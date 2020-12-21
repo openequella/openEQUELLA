@@ -39,8 +39,9 @@ import org.hibernate.annotations.Index;
 @AccessType("field")
 @SuppressWarnings("nls")
 @Table(
-    uniqueConstraints =
-        @UniqueConstraint(columnNames = {"institution_id", "itemid", "reason", "userTo"}))
+    uniqueConstraints = {
+      @UniqueConstraint(columnNames = {"institution_id", "itemid", "reason", "userTo"})
+    })
 public class Notification {
   public static final String REASON_WENTLIVE = "wentlive";
   public static final String REASON_REJECTED = "rejected";

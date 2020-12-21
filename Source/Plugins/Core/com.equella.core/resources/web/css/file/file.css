@@ -1,17 +1,14 @@
-.universalresourcedialog.fileHandler .addlink
-{
-	margin-top: 1em;
+.universalresourcedialog.fileHandler .addlink {
+  margin-top: 1em;
 }
 
-.universalresourcedialog .ctrlinvalidmessage
-{
-	color: red;
-	text-align: center;
-	font-size: 20px;
-	line-height: 24px
+.universalresourcedialog .ctrlinvalidmessage {
+  color: red;
+  text-align: center;
+  font-size: 20px;
+  line-height: 24px;
 }
 
-.universalresourcedialog .uploadsprogress
-{
-    margin-bottom: 15px;
+.universalresourcedialog .uploadsprogress {
+  margin-bottom: 15px;
 }

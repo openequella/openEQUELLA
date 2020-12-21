@@ -64,6 +64,10 @@
     <ScalaCodeStyleSettings>
       <option name="FORMATTER" value="1" />
     </ScalaCodeStyleSettings>
+    <TypeScriptCodeStyleSettings version="0">
+      <option name="IMPORT_SORT_MODULE_NAME" value="true" />
+      <option name="USE_PATH_MAPPING" value="NEVER" />
+    </TypeScriptCodeStyleSettings>
     <codeStyleSettings language="JAVA">
       <option name="KEEP_CONTROL_STATEMENT_IN_ONE_LINE" value="false" />
       <option name="KEEP_BLANK_LINES_IN_CODE" value="1" />

@@ -37,10 +37,16 @@ import io.bit3.jsass.Compiler;
 import io.bit3.jsass.Options;
 import io.bit3.jsass.Output;
 import io.bit3.jsass.context.StringContext;
-import java.awt.*;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.net.URLConnection;
 import java.util.Collections;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
@@ -53,6 +59,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("nls")
 @Bind(ThemeSettingsService.class)
 public class ThemeSettingsServiceImpl implements ThemeSettingsService {
+
   @Inject TLEAclManager tleAclManager;
   @Inject ConfigurationService configurationService;
   @Inject FileSystemService fileSystemService;
@@ -99,7 +106,7 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
   }
 
   @Override
-  public void setTheme(NewUITheme theme) throws JsonProcessingException, IOException {
+  public void setTheme(NewUITheme theme) throws IOException {
     checkPermissions();
     String themeString = themeToJSONString(theme);
     configurationService.setProperty(THEME_KEY, themeString);
@@ -109,36 +116,19 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
   @Override
   public void setLogo(File logoFile) throws IOException {
     checkPermissions();
-    CustomisationFile customisationFile = new CustomisationFile();
-    // read in image file
-    BufferedImage bImage = null;
-    bImage = ImageIO.read(logoFile);
-    if (bImage == null) {
+
+    // Resize logo
+    BufferedImage logo = ImageIO.read(logoFile);
+    if (logo == null) {
       throw new IllegalArgumentException("Invalid image file");
     }
+    RenderedImage resizedLogo = resizeLogo(logo);
 
-    // resize image to logo size (230px x 36px)
-    BufferedImage resizedImage = new BufferedImage(230, 36, BufferedImage.TYPE_INT_ARGB);
-    Graphics2D g2d = (Graphics2D) resizedImage.getGraphics();
-    g2d.drawImage(
-        bImage,
-        0,
-        0,
-        resizedImage.getWidth() - 1,
-        resizedImage.getHeight() - 1,
-        0,
-        0,
-        bImage.getWidth() - 1,
-        bImage.getHeight() - 1,
-        null);
-    g2d.dispose();
-    RenderedImage rImage = resizedImage;
-
-    // write resized image to image file in the institution's filestore
+    // write resized logo to image file in the institution's filestore
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ImageIO.write(rImage, "png", os);
+    ImageIO.write(resizedLogo, "png", os);
     InputStream fis = new ByteArrayInputStream(os.toByteArray());
-    fileSystemService.write(customisationFile, LOGO_FILENAME, fis, false);
+    fileSystemService.write(new CustomisationFile(), LOGO_FILENAME, fis, false);
     os.close();
     fis.close();
   }
@@ -165,17 +155,31 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
   }
 
   public InputStream getLegacyCss() throws IOException {
-    File baseLegacySass =
-        new File(getClass().getResource("/web/sass/" + SASS_LEGACY_CSS_FILENAME).getFile());
     CustomisationFile customisationFile = new CustomisationFile();
-    boolean legacyCssExists = fileSystemService.fileExists(customisationFile, LEGACY_CSS_FILENAME);
-    boolean baseSassUpdated =
-        baseLegacySass.lastModified()
-            > fileSystemService.lastModified(customisationFile, LEGACY_CSS_FILENAME);
+    boolean needsUpdate = false;
 
-    if (!legacyCssExists || baseSassUpdated) {
+    // compare against the modified date of the css file if it exists
+    boolean legacyCssExists = fileSystemService.fileExists(customisationFile, LEGACY_CSS_FILENAME);
+    if (legacyCssExists) {
+      // get last modified date of the scss file
+      URLConnection conn =
+          getClass().getResource("/web/sass/" + SASS_LEGACY_CSS_FILENAME).openConnection();
+      long lastMod = conn.getLastModified();
+      conn.getInputStream().close();
+
+      // get last modified of the compiled css file
+      long cssLastMod = fileSystemService.lastModified(customisationFile, LEGACY_CSS_FILENAME);
+      if (lastMod > cssLastMod) {
+        needsUpdate = true;
+      }
+    } else {
+      needsUpdate = true;
+    }
+
+    if (needsUpdate) {
       compileSass();
     }
+
     return fileSystemService.read(customisationFile, LEGACY_CSS_FILENAME);
   }
 
@@ -202,5 +206,33 @@ public class ThemeSettingsServiceImpl implements ThemeSettingsService {
       LOGGER.debug("Failed to compile Sass to css ", e);
     }
     return legacyScss;
+  }
+
+  private BufferedImage resizeLogo(BufferedImage logo) {
+    if (logo == null) {
+      throw new IllegalArgumentException("resizeLogo() should not be called with a null logo.");
+    }
+
+    final int maxWidth = 230; // based on New UI layout
+    final int width = Math.min(maxWidth, logo.getWidth());
+    final float scale = (float) width / logo.getWidth();
+    final int height = (int) (logo.getHeight() * scale);
+
+    BufferedImage resizedLogo = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    Graphics2D g2d = (Graphics2D) resizedLogo.getGraphics();
+    g2d.drawImage(
+        logo,
+        0,
+        0,
+        resizedLogo.getWidth() - 1,
+        resizedLogo.getHeight() - 1,
+        0,
+        0,
+        logo.getWidth() - 1,
+        logo.getHeight() - 1,
+        null);
+    g2d.dispose();
+
+    return resizedLogo;
   }
 }

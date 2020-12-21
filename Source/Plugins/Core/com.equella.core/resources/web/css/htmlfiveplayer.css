@@ -1,15 +1,13 @@
 p.fallback {
-	color: white;
-	font-size: 17px;
-	text-align: center;
+  color: white;
+  font-size: 17px;
+  text-align: center;
 }
 
-p.ie{
-	font-size: 12px;
-	padding-top: 10px;
+p.ie {
+  font-size: 12px;
+  padding-top: 10px;
 }
-#player-container
-{
-	position: absolute;
+#player-container {
+  position: absolute;
 }
-

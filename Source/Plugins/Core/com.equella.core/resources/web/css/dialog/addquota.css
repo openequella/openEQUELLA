@@ -1,23 +1,20 @@
-DIV.addquota DIV.settingLabel
-{
-	width: 140px;
+DIV.addquota DIV.settingLabel {
+  width: 140px;
 }
 
-DIV.addquota DIV.settingField
-{
-	width: 260px;
+DIV.addquota DIV.settingField {
+  width: 260px;
 }
 
 DIV.addquota div.spacer {
-	height: 24px;
+  height: 24px;
 }
 
-div.error-selector 
-{
-	background-color: #FDD;
-	padding: 2px;
-	display: block;
-	text-align: center;	
-	color: red;
-	margin: 0;
+div.error-selector {
+  background-color: #fdd;
+  padding: 2px;
+  display: block;
+  text-align: center;
+  color: red;
+  margin: 0;
 }

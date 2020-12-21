@@ -38,7 +38,7 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.type.StandardBasicTypes;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,11 +77,13 @@ public class AccessExpressionDaoImpl extends GenericDaoImpl<AccessExpression, Lo
   @Override
   @Transactional(propagation = Propagation.MANDATORY)
   public AccessExpression retrieveOrCreate(String expression) {
-    @SuppressWarnings("unchecked")
     List<AccessExpression> list =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "from AccessExpression where expression = :expression", "expression", expression);
+        (List<AccessExpression>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "from AccessExpression where expression = :expression",
+                    "expression",
+                    expression);
 
     AccessExpression result;
     if (!list.isEmpty()) {
@@ -124,55 +126,55 @@ public class AccessExpressionDaoImpl extends GenericDaoImpl<AccessExpression, Lo
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   @Transactional(propagation = Propagation.MANDATORY)
   public List<Triple<Long, String, Boolean>> getMatchingExpressions(final List<String> values) {
-    return getHibernateTemplate()
-        .executeFind(
-            new HibernateCallback() {
-              @Override
-              public Object doInHibernate(Session session) {
-                // NOTE THAT THIS IS NOT HQL!!! IT IS PRETTY MUCH SQL!!!
-                String sql =
-                    "SELECT id, expression, dynamic FROM access_expression WHERE id IN"
-                        + " (SELECT access_expression_id FROM access_expression_expression_p"
-                        + " WHERE element IN (:values))";
+    return (List<Triple<Long, String, Boolean>>)
+        getHibernateTemplate()
+            .execute(
+                new HibernateCallback() {
+                  @Override
+                  public Object doInHibernate(Session session) {
+                    // NOTE THAT THIS IS NOT HQL!!! IT IS PRETTY MUCH SQL!!!
+                    String sql =
+                        "SELECT id, expression, dynamic FROM access_expression WHERE id IN"
+                            + " (SELECT access_expression_id FROM access_expression_expression_p"
+                            + " WHERE element IN (:values))";
 
-                SQLQuery query = session.createSQLQuery(sql);
-                query.setParameterList("values", values);
-                query.addScalar("id", StandardBasicTypes.LONG);
-                query.addScalar("expression", StandardBasicTypes.STRING);
-                query.addScalar("dynamic", StandardBasicTypes.BOOLEAN);
-                query.setFetchSize(20);
+                    SQLQuery query = session.createSQLQuery(sql);
+                    query.setParameterList("values", values);
+                    query.addScalar("id", StandardBasicTypes.LONG);
+                    query.addScalar("expression", StandardBasicTypes.STRING);
+                    query.addScalar("dynamic", StandardBasicTypes.BOOLEAN);
+                    query.setFetchSize(20);
 
-                List<Pair<Long, String>> results = new ArrayList<Pair<Long, String>>();
+                    List<Pair<Long, String>> results = new ArrayList<Pair<Long, String>>();
 
-                List<Object[]> queryResults = query.list();
-                for (Object[] o : queryResults) {
-                  results.add(
-                      new Triple<Long, String, Boolean>(
-                          (Long) o[0], (String) o[1], (Boolean) o[2]));
-                }
-                return results;
-              }
-            });
+                    List<Object[]> queryResults = query.list();
+                    for (Object[] o : queryResults) {
+                      results.add(
+                          new Triple<Long, String, Boolean>(
+                              (Long) o[0], (String) o[1], (Boolean) o[2]));
+                    }
+                    return results;
+                  }
+                });
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   @Transactional(propagation = Propagation.MANDATORY)
   public List<AccessExpression> listAll() {
-    return getHibernateTemplate()
-        .executeFind(
-            new TLEHibernateCallback() {
-              @Override
-              public Object doInHibernate(Session session) throws HibernateException {
-                Query query = session.createQuery("from " + getPersistentClass().getName());
-                query.setCacheable(true);
-                query.setReadOnly(true);
-                return query.list();
-              }
-            });
+    return (List<AccessExpression>)
+        getHibernateTemplate()
+            .execute(
+                new TLEHibernateCallback() {
+                  @Override
+                  public Object doInHibernate(Session session) throws HibernateException {
+                    Query query = session.createQuery("from " + getPersistentClass().getName());
+                    query.setCacheable(true);
+                    query.setReadOnly(true);
+                    return query.list();
+                  }
+                });
   }
 
   @Override

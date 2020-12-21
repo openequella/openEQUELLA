@@ -1,5 +1,6 @@
 package com.tle.webtests.test.searching;
 
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import com.dytech.devlib.PropBagEx;
@@ -8,9 +9,7 @@ import com.google.common.io.Closeables;
 import com.tle.webtests.framework.SoapHelper;
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.framework.soap.SoapService50;
-import com.tle.webtests.pageobject.ReceiptPage;
 import com.tle.webtests.pageobject.SettingsPage;
-import com.tle.webtests.pageobject.searching.CreateSearchFilterPage;
 import com.tle.webtests.pageobject.searching.ItemListPage;
 import com.tle.webtests.pageobject.searching.ItemSearchResult;
 import com.tle.webtests.pageobject.searching.SearchPage;
@@ -22,9 +21,7 @@ import com.tle.webtests.pageobject.searching.ShareSearchQuerySection;
 import com.tle.webtests.test.AbstractCleanupAutoTest;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -32,7 +29,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.openqa.selenium.JavascriptExecutor;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -59,7 +55,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
   }
 
   // Test the sort order options
-  @Test(dependsOnMethods = {"testRemoveSearchFilters"})
+  @Test
   public void testChangeResultOrder() {
     SettingsPage sp = new SettingsPage(context).load();
 
@@ -73,9 +69,6 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     SearchPage searchPage = new SearchPage(context).load();
 
     assertTrue(searchPage.ensureSortSelected(sortOption.name()));
-    // TODO Check results properly
-    // assertTrue(checkItemOrder(searchPage.search().get().getResults(),
-    // sortOption));
 
     sortOption = Order.DATEMODIFIED;
     searchSettingsPage = new SettingsPage(context).load().searchSettings();
@@ -86,7 +79,6 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     searchPage = new SearchPage(context).load();
 
     assertTrue(searchPage.ensureSortSelected(sortOption.name()));
-    // assertTrue(true); TODO Check results
 
     sortOption = SearchSettingsPage.Order.NAME;
     searchSettingsPage = new SettingsPage(context).load().searchSettings();
@@ -97,7 +89,6 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     searchPage = new SearchPage(context).load();
 
     assertTrue(searchPage.ensureSortSelected(sortOption.name()));
-    // assertTrue(true); TODO Check results
 
     sortOption = SearchSettingsPage.Order.RATING;
     searchSettingsPage = new SettingsPage(context).load().searchSettings().get();
@@ -109,15 +100,13 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     searchPage = new SearchPage(context).load();
 
     assertTrue(searchPage.ensureSortSelected(sortOption.name()));
-    // assertTrue(true); TODO Check results
   }
 
   // Test the show non live options
-  @Test(dependsOnMethods = {"testRemoveSearchFilters"})
+  @Test
   public void testShowNonLive() {
     logon("AutoTest", "automated");
     SearchSettingsPage ssp = new SettingsPage(context).load().searchSettings().load();
-    ssp.setOrder(SearchSettingsPage.Order.RANK);
     ssp.includeNonLive(true).save();
 
     SearchPage searchPage = new SearchPage(context).load();
@@ -164,89 +153,25 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     assertTrue(!ssp.isDisableCloud(), "Cloud was not enabled");
   }
 
-  // Test the setup/usage of the MIME type search filters
-  @Test(dataProvider = "filters")
-  public void testSetupSearchFilters(String filterName, String mimetype, int count) {
+  @Test
+  public void testDisableGallery() {
+    // Disable Images Gallery view
     logon("AutoTest", "automated");
-    SearchSettingsPage ssp = new SettingsPage(context).load().searchSettings();
-    CreateSearchFilterPage sfp = ssp.addFilter();
-    sfp.setName(filterName).selectMimeType(mimetype, true).save();
+    new SettingsPage(context).load().searchSettings().load().setDisableImageGallery(true).save();
 
-    // Check for receipt
-    ReceiptPage.waiter("Search filter saved successfully", ssp).get();
-
-    // Check table
-    assertTrue(ssp.hasFilter(filterName), "Did not find filter with name: " + filterName);
-
+    // Go to search page, test that gallery is disabled
     SearchPage searchPage = new SearchPage(context).load();
-    assertTrue(
-        searchPage.hasResourceTypeFilter(filterName),
-        "Expected to find " + filterName + " in resource type filters");
-    searchPage.clearResourceTypeFilters();
-    searchPage.checkResourceTypeFilter(filterName, true);
-    String itemName = MessageFormat.format("SearchSettings - Image {0} - {1}", count, filterName);
-    ItemListPage results = SearchPage.searchExact(context, itemName);
-    assertTrue(results.doesResultExist(itemName, 1));
+    assertFalse(searchPage.isImagesLinkAvailable());
+
+    // Now reenable Images Gallery
+    new SettingsPage(context).load().searchSettings().load().setDisableImageGallery(false).save();
+
+    // Go to search page, test that gallery is enabled
+    searchPage = new SearchPage(context).load();
+    assertTrue(searchPage.isImagesLinkAvailable());
   }
-
-  // Test the editing of MIME type search filters
-  @Test(dependsOnMethods = {"testRemoveSearchFilters"})
-  public void testEditSearchFilter() {
-    logon("AutoTest", "automated");
-    SearchSettingsPage ssp = new SettingsPage(context).load().searchSettings();
-    CreateSearchFilterPage sfp = ssp.addFilter();
-    String filterName = "All Images";
-    String filterNameEdited = "All Images - Edited";
-
-    sfp.saveWithErrors();
-    assertTrue(sfp.nameValidationExists());
-    assertTrue(sfp.mimeTypeValidationExists());
-
-    sfp.setName(filterName).saveWithErrors();
-    assertTrue(!sfp.nameValidationExists());
-
-    sfp.setName("");
-    sfp.selectMimeTypes(
-            Arrays.asList("image/jpeg", "image/bmp", "image/png", "image/tiff", "equella/plan"))
-        .saveWithErrors();
-    assertTrue(!sfp.mimeTypeValidationExists());
-
-    ssp = sfp.setName(filterName).save();
-
-    sfp = ssp.editFilter(filterName);
-    ((JavascriptExecutor) getContext().getDriver())
-        .executeScript("window.scrollTo(0, -document.body.scrollHeight)");
-    sfp.selectMimeType("equella/plan", false);
-    ssp = sfp.selectMimeType("image/gif", true).setName(filterNameEdited).save().get();
-    assertTrue(
-        ssp.hasFilter(filterNameEdited), "Filter '" + filterNameEdited + "' was not present");
-
-    SearchPage searchPage = new SearchPage(context).load();
-    assertTrue(searchPage.hasResourceTypeFilter(filterNameEdited));
-
-    ssp = new SettingsPage(context).load().searchSettings();
-    sfp = ssp.editFilter(filterNameEdited);
-    String bogusName = "bogusfiltername";
-    sfp.setName(bogusName).cancel();
-    assertTrue(!ssp.hasFilter(bogusName));
-
-    ssp = new SettingsPage(context).load().searchSettings();
-    ssp.removeFilter(filterNameEdited);
-    assertTrue(!ssp.hasFilter(filterNameEdited));
-  }
-
-  // Test the removal of the MIME type search filters
-  @Test(
-      dependsOnMethods = {"testSetupSearchFilters"},
-      dataProvider = "filters")
-  public void testRemoveSearchFilters(String filterName, String mimetype, int count) {
-    SearchSettingsPage ssp = new SettingsPage(context).load().searchSettings();
-    ssp.removeFilter(filterName);
-    assertTrue(!ssp.hasFilter(filterName), "Expected not to see " + filterName + " after removal");
-  }
-
   // Test Authenticated feeds
-  @Test(dependsOnMethods = {"testRemoveSearchFilters"})
+  @Test
   public void testGenerateAuthenticatedFeeds() throws Exception {
     logon("AutoTest", "automated");
     final String searchTerm = "Relevance";
@@ -256,7 +181,6 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     soapService.login("AutoTest", "automated");
 
     SearchSettingsPage ssp = new SettingsPage(context).load().searchSettings();
-    ssp.setGenerateAuthFeeds(false).save();
 
     // Do a search and get RSS url
     SearchPage searchPage = new SearchPage(context).load();
@@ -289,32 +213,6 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     // Check results
     assertTrue(checkRssResponse(getResponse(soapService, rssUrl, basicCreds), false));
     assertTrue(checkAtomResponse(getResponse(soapService, atomUrl, basicCreds), false));
-  }
-
-  @Test(dependsOnMethods = {"testRemoveSearchFilters"})
-  public void testContentIndexing() throws Exception {
-    logon("AutoTest", "automated");
-    SearchSettingsPage ssp = new SettingsPage(context).load().searchSettings();
-    ssp.setNoIndexingOfPages().save();
-    logout();
-
-    logon("AutoTest", "automated");
-    ssp = new SettingsPage(context).load().searchSettings();
-    assertTrue(ssp.isNoIndexingOfPages());
-
-    ssp.setIndexPageOnly().save();
-    logout();
-
-    logon("AutoTest", "automated");
-    ssp = new SettingsPage(context).load().searchSettings();
-    assertTrue(ssp.isIndexPageOnly());
-
-    ssp.setIndex2ndryPages().save();
-    logout();
-
-    logon("AutoTest", "automated");
-    ssp = new SettingsPage(context).load().searchSettings();
-    assertTrue(ssp.isIndex2ndryPages());
   }
 
   private boolean checkRssResponse(PropBagEx response, boolean single) {

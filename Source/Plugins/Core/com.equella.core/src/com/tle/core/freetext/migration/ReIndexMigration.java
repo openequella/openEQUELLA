@@ -28,7 +28,7 @@ import com.tle.core.plugins.impl.PluginServiceImpl;
 import java.util.Date;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.hibernate.classic.Session;
+import org.hibernate.Session;
 
 @Bind
 @Singleton
@@ -65,7 +65,7 @@ public class ReIndexMigration extends AbstractHibernateMigration {
           @Override
           public void run(Session session) throws Exception {
             session
-                .createSQLQuery("update item set date_for_index = ?")
+                .createSQLQuery("update item set date_for_index = ?0")
                 .setParameter(0, new Date())
                 .executeUpdate();
           }

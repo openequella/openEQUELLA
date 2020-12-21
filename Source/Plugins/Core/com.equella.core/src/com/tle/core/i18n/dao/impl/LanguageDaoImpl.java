@@ -36,7 +36,7 @@ import javax.inject.Singleton;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 
 @Bind(LanguageDao.class)
 @Singleton
@@ -45,7 +45,7 @@ public class LanguageDaoImpl extends GenericInstitionalDaoImpl<Language, Long>
   private enum QueryType {
     CLOSEST("getClosest"),
     MORE_SPECIFIC("getMoreSpecific"),
-    LEAST_SPECIFIC("getLeastSpecific"); // $NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    LEAST_SPECIFIC("getLeastSpecific");
 
     private final String queryName;
 
@@ -134,19 +134,18 @@ public class LanguageDaoImpl extends GenericInstitionalDaoImpl<Language, Long>
       @SuppressWarnings("unchecked")
       public List<Object> doQuery(Session session, Collection<Long> collection) {
         Query query = session.getNamedQuery(queryType.getQueryName());
-        query.setParameterList("bundles", collection); // $NON-NLS-1$
+        query.setParameterList("bundles", collection);
         Locale locale = CurrentLocale.getLocale();
         switch (queryType) {
           case CLOSEST:
-            query.setParameterList(
-                "locales", LocaleUtils.getAllPossibleKeys(locale)); // $NON-NLS-1$
+            query.setParameterList("locales", LocaleUtils.getAllPossibleKeys(locale));
             break;
 
           case MORE_SPECIFIC:
             String langOnly = locale.getLanguage() + '_';
             String moreSpecific = langOnly + locale.getCountry();
-            query.setParameter("locale", langOnly + '%'); // $NON-NLS-1$
-            query.setParameter("locale2", moreSpecific + '%'); // $NON-NLS-1$
+            query.setParameter("locale", langOnly + '%');
+            query.setParameter("locale2", moreSpecific + '%');
             break;
 
           default:
@@ -167,22 +166,19 @@ public class LanguageDaoImpl extends GenericInstitionalDaoImpl<Language, Long>
   @Override
   public void deleteBundles(Collection<Long> bundles) {
     if (!bundles.isEmpty()) {
-      StringBuilder query = new StringBuilder("("); // $NON-NLS-1$
+      StringBuilder query = new StringBuilder("(");
       for (int i = 0; i < bundles.size(); i++) {
         if (i > 0) {
           query.append(',');
         }
-        query.append('?');
+        query.append('?').append(i);
       }
       query.append(')');
       getHibernateTemplate()
           .bulkUpdate(
-              "delete LanguageString where bundle.id in " + query.toString(), // $NON-NLS-1$
-              bundles.toArray());
+              "delete LanguageString where bundle.id in " + query.toString(), bundles.toArray());
       getHibernateTemplate()
-          .bulkUpdate(
-              "delete LanguageBundle where id in " + query.toString(), // $NON-NLS-1$
-              bundles.toArray());
+          .bulkUpdate("delete LanguageBundle where id in " + query.toString(), bundles.toArray());
     }
   }
 }

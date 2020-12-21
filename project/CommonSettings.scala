@@ -35,7 +35,7 @@ object CommonSettings extends AutoPlugin {
     lazy val platformEquella = LocalProject("com_tle_platform_equella")
     lazy val log4jCustom     = LocalProject("com_tle_log4j")
     lazy val xstreamDep      = "com.thoughtworks.xstream" % "xstream" % "1.4.11.1"
-    lazy val postgresDep     = "org.postgresql" % "postgresql" % "42.2.9"
+    lazy val postgresDep     = "org.postgresql" % "postgresql" % "42.2.18"
     lazy val sqlServerDep    = "com.microsoft.sqlserver" % "mssql-jdbc" % "6.1.0.jre8"
   }
 
@@ -46,9 +46,9 @@ object CommonSettings extends AutoPlugin {
   import autoImport._
   override def projectSettings = Seq(
     organization := "com.github.equella",
-    scalaVersion := "2.12.6",
+    scalaVersion := "2.12.12",
     scalacOptions += "-Ypartial-unification",
-    addCompilerPlugin("io.tryp" % "splain" % "0.3.1" cross CrossVersion.patch),
+    addCompilerPlugin("io.tryp" % "splain" % "0.5.7" cross CrossVersion.patch),
     scalacOptions ++= Seq("-P:splain:implicits:true", "-P:splain:color:false"),
     javacOptions ++= Seq("-source", "1.8", "-target", "8"),
     compileOrder := CompileOrder.Mixed,

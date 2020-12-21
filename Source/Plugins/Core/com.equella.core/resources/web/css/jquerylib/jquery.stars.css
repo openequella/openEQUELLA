@@ -1,10 +1,10 @@
- /*
+/*
   * IMPORTANT EQUELLA NOTE!
   *
   * This CSS and the accompanying image that comes with the JQuery plug-in has been
   * modified for stars that are 15px wide and 13px high. 
   */
-  
+
 /*!
  * jQuery UI Stars v3.0.1
  * http://plugins.jquery.com/project/Star_Rating_widget
@@ -18,7 +18,7 @@
  * $Build: 35 (2010-05-01)
  *
  */
- .ui-stars-star,
+.ui-stars-star,
 .ui-stars-cancel {
   float: left;
   display: block;

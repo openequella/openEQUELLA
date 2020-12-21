@@ -22,7 +22,7 @@ import com.tle.core.hibernate.impl.HibernateMigrationHelper;
 import com.tle.core.plugins.impl.PluginServiceImpl;
 import java.util.List;
 import org.hibernate.Query;
-import org.hibernate.classic.Session;
+import org.hibernate.Session;
 
 public abstract class AbstractHibernateSchemaMigration extends AbstractHibernateMigration {
   private static String prefix =

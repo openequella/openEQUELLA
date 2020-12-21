@@ -29,9 +29,22 @@ import java.util.List;
 /** @author Nicholas Read */
 public interface PowerSearchService
     extends AbstractEntityService<EntityEditingBean, PowerSearch>, RemotePowerSearchService {
+
+  /**
+   * List all available Power Searches (Advanced Searches) assuming 'SEARCH_POWER_SEARCH' ACL.
+   *
+   * @return available power searches
+   */
   List<BaseEntityLabel> listSearchable();
 
   List<BaseEntityLabel> listAllForSchema(long schemaId);
 
   List<BaseEntityLabel> listAllForSchema(Schema schema);
+
+  /**
+   * List all available Power Searches (Advanced Searches) assuming 'SEARCH_POWER_SEARCH' ACL.
+   *
+   * @return available power searches
+   */
+  List<PowerSearch> enumerateSearchable();
 }

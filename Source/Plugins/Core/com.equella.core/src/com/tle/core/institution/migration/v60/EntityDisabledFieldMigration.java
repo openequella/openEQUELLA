@@ -37,11 +37,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import org.hibernate.Query;
 import org.hibernate.ScrollableResults;
+import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Index;
-import org.hibernate.classic.Session;
 
 @Bind
 @Singleton

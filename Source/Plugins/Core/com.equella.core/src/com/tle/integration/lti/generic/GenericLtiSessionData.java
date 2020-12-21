@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 public class GenericLtiSessionData extends LtiSessionData {
   private static final long serialVersionUID = 1L;
 
+  private String contentId;
+
   public GenericLtiSessionData() {
     super();
   }
@@ -35,5 +37,13 @@ public class GenericLtiSessionData extends LtiSessionData {
   @Override
   public String getIntegrationType() {
     return "lti";
+  }
+
+  public String getContentId() {
+    return contentId;
+  }
+
+  public void setContentId(String contentId) {
+    this.contentId = contentId;
   }
 }

@@ -48,6 +48,10 @@ import org.apache.http.protocol.HTTP;
 
 @SuppressWarnings("serial")
 public class Setup extends JPanel {
+  // General note on the queries in this class - With the advent of hibernate 5,
+  // queries with '?' in them need to be ordinal ( ie `?4` ).  However, this class
+  // does not leverage the JPA / Hibernate logic, so we can leave the `?`s as-is.
+
   private static final String CONNECTION_URL = "jdbc:postgresql://appserver01:5432/autotestsync";
   private JTable institutionTable;
   private InstitutionModel institutionModel;

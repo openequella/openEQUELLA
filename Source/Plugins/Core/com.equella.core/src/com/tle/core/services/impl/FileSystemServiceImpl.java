@@ -34,11 +34,7 @@ import com.tle.common.filesystem.FileCallback;
 import com.tle.common.filesystem.FileEntry;
 import com.tle.common.filesystem.FileSystemHelper;
 import com.tle.common.filesystem.Filestore;
-import com.tle.common.filesystem.handle.ConversionFile;
-import com.tle.common.filesystem.handle.FileHandle;
-import com.tle.common.filesystem.handle.StagingFile;
-import com.tle.common.filesystem.handle.TemporaryFileHandle;
-import com.tle.common.filesystem.handle.TrashFile;
+import com.tle.common.filesystem.handle.*;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.quota.settings.QuotaSettings;
@@ -54,27 +50,12 @@ import com.tle.core.plugins.AbstractPluginService;
 import com.tle.core.services.FileSystemService;
 import com.tle.core.services.ZipProgress;
 import com.tle.core.settings.service.ConfigurationService;
-import com.tle.core.util.archive.ArchiveCreator;
-import com.tle.core.util.archive.ArchiveEntry;
-import com.tle.core.util.archive.ArchiveExtractor;
-import com.tle.core.util.archive.ArchiveProgress;
-import com.tle.core.util.archive.ArchiveType;
+import com.tle.core.util.archive.*;
 import com.tle.core.zookeeper.ZookeeperService;
 import com.tle.web.stream.FileContentStream;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -110,6 +91,10 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
   @com.google.inject.Inject(optional = true)
   @Named("filestore.advanced")
   private boolean advancedFilestore;
+
+  @com.google.inject.Inject(optional = true)
+  @Named("filestore.zipExtractCharset")
+  private String charset;
 
   @Inject
   @Named("filestore.root")
@@ -319,7 +304,7 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
       throws IOException {
     final int bufferSize = 4096;
     long copiedBytes = 0;
-    byte buffer[] = new byte[bufferSize];
+    byte[] buffer = new byte[bufferSize];
     for (int bytes = source.read(buffer, 0, buffer.length);
         bytes != -1;
         bytes = source.read(buffer, 0, buffer.length)) {
@@ -357,7 +342,8 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
     }
 
     long byteCount = 0;
-    try (Writer out = new OutputStreamWriter(getOutputStream(file, append), "UTF-8")) {
+    try (Writer out =
+        new OutputStreamWriter(getOutputStream(file, append), StandardCharsets.UTF_8)) {
       byteCount = CharStreams.copy(content, out);
     }
 
@@ -912,7 +898,7 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
     }
 
     try (InputStream in2 = in) {
-      extract(method.createExtractor(in2), outdir, progress);
+      extract(method.createExtractor(in2, Charset.forName(charset)), outdir, progress);
       return outdir.getName();
     }
   }
@@ -966,7 +952,7 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
       FileHandle handle, String filename, String entryToFind, boolean matchCase) {
     try (InputStream in = read(handle, filename)) {
       final ArchiveType method = ArchiveType.getForFilename(filename);
-      final ArchiveExtractor extractor = method.createExtractor(in);
+      final ArchiveExtractor extractor = method.createExtractor(in, Charset.forName(charset));
       final String lookFor = (matchCase ? entryToFind : entryToFind.toLowerCase());
       ArchiveEntry entry = extractor.getNextEntry();
       while (entry != null) {
@@ -987,7 +973,7 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
       FileHandle handle, String packageZipName, String entryToFind, OutputStream out) {
     try (InputStream in = read(handle, packageZipName)) {
       final ArchiveType method = ArchiveType.getForFilename(packageZipName);
-      final ArchiveExtractor extractor = method.createExtractor(in);
+      final ArchiveExtractor extractor = method.createExtractor(in, Charset.forName(charset));
       ArchiveEntry matchedEntry = extractor.getNextEntry();
       while (matchedEntry != null) {
         String entryName = matchedEntry.getName();

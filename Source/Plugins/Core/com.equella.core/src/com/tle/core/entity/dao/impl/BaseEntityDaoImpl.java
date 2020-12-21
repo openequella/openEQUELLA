@@ -33,7 +33,7 @@ import javax.inject.Singleton;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 
 /** @author Nicholas Read */
 @SuppressWarnings("nls")
@@ -66,10 +66,11 @@ public class BaseEntityDaoImpl extends AbstractHibernateDao implements BaseEntit
   public Map<Long, String> getUuids(Set<Long> ids) {
     Map<Long, String> uuids = new HashMap<Long, String>();
     if (!ids.isEmpty()) {
-      @SuppressWarnings("unchecked")
       List<Object[]> entityList =
-          getHibernateTemplate()
-              .findByNamedParam("SELECT id, uuid FROM BaseEntity WHERE id IN (:ids)", "ids", ids);
+          (List<Object[]>)
+              getHibernateTemplate()
+                  .findByNamedParam(
+                      "SELECT id, uuid FROM BaseEntity WHERE id IN (:ids)", "ids", ids);
 
       for (Object[] o : entityList) {
         uuids.put((Long) o[0], (String) o[1]);
@@ -79,16 +80,16 @@ public class BaseEntityDaoImpl extends AbstractHibernateDao implements BaseEntit
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<Long> getIdsFromUuids(Set<String> uuids) {
     if (uuids.isEmpty()) {
       return Collections.EMPTY_LIST;
     }
 
-    return getHibernateTemplate()
-        .findByNamedParam(
-            "SELECT id FROM BaseEntity WHERE institution = :institution AND uuid IN (:uuids)",
-            new String[] {"institution", "uuids"},
-            new Object[] {CurrentInstitution.get(), uuids});
+    return (List<Long>)
+        getHibernateTemplate()
+            .findByNamedParam(
+                "SELECT id FROM BaseEntity WHERE institution = :institution AND uuid IN (:uuids)",
+                new String[] {"institution", "uuids"},
+                new Object[] {CurrentInstitution.get(), uuids});
   }
 }

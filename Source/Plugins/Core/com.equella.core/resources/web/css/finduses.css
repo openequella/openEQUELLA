@@ -1,85 +1,71 @@
-#finduses select 
-{
-	width: 250px;
+#finduses select {
+  width: 250px;
 }
 
-#finduses P.error
-{
-	background-color: #FFDDDD;
-    display: block;
-    padding: 5px;
-    color: red;
-    text-align: center;
+#finduses P.error {
+  background-color: #ffdddd;
+  display: block;
+  padding: 5px;
+  color: red;
+  text-align: center;
 }
 
-
-table.zebra tr.active.detailsRow, 
-table.zebra tr.active.detailsRow td, 
-table.zebra tr.active.detailsRow td:hover, 
-table.zebra tr.active:hover.detailsRow td
-{
-	background-color: #EFF6FF !important;
-	cursor: auto;
+table.zebra tr.active.detailsRow,
+table.zebra tr.active.detailsRow td,
+table.zebra tr.active.detailsRow td:hover,
+table.zebra tr.active:hover.detailsRow td {
+  background-color: #eff6ff !important;
+  cursor: auto;
 }
 
-table.zebra tr.detailsRow td:hover
-{
-	cursor: pointer;
+table.zebra tr.detailsRow td:hover {
+  cursor: pointer;
 }
 
-table.zebra tr.detailsRow.active
-{
-	border-top: 0;
-	border-bottom: 0;
-	
+table.zebra tr.detailsRow.active {
+  border-top: 0;
+  border-bottom: 0;
 }
 
-table.zebra tr.detailsRow.inactive td
-{
-	border-top: 0;
-	border-bottom: 0;
+table.zebra tr.detailsRow.inactive td {
+  border-top: 0;
+  border-bottom: 0;
 }
 
-table.zebra tr.detailsRow.active td
-{
-	border-top: 1px solid #8F8B7F;
-	border-bottom: 1px solid #8F8B7F;
+table.zebra tr.detailsRow.active td {
+  border-top: 1px solid #8f8b7f;
+  border-bottom: 1px solid #8f8b7f;
 }
 
-table.zebra tr.detailsRow td.droparrow, 
-table.zebra tr.detailsRow th.droparrow
-{
-	padding: 2px;
-	width: 15px;
+table.zebra tr.detailsRow td.droparrow,
+table.zebra tr.detailsRow th.droparrow {
+  padding: 2px;
+  width: 15px;
 }
 
-table.zebra tr.detailsRow td.droparrow img
-{
-	display: none;
+table.zebra tr.detailsRow td.droparrow img {
+  display: none;
 }
 
-table.zebra tr.detailsRow:hover td.droparrow img, 
-table.zebra tr.detailsRow.active td.droparrow img 
-{
-	display: block;
+table.zebra tr.detailsRow:hover td.droparrow img,
+table.zebra tr.detailsRow.active td.droparrow img {
+  display: block;
 }
 
-.itemDetails
-{
-	display: none;
-	position: absolute;
-	right: 210px;
-	width: 221px;
-	padding: 17px;
-	background-color: #EFF6FF;
-	border: 1px solid #8F8B7F;
-	border-top: 0;
-	margin-top: 8px;
-	font-size: 10px;
-	z-index: 100;
+.itemDetails {
+  display: none;
+  position: absolute;
+  right: 210px;
+  width: 221px;
+  padding: 17px;
+  background-color: #eff6ff;
+  border: 1px solid #8f8b7f;
+  border-top: 0;
+  margin-top: 8px;
+  font-size: 10px;
+  z-index: 100;
 }
 
-.detailsRow .itemDetails div
-{
-	padding-top:4px;
+.detailsRow .itemDetails div {
+  padding-top: 4px;
 }

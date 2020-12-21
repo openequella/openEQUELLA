@@ -1,14 +1,14 @@
 ol.termsofuse {
-	list-style: decimal;
-	padding-left: 2.5em;
-	padding-right: 2.5em;
+  list-style: decimal;
+  padding-left: 2.5em;
+  padding-right: 2.5em;
 }
 
 ol.termsofuse li {
-	font-size: 12px;
-	line-height: 1.5;
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 ol.termsofuse .terms {
-	padding-left: 10px;
+  padding-left: 10px;
 }

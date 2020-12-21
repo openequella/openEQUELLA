@@ -1,9 +1,12 @@
 {
-  "extends": ["config:base"],
-  "prConcurrentLimit": 10,
-  "rebaseStalePrs": false,
-  "prHourlyLimit": 1,
+  "extends": ["config:base", ":masterIssue", ":maintainLockFilesMonthly"],
+  "prConcurrentLimit": 20,
+  "prHourlyLimit": 2,
   "packageRules": [
+    {
+      "depTypeList": ["devDependencies"],
+      "automerge": true
+    },
     {
       "packagePatterns": ["^com.fasterxml.jackson"],
       "groupName": "Jackson (XML) packages"
@@ -49,6 +52,10 @@
       "groupName": "Apache Tomcat packages"
     },
     {
+      "packagePatterns": ["^org.http4s:http4s"],
+      "groupName": "http4s packages"
+    },
+    {
       "packagePatterns": ["^org.slf4j"],
       "groupName": "SLF4J packages"
     },
@@ -59,6 +66,10 @@
     {
       "packagePatterns": ["^com.softwaremill.sttp"],
       "groupName": "Scala HTTP packages"
+    },
+    {
+      "packageNames": ["@types/tough-cookie"],
+      "rangeStrategy": "replace"
     }
   ]
 }

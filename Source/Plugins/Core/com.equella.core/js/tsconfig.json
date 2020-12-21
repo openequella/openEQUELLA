@@ -2,28 +2,32 @@
   "compilerOptions": {
     "outDir": "target/ts",
     "module": "CommonJS",
+    "esModuleInterop": true,
     "target": "es5",
-    "lib": ["es6", "dom"],
+    "lib": ["es2020", "dom", "dom.iterable"],
     "inlineSourceMap": true,
     "inlineSources": true,
     "allowJs": true,
     "checkJs": true,
+    "skipLibCheck": true,
     "jsx": "react",
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
     "noErrorTruncation": true,
+    "strict": true,
     "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true,
     "baseUrl": ".",
     "paths": {
-      "~*": ["./entrybuild/*"]
+      "~*": ["./entrypoint/*", "./tsrc/*"]
     }
   },
-  "include": ["tsrc/**/*"],
+  "include": [
+    "tsrc/**/*",
+    "__test__/**/*",
+    "__stories__/**/*",
+    "__mocks__/**/*"
+  ],
   "exclude": [
     "node_modules",
     "build",
@@ -31,6 +35,7 @@
     "acceptance-tests",
     "webpack",
     "jest",
-    "src/setupTests.ts"
+    "src/setupTests.ts",
+    "storybook-static"
   ]
 }

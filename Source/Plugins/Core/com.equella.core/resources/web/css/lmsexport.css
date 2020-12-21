@@ -1,178 +1,149 @@
-#lmsexport select 
-{
-	width: 250px;
+#lmsexport select {
+  width: 250px;
 }
 
-#lmsexport .lms-tree-container ul, #lmsexport .lms-tree-container li 
-{
-	margin: 0px;
+#lmsexport .lms-tree-container ul,
+#lmsexport .lms-tree-container li {
+  margin: 0px;
 }
 
-#lmsexport P.error
-{
-	background-color: #FFDDDD;
-    display: block;
-    padding: 5px;
-    color: red;
-    text-align: center;
+#lmsexport P.error {
+  background-color: #ffdddd;
+  display: block;
+  padding: 5px;
+  color: red;
+  text-align: center;
 }
 
-.lms-tree-container
-{
-	border: 1px solid #8F8B7F;
-	max-height: 350px;
-	overflow: auto;
-	min-height: 1px;	
-	background-color: white;
-	margin-top: 5px;
+.lms-tree-container {
+  border: 1px solid #8f8b7f;
+  max-height: 350px;
+  overflow: auto;
+  min-height: 1px;
+  background-color: white;
+  margin-top: 5px;
 }
 
-.lms-tree-container .input.checkbox
-{
-	margin-top: 0px;
-	margin-bottom: 0px;
+.lms-tree-container .input.checkbox {
+  margin-top: 0px;
+  margin-bottom: 0px;
 }
 
-UL.lms-tree LI SPAN.course
-{
-	font-size: 14px;
-	padding-left: 4px;
+UL.lms-tree LI SPAN.course {
+  font-size: 14px;
+  padding-left: 4px;
 }
 
-.lms-tree-container .no-results
-{
-	text-align: center;
-	display: none;
-	font-size: 14px;
-	padding-bottom: 10px;
-	
+.lms-tree-container .no-results {
+  text-align: center;
+  display: none;
+  font-size: 14px;
+  padding-bottom: 10px;
 }
 
-UL.lms-tree LI SPAN.folder
-{
-	font-size: 12px;
+UL.lms-tree LI SPAN.folder {
+  font-size: 12px;
 }
 
-UL.lms-tree LI
-{
-	/*height: 1.5em;*/
+UL.lms-tree LI {
+  /*height: 1.5em;*/
 }
-UL.lms-tree LI.collapsable
-{
-	height: auto;
+UL.lms-tree LI.collapsable {
+  height: auto;
 }
 
-UL.lms-tree 
-{
-	background-color: white;
-	padding: 6px;
-	position: relative;
+UL.lms-tree {
+  background-color: white;
+  padding: 6px;
+  position: relative;
 }
 
-UL.lms-tree .hidden
-{
-	display: none;
+UL.lms-tree .hidden {
+  display: none;
 }
 
-UL.lms-tree DIV.courseItem
-{
-	height: 18px;
-	padding-left: 2px;
+UL.lms-tree DIV.courseItem {
+  height: 18px;
+  padding-left: 2px;
 }
 
-UL.lms-tree DIV.lineItem
-{
-	padding-top: 4px;
-	padding-left: 4px;
-	height: 18px;
+UL.lms-tree DIV.lineItem {
+  padding-top: 4px;
+  padding-left: 4px;
+  height: 18px;
 }
 
-UL.lms-tree DIV.lineItem:hover
-{
-	background-color: #FFFFCC;
-	cursor: pointer;
+UL.lms-tree DIV.lineItem:hover {
+  background-color: #ffffcc;
+  cursor: pointer;
 }
 
-UL.lms-tree DIV.lineItem .selection
-{
-	position: absolute;
-	right: 10px;
+UL.lms-tree DIV.lineItem .selection {
+  position: absolute;
+  right: 10px;
 }
 
-.lms-tree.treeview .hover
-{
-	cursor: auto;
+.lms-tree.treeview .hover {
+  cursor: auto;
 }
 
-#lmsexport .toplevelselections
-{
-	margin: 1em 0em;
+#lmsexport .toplevelselections {
+  margin: 1em 0em;
 }
 
-#lmsexport .attachments
-{
-	margin-bottom: 3em;
+#lmsexport .attachments {
+  margin-bottom: 3em;
 }
 
-#lmsexport .attachments-browse.structured li 
-{
-	padding: 8px 20px 8px 45px;
-	background-position: 25px 5px;
+#lmsexport .attachments-browse.structured li {
+  padding: 8px 20px 8px 45px;
+  background-position: 25px 5px;
 }
 
-#lmsexport .attachments-browse li.level1 
-{
-	padding-left: 60px;
-	background-position: 40px 5px;
+#lmsexport .attachments-browse li.level1 {
+  padding-left: 60px;
+  background-position: 40px 5px;
 }
 
-#lmsexport .attachments-browse li.level2 
-{
-	padding-left: 90px;
-	background-position: 70px 5px;
+#lmsexport .attachments-browse li.level2 {
+  padding-left: 90px;
+  background-position: 70px 5px;
 }
 
-#lmsexport .attachments-browse li.level3 
-{
-	padding-left: 120px;
-	background-position: 100px 5px;
+#lmsexport .attachments-browse li.level3 {
+  padding-left: 120px;
+  background-position: 100px 5px;
 }
 
-#lmsexport .attachments-browse li.level4 
-{
-	padding-left: 150px;
-	background-position: 130px 5px;
+#lmsexport .attachments-browse li.level4 {
+  padding-left: 150px;
+  background-position: 130px 5px;
 }
 
-#lmsexport .attachments-browse li input[type="checkbox"]
-{
-	position: absolute;
-	left: 5px;
-	top: 5px;
+#lmsexport .attachments-browse li input[type="checkbox"] {
+  position: absolute;
+  left: 5px;
+  top: 5px;
 }
 
-#lmsexport H3.selectlocations
-{
-	margin-bottom: 12px;
+#lmsexport H3.selectlocations {
+  margin-bottom: 12px;
 }
 
-#lmsexport .filter-box INPUT.filterBox
-{
-	float: right;
-	width: 200px !important;
-	background-image: url(../images/filter.png);
-	background-repeat: no-repeat;
-	background-position: right;
-	padding-right: 22px;
+#lmsexport .filter-box INPUT.filterBox {
+  float: right;
+  width: 200px !important;
+  background-image: url(../images/filter.png);
+  background-repeat: no-repeat;
+  background-position: right;
+  padding-right: 22px;
 }
 
-#lmsexport .filter-box INPUT.filterBox.blur
-{
-	color: #AAAAAA;
-	background-image: url(../images/filterdis.png);
+#lmsexport .filter-box INPUT.filterBox.blur {
+  color: #aaaaaa;
+  background-image: url(../images/filterdis.png);
 }
 
-#lmsexport .locations
-{
-	margin-bottom: 4em;
+#lmsexport .locations {
+  margin-bottom: 4em;
 }

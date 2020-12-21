@@ -34,7 +34,6 @@ public class ResourcesService {
           .put("com.tle.web.sections.standard", "com.equella.core")
           .put("com.tle.web.connectors", "com.equella.core")
           .put("com.tle.web.contribute", "com.equella.core")
-          .put("com.tle.web.search", "com.equella.core")
           .put("com.tle.web.itemlist", "com.equella.core")
           .put("com.tle.web.htmleditor.tinymce", "com.equella.core")
           .put("com.tle.web.wizard.controls.universal", "com.equella.core")

@@ -1,20 +1,20 @@
-.freemarkerPortlet BUTTON, .freemarkerPortlet INPUT[type=submit]
-{
-	background: url(../images/button.gif) right 0 no-repeat;
-	border: none;
-	font-size: 9px;
-	text-transform: uppercase;
-	color: #fff;
-	padding: 3px 10px;
-	cursor: pointer;
-	margin: 3px;
+.freemarkerPortlet BUTTON,
+.freemarkerPortlet INPUT[type="submit"] {
+  background: url(../images/button.gif) right 0 no-repeat;
+  border: none;
+  font-size: 9px;
+  text-transform: uppercase;
+  color: #fff;
+  padding: 3px 10px;
+  cursor: pointer;
+  margin: 3px;
 }
 
-.freemarkerPortlet BUTTON:hover, .freemarkerPortlet INPUT[type=submit]:hover
-{
-	background-position: right -19px;
+.freemarkerPortlet BUTTON:hover,
+.freemarkerPortlet INPUT[type="submit"]:hover {
+  background-position: right -19px;
 }
 
 .freemarkerPortlet ul {
-    list-style-type: disc;
+  list-style-type: disc;
 }

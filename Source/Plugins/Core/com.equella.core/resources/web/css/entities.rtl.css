@@ -1,19 +1,19 @@
 @import url("entities.css");
 
-DIV.entitylist TABLE TR.enabled TD:FIRST-CHILD {
-	background-position-x: 99%;
-	padding-right: 0;
-	padding-right: 40px;
+DIV.entitylist TABLE TR.enabled TD:first-child {
+  background-position-x: 99%;
+  padding-right: 0;
+  padding-right: 40px;
 }
 
-DIV.entitylist TABLE TR.disabled TD:FIRST-CHILD {
-	background-position-x: 99%;
-	padding-right: 0;
-	padding-right: 40px;
+DIV.entitylist TABLE TR.disabled TD:first-child {
+  background-position-x: 99%;
+  padding-right: 0;
+  padding-right: 40px;
 }
 
-DIV.entitylist TABLE TR.pending TD:FIRST-CHILD {
-	background-position-x: 99%;
-	padding-right: 0;
-	padding-left: 40px;
+DIV.entitylist TABLE TR.pending TD:first-child {
+  background-position-x: 99%;
+  padding-right: 0;
+  padding-left: 40px;
 }

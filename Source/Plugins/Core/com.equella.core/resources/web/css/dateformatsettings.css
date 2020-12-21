@@ -1,9 +1,7 @@
-.settingRow .settingLabel 
-{
-	width:0;
+.settingRow .settingLabel {
+  width: 0;
 }
 
-.settingContainer > .settingRow:first-child 
-{
-    padding-top: 0;
+.settingContainer > .settingRow:first-child {
+  padding-top: 0;
 }

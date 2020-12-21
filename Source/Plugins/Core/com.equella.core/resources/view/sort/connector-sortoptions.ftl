@@ -1,11 +1,11 @@
 <#include "/com.tle.web.freemarker@/macro/sections.ftl">
 <#include "/com.tle.web.sections.standard@/checklist.ftl"/>
 
-<@css path="actions/sort.css" plugin="com.tle.web.search" />
+<@css path="actions/sort.css"/>
 
 <div class="sortaction">
 	<label for="${s.sortOptions.getElementId(_info)}" >
-		<h3>${p.gkey("com.tle.web.search", "sortsection.order.title")}</h3>
+		<h3>${b.key("sortsection.order.title")}</h3>
 	</label>
 	<div class="input select">
 		<@render s.sortOptions />

@@ -2,6 +2,7 @@ package com.tle.webtests.pageobject;
 
 import com.tle.webtests.framework.PageContext;
 import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 /** @author Aaron */
 public class ErrorPage extends AbstractPage<ErrorPage> {
@@ -34,10 +35,10 @@ public class ErrorPage extends AbstractPage<ErrorPage> {
   // tech debt as oEQ is converted to the new UI.  Eventually, it would be good to key
   // off of testConfig.isNewUI()
   public String getMainErrorMessage(boolean newUi) {
-    return driver
-        .findElement(
-            newUi ? By.xpath("id('mainDiv')//h5") : By.xpath("//div[contains(@class, 'error')]/h2"))
-        .getText();
+    By mainErrorBy =
+        newUi ? By.xpath("id('mainDiv')//h5") : By.xpath("//div[contains(@class, 'error')]/h2");
+    waiter.until(ExpectedConditions.visibilityOfElementLocated(mainErrorBy));
+    return driver.findElement(mainErrorBy).getText();
   }
 
   // See note above on getMainErrorMessage(boolean)

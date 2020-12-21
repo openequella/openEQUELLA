@@ -1,70 +1,71 @@
-
 .multieditbox {
-	margin: 8px 0;
+  margin: 8px 0;
 }
 
-.universaltranslation input, .universaltranslation textarea, .universaltranslation select, .universaltranslation .newListSelected {
-	float: left;
-	width: 100px;
+.universaltranslation input,
+.universaltranslation textarea,
+.universaltranslation select,
+.universaltranslation .newListSelected {
+  float: left;
+  width: 100px;
 }
 
-.universaltranslation textarea
-{
-	overflow: auto;
+.universaltranslation textarea {
+  overflow: auto;
 }
 
 .universaltranslation .newListSelected {
-	margin-left: 5px;
+  margin-left: 5px;
 }
 
 /* crap to make sure dropdown and textfield are the same height */
 .universaltranslation .selectedTxt {
-	padding-bottom: 2px;
+  padding-bottom: 2px;
 }
 
 .universaltranslation .newList li {
-	margin: -1px 0 0 !important;
-	padding: 0;
+  margin: -1px 0 0 !important;
+  padding: 0;
 }
 
-.universaltranslation input[type="text"] { 
-	width: 454px;
+.universaltranslation input[type="text"] {
+  width: 454px;
 }
 
 .alltranslations {
-	clear: both;
+  clear: both;
 }
 
-.alltranslations input[type="text"]  {
-	width: 300px !important;
+.alltranslations input[type="text"] {
+  width: 300px !important;
 }
 
- .alltranslations textarea {
-	width: 300px !important;
-	height: 1.4em;
-	overflow: hidden;
+.alltranslations textarea {
+  width: 300px !important;
+  height: 1.4em;
+  overflow: hidden;
 }
 
 .alltranslations .collapse {
-	padding-left: 10px;
+  padding-left: 10px;
 }
 
 .alltranslations .collapse:hover {
-	cursor: pointer;
-	text-decoration: underline;
+  cursor: pointer;
+  text-decoration: underline;
 }
 
 .alltranslations .input {
-	margin: 0;
+  margin: 0;
 }
 
 .alltranslations .input + .input {
-	margin: 5px 0;
+  margin: 5px 0;
 }
 
 .alltranslations .input label {
-	margin: 6px 10px 0 0;
-	float: left;
-	width: 75px;
-	text-align: right;
+  margin: 6px 10px 0 0;
+  float: left;
+  width: 75px;
+  text-align: right;
 }

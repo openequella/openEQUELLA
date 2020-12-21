@@ -37,7 +37,8 @@ public class QuotaDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implemen
   @Override
   public long calculateUserFileSize(UserBean user) {
     String hql = "select sum(i.totalFileSize) from Item i where i.owner = :owner";
-    List<Long> sum = getHibernateTemplate().findByNamedParam(hql, "owner", user.getUniqueID());
+    List<Long> sum =
+        (List<Long>) getHibernateTemplate().findByNamedParam(hql, "owner", user.getUniqueID());
     if (sum.size() > 0) {
       Long l = sum.get(0);
       if (l != null) {

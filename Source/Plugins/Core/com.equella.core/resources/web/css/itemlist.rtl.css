@@ -1,21 +1,21 @@
 @import url("itemlist.css");
 
 .thumbnail {
-	float: left;
-	padding: 0 15px 5px 0;
+  float: left;
+  padding: 0 15px 5px 0;
 }
 
 .itemresult-stars {
-	float: right;
-	margin: 0 0 0 5px;
+  float: right;
+  margin: 0 0 0 5px;
 }
 
 .itemresult-rating div.float-right {
-	right: auto;
-	left: 5px;
+  right: auto;
+  left: 5px;
 }
 
-.itemresult-rating button+button {
-	margin-left: 1px; !important;
-	margin-right: 3px !important;
+.itemresult-rating button + button {
+  margin-left: 1px !important;
+  margin-right: 3px !important;
 }

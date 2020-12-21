@@ -1,32 +1,34 @@
 #body-wrap3 {
-	width: 850px;
+  width: 850px;
 }
 
 #wrapper {
-	min-width: 800px;
-	overflow: hidden;
+  min-width: 800px;
+  overflow: hidden;
 }
 
 #body-inner {
-	width: 800px;
+  width: 800px;
 }
 
-#content-bottom,#content-bottom #content-inner,#content {
-	width: 800px;
+#content-bottom,
+#content-bottom #content-inner,
+#content {
+  width: 800px;
 }
 
 #content-bottom #content-inner #content-body.itemsummary-layout {
-	width: 755px;
+  width: 755px;
 }
 
 #breadcrumbs {
-	left: 28px;
+  left: 28px;
 }
 
-#body-inner>#helpAndOptions #button-bar {
-	right: 41px;
+#body-inner > #helpAndOptions #button-bar {
+  right: 41px;
 }
 
 .page-layout-menu-hidden #content-body {
-	width: 750px;
+  width: 750px;
 }

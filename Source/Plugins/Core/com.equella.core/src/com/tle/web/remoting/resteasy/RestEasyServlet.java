@@ -37,6 +37,7 @@ import com.tle.core.plugins.PluginTracker;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.web.DebugSettings;
 import com.tle.web.api.LegacyContentApi;
+import com.tle.web.api.auth.Auth;
 import com.tle.web.api.cloudprovider.CloudProviderApi;
 import com.tle.web.api.institution.AclResource;
 import com.tle.web.api.institution.GdprResource;
@@ -45,14 +46,28 @@ import com.tle.web.api.language.LanguageResource;
 import com.tle.web.api.loginnotice.PostLoginNoticeResource;
 import com.tle.web.api.loginnotice.PreLoginNoticeResource;
 import com.tle.web.api.newuitheme.NewUIThemeResource;
-import com.tle.web.api.searches.SearchConfigApi;
+import com.tle.web.api.search.SearchResource;
+import com.tle.web.api.settings.AdvancedSearchResource;
+import com.tle.web.api.settings.CloudSearchSettingsResource;
+import com.tle.web.api.settings.FacetedSearch.FacetedSearchClassificationResource;
+import com.tle.web.api.settings.MimeTypeResource;
+import com.tle.web.api.settings.RemoteSearchResource;
+import com.tle.web.api.settings.SearchFilterResource;
+import com.tle.web.api.settings.SearchSettingsResource;
 import com.tle.web.api.settings.SettingsResource;
 import com.tle.web.api.users.UserQueryResource;
 import com.tle.web.api.wizard.WizardApi;
 import com.tle.web.remoting.rest.resource.InstitutionSecurityFilter;
 import io.swagger.jaxrs.listing.SwaggerSerializers;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.ServletConfig;
@@ -62,11 +77,16 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
+import org.apache.log4j.Logger;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
-import org.jboss.resteasy.spi.*;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.HttpResponse;
+import org.jboss.resteasy.spi.Registry;
+import org.jboss.resteasy.spi.ResourceFactory;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.GetRestful;
 import scala.collection.GenTraversableOnce;
 
@@ -76,11 +96,40 @@ import scala.collection.GenTraversableOnce;
 public class RestEasyServlet extends HttpServletDispatcher implements MapperExtension {
   private static final long serialVersionUID = 1L;
 
+  private static final Logger LOGGER = Logger.getLogger(RestEasyServlet.class);
+
   @Inject private UserSessionService userSessionService;
   @Inject private PluginTracker<Object> tracker;
   @Inject private PluginService pluginService;
   @Inject private ObjectMapperService objectMapperService;
   @Inject private InstitutionSecurityFilter institutionSecurityFilter;
+
+  // API Classes which have been implemented in Scala
+  private static final List<Class> scalaApiClasses =
+      Arrays.asList(
+          AclResource.class,
+          AdvancedSearchResource.class,
+          Auth.class,
+          CloudProviderApi.class,
+          CloudSearchSettingsResource.class,
+          FacetedSearchClassificationResource.class,
+          GdprResource.class,
+          LanguageResource.class,
+          LegacyContentApi.class,
+          MimeTypeResource.class,
+          RemoteSearchResource.class,
+          SearchFilterResource.class,
+          SearchResource.class,
+          SearchSettingsResource.class,
+          SelectionApi.class,
+          SettingsResource.class,
+          UserQueryResource.class,
+          WizardApi.class);
+
+  // API Classes which have been implemented in Java
+  private static final List<Class> javaApiClasses =
+      Arrays.asList(
+          NewUIThemeResource.class, PostLoginNoticeResource.class, PreLoginNoticeResource.class);
 
   @Override
   protected void service(
@@ -112,33 +161,20 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
     PluginBeanLocator coreLocator = pluginService.getBeanLocator("com.equella.core");
     Set<Class<?>> classes = application.getClasses();
 
-    registry.addSingletonResource(new CloudProviderApi());
-    classes.add(CloudProviderApi.class);
-    registry.addSingletonResource(new SettingsResource());
-    classes.add(SettingsResource.class);
-    registry.addSingletonResource(new LanguageResource());
-    classes.add(LanguageResource.class);
-    registry.addSingletonResource(new UserQueryResource());
-    classes.add(UserQueryResource.class);
-    registry.addSingletonResource(new AclResource());
-    classes.add(AclResource.class);
-    registry.addSingletonResource(new WizardApi());
-    classes.add(WizardApi.class);
-    registry.addResourceFactory(new BeanLocatorResource(NewUIThemeResource.class, coreLocator));
-    classes.add(NewUIThemeResource.class);
-    registry.addResourceFactory(new BeanLocatorResource(PreLoginNoticeResource.class, coreLocator));
-    classes.add(PreLoginNoticeResource.class);
-    registry.addResourceFactory(
-        new BeanLocatorResource(PostLoginNoticeResource.class, coreLocator));
-    classes.add(PostLoginNoticeResource.class);
-    registry.addSingletonResource(new GdprResource());
-    classes.add(GdprResource.class);
-    registry.addSingletonResource(new LegacyContentApi());
-    classes.add(LegacyContentApi.class);
-    registry.addSingletonResource(new SelectionApi());
-    classes.add(SelectionApi.class);
-    registry.addSingletonResource(new SearchConfigApi());
-    classes.add(SearchConfigApi.class);
+    scalaApiClasses.forEach(
+        clazz -> {
+          try {
+            registry.addSingletonResource(clazz.newInstance());
+            classes.add(clazz);
+          } catch (InstantiationException | IllegalAccessException e) {
+            LOGGER.error("Failed to register API class: " + clazz.getCanonicalName(), e);
+          }
+        });
+    javaApiClasses.forEach(
+        clazz -> {
+          registry.addResourceFactory(new BeanLocatorResource(clazz, coreLocator));
+          classes.add(clazz);
+        });
 
     ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory();
     providerFactory.registerProvider(SwaggerSerializers.class);

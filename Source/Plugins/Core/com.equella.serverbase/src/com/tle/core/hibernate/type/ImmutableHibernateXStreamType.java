@@ -27,9 +27,10 @@ import java.io.StringReader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Objects;
 import org.hibernate.HibernateException;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
-import org.hibernate.util.EqualsHelper;
 
 public class ImmutableHibernateXStreamType implements UserType {
   // XStream is thread-safe, and this class gets instantiated **a lot**.
@@ -55,7 +56,7 @@ public class ImmutableHibernateXStreamType implements UserType {
   @Override
   public boolean equals(Object x, Object y) throws HibernateException // NOSONAR
       {
-    return EqualsHelper.equals(x, y);
+    return Objects.equals(x, y);
   }
 
   @Override
@@ -64,7 +65,11 @@ public class ImmutableHibernateXStreamType implements UserType {
   }
 
   @Override
-  public Object nullSafeGet(ResultSet rs, String[] names, Object owner) throws SQLException {
+  public Object nullSafeGet(
+      ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner)
+      throws SQLException {
+    // SharedSessionContractImplementor was included with SpringHib5,
+    //  but doesn't look to be needed here.
     Reader reader = rs.getCharacterStream(names[0]);
     if (reader == null) {
       return null;
@@ -87,7 +92,11 @@ public class ImmutableHibernateXStreamType implements UserType {
   }
 
   @Override
-  public void nullSafeSet(PreparedStatement st, Object value, int index) throws SQLException {
+  public void nullSafeSet(
+      PreparedStatement st, Object value, int index, SharedSessionContractImplementor session)
+      throws SQLException {
+    // SharedSessionContractImplementor was included with SpringHib5,
+    //  but doesn't look to be needed here.
     if (value != null) {
       String string = xstream.serialiseToXml(value);
       StringReader reader = new StringReader(string);

@@ -262,7 +262,7 @@ public abstract class AbstractRestApiTest extends AbstractSessionTest {
   protected HttpResponse deleteResource(String uri, String token, Object... paramNameValues)
       throws IOException {
     return execute(
-        new HttpDelete(appendQueryString(uri, queryString(paramNameValues))), true, token);
+        new HttpDelete(appendQueryString(uri, queryString(paramNameValues))), false, token);
   }
 
   protected HttpPut getPut(String url, File file, Object... paramNameValues) throws IOException {

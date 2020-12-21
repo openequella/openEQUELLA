@@ -35,7 +35,7 @@ class SettingsSection extends AbstractScalaSection with HtmlRenderer {
 
   override def newModel = _ => ()
 
-  lazy val (preRender, body) = RenderNewTemplate.parseEntryHtml("oldsettings.html")
+  lazy val (preRender, body) = RenderNewTemplate.parseEntryHtml("Settings.html")
 
   // "title", "settings.filter.all", "settings.categories"
 

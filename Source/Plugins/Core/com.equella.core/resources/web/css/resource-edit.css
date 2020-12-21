@@ -1,32 +1,32 @@
 .rating-stars {
-	width: 52px;
-	height: 10px;
-	background-image: url(../images/stars-small.png);
-	background-repeat: no-repeat;
-	float: left;
-	margin: 0 5px 0 0;
+  width: 52px;
+  height: 10px;
+  background-image: url(../images/stars-small.png);
+  background-repeat: no-repeat;
+  float: left;
+  margin: 0 5px 0 0;
 }
 
 .rating-stars.zero {
-	background-position: 0 0;
+  background-position: 0 0;
 }
 
 .rating-starss.one {
-	background-position: 0 -10px;
+  background-position: 0 -10px;
 }
 
 .rating-stars.two {
-	background-position: 0 -20px;
+  background-position: 0 -20px;
 }
 
 .rating-stars.three {
-	background-position: 0 -30px;
+  background-position: 0 -30px;
 }
 
 .rating-stars.four {
-	background-position: 0 -40px;
+  background-position: 0 -40px;
 }
 
 .rating-stars.five {
-	background-position: 0 -50px;
+  background-position: 0 -50px;
 }

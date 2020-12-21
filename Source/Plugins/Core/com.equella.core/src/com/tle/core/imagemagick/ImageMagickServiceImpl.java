@@ -37,6 +37,7 @@ import com.tle.core.zookeeper.ZookeeperService;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -60,6 +61,10 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
   @Inject private EventService eventService;
   @Inject private ZookeeperService zkService;
 
+  @Inject
+  @Named("thumbnailing.timeout")
+  private int thumbnailingTimeout;
+
   private String imageMagickPath;
   private File convertExe;
   private File identifyExe;
@@ -72,6 +77,7 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
   @Override
   public void generateThumbnailAdvanced(File srcFile, File dstFile, ThumbnailOptions options) {
     List<String> opts = new ArrayList<String>();
+    validateAgainstTimer(srcFile);
     boolean gif = srcFile.getAbsolutePath().endsWith(".gif");
     if (gif) {
       opts.add(convertExe.getAbsolutePath());
@@ -183,6 +189,25 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
         }
       }
     }
+  }
+
+  private void validateAgainstTimer(File image) {
+    // use a timed process so that thumbnailing
+    // for problem files doesn't attempt indefinitely.
+    // Set in plugins/com.tle.core.imagemagick/config.properties
+    // thumbnail.timeout as an integer in seconds.
+    // if not set, the default is 20 seconds. If set to 0, uses a regular non-timed process.
+    ExecResult result =
+        ExecUtils.execWithTimeLimit(
+            thumbnailingTimeout,
+            new String[] {
+              identifyExe.getAbsolutePath(),
+              "-format",
+              "%wx%h",
+              new String(
+                  image.getAbsolutePath().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8)
+            });
+    result.ensureOk();
   }
 
   @PostConstruct

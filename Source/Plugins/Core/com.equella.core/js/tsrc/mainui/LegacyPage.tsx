@@ -1,19 +1,37 @@
+/*
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import * as React from "react";
 import {
   templateError,
   TemplateUpdateProps,
   TemplateProps,
   FullscreenMode,
-  MenuMode
+  MenuMode,
 } from "./Template";
 import { Location, LocationDescriptor } from "history";
 import { ErrorResponse } from "../api/errors";
 import ScreenOptions from "./ScreenOptions";
 import {
   PageContent,
-  LegacyContentProps
+  LegacyContentProps,
 } from "../legacycontent/LegacyContent";
 import { LegacyContentRenderer } from "../legacycontent/LegacyContentRenderer";
+import { CircularProgress, Grid } from "@material-ui/core";
 
 interface LegacyPageProps extends TemplateUpdateProps {
   location: Location;
@@ -27,6 +45,7 @@ interface LegacyPageProps extends TemplateUpdateProps {
       cb: (p: LegacyContentProps) => LegacyContentProps
     ) => void;
   };
+  isReloadNeeded: boolean;
 }
 
 export function templatePropsForLegacy({
@@ -36,14 +55,12 @@ export function templatePropsForLegacy({
   contentId,
   hideAppBar,
   fullscreenMode,
-  menuMode
+  menuMode,
 }: PageContent): TemplateProps {
-  let soHtml = html["so"];
-  let menuExtra = soHtml ? (
+  const soHtml = html["so"];
+  const menuExtra = soHtml ? (
     <ScreenOptions optionsHtml={soHtml} contentId={contentId} key={contentId} />
-  ) : (
-    undefined
-  );
+  ) : undefined;
   return {
     title,
     metaTags,
@@ -51,7 +68,7 @@ export function templatePropsForLegacy({
     fullscreenMode: fullscreenMode as FullscreenMode,
     menuMode: menuMode as MenuMode,
     menuExtra,
-    children: undefined
+    children: undefined,
   };
 }
 
@@ -62,23 +79,31 @@ export const LegacyPage = React.memo(
     location,
     updateTemplate,
     setPreventNavigation,
-    redirect
+    redirect,
+    isReloadNeeded,
   }: LegacyPageProps) => {
     const { content } = legacyContent;
     const shouldPreventNav = content ? content.preventUnload : false;
 
+    // If New UI is actually not enabled then reload the page to display Old UI.
+    React.useEffect(() => {
+      if (isReloadNeeded) {
+        window.location.reload();
+      }
+    }, []);
+
     React.useEffect(() => {
       if (content) {
-        updateTemplate(tp => ({ ...tp, ...templatePropsForLegacy(content) }));
+        updateTemplate((tp) => ({ ...tp, ...templatePropsForLegacy(content) }));
       }
     }, [content]);
 
     React.useEffect(() => setPreventNavigation(shouldPreventNav), [
-      shouldPreventNav
+      shouldPreventNav,
     ]);
 
     const redirected = React.useCallback(
-      redir => {
+      (redir) => {
         const { href, external } = redir;
         if (external) {
           window.location.href = href;
@@ -89,7 +114,7 @@ export const LegacyPage = React.memo(
               ? { pathname: "/" + href, search: "" }
               : {
                   pathname: "/" + href.substr(0, ind),
-                  search: href.substr(ind)
+                  search: href.substr(ind),
                 };
           setPreventNavigation(false);
           redirect(redirloc);
@@ -111,23 +136,31 @@ export const LegacyPage = React.memo(
     );
 
     React.useEffect(() => {
-      legacyContent.setLegacyContentProps(p => ({
+      legacyContent.setLegacyContentProps((p) => ({
         ...p,
         enabled: true,
         pathname: location.pathname,
         search: location.search,
         locationKey: location.key,
         redirected,
-        onError
+        onError,
       }));
     }, [location, redirected, onError]);
 
     React.useEffect(
       () => () =>
-        legacyContent.setLegacyContentProps(p => ({ ...p, enabled: false })),
+        legacyContent.setLegacyContentProps((p) => ({ ...p, enabled: false })),
       []
     );
 
-    return content ? <LegacyContentRenderer {...content} /> : <div />;
+    return content ? (
+      <LegacyContentRenderer {...content} />
+    ) : (
+      <Grid container direction="column" alignItems="center">
+        <Grid item>
+          <CircularProgress />
+        </Grid>
+      </Grid>
+    );
   }
 );

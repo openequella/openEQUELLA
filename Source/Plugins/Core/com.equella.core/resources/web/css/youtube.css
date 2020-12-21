@@ -1,136 +1,135 @@
 .modal-search-results {
-	overflow: hidden;
+  overflow: hidden;
 }
 
 .tubequery {
-	width: 200px;
+  width: 200px;
 }
 
 .modal-search-result {
-	position: relative;
-	margin: 0 0 10px 0;
-	padding: 10px 10px 10px 40px;
-	background: #f0f0f0;
-	width: 681px;
-	float: left;
+  position: relative;
+  margin: 0 0 10px 0;
+  padding: 10px 10px 10px 40px;
+  background: #f0f0f0;
+  width: 681px;
+  float: left;
 }
 
 .modal-search-result input {
-	position: absolute;
-	left: 8px;
-	top: 8px;
+  position: absolute;
+  left: 8px;
+  top: 8px;
 }
 
 .modal-search-result h4 {
-	font-size: 13px;
-	margin: 0 0 4px 0;
+  font-size: 13px;
+  margin: 0 0 4px 0;
 }
 
 .modal-search-result.youtube img {
-	margin: 0 20px 10px 0;
-	padding: 4px;
-	background: #fff;
-	border: 1px solid #ddd;
-	float: left;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	-o-border-radius: 3px;
-	border-radius: 3px;
+  margin: 0 20px 10px 0;
+  padding: 4px;
+  background: #fff;
+  border: 1px solid #ddd;
+  float: left;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
 }
 
 .modal-search-result.youtube input {
-	top: 12px;
+  top: 12px;
 }
 
 .modal-search-result.youtube h4 {
-	margin-top: 4px;
-	font-weight: normal;
-	line-height: 1.3;
+  margin-top: 4px;
+  font-weight: normal;
+  line-height: 1.3;
 }
 
 p.info {
-
-	border-width: 1px;
-	border-style: solid;
-	margin-top: 10px !important;
-	padding: 5px;
+  border-width: 1px;
+  border-style: solid;
+  margin-top: 10px !important;
+  padding: 5px;
 }
 
 p.info.results {
-	background-color: #FFFFD0;
-	border-color: #FFFF00;
-	
+  background-color: #ffffd0;
+  border-color: #ffff00;
 }
 
 p.info.error {
-	background-color: #FDD;
-	border-color: red;
+  background-color: #fdd;
+  border-color: red;
 }
 
 .rating-bar {
-	border: 1px solid #CCCCCC;
-	/*  border-radius: 3px 3px 3px 3px; YouTube's style */
-	height: 4px;
-	margin: 2px 0;
-	overflow: hidden;
+  border: 1px solid #cccccc;
+  /*  border-radius: 3px 3px 3px 3px; YouTube's style */
+  height: 4px;
+  margin: 2px 0;
+  overflow: hidden;
 }
 
 .rating-bar-likes {
-	background: none repeat scroll 0 0 #006600;
-	border-right: 1px solid #FFFFFF;
-	float: left;
-	height: 4px;
+  background: none repeat scroll 0 0 #006600;
+  border-right: 1px solid #ffffff;
+  float: left;
+  height: 4px;
 }
 
 .rating-bar-dislikes {
-	background: none repeat scroll 0 0 #CC0000;
-	float: right;
-	height: 4px;
-	margin-right: -1px;
+  background: none repeat scroll 0 0 #cc0000;
+  float: right;
+  height: 4px;
+  margin-right: -1px;
 }
 
 .rating-info {
-	font-size: 10px;
+  font-size: 10px;
 }
 
 .preview-container {
-	text-align: center;
+  text-align: center;
 }
 
 .preview {
-	width: 300px;
-	height: 200px;
+  width: 300px;
+  height: 200px;
 }
 
 #youtube-channels-top {
-	width: 681px;
+  width: 681px;
 }
 
 #youtube-channels-bottom {
-	width: 681px;
+  width: 681px;
 }
 
 #youtube-query div.input label {
-	display: block;
-	font-size: 12px;
-	font-weight: bold;
-	left: 0;
-	position: absolute;
-	top: 6px;
-	width: 55px;
+  display: block;
+  font-size: 12px;
+  font-weight: bold;
+  left: 0;
+  position: absolute;
+  top: 6px;
+  width: 55px;
 }
 
 #youtube-query {
-	position: relative;
-	z-index: 100;
+  position: relative;
+  z-index: 100;
 }
 
 #youtube-query div.input {
-	margin: 0 3px 5px 0;
-	padding: 0 0 0 50px;
-	position: relative;
+  margin: 0 3px 5px 0;
+  padding: 0 0 0 50px;
+  position: relative;
 }
 
-#youtube-query input[type="text"],#youtube-query SELECT {
-	width: 450px;
+#youtube-query input[type="text"],
+#youtube-query SELECT {
+  width: 450px;
 }

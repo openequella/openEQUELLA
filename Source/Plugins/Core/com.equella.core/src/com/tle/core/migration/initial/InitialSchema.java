@@ -55,6 +55,7 @@ import com.tle.common.workflow.node.SerialNode;
 import com.tle.common.workflow.node.WorkflowItem;
 import com.tle.common.workflow.node.WorkflowNode;
 import com.tle.core.db.DBSchema$;
+import com.tle.core.facetedsearch.bean.FacetedSearchClassification;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.impl.AllDataHibernateMigrationFilter;
 import com.tle.core.hibernate.impl.HibernateCreationFilter;
@@ -72,7 +73,7 @@ import java.util.Collection;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.hibernate.classic.Session;
+import org.hibernate.Session;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
 
@@ -134,6 +135,7 @@ public class InitialSchema extends AbstractCreateMigration {
         TLEUser.class,
         TLEGroup.class,
         UserInfoBackup.class,
+        FacetedSearchClassification.class,
         Relation.class,
         Bookmark.class,
         MimeEntry.class,

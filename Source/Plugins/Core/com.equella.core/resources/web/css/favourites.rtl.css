@@ -1,13 +1,11 @@
 @import url("favourites.css");
 
 .action-button.addToFavourites {
-	background-image:
-		url("../images/button-add-to-favourites-action.rtl.png");
-	background-position: right 0;
+  background-image: url("../images/button-add-to-favourites-action.rtl.png");
+  background-position: right 0;
 }
 
 .action-button.removeFromFavourites {
-	background-image:
-		url("../images/button-remove-from-favourites-action.rtl.png");
-	background-position: right 0;
+  background-image: url("../images/button-remove-from-favourites-action.rtl.png");
+  background-position: right 0;
 }

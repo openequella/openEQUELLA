@@ -1,0 +1,14 @@
+{"valid": {
+  "name": "good name",
+  "schemaNode": "testing/testing/testing",
+  "maxResults": 0,
+  "orderIndex": 0
+},
+"invalid": {
+  "name": "",
+  "schemaNode": "testing/testing/testing",
+  "maxResults": 0,
+  "orderIndex": 0
+}
+}
+

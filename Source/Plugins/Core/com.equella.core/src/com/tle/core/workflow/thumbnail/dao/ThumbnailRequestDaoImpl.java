@@ -27,7 +27,6 @@ import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericInstitionalDaoImpl;
 import com.tle.core.workflow.thumbnail.entity.ThumbnailRequest;
-import java.sql.SQLException;
 import java.util.List;
 import javax.inject.Singleton;
 import org.hibernate.HibernateException;
@@ -35,7 +34,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -109,8 +108,7 @@ public class ThumbnailRequestDaoImpl extends GenericInstitionalDaoImpl<Thumbnail
             .execute(
                 new HibernateCallback() {
                   @Override
-                  public Object doInHibernate(Session session)
-                      throws HibernateException, SQLException {
+                  public Object doInHibernate(Session session) throws HibernateException {
                     Query query =
                         session
                             .createQuery(

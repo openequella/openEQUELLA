@@ -1,89 +1,89 @@
 .action-button.add-mime {
-	background-image: url("../images/button-add-mime.ltr.png");
+  background-image: url("../images/button-add-mime.ltr.png");
 }
 
 .itemresult-rating {
-	background: #E6E5E1;
-	border: 1px solid #DAD7CE;
-	clear: both;
-	font-size: 10px;
-	height: 30px;
-	position: relative;
+  background: #e6e5e1;
+  border: 1px solid #dad7ce;
+  clear: both;
+  font-size: 10px;
+  height: 30px;
+  position: relative;
 }
 
 .itemresult-rating div.float-right {
-	height: 30px;
-	position: absolute;
-	right: 2px;
-	top: 0px;
+  height: 30px;
+  position: absolute;
+  right: 2px;
+  top: 0px;
 }
 
 .itemresult-wrapper {
-	margin: 20px 0;
+  margin: 20px 0;
 }
 
 .itemresult {
-	margin: 0 0 3px 0;
-	position: relative;
+  margin: 0 0 3px 0;
+  position: relative;
 }
 
 .itemresult.first {
-	margin-top: 20px;
+  margin-top: 20px;
 }
 
 .ietmresult:last-child {
-	margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .itemresult-content {
-	margin: 0;
+  margin: 0;
 }
 
 .itemresult-content img {
-	float: right;
-	margin-bottom: 5px;
-	height: 66px;
+  float: right;
+  margin-bottom: 5px;
+  height: 66px;
 }
 
 .itemresult-content h3 {
-	font-size: 15px;
-	margin: 0;
+  font-size: 15px;
+  margin: 0;
 }
 
 .itemresult-content p {
-	margin: 5px 0;
-	font-size: 11px;
-	line-height: 14px;
+  margin: 5px 0;
+  font-size: 11px;
+  line-height: 14px;
 }
 
 .itemresult-meta {
-	margin: 7px 0 10px;
-	font-size: 10px;
-	line-height: 13px;
+  margin: 7px 0 10px;
+  font-size: 10px;
+  line-height: 13px;
 }
 
 .itemresult.selected {
-	background-color: #e1e0dc;
-	padding: 10px;
+  background-color: #e1e0dc;
+  padding: 10px;
 }
 
 .itemresult.selected .itemresult-content {
-	margin: 0;
+  margin: 0;
 }
 
 .itemresult.selected .itemresult-meta {
-	margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .itemresult.resource {
-	padding-left: 0;
-	padding-right: 0;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .itemresult-rating button {
-	margin: 2px 0px 0px;
+  margin: 2px 0px 0px;
 }
 
-.itemresult-rating button+button {
-	margin-left: 3px !important;
+.itemresult-rating button + button {
+  margin-left: 3px !important;
 }

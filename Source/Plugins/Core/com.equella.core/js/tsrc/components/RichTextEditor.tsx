@@ -1,48 +1,86 @@
+/*
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import * as React from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { AxiosPromise, AxiosResponse } from "axios";
-import { baseURL } from "tinymce";
-require("tinymce/tinymce");
-require("tinymce/themes/silver/theme");
-require("tinymce/plugins/anchor");
-require("tinymce/plugins/advlist");
-require("tinymce/plugins/autolink");
-require("tinymce/plugins/autoresize");
-require("tinymce/plugins/charmap");
-require("tinymce/plugins/code");
-require("tinymce/plugins/codesample");
-require("tinymce/plugins/directionality");
-require("tinymce/plugins/fullscreen");
-require("tinymce/plugins/help");
-require("tinymce/plugins/hr");
-require("tinymce/plugins/image");
-require("tinymce/plugins/imagetools");
-require("tinymce/plugins/importcss");
-require("tinymce/plugins/insertdatetime");
-require("tinymce/plugins/link");
-require("tinymce/plugins/lists");
-require("tinymce/plugins/media");
-require("tinymce/plugins/nonbreaking");
-require("tinymce/plugins/noneditable");
-require("tinymce/plugins/pagebreak");
-require("tinymce/plugins/paste");
-require("tinymce/plugins/preview");
-require("tinymce/plugins/print");
-require("tinymce/plugins/quickbars");
-require("tinymce/plugins/save");
-require("tinymce/plugins/searchreplace");
-require("tinymce/plugins/table");
-require("tinymce/plugins/template");
-require("tinymce/plugins/textpattern");
-require("tinymce/plugins/toc");
-require("tinymce/plugins/visualblocks");
-require("tinymce/plugins/visualchars");
-require("tinymce/plugins/wordcount");
+import { AppConfig, getRenderData } from "../AppConfig";
 
-interface RichTextEditorProps {
+import "tinymce/tinymce";
+
+import "tinymce/icons/default";
+import "tinymce/themes/silver/theme";
+
+import "tinymce/plugins/anchor";
+import "tinymce/plugins/advlist";
+import "tinymce/plugins/autolink";
+import "tinymce/plugins/autoresize";
+import "tinymce/plugins/charmap";
+import "tinymce/plugins/code";
+import "tinymce/plugins/codesample";
+import "tinymce/plugins/directionality";
+import "tinymce/plugins/fullscreen";
+import "tinymce/plugins/help";
+import "tinymce/plugins/hr";
+import "tinymce/plugins/image";
+import "tinymce/plugins/imagetools";
+import "tinymce/plugins/importcss";
+import "tinymce/plugins/insertdatetime";
+import "tinymce/plugins/link";
+import "tinymce/plugins/lists";
+import "tinymce/plugins/media";
+import "tinymce/plugins/nonbreaking";
+import "tinymce/plugins/noneditable";
+import "tinymce/plugins/pagebreak";
+import "tinymce/plugins/paste";
+import "tinymce/plugins/preview";
+import "tinymce/plugins/print";
+import "tinymce/plugins/quickbars";
+import "tinymce/plugins/save";
+import "tinymce/plugins/searchreplace";
+import "tinymce/plugins/table";
+import "tinymce/plugins/template";
+import "tinymce/plugins/textpattern";
+import "tinymce/plugins/toc";
+import "tinymce/plugins/visualblocks";
+import "tinymce/plugins/visualchars";
+import "tinymce/plugins/wordcount";
+
+const renderData = getRenderData();
+
+// from https://github.com/tinymce/tinymce/blob/26b948ac85b75991ab9e50d0affdf4f5c0b34f65/modules/tinymce/src/core/main/ts/api/file/BlobCache.ts#L31-L39
+export interface BlobInfo {
+  id: () => string;
+  name: () => string;
+  filename: () => string;
+  blob: () => Blob;
+  base64: () => string;
+  blobUri: () => string;
+  uri: () => string;
+}
+
+export interface RichTextEditorProps {
   htmlInput?: string;
+  /** Optionally provide the name of the skin to use. */
+  skinName?: string;
+  /** Optionally provide the URL for the location of the skin. */
+  skinUrl?: string;
   onStateChange(html: string): void;
-  imageUploadCallBack?(file: any): AxiosPromise<ImageReturnType>;
+  imageUploadCallBack?(file: BlobInfo): AxiosPromise<ImageReturnType>;
 }
 
 interface ImageReturnType {
@@ -70,7 +108,7 @@ class RichTextEditor extends React.Component<
   };
 
   uploadImages = (
-    blobInfo: any,
+    blobInfo: BlobInfo,
     success: (msg: string) => void,
     failure: (msg: string) => void
   ): void => {
@@ -87,6 +125,11 @@ class RichTextEditor extends React.Component<
   };
 
   render() {
+    const skinUrl =
+      AppConfig.baseUrl +
+      renderData?.baseResources +
+      "reactjs/tinymce/skins/ui/oxide";
+
     return (
       this.state.ready && (
         <Editor
@@ -98,13 +141,11 @@ class RichTextEditor extends React.Component<
             images_upload_handler: this.uploadImages,
             paste_data_images: true,
             relative_urls: false,
-            skin: "oxide",
-            skin_url: `${baseURL}/tinymce/skins/ui/oxide`,
-            media_dimensions: false
+            skin: this.props.skinName ?? "oxide",
+            skin_url: this.props.skinUrl ?? skinUrl,
+            media_dimensions: false,
           }}
-          toolbar={
-            "formatselect | bold italic strikethrough underline forecolor backcolor | link image media file | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent hr | removeformat | undo redo | preview | ltr rtl"
-          }
+          toolbar="formatselect | bold italic strikethrough underline forecolor backcolor | link image media file | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent hr | removeformat | undo redo | preview | ltr rtl"
           plugins={
             "anchor autolink autoresize advlist charmap code codesample  " +
             "directionality fullscreen help hr image imagetools " +

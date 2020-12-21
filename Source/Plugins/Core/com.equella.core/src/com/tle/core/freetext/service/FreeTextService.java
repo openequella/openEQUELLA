@@ -35,13 +35,25 @@ public interface FreeTextService {
 
   /**
    * @param <T>
-   * @param searchreq
-   * @param nStart
-   * @param nCount Use -1 for all
+   * @param searchReq
+   * @param start
+   * @param count Use -1 for all
    * @return
    */
   <T extends FreetextResult> FreetextSearchResults<T> search(
-      Search searchreq, int nStart, int nCount);
+      Search searchReq, int start, int count);
+
+  /**
+   * Another search method which allows users to specify if they want to search attachments.
+   *
+   * @param searchReq A search request.
+   * @param start The first record of a search result.
+   * @param count The maximum number of results requested, or -1 for all.
+   * @param searchAttachments Whether to search attachments.
+   * @return Search results matching the specified criteria, with a maximum length of count.
+   */
+  <T extends FreetextResult> FreetextSearchResults<T> search(
+      Search searchReq, int start, int count, boolean searchAttachments);
 
   SearchResults<ItemIdKey> searchIds(Search searchreq, int nStart, int nCount);
 

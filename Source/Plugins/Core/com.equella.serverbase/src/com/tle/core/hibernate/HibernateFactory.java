@@ -18,20 +18,27 @@
 
 package com.tle.core.hibernate;
 
-import com.tle.hibernate.dialect.LowercaseImprovedNamingScheme;
+import com.tle.hibernate.dialect.OeqImplicitNamingStrategy;
+import com.tle.hibernate.dialect.OeqPhysicalNamingStrategy;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.Properties;
 import javax.sql.DataSource;
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
-import org.hibernate.connection.ConnectionProvider;
-import org.hibernate.engine.Mapping;
+import org.hibernate.engine.jdbc.connections.internal.DatasourceConnectionProviderImpl;
+import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
+import org.hibernate.engine.spi.Mapping;
+import org.hibernate.service.UnknownUnwrapTypeException;
+import org.hibernate.service.spi.Configurable;
+import org.hibernate.service.spi.Stoppable;
 
-@SuppressWarnings("nls")
 public class HibernateFactory {
-  private static final String KEY_DATASOURCE = "datasource";
+  private static final Logger LOGGER = Logger.getLogger(HibernateFactory.class);
+
   private Mapping mapping;
   private ExtendedAnnotationConfiguration config;
   private SessionFactory sessionFactory;
@@ -57,14 +64,22 @@ public class HibernateFactory {
         setContextLoader(classLoader);
         ExtendedDialect dialect = dataSourceHolder.getDialect();
         this.config = new ExtendedAnnotationConfiguration(dialect);
-        config.setProperties(properties);
         config.setProperty(Environment.CONNECTION_PROVIDER, DataSourceProvider.class.getName());
-        properties.put(KEY_DATASOURCE, dataSourceHolder.getDataSource());
+        properties.put(Environment.DATASOURCE, dataSourceHolder.getDataSource());
+        config.addProperties(properties);
         config.setProperty(Environment.DIALECT, dialect.getClass().getName());
         config.setProperty(Environment.USE_SECOND_LEVEL_CACHE, "false");
-        config.setProperty("javax.persistence.validation.mode", "DDL");
-        config.setNamingStrategy(new LowercaseImprovedNamingScheme());
+        config.setProperty(Environment.JPA_VALIDATION_MODE, "DDL");
+        // Due to https://hibernate.atlassian.net/browse/HHH-12665 with SpringHib5,
+        // certain operations, like importing a institution would fail with a
+        // `javax.persistence.TransactionRequiredException: no transaction is in progress`
+        config.setProperty(Environment.ALLOW_UPDATE_OUTSIDE_TRANSACTION, "true");
+        config.setImplicitNamingStrategy(new OeqImplicitNamingStrategy());
+        config.setPhysicalNamingStrategy(new OeqPhysicalNamingStrategy());
         for (Class<?> class1 : clazzes) {
+          if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Adding annotated class: " + class1.getCanonicalName());
+          }
           config.addAnnotatedClass(class1);
         }
       } finally {
@@ -89,7 +104,6 @@ public class HibernateFactory {
 
   public synchronized SessionFactory getSessionFactory() {
     if (sessionFactory == null) {
-      getMapping();
       ClassLoader oldLoader = oldLoader();
       try {
         setContextLoader(classLoader);
@@ -97,6 +111,7 @@ public class HibernateFactory {
       } finally {
         setContextLoader(oldLoader);
       }
+      getMapping();
     }
     return sessionFactory;
   }
@@ -113,16 +128,29 @@ public class HibernateFactory {
     return dataSourceHolder.getDefaultSchema();
   }
 
-  public static class DataSourceProvider implements ConnectionProvider {
+  public static class DataSourceProvider implements ConnectionProvider, Configurable, Stoppable {
     private DataSource dataSource;
 
     @Override
-    public void configure(Properties props) throws HibernateException {
-      dataSource = (DataSource) props.get(KEY_DATASOURCE);
+    public void configure(Map configValues) {
+      if (this.dataSource == null) {
+        final Object dataSource = configValues.get(Environment.DATASOURCE);
+        if (DataSource.class.isInstance(dataSource)) {
+          this.dataSource = (DataSource) dataSource;
+        } else {
+          throw new HibernateException(
+              "DataSource to use was not specified by ["
+                  + Environment.DATASOURCE
+                  + "] configuration property");
+        }
+      }
     }
 
     @Override
     public Connection getConnection() throws SQLException {
+      if (dataSource == null) {
+        throw new HibernateException("DataSource is null.  Unable to retrieve a connection");
+      }
       return dataSource.getConnection();
     }
 
@@ -132,13 +160,32 @@ public class HibernateFactory {
     }
 
     @Override
-    public void close() throws HibernateException {
-      // nothing
+    public boolean supportsAggressiveRelease() {
+      return true;
     }
 
     @Override
-    public boolean supportsAggressiveRelease() {
-      return true;
+    public boolean isUnwrappableAs(Class unwrapType) {
+      return ConnectionProvider.class.equals(unwrapType)
+          || DataSourceProvider.class.isAssignableFrom(unwrapType)
+          || DataSource.class.isAssignableFrom(unwrapType);
+    }
+
+    @Override
+    public <T> T unwrap(Class<T> unwrapType) {
+      if (ConnectionProvider.class.equals(unwrapType)
+          || DatasourceConnectionProviderImpl.class.isAssignableFrom(unwrapType)) {
+        return (T) this;
+      } else if (DataSource.class.isAssignableFrom(unwrapType)) {
+        return (T) dataSource;
+      } else {
+        throw new UnknownUnwrapTypeException(unwrapType);
+      }
+    }
+
+    @Override
+    public void stop() {
+      this.dataSource = null;
     }
   }
 

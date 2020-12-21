@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Singleton;
 import net.sf.json.JSONArray;
-import org.hibernate.classic.Session;
+import org.hibernate.Session;
 
 /** @author Aaron */
 @SuppressWarnings("nls")

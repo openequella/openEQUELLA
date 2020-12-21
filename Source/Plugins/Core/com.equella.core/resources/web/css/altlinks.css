@@ -1,54 +1,60 @@
 div.alt-links a {
-	display: block;
-	padding: 9px 10px 9px 32px;
-	text-decoration: none !important;
-	margin: 0 0 1px 0;
-	background-position: 9px 7px;
-	background-repeat: no-repeat;
+  display: block;
+  padding: 9px 10px 9px 32px;
+  text-decoration: none !important;
+  margin: 0 0 1px 0;
+  background-position: 9px 7px;
+  background-repeat: no-repeat;
 }
 .alt-links a.folder-full {
-	background-image: url(../images/icons/folder_full16.png);
+  background-image: url(../images/icons/folder_full16.png);
 }
 
-.alt-links a.document, .alt-linktable td.task {
-	background-image: url(../images/icons/blog_post16.png);
+.alt-links a.document,
+.alt-linktable td.task {
+  background-image: url(../images/icons/blog_post16.png);
 }
 
 .alt-links a.folder {
-	background-image: url(../images/icons/folder16.png);
+  background-image: url(../images/icons/folder16.png);
 }
 .alt-links a.favourites {
-	background-image: url(../images/icons/star16.png);
+  background-image: url(../images/icons/star16.png);
 }
 
-.alt-links a:hover, .alt-links tr.odd:hover td, .alt-links tr.even:hover td, .alt-links a:focus, .alt-links tr.odd:focus td, .alt-links tr.even:focus td {
-	background-color: #e4e4e4 !important;
-	color: #4b4842;
-	text-decoration: none;
-	cursor: pointer;
+.alt-links a:hover,
+.alt-links tr.odd:hover td,
+.alt-links tr.even:hover td,
+.alt-links a:focus,
+.alt-links tr.odd:focus td,
+.alt-links tr.even:focus td {
+  background-color: #e4e4e4 !important;
+  color: #4b4842;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .alt-links a.level2 {
-	padding-left: 50px;
-	background-position: 27px 7px;
+  padding-left: 50px;
+  background-position: 27px 7px;
 }
 .alt-links a.odd {
-	background-color: #f1f0ef;
+  background-color: #f1f0ef;
 }
 .alt-links a.even {
-	background-color: #ecebea;
+  background-color: #ecebea;
 }
 
 .alt-links tr.odd td {
-	background-color: #f1f0ef;
+  background-color: #f1f0ef;
 }
 .alt-links tr.even td {
-	background-color: #ecebea;
+  background-color: #ecebea;
 }
 
 .alt-links td {
-	text-decoration: none;
-	background-position: 9px 7px;
-	background-repeat: no-repeat;
-	border-bottom: solid 1px white;
+  text-decoration: none;
+  background-position: 9px 7px;
+  background-repeat: no-repeat;
+  border-bottom: solid 1px white;
 }

@@ -1,1 +1,0 @@
-require("../target/uploadlist.js");

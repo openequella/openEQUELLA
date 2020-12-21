@@ -28,6 +28,7 @@ public abstract class PropertyFileModifier {
   public static String MANDATORY_CONFIG = "mandatory-config.properties";
   public static String OPTIONAL_CONFIG = "optional-config.properties";
   public static String HIBERNATE_CONFIG = "hibernate.properties";
+  public static String LOG4J_CONFIG = "learningedge-log4j.properties";
 
   private final File file;
   protected final PropertiesConfiguration props;

@@ -1,74 +1,71 @@
 .select_area {
-    height: 340px;
+  height: 340px;
 }
 
 .select_options li {
-	margin-bottom: 5px;
+  margin-bottom: 5px;
 }
 
 .select_options li input[type="radio"] {
-	margin-bottom: 3px;
-    margin-right: 4px;
-    vertical-align: middle;
+  margin-bottom: 3px;
+  margin-right: 4px;
+  vertical-align: middle;
 }
 
 .thumbcontainer .thumbs {
-	background: none repeat scroll 0 0 #FEFEFE;
-    border: 1px solid #8F8B7F;
-    list-style: none outside none;
-    height: 275px;
-    overflow-y: auto;
+  background: none repeat scroll 0 0 #fefefe;
+  border: 1px solid #8f8b7f;
+  list-style: none outside none;
+  height: 275px;
+  overflow-y: auto;
 }
 
 .thumbcontainer .thumbs li.thumbrow {
-	display: inline-block;
-    margin-bottom: 0;
-    padding-bottom: 5px;
-    padding-left: 3px;
-    padding-right: 0;
-    padding-top: 5px;
-    position: relative;
-    width: 19%;
+  display: inline-block;
+  margin-bottom: 0;
+  padding-bottom: 5px;
+  padding-left: 3px;
+  padding-right: 0;
+  padding-top: 5px;
+  position: relative;
+  width: 19%;
 }
 
 .thumbcontainer .thumbs li.selected a.thumbnail {
-	background-attachment: scroll;
-    background-clip: border-box;
-    background-color: #0088CC;
-    background-image: none;
-    background-origin: padding-box;
-    background-position: 0 0;
-    background-repeat: repeat;
-    background-size: auto auto;
+  background-attachment: scroll;
+  background-clip: border-box;
+  background-color: #0088cc;
+  background-image: none;
+  background-origin: padding-box;
+  background-position: 0 0;
+  background-repeat: repeat;
+  background-size: auto auto;
 }
 
-.thumbnail
-{
-	text-align: center;
-	border-radius:0;
-	border:none;
-	box-shadow: none;
+.thumbnail {
+  text-align: center;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
 }
 
-.thumbnail img
-{
-	margin: auto;
-	border: 1px solid #8F8B7E;
-	height: 66px;
-	max-width: 88px;
+.thumbnail img {
+  margin: auto;
+  border: 1px solid #8f8b7e;
+  height: 66px;
+  max-width: 88px;
 }
 
-.thumbnail img.noBorder
-{
-	border:none;
+.thumbnail img.noBorder {
+  border: none;
 }
 
 .help-text {
-	text-align: center;
-	margin-top: 120px;
-	font-size: 20px;
+  text-align: center;
+  margin-top: 120px;
+  font-size: 20px;
 }
 
-INPUT[type='radio']:disabled + LABEL {
-	color:#808080;
+INPUT[type="radio"]:disabled + LABEL {
+  color: #808080;
 }

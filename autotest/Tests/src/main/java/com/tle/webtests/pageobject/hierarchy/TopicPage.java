@@ -54,9 +54,7 @@ public class TopicPage
   }
 
   public TopicPage clickSubTopic(String title) {
-    Actions actions = new Actions(driver);
-    actions.click(driver.findElement(By.xpath(getTopicBy(title))));
-    actions.perform();
+    driver.findElement(By.xpath(getTopicBy(title))).click();
     return new TopicPage(context, title).get();
   }
 
@@ -91,7 +89,7 @@ public class TopicPage
   }
 
   private String getTopicBy(String title) {
-    return "//div[contains(@class,'browse-topics')]//a[text()=" + quoteXPath(title) + "]";
+    return "//div[contains(@class,'browse-topics')]//a[text()=\"" + title + "\"]";
   }
 
   public boolean hasPowerSearch() {

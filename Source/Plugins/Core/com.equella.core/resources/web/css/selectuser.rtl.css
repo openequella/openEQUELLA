@@ -1,21 +1,21 @@
 @import url("selectuser.css");
 
 .modal-search-result li {
-	padding: 10px 40px 10px 10px;
-	float: right;
+  padding: 10px 40px 10px 10px;
+  float: right;
 }
 
 .modal-search-result input {
-	left: auto;
-	right: 8px;
+  left: auto;
+  right: 8px;
 }
 
 .modal-search-result.youtube img {
-	margin: 0 0 10px 20px;
-	float: right;
+  margin: 0 0 10px 20px;
+  float: right;
 }
 
 .selectuser .displayfilters {
-	left: auto;
-	right: 0;
+  left: auto;
+  right: 0;
 }

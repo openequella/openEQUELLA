@@ -113,4 +113,23 @@ public class ConnectorFolder implements Serializable {
   public void setAvailable(boolean available) {
     this.available = available;
   }
+
+  public String toString() {
+    final String folderCount = (folders == null) ? "N/A" : "" + folders.size();
+    final String contentCount = (content == null) ? "N/A" : "" + content.size();
+    final String courseId = (course == null) ? "N/A" : course.getId();
+    return "ConnectorFolder(id="
+        + id
+        + ", course="
+        + courseId
+        + ", name="
+        + name
+        + ", leaf="
+        + leaf
+        + ", folders="
+        + folderCount
+        + ", content="
+        + contentCount
+        + ")";
+  }
 }

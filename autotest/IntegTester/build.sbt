@@ -7,11 +7,11 @@ name := "IntegTester"
 
 version := "1.0"
 
-val CirceVersion  = "0.9.3"
-val Http4sVersion = "0.20.0-M6"
-val jsoupVersion  = "1.11.3"
+val CirceVersion  = "0.12.1"
+val Http4sVersion = "0.21.8"
+val jsoupVersion  = "1.13.1"
 
-scalaVersion := "2.12.6"
+scalaVersion := "2.12.12"
 scalacOptions += "-Ypartial-unification"
 
 excludeDependencies ++= Seq("org.typelevel" % "scala-library")
@@ -28,7 +28,7 @@ libraryDependencies ++= Seq(
   "org.http4s"    %% "http4s-blaze-server" % Http4sVersion,
   "org.http4s"    %% "http4s-dsl"          % Http4sVersion,
   "org.http4s"    %% "http4s-circe"        % Http4sVersion,
-  "org.slf4j"     % "slf4j-simple"         % "1.7.28",
+  "org.slf4j"     % "slf4j-simple"         % "1.7.30",
   "org.jsoup"     % "jsoup"                % jsoupVersion,
   "com.nulab-inc" %% "scala-oauth2-core"   % "1.5.0"
 )

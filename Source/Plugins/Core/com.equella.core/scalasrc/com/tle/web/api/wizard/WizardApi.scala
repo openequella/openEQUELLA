@@ -24,7 +24,7 @@ import java.nio.channels.Channels
 import java.util.UUID
 
 import cats.data.OptionT
-import cats.effect.IO
+import cats.effect.{Blocker, IO}
 import com.softwaremill.sttp._
 import com.tle.beans.item.{Item, ItemPack}
 import com.tle.common.filesystem.FileEntry
@@ -185,7 +185,9 @@ class WizardApi {
   }
 
   private def getStreamedBody(content: InputStream): Stream[IO, ByteBuffer] = {
-    readInputStream(IO(content), 4096, Implicits.global).chunks.map(_.toByteBuffer)
+    Stream
+      .resource(Blocker[IO])
+      .flatMap(blocker => readInputStream(IO(content), 4096, blocker).chunks.map(_.toByteBuffer))
   }
 
   private def getRequestHeaders(req: HttpServletRequest): Map[String, String] = {

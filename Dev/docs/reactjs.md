@@ -8,7 +8,7 @@ To catch as many problems as early as possible, two typed languages are used to
 compile to JavaScript, rather than raw dynamically typed JavaScript.
 
 - [Typescript](https://www.typescriptlang.org/)
-- [Purescript](http://www.purescript.org/) (using Purescript is deprecated in favour of Typescript)
+- [Purescript](https://www.purescript.org/) (using Purescript is deprecated in favour of Typescript)
 
 To achieve a modern look and feel based on Google's [Material Design](https://material.io/), a
 React component library called [Material UI](https://material-ui.com/) is used.
@@ -69,17 +69,11 @@ npm run clean
 
 ---
 
-## Purescript/Typescript bridge
-
-In order to prevent a cyclic dependency, Typescript must access any Purescript components using a global "bridge" variable.
-
-The bridge's type is declared in [bridge.ts](../../Source/Plugins/Core/com.equella.core/js/tsrc/api/bridge.ts).
-
 ## Typescript notes
 
 - Typescript 3.3.3333
 - [Axios](https://github.com/axios/axios) is currently the library of choice for a `Promise` based approach to AJAX calls.
-- [Redux](https://redux.js.org/introduction) is currently being used to dispatch AJAX calls and do state manipulation.
+- [Redux](https://redux.js.org) is currently being used to dispatch AJAX calls and do state manipulation.
 - [Material UI](https://material-ui.com/) contains Typescript bindings.
 
 Right now none of the pages share any part of the Redux store, but eventually if pages need to share state it will be via the Redux store.

@@ -25,13 +25,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.StringTokenizer;
+import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +53,132 @@ public final class ExecUtils {
   private static final String[] EXE_TYPES = {
     "", ".exe", ".bat"
   }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+  /**
+   * For a given Process ID, kill any child processes and then kill the process. Works on Unix only,
+   * as it leverages pgrep and kill commands.
+   *
+   * @param pid The Process for which to terminate including it's direct children.
+   */
+  public static void killLinuxProcessTree(int pid) {
+    if (pid < 1) {
+      throw new IllegalArgumentException("Process ID should be greater than 0");
+    }
+    // get child process PIDs and kill them
+    getChildUnixProcessPids(pid).ifPresent(ExecUtils::sendSigKill);
+
+    // kill process itself, after all the child processes have been terminated
+    sendSigKill(pid);
+  }
+
+  /**
+   * Runs pgrep -P for a given Process ID, to get a list of child processes as Process IDs.
+   *
+   * @param pid The parent process ID to check for child processes.
+   * @return Process IDs for the children of {@code pid}.
+   */
+  public static Optional<int[]> getChildUnixProcessPids(int pid) {
+    Optional<int[]> pids = Optional.empty();
+    StringBuilder childPid = new StringBuilder();
+    try {
+      Process getChildPid = Runtime.getRuntime().exec("pgrep -P " + pid);
+      getChildPid.waitFor();
+
+      if (getChildPid.exitValue() == 0) {
+        CharStreams.copy(new InputStreamReader(getChildPid.getInputStream()), childPid);
+      } else {
+        StringBuilder errorOutput = new StringBuilder();
+        CharStreams.copy(new InputStreamReader(getChildPid.getErrorStream()), errorOutput);
+        LOGGER.warn("getChildPid function did not run properly.\n" + errorOutput);
+      }
+      getChildPid.destroy();
+
+      String childPidInfo = childPid.toString();
+      if (!childPidInfo.isEmpty()) {
+        // convert string to array of ints
+        pids =
+            Optional.of(
+                Arrays.stream(childPidInfo.replaceAll("\n", " ").split(" "))
+                    .mapToInt(Integer::parseInt)
+                    .toArray());
+      }
+    } catch (IOException | InterruptedException e) {
+      LOGGER.error("Error getting child processes for: " + pid, e);
+    } catch (NumberFormatException e) {
+      LOGGER.error("Unsupported output from 'pgrep -P'. Unable to terminate child processes.");
+      LOGGER.error("'pgrep' output: " + childPid.toString());
+      LOGGER.error("Parsing exception.", e);
+    }
+    return pids;
+  }
+
+  /**
+   * Creates a process which then sends a SIGKILL signal to an array of given processes.
+   *
+   * @param pids the Process IDs of the processes to kill.
+   * @return the exitValue of the SIGKILL process (not the process being killed)
+   */
+  public static int sendSigKill(int[] pids) {
+    try {
+      StringBuilder command = new StringBuilder("kill -9 ");
+      for (int pid : pids) {
+        command.append(pid).append(" ");
+      }
+      LOGGER.debug("Running command: " + command);
+      Process sigKill = Runtime.getRuntime().exec(String.valueOf(command));
+      sigKill.waitFor();
+      int returnValue = sigKill.exitValue();
+      if (sigKill.exitValue() == 0) {
+        StringBuilder successOutput = new StringBuilder();
+        CharStreams.copy(new InputStreamReader(sigKill.getInputStream()), successOutput);
+        LOGGER.debug("Output of kill function: " + successOutput);
+      } else {
+        StringBuilder errorOutput = new StringBuilder();
+        CharStreams.copy(new InputStreamReader(sigKill.getErrorStream()), errorOutput);
+        LOGGER.warn("Attempt to terminate processes failed (" + command + "):\n" + errorOutput);
+      }
+      sigKill.destroy();
+      return returnValue;
+    } catch (IOException | InterruptedException e) {
+      throw new RuntimeException("killing processes " + Arrays.toString(pids) + " failed.", e);
+    }
+  }
+
+  /**
+   * Overload of above for a single Process ID. Simply calls the int[] version of this method and
+   * returns the exitValue.
+   *
+   * @param pid The Process ID of the process to kill.
+   * @return the exitValue of the SIGKILL process (not the process being killed)
+   */
+  public static int sendSigKill(int pid) {
+    return sendSigKill(new int[] {pid});
+  }
+
+  /**
+   * Gets the process ID (PID) of a given *nix process.
+   *
+   * @param p The Process of which to get the PID.
+   * @return An Optional int. If not on Linux, or if the PID declared field is not available, the
+   *     value will be empty.
+   */
+  public static synchronized Optional<Integer> getPidOfProcess(Process p) {
+    Optional<Integer> pid = Optional.empty();
+
+    try {
+      if (p.getClass().getName().equals("java.lang.UNIXProcess")) {
+        Field f = p.getClass().getDeclaredField("pid");
+        f.setAccessible(true);
+        pid = Optional.of(f.getInt(p));
+        f.setAccessible(false);
+      }
+    } catch (NoSuchFieldException e) {
+      LOGGER.error("The field pid does not exist on the process. Cannot return pid", e);
+    } catch (IllegalAccessException | IllegalArgumentException e) {
+      LOGGER.error("pid field is inaccessible, or cannot be converted to an integer.", e);
+    }
+    return pid;
+  }
 
   public static File findExe(File file) {
     return findExe(file.getParentFile(), file.getName());
@@ -110,6 +239,50 @@ public final class ExecUtils {
       LOGGER.debug("Exec finished"); // $NON-NLS-1$
       return new ExecResult(exitStatus, stdOut.getResult(), stdErr.getResult());
     } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public static ExecResult execWithTimeLimit(long maxDurationInSeconds, String[] options) {
+    if (maxDurationInSeconds < 1L) {
+      LOGGER.debug("maxDurationInSeconds not set. Using a regular non-timed process.");
+      return exec(options, null, null);
+    }
+    return execWithTimeLimit(options, null, null, maxDurationInSeconds);
+  }
+
+  public static ExecResult execWithTimeLimit(
+      String[] cmdarray, Map<String, String> additionalEnv, File dir, long durationInSeconds) {
+    try {
+      final Triple<Process, StreamReader, StreamReader> cp =
+          createProcess(cmdarray, additionalEnv, dir);
+      LOGGER.debug("Started timed process");
+      final Process proc = cp.getFirst();
+      int pid = getPidOfProcess(proc).orElse(0);
+      final StreamReader stdOut = cp.getSecond();
+      final StreamReader stdErr = cp.getThird();
+      final boolean timeout = !proc.waitFor(durationInSeconds, TimeUnit.SECONDS);
+      if (timeout) {
+        // If the process is not terminated before the given timeout is reached,
+        // kill the process and throw an InterruptedException.
+        String platform = determinePlatform();
+        if (platform.equals(PLATFORM_LINUX) || platform.equals(PLATFORM_LINUX64)) {
+          killLinuxProcessTree(pid);
+        } else {
+          LOGGER.debug(
+              "Platform ("
+                  + platform
+                  + ") does not support process tree kill. Processes may be left hanging");
+        }
+        throw new InterruptedException();
+      }
+      LOGGER.debug("Timed process finished");
+      return new ExecResult(proc.exitValue(), stdOut.getResult(), stdErr.getResult());
+    } catch (Exception e) {
+      if (e instanceof InterruptedException) {
+        throw new RuntimeException(
+            "Timer of " + durationInSeconds + " seconds on this operation was exceeded.");
+      }
       throw new RuntimeException(e);
     }
   }

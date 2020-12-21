@@ -640,6 +640,17 @@ public class TopicDisplaySection
       return wrapped.getItemKey(i);
     }
 
+    /**
+     * This method was mainly added to provide better Java->Scala interoperability for the Search2
+     * rest api
+     *
+     * @return null. The Search2 rest api currently does not support the display of Hierarchy topics
+     */
+    @Override
+    public List<T> getSearchResults() {
+      return null;
+    }
+
     @Override
     public int getAvailable() {
       return wrapped.getAvailable() + keyResources.size();

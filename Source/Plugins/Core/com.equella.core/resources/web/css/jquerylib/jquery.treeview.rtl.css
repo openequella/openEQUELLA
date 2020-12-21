@@ -1,52 +1,64 @@
 @import url("jquery.treeview.css");
 
 .treeview .hitarea {
-	background: url(../../images/jquery-treeview/treeview-default.rtl.gif);
-	background-position: right -25px;
-	background-repeat: no-repeat;
-	margin-left: 0;
-	margin-right: -16px;
-	float: right;
+  background: url(../../images/jquery-treeview/treeview-default.rtl.gif);
+  background-position: right -25px;
+  background-repeat: no-repeat;
+  margin-left: 0;
+  margin-right: -16px;
+  float: right;
 }
 
-.treeview li { 
-	padding: 3px 16px 3px 0pt;
+.treeview li {
+  padding: 3px 16px 3px 0pt;
 }
 
-
-.treeview li { 
-	background: url(../../images/jquery-treeview/treeview-default-line.rtl.gif)  no-repeat scroll right 0 transparent;
-	background-position: right 0;
-	background-repeat: no-repeat; 
-	
+.treeview li {
+  background: url(../../images/jquery-treeview/treeview-default-line.rtl.gif)
+    no-repeat scroll right 0 transparent;
+  background-position: right 0;
+  background-repeat: no-repeat;
 }
 
-.treeview li.collapsable, .treeview li.expandable { background-position: right -176px;}
-
-.treeview .expandable-hitarea { background-position: right -3px; }
-
-.treeview li.last { background-position: right -1766px; }
-
-.treeview li.lastCollapsable, .treeview li.lastExpandable { 
-	background-image: url(../../images/jquery-treeview/treeview-default.rtl.gif);
-	background-position: right 0;
-	background-repeat: no-repeat;
-}  
-
-.treeview li.lastCollapsable { background-position: right -110px }
-.treeview li.lastExpandable { background-position: right -66px }
-
-.treeview div.lastCollapsable-hitarea, .treeview div.lastExpandable-hitarea { 
-	background-position: -20px;
-	background-repeat: no-repeat;
+.treeview li.collapsable,
+.treeview li.expandable {
+  background-position: right -176px;
 }
 
-a.lastCollapsable-hitarea, .treeview a.lastExpandable-hitarea 
-{
-	background-position: 10px 50%;
+.treeview .expandable-hitarea {
+  background-position: right -3px;
 }
 
-.treeview a.lastCollapsable-hitarea, .treeview a.lastExpandable-hitarea
-{
-	background-position: 10px 50%;
+.treeview li.last {
+  background-position: right -1766px;
+}
+
+.treeview li.lastCollapsable,
+.treeview li.lastExpandable {
+  background-image: url(../../images/jquery-treeview/treeview-default.rtl.gif);
+  background-position: right 0;
+  background-repeat: no-repeat;
+}
+
+.treeview li.lastCollapsable {
+  background-position: right -110px;
+}
+.treeview li.lastExpandable {
+  background-position: right -66px;
+}
+
+.treeview div.lastCollapsable-hitarea,
+.treeview div.lastExpandable-hitarea {
+  background-position: -20px;
+  background-repeat: no-repeat;
+}
+
+a.lastCollapsable-hitarea,
+.treeview a.lastExpandable-hitarea {
+  background-position: 10px 50%;
+}
+
+.treeview a.lastCollapsable-hitarea,
+.treeview a.lastExpandable-hitarea {
+  background-position: 10px 50%;
 }

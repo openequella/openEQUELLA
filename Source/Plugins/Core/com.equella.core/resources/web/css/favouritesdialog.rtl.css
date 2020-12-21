@@ -1,6 +1,7 @@
 @import url("favouritesdialog.css");
 
-.favouritesdialog div.input.checkbox label , div.input.radio label {
-	display: inline;
-	margin: 0 0 0 20px;
+.favouritesdialog div.input.checkbox label,
+div.input.radio label {
+  display: inline;
+  margin: 0 0 0 20px;
 }

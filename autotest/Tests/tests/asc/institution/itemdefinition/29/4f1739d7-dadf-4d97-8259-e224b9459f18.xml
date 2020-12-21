@@ -146,7 +146,7 @@ if (request.get(&apos;doit&apos;) == &apos;Create binary attachment&apos;)
 	var response = utils.getConnection(&quot;https://raw.githubusercontent.com/openequella/openEQUELLA/develop/Installer/resources/images/logo.gif?raw=true&quot;).getResponse(true);
 	attachments.createBinaryFileAttachment(&quot;equellaLogo.gif &quot;,&quot;EQUELLA Logo&quot;,response.getAsBinaryData());
 	attachments.addExistingFileAsAttachment(&quot;equellaLogo.gif &quot;,&quot;EQUELLA Logo&quot;);
-	
+
 	attributes.set(&apos;content&apos;, &apos;Binary attachment created!&apos;);
 }
 if (request.get(&apos;doit&apos;) == &apos;Create html attachment&apos;)
@@ -262,7 +262,7 @@ if(request.get(&quot;doit&quot;) == &quot;Resize Image&quot;)
 &lt;br/&gt;
 Contents:
 &lt;div id=&quot;ascMessage&quot;&gt;
-	&lt;pre&gt;${attributes.get(&apos;content&apos;)}&lt;/pre&gt;
+	&lt;span&gt;${attributes.get(&apos;content&apos;)}&lt;/span&gt;
 &lt;/div&gt;
 &lt;br/&gt;
 &lt;div id=&quot;attachmentList&quot;&gt;

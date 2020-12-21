@@ -1,38 +1,55 @@
-import * as React from "react";
-import { ErrorResponse } from "../api/errors";
-import { MuiPickersUtilsProvider } from "material-ui-pickers";
-import MenuIcon from "@material-ui/icons/Menu";
-import BackIcon from "@material-ui/icons/ArrowBack";
-import AccountIcon from "@material-ui/icons/AccountCircle";
-import AssignmentIcon from "@material-ui/icons/Assignment";
-import NotificationsIcon from "@material-ui/icons/Notifications";
+/*
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import {
-  CssBaseline,
-  Theme,
   AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
-  Hidden,
-  Tooltip,
-  Menu,
-  MenuItem,
   Badge,
+  CssBaseline,
+  Divider,
   Drawer,
-  ListItem,
+  Hidden,
   Icon,
+  IconButton,
   List,
+  ListItem,
   ListItemIcon,
   ListItemText,
-  Divider
+  Menu,
+  MenuItem,
+  Toolbar,
+  Tooltip,
+  Typography,
+  useTheme,
 } from "@material-ui/core";
-import luxonUtils from "@date-io/luxon";
-import { makeStyles } from "@material-ui/styles";
-import { languageStrings } from "../util/langstrings";
-import { UserData, guestUser, MenuItem as MI } from "../api/currentuser";
-import MessageInfo from "../components/MessageInfo";
-import { Link } from "react-router-dom";
+import { makeStyles, Theme } from "@material-ui/core/styles";
+import AccountIcon from "@material-ui/icons/AccountCircle";
+import BackIcon from "@material-ui/icons/ArrowBack";
+import AssignmentIcon from "@material-ui/icons/Assignment";
+import MenuIcon from "@material-ui/icons/Menu";
+import NotificationsIcon from "@material-ui/icons/Notifications";
+
+import * as OEQ from "@openequella/rest-api-client";
 import { LocationDescriptor } from "history";
+import * as React from "react";
+import { Link } from "react-router-dom";
+import { ErrorResponse } from "../api/errors";
+import MessageInfo from "../components/MessageInfo";
+import { guestUser } from "../legacycontent/LegacyContent";
+import { languageStrings } from "../util/langstrings";
 import { routes } from "./routes";
 
 export type MenuMode = "HIDDEN" | "COLLAPSED" | "FULL";
@@ -59,7 +76,7 @@ export interface TemplateProps {
   hideAppBar?: boolean;
   menuMode?: MenuMode;
   disableNotifications?: boolean;
-  currentUser?: UserData;
+  currentUser?: OEQ.LegacyContent.CurrentUserDetails;
   /* Extra meta tags */
   metaTags?: string;
 }
@@ -90,7 +107,7 @@ export type TemplateUpdate = (
  * No extra meta tags
  */
 export function templateDefaults(title: string): TemplateUpdate {
-  return tp =>
+  return (tp) =>
     ({
       ...tp,
       title,
@@ -104,14 +121,14 @@ export function templateDefaults(title: string): TemplateUpdate {
       fullscreenMode: undefined,
       menuMode: undefined,
       disableNotifications: undefined,
-      metaTags: undefined
+      metaTags: undefined,
     } as TemplateProps);
 }
 
 export function templateError(errorResponse: ErrorResponse): TemplateUpdate {
-  return tp => ({
+  return (tp) => ({
     ...tp,
-    errorResponse
+    errorResponse,
   });
 }
 
@@ -140,68 +157,69 @@ export const useStyles = makeStyles((theme: Theme) => {
     "@global": {
       a: {
         textDecoration: "none",
-        color: theme.palette.primary.main
-      }
+        color: theme.palette.primary.main,
+      },
     },
     root: {
       width: "100%",
-      zIndex: 1
+      zIndex: 1,
     },
     appFrame: {
-      position: "relative"
+      position: "relative",
     },
     appBar: {
       marginLeft: drawerWidth,
       [desktop]: {
-        width: `calc(100% - ${drawerWidth}px)`
-      }
+        width: `calc(100% - ${drawerWidth}px)`,
+      },
     },
     navIconHide: {
       [desktop]: {
-        display: "none"
-      }
+        display: "none",
+      },
     },
     content: {
       display: "flex",
       flexDirection: "column",
       [desktop]: {
-        marginLeft: drawerWidth
-      }
+        marginLeft: drawerWidth,
+      },
     },
     contentArea: {
       flexGrow: 1,
       flexBasis: 0,
-      minHeight: 0
+      minHeight: 0,
+      padding: theme.spacing(2),
     },
     toolbar: theme.mixins.toolbar,
     tabs: {
-      height: tabHeight
+      height: tabHeight,
     },
     contentMinHeight: {
-      minHeight: "100vh"
+      minHeight: "100vh",
     },
     contentFixedHeight: {
-      height: "100vh"
+      height: "100vh",
     },
     titleArea: {
       flexGrow: 1,
       display: "flex",
       alignItems: "center",
-      overflow: "hidden"
+      overflow: "hidden",
     },
     titlePadding: {
       [desktop]: {
-        marginLeft: theme.spacing.unit * 4
+        marginLeft: theme.spacing(4),
       },
-      marginLeft: theme.spacing.unit
+      marginLeft: theme.spacing(1),
     },
     titleDense: {
-      marginLeft: theme.spacing.unit
+      marginLeft: theme.spacing(1),
     },
     title: {
       overflow: "hidden",
       whiteSpace: "nowrap",
-      textOverflow: "ellipsis"
+      textOverflow: "ellipsis",
     },
     footer: {
       position: "fixed",
@@ -210,68 +228,88 @@ export const useStyles = makeStyles((theme: Theme) => {
       zIndex: 1000,
       width: "100%",
       [desktop]: {
-        width: `calc(100% - ${drawerWidth}px)`
-      }
+        width: `calc(100% - ${drawerWidth}px)`,
+      },
     },
     userMenu: {
-      flexShrink: 0
+      flexShrink: 0,
     },
     logo: {
       textAlign: "center",
-      marginTop: theme.spacing.unit * 2
+      marginTop: theme.spacing(2),
     },
     drawerPaper: {
       [desktop]: {
-        position: "fixed"
+        position: "fixed",
       },
       width: drawerWidth,
       zIndex: 1100,
-      background: menuColors.background
+      background: menuColors.background,
     },
     menuItem: {
-      color: menuColors.text
+      color: menuColors.text,
     },
     menuIcon: {
-      color: menuColors.icon
-    }
+      color: menuColors.icon,
+    },
   };
 });
 
-function useFullscreen(props: TemplateProps) {
-  const modeIsFullscreen = (function() {
-    switch (props.fullscreenMode) {
+interface useFullscreenProps {
+  fullscreenMode?: FullscreenMode;
+  hideAppBar?: boolean;
+}
+
+function useFullscreen({ fullscreenMode, hideAppBar }: useFullscreenProps) {
+  const modeIsFullscreen = (function () {
+    switch (fullscreenMode) {
       case "YES":
-        return true;
       case "YES_WITH_TOOLBAR":
         return true;
+
       default:
         return false;
     }
   })();
-  return props.hideAppBar || modeIsFullscreen;
+  return hideAppBar || modeIsFullscreen;
 }
 
-export const Template = React.memo(function Template(props: TemplateProps) {
-  const currentUser = props.currentUser ? props.currentUser : guestUser;
+export const Template = React.memo(function Template({
+  backRoute,
+  children,
+  currentUser = guestUser,
+  disableNotifications,
+  errorResponse,
+  fixedViewPort,
+  footer,
+  fullscreenMode,
+  hideAppBar,
+  menuExtra,
+  menuMode,
+  tabs,
+  title,
+  titleExtra,
+  metaTags,
+}: TemplateProps) {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLElement>();
   const [navMenuOpen, setNavMenuOpen] = React.useState(false);
   const [errorOpen, setErrorOpen] = React.useState(false);
 
   // Record what customised meta tags have been added into <head>
-  const [metaTags, setMetaTags] = React.useState<Array<string>>([]);
+  const [googleMetaTags, setGoogleMetaTags] = React.useState<Array<string>>([]);
 
-  const classes = useStyles();
+  const classes = useStyles(useTheme());
 
   React.useEffect(() => {
-    if (props.errorResponse) {
+    if (errorResponse) {
       setErrorOpen(true);
     }
-  }, [props.errorResponse]);
+  }, [errorResponse]);
 
   React.useEffect(() => {
     const classList = window.document.getElementsByTagName("html")[0].classList;
-    var remove = "fullscreen-toolbar";
-    switch (props.fullscreenMode) {
+    let remove = "fullscreen-toolbar";
+    switch (fullscreenMode) {
       case "YES":
         classList.add("fullscreen");
         break;
@@ -283,33 +321,33 @@ export const Template = React.memo(function Template(props: TemplateProps) {
         classList.remove("fullscreen");
     }
     classList.remove(remove);
-  }, [props.fullscreenMode]);
+  }, [fullscreenMode]);
 
   React.useEffect(() => {
-    window.document.title = `${props.title}${coreStrings.windowtitlepostfix}`;
-  }, [props.title]);
+    window.document.title = `${title}${coreStrings.windowtitlepostfix}`;
+  }, [title]);
 
   React.useEffect(() => {
-    updateMetaTags(props.metaTags);
-  }, [props.metaTags]);
+    updateMetaTags(metaTags);
+  }, [metaTags]);
 
   function updateMetaTags(tags: string | undefined) {
     const head = document.head;
     if (tags) {
       // The meta tags generated on the server side, separated by new line symbols
       const newMetaTags = tags.split("\n");
-      newMetaTags.forEach(newMetaTag => {
+      newMetaTags.forEach((newMetaTag) => {
         head.appendChild(
           document.createRange().createContextualFragment(newMetaTag)
         );
       });
-      setMetaTags(newMetaTags);
+      setGoogleMetaTags(newMetaTags);
     } else {
       // While there are no new meta tags to display, also remove old customised meta tags
       const existingMetaTags = document.querySelectorAll("meta");
-      existingMetaTags.forEach(existingMetaTag => {
+      existingMetaTags.forEach((existingMetaTag) => {
         if (
-          metaTags.some(tag => {
+          googleMetaTags.some((tag) => {
             return tag === existingMetaTag.outerHTML;
           })
         ) {
@@ -326,9 +364,12 @@ export const Template = React.memo(function Template(props: TemplateProps) {
   ) {
     return (
       <MenuItem
-        component={p =>
+        onClick={() => setMenuAnchorEl(undefined)}
+        component={(p) =>
           serverSide ? (
-            <a {...p} href={link as string} />
+            <a {...p} href={link as string}>
+              {}
+            </a>
           ) : (
             <Link {...p} to={link} />
           )
@@ -349,7 +390,7 @@ export const Template = React.memo(function Template(props: TemplateProps) {
       <Tooltip title={title}>
         <Link to={uri}>
           <IconButton aria-label={title}>
-            {count == 0 ? (
+            {count === 0 ? (
               icon
             ) : (
               <Badge badgeContent={count} color="secondary">
@@ -362,23 +403,26 @@ export const Template = React.memo(function Template(props: TemplateProps) {
     );
   }
 
-  function navItem(item: MI, ind: number) {
+  function navItem(item: OEQ.LegacyContent.MenuItem, ind: number) {
     return (
       <ListItem
-        component={p => {
+        component={(p) => {
           const props = {
             ...p,
+            rel: item.newWindow ? "noopener noreferrer" : undefined,
             target: item.newWindow ? "_blank" : undefined,
-            onClick: () => setNavMenuOpen(false)
+            onClick: () => setNavMenuOpen(false),
           };
           return item.route ? (
             <Link {...props} to={item.route} />
           ) : (
-            <a {...props} href={item.href!} />
+            <a {...props} href={item.href}>
+              {}
+            </a>
           );
         }}
         key={ind}
-        button={true}
+        button
       >
         <ListItemIcon>
           {item.iconUrl ? (
@@ -405,12 +449,12 @@ export const Template = React.memo(function Template(props: TemplateProps) {
     );
   }
 
-  const hasMenu = props.menuMode !== "HIDDEN";
+  const hasMenu = menuMode !== "HIDDEN";
 
   const menuContent = React.useMemo(
     () => (
       <div className={classes.logo}>
-        <img role="presentation" src={logoURL} alt={"Logo"} />
+        <img role="presentation" src={logoURL} alt="Logo" />
         {hasMenu && (
           <div id="menulinks">
             {currentUser.menuGroups.map((group, ind) => (
@@ -433,8 +477,8 @@ export const Template = React.memo(function Template(props: TemplateProps) {
   function titleArea() {
     return (
       <div className={classes.titleArea}>
-        {props.backRoute && (
-          <Link to={props.backRoute}>
+        {backRoute && (
+          <Link to={backRoute}>
             <IconButton>
               <BackIcon />
             </IconButton>
@@ -444,14 +488,12 @@ export const Template = React.memo(function Template(props: TemplateProps) {
           variant="h5"
           color="inherit"
           className={`${
-            props.backRoute && hasMenu
-              ? classes.titleDense
-              : classes.titlePadding
+            backRoute && hasMenu ? classes.titleDense : classes.titlePadding
           } ${classes.title}`}
         >
-          {props.title}
+          {title}
         </Typography>
-        {props.titleExtra}
+        {titleExtra}
       </div>
     );
   }
@@ -459,9 +501,9 @@ export const Template = React.memo(function Template(props: TemplateProps) {
   function menuArea() {
     return (
       <div className={classes.userMenu}>
-        {props.menuExtra}
-        {!props.disableNotifications && !currentUser.guest && (
-          <React.Fragment>
+        {menuExtra}
+        {!disableNotifications && !currentUser.guest && (
+          <>
             <Hidden smDown>
               {badgedLink(
                 <AssignmentIcon />,
@@ -476,10 +518,16 @@ export const Template = React.memo(function Template(props: TemplateProps) {
                 topBarString.notifications
               )}
             </Hidden>
-            <Tooltip title={strings.menu.title}>
+            <Tooltip
+              title={
+                currentUser
+                  ? currentUser.username
+                  : strings.menu.usernameUnknown
+              }
+            >
               <IconButton
                 aria-label={strings.menu.title}
-                onClick={e => setMenuAnchorEl(e.currentTarget)}
+                onClick={(e) => setMenuAnchorEl(e.currentTarget)}
               >
                 <AccountIcon />
               </IconButton>
@@ -487,7 +535,7 @@ export const Template = React.memo(function Template(props: TemplateProps) {
             <Menu
               anchorEl={menuAnchorEl}
               open={Boolean(menuAnchorEl)}
-              onClose={_ => setMenuAnchorEl(undefined)}
+              onClose={(_) => setMenuAnchorEl(undefined)}
               anchorOrigin={{ vertical: "top", horizontal: "right" }}
               transformOrigin={{ vertical: "top", horizontal: "right" }}
             >
@@ -495,14 +543,14 @@ export const Template = React.memo(function Template(props: TemplateProps) {
               {currentUser.prefsEditable &&
                 linkItem(routes.UserPreferences.to, false, strings.menu.prefs)}
             </Menu>
-          </React.Fragment>
+          </>
         )}
       </div>
     );
   }
 
-  const layout = useFullscreen(props) ? (
-    <main>{props.children}</main>
+  const layout = useFullscreen({ fullscreenMode, hideAppBar }) ? (
+    <main>{children}</main>
   ) : (
     <div className={classes.appFrame}>
       <AppBar className={classes.appBar}>
@@ -510,7 +558,7 @@ export const Template = React.memo(function Template(props: TemplateProps) {
           {hasMenu && (
             <IconButton
               className={classes.navIconHide}
-              onClick={_ => setNavMenuOpen(!navMenuOpen)}
+              onClick={(_) => setNavMenuOpen(!navMenuOpen)}
             >
               <MenuIcon />
             </IconButton>
@@ -518,14 +566,14 @@ export const Template = React.memo(function Template(props: TemplateProps) {
           {titleArea()}
           {menuArea()}
         </Toolbar>
-        {props.tabs}
+        {tabs}
       </AppBar>
       <Hidden mdUp>
         <Drawer
           variant="temporary"
           anchor="left"
           open={navMenuOpen}
-          onClose={_ => setNavMenuOpen(false)}
+          onClose={(_) => setNavMenuOpen(false)}
         >
           {menuContent}
         </Drawer>
@@ -542,16 +590,14 @@ export const Template = React.memo(function Template(props: TemplateProps) {
       </Hidden>
       <main
         className={`${classes.content} ${
-          props.fixedViewPort
-            ? classes.contentFixedHeight
-            : classes.contentMinHeight
+          fixedViewPort ? classes.contentFixedHeight : classes.contentMinHeight
         }`}
       >
         <div className={classes.toolbar} />
-        {props.tabs && <div className={classes.tabs} />}
-        <div className={classes.contentArea}>{props.children}</div>
+        {tabs && <div className={classes.tabs} />}
+        <div className={classes.contentArea}>{children}</div>
       </main>
-      {props.footer && <div className={classes.footer}>{props.footer}</div>}
+      {footer && <div className={classes.footer}>{footer}</div>}
     </div>
   );
 
@@ -567,12 +613,12 @@ export const Template = React.memo(function Template(props: TemplateProps) {
   }
 
   return (
-    <MuiPickersUtilsProvider utils={luxonUtils}>
+    <>
       <CssBaseline />
       <div className={classes.root}>
         {layout}
-        {props.errorResponse && renderError(props.errorResponse)}
+        {errorResponse && renderError(errorResponse)}
       </div>
-    </MuiPickersUtilsProvider>
+    </>
   );
 });

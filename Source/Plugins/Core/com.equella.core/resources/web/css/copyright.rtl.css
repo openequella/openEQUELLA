@@ -1,28 +1,23 @@
 @import url("copyright.css");
 
-table#copyright-totals .copyright-total
-{
-	text-align: left;
+table#copyright-totals .copyright-total {
+  text-align: left;
 }
 
-table#copyright-totals .copyright-totalvalue
-{
-	text-align: left;
+table#copyright-totals .copyright-totalvalue {
+  text-align: left;
 }
 
-.copyright-portionlink
-{
-	margin-left: 0;
-	margin-right: 18px;
+.copyright-portionlink {
+  margin-left: 0;
+  margin-right: 18px;
 }
 
-img.copyright-sectionlink
-{
-	margin-right: 0;
-	margin-left: 5px;
+img.copyright-sectionlink {
+  margin-right: 0;
+  margin-left: 5px;
 }
 
-table#copyright-table tr td
-{
-	text-align: right;
+table#copyright-table tr td {
+  text-align: right;
 }

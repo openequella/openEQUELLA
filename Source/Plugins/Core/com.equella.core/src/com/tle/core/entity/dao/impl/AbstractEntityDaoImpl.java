@@ -32,7 +32,7 @@ import javax.inject.Inject;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
 
 @SuppressWarnings("nls")
@@ -55,51 +55,51 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity>
 
   protected List<BaseEntityLabel> listAll(
       String resolveVirtualTo, final ListCallback callback, final boolean includeSystem) {
-    @SuppressWarnings("unchecked")
     List<BaseEntityLabel> results =
-        getHibernateTemplate()
-            .executeFind(
-                new TLEHibernateCallback() {
-                  @Override
-                  public Object doInHibernate(Session session) throws HibernateException {
-                    // NOTE: Don't order by name here - use the sorting on
-                    // DynamicHtmlListModel
-                    StringBuilder hql = new StringBuilder();
-                    hql.append("SELECT ");
-                    if (callback != null && callback.isDistinct()) {
-                      hql.append("DISTINCT ");
-                    }
-                    hql.append("NEW com.tle.beans.entity.BaseEntityLabel");
-                    hql.append("(be.id, be.uuid, be.name.id, be.owner, be.systemType) FROM ");
-                    hql.append(getPersistentClass().getName());
-                    hql.append(" be ");
-                    if (callback != null && !Check.isEmpty(callback.getAdditionalJoins())) {
-                      hql.append(" ");
-                      hql.append(callback.getAdditionalJoins());
-                      hql.append(" ");
-                    }
-                    hql.append("WHERE be.institution = :institution");
+        (List<BaseEntityLabel>)
+            getHibernateTemplate()
+                .execute(
+                    new TLEHibernateCallback() {
+                      @Override
+                      public Object doInHibernate(Session session) throws HibernateException {
+                        // NOTE: Don't order by name here - use the sorting on
+                        // DynamicHtmlListModel
+                        StringBuilder hql = new StringBuilder();
+                        hql.append("SELECT ");
+                        if (callback != null && callback.isDistinct()) {
+                          hql.append("DISTINCT ");
+                        }
+                        hql.append("NEW com.tle.beans.entity.BaseEntityLabel");
+                        hql.append("(be.id, be.uuid, be.name.id, be.owner, be.systemType) FROM ");
+                        hql.append(getPersistentClass().getName());
+                        hql.append(" be ");
+                        if (callback != null && !Check.isEmpty(callback.getAdditionalJoins())) {
+                          hql.append(" ");
+                          hql.append(callback.getAdditionalJoins());
+                          hql.append(" ");
+                        }
+                        hql.append("WHERE be.institution = :institution");
 
-                    if (!includeSystem) {
-                      hql.append(" AND be.systemType = false");
-                    }
+                        if (!includeSystem) {
+                          hql.append(" AND be.systemType = false");
+                        }
 
-                    if (callback != null && !Check.isEmpty(callback.getAdditionalWhere())) {
-                      hql.append(" AND ");
-                      hql.append(callback.getAdditionalWhere());
-                    }
+                        if (callback != null && !Check.isEmpty(callback.getAdditionalWhere())) {
+                          hql.append(" AND ");
+                          hql.append(callback.getAdditionalWhere());
+                        }
 
-                    Query query = session.createQuery(hql.toString());
-                    query.setParameter("institution", CurrentInstitution.get());
-                    query.setCacheable(true);
+                        Query query = session.createQuery(hql.toString());
+                        query.setParameter("institution", CurrentInstitution.get());
+                        query.setCacheable(true);
 
-                    if (callback != null) {
-                      callback.processQuery(query);
-                    }
+                        if (callback != null) {
+                          callback.processQuery(query);
+                        }
 
-                    return query.list();
-                  }
-                });
+                        return query.list();
+                      }
+                    });
 
     if (resolveVirtualTo != null) {
       String privType = resolveVirtualTo;
@@ -128,59 +128,61 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity>
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<T> getByIds(Collection<Long> ids) {
     if (ids == null || ids.isEmpty()) {
       return Collections.emptyList();
     }
 
     List<T> entityList =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "from " + getPersistentClass().getName() + " where id in (:keys)", "keys", ids);
+        (List<T>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "from " + getPersistentClass().getName() + " where id in (:keys)", "keys", ids);
     return entityList;
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<T> getByUuids(Collection<String> ids) {
     if (ids == null || ids.isEmpty()) {
       return Collections.emptyList();
     }
 
     List<T> entityList =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "from "
-                    + getPersistentClass().getName()
-                    + " where institution = :institution and uuid in (:keys)",
-                new String[] {"institution", "keys"},
-                new Object[] {CurrentInstitution.get(), ids});
+        (List<T>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "from "
+                        + getPersistentClass().getName()
+                        + " where institution = :institution and uuid in (:keys)",
+                    new String[] {"institution", "keys"},
+                    new Object[] {CurrentInstitution.get(), ids});
     return entityList;
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public T getByUuid(String uuid) {
     List<T> results =
-        getHibernateTemplate()
-            .find(
-                "FROM " + getPersistentClass().getName() + " WHERE institution = ? AND uuid = ?",
-                new Object[] {CurrentInstitution.get(), uuid});
+        (List<T>)
+            getHibernateTemplate()
+                .find(
+                    "FROM "
+                        + getPersistentClass().getName()
+                        + " WHERE institution = ?0 AND uuid = ?1",
+                    new Object[] {CurrentInstitution.get(), uuid});
     return results.isEmpty() ? null : results.get(0);
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public Set<String> getReferencedUsers() {
     List<String> entityList =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "select distinct owner from "
-                    + getPersistentClass().getName()
-                    + " where institution = :institution",
-                "institution",
-                CurrentInstitution.get());
+        (List<String>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "select distinct owner from "
+                        + getPersistentClass().getName()
+                        + " where institution = :institution",
+                    "institution",
+                    CurrentInstitution.get());
     return new HashSet<String>(entityList);
   }
 
@@ -246,29 +248,29 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity>
     return enumerateAllIds(true);
   }
 
-  @SuppressWarnings("unchecked")
   protected List<Long> enumerateAllIds(final boolean includeSystem) {
-    return getHibernateTemplate()
-        .executeFind(
-            new TLEHibernateCallback() {
-              @Override
-              public Object doInHibernate(Session session) throws HibernateException {
-                // NOTE: Don't order by name here - use NumberStringComparator
-                // on the returned list.
-                StringBuilder hql = new StringBuilder("select id from ");
-                hql.append(getPersistentClass().getName());
-                hql.append(" where institution = :institution");
-                if (!includeSystem) {
-                  hql.append(" and systemType = false");
-                }
+    return (List<Long>)
+        getHibernateTemplate()
+            .execute(
+                new TLEHibernateCallback() {
+                  @Override
+                  public Object doInHibernate(Session session) throws HibernateException {
+                    // NOTE: Don't order by name here - use NumberStringComparator
+                    // on the returned list.
+                    StringBuilder hql = new StringBuilder("select id from ");
+                    hql.append(getPersistentClass().getName());
+                    hql.append(" where institution = :institution");
+                    if (!includeSystem) {
+                      hql.append(" and systemType = false");
+                    }
 
-                Query query = session.createQuery(hql.toString());
-                query.setParameter("institution", CurrentInstitution.get());
-                query.setCacheable(true);
-                query.setReadOnly(true);
-                return query.list();
-              }
-            });
+                    Query query = session.createQuery(hql.toString());
+                    query.setParameter("institution", CurrentInstitution.get());
+                    query.setCacheable(true);
+                    query.setReadOnly(true);
+                    return query.list();
+                  }
+                });
   }
 
   @Override
@@ -371,6 +373,13 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity>
       super(wrappedCallback);
       this.offset = offset;
       this.max = max;
+    }
+
+    @Override
+    protected String createOrderBy() {
+      // Sort the list of paged entities by their IDs.
+      // Because the alias of those entity tables is 'be', we use 'be.id'.
+      return "be.id";
     }
 
     @Override

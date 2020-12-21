@@ -24,7 +24,7 @@ import java.net.URL;
 import java.text.MessageFormat;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import retry.RetryTest;
+import testng.annotation.RetryTest;
 
 @TestInstitution("fiveo")
 public class PackageAndNavigationTest extends AbstractCleanupAutoTest {

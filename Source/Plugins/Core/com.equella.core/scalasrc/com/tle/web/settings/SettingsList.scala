@@ -65,6 +65,7 @@ object CoreSettingsRest {
 
 object SettingsList {
   val General               = "general"
+  val Searching             = "searching"
   val Integration           = "integration"
   val CloudProviderListPage = "page/cloudprovider"
 
@@ -165,6 +166,37 @@ object SettingsList {
                                     OAuthConstants.PRIV_ADMINISTER_OAUTH_TOKENS)
         .isEmpty
   )
+  val searchPageSettings = CoreSettingsPage("searchpage",
+                                            Searching,
+                                            "setting.searchpage.title",
+                                            "setting.searchpage.desc",
+                                            "page/searchsettings",
+                                            searchPrivProvider.isAuthorised)
+
+  val contentIndexingSettings = CoreSettingsPage(
+    "contentindexing",
+    Searching,
+    "setting.contentindexing.title",
+    "setting.contentindexing.desc",
+    "page/contentindexsettings",
+    searchPrivProvider.isAuthorised
+  )
+
+  val facetedSearchSettings = CoreSettingsPage(
+    "facetedsearch",
+    Searching,
+    "setting.facetedsearch.title",
+    "setting.facetedsearch.desc",
+    "page/facetedsearchsettings",
+    searchPrivProvider.isAuthorised
+  )
+
+  val searchFilterSettings = CoreSettingsPage("searchfilter",
+                                              Searching,
+                                              "setting.searchfilter.title",
+                                              "setting.searchfilter.desc",
+                                              "page/searchfiltersettings",
+                                              searchPrivProvider.isAuthorised)
 
   val htmlEditorSettings = CoreSettingsPage("htmleditor",
                                             General,
@@ -196,6 +228,10 @@ object SettingsList {
     externalToolsSettings,
     uiSettings,
     loginNoticeSettings,
+    searchPageSettings,
+    contentIndexingSettings,
+    facetedSearchSettings,
+    searchFilterSettings,
     cloudProviderSettings,
     CoreSettingsPage("shortcuts",
                      General,
@@ -215,12 +251,6 @@ object SettingsList {
                      "google.settings.description",
                      "access/googleapisettings.do",
                      googlePrivProvider.isAuthorised),
-    CoreSettingsPage("search",
-                     General,
-                     "settings.link.title",
-                     "settings.link.description",
-                     "access/searchsettings.do",
-                     searchPrivProvider.isAuthorised),
     CoreSettingsPage("login",
                      General,
                      "login.title",
@@ -340,22 +370,7 @@ object SettingsList {
                      "setting.title",
                      "setting.description",
                      "access/portaladmin.do",
-                     portletWebService.canAdminister),
-    CoreSettingsPage(
-      "courses",
-      Integration,
-      "courses.title",
-      "courses.description",
-      "page/course",
-      () =>
-        !aclManager
-          .filterNonGrantedPrivileges(CourseInfoService.PRIV_CREATE_COURSE,
-                                      CourseInfoService.PRIV_EDIT_COURSE)
-          .isEmpty
-    )
-
-//    CoreSettingsPage("schemas", "entities", "schemas.title", "schemas.description",
-//      "page/schema", () => true),
+                     portletWebService.canAdminister)
   )
 
   def anyEditable = allSettings.exists(_.isEditable)

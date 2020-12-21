@@ -1,30 +1,24 @@
-.setupBlackboardWebServiceRow
-{
-	margin-top: 1em;
+.setupBlackboardWebServiceRow {
+  margin-top: 1em;
 }
 
-.passRow
-{
-	margin-top: 2em;
+.passRow {
+  margin-top: 2em;
 }
 
-.proxySecretRow
-{
-	margin-top: 2em;
+.proxySecretRow {
+  margin-top: 2em;
 }
 
-.helpLinks
-{
-	margin-top: 1em;
+.helpLinks {
+  margin-top: 1em;
 }
 
-.helpLinks UL
-{
-	margin-left: 1em;
+.helpLinks UL {
+  margin-left: 1em;
 }
 
-.helpLinks UL LI
-{
-	margin-left: 2em;
-	list-style: decimal;
+.helpLinks UL LI {
+  margin-left: 2em;
+  list-style: decimal;
 }

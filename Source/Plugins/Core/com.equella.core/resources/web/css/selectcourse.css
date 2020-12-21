@@ -1,31 +1,32 @@
 .resultlist {
-	height: 200px;
-	overflow-x: hidden;
-	overflow-y: auto;
-	position: relative;
+  height: 200px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative;
 }
 
 .selectcourse input[type="text"] {
-	width: 465px;
+  width: 465px;
 }
 
 .modal-search-result li {
-	position: relative;
-	margin: 0 0 10px 0 !important;
-	padding: 10px 10px 10px 40px;
-	background: #f0f0f0;
-	width: 505px;
-	float: left;
-	clear: both;
+  position: relative;
+  margin: 0 0 10px 0 !important;
+  padding: 10px 10px 10px 40px;
+  background: #f0f0f0;
+  width: 505px;
+  float: left;
+  clear: both;
 }
 
 .modal-search-result input {
-	position: absolute;
-	left: 8px;
-	top: 10px;
+  position: absolute;
+  left: 8px;
+  top: 10px;
 }
 
-.modal-search-result h4,.modal-search-result li label {
-	font-size: 13px;
-	font-weight: bold;
+.modal-search-result h4,
+.modal-search-result li label {
+  font-size: 13px;
+  font-weight: bold;
 }

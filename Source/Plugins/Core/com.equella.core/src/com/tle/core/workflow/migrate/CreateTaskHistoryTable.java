@@ -45,8 +45,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import org.hibernate.Query;
 import org.hibernate.ScrollableResults;
+import org.hibernate.Session;
 import org.hibernate.annotations.Index;
-import org.hibernate.classic.Session;
 
 @Bind
 @Singleton
@@ -70,7 +70,7 @@ public class CreateTaskHistoryTable extends AbstractHibernateSchemaMigration {
       HibernateMigrationHelper helper, MigrationResult result, Session session) {
     Query query =
         session.createQuery(
-            "update Item set moderating = true, dateForIndex = ? where status = 'MODERATING' and moderating = false");
+            "update Item set moderating = true, dateForIndex = ?0 where status = 'MODERATING' and moderating = false");
     query.setParameter(0, new Date());
     int fixes = query.executeUpdate();
     if (fixes > 0) {

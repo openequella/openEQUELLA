@@ -1,18 +1,14 @@
-DIV.status
-{
-	height: 3em;
+DIV.status {
+  height: 3em;
 }
 
-DIV.status P.error
-{
-    background-color: #FFDDDD;
-    display: block;
-    padding: 5px;
-    color: red;
-    text-align: center;
-    max-height: 3em;
-    overflow-y: auto;
-    margin-bottom: 5px;
+DIV.status P.error {
+  background-color: #ffdddd;
+  display: block;
+  padding: 5px;
+  color: red;
+  text-align: center;
+  max-height: 3em;
+  overflow-y: auto;
+  margin-bottom: 5px;
 }
-
-

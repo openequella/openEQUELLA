@@ -2,40 +2,43 @@
  Selection review table
 *****************************************************************************/
 
-table.zebra tr th.shrink, table.zebra tr td.shrink {
-	width: 1%;
+table.zebra tr th.shrink,
+table.zebra tr td.shrink {
+  width: 1%;
 }
 
 table.zebra tr td.unselect {
-	text-align: center;
+  text-align: center;
 }
 
 td.unselect a {
-	display: inline-block;
-	width: 16px;
-	height: 16px;
-	background: url(../images/remove.png) 0 0 no-repeat;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background: url(../images/remove.png) 0 0 no-repeat;
 }
 
-td.unselect a:hover,td.unselect a:focus {
-	background-image: url(../images/remove-hover.png);
+td.unselect a:hover,
+td.unselect a:focus {
+  background-image: url(../images/remove-hover.png);
 }
 
 table.zebra tr td.export {
-	text-align: center;
+  text-align: center;
 }
 
 td.export a {
-	display: inline-block;
-	width: 16px;
-	height: 16px;
-	background: url(../images/export2.gif) 0 0 no-repeat;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background: url(../images/export2.gif) 0 0 no-repeat;
 }
 
-td.export a:hover,td.export a:focus {
-	background-image: url(../images/save.gif);
+td.export a:hover,
+td.export a:focus {
+  background-image: url(../images/save.gif);
 }
 
 td.versionselect .selectedTxt {
-	white-space: nowrap;
+  white-space: nowrap;
 }

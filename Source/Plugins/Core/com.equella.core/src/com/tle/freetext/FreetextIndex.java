@@ -59,6 +59,9 @@ public interface FreetextIndex {
    */
   <T extends FreetextResult> SearchResults<T> search(Search searchReq, int start, int count);
 
+  <T extends FreetextResult> SearchResults<T> search(
+      Search searchReq, int start, int count, boolean searchAttachments);
+
   LongSet searchBitSet(Search searchReq);
 
   int count(Search searchReq);

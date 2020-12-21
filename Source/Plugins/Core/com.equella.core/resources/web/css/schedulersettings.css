@@ -1,11 +1,12 @@
 .schedulersettings select {
-	width: 100px;
+  width: 100px;
 }
 
-.schedulersettings .newListSelected, .schedulersettings .dayprefix {
-	float: left;
+.schedulersettings .newListSelected,
+.schedulersettings .dayprefix {
+  float: left;
 }
 
 .schedulersettings .dayprefix {
-	padding: 0 5px;
+  padding: 0 5px;
 }

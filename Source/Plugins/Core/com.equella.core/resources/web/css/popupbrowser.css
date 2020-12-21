@@ -1,140 +1,145 @@
 #container {
-	height: 484px;
-	position: relative;
+  height: 484px;
+  position: relative;
 }
 
-#termChooser,#selectedTerms,#termViewer {
-	position: absolute;
+#termChooser,
+#selectedTerms,
+#termViewer {
+  position: absolute;
 }
 
 #termChooser {
-	top: 5px;
-	left: 5px;
+  top: 5px;
+  left: 5px;
 }
 
 .popupbrowserdialog #termChooser {
-	bottom: 5px;
-	width: 49%;
+  bottom: 5px;
+  width: 49%;
 }
 
 .widepopupbrowserdialog #termChooser {
-	right: 5px;
-	height: 340px;
+  right: 5px;
+  height: 340px;
 }
 
-.popupbrowserdialog #browsetab,.popupbrowserdialog #searchtab {
-	height: 405px;
+.popupbrowserdialog #browsetab,
+.popupbrowserdialog #searchtab {
+  height: 405px;
 }
 
-.widepopupbrowserdialog #browsetab,.widepopupbrowserdialog #searchtab {
-	height: 285px;
+.widepopupbrowserdialog #browsetab,
+.widepopupbrowserdialog #searchtab {
+  height: 285px;
 }
 
 #selectedTerms {
-	bottom: 5px;
-	right: 5px;
+  bottom: 5px;
+  right: 5px;
 }
 
 .popupbrowserdialog #selectedTerms {
-	width: 49%;
+  width: 49%;
 }
 
 .widepopupbrowserdialog #selectedTerms {
-	left: 5px;
-	height: 25%;
+  left: 5px;
+  height: 25%;
 }
 
 .popupbrowserdialog #termViewer {
-	top: 5px;
-	right: 5px;
-	width: 49%;
+  top: 5px;
+  right: 5px;
+  width: 49%;
 }
 
 .popupbrowser-tab {
-	overflow-y: auto;
-	padding-top: 5px;
-	padding-bottom: 0;
+  overflow-y: auto;
+  padding-top: 5px;
+  padding-bottom: 0;
 }
 
-#browsetab li span:hover,#searchtab li:hover {
-	background-color: #FFA;
+#browsetab li span:hover,
+#searchtab li:hover {
+  background-color: #ffa;
 }
 
 /***************/
 /* Term viewer */
 /***************/
 #termViewer .termViewerLineage {
-	font-weight: bold;
+  font-weight: bold;
 }
 
 #termViewer .termViewerTerm {
-	border-bottom: 1px solid black;
-	padding-bottom: 5px;
-	margin-top: 10px;
-	margin-bottom: 1em;
+  border-bottom: 1px solid black;
+  padding-bottom: 5px;
+  margin-top: 10px;
+  margin-bottom: 1em;
 }
 
 #termViewer .termViewerSelector {
-	margin-top: 1.5em;
-	text-align: center;
+  margin-top: 1.5em;
+  text-align: center;
 }
 
 /**********************/
 /* Search results tab */
 /**********************/
 #searchtab .searchquery {
-	width: 70%;
+  width: 70%;
 }
 
 #searchResults .resultcount {
-	margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 #searchResults ul {
-	list-style: disc;
-	padding-left: 15px;
+  list-style: disc;
+  padding-left: 15px;
 }
 
 #searchResults li {
-	margin: 5px 0;
+  margin: 5px 0;
 }
 
 #searchtab .showallresults {
-	margin: 10px 0;
-	text-align: center;
+  margin: 10px 0;
+  text-align: center;
 }
 
 /* Annoying styles to override jquery-ui.css widget styles */
 #searchtab input {
-	font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 }
 
 #searchtab input[type="text"] {
-	font-size: 12px;
+  font-size: 12px;
 }
 
 /******************/
 /* Selected Terms */
 /******************/
 #selectedTerms h2 {
-	border-top: solid 1px grey;
-	margin-top: 1em;
+  border-top: solid 1px grey;
+  margin-top: 1em;
 }
 
 #selectedTerms .selectedItems {
-	position: relative;
-	max-height: 10em;
-	overflow-y: auto;
+  position: relative;
+  max-height: 10em;
+  overflow-y: auto;
 }
 
 #selectedTerms .selectedItems table {
-	margin: 0;
+  margin: 0;
 }
 
 /**************/
 /* View arrow */
 /**************/
 a.viewterm {
-	background: url(../images/viewterm.png) no-repeat 0 1px;
-	padding: 2px 0 2px 20px;
+  background: url(../images/viewterm.png) no-repeat 0 1px;
+  padding: 2px 0 2px 20px;
 }

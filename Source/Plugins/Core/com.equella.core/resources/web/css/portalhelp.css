@@ -1,13 +1,15 @@
-.portallist, #help ul {
-	list-style: disc;
+.portallist,
+#help ul {
+  list-style: disc;
 }
-.portallist li, #help ul li {
-	margin: 5px 30px;	
+.portallist li,
+#help ul li {
+  margin: 5px 30px;
 }
 
 #restoreAll {
-	padding-top: 5px;
-	font-size: 15px;
-	text-align: left;
-	font-size: 15px;
+  padding-top: 5px;
+  font-size: 15px;
+  text-align: left;
+  font-size: 15px;
 }

@@ -32,5 +32,6 @@ public class ImageMagickModule extends PropertiesModule {
   @Override
   protected void configure() {
     bindProp("imageMagick.path");
+    bindInt("thumbnailing.timeout", 20);
   }
 }

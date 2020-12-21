@@ -1,34 +1,32 @@
 .merlotlogo {
-	display: block;
-	padding-top: 10px;
-	padding-bottom: 10px;
+  display: block;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
-.merlotfooter
-{
-	text-align: center;
+.merlotfooter {
+  text-align: center;
 }
 
-.merlotfooter, .viewmerlotfooter
-{
-	position: relative;
-	margin-top: 3em;
+.merlotfooter,
+.viewmerlotfooter {
+  position: relative;
+  margin-top: 3em;
 }
 
-.merlotfooter UL, .viewmerlotfooter UL
-{
-	margin-top: 5px;
-	margin-bottom: 5px;
+.merlotfooter UL,
+.viewmerlotfooter UL {
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
-.merlotfooter UL LI, .viewmerlotfooter UL LI
-{
-	margin-left: 3em;
-	padding-top: 4px;
-	padding-bottom: 4px;
+.merlotfooter UL LI,
+.viewmerlotfooter UL LI {
+  margin-left: 3em;
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
-div.itemresult-meta 
-{
-	word-wrap: break-word;
+div.itemresult-meta {
+  word-wrap: break-word;
 }

@@ -1,0 +1,57 @@
+{
+  "name": "@openequella/rest-api-client",
+  "version": "2020.2.0-Alpha",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=10"
+  },
+  "scripts": {
+    "start": "rollup --config --watch",
+    "build": "rollup --config",
+    "test": "jest --no-cache",
+    "lint": "eslint \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
+    "format": "eslint --fix \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
+    "prepare": "npm run build"
+  },
+  "peerDependencies": {},
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "dependencies": {
+    "axios": "^0.21.0",
+    "axios-cookiejar-support": "^1.0.0",
+    "lodash": "^4.17.15",
+    "query-string": "^6.12.1",
+    "runtypes": "^5.0.1",
+    "tough-cookie": "^4.0.0",
+    "typescript-is": "^0.17.0"
+  },
+  "devDependencies": {
+    "@types/jest": "26.0.16",
+    "@types/tough-cookie": "^4.0.0",
+    "@types/lodash": "4.14.165",
+    "@typescript-eslint/eslint-plugin": "4.9.0",
+    "@typescript-eslint/parser": "4.9.0",
+    "core-js": "3.8.0",
+    "eslint": "7.14.0",
+    "eslint-plugin-jest": "24.1.3",
+    "jest": "26.6.3",
+    "rollup": "2.34.0",
+    "rollup-plugin-typescript2": "0.29.0",
+    "ts-jest": "26.4.4",
+    "ts-node": "9.0.0",
+    "tslib": "2.0.3",
+    "ttypescript": "1.5.12",
+    "typescript": "4.0.5"
+  }
+}

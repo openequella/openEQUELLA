@@ -2,6 +2,7 @@
 *.pmd
 *.iml
 .cache/
+.idea/.name
 
 target/
 build.conf
@@ -16,4 +17,3 @@ generated.keystore
 Source/Plugins/Kaltura
 server.xml
 node_modules/
-

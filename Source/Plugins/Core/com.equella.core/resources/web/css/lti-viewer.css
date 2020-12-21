@@ -1,11 +1,11 @@
 #tool-frame {
-	width: 100%;
-	height: 650px;
+  width: 100%;
+  height: 650px;
 }
 
 div.error span {
-	color: red;
-	font-size: 20px;
-	padding: 50px;
-	position: absolute;
+  color: red;
+  font-size: 20px;
+  padding: 50px;
+  position: absolute;
 }

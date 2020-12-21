@@ -1,44 +1,40 @@
 .modcomment {
-	padding: 8px 10px;
-	background: #fefefe;
-	display: flex;
-	margin: 10px 5px;
+  padding: 8px 10px;
+  background: #fefefe;
+  display: flex;
+  margin: 10px 5px;
 }
 
-.modcomment a
-{
-    font-size: 12px;
+.modcomment a {
+  font-size: 12px;
 }
 
-.modcomment-avatar
-{
-	background: url(../images/user-big.png) 0 0 no-repeat;
-    height: 50px;
-    width: 30px;
+.modcomment-avatar {
+  background: url(../images/user-big.png) 0 0 no-repeat;
+  height: 50px;
+  width: 30px;
 }
 
 .modcomment-username {
-	color: #f6a03d;
-	font-size: 14px;
+  color: #f6a03d;
+  font-size: 14px;
 }
 
 .modcomment-date {
-	color: #b1b17b;
-	font-size: 10px;
-	padding: 0 0 0 5px;
+  color: #b1b17b;
+  font-size: 10px;
+  padding: 0 0 0 5px;
 }
 
 .modcomment-content {
-	margin: 8px 0;
-	font-size: 12px;
+  margin: 8px 0;
+  font-size: 12px;
 }
 
-.modcomment.rejection
-{
-	background: #ffdfdf;
+.modcomment.rejection {
+  background: #ffdfdf;
 }
 
-.modcomment.approval
-{
-	background: #defede;
+.modcomment.approval {
+  background: #defede;
 }

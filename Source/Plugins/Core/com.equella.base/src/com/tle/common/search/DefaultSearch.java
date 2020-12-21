@@ -404,29 +404,26 @@ public class DefaultSearch extends VeryBasicSearch {
   }
 
   public static class QueryParser {
-    private final List<QueryToken> tokens;
+
     private final List<String> hilight;
 
     public QueryParser(String query) {
-      hilight = new ArrayList<String>();
-      tokens = new ArrayList<QueryToken>();
+      hilight = new ArrayList<>();
       parseQuery(query);
     }
 
     protected void parseQuery(final String query) {
       final List<QueryToken> newTokens = QueryToken.tokenize(query);
-      tokens.addAll(newTokens);
 
-      for (int i = 0; i < newTokens.size(); i++) {
-        final QueryToken qtok = newTokens.get(i);
+      for (final QueryToken qtok : newTokens) {
         final String token = qtok.token;
 
         boolean isFullWord = qtok.isaword;
-        isFullWord = isFullWord && !token.equalsIgnoreCase("AND"); // $NON-NLS-1$
-        isFullWord = isFullWord && !token.equalsIgnoreCase("OR"); // $NON-NLS-1$
-        isFullWord = isFullWord && !token.equalsIgnoreCase("NOT"); // $NON-NLS-1$
-        isFullWord = isFullWord && !token.startsWith("?"); // $NON-NLS-1$
-        isFullWord = isFullWord && !token.startsWith("*"); // $NON-NLS-1$
+        isFullWord = isFullWord && !token.equalsIgnoreCase("AND");
+        isFullWord = isFullWord && !token.equalsIgnoreCase("OR");
+        isFullWord = isFullWord && !token.equalsIgnoreCase("NOT");
+        isFullWord = isFullWord && !token.startsWith("?");
+        isFullWord = isFullWord && !token.startsWith("*");
 
         if (isFullWord) {
           hilight.add(token);
@@ -550,19 +547,21 @@ public class DefaultSearch extends VeryBasicSearch {
 
   public static SortType getOrderType(String order, String q) {
     if (order != null) {
-      // allowed values are relevance, modified, name, rating
-      if (order.equals("relevance")) {
+      // Allowed values are relevance, modified, name, rating and created.
+      // However due to the inconsistent order values, rank, datemodified and datecreated are also
+      // accepted.
+      if (order.equals("relevance") || order.equals("rank")) {
         if (Check.isEmpty(q)) {
           return SortType.DATEMODIFIED;
         }
         return SortType.RANK;
-      } else if (order.equals("modified")) {
+      } else if (order.equals("modified") || order.equals("datemodified")) {
         return SortType.DATEMODIFIED;
       } else if (order.equals("name")) {
         return SortType.NAME;
       } else if (order.equals("rating")) {
         return SortType.RATING;
-      } else if (order.equals("created")) {
+      } else if (order.equals("created") || order.equals("datecreated")) {
         return SortType.DATECREATED;
       }
     }

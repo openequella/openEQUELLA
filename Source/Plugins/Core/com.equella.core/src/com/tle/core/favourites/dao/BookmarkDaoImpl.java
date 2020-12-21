@@ -35,7 +35,7 @@ import java.util.Map;
 import javax.inject.Singleton;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,34 +49,34 @@ public class BookmarkDaoImpl extends GenericInstitionalDaoImpl<Bookmark, Long>
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public Bookmark findById(long id) {
     List<Bookmark> list =
-        getHibernateTemplate()
-            .find(
-                "FROM Bookmark WHERE id = ? AND institution = ?",
-                new Object[] {id, CurrentInstitution.get()});
+        (List<Bookmark>)
+            getHibernateTemplate()
+                .find(
+                    "FROM Bookmark WHERE id = ?0 AND institution = ?1",
+                    new Object[] {id, CurrentInstitution.get()});
     return list.isEmpty() ? null : list.get(0);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public Bookmark getByItemAndUserId(String userId, ItemKey itemId) {
     List<Bookmark> find =
-        getHibernateTemplate()
-            .find(
-                "FROM Bookmark WHERE owner = ? AND item.uuid = ? AND item.version = ? AND institution = ?",
-                new Object[] {
-                  userId, itemId.getUuid(), itemId.getVersion(), CurrentInstitution.get()
-                });
+        (List<Bookmark>)
+            getHibernateTemplate()
+                .find(
+                    "FROM Bookmark WHERE owner = ?0 AND item.uuid = ?1 AND item.version = ?2 AND institution = ?3",
+                    new Object[] {
+                      userId, itemId.getUuid(), itemId.getVersion(), CurrentInstitution.get()
+                    });
     return find.isEmpty() ? null : find.get(0);
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<Bookmark> listAll() {
-    return getHibernateTemplate()
-        .find("FROM Bookmark WHERE institution = ?", new Object[] {CurrentInstitution.get()});
+    return (List<Bookmark>)
+        getHibernateTemplate()
+            .find("FROM Bookmark WHERE institution = ?0", new Object[] {CurrentInstitution.get()});
   }
 
   @Override
@@ -126,23 +126,23 @@ public class BookmarkDaoImpl extends GenericInstitionalDaoImpl<Bookmark, Long>
             });
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public Collection<Bookmark> getAllMentioningItem(Item item) {
-    return getHibernateTemplate().find("FROM Bookmark WHERE item = ?", new Object[] {item});
+    return (Collection<Bookmark>)
+        getHibernateTemplate().find("FROM Bookmark WHERE item = ?0", new Object[] {item});
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public List<Item> updateAlwaysLatest(Item newItem) {
     List<Item> reindex = new ArrayList<Item>();
 
     // This could probably be done in a single bulk update query
     List<Bookmark> bookmarks =
-        getHibernateTemplate()
-            .find(
-                "FROM Bookmark WHERE institution = ? AND item.uuid = ? AND always_latest = true AND item <> ?",
-                new Object[] {CurrentInstitution.get(), newItem.getUuid(), newItem});
+        (List<Bookmark>)
+            getHibernateTemplate()
+                .find(
+                    "FROM Bookmark WHERE institution = ?0 AND item.uuid = ?1 AND always_latest = true AND item <> ?2",
+                    new Object[] {CurrentInstitution.get(), newItem.getUuid(), newItem});
     for (Bookmark b : bookmarks) {
       Item existingItem = b.getItem();
 
@@ -155,29 +155,28 @@ public class BookmarkDaoImpl extends GenericInstitionalDaoImpl<Bookmark, Long>
   }
 
   @Override
-  @SuppressWarnings({"unchecked"})
   public List<Item> filterNonBookmarkedItems(final Collection<Item> items) {
     if (items.isEmpty()) {
       return Collections.emptyList();
     }
-    return getHibernateTemplate()
-        .executeFind(
-            new HibernateCallback() {
-              @Override
-              public Object doInHibernate(Session session) {
-                Query q =
-                    session.createQuery(
-                        "SELECT b.item FROM Bookmark b WHERE b.owner = :owner"
-                            + " AND b.institution = :institution AND b.item IN (:items)");
-                q.setParameter("owner", CurrentUser.getUserID());
-                q.setParameter("institution", CurrentInstitution.get());
-                q.setParameterList("items", items);
-                return q.list();
-              }
-            });
+    return (List<Item>)
+        getHibernateTemplate()
+            .execute(
+                new HibernateCallback() {
+                  @Override
+                  public Object doInHibernate(Session session) {
+                    Query q =
+                        session.createQuery(
+                            "SELECT b.item FROM Bookmark b WHERE b.owner = :owner"
+                                + " AND b.institution = :institution AND b.item IN (:items)");
+                    q.setParameter("owner", CurrentUser.getUserID());
+                    q.setParameter("institution", CurrentInstitution.get());
+                    q.setParameterList("items", items);
+                    return q.list();
+                  }
+                });
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public Map<Long, List<Bookmark>> getBookmarksForIds(final Collection<Long> ids) {
     Map<Long, List<Bookmark>> map = new HashMap<Long, List<Bookmark>>();
@@ -186,9 +185,12 @@ public class BookmarkDaoImpl extends GenericInstitionalDaoImpl<Bookmark, Long>
     }
 
     List<Bookmark> bookmarks =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "FROM Bookmark b LEFT JOIN FETCH b.keywords WHERE b.item.id IN (:ids)", "ids", ids);
+        (List<Bookmark>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "FROM Bookmark b LEFT JOIN FETCH b.keywords WHERE b.item.id IN (:ids)",
+                    "ids",
+                    ids);
 
     for (Bookmark b : bookmarks) {
       long id = b.getItem().getId();
@@ -211,7 +213,6 @@ public class BookmarkDaoImpl extends GenericInstitionalDaoImpl<Bookmark, Long>
     }
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   @Transactional(propagation = Propagation.MANDATORY)
   public Map<Item, Bookmark> getBookmarksForItems(Collection<Item> items, String userId) {
@@ -220,11 +221,12 @@ public class BookmarkDaoImpl extends GenericInstitionalDaoImpl<Bookmark, Long>
     }
 
     final List<Bookmark> bs =
-        getHibernateTemplate()
-            .findByNamedParam(
-                "FROM Bookmark b WHERE b.item IN (:items) and b.owner = :ownerId",
-                new String[] {"items", "ownerId"},
-                new Object[] {items, userId});
+        (List<Bookmark>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    "FROM Bookmark b WHERE b.item IN (:items) and b.owner = :ownerId",
+                    new String[] {"items", "ownerId"},
+                    new Object[] {items, userId});
 
     final Map<Item, Bookmark> rv = new HashMap<Item, Bookmark>();
     for (Bookmark b : bs) {

@@ -17,7 +17,8 @@ case class CloudProviderListPage(ctx: PageContext)
     def delete(name: String): Unit = {
       val cloudProvider = elem.findElement(By.xpath("./div/button"))
       cloudProvider.click()
-      waitFor(ExpectedConditions.elementToBeClickable(By.id("confirm-delete"))).click()
+      waitFor(ExpectedConditions.elementToBeClickable(By.id("confirm-dialog-confirm-button")))
+        .click()
 
       waitFor(
         ExpectedConditions.stalenessOf(cloudProvider)

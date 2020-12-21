@@ -75,12 +75,12 @@ public class QtiAssessmentTestDaoImpl extends GenericInstitionalDaoImpl<QtiAsses
     return test; // NOSONAR (keeping local var for readability)
   }
 
-  @SuppressWarnings("unchecked")
   private List<QtiAssessmentTest> listAll() {
-    return getHibernateTemplate()
-        .find(
-            "FROM QtiAssessmentTest WHERE institution = ?",
-            new Object[] {CurrentInstitution.get()});
+    return (List<QtiAssessmentTest>)
+        getHibernateTemplate()
+            .find(
+                "FROM QtiAssessmentTest WHERE institution = ?0",
+                new Object[] {CurrentInstitution.get()});
   }
 
   @Transactional(propagation = Propagation.MANDATORY)

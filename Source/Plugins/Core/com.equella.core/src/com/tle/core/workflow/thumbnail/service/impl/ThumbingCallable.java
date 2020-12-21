@@ -205,7 +205,10 @@ public class ThumbingCallable implements Callable<ThumbingCallableResult> {
     } catch (Throwable ex) {
       final Throwable root = Throwables.getRootCause(ex);
       if (!(root instanceof InterruptedException)) {
-        LOGGER.error("Error generating thumbnail", ex);
+        LOGGER.error(
+            "Error generating thumbnail for "
+                + (thumbnailRequest != null ? thumbnailRequest.getFilename() : "filename unknown"),
+            ex);
       }
     }
     return result;

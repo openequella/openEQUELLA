@@ -1,3 +1,20 @@
+/*
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import * as React from "react";
 import {
   Avatar,
@@ -5,7 +22,7 @@ import {
   IconButton,
   Theme,
   withStyles,
-  WithStyles
+  WithStyles,
 } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloudIcon from "@material-ui/icons/CloudCircleRounded";
@@ -15,7 +32,7 @@ import {
   getCloudProviders,
   cloudProviderLangStrings,
   registerCloudProviderInit,
-  refreshCloudProvider
+  refreshCloudProvider,
 } from "./CloudProviderModule";
 import EntityList from "../components/EntityList";
 import { formatSize } from "../util/langstrings";
@@ -26,7 +43,7 @@ import EquellaListItem from "../components/EquellaListItem";
 import {
   templateDefaults,
   templateError,
-  TemplateUpdateProps
+  TemplateUpdateProps,
 } from "../mainui/Template";
 import { generateFromError } from "../api/errors";
 import { commonString } from "../util/commonstrings";
@@ -35,12 +52,12 @@ import MessageInfo from "../components/MessageInfo";
 const styles = (theme: Theme) =>
   createStyles({
     searchResultContent: {
-      marginTop: theme.spacing.unit
+      marginTop: theme.spacing(1),
     },
     cloudIcon: {
       width: 40,
-      height: 40
-    }
+      height: 40,
+    },
   });
 
 interface CloudProviderListPageProps
@@ -65,7 +82,7 @@ class CloudProviderListPage extends React.Component<
       cloudProviders: [],
       deleteDialogOpen: false,
       registerDialogOpen: false,
-      showRefreshed: false
+      showRefreshed: false,
     };
   }
 
@@ -80,9 +97,9 @@ class CloudProviderListPage extends React.Component<
 
   getCloudProviderList = () => {
     getCloudProviders()
-      .then(result => {
-        this.setState(prevState => ({
-          cloudProviders: result.results
+      .then((result) => {
+        this.setState((prevState) => ({
+          cloudProviders: result.results,
         }));
       })
       .catch(this.handleError);
@@ -91,12 +108,12 @@ class CloudProviderListPage extends React.Component<
   deleteCloudProvider = (cloudProvider: CloudProviderEntity) => {
     this.setState({
       deleteDialogOpen: true,
-      deleteDetails: cloudProvider
+      deleteDetails: cloudProvider,
     });
   };
 
   refreshProvider = (cloudProvider: CloudProviderEntity) => {
-    refreshCloudProvider(cloudProvider.id).then(_ => {
+    refreshCloudProvider(cloudProvider.id).then((_) => {
       this.getCloudProviderList();
       this.setState({ showRefreshed: true });
     });
@@ -104,13 +121,13 @@ class CloudProviderListPage extends React.Component<
 
   cancelDeleteCloudProvider = () => {
     this.setState({
-      deleteDialogOpen: false
+      deleteDialogOpen: false,
     });
   };
 
   confirmDeleteCloudProvider = () => {
     if (this.state.deleteDetails) {
-      let id = this.state.deleteDetails.id;
+      const id = this.state.deleteDetails.id;
       this.cancelDeleteCloudProvider();
       deleteCloudProvider(id)
         .then(() => {
@@ -122,19 +139,19 @@ class CloudProviderListPage extends React.Component<
 
   registerCloudProvider = () => {
     this.setState({
-      registerDialogOpen: true
+      registerDialogOpen: true,
     });
   };
 
   cancelRegisterCloudProvider = () => {
     this.setState({
-      registerDialogOpen: false
+      registerDialogOpen: false,
     });
   };
 
   confirmRegisterCloudProvider = (url: string) => {
     registerCloudProviderInit(url)
-      .then(result => {
+      .then((result) => {
         window.location.href = result.url;
       })
       .catch(this.handleError);
@@ -159,6 +176,7 @@ class CloudProviderListPage extends React.Component<
             )}
             onConfirm={this.confirmDeleteCloudProvider}
             onCancel={this.cancelDeleteCloudProvider}
+            confirmButtonText={commonString.action.delete}
           >
             {cloudProviderLangStrings.deletecloudprovider.message}
           </ConfirmDialog>
@@ -177,8 +195,8 @@ class CloudProviderListPage extends React.Component<
           progress={false}
           createOnClick={this.registerCloudProvider}
         >
-          {cloudProviders.map(cloudProvider => {
-            let secondaryAction = (
+          {cloudProviders.map((cloudProvider) => {
+            const secondaryAction = (
               <IconButton
                 onClick={() => {
                   this.deleteCloudProvider(cloudProvider);
@@ -187,7 +205,7 @@ class CloudProviderListPage extends React.Component<
                 <DeleteIcon />
               </IconButton>
             );
-            let icon = (
+            const icon = (
               <Avatar
                 src={cloudProvider.iconUrl}
                 alt={cloudProvider.description}
@@ -202,8 +220,11 @@ class CloudProviderListPage extends React.Component<
               <>
                 {cloudProvider.description} -{" "}
                 <a
-                  href="javascript:void"
-                  onClick={_ => this.refreshProvider(cloudProvider)}
+                  href="/#"
+                  onClick={(event: React.MouseEvent<HTMLAnchorElement>) => {
+                    event.preventDefault();
+                    this.refreshProvider(cloudProvider);
+                  }}
                 >
                   {commonString.action.refresh}
                 </a>

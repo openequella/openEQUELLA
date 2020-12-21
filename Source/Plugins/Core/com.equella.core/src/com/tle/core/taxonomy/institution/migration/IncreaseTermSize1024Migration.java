@@ -39,8 +39,8 @@ import javax.persistence.UniqueConstraint;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
+import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
-import org.hibernate.classic.Session;
 
 @Bind
 @Singleton

@@ -31,8 +31,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
-import org.springframework.orm.hibernate3.SpringSessionContext;
-import org.springframework.orm.hibernate3.SpringTransactionFactory;
+import org.springframework.orm.hibernate5.SpringSessionContext;
 
 @Bind(HibernateService.class)
 @Singleton
@@ -71,7 +70,6 @@ public class HibernateServiceImpl implements HibernateService {
     }
     HibernateFactory factory = hibernateService.createConfiguration(dataSource, clazzes);
     factory.setClassLoader(getClass().getClassLoader());
-    factory.setProperty(Environment.TRANSACTION_STRATEGY, SpringTransactionFactory.class.getName());
     factory.setProperty(
         Environment.CURRENT_SESSION_CONTEXT_CLASS, SpringSessionContext.class.getName());
     return factory;

@@ -1,0 +1,52 @@
+<list>
+  <com.tle.beans.security.AccessExpression>
+    <id>813563</id>
+    <dynamic>false</dynamic>
+    <expression>U:84a761e8-a973-4bd6-93c0-aa2703a6d262 </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>777860</id>
+    <dynamic>false</dynamic>
+    <expression>R:TLE_LOGGED_IN_USER_ROLE </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>18775</id>
+    <dynamic>false</dynamic>
+    <expression>R:351c2f38-b78a-4049-88d5-dc33693c9a9f</expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>18777</id>
+    <dynamic>false</dynamic>
+    <expression>R:351c2f38-b78a-4049-88d5-dc33693c9a9f R:e8a88448-cdeb-43d0-afc6-8c491266271a OR R:627130db-0da6-4ac2-b42e-cd597693b688 OR R:bfa5f737-f87f-4909-a822-65b0181ada1a OR </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>18781</id>
+    <dynamic>false</dynamic>
+    <expression>R:351c2f38-b78a-4049-88d5-dc33693c9a9f R:e8a88448-cdeb-43d0-afc6-8c491266271a OR </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>272</id>
+    <dynamic>true</dynamic>
+    <expression>$OWNER</expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>18780</id>
+    <dynamic>false</dynamic>
+    <expression>R:351c2f38-b78a-4049-88d5-dc33693c9a9f R:627130db-0da6-4ac2-b42e-cd597693b688 OR R:bfa5f737-f87f-4909-a822-65b0181ada1a OR R:e8a88448-cdeb-43d0-afc6-8c491266271a OR </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>18772</id>
+    <dynamic>false</dynamic>
+    <expression>R:351c2f38-b78a-4049-88d5-dc33693c9a9f R:e8a88448-cdeb-43d0-afc6-8c491266271a OR R:627130db-0da6-4ac2-b42e-cd597693b688 OR </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>264</id>
+    <dynamic>false</dynamic>
+    <expression>R:TLE_LOGGED_IN_USER_ROLE</expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>273</id>
+    <dynamic>false</dynamic>
+    <expression>*</expression>
+  </com.tle.beans.security.AccessExpression>
+</list>

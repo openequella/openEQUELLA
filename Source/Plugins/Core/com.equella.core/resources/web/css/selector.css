@@ -1,153 +1,130 @@
-#groupfilter 
-{
-    margin-top: 5px;
-    margin-bottom: 5px;
-    height:22px;
+#groupfilter {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  height: 22px;
 }
 
-#groupfilter .groups
-{
-	text-overflow: ellipsis;
-	width:450px;
-	white-space: nowrap;
-	overflow: hidden;
+#groupfilter .groups {
+  text-overflow: ellipsis;
+  width: 450px;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
-.result-list{
-	height: 290px;
-	overflow-y:auto;
-	position: relative;
-	padding-top: 15px;
-	width: 450px;
+.result-list {
+  height: 290px;
+  overflow-y: auto;
+  position: relative;
+  padding-top: 15px;
+  width: 450px;
 }
 
-#search-result-list
-{
-	height: 285px;
-	margin-bottom: 5px;
-	overflow-y:scroll;
-	overflow-x: hidden;
-	position: relative;
-	padding-top: 15px;
-	width: 98%;
-	background-color: #F5F5F5;
-    border: 1px solid #DDDDDD;
+#search-result-list {
+  height: 285px;
+  margin-bottom: 5px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  position: relative;
+  padding-top: 15px;
+  width: 98%;
+  background-color: #f5f5f5;
+  border: 1px solid #dddddd;
 }
 
-.search-result li 
-{
-	background: none repeat scroll 0 0 #F0F0F0;
-    clear: both;
-    float: left;
-    margin: 0 0 2px;
-    padding: 8px 10px 5px 40px;
-    position: relative;
-   	width: 385px;
+.search-result li {
+  background: none repeat scroll 0 0 #f0f0f0;
+  clear: both;
+  float: left;
+  margin: 0 0 2px;
+  padding: 8px 10px 5px 40px;
+  position: relative;
+  width: 385px;
 }
 
-.search-result input 
-{
-    left: 8px;
-    position: absolute;
-    top: 8px;
+.search-result input {
+  left: 8px;
+  position: absolute;
+  top: 8px;
 }
 
-.search-result h4, .search-result li label 
-{
-    font-size: 13px;
-    font-weight: bold;
-    margin: 0 0 4px;
+.search-result h4,
+.search-result li label {
+  font-size: 13px;
+  font-weight: bold;
+  margin: 0 0 4px;
 }
 
-
-.search-result .username 
-{
-    float:left;
-    width: 80px;
+.search-result .username {
+  float: left;
+  width: 80px;
 }
 
-.search-result .add-user
-{
-	float:right;
+.search-result .add-user {
+  float: right;
 }
 
-.search-result .displayname 
-{
-    font-weight: bold;
-    margin: 0 0 4px;
-    float:left;
-    width: 200px;
+.search-result .displayname {
+  font-weight: bold;
+  margin: 0 0 4px;
+  float: left;
+  width: 200px;
 }
 
-.resultlist
-{
-	height: 290px !important;
-	padding-top: 15px;
-	width: 950px;
+.resultlist {
+  height: 290px !important;
+  padding-top: 15px;
+  width: 950px;
 }
 
-.resultlist .modal-search-result li 
-{
-	background: none repeat scroll 0 0 #F0F0F0 !important;
-    margin: 0 0 2px !important;
-    padding: 8px 10px 5px 40px !important;
-   	width: 950px !important;
+.resultlist .modal-search-result li {
+  background: none repeat scroll 0 0 #f0f0f0 !important;
+  margin: 0 0 2px !important;
+  padding: 8px 10px 5px 40px !important;
+  width: 950px !important;
 }
 
-.modal-search-result input 
-{
-    left: 8px;
-    position: absolute;
-    top: 8px;
+.modal-search-result input {
+  left: 8px;
+  position: absolute;
+  top: 8px;
 }
 
-.modal-search-result h4, .modal-search-result li label 
-{
-    font-size: 13px;
-    font-weight: bold;
-    margin: 0 0 4px;
+.modal-search-result h4,
+.modal-search-result li label {
+  font-size: 13px;
+  font-weight: bold;
+  margin: 0 0 4px;
 }
 
-.modal-content-background 
-{
-	 height: 473px;
+.modal-content-background {
+  height: 473px;
 }
 
-
-#tab1 .control input[type="text"]
-{
-	width: 355px;
-	margin: 0;
+#tab1 .control input[type="text"] {
+  width: 355px;
+  margin: 0;
 }
 
-.selectgroup .control input[type="text"]
-{
-	width:450px;
-	margin: 0;
+.selectgroup .control input[type="text"] {
+  width: 450px;
+  margin: 0;
 }
 
-
-#typelist li
-{
-	display: inline;
-	list-style-type: none;
-	padding-right: 20px;
+#typelist li {
+  display: inline;
+  list-style-type: none;
+  padding-right: 20px;
 }
 
-#typelist li label
-{
-	margin-left: 3px;
+#typelist li label {
+  margin-left: 3px;
 }
 
-
-#typelist li input
-{
-	vertical-align:bottom;
+#typelist li input {
+  vertical-align: bottom;
 }
 
-
-.nav 
-{
+.nav {
   margin-left: 0;
   margin-bottom: 20px;
   list-style: none;
@@ -155,38 +132,31 @@
 }
 
 .nav-tabs:before,
-.nav-tabs:after
-{
+.nav-tabs:after {
   display: table;
   content: "";
   line-height: 0;
 }
-.nav-tabs:after
-{
+.nav-tabs:after {
   clear: both;
 }
-.nav-tabs > li
-{
+.nav-tabs > li {
   float: left;
 }
-.nav-tabs > li > a
-{
+.nav-tabs > li > a {
   padding-right: 12px;
   padding-left: 12px;
   margin-right: 2px;
   line-height: 14px;
 }
-.nav-tabs 
-{
+.nav-tabs {
   border-bottom: 1px solid #ddd;
   width: 455px;
 }
-.nav-tabs > li 
-{
+.nav-tabs > li {
   margin-bottom: -1px;
 }
-.nav-tabs > li > a 
-{
+.nav-tabs > li > a {
   padding-top: 8px;
   padding-bottom: 8px;
   line-height: 20px;
@@ -196,14 +166,12 @@
   border-radius: 4px 4px 0 0;
 }
 .nav-tabs > li > a:hover,
-.nav-tabs > li > a:focus 
-{
+.nav-tabs > li > a:focus {
   border-color: #eeeeee #eeeeee #dddddd;
 }
 .nav-tabs > .active > a,
 .nav-tabs > .active > a:hover,
-.nav-tabs > .active > a:focus 
-{
+.nav-tabs > .active > a:focus {
   color: #555555;
   background-color: #ffffff;
   border: 1px solid #ddd;
@@ -211,219 +179,178 @@
   cursor: default;
 }
 
-.tabbable 
-{
-  float:left;
+.tabbable {
+  float: left;
 }
 .tabbable:before,
-.tabbable:after 
-{
+.tabbable:after {
   display: table;
   content: "";
   line-height: 0;
 }
-.tabbable:after 
-{
+.tabbable:after {
   clear: both;
 }
-.tab-content 
-{
+.tab-content {
   width: 465px;
   height: 414px;
 }
 
-.tab-content > .tab-pane 
-{
+.tab-content > .tab-pane {
   display: none;
 }
-.tab-content > .active
-{
+.tab-content > .active {
   display: block;
 }
 
-.modal-content-inner #right-cloumn
-{
-	background-color: #F5F5F5;
-    border: 1px solid #DDDDDD;
-    float: left;
-    height: 404px;
-    margin-left: 45px;
-    margin-top: 22px;
-    margin-bottom: 5px;
-    width: 46%;
-    overflow-y: scroll;
-    overflow-x: hidden;
+.modal-content-inner #right-cloumn {
+  background-color: #f5f5f5;
+  border: 1px solid #dddddd;
+  float: left;
+  height: 404px;
+  margin-left: 45px;
+  margin-top: 22px;
+  margin-bottom: 5px;
+  width: 46%;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
-.add-group
-{
-    text-align: right;
-    margin-right: -3px;
+.add-group {
+  text-align: right;
+  margin-right: -3px;
 }
 
-#right-cloumn .level1 li.select
-{
- 	padding-left:4px;
+#right-cloumn .level1 li.select {
+  padding-left: 4px;
 }
 
-#right-cloumn .level1 .expression-text
-{
-   padding-left:30px;
+#right-cloumn .level1 .expression-text {
+  padding-left: 30px;
 }
-#right-cloumn .level2 li .newListSelected
-{
-   margin-left:30px;
+#right-cloumn .level2 li .newListSelected {
+  margin-left: 30px;
 }
 
-.newListSelected
-{
-	float: left;
+.newListSelected {
+  float: left;
 }
 
-
-#right-cloumn .level2 .expression-text
-{
-	
-	 padding-left:60px;
+#right-cloumn .level2 .expression-text {
+  padding-left: 60px;
 }
-#right-cloumn .level3 li .newListSelected
-{
-	margin-left:60px;
+#right-cloumn .level3 li .newListSelected {
+  margin-left: 60px;
 }
 
-
-#right-cloumn .level3 .expression-text
-{
-	 padding-left:90px;
+#right-cloumn .level3 .expression-text {
+  padding-left: 90px;
 }
-#right-cloumn .level4 li .newListSelected
-{
-	margin-left:90px;
+#right-cloumn .level4 li .newListSelected {
+  margin-left: 90px;
 }
 
-
-#right-cloumn .level4 .expression-text
-{
-	 padding-left:120px;
+#right-cloumn .level4 .expression-text {
+  padding-left: 120px;
 }
-#right-cloumn .level5 li .newListSelected
-{
-	margin-left:120px;
+#right-cloumn .level5 li .newListSelected {
+  margin-left: 120px;
 }
 
-
-#right-cloumn .level5 .expression-text
-{
-	 padding-left:150px;
+#right-cloumn .level5 .expression-text {
+  padding-left: 150px;
 }
 
-.grouping li 
-{    
-    background: none repeat scroll 0 0 #F0F0F0;
-    clear: both;
-    float: left;
-    margin: 0 0 2px;
-    padding-bottom: 5px;
-    padding-top: 5px;
-    position: relative;
-    width: 100%;
-    min-height: 24px;
-    line-height: normal;
-    vertical-align: middle;
+.grouping li {
+  background: none repeat scroll 0 0 #f0f0f0;
+  clear: both;
+  float: left;
+  margin: 0 0 2px;
+  padding-bottom: 5px;
+  padding-top: 5px;
+  position: relative;
+  width: 100%;
+  min-height: 24px;
+  line-height: normal;
+  vertical-align: middle;
 }
 
-.grouping li .newListSelected ul li
-{
-	width:260px;
+.grouping li .newListSelected ul li {
+  width: 260px;
 }
 
-
-.expression-text
-{
-	float: left;
-    width: 250px;
-    margin-top: 5px;
+.expression-text {
+  float: left;
+  width: 250px;
+  margin-top: 5px;
 }
 
-.grouping li:hover 
-{
-	background-color:#FFFFCC;
+.grouping li:hover {
+  background-color: #ffffcc;
 }
 
-.grouping .select:hover
-{
-	background-color:#FFFFCC;
+.grouping .select:hover {
+  background-color: #ffffcc;
 }
 
-.grouping .select:focus
-{
-	background-color:green;
+.grouping .select:focus {
+  background-color: green;
 }
 
-.grouping .selected
-{
-	background: none repeat scroll 0 0 #80D2EE;
-/* 	border: 1px solid #80D2EE; */
+.grouping .selected {
+  background: none repeat scroll 0 0 #80d2ee;
+  /* 	border: 1px solid #80D2EE; */
 }
 
-.other-options li
-{
-	padding-top:6px;
-	padding-bottom:7px;
+.other-options li {
+  padding-top: 6px;
+  padding-bottom: 7px;
 }
 
-.other-options li input[type="radio"] 
-{
-	margin: 4px 7px;
+.other-options li input[type="radio"] {
+  margin: 4px 7px;
 }
 
-.other-options input, .other-options label
-{
-	vertical-align: middle;
+.other-options input,
+.other-options label {
+  vertical-align: middle;
 }
 
-.other-options input[type="text"]
-{
-	width:250px;
-	margin-left: 20px;
+.other-options input[type="text"] {
+  width: 250px;
+  margin-left: 20px;
 }
 
-.other-options div.ip-input{
-	margin-left: 16px;
+.other-options div.ip-input {
+  margin-left: 16px;
 }
 
-#right-cloumn a.unselect 
-{
-	 position: absolute;
-	 top: 9px;
-	 right: 10px;
+#right-cloumn a.unselect {
+  position: absolute;
+  top: 9px;
+  right: 10px;
 }
 
-.other-options .newListSelected
-{
-	float:none;
-	padding: 4px 6px !important;
-	margin-left: 20px;
+.other-options .newListSelected {
+  float: none;
+  padding: 4px 6px !important;
+  margin-left: 20px;
 }
 
-.referrer-options
-{
-	margin-left:20px;
+.referrer-options {
+  margin-left: 20px;
 }
 
- #select-area button
-{
-	float:right;
-	margin-right: 13px;
+#select-area button {
+  float: right;
+  margin-right: 13px;
 }
 
-#select-area .selectlinks 
-{
-	float: left;
-    margin-top: 10px;
+#select-area .selectlinks {
+  float: left;
+  margin-top: 10px;
 }
 
-.select-area button
-{
-	margin-top: 12px;
+.select-area button {
+  margin-top: 12px;
 }

@@ -1,13 +1,11 @@
 @import url("sharesearchquery.css");
 
-.sharesearchquery  .error 
-{
-	padding-left: 0;
-	padding-right: 20px;
+.sharesearchquery .error {
+  padding-left: 0;
+  padding-right: 20px;
 }
 
-.sharesearchquery .sendEmailButton button 
-{
-	right: auto;
-	left: 0;
+.sharesearchquery .sendEmailButton button {
+  right: auto;
+  left: 0;
 }

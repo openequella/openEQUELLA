@@ -1,61 +1,50 @@
-.topic-tree-container
-{
-	border: 1px solid #8F8B7F;
-	max-height: 350px;
-	overflow: auto;
-	min-height: 1px;
-	margin-bottom: 1em;	
+.topic-tree-container {
+  border: 1px solid #8f8b7f;
+  max-height: 350px;
+  overflow: auto;
+  min-height: 1px;
+  margin-bottom: 1em;
 }
 
-.topic-tree-container .input.checkbox
-{
-	margin-top: 0px;
-	margin-bottom: 0px;
+.topic-tree-container .input.checkbox {
+  margin-top: 0px;
+  margin-bottom: 0px;
 }
 
-UL.topic-tree LI SPAN.topic
-{
-	font-size: 14px;
+UL.topic-tree LI SPAN.topic {
+  font-size: 14px;
 }
 
-UL.topic-tree LI.collapsable
-{
-	height: auto;
+UL.topic-tree LI.collapsable {
+  height: auto;
 }
 
-UL.topic-tree 
-{
-	background-color: white;
-	padding: 6px;
-	position: relative;
+UL.topic-tree {
+  background-color: white;
+  padding: 6px;
+  position: relative;
 }
 
-UL.topic-tree .hidden
-{
-	display: none;
+UL.topic-tree .hidden {
+  display: none;
 }
 
-
-UL.topic-tree DIV.lineItem
-{
-	margin-right: 15px;
-    padding-left: 4px;
-    padding-top: 2px;
+UL.topic-tree DIV.lineItem {
+  margin-right: 15px;
+  padding-left: 4px;
+  padding-top: 2px;
 }
 
-UL.topic-tree DIV.lineItem:hover
-{
-	background-color: #FFFFCC;
-	cursor: pointer;
+UL.topic-tree DIV.lineItem:hover {
+  background-color: #ffffcc;
+  cursor: pointer;
 }
 
-UL.topic-tree DIV.lineItem .selection
-{
-	position: absolute;
-	right: 10px;
+UL.topic-tree DIV.lineItem .selection {
+  position: absolute;
+  right: 10px;
 }
 
-.topic-tree.treeview .hover
-{
-	cursor: auto;
+.topic-tree.treeview .hover {
+  cursor: auto;
 }

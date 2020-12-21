@@ -115,8 +115,8 @@ buildConfig in ThisBuild := Common.buildConfig
 name := "Equella"
 
 equellaMajor in ThisBuild := 2020
-equellaMinor in ThisBuild := 1
-equellaPatch in ThisBuild := 6
+equellaMinor in ThisBuild := 2
+equellaPatch in ThisBuild := 0
 equellaStream in ThisBuild := "Stable"
 equellaBuild in ThisBuild := buildConfig.value.getString("build.buildname")
 
@@ -245,16 +245,26 @@ sources in (Compile, doc) := {
 }
 javacOptions in (Compile, doc) := Seq()
 
-lazy val cleanrun = taskKey[Unit]("clean, build and run a dev server")
-
 lazy val allEquella = ScopeFilter(inAggregates(equella))
 
-cleanrun := {
+lazy val devrebuild = taskKey[Unit]("clean and build all code - targeting a local dev run")
+
+devrebuild := {
   Def
     .sequential(
       clean.all(allEquella),
       jpfWriteDevJars.all(allPluginsScope),
       (fullClasspath in Compile).all(allEquella),
+    )
+    .value
+}
+
+lazy val cleanrun = taskKey[Unit]("clean, build and run a dev server")
+
+cleanrun := {
+  Def
+    .sequential(
+      devrebuild,
       (run in equellaserver).toTask("")
     )
     .value

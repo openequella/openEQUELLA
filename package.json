@@ -2,29 +2,143 @@
   "name": "openequella",
   "private": true,
   "scripts": {
-    "install": "cross-env-shell \"./coursier bootstrap com.geirsson:scalafmt-cli_2.12:1.5.1 -f -o node_modules/.bin/scalafmt && ./coursier bootstrap com.google.googlejavaformat:google-java-format:1.7 -f -o node_modules/.bin/google-java-format\"",
-    "format-commit:scala": "git-format-staged -f \"scalafmt --stdin --assume-filename \\\"{}\\\"\" \"*.scala\" \"*.sbt\"",
-    "format-commit:java": "git-format-staged -f \"google-java-format --assume-filename \\\"{}\\\" -\" \"*.java\"",
+    "postinstall": "cross-env-shell \"./coursier bootstrap com.geirsson:scalafmt-cli_2.12:1.5.1 -f -o node_modules/.bin/scalafmt && ./coursier bootstrap com.google.googlejavaformat:google-java-format:1.7 -f -o node_modules/.bin/google-java-format\"",
     "format:scala": "find . -name \"*.scala\" -o -name \"*.sbt\" | xargs scalafmt",
     "format:java": "find . -name \"*.java\" | xargs google-java-format -r",
-    "format:ts": "prettier --write \"Source/Plugins/Core/**/*.{ts,tsx}\"",
+    "format:scss": "prettier --write ${npm_package_config_stylesheet_glob}",
+    "format:ts": "eslint --fix ${npm_package_config_typescript_glob}",
     "check:scala": "find . -name '*.scala' -o -name '*.sbt' | xargs scalafmt --test",
     "check:java": "find . -name '*.java' | xargs google-java-format -n --set-exit-if-changed",
-    "check:ts": "prettier -c \"Source/Plugins/Core/**/*.{ts,tsx}\"",
+    "check:license": "cd Source/Plugins/Core/com.equella.core/js && licensee --production --errors-only && cd -",
+    "check:md": "remark -q --ignore-pattern NOTICE.md .",
+    "check:scss": "prettier --check ${npm_package_config_stylesheet_glob}",
+    "check:ts": "eslint ${npm_package_config_typescript_glob}",
+    "check:ts-types-source": "tsc --noEmit --project \"Source/Plugins/Core/com.equella.core/js/tsconfig.json\"",
+    "check:ts-types-autotest": "tsc --noEmit --project \"autotest/IntegTester/ps/tsconfig.json\"",
     "check": "run-s check:*",
     "format": "run-s format:*"
   },
+  "config": {
+    "stylesheet_glob": "Source/Plugins/Core/com.equella.core/{js,resources}/**/*.{css,scss}",
+    "typescript_glob": "Source/Plugins/Core/com.equella.core/js/**/*.{js,ts,tsx}"
+  },
   "devDependencies": {
-    "git-format-staged": "2.1.0",
-    "husky": "1.3.1",
-    "prettier": "1.16.4",
-    "pretty-quick": "1.10.0",
+    "@typescript-eslint/eslint-plugin": "4.9.0",
+    "@typescript-eslint/parser": "4.9.0",
+    "babel-eslint": "10.1.0",
+    "cross-env": "7.0.3",
+    "eslint": "7.14.0",
+    "eslint-config-prettier": "6.15.0",
+    "eslint-config-react-app": "6.0.0",
+    "eslint-plugin-flowtype": "5.2.0",
+    "eslint-plugin-import": "2.22.1",
+    "eslint-plugin-jest": "24.1.3",
+    "eslint-plugin-jsx-a11y": "6.4.1",
+    "eslint-plugin-notice": "0.9.10",
+    "eslint-plugin-prettier": "3.1.4",
+    "eslint-plugin-react": "7.21.5",
+    "eslint-plugin-react-hooks": "4.2.0",
+    "husky": "4.3.0",
+    "licensee": "8.1.0",
+    "lint-staged": "10.5.2",
     "npm-run-all": "4.1.5",
-    "cross-env": "5.2.1"
+    "prettier": "2.2.1",
+    "remark-cli": "9.0.0",
+    "remark-lint-no-dead-urls": "1.1.0",
+    "remark-validate-links": "10.0.2",
+    "typescript": "4.0.5"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "pretty-quick --staged && npm run format-commit:scala && npm run format-commit:java"
+      "pre-commit": "lint-staged"
     }
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx}": "eslint --fix",
+    "*.{css,scss}": "prettier --write",
+    "*.java": "google-java-format --replace",
+    "*.{scala,sbt}": "scalafmt"
+  },
+  "remarkConfig": {
+    "plugins": [
+      "remark-validate-links",
+      [
+        "remark-lint-no-dead-urls",
+        {
+          "skipLocalhost": true
+        }
+      ]
+    ]
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "react-app",
+      "plugin:jest/recommended",
+      "plugin:jest/style",
+      "plugin:prettier/recommended"
+    ],
+    "plugins": [
+      "notice"
+    ],
+    "env": {
+      "jquery": true
+    },
+    "rules": {
+      "jest/consistent-test-it": "error",
+      "jest/no-mocks-import": "off",
+      "jest/require-top-level-describe": "error",
+      "jest/expect-expect": [
+        "warn",
+        {
+          "assertFunctionNames": ["expect*"]
+        }
+      ],
+      "notice/notice": [
+        "error",
+        {
+          "templateFile": "licenseHeader.js"
+        }
+      ],
+      "react/jsx-boolean-value": "error",
+      "react/jsx-curly-brace-presence": "error",
+      "react/jsx-fragments": "error",
+      "react/jsx-no-useless-fragment": "error",
+      "react/prefer-stateless-function": "error"
+    },
+    "settings": {
+      "jest": {
+        "version": 26
+      },
+      "react": {
+        "version": "16.13"
+      }
+    },
+    "overrides": [
+      {
+        "files": [
+          "Source/Plugins/Core/com.equella.core/js/tsrc/**/*.{ts,tsx}",
+          "Source/Plugins/Core/com.equella.core/js/__test__/**/*.{ts,tsx}",
+          "Source/Plugins/Core/com.equella.core/js/__stories__/**/*.{ts,tsx}",
+          "Source/Plugins/Core/com.equella.core/js/__mocks__/**/*.{ts,tsx}"
+        ],
+        "parserOptions": {
+          "project": "Source/Plugins/Core/com.equella.core/js/tsconfig.json"
+        },
+        "rules": {
+          "no-var": "error",
+          "prefer-const": "error",
+          "@typescript-eslint/consistent-type-definitions": [
+            "error",
+            "interface"
+          ],
+          "@typescript-eslint/no-explicit-any": "error",
+          "@typescript-eslint/no-inferrable-types": "error",
+          "@typescript-eslint/no-non-null-assertion": "error",
+          "@typescript-eslint/no-unnecessary-type-assertion": "error",
+          "@typescript-eslint/prefer-optional-chain": "error"
+        }
+      }
+    ]
   }
 }

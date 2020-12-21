@@ -1,8 +1,8 @@
 .checklist_bulkops {
-	padding-left: 1em;
+  padding-left: 1em;
 }
 
-html[dir='rtl'] .checklist_bulkops {
-	padding-left: 0;
-	padding-right: 1em;
+html[dir="rtl"] .checklist_bulkops {
+  padding-left: 0;
+  padding-right: 1em;
 }

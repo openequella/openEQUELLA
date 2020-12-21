@@ -1,18 +1,18 @@
 @import url("mime.css");
 
 .action-button.add-mime {
-	background-image: url("../images/button-add-mime.rtl.png");
+  background-image: url("../images/button-add-mime.rtl.png");
 }
 
 .itemresult-rating div.float-right {
-	right: auto;
-	left: 5px;
+  right: auto;
+  left: 5px;
 }
 
 .itemresult-content img {
-	float: left;
+  float: left;
 }
 
-.itemresult-rating button+button {
-	margin-right: 3px !important;
+.itemresult-rating button + button {
+  margin-right: 3px !important;
 }

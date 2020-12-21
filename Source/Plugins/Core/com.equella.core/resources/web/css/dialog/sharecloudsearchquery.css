@@ -1,22 +1,18 @@
-.sharecloudsearchquery .sharefield
-{
-	width: 416px;
+.sharecloudsearchquery .sharefield {
+  width: 416px;
 }
 
-.sharecloudsearchquery .sharefield.email
-{
-	border-radius: 4px 0 0 4px;
-    border-right: medium none;
-    height: 14px;
+.sharecloudsearchquery .sharefield.email {
+  border-radius: 4px 0 0 4px;
+  border-right: medium none;
+  height: 14px;
 }
 
-.sharecloudsearchquery .input-append button 
-{
-	height: 24px;
+.sharecloudsearchquery .input-append button {
+  height: 24px;
 }
 
-.sharecloudsearchquery .error 
-{
-	color: red;
-	padding-left: 20px;
+.sharecloudsearchquery .error {
+  color: red;
+  padding-left: 20px;
 }

@@ -1,3 +1,20 @@
+/*
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import * as ReactDOM from "react-dom";
 import * as React from "react";
 import axios from "axios";
@@ -10,14 +27,14 @@ import {
   Toolbar,
   Paper,
   Button,
-  CssBaseline
+  CssBaseline,
 } from "@material-ui/core";
-import { ThemeProvider } from "@material-ui/styles";
+import { ThemeProvider } from "@material-ui/core/styles";
 import { ProviderRegistrationResponse } from "oeq-cloudproviders/registration";
-import { createRegistration, UpdateRegistration } from "./registration";
+import { createRegistration } from "./registration";
 import { theme, useStyles } from "./theme";
 
-interface Props {
+interface QueryProps {
   register?: string;
   institution?: string;
   name?: string;
@@ -34,8 +51,11 @@ interface CurrentUserDetails {
   lastName: String;
 }
 
-function CloudProvider(props: { query: Props }) {
-  const q = props.query;
+interface CloudProviderProps {
+  query: QueryProps;
+}
+
+function CloudProvider({ query }: CloudProviderProps) {
   const [error, setError] = useState<Error | null>(null);
   const [response, setResponse] = useState<ProviderRegistrationResponse | null>(
     null
@@ -46,38 +66,38 @@ function CloudProvider(props: { query: Props }) {
 
   async function registerCP(url: string) {
     const pr = createRegistration({
-      name: q.name!,
-      description: q.description!,
-      iconUrl: q.iconUrl
+      name: query.name!,
+      description: query.description!,
+      iconUrl: query.iconUrl,
     });
     await axios
       .post<ProviderRegistrationResponse>(url, pr)
-      .then(resp => setResponse(resp.data))
+      .then((resp) => setResponse(resp.data))
       .catch((error: Error) => setError(error));
   }
 
   async function talkToEQUELLA(registration: ProviderRegistrationResponse) {
     const oeqAuth = registration.instance.oeqAuth;
     await axios
-      .get<TokenResponse>(props.query.institution + "oauth/access_token", {
+      .get<TokenResponse>(query.institution + "oauth/access_token", {
         params: {
           grant_type: "client_credentials",
           client_id: oeqAuth.clientId,
-          client_secret: oeqAuth.clientSecret
-        }
+          client_secret: oeqAuth.clientSecret,
+        },
       })
-      .then(tokenResponse =>
+      .then((tokenResponse) =>
         axios
           .get<CurrentUserDetails>(
-            props.query.institution + "api/content/currentuser",
+            query.institution + "api/content/currentuser",
             {
               headers: {
                 "X-Authorization":
-                  "access_token=" + tokenResponse.data.access_token
-              }
+                  "access_token=" + tokenResponse.data.access_token,
+              },
             }
           )
-          .then(resp => setCurrentUser(resp.data))
+          .then((resp) => setCurrentUser(resp.data))
       )
       .catch((error: Error) => setError(error));
   }
@@ -98,8 +118,8 @@ function CloudProvider(props: { query: Props }) {
             <Typography>Successfully registered.</Typography>
           ) : (
             <Typography>
-              Institution <b>'{props.query.institution}'</b> has request we
-              register a cloud provider.
+              Institution <b>'{query.institution}'</b> has request we register a
+              cloud provider.
             </Typography>
           )}
           {error && (
@@ -121,7 +141,7 @@ function CloudProvider(props: { query: Props }) {
                 id="testOEQAuth"
                 variant="contained"
                 color="secondary"
-                onClick={_ => talkToEQUELLA(response)}
+                onClick={() => talkToEQUELLA(response)}
               >
                 Talk to openEQUELLA
               </Button>
@@ -129,7 +149,7 @@ function CloudProvider(props: { query: Props }) {
                 id="returnButton"
                 variant="contained"
                 color="secondary"
-                onClick={_ => (window.location.href = response.forwardUrl)}
+                onClick={() => (window.location.href = response.forwardUrl)}
               >
                 Back to openEQUELLA
               </Button>
@@ -139,7 +159,7 @@ function CloudProvider(props: { query: Props }) {
               id="registerButton"
               variant="contained"
               color="secondary"
-              onClick={() => registerCP(q.institution! + q.register!)}
+              onClick={() => registerCP(query.institution! + query.register!)}
             >
               Register
             </Button>
@@ -151,11 +171,11 @@ function CloudProvider(props: { query: Props }) {
 }
 
 ReactDOM.render(
-  <React.Fragment>
+  <>
     <CssBaseline />
     <ThemeProvider theme={theme}>
-      <CloudProvider query={parse(location.search)} />
+      <CloudProvider query={parse(window.location.search)} />
     </ThemeProvider>
-  </React.Fragment>,
+  </>,
   document.getElementById("app")
 );

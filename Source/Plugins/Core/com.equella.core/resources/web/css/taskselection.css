@@ -1,10 +1,10 @@
 #bulkresults_inner textarea {
-	height:220px;
-	width:100%;
+  height: 220px;
+  width: 100%;
 }
 
 #bulkresults_inner .content {
-	padding-top: 10px;
-	padding-left:10px;
-	padding-right:28px;
+  padding-top: 10px;
+  padding-left: 10px;
+  padding-right: 28px;
 }

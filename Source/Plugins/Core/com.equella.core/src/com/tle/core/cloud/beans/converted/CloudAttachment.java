@@ -180,6 +180,14 @@ public class CloudAttachment implements IAttachment, Serializable {
     return item;
   }
 
+  @Override
+  public boolean isErroredIndexing() {
+    return false;
+  }
+
+  @Override
+  public void setErroredIndexing(boolean erroredIndexing) {}
+
   public void setItem(CloudItem item) {
     this.item = item;
   }

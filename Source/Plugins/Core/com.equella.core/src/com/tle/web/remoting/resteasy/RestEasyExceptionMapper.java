@@ -22,6 +22,7 @@ import com.dytech.edge.common.LockedException;
 import com.dytech.edge.exceptions.InUseException;
 import com.dytech.edge.exceptions.WebException;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.tle.beans.item.ItemEditingException;
 import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.exceptions.AccessDeniedException;
@@ -108,6 +109,8 @@ public class RestEasyExceptionMapper implements ExceptionMapper<Throwable> {
         return new WebApplicationException(t, Status.BAD_REQUEST);
       }
       webAppException = new WebApplicationException(t, Status.INTERNAL_SERVER_ERROR);
+    } else if (t instanceof UnrecognizedPropertyException) {
+      webAppException = new WebApplicationException(t, Status.BAD_REQUEST);
     } else {
       webAppException = new WebApplicationException(t);
     }

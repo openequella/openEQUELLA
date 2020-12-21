@@ -1,11 +1,11 @@
 libraryDependencies ++= Seq(
   "com.google.guava" % "guava"          % "18.0",
-  "org.slf4j"        % "jcl-over-slf4j" % "1.7.28",
-  "org.slf4j"        % "slf4j-log4j12"  % "1.7.28",
+  "org.slf4j"        % "jcl-over-slf4j" % "1.7.30",
+  "org.slf4j"        % "slf4j-log4j12"  % "1.7.30",
   "log4j"            % "log4j"          % "1.2.17",
   xstreamDep,
   "commons-configuration" % "commons-configuration" % "1.10",
-  "commons-io"            % "commons-io"            % "2.6",
+  "commons-io"            % "commons-io"            % "2.8.0",
   "commons-lang"          % "commons-lang"          % "2.6"
 )
 

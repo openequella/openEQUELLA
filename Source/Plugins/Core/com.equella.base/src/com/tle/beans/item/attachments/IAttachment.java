@@ -67,4 +67,28 @@ public interface IAttachment {
   boolean isRestricted();
 
   IItem<?> getItem();
+
+  /**
+   * This value gets set to true when an attachment attempts to index and times out, which indicates
+   * a problem with the file. Used to avoid instability issues caused by attempting to index a
+   * broken file indefinitely.
+   *
+   * <p>The timeout is controlled by textExtracter.parseDurationCap in milliseconds in the
+   * plugins/com.tle.core.freetext/optional.properties file. The default is 60000.
+   *
+   * <p>Stored in the attachment table in the errored_when_indexing column. Column was initially
+   * added via com.tle.core.institution.migration.v20202.AddIndexingErrorColumnMigration.
+   *
+   * @see com.tle.core.institution.migration.v20202
+   * @return Returns true if the attachment failed to index previously
+   */
+  boolean isErroredIndexing();
+
+  /**
+   * Sets the value of erroredIndexing. If set to true and updated in the database, then the
+   * attachment will be skipped for indexing in future.
+   *
+   * @param erroredIndexing The value to set erroredIndexing to
+   */
+  void setErroredIndexing(boolean erroredIndexing);
 }

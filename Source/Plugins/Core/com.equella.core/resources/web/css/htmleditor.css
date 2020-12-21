@@ -1,95 +1,82 @@
-.editorbox
-{
-	padding-left: 0px;
-	padding-right: 3px;
+.editorbox {
+  padding-left: 0px;
+  padding-right: 3px;
 }
 
-.editorbox TEXTAREA, .editorbox DIV.disablededitor
-{
-	width: 538px;
-	height: 300px;
+.editorbox TEXTAREA,
+.editorbox DIV.disablededitor {
+  width: 538px;
+  height: 300px;
 }
 
 /* Attempt to replicate the textarea style in styles.css (line 661) */
-.editorbox DIV.disablededitor
-{
-	border: 1px solid #cfcbbe;
-	border-right: 1px solid #c3beae;
-	border-top: 1px solid #7e765e;
-	background: #fff;
-	font-size: 12px;
-	padding: 4px 6px;
-	border-radius: 3px;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	
-	overflow: auto;
+.editorbox DIV.disablededitor {
+  border: 1px solid #cfcbbe;
+  border-right: 1px solid #c3beae;
+  border-top: 1px solid #7e765e;
+  background: #fff;
+  font-size: 12px;
+  padding: 4px 6px;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+
+  overflow: auto;
 }
 
-.mceEditor
-{
-	/*height: 100%;*/
+.mceEditor {
+  /*height: 100%;*/
 }
 
-
-TABLE.nocopypastecommands
-{
-	width: 100%;
-	text-align: center;
-	border-style: solid;
-	border-width: 1px;
-	border-color: #999999;
+TABLE.nocopypastecommands {
+  width: 100%;
+  text-align: center;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #999999;
 }
 
-TABLE.nocopypastecommands TR TH 
-{ 
-	background-color: #999999; 
-	font-weight: bold; 
+TABLE.nocopypastecommands TR TH {
+  background-color: #999999;
+  font-weight: bold;
 }
 
-TABLE.nocopypastecommands TR TD, TABLE.nocopypastecommands TR TH  
-{
-	padding: 5px;
+TABLE.nocopypastecommands TR TD,
+TABLE.nocopypastecommands TR TH {
+  padding: 5px;
 }
 
-TABLE.nocopypastecommands TR.odd TD 
-{
-	background-color: #FFFFFF; 
+TABLE.nocopypastecommands TR.odd TD {
+  background-color: #ffffff;
 }
 
-TABLE.nocopypastecommands TR.even TD 
-{ 
-	background-color: #CCCCCC; 
+TABLE.nocopypastecommands TR.even TD {
+  background-color: #cccccc;
 }
 
-
-DIV.link-fullscreen 
-{
-	margin-top: 5px;
-	margin-bottom: 10px;
-	background: url(../images/fullscreen.png) 4px 0 no-repeat;
-	padding-left: 25px;
-	height: 20px;
+DIV.link-fullscreen {
+  margin-top: 5px;
+  margin-bottom: 10px;
+  background: url(../images/fullscreen.png) 4px 0 no-repeat;
+  padding-left: 25px;
+  height: 20px;
 }
 
-DIV.link-fullscreen A
-{
-	padding-top: 2px;
-	padding-bottom: 2px;
+DIV.link-fullscreen A {
+  padding-top: 2px;
+  padding-bottom: 2px;
 }
 
-DIV.link-fullscreen.fullscreened 
-{
-	position: absolute;
-	right: 20px;
-	top: 20px;
-	z-index: 200001;
-	background: url(../images/unfullscreen.png) 4px 0 no-repeat;
+DIV.link-fullscreen.fullscreened {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  z-index: 200001;
+  background: url(../images/unfullscreen.png) 4px 0 no-repeat;
 }
 
-DIV.link-fullscreen.fullscreened A
-{
-	/* replicate .modal A */
-	color: #0C96C4;
-    text-decoration: none;
+DIV.link-fullscreen.fullscreened A {
+  /* replicate .modal A */
+  color: #0c96c4;
+  text-decoration: none;
 }

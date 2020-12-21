@@ -1,70 +1,69 @@
 .package-viewer {
-	background: url(../images/bg-dialogs.png) 0 0 repeat-x;
-	background-color: #0a84ac;
-	font-size: 11px;
-	line-height: 1;
+  background: url(../images/bg-dialogs.png) 0 0 repeat-x;
+  background-color: #0a84ac;
+  font-size: 11px;
+  line-height: 1;
 }
 
 #pv-content {
-	width: 100%;
-	float: left;
-	height: 500px;
+  width: 100%;
+  float: left;
+  height: 500px;
 }
 
 #pv-content-left {
-	width: 350px;
-	float: left;
-	height: 500px;
-	background: url(../images/bg-pv-content-left.png) 0 bottom no-repeat;
-	background-color: #f7f6ef;
-	position: relative;
+  width: 350px;
+  float: left;
+  height: 500px;
+  background: url(../images/bg-pv-content-left.png) 0 bottom no-repeat;
+  background-color: #f7f6ef;
+  position: relative;
 }
 
 .collapsed #pv-content-left {
-	display: none;
+  display: none;
 }
 
 #pv-content-right {
-	width: 50%;
-	float: right;
-	height: 500px;
-	background: url(../images/bg-pv-content-right.png) 0 bottom no-repeat;
-	background-color: #d4cfb9;
+  width: 50%;
+  float: right;
+  height: 500px;
+  background: url(../images/bg-pv-content-right.png) 0 bottom no-repeat;
+  background-color: #d4cfb9;
 }
 
 .box-content.visible {
-	display: block;
+  display: block;
 }
 
 #pv-divider {
-	border: 1px solid #838178;
-	width: 9px;
-	float: left;
+  border: 1px solid #838178;
+  width: 9px;
+  float: left;
 }
 
 #pv-divider-inner {
-	border: 1px solid #c6c4bf;
-	background: url(../images/bg-pv-divider.png) center no-repeat;
-	background-color:  #8d897e;
-	width: 7px;
+  border: 1px solid #c6c4bf;
+  background: url(../images/bg-pv-divider.png) center no-repeat;
+  background-color: #8d897e;
+  width: 7px;
 }
 
 .collapsed #pv-divider-inner {
-	background-image: url(../images/bg-pv-divider-collapsed.png);
+  background-image: url(../images/bg-pv-divider-collapsed.png);
 }
 
 #pv-divider-inner:hover {
-	background-color: #9a9790;
-	cursor: pointer;
+  background-color: #9a9790;
+  cursor: pointer;
 }
 
-.fullscreen-toolbar .return-link
-{
-	color: #80D2EE;
-	font-size: 16px;
-	font-weight: bold;
-	background-image: url(../images/return.png);
-	background-repeat: no-repeat;
-	background-position: right center;
-	padding-right: 20px;
+.fullscreen-toolbar .return-link {
+  color: #80d2ee;
+  font-size: 16px;
+  font-weight: bold;
+  background-image: url(../images/return.png);
+  background-repeat: no-repeat;
+  background-position: right center;
+  padding-right: 20px;
 }

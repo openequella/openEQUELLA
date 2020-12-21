@@ -43,7 +43,6 @@ public class AttachmentDaoImpl extends GenericDaoImpl<Attachment, Long> implemen
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<Attachment> findByMd5Sum(
       final String md5Sum,
       ItemDefinition collection,
@@ -66,25 +65,25 @@ public class AttachmentDaoImpl extends GenericDaoImpl<Attachment, Long> implemen
       valueList.add(excludedItemUuid);
     }
     List<Attachment> attachments =
-        getHibernateTemplate()
-            .findByNamedParam(
-                query.toString(),
-                nameList.toArray(new String[nameList.size()]),
-                valueList.toArray());
+        (List<Attachment>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    query.toString(),
+                    nameList.toArray(new String[nameList.size()]),
+                    valueList.toArray());
 
     return attachments;
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<FileAttachment> findFilesWithNoMD5Sum() {
     String hql =
         "FROM FileAttachment WHERE (md5sum IS NULL OR md5sum = '') AND item.institution = :institution";
-    return getHibernateTemplate().findByNamedParam(hql, "institution", CurrentInstitution.get());
+    return (List<FileAttachment>)
+        getHibernateTemplate().findByNamedParam(hql, "institution", CurrentInstitution.get());
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<CustomAttachment> findResourceAttachmentsByQuery(
       final String query, boolean liveOnly, String sortHql) {
     String q = query;
@@ -119,8 +118,10 @@ public class AttachmentDaoImpl extends GenericDaoImpl<Attachment, Long> implemen
     hql += " " + sortHql;
 
     final List<CustomAttachment> attachments =
-        getHibernateTemplate()
-            .findByNamedParam(hql, params.toArray(new String[params.size()]), paramVals.toArray());
+        (List<CustomAttachment>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    hql, params.toArray(new String[params.size()]), paramVals.toArray());
     // it's possible that value1 could be
     return attachments;
   }

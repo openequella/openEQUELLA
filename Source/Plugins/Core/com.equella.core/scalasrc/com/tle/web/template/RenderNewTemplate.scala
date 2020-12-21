@@ -21,6 +21,7 @@ package com.tle.web.template
 import java.util.concurrent.ConcurrentHashMap
 
 import com.tle.common.i18n.{CurrentLocale, LocaleUtils}
+import com.tle.common.settings.standard.QuickContributeAndVersionSettings
 import com.tle.core.db.RunWithDB
 import com.tle.core.i18n.LocaleLookup
 import com.tle.legacy.LegacyGuice
@@ -34,7 +35,11 @@ import com.tle.web.sections.jquery.libraries.JQueryCore
 import com.tle.web.sections.js.generic.expression.ObjectExpression
 import com.tle.web.sections.js.generic.function.IncludeFile
 import com.tle.web.sections.render._
+import com.tle.web.selection.section.RootSelectionSection
+import com.tle.web.integration.IntegrationSection
+import com.tle.web.selection.section.RootSelectionSection.Layout
 import com.tle.web.settings.UISettings
+import javax.servlet.http.HttpServletRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
 
@@ -61,17 +66,18 @@ object RenderNewTemplate {
   }
 
   def parseEntryHtml(filename: String): (PreRenderable, Document) = {
-    val inpStream = getClass.getResourceAsStream(s"/web/reactjs/$filename")
+    val reactJsPath = "reactjs/"
+    val inpStream   = getClass.getResourceAsStream(s"/web/$reactJsPath$filename")
     if (inpStream == null) sys.error(s"Failed to find $filename react html bundle")
     val htmlDoc = Jsoup.parse(inpStream, "UTF-8", "")
     inpStream.close()
-    val links   = htmlDoc.getElementsByTag("link").asScala
-    val scripts = htmlDoc.getElementsByTag("script").asScala
-    scripts.foreach { e =>
-      if (e.hasAttr("src")) {
-        e.attr("src", r.url(e.attr("src")))
+    htmlDoc.getElementsByTag("script").asScala.foreach { e =>
+      val srcAttrKey = "src"
+      if (e.hasAttr(srcAttrKey)) {
+        e.attr(srcAttrKey, r.url(reactJsPath + e.attr(srcAttrKey)))
       }
     }
+    val links = htmlDoc.getElementsByTag("link").asScala
     val prerender: PreRenderable = info => {
       info.preRender(JQueryCore.PRERENDER)
       supportIEPolyFills(info)
@@ -84,6 +90,26 @@ object RenderNewTemplate {
 
   val NewLayoutKey = "NEW_LAYOUT"
 
+  // Check if new UI is enabled.
+  def isNewUIEnabled: Boolean = {
+    RunWithDB
+      .executeIfInInstitution(UISettings.cachedUISettings)
+      .getOrElse(UISettings.defaultSettings)
+      .newUI
+      .enabled
+  }
+
+  // Check if new Search page is enabled.
+  def isNewSearchPageEnabled: Boolean = {
+    RunWithDB
+      .executeIfInInstitution(UISettings.cachedUISettings)
+      .getOrElse(UISettings.defaultSettings)
+      .isNewSearchActive
+  }
+
+  // Check if New UI is being used, but there is no guarantee that New UI is enabled.
+  // An example is when Old UI is turned on, users will see New UI if they open pages
+  // that are only available in New UI such as the Facet settings page.
   def isNewLayout(info: SectionInfo): Boolean = {
     Option(info.getAttribute(NewLayoutKey)).getOrElse {
       val paramOverride = Option(info.getRequest.getParameter("old")).map(!_.toBoolean)
@@ -92,13 +118,7 @@ object RenderNewTemplate {
         LegacyGuice.userSessionService.setAttribute(NewLayoutKey, newUI)
         Some(newUI)
       }
-      val newLayout = sessionOverride.getOrElse {
-        RunWithDB
-          .executeIfInInstitution(UISettings.cachedUISettings)
-          .getOrElse(UISettings.defaultSettings)
-          .newUI
-          .enabled
-      }
+      val newLayout = sessionOverride.getOrElse(isNewUIEnabled)
       info.setAttribute(NewLayoutKey, newLayout)
       newLayout
     }
@@ -124,15 +144,73 @@ object RenderNewTemplate {
         }
       })
 
+  private def getSelectionSessionInfo(context: RenderEventContext): Option[ObjectExpression] = {
+    val currentSession = LegacyGuice.selectionService.get().getCurrentSession(context)
+    Option(currentSession).map(session => {
+      val layout = session.getLayout match {
+        case Layout.COURSE => "coursesearch"
+        case Layout.NORMAL => "search"
+        case Layout.SKINNY => "skinnysearch"
+      }
+
+      val rootSelectionSection: RootSelectionSection =
+        context.lookupSection(classOf[RootSelectionSection])
+      val stateId = rootSelectionSection.getSessionId(context)
+
+      val integrationSection: IntegrationSection =
+        context.lookupSection(classOf[IntegrationSection])
+      val integId = Option(integrationSection).map(_.getStateId(context)).orNull
+
+      def isSelectSummaryButtonDisabled: Boolean = {
+        // 'Select summary page' button can be disabled by both oEQ setting and LMS (at least Moodle)
+        // oEQ plugin setting - Restrict selections.
+        // Three booleans: selectItem, selectAttachments and selectPackage, defined in 'SelectionSession.java',
+        // provide the access to the LMS setting.
+
+        def getOeqSetting: Boolean =
+          LegacyGuice.configService
+            .getProperties(new QuickContributeAndVersionSettings())
+            .isButtonDisable
+
+        Option(integrationSection) match {
+          case Some(_) =>
+            session.isSelectItem match {
+              // When Restrict selections is either "Attachments only" or "Package only", the button is always disabled.
+              case false => true
+              // When Restrict selections is "Items only", the button is always NOT disabled.
+              case true if !session.isSelectAttachments && !session.isSelectPackage => false
+              // When Restrict selections is "No restrictions", whether disabled or not depends on the oEQ setting.
+              case _ => getOeqSetting
+            }
+          case None =>
+            getOeqSetting // Not in an Integration, whether disabled or not depends on the oEQ setting.
+        }
+      }
+
+      val selectionSessionInfo = new ObjectExpression
+      selectionSessionInfo.put("stateId", stateId)
+      selectionSessionInfo.put("integId", integId)
+      selectionSessionInfo.put("layout", layout)
+      selectionSessionInfo.put("isSelectSummaryButtonDisabled", isSelectSummaryButtonDisabled)
+      selectionSessionInfo
+    })
+  }
+
   def renderNewHtml(context: RenderEventContext, viewFactory: FreemarkerFactory): SectionResult = {
     val req = context.getRequest
     val _renderData =
-      new ObjectExpression("baseResources",
-                           r.url(""),
-                           "newUI",
-                           java.lang.Boolean.TRUE,
-                           "autotestMode",
-                           java.lang.Boolean.valueOf(DebugSettings.isAutoTestMode))
+      new ObjectExpression(
+        "baseResources",
+        r.url(""),
+        "newUI",
+        java.lang.Boolean.valueOf(isNewUIEnabled),
+        "autotestMode",
+        java.lang.Boolean.valueOf(DebugSettings.isAutoTestMode),
+        "newSearch",
+        java.lang.Boolean.valueOf(isNewSearchPageEnabled),
+        "selectionSessionInfo",
+        getSelectionSessionInfo(context).orNull
+      )
     val renderData =
       Option(req.getAttribute(SetupJSKey).asInstanceOf[ObjectExpression => ObjectExpression])
         .map(_.apply(_renderData))
@@ -148,7 +226,7 @@ object RenderNewTemplate {
   }
 
   def supportIEPolyFills(context: PreRenderContext): Unit = {
-    if (Option(context.getRequest.getHeader("User-Agent")).exists(_.contains("Trident"))) {
+    if (isInternetExplorer(context.getRequest)) {
       context.addJs(
         "https://polyfill.io/v3/polyfill.min.js?features=es6%2CURL%2CElement%2CArray.prototype.forEach%2Cdocument.querySelector%2CNodeList.prototype.forEach%2CNodeList.prototype.%40%40iterator%2CNode.prototype.contains%2CString.prototype.includes%2CArray.prototype.includes")
       RenderTemplate.TINYMCE_CONTENT_CSS.preRender(context)
@@ -157,6 +235,9 @@ object RenderNewTemplate {
       RenderTemplate.IE11_COMPAT_CSS.preRender(context)
     }
   }
+
+  def isInternetExplorer(request: HttpServletRequest): Boolean =
+    Option(request.getHeader("User-Agent")).exists(_.contains("Trident"))
 
   def renderReact(context: RenderEventContext,
                   viewFactory: FreemarkerFactory,
@@ -167,8 +248,12 @@ object RenderNewTemplate {
     }
     val tempResult = new GenericTemplateResult()
     tempResult.addNamedResult("header", HeaderSection)
-    viewFactory.createResultWithModel("layouts/outer/react.ftl",
-                                      TemplateScript(body, renderData, tempResult, ""))
+    val template =
+      if (isInternetExplorer(context.getRequest)) "layouts/outer/unsupportedbrowser.ftl"
+      else "layouts/outer/react.ftl"
+
+    viewFactory.createResultWithModel(template, TemplateScript(body, renderData, tempResult, ""))
+
   }
 
   case class TemplateScript(getBody: String,

@@ -36,7 +36,6 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.ajax.AjaxGenerator;
-import com.tle.web.sections.ajax.AjaxGenerator.EffectType;
 import com.tle.web.sections.ajax.AjaxRenderContext;
 import com.tle.web.sections.ajax.JSONResponseCallback;
 import com.tle.web.sections.ajax.handler.AjaxFactory;
@@ -64,7 +63,6 @@ import com.tle.web.sections.js.generic.expression.ScriptVariable;
 import com.tle.web.sections.js.generic.function.AbstractCallable;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
-import com.tle.web.sections.js.generic.function.ReloadFunction;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.standard.Button;
@@ -102,7 +100,7 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
         AllAttachmentsSelectorEventListener,
         ItemSelectorEventListener,
         PackageSelectorEventListener {
-  private static IncludeFile JS =
+  private static final IncludeFile JS =
       new IncludeFile(
           ResourcesService.getResourceHelper(CourseListSection.class).url("scripts/courselist.js"),
           JQueryDraggable.PRERENDER,
@@ -110,10 +108,10 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
           JQueryUIEffects.TRANSFER);
   private static final JSCallAndReference COURSE_LIST_CLASS =
       new ExternallyDefinedFunction("CourseList", JS);
-  private static ExternallyDefinedFunction SETUP_FUNCTION =
+  private static final ExternallyDefinedFunction SETUP_FUNCTION =
       new ExternallyDefinedFunction(COURSE_LIST_CLASS, "setupDraggables", 4);
 
-  private static final String COURSE_LIST_AJAX = "courselistajax";
+  public static final String COURSE_LIST_AJAX = "courselistajax";
   @Inject private SelectionService selectionService;
   @Inject private ItemResolver itemResolver;
 
@@ -144,9 +142,17 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
   private JSCallable selectPackageFunction;
   private JSCallable onDropAjaxUpdateFunction;
 
+  private JSCallable reloadFolderFunction;
+
   @AjaxMethod
   public JSONResponseCallback reloadFolder(
       AjaxRenderContext context, CourseListFolderAjaxUpdateData controlData) {
+    // As new search UI does not include folder ID in the request,
+    // we need to manually set the folder ID.
+    if (controlData.getFolderId() == null) {
+      controlData.setFolderId(getTargetFolderID(context));
+    }
+
     CourseListFolderUpdateCallback callback =
         new CourseListFolderUpdateCallback(context, controlData);
     context.addAjaxDivs(COURSE_LIST_AJAX);
@@ -163,8 +169,6 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
    */
   public JSCallable getReloadFunction(
       final boolean drop, @Nullable final ParameterizedEvent event, final String... ajaxIds) {
-    final JSCallable reloadFolderFunction =
-        CourseListFolderUpdateCallback.getReloadFunction(ajax.getAjaxFunction("reloadFolder"));
     return new AbstractCallable() {
       @Override
       public void preRender(PreRenderContext info) {
@@ -192,7 +196,7 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
                 reloadFolderFunction,
                 drop ? new ScriptVariable("p2") : null,
                 eventArray,
-                new ArrayExpression((Object[]) ajaxIds))
+                new ArrayExpression(ajaxIds))
             .getExpression(info);
       }
     };
@@ -250,20 +254,9 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
     // updates (so results could be highlighted when already selected?)
     onDropAjaxUpdateFunction =
         getReloadFunction(true, events.getEventHandler("onDrop"), COURSE_LIST_AJAX);
-    // ajax.getAjaxUpdateDomFunction(tree, null,
-    // events.getEventHandler("onDrop"),
-    // ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE),
-    // "courselistajax");
 
-    // TODO: use the getReloadFunction as well
     selectAllAttachmentsFunction =
-        ajax.getAjaxUpdateDomFunction(
-            tree,
-            null,
-            events.getEventHandler("selectAllAttachments"),
-            ajax.getEffectFunction(EffectType.REPLACE_IN_PLACE),
-            COURSE_LIST_AJAX);
-
+        getReloadFunction(false, events.getEventHandler("selectAllAttachments"), COURSE_LIST_AJAX);
     selectAttachmentFunction =
         getReloadFunction(false, events.getEventHandler("selectAttachment"), COURSE_LIST_AJAX);
     selectItemFunction =
@@ -274,7 +267,12 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
     saveButton.addClickStatements(events.getNamedHandler("save"));
     cancelButton.addClickStatements(events.getNamedHandler("cancel"));
 
-    versionDialog.setOkCallback(new ReloadFunction(false));
+    // Call 'CourseListFolderUpdateCallback.getReloadFunction' again when the OK button is clicked,
+    // in order to update the course list by a ajax request.
+    reloadFolderFunction =
+        CourseListFolderUpdateCallback.getReloadFunction(ajax.getAjaxFunction("reloadFolder"));
+    versionDialog.setOkCallback(reloadFolderFunction);
+    versionDialog.setCancelCallback(reloadFolderFunction);
   }
 
   public SectionInfo createSearchForward(SectionInfo info) {
@@ -432,7 +430,7 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
   public void selectAttachment(
       SectionInfo info, String attachmentUuid, ItemId itemId, String extensionType) {
     final String et = sanitiseExtensionType(extensionType);
-    final String folderId = selectionService.getCurrentSession(info).getTargetFolder();
+    final String folderId = getTargetFolderID(info);
     addAttachment(
         info,
         itemId,
@@ -443,9 +441,10 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
 
   @EventHandlerMethod
   public void selectAllAttachments(
-      SectionInfo info, List<String> uuids, ItemId itemId, @Nullable String extensionType) {
+      SectionInfo info, String uuids, ItemId itemId, @Nullable String extensionType) {
     final String et = sanitiseExtensionType(extensionType);
-    for (String uuid : uuids) {
+    // uuids is a comma-separated string.
+    for (String uuid : uuids.split(",")) {
       selectAttachment(info, uuid, itemId, et);
     }
   }
@@ -453,7 +452,7 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
   @EventHandlerMethod
   public void selectItem(SectionInfo info, ItemId itemId, String extensionType) {
     final String et = sanitiseExtensionType(extensionType);
-    final String folderId = selectionService.getCurrentSession(info).getTargetFolder();
+    final String folderId = getTargetFolderID(info);
     final TargetFolder folder = selectionService.findTargetFolder(info, folderId);
     selectionService.addSelectedResource(
         info,
@@ -465,7 +464,7 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
   public void selectPackage(
       SectionInfo info, ItemId itemId, String extensionType, String attachmentControlId) {
     final String et = sanitiseExtensionType(extensionType);
-    final String folderId = selectionService.getCurrentSession(info).getTargetFolder();
+    final String folderId = getTargetFolderID(info);
     final TargetFolder folder = selectionService.findTargetFolder(info, folderId);
     final IItem<?> item = itemResolver.getItem(itemId, et);
     final ImsAttachment attachment = new UnmodifiableAttachments(item).getIms();
@@ -483,6 +482,10 @@ public class CourseListSection extends AbstractPrototypeSection<CourseListSectio
   }
 
   @Nullable
+  private String getTargetFolderID(SectionInfo info) {
+    return selectionService.getCurrentSession(info).getTargetFolder();
+  }
+
   private String sanitiseExtensionType(@Nullable String extensionType) {
     return (extensionType == null || "null".equals(extensionType) ? null : extensionType);
   }

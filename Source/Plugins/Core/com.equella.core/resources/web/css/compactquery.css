@@ -1,38 +1,38 @@
 .compactQuery {
-	display: flex;
+  display: flex;
 }
 
-.compactQuery .autocomplete-container
-{
-    margin-right: 8px;
+.compactQuery .autocomplete-container {
+  margin-right: 8px;
 }
 
 #col .compactQuery .autocomplete-container {
-    width: 677px;
+  width: 677px;
 }
 
 .quick-search .compactQuery .autocomplete-container {
-	width: 280px;
+  width: 280px;
 }
 
 #col1 .compactQuery .autocomplete-container {
-    width: 435px;
+  width: 435px;
 }
 
 .compactQuery input {
-	margin: 0 3px 0 0;
-	padding: 5px 5px 4px;
-	box-sizing: border-box;
+  margin: 0 3px 0 0;
+  padding: 5px 5px 4px;
+  box-sizing: border-box;
 }
 
 .compactQuery .compactQueryButton {
-	height: 26px;
+  height: 26px;
 }
 
-.compactQuery input[disabled], input[disabled="disabled"] {
-    opacity: 1;
+.compactQuery input[disabled],
+input[disabled="disabled"] {
+  opacity: 1;
 }
 
 .compactQuery input {
-	width: 100%;
+  width: 100%;
 }

@@ -40,6 +40,9 @@ public class MimeEditorPage extends AbstractPage<MimeEditorPage> {
   @FindBy(id = "dv_dvt")
   private WebElement viewersTable;
 
+  @FindBy(xpath = "//div[@class='control']/img")
+  private WebElement icon;
+
   public MimeEditorPage(PageContext context) {
     super(context, By.xpath("//h3[text()='Viewers']"));
   }
@@ -94,7 +97,8 @@ public class MimeEditorPage extends AbstractPage<MimeEditorPage> {
   }
 
   private WebElement getIcon() {
-    return driver.findElement(By.xpath("//div[@class='control']/img"));
+    waiter.until(ExpectedConditions2.presenceOfElement(icon));
+    return icon;
   }
 
   public MimeEditorPage uploadIcon(URL icon) {

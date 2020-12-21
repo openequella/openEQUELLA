@@ -1,21 +1,19 @@
 @import url("htmleditor.css");
 
-.link-fullscreen A
-{
-	padding: 2px 25px 2px 0;
-	background-position: 95% 0;
+.link-fullscreen A {
+  padding: 2px 25px 2px 0;
+  background-position: 95% 0;
 }
 
-.link-fullscreen.fullscreened 
-{
-	right: auto;
-	left: 20px;
+.link-fullscreen.fullscreened {
+  right: auto;
+  left: 20px;
 }
 
 div.link-fullscreen {
-	background-position-x: right;
+  background-position-x: right;
 }
 
 div.link-fullscreen.fullscreened a {
-	float: left;
+  float: left;
 }

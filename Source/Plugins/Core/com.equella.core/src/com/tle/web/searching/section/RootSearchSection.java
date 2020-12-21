@@ -37,6 +37,9 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.generic.InfoBookmark;
 import com.tle.web.sections.render.Label;
+import com.tle.web.selection.SelectionSession;
+import com.tle.web.template.RenderNewSearchPage;
+import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.template.section.event.BlueBarEvent;
 import com.tle.web.template.section.event.BlueBarEventListener;
 import javax.inject.Inject;
@@ -46,7 +49,7 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
     implements BlueBarEventListener {
   public static final String SEARCHURL = "/searching.do";
   public static final String SEARCH_SESSIONKEY = "searchContext";
-  private static PluginResourceHelper urlHelper =
+  private static final PluginResourceHelper urlHelper =
       ResourcesService.getResourceHelper(RootSearchSection.class);
 
   @PlugKey("searching.search.title")
@@ -67,6 +70,13 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
     return SEARCH_SESSIONKEY;
   }
 
+  /**
+   * For child sections that need to skip new Search UI, override this function and return false.
+   */
+  protected boolean useNewSearch() {
+    return true;
+  }
+
   @Override
   public SectionResult renderHtml(RenderEventContext context) {
     if (aclManager.filterNonGrantedPrivileges(WebConstants.SEARCH_PAGE_PRIVILEGE).isEmpty()) {
@@ -79,6 +89,13 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
       }
       throw new AccessDeniedException(
           urlHelper.getString("missingprivileges", WebConstants.SEARCH_PAGE_PRIVILEGE));
+    }
+
+    // If this method is triggered from Selection Section, then check if Selection Section
+    // is in 'structured' mode. If yes, then render the new search page if it's enabled.
+    SelectionSession selectionSession = selectionService.getCurrentSession(context);
+    if (isNewSearchUIInSelectionSession(selectionSession) && useNewSearch()) {
+      getModel(context).setNewSearchUIContent(RenderNewSearchPage.renderNewSearchPage(context));
     }
     return super.renderHtml(context);
   }
@@ -102,5 +119,12 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
   @Override
   protected String getPageName() {
     return SEARCHURL;
+  }
+
+  private boolean isNewSearchUIInSelectionSession(SelectionSession selectionSession) {
+    if (selectionSession != null) {
+      return RenderNewTemplate.isNewSearchPageEnabled();
+    }
+    return false;
   }
 }

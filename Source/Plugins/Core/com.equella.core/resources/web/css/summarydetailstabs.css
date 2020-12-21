@@ -1,46 +1,49 @@
 .renderable_area.area {
-	border-top: medium none;
-	position: relative;
+  border-top: medium none;
+  position: relative;
 }
 
 .renderable_area.area .newListSelected {
-	width: auto !important;
+  width: auto !important;
 }
 
 .renderable_area.area .formsection h3 {
-	margin-top: 10px;
+  margin-top: 10px;
 }
 
 .nav-tabs {
-	border-bottom: solid 1px #8f8b7e;
-	height: 30px;
+  border-bottom: solid 1px #8f8b7e;
+  height: 30px;
 }
 
-.nav:AFTER {
-	clear: both;
+.nav:after {
+  clear: both;
 }
 
-.nav-tabs>li {
-	float: left;
-	position: relative;
-	display: block;
+.nav-tabs > li {
+  float: left;
+  position: relative;
+  display: block;
 }
 
-.nav-tabs>li>a {
-	position: relative;
-	display: block;
-	padding: 10px 15px;
-	-moz-border-radius: 4px 4px 0 0;
-	-webkit-border-radius: 4px 4px 0 0;
-	border: 1px solid transparent;
-	border-radius: 4px 4px 0 0;
+.nav-tabs > li > a {
+  position: relative;
+  display: block;
+  padding: 10px 15px;
+  -moz-border-radius: 4px 4px 0 0;
+  -webkit-border-radius: 4px 4px 0 0;
+  border: 1px solid transparent;
+  border-radius: 4px 4px 0 0;
 }
 
-.nav-tabs>li.active>a,.nav-tabs>li>a:hover,.nav-tabs>li.active>a:hover {
-	border: 1px solid #8f8b7e;
+.nav-tabs > li.active > a,
+.nav-tabs > li > a:hover,
+.nav-tabs > li.active > a:hover {
+  border: 1px solid #8f8b7e;
 }
 
-.nav-tabs>li.active>a,.nav-tabs>li.active>a:hover {
-	background-color: #f1f1f1;
-	border-bottom-color: transparent;
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover {
+  background-color: #f1f1f1;
+  border-bottom-color: transparent;
 }

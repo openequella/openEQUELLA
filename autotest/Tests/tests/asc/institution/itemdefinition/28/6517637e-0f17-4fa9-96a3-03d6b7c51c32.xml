@@ -194,19 +194,19 @@
                 </entry>
                 <entry>
                   <string>MarkUp</string>
-                  <string>&lt;#if attachments.list()?size gt 0&gt; 
-	
-	&lt;#assign a=attachments.list()[0] /&gt; 
-	&lt;#if a.getFilename()?ends_with(&quot;.xml&quot;)&gt; 
-		Here is the document: 
+                  <string>&lt;#if attachments.list()?size gt 0&gt;
+
+	&lt;#assign a=attachments.list()[0] /&gt;
+	&lt;#if a.getFilename()?ends_with(&quot;.xml&quot;)&gt;
+		Here is the document:
 		&lt;div id=&quot;ascMessage&quot;&gt;
-		&lt;pre&gt; ${attachments.readXmlFileAttachment(a).getSubtree(&quot;message[0]&quot;).get(&quot;part/@element&quot;)?html} &lt;/pre&gt; 
+		&lt;span&gt; ${attachments.readXmlFileAttachment(a).getSubtree(&quot;message[0]&quot;).get(&quot;part/@element&quot;)?html} &lt;/span&gt;
 		&lt;/div&gt;
-	&lt;#else&gt; 
-		&lt;div id=&quot;ascMessage&quot;&gt;&lt;pre&gt;I told you to upload and XML document, so do it!&lt;/pre&gt;&lt;/div&gt;
-	&lt;/#if&gt; 
+	&lt;#else&gt;
+		&lt;div id=&quot;ascMessage&quot;&gt;&lt;span&gt;I told you to upload and XML document, so do it!&lt;/span&gt;&lt;/div&gt;
+	&lt;/#if&gt;
 &lt;#else&gt;
-	&lt;div id=&quot;ascMessage&quot;&gt;&lt;pre&gt;I told you to upload and XML document, so do it!&lt;/pre&gt;&lt;/div&gt;
+	&lt;div id=&quot;ascMessage&quot;&gt;&lt;span&gt;I told you to upload and XML document, so do it!&lt;/span&gt;&lt;/div&gt;
 &lt;/#if&gt;</string>
                 </entry>
                 <entry>

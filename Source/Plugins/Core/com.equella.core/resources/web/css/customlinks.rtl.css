@@ -1,16 +1,16 @@
 @import url("customlinks.css");
 
 #cls_us li {
-	padding: 5px 45px 8px 10px;
-	background-position: 98% center;
+  padding: 5px 45px 8px 10px;
+  background-position: 98% center;
 }
 
 .ui-state-default .link-name {
-	padding-left: 0 !important;
-	padding-right: 7px !important;
-	float: right;
+  padding-left: 0 !important;
+  padding-right: 7px !important;
+  float: right;
 }
 
 .customlinks .link-buttons {
-	float: left;
+  float: left;
 }

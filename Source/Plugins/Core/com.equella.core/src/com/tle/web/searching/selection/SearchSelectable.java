@@ -28,6 +28,7 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.selection.AbstractSelectionNavAction;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.section.RootSelectionSection.Layout;
+import com.tle.web.template.RenderNewTemplate;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -37,6 +38,9 @@ public class SearchSelectable extends AbstractSelectionNavAction {
   static {
     PluginResourceHandler.init(SearchSelectable.class);
   }
+
+  private static final String LEGACY_FORWARD_PATH = "/searching.do";
+  public static final String NEW_FORWARD_PATH = "/selectoradd/searching.do";
 
   @PlugKey("searching.search.title")
   private static Label LABEL_SEARCH;
@@ -50,7 +54,10 @@ public class SearchSelectable extends AbstractSelectionNavAction {
 
   @SuppressWarnings("nls")
   protected SectionInfo getSearchTree(SectionInfo info) {
-    return controller.createForward(info, "/searching.do");
+    if (RenderNewTemplate.isNewUIEnabled()) {
+      return controller.createForward(info, NEW_FORWARD_PATH);
+    }
+    return controller.createForward(info, LEGACY_FORWARD_PATH);
   }
 
   public void setController(SectionsController controller) {

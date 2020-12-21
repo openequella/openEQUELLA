@@ -1,0 +1,135 @@
+<com.tle.beans.item.Item>
+  <id>19254</id>
+  <uuid>869e6ce0-d183-40bb-ac9b-e97ca733136b</uuid>
+  <version>1</version>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2020-08-18 17:24:26.276</dateModified>
+  <dateCreated class="sql-timestamp">2020-08-18 17:24:26.278</dateCreated>
+  <dateForIndex class="sql-timestamp">2020-08-18 17:24:26.276</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>DRAFT</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.LinkAttachment>
+      <id>19258</id>
+      <uuid>396dce8b-543b-41b8-8f8a-d3beb1fc3981</uuid>
+      <url>http://www.rust-lang.org/</url>
+      <description>http://www.rust-lang.org/</description>
+      <preview>false</preview>
+      <restricted>false</restricted>
+    </com.tle.beans.item.attachments.LinkAttachment>
+  </attachments>
+  <searchDetails>
+    <com.tle.common.Pair>
+      <first class="com.tle.beans.entity.LanguageBundle">
+        <id>0</id>
+        <strings>
+          <entry>
+            <string>en</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>0</id>
+              <locale>en</locale>
+              <priority>1</priority>
+              <text>Year</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </first>
+      <second class="com.tle.beans.entity.LanguageBundle">
+        <id>0</id>
+        <strings>
+          <entry>
+            <string>en_gb</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>0</id>
+              <locale>en_gb</locale>
+              <priority>1</priority>
+              <text>2010</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </second>
+    </com.tle.common.Pair>
+  </searchDetails>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="20d40571-e577-4cd7-a12d-d46e5cefcd3f"/>
+  <collaborators/>
+  <referencedUrls>
+    <com.tle.beans.ReferencedURL>
+      <id>19261</id>
+      <url>http://www.rust-lang.org/</url>
+      <urlHash>6191715fd8408ee0298b0c16c121f1e4</urlHash>
+      <success>true</success>
+      <status>200</status>
+      <tries>0</tries>
+      <lastChecked class="sql-timestamp">2020-08-18 17:24:27.698</lastChecked>
+      <lastIndexed class="sql-timestamp">1970-01-01 11:00:00.0</lastIndexed>
+    </com.tle.beans.ReferencedURL>
+  </referencedUrls>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>19259</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2020-08-18 17:24:26.276</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>19260</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2020-08-18 17:24:26.276</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>19256</id>
+    <strings>
+      <entry>
+        <string>en_GB</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>19257</id>
+          <locale>en_GB</locale>
+          <priority>2</priority>
+          <text>Rust</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <description>
+    <id>13331</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>13094</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>Rust is a multi-paradigm programming language focused on performance and safety, especially safe concurrency.[16][17] Rust is syntactically similar to C++,[18] and provides memory safety without using garbage collection.
+
+            Rust was originally designed by Graydon Hoare at Mozilla Research, with contributions from Dave Herman, Brendan Eich, and others.[19][20] The designers refined the language while writing the Servo layout or browser engine,[21] and the Rust compiler. The compiler is free and open-source software dual-licensed under the MIT License and Apache License 2.0. It has gained increasing use in industry and is now Microsoft's language of choice for secure and safety-critical software components.[22] [23]
+
+            Rust has been the &quot;most loved programming language&quot; in the Stack Overflow Developer Survey every year since 2016.</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>default</thumb>
+</com.tle.beans.item.Item>

@@ -24,10 +24,7 @@ public final class BlackboardRESTConnectorConstants {
   public static final String AUTHENTICATIONCODE_SERVICE_URI_PATH =
       "/learn/api/public/v1/oauth2/authorizationcode";
 
-  public static final String SESSION_KEY_USER_ID = "BbRest.UserId";
-  public static final String SESSION_COURSES = "BbRest.UserCourses";
   public static final String SESSION_CODE = "BbRest.Code";
-  public static final String SESSION_TOKEN = "BbRest.Token";
 
   public static final String CONNECTOR_TYPE = "blackboardrest";
 
@@ -38,6 +35,8 @@ public final class BlackboardRESTConnectorConstants {
   public static final String STATE_KEY_POSTFIX_KEY = "postfixKey";
 
   public static final String AUTH_URL = "blackboardrestauth";
+
+  public static final String USER_SESSION_AUTH_KEY = "USER_AUTH";
 
   private BlackboardRESTConnectorConstants() {
     throw new Error();
