@@ -63,7 +63,6 @@ $col2Width: 250px;
 $standardBorderRadius: 4px;
 $roundButtonRadius: 50px;
 $termSelectorHeight: 68px;
-$youtubeSearchOffset: -275px;
 
 @mixin boxShadow {
   box-shadow: $boxShadow;
@@ -543,13 +542,8 @@ select[multiple="multiple"] {
 
 .youTubeHandler {
   @include buttonShadowBorder;
-  //make room for more search results with a negative margin
-  margin-top: $youtubeSearchOffset;
-  .modal_close {
-    margin-top: $youtubeSearchOffset;
-  }
   .modal-content-inner {
-    max-height: 75vh;
+    max-height: 62.5vh;
   }
   .area.float-left.attachment-content {
     background: none;
