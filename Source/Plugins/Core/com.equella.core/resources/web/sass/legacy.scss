@@ -551,6 +551,15 @@ select[multiple="multiple"] {
   .modal-content-inner {
     max-height: 75vh;
   }
+  .area.float-left.attachment-content {
+    background: none;
+    box-shadow: none;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    width: 400px;
+    padding-right: 0;
+    margin-right: 0;
+  }
 }
 
 .modal-search-result li {
