@@ -252,10 +252,11 @@ export const queryStringParamsToSearchOptions = async (
   }
   const params = new URLSearchParams(location.search);
   const searchOptions = params.get("searchOptions");
-  // If SearchOptions is in query string, convert the string to a SearchOptions.
-  // Or, if query string contains 'LegacySearchParams', convert the string
-  // to a SearchOptions.
-  // Otherwise, return undefined.
+
+  // If the query params contain `searchOptions` convert to `SearchOptions` with `newSearchQueryToSearchOptions`.
+  // Else if the query params contain params from legacy `searching.do` (i.e. `LegacySearchParams`) then convert to
+  // `searchOptions` with `legacyQueryStringToSearchOptions`.
+  // For all else, return `undefined`.
   if (searchOptions) {
     return await newSearchQueryToSearchOptions(searchOptions);
   } else if (
