@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { LanguageStrings, languageStrings } from "./langstrings";
+import { LanguageStrings, languageStrings } from "../tsrc/util/langstrings";
 
 type LanguageStringKey = keyof typeof languageStrings;
 
@@ -41,7 +41,7 @@ const generateLanguageBundle = (
   const output: LanguageStrings[] = [];
   if (typeof value === "string") {
     output.push({ [key]: value });
-  } else {
+  } else if (typeof value === "object") {
     for (const subKey in value) {
       if (value.hasOwnProperty(subKey)) {
         const nestedStrings = generateLanguageBundle(
@@ -51,6 +51,8 @@ const generateLanguageBundle = (
         output.push(...nestedStrings);
       }
     }
+  } else {
+    throw new TypeError("Unrecognised language string type");
   }
 
   return output;
