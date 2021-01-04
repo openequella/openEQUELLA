@@ -5,7 +5,7 @@
 
 $.datepicker.setDefaults({
 	showOn : 'both',
-	yearRange : "c-50:c+10",
+	yearRange : "1970:c+10",
 	changeYear : true,
 	changeMonth : true,
 	constrainInput : true,
@@ -32,7 +32,7 @@ function disablePicker($jelem, disabled)
 }
 
 /**
- * 
+ *
  * @param $jelem
  * @param $hiddenElem
  * @param timezoneOffset
@@ -56,7 +56,7 @@ function setupPicker($jelem, $hiddenElem, timezoneOffset, changeFunc, $otherCale
 		showButtonPanel : false,
 		buttonText : buttonText
 	};
-	
+
 	$jelem.datepicker(settings);
 	$jelem.data('$hiddenElem', $hiddenElem);
 
@@ -175,7 +175,7 @@ function stripExtras($dp)
 }
 
 /**
- * 
+ *
  * @param $elem
  * @param timezoneOffset
  * @returns A UTC date which is Midnight *our* time
@@ -189,13 +189,13 @@ function getPickerUiValue($elem, timezoneOffset)
 		// Convert to midnight our time
 		// var toff2 = new Date(dtUtc).getTimezoneOffset() * 60000;
 		return dtUtc; /* - toff2 */
-		;
+
 	}
 	return null;
 }
 
 /**
- * 
+ *
  * @param $elem
  * @param utcDate
  *            A UTC date which is Midnight *our* time
