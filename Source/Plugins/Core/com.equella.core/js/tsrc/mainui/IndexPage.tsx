@@ -193,7 +193,7 @@ export default function IndexPage() {
         currentParams.get("in")?.startsWith("P") ?? false;
       const advancedSearchRequested: boolean =
         currentPath.endsWith(oldSearchPagePath) && advancedSearchParamsPresent;
-      // TODO: Before we release 2020.2 this can be removed, as the 'newSearch' toggle wil be removed
+      // TODO: Before we release 2021.1 this can be removed, as the 'newSearch' toggle wil be removed
       const newSearchEnabled: boolean =
         typeof renderData !== "undefined" && renderData?.newSearch;
 
