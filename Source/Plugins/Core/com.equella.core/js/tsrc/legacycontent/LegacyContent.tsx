@@ -311,7 +311,6 @@ export const LegacyContent = React.memo(function LegacyContent({
   );
 
   const renderPageContent = (content: PageContent): React.ReactElement => {
-    // updateTemplate((tp) => ({ ...tp, ...templatePropsForLegacy(content) }));
     const renderedContent = <LegacyContentRenderer {...content} />;
     const { form } = content.html;
     return content.noForm ? (
