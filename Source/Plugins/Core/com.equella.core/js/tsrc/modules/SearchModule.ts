@@ -247,18 +247,24 @@ export const generateCategoryWhereQuery = (
 export const queryStringParamsToSearchOptions = async (
   location: Location
 ): Promise<SearchOptions | undefined> => {
-  if (!location.search) return undefined;
-  const params = new URLSearchParams(location.search);
-
-  // If no query strings is of type LegacySearchParams, return undefined.
-  if (!Array.from(params.keys()).some((key) => LegacySearchParams.guard(key))) {
+  if (!location.search) {
     return undefined;
   }
+  const params = new URLSearchParams(location.search);
+  const searchOptions = params.get("searchOptions");
 
-  if (location.pathname.endsWith("searching.do")) {
+  // If the query params contain `searchOptions` convert to `SearchOptions` with `newSearchQueryToSearchOptions`.
+  // Else if the query params contain params from legacy `searching.do` (i.e. `LegacySearchParams`) then convert to
+  // `searchOptions` with `legacyQueryStringToSearchOptions`.
+  // For all else, return `undefined`.
+  if (searchOptions) {
+    return await newSearchQueryToSearchOptions(searchOptions);
+  } else if (
+    Array.from(params.keys()).some((key) => LegacySearchParams.guard(key))
+  ) {
     return await legacyQueryStringToSearchOptions(params);
   }
-  return await newSearchQueryToSearchOptions(params.get("searchOptions") ?? "");
+  return undefined;
 };
 
 /**
