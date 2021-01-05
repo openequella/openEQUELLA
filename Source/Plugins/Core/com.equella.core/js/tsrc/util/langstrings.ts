@@ -49,7 +49,7 @@ export function formatSize(size: number, strings: Sizes): string {
   return sprintf(format, size);
 }
 
-interface LanguageStrings {
+export interface LanguageStrings {
   [key: string]: string | LanguageStrings;
 }
 
