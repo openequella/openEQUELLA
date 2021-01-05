@@ -15,9 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { CircularProgress, Grid } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 import Axios from "axios";
 import * as React from "react";
+import HtmlParser from "react-html-parser";
 import { v4 } from "uuid";
 import {
   ErrorResponse,
@@ -25,6 +27,10 @@ import {
   generateFromError,
 } from "../api/errors";
 import { API_BASE_URL } from "../AppConfig";
+import { BaseOEQRouteComponentProps } from "../mainui/routes";
+import { templateDefaults, templatePropsForLegacy } from "../mainui/Template";
+import { LegacyContentRenderer } from "./LegacyContentRenderer";
+import { LegacyForm } from "./LegacyForm";
 
 declare global {
   interface Window {
@@ -100,16 +106,11 @@ export interface PageContent {
   afterHtml: () => void;
 }
 
-export interface LegacyContentProps {
-  enabled: boolean;
+export interface LegacyContentProps extends BaseOEQRouteComponentProps {
   pathname: string;
   search: string;
   locationKey?: string;
-  userUpdated: () => void;
-  redirected: (redir: { href: string; external: boolean }) => void;
-  onError: (cb: { error: ErrorResponse; fullScreen: boolean }) => void;
-
-  render(content: PageContent | undefined): React.ReactElement;
+  onError: (error: ErrorResponse) => void;
 
   children?: never;
 }
@@ -139,17 +140,34 @@ function submitRequest(path: string, vals: StateData): Promise<SubmitResponse> {
 }
 
 export const LegacyContent = React.memo(function LegacyContent({
-  enabled,
   locationKey,
   onError,
   pathname,
-  redirected,
-  render,
   search,
-  userUpdated,
+  refreshUser,
+  redirect,
+  setPreventNavigation,
+  updateTemplate,
 }: LegacyContentProps) {
   const [content, setContent] = React.useState<PageContent>();
   const baseUrl = document.getElementsByTagName("base")[0].href;
+
+  const redirected = (href: string, external: boolean) => {
+    if (external) {
+      window.location.href = href;
+    } else {
+      const ind = href.indexOf("?");
+      const redirloc =
+        ind < 0
+          ? { pathname: "/" + href, search: "" }
+          : {
+              pathname: "/" + href.substr(0, ind),
+              search: href.substr(ind),
+            };
+      setPreventNavigation(false);
+      redirect(redirloc);
+    }
+  };
 
   function toRelativeUrl(url: string) {
     const relUrl =
@@ -173,7 +191,7 @@ export const LegacyContent = React.memo(function LegacyContent({
         },
       } as PageContent;
       if (content.userUpdated) {
-        userUpdated();
+        refreshUser();
       }
       setContent(pageContent);
     });
@@ -194,11 +212,11 @@ export const LegacyContent = React.memo(function LegacyContent({
           updatePageContent(content, scrollTop);
         } else if (isChangeRoute(content)) {
           if (content.userUpdated) {
-            userUpdated();
+            refreshUser();
           }
-          redirected({ href: content.route, external: false });
+          redirected(content.route, false);
         } else if (content.href) {
-          redirected({ href: content.href, external: true });
+          redirected(content.href, true);
         }
       })
       .catch((error) => {
@@ -206,7 +224,7 @@ export const LegacyContent = React.memo(function LegacyContent({
           error.response !== undefined
             ? fromAxiosResponse(error.response)
             : generateFromError(error);
-        onError({ error: errorResponse, fullScreen });
+        onError(errorResponse);
       });
   }
 
@@ -271,23 +289,50 @@ export const LegacyContent = React.memo(function LegacyContent({
   }, [pathname]);
 
   React.useEffect(() => {
-    if (enabled) {
-      const params = new URLSearchParams(search);
-      const urlValues: { [index: string]: string[] } = {};
-      params.forEach((val, key) => {
-        const exVal = urlValues[key];
-        if (exVal) exVal.push(val);
-        else urlValues[key] = [val];
-      });
-      submitCurrentForm(true, true, undefined, urlValues);
-    }
-    if (!enabled) {
-      setContent(undefined);
-      updateStylesheets([]).then(deleteElements);
-    }
-  }, [enabled, pathname, search, locationKey]);
+    const params = new URLSearchParams(search);
+    const urlValues: { [index: string]: string[] } = {};
+    params.forEach((val, key) => {
+      const exVal = urlValues[key];
+      if (exVal) exVal.push(val);
+      else urlValues[key] = [val];
+    });
+    submitCurrentForm(true, true, undefined, urlValues);
+  }, [pathname, search, locationKey]);
 
-  return render(enabled ? content : undefined);
+  React.useEffect(
+    () =>
+      updateTemplate((tp) => ({
+        ...tp,
+        ...(content
+          ? templatePropsForLegacy(content)
+          : templateDefaults("Missing content!")),
+      })),
+    [content]
+  );
+
+  const renderPageContent = (content: PageContent): React.ReactElement => {
+    // updateTemplate((tp) => ({ ...tp, ...templatePropsForLegacy(content) }));
+    const renderedContent = <LegacyContentRenderer {...content} />;
+    const { form } = content.html;
+    return content.noForm ? (
+      renderedContent
+    ) : (
+      <>
+        <LegacyForm state={content.state}>{renderedContent}</LegacyForm>
+        {form && HtmlParser(form)}
+      </>
+    );
+  };
+
+  return content ? (
+    renderPageContent(content)
+  ) : (
+    <Grid container direction="column" alignItems="center">
+      <Grid item>
+        <CircularProgress />
+      </Grid>
+    </Grid>
+  );
 });
 
 function resolveUrl(url: string) {

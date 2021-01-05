@@ -48,9 +48,10 @@ import * as React from "react";
 import { Link } from "react-router-dom";
 import { ErrorResponse } from "../api/errors";
 import MessageInfo from "../components/MessageInfo";
-import { guestUser } from "../legacycontent/LegacyContent";
+import { guestUser, PageContent } from "../legacycontent/LegacyContent";
 import { languageStrings } from "../util/langstrings";
 import { routes } from "./routes";
+import ScreenOptions from "./ScreenOptions";
 
 export type MenuMode = "HIDDEN" | "COLLAPSED" | "FULL";
 export type FullscreenMode = "YES" | "YES_WITH_TOOLBAR" | "NO";
@@ -130,6 +131,30 @@ export function templateError(errorResponse: ErrorResponse): TemplateUpdate {
     ...tp,
     errorResponse,
   });
+}
+
+export function templatePropsForLegacy({
+  title,
+  metaTags,
+  html,
+  contentId,
+  hideAppBar,
+  fullscreenMode,
+  menuMode,
+}: PageContent): TemplateProps {
+  const soHtml = html["so"];
+  const menuExtra = soHtml ? (
+    <ScreenOptions optionsHtml={soHtml} contentId={contentId} key={contentId} />
+  ) : undefined;
+  return {
+    title,
+    metaTags,
+    hideAppBar,
+    fullscreenMode: fullscreenMode as FullscreenMode,
+    menuMode: menuMode as MenuMode,
+    menuExtra,
+    children: undefined,
+  };
 }
 
 export const strings = languageStrings.template;
@@ -274,7 +299,7 @@ function useFullscreen({ fullscreenMode, hideAppBar }: useFullscreenProps) {
   return hideAppBar || modeIsFullscreen;
 }
 
-export const Template = React.memo(function Template({
+export const Template = function Template({
   backRoute,
   children,
   currentUser = guestUser,
@@ -621,4 +646,4 @@ export const Template = React.memo(function Template({
       </div>
     </>
   );
-});
+};
