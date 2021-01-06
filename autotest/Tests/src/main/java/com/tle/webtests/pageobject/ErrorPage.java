@@ -36,8 +36,7 @@ public class ErrorPage extends AbstractPage<ErrorPage> {
   // off of testConfig.isNewUI()
   public String getMainErrorMessage(boolean newUi) {
     By mainErrorBy =
-        newUi ? By.xpath("id('mainDiv')//h5") : By.xpath("//div[contains(@class, 'error')]/h2");
-    waiter.until(ExpectedConditions.visibilityOfElementLocated(mainErrorBy));
+        getErrorBy(newUi ? "id('mainDiv')//h5" : "//div[contains(@class, 'error')]/h2");
     return driver.findElement(mainErrorBy).getText();
   }
 
@@ -45,27 +44,25 @@ public class ErrorPage extends AbstractPage<ErrorPage> {
   public String getSubErrorMessage(boolean newUi) {
     return driver
         .findElement(
-            newUi
-                ? By.xpath("id('errorPage')//h3")
-                : By.xpath("//div[contains(@class, 'error')]/h3[1]"))
+            getErrorBy(newUi ? "id('errorPage')//h3" : "//div[contains(@class, 'error')]/h3[1]"))
         .getText();
   }
 
   public String getDetail() {
     return driver
         .findElement(
-            isNewUI()
-                ? By.xpath("id('errorPage')//h5")
-                : By.xpath("//div[@class='area error']/p[@id='description']"))
+            getErrorBy(
+                isNewUI()
+                    ? "id('errorPage')//h5"
+                    : "//div[@class='area error']/p[@id='description']"))
         .getText();
   }
 
   public String getDenied() {
     return driver
         .findElement(
-            isNewUI()
-                ? By.xpath("id('errorPage')//h5")
-                : By.xpath("//div[@class='area error']/p[@id='denied']"))
+            getErrorBy(
+                isNewUI() ? "id('errorPage')//h5" : "//div[@class='area error']/p[@id='denied']"))
         .getText();
   }
 
@@ -76,5 +73,11 @@ public class ErrorPage extends AbstractPage<ErrorPage> {
       context.getDriver().navigate().back();
     }
     return backTo.get();
+  }
+
+  private By getErrorBy(String xpath) {
+    By errorElement = By.xpath(xpath);
+    waiter.until(ExpectedConditions.visibilityOfElementLocated(errorElement));
+    return errorElement;
   }
 }
