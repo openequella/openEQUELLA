@@ -15,4 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-require("../../target/uploadlist.js");
+
+// Assign 'FileUploader' to the window object so it's accessible for server.
+window.FileUploader = require("../../tsrc/components/FileUploader");
