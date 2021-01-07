@@ -15,10 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import JQueryDiv from "./JQueryDiv";
 import { makeStyles } from "@material-ui/core";
+import * as React from "react";
+import HtmlParser from "react-html-parser";
+import JQueryDiv from "./JQueryDiv";
 import { PageContent } from "./LegacyContent";
+import { getEqPageForm, LegacyForm } from "./LegacyForm";
 
 const useStyles = makeStyles((t) => ({
   noPadding: {
@@ -29,22 +31,57 @@ const useStyles = makeStyles((t) => ({
 export function LegacyContentRenderer({
   afterHtml,
   fullscreenMode,
-  html,
+  html: { body, crumbs, form, upperbody },
   menuMode,
+  noForm,
   script,
+  state,
 }: PageContent) {
   const classes = useStyles();
 
-  const { body, crumbs, upperbody } = html;
+  // Effect responsible for the execution of the legacy scripts etc which historically were
+  // simply added at the end of the server-side HTML rendered. Some of the scripts would
+  // fail with `form` being `null` as the React rendering needs to be done before we kick
+  // these off.
+  React.useEffect(() => {
+    const isReady = (): boolean =>
+      (noForm ? document.getElementById(mainContentDivId) : getEqPageForm()) !==
+      null;
+
+    const runPostRenderTasks = () => {
+      if (!isReady()) {
+        window.requestAnimationFrame(runPostRenderTasks);
+      } else {
+        // eslint-disable-next-line no-eval
+        if (script) window.eval(script);
+        if (afterHtml) afterHtml();
+      }
+    };
+
+    if (script || afterHtml) {
+      runPostRenderTasks();
+    }
+  }, [afterHtml, noForm, script]);
+
   const extraClass =
     !fullscreenMode && menuMode !== "HIDDEN" ? classes.noPadding : "";
+
+  const mainContentDivId = "oeqMainLegacyContent";
+
   const mainContent = (
-    <div className={`content ${extraClass}`}>
+    <div id={mainContentDivId} className={`content ${extraClass}`}>
       {crumbs && <JQueryDiv id="breadcrumbs" html={crumbs} />}
       {upperbody && <JQueryDiv html={upperbody} />}
-      <JQueryDiv html={body} script={script} afterHtml={afterHtml} />
+      <JQueryDiv html={body} />
     </div>
   );
 
-  return mainContent;
+  return noForm ? (
+    mainContent
+  ) : (
+    <>
+      <LegacyForm state={state}>{mainContent}</LegacyForm>
+      {form && HtmlParser(form)}
+    </>
+  );
 }

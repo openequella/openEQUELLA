@@ -19,7 +19,6 @@ import { CircularProgress, Grid } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 import Axios from "axios";
 import * as React from "react";
-import HtmlParser from "react-html-parser";
 import { v4 } from "uuid";
 import {
   ErrorResponse,
@@ -30,7 +29,7 @@ import { API_BASE_URL } from "../AppConfig";
 import { BaseOEQRouteComponentProps } from "../mainui/routes";
 import { templateDefaults, templatePropsForLegacy } from "../mainui/Template";
 import { LegacyContentRenderer } from "./LegacyContentRenderer";
-import { LegacyForm } from "./LegacyForm";
+import { getEqPageForm, legacyFormId } from "./LegacyForm";
 
 declare global {
   interface Window {
@@ -238,9 +237,19 @@ export const LegacyContent = React.memo(function LegacyContent({
           }
         }
       }
-      const form = document.getElementById("eqpageForm") as HTMLFormElement;
-      const vals = collectParams(form, command, [].slice.call(arguments, 1));
-      submitCurrentForm(true, false, form.action, vals);
+      const form = getEqPageForm();
+      if (!form) {
+        onError(
+          generateFromError({
+            name: "stdSubmit Failure",
+            message:
+              "stdSubmit unable to proceed due to missing " + legacyFormId,
+          })
+        );
+      } else {
+        const vals = collectParams(form, command, [].slice.call(arguments, 1));
+        submitCurrentForm(true, false, form.action, vals);
+      }
       return false;
     };
   }
@@ -310,21 +319,8 @@ export const LegacyContent = React.memo(function LegacyContent({
     [content]
   );
 
-  const renderPageContent = (content: PageContent): React.ReactElement => {
-    const renderedContent = <LegacyContentRenderer {...content} />;
-    const { form } = content.html;
-    return content.noForm ? (
-      renderedContent
-    ) : (
-      <>
-        <LegacyForm state={content.state}>{renderedContent}</LegacyForm>
-        {form && HtmlParser(form)}
-      </>
-    );
-  };
-
   return content ? (
-    renderPageContent(content)
+    <LegacyContentRenderer {...content} />
   ) : (
     <Grid container direction="column" alignItems="center">
       <Grid item>

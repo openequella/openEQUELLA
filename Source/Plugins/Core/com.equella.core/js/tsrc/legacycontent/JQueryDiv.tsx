@@ -19,18 +19,19 @@ import * as React from "react";
 
 export interface JQueryDivProps extends React.HTMLAttributes<HTMLDivElement> {
   html: string;
-  script?: string;
-  afterHtml?: () => void;
   children?: never;
 }
 
-export default React.memo(function JQueryDiv({
-  afterHtml,
-  script,
-  html,
-  ...withoutOthers
-}: JQueryDivProps) {
+/**
+ * Provides a means to have a `div` whose content is the raw HTML returned from the server. However
+ * also used to support the various JQuery AJAX stuff partially due to the clean-up effect of
+ * emptying out the `div`.
+ */
+const JQueryDiv = React.memo(({ html, ...withoutOthers }: JQueryDivProps) => {
   const divElem = React.useRef<HTMLElement>();
+
+  // Just a clean-up effect to clear out the div at un-mount time.
+  // This is key for supporting the AJAXy stuff.
   React.useEffect(
     () => () => {
       if (divElem.current) {
@@ -39,6 +40,7 @@ export default React.memo(function JQueryDiv({
     },
     []
   );
+
   return (
     <div
       {...withoutOthers}
@@ -46,11 +48,10 @@ export default React.memo(function JQueryDiv({
         if (e) {
           divElem.current = e;
           $(e).html(html);
-          // eslint-disable-next-line no-eval
-          if (script) window.eval(script);
-          if (afterHtml) afterHtml();
         }
       }}
     />
   );
 });
+
+export default JQueryDiv;

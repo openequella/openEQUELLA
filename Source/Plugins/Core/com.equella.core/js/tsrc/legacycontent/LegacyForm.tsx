@@ -18,6 +18,17 @@
 import * as React from "react";
 import { ReactNode, Fragment } from "react";
 
+export const legacyFormId = "eqpageForm";
+
+export const getEqPageForm = (): HTMLFormElement | null => {
+  const form: HTMLElement | null = document.getElementById(legacyFormId);
+  if (form && (form as HTMLFormElement).action !== undefined) {
+    return form as HTMLFormElement;
+  }
+
+  return null;
+};
+
 interface LegacyFormProps {
   state: { [key: string]: string[] };
   children: ReactNode;
@@ -25,7 +36,7 @@ interface LegacyFormProps {
 
 export function LegacyForm({ children, state }: LegacyFormProps) {
   return (
-    <form name="eqForm" id="eqpageForm" onSubmit={(e) => e.preventDefault()}>
+    <form name="eqForm" id={legacyFormId} onSubmit={(e) => e.preventDefault()}>
       <div style={{ display: "none" }} className="_hiddenstate">
         {Object.keys(state).map((k, i) => {
           return (
