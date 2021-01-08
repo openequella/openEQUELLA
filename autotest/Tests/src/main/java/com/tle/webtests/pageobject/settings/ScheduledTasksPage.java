@@ -40,16 +40,16 @@ public class ScheduledTasksPage extends AbstractPage<ScheduledTasksPage> {
     driver.get(context.getBaseUrl() + "access/scheduledtasksdebug.do");
   }
 
-  public ScheduledTasksPage runCheckReview() {
-    return clickAndUpdate(checkReviewLink);
+  public void runCheckReview() {
+    clickLink(checkReviewLink);
   }
 
-  public ScheduledTasksPage runNotifyNewTasks() {
-    return clickAndUpdate(notifyNewTasksLink);
+  public void runNotifyNewTasks() {
+    clickLink(notifyNewTasksLink);
   }
 
-  public ScheduledTasksPage runCheckModeration() {
-    return clickAndUpdate(checkModerationLink);
+  public void runCheckModeration() {
+    clickLink(checkModerationLink);
   }
 
   public ScheduledTasksPage runCheckUrls() {
@@ -70,5 +70,23 @@ public class ScheduledTasksPage extends AbstractPage<ScheduledTasksPage> {
 
   public ScheduledTasksPage runHarvesterProfiles() {
     return clickAndUpdate(runHarvesterProfilesLink);
+  }
+
+  /**
+   * Used for clicking the simply links which simply trigger a server action, and then the page is
+   * (historically) re-rendered. However in New UI react detects there's nothing new in the DOM so
+   * doesn't change anything. So in that case we have to resort to sleepTime().
+   *
+   * @param element the link to click
+   */
+  private void clickLink(WebElement element) {
+    if (context.getTestConfig().isNewUI()) {
+      // Due to react DOM rendering optimisations, there is nothing for us to detect so we have
+      // to use sleepy time.
+      element.click();
+      sleepyTime(500);
+    } else {
+      clickAndUpdate(element);
+    }
   }
 }
