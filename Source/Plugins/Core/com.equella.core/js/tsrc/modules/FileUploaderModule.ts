@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Axios from "axios";
-import { FileElement } from "../components/FileUploader";
+import Axios, { CancelTokenSource } from "axios";
+import { OeqFileInfo, UploadingFile } from "../components/FileUploader";
 
 interface AttachmentDuplicateInfo {
   displayWarningMessage: boolean;
@@ -28,10 +28,6 @@ type UploadResponseType =
   | "removeentries"
   | "uploadfailed"
   | "newuploadresponse";
-
-interface BasicUploadResponse {
-  response: UploadResponseType;
-}
 
 interface BasicUploadCommand {
   command: string;
@@ -46,8 +42,12 @@ interface DeleteUpload extends BasicUploadCommand {
   id: string;
 }
 
+interface BasicUploadResponse {
+  response: UploadResponseType;
+}
+
 interface UpdateEntry extends BasicUploadResponse {
-  entry: FileElement;
+  entry: OeqFileInfo;
   attachmentDuplicateInfo?: AttachmentDuplicateInfo;
 }
 
@@ -72,30 +72,53 @@ export const isUpdateEntry = (
   uploadResponse: CompleteUploadResponse
 ): uploadResponse is UpdateEntry => uploadResponse.response === "updateentry";
 
+const CancelToken = Axios.CancelToken;
+
+const axiosSourceMap: Map<string, CancelTokenSource> = new Map();
+export const getAxiosSource = (id: string) => axiosSourceMap.get(id);
+
 export const newUpload = (
   path: string,
-  file: File
+  uploadingFile: UploadingFile,
+  updateUploadProgress: (newFile: UploadingFile) => void
 ): Promise<CompleteUploadResponse> => {
+  const { name, size } = uploadingFile.file;
   const uploadData: NewUpload = {
     command: "newupload",
-    filename: file.name,
-    size: file.size,
+    filename: name,
+    size: size,
   };
   return Axios.post<NewUploadResponse>(
     path,
     uploadData
-  ).then(({ data: { uploadUrl } }) => completeUpload(uploadUrl, file));
+  ).then(({ data: { uploadUrl } }) =>
+    completeUpload(uploadUrl, uploadingFile, updateUploadProgress)
+  );
 };
 
 const completeUpload = (
   path: string,
-  file: File
+  uploadingFile: UploadingFile,
+  updateUploadProgress: (newFile: UploadingFile) => void
 ): Promise<CompleteUploadResponse> => {
+  const { file } = uploadingFile;
+
+  const source = CancelToken.source();
+  axiosSourceMap.set(uploadingFile.localId, source);
+  const token = source.token;
+
   const formData = new FormData();
   formData.append("file", file);
-  return Axios.post<CompleteUploadResponse>(path, formData).then(
-    ({ data }) => data
-  );
+
+  return Axios.post<CompleteUploadResponse>(path, formData, {
+    cancelToken: token,
+    onUploadProgress: (progressEvent: ProgressEvent) => {
+      updateUploadProgress({
+        ...uploadingFile,
+        uploadPercentage: Math.round((progressEvent.loaded / file.size) * 100),
+      });
+    },
+  }).then(({ data }) => data);
 };
 
 export const deleteUpload = (
@@ -105,3 +128,36 @@ export const deleteUpload = (
   const deleteData: DeleteUpload = { command: "delete", id: id };
   return Axios.post<RemoveEntries>(path, deleteData).then(({ data }) => data);
 };
+
+export const updateDuplicateMessage = (id: string, display: boolean) => {
+  // The div id of all duplicate warning messages automatically follows
+  // this format: its parent div id concatenated with "_duplicateWarningMessage"
+  const duplicateMessageDiv = $(`#${id}_attachment_duplicate_warning`);
+  if (duplicateMessageDiv) {
+    if (display) {
+      duplicateMessageDiv.css("display", "inline");
+    } else {
+      duplicateMessageDiv.css("display", "none");
+    }
+  }
+};
+
+export const updateCtrlErrorText = (ctrlId: string, text = "") => {
+  const contElem = $(`DIV#${ctrlId} > DIV.control`);
+  if (contElem) {
+    if (text === "") {
+      contElem.removeClass("ctrlinvalid");
+    } else {
+      contElem.addClass("ctrlinvalid");
+    }
+    contElem.find("P.ctrlinvalidmessage").text(text);
+  }
+};
+
+export const buildMaxAttachmentWarning = (
+  format: string,
+  ...args: string[]
+): string =>
+  format.replace(/{(\d+)}/g, (match, number) =>
+    typeof args[number] !== "undefined" ? args[number] : match
+  );

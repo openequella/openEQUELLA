@@ -15,27 +15,62 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Divider, Grid, Link } from "@material-ui/core";
+import {
+  createGenerateClassName,
+  Divider,
+  Grid,
+  LinearProgress,
+  Link,
+  StylesProvider,
+  ThemeProvider,
+} from "@material-ui/core";
+import { v4 } from "uuid";
 import * as React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as ReactDOM from "react-dom";
 import { useDropzone } from "react-dropzone";
 import {
+  buildMaxAttachmentWarning,
   CompleteUploadResponse,
   deleteUpload,
+  getAxiosSource,
   isUpdateEntry,
   newUpload,
+  updateCtrlErrorText,
+  updateDuplicateMessage,
 } from "../modules/FileUploaderModule";
-import { deleteElement } from "../util/ImmutableArrayUtil";
+import { oeqTheme } from "../theme";
+import {
+  addElement,
+  deleteElement,
+  replaceElement,
+} from "../util/ImmutableArrayUtil";
 
-export interface FileElement {
+export interface OeqFileInfo {
   id: string;
   name: string;
   link: string;
   preview: boolean;
   editable: boolean;
-  children: FileElement[];
+  children: OeqFileInfo[];
 }
+
+interface UploadedFile {
+  uploadedFile: OeqFileInfo;
+  status: "uploaded" | "failed";
+}
+
+export interface UploadingFile {
+  localId: string;
+  file: File;
+  status: "uploading";
+  uploadPercentage: number;
+}
+
+const isUploadedFile = (
+  file: UploadedFile | UploadingFile
+): file is UploadedFile =>
+  file.status === "uploaded" || file.status === "failed";
 
 interface ControlStrings {
   edit: string;
@@ -51,24 +86,23 @@ interface ControlStrings {
   toomany_1: string;
 }
 
-interface UploadListProps {
+interface FileUploaderProps {
   elem: Element;
   ctrlId: string;
-  entries: FileElement[];
-  maxAttachments?: number;
+  entries: OeqFileInfo[];
+  maxAttachments: number | null;
   canUpload: boolean;
   dialog: (replaceUuid: string, editUuid: string) => void;
-  onAdd: () => void;
   editable: boolean;
   commandUrl: string;
   strings: ControlStrings;
   reloadState: () => void;
 }
 
-const isUploadPromiseFulFilled = (
-  promise: PromiseSettledResult<CompleteUploadResponse>
-): promise is PromiseFulfilledResult<CompleteUploadResponse> =>
-  promise.status === "fulfilled";
+const generateClassName = createGenerateClassName({
+  productionPrefix: "oeq-file",
+  seed: "oeq-file",
+});
 
 /**
  * A component used to upload files by 'drag and drop' or 'file selector'.
@@ -79,127 +113,270 @@ const FileUploader = ({
   maxAttachments,
   canUpload,
   dialog: openDialog,
-  onAdd,
   editable,
   commandUrl,
   strings,
   reloadState,
-}: UploadListProps) => {
-  const [files, setFiles] = useState<FileElement[]>(entries);
+}: FileUploaderProps) => {
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>(
+    entries.map((entry) => ({
+      uploadedFile: entry,
+      status: "uploaded",
+    }))
+  );
+  const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
+  const [fileCount, setFileCount] = useState<number>(entries.length);
+  const [showDuplicateWarning, setShowDuplicateWarning] = useState<
+    boolean | undefined
+  >(undefined);
 
-  const handleUploadResponse = (
-    res: PromiseSettledResult<CompleteUploadResponse>[]
-  ) => {
-    const fulFilled: CompleteUploadResponse[] = res
-      .filter(isUploadPromiseFulFilled)
-      .map((res) => res.value);
-    const uploaded = fulFilled.filter(isUpdateEntry).map((f) => f.entry);
-    setFiles([...files, ...uploaded]);
-
-    //todo: handle UploadFailed
+  const updateUploadProgress = (updatedFile: UploadingFile) => {
+    setUploadingFiles((prev) => [
+      ...replaceElement(
+        prev,
+        (file: UploadingFile) => file.localId === updatedFile.localId,
+        updatedFile
+      ),
+    ]);
   };
+
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: (droppedFiles) => {
-      console.log(droppedFiles.map((f) => f.size));
-      Promise.allSettled([
-        ...droppedFiles.map((file) => newUpload(commandUrl, file)),
-      ])
-        .then(handleUploadResponse)
-        .finally(reloadState);
+      setFileCount(fileCount + droppedFiles.length);
+      droppedFiles.forEach((droppedFile) => {
+        const localId = v4();
+        const localFile: UploadingFile = {
+          localId: localId,
+          file: droppedFile,
+          status: "uploading",
+          uploadPercentage: 0,
+        };
+        setUploadingFiles((prev) => [
+          ...addElement<UploadingFile>(prev, localFile),
+        ]);
+
+        newUpload(commandUrl, localFile, updateUploadProgress)
+          .then((res: CompleteUploadResponse) => {
+            if (isUpdateEntry(res)) {
+              const uploadedFile: UploadedFile = {
+                uploadedFile: res.entry,
+                status: "uploaded",
+              };
+              setUploadingFiles(
+                deleteElement(
+                  uploadingFiles,
+                  (file: UploadingFile) => file.localId === localId,
+                  1
+                )
+              );
+              setUploadedFiles((prev) => [...addElement(prev, uploadedFile)]);
+              setShowDuplicateWarning(
+                res.attachmentDuplicateInfo?.displayWarningMessage ?? false
+              );
+            }
+          })
+          .finally(reloadState);
+      });
     },
   });
+
+  useEffect(() => {
+    if (showDuplicateWarning !== undefined) {
+      updateDuplicateMessage(ctrlId, showDuplicateWarning);
+    }
+  }, [showDuplicateWarning]);
+
+  useEffect(() => {
+    if (maxAttachments) {
+      if (fileCount > maxAttachments) {
+        if (maxAttachments > 1) {
+          updateCtrlErrorText(
+            ctrlId,
+            `${buildMaxAttachmentWarning(
+              strings.toomany,
+              `${maxAttachments}`,
+              `${fileCount - maxAttachments}`
+            )}`
+          );
+        } else {
+          updateCtrlErrorText(
+            ctrlId,
+            `remove1 : ${fileCount - maxAttachments}`
+          );
+        }
+      } else {
+        updateCtrlErrorText(ctrlId);
+      }
+    }
+  }, [fileCount]);
 
   const onEdit = (id: string) => openDialog("", id);
 
   const onReplace = (id: string) => openDialog(id, "");
 
-  const onDelete = (id: string) =>
-    deleteUpload(commandUrl, id)
-      .then(({ ids }) =>
-        ids.forEach((id) =>
-          setFiles(
-            deleteElement(files, (file: FileElement) => file.id === id, 1)
-          )
-        )
-      )
-      .finally(reloadState);
+  const onDelete = (fileId: string) => {
+    const confirmDelete = window.confirm(strings.deleteConfirm);
+    if (confirmDelete) {
+      deleteUpload(commandUrl, fileId)
+        .then(({ ids, attachmentDuplicateInfo }) => {
+          setUploadedFiles(
+            deleteElement(
+              uploadedFiles,
+              ({ uploadedFile: { id } }: UploadedFile) => id === fileId,
+              1
+            )
+          );
+          setShowDuplicateWarning(
+            attachmentDuplicateInfo?.displayWarningMessage ?? false
+          );
+          setFileCount(fileCount - 1);
+        })
+        .finally(reloadState);
+    }
+  };
+
+  const onCancel = (fileId: string) => {
+    const axiosSource = getAxiosSource(fileId);
+    if (axiosSource) {
+      axiosSource.cancel();
+    } else {
+      console.error("Failed to cancel the upload request.");
+    }
+    setUploadingFiles((prev) =>
+      deleteElement(prev, ({ localId }) => localId === fileId, 1)
+    );
+  };
 
   const fileListBody = () => {
-    const fileList = files.map((file, index) => {
+    const fileName = (file: UploadedFile | UploadingFile) => {
+      if (isUploadedFile(file)) {
+        const { link, name } = file.uploadedFile;
+        return (
+          <Link href={link} target="_blank">
+            {name}
+          </Link>
+        );
+      }
+      const {
+        file: { name },
+        uploadPercentage,
+      } = file;
       return (
-        <tr className={index % 2 === 0 ? "even" : "odd rowShown"}>
-          <td className="name">
-            <Link href={file.link} target="_blank">
-              {file.name}
-            </Link>
-          </td>
-          <td className="actions">
-            <Grid container wrap="nowrap" spacing={2}>
-              <Grid item>
-                <Link
-                  href="javascript:void(0);"
-                  onClick={() => onEdit(file.id)}
-                >
-                  {strings.edit}
-                </Link>
-              </Grid>
-
-              <Divider orientation="vertical" flexItem />
-              <Grid item>
-                <Link
-                  href="javascript:void(0);"
-                  onClick={() => onReplace(file.id)}
-                >
-                  {strings.replace}
-                </Link>
-              </Grid>
-
-              <Divider orientation="vertical" flexItem />
-              <Grid item>
-                <Link
-                  href="javascript:void(0);"
-                  onClick={() => onDelete(file.id)}
-                >
-                  {strings.delete}
-                </Link>
-              </Grid>
+        <Grid container className="progress-bar">
+          <Grid xs={10} item>
+            {name}
+          </Grid>
+          <Grid xs={2} item container alignItems="center" spacing={2}>
+            <Grid xs={9} item>
+              <LinearProgress variant="determinate" value={uploadPercentage} />
             </Grid>
-          </td>
-        </tr>
+            <Grid xs={3} item>
+              {uploadPercentage}
+            </Grid>
+          </Grid>
+        </Grid>
       );
-    });
+    };
+
+    const actions = (file: UploadedFile | UploadingFile) => {
+      if (isUploadedFile(file)) {
+        const { id } = file.uploadedFile;
+        return (
+          <Grid container spacing={2} wrap="nowrap">
+            {editable && (
+              <>
+                <Grid item>
+                  <Link href="javascript:void(0);" onClick={() => onEdit(id)}>
+                    {strings.edit}
+                  </Link>
+                </Grid>
+
+                <Divider orientation="vertical" flexItem />
+                <Grid item>
+                  <Link
+                    href="javascript:void(0);"
+                    onClick={() => onReplace(id)}
+                  >
+                    {strings.replace}
+                  </Link>
+                </Grid>
+
+                <Divider orientation="vertical" flexItem />
+              </>
+            )}
+
+            <Grid item>
+              <Link href="javascript:void(0);" onClick={() => onDelete(id)}>
+                {strings.delete}
+              </Link>
+            </Grid>
+          </Grid>
+        );
+      }
+      return (
+        <Link
+          className="unselect"
+          href="javascript:void(0);"
+          onClick={() => onCancel(file.localId)}
+          title={strings.cancel}
+        />
+      );
+    };
+
+    const fileList = [...uploadedFiles, ...uploadingFiles].map(
+      (file, index) => (
+        <tr
+          key={isUploadedFile(file) ? file.uploadedFile.id : file.localId}
+          className={index % 2 === 0 ? "even" : "odd rowShown"}
+        >
+          <td className="name">{fileName(file)}</td>
+          <td className="actions">{actions(file)}</td>
+        </tr>
+      )
+    );
+
     const noFiles = (
       <tr className="even">
         <td>{strings.none}</td>
       </tr>
     );
 
-    return <tbody>{files.length > 0 ? fileList : noFiles}</tbody>;
+    return <tbody>{fileCount > 0 ? fileList : noFiles}</tbody>;
   };
 
   return (
-    <div id={`${ctrlId}universalresources`} className="universalresources">
-      <table className="zebra selections">{fileListBody()}</table>
+    <StylesProvider generateClassName={generateClassName}>
+      <ThemeProvider theme={oeqTheme}>
+        <div id={`${ctrlId}universalresources`} className="universalresources">
+          <table className="zebra selections">{fileListBody()}</table>
 
-      <Link
-        id={`${ctrlId}_addLink`}
-        className="add"
-        href="javascript:void(0);"
-        title={strings.add}
-        onClick={() => openDialog("", "")}
-      >
-        {strings.add}
-      </Link>
-
-      <div {...getRootProps({ className: "dropzone" })}>
-        <input id={`${ctrlId}_fileUpload_file`} {...getInputProps()} />
-        <div className="filedrop">{strings.drop}</div>
-      </div>
-    </div>
+          {editable && (maxAttachments === null || fileCount < maxAttachments) && (
+            <>
+              <Link
+                id={`${ctrlId}_addLink`}
+                className="add"
+                href="javascript:void(0);"
+                onClick={() => openDialog("", "")}
+              >
+                {strings.add}
+              </Link>
+              {canUpload && (
+                <div {...getRootProps({ className: "dropzone" })}>
+                  <input
+                    id={`${ctrlId}_fileUpload_file`}
+                    {...getInputProps()}
+                  />
+                  <div className="filedrop">{strings.drop}</div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </ThemeProvider>
+    </StylesProvider>
   );
 };
 
-export const inlineUpload = (props: UploadListProps) => {
-  console.log(props);
+export const inlineUpload = (props: FileUploaderProps) => {
   ReactDOM.render(<FileUploader {...props} />, props.elem);
 };
