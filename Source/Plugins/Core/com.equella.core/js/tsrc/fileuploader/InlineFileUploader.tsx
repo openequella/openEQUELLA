@@ -31,13 +31,17 @@ import * as ReactDOM from "react-dom";
 import { useDropzone } from "react-dropzone";
 import {
   buildMaxAttachmentWarning,
+  cancelUpload,
   CompleteUploadResponse,
   deleteUpload,
-  getAxiosSource,
   isUpdateEntry,
+  isUploadedFile,
   newUpload,
+  OeqFileInfo,
   updateCtrlErrorText,
   updateDuplicateMessage,
+  UploadedFile,
+  UploadingFile,
 } from "../modules/FileUploaderModule";
 import { oeqTheme } from "../theme";
 import {
@@ -45,32 +49,7 @@ import {
   deleteElement,
   replaceElement,
 } from "../util/ImmutableArrayUtil";
-
-export interface OeqFileInfo {
-  id: string;
-  name: string;
-  link: string;
-  preview: boolean;
-  editable: boolean;
-  children: OeqFileInfo[];
-}
-
-interface UploadedFile {
-  uploadedFile: OeqFileInfo;
-  status: "uploaded" | "failed";
-}
-
-export interface UploadingFile {
-  localId: string;
-  file: File;
-  status: "uploading";
-  uploadPercentage: number;
-}
-
-const isUploadedFile = (
-  file: UploadedFile | UploadingFile
-): file is UploadedFile =>
-  file.status === "uploaded" || file.status === "failed";
+import { FileActionLink } from "./FileUploaderActionLink";
 
 interface ControlStrings {
   edit: string;
@@ -86,7 +65,7 @@ interface ControlStrings {
   toomany_1: string;
 }
 
-interface FileUploaderProps {
+interface InlineFileUploaderProps {
   elem: Element;
   ctrlId: string;
   entries: OeqFileInfo[];
@@ -99,37 +78,10 @@ interface FileUploaderProps {
   reloadState: () => void;
 }
 
-const generateClassName = createGenerateClassName({
-  productionPrefix: "oeq-file",
-  seed: "oeq-file",
-});
-
-interface FileActionLinkProps {
-  onClick: () => void;
-  text: string;
-  id?: string;
-  linkClassName?: string;
-}
-const FileActionLink = ({
-  onClick,
-  text,
-  id,
-  linkClassName,
-}: FileActionLinkProps) => (
-  <Link
-    id={id}
-    className={linkClassName}
-    href="javascript:void(0);"
-    onClick={() => onClick()}
-    title={text}
-  >
-    {text}
-  </Link>
-);
 /**
  * A component used to upload files by 'drag and drop' or 'file selector'.
  */
-const FileUploader = ({
+const InlineFileUploader = ({
   ctrlId,
   entries,
   maxAttachments,
@@ -139,7 +91,7 @@ const FileUploader = ({
   commandUrl,
   strings,
   reloadState,
-}: FileUploaderProps) => {
+}: InlineFileUploaderProps) => {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>(
     entries.map((entry) => ({
       uploadedFile: entry,
@@ -169,7 +121,7 @@ const FileUploader = ({
         const localId = v4();
         const localFile: UploadingFile = {
           localId: localId,
-          file: droppedFile,
+          uploadingFile: droppedFile,
           status: "uploading",
           uploadPercentage: 0,
         };
@@ -230,9 +182,9 @@ const FileUploader = ({
     }
   }, [fileCount]);
 
-  const onEdit = (id: string) => openDialog("", id);
+  const onEdit = (fileId: string) => openDialog("", fileId);
 
-  const onReplace = (id: string) => openDialog(id, "");
+  const onReplace = (fileId: string) => openDialog(fileId, "");
 
   const onDelete = (fileId: string) => {
     const confirmDelete = window.confirm(strings.deleteConfirm);
@@ -242,7 +194,7 @@ const FileUploader = ({
           setUploadedFiles(
             deleteElement(
               uploadedFiles,
-              ({ uploadedFile: { id } }: UploadedFile) => id === fileId,
+              ({ uploadedFile: { id } }: UploadedFile) => fileId === id,
               1
             )
           );
@@ -256,18 +208,16 @@ const FileUploader = ({
   };
 
   const onCancel = (fileId: string) => {
-    const axiosSource = getAxiosSource(fileId);
-    if (axiosSource) {
-      axiosSource.cancel();
-    } else {
-      console.error("Failed to cancel the upload request.");
-    }
-    setUploadingFiles((prev) =>
-      deleteElement(prev, ({ localId }) => localId === fileId, 1)
-    );
+    const cancelCallback = () => {
+      setUploadingFiles((prev) =>
+        deleteElement(prev, ({ localId }) => localId === fileId, 1)
+      );
+      setFileCount(fileCount - 1);
+    };
+    cancelUpload(fileId, cancelCallback);
   };
 
-  const fileListBody = () => {
+  const fileList = () => {
     const fileName = (file: UploadedFile | UploadingFile) => {
       if (isUploadedFile(file)) {
         const { link, name } = file.uploadedFile;
@@ -279,7 +229,7 @@ const FileUploader = ({
       }
 
       const {
-        file: { name },
+        uploadingFile: { name },
         uploadPercentage,
       } = file;
       return (
@@ -292,7 +242,7 @@ const FileUploader = ({
               <LinearProgress variant="determinate" value={uploadPercentage} />
             </Grid>
             <Grid xs={3} item>
-              {uploadPercentage}
+              {`${uploadPercentage}%`}
             </Grid>
           </Grid>
         </Grid>
@@ -338,22 +288,21 @@ const FileUploader = ({
         <FileActionLink
           onClick={() => onCancel(file.localId)}
           text={strings.cancel}
+          showText={false}
           linkClassName="unselect"
         />
       );
     };
 
-    const fileList = [...uploadedFiles, ...uploadingFiles].map(
-      (file, index) => (
-        <tr
-          key={isUploadedFile(file) ? file.uploadedFile.id : file.localId}
-          className={index % 2 === 0 ? "even" : "odd rowShown"}
-        >
-          <td className="name">{fileName(file)}</td>
-          <td className="actions">{fileActions(file)}</td>
-        </tr>
-      )
-    );
+    const files = [...uploadedFiles, ...uploadingFiles].map((file, index) => (
+      <tr
+        key={isUploadedFile(file) ? file.uploadedFile.id : file.localId}
+        className={index % 2 === 0 ? "even" : "odd rowShown"}
+      >
+        <td className="name">{fileName(file)}</td>
+        <td className="actions">{fileActions(file)}</td>
+      </tr>
+    ));
 
     const noFiles = (
       <tr className="even">
@@ -361,40 +310,44 @@ const FileUploader = ({
       </tr>
     );
 
-    return <tbody>{fileCount > 0 ? fileList : noFiles}</tbody>;
+    return <tbody>{fileCount > 0 ? files : noFiles}</tbody>;
   };
 
   return (
-    <StylesProvider generateClassName={generateClassName}>
-      <ThemeProvider theme={oeqTheme}>
-        <div id={`${ctrlId}universalresources`} className="universalresources">
-          <table className="zebra selections">{fileListBody()}</table>
+    <div id={`${ctrlId}universalresources`} className="universalresources">
+      <table className="zebra selections">{fileList()}</table>
 
-          {editable && (maxAttachments === null || fileCount < maxAttachments) && (
-            <>
-              <FileActionLink
-                id={`${ctrlId}_addLink`}
-                onClick={() => openDialog("", "")}
-                text={strings.add}
-                linkClassName="add"
-              />
-              {canUpload && (
-                <div {...getRootProps({ className: "dropzone" })}>
-                  <input
-                    id={`${ctrlId}_fileUpload_file`}
-                    {...getInputProps()}
-                  />
-                  <div className="filedrop">{strings.drop}</div>
-                </div>
-              )}
-            </>
+      {editable && (maxAttachments === null || fileCount < maxAttachments) && (
+        <>
+          <FileActionLink
+            id={`${ctrlId}_addLink`}
+            onClick={() => openDialog("", "")}
+            text={strings.add}
+            linkClassName="add"
+          />
+          {canUpload && (
+            <div {...getRootProps({ className: "dropzone" })}>
+              <input id={`${ctrlId}_fileUpload_file`} {...getInputProps()} />
+              <div className="filedrop">{strings.drop}</div>
+            </div>
           )}
-        </div>
-      </ThemeProvider>
-    </StylesProvider>
+        </>
+      )}
+    </div>
   );
 };
 
-export const inlineUpload = (props: FileUploaderProps) => {
-  ReactDOM.render(<FileUploader {...props} />, props.elem);
+export const render = (props: InlineFileUploaderProps) => {
+  const generateClassName = createGenerateClassName({
+    productionPrefix: "oeq-inline-file-uploader",
+    seed: "oeq-inline-file-uploader",
+  });
+  ReactDOM.render(
+    <StylesProvider generateClassName={generateClassName}>
+      <ThemeProvider theme={oeqTheme}>
+        <InlineFileUploader {...props} />
+      </ThemeProvider>
+    </StylesProvider>,
+    props.elem
+  );
 };

@@ -15,7 +15,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Link } from "@material-ui/core";
+import * as React from "react";
 
-// Assign 'FileUploader' to the window object so it's accessible for server.
-window.InlineFileUploader = require("../../tsrc/fileuploader/InlineFileUploader");
-window.UniversalFileUploader = require("../../tsrc/fileuploader/UniversalFileUploader");
+interface FileActionLinkProps {
+  onClick: () => void;
+  text: string;
+  showText?: boolean;
+  id?: string;
+  linkClassName?: string;
+}
+export const FileActionLink = ({
+  onClick,
+  text,
+  showText = true,
+  id,
+  linkClassName,
+}: FileActionLinkProps) => (
+  <Link
+    id={id}
+    className={linkClassName}
+    href="javascript:void(0);"
+    onClick={() => onClick()}
+    title={text}
+  >
+    {showText && text}
+  </Link>
+);

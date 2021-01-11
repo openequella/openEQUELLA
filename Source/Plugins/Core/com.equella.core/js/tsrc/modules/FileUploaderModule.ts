@@ -16,7 +16,32 @@
  * limitations under the License.
  */
 import Axios, { CancelTokenSource } from "axios";
-import { OeqFileInfo, UploadingFile } from "../components/FileUploader";
+
+export interface OeqFileInfo {
+  id: string;
+  name: string;
+  link: string;
+  preview: boolean;
+  editable: boolean;
+  children: OeqFileInfo[];
+}
+
+export interface UploadedFile {
+  uploadedFile: OeqFileInfo;
+  status: "uploaded" | "failed";
+}
+
+export interface UploadingFile {
+  localId: string;
+  uploadingFile: File;
+  status: "uploading";
+  uploadPercentage: number;
+}
+
+export const isUploadedFile = (
+  file: UploadedFile | UploadingFile
+): file is UploadedFile =>
+  file.status === "uploaded" || file.status === "failed";
 
 interface AttachmentDuplicateInfo {
   displayWarningMessage: boolean;
@@ -82,7 +107,9 @@ export const newUpload = (
   uploadingFile: UploadingFile,
   updateUploadProgress: (newFile: UploadingFile) => void
 ): Promise<CompleteUploadResponse> => {
-  const { name, size } = uploadingFile.file;
+  const {
+    uploadingFile: { name, size },
+  } = uploadingFile;
   const uploadData: NewUpload = {
     command: "newupload",
     filename: name,
@@ -101,7 +128,7 @@ const completeUpload = (
   uploadingFile: UploadingFile,
   updateUploadProgress: (newFile: UploadingFile) => void
 ): Promise<CompleteUploadResponse> => {
-  const { file } = uploadingFile;
+  const { uploadingFile: file } = uploadingFile;
 
   const source = CancelToken.source();
   axiosSourceMap.set(uploadingFile.localId, source);
@@ -115,7 +142,7 @@ const completeUpload = (
     onUploadProgress: (progressEvent: ProgressEvent) => {
       updateUploadProgress({
         ...uploadingFile,
-        uploadPercentage: Math.round((progressEvent.loaded / file.size) * 100),
+        uploadPercentage: Math.floor((progressEvent.loaded / file.size) * 100),
       });
     },
   }).then(({ data }) => data);
@@ -127,6 +154,16 @@ export const deleteUpload = (
 ): Promise<RemoveEntries> => {
   const deleteData: DeleteUpload = { command: "delete", id: id };
   return Axios.post<RemoveEntries>(path, deleteData).then(({ data }) => data);
+};
+
+export const cancelUpload = (fileId: string, cancelCallback: () => void) => {
+  const axiosSource = getAxiosSource(fileId);
+  if (axiosSource) {
+    axiosSource.cancel();
+  } else {
+    console.error("Failed to cancel the upload request.");
+  }
+  cancelCallback();
 };
 
 export const updateDuplicateMessage = (id: string, display: boolean) => {

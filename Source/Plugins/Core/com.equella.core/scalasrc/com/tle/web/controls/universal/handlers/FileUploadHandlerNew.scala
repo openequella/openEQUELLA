@@ -109,7 +109,7 @@ object FileUploadHandlerNew {
   val VIEW_LINK_LABEL     = l("handlers.file.viewlink")
   val SCRAPBOOK_LABEL     = l("handlers.file.link.filesfromscrapbook")
 
-  val universalUploadFunc = new ExternallyDefinedFunction("UploadList.universalUpload",
+  val universalUploadFunc = new ExternallyDefinedFunction("UniversalFileUploader.render",
                                                           uploadListSrc,
                                                           AjaxUpload.CSS_INCLUDE,
                                                           EquellaFileUploadExtension.CSS)
@@ -699,7 +699,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
               .validateBeforeUpload(mimeType, request.getContentLengthLong, controlSettings)
               .map(illegal)
               .getOrElse {
-                WebFileUploads.writeStream(uf, this, request.getInputStream) match {
+                WebFileUploads.writeStream(uf, this, request.getPart("file").getInputStream) match {
                   case Successful(fileInfo) =>
                     validateContent(info, this, uf.uploadPath) match {
                       case Left(ifr) =>
