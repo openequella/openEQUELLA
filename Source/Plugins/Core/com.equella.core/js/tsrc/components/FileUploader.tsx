@@ -104,6 +104,28 @@ const generateClassName = createGenerateClassName({
   seed: "oeq-file",
 });
 
+interface FileActionLinkProps {
+  onClick: () => void;
+  text: string;
+  id?: string;
+  linkClassName?: string;
+}
+const FileActionLink = ({
+  onClick,
+  text,
+  id,
+  linkClassName,
+}: FileActionLinkProps) => (
+  <Link
+    id={id}
+    className={linkClassName}
+    href="javascript:void(0);"
+    onClick={() => onClick()}
+    title={text}
+  >
+    {text}
+  </Link>
+);
 /**
  * A component used to upload files by 'drag and drop' or 'file selector'.
  */
@@ -131,13 +153,13 @@ const FileUploader = ({
   >(undefined);
 
   const updateUploadProgress = (updatedFile: UploadingFile) => {
-    setUploadingFiles((prev) => [
-      ...replaceElement(
+    setUploadingFiles((prev) =>
+      replaceElement(
         prev,
         (file: UploadingFile) => file.localId === updatedFile.localId,
         updatedFile
-      ),
-    ]);
+      )
+    );
   };
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -151,10 +173,7 @@ const FileUploader = ({
           status: "uploading",
           uploadPercentage: 0,
         };
-        setUploadingFiles((prev) => [
-          ...addElement<UploadingFile>(prev, localFile),
-        ]);
-
+        setUploadingFiles((prev) => addElement<UploadingFile>(prev, localFile));
         newUpload(commandUrl, localFile, updateUploadProgress)
           .then((res: CompleteUploadResponse) => {
             if (isUpdateEntry(res)) {
@@ -169,7 +188,7 @@ const FileUploader = ({
                   1
                 )
               );
-              setUploadedFiles((prev) => [...addElement(prev, uploadedFile)]);
+              setUploadedFiles((prev) => addElement(prev, uploadedFile));
               setShowDuplicateWarning(
                 res.attachmentDuplicateInfo?.displayWarningMessage ?? false
               );
@@ -189,19 +208,20 @@ const FileUploader = ({
   useEffect(() => {
     if (maxAttachments) {
       if (fileCount > maxAttachments) {
+        const removeNumber = `${fileCount - maxAttachments}`;
         if (maxAttachments > 1) {
           updateCtrlErrorText(
             ctrlId,
             `${buildMaxAttachmentWarning(
               strings.toomany,
               `${maxAttachments}`,
-              `${fileCount - maxAttachments}`
+              removeNumber
             )}`
           );
         } else {
           updateCtrlErrorText(
             ctrlId,
-            `remove1 : ${fileCount - maxAttachments}`
+            `${buildMaxAttachmentWarning(strings.toomany_1, removeNumber)}`
           );
         }
       } else {
@@ -257,6 +277,7 @@ const FileUploader = ({
           </Link>
         );
       }
+
       const {
         file: { name },
         uploadPercentage,
@@ -278,7 +299,7 @@ const FileUploader = ({
       );
     };
 
-    const actions = (file: UploadedFile | UploadingFile) => {
+    const fileActions = (file: UploadedFile | UploadingFile) => {
       if (isUploadedFile(file)) {
         const { id } = file.uploadedFile;
         return (
@@ -286,19 +307,18 @@ const FileUploader = ({
             {editable && (
               <>
                 <Grid item>
-                  <Link href="javascript:void(0);" onClick={() => onEdit(id)}>
-                    {strings.edit}
-                  </Link>
+                  <FileActionLink
+                    onClick={() => onEdit(id)}
+                    text={strings.edit}
+                  />
                 </Grid>
 
                 <Divider orientation="vertical" flexItem />
                 <Grid item>
-                  <Link
-                    href="javascript:void(0);"
+                  <FileActionLink
                     onClick={() => onReplace(id)}
-                  >
-                    {strings.replace}
-                  </Link>
+                    text={strings.replace}
+                  />
                 </Grid>
 
                 <Divider orientation="vertical" flexItem />
@@ -306,19 +326,19 @@ const FileUploader = ({
             )}
 
             <Grid item>
-              <Link href="javascript:void(0);" onClick={() => onDelete(id)}>
-                {strings.delete}
-              </Link>
+              <FileActionLink
+                onClick={() => onDelete(id)}
+                text={strings.delete}
+              />
             </Grid>
           </Grid>
         );
       }
       return (
-        <Link
-          className="unselect"
-          href="javascript:void(0);"
+        <FileActionLink
           onClick={() => onCancel(file.localId)}
-          title={strings.cancel}
+          text={strings.cancel}
+          linkClassName="unselect"
         />
       );
     };
@@ -330,7 +350,7 @@ const FileUploader = ({
           className={index % 2 === 0 ? "even" : "odd rowShown"}
         >
           <td className="name">{fileName(file)}</td>
-          <td className="actions">{actions(file)}</td>
+          <td className="actions">{fileActions(file)}</td>
         </tr>
       )
     );
@@ -352,14 +372,12 @@ const FileUploader = ({
 
           {editable && (maxAttachments === null || fileCount < maxAttachments) && (
             <>
-              <Link
+              <FileActionLink
                 id={`${ctrlId}_addLink`}
-                className="add"
-                href="javascript:void(0);"
                 onClick={() => openDialog("", "")}
-              >
-                {strings.add}
-              </Link>
+                text={strings.add}
+                linkClassName="add"
+              />
               {canUpload && (
                 <div {...getRootProps({ className: "dropzone" })}>
                   <input
