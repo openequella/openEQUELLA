@@ -69,7 +69,7 @@ export default function IndexPage() {
 
   const [templateProps, setTemplateProps] = React.useState<TemplateProps>({
     title: "",
-    fullscreenMode: "YES",
+    fullscreenMode: "NO", // Match default on the server to avoid superfluous template updates
     children: [],
   });
 
