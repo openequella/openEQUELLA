@@ -15,10 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Checkbox, TextField } from "@material-ui/core";
+import { Checkbox, Chip, TextField, Tooltip } from "@material-ui/core";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
-import { Autocomplete } from "@material-ui/lab";
+import { Autocomplete, AutocompleteGetTagProps } from "@material-ui/lab";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useEffect, useState } from "react";
@@ -26,6 +26,7 @@ import {
   Collection,
   collectionListSummary,
 } from "../../modules/CollectionsModule";
+import { isSelectionSessionOpen } from "../../modules/LegacySelectionSessionModule";
 import { languageStrings } from "../../util/langstrings";
 import useError from "../../util/useError";
 
@@ -71,6 +72,27 @@ export const CollectionSelector = ({
       multiple
       fullWidth
       limitTags={2}
+      renderTags={
+        /**
+         * If we are in a selection session, limit the max width of the chips
+         * so as to prevent overlapping with the selection panel. 132px is the
+         * widest a chip can be before it starts to increase the width of the
+         * surrounding Autocomplete component.
+         */
+        isSelectionSessionOpen()
+          ? (collections: Collection[], getTagProps: AutocompleteGetTagProps) =>
+              collections.map((collection: Collection, index: number) => (
+                <Tooltip title={collection.name}>
+                  <Chip
+                    style={{ maxWidth: "132px" }}
+                    id={"collectionChip " + collection.uuid}
+                    label={collection.name}
+                    {...getTagProps({ index })}
+                  />
+                </Tooltip>
+              ))
+          : undefined
+      }
       onChange={(_, value: Collection[]) => {
         onSelectionChange(value);
       }}
