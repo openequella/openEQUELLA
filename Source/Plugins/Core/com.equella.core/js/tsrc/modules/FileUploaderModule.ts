@@ -16,138 +16,277 @@
  * limitations under the License.
  */
 import Axios, { CancelTokenSource } from "axios";
+import { v4 } from "uuid";
 
-export interface OeqFileInfo {
+/**
+ * Data structure matching server side type 'AjaxFileEntry'
+ */
+export interface AjaxFileEntry {
+  /**
+   * A file's UUID generated on server
+   */
   id: string;
+  /**
+   * A file's name
+   */
   name: string;
+  /**
+   * A link used to access the file
+   */
   link: string;
+  /**
+   * True if previewing the file is allowed
+   */
   preview: boolean;
+  /**
+   * True if editing the file is allowed
+   */
   editable: boolean;
-  children: OeqFileInfo[];
+  /**
+   * Files that are children of this file.
+   */
+  children: AjaxFileEntry[];
 }
 
+/**
+ * Data structure for files that have been uploaded
+ */
 export interface UploadedFile {
-  uploadedFile: OeqFileInfo;
-  status: "uploaded" | "failed";
+  /**
+   * An object of AjaxFileEntry returned from server
+   */
+  fileEntry: AjaxFileEntry;
+  /**
+   * Status indicating the upload is successful
+   */
+  status: "uploaded";
 }
 
+/**
+ * Data structure for files that are being uploaded
+ */
 export interface UploadingFile {
+  /**
+   * A temporary unique ID generated on client
+   */
   localId: string;
-  uploadingFile: File;
+  /**
+   * A local file added through the File Uploader
+   */
+  fileEntry: File;
+  /**
+   * Status indicating the upload is in progress
+   */
   status: "uploading";
+  /**
+   * A number representing the amount of upload already performed
+   */
   uploadPercentage: number;
 }
 
+/**
+ * A type guard used to check if an object is UploadedFile.
+ * @param file An object that is either a UploadedFile or a UploadingFile
+ */
 export const isUploadedFile = (
   file: UploadedFile | UploadingFile
-): file is UploadedFile =>
-  file.status === "uploaded" || file.status === "failed";
+): file is UploadedFile => file.status === "uploaded";
 
+/**
+ * Data structure matching server side type 'AttachmentDuplicateInfo'
+ */
 interface AttachmentDuplicateInfo {
+  /**
+   * Whether to display the duplicate attachment warning
+   */
   displayWarningMessage: boolean;
+  /**
+   * The Attachment Control's root ID
+   */
   warningMessageWebId: string;
 }
 
+interface BasicUploadCommand {
+  command: "newupload" | "delete";
+}
+
+/**
+ * The structure for POST data used to initialise an upload
+ */
+interface NewUpload extends BasicUploadCommand {
+  /**
+   * The file name
+   */
+  filename: string;
+  /**
+   * The file size
+   */
+  size: number;
+}
+
+/**
+ * The structure for POST data used to delete an upload
+ */
+interface DeleteUpload extends BasicUploadCommand {
+  /**
+   * The file ID generated on either server or client
+   */
+  id: string;
+}
+
+/**
+ * String literal type for the response text
+ */
 type UploadResponseType =
   | "updateentry"
   | "removeentries"
   | "uploadfailed"
   | "newuploadresponse";
 
-interface BasicUploadCommand {
-  command: string;
-}
-
-interface NewUpload extends BasicUploadCommand {
-  filename: string;
-  size: number;
-}
-
-interface DeleteUpload extends BasicUploadCommand {
-  id: string;
-}
-
 interface BasicUploadResponse {
   response: UploadResponseType;
 }
 
-interface UpdateEntry extends BasicUploadResponse {
-  entry: OeqFileInfo;
-  attachmentDuplicateInfo?: AttachmentDuplicateInfo;
+/**
+ * Data structure matching server side type UpdateEntry which indicates an upload is successful
+ */
+export interface UpdateEntry extends BasicUploadResponse {
+  /**
+   * Information of an uploaded file
+   */
+  entry: AjaxFileEntry;
+  /**
+   * Information of attachment duplicates
+   */
+  attachmentDuplicateInfo: AttachmentDuplicateInfo | null;
 }
 
-interface UploadFailed extends BasicUploadResponse {
+/**
+ * Data structure matching server side type UploadFailed which indicates an upload is failed
+ */
+export interface UploadFailed extends BasicUploadResponse {
+  /**
+   * Text describing why the uploading is failed
+   */
   reason: string;
 }
 
-interface RemoveEntries extends BasicUploadResponse {
+/**
+ * Data structure matching server side type RemoveEntries which indicates deletion of an upload is successful
+ */
+export interface RemoveEntries extends BasicUploadResponse {
+  /**
+   * An array of IDs of removed files
+   * It's unsure why server uses a collection type for an individual entry.
+   */
   ids: string[];
-  attachmentDuplicateInfo?: AttachmentDuplicateInfo;
+  /**
+   * Information of attachment duplicates
+   */
+  attachmentDuplicateInfo: AttachmentDuplicateInfo | null;
 }
 
-interface NewUploadResponse extends BasicUploadResponse {
+/**
+ * Data structure matching server side type NewUploadResponse which provides information of an initialised upload
+ */
+export interface NewUploadResponse extends BasicUploadResponse {
+  /**
+   * A POST URL used to perform an upload
+   */
   uploadUrl: string;
+  /**
+   * A server generated ID for an upload
+   */
   id: string;
+  /**
+   * A server generated unique file name
+   */
   name: string;
 }
 
-export type CompleteUploadResponse = UpdateEntry | UploadFailed;
-
+/**
+ * A type guard used to check if an object is UpdateEntry.
+ * @param uploadResponse An object that is either a UpdateEntry or a UploadFailed
+ */
 export const isUpdateEntry = (
-  uploadResponse: CompleteUploadResponse
+  uploadResponse: UpdateEntry | UploadFailed
 ): uploadResponse is UpdateEntry => uploadResponse.response === "updateentry";
 
 const CancelToken = Axios.CancelToken;
-
+/**
+ * A map where the key is each UploadingFile's localId and the value is a CancelTokenSource
+ */
 const axiosSourceMap: Map<string, CancelTokenSource> = new Map();
+
+/**
+ * Due to the support of uploading multiple files at once, multiple Axios CancelToken
+ * sources are generated for each request. In order to cancel any request independently,
+ * call this function to access a CancelToken source.
+ *
+ * @param id The localId of each UploadingFile
+ */
 export const getAxiosSource = (id: string) => axiosSourceMap.get(id);
 
+/**
+ * Send a POST request to initialise an upload.
+ * @param path The request URL
+ * @param uploadingFile The file to be uploaded
+ */
 export const newUpload = (
   path: string,
-  uploadingFile: UploadingFile,
-  updateUploadProgress: (newFile: UploadingFile) => void
-): Promise<CompleteUploadResponse> => {
+  uploadingFile: UploadingFile
+): Promise<NewUploadResponse> => {
   const {
-    uploadingFile: { name, size },
+    fileEntry: { name, size },
   } = uploadingFile;
   const uploadData: NewUpload = {
     command: "newupload",
     filename: name,
     size: size,
   };
-  return Axios.post<NewUploadResponse>(
-    path,
-    uploadData
-  ).then(({ data: { uploadUrl } }) =>
-    completeUpload(uploadUrl, uploadingFile, updateUploadProgress)
+  return Axios.post<NewUploadResponse>(path, uploadData).then(
+    ({ data }) => data
   );
 };
 
-const completeUpload = (
+/**
+ * Send a POST request to complete an upload.
+ * @param path The request URL
+ * @param uploadingFile A file to be uploaded
+ * @param updateUploadProgress A Function fired during upload to update the ProgressBar
+ */
+export const completeUpload = (
   path: string,
   uploadingFile: UploadingFile,
-  updateUploadProgress: (newFile: UploadingFile) => void
-): Promise<CompleteUploadResponse> => {
-  const { uploadingFile: file } = uploadingFile;
+  updateUploadProgress: (file: UploadingFile) => void
+): Promise<UpdateEntry | UploadFailed> => {
+  const { fileEntry } = uploadingFile;
 
+  // Create a new CancelToken source and add the source to the map.
   const source = CancelToken.source();
   axiosSourceMap.set(uploadingFile.localId, source);
   const token = source.token;
 
   const formData = new FormData();
-  formData.append("file", file);
-
-  return Axios.post<CompleteUploadResponse>(path, formData, {
+  formData.append("file", fileEntry);
+  return Axios.post<UpdateEntry | UploadFailed>(path, formData, {
     cancelToken: token,
     onUploadProgress: (progressEvent: ProgressEvent) => {
       updateUploadProgress({
         ...uploadingFile,
-        uploadPercentage: Math.floor((progressEvent.loaded / file.size) * 100),
+        uploadPercentage: Math.floor(
+          (progressEvent.loaded / fileEntry.size) * 100
+        ),
       });
     },
   }).then(({ data }) => data);
 };
 
+/**
+ * Send a POST request to remove an uploaded file.
+ * @param path The request URL
+ * @param id The file ID which must be the server generated ID
+ */
 export const deleteUpload = (
   path: string,
   id: string
@@ -156,20 +295,29 @@ export const deleteUpload = (
   return Axios.post<RemoveEntries>(path, deleteData).then(({ data }) => data);
 };
 
-export const cancelUpload = (fileId: string, cancelCallback: () => void) => {
+/**
+ * Cancel an upload request.
+ * Returns a resolved promise for successful cancel or a rejected promise otherwise.
+ * @param fileId The file ID which must be the client generated ID
+ */
+export const cancelUpload = (fileId: string): Promise<void> => {
   const axiosSource = getAxiosSource(fileId);
   if (axiosSource) {
     axiosSource.cancel();
-  } else {
-    console.error("Failed to cancel the upload request.");
+    return Promise.resolve();
   }
-  cancelCallback();
+  return Promise.reject();
 };
 
-export const updateDuplicateMessage = (id: string, display: boolean) => {
-  // The div id of all duplicate warning messages automatically follows
-  // this format: its parent div id concatenated with "_duplicateWarningMessage"
-  const duplicateMessageDiv = $(`#${id}_attachment_duplicate_warning`);
+/**
+ * Update whether to show the attachment duplicate warning. Because the warning message UI
+ * is created on server side through 'ftl' template, we have to use jQuery to update the DOM.
+ *
+ * @param ctrlId The root ID of an Attachment Wizard Control
+ * @param display True to show the warning
+ */
+export const updateDuplicateMessage = (ctrlId: string, display: boolean) => {
+  const duplicateMessageDiv = $(`#${ctrlId}_attachment_duplicate_warning`);
   if (duplicateMessageDiv) {
     if (display) {
       duplicateMessageDiv.css("display", "inline");
@@ -179,7 +327,16 @@ export const updateDuplicateMessage = (id: string, display: boolean) => {
   }
 };
 
-export const updateCtrlErrorText = (ctrlId: string, text = "") => {
+/**
+ * Update the error text of an Attachment Wizard Control. An example of calling this
+ * function is when the number of uploaded/uploading files is more than the maximum
+ * number of attachments. Similar to 'updateDuplicateMessage', jQuery is used to help
+ * update DOM.
+ *
+ * @param ctrlId The root ID of an Attachment Wizard Control
+ * @param text The text describing the error
+ */
+export const updateCtrlErrorText = (ctrlId: string, text: string) => {
   const contElem = $(`DIV#${ctrlId} > DIV.control`);
   if (contElem) {
     if (text === "") {
@@ -191,10 +348,23 @@ export const updateCtrlErrorText = (ctrlId: string, text = "") => {
   }
 };
 
+/**
+ * Build a text for the error of exceeding the maximum number of attachments
+ *
+ * @param format The text format provided by server
+ * @param args A list of values used to replace the format's placeholders.
+ */
 export const buildMaxAttachmentWarning = (
   format: string,
-  ...args: string[]
+  ...args: number[]
 ): string =>
   format.replace(/{(\d+)}/g, (match, number) =>
-    typeof args[number] !== "undefined" ? args[number] : match
+    typeof args[number] !== "undefined" ? args[number].toString() : match
   );
+
+export const generateLocalFile = (file: File): UploadingFile => ({
+  localId: v4(),
+  fileEntry: file,
+  status: "uploading",
+  uploadPercentage: 0,
+});

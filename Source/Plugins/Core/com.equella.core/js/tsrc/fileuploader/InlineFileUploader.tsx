@@ -24,7 +24,6 @@ import {
   StylesProvider,
   ThemeProvider,
 } from "@material-ui/core";
-import { v4 } from "uuid";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import * as ReactDOM from "react-dom";
@@ -32,16 +31,20 @@ import { useDropzone } from "react-dropzone";
 import {
   buildMaxAttachmentWarning,
   cancelUpload,
-  CompleteUploadResponse,
   deleteUpload,
   isUpdateEntry,
   isUploadedFile,
   newUpload,
-  OeqFileInfo,
+  AjaxFileEntry,
   updateCtrlErrorText,
   updateDuplicateMessage,
   UploadedFile,
   UploadingFile,
+  completeUpload,
+  NewUploadResponse,
+  UpdateEntry,
+  UploadFailed,
+  generateLocalFile,
 } from "../modules/FileUploaderModule";
 import { oeqTheme } from "../theme";
 import {
@@ -51,6 +54,9 @@ import {
 } from "../util/ImmutableArrayUtil";
 import { FileActionLink } from "./FileUploaderActionLink";
 
+/**
+ * Data structure for all texts server passes in
+ */
 interface ControlStrings {
   edit: string;
   replace: string;
@@ -65,22 +71,54 @@ interface ControlStrings {
   toomany_1: string;
 }
 
+/**
+ * Data structure matching the props server passes in
+ */
 interface InlineFileUploaderProps {
+  /**
+   * The root HTML Element under which this component gets rendered
+   */
   elem: Element;
+  /**
+   * The root ID of an Attachment Wizard Control
+   */
   ctrlId: string;
-  entries: OeqFileInfo[];
+  /**
+   * A list of files that have been uploaded to server
+   */
+  entries: AjaxFileEntry[];
+  /**
+   * The number of maximum attachments
+   */
   maxAttachments: number | null;
+  /**
+   * Whether uploading files is allowed
+   */
   canUpload: boolean;
+  /**
+   * The function used to open the Universal Resource Dialog to update a uploaded file
+   * @param replaceUuid The ID of a file that is the replacement of a selected file
+   * @param editUuid The ID of a selected file
+   */
   dialog: (replaceUuid: string, editUuid: string) => void;
+  /**
+   * Whether editing files is allowed
+   */
   editable: boolean;
+  /**
+   * The URL used to initialise or delete an upload
+   */
   commandUrl: string;
+  /**
+   * A number of language strings defined on server
+   */
   strings: ControlStrings;
+  /**
+   * The function used to reload the Wizard state
+   */
   reloadState: () => void;
 }
 
-/**
- * A component used to upload files by 'drag and drop' or 'file selector'.
- */
 const InlineFileUploader = ({
   ctrlId,
   entries,
@@ -94,7 +132,7 @@ const InlineFileUploader = ({
 }: InlineFileUploaderProps) => {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>(
     entries.map((entry) => ({
-      uploadedFile: entry,
+      fileEntry: entry,
       status: "uploaded",
     }))
   );
@@ -104,81 +142,93 @@ const InlineFileUploader = ({
     boolean | undefined
   >(undefined);
 
-  const updateUploadProgress = (updatedFile: UploadingFile) => {
-    setUploadingFiles((prev) =>
-      replaceElement(
-        prev,
-        (file: UploadingFile) => file.localId === updatedFile.localId,
-        updatedFile
-      )
-    );
-  };
-
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: (droppedFiles) => {
+      const updateUploadProgress = (updatedFile: UploadingFile) => {
+        setUploadingFiles((prev) =>
+          replaceElement(
+            prev,
+            (file: UploadingFile) => file.localId === updatedFile.localId,
+            updatedFile
+          )
+        );
+      };
+      // Update the file count first.
       setFileCount(fileCount + droppedFiles.length);
+      // Upload each dropped file.
       droppedFiles.forEach((droppedFile) => {
-        const localId = v4();
-        const localFile: UploadingFile = {
-          localId: localId,
-          uploadingFile: droppedFile,
-          status: "uploading",
-          uploadPercentage: 0,
-        };
-        setUploadingFiles((prev) => addElement<UploadingFile>(prev, localFile));
-        newUpload(commandUrl, localFile, updateUploadProgress)
-          .then((res: CompleteUploadResponse) => {
-            if (isUpdateEntry(res)) {
+        const localFile = generateLocalFile(droppedFile);
+        // Add each file to the uploading list.
+        setUploadingFiles((prev) => addElement(prev, localFile));
+        // A promise chain which includes initialising and completing an upload as well as updating state.
+        newUpload(commandUrl, localFile)
+          .then(({ uploadUrl }: NewUploadResponse) =>
+            completeUpload(uploadUrl, localFile, updateUploadProgress)
+          )
+          .then((uploadResponse: UpdateEntry | UploadFailed) => {
+            if (isUpdateEntry(uploadResponse)) {
+              const { entry, attachmentDuplicateInfo } = uploadResponse;
               const uploadedFile: UploadedFile = {
-                uploadedFile: res.entry,
+                fileEntry: entry,
                 status: "uploaded",
               };
-              setUploadingFiles(
+              // Remove each file from the uploading list.
+              setUploadingFiles((prev) =>
                 deleteElement(
-                  uploadingFiles,
-                  (file: UploadingFile) => file.localId === localId,
+                  prev,
+                  (file: UploadingFile) => file.localId === localFile.localId,
                   1
                 )
               );
+              // Add each file to the uploaded list.
               setUploadedFiles((prev) => addElement(prev, uploadedFile));
+              // Update duplicate warning.
               setShowDuplicateWarning(
-                res.attachmentDuplicateInfo?.displayWarningMessage ?? false
+                attachmentDuplicateInfo?.displayWarningMessage ?? false
               );
             }
           })
+          .catch
+          //todo handle error
+          ()
           .finally(reloadState);
       });
     },
   });
 
+  /**
+   * Update whether to show the attachment duplicate warning.
+   * In the first render where 'showDuplicateWarning' is undefined, do nothing
+   * because the warning message is controlled by server.
+   */
   useEffect(() => {
     if (showDuplicateWarning !== undefined) {
       updateDuplicateMessage(ctrlId, showDuplicateWarning);
     }
   }, [showDuplicateWarning]);
 
+  /**
+   * Update the error text for exceeding maximum number of attachments.
+   * When there is a limit, check if 'fileCount' is greater than 'maxAttachments'.
+   * If yes, depending on whether the limit is 1 or more than 1, use a proper format
+   * provided by server to update the error text.
+   * If no, set the text to an empty string which will remove the error.
+   * Lastly, do nothing when there is no limit.
+   */
   useEffect(() => {
     if (maxAttachments) {
-      if (fileCount > maxAttachments) {
-        const removeNumber = `${fileCount - maxAttachments}`;
-        if (maxAttachments > 1) {
-          updateCtrlErrorText(
-            ctrlId,
-            `${buildMaxAttachmentWarning(
+      const remainingQuota = fileCount - maxAttachments;
+      const getTextFromFormat = () =>
+        maxAttachments > 1
+          ? buildMaxAttachmentWarning(
               strings.toomany,
-              `${maxAttachments}`,
-              removeNumber
-            )}`
-          );
-        } else {
-          updateCtrlErrorText(
-            ctrlId,
-            `${buildMaxAttachmentWarning(strings.toomany_1, removeNumber)}`
-          );
-        }
-      } else {
-        updateCtrlErrorText(ctrlId);
-      }
+              maxAttachments,
+              remainingQuota
+            )
+          : buildMaxAttachmentWarning(strings.toomany_1, remainingQuota);
+      const warningText = fileCount > maxAttachments ? getTextFromFormat() : "";
+
+      updateCtrlErrorText(ctrlId, warningText);
     }
   }, [fileCount]);
 
@@ -190,17 +240,20 @@ const InlineFileUploader = ({
     const confirmDelete = window.confirm(strings.deleteConfirm);
     if (confirmDelete) {
       deleteUpload(commandUrl, fileId)
-        .then(({ ids, attachmentDuplicateInfo }) => {
+        .then(({ attachmentDuplicateInfo }) => {
+          // Remove the file from the uploaded list.
           setUploadedFiles(
             deleteElement(
               uploadedFiles,
-              ({ uploadedFile: { id } }: UploadedFile) => fileId === id,
+              ({ fileEntry }) => fileId === fileEntry.id,
               1
             )
           );
+          // Update duplicate warning.
           setShowDuplicateWarning(
             attachmentDuplicateInfo?.displayWarningMessage ?? false
           );
+          // Update the file count.
           setFileCount(fileCount - 1);
         })
         .finally(reloadState);
@@ -208,19 +261,23 @@ const InlineFileUploader = ({
   };
 
   const onCancel = (fileId: string) => {
-    const cancelCallback = () => {
-      setUploadingFiles((prev) =>
-        deleteElement(prev, ({ localId }) => localId === fileId, 1)
+    cancelUpload(fileId).then(() => {
+      // Remove the file from the uploading list.
+      setUploadingFiles(
+        deleteElement(uploadingFiles, ({ localId }) => localId === fileId, 1)
       );
       setFileCount(fileCount - 1);
-    };
-    cancelUpload(fileId, cancelCallback);
+    });
   };
 
-  const fileList = () => {
-    const fileName = (file: UploadedFile | UploadingFile) => {
+  /**
+   * Build a file list. Each list item has two columns and what the two columns
+   * display depends on file status.
+   */
+  const buildFileList = () => {
+    const buildFirstColumn = (file: UploadedFile | UploadingFile) => {
       if (isUploadedFile(file)) {
-        const { link, name } = file.uploadedFile;
+        const { link, name } = file.fileEntry;
         return (
           <Link href={link} target="_blank">
             {name}
@@ -229,19 +286,19 @@ const InlineFileUploader = ({
       }
 
       const {
-        uploadingFile: { name },
+        fileEntry: { name },
         uploadPercentage,
       } = file;
       return (
-        <Grid container className="progress-bar">
-          <Grid xs={10} item>
+        <Grid container className="progress-bar progressbarOuter">
+          <Grid item xs={10}>
             {name}
           </Grid>
-          <Grid xs={2} item container alignItems="center" spacing={2}>
-            <Grid xs={9} item>
+          <Grid item container xs={2} alignItems="center" spacing={2}>
+            <Grid item xs={9}>
               <LinearProgress variant="determinate" value={uploadPercentage} />
             </Grid>
-            <Grid xs={3} item>
+            <Grid item xs={3}>
               {`${uploadPercentage}%`}
             </Grid>
           </Grid>
@@ -249,38 +306,38 @@ const InlineFileUploader = ({
       );
     };
 
-    const fileActions = (file: UploadedFile | UploadingFile) => {
+    const buildSecondColumn = (file: UploadedFile | UploadingFile) => {
       if (isUploadedFile(file)) {
-        const { id } = file.uploadedFile;
+        const { id } = file.fileEntry;
         return (
           <Grid container spacing={2} wrap="nowrap">
-            {editable && (
-              <>
-                <Grid item>
-                  <FileActionLink
-                    onClick={() => onEdit(id)}
-                    text={strings.edit}
-                  />
-                </Grid>
-
-                <Divider orientation="vertical" flexItem />
-                <Grid item>
-                  <FileActionLink
-                    onClick={() => onReplace(id)}
-                    text={strings.replace}
-                  />
-                </Grid>
-
-                <Divider orientation="vertical" flexItem />
-              </>
-            )}
-
-            <Grid item>
-              <FileActionLink
-                onClick={() => onDelete(id)}
-                text={strings.delete}
-              />
-            </Grid>
+            {editable &&
+              [
+                {
+                  text: strings.edit,
+                  handler: onEdit,
+                  isDividerNeeded: true,
+                },
+                {
+                  text: strings.replace,
+                  handler: onReplace,
+                  isDividerNeeded: true,
+                },
+                {
+                  text: strings.delete,
+                  handler: onDelete,
+                  isDividerNeeded: false,
+                },
+              ].map(({ text, handler, isDividerNeeded }) => (
+                <>
+                  <Grid item>
+                    <FileActionLink onClick={() => handler(id)} text={text} />
+                  </Grid>
+                  {isDividerNeeded && (
+                    <Divider orientation="vertical" flexItem />
+                  )}
+                </>
+              ))}
           </Grid>
         );
       }
@@ -289,20 +346,22 @@ const InlineFileUploader = ({
           onClick={() => onCancel(file.localId)}
           text={strings.cancel}
           showText={false}
-          linkClassName="unselect"
+          customClass="unselect"
         />
       );
     };
 
-    const files = [...uploadedFiles, ...uploadingFiles].map((file, index) => (
-      <tr
-        key={isUploadedFile(file) ? file.uploadedFile.id : file.localId}
-        className={index % 2 === 0 ? "even" : "odd rowShown"}
-      >
-        <td className="name">{fileName(file)}</td>
-        <td className="actions">{fileActions(file)}</td>
-      </tr>
-    ));
+    const fileList = [...uploadedFiles, ...uploadingFiles].map(
+      (file, index) => (
+        <tr
+          key={isUploadedFile(file) ? file.fileEntry.id : file.localId}
+          className={index % 2 === 0 ? "even" : "odd rowShown"}
+        >
+          <td className="name">{buildFirstColumn(file)}</td>
+          <td className="actions">{buildSecondColumn(file)}</td>
+        </tr>
+      )
+    );
 
     const noFiles = (
       <tr className="even">
@@ -310,12 +369,12 @@ const InlineFileUploader = ({
       </tr>
     );
 
-    return <tbody>{fileCount > 0 ? files : noFiles}</tbody>;
+    return <tbody>{fileCount > 0 ? fileList : noFiles}</tbody>;
   };
 
   return (
     <div id={`${ctrlId}universalresources`} className="universalresources">
-      <table className="zebra selections">{fileList()}</table>
+      <table className="zebra selections">{buildFileList()}</table>
 
       {editable && (maxAttachments === null || fileCount < maxAttachments) && (
         <>
@@ -323,7 +382,7 @@ const InlineFileUploader = ({
             id={`${ctrlId}_addLink`}
             onClick={() => openDialog("", "")}
             text={strings.add}
-            linkClassName="add"
+            customClass="add"
           />
           {canUpload && (
             <div {...getRootProps({ className: "dropzone" })}>
@@ -337,10 +396,14 @@ const InlineFileUploader = ({
   );
 };
 
+/**
+ * This function is primarily created for rendering this component on server
+ * @param props The props passed into this component (search 'uploadArgs' in 'UniversalWebControlNew.scala' for details)
+ */
 export const render = (props: InlineFileUploaderProps) => {
   const generateClassName = createGenerateClassName({
-    productionPrefix: "oeq-inline-file-uploader",
-    seed: "oeq-inline-file-uploader",
+    productionPrefix: "oeq-ifu",
+    seed: "oeq-ifu",
   });
   ReactDOM.render(
     <StylesProvider generateClassName={generateClassName}>

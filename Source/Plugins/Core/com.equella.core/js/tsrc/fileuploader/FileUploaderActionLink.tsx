@@ -23,18 +23,18 @@ interface FileActionLinkProps {
   text: string;
   showText?: boolean;
   id?: string;
-  linkClassName?: string;
+  customClass?: string;
 }
 export const FileActionLink = ({
   onClick,
   text,
   showText = true,
   id,
-  linkClassName,
+  customClass,
 }: FileActionLinkProps) => (
   <Link
     id={id}
-    className={linkClassName}
+    className={customClass}
     href="javascript:void(0);"
     onClick={() => onClick()}
     title={text}

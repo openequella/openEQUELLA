@@ -28,15 +28,18 @@ import * as React from "react";
 import { useState } from "react";
 import * as ReactDOM from "react-dom";
 import { useDropzone } from "react-dropzone";
-import { v4 } from "uuid";
 import {
   cancelUpload,
-  CompleteUploadResponse,
+  completeUpload,
   deleteUpload,
+  generateLocalFile,
   isUpdateEntry,
   isUploadedFile,
   newUpload,
+  NewUploadResponse,
+  UpdateEntry,
   UploadedFile,
+  UploadFailed,
   UploadingFile,
 } from "../modules/FileUploaderModule";
 import { oeqTheme } from "../theme";
@@ -45,8 +48,12 @@ import {
   deleteElement,
   replaceElement,
 } from "../util/ImmutableArrayUtil";
+import { languageStrings } from "../util/langstrings";
 import { FileActionLink } from "./FileUploaderActionLink";
 
+/**
+ * Data structure for all texts server passes in
+ */
 interface DialogStrings {
   scrapbook: string;
   delete: string;
@@ -54,16 +61,39 @@ interface DialogStrings {
   drop: string;
 }
 
+/**
+ * Data structure matching the props server passes in
+ */
 interface UniversalFileUploaderProps {
+  /**
+   * The root HTML Element under which this component gets rendered
+   */
   elem: Element;
+  /**
+   * The root ID of an Attachment Wizard Control
+   */
   ctrlId: string;
+  /**
+   * The function used to update the footer of Universal Resource Dialog
+   */
   updateFooter: () => void;
+  /**
+   * The function used to import files from scrapbook
+   */
   scrapBookOnClick?: () => void;
+  /**
+   * The URL used to initialise or delete an upload
+   */
   commandUrl: string;
+  /**
+   * A number of language strings defined on server
+   */
   strings: DialogStrings;
 }
 
 const useStyles = makeStyles({
+  // In order to show the custom progress bar background color, override the MUI LinearProgress styles
+  // to make its background color transparent.
   barColorPrimary: {
     backgroundColor: "transparent",
   },
@@ -77,41 +107,38 @@ const UniversalFileUploader = ({
   strings,
 }: UniversalFileUploaderProps) => {
   const classes = useStyles();
+  const { browse, noFileSelected } = languageStrings.fileUploader;
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
 
-  const updateUploadProgress = (updatedFile: UploadingFile) => {
-    setUploadingFiles((prev) =>
-      replaceElement(
-        prev,
-        (file: UploadingFile) => file.localId === updatedFile.localId,
-        updatedFile
-      )
-    );
-  };
-
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: (droppedFiles) => {
+      const updateUploadProgress = (updatedFile: UploadingFile) => {
+        setUploadingFiles((prev) =>
+          replaceElement(
+            prev,
+            (file) => file.localId === updatedFile.localId,
+            updatedFile
+          )
+        );
+      };
       droppedFiles.forEach((droppedFile) => {
-        const localId = v4();
-        const localFile: UploadingFile = {
-          localId: localId,
-          uploadingFile: droppedFile,
-          status: "uploading",
-          uploadPercentage: 0,
-        };
-        setUploadingFiles((prev) => addElement<UploadingFile>(prev, localFile));
-        newUpload(commandUrl, localFile, updateUploadProgress)
-          .then((res: CompleteUploadResponse) => {
-            if (isUpdateEntry(res)) {
+        const localFile: UploadingFile = generateLocalFile(droppedFile);
+        setUploadingFiles((prev) => addElement(prev, localFile));
+        newUpload(commandUrl, localFile)
+          .then(({ uploadUrl }: NewUploadResponse) =>
+            completeUpload(uploadUrl, localFile, updateUploadProgress)
+          )
+          .then((uploadResponse: UpdateEntry | UploadFailed) => {
+            if (isUpdateEntry(uploadResponse)) {
               const uploadedFile: UploadedFile = {
-                uploadedFile: res.entry,
+                fileEntry: uploadResponse.entry,
                 status: "uploaded",
               };
-              setUploadingFiles(
+              setUploadingFiles((prev) =>
                 deleteElement(
-                  uploadingFiles,
-                  (file: UploadingFile) => file.localId === localId,
+                  prev,
+                  (file: UploadingFile) => file.localId === localFile.localId,
                   1
                 )
               );
@@ -122,22 +149,14 @@ const UniversalFileUploader = ({
       });
     },
   });
-  const onCancel = (fileId: string) => {
-    const cancelCallback = () => {
-      setUploadingFiles((prev) =>
-        deleteElement(prev, ({ localId }) => localId === fileId, 1)
-      );
-    };
-    cancelUpload(fileId, cancelCallback);
-  };
 
   const onDelete = (fileId: string) => {
     deleteUpload(commandUrl, fileId)
-      .then(({ ids, attachmentDuplicateInfo }) => {
+      .then((_) => {
         setUploadedFiles(
           deleteElement(
             uploadedFiles,
-            ({ uploadedFile: { id } }: UploadedFile) => id === fileId,
+            ({ fileEntry: { id } }: UploadedFile) => id === fileId,
             1
           )
         );
@@ -145,41 +164,45 @@ const UniversalFileUploader = ({
       .finally(updateFooter);
   };
 
-  const fileList = [...uploadingFiles, ...uploadedFiles].map((file) => {
-    const fileName = () =>
-      isUploadedFile(file) ? file.uploadedFile.name : file.uploadingFile.name;
+  const onCancel = (fileId: string) => {
+    cancelUpload(fileId).then(() => {
+      setUploadingFiles(
+        deleteElement(uploadingFiles, ({ localId }) => localId === fileId, 1)
+      );
+    });
+  };
 
-    const progressBarProps = () =>
-      isUploadedFile(file)
-        ? {
+  const buildFileList = [...uploadingFiles, ...uploadedFiles].map((file) => {
+    const fileListProps = isUploadedFile(file)
+      ? {
+          progressBarProps: {
             className: "progress-bar-inner complete",
             value: 100,
             classes: {
               barColorPrimary: classes.barColorPrimary,
             },
-          }
-        : {
+          },
+          progressPercentage: "",
+          binIconProps: {
+            onClick: () => onDelete(file.fileEntry.id),
+            text: strings.delete,
+          },
+        }
+      : {
+          progressBarProps: {
             className: "progress-bar-inner",
             value: file.uploadPercentage,
-          };
-    const progressPercentage = () =>
-      isUploadedFile(file) ? "" : `${file.uploadPercentage}%`;
-
-    const binIconProps = () =>
-      isUploadedFile(file)
-        ? {
-            onClick: () => onDelete(file.uploadedFile.id),
-            text: strings.delete,
-          }
-        : {
+          },
+          progressPercentage: `${file.uploadPercentage}%`,
+          binIconProps: {
             onClick: () => onCancel(file.localId),
             text: strings.cancel,
-          };
-
+          },
+        };
     return (
       <Grid container className="file-upload" spacing={2} alignItems="center">
         <Grid item className="file-name" xs={8}>
-          {fileName()}
+          {file.fileEntry.name}
         </Grid>
         <Grid
           item
@@ -190,17 +213,20 @@ const UniversalFileUploader = ({
           alignItems="center"
         >
           <Grid item xs={9}>
-            <LinearProgress variant="determinate" {...progressBarProps()} />
+            <LinearProgress
+              variant="determinate"
+              {...fileListProps.progressBarProps}
+            />
           </Grid>
           <Grid item xs={3}>
-            {progressPercentage()}
+            {fileListProps.progressPercentage}
           </Grid>
         </Grid>
         <Grid item xs={1}>
           <FileActionLink
-            {...binIconProps()}
+            {...fileListProps.binIconProps}
             showText={false}
-            linkClassName="unselect"
+            customClass="unselect"
           />
         </Grid>
       </Grid>
@@ -208,16 +234,16 @@ const UniversalFileUploader = ({
   });
   return (
     <div id="uploads">
-      <div className="uploadsprogress">{fileList}</div>
+      <div className="uploadsprogress">{buildFileList}</div>
       <div {...getRootProps()}>
         <div className="customfile focus">
           <Button
             className="customfile-button focus btn btn-equella btn-mini"
             onClick={(e) => e.preventDefault()}
           >
-            Browse
+            {browse}
           </Button>
-          <span className="customfile-feedback">No file selected...</span>
+          <span className="customfile-feedback">{noFileSelected}</span>
           <input
             id={`${ctrlId}_fileUpload`}
             className="customfile-input"
@@ -232,8 +258,8 @@ const UniversalFileUploader = ({
 
 export const render = (props: UniversalFileUploaderProps) => {
   const generateClassName = createGenerateClassName({
-    productionPrefix: "oeq-universal-file-uploader",
-    seed: "oeq-universal-file-uploader",
+    productionPrefix: "oeq-ufu",
+    seed: "oeq-ufu",
   });
   ReactDOM.render(
     <StylesProvider generateClassName={generateClassName} injectFirst>
