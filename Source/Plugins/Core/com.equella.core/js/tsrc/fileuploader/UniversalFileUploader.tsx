@@ -102,7 +102,7 @@ const useStyles = makeStyles({
 const UniversalFileUploader = ({
   ctrlId,
   updateFooter,
-  scrapBookOnClick,
+  scrapBookOnClick = () => {},
   commandUrl,
   strings,
 }: UniversalFileUploaderProps) => {
@@ -252,6 +252,12 @@ const UniversalFileUploader = ({
         </div>
         <div className="filedrop">{strings.drop}</div>
       </div>
+      <FileActionLink
+        id={`${ctrlId}_filesFromScrapbookLink`}
+        onClick={scrapBookOnClick}
+        text={strings.scrapbook}
+        customClass="add"
+      />
     </div>
   );
 };
