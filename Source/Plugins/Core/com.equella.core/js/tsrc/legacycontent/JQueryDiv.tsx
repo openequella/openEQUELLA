@@ -26,6 +26,14 @@ export interface JQueryDivProps extends React.HTMLAttributes<HTMLDivElement> {
  * Provides a means to have a `div` whose content is the raw HTML returned from the server. However
  * also used to support the various JQuery AJAX stuff partially due to the clean-up effect of
  * emptying out the `div`.
+ *
+ * It would be nice if we could get away with a simpler:
+ *
+ * `<div {...withoutOthers} dangerouslySetInnerHTML={{ __html: html}}/>`
+ *
+ * However that does not work, using jQuery to set the content of the `div` and then especially
+ * clearing the `div` in the clean-up effect is required for some edge cases. Why, is not entirely
+ * clear.
  */
 const JQueryDiv = React.memo(({ html, ...withoutOthers }: JQueryDivProps) => {
   const divElem = React.useRef<HTMLElement>();

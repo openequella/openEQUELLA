@@ -178,6 +178,10 @@ export const LegacyContent = React.memo(function LegacyContent({
     content: LegacyContentResponse,
     scrollTop: boolean
   ) {
+    // First clear the content. As odd as this may seem we need this to ensure
+    // legacy elements work correctly without React rendering/dom optimisations. *sad*
+    // - This mimicks the idea of where the web browser would've reloaded the page.
+    setContent(undefined);
     updateIncludes(content.js, content.css).then((extraCss) => {
       const pageContent = {
         ...content,

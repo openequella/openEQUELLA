@@ -20,7 +20,7 @@ import * as React from "react";
 import HtmlParser from "react-html-parser";
 import JQueryDiv from "./JQueryDiv";
 import { PageContent } from "./LegacyContent";
-import { getEqPageForm, LegacyForm } from "./LegacyForm";
+import { LegacyForm } from "./LegacyForm";
 
 const useStyles = makeStyles((t) => ({
   noPadding: {
@@ -40,36 +40,20 @@ export function LegacyContentRenderer({
   const classes = useStyles();
 
   // Effect responsible for the execution of the legacy scripts etc which historically were
-  // simply added at the end of the server-side HTML rendered. Some of the scripts would
-  // fail with `form` being `null` as the React rendering needs to be done before we kick
-  // these off.
+  // simply added at the end of the server-side HTML rendered.
   React.useEffect(() => {
-    const isReady = (): boolean =>
-      (noForm ? document.getElementById(mainContentDivId) : getEqPageForm()) !==
-      null;
+    if (script) window.eval(script);
+  }, [script]);
 
-    const runPostRenderTasks = () => {
-      if (!isReady()) {
-        window.requestAnimationFrame(runPostRenderTasks);
-      } else {
-        // eslint-disable-next-line no-eval
-        if (script) window.eval(script);
-        if (afterHtml) afterHtml();
-      }
-    };
-
-    if (script || afterHtml) {
-      runPostRenderTasks();
-    }
-  }, [afterHtml, noForm, script]);
+  React.useEffect(() => {
+    if (afterHtml) afterHtml();
+  }, [afterHtml]);
 
   const extraClass =
     !fullscreenMode && menuMode !== "HIDDEN" ? classes.noPadding : "";
 
-  const mainContentDivId = "oeqMainLegacyContent";
-
   const mainContent = (
-    <div id={mainContentDivId} className={`content ${extraClass}`}>
+    <div id="oeqMainLegacyContent" className={`content ${extraClass}`}>
       {crumbs && <JQueryDiv id="breadcrumbs" html={crumbs} />}
       {upperbody && <JQueryDiv html={upperbody} />}
       <JQueryDiv html={body} />
