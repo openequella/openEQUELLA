@@ -37,7 +37,7 @@
     "typescript-is": "^0.17.0"
   },
   "devDependencies": {
-    "@types/jest": "26.0.16",
+    "@types/jest": "26.0.20",
     "@types/tough-cookie": "^4.0.0",
     "@types/lodash": "4.14.165",
     "@typescript-eslint/eslint-plugin": "4.9.0",
