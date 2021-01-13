@@ -24,7 +24,7 @@ jobs:
     steps:
       # Using v1 (rather than v2) through-out this workflow due to issue:
       # https://github.com/actions/checkout/issues/237
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: NPM Cache
         uses: actions/cache@v2
@@ -116,7 +116,7 @@ jobs:
     steps:
       # Using v1 (rather than v2) through-out this workflow due to issue:
       # https://github.com/actions/checkout/issues/237
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: NPM Cache
         uses: actions/cache@v2
@@ -159,7 +159,7 @@ jobs:
   build_import_export_tool:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Set up JDK 1.8
         uses: actions/setup-java@v2
@@ -231,7 +231,7 @@ jobs:
           distribution: adopt
           java-version: 8
 
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Download installer
         uses: actions/download-artifact@v1
@@ -335,7 +335,7 @@ jobs:
       AUTOTEST_CONFIG: autotest/github-actions.conf
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Install OS dependencies
         run: |
