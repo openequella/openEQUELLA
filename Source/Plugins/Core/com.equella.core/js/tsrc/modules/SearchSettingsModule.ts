@@ -70,7 +70,7 @@ export const getSearchSettingsFromServer = () =>
   );
 
 export const saveSearchSettingsToServer = (settings: SearchSettings) =>
-  new Promise(
+  new Promise<void>(
     (resolve: () => void, reject: (error: TemplateUpdate) => void) => {
       Axios.put(SEARCH_SETTINGS_URL, settings)
         .then(() => {
@@ -80,7 +80,7 @@ export const saveSearchSettingsToServer = (settings: SearchSettings) =>
     }
   );
 export const saveCloudSettingsToServer = (settings: CloudSettings) =>
-  new Promise(
+  new Promise<void>(
     (resolve: () => void, reject: (error: TemplateUpdate) => void) => {
       Axios.put(CLOUD_SETTINGS_URL, settings)
         .then(() => {
