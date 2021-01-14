@@ -16,6 +16,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Set;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.pagefactory.ByChained;
@@ -108,9 +109,12 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
       uploadMultiple(getPathFromUrl(url), expectedFilenames[i]);
       i++;
     }
-    WebElement addButton = waitForElement(getMainDiv(), EBy.buttonText("Add"));
-    ExpectedCondition<Boolean> disappears = removalCondition(addButton);
-    addButton.click();
+    WebElement universalResourceDialog = getMainDiv();
+    ((JavascriptExecutor) getContext().getDriver())
+        .executeScript(
+            "arguments[0].click();", universalResourceDialog.findElement(EBy.buttonText("Add")));
+
+    ExpectedCondition<Boolean> disappears = removalCondition(universalResourceDialog);
     waiter.until(disappears);
   }
 
@@ -132,11 +136,11 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
         waitForElement(
             uploadsDiv,
             By.xpath(
-                "div[@class='file-upload' and span/strong/text() = "
+                "div[contains(@class, 'file-upload') and div/h6/text() = "
                     + quoteXPath(expectedFilename)
                     + "]"));
     waitForElement(
-        uploadRow, new ByChained(By.className("progress-bar"), By.className("complete")));
+        uploadRow, new ByChained(By.className("file-upload-progress"), By.className("complete")));
   }
 
   public FileUniversalControlType uploadError(URL file, String errorMessage) {
@@ -149,7 +153,7 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
     String xpath =
         "id('"
             + getWizid()
-            + "_dialog')//p[@class = 'ctrlinvalidmessage' and text() = "
+            + "_dialog')//div[contains(@class, 'ctrlinvalidmessage') and h6/text() = "
             + quoteXPath(msg)
             + "]";
     return ExpectedConditions.visibilityOfElementLocated(By.xpath(xpath));

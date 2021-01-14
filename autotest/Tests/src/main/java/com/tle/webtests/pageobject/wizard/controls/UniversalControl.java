@@ -89,7 +89,7 @@ public class UniversalControl extends NewAbstractWizardControl<UniversalControl>
   }
 
   private By getActionLink(String action) {
-    return By.xpath("td[@class='actions']/a[text()=" + quoteXPath(action) + "]");
+    return By.xpath("td[@class='actions']/div/div/a[text()=" + quoteXPath(action) + "]");
   }
 
   private void clickAction(By rowBy, String action) {

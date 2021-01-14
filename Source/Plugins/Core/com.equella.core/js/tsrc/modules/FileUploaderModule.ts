@@ -77,11 +77,12 @@ export interface UploadingFile {
   /**
    * Status indicating the upload is in progress
    */
-  status: "uploading";
+  status: "uploading" | "failed";
   /**
    * A number representing the amount of upload already performed
    */
   uploadPercentage: number;
+  failedReason?: string;
 }
 
 /**
@@ -209,8 +210,12 @@ export interface NewUploadResponse extends BasicUploadResponse {
  * @param uploadResponse An object that is either a UpdateEntry or a UploadFailed
  */
 export const isUpdateEntry = (
-  uploadResponse: UpdateEntry | UploadFailed
+  uploadResponse: BasicUploadResponse
 ): uploadResponse is UpdateEntry => uploadResponse.response === "updateentry";
+
+const isUploadFailed = (
+  uploadResponse: BasicUploadResponse
+): uploadResponse is UploadFailed => uploadResponse.response === "uploadfailed";
 
 const CancelToken = Axios.CancelToken;
 /**
@@ -231,11 +236,14 @@ export const getAxiosSource = (id: string) => axiosSourceMap.get(id);
  * Send a POST request to initialise an upload.
  * @param path The request URL
  * @param uploadingFile The file to be uploaded
+ * @param updateUploadProgress
+ * @param failCallback
  */
 export const newUpload = (
   path: string,
-  uploadingFile: UploadingFile
-): Promise<NewUploadResponse> => {
+  uploadingFile: UploadingFile,
+  updateUploadProgress: (file: UploadingFile) => void
+): Promise<UpdateEntry | UploadFailed> => {
   const {
     fileEntry: { name, size },
   } = uploadingFile;
@@ -244,8 +252,13 @@ export const newUpload = (
     filename: name,
     size: size,
   };
-  return Axios.post<NewUploadResponse>(path, uploadData).then(
-    ({ data }) => data
+  return Axios.post<NewUploadResponse | UploadFailed>(
+    path,
+    uploadData
+  ).then(({ data }) =>
+    isUploadFailed(data)
+      ? data
+      : completeUpload(data.uploadUrl, uploadingFile, updateUploadProgress)
   );
 };
 
@@ -255,7 +268,7 @@ export const newUpload = (
  * @param uploadingFile A file to be uploaded
  * @param updateUploadProgress A Function fired during upload to update the ProgressBar
  */
-export const completeUpload = (
+const completeUpload = (
   path: string,
   uploadingFile: UploadingFile,
   updateUploadProgress: (file: UploadingFile) => void
@@ -298,15 +311,20 @@ export const deleteUpload = (
 /**
  * Cancel an upload request.
  * Returns a resolved promise for successful cancel or a rejected promise otherwise.
- * @param fileId The file ID which must be the client generated ID
+ * @param file A file which is being uploaded
  */
-export const cancelUpload = (fileId: string): Promise<void> => {
-  const axiosSource = getAxiosSource(fileId);
+export const cancelUpload = (file: UploadingFile) => {
+  const {
+    localId,
+    fileEntry: { name },
+  } = file;
+  const axiosSource = getAxiosSource(localId);
   if (axiosSource) {
     axiosSource.cancel();
-    return Promise.resolve();
+    axiosSourceMap.delete(localId);
+  } else {
+    throw new Error(`Fail to cancel uploading ${name}`);
   }
-  return Promise.reject();
 };
 
 /**

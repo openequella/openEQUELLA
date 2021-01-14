@@ -22,21 +22,20 @@ import {
   LinearProgress,
   StylesProvider,
   ThemeProvider,
+  Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import * as React from "react";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import * as ReactDOM from "react-dom";
 import { useDropzone } from "react-dropzone";
 import {
   cancelUpload,
-  completeUpload,
   deleteUpload,
   generateLocalFile,
   isUpdateEntry,
   isUploadedFile,
   newUpload,
-  NewUploadResponse,
   UpdateEntry,
   UploadedFile,
   UploadFailed,
@@ -113,7 +112,7 @@ const UniversalFileUploader = ({
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: (droppedFiles) => {
-      const updateUploadProgress = (updatedFile: UploadingFile) => {
+      const updateUploadingFile = (updatedFile: UploadingFile) => {
         setUploadingFiles((prev) =>
           replaceElement(
             prev,
@@ -125,10 +124,8 @@ const UniversalFileUploader = ({
       droppedFiles.forEach((droppedFile) => {
         const localFile: UploadingFile = generateLocalFile(droppedFile);
         setUploadingFiles((prev) => addElement(prev, localFile));
-        newUpload(commandUrl, localFile)
-          .then(({ uploadUrl }: NewUploadResponse) =>
-            completeUpload(uploadUrl, localFile, updateUploadProgress)
-          )
+
+        newUpload(commandUrl, localFile, updateUploadingFile)
           .then((uploadResponse: UpdateEntry | UploadFailed) => {
             if (isUpdateEntry(uploadResponse)) {
               const uploadedFile: UploadedFile = {
@@ -143,6 +140,13 @@ const UniversalFileUploader = ({
                 )
               );
               setUploadedFiles((prev) => addElement(prev, uploadedFile));
+            } else {
+              const { reason } = uploadResponse;
+              updateUploadingFile({
+                ...localFile,
+                status: "failed",
+                failedReason: reason,
+              });
             }
           })
           .finally(updateFooter);
@@ -164,77 +168,98 @@ const UniversalFileUploader = ({
       .finally(updateFooter);
   };
 
-  const onCancel = (fileId: string) => {
-    cancelUpload(fileId).then(() => {
-      setUploadingFiles(
-        deleteElement(uploadingFiles, ({ localId }) => localId === fileId, 1)
-      );
-    });
+  const onCancel = (file: UploadingFile) => {
+    cancelUpload(file);
+    setUploadingFiles(
+      deleteElement(
+        uploadingFiles,
+        ({ localId }) => localId === file.localId,
+        1
+      )
+    );
   };
 
-  const buildFileList = [...uploadingFiles, ...uploadedFiles].map((file) => {
-    const fileListProps = isUploadedFile(file)
-      ? {
-          progressBarProps: {
+  const buildFileList = () => {
+    const fileName = (file: UploadedFile | UploadingFile) => (
+      <Typography
+        variant="subtitle1"
+        style={file.status !== "uploading" ? { fontWeight: 500 } : undefined}
+      >
+        {file.fileEntry.name}
+      </Typography>
+    );
+
+    const progressBar = (file: UploadedFile | UploadingFile) => {
+      const progressBarProps = isUploadedFile(file)
+        ? {
             className: "progress-bar-inner complete",
             value: 100,
             classes: {
               barColorPrimary: classes.barColorPrimary,
             },
-          },
-          progressPercentage: "",
-          binIconProps: {
-            onClick: () => onDelete(file.fileEntry.id),
-            text: strings.delete,
-          },
-        }
-      : {
-          progressBarProps: {
+          }
+        : {
             className: "progress-bar-inner",
             value: file.uploadPercentage,
-          },
-          progressPercentage: `${file.uploadPercentage}%`,
-          binIconProps: {
-            onClick: () => onCancel(file.localId),
+          };
+      return (
+        <Grid item xs={9}>
+          <LinearProgress variant="determinate" {...progressBarProps} />
+        </Grid>
+      );
+    };
+
+    const uploadPercentage = (file: UploadedFile | UploadingFile) =>
+      isUploadedFile(file) ? "" : `${file.uploadPercentage}%`;
+
+    const binIcon = (file: UploadedFile | UploadingFile) => {
+      const binIconProps = isUploadedFile(file)
+        ? {
+            onClick: () => onDelete(file.fileEntry.id),
+            text: strings.delete,
+          }
+        : {
+            onClick: () => onCancel(file),
             text: strings.cancel,
-          },
-        };
-    return (
+          };
+      return (
+        <FileActionLink
+          {...binIconProps}
+          showText={false}
+          customClass="unselect"
+        />
+      );
+    };
+    return [...uploadedFiles, ...uploadingFiles].map((file) => (
       <Grid container className="file-upload" spacing={2} alignItems="center">
-        <Grid item className="file-name" xs={8}>
-          {file.fileEntry.name}
+        <Grid item className="file-name" xs={7}>
+          {fileName(file)}
         </Grid>
-        <Grid
-          item
-          container
-          className="file-upload-progress"
-          xs={3}
-          spacing={2}
-          alignItems="center"
-        >
-          <Grid item xs={9}>
-            <LinearProgress
-              variant="determinate"
-              {...fileListProps.progressBarProps}
-            />
+        {file.status !== "failed" ? (
+          <>
+            <Grid item className="file-upload-progress" xs={3}>
+              {progressBar(file)}
+            </Grid>
+            <Grid item xs={1}>
+              {uploadPercentage(file)}
+            </Grid>
+          </>
+        ) : (
+          <Grid item xs={4} className="ctrlinvalidmessage">
+            <Typography variant="subtitle1" color="error">
+              {file.failedReason}
+            </Typography>
           </Grid>
-          <Grid item xs={3}>
-            {fileListProps.progressPercentage}
-          </Grid>
-        </Grid>
+        )}
         <Grid item xs={1}>
-          <FileActionLink
-            {...fileListProps.binIconProps}
-            showText={false}
-            customClass="unselect"
-          />
+          {binIcon(file)}
         </Grid>
       </Grid>
-    );
-  });
+    ));
+  };
   return (
     <div id="uploads">
-      <div className="uploadsprogress">{buildFileList}</div>
+      <div className="uploadsprogress">{buildFileList()}</div>
       <div {...getRootProps()}>
         <div className="customfile focus">
           <Button
@@ -246,8 +271,16 @@ const UniversalFileUploader = ({
           <span className="customfile-feedback">{noFileSelected}</span>
           <input
             id={`${ctrlId}_fileUpload`}
-            className="customfile-input"
             {...getInputProps()}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              const fileInput: HTMLInputElement = event.target;
+              const changeEventHandler = getInputProps().onChange;
+              if (changeEventHandler) {
+                changeEventHandler(event);
+              }
+              // Need to empty the input value to make 'Selenium - sendKeys' happy.
+              fileInput.value = "";
+            }}
           />
         </div>
         <div className="filedrop">{strings.drop}</div>

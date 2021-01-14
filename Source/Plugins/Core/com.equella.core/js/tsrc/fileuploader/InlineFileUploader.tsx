@@ -23,6 +23,7 @@ import {
   Link,
   StylesProvider,
   ThemeProvider,
+  Typography,
 } from "@material-ui/core";
 import * as React from "react";
 import { useEffect, useState } from "react";
@@ -40,8 +41,6 @@ import {
   updateDuplicateMessage,
   UploadedFile,
   UploadingFile,
-  completeUpload,
-  NewUploadResponse,
   UpdateEntry,
   UploadFailed,
   generateLocalFile,
@@ -144,7 +143,7 @@ const InlineFileUploader = ({
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: (droppedFiles) => {
-      const updateUploadProgress = (updatedFile: UploadingFile) => {
+      const updateUploadingFile = (updatedFile: UploadingFile) => {
         setUploadingFiles((prev) =>
           replaceElement(
             prev,
@@ -158,13 +157,9 @@ const InlineFileUploader = ({
       // Upload each dropped file.
       droppedFiles.forEach((droppedFile) => {
         const localFile = generateLocalFile(droppedFile);
-        // Add each file to the uploading list.
         setUploadingFiles((prev) => addElement(prev, localFile));
-        // A promise chain which includes initialising and completing an upload as well as updating state.
-        newUpload(commandUrl, localFile)
-          .then(({ uploadUrl }: NewUploadResponse) =>
-            completeUpload(uploadUrl, localFile, updateUploadProgress)
-          )
+
+        newUpload(commandUrl, localFile, updateUploadingFile)
           .then((uploadResponse: UpdateEntry | UploadFailed) => {
             if (isUpdateEntry(uploadResponse)) {
               const { entry, attachmentDuplicateInfo } = uploadResponse;
@@ -186,6 +181,13 @@ const InlineFileUploader = ({
               setShowDuplicateWarning(
                 attachmentDuplicateInfo?.displayWarningMessage ?? false
               );
+            } else {
+              const { reason } = uploadResponse;
+              updateUploadingFile({
+                ...localFile,
+                status: "failed",
+                failedReason: reason,
+              });
             }
           })
           .catch
@@ -260,14 +262,16 @@ const InlineFileUploader = ({
     }
   };
 
-  const onCancel = (fileId: string) => {
-    cancelUpload(fileId).then(() => {
-      // Remove the file from the uploading list.
-      setUploadingFiles(
-        deleteElement(uploadingFiles, ({ localId }) => localId === fileId, 1)
-      );
-      setFileCount(fileCount - 1);
-    });
+  const onCancel = (file: UploadingFile) => {
+    cancelUpload(file);
+    setUploadingFiles(
+      deleteElement(
+        uploadingFiles,
+        ({ localId }) => localId === file.localId,
+        1
+      )
+    );
+    setFileCount(fileCount - 1);
   };
 
   /**
@@ -288,20 +292,33 @@ const InlineFileUploader = ({
       const {
         fileEntry: { name },
         uploadPercentage,
+        status,
+        failedReason,
       } = file;
       return (
         <Grid container className="progress-bar progressbarOuter">
           <Grid item xs={10}>
             {name}
           </Grid>
-          <Grid item container xs={2} alignItems="center" spacing={2}>
-            <Grid item xs={9}>
-              <LinearProgress variant="determinate" value={uploadPercentage} />
+          {status === "uploading" ? (
+            <Grid item container xs={2} alignItems="center" spacing={2}>
+              <Grid item xs={9}>
+                <LinearProgress
+                  variant="determinate"
+                  value={uploadPercentage}
+                />
+              </Grid>
+              <Grid item xs={3}>
+                {`${uploadPercentage}%`}
+              </Grid>
             </Grid>
-            <Grid item xs={3}>
-              {`${uploadPercentage}%`}
+          ) : (
+            <Grid item xs={2}>
+              <Typography variant="subtitle1" color="error">
+                {failedReason}
+              </Typography>
             </Grid>
-          </Grid>
+          )}
         </Grid>
       );
     };
@@ -343,7 +360,7 @@ const InlineFileUploader = ({
       }
       return (
         <FileActionLink
-          onClick={() => onCancel(file.localId)}
+          onClick={() => onCancel(file)}
           text={strings.cancel}
           showText={false}
           customClass="unselect"
