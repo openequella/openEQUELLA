@@ -174,14 +174,10 @@ const UniversalFileUploader = ({
       .finally(updateFooter);
   };
 
-  const onCancel = (file: UploadingFile) => {
-    cancelUpload(file);
+  const onCancel = (fileId: string) => {
+    cancelUpload(fileId);
     setUploadingFiles(
-      deleteElement(
-        uploadingFiles,
-        ({ localId }) => localId === file.localId,
-        1
-      )
+      deleteElement(uploadingFiles, ({ localId }) => localId === fileId, 1)
     );
   };
 
@@ -225,7 +221,7 @@ const UniversalFileUploader = ({
             text: strings.delete,
           }
         : {
-            onClick: () => onCancel(file),
+            onClick: () => onCancel(file.localId),
             text: strings.cancel,
           };
       return (

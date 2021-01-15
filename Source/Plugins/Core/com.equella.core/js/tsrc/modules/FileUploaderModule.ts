@@ -310,19 +310,13 @@ export const deleteUpload = (
 /**
  * Cancel an upload request.
  * Returns a resolved promise for successful cancel or a rejected promise otherwise.
- * @param file A file which is being uploaded
+ * @param id The file ID which must be the client generated ID
  */
-export const cancelUpload = (file: UploadingFile) => {
-  const {
-    localId,
-    fileEntry: { name },
-  } = file;
-  const axiosSource = getAxiosSource(localId);
+export const cancelUpload = (id: string) => {
+  const axiosSource = getAxiosSource(id);
   if (axiosSource) {
     axiosSource.cancel();
-    axiosSourceMap.delete(localId);
-  } else {
-    throw new Error(`Fail to cancel uploading ${name}`);
+    axiosSourceMap.delete(id);
   }
 };
 
