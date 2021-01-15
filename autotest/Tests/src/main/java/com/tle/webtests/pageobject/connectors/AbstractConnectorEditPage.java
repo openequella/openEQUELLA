@@ -78,6 +78,7 @@ public abstract class AbstractConnectorEditPage<THIS extends AbstractConnectorEd
   }
 
   public THIS viewableForExpression(final String expression) {
+    final WebElement before = driver.findElement(getViewExpressionInput());
     executeSubmit(
         "('"
             + getId()
@@ -88,7 +89,10 @@ public abstract class AbstractConnectorEditPage<THIS extends AbstractConnectorEd
             + "');");
 
     return ExpectWaiter.waiter(
-            ExpectedConditions.attributeToBe(getViewExpressionInput(), "value", expression), this)
+            ExpectedConditions.and(
+                ExpectedConditions.stalenessOf(before),
+                ExpectedConditions.attributeToBe(getViewExpressionInput(), "value", expression)),
+            this)
         .get();
   }
 
