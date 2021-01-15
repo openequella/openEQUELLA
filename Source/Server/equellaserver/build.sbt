@@ -17,7 +17,7 @@ unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_co
 
 val jacksonVersion   = "2.11.3"
 val axis2Version     = "1.6.2"
-val TomcatVersion    = "9.0.40"
+val TomcatVersion    = "9.0.41"
 val SwaggerVersion   = "1.6.2"
 val RestEasyVersion  = "3.13.2.Final"
 val simpledbaVersion = "0.1.9"
@@ -26,7 +26,7 @@ val jsoupVersion     = "1.13.1"
 val sttpVersion      = "1.7.2"
 val fs2Version       = "2.4.4"
 val jsassVersion     = "5.10.3"
-val springVersion    = "5.2.9.RELEASE"
+val springVersion    = "5.3.3"
 val tikaVersion      = "1.24.1"
 val cxfVersion       = "3.4.1"
 val guiceVersion     = "3.0"
@@ -321,7 +321,7 @@ excludeDependencies ++= Seq(
   // Spring 5 added a default logging bridge.  In oEQ, this results in
   // a [deduplicate: different file contents found in the following] error
   // ...org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.7.30.jar:org/apache/commons/logging/Log.class
-  // ...org.springframework/spring-jcl/jars/spring-jcl-5.2.9.RELEASE.jar:org/apache/commons/logging/Log.class
+  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.3.jar:org/apache/commons/logging/Log.class
   // As per https://github.com/spring-projects/spring-framework/issues/20611 ,
   // since we already have logging in place, we can safely exclude the dep from spring.
   "org.springframework" % "spring-jcl",

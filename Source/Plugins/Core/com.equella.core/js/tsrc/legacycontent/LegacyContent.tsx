@@ -382,7 +382,7 @@ function updateStylesheets(
           "error",
           (err) => {
             console.error(`Failed to load css: ${newCss.href}`);
-            resolve();
+            resolve(undefined);
           },
           false
         );
@@ -428,14 +428,14 @@ function loadMissingScripts(_scripts: string[]) {
       },
       null
     );
-    if (!lastScript) resolve();
+    if (!lastScript) resolve(undefined);
     else {
       lastScript.addEventListener("load", resolve, false);
       lastScript.addEventListener(
         "error",
         () => {
           console.error(`Failed to load script: ${lastScript.src}`);
-          resolve();
+          resolve(undefined);
         },
         false
       );

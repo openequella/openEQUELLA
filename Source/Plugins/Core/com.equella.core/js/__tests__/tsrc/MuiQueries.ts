@@ -26,6 +26,6 @@ import { queryByText } from "@testing-library/react";
 export const queryMuiButtonByText = (container: HTMLElement, text: string) =>
   queryByText(
     container,
-    (content: string, element: HTMLElement) =>
-      content === text && (element.parentElement?.matches("button") ?? false)
+    (content: string, element: Element | null | undefined) =>
+      content === text && (element?.parentElement?.matches("button") ?? false)
   );
