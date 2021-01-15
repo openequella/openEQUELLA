@@ -237,7 +237,6 @@ export const getAxiosSource = (id: string) => axiosSourceMap.get(id);
  * @param path The request URL
  * @param uploadingFile The file to be uploaded
  * @param updateUploadProgress
- * @param failCallback
  */
 export const newUpload = (
   path: string,

@@ -25,10 +25,12 @@ import {
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import Axios from "axios";
 import * as React from "react";
 import { ChangeEvent, useState } from "react";
 import * as ReactDOM from "react-dom";
 import { useDropzone } from "react-dropzone";
+import { getRenderData } from "../AppConfig";
 import {
   cancelUpload,
   deleteUpload,
@@ -41,7 +43,6 @@ import {
   UploadFailed,
   UploadingFile,
 } from "../modules/FileUploaderModule";
-import { oeqTheme } from "../theme";
 import {
   addElement,
   deleteElement,
@@ -110,17 +111,18 @@ const UniversalFileUploader = ({
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
 
+  const updateUploadingFile = (updatedFile: UploadingFile) => {
+    setUploadingFiles((prev) =>
+      replaceElement(
+        prev,
+        (file) => file.localId === updatedFile.localId,
+        updatedFile
+      )
+    );
+  };
+
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: (droppedFiles) => {
-      const updateUploadingFile = (updatedFile: UploadingFile) => {
-        setUploadingFiles((prev) =>
-          replaceElement(
-            prev,
-            (file) => file.localId === updatedFile.localId,
-            updatedFile
-          )
-        );
-      };
       droppedFiles.forEach((droppedFile) => {
         const localFile: UploadingFile = generateLocalFile(droppedFile);
         setUploadingFiles((prev) => addElement(prev, localFile));
@@ -141,11 +143,15 @@ const UniversalFileUploader = ({
               );
               setUploadedFiles((prev) => addElement(prev, uploadedFile));
             } else {
-              const { reason } = uploadResponse;
+              throw new Error(uploadResponse.reason);
+            }
+          })
+          .catch((error: Error) => {
+            if (!Axios.isCancel(error)) {
               updateUploadingFile({
                 ...localFile,
                 status: "failed",
-                failedReason: reason,
+                failedReason: error.message,
               });
             }
           })
@@ -296,16 +302,23 @@ const UniversalFileUploader = ({
 };
 
 export const render = (props: UniversalFileUploaderProps) => {
-  const generateClassName = createGenerateClassName({
-    productionPrefix: "oeq-ufu",
-    seed: "oeq-ufu",
-  });
-  ReactDOM.render(
-    <StylesProvider generateClassName={generateClassName} injectFirst>
-      <ThemeProvider theme={oeqTheme}>
-        <UniversalFileUploader {...props} />
-      </ThemeProvider>
-    </StylesProvider>,
-    props.elem
-  );
+  if (getRenderData()?.newUI) {
+    const generateClassName = createGenerateClassName({
+      productionPrefix: "oeq-ufu",
+      seed: "oeq-ufu",
+    });
+
+    import("../theme/index").then(({ oeqTheme }) => {
+      ReactDOM.render(
+        <StylesProvider generateClassName={generateClassName}>
+          <ThemeProvider theme={oeqTheme}>
+            <UniversalFileUploader {...props} />
+          </ThemeProvider>
+        </StylesProvider>,
+        props.elem
+      );
+    });
+  } else {
+    ReactDOM.render(<UniversalFileUploader {...props} />, props.elem);
+  }
 };

@@ -25,27 +25,28 @@ import {
   ThemeProvider,
   Typography,
 } from "@material-ui/core";
+import Axios from "axios";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import * as ReactDOM from "react-dom";
 import { useDropzone } from "react-dropzone";
+import { getRenderData } from "../AppConfig";
 import {
+  AjaxFileEntry,
   buildMaxAttachmentWarning,
   cancelUpload,
   deleteUpload,
+  generateLocalFile,
   isUpdateEntry,
   isUploadedFile,
   newUpload,
-  AjaxFileEntry,
   updateCtrlErrorText,
   updateDuplicateMessage,
-  UploadedFile,
-  UploadingFile,
   UpdateEntry,
+  UploadedFile,
   UploadFailed,
-  generateLocalFile,
+  UploadingFile,
 } from "../modules/FileUploaderModule";
-import { oeqTheme } from "../theme";
 import {
   addElement,
   deleteElement,
@@ -182,17 +183,21 @@ const InlineFileUploader = ({
                 attachmentDuplicateInfo?.displayWarningMessage ?? false
               );
             } else {
-              const { reason } = uploadResponse;
+              throw new Error(uploadResponse.reason);
+            }
+          })
+          .catch((error: Error) => {
+            // There is no more error handling required for cancelling an Axios request.
+            // For all other errors, update state to display the error message for the file.
+            if (!Axios.isCancel(error)) {
+              console.log(error.message);
               updateUploadingFile({
                 ...localFile,
                 status: "failed",
-                failedReason: reason,
+                failedReason: error.message,
               });
             }
           })
-          .catch
-          //todo handle error
-          ()
           .finally(reloadState);
       });
     },
@@ -418,16 +423,23 @@ const InlineFileUploader = ({
  * @param props The props passed into this component (search 'uploadArgs' in 'UniversalWebControlNew.scala' for details)
  */
 export const render = (props: InlineFileUploaderProps) => {
-  const generateClassName = createGenerateClassName({
-    productionPrefix: "oeq-ifu",
-    seed: "oeq-ifu",
-  });
-  ReactDOM.render(
-    <StylesProvider generateClassName={generateClassName}>
-      <ThemeProvider theme={oeqTheme}>
-        <InlineFileUploader {...props} />
-      </ThemeProvider>
-    </StylesProvider>,
-    props.elem
-  );
+  if (getRenderData()?.newUI) {
+    const generateClassName = createGenerateClassName({
+      productionPrefix: "oeq-ifu",
+      seed: "oeq-ifu",
+    });
+
+    import("../theme/index").then(({ oeqTheme }) => {
+      ReactDOM.render(
+        <StylesProvider generateClassName={generateClassName}>
+          <ThemeProvider theme={oeqTheme}>
+            <InlineFileUploader {...props} />
+          </ThemeProvider>
+        </StylesProvider>,
+        props.elem
+      );
+    });
+  } else {
+    ReactDOM.render(<InlineFileUploader {...props} />, props.elem);
+  }
 };
