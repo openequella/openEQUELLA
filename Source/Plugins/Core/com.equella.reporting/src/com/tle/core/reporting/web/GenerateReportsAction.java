@@ -94,6 +94,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
+import org.apache.log4j.Logger;
 import org.eclipse.birt.report.engine.api.IAction;
 import org.eclipse.birt.report.engine.api.IGetParameterDefinitionTask;
 import org.eclipse.birt.report.engine.api.IHTMLActionHandler;
@@ -107,6 +108,8 @@ import org.eclipse.birt.report.model.api.util.ParameterValidationUtil;
 @SuppressWarnings("nls")
 public class GenerateReportsAction extends AbstractPrototypeSection<ReportingForm>
     implements HtmlRenderer {
+  private static final Logger LOGGER = Logger.getLogger(GenerateReportsAction.class);
+
   private static final String PFX_PARAM = "p.";
   private static final String PFX_PARAM_TEXT = "pt.";
 
@@ -328,6 +331,10 @@ public class GenerateReportsAction extends AbstractPrototypeSection<ReportingFor
 
   @EventHandlerMethod
   public void showReport(SectionInfo info, boolean forceExecution) throws Exception {
+    final String logPrefix =
+        "showReport(info=" + info + ", forceExecution=" + forceExecution + ") - ";
+    LOGGER.debug(logPrefix + "START");
+
     ReportingForm model = getModel(info);
     model.setShowReport(true);
 
@@ -342,6 +349,7 @@ public class GenerateReportsAction extends AbstractPrototypeSection<ReportingFor
             model.getParameters(),
             model.getParameterDisplayTexts(),
             forceExecution);
+    LOGGER.debug(logPrefix + "generatedReportId=" + generatedReportId);
     model.setGeneratedReportId(generatedReportId);
   }
 
