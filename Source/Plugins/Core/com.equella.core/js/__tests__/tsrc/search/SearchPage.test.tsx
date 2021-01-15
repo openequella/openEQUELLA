@@ -278,7 +278,7 @@ describe("Refine search by status", () => {
   });
 
   afterEach(() => {
-    // Needed to keep Enzyme tests below happy
+    // Needed to keep tests below happy
     jest.clearAllMocks();
   });
 
@@ -311,7 +311,7 @@ describe("Refine search by Owner", () => {
   });
 
   afterEach(() => {
-    // Needed to keep Enzyme tests below happy
+    // Needed to keep tests below happy
     jest.clearAllMocks();
   });
 

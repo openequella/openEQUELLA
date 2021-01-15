@@ -16,12 +16,11 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { mount, ReactWrapper } from "enzyme";
+import { act, render, RenderResult } from "@testing-library/react";
 import FacetedSearchSettingsPage from "../../../tsrc/settings/Search/facetedsearch/FacetedSearchSettingsPage";
 import * as FacetedSearchSettingsModule from "../../../tsrc/modules/FacetedSearchSettingsModule";
 import { FacetWithFlags } from "../../../tsrc/modules/FacetedSearchSettingsModule";
 import { NavigationGuardProps } from "../../../tsrc/components/NavigationGuard";
-import { act } from "react-dom/test-utils";
 import { getSchemasResp } from "../../../__mocks__/getSchemasResp";
 import { getSchemaUuidResp } from "../../../__mocks__/getSchemaUuidResp";
 import FacetDialog from "../../../tsrc/settings/Search/facetedsearch/FacetDialog";
@@ -92,19 +91,18 @@ describe("<FacetedSearchSettingsPage />", () => {
     Edit,
     Add,
   }
-  let component: ReactWrapper;
+  let component: RenderResult;
   let root: HTMLDivElement;
   beforeEach(async () => {
     root = document.createElement("div");
     document.body.appendChild(root);
-    component = mount(
+    component = render(
       <FacetedSearchSettingsPage updateTemplate={jest.fn()} />,
-      { attachTo: root }
+      { container: root }
     );
     await act(async () => {
       await getFacetsPromise;
     });
-    component.update();
   });
   afterEach(() => {
     jest.clearAllMocks();

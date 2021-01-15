@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import ContentIndexSettings from "../../../tsrc/settings/Search/ContentIndexSettings";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule"; // eslint-disable-line
 import SettingsList from "../../../tsrc/components/SettingsList";
@@ -42,7 +42,7 @@ describe("Content Index Settings Page", () => {
     );
 
   const renderComponent = () =>
-    mount(<ContentIndexSettings updateTemplate={jest.fn()} />);
+    render(<ContentIndexSettings updateTemplate={jest.fn()} />);
 
   describe("When content indexing settings page page is loaded", () => {
     const component = renderComponent();

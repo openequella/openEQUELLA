@@ -169,6 +169,7 @@ const MimeTypeFilterEditingDialog = ({
         </Button>
         <Button
           id="MimeTypeFilterEditingDialog_save"
+          data-testid="MimeTypeFilterEditingDialog_save"
           onClick={onAddOrUpdate}
           color="primary"
           disabled={

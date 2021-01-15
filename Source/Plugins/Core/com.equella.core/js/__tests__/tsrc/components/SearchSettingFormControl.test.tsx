@@ -18,21 +18,19 @@
 import SearchSettingFormControl from "../../../tsrc/components/SearchSettingFormControl";
 import { TextField } from "@material-ui/core";
 import * as React from "react";
-import { mount, ReactWrapper, shallow } from "enzyme";
+import { render, RenderResult } from "@testing-library/react";
 
 describe("SearchSettingFormControl.tsx", () => {
   const onChange = jest.fn();
-  let component: ReactWrapper;
+  let component: RenderResult;
   beforeEach(() => {
-    component = mount(
-      shallow(
-        <SearchSettingFormControl
-          control={
-            <TextField id="testTextField" value="test" onChange={onChange} />
-          }
-          onChange={onChange}
-        />
-      ).get(0)
+    component = render(
+      <SearchSettingFormControl
+        control={
+          <TextField id="testTextField" value="test" onChange={onChange} />
+        }
+        onChange={onChange}
+      />
     );
   });
   afterEach(() => jest.clearAllMocks);
