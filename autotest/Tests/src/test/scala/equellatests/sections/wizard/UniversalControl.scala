@@ -12,6 +12,8 @@ class UniversalControl(val page: WizardPageTab, val ctrlNum: Int) extends Wizard
   private def actionLinkBy(action: String) =
     By.xpath("td[@class='actions']/div/div/a[text()=" + quoteXPath(action) + "]")
 
+  private val cancelBtnBy = By.xpath("td[@class='actions']/a[contains(@title, 'Cancel upload')]")
+
   private def rowForDescription(description: String, disabled: Boolean) =
     Try(pageElement.findElement(rowDescriptionBy(description, disabled))).toOption
 
@@ -34,8 +36,15 @@ class UniversalControl(val page: WizardPageTab, val ctrlNum: Int) extends Wizard
     waitFor(after)
   }
 
+  def cancelUpload(actualFilename: String) = {
+    rowForDescription(actualFilename, true).map { row =>
+      row.findElement(cancelBtnBy).click()
+      waitFor(ExpectedConditions.stalenessOf(row))
+    }
+  }
+
   private def rowDescriptionBy(title: String, disabled: Boolean) =
-    By.xpath(".//tr[.//" + (if (disabled) "span" else "a") + "[text()=" + quoteXPath(title) + "]]")
+    By.xpath(".//tr[.//" + (if (disabled) "div" else "a") + "[text()=" + quoteXPath(title) + "]]")
 
   def attachNameWaiter(description: String, disabled: Boolean): ExpectedCondition[_] = {
     ExpectedConditions.visibilityOfElementLocated(
