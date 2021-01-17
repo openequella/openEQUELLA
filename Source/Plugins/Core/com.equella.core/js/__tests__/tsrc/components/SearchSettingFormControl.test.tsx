@@ -18,7 +18,7 @@
 import SearchSettingFormControl from "../../../tsrc/components/SearchSettingFormControl";
 import { TextField } from "@material-ui/core";
 import * as React from "react";
-import { render, RenderResult } from "@testing-library/react";
+import { fireEvent, render, RenderResult } from "@testing-library/react";
 
 describe("SearchSettingFormControl.tsx", () => {
   const onChange = jest.fn();
@@ -39,9 +39,9 @@ describe("SearchSettingFormControl.tsx", () => {
       expect(onChange).not.toHaveBeenCalled();
     });
 
-    it("should be triggered after call", () => {
-      const textField = component.find("input");
-      textField.simulate("change");
+    it("should be triggered after call", async () => {
+      const textField = await component.findByRole("input");
+      fireEvent.change(textField, {});
       expect(onChange).toHaveBeenCalledTimes(1);
       component.unmount();
     });
