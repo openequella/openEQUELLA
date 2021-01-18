@@ -28,7 +28,7 @@ class UniversalControl(val page: WizardPageTab, val ctrlNum: Int) extends Wizard
   def errorExpectation(msg: String) = {
     ExpectedConditions.visibilityOfNestedElementsLocatedBy(
       pageBy,
-      By.xpath(s"//div[@class='universalresources']//h6[text() = ${quoteXPath(msg)}]"))
+      By.xpath(s"//div[@class='universalresources']//p[text() = ${quoteXPath(msg)}]"))
   }
 
   def uploadInline[A](tf: TestFile, actualFilename: String, after: ExpectedCondition[A]): A = {

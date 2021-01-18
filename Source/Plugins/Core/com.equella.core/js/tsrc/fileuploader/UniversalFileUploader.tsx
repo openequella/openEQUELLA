@@ -35,6 +35,8 @@ import {
   cancelUpload,
   deleteUpload,
   generateLocalFile,
+  generateUploadedFileComparator,
+  generateUploadingFileComparator,
   isUpdateEntry,
   isUploadedFile,
   newUpload,
@@ -49,7 +51,7 @@ import {
   replaceElement,
 } from "../util/ImmutableArrayUtil";
 import { languageStrings } from "../util/langstrings";
-import { FileActionLink } from "./FileUploaderActionLink";
+import { FileUploaderActionLink } from "./FileUploaderActionLink";
 
 /**
  * Data structure for all texts server passes in
@@ -115,7 +117,7 @@ const UniversalFileUploader = ({
     setUploadingFiles((prev) =>
       replaceElement(
         prev,
-        (file) => file.localId === updatedFile.localId,
+        generateUploadingFileComparator(updatedFile.localId),
         updatedFile
       )
     );
@@ -137,7 +139,7 @@ const UniversalFileUploader = ({
               setUploadingFiles((prev) =>
                 deleteElement(
                   prev,
-                  (file: UploadingFile) => file.localId === localFile.localId,
+                  generateUploadingFileComparator(localFile.localId),
                   1
                 )
               );
@@ -166,7 +168,7 @@ const UniversalFileUploader = ({
         setUploadedFiles(
           deleteElement(
             uploadedFiles,
-            ({ fileEntry: { id } }: UploadedFile) => id === fileId,
+            generateUploadedFileComparator(fileId),
             1
           )
         );
@@ -177,38 +179,25 @@ const UniversalFileUploader = ({
   const onCancel = (fileId: string) => {
     cancelUpload(fileId);
     setUploadingFiles(
-      deleteElement(uploadingFiles, ({ localId }) => localId === fileId, 1)
+      deleteElement(uploadingFiles, generateUploadingFileComparator(fileId), 1)
     );
   };
 
   const buildFileList = () => {
-    const fileName = (file: UploadedFile | UploadingFile) => (
-      <Typography
-        variant="subtitle1"
-        style={file.status !== "uploading" ? { fontWeight: 500 } : undefined}
-      >
-        {file.fileEntry.name}
-      </Typography>
-    );
-
     const progressBar = (file: UploadedFile | UploadingFile) => {
       const progressBarProps = isUploadedFile(file)
         ? {
             className: "progress-bar-inner complete",
             value: 100,
             classes: {
-              barColorPrimary: classes.barColorPrimary,
+              barColorPrimary: classes.barColorPrimary, // Override the class applied to the inner bar to allow above custom styles working
             },
           }
         : {
             className: "progress-bar-inner",
             value: file.uploadPercentage,
           };
-      return (
-        <Grid item xs={9}>
-          <LinearProgress variant="determinate" {...progressBarProps} />
-        </Grid>
-      );
+      return <LinearProgress variant="determinate" {...progressBarProps} />;
     };
 
     const uploadPercentage = (file: UploadedFile | UploadingFile) =>
@@ -225,7 +214,7 @@ const UniversalFileUploader = ({
             text: strings.cancel,
           };
       return (
-        <FileActionLink
+        <FileUploaderActionLink
           {...binIconProps}
           showText={false}
           customClass="unselect"
@@ -234,25 +223,37 @@ const UniversalFileUploader = ({
     };
     return [...uploadedFiles, ...uploadingFiles].map((file) => (
       <Grid container className="file-upload" spacing={2} alignItems="center">
-        <Grid item className="file-name" xs={7}>
-          {fileName(file)}
+        <Grid item className="file-name" xs={4}>
+          {file.fileEntry.name}
         </Grid>
-        {file.status !== "failed" ? (
-          <>
-            <Grid item className="file-upload-progress" xs={3}>
-              {progressBar(file)}
+
+        {
+          // If status is failed, show the error message.
+          // For other status, show a progress bar and a number indicating the progress.
+          file.status === "failed" ? (
+            <Grid item xs={7} className="ctrlinvalidmessage">
+              <Typography role="alert" color="error" align="left">
+                {file.failedReason}
+              </Typography>
             </Grid>
-            <Grid item xs={1}>
-              {uploadPercentage(file)}
+          ) : (
+            <Grid
+              item
+              container
+              className="file-upload-progress"
+              xs={7}
+              alignItems="center"
+            >
+              <Grid item xs={11}>
+                {progressBar(file)}
+              </Grid>
+              <Grid item xs={1}>
+                {uploadPercentage(file)}
+              </Grid>
             </Grid>
-          </>
-        ) : (
-          <Grid item xs={4} className="ctrlinvalidmessage">
-            <Typography variant="subtitle1" color="error">
-              {file.failedReason}
-            </Typography>
-          </Grid>
-        )}
+          )
+        }
+
         <Grid item xs={1}>
           {binIcon(file)}
         </Grid>
@@ -287,7 +288,7 @@ const UniversalFileUploader = ({
         </div>
         <div className="filedrop">{strings.drop}</div>
       </div>
-      <FileActionLink
+      <FileUploaderActionLink
         id={`${ctrlId}_filesFromScrapbookLink`}
         onClick={scrapBookOnClick}
         text={strings.scrapbook}

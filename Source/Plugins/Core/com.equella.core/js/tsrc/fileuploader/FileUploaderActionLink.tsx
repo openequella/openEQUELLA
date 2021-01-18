@@ -25,7 +25,7 @@ interface FileActionLinkProps {
   id?: string;
   customClass?: string;
 }
-export const FileActionLink = ({
+export const FileUploaderActionLink = ({
   onClick,
   text,
   showText = true,

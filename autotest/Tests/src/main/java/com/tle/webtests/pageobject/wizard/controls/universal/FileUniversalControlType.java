@@ -136,9 +136,9 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
         waitForElement(
             uploadsDiv,
             By.xpath(
-                "div[contains(@class, 'file-upload') and div/h6/text() = "
+                "div[contains(@class, 'file-upload') and div[text() = "
                     + quoteXPath(expectedFilename)
-                    + "]"));
+                    + "]]"));
     waitForElement(
         uploadRow, new ByChained(By.className("file-upload-progress"), By.className("complete")));
   }
@@ -153,7 +153,7 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
     String xpath =
         "id('"
             + getWizid()
-            + "_dialog')//div[contains(@class, 'ctrlinvalidmessage') and h6/text() = "
+            + "_dialog')//div[contains(@class, 'ctrlinvalidmessage') and p/text() = "
             + quoteXPath(msg)
             + "]";
     return ExpectedConditions.visibilityOfElementLocated(By.xpath(xpath));

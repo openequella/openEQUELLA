@@ -379,3 +379,19 @@ export const generateLocalFile = (file: File): UploadingFile => ({
   status: "uploading",
   uploadPercentage: 0,
 });
+
+/**
+ * Provide a function used to compare an UploadingFile's ID and a client-generated ID.
+ * @param comparedFileId A file ID which must be generated on client side.
+ */
+export const generateUploadingFileComparator = (comparedFileId: string) => (
+  file: UploadingFile
+) => file.localId === comparedFileId;
+
+/**
+ * Provide a function used to compare an UploadedFile's ID and a server-generated ID.
+ * @param comparedFileId A file ID which must be generated on server side.
+ */
+export const generateUploadedFileComparator = (comparedFileId: string) => (
+  file: UploadedFile
+) => file.fileEntry.id === comparedFileId;

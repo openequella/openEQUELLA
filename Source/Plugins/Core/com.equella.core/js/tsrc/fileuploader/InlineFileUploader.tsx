@@ -27,6 +27,7 @@ import {
 } from "@material-ui/core";
 import Axios from "axios";
 import * as React from "react";
+import { Fragment } from "react";
 import { useEffect, useState } from "react";
 import * as ReactDOM from "react-dom";
 import { useDropzone } from "react-dropzone";
@@ -37,6 +38,8 @@ import {
   cancelUpload,
   deleteUpload,
   generateLocalFile,
+  generateUploadedFileComparator,
+  generateUploadingFileComparator,
   isUpdateEntry,
   isUploadedFile,
   newUpload,
@@ -52,7 +55,7 @@ import {
   deleteElement,
   replaceElement,
 } from "../util/ImmutableArrayUtil";
-import { FileActionLink } from "./FileUploaderActionLink";
+import { FileUploaderActionLink } from "./FileUploaderActionLink";
 
 /**
  * Data structure for all texts server passes in
@@ -148,7 +151,7 @@ const InlineFileUploader = ({
         setUploadingFiles((prev) =>
           replaceElement(
             prev,
-            (file: UploadingFile) => file.localId === updatedFile.localId,
+            generateUploadingFileComparator(updatedFile.localId),
             updatedFile
           )
         );
@@ -168,17 +171,14 @@ const InlineFileUploader = ({
                 fileEntry: entry,
                 status: "uploaded",
               };
-              // Remove each file from the uploading list.
               setUploadingFiles((prev) =>
                 deleteElement(
                   prev,
-                  (file: UploadingFile) => file.localId === localFile.localId,
+                  generateUploadingFileComparator(localFile.localId),
                   1
                 )
               );
-              // Add each file to the uploaded list.
               setUploadedFiles((prev) => addElement(prev, uploadedFile));
-              // Update duplicate warning.
               setShowDuplicateWarning(
                 attachmentDuplicateInfo?.displayWarningMessage ?? false
               );
@@ -190,7 +190,6 @@ const InlineFileUploader = ({
             // There is no more error handling required for cancelling an Axios request.
             // For all other errors, update state to display the error message for the file.
             if (!Axios.isCancel(error)) {
-              console.log(error.message);
               updateUploadingFile({
                 ...localFile,
                 status: "failed",
@@ -248,19 +247,16 @@ const InlineFileUploader = ({
     if (confirmDelete) {
       deleteUpload(commandUrl, fileId)
         .then(({ attachmentDuplicateInfo }) => {
-          // Remove the file from the uploaded list.
           setUploadedFiles(
             deleteElement(
               uploadedFiles,
-              ({ fileEntry }) => fileId === fileEntry.id,
+              generateUploadedFileComparator(fileId),
               1
             )
           );
-          // Update duplicate warning.
           setShowDuplicateWarning(
             attachmentDuplicateInfo?.displayWarningMessage ?? false
           );
-          // Update the file count.
           setFileCount(fileCount - 1);
         })
         .finally(reloadState);
@@ -270,17 +266,16 @@ const InlineFileUploader = ({
   const onCancel = (fileId: string) => {
     cancelUpload(fileId);
     setUploadingFiles(
-      deleteElement(uploadingFiles, ({ localId }) => localId === fileId, 1)
+      deleteElement(uploadingFiles, generateUploadingFileComparator(fileId), 1)
     );
     setFileCount(fileCount - 1);
   };
 
-  /**
-   * Build a file list. Each list item has two columns and what the two columns
-   * display depends on file status.
-   */
   const buildFileList = () => {
-    const buildFirstColumn = (file: UploadedFile | UploadingFile) => {
+    // For an UploadedFile, display the file name as a link.
+    // For an UploadingFile, not only display the file name, but also display
+    // a progress bar or an error message, depending on the file status.
+    const fileName = (file: UploadedFile | UploadingFile) => {
       if (isUploadedFile(file)) {
         const { link, name } = file.fileEntry;
         return (
@@ -297,25 +292,34 @@ const InlineFileUploader = ({
         failedReason,
       } = file;
       return (
-        <Grid container className="progress-bar progressbarOuter">
-          <Grid item xs={10}>
+        <Grid container spacing={1}>
+          <Grid item xs={4}>
             {name}
           </Grid>
+
           {status === "uploading" ? (
-            <Grid item container xs={2} alignItems="center" spacing={2}>
-              <Grid item xs={9}>
+            <Grid
+              item
+              container
+              xs={8}
+              alignItems="center"
+              spacing={1}
+              wrap="nowrap"
+            >
+              <Grid item xs={10}>
                 <LinearProgress
                   variant="determinate"
                   value={uploadPercentage}
+                  className="progress-bar-inner"
                 />
               </Grid>
-              <Grid item xs={3}>
+              <Grid item xs={2}>
                 {`${uploadPercentage}%`}
               </Grid>
             </Grid>
           ) : (
-            <Grid item xs={2}>
-              <Typography variant="subtitle1" color="error">
+            <Grid item xs={8}>
+              <Typography role="alert" color="error">
                 {failedReason}
               </Typography>
             </Grid>
@@ -324,7 +328,9 @@ const InlineFileUploader = ({
       );
     };
 
-    const buildSecondColumn = (file: UploadedFile | UploadingFile) => {
+    // For an UploadedFile, display three links for three actions: replace, edit and delete.
+    // For an UploadingFile, display one link for cancelling an upload.
+    const actions = (file: UploadedFile | UploadingFile) => {
       if (isUploadedFile(file)) {
         const { id } = file.fileEntry;
         return (
@@ -347,20 +353,23 @@ const InlineFileUploader = ({
                   isDividerNeeded: false,
                 },
               ].map(({ text, handler, isDividerNeeded }) => (
-                <>
+                <Fragment key={text}>
                   <Grid item>
-                    <FileActionLink onClick={() => handler(id)} text={text} />
+                    <FileUploaderActionLink
+                      onClick={() => handler(id)}
+                      text={text}
+                    />
                   </Grid>
                   {isDividerNeeded && (
                     <Divider orientation="vertical" flexItem />
                   )}
-                </>
+                </Fragment>
               ))}
           </Grid>
         );
       }
       return (
-        <FileActionLink
+        <FileUploaderActionLink
           onClick={() => onCancel(file.localId)}
           text={strings.cancel}
           showText={false}
@@ -375,8 +384,8 @@ const InlineFileUploader = ({
           key={isUploadedFile(file) ? file.fileEntry.id : file.localId}
           className={index % 2 === 0 ? "even" : "odd rowShown"}
         >
-          <td className="name">{buildFirstColumn(file)}</td>
-          <td className="actions">{buildSecondColumn(file)}</td>
+          <td className="name">{fileName(file)}</td>
+          <td className="actions">{actions(file)}</td>
         </tr>
       )
     );
@@ -396,7 +405,7 @@ const InlineFileUploader = ({
 
       {editable && (maxAttachments === null || fileCount < maxAttachments) && (
         <>
-          <FileActionLink
+          <FileUploaderActionLink
             id={`${ctrlId}_addLink`}
             onClick={() => openDialog("", "")}
             text={strings.add}
