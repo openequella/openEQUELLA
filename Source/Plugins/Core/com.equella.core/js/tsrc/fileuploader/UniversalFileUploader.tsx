@@ -154,7 +154,7 @@ export const UniversalFileUploader = ({
 
   const onDelete = (fileId: string) => {
     deleteUpload(commandUrl, fileId)
-      .then((_) => {
+      .then(() => {
         setUploadedFiles(
           deleteElement(
             uploadedFiles,

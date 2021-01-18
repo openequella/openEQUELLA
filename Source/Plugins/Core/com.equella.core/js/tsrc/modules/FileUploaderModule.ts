@@ -217,7 +217,7 @@ const isUploadFailed = (
   uploadResponse: BasicUploadResponse
 ): uploadResponse is UploadFailed => uploadResponse.response === "uploadfailed";
 
-const CancelToken = Axios.CancelToken;
+const { CancelToken } = Axios;
 /**
  * A map where the key is each UploadingFile's localId and the value is a CancelTokenSource
  */
@@ -328,12 +328,14 @@ export const cancelUpload = (id: string) => {
  * @param display True to show the warning
  */
 export const updateDuplicateMessage = (ctrlId: string, display: boolean) => {
-  const duplicateMessageDiv = $(`#${ctrlId}_attachment_duplicate_warning`);
+  const duplicateMessageDiv = document.querySelector(
+    `#${ctrlId}_attachment_duplicate_warning`
+  );
   if (duplicateMessageDiv) {
     if (display) {
-      duplicateMessageDiv.css("display", "inline");
+      duplicateMessageDiv.setAttribute("style", "display: inline");
     } else {
-      duplicateMessageDiv.css("display", "none");
+      duplicateMessageDiv.setAttribute("style", "display: none");
     }
   }
 };
@@ -348,14 +350,18 @@ export const updateDuplicateMessage = (ctrlId: string, display: boolean) => {
  * @param text The text describing the error
  */
 export const updateCtrlErrorText = (ctrlId: string, text: string) => {
-  const contElem = $(`DIV#${ctrlId} > DIV.control`);
+  const contElem = document.querySelector(`DIV#${ctrlId} > DIV.control`);
   if (contElem) {
     if (text === "") {
-      contElem.removeClass("ctrlinvalid");
+      contElem.classList.remove("ctrlinvalid");
     } else {
-      contElem.addClass("ctrlinvalid");
+      contElem.classList.add("ctrlinvalid");
     }
-    contElem.find("P.ctrlinvalidmessage").text(text);
+
+    const invalidMessage = contElem.querySelector("P.ctrlinvalidmessage");
+    if (invalidMessage) {
+      invalidMessage.textContent = text;
+    }
   }
 };
 
