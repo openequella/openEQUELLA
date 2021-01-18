@@ -26,7 +26,6 @@ import {
   Collection,
   collectionListSummary,
 } from "../../modules/CollectionsModule";
-import { isSelectionSessionOpen } from "../../modules/LegacySelectionSessionModule";
 import { languageStrings } from "../../util/langstrings";
 import useError from "../../util/useError";
 
@@ -68,59 +67,54 @@ export const CollectionSelector = ({
   }, [handleError]);
 
   return (
-    <Autocomplete
-      multiple
-      fullWidth
-      limitTags={2}
-      renderTags={
-        /**
-         * If we are in a selection session, limit the max width of the chips
-         * so as to prevent overlapping with the selection panel. 132px is the
-         * widest a chip can be before it starts to increase the width of the
-         * surrounding Autocomplete component.
-         */
-        isSelectionSessionOpen()
-          ? (collections: Collection[], getTagProps: AutocompleteGetTagProps) =>
-              collections.map((collection: Collection, index: number) => (
-                <Tooltip title={collection.name}>
-                  <Chip
-                    style={{ maxWidth: "132px" }}
-                    id={"collectionChip " + collection.uuid}
-                    label={collection.name}
-                    {...getTagProps({ index })}
-                  />
-                </Tooltip>
-              ))
-          : undefined
-      }
-      onChange={(_, value: Collection[]) => {
-        onSelectionChange(value);
-      }}
-      value={value ?? []}
-      options={collections}
-      disableCloseOnSelect
-      getOptionLabel={(collection) => collection.name}
-      getOptionSelected={(collection, selected) =>
-        selected.uuid === collection.uuid
-      }
-      renderOption={(collection, { selected }) => (
-        <>
-          <Checkbox
-            icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
-            checkedIcon={<CheckBoxIcon fontSize="small" />}
-            checked={selected}
+    <div style={{ width: "100%" }}>
+      <Autocomplete
+        multiple
+        limitTags={2}
+        renderTags={(
+          collections: Collection[],
+          getTagProps: AutocompleteGetTagProps
+        ) =>
+          collections.map((collection: Collection, index: number) => (
+            <Tooltip title={collection.name}>
+              <Chip
+                style={{ maxWidth: "50%" }}
+                id={"collectionChip " + collection.uuid}
+                label={collection.name}
+                {...getTagProps({ index })}
+              />
+            </Tooltip>
+          ))
+        }
+        onChange={(_, value: Collection[]) => {
+          onSelectionChange(value);
+        }}
+        value={value ?? []}
+        options={collections}
+        disableCloseOnSelect
+        getOptionLabel={(collection) => collection.name}
+        getOptionSelected={(collection, selected) =>
+          selected.uuid === collection.uuid
+        }
+        renderOption={(collection, { selected }) => (
+          <>
+            <Checkbox
+              icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
+              checkedIcon={<CheckBoxIcon fontSize="small" />}
+              checked={selected}
+            />
+            {collection.name}
+          </>
+        )}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            variant="outlined"
+            label={collectionSelectorStrings.title}
+            placeholder={collectionSelectorStrings.title}
           />
-          {collection.name}
-        </>
-      )}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          variant="outlined"
-          label={collectionSelectorStrings.title}
-          placeholder={collectionSelectorStrings.title}
-        />
-      )}
-    />
+        )}
+      />
+    </div>
   );
 };
