@@ -60,6 +60,7 @@ import {
   buildSelectionSessionAdvancedSearchLink,
   buildSelectionSessionRemoteSearchLink,
   isSelectionSessionInStructured,
+  isSelectionSessionOpen,
 } from "../modules/LegacySelectionSessionModule";
 import SearchBar from "../search/components/SearchBar";
 import { languageStrings } from "../util/langstrings";
@@ -498,7 +499,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item xs={9}>
+        <Grid item xs={isSelectionSessionOpen() ? 8 : 9}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <SearchBar
@@ -533,7 +534,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           </Grid>
         </Grid>
 
-        <Grid item xs={3}>
+        <Grid item xs={isSelectionSessionOpen() ? 4 : 3}>
           <Grid container direction="column" spacing={2}>
             <Grid item>
               <RefineSearchPanel
