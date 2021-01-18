@@ -17,5 +17,4 @@
  */
 
 // Assign 'FileUploader' to the window object so it's accessible for server.
-window.InlineFileUploader = require("../../tsrc/fileuploader/InlineFileUploader");
-window.UniversalFileUploader = require("../../tsrc/fileuploader/UniversalFileUploader");
+window.FileUploader = require("../../tsrc/fileuploader/FileUploaderServerRender").render;

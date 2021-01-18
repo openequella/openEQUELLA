@@ -100,7 +100,7 @@ object UniversalWebControlNew {
                                       FileDropRenderer.CSS,
                                       ZebraTableRenderer.CSS)
   val uploadListFunc =
-    new ExternallyDefinedFunction("InlineFileUploader.render", uploadListSrc)
+    new ExternallyDefinedFunction("FileUploader", uploadListSrc)
 }
 
 @Bind

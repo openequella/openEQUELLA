@@ -15,22 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Button,
-  createGenerateClassName,
-  Grid,
-  LinearProgress,
-  StylesProvider,
-  ThemeProvider,
-  Typography,
-} from "@material-ui/core";
+import { Button, Grid, LinearProgress, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Axios from "axios";
 import * as React from "react";
 import { ChangeEvent, useState } from "react";
-import * as ReactDOM from "react-dom";
 import { useDropzone } from "react-dropzone";
-import { getRenderData } from "../AppConfig";
 import {
   cancelUpload,
   deleteUpload,
@@ -66,7 +56,7 @@ interface DialogStrings {
 /**
  * Data structure matching the props server passes in
  */
-interface UniversalFileUploaderProps {
+export interface UniversalFileUploaderProps {
   /**
    * The root HTML Element under which this component gets rendered
    */
@@ -101,7 +91,7 @@ const useStyles = makeStyles({
   },
 });
 
-const UniversalFileUploader = ({
+export const UniversalFileUploader = ({
   ctrlId,
   updateFooter,
   scrapBookOnClick = () => {},
@@ -296,26 +286,4 @@ const UniversalFileUploader = ({
       />
     </div>
   );
-};
-
-export const render = (props: UniversalFileUploaderProps) => {
-  if (getRenderData()?.newUI) {
-    const generateClassName = createGenerateClassName({
-      productionPrefix: "oeq-ufu",
-      seed: "oeq-ufu",
-    });
-
-    import("../theme/index").then(({ oeqTheme }) => {
-      ReactDOM.render(
-        <StylesProvider generateClassName={generateClassName}>
-          <ThemeProvider theme={oeqTheme}>
-            <UniversalFileUploader {...props} />
-          </ThemeProvider>
-        </StylesProvider>,
-        props.elem
-      );
-    });
-  } else {
-    ReactDOM.render(<UniversalFileUploader {...props} />, props.elem);
-  }
 };

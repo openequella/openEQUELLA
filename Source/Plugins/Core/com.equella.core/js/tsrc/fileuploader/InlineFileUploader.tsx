@@ -16,22 +16,16 @@
  * limitations under the License.
  */
 import {
-  createGenerateClassName,
   Divider,
   Grid,
   LinearProgress,
   Link,
-  StylesProvider,
-  ThemeProvider,
   Typography,
 } from "@material-ui/core";
 import Axios from "axios";
 import * as React from "react";
-import { Fragment } from "react";
-import { useEffect, useState } from "react";
-import * as ReactDOM from "react-dom";
+import { Fragment, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { getRenderData } from "../AppConfig";
 import {
   AjaxFileEntry,
   buildMaxAttachmentWarning,
@@ -77,7 +71,7 @@ interface ControlStrings {
 /**
  * Data structure matching the props server passes in
  */
-interface InlineFileUploaderProps {
+export interface InlineFileUploaderProps {
   /**
    * The root HTML Element under which this component gets rendered
    */
@@ -122,7 +116,7 @@ interface InlineFileUploaderProps {
   reloadState: () => void;
 }
 
-const InlineFileUploader = ({
+export const InlineFileUploader = ({
   ctrlId,
   entries,
   maxAttachments,
@@ -421,30 +415,4 @@ const InlineFileUploader = ({
       )}
     </div>
   );
-};
-
-/**
- * This function is primarily created for rendering this component on server
- * @param props The props passed into this component (search 'uploadArgs' in 'UniversalWebControlNew.scala' for details)
- */
-export const render = (props: InlineFileUploaderProps) => {
-  if (getRenderData()?.newUI) {
-    const generateClassName = createGenerateClassName({
-      productionPrefix: "oeq-ifu",
-      seed: "oeq-ifu",
-    });
-
-    import("../theme/index").then(({ oeqTheme }) => {
-      ReactDOM.render(
-        <StylesProvider generateClassName={generateClassName}>
-          <ThemeProvider theme={oeqTheme}>
-            <InlineFileUploader {...props} />
-          </ThemeProvider>
-        </StylesProvider>,
-        props.elem
-      );
-    });
-  } else {
-    ReactDOM.render(<InlineFileUploader {...props} />, props.elem);
-  }
 };
