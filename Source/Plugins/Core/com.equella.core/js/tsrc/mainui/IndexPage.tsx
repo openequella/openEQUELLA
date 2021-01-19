@@ -182,7 +182,7 @@ export default function IndexPage() {
       );
     };
 
-    const renderLegacyPage = (p: RouteComponentProps) => {
+    const renderLegacyContent = (p: RouteComponentProps) => {
       return (
         <LegacyContent
           {...mkRouteProps(p)}
@@ -211,11 +211,11 @@ export default function IndexPage() {
             newOrOldSearch(window.location) ? (
               <SearchPage {...mkRouteProps(p)} />
             ) : (
-              renderLegacyPage(p)
+              renderLegacyContent(p)
             )
           }
         />
-        <Route render={renderLegacyPage} />
+        <Route render={renderLegacyContent} />
       </Switch>
     );
   };
