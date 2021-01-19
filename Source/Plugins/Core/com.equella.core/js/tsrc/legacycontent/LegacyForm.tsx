@@ -20,14 +20,8 @@ import { ReactNode, Fragment } from "react";
 
 export const legacyFormId = "eqpageForm";
 
-export const getEqPageForm = (): HTMLFormElement | null => {
-  const form: HTMLElement | null = document.getElementById(legacyFormId);
-  if (form && (form as HTMLFormElement).action !== undefined) {
-    return form as HTMLFormElement;
-  }
-
-  return null;
-};
+export const getEqPageForm = (): HTMLFormElement | null =>
+  document.querySelector<HTMLFormElement>(`#${legacyFormId}`);
 
 interface LegacyFormProps {
   state: { [key: string]: string[] };
