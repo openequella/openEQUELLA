@@ -44,7 +44,7 @@ import { languageStrings } from "../util/langstrings";
 import { FileUploaderActionLink } from "./FileUploaderActionLink";
 
 /**
- * Data structure for all texts server passes in
+ * Data structure for all strings from the server.
  */
 interface DialogStrings {
   scrapbook: string;
@@ -91,6 +91,12 @@ const useStyles = makeStyles({
   },
 });
 
+/**
+ * Similar to InlineFileUploader, this component is also used for selecting and uploading local
+ * files to server, but it should be ONLY used in the Legacy Universal Resource dialog at the moment.
+ *
+ * Also, upload restrictions configured on server do not apply.
+ */
 export const UniversalFileUploader = ({
   ctrlId,
   updateFooter,

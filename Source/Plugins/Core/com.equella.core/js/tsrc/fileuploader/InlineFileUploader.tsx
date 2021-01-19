@@ -52,7 +52,7 @@ import {
 import { FileUploaderActionLink } from "./FileUploaderActionLink";
 
 /**
- * Data structure for all texts server passes in
+ * Data structure for all strings from the server.
  */
 interface ControlStrings {
   edit: string;
@@ -116,6 +116,16 @@ export interface InlineFileUploaderProps {
   reloadState: () => void;
 }
 
+/**
+ * This component is used for selecting and uploading local files to server.
+ * It supports 'Drag and Drop', multiple selections, and common actions such as
+ * editing, replacing and deleting uploaded files.
+ *
+ * Also, upload restrictions configured on server are applied.
+ *
+ * However, this component should be used in the context of Legacy Wizard page
+ * at the moment because all required props is only available on server.
+ */
 export const InlineFileUploader = ({
   ctrlId,
   entries,

@@ -37,6 +37,18 @@ const isInlineFileUploaderProps = (
   props: InlineFileUploaderProps | UniversalFileUploaderProps
 ): props is InlineFileUploaderProps => "reloadState" in props;
 
+/**
+ * This function is created primarily for rendering either InlineFileUploader or UniversalFileUploader from server.
+ * Four steps are required to do on server:
+ * 1. Load "reactjs/scripts/uploadlist.js" by using 'IncludeFile'.
+ * 2. Create a variable which references to the object 'FileUploader' provided by above JS file.
+ * 3. Prepare required props by using 'ObjectExpression'.
+ * 4. Pass the variable and props to any server function that can execute Javascript code(e.g. 'addReadyStatements').
+ *
+ * Please view 'UniversalWebControlNew.scala' and 'FileUploadHandlerNew' to get more details.
+ *
+ * @param props Props that will be passed to InlineFileUploader or UniversalFileUploader
+ */
 export const render = (
   props: InlineFileUploaderProps | UniversalFileUploaderProps
 ) => {

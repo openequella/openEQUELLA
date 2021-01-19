@@ -366,9 +366,9 @@ export const updateCtrlErrorText = (ctrlId: string, text: string) => {
 };
 
 /**
- * Build a text for the error of exceeding the maximum number of attachments
+ * Build a string for the error of exceeding the maximum number of attachments
  *
- * @param format The text format provided by server
+ * @param format The text format provided by server(e.g. Maximum attachment number is {0} and please remove {1} attachment.)
  * @param args A list of values used to replace the format's placeholders.
  */
 export const buildMaxAttachmentWarning = (

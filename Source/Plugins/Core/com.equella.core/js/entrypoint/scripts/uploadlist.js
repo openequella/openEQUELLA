@@ -16,5 +16,5 @@
  * limitations under the License.
  */
 
-// Assign 'FileUploader' to the window object so it's accessible for server.
-window.FileUploader = require("../../tsrc/fileuploader/FileUploaderServerRender").render;
+// Assign 'FileUploader' to the window object so it's accessible by the server-generated Javascript.
+window.FileUploader = require("../../tsrc/fileuploader/FileUploaderRender").render;
