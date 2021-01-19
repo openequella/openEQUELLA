@@ -39,8 +39,8 @@ export function LegacyContentRenderer({
 }: PageContent) {
   const classes = useStyles();
 
-  // Effect responsible for the execution of the legacy scripts etc which historically were
-  // simply added at the end of the server-side HTML rendered.
+  // Effect responsible for the execution of the legacy scripts etc which were historically
+  // added at the end of the server-side rendered HTML.
   React.useEffect(() => {
     // eslint-disable-next-line no-eval
     if (script) window.eval(script);

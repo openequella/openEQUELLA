@@ -648,8 +648,8 @@ export const Template = function Template({
 
   /**
    * Defines the main layout of the page by structuring the above `layoutXyz` constants. This is
-   * done to enhance the readability of what the layout looks like, especially with regards to
-   * support for fullscreen mode.
+   * done to enhance readability to emphasise the structure - especially with regards to support for
+   * fullscreen mode.
    *
    * Originally fullscreen mode support was done with a simple ternary expression that would
    * set the layout as `<main>children</main>` when in fullscreen, but otherwise build up a

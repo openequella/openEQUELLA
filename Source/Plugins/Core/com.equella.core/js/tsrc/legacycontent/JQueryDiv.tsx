@@ -23,9 +23,9 @@ export interface JQueryDivProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 /**
- * Provides a means to have a `div` whose content is the raw HTML returned from the server. However
- * also used to support the various JQuery AJAX stuff partially due to the clean-up effect of
- * emptying out the `div`.
+ * Provides a means to have a `div` whose content is the raw HTML returned from the server. Also
+ * used to support the various JQuery AJAX stuff partially due to the clean-up effect of emptying
+ * out the `div`.
  *
  * It would be nice if we could get away with a simpler:
  *
