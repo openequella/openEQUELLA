@@ -149,6 +149,8 @@ export const LegacyContent = React.memo(function LegacyContent({
   updateTemplate,
 }: LegacyContentProps) {
   const [content, setContent] = React.useState<PageContent>();
+  const [updatingContent, setUpdatingContent] = React.useState<boolean>(true);
+
   const baseUrl = document.getElementsByTagName("base")[0].href;
 
   const redirected = (href: string, external: boolean) => {
@@ -178,10 +180,11 @@ export const LegacyContent = React.memo(function LegacyContent({
     content: LegacyContentResponse,
     scrollTop: boolean
   ) {
-    // First clear the content. As odd as this may seem we need this to ensure
-    // legacy elements work correctly without React rendering/dom optimisations. *sad*
-    // This mimics the functioning of a web browser where it would've reloaded the page.
-    setContent(undefined);
+    // Setting the below flag is crucial, as it forces the DOM to change (to display a spinner)
+    // thereby circumventing React rendering/DOM optimisations. This mimics the functioning of a web
+    // browser where it would've reloaded the page. Which is needed based on the way some of the
+    // Legacy AJAX code is written.
+    setUpdatingContent(true);
     updateIncludes(content.js, content.css).then((extraCss) => {
       const pageContent = {
         ...content,
@@ -197,6 +200,7 @@ export const LegacyContent = React.memo(function LegacyContent({
         refreshUser();
       }
       setContent(pageContent);
+      setUpdatingContent(false);
     });
   }
 
@@ -323,7 +327,7 @@ export const LegacyContent = React.memo(function LegacyContent({
     [content]
   );
 
-  return content ? (
+  return !updatingContent && content ? (
     <LegacyContentRenderer {...content} />
   ) : (
     <Grid container direction="column" alignItems="center">
