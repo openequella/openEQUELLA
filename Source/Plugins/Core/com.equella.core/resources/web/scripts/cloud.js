@@ -1,6 +1,6 @@
 const Cloud = {
   onSearch: function (cb, $span, searchingText) {
-    if ($("#eqpageForm").size()) {
+    if (document.getElementById("eqpageForm")) {
       //TODO: spinner
       $span.text(searchingText);
 
