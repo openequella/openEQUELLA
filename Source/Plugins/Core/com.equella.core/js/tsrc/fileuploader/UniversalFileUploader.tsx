@@ -15,8 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Button, Grid, LinearProgress, Typography } from "@material-ui/core";
+import {
+  Button,
+  Grid,
+  IconButton,
+  LinearProgress,
+  Typography,
+} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import AddCircleIcon from "@material-ui/icons/AddCircle";
+import DeleteIcon from "@material-ui/icons/Delete";
 import Axios from "axios";
 import * as React from "react";
 import { ChangeEvent, useState } from "react";
@@ -41,7 +49,6 @@ import {
   replaceElement,
 } from "../util/ImmutableArrayUtil";
 import { languageStrings } from "../util/langstrings";
-import { FileUploaderActionLink } from "./FileUploaderActionLink";
 
 /**
  * Data structure for all strings from the server.
@@ -203,18 +210,16 @@ export const UniversalFileUploader = ({
       const binIconProps = isUploadedFile(file)
         ? {
             onClick: () => onDelete(file.fileEntry.id),
-            text: strings.delete,
+            title: strings.delete,
           }
         : {
             onClick: () => onCancel(file.localId),
-            text: strings.cancel,
+            title: strings.cancel,
           };
       return (
-        <FileUploaderActionLink
-          {...binIconProps}
-          showText={false}
-          customClass="unselect"
-        />
+        <IconButton {...binIconProps} color="primary">
+          <DeleteIcon />
+        </IconButton>
       );
     };
     return [...uploadedFiles, ...uploadingFiles].map((file) => (
@@ -284,12 +289,14 @@ export const UniversalFileUploader = ({
         </div>
         <div className="filedrop">{strings.drop}</div>
       </div>
-      <FileUploaderActionLink
+      <IconButton
         id={`${ctrlId}_filesFromScrapbookLink`}
         onClick={scrapBookOnClick}
-        text={strings.scrapbook}
-        customClass="add"
-      />
+        title={strings.scrapbook}
+        color="primary"
+      >
+        <AddCircleIcon />
+      </IconButton>
     </div>
   );
 };

@@ -18,10 +18,13 @@
 import {
   Divider,
   Grid,
+  IconButton,
   LinearProgress,
   Link,
   Typography,
 } from "@material-ui/core";
+import DeleteIcon from "@material-ui/icons/Delete";
+import AddCircleIcon from "@material-ui/icons/AddCircle";
 import Axios from "axios";
 import * as React from "react";
 import { Fragment, useEffect, useState } from "react";
@@ -373,12 +376,13 @@ export const InlineFileUploader = ({
         );
       }
       return (
-        <FileUploaderActionLink
+        <IconButton
           onClick={() => onCancel(file.localId)}
-          text={strings.cancel}
-          showText={false}
-          customClass="unselect"
-        />
+          title={strings.cancel}
+          color="primary"
+        >
+          <DeleteIcon />
+        </IconButton>
       );
     };
 
@@ -409,12 +413,14 @@ export const InlineFileUploader = ({
 
       {editable && (maxAttachments === null || fileCount < maxAttachments) && (
         <>
-          <FileUploaderActionLink
+          <IconButton
             id={`${ctrlId}_addLink`}
             onClick={() => openDialog("", "")}
-            text={strings.add}
-            customClass="add"
-          />
+            title={strings.add}
+            color="primary"
+          >
+            <AddCircleIcon />
+          </IconButton>
           {canUpload && (
             <div {...getRootProps({ className: "dropzone" })}>
               <input id={`${ctrlId}_fileUpload_file`} {...getInputProps()} />
