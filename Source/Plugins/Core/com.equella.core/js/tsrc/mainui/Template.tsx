@@ -592,7 +592,7 @@ export const Template = ({
         {hasMenu && (
           <IconButton
             className={classes.navIconHide}
-            onClick={(_) => setNavMenuOpen(!navMenuOpen)}
+            onClick={() => setNavMenuOpen(!navMenuOpen)}
           >
             <MenuIcon />
           </IconButton>
