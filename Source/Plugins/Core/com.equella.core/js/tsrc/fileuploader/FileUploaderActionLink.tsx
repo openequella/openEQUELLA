@@ -21,24 +21,23 @@ import * as React from "react";
 interface FileActionLinkProps {
   onClick: () => void;
   text: string;
-  showText?: boolean;
   id?: string;
   customClass?: string;
 }
 export const FileUploaderActionLink = ({
   onClick,
   text,
-  showText = true,
   id,
   customClass,
 }: FileActionLinkProps) => (
   <Link
     id={id}
     className={customClass}
-    href="javascript:void(0);"
-    onClick={() => onClick()}
+    component="button"
+    onClick={onClick}
     title={text}
+    underline="none"
   >
-    {showText && text}
+    {text}
   </Link>
 );
