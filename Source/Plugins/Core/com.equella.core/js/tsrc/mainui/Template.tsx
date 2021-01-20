@@ -300,7 +300,7 @@ function useFullscreen({ fullscreenMode, hideAppBar }: useFullscreenProps) {
   return hideAppBar || modeIsFullscreen;
 }
 
-export const Template = function Template({
+export const Template = ({
   backRoute,
   children,
   currentUser = guestUser,
@@ -316,7 +316,7 @@ export const Template = function Template({
   title,
   titleExtra,
   metaTags,
-}: TemplateProps) {
+}: TemplateProps) => {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLElement>();
   const [navMenuOpen, setNavMenuOpen] = React.useState(false);
   const [errorOpen, setErrorOpen] = React.useState(false);
