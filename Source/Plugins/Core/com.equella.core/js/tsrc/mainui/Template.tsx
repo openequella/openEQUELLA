@@ -575,16 +575,14 @@ export const Template = ({
     );
   }
 
-  function renderError(error: ErrorResponse) {
-    return (
-      <MessageInfo
-        open={errorOpen}
-        onClose={() => setErrorOpen(false)}
-        variant="error"
-        title={error.error_description ? error.error_description : error.error}
-      />
-    );
-  }
+  const ErrorMessage = ({ error }: { error: ErrorResponse }) => (
+    <MessageInfo
+      open={errorOpen}
+      onClose={() => setErrorOpen(false)}
+      variant="error"
+      title={error.error_description ? error.error_description : error.error}
+    />
+  );
 
   const fullScreen = useFullscreen({ fullscreenMode, hideAppBar });
 
@@ -679,7 +677,7 @@ export const Template = ({
       <CssBaseline />
       <div className={classes.root}>
         {layout}
-        {errorResponse && renderError(errorResponse)}
+        {errorResponse && <ErrorMessage error={errorResponse} />}
       </div>
     </>
   );
