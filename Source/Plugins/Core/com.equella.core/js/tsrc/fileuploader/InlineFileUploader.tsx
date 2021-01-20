@@ -368,7 +368,9 @@ export const InlineFileUploader = ({
                     />
                   </Grid>
                   {isDividerNeeded && (
-                    <Divider orientation="vertical" flexItem />
+                    <Grid item>
+                      <Divider orientation="vertical" />
+                    </Grid>
                   )}
                 </Fragment>
               ))}
