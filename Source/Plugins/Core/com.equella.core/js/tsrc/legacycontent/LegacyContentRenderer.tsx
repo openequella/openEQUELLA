@@ -54,7 +54,7 @@ export function LegacyContentRenderer({
     !fullscreenMode && menuMode !== "HIDDEN" ? classes.noPadding : "";
 
   const mainContent = (
-    <div id="oeqMainLegacyContent" className={`content ${extraClass}`}>
+    <div className={`content ${extraClass}`}>
       {crumbs && <JQueryDiv id="breadcrumbs" html={crumbs} />}
       {upperbody && <JQueryDiv html={upperbody} />}
       <JQueryDiv html={body} />
