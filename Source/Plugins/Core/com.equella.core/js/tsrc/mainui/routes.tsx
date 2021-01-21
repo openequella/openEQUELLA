@@ -81,21 +81,19 @@ export const routes = {
   },
   SearchSettings: {
     path: "/page/searchsettings",
-    render: (p: BaseOEQRouteComponentProps) => <SearchPageSettings {...p} />,
+    component: SearchPageSettings,
   },
   SearchFilterSettings: {
     path: "/page/searchfiltersettings",
-    render: (p: BaseOEQRouteComponentProps) => <SearchFilterPage {...p} />,
+    component: SearchFilterPage,
   },
   ContentIndexSettings: {
     path: "/page/contentindexsettings",
-    render: (p: BaseOEQRouteComponentProps) => <ContentIndexSettings {...p} />,
+    component: ContentIndexSettings,
   },
   FacetedSearchSetting: {
     path: "/page/facetedsearchsettings",
-    render: (p: BaseOEQRouteComponentProps) => (
-      <FacetedSearchSettingsPage {...p} />
-    ),
+    component: FacetedSearchSettingsPage,
   },
   ViewItem: {
     to: (uuid: string, version: number) => `/items/${uuid}/${version}/`,
