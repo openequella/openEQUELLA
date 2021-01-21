@@ -79,10 +79,9 @@ public class ApidocsTest extends AbstractSessionTest {
   //    }
 
   private void assertAccessDenied(ErrorPage error) {
-
-    assertEquals(
-        error.getMainErrorMessage(testConfig.isNewUI()),
-        testConfig.isNewUI() ? "Forbidden" : "Access denied");
+    if (!testConfig.isNewUI()) {
+      assertEquals(error.getMainErrorMessage(false), "Access denied");
+    }
     assertEquals(
         error.getSubErrorMessage(testConfig.isNewUI()),
         testConfig.isNewUI()

@@ -43,14 +43,16 @@ import MenuIcon from "@material-ui/icons/Menu";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 
 import * as OEQ from "@openequella/rest-api-client";
+import clsx, { ClassValue } from "clsx";
 import { LocationDescriptor } from "history";
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { ErrorResponse } from "../api/errors";
 import MessageInfo from "../components/MessageInfo";
-import { guestUser } from "../legacycontent/LegacyContent";
+import { guestUser, PageContent } from "../legacycontent/LegacyContent";
 import { languageStrings } from "../util/langstrings";
 import { routes } from "./routes";
+import ScreenOptions from "./ScreenOptions";
 
 export type MenuMode = "HIDDEN" | "COLLAPSED" | "FULL";
 export type FullscreenMode = "YES" | "YES_WITH_TOOLBAR" | "NO";
@@ -130,6 +132,30 @@ export function templateError(errorResponse: ErrorResponse): TemplateUpdate {
     ...tp,
     errorResponse,
   });
+}
+
+export function templatePropsForLegacy({
+  title,
+  metaTags,
+  html,
+  contentId,
+  hideAppBar,
+  fullscreenMode,
+  menuMode,
+}: PageContent): TemplateProps {
+  const soHtml = html["so"];
+  const menuExtra = soHtml ? (
+    <ScreenOptions optionsHtml={soHtml} contentId={contentId} key={contentId} />
+  ) : undefined;
+  return {
+    title,
+    metaTags,
+    hideAppBar,
+    fullscreenMode: fullscreenMode as FullscreenMode,
+    menuMode: menuMode as MenuMode,
+    menuExtra,
+    children: undefined,
+  };
 }
 
 export const strings = languageStrings.template;
@@ -274,7 +300,7 @@ function useFullscreen({ fullscreenMode, hideAppBar }: useFullscreenProps) {
   return hideAppBar || modeIsFullscreen;
 }
 
-export const Template = React.memo(function Template({
+export const Template = ({
   backRoute,
   children,
   currentUser = guestUser,
@@ -290,7 +316,7 @@ export const Template = React.memo(function Template({
   title,
   titleExtra,
   metaTags,
-}: TemplateProps) {
+}: TemplateProps) => {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLElement>();
   const [navMenuOpen, setNavMenuOpen] = React.useState(false);
   const [errorOpen, setErrorOpen] = React.useState(false);
@@ -549,25 +575,37 @@ export const Template = React.memo(function Template({
     );
   }
 
-  const layout = useFullscreen({ fullscreenMode, hideAppBar }) ? (
-    <main>{children}</main>
-  ) : (
-    <div className={classes.appFrame}>
-      <AppBar className={classes.appBar}>
-        <Toolbar disableGutters>
-          {hasMenu && (
-            <IconButton
-              className={classes.navIconHide}
-              onClick={(_) => setNavMenuOpen(!navMenuOpen)}
-            >
-              <MenuIcon />
-            </IconButton>
-          )}
-          {titleArea()}
-          {menuArea()}
-        </Toolbar>
-        {tabs}
-      </AppBar>
+  const ErrorMessage = ({ error }: { error: ErrorResponse }) => (
+    <MessageInfo
+      open={errorOpen}
+      onClose={() => setErrorOpen(false)}
+      variant="error"
+      title={error.error_description ? error.error_description : error.error}
+    />
+  );
+
+  const fullScreen = useFullscreen({ fullscreenMode, hideAppBar });
+
+  const layoutAppBar = !fullScreen && (
+    <AppBar className={classes.appBar}>
+      <Toolbar disableGutters>
+        {hasMenu && (
+          <IconButton
+            className={classes.navIconHide}
+            onClick={() => setNavMenuOpen(!navMenuOpen)}
+          >
+            <MenuIcon />
+          </IconButton>
+        )}
+        {titleArea()}
+        {menuArea()}
+      </Toolbar>
+      {tabs}
+    </AppBar>
+  );
+
+  const layoutDrawer = !fullScreen && (
+    <>
       <Hidden mdUp>
         <Drawer
           variant="temporary"
@@ -588,37 +626,59 @@ export const Template = React.memo(function Template({
           {menuContent}
         </Drawer>
       </Hidden>
-      <main
-        className={`${classes.content} ${
-          fixedViewPort ? classes.contentFixedHeight : classes.contentMinHeight
-        }`}
-      >
-        <div className={classes.toolbar} />
-        {tabs && <div className={classes.tabs} />}
-        <div className={classes.contentArea}>{children}</div>
-      </main>
-      {footer && <div className={classes.footer}>{footer}</div>}
-    </div>
+    </>
   );
 
-  function renderError(error: ErrorResponse) {
-    return (
-      <MessageInfo
-        open={errorOpen}
-        onClose={() => setErrorOpen(false)}
-        variant="error"
-        title={error.error_description ? error.error_description : error.error}
-      />
-    );
-  }
+  const layoutToolbarAndTabs = !fullScreen && (
+    <>
+      <div className={classes.toolbar} />
+      {tabs && <div className={classes.tabs} />}
+    </>
+  );
+
+  const layoutFooter = !fullScreen && footer && (
+    <div className={classes.footer}>{footer}</div>
+  );
+
+  // Simple wrapper for `clsx` for easy consideration of fullscreen mode.
+  const layoutClasses = (...classes: ClassValue[]): string =>
+    clsx(!fullScreen && classes);
+
+  /**
+   * Defines the main layout of the page by structuring the above `layoutXyz` constants. This is
+   * done to enhance readability to emphasise the structure - especially with regards to support for
+   * fullscreen mode.
+   *
+   * Originally fullscreen mode support was done with a simple ternary expression that would
+   * set the layout as `<main>children</main>` when in fullscreen, but otherwise build up a
+   * component tree similar to the below. However this meant `children` would be unmounted when
+   * changing modes triggering excessive re-rendering. This became an issue with `LegacyContent`
+   * making duplicate calls to the server and ending up with incorrect results.
+   */
+  const layout = (
+    <div className={layoutClasses(classes.appFrame)}>
+      {layoutAppBar}
+      {layoutDrawer}
+      <main
+        className={layoutClasses([
+          classes.content,
+          fixedViewPort ? classes.contentFixedHeight : classes.contentMinHeight,
+        ])}
+      >
+        {layoutToolbarAndTabs}
+        <div className={layoutClasses(classes.contentArea)}>{children}</div>
+      </main>
+      {layoutFooter}
+    </div>
+  );
 
   return (
     <>
       <CssBaseline />
       <div className={classes.root}>
         {layout}
-        {errorResponse && renderError(errorResponse)}
+        {errorResponse && <ErrorMessage error={errorResponse} />}
       </div>
     </>
   );
-});
+};
