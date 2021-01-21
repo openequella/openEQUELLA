@@ -27,7 +27,11 @@ import {
 } from "../api/errors";
 import { API_BASE_URL } from "../AppConfig";
 import { BaseOEQRouteComponentProps } from "../mainui/routes";
-import { templateDefaults, templatePropsForLegacy } from "../mainui/Template";
+import {
+  templateDefaults,
+  templateError,
+  templatePropsForLegacy,
+} from "../mainui/Template";
 import { LegacyContentRenderer } from "./LegacyContentRenderer";
 import { getEqPageForm, legacyFormId } from "./LegacyForm";
 
@@ -109,6 +113,10 @@ export interface LegacyContentProps extends BaseOEQRouteComponentProps {
   pathname: string;
   search: string;
   locationKey?: string;
+  /**
+   * A callback that will display any errors as a full page error.
+   * @param error The error to be displayed
+   */
   onError: (error: ErrorResponse) => void;
 
   children?: never;
@@ -204,6 +212,22 @@ export const LegacyContent = React.memo(function LegacyContent({
     });
   }
 
+  /**
+   * Appropriately handle/display any error messages while submitting the current form - a la
+   * `submitCurrentForm`.
+   *
+   * @param fullscreen Should the error be displayed fullscreen/page (`true`) or just as a toast
+   *                   or however the `Template` currently does it (`false`).
+   * @param error The error to be handled
+   */
+  function handleError(fullscreen: boolean, error: ErrorResponse): void {
+    if (fullscreen) {
+      onError(error);
+    } else {
+      updateTemplate(templateError(error));
+    }
+  }
+
   function submitCurrentForm(
     fullScreen: boolean,
     scrollTop: boolean,
@@ -231,7 +255,7 @@ export const LegacyContent = React.memo(function LegacyContent({
           error.response !== undefined
             ? fromAxiosResponse(error.response)
             : generateFromError(error);
-        onError(errorResponse);
+        handleError(fullScreen, errorResponse);
       });
   }
 
