@@ -37,6 +37,7 @@ export const FileUploaderActionLink = ({
     onClick={onClick}
     title={text}
     underline="none"
+    color="primary"
   >
     {text}
   </Link>

@@ -23,11 +23,11 @@ import {
   Link,
   Typography,
 } from "@material-ui/core";
-import DeleteIcon from "@material-ui/icons/Delete";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
+import CancelIcon from "@material-ui/icons/Cancel";
 import Axios from "axios";
 import * as React from "react";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import {
   AjaxFileEntry,
@@ -53,6 +53,7 @@ import {
   replaceElement,
 } from "../util/ImmutableArrayUtil";
 import { FileUploaderActionLink } from "./FileUploaderActionLink";
+import { UploadList } from "./UploadList";
 
 /**
  * Data structure for all strings from the server.
@@ -278,143 +279,101 @@ export const InlineFileUploader = ({
     setFileCount(fileCount - 1);
   };
 
-  const buildFileList = () => {
-    // For an UploadedFile, display the file name as a link.
-    // For an UploadingFile, not only display the file name, but also display
-    // a progress bar or an error message, depending on the file status.
-    const fileName = (file: UploadedFile | UploadingFile) => {
-      if (isUploadedFile(file)) {
-        const { link, name } = file.fileEntry;
-        return (
-          <Link href={link} target="_blank">
-            {name}
-          </Link>
-        );
-      }
-
-      const {
-        fileEntry: { name },
-        uploadPercentage,
-        status,
-        failedReason,
-      } = file;
+  /**
+   * Build a link for UploadedFile or plain text for UploadingFile.
+   */
+  const buildFileName = (file: UploadedFile | UploadingFile) => {
+    if (isUploadedFile(file)) {
+      const { link, name } = file.fileEntry;
       return (
-        <Grid container spacing={1}>
-          <Grid item xs={4}>
-            {name}
-          </Grid>
+        <Link href={link} target="_blank">
+          {name}
+        </Link>
+      );
+    }
+    return file.fileEntry.name;
+  };
 
-          {status === "uploading" ? (
-            <Grid
-              item
-              container
-              xs={8}
-              alignItems="center"
-              spacing={1}
-              wrap="nowrap"
-            >
-              <Grid item xs={10}>
-                <LinearProgress
-                  variant="determinate"
-                  value={uploadPercentage}
-                  className="progress-bar-inner"
-                />
-              </Grid>
-              <Grid item xs={2}>
-                {`${uploadPercentage}%`}
-              </Grid>
-            </Grid>
-          ) : (
-            <Grid item xs={8}>
-              <Typography role="alert" color="error">
-                {failedReason}
-              </Typography>
-            </Grid>
-          )}
+  /**
+   * Build three text buttons for UploadedFile or one icon button for UploadingFile.
+   */
+  const buildActions = (file: UploadedFile | UploadingFile) =>
+    isUploadedFile(file)
+      ? [
+          <FileUploaderActionLink
+            onClick={() => onEdit(file.fileEntry.id)}
+            text={strings.edit}
+          />,
+          <Divider orientation="vertical" />,
+          <FileUploaderActionLink
+            onClick={() => onReplace(file.fileEntry.id)}
+            text={strings.replace}
+          />,
+          <Divider orientation="vertical" />,
+          <FileUploaderActionLink
+            onClick={() => onDelete(file.fileEntry.id)}
+            text={strings.delete}
+          />,
+        ]
+      : [
+          <IconButton
+            onClick={() => onCancel(file.localId)}
+            title={strings.cancel}
+            color="primary"
+          >
+            <CancelIcon />
+          </IconButton>,
+        ];
+
+  /**
+   * Build a progress bar or an error message for UploadingFile depending on its status.
+   * For UploadedFile, nothing is required so return undefined.
+   */
+  const buildUploadInfo = (file: UploadedFile | UploadingFile) => {
+    if (isUploadedFile(file)) {
+      return undefined;
+    }
+    const { uploadPercentage, status, failedReason } = file;
+    return status === "uploading" ? (
+      <Grid container alignItems="center" spacing={1}>
+        <Grid item xs={10}>
+          <LinearProgress
+            variant="determinate"
+            value={uploadPercentage}
+            className="progress-bar-inner"
+          />
         </Grid>
-      );
-    };
-
-    // For an UploadedFile, display three links for three actions: replace, edit and delete.
-    // For an UploadingFile, display one link for cancelling an upload.
-    const actions = (file: UploadedFile | UploadingFile) => {
-      if (isUploadedFile(file)) {
-        const { id } = file.fileEntry;
-        return (
-          <Grid container spacing={2} wrap="nowrap">
-            {editable &&
-              [
-                {
-                  text: strings.edit,
-                  handler: onEdit,
-                  isDividerNeeded: true,
-                },
-                {
-                  text: strings.replace,
-                  handler: onReplace,
-                  isDividerNeeded: true,
-                },
-                {
-                  text: strings.delete,
-                  handler: onDelete,
-                  isDividerNeeded: false,
-                },
-              ].map(({ text, handler, isDividerNeeded }) => (
-                <Fragment key={text}>
-                  <Grid item>
-                    <FileUploaderActionLink
-                      onClick={() => handler(id)}
-                      text={text}
-                    />
-                  </Grid>
-                  {isDividerNeeded && (
-                    <Grid item>
-                      <Divider orientation="vertical" />
-                    </Grid>
-                  )}
-                </Fragment>
-              ))}
-          </Grid>
-        );
-      }
-      return (
-        <IconButton
-          onClick={() => onCancel(file.localId)}
-          title={strings.cancel}
-          color="primary"
-        >
-          <DeleteIcon />
-        </IconButton>
-      );
-    };
-
-    const fileList = [...uploadedFiles, ...uploadingFiles].map(
-      (file, index) => (
-        <tr
-          key={isUploadedFile(file) ? file.fileEntry.id : file.localId}
-          className={index % 2 === 0 ? "even" : "odd rowShown"}
-        >
-          <td className="name">{fileName(file)}</td>
-          <td className="actions">{actions(file)}</td>
-        </tr>
-      )
+        <Grid item xs={2}>
+          {`${uploadPercentage}%`}
+        </Grid>
+      </Grid>
+    ) : (
+      <Typography role="alert" color="error">
+        {failedReason}
+      </Typography>
     );
-
-    const noFiles = (
-      <tr className="even">
-        <td>{strings.none}</td>
-      </tr>
-    );
-
-    return <tbody>{fileCount > 0 ? fileList : noFiles}</tbody>;
   };
 
   return (
-    <div id={`${ctrlId}universalresources`} className="universalresources">
-      <table className="zebra selections">{buildFileList()}</table>
+    <Grid
+      container
+      id={`${ctrlId}universalresources`}
+      className="universalresources"
+      direction="column"
+      wrap="nowrap"
+    >
+      <Grid item>
+        <UploadList
+          files={[...uploadedFiles, ...uploadingFiles]}
+          buildFileName={buildFileName}
+          buildActions={buildActions}
+          noFiles={strings.none}
+          buildUploadInfo={buildUploadInfo}
+        />
+      </Grid>
 
       {editable && (maxAttachments === null || fileCount < maxAttachments) && (
-        <>
+        <Grid item>
           <IconButton
             id={`${ctrlId}_addLink`}
             onClick={() => openDialog("", "")}
@@ -429,8 +388,8 @@ export const InlineFileUploader = ({
               <div className="filedrop">{strings.drop}</div>
             </div>
           )}
-        </>
+        </Grid>
       )}
-    </div>
+    </Grid>
   );
 };
