@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   CircularProgress,
-  ExpansionPanel,
-  ExpansionPanelDetails,
-  ExpansionPanelSummary,
   List,
   ListItem,
   ListItemText,
@@ -119,7 +119,7 @@ const SettingsPage = ({
    * @param settings - settings of the category
    * @returns {ReactElement} Either a List or UISettingEditor, depending on the category
    */
-  const expansionPanelContent = ({
+  const accordionContent = ({
     category,
     settings,
   }: SettingGroup): ReactElement => {
@@ -129,7 +129,7 @@ const SettingsPage = ({
       );
     }
     return (
-      <ExpansionPanelDetails>
+      <AccordionDetails>
         <List>
           {settings.map((setting) => (
             <ListItem key={setting.id}>
@@ -140,7 +140,7 @@ const SettingsPage = ({
             </ListItem>
           ))}
         </List>
-      </ExpansionPanelDetails>
+      </AccordionDetails>
     );
   };
 
@@ -192,15 +192,15 @@ const SettingsPage = ({
           settingGroups.map((group) => {
             const { name, desc } = group.category;
             return (
-              <ExpansionPanel key={name}>
-                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+              <Accordion key={name}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                   <Typography className={classes.heading}>{name}</Typography>
                   <Typography className={classes.secondaryHeading}>
                     {desc}
                   </Typography>
-                </ExpansionPanelSummary>
-                {expansionPanelContent(group)}
-              </ExpansionPanel>
+                </AccordionSummary>
+                {accordionContent(group)}
+              </Accordion>
             );
           })
         )
