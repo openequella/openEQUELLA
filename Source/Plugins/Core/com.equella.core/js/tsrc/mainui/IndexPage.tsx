@@ -34,7 +34,7 @@ import { getCurrentUserDetails } from "../modules/UserModule";
 import { basePath } from "./App";
 import ErrorPage from "./ErrorPage";
 import { defaultNavMessage, NavAwayDialog } from "./PreventNavigation";
-import { BaseOEQRouteComponentProps, OEQRoute, routes } from "./routes";
+import { BaseOEQRouteComponentProps, routes } from "./routes";
 import { Template, TemplateProps, TemplateUpdate } from "./Template";
 
 const SearchPage = React.lazy(() => import("../search/SearchPage"));
@@ -58,7 +58,7 @@ export default function IndexPage() {
     getCurrentUserDetails().then(setCurrentUser);
   }, []);
 
-  React.useEffect(() => refreshUser(), []);
+  React.useEffect(() => refreshUser(), [refreshUser]);
 
   const [navAwayCallback, setNavAwayCallback] = React.useState<{
     message: string;
@@ -95,44 +95,41 @@ export default function IndexPage() {
     });
   }, []);
 
-  interface Routes {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [key: string]: OEQRoute<any>;
-  }
-  const oeqRoutes: Routes = routes;
-
-  function mkRouteProps(p: RouteComponentProps): BaseOEQRouteComponentProps {
-    return {
+  const mkRouteProps = React.useCallback(
+    (p: RouteComponentProps): BaseOEQRouteComponentProps => ({
       ...p,
       updateTemplate,
       refreshUser,
       redirect: p.history.push,
       setPreventNavigation,
       isReloadNeeded: !renderData?.newUI, // Indicate that new UI is displayed but not enabled.
-    };
-  }
+    }),
+    [refreshUser, setPreventNavigation, updateTemplate]
+  );
 
-  const newUIRoutes = React.useMemo(() => {
-    return Object.keys(oeqRoutes).map((key, ind) => {
-      const oeqRoute = oeqRoutes[key];
-      return (
-        (oeqRoute.component || oeqRoute.render) && (
-          <Route
-            key={ind}
-            exact={oeqRoute.exact}
-            path={oeqRoute.path}
-            render={(p) => {
-              const oeqProps = mkRouteProps(p);
-              if (oeqRoute.component) {
-                return <oeqRoute.component {...oeqProps} />;
-              }
-              return oeqRoute.render?.(oeqProps);
-            }}
-          />
-        )
-      );
-    });
-  }, [refreshUser]);
+  const newUIRoutes = React.useMemo(
+    () =>
+      Object.keys(routes).map((key, ind) => {
+        const oeqRoute = routes[key];
+        return (
+          (oeqRoute.component || oeqRoute.render) && (
+            <Route
+              key={ind}
+              exact={oeqRoute.exact}
+              path={oeqRoute.path}
+              render={(p) => {
+                const oeqProps = mkRouteProps(p);
+                if (oeqRoute.component) {
+                  return <oeqRoute.component {...oeqProps} />;
+                }
+                return oeqRoute.render?.(oeqProps);
+              }}
+            />
+          )
+        );
+      }),
+    [mkRouteProps]
+  );
 
   const errorCallback = React.useCallback((err: ErrorResponse) => {
     errorShowing.current = true;

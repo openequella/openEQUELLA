@@ -63,7 +63,26 @@ export interface OEQRoute<T> {
   to?: string | To | ToVersion;
 }
 
-export const routes = {
+interface Routes {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: OEQRoute<any>;
+}
+
+/**
+ * Simple validator to allow direct use of an expected to URL route - considering they're hardcoded
+ * if an expected one is missing - or of the wrong type - then we have a code issue.
+ *
+ * @param to route to validate
+ */
+export const legacyPageUrl = (to?: string | To | ToVersion): string => {
+  if (typeof to === "string") {
+    return to;
+  }
+
+  throw new TypeError("Expected legacy page URL is undefined");
+};
+
+export const routes: Routes = {
   Settings: {
     path: "(/access/settings.do|/page/settings)",
     to: "/page/settings",

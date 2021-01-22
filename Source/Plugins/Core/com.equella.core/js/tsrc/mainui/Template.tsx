@@ -534,13 +534,13 @@ export const Template = ({
               {badgedLink(
                 <AssignmentIcon />,
                 itemCounts.tasks,
-                routes.TaskList.to,
+                legacyPageUrl(routes.TaskList.to),
                 topBarString.tasks
               )}
               {badgedLink(
                 <NotificationsIcon />,
                 itemCounts.notifications,
-                routes.Notifications.to,
+                legacyPageUrl(routes.Notifications.to),
                 topBarString.notifications
               )}
             </Hidden>
@@ -565,9 +565,17 @@ export const Template = ({
               anchorOrigin={{ vertical: "top", horizontal: "right" }}
               transformOrigin={{ vertical: "top", horizontal: "right" }}
             >
-              {linkItem(routes.Logout.to, true, strings.menu.logout)}
+              {linkItem(
+                legacyPageUrl(routes.Logout.to),
+                true,
+                strings.menu.logout
+              )}
               {currentUser.prefsEditable &&
-                linkItem(routes.UserPreferences.to, false, strings.menu.prefs)}
+                linkItem(
+                  legacyPageUrl(routes.UserPreferences.to),
+                  false,
+                  strings.menu.prefs
+                )}
             </Menu>
           </>
         )}
