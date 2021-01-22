@@ -40,6 +40,9 @@ interface SchemaSelectorProps {
   setSchemaNode: (node: string) => void;
 }
 
+const strings =
+  languageStrings.settings.searching.facetedsearchsetting.schemaSelector;
+
 /**
  * This component defines a schema selector, for selecting a schema and then a node within.
  * When a schema is selected, it will display that schema within a SchemaNodeSelector.
@@ -52,8 +55,7 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
   const [schema, setSchema] = React.useState<SchemaNode>();
   const [schemaList, setSchemaList] = React.useState<ReactElement[]>([]);
   const [schemaNodePath, setSchemaNodePath] = React.useState<string>("");
-  const strings =
-    languageStrings.settings.searching.facetedsearchsetting.schemaSelector;
+
   React.useEffect(() => {
     schemaListSummary().then((schemas) => {
       const defaultListItem = [[undefined, strings.selectASchema]];
@@ -80,7 +82,7 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
     if (schemaNodePath?.trim()) {
       setSchemaNode(schemaNodePath);
     }
-  }, [schemaNodePath]);
+  }, [schemaNodePath, setSchemaNode]);
 
   return (
     <Grid container direction="column" spacing={0}>
