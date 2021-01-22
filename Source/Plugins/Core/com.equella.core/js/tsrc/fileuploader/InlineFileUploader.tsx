@@ -305,7 +305,6 @@ export const InlineFileUploader = ({
       id={`${ctrlId}universalresources`}
       className="universalresources"
       direction="column"
-      wrap="nowrap"
     >
       <Grid item>
         <UploadList

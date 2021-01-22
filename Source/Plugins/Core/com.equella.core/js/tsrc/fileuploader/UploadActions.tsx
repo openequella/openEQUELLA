@@ -29,7 +29,7 @@ interface UploadActionsProps {
   actions: UploadAction[];
 }
 export const UploadActions = ({ actions }: UploadActionsProps) => (
-  <Grid container spacing={1}>
+  <Grid container spacing={1} className="actions">
     {actions.map(({ onClick, text, icon }, index) => (
       <>
         <Grid item key={index}>

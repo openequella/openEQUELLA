@@ -84,12 +84,12 @@ public class UniversalControl extends NewAbstractWizardControl<UniversalControl>
   }
 
   private By getRowByTitle(String title, boolean disabled) {
-    return By.xpath(
-        ".//tr[.//" + (disabled ? "span" : "a") + "[text()=" + quoteXPath(title) + "]]");
+    return By.xpath(".//li[.//" + (disabled ? "div" : "a") + "[text()=" + quoteXPath(title) + "]]");
   }
 
   private By getActionLink(String action) {
-    return By.xpath("td[@class='actions']/div/div/button[text()=" + quoteXPath(action) + "]");
+    return By.xpath(
+        "div/div[contains(@class, 'actions')]/div/button[text()=" + quoteXPath(action) + "]");
   }
 
   private void clickAction(By rowBy, String action) {
