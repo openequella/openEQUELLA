@@ -15,15 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Button,
-  Grid,
-  IconButton,
-  LinearProgress,
-  Typography,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Grid, IconButton } from "@material-ui/core";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
+import CancelIcon from "@material-ui/icons/Cancel";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Axios from "axios";
 import * as React from "react";
@@ -49,6 +43,8 @@ import {
   replaceElement,
 } from "../util/ImmutableArrayUtil";
 import { languageStrings } from "../util/langstrings";
+import { UploadAction } from "./UploadActions";
+import { UploadList } from "./UploadList";
 
 /**
  * Data structure for all strings from the server.
@@ -90,14 +86,6 @@ export interface UniversalFileUploaderProps {
   strings: DialogStrings;
 }
 
-const useStyles = makeStyles({
-  // In order to show the custom progress bar background color, override the MUI LinearProgress styles
-  // to make its background color transparent.
-  barColorPrimary: {
-    backgroundColor: "transparent",
-  },
-});
-
 /**
  * Similar to InlineFileUploader, this component is also used for selecting and uploading local
  * files to server, but it should be ONLY used in the Legacy Universal Resource dialog at the moment.
@@ -111,8 +99,7 @@ export const UniversalFileUploader = ({
   commandUrl,
   strings,
 }: UniversalFileUploaderProps) => {
-  const classes = useStyles();
-  const { browse, noFileSelected } = languageStrings.fileUploader;
+  const { noFileSelected } = languageStrings.fileUploader;
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
 
@@ -186,117 +173,55 @@ export const UniversalFileUploader = ({
     );
   };
 
-  const buildFileList = () => {
-    const progressBar = (file: UploadedFile | UploadingFile) => {
-      const progressBarProps = isUploadedFile(file)
-        ? {
-            className: "progress-bar-inner complete",
-            value: 100,
-            classes: {
-              barColorPrimary: classes.barColorPrimary, // Override the class applied to the inner bar to allow above custom styles working
-            },
-          }
-        : {
-            className: "progress-bar-inner",
-            value: file.uploadPercentage,
-          };
-      return <LinearProgress variant="determinate" {...progressBarProps} />;
-    };
-
-    const uploadPercentage = (file: UploadedFile | UploadingFile) =>
-      isUploadedFile(file) ? "" : `${file.uploadPercentage}%`;
-
-    const binIcon = (file: UploadedFile | UploadingFile) => {
-      const binIconProps = isUploadedFile(file)
-        ? {
-            onClick: () => onDelete(file.fileEntry.id),
-            title: strings.delete,
-          }
-        : {
-            onClick: () => onCancel(file.localId),
-            title: strings.cancel,
-          };
-      return (
-        <IconButton {...binIconProps} color="primary">
-          <DeleteIcon />
-        </IconButton>
-      );
-    };
-    return [...uploadedFiles, ...uploadingFiles].map((file) => (
-      <Grid container className="file-upload" spacing={2} alignItems="center">
-        <Grid item className="file-name" xs={4}>
-          {file.fileEntry.name}
-        </Grid>
-
-        {
-          // If status is failed, show the error message.
-          // For other status, show a progress bar and a number indicating the progress.
-          file.status === "failed" ? (
-            <Grid item xs={7} className="ctrlinvalidmessage">
-              <Typography role="alert" color="error" align="left">
-                {file.failedReason}
-              </Typography>
-            </Grid>
-          ) : (
-            <Grid
-              item
-              container
-              className="file-upload-progress"
-              xs={7}
-              alignItems="center"
-            >
-              <Grid item xs={11}>
-                {progressBar(file)}
-              </Grid>
-              <Grid item xs={1}>
-                {uploadPercentage(file)}
-              </Grid>
-            </Grid>
-          )
+  const buildActions = (file: UploadedFile | UploadingFile): UploadAction[] => [
+    isUploadedFile(file)
+      ? {
+          onClick: () => onDelete(file.fileEntry.id),
+          text: strings.delete,
+          icon: <DeleteIcon />,
         }
+      : {
+          onClick: () => onCancel(file.localId),
+          text: strings.cancel,
+          icon: <CancelIcon />,
+        },
+  ];
 
-        <Grid item xs={1}>
-          {binIcon(file)}
-        </Grid>
-      </Grid>
-    ));
-  };
   return (
-    <div id="uploads">
-      <div className="uploadsprogress">{buildFileList()}</div>
-      <div {...getRootProps()}>
-        <div className="customfile focus">
-          <Button
-            className="customfile-button focus btn btn-equella btn-mini"
-            onClick={(e) => e.preventDefault()}
-          >
-            {browse}
-          </Button>
-          <span className="customfile-feedback">{noFileSelected}</span>
-          <input
-            id={`${ctrlId}_fileUpload`}
-            {...getInputProps()}
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              const fileInput: HTMLInputElement = event.target;
-              const changeEventHandler = getInputProps().onChange;
-              if (changeEventHandler) {
-                changeEventHandler(event);
-              }
-              // Need to empty the input value to make 'Selenium - sendKeys' happy.
-              fileInput.value = "";
-            }}
-          />
-        </div>
+    <Grid container id="uploads" direction="column" spacing={1}>
+      <Grid item className="uploadsprogress">
+        <UploadList
+          files={[...uploadedFiles, ...uploadingFiles]}
+          buildActions={buildActions}
+          noFileSelectedText={noFileSelected}
+        />
+      </Grid>
+      <Grid item {...getRootProps()}>
+        <input
+          id={`${ctrlId}_fileUpload`}
+          {...getInputProps()}
+          onChange={(event: ChangeEvent<HTMLInputElement>) => {
+            const fileInput: HTMLInputElement = event.target;
+            const changeEventHandler = getInputProps().onChange;
+            if (changeEventHandler) {
+              changeEventHandler(event);
+            }
+            // Need to empty the input value to make 'Selenium - sendKeys' happy.
+            fileInput.value = "";
+          }}
+        />
         <div className="filedrop">{strings.drop}</div>
-      </div>
-      <IconButton
-        id={`${ctrlId}_filesFromScrapbookLink`}
-        onClick={scrapBookOnClick}
-        title={strings.scrapbook}
-        color="primary"
-      >
-        <AddCircleIcon />
-      </IconButton>
-    </div>
+      </Grid>
+      <Grid item>
+        <IconButton
+          id={`${ctrlId}_filesFromScrapbookLink`}
+          onClick={scrapBookOnClick}
+          title={strings.scrapbook}
+          color="primary"
+        >
+          <AddCircleIcon />
+        </IconButton>
+      </Grid>
+    </Grid>
   );
 };

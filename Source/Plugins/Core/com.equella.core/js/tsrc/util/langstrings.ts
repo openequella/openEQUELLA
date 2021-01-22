@@ -623,7 +623,6 @@ export const languageStrings = {
     unsupportedContent: "Provided content is not supported",
   },
   fileUploader: {
-    browse: "Browse",
-    noFileSelected: "No file selected...",
+    noFileSelected: "No attached resources",
   },
 };

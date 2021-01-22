@@ -16,60 +16,53 @@
  * limitations under the License.
  */
 import {
-  Grid,
   List,
   ListItem,
   ListItemSecondaryAction,
   ListItemText,
 } from "@material-ui/core";
 import * as React from "react";
-import { ReactElement } from "react";
 import {
   isUploadedFile,
   UploadedFile,
   UploadingFile,
 } from "../modules/FileUploaderModule";
+import { UploadAction, UploadActions } from "./UploadActions";
+import { UploadFileName } from "./UploadFileName";
+import { UploadInfo } from "./UploadInfo";
 
 interface UploadListProps {
   files: (UploadingFile | UploadedFile)[];
-  buildFileName: (file: UploadingFile | UploadedFile) => ReactElement | string;
-  buildActions: (file: UploadingFile | UploadedFile) => ReactElement[];
-  buildUploadInfo: (
-    file: UploadingFile | UploadedFile
-  ) => ReactElement | undefined;
-  noFiles?: string;
+  buildActions: (file: UploadingFile | UploadedFile) => UploadAction[];
+  noFileSelectedText?: string;
 }
 export const UploadList = ({
   files,
-  buildFileName,
   buildActions,
-  buildUploadInfo,
-  noFiles,
+  noFileSelectedText,
 }: UploadListProps) => (
   <List>
     {files.length > 0 ? (
-      files.map((file) => (
-        <ListItem
-          key={isUploadedFile(file) ? file.fileEntry.id : file.localId}
-          divider
-        >
-          <ListItemText
-            primary={buildFileName(file)}
-            secondary={buildUploadInfo(file)}
-          />
-          <ListItemSecondaryAction>
-            <Grid container spacing={1}>
-              {buildActions(file).map((action, index) => (
-                <Grid item key={index}>
-                  {action}
-                </Grid>
-              ))}
-            </Grid>
-          </ListItemSecondaryAction>
-        </ListItem>
-      ))
+      files.map((file) => {
+        const fileId = isUploadedFile(file) ? file.fileEntry.id : file.localId;
+        const fileName = file.fileEntry.name;
+        const fileLink = isUploadedFile(file) ? file.fileEntry.link : undefined;
+
+        return (
+          <ListItem key={fileId} divider>
+            <ListItemText
+              primary={<UploadFileName fileName={fileName} link={fileLink} />}
+              secondary={<UploadInfo file={file} />}
+              secondaryTypographyProps={{ component: "div" }}
+            />
+            <ListItemSecondaryAction>
+              <UploadActions actions={buildActions(file)} />
+            </ListItemSecondaryAction>
+          </ListItem>
+        );
+      })
     ) : (
-      <ListItem divider>{noFiles}</ListItem>
+      <ListItem divider>{noFileSelectedText}</ListItem>
     )}
   </List>
 );

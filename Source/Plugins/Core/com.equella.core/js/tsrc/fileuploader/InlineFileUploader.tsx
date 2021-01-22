@@ -15,14 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Divider,
-  Grid,
-  IconButton,
-  LinearProgress,
-  Link,
-  Typography,
-} from "@material-ui/core";
+import { Grid, IconButton } from "@material-ui/core";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import CancelIcon from "@material-ui/icons/Cancel";
 import Axios from "axios";
@@ -52,7 +45,7 @@ import {
   deleteElement,
   replaceElement,
 } from "../util/ImmutableArrayUtil";
-import { FileUploaderActionLink } from "./FileUploaderActionLink";
+import { UploadAction } from "./UploadActions";
 import { UploadList } from "./UploadList";
 
 /**
@@ -280,79 +273,31 @@ export const InlineFileUploader = ({
   };
 
   /**
-   * Build a link for UploadedFile or plain text for UploadingFile.
-   */
-  const buildFileName = (file: UploadedFile | UploadingFile) => {
-    if (isUploadedFile(file)) {
-      const { link, name } = file.fileEntry;
-      return (
-        <Link href={link} target="_blank">
-          {name}
-        </Link>
-      );
-    }
-    return file.fileEntry.name;
-  };
-
-  /**
    * Build three text buttons for UploadedFile or one icon button for UploadingFile.
    */
-  const buildActions = (file: UploadedFile | UploadingFile) =>
+  const buildActions = (file: UploadedFile | UploadingFile): UploadAction[] =>
     isUploadedFile(file)
       ? [
-          <FileUploaderActionLink
-            onClick={() => onEdit(file.fileEntry.id)}
-            text={strings.edit}
-          />,
-          <Divider orientation="vertical" />,
-          <FileUploaderActionLink
-            onClick={() => onReplace(file.fileEntry.id)}
-            text={strings.replace}
-          />,
-          <Divider orientation="vertical" />,
-          <FileUploaderActionLink
-            onClick={() => onDelete(file.fileEntry.id)}
-            text={strings.delete}
-          />,
+          {
+            onClick: () => onEdit(file.fileEntry.id),
+            text: strings.edit,
+          },
+          {
+            onClick: () => onReplace(file.fileEntry.id),
+            text: strings.replace,
+          },
+          {
+            onClick: () => onDelete(file.fileEntry.id),
+            text: strings.delete,
+          },
         ]
       : [
-          <IconButton
-            onClick={() => onCancel(file.localId)}
-            title={strings.cancel}
-            color="primary"
-          >
-            <CancelIcon />
-          </IconButton>,
+          {
+            onClick: () => onCancel(file.localId),
+            text: strings.cancel,
+            icon: <CancelIcon />,
+          },
         ];
-
-  /**
-   * Build a progress bar or an error message for UploadingFile depending on its status.
-   * For UploadedFile, nothing is required so return undefined.
-   */
-  const buildUploadInfo = (file: UploadedFile | UploadingFile) => {
-    if (isUploadedFile(file)) {
-      return undefined;
-    }
-    const { uploadPercentage, status, failedReason } = file;
-    return status === "uploading" ? (
-      <Grid container alignItems="center" spacing={1}>
-        <Grid item xs={10}>
-          <LinearProgress
-            variant="determinate"
-            value={uploadPercentage}
-            className="progress-bar-inner"
-          />
-        </Grid>
-        <Grid item xs={2}>
-          {`${uploadPercentage}%`}
-        </Grid>
-      </Grid>
-    ) : (
-      <Typography role="alert" color="error">
-        {failedReason}
-      </Typography>
-    );
-  };
 
   return (
     <Grid
@@ -365,10 +310,8 @@ export const InlineFileUploader = ({
       <Grid item>
         <UploadList
           files={[...uploadedFiles, ...uploadingFiles]}
-          buildFileName={buildFileName}
           buildActions={buildActions}
-          noFiles={strings.none}
-          buildUploadInfo={buildUploadInfo}
+          noFileSelectedText={strings.none}
         />
       </Grid>
 
