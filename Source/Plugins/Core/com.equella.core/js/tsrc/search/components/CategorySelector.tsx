@@ -28,7 +28,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
-import { ReactElement, useState } from "react";
+import { useState } from "react";
 import {
   Classification,
   SelectedCategories,
@@ -136,15 +136,25 @@ export const CategorySelector = ({
     onSelectedCategoriesChange(copiedCategoryGroups);
   };
 
+  interface ShowMoreButtonProps {
+    /**
+     * The ID of a Classification.
+     */
+    classificationID: number;
+
+    /**
+     * Whether the section of a Classification has been expanded or not.
+     */
+    expanded: boolean;
+  }
+
   /**
    * Create a button to show more/less categories for each Classification.
-   * @param classificationID The ID of a Classification.
-   * @param expanded Whether the section of a Classification has been expanded or not.
    */
-  const showMoreButton = (
-    classificationID: number,
-    expanded: boolean
-  ): ReactElement => (
+  const ShowMoreButton = ({
+    classificationID,
+    expanded,
+  }: ShowMoreButtonProps) => (
     <ListItem>
       <Grid container justify="center">
         <Grid item>
@@ -166,10 +176,7 @@ export const CategorySelector = ({
    * @param category The text of a category
    * @param count The count of a category
    */
-  const categoryLabel = ({
-    term: category,
-    count,
-  }: OEQ.SearchFacets.Facet): ReactElement => (
+  const CategoryLabel = ({ term: category, count }: OEQ.SearchFacets.Facet) => (
     <>
       <Typography display="inline">{category}</Typography>
       <Typography
@@ -182,15 +189,24 @@ export const CategorySelector = ({
     </>
   );
 
+  interface CategoryListItemProps {
+    /**
+     * The ID of a Classification
+     */
+    classificationID: number;
+    /**
+     * A category to be displayed
+     */
+    category: OEQ.SearchFacets.Facet;
+  }
+
   /**
    * Build a ListItem consisting of a MUI Checkbox and a Label for a category.
-   * @param classificationID The ID of a Classification
-   * @param category A category to be displayed
    */
-  const categoryListItem = (
-    classificationID: number,
-    category: OEQ.SearchFacets.Facet
-  ): ReactElement => {
+  const CategoryListItem = ({
+    classificationID,
+    category,
+  }: CategoryListItemProps) => {
     const { term } = category;
     return (
       <ListItem
@@ -214,7 +230,7 @@ export const CategorySelector = ({
               }}
             />
           }
-          label={categoryLabel(category)}
+          label={<CategoryLabel {...category} />}
         />
       </ListItem>
     );
@@ -259,29 +275,38 @@ export const CategorySelector = ({
     return [...selectedApplicable, ...selectedNotApplicable, ...notSelected];
   };
 
+  interface ListCategoryProps {
+    /**
+     * Classification to build from
+     */
+    classification: Classification;
+    /**
+     * Whether to show more categories or not
+     */
+    expanded: boolean;
+  }
+
   /**
    * Build a list for a Classification's categories. Some categories may have facets
    * not displayed due to the configured maximum display number.
-   *
-   * @param id The ID of a Classification
-   * @param categories A list of terms to build into a list
-   * @param maxDisplay Default maximum number of displayed facets
-   * @param expanded Whether to show more categories or not
    */
-  const listCategories = (
-    { id, categories, maxDisplay }: Classification,
-    expanded: boolean
-  ): ReactElement[] =>
-    categories
-      .slice(0, expanded ? undefined : maxDisplay)
-      .map((facet) => categoryListItem(id, facet));
+  const ListCategories = ({
+    classification: { id, categories, maxDisplay },
+    expanded,
+  }: ListCategoryProps) => (
+    <>
+      {categories.slice(0, expanded ? undefined : maxDisplay).map((facet) => (
+        <CategoryListItem classificationID={id} category={facet} />
+      ))}
+    </>
+  );
 
   /**
    * Sort and build Classifications that have categories.
    * For each Classification, a scroll bar and a 'Show more' button may or may not
    * be added, depending on whether a classification has more categories to show or not.
    */
-  const buildClassifications: ReactElement[] = classifications
+  const buildClassifications = classifications
     .filter((classification) => classification.categories.length > 0)
     .sort(
       (prevClassification, nextClassification) =>
@@ -301,12 +326,16 @@ export const CategorySelector = ({
             </Grid>
             <Grid item>
               <List className={expanded ? classes.classificationList : ""}>
-                {listCategories(
-                  { ...classification, categories: orderedCategories },
-                  expanded
+                <ListCategories
+                  classification={{
+                    ...classification,
+                    categories: orderedCategories,
+                  }}
+                  expanded={expanded}
+                />
+                {orderedCategories.length > maxDisplay && (
+                  <ShowMoreButton classificationID={id} expanded={expanded} />
                 )}
-                {orderedCategories.length > maxDisplay &&
-                  showMoreButton(id, expanded)}
               </List>
             </Grid>
           </Grid>
