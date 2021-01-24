@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { highlight } from "../../../tsrc/util/TextUtils";
+import { highlight, buildOEQServerString } from "../../../tsrc/util/TextUtils";
 
 describe("Highlighting of Text", () => {
   const className = "highlighted";
@@ -43,4 +43,14 @@ describe("Highlighting of Text", () => {
       expect(highlight(text, highlights, className)).toEqual(expected);
     }
   );
+});
+
+describe("Build oEQ server language strings", () => {
+  it("supports oEQ server defined language string formats", () => {
+    const format =
+      "Maximum attachment number is {0} and please remove {1} attachments.";
+    expect(buildOEQServerString(format, 1, 2)).toBe(
+      "Maximum attachment number is 1 and please remove 2 attachments."
+    );
+  });
 });

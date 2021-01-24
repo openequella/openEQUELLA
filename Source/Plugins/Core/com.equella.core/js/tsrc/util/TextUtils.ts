@@ -99,3 +99,19 @@ export const highlight = (
 
   return highlightWords(text);
 };
+
+/**
+ * This function is created to support building oEQ server defined language strings based on formats.
+ * The format usually has one or more placeholders wrapped by curly brackets.
+ * e.g. Maximum attachment number is {0} and please remove {1} attachment.
+ *
+ * @param format The format provided by oEQ Server
+ * @param args A list of values used to replace the format's placeholders.
+ */
+export const buildOEQServerString = (
+  format: string,
+  ...args: number[]
+): string =>
+  format.replace(/{(\d+)}/g, (match, number) =>
+    typeof args[number] !== "undefined" ? args[number].toString() : match
+  );

@@ -18,6 +18,8 @@
 import Axios, { CancelTokenSource } from "axios";
 import { v4 } from "uuid";
 
+const { CancelToken } = Axios;
+
 /**
  * Data structure matching server side type 'AjaxFileEntry'
  */
@@ -217,7 +219,6 @@ const isUploadFailed = (
   uploadResponse: BasicUploadResponse
 ): uploadResponse is UploadFailed => uploadResponse.response === "uploadfailed";
 
-const { CancelToken } = Axios;
 /**
  * A map where the key is each UploadingFile's localId and the value is a CancelTokenSource
  */
@@ -257,17 +258,19 @@ export const newUpload = (
   ).then(({ data }) =>
     isUploadFailed(data)
       ? data
-      : completeUpload(data.uploadUrl, uploadingFile, updateUploadProgress)
+      : doUpload(data.uploadUrl, uploadingFile, updateUploadProgress)
   );
 };
 
 /**
- * Send a POST request to complete an upload.
+ * Send a POST request to complete an upload. This function must be called after
+ * initialising an upload by 'newUpload'.
+ *
  * @param path The request URL
  * @param uploadingFile A file to be uploaded
  * @param updateUploadProgress A Function fired during upload to update the ProgressBar
  */
-const completeUpload = (
+const doUpload = (
   path: string,
   uploadingFile: UploadingFile,
   updateUploadProgress: (file: UploadingFile) => void
@@ -364,20 +367,6 @@ export const updateCtrlErrorText = (ctrlId: string, text: string) => {
     }
   }
 };
-
-/**
- * Build a string for the error of exceeding the maximum number of attachments
- *
- * @param format The text format provided by server(e.g. Maximum attachment number is {0} and please remove {1} attachment.)
- * @param args A list of values used to replace the format's placeholders.
- */
-export const buildMaxAttachmentWarning = (
-  format: string,
-  ...args: number[]
-): string =>
-  format.replace(/{(\d+)}/g, (match, number) =>
-    typeof args[number] !== "undefined" ? args[number].toString() : match
-  );
 
 export const generateLocalFile = (file: File): UploadingFile => ({
   localId: v4(),

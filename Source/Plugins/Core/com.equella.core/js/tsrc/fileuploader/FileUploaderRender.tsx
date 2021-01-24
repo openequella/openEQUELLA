@@ -69,14 +69,18 @@ export const render = (
       seed: uniqueMUIStylePrefix,
     });
 
-    import("../theme/index").then(({ oeqTheme }) => {
-      ReactDOM.render(
-        <StylesProvider generateClassName={generateClassName}>
-          <ThemeProvider theme={oeqTheme}>{fileUploader}</ThemeProvider>
-        </StylesProvider>,
-        props.elem
+    import("../theme/index")
+      .then(({ oeqTheme }) => {
+        ReactDOM.render(
+          <StylesProvider generateClassName={generateClassName}>
+            <ThemeProvider theme={oeqTheme}>{fileUploader}</ThemeProvider>
+          </StylesProvider>,
+          props.elem
+        );
+      })
+      .catch((error: Error) =>
+        console.error(`Fail to load oEQ Theme settings due to ${error.message}`)
       );
-    });
   } else {
     ReactDOM.render(fileUploader, props.elem);
   }

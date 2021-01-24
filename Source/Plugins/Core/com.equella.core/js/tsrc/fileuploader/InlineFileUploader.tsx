@@ -24,7 +24,6 @@ import { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import {
   AjaxFileEntry,
-  buildMaxAttachmentWarning,
   cancelUpload,
   deleteUpload,
   generateLocalFile,
@@ -45,6 +44,7 @@ import {
   deleteElement,
   replaceElement,
 } from "../util/ImmutableArrayUtil";
+import { buildOEQServerString } from "../util/TextUtils";
 import { UploadAction } from "./UploadActions";
 import { UploadList } from "./UploadList";
 
@@ -225,15 +225,16 @@ export const InlineFileUploader = ({
   useEffect(() => {
     if (maxAttachments) {
       const remainingQuota = fileCount - maxAttachments;
-      const getTextFromFormat = () =>
+      const getMaxAttachmentWarningText = () =>
         maxAttachments > 1
-          ? buildMaxAttachmentWarning(
+          ? buildOEQServerString(
               strings.toomany,
               maxAttachments,
               remainingQuota
             )
-          : buildMaxAttachmentWarning(strings.toomany_1, remainingQuota);
-      const warningText = fileCount > maxAttachments ? getTextFromFormat() : "";
+          : buildOEQServerString(strings.toomany_1, remainingQuota);
+      const warningText =
+        fileCount > maxAttachments ? getMaxAttachmentWarningText() : "";
 
       updateCtrlErrorText(ctrlId, warningText);
     }
