@@ -16,7 +16,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Set;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.pagefactory.ByChained;
@@ -109,12 +108,9 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
       uploadMultiple(getPathFromUrl(url), expectedFilenames[i]);
       i++;
     }
-    WebElement universalResourceDialog = getMainDiv();
-    ((JavascriptExecutor) getContext().getDriver())
-        .executeScript(
-            "arguments[0].click();", universalResourceDialog.findElement(EBy.buttonText("Add")));
-
-    ExpectedCondition<Boolean> disappears = removalCondition(universalResourceDialog);
+    WebElement addButton = waitForElement(getMainDiv(), EBy.buttonText("Add"));
+    ExpectedCondition<Boolean> disappears = removalCondition(addButton);
+    addButton.click();
     waiter.until(disappears);
   }
 
