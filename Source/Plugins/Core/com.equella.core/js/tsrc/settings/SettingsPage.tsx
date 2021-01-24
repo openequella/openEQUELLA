@@ -31,7 +31,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
-import { ReactElement, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { generateFromError } from "../api/errors";
 import {
@@ -119,10 +119,7 @@ const SettingsPage = ({
    * @param settings - settings of the category
    * @returns {ReactElement} Either a List or UISettingEditor, depending on the category
    */
-  const accordionContent = ({
-    category,
-    settings,
-  }: SettingGroup): ReactElement => {
+  const AccordionContent = ({ category, settings }: SettingGroup) => {
     if (category.name === languageStrings.settings.ui.name) {
       return (
         <UISettingEditor refreshUser={refreshUser} handleError={setError} />
@@ -134,7 +131,7 @@ const SettingsPage = ({
           {settings.map((setting) => (
             <ListItem key={setting.id}>
               <ListItemText
-                primary={settingLink(setting)}
+                primary={<SettingLink {...setting} />}
                 secondary={setting.description}
               />
             </ListItem>
@@ -149,7 +146,7 @@ const SettingsPage = ({
    * @param {GeneralSetting} setting - A oEQ general setting
    * @returns {ReactElement} A link to the setting's page
    */
-  const settingLink = (setting: OEQ.Settings.GeneralSetting): ReactElement => {
+  const SettingLink = (setting: OEQ.Settings.GeneralSetting) => {
     let link = <div />;
     if (setting.links.route) {
       link = <Link to={setting.links.route}>{setting.name}</Link>;
@@ -199,7 +196,7 @@ const SettingsPage = ({
                     {desc}
                   </Typography>
                 </AccordionSummary>
-                {accordionContent(group)}
+                <AccordionContent {...group} />
               </Accordion>
             );
           })
