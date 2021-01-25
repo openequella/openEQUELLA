@@ -185,16 +185,17 @@ export const UniversalFileUploader = ({
       <Grid item {...getRootProps()}>
         <input
           id={`${ctrlId}_fileUpload`}
-          {...getInputProps()}
-          onChange={(event: ChangeEvent<HTMLInputElement>) => {
-            const fileInput: HTMLInputElement = event.target;
-            const changeEventHandler = getInputProps().onChange;
-            if (changeEventHandler) {
-              changeEventHandler(event);
-            }
-            // Need to empty the input value to make 'Selenium - sendKeys' happy.
-            fileInput.value = "";
-          }}
+          {...getInputProps({
+            onChange: (event: ChangeEvent<HTMLInputElement>) => {
+              const fileInput: HTMLInputElement = event.target;
+              const changeEventHandler = getInputProps().onChange;
+              if (changeEventHandler) {
+                changeEventHandler(event);
+              }
+              // Need to empty the input value to make 'Selenium - sendKeys' happy.
+              fileInput.value = "";
+            },
+          })}
         />
         <div className="filedrop">{strings.drop}</div>
       </Grid>
