@@ -239,7 +239,7 @@ export const getAxiosSource = (id: string) => axiosSourceMap.get(id);
  * @param uploadingFile The file to be uploaded
  * @param updateUploadProgress
  */
-export const newUpload = (
+const newUpload = (
   path: string,
   uploadingFile: UploadingFile,
   updateUploadProgress: (file: UploadingFile) => void
@@ -295,6 +295,58 @@ const doUpload = (
       });
     },
   }).then(({ data }) => data);
+};
+
+/**
+ * Upload a file to oEQ server.
+ * @param uploadURL The upload URL provided by server
+ * @param file The file to be uploaded
+ * @param beforeUpload The function fired before doing an upload
+ * @param onUpload The function fired when an upload is in progress
+ * @param onSuccessful The function fired when an upload is successfully completed
+ * @param onError The function fired when an upload fails
+ * @param afterUpload The function fired in the end of the whole process
+ */
+export const upload = (
+  uploadURL: string,
+  file: UploadingFile,
+  beforeUpload: () => void,
+  onUpload: (file: UploadingFile) => void,
+  onSuccessful: (
+    uploadedFile: UploadedFile,
+    displayWarningMessage?: boolean
+  ) => void,
+  onError: (file: UploadingFile) => void,
+  afterUpload: () => void
+) => {
+  beforeUpload();
+  newUpload(uploadURL, file, onUpload)
+    .then((uploadResponse: UpdateEntry | UploadFailed) => {
+      if (isUpdateEntry(uploadResponse)) {
+        const { entry, attachmentDuplicateInfo } = uploadResponse;
+        const uploadedFile: UploadedFile = {
+          fileEntry: entry,
+          status: "uploaded",
+        };
+        onSuccessful(
+          uploadedFile,
+          attachmentDuplicateInfo?.displayWarningMessage ?? false
+        );
+      } else {
+        throw new Error(uploadResponse.reason);
+      }
+    })
+    .catch((error: Error) => {
+      // There is no need to handle Axios cancel error.
+      if (!Axios.isCancel(error)) {
+        onError({
+          ...file,
+          status: "failed",
+          failedReason: error.message,
+        });
+      }
+    })
+    .finally(afterUpload);
 };
 
 /**

@@ -18,7 +18,6 @@
 import { Grid, IconButton } from "@material-ui/core";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import CancelIcon from "@material-ui/icons/Cancel";
-import Axios from "axios";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
@@ -29,14 +28,11 @@ import {
   generateLocalFile,
   generateUploadedFileComparator,
   generateUploadingFileComparator,
-  isUpdateEntry,
   isUploadedFile,
-  newUpload,
   updateCtrlErrorText,
   updateDuplicateMessage,
-  UpdateEntry,
+  upload,
   UploadedFile,
-  UploadFailed,
   UploadingFile,
 } from "../modules/FileUploaderModule";
 import {
@@ -148,57 +144,46 @@ export const InlineFileUploader = ({
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: (droppedFiles) => {
-      const updateUploadingFile = (updatedFile: UploadingFile) => {
-        setUploadingFiles((prev) =>
-          replaceElement(
-            prev,
-            generateUploadingFileComparator(updatedFile.localId),
-            updatedFile
-          )
-        );
-      };
-      // Update the file count first.
       setFileCount(fileCount + droppedFiles.length);
-      // Upload each dropped file.
+
       droppedFiles.forEach((droppedFile) => {
         const localFile = generateLocalFile(droppedFile);
-        setUploadingFiles((prev) => addElement(prev, localFile));
+        const beforeUpload = () =>
+          setUploadingFiles((prev) => addElement(prev, localFile));
+        const onUpload = (updatedFile: UploadingFile) =>
+          setUploadingFiles((prev) =>
+            replaceElement(
+              prev,
+              generateUploadingFileComparator(localFile.localId),
+              updatedFile
+            )
+          );
+        // What onError essentially does is the same as what onUpload does - update the Uploading list.
+        const onError = onUpload;
+        const onSuccessful = (
+          uploadedFile: UploadedFile,
+          displayWarningMessage = false
+        ) => {
+          setUploadingFiles((prev) =>
+            deleteElement(
+              prev,
+              generateUploadingFileComparator(localFile.localId),
+              1
+            )
+          );
+          setUploadedFiles((prev) => addElement(prev, uploadedFile));
+          setShowDuplicateWarning(displayWarningMessage);
+        };
 
-        newUpload(commandUrl, localFile, updateUploadingFile)
-          .then((uploadResponse: UpdateEntry | UploadFailed) => {
-            if (isUpdateEntry(uploadResponse)) {
-              const { entry, attachmentDuplicateInfo } = uploadResponse;
-              const uploadedFile: UploadedFile = {
-                fileEntry: entry,
-                status: "uploaded",
-              };
-              setUploadingFiles((prev) =>
-                deleteElement(
-                  prev,
-                  generateUploadingFileComparator(localFile.localId),
-                  1
-                )
-              );
-              setUploadedFiles((prev) => addElement(prev, uploadedFile));
-              setShowDuplicateWarning(
-                attachmentDuplicateInfo?.displayWarningMessage ?? false
-              );
-            } else {
-              throw new Error(uploadResponse.reason);
-            }
-          })
-          .catch((error: Error) => {
-            // There is no more error handling required for cancelling an Axios request.
-            // For all other errors, update state to display the error message for the file.
-            if (!Axios.isCancel(error)) {
-              updateUploadingFile({
-                ...localFile,
-                status: "failed",
-                failedReason: error.message,
-              });
-            }
-          })
-          .finally(reloadState);
+        upload(
+          commandUrl,
+          localFile,
+          beforeUpload,
+          onUpload,
+          onSuccessful,
+          onError,
+          reloadState
+        );
       });
     },
   });

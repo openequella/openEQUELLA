@@ -19,7 +19,6 @@ import { Grid, IconButton } from "@material-ui/core";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import CancelIcon from "@material-ui/icons/Cancel";
 import DeleteIcon from "@material-ui/icons/Delete";
-import Axios from "axios";
 import * as React from "react";
 import { ChangeEvent, useState } from "react";
 import { useDropzone } from "react-dropzone";
@@ -29,12 +28,9 @@ import {
   generateLocalFile,
   generateUploadedFileComparator,
   generateUploadingFileComparator,
-  isUpdateEntry,
   isUploadedFile,
-  newUpload,
-  UpdateEntry,
+  upload,
   UploadedFile,
-  UploadFailed,
   UploadingFile,
 } from "../modules/FileUploaderModule";
 import {
@@ -103,51 +99,41 @@ export const UniversalFileUploader = ({
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
 
-  const updateUploadingFile = (updatedFile: UploadingFile) => {
-    setUploadingFiles((prev) =>
-      replaceElement(
-        prev,
-        generateUploadingFileComparator(updatedFile.localId),
-        updatedFile
-      )
-    );
-  };
-
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: (droppedFiles) => {
       droppedFiles.forEach((droppedFile) => {
         const localFile: UploadingFile = generateLocalFile(droppedFile);
-        setUploadingFiles((prev) => addElement(prev, localFile));
+        const beforeUpload = () =>
+          setUploadingFiles((prev) => addElement(prev, localFile));
+        const onUpload = (updatedFile: UploadingFile) =>
+          setUploadingFiles((prev) =>
+            replaceElement(
+              prev,
+              generateUploadingFileComparator(localFile.localId),
+              updatedFile
+            )
+          );
+        const onError = onUpload;
+        const onSuccessful = (uploadedFile: UploadedFile) => {
+          setUploadingFiles((prev) =>
+            deleteElement(
+              prev,
+              generateUploadingFileComparator(localFile.localId),
+              1
+            )
+          );
+          setUploadedFiles((prev) => addElement(prev, uploadedFile));
+        };
 
-        newUpload(commandUrl, localFile, updateUploadingFile)
-          .then((uploadResponse: UpdateEntry | UploadFailed) => {
-            if (isUpdateEntry(uploadResponse)) {
-              const uploadedFile: UploadedFile = {
-                fileEntry: uploadResponse.entry,
-                status: "uploaded",
-              };
-              setUploadingFiles((prev) =>
-                deleteElement(
-                  prev,
-                  generateUploadingFileComparator(localFile.localId),
-                  1
-                )
-              );
-              setUploadedFiles((prev) => addElement(prev, uploadedFile));
-            } else {
-              throw new Error(uploadResponse.reason);
-            }
-          })
-          .catch((error: Error) => {
-            if (!Axios.isCancel(error)) {
-              updateUploadingFile({
-                ...localFile,
-                status: "failed",
-                failedReason: error.message,
-              });
-            }
-          })
-          .finally(updateFooter);
+        upload(
+          commandUrl,
+          localFile,
+          beforeUpload,
+          onUpload,
+          onSuccessful,
+          onError,
+          updateFooter
+        );
       });
     },
   });
