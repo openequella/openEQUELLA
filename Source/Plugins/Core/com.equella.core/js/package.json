@@ -91,7 +91,6 @@
     "@types/react-router-hash-link": "1.2.1",
     "@types/react-router-dom": "5.1.6",
     "@types/react-test-renderer": "16.9.3",
-    "@types/react-dropzone": "5.1.0",
     "@types/redux-logger": "3.0.8",
     "@types/rewire": "2.5.28",
     "@types/sprintf-js": "1.1.2",
