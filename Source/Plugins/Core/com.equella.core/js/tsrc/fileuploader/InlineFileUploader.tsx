@@ -123,7 +123,7 @@ export const InlineFileUploader = ({
   ctrlId,
   entries,
   maxAttachments,
-  canUpload,
+  canUpload: canUploadFile,
   dialog: openDialog,
   editable,
   commandUrl,
@@ -137,14 +137,16 @@ export const InlineFileUploader = ({
     }))
   );
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
-  const [fileCount, setFileCount] = useState<number>(entries.length);
+  const [attachmentCount, setAttachmentCount] = useState<number>(
+    entries.length
+  );
   const [showDuplicateWarning, setShowDuplicateWarning] = useState<
     boolean | undefined
   >(undefined);
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: (droppedFiles) => {
-      setFileCount(fileCount + droppedFiles.length);
+      setAttachmentCount(attachmentCount + droppedFiles.length);
 
       droppedFiles.forEach((droppedFile) => {
         const localFile = generateLocalFile(droppedFile);
@@ -209,7 +211,7 @@ export const InlineFileUploader = ({
    */
   useEffect(() => {
     if (maxAttachments) {
-      const remainingQuota = fileCount - maxAttachments;
+      const remainingQuota = attachmentCount - maxAttachments;
       const getMaxAttachmentWarningText = () =>
         maxAttachments > 1
           ? buildOEQServerString(
@@ -219,11 +221,17 @@ export const InlineFileUploader = ({
             )
           : buildOEQServerString(strings.toomany_1, remainingQuota);
       const warningText =
-        fileCount > maxAttachments ? getMaxAttachmentWarningText() : "";
+        attachmentCount > maxAttachments ? getMaxAttachmentWarningText() : "";
 
       updateCtrlErrorText(ctrlId, warningText);
     }
-  }, [fileCount, ctrlId, maxAttachments, strings.toomany, strings.toomany_1]);
+  }, [
+    attachmentCount,
+    ctrlId,
+    maxAttachments,
+    strings.toomany,
+    strings.toomany_1,
+  ]);
 
   const onEdit = (fileId: string) => openDialog("", fileId);
 
@@ -244,7 +252,7 @@ export const InlineFileUploader = ({
           setShowDuplicateWarning(
             attachmentDuplicateInfo?.displayWarningMessage ?? false
           );
-          setFileCount(fileCount - 1);
+          setAttachmentCount(attachmentCount - 1);
         })
         .finally(reloadState);
     }
@@ -255,7 +263,7 @@ export const InlineFileUploader = ({
     setUploadingFiles(
       deleteElement(uploadingFiles, generateUploadingFileComparator(fileId), 1)
     );
-    setFileCount(fileCount - 1);
+    setAttachmentCount(attachmentCount - 1);
   };
 
   /**
@@ -300,24 +308,25 @@ export const InlineFileUploader = ({
         />
       </Grid>
 
-      {editable && (maxAttachments === null || fileCount < maxAttachments) && (
-        <Grid item>
-          <IconButton
-            id={`${ctrlId}_addLink`}
-            onClick={() => openDialog("", "")}
-            title={strings.add}
-            color="primary"
-          >
-            <AddCircleIcon />
-          </IconButton>
-          {canUpload && (
-            <div {...getRootProps({ className: "dropzone" })}>
-              <input id={`${ctrlId}_fileUpload_file`} {...getInputProps()} />
-              <div className="filedrop">{strings.drop}</div>
-            </div>
-          )}
-        </Grid>
-      )}
+      {editable &&
+        (maxAttachments === null || attachmentCount < maxAttachments) && (
+          <Grid item>
+            <IconButton
+              id={`${ctrlId}_addLink`}
+              onClick={() => openDialog("", "")}
+              title={strings.add}
+              color="primary"
+            >
+              <AddCircleIcon />
+            </IconButton>
+            {canUploadFile && (
+              <div {...getRootProps({ className: "dropzone" })}>
+                <input id={`${ctrlId}_fileUpload_file`} {...getInputProps()} />
+                <div className="filedrop">{strings.drop}</div>
+              </div>
+            )}
+          </Grid>
+        )}
     </Grid>
   );
 };
