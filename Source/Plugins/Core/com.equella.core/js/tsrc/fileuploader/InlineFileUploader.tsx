@@ -197,7 +197,7 @@ export const InlineFileUploader = ({
     if (showDuplicateWarning !== undefined) {
       updateDuplicateMessage(ctrlId, showDuplicateWarning);
     }
-  }, [showDuplicateWarning]);
+  }, [showDuplicateWarning, ctrlId]);
 
   /**
    * Update the error text for exceeding maximum number of attachments.
@@ -223,7 +223,7 @@ export const InlineFileUploader = ({
 
       updateCtrlErrorText(ctrlId, warningText);
     }
-  }, [fileCount]);
+  }, [fileCount, ctrlId, maxAttachments, strings.toomany, strings.toomany_1]);
 
   const onEdit = (fileId: string) => openDialog("", fileId);
 
