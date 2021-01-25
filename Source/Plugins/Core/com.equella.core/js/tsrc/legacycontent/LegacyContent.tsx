@@ -327,6 +327,11 @@ export const LegacyContent = React.memo(function LegacyContent({
         });
       },
     };
+    // The below is missing `submitCurrentForm` and `stdSubmit` (which depends on
+    // `submitCurrentForm`) from the dependency list. However to add that in would require more
+    // effort than justified - best to rework with a reducer. Long term we aim to not even have the
+    // whole LegacyContent tree, so for now we leave this as is.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   React.useEffect(() => {
@@ -338,6 +343,10 @@ export const LegacyContent = React.memo(function LegacyContent({
       else urlValues[key] = [val];
     });
     submitCurrentForm(true, true, undefined, urlValues);
+    // The below is missing `submitCurrentForm` from the dependency list. However to add that in
+    // would require more effort than justified - best to rework with a reducer. Long term we aim
+    // to not even have the whole LegacyContent tree, so for now we leave this as is.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, search, locationKey]);
 
   React.useEffect(
@@ -348,7 +357,7 @@ export const LegacyContent = React.memo(function LegacyContent({
           ? templatePropsForLegacy(content)
           : templateDefaults("Missing content!")),
       })),
-    [content]
+    [content, updateTemplate]
   );
 
   return !updatingContent && content ? (
