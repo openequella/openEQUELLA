@@ -19,9 +19,19 @@ import { Link } from "@material-ui/core";
 import * as React from "react";
 
 interface UploadFileNameProps {
+  /**
+   * The file's name
+   */
   fileName: string;
+  /**
+   * The link to preview the file
+   */
   link?: string;
 }
+
+/**
+ * Display a file name in plain text or as a link, depending on whether the link URL is provided or not.
+ */
 export const UploadFileName = ({ fileName, link }: UploadFileNameProps) => {
   if (link) {
     return (

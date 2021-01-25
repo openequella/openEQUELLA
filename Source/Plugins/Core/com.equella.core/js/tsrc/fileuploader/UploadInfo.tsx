@@ -24,8 +24,17 @@ import {
 } from "../modules/FileUploaderModule";
 
 interface UploadInfoProps {
+  /**
+   * A file that's either an UploadedFile or UploadingFile
+   */
   file: UploadedFile | UploadingFile;
 }
+
+/**
+ * For an UploadingFile, display a progress bar when the upload is in progress. Show
+ * the error message if the upload fails.
+ * For an UploadedFile, show nothing.
+ */
 export const UploadInfo = ({ file }: UploadInfoProps) => {
   if (isUploadedFile(file)) {
     return <div />;

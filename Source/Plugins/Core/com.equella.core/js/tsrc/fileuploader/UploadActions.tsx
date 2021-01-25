@@ -21,13 +21,31 @@ import { ReactElement } from "react";
 import { FileUploaderActionLink } from "./FileUploaderActionLink";
 
 export interface UploadAction {
+  /**
+   * Fired when clicking an action button
+   */
   onClick: () => void;
+  /**
+   * Text of an action
+   */
   text: string;
+  /**
+   * The MUI Icon representing the action
+   */
   icon?: ReactElement;
 }
+
 interface UploadActionsProps {
+  /**
+   * A list of UploadActions to be rendered
+   */
   actions: UploadAction[];
 }
+
+/**
+ * Display an IconButton or a FileUploaderActionLink, depending on whether a MUI Icon is provided or not.
+ * A vertical Divider is added after each action except the last action.
+ */
 export const UploadActions = ({ actions }: UploadActionsProps) => (
   <Grid container spacing={1} className="actions">
     {actions.map(({ onClick, text, icon }, index) => (

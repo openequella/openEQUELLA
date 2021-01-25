@@ -32,10 +32,26 @@ import { UploadFileName } from "./UploadFileName";
 import { UploadInfo } from "./UploadInfo";
 
 interface UploadListProps {
+  /**
+   * A list of UploadingFile or UploadedFile
+   */
   files: (UploadingFile | UploadedFile)[];
+  /**
+   * Function fired to build actions for each selected file.
+   */
   buildActions: (file: UploadingFile | UploadedFile) => UploadAction[];
+  /**
+   * The text displayed when there are no files selected
+   */
   noFileSelectedText?: string;
 }
+
+/**
+ * Show selected files in a MUI List, or a text indicating no files selected.
+ * In each ListItem, the primary text is used to show file name. The secondary
+ * text is used to show upload information such as a progress bar. The Secondary
+ * Action is used to show actions applicable to each file.
+ */
 export const UploadList = ({
   files,
   buildActions,
