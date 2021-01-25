@@ -15,13 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Grid, IconButton } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import CancelIcon from "@material-ui/icons/Cancel";
 import DeleteIcon from "@material-ui/icons/Delete";
 import * as React from "react";
 import { ChangeEvent, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { LabelledIconButton } from "../components/LabelledIconButton";
 import {
   cancelUpload,
   deleteUpload,
@@ -200,14 +201,13 @@ export const UniversalFileUploader = ({
         <div className="filedrop">{strings.drop}</div>
       </Grid>
       <Grid item>
-        <IconButton
+        <LabelledIconButton
+          icon={<AddCircleIcon />}
+          buttonText={strings.scrapbook}
           id={`${ctrlId}_filesFromScrapbookLink`}
           onClick={scrapBookOnClick}
-          title={strings.scrapbook}
           color="primary"
-        >
-          <AddCircleIcon />
-        </IconButton>
+        />
       </Grid>
     </Grid>
   );

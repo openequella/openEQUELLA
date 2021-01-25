@@ -15,12 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Grid, IconButton } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import CancelIcon from "@material-ui/icons/Cancel";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { LabelledIconButton } from "../components/LabelledIconButton";
 import {
   AjaxFileEntry,
   cancelUpload,
@@ -311,14 +312,13 @@ export const InlineFileUploader = ({
       {editable &&
         (maxAttachments === null || attachmentCount < maxAttachments) && (
           <Grid item>
-            <IconButton
+            <LabelledIconButton
+              buttonText={strings.add}
+              icon={<AddCircleIcon />}
               id={`${ctrlId}_addLink`}
               onClick={() => openDialog("", "")}
-              title={strings.add}
               color="primary"
-            >
-              <AddCircleIcon />
-            </IconButton>
+            />
             {canUploadFile && (
               <div {...getRootProps({ className: "dropzone" })}>
                 <input id={`${ctrlId}_fileUpload_file`} {...getInputProps()} />
