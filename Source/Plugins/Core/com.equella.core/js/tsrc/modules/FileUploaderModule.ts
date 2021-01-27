@@ -239,7 +239,7 @@ export const getAxiosSource = (id: string) => axiosSourceMap.get(id);
  * @param uploadingFile The file to be uploaded
  * @param updateUploadProgress
  */
-const newUpload = (
+export const newUpload = (
   path: string,
   uploadingFile: UploadingFile,
   updateUploadProgress: (file: UploadingFile) => void

@@ -17,6 +17,7 @@
  */
 import { Divider, Grid, IconButton } from "@material-ui/core";
 import * as React from "react";
+import { Fragment } from "react";
 import { ReactElement } from "react";
 import { FileUploaderActionLink } from "./FileUploaderActionLink";
 
@@ -49,8 +50,8 @@ interface UploadActionsProps {
 export const UploadActions = ({ actions }: UploadActionsProps) => (
   <Grid container spacing={1} className="actions">
     {actions.map(({ onClick, text, icon }, index) => (
-      <>
-        <Grid item key={index}>
+      <Fragment key={index}>
+        <Grid item>
           {icon ? (
             <IconButton onClick={onClick} title={text} color="primary">
               {icon}
@@ -64,7 +65,7 @@ export const UploadActions = ({ actions }: UploadActionsProps) => (
             <Divider orientation="vertical" />
           </Grid>
         )}
-      </>
+      </Fragment>
     ))}
   </Grid>
 );
