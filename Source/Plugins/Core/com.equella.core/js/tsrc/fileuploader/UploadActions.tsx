@@ -44,8 +44,9 @@ interface UploadActionsProps {
 }
 
 /**
- * Display an IconButton or a FileUploaderActionLink, depending on whether a MUI Icon is provided or not.
- * A vertical Divider is added after each action except the last action.
+ * Display one or more actions that are available for different upload status.
+ * For each action, display an IconButton or a FileUploaderActionLink, depending on whether a MUI Icon is provided or not.
+ * A vertical MUI Divider is added after each action except the last action.
  */
 export const UploadActions = ({ actions }: UploadActionsProps) => (
   <Grid container spacing={1} className="actions">

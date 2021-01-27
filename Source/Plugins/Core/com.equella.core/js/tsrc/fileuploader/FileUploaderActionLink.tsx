@@ -19,20 +19,32 @@ import { Link } from "@material-ui/core";
 import * as React from "react";
 
 interface FileActionLinkProps {
+  /**
+   * Fired when clicking the link
+   */
   onClick: () => void;
+  /**
+   * Text of the link
+   */
   text: string;
+  /**
+   * ID of the link
+   */
   id?: string;
-  customClass?: string;
+  /**
+   * Custom CSS class applied to the link
+   */
+  className?: string;
 }
 export const FileUploaderActionLink = ({
   onClick,
   text,
   id,
-  customClass,
+  className,
 }: FileActionLinkProps) => (
   <Link
     id={id}
-    className={customClass}
+    className={className}
     component="button"
     onClick={onClick}
     title={text}
