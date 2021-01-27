@@ -31,10 +31,22 @@ import { Link } from "react-router-dom";
 import { useStyles } from "./Template";
 
 interface MainMenuProps {
+  /**
+   * Groups of menu items to display in the menu - typically separated by `Divider`s. These groups
+   * are normally computed on the server and based on the current user.
+   */
   menuGroups: Array<Array<OEQ.LegacyContent.MenuItem>>;
+  /**
+   * Event handler for when a menu item is clicked - commonly used to show/hide the drawer which the
+   * menu may be residing in at certain responsive break points.
+   */
   onClickNavItem: () => void;
 }
 
+/**
+ * A component responsible for the menu often found in the left hand side bar (or drawer) of the
+ * main layout.
+ */
 const MainMenu = ({ menuGroups, onClickNavItem }: MainMenuProps) => {
   const classes = useStyles(useTheme());
 
