@@ -48,25 +48,45 @@ export interface BaseOEQRouteComponentProps {
   isReloadNeeded: boolean;
 }
 
-type To = (uuid: string) => string;
-type ToVersion = (uuid: string, version: number) => string;
+type ToFunc = (uuid: string) => string;
+type ToVersionFunc = (uuid: string, version: number) => string;
 
-export interface OEQRoute<T> {
-  component?:
-    | React.ComponentType<BaseOEQRouteComponentProps>
-    | React.ComponentType<T>;
+export interface OEQRouteNewUI {
+  component?: React.ComponentType<BaseOEQRouteComponentProps>;
   render?: (props: BaseOEQRouteComponentProps) => React.ReactNode;
-  path?: string;
-  exact?: boolean;
-  sensitive?: boolean;
-  strict?: boolean;
-  to?: string | To | ToVersion;
+  path: string;
+}
+
+interface OEQRouteTo<T = string | ToFunc | ToVersionFunc> {
+  to: T;
 }
 
 interface Routes {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: OEQRoute<any>;
+  AdvancedSearch: OEQRouteTo<ToFunc>;
+  CloudProviders: OEQRouteNewUI;
+  ContentIndexSettings: OEQRouteNewUI;
+  FacetedSearchSetting: OEQRouteNewUI;
+  LoginNoticeConfig: OEQRouteNewUI;
+  Logout: OEQRouteTo<string>;
+  Notifications: OEQRouteTo<string>;
+  RemoteSearch: OEQRouteTo<ToFunc>;
+  SearchFilterSettings: OEQRouteNewUI;
+  SearchSettings: OEQRouteNewUI;
+  Settings: OEQRouteNewUI & OEQRouteTo<string>;
+  TaskList: OEQRouteTo<string>;
+  ThemeConfig: OEQRouteNewUI;
+  UserPreferences: OEQRouteTo<string>;
+  ViewItem: OEQRouteTo<ToVersionFunc>;
 }
+
+/**
+ * Type guard for when needing to dynamically determine what kind of route is being used.
+ *
+ * @param route the potential route to check
+ */
+export const isNewUIRoute = (route: unknown): route is OEQRouteNewUI =>
+  (route as OEQRouteNewUI).component !== undefined ||
+  (route as OEQRouteNewUI).render !== undefined;
 
 /**
  * Simple validator to allow direct use of an expected to URL route - considering they're hardcoded
@@ -74,7 +94,7 @@ interface Routes {
  *
  * @param to route to validate
  */
-export const legacyPageUrl = (to?: string | To | ToVersion): string => {
+export const legacyPageUrl = (to?: string | ToFunc | ToVersionFunc): string => {
   if (typeof to === "string") {
     return to;
   }
@@ -83,28 +103,12 @@ export const legacyPageUrl = (to?: string | To | ToVersion): string => {
 };
 
 export const routes: Routes = {
-  Settings: {
-    path: "(/access/settings.do|/page/settings)",
-    to: "/page/settings",
-    component: SettingsPage,
-  },
   AdvancedSearch: {
     to: (uuid: string) => `/advanced/searching.do?in=P${uuid}&editquery=true`,
   },
-  RemoteSearch: {
-    // `uc` parameter comes from sections code (AbstractRootSearchSection.Model.java). Setting it to
-    // true clears out the Session State for Remote Repository pages. This replicates the behaviour
-    // for links inside the 'Within' dropdown in the legacy UI.
-    // See com.tle.web.searching.section.SearchQuerySection.forwardToRemote
-    to: (uuid: string) => `/access/z3950.do?.repository=${uuid}&uc=true`,
-  },
-  SearchSettings: {
-    path: "/page/searchsettings",
-    component: SearchPageSettings,
-  },
-  SearchFilterSettings: {
-    path: "/page/searchfiltersettings",
-    component: SearchFilterPage,
+  CloudProviders: {
+    path: "/page/cloudprovider",
+    component: CloudProviderListPage,
   },
   ContentIndexSettings: {
     path: "/page/contentindexsettings",
@@ -114,29 +118,45 @@ export const routes: Routes = {
     path: "/page/facetedsearchsettings",
     component: FacetedSearchSettingsPage,
   },
-  ViewItem: {
-    to: (uuid: string, version: number) => `/items/${uuid}/${version}/`,
-  },
-  ThemeConfig: { path: "/page/themeconfiguration", component: ThemePage },
   LoginNoticeConfig: {
     path: "/page/loginconfiguration",
     component: LoginNoticeConfigPage,
-  },
-  CloudProviders: {
-    path: "/page/cloudprovider",
-    component: CloudProviderListPage,
-  },
-  Notifications: {
-    to: "/access/notifications.do",
-  },
-  TaskList: {
-    to: "/access/tasklist.do",
   },
   Logout: {
     // lack of '/' is significant
     to: "logon.do?logout=true",
   },
+  Notifications: {
+    to: "/access/notifications.do",
+  },
+  RemoteSearch: {
+    // `uc` parameter comes from sections code (AbstractRootSearchSection.Model.java). Setting it to
+    // true clears out the Session State for Remote Repository pages. This replicates the behaviour
+    // for links inside the 'Within' dropdown in the legacy UI.
+    // See com.tle.web.searching.section.SearchQuerySection.forwardToRemote
+    to: (uuid: string) => `/access/z3950.do?.repository=${uuid}&uc=true`,
+  },
+  Settings: {
+    path: "(/access/settings.do|/page/settings)",
+    to: "/page/settings",
+    component: SettingsPage,
+  },
+  SearchFilterSettings: {
+    path: "/page/searchfiltersettings",
+    component: SearchFilterPage,
+  },
+  SearchSettings: {
+    path: "/page/searchsettings",
+    component: SearchPageSettings,
+  },
+  TaskList: {
+    to: "/access/tasklist.do",
+  },
+  ThemeConfig: { path: "/page/themeconfiguration", component: ThemePage },
   UserPreferences: {
     to: "/access/user.do",
+  },
+  ViewItem: {
+    to: (uuid: string, version: number) => `/items/${uuid}/${version}/`,
   },
 };

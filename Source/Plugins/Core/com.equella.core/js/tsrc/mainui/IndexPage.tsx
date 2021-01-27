@@ -34,7 +34,12 @@ import { getCurrentUserDetails } from "../modules/UserModule";
 import { basePath } from "./App";
 import ErrorPage from "./ErrorPage";
 import { defaultNavMessage, NavAwayDialog } from "./PreventNavigation";
-import { BaseOEQRouteComponentProps, routes } from "./routes";
+import {
+  BaseOEQRouteComponentProps,
+  isNewUIRoute,
+  OEQRouteNewUI,
+  routes,
+} from "./routes";
 import { Template, TemplateProps, TemplateUpdate } from "./Template";
 
 const SearchPage = React.lazy(() => import("../search/SearchPage"));
@@ -109,25 +114,27 @@ export default function IndexPage() {
 
   const newUIRoutes = React.useMemo(
     () =>
-      Object.keys(routes).map((key, ind) => {
-        const oeqRoute = routes[key];
-        return (
-          (oeqRoute.component || oeqRoute.render) && (
-            <Route
-              key={ind}
-              exact={oeqRoute.exact}
-              path={oeqRoute.path}
-              render={(p) => {
-                const oeqProps = mkRouteProps(p);
-                if (oeqRoute.component) {
-                  return <oeqRoute.component {...oeqProps} />;
-                }
-                return oeqRoute.render?.(oeqProps);
-              }}
-            />
-          )
-        );
-      }),
+      Object.keys(routes)
+        .map<OEQRouteNewUI | undefined>((name) => {
+          // @ts-ignore:  Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Routes'
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const maybeRoute: any = routes[name];
+          return isNewUIRoute(maybeRoute) ? maybeRoute : undefined;
+        })
+        .filter((maybeRoute): maybeRoute is OEQRouteNewUI => !!maybeRoute)
+        .map((oeqRoute: OEQRouteNewUI, ind) => (
+          <Route
+            key={ind}
+            path={oeqRoute.path}
+            render={(p) => {
+              const oeqProps = mkRouteProps(p);
+              if (oeqRoute.component) {
+                return <oeqRoute.component {...oeqProps} />;
+              }
+              return oeqRoute.render?.(oeqProps);
+            }}
+          />
+        )),
     [mkRouteProps]
   );
 
