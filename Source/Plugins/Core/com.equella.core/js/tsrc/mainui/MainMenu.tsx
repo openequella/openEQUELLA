@@ -96,9 +96,9 @@ const MainMenu = ({ menuGroups, onClickNavItem }: MainMenuProps) => {
 
   return (
     <div id="menulinks">
-      {menuGroups.map((group, ind) => (
-        <React.Fragment key={ind}>
-          {ind > 0 && <Divider />}
+      {menuGroups.map((group, index) => (
+        <React.Fragment key={index}>
+          {index > 0 && <Divider />}
           <List component="nav">{group.map(navItem)}</List>
         </React.Fragment>
       ))}
