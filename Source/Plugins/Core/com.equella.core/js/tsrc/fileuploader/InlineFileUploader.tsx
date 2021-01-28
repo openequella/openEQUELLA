@@ -165,7 +165,7 @@ export const InlineFileUploader = ({
         const onError = onUpload;
         const onSuccessful = (
           uploadedFile: UploadedFile,
-          displayWarningMessage = false
+          displayWarningMessage?: boolean
         ) => {
           setUploadingFiles((prev) =>
             deleteElement(
