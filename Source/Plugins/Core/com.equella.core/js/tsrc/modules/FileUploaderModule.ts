@@ -62,6 +62,10 @@ export interface UploadedFile {
    * Status indicating the upload is successful
    */
   status: "uploaded";
+  /**
+   * Text describing why fail to delete this file
+   */
+  errorMessage?: string;
 }
 
 /**
@@ -84,6 +88,9 @@ export interface UploadingFile {
    * A number representing the amount of upload already performed
    */
   uploadPercentage: number;
+  /**
+   * Text describing why the upload is failed
+   */
   failedReason?: string;
 }
 
@@ -305,7 +312,6 @@ const doUpload = (
  * @param onUpload The function fired when an upload is in progress
  * @param onSuccessful The function fired when an upload is successfully completed
  * @param onError The function fired when an upload fails
- * @param afterUpload The function fired in the end of the whole process
  */
 export const upload = (
   uploadURL: string,
@@ -316,8 +322,7 @@ export const upload = (
     uploadedFile: UploadedFile,
     displayWarningMessage?: boolean
   ) => void,
-  onError: (file: UploadingFile) => void,
-  afterUpload: () => void
+  onError: (file: UploadingFile) => void
 ) => {
   beforeUpload();
   newUpload(uploadURL, file, onUpload)
@@ -345,21 +350,41 @@ export const upload = (
           failedReason: error.message,
         });
       }
-    })
-    .finally(afterUpload);
+    });
 };
 
 /**
  * Send a POST request to remove an uploaded file.
  * @param path The request URL
- * @param id The file ID which must be the server generated ID
+ * @param file The file to be deleted
+ * @param onSuccessful The function fired when deleting a file is completed
+ * @param onError The function fired when deleting a file is failed
+ * @param deleteConfirmText Text to show in the confirm dialog
  */
 export const deleteUpload = (
   path: string,
-  id: string
-): Promise<RemoveEntries> => {
-  const deleteData: DeleteUpload = { command: "delete", id: id };
-  return Axios.post<RemoveEntries>(path, deleteData).then(({ data }) => data);
+  file: UploadedFile,
+  onSuccessful: (displayWarningMessage?: boolean) => void,
+  onError: (file: UploadedFile) => void,
+  deleteConfirmText?: string
+) => {
+  const { id, name } = file.fileEntry;
+  const deleteConfirmed =
+    (deleteConfirmText && window.confirm(deleteConfirmText)) ||
+    !deleteConfirmText;
+  if (deleteConfirmed) {
+    const deleteData: DeleteUpload = { command: "delete", id: id };
+    Axios.post<RemoveEntries>(path, deleteData)
+      .then(({ data: { attachmentDuplicateInfo } }) => {
+        onSuccessful(attachmentDuplicateInfo?.displayWarningMessage);
+      })
+      .catch((error: Error) => {
+        onError({
+          ...file,
+          errorMessage: `Fail to delete ${name} due to error: ${error.message}`,
+        });
+      });
+  }
 };
 
 /**

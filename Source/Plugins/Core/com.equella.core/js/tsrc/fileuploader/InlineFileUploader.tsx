@@ -176,6 +176,7 @@ export const InlineFileUploader = ({
           );
           setUploadedFiles((prev) => addElement(prev, uploadedFile));
           setShowDuplicateWarning(displayWarningMessage);
+          reloadState();
         };
 
         upload(
@@ -184,8 +185,7 @@ export const InlineFileUploader = ({
           beforeUpload,
           onUpload,
           onSuccessful,
-          onError,
-          reloadState
+          onError
         );
       });
     },
@@ -238,25 +238,30 @@ export const InlineFileUploader = ({
 
   const onReplace = (fileId: string) => openDialog(fileId, "");
 
-  const onDelete = (fileId: string) => {
-    const confirmDelete = window.confirm(strings.deleteConfirm);
-    if (confirmDelete) {
-      deleteUpload(commandUrl, fileId)
-        .then(({ attachmentDuplicateInfo }) => {
-          setUploadedFiles(
-            deleteElement(
-              uploadedFiles,
-              generateUploadedFileComparator(fileId),
-              1
-            )
-          );
-          setShowDuplicateWarning(
-            attachmentDuplicateInfo?.displayWarningMessage ?? false
-          );
-          setAttachmentCount(attachmentCount - 1);
-        })
-        .finally(reloadState);
-    }
+  const onDelete = (file: UploadedFile) => {
+    const { id } = file.fileEntry;
+    const onSuccessful = (displayWarningMessage = false) => {
+      setUploadedFiles(
+        deleteElement(uploadedFiles, generateUploadedFileComparator(id), 1)
+      );
+      setShowDuplicateWarning(displayWarningMessage);
+      setAttachmentCount(attachmentCount - 1);
+      reloadState();
+    };
+
+    const onError = (file: UploadedFile) => {
+      setUploadedFiles(
+        replaceElement(uploadedFiles, generateUploadedFileComparator(id), file)
+      );
+    };
+
+    deleteUpload(
+      commandUrl,
+      file,
+      onSuccessful,
+      onError,
+      strings.deleteConfirm
+    );
   };
 
   const onCancel = (fileId: string) => {
@@ -282,7 +287,7 @@ export const InlineFileUploader = ({
             text: strings.replace,
           },
           {
-            onClick: () => onDelete(file.fileEntry.id),
+            onClick: () => onDelete(file),
             text: strings.delete,
           },
         ]

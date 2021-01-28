@@ -124,6 +124,7 @@ export const UniversalFileUploader = ({
             )
           );
           setUploadedFiles((prev) => addElement(prev, uploadedFile));
+          updateFooter();
         };
 
         upload(
@@ -132,25 +133,26 @@ export const UniversalFileUploader = ({
           beforeUpload,
           onUpload,
           onSuccessful,
-          onError,
-          updateFooter
+          onError
         );
       });
     },
   });
 
-  const onDelete = (fileId: string) => {
-    deleteUpload(commandUrl, fileId)
-      .then(() => {
-        setUploadedFiles(
-          deleteElement(
-            uploadedFiles,
-            generateUploadedFileComparator(fileId),
-            1
-          )
-        );
-      })
-      .finally(updateFooter);
+  const onDelete = (file: UploadedFile) => {
+    const { id } = file.fileEntry;
+    const onSuccessful = () => {
+      setUploadedFiles(
+        deleteElement(uploadedFiles, generateUploadedFileComparator(id), 1)
+      );
+      updateFooter();
+    };
+    const onError = (file: UploadedFile) => {
+      setUploadedFiles(
+        replaceElement(uploadedFiles, generateUploadedFileComparator(id), file)
+      );
+    };
+    deleteUpload(commandUrl, file, onSuccessful, onError);
   };
 
   const onCancel = (fileId: string) => {
@@ -163,7 +165,7 @@ export const UniversalFileUploader = ({
   const buildActions = (file: UploadedFile | UploadingFile): UploadAction[] => [
     isUploadedFile(file)
       ? {
-          onClick: () => onDelete(file.fileEntry.id),
+          onClick: () => onDelete(file),
           text: strings.delete,
           icon: <DeleteIcon />,
         }

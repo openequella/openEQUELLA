@@ -17,17 +17,13 @@
  */
 import { Grid, LinearProgress, Typography } from "@material-ui/core";
 import * as React from "react";
-import {
-  isUploadedFile,
-  UploadedFile,
-  UploadingFile,
-} from "../modules/FileUploaderModule";
+import { UploadingFile } from "../modules/FileUploaderModule";
 
 interface UploadInfoProps {
   /**
-   * A file that's either an UploadedFile or UploadingFile
+   * An UploadingFile that has upload information to show
    */
-  file: UploadedFile | UploadingFile;
+  file: UploadingFile;
 }
 
 /**
@@ -36,9 +32,6 @@ interface UploadInfoProps {
  * For an UploadedFile, show nothing.
  */
 export const UploadInfo = ({ file }: UploadInfoProps) => {
-  if (isUploadedFile(file)) {
-    return <div />;
-  }
   const { uploadPercentage, status, failedReason } = file;
   return status === "uploading" ? (
     <Grid container alignItems="center" spacing={1}>

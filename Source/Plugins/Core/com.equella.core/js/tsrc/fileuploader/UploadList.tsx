@@ -20,6 +20,7 @@ import {
   ListItem,
   ListItemSecondaryAction,
   ListItemText,
+  Typography,
 } from "@material-ui/core";
 import * as React from "react";
 import {
@@ -63,12 +64,18 @@ export const UploadList = ({
         const fileId = isUploadedFile(file) ? file.fileEntry.id : file.localId;
         const fileName = file.fileEntry.name;
         const fileLink = isUploadedFile(file) ? file.fileEntry.link : undefined;
-
+        const secondaryText = isUploadedFile(file) ? (
+          <Typography role="alert" color="error">
+            {file.errorMessage}
+          </Typography>
+        ) : (
+          <UploadInfo file={file} />
+        );
         return (
           <ListItem key={fileId} divider>
             <ListItemText
               primary={<UploadFileName fileName={fileName} link={fileLink} />}
-              secondary={<UploadInfo file={file} />}
+              secondary={secondaryText}
               secondaryTypographyProps={{ component: "div" }}
             />
             <ListItemSecondaryAction>
