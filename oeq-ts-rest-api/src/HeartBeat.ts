@@ -20,6 +20,10 @@ import { GET } from './AxiosInstance';
 
 const HEART_BEAT_API_PATH = '/status/heartbeat';
 
+/**
+ * Retrieve oEQ server status by sending a heart beat request.
+ * @param apiBasePath Base URI to the oEQ institution and API
+ */
 export const checkHeartBeat = (apiBasePath: string): Promise<string> =>
   GET<string>(apiBasePath + HEART_BEAT_API_PATH, (data): data is string =>
     is<string>(data)

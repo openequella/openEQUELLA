@@ -18,17 +18,20 @@
 import { API_BASE_URL } from "../AppConfig";
 import * as OEQ from "@openequella/rest-api-client";
 
+/**
+ * Retrieve oEQ server status by heartbeat every 2 minutes.
+ */
 export function startHeartbeat() {
   setInterval(() => {
     OEQ.HeartBeat.checkHeartBeat(API_BASE_URL)
-      .then((result) => {
+      .then((result: string) => {
         if (result !== "OK") {
           throw new Error(
             `Unexpected heartbeat response from openEQUELLA server: ${result}`
           );
         }
       })
-      .catch((error) => {
+      .catch((error: Error) => {
         console.error("Attempt to communicate with openEQUELLA server failed");
         console.error(error);
       });
