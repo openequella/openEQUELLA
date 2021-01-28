@@ -147,9 +147,9 @@ describe("SearchModule", () => {
       expect(convertedParamsPromise).toEqual(allSearchOptions);
     });
 
-    const emptyStartDateQueryString =
+    const emptyEndDateQueryString =
       '{"lastModifiedDateRange":{"start":"2020-05-26T03:24:00.889Z"}}';
-    const expectedEmptyStartDateSearchOptions: SearchOptions = {
+    const expectedEmptyEndDateSearchOptions: SearchOptions = {
       ...basicSearchOptions,
       lastModifiedDateRange: {
         start: new Date("2020-05-26T13:24:00.889+10:00"),
@@ -157,9 +157,9 @@ describe("SearchModule", () => {
       },
     };
 
-    const emptyEndDateQueryString =
+    const emptyStartDateQueryString =
       '{"lastModifiedDateRange":{"end":"2020-05-27T03:24:00.889Z"}}';
-    const expectedEmptyEndDateSearchOptions: SearchOptions = {
+    const expectedEmptyStartDateSearchOptions: SearchOptions = {
       ...basicSearchOptions,
       lastModifiedDateRange: {
         start: undefined,
