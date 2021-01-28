@@ -19,15 +19,9 @@ import {
   AppBar,
   Badge,
   CssBaseline,
-  Divider,
   Drawer,
   Hidden,
-  Icon,
   IconButton,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   Menu,
   MenuItem,
   Toolbar,
@@ -51,7 +45,8 @@ import { ErrorResponse } from "../api/errors";
 import MessageInfo from "../components/MessageInfo";
 import { guestUser, PageContent } from "../legacycontent/LegacyContent";
 import { languageStrings } from "../util/langstrings";
-import { routes } from "./routes";
+import MainMenu from "./MainMenu";
+import { legacyPageUrl, routes } from "./routes";
 import ScreenOptions from "./ScreenOptions";
 
 export type MenuMode = "HIDDEN" | "COLLAPSED" | "FULL";
@@ -354,14 +349,10 @@ export const Template = ({
   }, [title]);
 
   React.useEffect(() => {
-    updateMetaTags(metaTags);
-  }, [metaTags]);
-
-  function updateMetaTags(tags: string | undefined) {
     const head = document.head;
-    if (tags) {
+    if (metaTags) {
       // The meta tags generated on the server side, separated by new line symbols
-      const newMetaTags = tags.split("\n");
+      const newMetaTags = metaTags.split("\n");
       newMetaTags.forEach((newMetaTag) => {
         head.appendChild(
           document.createRange().createContextualFragment(newMetaTag)
@@ -381,7 +372,7 @@ export const Template = ({
         }
       });
     }
-  }
+  }, [metaTags, googleMetaTags]);
 
   function linkItem(
     link: LocationDescriptor,
@@ -429,52 +420,6 @@ export const Template = ({
     );
   }
 
-  function navItem(item: OEQ.LegacyContent.MenuItem, ind: number) {
-    return (
-      <ListItem
-        component={(p) => {
-          const props = {
-            ...p,
-            rel: item.newWindow ? "noopener noreferrer" : undefined,
-            target: item.newWindow ? "_blank" : undefined,
-            onClick: () => setNavMenuOpen(false),
-          };
-          return item.route ? (
-            <Link {...props} to={item.route} />
-          ) : (
-            <a {...props} href={item.href}>
-              {}
-            </a>
-          );
-        }}
-        key={ind}
-        button
-      >
-        <ListItemIcon>
-          {item.iconUrl ? (
-            <img src={item.iconUrl} alt={item.title} />
-          ) : (
-            <Icon color="inherit" className={classes.menuIcon}>
-              {item.systemIcon ? item.systemIcon : "folder"}
-            </Icon>
-          )}
-        </ListItemIcon>
-        <ListItemText
-          disableTypography
-          primary={
-            <Typography
-              variant="subtitle1"
-              className={classes.menuItem}
-              component="div"
-            >
-              {item.title}
-            </Typography>
-          }
-        />
-      </ListItem>
-    );
-  }
-
   const hasMenu = menuMode !== "HIDDEN";
 
   const menuContent = React.useMemo(
@@ -482,18 +427,14 @@ export const Template = ({
       <div className={classes.logo}>
         <img role="presentation" src={logoURL} alt="Logo" />
         {hasMenu && (
-          <div id="menulinks">
-            {currentUser.menuGroups.map((group, ind) => (
-              <React.Fragment key={ind}>
-                {ind > 0 && <Divider />}
-                <List component="nav">{group.map(navItem)}</List>
-              </React.Fragment>
-            ))}
-          </div>
+          <MainMenu
+            menuGroups={currentUser.menuGroups}
+            onClickNavItem={() => setNavMenuOpen(false)}
+          />
         )}
       </div>
     ),
-    [currentUser, hasMenu]
+    [classes.logo, currentUser, hasMenu]
   );
 
   const itemCounts = currentUser.counts
@@ -534,13 +475,13 @@ export const Template = ({
               {badgedLink(
                 <AssignmentIcon />,
                 itemCounts.tasks,
-                routes.TaskList.to,
+                legacyPageUrl(routes.TaskList.to),
                 topBarString.tasks
               )}
               {badgedLink(
                 <NotificationsIcon />,
                 itemCounts.notifications,
-                routes.Notifications.to,
+                legacyPageUrl(routes.Notifications.to),
                 topBarString.notifications
               )}
             </Hidden>
@@ -565,9 +506,17 @@ export const Template = ({
               anchorOrigin={{ vertical: "top", horizontal: "right" }}
               transformOrigin={{ vertical: "top", horizontal: "right" }}
             >
-              {linkItem(routes.Logout.to, true, strings.menu.logout)}
+              {linkItem(
+                legacyPageUrl(routes.Logout.to),
+                true,
+                strings.menu.logout
+              )}
               {currentUser.prefsEditable &&
-                linkItem(routes.UserPreferences.to, false, strings.menu.prefs)}
+                linkItem(
+                  legacyPageUrl(routes.UserPreferences.to),
+                  false,
+                  strings.menu.prefs
+                )}
             </Menu>
           </>
         )}

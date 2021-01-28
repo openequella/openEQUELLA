@@ -15,26 +15,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Card, CardContent, Mark, Slider } from "@material-ui/core";
 import * as React from "react";
+import { shallowEqual } from "shallow-equal-object";
+import SettingPageTemplate from "../../components/SettingPageTemplate";
+import SettingsList from "../../components/SettingsList";
+import SettingsListControl from "../../components/SettingsListControl";
+import { routes } from "../../mainui/routes";
 import {
   templateDefaults,
   TemplateUpdate,
   TemplateUpdateProps,
 } from "../../mainui/Template";
-import { routes } from "../../mainui/routes";
-import { Card, CardContent, Mark, Slider } from "@material-ui/core";
-import { languageStrings } from "../../util/langstrings";
 import {
   defaultSearchSettings,
   getSearchSettingsFromServer,
   saveSearchSettingsToServer,
   SearchSettings,
 } from "../../modules/SearchSettingsModule";
-import SettingsList from "../../components/SettingsList";
-import SettingsListControl from "../../components/SettingsListControl";
+import { languageStrings } from "../../util/langstrings";
 import WebPageIndexSetting from "./components/WebPageIndexSetting";
-import SettingPageTemplate from "../../components/SettingPageTemplate";
-import { shallowEqual } from "shallow-equal-object";
 
 function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
   const [searchSettings, setSearchSettings] = React.useState<SearchSettings>(
@@ -44,7 +44,10 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
     initialSearchSettings,
     setInitialSearchSettings,
   ] = React.useState<SearchSettings>(defaultSearchSettings);
-  const [showError, setShowError] = React.useState<boolean>(false);
+  const [loadSettings, setLoadSettings] = React.useState<boolean>(true);
+  // Because `TemplateUpdate` is a function, make sure when using setError to at least do
+  // setError(() => error)
+  const [error, setError] = React.useState<TemplateUpdate>();
   const [showSuccess, setShowSuccess] = React.useState<boolean>(false);
 
   const contentIndexSettingsStrings =
@@ -70,28 +73,28 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
       ...templateDefaults(contentIndexSettingsStrings.name)(tp),
       backRoute: routes.Settings.to,
     }));
-    getSettings();
-  }, []);
+  }, [updateTemplate, contentIndexSettingsStrings.name]);
 
-  function getSettings() {
+  React.useEffect(() => {
     getSearchSettingsFromServer()
       .then((settings: SearchSettings) => {
         setSearchSettings(settings);
         setInitialSearchSettings(settings);
       })
-      .catch((error) => handleError(error));
-  }
+      .catch((error) => setError(() => error));
+  }, [loadSettings]);
 
-  function handleError(error: TemplateUpdate) {
-    setShowError(true);
-    updateTemplate(error);
-  }
+  React.useEffect(() => {
+    if (error) {
+      updateTemplate(error);
+    }
+  }, [error, updateTemplate]);
 
   function handleSubmitButton() {
     saveSearchSettingsToServer(searchSettings)
       .then(() => setShowSuccess(true))
-      .catch((error: TemplateUpdate) => handleError(error))
-      .finally(() => getSettings());
+      .catch((error: TemplateUpdate) => setError(() => error))
+      .finally(() => setLoadSettings(!loadSettings));
   }
 
   const handleSliderChange = (newValue: number | number[], prop: string) => {
@@ -110,6 +113,8 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
     return boostVals[value].label as string;
   };
 
+  const disableSettings: boolean = error !== undefined;
+
   return (
     <SettingPageTemplate
       onSave={handleSubmitButton}
@@ -126,7 +131,7 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
               secondaryText={contentIndexSettingsStrings.description}
               control={
                 <WebPageIndexSetting
-                  disabled={showError}
+                  disabled={disableSettings}
                   value={searchSettings.urlLevel}
                   setValue={(level) =>
                     setSearchSettings({
@@ -148,7 +153,7 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
               divider
               control={
                 <Slider
-                  disabled={showError}
+                  disabled={disableSettings}
                   marks={boostVals}
                   min={0}
                   max={7}
@@ -166,7 +171,7 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
               divider
               control={
                 <Slider
-                  disabled={showError}
+                  disabled={disableSettings}
                   marks={boostVals}
                   min={0}
                   max={7}
@@ -183,7 +188,7 @@ function ContentIndexSettings({ updateTemplate }: TemplateUpdateProps) {
               primaryText={contentIndexSettingsStrings.attachmentBoostingTitle}
               control={
                 <Slider
-                  disabled={showError}
+                  disabled={disableSettings}
                   marks={boostVals}
                   min={0}
                   max={7}

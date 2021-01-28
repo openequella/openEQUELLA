@@ -89,13 +89,14 @@ export default function SchemaNodeSelector({
   const strings =
     languageStrings.settings.searching.facetedsearchsetting.schemaSelector
       .nodeSelector;
+
   React.useEffect(() => {
     if (tree) {
       setRenderedTree(renderTree(tree));
       setExpanded([]);
       setSelectedNode("");
     }
-  }, [tree]);
+  }, [tree, setSelectedNode]);
 
   return (
     <>
