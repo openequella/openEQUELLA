@@ -15,16 +15,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as OEQ from '../src';
-import { checkHeartBeat } from '../src/HeartBeat';
-import * as TC from './TestConfig';
+import { API_BASE_URL } from "../AppConfig";
+import * as OEQ from "@openequella/rest-api-client";
 
-beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
-
-afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
-
-describe('checkHeartBeat', () => {
-  it('checks oEQ server status by heartbeat', async () => {
-    expect(await checkHeartBeat(TC.API_PATH)).toEqual('OK');
-  });
-});
+/**
+ * Check oEQ server status by sending a heartbeat request.
+ * If the result is not equal to "OK", throw an error.
+ */
+export function checkHeartbeat() {
+  OEQ.Heartbeat.checkHeartbeat(API_BASE_URL)
+    .then((result: string) => {
+      if (result !== "OK") {
+        throw new Error(
+          `Unexpected heartbeat response from openEQUELLA server: ${result}`
+        );
+      }
+    })
+    .catch((error: Error) => {
+      console.error("Attempt to communicate with openEQUELLA server failed");
+      console.error(error);
+    });
+}

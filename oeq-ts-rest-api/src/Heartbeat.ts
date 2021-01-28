@@ -15,11 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { checkHeartbeat } from "../modules/Heartbeat";
+import { is } from 'typescript-is';
+import { GET } from './AxiosInstance';
+
+const HEART_BEAT_API_PATH = '/status/heartbeat';
 
 /**
- * Do heartbeat checking every 2 minutes.
+ * Retrieve oEQ server status by sending a heartbeat request.
+ * @param apiBasePath Base URI to the oEQ institution and API
  */
-export const startHeartbeat = () => {
-  setInterval(checkHeartbeat, 2 * 60 * 1000);
-};
+export const checkHeartbeat = (apiBasePath: string): Promise<string> =>
+  GET<string>(apiBasePath + HEART_BEAT_API_PATH, (data): data is string =>
+    is<string>(data)
+  );

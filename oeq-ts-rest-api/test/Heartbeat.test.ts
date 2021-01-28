@@ -15,16 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { is } from 'typescript-is';
-import { GET } from './AxiosInstance';
+import * as OEQ from '../src';
+import { checkHeartbeat } from '../src/Heartbeat';
+import * as TC from './TestConfig';
 
-const HEART_BEAT_API_PATH = '/status/heartbeat';
+beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 
-/**
- * Retrieve oEQ server status by sending a heart beat request.
- * @param apiBasePath Base URI to the oEQ institution and API
- */
-export const checkHeartBeat = (apiBasePath: string): Promise<string> =>
-  GET<string>(apiBasePath + HEART_BEAT_API_PATH, (data): data is string =>
-    is<string>(data)
-  );
+afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
+
+describe('checkHeartBeat', () => {
+  it('checks oEQ server status by heartbeat', async () => {
+    expect(await checkHeartbeat(TC.API_PATH)).toEqual('OK');
+  });
+});
