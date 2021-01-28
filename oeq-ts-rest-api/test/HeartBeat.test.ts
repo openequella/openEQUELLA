@@ -15,20 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * as Acl from './Acl';
-export * as AdvancedSearch from './AdvancedSearch';
-export * as Auth from './Auth';
-export * as Collection from './Collection';
-export * as Common from './Common';
-export * as Errors from './Errors';
-export * as LegacyContent from './LegacyContent';
-export * as MimeType from './MimeType';
-export * as RemoteSearch from './RemoteSearch';
-export * as Schema from './Schema';
-export * as Search from './Search';
-export * as SearchFacets from './SearchFacets';
-export * as Security from './Security';
-export * as Settings from './Settings';
-export * as UserQuery from './UserQuery';
-export * as Utils from './Utils';
-export * as HeartBeat from './HeartBeat';
+import * as OEQ from '../src';
+import { checkHeartBeat } from '../src/HeartBeat';
+import * as TC from './TestConfig';
+
+beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
+
+afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
+
+describe('checkHeartBeat', () => {
+  it('checks oEQ server status by heartbeat', async () => {
+    expect(await checkHeartBeat(TC.API_PATH)).toEqual('OK');
+  });
+});

@@ -15,15 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Axios from "axios";
+import { API_BASE_URL } from "../AppConfig";
+import * as OEQ from "@openequella/rest-api-client";
 
 export function startHeartbeat() {
-  setInterval(function () {
-    Axios.get<string>("api/status/heartbeat")
-      .then((resp) => {
-        if (resp.data !== "OK") {
+  setInterval(() => {
+    OEQ.HeartBeat.checkHeartBeat(API_BASE_URL)
+      .then((result) => {
+        if (result !== "OK") {
           throw new Error(
-            `Unexpected heartbeat response from openEQUELLA server: ${resp.data}`
+            `Unexpected heartbeat response from openEQUELLA server: ${result}`
           );
         }
       })
