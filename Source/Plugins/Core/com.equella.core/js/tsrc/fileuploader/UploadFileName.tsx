@@ -32,13 +32,11 @@ interface UploadFileNameProps {
 /**
  * Display a file name in plain text or as a link, depending on whether the link URL is provided or not.
  */
-export const UploadFileName = ({ fileName, link }: UploadFileNameProps) => {
-  if (link) {
-    return (
-      <Link href={link} target="_blank">
-        {fileName}
-      </Link>
-    );
-  }
-  return <div>{fileName}</div>;
-};
+export const UploadFileName = ({ fileName, link }: UploadFileNameProps) =>
+  link ? (
+    <Link href={link} target="_blank">
+      {fileName}
+    </Link>
+  ) : (
+    <div>{fileName}</div>
+  );

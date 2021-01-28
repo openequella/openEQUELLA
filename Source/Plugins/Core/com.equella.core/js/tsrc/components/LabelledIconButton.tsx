@@ -42,6 +42,10 @@ export interface LabelledIconButtonProps {
   onClick?: () => void;
 }
 
+/**
+ * This component provides an Icon Button which has a text to describe the button.
+ * Both the icon and text are clickable.
+ */
 export const LabelledIconButton = ({
   icon,
   buttonText,

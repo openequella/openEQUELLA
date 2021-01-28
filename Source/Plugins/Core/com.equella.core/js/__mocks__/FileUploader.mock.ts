@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { v4 } from "uuid";
-import {
+import type {
   AjaxFileEntry,
   UpdateEntry,
   UploadFailed,

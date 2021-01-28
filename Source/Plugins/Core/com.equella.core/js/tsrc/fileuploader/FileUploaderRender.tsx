@@ -35,7 +35,8 @@ import {
 // A type guard used to check if the props passed from server is 'InlineFileUploaderProps' or 'UniversalFileUploaderProps'.
 const isInlineFileUploaderProps = (
   props: InlineFileUploaderProps | UniversalFileUploaderProps
-): props is InlineFileUploaderProps => "reloadState" in props;
+): props is InlineFileUploaderProps =>
+  (props as InlineFileUploaderProps).reloadState !== undefined;
 
 /**
  * This function is created primarily for rendering either InlineFileUploader or UniversalFileUploader from server.

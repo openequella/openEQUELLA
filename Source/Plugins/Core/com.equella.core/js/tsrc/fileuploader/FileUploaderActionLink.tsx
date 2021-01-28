@@ -36,6 +36,7 @@ interface FileActionLinkProps {
    */
   className?: string;
 }
+
 export const FileUploaderActionLink = ({
   onClick,
   text,

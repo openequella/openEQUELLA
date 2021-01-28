@@ -117,8 +117,8 @@ export interface InlineFileUploaderProps {
  *
  * Also, upload restrictions configured on server are applied.
  *
- * However, this component should be used in the context of Legacy Wizard page
- * at the moment because all required props is only available on server.
+ * However, this component should *only* be used in the context of Legacy Wizard pages
+ * at the moment because required props are only available via server side rendering (Sections).
  */
 export const InlineFileUploader = ({
   ctrlId,
