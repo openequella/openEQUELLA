@@ -130,13 +130,12 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
     getFileUpload().sendKeys(filename);
     WebElement uploadRow =
         waitForElement(
-            uploadsDiv,
-            By.xpath(
-                "div[@class='file-upload' and span/strong/text() = "
-                    + quoteXPath(expectedFilename)
-                    + "]"));
+            uploadsDiv, By.xpath("ul/li[.//div[text() = " + quoteXPath(expectedFilename) + "]]"));
     waitForElement(
-        uploadRow, new ByChained(By.className("progress-bar"), By.className("complete")));
+        uploadRow,
+        new ByChained(
+            By.xpath(
+                "div/div[contains(@class, 'actions')]/div/button[contains(@title, 'Delete file')]")));
   }
 
   public FileUniversalControlType uploadError(URL file, String errorMessage) {
@@ -147,11 +146,7 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
 
   private ExpectedCondition<?> getErrorExpectation(String msg) {
     String xpath =
-        "id('"
-            + getWizid()
-            + "_dialog')//p[@class = 'ctrlinvalidmessage' and text() = "
-            + quoteXPath(msg)
-            + "]";
+        "id('" + getWizid() + "_dialog')//p[text() = " + quoteXPath(msg) + " and @role = 'alert']";
     return ExpectedConditions.visibilityOfElementLocated(By.xpath(xpath));
   }
 
