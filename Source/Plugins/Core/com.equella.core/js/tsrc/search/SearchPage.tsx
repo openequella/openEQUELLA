@@ -498,7 +498,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item xs={9}>
+        <Grid item xs={8}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <SearchBar
@@ -533,7 +533,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           </Grid>
         </Grid>
 
-        <Grid item xs={3}>
+        <Grid item xs={4}>
           <Grid container direction="column" spacing={2}>
             <Grid item>
               <RefineSearchPanel
