@@ -22,7 +22,6 @@ import { isEqual, pick } from "lodash";
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
 import { useHistory, useLocation } from "react-router";
-import { Static } from "runtypes";
 import { generateFromError } from "../api/errors";
 import { AppConfig } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
@@ -50,11 +49,7 @@ import {
   searchItems,
   SearchOptions,
 } from "../modules/SearchModule";
-import {
-  getSearchSettingsFromServer,
-  SearchSettings,
-  SortOrder,
-} from "../modules/SearchSettingsModule";
+import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
 import {
   prepareDraggable,
   buildSelectionSessionAdvancedSearchLink,
@@ -137,7 +132,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   >(defaultPagedSearchResult);
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
   const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
-  const [searchSettings, setSearchSettings] = useState<SearchSettings>();
+  const [
+    searchSettings,
+    setSearchSettings,
+  ] = useState<OEQ.SearchSettings.SearchSettings>();
   const [classifications, setClassifications] = useState<Classification[]>([]);
 
   const location = useLocation();
@@ -245,7 +243,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       .finally(() => setShowSpinner(false));
   };
 
-  const handleSortOrderChanged = (order: Static<typeof SortOrder>) =>
+  const handleSortOrderChanged = (order: OEQ.SearchSettings.SortOrder) =>
     setSearchPageOptions({ ...searchPageOptions, sortOrder: order });
 
   const handleQueryChanged = (query: string) =>

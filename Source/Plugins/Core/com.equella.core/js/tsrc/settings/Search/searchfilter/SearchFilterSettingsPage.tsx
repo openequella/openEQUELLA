@@ -55,7 +55,6 @@ import {
   defaultSearchSettings,
   getSearchSettingsFromServer,
   saveSearchSettingsToServer,
-  SearchSettings,
 } from "../../../modules/SearchSettingsModule";
 import { commonString } from "../../../util/commonstrings";
 import { idExtractor } from "../../../util/idExtractor";
@@ -65,7 +64,9 @@ import {
   replaceElement,
 } from "../../../util/ImmutableArrayUtil";
 import { languageStrings } from "../../../util/langstrings";
+import useError from "../../../util/useError";
 import MimeTypeFilterEditingDialog from "./MimeTypeFilterEditingDialog";
+import * as OEQ from "@openequella/rest-api-client";
 
 const useStyles = makeStyles({
   cardAction: {
@@ -74,21 +75,23 @@ const useStyles = makeStyles({
   },
 });
 
+const searchFilterStrings =
+  languageStrings.settings.searching.searchfiltersettings;
+
 const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const classes = useStyles();
-  const searchFilterStrings =
-    languageStrings.settings.searching.searchfiltersettings;
 
   // The general Search settings. Here only configure searchingDisableOwnerFilter and searchingDisableDateModifiedFilter.
-  const [searchSettings, setSearchSettings] = useState<SearchSettings>(
-    defaultSearchSettings
-  );
+  const [
+    searchSettings,
+    setSearchSettings,
+  ] = useState<OEQ.SearchSettings.SearchSettings>(defaultSearchSettings);
 
   // Used to record the initial Search settings and compare if values are changed or not when saving.
   const [
     initialSearchSettings,
     setInitialSearchSettings,
-  ] = useState<SearchSettings>(defaultSearchSettings);
+  ] = useState<OEQ.SearchSettings.SearchSettings>(defaultSearchSettings);
 
   // mimeTypeFilters contains all filters displayed in the list, including those saved in the Server and visually added/deleted.
   const [mimeTypeFilters, setMimeTypeFilters] = useState<MimeTypeFilter[]>([]);
@@ -119,18 +122,18 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
   );
   const [reset, setReset] = useState<boolean>(true);
 
+  const setError = useError((error: Error) => {
+    updateTemplate(templateError(generateFromError(error)));
+  });
+
   useEffect(() => {
     updateTemplate((tp) => ({
       ...templateDefaults(searchFilterStrings.name)(tp),
       backRoute: routes.Settings.to,
     }));
-  }, [searchFilterStrings.name, updateTemplate]);
+  }, [updateTemplate]);
 
   useEffect(() => {
-    const onError = (error: Error) => {
-      updateTemplate(templateError(generateFromError(error)));
-    };
-
     /**
      * Fetch the general Search Settings from the Server.
      * Set the initial values of the Owner filter and Date modified filter to state.
@@ -141,7 +144,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
           setSearchSettings(settings);
           setInitialSearchSettings(settings);
         })
-        .catch(onError);
+        .catch((error: Error) => setError(error));
     };
 
     /**
@@ -155,12 +158,12 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
           setDeletedMimeTypeFilters([]);
           setChangedMimeTypeFilters([]);
         })
-        .catch(onError);
+        .catch((error: Error) => setError(error));
     };
 
     getSearchSettings();
     getMimeTypeFilters();
-  }, [reset, updateTemplate]);
+  }, [reset, setError]);
 
   const mimeTypeFilterChanged =
     deletedMimeTypeFilters.length || changedMimeTypeFilters.length;

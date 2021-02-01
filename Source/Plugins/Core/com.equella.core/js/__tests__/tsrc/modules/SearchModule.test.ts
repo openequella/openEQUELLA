@@ -37,7 +37,20 @@ import {
 } from "../../../tsrc/modules/SearchModule";
 import * as UserModule from "../../../tsrc/modules/UserModule";
 
-jest.mock("@openequella/rest-api-client");
+jest.mock("@openequella/rest-api-client", () => {
+  // We only want to mock module 'Search' because mocking the whole module
+  // will break Runtypes.
+  const restModule: typeof OEQ = jest.requireActual(
+    "@openequella/rest-api-client"
+  );
+  return {
+    ...restModule,
+    Search: {
+      search: jest.fn(),
+    },
+  };
+});
+
 const mockedSearch = (OEQ.Search.search as jest.Mock<
   Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>>
 >).mockResolvedValue(getSearchResult);

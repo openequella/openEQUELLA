@@ -21,14 +21,14 @@ import {
   OutlinedInput,
   Select,
 } from "@material-ui/core";
-import { ContentIndex } from "../../../modules/SearchSettingsModule";
 import * as React from "react";
 import { languageStrings } from "../../../util/langstrings";
+import * as OEQ from "@openequella/rest-api-client";
 
 export interface WebPageIndexSettingProps {
   disabled: boolean;
-  value: ContentIndex;
-  setValue: (indexOption: ContentIndex) => void;
+  value: OEQ.SearchSettings.ContentIndex;
+  setValue: (indexOption: OEQ.SearchSettings.ContentIndex) => void;
 }
 export default function WebPageIndexSetting({
   disabled,
@@ -42,19 +42,21 @@ export default function WebPageIndexSetting({
       <Select
         SelectDisplayProps={{ id: "_contentIndex" }}
         disabled={disabled}
-        onChange={(event) => setValue(event.target.value as ContentIndex)}
+        onChange={(event) =>
+          setValue(event.target.value as OEQ.SearchSettings.ContentIndex)
+        }
         variant="outlined"
         value={value}
         autoWidth
         input={<OutlinedInput labelWidth={0} id="_contentIndex" />}
       >
-        <MenuItem value={ContentIndex.OPTION_NONE}>
+        <MenuItem value={OEQ.SearchSettings.ContentIndex.OPTION_NONE}>
           {contentIndexSettingsStrings.option.none}
         </MenuItem>
-        <MenuItem value={ContentIndex.OPTION_WEBPAGE}>
+        <MenuItem value={OEQ.SearchSettings.ContentIndex.OPTION_WEBPAGE}>
           {contentIndexSettingsStrings.option.webPage}
         </MenuItem>
-        <MenuItem value={ContentIndex.OPTION_SECONDARY}>
+        <MenuItem value={OEQ.SearchSettings.ContentIndex.OPTION_SECONDARY}>
           {contentIndexSettingsStrings.option.secondaryPage}
         </MenuItem>
       </Select>

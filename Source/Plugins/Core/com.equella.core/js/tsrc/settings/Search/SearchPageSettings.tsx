@@ -18,6 +18,7 @@
 import { Card, CardContent } from "@material-ui/core";
 import * as React from "react";
 import { shallowEqual } from "shallow-equal-object";
+import { generateFromError } from "../../api/errors";
 import SettingPageTemplate from "../../components/SettingPageTemplate";
 import SettingsList from "../../components/SettingsList";
 import SettingsListControl from "../../components/SettingsListControl";
@@ -25,48 +26,55 @@ import SettingsToggleSwitch from "../../components/SettingsToggleSwitch";
 import { routes } from "../../mainui/routes";
 import {
   templateDefaults,
-  TemplateUpdate,
+  templateError,
   TemplateUpdateProps,
 } from "../../mainui/Template";
 import {
-  CloudSettings,
   defaultSearchSettings,
   getCloudSettingsFromServer,
   getSearchSettingsFromServer,
   saveCloudSettingsToServer,
   saveSearchSettingsToServer,
-  SearchSettings,
 } from "../../modules/SearchSettingsModule";
 import { languageStrings } from "../../util/langstrings";
+import useError from "../../util/useError";
 import DefaultSortOrderSetting from "./components/DefaultSortOrderSetting";
+import * as OEQ from "@openequella/rest-api-client";
 
-function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
-  const [searchSettings, setSearchSettings] = React.useState<SearchSettings>(
-    defaultSearchSettings
-  );
-  const [cloudSettings, setCloudSettings] = React.useState<CloudSettings>({
+const searchPageSettingsStrings =
+  languageStrings.settings.searching.searchPageSettings;
+
+const SearchPageSettings = ({ updateTemplate }: TemplateUpdateProps) => {
+  const [
+    searchSettings,
+    setSearchSettings,
+  ] = React.useState<OEQ.SearchSettings.SearchSettings>(defaultSearchSettings);
+  const [
+    cloudSettings,
+    setCloudSettings,
+  ] = React.useState<OEQ.SearchSettings.CloudSettings>({
     disabled: false,
   });
 
   const [
     initialSearchSettings,
     setInitialSearchSettings,
-  ] = React.useState<SearchSettings>(defaultSearchSettings);
+  ] = React.useState<OEQ.SearchSettings.SearchSettings>(defaultSearchSettings);
   const [
     initialCloudSettings,
     setInitialCloudSettings,
-  ] = React.useState<CloudSettings>({
+  ] = React.useState<OEQ.SearchSettings.CloudSettings>({
     disabled: false,
   });
 
   const [loadSettings, setLoadSettings] = React.useState<boolean>(true);
-  // Because `TemplateUpdate` is a function, make sure when using setError to at least do
-  // setError(() => error)
-  const [error, setError] = React.useState<TemplateUpdate>();
   const [showSuccess, setShowSuccess] = React.useState<boolean>(false);
+  const [showError, setShowError] = React.useState<boolean>(false);
 
-  const searchPageSettingsStrings =
-    languageStrings.settings.searching.searchPageSettings;
+  const setError = useError((error: Error) => {
+    updateTemplate(templateError(generateFromError(error)));
+    setShowError(true);
+  });
 
   const changesUnsaved =
     initialCloudSettings.disabled !== cloudSettings.disabled ||
@@ -77,38 +85,32 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
       ...templateDefaults(searchPageSettingsStrings.name)(tp),
       backRoute: routes.Settings.to,
     }));
-  }, [updateTemplate, searchPageSettingsStrings.name]);
+  }, [updateTemplate]);
 
   React.useEffect(() => {
     getSearchSettingsFromServer()
-      .then((settings: SearchSettings) => {
+      .then((settings: OEQ.SearchSettings.SearchSettings) => {
         setSearchSettings(settings);
         setInitialSearchSettings(settings);
       })
       .then(() =>
-        getCloudSettingsFromServer().then((settings: CloudSettings) => {
-          setCloudSettings(settings);
-          setInitialCloudSettings(settings);
-        })
+        getCloudSettingsFromServer().then(
+          (settings: OEQ.SearchSettings.CloudSettings) => {
+            setCloudSettings(settings);
+            setInitialCloudSettings(settings);
+          }
+        )
       )
-      .catch((error) => setError(() => error));
-  }, [loadSettings]);
-
-  React.useEffect(() => {
-    if (error) {
-      updateTemplate(error);
-    }
-  }, [error, updateTemplate]);
+      .catch((error: Error) => setError(error));
+  }, [loadSettings, setError]);
 
   function handleSubmitButton() {
     saveSearchSettingsToServer(searchSettings)
       .then(() => saveCloudSettingsToServer(cloudSettings))
       .then(() => setShowSuccess(true))
-      .catch((error: TemplateUpdate) => setError(() => error))
+      .catch((error: Error) => setError(error))
       .finally(() => setLoadSettings(!loadSettings));
   }
-
-  const disableSettings: boolean = error !== undefined;
 
   return (
     <SettingPageTemplate
@@ -128,7 +130,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
               secondaryText={searchPageSettingsStrings.defaultSortOrderDesc}
               control={
                 <DefaultSortOrderSetting
-                  disabled={disableSettings}
+                  disabled={showError}
                   value={searchSettings.defaultSearchSort}
                   setValue={(order) =>
                     setSearchSettings({
@@ -153,7 +155,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
                       searchingShowNonLiveCheckbox: value,
                     })
                   }
-                  disabled={disableSettings}
+                  disabled={showError}
                   id="_showNonLiveCheckbox"
                 />
               }
@@ -172,7 +174,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
                       authenticateFeedsByDefault: value,
                     })
                   }
-                  disabled={disableSettings}
+                  disabled={showError}
                   id="_authenticateByDefault"
                 />
               }
@@ -187,7 +189,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
                   setValue={(value) =>
                     setCloudSettings({ ...cloudSettings, disabled: value })
                   }
-                  disabled={disableSettings}
+                  disabled={showError}
                   id="cs_dc"
                 />
               }
@@ -212,7 +214,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
                       searchingDisableGallery: value,
                     })
                   }
-                  disabled={disableSettings}
+                  disabled={showError}
                   id="_disableGallery"
                 />
               }
@@ -230,7 +232,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
                       searchingDisableVideos: value,
                     })
                   }
-                  disabled={disableSettings}
+                  disabled={showError}
                   id="_disableVideos"
                 />
               }
@@ -247,7 +249,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
                       fileCountDisabled: value,
                     })
                   }
-                  disabled={disableSettings}
+                  disabled={showError}
                   id="_disableFileCount"
                 />
               }
@@ -257,6 +259,6 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
       </Card>
     </SettingPageTemplate>
   );
-}
+};
 
 export default SearchPageSettings;
