@@ -15,11 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { checkHeartbeat } from "../modules/Heartbeat";
+import { API_BASE_URL } from "../AppConfig";
+import * as OEQ from "@openequella/rest-api-client";
 
 /**
- * Do heartbeat checking every 2 minutes.
+ * Check oEQ server status by sending a heartbeat request.
+ * If the result is not equal to "OK", throw an error.
  */
-export const startHeartbeat = () => {
-  setInterval(checkHeartbeat, 2 * 60 * 1000);
+export const checkHeartbeat = (): void => {
+  OEQ.Heartbeat.checkHeartbeat(API_BASE_URL).catch((error: Error) => {
+    console.error("Attempt to communicate with openEQUELLA server failed");
+    console.error(error);
+  });
 };
