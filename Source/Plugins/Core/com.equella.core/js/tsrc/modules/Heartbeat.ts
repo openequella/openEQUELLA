@@ -22,17 +22,9 @@ import * as OEQ from "@openequella/rest-api-client";
  * Check oEQ server status by sending a heartbeat request.
  * If the result is not equal to "OK", throw an error.
  */
-export function checkHeartbeat() {
-  OEQ.Heartbeat.checkHeartbeat(API_BASE_URL)
-    .then((result: string) => {
-      if (result !== "OK") {
-        throw new Error(
-          `Unexpected heartbeat response from openEQUELLA server: ${result}`
-        );
-      }
-    })
-    .catch((error: Error) => {
-      console.error("Attempt to communicate with openEQUELLA server failed");
-      console.error(error);
-    });
-}
+export const checkHeartbeat = (): void => {
+  OEQ.Heartbeat.checkHeartbeat(API_BASE_URL).catch((error: Error) => {
+    console.error("Attempt to communicate with openEQUELLA server failed");
+    console.error(error);
+  });
+};

@@ -18,6 +18,8 @@
 import { is } from 'typescript-is';
 import { GET } from './AxiosInstance';
 
+type heartbeatResponse = 'OK';
+
 const HEART_BEAT_API_PATH = '/status/heartbeat';
 
 /**
@@ -25,6 +27,7 @@ const HEART_BEAT_API_PATH = '/status/heartbeat';
  * @param apiBasePath Base URI to the oEQ institution and API
  */
 export const checkHeartbeat = (apiBasePath: string): Promise<string> =>
-  GET<string>(apiBasePath + HEART_BEAT_API_PATH, (data): data is string =>
-    is<string>(data)
+  GET<string>(
+    apiBasePath + HEART_BEAT_API_PATH,
+    (data): data is heartbeatResponse => is<heartbeatResponse>(data)
   );

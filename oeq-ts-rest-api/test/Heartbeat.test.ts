@@ -15,16 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as OEQ from '../src';
 import { checkHeartbeat } from '../src/Heartbeat';
 import * as TC from './TestConfig';
 
-beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
-
-afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
-
 describe('checkHeartBeat', () => {
-  it('checks oEQ server status by heartbeat', async () => {
-    expect(await checkHeartbeat(TC.API_PATH)).toEqual('OK');
+  it('returns a resolved promise if server responds correctly', async () => {
+    await expect(checkHeartbeat(TC.API_PATH)).resolves.toBeTruthy();
   });
 });
