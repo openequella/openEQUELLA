@@ -67,54 +67,52 @@ export const CollectionSelector = ({
   }, [handleError]);
 
   return (
-    <div style={{ width: "100%" }}>
-      <Autocomplete
-        multiple
-        limitTags={2}
-        renderTags={(
-          collections: Collection[],
-          getTagProps: AutocompleteGetTagProps
-        ) =>
-          collections.map((collection: Collection, index: number) => (
-            <Tooltip title={collection.name}>
-              <Chip
-                style={{ maxWidth: "50%" }}
-                id={"collectionChip " + collection.uuid}
-                label={collection.name}
-                {...getTagProps({ index })}
-              />
-            </Tooltip>
-          ))
-        }
-        onChange={(_, value: Collection[]) => {
-          onSelectionChange(value);
-        }}
-        value={value ?? []}
-        options={collections}
-        disableCloseOnSelect
-        getOptionLabel={(collection) => collection.name}
-        getOptionSelected={(collection, selected) =>
-          selected.uuid === collection.uuid
-        }
-        renderOption={(collection, { selected }) => (
-          <>
-            <Checkbox
-              icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
-              checkedIcon={<CheckBoxIcon fontSize="small" />}
-              checked={selected}
+    <Autocomplete
+      multiple
+      limitTags={2}
+      renderTags={(
+        collections: Collection[],
+        getTagProps: AutocompleteGetTagProps
+      ) =>
+        collections.map((collection: Collection, index: number) => (
+          <Tooltip title={collection.name}>
+            <Chip
+              style={{ maxWidth: "50%" }}
+              id={"collectionChip " + collection.uuid}
+              label={collection.name}
+              {...getTagProps({ index })}
             />
-            {collection.name}
-          </>
-        )}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            variant="outlined"
-            label={collectionSelectorStrings.title}
-            placeholder={collectionSelectorStrings.title}
+          </Tooltip>
+        ))
+      }
+      onChange={(_, value: Collection[]) => {
+        onSelectionChange(value);
+      }}
+      value={value ?? []}
+      options={collections}
+      disableCloseOnSelect
+      getOptionLabel={(collection) => collection.name}
+      getOptionSelected={(collection, selected) =>
+        selected.uuid === collection.uuid
+      }
+      renderOption={(collection, { selected }) => (
+        <>
+          <Checkbox
+            icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
+            checkedIcon={<CheckBoxIcon fontSize="small" />}
+            checked={selected}
           />
-        )}
-      />
-    </div>
+          {collection.name}
+        </>
+      )}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          variant="outlined"
+          label={collectionSelectorStrings.title}
+          placeholder={collectionSelectorStrings.title}
+        />
+      )}
+    />
   );
 };
