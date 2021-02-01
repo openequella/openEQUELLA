@@ -15,6 +15,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Link } from "@material-ui/core";
+import * as React from "react";
 
-// Assign 'FileUploader' to the window object so it's accessible by the server-generated Javascript.
-window.FileUploader = require("../../tsrc/fileuploader/FileUploaderRender").render;
+interface UploadFileNameProps {
+  /**
+   * The file's name
+   */
+  fileName: string;
+  /**
+   * The link to preview the file
+   */
+  link?: string;
+}
+
+/**
+ * Display a file name in plain text or as a link, depending on whether the link URL is provided or not.
+ */
+export const UploadFileName = ({ fileName, link }: UploadFileNameProps) =>
+  link ? (
+    <Link href={link} target="_blank">
+      {fileName}
+    </Link>
+  ) : (
+    <div>{fileName}</div>
+  );

@@ -15,6 +15,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import AddCircleIcon from "@material-ui/icons/AddCircle";
+import { Meta, Story } from "@storybook/react";
+import React from "react";
+import {
+  LabelledIconButton,
+  LabelledIconButtonProps,
+} from "../../tsrc/components/LabelledIconButton";
 
-// Assign 'FileUploader' to the window object so it's accessible by the server-generated Javascript.
-window.FileUploader = require("../../tsrc/fileuploader/FileUploaderRender").render;
+export default {
+  title: "component/LabelledIconButton",
+  component: LabelledIconButton,
+  argTypes: {
+    onClick: { action: "onClick triggered" },
+  },
+} as Meta<LabelledIconButtonProps>;
+
+export const addButton: Story<LabelledIconButtonProps> = (
+  args: LabelledIconButtonProps
+) => <LabelledIconButton {...args} />;
+
+addButton.args = {
+  icon: <AddCircleIcon />,
+  buttonText: "Add an item",
+  color: "primary",
+};

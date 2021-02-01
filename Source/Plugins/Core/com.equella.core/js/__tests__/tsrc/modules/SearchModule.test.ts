@@ -17,7 +17,10 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
-import { allSearchOptions } from "../../../__mocks__/searchOptions.mock";
+import {
+  allSearchOptions,
+  basicSearchOptions,
+} from "../../../__mocks__/searchOptions.mock";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import { users } from "../../../__mocks__/UserSearch.mock";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
@@ -143,6 +146,65 @@ describe("SearchModule", () => {
       );
       expect(convertedParamsPromise).toEqual(allSearchOptions);
     });
+
+    const emptyEndDateQueryString =
+      '{"lastModifiedDateRange":{"start":"2020-05-26T03:24:00.889Z"}}';
+    const expectedEmptyEndDateSearchOptions: SearchOptions = {
+      ...basicSearchOptions,
+      lastModifiedDateRange: {
+        start: new Date("2020-05-26T13:24:00.889+10:00"),
+        end: undefined,
+      },
+    };
+
+    const emptyStartDateQueryString =
+      '{"lastModifiedDateRange":{"end":"2020-05-27T03:24:00.889Z"}}';
+    const expectedEmptyStartDateSearchOptions: SearchOptions = {
+      ...basicSearchOptions,
+      lastModifiedDateRange: {
+        start: undefined,
+        end: new Date("2020-05-27T13:24:00.889+10:00"),
+      },
+    };
+
+    const fullDateQueryString =
+      '{"lastModifiedDateRange":{"start":"2020-05-26T03:24:00.889Z","end":"2020-05-27T03:24:00.889Z"}}';
+    const expectedFullDateSearchOptions: SearchOptions = {
+      ...basicSearchOptions,
+      lastModifiedDateRange: {
+        start: new Date("2020-05-26T13:24:00.889+10:00"),
+        end: new Date("2020-05-27T13:24:00.889+10:00"),
+      },
+    };
+
+    it.each([
+      [
+        "no start date",
+        emptyStartDateQueryString,
+        expectedEmptyStartDateSearchOptions,
+      ],
+      [
+        "no end date",
+        emptyEndDateQueryString,
+        expectedEmptyEndDateSearchOptions,
+      ],
+      [
+        "both start and end dates",
+        fullDateQueryString,
+        expectedFullDateSearchOptions,
+      ],
+    ])(
+      "supports date ranges that have %s",
+      async (
+        dateRangeType: string,
+        queryString: string,
+        expectedSearchOptions: SearchOptions
+      ) => {
+        expect(await newSearchQueryToSearchOptions(queryString)).toEqual(
+          expectedSearchOptions
+        );
+      }
+    );
 
     it("should be able to convert SearchOptions to a query string, and back to SearchOptions again", async () => {
       const queryStringFromSearchOptions = await generateQueryStringFromSearchOptions(

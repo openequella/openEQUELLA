@@ -55,7 +55,7 @@ export enum ContentIndex {
 }
 
 export const SEARCH_SETTINGS_URL = "api/settings/search";
-export const CLOUD_SETTINGS_URL = "api/settings/search/cloud";
+export const CLOUD_SETTINGS_URL = `${SEARCH_SETTINGS_URL}/cloud`;
 
 export const getSearchSettingsFromServer = () =>
   new Promise(

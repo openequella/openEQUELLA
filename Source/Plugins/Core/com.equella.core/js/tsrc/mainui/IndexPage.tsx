@@ -34,7 +34,12 @@ import { getCurrentUserDetails } from "../modules/UserModule";
 import { basePath } from "./App";
 import ErrorPage from "./ErrorPage";
 import { defaultNavMessage, NavAwayDialog } from "./PreventNavigation";
-import { BaseOEQRouteComponentProps, OEQRoute, routes } from "./routes";
+import {
+  BaseOEQRouteComponentProps,
+  isNewUIRoute,
+  OEQRouteNewUI,
+  routes,
+} from "./routes";
 import { Template, TemplateProps, TemplateUpdate } from "./Template";
 
 const SearchPage = React.lazy(() => import("../search/SearchPage"));
@@ -58,7 +63,7 @@ export default function IndexPage() {
     getCurrentUserDetails().then(setCurrentUser);
   }, []);
 
-  React.useEffect(() => refreshUser(), []);
+  React.useEffect(() => refreshUser(), [refreshUser]);
 
   const [navAwayCallback, setNavAwayCallback] = React.useState<{
     message: string;
@@ -95,31 +100,31 @@ export default function IndexPage() {
     });
   }, []);
 
-  interface Routes {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [key: string]: OEQRoute<any>;
-  }
-  const oeqRoutes: Routes = routes;
-
-  function mkRouteProps(p: RouteComponentProps): BaseOEQRouteComponentProps {
-    return {
+  const mkRouteProps = React.useCallback(
+    (p: RouteComponentProps): BaseOEQRouteComponentProps => ({
       ...p,
       updateTemplate,
       refreshUser,
       redirect: p.history.push,
       setPreventNavigation,
       isReloadNeeded: !renderData?.newUI, // Indicate that new UI is displayed but not enabled.
-    };
-  }
+    }),
+    [refreshUser, setPreventNavigation, updateTemplate]
+  );
 
-  const newUIRoutes = React.useMemo(() => {
-    return Object.keys(oeqRoutes).map((key, ind) => {
-      const oeqRoute = oeqRoutes[key];
-      return (
-        (oeqRoute.component || oeqRoute.render) && (
+  const newUIRoutes = React.useMemo(
+    () =>
+      Object.keys(routes)
+        .map<OEQRouteNewUI | undefined>((name) => {
+          // @ts-ignore:  Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Routes'
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const maybeRoute: any = routes[name];
+          return isNewUIRoute(maybeRoute) ? maybeRoute : undefined;
+        })
+        .filter((maybeRoute): maybeRoute is OEQRouteNewUI => !!maybeRoute)
+        .map((oeqRoute: OEQRouteNewUI, ind) => (
           <Route
             key={ind}
-            exact={oeqRoute.exact}
             path={oeqRoute.path}
             render={(p) => {
               const oeqProps = mkRouteProps(p);
@@ -129,10 +134,9 @@ export default function IndexPage() {
               return oeqRoute.render?.(oeqProps);
             }}
           />
-        )
-      );
-    });
-  }, [refreshUser]);
+        )),
+    [mkRouteProps]
+  );
 
   const errorCallback = React.useCallback((err: ErrorResponse) => {
     errorShowing.current = true;

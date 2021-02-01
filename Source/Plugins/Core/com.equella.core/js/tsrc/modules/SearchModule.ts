@@ -132,7 +132,7 @@ const DehydratedSearchOptionsRunTypes = Partial({
   sortOrder: SortOrder,
   collections: RuntypeArray(Record({ uuid: String })),
   rawMode: Boolean,
-  lastModifiedDateRange: Record({ start: Guard(isDate), end: Guard(isDate) }),
+  lastModifiedDateRange: Partial({ start: Guard(isDate), end: Guard(isDate) }),
   owner: Record({ id: String }),
   // Runtypes guard function would not work when defining the type as Array(OEQ.Common.ItemStatuses) or Guard(OEQ.Common.ItemStatuses.guard),
   // So the Union of Literals has been copied from the OEQ.Common module.

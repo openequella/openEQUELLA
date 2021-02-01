@@ -15,31 +15,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-exports.postFile_ = function (options) {
-  return function (errback, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", options.url, true);
-    xhr.onerror = function () {
-      errback(new Error("AJAX request failed: " + options.url));
-    };
-    xhr.onload = function () {
-      callback({
-        status: xhr.status,
-        headers: [],
-        response: xhr.response,
-      });
-    };
-    xhr.upload.addEventListener("progress", options.progress);
-    xhr.responseType = "text";
-    xhr.send(options.file);
+import { v4 } from "uuid";
+import type {
+  AjaxFileEntry,
+  UpdateEntry,
+  UploadFailed,
+} from "../tsrc/modules/FileUploaderModule";
 
-    return function (cancelError, cancelErrback, cancelCallback) {
-      try {
-        xhr.abort();
-      } catch (e) {
-        return cancelErrback(e);
-      }
-      return cancelCallback();
-    };
-  };
+export const uploadedFileEntry: AjaxFileEntry = {
+  id: v4(),
+  name: "test2.png",
+  link: "https://localhost:8080/test/upload/test2",
+  preview: true,
+  editable: true,
+  children: [],
 };
+
+export const successfulUploadResponse: UpdateEntry = {
+  entry: uploadedFileEntry,
+  attachmentDuplicateInfo: {
+    displayWarningMessage: true,
+    warningMessageWebId: "P0C0",
+  },
+  response: "updateentry",
+};
+
+export const failedUploadResponse: UploadFailed = {
+  reason: "File is too large",
+  response: "uploadfailed",
+};
+
+export const files = [
+  new File(["test1"], "test1.png"),
+  new File(["test2"], "test2.png"),
+];

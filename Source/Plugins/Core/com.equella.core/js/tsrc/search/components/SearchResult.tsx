@@ -69,6 +69,13 @@ import {
   determineViewer,
 } from "../../modules/ViewerModule";
 
+const {
+  searchResult: searchResultStrings,
+  comments: commentStrings,
+  starRatings: ratingStrings,
+  selectResource: selectResourceStrings,
+} = languageStrings.searchpage;
+
 const useStyles = makeStyles((theme: Theme) => {
   return {
     inline: {
@@ -172,13 +179,6 @@ export default function SearchResult({
     setAttachmentsWithViewerDetails,
   ] = useState<AttachmentAndViewerDetails[]>([]);
 
-  const {
-    searchResult: searchResultStrings,
-    comments: commentStrings,
-    starRatings: ratingStrings,
-    selectResource: selectResourceStrings,
-  } = languageStrings.searchpage;
-
   // Responsible for determining the MIME type viewer for the provided attachments
   useEffect(() => {
     let mounted = true;
@@ -222,7 +222,7 @@ export default function SearchResult({
       // Short circuit if this component is unmounted before all its comms are done.
       mounted = false;
     };
-  }, [attachments, getViewerDetails]);
+  }, [attachments, getViewerDetails, handleError]);
 
   // In Selection Session, make each attachment draggable.
   useEffect(() => {
@@ -231,7 +231,7 @@ export default function SearchResult({
         prepareDraggable(attachment.id, false);
       });
     }
-  }, [attachmentsWithViewerDetails]);
+  }, [attachmentsWithViewerDetails, inStructured]);
 
   const handleAttachmentPanelClick = (event: SyntheticEvent) => {
     /** prevents the SearchResult onClick from firing when attachment panel is clicked */

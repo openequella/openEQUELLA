@@ -15,15 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Card, CardContent } from "@material-ui/core";
 import * as React from "react";
+import { shallowEqual } from "shallow-equal-object";
+import SettingPageTemplate from "../../components/SettingPageTemplate";
+import SettingsList from "../../components/SettingsList";
+import SettingsListControl from "../../components/SettingsListControl";
+import SettingsToggleSwitch from "../../components/SettingsToggleSwitch";
+import { routes } from "../../mainui/routes";
 import {
   templateDefaults,
   TemplateUpdate,
   TemplateUpdateProps,
 } from "../../mainui/Template";
-import { routes } from "../../mainui/routes";
-import { Card, CardContent } from "@material-ui/core";
-import { languageStrings } from "../../util/langstrings";
 import {
   CloudSettings,
   defaultSearchSettings,
@@ -33,12 +37,8 @@ import {
   saveSearchSettingsToServer,
   SearchSettings,
 } from "../../modules/SearchSettingsModule";
+import { languageStrings } from "../../util/langstrings";
 import DefaultSortOrderSetting from "./components/DefaultSortOrderSetting";
-import SettingsToggleSwitch from "../../components/SettingsToggleSwitch";
-import SettingsList from "../../components/SettingsList";
-import SettingsListControl from "../../components/SettingsListControl";
-import SettingPageTemplate from "../../components/SettingPageTemplate";
-import { shallowEqual } from "shallow-equal-object";
 
 function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
   const [searchSettings, setSearchSettings] = React.useState<SearchSettings>(
@@ -59,7 +59,10 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
     disabled: false,
   });
 
-  const [showError, setShowError] = React.useState<boolean>(false);
+  const [loadSettings, setLoadSettings] = React.useState<boolean>(true);
+  // Because `TemplateUpdate` is a function, make sure when using setError to at least do
+  // setError(() => error)
+  const [error, setError] = React.useState<TemplateUpdate>();
   const [showSuccess, setShowSuccess] = React.useState<boolean>(false);
 
   const searchPageSettingsStrings =
@@ -74,10 +77,9 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
       ...templateDefaults(searchPageSettingsStrings.name)(tp),
       backRoute: routes.Settings.to,
     }));
-    getSettings();
-  }, []);
+  }, [updateTemplate, searchPageSettingsStrings.name]);
 
-  function getSettings() {
+  React.useEffect(() => {
     getSearchSettingsFromServer()
       .then((settings: SearchSettings) => {
         setSearchSettings(settings);
@@ -89,21 +91,24 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
           setInitialCloudSettings(settings);
         })
       )
-      .catch((error) => handleError(error));
-  }
+      .catch((error) => setError(() => error));
+  }, [loadSettings]);
 
-  function handleError(error: TemplateUpdate) {
-    setShowError(true);
-    updateTemplate(error);
-  }
+  React.useEffect(() => {
+    if (error) {
+      updateTemplate(error);
+    }
+  }, [error, updateTemplate]);
 
   function handleSubmitButton() {
     saveSearchSettingsToServer(searchSettings)
       .then(() => saveCloudSettingsToServer(cloudSettings))
       .then(() => setShowSuccess(true))
-      .catch((error: TemplateUpdate) => handleError(error))
-      .finally(() => getSettings());
+      .catch((error: TemplateUpdate) => setError(() => error))
+      .finally(() => setLoadSettings(!loadSettings));
   }
+
+  const disableSettings: boolean = error !== undefined;
 
   return (
     <SettingPageTemplate
@@ -123,7 +128,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
               secondaryText={searchPageSettingsStrings.defaultSortOrderDesc}
               control={
                 <DefaultSortOrderSetting
-                  disabled={showError}
+                  disabled={disableSettings}
                   value={searchSettings.defaultSearchSort}
                   setValue={(order) =>
                     setSearchSettings({
@@ -148,7 +153,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
                       searchingShowNonLiveCheckbox: value,
                     })
                   }
-                  disabled={showError}
+                  disabled={disableSettings}
                   id="_showNonLiveCheckbox"
                 />
               }
@@ -167,7 +172,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
                       authenticateFeedsByDefault: value,
                     })
                   }
-                  disabled={showError}
+                  disabled={disableSettings}
                   id="_authenticateByDefault"
                 />
               }
@@ -182,7 +187,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
                   setValue={(value) =>
                     setCloudSettings({ ...cloudSettings, disabled: value })
                   }
-                  disabled={showError}
+                  disabled={disableSettings}
                   id="cs_dc"
                 />
               }
@@ -207,7 +212,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
                       searchingDisableGallery: value,
                     })
                   }
-                  disabled={showError}
+                  disabled={disableSettings}
                   id="_disableGallery"
                 />
               }
@@ -225,7 +230,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
                       searchingDisableVideos: value,
                     })
                   }
-                  disabled={showError}
+                  disabled={disableSettings}
                   id="_disableVideos"
                 />
               }
@@ -242,7 +247,7 @@ function SearchPageSettings({ updateTemplate }: TemplateUpdateProps) {
                       fileCountDisabled: value,
                     })
                   }
-                  disabled={showError}
+                  disabled={disableSettings}
                   id="_disableFileCount"
                 />
               }
