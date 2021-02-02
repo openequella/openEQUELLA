@@ -79,7 +79,7 @@ import {
 import StatusSelector from "./components/StatusSelector";
 
 // destructure strings import
-const searchStrings = languageStrings.searchpage;
+const { searchpage: searchStrings } = languageStrings;
 const {
   title: dateModifiedSelectorTitle,
   quickOptionDropdown,
