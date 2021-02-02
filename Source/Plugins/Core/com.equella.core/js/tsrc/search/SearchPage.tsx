@@ -290,7 +290,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   // In Selection Session, once a new search result is returned, make each
   // new search result Item draggable. Could probably merge into 'searching'
-  // effect, however this is only required while selections sessions still
+  // effect, however this is only required while selection sessions still
   // involve legacy content.
   useEffect(() => {
     if (state.status === "success" && isSelectionSessionInStructured()) {
