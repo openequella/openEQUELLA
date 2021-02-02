@@ -28,7 +28,8 @@ import type { RenderData } from "../../../../tsrc/AppConfig";
 import {
   getGlobalCourseList,
   selectResourceForCourseList,
-  selectResourceForNonCourseList,
+  selectResourceForSelectOrAdd,
+  selectResourceForSkinny,
 } from "../../../../tsrc/modules/LegacySelectionSessionModule";
 import * as MimeTypesModule from "../../../../tsrc/modules/MimeTypesModule";
 import * as LegacySelectionSessionModule from "../../../../tsrc/modules/LegacySelectionSessionModule";
@@ -39,6 +40,7 @@ import { updateMockGlobalCourseList } from "../../CourseListHelper";
 import {
   basicRenderData,
   renderDataForSelectOrAdd,
+  renderDataForSkinny,
   selectSummaryButtonDisabled,
   updateMockGetRenderData,
   withIntegId,
@@ -209,16 +211,24 @@ describe("<SearchResult/>", () => {
     );
     mockSelectResourceForCourseList.mockResolvedValue();
 
-    const mockSelectResourceForNonCourseList = jest.spyOn(
+    const mockSelectResourceForSelectOrAdd = jest.spyOn(
       LegacySelectionSessionModule,
-      "selectResourceForNonCourseList"
+      "selectResourceForSelectOrAdd"
     );
-    mockSelectResourceForNonCourseList.mockResolvedValue();
+    mockSelectResourceForSelectOrAdd.mockResolvedValue();
+
+    const mockSelectResourceForSkinny = jest.spyOn(
+      LegacySelectionSessionModule,
+      "selectResourceForSkinny"
+    );
+    mockSelectResourceForSkinny.mockResolvedValue();
 
     const STRUCTURED = "structured";
     const SELECT_OR_ADD = "selectOrAdd";
+    const SKINNY = "skinny";
     const selectForCourseFunc = selectResourceForCourseList;
-    const selectForNonCourseFunc = selectResourceForNonCourseList;
+    const selectForSelectOrAdd = selectResourceForSelectOrAdd;
+    const selectForSkinny = selectResourceForSkinny;
 
     const makeSelection = (findSelector: () => HTMLElement | null) => {
       const selectorControl = findSelector();
@@ -251,21 +261,23 @@ describe("<SearchResult/>", () => {
       [
         selectSummaryPageString,
         SELECT_OR_ADD,
-        selectForNonCourseFunc,
+        selectForSelectOrAdd,
         renderDataForSelectOrAdd,
       ],
       [
         selectAllAttachmentsString,
         SELECT_OR_ADD,
-        selectForNonCourseFunc,
+        selectForSelectOrAdd,
         renderDataForSelectOrAdd,
       ],
       [
         selectAttachmentString,
         SELECT_OR_ADD,
-        selectForNonCourseFunc,
+        selectForSelectOrAdd,
         renderDataForSelectOrAdd,
       ],
+      [selectSummaryPageString, SKINNY, selectForSkinny, renderDataForSkinny],
+      [selectAttachmentString, SKINNY, selectForSkinny, renderDataForSkinny],
     ])(
       "supports %s in %s mode",
       async (
@@ -324,6 +336,16 @@ describe("<SearchResult/>", () => {
           getGlobalCourseList().prepareDraggableAndBind
         ).toHaveBeenCalledWith(`#${attachment.id}`, false);
       });
+    });
+
+    it("should hide All attachment button in Skinny", async () => {
+      updateMockGetRenderData(renderDataForSkinny);
+      const { queryByLabelText } = await renderSearchResult(
+        mockData.attachSearchObj
+      );
+      expect(
+        queryByLabelText(selectAllAttachmentsString)
+      ).not.toBeInTheDocument();
     });
   });
 });

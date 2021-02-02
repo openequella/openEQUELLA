@@ -60,7 +60,7 @@ export const guestUser: OEQ.LegacyContent.CurrentUserDetails = {
   menuGroups: [],
 };
 
-interface ExternalRedirect {
+export interface ExternalRedirect {
   href: string;
 }
 

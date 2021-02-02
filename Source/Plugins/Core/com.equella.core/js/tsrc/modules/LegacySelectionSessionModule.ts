@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import Axios from "axios";
+import { Literal, match } from "runtypes";
 import {
   API_BASE_URL,
   AppConfig,
@@ -25,6 +26,7 @@ import {
 } from "../AppConfig";
 import {
   ChangeRoute,
+  ExternalRedirect,
   isChangeRoute,
   isPageContent,
   LegacyContentResponse,
@@ -162,6 +164,17 @@ export const isSelectionSessionInStructured = (): boolean => {
   }
   return false;
 };
+
+/**
+ * Return true if Selection Session is in 'Structured'.
+ */
+export const isSelectionSessionInSkinny = (): boolean => {
+  if (isSelectionSessionOpen()) {
+    return getSelectionSessionInfo().layout === "skinnysearch";
+  }
+  return false;
+};
+
 /**
  * Indicates if the Select Summary button is disabled or not.
  * Returns true if the Selection Session info is not available.
@@ -341,6 +354,27 @@ export const buildPostDataForSelectOrAdd = (
       };
 
 /**
+ * Build an object of SelectionSessionPostData for 'skinny'.
+ */
+export const buildPostDataForSkinny = (
+  itemKey: string,
+  attachmentUUID?: string
+): SelectionSessionPostData =>
+  attachmentUUID
+    ? {
+        event__: ["ilad.selectAttachment"],
+        eventp__0: [attachmentUUID],
+        eventp__1: [itemKey],
+        eventp__2: [null],
+        ...getBasicPostData(),
+      }
+    : {
+        event__: ["_slssp.selectItemSummary"],
+        eventp__0: [itemKey],
+        ...getBasicPostData(),
+      };
+
+/**
  * Select resources in 'structured'. The approach is to call the server AJAX method 'reloadFolder'
  * which is defined in 'CourseListSection'. The parameter passed to this method is a JSON string
  * converted from an object of 'CourseListFolderAjaxUpdateData'.
@@ -366,7 +400,7 @@ export const selectResourceForCourseList = (
  * The difference is we call the server event handlers directly. Details of those handlers can
  * be found from 'AbstractAttachmentsSection' and 'AbstractSelectItemListExtension'.
  */
-export const selectResourceForNonCourseList = (
+export const selectResourceForSelectOrAdd = (
   itemKey: string,
   attachmentUUIDs: string[]
 ): Promise<void> => {
@@ -390,6 +424,30 @@ export const selectResourceForNonCourseList = (
 };
 
 /**
+ * Select resources in 'skinny'. The approach is the same as 'selectResourceForSelectOrAdd'.
+ * The response is an external href so use 'window.location' to redirect.
+ */
+export const selectResourceForSkinny = (
+  itemKey: string,
+  attachmentUUIDs: string[]
+): Promise<void> => {
+  const postData: SelectionSessionPostData = buildPostDataForSkinny(
+    itemKey,
+    // Each selection In skinny can only have one attachment.
+    attachmentUUIDs.length > 0 ? attachmentUUIDs[0] : undefined
+  );
+
+  const callback = (response: ExternalRedirect) => {
+    window.location.href = response.href;
+  };
+
+  return submitSelection<ExternalRedirect>(
+    `${submitBaseUrl}/access/skinny/searching.do`,
+    postData,
+    callback
+  );
+};
+/**
  * Submit a request to select an ItemSummary page, an attachment or all attachments of an Item.
  * @param itemKey The unique key including the selected Item's UUID and version
  * @param attachments A list of UUIDs of selected attachments
@@ -398,8 +456,20 @@ export const selectResource = (
   itemKey: string,
   attachments: string[]
 ): Promise<void> => {
+  const selectResource = match(
+    [
+      Literal("coursesearch"),
+      () => selectResourceForCourseList(itemKey, attachments),
+    ],
+    [
+      Literal("search"),
+      () => selectResourceForSelectOrAdd(itemKey, attachments),
+    ],
+    [
+      Literal("skinnysearch"),
+      () => selectResourceForSkinny(itemKey, attachments),
+    ]
+  );
   const { layout } = getSelectionSessionInfo();
-  return layout === "coursesearch"
-    ? selectResourceForCourseList(itemKey, attachments)
-    : selectResourceForNonCourseList(itemKey, attachments);
+  return selectResource(layout);
 };

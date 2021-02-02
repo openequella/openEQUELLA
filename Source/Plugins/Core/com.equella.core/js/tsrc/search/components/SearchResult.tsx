@@ -60,6 +60,7 @@ import {
   getSearchPageItemClass,
   getSearchPageAttachmentClass,
   isSelectionSessionInStructured,
+  isSelectionSessionInSkinny,
 } from "../../modules/LegacySelectionSessionModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
@@ -168,6 +169,7 @@ export default function SearchResult({
   const classes = useStyles();
   const inSelectionSession: boolean = isSelectionSessionOpen();
   const inStructured = isSelectionSessionInStructured();
+  const inSkinny = isSelectionSessionInSkinny();
 
   const [attachExpanded, setAttachExpanded] = useState(
     (inSelectionSession
@@ -392,16 +394,18 @@ export default function SearchResult({
       <Grid container alignItems="center">
         <Grid item>{accordionText}</Grid>
         <Grid>
-          <ResourceSelector
-            labelText={selectResourceStrings.allAttachments}
-            isStopPropagation
-            onClick={() => {
-              const attachments = attachmentsWithViewerDetails.map(
-                ({ attachment }) => attachment.id
-              );
-              handleSelectResource(itemKey, attachments);
-            }}
-          />
+          {!inSkinny && (
+            <ResourceSelector
+              labelText={selectResourceStrings.allAttachments}
+              isStopPropagation
+              onClick={() => {
+                const attachments = attachmentsWithViewerDetails.map(
+                  ({ attachment }) => attachment.id
+                );
+                handleSelectResource(itemKey, attachments);
+              }}
+            />
+          )}
         </Grid>
       </Grid>
     ) : (
