@@ -538,32 +538,41 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     },
   ];
 
-  const renderClassifications = () => {
-    if (
-      state.status === "success" &&
-      state.classifications.length > 0 &&
-      state.classifications.some((c) => c.categories.length > 0)
-    ) {
-      return (
-        <Grid item>
-          <Card>
-            <CardContent>
-              <Typography variant="h5">
-                {languageStrings.searchpage.categorySelector.title}
-              </Typography>
-              <CategorySelector
-                classifications={state.classifications}
-                onSelectedCategoriesChange={handleSelectedCategoriesChange}
-                selectedCategories={searchPageOptions.selectedCategories}
-              />
-            </CardContent>
-          </Card>
-        </Grid>
-      );
-    }
+  const Classifications = ({
+    classifications,
+    onChange,
+    currentSelections,
+  }: {
+    classifications: Classification[];
+    onChange: (selectedCategories: SelectedCategories[]) => void;
+    currentSelections?: SelectedCategories[];
+  }) => (
+    <Grid item>
+      <Card>
+        <CardContent>
+          <Typography variant="h5">
+            {languageStrings.searchpage.categorySelector.title}
+          </Typography>
+          <CategorySelector
+            classifications={classifications}
+            onSelectedCategoriesChange={onChange}
+            selectedCategories={currentSelections}
+          />
+        </CardContent>
+      </Card>
+    </Grid>
+  );
 
-    return null;
-  };
+  const renderClassifications = () =>
+    state.status === "success" &&
+    state.classifications.length > 0 &&
+    state.classifications.some((c) => c.categories.length > 0) ? (
+      <Classifications
+        classifications={state.classifications}
+        onChange={handleSelectedCategoriesChange}
+        currentSelections={searchPageOptions.selectedCategories}
+      />
+    ) : null;
 
   const {
     available: totalCount,
