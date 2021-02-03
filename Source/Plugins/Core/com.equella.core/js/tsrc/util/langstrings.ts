@@ -622,4 +622,7 @@ export const languageStrings = {
   lightboxComponent: {
     unsupportedContent: "Provided content is not supported",
   },
+  fileUploader: {
+    noFileSelected: "No attached resources",
+  },
 };

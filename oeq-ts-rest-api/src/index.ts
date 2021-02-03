@@ -32,3 +32,4 @@ export * as Settings from './Settings';
 export * as UserQuery from './UserQuery';
 export * as Utils from './Utils';
 export * as SearchSettings from './SearchSettings';
+export * as Heartbeat from './Heartbeat';

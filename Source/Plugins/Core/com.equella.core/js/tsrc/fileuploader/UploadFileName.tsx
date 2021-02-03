@@ -15,11 +15,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { checkHeartbeat } from "../modules/Heartbeat";
+import { Link } from "@material-ui/core";
+import * as React from "react";
+
+interface UploadFileNameProps {
+  /**
+   * The file's name
+   */
+  fileName: string;
+  /**
+   * The link to preview the file
+   */
+  link?: string;
+}
 
 /**
- * Do heartbeat checking every 2 minutes.
+ * Display a file name in plain text or as a link, depending on whether the link URL is provided or not.
  */
-export const startHeartbeat = () => {
-  setInterval(checkHeartbeat, 2 * 60 * 1000);
-};
+export const UploadFileName = ({ fileName, link }: UploadFileNameProps) =>
+  link ? (
+    <Link href={link} target="_blank">
+      {fileName}
+    </Link>
+  ) : (
+    <div>{fileName}</div>
+  );

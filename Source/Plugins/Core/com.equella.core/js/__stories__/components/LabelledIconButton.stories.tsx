@@ -15,11 +15,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { checkHeartbeat } from "../modules/Heartbeat";
+import AddCircleIcon from "@material-ui/icons/AddCircle";
+import { Meta, Story } from "@storybook/react";
+import React from "react";
+import {
+  LabelledIconButton,
+  LabelledIconButtonProps,
+} from "../../tsrc/components/LabelledIconButton";
 
-/**
- * Do heartbeat checking every 2 minutes.
- */
-export const startHeartbeat = () => {
-  setInterval(checkHeartbeat, 2 * 60 * 1000);
+export default {
+  title: "component/LabelledIconButton",
+  component: LabelledIconButton,
+  argTypes: {
+    onClick: { action: "onClick triggered" },
+  },
+} as Meta<LabelledIconButtonProps>;
+
+export const addButton: Story<LabelledIconButtonProps> = (
+  args: LabelledIconButtonProps
+) => <LabelledIconButton {...args} />;
+
+addButton.args = {
+  icon: <AddCircleIcon />,
+  buttonText: "Add an item",
+  color: "primary",
 };

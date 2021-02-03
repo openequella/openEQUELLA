@@ -15,12 +15,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-exports.runProgress = function (p) {
-  return function (el) {
-    return function () {
-      if (el) {
-        $(el).progression({ Current: p });
-      }
-    };
-  };
+import { v4 } from "uuid";
+import type {
+  AjaxFileEntry,
+  UpdateEntry,
+  UploadFailed,
+} from "../tsrc/modules/FileUploaderModule";
+
+export const uploadedFileEntry: AjaxFileEntry = {
+  id: v4(),
+  name: "test2.png",
+  link: "https://localhost:8080/test/upload/test2",
+  preview: true,
+  editable: true,
+  children: [],
 };
+
+export const successfulUploadResponse: UpdateEntry = {
+  entry: uploadedFileEntry,
+  attachmentDuplicateInfo: {
+    displayWarningMessage: true,
+    warningMessageWebId: "P0C0",
+  },
+  response: "updateentry",
+};
+
+export const failedUploadResponse: UploadFailed = {
+  reason: "File is too large",
+  response: "uploadfailed",
+};
+
+export const files = [
+  new File(["test1"], "test1.png"),
+  new File(["test2"], "test2.png"),
+];

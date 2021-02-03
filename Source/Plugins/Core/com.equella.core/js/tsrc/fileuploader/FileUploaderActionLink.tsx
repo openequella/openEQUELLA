@@ -15,11 +15,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { checkHeartbeat } from "../modules/Heartbeat";
+import { Link } from "@material-ui/core";
+import * as React from "react";
 
-/**
- * Do heartbeat checking every 2 minutes.
- */
-export const startHeartbeat = () => {
-  setInterval(checkHeartbeat, 2 * 60 * 1000);
-};
+interface FileActionLinkProps {
+  /**
+   * Fired when clicking the link
+   */
+  onClick: () => void;
+  /**
+   * Text of the link
+   */
+  text: string;
+  /**
+   * ID of the link
+   */
+  id?: string;
+  /**
+   * Custom CSS class applied to the link
+   */
+  className?: string;
+}
+
+export const FileUploaderActionLink = ({
+  onClick,
+  text,
+  id,
+  className,
+}: FileActionLinkProps) => (
+  <Link
+    id={id}
+    className={className}
+    component="button"
+    onClick={onClick}
+    title={text}
+    underline="none"
+    color="primary"
+  >
+    {text}
+  </Link>
+);

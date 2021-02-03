@@ -16,13 +16,11 @@
   },
   "scripts": {
     "prepare": "cross-env-shell \"cd ../../../../../oeq-ts-rest-api && npm ci build\"",
-    "install": "cross-env-shell \"psc-package install && mkdirp ${npm_package_config_devlang} ${npm_package_config_buildlang}\"",
+    "install": "cross-env-shell \"mkdirp ${npm_package_config_devlang} ${npm_package_config_buildlang}\"",
     "clean": "rm -rf target/ output/ node_modules/ bower_components/ .cache/ .psc-package/ .pulp-cache/",
-    "compile:ps": "pulp build",
     "compile:langbundle-tool": "cross-env-shell tsc --types \"node\" --outDir ${npm_package_config_languageBundle} build-tools/BuildLanguageBundle.ts",
     "build:langbundle-tool": "cross-env-shell parcel build ${npm_package_config_languageBundle}/build-tools/BuildLanguageBundle.js --no-minify --no-source-maps --target node --out-dir=${npm_package_config_tools}",
     "build:langbundle": "cross-env-shell \"node ${npm_package_config_tools}/BuildLanguageBundle.js > ${npm_package_config_buildlang}/jsbundle.json\"",
-    "build:ps-uploadlist": "cross-env-shell \"purs bundle \"${npm_package_config_psglob}\" -m Uploads.UploadList --main Uploads.UploadList -o target/uploadlist.js\"",
     "build:bundle": "cross-env-shell parcel build --public-url=. --out-dir=${npm_package_config_dist} ${npm_package_config_parcelEntryFiles}",
     "build": "npm-run-all compile:* build:*",
     "dev": "npm run build && cross-env-shell parcel watch --no-autoinstall --public-url=. --out-dir=${npm_package_config_devjs} ${npm_package_config_parcelEntryFiles}",
@@ -56,6 +54,7 @@
     "react-router-dom": "5.2.0",
     "react-router-hash-link": "2.3.1",
     "react-visibility-sensor": "3.14.0",
+    "react-dropzone": "11.2.4",
     "runtypes": "5.0.1",
     "shallow-equal-object": "1.1.1",
     "sprintf-js": "1.1.2",
@@ -111,12 +110,9 @@
     "mkdirp": "1.0.4",
     "npm-run-all": "4.1.5",
     "parcel-bundler": "1.12.4",
-    "psc-package": "3.0.1",
-    "pulp": "12.4.2",
-    "purescript": "0.12.0",
     "rewire": "5.0.0",
     "storybook-react-router": "1.0.8",
-    "ts-jest": "26.4.4",
+    "ts-jest": "26.5.0",
     "typescript": "4.1.3"
   }
 }
