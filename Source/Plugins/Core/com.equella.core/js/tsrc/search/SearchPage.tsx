@@ -20,7 +20,7 @@ import * as OEQ from "@openequella/rest-api-client";
 
 import { isEqual, pick } from "lodash";
 import * as React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useReducer, useState } from "react";
 import { useHistory, useLocation } from "react-router";
 import { generateFromError } from "../api/errors";
 import { AppConfig } from "../AppConfig";
@@ -34,6 +34,12 @@ import {
 } from "../mainui/Template";
 import { getAdvancedSearchesFromServer } from "../modules/AdvancedSearchModule";
 import type { Collection } from "../modules/CollectionsModule";
+import {
+  buildSelectionSessionAdvancedSearchLink,
+  buildSelectionSessionRemoteSearchLink,
+  isSelectionSessionInStructured,
+  prepareDraggable,
+} from "../modules/LegacySelectionSessionModule";
 import { getRemoteSearchesFromServer } from "../modules/RemoteSearchModule";
 import {
   Classification,
@@ -50,12 +56,6 @@ import {
   SearchOptions,
 } from "../modules/SearchModule";
 import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
-import {
-  prepareDraggable,
-  buildSelectionSessionAdvancedSearchLink,
-  buildSelectionSessionRemoteSearchLink,
-  isSelectionSessionInStructured,
-} from "../modules/LegacySelectionSessionModule";
 import SearchBar from "../search/components/SearchBar";
 import { languageStrings } from "../util/langstrings";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
@@ -72,6 +72,14 @@ import {
   SearchResultList,
 } from "./components/SearchResultList";
 import StatusSelector from "./components/StatusSelector";
+
+// destructure strings import
+const { searchpage: searchStrings } = languageStrings;
+const {
+  title: dateModifiedSelectorTitle,
+  quickOptionDropdown,
+} = searchStrings.lastModifiedDateSelector;
+const { title: collectionSelectorTitle } = searchStrings.collectionSelector;
 
 /**
  * Type of search options that are specific to Search page presentation layer.
@@ -97,15 +105,50 @@ interface SearchPageHistoryState {
   filterExpansion: boolean;
 }
 
-const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
-  const searchStrings = languageStrings.searchpage;
-  const {
-    title: dateModifiedSelectorTitle,
-    quickOptionDropdown,
-  } = searchStrings.lastModifiedDateSelector;
-  const { title: collectionSelectorTitle } = searchStrings.collectionSelector;
+type Action =
+  | { type: "init" }
+  | { type: "search"; options: SearchPageOptions }
+  | {
+      type: "search-complete";
+      result: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>;
+      classifications: Classification[];
+    }
+  | { type: "error"; cause: Error };
 
+type State =
+  | { status: "initialising" }
+  | { status: "searching"; options: SearchPageOptions }
+  | {
+      status: "success";
+      result: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>;
+      classifications: Classification[];
+    }
+  | { status: "failure"; cause: Error };
+
+const reducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case "init":
+      return { status: "initialising" };
+    case "search":
+      return { status: "searching", options: action.options };
+    case "search-complete":
+      return {
+        status: "success",
+        result: action.result,
+        classifications: action.classifications,
+      };
+    case "error":
+      return { status: "failure", cause: action.cause };
+    default:
+      throw new TypeError("Unexpected action passed to reducer!");
+  }
+};
+
+const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const history = useHistory();
+  const location = useLocation();
+
+  const [state, dispatch] = useReducer(reducer, { status: "initialising" });
   const defaultSearchPageOptions: SearchPageOptions = {
     ...defaultSearchOptions,
     dateRangeQuickModeEnabled: true,
@@ -127,127 +170,139 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     searchPageHistoryState?.filterExpansion ??
       defaultSearchPageHistory.filterExpansion
   );
-  const [pagedSearchResult, setPagedSearchResult] = useState<
-    OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>
-  >(defaultPagedSearchResult);
-  const [showSpinner, setShowSpinner] = useState<boolean>(false);
-  const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
+  const [
+    showSearchCopiedSnackBar,
+    setShowSearchCopiedSnackBar,
+  ] = useState<boolean>(false);
   const [
     searchSettings,
     setSearchSettings,
   ] = useState<OEQ.SearchSettings.Settings>();
-  const [classifications, setClassifications] = useState<Classification[]>([]);
 
-  const location = useLocation();
+  const handleError = useCallback(
+    (error: Error) => {
+      dispatch({ type: "error", cause: error });
+    },
+    [dispatch]
+  );
 
-  const handleError = (error: Error) => {
-    updateTemplate(templateError(generateFromError(error)));
-  };
+  const search = useCallback(
+    (searchPageOptions: SearchPageOptions): void =>
+      dispatch({ type: "search", options: { ...searchPageOptions } }),
+    [dispatch]
+  );
 
   /**
-   * Update the page title and retrieve Search settings.
+   * Error display -> similar to onError hook, however in the context of reducer need to do manually.
    */
   useEffect(() => {
+    if (state.status === "failure") {
+      updateTemplate(templateError(generateFromError(state.cause)));
+    }
+  }, [state, updateTemplate]);
+
+  /**
+   * Page initialisation -> Update the page title, retrieve Search settings and trigger first
+   * search.
+   */
+  useEffect(() => {
+    if (state.status !== "initialising") {
+      return;
+    }
+
     updateTemplate((tp) => ({
       ...templateDefaults(searchStrings.title)(tp),
     }));
-    // Show spinner before calling API to retrieve Search settings.
-    setShowSpinner(true);
 
     Promise.all([
       getSearchSettingsFromServer(),
       // If the search options are available from browser history, ignore those in the query string.
-      searchPageHistoryState
+      (location.state as SearchPageHistoryState)
         ? Promise.resolve(undefined)
         : queryStringParamsToSearchOptions(location),
     ])
       .then(([searchSettings, queryStringSearchOptions]) => {
         setSearchSettings(searchSettings);
-        if (queryStringSearchOptions)
-          setSearchPageOptions({
-            ...queryStringSearchOptions,
-            dateRangeQuickModeEnabled: false,
-            sortOrder:
-              queryStringSearchOptions.sortOrder ??
-              searchSettings.defaultSearchSort,
-          });
-        else
-          setSearchPageOptions({
-            ...searchPageOptions,
-            sortOrder:
-              searchPageOptions.sortOrder ?? searchSettings.defaultSearchSort,
-          });
+        search(
+          queryStringSearchOptions
+            ? {
+                ...queryStringSearchOptions,
+                dateRangeQuickModeEnabled: false,
+                sortOrder:
+                  queryStringSearchOptions.sortOrder ??
+                  searchSettings.defaultSearchSort,
+              }
+            : {
+                ...searchPageOptions,
+                sortOrder:
+                  searchPageOptions.sortOrder ??
+                  searchSettings.defaultSearchSort,
+              }
+        );
       })
       .catch((e) => {
-        setShowSpinner(false);
         handleError(e);
       });
-  }, []);
+  }, [
+    dispatch,
+    handleError,
+    location,
+    search,
+    searchPageOptions,
+    state.status,
+    updateTemplate,
+  ]);
 
-  const isInitialSearch = useRef(true);
-  // Trigger a search when Search options get changed, but skip the initial values.
+  /**
+   * Searching -> Executing the search (including for classifications) and returning the results.
+   */
   useEffect(() => {
-    if (isInitialSearch.current) {
-      isInitialSearch.current = false;
-    } else {
-      search();
+    if (state.status === "searching") {
+      setSearchPageOptions(state.options);
+      Promise.all([
+        searchItems(state.options),
+        listClassifications(state.options),
+      ])
+        .then(
+          ([result, classifications]: [
+            OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>,
+            Classification[]
+          ]) => {
+            dispatch({
+              type: "search-complete",
+              result: { ...result },
+              classifications: [...classifications],
+            });
+            // Update history
+            history.replace({
+              ...history.location,
+              state: { searchPageOptions: state.options, filterExpansion },
+            });
+            // scroll back up to the top of the page
+            window.scrollTo(0, 0);
+          }
+        )
+        .catch(handleError);
     }
-  }, [searchPageOptions]);
-
-  useEffect(() => {
-    // If search page is open from a URL which has some query params, updating browser
-    // history for the initial search will produce wrong search option for the second
-    // render. This is because in the second render, we ignore the query param conversion
-    // as the history data has higher priority. So the end result is wrong search options
-    // are displayed in the page.
-    if (isInitialSearch && searchPageOptions === defaultSearchPageOptions) {
-      return;
-    }
-    history.replace({
-      ...history.location,
-      state: { searchPageOptions, filterExpansion },
-    });
-  }, [filterExpansion, pagedSearchResult]);
+  }, [dispatch, filterExpansion, handleError, history, state]);
 
   // In Selection Session, once a new search result is returned, make each
-  // new search result Item draggable.
+  // new search result Item draggable. Could probably merge into 'searching'
+  // effect, however this is only required while selection sessions still
+  // involve legacy content.
   useEffect(() => {
-    if (isSelectionSessionInStructured()) {
-      pagedSearchResult.results.forEach(({ uuid }) => {
+    if (state.status === "success" && isSelectionSessionInStructured()) {
+      state.result.results.forEach(({ uuid }) => {
         prepareDraggable(uuid);
       });
     }
-  }, [pagedSearchResult]);
-
-  // When Search options get changed, also update the Classification list.
-  useEffect(() => {
-    if (!isInitialSearch.current) {
-      listClassifications(searchPageOptions)
-        .then((classifications) => setClassifications(classifications))
-        .catch(handleError);
-    }
-  }, [searchPageOptions]);
-
-  /**
-   * Search items with specified search criteria and show a spinner when the search is in progress.
-   */
-  const search = (): void => {
-    setShowSpinner(true);
-    searchItems(searchPageOptions)
-      .then((items: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>) => {
-        setPagedSearchResult(items);
-        // scroll back up to the top of the page
-        window.scrollTo(0, 0);
-      })
-      .catch(handleError)
-      .finally(() => setShowSpinner(false));
-  };
+  }, [state]);
 
   const handleSortOrderChanged = (order: OEQ.SearchSettings.SortOrder) =>
     setSearchPageOptions({ ...searchPageOptions, sortOrder: order });
 
   const handleQueryChanged = (query: string) =>
-    setSearchPageOptions({
+    search({
       ...searchPageOptions,
       query: query,
       currentPage: 0,
@@ -255,7 +310,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     });
 
   const handleCollectionSelectionChanged = (collections: Collection[]) => {
-    setSearchPageOptions({
+    search({
       ...searchPageOptions,
       collections: collections,
       currentPage: 0,
@@ -286,23 +341,23 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   };
 
   const handlePageChanged = (page: number) =>
-    setSearchPageOptions({ ...searchPageOptions, currentPage: page });
+    search({ ...searchPageOptions, currentPage: page });
 
   const handleRowsPerPageChanged = (rowsPerPage: number) =>
-    setSearchPageOptions({
+    search({
       ...searchPageOptions,
       currentPage: 0,
       rowsPerPage: rowsPerPage,
     });
 
   const handleRawModeChanged = (rawMode: boolean) =>
-    setSearchPageOptions({ ...searchPageOptions, rawMode: rawMode });
+    search({ ...searchPageOptions, rawMode: rawMode });
 
   const handleQuickDateRangeModeChange = (
     quickDateRangeMode: boolean,
     dateRange?: DateRange
   ) =>
-    setSearchPageOptions({
+    search({
       ...searchPageOptions,
       dateRangeQuickModeEnabled: quickDateRangeMode,
       // When the mode is changed, the date range may also need to be updated.
@@ -312,28 +367,19 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     });
 
   const handleLastModifiedDateRangeChange = (dateRange?: DateRange) =>
-    setSearchPageOptions({
+    search({
       ...searchPageOptions,
       lastModifiedDateRange: dateRange,
       selectedCategories: undefined,
     });
 
   const handleClearSearchOptions = () => {
-    setSearchPageOptions({
+    search({
       ...defaultSearchPageOptions,
       sortOrder: searchSettings?.defaultSearchSort,
     });
     setFilterExpansion(false);
   };
-
-  const copySearchInfoSnackbar = (
-    <MessageInfo
-      open={showSnackBar}
-      onClose={() => setShowSnackBar(false)}
-      title={searchStrings.shareSearchConfirmationText}
-      variant="success"
-    />
-  );
 
   const handleCopySearch = () => {
     //base institution urls have a trailing / that we need to get rid of
@@ -345,34 +391,34 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     navigator.clipboard
       .writeText(searchUrl)
       .then(() => {
-        setShowSnackBar(true);
+        setShowSearchCopiedSnackBar(true);
       })
       .catch(() => handleError);
   };
 
   const handleOwnerChange = (owner: OEQ.UserQuery.UserDetails) =>
-    setSearchPageOptions({
+    search({
       ...searchPageOptions,
       owner: { ...owner },
       selectedCategories: undefined,
     });
 
   const handleOwnerClear = () =>
-    setSearchPageOptions({
+    search({
       ...searchPageOptions,
       owner: undefined,
       selectedCategories: undefined,
     });
 
   const handleStatusChange = (status: OEQ.Common.ItemStatus[]) =>
-    setSearchPageOptions({
+    search({
       ...searchPageOptions,
       status: [...status],
       selectedCategories: undefined,
     });
 
   const handleSearchAttachmentsChange = (searchAttachments: boolean) => {
-    setSearchPageOptions({
+    search({
       ...searchPageOptions,
       searchAttachments: searchAttachments,
     });
@@ -382,14 +428,16 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     selectedCategories: SelectedCategories[]
   ) => {
     const getSchemaNode = (id: number) => {
-      const node = classifications.find((c) => c.id === id)?.schemaNode;
+      const node =
+        state.status === "success" &&
+        state.classifications.find((c) => c.id === id)?.schemaNode;
       if (!node) {
         throw new Error(`Unable to find schema node for classification ${id}.`);
       }
       return node;
     };
 
-    setSearchPageOptions({
+    search({
       ...searchPageOptions,
       selectedCategories: selectedCategories.map((c) => ({
         ...c,
@@ -488,11 +536,47 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     },
   ];
 
+  const Classifications = ({
+    classifications,
+    onChange,
+    currentSelections,
+  }: {
+    classifications: Classification[];
+    onChange: (selectedCategories: SelectedCategories[]) => void;
+    currentSelections?: SelectedCategories[];
+  }) => (
+    <Grid item>
+      <Card>
+        <CardContent>
+          <Typography variant="h5">
+            {languageStrings.searchpage.categorySelector.title}
+          </Typography>
+          <CategorySelector
+            classifications={classifications}
+            onSelectedCategoriesChange={onChange}
+            selectedCategories={currentSelections}
+          />
+        </CardContent>
+      </Card>
+    </Grid>
+  );
+
+  const renderClassifications = () =>
+    state.status === "success" &&
+    state.classifications.length > 0 &&
+    state.classifications.some((c) => c.categories.length > 0) ? (
+      <Classifications
+        classifications={state.classifications}
+        onChange={handleSelectedCategoriesChange}
+        currentSelections={searchPageOptions.selectedCategories}
+      />
+    ) : null;
+
   const {
     available: totalCount,
     highlight: highlights,
     results: searchResults,
-  } = pagedSearchResult;
+  } = state.status === "success" ? state.result : defaultPagedSearchResult;
   return (
     <>
       <Grid container spacing={2}>
@@ -504,12 +588,15 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 rawMode={searchPageOptions.rawMode}
                 onQueryChange={handleQueryChanged}
                 onRawModeChange={handleRawModeChanged}
-                doSearch={search}
+                doSearch={() => search(searchPageOptions)}
               />
             </Grid>
             <Grid item xs={12}>
               <SearchResultList
-                showSpinner={showSpinner}
+                showSpinner={
+                  state.status === "initialising" ||
+                  state.status === "searching"
+                }
                 paginationProps={{
                   count: totalCount,
                   currentPage: searchPageOptions.currentPage,
@@ -541,31 +628,16 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 showFilterIcon={areCollapsibleFiltersSet()}
               />
             </Grid>
-            {classifications.length > 0 &&
-              classifications.some((c) => c.categories.length > 0) && (
-                <Grid item>
-                  <Card>
-                    <CardContent>
-                      <Typography variant="h5">
-                        {languageStrings.searchpage.categorySelector.title}
-                      </Typography>
-                      <CategorySelector
-                        classifications={classifications}
-                        onSelectedCategoriesChange={
-                          handleSelectedCategoriesChange
-                        }
-                        selectedCategories={
-                          searchPageOptions.selectedCategories
-                        }
-                      />
-                    </CardContent>
-                  </Card>
-                </Grid>
-              )}
+            {renderClassifications()}
           </Grid>
         </Grid>
       </Grid>
-      {copySearchInfoSnackbar}
+      <MessageInfo
+        open={showSearchCopiedSnackBar}
+        onClose={() => setShowSearchCopiedSnackBar(false)}
+        title={searchStrings.shareSearchConfirmationText}
+        variant="success"
+      />
     </>
   );
 };
