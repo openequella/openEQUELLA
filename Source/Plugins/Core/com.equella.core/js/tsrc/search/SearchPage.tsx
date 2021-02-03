@@ -299,7 +299,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   }, [state]);
 
   const handleSortOrderChanged = (order: OEQ.SearchSettings.SortOrder) =>
-    setSearchPageOptions({ ...searchPageOptions, sortOrder: order });
+    search({ ...searchPageOptions, sortOrder: order });
 
   const handleQueryChanged = (query: string) =>
     search({
