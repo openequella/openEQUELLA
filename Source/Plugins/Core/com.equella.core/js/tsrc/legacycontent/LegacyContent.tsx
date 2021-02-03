@@ -139,6 +139,12 @@ export function isChangeRoute(
   return (response as ChangeRoute).route !== undefined;
 }
 
+export function isExternalRedirect(
+  response: SubmitResponse
+): response is ExternalRedirect {
+  return (response as ExternalRedirect).href !== undefined;
+}
+
 function submitRequest(path: string, vals: StateData): Promise<SubmitResponse> {
   return Axios.post<SubmitResponse>(
     "api/content/submit" + encodeURI(path),

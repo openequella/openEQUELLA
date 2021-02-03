@@ -25,9 +25,9 @@ import {
   SelectionSessionInfo,
 } from "../AppConfig";
 import {
-  ChangeRoute,
   ExternalRedirect,
   isChangeRoute,
+  isExternalRedirect,
   isPageContent,
   LegacyContentResponse,
   SubmitResponse,
@@ -292,15 +292,11 @@ const updateSelectionSummary = (legacyContent: LegacyContentResponse) => {
 };
 
 /**
- * Navigate to Selection Session Checkout page. This function is mostly called
- * when Selection Session is in 'selectOrAdd'.
- *
- * Due to no available React Routes in the context of using new Search UI in
- * Selection Session, this function concatenates the route with base URL and
- * then uses 'window.location.href' to achieve the navigation.
+ * Call this function in cases where after resources are selected we need to navigate to either
+ * another oEQ page(e.g. Checkout page) or an external LMS page.
+ * @param href URL of a page which the browser should navigate to
  */
-const navigateToCheckout = ({ route }: ChangeRoute) =>
-  (window.location.href = `${AppConfig.baseUrl}${route}`);
+const leaveSearchPage = (href: string) => (window.location.href = href);
 
 /**
  * Build an object of SelectionSessionPostData for 'structured'.
@@ -410,7 +406,7 @@ export const selectResourceForSelectOrAdd = (
   );
   const callback = (response: SubmitResponse) => {
     if (isChangeRoute(response)) {
-      navigateToCheckout(response);
+      leaveSearchPage(`${AppConfig.baseUrl}${response.route}`);
     } else if (isPageContent(response)) {
       updateSelectionSummary(response);
     }
@@ -437,8 +433,17 @@ export const selectResourceForSkinny = (
     attachmentUUIDs.length > 0 ? attachmentUUIDs[0] : undefined
   );
 
-  const callback = (response: ExternalRedirect) => {
-    window.location.href = response.href;
+  const callback = (response: SubmitResponse) => {
+    if (isPageContent(response)) {
+      // What's in 'html.body' is a form which should be submitted by the returned
+      // script. So the approach is to firstly add the form into DOM and then execute the
+      // script. Once the two steps are done, Selection session should be closed and the
+      // iframe should return to whatever LMS page that Selection session was open from.
+      $("#mainDiv").append(response.html["body"]);
+      window.eval(response.script);
+    } else if (isExternalRedirect(response)) {
+      leaveSearchPage(response.href);
+    }
   };
 
   return submitSelection<ExternalRedirect>(
