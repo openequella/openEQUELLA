@@ -22,7 +22,7 @@ beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
 
 describe('Retrieve Search settings', () => {
-  const defaultSearchSettings: OEQ.SearchSettings.SearchSettings = {
+  const defaultSearchSettings: OEQ.SearchSettings.Settings = {
     searchingShowNonLiveCheckbox: false,
     searchingDisableGallery: false,
     searchingDisableVideos: false,
@@ -45,7 +45,7 @@ describe('Retrieve Search settings', () => {
   });
 
   it('updates general search settings', async () => {
-    await OEQ.SearchSettings.putSearchSettings(TC.API_PATH, {
+    await OEQ.SearchSettings.updateSearchSettings(TC.API_PATH, {
       ...defaultSearchSettings,
       defaultSearchSort: 'RATING',
     });
@@ -59,7 +59,7 @@ describe('Retrieve Search settings', () => {
   });
 
   it('updates cloud search settings', async () => {
-    await OEQ.SearchSettings.putCloudSettings(TC.API_PATH, {
+    await OEQ.SearchSettings.updateCloudSettings(TC.API_PATH, {
       ...defaultCloudSettings,
       disabled: true,
     });

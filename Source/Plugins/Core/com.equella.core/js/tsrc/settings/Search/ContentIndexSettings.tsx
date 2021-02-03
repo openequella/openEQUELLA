@@ -47,11 +47,11 @@ const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
   const [
     searchSettings,
     setSearchSettings,
-  ] = React.useState<OEQ.SearchSettings.SearchSettings>(defaultSearchSettings);
+  ] = React.useState<OEQ.SearchSettings.Settings>(defaultSearchSettings);
   const [
     initialSearchSettings,
     setInitialSearchSettings,
-  ] = React.useState<OEQ.SearchSettings.SearchSettings>(defaultSearchSettings);
+  ] = React.useState<OEQ.SearchSettings.Settings>(defaultSearchSettings);
   const [loadSettings, setLoadSettings] = React.useState<boolean>(true);
   const [showSuccess, setShowSuccess] = React.useState<boolean>(false);
   const [disableSettings, setDisableSettings] = React.useState<boolean>(false);
@@ -83,7 +83,7 @@ const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
 
   React.useEffect(() => {
     getSearchSettingsFromServer()
-      .then((settings: OEQ.SearchSettings.SearchSettings) => {
+      .then((settings: OEQ.SearchSettings.Settings) => {
         setSearchSettings(settings);
         setInitialSearchSettings(settings);
       })

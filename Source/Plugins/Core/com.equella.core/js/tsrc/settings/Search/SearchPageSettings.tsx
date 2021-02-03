@@ -48,7 +48,7 @@ const SearchPageSettings = ({ updateTemplate }: TemplateUpdateProps) => {
   const [
     searchSettings,
     setSearchSettings,
-  ] = React.useState<OEQ.SearchSettings.SearchSettings>(defaultSearchSettings);
+  ] = React.useState<OEQ.SearchSettings.Settings>(defaultSearchSettings);
   const [
     cloudSettings,
     setCloudSettings,
@@ -59,7 +59,7 @@ const SearchPageSettings = ({ updateTemplate }: TemplateUpdateProps) => {
   const [
     initialSearchSettings,
     setInitialSearchSettings,
-  ] = React.useState<OEQ.SearchSettings.SearchSettings>(defaultSearchSettings);
+  ] = React.useState<OEQ.SearchSettings.Settings>(defaultSearchSettings);
   const [
     initialCloudSettings,
     setInitialCloudSettings,
@@ -89,7 +89,7 @@ const SearchPageSettings = ({ updateTemplate }: TemplateUpdateProps) => {
 
   React.useEffect(() => {
     getSearchSettingsFromServer()
-      .then((settings: OEQ.SearchSettings.SearchSettings) => {
+      .then((settings: OEQ.SearchSettings.Settings) => {
         setSearchSettings(settings);
         setInitialSearchSettings(settings);
       })

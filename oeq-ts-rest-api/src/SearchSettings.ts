@@ -35,7 +35,7 @@ export const SortOrderRunTypes = Union(
 
 export type SortOrder = Static<typeof SortOrderRunTypes>;
 
-export interface SearchSettings {
+export interface Settings {
   searchingShowNonLiveCheckbox: boolean;
   searchingDisableGallery: boolean;
   searchingDisableVideos: boolean;
@@ -61,12 +61,9 @@ export const CLOUD_SETTINGS_URL = `${SEARCH_SETTINGS_URL}/cloud`;
  * Retrieve the general Search settings for OEQ.
  * @param apiBasePath Base URI to the oEQ institution and API
  */
-export const getSearchSettings = (
-  apiBasePath: string
-): Promise<SearchSettings> =>
-  GET<SearchSettings>(
-    apiBasePath + SEARCH_SETTINGS_URL,
-    (data): data is SearchSettings => is<SearchSettings>(data)
+export const getSearchSettings = (apiBasePath: string): Promise<Settings> =>
+  GET<Settings>(apiBasePath + SEARCH_SETTINGS_URL, (data): data is Settings =>
+    is<Settings>(data)
   );
 
 /**
@@ -74,11 +71,11 @@ export const getSearchSettings = (
  * @param apiBasePath Base URI to the oEQ institution and API
  * @param settings New Search settings
  */
-export const putSearchSettings = (
+export const updateSearchSettings = (
   apiBasePath: string,
-  settings: SearchSettings
+  settings: Settings
 ): Promise<void> =>
-  PUT<SearchSettings, void>(apiBasePath + SEARCH_SETTINGS_URL, settings);
+  PUT<Settings, void>(apiBasePath + SEARCH_SETTINGS_URL, settings);
 
 /**
  * Retrieve the general Cloud settings for OEQ.
@@ -95,7 +92,7 @@ export const getCloudSettings = (apiBasePath: string): Promise<CloudSettings> =>
  * @param apiBasePath Base URI to the oEQ institution and API
  * @param settings New Cloud settings
  */
-export const putCloudSettings = (
+export const updateCloudSettings = (
   apiBasePath: string,
   settings: CloudSettings
 ): Promise<void> =>

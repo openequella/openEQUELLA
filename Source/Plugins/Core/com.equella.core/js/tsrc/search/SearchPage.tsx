@@ -135,7 +135,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [
     searchSettings,
     setSearchSettings,
-  ] = useState<OEQ.SearchSettings.SearchSettings>();
+  ] = useState<OEQ.SearchSettings.Settings>();
   const [classifications, setClassifications] = useState<Classification[]>([]);
 
   const location = useLocation();

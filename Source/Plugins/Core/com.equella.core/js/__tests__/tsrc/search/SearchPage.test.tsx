@@ -464,8 +464,8 @@ describe("Hide Refine Search controls", () => {
     async (
       testName: string,
       getSelector: () => HTMLElement | null,
-      disableSelector: OEQ.SearchSettings.SearchSettings,
-      enableSelector: OEQ.SearchSettings.SearchSettings
+      disableSelector: OEQ.SearchSettings.Settings,
+      enableSelector: OEQ.SearchSettings.Settings
     ) => {
       // Explicitly enable selectors.
       searchSettingPromise.mockResolvedValueOnce(enableSelector);

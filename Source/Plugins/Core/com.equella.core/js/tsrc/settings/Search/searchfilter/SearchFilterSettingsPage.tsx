@@ -85,13 +85,13 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [
     searchSettings,
     setSearchSettings,
-  ] = useState<OEQ.SearchSettings.SearchSettings>(defaultSearchSettings);
+  ] = useState<OEQ.SearchSettings.Settings>(defaultSearchSettings);
 
   // Used to record the initial Search settings and compare if values are changed or not when saving.
   const [
     initialSearchSettings,
     setInitialSearchSettings,
-  ] = useState<OEQ.SearchSettings.SearchSettings>(defaultSearchSettings);
+  ] = useState<OEQ.SearchSettings.Settings>(defaultSearchSettings);
 
   // mimeTypeFilters contains all filters displayed in the list, including those saved in the Server and visually added/deleted.
   const [mimeTypeFilters, setMimeTypeFilters] = useState<MimeTypeFilter[]>([]);
