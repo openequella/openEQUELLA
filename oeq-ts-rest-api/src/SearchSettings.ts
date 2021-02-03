@@ -19,11 +19,13 @@ import { Literal, Static, Union } from 'runtypes';
 import { is } from 'typescript-is';
 import { GET, PUT } from './AxiosInstance';
 
-export enum ContentIndex {
-  OPTION_NONE = 0,
-  OPTION_WEBPAGE = 1,
-  OPTION_SECONDARY = 2,
-}
+export const ContentIndexLevelRunTypes = Union(
+  Literal(0),
+  Literal(1),
+  Literal(2)
+);
+
+export type ContentIndexLevel = Static<typeof ContentIndexLevelRunTypes>;
 
 export const SortOrderRunTypes = Union(
   Literal('RANK'),
@@ -44,7 +46,7 @@ export interface Settings {
   fileCountDisabled: boolean;
   defaultSearchSort?: SortOrder;
   authenticateFeedsByDefault: boolean;
-  urlLevel: ContentIndex;
+  urlLevel: ContentIndexLevel;
   titleBoost: number;
   descriptionBoost: number;
   attachmentBoost: number;

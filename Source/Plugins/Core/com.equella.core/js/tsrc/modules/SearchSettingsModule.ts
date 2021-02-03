@@ -44,7 +44,7 @@ export const defaultSearchSettings: OEQ.SearchSettings.Settings = {
   defaultSearchSort: "RANK",
   authenticateFeedsByDefault: false,
 
-  urlLevel: OEQ.SearchSettings.ContentIndex.OPTION_NONE,
+  urlLevel: 0,
   titleBoost: 0,
   descriptionBoost: 0,
   attachmentBoost: 0,

@@ -27,8 +27,8 @@ import * as OEQ from "@openequella/rest-api-client";
 
 export interface WebPageIndexSettingProps {
   disabled: boolean;
-  value: OEQ.SearchSettings.ContentIndex;
-  setValue: (indexOption: OEQ.SearchSettings.ContentIndex) => void;
+  value: OEQ.SearchSettings.ContentIndexLevel;
+  setValue: (indexOption: OEQ.SearchSettings.ContentIndexLevel) => void;
 }
 export default function WebPageIndexSetting({
   disabled,
@@ -43,20 +43,18 @@ export default function WebPageIndexSetting({
         SelectDisplayProps={{ id: "_contentIndex" }}
         disabled={disabled}
         onChange={(event) =>
-          setValue(event.target.value as OEQ.SearchSettings.ContentIndex)
+          setValue(event.target.value as OEQ.SearchSettings.ContentIndexLevel)
         }
         variant="outlined"
         value={value}
         autoWidth
         input={<OutlinedInput labelWidth={0} id="_contentIndex" />}
       >
-        <MenuItem value={OEQ.SearchSettings.ContentIndex.OPTION_NONE}>
-          {contentIndexSettingsStrings.option.none}
-        </MenuItem>
-        <MenuItem value={OEQ.SearchSettings.ContentIndex.OPTION_WEBPAGE}>
+        <MenuItem value={0}>{contentIndexSettingsStrings.option.none}</MenuItem>
+        <MenuItem value={1}>
           {contentIndexSettingsStrings.option.webPage}
         </MenuItem>
-        <MenuItem value={OEQ.SearchSettings.ContentIndex.OPTION_SECONDARY}>
+        <MenuItem value={2}>
           {contentIndexSettingsStrings.option.secondaryPage}
         </MenuItem>
       </Select>
