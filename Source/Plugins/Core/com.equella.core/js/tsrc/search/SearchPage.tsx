@@ -22,7 +22,6 @@ import { isEqual, pick } from "lodash";
 import * as React from "react";
 import { useCallback, useEffect, useReducer, useState } from "react";
 import { useHistory, useLocation } from "react-router";
-import { Static } from "runtypes";
 import { generateFromError } from "../api/errors";
 import { AppConfig } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
@@ -56,11 +55,7 @@ import {
   searchItems,
   SearchOptions,
 } from "../modules/SearchModule";
-import {
-  getSearchSettingsFromServer,
-  SearchSettings,
-  SortOrder,
-} from "../modules/SearchSettingsModule";
+import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
 import SearchBar from "../search/components/SearchBar";
 import { languageStrings } from "../util/langstrings";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
@@ -179,7 +174,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     showSearchCopiedSnackBar,
     setShowSearchCopiedSnackBar,
   ] = useState<boolean>(false);
-  const [searchSettings, setSearchSettings] = useState<SearchSettings>();
+  const [
+    searchSettings,
+    setSearchSettings,
+  ] = useState<OEQ.SearchSettings.Settings>();
 
   const handleError = useCallback(
     (error: Error) => {
@@ -300,7 +298,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     }
   }, [state]);
 
-  const handleSortOrderChanged = (order: Static<typeof SortOrder>) =>
+  const handleSortOrderChanged = (order: OEQ.SearchSettings.SortOrder) =>
     search({ ...searchPageOptions, sortOrder: order });
 
   const handleQueryChanged = (query: string) =>

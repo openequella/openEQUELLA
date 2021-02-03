@@ -15,94 +15,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Axios from "axios";
-import { Literal, Static, Union } from "runtypes";
-import { fromAxiosError } from "../api/errors";
-import { templateError, TemplateUpdate } from "../mainui/Template";
+import { API_BASE_URL } from "../AppConfig";
+import * as OEQ from "@openequella/rest-api-client";
 
-export interface SearchSettings {
-  searchingShowNonLiveCheckbox: boolean;
-  searchingDisableGallery: boolean;
-  searchingDisableVideos: boolean;
-  searchingDisableOwnerFilter: boolean;
-  searchingDisableDateModifiedFilter: boolean;
-  fileCountDisabled: boolean;
-  defaultSearchSort: Static<typeof SortOrder>;
-  authenticateFeedsByDefault: boolean;
+export const getSearchSettingsFromServer = (): Promise<OEQ.SearchSettings.Settings> =>
+  OEQ.SearchSettings.getSearchSettings(API_BASE_URL);
 
-  urlLevel: ContentIndex;
-  titleBoost: number;
-  descriptionBoost: number;
-  attachmentBoost: number;
-}
+export const saveSearchSettingsToServer = (
+  settings: OEQ.SearchSettings.Settings
+): Promise<void> =>
+  OEQ.SearchSettings.updateSearchSettings(API_BASE_URL, settings);
 
-export interface CloudSettings {
-  disabled: boolean;
-}
+export const getCloudSettingsFromServer = (): Promise<OEQ.SearchSettings.CloudSettings> =>
+  OEQ.SearchSettings.getCloudSettings(API_BASE_URL);
 
-export const SortOrder = Union(
-  Literal("RANK"),
-  Literal("DATEMODIFIED"),
-  Literal("DATECREATED"),
-  Literal("NAME"),
-  Literal("RATING")
-);
+export const saveCloudSettingsToServer = (
+  settings: OEQ.SearchSettings.CloudSettings
+): Promise<void> =>
+  OEQ.SearchSettings.updateCloudSettings(API_BASE_URL, settings);
 
-export enum ContentIndex {
-  OPTION_NONE = 0,
-  OPTION_WEBPAGE = 1,
-  OPTION_SECONDARY = 2,
-}
-
-export const SEARCH_SETTINGS_URL = "api/settings/search";
-export const CLOUD_SETTINGS_URL = `${SEARCH_SETTINGS_URL}/cloud`;
-
-export const getSearchSettingsFromServer = () =>
-  new Promise(
-    (
-      resolve: (settings: SearchSettings) => void,
-      reject: (error: TemplateUpdate) => void
-    ) => {
-      Axios.get(SEARCH_SETTINGS_URL)
-        .then((response) => resolve(response.data))
-        .catch((error) => reject(templateError(fromAxiosError(error))));
-    }
-  );
-
-export const saveSearchSettingsToServer = (settings: SearchSettings) =>
-  new Promise<void>(
-    (resolve: () => void, reject: (error: TemplateUpdate) => void) => {
-      Axios.put(SEARCH_SETTINGS_URL, settings)
-        .then(() => {
-          resolve();
-        })
-        .catch((error) => reject(templateError(fromAxiosError(error))));
-    }
-  );
-export const saveCloudSettingsToServer = (settings: CloudSettings) =>
-  new Promise<void>(
-    (resolve: () => void, reject: (error: TemplateUpdate) => void) => {
-      Axios.put(CLOUD_SETTINGS_URL, settings)
-        .then(() => {
-          resolve();
-        })
-        .catch((error) => reject(templateError(fromAxiosError(error))));
-    }
-  );
-
-export const getCloudSettingsFromServer = () =>
-  new Promise(
-    (
-      resolve: (settings: CloudSettings) => void,
-      reject: (error: TemplateUpdate) => void
-    ) => {
-      Axios.get(CLOUD_SETTINGS_URL)
-        .then((response) => resolve(response.data))
-        .catch((error) => reject(templateError(fromAxiosError(error))));
-    }
-  );
-
-export const defaultSearchSettings: SearchSettings = {
+export const defaultSearchSettings: OEQ.SearchSettings.Settings = {
   searchingShowNonLiveCheckbox: false,
   searchingDisableGallery: false,
   searchingDisableVideos: false,
