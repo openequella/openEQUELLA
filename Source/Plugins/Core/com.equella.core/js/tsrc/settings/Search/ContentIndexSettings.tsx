@@ -54,11 +54,11 @@ const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
   ] = React.useState<OEQ.SearchSettings.SearchSettings>(defaultSearchSettings);
   const [loadSettings, setLoadSettings] = React.useState<boolean>(true);
   const [showSuccess, setShowSuccess] = React.useState<boolean>(false);
-  const [showError, setShowError] = React.useState<boolean>(false);
+  const [disableSettings, setDisableSettings] = React.useState<boolean>(false);
 
   const setError = useError((error: Error) => {
     updateTemplate(templateError(generateFromError(error)));
-    setShowError(true);
+    setDisableSettings(true);
   });
 
   const boostVals: Mark[] = [
@@ -129,7 +129,7 @@ const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
               secondaryText={contentIndexSettingsStrings.description}
               control={
                 <WebPageIndexSetting
-                  disabled={showError}
+                  disabled={disableSettings}
                   value={searchSettings.urlLevel}
                   setValue={(level) =>
                     setSearchSettings({
@@ -151,7 +151,7 @@ const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
               divider
               control={
                 <Slider
-                  disabled={showError}
+                  disabled={disableSettings}
                   marks={boostVals}
                   min={0}
                   max={7}
@@ -169,7 +169,7 @@ const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
               divider
               control={
                 <Slider
-                  disabled={showError}
+                  disabled={disableSettings}
                   marks={boostVals}
                   min={0}
                   max={7}
@@ -186,7 +186,7 @@ const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
               primaryText={contentIndexSettingsStrings.attachmentBoostingTitle}
               control={
                 <Slider
-                  disabled={showError}
+                  disabled={disableSettings}
                   marks={boostVals}
                   min={0}
                   max={7}

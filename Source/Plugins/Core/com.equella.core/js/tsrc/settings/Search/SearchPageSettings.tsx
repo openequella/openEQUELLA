@@ -69,11 +69,11 @@ const SearchPageSettings = ({ updateTemplate }: TemplateUpdateProps) => {
 
   const [loadSettings, setLoadSettings] = React.useState<boolean>(true);
   const [showSuccess, setShowSuccess] = React.useState<boolean>(false);
-  const [showError, setShowError] = React.useState<boolean>(false);
+  const [disableSettings, setDisableSettings] = React.useState<boolean>(false);
 
   const setError = useError((error: Error) => {
     updateTemplate(templateError(generateFromError(error)));
-    setShowError(true);
+    setDisableSettings(true);
   });
 
   const changesUnsaved =
@@ -101,14 +101,14 @@ const SearchPageSettings = ({ updateTemplate }: TemplateUpdateProps) => {
           }
         )
       )
-      .catch((error: Error) => setError(error));
+      .catch(setError);
   }, [loadSettings, setError]);
 
   function handleSubmitButton() {
     saveSearchSettingsToServer(searchSettings)
       .then(() => saveCloudSettingsToServer(cloudSettings))
       .then(() => setShowSuccess(true))
-      .catch((error: Error) => setError(error))
+      .catch(setError)
       .finally(() => setLoadSettings(!loadSettings));
   }
 
@@ -130,7 +130,7 @@ const SearchPageSettings = ({ updateTemplate }: TemplateUpdateProps) => {
               secondaryText={searchPageSettingsStrings.defaultSortOrderDesc}
               control={
                 <DefaultSortOrderSetting
-                  disabled={showError}
+                  disabled={disableSettings}
                   value={searchSettings.defaultSearchSort}
                   setValue={(order) =>
                     setSearchSettings({
@@ -155,7 +155,7 @@ const SearchPageSettings = ({ updateTemplate }: TemplateUpdateProps) => {
                       searchingShowNonLiveCheckbox: value,
                     })
                   }
-                  disabled={showError}
+                  disabled={disableSettings}
                   id="_showNonLiveCheckbox"
                 />
               }
@@ -174,7 +174,7 @@ const SearchPageSettings = ({ updateTemplate }: TemplateUpdateProps) => {
                       authenticateFeedsByDefault: value,
                     })
                   }
-                  disabled={showError}
+                  disabled={disableSettings}
                   id="_authenticateByDefault"
                 />
               }
@@ -189,7 +189,7 @@ const SearchPageSettings = ({ updateTemplate }: TemplateUpdateProps) => {
                   setValue={(value) =>
                     setCloudSettings({ ...cloudSettings, disabled: value })
                   }
-                  disabled={showError}
+                  disabled={disableSettings}
                   id="cs_dc"
                 />
               }
@@ -214,7 +214,7 @@ const SearchPageSettings = ({ updateTemplate }: TemplateUpdateProps) => {
                       searchingDisableGallery: value,
                     })
                   }
-                  disabled={showError}
+                  disabled={disableSettings}
                   id="_disableGallery"
                 />
               }
@@ -232,7 +232,7 @@ const SearchPageSettings = ({ updateTemplate }: TemplateUpdateProps) => {
                       searchingDisableVideos: value,
                     })
                   }
-                  disabled={showError}
+                  disabled={disableSettings}
                   id="_disableVideos"
                 />
               }
@@ -249,7 +249,7 @@ const SearchPageSettings = ({ updateTemplate }: TemplateUpdateProps) => {
                       fileCountDisabled: value,
                     })
                   }
-                  disabled={showError}
+                  disabled={disableSettings}
                   id="_disableFileCount"
                 />
               }

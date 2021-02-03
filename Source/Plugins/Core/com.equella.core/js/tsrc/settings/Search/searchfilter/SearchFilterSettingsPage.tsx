@@ -144,7 +144,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
           setSearchSettings(settings);
           setInitialSearchSettings(settings);
         })
-        .catch((error: Error) => setError(error));
+        .catch(setError);
     };
 
     /**
@@ -158,7 +158,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
           setDeletedMimeTypeFilters([]);
           setChangedMimeTypeFilters([]);
         })
-        .catch((error: Error) => setError(error));
+        .catch(setError);
     };
 
     getSearchSettings();
