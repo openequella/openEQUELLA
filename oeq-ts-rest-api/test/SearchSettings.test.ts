@@ -21,49 +21,54 @@ import * as TC from './TestConfig';
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
 
-describe('Retrieve Search settings', () => {
-  const defaultSearchSettings: OEQ.SearchSettings.Settings = {
-    searchingShowNonLiveCheckbox: false,
-    searchingDisableGallery: false,
-    searchingDisableVideos: false,
-    searchingDisableOwnerFilter: false,
-    searchingDisableDateModifiedFilter: false,
-    fileCountDisabled: false,
-    authenticateFeedsByDefault: false,
-    urlLevel: 0,
-    titleBoost: 5,
-    descriptionBoost: 3,
-    attachmentBoost: 2,
-  };
-  const defaultCloudSettings: OEQ.SearchSettings.CloudSettings = {
-    disabled: false,
-  };
+describe('SearchSettings', () => {
+  describe('General settings', () => {
+    const defaultSearchSettings: OEQ.SearchSettings.Settings = {
+      searchingShowNonLiveCheckbox: false,
+      searchingDisableGallery: false,
+      searchingDisableVideos: false,
+      searchingDisableOwnerFilter: false,
+      searchingDisableDateModifiedFilter: false,
+      fileCountDisabled: false,
+      authenticateFeedsByDefault: false,
+      urlLevel: 0,
+      titleBoost: 5,
+      descriptionBoost: 3,
+      attachmentBoost: 2,
+    };
 
-  it('retrieves general search settings', async () => {
-    const settings = await OEQ.SearchSettings.getSearchSettings(TC.API_PATH);
-    expect(settings).toBeTruthy();
-  });
-
-  it('updates general search settings', async () => {
-    await OEQ.SearchSettings.updateSearchSettings(TC.API_PATH, {
-      ...defaultSearchSettings,
-      defaultSearchSort: 'RATING',
+    it('retrieves general Search settings in an institution', async () => {
+      const settings = await OEQ.SearchSettings.getSearchSettings(TC.API_PATH);
+      expect(settings).toBeTruthy();
     });
-    const settings = await OEQ.SearchSettings.getSearchSettings(TC.API_PATH);
-    expect(settings.defaultSearchSort).toEqual('RATING');
-  });
 
-  it('retrieves cloud search settings', async () => {
-    const settings = await OEQ.SearchSettings.getCloudSettings(TC.API_PATH);
-    expect(settings).not.toBeNull();
-  });
-
-  it('updates cloud search settings', async () => {
-    await OEQ.SearchSettings.updateCloudSettings(TC.API_PATH, {
-      ...defaultCloudSettings,
-      disabled: true,
+    it('updates general search settings in an institution', async () => {
+      await OEQ.SearchSettings.updateSearchSettings(TC.API_PATH, {
+        ...defaultSearchSettings,
+        defaultSearchSort: 'RATING',
+      });
+      const settings = await OEQ.SearchSettings.getSearchSettings(TC.API_PATH);
+      expect(settings.defaultSearchSort).toEqual('RATING');
     });
-    const settings = await OEQ.SearchSettings.getCloudSettings(TC.API_PATH);
-    expect(settings.disabled).toBe(true);
+  });
+
+  describe('Cloud settings', () => {
+    const defaultCloudSettings: OEQ.SearchSettings.CloudSettings = {
+      disabled: false,
+    };
+
+    it('retrieves Cloud Search settings in an institution', async () => {
+      const settings = await OEQ.SearchSettings.getCloudSettings(TC.API_PATH);
+      expect(settings).not.toBeNull();
+    });
+
+    it('updates Cloud Search settings in an institution', async () => {
+      await OEQ.SearchSettings.updateCloudSettings(TC.API_PATH, {
+        ...defaultCloudSettings,
+        disabled: true,
+      });
+      const settings = await OEQ.SearchSettings.getCloudSettings(TC.API_PATH);
+      expect(settings.disabled).toBe(true);
+    });
   });
 });
