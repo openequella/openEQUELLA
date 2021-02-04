@@ -15,10 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Card, CardContent, Grid, Typography } from "@material-ui/core";
+import {
+  Card,
+  CardContent,
+  Drawer,
+  Grid,
+  Typography,
+  useMediaQuery,
+} from "@material-ui/core";
+import type { Theme } from "@material-ui/core/styles";
 import * as OEQ from "@openequella/rest-api-client";
 
-import { isEqual, pick } from "lodash";
+import { isEqual } from "lodash";
 import * as React from "react";
 import { useCallback, useEffect, useReducer, useState } from "react";
 import { useHistory, useLocation } from "react-router";
@@ -51,6 +59,7 @@ import {
   defaultPagedSearchResult,
   defaultSearchOptions,
   generateQueryStringFromSearchOptions,
+  getPartialSearchOptions,
   queryStringParamsToSearchOptions,
   searchItems,
   SearchOptions,
@@ -196,6 +205,13 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     searchSettings,
     setSearchSettings,
   ] = useState<OEQ.SearchSettings.Settings>();
+
+  const [showRefinePanel, setShowRefinePanel] = useState<boolean>(false);
+
+  // True when the current screen width is <= MUI breakpoint 'sm'.
+  const isInSmallScreen: boolean = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down("sm")
+  );
 
   const handleError = useCallback(
     (error: Error) => {
@@ -348,17 +364,30 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
    * Determines if any collapsible filters have been modified from their defaults
    */
   const areCollapsibleFiltersSet = (): boolean => {
-    const getCollapsibleOptions = (options: SearchOptions) =>
-      pick(options, [
-        "lastModifiedDateRange",
-        "owner",
-        "status",
-        "searchAttachments",
-      ]);
-
+    const fields = [
+      "lastModifiedDateRange",
+      "owner",
+      "status",
+      "searchAttachments",
+    ];
     return !isEqual(
-      getCollapsibleOptions(defaultSearchOptions),
-      getCollapsibleOptions(searchPageOptions)
+      getPartialSearchOptions(defaultSearchOptions, fields),
+      getPartialSearchOptions(searchPageOptions, fields)
+    );
+  };
+
+  const isCriteriaSet = (): boolean => {
+    const fields = [
+      "lastModifiedDateRange",
+      "owner",
+      "status",
+      "searchAttachments",
+      "query",
+      "collections",
+    ];
+    return !isEqual(
+      getPartialSearchOptions(defaultSearchOptions, fields),
+      getPartialSearchOptions(searchPageOptions, fields)
     );
   };
 
@@ -598,6 +627,23 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     return defaultPagedSearchResult;
   };
 
+  /**
+   * Include Refine Search panel and Classification panel.
+   */
+  const FilterPanel = () => (
+    <Grid container direction="column" spacing={2}>
+      <Grid item>
+        <RefineSearchPanel
+          controls={refinePanelControls}
+          onChangeExpansion={handleCollapsibleFilterClick}
+          panelExpanded={filterExpansion}
+          showFilterIcon={areCollapsibleFiltersSet()}
+        />
+      </Grid>
+      {renderClassifications()}
+    </Grid>
+  );
+
   const {
     available: totalCount,
     highlight: highlights,
@@ -606,7 +652,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item xs={8}>
+        <Grid item sm={12} md={8}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <SearchBar
@@ -634,6 +680,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                   value: searchPageOptions.sortOrder,
                   onChange: handleSortOrderChanged,
                 }}
+                refineSearchProps={{
+                  isInSmallScreen: isInSmallScreen,
+                  showRefinePanel: () => setShowRefinePanel(true),
+                  isCriteriaSet: isCriteriaSet(),
+                }}
                 onClearSearchOptions={handleClearSearchOptions}
                 onCopySearchLink={handleCopySearch}
               >
@@ -643,20 +694,14 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
             </Grid>
           </Grid>
         </Grid>
-
-        <Grid item xs={4}>
-          <Grid container direction="column" spacing={2}>
-            <Grid item>
-              <RefineSearchPanel
-                controls={refinePanelControls}
-                onChangeExpansion={handleCollapsibleFilterClick}
-                panelExpanded={filterExpansion}
-                showFilterIcon={areCollapsibleFiltersSet()}
-              />
+        {
+          // Only show Refine panel when NOT in small screen.
+          !isInSmallScreen && (
+            <Grid item md={4}>
+              <FilterPanel />
             </Grid>
-            {renderClassifications()}
-          </Grid>
-        </Grid>
+          )
+        }
       </Grid>
       <MessageInfo
         open={showSearchCopiedSnackBar}
@@ -664,6 +709,13 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         title={searchStrings.shareSearchConfirmationText}
         variant="success"
       />
+      <Drawer
+        open={showRefinePanel}
+        anchor="right"
+        onClose={() => setShowRefinePanel(false)}
+      >
+        <FilterPanel />
+      </Drawer>
     </>
   );
 };

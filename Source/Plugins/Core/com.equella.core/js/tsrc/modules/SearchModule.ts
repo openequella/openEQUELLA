@@ -185,6 +185,10 @@ export const defaultSearchOptions: SearchOptions = {
   rawMode: false,
   status: liveStatuses,
   searchAttachments: true,
+  query: "",
+  collections: [],
+  lastModifiedDateRange: { start: undefined, end: undefined },
+  owner: undefined,
 };
 
 export const defaultPagedSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> = {
@@ -484,3 +488,13 @@ export const legacyQueryStringToSearchOptions = async (
   };
   return searchOptions;
 };
+
+/**
+ * Call this function to get partial SearchOptions.
+ * @param options An object of SearchOptions
+ * @param fields What fields of SearchOptions to get
+ */
+export const getPartialSearchOptions = (
+  options: SearchOptions,
+  fields: string[]
+) => pick(options, fields);

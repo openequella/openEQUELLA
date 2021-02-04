@@ -29,6 +29,7 @@ import {
   Tooltip,
   Typography,
 } from "@material-ui/core";
+import FilterListIcon from "@material-ui/icons/FilterList";
 import { makeStyles } from "@material-ui/core/styles";
 import Share from "@material-ui/icons/Share";
 import * as OEQ from "@openequella/rest-api-client";
@@ -48,6 +49,21 @@ const useStyles = makeStyles({
     position: "fixed",
   },
 });
+
+interface RefineSearchProps {
+  /**
+   * True when current screen width is <= MUI breakpoint 'sm'
+   */
+  isInSmallScreen: boolean;
+  /**
+   * True when any search criteria has been set
+   */
+  isCriteriaSet: boolean;
+  /**
+   * Function fired to show Refine Search panel.
+   */
+  showRefinePanel: () => void;
+}
 
 /**
  * Props required by component SearchResultList.
@@ -77,6 +93,10 @@ export interface SearchResultListProps {
    * Fired when the copy search button is clicked.
    */
   onCopySearchLink: () => void;
+  /**
+   * Props for the Icon button that controls whether show Refine panel in small screens
+   */
+  refineSearchProps: RefineSearchProps;
 }
 
 /**
@@ -88,8 +108,15 @@ export interface SearchResultListProps {
 export const SearchResultList = ({
   children,
   showSpinner,
-  orderSelectProps,
-  paginationProps,
+  orderSelectProps: { value, onChange: onOrderChange },
+  paginationProps: {
+    count,
+    currentPage,
+    rowsPerPage,
+    onPageChange,
+    onRowsPerPageChange,
+  },
+  refineSearchProps: { isCriteriaSet, isInSmallScreen, showRefinePanel },
   onClearSearchOptions,
   onCopySearchLink,
 }: SearchResultListProps) => {
@@ -115,14 +142,11 @@ export const SearchResultList = ({
   return (
     <Card>
       <CardHeader
-        title={searchPageStrings.subtitle + ` (${paginationProps.count})`}
+        title={searchPageStrings.subtitle + ` (${count})`}
         action={
           <Grid container spacing={1} alignItems="center">
             <Grid item>
-              <SearchOrderSelect
-                value={orderSelectProps.value}
-                onChange={orderSelectProps.onChange}
-              />
+              <SearchOrderSelect value={value} onChange={onOrderChange} />
             </Grid>
             <Grid item>
               <Tooltip title={searchPageStrings.newSearchHelperText}>
@@ -131,6 +155,16 @@ export const SearchResultList = ({
                 </Button>
               </Tooltip>
             </Grid>
+            {isInSmallScreen && (
+              <Grid item>
+                <IconButton
+                  onClick={showRefinePanel}
+                  color={isCriteriaSet ? "secondary" : "primary"}
+                >
+                  <FilterListIcon />
+                </IconButton>
+              </Grid>
+            )}
             {!inSelectionSession && (
               <Grid item>
                 <Tooltip title={searchPageStrings.shareSearchHelperText}>
@@ -157,14 +191,12 @@ export const SearchResultList = ({
         <Grid container justify="center">
           <Grid item>
             <SearchPagination
-              count={paginationProps.count}
-              currentPage={paginationProps.currentPage}
-              rowsPerPage={paginationProps.rowsPerPage}
-              onPageChange={(page: number) =>
-                paginationProps.onPageChange(page)
-              }
+              count={count}
+              currentPage={currentPage}
+              rowsPerPage={rowsPerPage}
+              onPageChange={(page: number) => onPageChange(page)}
               onRowsPerPageChange={(rowsPerPage: number) =>
-                paginationProps.onRowsPerPageChange(rowsPerPage)
+                onRowsPerPageChange(rowsPerPage)
               }
             />
           </Grid>
