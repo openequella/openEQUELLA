@@ -15,14 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Card,
-  CardContent,
-  Drawer,
-  Grid,
-  Typography,
-  useMediaQuery,
-} from "@material-ui/core";
+import { Drawer, Grid, useMediaQuery } from "@material-ui/core";
 import type { Theme } from "@material-ui/core/styles";
 import * as OEQ from "@openequella/rest-api-client";
 
@@ -68,18 +61,15 @@ import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
 import SearchBar from "../search/components/SearchBar";
 import { languageStrings } from "../util/langstrings";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
-import { CategorySelector } from "./components/CategorySelector";
 import { CollectionSelector } from "./components/CollectionSelector";
 import OwnerSelector from "./components/OwnerSelector";
-import {
-  RefinePanelControl,
-  RefineSearchPanel,
-} from "./components/RefineSearchPanel";
+import { RefinePanelControl } from "./components/RefineSearchPanel";
 import { SearchAttachmentsSelector } from "./components/SearchAttachmentsSelector";
 import {
   mapSearchResultItems,
   SearchResultList,
 } from "./components/SearchResultList";
+import { SidePanel } from "./components/SidePanel";
 import StatusSelector from "./components/StatusSelector";
 
 // destructure strings import
@@ -174,6 +164,10 @@ const reducer = (state: State, action: Action): State => {
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const history = useHistory();
   const location = useLocation();
+  // True when the current screen width is <= MUI breakpoint 'sm'.
+  const isInSmallScreen: boolean = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down("sm")
+  );
 
   const [state, dispatch] = useReducer(reducer, { status: "initialising" });
   const defaultSearchPageOptions: SearchPageOptions = {
@@ -207,11 +201,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   ] = useState<OEQ.SearchSettings.Settings>();
 
   const [showRefinePanel, setShowRefinePanel] = useState<boolean>(false);
-
-  // True when the current screen width is <= MUI breakpoint 'sm'.
-  const isInSmallScreen: boolean = useMediaQuery((theme: Theme) =>
-    theme.breakpoints.down("sm")
-  );
 
   const handleError = useCallback(
     (error: Error) => {
@@ -590,28 +579,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     },
   ];
 
-  const classifications = (): Classification[] => {
-    const orEmpty = (c?: Classification[]) => c ?? [];
-
-    switch (state.status) {
-      case "success":
-        return orEmpty(state.classifications);
-      case "searching":
-        return orEmpty(state.previousClassifications);
-    }
-
-    return [];
-  };
-
-  const renderClassifications = (c = classifications()) =>
-    c.length > 0 && c.some((c) => c.categories.length > 0) ? (
-      <Classifications
-        classifications={c}
-        onChange={handleSelectedCategoriesChange}
-        currentSelections={searchPageOptions.selectedCategories}
-      />
-    ) : null;
-
   const searchResult = (): OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> => {
     const orDefault = (
       r?: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>
@@ -627,22 +594,30 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     return defaultPagedSearchResult;
   };
 
-  /**
-   * Include Refine Search panel and Classification panel.
-   */
-  const FilterPanel = () => (
-    <Grid container direction="column" spacing={2}>
-      <Grid item>
-        <RefineSearchPanel
-          controls={refinePanelControls}
-          onChangeExpansion={handleCollapsibleFilterClick}
-          panelExpanded={filterExpansion}
-          showFilterIcon={areCollapsibleFiltersSet()}
-        />
-      </Grid>
-      {renderClassifications()}
-    </Grid>
-  );
+  const renderSidePanel = () => {
+    const classifications =
+      state.status === "success" &&
+      state.classifications.length > 0 &&
+      state.classifications.some((c) => c.categories.length > 0)
+        ? state.classifications
+        : [];
+
+    return (
+      <SidePanel
+        refinePanelProps={{
+          controls: refinePanelControls,
+          onChangeExpansion: handleCollapsibleFilterClick,
+          panelExpanded: filterExpansion,
+          showFilterIcon: areCollapsibleFiltersSet(),
+        }}
+        classificationsPanelProps={{
+          classifications: classifications,
+          onSelectedCategoriesChange: handleSelectedCategoriesChange,
+          selectedCategories: searchPageOptions.selectedCategories,
+        }}
+      />
+    );
+  };
 
   const {
     available: totalCount,
@@ -695,10 +670,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           </Grid>
         </Grid>
         {
-          // Only show Refine panel when NOT in small screen.
+          // Only show the right-hand side panels when NOT in small screen.
           !isInSmallScreen && (
             <Grid item md={4}>
-              <FilterPanel />
+              {renderSidePanel()}
             </Grid>
           )
         }
@@ -709,40 +684,17 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         title={searchStrings.shareSearchConfirmationText}
         variant="success"
       />
-      <Drawer
-        open={showRefinePanel}
-        anchor="right"
-        onClose={() => setShowRefinePanel(false)}
-      >
-        <FilterPanel />
-      </Drawer>
+      {isInSmallScreen && (
+        <Drawer
+          open={showRefinePanel}
+          anchor="right"
+          onClose={() => setShowRefinePanel(false)}
+        >
+          {renderSidePanel()}
+        </Drawer>
+      )}
     </>
   );
 };
-
-const Classifications = ({
-  classifications,
-  onChange,
-  currentSelections,
-}: {
-  classifications: Classification[];
-  onChange: (selectedCategories: SelectedCategories[]) => void;
-  currentSelections?: SelectedCategories[];
-}) => (
-  <Grid item>
-    <Card>
-      <CardContent>
-        <Typography variant="h5">
-          {languageStrings.searchpage.categorySelector.title}
-        </Typography>
-        <CategorySelector
-          classifications={classifications}
-          onSelectedCategoriesChange={onChange}
-          selectedCategories={currentSelections}
-        />
-      </CardContent>
-    </Card>
-  </Grid>
-);
 
 export default SearchPage;
