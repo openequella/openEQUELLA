@@ -349,37 +349,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     setFilterExpansion(!filterExpansion);
   };
 
-  /**
-   * Determines if any collapsible filters have been modified from their defaults
-   */
-  const areCollapsibleFiltersSet = (): boolean => {
-    const fields = [
-      "lastModifiedDateRange",
-      "owner",
-      "status",
-      "searchAttachments",
-    ];
-    return !isEqual(
-      getPartialSearchOptions(defaultSearchOptions, fields),
-      getPartialSearchOptions(searchPageOptions, fields)
-    );
-  };
-
-  const isCriteriaSet = (): boolean => {
-    const fields = [
-      "lastModifiedDateRange",
-      "owner",
-      "status",
-      "searchAttachments",
-      "query",
-      "collections",
-    ];
-    return !isEqual(
-      getPartialSearchOptions(defaultSearchOptions, fields),
-      getPartialSearchOptions(searchPageOptions, fields)
-    );
-  };
-
   const handlePageChanged = (page: number) =>
     search({ ...searchPageOptions, currentPage: page });
 
@@ -487,6 +456,47 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         schemaNode: getSchemaNode(c.id),
       })),
     });
+  };
+
+  /**
+   * Determines if any collapsible filters have been modified from their defaults
+   */
+  const areCollapsibleFiltersSet = (): boolean => {
+    const fields = [
+      "lastModifiedDateRange",
+      "owner",
+      "status",
+      "searchAttachments",
+    ];
+    return !isEqual(
+      getPartialSearchOptions(defaultSearchOptions, fields),
+      getPartialSearchOptions(searchPageOptions, fields)
+    );
+  };
+
+  const isCriteriaSet = (): boolean => {
+    const fields = [
+      "lastModifiedDateRange",
+      "owner",
+      "status",
+      "searchAttachments",
+      "query",
+      "collections",
+    ];
+
+    // Field 'selectedCategories' is a bit different. Once a classification is selected, the category will persist in searchPageOptions.
+    // What we really care is if we have got any category that has any classification selected.
+    const isClassificationSelected: boolean =
+      searchPageOptions.selectedCategories?.some(
+        ({ categories }: SelectedCategories) => categories.length > 0
+      ) ?? false;
+
+    return (
+      !isEqual(
+        getPartialSearchOptions(defaultSearchOptions, fields),
+        getPartialSearchOptions(searchPageOptions, fields)
+      ) || isClassificationSelected
+    );
   };
 
   const refinePanelControls: RefinePanelControl[] = [
