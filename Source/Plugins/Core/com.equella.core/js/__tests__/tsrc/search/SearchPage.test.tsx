@@ -15,6 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createMuiTheme, MuiThemeProvider } from "@material-ui/core";
+import type { Theme } from "@material-ui/core/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
 import {
@@ -75,6 +77,7 @@ import {
   queryStatusSelector,
 } from "./SearchPageHelper";
 
+const defaultTheme = createMuiTheme();
 const mockCollections = jest.spyOn(CollectionsModule, "collectionListSummary");
 const mockListUsers = jest.spyOn(UserModule, "listUsers");
 const mockListClassification = jest.spyOn(
@@ -148,7 +151,8 @@ const waitForSearch = async () =>
  * @returns The RenderResult from the `render` of the `<SearchPage>`
  */
 const renderSearchPage = async (
-  queryString?: string
+  queryString?: string,
+  theme: Theme = defaultTheme
 ): Promise<RenderResult> => {
   window.history.replaceState({}, "Clean history state");
   const history = createMemoryHistory();
@@ -156,9 +160,11 @@ const renderSearchPage = async (
   history.push({});
 
   const page = render(
-    <Router history={history}>
-      <SearchPage updateTemplate={jest.fn()} />{" "}
-    </Router>
+    <MuiThemeProvider theme={theme}>
+      <Router history={history}>
+        <SearchPage updateTemplate={jest.fn()} />
+      </Router>
+    </MuiThemeProvider>
   );
   // Wait for the first completion of initial search
   await waitForSearch();
@@ -371,7 +377,9 @@ describe("Collapsible refine filter section", () => {
   });
 
   it("Should contain the correct controls", async () => {
-    const refineSearchPanel = page.getByText("Refine search").closest("div");
+    const refineSearchPanel = page
+      .getByText(languageStrings.searchpage.refineSearchPanel.title)
+      .closest("div");
     if (!refineSearchPanel) {
       throw new Error("Unable to find refine search panel");
     }
@@ -719,7 +727,7 @@ describe("<SearchPage/>", () => {
       1
     );
     expect(mockClipboard).toHaveBeenCalledWith(
-      "/?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RANK%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D"
+      "/?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RANK%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D"
     );
     expect(
       screen.getByText(languageStrings.searchpage.shareSearchConfirmationText)
@@ -778,5 +786,45 @@ describe("In Selection Session", () => {
       languageStrings.searchpage.shareSearchHelperText
     );
     expect(copySearchButton).not.toBeInTheDocument();
+  });
+});
+
+describe("Responsiveness", () => {
+  const getSidePanel = (page: RenderResult) =>
+    page.queryByTitle(languageStrings.searchpage.sidePanel.title);
+  let page: RenderResult;
+
+  beforeAll(() => {
+    Object.defineProperty(window, "matchMedia", {
+      writable: true,
+      value: jest.fn().mockImplementation((query) => ({
+        matches: true,
+        media: query,
+        onchange: null,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
+      })),
+    });
+  });
+
+  beforeEach(async () => {
+    page = await renderSearchPage();
+  });
+
+  it("should hide the side panel in small screens", async () => {
+    expect(getSidePanel(page)).not.toBeInTheDocument();
+  });
+
+  it("should display the button controlling the side panel visibility", async () => {
+    const refineSearchButton = page.queryByTitle(
+      languageStrings.searchpage.refineSearchPanel.title
+    );
+    expect(refineSearchButton).toBeInTheDocument();
+
+    userEvent.click(refineSearchButton!); // It's safe to add a '!' now.
+    expect(getSidePanel(page)).toBeInTheDocument();
   });
 });

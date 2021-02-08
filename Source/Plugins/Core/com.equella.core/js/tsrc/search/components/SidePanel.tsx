@@ -17,6 +17,7 @@
  */
 import { Grid } from "@material-ui/core";
 import * as React from "react";
+import { languageStrings } from "../../util/langstrings";
 import { CategorySelectorProps } from "./CategorySelector";
 
 import { ClassificationsPanel } from "./ClassificationsPanel";
@@ -49,7 +50,12 @@ export const SidePanel = ({
     selectedCategories,
   },
 }: SidePanelProps) => (
-  <Grid container direction="column" spacing={2}>
+  <Grid
+    container
+    direction="column"
+    spacing={2}
+    title={languageStrings.searchpage.sidePanel.title}
+  >
     <Grid item>
       <RefineSearchPanel
         controls={controls}

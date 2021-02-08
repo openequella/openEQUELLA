@@ -99,6 +99,8 @@ export interface SearchResultListProps {
   refineSearchProps: RefineSearchProps;
 }
 
+const searchPageStrings = languageStrings.searchpage;
+
 /**
  * This component is basically a Card which includes a list of search results and a few search controls.
  * The sort order select is displayed in CardHeader.
@@ -120,7 +122,6 @@ export const SearchResultList = ({
   onClearSearchOptions,
   onCopySearchLink,
 }: SearchResultListProps) => {
-  const searchPageStrings = languageStrings.searchpage;
   const classes = useStyles();
   const inSelectionSession: boolean = isSelectionSessionOpen();
 
@@ -157,12 +158,14 @@ export const SearchResultList = ({
             </Grid>
             {isInSmallScreen && (
               <Grid item>
-                <IconButton
-                  onClick={showRefinePanel}
-                  color={isCriteriaSet ? "secondary" : "primary"}
-                >
-                  <FilterListIcon />
-                </IconButton>
+                <Tooltip title={searchPageStrings.refineSearchPanel.title}>
+                  <IconButton
+                    onClick={showRefinePanel}
+                    color={isCriteriaSet ? "secondary" : "primary"}
+                  >
+                    <FilterListIcon />
+                  </IconButton>
+                </Tooltip>
               </Grid>
             )}
             {!inSelectionSession && (
