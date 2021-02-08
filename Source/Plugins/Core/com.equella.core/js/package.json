@@ -70,7 +70,7 @@
     "@babel/core": "7.12.10",
     "@storybook/addon-knobs": "6.1.15",
     "@testing-library/jest-dom": "5.11.9",
-    "@testing-library/react": "11.2.4",
+    "@testing-library/react": "11.2.5",
     "@testing-library/user-event": "12.6.2",
     "@storybook/addon-a11y": "6.1.15",
     "@storybook/addon-essentials": "6.1.15",
