@@ -67,7 +67,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@babel/core": "7.12.10",
+    "@babel/core": "7.12.13",
     "@storybook/addon-knobs": "6.1.15",
     "@testing-library/jest-dom": "5.11.9",
     "@testing-library/react": "11.2.5",
