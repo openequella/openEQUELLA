@@ -239,6 +239,10 @@ describe("<SearchResult/>", () => {
       fireEvent.click(selectorControl!);
     };
 
+    type selectResourceFuncType =
+      | ((itemKey: string, attachmentUUIDs: string[]) => Promise<void>)
+      | ((itemKey: string, attachmentUUID?: string) => Promise<void>);
+
     it.each([
       [
         selectSummaryPageString,
@@ -283,10 +287,7 @@ describe("<SearchResult/>", () => {
       async (
         resourceType: string,
         selectionSessionMode: string,
-        selectResourceFunc: (
-          itemKey: string,
-          attachmentUUIDs: string[]
-        ) => Promise<void>,
+        selectResourceFunc: selectResourceFuncType,
         renderData: RenderData
       ) => {
         updateMockGetRenderData(renderData);
