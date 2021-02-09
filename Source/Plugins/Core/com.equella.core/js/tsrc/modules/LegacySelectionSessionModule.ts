@@ -435,9 +435,14 @@ export const selectResourceForSkinny = (
       // script. So the approach is to firstly add the form into DOM and then execute the
       // script. Once the two steps are done, Selection session should be closed and the
       // iframe should return to whatever LMS page that Selection session was open from.
-      $("#mainDiv").append(response.html["body"]);
-      // eslint-disable-next-line no-eval
-      window.eval(response.script);
+      const mainDiv = document.querySelector<HTMLDivElement>("#mainDiv");
+      if (mainDiv) {
+        mainDiv.insertAdjacentHTML("beforeend", response.html["body"]);
+        // eslint-disable-next-line no-eval
+        window.eval(response.script);
+      } else {
+        throw new Error("Fail to find oEQ main DIV.");
+      }
     } else if (isExternalRedirect(response)) {
       leaveSearchPage(response.href);
     }
