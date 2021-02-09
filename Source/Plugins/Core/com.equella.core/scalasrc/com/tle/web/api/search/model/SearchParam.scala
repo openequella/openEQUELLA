@@ -86,4 +86,8 @@ class SearchParam {
   @ApiParam("Single dynamic collection uuid (:virtualized value)")
   @QueryParam("dynaCollection")
   var dynaCollection: String = _
+
+  @ApiParam("List of MIME types to filter by")
+  @QueryParam("mimeTypes")
+  var mimeTypes: Array[String] = _
 }

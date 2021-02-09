@@ -157,6 +157,19 @@ public class Search2ApiTest extends AbstractRestApiTest {
     assertEquals(getAvailable(result), expectNumber);
   }
 
+  @Test(description = "Search for a known MIME type")
+  public void validMimeTypeSearch() throws IOException {
+    JsonNode result = doSearch(200, null, new NameValuePair("mimeTypes", "text/plain"));
+    assertEquals(getAvailable(result), 6);
+  }
+
+  @Test(description = "Search for a known MIME type with has no items")
+  public void absentMimeTypeSearch() throws IOException {
+    JsonNode result =
+        doSearch(200, null, new NameValuePair("mimeTypes", "application/illustrator"));
+    assertEquals(getAvailable(result), 0);
+  }
+
   private JsonNode doSearch(int expectedCode, String query, NameValuePair... queryVals)
       throws IOException {
     final HttpMethod method = new GetMethod(SEARCH_API_ENDPOINT);
