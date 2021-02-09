@@ -474,6 +474,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     );
   };
 
+  /**
+   * Determines if any search criteria has been set, including classifications, query and all filters.
+   */
   const isCriteriaSet = (): boolean => {
     const fields = [
       "lastModifiedDateRange",
@@ -484,6 +487,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       "collections",
     ];
 
+    const isQueryOrFiltersSet = !isEqual(
+      getPartialSearchOptions(defaultSearchOptions, fields),
+      getPartialSearchOptions(searchPageOptions, fields)
+    );
+
     // Field 'selectedCategories' is a bit different. Once a classification is selected, the category will persist in searchPageOptions.
     // What we really care is if we have got any category that has any classification selected.
     const isClassificationSelected: boolean =
@@ -491,12 +499,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         ({ categories }: SelectedCategories) => categories.length > 0
       ) ?? false;
 
-    return (
-      !isEqual(
-        getPartialSearchOptions(defaultSearchOptions, fields),
-        getPartialSearchOptions(searchPageOptions, fields)
-      ) || isClassificationSelected
-    );
+    return isQueryOrFiltersSet || isClassificationSelected;
   };
 
   const refinePanelControls: RefinePanelControl[] = [
@@ -589,6 +592,37 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     },
   ];
 
+  const renderSidePanel = () => {
+    const getClassifications = (): Classification[] => {
+      const orEmpty = (c?: Classification[]) => c ?? [];
+
+      switch (state.status) {
+        case "success":
+          return orEmpty(state.classifications);
+        case "searching":
+          return orEmpty(state.previousClassifications);
+      }
+
+      return [];
+    };
+
+    return (
+      <SidePanel
+        refinePanelProps={{
+          controls: refinePanelControls,
+          onChangeExpansion: handleCollapsibleFilterClick,
+          panelExpanded: filterExpansion,
+          showFilterIcon: areCollapsibleFiltersSet(),
+        }}
+        classificationsPanelProps={{
+          classifications: getClassifications(),
+          onSelectedCategoriesChange: handleSelectedCategoriesChange,
+          selectedCategories: searchPageOptions.selectedCategories,
+        }}
+      />
+    );
+  };
+
   const searchResult = (): OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> => {
     const orDefault = (
       r?: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>
@@ -602,31 +636,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     }
 
     return defaultPagedSearchResult;
-  };
-
-  const renderSidePanel = () => {
-    const classifications =
-      state.status === "success" &&
-      state.classifications.length > 0 &&
-      state.classifications.some((c) => c.categories.length > 0)
-        ? state.classifications
-        : [];
-
-    return (
-      <SidePanel
-        refinePanelProps={{
-          controls: refinePanelControls,
-          onChangeExpansion: handleCollapsibleFilterClick,
-          panelExpanded: filterExpansion,
-          showFilterIcon: areCollapsibleFiltersSet(),
-        }}
-        classificationsPanelProps={{
-          classifications: classifications,
-          onSelectedCategoriesChange: handleSelectedCategoriesChange,
-          selectedCategories: searchPageOptions.selectedCategories,
-        }}
-      />
-    );
   };
 
   const {
