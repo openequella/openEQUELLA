@@ -158,22 +158,16 @@ export const isSelectionSessionOpen = (): boolean =>
 /**
  * Return true if Selection Session is in 'Structured'.
  */
-export const isSelectionSessionInStructured = (): boolean => {
-  if (isSelectionSessionOpen()) {
-    return getSelectionSessionInfo().layout === "coursesearch";
-  }
-  return false;
-};
+export const isSelectionSessionInStructured = (): boolean =>
+  isSelectionSessionOpen() &&
+  getSelectionSessionInfo().layout === "coursesearch";
 
 /**
- * Return true if Selection Session is in 'Structured'.
+ * Return true if Selection Session is in 'Skinny'.
  */
-export const isSelectionSessionInSkinny = (): boolean => {
-  if (isSelectionSessionOpen()) {
-    return getSelectionSessionInfo().layout === "skinnysearch";
-  }
-  return false;
-};
+export const isSelectionSessionInSkinny = (): boolean =>
+  isSelectionSessionOpen() &&
+  getSelectionSessionInfo().layout === "skinnysearch";
 
 /**
  * Indicates if the Select Summary button is disabled or not.
@@ -422,15 +416,17 @@ export const selectResourceForSelectOrAdd = (
 /**
  * Select resources in 'skinny'. The approach is the same as 'selectResourceForSelectOrAdd'.
  * The response is an external href so use 'window.location' to redirect.
+ *
+ * @param itemKey A unique Item ID
+ * @param attachmentUUID A unique Attachment ID which can be undefined when no attachment is selected
  */
 export const selectResourceForSkinny = (
   itemKey: string,
-  attachmentUUIDs: string[]
+  attachmentUUID?: string
 ): Promise<void> => {
   const postData: SelectionSessionPostData = buildPostDataForSkinny(
     itemKey,
-    // Each selection In skinny can only have one attachment.
-    attachmentUUIDs.length > 0 ? attachmentUUIDs[0] : undefined
+    attachmentUUID
   );
 
   const callback = (response: SubmitResponse) => {
@@ -440,6 +436,7 @@ export const selectResourceForSkinny = (
       // script. Once the two steps are done, Selection session should be closed and the
       // iframe should return to whatever LMS page that Selection session was open from.
       $("#mainDiv").append(response.html["body"]);
+      // eslint-disable-next-line no-eval
       window.eval(response.script);
     } else if (isExternalRedirect(response)) {
       leaveSearchPage(response.href);
@@ -460,8 +457,8 @@ export const selectResourceForSkinny = (
 export const selectResource = (
   itemKey: string,
   attachments: string[]
-): Promise<void> => {
-  const selectResource = match(
+): Promise<void> =>
+  match(
     [
       Literal("coursesearch"),
       () => selectResourceForCourseList(itemKey, attachments),
@@ -472,9 +469,18 @@ export const selectResource = (
     ],
     [
       Literal("skinnysearch"),
-      () => selectResourceForSkinny(itemKey, attachments),
+      () => {
+        // Each selection in Skinny can only have one attachment.
+        if (attachments.length <= 1) {
+          const attachmentUUID =
+            attachments.length === 1 ? attachments[0] : undefined;
+          return selectResourceForSkinny(itemKey, attachmentUUID);
+        }
+        return Promise.reject(
+          new Error(
+            "Only one attachment is allowed in Skinny Selection Session."
+          )
+        );
+      },
     ]
-  );
-  const { layout } = getSelectionSessionInfo();
-  return selectResource(layout);
-};
+  )(getSelectionSessionInfo().layout);

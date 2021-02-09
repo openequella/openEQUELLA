@@ -252,7 +252,7 @@ export const LegacyContent = React.memo(function LegacyContent({
             refreshUser();
           }
           redirected(content.route, false);
-        } else if (content.href) {
+        } else if (isExternalRedirect(content)) {
           redirected(content.href, true);
         }
       })
