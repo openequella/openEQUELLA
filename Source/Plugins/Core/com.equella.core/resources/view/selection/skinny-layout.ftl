@@ -5,7 +5,7 @@
 <#assign d = m.decorations />
 
 <#assign TEMP_body>
-	<div id="wrapper">
+	<div id="wrapper" class="skinny-layout" >
 		<div id="selection-header">
 			<div id="selection-header-content" <#if m.hideDividers??> class="${m.hideDividers}"</#if>>
 				<@render s.navBar />
@@ -16,7 +16,7 @@
 				<div id="selection-page">
 					<div id="selection-content" class="content">
 						<div id="selection-content-inner" ${d.contentBodyAttributes}>
-							<@render m.parts["body"]/>	
+							<@render m.parts["body"]/>
 						</div>
 					</div>
 				</div>

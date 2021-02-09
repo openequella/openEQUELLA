@@ -58,6 +58,14 @@ export const renderDataForSelectOrAdd: RenderData = {
   },
 };
 
+export const renderDataForSkinny: RenderData = {
+  ...basicRenderData,
+  selectionSessionInfo: {
+    ...basicSelectionSessionInfo,
+    layout: "skinnysearch",
+  },
+};
+
 const mockGetRenderData = jest.spyOn(AppConfig, "getRenderData");
 export const updateMockGetRenderData = (renderData?: RenderData) => {
   mockGetRenderData.mockReturnValue(renderData);

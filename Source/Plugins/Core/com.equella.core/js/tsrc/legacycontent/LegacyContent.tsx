@@ -60,7 +60,7 @@ export const guestUser: OEQ.LegacyContent.CurrentUserDetails = {
   menuGroups: [],
 };
 
-interface ExternalRedirect {
+export interface ExternalRedirect {
   href: string;
 }
 
@@ -137,6 +137,12 @@ export function isChangeRoute(
   response: SubmitResponse
 ): response is ChangeRoute {
   return (response as ChangeRoute).route !== undefined;
+}
+
+export function isExternalRedirect(
+  response: SubmitResponse
+): response is ExternalRedirect {
+  return (response as ExternalRedirect).href !== undefined;
 }
 
 function submitRequest(path: string, vals: StateData): Promise<SubmitResponse> {
@@ -246,7 +252,7 @@ export const LegacyContent = React.memo(function LegacyContent({
             refreshUser();
           }
           redirected(content.route, false);
-        } else if (content.href) {
+        } else if (isExternalRedirect(content)) {
           redirected(content.href, true);
         }
       })
