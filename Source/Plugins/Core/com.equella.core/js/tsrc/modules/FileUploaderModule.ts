@@ -294,11 +294,13 @@ const doUpload = (
   return Axios.post<UpdateEntry | UploadFailed>(path, formData, {
     cancelToken: token,
     onUploadProgress: (progressEvent: ProgressEvent) => {
+      const uploadPercentage = Math.floor(
+        (progressEvent.loaded / fileEntry.size) * 100
+      );
+
       updateUploadProgress({
         ...uploadingFile,
-        uploadPercentage: Math.floor(
-          (progressEvent.loaded / fileEntry.size) * 100
-        ),
+        uploadPercentage: uploadPercentage > 100 ? 100 : uploadPercentage,
       });
     },
   }).then(({ data }) => data);
