@@ -64,6 +64,7 @@ export const UploadList = ({
         const fileId = isUploadedFile(file) ? file.fileEntry.id : file.localId;
         const fileName = file.fileEntry.name;
         const fileLink = isUploadedFile(file) ? file.fileEntry.link : undefined;
+        const indented = isUploadedFile(file) ? file.indented : false;
         const secondaryText = isUploadedFile(file) ? (
           <Typography role="alert" color="error">
             {file.errorMessage}
@@ -74,7 +75,13 @@ export const UploadList = ({
         return (
           <ListItem key={fileId} divider>
             <ListItemText
-              primary={<UploadFileName fileName={fileName} link={fileLink} />}
+              primary={
+                <UploadFileName
+                  fileName={fileName}
+                  link={fileLink}
+                  indented={indented}
+                />
+              }
               secondary={secondaryText}
               secondaryTypographyProps={{ component: "div" }}
             />

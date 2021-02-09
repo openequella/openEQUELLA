@@ -131,11 +131,22 @@ export const InlineFileUploader = ({
   strings,
   reloadState,
 }: InlineFileUploaderProps) => {
+  const initialiseEntry = (
+    entry: AjaxFileEntry,
+    indented: boolean
+  ): UploadedFile => ({
+    fileEntry: entry,
+    status: "uploaded",
+    indented: indented,
+  });
+
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>(
-    entries.map((entry) => ({
-      fileEntry: entry,
-      status: "uploaded",
-    }))
+    entries.flatMap((entry) => {
+      const withChildren: UploadedFile[] = [];
+      return withChildren
+        .concat(initialiseEntry(entry, false))
+        .concat(entry.children.map((e) => initialiseEntry(e, true)));
+    })
   );
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
   const [attachmentCount, setAttachmentCount] = useState<number>(
@@ -275,29 +286,37 @@ export const InlineFileUploader = ({
   /**
    * Build three text buttons for UploadedFile or one icon button for UploadingFile.
    */
-  const buildActions = (file: UploadedFile | UploadingFile): UploadAction[] =>
-    isUploadedFile(file)
-      ? [
-          {
-            onClick: () => onEdit(file.fileEntry.id),
-            text: strings.edit,
-          },
-          {
-            onClick: () => onReplace(file.fileEntry.id),
-            text: strings.replace,
-          },
-          {
-            onClick: () => onDelete(file),
-            text: strings.delete,
-          },
-        ]
-      : [
-          {
-            onClick: () => onCancel(file.localId),
-            text: strings.cancel,
-            icon: <CancelIcon />,
-          },
-        ];
+  const buildActions = (file: UploadedFile | UploadingFile): UploadAction[] => {
+    if (isUploadedFile(file)) {
+      const basicAction = [
+        {
+          onClick: () => onDelete(file),
+          text: strings.delete,
+        },
+      ];
+      const { id, editable } = file.fileEntry;
+      return editable
+        ? [
+            {
+              onClick: () => onEdit(id),
+              text: strings.edit,
+            },
+            {
+              onClick: () => onReplace(id),
+              text: strings.replace,
+            },
+            ...basicAction,
+          ]
+        : basicAction;
+    }
+    return [
+      {
+        onClick: () => onCancel(file.localId),
+        text: strings.cancel,
+        icon: <CancelIcon />,
+      },
+    ];
+  };
 
   return (
     <Grid

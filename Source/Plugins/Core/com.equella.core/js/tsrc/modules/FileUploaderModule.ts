@@ -66,6 +66,10 @@ export interface UploadedFile {
    * Text describing why fail to delete this file
    */
   errorMessage?: string;
+  /**
+   * Whether to show this file with an indentation. Typically, true for child AjaxFileEntry.
+   */
+  indented: boolean;
 }
 
 /**
@@ -334,6 +338,7 @@ export const upload = (
         const uploadedFile: UploadedFile = {
           fileEntry: entry,
           status: "uploaded",
+          indented: false,
         };
         onSuccessful(
           uploadedFile,

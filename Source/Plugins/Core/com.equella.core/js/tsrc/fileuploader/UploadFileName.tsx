@@ -27,16 +27,28 @@ interface UploadFileNameProps {
    * The link to preview the file
    */
   link?: string;
+  /**
+   * True if an indentation is required
+   */
+  indented: boolean;
 }
 
 /**
  * Display a file name in plain text or as a link, depending on whether the link URL is provided or not.
+ * Indentation is achieved by reusing oEQ existing CSS styles.
  */
-export const UploadFileName = ({ fileName, link }: UploadFileNameProps) =>
-  link ? (
-    <Link href={link} target="_blank">
-      {fileName}
-    </Link>
-  ) : (
-    <div>{fileName}</div>
-  );
+export const UploadFileName = ({
+  fileName,
+  link,
+  indented,
+}: UploadFileNameProps) => (
+  <div className={indented ? "indent" : ""}>
+    {link ? (
+      <Link href={link} target="_blank">
+        {fileName}
+      </Link>
+    ) : (
+      <div>{fileName}</div>
+    )}
+  </div>
+);
