@@ -54,7 +54,7 @@
     "react-router-dom": "5.2.0",
     "react-router-hash-link": "2.3.1",
     "react-visibility-sensor": "3.14.0",
-    "react-dropzone": "11.2.4",
+    "react-dropzone": "11.3.1",
     "runtypes": "5.0.1",
     "shallow-equal-object": "1.1.1",
     "sprintf-js": "1.1.2",
