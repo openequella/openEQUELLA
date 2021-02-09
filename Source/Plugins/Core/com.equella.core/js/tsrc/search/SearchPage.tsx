@@ -107,7 +107,7 @@ interface SearchPageHistoryState {
 
 type Action =
   | { type: "init" }
-  | { type: "search"; options: SearchPageOptions }
+  | { type: "search"; options: SearchPageOptions; scrollToTop: boolean }
   | {
       type: "search-complete";
       result: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>;
@@ -117,7 +117,13 @@ type Action =
 
 type State =
   | { status: "initialising" }
-  | { status: "searching"; options: SearchPageOptions }
+  | {
+      status: "searching";
+      options: SearchPageOptions;
+      previousResult?: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>;
+      previousClassifications?: Classification[];
+      scrollToTop: boolean;
+    }
   | {
       status: "success";
       result: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>;
@@ -130,7 +136,19 @@ const reducer = (state: State, action: Action): State => {
     case "init":
       return { status: "initialising" };
     case "search":
-      return { status: "searching", options: action.options };
+      const prevResults =
+        state.status === "success"
+          ? {
+              previousResult: state.result,
+              previousClassifications: state.classifications,
+            }
+          : {};
+      return {
+        status: "searching",
+        options: action.options,
+        scrollToTop: action.scrollToTop,
+        ...prevResults,
+      };
     case "search-complete":
       return {
         status: "success",
@@ -187,8 +205,12 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   );
 
   const search = useCallback(
-    (searchPageOptions: SearchPageOptions): void =>
-      dispatch({ type: "search", options: { ...searchPageOptions } }),
+    (searchPageOptions: SearchPageOptions, scrollToTop = true): void =>
+      dispatch({
+        type: "search",
+        options: { ...searchPageOptions },
+        scrollToTop,
+      }),
     [dispatch]
   );
 
@@ -279,7 +301,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
               state: { searchPageOptions: state.options, filterExpansion },
             });
             // scroll back up to the top of the page
-            window.scrollTo(0, 0);
+            if (state.scrollToTop) window.scrollTo(0, 0);
           }
         )
         .catch(handleError);
@@ -344,11 +366,14 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     search({ ...searchPageOptions, currentPage: page });
 
   const handleRowsPerPageChanged = (rowsPerPage: number) =>
-    search({
-      ...searchPageOptions,
-      currentPage: 0,
-      rowsPerPage: rowsPerPage,
-    });
+    search(
+      {
+        ...searchPageOptions,
+        currentPage: 0,
+        rowsPerPage: rowsPerPage,
+      },
+      false
+    );
 
   const handleRawModeChanged = (rawMode: boolean) =>
     search({ ...searchPageOptions, rawMode: rawMode });
@@ -536,47 +561,48 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     },
   ];
 
-  const Classifications = ({
-    classifications,
-    onChange,
-    currentSelections,
-  }: {
-    classifications: Classification[];
-    onChange: (selectedCategories: SelectedCategories[]) => void;
-    currentSelections?: SelectedCategories[];
-  }) => (
-    <Grid item>
-      <Card>
-        <CardContent>
-          <Typography variant="h5">
-            {languageStrings.searchpage.categorySelector.title}
-          </Typography>
-          <CategorySelector
-            classifications={classifications}
-            onSelectedCategoriesChange={onChange}
-            selectedCategories={currentSelections}
-          />
-        </CardContent>
-      </Card>
-    </Grid>
-  );
+  const classifications = (): Classification[] => {
+    const orEmpty = (c?: Classification[]) => c ?? [];
 
-  const renderClassifications = () =>
-    state.status === "success" &&
-    state.classifications.length > 0 &&
-    state.classifications.some((c) => c.categories.length > 0) ? (
+    switch (state.status) {
+      case "success":
+        return orEmpty(state.classifications);
+      case "searching":
+        return orEmpty(state.previousClassifications);
+    }
+
+    return [];
+  };
+
+  const renderClassifications = (c = classifications()) =>
+    c.length > 0 && c.some((c) => c.categories.length > 0) ? (
       <Classifications
-        classifications={state.classifications}
+        classifications={c}
         onChange={handleSelectedCategoriesChange}
         currentSelections={searchPageOptions.selectedCategories}
       />
     ) : null;
 
+  const searchResult = (): OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> => {
+    const orDefault = (
+      r?: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>
+    ) => r ?? defaultPagedSearchResult;
+
+    switch (state.status) {
+      case "success":
+        return orDefault(state.result);
+      case "searching":
+        return orDefault(state.previousResult);
+    }
+
+    return defaultPagedSearchResult;
+  };
+
   const {
     available: totalCount,
     highlight: highlights,
     results: searchResults,
-  } = state.status === "success" ? state.result : defaultPagedSearchResult;
+  } = searchResult();
   return (
     <>
       <Grid container spacing={2}>
@@ -641,5 +667,30 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     </>
   );
 };
+
+const Classifications = ({
+  classifications,
+  onChange,
+  currentSelections,
+}: {
+  classifications: Classification[];
+  onChange: (selectedCategories: SelectedCategories[]) => void;
+  currentSelections?: SelectedCategories[];
+}) => (
+  <Grid item>
+    <Card>
+      <CardContent>
+        <Typography variant="h5">
+          {languageStrings.searchpage.categorySelector.title}
+        </Typography>
+        <CategorySelector
+          classifications={classifications}
+          onSelectedCategoriesChange={onChange}
+          selectedCategories={currentSelections}
+        />
+      </CardContent>
+    </Card>
+  </Grid>
+);
 
 export default SearchPage;
