@@ -134,6 +134,8 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
   public void selectStatus(boolean allStatus) {
     String buttonText = allStatus ? "All" : "Live";
     WebElement statusSelector = getRefineControl("StatusSelector");
+    // Normally hidden in the collapsed section of the Refine Panel
+    waiter.until(ExpectedConditions.visibilityOf(statusSelector));
     selectFromButtonGroup(statusSelector, buttonText);
   }
 
@@ -145,6 +147,8 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
   public void selectSearchAttachments(boolean search) {
     String buttonText = search ? "Yes" : "No";
     WebElement searchAttachmentsSelector = getRefineControl("SearchAttachmentsSelector");
+    // Normally hidden in the collapsed section of the Refine Panel
+    waiter.until(ExpectedConditions.visibilityOf(searchAttachmentsSelector));
     selectFromButtonGroup(searchAttachmentsSelector, buttonText);
   }
 
