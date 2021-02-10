@@ -209,11 +209,7 @@ export const CategorySelector = ({
   }: CategoryListItemProps) => {
     const { term } = category;
     return (
-      <ListItem
-        key={`${classificationID}:${term}`}
-        disableGutters
-        className={classes.classificationListItem}
-      >
+      <ListItem disableGutters className={classes.classificationListItem}>
         <FormControlLabel
           style={{ alignItems: "flex-start" }}
           control={
@@ -296,7 +292,11 @@ export const CategorySelector = ({
   }: ListCategoryProps) => (
     <>
       {categories.slice(0, expanded ? undefined : maxDisplay).map((facet) => (
-        <CategoryListItem classificationID={id} category={facet} />
+        <CategoryListItem
+          classificationID={id}
+          category={facet}
+          key={`${id}:${facet.term}`}
+        />
       ))}
     </>
   );

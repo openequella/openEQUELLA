@@ -165,8 +165,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const history = useHistory();
   const location = useLocation();
   // True when the current screen width is <= MUI breakpoint 'sm'.
-  const isInSmallScreen: boolean = useMediaQuery((theme: Theme) =>
-    theme.breakpoints.down("sm")
+  const isInSmallScreen: boolean = useMediaQuery(
+    (theme: Theme) => theme.breakpoints.down("sm"),
+    { noSsr: true } // Set 'noSsr' to true as we only do client-side rendering.
   );
 
   const [state, dispatch] = useReducer(reducer, { status: "initialising" });

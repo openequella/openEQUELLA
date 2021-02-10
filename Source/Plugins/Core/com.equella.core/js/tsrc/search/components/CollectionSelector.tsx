@@ -75,7 +75,7 @@ export const CollectionSelector = ({
         getTagProps: AutocompleteGetTagProps
       ) =>
         collections.map((collection: Collection, index: number) => (
-          <Tooltip title={collection.name}>
+          <Tooltip title={collection.name} key={collection.uuid}>
             <Chip
               style={{ maxWidth: "50%" }}
               id={"collectionChip " + collection.uuid}

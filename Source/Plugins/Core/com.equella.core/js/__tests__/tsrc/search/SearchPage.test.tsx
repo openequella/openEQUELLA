@@ -782,7 +782,9 @@ describe("In Selection Session", () => {
   it("should not show the share search button", async () => {
     updateMockGetRenderData(basicRenderData);
     mockSearch.mockResolvedValue(getSearchResult);
-    const copySearchButton = screen.queryByTitle(
+    const { queryByTitle } = await renderSearchPage();
+
+    const copySearchButton = queryByTitle(
       languageStrings.searchpage.shareSearchHelperText
     );
     expect(copySearchButton).not.toBeInTheDocument();
@@ -823,8 +825,11 @@ describe("Responsiveness", () => {
       languageStrings.searchpage.refineSearchPanel.title
     );
     expect(refineSearchButton).toBeInTheDocument();
-
-    userEvent.click(refineSearchButton!); // It's safe to add a '!' now.
+    userEvent.click(refineSearchButton!);
+    await act(async () => {
+      // Put this click in an act because it will update some components' state.
+      await userEvent.click(refineSearchButton!); // It's safe to add a '!' now.
+    });
     expect(getSidePanel(page)).toBeInTheDocument();
   });
 });
