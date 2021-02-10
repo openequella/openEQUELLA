@@ -65,8 +65,7 @@ object SearchHelper {
     search.setUseServerTimeZone(true)
     search.setQuery(params.query)
     search.setOwner(params.owner)
-    search.setMimeTypes(
-      (if (params.mimeTypes.isEmpty) None else Some(params.mimeTypes.toList.asJava)).orNull)
+    search.setMimeTypes(params.mimeTypes.toList.asJava)
 
     val orderType =
       DefaultSearch.getOrderType(Option(params.order).map(_.toLowerCase).orNull, params.query)
