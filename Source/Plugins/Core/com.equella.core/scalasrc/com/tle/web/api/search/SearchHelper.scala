@@ -18,10 +18,6 @@
 
 package com.tle.web.api.search
 
-import java.time.format.DateTimeParseException
-import java.time.{LocalDate, LocalDateTime, LocalTime, ZoneId}
-import java.util.Date
-
 import com.dytech.edge.exceptions.BadRequestException
 import com.tle.beans.entity.DynaCollection
 import com.tle.beans.item.{Comment, ItemIdKey}
@@ -41,6 +37,9 @@ import com.tle.web.api.item.equella.interfaces.beans.{
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
 import com.tle.web.api.search.model.{SearchParam, SearchResultAttachment, SearchResultItem}
 
+import java.time.format.DateTimeParseException
+import java.time.{LocalDate, LocalDateTime, LocalTime, ZoneId}
+import java.util.Date
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ListBuffer
 
@@ -66,6 +65,7 @@ object SearchHelper {
     search.setUseServerTimeZone(true)
     search.setQuery(params.query)
     search.setOwner(params.owner)
+    search.setMimeTypes(params.mimeTypes.toList.asJava)
 
     val orderType =
       DefaultSearch.getOrderType(Option(params.order).map(_.toLowerCase).orNull, params.query)

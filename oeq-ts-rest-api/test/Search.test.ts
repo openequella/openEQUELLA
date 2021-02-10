@@ -69,6 +69,13 @@ describe('Search for items', () => {
     expect(findItemByStatus(STATUS_LIVE)).toBeTruthy();
     expect(findItemByStatus(STATUS_PERSONAL)).toBeTruthy();
   });
+
+  it('should return results which match one of multiple MIME types', async () => {
+    const searchResult = await doSearch({
+      mimeTypes: ['text/plain', 'application/pdf'],
+    });
+    expect(searchResult.results).toHaveLength(7);
+  });
 });
 
 describe('Search for attachments', () => {
