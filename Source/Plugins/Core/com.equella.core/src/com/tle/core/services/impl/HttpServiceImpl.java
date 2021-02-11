@@ -222,7 +222,7 @@ public class HttpServiceImpl implements HttpService {
   }
 
   public void clearCookieCache(String url) {
-    COOKIE_CACHE.invalidate(toCacheKey(url));
+    COOKIE_CACHE.invalidateAll();
     COOKIE_CACHE.cleanUp();
   }
 
