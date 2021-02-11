@@ -796,7 +796,7 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
           }
           if (response.getCode() == 400 && response.getBody().contains("Apache")) {
             // Invalidating cookie cache, as this is a known source of these errors
-            httpService.clearCookieCache(request.getUrl());
+            httpService.clearCookieCache();
             LOGGER.debug("Error response from Canvas's Apache");
             LOGGER.debug(response.getCode());
             LOGGER.debug(response.getMessage());

@@ -62,8 +62,9 @@ public interface HttpService {
   /** Encodes a URL parameter value */
   String urlParamEncode(String value);
 
-  /** Invalidates a cookie cache for a given URL (URLs are used as cache keys) */
-  void clearCookieCache(String url);
+  /** Invalidates cookie cache */
+  void clearCookieCache();
+
   /**
    * Checks the code of the response for error codes (404, 500 etc)
    *

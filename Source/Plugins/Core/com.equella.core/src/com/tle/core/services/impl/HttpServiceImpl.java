@@ -221,7 +221,7 @@ public class HttpServiceImpl implements HttpService {
     return /* req.getSession().getId() */ "FIXME" + ':' + url;
   }
 
-  public void clearCookieCache(String url) {
+  public void clearCookieCache() {
     COOKIE_CACHE.invalidateAll();
     COOKIE_CACHE.cleanUp();
   }
