@@ -223,6 +223,7 @@ public class HttpServiceImpl implements HttpService {
 
   public void clearCookieCache(String url) {
     COOKIE_CACHE.invalidate(toCacheKey(url));
+    COOKIE_CACHE.cleanUp();
   }
 
   private DefaultHttpClient createClient(boolean https) {
