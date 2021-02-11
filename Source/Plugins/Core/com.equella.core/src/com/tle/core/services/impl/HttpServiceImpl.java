@@ -203,7 +203,7 @@ public class HttpServiceImpl implements HttpService {
       }
 
       // TODO: see fixme about cookie cache
-      final String cacheKey = /* req.getSession().getId() */ "FIXME" + ':' + url;
+      final String cacheKey = toCacheKey(url);
       Cookies cookies = COOKIE_CACHE.getIfPresent(cacheKey);
       if (cookies == null) {
         cookies = new Cookies();
@@ -215,6 +215,14 @@ public class HttpServiceImpl implements HttpService {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public String toCacheKey(String url) {
+    return /* req.getSession().getId() */ "FIXME" + ':' + url;
+  }
+
+  public void clearCookieCache(String url) {
+    COOKIE_CACHE.invalidate(toCacheKey(url));
   }
 
   private DefaultHttpClient createClient(boolean https) {
