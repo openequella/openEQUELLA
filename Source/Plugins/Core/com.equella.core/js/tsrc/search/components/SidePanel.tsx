@@ -17,7 +17,6 @@
  */
 import { Grid } from "@material-ui/core";
 import * as React from "react";
-import { languageStrings } from "../../util/langstrings";
 import { CategorySelectorProps } from "./CategorySelector";
 
 import { ClassificationsPanel } from "./ClassificationsPanel";
@@ -38,39 +37,16 @@ interface SidePanelProps {
  * Right-hand side panel which includes Refine Search panel and Classifications panel.
  */
 export const SidePanel = ({
-  refinePanelProps: {
-    controls,
-    onChangeExpansion,
-    panelExpanded,
-    showFilterIcon,
-  },
-  classificationsPanelProps: {
-    classifications,
-    onSelectedCategoriesChange,
-    selectedCategories,
-  },
+  refinePanelProps,
+  classificationsPanelProps,
 }: SidePanelProps) => (
-  <Grid
-    container
-    direction="column"
-    spacing={2}
-    title={languageStrings.searchpage.sidePanel.title}
-  >
+  <Grid container direction="column" spacing={2}>
     <Grid item>
-      <RefineSearchPanel
-        controls={controls}
-        onChangeExpansion={onChangeExpansion}
-        panelExpanded={panelExpanded}
-        showFilterIcon={showFilterIcon}
-      />
+      <RefineSearchPanel {...refinePanelProps} />
     </Grid>
-    {classifications.length > 0 && (
+    {classificationsPanelProps.classifications.length > 0 && (
       <Grid item>
-        <ClassificationsPanel
-          classifications={classifications}
-          onSelectedCategoriesChange={onSelectedCategoriesChange}
-          selectedCategories={selectedCategories}
-        />
+        <ClassificationsPanel {...classificationsPanelProps} />
       </Grid>
     )}
   </Grid>

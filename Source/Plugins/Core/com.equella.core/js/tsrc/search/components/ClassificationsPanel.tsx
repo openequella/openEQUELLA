@@ -21,23 +21,16 @@ import { languageStrings } from "../../util/langstrings";
 import { CategorySelector, CategorySelectorProps } from "./CategorySelector";
 
 /**
- * Provide a MUI Card which display CategorySelector and the title.
+ * Lays out `CategorySelector` in a MUI `Card` with appropriate title. As a result, props
+ * are simply passed through to `CategorySelector`.
  */
-export const ClassificationsPanel = ({
-  classifications,
-  onSelectedCategoriesChange,
-  selectedCategories,
-}: CategorySelectorProps) => (
+export const ClassificationsPanel = (props: CategorySelectorProps) => (
   <Card>
     <CardContent>
       <Typography variant="h5">
         {languageStrings.searchpage.categorySelector.title}
       </Typography>
-      <CategorySelector
-        classifications={classifications}
-        onSelectedCategoriesChange={onSelectedCategoriesChange}
-        selectedCategories={selectedCategories}
-      />
+      <CategorySelector {...props} />
     </CardContent>
   </Card>
 );
