@@ -792,8 +792,9 @@ describe("In Selection Session", () => {
 });
 
 describe("Responsiveness", () => {
-  const getSidePanel = (page: RenderResult) =>
-    page.queryByTitle(languageStrings.searchpage.sidePanel.title);
+  // We can query the Refine Search Panel as it always exists in the Side Panel.
+  const querySidePanel = (page: RenderResult) =>
+    page.queryByText(languageStrings.searchpage.refineSearchPanel.title);
   let page: RenderResult;
 
   beforeAll(() => {
@@ -817,7 +818,7 @@ describe("Responsiveness", () => {
   });
 
   it("should hide the side panel in small screens", async () => {
-    expect(getSidePanel(page)).not.toBeInTheDocument();
+    expect(querySidePanel(page)).not.toBeInTheDocument();
   });
 
   it("should display the button controlling the side panel visibility", async () => {
@@ -825,11 +826,10 @@ describe("Responsiveness", () => {
       languageStrings.searchpage.refineSearchPanel.title
     );
     expect(refineSearchButton).toBeInTheDocument();
-    userEvent.click(refineSearchButton!);
     await act(async () => {
       // Put this click in an act because it will update some components' state.
       await userEvent.click(refineSearchButton!); // It's safe to add a '!' now.
     });
-    expect(getSidePanel(page)).toBeInTheDocument();
+    expect(querySidePanel(page)).toBeInTheDocument();
   });
 });
