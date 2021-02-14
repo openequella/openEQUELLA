@@ -15,8 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Drawer, Grid, useMediaQuery } from "@material-ui/core";
-import type { Theme } from "@material-ui/core/styles";
+import { Drawer, Grid, Hidden } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 
 import { isEqual } from "lodash";
@@ -164,11 +163,6 @@ const reducer = (state: State, action: Action): State => {
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const history = useHistory();
   const location = useLocation();
-  // True when the current screen width is <= MUI breakpoint 'sm'.
-  const isInSmallScreen: boolean = useMediaQuery(
-    (theme: Theme) => theme.breakpoints.down("sm"),
-    { noSsr: true } // Set 'noSsr' to true as we only do client-side rendering.
-  );
 
   const [state, dispatch] = useReducer(reducer, { status: "initialising" });
   const defaultSearchPageOptions: SearchPageOptions = {
@@ -676,7 +670,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                   onChange: handleSortOrderChanged,
                 }}
                 refineSearchProps={{
-                  isInSmallScreen: isInSmallScreen,
                   showRefinePanel: () => setShowRefinePanel(true),
                   isCriteriaSet: isCriteriaSet(),
                 }}
@@ -689,14 +682,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
             </Grid>
           </Grid>
         </Grid>
-        {
-          // Only show the right-hand side panels when NOT in small screen.
-          !isInSmallScreen && (
-            <Grid item md={4}>
-              {renderSidePanel()}
-            </Grid>
-          )
-        }
+        <Hidden smDown>
+          <Grid item md={4}>
+            {renderSidePanel()}
+          </Grid>
+        </Hidden>
       </Grid>
       <MessageInfo
         open={showSearchCopiedSnackBar}
@@ -704,7 +694,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         title={searchStrings.shareSearchConfirmationText}
         variant="success"
       />
-      {isInSmallScreen && (
+      <Hidden mdUp>
         <Drawer
           open={showRefinePanel}
           anchor="right"
@@ -712,7 +702,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         >
           {renderSidePanel()}
         </Drawer>
-      )}
+      </Hidden>
     </>
   );
 };

@@ -23,6 +23,7 @@ import {
   CardHeader,
   CircularProgress,
   Grid,
+  Hidden,
   IconButton,
   List,
   ListItem,
@@ -51,10 +52,6 @@ const useStyles = makeStyles({
 });
 
 interface RefineSearchProps {
-  /**
-   * True when current screen width is <= MUI breakpoint 'sm'
-   */
-  isInSmallScreen: boolean;
   /**
    * True when any search criteria has been set
    */
@@ -118,7 +115,7 @@ export const SearchResultList = ({
     onPageChange,
     onRowsPerPageChange,
   },
-  refineSearchProps: { isCriteriaSet, isInSmallScreen, showRefinePanel },
+  refineSearchProps: { isCriteriaSet, showRefinePanel },
   onClearSearchOptions,
   onCopySearchLink,
 }: SearchResultListProps) => {
@@ -156,7 +153,7 @@ export const SearchResultList = ({
                 </Button>
               </Tooltip>
             </Grid>
-            {isInSmallScreen && (
+            <Hidden mdUp>
               <Grid item>
                 <Tooltip title={searchPageStrings.refineSearchPanel.title}>
                   <IconButton
@@ -167,7 +164,7 @@ export const SearchResultList = ({
                   </IconButton>
                 </Tooltip>
               </Grid>
-            )}
+            </Hidden>
             {!inSelectionSession && (
               <Grid item>
                 <Tooltip title={searchPageStrings.shareSearchHelperText}>

@@ -77,7 +77,9 @@ import {
   queryStatusSelector,
 } from "./SearchPageHelper";
 
-const defaultTheme = createMuiTheme();
+const defaultTheme = createMuiTheme({
+  props: { MuiWithWidth: { initialWidth: "md" } },
+});
 const mockCollections = jest.spyOn(CollectionsModule, "collectionListSummary");
 const mockListUsers = jest.spyOn(UserModule, "listUsers");
 const mockListClassification = jest.spyOn(
@@ -792,29 +794,17 @@ describe("In Selection Session", () => {
 });
 
 describe("Responsiveness", () => {
+  const theme = createMuiTheme({
+    props: { MuiWithWidth: { initialWidth: "sm" } },
+  });
+
   // We can query the Refine Search Panel as it always exists in the Side Panel.
   const querySidePanel = (page: RenderResult) =>
     page.queryByText(languageStrings.searchpage.refineSearchPanel.title);
   let page: RenderResult;
 
-  beforeAll(() => {
-    Object.defineProperty(window, "matchMedia", {
-      writable: true,
-      value: jest.fn().mockImplementation((query) => ({
-        matches: true,
-        media: query,
-        onchange: null,
-        addListener: jest.fn(),
-        removeListener: jest.fn(),
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-      })),
-    });
-  });
-
   beforeEach(async () => {
-    page = await renderSearchPage();
+    page = await renderSearchPage(undefined, theme);
   });
 
   it("should hide the side panel in small screens", async () => {
