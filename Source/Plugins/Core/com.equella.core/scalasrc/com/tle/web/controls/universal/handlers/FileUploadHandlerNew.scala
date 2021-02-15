@@ -699,7 +699,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
               .validateBeforeUpload(mimeType, request.getContentLengthLong, controlSettings)
               .map(illegal)
               .getOrElse {
-                WebFileUploads.writeStream(uf, this, request.getPart("file").getInputStream) match {
+                WebFileUploads.writeStream(uf, this, request.getInputStream) match {
                   case Successful(fileInfo) =>
                     validateContent(info, this, uf.uploadPath) match {
                       case Left(ifr) =>

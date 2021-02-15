@@ -292,10 +292,11 @@ const doUpload = (
   const source = CancelToken.source();
   axiosSourceMap.set(uploadingFile.localId, source);
   const token = source.token;
-
-  const formData = new FormData();
-  formData.append("file", fileEntry);
-  return Axios.post<UpdateEntry | UploadFailed>(path, formData, {
+  return Axios.post<UpdateEntry | UploadFailed>(path, fileEntry, {
+    // IMPORTANT! Must specify the file type.
+    headers: {
+      "Content-Type": fileEntry.type || "application/octet-stream",
+    },
     cancelToken: token,
     onUploadProgress: (progressEvent: ProgressEvent) => {
       const uploadPercentage = Math.floor(
