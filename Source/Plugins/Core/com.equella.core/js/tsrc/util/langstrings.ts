@@ -397,9 +397,6 @@ export const languageStrings = {
           "Failed to get attachment viewer details",
       },
     },
-    sidePanel: {
-      title: "Side panel",
-    },
     statusSelector: {
       all: "All",
       live: "Live",
