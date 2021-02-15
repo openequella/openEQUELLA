@@ -15,10 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Card, CardContent, Grid, Typography } from "@material-ui/core";
+import { Drawer, Grid, Hidden } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 
-import { isEqual, pick } from "lodash";
+import { isEqual } from "lodash";
 import * as React from "react";
 import { useCallback, useEffect, useReducer, useState } from "react";
 import { useHistory, useLocation } from "react-router";
@@ -51,26 +51,25 @@ import {
   defaultPagedSearchResult,
   defaultSearchOptions,
   generateQueryStringFromSearchOptions,
+  getPartialSearchOptions,
   queryStringParamsToSearchOptions,
   searchItems,
   SearchOptions,
+  SearchOptionsFields,
 } from "../modules/SearchModule";
 import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
 import SearchBar from "../search/components/SearchBar";
 import { languageStrings } from "../util/langstrings";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
-import { CategorySelector } from "./components/CategorySelector";
 import { CollectionSelector } from "./components/CollectionSelector";
 import OwnerSelector from "./components/OwnerSelector";
-import {
-  RefinePanelControl,
-  RefineSearchPanel,
-} from "./components/RefineSearchPanel";
+import { RefinePanelControl } from "./components/RefineSearchPanel";
 import { SearchAttachmentsSelector } from "./components/SearchAttachmentsSelector";
 import {
   mapSearchResultItems,
   SearchResultList,
 } from "./components/SearchResultList";
+import { SidePanel } from "./components/SidePanel";
 import StatusSelector from "./components/StatusSelector";
 
 // destructure strings import
@@ -196,6 +195,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     searchSettings,
     setSearchSettings,
   ] = useState<OEQ.SearchSettings.Settings>();
+
+  const [showRefinePanel, setShowRefinePanel] = useState<boolean>(false);
 
   const handleError = useCallback(
     (error: Error) => {
@@ -344,24 +345,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     setFilterExpansion(!filterExpansion);
   };
 
-  /**
-   * Determines if any collapsible filters have been modified from their defaults
-   */
-  const areCollapsibleFiltersSet = (): boolean => {
-    const getCollapsibleOptions = (options: SearchOptions) =>
-      pick(options, [
-        "lastModifiedDateRange",
-        "owner",
-        "status",
-        "searchAttachments",
-      ]);
-
-    return !isEqual(
-      getCollapsibleOptions(defaultSearchOptions),
-      getCollapsibleOptions(searchPageOptions)
-    );
-  };
-
   const handlePageChanged = (page: number) =>
     search({ ...searchPageOptions, currentPage: page });
 
@@ -471,6 +454,49 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     });
   };
 
+  /**
+   * Determines if any collapsible filters have been modified from their defaults
+   */
+  const areCollapsibleFiltersSet = (): boolean => {
+    const fields: SearchOptionsFields[] = [
+      "lastModifiedDateRange",
+      "owner",
+      "status",
+      "searchAttachments",
+    ];
+    return !isEqual(
+      getPartialSearchOptions(defaultSearchOptions, fields),
+      getPartialSearchOptions(searchPageOptions, fields)
+    );
+  };
+
+  /**
+   * Determines if any search criteria has been set, including classifications, query and all filters.
+   */
+  const isCriteriaSet = (): boolean => {
+    const fields: SearchOptionsFields[] = [
+      "lastModifiedDateRange",
+      "owner",
+      "status",
+      "searchAttachments",
+      "collections",
+    ];
+
+    const isQueryOrFiltersSet = !isEqual(
+      getPartialSearchOptions(defaultSearchOptions, fields),
+      getPartialSearchOptions(searchPageOptions, fields)
+    );
+
+    // Field 'selectedCategories' is a bit different. Once a classification is selected, the category will persist in searchPageOptions.
+    // What we really care is if we have got any category that has any classification selected.
+    const isClassificationSelected: boolean =
+      searchPageOptions.selectedCategories?.some(
+        ({ categories }: SelectedCategories) => categories.length > 0
+      ) ?? false;
+
+    return isQueryOrFiltersSet || isClassificationSelected;
+  };
+
   const refinePanelControls: RefinePanelControl[] = [
     {
       idSuffix: "CollectionSelector",
@@ -561,27 +587,36 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     },
   ];
 
-  const classifications = (): Classification[] => {
-    const orEmpty = (c?: Classification[]) => c ?? [];
+  const renderSidePanel = () => {
+    const getClassifications = (): Classification[] => {
+      const orEmpty = (c?: Classification[]) => c ?? [];
 
-    switch (state.status) {
-      case "success":
-        return orEmpty(state.classifications);
-      case "searching":
-        return orEmpty(state.previousClassifications);
-    }
+      switch (state.status) {
+        case "success":
+          return orEmpty(state.classifications);
+        case "searching":
+          return orEmpty(state.previousClassifications);
+      }
 
-    return [];
-  };
+      return [];
+    };
 
-  const renderClassifications = (c = classifications()) =>
-    c.length > 0 && c.some((c) => c.categories.length > 0) ? (
-      <Classifications
-        classifications={c}
-        onChange={handleSelectedCategoriesChange}
-        currentSelections={searchPageOptions.selectedCategories}
+    return (
+      <SidePanel
+        refinePanelProps={{
+          controls: refinePanelControls,
+          onChangeExpansion: handleCollapsibleFilterClick,
+          panelExpanded: filterExpansion,
+          showFilterIcon: areCollapsibleFiltersSet(),
+        }}
+        classificationsPanelProps={{
+          classifications: getClassifications(),
+          onSelectedCategoriesChange: handleSelectedCategoriesChange,
+          selectedCategories: searchPageOptions.selectedCategories,
+        }}
       />
-    ) : null;
+    );
+  };
 
   const searchResult = (): OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> => {
     const orDefault = (
@@ -606,7 +641,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item xs={8}>
+        <Grid item sm={12} md={8}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <SearchBar
@@ -634,6 +669,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                   value: searchPageOptions.sortOrder,
                   onChange: handleSortOrderChanged,
                 }}
+                refineSearchProps={{
+                  showRefinePanel: () => setShowRefinePanel(true),
+                  isCriteriaSet: isCriteriaSet(),
+                }}
                 onClearSearchOptions={handleClearSearchOptions}
                 onCopySearchLink={handleCopySearch}
               >
@@ -643,20 +682,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
             </Grid>
           </Grid>
         </Grid>
-
-        <Grid item xs={4}>
-          <Grid container direction="column" spacing={2}>
-            <Grid item>
-              <RefineSearchPanel
-                controls={refinePanelControls}
-                onChangeExpansion={handleCollapsibleFilterClick}
-                panelExpanded={filterExpansion}
-                showFilterIcon={areCollapsibleFiltersSet()}
-              />
-            </Grid>
-            {renderClassifications()}
+        <Hidden smDown>
+          <Grid item md={4}>
+            {renderSidePanel()}
           </Grid>
-        </Grid>
+        </Hidden>
       </Grid>
       <MessageInfo
         open={showSearchCopiedSnackBar}
@@ -664,33 +694,17 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         title={searchStrings.shareSearchConfirmationText}
         variant="success"
       />
+      <Hidden mdUp>
+        <Drawer
+          open={showRefinePanel}
+          anchor="right"
+          onClose={() => setShowRefinePanel(false)}
+        >
+          {renderSidePanel()}
+        </Drawer>
+      </Hidden>
     </>
   );
 };
-
-const Classifications = ({
-  classifications,
-  onChange,
-  currentSelections,
-}: {
-  classifications: Classification[];
-  onChange: (selectedCategories: SelectedCategories[]) => void;
-  currentSelections?: SelectedCategories[];
-}) => (
-  <Grid item>
-    <Card>
-      <CardContent>
-        <Typography variant="h5">
-          {languageStrings.searchpage.categorySelector.title}
-        </Typography>
-        <CategorySelector
-          classifications={classifications}
-          onSelectedCategoriesChange={onChange}
-          selectedCategories={currentSelections}
-        />
-      </CardContent>
-    </Card>
-  </Grid>
-);
 
 export default SearchPage;

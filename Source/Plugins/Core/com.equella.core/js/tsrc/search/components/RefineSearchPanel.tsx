@@ -54,7 +54,7 @@ export interface RefinePanelControl {
   alwaysVisible?: boolean;
 }
 
-interface RefinePanelProps {
+export interface RefinePanelProps {
   /**
    * Child components rendered inside this panel.
    */

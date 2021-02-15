@@ -86,39 +86,37 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
 
   return (
     <Grid container direction="column" spacing={0}>
-      <>
-        <Grid item>
-          {schemaList && (
-            <>
-              <Select
-                fullWidth
-                label={
-                  <InputLabel shrink id="select-label">
-                    {strings.schema}
-                  </InputLabel>
-                }
-                value={selectedSchema}
-                displayEmpty
-                onChange={(event) => {
-                  setSelectedSchema(event.target.value as string | undefined);
-                }}
-              >
-                {schemaList}
-              </Select>
-              <FormHelperText>{strings.permissionsHelperText}</FormHelperText>
-            </>
-          )}
-        </Grid>
-        <Grid item>
-          {schema && (
-            <SchemaNodeSelector
-              expandControls
-              tree={schema}
-              setSelectedNode={setSchemaNodePath}
-            />
-          )}
-        </Grid>
-      </>
+      <Grid item>
+        {schemaList && (
+          <>
+            <Select
+              fullWidth
+              label={
+                <InputLabel shrink id="select-label">
+                  {strings.schema}
+                </InputLabel>
+              }
+              value={selectedSchema ?? ""}
+              displayEmpty
+              onChange={(event) => {
+                setSelectedSchema(event.target.value as string | undefined);
+              }}
+            >
+              {schemaList}
+            </Select>
+            <FormHelperText>{strings.permissionsHelperText}</FormHelperText>
+          </>
+        )}
+      </Grid>
+      <Grid item>
+        {schema && (
+          <SchemaNodeSelector
+            expandControls
+            tree={schema}
+            setSelectedNode={setSchemaNodePath}
+          />
+        )}
+      </Grid>
     </Grid>
   );
 }

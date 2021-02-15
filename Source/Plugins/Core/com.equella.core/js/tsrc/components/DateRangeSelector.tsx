@@ -149,7 +149,7 @@ export const DateRangeSelector = ({
       start && end ? isStartValid && isEndValid && start <= end : false;
     // Call onDateRangeChange for above four cases.
     if (openStart || openEnd || openRange || closedRange) {
-      onDateRangeChange(range);
+      onDateRangeChange({ start: range.start, end: range.end });
     }
   };
   /**
