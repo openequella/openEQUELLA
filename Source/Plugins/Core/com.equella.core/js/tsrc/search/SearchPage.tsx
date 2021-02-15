@@ -55,6 +55,7 @@ import {
   queryStringParamsToSearchOptions,
   searchItems,
   SearchOptions,
+  SearchOptionsFields,
 } from "../modules/SearchModule";
 import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
 import SearchBar from "../search/components/SearchBar";
@@ -457,7 +458,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
    * Determines if any collapsible filters have been modified from their defaults
    */
   const areCollapsibleFiltersSet = (): boolean => {
-    const fields = [
+    const fields: SearchOptionsFields[] = [
       "lastModifiedDateRange",
       "owner",
       "status",
@@ -473,12 +474,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
    * Determines if any search criteria has been set, including classifications, query and all filters.
    */
   const isCriteriaSet = (): boolean => {
-    const fields = [
+    const fields: SearchOptionsFields[] = [
       "lastModifiedDateRange",
       "owner",
       "status",
       "searchAttachments",
-      "query",
       "collections",
     ];
 

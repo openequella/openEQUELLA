@@ -91,6 +91,11 @@ export interface SearchOptions {
 }
 
 /**
+ * The type representing fields of SearchOptions.
+ */
+export type SearchOptionsFields = keyof SearchOptions;
+
+/**
  * Represent a date range which has an optional start and end.
  */
 export interface DateRange {
@@ -496,5 +501,5 @@ export const legacyQueryStringToSearchOptions = async (
  */
 export const getPartialSearchOptions = (
   options: SearchOptions,
-  fields: string[]
+  fields: SearchOptionsFields[]
 ) => pick(options, fields);
