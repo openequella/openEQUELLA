@@ -148,12 +148,10 @@ export const InlineFileUploader = ({
   });
 
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>(
-    entries.flatMap((entry) => {
-      const withChildren: UploadedFile[] = [];
-      return withChildren
-        .concat(initialiseEntry(entry, false))
-        .concat(entry.children.map((e) => initialiseEntry(e, true)));
-    })
+    entries.flatMap((entry) => [
+      initialiseEntry(entry, false),
+      ...entry.children.map((e) => initialiseEntry(e, true)),
+    ])
   );
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
   const [attachmentCount, setAttachmentCount] = useState<number>(
