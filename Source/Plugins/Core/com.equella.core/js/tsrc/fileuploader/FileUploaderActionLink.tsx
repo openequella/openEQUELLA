@@ -50,7 +50,7 @@ export const FileUploaderActionLink = ({
     className={className}
     onClick={onClick}
     title={text}
-    aria-role="button"
+    role="button"
     style={{ cursor: "pointer" }} // Add this style since this Link does not have 'href'.
   >
     {text}
