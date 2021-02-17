@@ -35,6 +35,7 @@ import com.tle.core.events.services.EventService;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionCache;
 import com.tle.core.institution.InstitutionService;
+import com.tle.core.item.dao.AttachmentDao;
 import com.tle.core.mimetypes.dao.MimeEntryDao;
 import com.tle.core.mimetypes.institution.MimeMigrator;
 import com.tle.core.plugins.AbstractPluginService;
@@ -43,6 +44,7 @@ import com.tle.core.plugins.PluginTracker;
 import com.tle.core.plugins.PluginTracker.ExtensionParamComparator;
 import com.tle.core.security.impl.RequiresPrivilege;
 import com.tle.exceptions.AccessDeniedException;
+import com.tle.web.controls.resource.ResourceAttachmentBean;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -56,6 +58,7 @@ import javax.inject.Singleton;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.hibernate.Hibernate;
+import org.hibernate.criterion.Restrictions;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
 import org.springframework.transaction.annotation.Propagation;
@@ -70,6 +73,7 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
       AbstractPluginService.getMyPluginId(MimeTypeServiceImpl.class) + ".";
   @Inject private MimeEntryDao mimeEntryDao;
   @Inject private EventService eventService;
+  @Inject private AttachmentDao attachmentDao;
 
   private PluginTracker<TextExtracterExtension> textExtracterTracker;
 
@@ -165,6 +169,23 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
       return entry.getType();
     }
     return DEFAULT_MIMETYPE;
+  }
+
+  public String getMimeTypeForAttachmentUuid(String attachmentUuid) {
+    Attachment attachment = attachmentDao.findByCriteria(Restrictions.eq("uuid", attachmentUuid));
+    return getMimeEntryForAttachment(attachment);
+  }
+
+  public String getMimeTypeForResourceAttachmentBean(
+      ResourceAttachmentBean resourceAttachmentBean) {
+    switch (resourceAttachmentBean.getResourceType()) {
+      case 'a':
+        return getMimeTypeForAttachmentUuid(resourceAttachmentBean.getAttachmentUuid());
+      case 'p':
+        return "equella/item";
+      default:
+        return DEFAULT_MIMETYPE;
+    }
   }
 
   @Override
@@ -445,6 +466,11 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
     String type = attachType.name().toLowerCase();
     if (attachType == AttachmentType.CUSTOM) {
       type += '/' + ((CustomAttachment) attachment).getType().toLowerCase();
+    }
+    if (type.equals("custom/resource")) {
+      // Recurse to drill into the linked attachment, so we can use the correct viewer
+      return getMimeEntryForAttachment(
+          attachmentDao.findByCriteria(Restrictions.eq("uuid", attachment.getUrl())));
     }
     Map<String, List<Extension>> map = getExtensionMap();
     List<Extension> extensions = map.get(type);

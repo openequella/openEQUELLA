@@ -23,6 +23,7 @@ import com.tle.annotation.Nullable;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.mime.MimeEntry;
 import com.tle.core.TextExtracterExtension;
+import com.tle.web.controls.resource.ResourceAttachmentBean;
 import java.util.Collection;
 import java.util.List;
 
@@ -36,6 +37,10 @@ public interface MimeTypeService {
    * @return If the extension is not known then application/octet-stream is returned
    */
   String getMimeTypeForFilename(String filename);
+
+  String getMimeTypeForAttachmentUuid(String attachmentUuid);
+
+  String getMimeTypeForResourceAttachmentBean(ResourceAttachmentBean resourceAttachmentBean);
 
   @Nullable
   MimeEntry getEntryForMimeType(String mimeType);
