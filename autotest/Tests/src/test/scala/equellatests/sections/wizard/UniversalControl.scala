@@ -10,7 +10,7 @@ import scala.util.Try
 class UniversalControl(val page: WizardPageTab, val ctrlNum: Int) extends WizardControl {
 
   private def actionLinkBy(action: String) =
-    By.xpath("div/div[contains(@class, 'actions')]/div/button[text()=" + quoteXPath(action) + "]")
+    By.xpath("div/div[contains(@class, 'actions')]/div/a[text()=" + quoteXPath(action) + "]")
 
   private val cancelBtnBy =
     By.xpath("div/div[contains(@class, 'actions')]/div/button[contains(@title, 'Cancel upload')]")
