@@ -20,7 +20,7 @@ package com.tle.web.api.search
 
 import com.dytech.edge.exceptions.BadRequestException
 import com.tle.beans.entity.DynaCollection
-import com.tle.beans.item.{Comment, ItemIdKey}
+import com.tle.beans.item.{Bookmark, Comment, ItemIdKey}
 import com.tle.common.Check
 import com.tle.common.beans.exception.NotFoundException
 import com.tle.common.search.DefaultSearch
@@ -205,7 +205,8 @@ object SearchHelper {
       displayFields = bean.getDisplayFields.asScala.toList,
       displayOptions = Option(bean.getDisplayOptions),
       keywordFoundInAttachment = item.keywordFound,
-      links = getLinksFromBean(bean)
+      links = getLinksFromBean(bean),
+      isBookmarked = getBookmark(key).isDefined
     )
   }
 
@@ -279,4 +280,7 @@ object SearchHelper {
     */
   def getLinksFromBean[T <: AbstractExtendableBean](bean: T) =
     bean.get("links").asInstanceOf[java.util.Map[String, String]]
+
+  def getBookmark(itemID: ItemIdKey): Option[Bookmark] =
+    Option(LegacyGuice.bookmarkService.getByItem(itemID))
 }
