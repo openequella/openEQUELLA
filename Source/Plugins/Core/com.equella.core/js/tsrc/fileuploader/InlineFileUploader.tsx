@@ -88,7 +88,13 @@ export interface InlineFileUploaderProps {
    */
   canUpload: boolean;
   /**
-   * The function used to open the Universal Resource Dialog to update a uploaded file
+   * The function is used to open the Universal Resource Dialog to manage resources.
+   * To add a new resource, pass two empty strings in.
+   * To edit a file, pass an empty string as the first parameter and the file's ID
+   * as the second parameter.
+   * To replace a file, pass the file's ID as the first parameter and an empty string
+   * as the second parameter.
+   *
    * @param replaceUuid The ID of a file that is the replacement of a selected file
    * @param editUuid The ID of a selected file
    */

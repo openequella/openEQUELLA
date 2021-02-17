@@ -28,7 +28,7 @@ interface UploadFileNameProps {
    */
   link?: string;
   /**
-   * True if an indentation is required
+   * `true` if the entry should be indented
    */
   indented: boolean;
 }
@@ -44,7 +44,7 @@ export const UploadFileName = ({
 }: UploadFileNameProps) => (
   <div className={indented ? "indent" : ""}>
     {link ? (
-      <Link href={link} target="_blank">
+      <Link href={link} target="_blank" rel="noopener noreferrer">
         {fileName}
       </Link>
     ) : (

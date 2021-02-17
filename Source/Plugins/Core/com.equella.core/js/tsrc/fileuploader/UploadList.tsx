@@ -65,7 +65,7 @@ export const UploadList = ({
         /**
          * Build the content of each ListItem. Directly show the content for any UploadedFile that
          * does not have any error message. For other cases, use ListItemText to wrap the content,
-         * that's, file name as primary text and other information as second text.
+         * that's, file name as primary text and other information as secondary text.
          */
         const ListItemContent = () => {
           const primaryText = (

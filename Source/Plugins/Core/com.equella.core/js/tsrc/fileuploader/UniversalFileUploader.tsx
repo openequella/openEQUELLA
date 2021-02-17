@@ -177,6 +177,9 @@ export const UniversalFileUploader = ({
         },
   ];
 
+  // Build an Icon button for adding Scrapbooks. In Old UI, this is achieved by legacy CSS styles.
+  // In New UI, use component LabelledIconButton. The reason for using '<a>' for Old UI is because
+  // the legacy style 'add' only applies to '<a>'.
   const AddScrapBookButton = () => {
     const commonProps = {
       id: `${ctrlId}_filesFromScrapbookLink`,

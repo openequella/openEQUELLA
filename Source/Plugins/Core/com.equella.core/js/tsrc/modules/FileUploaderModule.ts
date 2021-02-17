@@ -67,7 +67,7 @@ export interface UploadedFile {
    */
   errorMessage?: string;
   /**
-   * Whether to show this file with an indentation. Typically, true for child AjaxFileEntry.
+   * Whether to show this file indented. Typically, true for child AjaxFileEntry.
    */
   indented: boolean;
 }
@@ -293,7 +293,9 @@ const doUpload = (
   axiosSourceMap.set(uploadingFile.localId, source);
   const token = source.token;
   return Axios.post<UpdateEntry | UploadFailed>(path, fileEntry, {
-    // IMPORTANT! Must specify the file type.
+    // IMPORTANT! Must specify the file type. There is legacy server side code that consumes
+    // the InputStream of request body if Content-Type is `application/x-www-form-urlencoded`,
+    // which is the default value. That will result in uploaded files being empty.
     headers: {
       "Content-Type": fileEntry.type || "application/octet-stream",
     },
@@ -389,7 +391,7 @@ export const deleteUpload = (
       .catch((error: Error) => {
         onError({
           ...file,
-          errorMessage: `Fail to delete ${name} due to error: ${error.message}`,
+          errorMessage: `Failed to delete ${name} due to error: ${error.message}`,
         });
       });
   }

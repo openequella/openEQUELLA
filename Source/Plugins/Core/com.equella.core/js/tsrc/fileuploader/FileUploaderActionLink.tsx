@@ -43,13 +43,14 @@ export const FileUploaderActionLink = ({
   id,
   className,
 }: FileActionLinkProps) => (
-  // This Link is used as a button but wo don't do ' component="button" ' because
+  // This Link is used as a button but we don't use `component="button"` because
   // this will break UI consistency (color & font size) in Old UI.
   <Link
     id={id}
     className={className}
     onClick={onClick}
     title={text}
+    aria-role="button"
     style={{ cursor: "pointer" }} // Add this style since this Link does not have 'href'.
   >
     {text}
