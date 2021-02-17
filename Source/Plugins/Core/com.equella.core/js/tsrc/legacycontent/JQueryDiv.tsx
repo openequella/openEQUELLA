@@ -19,18 +19,27 @@ import * as React from "react";
 
 export interface JQueryDivProps extends React.HTMLAttributes<HTMLDivElement> {
   html: string;
-  script?: string;
-  afterHtml?: () => void;
   children?: never;
 }
 
-export default React.memo(function JQueryDiv({
-  afterHtml,
-  script,
-  html,
-  ...withoutOthers
-}: JQueryDivProps) {
+/**
+ * Provides a means to have a `div` whose content is the raw HTML returned from the server. Also
+ * used to support the various JQuery AJAX stuff partially due to the clean-up effect of emptying
+ * out the `div`.
+ *
+ * It would be nice if we could get away with a simpler:
+ *
+ * `<div {...withoutOthers} dangerouslySetInnerHTML={{ __html: html}}/>`
+ *
+ * However that does not work, using jQuery to set the content of the `div` and then especially
+ * clearing the `div` in the clean-up effect is required for some edge cases. Why, is not entirely
+ * clear.
+ */
+const JQueryDiv = React.memo(({ html, ...withoutOthers }: JQueryDivProps) => {
   const divElem = React.useRef<HTMLElement>();
+
+  // Just a clean-up effect to clear out the div at un-mount time.
+  // This is key for supporting the AJAXy stuff.
   React.useEffect(
     () => () => {
       if (divElem.current) {
@@ -39,6 +48,7 @@ export default React.memo(function JQueryDiv({
     },
     []
   );
+
   return (
     <div
       {...withoutOthers}
@@ -46,11 +56,10 @@ export default React.memo(function JQueryDiv({
         if (e) {
           divElem.current = e;
           $(e).html(html);
-          // eslint-disable-next-line no-eval
-          if (script) window.eval(script);
-          if (afterHtml) afterHtml();
         }
       }}
     />
   );
 });
+
+export default JQueryDiv;

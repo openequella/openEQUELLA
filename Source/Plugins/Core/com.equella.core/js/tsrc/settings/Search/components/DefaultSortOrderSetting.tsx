@@ -21,16 +21,15 @@ import {
   OutlinedInput,
   Select,
 } from "@material-ui/core";
-import { Static } from "runtypes";
-import { SortOrder } from "../../../modules/SearchSettingsModule";
 import * as React from "react";
 import { languageStrings } from "../../../util/langstrings";
 import { makeStyles } from "@material-ui/core/styles";
+import * as OEQ from "@openequella/rest-api-client";
 
 export interface DefaultSortOrderSettingProps {
   disabled: boolean;
-  value: Static<typeof SortOrder>;
-  setValue: (order: Static<typeof SortOrder>) => void;
+  value?: OEQ.SearchSettings.SortOrder;
+  setValue: (order: OEQ.SearchSettings.SortOrder) => void;
 }
 const useStyles = makeStyles({
   select: {
@@ -45,28 +44,32 @@ export default function DefaultSortOrderSetting({
   const searchPageSettingsStrings =
     languageStrings.settings.searching.searchPageSettings;
   const classes = useStyles();
+
+  const validateSortOrder = (value: unknown): OEQ.SearchSettings.SortOrder =>
+    OEQ.SearchSettings.SortOrderRunTypes.check(value);
+
   return (
     <FormControl variant="outlined">
       <Select
         SelectDisplayProps={{ id: "_sortOrder" }}
         disabled={disabled}
-        onChange={(event) => setValue(SortOrder.check(event.target.value))}
+        onChange={(event) => setValue(validateSortOrder(event.target.value))}
         variant="outlined"
         value={value}
         className={classes.select}
         input={<OutlinedInput labelWidth={0} id="_sortOrder" />}
       >
         <MenuItem value="RANK">{searchPageSettingsStrings.relevance}</MenuItem>
-        <MenuItem value={SortOrder.check("DATEMODIFIED")}>
+        <MenuItem value={validateSortOrder("DATEMODIFIED")}>
           {searchPageSettingsStrings.lastModified}
         </MenuItem>
-        <MenuItem value={SortOrder.check("DATECREATED")}>
+        <MenuItem value={validateSortOrder("DATECREATED")}>
           {searchPageSettingsStrings.dateCreated}
         </MenuItem>
-        <MenuItem value={SortOrder.check("NAME")}>
+        <MenuItem value={validateSortOrder("NAME")}>
           {searchPageSettingsStrings.title}
         </MenuItem>
-        <MenuItem value={SortOrder.check("RATING")}>
+        <MenuItem value={validateSortOrder("RATING")}>
           {searchPageSettingsStrings.userRating}
         </MenuItem>
       </Select>

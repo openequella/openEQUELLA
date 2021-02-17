@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import Axios from "axios";
+import { Literal, match } from "runtypes";
 import {
   API_BASE_URL,
   AppConfig,
@@ -24,8 +25,9 @@ import {
   SelectionSessionInfo,
 } from "../AppConfig";
 import {
-  ChangeRoute,
+  ExternalRedirect,
   isChangeRoute,
+  isExternalRedirect,
   isPageContent,
   LegacyContentResponse,
   SubmitResponse,
@@ -156,12 +158,17 @@ export const isSelectionSessionOpen = (): boolean =>
 /**
  * Return true if Selection Session is in 'Structured'.
  */
-export const isSelectionSessionInStructured = (): boolean => {
-  if (isSelectionSessionOpen()) {
-    return getSelectionSessionInfo().layout === "coursesearch";
-  }
-  return false;
-};
+export const isSelectionSessionInStructured = (): boolean =>
+  isSelectionSessionOpen() &&
+  getSelectionSessionInfo().layout === "coursesearch";
+
+/**
+ * Return true if Selection Session is in 'Skinny'.
+ */
+export const isSelectionSessionInSkinny = (): boolean =>
+  isSelectionSessionOpen() &&
+  getSelectionSessionInfo().layout === "skinnysearch";
+
 /**
  * Indicates if the Select Summary button is disabled or not.
  * Returns true if the Selection Session info is not available.
@@ -279,15 +286,11 @@ const updateSelectionSummary = (legacyContent: LegacyContentResponse) => {
 };
 
 /**
- * Navigate to Selection Session Checkout page. This function is mostly called
- * when Selection Session is in 'selectOrAdd'.
- *
- * Due to no available React Routes in the context of using new Search UI in
- * Selection Session, this function concatenates the route with base URL and
- * then uses 'window.location.href' to achieve the navigation.
+ * Call this function in cases where after resources are selected we need to navigate to either
+ * another oEQ page(e.g. Checkout page) or an external LMS page.
+ * @param href URL of a page which the browser should navigate to
  */
-const navigateToCheckout = ({ route }: ChangeRoute) =>
-  (window.location.href = `${AppConfig.baseUrl}${route}`);
+const leaveSearchPage = (href: string) => (window.location.href = href);
 
 /**
  * Build an object of SelectionSessionPostData for 'structured'.
@@ -341,6 +344,27 @@ export const buildPostDataForSelectOrAdd = (
       };
 
 /**
+ * Build an object of SelectionSessionPostData for 'skinny'.
+ */
+export const buildPostDataForSkinny = (
+  itemKey: string,
+  attachmentUUID?: string
+): SelectionSessionPostData =>
+  attachmentUUID
+    ? {
+        event__: ["ilad.selectAttachment"],
+        eventp__0: [attachmentUUID],
+        eventp__1: [itemKey],
+        eventp__2: [null],
+        ...getBasicPostData(),
+      }
+    : {
+        event__: ["_slssp.selectItemSummary"],
+        eventp__0: [itemKey],
+        ...getBasicPostData(),
+      };
+
+/**
  * Select resources in 'structured'. The approach is to call the server AJAX method 'reloadFolder'
  * which is defined in 'CourseListSection'. The parameter passed to this method is a JSON string
  * converted from an object of 'CourseListFolderAjaxUpdateData'.
@@ -366,7 +390,7 @@ export const selectResourceForCourseList = (
  * The difference is we call the server event handlers directly. Details of those handlers can
  * be found from 'AbstractAttachmentsSection' and 'AbstractSelectItemListExtension'.
  */
-export const selectResourceForNonCourseList = (
+export const selectResourceForSelectOrAdd = (
   itemKey: string,
   attachmentUUIDs: string[]
 ): Promise<void> => {
@@ -376,7 +400,7 @@ export const selectResourceForNonCourseList = (
   );
   const callback = (response: SubmitResponse) => {
     if (isChangeRoute(response)) {
-      navigateToCheckout(response);
+      leaveSearchPage(`${AppConfig.baseUrl}${response.route}`);
     } else if (isPageContent(response)) {
       updateSelectionSummary(response);
     }
@@ -390,6 +414,47 @@ export const selectResourceForNonCourseList = (
 };
 
 /**
+ * Select resources in 'skinny'. The approach is the same as 'selectResourceForSelectOrAdd'.
+ * The response is an external href so use 'window.location' to redirect.
+ *
+ * @param itemKey A unique Item ID
+ * @param attachmentUUID A unique Attachment ID which can be undefined when no attachment is selected
+ */
+export const selectResourceForSkinny = (
+  itemKey: string,
+  attachmentUUID?: string
+): Promise<void> => {
+  const postData: SelectionSessionPostData = buildPostDataForSkinny(
+    itemKey,
+    attachmentUUID
+  );
+
+  const callback = (response: SubmitResponse) => {
+    if (isPageContent(response)) {
+      // What's in 'html.body' is a form which should be submitted by the returned
+      // script. So the approach is to firstly add the form into DOM and then execute the
+      // script. Once the two steps are done, Selection session should be closed and the
+      // iframe should return to whatever LMS page that Selection session was open from.
+      const mainDiv = document.querySelector<HTMLDivElement>("#mainDiv");
+      if (mainDiv) {
+        mainDiv.insertAdjacentHTML("beforeend", response.html["body"]);
+        // eslint-disable-next-line no-eval
+        window.eval(response.script);
+      } else {
+        throw new Error("Fail to find oEQ main DIV.");
+      }
+    } else if (isExternalRedirect(response)) {
+      leaveSearchPage(response.href);
+    }
+  };
+
+  return submitSelection<ExternalRedirect>(
+    `${submitBaseUrl}/access/skinny/searching.do`,
+    postData,
+    callback
+  );
+};
+/**
  * Submit a request to select an ItemSummary page, an attachment or all attachments of an Item.
  * @param itemKey The unique key including the selected Item's UUID and version
  * @param attachments A list of UUIDs of selected attachments
@@ -397,9 +462,30 @@ export const selectResourceForNonCourseList = (
 export const selectResource = (
   itemKey: string,
   attachments: string[]
-): Promise<void> => {
-  const { layout } = getSelectionSessionInfo();
-  return layout === "coursesearch"
-    ? selectResourceForCourseList(itemKey, attachments)
-    : selectResourceForNonCourseList(itemKey, attachments);
-};
+): Promise<void> =>
+  match(
+    [
+      Literal("coursesearch"),
+      () => selectResourceForCourseList(itemKey, attachments),
+    ],
+    [
+      Literal("search"),
+      () => selectResourceForSelectOrAdd(itemKey, attachments),
+    ],
+    [
+      Literal("skinnysearch"),
+      () => {
+        // Each selection in Skinny can only have one attachment.
+        if (attachments.length <= 1) {
+          const attachmentUUID =
+            attachments.length === 1 ? attachments[0] : undefined;
+          return selectResourceForSkinny(itemKey, attachmentUUID);
+        }
+        return Promise.reject(
+          new Error(
+            "Only one attachment is allowed in Skinny Selection Session."
+          )
+        );
+      },
+    ]
+  )(getSelectionSessionInfo().layout);

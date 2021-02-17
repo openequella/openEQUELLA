@@ -15,11 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { checkHeartbeat } from "../modules/Heartbeat";
+import { checkHeartbeat } from '../src/Heartbeat';
+import * as TC from './TestConfig';
 
-/**
- * Do heartbeat checking every 2 minutes.
- */
-export const startHeartbeat = () => {
-  setInterval(checkHeartbeat, 2 * 60 * 1000);
-};
+describe('checkHeartBeat', () => {
+  it('returns a resolved promise if server responds correctly', async () => {
+    await expect(checkHeartbeat(TC.API_PATH)).resolves.toBeTruthy();
+  });
+});

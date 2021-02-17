@@ -15,11 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { checkHeartbeat } from "../modules/Heartbeat";
+import { Card, CardContent, Typography } from "@material-ui/core";
+import * as React from "react";
+import { languageStrings } from "../../util/langstrings";
+import { CategorySelector, CategorySelectorProps } from "./CategorySelector";
 
 /**
- * Do heartbeat checking every 2 minutes.
+ * Lays out `CategorySelector` in a MUI `Card` with appropriate title. As a result, props
+ * are simply passed through to `CategorySelector`.
  */
-export const startHeartbeat = () => {
-  setInterval(checkHeartbeat, 2 * 60 * 1000);
-};
+export const ClassificationsPanel = (props: CategorySelectorProps) => (
+  <Card>
+    <CardContent>
+      <Typography variant="h5">
+        {languageStrings.searchpage.categorySelector.title}
+      </Typography>
+      <CategorySelector {...props} />
+    </CardContent>
+  </Card>
+);

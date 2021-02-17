@@ -60,6 +60,7 @@ import {
   getSearchPageItemClass,
   getSearchPageAttachmentClass,
   isSelectionSessionInStructured,
+  isSelectionSessionInSkinny,
 } from "../../modules/LegacySelectionSessionModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
@@ -68,6 +69,13 @@ import {
   determineAttachmentViewUrl,
   determineViewer,
 } from "../../modules/ViewerModule";
+
+const {
+  searchResult: searchResultStrings,
+  comments: commentStrings,
+  starRatings: ratingStrings,
+  selectResource: selectResourceStrings,
+} = languageStrings.searchpage;
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -161,6 +169,7 @@ export default function SearchResult({
   const classes = useStyles();
   const inSelectionSession: boolean = isSelectionSessionOpen();
   const inStructured = isSelectionSessionInStructured();
+  const inSkinny = isSelectionSessionInSkinny();
 
   const [attachExpanded, setAttachExpanded] = useState(
     (inSelectionSession
@@ -171,13 +180,6 @@ export default function SearchResult({
     attachmentsWithViewerDetails,
     setAttachmentsWithViewerDetails,
   ] = useState<AttachmentAndViewerDetails[]>([]);
-
-  const {
-    searchResult: searchResultStrings,
-    comments: commentStrings,
-    starRatings: ratingStrings,
-    selectResource: selectResourceStrings,
-  } = languageStrings.searchpage;
 
   // Responsible for determining the MIME type viewer for the provided attachments
   useEffect(() => {
@@ -222,7 +224,7 @@ export default function SearchResult({
       // Short circuit if this component is unmounted before all its comms are done.
       mounted = false;
     };
-  }, [attachments, getViewerDetails]);
+  }, [attachments, getViewerDetails, handleError]);
 
   // In Selection Session, make each attachment draggable.
   useEffect(() => {
@@ -231,7 +233,7 @@ export default function SearchResult({
         prepareDraggable(attachment.id, false);
       });
     }
-  }, [attachmentsWithViewerDetails]);
+  }, [attachmentsWithViewerDetails, inStructured]);
 
   const handleAttachmentPanelClick = (event: SyntheticEvent) => {
     /** prevents the SearchResult onClick from firing when attachment panel is clicked */
@@ -392,16 +394,18 @@ export default function SearchResult({
       <Grid container alignItems="center">
         <Grid item>{accordionText}</Grid>
         <Grid>
-          <ResourceSelector
-            labelText={selectResourceStrings.allAttachments}
-            isStopPropagation
-            onClick={() => {
-              const attachments = attachmentsWithViewerDetails.map(
-                ({ attachment }) => attachment.id
-              );
-              handleSelectResource(itemKey, attachments);
-            }}
-          />
+          {!inSkinny && (
+            <ResourceSelector
+              labelText={selectResourceStrings.allAttachments}
+              isStopPropagation
+              onClick={() => {
+                const attachments = attachmentsWithViewerDetails.map(
+                  ({ attachment }) => attachment.id
+                );
+                handleSelectResource(itemKey, attachments);
+              }}
+            />
+          )}
         </Grid>
       </Grid>
     ) : (

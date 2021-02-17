@@ -17,7 +17,7 @@ unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_co
 
 val jacksonVersion   = "2.11.3"
 val axis2Version     = "1.6.2"
-val TomcatVersion    = "9.0.41"
+val TomcatVersion    = "9.0.43"
 val SwaggerVersion   = "1.6.2"
 val RestEasyVersion  = "3.13.2.Final"
 val simpledbaVersion = "0.1.9"
@@ -156,7 +156,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "net.sf.ehcache")
   ),
   "org.apache.httpcomponents" % "httpclient"       % "4.5.13",
-  "org.apache.httpcomponents" % "httpcore"         % "4.4.13",
+  "org.apache.httpcomponents" % "httpcore"         % "4.4.14",
   "org.apache.lucene"         % "lucene-analyzers" % "3.6.2",
   "org.apache.lucene"         % "lucene-core"      % "3.6.2",
   "org.apache.lucene"         % "lucene-queries"   % "3.6.2",

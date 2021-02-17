@@ -79,6 +79,7 @@ export const AuxiliarySearchSelector = ({
       <OeqLink
         routeLinkUrlProvider={() => urlGeneratorForRouteLink(summary.uuid)}
         muiLinkUrlProvider={() => urlGeneratorForMuiLink(summary.uuid)}
+        key={summary.uuid}
       >
         {getLinkContent(summary)}
       </OeqLink>
@@ -86,7 +87,7 @@ export const AuxiliarySearchSelector = ({
 
   return (
     <FormControl variant="outlined" fullWidth>
-      <Select>{buildSearchMenuItems()}</Select>
+      <Select value="">{buildSearchMenuItems()}</Select>
     </FormControl>
   );
 };

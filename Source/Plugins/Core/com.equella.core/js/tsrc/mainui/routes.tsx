@@ -17,8 +17,7 @@
  */
 import { LocationDescriptor } from "history";
 import * as React from "react";
-import { RouteComponentProps } from "react-router";
-import { TemplateUpdate, TemplateUpdateProps } from "./Template";
+import { TemplateUpdate } from "./Template";
 
 const ThemePage = React.lazy(() => import("../theme/ThemePage"));
 const CloudProviderListPage = React.lazy(
@@ -41,38 +40,94 @@ const ContentIndexSettings = React.lazy(
   () => import("../settings/Search/ContentIndexSettings")
 );
 
-export interface OEQRouteComponentProps<T = TemplateUpdateProps>
-  extends RouteComponentProps<T> {
-  updateTemplate(edit: TemplateUpdate): void;
-  redirect(to: LocationDescriptor): void;
-  setPreventNavigation(b: boolean): void;
-  refreshUser(): void;
+export interface BaseOEQRouteComponentProps {
+  updateTemplate: (edit: TemplateUpdate) => void;
+  redirect: (to: LocationDescriptor) => void;
+  setPreventNavigation: (b: boolean) => void;
+  refreshUser: () => void;
   isReloadNeeded: boolean;
 }
 
-type To = (uuid: string) => string;
-type ToVersion = (uuid: string, version: number) => string;
+type ToFunc = (uuid: string) => string;
+type ToVersionFunc = (uuid: string, version: number) => string;
 
-export interface OEQRoute<T> {
-  component?:
-    | React.ComponentType<OEQRouteComponentProps<T>>
-    | React.ComponentType<T>;
-  render?: (props: OEQRouteComponentProps<T>) => React.ReactNode;
-  path?: string;
-  exact?: boolean;
-  sensitive?: boolean;
-  strict?: boolean;
-  to?: string | To | ToVersion;
+export interface OEQRouteNewUI {
+  component?: React.ComponentType<BaseOEQRouteComponentProps>;
+  render?: (props: BaseOEQRouteComponentProps) => React.ReactNode;
+  path: string;
 }
 
-export const routes = {
-  Settings: {
-    path: "(/access/settings.do|/page/settings)",
-    to: "/page/settings",
-    component: SettingsPage,
-  },
+interface OEQRouteTo<T = string | ToFunc | ToVersionFunc> {
+  to: T;
+}
+
+interface Routes {
+  AdvancedSearch: OEQRouteTo<ToFunc>;
+  CloudProviders: OEQRouteNewUI;
+  ContentIndexSettings: OEQRouteNewUI;
+  FacetedSearchSetting: OEQRouteNewUI;
+  LoginNoticeConfig: OEQRouteNewUI;
+  Logout: OEQRouteTo<string>;
+  Notifications: OEQRouteTo<string>;
+  RemoteSearch: OEQRouteTo<ToFunc>;
+  SearchFilterSettings: OEQRouteNewUI;
+  SearchSettings: OEQRouteNewUI;
+  Settings: OEQRouteNewUI & OEQRouteTo<string>;
+  TaskList: OEQRouteTo<string>;
+  ThemeConfig: OEQRouteNewUI;
+  UserPreferences: OEQRouteTo<string>;
+  ViewItem: OEQRouteTo<ToVersionFunc>;
+}
+
+/**
+ * Type guard for when needing to dynamically determine what kind of route is being used.
+ *
+ * @param route the potential route to check
+ */
+export const isNewUIRoute = (route: unknown): route is OEQRouteNewUI =>
+  (route as OEQRouteNewUI).component !== undefined ||
+  (route as OEQRouteNewUI).render !== undefined;
+
+/**
+ * Simple validator to allow direct use of an expected to URL route - considering they're hardcoded
+ * if an expected one is missing - or of the wrong type - then we have a code issue.
+ *
+ * @param to route to validate
+ */
+export const legacyPageUrl = (to?: string | ToFunc | ToVersionFunc): string => {
+  if (typeof to === "string") {
+    return to;
+  }
+
+  throw new TypeError("Expected legacy page URL is undefined");
+};
+
+export const routes: Routes = {
   AdvancedSearch: {
     to: (uuid: string) => `/advanced/searching.do?in=P${uuid}&editquery=true`,
+  },
+  CloudProviders: {
+    path: "/page/cloudprovider",
+    component: CloudProviderListPage,
+  },
+  ContentIndexSettings: {
+    path: "/page/contentindexsettings",
+    component: ContentIndexSettings,
+  },
+  FacetedSearchSetting: {
+    path: "/page/facetedsearchsettings",
+    component: FacetedSearchSettingsPage,
+  },
+  LoginNoticeConfig: {
+    path: "/page/loginconfiguration",
+    component: LoginNoticeConfigPage,
+  },
+  Logout: {
+    // lack of '/' is significant
+    to: "logon.do?logout=true",
+  },
+  Notifications: {
+    to: "/access/notifications.do",
   },
   RemoteSearch: {
     // `uc` parameter comes from sections code (AbstractRootSearchSection.Model.java). Setting it to
@@ -81,45 +136,27 @@ export const routes = {
     // See com.tle.web.searching.section.SearchQuerySection.forwardToRemote
     to: (uuid: string) => `/access/z3950.do?.repository=${uuid}&uc=true`,
   },
-  SearchSettings: {
-    path: "/page/searchsettings",
-    render: (p: OEQRouteComponentProps) => <SearchPageSettings {...p} />,
+  Settings: {
+    path: "(/access/settings.do|/page/settings)",
+    to: "/page/settings",
+    component: SettingsPage,
   },
   SearchFilterSettings: {
     path: "/page/searchfiltersettings",
-    render: (p: OEQRouteComponentProps) => <SearchFilterPage {...p} />,
+    component: SearchFilterPage,
   },
-  ContentIndexSettings: {
-    path: "/page/contentindexsettings",
-    render: (p: OEQRouteComponentProps) => <ContentIndexSettings {...p} />,
-  },
-  FacetedSearchSetting: {
-    path: "/page/facetedsearchsettings",
-    render: (p: OEQRouteComponentProps) => <FacetedSearchSettingsPage {...p} />,
-  },
-  ViewItem: {
-    to: (uuid: string, version: number) => `/items/${uuid}/${version}/`,
-  },
-  ThemeConfig: { path: "/page/themeconfiguration", component: ThemePage },
-  LoginNoticeConfig: {
-    path: "/page/loginconfiguration",
-    component: LoginNoticeConfigPage,
-  },
-  CloudProviders: {
-    path: "/page/cloudprovider",
-    component: CloudProviderListPage,
-  },
-  Notifications: {
-    to: "/access/notifications.do",
+  SearchSettings: {
+    path: "/page/searchsettings",
+    component: SearchPageSettings,
   },
   TaskList: {
     to: "/access/tasklist.do",
   },
-  Logout: {
-    // lack of '/' is significant
-    to: "logon.do?logout=true",
-  },
+  ThemeConfig: { path: "/page/themeconfiguration", component: ThemePage },
   UserPreferences: {
     to: "/access/user.do",
+  },
+  ViewItem: {
+    to: (uuid: string, version: number) => `/items/${uuid}/${version}/`,
   },
 };

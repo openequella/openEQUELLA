@@ -80,6 +80,10 @@ export interface SearchParams {
    * A flag indicating whether to search attachments or not.
    */
   searchAttachments?: boolean;
+  /**
+   * List of MIME types to filter by.
+   */
+  mimeTypes?: string[];
 }
 
 /**

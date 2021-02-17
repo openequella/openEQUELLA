@@ -37,7 +37,6 @@ import { API_BASE_URL } from "../AppConfig";
 import { getISODateString } from "../util/Date";
 import { Collection, collectionListSummary } from "./CollectionsModule";
 import { SelectedCategories } from "./SearchFacetsModule";
-import { SortOrder } from "./SearchSettingsModule";
 import { resolveUsers } from "./UserModule";
 
 /**
@@ -59,7 +58,7 @@ export interface SearchOptions {
   /**
    * Selected search result sorting order.
    */
-  sortOrder: Static<typeof SortOrder> | undefined;
+  sortOrder: OEQ.SearchSettings.SortOrder | undefined;
   /**
    * A list of collections.
    */
@@ -90,6 +89,11 @@ export interface SearchOptions {
    */
   searchAttachments?: boolean;
 }
+
+/**
+ * The type representing fields of SearchOptions.
+ */
+export type SearchOptionsFields = keyof SearchOptions;
 
 /**
  * Represent a date range which has an optional start and end.
@@ -129,10 +133,10 @@ const DehydratedSearchOptionsRunTypes = Partial({
   query: String,
   rowsPerPage: Number,
   currentPage: Number,
-  sortOrder: SortOrder,
+  sortOrder: OEQ.SearchSettings.SortOrderRunTypes,
   collections: RuntypeArray(Record({ uuid: String })),
   rawMode: Boolean,
-  lastModifiedDateRange: Record({ start: Guard(isDate), end: Guard(isDate) }),
+  lastModifiedDateRange: Partial({ start: Guard(isDate), end: Guard(isDate) }),
   owner: Record({ id: String }),
   // Runtypes guard function would not work when defining the type as Array(OEQ.Common.ItemStatuses) or Guard(OEQ.Common.ItemStatuses.guard),
   // So the Union of Literals has been copied from the OEQ.Common module.
@@ -186,6 +190,10 @@ export const defaultSearchOptions: SearchOptions = {
   rawMode: false,
   status: liveStatuses,
   searchAttachments: true,
+  query: "",
+  collections: [],
+  lastModifiedDateRange: { start: undefined, end: undefined },
+  owner: undefined,
 };
 
 export const defaultPagedSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> = {
@@ -479,9 +487,19 @@ export const legacyQueryStringToSearchOptions = async (
         datePrimary ? new Date(parseInt(datePrimary)) : undefined,
         dateSecondary ? new Date(parseInt(dateSecondary)) : undefined
       ) ?? defaultSearchOptions.lastModifiedDateRange,
-    sortOrder: SortOrder.guard(sortOrderParam)
+    sortOrder: OEQ.SearchSettings.SortOrderRunTypes.guard(sortOrderParam)
       ? sortOrderParam
       : defaultSearchOptions.sortOrder,
   };
   return searchOptions;
 };
+
+/**
+ * Call this function to get partial SearchOptions.
+ * @param options An object of SearchOptions
+ * @param fields What fields of SearchOptions to get
+ */
+export const getPartialSearchOptions = (
+  options: SearchOptions,
+  fields: SearchOptionsFields[]
+) => pick(options, fields);
