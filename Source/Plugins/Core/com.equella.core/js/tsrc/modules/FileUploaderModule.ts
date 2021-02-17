@@ -93,9 +93,9 @@ export interface UploadingFile {
    */
   uploadPercentage: number;
   /**
-   * Text describing why the upload is failed
+   * Text describing errors that happen when the upload is in progress
    */
-  failedReason?: string;
+  errorMessage?: string;
 }
 
 /**
@@ -355,7 +355,7 @@ export const upload = (
         onError({
           ...file,
           status: "failed",
-          failedReason: error.message,
+          errorMessage: error.message,
         });
       }
     });

@@ -20,7 +20,6 @@ import {
   ListItem,
   ListItemSecondaryAction,
   ListItemText,
-  Typography,
 } from "@material-ui/core";
 import * as React from "react";
 import {
@@ -62,29 +61,50 @@ export const UploadList = ({
     {files.length > 0 ? (
       files.map((file) => {
         const fileId = isUploadedFile(file) ? file.fileEntry.id : file.localId;
-        const fileName = file.fileEntry.name;
-        const fileLink = isUploadedFile(file) ? file.fileEntry.link : undefined;
-        const indented = isUploadedFile(file) ? file.indented : false;
-        const secondaryText = isUploadedFile(file) ? (
-          <Typography role="alert" color="error">
-            {file.errorMessage}
-          </Typography>
-        ) : (
-          <UploadInfo file={file} />
-        );
+
+        /**
+         * Build the content of each ListItem. Directly show the content for any UploadedFile that
+         * does not have any error message. For other cases, use ListItemText to wrap the content,
+         * that's, file name as primary text and other information as second text.
+         */
+        const ListItemContent = () => {
+          const primaryText = (
+            <UploadFileName
+              fileName={file.fileEntry.name}
+              indented={isUploadedFile(file) ? file.indented : false}
+              link={isUploadedFile(file) ? file.fileEntry.link : undefined}
+            />
+          );
+          const secondaryText = isUploadedFile(file) ? (
+            file.errorMessage
+          ) : (
+            <UploadInfo file={file} />
+          );
+          // Unset Legacy font size and margin styles.
+          const primaryTypoProps = {
+            style: { fontSize: "unset", margin: "unset" },
+          };
+          const hasError = !!file.errorMessage;
+
+          return isUploadedFile(file) && !hasError ? (
+            primaryText
+          ) : (
+            <ListItemText
+              primary={primaryText}
+              primaryTypographyProps={primaryTypoProps}
+              secondary={secondaryText}
+              secondaryTypographyProps={{
+                color: hasError ? "error" : undefined,
+                role: hasError ? "alert" : undefined,
+                ...primaryTypoProps,
+              }}
+            />
+          );
+        };
+
         return (
           <ListItem key={fileId} divider>
-            <ListItemText
-              primary={
-                <UploadFileName
-                  fileName={fileName}
-                  link={fileLink}
-                  indented={indented}
-                />
-              }
-              secondary={secondaryText}
-              secondaryTypographyProps={{ component: "div" }}
-            />
+            <ListItemContent />
             <ListItemSecondaryAction>
               <UploadActions actions={buildActions(file)} />
             </ListItemSecondaryAction>

@@ -15,9 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Grid, LinearProgress, Typography } from "@material-ui/core";
+import { Grid, LinearProgress } from "@material-ui/core";
 import * as React from "react";
 import { UploadingFile } from "../modules/FileUploaderModule";
+import { Fragment } from "react";
 
 interface UploadInfoProps {
   /**
@@ -32,7 +33,7 @@ interface UploadInfoProps {
  * For an UploadedFile, show nothing.
  */
 export const UploadInfo = ({ file }: UploadInfoProps) => {
-  const { uploadPercentage, status, failedReason } = file;
+  const { uploadPercentage, status, errorMessage } = file;
   return status === "uploading" ? (
     <Grid container alignItems="center" spacing={1}>
       <Grid item xs={10}>
@@ -43,8 +44,6 @@ export const UploadInfo = ({ file }: UploadInfoProps) => {
       </Grid>
     </Grid>
   ) : (
-    <Typography role="alert" color="error">
-      {failedReason}
-    </Typography>
+    <Fragment key={file.localId}>{errorMessage}</Fragment>
   );
 };

@@ -21,6 +21,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { getRenderData } from "../AppConfig";
 import { LabelledIconButton } from "../components/LabelledIconButton";
 import {
   AjaxFileEntry,
@@ -318,12 +319,35 @@ export const InlineFileUploader = ({
     ];
   };
 
+  // Build an Icon button for adding resources. In Old UI, this is achieved by legacy CSS styles.
+  // In New UI, use component LabelledIconButton. The reason for using '<a>' for Old UI is because
+  // the legacy style 'add' only applies to '<a>'.
+  const AddResourceButton = () => {
+    const commonProps = {
+      id: `${ctrlId}_addLink`,
+      onClick: () => openDialog("", ""),
+    };
+    return getRenderData()?.newUI ? (
+      <LabelledIconButton
+        buttonText={strings.add}
+        icon={<AddCircleIcon />}
+        color="primary"
+        {...commonProps}
+      />
+    ) : (
+      <a className="add" {...commonProps}>
+        {strings.add}
+      </a>
+    );
+  };
+
   return (
     <Grid
       container
       id={`${ctrlId}universalresources`}
       className="universalresources"
       direction="column"
+      wrap="nowrap"
     >
       <Grid item>
         <UploadList
@@ -336,13 +360,7 @@ export const InlineFileUploader = ({
       {editable &&
         (maxAttachments === null || attachmentCount < maxAttachments) && (
           <Grid item>
-            <LabelledIconButton
-              buttonText={strings.add}
-              icon={<AddCircleIcon />}
-              id={`${ctrlId}_addLink`}
-              onClick={() => openDialog("", "")}
-              color="primary"
-            />
+            <AddResourceButton />
             {canUploadFile && (
               <div {...getRootProps({ className: "dropzone" })}>
                 <input id={`${ctrlId}_fileUpload_file`} {...getInputProps()} />

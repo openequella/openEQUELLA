@@ -54,7 +54,12 @@ export const UploadActions = ({ actions }: UploadActionsProps) => (
       <Fragment key={index}>
         <Grid item>
           {icon ? (
-            <IconButton onClick={onClick} title={text} color="primary">
+            <IconButton
+              onClick={onClick}
+              title={text}
+              color="primary"
+              size="small"
+            >
               {icon}
             </IconButton>
           ) : (
