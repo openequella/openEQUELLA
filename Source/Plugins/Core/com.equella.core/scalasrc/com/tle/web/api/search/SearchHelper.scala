@@ -36,6 +36,7 @@ import com.tle.web.api.item.equella.interfaces.beans.{
 }
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
 import com.tle.web.api.search.model.{SearchParam, SearchResultAttachment, SearchResultItem}
+import com.tle.web.controls.resource.ResourceAttachmentBean
 
 import java.time.format.DateTimeParseException
 import java.time.{LocalDate, LocalDateTime, LocalTime, ZoneId}
@@ -258,6 +259,9 @@ object SearchHelper {
     bean match {
       case file: AbstractFileAttachmentBean =>
         Some(LegacyGuice.mimeTypeService.getMimeTypeForFilename(file.getFilename))
+      case resourceAttachmentBean: ResourceAttachmentBean =>
+        Some(
+          LegacyGuice.mimeTypeService.getMimeTypeForResourceAttachmentBean(resourceAttachmentBean))
       case _ => None
     }
   }
