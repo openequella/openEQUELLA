@@ -16,7 +16,9 @@
  * limitations under the License.
  */
 import Axios, { CancelTokenSource } from "axios";
+import { sprintf } from "sprintf-js";
 import { v4 } from "uuid";
+import { languageStrings } from "../util/langstrings";
 
 const { CancelToken } = Axios;
 
@@ -391,7 +393,11 @@ export const deleteUpload = (
       .catch((error: Error) => {
         onError({
           ...file,
-          errorMessage: `Failed to delete ${name} due to error: ${error.message}`,
+          errorMessage: sprintf(
+            languageStrings.fileUploader.failedToDelete,
+            name,
+            error.message
+          ),
         });
       });
   }
