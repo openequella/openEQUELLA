@@ -18,7 +18,6 @@
 import { Grid, LinearProgress } from "@material-ui/core";
 import * as React from "react";
 import { UploadingFile } from "../modules/FileUploaderModule";
-import { Fragment } from "react";
 
 interface UploadInfoProps {
   /**
@@ -44,6 +43,10 @@ export const UploadInfo = ({ file }: UploadInfoProps) => {
       </Grid>
     </Grid>
   ) : (
-    <Fragment key={file.localId}>{errorMessage}</Fragment>
+    // MUI Typography brings in extra styles which break UI consistency in Old UI so
+    // have to use a div.
+    <div role="alert" style={{ color: "red" }}>
+      {errorMessage}
+    </div>
   );
 };

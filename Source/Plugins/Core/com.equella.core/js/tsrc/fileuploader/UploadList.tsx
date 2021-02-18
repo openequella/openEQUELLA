@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 import {
+  Grid,
   List,
   ListItem,
   ListItemSecondaryAction,
-  ListItemText,
 } from "@material-ui/core";
 import * as React from "react";
 import {
@@ -76,29 +76,20 @@ export const UploadList = ({
             />
           );
           const secondaryText = isUploadedFile(file) ? (
-            file.errorMessage
+            <div role="alert" style={{ color: "red" }}>
+              {file.errorMessage}
+            </div>
           ) : (
             <UploadInfo file={file} />
           );
-          // Unset Legacy font size and margin styles.
-          const primaryTypoProps = {
-            style: { fontSize: "unset", margin: "unset" },
-          };
-          const hasError = !!file.errorMessage;
 
-          return isUploadedFile(file) && !hasError ? (
+          return isUploadedFile(file) && !file.errorMessage ? (
             primaryText
           ) : (
-            <ListItemText
-              primary={primaryText}
-              primaryTypographyProps={primaryTypoProps}
-              secondary={secondaryText}
-              secondaryTypographyProps={{
-                color: hasError ? "error" : undefined,
-                role: hasError ? "alert" : undefined,
-                ...primaryTypoProps,
-              }}
-            />
+            <Grid container direction="column" spacing={1} wrap="nowrap">
+              <Grid item>{primaryText}</Grid>
+              <Grid item>{secondaryText}</Grid>
+            </Grid>
           );
         };
 
