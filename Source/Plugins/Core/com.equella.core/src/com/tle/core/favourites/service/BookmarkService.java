@@ -24,9 +24,10 @@ import com.tle.beans.item.ItemKey;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface BookmarkService {
-  Bookmark add(Item item, String tags, boolean latest);
+  Bookmark add(Item item, Set<String> tags, boolean latest);
 
   void delete(long id);
 

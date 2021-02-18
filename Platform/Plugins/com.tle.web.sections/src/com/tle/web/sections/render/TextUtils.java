@@ -69,6 +69,25 @@ public final class TextUtils {
     return text;
   }
 
+  /**
+   * Split a text by either a whitespace, a comma or a semi-colon, and then add each split text into
+   * a provided collection.
+   *
+   * @param text Text to be processed.
+   * @param collection Collection where split text to be added into
+   */
+  public static <T extends Collection<String>> T convertStringToCollection(
+      String text, T collection) {
+    if (!Check.isEmpty(text)) {
+      for (String s : text.split("\\s|,|;")) {
+        if (!Check.isEmpty(s)) {
+          collection.add(s.toLowerCase());
+        }
+      }
+    }
+    return collection;
+  }
+
   private String returnMatchingFraction(String text, Collection<String> terms, int maxLength) {
     ArrayList<Integer> positions = new ArrayList<Integer>();
 
@@ -96,13 +115,13 @@ public final class TextUtils {
         // the beginning
         if (prePosition > 2 * WORDS_SPACE_LENGTH) {
           sub.append((char) 0x2026);
-          sub.append(text.substring(curPosition - WORDS_SPACE_LENGTH, curPosition));
+          sub.append(text, curPosition - WORDS_SPACE_LENGTH, curPosition);
         } else {
-          sub.append(text.substring(0, curPosition));
+          sub.append(text, 0, curPosition);
         }
 
         if (positions.size() == 2) {
-          sub.append(text.substring(curPosition, text.length()));
+          sub.append(text.substring(curPosition));
         }
       }
 
@@ -112,13 +131,13 @@ public final class TextUtils {
         // two terms are too far from each other then add'...' in
         // between
         if (curPosition - prePosition > 2 * WORDS_SPACE_LENGTH) {
-          sub.append(text.substring(prePosition, prePosition + WORDS_SPACE_LENGTH));
+          sub.append(text, prePosition, prePosition + WORDS_SPACE_LENGTH);
           sub.append((char) 0x2026);
-          sub.append(text.substring(curPosition - WORDS_SPACE_LENGTH, curPosition));
+          sub.append(text, curPosition - WORDS_SPACE_LENGTH, curPosition);
         }
         // two terms are close to each other
         else {
-          sub.append(text.substring(prePosition, curPosition));
+          sub.append(text, prePosition, curPosition);
         }
       }
       // found terms' end positions
@@ -126,11 +145,11 @@ public final class TextUtils {
         int prePosition = positions.get(index - 1);
         // handle the ending
         if (index == positions.size() - 1) {
-          sub.append(text.substring(prePosition, text.length()));
+          sub.append(text.substring(prePosition));
         }
         // concatenate search terms
         else {
-          sub.append(text.substring(prePosition, curPosition));
+          sub.append(text, prePosition, curPosition);
         }
       }
     }

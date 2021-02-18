@@ -42,10 +42,12 @@ import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.generic.OverrideHandler;
 import com.tle.web.sections.js.validators.Confirm;
 import com.tle.web.sections.render.Label;
+import com.tle.web.sections.render.TextUtils;
 import com.tle.web.sections.result.util.IconLabel;
 import com.tle.web.sections.result.util.IconLabel.Icon;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.HtmlLinkState;
+import java.util.HashSet;
 import java.util.List;
 import javax.inject.Inject;
 
@@ -149,7 +151,8 @@ public class FavouritesDisplay extends AbstractPrototypeSection<Object>
   @EventHandlerMethod
   public void addFavourite(SectionInfo info, String tagString, boolean latest, String itemId) {
     Item item = itemService.get(new ItemId(itemId));
-    bookmarkService.add(item, tagString, latest);
+    bookmarkService.add(
+        item, TextUtils.convertStringToCollection(tagString, new HashSet<>()), latest);
     receiptService.setReceipt(ADD_RECEIPT_LABEL);
   }
 

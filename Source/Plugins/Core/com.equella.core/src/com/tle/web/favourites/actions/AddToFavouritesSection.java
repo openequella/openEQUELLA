@@ -41,11 +41,13 @@ import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.js.generic.OverrideHandler;
 import com.tle.web.sections.render.CssInclude;
 import com.tle.web.sections.render.Label;
+import com.tle.web.sections.render.TextUtils;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.viewitem.section.AbstractParentViewItemSection;
 import com.tle.web.viewurl.ItemSectionInfo;
 import com.tle.web.workflow.tasks.ModerationService;
+import java.util.HashSet;
 import javax.inject.Inject;
 
 @Bind
@@ -86,7 +88,8 @@ public class AddToFavouritesSection extends AbstractParentViewItemSection<AddToF
   @EventHandlerMethod
   public void addBookmarkClicked(SectionInfo info, String tagString, boolean alwaysLatest) {
     Item item = getItemInfo(info).getItem();
-    bookmarkService.add(item, tagString, alwaysLatest);
+    bookmarkService.add(
+        item, TextUtils.convertStringToCollection(tagString, new HashSet<>()), alwaysLatest);
     receiptService.setReceipt(LABEL_RECEIPT);
   }
 
