@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface BookmarkService {
-  void add(Item item, String tags, boolean latest);
+  Bookmark add(Item item, String tags, boolean latest);
 
   void delete(long id);
 

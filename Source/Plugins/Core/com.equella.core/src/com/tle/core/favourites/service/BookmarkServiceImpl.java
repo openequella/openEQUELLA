@@ -59,11 +59,11 @@ public class BookmarkServiceImpl implements BookmarkService, UserChangeListener 
 
   @Override
   @Transactional
-  public void add(Item item, String tagString, boolean latest) {
+  public Bookmark add(Item item, String tagString, boolean latest) {
     Set<String> keywords = new HashSet<String>();
 
     if (!Check.isEmpty(tagString)) {
-      String tags[] = tagString.split("\\s|,|;");
+      String[] tags = tagString.split("\\s|,|;");
       for (int i = 0; i < tags.length; i++) {
         if (!Check.isEmpty(tags[i])) {
           keywords.add(tags[i].toLowerCase());
@@ -81,6 +81,7 @@ public class BookmarkServiceImpl implements BookmarkService, UserChangeListener 
     dao.save(bookmark);
 
     itemService.operation(bookmark.getItem().getItemId(), workflowFactory.reindexOnly(true));
+    return bookmark;
   }
 
   @Override

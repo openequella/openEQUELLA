@@ -9,6 +9,19 @@ import javax.ws.rs.core.Response
 import javax.ws.rs.core.Response.Status
 import javax.ws.rs.{DELETE, POST, Path, PathParam, Produces, QueryParam}
 
+/**
+  * Basic information of a bookmark. The Java entity class 'com.tle.beans.item.Bookmark'
+  * has too many fields that are useless in this API so use this simplified one.
+  * @param bookmarkID The unique ID
+  * @param keywords tags of this bookmark
+  * @param alwaysLatest whether this bookmark uses latest Item version
+  * @param itemID ID of the Item this bookmark is related to
+  */
+case class BookmarkInfo(bookmarkID: Long,
+                        keywords: java.util.Collection[String],
+                        alwaysLatest: Boolean,
+                        itemID: String)
+
 @Path("favourite")
 @Produces(Array("application/json"))
 @Api("Favourite")
@@ -17,7 +30,7 @@ class FavouriteResource {
   private val itemService     = LegacyGuice.itemService
 
   @POST
-  @ApiOperation("Add one Item to user's favourites")
+  @ApiOperation(value = "Add one Item to user's favourites", response = classOf[BookmarkInfo])
   def addFavourite(@ApiParam(value = "The unique ID consisting of Item's UUID and version",
                              example = "77279582-ce3f-97ee-84c3-66de5af5a4c5/1") @QueryParam(
                      "itemID") itemID: String,
@@ -27,9 +40,14 @@ class FavouriteResource {
                      "latest") latest: Boolean): Response = {
     // ItemNotFoundException will be thrown by itemService so there is no need to
     // validate itemID here.
-    val item = itemService.get(new ItemId(itemID))
-    bookmarkService.add(item, tags, latest)
-    Response.status(Status.CREATED).build()
+    val item        = itemService.get(new ItemId(itemID))
+    val newBookmark = bookmarkService.add(item, tags, latest)
+    Response
+      .status(Status.CREATED)
+      .entity(
+        BookmarkInfo(newBookmark.getId, newBookmark.getKeywords, newBookmark.isAlwaysLatest, itemID)
+      )
+      .build()
   }
 
   @DELETE
