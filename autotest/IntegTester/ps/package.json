@@ -13,7 +13,7 @@
     "js-md5": "0.7.3",
     "jss": "10.5.1",
     "oeq-cloudproviders": "git+https://github.com/apereo/openEQUELLA-cloudprovidersdk.git#32d958ddfff64ca748e7e1b2eae0f0487946a487",
-    "query-string": "6.13.8",
+    "query-string": "6.14.0",
     "react": "16.14.0",
     "react-dom": "16.14.0"
   },
