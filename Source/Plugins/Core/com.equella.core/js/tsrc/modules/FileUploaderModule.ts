@@ -16,7 +16,9 @@
  * limitations under the License.
  */
 import Axios, { CancelTokenSource } from "axios";
+import { sprintf } from "sprintf-js";
 import { v4 } from "uuid";
+import { languageStrings } from "../util/langstrings";
 
 const { CancelToken } = Axios;
 
@@ -66,6 +68,10 @@ export interface UploadedFile {
    * Text describing why fail to delete this file
    */
   errorMessage?: string;
+  /**
+   * Whether to show this file indented. Typically, true for child AjaxFileEntry.
+   */
+  indented: boolean;
 }
 
 /**
@@ -89,9 +95,9 @@ export interface UploadingFile {
    */
   uploadPercentage: number;
   /**
-   * Text describing why the upload is failed
+   * Text describing errors that happen when the upload is in progress
    */
-  failedReason?: string;
+  errorMessage?: string;
 }
 
 /**
@@ -288,17 +294,22 @@ const doUpload = (
   const source = CancelToken.source();
   axiosSourceMap.set(uploadingFile.localId, source);
   const token = source.token;
-
-  const formData = new FormData();
-  formData.append("file", fileEntry);
-  return Axios.post<UpdateEntry | UploadFailed>(path, formData, {
+  return Axios.post<UpdateEntry | UploadFailed>(path, fileEntry, {
+    // IMPORTANT! Must specify the file type. There is legacy server side code that consumes
+    // the InputStream of request body if Content-Type is `application/x-www-form-urlencoded`,
+    // which is the default value. That will result in uploaded files being empty.
+    headers: {
+      "Content-Type": fileEntry.type || "application/octet-stream",
+    },
     cancelToken: token,
     onUploadProgress: (progressEvent: ProgressEvent) => {
+      const uploadPercentage = Math.floor(
+        (progressEvent.loaded / fileEntry.size) * 100
+      );
+
       updateUploadProgress({
         ...uploadingFile,
-        uploadPercentage: Math.floor(
-          (progressEvent.loaded / fileEntry.size) * 100
-        ),
+        uploadPercentage: uploadPercentage > 100 ? 100 : uploadPercentage,
       });
     },
   }).then(({ data }) => data);
@@ -332,6 +343,7 @@ export const upload = (
         const uploadedFile: UploadedFile = {
           fileEntry: entry,
           status: "uploaded",
+          indented: false,
         };
         onSuccessful(
           uploadedFile,
@@ -347,7 +359,7 @@ export const upload = (
         onError({
           ...file,
           status: "failed",
-          failedReason: error.message,
+          errorMessage: error.message,
         });
       }
     });
@@ -381,7 +393,11 @@ export const deleteUpload = (
       .catch((error: Error) => {
         onError({
           ...file,
-          errorMessage: `Fail to delete ${name} due to error: ${error.message}`,
+          errorMessage: sprintf(
+            languageStrings.fileUploader.failedToDelete,
+            name,
+            error.message
+          ),
         });
       });
   }

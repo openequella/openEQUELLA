@@ -22,6 +22,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import * as React from "react";
 import { ChangeEvent, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { getRenderData } from "../AppConfig";
 import { LabelledIconButton } from "../components/LabelledIconButton";
 import {
   cancelUpload,
@@ -176,6 +177,28 @@ export const UniversalFileUploader = ({
         },
   ];
 
+  // Build an Icon button for adding Scrapbooks. In Old UI, this is achieved by legacy CSS styles.
+  // In New UI, use component LabelledIconButton. The reason for using '<a>' for Old UI is because
+  // the legacy style 'add' only applies to '<a>'.
+  const AddScrapBookButton = () => {
+    const commonProps = {
+      id: `${ctrlId}_filesFromScrapbookLink`,
+      onClick: scrapBookOnClick,
+    };
+    return getRenderData()?.newUI ? (
+      <LabelledIconButton
+        icon={<AddCircleIcon />}
+        buttonText={strings.scrapbook}
+        color="primary"
+        {...commonProps}
+      />
+    ) : (
+      <a className="add" {...commonProps}>
+        {strings.scrapbook}
+      </a>
+    );
+  };
+
   return (
     <Grid container id="uploads" direction="column" spacing={1}>
       <Grid item className="uploadsprogress">
@@ -203,13 +226,7 @@ export const UniversalFileUploader = ({
         <div className="filedrop">{strings.drop}</div>
       </Grid>
       <Grid item>
-        <LabelledIconButton
-          icon={<AddCircleIcon />}
-          buttonText={strings.scrapbook}
-          id={`${ctrlId}_filesFromScrapbookLink`}
-          onClick={scrapBookOnClick}
-          color="primary"
-        />
+        <AddScrapBookButton />
       </Grid>
     </Grid>
   );

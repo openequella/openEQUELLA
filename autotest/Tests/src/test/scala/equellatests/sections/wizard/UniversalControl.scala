@@ -10,7 +10,7 @@ import scala.util.Try
 class UniversalControl(val page: WizardPageTab, val ctrlNum: Int) extends WizardControl {
 
   private def actionLinkBy(action: String) =
-    By.xpath("div/div[contains(@class, 'actions')]/div/button[text()=" + quoteXPath(action) + "]")
+    By.xpath("div/div[contains(@class, 'actions')]/div/a[text()=" + quoteXPath(action) + "]")
 
   private val cancelBtnBy =
     By.xpath("div/div[contains(@class, 'actions')]/div/button[contains(@title, 'Cancel upload')]")
@@ -29,7 +29,7 @@ class UniversalControl(val page: WizardPageTab, val ctrlNum: Int) extends Wizard
   def errorExpectation(msg: String) = {
     ExpectedConditions.visibilityOfNestedElementsLocatedBy(
       pageBy,
-      By.xpath(s"//div[contains(@class, 'universalresources')]//p[text() = ${quoteXPath(msg)}]"))
+      By.xpath(s"//div[contains(@class, 'universalresources')]//div[text() = ${quoteXPath(msg)}]"))
   }
 
   def uploadInline[A](tf: TestFile, actualFilename: String, after: ExpectedCondition[A]): A = {

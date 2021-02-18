@@ -21,6 +21,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { getRenderData } from "../AppConfig";
 import { LabelledIconButton } from "../components/LabelledIconButton";
 import {
   AjaxFileEntry,
@@ -87,7 +88,13 @@ export interface InlineFileUploaderProps {
    */
   canUpload: boolean;
   /**
-   * The function used to open the Universal Resource Dialog to update a uploaded file
+   * The function is used to open the Universal Resource Dialog to manage resources.
+   * To add a new resource, pass two empty strings in.
+   * To edit a file, pass an empty string as the first parameter and the file's ID
+   * as the second parameter.
+   * To replace a file, pass the file's ID as the first parameter and an empty string
+   * as the second parameter.
+   *
    * @param replaceUuid The ID of a file that is the replacement of a selected file
    * @param editUuid The ID of a selected file
    */
@@ -131,11 +138,20 @@ export const InlineFileUploader = ({
   strings,
   reloadState,
 }: InlineFileUploaderProps) => {
+  const initialiseEntry = (
+    entry: AjaxFileEntry,
+    indented: boolean
+  ): UploadedFile => ({
+    fileEntry: entry,
+    status: "uploaded",
+    indented: indented,
+  });
+
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>(
-    entries.map((entry) => ({
-      fileEntry: entry,
-      status: "uploaded",
-    }))
+    entries.flatMap((entry) => [
+      initialiseEntry(entry, false),
+      ...entry.children.map((e) => initialiseEntry(e, true)),
+    ])
   );
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
   const [attachmentCount, setAttachmentCount] = useState<number>(
@@ -275,29 +291,59 @@ export const InlineFileUploader = ({
   /**
    * Build three text buttons for UploadedFile or one icon button for UploadingFile.
    */
-  const buildActions = (file: UploadedFile | UploadingFile): UploadAction[] =>
-    isUploadedFile(file)
-      ? [
-          {
-            onClick: () => onEdit(file.fileEntry.id),
-            text: strings.edit,
-          },
-          {
-            onClick: () => onReplace(file.fileEntry.id),
-            text: strings.replace,
-          },
-          {
-            onClick: () => onDelete(file),
-            text: strings.delete,
-          },
-        ]
-      : [
-          {
-            onClick: () => onCancel(file.localId),
-            text: strings.cancel,
-            icon: <CancelIcon />,
-          },
-        ];
+  const buildActions = (file: UploadedFile | UploadingFile): UploadAction[] => {
+    if (isUploadedFile(file)) {
+      const basicAction = [
+        {
+          onClick: () => onDelete(file),
+          text: strings.delete,
+        },
+      ];
+      const { id, editable } = file.fileEntry;
+      return editable
+        ? [
+            {
+              onClick: () => onEdit(id),
+              text: strings.edit,
+            },
+            {
+              onClick: () => onReplace(id),
+              text: strings.replace,
+            },
+            ...basicAction,
+          ]
+        : basicAction;
+    }
+    return [
+      {
+        onClick: () => onCancel(file.localId),
+        text: strings.cancel,
+        icon: <CancelIcon />,
+      },
+    ];
+  };
+
+  // Build an Icon button for adding resources. In Old UI, this is achieved by legacy CSS styles.
+  // In New UI, use component LabelledIconButton. The reason for using '<a>' for Old UI is because
+  // the legacy style 'add' only applies to '<a>'.
+  const AddResourceButton = () => {
+    const commonProps = {
+      id: `${ctrlId}_addLink`,
+      onClick: () => openDialog("", ""),
+    };
+    return getRenderData()?.newUI ? (
+      <LabelledIconButton
+        buttonText={strings.add}
+        icon={<AddCircleIcon />}
+        color="primary"
+        {...commonProps}
+      />
+    ) : (
+      <a className="add" {...commonProps}>
+        {strings.add}
+      </a>
+    );
+  };
 
   return (
     <Grid
@@ -305,6 +351,7 @@ export const InlineFileUploader = ({
       id={`${ctrlId}universalresources`}
       className="universalresources"
       direction="column"
+      wrap="nowrap"
     >
       <Grid item>
         <UploadList
@@ -317,13 +364,7 @@ export const InlineFileUploader = ({
       {editable &&
         (maxAttachments === null || attachmentCount < maxAttachments) && (
           <Grid item>
-            <LabelledIconButton
-              buttonText={strings.add}
-              icon={<AddCircleIcon />}
-              id={`${ctrlId}_addLink`}
-              onClick={() => openDialog("", "")}
-              color="primary"
-            />
+            <AddResourceButton />
             {canUploadFile && (
               <div {...getRootProps({ className: "dropzone" })}>
                 <input id={`${ctrlId}_fileUpload_file`} {...getInputProps()} />

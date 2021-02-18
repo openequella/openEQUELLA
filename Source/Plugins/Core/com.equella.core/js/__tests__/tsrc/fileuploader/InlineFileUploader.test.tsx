@@ -107,7 +107,7 @@ describe("<InlineFileUploader />", () => {
     // The first upload fails so show the file name in a 'div' and failure reason in a 'p'.
     expect(queryByText("test1.png", { selector: "div" })).toBeInTheDocument();
     expect(
-      queryByText("File is too large", { selector: "p" })
+      queryByText("File is too large", { selector: "div" })
     ).toBeInTheDocument();
     // The second upload succeeds so show the file name as a link.
     expect(queryByText("test2.png", { selector: "a" })).toBeInTheDocument();

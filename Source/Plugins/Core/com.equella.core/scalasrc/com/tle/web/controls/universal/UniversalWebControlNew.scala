@@ -368,14 +368,11 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
                 WebFileUploads.labelForIllegalReason(reason, uf.originalFilename).getText)
             val mimeType = mimeTypeForFilename(uf.originalFilename)
             // Retrieve file from form data. If not found then try to get it from request body.
-            val fileInputStream = Option(request.getPart("file"))
-              .map(part => part.getInputStream)
-              .getOrElse(request.getInputStream)
             val r = WebFileUploads
               .validateBeforeUpload(mimeType, request.getContentLengthLong, controlSettings)
               .map(illegal)
               .getOrElse {
-                WebFileUploads.writeStream(uf, this, fileInputStream) match {
+                WebFileUploads.writeStream(uf, this, request.getInputStream) match {
                   case Successful(fileInfo) =>
                     validateContent(info, this, uf.uploadPath) match {
                       case Left(ifr) => illegal(ifr)
