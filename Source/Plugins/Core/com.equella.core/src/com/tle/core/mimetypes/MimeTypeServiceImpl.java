@@ -467,7 +467,7 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
     if (attachType == AttachmentType.CUSTOM) {
       type += '/' + ((CustomAttachment) attachment).getType().toLowerCase();
     }
-    if (type.equals("custom/resource") && attachment.getData("type").equals('a')) {
+    if (type.equals("custom/resource") && attachment.getData("type").equals("a")) {
       // Recurse to drill into the linked attachment, so we can use the correct viewer
       return getMimeEntryForAttachment(
           attachmentDao.findByCriteria(Restrictions.eq("uuid", attachment.getUrl())));
