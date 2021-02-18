@@ -146,7 +146,11 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
 
   private ExpectedCondition<?> getErrorExpectation(String msg) {
     String xpath =
-        "id('" + getWizid() + "_dialog')//p[text() = " + quoteXPath(msg) + " and @role = 'alert']";
+        "id('"
+            + getWizid()
+            + "_dialog')//div[text() = "
+            + quoteXPath(msg)
+            + " and @role = 'alert']";
     return ExpectedConditions.visibilityOfElementLocated(By.xpath(xpath));
   }
 
