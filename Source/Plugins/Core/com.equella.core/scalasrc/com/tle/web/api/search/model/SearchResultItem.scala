@@ -58,7 +58,7 @@ case class SearchResultItem(
     displayOptions: Option[DisplayOptions],
     keywordFoundInAttachment: Boolean,
     links: java.util.Map[String, String],
-    isBookmarked: Boolean
+    isAddedToFavourite: Boolean
 )
 
 /**

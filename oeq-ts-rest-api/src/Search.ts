@@ -242,6 +242,10 @@ interface SearchResultItemBase {
      */
     self: string;
   };
+  /**
+   * Whether an Item is already added to user's favourites.
+   */
+  isAddedToFavourite: boolean;
 }
 
 /**

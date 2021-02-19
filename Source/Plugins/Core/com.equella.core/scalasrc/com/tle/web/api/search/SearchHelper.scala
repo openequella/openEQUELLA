@@ -206,7 +206,7 @@ object SearchHelper {
       displayOptions = Option(bean.getDisplayOptions),
       keywordFoundInAttachment = item.keywordFound,
       links = getLinksFromBean(bean),
-      isBookmarked = getBookmark(key).isDefined
+      isAddedToFavourite = isAddedToFavourite(key)
     )
   }
 
@@ -281,6 +281,6 @@ object SearchHelper {
   def getLinksFromBean[T <: AbstractExtendableBean](bean: T) =
     bean.get("links").asInstanceOf[java.util.Map[String, String]]
 
-  def getBookmark(itemID: ItemIdKey): Option[Bookmark] =
-    Option(LegacyGuice.bookmarkService.getByItem(itemID))
+  def isAddedToFavourite(itemID: ItemIdKey): Boolean =
+    Option(LegacyGuice.bookmarkService.getByItem(itemID)).isDefined
 }
