@@ -90,4 +90,22 @@ export const POST = <T, R>(
     })
     .catch(catchHandler);
 
+/**
+ * Executes a HTTP DELETE for a given path.
+ *
+ * @param path The URL path for the target DELETE
+ * @param queryParams  The query parameters to send with the DELETE request
+ */
+export const DELETE = <R>(
+  path: string,
+  queryParams?: Parameters<typeof stringify>[0] // eslint-disable-line @typescript-eslint/ban-types
+): Promise<R> =>
+  axios
+    .delete(path, {
+      params: queryParams,
+      paramsSerializer: (params) => stringify(params),
+    })
+    .then((response: AxiosResponse<R>) => response.data)
+    .catch(catchHandler);
+
 export default axios;

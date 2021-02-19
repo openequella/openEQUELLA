@@ -27,7 +27,7 @@ class FavouriteResource {
 
   @POST
   @ApiOperation(value = "Add one Item to user's favourites", response = classOf[FavouriteItem])
-  def addFavourite(favouriteItem: FavouriteItem): Response = {
+  def addFavouriteItem(favouriteItem: FavouriteItem): Response = {
     // ItemNotFoundException will be thrown by itemService if there is no Item matching this
     // item ID so we don't validate item ID here again.
     val item = itemService.get(new ItemId(favouriteItem.itemID))
@@ -49,15 +49,16 @@ class FavouriteResource {
   @DELETE
   @Path("/{uuid}/{version}")
   @ApiOperation("Delete one Item from user's favourites")
-  def deleteFavourite(@ApiParam("Item's UUID") @PathParam("uuid") uuid: String,
-                      @ApiParam("Item's version") @PathParam("version") version: Int): Response = {
+  def deleteFavouriteItem(
+      @ApiParam("Item's UUID") @PathParam("uuid") uuid: String,
+      @ApiParam("Item's version") @PathParam("version") version: Int): Response = {
     Option(bookmarkService.getByItem(new ItemId(s"${uuid}/${version}"))) match {
       case Some(bookmark) =>
         bookmarkService.delete(bookmark.getId)
-        Response.ok().build()
+        Response.status(Status.NO_CONTENT).build()
       case None =>
         ApiErrorResponse
-          .resourceNotFound(s"No favourite matching Item UUID: ${uuid} and version: ${version}")
+          .resourceNotFound(s"No favourite Item matching UUID: ${uuid} and version: ${version}")
     }
   }
 }
