@@ -98,14 +98,14 @@ export const POST = <T, R>(
  */
 export const DELETE = <R>(
   path: string,
-  queryParams?: Parameters<typeof stringify>[0] // eslint-disable-line @typescript-eslint/ban-types
+  queryParams?: Parameters<typeof stringify>[0]
 ): Promise<R> =>
   axios
     .delete(path, {
       params: queryParams,
       paramsSerializer: (params) => stringify(params),
     })
-    .then((response: AxiosResponse<R>) => response.data)
+    .then(({ data }: AxiosResponse<R>) => data)
     .catch(catchHandler);
 
 export default axios;
