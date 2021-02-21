@@ -42,6 +42,6 @@ public class FavouriteApiTest extends AbstractRestApiTest {
   public void testRemoveFavourite() throws IOException {
     final HttpMethod method = new DeleteMethod(FAVOURITE_API_ENDPOINT + "/" + ITEM_KEY);
     final int statusCode = makeClientRequest(method);
-    assertEquals(HttpStatus.SC_OK, statusCode);
+    assertEquals(HttpStatus.SC_NO_CONTENT, statusCode);
   }
 }
