@@ -18,6 +18,8 @@
 
 package com.tle.core.mimetypes;
 
+import static com.tle.core.mimetypes.MimeTypeConstants.MIME_ITEM;
+
 import com.google.common.cache.CacheLoader;
 import com.tle.annotation.Nullable;
 import com.tle.beans.Institution;
@@ -184,9 +186,9 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
       case SelectedResource.TYPE_ATTACHMENT:
         return getMimeTypeForAttachmentUuid(resourceAttachmentBean.getAttachmentUuid());
       case SelectedResource.TYPE_PATH:
-        return "equella/item";
+        return MIME_ITEM;
       default:
-        return DEFAULT_MIMETYPE;
+        return resourceAttachmentBean.getRawAttachmentType();
     }
   }
 
