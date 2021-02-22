@@ -20,10 +20,12 @@ package com.tle.web.sections.render;
 
 import com.tle.common.Check;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /** @author aholland */
 public final class TextUtils {
@@ -74,18 +76,10 @@ public final class TextUtils {
    * a provided collection.
    *
    * @param text Text to be processed.
-   * @param collection Collection where split text to be added into
+   * @return A Stream containing an array created by splitting the provided text
    */
-  public static <T extends Collection<String>> T convertStringToCollection(
-      String text, T collection) {
-    if (!Check.isEmpty(text)) {
-      for (String s : text.split("\\s|,|;")) {
-        if (!Check.isEmpty(s)) {
-          collection.add(s.toLowerCase());
-        }
-      }
-    }
-    return collection;
+  public static Stream<String> convertStringToStream(String text) {
+    return Arrays.stream(text.split("\\s|,|;")).filter(s -> !Check.isEmpty(s));
   }
 
   private String returnMatchingFraction(String text, Collection<String> terms, int maxLength) {

@@ -47,7 +47,8 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.viewitem.section.AbstractParentViewItemSection;
 import com.tle.web.viewurl.ItemSectionInfo;
 import com.tle.web.workflow.tasks.ModerationService;
-import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 @Bind
@@ -88,8 +89,12 @@ public class AddToFavouritesSection extends AbstractParentViewItemSection<AddToF
   @EventHandlerMethod
   public void addBookmarkClicked(SectionInfo info, String tagString, boolean alwaysLatest) {
     Item item = getItemInfo(info).getItem();
-    bookmarkService.add(
-        item, TextUtils.convertStringToCollection(tagString, new HashSet<>()), alwaysLatest);
+    Set<String> tags =
+        TextUtils.convertStringToStream(tagString)
+            .map(String::toLowerCase)
+            .collect(Collectors.toSet());
+
+    bookmarkService.add(item, tags, alwaysLatest);
     receiptService.setReceipt(LABEL_RECEIPT);
   }
 
