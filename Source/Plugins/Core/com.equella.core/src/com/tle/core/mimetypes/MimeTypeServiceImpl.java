@@ -58,6 +58,7 @@ import javax.inject.Singleton;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.hibernate.Hibernate;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
@@ -468,9 +469,14 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
       type += '/' + ((CustomAttachment) attachment).getType().toLowerCase();
     }
     if (type.equals("custom/resource") && attachment.getData("type").equals("a")) {
-      // Recurse to drill into the linked attachment, so we can use the correct viewer
-      return getMimeEntryForAttachment(
-          attachmentDao.findByCriteria(Restrictions.eq("uuid", attachment.getUrl())));
+      // Recurse to drill into the linked attachment, so we can use the correct viewer.
+      // If more than one attachment has the linked uuid,
+      // this is a zip or scorm package and we can let it fall through.
+      Criterion uuidEqualsAttachmentUrl = Restrictions.eq("uuid", attachment.getUrl());
+      List<Attachment> attachmentList = attachmentDao.findAllByCriteria(uuidEqualsAttachmentUrl);
+      if (attachmentList.size() == 1) {
+        return getMimeEntryForAttachment(attachmentList.get(0));
+      }
     }
     Map<String, List<Extension>> map = getExtensionMap();
     List<Extension> extensions = map.get(type);
