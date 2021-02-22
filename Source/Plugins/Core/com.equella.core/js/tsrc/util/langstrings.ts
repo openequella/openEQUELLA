@@ -350,6 +350,10 @@ export const languageStrings = {
     categorySelector: {
       title: "Classifications",
     },
+    favouriteItem: {
+      add: "Add to favourites",
+      remove: "Remove from favourites",
+    },
     filterOwner: {
       title: "Owner",
       chip: "Owner: ",

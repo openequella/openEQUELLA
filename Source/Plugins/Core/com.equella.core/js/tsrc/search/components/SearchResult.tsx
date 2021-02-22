@@ -22,6 +22,7 @@ import {
   Badge,
   Divider,
   Grid,
+  Hidden,
   IconButton,
   List,
   ListItem,
@@ -37,6 +38,8 @@ import AttachFile from "@material-ui/icons/AttachFile";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import InsertDriveFile from "@material-ui/icons/InsertDriveFile";
 import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
+import FavoriteIcon from "@material-ui/icons/Favorite";
+import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import Search from "@material-ui/icons/Search";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
@@ -75,6 +78,7 @@ const {
   comments: commentStrings,
   starRatings: ratingStrings,
   selectResource: selectResourceStrings,
+  favouriteItem: favouriteItemStrings,
 } = languageStrings.searchpage;
 
 const useStyles = makeStyles((theme: Theme) => {
@@ -93,6 +97,7 @@ const useStyles = makeStyles((theme: Theme) => {
       flexDirection: "row",
       display: "flex",
       paddingTop: theme.spacing(1),
+      alignItems: "center",
     },
     status: {
       textTransform: "capitalize",
@@ -159,6 +164,7 @@ export default function SearchResult({
     keywordFoundInAttachment,
     commentCount = 0,
     starRatings,
+    isAddedToFavourite,
   },
 }: SearchResultProps) {
   interface AttachmentAndViewerDetails {
@@ -270,8 +276,31 @@ export default function SearchResult({
           <DateDisplay displayRelative date={new Date(modifiedDate)} />
         </Typography>
 
+        {metaDataDivider}
+        {[
+          {
+            hidden: !isAddedToFavourite,
+            icon: <FavoriteIcon />,
+            label: favouriteItemStrings.add,
+            onClick: () => {},
+          },
+          {
+            hidden: isAddedToFavourite,
+            icon: <FavoriteBorderIcon />,
+            label: favouriteItemStrings.remove,
+            onClick: () => {},
+          },
+        ].map(
+          ({ hidden, icon, label, onClick }) =>
+            hidden && (
+              <IconButton onClick={onClick} aria-label={label} size="small">
+                {icon}
+              </IconButton>
+            )
+        )}
+
         {commentCount > 0 && (
-          <>
+          <Hidden smDown>
             {metaDataDivider}
             <Typography component="span">
               <HashLink
@@ -281,16 +310,16 @@ export default function SearchResult({
                 {formatSize(commentCount, commentStrings)}
               </HashLink>
             </Typography>
-          </>
+          </Hidden>
         )}
 
         {starRatings >= 0 && (
-          <>
+          <Hidden smDown>
             {metaDataDivider}
             <div aria-label={sprintf(ratingStrings.label, starRatings)}>
               <StarRating numberOfStars={5} rating={starRatings} />
             </div>
-          </>
+          </Hidden>
         )}
       </div>
     );
