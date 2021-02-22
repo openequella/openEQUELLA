@@ -472,7 +472,9 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
       type += '/' + ((CustomAttachment) attachment).getType().toLowerCase();
     }
     if (type.equals("custom/resource")
-        && attachment.getData("type").equals(SelectedResource.TYPE_ATTACHMENT)) {
+        && attachment
+            .getData("type")
+            .equals(Character.toString(SelectedResource.TYPE_ATTACHMENT))) {
       // Recurse to drill into the linked attachment, so we can use the correct viewer.
       // If more than one attachment has the linked uuid,
       // this is a zip or scorm package and we can let it fall through.
