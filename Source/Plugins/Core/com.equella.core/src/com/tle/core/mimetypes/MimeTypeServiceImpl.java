@@ -45,6 +45,7 @@ import com.tle.core.plugins.PluginTracker.ExtensionParamComparator;
 import com.tle.core.security.impl.RequiresPrivilege;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.controls.resource.ResourceAttachmentBean;
+import com.tle.web.selection.SelectedResource;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -180,9 +181,9 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
   public String getMimeTypeForResourceAttachmentBean(
       ResourceAttachmentBean resourceAttachmentBean) {
     switch (resourceAttachmentBean.getResourceType()) {
-      case 'a':
+      case SelectedResource.TYPE_ATTACHMENT:
         return getMimeTypeForAttachmentUuid(resourceAttachmentBean.getAttachmentUuid());
-      case 'p':
+      case SelectedResource.TYPE_PATH:
         return "equella/item";
       default:
         return DEFAULT_MIMETYPE;
@@ -468,7 +469,8 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
     if (attachType == AttachmentType.CUSTOM) {
       type += '/' + ((CustomAttachment) attachment).getType().toLowerCase();
     }
-    if (type.equals("custom/resource") && attachment.getData("type").equals("a")) {
+    if (type.equals("custom/resource")
+        && attachment.getData("type").equals(SelectedResource.TYPE_ATTACHMENT)) {
       // Recurse to drill into the linked attachment, so we can use the correct viewer.
       // If more than one attachment has the linked uuid,
       // this is a zip or scorm package and we can let it fall through.
