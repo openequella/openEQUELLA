@@ -27,22 +27,29 @@ beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
 
 describe('FavouriteItem', () => {
-  const itemUUID = '2f6e9be8-897d-45f1-98ea-7aa31b449c0e';
-  const itemVersion = 1;
-
-  it('should be possible to add a favourite Item', async () => {
+  const add = (): Promise<FavouriteItem> => {
+    const itemKey = '2f6e9be8-897d-45f1-98ea-7aa31b449c0e/1';
     const favouriteItem: FavouriteItem = {
-      itemID: `${itemUUID}/${itemVersion}`,
+      itemID: itemKey,
       keywords: ['a', 'b'],
       isAlwaysLatest: true,
     };
-    const newFavouriteItem = await addFavouriteItem(TC.API_PATH, favouriteItem);
+    return addFavouriteItem(TC.API_PATH, favouriteItem);
+  };
+  it('should be possible to add a favourite Item', async () => {
+    const newFavouriteItem: FavouriteItem = await add();
     expect(newFavouriteItem).not.toBeNull();
+    expect(newFavouriteItem.bookmarkID).toBeTruthy();
   });
 
   it('should be possible to delete a favourite Item', async () => {
+    const newFavouriteItem: FavouriteItem = await add();
+    const newBookmarkID = newFavouriteItem.bookmarkID;
+    if (!newBookmarkID) {
+      throw new Error("Bookmark ID can't be falsy");
+    }
     await expect(
-      deleteFavouriteItem(TC.API_PATH, itemUUID, itemVersion)
+      deleteFavouriteItem(TC.API_PATH, newBookmarkID)
     ).resolves.not.toThrow();
   });
 });
