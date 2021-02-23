@@ -258,14 +258,9 @@ export const InlineFileUploader = ({
     const { id, children } = file.fileEntry;
     const onSuccessful = (displayWarningMessage = false) => {
       // Child files must be deleted as well.
-      const remainingFiles = [id, ...children.map((child) => child.id)].reduce(
-        (accumulator: UploadedFile[], currentValue: string) =>
-          deleteElement(
-            accumulator,
-            generateUploadedFileComparator(currentValue),
-            1
-          ),
-        uploadedFiles
+      const toRemove = [id, ...children.map((child) => child.id)];
+      const remainingFiles = uploadedFiles.filter(
+        (file) => !toRemove.includes(file.fileEntry.id)
       );
       setUploadedFiles(remainingFiles);
       setShowDuplicateWarning(displayWarningMessage);
