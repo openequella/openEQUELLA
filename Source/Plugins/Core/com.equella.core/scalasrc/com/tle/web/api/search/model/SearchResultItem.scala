@@ -40,6 +40,8 @@ import com.tle.web.api.item.equella.interfaces.beans.{DisplayField, DisplayOptio
   * @param displayOptions Item's displayOptions which can be null.
   * @param keywordFoundInAttachment Indicates if a search term has been found inside attachment content
   * @param links Item's links.
+  * @param bookmarkId ID of Bookmark linking to this Item.
+  * @param isLatestVersion True if this version is the latest version.
   */
 case class SearchResultItem(
     uuid: String,
@@ -58,7 +60,8 @@ case class SearchResultItem(
     displayOptions: Option[DisplayOptions],
     keywordFoundInAttachment: Boolean,
     links: java.util.Map[String, String],
-    isAddedToFavourite: Boolean
+    bookmarkId: Option[Long],
+    isLatestVersion: Boolean
 )
 
 /**

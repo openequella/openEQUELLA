@@ -206,7 +206,8 @@ object SearchHelper {
       displayOptions = Option(bean.getDisplayOptions),
       keywordFoundInAttachment = item.keywordFound,
       links = getLinksFromBean(bean),
-      isAddedToFavourite = isAddedToFavourite(key)
+      bookmarkId = getBookmarkId(key),
+      isLatestVersion = isLatestVersion(key),
     )
   }
 
@@ -281,6 +282,19 @@ object SearchHelper {
   def getLinksFromBean[T <: AbstractExtendableBean](bean: T) =
     bean.get("links").asInstanceOf[java.util.Map[String, String]]
 
-  def isAddedToFavourite(itemID: ItemIdKey): Boolean =
-    Option(LegacyGuice.bookmarkService.getByItem(itemID)).isDefined
+  /**
+    * Find the Bookmark linking to the Item and return the Bookmark's ID.
+    * @param itemID Unique Item ID
+    * @return Unique Bookmark ID
+    */
+  def getBookmarkId(itemID: ItemIdKey): Option[Long] =
+    Option(LegacyGuice.bookmarkService.getByItem(itemID)).map(_.getId)
+
+  /**
+    * Check whether a specific version is the latest version
+    * @param itemID Unique Item ID
+    * @return True if the version is the latest one
+    */
+  def isLatestVersion(itemID: ItemIdKey): Boolean =
+    itemID.getVersion == LegacyGuice.itemService.getLatestVersion(itemID.getUuid)
 }

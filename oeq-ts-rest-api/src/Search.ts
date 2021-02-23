@@ -243,9 +243,13 @@ interface SearchResultItemBase {
     self: string;
   };
   /**
-   * Whether an Item is already added to user's favourites.
+   * ID of Bookmark linking to this Item.
    */
-  isAddedToFavourite: boolean;
+  bookmarkId?: number;
+  /**
+   * True if this version is the latest version.
+   */
+  isLatestVersion: boolean;
 }
 
 /**
