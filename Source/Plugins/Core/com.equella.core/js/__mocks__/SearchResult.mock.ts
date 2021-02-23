@@ -66,6 +66,7 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
         self:
           "http://localhost:8080/rest/api/item/9b9bf5a9-c5af-490b-88fe-7e330679fad2/1/",
       },
+      isLatestVersion: true,
     },
     {
       uuid: "266bb0ff-a730-4658-aec0-c68bbefc227c",
@@ -85,6 +86,7 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
         self:
           "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
       },
+      isLatestVersion: true,
     },
     {
       uuid: "2534e329-e37e-4851-896e-51d8b39104c4",
@@ -104,6 +106,7 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
         self:
           "http://localhost:8080/rest/api/item/2534e329-e37e-4851-896e-51d8b39104c4/1/",
       },
+      isLatestVersion: true,
     },
     {
       uuid: "925f5dd2-66eb-4b68-85be-93837af785d0",
@@ -138,6 +141,7 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
         self:
           "http://localhost:8080/rest/api/item/925f5dd2-66eb-4b68-85be-93837af785d0/1/",
       },
+      isLatestVersion: true,
     },
     {
       uuid: "266bb0ff-a730-4658-aec0-c68bbefc2271",
@@ -158,6 +162,7 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
         self:
           "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
       },
+      isLatestVersion: true,
     },
     {
       uuid: "266bb0ff-a730-4658-aec0-c68bbefc2272",
@@ -178,6 +183,7 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
         self:
           "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
       },
+      isLatestVersion: true,
     },
     {
       uuid: "266bb0ff-a730-4658-aec0-c68bbefc2273",
@@ -218,6 +224,7 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
         self:
           "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
       },
+      isLatestVersion: true,
     },
     {
       uuid: "266bb0ff-a730-4658-aec0-c68bbefc2275",
@@ -238,6 +245,7 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
         self:
           "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
       },
+      isLatestVersion: true,
     },
     {
       uuid: "266bb0ff-a730-4658-aec0-c68bbefc2276",
@@ -258,6 +266,7 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
         self:
           "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
       },
+      isLatestVersion: true,
     },
     {
       uuid: "266bb0ff-a730-4658-aec0-c68bbefc2277",
@@ -278,6 +287,7 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
         self:
           "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
       },
+      isLatestVersion: true,
     },
     {
       uuid: "266bb0ff-a730-4658-aec0-c68bbefc2278",
@@ -298,6 +308,7 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
         self:
           "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
       },
+      isLatestVersion: true,
     },
   ],
   highlight: [],
@@ -328,6 +339,7 @@ export const getSearchResultsCustom = (
       self:
         "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
     },
+    isLatestVersion: true,
   })),
   highlight: [],
 });
