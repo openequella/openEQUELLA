@@ -130,12 +130,12 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
     getFileUpload().sendKeys(filename);
     WebElement uploadRow =
         waitForElement(
-            uploadsDiv, By.xpath("ul/li[.//div[text() = " + quoteXPath(expectedFilename) + "]]"));
+            uploadsDiv, By.xpath("ul/div[.//div[text() = " + quoteXPath(expectedFilename) + "]]"));
     waitForElement(
         uploadRow,
         new ByChained(
             By.xpath(
-                "div/div[contains(@class, 'actions')]/div/button[contains(@title, 'Delete file')]")));
+                "div/div/div[contains(@class, 'actions')]/div/button[contains(@title, 'Delete file')]")));
   }
 
   public FileUniversalControlType uploadError(URL file, String errorMessage) {

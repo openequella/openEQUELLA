@@ -88,13 +88,14 @@ export const UploadList = ({
           );
         };
 
+        // Use "div" as the ListItem component to avoid EBP styles which apply to "li".
         return (
           <ListItem key={fileId} divider component="div">
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs={9}>
+              <Grid item xs={6} sm={8} lg={9}>
                 <ListItemContent />
               </Grid>
-              <Grid item xs={3}>
+              <Grid item xs={6} sm={4} lg={3}>
                 <UploadActions actions={buildActions(file)} />
               </Grid>
             </Grid>
