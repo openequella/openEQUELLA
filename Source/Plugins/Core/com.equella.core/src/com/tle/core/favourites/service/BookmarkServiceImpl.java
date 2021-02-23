@@ -56,6 +56,11 @@ public class BookmarkServiceImpl implements BookmarkService, UserChangeListener 
   }
 
   @Override
+  public Bookmark getById(long id) {
+    return dao.findById(id);
+  }
+
+  @Override
   @Transactional
   public Bookmark add(Item item, Set<String> tags, boolean latest) {
     Bookmark bookmark = new Bookmark();

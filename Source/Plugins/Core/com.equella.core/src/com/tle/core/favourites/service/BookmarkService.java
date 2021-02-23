@@ -33,6 +33,8 @@ public interface BookmarkService {
 
   Bookmark getByItem(ItemKey itemId);
 
+  Bookmark getById(long id);
+
   /** Return a set of items that are not bookmarked by the current user. */
   List<Item> filterNonBookmarkedItems(Collection<Item> items);
 

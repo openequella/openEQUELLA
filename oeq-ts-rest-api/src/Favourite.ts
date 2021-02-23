@@ -18,10 +18,26 @@
 import { is } from 'typescript-is';
 import { DELETE, POST } from './AxiosInstance';
 
+/**
+ * Type matching server-side Favourite Item model
+ */
 export interface FavouriteItem {
+  /**
+   * Item's ID consisting of Item's UUID and version
+   */
   itemID: string;
+  /**
+   * Tags of this Favourite Item
+   */
   keywords: string[];
+  /**
+   * Whether this Favourite Item uses latest Item version
+   */
   isAlwaysLatest: boolean;
+  /**
+   * ID of the related Bookmark.
+   */
+  bookmarkID?: number;
 }
 
 const FAVOURITE_PATH = '/favourite';
@@ -44,12 +60,10 @@ export const addFavouriteItem = (
 /**
  * Delete one Item from user's favourites.
  * @param apiBasePath Base URI to the oEQ institution and API
- * @param uuid UUID of an Item
- * @param version Version of an Item
+ * @param bookmarkID ID of a bookmark
  */
 export const deleteFavouriteItem = (
   apiBasePath: string,
-  uuid: string,
-  version: number
+  bookmarkID: number
 ): Promise<void> =>
-  DELETE<void>(`${apiBasePath}${FAVOURITE_PATH}/${uuid}/${version}`);
+  DELETE<void>(`${apiBasePath}${FAVOURITE_PATH}/${bookmarkID}`);
