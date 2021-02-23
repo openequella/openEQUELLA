@@ -19,6 +19,7 @@
 package com.tle.core.mimetypes;
 
 import static com.tle.core.mimetypes.MimeTypeConstants.MIME_ITEM;
+import static com.tle.web.controls.resource.ResourceAttachmentBean.TYPE_ID;
 
 import com.google.common.cache.CacheLoader;
 import com.tle.annotation.Nullable;
@@ -471,7 +472,7 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
     if (attachType == AttachmentType.CUSTOM) {
       type += '/' + ((CustomAttachment) attachment).getType().toLowerCase();
     }
-    if (type.equals("custom/resource")
+    if (type.equals(TYPE_ID)
         && attachment
             .getData("type")
             .equals(Character.toString(SelectedResource.TYPE_ATTACHMENT))) {
