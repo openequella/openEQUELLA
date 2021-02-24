@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import {
+  Chip,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -24,6 +25,7 @@ import {
   RadioGroup,
   TextField,
 } from "@material-ui/core";
+import { Autocomplete } from "@material-ui/lab";
 import { useState } from "react";
 import * as React from "react";
 import ConfirmDialog from "../../components/ConfirmDialog";
@@ -65,29 +67,40 @@ export interface FavouriteItemDialogProps {
   favouriteItem?: FavouriteItem;
 }
 
-interface AddFavouriteItemContentProps {
-  value: string;
-  setValue: (value: string) => void;
-  isLatestVersion: boolean;
-}
+const {
+  add: addFavouriteItemString,
+  remove: removeFavouriteItemString,
+  removeAlert: removeAlertString,
+  tags: tagsString,
+} = languageStrings.searchpage.favouriteItem;
 
 /**
  * Build a Grid as the dialog's content when the dialog is used for adding a favourite Item.
  */
 const AddFavouriteItemContent = ({
-  value,
-  setValue,
+  setTags,
   isLatestVersion,
-}: AddFavouriteItemContentProps) => (
+}: {
+  setTags: (tags: string[]) => void;
+  isLatestVersion: boolean;
+}) => (
   <Grid container direction="column" spacing={2}>
     <Grid item>
-      <TextField
-        key="tags"
-        value={value}
-        label="Provide tags to help when searching (optional)."
-        helperText="Each tag can be separated by a whitespace, a comma or a semi-colon."
-        onChange={(event) => setValue(event.target.value)}
-        fullWidth
+      <Autocomplete
+        multiple
+        freeSolo
+        renderTags={(value: string[], getTagProps) =>
+          value.map((option: string, index: number) => (
+            <Chip label={option} {...getTagProps({ index })} />
+          ))
+        }
+        renderInput={(params) => (
+          <TextField {...params} label={tagsString.description} />
+        )}
+        options={[]}
+        onChange={(_, value: string[]) => {
+          setTags(value);
+        }}
       />
     </Grid>
     <Grid item>
@@ -98,23 +111,21 @@ const AddFavouriteItemContent = ({
             <FormControlLabel
               value="true"
               control={<Radio />}
-              label="Always use latest version"
+              label={tagsString.versionOptions.useLatestVersion}
             />
             <FormControlLabel
               value="false"
               control={<Radio />}
-              label="This version"
+              label={tagsString.versionOptions.useThisVersion}
             />
           </RadioGroup>
         </FormControl>
       ) : (
-        "NOTE: Adding this favourite will point to this version forever."
+        tagsString.toThisVersion
       )}
     </Grid>
   </Grid>
 );
-
-const favouriteItemStrings = languageStrings.searchpage.favouriteItem;
 
 /**
  * Provide a Dialog where an Item can be added to or removed from user's favourites.
@@ -125,29 +136,25 @@ export const FavouriteItemDialog = ({
   favouriteItem = defaultFavouriteItem,
 }: FavouriteItemDialogProps) => {
   const { itemKey, bookmarkId, isLatestVersion } = favouriteItem;
-  const title = bookmarkId
-    ? favouriteItemStrings.remove
-    : favouriteItemStrings.add;
 
-  const [tags, setTags] = useState<string>("");
+  const [tags, setTags] = useState<string[]>([]);
   const onConfirm = bookmarkId
     ? () => console.log("remove " + bookmarkId)
-    : () => console.log("add " + itemKey);
+    : () => console.log("add " + itemKey + ": " + tags.join(","));
 
   return (
     <ConfirmDialog
       open={open}
-      title={title}
+      title={bookmarkId ? removeFavouriteItemString : addFavouriteItemString}
       onConfirm={onConfirm}
       onCancel={onCancel}
-      confirmButtonText="ok"
+      confirmButtonText={languageStrings.common.action.ok}
     >
       {bookmarkId ? (
-        "Are you sure you want to remove from your favourites?"
+        removeAlertString
       ) : (
         <AddFavouriteItemContent
-          value={tags}
-          setValue={setTags}
+          setTags={setTags}
           isLatestVersion={isLatestVersion}
         />
       )}

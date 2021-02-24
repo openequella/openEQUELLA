@@ -353,6 +353,16 @@ export const languageStrings = {
     favouriteItem: {
       add: "Add to favourites",
       remove: "Remove from favourites",
+      removeAlert: "Are you sure you want to remove from your favourites?",
+      tags: {
+        description: "Provide tags to help when searching (optional).",
+        toThisVersion:
+          "NOTE: Adding this favourite will point to this version forever.",
+        versionOptions: {
+          useLatestVersion: "Always use latest version",
+          useThisVersion: "This version",
+        },
+      },
     },
     filterOwner: {
       title: "Owner",
