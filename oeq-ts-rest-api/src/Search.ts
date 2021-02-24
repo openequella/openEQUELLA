@@ -242,6 +242,14 @@ interface SearchResultItemBase {
      */
     self: string;
   };
+  /**
+   * ID of Bookmark linking to this Item.
+   */
+  bookmarkId?: number;
+  /**
+   * True if this version is the latest version.
+   */
+  isLatestVersion: boolean;
 }
 
 /**
