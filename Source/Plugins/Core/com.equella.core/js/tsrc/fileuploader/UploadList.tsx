@@ -15,12 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Grid,
-  List,
-  ListItem,
-  ListItemSecondaryAction,
-} from "@material-ui/core";
+import { Grid, List, ListItem } from "@material-ui/core";
 import * as React from "react";
 import {
   isUploadedFile,
@@ -93,12 +88,17 @@ export const UploadList = ({
           );
         };
 
+        // Use "div" as the ListItem component to avoid EBP styles which apply to "li".
         return (
-          <ListItem key={fileId} divider>
-            <ListItemContent />
-            <ListItemSecondaryAction>
-              <UploadActions actions={buildActions(file)} />
-            </ListItemSecondaryAction>
+          <ListItem key={fileId} divider component="div">
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={6} sm={8} lg={9}>
+                <ListItemContent />
+              </Grid>
+              <Grid item xs={6} sm={4} lg={3}>
+                <UploadActions actions={buildActions(file)} />
+              </Grid>
+            </Grid>
           </ListItem>
         );
       })

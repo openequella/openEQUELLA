@@ -155,7 +155,7 @@ export const InlineFileUploader = ({
   );
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
   const [attachmentCount, setAttachmentCount] = useState<number>(
-    entries.length
+    uploadedFiles.length
   );
   const [showDuplicateWarning, setShowDuplicateWarning] = useState<
     boolean | undefined
@@ -255,13 +255,16 @@ export const InlineFileUploader = ({
   const onReplace = (fileId: string) => openDialog(fileId, "");
 
   const onDelete = (file: UploadedFile) => {
-    const { id } = file.fileEntry;
+    const { id, children } = file.fileEntry;
     const onSuccessful = (displayWarningMessage = false) => {
-      setUploadedFiles(
-        deleteElement(uploadedFiles, generateUploadedFileComparator(id), 1)
+      // Child files must be deleted as well.
+      const toRemove = [id, ...children.map((child) => child.id)];
+      const remainingFiles = uploadedFiles.filter(
+        (file) => !toRemove.includes(file.fileEntry.id)
       );
+      setUploadedFiles(remainingFiles);
       setShowDuplicateWarning(displayWarningMessage);
-      setAttachmentCount(attachmentCount - 1);
+      setAttachmentCount(remainingFiles.length);
       reloadState();
     };
 

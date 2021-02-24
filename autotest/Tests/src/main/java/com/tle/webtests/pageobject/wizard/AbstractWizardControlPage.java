@@ -253,7 +253,7 @@ public abstract class AbstractWizardControlPage<T extends AbstractWizardControlP
   public ExpectedCondition<WebElement> getNewAttachmentExpectation(String item) {
     return ExpectedConditions.visibilityOfElementLocated(
         By.xpath(
-            "//div[contains(@class, 'universalresources')]/div/ul/li/.//a[text()="
+            "//div[contains(@class, 'universalresources')]/div/ul/div/.//a[text()="
                 + quoteXPath(item)
                 + "]"));
   }

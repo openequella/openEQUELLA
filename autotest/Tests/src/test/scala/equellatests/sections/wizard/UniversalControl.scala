@@ -10,10 +10,11 @@ import scala.util.Try
 class UniversalControl(val page: WizardPageTab, val ctrlNum: Int) extends WizardControl {
 
   private def actionLinkBy(action: String) =
-    By.xpath("div/div[contains(@class, 'actions')]/div/a[text()=" + quoteXPath(action) + "]")
+    By.xpath("div/div/div[contains(@class, 'actions')]/div/a[text()=" + quoteXPath(action) + "]")
 
   private val cancelBtnBy =
-    By.xpath("div/div[contains(@class, 'actions')]/div/button[contains(@title, 'Cancel upload')]")
+    By.xpath(
+      "div/div/div[contains(@class, 'actions')]/div/button[contains(@title, 'Cancel upload')]")
 
   private def rowForDescription(description: String, disabled: Boolean) =
     Try(pageElement.findElement(rowDescriptionBy(description, disabled))).toOption
@@ -45,7 +46,8 @@ class UniversalControl(val page: WizardPageTab, val ctrlNum: Int) extends Wizard
   }
 
   private def rowDescriptionBy(title: String, disabled: Boolean) =
-    By.xpath(".//li[.//" + (if (disabled) "div" else "a") + "[text()=" + quoteXPath(title) + "]]")
+    By.xpath(
+      ".//ul/div[.//" + (if (disabled) "div" else "a") + "[text()=" + quoteXPath(title) + "]]")
 
   def attachNameWaiter(description: String, disabled: Boolean): ExpectedCondition[_] = {
     ExpectedConditions.visibilityOfElementLocated(
