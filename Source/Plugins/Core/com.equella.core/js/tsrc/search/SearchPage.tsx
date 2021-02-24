@@ -60,6 +60,10 @@ import {
 import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
 import SearchBar from "../search/components/SearchBar";
 import { languageStrings } from "../util/langstrings";
+import {
+  FavouriteItemDialog,
+  FavouriteItem,
+} from "./components/FavouriteItemDialog";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
 import { CollectionSelector } from "./components/CollectionSelector";
 import OwnerSelector from "./components/OwnerSelector";
@@ -195,7 +199,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     searchSettings,
     setSearchSettings,
   ] = useState<OEQ.SearchSettings.Settings>();
-
+  const [showFavouriteDialog, setShowFavouriteDialog] = useState<boolean>(
+    false
+  );
+  const [favouriteItem, setFavouriteItem] = useState<FavouriteItem>();
   const [showRefinePanel, setShowRefinePanel] = useState<boolean>(false);
 
   const handleError = useCallback(
@@ -677,7 +684,15 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 onCopySearchLink={handleCopySearch}
               >
                 {searchResults.length > 0 &&
-                  mapSearchResultItems(searchResults, handleError, highlights)}
+                  mapSearchResultItems(
+                    searchResults,
+                    handleError,
+                    highlights,
+                    (favouriteItem: FavouriteItem) => {
+                      setShowFavouriteDialog(true);
+                      setFavouriteItem(favouriteItem);
+                    }
+                  )}
               </SearchResultList>
             </Grid>
           </Grid>
@@ -703,6 +718,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           {renderSidePanel()}
         </Drawer>
       </Hidden>
+      <FavouriteItemDialog
+        open={showFavouriteDialog}
+        onCancel={() => setShowFavouriteDialog(false)}
+        favouriteItem={favouriteItem}
+      />
     </>
   );
 };

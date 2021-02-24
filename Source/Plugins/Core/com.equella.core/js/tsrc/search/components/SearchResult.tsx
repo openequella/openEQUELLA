@@ -67,6 +67,7 @@ import {
 } from "../../modules/LegacySelectionSessionModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
+import type { FavouriteItem } from "./FavouriteItemDialog";
 import { ResourceSelector } from "./ResourceSelector";
 import {
   determineAttachmentViewUrl,
@@ -145,6 +146,11 @@ export interface SearchResultProps {
    * The details of the items to display.
    */
   item: OEQ.Search.SearchResultItem;
+  /**
+   * Function fired to update what Item to be added to or removed from user's favourite
+   * @param favouriteItem Information of an Item to be processed
+   */
+  updateFavouriteItem: (favouriteItem: FavouriteItem) => void;
 }
 
 export default function SearchResult({
@@ -164,8 +170,10 @@ export default function SearchResult({
     keywordFoundInAttachment,
     commentCount = 0,
     starRatings,
-    isAddedToFavourite,
+    bookmarkId,
+    isLatestVersion,
   },
+  updateFavouriteItem,
 }: SearchResultProps) {
   interface AttachmentAndViewerDetails {
     attachment: OEQ.Search.Attachment;
@@ -279,23 +287,33 @@ export default function SearchResult({
         {metaDataDivider}
         {[
           {
-            hidden: !isAddedToFavourite,
-            icon: <FavoriteIcon />,
+            hidden: bookmarkId !== undefined,
+            icon: <FavoriteBorderIcon />,
             label: favouriteItemStrings.add,
-            onClick: () => {},
           },
           {
-            hidden: isAddedToFavourite,
-            icon: <FavoriteBorderIcon />,
+            hidden: !bookmarkId,
+            icon: <FavoriteIcon />,
             label: favouriteItemStrings.remove,
-            onClick: () => {},
           },
         ].map(
-          ({ hidden, icon, label, onClick }) =>
-            hidden && (
-              <IconButton onClick={onClick} aria-label={label} size="small">
-                {icon}
-              </IconButton>
+          ({ hidden, icon, label }) =>
+            !hidden && (
+              <Tooltip title={label} key={label}>
+                <IconButton
+                  onClick={() =>
+                    updateFavouriteItem({
+                      itemKey,
+                      bookmarkId,
+                      isLatestVersion,
+                    })
+                  }
+                  aria-label={label}
+                  size="small"
+                >
+                  {icon}
+                </IconButton>
+              </Tooltip>
             )
         )}
 
