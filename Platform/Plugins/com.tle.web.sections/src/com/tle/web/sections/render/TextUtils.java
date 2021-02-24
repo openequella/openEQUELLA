@@ -72,14 +72,15 @@ public final class TextUtils {
   }
 
   /**
-   * Split a text by either a whitespace, a comma or a semi-colon, and then add each split text into
-   * a provided collection.
+   * Tokenize a text by regex and put each split text into an array. And return a Stream whose
+   * source is the array.
    *
    * @param text Text to be processed.
-   * @return A Stream containing an array created by splitting the provided text
+   * @param regex Regex used to tokenize the text.
+   * @return A Stream containing an array created by tokenizing the provided text.
    */
-  public static Stream<String> convertStringToStream(String text) {
-    return Arrays.stream(text.split("\\s|,|;")).filter(s -> !Check.isEmpty(s));
+  public static Stream<String> tokenizeString(String text, String regex) {
+    return Arrays.stream(text.split(regex)).filter(s -> !Check.isEmpty(s));
   }
 
   private String returnMatchingFraction(String text, Collection<String> terms, int maxLength) {

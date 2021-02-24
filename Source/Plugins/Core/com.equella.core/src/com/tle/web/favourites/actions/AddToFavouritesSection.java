@@ -24,6 +24,7 @@ import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.favourites.service.BookmarkService;
 import com.tle.core.guice.Bind;
 import com.tle.web.favourites.FavouritesDialog;
+import com.tle.web.favourites.RootFavouritesSection;
 import com.tle.web.favourites.actions.AddToFavouritesSection.AddToFavouritesModel;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
@@ -41,14 +42,11 @@ import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.js.generic.OverrideHandler;
 import com.tle.web.sections.render.CssInclude;
 import com.tle.web.sections.render.Label;
-import com.tle.web.sections.render.TextUtils;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.viewitem.section.AbstractParentViewItemSection;
 import com.tle.web.viewurl.ItemSectionInfo;
 import com.tle.web.workflow.tasks.ModerationService;
-import java.util.Set;
-import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 @Bind
@@ -89,12 +87,7 @@ public class AddToFavouritesSection extends AbstractParentViewItemSection<AddToF
   @EventHandlerMethod
   public void addBookmarkClicked(SectionInfo info, String tagString, boolean alwaysLatest) {
     Item item = getItemInfo(info).getItem();
-    Set<String> tags =
-        TextUtils.convertStringToStream(tagString)
-            .map(String::toLowerCase)
-            .collect(Collectors.toSet());
-
-    bookmarkService.add(item, tags, alwaysLatest);
+    bookmarkService.add(item, RootFavouritesSection.tagsFromString(tagString), alwaysLatest);
     receiptService.setReceipt(LABEL_RECEIPT);
   }
 

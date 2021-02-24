@@ -25,6 +25,7 @@ import com.tle.core.favourites.service.BookmarkService;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.service.ItemService;
 import com.tle.web.favourites.FavouritesDialog;
+import com.tle.web.favourites.RootFavouritesSection;
 import com.tle.web.itemlist.item.AbstractItemlikeListEntry;
 import com.tle.web.itemlist.item.ItemListEntry;
 import com.tle.web.itemlist.item.ItemlikeListEntryExtension;
@@ -42,14 +43,11 @@ import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.generic.OverrideHandler;
 import com.tle.web.sections.js.validators.Confirm;
 import com.tle.web.sections.render.Label;
-import com.tle.web.sections.render.TextUtils;
 import com.tle.web.sections.result.util.IconLabel;
 import com.tle.web.sections.result.util.IconLabel.Icon;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 @SuppressWarnings("nls")
@@ -152,12 +150,7 @@ public class FavouritesDisplay extends AbstractPrototypeSection<Object>
   @EventHandlerMethod
   public void addFavourite(SectionInfo info, String tagString, boolean latest, String itemId) {
     Item item = itemService.get(new ItemId(itemId));
-    Set<String> tags =
-        TextUtils.convertStringToStream(tagString)
-            .map(String::toLowerCase)
-            .collect(Collectors.toSet());
-
-    bookmarkService.add(item, tags, latest);
+    bookmarkService.add(item, RootFavouritesSection.tagsFromString(tagString), latest);
     receiptService.setReceipt(ADD_RECEIPT_LABEL);
   }
 
