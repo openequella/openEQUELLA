@@ -72,7 +72,7 @@ const ConfirmDialog: FunctionComponent<ConfirmDialogProps> = ({
     >
       <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
       <DialogContent>
-        <DialogContentText id="alert-dialog-description">
+        <DialogContentText component="div" id="alert-dialog-description">
           {children}
         </DialogContentText>
       </DialogContent>
