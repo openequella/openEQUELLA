@@ -355,22 +355,24 @@ export const newSearchQueryToSearchOptions = async (
  * A function that takes search options and converts search options to search params,
  * and then does a search and returns a list of Items.
  * @param searchOptions Search options selected on Search page.
+ * @param mimeTypes A list of potential MIME types to filter items by
  */
-export const searchItems = ({
-  query,
-  rowsPerPage,
-  currentPage,
-  sortOrder,
-  collections,
-  rawMode,
-  lastModifiedDateRange,
-  owner,
-  status = liveStatuses,
-  searchAttachments,
-  selectedCategories,
-}: SearchOptions): Promise<
-  OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>
-> => {
+export const searchItems = (
+  {
+    query,
+    rowsPerPage,
+    currentPage,
+    sortOrder,
+    collections,
+    rawMode,
+    lastModifiedDateRange,
+    owner,
+    status = liveStatuses,
+    searchAttachments,
+    selectedCategories,
+  }: SearchOptions,
+  mimeTypes?: string[]
+): Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>> => {
   const processedQuery = query ? formatQuery(query, !rawMode) : undefined;
   const searchParams: OEQ.Search.SearchParams = {
     query: processedQuery,
@@ -384,7 +386,9 @@ export const searchItems = ({
     owner: owner?.id,
     searchAttachments: searchAttachments,
     whereClause: generateCategoryWhereQuery(selectedCategories),
+    mimeTypes,
   };
+
   return OEQ.Search.search(API_BASE_URL, searchParams);
 };
 

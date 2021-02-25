@@ -61,6 +61,36 @@ export const getMimeTypeDefaultViewerDetails = async (
 };
 
 /**
+ * Produces a predicate function to filter `MimeTypeEntry` collections based on MIME type types -
+ * i.e. the value before the first slash (e.g. `image` in `image/png`).
+ *
+ * @param type the MIME `type` to filter on - e.g. image, video, application, etc.
+ */
+const mimeTypeEntryTypePredicate = (type: string) => (
+  mte: OEQ.MimeType.MimeTypeEntry
+): boolean => {
+  try {
+    return splitMimeType(mte.mimeType)[0] === type;
+  } catch (e) {
+    if (e instanceof TypeError) {
+      return false;
+    } else {
+      throw e;
+    }
+  }
+};
+
+/**
+ * Provides a list of all the `image/` MIME types configured on the server. Results are memoized.
+ */
+export const getImageMimeTypes: () => Promise<string[]> = memoize(
+  async (): Promise<string[]> =>
+    (await getMIMETypesFromServer())
+      .filter(mimeTypeEntryTypePredicate("image"))
+      .map((mte) => mte.mimeType)
+);
+
+/**
  * Given a MIME Type of the form `<type>/<sub-type>`, validate correct form and then return
  * `type` and `sub-type` in a tuple. `sub-type` will actually also include any attributes, etc. as
  * that's all we need for now (i.e. we're not so interested in sub-types yet).
