@@ -33,6 +33,7 @@ import {
   addFavouriteItem,
   deleteFavouriteItem,
   FavouriteItemInfo,
+  FavouriteItemVersionOption,
 } from "../../modules/FavouriteModule";
 import { languageStrings } from "../../util/langstrings";
 
@@ -74,9 +75,11 @@ const {
  */
 const AddFavouriteItemContent = ({
   setTags,
+  setVersionOption,
   isLatestVersion,
 }: {
   setTags: (tags: string[]) => void;
+  setVersionOption: (version: FavouriteItemVersionOption) => void;
   isLatestVersion: boolean;
 }) => (
   <Grid container direction="column" spacing={2}>
@@ -100,14 +103,20 @@ const AddFavouriteItemContent = ({
       {isLatestVersion ? (
         <FormControl>
           <FormLabel>{tagsString.selectVersion}</FormLabel>
-          <RadioGroup row>
+          <RadioGroup
+            row
+            onChange={(event) =>
+              setVersionOption(event.target.value as FavouriteItemVersionOption)
+            }
+            defaultValue="latest"
+          >
             <FormControlLabel
-              value="true"
+              value="latest"
               control={<Radio />}
               label={tagsString.versionOptions.useLatestVersion}
             />
             <FormControlLabel
-              value="false"
+              value="this"
               control={<Radio />}
               label={tagsString.versionOptions.useThisVersion}
             />
@@ -131,18 +140,24 @@ export const FavouriteItemDialog = ({
   handleError,
 }: FavouriteItemDialogProps) => {
   const [tags, setTags] = useState<string[]>([]);
+  const [
+    versionOption,
+    setVersionOption,
+  ] = useState<FavouriteItemVersionOption>("latest");
 
   const addFavourite = () =>
-    addFavouriteItem(`${uuid}/${version}`, tags, isLatestVersion)
+    addFavouriteItem(`${uuid}/${version}`, tags, versionOption === "latest")
       .then(({ bookmarkID }) => {
         callback(resultString.successfulAdd, bookmarkID);
+        // Reset the version option to match the default selected value.
+        setVersionOption("latest");
       })
       .catch(handleError)
       .finally(closeDialog);
 
   const deleteFavourite = () => {
     if (!bookmarkId) {
-      throw new Error("Bookmark ID can't be empty.");
+      throw new Error("Bookmark ID can't be falsy.");
     }
     deleteFavouriteItem(bookmarkId)
       .then(() => callback(resultString.successfulRemove, undefined))
@@ -163,6 +178,7 @@ export const FavouriteItemDialog = ({
       ) : (
         <AddFavouriteItemContent
           setTags={setTags}
+          setVersionOption={setVersionOption}
           isLatestVersion={isLatestVersion}
         />
       )}

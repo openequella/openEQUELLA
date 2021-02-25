@@ -27,6 +27,11 @@ export type FavouriteItemInfo = Pick<
   "bookmarkId" | "uuid" | "version" | "isLatestVersion"
 >;
 
+/**
+ * Type for the two version options.
+ */
+export type FavouriteItemVersionOption = "latest" | "this";
+
 export const defaultFavouriteItem: FavouriteItemInfo = {
   uuid: "",
   version: 0,
