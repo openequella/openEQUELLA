@@ -53,6 +53,7 @@ import { OeqLink } from "../../components/OeqLink";
 import OEQThumb from "../../components/OEQThumb";
 import { StarRating } from "../../components/StarRating";
 import { routes } from "../../mainui/routes";
+import type { FavouriteItemInfo } from "../../modules/FavouriteModule";
 import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
 import {
   buildSelectionSessionItemSummaryLink,
@@ -67,7 +68,6 @@ import {
 } from "../../modules/LegacySelectionSessionModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
-import type { FavouriteItem } from "./FavouriteItemDialog";
 import { ResourceSelector } from "./ResourceSelector";
 import {
   determineAttachmentViewUrl,
@@ -147,10 +147,9 @@ export interface SearchResultProps {
    */
   item: OEQ.Search.SearchResultItem;
   /**
-   * Function fired to update what Item to be added to or removed from user's favourite
-   * @param favouriteItem Information of an Item to be processed
+   * Function fired to update what Item to be passed to FavouriteItemDialog.
    */
-  updateFavouriteItem: (favouriteItem: FavouriteItem) => void;
+  getItemForFavouriteDialog: (favouriteItem: FavouriteItemInfo) => void;
 }
 
 export default function SearchResult({
@@ -173,7 +172,7 @@ export default function SearchResult({
     bookmarkId,
     isLatestVersion,
   },
-  updateFavouriteItem,
+  getItemForFavouriteDialog,
 }: SearchResultProps) {
   interface AttachmentAndViewerDetails {
     attachment: OEQ.Search.Attachment;
@@ -302,8 +301,9 @@ export default function SearchResult({
               <Tooltip title={label} key={label}>
                 <IconButton
                   onClick={() =>
-                    updateFavouriteItem({
-                      itemKey,
+                    getItemForFavouriteDialog({
+                      uuid,
+                      version,
                       bookmarkId,
                       isLatestVersion,
                     })

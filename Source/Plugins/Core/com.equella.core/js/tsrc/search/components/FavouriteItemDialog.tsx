@@ -29,28 +29,12 @@ import { Autocomplete } from "@material-ui/lab";
 import { useState } from "react";
 import * as React from "react";
 import ConfirmDialog from "../../components/ConfirmDialog";
+import {
+  addFavouriteItem,
+  deleteFavouriteItem,
+  FavouriteItemInfo,
+} from "../../modules/FavouriteModule";
 import { languageStrings } from "../../util/langstrings";
-
-export interface FavouriteItem {
-  /**
-   * Item's unique key which consists of UUID and version
-   */
-  itemKey: string;
-  /**
-   * ID of a Bookmark which links to the Item
-   */
-  bookmarkId?: number;
-  /**
-   * Whether this version is the latest version
-   */
-  isLatestVersion: boolean;
-}
-
-const defaultFavouriteItem: FavouriteItem = {
-  itemKey: "",
-  bookmarkId: 0,
-  isLatestVersion: false,
-};
 
 export interface FavouriteItemDialogProps {
   /**
@@ -64,7 +48,7 @@ export interface FavouriteItemDialogProps {
   /**
    * An Item to be added to or removed from user's favourites
    */
-  favouriteItem?: FavouriteItem;
+  item: FavouriteItemInfo;
 }
 
 const {
@@ -133,14 +117,12 @@ const AddFavouriteItemContent = ({
 export const FavouriteItemDialog = ({
   open,
   onCancel,
-  favouriteItem = defaultFavouriteItem,
+  item: { uuid, version, bookmarkId, isLatestVersion },
 }: FavouriteItemDialogProps) => {
-  const { itemKey, bookmarkId, isLatestVersion } = favouriteItem;
-
   const [tags, setTags] = useState<string[]>([]);
   const onConfirm = bookmarkId
-    ? () => console.log("remove " + bookmarkId)
-    : () => console.log("add " + itemKey + ": " + tags.join(","));
+    ? () => deleteFavouriteItem(bookmarkId)
+    : () => addFavouriteItem(`${uuid}/${version}`, tags, isLatestVersion);
 
   return (
     <ConfirmDialog

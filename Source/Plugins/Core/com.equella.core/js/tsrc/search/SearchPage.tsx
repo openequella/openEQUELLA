@@ -34,6 +34,8 @@ import {
 } from "../mainui/Template";
 import { getAdvancedSearchesFromServer } from "../modules/AdvancedSearchModule";
 import type { Collection } from "../modules/CollectionsModule";
+import { defaultFavouriteItem } from "../modules/FavouriteModule";
+import type { FavouriteItemInfo } from "../modules/FavouriteModule";
 import {
   buildSelectionSessionAdvancedSearchLink,
   buildSelectionSessionRemoteSearchLink,
@@ -60,10 +62,7 @@ import {
 import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
 import SearchBar from "../search/components/SearchBar";
 import { languageStrings } from "../util/langstrings";
-import {
-  FavouriteItemDialog,
-  FavouriteItem,
-} from "./components/FavouriteItemDialog";
+import { FavouriteItemDialog } from "./components/FavouriteItemDialog";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
 import { CollectionSelector } from "./components/CollectionSelector";
 import OwnerSelector from "./components/OwnerSelector";
@@ -202,7 +201,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [showFavouriteDialog, setShowFavouriteDialog] = useState<boolean>(
     false
   );
-  const [favouriteItem, setFavouriteItem] = useState<FavouriteItem>();
+  const [favouriteItem, setFavouriteItem] = useState<FavouriteItemInfo>(
+    defaultFavouriteItem
+  );
   const [showRefinePanel, setShowRefinePanel] = useState<boolean>(false);
 
   const handleError = useCallback(
@@ -688,7 +689,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                     searchResults,
                     handleError,
                     highlights,
-                    (favouriteItem: FavouriteItem) => {
+                    (favouriteItem: FavouriteItemInfo) => {
                       setShowFavouriteDialog(true);
                       setFavouriteItem(favouriteItem);
                     }
@@ -721,7 +722,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       <FavouriteItemDialog
         open={showFavouriteDialog}
         onCancel={() => setShowFavouriteDialog(false)}
-        favouriteItem={favouriteItem}
+        item={favouriteItem}
       />
     </>
   );
