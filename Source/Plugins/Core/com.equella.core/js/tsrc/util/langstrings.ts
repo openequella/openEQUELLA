@@ -352,10 +352,6 @@ export const languageStrings = {
     },
     favouriteItem: {
       removeAlert: "Are you sure you want to remove from your favourites?",
-      result: {
-        successfulAdd: "Successfully added to favourites",
-        successfulRemove: "Successfully removed from favourites",
-      },
       tags: {
         description: "Provide tags to help when searching (optional).",
         selectVersion: "Select version to add:",

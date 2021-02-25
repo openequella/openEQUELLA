@@ -53,10 +53,9 @@ export interface FavouriteItemDialogProps {
   /**
    * Fired when adding/removing a favourite Item is successful
    *
-   * @param result Text describing an operation's result
    * @param newBookmarkID ID of the new Bookmark or undefined if the operation is deleting.
    */
-  callback: (result: string, newBookmarkID?: number) => void;
+  callback: (newBookmarkID?: number) => void;
   /**
    * Error handler for general errors
    */
@@ -66,7 +65,6 @@ export interface FavouriteItemDialogProps {
 const {
   title: { add: addString, remove: removeString },
   removeAlert: removeAlertString,
-  result: resultString,
   tags: tagsString,
 } = languageStrings.searchpage.favouriteItem;
 
@@ -148,7 +146,7 @@ export const FavouriteItemDialog = ({
   const addFavourite = () =>
     addFavouriteItem(`${uuid}/${version}`, tags, versionOption === "latest")
       .then(({ bookmarkID }) => {
-        callback(resultString.successfulAdd, bookmarkID);
+        callback(bookmarkID);
         // Reset the version option to match the default selected value.
         setVersionOption("latest");
       })
@@ -160,7 +158,7 @@ export const FavouriteItemDialog = ({
       throw new Error("Bookmark ID can't be falsy.");
     }
     deleteFavouriteItem(bookmarkId)
-      .then(() => callback(resultString.successfulRemove, undefined))
+      .then(() => callback(undefined))
       .catch(handleError)
       .finally(closeDialog);
   };

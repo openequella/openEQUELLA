@@ -230,9 +230,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ...favouriteDialogProps,
       open: true,
       item,
-      callback: (result: string, newBookmarkID?: number) => {
-        updateBookmarkId(newBookmarkID);
-      },
+      callback: (newBookmarkID?: number) => updateBookmarkId(newBookmarkID),
       handleError,
     });
   };
