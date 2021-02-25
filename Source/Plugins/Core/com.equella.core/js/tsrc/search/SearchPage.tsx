@@ -62,7 +62,10 @@ import {
 import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
 import SearchBar from "../search/components/SearchBar";
 import { languageStrings } from "../util/langstrings";
-import { FavouriteItemDialog } from "./components/FavouriteItemDialog";
+import {
+  FavouriteItemDialog,
+  FavouriteItemDialogProps,
+} from "./components/FavouriteItemDialog";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
 import { CollectionSelector } from "./components/CollectionSelector";
 import OwnerSelector from "./components/OwnerSelector";
@@ -198,13 +201,18 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     searchSettings,
     setSearchSettings,
   ] = useState<OEQ.SearchSettings.Settings>();
-  const [showFavouriteDialog, setShowFavouriteDialog] = useState<boolean>(
-    false
-  );
-  const [favouriteItem, setFavouriteItem] = useState<FavouriteItemInfo>(
-    defaultFavouriteItem
-  );
   const [showRefinePanel, setShowRefinePanel] = useState<boolean>(false);
+  const [
+    favouriteDialogProps,
+    setFavouriteDialogProps,
+  ] = useState<FavouriteItemDialogProps>({
+    open: false,
+    item: defaultFavouriteItem,
+    closeDialog: () =>
+      setFavouriteDialogProps({ ...favouriteDialogProps, open: false }),
+    callback: () => {},
+    handleError: () => {},
+  });
 
   const handleError = useCallback(
     (error: Error) => {
@@ -212,6 +220,22 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     },
     [dispatch]
   );
+
+  // A helper function passed to SearchResult to collect information required by FavouriteItemDialog.
+  const favouriteDialogHelper = (
+    item: FavouriteItemInfo,
+    updateBookmarkId: (id?: number) => void
+  ) => {
+    setFavouriteDialogProps({
+      ...favouriteDialogProps,
+      open: true,
+      item,
+      callback: (result: string, newBookmarkID?: number) => {
+        updateBookmarkId(newBookmarkID);
+      },
+      handleError,
+    });
+  };
 
   const search = useCallback(
     (searchPageOptions: SearchPageOptions, scrollToTop = true): void =>
@@ -689,10 +713,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                     searchResults,
                     handleError,
                     highlights,
-                    (favouriteItem: FavouriteItemInfo) => {
-                      setShowFavouriteDialog(true);
-                      setFavouriteItem(favouriteItem);
-                    }
+                    favouriteDialogHelper
                   )}
               </SearchResultList>
             </Grid>
@@ -719,11 +740,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           {renderSidePanel()}
         </Drawer>
       </Hidden>
-      <FavouriteItemDialog
-        open={showFavouriteDialog}
-        onCancel={() => setShowFavouriteDialog(false)}
-        item={favouriteItem}
-      />
+      <FavouriteItemDialog {...favouriteDialogProps} />
     </>
   );
 };

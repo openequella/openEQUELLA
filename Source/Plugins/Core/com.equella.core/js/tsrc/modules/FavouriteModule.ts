@@ -34,6 +34,12 @@ export const defaultFavouriteItem: FavouriteItemInfo = {
   isLatestVersion: false,
 };
 
+/**
+ * Add an Item to user's favourites.
+ * @param itemID Item's unique ID
+ * @param keywords Tags of a favourite Item
+ * @param isAlwaysLatest `true` to always use Item's latest version
+ */
 export const addFavouriteItem = (
   itemID: string,
   keywords: string[],
@@ -45,5 +51,9 @@ export const addFavouriteItem = (
     isAlwaysLatest,
   }).then((newFavouriteItem: OEQ.Favourite.FavouriteItem) => newFavouriteItem);
 
+/**
+ * Delete one Item from user's favourites.
+ * @param bookmarkID ID of a bookmark
+ */
 export const deleteFavouriteItem = (bookmarkID: number) =>
   OEQ.Favourite.deleteFavouriteItem(API_BASE_URL, bookmarkID);

@@ -44,17 +44,28 @@ export interface FavouriteItemDialogProps {
   /**
    * Fired when the dialog is closed
    */
-  onCancel: () => void;
+  closeDialog: () => void;
   /**
    * An Item to be added to or removed from user's favourites
    */
   item: FavouriteItemInfo;
+  /**
+   * Fired when adding/removing a favourite Item is successful
+   *
+   * @param result Text describing an operation's result
+   * @param newBookmarkID ID of the new Bookmark or undefined if the operation is deleting.
+   */
+  callback: (result: string, newBookmarkID?: number) => void;
+  /**
+   * Error handler for general errors
+   */
+  handleError: (error: Error) => void;
 }
 
 const {
-  add: addFavouriteItemString,
-  remove: removeFavouriteItemString,
+  title: { add: addString, remove: removeString },
   removeAlert: removeAlertString,
+  result: resultString,
   tags: tagsString,
 } = languageStrings.searchpage.favouriteItem;
 
@@ -82,15 +93,13 @@ const AddFavouriteItemContent = ({
           <TextField {...params} label={tagsString.description} />
         )}
         options={[]}
-        onChange={(_, value: string[]) => {
-          setTags(value);
-        }}
+        onChange={(_, value: string[]) => setTags(value)}
       />
     </Grid>
     <Grid item>
       {isLatestVersion ? (
         <FormControl>
-          <FormLabel>Select version to add:</FormLabel>
+          <FormLabel>{tagsString.selectVersion}</FormLabel>
           <RadioGroup row>
             <FormControlLabel
               value="true"
@@ -116,20 +125,37 @@ const AddFavouriteItemContent = ({
  */
 export const FavouriteItemDialog = ({
   open,
-  onCancel,
+  closeDialog,
   item: { uuid, version, bookmarkId, isLatestVersion },
+  callback,
+  handleError,
 }: FavouriteItemDialogProps) => {
   const [tags, setTags] = useState<string[]>([]);
-  const onConfirm = bookmarkId
-    ? () => deleteFavouriteItem(bookmarkId)
-    : () => addFavouriteItem(`${uuid}/${version}`, tags, isLatestVersion);
+
+  const addFavourite = () =>
+    addFavouriteItem(`${uuid}/${version}`, tags, isLatestVersion)
+      .then(({ bookmarkID }) => {
+        callback(resultString.successfulAdd, bookmarkID);
+      })
+      .catch(handleError)
+      .finally(closeDialog);
+
+  const deleteFavourite = () => {
+    if (!bookmarkId) {
+      throw new Error("Bookmark ID can't be empty.");
+    }
+    deleteFavouriteItem(bookmarkId)
+      .then(() => callback(resultString.successfulRemove, undefined))
+      .catch(handleError)
+      .finally(closeDialog);
+  };
 
   return (
     <ConfirmDialog
       open={open}
-      title={bookmarkId ? removeFavouriteItemString : addFavouriteItemString}
-      onConfirm={onConfirm}
-      onCancel={onCancel}
+      title={bookmarkId ? removeString : addString}
+      onConfirm={bookmarkId ? deleteFavourite : addFavourite}
+      onCancel={closeDialog}
       confirmButtonText={languageStrings.common.action.ok}
     >
       {bookmarkId ? (

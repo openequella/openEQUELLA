@@ -351,17 +351,24 @@ export const languageStrings = {
       title: "Classifications",
     },
     favouriteItem: {
-      add: "Add to favourites",
-      remove: "Remove from favourites",
       removeAlert: "Are you sure you want to remove from your favourites?",
+      result: {
+        successfulAdd: "Successfully added to favourites",
+        successfulRemove: "Successfully removed from favourites",
+      },
       tags: {
         description: "Provide tags to help when searching (optional).",
+        selectVersion: "Select version to add:",
         toThisVersion:
           "NOTE: Adding this favourite will point to this version forever.",
         versionOptions: {
           useLatestVersion: "Always use latest version",
           useThisVersion: "This version",
         },
+      },
+      title: {
+        add: "Add to favourites",
+        remove: "Remove from favourites",
       },
     },
     filterOwner: {

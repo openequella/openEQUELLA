@@ -147,9 +147,12 @@ export interface SearchResultProps {
    */
   item: OEQ.Search.SearchResultItem;
   /**
-   * Function fired to update what Item to be passed to FavouriteItemDialog.
+   * Function fired to help update props of FavouriteItemDialog.
    */
-  getItemForFavouriteDialog: (favouriteItem: FavouriteItemInfo) => void;
+  favouriteDialogHelper: (
+    favouriteItem: FavouriteItemInfo,
+    updateBookmarkId: (id?: number) => void
+  ) => void;
 }
 
 export default function SearchResult({
@@ -169,10 +172,10 @@ export default function SearchResult({
     keywordFoundInAttachment,
     commentCount = 0,
     starRatings,
-    bookmarkId,
+    bookmarkId: bookmarkDefaultId,
     isLatestVersion,
   },
-  getItemForFavouriteDialog,
+  favouriteDialogHelper,
 }: SearchResultProps) {
   interface AttachmentAndViewerDetails {
     attachment: OEQ.Search.Attachment;
@@ -193,6 +196,10 @@ export default function SearchResult({
     attachmentsWithViewerDetails,
     setAttachmentsWithViewerDetails,
   ] = useState<AttachmentAndViewerDetails[]>([]);
+
+  const [bookmarkId, setBookmarkId] = useState<number | undefined>(
+    bookmarkDefaultId
+  );
 
   // Responsible for determining the MIME type viewer for the provided attachments
   useEffect(() => {
@@ -288,12 +295,12 @@ export default function SearchResult({
           {
             hidden: bookmarkId !== undefined,
             icon: <FavoriteBorderIcon />,
-            label: favouriteItemStrings.add,
+            label: favouriteItemStrings.title.add,
           },
           {
             hidden: !bookmarkId,
             icon: <FavoriteIcon />,
-            label: favouriteItemStrings.remove,
+            label: favouriteItemStrings.title.remove,
           },
         ].map(
           ({ hidden, icon, label }) =>
@@ -301,12 +308,15 @@ export default function SearchResult({
               <Tooltip title={label} key={label}>
                 <IconButton
                   onClick={() =>
-                    getItemForFavouriteDialog({
-                      uuid,
-                      version,
-                      bookmarkId,
-                      isLatestVersion,
-                    })
+                    favouriteDialogHelper(
+                      {
+                        uuid,
+                        version,
+                        bookmarkId,
+                        isLatestVersion,
+                      },
+                      (id?: number) => setBookmarkId(id)
+                    )
                   }
                   aria-label={label}
                   size="small"
