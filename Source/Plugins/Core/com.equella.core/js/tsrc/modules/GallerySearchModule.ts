@@ -31,6 +31,11 @@ import { searchItems, SearchOptions } from "./SearchModule";
  * the asset and the associated MIME Type.
  */
 export interface GalleryEntry {
+  /**
+   * The MIME type for the attachment being represented. Note however that it really only matches
+   * the MIME type for `imagePathFull` - as thumbnails generated for small and medium seem to mainly
+   * be `image/jpeg` regardless of input type.
+   */
   mimeType: string;
   /**
    * The path to a small version of the image - typically the thumbnail with parameter `gallery` as
