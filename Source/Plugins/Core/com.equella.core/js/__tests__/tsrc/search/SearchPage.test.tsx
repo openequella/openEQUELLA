@@ -22,6 +22,7 @@ import "@testing-library/jest-dom/extend-expect";
 import {
   fireEvent,
   getByText,
+  queryByText,
   render,
   RenderResult,
   screen,
@@ -734,6 +735,17 @@ describe("<SearchPage/>", () => {
     expect(
       screen.getByText(languageStrings.searchpage.shareSearchConfirmationText)
     ).toBeInTheDocument();
+  });
+
+  it("shows the FavouriteItemDialog to add/remove a favourite Item", async () => {
+    const addText = languageStrings.searchpage.favouriteItem.title.add;
+    // There are many Items that can be added to favourites so we just get the first one.
+    const heartIcon = page.getAllByLabelText(addText, {
+      selector: "button",
+    })[0];
+    userEvent.click(heartIcon);
+    const dialog = page.getByRole("dialog");
+    expect(queryByText(dialog, addText)).toBeInTheDocument();
   });
 });
 
