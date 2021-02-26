@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createMuiTheme, MuiThemeProvider, Theme } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
 import { render, RenderResult, fireEvent } from "@testing-library/react";
@@ -58,22 +59,31 @@ const {
   attachment: selectAttachmentString,
 } = languageStrings.searchpage.selectResource;
 
+const defaultTheme = createMuiTheme({
+  props: { MuiWithWidth: { initialWidth: "md" } },
+});
+
 describe("<SearchResult/>", () => {
+  const favouriteDialogHelper = jest.fn();
   const renderSearchResult = async (
-    itemResult: OEQ.Search.SearchResultItem
+    itemResult: OEQ.Search.SearchResultItem,
+    theme: Theme = defaultTheme
   ) => {
     const renderResult = render(
       //This needs to be wrapped inside a BrowserRouter, to prevent an `Invariant failed: You should not use <Link> outside a <Router>` error  because of the <Link/> tag within SearchResult
-      <BrowserRouter>
-        <SearchResult
-          key={itemResult.uuid}
-          item={itemResult}
-          handleError={(error) =>
-            console.warn(`Testing error handler: ${error}`)
-          }
-          highlights={[]}
-        />
-      </BrowserRouter>
+      <MuiThemeProvider theme={theme}>
+        <BrowserRouter>
+          <SearchResult
+            key={itemResult.uuid}
+            item={itemResult}
+            handleError={(error) =>
+              console.warn(`Testing error handler: ${error}`)
+            }
+            highlights={[]}
+            favouriteDialogHelper={favouriteDialogHelper}
+          />
+        </BrowserRouter>
+      </MuiThemeProvider>
     );
 
     // Make sure we wait for the resolution of viewers - which will update the attachment lists
@@ -157,6 +167,59 @@ describe("<SearchResult/>", () => {
       queryByLabelText(languageStrings.common.action.openInNewWindow)
     ).toBeInTheDocument();
   });
+
+  it("hide star rating and comment count in small screen", async () => {
+    const theme = createMuiTheme({
+      props: { MuiWithWidth: { initialWidth: "sm" } },
+    });
+    const { starRatings, commentCount } = mockData.attachSearchObj;
+    const { queryByLabelText, queryByText } = await renderSearchResult(
+      mockData.attachSearchObj,
+      theme
+    );
+    expect(
+      queryByLabelText(
+        sprintf(languageStrings.searchpage.starRatings.label, starRatings)
+      )
+    ).not.toBeInTheDocument();
+
+    expect(
+      queryByText(
+        sprintf(languageStrings.searchpage.comments.more, commentCount),
+        { selector: "a" }
+      )
+    ).not.toBeInTheDocument();
+  });
+
+  it.each([
+    [
+      "solid Heart",
+      "remove",
+      mockData.basicSearchObj,
+      languageStrings.searchpage.favouriteItem.title.remove,
+    ],
+    [
+      "empty Heart",
+      "add",
+      mockData.attachSearchObj,
+      languageStrings.searchpage.favouriteItem.title.add,
+    ],
+  ])(
+    "should show %s icon to %s favourite Item",
+    async (
+      iconType: string,
+      action: string,
+      item: OEQ.Search.SearchResultItem,
+      iconLabel: string
+    ) => {
+      const { queryByLabelText } = await renderSearchResult(item);
+      const iconButton = queryByLabelText(iconLabel);
+      expect(iconButton).toBeInTheDocument();
+
+      userEvent.click(iconButton!);
+      expect(favouriteDialogHelper).toHaveBeenCalled();
+    }
+  );
 
   it.each<[string]>([
     [selectSummaryPageString],

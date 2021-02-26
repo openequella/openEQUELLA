@@ -45,6 +45,7 @@ const basicSearchObj: OEQ.Search.SearchResultItem = {
     self:
       "http://localhost:8080/rest/api/item/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
   },
+  bookmarkId: 884874,
   isLatestVersion: true,
 };
 
