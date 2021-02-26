@@ -18,7 +18,6 @@
 import * as OEQ from "@openequella/rest-api-client";
 import { Do } from "fp-ts-contrib/Do";
 import * as A from "fp-ts/Array";
-import { fold as boolFold } from "fp-ts/boolean";
 import * as E from "fp-ts/Either";
 import { flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
@@ -74,18 +73,6 @@ export interface GallerySearchResultItem
   additionalEntries: GalleryEntry[];
 }
 
-const hasThumbnail = (thumbnail?: boolean): O.Option<boolean> =>
-  pipe(
-    thumbnail,
-    O.fromNullable,
-    O.chain(
-      boolFold(
-        () => O.none,
-        () => O.some(true)
-      )
-    )
-  );
-
 /**
  * Builds a URL for displaying an attachment's thumbnail, optionally at the format as specified by
  * `type`.
@@ -96,16 +83,7 @@ const hasThumbnail = (thumbnail?: boolean): O.Option<boolean> =>
 const thumbnailLink = (
   attachment: OEQ.Search.Attachment,
   type?: "thumbnail" | "preview"
-): string =>
-  pipe(
-    type,
-    O.fromNullable,
-    O.fold(
-      () => "",
-      () => `?gallery=${type}`
-    ),
-    (suffix: string) => attachment.links.thumbnail.concat(suffix)
-  );
+): string => attachment.links.thumbnail.concat(type ? `?gallery=${type}` : "");
 
 /**
  * Transform an item's attachment into a `GalleryEntry`.
@@ -121,14 +99,11 @@ export const buildGalleryEntry = (
 ): E.Either<string, GalleryEntry> =>
   Do(E.either)
     .do(
-      pipe(
-        attachment.hasGeneratedThumb,
-        hasThumbnail,
-        E.fromOption(
-          () =>
+      !!attachment.hasGeneratedThumb
+        ? E.right(true)
+        : E.left(
             `Attachment ${attachment.id} on item ${itemUuid}/${itemVersion} does not have a thumbnail`
-        )
-      )
+          )
     )
     .bind(
       "mimeType",
@@ -193,16 +168,13 @@ const createAdditionalEntries = (
     O.map(
       flow(
         A.map((attachment) =>
-          buildGalleryEntry(itemUuid, itemVersion, attachment)
-        ),
-        A.map(
-          // Let's log any issues - just so we're aware of any odd data
-          E.fold(
-            (l) => {
-              console.warn(l);
-              return E.left(l);
-            },
-            (r) => E.right(r)
+          pipe(
+            buildGalleryEntry(itemUuid, itemVersion, attachment),
+            // Let's log any issues - just so we're aware of any odd data
+            E.mapLeft((error) => {
+              console.warn(error);
+              return error;
+            })
           )
         ),
         A.filter(E.isRight),
@@ -236,15 +208,7 @@ const filterAttachmentsByMimeType = (typeRegex: string): AttachmentFilter => (
         )
       )
     ),
-    (xs: OEQ.Search.Attachment[]) =>
-      pipe(
-        xs,
-        A.isEmpty,
-        boolFold(
-          () => O.some(xs),
-          () => O.none
-        )
-      )
+    (xs: OEQ.Search.Attachment[]) => (xs.length === 0 ? O.none : O.some(xs))
   );
 
 /**
@@ -320,14 +284,11 @@ export const imageGallerySearch = async (
     pipe(
       sri,
       buildGallerySearchResultItem(filterAttachmentsByMimeType("image")),
-      E.fold(
-        (error) => {
-          const msg = `Failed to create gallery item for item ${sri.uuid}: ${error}`;
-          console.error(msg);
-          return E.left(msg);
-        },
-        (item) => E.right(item)
-      )
+      E.mapLeft((error) => {
+        const msg = `Failed to create gallery item for item ${sri.uuid}: ${error}`;
+        console.error(msg);
+        return msg;
+      })
     );
 
   const searchResults = await searchItems(options, await getImageMimeTypes());

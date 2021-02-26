@@ -256,8 +256,9 @@ describe("buildGallerySearchResultItem", () => {
 });
 
 describe("imageGallerySearch", () => {
+  beforeEach(() => mockListMimeTypes.mockResolvedValue([]));
+
   it("returns a list of GallerySearchItems containing only images", async () => {
-    mockListMimeTypes.mockResolvedValue([]);
     mockSearchItems.mockResolvedValue(basicImageSearchResponse);
 
     const result = await imageGallerySearch(defaultSearchOptions);
@@ -280,5 +281,18 @@ describe("imageGallerySearch", () => {
     expect(mimeTypes.filter((s) => s.startsWith("image"))).toHaveLength(
       mimeTypes.length
     );
+  });
+
+  it("logs any issues and skips corrupt data", async () => {
+    const corruptResponse = { ...basicImageSearchResponse };
+    corruptResponse.results[2].attachments = undefined;
+    mockSearchItems.mockResolvedValue(corruptResponse);
+
+    const consoleSpy = jest.spyOn(global.console, "error");
+
+    const result = await imageGallerySearch(defaultSearchOptions);
+    expect(consoleSpy).toHaveBeenCalledTimes(1);
+    expect(result.results).toHaveLength(2);
+    expect(result).toHaveLength(2);
   });
 });
