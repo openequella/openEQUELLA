@@ -214,7 +214,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     onConfirm: () => Promise.resolve(),
   });
 
-  // A helper function passed to SearchResult to collect information required by FavouriteItemDialog.
+  // A helper function passed to SearchResult to collect Item information required by FavouriteItemDialog.
   const favouriteDialogHelper = (itemInfo: FavouriteItemInfo) => {
     setFavouriteDialogProps({
       ...favouriteDialogProps,

@@ -214,7 +214,7 @@ export const SearchResultList = ({
  * @param items the search result items to map over
  * @param handleError function which will be called on error (e.g. comms errors)
  * @param highlights a list of highlight terms
- * @param favouriteDialogHelper function which collects the Item to be passed to FavouriteItemDialog
+ * @param favouriteDialogHelper Helper function passed to SearchResult to help build part of FavouriteItemDialogProps
  * @param getViewerDetails optional function to override retrieval of viewer details
  */
 export const mapSearchResultItems = (
