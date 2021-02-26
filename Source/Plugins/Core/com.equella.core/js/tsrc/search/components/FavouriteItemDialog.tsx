@@ -29,13 +29,25 @@ import { Autocomplete } from "@material-ui/lab";
 import { useState } from "react";
 import * as React from "react";
 import ConfirmDialog from "../../components/ConfirmDialog";
-import {
-  addFavouriteItem,
-  deleteFavouriteItem,
-  FavouriteItemInfo,
-  FavouriteItemVersionOption,
-} from "../../modules/FavouriteModule";
+import type { FavouriteItemVersionOption } from "../../modules/FavouriteModule";
 import { languageStrings } from "../../util/langstrings";
+
+/**
+ * What happens on clicking the Confirm button dep
+ */
+export type FavDialogConfirmAction = "add" | "delete";
+type FavDialogConfirmToAdd = (
+  tags: string[],
+  isAlwaysLatest: boolean
+) => Promise<void>;
+type FavDialogConfirmToDelete = () => Promise<void>;
+type FavDialogConfirmFunction =
+  | FavDialogConfirmToAdd
+  | FavDialogConfirmToDelete;
+const isConfirmToDelete = (
+  action: FavDialogConfirmAction,
+  func: unknown
+): func is FavDialogConfirmToDelete => action === "delete";
 
 export interface FavouriteItemDialogProps {
   /**
@@ -46,21 +58,17 @@ export interface FavouriteItemDialogProps {
    * Fired when the dialog is closed
    */
   closeDialog: () => void;
-  /**
-   * An Item to be added to or removed from user's favourites
-   */
-  item: FavouriteItemInfo;
-  /**
-   * Fired when adding/removing a favourite Item is successful
-   *
-   * @param newBookmarkID ID of the new Bookmark or undefined if the operation is deleting.
-   */
-  callback: (newBookmarkID?: number) => void;
-  /**
-   * Error handler for general errors
-   */
-  handleError: (error: Error) => void;
+  isAddedToFavourite: boolean;
+  isOnLatestVersion: boolean;
+  action: FavDialogConfirmAction;
+  onConfirm: FavDialogConfirmFunction;
 }
+
+// Type of partial FavouriteItemDialogProps as these properties are only available at SearchResult
+export type FavouriteItemInfo = Pick<
+  FavouriteItemDialogProps,
+  "isAddedToFavourite" | "isOnLatestVersion" | "action" | "onConfirm"
+>;
 
 const {
   title: { add: addString, remove: removeString },
@@ -74,11 +82,11 @@ const {
 const AddFavouriteItemContent = ({
   setTags,
   setVersionOption,
-  isLatestVersion,
+  isOnLatestVersion,
 }: {
   setTags: (tags: string[]) => void;
   setVersionOption: (version: FavouriteItemVersionOption) => void;
-  isLatestVersion: boolean;
+  isOnLatestVersion: boolean;
 }) => (
   <Grid container direction="column" spacing={2}>
     <Grid item>
@@ -98,7 +106,7 @@ const AddFavouriteItemContent = ({
       />
     </Grid>
     <Grid item>
-      {isLatestVersion ? (
+      {isOnLatestVersion ? (
         <FormControl>
           <FormLabel>{tagsString.selectVersion}</FormLabel>
           <RadioGroup
@@ -133,9 +141,10 @@ const AddFavouriteItemContent = ({
 export const FavouriteItemDialog = ({
   open,
   closeDialog,
-  item: { uuid, version, bookmarkId, isLatestVersion },
-  callback,
-  handleError,
+  isAddedToFavourite,
+  isOnLatestVersion,
+  action,
+  onConfirm,
 }: FavouriteItemDialogProps) => {
   const [tags, setTags] = useState<string[]>([]);
   const [
@@ -143,41 +152,32 @@ export const FavouriteItemDialog = ({
     setVersionOption,
   ] = useState<FavouriteItemVersionOption>("latest");
 
-  const addFavourite = () =>
-    addFavouriteItem(`${uuid}/${version}`, tags, versionOption === "latest")
-      .then(({ bookmarkID }) => {
-        callback(bookmarkID);
-        // Reset the version option to match the default selected value.
-        setVersionOption("latest");
-      })
-      .catch(handleError)
-      .finally(closeDialog);
+  const confirmHandler = () => {
+    const doConfirm = isConfirmToDelete(action, onConfirm)
+      ? () => onConfirm()
+      : () =>
+          onConfirm(tags, versionOption === "latest").finally(() =>
+            setVersionOption("latest")
+          );
 
-  const deleteFavourite = () => {
-    if (!bookmarkId) {
-      throw new Error("Bookmark ID can't be falsy.");
-    }
-    deleteFavouriteItem(bookmarkId)
-      .then(() => callback(undefined))
-      .catch(handleError)
-      .finally(closeDialog);
+    doConfirm().finally(closeDialog);
   };
 
   return (
     <ConfirmDialog
       open={open}
-      title={bookmarkId ? removeString : addString}
-      onConfirm={bookmarkId ? deleteFavourite : addFavourite}
+      title={isAddedToFavourite ? removeString : addString}
+      onConfirm={confirmHandler}
       onCancel={closeDialog}
       confirmButtonText={languageStrings.common.action.ok}
     >
-      {bookmarkId ? (
+      {isAddedToFavourite ? (
         removeAlertString
       ) : (
         <AddFavouriteItemContent
           setTags={setTags}
           setVersionOption={setVersionOption}
-          isLatestVersion={isLatestVersion}
+          isOnLatestVersion={isOnLatestVersion}
         />
       )}
     </ConfirmDialog>

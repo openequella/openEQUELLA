@@ -34,8 +34,6 @@ import {
 } from "../mainui/Template";
 import { getAdvancedSearchesFromServer } from "../modules/AdvancedSearchModule";
 import type { Collection } from "../modules/CollectionsModule";
-import { defaultFavouriteItem } from "../modules/FavouriteModule";
-import type { FavouriteItemInfo } from "../modules/FavouriteModule";
 import {
   buildSelectionSessionAdvancedSearchLink,
   buildSelectionSessionRemoteSearchLink,
@@ -65,6 +63,7 @@ import { languageStrings } from "../util/langstrings";
 import {
   FavouriteItemDialog,
   FavouriteItemDialogProps,
+  FavouriteItemInfo,
 } from "./components/FavouriteItemDialog";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
 import { CollectionSelector } from "./components/CollectionSelector";
@@ -207,12 +206,22 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     setFavouriteDialogProps,
   ] = useState<FavouriteItemDialogProps>({
     open: false,
-    item: defaultFavouriteItem,
     closeDialog: () =>
       setFavouriteDialogProps({ ...favouriteDialogProps, open: false }),
-    callback: () => {},
-    handleError: () => {},
+    isAddedToFavourite: false,
+    isOnLatestVersion: false,
+    action: "add",
+    onConfirm: () => Promise.resolve(),
   });
+
+  // A helper function passed to SearchResult to collect information required by FavouriteItemDialog.
+  const favouriteDialogHelper = (itemInfo: FavouriteItemInfo) => {
+    setFavouriteDialogProps({
+      ...favouriteDialogProps,
+      open: true,
+      ...itemInfo,
+    });
+  };
 
   const handleError = useCallback(
     (error: Error) => {
@@ -220,20 +229,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     },
     [dispatch]
   );
-
-  // A helper function passed to SearchResult to collect information required by FavouriteItemDialog.
-  const favouriteDialogHelper = (
-    item: FavouriteItemInfo,
-    updateBookmarkId: (id?: number) => void
-  ) => {
-    setFavouriteDialogProps({
-      ...favouriteDialogProps,
-      open: true,
-      item,
-      callback: (newBookmarkID?: number) => updateBookmarkId(newBookmarkID),
-      handleError,
-    });
-  };
 
   const search = useCallback(
     (searchPageOptions: SearchPageOptions, scrollToTop = true): void =>

@@ -19,25 +19,9 @@ import * as OEQ from "@openequella/rest-api-client";
 import { API_BASE_URL } from "../AppConfig";
 
 /**
- * A type consisting of Item's UUID, version, bookmark ID and the flag of
- * whether the Item is on the latest version.
- */
-export type FavouriteItemInfo = Pick<
-  OEQ.Search.SearchResultItem,
-  "bookmarkId" | "uuid" | "version" | "isLatestVersion"
->;
-
-/**
  * Type for the two version options.
  */
 export type FavouriteItemVersionOption = "latest" | "this";
-
-export const defaultFavouriteItem: FavouriteItemInfo = {
-  uuid: "",
-  version: 0,
-  bookmarkId: 0,
-  isLatestVersion: false,
-};
 
 /**
  * Add an Item to user's favourites.

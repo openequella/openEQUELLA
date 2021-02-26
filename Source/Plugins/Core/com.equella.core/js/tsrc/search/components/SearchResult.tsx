@@ -53,7 +53,10 @@ import { OeqLink } from "../../components/OeqLink";
 import OEQThumb from "../../components/OEQThumb";
 import { StarRating } from "../../components/StarRating";
 import { routes } from "../../mainui/routes";
-import type { FavouriteItemInfo } from "../../modules/FavouriteModule";
+import {
+  addFavouriteItem,
+  deleteFavouriteItem,
+} from "../../modules/FavouriteModule";
 import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
 import {
   buildSelectionSessionItemSummaryLink,
@@ -68,6 +71,10 @@ import {
 } from "../../modules/LegacySelectionSessionModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
+import type {
+  FavDialogConfirmAction,
+  FavouriteItemInfo,
+} from "./FavouriteItemDialog";
 import { ResourceSelector } from "./ResourceSelector";
 import {
   determineAttachmentViewUrl,
@@ -149,10 +156,7 @@ export interface SearchResultProps {
   /**
    * Function fired to help update props of FavouriteItemDialog.
    */
-  favouriteDialogHelper: (
-    favouriteItem: FavouriteItemInfo,
-    updateBookmarkId: (id?: number) => void
-  ) => void;
+  favouriteDialogHelper: (itemInfo: FavouriteItemInfo) => void;
 }
 
 export default function SearchResult({
@@ -296,27 +300,38 @@ export default function SearchResult({
             hidden: bookmarkId !== undefined,
             icon: <FavoriteBorderIcon />,
             label: favouriteItemStrings.title.add,
+            action: "add",
+            onConfirm: (tags: string[], isAlwaysLatest: boolean) =>
+              addFavouriteItem(`${uuid}/${version}`, tags, isAlwaysLatest)
+                .then(({ bookmarkID }) => setBookmarkId(bookmarkID))
+                .catch(handleError),
           },
           {
             hidden: !bookmarkId,
             icon: <FavoriteIcon />,
             label: favouriteItemStrings.title.remove,
+            action: "delete",
+            onConfirm: () => {
+              if (!bookmarkId) {
+                throw new Error("Bookmark ID can't be falsy.");
+              }
+              return deleteFavouriteItem(bookmarkId)
+                .then(() => setBookmarkId(undefined))
+                .catch(handleError);
+            },
           },
         ].map(
-          ({ hidden, icon, label }) =>
+          ({ hidden, icon, label, action, onConfirm }) =>
             !hidden && (
               <Tooltip title={label} key={label}>
                 <IconButton
                   onClick={() =>
-                    favouriteDialogHelper(
-                      {
-                        uuid,
-                        version,
-                        bookmarkId,
-                        isLatestVersion,
-                      },
-                      (id?: number) => setBookmarkId(id)
-                    )
+                    favouriteDialogHelper({
+                      isAddedToFavourite: bookmarkId !== undefined,
+                      isOnLatestVersion: isLatestVersion,
+                      action: action as FavDialogConfirmAction,
+                      onConfirm,
+                    })
                   }
                   aria-label={label}
                   size="small"

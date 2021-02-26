@@ -35,9 +35,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import Share from "@material-ui/icons/Share";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
-import type { FavouriteItemInfo } from "../../modules/FavouriteModule";
 import { isSelectionSessionOpen } from "../../modules/LegacySelectionSessionModule";
 import { languageStrings } from "../../util/langstrings";
+import type { FavouriteItemInfo } from "./FavouriteItemDialog";
 import SearchOrderSelect, { SearchOrderSelectProps } from "./SearchOrderSelect";
 import { SearchPagination, SearchPaginationProps } from "./SearchPagination";
 import SearchResult from "./SearchResult";
@@ -221,10 +221,7 @@ export const mapSearchResultItems = (
   items: OEQ.Search.SearchResultItem[],
   handleError: (error: Error) => void,
   highlights: string[],
-  favouriteDialogHelper: (
-    favouriteItem: FavouriteItemInfo,
-    updateBookmarkId: (id?: number) => void
-  ) => void,
+  favouriteDialogHelper: (itemInfo: FavouriteItemInfo) => void,
   getViewerDetails?: (
     mimeType: string
   ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>

@@ -17,7 +17,6 @@
  */
 import { Meta, Story } from "@storybook/react";
 import * as React from "react";
-import { defaultFavouriteItem } from "../../tsrc/modules/FavouriteModule";
 import {
   FavouriteItemDialog,
   FavouriteItemDialogProps,
@@ -28,14 +27,16 @@ export default {
   component: FavouriteItemDialog,
   argTypes: {
     closeDialog: { action: "on close dialog" },
-    callback: { action: "on fire callback" },
-    handleError: { action: "on handle error" },
+    onConfirm: {
+      action: "on click confirm",
+    },
   },
 } as Meta<FavouriteItemDialogProps>;
 
 const commonProps = {
   open: true,
-  item: defaultFavouriteItem,
+  isAddedToFavourite: false,
+  isOnLatestVersion: false,
 };
 
 export const AddFavouriteItemOnOlderVersion: Story<FavouriteItemDialogProps> = (
@@ -50,10 +51,7 @@ export const AddFavouriteItemOnLatestVersion: Story<FavouriteItemDialogProps> = 
 
 AddFavouriteItemOnLatestVersion.args = {
   ...commonProps,
-  item: {
-    ...defaultFavouriteItem,
-    isLatestVersion: true,
-  },
+  isOnLatestVersion: true,
 };
 
 export const RemoveFavouriteItem: Story<FavouriteItemDialogProps> = (args) => (
@@ -62,8 +60,5 @@ export const RemoveFavouriteItem: Story<FavouriteItemDialogProps> = (args) => (
 
 RemoveFavouriteItem.args = {
   ...commonProps,
-  item: {
-    ...defaultFavouriteItem,
-    bookmarkId: 123,
-  },
+  isAddedToFavourite: true,
 };
