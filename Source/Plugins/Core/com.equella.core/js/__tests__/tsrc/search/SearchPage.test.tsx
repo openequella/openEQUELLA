@@ -21,8 +21,9 @@ import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
 import {
   fireEvent,
+  getByLabelText,
   getByText,
-  queryByText,
+  queryByLabelText,
   render,
   RenderResult,
   screen,
@@ -45,6 +46,7 @@ import {
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
 import * as AdvancedSearchModule from "../../../tsrc/modules/AdvancedSearchModule";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
+import * as FavouriteModule from "../../../tsrc/modules/FavouriteModule";
 import { Collection } from "../../../tsrc/modules/CollectionsModule";
 import { getGlobalCourseList } from "../../../tsrc/modules/LegacySelectionSessionModule";
 import * as MimeTypesModule from "../../../tsrc/modules/MimeTypesModule";
@@ -128,6 +130,15 @@ jest
 jest
   .spyOn(AdvancedSearchModule, "getAdvancedSearchesFromServer")
   .mockResolvedValue(getAdvancedSearchesFromServerResult);
+
+jest.spyOn(FavouriteModule, "addFavouriteItem").mockResolvedValue({
+  itemID: "abc",
+  keywords: ["a", "b"],
+  isAlwaysLatest: true,
+  bookmarkID: 456,
+});
+
+jest.spyOn(FavouriteModule, "deleteFavouriteItem").mockResolvedValue();
 
 const defaultSearchPageOptions: SearchPageOptions = {
   ...SearchModule.defaultSearchOptions,
@@ -736,17 +747,6 @@ describe("<SearchPage/>", () => {
       screen.getByText(languageStrings.searchpage.shareSearchConfirmationText)
     ).toBeInTheDocument();
   });
-
-  it("shows the FavouriteItemDialog to add/remove a favourite Item", async () => {
-    const addText = languageStrings.searchpage.favouriteItem.title.add;
-    // There are many Items that can be added to favourites so we just get the first one.
-    const heartIcon = page.getAllByLabelText(addText, {
-      selector: "button",
-    })[0];
-    userEvent.click(heartIcon);
-    const dialog = page.getByRole("dialog");
-    expect(queryByText(dialog, addText)).toBeInTheDocument();
-  });
 });
 
 describe("conversion of parameters to SearchPageOptions", () => {
@@ -834,4 +834,47 @@ describe("Responsiveness", () => {
     });
     expect(querySidePanel(page)).toBeInTheDocument();
   });
+});
+
+describe("Add and remove favourite Item,", () => {
+  const { add, remove } = languageStrings.searchpage.favouriteItem.title;
+  let page: RenderResult;
+
+  beforeEach(async () => {
+    page = await renderSearchPage();
+  });
+  it.each([
+    // The mocked search result has two Items named "a" and "b" so let's use them.
+    [add, remove, "a"],
+    [remove, add, "b"],
+  ])(
+    "shows FavouriteItemDialog to %s",
+    async (defaultIcon, updatedIcon, itemName: string) => {
+      const searchResultItem = page
+        .getByText(itemName, { selector: "a" })
+        .closest("li");
+      if (!searchResultItem) {
+        throw new Error("Failed to find the mocked search result Item.");
+      }
+      const heartIcon = getByLabelText(searchResultItem, defaultIcon, {
+        selector: "button",
+      });
+      userEvent.click(heartIcon);
+
+      const dialog = page.getByRole("dialog");
+      const confirmBtn = dialog.querySelector("#confirm-dialog-confirm-button");
+      if (!confirmBtn) {
+        throw new Error("Failed to find confirm button.");
+      }
+
+      await act(async () => {
+        await userEvent.click(confirmBtn);
+      });
+      // Now a different Heart Icon should be used.
+      const updatedHeartIcon = queryByLabelText(searchResultItem, updatedIcon, {
+        selector: "button",
+      });
+      expect(updatedHeartIcon).toBeInTheDocument();
+    }
+  );
 });

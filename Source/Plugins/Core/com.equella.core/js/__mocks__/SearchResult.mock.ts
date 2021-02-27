@@ -184,6 +184,7 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
           "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
       },
       isLatestVersion: true,
+      bookmarkId: 123,
     },
     {
       uuid: "266bb0ff-a730-4658-aec0-c68bbefc2273",

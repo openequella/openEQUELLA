@@ -33,7 +33,7 @@ export const addFavouriteItem = (
   itemID: string,
   keywords: string[],
   isAlwaysLatest: boolean
-) =>
+): Promise<OEQ.Favourite.FavouriteItem> =>
   OEQ.Favourite.addFavouriteItem(API_BASE_URL, {
     itemID,
     keywords,
@@ -44,5 +44,5 @@ export const addFavouriteItem = (
  * Delete one Item from user's favourites.
  * @param bookmarkID ID of a bookmark
  */
-export const deleteFavouriteItem = (bookmarkID: number) =>
+export const deleteFavouriteItem = (bookmarkID: number): Promise<void> =>
   OEQ.Favourite.deleteFavouriteItem(API_BASE_URL, bookmarkID);
