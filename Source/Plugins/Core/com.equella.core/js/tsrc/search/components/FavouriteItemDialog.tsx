@@ -33,37 +33,31 @@ import type { FavouriteItemVersionOption } from "../../modules/FavouriteModule";
 import { languageStrings } from "../../util/langstrings";
 
 /**
- * Type for the two actions performed in this dialog.
+ * Type that includes a function which is fired to add a favourite Item and
+ * a flag which is primarily used for type checking.
  */
-export type FavDialogConfirmAction = "add" | "delete";
+export interface FavDialogConfirmToAdd {
+  action: "add";
+  onConfirm: (tags: string[], isAlwaysLatest: boolean) => Promise<void>;
+}
 
 /**
- * Type for the function fired to add a favourite Item.
+ * Type that includes a function which is fired to delete a favourite Item and
+ * a flag which is primarily used for type checking.
  */
-type FavDialogConfirmToAdd = (
-  tags: string[],
-  isAlwaysLatest: boolean
-) => Promise<void>;
+export interface FavDialogConfirmToDelete {
+  action: "delete";
+  onConfirm: () => Promise<void>;
+}
+
+type FavDialogOnConfirmProps = FavDialogConfirmToAdd | FavDialogConfirmToDelete;
 
 /**
- * Type for the function fired to delete a favourite Item.
- */
-type FavDialogConfirmToDelete = () => Promise<void>;
-
-/**
- * A union type for the function fired when clicking the Confirm button.
- */
-type FavDialogConfirmFunction =
-  | FavDialogConfirmToAdd
-  | FavDialogConfirmToDelete;
-
-/**
- * Type guard to help determine the type of the onConfirm handler.
+ * Type guard of FavDialogOnConfirmProps to help determine the type of property 'onConfirm'.
  */
 const isConfirmToDelete = (
-  action: FavDialogConfirmAction,
-  func: FavDialogConfirmFunction
-): func is FavDialogConfirmToDelete => action === "delete";
+  props: FavDialogOnConfirmProps
+): props is FavDialogConfirmToDelete => props.action === "delete";
 
 export interface FavouriteItemDialogProps {
   /**
@@ -81,22 +75,18 @@ export interface FavouriteItemDialogProps {
   /**
    * `true` if the Item is on its latest version
    */
-  isOnLatestVersion: boolean;
-  /**
-   * Literal string indicating what action will be performed when the Confirm button is clicked
-   */
-  action: FavDialogConfirmAction;
+  isLatestVersion: boolean;
   /**
    * The handler for clicking the Confirm button. Type of this handler depends on the value of 'action'.
    * Must call type guard 'isConfirmToDelete' first to narrow down its type.
    */
-  onConfirm: FavDialogConfirmFunction;
+  onConfirmProps?: FavDialogOnConfirmProps;
 }
 
-// Type which has partial FavouriteItemDialogProps for the ease of collecting some Item information from other components.
+// Type of partial FavouriteItemDialogProps for the ease of building the whole props in other components.
 export type FavouriteItemInfo = Pick<
   FavouriteItemDialogProps,
-  "isAddedToFavourite" | "isOnLatestVersion" | "action" | "onConfirm"
+  "isAddedToFavourite" | "isLatestVersion" | "onConfirmProps"
 >;
 
 const {
@@ -171,9 +161,8 @@ export const FavouriteItemDialog = ({
   open,
   closeDialog,
   isAddedToFavourite,
-  isOnLatestVersion,
-  action,
-  onConfirm,
+  isLatestVersion,
+  onConfirmProps,
 }: FavouriteItemDialogProps) => {
   const [tags, setTags] = useState<string[]>([]);
   const [
@@ -182,15 +171,17 @@ export const FavouriteItemDialog = ({
   ] = useState<FavouriteItemVersionOption>("latest");
 
   const confirmHandler = () => {
-    const doConfirm = isConfirmToDelete(action, onConfirm)
-      ? () => onConfirm()
-      : () => onConfirm(tags, versionOption === "latest");
+    if (onConfirmProps) {
+      const doConfirm = isConfirmToDelete(onConfirmProps)
+        ? () => onConfirmProps.onConfirm()
+        : () => onConfirmProps.onConfirm(tags, versionOption === "latest");
 
-    doConfirm().finally(() => {
-      // Need to reset versionOption to match the RadioGroup's default selected value .
-      setVersionOption("latest");
-      closeDialog();
-    });
+      doConfirm().finally(() => {
+        // Need to reset versionOption to match the RadioGroup's default selected value .
+        setVersionOption("latest");
+        closeDialog();
+      });
+    }
   };
 
   return (
@@ -207,7 +198,7 @@ export const FavouriteItemDialog = ({
         <AddFavouriteItemContent
           setTags={setTags}
           setVersionOption={setVersionOption}
-          isOnLatestVersion={isOnLatestVersion}
+          isOnLatestVersion={isLatestVersion}
         />
       )}
     </ConfirmDialog>

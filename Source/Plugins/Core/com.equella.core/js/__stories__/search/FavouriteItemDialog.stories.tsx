@@ -51,7 +51,7 @@ export const AddFavouriteItemOnLatestVersion: Story<FavouriteItemDialogProps> = 
 
 AddFavouriteItemOnLatestVersion.args = {
   ...commonProps,
-  isOnLatestVersion: true,
+  isLatestVersion: true,
 };
 
 export const RemoveFavouriteItem: Story<FavouriteItemDialogProps> = (args) => (

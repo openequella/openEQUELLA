@@ -209,12 +209,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     closeDialog: () =>
       setFavouriteDialogProps({ ...favouriteDialogProps, open: false }),
     isAddedToFavourite: false,
-    isOnLatestVersion: false,
-    action: "add",
-    onConfirm: () => Promise.resolve(),
+    isLatestVersion: false,
   });
 
-  // A helper function passed to SearchResult to collect Item information required by FavouriteItemDialog.
+  // A helper function passed to SearchResult to help build props of FavouriteItemDialog.
   const favouriteDialogHelper = (itemInfo: FavouriteItemInfo) => {
     setFavouriteDialogProps({
       ...favouriteDialogProps,
