@@ -214,14 +214,14 @@ export const SearchResultList = ({
  * @param items the search result items to map over
  * @param handleError function which will be called on error (e.g. comms errors)
  * @param highlights a list of highlight terms
- * @param favouriteDialogHelper Helper function passed to SearchResult to help build part of FavouriteItemDialogProps
+ * @param onFavouriteItem function passed to SearchResult to help build part of FavouriteItemDialogProps
  * @param getViewerDetails optional function to override retrieval of viewer details
  */
 export const mapSearchResultItems = (
   items: OEQ.Search.SearchResultItem[],
   handleError: (error: Error) => void,
   highlights: string[],
-  favouriteDialogHelper: (itemInfo: FavouriteItemInfo) => void,
+  onFavouriteItem: (itemInfo: FavouriteItemInfo) => void,
   getViewerDetails?: (
     mimeType: string
   ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>
@@ -233,6 +233,6 @@ export const mapSearchResultItems = (
       handleError={handleError}
       highlights={highlights}
       getViewerDetails={getViewerDetails}
-      favouriteDialogHelper={favouriteDialogHelper}
+      onFavouriteItem={onFavouriteItem}
     />
   ));

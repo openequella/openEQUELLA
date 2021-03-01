@@ -61,6 +61,7 @@ import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
 import SearchBar from "../search/components/SearchBar";
 import { languageStrings } from "../util/langstrings";
 import {
+  defaultFavouriteItemDialogProps,
   FavouriteItemDialog,
   FavouriteItemDialogProps,
   FavouriteItemInfo,
@@ -205,15 +206,13 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     favouriteDialogProps,
     setFavouriteDialogProps,
   ] = useState<FavouriteItemDialogProps>({
-    open: false,
+    ...defaultFavouriteItemDialogProps,
     closeDialog: () =>
       setFavouriteDialogProps({ ...favouriteDialogProps, open: false }),
-    isAddedToFavourite: false,
-    isLatestVersion: false,
   });
 
-  // A helper function passed to SearchResult to help build props of FavouriteItemDialog.
-  const favouriteDialogHelper = (itemInfo: FavouriteItemInfo) => {
+  // A function passed to SearchResult to help build props of FavouriteItemDialog.
+  const favouriteDialogOnConfirm = (itemInfo: FavouriteItemInfo) => {
     setFavouriteDialogProps({
       ...favouriteDialogProps,
       open: true,
@@ -704,7 +703,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                     searchResults,
                     handleError,
                     highlights,
-                    favouriteDialogHelper
+                    favouriteDialogOnConfirm
                   )}
               </SearchResultList>
             </Grid>

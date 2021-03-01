@@ -35,7 +35,7 @@ BasicSearchResult.args = {
   item: mockData.basicSearchObj,
   highlights: [],
   getViewerDetails: async () => ({ viewerId: "fancy" }),
-  favouriteDialogHelper: action("update Favourite Dialog props"),
+  onFavouriteItem: action("update Favourite Dialog props"),
 };
 
 export const AttachmentSearchResult: Story<SearchResultProps> = (args) => (

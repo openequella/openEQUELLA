@@ -157,7 +157,7 @@ export interface SearchResultProps {
   /**
    * Function fired to help update props of FavouriteItemDialog.
    */
-  favouriteDialogHelper: (itemInfo: FavouriteItemInfo) => void;
+  onFavouriteItem: (itemInfo: FavouriteItemInfo) => void;
 }
 
 export default function SearchResult({
@@ -180,7 +180,7 @@ export default function SearchResult({
     bookmarkId: bookmarkDefaultId,
     isLatestVersion,
   },
-  favouriteDialogHelper,
+  onFavouriteItem,
 }: SearchResultProps) {
   interface AttachmentAndViewerDetails {
     attachment: OEQ.Search.Attachment;
@@ -335,7 +335,7 @@ export default function SearchResult({
               <Tooltip title={label} key={label}>
                 <IconButton
                   onClick={() =>
-                    favouriteDialogHelper({
+                    onFavouriteItem({
                       isAddedToFavourite: bookmarkId !== undefined,
                       isLatestVersion,
                       onConfirmProps,

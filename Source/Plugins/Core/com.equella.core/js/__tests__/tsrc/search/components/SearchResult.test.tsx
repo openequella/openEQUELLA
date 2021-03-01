@@ -80,7 +80,7 @@ describe("<SearchResult/>", () => {
               console.warn(`Testing error handler: ${error}`)
             }
             highlights={[]}
-            favouriteDialogHelper={favouriteDialogHelper}
+            onFavouriteItem={favouriteDialogHelper}
           />
         </BrowserRouter>
       </MuiThemeProvider>

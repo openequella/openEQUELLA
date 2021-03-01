@@ -80,8 +80,20 @@ export interface FavouriteItemDialogProps {
    * The handler for clicking the Confirm button. Type of this handler depends on the value of 'action'.
    * Must call type guard 'isConfirmToDelete' first to narrow down its type.
    */
-  onConfirmProps?: FavDialogOnConfirmProps;
+  onConfirmProps: FavDialogOnConfirmProps;
 }
+
+// Provide a default props for the dialog.
+export const defaultFavouriteItemDialogProps = {
+  open: false,
+  closeDialog: () => {},
+  isAddedToFavourite: false,
+  isLatestVersion: false,
+  onConfirmProps: {
+    action: "delete",
+    onConfirm: () => Promise.resolve(),
+  } as FavDialogConfirmToDelete,
+};
 
 // Type of partial FavouriteItemDialogProps for the ease of building the whole props in other components.
 export type FavouriteItemInfo = Pick<
@@ -173,17 +185,15 @@ export const FavouriteItemDialog = ({
   ] = useState<FavouriteItemVersionOption>("latest");
 
   const confirmHandler = () => {
-    if (onConfirmProps) {
-      const doConfirm = isConfirmToDelete(onConfirmProps)
-        ? () => onConfirmProps.onConfirm()
-        : () => onConfirmProps.onConfirm(tags, versionOption === "latest");
+    const doConfirm = isConfirmToDelete(onConfirmProps)
+      ? () => onConfirmProps.onConfirm()
+      : () => onConfirmProps.onConfirm(tags, versionOption === "latest");
 
-      doConfirm().finally(() => {
-        // Need to reset versionOption to match the RadioGroup's default selected value .
-        setVersionOption("latest");
-        closeDialog();
-      });
-    }
+    doConfirm().finally(() => {
+      // Need to reset versionOption to match the RadioGroup's default selected value .
+      setVersionOption("latest");
+      closeDialog();
+    });
   };
 
   return (
