@@ -73,6 +73,11 @@ export interface GallerySearchResultItem
   additionalEntries: GalleryEntry[];
 }
 
+const warnOnLeft = E.mapLeft((left) => {
+  console.warn(left);
+  return left;
+});
+
 /**
  * Builds a URL for displaying an attachment's thumbnail, optionally at the format as specified by
  * `type`.
@@ -148,6 +153,15 @@ const createMainEntry = (
     )
   );
 
+const attachmentToGalleryEntry = (itemUuid: string, itemVersion: number) => (
+  attachment: OEQ.Search.Attachment
+): E.Either<string, GalleryEntry> =>
+  pipe(
+    buildGalleryEntry(itemUuid, itemVersion, attachment),
+    // Let's log any issues - just so we're aware of any odd data
+    warnOnLeft
+  ) as E.Either<string, GalleryEntry>;
+
 /**
  * Similar to `createMainEntry` in intent, but operating on the ideally a provided `A.tail` of
  * attachments. Further, is gentler with errors (preferring to return an O.Option) as additional
@@ -167,16 +181,7 @@ const createAdditionalEntries = (
     attachments,
     O.map(
       flow(
-        A.map((attachment) =>
-          pipe(
-            buildGalleryEntry(itemUuid, itemVersion, attachment),
-            // Let's log any issues - just so we're aware of any odd data
-            E.mapLeft((error) => {
-              console.warn(error);
-              return error;
-            })
-          )
-        ),
+        A.map(attachmentToGalleryEntry(itemUuid, itemVersion)),
         A.filter(E.isRight),
         A.map((e) => e.right)
       )
@@ -252,10 +257,7 @@ export const buildGallerySearchResultItem = (
         attachmentsNotEmpty,
         A.tail,
         (attachments) => createAdditionalEntries(uuid, version, attachments),
-        O.fold(
-          () => [],
-          (entries) => entries
-        ),
+        O.getOrElse(() => [] as GalleryEntry[]),
         E.right
       )
     )
