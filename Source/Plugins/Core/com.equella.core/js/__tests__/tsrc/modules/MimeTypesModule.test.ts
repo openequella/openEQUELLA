@@ -15,18 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
 import {
+  getImageMimeTypes,
   getMimeTypeDefaultViewerDetails,
   isBrowserSupportedAudio,
   isBrowserSupportedVideo,
   splitMimeType,
 } from "../../../tsrc/modules/MimeTypesModule";
-import * as OEQ from "@openequella/rest-api-client";
 
 jest.mock("@openequella/rest-api-client");
 const mockedGetViewersForMimeType = OEQ.MimeType
   .getViewersForMimeType as jest.Mock<
   Promise<OEQ.MimeType.MimeTypeViewerConfiguration>
+>;
+const mockListMimeTypes = OEQ.MimeType.listMimeTypes as jest.Mock<
+  Promise<OEQ.MimeType.MimeTypeEntry[]>
 >;
 
 describe("splitMimeTypes()", () => {
@@ -114,5 +118,26 @@ describe("getMimeTypeDefaultViewerDetails()", () => {
     await expect(getMimeTypeDefaultViewerDetails("image/jpeg")).rejects.toThrow(
       ReferenceError
     );
+  });
+});
+
+describe("getImageMimeTypes()", () => {
+  const imagePrefix = "image/";
+  const mimeTypeEntries: OEQ.MimeType.MimeTypeEntry[] = [
+    "audio/ogg",
+    "image/jpeg",
+    "image/png",
+    "video/mp4",
+  ].map((s) => ({ mimeType: s, desc: `Testing MIME type ${s}` }));
+  const imageMimeTypeCount = 2; // Based on number of image entries in `mimeTypeEntries`
+
+  it("returns the list of image MIME types _only_", async () => {
+    mockListMimeTypes.mockResolvedValue(mimeTypeEntries);
+
+    const result = await getImageMimeTypes();
+
+    expect(result).toHaveLength(imageMimeTypeCount);
+    // Make sure only 'image' MIME types are in the list
+    expect(result.find((s) => !s.startsWith(imagePrefix))).toBeFalsy();
   });
 });
