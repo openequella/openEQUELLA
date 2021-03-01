@@ -26,12 +26,12 @@ import {
   Literal,
   match,
   Number,
+  Partial,
   Record,
   Static,
   String,
   Union,
   Unknown,
-  Partial,
 } from "runtypes";
 import { API_BASE_URL } from "../AppConfig";
 import { getISODateString } from "../util/Date";
@@ -88,6 +88,10 @@ export interface SearchOptions {
    * Whether to search attachments or not.
    */
   searchAttachments?: boolean;
+  /**
+   * A list of potential MIME types to filter items by.
+   */
+  mimeTypes?: string[];
 }
 
 /**
@@ -355,24 +359,23 @@ export const newSearchQueryToSearchOptions = async (
  * A function that takes search options and converts search options to search params,
  * and then does a search and returns a list of Items.
  * @param searchOptions Search options selected on Search page.
- * @param mimeTypes A list of potential MIME types to filter items by
  */
-export const searchItems = (
-  {
-    query,
-    rowsPerPage,
-    currentPage,
-    sortOrder,
-    collections,
-    rawMode,
-    lastModifiedDateRange,
-    owner,
-    status = liveStatuses,
-    searchAttachments,
-    selectedCategories,
-  }: SearchOptions,
-  mimeTypes?: string[]
-): Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>> => {
+export const searchItems = ({
+  query,
+  rowsPerPage,
+  currentPage,
+  sortOrder,
+  collections,
+  rawMode,
+  lastModifiedDateRange,
+  owner,
+  status = liveStatuses,
+  searchAttachments,
+  selectedCategories,
+  mimeTypes,
+}: SearchOptions): Promise<
+  OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>
+> => {
   const processedQuery = query ? formatQuery(query, !rawMode) : undefined;
   const searchParams: OEQ.Search.SearchParams = {
     query: processedQuery,
@@ -386,7 +389,7 @@ export const searchItems = (
     owner: owner?.id,
     searchAttachments: searchAttachments,
     whereClause: generateCategoryWhereQuery(selectedCategories),
-    mimeTypes,
+    mimeTypes: mimeTypes,
   };
 
   return OEQ.Search.search(API_BASE_URL, searchParams);

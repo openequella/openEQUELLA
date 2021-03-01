@@ -293,7 +293,10 @@ export const imageGallerySearch = async (
       })
     );
 
-  const searchResults = await searchItems(options, await getImageMimeTypes());
+  const searchResults = await searchItems({
+    ...options,
+    mimeTypes: await getImageMimeTypes(),
+  });
   const items: GallerySearchResultItem[] = pipe(
     searchResults.results,
     A.map(processSearchResultItem),
