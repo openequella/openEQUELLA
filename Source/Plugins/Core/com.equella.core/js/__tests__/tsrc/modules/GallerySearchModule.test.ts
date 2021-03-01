@@ -195,8 +195,9 @@ describe("buildGallerySearchResultItem", () => {
     isLatestVersion: true,
   };
 
-  const passThroughAttachmentFilter: AttachmentFilter = (a) =>
-    A.isNonEmpty(a) ? O.some(a) : O.none;
+  const passThroughAttachmentFilter: AttachmentFilter = (
+    a: OEQ.Search.Attachment[]
+  ) => (A.isNonEmpty(a) ? O.some(a) : O.none);
 
   it("builds a GallerySearchResultItem from a valid SearchResultItem", () => {
     const result = buildGallerySearchResultItem(passThroughAttachmentFilter)(
@@ -232,7 +233,7 @@ describe("buildGallerySearchResultItem", () => {
   it("fails if the attachments array is empty", () => {
     const result = buildGallerySearchResultItem(passThroughAttachmentFilter)({
       ...searchItem,
-      attachments: undefined,
+      attachments: [],
     });
     expectLeft(result);
   });
