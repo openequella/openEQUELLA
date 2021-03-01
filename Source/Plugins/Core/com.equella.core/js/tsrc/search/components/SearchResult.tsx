@@ -303,7 +303,7 @@ export default function SearchResult({
       },
     };
 
-    const buildHeartIcon = () => {
+    const FavItemHeartIcon = () => {
       const title = bookmarkId
         ? favouriteItemStrings.title.remove
         : favouriteItemStrings.title.add;
@@ -345,7 +345,7 @@ export default function SearchResult({
         </Typography>
 
         {metaDataDivider}
-        {buildHeartIcon()}
+        <FavItemHeartIcon />
 
         {commentCount > 0 && (
           <Hidden smDown>
