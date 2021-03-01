@@ -350,6 +350,23 @@ export const languageStrings = {
     categorySelector: {
       title: "Classifications",
     },
+    favouriteItem: {
+      removeAlert: "Are you sure you want to remove from your favourites?",
+      tags: {
+        description: "Tags to help when searching (optional).",
+        selectVersion: "Select version to add:",
+        toThisVersion:
+          "NOTE: Adding this favourite will point to this version forever.",
+        versionOptions: {
+          useLatestVersion: "Always use latest version",
+          useThisVersion: "This version",
+        },
+      },
+      title: {
+        add: "Add to favourites",
+        remove: "Remove from favourites",
+      },
+    },
     filterOwner: {
       title: "Owner",
       chip: "Owner: ",

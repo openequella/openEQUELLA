@@ -59,6 +59,10 @@ EmptyResultListComponent.args = {
     onChange: action("orderSelect onChange called"),
     value: defaultSearchOptions.sortOrder,
   },
+  refineSearchProps: {
+    isCriteriaSet: true,
+    showRefinePanel: action("show Refine Panel"),
+  },
 };
 
 export const BasicSearchResultListComponent: Story<SearchResultListProps> = (

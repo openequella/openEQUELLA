@@ -22,6 +22,7 @@ import {
   Badge,
   Divider,
   Grid,
+  Hidden,
   IconButton,
   List,
   ListItem,
@@ -37,6 +38,8 @@ import AttachFile from "@material-ui/icons/AttachFile";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import InsertDriveFile from "@material-ui/icons/InsertDriveFile";
 import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
+import FavoriteIcon from "@material-ui/icons/Favorite";
+import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import Search from "@material-ui/icons/Search";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
@@ -50,6 +53,10 @@ import { OeqLink } from "../../components/OeqLink";
 import OEQThumb from "../../components/OEQThumb";
 import { StarRating } from "../../components/StarRating";
 import { routes } from "../../mainui/routes";
+import {
+  addFavouriteItem,
+  deleteFavouriteItem,
+} from "../../modules/FavouriteModule";
 import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
 import {
   buildSelectionSessionItemSummaryLink,
@@ -64,6 +71,11 @@ import {
 } from "../../modules/LegacySelectionSessionModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
+import type {
+  FavDialogConfirmToAdd,
+  FavDialogConfirmToDelete,
+  FavouriteItemInfo,
+} from "./FavouriteItemDialog";
 import { ResourceSelector } from "./ResourceSelector";
 import {
   determineAttachmentViewUrl,
@@ -75,6 +87,7 @@ const {
   comments: commentStrings,
   starRatings: ratingStrings,
   selectResource: selectResourceStrings,
+  favouriteItem: favouriteItemStrings,
 } = languageStrings.searchpage;
 
 const useStyles = makeStyles((theme: Theme) => {
@@ -93,6 +106,7 @@ const useStyles = makeStyles((theme: Theme) => {
       flexDirection: "row",
       display: "flex",
       paddingTop: theme.spacing(1),
+      alignItems: "center",
     },
     status: {
       textTransform: "capitalize",
@@ -140,6 +154,10 @@ export interface SearchResultProps {
    * The details of the items to display.
    */
   item: OEQ.Search.SearchResultItem;
+  /**
+   * Function fired to help update props of FavouriteItemDialog.
+   */
+  onFavouriteItem: (itemInfo: FavouriteItemInfo) => void;
 }
 
 export default function SearchResult({
@@ -159,7 +177,10 @@ export default function SearchResult({
     keywordFoundInAttachment,
     commentCount = 0,
     starRatings,
+    bookmarkId: bookmarkDefaultId,
+    isLatestVersion,
   },
+  onFavouriteItem,
 }: SearchResultProps) {
   interface AttachmentAndViewerDetails {
     attachment: OEQ.Search.Attachment;
@@ -180,6 +201,10 @@ export default function SearchResult({
     attachmentsWithViewerDetails,
     setAttachmentsWithViewerDetails,
   ] = useState<AttachmentAndViewerDetails[]>([]);
+
+  const [bookmarkId, setBookmarkId] = useState<number | undefined>(
+    bookmarkDefaultId
+  );
 
   // Responsible for determining the MIME type viewer for the provided attachments
   useEffect(() => {
@@ -258,6 +283,55 @@ export default function SearchResult({
       />
     );
 
+    const favDialogConfirmToAdd: FavDialogConfirmToAdd = {
+      action: "add",
+      onConfirm: (tags: string[], isAlwaysLatest: boolean) =>
+        addFavouriteItem(`${uuid}/${version}`, tags, isAlwaysLatest)
+          .then(({ bookmarkID }) => setBookmarkId(bookmarkID))
+          .catch(handleError),
+    };
+
+    const favDialogConfirmToDelete: FavDialogConfirmToDelete = {
+      action: "delete",
+      onConfirm: () => {
+        if (!bookmarkId) {
+          throw new Error("Bookmark ID can't be falsy.");
+        }
+        return deleteFavouriteItem(bookmarkId)
+          .then(() => setBookmarkId(undefined))
+          .catch(handleError);
+      },
+    };
+
+    const FavItemHeartIcon = () => {
+      const title = bookmarkId
+        ? favouriteItemStrings.title.remove
+        : favouriteItemStrings.title.add;
+      const icon = bookmarkId ? <FavoriteIcon /> : <FavoriteBorderIcon />;
+      const isAddedToFavourite = bookmarkId !== undefined;
+      const onConfirmProps = bookmarkId
+        ? favDialogConfirmToDelete
+        : favDialogConfirmToAdd;
+
+      return (
+        <Tooltip title={title}>
+          <IconButton
+            onClick={() =>
+              onFavouriteItem({
+                isAddedToFavourite,
+                isLatestVersion,
+                onConfirmProps,
+              })
+            }
+            aria-label={title}
+            size="small"
+          >
+            {icon}
+          </IconButton>
+        </Tooltip>
+      );
+    };
+
     return (
       <div className={classes.additionalDetails}>
         <Typography component="span" className={classes.status}>
@@ -270,8 +344,11 @@ export default function SearchResult({
           <DateDisplay displayRelative date={new Date(modifiedDate)} />
         </Typography>
 
+        {metaDataDivider}
+        <FavItemHeartIcon />
+
         {commentCount > 0 && (
-          <>
+          <Hidden smDown>
             {metaDataDivider}
             <Typography component="span">
               <HashLink
@@ -281,16 +358,16 @@ export default function SearchResult({
                 {formatSize(commentCount, commentStrings)}
               </HashLink>
             </Typography>
-          </>
+          </Hidden>
         )}
 
         {starRatings >= 0 && (
-          <>
+          <Hidden smDown>
             {metaDataDivider}
             <div aria-label={sprintf(ratingStrings.label, starRatings)}>
               <StarRating numberOfStars={5} rating={starRatings} />
             </div>
-          </>
+          </Hidden>
         )}
       </div>
     );

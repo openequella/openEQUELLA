@@ -60,6 +60,12 @@ import {
 import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
 import SearchBar from "../search/components/SearchBar";
 import { languageStrings } from "../util/langstrings";
+import {
+  defaultFavouriteItemDialogProps,
+  FavouriteItemDialog,
+  FavouriteItemDialogProps,
+  FavouriteItemInfo,
+} from "./components/FavouriteItemDialog";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
 import { CollectionSelector } from "./components/CollectionSelector";
 import OwnerSelector from "./components/OwnerSelector";
@@ -195,8 +201,24 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     searchSettings,
     setSearchSettings,
   ] = useState<OEQ.SearchSettings.Settings>();
-
   const [showRefinePanel, setShowRefinePanel] = useState<boolean>(false);
+  const [
+    favouriteDialogProps,
+    setFavouriteDialogProps,
+  ] = useState<FavouriteItemDialogProps>({
+    ...defaultFavouriteItemDialogProps,
+    closeDialog: () =>
+      setFavouriteDialogProps({ ...favouriteDialogProps, open: false }),
+  });
+
+  // A function passed to SearchResult to help build props of FavouriteItemDialog.
+  const favouriteDialogOnConfirm = (itemInfo: FavouriteItemInfo) => {
+    setFavouriteDialogProps({
+      ...favouriteDialogProps,
+      open: true,
+      ...itemInfo,
+    });
+  };
 
   const handleError = useCallback(
     (error: Error) => {
@@ -677,7 +699,12 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 onCopySearchLink={handleCopySearch}
               >
                 {searchResults.length > 0 &&
-                  mapSearchResultItems(searchResults, handleError, highlights)}
+                  mapSearchResultItems(
+                    searchResults,
+                    handleError,
+                    highlights,
+                    favouriteDialogOnConfirm
+                  )}
               </SearchResultList>
             </Grid>
           </Grid>
@@ -703,6 +730,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           {renderSidePanel()}
         </Drawer>
       </Hidden>
+      <FavouriteItemDialog {...favouriteDialogProps} />
     </>
   );
 };
