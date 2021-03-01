@@ -22,13 +22,29 @@ import { Autocomplete, AutocompleteGetTagProps } from "@material-ui/lab";
 import { useEffect, useState } from "react";
 import * as React from "react";
 import { MimeTypeFilter } from "../../modules/SearchFilterSettingsModule";
+import { languageStrings } from "../../util/langstrings";
 
 interface MimeTypeFilterSelectorProps {
-  value: MimeTypeFilter[];
+  /**
+   * MIME type filters that have been selected.
+   */
+  value?: MimeTypeFilter[];
+  /**
+   * Function to provide configured MIME type filters.
+   */
   mimeTypeFilterProvider: () => Promise<MimeTypeFilter[]>;
+  /**
+   * Function fired on selecting different MIME type filters.
+   * @param filters A list of currently selected MIME type filters.
+   */
   onChange: (filters: MimeTypeFilter[]) => void;
 }
 
+const { helperText } = languageStrings.searchpage.mimeTypeFilterSelector;
+/**
+ * This component displays a list of configured MIME type filters which can be selected to
+ * filter search results by Mime Types. It supports filtering options by typing keywords.
+ */
 export const MimeTypeFilterSelector = ({
   value,
   mimeTypeFilterProvider,
@@ -47,7 +63,7 @@ export const MimeTypeFilterSelector = ({
         filters: MimeTypeFilter[],
         getTagProps: AutocompleteGetTagProps
       ) =>
-        filters.map((filter: MimeTypeFilter, index: number) => (
+        filters.map((filter, index) => (
           <Chip
             key={filter.id}
             label={filter.name}
@@ -77,8 +93,8 @@ export const MimeTypeFilterSelector = ({
         <TextField
           {...params}
           variant="outlined"
-          label="Attachment types"
-          placeholder="Attachment types"
+          label={helperText}
+          placeholder={helperText}
         />
       )}
     />

@@ -198,6 +198,7 @@ export const defaultSearchOptions: SearchOptions = {
   collections: [],
   lastModifiedDateRange: { start: undefined, end: undefined },
   owner: undefined,
+  mimeTypes: [],
 };
 
 export const defaultPagedSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> = {

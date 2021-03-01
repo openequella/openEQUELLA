@@ -379,6 +379,10 @@ export const languageStrings = {
       endDatePicker: "Modified before",
       quickOptionDropdown: "Last modified date",
     },
+    mimeTypeFilterSelector: {
+      title: "Filter by Attachment type",
+      helperText: "Attachment types",
+    },
     order: {
       relevance: "Relevance",
       name: "Name",

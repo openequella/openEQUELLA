@@ -47,6 +47,10 @@ import {
   SelectedCategories,
 } from "../modules/SearchFacetsModule";
 import {
+  getMimeTypeFiltersFromServer,
+  MimeTypeFilter,
+} from "../modules/SearchFilterSettingsModule";
+import {
   DateRange,
   defaultPagedSearchResult,
   defaultSearchOptions,
@@ -68,6 +72,7 @@ import {
 } from "./components/FavouriteItemDialog";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
 import { CollectionSelector } from "./components/CollectionSelector";
+import { MimeTypeFilterSelector } from "./components/MimeTypeFilterSelector";
 import OwnerSelector from "./components/OwnerSelector";
 import { RefinePanelControl } from "./components/RefineSearchPanel";
 import { SearchAttachmentsSelector } from "./components/SearchAttachmentsSelector";
@@ -94,6 +99,10 @@ export interface SearchPageOptions extends SearchOptions {
    * Whether to enable Quick mode (true) or to use custom date pickers (false).
    */
   dateRangeQuickModeEnabled: boolean;
+  /**
+   * A list of selected MIME type filters.
+   */
+  mimeTypeFilters?: MimeTypeFilter[];
 }
 
 /**
@@ -175,6 +184,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const defaultSearchPageOptions: SearchPageOptions = {
     ...defaultSearchOptions,
     dateRangeQuickModeEnabled: true,
+    mimeTypeFilters: [],
   };
 
   const defaultSearchPageHistory: SearchPageHistoryState = {
@@ -426,6 +436,15 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       .catch(() => handleError);
   };
 
+  const handleMimeTypeFilterChange = (filters: MimeTypeFilter[]) =>
+    search({
+      ...searchPageOptions,
+      mimeTypeFilters: filters,
+      mimeTypes: filters.flatMap((f) => f.mimeTypes),
+      currentPage: 0,
+      selectedCategories: undefined,
+    });
+
   const handleOwnerChange = (owner: OEQ.UserQuery.UserDetails) =>
     search({
       ...searchPageOptions,
@@ -485,6 +504,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       "owner",
       "status",
       "searchAttachments",
+      "mimeTypes",
     ];
     return !isEqual(
       getPartialSearchOptions(defaultSearchOptions, fields),
@@ -502,6 +522,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       "status",
       "searchAttachments",
       "collections",
+      "mimeTypes",
     ];
 
     const isQueryOrFiltersSet = !isEqual(
@@ -572,6 +593,18 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ),
       // Before Search settings are retrieved, do not show.
       disabled: searchSettings?.searchingDisableDateModifiedFilter ?? true,
+    },
+    {
+      idSuffix: "MIMETypeSelector",
+      title: searchStrings.mimeTypeFilterSelector.title,
+      component: (
+        <MimeTypeFilterSelector
+          value={searchPageOptions.mimeTypeFilters}
+          mimeTypeFilterProvider={getMimeTypeFiltersFromServer}
+          onChange={handleMimeTypeFilterChange}
+        />
+      ),
+      disabled: false,
     },
     {
       idSuffix: "OwnerSelector",
