@@ -129,9 +129,7 @@ describe("getImageMimeTypes()", () => {
     "image/png",
     "video/mp4",
   ].map((s) => ({ mimeType: s, desc: `Testing MIME type ${s}` }));
-  const imageMimeTypeCount = mimeTypeEntries.filter((mte) =>
-    mte.mimeType.startsWith(imagePrefix)
-  ).length;
+  const imageMimeTypeCount = 2; // Based on number of image entries in `mimeTypeEntries`
 
   it("returns the list of image MIME types _only_", async () => {
     mockListMimeTypes.mockResolvedValue(mimeTypeEntries);
