@@ -303,6 +303,35 @@ export default function SearchResult({
       },
     };
 
+    const buildHeartIcon = () => {
+      const title = bookmarkId
+        ? favouriteItemStrings.title.remove
+        : favouriteItemStrings.title.add;
+      const icon = bookmarkId ? <FavoriteIcon /> : <FavoriteBorderIcon />;
+      const isAddedToFavourite = bookmarkId !== undefined;
+      const onConfirmProps = bookmarkId
+        ? favDialogConfirmToDelete
+        : favDialogConfirmToAdd;
+
+      return (
+        <Tooltip title={title}>
+          <IconButton
+            onClick={() =>
+              onFavouriteItem({
+                isAddedToFavourite,
+                isLatestVersion,
+                onConfirmProps,
+              })
+            }
+            aria-label={title}
+            size="small"
+          >
+            {icon}
+          </IconButton>
+        </Tooltip>
+      );
+    };
+
     return (
       <div className={classes.additionalDetails}>
         <Typography component="span" className={classes.status}>
@@ -316,39 +345,7 @@ export default function SearchResult({
         </Typography>
 
         {metaDataDivider}
-        {[
-          {
-            hidden: bookmarkId !== undefined,
-            icon: <FavoriteBorderIcon />,
-            label: favouriteItemStrings.title.add,
-            onConfirmProps: favDialogConfirmToAdd,
-          },
-          {
-            hidden: !bookmarkId,
-            icon: <FavoriteIcon />,
-            label: favouriteItemStrings.title.remove,
-            onConfirmProps: favDialogConfirmToDelete,
-          },
-        ].map(
-          ({ hidden, icon, label, onConfirmProps }) =>
-            !hidden && (
-              <Tooltip title={label} key={label}>
-                <IconButton
-                  onClick={() =>
-                    onFavouriteItem({
-                      isAddedToFavourite: bookmarkId !== undefined,
-                      isLatestVersion,
-                      onConfirmProps,
-                    })
-                  }
-                  aria-label={label}
-                  size="small"
-                >
-                  {icon}
-                </IconButton>
-              </Tooltip>
-            )
-        )}
+        {buildHeartIcon()}
 
         {commentCount > 0 && (
           <Hidden smDown>
