@@ -125,4 +125,30 @@ public class AttachmentDaoImpl extends GenericDaoImpl<Attachment, Long> implemen
     // it's possible that value1 could be
     return attachments;
   }
+
+  @Override
+  public List<Attachment> findAllByUuid(String uuid) {
+    String[] names = new String[] {"institution", "uuid"};
+    Object[] values = new Object[] {CurrentInstitution.get(), uuid};
+    List<String> nameList = new ArrayList<String>(Arrays.asList(names));
+    List<Object> valueList = new ArrayList<Object>(Arrays.asList(values));
+
+    StringBuilder query = new StringBuilder();
+    query.append(
+        "SELECT a FROM Item i LEFT JOIN i.attachments a WHERE i.institution = :institution");
+    query.append(" AND a.uuid = :uuid");
+    List<Attachment> attachments =
+        (List<Attachment>)
+            getHibernateTemplate()
+                .findByNamedParam(
+                    query.toString(),
+                    nameList.toArray(new String[nameList.size()]),
+                    valueList.toArray());
+
+    return attachments;
+  }
+
+  public Attachment findByUuid(String uuid) {
+    return findAllByUuid(uuid).get(0);
+  }
 }

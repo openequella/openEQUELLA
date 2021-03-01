@@ -62,8 +62,6 @@ import javax.inject.Singleton;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.hibernate.Hibernate;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Restrictions;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
 import org.springframework.transaction.annotation.Propagation;
@@ -177,7 +175,7 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
   }
 
   public String getMimeTypeForAttachmentUuid(String attachmentUuid) {
-    Attachment attachment = attachmentDao.findByCriteria(Restrictions.eq("uuid", attachmentUuid));
+    Attachment attachment = attachmentDao.findByUuid(attachmentUuid);
     return getMimeEntryForAttachment(attachment);
   }
 
@@ -479,8 +477,7 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
       // Recurse to drill into the linked attachment, so we can use the correct viewer.
       // If more than one attachment has the linked uuid,
       // this is a zip or scorm package and we can let it fall through.
-      Criterion uuidEqualsAttachmentUrl = Restrictions.eq("uuid", attachment.getUrl());
-      List<Attachment> attachmentList = attachmentDao.findAllByCriteria(uuidEqualsAttachmentUrl);
+      List<Attachment> attachmentList = attachmentDao.findAllByUuid(attachment.getUrl());
       if (attachmentList.size() == 1) {
         return getMimeEntryForAttachment(attachmentList.get(0));
       }
