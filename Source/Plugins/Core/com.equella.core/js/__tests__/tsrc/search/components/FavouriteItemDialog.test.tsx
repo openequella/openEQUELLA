@@ -36,7 +36,7 @@ describe("<FavouriteItemDialog />", () => {
     onConfirmProps,
   };
 
-  it("shows a RadiaGroup of two options for adding an Item that's on the latest version", () => {
+  it("shows a RadioGroup of two options for adding an Item that's on the latest version", () => {
     const { queryByLabelText, queryByText } = render(
       <FavouriteItemDialog
         {...commonProps}

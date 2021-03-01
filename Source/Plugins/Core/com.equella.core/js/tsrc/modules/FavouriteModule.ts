@@ -28,6 +28,7 @@ export type FavouriteItemVersionOption = "latest" | "this";
  * @param itemID Item's unique ID
  * @param keywords Tags of a favourite Item
  * @param isAlwaysLatest `true` to always use Item's latest version
+ * @return Details of the newly created favourite from the server.
  */
 export const addFavouriteItem = (
   itemID: string,

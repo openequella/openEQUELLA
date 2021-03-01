@@ -99,12 +99,12 @@ const {
  * Build a Grid as the dialog's content when the dialog is used for adding a favourite Item.
  */
 const AddFavouriteItemContent = ({
-  setTags,
-  setVersionOption,
+  onChangeTags,
+  onChangeVersionOption,
   isOnLatestVersion,
 }: {
-  setTags: (tags: string[]) => void;
-  setVersionOption: (version: FavouriteItemVersionOption) => void;
+  onChangeTags: (tags: string[]) => void;
+  onChangeVersionOption: (version: FavouriteItemVersionOption) => void;
   isOnLatestVersion: boolean;
 }) => (
   <Grid container direction="column" spacing={2}>
@@ -121,7 +121,7 @@ const AddFavouriteItemContent = ({
           <TextField {...params} label={tagsString.description} />
         )}
         options={[]}
-        onChange={(_, value: string[]) => setTags(value)}
+        onChange={(_, value: string[]) => onChangeTags(value)}
       />
     </Grid>
     <Grid item>
@@ -131,7 +131,9 @@ const AddFavouriteItemContent = ({
           <RadioGroup
             row
             onChange={(event) =>
-              setVersionOption(event.target.value as FavouriteItemVersionOption)
+              onChangeVersionOption(
+                event.target.value as FavouriteItemVersionOption
+              )
             }
             defaultValue="latest"
           >
@@ -196,8 +198,8 @@ export const FavouriteItemDialog = ({
         removeAlertString
       ) : (
         <AddFavouriteItemContent
-          setTags={setTags}
-          setVersionOption={setVersionOption}
+          onChangeTags={setTags}
+          onChangeVersionOption={setVersionOption}
           isOnLatestVersion={isLatestVersion}
         />
       )}

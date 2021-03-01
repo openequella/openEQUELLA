@@ -212,11 +212,10 @@ describe("<SearchResult/>", () => {
       item: OEQ.Search.SearchResultItem,
       iconLabel: string
     ) => {
-      const { queryByLabelText } = await renderSearchResult(item);
-      const iconButton = queryByLabelText(iconLabel);
-      expect(iconButton).toBeInTheDocument();
+      const { getByLabelText } = await renderSearchResult(item);
+      const iconButton = getByLabelText(iconLabel);
 
-      userEvent.click(iconButton!);
+      userEvent.click(iconButton);
       expect(favouriteDialogHelper).toHaveBeenCalled();
     }
   );

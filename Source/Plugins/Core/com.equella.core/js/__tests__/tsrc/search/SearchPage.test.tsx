@@ -843,6 +843,7 @@ describe("Add and remove favourite Item,", () => {
   beforeEach(async () => {
     page = await renderSearchPage();
   });
+
   it.each([
     // The mocked search result has two Items named "a" and "b" so let's use them.
     [add, remove, "a"],
