@@ -19,7 +19,6 @@ import { Checkbox, Chip, TextField } from "@material-ui/core";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import { Autocomplete, AutocompleteGetTagProps } from "@material-ui/lab";
-import { useEffect, useState } from "react";
 import * as React from "react";
 import { MimeTypeFilter } from "../../modules/SearchFilterSettingsModule";
 import { languageStrings } from "../../util/langstrings";
@@ -30,14 +29,14 @@ export interface MimeTypeFilterSelectorProps {
    */
   value?: MimeTypeFilter[];
   /**
-   * Function to provide configured MIME type filters.
-   */
-  mimeTypeFilterProvider: () => Promise<MimeTypeFilter[]>;
-  /**
    * Function fired on selecting different MIME type filters.
    * @param filters A list of currently selected MIME type filters.
    */
   onChange: (filters: MimeTypeFilter[]) => void;
+  /**
+   * All configured MIME type filters.
+   */
+  filters: MimeTypeFilter[];
 }
 
 const { helperText } = languageStrings.searchpage.mimeTypeFilterSelector;
@@ -47,56 +46,44 @@ const { helperText } = languageStrings.searchpage.mimeTypeFilterSelector;
  */
 export const MimeTypeFilterSelector = ({
   value,
-  mimeTypeFilterProvider,
   onChange,
-}: MimeTypeFilterSelectorProps) => {
-  const [mimeTypeFilters, setMimeTypeFilters] = useState<MimeTypeFilter[]>([]);
-
-  useEffect(() => {
-    mimeTypeFilterProvider().then((filters) => setMimeTypeFilters(filters));
-  }, [mimeTypeFilterProvider]);
-
-  return (
-    <Autocomplete
-      multiple
-      renderTags={(
-        filters: MimeTypeFilter[],
-        getTagProps: AutocompleteGetTagProps
-      ) =>
-        filters.map((filter, index) => (
-          <Chip
-            key={filter.id}
-            label={filter.name}
-            {...getTagProps({ index })}
-          />
-        ))
-      }
-      onChange={(_, value: MimeTypeFilter[]) => {
-        onChange(value);
-      }}
-      value={value ?? []}
-      options={mimeTypeFilters}
-      disableCloseOnSelect
-      getOptionLabel={(filter) => filter.name}
-      getOptionSelected={(filter, selected) => filter.id === selected.id}
-      renderOption={(filter, { selected }) => (
-        <>
-          <Checkbox
-            icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
-            checkedIcon={<CheckBoxIcon fontSize="small" />}
-            checked={selected}
-          />
-          {filter.name}
-        </>
-      )}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          variant="outlined"
-          label={helperText}
-          placeholder={helperText}
+  filters,
+}: MimeTypeFilterSelectorProps) => (
+  <Autocomplete
+    multiple
+    renderTags={(
+      filters: MimeTypeFilter[],
+      getTagProps: AutocompleteGetTagProps
+    ) =>
+      filters.map((filter, index) => (
+        <Chip key={filter.id} label={filter.name} {...getTagProps({ index })} />
+      ))
+    }
+    onChange={(_, value: MimeTypeFilter[]) => {
+      onChange(value);
+    }}
+    value={value ?? []}
+    options={filters}
+    disableCloseOnSelect
+    getOptionLabel={(filter) => filter.name}
+    getOptionSelected={(filter, selected) => filter.id === selected.id}
+    renderOption={(filter, { selected }) => (
+      <>
+        <Checkbox
+          icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
+          checkedIcon={<CheckBoxIcon fontSize="small" />}
+          checked={selected}
         />
-      )}
-    />
-  );
-};
+        {filter.name}
+      </>
+    )}
+    renderInput={(params) => (
+      <TextField
+        {...params}
+        variant="outlined"
+        label={helperText}
+        placeholder={helperText}
+      />
+    )}
+  />
+);

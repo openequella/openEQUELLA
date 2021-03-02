@@ -34,7 +34,7 @@ export default {
 
 const mockedFilters: MimeTypeFilter[] = getMimeTypeFilters;
 const commonProps = {
-  mimeTypeFilterProvider: () => Promise.resolve(mockedFilters),
+  filters: mockedFilters,
 };
 
 export const NoFilterSelected: Story<MimeTypeFilterSelectorProps> = (args) => (
@@ -51,6 +51,6 @@ export const FilterSelected: Story<MimeTypeFilterSelectorProps> = (args) => (
 );
 
 FilterSelected.args = {
-  value: [mockedFilters[0]],
+  value: mockedFilters,
   ...commonProps,
 };

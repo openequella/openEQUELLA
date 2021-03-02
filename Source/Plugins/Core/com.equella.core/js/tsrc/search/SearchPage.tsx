@@ -211,6 +211,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     searchSettings,
     setSearchSettings,
   ] = useState<OEQ.SearchSettings.Settings>();
+  const [mimeTypeFilters, setMimeTypeFilters] = useState<MimeTypeFilter[]>([]);
+
   const [showRefinePanel, setShowRefinePanel] = useState<boolean>(false);
   const [
     favouriteDialogProps,
@@ -271,13 +273,15 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
     Promise.all([
       getSearchSettingsFromServer(),
+      getMimeTypeFiltersFromServer(),
       // If the search options are available from browser history, ignore those in the query string.
       (location.state as SearchPageHistoryState)
         ? Promise.resolve(undefined)
         : queryStringParamsToSearchOptions(location),
     ])
-      .then(([searchSettings, queryStringSearchOptions]) => {
+      .then(([searchSettings, mimeTypeFilters, queryStringSearchOptions]) => {
         setSearchSettings(searchSettings);
+        setMimeTypeFilters(mimeTypeFilters);
         search(
           queryStringSearchOptions
             ? {
@@ -600,11 +604,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       component: (
         <MimeTypeFilterSelector
           value={searchPageOptions.mimeTypeFilters}
-          mimeTypeFilterProvider={getMimeTypeFiltersFromServer}
           onChange={handleMimeTypeFilterChange}
+          filters={mimeTypeFilters}
         />
       ),
-      disabled: false,
+      disabled: mimeTypeFilters.length === 0,
     },
     {
       idSuffix: "OwnerSelector",

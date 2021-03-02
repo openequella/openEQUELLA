@@ -101,7 +101,7 @@ const mockConvertParamsToSearchOptions = jest.spyOn(
   "queryStringParamsToSearchOptions"
 );
 
-jest
+const mockMimeTypeFilters = jest
   .spyOn(SearchFilterSettingsModule, "getMimeTypeFiltersFromServer")
   .mockResolvedValue(getMimeTypeFilters);
 
@@ -389,14 +389,12 @@ describe("Refine search by Owner", () => {
 });
 
 describe("Refine search by MIME type filters", () => {
+  const { helperText } = languageStrings.searchpage.mimeTypeFilterSelector;
+
   it("supports multiple filters", async () => {
     const filters = getMimeTypeFilters;
     const page = await renderSearchPage();
-    userEvent.click(
-      page.getByLabelText(
-        languageStrings.searchpage.mimeTypeFilterSelector.helperText
-      )
-    );
+    userEvent.click(page.getByLabelText(helperText));
     filters.forEach((filter) => {
       userEvent.click(screen.getByText(filter.name));
     });
@@ -406,6 +404,12 @@ describe("Refine search by MIME type filters", () => {
       mimeTypes: filters.flatMap((f) => f.mimeTypes),
       mimeTypeFilters: filters,
     });
+  });
+
+  it("should be hidden if there are no configured filters", async () => {
+    mockMimeTypeFilters.mockResolvedValueOnce([]);
+    const page = await renderSearchPage();
+    expect(page.queryByLabelText(helperText)).not.toBeInTheDocument();
   });
 });
 
