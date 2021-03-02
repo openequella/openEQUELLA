@@ -17,7 +17,7 @@
  */
 import { MimeTypeFilter } from "../tsrc/modules/SearchFilterSettingsModule";
 
-export const getMimeTypeFilters = (): MimeTypeFilter[] => [
+export const getMimeTypeFilters: MimeTypeFilter[] = [
   {
     id: "fe79c485-a6dd-4743-81e8-52de66494632",
     name: "Image filter",

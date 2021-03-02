@@ -32,7 +32,7 @@ export default {
   },
 } as Meta<MimeTypeFilterSelectorProps>;
 
-const mockedFilters: MimeTypeFilter[] = getMimeTypeFilters();
+const mockedFilters: MimeTypeFilter[] = getMimeTypeFilters;
 const commonProps = {
   mimeTypeFilterProvider: () => Promise.resolve(mockedFilters),
 };
