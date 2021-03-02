@@ -24,7 +24,7 @@ import * as React from "react";
 import { MimeTypeFilter } from "../../modules/SearchFilterSettingsModule";
 import { languageStrings } from "../../util/langstrings";
 
-interface MimeTypeFilterSelectorProps {
+export interface MimeTypeFilterSelectorProps {
   /**
    * MIME type filters that have been selected.
    */
