@@ -52,7 +52,7 @@ import ItemAttachmentLink from "../../components/ItemAttachmentLink";
 import { OeqLink } from "../../components/OeqLink";
 import OEQThumb from "../../components/OEQThumb";
 import { StarRating } from "../../components/StarRating";
-import { TooltipIconButton } from "../../components/TooptipIconButton";
+import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { routes } from "../../mainui/routes";
 import {
   addFavouriteItem,

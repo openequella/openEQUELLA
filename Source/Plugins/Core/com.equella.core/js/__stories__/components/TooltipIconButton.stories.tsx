@@ -21,7 +21,7 @@ import * as React from "react";
 import {
   TooltipIconButton,
   TooltipIconButtonProps,
-} from "../../tsrc/components/TooptipIconButton";
+} from "../../tsrc/components/TooltipIconButton";
 
 export default {
   title: "component/TooltipIconButton",
