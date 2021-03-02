@@ -153,7 +153,7 @@ describe("SearchModule", () => {
 
     it("should convert query string to searchOptions", async () => {
       const longSearch =
-        '{"rowsPerPage":10,"currentPage":0,"sortOrder":"NAME","query":"test machine","rawMode":true,"status":["LIVE","REVIEW"],"searchAttachments":true,"selectedCategories":[{"id":766943,"categories":["Hobart"]},{"id":766944,"categories":["Some cool things"]}],"collections":[{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545fff"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffe"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffg"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffa"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffb"}],"lastModifiedDateRange":{"start":"2020-05-26T03:24:00.889Z","end":"2020-05-27T03:24:00.889Z"},"owner":{"id":"680f5eb7-22e2-4ab6-bcea-25205165e36e"}}';
+        '{"rowsPerPage":10,"currentPage":0,"sortOrder":"NAME","query":"test machine","rawMode":true,"status":["LIVE","REVIEW"],"searchAttachments":true,"selectedCategories":[{"id":766943,"categories":["Hobart"]},{"id":766944,"categories":["Some cool things"]}],"collections":[{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545fff"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffe"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffg"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffa"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffb"}],"lastModifiedDateRange":{"start":"2020-05-26T03:24:00.889Z","end":"2020-05-27T03:24:00.889Z"},"owner":{"id":"680f5eb7-22e2-4ab6-bcea-25205165e36e"}, "mimeTypes": ["Image/png"]}';
       const convertedParamsPromise = await newSearchQueryToSearchOptions(
         longSearch
       );

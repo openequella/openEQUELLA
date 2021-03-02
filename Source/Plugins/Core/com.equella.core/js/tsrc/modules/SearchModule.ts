@@ -164,6 +164,7 @@ const DehydratedSearchOptionsRunTypes = Partial({
     })
   ),
   searchAttachments: Boolean,
+  mimeTypes: RuntypeArray(String),
 });
 
 type DehydratedSearchOptions = Static<typeof DehydratedSearchOptionsRunTypes>;
