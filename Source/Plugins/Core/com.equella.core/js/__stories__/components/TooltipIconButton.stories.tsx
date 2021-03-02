@@ -15,28 +15,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IconButton, IconButtonProps } from "@material-ui/core";
-import Tooltip from "@material-ui/core/Tooltip";
-import { TooltipProps } from "@material-ui/core/Tooltip/Tooltip";
+import FavoriteIcon from "@material-ui/icons/Favorite";
+import { Meta, Story } from "@storybook/react";
 import * as React from "react";
+import {
+  TooltipIconButton,
+  TooltipIconButtonProps,
+} from "../../tsrc/components/TooptipIconButton";
 
-/**
- * A combined type including TooltipProps and IconButtonProps.
- */
-export type TooltipIconButtonProps = TooltipProps & IconButtonProps;
+export default {
+  title: "component/TooltipIconButton",
+  component: TooltipIconButton,
+  argTypes: {
+    onClick: { action: "on click" },
+  },
+} as Meta<TooltipIconButtonProps>;
 
-/**
- * Provide an IconButton wrapped by a Tooltip.
- */
-export const TooltipIconButton = ({
-  title,
-  onClick,
-  children,
-  size,
-}: TooltipIconButtonProps) => (
-  <Tooltip title={title}>
-    <IconButton onClick={onClick} aria-label={title} size={size}>
-      {children}
-    </IconButton>
-  </Tooltip>
+export const Standard: Story<TooltipIconButtonProps> = (args) => (
+  <TooltipIconButton {...args}>
+    <FavoriteIcon />
+  </TooltipIconButton>
 );
+Standard.args = {
+  title: "This is a Tooltip Icon Button",
+  size: "small",
+};
