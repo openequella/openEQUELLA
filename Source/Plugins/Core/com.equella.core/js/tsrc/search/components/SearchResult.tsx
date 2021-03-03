@@ -304,23 +304,19 @@ export default function SearchResult({
       },
     };
 
-    const favouriteItemButtonText = bookmarkId
-      ? favouriteItemStrings.title.remove
-      : favouriteItemStrings.title.add;
-
-    const favouriteItemButtonIcon = bookmarkId ? (
-      <FavoriteIcon />
-    ) : (
-      <FavoriteBorderIcon />
-    );
-    const favouriteItemButtonOnClick = () =>
-      onFavouriteItem({
-        isAddedToFavourite: bookmarkId !== undefined,
-        isLatestVersion,
-        onConfirmProps: bookmarkId
-          ? favDialogConfirmToDelete
-          : favDialogConfirmToAdd,
-      });
+    const favouriteItemButtonPops = {
+      title: bookmarkId
+        ? favouriteItemStrings.title.remove
+        : favouriteItemStrings.title.add,
+      onClick: () =>
+        onFavouriteItem({
+          isAddedToFavourite: bookmarkId !== undefined,
+          isLatestVersion,
+          onConfirmProps: bookmarkId
+            ? favDialogConfirmToDelete
+            : favDialogConfirmToAdd,
+        }),
+    };
 
     return (
       <div className={classes.additionalDetails}>
@@ -335,12 +331,8 @@ export default function SearchResult({
         </Typography>
 
         {metaDataDivider}
-        <TooltipIconButton
-          title={favouriteItemButtonText}
-          onClick={favouriteItemButtonOnClick}
-          size="small"
-        >
-          {favouriteItemButtonIcon}
+        <TooltipIconButton {...favouriteItemButtonPops} size="small">
+          {bookmarkId ? <FavoriteIcon /> : <FavoriteBorderIcon />}
         </TooltipIconButton>
 
         {commentCount > 0 && (

@@ -24,7 +24,6 @@ import {
   CircularProgress,
   Grid,
   Hidden,
-  IconButton,
   List,
   ListItem,
   Tooltip,
@@ -35,6 +34,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Share from "@material-ui/icons/Share";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
+import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { isSelectionSessionOpen } from "../../modules/LegacySelectionSessionModule";
 import { languageStrings } from "../../util/langstrings";
 import type { FavouriteItemInfo } from "./FavouriteItemDialog";
@@ -156,23 +156,23 @@ export const SearchResultList = ({
             </Grid>
             <Hidden mdUp>
               <Grid item>
-                <Tooltip title={searchPageStrings.refineSearchPanel.title}>
-                  <IconButton
-                    onClick={showRefinePanel}
-                    color={isCriteriaSet ? "secondary" : "primary"}
-                  >
-                    <FilterListIcon />
-                  </IconButton>
-                </Tooltip>
+                <TooltipIconButton
+                  title={searchPageStrings.refineSearchPanel.title}
+                  onClick={showRefinePanel}
+                  color={isCriteriaSet ? "secondary" : "primary"}
+                >
+                  <FilterListIcon />
+                </TooltipIconButton>
               </Grid>
             </Hidden>
             {!inSelectionSession && (
               <Grid item>
-                <Tooltip title={searchPageStrings.shareSearchHelperText}>
-                  <IconButton onClick={onCopySearchLink}>
-                    <Share />
-                  </IconButton>
-                </Tooltip>
+                <TooltipIconButton
+                  title={searchPageStrings.shareSearchHelperText}
+                  onClick={onCopySearchLink}
+                >
+                  <Share />
+                </TooltipIconButton>
               </Grid>
             )}
           </Grid>

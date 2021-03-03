@@ -22,8 +22,10 @@ import * as React from "react";
 
 /**
  * A combined type including TooltipProps and IconButtonProps.
+ * 'onClick' of TooltipProps is omitted as what's really clicked is the icon button.
  */
-export type TooltipIconButtonProps = TooltipProps & IconButtonProps;
+export type TooltipIconButtonProps = Omit<TooltipProps, "onClick"> &
+  IconButtonProps;
 
 /**
  * Provide an IconButton wrapped by a Tooltip.
@@ -33,9 +35,16 @@ export const TooltipIconButton = ({
   onClick,
   children,
   size,
+  color,
+  "aria-label": ariaLabel,
 }: TooltipIconButtonProps) => (
   <Tooltip title={title}>
-    <IconButton onClick={onClick} aria-label={title} size={size}>
+    <IconButton
+      onClick={onClick}
+      aria-label={ariaLabel ?? title}
+      size={size}
+      color={color}
+    >
       {children}
     </IconButton>
   </Tooltip>
