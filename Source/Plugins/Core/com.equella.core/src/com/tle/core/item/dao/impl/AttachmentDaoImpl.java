@@ -33,6 +33,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.inject.Singleton;
+import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 
 @SuppressWarnings("nls")
 @Bind(AttachmentDao.class)
@@ -126,29 +130,39 @@ public class AttachmentDaoImpl extends GenericDaoImpl<Attachment, Long> implemen
     return attachments;
   }
 
-  @Override
-  public List<Attachment> findAllByUuid(String uuid) {
-    String[] names = new String[] {"institution", "uuid"};
-    Object[] values = new Object[] {CurrentInstitution.get(), uuid};
-    List<String> nameList = new ArrayList<String>(Arrays.asList(names));
-    List<Object> valueList = new ArrayList<Object>(Arrays.asList(values));
-
-    StringBuilder query = new StringBuilder();
-    query.append(
-        "SELECT a FROM Item i LEFT JOIN i.attachments a WHERE i.institution = :institution");
-    query.append(" AND a.uuid = :uuid");
-    List<Attachment> attachments =
-        (List<Attachment>)
-            getHibernateTemplate()
-                .findByNamedParam(
-                    query.toString(),
-                    nameList.toArray(new String[nameList.size()]),
-                    valueList.toArray());
-
-    return attachments;
+  // Criteria for checking an attachments against institution of the item and uuid of the
+  // attachment.
+  private Criteria createUuidCriterion(Session session, String uuid) {
+    return session
+        .createCriteria(Attachment.class)
+        .createAlias("item", "i")
+        .add(Restrictions.eq("i.institution", CurrentInstitution.get()))
+        .add(Restrictions.eq("uuid", uuid));
   }
 
+  @Override
+  public List<Attachment> findAllByUuid(String uuid) {
+    return (List<Attachment>)
+        getHibernateTemplate()
+            .execute(
+                new TLEHibernateCallback() {
+                  @Override
+                  public Object doInHibernate(Session session) throws HibernateException {
+                    return (List<Attachment>) createUuidCriterion(session, uuid).list();
+                  }
+                });
+  }
+
+  @Override
   public Attachment findByUuid(String uuid) {
-    return findAllByUuid(uuid).get(0);
+    return (Attachment)
+        getHibernateTemplate()
+            .execute(
+                new TLEHibernateCallback() {
+                  @Override
+                  public Object doInHibernate(Session session) throws HibernateException {
+                    return createUuidCriterion(session, uuid).uniqueResult();
+                  }
+                });
   }
 }
