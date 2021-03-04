@@ -42,7 +42,7 @@ export interface MimeTypeFilterSelectorProps {
 const { helperText } = languageStrings.searchpage.mimeTypeFilterSelector;
 /**
  * This component displays a list of configured MIME type filters which can be selected to
- * filter search results by Mime Types. It supports filtering options by typing keywords.
+ * filter search results by MIME Types. It supports filtering options by typing keywords.
  */
 export const MimeTypeFilterSelector = ({
   value,
