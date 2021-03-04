@@ -263,6 +263,9 @@ describe("SearchModule", () => {
       CollectionsModule,
       "collectionListSummary"
     );
+    jest
+      .spyOn(SearchFilterSettingsModule, "getMimeTypeFiltersFromServer")
+      .mockResolvedValue(getMimeTypeFilters);
 
     it("should return default search for any parameters that aren't supported", async () => {
       const unsupportedQueryString = "?test=nothing&cool=beans";

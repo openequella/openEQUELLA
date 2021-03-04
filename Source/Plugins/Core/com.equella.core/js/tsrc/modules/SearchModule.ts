@@ -131,7 +131,8 @@ const LegacySearchParams = Union(
   Literal("q"),
   Literal("sort"),
   Literal("owner"),
-  Literal("in")
+  Literal("in"),
+  Literal("mt")
 );
 
 type LegacyParams = Static<typeof LegacySearchParams>;
@@ -208,6 +209,7 @@ export const defaultSearchOptions: SearchOptions = {
   lastModifiedDateRange: { start: undefined, end: undefined },
   owner: undefined,
   mimeTypes: [],
+  mimeTypeFilters: [],
 };
 
 export const defaultPagedSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> = {
@@ -519,6 +521,8 @@ export const legacyQueryStringToSearchOptions = async (
   };
 
   const sortOrderParam = getQueryParam("sort")?.toUpperCase();
+  const mimeTypeFilters = await findMIMETypeFiltersById(params.getAll("mt"));
+  const mimeTypes = mimeTypeFilters?.flatMap(({ mimeTypes }) => mimeTypes);
   const searchOptions: SearchOptions = {
     ...defaultSearchOptions,
     collections: await parseCollectionUuid(collectionId),
@@ -533,6 +537,8 @@ export const legacyQueryStringToSearchOptions = async (
     sortOrder: OEQ.SearchSettings.SortOrderRunTypes.guard(sortOrderParam)
       ? sortOrderParam
       : defaultSearchOptions.sortOrder,
+    mimeTypes,
+    mimeTypeFilters,
   };
   return searchOptions;
 };
