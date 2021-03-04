@@ -37,6 +37,10 @@ import { API_BASE_URL } from "../AppConfig";
 import { getISODateString } from "../util/Date";
 import { Collection, collectionListSummary } from "./CollectionsModule";
 import { SelectedCategories } from "./SearchFacetsModule";
+import {
+  getMimeTypeFiltersFromServer,
+  MimeTypeFilter,
+} from "./SearchFilterSettingsModule";
 import { resolveUsers } from "./UserModule";
 
 /**
@@ -92,6 +96,10 @@ export interface SearchOptions {
    * A list of potential MIME types to filter items by.
    */
   mimeTypes?: string[];
+  /**
+   * A list of selected MIME type filters.
+   */
+  mimeTypeFilters?: MimeTypeFilter[];
 }
 
 /**
@@ -164,7 +172,7 @@ const DehydratedSearchOptionsRunTypes = Partial({
     })
   ),
   searchAttachments: Boolean,
-  mimeTypes: RuntypeArray(String),
+  mimeTypeFilters: RuntypeArray(Record({ id: String })),
 });
 
 type DehydratedSearchOptions = Static<typeof DehydratedSearchOptionsRunTypes>;
@@ -304,6 +312,12 @@ export const generateQueryStringFromSearchOptions = (
             () => value?.map((collection) => pick(collection, ["uuid"])),
           ],
           [Literal("owner"), () => (value ? pick(value, ["id"]) : undefined)],
+          [
+            Literal("mimeTypeFilters"),
+            () => value?.map((filter) => pick(filter, ["id"])),
+          ],
+          // As we can get MIME types from filters, we can skip key "mimeTypes".
+          [Literal("mimeTypes"), () => undefined],
           [Unknown, () => value ?? undefined]
         )(key);
       }
@@ -317,6 +331,13 @@ const rehydrateCollections = async (
 ): Promise<Collection[] | undefined> =>
   options.collections
     ? await findCollectionsByUuid(options.collections.map((c) => c.uuid))
+    : undefined;
+
+const rehydrateMIMETypeFilter = async (
+  options: DehydratedSearchOptions
+): Promise<MimeTypeFilter[] | undefined> =>
+  options.mimeTypeFilters
+    ? await findMIMETypeFiltersById(options.mimeTypeFilters.map((f) => f.id))
     : undefined;
 
 const rehydrateOwner = async (
@@ -348,11 +369,17 @@ export const newSearchQueryToSearchOptions = async (
     console.warn("Invalid search query params received. Using defaults.");
     return defaultSearchOptions;
   }
+
+  const mimeTypeFilters = await rehydrateMIMETypeFilter(parsedOptions);
+  const mimeTypes = mimeTypeFilters?.flatMap((f) => f.mimeTypes);
+
   const result: SearchOptions = {
     ...defaultSearchOptions,
     ...parsedOptions,
     collections: await rehydrateCollections(parsedOptions),
     owner: await rehydrateOwner(parsedOptions),
+    mimeTypeFilters,
+    mimeTypes,
   };
   return result;
 };
@@ -407,6 +434,13 @@ const findCollectionsByUuid = async (
     collectionUuids.includes(c.uuid)
   );
   return filteredCollectionList.length > 0 ? filteredCollectionList : undefined;
+};
+
+const findMIMETypeFiltersById = async (
+  filterIds: string[]
+): Promise<MimeTypeFilter[] | undefined> => {
+  const allFilters = await getMimeTypeFiltersFromServer();
+  return allFilters.filter(({ id }) => id && filterIds.includes(id));
 };
 
 const findUser = async (

@@ -99,10 +99,6 @@ export interface SearchPageOptions extends SearchOptions {
    * Whether to enable Quick mode (true) or to use custom date pickers (false).
    */
   dateRangeQuickModeEnabled: boolean;
-  /**
-   * A list of selected MIME type filters.
-   */
-  mimeTypeFilters?: MimeTypeFilter[];
 }
 
 /**
