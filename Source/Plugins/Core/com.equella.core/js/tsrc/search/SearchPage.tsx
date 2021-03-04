@@ -54,7 +54,6 @@ import {
   DateRange,
   defaultPagedSearchResult,
   defaultSearchOptions,
-  defaultSearchPageOptions,
   generateQueryStringFromSearchOptions,
   getPartialSearchOptions,
   queryStringParamsToSearchOptions,
@@ -182,6 +181,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const location = useLocation();
 
   const [state, dispatch] = useReducer(reducer, { status: "initialising" });
+  const defaultSearchPageOptions: SearchPageOptions = {
+    ...defaultSearchOptions,
+    dateRangeQuickModeEnabled: true,
+    mimeTypeFilters: [],
+  };
 
   const defaultSearchPageHistory: SearchPageHistoryState = {
     searchPageOptions: defaultSearchPageOptions,

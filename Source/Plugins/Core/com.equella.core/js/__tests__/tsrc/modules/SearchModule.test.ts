@@ -17,23 +17,21 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
-import { getMimeTypeFilters } from "../../../__mocks__/MimeTypeFilter.mock";
 import {
   allSearchOptions,
-  basicSearchPageOptions,
+  basicSearchOptions,
 } from "../../../__mocks__/searchOptions.mock";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import { users } from "../../../__mocks__/UserSearch.mock";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
-import * as SearchFilterSettingsModule from "../../../tsrc/modules/SearchFilterSettingsModule";
 import {
   DateRange,
   defaultSearchOptions,
   generateQueryStringFromSearchOptions,
   legacyQueryStringToSearchOptions,
-  newSearchQueryToSearchPageOptions,
+  newSearchQueryToSearchOptions,
   queryStringParamsToSearchOptions,
   SearchOptions,
 } from "../../../tsrc/modules/SearchModule";
@@ -137,33 +135,26 @@ describe("SearchModule", () => {
     expect(SearchModule.generateCategoryWhereQuery([])).toBeUndefined();
   });
 
-  describe("newSearchQueryToSearchPageOptions", () => {
+  describe("newSearchQueryToSearchOptions", () => {
     const mockedResolvedUser = jest.spyOn(UserModule, "resolveUsers");
     const mockedCollectionListSummary = jest.spyOn(
       CollectionsModule,
       "collectionListSummary"
     );
-    const mockGetMimeTypeFiltersFromServer = jest.spyOn(
-      SearchFilterSettingsModule,
-      "getMimeTypeFiltersFromServer"
-    );
 
     beforeEach(() => {
       mockedResolvedUser.mockResolvedValue([users[0]]);
       mockedCollectionListSummary.mockResolvedValueOnce(getCollectionMap);
-      mockGetMimeTypeFiltersFromServer.mockResolvedValueOnce(
-        getMimeTypeFilters
-      );
     });
 
     afterEach(() => {
       jest.clearAllMocks();
     });
 
-    it("should convert query string to searchPageOptions", async () => {
+    it("should convert query string to searchOptions", async () => {
       const longSearch =
-        '{"rowsPerPage":10,"currentPage":0,"sortOrder":"NAME","query":"test machine","rawMode":true,"status":["LIVE","REVIEW"],"searchAttachments":true,"selectedCategories":[{"id":766943,"categories":["Hobart"]},{"id":766944,"categories":["Some cool things"]}],"collections":[{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545fff"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffe"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffg"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffa"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffb"}],"lastModifiedDateRange":{"start":"2020-05-26T03:24:00.889Z","end":"2020-05-27T03:24:00.889Z"},"owner":{"id":"680f5eb7-22e2-4ab6-bcea-25205165e36e"}, "mimeTypeFilters": [{"id":"fe79c485-a6dd-4743-81e8-52de66494632"},{"id":"fe79c485-a6dd-4743-81e8-52de66494631"}]}';
-      const convertedParamsPromise = await newSearchQueryToSearchPageOptions(
+        '{"rowsPerPage":10,"currentPage":0,"sortOrder":"NAME","query":"test machine","rawMode":true,"status":["LIVE","REVIEW"],"searchAttachments":true,"selectedCategories":[{"id":766943,"categories":["Hobart"]},{"id":766944,"categories":["Some cool things"]}],"collections":[{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545fff"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffe"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffg"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffa"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffb"}],"lastModifiedDateRange":{"start":"2020-05-26T03:24:00.889Z","end":"2020-05-27T03:24:00.889Z"},"owner":{"id":"680f5eb7-22e2-4ab6-bcea-25205165e36e"}, "mimeTypes": ["Image/png"]}';
+      const convertedParamsPromise = await newSearchQueryToSearchOptions(
         longSearch
       );
       expect(convertedParamsPromise).toEqual(allSearchOptions);
@@ -172,7 +163,7 @@ describe("SearchModule", () => {
     const emptyEndDateQueryString =
       '{"lastModifiedDateRange":{"start":"2020-05-26T03:24:00.889Z"}}';
     const expectedEmptyEndDateSearchOptions: SearchOptions = {
-      ...basicSearchPageOptions,
+      ...basicSearchOptions,
       lastModifiedDateRange: {
         start: new Date("2020-05-26T13:24:00.889+10:00"),
         end: undefined,
@@ -182,7 +173,7 @@ describe("SearchModule", () => {
     const emptyStartDateQueryString =
       '{"lastModifiedDateRange":{"end":"2020-05-27T03:24:00.889Z"}}';
     const expectedEmptyStartDateSearchOptions: SearchOptions = {
-      ...basicSearchPageOptions,
+      ...basicSearchOptions,
       lastModifiedDateRange: {
         start: undefined,
         end: new Date("2020-05-27T13:24:00.889+10:00"),
@@ -192,7 +183,7 @@ describe("SearchModule", () => {
     const fullDateQueryString =
       '{"lastModifiedDateRange":{"start":"2020-05-26T03:24:00.889Z","end":"2020-05-27T03:24:00.889Z"}}';
     const expectedFullDateSearchOptions: SearchOptions = {
-      ...basicSearchPageOptions,
+      ...basicSearchOptions,
       lastModifiedDateRange: {
         start: new Date("2020-05-26T13:24:00.889+10:00"),
         end: new Date("2020-05-27T13:24:00.889+10:00"),
@@ -222,7 +213,7 @@ describe("SearchModule", () => {
         queryString: string,
         expectedSearchOptions: SearchOptions
       ) => {
-        expect(await newSearchQueryToSearchPageOptions(queryString)).toEqual(
+        expect(await newSearchQueryToSearchOptions(queryString)).toEqual(
           expectedSearchOptions
         );
       }
@@ -233,7 +224,7 @@ describe("SearchModule", () => {
         allSearchOptions
       );
       expect(
-        await newSearchQueryToSearchPageOptions(
+        await newSearchQueryToSearchOptions(
           new URLSearchParams(queryStringFromSearchOptions).get(
             "searchOptions"
           ) ?? ""
@@ -367,7 +358,7 @@ describe("SearchModule", () => {
   describe("generateQueryStringFromSearchOptions", () => {
     it("converts all searchOptions to a url encoded json string", () => {
       expect(generateQueryStringFromSearchOptions(allSearchOptions)).toEqual(
-        "searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22NAME%22%2C%22rawMode%22%3Atrue%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22test+machine%22%2C%22collections%22%3A%5B%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545fff%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffe%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffg%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffa%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffb%22%7D%5D%2C%22selectedCategories%22%3A%5B%7B%22id%22%3A766943%2C%22categories%22%3A%5B%22Hobart%22%5D%7D%2C%7B%22id%22%3A766944%2C%22categories%22%3A%5B%22Some+cool+things%22%5D%7D%5D%2C%22lastModifiedDateRange%22%3A%7B%22start%22%3A%222020-05-26T03%3A24%3A00.889Z%22%2C%22end%22%3A%222020-05-27T03%3A24%3A00.889Z%22%7D%2C%22owner%22%3A%7B%22id%22%3A%22680f5eb7-22e2-4ab6-bcea-25205165e36e%22%7D%2C%22dateRangeQuickModeEnabled%22%3Atrue%2C%22mimeTypeFilters%22%3A%5B%7B%22id%22%3A%22fe79c485-a6dd-4743-81e8-52de66494632%22%7D%2C%7B%22id%22%3A%22fe79c485-a6dd-4743-81e8-52de66494631%22%7D%5D%7D"
+        "searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22NAME%22%2C%22rawMode%22%3Atrue%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22test+machine%22%2C%22collections%22%3A%5B%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545fff%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffe%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffg%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffa%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffb%22%7D%5D%2C%22selectedCategories%22%3A%5B%7B%22id%22%3A766943%2C%22categories%22%3A%5B%22Hobart%22%5D%7D%2C%7B%22id%22%3A766944%2C%22categories%22%3A%5B%22Some+cool+things%22%5D%7D%5D%2C%22lastModifiedDateRange%22%3A%7B%22start%22%3A%222020-05-26T03%3A24%3A00.889Z%22%2C%22end%22%3A%222020-05-27T03%3A24%3A00.889Z%22%7D%2C%22owner%22%3A%7B%22id%22%3A%22680f5eb7-22e2-4ab6-bcea-25205165e36e%22%7D%2C%22mimeTypes%22%3A%5B%22Image%2Fpng%22%5D%7D"
       );
     });
 

@@ -34,14 +34,9 @@ import {
   Unknown,
 } from "runtypes";
 import { API_BASE_URL } from "../AppConfig";
-import { SearchPageOptions } from "../search/SearchPage";
 import { getISODateString } from "../util/Date";
 import { Collection, collectionListSummary } from "./CollectionsModule";
 import { SelectedCategories } from "./SearchFacetsModule";
-import {
-  getMimeTypeFiltersFromServer,
-  MimeTypeFilter,
-} from "./SearchFilterSettingsModule";
 import { resolveUsers } from "./UserModule";
 
 /**
@@ -169,7 +164,7 @@ const DehydratedSearchOptionsRunTypes = Partial({
     })
   ),
   searchAttachments: Boolean,
-  mimeTypeFilters: RuntypeArray(Record({ id: String })),
+  mimeTypes: RuntypeArray(String),
 });
 
 type DehydratedSearchOptions = Static<typeof DehydratedSearchOptionsRunTypes>;
@@ -205,12 +200,6 @@ export const defaultSearchOptions: SearchOptions = {
   lastModifiedDateRange: { start: undefined, end: undefined },
   owner: undefined,
   mimeTypes: [],
-};
-
-export const defaultSearchPageOptions: SearchPageOptions = {
-  ...defaultSearchOptions,
-  dateRangeQuickModeEnabled: true,
-  mimeTypeFilters: [],
 };
 
 export const defaultPagedSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> = {
@@ -278,16 +267,15 @@ export const queryStringParamsToSearchOptions = async (
   const params = new URLSearchParams(location.search);
   const searchOptions = params.get("searchOptions");
 
-  // If the query params contain `searchOptions` convert to `SearchOptions` with `newSearchQueryToSearchPageOptions`.
+  // If the query params contain `searchOptions` convert to `SearchOptions` with `newSearchQueryToSearchOptions`.
   // Else if the query params contain params from legacy `searching.do` (i.e. `LegacySearchParams`) then convert to
   // `searchOptions` with `legacyQueryStringToSearchOptions`.
   // For all else, return `undefined`.
   if (searchOptions) {
-    return await newSearchQueryToSearchPageOptions(searchOptions);
+    return await newSearchQueryToSearchOptions(searchOptions);
   } else if (
     Array.from(params.keys()).some((key) => LegacySearchParams.guard(key))
   ) {
-    //todo: Support converting legacy query string to SearchPageOptions. Once this done, change the return type of this functio
     return await legacyQueryStringToSearchOptions(params);
   }
   return undefined;
@@ -316,12 +304,6 @@ export const generateQueryStringFromSearchOptions = (
             () => value?.map((collection) => pick(collection, ["uuid"])),
           ],
           [Literal("owner"), () => (value ? pick(value, ["id"]) : undefined)],
-          [
-            Literal("mimeTypeFilters"),
-            () => value?.map((filter) => pick(filter, ["id"])),
-          ],
-          // As we can get MIME types from filters, we can skip key "mimeTypes".
-          [Literal("mimeTypes"), () => undefined],
           [Unknown, () => value ?? undefined]
         )(key);
       }
@@ -342,18 +324,6 @@ const rehydrateOwner = async (
 ): Promise<OEQ.UserQuery.UserDetails | undefined> =>
   options.owner ? await findUser(options.owner.id) : undefined;
 
-const rehydrateMIMETypeFilter = async (
-  options: DehydratedSearchOptions
-): Promise<MimeTypeFilter[] | undefined> => {
-  const selectedFilters = options.mimeTypeFilters;
-  if (!selectedFilters) {
-    return undefined;
-  }
-  const filterIDs = selectedFilters.map((f) => f.id);
-  const mimeTypeFilters = await getMimeTypeFiltersFromServer();
-  return mimeTypeFilters.filter(({ id }) => id && filterIDs.includes(id));
-};
-
 /**
  * A function that takes a JSON representation of a SearchOptions object, and converts it into an actual SearchOptions object.
  * Note: currently, due to lack of support from runtypes extraneous properties will end up in the resultant object (which then could be stored in state).
@@ -361,9 +331,9 @@ const rehydrateMIMETypeFilter = async (
  * @param searchOptionsJSON a JSON representation of a SearchOptions object.
  * @return searchOptions A deserialized representation of that provided by `searchOptionsJSON`
  */
-export const newSearchQueryToSearchPageOptions = async (
+export const newSearchQueryToSearchOptions = async (
   searchOptionsJSON: string
-): Promise<SearchPageOptions> => {
+): Promise<SearchOptions> => {
   const parsedOptions: unknown = JSON.parse(searchOptionsJSON, (key, value) => {
     if (key === "lastModifiedDateRange") {
       let { start, end } = value;
@@ -376,16 +346,13 @@ export const newSearchQueryToSearchPageOptions = async (
 
   if (!DehydratedSearchOptionsRunTypes.guard(parsedOptions)) {
     console.warn("Invalid search query params received. Using defaults.");
-    return defaultSearchPageOptions;
+    return defaultSearchOptions;
   }
-  const selectedMIMETypeFilters = await rehydrateMIMETypeFilter(parsedOptions);
-  const result: SearchPageOptions = {
-    ...defaultSearchPageOptions,
+  const result: SearchOptions = {
+    ...defaultSearchOptions,
     ...parsedOptions,
     collections: await rehydrateCollections(parsedOptions),
     owner: await rehydrateOwner(parsedOptions),
-    mimeTypeFilters: selectedMIMETypeFilters,
-    mimeTypes: selectedMIMETypeFilters?.flatMap((f) => f.mimeTypes),
   };
   return result;
 };
