@@ -180,7 +180,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const defaultSearchPageOptions: SearchPageOptions = {
     ...defaultSearchOptions,
     dateRangeQuickModeEnabled: true,
-    mimeTypeFilters: [],
   };
 
   const defaultSearchPageHistory: SearchPageHistoryState = {

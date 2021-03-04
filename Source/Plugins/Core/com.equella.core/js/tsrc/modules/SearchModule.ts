@@ -404,6 +404,7 @@ export const searchItems = ({
   searchAttachments,
   selectedCategories,
   mimeTypes,
+  mimeTypeFilters,
 }: SearchOptions): Promise<
   OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>
 > => {
@@ -420,7 +421,11 @@ export const searchItems = ({
     owner: owner?.id,
     searchAttachments: searchAttachments,
     whereClause: generateCategoryWhereQuery(selectedCategories),
-    mimeTypes: mimeTypes,
+    // If filters are selected use them to generate MIME types. Use SearchOptions' mimeTypes otherwise.
+    mimeTypes:
+      mimeTypeFilters && mimeTypeFilters.length > 0
+        ? mimeTypeFilters.flatMap((f) => f.mimeTypes)
+        : mimeTypes,
   };
 
   return OEQ.Search.search(API_BASE_URL, searchParams);
