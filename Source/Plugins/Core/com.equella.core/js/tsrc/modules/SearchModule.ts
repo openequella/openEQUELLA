@@ -351,7 +351,7 @@ const rehydrateMIMETypeFilter = async (
   }
   const filterIDs = selectedFilters.map((f) => f.id);
   const mimeTypeFilters = await getMimeTypeFiltersFromServer();
-  return mimeTypeFilters.filter((f) => f.id && filterIDs.includes(f.id));
+  return mimeTypeFilters.filter(({ id }) => id && filterIDs.includes(id));
 };
 
 /**
