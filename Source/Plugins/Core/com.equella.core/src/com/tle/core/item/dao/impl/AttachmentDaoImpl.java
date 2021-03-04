@@ -34,8 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 import javax.inject.Singleton;
 import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
+import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 
 @SuppressWarnings("nls")
@@ -131,10 +130,9 @@ public class AttachmentDaoImpl extends GenericDaoImpl<Attachment, Long> implemen
   }
 
   // Criteria for checking an attachments against institution of the item and uuid of the
-  // attachment.
-  private Criteria createUuidCriterion(Session session, String uuid) {
-    return session
-        .createCriteria(Attachment.class)
+  // attachment. Detached so that we don't need to create a Hibernate session until one is required.
+  private DetachedCriteria criteriaByUuid(String uuid) {
+    return DetachedCriteria.forClass(Attachment.class)
         .createAlias("item", "i")
         .add(Restrictions.eq("i.institution", CurrentInstitution.get()))
         .add(Restrictions.eq("uuid", uuid));
@@ -142,27 +140,11 @@ public class AttachmentDaoImpl extends GenericDaoImpl<Attachment, Long> implemen
 
   @Override
   public List<Attachment> findAllByUuid(String uuid) {
-    return (List<Attachment>)
-        getHibernateTemplate()
-            .execute(
-                new TLEHibernateCallback() {
-                  @Override
-                  public Object doInHibernate(Session session) throws HibernateException {
-                    return (List<Attachment>) createUuidCriterion(session, uuid).list();
-                  }
-                });
+    return (List<Attachment>) findByDetachedCriteria(Criteria::list, criteriaByUuid(uuid));
   }
 
   @Override
   public Attachment findByUuid(String uuid) {
-    return (Attachment)
-        getHibernateTemplate()
-            .execute(
-                new TLEHibernateCallback() {
-                  @Override
-                  public Object doInHibernate(Session session) throws HibernateException {
-                    return createUuidCriterion(session, uuid).uniqueResult();
-                  }
-                });
+    return (Attachment) findByDetachedCriteria(Criteria::uniqueResult, criteriaByUuid(uuid));
   }
 }
