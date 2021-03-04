@@ -492,9 +492,8 @@ describe("Hide Refine Search controls", () => {
       disableSelector: OEQ.SearchSettings.Settings
     ) => {
       mockSearchSettings.mockResolvedValueOnce(disableSelector);
-      const newPage = await renderSearchPage();
-      // They should disappear.
-      expect(getSelector(newPage.container)).toBeNull();
+      const page = await renderSearchPage();
+      expect(getSelector(page.container)).toBeNull();
     }
   );
 
