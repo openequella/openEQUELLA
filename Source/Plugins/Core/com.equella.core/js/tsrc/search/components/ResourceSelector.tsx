@@ -15,10 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IconButton } from "@material-ui/core";
-import Tooltip from "@material-ui/core/Tooltip";
 import DoubleArrowIcon from "@material-ui/icons/DoubleArrow";
 import * as React from "react";
+import { TooltipIconButton } from "../../components/TooltipIconButton";
 
 export interface ResourceSelectorProps {
   /**
@@ -44,18 +43,17 @@ export const ResourceSelector = ({
   onClick,
   isStopPropagation = false,
 }: ResourceSelectorProps) => (
-  <Tooltip title={labelText}>
-    <IconButton
-      color="secondary"
-      aria-label={labelText}
-      onClick={(event) => {
-        if (isStopPropagation) {
-          event.stopPropagation();
-        }
-        onClick();
-      }}
-    >
-      <DoubleArrowIcon />
-    </IconButton>
-  </Tooltip>
+  <TooltipIconButton
+    title={labelText}
+    color="secondary"
+    aria-label={labelText}
+    onClick={(event) => {
+      if (isStopPropagation) {
+        event.stopPropagation();
+      }
+      onClick();
+    }}
+  >
+    <DoubleArrowIcon />
+  </TooltipIconButton>
 );

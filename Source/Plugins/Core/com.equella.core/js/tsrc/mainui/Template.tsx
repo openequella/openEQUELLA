@@ -43,6 +43,7 @@ import * as React from "react";
 import { Link } from "react-router-dom";
 import { ErrorResponse } from "../api/errors";
 import MessageInfo from "../components/MessageInfo";
+import { TooltipIconButton } from "../components/TooltipIconButton";
 import { guestUser, PageContent } from "../legacycontent/LegacyContent";
 import { languageStrings } from "../util/langstrings";
 import MainMenu from "./MainMenu";
@@ -485,20 +486,17 @@ export const Template = ({
                 topBarString.notifications
               )}
             </Hidden>
-            <Tooltip
+            <TooltipIconButton
               title={
                 currentUser
                   ? currentUser.username
                   : strings.menu.usernameUnknown
               }
+              onClick={(e) => setMenuAnchorEl(e.currentTarget)}
+              aria-label={strings.menu.title}
             >
-              <IconButton
-                aria-label={strings.menu.title}
-                onClick={(e) => setMenuAnchorEl(e.currentTarget)}
-              >
-                <AccountIcon />
-              </IconButton>
-            </Tooltip>
+              <AccountIcon />
+            </TooltipIconButton>
             <Menu
               anchorEl={menuAnchorEl}
               open={Boolean(menuAnchorEl)}

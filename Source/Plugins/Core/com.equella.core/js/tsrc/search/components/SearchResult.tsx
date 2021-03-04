@@ -52,6 +52,7 @@ import ItemAttachmentLink from "../../components/ItemAttachmentLink";
 import { OeqLink } from "../../components/OeqLink";
 import OEQThumb from "../../components/OEQThumb";
 import { StarRating } from "../../components/StarRating";
+import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { routes } from "../../mainui/routes";
 import {
   addFavouriteItem,
@@ -303,33 +304,18 @@ export default function SearchResult({
       },
     };
 
-    const FavItemHeartIcon = () => {
-      const title = bookmarkId
+    const favouriteItemButtonPops = {
+      title: bookmarkId
         ? favouriteItemStrings.title.remove
-        : favouriteItemStrings.title.add;
-      const icon = bookmarkId ? <FavoriteIcon /> : <FavoriteBorderIcon />;
-      const isAddedToFavourite = bookmarkId !== undefined;
-      const onConfirmProps = bookmarkId
-        ? favDialogConfirmToDelete
-        : favDialogConfirmToAdd;
-
-      return (
-        <Tooltip title={title}>
-          <IconButton
-            onClick={() =>
-              onFavouriteItem({
-                isAddedToFavourite,
-                isLatestVersion,
-                onConfirmProps,
-              })
-            }
-            aria-label={title}
-            size="small"
-          >
-            {icon}
-          </IconButton>
-        </Tooltip>
-      );
+        : favouriteItemStrings.title.add,
+      onClick: () =>
+        onFavouriteItem({
+          isAddedToFavourite: bookmarkId !== undefined,
+          isLatestVersion,
+          onConfirmProps: bookmarkId
+            ? favDialogConfirmToDelete
+            : favDialogConfirmToAdd,
+        }),
     };
 
     return (
@@ -345,7 +331,9 @@ export default function SearchResult({
         </Typography>
 
         {metaDataDivider}
-        <FavItemHeartIcon />
+        <TooltipIconButton {...favouriteItemButtonPops} size="small">
+          {bookmarkId ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+        </TooltipIconButton>
 
         {commentCount > 0 && (
           <Hidden smDown>
