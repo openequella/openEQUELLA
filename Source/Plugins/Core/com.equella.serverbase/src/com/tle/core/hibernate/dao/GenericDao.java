@@ -67,7 +67,7 @@ public interface GenericDao<T, ID extends Serializable> {
   List<T> findAllByCriteria(Criterion... criterion);
 
   Object findByDetachedCriteria(
-      final Function<Criteria, Object> process, DetachedCriteria criteria);
+      DetachedCriteria criteria, final Function<Criteria, Object> process);
   /**
    * @param order can be null if no order is required
    * @param maxResults can be -1 to retrieve all results.

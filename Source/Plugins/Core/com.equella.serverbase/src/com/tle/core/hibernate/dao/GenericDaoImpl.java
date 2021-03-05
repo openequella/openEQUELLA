@@ -232,12 +232,12 @@ public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernat
   /**
    * Allows for passing a DetachedCriteria to run Hibernate query.
    *
+   * @param criteria Detached query that is attached to a new session.
    * @param process Function from Criteria class used to determine what to do with the output of the
    *     query. This also specifies the return type.
-   * @param criteria Detached query that is attached to a new session.
    */
   public Object findByDetachedCriteria(
-      final Function<Criteria, Object> process, DetachedCriteria criteria) {
+      DetachedCriteria criteria, final Function<Criteria, Object> process) {
     return getHibernateTemplate()
         .execute(
             new TLEHibernateCallback() {

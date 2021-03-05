@@ -140,11 +140,11 @@ public class AttachmentDaoImpl extends GenericDaoImpl<Attachment, Long> implemen
 
   @Override
   public List<Attachment> findAllByUuid(String uuid) {
-    return (List<Attachment>) findByDetachedCriteria(Criteria::list, criteriaByUuid(uuid));
+    return (List<Attachment>) findByDetachedCriteria(criteriaByUuid(uuid), Criteria::list);
   }
 
   @Override
   public Attachment findByUuid(String uuid) {
-    return (Attachment) findByDetachedCriteria(Criteria::uniqueResult, criteriaByUuid(uuid));
+    return (Attachment) findByDetachedCriteria(criteriaByUuid(uuid), Criteria::uniqueResult);
   }
 }
