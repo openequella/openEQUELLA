@@ -216,8 +216,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     setFavouriteDialogProps,
   ] = useState<FavouriteItemDialogProps>({
     ...defaultFavouriteItemDialogProps,
-    closeDialog: () =>
-      setFavouriteDialogProps({ ...favouriteDialogProps, open: false }),
+    closeDialog: () => {
+      setFavouriteDialogProps({ ...favouriteDialogProps, open: false });
+    },
   });
 
   // A function passed to SearchResult to help build props of FavouriteItemDialog.
@@ -766,7 +767,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           {renderSidePanel()}
         </Drawer>
       </Hidden>
-      <FavouriteItemDialog {...favouriteDialogProps} />
+      {favouriteDialogProps.open && (
+        <FavouriteItemDialog {...favouriteDialogProps} />
+      )}
     </>
   );
 };
