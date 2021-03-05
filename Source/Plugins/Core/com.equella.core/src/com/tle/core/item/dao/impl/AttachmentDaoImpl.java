@@ -129,7 +129,7 @@ public class AttachmentDaoImpl extends GenericDaoImpl<Attachment, Long> implemen
     return attachments;
   }
 
-  // Criteria for checking an attachments against institution of the item and uuid of the
+  // Criteria for checking attachments against institution of the item and UUID of the
   // attachment. Detached so that we don't need to create a Hibernate session until one is required.
   private DetachedCriteria criteriaByUuid(String uuid) {
     return DetachedCriteria.forClass(Attachment.class)
