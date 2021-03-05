@@ -40,7 +40,7 @@ export const determineViewer = (
 ): ViewerDefinition => {
   const simpleLinkView: ViewerDefinition = ["link", viewUrl];
 
-  if (attachmentType !== "file") {
+  if (attachmentType !== "file" && attachmentType !== "custom/resource") {
     // For non-file attachments, we currently just defer to the link provided by the server
     return simpleLinkView;
   }
