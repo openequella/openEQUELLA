@@ -188,7 +188,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:9.6
+        image: postgres:13.2
         env:
           POSTGRES_USER: equellatests
           POSTGRES_PASSWORD: password
