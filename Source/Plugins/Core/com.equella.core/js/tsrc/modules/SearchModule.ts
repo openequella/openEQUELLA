@@ -37,6 +37,10 @@ import { API_BASE_URL } from "../AppConfig";
 import { getISODateString } from "../util/Date";
 import { Collection, collectionListSummary } from "./CollectionsModule";
 import { SelectedCategories } from "./SearchFacetsModule";
+import {
+  getMimeTypeFiltersFromServer,
+  MimeTypeFilter,
+} from "./SearchFilterSettingsModule";
 import { resolveUsers } from "./UserModule";
 
 /**
@@ -92,6 +96,10 @@ export interface SearchOptions {
    * A list of potential MIME types to filter items by.
    */
   mimeTypes?: string[];
+  /**
+   * A list of selected MIME type filters.
+   */
+  mimeTypeFilters?: MimeTypeFilter[];
 }
 
 /**
@@ -123,7 +131,8 @@ const LegacySearchParams = Union(
   Literal("q"),
   Literal("sort"),
   Literal("owner"),
-  Literal("in")
+  Literal("in"),
+  Literal("mt")
 );
 
 type LegacyParams = Static<typeof LegacySearchParams>;
@@ -164,6 +173,7 @@ const DehydratedSearchOptionsRunTypes = Partial({
     })
   ),
   searchAttachments: Boolean,
+  mimeTypeFilters: RuntypeArray(Record({ id: String })),
 });
 
 type DehydratedSearchOptions = Static<typeof DehydratedSearchOptionsRunTypes>;
@@ -198,6 +208,8 @@ export const defaultSearchOptions: SearchOptions = {
   collections: [],
   lastModifiedDateRange: { start: undefined, end: undefined },
   owner: undefined,
+  mimeTypes: [],
+  mimeTypeFilters: [],
 };
 
 export const defaultPagedSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> = {
@@ -302,6 +314,12 @@ export const generateQueryStringFromSearchOptions = (
             () => value?.map((collection) => pick(collection, ["uuid"])),
           ],
           [Literal("owner"), () => (value ? pick(value, ["id"]) : undefined)],
+          [
+            Literal("mimeTypeFilters"),
+            () => value?.map((filter) => pick(filter, ["id"])),
+          ],
+          // As we can get MIME types from filters, we can skip key "mimeTypes".
+          [Literal("mimeTypes"), () => undefined],
           [Unknown, () => value ?? undefined]
         )(key);
       }
@@ -315,6 +333,13 @@ const rehydrateCollections = async (
 ): Promise<Collection[] | undefined> =>
   options.collections
     ? await findCollectionsByUuid(options.collections.map((c) => c.uuid))
+    : undefined;
+
+const rehydrateMIMETypeFilter = async (
+  options: DehydratedSearchOptions
+): Promise<MimeTypeFilter[] | undefined> =>
+  options.mimeTypeFilters
+    ? await findMIMETypeFiltersById(options.mimeTypeFilters.map((f) => f.id))
     : undefined;
 
 const rehydrateOwner = async (
@@ -346,11 +371,17 @@ export const newSearchQueryToSearchOptions = async (
     console.warn("Invalid search query params received. Using defaults.");
     return defaultSearchOptions;
   }
+
+  const mimeTypeFilters = await rehydrateMIMETypeFilter(parsedOptions);
+  const mimeTypes = mimeTypeFilters?.flatMap((f) => f.mimeTypes);
+
   const result: SearchOptions = {
     ...defaultSearchOptions,
     ...parsedOptions,
     collections: await rehydrateCollections(parsedOptions),
     owner: await rehydrateOwner(parsedOptions),
+    mimeTypeFilters,
+    mimeTypes,
   };
   return result;
 };
@@ -373,6 +404,7 @@ export const searchItems = ({
   searchAttachments,
   selectedCategories,
   mimeTypes,
+  mimeTypeFilters,
 }: SearchOptions): Promise<
   OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>
 > => {
@@ -389,7 +421,11 @@ export const searchItems = ({
     owner: owner?.id,
     searchAttachments: searchAttachments,
     whereClause: generateCategoryWhereQuery(selectedCategories),
-    mimeTypes: mimeTypes,
+    // If filters are selected use them to generate MIME types. Use SearchOptions' mimeTypes otherwise.
+    mimeTypes:
+      mimeTypeFilters && mimeTypeFilters.length > 0
+        ? mimeTypeFilters.flatMap((f) => f.mimeTypes)
+        : mimeTypes,
   };
 
   return OEQ.Search.search(API_BASE_URL, searchParams);
@@ -405,6 +441,13 @@ const findCollectionsByUuid = async (
     collectionUuids.includes(c.uuid)
   );
   return filteredCollectionList.length > 0 ? filteredCollectionList : undefined;
+};
+
+const findMIMETypeFiltersById = async (
+  filterIds: string[]
+): Promise<MimeTypeFilter[] | undefined> => {
+  const allFilters = await getMimeTypeFiltersFromServer();
+  return allFilters.filter(({ id }) => id && filterIds.includes(id));
 };
 
 const findUser = async (
@@ -483,6 +526,8 @@ export const legacyQueryStringToSearchOptions = async (
   };
 
   const sortOrderParam = getQueryParam("sort")?.toUpperCase();
+  const mimeTypeFilters = await findMIMETypeFiltersById(params.getAll("mt"));
+  const mimeTypes = mimeTypeFilters?.flatMap(({ mimeTypes }) => mimeTypes);
   const searchOptions: SearchOptions = {
     ...defaultSearchOptions,
     collections: await parseCollectionUuid(collectionId),
@@ -497,6 +542,8 @@ export const legacyQueryStringToSearchOptions = async (
     sortOrder: OEQ.SearchSettings.SortOrderRunTypes.guard(sortOrderParam)
       ? sortOrderParam
       : defaultSearchOptions.sortOrder,
+    mimeTypes,
+    mimeTypeFilters,
   };
   return searchOptions;
 };

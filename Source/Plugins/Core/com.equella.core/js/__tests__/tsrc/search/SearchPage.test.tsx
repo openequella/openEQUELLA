@@ -37,6 +37,7 @@ import { Router } from "react-router-dom";
 import { getAdvancedSearchesFromServerResult } from "../../../__mocks__/AdvancedSearchModule.mock";
 import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
+import { getMimeTypeFilters } from "../../../__mocks__/MimeTypeFilter.mock";
 import { getRemoteSearchesFromServerResult } from "../../../__mocks__/RemoteSearchModule.mock";
 import {
   getEmptySearchResult,
@@ -53,6 +54,7 @@ import * as MimeTypesModule from "../../../tsrc/modules/MimeTypesModule";
 import * as RemoteSearchModule from "../../../tsrc/modules/RemoteSearchModule";
 import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchFacetsModule from "../../../tsrc/modules/SearchFacetsModule";
+import * as SearchFilterSettingsModule from "../../../tsrc/modules/SearchFilterSettingsModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import {
   liveStatuses,
@@ -98,6 +100,11 @@ const mockConvertParamsToSearchOptions = jest.spyOn(
   SearchModule,
   "queryStringParamsToSearchOptions"
 );
+
+const mockMimeTypeFilters = jest
+  .spyOn(SearchFilterSettingsModule, "getMimeTypeFiltersFromServer")
+  .mockResolvedValue(getMimeTypeFilters);
+
 //i tried mocking this using window.navigator.clipboard.writeText = jest.fn(), but the navigator object is undefined
 Object.assign(navigator, {
   clipboard: {
@@ -144,6 +151,7 @@ const defaultSearchPageOptions: SearchPageOptions = {
   ...SearchModule.defaultSearchOptions,
   sortOrder: "RANK",
   dateRangeQuickModeEnabled: true,
+  mimeTypeFilters: [],
 };
 const defaultCollectionPrivileges = [OEQ.Acl.ACL_SEARCH_COLLECTION];
 
@@ -184,15 +192,6 @@ const renderSearchPage = async (
   await waitForSearch();
 
   return page;
-};
-
-/**
- * Helper function to unmount current Search page and re-render Search page.
- * @param page Current Search page.
- */
-const reRenderSearchPage = async (page: RenderResult) => {
-  page.unmount();
-  return await renderSearchPage();
 };
 
 const getQueryBar = (container: Element): HTMLElement => {
@@ -380,6 +379,27 @@ describe("Refine search by Owner", () => {
   });
 });
 
+describe("Refine search by MIME type filters", () => {
+  it("supports multiple filters", async () => {
+    const filters = getMimeTypeFilters;
+    const page = await renderSearchPage();
+    userEvent.click(
+      page.getByLabelText(
+        languageStrings.searchpage.mimeTypeFilterSelector.helperText
+      )
+    );
+    filters.forEach((filter) => {
+      userEvent.click(screen.getByText(filter.name));
+    });
+    await waitForSearch();
+    expect(SearchModule.searchItems).toHaveBeenLastCalledWith({
+      ...defaultSearchPageOptions,
+      mimeTypes: filters.flatMap((f) => f.mimeTypes),
+      mimeTypeFilters: filters,
+    });
+  });
+});
+
 describe("Collapsible refine filter section", () => {
   let page: RenderResult;
   beforeEach(async () => {
@@ -436,70 +456,55 @@ describe("Collapsible refine filter section", () => {
 });
 
 describe("Hide Refine Search controls", () => {
-  let page: RenderResult;
-  beforeEach(async () => {
-    page = await renderSearchPage();
-  });
-
   afterEach(() => {
     jest.clearAllMocks();
   });
-
-  const _queryOwnerSelector = () => queryOwnerSelector(page.container);
-  const _queryDateSelector = () => queryDateRangeSelector(page.container);
-  const _queryStatusSelector = () => queryStatusSelector(page.container);
-  const disableDateSelector = {
-    ...SearchSettingsModule.defaultSearchSettings,
-    searchingDisableDateModifiedFilter: true,
-  };
-  const disableOwnerSelector = {
-    ...SearchSettingsModule.defaultSearchSettings,
-    searchingDisableOwnerFilter: true,
-  };
-  const enableStatusSelector = {
-    ...SearchSettingsModule.defaultSearchSettings,
-    searchingShowNonLiveCheckbox: true,
-  };
 
   it.each([
     // Reuse default Search settings as disableStatusSelector, enableOwnerSelector and enableDateSelector.
     [
       "Owner Selector",
-      _queryOwnerSelector,
-      disableOwnerSelector,
-      SearchSettingsModule.defaultSearchSettings,
+      (container: HTMLElement) => queryOwnerSelector(container),
+      {
+        ...SearchSettingsModule.defaultSearchSettings,
+        searchingDisableOwnerFilter: true,
+      },
     ],
     [
       "Date Selector",
-      _queryDateSelector,
-      disableDateSelector,
-      SearchSettingsModule.defaultSearchSettings,
+      (container: HTMLElement) => queryDateRangeSelector(container),
+      {
+        ...SearchSettingsModule.defaultSearchSettings,
+        searchingDisableDateModifiedFilter: true,
+      },
     ],
     [
       "Status Selector",
-      _queryStatusSelector,
+      (container: HTMLElement) => queryStatusSelector(container),
       SearchSettingsModule.defaultSearchSettings,
-      enableStatusSelector,
     ],
   ])(
     "should be possible to disable %s",
     async (
       testName: string,
-      getSelector: () => HTMLElement | null,
-      disableSelector: OEQ.SearchSettings.Settings,
-      enableSelector: OEQ.SearchSettings.Settings
+      getSelector: (container: HTMLElement) => HTMLElement | null,
+      disableSelector: OEQ.SearchSettings.Settings
     ) => {
-      // Explicitly enable selectors.
-      searchSettingPromise.mockResolvedValueOnce(enableSelector);
-      page = await reRenderSearchPage(page);
-      expect(getSelector()).toBeInTheDocument();
-      // Now disable them and re-render the page.
-      searchSettingPromise.mockResolvedValueOnce(disableSelector);
-      page = await reRenderSearchPage(page);
-      // They should disappear.
-      expect(getSelector()).toBeNull();
+      mockSearchSettings.mockResolvedValueOnce(disableSelector);
+      const page = await renderSearchPage();
+      expect(getSelector(page.container)).toBeNull();
     }
   );
+
+  it("If not MIME type filters are available, the selector should be hidden", async () => {
+    mockMimeTypeFilters.mockResolvedValueOnce([]);
+    const page = await renderSearchPage();
+    expect(
+      page.queryByLabelText(
+        languageStrings.searchpage.mimeTypeFilterSelector.helperText
+      )
+    ).not.toBeInTheDocument();
+  });
 });
 
 describe("<SearchPage/>", () => {
@@ -741,7 +746,7 @@ describe("<SearchPage/>", () => {
       1
     );
     expect(mockClipboard).toHaveBeenCalledWith(
-      "/?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RANK%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D"
+      "/?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RANK%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D"
     );
     expect(
       screen.getByText(languageStrings.searchpage.shareSearchConfirmationText)

@@ -47,6 +47,10 @@ import {
   SelectedCategories,
 } from "../modules/SearchFacetsModule";
 import {
+  getMimeTypeFiltersFromServer,
+  MimeTypeFilter,
+} from "../modules/SearchFilterSettingsModule";
+import {
   DateRange,
   defaultPagedSearchResult,
   defaultSearchOptions,
@@ -68,6 +72,7 @@ import {
 } from "./components/FavouriteItemDialog";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
 import { CollectionSelector } from "./components/CollectionSelector";
+import { MimeTypeFilterSelector } from "./components/MimeTypeFilterSelector";
 import OwnerSelector from "./components/OwnerSelector";
 import { RefinePanelControl } from "./components/RefineSearchPanel";
 import { SearchAttachmentsSelector } from "./components/SearchAttachmentsSelector";
@@ -197,10 +202,14 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     showSearchCopiedSnackBar,
     setShowSearchCopiedSnackBar,
   ] = useState<boolean>(false);
-  const [
-    searchSettings,
-    setSearchSettings,
-  ] = useState<OEQ.SearchSettings.Settings>();
+  const [searchSettings, setSearchSettings] = useState<{
+    core: OEQ.SearchSettings.Settings | undefined;
+    mimeTypeFilters: MimeTypeFilter[];
+  }>({
+    core: undefined,
+    mimeTypeFilters: [],
+  });
+
   const [showRefinePanel, setShowRefinePanel] = useState<boolean>(false);
   const [
     favouriteDialogProps,
@@ -261,13 +270,17 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
     Promise.all([
       getSearchSettingsFromServer(),
+      getMimeTypeFiltersFromServer(),
       // If the search options are available from browser history, ignore those in the query string.
       (location.state as SearchPageHistoryState)
         ? Promise.resolve(undefined)
         : queryStringParamsToSearchOptions(location),
     ])
-      .then(([searchSettings, queryStringSearchOptions]) => {
-        setSearchSettings(searchSettings);
+      .then(([searchSettings, mimeTypeFilters, queryStringSearchOptions]) => {
+        setSearchSettings({
+          core: searchSettings,
+          mimeTypeFilters: mimeTypeFilters,
+        });
         search(
           queryStringSearchOptions
             ? {
@@ -406,7 +419,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const handleClearSearchOptions = () => {
     search({
       ...defaultSearchPageOptions,
-      sortOrder: searchSettings?.defaultSearchSort,
+      sortOrder: searchSettings.core?.defaultSearchSort,
     });
     setFilterExpansion(false);
   };
@@ -425,6 +438,15 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       })
       .catch(() => handleError);
   };
+
+  const handleMimeTypeFilterChange = (filters: MimeTypeFilter[]) =>
+    search({
+      ...searchPageOptions,
+      mimeTypeFilters: filters,
+      mimeTypes: filters.flatMap((f) => f.mimeTypes),
+      currentPage: 0,
+      selectedCategories: undefined,
+    });
 
   const handleOwnerChange = (owner: OEQ.UserQuery.UserDetails) =>
     search({
@@ -485,6 +507,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       "owner",
       "status",
       "searchAttachments",
+      "mimeTypes",
     ];
     return !isEqual(
       getPartialSearchOptions(defaultSearchOptions, fields),
@@ -502,6 +525,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       "status",
       "searchAttachments",
       "collections",
+      "mimeTypes",
     ];
 
     const isQueryOrFiltersSet = !isEqual(
@@ -571,7 +595,19 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         />
       ),
       // Before Search settings are retrieved, do not show.
-      disabled: searchSettings?.searchingDisableDateModifiedFilter ?? true,
+      disabled: searchSettings.core?.searchingDisableDateModifiedFilter ?? true,
+    },
+    {
+      idSuffix: "MIMETypeSelector",
+      title: searchStrings.mimeTypeFilterSelector.title,
+      component: (
+        <MimeTypeFilterSelector
+          value={searchPageOptions.mimeTypeFilters}
+          onChange={handleMimeTypeFilterChange}
+          filters={searchSettings.mimeTypeFilters}
+        />
+      ),
+      disabled: searchSettings.mimeTypeFilters.length === 0,
     },
     {
       idSuffix: "OwnerSelector",
@@ -583,7 +619,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           value={searchPageOptions.owner}
         />
       ),
-      disabled: searchSettings?.searchingDisableOwnerFilter ?? true,
+      disabled: searchSettings.core?.searchingDisableOwnerFilter ?? true,
     },
     {
       idSuffix: "StatusSelector",
@@ -594,7 +630,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           value={searchPageOptions.status}
         />
       ),
-      disabled: !searchSettings?.searchingShowNonLiveCheckbox ?? true,
+      disabled: !searchSettings.core?.searchingShowNonLiveCheckbox ?? true,
     },
     {
       idSuffix: "SearchAttachmentsSelector",
