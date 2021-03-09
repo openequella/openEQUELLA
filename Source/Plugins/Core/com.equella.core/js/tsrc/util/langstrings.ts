@@ -398,6 +398,7 @@ export const languageStrings = {
       itemsPerPage: "Items per page",
     },
     refineSearchPanel: {
+      close: "Close Refine Search Panel",
       title: "Refine search",
     },
     advancedSearchSelector: {

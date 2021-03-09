@@ -508,7 +508,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       "owner",
       "status",
       "searchAttachments",
-      "mimeTypes",
+      "mimeTypeFilters",
     ];
     return !isEqual(
       getPartialSearchOptions(defaultSearchOptions, fields),
@@ -526,7 +526,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       "status",
       "searchAttachments",
       "collections",
-      "mimeTypes",
+      "mimeTypeFilters",
     ];
 
     const isQueryOrFiltersSet = !isEqual(
@@ -667,6 +667,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           onChangeExpansion: handleCollapsibleFilterClick,
           panelExpanded: filterExpansion,
           showFilterIcon: areCollapsibleFiltersSet(),
+          onClose: () => setShowRefinePanel(false),
         }}
         classificationsPanelProps={{
           classifications: getClassifications(),
