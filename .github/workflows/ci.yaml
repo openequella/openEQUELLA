@@ -184,11 +184,15 @@ jobs:
     strategy:
       matrix:
         newui: [true, false]
+        pgsql-image: [latest, 9.6]
+        exclude:
+          - newui: false
+            pgsql-image: latest
       fail-fast: false
 
     services:
       postgres:
-        image: postgres:13.2
+        image: postgres:${{ matrix.pgsql-image }}
         env:
           POSTGRES_USER: equellatests
           POSTGRES_PASSWORD: password
