@@ -485,7 +485,6 @@ export const legacyQueryStringToSearchOptions = async (
   const dateRange = getQueryParam("dr");
   const datePrimary = getQueryParam("dp");
   const dateSecondary = getQueryParam("ds");
-  const integrationMIMETypes = params.getAll("_int.mimeTypes");
 
   const RangeTypeLiterals = Union(
     Literal("between"),
@@ -538,6 +537,11 @@ export const legacyQueryStringToSearchOptions = async (
   const sortOrderParam = getQueryParam("sort")?.toUpperCase();
   const mimeTypeFilters = await findMIMETypeFiltersById(params.getAll("mt"));
   const mimeTypes = mimeTypeFilters?.flatMap(({ mimeTypes }) => mimeTypes);
+  const getExternalMIMETypes = () => {
+    const integrationMIMETypes = params.getAll("_int.mimeTypes");
+    return integrationMIMETypes.length > 0 ? integrationMIMETypes : undefined;
+  };
+
   const searchOptions: SearchOptions = {
     ...defaultSearchOptions,
     collections: await parseCollectionUuid(collectionId),
@@ -554,7 +558,7 @@ export const legacyQueryStringToSearchOptions = async (
       : defaultSearchOptions.sortOrder,
     mimeTypes,
     mimeTypeFilters,
-    externalMimeTypes: integrationMIMETypes,
+    externalMimeTypes: getExternalMIMETypes(),
   };
   return searchOptions;
 };

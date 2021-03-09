@@ -411,9 +411,9 @@ describe("Collapsible refine filter section", () => {
   });
 
   it("Should contain the correct controls", async () => {
-    const refineSearchPanel = page
-      .getByText(languageStrings.searchpage.refineSearchPanel.title)
-      .closest("div");
+    const refineSearchPanel = page.container.querySelector<HTMLDivElement>(
+      "#refine-panel"
+    );
     if (!refineSearchPanel) {
       throw new Error("Unable to find refine search panel");
     }
