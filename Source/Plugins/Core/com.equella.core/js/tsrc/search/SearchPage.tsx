@@ -38,6 +38,7 @@ import {
   buildSelectionSessionAdvancedSearchLink,
   buildSelectionSessionRemoteSearchLink,
   isSelectionSessionInStructured,
+  isSelectionSessionOpen,
   prepareDraggable,
 } from "../modules/LegacySelectionSessionModule";
 import { getRemoteSearchesFromServer } from "../modules/RemoteSearchModule";
@@ -418,10 +419,19 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     });
 
   const handleClearSearchOptions = () => {
-    search({
+    const basicSearchPageOptions = {
       ...defaultSearchPageOptions,
       sortOrder: searchSettings.core?.defaultSearchSort,
-    });
+    };
+    search(
+      isSelectionSessionOpen()
+        ? {
+            ...basicSearchPageOptions,
+            // Keep external MIME types in Selection Session
+            externalMimeTypes: searchPageOptions.externalMimeTypes,
+          }
+        : basicSearchPageOptions
+    );
     setFilterExpansion(false);
   };
 
@@ -608,7 +618,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           filters={searchSettings.mimeTypeFilters}
         />
       ),
-      disabled: searchSettings.mimeTypeFilters.length === 0,
+      disabled:
+        searchSettings.mimeTypeFilters.length === 0 ||
+        !!searchPageOptions.externalMimeTypes,
     },
     {
       idSuffix: "OwnerSelector",
