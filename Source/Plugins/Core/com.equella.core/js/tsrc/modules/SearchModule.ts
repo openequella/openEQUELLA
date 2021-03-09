@@ -132,7 +132,8 @@ const LegacySearchParams = Union(
   Literal("sort"),
   Literal("owner"),
   Literal("in"),
-  Literal("mt")
+  Literal("mt"),
+  Literal("_int.mimeTypes")
 );
 
 type LegacyParams = Static<typeof LegacySearchParams>;
@@ -476,6 +477,7 @@ export const legacyQueryStringToSearchOptions = async (
   const dateRange = getQueryParam("dr");
   const datePrimary = getQueryParam("dp");
   const dateSecondary = getQueryParam("ds");
+  const integrationMIMETypes = params.getAll("_int.mimeTypes");
 
   const RangeTypeLiterals = Union(
     Literal("between"),
@@ -527,7 +529,9 @@ export const legacyQueryStringToSearchOptions = async (
 
   const sortOrderParam = getQueryParam("sort")?.toUpperCase();
   const mimeTypeFilters = await findMIMETypeFiltersById(params.getAll("mt"));
-  const mimeTypes = mimeTypeFilters?.flatMap(({ mimeTypes }) => mimeTypes);
+  const mimeTypes = mimeTypeFilters
+    ?.flatMap(({ mimeTypes }) => mimeTypes)
+    .concat(integrationMIMETypes);
   const searchOptions: SearchOptions = {
     ...defaultSearchOptions,
     collections: await parseCollectionUuid(collectionId),
