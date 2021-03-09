@@ -15,11 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Checkbox, Chip, TextField } from "@material-ui/core";
+import { Checkbox, TextField } from "@material-ui/core";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import { Autocomplete, AutocompleteGetTagProps } from "@material-ui/lab";
 import * as React from "react";
+import { TooltipChip } from "../../components/TooltipChip";
 import { MimeTypeFilter } from "../../modules/SearchFilterSettingsModule";
 import { languageStrings } from "../../util/langstrings";
 
@@ -56,7 +57,12 @@ export const MimeTypeFilterSelector = ({
       getTagProps: AutocompleteGetTagProps
     ) =>
       filters.map((filter, index) => (
-        <Chip key={filter.id} label={filter.name} {...getTagProps({ index })} />
+        <TooltipChip
+          key={filter.id}
+          title={filter.name}
+          maxWidth={150}
+          tagProps={getTagProps({ index })}
+        />
       ))
     }
     onChange={(_, value: MimeTypeFilter[]) => {
