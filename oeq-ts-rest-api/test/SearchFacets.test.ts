@@ -172,4 +172,15 @@ describe('Search for facets', () => {
       results.results.find((f) => f.term === 'jvm' && f.count === 1)
     ).toBeTruthy();
   });
+
+  it('should be possible to limit to a MIME type', async () => {
+    const results = await search({
+      nodes: [nodeKeyword],
+      mimeTypes: ['text/plain'],
+    });
+
+    expectResults(results);
+    expectTermPresent(results, 'Zilog');
+    expectTermPresent(results, '8080');
+  });
 });

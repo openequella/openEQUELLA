@@ -67,6 +67,10 @@ export interface SearchFacetsParams {
    * If `true` then includes items that are not live.
    */
   showall?: boolean;
+  /**
+   * A list of MIME types.
+   */
+  mimeTypes?: string[];
 }
 
 /**
