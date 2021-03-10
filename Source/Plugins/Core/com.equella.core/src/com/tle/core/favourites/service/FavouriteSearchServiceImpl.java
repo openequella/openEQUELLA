@@ -34,6 +34,7 @@ import com.tle.core.favourites.bean.FavouriteSearch;
 import com.tle.core.favourites.dao.FavouriteSearchDao;
 import com.tle.core.guice.Bind;
 import com.tle.web.sections.SectionInfo;
+import com.tle.web.template.RenderNewTemplate;
 import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
@@ -72,6 +73,13 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
     FavouriteSearch search = dao.getById(id);
     if (search != null) {
       String url = search.getUrl();
+      if (url != null && RenderNewTemplate.isNewSearchPageEnabled()) {
+        // Remove the last '/' from 'CurrentInstitution.get().getUrl()' and then construct a full
+        // path.
+        String fullPath = StringUtils.removeEnd(CurrentInstitution.get().getUrl(), "/") + url;
+        info.forwardToUrl(fullPath);
+        return;
+      }
       // When user favourites a normal search, cloud search or hierarchy search,
       // the value of 'url' starts with '/access' if the fav search is added in old oEQ versions,
       // which results in "no tree for xxx" error. Hence, remove "/access" if it exists.
