@@ -28,6 +28,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.util.List;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -147,6 +148,7 @@ public interface EquellaSearchResource extends SearchResource {
           @QueryParam("advancedsearch")
           String advancedSearch,
       @ApiParam(value = "An ID (not a username) of a user", required = false) @QueryParam("owner")
-          String owner);
+          String owner,
+      @ApiParam("A list of MIME types") @QueryParam("mimeTypes") List<String> mimeTypes);
   // @formatter:on
 }
