@@ -40,7 +40,48 @@ export interface FavouriteItem {
   bookmarkID?: number;
 }
 
-const FAVOURITE_PATH = '/favourite';
+/**
+ * Type matching server-side model FavouriteSearch
+ */
+export interface FavouriteSearch {
+  /**
+   * Unique ID of a favourite search
+   */
+  id: number;
+  /**
+   * Name of a favourite search
+   */
+  name: string;
+  /**
+   * Relative path to the new Search UI including query strings
+   * If the search is added from new Search UI, the URL will be `/page/search?searchOptions=xxxxx`.
+   * If it's added from old UI, the URL will be `searching.do?xxx=yyy`.
+   */
+  url: string;
+  /**
+   * Owner of a favourite search
+   */
+  owner: string;
+  /**
+   * Last modified date
+   */
+  dateModified: string;
+  /**
+   * Name of selected Collection
+   */
+  within?: string;
+  /**
+   * Search query
+   */
+  query?: string;
+  /**
+   * Advanced search criteria
+   */
+  criteria?: string;
+}
+
+const FAVOURITE_ITEM_PATH = '/favourite/item';
+const FAVOURITE_SEARCH_PATH = '/favourite/search';
 
 /**
  * Add an Item to user's favourites.
@@ -52,7 +93,7 @@ export const addFavouriteItem = (
   favouriteItem: FavouriteItem
 ): Promise<FavouriteItem> =>
   POST(
-    apiBasePath + FAVOURITE_PATH,
+    apiBasePath + FAVOURITE_ITEM_PATH,
     (data): data is FavouriteItem => is<FavouriteItem>(data),
     favouriteItem
   );
@@ -66,4 +107,24 @@ export const deleteFavouriteItem = (
   apiBasePath: string,
   bookmarkID: number
 ): Promise<void> =>
-  DELETE<void>(`${apiBasePath}${FAVOURITE_PATH}/${bookmarkID}`);
+  DELETE<void>(`${apiBasePath}${FAVOURITE_ITEM_PATH}/${bookmarkID}`);
+
+/**
+ * Add a search to user's favourites.
+ * @param apiBasePath Base URI to the oEQ institution and API
+ * @param favouriteSearchName Name of a favourite search
+ * @param favouriteSearchURL Relative path to the new Search UI including query strings (e.g. `/page/search?searchOptions=xxxxx`)
+ */
+export const addFavouriteSearch = (
+  apiBasePath: string,
+  favouriteSearchName: string,
+  favouriteSearchURL: string
+): Promise<FavouriteSearch> =>
+  POST(
+    apiBasePath + FAVOURITE_SEARCH_PATH,
+    (data): data is FavouriteSearch => is<FavouriteSearch>(data),
+    {
+      name: favouriteSearchName,
+      url: favouriteSearchURL,
+    }
+  );
