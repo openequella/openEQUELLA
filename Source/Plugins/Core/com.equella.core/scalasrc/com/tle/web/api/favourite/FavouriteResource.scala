@@ -19,6 +19,10 @@
 package com.tle.web.api.favourite
 
 import com.tle.beans.item.ItemId
+import com.tle.common.institution.CurrentInstitution
+import com.tle.common.usermanagement.user.CurrentUser
+import com.tle.core.favourites.bean.FavouriteSearch
+import java.util.Date
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.ApiErrorResponse
 import io.swagger.annotations.{Api, ApiOperation, ApiParam}
@@ -48,6 +52,7 @@ class FavouriteResource {
   private val itemService     = LegacyGuice.itemService
 
   @POST
+  @Path("/item")
   @ApiOperation(value = "Add one Item to user's favourites",
                 notes = "This operation is essentially adding a new bookmark.",
                 response = classOf[FavouriteItem])
@@ -71,7 +76,7 @@ class FavouriteResource {
   }
 
   @DELETE
-  @Path("/{id}")
+  @Path("/item/{id}")
   @ApiOperation(
     value = "Delete one Item from user's favourites",
     notes = "This operation is essentially deleting a bookmark.",
@@ -85,5 +90,16 @@ class FavouriteResource {
         ApiErrorResponse
           .resourceNotFound(s"No Bookmark matching ID: ${id}")
     }
+  }
+
+  @POST
+  @Path("/search")
+  @ApiOperation(value = "Add one search to user's favourites", response = classOf[FavouriteSearch])
+  def addFavouriteSearch(favouriteSearch: FavouriteSearch): Response = {
+    favouriteSearch.setInstitution(CurrentInstitution.get())
+    favouriteSearch.setDateModified(new Date())
+    favouriteSearch.setOwner(CurrentUser.getUserID)
+    val newFavouriteSearch = LegacyGuice.favouriteSearchService.save(favouriteSearch)
+    Response.status(Status.CREATED).entity(newFavouriteSearch).build()
   }
 }

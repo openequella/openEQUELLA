@@ -25,7 +25,7 @@ import com.tle.web.sections.SectionInfo;
 import java.util.List;
 
 public interface FavouriteSearchService {
-  void save(FavouriteSearch search);
+  FavouriteSearch save(FavouriteSearch search);
 
   SearchFavouritesSearchResults search(Search search, int offset, int perPage);
 
