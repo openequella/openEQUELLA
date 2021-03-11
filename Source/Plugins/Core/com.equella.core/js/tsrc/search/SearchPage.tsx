@@ -774,6 +774,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           open={showRefinePanel}
           anchor="right"
           onClose={() => setShowRefinePanel(false)}
+          PaperProps={{ style: { width: "50%" } }}
         >
           {renderSidePanel()}
         </Drawer>
