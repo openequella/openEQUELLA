@@ -101,7 +101,7 @@ export interface SearchOptions {
    */
   mimeTypeFilters?: MimeTypeFilter[];
   /**
-   * A list of MIME types provided by an Integration (e.g. with Moodle), which has high priority than `mimeTypes`.
+   * A list of MIME types provided by an Integration (e.g. with Moodle), which has a higher priority than `mimeTypes`.
    */
   externalMimeTypes?: string[];
 }
@@ -417,8 +417,9 @@ export const searchItems = ({
   const processedQuery = query ? formatQuery(query, !rawMode) : undefined;
   // We use selected filters to generate MIME types. However, in Image Gallery,
   // image MIME types are applied before any filter gets selected.
-  // So the logic is using filters if any gets selected, or using MIME types already provided.
-  const internalMimeTypes =
+  // So the logic is, we use MIME type filters if any are selected, or specific MIME types
+  // already provided by the Image Gallery.
+  const _mimeTypes =
     mimeTypeFilters && mimeTypeFilters.length > 0
       ? mimeTypeFilters.flatMap((f) => f.mimeTypes)
       : mimeTypes;
@@ -434,7 +435,7 @@ export const searchItems = ({
     owner: owner?.id,
     searchAttachments: searchAttachments,
     whereClause: generateCategoryWhereQuery(selectedCategories),
-    mimeTypes: externalMimeTypes ?? internalMimeTypes,
+    mimeTypes: externalMimeTypes ?? _mimeTypes,
   };
 
   return OEQ.Search.search(API_BASE_URL, searchParams);

@@ -87,10 +87,7 @@ export const RefineSearchPanel = ({
   showFilterIcon,
   onClose,
 }: RefinePanelProps) => {
-  const {
-    title,
-    close: closePanelString,
-  } = languageStrings.searchpage.refineSearchPanel;
+  const { title } = languageStrings.searchpage.refineSearchPanel;
 
   const { showMore, showLess } = languageStrings.common.action;
 
@@ -163,7 +160,10 @@ export const RefineSearchPanel = ({
           </Grid>
           <Grid item xs={1}>
             <Hidden mdUp>
-              <TooltipIconButton title={closePanelString} onClick={onClose}>
+              <TooltipIconButton
+                title={languageStrings.common.action.close}
+                onClick={onClose}
+              >
                 <CloseIcon />
               </TooltipIconButton>
             </Hidden>

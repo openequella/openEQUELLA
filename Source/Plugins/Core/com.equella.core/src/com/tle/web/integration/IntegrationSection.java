@@ -81,11 +81,10 @@ public class IntegrationSection
     @Bookmarked(contexts = BookmarkEvent.CONTEXT_SESSION)
     private String id;
 
-    // This field is primarily used to let New Search UI filters search results by MIME types
+    // This field is primarily used to let the new Search UI filter search results by MIME types
     // provided by Integrations.
-    // The approach is to add these MIME types to the URL as query strings and then leverage the
-    // feature of converting
-    // Legacy Search param to SearchOptions.
+    // The approach is to add these MIME types to the URL as query strings and then convert
+    // Legacy Search params to SearchOptions.
     // For example, a URL would be 'searching.do?_sl.stateId=1&_int.id_2&_int.mimeTypes=xxx'.
     // To achieve this, we must use annotation 'Bookmarked'. For details, please look
     // 'BookmarkEvent', 'AnnotatedBookmarkScanner',

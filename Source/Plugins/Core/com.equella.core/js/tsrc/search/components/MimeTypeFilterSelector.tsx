@@ -60,7 +60,7 @@ export const MimeTypeFilterSelector = ({
         <TooltipChip
           key={filter.id}
           title={filter.name}
-          maxWidth={150}
+          maxWidth={200}
           tagProps={getTagProps({ index })}
         />
       ))
