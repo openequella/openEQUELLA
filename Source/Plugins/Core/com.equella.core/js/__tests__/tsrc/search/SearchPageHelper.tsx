@@ -17,6 +17,28 @@
  */
 
 /**
+ * Helper function to assist in finding the Refine Search panel.
+ * @param container The root container where <RefineSearchPanel/> exists
+ */
+export const queryRefineSearchPanel = (
+  container: Element
+): HTMLDivElement | null =>
+  container.querySelector<HTMLDivElement>("#refine-panel");
+
+/**
+ * Similar to queryRefineSearchPanel but throws an error if RefineSearchPanel is not found.
+ * @param container The root container where <RefineSearchPanel/> exists
+ */
+export const getRefineSearchPanel = (container: Element): HTMLDivElement => {
+  const refineSearchPanel = queryRefineSearchPanel(container);
+  if (!refineSearchPanel) {
+    throw new Error("Unable to find refine search panel");
+  }
+
+  return refineSearchPanel;
+};
+
+/**
  * Similar to queryRefineSearchComponent but throws an error if the component is not found.
  *
  * @see queryRefineSearchComponent

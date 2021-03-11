@@ -75,6 +75,7 @@ import {
 } from "./components/OwnerSelectTestHelpers";
 import {
   getRefineSearchComponent,
+  getRefineSearchPanel,
   queryCollectionSelector,
   queryDateRangeSelector,
   queryOwnerSelector,
@@ -411,13 +412,7 @@ describe("Collapsible refine filter section", () => {
   });
 
   it("Should contain the correct controls", async () => {
-    const refineSearchPanel = page.container.querySelector<HTMLDivElement>(
-      "#refine-panel"
-    );
-    if (!refineSearchPanel) {
-      throw new Error("Unable to find refine search panel");
-    }
-
+    const refineSearchPanel = getRefineSearchPanel(page.container);
     const collapsibleSection = refineSearchPanel.querySelector(
       ".collapsibleRefinePanel"
     );
