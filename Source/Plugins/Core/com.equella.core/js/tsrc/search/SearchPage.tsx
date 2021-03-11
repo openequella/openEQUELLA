@@ -17,6 +17,7 @@
  */
 import { Drawer, Grid, Hidden } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
+import { pipe } from "fp-ts/function";
 
 import { isEqual } from "lodash";
 import * as React from "react";
@@ -419,18 +420,15 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     });
 
   const handleClearSearchOptions = () => {
-    const basicSearchPageOptions = {
-      ...defaultSearchPageOptions,
-      sortOrder: searchSettings.core?.defaultSearchSort,
-    };
-    search(
-      isSelectionSessionOpen()
-        ? {
-            ...basicSearchPageOptions,
-            // Keep external MIME types in Selection Session
-            externalMimeTypes: searchPageOptions.externalMimeTypes,
-          }
-        : basicSearchPageOptions
+    pipe(
+      {
+        ...defaultSearchPageOptions,
+        sortOrder: searchSettings.core?.defaultSearchSort,
+        externalMimeTypes: isSelectionSessionOpen()
+          ? searchPageOptions.externalMimeTypes
+          : undefined,
+      },
+      search
     );
     setFilterExpansion(false);
   };
