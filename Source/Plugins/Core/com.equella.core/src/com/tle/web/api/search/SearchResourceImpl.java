@@ -101,8 +101,7 @@ public class SearchResourceImpl implements EquellaSearchResource {
       String modifiedAfter,
       String modifiedBefore,
       String advancedSearch,
-      String owner,
-      List<String> mimeTypes) {
+      String owner) {
     Preconditions.checkArgument(length <= 50, "Length must be less than or equal to 50");
 
     final SearchBean<ItemBean> result = new SearchBean<ItemBean>();
@@ -148,7 +147,6 @@ public class SearchResourceImpl implements EquellaSearchResource {
             dynaCollectionCompound,
             status,
             owner,
-            mimeTypes,
             new DefaultSearch());
 
     final SearchResults<ItemIdKey> searchResults = freetextService.searchIds(search, offset, count);
@@ -225,8 +223,8 @@ public class SearchResourceImpl implements EquellaSearchResource {
             null,
             null,
             owner,
-            mimeTypes,
             new DefaultSearch());
+    search.setMimeTypes(mimeTypes);
 
     final MatrixResults matrixResults =
         freetextService.matrixSearch(search, nodeList, true, width, true);
@@ -256,7 +254,6 @@ public class SearchResourceImpl implements EquellaSearchResource {
       String dynaCollectionCompound,
       String status,
       String owner,
-      List<String> mimeTypes,
       DefaultSearch search) {
     FreeTextBooleanQuery freetextQuery = null;
     if (!Check.isEmpty(dynaCollectionCompound)) {
@@ -322,7 +319,6 @@ public class SearchResourceImpl implements EquellaSearchResource {
     }
 
     search.setOwner(owner);
-    search.setMimeTypes(mimeTypes);
 
     return search;
   }
