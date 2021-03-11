@@ -34,3 +34,12 @@ Standard.args = {
   title: "This is a Tooltip Chip",
   maxWidth: 150,
 };
+
+export const ReallyLongChip: Story<TooltipChipProps> = (args) => (
+  <TooltipChip {...args} />
+);
+ReallyLongChip.args = {
+  title:
+    "This is a long long long long long long long long long long long long long long long long long long long long Tooltip Chip",
+  maxWidth: 150,
+};
