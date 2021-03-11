@@ -68,7 +68,7 @@ export interface SearchFacetsParams {
    */
   showall?: boolean;
   /**
-   * A list of MIME types.
+   * A list of MIME types to filter items based on their attachments matching the specified types.
    */
   mimeTypes?: string[];
 }

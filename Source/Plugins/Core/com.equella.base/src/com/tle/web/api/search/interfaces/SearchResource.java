@@ -82,6 +82,9 @@ public interface SearchResource {
               required = false)
           @QueryParam("showall")
           String showall,
-      @ApiParam("A list of MIME types") @QueryParam("mimeTypes") List<String> mimeTypes);
+      @ApiParam(
+              "A list of MIME types to filter items based on their attachments matching the specified types.")
+          @QueryParam("mimeTypes")
+          List<String> mimeTypes);
   // @formatter:on
 }
