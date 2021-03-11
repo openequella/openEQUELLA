@@ -37,6 +37,10 @@ export interface GalleryEntry {
    */
   mimeType: string;
   /**
+   * The name of the attachment this points to.
+   */
+  name: string;
+  /**
    * The path to a small version of the image - typically the thumbnail with parameter `gallery` as
    * `thumbnail`.
    */
@@ -117,6 +121,7 @@ export const buildGalleryEntry = (
         E.fromNullable("Attachment is missing a defined MIME type")
       )
     )
+    .bind("name", E.right(attachment.description ?? attachment.id))
     .bind("imagePathSmall", E.right(thumbnailLink(attachment, "thumbnail")))
     .bind("imagePathMedium", E.right(thumbnailLink(attachment, "preview")))
     .bind(

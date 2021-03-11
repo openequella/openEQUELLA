@@ -47,8 +47,8 @@ import {
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
 import * as AdvancedSearchModule from "../../../tsrc/modules/AdvancedSearchModule";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
-import * as FavouriteModule from "../../../tsrc/modules/FavouriteModule";
 import { Collection } from "../../../tsrc/modules/CollectionsModule";
+import * as FavouriteModule from "../../../tsrc/modules/FavouriteModule";
 import { getGlobalCourseList } from "../../../tsrc/modules/LegacySelectionSessionModule";
 import * as MimeTypesModule from "../../../tsrc/modules/MimeTypesModule";
 import * as RemoteSearchModule from "../../../tsrc/modules/RemoteSearchModule";
@@ -153,6 +153,7 @@ const defaultSearchPageOptions: SearchPageOptions = {
   sortOrder: "RANK",
   dateRangeQuickModeEnabled: true,
   mimeTypeFilters: [],
+  displayMode: "list",
 };
 const defaultCollectionPrivileges = [OEQ.Acl.ACL_SEARCH_COLLECTION];
 
@@ -741,7 +742,7 @@ describe("<SearchPage/>", () => {
       1
     );
     expect(mockClipboard).toHaveBeenCalledWith(
-      "/?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RANK%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D"
+      "/?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RANK%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22dateRangeQuickModeEnabled%22%3Atrue%2C%22displayMode%22%3A%22list%22%7D"
     );
     expect(
       screen.getByText(languageStrings.searchpage.shareSearchConfirmationText)
