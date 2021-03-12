@@ -55,8 +55,8 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
   @Override
   @Transactional
   public FavouriteSearch save(FavouriteSearch search) {
-    dao.save(search);
-    return search;
+    Long id = dao.save(search);
+    return dao.getById(id);
   }
 
   @Override

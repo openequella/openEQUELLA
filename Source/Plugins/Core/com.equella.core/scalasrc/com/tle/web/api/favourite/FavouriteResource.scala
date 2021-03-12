@@ -44,6 +44,8 @@ case class FavouriteItem(itemID: String,
                          isAlwaysLatest: Boolean,
                          bookmarkID: Long)
 
+case class FavouriteSearchInfo(name: String, url: String)
+
 @Path("favourite")
 @Produces(Array("application/json"))
 @Api("Favourite")
@@ -94,12 +96,20 @@ class FavouriteResource {
 
   @POST
   @Path("/search")
-  @ApiOperation(value = "Add one search to user's favourites", response = classOf[FavouriteSearch])
-  def addFavouriteSearch(favouriteSearch: FavouriteSearch): Response = {
+  @ApiOperation(value = "Add a search definition to user's search favourites",
+                response = classOf[FavouriteSearchInfo])
+  def addFavouriteSearch(searchInfo: FavouriteSearchInfo): Response = {
+    val favouriteSearch = new FavouriteSearch
+    favouriteSearch.setName(searchInfo.name)
+    favouriteSearch.setUrl(searchInfo.url)
     favouriteSearch.setInstitution(CurrentInstitution.get())
     favouriteSearch.setDateModified(new Date())
     favouriteSearch.setOwner(CurrentUser.getUserID)
     val newFavouriteSearch = LegacyGuice.favouriteSearchService.save(favouriteSearch)
-    Response.status(Status.CREATED).entity(newFavouriteSearch).build()
+
+    Response
+      .status(Status.CREATED)
+      .entity(FavouriteSearchInfo(newFavouriteSearch.getName, newFavouriteSearch.getUrl))
+      .build()
   }
 }

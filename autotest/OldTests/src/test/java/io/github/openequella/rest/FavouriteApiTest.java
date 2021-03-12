@@ -64,10 +64,6 @@ public class FavouriteApiTest extends AbstractRestApiTest {
 
     assertEquals(HttpStatus.SC_CREATED, makeClientRequest(method));
     JsonNode response = mapper.readTree(method.getResponseBody());
-    assertNotNull(response.get("id"));
-    assertNotNull(response.get("owner"));
-    assertNotNull(response.get("dateModified"));
-    assertNotNull(response.get("institution"));
     assertEquals(searchName, response.get("name").asText());
     assertEquals(searchPath, response.get("url").asText());
   }
