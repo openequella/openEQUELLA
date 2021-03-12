@@ -20,9 +20,10 @@ package com.tle.web.api.search
 
 import com.dytech.edge.exceptions.BadRequestException
 import com.tle.beans.entity.DynaCollection
-import com.tle.beans.item.{Bookmark, Comment, ItemIdKey}
+import com.tle.beans.item.{Comment, ItemIdKey}
 import com.tle.common.Check
 import com.tle.common.beans.exception.NotFoundException
+import com.tle.common.collection.AttachmentConfigConstants
 import com.tle.common.search.DefaultSearch
 import com.tle.common.search.whereparser.WhereParser
 import com.tle.core.freetext.queries.FreeTextBooleanQuery
@@ -217,6 +218,12 @@ object SearchHelper {
     */
   def convertToAttachment(attachmentBeans: java.util.List[AttachmentBean],
                           itemKey: ItemIdKey): Option[List[SearchResultAttachment]] = {
+    // Filter out restricted attachments if user doesn't have permission to view them
+    if (LegacyGuice.aclManager
+          .filterNonGrantedPrivileges(AttachmentConfigConstants.VIEW_RESTRICTED_ATTACHMENTS)
+          .isEmpty) {
+      attachmentBeans.removeIf(a => a.isRestricted)
+    }
     Option(attachmentBeans).map(
       beans =>
         beans.asScala
