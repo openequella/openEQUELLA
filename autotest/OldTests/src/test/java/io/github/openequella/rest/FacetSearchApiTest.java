@@ -32,32 +32,6 @@ public class FacetSearchApiTest extends AbstractRestApiTest {
     return testConfig;
   }
 
-  private JsonNode search(NameValuePair... params) throws IOException {
-    final GetMethod method = new GetMethod(SEARCH_FACET_API_ENDPOINT);
-    method.setQueryString(params);
-    int statusCode = makeClientRequest(method);
-    assertEquals(HttpStatus.SC_OK, statusCode);
-    return mapper.readTree(method.getResponseBody());
-  }
-
-  private void assertResult(JsonNode result) {
-    assertTrue(result.get("results").size() > 0);
-  }
-
-  private void assertTermPresent(JsonNode result, String term) throws IOException {
-    boolean termPresent =
-        StreamSupport.stream(result.get("results").spliterator(), false)
-            .anyMatch(node -> term.equals(node.get("term").asText()));
-    assertTrue(termPresent);
-  }
-
-  private void assertTermAbsent(JsonNode result, String term) throws IOException {
-    boolean termAbsent =
-        StreamSupport.stream(result.get("results").spliterator(), false)
-            .noneMatch(node -> term.equals(node.get("term").asText()));
-    assertTrue(termAbsent);
-  }
-
   @Test
   public void testSingleNode() throws IOException {
     JsonNode result = search(SINGLE_NODE);
@@ -148,5 +122,31 @@ public class FacetSearchApiTest extends AbstractRestApiTest {
             new NameValuePair("modifiedAfter", startDate),
             new NameValuePair("modifiedBefore", endDate));
     assertEquals(result.get("results").size(), expectedResults);
+  }
+
+  private JsonNode search(NameValuePair... params) throws IOException {
+    final GetMethod method = new GetMethod(SEARCH_FACET_API_ENDPOINT);
+    method.setQueryString(params);
+    int statusCode = makeClientRequest(method);
+    assertEquals(HttpStatus.SC_OK, statusCode);
+    return mapper.readTree(method.getResponseBody());
+  }
+
+  private void assertResult(JsonNode result) {
+    assertTrue(result.get("results").size() > 0);
+  }
+
+  private void assertTermPresent(JsonNode result, String term) throws IOException {
+    boolean termPresent =
+        StreamSupport.stream(result.get("results").spliterator(), false)
+            .anyMatch(node -> term.equals(node.get("term").asText()));
+    assertTrue(termPresent);
+  }
+
+  private void assertTermAbsent(JsonNode result, String term) throws IOException {
+    boolean termAbsent =
+        StreamSupport.stream(result.get("results").spliterator(), false)
+            .noneMatch(node -> term.equals(node.get("term").asText()));
+    assertTrue(termAbsent);
   }
 }
