@@ -134,6 +134,7 @@ public class IntegrationServiceImpl extends AbstractSectionFilter implements Int
       if (data == null) {
         isection.newSession(info, null);
       }
+      updateIntegrationMimeTypes(info, isection);
     }
     return data;
   }
@@ -144,6 +145,7 @@ public class IntegrationServiceImpl extends AbstractSectionFilter implements Int
     String id = sessionService.createUniqueKey();
     sessionService.setAttribute(id, data);
     isection.newSession(info, id);
+    updateIntegrationMimeTypes(info, isection);
     return id;
   }
 
@@ -464,6 +466,13 @@ public class IntegrationServiceImpl extends AbstractSectionFilter implements Int
   public void checkIntegrationAllowed() throws AccessDeniedException {
     if (aclService.filterNonGrantedPrivileges("INTEGRATION_SELECTION_SESSION").isEmpty()) {
       throw new AccessDeniedException(CoreStrings.text("error.selectionsession.accessdenied"));
+    }
+  }
+
+  private void updateIntegrationMimeTypes(SectionInfo info, IntegrationSection integrationSection) {
+    SelectionSession selectionSession = selectionService.getCurrentSession(info);
+    if (selectionSession != null && !selectionSession.getMimeTypes().isEmpty()) {
+      integrationSection.updateModelMimeTypes(info, selectionSession.getMimeTypes());
     }
   }
 }

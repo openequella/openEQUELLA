@@ -4463,7 +4463,7 @@ img.warningimg {
 /*****************************************************************************
  Selection Dialog
 *****************************************************************************/
-#wrapper {
+#wrapper:not(.skinny-layout) {
   min-width: 784px;
 }
 
@@ -5570,6 +5570,7 @@ button:focus {
   #selection-header {
     position: unset; // Unset position because it is an flex item.
     height: auto;
+    padding-top: $singleMargin;
   }
 
   .navbar-inner {
