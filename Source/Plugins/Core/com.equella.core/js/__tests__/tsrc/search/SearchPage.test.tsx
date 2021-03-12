@@ -396,6 +396,7 @@ describe("Refine search by MIME type filters", () => {
     await waitForSearch();
     expect(SearchModule.searchItems).toHaveBeenLastCalledWith({
       ...defaultSearchPageOptions,
+      // @ts-ignore IntelliJ complains about missing flatMap - but works fine everywhere else
       mimeTypes: filters.flatMap((f) => f.mimeTypes),
       mimeTypeFilters: filters,
     });
