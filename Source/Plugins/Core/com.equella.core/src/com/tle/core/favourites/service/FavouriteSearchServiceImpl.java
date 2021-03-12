@@ -34,6 +34,7 @@ import com.tle.core.favourites.bean.FavouriteSearch;
 import com.tle.core.favourites.dao.FavouriteSearchDao;
 import com.tle.core.guice.Bind;
 import com.tle.web.sections.SectionInfo;
+import com.tle.web.sections.SectionsRuntimeException;
 import com.tle.web.template.RenderNewTemplate;
 import java.util.Date;
 import java.util.List;
@@ -73,12 +74,20 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
     FavouriteSearch search = dao.getById(id);
     if (search != null) {
       String url = search.getUrl();
-      if (url != null && RenderNewTemplate.isNewSearchPageEnabled()) {
-        // Remove the last '/' from 'CurrentInstitution.get().getUrl()' and then construct a full
-        // path.
-        String fullPath = StringUtils.removeEnd(CurrentInstitution.get().getUrl(), "/") + url;
-        info.forwardToUrl(fullPath);
-        return;
+      // If new Search UI is enabled then navigate to it by calling 'forwardToUrl'.
+      // If new Search UI is disabled but the search was added from new Search UI, throw an error.
+      // Else do however it used to do.
+      if (url != null) {
+        if (RenderNewTemplate.isNewSearchPageEnabled()) {
+          // Remove the last '/' from 'CurrentInstitution.get().getUrl()' and then construct a full
+          // path.
+          String fullPath = StringUtils.removeEnd(CurrentInstitution.get().getUrl(), "/") + url;
+          info.forwardToUrl(fullPath);
+          return;
+        } else if (url.contains("/page/search")) {
+          throw new SectionsRuntimeException(
+              "This favourite search is only available in new Search Page");
+        }
       }
       // When user favourites a normal search, cloud search or hierarchy search,
       // the value of 'url' starts with '/access' if the fav search is added in old oEQ versions,
