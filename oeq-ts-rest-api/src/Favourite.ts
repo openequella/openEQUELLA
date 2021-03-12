@@ -80,6 +80,20 @@ export interface FavouriteSearch {
   criteria?: string;
 }
 
+/**
+ * Data structure for adding a search definition to user's favourite search
+ */
+export interface FavouriteSearchInfo {
+  /**
+   * Name of a search definition
+   */
+  name: string;
+  /**
+   * Relative path to the new Search UI, including all query params.
+   */
+  url: string;
+}
+
 const FAVOURITE_ITEM_PATH = '/favourite/item';
 const FAVOURITE_SEARCH_PATH = '/favourite/search';
 
@@ -112,19 +126,14 @@ export const deleteFavouriteItem = (
 /**
  * Add a search to user's favourites.
  * @param apiBasePath Base URI to the oEQ institution and API
- * @param favouriteSearchName Name of a favourite search
- * @param favouriteSearchURL Relative path to the new Search UI including query strings (e.g. `/page/search?searchOptions=xxxxx`)
+ * @param searchInfo required information for adding a favourite search
  */
 export const addFavouriteSearch = (
   apiBasePath: string,
-  favouriteSearchName: string,
-  favouriteSearchURL: string
-): Promise<FavouriteSearch> =>
+  searchInfo: FavouriteSearchInfo
+): Promise<FavouriteSearchInfo> =>
   POST(
     apiBasePath + FAVOURITE_SEARCH_PATH,
-    (data): data is FavouriteSearch => is<FavouriteSearch>(data),
-    {
-      name: favouriteSearchName,
-      url: favouriteSearchURL,
-    }
+    (data): data is FavouriteSearchInfo => is<FavouriteSearchInfo>(data),
+    searchInfo
   );
