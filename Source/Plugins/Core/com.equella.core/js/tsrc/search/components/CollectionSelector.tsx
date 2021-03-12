@@ -15,13 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Checkbox, Chip, TextField, Tooltip } from "@material-ui/core";
+import { Checkbox, TextField } from "@material-ui/core";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import { Autocomplete, AutocompleteGetTagProps } from "@material-ui/lab";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useEffect, useState } from "react";
+import { TooltipChip } from "../../components/TooltipChip";
 import {
   Collection,
   collectionListSummary,
@@ -75,14 +76,13 @@ export const CollectionSelector = ({
         getTagProps: AutocompleteGetTagProps
       ) =>
         collections.map((collection: Collection, index: number) => (
-          <Tooltip title={collection.name} key={collection.uuid}>
-            <Chip
-              style={{ maxWidth: "50%" }}
-              id={"collectionChip " + collection.uuid}
-              label={collection.name}
-              {...getTagProps({ index })}
-            />
-          </Tooltip>
+          <TooltipChip
+            key={collection.uuid}
+            id={`collectionChip-${collection.uuid}`}
+            title={collection.name}
+            maxWidth={200}
+            tagProps={getTagProps({ index })}
+          />
         ))
       }
       onChange={(_, value: Collection[]) => {

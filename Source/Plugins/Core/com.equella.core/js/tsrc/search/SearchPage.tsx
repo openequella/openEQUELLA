@@ -38,6 +38,7 @@ import {
   buildSelectionSessionAdvancedSearchLink,
   buildSelectionSessionRemoteSearchLink,
   isSelectionSessionInStructured,
+  isSelectionSessionOpen,
   prepareDraggable,
 } from "../modules/LegacySelectionSessionModule";
 import { getRemoteSearchesFromServer } from "../modules/RemoteSearchModule";
@@ -421,6 +422,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     search({
       ...defaultSearchPageOptions,
       sortOrder: searchSettings.core?.defaultSearchSort,
+      externalMimeTypes: isSelectionSessionOpen()
+        ? searchPageOptions.externalMimeTypes
+        : undefined,
     });
     setFilterExpansion(false);
   };
@@ -508,7 +512,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       "owner",
       "status",
       "searchAttachments",
-      "mimeTypes",
+      "mimeTypeFilters",
     ];
     return !isEqual(
       getPartialSearchOptions(defaultSearchOptions, fields),
@@ -526,7 +530,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       "status",
       "searchAttachments",
       "collections",
-      "mimeTypes",
+      "mimeTypeFilters",
     ];
 
     const isQueryOrFiltersSet = !isEqual(
@@ -608,7 +612,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           filters={searchSettings.mimeTypeFilters}
         />
       ),
-      disabled: searchSettings.mimeTypeFilters.length === 0,
+      disabled:
+        searchSettings.mimeTypeFilters.length === 0 ||
+        !!searchPageOptions.externalMimeTypes,
     },
     {
       idSuffix: "OwnerSelector",
@@ -667,6 +673,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           onChangeExpansion: handleCollapsibleFilterClick,
           panelExpanded: filterExpansion,
           showFilterIcon: areCollapsibleFiltersSet(),
+          onClose: () => setShowRefinePanel(false),
         }}
         classificationsPanelProps={{
           classifications: getClassifications(),
@@ -763,6 +770,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           open={showRefinePanel}
           anchor="right"
           onClose={() => setShowRefinePanel(false)}
+          PaperProps={{ style: { width: "50%" } }}
         >
           {renderSidePanel()}
         </Drawer>

@@ -93,13 +93,17 @@ export interface SearchOptions {
    */
   searchAttachments?: boolean;
   /**
-   * A list of potential MIME types to filter items by.
+   * A list of MIME types generated from filters or provided by Image/Video Gallery.
    */
   mimeTypes?: string[];
   /**
    * A list of selected MIME type filters.
    */
   mimeTypeFilters?: MimeTypeFilter[];
+  /**
+   * A list of MIME types provided by an Integration (e.g. with Moodle), which has a higher priority than `mimeTypes`.
+   */
+  externalMimeTypes?: string[];
 }
 
 /**
@@ -132,7 +136,8 @@ const LegacySearchParams = Union(
   Literal("sort"),
   Literal("owner"),
   Literal("in"),
-  Literal("mt")
+  Literal("mt"),
+  Literal("_int.mimeTypes")
 );
 
 type LegacyParams = Static<typeof LegacySearchParams>;
@@ -405,10 +410,19 @@ export const searchItems = ({
   selectedCategories,
   mimeTypes,
   mimeTypeFilters,
+  externalMimeTypes,
 }: SearchOptions): Promise<
   OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>
 > => {
   const processedQuery = query ? formatQuery(query, !rawMode) : undefined;
+  // We use selected filters to generate MIME types. However, in Image Gallery,
+  // image MIME types are applied before any filter gets selected.
+  // So the logic is, we use MIME type filters if any are selected, or specific MIME types
+  // already provided by the Image Gallery.
+  const _mimeTypes =
+    mimeTypeFilters && mimeTypeFilters.length > 0
+      ? mimeTypeFilters.flatMap((f) => f.mimeTypes)
+      : mimeTypes;
   const searchParams: OEQ.Search.SearchParams = {
     query: processedQuery,
     start: currentPage * rowsPerPage,
@@ -421,11 +435,7 @@ export const searchItems = ({
     owner: owner?.id,
     searchAttachments: searchAttachments,
     whereClause: generateCategoryWhereQuery(selectedCategories),
-    // If filters are selected use them to generate MIME types. Use SearchOptions' mimeTypes otherwise.
-    mimeTypes:
-      mimeTypeFilters && mimeTypeFilters.length > 0
-        ? mimeTypeFilters.flatMap((f) => f.mimeTypes)
-        : mimeTypes,
+    mimeTypes: externalMimeTypes ?? _mimeTypes,
   };
 
   return OEQ.Search.search(API_BASE_URL, searchParams);
@@ -528,6 +538,11 @@ export const legacyQueryStringToSearchOptions = async (
   const sortOrderParam = getQueryParam("sort")?.toUpperCase();
   const mimeTypeFilters = await findMIMETypeFiltersById(params.getAll("mt"));
   const mimeTypes = mimeTypeFilters?.flatMap(({ mimeTypes }) => mimeTypes);
+  const getExternalMIMETypes = () => {
+    const integrationMIMETypes = params.getAll("_int.mimeTypes");
+    return integrationMIMETypes.length > 0 ? integrationMIMETypes : undefined;
+  };
+
   const searchOptions: SearchOptions = {
     ...defaultSearchOptions,
     collections: await parseCollectionUuid(collectionId),
@@ -544,6 +559,7 @@ export const legacyQueryStringToSearchOptions = async (
       : defaultSearchOptions.sortOrder,
     mimeTypes,
     mimeTypeFilters,
+    externalMimeTypes: getExternalMIMETypes(),
   };
   return searchOptions;
 };

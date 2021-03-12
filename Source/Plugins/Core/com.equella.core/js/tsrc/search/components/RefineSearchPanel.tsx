@@ -21,13 +21,16 @@ import {
   CardContent,
   Collapse,
   Grid,
+  Hidden,
   List,
   ListItem,
   Typography,
 } from "@material-ui/core";
 import FilterList from "@material-ui/icons/FilterList";
+import CloseIcon from "@material-ui/icons/Close";
 import * as React from "react";
 import { ReactNode } from "react";
+import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { languageStrings } from "../../util/langstrings";
 import { RefinePanelControlHeading } from "./RefinePanelControlHeading";
 
@@ -71,6 +74,10 @@ export interface RefinePanelProps {
    * True if filter icon should be shown next to the 'Show more' button.
    */
   showFilterIcon: boolean;
+  /**
+   * Function fired to close the panel.
+   */
+  onClose: () => void;
 }
 
 export const RefineSearchPanel = ({
@@ -78,6 +85,7 @@ export const RefineSearchPanel = ({
   onChangeExpansion,
   panelExpanded,
   showFilterIcon,
+  onClose,
 }: RefinePanelProps) => {
   const { title } = languageStrings.searchpage.refineSearchPanel;
 
@@ -146,7 +154,21 @@ export const RefineSearchPanel = ({
   return (
     <Card>
       <CardContent>
-        <Typography variant="h5">{title}</Typography>
+        <Grid container alignItems="center">
+          <Grid item xs={11}>
+            <Typography variant="h5">{title}</Typography>
+          </Grid>
+          <Grid item xs={1}>
+            <Hidden mdUp>
+              <TooltipIconButton
+                title={languageStrings.common.action.close}
+                onClick={onClose}
+              >
+                <CloseIcon />
+              </TooltipIconButton>
+            </Hidden>
+          </Grid>
+        </Grid>
         <List>
           {alwaysVisibleSection(alwaysVisibleControls)}
           {collapsibleSection(collapsedControls)}
