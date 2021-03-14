@@ -44,7 +44,9 @@ export const SidePanel = ({
     <Grid item id="refine-panel">
       <RefineSearchPanel {...refinePanelProps} />
     </Grid>
-    {classificationsPanelProps.classifications.length > 0 && (
+    {classificationsPanelProps.classifications.some(
+      (c) => c.categories.length > 0
+    ) && (
       <Grid item id="classification-panel">
         <ClassificationsPanel {...classificationsPanelProps} />
       </Grid>

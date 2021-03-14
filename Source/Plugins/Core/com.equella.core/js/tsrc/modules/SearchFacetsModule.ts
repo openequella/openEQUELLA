@@ -94,6 +94,7 @@ const convertSearchOptions: (
       owner,
       status,
       rawMode,
+      mimeTypes,
     } = options;
     let searchFacetsParams: OEQ.SearchFacets.SearchFacetsParams = {
       nodes: [],
@@ -105,6 +106,7 @@ const convertSearchOptions: (
         status?.sort(),
         OEQ.Common.ItemStatuses.alternatives.map((i) => i.value).sort()
       ),
+      mimeTypes,
     };
     if (collections && collections.length > 0) {
       searchFacetsParams = {
