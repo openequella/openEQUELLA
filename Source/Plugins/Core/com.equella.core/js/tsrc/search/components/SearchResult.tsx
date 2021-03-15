@@ -433,7 +433,11 @@ export default function SearchResult({
                 viewerDetails?.viewerId
               )}
             >
-              <ListItemText color="primary" primary={description} />
+              <ListItemText
+                title={description}
+                color="primary"
+                primary={description}
+              />
             </ItemAttachmentLink>
             {inSelectionSession && (
               <ListItemSecondaryAction>
