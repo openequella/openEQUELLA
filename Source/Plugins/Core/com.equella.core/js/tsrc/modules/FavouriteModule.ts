@@ -47,3 +47,17 @@ export const addFavouriteItem = (
  */
 export const deleteFavouriteItem = (bookmarkID: number): Promise<void> =>
   OEQ.Favourite.deleteFavouriteItem(API_BASE_URL, bookmarkID);
+
+/**
+ * Add a search definition to user's favourites
+ * @param name Name of a search definition
+ * @param url Path to the new Search UI, including all query strings
+ */
+export const addFavouriteSearch = (
+  name: string,
+  url: string
+): Promise<OEQ.Favourite.FavouriteSearchInfo> =>
+  OEQ.Favourite.addFavouriteSearch(API_BASE_URL, {
+    name,
+    url,
+  }).then((searchInfo: OEQ.Favourite.FavouriteSearchInfo) => searchInfo);
