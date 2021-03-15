@@ -52,6 +52,10 @@ export interface ConfirmDialogProps {
    * The text of the Confirm button.
    */
   confirmButtonText: string;
+  /**
+   * `true` to disable the confirmation button.
+   */
+  disableConfirmButton?: boolean;
 }
 
 const ConfirmDialog: FunctionComponent<ConfirmDialogProps> = ({
@@ -61,6 +65,7 @@ const ConfirmDialog: FunctionComponent<ConfirmDialogProps> = ({
   onCancel,
   onConfirm,
   confirmButtonText,
+  disableConfirmButton = false,
 }: ConfirmDialogProps) => {
   const { cancel } = commonString.action;
   return (
@@ -69,6 +74,7 @@ const ConfirmDialog: FunctionComponent<ConfirmDialogProps> = ({
       onClose={onCancel}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
+      fullWidth
     >
       <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
       <DialogContent>
@@ -89,6 +95,7 @@ const ConfirmDialog: FunctionComponent<ConfirmDialogProps> = ({
           color="primary"
           id="confirm-dialog-confirm-button"
           autoFocus
+          disabled={disableConfirmButton}
         >
           {confirmButtonText}
         </Button>
