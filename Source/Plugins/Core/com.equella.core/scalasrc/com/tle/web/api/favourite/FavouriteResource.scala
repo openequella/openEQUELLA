@@ -33,18 +33,24 @@ import javax.ws.rs.{DELETE, POST, Path, PathParam, Produces, QueryParam}
 import scala.collection.JavaConverters._
 
 /**
-  * Provide basic information of a favourite Item.
+  * Model class for Items to be saved to user's favourites.
   * @param keywords Tags of this Favourite Item
   * @param isAlwaysLatest Whether this Favourite Item uses latest Item version
   * @param itemID ID of the Item
   * @param bookmarkID ID of the related Bookmark
   */
-case class FavouriteItem(itemID: String,
-                         keywords: Array[String],
-                         isAlwaysLatest: Boolean,
-                         bookmarkID: Long)
+case class FavouriteItemModel(itemID: String,
+                              keywords: Array[String],
+                              isAlwaysLatest: Boolean,
+                              bookmarkID: Long)
 
-case class FavouriteSearchInfo(name: String, url: String)
+/**
+  * Model class for search definitions to be saved to user's favourites.
+  * @param id ID of a search definition. The value is None before the search definition persists to DB.
+  * @param name Name of a search definition.
+  * @param url Path to new Search UI, including all query strings.
+  */
+case class FavouriteSearchModel(id: Option[Long], name: String, url: String)
 
 @Path("favourite")
 @Produces(Array("application/json"))
@@ -57,8 +63,8 @@ class FavouriteResource {
   @Path("/item")
   @ApiOperation(value = "Add one Item to user's favourites",
                 notes = "This operation is essentially adding a new bookmark.",
-                response = classOf[FavouriteItem])
-  def addFavouriteItem(favouriteItem: FavouriteItem): Response = {
+                response = classOf[FavouriteItemModel])
+  def addFavouriteItem(favouriteItem: FavouriteItemModel): Response = {
     // ItemNotFoundException will be thrown by itemService if there is no Item matching this
     // item ID so we don't validate item ID here again.
     val item = itemService.get(new ItemId(favouriteItem.itemID))
@@ -67,7 +73,7 @@ class FavouriteResource {
     Response
       .status(Status.CREATED)
       .entity(
-        FavouriteItem(
+        FavouriteItemModel(
           newBookmark.getItem.getItemId.toString,
           newBookmark.getKeywords.asScala.toArray,
           newBookmark.isAlwaysLatest,
@@ -97,8 +103,8 @@ class FavouriteResource {
   @POST
   @Path("/search")
   @ApiOperation(value = "Add a search definition to user's search favourites",
-                response = classOf[FavouriteSearchInfo])
-  def addFavouriteSearch(searchInfo: FavouriteSearchInfo): Response = {
+                response = classOf[FavouriteSearchModel])
+  def addFavouriteSearch(searchInfo: FavouriteSearchModel): Response = {
     val favouriteSearch = new FavouriteSearch
     favouriteSearch.setName(searchInfo.name)
     favouriteSearch.setUrl(searchInfo.url)
@@ -109,7 +115,10 @@ class FavouriteResource {
 
     Response
       .status(Status.CREATED)
-      .entity(FavouriteSearchInfo(newFavouriteSearch.getName, newFavouriteSearch.getUrl))
+      .entity(
+        FavouriteSearchModel(Option(newFavouriteSearch.getId),
+                             newFavouriteSearch.getName,
+                             newFavouriteSearch.getUrl))
       .build()
   }
 }
