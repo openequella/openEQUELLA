@@ -34,6 +34,7 @@ import {
 } from "../mainui/Template";
 import { getAdvancedSearchesFromServer } from "../modules/AdvancedSearchModule";
 import type { Collection } from "../modules/CollectionsModule";
+import { addFavouriteSearch } from "../modules/FavouriteModule";
 import {
   buildSelectionSessionAdvancedSearchLink,
   buildSelectionSessionRemoteSearchLink,
@@ -73,6 +74,11 @@ import {
 } from "./components/FavouriteItemDialog";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
 import { CollectionSelector } from "./components/CollectionSelector";
+import {
+  defaultFavouriteSearchDialogProps,
+  FavouriteSearchDialog,
+  FavouriteSearchDialogProps,
+} from "./components/FavouriteSearchDialog";
 import { MimeTypeFilterSelector } from "./components/MimeTypeFilterSelector";
 import OwnerSelector from "./components/OwnerSelector";
 import { RefinePanelControl } from "./components/RefineSearchPanel";
@@ -91,6 +97,10 @@ const {
   quickOptionDropdown,
 } = searchStrings.lastModifiedDateSelector;
 const { title: collectionSelectorTitle } = searchStrings.collectionSelector;
+const defaultMessageInfo = {
+  open: false,
+  message: "",
+};
 
 /**
  * Type of search options that are specific to Search page presentation layer.
@@ -199,10 +209,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     searchPageHistoryState?.filterExpansion ??
       defaultSearchPageHistory.filterExpansion
   );
-  const [
-    showSearchCopiedSnackBar,
-    setShowSearchCopiedSnackBar,
-  ] = useState<boolean>(false);
+  const [messageInfo, setMessageInfo] = useState<{
+    open: boolean;
+    message: string;
+  }>(defaultMessageInfo);
   const [searchSettings, setSearchSettings] = useState<{
     core: OEQ.SearchSettings.Settings | undefined;
     mimeTypeFilters: MimeTypeFilter[];
@@ -213,19 +223,29 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   const [showRefinePanel, setShowRefinePanel] = useState<boolean>(false);
   const [
-    favouriteDialogProps,
-    setFavouriteDialogProps,
+    favouriteItemDialogProps,
+    setFavouriteItemDialogProps,
   ] = useState<FavouriteItemDialogProps>({
     ...defaultFavouriteItemDialogProps,
     closeDialog: () => {
-      setFavouriteDialogProps({ ...favouriteDialogProps, open: false });
+      setFavouriteItemDialogProps({ ...favouriteItemDialogProps, open: false });
+    },
+  });
+
+  const [
+    favouriteSearchDialogProps,
+    setFavouriteSearchDialog,
+  ] = useState<FavouriteSearchDialogProps>({
+    ...defaultFavouriteSearchDialogProps,
+    closeDialog: () => {
+      setFavouriteSearchDialog({ ...favouriteSearchDialogProps, open: false });
     },
   });
 
   // A function passed to SearchResult to help build props of FavouriteItemDialog.
-  const favouriteDialogOnConfirm = (itemInfo: FavouriteItemInfo) => {
-    setFavouriteDialogProps({
-      ...favouriteDialogProps,
+  const favouriteItemDialogOnConfirm = (itemInfo: FavouriteItemInfo) => {
+    setFavouriteItemDialogProps({
+      ...favouriteItemDialogProps,
       open: true,
       ...itemInfo,
     });
@@ -439,9 +459,34 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     navigator.clipboard
       .writeText(searchUrl)
       .then(() => {
-        setShowSearchCopiedSnackBar(true);
+        setMessageInfo({
+          open: true,
+          message: searchStrings.shareSearchConfirmationText,
+        });
       })
       .catch(() => handleError);
+  };
+
+  const handleSaveSearch = () => {
+    setFavouriteSearchDialog({
+      ...favouriteSearchDialogProps,
+      open: true,
+      onConfirm: (name: string) => {
+        // We only need pathname and query strings.
+        const url = `${
+          location.pathname
+        }?${generateQueryStringFromSearchOptions(searchPageOptions)}`;
+
+        return addFavouriteSearch(name, url)
+          .then(() =>
+            setMessageInfo({
+              open: true,
+              message: searchStrings.favouriteSearch.saveSearchConfirmationText,
+            })
+          )
+          .catch(handleError);
+      },
+    });
   };
 
   const handleMimeTypeFilterChange = (filters: MimeTypeFilter[]) =>
@@ -741,13 +786,14 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 }}
                 onClearSearchOptions={handleClearSearchOptions}
                 onCopySearchLink={handleCopySearch}
+                onSaveSearch={handleSaveSearch}
               >
                 {searchResults.length > 0 &&
                   mapSearchResultItems(
                     searchResults,
                     handleError,
                     highlights,
-                    favouriteDialogOnConfirm
+                    favouriteItemDialogOnConfirm
                   )}
               </SearchResultList>
             </Grid>
@@ -760,9 +806,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         </Hidden>
       </Grid>
       <MessageInfo
-        open={showSearchCopiedSnackBar}
-        onClose={() => setShowSearchCopiedSnackBar(false)}
-        title={searchStrings.shareSearchConfirmationText}
+        open={messageInfo.open}
+        onClose={() => setMessageInfo(defaultMessageInfo)}
+        title={messageInfo.message}
         variant="success"
       />
       <Hidden mdUp>
@@ -775,8 +821,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           {renderSidePanel()}
         </Drawer>
       </Hidden>
-      {favouriteDialogProps.open && (
-        <FavouriteItemDialog {...favouriteDialogProps} />
+      {favouriteItemDialogProps.open && (
+        <FavouriteItemDialog {...favouriteItemDialogProps} />
+      )}
+      {favouriteSearchDialogProps.open && (
+        <FavouriteSearchDialog {...favouriteSearchDialogProps} />
       )}
     </>
   );

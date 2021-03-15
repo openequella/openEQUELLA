@@ -29,6 +29,7 @@ import {
   Tooltip,
   Typography,
 } from "@material-ui/core";
+import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import FilterListIcon from "@material-ui/icons/FilterList";
 import { makeStyles } from "@material-ui/core/styles";
 import Share from "@material-ui/icons/Share";
@@ -92,6 +93,10 @@ export interface SearchResultListProps {
    */
   onCopySearchLink: () => void;
   /**
+   * Fired to open the Favourite search dialog
+   */
+  onSaveSearch: () => void;
+  /**
    * Props for the Icon button that controls whether show Refine panel in small screens
    */
   refineSearchProps: RefineSearchProps;
@@ -119,6 +124,7 @@ export const SearchResultList = ({
   refineSearchProps: { isCriteriaSet, showRefinePanel },
   onClearSearchOptions,
   onCopySearchLink,
+  onSaveSearch,
 }: SearchResultListProps) => {
   const classes = useStyles();
   const inSelectionSession: boolean = isSelectionSessionOpen();
@@ -153,6 +159,14 @@ export const SearchResultList = ({
                   {searchPageStrings.newSearch}
                 </Button>
               </Tooltip>
+            </Grid>
+            <Grid item>
+              <TooltipIconButton
+                title={searchPageStrings.favouriteSearch.title}
+                onClick={onSaveSearch}
+              >
+                <FavoriteBorderIcon />
+              </TooltipIconButton>
             </Grid>
             <Hidden mdUp>
               <Grid item>

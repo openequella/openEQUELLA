@@ -37,6 +37,12 @@ export interface FavouriteSearchDialogProps {
   closeDialog: () => void;
 }
 
+export const defaultFavouriteSearchDialogProps: FavouriteSearchDialogProps = {
+  open: false,
+  onConfirm: Promise.resolve,
+  closeDialog: () => {},
+};
+
 const favouriteSearchStrings = languageStrings.searchpage.favouriteSearch;
 
 /**
