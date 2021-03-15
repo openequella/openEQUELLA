@@ -198,9 +198,7 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
    */
   private By xPathForAttachmentText(String attachmentText) {
     return By.xpath(
-        String.format(
-            "//ul[contains(@class,'attachmentListItem')]//div[contains(@title,'%s')]",
-            attachmentText));
+        String.format("//*[@aria-label='Attachment link']//span[text()='%s']", attachmentText));
   }
 
   /**
