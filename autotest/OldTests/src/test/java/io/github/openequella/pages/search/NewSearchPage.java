@@ -189,6 +189,43 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
   }
 
   /**
+   * Returns a By for the title attribute of an attachment in a search result given the attachment
+   * title.
+   *
+   * @param attachmentText The text to search against to find the name of the attachment within
+   *     search results.
+   * @return a By for the attachmentText.
+   */
+  private By xPathForAttachmentText(String attachmentText) {
+    return By.xpath(
+        String.format(
+            "//ul[contains(@class,'attachmentListItem')]//div[contains(@title,'%s')]",
+            attachmentText));
+  }
+
+  /**
+   * Waits until the search results contain an Attachment with a name that matches the given text.
+   *
+   * @param attachmentText the attachment name to be present in the search.
+   */
+  public void verifyAttachmentDisplayed(String attachmentText) {
+    waiter.until(
+        ExpectedConditions.presenceOfElementLocated(xPathForAttachmentText(attachmentText)));
+  }
+
+  /**
+   * Waits until the search results contain no attachments with a name that matches the given text.
+   * Uses numberOfElementsToBe(path, 0), as there is no non-presence condition in
+   * ExpectedConditions.
+   *
+   * @param attachmentText the attachment name not to be present in the search.
+   */
+  public void verifyAttachmentNotDisplayed(String attachmentText) {
+    waiter.until(
+        ExpectedConditions.numberOfElementsToBe(xPathForAttachmentText(attachmentText), 0));
+  }
+
+  /**
    * Get one Refine Search control by ID.
    *
    * @param id The ID of a Refine Search control, excluding its prefix.
