@@ -90,7 +90,8 @@ public class NewSearchPageTest extends AbstractSessionTest {
   }
 
   @Test(
-      description = "Search with two differently privileged users when there is a restricted attachment",
+      description =
+          "Search with two differently privileged users when there is a restricted attachment",
       dependsOnMethods = "searchWithLessACLS")
   @NewUIOnly
   public void searchWithRestrictedAttachments() {
