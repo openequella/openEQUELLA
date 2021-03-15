@@ -91,8 +91,7 @@ public class NewSearchPageTest extends AbstractSessionTest {
 
   @Test(
       description =
-          "Search with two differently privileged users when there is a restricted attachment",
-      dependsOnMethods = "searchWithLessACLS")
+          "Search with two differently privileged users when there is a restricted attachment")
   @NewUIOnly
   public void searchWithRestrictedAttachments() {
     String attachmentTitle = "https://en.wikipedia.org/wiki/Itanium";
