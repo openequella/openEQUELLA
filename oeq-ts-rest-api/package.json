@@ -32,7 +32,7 @@
     "axios-cookiejar-support": "^1.0.0",
     "lodash": "^4.17.15",
     "query-string": "^6.12.1",
-    "runtypes": "^5.0.1",
+    "runtypes": "^5.0.2",
     "tough-cookie": "^4.0.0",
     "typescript-is": "^0.17.0"
   },
