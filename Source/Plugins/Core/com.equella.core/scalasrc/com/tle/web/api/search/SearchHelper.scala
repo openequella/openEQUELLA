@@ -38,6 +38,7 @@ import com.tle.web.api.item.equella.interfaces.beans.{
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
 import com.tle.web.api.search.model.{SearchParam, SearchResultAttachment, SearchResultItem}
 import com.tle.web.controls.resource.ResourceAttachmentBean
+import org.apache.commons.collections.CollectionUtils
 
 import java.time.format.DateTimeParseException
 import java.time.{LocalDate, LocalDateTime, LocalTime, ZoneId}
@@ -219,7 +220,7 @@ object SearchHelper {
   def convertToAttachment(attachmentBeans: java.util.List[AttachmentBean],
                           itemKey: ItemIdKey): Option[List[SearchResultAttachment]] = {
     // Filter out restricted attachments if user doesn't have permission to view them
-    if (LegacyGuice.aclManager
+    if (CollectionUtils.isNotEmpty(attachmentBeans) && LegacyGuice.aclManager
           .filterNonGrantedPrivileges(AttachmentConfigConstants.VIEW_RESTRICTED_ATTACHMENTS)
           .isEmpty) {
       attachmentBeans.removeIf(a => a.isRestricted)
