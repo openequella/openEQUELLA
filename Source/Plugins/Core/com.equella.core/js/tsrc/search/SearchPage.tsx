@@ -78,8 +78,8 @@ import {
   FavouriteItemDialogProps,
   FavouriteItemInfo,
 } from "./components/FavouriteItemDialog";
-import { MimeTypeFilterSelector } from "./components/MimeTypeFilterSelector";
 import GallerySearchResult from "./components/GallerySearchResult";
+import { MimeTypeFilterSelector } from "./components/MimeTypeFilterSelector";
 import OwnerSelector from "./components/OwnerSelector";
 import { RefinePanelControl } from "./components/RefineSearchPanel";
 import { SearchAttachmentsSelector } from "./components/SearchAttachmentsSelector";

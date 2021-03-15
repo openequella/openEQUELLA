@@ -40,7 +40,7 @@ import {
 } from "../../modules/LegacySelectionSessionModule";
 import { languageStrings } from "../../util/langstrings";
 
-const { viewItem } = languageStrings.searchpage.gallerySearchResult;
+const { ariaLabel, viewItem } = languageStrings.searchpage.gallerySearchResult;
 
 export interface GallerySearchResultProps {
   items: GallerySearchResultItem[];
@@ -73,7 +73,7 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
     altText: string,
     onClick: () => void
   ) => (
-    <GridListTile key={key} onClick={onClick}>
+    <GridListTile key={key} onClick={onClick} aria-label={ariaLabel}>
       <img style={{ cursor: "zoom-in" }} src={imgSrc} alt={altText} />
       <GridListTileBar
         className={classes.titleBar}

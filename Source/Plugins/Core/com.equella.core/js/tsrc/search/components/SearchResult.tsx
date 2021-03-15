@@ -35,11 +35,11 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import Tooltip from "@material-ui/core/Tooltip";
 import AttachFile from "@material-ui/icons/AttachFile";
-import ExpandMore from "@material-ui/icons/ExpandMore";
-import InsertDriveFile from "@material-ui/icons/InsertDriveFile";
 import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
+import ExpandMore from "@material-ui/icons/ExpandMore";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
+import InsertDriveFile from "@material-ui/icons/InsertDriveFile";
 import Search from "@material-ui/icons/Search";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
@@ -58,18 +58,22 @@ import {
   addFavouriteItem,
   deleteFavouriteItem,
 } from "../../modules/FavouriteModule";
-import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
 import {
   buildSelectionSessionItemSummaryLink,
-  selectResource,
+  getSearchPageAttachmentClass,
+  getSearchPageItemClass,
+  isSelectionSessionInSkinny,
+  isSelectionSessionInStructured,
   isSelectionSessionOpen,
   isSelectSummaryButtonDisabled,
   prepareDraggable,
-  getSearchPageItemClass,
-  getSearchPageAttachmentClass,
-  isSelectionSessionInStructured,
-  isSelectionSessionInSkinny,
+  selectResource,
 } from "../../modules/LegacySelectionSessionModule";
+import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
+import {
+  determineAttachmentViewUrl,
+  determineViewer,
+} from "../../modules/ViewerModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
 import type {
@@ -78,10 +82,6 @@ import type {
   FavouriteItemInfo,
 } from "./FavouriteItemDialog";
 import { ResourceSelector } from "./ResourceSelector";
-import {
-  determineAttachmentViewUrl,
-  determineViewer,
-} from "../../modules/ViewerModule";
 
 const {
   searchResult: searchResultStrings,
@@ -577,7 +577,11 @@ export default function SearchResult({
       : itemLink();
 
   return (
-    <ListItem alignItems="flex-start" divider>
+    <ListItem
+      alignItems="flex-start"
+      divider
+      aria-label={searchResultStrings.ariaLabel}
+    >
       <OEQThumb
         attachment={attachments[0]}
         showPlaceholder={displayOptions?.disableThumbnail ?? false}

@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import { GallerySearchResultItem } from "../tsrc/modules/GallerySearchModule";
 
 export const basicImageSearchResponse: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> = {
   start: 0,
@@ -250,6 +251,123 @@ export const basicImageSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
           "http://localhost:8080/ian/api/item/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/",
       },
       isLatestVersion: true,
+    },
+  ],
+  highlight: [],
+};
+
+export const transformedBasicImageSearchResponse: OEQ.Search.SearchResult<GallerySearchResultItem> = {
+  start: 0,
+  length: 3,
+  available: 24,
+  results: [
+    {
+      uuid: "fe79c485-a6dd-4743-81e8-52de66494633",
+      version: 1,
+      name: "A history of cattle dogs",
+      links: {
+        view:
+          "http://localhost:8080/ian/items/fe79c485-a6dd-4743-81e8-52de66494633/1/",
+        self:
+          "http://localhost:8080/ian/api/item/fe79c485-a6dd-4743-81e8-52de66494633/1/",
+      },
+      mainEntry: {
+        mimeType: "image/jpeg",
+        name: "Kelpie1.jpg",
+        imagePathSmall:
+          "http://localhost:8080/ian/thumbs/fe79c485-a6dd-4743-81e8-52de66494633/1/dbd6dd98-d731-4a8f-907e-ceaf9608da3b?gallery=thumbnail",
+        imagePathMedium:
+          "http://localhost:8080/ian/thumbs/fe79c485-a6dd-4743-81e8-52de66494633/1/dbd6dd98-d731-4a8f-907e-ceaf9608da3b?gallery=preview",
+        imagePathFull:
+          "file/fe79c485-a6dd-4743-81e8-52de66494633/1/Kelpie1.jpg",
+      },
+      additionalEntries: [],
+    },
+    {
+      uuid: "40e879db-393b-4256-bfe2-9a78771d6937",
+      version: 1,
+      name: "Australian Kelpies",
+      links: {
+        view:
+          "http://localhost:8080/ian/items/40e879db-393b-4256-bfe2-9a78771d6937/1/",
+        self:
+          "http://localhost:8080/ian/api/item/40e879db-393b-4256-bfe2-9a78771d6937/1/",
+      },
+      mainEntry: {
+        mimeType: "image/jpeg",
+        name: "Kelpie2.jpg",
+        imagePathSmall:
+          "http://localhost:8080/ian/thumbs/40e879db-393b-4256-bfe2-9a78771d6937/1/4fddbeb7-8d16-4417-be60-8709ce9d7b15?gallery=thumbnail",
+        imagePathMedium:
+          "http://localhost:8080/ian/thumbs/40e879db-393b-4256-bfe2-9a78771d6937/1/4fddbeb7-8d16-4417-be60-8709ce9d7b15?gallery=preview",
+        imagePathFull:
+          "file/40e879db-393b-4256-bfe2-9a78771d6937/1/Kelpie2.jpg",
+      },
+      additionalEntries: [
+        {
+          mimeType: "image/jpeg",
+          name: "Kelpie1.jpg",
+          imagePathSmall:
+            "http://localhost:8080/ian/thumbs/40e879db-393b-4256-bfe2-9a78771d6937/1/df55f129-1bbb-427f-b8a0-46792559bea9?gallery=thumbnail",
+          imagePathMedium:
+            "http://localhost:8080/ian/thumbs/40e879db-393b-4256-bfe2-9a78771d6937/1/df55f129-1bbb-427f-b8a0-46792559bea9?gallery=preview",
+          imagePathFull:
+            "file/40e879db-393b-4256-bfe2-9a78771d6937/1/Kelpie1.jpg",
+        },
+      ],
+    },
+    {
+      uuid: "8d25bfcc-f877-4cb6-84cd-391a79c7c67a",
+      version: 1,
+      name: "Authors of the 20th Century",
+      links: {
+        view:
+          "http://localhost:8080/ian/items/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/",
+        self:
+          "http://localhost:8080/ian/api/item/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/",
+      },
+      mainEntry: {
+        mimeType: "image/jpeg",
+        name: "Wilkie Collins.jpg",
+        imagePathSmall:
+          "http://localhost:8080/ian/thumbs/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/a09056f0-c867-40ea-80c0-a1433f487182?gallery=thumbnail",
+        imagePathMedium:
+          "http://localhost:8080/ian/thumbs/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/a09056f0-c867-40ea-80c0-a1433f487182?gallery=preview",
+        imagePathFull:
+          "file/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/Wilkie Collins.jpg",
+      },
+      additionalEntries: [
+        {
+          mimeType: "image/jpeg",
+          name: "Dickens.jpg",
+          imagePathSmall:
+            "http://localhost:8080/ian/thumbs/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/e3f96e6b-a6aa-4c8e-975c-c2c3870daa34?gallery=thumbnail",
+          imagePathMedium:
+            "http://localhost:8080/ian/thumbs/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/e3f96e6b-a6aa-4c8e-975c-c2c3870daa34?gallery=preview",
+          imagePathFull:
+            "file/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/Dickens.jpg",
+        },
+        {
+          mimeType: "image/jpeg",
+          name: "Conrad.jpg",
+          imagePathSmall:
+            "http://localhost:8080/ian/thumbs/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/f226e79a-1d2c-4894-aaa1-032812351d29?gallery=thumbnail",
+          imagePathMedium:
+            "http://localhost:8080/ian/thumbs/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/f226e79a-1d2c-4894-aaa1-032812351d29?gallery=preview",
+          imagePathFull:
+            "file/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/Conrad.jpg",
+        },
+        {
+          mimeType: "image/jpeg",
+          name: "Eliot.jpg",
+          imagePathSmall:
+            "http://localhost:8080/ian/thumbs/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/3afceca2-63d0-47ea-b921-f199b73194fc?gallery=thumbnail",
+          imagePathMedium:
+            "http://localhost:8080/ian/thumbs/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/3afceca2-63d0-47ea-b921-f199b73194fc?gallery=preview",
+          imagePathFull:
+            "file/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/Eliot(2).jpg",
+        },
+      ],
     },
   ],
   highlight: [],

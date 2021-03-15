@@ -71,16 +71,21 @@ const DisplayModeSelector = ({ value, onChange }: DisplayModeSelectorProps) => {
     },
   ];
 
-  const buttons = options.map(({ displayMode, icon, label }) => (
-    <Button
-      key={displayMode}
-      variant={displayMode === value ? "contained" : "outlined"}
-      onClick={() => onChange(displayMode)}
-      aria-label={label}
-    >
-      {icon}
-    </Button>
-  ));
+  const buttons = options.map(({ displayMode, icon, label }) => {
+    const currentlySelected = displayMode === value;
+
+    return (
+      <Button
+        key={displayMode}
+        variant={currentlySelected ? "contained" : "outlined"}
+        onClick={() => onChange(displayMode)}
+        aria-checked={currentlySelected}
+        aria-label={label}
+      >
+        {icon}
+      </Button>
+    );
+  });
 
   return <ButtonGroup color="secondary">{buttons}</ButtonGroup>;
 };

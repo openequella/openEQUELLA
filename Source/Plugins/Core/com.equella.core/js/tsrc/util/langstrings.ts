@@ -416,6 +416,7 @@ export const languageStrings = {
       title: "Search attachments",
     },
     searchResult: {
+      ariaLabel: "Search result list item",
       attachments: "Attachments",
       dateModified: "Modified",
       keywordFoundInAttachment: "Search term found in attachment content",
@@ -425,6 +426,7 @@ export const languageStrings = {
       },
     },
     gallerySearchResult: {
+      ariaLabel: "Search result gallery item",
       viewItem: "View item",
     },
     statusSelector: {
