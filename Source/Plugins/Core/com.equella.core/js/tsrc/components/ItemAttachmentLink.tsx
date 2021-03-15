@@ -68,6 +68,7 @@ const ItemAttachmentLink = ({
     return (
       <>
         <Link
+          aria-label="Attachment link"
           component="button"
           onClick={(event: SyntheticEvent) => {
             setShowLightbox(!showLightbox);
@@ -93,7 +94,12 @@ const ItemAttachmentLink = ({
     buildLightboxLink()
   ) : (
     // Lightbox viewer not specified, so go with the default of a simple link.
-    <Link href={url} target="_blank" rel="noreferrer">
+    <Link
+      aria-label="Attachment link"
+      href={url}
+      target="_blank"
+      rel="noreferrer"
+    >
       {children}
     </Link>
   );
