@@ -43,6 +43,9 @@ import { languageStrings } from "../../util/langstrings";
 const { ariaLabel, viewItem } = languageStrings.searchpage.gallerySearchResult;
 
 export interface GallerySearchResultProps {
+  /**
+   * The details of the items (and most importantly their thumbnails) to be displayed in the gallery.
+   */
   items: GallerySearchResultItem[];
 }
 
@@ -56,6 +59,11 @@ const useStyles = makeStyles((_: Theme) =>
   })
 );
 
+/**
+ * Displays the results of a search in a Gallery format rather than a list format (as provided
+ * by `SearchResult` with `mapSearchResultItems`). Intended for use with Images and Videos -
+ * possibly later audio.
+ */
 const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
   const classes = useStyles();
   const history = useHistory();
