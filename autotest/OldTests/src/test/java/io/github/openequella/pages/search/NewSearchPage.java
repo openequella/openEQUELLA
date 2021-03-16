@@ -189,8 +189,8 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
   }
 
   /**
-   * Returns a By for the title attribute of an attachment in a search result given the attachment
-   * title.
+   * Returns a By for the aria-label attribute of an attachment link in a search result, given the
+   * attachment title.
    *
    * @param attachmentText The text to search against to find the name of the attachment within
    *     search results.
