@@ -219,15 +219,15 @@ object SearchHelper {
     */
   def convertToAttachment(attachmentBeans: java.util.List[AttachmentBean],
                           itemKey: ItemIdKey): Option[List[SearchResultAttachment]] = {
-    // Filter out restricted attachments if user doesn't have permission to view them
-    if (CollectionUtils.isNotEmpty(attachmentBeans) && LegacyGuice.aclManager
-          .filterNonGrantedPrivileges(AttachmentConfigConstants.VIEW_RESTRICTED_ATTACHMENTS)
-          .isEmpty) {
-      attachmentBeans.removeIf(a => a.isRestricted)
-    }
     Option(attachmentBeans).map(
       beans =>
         beans.asScala
+        // Filter out restricted attachments if the user does not have permissions to view them
+          .filter(
+            a =>
+              !a.isRestricted || !LegacyGuice.aclManager
+                .filterNonGrantedPrivileges(AttachmentConfigConstants.VIEW_RESTRICTED_ATTACHMENTS)
+                .isEmpty)
           .map(att =>
             SearchResultAttachment(
               attachmentType = att.getRawAttachmentType,
