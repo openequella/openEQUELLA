@@ -28,7 +28,7 @@ export const queryMuiButtonByText = (container: HTMLElement, text: string) =>
     container,
     (content: string, element: Element | null | undefined) =>
       content === text && (element?.parentElement?.matches("button") ?? false)
-  );
+  )?.parentElement ?? null;
 
 /**
  * Helper function to find MUI TextField with React Testing Library.
