@@ -19,6 +19,7 @@ import { Link } from "@material-ui/core";
 import * as React from "react";
 import { SyntheticEvent, useState } from "react";
 import { ViewerDefinition } from "../modules/ViewerModule";
+import { languageStrings } from "../util/langstrings";
 import Lightbox from "./Lightbox";
 
 export interface ItemAttachmentLinkProps {
@@ -57,6 +58,7 @@ const ItemAttachmentLink = ({
   viewerDetails: [viewer, url],
 }: ItemAttachmentLinkProps) => {
   const [showLightbox, setShowLightbox] = useState<boolean>(false);
+  const { attachmentLink } = languageStrings.searchpage.searchResult;
 
   const buildLightboxLink = (): JSX.Element => {
     if (!mimeType) {
@@ -68,7 +70,7 @@ const ItemAttachmentLink = ({
     return (
       <>
         <Link
-          aria-label="Attachment link"
+          aria-label={`${attachmentLink} ${description}`}
           component="button"
           onClick={(event: SyntheticEvent) => {
             setShowLightbox(!showLightbox);
@@ -95,7 +97,7 @@ const ItemAttachmentLink = ({
   ) : (
     // Lightbox viewer not specified, so go with the default of a simple link.
     <Link
-      aria-label="Attachment link"
+      aria-label={`${attachmentLink} ${description}`}
       href={url}
       target="_blank"
       rel="noreferrer"
