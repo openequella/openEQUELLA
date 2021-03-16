@@ -83,7 +83,11 @@ export interface FavouriteSearch {
 /**
  * Data structure for adding a search definition to user's favourite search
  */
-export interface FavouriteSearchInfo {
+export interface FavouriteSearchModel {
+  /**
+   * ID of a favourite search. The value is null when the search doesn't persist to DB.
+   */
+  id?: number;
   /**
    * Name of a search definition
    */
@@ -130,10 +134,10 @@ export const deleteFavouriteItem = (
  */
 export const addFavouriteSearch = (
   apiBasePath: string,
-  searchInfo: FavouriteSearchInfo
-): Promise<FavouriteSearchInfo> =>
+  searchInfo: FavouriteSearchModel
+): Promise<FavouriteSearchModel> =>
   POST(
     apiBasePath + FAVOURITE_SEARCH_PATH,
-    (data): data is FavouriteSearchInfo => is<FavouriteSearchInfo>(data),
+    (data): data is FavouriteSearchModel => is<FavouriteSearchModel>(data),
     searchInfo
   );
