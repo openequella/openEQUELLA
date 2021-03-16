@@ -56,8 +56,8 @@ export const deleteFavouriteItem = (bookmarkID: number): Promise<void> =>
 export const addFavouriteSearch = (
   name: string,
   url: string
-): Promise<OEQ.Favourite.FavouriteSearchInfo> =>
+): Promise<OEQ.Favourite.FavouriteSearchModel> =>
   OEQ.Favourite.addFavouriteSearch(API_BASE_URL, {
     name,
     url,
-  }).then((searchInfo: OEQ.Favourite.FavouriteSearchInfo) => searchInfo);
+  }).then((searchInfo: OEQ.Favourite.FavouriteSearchModel) => searchInfo);

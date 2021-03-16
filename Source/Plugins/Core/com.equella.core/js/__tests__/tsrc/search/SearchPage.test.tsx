@@ -67,6 +67,7 @@ import { languageStrings } from "../../../tsrc/util/langstrings";
 import { updateMockGetBaseUrl } from "../BaseUrlHelper";
 import { queryPaginatorControls } from "../components/SearchPaginationTestHelper";
 import { updateMockGlobalCourseList } from "../CourseListHelper";
+import { queryMuiTextField } from "../MuiQueries";
 import { selectOption } from "../MuiTestHelpers";
 import { basicRenderData, updateMockGetRenderData } from "../RenderDataHelper";
 import {
@@ -147,6 +148,13 @@ jest.spyOn(FavouriteModule, "addFavouriteItem").mockResolvedValue({
 });
 
 jest.spyOn(FavouriteModule, "deleteFavouriteItem").mockResolvedValue();
+
+jest.spyOn(FavouriteModule, "addFavouriteSearch").mockResolvedValue({
+  id: 123,
+  name: "test",
+  url:
+    "/page/search?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RATING%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22crab%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D",
+});
 
 const defaultSearchPageOptions: SearchPageOptions = {
   ...SearchModule.defaultSearchOptions,
@@ -878,4 +886,47 @@ describe("Add and remove favourite Item,", () => {
       expect(updatedHeartIcon).toBeInTheDocument();
     }
   );
+});
+
+describe("Add favourite search", () => {
+  it("shows FavouriteSearchDialog to add a favourite search", async () => {
+    const page = await renderSearchPage();
+    const heartIcon = getByLabelText(
+      page.container,
+      languageStrings.searchpage.favouriteSearch.title,
+      {
+        selector: "button",
+      }
+    );
+    userEvent.click(heartIcon);
+
+    const dialog = page.getByRole("dialog");
+    const searchNameInput = queryMuiTextField(
+      dialog,
+      languageStrings.searchpage.favouriteSearch.text
+    );
+    if (!searchNameInput) {
+      throw new Error("Failed to find TextField in FavouriteSearchDialog.");
+    }
+    userEvent.type(searchNameInput, "test");
+
+    const confirmButton = dialog.querySelector(
+      "#confirm-dialog-confirm-button"
+    );
+    if (!confirmButton) {
+      throw new Error(
+        "Failed to find the Confirm button in FavouriteSearchDialog."
+      );
+    }
+
+    await act(async () => {
+      await userEvent.click(confirmButton);
+    });
+
+    expect(
+      screen.getByText(
+        languageStrings.searchpage.favouriteSearch.saveSearchConfirmationText
+      )
+    ).toBeInTheDocument();
+  });
 });
