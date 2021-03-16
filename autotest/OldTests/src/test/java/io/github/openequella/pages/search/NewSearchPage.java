@@ -192,13 +192,12 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
    * Returns a By for the aria-label attribute of an attachment link in a search result, given the
    * attachment title.
    *
-   * @param attachmentText The text to search against to find the name of the attachment within
-   *     search results.
-   * @return a By for the attachmentText.
+   * @param text The text to search against to find the name of the attachment within search
+   *     results.
+   * @return a By for the text.
    */
-  private By xPathForAttachmentText(String attachmentText) {
-
-    return By.xpath(String.format("//*[@aria-label='Attachment link %s']", attachmentText));
+  private By attachmentLinkByText(String text) {
+    return By.xpath(String.format("//*[@aria-label='Attachment link %s']", text));
   }
 
   /**
@@ -207,8 +206,7 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
    * @param attachmentText the attachment name to be present in the search.
    */
   public void verifyAttachmentDisplayed(String attachmentText) {
-    waiter.until(
-        ExpectedConditions.presenceOfElementLocated(xPathForAttachmentText(attachmentText)));
+    waiter.until(ExpectedConditions.presenceOfElementLocated(attachmentLinkByText(attachmentText)));
   }
 
   /**
@@ -219,8 +217,7 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
    * @param attachmentText the attachment name not to be present in the search.
    */
   public void verifyAttachmentNotDisplayed(String attachmentText) {
-    waiter.until(
-        ExpectedConditions.numberOfElementsToBe(xPathForAttachmentText(attachmentText), 0));
+    waiter.until(ExpectedConditions.numberOfElementsToBe(attachmentLinkByText(attachmentText), 0));
   }
 
   /**
