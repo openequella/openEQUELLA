@@ -89,8 +89,7 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
       info.forwardToUrl(fullPath);
       return;
     } else if (path.contains("/page/search")) {
-      throw new SectionsRuntimeException(
-          "This favourite search is only available in new Search Page");
+      throw new SectionsRuntimeException("This favourite search is only available in New UI mode.");
     }
 
     // When user favourites a normal search, cloud search or hierarchy search,
