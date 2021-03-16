@@ -197,8 +197,8 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
    * @return a By for the attachmentText.
    */
   private By xPathForAttachmentText(String attachmentText) {
-    return By.xpath(
-        String.format("//*[@aria-label='Attachment link']//span[text()='%s']", attachmentText));
+
+    return By.xpath(String.format("//*[@aria-label='Attachment link %s']", attachmentText));
   }
 
   /**
