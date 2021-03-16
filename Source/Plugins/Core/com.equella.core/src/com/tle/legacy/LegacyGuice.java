@@ -31,6 +31,7 @@ import com.tle.core.encryption.EncryptionService;
 import com.tle.core.events.services.EventService;
 import com.tle.core.facetedsearch.service.FacetedSearchClassificationService;
 import com.tle.core.favourites.service.BookmarkService;
+import com.tle.core.favourites.service.FavouriteSearchService;
 import com.tle.core.fedsearch.FederatedSearchService;
 import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.i18n.BundleCache;
@@ -136,6 +137,8 @@ public class LegacyGuice extends AbstractModule {
   @Inject public static EventService eventService;
 
   @Inject public static FacetedSearchClassificationService facetedSearchClassificationService;
+
+  @Inject public static FavouriteSearchService favouriteSearchService;
 
   @Inject public static FederatedSearchService federatedSearchService;
 
