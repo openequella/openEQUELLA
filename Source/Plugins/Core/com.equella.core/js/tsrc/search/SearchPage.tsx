@@ -393,9 +393,13 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   // effect, however this is only required while selection sessions still
   // involve legacy content.
   useEffect(() => {
-    if (state.status === "success" && isSelectionSessionInStructured()) {
+    if (
+      state.status === "success" &&
+      state.result.from === "item-search" &&
+      isSelectionSessionInStructured()
+    ) {
       state.result.content.results.forEach(
-        ({ uuid }: OEQ.Search.SearchResultItem | GallerySearchResultItem) => {
+        ({ uuid }: OEQ.Search.SearchResultItem) => {
           prepareDraggable(uuid);
         }
       );
