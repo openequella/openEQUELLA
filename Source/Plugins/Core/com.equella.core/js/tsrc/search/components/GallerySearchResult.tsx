@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 import { GridList, GridListTile, GridListTileBar } from "@material-ui/core";
-import IconButton from "@material-ui/core/IconButton";
 import { makeStyles } from "@material-ui/core/styles";
 import InfoIcon from "@material-ui/icons/Info";
 import * as React from "react";
 import { useState } from "react";
 import { useHistory } from "react-router";
 import Lightbox, { LightboxProps } from "../../components/Lightbox";
+import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { routes } from "../../mainui/routes";
 import {
   GalleryEntry,
@@ -78,9 +78,9 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
       <GridListTileBar
         className={classes.titleBar}
         actionIcon={
-          <IconButton
+          <TooltipIconButton
             color="secondary"
-            aria-label={viewItem}
+            title={viewItem}
             onClick={() =>
               history.push(
                 isSelectionSessionOpen()
@@ -90,7 +90,7 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
             }
           >
             <InfoIcon />
-          </IconButton>
+          </TooltipIconButton>
         }
       />
     </GridListTile>
