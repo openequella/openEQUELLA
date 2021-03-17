@@ -60,7 +60,4 @@ export const addFavouriteSearch = (
   OEQ.Favourite.addFavouriteSearch(API_BASE_URL, {
     name,
     url,
-  }).then(
-    (newFavouriteSearch: OEQ.Favourite.FavouriteSearchModel) =>
-      newFavouriteSearch
-  );
+  });

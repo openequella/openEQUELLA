@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { Meta, Story } from "@storybook/react";
+import type { Meta, Story } from "@storybook/react";
 import {
   FavouriteSearchDialog,
   FavouriteSearchDialogProps,

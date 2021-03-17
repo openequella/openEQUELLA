@@ -15,11 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
-import { act } from "react-dom/test-utils";
 import {
   FavouriteSearchDialog,
   FavouriteSearchDialogProps,
