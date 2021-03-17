@@ -93,7 +93,7 @@ export interface SearchResultListProps {
    */
   onCopySearchLink: () => void;
   /**
-   * Fired to open the Favourite search dialog
+   * Fired when the save search button is clicked.
    */
   onSaveSearch: () => void;
   /**

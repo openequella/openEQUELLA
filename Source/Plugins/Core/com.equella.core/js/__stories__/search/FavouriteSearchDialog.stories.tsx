@@ -26,9 +26,9 @@ export default {
   title: "Search/FavouriteSearchDialog",
   component: FavouriteSearchDialog,
   argTypes: {
-    closeDialog: { action: "on close dialog" },
+    closeDialog: { action: "onClose" },
     onConfirm: {
-      action: "on click confirm",
+      action: "onConfirm",
     },
   },
 } as Meta<FavouriteSearchDialogProps>;
