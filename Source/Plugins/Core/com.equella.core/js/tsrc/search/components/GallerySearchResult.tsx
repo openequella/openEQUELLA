@@ -106,7 +106,7 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
         version,
       }: GallerySearchResultItem) => {
         const itemName = name ?? uuid;
-        const onClick = ({
+        const buildOnClickHandler = ({
           mimeType,
           imagePathFull: src,
           name,
@@ -126,7 +126,7 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
             `${uuid}-mainEntry`,
             mainEntry.imagePathMedium,
             `${itemName} - Main Entry (${mainEntry.name})`,
-            onClick(mainEntry)
+            buildOnClickHandler(mainEntry)
           ),
           additionalEntries.map((ae, idx) =>
             buildTile(
@@ -135,7 +135,7 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
               `${uuid}-additionalEntry-${idx}`,
               ae.imagePathMedium,
               `${itemName} - Additional Entry ${idx + 1} (${ae.name})`,
-              onClick(ae)
+              buildOnClickHandler(ae)
             )
           ),
         ];
