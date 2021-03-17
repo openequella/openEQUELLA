@@ -764,10 +764,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     return defaultResult;
   };
 
-  const renderSearchResults = ():
-    | React.ReactNode[]
-    | React.ReactNode
-    | null => {
+  const renderSearchResults = (): React.ReactNode | null => {
     const {
       from,
       content: { results: searchResults },
