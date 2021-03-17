@@ -15,13 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  createStyles,
-  GridList,
-  GridListTile,
-  GridListTileBar,
-  Theme,
-} from "@material-ui/core";
+import { GridList, GridListTile, GridListTileBar } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import { makeStyles } from "@material-ui/core/styles";
 import InfoIcon from "@material-ui/icons/Info";
@@ -49,15 +43,13 @@ export interface GallerySearchResultProps {
   items: GallerySearchResultItem[];
 }
 
-const useStyles = makeStyles((_: Theme) =>
-  createStyles({
-    titleBar: {
-      background:
-        "linear-gradient(to top, rgba(0,0,0,0.5) 0%, " +
-        "rgba(0,0,0,0.1) 70%, rgba(0,0,0,0) 100%)",
-    },
-  })
-);
+const useStyles = makeStyles({
+  titleBar: {
+    background:
+      "linear-gradient(to top, rgba(0,0,0,0.5) 0%, " +
+      "rgba(0,0,0,0.1) 70%, rgba(0,0,0,0) 100%)",
+  },
+});
 
 /**
  * Displays the results of a search in a Gallery format rather than a list format (as provided
