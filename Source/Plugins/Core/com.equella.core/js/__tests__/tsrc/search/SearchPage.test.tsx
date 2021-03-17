@@ -905,7 +905,7 @@ describe("Changing display mode", () => {
     page.queryAllByLabelText(galleryItemAriaLabel);
 
   const isChecked = (label: string): boolean => {
-    const button = screen.getByLabelText(label);
+    const button = page.getByLabelText(label);
     const checkedState = button.getAttribute("aria-checked");
     return (
       checkedState === "true" &&
@@ -915,7 +915,7 @@ describe("Changing display mode", () => {
 
   const changeMode = async (mode: string) => {
     await act(async () => {
-      await userEvent.click(screen.getByLabelText(mode));
+      await userEvent.click(page.getByLabelText(mode));
     });
     expect(isChecked(mode)).toBeTruthy();
   };
