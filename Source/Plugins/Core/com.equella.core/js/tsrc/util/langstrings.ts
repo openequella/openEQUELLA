@@ -419,6 +419,7 @@ export const languageStrings = {
       ariaLabel: "Search result list item",
       attachments: "Attachments",
       dateModified: "Modified",
+      attachmentLink: "Attachment link",
       keywordFoundInAttachment: "Search term found in attachment content",
       errors: {
         getAttachmentViewerDetailsFailure:
