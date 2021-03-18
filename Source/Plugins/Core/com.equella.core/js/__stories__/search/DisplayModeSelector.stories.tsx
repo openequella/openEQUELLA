@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { action } from "@storybook/addon-actions";
 import { Meta, Story } from "@storybook/react";
 import * as React from "react";
 import DisplayModeSelector, {
@@ -25,23 +24,22 @@ import DisplayModeSelector, {
 export default {
   title: "Search/DisplayModeSelector",
   component: DisplayModeSelector,
+  argTypes: {
+    onChange: { action: "onChange" },
+  },
 } as Meta<DisplayModeSelectorProps>;
-
-const commonParams = {
-  onChange: action("onChange"),
-};
 
 export const ListSelection: Story<DisplayModeSelectorProps> = (args) => (
   <DisplayModeSelector {...args} />
 );
-ListSelection.args = { ...commonParams, value: "list" };
+ListSelection.args = { value: "list" };
 
 export const ImageGallerySelection: Story<DisplayModeSelectorProps> = (
   args
 ) => <DisplayModeSelector {...args} />;
-ImageGallerySelection.args = { ...commonParams, value: "gallery-image" };
+ImageGallerySelection.args = { value: "gallery-image" };
 
 export const VideoGallerySelection: Story<DisplayModeSelectorProps> = (
   args
 ) => <DisplayModeSelector {...args} />;
-VideoGallerySelection.args = { ...commonParams, value: "gallery-video" };
+VideoGallerySelection.args = { value: "gallery-video" };
