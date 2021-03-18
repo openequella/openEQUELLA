@@ -36,6 +36,7 @@ import { act } from "react-dom/test-utils";
 import { Router } from "react-router-dom";
 import { getAdvancedSearchesFromServerResult } from "../../../__mocks__/AdvancedSearchModule.mock";
 import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock";
+import { transformedBasicImageSearchResponse } from "../../../__mocks__/GallerySearchModule.mock";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import { getMimeTypeFilters } from "../../../__mocks__/MimeTypeFilter.mock";
 import { getRemoteSearchesFromServerResult } from "../../../__mocks__/RemoteSearchModule.mock";
@@ -47,8 +48,9 @@ import {
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
 import * as AdvancedSearchModule from "../../../tsrc/modules/AdvancedSearchModule";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
-import * as FavouriteModule from "../../../tsrc/modules/FavouriteModule";
 import { Collection } from "../../../tsrc/modules/CollectionsModule";
+import * as FavouriteModule from "../../../tsrc/modules/FavouriteModule";
+import * as GallerySearchModule from "../../../tsrc/modules/GallerySearchModule";
 import { getGlobalCourseList } from "../../../tsrc/modules/LegacySelectionSessionModule";
 import * as MimeTypesModule from "../../../tsrc/modules/MimeTypesModule";
 import * as RemoteSearchModule from "../../../tsrc/modules/RemoteSearchModule";
@@ -93,6 +95,7 @@ const mockListClassification = jest.spyOn(
   "listClassifications"
 );
 const mockSearch = jest.spyOn(SearchModule, "searchItems");
+const mockGallerySearch = jest.spyOn(GallerySearchModule, "imageGallerySearch");
 const mockSearchSettings = jest.spyOn(
   SearchSettingsModule,
   "getSearchSettingsFromServer"
@@ -153,10 +156,12 @@ const defaultSearchPageOptions: SearchPageOptions = {
   sortOrder: "RANK",
   dateRangeQuickModeEnabled: true,
   mimeTypeFilters: [],
+  displayMode: "list",
 };
 const defaultCollectionPrivileges = [OEQ.Acl.ACL_SEARCH_COLLECTION];
 
 const SORTORDER_SELECT_ID = "#sort-order-select";
+
 /**
  * Simple helper to wrap the process of waiting for the execution of a search based on checking the
  * `searchPromise`. Being that it is abstracted out, in the future could change as needed to be
@@ -395,6 +400,7 @@ describe("Refine search by MIME type filters", () => {
     await waitForSearch();
     expect(SearchModule.searchItems).toHaveBeenLastCalledWith({
       ...defaultSearchPageOptions,
+      // @ts-ignore IntelliJ complains about missing flatMap - but works fine everywhere else
       mimeTypes: filters.flatMap((f) => f.mimeTypes),
       mimeTypeFilters: filters,
     });
@@ -741,7 +747,7 @@ describe("<SearchPage/>", () => {
       1
     );
     expect(mockClipboard).toHaveBeenCalledWith(
-      "/?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RANK%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D"
+      "/?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RANK%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22dateRangeQuickModeEnabled%22%3Atrue%2C%22displayMode%22%3A%22list%22%7D"
     );
     expect(
       screen.getByText(languageStrings.searchpage.shareSearchConfirmationText)
@@ -876,6 +882,82 @@ describe("Add and remove favourite Item,", () => {
         selector: "button",
       });
       expect(updatedHeartIcon).toBeInTheDocument();
+    }
+  );
+});
+
+describe("Changing display mode", () => {
+  const {
+    modeGalleryImage,
+    modeGalleryVideo,
+    modeItemList,
+  } = languageStrings.searchpage.displayModeSelector;
+  const {
+    searchResult: { ariaLabel: listItemAriaLabel },
+    gallerySearchResult: { ariaLabel: galleryItemAriaLabel },
+  } = languageStrings.searchpage;
+
+  let page: RenderResult;
+
+  const queryListItems = () => page.queryAllByLabelText(listItemAriaLabel);
+
+  const queryGalleryItems = () =>
+    page.queryAllByLabelText(galleryItemAriaLabel);
+
+  const isChecked = (label: string): boolean => {
+    const button = page.getByLabelText(label);
+    const checkedState = button.getAttribute("aria-checked");
+    return (
+      checkedState === "true" &&
+      button.classList.contains("MuiButton-contained")
+    );
+  };
+
+  const changeMode = async (mode: string) => {
+    await act(async () => {
+      await userEvent.click(page.getByLabelText(mode));
+    });
+    expect(isChecked(mode)).toBeTruthy();
+  };
+
+  beforeEach(async () => {
+    page = await renderSearchPage();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("has a default of item list mode", async () => {
+    // Check that the button is visually correct
+    expect(isChecked(modeItemList)).toBeTruthy();
+
+    // Check that it's all wired up correctly - i.e. no mime types were passed to the search
+    expect(mockSearch).toHaveBeenLastCalledWith(defaultSearchPageOptions);
+
+    // And lastly check that it was a item list display - not a gallery
+    expect(queryListItems().length).toBeGreaterThan(0);
+  });
+
+  it.each([modeGalleryImage, modeGalleryVideo])(
+    "supports changing mode - [%s]",
+    async (mode: string) => {
+      expect(queryListItems().length).toBeGreaterThan(0);
+      expect(queryGalleryItems()).toHaveLength(0);
+
+      // Monitor the search function, and change the mode
+      const gallerySearchPromise = mockGallerySearch.mockResolvedValue(
+        transformedBasicImageSearchResponse
+      );
+      await changeMode(mode);
+      await gallerySearchPromise;
+
+      // Make sure the search has been triggered
+      expect(mockGallerySearch).toHaveBeenCalledTimes(1);
+
+      // And now check the visual change
+      expect(queryGalleryItems().length).toBeGreaterThan(0);
+      expect(queryListItems()).toHaveLength(0);
     }
   );
 });
