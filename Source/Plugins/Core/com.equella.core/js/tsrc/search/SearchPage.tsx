@@ -354,7 +354,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           case "gallery-video": // Coming soon
             return {
               from: "gallery-search",
-              content: await imageGallerySearch(options),
+              content: await imageGallerySearch({
+                ...options,
+                // `mimeTypeFilters` should be ignored in gallery modes
+                mimeTypeFilters: undefined,
+              }),
             };
           case "list":
             return { from: "item-search", content: await searchItems(options) };
@@ -676,6 +680,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         />
       ),
       disabled:
+        searchPageOptions.displayMode !== "list" ||
         searchSettings.mimeTypeFilters.length === 0 ||
         !!searchPageOptions.externalMimeTypes,
     },

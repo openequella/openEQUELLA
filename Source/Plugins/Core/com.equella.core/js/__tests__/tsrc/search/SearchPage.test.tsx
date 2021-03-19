@@ -239,6 +239,11 @@ const clickCategory = (container: HTMLElement, category: string) => {
   userEvent.click(getByText(container, category));
 };
 
+const queryMimeTypesSelector = (page: RenderResult) =>
+  page.queryByLabelText(
+    languageStrings.searchpage.mimeTypeFilterSelector.helperText
+  );
+
 describe("Refine search by searching attachments", () => {
   let page: RenderResult;
 
@@ -500,11 +505,7 @@ describe("Hide Refine Search controls", () => {
   it("If not MIME type filters are available, the selector should be hidden", async () => {
     mockMimeTypeFilters.mockResolvedValueOnce([]);
     const page = await renderSearchPage();
-    expect(
-      page.queryByLabelText(
-        languageStrings.searchpage.mimeTypeFilterSelector.helperText
-      )
-    ).not.toBeInTheDocument();
+    expect(queryMimeTypesSelector(page)).not.toBeInTheDocument();
   });
 });
 
@@ -958,6 +959,7 @@ describe("Changing display mode", () => {
       // And now check the visual change
       expect(queryGalleryItems().length).toBeGreaterThan(0);
       expect(queryListItems()).toHaveLength(0);
+      expect(queryMimeTypesSelector(page)).not.toBeInTheDocument();
     }
   );
 });
