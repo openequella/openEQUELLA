@@ -15,7 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { isLightboxSupportedMimeType } from "../../../tsrc/components/Lightbox";
+import userEvent from "@testing-library/user-event";
+import * as React from "react";
+import Lightbox, {
+  isLightboxSupportedMimeType,
+} from "../../../tsrc/components/Lightbox";
+import { render } from "@testing-library/react";
+import { languageStrings } from "../../../tsrc/util/langstrings";
 
 describe("isLightboxSupportedMimeType", () => {
   it.each<[string, boolean]>([
@@ -28,4 +34,31 @@ describe("isLightboxSupportedMimeType", () => {
   ])("MIME type: %s, supported: %s", (mimeType: string, expected: boolean) =>
     expect(isLightboxSupportedMimeType(mimeType)).toEqual(expected)
   );
+
+  it("supports viewing previous/next attachment", () => {
+    const onPrevious = jest.fn();
+    const onNext = jest.fn();
+    const { getByLabelText } = render(
+      <Lightbox
+        mimeType="image/png"
+        onClose={jest.fn()}
+        open
+        src="./placeholder-135x135.png"
+        onNext={onNext}
+        onPrevious={onPrevious}
+      />
+    );
+
+    const previousButton = getByLabelText(
+      languageStrings.lightboxComponent.viewPrevious
+    );
+    userEvent.click(previousButton);
+    expect(onPrevious).toHaveBeenCalledTimes(1);
+
+    const nextButton = getByLabelText(
+      languageStrings.lightboxComponent.viewNext
+    );
+    userEvent.click(nextButton);
+    expect(onNext).toHaveBeenCalledTimes(1);
+  });
 });

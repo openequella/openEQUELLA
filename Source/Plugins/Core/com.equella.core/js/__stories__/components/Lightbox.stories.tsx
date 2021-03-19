@@ -74,6 +74,6 @@ export const NavigateAttachments: Story<LightboxProps> = (
 ) => <Lightbox {...args} />;
 NavigateAttachments.args = {
   ...displayImage.args,
-  viewNextAttachment: action("View next image"),
-  viewPreviousAttachment: action("View previous image"),
+  onNext: action("View next image"),
+  onPrevious: action("View previous image"),
 };

@@ -96,11 +96,11 @@ export interface LightboxProps {
   /**
    * Function fired to view previous attachment.
    */
-  viewPreviousAttachment?: () => void;
+  onPrevious?: () => void;
   /**
    * Function fired to view next attachment.
    */
-  viewNextAttachment?: () => void;
+  onNext?: () => void;
 }
 
 const {
@@ -114,8 +114,8 @@ const Lightbox = ({
   open,
   src,
   title,
-  viewPreviousAttachment,
-  viewNextAttachment,
+  onPrevious,
+  onNext,
 }: LightboxProps) => {
   const classes = useStyles();
   const {
@@ -128,10 +128,10 @@ const Lightbox = ({
 
   useEffect(() => {
     const keyDownHandler = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft" && viewPreviousAttachment) {
-        viewPreviousAttachment();
-      } else if (e.key === "ArrowRight" && viewNextAttachment) {
-        viewNextAttachment();
+      if (e.key === "ArrowLeft" && onPrevious) {
+        onPrevious();
+      } else if (e.key === "ArrowRight" && onNext) {
+        onNext();
       } else if (e.key === "Escape") {
         onClose();
       }
@@ -140,7 +140,7 @@ const Lightbox = ({
     return () => {
       window.removeEventListener("keydown", keyDownHandler);
     };
-  }, [viewPreviousAttachment, viewNextAttachment]);
+  }, [onPrevious, onNext]);
 
   const unsupportedContent = (
     <Card>
@@ -152,8 +152,8 @@ const Lightbox = ({
     </Card>
   );
 
-  // Build an nested component which gets unmounted when the LightBox re-renders.
-  // This ensures when we navigate to previous/next image, the current image disappears immediately.
+  // Build an nested component which gets unmounted and mounted again when Lightbox re-renders.
+  // This ensures when navigate to previous/next image, the current image disappears immediately.
   const LightBoxImage = () => (
     <img
       className={`${classes.lightboxContent} ${classes.lightboxImage}`}
@@ -238,12 +238,12 @@ const Lightbox = ({
       </Toolbar>
       <Grid container alignItems="center">
         <Grid item xs={1}>
-          {viewPreviousAttachment && (
+          {onPrevious && (
             <TooltipIconButton
               title={viewPreviousString}
               onClick={(e) => {
                 e.stopPropagation();
-                viewPreviousAttachment();
+                onPrevious();
               }}
             >
               <NavigateBeforeIcon className={classes.arrowButton} />
@@ -255,12 +255,12 @@ const Lightbox = ({
         </Grid>
         <Grid item container justify="flex-end" xs={1}>
           <Grid item>
-            {viewNextAttachment && (
+            {onNext && (
               <TooltipIconButton
                 title={viewNextString}
                 onClick={(e) => {
                   e.stopPropagation();
-                  viewNextAttachment();
+                  onNext();
                 }}
               >
                 <NavigateNextIcon className={classes.arrowButton} />

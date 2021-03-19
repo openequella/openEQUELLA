@@ -69,7 +69,7 @@ const ItemAttachmentLink = ({
     .findIndex((url) => url === lightBoxProps.src);
 
   // Return a function which will be passed to LightBox and fired to update what LightBox displays.
-  const viewAnotherAttachment = (
+  const buildLightboxNavigationHandler = (
     canView: boolean,
     anotherAttachmentIndex: number
   ) => {
@@ -109,11 +109,11 @@ const ItemAttachmentLink = ({
         {lightBoxProps.open && ( // minor optimisation to minimise DOM
           <Lightbox
             {...lightBoxProps}
-            viewPreviousAttachment={viewAnotherAttachment(
+            onPrevious={buildLightboxNavigationHandler(
               currentAttachmentIndex > 0,
               currentAttachmentIndex - 1
             )}
-            viewNextAttachment={viewAnotherAttachment(
+            onNext={buildLightboxNavigationHandler(
               currentAttachmentIndex < allLightBoxAttachments.length - 1,
               currentAttachmentIndex + 1
             )}
