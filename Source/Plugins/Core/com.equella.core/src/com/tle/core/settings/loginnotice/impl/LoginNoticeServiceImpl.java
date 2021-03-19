@@ -169,7 +169,8 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
   public String getMimeType(String name) throws IOException {
     CustomisationFile customisationFile = new CustomisationFile();
     if (fileSystemService.fileExists(customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + name)) {
-      return fileSystemService.getMimeType(customisationFile, name);
+      return fileSystemService.getMimeType(
+          customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + name);
     }
     return MediaType.MEDIA_TYPE_WILDCARD;
   }
