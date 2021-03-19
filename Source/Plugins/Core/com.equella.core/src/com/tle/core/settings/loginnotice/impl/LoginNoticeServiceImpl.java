@@ -112,7 +112,7 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
       }
       if (!imageFileUsed) {
         fileSystemService.removeFile(
-            customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + imageFile.getName());
+            customisationFile, getLoginNoticeImageFileName(imageFile.getName()));
       }
     }
   }
@@ -144,7 +144,7 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
     CustomisationFile customisationFile = new CustomisationFile();
     String nameToUse = iterateImageNameIfDuplicateExists(name);
     fileSystemService.write(
-        customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + nameToUse, imageFile, false);
+        customisationFile, getLoginNoticeImageFileName(nameToUse), imageFile, false);
     return nameToUse;
   }
 
@@ -152,25 +152,25 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
     CustomisationFile customisationFile = new CustomisationFile();
     String nameWithoutExtension = FilenameUtils.removeExtension(name);
     String extension = '.' + FilenameUtils.getExtension(name);
+    String concatenatedName = nameWithoutExtension + extension;
     if (fileSystemService.fileExists(
-        customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + nameWithoutExtension + extension)) {
+        customisationFile, getLoginNoticeImageFileName(concatenatedName))) {
       int i = 1;
       while (fileSystemService.fileExists(
           customisationFile,
-          LOGIN_NOTICE_IMAGE_FOLDER_NAME + nameWithoutExtension + '_' + i + extension)) {
+          getLoginNoticeImageFileName(nameWithoutExtension + '_' + i + extension))) {
         i++;
       }
       return nameWithoutExtension + '_' + i + extension;
     }
-    return nameWithoutExtension + extension;
+    return concatenatedName;
   }
 
   @Override
   public String getMimeType(String name) throws IOException {
     CustomisationFile customisationFile = new CustomisationFile();
-    if (fileSystemService.fileExists(customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + name)) {
-      return fileSystemService.getMimeType(
-          customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + name);
+    if (fileSystemService.fileExists(customisationFile, getLoginNoticeImageFileName(name))) {
+      return fileSystemService.getMimeType(customisationFile, getLoginNoticeImageFileName(name));
     }
     return MediaType.MEDIA_TYPE_WILDCARD;
   }
@@ -178,8 +178,8 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
   @Override
   public InputStream getPreLoginNoticeImage(String name) throws IOException {
     CustomisationFile customisationFile = new CustomisationFile();
-    if (fileSystemService.fileExists(customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + name)) {
-      return fileSystemService.read(customisationFile, LOGIN_NOTICE_IMAGE_FOLDER_NAME + name);
+    if (fileSystemService.fileExists(customisationFile, getLoginNoticeImageFileName(name))) {
+      return fileSystemService.read(customisationFile, getLoginNoticeImageFileName(name));
     }
     return null;
   }
@@ -209,5 +209,9 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
     if (!loginNoticeEditorPrivilegeTreeProvider.isAuthorised()) {
       throw new PrivilegeRequiredException(PERMISSION_KEY);
     }
+  }
+
+  private String getLoginNoticeImageFileName(String fileName) {
+    return LOGIN_NOTICE_IMAGE_FOLDER_NAME + fileName;
   }
 }
