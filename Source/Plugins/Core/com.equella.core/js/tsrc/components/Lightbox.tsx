@@ -140,7 +140,7 @@ const Lightbox = ({
     return () => {
       window.removeEventListener("keydown", keyDownHandler);
     };
-  }, [onPrevious, onNext]);
+  }, [onPrevious, onNext, onClose]);
 
   const unsupportedContent = (
     <Card>

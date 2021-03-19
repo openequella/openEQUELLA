@@ -276,7 +276,7 @@ export default function SearchResult({
       // Short circuit if this component is unmounted before all its comms are done.
       mounted = false;
     };
-  }, [attachments, getViewerDetails, handleError]);
+  }, [attachments, getViewerDetails, handleError, uuid, version]);
 
   // In Selection Session, make each attachment draggable.
   useEffect(() => {
