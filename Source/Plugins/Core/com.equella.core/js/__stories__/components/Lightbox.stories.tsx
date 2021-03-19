@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { action } from "@storybook/addon-actions";
 import { Meta, Story } from "@storybook/react";
 import * as React from "react";
 import Lightbox, { LightboxProps } from "../../tsrc/components/Lightbox";
@@ -66,4 +67,13 @@ unsupportedContent.args = {
   open: true,
   src: "not-relevant",
   title: "A Title",
+};
+
+export const NavigateAttachments: Story<LightboxProps> = (
+  args: LightboxProps
+) => <Lightbox {...args} />;
+NavigateAttachments.args = {
+  ...displayImage.args,
+  viewNextAttachment: action("View next image"),
+  viewPreviousAttachment: action("View previous image"),
 };
