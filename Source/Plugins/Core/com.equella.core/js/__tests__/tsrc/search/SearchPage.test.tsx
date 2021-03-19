@@ -67,7 +67,7 @@ import { languageStrings } from "../../../tsrc/util/langstrings";
 import { updateMockGetBaseUrl } from "../BaseUrlHelper";
 import { queryPaginatorControls } from "../components/SearchPaginationTestHelper";
 import { updateMockGlobalCourseList } from "../CourseListHelper";
-import { queryMuiTextField } from "../MuiQueries";
+import { getMuiTextField } from "../MuiQueries";
 import { selectOption } from "../MuiTestHelpers";
 import { basicRenderData, updateMockGetRenderData } from "../RenderDataHelper";
 import {
@@ -901,23 +901,16 @@ describe("Add favourite search", () => {
     userEvent.click(heartIcon);
 
     const dialog = page.getByRole("dialog");
-    const searchNameInput = queryMuiTextField(
+    const searchNameInput = getMuiTextField(
       dialog,
       languageStrings.searchpage.favouriteSearch.text
     );
-    if (!searchNameInput) {
-      throw new Error("Failed to find TextField in FavouriteSearchDialog.");
-    }
     userEvent.type(searchNameInput, "test");
 
     const confirmButton = dialog.querySelector(
       "#confirm-dialog-confirm-button"
     );
-    if (!confirmButton) {
-      throw new Error(
-        "Failed to find the Confirm button in FavouriteSearchDialog."
-      );
-    }
+    expect(confirmButton).not.toBeNull();
 
     await act(async () => {
       await userEvent.click(confirmButton);

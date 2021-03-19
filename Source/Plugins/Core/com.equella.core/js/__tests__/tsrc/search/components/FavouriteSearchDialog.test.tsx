@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { act, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import {
@@ -24,7 +24,7 @@ import {
   FavouriteSearchDialogProps,
 } from "../../../../tsrc/search/components/FavouriteSearchDialog";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
-import { queryMuiButtonByText, queryMuiTextField } from "../../MuiQueries";
+import { getMuiButtonByText, getMuiTextField } from "../../MuiQueries";
 
 describe("<FavouriteSearchDialog/>", () => {
   const closeDialog = jest.fn();
@@ -37,28 +37,15 @@ describe("<FavouriteSearchDialog/>", () => {
 
   const getConfirmButton = (): HTMLElement => {
     const dialog = screen.getByRole("dialog");
-    const confirmButton = queryMuiButtonByText(
-      dialog,
-      languageStrings.common.action.ok
-    );
-    if (!confirmButton) {
-      throw new Error(
-        "Failed to find the Confirm button in FavouriteSearchDialog"
-      );
-    }
-    return confirmButton;
+    return getMuiButtonByText(dialog, languageStrings.common.action.ok);
   };
 
   const getTextField = (): HTMLElement => {
     const dialog = screen.getByRole("dialog");
-    const searchNameInput = queryMuiTextField(
+    return getMuiTextField(
       dialog,
       languageStrings.searchpage.favouriteSearch.text
     );
-    if (!searchNameInput) {
-      throw new Error("Failed to find the TextField in FavouriteSearchDialog");
-    }
-    return searchNameInput;
   };
 
   it("disables the Confirm button by default", () => {
