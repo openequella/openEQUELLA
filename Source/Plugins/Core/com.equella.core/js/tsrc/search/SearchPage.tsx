@@ -97,10 +97,6 @@ const {
   quickOptionDropdown,
 } = searchStrings.lastModifiedDateSelector;
 const { title: collectionSelectorTitle } = searchStrings.collectionSelector;
-const defaultMessageInfo = {
-  open: false,
-  message: "",
-};
 
 /**
  * Type of search options that are specific to Search page presentation layer.
@@ -209,10 +205,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     searchPageHistoryState?.filterExpansion ??
       defaultSearchPageHistory.filterExpansion
   );
-  const [messageInfo, setMessageInfo] = useState<{
-    open: boolean;
-    message: string;
-  }>(defaultMessageInfo);
+  const [snackBarMessage, setSnackBarMessage] = useState<string>("");
   const [searchSettings, setSearchSettings] = useState<{
     core: OEQ.SearchSettings.Settings | undefined;
     mimeTypeFilters: MimeTypeFilter[];
@@ -459,10 +452,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     navigator.clipboard
       .writeText(searchUrl)
       .then(() => {
-        setMessageInfo({
-          open: true,
-          message: searchStrings.shareSearchConfirmationText,
-        });
+        setSnackBarMessage(searchStrings.shareSearchConfirmationText);
       })
       .catch(() => handleError);
   };
@@ -479,10 +469,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
         return addFavouriteSearch(name, url)
           .then(() =>
-            setMessageInfo({
-              open: true,
-              message: searchStrings.favouriteSearch.saveSearchConfirmationText,
-            })
+            setSnackBarMessage(
+              searchStrings.favouriteSearch.saveSearchConfirmationText
+            )
           )
           .catch(handleError);
       },
@@ -806,9 +795,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         </Hidden>
       </Grid>
       <MessageInfo
-        open={messageInfo.open}
-        onClose={() => setMessageInfo(defaultMessageInfo)}
-        title={messageInfo.message}
+        open={!!snackBarMessage}
+        onClose={() => setSnackBarMessage("")}
+        title={snackBarMessage}
         variant="success"
       />
       <Hidden mdUp>
