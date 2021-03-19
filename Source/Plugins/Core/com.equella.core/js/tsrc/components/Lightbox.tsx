@@ -19,6 +19,7 @@ import {
   Backdrop,
   Card,
   CardContent,
+  Grid,
   IconButton,
   Theme,
   Toolbar,
@@ -28,7 +29,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import * as React from "react";
-import { SyntheticEvent } from "react";
+import { SyntheticEvent, useEffect } from "react";
 import { Literal, match, Unknown } from "runtypes";
 import {
   isBrowserSupportedAudio,
@@ -36,6 +37,9 @@ import {
   splitMimeType,
 } from "../modules/MimeTypesModule";
 import { languageStrings } from "../util/langstrings";
+import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
+import NavigateNextIcon from "@material-ui/icons/NavigateNext";
+import { TooltipIconButton } from "./TooltipIconButton";
 
 const useStyles = makeStyles((theme: Theme) => ({
   lightboxBackdrop: {
@@ -71,6 +75,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     top: 0,
     width: "100%",
   },
+  arrowButton: {
+    width: 48,
+    height: 48,
+    color: "#fafafa",
+  },
 }));
 
 export interface LightboxProps {
@@ -84,9 +93,30 @@ export interface LightboxProps {
   src: string;
   /** Title to display at the top of the Lightbox. */
   title?: string;
+  /**
+   * Function fired to view previous attachment.
+   */
+  viewPreviousAttachment?: () => void;
+  /**
+   * Function fired to view next attachment.
+   */
+  viewNextAttachment?: () => void;
 }
 
-const Lightbox = ({ mimeType, onClose, open, src, title }: LightboxProps) => {
+const {
+  viewNext: viewNextString,
+  viewPrevious: viewPreviousString,
+} = languageStrings.lightboxComponent;
+
+const Lightbox = ({
+  mimeType,
+  onClose,
+  open,
+  src,
+  title,
+  viewPreviousAttachment,
+  viewNextAttachment,
+}: LightboxProps) => {
   const classes = useStyles();
   const {
     close: labelClose,
@@ -95,6 +125,22 @@ const Lightbox = ({ mimeType, onClose, open, src, title }: LightboxProps) => {
   const {
     unsupportedContent: labelUnsupportedContent,
   } = languageStrings.lightboxComponent;
+
+  useEffect(() => {
+    const keyDownHandler = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft" && viewPreviousAttachment) {
+        viewPreviousAttachment();
+      } else if (e.key === "ArrowRight" && viewNextAttachment) {
+        viewNextAttachment();
+      } else if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", keyDownHandler);
+    return () => {
+      window.removeEventListener("keydown", keyDownHandler);
+    };
+  }, [viewPreviousAttachment, viewNextAttachment]);
 
   const unsupportedContent = (
     <Card>
@@ -106,17 +152,19 @@ const Lightbox = ({ mimeType, onClose, open, src, title }: LightboxProps) => {
     </Card>
   );
 
+  // Build an nested component which gets unmounted when the LightBox re-renders.
+  // This ensures when we navigate to previous/next image, the current image disappears immediately.
+  const LightBoxImage = () => (
+    <img
+      className={`${classes.lightboxContent} ${classes.lightboxImage}`}
+      alt={title}
+      src={src}
+      loading="lazy"
+    />
+  );
+
   const content = match(
-    [
-      Literal("image"),
-      () => (
-        <img
-          className={`${classes.lightboxContent} ${classes.lightboxImage}`}
-          src={src}
-          alt={title}
-        />
-      ),
-    ],
+    [Literal("image"), () => <LightBoxImage />],
     [
       Literal("video"),
       () =>
@@ -188,7 +236,39 @@ const Lightbox = ({ mimeType, onClose, open, src, title }: LightboxProps) => {
           <CloseIcon />
         </IconButton>
       </Toolbar>
-      {content}
+      <Grid container alignItems="center">
+        <Grid item xs={1}>
+          {viewPreviousAttachment && (
+            <TooltipIconButton
+              title={viewPreviousString}
+              onClick={(e) => {
+                e.stopPropagation();
+                viewPreviousAttachment();
+              }}
+            >
+              <NavigateBeforeIcon className={classes.arrowButton} />
+            </TooltipIconButton>
+          )}
+        </Grid>
+        <Grid item container justify="center" xs={10}>
+          <Grid item>{content}</Grid>
+        </Grid>
+        <Grid item container justify="flex-end" xs={1}>
+          <Grid item>
+            {viewNextAttachment && (
+              <TooltipIconButton
+                title={viewNextString}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  viewNextAttachment();
+                }}
+              >
+                <NavigateNextIcon className={classes.arrowButton} />
+              </TooltipIconButton>
+            )}
+          </Grid>
+        </Grid>
+      </Grid>
     </Backdrop>
   );
 };

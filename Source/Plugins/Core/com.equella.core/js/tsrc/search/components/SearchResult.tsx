@@ -70,10 +70,6 @@ import {
   selectResource,
 } from "../../modules/LegacySelectionSessionModule";
 import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
-import {
-  determineAttachmentViewUrl,
-  determineViewer,
-} from "../../modules/ViewerModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
 import type {
@@ -82,6 +78,11 @@ import type {
   FavouriteItemInfo,
 } from "./FavouriteItemDialog";
 import { ResourceSelector } from "./ResourceSelector";
+import {
+  determineAttachmentViewUrl,
+  determineViewer,
+  ViewerDefinition,
+} from "../../modules/ViewerModule";
 
 const {
   searchResult: searchResultStrings,
@@ -161,6 +162,17 @@ export interface SearchResultProps {
   onFavouriteItem: (itemInfo: FavouriteItemInfo) => void;
 }
 
+export interface AttachmentAndViewer {
+  /**
+   * The details of an attachment.
+   */
+  attachment: OEQ.Search.Attachment;
+  /**
+   * Viewer information for the attachment, including which viewer to be used and the view URL.
+   */
+  viewer: ViewerDefinition;
+}
+
 export default function SearchResult({
   getViewerDetails = getMimeTypeDefaultViewerDetails,
   handleError,
@@ -183,10 +195,6 @@ export default function SearchResult({
   },
   onFavouriteItem,
 }: SearchResultProps) {
-  interface AttachmentAndViewerDetails {
-    attachment: OEQ.Search.Attachment;
-    viewerDetails?: OEQ.MimeType.MimeTypeViewerDetail;
-  }
   const itemKey = `${uuid}/${version}`;
   const classes = useStyles();
   const inSelectionSession: boolean = isSelectionSessionOpen();
@@ -198,10 +206,9 @@ export default function SearchResult({
       ? displayOptions?.integrationOpen
       : displayOptions?.standardOpen) ?? false
   );
-  const [
-    attachmentsWithViewerDetails,
-    setAttachmentsWithViewerDetails,
-  ] = useState<AttachmentAndViewerDetails[]>([]);
+  const [attachmentsAndViewers, setAttachmentsAndViewers] = useState<
+    AttachmentAndViewer[]
+  >([]);
 
   const [bookmarkId, setBookmarkId] = useState<number | undefined>(
     bookmarkDefaultId
@@ -218,7 +225,21 @@ export default function SearchResult({
 
     const transform = async (
       a: OEQ.Search.Attachment
-    ): Promise<AttachmentAndViewerDetails> => {
+    ): Promise<AttachmentAndViewer> => {
+      const {
+        attachmentType,
+        mimeType,
+        links: { view: defaultViewUrl },
+        filePath,
+      } = a;
+      const viewUrl = determineAttachmentViewUrl(
+        uuid,
+        version,
+        attachmentType,
+        defaultViewUrl,
+        filePath
+      );
+
       let viewerDetails: OEQ.MimeType.MimeTypeViewerDetail | undefined;
       try {
         viewerDetails = a.mimeType
@@ -233,16 +254,21 @@ export default function SearchResult({
 
       return {
         attachment: a,
-        viewerDetails: viewerDetails,
+        viewer: determineViewer(
+          attachmentType,
+          viewUrl,
+          mimeType,
+          viewerDetails?.viewerId
+        ),
       };
     };
 
     (async () => {
-      const viewerDetails = await Promise.all(
-        attachments.map<Promise<AttachmentAndViewerDetails>>(transform)
+      const attachmentsAndViewers = await Promise.all(
+        attachments.map<Promise<AttachmentAndViewer>>(transform)
       );
       if (mounted) {
-        setAttachmentsWithViewerDetails(viewerDetails);
+        setAttachmentsAndViewers(attachmentsAndViewers);
       }
     })();
 
@@ -255,11 +281,11 @@ export default function SearchResult({
   // In Selection Session, make each attachment draggable.
   useEffect(() => {
     if (inStructured) {
-      attachmentsWithViewerDetails.forEach(({ attachment }) => {
+      attachmentsAndViewers.forEach(({ attachment }) => {
         prepareDraggable(attachment.id, false);
       });
     }
-  }, [attachmentsWithViewerDetails, inStructured]);
+  }, [attachmentsAndViewers, inStructured]);
 
   const handleAttachmentPanelClick = (event: SyntheticEvent) => {
     /** prevents the SearchResult onClick from firing when attachment panel is clicked */
@@ -391,25 +417,11 @@ export default function SearchResult({
   );
 
   const generateAttachmentList = () => {
-    const attachmentsList = attachmentsWithViewerDetails.map(
-      ({
-        attachment: {
-          attachmentType,
-          description,
-          id,
-          links: { view: defaultViewUrl },
-          mimeType,
-          filePath,
-        },
-        viewerDetails,
-      }: AttachmentAndViewerDetails) => {
-        const viewUrl = determineAttachmentViewUrl(
-          uuid,
-          version,
-          attachmentType,
-          defaultViewUrl,
-          filePath
-        );
+    const attachmentsList = attachmentsAndViewers.map(
+      (attachmentAndViewer: AttachmentAndViewer) => {
+        const {
+          attachment: { id, description },
+        } = attachmentAndViewer;
         return (
           <ListItem
             key={id}
@@ -424,13 +436,9 @@ export default function SearchResult({
               {inStructured ? <DragIndicatorIcon /> : <InsertDriveFile />}
             </ListItemIcon>
             <ItemAttachmentLink
-              description={description}
-              mimeType={mimeType}
-              viewerDetails={determineViewer(
-                attachmentType,
-                viewUrl,
-                mimeType,
-                viewerDetails?.viewerId
+              selectedAttachment={attachmentAndViewer}
+              allLightBoxAttachments={attachmentsAndViewers.filter(
+                (av) => av.viewer[0] === "lightbox"
               )}
             >
               <ListItemText color="primary" primary={description} />
@@ -464,7 +472,7 @@ export default function SearchResult({
               labelText={selectResourceStrings.allAttachments}
               isStopPropagation
               onClick={() => {
-                const attachments = attachmentsWithViewerDetails.map(
+                const attachments = attachmentsAndViewers.map(
                   ({ attachment }) => attachment.id
                 );
                 handleSelectResource(itemKey, attachments);

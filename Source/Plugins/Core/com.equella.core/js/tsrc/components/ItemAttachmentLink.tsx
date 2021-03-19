@@ -18,9 +18,9 @@
 import { Link } from "@material-ui/core";
 import * as React from "react";
 import { SyntheticEvent, useState } from "react";
-import { ViewerDefinition } from "../modules/ViewerModule";
 import { languageStrings } from "../util/langstrings";
-import Lightbox from "./Lightbox";
+import type { AttachmentAndViewer } from "../search/components/SearchResult";
+import Lightbox, { LightboxProps } from "./Lightbox";
 
 export interface ItemAttachmentLinkProps {
   /**
@@ -28,20 +28,13 @@ export interface ItemAttachmentLinkProps {
    */
   children: React.ReactNode;
   /**
-   * Optional description that will be passed to chosen viewer - e.g. The viewer provided by
-   * the `<Lightbox/>` component.
+   * The attachment to be viewed in the LightBox.
    */
-  description?: string;
+  selectedAttachment: AttachmentAndViewer;
   /**
-   * Optional mimeType that will be passed to chosen viewer - e.g. The viewer provided by
-   * the `<Lightbox/>` component.
+   * All attachments that are viewable in the LightBox.
    */
-  mimeType?: string;
-  /**
-   * Viewer details for the attachment this link is pointing to. Controls which viewer is triggered
-   * when the link is clicked.
-   */
-  viewerDetails: ViewerDefinition;
+  allLightBoxAttachments: AttachmentAndViewer[];
 }
 
 /**
@@ -53,12 +46,46 @@ export interface ItemAttachmentLinkProps {
  */
 const ItemAttachmentLink = ({
   children,
-  description,
-  mimeType,
-  viewerDetails: [viewer, url],
+  selectedAttachment: {
+    attachment: { description, mimeType },
+    viewer: [viewer, url],
+  },
+  allLightBoxAttachments,
 }: ItemAttachmentLinkProps) => {
-  const [showLightbox, setShowLightbox] = useState<boolean>(false);
   const { attachmentLink } = languageStrings.searchpage.searchResult;
+  const [lightBoxProps, setLightBoxProps] = useState<LightboxProps>({
+    mimeType: mimeType ?? "",
+    src: url,
+    title: description,
+    open: false,
+    onClose: () => {
+      setLightBoxProps({ ...lightBoxProps, open: false }); // Reset LightBox to display the initial attachment.
+    },
+  });
+
+  // Each attachment must have a unique view URL which we can use to determine their indexes.
+  const currentAttachmentIndex = allLightBoxAttachments
+    .map((a) => a.viewer[1])
+    .findIndex((url) => url === lightBoxProps.src);
+
+  // Return a function which will be passed to LightBox and fired to update what LightBox displays.
+  const viewAnotherAttachment = (
+    canView: boolean,
+    anotherAttachmentIndex: number
+  ) => {
+    if (!canView) {
+      return;
+    }
+    const anotherAttachment = allLightBoxAttachments[anotherAttachmentIndex];
+    return () => {
+      setLightBoxProps({
+        ...lightBoxProps,
+        src: anotherAttachment.viewer[1],
+        title: anotherAttachment.attachment.description,
+        mimeType: anotherAttachment.attachment.mimeType ?? "",
+      });
+    };
+  };
 
   const buildLightboxLink = (): JSX.Element => {
     if (!mimeType) {
@@ -73,25 +100,28 @@ const ItemAttachmentLink = ({
           aria-label={`${attachmentLink} ${description}`}
           component="button"
           onClick={(event: SyntheticEvent) => {
-            setShowLightbox(!showLightbox);
+            setLightBoxProps({ ...lightBoxProps, open: true });
             event.stopPropagation();
           }}
         >
           {children}
         </Link>
-        {showLightbox && ( // minor optimisation to minimise DOM
+        {lightBoxProps.open && ( // minor optimisation to minimise DOM
           <Lightbox
-            mimeType={mimeType}
-            onClose={() => setShowLightbox(false)}
-            open={showLightbox}
-            src={url}
-            title={description}
+            {...lightBoxProps}
+            viewPreviousAttachment={viewAnotherAttachment(
+              currentAttachmentIndex > 0,
+              currentAttachmentIndex - 1
+            )}
+            viewNextAttachment={viewAnotherAttachment(
+              currentAttachmentIndex < allLightBoxAttachments.length - 1,
+              currentAttachmentIndex + 1
+            )}
           />
         )}
       </>
     );
   };
-
   return viewer === "lightbox" ? (
     buildLightboxLink()
   ) : (
