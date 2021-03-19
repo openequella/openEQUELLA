@@ -21,7 +21,7 @@
     "@types/react": "16.14.5",
     "@types/react-dom": "16.9.11",
     "mkdirp": "1.0.4",
-    "parcel-bundler": "1.12.4",
+    "parcel-bundler": "1.12.5",
     "psc-package": "3.0.1",
     "pulp": "12.4.2",
     "purescript": "0.12.3",
