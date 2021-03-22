@@ -20,28 +20,21 @@ import { useState } from "react";
 import * as React from "react";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import { languageStrings } from "../../util/langstrings";
+import type { SearchPageDialogCommonProps } from "./SearchPageDialog";
 
-export interface FavouriteSearchDialogProps {
-  /**
-   * `true` to open the dialog.
-   */
-  open: boolean;
+export interface FavouriteSearchDialogProps
+  extends SearchPageDialogCommonProps {
   /**
    * Fired to add a search definition to user's favourites.
    * @param name Name of a search definition
    */
   onConfirm: (name: string) => Promise<void>;
-  /**
-   * Fired to close the dialog.
-   */
-  closeDialog: () => void;
 }
 
-export const defaultFavouriteSearchDialogProps: FavouriteSearchDialogProps = {
-  open: false,
-  onConfirm: Promise.resolve,
-  closeDialog: () => {},
-};
+export type FavouriteSearchDialogSpecificProps = Omit<
+  FavouriteSearchDialogProps,
+  keyof SearchPageDialogCommonProps
+>;
 
 const favouriteSearchStrings = languageStrings.searchpage.favouriteSearch;
 

@@ -75,7 +75,7 @@ import { highlight } from "../../util/TextUtils";
 import type {
   FavDialogConfirmToAdd,
   FavDialogConfirmToDelete,
-  FavouriteItemInfo,
+  FavouriteItemDialogSpecificProps,
 } from "./FavouriteItemDialog";
 import { ResourceSelector } from "./ResourceSelector";
 import {
@@ -158,7 +158,7 @@ export interface SearchResultProps {
   /**
    * Function fired to help update props of FavouriteItemDialog.
    */
-  onFavouriteItem: (itemInfo: FavouriteItemInfo) => void;
+  onFavouriteItem: (props: FavouriteItemDialogSpecificProps) => void;
 }
 
 export default function SearchResult({

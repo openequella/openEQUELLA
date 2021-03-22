@@ -66,23 +66,17 @@ import {
 import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
 import SearchBar from "../search/components/SearchBar";
 import { languageStrings } from "../util/langstrings";
-import {
-  defaultFavouriteItemDialogProps,
-  FavouriteItemDialog,
-  FavouriteItemDialogProps,
-  FavouriteItemInfo,
-} from "./components/FavouriteItemDialog";
+import { FavouriteItemDialogSpecificProps } from "./components/FavouriteItemDialog";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
 import { CollectionSelector } from "./components/CollectionSelector";
-import {
-  defaultFavouriteSearchDialogProps,
-  FavouriteSearchDialog,
-  FavouriteSearchDialogProps,
-} from "./components/FavouriteSearchDialog";
 import { MimeTypeFilterSelector } from "./components/MimeTypeFilterSelector";
 import OwnerSelector from "./components/OwnerSelector";
 import { RefinePanelControl } from "./components/RefineSearchPanel";
 import { SearchAttachmentsSelector } from "./components/SearchAttachmentsSelector";
+import {
+  SearchPageDialog,
+  SearchPageDialogProps,
+} from "./components/SearchPageDialog";
 import {
   mapSearchResultItems,
   SearchResultList,
@@ -215,34 +209,12 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   });
 
   const [showRefinePanel, setShowRefinePanel] = useState<boolean>(false);
-  const [
-    favouriteItemDialogProps,
-    setFavouriteItemDialogProps,
-  ] = useState<FavouriteItemDialogProps>({
-    ...defaultFavouriteItemDialogProps,
+  const [dialogProps, setDialogProps] = useState<SearchPageDialogProps>({
+    open: false,
     closeDialog: () => {
-      setFavouriteItemDialogProps({ ...favouriteItemDialogProps, open: false });
+      setDialogProps({ ...dialogProps, open: false });
     },
   });
-
-  const [
-    favouriteSearchDialogProps,
-    setFavouriteSearchDialog,
-  ] = useState<FavouriteSearchDialogProps>({
-    ...defaultFavouriteSearchDialogProps,
-    closeDialog: () => {
-      setFavouriteSearchDialog({ ...favouriteSearchDialogProps, open: false });
-    },
-  });
-
-  // A function passed to SearchResult to help build props of FavouriteItemDialog.
-  const favouriteItemDialogOnConfirm = (itemInfo: FavouriteItemInfo) => {
-    setFavouriteItemDialogProps({
-      ...favouriteItemDialogProps,
-      open: true,
-      ...itemInfo,
-    });
-  };
 
   const handleError = useCallback(
     (error: Error) => {
@@ -457,23 +429,40 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       .catch(() => handleError);
   };
 
-  const handleSaveSearch = () => {
-    setFavouriteSearchDialog({
-      ...favouriteSearchDialogProps,
+  // Handler passed to SearchResult to help build props of FavouriteItemDialog.
+  const handleSaveFavouriteItem = (props: FavouriteItemDialogSpecificProps) => {
+    setDialogProps({
+      ...dialogProps,
       open: true,
-      onConfirm: (name: string) => {
-        // We only need pathname and query strings.
-        const url = `${
-          location.pathname
-        }?${generateQueryStringFromSearchOptions(searchPageOptions)}`;
+      additionalDialogProps: {
+        type: "item",
+        props,
+      },
+    });
+  };
 
-        return addFavouriteSearch(name, url)
-          .then(() =>
-            setSnackBarMessage(
-              searchStrings.favouriteSearch.saveSearchConfirmationText
-            )
-          )
-          .catch(handleError);
+  const handleSaveFavouriteSearch = () => {
+    setDialogProps({
+      ...dialogProps,
+      open: true,
+      additionalDialogProps: {
+        type: "search",
+        props: {
+          onConfirm: (name: string) => {
+            // We only need pathname and query strings.
+            const url = `${
+              location.pathname
+            }?${generateQueryStringFromSearchOptions(searchPageOptions)}`;
+
+            return addFavouriteSearch(name, url)
+              .then(() =>
+                setSnackBarMessage(
+                  searchStrings.favouriteSearch.saveSearchConfirmationText
+                )
+              )
+              .catch(handleError);
+          },
+        },
       },
     });
   };
@@ -775,14 +764,14 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 }}
                 onClearSearchOptions={handleClearSearchOptions}
                 onCopySearchLink={handleCopySearch}
-                onSaveSearch={handleSaveSearch}
+                onSaveSearch={handleSaveFavouriteSearch}
               >
                 {searchResults.length > 0 &&
                   mapSearchResultItems(
                     searchResults,
                     handleError,
                     highlights,
-                    favouriteItemDialogOnConfirm
+                    handleSaveFavouriteItem
                   )}
               </SearchResultList>
             </Grid>
@@ -810,12 +799,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           {renderSidePanel()}
         </Drawer>
       </Hidden>
-      {favouriteItemDialogProps.open && (
-        <FavouriteItemDialog {...favouriteItemDialogProps} />
-      )}
-      {favouriteSearchDialogProps.open && (
-        <FavouriteSearchDialog {...favouriteSearchDialogProps} />
-      )}
+
+      {dialogProps.open && <SearchPageDialog {...dialogProps} />}
     </>
   );
 };

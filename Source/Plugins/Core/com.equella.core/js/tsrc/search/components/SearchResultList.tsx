@@ -38,7 +38,7 @@ import * as React from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { isSelectionSessionOpen } from "../../modules/LegacySelectionSessionModule";
 import { languageStrings } from "../../util/langstrings";
-import type { FavouriteItemInfo } from "./FavouriteItemDialog";
+import type { FavouriteItemDialogSpecificProps } from "./FavouriteItemDialog";
 import SearchOrderSelect, { SearchOrderSelectProps } from "./SearchOrderSelect";
 import { SearchPagination, SearchPaginationProps } from "./SearchPagination";
 import SearchResult from "./SearchResult";
@@ -235,7 +235,7 @@ export const mapSearchResultItems = (
   items: OEQ.Search.SearchResultItem[],
   handleError: (error: Error) => void,
   highlights: string[],
-  onFavouriteItem: (itemInfo: FavouriteItemInfo) => void,
+  onFavouriteItem: (props: FavouriteItemDialogSpecificProps) => void,
   getViewerDetails?: (
     mimeType: string
   ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>
