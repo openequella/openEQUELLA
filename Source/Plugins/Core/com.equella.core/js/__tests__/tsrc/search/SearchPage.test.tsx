@@ -69,7 +69,7 @@ import { languageStrings } from "../../../tsrc/util/langstrings";
 import { updateMockGetBaseUrl } from "../BaseUrlHelper";
 import { queryPaginatorControls } from "../components/SearchPaginationTestHelper";
 import { updateMockGlobalCourseList } from "../CourseListHelper";
-import { getMuiTextField } from "../MuiQueries";
+import { getMuiButtonByText, getMuiTextField } from "../MuiQueries";
 import { selectOption } from "../MuiTestHelpers";
 import { basicRenderData, updateMockGetRenderData } from "../RenderDataHelper";
 import {
@@ -913,12 +913,10 @@ describe("Add favourite search", () => {
       languageStrings.searchpage.favouriteSearch.text
     );
     userEvent.type(searchNameInput, "test");
-
-    const confirmButton = dialog.querySelector(
-      "#confirm-dialog-confirm-button"
+    const confirmButton = getMuiButtonByText(
+      dialog,
+      languageStrings.common.action.ok
     );
-    expect(confirmButton).not.toBeNull();
-
     await act(async () => {
       await userEvent.click(confirmButton);
     });
