@@ -20,7 +20,7 @@ import { useState } from "react";
 import * as React from "react";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import { languageStrings } from "../../util/langstrings";
-import type { SearchPageDialogCommonProps } from "./SearchPageDialog";
+import type { SearchPageDialogCommonProps } from "./SearchPageDialogsSwitch";
 
 export interface FavouriteSearchDialogProps
   extends SearchPageDialogCommonProps {

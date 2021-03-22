@@ -80,9 +80,9 @@ import OwnerSelector from "./components/OwnerSelector";
 import { RefinePanelControl } from "./components/RefineSearchPanel";
 import { SearchAttachmentsSelector } from "./components/SearchAttachmentsSelector";
 import {
-  SearchPageDialog,
-  SearchPageDialogProps,
-} from "./components/SearchPageDialog";
+  SearchPageDialogsSwitch,
+  SearchPageDialogsSwitchProps,
+} from "./components/SearchPageDialogsSwitch";
 import {
   mapSearchResultItems,
   SearchResultList,
@@ -236,10 +236,13 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   });
 
   const [showRefinePanel, setShowRefinePanel] = useState<boolean>(false);
-  const [dialogProps, setDialogProps] = useState<SearchPageDialogProps>({
+  const [dialogProps, setDialogProps] = useState<SearchPageDialogsSwitchProps>({
     open: false,
     closeDialog: () => {
       setDialogProps({ ...dialogProps, open: false });
+    },
+    additionalDialogProps: {
+      type: "unknown",
     },
   });
 
@@ -490,7 +493,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ...dialogProps,
       open: true,
       additionalDialogProps: {
-        type: "item",
+        type: "fav-item",
         props,
       },
     });
@@ -501,7 +504,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ...dialogProps,
       open: true,
       additionalDialogProps: {
-        type: "search",
+        type: "fav-search",
         props: {
           onConfirm: (name: string) => {
             // We only need pathname and query strings.
@@ -894,7 +897,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         </Drawer>
       </Hidden>
 
-      {dialogProps.open && <SearchPageDialog {...dialogProps} />}
+      {dialogProps.open && <SearchPageDialogsSwitch {...dialogProps} />}
     </>
   );
 };

@@ -34,31 +34,36 @@ export interface SearchPageDialogCommonProps {
   closeDialog: () => void;
 }
 
-export interface SearchPageDialogProps extends SearchPageDialogCommonProps {
+export interface SearchPageDialogsSwitchProps
+  extends SearchPageDialogCommonProps {
   /**
    * Additional props required by a certain Dialog to be rendered in Search page.
    */
-  additionalDialogProps?:
+  additionalDialogProps:
     | {
-        type: "item";
+        type: "fav-item";
         props: FavouriteItemDialogSpecificProps;
       }
     | {
-        type: "search";
+        type: "fav-search";
         props: FavouriteSearchDialogSpecificProps;
+      }
+    | {
+        type: "unknown";
       };
 }
 
 /**
- * Provide an entry to different Dialogs rendered in Search page.
+ * Manage the various dialogs which can be displayed on the search page,
+ * including ensuring only one is displayed at a time.
  */
-export const SearchPageDialog = ({
+export const SearchPageDialogsSwitch = ({
   open,
   closeDialog,
   additionalDialogProps,
-}: SearchPageDialogProps) => {
+}: SearchPageDialogsSwitchProps) => {
   switch (additionalDialogProps?.type) {
-    case "item":
+    case "fav-item":
       return (
         <FavouriteItemDialog
           open={open}
@@ -66,7 +71,7 @@ export const SearchPageDialog = ({
           {...additionalDialogProps.props}
         />
       );
-    case "search":
+    case "fav-search":
       return (
         <FavouriteSearchDialog
           open={open}
@@ -75,6 +80,8 @@ export const SearchPageDialog = ({
         />
       );
     default:
-      throw new Error("Unexpected Dialog type");
+      throw new TypeError(
+        `Unexpected Dialog type: [${additionalDialogProps?.type}]`
+      );
   }
 };

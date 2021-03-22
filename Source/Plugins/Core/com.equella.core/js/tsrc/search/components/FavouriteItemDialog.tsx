@@ -31,7 +31,7 @@ import * as React from "react";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import type { FavouriteItemVersionOption } from "../../modules/FavouriteModule";
 import { languageStrings } from "../../util/langstrings";
-import type { SearchPageDialogCommonProps } from "./SearchPageDialog";
+import type { SearchPageDialogCommonProps } from "./SearchPageDialogsSwitch";
 
 /**
  * Type that includes a function which is fired to add a favourite Item and
