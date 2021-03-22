@@ -152,9 +152,7 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
     CustomisationFile customisationFile = new CustomisationFile();
     String nameWithoutExtension = FilenameUtils.removeExtension(name);
     String extension = '.' + FilenameUtils.getExtension(name);
-    String concatenatedName = nameWithoutExtension + extension;
-    if (fileSystemService.fileExists(
-        customisationFile, getLoginNoticeImageFileName(concatenatedName))) {
+    if (fileSystemService.fileExists(customisationFile, getLoginNoticeImageFileName(name))) {
       int i = 1;
       while (fileSystemService.fileExists(
           customisationFile,
@@ -163,7 +161,7 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
       }
       return nameWithoutExtension + '_' + i + extension;
     }
-    return concatenatedName;
+    return name;
   }
 
   @Override
