@@ -153,13 +153,13 @@ public class LoginNoticeServiceImpl implements LoginNoticeService {
     String nameWithoutExtension = FilenameUtils.removeExtension(name);
     String extension = '.' + FilenameUtils.getExtension(name);
     if (fileSystemService.fileExists(customisationFile, getLoginNoticeImageFileName(name))) {
-      int i = 1;
-      while (fileSystemService.fileExists(
-          customisationFile,
-          getLoginNoticeImageFileName(nameWithoutExtension + '_' + i + extension))) {
-        i++;
-      }
-      return nameWithoutExtension + '_' + i + extension;
+      int i = 0;
+      String uniqueFileName;
+      do {
+        uniqueFileName = (nameWithoutExtension + '_' + (++i) + extension);
+      } while (fileSystemService.fileExists(
+          customisationFile, getLoginNoticeImageFileName(uniqueFileName)));
+      return uniqueFileName;
     }
     return name;
   }
