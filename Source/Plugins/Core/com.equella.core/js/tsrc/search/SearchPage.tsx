@@ -36,6 +36,10 @@ import { getAdvancedSearchesFromServer } from "../modules/AdvancedSearchModule";
 import type { Collection } from "../modules/CollectionsModule";
 import { addFavouriteSearch } from "../modules/FavouriteModule";
 import {
+  GallerySearchResultItem,
+  imageGallerySearch,
+} from "../modules/GallerySearchModule";
+import {
   buildSelectionSessionAdvancedSearchLink,
   buildSelectionSessionRemoteSearchLink,
   isSelectionSessionInStructured,
@@ -69,6 +73,8 @@ import { languageStrings } from "../util/langstrings";
 import { FavouriteItemDialogSpecificProps } from "./components/FavouriteItemDialog";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
 import { CollectionSelector } from "./components/CollectionSelector";
+import DisplayModeSelector from "./components/DisplayModeSelector";
+import GallerySearchResult from "./components/GallerySearchResult";
 import { MimeTypeFilterSelector } from "./components/MimeTypeFilterSelector";
 import OwnerSelector from "./components/OwnerSelector";
 import { RefinePanelControl } from "./components/RefineSearchPanel";
@@ -91,6 +97,9 @@ const {
   quickOptionDropdown,
 } = searchStrings.lastModifiedDateSelector;
 const { title: collectionSelectorTitle } = searchStrings.collectionSelector;
+const { title: displayModeSelectorTitle } = searchStrings.displayModeSelector;
+
+export type DisplayMode = "list" | "gallery-image" | "gallery-video";
 
 /**
  * Type of search options that are specific to Search page presentation layer.
@@ -100,6 +109,10 @@ export interface SearchPageOptions extends SearchOptions {
    * Whether to enable Quick mode (true) or to use custom date pickers (false).
    */
   dateRangeQuickModeEnabled: boolean;
+  /**
+   * How to display the search results - also determines the type of results.
+   */
+  displayMode: DisplayMode;
 }
 
 /**
@@ -116,12 +129,25 @@ interface SearchPageHistoryState {
   filterExpansion: boolean;
 }
 
+/**
+ * The types of SearchResultItem that we support within an `OEQ.Search.SearchResult`.
+ */
+type SearchPageSearchResult =
+  | {
+      from: "item-search";
+      content: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>;
+    }
+  | {
+      from: "gallery-search";
+      content: OEQ.Search.SearchResult<GallerySearchResultItem>;
+    };
+
 type Action =
   | { type: "init" }
   | { type: "search"; options: SearchPageOptions; scrollToTop: boolean }
   | {
       type: "search-complete";
-      result: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>;
+      result: SearchPageSearchResult;
       classifications: Classification[];
     }
   | { type: "error"; cause: Error };
@@ -131,13 +157,13 @@ type State =
   | {
       status: "searching";
       options: SearchPageOptions;
-      previousResult?: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>;
+      previousResult?: SearchPageSearchResult;
       previousClassifications?: Classification[];
       scrollToTop: boolean;
     }
   | {
       status: "success";
-      result: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>;
+      result: SearchPageSearchResult;
       classifications: Classification[];
     }
   | { status: "failure"; cause: Error };
@@ -181,6 +207,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const defaultSearchPageOptions: SearchPageOptions = {
     ...defaultSearchOptions,
     dateRangeQuickModeEnabled: true,
+    displayMode: "list",
   };
 
   const defaultSearchPageHistory: SearchPageHistoryState = {
@@ -276,6 +303,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 sortOrder:
                   queryStringSearchOptions.sortOrder ??
                   searchSettings.defaultSearchSort,
+                displayMode: "list",
               }
             : {
                 ...searchPageOptions,
@@ -303,14 +331,32 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
    */
   useEffect(() => {
     if (state.status === "searching") {
+      const doSearch = async (
+        options: SearchPageOptions
+      ): Promise<SearchPageSearchResult> => {
+        switch (options.displayMode) {
+          case "gallery-image":
+          case "gallery-video": // Coming soon
+            return {
+              from: "gallery-search",
+              content: await imageGallerySearch({
+                ...options,
+                // `mimeTypeFilters` should be ignored in gallery modes
+                mimeTypeFilters: undefined,
+              }),
+            };
+          case "list":
+            return { from: "item-search", content: await searchItems(options) };
+          default:
+            throw new TypeError("Unexpected `displayMode` for searching");
+        }
+      };
+
       setSearchPageOptions(state.options);
-      Promise.all([
-        searchItems(state.options),
-        listClassifications(state.options),
-      ])
+      Promise.all([doSearch(state.options), listClassifications(state.options)])
         .then(
           ([result, classifications]: [
-            OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>,
+            SearchPageSearchResult,
             Classification[]
           ]) => {
             dispatch({
@@ -336,10 +382,16 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   // effect, however this is only required while selection sessions still
   // involve legacy content.
   useEffect(() => {
-    if (state.status === "success" && isSelectionSessionInStructured()) {
-      state.result.results.forEach(({ uuid }) => {
-        prepareDraggable(uuid);
-      });
+    if (
+      state.status === "success" &&
+      state.result.from === "item-search" &&
+      isSelectionSessionInStructured()
+    ) {
+      state.result.content.results.forEach(
+        ({ uuid }: OEQ.Search.SearchResultItem) => {
+          prepareDraggable(uuid);
+        }
+      );
     }
   }, [state]);
 
@@ -353,6 +405,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       currentPage: 0,
       selectedCategories: undefined,
     });
+
+  const handleDisplayModeChanged = (mode: DisplayMode) =>
+    search({ ...searchPageOptions, displayMode: mode });
 
   const handleCollectionSelectionChanged = (collections: Collection[]) => {
     search({
@@ -573,6 +628,18 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   const refinePanelControls: RefinePanelControl[] = [
     {
+      idSuffix: "DisplayModeSelector",
+      title: displayModeSelectorTitle,
+      component: (
+        <DisplayModeSelector
+          onChange={handleDisplayModeChanged}
+          value={searchPageOptions.displayMode}
+        />
+      ),
+      disabled: false,
+      alwaysVisible: true,
+    },
+    {
       idSuffix: "CollectionSelector",
       title: collectionSelectorTitle,
       component: (
@@ -636,6 +703,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         />
       ),
       disabled:
+        searchPageOptions.displayMode !== "list" ||
         searchSettings.mimeTypeFilters.length === 0 ||
         !!searchPageOptions.externalMimeTypes,
     },
@@ -707,10 +775,12 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     );
   };
 
-  const searchResult = (): OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> => {
-    const orDefault = (
-      r?: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>
-    ) => r ?? defaultPagedSearchResult;
+  const searchResult = (): SearchPageSearchResult => {
+    const defaultResult: SearchPageSearchResult = {
+      from: "item-search",
+      content: defaultPagedSearchResult,
+    };
+    const orDefault = (r?: SearchPageSearchResult) => r ?? defaultResult;
 
     switch (state.status) {
       case "success":
@@ -719,13 +789,43 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         return orDefault(state.previousResult);
     }
 
-    return defaultPagedSearchResult;
+    return defaultResult;
+  };
+
+  const renderSearchResults = (): React.ReactNode | null => {
+    const {
+      from,
+      content: { results: searchResults },
+    } = searchResult();
+
+    if (searchResults.length < 1) {
+      return null;
+    }
+
+    const isListItems = (
+      items: unknown
+    ): items is OEQ.Search.SearchResultItem[] => from === "item-search";
+
+    const isGalleryItems = (
+      items: unknown
+    ): items is GallerySearchResultItem[] => from === "gallery-search";
+
+    if (isListItems(searchResults)) {
+      return mapSearchResultItems(
+        searchResults,
+        handleError,
+        highlights,
+        handleSaveFavouriteItem
+      );
+    } else if (isGalleryItems(searchResults)) {
+      return <GallerySearchResult items={searchResults} />;
+    }
+
+    throw new TypeError("Unexpected type for searchResults");
   };
 
   const {
-    available: totalCount,
-    highlight: highlights,
-    results: searchResults,
+    content: { available: totalCount, highlight: highlights },
   } = searchResult();
   return (
     <>
@@ -766,13 +866,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 onCopySearchLink={handleCopySearch}
                 onSaveSearch={handleSaveFavouriteSearch}
               >
-                {searchResults.length > 0 &&
-                  mapSearchResultItems(
-                    searchResults,
-                    handleError,
-                    highlights,
-                    handleSaveFavouriteItem
-                  )}
+                {renderSearchResults()}
               </SearchResultList>
             </Grid>
           </Grid>

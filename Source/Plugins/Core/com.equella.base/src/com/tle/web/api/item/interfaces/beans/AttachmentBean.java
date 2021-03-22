@@ -31,6 +31,7 @@ public abstract class AttachmentBean extends AbstractExtendableBean {
   private String viewer;
   private boolean preview;
   private boolean erroredIndexing;
+  private boolean restricted;
 
   public String getUuid() {
     return uuid;
@@ -65,6 +66,14 @@ public abstract class AttachmentBean extends AbstractExtendableBean {
 
   public void setPreview(boolean preview) {
     this.preview = preview;
+  }
+
+  public void setRestricted(boolean restricted) {
+    this.restricted = restricted;
+  }
+
+  public boolean isRestricted() {
+    return restricted;
   }
 
   /**

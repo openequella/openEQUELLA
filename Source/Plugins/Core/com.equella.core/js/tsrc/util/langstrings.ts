@@ -333,6 +333,12 @@ export const languageStrings = {
     newSearchHelperText: "Clears search text and filters",
     shareSearchHelperText: "Copy search link to clipboard",
     shareSearchConfirmationText: "Search link saved to clipboard",
+    displayModeSelector: {
+      title: "Display Mode",
+      modeItemList: "Item List",
+      modeGalleryImage: "Image Gallery",
+      modeGalleryVideo: "Video Gallery",
+    },
     collectionSelector: {
       title: "Collections",
     },
@@ -415,13 +421,19 @@ export const languageStrings = {
       title: "Search attachments",
     },
     searchResult: {
+      ariaLabel: "Search result list item",
       attachments: "Attachments",
       dateModified: "Modified",
+      attachmentLink: "Attachment link",
       keywordFoundInAttachment: "Search term found in attachment content",
       errors: {
         getAttachmentViewerDetailsFailure:
           "Failed to get attachment viewer details",
       },
+    },
+    gallerySearchResult: {
+      ariaLabel: "Search result gallery item",
+      viewItem: "View item",
     },
     statusSelector: {
       all: "All",
