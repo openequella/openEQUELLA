@@ -70,7 +70,6 @@ import {
 import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
 import SearchBar from "../search/components/SearchBar";
 import { languageStrings } from "../util/langstrings";
-import { FavouriteItemDialogSpecificProps } from "./components/FavouriteItemDialog";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
 import { CollectionSelector } from "./components/CollectionSelector";
 import DisplayModeSelector from "./components/DisplayModeSelector";
@@ -487,18 +486,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       .catch(() => handleError);
   };
 
-  // Handler passed to SearchResult to help build props of FavouriteItemDialog.
-  const handleSaveFavouriteItem = (props: FavouriteItemDialogSpecificProps) => {
-    setDialogProps({
-      ...dialogProps,
-      open: true,
-      additionalDialogProps: {
-        type: "fav-item",
-        props,
-      },
-    });
-  };
-
   const handleSaveFavouriteSearch = () => {
     setDialogProps({
       ...dialogProps,
@@ -814,12 +801,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     ): items is GallerySearchResultItem[] => from === "gallery-search";
 
     if (isListItems(searchResults)) {
-      return mapSearchResultItems(
-        searchResults,
-        handleError,
-        highlights,
-        handleSaveFavouriteItem
-      );
+      return mapSearchResultItems(searchResults, handleError, highlights);
     } else if (isGalleryItems(searchResults)) {
       return <GallerySearchResult items={searchResults} />;
     }
