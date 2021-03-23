@@ -73,15 +73,12 @@ import { languageStrings } from "../util/langstrings";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
 import { CollectionSelector } from "./components/CollectionSelector";
 import DisplayModeSelector from "./components/DisplayModeSelector";
+import { FavouriteSearchDialog } from "./components/FavouriteSearchDialog";
 import GallerySearchResult from "./components/GallerySearchResult";
 import { MimeTypeFilterSelector } from "./components/MimeTypeFilterSelector";
 import OwnerSelector from "./components/OwnerSelector";
 import { RefinePanelControl } from "./components/RefineSearchPanel";
 import { SearchAttachmentsSelector } from "./components/SearchAttachmentsSelector";
-import {
-  SearchPageDialogsSwitch,
-  SearchPageDialogsSwitchProps,
-} from "./components/SearchPageDialogsSwitch";
 import {
   mapSearchResultItems,
   SearchResultList,
@@ -235,15 +232,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   });
 
   const [showRefinePanel, setShowRefinePanel] = useState<boolean>(false);
-  const [dialogProps, setDialogProps] = useState<SearchPageDialogsSwitchProps>({
-    open: false,
-    closeDialog: () => {
-      setDialogProps({ ...dialogProps, open: false });
-    },
-    additionalDialogProps: {
-      type: "unknown",
-    },
-  });
+  const [
+    showFavouriteSearchDialog,
+    setShowFavouriteSearchDialog,
+  ] = useState<boolean>(false);
 
   const handleError = useCallback(
     (error: Error) => {
@@ -486,30 +478,19 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       .catch(() => handleError);
   };
 
-  const handleSaveFavouriteSearch = () => {
-    setDialogProps({
-      ...dialogProps,
-      open: true,
-      additionalDialogProps: {
-        type: "fav-search",
-        props: {
-          onConfirm: (name: string) => {
-            // We only need pathname and query strings.
-            const url = `${
-              location.pathname
-            }?${generateQueryStringFromSearchOptions(searchPageOptions)}`;
+  const handleSaveFavouriteSearch = (name: string) => {
+    // We only need pathname and query strings.
+    const url = `${location.pathname}?${generateQueryStringFromSearchOptions(
+      searchPageOptions
+    )}`;
 
-            return addFavouriteSearch(name, url)
-              .then(() =>
-                setSnackBarMessage(
-                  searchStrings.favouriteSearch.saveSearchConfirmationText
-                )
-              )
-              .catch(handleError);
-          },
-        },
-      },
-    });
+    return addFavouriteSearch(name, url)
+      .then(() =>
+        setSnackBarMessage(
+          searchStrings.favouriteSearch.saveSearchConfirmationText
+        )
+      )
+      .catch(handleError);
   };
 
   const handleMimeTypeFilterChange = (filters: MimeTypeFilter[]) =>
@@ -849,7 +830,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 }}
                 onClearSearchOptions={handleClearSearchOptions}
                 onCopySearchLink={handleCopySearch}
-                onSaveSearch={handleSaveFavouriteSearch}
+                onSaveSearch={() => setShowFavouriteSearchDialog(true)}
               >
                 {renderSearchResults()}
               </SearchResultList>
@@ -879,7 +860,13 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         </Drawer>
       </Hidden>
 
-      {dialogProps.open && <SearchPageDialogsSwitch {...dialogProps} />}
+      {showFavouriteSearchDialog && (
+        <FavouriteSearchDialog
+          open={showFavouriteSearchDialog}
+          closeDialog={() => setShowFavouriteSearchDialog(false)}
+          onConfirm={handleSaveFavouriteSearch}
+        />
+      )}
     </>
   );
 };
