@@ -31,7 +31,6 @@ import * as React from "react";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import type { FavouriteItemVersionOption } from "../../modules/FavouriteModule";
 import { languageStrings } from "../../util/langstrings";
-import type { SearchPageDialogCommonProps } from "./SearchPageDialogsSwitch";
 
 /**
  * Type that includes a function which is fired to add a favourite Item and
@@ -60,7 +59,15 @@ const isConfirmToDelete = (
   props: FavDialogOnConfirmProps
 ): props is FavDialogConfirmToDelete => props.action === "delete";
 
-export interface FavouriteItemDialogProps extends SearchPageDialogCommonProps {
+export interface FavouriteItemDialogProps {
+  /**
+   * `true` to open the dialog
+   */
+  open: boolean;
+  /**
+   * Fired when the dialog is closed
+   */
+  closeDialog: () => void;
   /**
    * `true` if the Item is already in favourites
    */
@@ -75,12 +82,6 @@ export interface FavouriteItemDialogProps extends SearchPageDialogCommonProps {
    */
   onConfirmProps: FavDialogOnConfirmProps;
 }
-
-// Type of partial FavouriteItemDialogProps for the ease of building the whole props in other components.
-export type FavouriteItemDialogSpecificProps = Omit<
-  FavouriteItemDialogProps,
-  keyof SearchPageDialogCommonProps
->;
 
 const {
   title: { add: addString, remove: removeString },
