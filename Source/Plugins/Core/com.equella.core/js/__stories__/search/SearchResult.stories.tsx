@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { action } from "@storybook/addon-actions";
 import type { Meta, Story } from "@storybook/react";
 import * as React from "react";
 import * as mockData from "../../__mocks__/searchresult_mock_data";
@@ -35,7 +34,6 @@ BasicSearchResult.args = {
   item: mockData.basicSearchObj,
   highlights: [],
   getViewerDetails: async () => ({ viewerId: "fancy" }),
-  onFavouriteItem: action("update Favourite Dialog props"),
 };
 
 export const AttachmentSearchResult: Story<SearchResultProps> = (args) => (

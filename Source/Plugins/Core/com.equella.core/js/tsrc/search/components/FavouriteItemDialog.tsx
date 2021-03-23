@@ -83,24 +83,6 @@ export interface FavouriteItemDialogProps {
   onConfirmProps: FavDialogOnConfirmProps;
 }
 
-// Provide a default props for the dialog.
-export const defaultFavouriteItemDialogProps = {
-  open: false,
-  closeDialog: () => {},
-  isAddedToFavourite: false,
-  isLatestVersion: false,
-  onConfirmProps: {
-    action: "delete",
-    onConfirm: () => Promise.resolve(),
-  } as FavDialogConfirmToDelete,
-};
-
-// Type of partial FavouriteItemDialogProps for the ease of building the whole props in other components.
-export type FavouriteItemInfo = Pick<
-  FavouriteItemDialogProps,
-  "isAddedToFavourite" | "isLatestVersion" | "onConfirmProps"
->;
-
 const {
   title: { add: addString, remove: removeString },
   removeAlert: removeAlertString,

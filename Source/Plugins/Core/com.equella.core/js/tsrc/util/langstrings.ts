@@ -373,6 +373,11 @@ export const languageStrings = {
         remove: "Remove from favourites",
       },
     },
+    favouriteSearch: {
+      saveSearchConfirmationText: "Search added to favourites",
+      text: "Please enter a name for this search",
+      title: "Add search to favourites",
+    },
     filterOwner: {
       title: "Owner",
       chip: "Owner: ",
