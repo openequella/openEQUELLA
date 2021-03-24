@@ -29,7 +29,13 @@ import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import * as React from "react";
-import { ReactNode, SyntheticEvent, useEffect, useState } from "react";
+import {
+  ReactNode,
+  SyntheticEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { Literal, match, Unknown } from "runtypes";
 import {
   isBrowserSupportedAudio,
@@ -126,15 +132,16 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
   const [content, setContent] = useState<ReactNode | undefined>();
   const [lightBoxConfig, setLightBoxConfig] = useState<LightboxConfig>(config);
   const { src, title, mimeType, onPrevious, onNext } = lightBoxConfig;
-  const handleOnPrevious = () => {
+
+  const handleOnPrevious = useCallback(() => {
     setContent(undefined);
     onPrevious && setLightBoxConfig(onPrevious());
-  };
+  }, [onPrevious]);
 
-  const handleOnNext = () => {
+  const handleOnNext = useCallback(() => {
     setContent(undefined);
     onNext && setLightBoxConfig(onNext());
-  };
+  }, [onNext]);
 
   useEffect(() => {
     const keyDownHandler = (e: KeyboardEvent) => {
@@ -150,65 +157,65 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
     return () => {
       window.removeEventListener("keydown", keyDownHandler);
     };
-  }, [onPrevious, onNext, onClose]);
+  }, [handleOnPrevious, handleOnNext, onClose]);
 
   // Update content when config is updated.
   useEffect(() => {
+    const unsupportedContent = (
+      <Card>
+        <CardContent>
+          <Typography variant="h5" component="h2">
+            {labelUnsupportedContent}
+          </Typography>
+        </CardContent>
+      </Card>
+    );
+
+    const buildContent = () =>
+      match(
+        [
+          Literal("image"),
+          () => (
+            <img
+              className={`${classes.lightboxContent} ${classes.lightboxImage}`}
+              alt={title}
+              src={src}
+            />
+          ),
+        ],
+        [
+          Literal("video"),
+          () =>
+            isBrowserSupportedVideo(mimeType) ? (
+              <video
+                className={classes.lightboxContent}
+                controls
+                src={src}
+                aria-label={title}
+              />
+            ) : (
+              unsupportedContent
+            ),
+        ],
+        [
+          Literal("audio"),
+          () =>
+            isBrowserSupportedAudio(mimeType) ? (
+              <audio
+                className={classes.lightboxAudio}
+                controls
+                src={src}
+                aria-label={title}
+              />
+            ) : (
+              unsupportedContent
+            ),
+        ],
+        [Unknown, () => unsupportedContent]
+      )(splitMimeType(mimeType)[0]);
+
     setContent(buildContent());
-  }, [lightBoxConfig]);
-
-  const unsupportedContent = (
-    <Card>
-      <CardContent>
-        <Typography variant="h5" component="h2">
-          {labelUnsupportedContent}
-        </Typography>
-      </CardContent>
-    </Card>
-  );
-
-  const buildContent = () =>
-    match(
-      [
-        Literal("image"),
-        () => (
-          <img
-            className={`${classes.lightboxContent} ${classes.lightboxImage}`}
-            alt={title}
-            src={src}
-          />
-        ),
-      ],
-      [
-        Literal("video"),
-        () =>
-          isBrowserSupportedVideo(mimeType) ? (
-            <video
-              className={classes.lightboxContent}
-              controls
-              src={src}
-              aria-label={title}
-            />
-          ) : (
-            unsupportedContent
-          ),
-      ],
-      [
-        Literal("audio"),
-        () =>
-          isBrowserSupportedAudio(mimeType) ? (
-            <audio
-              className={classes.lightboxAudio}
-              controls
-              src={src}
-              aria-label={title}
-            />
-          ) : (
-            unsupportedContent
-          ),
-      ],
-      [Unknown, () => unsupportedContent]
-    )(splitMimeType(mimeType)[0]);
+  }, [lightBoxConfig, classes, mimeType, src, title, labelUnsupportedContent]);
 
   const handleOpenInNewWindow = (event: SyntheticEvent) => {
     event.stopPropagation();
