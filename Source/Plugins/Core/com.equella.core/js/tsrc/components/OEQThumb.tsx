@@ -24,6 +24,7 @@ import VideoIcon from "@material-ui/icons/Movie";
 import ImageIcon from "@material-ui/icons/Panorama";
 import DefaultFileIcon from "@material-ui/icons/InsertDriveFile";
 import WebIcon from "@material-ui/icons/Language";
+import Web from "@material-ui/icons/Web";
 import PlaceholderIcon from "@material-ui/icons/TextFields";
 
 const useStyles = makeStyles((theme: Theme) => {
@@ -126,9 +127,19 @@ export default function OEQThumb({
     case "html":
       oeqThumb = <WebIcon {...generalThumbStyles} />;
       break;
+    case "custom/resource":
+      if (mimeType === "equella/item") {
+        // resource summaries can be pointed to by a Resource Selector.
+        oeqThumb = <Web {...generalThumbStyles} />;
+      } else {
+        oeqThumb = oeqProvidedThumb;
+      }
+      break;
     case "custom/flickr":
     case "custom/youtube":
+    case "custom/kaltura":
     case "custom/googlebook":
+    default:
       oeqThumb = oeqProvidedThumb;
       break;
   }
