@@ -17,34 +17,26 @@
  */
 import * as React from "react";
 import type { Meta, Story } from "@storybook/react";
-import ConfirmDialog, {
-  ConfirmDialogProps,
-} from "../../tsrc/components/ConfirmDialog";
+import {
+  FavouriteSearchDialog,
+  FavouriteSearchDialogProps,
+} from "../../tsrc/search/components/FavouriteSearchDialog";
 
 export default {
-  title: "ConfirmDialog",
-  component: ConfirmDialog,
+  title: "Search/FavouriteSearchDialog",
+  component: FavouriteSearchDialog,
   argTypes: {
-    onCancel: { action: "onCancel" },
-    onConfirm: { action: "onConfirm" },
+    closeDialog: { action: "onClose" },
+    onConfirm: {
+      action: "onConfirm",
+    },
   },
-} as Meta<ConfirmDialogProps>;
+} as Meta<FavouriteSearchDialogProps>;
 
-export const ShowDialog: Story<ConfirmDialogProps> = (args) => (
-  <ConfirmDialog {...args} />
+export const Standard: Story<FavouriteSearchDialogProps> = (args) => (
+  <FavouriteSearchDialog {...args} />
 );
 
-ShowDialog.args = {
+Standard.args = {
   open: true,
-  title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-  confirmButtonText: "ok",
-};
-
-export const DisableConfirmButton: Story<ConfirmDialogProps> = (args) => (
-  <ConfirmDialog {...args} />
-);
-
-DisableConfirmButton.args = {
-  ...ShowDialog.args,
-  disableConfirmButton: true,
 };

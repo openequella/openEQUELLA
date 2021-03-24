@@ -29,6 +29,7 @@ import {
   Tooltip,
   Typography,
 } from "@material-ui/core";
+import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import FilterListIcon from "@material-ui/icons/FilterList";
 import { makeStyles } from "@material-ui/core/styles";
 import Share from "@material-ui/icons/Share";
@@ -37,7 +38,6 @@ import * as React from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { isSelectionSessionOpen } from "../../modules/LegacySelectionSessionModule";
 import { languageStrings } from "../../util/langstrings";
-import type { FavouriteItemInfo } from "./FavouriteItemDialog";
 import SearchOrderSelect, { SearchOrderSelectProps } from "./SearchOrderSelect";
 import { SearchPagination, SearchPaginationProps } from "./SearchPagination";
 import SearchResult from "./SearchResult";
@@ -92,6 +92,10 @@ export interface SearchResultListProps {
    */
   onCopySearchLink: () => void;
   /**
+   * Fired when the save search button is clicked.
+   */
+  onSaveSearch: () => void;
+  /**
    * Props for the Icon button that controls whether show Refine panel in small screens
    */
   refineSearchProps: RefineSearchProps;
@@ -119,6 +123,7 @@ export const SearchResultList = ({
   refineSearchProps: { isCriteriaSet, showRefinePanel },
   onClearSearchOptions,
   onCopySearchLink,
+  onSaveSearch,
 }: SearchResultListProps) => {
   const classes = useStyles();
   const inSelectionSession: boolean = isSelectionSessionOpen();
@@ -153,6 +158,14 @@ export const SearchResultList = ({
                   {searchPageStrings.newSearch}
                 </Button>
               </Tooltip>
+            </Grid>
+            <Grid item>
+              <TooltipIconButton
+                title={searchPageStrings.favouriteSearch.title}
+                onClick={onSaveSearch}
+              >
+                <FavoriteBorderIcon />
+              </TooltipIconButton>
             </Grid>
             <Hidden mdUp>
               <Grid item>
@@ -214,14 +227,12 @@ export const SearchResultList = ({
  * @param items the search result items to map over
  * @param handleError function which will be called on error (e.g. comms errors)
  * @param highlights a list of highlight terms
- * @param onFavouriteItem function passed to SearchResult to help build part of FavouriteItemDialogProps
  * @param getViewerDetails optional function to override retrieval of viewer details
  */
 export const mapSearchResultItems = (
   items: OEQ.Search.SearchResultItem[],
   handleError: (error: Error) => void,
   highlights: string[],
-  onFavouriteItem: (itemInfo: FavouriteItemInfo) => void,
   getViewerDetails?: (
     mimeType: string
   ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>
@@ -233,6 +244,5 @@ export const mapSearchResultItems = (
       handleError={handleError}
       highlights={highlights}
       getViewerDetails={getViewerDetails}
-      onFavouriteItem={onFavouriteItem}
     />
   ));

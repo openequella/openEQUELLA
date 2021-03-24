@@ -64,7 +64,6 @@ const defaultTheme = createMuiTheme({
 });
 
 describe("<SearchResult/>", () => {
-  const favouriteDialogHelper = jest.fn();
   const renderSearchResult = async (
     itemResult: OEQ.Search.SearchResultItem,
     theme: Theme = defaultTheme
@@ -80,7 +79,6 @@ describe("<SearchResult/>", () => {
               console.warn(`Testing error handler: ${error}`)
             }
             highlights={[]}
-            onFavouriteItem={favouriteDialogHelper}
           />
         </BrowserRouter>
       </MuiThemeProvider>
@@ -212,11 +210,9 @@ describe("<SearchResult/>", () => {
       item: OEQ.Search.SearchResultItem,
       iconLabel: string
     ) => {
-      const { getByLabelText } = await renderSearchResult(item);
-      const iconButton = getByLabelText(iconLabel);
-
-      userEvent.click(iconButton);
-      expect(favouriteDialogHelper).toHaveBeenCalled();
+      const { queryByLabelText } = await renderSearchResult(item);
+      const iconButton = queryByLabelText(iconLabel);
+      expect(iconButton).toBeInTheDocument();
     }
   );
 

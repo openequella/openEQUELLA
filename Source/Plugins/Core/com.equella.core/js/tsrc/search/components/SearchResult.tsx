@@ -58,10 +58,10 @@ import {
 import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
+import { FavouriteItemDialog } from "./FavouriteItemDialog";
 import type {
   FavDialogConfirmToAdd,
   FavDialogConfirmToDelete,
-  FavouriteItemInfo,
 } from "./FavouriteItemDialog";
 import { ResourceSelector } from "./ResourceSelector";
 import { SearchResultAttachmentsList } from "./SearchResultAttachmentsList";
@@ -123,10 +123,6 @@ export interface SearchResultProps {
    * The details of the items to display.
    */
   item: OEQ.Search.SearchResultItem;
-  /**
-   * Function fired to help update props of FavouriteItemDialog.
-   */
-  onFavouriteItem: (itemInfo: FavouriteItemInfo) => void;
 }
 
 export default function SearchResult({
@@ -134,7 +130,6 @@ export default function SearchResult({
   handleError,
   highlights,
   item,
-  onFavouriteItem,
 }: SearchResultProps) {
   const {
     name,
@@ -156,6 +151,10 @@ export default function SearchResult({
   const inSelectionSession: boolean = isSelectionSessionOpen();
   const inStructured = isSelectionSessionInStructured();
 
+  const [
+    showFavouriteItemDialog,
+    setShowFavouriteItemDialog,
+  ] = useState<boolean>(false);
   const [bookmarkId, setBookmarkId] = useState<number | undefined>(
     bookmarkDefaultId
   );
@@ -176,6 +175,26 @@ export default function SearchResult({
     selectResource(itemKey, attachments).catch((error) => handleError(error));
   };
 
+  const handleAddFavouriteItem: FavDialogConfirmToAdd = {
+    action: "add",
+    onConfirm: (tags: string[], isAlwaysLatest: boolean) =>
+      addFavouriteItem(`${uuid}/${version}`, tags, isAlwaysLatest)
+        .then(({ bookmarkID }) => setBookmarkId(bookmarkID))
+        .catch(handleError),
+  };
+
+  const handleDeleteFavouriteItem: FavDialogConfirmToDelete = {
+    action: "delete",
+    onConfirm: () => {
+      if (!bookmarkId) {
+        throw new Error("Bookmark ID can't be falsy.");
+      }
+      return deleteFavouriteItem(bookmarkId)
+        .then(() => setBookmarkId(undefined))
+        .catch(handleError);
+    },
+  };
+
   const generateItemMetadata = () => {
     const metaDataDivider = (
       <Divider
@@ -185,40 +204,6 @@ export default function SearchResult({
         orientation="vertical"
       />
     );
-
-    const favDialogConfirmToAdd: FavDialogConfirmToAdd = {
-      action: "add",
-      onConfirm: (tags: string[], isAlwaysLatest: boolean) =>
-        addFavouriteItem(`${uuid}/${version}`, tags, isAlwaysLatest)
-          .then(({ bookmarkID }) => setBookmarkId(bookmarkID))
-          .catch(handleError),
-    };
-
-    const favDialogConfirmToDelete: FavDialogConfirmToDelete = {
-      action: "delete",
-      onConfirm: () => {
-        if (!bookmarkId) {
-          throw new Error("Bookmark ID can't be falsy.");
-        }
-        return deleteFavouriteItem(bookmarkId)
-          .then(() => setBookmarkId(undefined))
-          .catch(handleError);
-      },
-    };
-
-    const favouriteItemButtonPops = {
-      title: bookmarkId
-        ? favouriteItemStrings.title.remove
-        : favouriteItemStrings.title.add,
-      onClick: () =>
-        onFavouriteItem({
-          isAddedToFavourite: bookmarkId !== undefined,
-          isLatestVersion,
-          onConfirmProps: bookmarkId
-            ? favDialogConfirmToDelete
-            : favDialogConfirmToAdd,
-        }),
-    };
 
     return (
       <div className={classes.additionalDetails}>
@@ -233,7 +218,15 @@ export default function SearchResult({
         </Typography>
 
         {metaDataDivider}
-        <TooltipIconButton {...favouriteItemButtonPops} size="small">
+        <TooltipIconButton
+          title={
+            bookmarkId
+              ? favouriteItemStrings.title.remove
+              : favouriteItemStrings.title.add
+          }
+          onClick={() => setShowFavouriteItemDialog(true)}
+          size="small"
+        >
           {bookmarkId ? <FavoriteIcon /> : <FavoriteBorderIcon />}
         </TooltipIconButton>
 
@@ -347,34 +340,47 @@ export default function SearchResult({
       : itemLink();
 
   return (
-    <ListItem
-      alignItems="flex-start"
-      divider
-      aria-label={searchResultStrings.ariaLabel}
-    >
-      <OEQThumb
-        attachment={attachments[0]}
-        showPlaceholder={displayOptions?.disableThumbnail ?? false}
-      />
-      <ListItemText
-        primary={itemPrimaryContent}
-        secondary={
-          <>
-            <Typography className={classes.itemDescription}>
-              {highlightField(description ?? "")}
-            </Typography>
-            <List disablePadding>{customDisplayMetadata}</List>
-            <SearchResultAttachmentsList
-              item={item}
-              handleError={handleError}
-              getViewerDetails={getViewerDetails}
-            />
-            {generateItemMetadata()}
-          </>
-        }
-        primaryTypographyProps={{ color: "primary", variant: "h6" }}
-        secondaryTypographyProps={{ component: "section" }}
-      />
-    </ListItem>
+    <>
+      <ListItem
+        alignItems="flex-start"
+        divider
+        aria-label={searchResultStrings.ariaLabel}
+      >
+        <OEQThumb
+          attachment={attachments[0]}
+          showPlaceholder={displayOptions?.disableThumbnail ?? false}
+        />
+        <ListItemText
+          primary={itemPrimaryContent}
+          secondary={
+            <>
+              <Typography className={classes.itemDescription}>
+                {highlightField(description ?? "")}
+              </Typography>
+              <List disablePadding>{customDisplayMetadata}</List>
+              <SearchResultAttachmentsList
+                item={item}
+                handleError={handleError}
+                getViewerDetails={getViewerDetails}
+              />
+              {generateItemMetadata()}
+            </>
+          }
+          primaryTypographyProps={{ color: "primary", variant: "h6" }}
+          secondaryTypographyProps={{ component: "section" }}
+        />
+      </ListItem>
+      {showFavouriteItemDialog && (
+        <FavouriteItemDialog
+          isAddedToFavourite={bookmarkId !== undefined}
+          isLatestVersion={isLatestVersion}
+          onConfirmProps={
+            bookmarkId ? handleDeleteFavouriteItem : handleAddFavouriteItem
+          }
+          open={showFavouriteItemDialog}
+          closeDialog={() => setShowFavouriteItemDialog(false)}
+        />
+      )}
+    </>
   );
 }

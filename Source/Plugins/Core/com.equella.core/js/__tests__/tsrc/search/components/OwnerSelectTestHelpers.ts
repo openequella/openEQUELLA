@@ -36,7 +36,7 @@ export const clickSelect = (container: HTMLElement) => {
 
 export const selectUser = async (container: HTMLElement, username: string) => {
   clickSelect(container);
-  doSearch(username);
+  doSearch(screen.getByRole("dialog"), username);
   // Wait for mock latency
   const findUsername = () => screen.getByText(username);
   await waitFor(findUsername);
