@@ -29,7 +29,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import * as React from "react";
-import { SyntheticEvent, useEffect, useState } from "react";
+import { ReactNode, SyntheticEvent, useEffect, useState } from "react";
 import { Literal, match, Unknown } from "runtypes";
 import {
   isBrowserSupportedAudio,
@@ -128,15 +128,27 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
     unsupportedContent: labelUnsupportedContent,
   } = languageStrings.lightboxComponent;
 
+  const [content, setContent] = useState<ReactNode | undefined>();
   const [lightBoxConfig, setLightBoxConfig] = useState<LightboxConfig>(config);
   const { attachment, onPrevious, onNext } = lightBoxConfig;
   const { src, title, mimeType } = attachment;
+
+  const handleOnPrevious = () => {
+    setContent(undefined);
+    onPrevious && setLightBoxConfig(onPrevious());
+  };
+
+  const handleOnNext = () => {
+    setContent(undefined);
+    onNext && setLightBoxConfig(onNext());
+  };
+
   useEffect(() => {
     const keyDownHandler = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft" && onPrevious) {
-        setLightBoxConfig(onPrevious());
-      } else if (e.key === "ArrowRight" && onNext) {
-        setLightBoxConfig(onNext());
+      if (e.key === "ArrowLeft") {
+        handleOnPrevious();
+      } else if (e.key === "ArrowRight") {
+        handleOnNext();
       } else if (e.key === "Escape") {
         onClose();
       }
@@ -146,6 +158,11 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
       window.removeEventListener("keydown", keyDownHandler);
     };
   }, [onPrevious, onNext, onClose]);
+
+  // Update content when config is updated.
+  useEffect(() => {
+    setContent(buildContent());
+  }, [lightBoxConfig]);
 
   const unsupportedContent = (
     <Card>
@@ -157,49 +174,49 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
     </Card>
   );
 
-  // Build an nested component which gets unmounted and mounted again when Lightbox re-renders.
-  // This ensures when navigate to previous/next image, the current image disappears immediately.
-  const LightBoxImage = () => (
-    <img
-      className={`${classes.lightboxContent} ${classes.lightboxImage}`}
-      alt={title}
-      src={src}
-      loading="lazy"
-    />
-  );
-
-  const content = match(
-    [Literal("image"), () => <LightBoxImage />],
-    [
-      Literal("video"),
-      () =>
-        isBrowserSupportedVideo(mimeType) ? (
-          <video
-            className={classes.lightboxContent}
-            controls
+  const buildContent = () =>
+    match(
+      [
+        Literal("image"),
+        () => (
+          <img
+            className={`${classes.lightboxContent} ${classes.lightboxImage}`}
+            alt={title}
             src={src}
-            aria-label={title}
+            onLoad={() => console.log("ok")}
           />
-        ) : (
-          unsupportedContent
         ),
-    ],
-    [
-      Literal("audio"),
-      () =>
-        isBrowserSupportedAudio(mimeType) ? (
-          <audio
-            className={classes.lightboxAudio}
-            controls
-            src={src}
-            aria-label={title}
-          />
-        ) : (
-          unsupportedContent
-        ),
-    ],
-    [Unknown, () => unsupportedContent]
-  )(splitMimeType(mimeType)[0]);
+      ],
+      [
+        Literal("video"),
+        () =>
+          isBrowserSupportedVideo(mimeType) ? (
+            <video
+              className={classes.lightboxContent}
+              controls
+              src={src}
+              aria-label={title}
+            />
+          ) : (
+            unsupportedContent
+          ),
+      ],
+      [
+        Literal("audio"),
+        () =>
+          isBrowserSupportedAudio(mimeType) ? (
+            <audio
+              className={classes.lightboxAudio}
+              controls
+              src={src}
+              aria-label={title}
+            />
+          ) : (
+            unsupportedContent
+          ),
+      ],
+      [Unknown, () => unsupportedContent]
+    )(splitMimeType(mimeType)[0]);
 
   const handleOpenInNewWindow = (event: SyntheticEvent) => {
     event.stopPropagation();
@@ -248,7 +265,7 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
               title={viewPreviousString}
               onClick={(e) => {
                 e.stopPropagation();
-                setLightBoxConfig(onPrevious());
+                handleOnPrevious();
               }}
             >
               <NavigateBeforeIcon className={classes.arrowButton} />
@@ -265,7 +282,7 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
                 title={viewNextString}
                 onClick={(e) => {
                   e.stopPropagation();
-                  setLightBoxConfig(onNext());
+                  handleOnNext();
                 }}
               >
                 <NavigateNextIcon className={classes.arrowButton} />
