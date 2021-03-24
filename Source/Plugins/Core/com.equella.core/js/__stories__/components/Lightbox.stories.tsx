@@ -15,10 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { action } from "@storybook/addon-actions";
 import { Meta, Story } from "@storybook/react";
 import * as React from "react";
-import Lightbox, { LightboxProps } from "../../tsrc/components/Lightbox";
+import Lightbox, {
+  LightboxConfig,
+  LightboxProps,
+} from "../../tsrc/components/Lightbox";
 
 export default {
   title: "component/Lightbox",
@@ -28,45 +30,59 @@ export default {
   },
 } as Meta<LightboxProps>;
 
+const imageConfig: LightboxConfig = {
+  src: "https://avatars2.githubusercontent.com/u/54074368",
+  title: "openEQUELLA GitHub avatar",
+  mimeType: "image/png",
+};
+
+const videoConfig: LightboxConfig = {
+  src: "https://archive.org/download/JoanAvoi1947/JoanAvoi1947.ogv",
+  title: "Joan Avoids a Cold (Coronet Instructional Films)",
+  mimeType: "video/ogg",
+};
+
+const audioConfig: LightboxConfig = {
+  src:
+    "https://archive.org/download/Sleep_Music-5629/junior85_-_01_-_Birdsong.ogg",
+  title: "Sleep Music (Tony Higgins) - Birdsong",
+  mimeType: "audio/ogg",
+};
+
 export const displayImage: Story<LightboxProps> = (args: LightboxProps) => (
   <Lightbox {...args} />
 );
 displayImage.args = {
-  mimeType: "image/png",
   open: true,
-  src: "https://avatars2.githubusercontent.com/u/54074368",
-  title: "openEQUELLA GitHub avatar",
+  config: imageConfig,
 };
 
 export const displayAudio: Story<LightboxProps> = (args: LightboxProps) => (
   <Lightbox {...args} />
 );
 displayAudio.args = {
-  mimeType: "audio/ogg",
   open: true,
-  src:
-    "https://archive.org/download/Sleep_Music-5629/junior85_-_01_-_Birdsong.ogg",
-  title: "Sleep Music (Tony Higgins) - Birdsong",
+  config: audioConfig,
 };
 
 export const displayVideo: Story<LightboxProps> = (args: LightboxProps) => (
   <Lightbox {...args} />
 );
 displayVideo.args = {
-  mimeType: "video/ogg",
   open: true,
-  src: "https://archive.org/download/JoanAvoi1947/JoanAvoi1947.ogv",
-  title: "Joan Avoids a Cold (Coronet Instructional Films)",
+  config: videoConfig,
 };
 
 export const unsupportedContent: Story<LightboxProps> = (
   args: LightboxProps
 ) => <Lightbox {...args} />;
 unsupportedContent.args = {
-  mimeType: "blah/blah",
   open: true,
-  src: "not-relevant",
-  title: "A Title",
+  config: {
+    src: "not-relevant",
+    title: "A Title",
+    mimeType: "blah/blah",
+  },
 };
 
 export const NavigateAttachments: Story<LightboxProps> = (
@@ -74,6 +90,9 @@ export const NavigateAttachments: Story<LightboxProps> = (
 ) => <Lightbox {...args} />;
 NavigateAttachments.args = {
   ...displayImage.args,
-  onNext: action("View next image"),
-  onPrevious: action("View previous image"),
+  config: {
+    ...imageConfig,
+    onNext: () => audioConfig,
+    onPrevious: () => videoConfig,
+  },
 };

@@ -82,20 +82,13 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export interface LightboxAttachment {
+export interface LightboxConfig {
   /** URL for the item to display in the Lightbox. */
   src: string;
   /** Title to display at the top of the Lightbox. */
   title?: string;
   /** MIME type of the items specified by `src` */
   mimeType: string;
-}
-
-export interface LightboxConfig {
-  /**
-   * The attachment displayed in Lightbox.
-   */
-  attachment: LightboxAttachment;
   /**
    * Function fired to view previous attachment.
    */
@@ -105,11 +98,13 @@ export interface LightboxConfig {
    */
   onNext?: () => LightboxConfig;
 }
+
 export interface LightboxProps {
   /** Function to call when the Lightbox is closing. */
   onClose: () => void;
   /** Control whether to hide (`false`) or show (`true`) the Lightbox. */
   open: boolean;
+  /** Configuration to help build Lightbox content. */
   config: LightboxConfig;
 }
 
@@ -130,9 +125,7 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
 
   const [content, setContent] = useState<ReactNode | undefined>();
   const [lightBoxConfig, setLightBoxConfig] = useState<LightboxConfig>(config);
-  const { attachment, onPrevious, onNext } = lightBoxConfig;
-  const { src, title, mimeType } = attachment;
-
+  const { src, title, mimeType, onPrevious, onNext } = lightBoxConfig;
   const handleOnPrevious = () => {
     setContent(undefined);
     onPrevious && setLightBoxConfig(onPrevious());
@@ -183,7 +176,6 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
             className={`${classes.lightboxContent} ${classes.lightboxImage}`}
             alt={title}
             src={src}
-            onLoad={() => console.log("ok")}
           />
         ),
       ],

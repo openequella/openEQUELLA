@@ -80,11 +80,9 @@ const ItemAttachmentLink = ({
                 setLightBoxProps(undefined);
               },
               config: {
-                attachment: {
-                  mimeType: mimeType ?? "",
-                  src: url,
-                  title: description,
-                },
+                mimeType: mimeType ?? "",
+                src: url,
+                title: description,
                 onPrevious,
                 onNext,
               },

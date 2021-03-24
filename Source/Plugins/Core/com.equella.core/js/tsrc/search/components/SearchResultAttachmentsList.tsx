@@ -215,11 +215,9 @@ export const SearchResultAttachmentsList = ({
     ) {
       const previousAttachment = lightboxAttachments[anotherAttachmentIndex];
       return () => ({
-        attachment: {
-          src: previousAttachment.viewer[1],
-          title: previousAttachment.attachment.description,
-          mimeType: previousAttachment.attachment.mimeType ?? "",
-        },
+        src: previousAttachment.viewer[1],
+        title: previousAttachment.attachment.description,
+        mimeType: previousAttachment.attachment.mimeType ?? "",
         onNext: buildLightboxNavigationHandler(anotherAttachmentIndex + 1),
         onPrevious: buildLightboxNavigationHandler(anotherAttachmentIndex - 1),
       });

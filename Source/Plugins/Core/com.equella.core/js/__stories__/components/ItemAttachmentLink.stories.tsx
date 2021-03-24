@@ -21,7 +21,7 @@ import * as React from "react";
 import ItemAttachmentLink, {
   ItemAttachmentLinkProps,
 } from "../../tsrc/components/ItemAttachmentLink";
-import type { AttachmentAndViewer } from "../../tsrc/search/components/SearchResult";
+import type { AttachmentAndViewer } from "../../tsrc/search/components/SearchResultAttachmentsList";
 
 export default {
   title: "component/ItemAttachmentLink",
@@ -57,7 +57,6 @@ export const linkToLightbox: Story<ItemAttachmentLinkProps> = (
 );
 linkToLightbox.args = {
   selectedAttachment: attachmentAndViewer,
-  allLightBoxAttachments: [attachmentAndViewer],
 };
 
 export const linkToURL: Story<ItemAttachmentLinkProps> = (
