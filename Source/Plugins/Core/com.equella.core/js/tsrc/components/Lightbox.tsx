@@ -29,7 +29,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import * as React from "react";
-import { SyntheticEvent, useEffect } from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 import { Literal, match, Unknown } from "runtypes";
 import {
   isBrowserSupportedAudio,
@@ -82,25 +82,35 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export interface LightboxProps {
-  /** MIME type of the items specified by `src` */
-  mimeType: string;
-  /** Function to call when the Lightbox is closing. */
-  onClose: () => void;
-  /** Control whether to hide (`false`) or show (`true`) the Lightbox. */
-  open: boolean;
+export interface LightboxAttachment {
   /** URL for the item to display in the Lightbox. */
   src: string;
   /** Title to display at the top of the Lightbox. */
   title?: string;
+  /** MIME type of the items specified by `src` */
+  mimeType: string;
+}
+
+export interface LightboxConfig {
+  /**
+   * The attachment displayed in Lightbox.
+   */
+  attachment: LightboxAttachment;
   /**
    * Function fired to view previous attachment.
    */
-  onPrevious?: () => void;
+  onPrevious?: () => LightboxConfig;
   /**
    * Function fired to view next attachment.
    */
-  onNext?: () => void;
+  onNext?: () => LightboxConfig;
+}
+export interface LightboxProps {
+  /** Function to call when the Lightbox is closing. */
+  onClose: () => void;
+  /** Control whether to hide (`false`) or show (`true`) the Lightbox. */
+  open: boolean;
+  config: LightboxConfig;
 }
 
 const {
@@ -108,15 +118,7 @@ const {
   viewPrevious: viewPreviousString,
 } = languageStrings.lightboxComponent;
 
-const Lightbox = ({
-  mimeType,
-  onClose,
-  open,
-  src,
-  title,
-  onPrevious,
-  onNext,
-}: LightboxProps) => {
+const Lightbox = ({ open, onClose, config }: LightboxProps) => {
   const classes = useStyles();
   const {
     close: labelClose,
@@ -126,12 +128,15 @@ const Lightbox = ({
     unsupportedContent: labelUnsupportedContent,
   } = languageStrings.lightboxComponent;
 
+  const [lightBoxConfig, setLightBoxConfig] = useState<LightboxConfig>(config);
+  const { attachment, onPrevious, onNext } = lightBoxConfig;
+  const { src, title, mimeType } = attachment;
   useEffect(() => {
     const keyDownHandler = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft" && onPrevious) {
-        onPrevious();
+        setLightBoxConfig(onPrevious());
       } else if (e.key === "ArrowRight" && onNext) {
-        onNext();
+        setLightBoxConfig(onNext());
       } else if (e.key === "Escape") {
         onClose();
       }
@@ -243,7 +248,7 @@ const Lightbox = ({
               title={viewPreviousString}
               onClick={(e) => {
                 e.stopPropagation();
-                onPrevious();
+                setLightBoxConfig(onPrevious());
               }}
             >
               <NavigateBeforeIcon className={classes.arrowButton} />
@@ -260,7 +265,7 @@ const Lightbox = ({
                 title={viewNextString}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onNext();
+                  setLightBoxConfig(onNext());
                 }}
               >
                 <NavigateNextIcon className={classes.arrowButton} />

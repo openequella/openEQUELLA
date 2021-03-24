@@ -18,9 +18,9 @@
 import { Link } from "@material-ui/core";
 import * as React from "react";
 import { SyntheticEvent, useState } from "react";
+import { AttachmentAndViewer } from "../search/components/SearchResultAttachmentsList";
 import { languageStrings } from "../util/langstrings";
-import type { AttachmentAndViewer } from "../search/components/SearchResult";
-import Lightbox, { LightboxProps } from "./Lightbox";
+import Lightbox, { LightboxConfig, LightboxProps } from "./Lightbox";
 
 export interface ItemAttachmentLinkProps {
   /**
@@ -31,10 +31,15 @@ export interface ItemAttachmentLinkProps {
    * The attachment to be viewed in the LightBox.
    */
   selectedAttachment: AttachmentAndViewer;
+
   /**
-   * All attachments that are viewable in the LightBox.
+   * Function passed to Lightbox to handle viewing previous attachment.
    */
-  allLightBoxAttachments: AttachmentAndViewer[];
+  onPrevious?: () => LightboxConfig;
+  /**
+   * Function passed to Lightbox to handle viewing next attachment.
+   */
+  onNext?: () => LightboxConfig;
 }
 
 /**
@@ -50,42 +55,11 @@ const ItemAttachmentLink = ({
     attachment: { description, mimeType },
     viewer: [viewer, url],
   },
-  allLightBoxAttachments,
+  onPrevious,
+  onNext,
 }: ItemAttachmentLinkProps) => {
   const { attachmentLink } = languageStrings.searchpage.searchResult;
-  const [lightBoxProps, setLightBoxProps] = useState<LightboxProps>({
-    mimeType: mimeType ?? "",
-    src: url,
-    title: description,
-    open: false,
-    onClose: () => {
-      setLightBoxProps({ ...lightBoxProps, open: false }); // Reset LightBox to display the initial attachment.
-    },
-  });
-
-  // Each attachment must have a unique view URL which we can use to determine their indexes.
-  const currentAttachmentIndex = allLightBoxAttachments
-    .map((a) => a.viewer[1])
-    .findIndex((url) => url === lightBoxProps.src);
-
-  // Return a function which will be passed to LightBox and fired to update what LightBox displays.
-  const buildLightboxNavigationHandler = (
-    canView: boolean,
-    anotherAttachmentIndex: number
-  ) => {
-    if (!canView) {
-      return;
-    }
-    const anotherAttachment = allLightBoxAttachments[anotherAttachmentIndex];
-    return () => {
-      setLightBoxProps({
-        ...lightBoxProps,
-        src: anotherAttachment.viewer[1],
-        title: anotherAttachment.attachment.description,
-        mimeType: anotherAttachment.attachment.mimeType ?? "",
-      });
-    };
-  };
+  const [lightBoxProps, setLightBoxProps] = useState<LightboxProps>();
 
   const buildLightboxLink = (): JSX.Element => {
     if (!mimeType) {
@@ -100,25 +74,29 @@ const ItemAttachmentLink = ({
           aria-label={`${attachmentLink} ${description}`}
           component="button"
           onClick={(event: SyntheticEvent) => {
-            setLightBoxProps({ ...lightBoxProps, open: true });
+            setLightBoxProps({
+              open: true,
+              onClose: () => {
+                setLightBoxProps(undefined);
+              },
+              config: {
+                attachment: {
+                  mimeType: mimeType ?? "",
+                  src: url,
+                  title: description,
+                },
+                onPrevious,
+                onNext,
+              },
+            });
             event.stopPropagation();
           }}
         >
           {children}
         </Link>
-        {lightBoxProps.open && ( // minor optimisation to minimise DOM
-          <Lightbox
-            {...lightBoxProps}
-            onPrevious={buildLightboxNavigationHandler(
-              currentAttachmentIndex > 0,
-              currentAttachmentIndex - 1
-            )}
-            onNext={buildLightboxNavigationHandler(
-              currentAttachmentIndex < allLightBoxAttachments.length - 1,
-              currentAttachmentIndex + 1
-            )}
-          />
-        )}
+        {
+          lightBoxProps && <Lightbox {...lightBoxProps} /> // minor optimisation to minimise DOM
+        }
       </>
     );
   };
