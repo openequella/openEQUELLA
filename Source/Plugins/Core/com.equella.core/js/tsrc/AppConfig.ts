@@ -51,6 +51,7 @@ export interface RenderData {
   autotestMode: boolean;
   newSearch: boolean;
   selectionSessionInfo: SelectionSessionInfo | null;
+  viewedFromIntegration: boolean;
 }
 
 declare const renderData: RenderData | undefined;
