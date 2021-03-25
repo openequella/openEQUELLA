@@ -76,6 +76,35 @@ describe('Search for items', () => {
     });
     expect(searchResult.results).toHaveLength(7);
   });
+
+  it("supports a list of 'musts' specifications", async () => {
+    const searchResult = await doSearch({
+      musts: [
+        ['moderating', ['true']],
+        [
+          'uuid',
+          [
+            'ab16b5f0-a12e-43f5-9d8b-25870528ad41',
+            '24b977ec-4df4-4a43-8922-8ca6f82a296a',
+          ],
+        ],
+      ],
+    });
+    expect(searchResult.results).toHaveLength(2);
+  });
+
+  it.each<[string, [string, string[]][]]>([
+    ['Empty field name', [['', ['a value']]]],
+    ['Empty value array', [['field-no-values', []]]],
+    ['Empty value', [['field-empty-value', ['']]]],
+    ['Colon in field name', [['field:colon', ['value-no-colon']]]],
+    ['Colon in value', [['field-no-colon', ['value:colon']]]],
+  ])(
+    "attempts to validate the 'musts' client side before sending [%s]",
+    async (_, musts) => {
+      await expect(doSearch({ musts })).rejects.toThrow(TypeError);
+    }
+  );
 });
 
 describe('Search for attachments', () => {
