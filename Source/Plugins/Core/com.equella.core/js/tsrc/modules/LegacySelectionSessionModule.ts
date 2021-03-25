@@ -156,6 +156,14 @@ export const isSelectionSessionOpen = (): boolean =>
   isSelectionSessionInfo(getRenderData()?.selectionSessionInfo);
 
 /**
+ * Returns true if this is an /integ/gen item link - that is, a resource summary viewed via an integration.
+ */
+export const isItemViewedFromIntegration = (): boolean => {
+  const viewedFromIntegration = getRenderData()?.viewedFromIntegration;
+  return typeof viewedFromIntegration == "boolean" && viewedFromIntegration;
+};
+
+/**
  * Return true if Selection Session is in 'Structured'.
  */
 export const isSelectionSessionInStructured = (): boolean =>
