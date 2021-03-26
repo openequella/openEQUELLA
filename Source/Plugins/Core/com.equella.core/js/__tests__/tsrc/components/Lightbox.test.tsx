@@ -23,6 +23,7 @@ import Lightbox, {
 } from "../../../tsrc/components/Lightbox";
 import { render } from "@testing-library/react";
 import { languageStrings } from "../../../tsrc/util/langstrings";
+import "@testing-library/jest-dom/extend-expect";
 
 describe("isLightboxSupportedMimeType", () => {
   it.each<[string, boolean]>([
@@ -38,12 +39,16 @@ describe("isLightboxSupportedMimeType", () => {
 });
 
 describe("view previous/next attachment", () => {
+  const nextImageTitle = "Next image";
+  const previousImageTitle = "Previous image";
   const onPrevious = jest.fn().mockReturnValue({
+    title: previousImageTitle,
     src: "./thumb.jpg",
     mimeType: "image/jpeg",
   });
 
   const onNext = jest.fn().mockReturnValue({
+    title: nextImageTitle,
     src: "./placeholder-500x500.png",
     mimeType: "image/png",
   });
@@ -58,6 +63,7 @@ describe("view previous/next attachment", () => {
       },
       onPrevious,
       languageStrings.lightboxComponent.viewPrevious,
+      previousImageTitle,
     ],
     [
       "next",
@@ -68,6 +74,7 @@ describe("view previous/next attachment", () => {
       },
       onNext,
       languageStrings.lightboxComponent.viewNext,
+      nextImageTitle,
     ],
   ])(
     "supports viewing %s attachment",
@@ -75,14 +82,16 @@ describe("view previous/next attachment", () => {
       which: string,
       config: LightboxConfig,
       handler: jest.Mock,
-      buttonText: string
+      buttonText: string,
+      updatedTitle: string
     ) => {
-      const { getByLabelText } = render(
+      const { getByLabelText, queryByText } = render(
         <Lightbox onClose={jest.fn()} open config={config} />
       );
 
       userEvent.click(getByLabelText(buttonText));
       expect(handler).toHaveBeenCalledTimes(1);
+      expect(queryByText(updatedTitle)).toBeInTheDocument();
     }
   );
 });

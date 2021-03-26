@@ -110,7 +110,7 @@ export interface LightboxProps {
   onClose: () => void;
   /** Control whether to hide (`false`) or show (`true`) the Lightbox. */
   open: boolean;
-  /** Configuration to help build Lightbox content. */
+  /** Configuration specifying the Lightbox's content. */
   config: LightboxConfig;
 }
 
