@@ -21,14 +21,35 @@ import * as React from "react";
 import ItemAttachmentLink, {
   ItemAttachmentLinkProps,
 } from "../../tsrc/components/ItemAttachmentLink";
-import type { AttachmentAndViewer } from "../../tsrc/search/components/SearchResultAttachmentsList";
+import { AttachmentAndViewerConfig } from "../../tsrc/search/components/SearchResultAttachmentsList";
 
 export default {
   title: "component/ItemAttachmentLink",
   component: ItemAttachmentLink,
 } as Meta<ItemAttachmentLinkProps>;
 
-const mockedAttachment = {
+const githubAvatarUrl = "https://avatars2.githubusercontent.com/u/54074368";
+
+const linkAttachment = {
+  attachmentType: "link",
+  id: "78b8af7e-f0f5-4b5c-9f44-16f212583fe1",
+  description: "link",
+  preview: false,
+  links: {
+    view: githubAvatarUrl,
+    thumbnail: "",
+  },
+};
+
+const linkAttachmentAndViewer: AttachmentAndViewerConfig = {
+  attachment: linkAttachment,
+  viewerConfig: {
+    viewerType: "link",
+    url: githubAvatarUrl,
+  },
+};
+
+const lightboxAttachment = {
   attachmentType: "file",
   id: "78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
   description: "image.png",
@@ -36,16 +57,21 @@ const mockedAttachment = {
   mimeType: "image/png",
   hasGeneratedThumb: true,
   links: {
-    view:
-      "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/?attachment.uuid=78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
+    view: githubAvatarUrl,
     thumbnail: "./thumb.jpg",
   },
 };
 
-const githubAvatarUrl = "https://avatars2.githubusercontent.com/u/54074368";
-const attachmentAndViewer: AttachmentAndViewer = {
-  attachment: mockedAttachment,
-  viewer: ["lightbox", githubAvatarUrl],
+const lightboxAttachmentAndViewer: AttachmentAndViewerConfig = {
+  attachment: lightboxAttachment,
+  viewerConfig: {
+    viewerType: "lightbox",
+    config: {
+      src: githubAvatarUrl,
+      title: lightboxAttachment.description,
+      mimeType: lightboxAttachment.mimeType,
+    },
+  },
 };
 
 export const linkToLightbox: Story<ItemAttachmentLinkProps> = (
@@ -56,7 +82,7 @@ export const linkToLightbox: Story<ItemAttachmentLinkProps> = (
   </ItemAttachmentLink>
 );
 linkToLightbox.args = {
-  selectedAttachment: attachmentAndViewer,
+  selectedAttachment: lightboxAttachmentAndViewer,
 };
 
 export const linkToURL: Story<ItemAttachmentLinkProps> = (
@@ -68,8 +94,5 @@ export const linkToURL: Story<ItemAttachmentLinkProps> = (
 );
 linkToURL.args = {
   ...linkToLightbox.args,
-  selectedAttachment: {
-    ...attachmentAndViewer,
-    viewer: ["link", githubAvatarUrl],
-  },
+  selectedAttachment: linkAttachmentAndViewer,
 };

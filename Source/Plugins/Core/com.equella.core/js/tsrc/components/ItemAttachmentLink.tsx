@@ -18,9 +18,13 @@
 import { Link } from "@material-ui/core";
 import * as React from "react";
 import { SyntheticEvent, useState } from "react";
-import { AttachmentAndViewer } from "../search/components/SearchResultAttachmentsList";
+import {
+  AttachmentAndViewerConfig,
+  isViewerLightConfig,
+  ViewerLightboxConfig,
+} from "../search/components/SearchResultAttachmentsList";
 import { languageStrings } from "../util/langstrings";
-import Lightbox, { LightboxConfig, LightboxProps } from "./Lightbox";
+import Lightbox, { LightboxProps } from "./Lightbox";
 
 export interface ItemAttachmentLinkProps {
   /**
@@ -28,18 +32,9 @@ export interface ItemAttachmentLinkProps {
    */
   children: React.ReactNode;
   /**
-   * The attachment to be viewed in the LightBox.
+   * Information about an attachment and what viewer to be used for this attachment.
    */
-  selectedAttachment: AttachmentAndViewer;
-
-  /**
-   * Function passed to Lightbox to handle viewing previous attachment.
-   */
-  onPrevious?: () => LightboxConfig;
-  /**
-   * Function passed to Lightbox to handle viewing next attachment.
-   */
-  onNext?: () => LightboxConfig;
+  selectedAttachment: AttachmentAndViewerConfig;
 }
 
 /**
@@ -53,15 +48,13 @@ const ItemAttachmentLink = ({
   children,
   selectedAttachment: {
     attachment: { description, mimeType },
-    viewer: [viewer, url],
+    viewerConfig,
   },
-  onPrevious,
-  onNext,
 }: ItemAttachmentLinkProps) => {
   const { attachmentLink } = languageStrings.searchpage.searchResult;
   const [lightBoxProps, setLightBoxProps] = useState<LightboxProps>();
 
-  const buildLightboxLink = (): JSX.Element => {
+  const buildLightboxLink = ({ config }: ViewerLightboxConfig): JSX.Element => {
     if (!mimeType) {
       throw new Error(
         "'mimeType' must be specified when viewer is 'lightbox'."
@@ -79,13 +72,7 @@ const ItemAttachmentLink = ({
               onClose: () => {
                 setLightBoxProps(undefined);
               },
-              config: {
-                mimeType: mimeType ?? "",
-                src: url,
-                title: description,
-                onPrevious,
-                onNext,
-              },
+              config,
             });
             event.stopPropagation();
           }}
@@ -98,13 +85,13 @@ const ItemAttachmentLink = ({
       </>
     );
   };
-  return viewer === "lightbox" ? (
-    buildLightboxLink()
+  return isViewerLightConfig(viewerConfig) ? (
+    buildLightboxLink(viewerConfig)
   ) : (
     // Lightbox viewer not specified, so go with the default of a simple link.
     <Link
       aria-label={`${attachmentLink} ${description}`}
-      href={url}
+      href={viewerConfig.url}
       target="_blank"
       rel="noreferrer"
     >

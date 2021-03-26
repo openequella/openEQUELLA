@@ -82,15 +82,54 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export interface AttachmentAndViewer {
+export interface ViewerLinkConfig {
+  /**
+   * Indicating the viewer is 'link'.
+   */
+  viewerType: "link";
+  /**
+   * The URL of this viewer.
+   */
+  url: string;
+}
+
+export interface ViewerLightboxConfig {
+  /**
+   * Indicating the viewer is 'Lightbox'.
+   */
+  viewerType: "lightbox";
+  /**
+   * Config required by Lightbox.
+   */
+  config: LightboxConfig;
+}
+
+export type ViewerConfig = ViewerLinkConfig | ViewerLightboxConfig;
+
+export const isViewerLightConfig = (
+  config: ViewerConfig
+): config is ViewerLightboxConfig => config.viewerType === "lightbox";
+
+export interface AttachmentAndViewerDefinition {
   /**
    * The details of an attachment.
    */
   attachment: OEQ.Search.Attachment;
   /**
-   * Viewer information for the attachment, including which viewer to be used and the view URL.
+   * Viewer definition for the attachment, including which viewer to be used and the view URL.
    */
-  viewer: ViewerDefinition;
+  viewerDefinition: ViewerDefinition;
+}
+
+export interface AttachmentAndViewerConfig {
+  /**
+   * The details of an attachment.
+   */
+  attachment: OEQ.Search.Attachment;
+  /**
+   * Viewer configuration for the attachment.
+   */
+  viewerConfig: ViewerConfig;
 }
 
 export interface SearchResultAttachmentsListProps {
@@ -128,9 +167,10 @@ export const SearchResultAttachmentsList = ({
       : displayOptions?.standardOpen) ?? false
   );
 
-  const [attachmentsAndViewers, setAttachmentsAndViewers] = useState<
-    AttachmentAndViewer[]
-  >([]);
+  const [
+    attachmentsAndViewerConfigs,
+    setAttachmentsAndViewerConfigs,
+  ] = useState<AttachmentAndViewerConfig[]>([]);
 
   // Responsible for determining the MIME type viewer for the provided attachments
   useEffect(() => {
@@ -143,7 +183,7 @@ export const SearchResultAttachmentsList = ({
 
     const transform = async (
       attachment: OEQ.Search.Attachment
-    ): Promise<AttachmentAndViewer> => {
+    ): Promise<AttachmentAndViewerDefinition> => {
       const {
         attachmentType,
         mimeType,
@@ -170,7 +210,7 @@ export const SearchResultAttachmentsList = ({
 
       return {
         attachment: attachment,
-        viewer: determineViewer(
+        viewerDefinition: determineViewer(
           attachmentType,
           viewUrl,
           mimeType,
@@ -180,11 +220,85 @@ export const SearchResultAttachmentsList = ({
     };
 
     (async () => {
-      const attachmentsAndViewers = await Promise.all(
-        attachments.map<Promise<AttachmentAndViewer>>(transform)
+      const attachmentsAndViewerDefinitions = await Promise.all(
+        attachments.map<Promise<AttachmentAndViewerDefinition>>(transform)
       );
+
+      const lightboxAttachments = attachmentsAndViewerDefinitions.filter(
+        ({ viewerDefinition: [viewer] }) => viewer === "lightbox"
+      );
+
+      /**
+       * Build a function to handler navigation between Lightbox attachments.
+       * @param attachmentIndex Index of the attachment to be viewed
+       */
+      const buildLightboxNavigationHandler = (
+        attachmentIndex: number
+      ): (() => LightboxConfig) | undefined =>
+        pipe(
+          lightboxAttachments,
+          A.lookup(attachmentIndex),
+          O.fold(
+            () => undefined,
+            (av) => {
+              const {
+                attachment: { description, mimeType },
+                viewerDefinition: [viewer, viewUrl],
+              } = av;
+              if (viewer === "lightbox") {
+                return () => ({
+                  src: viewUrl,
+                  title: description,
+                  mimeType: mimeType ?? "",
+                  onNext: buildLightboxNavigationHandler(attachmentIndex + 1),
+                  onPrevious: buildLightboxNavigationHandler(
+                    attachmentIndex - 1
+                  ),
+                });
+              }
+              throw new TypeError("Unexpected viewer configuration");
+            }
+          )
+        );
+
+      // Transform AttachmentAndViewerDefinition to AttachmentAndViewerConfig.
+      const attachmentsAndConfigs: AttachmentAndViewerConfig[] = attachmentsAndViewerDefinitions.map(
+        (avd) => {
+          const [viewer, viewUrl] = avd.viewerDefinition;
+          const { attachment } = avd;
+          const lightboxAttachmentIndex = lightboxAttachments.findIndex(
+            (a) => a.attachment.id === attachment.id
+          );
+          return viewer === "lightbox"
+            ? {
+                attachment,
+                viewerConfig: {
+                  viewerType: viewer,
+                  config: {
+                    src: viewUrl,
+                    title: attachment.description,
+                    mimeType: attachment.mimeType ?? "",
+                    onNext: buildLightboxNavigationHandler(
+                      lightboxAttachmentIndex + 1
+                    ),
+                    onPrevious: buildLightboxNavigationHandler(
+                      lightboxAttachmentIndex - 1
+                    ),
+                  },
+                },
+              }
+            : {
+                attachment,
+                viewerConfig: {
+                  viewerType: viewer,
+                  url: viewUrl,
+                },
+              };
+        }
+      );
+
       if (mounted) {
-        setAttachmentsAndViewers(attachmentsAndViewers);
+        setAttachmentsAndViewerConfigs(attachmentsAndConfigs);
       }
     })();
 
@@ -207,48 +321,12 @@ export const SearchResultAttachmentsList = ({
     setAttachExpanded(!attachExpanded);
   };
 
-  const lightboxAttachments = attachmentsAndViewers.filter(
-    ({ viewer: [viewerType] }) => viewerType === "lightbox"
-  );
-
-  /**
-   * Build a function to handler navigation between Lightbox attachments.
-   * @param attachmentIndex Index of the attachment to be viewed
-   */
-  const buildLightboxNavigationHandler = (
-    attachmentIndex: number
-  ): (() => LightboxConfig) | undefined =>
-    pipe(
-      lightboxAttachments,
-      A.lookup(attachmentIndex),
-      O.fold(
-        () => undefined,
-        (av) => {
-          const {
-            attachment: { description, mimeType },
-            viewer,
-          } = av;
-          const [viewUrl] = viewer.slice(-1);
-          return () => ({
-            src: viewUrl,
-            title: description,
-            mimeType: mimeType ?? "",
-            onNext: buildLightboxNavigationHandler(attachmentIndex + 1),
-            onPrevious: buildLightboxNavigationHandler(attachmentIndex - 1),
-          });
-        }
-      )
-    );
-
-  const attachmentsList = attachmentsAndViewers.map(
-    (attachmentAndViewer: AttachmentAndViewer) => {
+  const attachmentsList = attachmentsAndViewerConfigs.map(
+    (attachmentAndViewerConfig: AttachmentAndViewerConfig) => {
       const {
         attachment: { id, description },
-      } = attachmentAndViewer;
+      } = attachmentAndViewerConfig;
 
-      const lightboxAttachmentIndex = lightboxAttachments.findIndex(
-        (v) => v.attachment.id === id
-      );
       return (
         <ListItem
           key={id}
@@ -262,14 +340,7 @@ export const SearchResultAttachmentsList = ({
           <ListItemIcon>
             {inStructured ? <DragIndicatorIcon /> : <InsertDriveFile />}
           </ListItemIcon>
-          <ItemAttachmentLink
-            selectedAttachment={attachmentAndViewer}
-            // Need the index in 'lightboxAttachments' to make sure the next or previous attachment must be viewable in Lightbox.
-            onPrevious={buildLightboxNavigationHandler(
-              lightboxAttachmentIndex - 1
-            )}
-            onNext={buildLightboxNavigationHandler(lightboxAttachmentIndex + 1)}
-          >
+          <ItemAttachmentLink selectedAttachment={attachmentAndViewerConfig}>
             <ListItemText color="primary" primary={description} />
           </ItemAttachmentLink>
           {inSelectionSession && (
@@ -301,7 +372,7 @@ export const SearchResultAttachmentsList = ({
             labelText={selectResourceStrings.allAttachments}
             isStopPropagation
             onClick={() => {
-              const attachments = attachmentsAndViewers.map(
+              const attachments = attachmentsAndViewerConfigs.map(
                 ({ attachment }) => attachment.id
               );
               handleSelectResource(itemKey, attachments);
