@@ -55,6 +55,9 @@ import {
 import { languageStrings } from "../../util/langstrings";
 import { ResourceSelector } from "./ResourceSelector";
 import * as OEQ from "@openequella/rest-api-client";
+import * as A from "fp-ts/Array";
+import * as O from "fp-ts/Option";
+import { pipe } from "fp-ts/function";
 
 const {
   searchResult: searchResultStrings,
@@ -100,6 +103,7 @@ export interface SearchResultAttachmentsListProps {
    */
   handleError: (error: Error) => void;
 }
+
 export const SearchResultAttachmentsList = ({
   item: {
     uuid,
@@ -204,33 +208,47 @@ export const SearchResultAttachmentsList = ({
   };
 
   const lightboxAttachments = attachmentsAndViewers.filter(
-    (av) => av.viewer[0] === "lightbox"
+    ({ viewer: [viewerType] }) => viewerType === "lightbox"
   );
-  const buildLightboxNavigationHandler = (
-    anotherAttachmentIndex: number
-  ): (() => LightboxConfig) | undefined => {
-    if (
-      anotherAttachmentIndex > -1 &&
-      anotherAttachmentIndex < lightboxAttachments.length
-    ) {
-      const previousAttachment = lightboxAttachments[anotherAttachmentIndex];
-      return () => ({
-        src: previousAttachment.viewer[1],
-        title: previousAttachment.attachment.description,
-        mimeType: previousAttachment.attachment.mimeType ?? "",
-        onNext: buildLightboxNavigationHandler(anotherAttachmentIndex + 1),
-        onPrevious: buildLightboxNavigationHandler(anotherAttachmentIndex - 1),
-      });
-    }
 
-    return;
-  };
+  /**
+   * Build a function to handler navigation between Lightbox attachments.
+   * @param attachmentIndex Index of the attachment to be viewed
+   */
+  const buildLightboxNavigationHandler = (
+    attachmentIndex: number
+  ): (() => LightboxConfig) | undefined =>
+    pipe(
+      lightboxAttachments,
+      A.lookup(attachmentIndex),
+      O.fold(
+        () => undefined,
+        (av) => {
+          const {
+            attachment: { description, mimeType },
+            viewer,
+          } = av;
+          const [viewUrl] = viewer.slice(-1);
+          return () => ({
+            src: viewUrl,
+            title: description,
+            mimeType: mimeType ?? "",
+            onNext: buildLightboxNavigationHandler(attachmentIndex + 1),
+            onPrevious: buildLightboxNavigationHandler(attachmentIndex - 1),
+          });
+        }
+      )
+    );
 
   const attachmentsList = attachmentsAndViewers.map(
     (attachmentAndViewer: AttachmentAndViewer) => {
       const {
         attachment: { id, description },
       } = attachmentAndViewer;
+
+      const lightboxAttachmentIndex = lightboxAttachments.findIndex(
+        (v) => v.attachment.id === id
+      );
       return (
         <ListItem
           key={id}
@@ -248,11 +266,9 @@ export const SearchResultAttachmentsList = ({
             selectedAttachment={attachmentAndViewer}
             // Need the index in 'lightboxAttachments' to make sure the next or previous attachment must be viewable in Lightbox.
             onPrevious={buildLightboxNavigationHandler(
-              lightboxAttachments.findIndex((v) => v.attachment.id === id) - 1
+              lightboxAttachmentIndex - 1
             )}
-            onNext={buildLightboxNavigationHandler(
-              lightboxAttachments.findIndex((v) => v.attachment.id === id) + 1
-            )}
+            onNext={buildLightboxNavigationHandler(lightboxAttachmentIndex + 1)}
           >
             <ListItemText color="primary" primary={description} />
           </ItemAttachmentLink>
