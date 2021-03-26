@@ -81,6 +81,13 @@ public final class Check {
     }
   }
 
+  /**
+   * Returns {@code true} if the string is {@code null} or is zero length <strong>after</strong>
+   * trimming.
+   *
+   * @param s a possible string to test
+   * @return true if empty, false if has length greater than zero after trimming.
+   */
   public static boolean isEmpty(String s) {
     return s == null || s.trim().length() == 0;
   }

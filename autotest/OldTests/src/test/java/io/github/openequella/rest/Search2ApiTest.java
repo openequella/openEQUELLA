@@ -170,6 +170,41 @@ public class Search2ApiTest extends AbstractRestApiTest {
     assertEquals(getAvailable(result), 0);
   }
 
+  @Test(description = "Filter search by a list of 'musts'")
+  public void validMustsSearch() throws IOException {
+    JsonNode result = doSearch(200, null, new NameValuePair("musts", "moderating:true"));
+    assertEquals(getAvailable(result), 9);
+
+    result =
+        doSearch(
+            200,
+            null,
+            new NameValuePair("musts", "moderating:true"),
+            new NameValuePair("musts", "uuid:ab16b5f0-a12e-43f5-9d8b-25870528ad41"),
+            new NameValuePair("musts", "uuid:24b977ec-4df4-4a43-8922-8ca6f82a296a"));
+    assertEquals(getAvailable(result), 2);
+
+    result =
+        doSearch(
+            200, null, new NameValuePair("musts", "uuid:ab16b5f0-a12e-43f5-9d8b-25870528ad41"));
+    assertEquals(getAvailable(result), 1);
+  }
+
+  @DataProvider(name = "badMustExpressions")
+  public static Object[][] badMustExpressions() {
+    return new Object[][] {
+      {"tooFewDelimiter"}, {"too:many:delimiter"}, {":emptyField"},
+      {"emptyValue:"}, {":"}, {""}
+    };
+  }
+
+  @Test(
+      description = "Report error with incorrectly formatted 'musts' expressions",
+      dataProvider = "badMustExpressions")
+  public void invalidMustsSearch(String badMust) throws IOException {
+    doSearch(400, null, new NameValuePair("musts", badMust));
+  }
+
   private JsonNode doSearch(int expectedCode, String query, NameValuePair... queryVals)
       throws IOException {
     final HttpMethod method = new GetMethod(SEARCH_API_ENDPOINT);

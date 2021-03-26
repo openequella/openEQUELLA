@@ -98,6 +98,10 @@ object SearchHelper {
     }
     search.setFreeTextQuery(freeTextQuery)
 
+    handleMusts(params.musts) foreach {
+      case (field, value) => search.addMust(field, value.asJavaCollection)
+    }
+
     search
   }
 
@@ -171,6 +175,36 @@ object SearchHelper {
         case None    => throw new NotFoundException(s"No collection UUID matching $c")
     })
     Some(collectionIds.toList.asJava)
+  }
+
+  /**
+    * Takes a list of colon delimited strings (i.e. key:value), and splits them to build up a map.
+    * Entries in the map can have multiple values, so each additional `key:value` will simply append
+    * to the existing entry(key).
+    *
+    * @param musts a list of colon delimited strings to be split
+    * @return the processed strings, ready for calls into `DefaultSearch.addMusts` or throws if there
+    *         was an issue processing the strings
+    */
+  def handleMusts(musts: Array[String]): Map[String, List[String]] = {
+    val delimiter         = ':'
+    val oneOrMoreNonDelim = s"([^$delimiter]+)"
+    val mustExprFormat    = s"$oneOrMoreNonDelim$delimiter$oneOrMoreNonDelim".r
+
+    def valid = (xs: Array[String]) => xs.forall(s => s.matches(mustExprFormat.regex))
+
+    if (valid(musts)) {
+      val initialEmptyMap = Map[String, List[String]]()
+      musts.foldLeft(initialEmptyMap)((result, mustExpr) => {
+        val mustExprFormat(k, v) = mustExpr
+        result.get(k) match {
+          case Some(existing) => result ++ Map(k -> (existing :+ v))
+          case None           => result ++ Map(k -> List(v))
+        }
+      })
+    } else {
+      throw new BadRequestException("Provided 'musts' expression(s) was incorrectly formatted.")
+    }
   }
 
   /**
