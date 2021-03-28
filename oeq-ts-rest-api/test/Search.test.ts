@@ -95,8 +95,13 @@ describe('Search for items', () => {
 
   it.each<[string, [string, string[]][]]>([
     ['Empty field name', [['', ['a value']]]],
+    [
+      'Empty field name - whitespace',
+      [[' ', ['a value for whitespace field']]],
+    ],
     ['Empty value array', [['field-no-values', []]]],
     ['Empty value', [['field-empty-value', ['']]]],
+    ['Empty value - whitespace', [['field-empty-value-whitespace', [' ']]]],
     ['Colon in field name', [['field:colon', ['value-no-colon']]]],
     ['Colon in value', [['field-no-colon', ['value:colon']]]],
   ])(
