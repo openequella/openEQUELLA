@@ -112,11 +112,13 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
           name,
         }: GalleryEntry) => () =>
           setLightboxProps({
-            mimeType,
             onClose: () => setLightboxProps(undefined),
             open: true,
-            src,
-            title: name,
+            config: {
+              src,
+              title: name,
+              mimeType,
+            },
           });
 
         return [

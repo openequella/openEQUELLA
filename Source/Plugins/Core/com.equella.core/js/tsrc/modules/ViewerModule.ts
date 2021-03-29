@@ -16,11 +16,67 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { isLightboxSupportedMimeType } from "../components/Lightbox";
+import * as A from "fp-ts/Array";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import {
+  isLightboxSupportedMimeType,
+  LightboxConfig,
+} from "../components/Lightbox";
 import { buildFileAttachmentUrl } from "./AttachmentsModule";
 
 export type Viewer = "lightbox" | "link";
 export type ViewerDefinition = [Viewer, string];
+
+export interface ViewerLinkConfig {
+  /**
+   * Indicating the viewer is 'link'.
+   */
+  viewerType: "link";
+  /**
+   * The URL of this viewer.
+   */
+  url: string;
+}
+
+export interface ViewerLightboxConfig {
+  /**
+   * Indicating the viewer is 'Lightbox'.
+   */
+  viewerType: "lightbox";
+  /**
+   * Config required by Lightbox.
+   */
+  config: LightboxConfig;
+}
+
+export type ViewerConfig = ViewerLinkConfig | ViewerLightboxConfig;
+
+export const isViewerLightboxConfig = (
+  config: ViewerConfig
+): config is ViewerLightboxConfig => config.viewerType === "lightbox";
+
+export interface AttachmentAndViewerDefinition {
+  /**
+   * The details of an attachment.
+   */
+  attachment: OEQ.Search.Attachment;
+  /**
+   * Viewer definition for the attachment, including which viewer to be used and the view URL.
+   */
+  viewerDefinition: ViewerDefinition;
+}
+
+export interface AttachmentAndViewerConfig {
+  /**
+   * The details of an attachment.
+   */
+  attachment: OEQ.Search.Attachment;
+  /**
+   * Viewer configuration for the attachment.
+   */
+  viewerConfig: ViewerConfig;
+}
 
 /**
  * Determine which viewer to use based on the provided `attachmentType` and `mimeType`. The result
@@ -87,3 +143,72 @@ export const determineAttachmentViewUrl = (
   attachmentType === "file" && fileAttachmentPath
     ? buildFileAttachmentUrl(itemUuid, itemVersion, fileAttachmentPath)
     : viewUrl;
+
+/**
+ * Return an attachment's viewer definition.
+ *
+ * @param itemUuid The attachment item's UUID
+ * @param itemVersion The attachment item's version.
+ * @param attachment The attachment for which
+ * @param mimeTypeViewerId The attachment's viewer ID.
+ */
+export const getViewerDefinitionForAttachment = (
+  itemUuid: string,
+  itemVersion: number,
+  attachment: OEQ.Search.Attachment,
+  mimeTypeViewerId?: OEQ.MimeType.ViewerId
+): ViewerDefinition => {
+  const {
+    attachmentType,
+    mimeType,
+    links: { view: defaultViewUrl },
+    filePath,
+  } = attachment;
+  const viewUrl = determineAttachmentViewUrl(
+    itemUuid,
+    itemVersion,
+    attachmentType,
+    defaultViewUrl,
+    filePath
+  );
+
+  return determineViewer(attachmentType, viewUrl, mimeType, mimeTypeViewerId);
+};
+
+/**
+ * Build a function to handler navigation between Lightbox attachments.
+ * @param lightboxAttachments All attachments that can be viewed in Lightbox and their Viewer definitions.
+ * @param attachmentIndex Index of the attachment to be viewed
+ */
+export const buildLightboxNavigationHandler = (
+  lightboxAttachments: AttachmentAndViewerDefinition[],
+  attachmentIndex: number
+): (() => LightboxConfig) | undefined =>
+  pipe(
+    lightboxAttachments,
+    A.lookup(attachmentIndex),
+    O.fold(
+      () => undefined,
+      ({
+        attachment: { description, mimeType },
+        viewerDefinition: [viewer, viewUrl],
+      }) => {
+        if (viewer === "lightbox") {
+          return () => ({
+            src: viewUrl,
+            title: description,
+            mimeType: mimeType ?? "",
+            onNext: buildLightboxNavigationHandler(
+              lightboxAttachments,
+              attachmentIndex + 1
+            ),
+            onPrevious: buildLightboxNavigationHandler(
+              lightboxAttachments,
+              attachmentIndex - 1
+            ),
+          });
+        }
+        throw new TypeError(`Unexpected viewer configuration: ${viewer}`);
+      }
+    )
+  );
