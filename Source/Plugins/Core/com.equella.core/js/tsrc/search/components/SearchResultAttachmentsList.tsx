@@ -39,7 +39,6 @@ import Search from "@material-ui/icons/Search";
 import { SyntheticEvent, useEffect, useState } from "react";
 import * as React from "react";
 import ItemAttachmentLink from "../../components/ItemAttachmentLink";
-import { LightboxConfig } from "../../components/Lightbox";
 import {
   getSearchPageAttachmentClass,
   isSelectionSessionInSkinny,
@@ -48,16 +47,14 @@ import {
   selectResource,
 } from "../../modules/LegacySelectionSessionModule";
 import {
-  determineAttachmentViewUrl,
-  determineViewer,
-  ViewerDefinition,
+  AttachmentAndViewerConfig,
+  AttachmentAndViewerDefinition,
+  buildLightboxNavigationHandler,
+  getViewerDefinitionForAttachment,
 } from "../../modules/ViewerModule";
 import { languageStrings } from "../../util/langstrings";
 import { ResourceSelector } from "./ResourceSelector";
 import * as OEQ from "@openequella/rest-api-client";
-import * as A from "fp-ts/Array";
-import * as O from "fp-ts/Option";
-import { pipe } from "fp-ts/function";
 
 const {
   searchResult: searchResultStrings,
@@ -81,56 +78,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: "100%",
   },
 }));
-
-export interface ViewerLinkConfig {
-  /**
-   * Indicating the viewer is 'link'.
-   */
-  viewerType: "link";
-  /**
-   * The URL of this viewer.
-   */
-  url: string;
-}
-
-export interface ViewerLightboxConfig {
-  /**
-   * Indicating the viewer is 'Lightbox'.
-   */
-  viewerType: "lightbox";
-  /**
-   * Config required by Lightbox.
-   */
-  config: LightboxConfig;
-}
-
-export type ViewerConfig = ViewerLinkConfig | ViewerLightboxConfig;
-
-export const isViewerLightConfig = (
-  config: ViewerConfig
-): config is ViewerLightboxConfig => config.viewerType === "lightbox";
-
-export interface AttachmentAndViewerDefinition {
-  /**
-   * The details of an attachment.
-   */
-  attachment: OEQ.Search.Attachment;
-  /**
-   * Viewer definition for the attachment, including which viewer to be used and the view URL.
-   */
-  viewerDefinition: ViewerDefinition;
-}
-
-export interface AttachmentAndViewerConfig {
-  /**
-   * The details of an attachment.
-   */
-  attachment: OEQ.Search.Attachment;
-  /**
-   * Viewer configuration for the attachment.
-   */
-  viewerConfig: ViewerConfig;
-}
 
 export interface SearchResultAttachmentsListProps {
   item: OEQ.Search.SearchResultItem;
@@ -175,97 +122,50 @@ export const SearchResultAttachmentsList = ({
   // Responsible for determining the MIME type viewer for the provided attachments
   useEffect(() => {
     let mounted = true;
-
     if (!attachments.length) {
       // If there are no attachments, skip this effect
       return;
     }
 
-    const transform = async (
-      attachment: OEQ.Search.Attachment
-    ): Promise<AttachmentAndViewerDefinition> => {
-      const {
-        attachmentType,
-        mimeType,
-        links: { view: defaultViewUrl },
-        filePath,
-      } = attachment;
-      const viewUrl = determineAttachmentViewUrl(
-        uuid,
-        version,
-        attachmentType,
-        defaultViewUrl,
-        filePath
-      );
-
+    const getViewerID = async (mimeType: string) => {
       let viewerDetails: OEQ.MimeType.MimeTypeViewerDetail | undefined;
       try {
-        viewerDetails = mimeType ? await getViewerDetails(mimeType) : undefined;
+        viewerDetails = await getViewerDetails(mimeType);
       } catch (error) {
         handleError({
           ...error,
           message: `${searchResultStrings.errors.getAttachmentViewerDetailsFailure}: ${error.message}`,
         });
       }
-
-      return {
-        attachment: attachment,
-        viewerDefinition: determineViewer(
-          attachmentType,
-          viewUrl,
-          mimeType,
-          viewerDetails?.viewerId
-        ),
-      };
+      return viewerDetails?.viewerId;
     };
 
     (async () => {
       const attachmentsAndViewerDefinitions = await Promise.all(
-        attachments.map<Promise<AttachmentAndViewerDefinition>>(transform)
+        attachments.map<Promise<AttachmentAndViewerDefinition>>(
+          async (attachment) => {
+            const { mimeType } = attachment;
+            const viewerId = mimeType ? await getViewerID(mimeType) : undefined;
+            return {
+              attachment,
+              viewerDefinition: getViewerDefinitionForAttachment(
+                uuid,
+                version,
+                attachment,
+                viewerId
+              ),
+            };
+          }
+        )
       );
 
       const lightboxAttachments = attachmentsAndViewerDefinitions.filter(
         ({ viewerDefinition: [viewer] }) => viewer === "lightbox"
       );
 
-      /**
-       * Build a function to handler navigation between Lightbox attachments.
-       * @param attachmentIndex Index of the attachment to be viewed
-       */
-      const buildLightboxNavigationHandler = (
-        attachmentIndex: number
-      ): (() => LightboxConfig) | undefined =>
-        pipe(
-          lightboxAttachments,
-          A.lookup(attachmentIndex),
-          O.fold(
-            () => undefined,
-            (av) => {
-              const {
-                attachment: { description, mimeType },
-                viewerDefinition: [viewer, viewUrl],
-              } = av;
-              if (viewer === "lightbox") {
-                return () => ({
-                  src: viewUrl,
-                  title: description,
-                  mimeType: mimeType ?? "",
-                  onNext: buildLightboxNavigationHandler(attachmentIndex + 1),
-                  onPrevious: buildLightboxNavigationHandler(
-                    attachmentIndex - 1
-                  ),
-                });
-              }
-              throw new TypeError("Unexpected viewer configuration");
-            }
-          )
-        );
-
       // Transform AttachmentAndViewerDefinition to AttachmentAndViewerConfig.
       const attachmentsAndConfigs: AttachmentAndViewerConfig[] = attachmentsAndViewerDefinitions.map(
-        (avd) => {
-          const [viewer, viewUrl] = avd.viewerDefinition;
-          const { attachment } = avd;
+        ({ viewerDefinition: [viewer, viewUrl], attachment }) => {
           const lightboxAttachmentIndex = lightboxAttachments.findIndex(
             (a) => a.attachment.id === attachment.id
           );
@@ -279,9 +179,11 @@ export const SearchResultAttachmentsList = ({
                     title: attachment.description,
                     mimeType: attachment.mimeType ?? "",
                     onNext: buildLightboxNavigationHandler(
+                      lightboxAttachments,
                       lightboxAttachmentIndex + 1
                     ),
                     onPrevious: buildLightboxNavigationHandler(
+                      lightboxAttachments,
                       lightboxAttachmentIndex - 1
                     ),
                   },

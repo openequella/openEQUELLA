@@ -20,9 +20,9 @@ import * as React from "react";
 import { SyntheticEvent, useState } from "react";
 import {
   AttachmentAndViewerConfig,
-  isViewerLightConfig,
+  isViewerLightboxConfig,
   ViewerLightboxConfig,
-} from "../search/components/SearchResultAttachmentsList";
+} from "../modules/ViewerModule";
 import { languageStrings } from "../util/langstrings";
 import Lightbox, { LightboxProps } from "./Lightbox";
 
@@ -85,7 +85,7 @@ const ItemAttachmentLink = ({
       </>
     );
   };
-  return isViewerLightConfig(viewerConfig) ? (
+  return isViewerLightboxConfig(viewerConfig) ? (
     buildLightboxLink(viewerConfig)
   ) : (
     // Lightbox viewer not specified, so go with the default of a simple link.

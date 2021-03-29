@@ -21,7 +21,7 @@ import * as React from "react";
 import ItemAttachmentLink, {
   ItemAttachmentLinkProps,
 } from "../../tsrc/components/ItemAttachmentLink";
-import { AttachmentAndViewerConfig } from "../../tsrc/search/components/SearchResultAttachmentsList";
+import { AttachmentAndViewerConfig } from "../../tsrc/modules/ViewerModule";
 
 export default {
   title: "component/ItemAttachmentLink",
