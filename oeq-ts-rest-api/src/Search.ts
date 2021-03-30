@@ -204,6 +204,11 @@ export interface Attachment {
      * The URL for viewing this attachment's thumbnail.
      */
     thumbnail: string;
+    /**
+     * The ID of the attachment on an external system - as determined by the `attachmentType`.
+     * For example, for `custom/youtube` this is the YouTube video ID.
+     */
+    externalId?: string;
   };
   /**
    * If a file attachment, the path for the represented file
