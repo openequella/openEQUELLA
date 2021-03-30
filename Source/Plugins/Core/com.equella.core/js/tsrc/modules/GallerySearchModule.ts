@@ -41,19 +41,19 @@ export interface GalleryEntry {
    */
   name: string;
   /**
-   * The path to a small version of the image - typically the thumbnail with parameter `gallery` as
+   * The path to a small thumbnail - typically the thumbnail with parameter `gallery` as
    * `thumbnail`.
    */
-  imagePathSmall: string;
+  thumbnailSmall: string;
   /**
-   * The path to a larger version of the image - typically the thumbnail with parameter `gallery` as
+   * The path to a large thumbnail - typically the thumbnail with parameter `gallery` as
    * `preview`.
    */
-  imagePathMedium: string;
+  thumbnailLarge: string;
   /**
    * The URL to the actual raw asset, good for viewing in the lightbox (or perhaps downloading).
    */
-  imagePathFull: string;
+  directUrl: string;
 }
 
 /**
@@ -122,10 +122,10 @@ export const buildGalleryEntry = (
       )
     )
     .bind("name", E.right(attachment.description ?? attachment.id))
-    .bind("imagePathSmall", E.right(thumbnailLink(attachment, "thumbnail")))
-    .bind("imagePathMedium", E.right(thumbnailLink(attachment, "preview")))
+    .bind("thumbnailSmall", E.right(thumbnailLink(attachment, "thumbnail")))
+    .bind("thumbnailLarge", E.right(thumbnailLink(attachment, "preview")))
     .bind(
-      "imagePathFull",
+      "directUrl",
       pipe(
         attachment.filePath,
         E.fromNullable("Attachment is missing its `filePath`"),

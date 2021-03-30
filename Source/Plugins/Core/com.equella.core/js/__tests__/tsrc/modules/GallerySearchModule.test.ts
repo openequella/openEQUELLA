@@ -204,7 +204,7 @@ describe("buildGallerySearchResultItem", () => {
       searchItem
     );
     const { mainEntry, additionalEntries } = expectRight(result)!;
-    expect(mainEntry.imagePathFull).toBe(
+    expect(mainEntry.directUrl).toBe(
       // Based on the fact there is no base URL set in Jest tests
       "file/535e4e9b-4836-4011-8857-eb29260bf155/1/content.zip/images/ima_3166d0f.jpeg"
     );
@@ -250,9 +250,7 @@ describe("buildGallerySearchResultItem", () => {
     const { additionalEntries } = expectRight(result)!;
     expect(consoleSpy).toHaveBeenCalledTimes(1);
     expect(additionalEntries).toHaveLength(1);
-    expect(
-      additionalEntries[0].imagePathFull.endsWith(a3.filePath!)
-    ).toBeTruthy();
+    expect(additionalEntries[0].directUrl.endsWith(a3.filePath!)).toBeTruthy();
   });
 });
 

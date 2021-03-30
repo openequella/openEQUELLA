@@ -274,12 +274,11 @@ export const transformedBasicImageSearchResponse: OEQ.Search.SearchResult<Galler
       mainEntry: {
         mimeType: "image/jpeg",
         name: "Kelpie1.jpg",
-        imagePathSmall:
+        thumbnailSmall:
           "http://localhost:8080/ian/thumbs/fe79c485-a6dd-4743-81e8-52de66494633/1/dbd6dd98-d731-4a8f-907e-ceaf9608da3b?gallery=thumbnail",
-        imagePathMedium:
+        thumbnailLarge:
           "http://localhost:8080/ian/thumbs/fe79c485-a6dd-4743-81e8-52de66494633/1/dbd6dd98-d731-4a8f-907e-ceaf9608da3b?gallery=preview",
-        imagePathFull:
-          "file/fe79c485-a6dd-4743-81e8-52de66494633/1/Kelpie1.jpg",
+        directUrl: "file/fe79c485-a6dd-4743-81e8-52de66494633/1/Kelpie1.jpg",
       },
       additionalEntries: [],
     },
@@ -296,23 +295,21 @@ export const transformedBasicImageSearchResponse: OEQ.Search.SearchResult<Galler
       mainEntry: {
         mimeType: "image/jpeg",
         name: "Kelpie2.jpg",
-        imagePathSmall:
+        thumbnailSmall:
           "http://localhost:8080/ian/thumbs/40e879db-393b-4256-bfe2-9a78771d6937/1/4fddbeb7-8d16-4417-be60-8709ce9d7b15?gallery=thumbnail",
-        imagePathMedium:
+        thumbnailLarge:
           "http://localhost:8080/ian/thumbs/40e879db-393b-4256-bfe2-9a78771d6937/1/4fddbeb7-8d16-4417-be60-8709ce9d7b15?gallery=preview",
-        imagePathFull:
-          "file/40e879db-393b-4256-bfe2-9a78771d6937/1/Kelpie2.jpg",
+        directUrl: "file/40e879db-393b-4256-bfe2-9a78771d6937/1/Kelpie2.jpg",
       },
       additionalEntries: [
         {
           mimeType: "image/jpeg",
           name: "Kelpie1.jpg",
-          imagePathSmall:
+          thumbnailSmall:
             "http://localhost:8080/ian/thumbs/40e879db-393b-4256-bfe2-9a78771d6937/1/df55f129-1bbb-427f-b8a0-46792559bea9?gallery=thumbnail",
-          imagePathMedium:
+          thumbnailLarge:
             "http://localhost:8080/ian/thumbs/40e879db-393b-4256-bfe2-9a78771d6937/1/df55f129-1bbb-427f-b8a0-46792559bea9?gallery=preview",
-          imagePathFull:
-            "file/40e879db-393b-4256-bfe2-9a78771d6937/1/Kelpie1.jpg",
+          directUrl: "file/40e879db-393b-4256-bfe2-9a78771d6937/1/Kelpie1.jpg",
         },
       ],
     },
@@ -329,43 +326,40 @@ export const transformedBasicImageSearchResponse: OEQ.Search.SearchResult<Galler
       mainEntry: {
         mimeType: "image/jpeg",
         name: "Wilkie Collins.jpg",
-        imagePathSmall:
+        thumbnailSmall:
           "http://localhost:8080/ian/thumbs/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/a09056f0-c867-40ea-80c0-a1433f487182?gallery=thumbnail",
-        imagePathMedium:
+        thumbnailLarge:
           "http://localhost:8080/ian/thumbs/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/a09056f0-c867-40ea-80c0-a1433f487182?gallery=preview",
-        imagePathFull:
+        directUrl:
           "file/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/Wilkie Collins.jpg",
       },
       additionalEntries: [
         {
           mimeType: "image/jpeg",
           name: "Dickens.jpg",
-          imagePathSmall:
+          thumbnailSmall:
             "http://localhost:8080/ian/thumbs/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/e3f96e6b-a6aa-4c8e-975c-c2c3870daa34?gallery=thumbnail",
-          imagePathMedium:
+          thumbnailLarge:
             "http://localhost:8080/ian/thumbs/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/e3f96e6b-a6aa-4c8e-975c-c2c3870daa34?gallery=preview",
-          imagePathFull:
-            "file/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/Dickens.jpg",
+          directUrl: "file/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/Dickens.jpg",
         },
         {
           mimeType: "image/jpeg",
           name: "Conrad.jpg",
-          imagePathSmall:
+          thumbnailSmall:
             "http://localhost:8080/ian/thumbs/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/f226e79a-1d2c-4894-aaa1-032812351d29?gallery=thumbnail",
-          imagePathMedium:
+          thumbnailLarge:
             "http://localhost:8080/ian/thumbs/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/f226e79a-1d2c-4894-aaa1-032812351d29?gallery=preview",
-          imagePathFull:
-            "file/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/Conrad.jpg",
+          directUrl: "file/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/Conrad.jpg",
         },
         {
           mimeType: "image/jpeg",
           name: "Eliot.jpg",
-          imagePathSmall:
+          thumbnailSmall:
             "http://localhost:8080/ian/thumbs/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/3afceca2-63d0-47ea-b921-f199b73194fc?gallery=thumbnail",
-          imagePathMedium:
+          thumbnailLarge:
             "http://localhost:8080/ian/thumbs/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/3afceca2-63d0-47ea-b921-f199b73194fc?gallery=preview",
-          imagePathFull:
-            "file/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/Eliot(2).jpg",
+          directUrl: "file/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/Eliot(2).jpg",
         },
       ],
     },

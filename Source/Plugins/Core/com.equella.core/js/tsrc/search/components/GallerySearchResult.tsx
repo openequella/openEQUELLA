@@ -108,7 +108,7 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
         const itemName = name ?? uuid;
         const buildOnClickHandler = ({
           mimeType,
-          imagePathFull: src,
+          directUrl: src,
           name,
         }: GalleryEntry) => () =>
           setLightboxProps({
@@ -126,7 +126,7 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
             uuid,
             version,
             `${uuid}-mainEntry`,
-            mainEntry.imagePathMedium,
+            mainEntry.thumbnailLarge,
             `${itemName} - Main Entry (${mainEntry.name})`,
             buildOnClickHandler(mainEntry)
           ),
@@ -135,7 +135,7 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
               uuid,
               version,
               `${uuid}-additionalEntry-${idx}`,
-              ae.imagePathMedium,
+              ae.thumbnailLarge,
               `${itemName} - Additional Entry ${idx + 1} (${ae.name})`,
               buildOnClickHandler(ae)
             )
