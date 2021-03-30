@@ -26,6 +26,7 @@ import com.tle.beans.item.attachments.ImsAttachment;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
 import com.tle.common.URLUtils;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.common.usermanagement.util.UserXmlUtils;
 import com.tle.core.guice.Bind;
@@ -49,7 +50,7 @@ import org.apache.commons.logging.LogFactory;
 @Bind(ItemXsltService.class)
 @Singleton
 public class ItemXsltServiceImpl implements ItemXsltService {
-  private static Log LOGGER = LogFactory.getLog(ItemXsltService.class);
+  private static final Log LOGGER = LogFactory.getLog(ItemXsltService.class);
 
   @Inject private ItemHelper itemHelper;
   @Inject private UserService userService;
@@ -78,53 +79,67 @@ public class ItemXsltServiceImpl implements ItemXsltService {
   }
 
   @Override
-  public PropBagEx getXmlForXslt(SectionInfo info, ItemSectionInfo itemInfo) {
-    Item item = itemInfo.getItem();
-    PropBagEx itemXml = itemInfo.getItemxml();
-    itemXml =
-        itemHelper.convertToXml(
-            new ItemPack(item, itemXml, ""),
-            new ItemHelperSettings( //$NON-NLS-1$
-                true));
-    String owner = item.getOwner();
+  public PropBagEx getStandardXmlForXslt(Item item, ItemSectionInfo itemInfo) {
+    boolean isItemInfoProvided = itemInfo != null;
+    PropBagEx basicXml =
+        isItemInfoProvided ? itemInfo.getItemxml() : new PropBagEx(item.getItemXml().getXml());
+    PropBagEx fullXml =
+        itemHelper.convertToXml(new ItemPack(item, basicXml, ""), new ItemHelperSettings(true));
 
+    // Include more information about the Owner.
+    String owner = item.getOwner();
     try {
       // Retrieve the owner information
       UserBean userBean = userService.getInformationForUser(owner);
       PropBagEx ownerXml = UserXmlUtils.getUserAsXml(userBean);
-      itemXml.append("item/owner", ownerXml); // $NON-NLS-1$
+      fullXml.append("item/owner", ownerXml);
     } catch (Exception e) {
-      LOGGER.info("Error including owner '" + owner + "' for xslt"); // $NON-NLS-1$ //$NON-NLS-2$
+      LOGGER.info("Error including owner '" + owner + "' for xslt");
     }
+    // Include Item directory.
+    fullXml.setNode(
+        "itemdir",
+        isItemInfoProvided
+            ? itemInfo.getItemdir()
+            : CurrentInstitution.get().getFilestoreId() + "/items/" + item.getItemId() + "/");
 
     // Include information for our templates and webdav information
-    itemXml.setNode(
-        "template",
-        "entity/"
-            + item.getItemDefinition().getId() // $NON-NLS-1$ //$NON-NLS-2$
-            + "/displaytemplate/"); //$NON-NLS-1$
-    itemXml.setNode("itemdir", itemInfo.getItemdir()); // $NON-NLS-1$
-    BookmarkEvent bookmarkEvent = new BookmarkEvent(BookmarkEvent.CONTEXT_SESSION);
-    info.processEvent(bookmarkEvent);
-    itemXml.setNode(
-        "sessionparams",
-        SectionUtils.getParameterString(
-            SectionUtils.getParameterNameValues( // $NON-NLS-1$
-                bookmarkEvent.getBookmarkState(), false)));
-    itemXml.setNode(
-        "collection", CurrentLocale.get(item.getItemDefinition().getName())); // $NON-NLS-1$
+    fullXml.setNode("template", "entity/" + item.getItemDefinition().getId() + "/displaytemplate/");
+
+    // Include Collection name.
+    fullXml.setNode("collection", CurrentLocale.get(item.getItemDefinition().getName()));
+
+    // Include IMS
     Attachments attachments = new UnmodifiableAttachments(item);
     ImsAttachment ims = attachments.getIms();
     if (ims != null) {
-      itemXml.setNode("viewims", "viewscorm.jsp"); // $NON-NLS-1$ //$NON-NLS-2$
-      itemXml.setNode("imsdir", URLUtils.urlEncode(ims.getUrl()) + '/'); // $NON-NLS-1$
+      fullXml.setNode("viewims", "viewscorm.jsp");
+      fullXml.setNode("imsdir", URLUtils.urlEncode(ims.getUrl()) + '/');
     }
 
+    return fullXml;
+  }
+
+  @Override
+  public PropBagEx getXmlForXslt(SectionInfo info, ItemSectionInfo itemInfo) {
+    PropBagEx fullItemXml = getStandardXmlForXslt(itemInfo.getItem(), itemInfo);
+
+    // There are more additional XML nodes can be added by 'info' and 'itemInfo'.
+    // Include session params.
+    BookmarkEvent bookmarkEvent = new BookmarkEvent(BookmarkEvent.CONTEXT_SESSION);
+    info.processEvent(bookmarkEvent);
+    fullItemXml.setNode(
+        "sessionparams",
+        SectionUtils.getParameterString(
+            SectionUtils.getParameterNameValues(bookmarkEvent.getBookmarkState(), false)));
+
+    // Include extensions.
     List<ItemXsltExtension> itemXsltExtensions = itemXsltTracker.getBeanList();
     for (ItemXsltExtension extension : itemXsltExtensions) {
-      extension.addXml(itemXml, info);
+      extension.addXml(fullItemXml, info);
     }
-    return itemXml;
+
+    return fullItemXml;
   }
 
   @Inject
