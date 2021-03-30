@@ -38,6 +38,7 @@ import com.tle.web.api.item.equella.interfaces.beans.{
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
 import com.tle.web.api.search.model.{SearchParam, SearchResultAttachment, SearchResultItem}
 import com.tle.web.controls.resource.ResourceAttachmentBean
+import com.tle.web.controls.youtube.YoutubeAttachmentBean
 
 import java.time.format.DateTimeParseException
 import java.time.{LocalDate, LocalDateTime, LocalTime, ZoneId}
@@ -269,7 +270,7 @@ object SearchHelper {
               preview = att.isPreview,
               mimeType = getMimetypeForAttachment(att),
               hasGeneratedThumb = thumbExists(itemKey, att),
-              links = getLinksFromBean(att),
+              links = buildAttachmentLinks(att),
               filePath = getFilePathForAttachment(att)
           ))
           .toList)
@@ -326,6 +327,23 @@ object SearchHelper {
     */
   def getLinksFromBean[T <: AbstractExtendableBean](bean: T) =
     bean.get("links").asInstanceOf[java.util.Map[String, String]]
+
+  /**
+    * Build the links maps for an attachment, which can also include external links (or IDs) for
+    * custom attachments.
+    *
+    * @param attachment to build the links map for
+    * @return a map containing the standard links (view, thumbnail), plus optionally external links
+    *         if suitable for the attachment type.
+    */
+  def buildAttachmentLinks(attachment: AttachmentBean): java.util.Map[String, String] = {
+    val externalIdKey = "externalId"
+    val links         = getLinksFromBean(attachment).asScala
+    (attachment match {
+      case youtube: YoutubeAttachmentBean => links ++ Map(externalIdKey -> youtube.getVideoId)
+      case _                              => links
+    }).asJava
+  }
 
   /**
     * Find the Bookmark linking to the Item and return the Bookmark's ID.

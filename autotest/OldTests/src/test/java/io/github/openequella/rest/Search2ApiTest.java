@@ -9,7 +9,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.apache.commons.httpclient.HttpMethod;
@@ -203,6 +205,38 @@ public class Search2ApiTest extends AbstractRestApiTest {
       dataProvider = "badMustExpressions")
   public void invalidMustsSearch(String badMust) throws IOException {
     doSearch(400, null, new NameValuePair("musts", badMust));
+  }
+
+  @Test(description = "Ensure the 'externalId' link is present in YouTube attachments.")
+  public void ensureExternalIdIsPresent() throws IOException {
+    final JsonNode result = doSearch(200, null, new NameValuePair("musts", "videothumb:true"));
+    assertEquals(getAvailable(result), 1); // Confirm we've kind of got what we expect
+
+    final JsonNode attachments =
+        Optional.of(result.get("results"))
+            .map(results -> results.get(0))
+            .map(item -> item.get("attachments"))
+            .orElseThrow(
+                () -> new IllegalStateException("Failed to access attachments for validation"));
+
+    final Iterable<JsonNode> attachmentsIterable = attachments::getElements;
+    final Predicate<JsonNode> isYouTubeAttachment =
+        attachment ->
+            Optional.of(attachment.get("attachmentType"))
+                .map(JsonNode::asText)
+                .map(typeString -> typeString.compareTo("custom/youtube") == 0)
+                .orElse(false);
+    final Predicate<JsonNode> hasExternalId =
+        attachment ->
+            Optional.of(attachment.get("links")).map(links -> links.get("externalId")).isPresent();
+
+    final long validAttachments =
+        StreamSupport.stream(attachmentsIterable.spliterator(), false)
+            .filter(isYouTubeAttachment)
+            .filter(hasExternalId)
+            .count();
+
+    assertEquals(validAttachments, 1);
   }
 
   private JsonNode doSearch(int expectedCode, String query, NameValuePair... queryVals)
