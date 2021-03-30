@@ -182,7 +182,7 @@ public final class PrivilegeTree {
     private final boolean virtual;
     private final int overridePriority;
 
-    private Node(boolean virtual, int overridePriority) {
+    Node(boolean virtual, int overridePriority) {
       this.virtual = virtual;
       this.overridePriority = overridePriority;
     }
@@ -552,6 +552,7 @@ public final class PrivilegeTree {
     institution.registerPrivilege("INTEGRATION_SELECTION_SESSION");
     institution.registerPrivilege("VIEW_APIDOCS");
     institution.registerPrivilege("LIST_USERS");
+    institution.registerPrivilege("EXPORT_SEARCH_RESULT");
 
     // OAuth hax
     institution.registerPrivilege("ADMINISTER_OAUTH_TOKENS");
