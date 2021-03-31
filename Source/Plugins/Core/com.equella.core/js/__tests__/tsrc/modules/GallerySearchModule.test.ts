@@ -17,7 +17,6 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
-import * as E from "fp-ts/lib/Either";
 import * as O from "fp-ts/Option";
 import { basicImageSearchResponse } from "../../../__mocks__/GallerySearchModule.mock";
 import {
@@ -32,6 +31,7 @@ import {
   defaultSearchOptions,
   searchItems,
 } from "../../../tsrc/modules/SearchModule";
+import { expectRight } from "../FpTsMatchers";
 
 jest.mock("@openequella/rest-api-client");
 jest.mock("../../../tsrc/modules/SearchModule");
@@ -42,29 +42,6 @@ const mockListMimeTypes = OEQ.MimeType.listMimeTypes as jest.Mock<
 const mockSearchItems = searchItems as jest.Mock<
   Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>>
 >;
-
-/**
- * An expect matcher for Jest to confirm the response is a E.Left - typically to confirm an
- * error result.
- *
- * @param either The E.Either to validate
- */
-const expectLeft = (either: E.Either<unknown, unknown>): void =>
-  expect(E.isLeft(either)).toBeTruthy();
-
-/**
- * An expect matcher for Jest to confirm the response is an E.Right - typically to confirm an
- * success result. The value is also returned, albeit (unfortunately) unioned with an undefined. It
- * is considered safe to access the value via a bang - .e.g `const value = expectRight(either)!;`
- *
- * @param either The E.Either to validate
- * @return The value contained in the E.Right
- */
-const expectRight = <V>(either: E.Either<unknown, V>): V | undefined => {
-  const value = E.isRight(either) ? either.right : undefined;
-  expect(value).toBeTruthy();
-  return value;
-};
 
 describe("buildGalleryEntry", () => {
   const itemUuid = "1eeb3df5-3809-4655-925b-24d994e42ff6";
@@ -92,28 +69,28 @@ describe("buildGalleryEntry", () => {
 
   it("fails if the Attachment has a missing MIME type", () => {
     const galleryEntry = buildGalleryEntry(itemUuid, itemVersion, {
-      ...attachment,
+      ...imageAttachment,
       mimeType: undefined,
     });
-    expectLeft(galleryEntry);
+    expect(galleryEntry).toBeLeft();
   });
 
   it("fails if the Attachment has a missing attachmentFilePath", () => {
     const galleryEntry = buildGalleryEntry(itemUuid, itemVersion, {
-      ...attachment,
+      ...imageAttachment,
       filePath: undefined,
     });
-    expectLeft(galleryEntry);
+    expect(galleryEntry).toBeLeft();
   });
 
   it.each([false, undefined])(
     "fails if the Attachment has a missing a thumbnail (value: %s)",
     (hasGeneratedThumb) => {
       const galleryEntry = buildGalleryEntry(itemUuid, itemVersion, {
-        ...attachment,
+        ...imageAttachment,
         hasGeneratedThumb,
       });
-      expectLeft(galleryEntry);
+      expect(galleryEntry).toBeLeft();
     }
   );
 });
@@ -225,7 +202,7 @@ describe("buildGallerySearchResultItem", () => {
       ...searchItem,
       attachments: undefined,
     });
-    expectLeft(result);
+    expect(result).toBeLeft();
   });
 
   // It would've been good to merge this with the above via an `it.each`, but unfortunately
@@ -235,7 +212,7 @@ describe("buildGallerySearchResultItem", () => {
       ...searchItem,
       attachments: [],
     });
-    expectLeft(result);
+    expect(result).toBeLeft();
   });
 
   it("will log and prune any problematic 'additional' attachments", () => {
