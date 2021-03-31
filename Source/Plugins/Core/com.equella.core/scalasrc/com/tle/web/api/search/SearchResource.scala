@@ -22,6 +22,7 @@ import com.dytech.devlib.PropBagEx
 import com.tle.beans.item.ItemIdKey
 import com.tle.common.search.DefaultSearch
 import com.tle.core.item.serializer.ItemSerializerItemBean
+import com.tle.core.security.impl.RequiresPrivilege
 import com.tle.core.services.item.{FreetextResult, FreetextSearchResults}
 import com.tle.exceptions.PrivilegeRequiredException
 import com.tle.legacy.LegacyGuice
@@ -31,6 +32,8 @@ import com.tle.web.api.search.ExportCSVHelper.{
   STANDARD_HEADER_LIST,
   buildCSVCell,
   buildHeadersForSchema,
+  checkCollectionNumber,
+  checkDownloadACL,
   convertSearchResultToXML
 }
 import com.tle.web.api.search.SearchHelper._
@@ -51,7 +54,6 @@ import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 @Produces(Array("application/json"))
 @Api("Search V2")
 class SearchResource {
-
   @GET
   @ApiOperation(
     value = "Search items",
@@ -79,25 +81,27 @@ class SearchResource {
   @GET
   @Produces(Array("text/csv"))
   @Path("/export")
+  @RequiresPrivilege(priv = "EXPORT_SEARCH_RESULT")
   def exportCSV(@BeanParam params: SearchParam,
                 @Context req: HttpServletRequest,
                 @Context resp: HttpServletResponse) = {
-    if (LegacyGuice.aclManager
-          .filterNonGrantedPrivileges("EXPORT_SEARCH_RESULT")
-          .isEmpty) {
-      throw new PrivilegeRequiredException("EXPORT_SEARCH_RESULT")
-    }
 
-    if (params.collections.length != 1) {
-      throw new BadRequestException("Only one Collection is allowed")
-    }
+    checkDownloadACL()
+    checkCollectionNumber(params.collections)
+    LegacyGuice.auditLogService.logGeneric("Download",
+                                           "SearchResult",
+                                           "CSV",
+                                           req.getQueryString,
+                                           null,
+                                           null)
 
     val bos                 = new BufferedOutputStream(resp.getOutputStream)
     val csvContentContainer = new StringBuilder
+
     def inputContents(contents: String*): Unit = {
       contents.foreach(c => csvContentContainer.append(c))
     }
-    // Write contents to the output stream and clear contents.
+
     def outputContents(): Unit = {
       bos.write(csvContentContainer.toString().getBytes())
       csvContentContainer.clear()
@@ -120,31 +124,29 @@ class SearchResource {
 
     def buildCSVRow(xml: PropBagEx, headers: List[CSVHeader]): Unit = {
       headers.foreach(header => {
+        // Regex for XPATH that points to an attribute(e.g. item/@name).
+        val xpathAttributeRegex = """^.+/@.+$""".r
         // If the xpath points to an attribute, read the value directly.
-        val cellContent: String = if (header.xpath.contains("@")) {
-          xml.getNode(header.xpath)
-        }
-        // If the xpath points to a node, there might be multiple matched nodes.
-        // So we need to process each node and combine results into one cell.
-        // According to the Consulting PHP solution, each result should be concatenated by a '|'.
-        else {
-          xml
-            .iterator(header.xpath)
-            .iterator()
-            .asScala
-            .map(node => {
-              buildCSVCell(node,
-                           parentNodeName =
-                             Option(header.name).filter(NEED_FULL_XPATH_IN_CONTENT.contains))
-            })
-            .toList
-            .mkString("|")
+        val cellContent: String = header.xpath match {
+          case xpathAttributeRegex() => xml.getNode(header.xpath)
+          case _ =>
+            xml
+              .iterator(header.xpath) // This is a PropBagIterator.
+              .iterator() // So we have to call 'iterator' again.
+              .asScala
+              .map(rootNode => {
+                buildCSVCell(rootNode,
+                             parentNodeName =
+                               Option(header.name).filter(NEED_FULL_XPATH_IN_CONTENT.contains))
+              })
+              .toList
+              .mkString("|")
         }
 
         // Add a comma to separate each cell.
         inputContents(StringEscapeUtils.escapeCsv(cellContent), ",")
       })
-      // Add a newline for next Item.
+      // Add a new row for next Item.
       inputContents("\n")
       outputContents()
     }
@@ -158,12 +160,11 @@ class SearchResource {
   }
 
   private def search(params: SearchParam,
-                     length: Option[Int] = None): FreetextSearchResults[FreetextResult] = {
+                     length: Option[Int] = None): FreetextSearchResults[FreetextResult] =
     LegacyGuice.freeTextService.search(createSearch(params),
                                        params.start,
                                        length.getOrElse(params.length),
                                        params.searchAttachments)
-  }
 }
 
 /**

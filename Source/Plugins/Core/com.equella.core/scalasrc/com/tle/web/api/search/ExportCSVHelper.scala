@@ -3,8 +3,10 @@ package com.tle.web.api.search
 import com.dytech.devlib.PropBagEx
 import com.tle.beans.entity.Schema.SchemaNode
 import com.tle.core.services.item.FreetextResult
+import com.tle.exceptions.PrivilegeRequiredException
 import com.tle.legacy.LegacyGuice
 
+import javax.ws.rs.BadRequestException
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ListBuffer
 case class CSVHeader(name: String, xpath: String)
@@ -27,7 +29,7 @@ object ExportCSVHelper {
     ("Attachments", "item/attachments"),
     ("Bad URLs", "item/badurls"),
     ("Moderation", "item/moderation"),
-    ("Navigation", "item/navigationNodes"),
+    ("Navigation nodes", "item/navigationNodes"),
     ("History", "item/history"),
     ("Item DIR", "itemdir"),
     ("View IMS", "viewims"),
@@ -49,10 +51,10 @@ object ExportCSVHelper {
 
   /**
     * Build a list of CSV headers based on Schema.
-    * @param schemaNodeList List of Schema nodes
+    * @param schemaNodes List of Schema nodes which determines what headers to be built
     * @param rootNodeName Name of root node which is used to build full xpath
     */
-  def buildHeadersForSchema(nodeList: java.util.List[SchemaNode],
+  def buildHeadersForSchema(schemaNodes: java.util.List[SchemaNode],
                             rootNodeName: Option[String]): List[CSVHeader] = {
     def buildFullXpath(path: String): String = {
       rootNodeName match {
@@ -62,7 +64,7 @@ object ExportCSVHelper {
     }
 
     val headers = ListBuffer[CSVHeader]()
-    nodeList.asScala.foreach(n => {
+    schemaNodes.asScala.foreach(n => {
       val xpath = buildFullXpath(n.getName)
       if (n.hasChildren) {
         headers ++= buildHeadersForSchema(n.getChildNodes, Option(xpath))
@@ -136,5 +138,18 @@ object ExportCSVHelper {
       val fullItemXml: PropBagEx = LegacyGuice.itemXsltService.getStandardXmlForXslt(item, null)
       fullItemXml
     })
+  }
+
+  def checkDownloadACL(): Unit = {
+    val DOWNLOAD_ACL = "EXPORT_SEARCH_RESULT"
+    if (LegacyGuice.aclManager.filterNonGrantedPrivileges(DOWNLOAD_ACL).isEmpty) {
+      throw new PrivilegeRequiredException(DOWNLOAD_ACL)
+    }
+  }
+
+  def checkCollectionNumber(collections: Array[String]): Unit = {
+    if (collections.length != 1) {
+      throw new BadRequestException("Only one Collection is allowed")
+    }
   }
 }
