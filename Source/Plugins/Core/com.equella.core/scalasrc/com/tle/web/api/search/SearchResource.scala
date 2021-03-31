@@ -42,7 +42,7 @@ import io.swagger.annotations.{Api, ApiOperation}
 import org.apache.commons.lang.StringEscapeUtils
 
 import javax.ws.rs.core.{Context, Response}
-import javax.ws.rs.{BadRequestException, BeanParam, GET, Path, Produces}
+import javax.ws.rs.{BeanParam, GET, NotAcceptableException, Path, Produces}
 import org.jboss.resteasy.annotations.cache.NoCache
 
 import java.io.BufferedOutputStream
@@ -81,13 +81,21 @@ class SearchResource {
   @GET
   @Produces(Array("text/csv"))
   @Path("/export")
-  @RequiresPrivilege(priv = "EXPORT_SEARCH_RESULT")
-  def exportCSV(@BeanParam params: SearchParam,
-                @Context req: HttpServletRequest,
-                @Context resp: HttpServletResponse) = {
-
+  def export(@BeanParam params: SearchParam,
+             @Context req: HttpServletRequest,
+             @Context resp: HttpServletResponse) = {
     checkDownloadACL()
     checkCollectionNumber(params.collections)
+    req.getHeader("accept") match {
+      case "text/csv"         => exportCSV(params, req, resp)
+      case "application/json" => // todo
+      case _                  => throw new NotAcceptableException("Only support CSV format")
+    }
+  }
+
+  private def exportCSV(params: SearchParam,
+                        req: HttpServletRequest,
+                        resp: HttpServletResponse): Unit = {
     LegacyGuice.auditLogService.logGeneric("Download",
                                            "SearchResult",
                                            "CSV",
