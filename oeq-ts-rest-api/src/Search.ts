@@ -24,7 +24,7 @@ import * as Utils from './Utils';
  * Used for specifying must expressions such as `moderating:true`. Neither string should contain
  * any colons (or other exempt Lucene syntax characters).
  */
-type Must = [string, string[]];
+export type Must = [string, string[]];
 
 interface SearchParamsBase {
   /**
