@@ -1237,6 +1237,16 @@ div.area {
   float: none;
 }
 
+.itemsummary-layout #col1 {
+  //handle long strings  in item summaries without breaking the layout
+  overflow-wrap: anywhere;
+}
+
+.wizard-layout #col1 {
+  //handle wizard control names and descriptions without breaking the layout
+  max-width:85%;
+}
+
 .area h3 {
   @include typography-headline-6;
   color: $primaryTextColor;
