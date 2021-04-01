@@ -1,3 +1,21 @@
+/*
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.tle.web.api.search
 
 import com.dytech.devlib.PropBagEx
@@ -5,8 +23,9 @@ import com.tle.beans.entity.Schema.SchemaNode
 import com.tle.core.services.item.FreetextResult
 import com.tle.exceptions.PrivilegeRequiredException
 import com.tle.legacy.LegacyGuice
+import org.apache.commons.lang.StringEscapeUtils
 
-import javax.ws.rs.BadRequestException
+import javax.ws.rs.{BadRequestException, NotFoundException}
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ListBuffer
 case class CSVHeader(name: String, xpath: String)
@@ -43,7 +62,7 @@ object ExportCSVHelper {
   /**
     * If a column's header is in this list, full XML xpath is used in each cell where applicable.
     * For example, given a XML `<tree><node1><node2>DRM</node2</node1></tree>`,
-    * the content is `tree/node1/node2:DRM` instead of `node2:DRM`
+    * the CSV cell content is `tree/node1/node2:DRM` instead of `node2:DRM`
     */
   val NEED_FULL_XPATH_IN_CONTENT = List[String](
     DRM_HEADER
@@ -74,6 +93,18 @@ object ExportCSVHelper {
     })
     headers.toList
   }
+
+  /**
+    * Build a full list of headers which include standard headers and headers generated based on Schema.
+    * @param collectionId ID of a collection to be used to get the Schema used in the Collection
+    */
+  def buildCSVHeaders(collectionId: String): List[CSVHeader] =
+    Option(LegacyGuice.itemDefinitionService.getByUuid(collectionId)).map(_.getSchema) match {
+      case Some(schema) =>
+        buildHeadersForSchema(schema.getRootSchemaNode.getChildNodes, None) ++ STANDARD_HEADER_LIST
+      case None =>
+        throw new NotFoundException(s"Failed to find Schema for Collection: $collectionId")
+    }
 
   /**
     * Build a text based on provided XML as a CSV cell content.
@@ -113,7 +144,6 @@ object ExportCSVHelper {
     }
 
     // Process a node's value and recursively call 'buildCSVCell' to process child nodes.
-
     def processValues: Seq[String] = {
       if (childNodes.nonEmpty) {
         childNodes.map(child =>
@@ -130,6 +160,40 @@ object ExportCSVHelper {
     }
 
     (processValues ++ processAttributes).mkString(delimiter)
+  }
+
+  /**
+    * Build one row for one Item XML
+    * @param xml The XML based on which a row is built
+    * @param headers The CSV column headers
+    */
+  def buildCSVRow(xml: PropBagEx, headers: List[CSVHeader]): String = {
+    // Regex for XPATH that points to an attribute(e.g. item/@name).
+    val rowContent          = new StringBuilder
+    val xpathAttributeRegex = """^.+/@.+$""".r
+    headers.foreach(header => {
+      // If the xpath points to an attribute, read the value directly.
+      val cellContent: String = header.xpath match {
+        case xpathAttributeRegex() => xml.getNode(header.xpath)
+        case _ =>
+          xml
+            .iterator(header.xpath) // This is a PropBagIterator.
+            .iterator() // So we have to call 'iterator' again.
+            .asScala
+            .map(rootNode => {
+              buildCSVCell(rootNode,
+                           parentNodeName =
+                             Option(header.name).filter(NEED_FULL_XPATH_IN_CONTENT.contains))
+            })
+            .toList
+            .mkString("|")
+      }
+
+      // Add a comma to separate each cell.
+      rowContent.append(StringEscapeUtils.escapeCsv(cellContent))
+      rowContent.append(",")
+    })
+    rowContent.toString()
   }
 
   def convertSearchResultToXML(searchResults: List[FreetextResult]): List[PropBagEx] = {

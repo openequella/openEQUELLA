@@ -22,16 +22,12 @@ import com.dytech.devlib.PropBagEx
 import com.tle.beans.item.ItemIdKey
 import com.tle.common.search.DefaultSearch
 import com.tle.core.item.serializer.ItemSerializerItemBean
-import com.tle.core.security.impl.RequiresPrivilege
 import com.tle.core.services.item.{FreetextResult, FreetextSearchResults}
-import com.tle.exceptions.PrivilegeRequiredException
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean
 import com.tle.web.api.search.ExportCSVHelper.{
-  NEED_FULL_XPATH_IN_CONTENT,
-  STANDARD_HEADER_LIST,
-  buildCSVCell,
-  buildHeadersForSchema,
+  buildCSVHeaders,
+  buildCSVRow,
   checkCollectionNumber,
   checkDownloadACL,
   convertSearchResultToXML
@@ -39,13 +35,9 @@ import com.tle.web.api.search.ExportCSVHelper.{
 import com.tle.web.api.search.SearchHelper._
 import com.tle.web.api.search.model.{SearchParam, SearchResult, SearchResultItem}
 import io.swagger.annotations.{Api, ApiOperation}
-import org.apache.commons.lang.StringEscapeUtils
-
 import javax.ws.rs.core.{Context, Response}
-import javax.ws.rs.{BeanParam, GET, NotAcceptableException, Path, Produces}
+import javax.ws.rs.{BeanParam, GET, Path, Produces}
 import org.jboss.resteasy.annotations.cache.NoCache
-
-import java.io.BufferedOutputStream
 import scala.collection.JavaConverters._
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
@@ -68,14 +60,14 @@ class SearchResource {
     val items: List[SearchItem] = freetextResults.map(result => SearchItem(result, serializer))
     val highlight =
       new DefaultSearch.QueryParser(params.query).getHilightedList.asScala.toList
-    SearchResult(
+    val result = SearchResult(
       searchResults.getOffset,
       searchResults.getCount,
       searchResults.getAvailable,
       items.map(convertToItem),
       highlight
     )
-    Response.ok.entity().build()
+    Response.ok.entity(result).build()
   }
 
   @GET
@@ -86,16 +78,9 @@ class SearchResource {
              @Context resp: HttpServletResponse) = {
     checkDownloadACL()
     checkCollectionNumber(params.collections)
-    req.getHeader("accept") match {
-      case "text/csv"         => exportCSV(params, req, resp)
-      case "application/json" => // todo
-      case _                  => throw new NotAcceptableException("Only support CSV format")
-    }
-  }
 
-  private def exportCSV(params: SearchParam,
-                        req: HttpServletRequest,
-                        resp: HttpServletResponse): Unit = {
+    resp.setContentType("text/csv")
+    resp.setHeader("Content-Disposition", " attachment; filename=search.csv")
     LegacyGuice.auditLogService.logGeneric("Download",
                                            "SearchResult",
                                            "CSV",
@@ -103,7 +88,7 @@ class SearchResource {
                                            null,
                                            null)
 
-    val bos                 = new BufferedOutputStream(resp.getOutputStream)
+    val out                 = resp.getOutputStream
     val csvContentContainer = new StringBuilder
 
     def inputContents(contents: String*): Unit = {
@@ -111,7 +96,7 @@ class SearchResource {
     }
 
     def outputContents(): Unit = {
-      bos.write(csvContentContainer.toString().getBytes())
+      out.write(csvContentContainer.toString().getBytes())
       csvContentContainer.clear()
     }
 
@@ -119,52 +104,17 @@ class SearchResource {
       convertSearchResultToXML(search(params, Option(-1)).getSearchResults.asScala.toList)
     }
 
-    def buildCSVHeaders: List[CSVHeader] = {
-      val schema  = LegacyGuice.itemDefinitionService.getByUuid(params.collections(0)).getSchema
-      val headers = buildHeadersForSchema(schema.getRootSchemaNode.getChildNodes, None) ++ STANDARD_HEADER_LIST
-      headers.foreach(header => {
-        inputContents(header.name, ",")
-      })
-      inputContents("\n")
+    // Process headers.
+    val csvHeaders = buildCSVHeaders(params.collections(0))
+    csvHeaders.foreach(header => inputContents(header.name, ","))
+    inputContents("\n") // Move to the second row.
+    outputContents()
+
+    // Process each row.
+    getXmlList.foreach(xml => {
+      inputContents(buildCSVRow(xml, csvHeaders), "\n")
       outputContents()
-      headers
-    }
-
-    def buildCSVRow(xml: PropBagEx, headers: List[CSVHeader]): Unit = {
-      headers.foreach(header => {
-        // Regex for XPATH that points to an attribute(e.g. item/@name).
-        val xpathAttributeRegex = """^.+/@.+$""".r
-        // If the xpath points to an attribute, read the value directly.
-        val cellContent: String = header.xpath match {
-          case xpathAttributeRegex() => xml.getNode(header.xpath)
-          case _ =>
-            xml
-              .iterator(header.xpath) // This is a PropBagIterator.
-              .iterator() // So we have to call 'iterator' again.
-              .asScala
-              .map(rootNode => {
-                buildCSVCell(rootNode,
-                             parentNodeName =
-                               Option(header.name).filter(NEED_FULL_XPATH_IN_CONTENT.contains))
-              })
-              .toList
-              .mkString("|")
-        }
-
-        // Add a comma to separate each cell.
-        inputContents(StringEscapeUtils.escapeCsv(cellContent), ",")
-      })
-      // Add a new row for next Item.
-      inputContents("\n")
-      outputContents()
-    }
-
-    val csvHeaders = buildCSVHeaders
-    getXmlList.foreach(xml => buildCSVRow(xml, csvHeaders))
-
-    resp.setHeader("Content-Disposition", " attachment; filename=search.csv")
-    bos.flush()
-    bos.close()
+    })
   }
 
   private def search(params: SearchParam,
