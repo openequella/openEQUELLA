@@ -19,6 +19,7 @@
 package com.tle.web.api.search
 
 import com.dytech.devlib.PropBagEx
+import com.tle.beans.entity.Schema
 import com.tle.beans.item.ItemIdKey
 import com.tle.common.search.DefaultSearch
 import com.tle.core.item.serializer.ItemSerializerItemBean
@@ -28,20 +29,25 @@ import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean
 import com.tle.web.api.search.ExportCSVHelper.{
   buildCSVHeaders,
   buildCSVRow,
-  checkCollectionNumber,
   checkDownloadACL,
-  convertSearchResultToXML
+  convertSearchResultToXML,
+  getSchemaFromCollection
 }
 import com.tle.web.api.search.SearchHelper._
 import com.tle.web.api.search.model.{SearchParam, SearchResult, SearchResultItem}
 import io.swagger.annotations.{Api, ApiOperation}
+
 import javax.ws.rs.core.{Context, Response}
 import javax.ws.rs.{BeanParam, GET, Path, Produces}
 import org.jboss.resteasy.annotations.cache.NoCache
+
+import java.io.BufferedOutputStream
+import javax.inject.Singleton
 import scala.collection.JavaConverters._
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
 @NoCache
+@Singleton
 @Path("search2")
 @Produces(Array("application/json"))
 @Api("Search V2")
@@ -77,7 +83,7 @@ class SearchResource {
              @Context req: HttpServletRequest,
              @Context resp: HttpServletResponse) = {
     checkDownloadACL()
-    checkCollectionNumber(params.collections)
+    val schema: Schema = getSchemaFromCollection(params.collections)
 
     resp.setContentType("text/csv")
     resp.setHeader("Content-Disposition", " attachment; filename=search.csv")
@@ -88,7 +94,7 @@ class SearchResource {
                                            null,
                                            null)
 
-    val out                 = resp.getOutputStream
+    val bos                 = new BufferedOutputStream(resp.getOutputStream)
     val csvContentContainer = new StringBuilder
 
     def inputContents(contents: String*): Unit = {
@@ -96,7 +102,8 @@ class SearchResource {
     }
 
     def outputContents(): Unit = {
-      out.write(csvContentContainer.toString().getBytes())
+      bos.write(csvContentContainer.toString().getBytes())
+      bos.flush()
       csvContentContainer.clear()
     }
 
@@ -104,17 +111,19 @@ class SearchResource {
       convertSearchResultToXML(search(params, Option(-1)).getSearchResults.asScala.toList)
     }
 
-    // Process headers.
-    val csvHeaders = buildCSVHeaders(params.collections(0))
+    // Build the first row for headers.
+    val csvHeaders = buildCSVHeaders(schema)
     csvHeaders.foreach(header => inputContents(header.name, ","))
     inputContents("\n") // Move to the second row.
     outputContents()
 
-    // Process each row.
+    // Build a row for each Item XML.
     getXmlList.foreach(xml => {
       inputContents(buildCSVRow(xml, csvHeaders), "\n")
       outputContents()
     })
+
+    bos.close()
   }
 
   private def search(params: SearchParam,

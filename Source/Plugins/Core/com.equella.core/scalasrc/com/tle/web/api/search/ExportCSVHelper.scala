@@ -19,6 +19,7 @@
 package com.tle.web.api.search
 
 import com.dytech.devlib.PropBagEx
+import com.tle.beans.entity.Schema
 import com.tle.beans.entity.Schema.SchemaNode
 import com.tle.core.services.item.FreetextResult
 import com.tle.exceptions.PrivilegeRequiredException
@@ -60,7 +61,8 @@ object ExportCSVHelper {
   }
 
   /**
-    * If a column's header is in this list, full XML xpath is used in each cell where applicable.
+    * If a column's header is in this list and its content is formatted as 'name:value',
+    * full XML xpath is used as the name.
     * For example, given a XML `<tree><node1><node2>DRM</node2</node1></tree>`,
     * the CSV cell content is `tree/node1/node2:DRM` instead of `node2:DRM`
     */
@@ -96,15 +98,10 @@ object ExportCSVHelper {
 
   /**
     * Build a full list of headers which include standard headers and headers generated based on Schema.
-    * @param collectionId ID of a collection to be used to get the Schema used in the Collection
+    * @param schema Schema used to generate headers based on its nodes
     */
-  def buildCSVHeaders(collectionId: String): List[CSVHeader] =
-    Option(LegacyGuice.itemDefinitionService.getByUuid(collectionId)).map(_.getSchema) match {
-      case Some(schema) =>
-        buildHeadersForSchema(schema.getRootSchemaNode.getChildNodes, None) ++ STANDARD_HEADER_LIST
-      case None =>
-        throw new NotFoundException(s"Failed to find Schema for Collection: $collectionId")
-    }
+  def buildCSVHeaders(schema: Schema): List[CSVHeader] =
+    buildHeadersForSchema(schema.getRootSchemaNode.getChildNodes, None) ++ STANDARD_HEADER_LIST
 
   /**
     * Build a text based on provided XML as a CSV cell content.
@@ -211,9 +208,16 @@ object ExportCSVHelper {
     }
   }
 
-  def checkCollectionNumber(collections: Array[String]): Unit = {
+  def getSchemaFromCollection(collections: Array[String]): Schema = {
     if (collections.length != 1) {
       throw new BadRequestException("Only one Collection is allowed")
+    }
+
+    val collectionId = collections(0)
+    Option(LegacyGuice.itemDefinitionService.getByUuid(collectionId)).map(_.getSchema) match {
+      case Some(schema) => schema
+      case None =>
+        throw new NotFoundException(s"Failed to find Schema for Collection: $collectionId")
     }
   }
 }
