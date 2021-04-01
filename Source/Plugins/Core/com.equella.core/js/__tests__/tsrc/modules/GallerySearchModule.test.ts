@@ -18,7 +18,11 @@
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as O from "fp-ts/Option";
-import { basicImageSearchResponse } from "../../../__mocks__/GallerySearchModule.mock";
+import {
+  basicImageSearchResponse,
+  basicVideoSearchResponse,
+} from "../../../__mocks__/GallerySearchModule.mock";
+import { ATYPE_LINK } from "../../../tsrc/modules/AttachmentsModule";
 import {
   AttachmentFilter,
   buildGalleryEntry,
@@ -26,7 +30,9 @@ import {
   GalleryEntry,
   GallerySearchResultItem,
   imageGallerySearch,
+  videoGallerySearch,
 } from "../../../tsrc/modules/GallerySearchModule";
+import { CustomMimeTypes } from "../../../tsrc/modules/MimeTypesModule";
 import {
   defaultSearchOptions,
   searchItems,
@@ -46,7 +52,10 @@ const mockSearchItems = searchItems as jest.Mock<
 describe("buildGalleryEntry", () => {
   const itemUuid = "1eeb3df5-3809-4655-925b-24d994e42ff6";
   const itemVersion = 1;
-  const attachment: OEQ.Search.Attachment = {
+  // Although this example is specifically an image, the data structure is the same for local (i.e.
+  // not YouTube etc) videos - just different `mimeType`s. And really, it's then the same for any
+  // `file` `attachmentType`.
+  const imageAttachment: OEQ.Search.Attachment = {
     attachmentType: "file",
     id: "7186d40d-6159-4d07-8eee-4f7ee0cfdc4e",
     description: "image.png",
@@ -61,10 +70,37 @@ describe("buildGalleryEntry", () => {
     },
     filePath: "image.png",
   };
+  const youtubeAttachment: OEQ.Search.Attachment = {
+    attachmentType: "custom/youtube",
+    id: "b18ed9ab-1ddb-4961-8935-22bbf1095b24",
+    description: "The Odyssey by Homer | Summary & Analysis",
+    preview: false,
+    links: {
+      view:
+        "https://example.com/inst/items/234b9bd6-b603-4e26-8214-b79b8aab0ed9/1/?attachment.uuid=b18ed9ab-1ddb-4961-8935-22bbf1095b24",
+      thumbnail:
+        "https://example.com/inst/thumbs/234b9bd6-b603-4e26-8214-b79b8aab0ed9/1/b18ed9ab-1ddb-4961-8935-22bbf1095b24",
+      externalId: "z7i9AmmZE2o",
+    },
+  };
 
-  it("builds a gallery entry from a valid Attachment", () => {
-    const galleryEntry = buildGalleryEntry(itemUuid, itemVersion, attachment);
-    expectRight(galleryEntry);
+  it.each([
+    ["Image", imageAttachment],
+    ["YouTube", youtubeAttachment],
+  ])(
+    "builds a gallery entry from a valid %s `Attachment`",
+    (_: string, attachment: OEQ.Search.Attachment) => {
+      const galleryEntry = buildGalleryEntry(itemUuid, itemVersion, attachment);
+      expectRight(galleryEntry);
+    }
+  );
+
+  it("fails if Attachment is an unsupported attachment type", () => {
+    const galleryEntry = buildGalleryEntry(itemUuid, itemVersion, {
+      ...imageAttachment,
+      attachmentType: ATYPE_LINK,
+    });
+    expect(galleryEntry).toBeLeft();
   });
 
   it("fails if the Attachment has a missing MIME type", () => {
@@ -231,6 +267,30 @@ describe("buildGallerySearchResultItem", () => {
   });
 });
 
+const expectValidGalleryResult = (
+  result: OEQ.Search.SearchResult<GallerySearchResultItem>,
+  expectLength: number,
+  mimeTypesValidator: (s: string) => boolean
+) => {
+  // The below is validating a variable, not the length of an array
+  // eslint-disable-next-line jest/prefer-to-have-length
+  expect(result.length).toEqual(expectLength);
+  expect(result.results).toHaveLength(result.length);
+
+  const mimeTypes = result.results
+    .reduce(
+      (acc: GalleryEntry[], cur: GallerySearchResultItem) => [
+        ...acc,
+        cur.mainEntry,
+        ...cur.additionalEntries,
+      ],
+      [] as GalleryEntry[]
+    )
+    .map((entry: GalleryEntry) => entry.mimeType);
+  expect(mimeTypes.length).toBeGreaterThan(1);
+  expect(mimeTypes.every(mimeTypesValidator)).toBeTruthy();
+};
+
 describe("imageGallerySearch", () => {
   beforeEach(() => mockListMimeTypes.mockResolvedValue([]));
 
@@ -238,24 +298,8 @@ describe("imageGallerySearch", () => {
     mockSearchItems.mockResolvedValue(basicImageSearchResponse);
 
     const result = await imageGallerySearch(defaultSearchOptions);
-    // The below is validating a variable, not the length of an array
-    // eslint-disable-next-line jest/prefer-to-have-length
-    expect(result.length).toEqual(basicImageSearchResponse.length);
-    expect(result.results).toHaveLength(result.length);
-
-    const mimeTypes = result.results
-      .reduce(
-        (acc: GalleryEntry[], cur: GallerySearchResultItem) => [
-          ...acc,
-          cur.mainEntry,
-          ...cur.additionalEntries,
-        ],
-        [] as GalleryEntry[]
-      )
-      .map((entry: GalleryEntry) => entry.mimeType);
-    expect(mimeTypes.length).toBeGreaterThan(1);
-    expect(mimeTypes.filter((s) => s.startsWith("image"))).toHaveLength(
-      mimeTypes.length
+    expectValidGalleryResult(result, basicImageSearchResponse.length, (s) =>
+      s.startsWith("image")
     );
   });
 
@@ -270,5 +314,18 @@ describe("imageGallerySearch", () => {
     expect(consoleSpy).toHaveBeenCalledTimes(1);
     expect(result.results).toHaveLength(2);
     expect(result).toHaveLength(2);
+  });
+});
+
+describe("videoGallerySearch", () => {
+  it("returns a list of GallerySearchItems containing only videos", async () => {
+    mockSearchItems.mockResolvedValue(basicVideoSearchResponse);
+
+    const result = await videoGallerySearch(defaultSearchOptions);
+    expectValidGalleryResult(
+      result,
+      basicVideoSearchResponse.length,
+      (s) => s.startsWith("video") || s === CustomMimeTypes.YOUTUBE
+    );
   });
 });
