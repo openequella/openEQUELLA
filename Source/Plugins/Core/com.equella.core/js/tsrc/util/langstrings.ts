@@ -659,6 +659,8 @@ export const languageStrings = {
   },
   lightboxComponent: {
     unsupportedContent: "Provided content is not supported",
+    viewNext: "View next attachment",
+    viewPrevious: "View previous attachment",
   },
   fileUploader: {
     noFileSelected: "No attached resources",

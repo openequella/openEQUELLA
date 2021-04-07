@@ -46,11 +46,30 @@ export interface SelectionSessionInfo {
 }
 
 export interface RenderData {
+  /**
+   * Path to base resources for this institution.
+   */
   baseResources: string;
+  /**
+   * True if in the new UI.
+   */
   newUI: boolean;
+  /**
+   * True if server is running in autotestMode (VM argument -Dequella.autotest=true)
+   */
   autotestMode: boolean;
+  /**
+   * True if using the new Search UI.
+   */
   newSearch: boolean;
+  /**
+   * If in a Selection Session, this will be populated with info about the session. If not, this will be null.
+   */
   selectionSessionInfo: SelectionSessionInfo | null;
+  /**
+   * True if this is an item viewed via integration (integ/gen item link)
+   */
+  viewedFromIntegration: boolean;
 }
 
 declare const renderData: RenderData | undefined;

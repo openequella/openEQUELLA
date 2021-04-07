@@ -19,6 +19,7 @@ import {
   Backdrop,
   Card,
   CardContent,
+  Grid,
   IconButton,
   Theme,
   Toolbar,
@@ -28,7 +29,13 @@ import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import * as React from "react";
-import { SyntheticEvent } from "react";
+import {
+  ReactNode,
+  SyntheticEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { Literal, match, Unknown } from "runtypes";
 import {
   isBrowserSupportedAudio,
@@ -36,6 +43,9 @@ import {
   splitMimeType,
 } from "../modules/MimeTypesModule";
 import { languageStrings } from "../util/langstrings";
+import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
+import NavigateNextIcon from "@material-ui/icons/NavigateNext";
+import { TooltipIconButton } from "./TooltipIconButton";
 
 const useStyles = makeStyles((theme: Theme) => ({
   lightboxBackdrop: {
@@ -71,22 +81,45 @@ const useStyles = makeStyles((theme: Theme) => ({
     top: 0,
     width: "100%",
   },
+  arrowButton: {
+    width: 48,
+    height: 48,
+    color: "#fafafa",
+  },
 }));
 
-export interface LightboxProps {
-  /** MIME type of the items specified by `src` */
-  mimeType: string;
-  /** Function to call when the Lightbox is closing. */
-  onClose: () => void;
-  /** Control whether to hide (`false`) or show (`true`) the Lightbox. */
-  open: boolean;
+export interface LightboxConfig {
   /** URL for the item to display in the Lightbox. */
   src: string;
   /** Title to display at the top of the Lightbox. */
   title?: string;
+  /** MIME type of the items specified by `src` */
+  mimeType: string;
+  /**
+   * Function fired to view previous attachment.
+   */
+  onPrevious?: () => LightboxConfig;
+  /**
+   * Function fired to view next attachment.
+   */
+  onNext?: () => LightboxConfig;
 }
 
-const Lightbox = ({ mimeType, onClose, open, src, title }: LightboxProps) => {
+export interface LightboxProps {
+  /** Function to call when the Lightbox is closing. */
+  onClose: () => void;
+  /** Control whether to hide (`false`) or show (`true`) the Lightbox. */
+  open: boolean;
+  /** Configuration specifying the Lightbox's content. */
+  config: LightboxConfig;
+}
+
+const {
+  viewNext: viewNextString,
+  viewPrevious: viewPreviousString,
+} = languageStrings.lightboxComponent;
+
+const Lightbox = ({ open, onClose, config }: LightboxProps) => {
   const classes = useStyles();
   const {
     close: labelClose,
@@ -96,57 +129,93 @@ const Lightbox = ({ mimeType, onClose, open, src, title }: LightboxProps) => {
     unsupportedContent: labelUnsupportedContent,
   } = languageStrings.lightboxComponent;
 
-  const unsupportedContent = (
-    <Card>
-      <CardContent>
-        <Typography variant="h5" component="h2">
-          {labelUnsupportedContent}
-        </Typography>
-      </CardContent>
-    </Card>
-  );
+  const [content, setContent] = useState<ReactNode | undefined>();
+  const [lightBoxConfig, setLightBoxConfig] = useState<LightboxConfig>(config);
+  const { src, title, mimeType, onPrevious, onNext } = lightBoxConfig;
 
-  const content = match(
-    [
-      Literal("image"),
-      () => (
-        <img
-          className={`${classes.lightboxContent} ${classes.lightboxImage}`}
-          src={src}
-          alt={title}
-        />
-      ),
-    ],
-    [
-      Literal("video"),
-      () =>
-        isBrowserSupportedVideo(mimeType) ? (
-          <video
-            className={classes.lightboxContent}
-            controls
-            src={src}
-            aria-label={title}
-          />
-        ) : (
-          unsupportedContent
-        ),
-    ],
-    [
-      Literal("audio"),
-      () =>
-        isBrowserSupportedAudio(mimeType) ? (
-          <audio
-            className={classes.lightboxAudio}
-            controls
-            src={src}
-            aria-label={title}
-          />
-        ) : (
-          unsupportedContent
-        ),
-    ],
-    [Unknown, () => unsupportedContent]
-  )(splitMimeType(mimeType)[0]);
+  const handleOnPrevious = useCallback(() => {
+    setContent(undefined);
+    onPrevious && setLightBoxConfig(onPrevious());
+  }, [onPrevious]);
+
+  const handleOnNext = useCallback(() => {
+    setContent(undefined);
+    onNext && setLightBoxConfig(onNext());
+  }, [onNext]);
+
+  useEffect(() => {
+    const keyDownHandler = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        handleOnPrevious();
+      } else if (e.key === "ArrowRight") {
+        handleOnNext();
+      } else if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", keyDownHandler);
+    return () => {
+      window.removeEventListener("keydown", keyDownHandler);
+    };
+  }, [handleOnPrevious, handleOnNext, onClose]);
+
+  // Update content when config is updated.
+  useEffect(() => {
+    const unsupportedContent = (
+      <Card>
+        <CardContent>
+          <Typography variant="h5" component="h2">
+            {labelUnsupportedContent}
+          </Typography>
+        </CardContent>
+      </Card>
+    );
+
+    const buildContent = () =>
+      match(
+        [
+          Literal("image"),
+          () => (
+            <img
+              className={`${classes.lightboxContent} ${classes.lightboxImage}`}
+              alt={title}
+              src={src}
+            />
+          ),
+        ],
+        [
+          Literal("video"),
+          () =>
+            isBrowserSupportedVideo(mimeType) ? (
+              <video
+                className={classes.lightboxContent}
+                controls
+                src={src}
+                aria-label={title}
+              />
+            ) : (
+              unsupportedContent
+            ),
+        ],
+        [
+          Literal("audio"),
+          () =>
+            isBrowserSupportedAudio(mimeType) ? (
+              <audio
+                className={classes.lightboxAudio}
+                controls
+                src={src}
+                aria-label={title}
+              />
+            ) : (
+              unsupportedContent
+            ),
+        ],
+        [Unknown, () => unsupportedContent]
+      )(splitMimeType(mimeType)[0]);
+
+    setContent(buildContent());
+  }, [lightBoxConfig, classes, mimeType, src, title, labelUnsupportedContent]);
 
   const handleOpenInNewWindow = (event: SyntheticEvent) => {
     event.stopPropagation();
@@ -188,7 +257,39 @@ const Lightbox = ({ mimeType, onClose, open, src, title }: LightboxProps) => {
           <CloseIcon />
         </IconButton>
       </Toolbar>
-      {content}
+      <Grid container alignItems="center">
+        <Grid item xs={1}>
+          {onPrevious && (
+            <TooltipIconButton
+              title={viewPreviousString}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleOnPrevious();
+              }}
+            >
+              <NavigateBeforeIcon className={classes.arrowButton} />
+            </TooltipIconButton>
+          )}
+        </Grid>
+        <Grid item container justify="center" xs={10}>
+          <Grid item>{content}</Grid>
+        </Grid>
+        <Grid item container justify="flex-end" xs={1}>
+          <Grid item>
+            {onNext && (
+              <TooltipIconButton
+                title={viewNextString}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleOnNext();
+                }}
+              >
+                <NavigateNextIcon className={classes.arrowButton} />
+              </TooltipIconButton>
+            )}
+          </Grid>
+        </Grid>
+      </Grid>
     </Backdrop>
   );
 };

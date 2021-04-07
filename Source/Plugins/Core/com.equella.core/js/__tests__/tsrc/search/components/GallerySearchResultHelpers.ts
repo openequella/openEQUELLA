@@ -25,9 +25,9 @@ import {
 const buildGalleryEntry = (name: string): GalleryEntry => ({
   mimeType: "image/png",
   name,
-  imagePathSmall: "./placeholder-135x135.png",
-  imagePathMedium: "./placeholder-500x500.png",
-  imagePathFull: "./placeholder-500x500.png",
+  thumbnailSmall: "./placeholder-135x135.png",
+  thumbnailLarge: "./placeholder-500x500.png",
+  directUrl: "./placeholder-500x500.png",
 });
 
 export const buildItems = (howMany: number): GallerySearchResultItem[] =>

@@ -48,6 +48,7 @@ export const basicRenderData: RenderData = {
   autotestMode: false,
   newSearch: true,
   selectionSessionInfo: basicSelectionSessionInfo,
+  viewedFromIntegration: false,
 };
 
 export const renderDataForSelectOrAdd: RenderData = {
