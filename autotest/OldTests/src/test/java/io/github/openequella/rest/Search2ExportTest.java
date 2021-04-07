@@ -30,7 +30,7 @@ public class Search2ExportTest extends AbstractRestApiTest {
     return testConfig;
   }
 
-  @Test
+  @Test(description = "Export without ACL")
   public void withoutACL() throws IOException {
     // Login as a low privilege user.
     makeClientRequest(buildLoginMethod(AUTOTEST_LOW_PRIVILEGE_LOGON, PASSWORD));
@@ -39,7 +39,7 @@ public class Search2ExportTest extends AbstractRestApiTest {
     assertEquals(statusCode, 403);
   }
 
-  @Test
+  @Test(description = "Export with unsupported file formats")
   public void unsupportedFormat() throws IOException {
     HttpMethod method = buildExportRequest(null);
     method.setRequestHeader("accept", "text/xml");
@@ -47,7 +47,7 @@ public class Search2ExportTest extends AbstractRestApiTest {
     assertEquals(statusCode, 406);
   }
 
-  @Test
+  @Test(description = "Export with multiple Collections")
   public void onlyOneCollection() throws IOException {
     NameValuePair[] queryStrings = Arrays.copyOf(defaultQueryStrings, 4);
     queryStrings[3] = new NameValuePair("collections", "b2be4e8e-a0d4-4e6a-b9ff-4c65a7c8024e");
@@ -56,7 +56,7 @@ public class Search2ExportTest extends AbstractRestApiTest {
     assertEquals(statusCode, 400);
   }
 
-  @Test
+  @Test(description = "A standard export")
   public void export() throws IOException {
     HttpMethod method = buildExportRequest(null);
     int statusCode = makeClientRequest(method);

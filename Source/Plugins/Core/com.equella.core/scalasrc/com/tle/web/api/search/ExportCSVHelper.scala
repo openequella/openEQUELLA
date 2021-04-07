@@ -104,11 +104,17 @@ object ExportCSVHelper {
     buildHeadersForSchema(schema.getRootSchemaNode.getChildNodes, None) ++ STANDARD_HEADER_LIST
 
   /**
-    * Build a text based on provided XML as a CSV cell content.
-    * Iff a node is a root node and does not have any child nodes and attributes, since
-    * we have its name on the header, only use the value as content.
-    * For others, the content is a list of texts formatted as 'name:value' where 'name' may include parent node's name.
-    * Each text is separated by a delimiter.
+    * Build text based CSV content based on provided XML.
+    * Iff a node is a root node and does not have any child nodes or attributes,
+    * use only the value as CSV cell content (since we have the node name in the header).
+    * For others, the content is a list of strings formatted as `name:value` where `name`
+    * may include parent node's name.
+    * Each text is separated by a delimiter. When a root node has child nodes, each child node
+    * is separated by `||`. For other nodes, use `|` to delimit their attributes, values and
+    * child nodes' attributes and values.
+    * A typical example is:
+    * size:816932|uuid:8353cdfe-8211-4c69-bd94-7784956cebe9|file:cat2.png||
+    * size:444808|uuid:c72354f4-0c9f-44f1-93e2-8e7bf050ee5c|file:cat1.jpg
     *
     * @param node Node for which the content is built
     * @param isRootNode True if the node is a root node
@@ -117,15 +123,8 @@ object ExportCSVHelper {
   def buildCSVCell(node: PropBagEx,
                    isRootNode: Boolean = true,
                    parentNodeName: Option[String] = None): String = {
-    val childNodes = node.getChildren.asScala.toList
-    val attributes = node.getAttributesForNode("").asScala.toMap
-
-    /**
-      * This is the delimiter used to separate a node's attributes, value and its child nodes' attributes and values.
-      * A typical example is:
-      * size:816932|uuid:8353cdfe-8211-4c69-bd94-7784956cebe9|file:cat2.png||
-      * size:444808|uuid:c72354f4-0c9f-44f1-93e2-8e7bf050ee5c|file:cat1.jpg
-      */
+    val childNodes            = node.getChildren.asScala.toList
+    val attributes            = node.getAttributesForNode("").asScala.toMap
     val delimiter             = if (isRootNode && childNodes.nonEmpty) "||" else "|"
     val parentNameForChildren = parentNodeName.map(name => s"$name/${node.getNodeName}")
 
@@ -160,8 +159,8 @@ object ExportCSVHelper {
   }
 
   /**
-    * Build one row for one Item XML
-    * @param xml The XML based on which a row is built
+    * Builds a CSV row based on the XML for an Item.
+    * @param xml The XML from an Item for this row
     * @param headers The CSV column headers
     */
   def buildCSVRow(xml: PropBagEx, headers: List[CSVHeader]): String = {
