@@ -49,3 +49,11 @@ export const buildThumbnailUrl = (
 
 export const buildViewUrl = (videoId: string): string =>
   `https://www.youtube.com/watch?v=${videoId}`;
+
+/**
+ * Will extract the Video ID from a YouTube view URL - i.e. a URL which has a `v` search param.
+ *
+ * @param viewUrl a YouTube view URL containing a `v` search param.
+ */
+export const extractVideoId = (viewUrl: string): string | null =>
+  new URL(viewUrl).searchParams.get("v");
