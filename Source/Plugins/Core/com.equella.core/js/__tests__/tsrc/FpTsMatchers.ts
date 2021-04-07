@@ -64,9 +64,9 @@ declare global {
 }
 
 /**
- * An expect matcher for Jest to confirm the response is an E.Right - typically to confirm an
- * success result. The value is also returned, albeit (unfortunately) unioned with an undefined. It
- * is considered safe to access the value via a bang - .e.g `const value = expectRight(either)!;`
+ * An expect matcher for Jest to confirm the response is an E.Right - typically to confirm a
+ * success result. The value is also returned, albeit (unfortunately) unioned with an `undefined`.
+ * It is considered safe to access the value via a bang - .e.g `const value = expectRight(either)!;`
  *
  * @param either The E.Either to validate
  * @return The value contained in the E.Right
