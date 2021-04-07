@@ -552,7 +552,7 @@ public final class PrivilegeTree {
     institution.registerPrivilege("INTEGRATION_SELECTION_SESSION");
     institution.registerPrivilege("VIEW_APIDOCS");
     institution.registerPrivilege("LIST_USERS");
-    institution.registerPrivilege("EXPORT_SEARCH_RESULT");
+    institution.registerPrivilege(SecurityConstants.EXPORT_SEARCH_RESULT);
 
     // OAuth hax
     institution.registerPrivilege("ADMINISTER_OAUTH_TOKENS");

@@ -38,16 +38,14 @@ import com.tle.web.api.search.model.{SearchParam, SearchResult, SearchResultItem
 import io.swagger.annotations.{Api, ApiOperation}
 
 import javax.ws.rs.core.{Context, Response}
-import javax.ws.rs.{BeanParam, GET, Path, Produces}
+import javax.ws.rs.{BadRequestException, BeanParam, GET, NotFoundException, Path, Produces}
 import org.jboss.resteasy.annotations.cache.NoCache
 
 import java.io.BufferedOutputStream
-import javax.inject.Singleton
 import scala.collection.JavaConverters._
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
 @NoCache
-@Singleton
 @Path("search2")
 @Produces(Array("application/json"))
 @Api("Search V2")
@@ -83,7 +81,16 @@ class SearchResource {
              @Context req: HttpServletRequest,
              @Context resp: HttpServletResponse) = {
     checkDownloadACL()
-    val schema: Schema = getSchemaFromCollection(params.collections)
+
+    if (params.collections.length != 1) {
+      throw new BadRequestException("Only one Collection is allowed")
+    }
+    val collectionId = params.collections(0)
+    val schema: Schema = getSchemaFromCollection(collectionId) match {
+      case Some(s) => s
+      case None =>
+        throw new NotFoundException(s"Failed to find Schema for Collection: $collectionId")
+    }
 
     resp.setContentType("text/csv")
     resp.setHeader("Content-Disposition", " attachment; filename=search.csv")

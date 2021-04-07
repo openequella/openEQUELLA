@@ -21,14 +21,13 @@ package com.tle.web.api.search
 import com.dytech.devlib.PropBagEx
 import com.tle.beans.entity.Schema
 import com.tle.beans.entity.Schema.SchemaNode
+import com.tle.common.security.SecurityConstants
 import com.tle.core.services.item.FreetextResult
 import com.tle.exceptions.PrivilegeRequiredException
 import com.tle.legacy.LegacyGuice
 import org.apache.commons.lang.StringEscapeUtils
 
-import javax.ws.rs.{BadRequestException, NotFoundException}
 import scala.collection.JavaConverters._
-import scala.collection.mutable.ListBuffer
 case class CSVHeader(name: String, xpath: String)
 
 object ExportCSVHelper {
@@ -70,6 +69,9 @@ object ExportCSVHelper {
     DRM_HEADER
   )
 
+  val SINGLE_PIPE_DELIMITER = "|"
+  val DOUBLE_PIPE_DELIMITER = "||"
+
   /**
     * Build a list of CSV headers based on Schema.
     * @param schemaNodes List of Schema nodes which determines what headers to be built
@@ -83,17 +85,15 @@ object ExportCSVHelper {
         case None       => path
       }
     }
-
-    val headers = ListBuffer[CSVHeader]()
-    schemaNodes.asScala.foreach(n => {
-      val xpath = buildFullXpath(n.getName)
-      if (n.hasChildren) {
-        headers ++= buildHeadersForSchema(n.getChildNodes, Option(xpath))
-      } else {
-        headers += CSVHeader(xpath, xpath)
-      }
-    })
-    headers.toList
+    schemaNodes.asScala.foldLeft(List.empty[CSVHeader]) {
+      case (list, node) =>
+        val xpath = buildFullXpath(node.getName)
+        if (node.hasChildren) {
+          list ++: buildHeadersForSchema(node.getChildNodes, Option(xpath))
+        } else {
+          list :+ CSVHeader(xpath, xpath)
+        }
+    }
   }
 
   /**
@@ -101,7 +101,7 @@ object ExportCSVHelper {
     * @param schema Schema used to generate headers based on its nodes
     */
   def buildCSVHeaders(schema: Schema): List[CSVHeader] =
-    buildHeadersForSchema(schema.getRootSchemaNode.getChildNodes, None) ++ STANDARD_HEADER_LIST
+    STANDARD_HEADER_LIST ++ buildHeadersForSchema(schema.getRootSchemaNode.getChildNodes, None)
 
   /**
     * Build text based CSV content based on provided XML.
@@ -123,9 +123,10 @@ object ExportCSVHelper {
   def buildCSVCell(node: PropBagEx,
                    isRootNode: Boolean = true,
                    parentNodeName: Option[String] = None): String = {
-    val childNodes            = node.getChildren.asScala.toList
-    val attributes            = node.getAttributesForNode("").asScala.toMap
-    val delimiter             = if (isRootNode && childNodes.nonEmpty) "||" else "|"
+    val childNodes = node.getChildren.asScala.toList
+    val attributes = node.getAttributesForNode("").asScala.toMap
+    val delimiter =
+      if (isRootNode && childNodes.nonEmpty) DOUBLE_PIPE_DELIMITER else SINGLE_PIPE_DELIMITER
     val parentNameForChildren = parentNodeName.map(name => s"$name/${node.getNodeName}")
 
     // Process a node's attributes and build a list of text formatted as "key:value".
@@ -182,7 +183,7 @@ object ExportCSVHelper {
                              Option(header.name).filter(NEED_FULL_XPATH_IN_CONTENT.contains))
             })
             .toList
-            .mkString("|")
+            .mkString(SINGLE_PIPE_DELIMITER)
       }
 
       // Add a comma to separate each cell.
@@ -201,22 +202,14 @@ object ExportCSVHelper {
   }
 
   def checkDownloadACL(): Unit = {
-    val DOWNLOAD_ACL = "EXPORT_SEARCH_RESULT"
-    if (LegacyGuice.aclManager.filterNonGrantedPrivileges(DOWNLOAD_ACL).isEmpty) {
-      throw new PrivilegeRequiredException(DOWNLOAD_ACL)
+    if (LegacyGuice.aclManager
+          .filterNonGrantedPrivileges(SecurityConstants.EXPORT_SEARCH_RESULT)
+          .isEmpty) {
+      throw new PrivilegeRequiredException(SecurityConstants.EXPORT_SEARCH_RESULT)
     }
   }
 
-  def getSchemaFromCollection(collections: Array[String]): Schema = {
-    if (collections.length != 1) {
-      throw new BadRequestException("Only one Collection is allowed")
-    }
-
-    val collectionId = collections(0)
-    Option(LegacyGuice.itemDefinitionService.getByUuid(collectionId)).map(_.getSchema) match {
-      case Some(schema) => schema
-      case None =>
-        throw new NotFoundException(s"Failed to find Schema for Collection: $collectionId")
-    }
+  def getSchemaFromCollection(collectionId: String): Option[Schema] = {
+    Option(LegacyGuice.itemDefinitionService.getByUuid(collectionId)).map(_.getSchema)
   }
 }
