@@ -38,6 +38,7 @@ import { addFavouriteSearch } from "../modules/FavouriteModule";
 import {
   GallerySearchResultItem,
   imageGallerySearch,
+  videoGallerySearch,
 } from "../modules/GallerySearchModule";
 import {
   buildSelectionSessionAdvancedSearchLink,
@@ -325,20 +326,26 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
    */
   useEffect(() => {
     if (state.status === "searching") {
+      const gallerySearch = async (
+        search: typeof imageGallerySearch | typeof videoGallerySearch,
+        options: SearchPageOptions
+      ): Promise<SearchPageSearchResult> => ({
+        from: "gallery-search",
+        content: await search({
+          ...options,
+          // `mimeTypeFilters` should be ignored in gallery modes
+          mimeTypeFilters: undefined,
+        }),
+      });
+
       const doSearch = async (
         options: SearchPageOptions
       ): Promise<SearchPageSearchResult> => {
         switch (options.displayMode) {
           case "gallery-image":
-          case "gallery-video": // Coming soon
-            return {
-              from: "gallery-search",
-              content: await imageGallerySearch({
-                ...options,
-                // `mimeTypeFilters` should be ignored in gallery modes
-                mimeTypeFilters: undefined,
-              }),
-            };
+            return gallerySearch(imageGallerySearch, options);
+          case "gallery-video":
+            return gallerySearch(videoGallerySearch, options);
           case "list":
             return { from: "item-search", content: await searchItems(options) };
           default:

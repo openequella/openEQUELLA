@@ -36,7 +36,10 @@ import { act } from "react-dom/test-utils";
 import { Router } from "react-router-dom";
 import { getAdvancedSearchesFromServerResult } from "../../../__mocks__/AdvancedSearchModule.mock";
 import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock";
-import { transformedBasicImageSearchResponse } from "../../../__mocks__/GallerySearchModule.mock";
+import {
+  transformedBasicImageSearchResponse,
+  transformedBasicVideoSearchResponse,
+} from "../../../__mocks__/GallerySearchModule.mock";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import { getMimeTypeFilters } from "../../../__mocks__/MimeTypeFilter.mock";
 import { getRemoteSearchesFromServerResult } from "../../../__mocks__/RemoteSearchModule.mock";
@@ -96,7 +99,14 @@ const mockListClassification = jest.spyOn(
   "listClassifications"
 );
 const mockSearch = jest.spyOn(SearchModule, "searchItems");
-const mockGallerySearch = jest.spyOn(GallerySearchModule, "imageGallerySearch");
+const mockImageGallerySearch = jest.spyOn(
+  GallerySearchModule,
+  "imageGallerySearch"
+);
+const mockVideoGallerySearch = jest.spyOn(
+  GallerySearchModule,
+  "videoGallerySearch"
+);
 const mockSearchSettings = jest.spyOn(
   SearchSettingsModule,
   "getSearchSettingsFromServer"
@@ -982,21 +992,32 @@ describe("Changing display mode", () => {
     expect(queryListItems().length).toBeGreaterThan(0);
   });
 
-  it.each([modeGalleryImage, modeGalleryVideo])(
+  it.each([
+    [
+      modeGalleryImage,
+      mockImageGallerySearch,
+      transformedBasicImageSearchResponse,
+    ],
+    [
+      modeGalleryVideo,
+      mockVideoGallerySearch,
+      transformedBasicVideoSearchResponse,
+    ],
+  ])(
     "supports changing mode - [%s]",
-    async (mode: string) => {
+    async (mode: string, gallerySearch, mockResponse) => {
       expect(queryListItems().length).toBeGreaterThan(0);
       expect(queryGalleryItems()).toHaveLength(0);
 
       // Monitor the search function, and change the mode
-      const gallerySearchPromise = mockGallerySearch.mockResolvedValue(
-        transformedBasicImageSearchResponse
+      const gallerySearchPromise = gallerySearch.mockResolvedValue(
+        mockResponse
       );
       await changeMode(mode);
       await gallerySearchPromise;
 
       // Make sure the search has been triggered
-      expect(mockGallerySearch).toHaveBeenCalledTimes(1);
+      expect(gallerySearch).toHaveBeenCalledTimes(1);
 
       // And now check the visual change
       expect(queryGalleryItems().length).toBeGreaterThan(0);
