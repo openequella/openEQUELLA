@@ -139,7 +139,6 @@ export default function OEQThumb({
     case "custom/youtube":
     case "custom/kaltura":
     case "custom/googlebook":
-    default:
       oeqThumb = oeqProvidedThumb;
       break;
   }
