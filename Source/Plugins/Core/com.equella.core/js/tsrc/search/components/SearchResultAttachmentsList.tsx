@@ -20,6 +20,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Badge,
+  Chip,
   Grid,
   List,
   ListItem,
@@ -36,8 +37,9 @@ import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import InsertDriveFile from "@material-ui/icons/InsertDriveFile";
 import Search from "@material-ui/icons/Search";
-import { SyntheticEvent, useEffect, useState } from "react";
+import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 import ItemAttachmentLink from "../../components/ItemAttachmentLink";
 import {
   getSearchPageAttachmentClass,
@@ -54,7 +56,6 @@ import {
 } from "../../modules/ViewerModule";
 import { languageStrings } from "../../util/langstrings";
 import { ResourceSelector } from "./ResourceSelector";
-import * as OEQ from "@openequella/rest-api-client";
 
 const {
   searchResult: searchResultStrings,
@@ -262,7 +263,10 @@ export const SearchResultAttachmentsList = ({
   );
 
   const accordionText = (
-    <Typography>{searchResultStrings.attachments}</Typography>
+    <Typography>
+      {searchResultStrings.attachments}&nbsp;&nbsp;
+      <Chip label={attachments.length} size="small" color="primary" />
+    </Typography>
   );
 
   const accordionSummaryContent = inSelectionSession ? (
