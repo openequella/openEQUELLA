@@ -15,17 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { isLightboxSupportedMimeType } from "../../../tsrc/components/Lightbox";
+import { checkHeartbeat } from '../src/Heartbeat';
+import * as TC from './TestConfig';
 
-describe("isLightboxSupportedMimeType", () => {
-  it.each<[string, boolean]>([
-    ["application/pdf", false],
-    ["audio/aac", false],
-    ["audio/ogg", true],
-    ["image/anything", true],
-    ["video/ogg", true],
-    ["video/quicktime", false],
-  ])("MIME type: %s, supported: %s", (mimeType: string, expected: boolean) =>
-    expect(isLightboxSupportedMimeType(mimeType)).toEqual(expected)
-  );
+describe('checkHeartBeat', () => {
+  it('returns a resolved promise if server responds correctly', async () => {
+    await expect(checkHeartbeat(TC.API_PATH)).resolves.toBeTruthy();
+  });
 });

@@ -15,21 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Axios from "axios";
+import { checkHeartbeat } from "../modules/Heartbeat";
 
-export function startHeartbeat() {
-  setInterval(function () {
-    Axios.get<string>("api/status/heartbeat")
-      .then((resp) => {
-        if (resp.data !== "OK") {
-          throw new Error(
-            `Unexpected heartbeat response from openEQUELLA server: ${resp.data}`
-          );
-        }
-      })
-      .catch((error) => {
-        console.error("Attempt to communicate with openEQUELLA server failed");
-        console.error(error);
-      });
-  }, 2 * 60 * 1000);
-}
+/**
+ * Do heartbeat checking every 2 minutes.
+ */
+export const startHeartbeat = () => {
+  setInterval(checkHeartbeat, 2 * 60 * 1000);
+};

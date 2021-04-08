@@ -15,8 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import LuxonUtils from "@date-io/luxon";
 import {
   FormControl,
   Grid,
@@ -24,16 +23,17 @@ import {
   MenuItem,
   Select,
 } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import {
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
-import type { DateRange } from "../modules/SearchModule";
-import SettingsToggleSwitch from "./SettingsToggleSwitch";
-import { ReactNode, useEffect, useRef, useState } from "react";
-import { languageStrings } from "../util/langstrings";
-import LuxonUtils from "@date-io/luxon";
 import { DateTime } from "luxon";
+import * as React from "react";
+import { ReactNode, useEffect, useState } from "react";
+import type { DateRange } from "../modules/SearchModule";
+import { languageStrings } from "../util/langstrings";
+import SettingsToggleSwitch from "./SettingsToggleSwitch";
 
 interface DatePickerProps {
   /**
@@ -128,18 +128,13 @@ export const DateRangeSelector = ({
   );
   const [showCalenderIcon, setShowCalenderIcon] = useState<boolean>(false);
 
-  const isInitialRender = useRef(true);
+  // Only when prop dateRange is cleared, clear stateDateRange as well.
   useEffect(() => {
-    if (isInitialRender.current) {
-      isInitialRender.current = false;
-      return;
-    }
-    // When state is cleared, do not proceed to avoid duplicated search.
-    if (!stateDateRange) {
-      return;
-    }
-    const start = stateDateRange?.start;
-    const end = stateDateRange?.end;
+    setStateDateRange(dateRange);
+  }, [dateRange]);
+
+  const handleDateRangeChange = (range: DateRange): void => {
+    const { start, end } = range;
     const isStartValid = start && DateTime.fromJSDate(start).isValid;
     const isEndValid = end && DateTime.fromJSDate(end).isValid;
 
@@ -154,15 +149,9 @@ export const DateRangeSelector = ({
       start && end ? isStartValid && isEndValid && start <= end : false;
     // Call onDateRangeChange for above four cases.
     if (openStart || openEnd || openRange || closedRange) {
-      onDateRangeChange(stateDateRange);
+      onDateRangeChange({ start: range.start, end: range.end });
     }
-  }, [stateDateRange]);
-
-  // Only when prop dateRange is cleared, clear stateDateRange as well.
-  useEffect(() => {
-    setStateDateRange(dateRange);
-  }, [dateRange]);
-
+  };
   /**
    * Provide labels and values for options of pre-defined date ranges.
    */
@@ -238,6 +227,7 @@ export const DateRangeSelector = ({
   const handleQuickDateOptionChange = (option: string): void => {
     const dateRange = dateOptionToDateRangeConverter(option);
     setStateDateRange(dateRange);
+    handleDateRangeChange(dateRange);
   };
 
   const quickOptionSelector: ReactNode = (
@@ -304,12 +294,14 @@ export const DateRangeSelector = ({
             label={label}
             // When value is undefined use null instead so nothing is displayed in the TextField.
             value={value ?? null}
-            onChange={(newDate, _) =>
-              setStateDateRange({
+            onChange={(newDate, _) => {
+              const newRange = {
                 ...stateDateRange,
                 [field]: newDate?.toJSDate(),
-              })
-            }
+              };
+              setStateDateRange(newRange);
+              handleDateRangeChange(newRange);
+            }}
           />
         </Grid>
       );

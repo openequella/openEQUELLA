@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createMuiTheme, MuiThemeProvider, Theme } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
 import { render, RenderResult, fireEvent } from "@testing-library/react";
@@ -28,7 +29,8 @@ import type { RenderData } from "../../../../tsrc/AppConfig";
 import {
   getGlobalCourseList,
   selectResourceForCourseList,
-  selectResourceForNonCourseList,
+  selectResourceForSelectOrAdd,
+  selectResourceForSkinny,
 } from "../../../../tsrc/modules/LegacySelectionSessionModule";
 import * as MimeTypesModule from "../../../../tsrc/modules/MimeTypesModule";
 import * as LegacySelectionSessionModule from "../../../../tsrc/modules/LegacySelectionSessionModule";
@@ -39,6 +41,7 @@ import { updateMockGlobalCourseList } from "../../CourseListHelper";
 import {
   basicRenderData,
   renderDataForSelectOrAdd,
+  renderDataForSkinny,
   selectSummaryButtonDisabled,
   updateMockGetRenderData,
   withIntegId,
@@ -56,22 +59,29 @@ const {
   attachment: selectAttachmentString,
 } = languageStrings.searchpage.selectResource;
 
+const defaultTheme = createMuiTheme({
+  props: { MuiWithWidth: { initialWidth: "md" } },
+});
+
 describe("<SearchResult/>", () => {
   const renderSearchResult = async (
-    itemResult: OEQ.Search.SearchResultItem
+    itemResult: OEQ.Search.SearchResultItem,
+    theme: Theme = defaultTheme
   ) => {
     const renderResult = render(
       //This needs to be wrapped inside a BrowserRouter, to prevent an `Invariant failed: You should not use <Link> outside a <Router>` error  because of the <Link/> tag within SearchResult
-      <BrowserRouter>
-        <SearchResult
-          key={itemResult.uuid}
-          item={itemResult}
-          handleError={(error) =>
-            console.warn(`Testing error handler: ${error}`)
-          }
-          highlights={[]}
-        />
-      </BrowserRouter>
+      <MuiThemeProvider theme={theme}>
+        <BrowserRouter>
+          <SearchResult
+            key={itemResult.uuid}
+            item={itemResult}
+            handleError={(error) =>
+              console.warn(`Testing error handler: ${error}`)
+            }
+            highlights={[]}
+          />
+        </BrowserRouter>
+      </MuiThemeProvider>
     );
 
     // Make sure we wait for the resolution of viewers - which will update the attachment lists
@@ -156,6 +166,56 @@ describe("<SearchResult/>", () => {
     ).toBeInTheDocument();
   });
 
+  it("hide star rating and comment count in small screen", async () => {
+    const theme = createMuiTheme({
+      props: { MuiWithWidth: { initialWidth: "sm" } },
+    });
+    const { starRatings, commentCount } = mockData.attachSearchObj;
+    const { queryByLabelText, queryByText } = await renderSearchResult(
+      mockData.attachSearchObj,
+      theme
+    );
+    expect(
+      queryByLabelText(
+        sprintf(languageStrings.searchpage.starRatings.label, starRatings)
+      )
+    ).not.toBeInTheDocument();
+
+    expect(
+      queryByText(
+        sprintf(languageStrings.searchpage.comments.more, commentCount),
+        { selector: "a" }
+      )
+    ).not.toBeInTheDocument();
+  });
+
+  it.each([
+    [
+      "solid Heart",
+      "remove",
+      mockData.basicSearchObj,
+      languageStrings.searchpage.favouriteItem.title.remove,
+    ],
+    [
+      "empty Heart",
+      "add",
+      mockData.attachSearchObj,
+      languageStrings.searchpage.favouriteItem.title.add,
+    ],
+  ])(
+    "should show %s icon to %s favourite Item",
+    async (
+      iconType: string,
+      action: string,
+      item: OEQ.Search.SearchResultItem,
+      iconLabel: string
+    ) => {
+      const { queryByLabelText } = await renderSearchResult(item);
+      const iconButton = queryByLabelText(iconLabel);
+      expect(iconButton).toBeInTheDocument();
+    }
+  );
+
   it.each<[string]>([
     [selectSummaryPageString],
     [selectAllAttachmentsString],
@@ -209,16 +269,24 @@ describe("<SearchResult/>", () => {
     );
     mockSelectResourceForCourseList.mockResolvedValue();
 
-    const mockSelectResourceForNonCourseList = jest.spyOn(
+    const mockSelectResourceForSelectOrAdd = jest.spyOn(
       LegacySelectionSessionModule,
-      "selectResourceForNonCourseList"
+      "selectResourceForSelectOrAdd"
     );
-    mockSelectResourceForNonCourseList.mockResolvedValue();
+    mockSelectResourceForSelectOrAdd.mockResolvedValue();
+
+    const mockSelectResourceForSkinny = jest.spyOn(
+      LegacySelectionSessionModule,
+      "selectResourceForSkinny"
+    );
+    mockSelectResourceForSkinny.mockResolvedValue();
 
     const STRUCTURED = "structured";
     const SELECT_OR_ADD = "selectOrAdd";
+    const SKINNY = "skinny";
     const selectForCourseFunc = selectResourceForCourseList;
-    const selectForNonCourseFunc = selectResourceForNonCourseList;
+    const selectForSelectOrAdd = selectResourceForSelectOrAdd;
+    const selectForSkinny = selectResourceForSkinny;
 
     const makeSelection = (findSelector: () => HTMLElement | null) => {
       const selectorControl = findSelector();
@@ -228,6 +296,10 @@ describe("<SearchResult/>", () => {
       // Above expect can make sure selectorControl is not null.
       fireEvent.click(selectorControl!);
     };
+
+    type selectResourceFuncType =
+      | ((itemKey: string, attachmentUUIDs: string[]) => Promise<void>)
+      | ((itemKey: string, attachmentUUID?: string) => Promise<void>);
 
     it.each([
       [
@@ -251,30 +323,29 @@ describe("<SearchResult/>", () => {
       [
         selectSummaryPageString,
         SELECT_OR_ADD,
-        selectForNonCourseFunc,
+        selectForSelectOrAdd,
         renderDataForSelectOrAdd,
       ],
       [
         selectAllAttachmentsString,
         SELECT_OR_ADD,
-        selectForNonCourseFunc,
+        selectForSelectOrAdd,
         renderDataForSelectOrAdd,
       ],
       [
         selectAttachmentString,
         SELECT_OR_ADD,
-        selectForNonCourseFunc,
+        selectForSelectOrAdd,
         renderDataForSelectOrAdd,
       ],
+      [selectSummaryPageString, SKINNY, selectForSkinny, renderDataForSkinny],
+      [selectAttachmentString, SKINNY, selectForSkinny, renderDataForSkinny],
     ])(
       "supports %s in %s mode",
       async (
         resourceType: string,
         selectionSessionMode: string,
-        selectResourceFunc: (
-          itemKey: string,
-          attachmentUUIDs: string[]
-        ) => Promise<void>,
+        selectResourceFunc: selectResourceFuncType,
         renderData: RenderData
       ) => {
         updateMockGetRenderData(renderData);
@@ -324,6 +395,16 @@ describe("<SearchResult/>", () => {
           getGlobalCourseList().prepareDraggableAndBind
         ).toHaveBeenCalledWith(`#${attachment.id}`, false);
       });
+    });
+
+    it("should hide All attachment button in Skinny", async () => {
+      updateMockGetRenderData(renderDataForSkinny);
+      const { queryByLabelText } = await renderSearchResult(
+        mockData.attachSearchObj
+      );
+      expect(
+        queryByLabelText(selectAllAttachmentsString)
+      ).not.toBeInTheDocument();
     });
   });
 });

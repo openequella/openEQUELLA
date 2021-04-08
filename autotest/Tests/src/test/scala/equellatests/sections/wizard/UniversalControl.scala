@@ -10,7 +10,11 @@ import scala.util.Try
 class UniversalControl(val page: WizardPageTab, val ctrlNum: Int) extends WizardControl {
 
   private def actionLinkBy(action: String) =
-    By.xpath("td[@class='actions']/a[text()=" + quoteXPath(action) + "]")
+    By.xpath("div/div/div[contains(@class, 'actions')]/div/a[text()=" + quoteXPath(action) + "]")
+
+  private val cancelBtnBy =
+    By.xpath(
+      "div/div/div[contains(@class, 'actions')]/div/button[contains(@title, 'Cancel upload')]")
 
   private def rowForDescription(description: String, disabled: Boolean) =
     Try(pageElement.findElement(rowDescriptionBy(description, disabled))).toOption
@@ -26,7 +30,7 @@ class UniversalControl(val page: WizardPageTab, val ctrlNum: Int) extends Wizard
   def errorExpectation(msg: String) = {
     ExpectedConditions.visibilityOfNestedElementsLocatedBy(
       pageBy,
-      By.xpath(s"//p[@class='ctrlinvalidmessage' and text() = ${quoteXPath(msg)}]"))
+      By.xpath(s"//div[contains(@class, 'universalresources')]//div[text() = ${quoteXPath(msg)}]"))
   }
 
   def uploadInline[A](tf: TestFile, actualFilename: String, after: ExpectedCondition[A]): A = {
@@ -34,8 +38,16 @@ class UniversalControl(val page: WizardPageTab, val ctrlNum: Int) extends Wizard
     waitFor(after)
   }
 
+  def cancelUpload(actualFilename: String) = {
+    rowForDescription(actualFilename, true).map { row =>
+      row.findElement(cancelBtnBy).click()
+      waitFor(ExpectedConditions.stalenessOf(row))
+    }
+  }
+
   private def rowDescriptionBy(title: String, disabled: Boolean) =
-    By.xpath(".//tr[.//" + (if (disabled) "span" else "a") + "[text()=" + quoteXPath(title) + "]]")
+    By.xpath(
+      ".//ul/div[.//" + (if (disabled) "div" else "a") + "[text()=" + quoteXPath(title) + "]]")
 
   def attachNameWaiter(description: String, disabled: Boolean): ExpectedCondition[_] = {
     ExpectedConditions.visibilityOfElementLocated(

@@ -100,7 +100,7 @@ object UniversalWebControlNew {
                                       FileDropRenderer.CSS,
                                       ZebraTableRenderer.CSS)
   val uploadListFunc =
-    new ExternallyDefinedFunction("UploadList.inlineUpload", uploadListSrc)
+    new ExternallyDefinedFunction("FileUploader", uploadListSrc)
 }
 
 @Bind
@@ -367,6 +367,7 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
               UploadFailed(
                 WebFileUploads.labelForIllegalReason(reason, uf.originalFilename).getText)
             val mimeType = mimeTypeForFilename(uf.originalFilename)
+            // Retrieve file from form data. If not found then try to get it from request body.
             val r = WebFileUploads
               .validateBeforeUpload(mimeType, request.getContentLengthLong, controlSettings)
               .map(illegal)

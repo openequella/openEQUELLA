@@ -22,6 +22,7 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import java.io.Serializable;
 import java.util.List;
+import java.util.function.Function;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -228,6 +229,25 @@ public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernat
     return findAllByCriteria(null, -1, criterion);
   }
 
+  /**
+   * Allows for passing a DetachedCriteria to run Hibernate query.
+   *
+   * @param criteria Detached query that is attached to a new session.
+   * @param process Function from Criteria class used to determine what to do with the output of the
+   *     query. This also specifies the return type.
+   */
+  public Object findByDetachedCriteria(
+      DetachedCriteria criteria, final Function<Criteria, Object> process) {
+    return getHibernateTemplate()
+        .execute(
+            new TLEHibernateCallback() {
+
+              @Override
+              public Object doInHibernate(Session session) throws HibernateException {
+                return process.apply(criteria.getExecutableCriteria(session));
+              }
+            });
+  }
   /*
    * (non-Javadoc)
    * @see

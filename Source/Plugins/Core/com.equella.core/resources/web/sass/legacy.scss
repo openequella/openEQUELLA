@@ -4428,12 +4428,9 @@ img.warningimg {
   vertical-align: middle;
 }
 
+// The File Uoloader is rewritten in TS and some previous styles applied
+// to the Progress bar must be removed to avoid conflicts with MUI styles.
 .universalresources .progress-bar {
-  @include curvedCorners;
-  width: 200px;
-  height: 14px;
-  border: 1px solid #aaa;
-  margin: 0 10px 0 0;
   float: right;
 }
 
@@ -4466,7 +4463,7 @@ img.warningimg {
 /*****************************************************************************
  Selection Dialog
 *****************************************************************************/
-#wrapper {
+#wrapper:not(.skinny-layout) {
   min-width: 784px;
 }
 
@@ -5562,4 +5559,53 @@ button:focus {
 
 #wizard-controls .autocompleteControl table.zebra {
   margin-top: $termSelectorHeight;
+}
+
+.skinny-layout {
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+
+  #selection-header {
+    position: unset; // Unset position because it is an flex item.
+    height: auto;
+    padding-top: $singleMargin;
+  }
+
+  .navbar-inner {
+    display: flex;
+    justify-content: center; // Ensure the header content is centered.
+  }
+
+  .navbar-content {
+    display: flex; // Two items: '.pull-left' and '.centered-pills'
+  }
+
+  .navbar .pull-left {
+    margin-bottom: 0; // Override the margin-bottom added in '.nav'.
+  }
+
+  .navbar .pull-left li {
+    margin-top: 4px;
+  }
+
+  .navbar .centered-pills ul {
+    display: flex;
+    margin-bottom: 0;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .navbar .centered-pills li {
+    padding: 0 12px 0 12px;
+  }
+
+  .navbar .divider-vertical {
+    display: none;
+  }
+}
+
+#selection-page .area.error {
+  width: 100%;
 }

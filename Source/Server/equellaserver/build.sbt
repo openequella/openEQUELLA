@@ -17,7 +17,7 @@ unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_co
 
 val RestEasyVersion  = "3.13.2.Final"
 val SwaggerVersion   = "1.6.2"
-val TomcatVersion    = "9.0.41"
+val TomcatVersion    = "9.0.43"
 val axis2Version     = "1.6.2"
 val circeVersion     = "0.12.1"
 val cxfVersion       = "3.4.1"
@@ -27,7 +27,7 @@ val jacksonVersion   = "2.11.3"
 val jsassVersion     = "5.10.4"
 val jsoupVersion     = "1.13.1"
 val simpledbaVersion = "0.1.9"
-val springVersion    = "5.3.3"
+val springVersion    = "5.3.5"
 val sttpVersion      = "1.7.2"
 val tikaVersion      = "1.24.1"
 
@@ -156,7 +156,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "net.sf.ehcache")
   ),
   "org.apache.httpcomponents" % "httpclient"       % "4.5.13",
-  "org.apache.httpcomponents" % "httpcore"         % "4.4.13",
+  "org.apache.httpcomponents" % "httpcore"         % "4.4.14",
   "org.apache.lucene"         % "lucene-analyzers" % "3.6.2",
   "org.apache.lucene"         % "lucene-core"      % "3.6.2",
   "org.apache.lucene"         % "lucene-queries"   % "3.6.2",
@@ -320,7 +320,7 @@ excludeDependencies ++= Seq(
   // Spring 5 added a default logging bridge.  In oEQ, this results in
   // a [deduplicate: different file contents found in the following] error
   // ...org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.7.30.jar:org/apache/commons/logging/Log.class
-  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.3.jar:org/apache/commons/logging/Log.class
+  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.5.jar:org/apache/commons/logging/Log.class
   // As per https://github.com/spring-projects/spring-framework/issues/20611 ,
   // since we already have logging in place, we can safely exclude the dep from spring.
   "org.springframework" % "spring-jcl",

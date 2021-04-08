@@ -81,6 +81,7 @@ describe("SearchFacetsModule", () => {
     const dateStart = "2020-01-01";
     const dateEnd = "2020-02-02";
     const ownerUuid = "uuidOwner";
+    const mimeTypes = ["Image/png"];
     const classifications = await listClassifications({
       query: queryString,
       rowsPerPage: 10, // n/a
@@ -102,6 +103,7 @@ describe("SearchFacetsModule", () => {
       },
       status: OEQ.Common.ItemStatuses.alternatives.map((i) => i.value), // i.e. All statuses
       sortOrder: undefined,
+      mimeTypes: mimeTypes,
     });
 
     // Expect the correct data is generated
@@ -132,6 +134,7 @@ describe("SearchFacetsModule", () => {
       modifiedBefore: dateEnd,
       owner: ownerUuid,
       showall: true,
+      mimeTypes: mimeTypes,
     } as OEQ.SearchFacets.SearchFacetsParams);
   });
 });

@@ -17,7 +17,7 @@
       <url>https://en.wikipedia.org/wiki/Itanium</url>
       <description>https://en.wikipedia.org/wiki/Itanium</description>
       <preview>false</preview>
-      <restricted>false</restricted>
+      <restricted>true</restricted>
     </com.tle.beans.item.attachments.LinkAttachment>
   </attachments>
   <searchDetails>

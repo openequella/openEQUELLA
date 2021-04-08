@@ -42,6 +42,7 @@ public class ResourceSelectorFavouritesTest extends AbstractCleanupAutoTest {
     ItemListPage favourites = resource.getSelectionSession().getShowAllFavourites();
 
     ItemSearchResult aFavourite = favourites.getResultForTitle(ITEM_TITLE);
+    favourites.scrollToElement(aFavourite.getLoadedElement());
     aFavourite.clickTitle();
     SummaryPage stp = new SummaryPage(context).get();
     assertTrue(stp.selectItemPresent(), "Expected summary page to be selectable");

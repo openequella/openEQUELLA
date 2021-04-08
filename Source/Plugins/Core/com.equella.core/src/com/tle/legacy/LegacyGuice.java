@@ -30,6 +30,8 @@ import com.tle.core.dynacollection.DynaCollectionService;
 import com.tle.core.encryption.EncryptionService;
 import com.tle.core.events.services.EventService;
 import com.tle.core.facetedsearch.service.FacetedSearchClassificationService;
+import com.tle.core.favourites.service.BookmarkService;
+import com.tle.core.favourites.service.FavouriteSearchService;
 import com.tle.core.fedsearch.FederatedSearchService;
 import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.i18n.BundleCache;
@@ -40,6 +42,7 @@ import com.tle.core.item.edit.attachment.AbstractAttachmentEditor;
 import com.tle.core.item.helper.ItemHelper;
 import com.tle.core.item.serializer.ItemSerializerService;
 import com.tle.core.item.serializer.impl.AttachmentSerializerProvider;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.item.standard.service.ItemCommentService;
 import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.mimetypes.MimeTypeService;
@@ -109,6 +112,8 @@ public class LegacyGuice extends AbstractModule {
 
   @Inject public static BasicFreemarkerFactory basicFreemarkerFactory;
 
+  @Inject public static BookmarkService bookmarkService;
+
   @Inject public static BundleCache bundleCache;
 
   @Inject public static CALService calService;
@@ -132,6 +137,8 @@ public class LegacyGuice extends AbstractModule {
   @Inject public static EventService eventService;
 
   @Inject public static FacetedSearchClassificationService facetedSearchClassificationService;
+
+  @Inject public static FavouriteSearchService favouriteSearchService;
 
   @Inject public static FederatedSearchService federatedSearchService;
 
@@ -160,6 +167,8 @@ public class LegacyGuice extends AbstractModule {
   @Inject public static ItemLinkService itemLinkService;
 
   @Inject public static ItemSerializerService itemSerializerService;
+
+  @Inject public static ItemService itemService;
 
   @Inject public static ItemXsltService itemXsltService;
 

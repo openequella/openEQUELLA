@@ -22,6 +22,8 @@ import com.tle.web.api.item.equella.interfaces.beans.EquellaAttachmentBean;
 
 @SuppressWarnings("nls")
 public class ResourceAttachmentBean extends EquellaAttachmentBean {
+  public static final String TYPE_ID = "custom/resource";
+
   private String itemUuid;
   private int itemVersion;
   private char resourceType;
@@ -70,6 +72,6 @@ public class ResourceAttachmentBean extends EquellaAttachmentBean {
 
   @Override
   public String getRawAttachmentType() {
-    return "custom/resource";
+    return TYPE_ID;
   }
 }

@@ -15,14 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Card, CardContent, Grid, Typography } from "@material-ui/core";
+import { Drawer, Grid, Hidden } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 
-import { isEqual, pick } from "lodash";
+import { isEqual } from "lodash";
 import * as React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useReducer, useState } from "react";
 import { useHistory, useLocation } from "react-router";
-import { Static } from "runtypes";
 import { generateFromError } from "../api/errors";
 import { AppConfig } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
@@ -35,6 +34,19 @@ import {
 } from "../mainui/Template";
 import { getAdvancedSearchesFromServer } from "../modules/AdvancedSearchModule";
 import type { Collection } from "../modules/CollectionsModule";
+import { addFavouriteSearch } from "../modules/FavouriteModule";
+import {
+  GallerySearchResultItem,
+  imageGallerySearch,
+  videoGallerySearch,
+} from "../modules/GallerySearchModule";
+import {
+  buildSelectionSessionAdvancedSearchLink,
+  buildSelectionSessionRemoteSearchLink,
+  isSelectionSessionInStructured,
+  isSelectionSessionOpen,
+  prepareDraggable,
+} from "../modules/LegacySelectionSessionModule";
 import { getRemoteSearchesFromServer } from "../modules/RemoteSearchModule";
 import {
   Classification,
@@ -42,41 +54,49 @@ import {
   SelectedCategories,
 } from "../modules/SearchFacetsModule";
 import {
+  getMimeTypeFiltersFromServer,
+  MimeTypeFilter,
+} from "../modules/SearchFilterSettingsModule";
+import {
   DateRange,
   defaultPagedSearchResult,
   defaultSearchOptions,
   generateQueryStringFromSearchOptions,
+  getPartialSearchOptions,
   queryStringParamsToSearchOptions,
   searchItems,
   SearchOptions,
+  SearchOptionsFields,
 } from "../modules/SearchModule";
-import {
-  getSearchSettingsFromServer,
-  SearchSettings,
-  SortOrder,
-} from "../modules/SearchSettingsModule";
-import {
-  prepareDraggable,
-  buildSelectionSessionAdvancedSearchLink,
-  buildSelectionSessionRemoteSearchLink,
-  isSelectionSessionInStructured,
-} from "../modules/LegacySelectionSessionModule";
+import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
 import SearchBar from "../search/components/SearchBar";
 import { languageStrings } from "../util/langstrings";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
-import { CategorySelector } from "./components/CategorySelector";
 import { CollectionSelector } from "./components/CollectionSelector";
+import DisplayModeSelector from "./components/DisplayModeSelector";
+import { FavouriteSearchDialog } from "./components/FavouriteSearchDialog";
+import GallerySearchResult from "./components/GallerySearchResult";
+import { MimeTypeFilterSelector } from "./components/MimeTypeFilterSelector";
 import OwnerSelector from "./components/OwnerSelector";
-import {
-  RefinePanelControl,
-  RefineSearchPanel,
-} from "./components/RefineSearchPanel";
+import { RefinePanelControl } from "./components/RefineSearchPanel";
 import { SearchAttachmentsSelector } from "./components/SearchAttachmentsSelector";
 import {
   mapSearchResultItems,
   SearchResultList,
 } from "./components/SearchResultList";
+import { SidePanel } from "./components/SidePanel";
 import StatusSelector from "./components/StatusSelector";
+
+// destructure strings import
+const { searchpage: searchStrings } = languageStrings;
+const {
+  title: dateModifiedSelectorTitle,
+  quickOptionDropdown,
+} = searchStrings.lastModifiedDateSelector;
+const { title: collectionSelectorTitle } = searchStrings.collectionSelector;
+const { title: displayModeSelectorTitle } = searchStrings.displayModeSelector;
+
+export type DisplayMode = "list" | "gallery-image" | "gallery-video";
 
 /**
  * Type of search options that are specific to Search page presentation layer.
@@ -86,6 +106,10 @@ export interface SearchPageOptions extends SearchOptions {
    * Whether to enable Quick mode (true) or to use custom date pickers (false).
    */
   dateRangeQuickModeEnabled: boolean;
+  /**
+   * How to display the search results - also determines the type of results.
+   */
+  displayMode: DisplayMode;
 }
 
 /**
@@ -102,18 +126,85 @@ interface SearchPageHistoryState {
   filterExpansion: boolean;
 }
 
-const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
-  const searchStrings = languageStrings.searchpage;
-  const {
-    title: dateModifiedSelectorTitle,
-    quickOptionDropdown,
-  } = searchStrings.lastModifiedDateSelector;
-  const { title: collectionSelectorTitle } = searchStrings.collectionSelector;
+/**
+ * The types of SearchResultItem that we support within an `OEQ.Search.SearchResult`.
+ */
+type SearchPageSearchResult =
+  | {
+      from: "item-search";
+      content: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>;
+    }
+  | {
+      from: "gallery-search";
+      content: OEQ.Search.SearchResult<GallerySearchResultItem>;
+    };
 
+type Action =
+  | { type: "init" }
+  | { type: "search"; options: SearchPageOptions; scrollToTop: boolean }
+  | {
+      type: "search-complete";
+      result: SearchPageSearchResult;
+      classifications: Classification[];
+    }
+  | { type: "error"; cause: Error };
+
+type State =
+  | { status: "initialising" }
+  | {
+      status: "searching";
+      options: SearchPageOptions;
+      previousResult?: SearchPageSearchResult;
+      previousClassifications?: Classification[];
+      scrollToTop: boolean;
+    }
+  | {
+      status: "success";
+      result: SearchPageSearchResult;
+      classifications: Classification[];
+    }
+  | { status: "failure"; cause: Error };
+
+const reducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case "init":
+      return { status: "initialising" };
+    case "search":
+      const prevResults =
+        state.status === "success"
+          ? {
+              previousResult: state.result,
+              previousClassifications: state.classifications,
+            }
+          : {};
+      return {
+        status: "searching",
+        options: action.options,
+        scrollToTop: action.scrollToTop,
+        ...prevResults,
+      };
+    case "search-complete":
+      return {
+        status: "success",
+        result: action.result,
+        classifications: action.classifications,
+      };
+    case "error":
+      return { status: "failure", cause: action.cause };
+    default:
+      throw new TypeError("Unexpected action passed to reducer!");
+  }
+};
+
+const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const history = useHistory();
+  const location = useLocation();
+
+  const [state, dispatch] = useReducer(reducer, { status: "initialising" });
   const defaultSearchPageOptions: SearchPageOptions = {
     ...defaultSearchOptions,
     dateRangeQuickModeEnabled: true,
+    displayMode: "list",
   };
 
   const defaultSearchPageHistory: SearchPageHistoryState = {
@@ -132,132 +223,195 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     searchPageHistoryState?.filterExpansion ??
       defaultSearchPageHistory.filterExpansion
   );
-  const [pagedSearchResult, setPagedSearchResult] = useState<
-    OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>
-  >(defaultPagedSearchResult);
-  const [showSpinner, setShowSpinner] = useState<boolean>(false);
-  const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
-  const [searchSettings, setSearchSettings] = useState<SearchSettings>();
-  const [classifications, setClassifications] = useState<Classification[]>([]);
+  const [snackBarMessage, setSnackBarMessage] = useState<string>("");
+  const [searchSettings, setSearchSettings] = useState<{
+    core: OEQ.SearchSettings.Settings | undefined;
+    mimeTypeFilters: MimeTypeFilter[];
+  }>({
+    core: undefined,
+    mimeTypeFilters: [],
+  });
 
-  const location = useLocation();
+  const [showRefinePanel, setShowRefinePanel] = useState<boolean>(false);
+  const [
+    showFavouriteSearchDialog,
+    setShowFavouriteSearchDialog,
+  ] = useState<boolean>(false);
 
-  const handleError = (error: Error) => {
-    updateTemplate(templateError(generateFromError(error)));
-  };
+  const handleError = useCallback(
+    (error: Error) => {
+      dispatch({ type: "error", cause: error });
+    },
+    [dispatch]
+  );
+
+  const search = useCallback(
+    (searchPageOptions: SearchPageOptions, scrollToTop = true): void =>
+      dispatch({
+        type: "search",
+        options: { ...searchPageOptions },
+        scrollToTop,
+      }),
+    [dispatch]
+  );
 
   /**
-   * Update the page title and retrieve Search settings.
+   * Error display -> similar to onError hook, however in the context of reducer need to do manually.
    */
   useEffect(() => {
+    if (state.status === "failure") {
+      updateTemplate(templateError(generateFromError(state.cause)));
+    }
+  }, [state, updateTemplate]);
+
+  /**
+   * Page initialisation -> Update the page title, retrieve Search settings and trigger first
+   * search.
+   */
+  useEffect(() => {
+    if (state.status !== "initialising") {
+      return;
+    }
+
     updateTemplate((tp) => ({
       ...templateDefaults(searchStrings.title)(tp),
     }));
-    // Show spinner before calling API to retrieve Search settings.
-    setShowSpinner(true);
 
     Promise.all([
       getSearchSettingsFromServer(),
+      getMimeTypeFiltersFromServer(),
       // If the search options are available from browser history, ignore those in the query string.
-      searchPageHistoryState
+      (location.state as SearchPageHistoryState)
         ? Promise.resolve(undefined)
         : queryStringParamsToSearchOptions(location),
     ])
-      .then(([searchSettings, queryStringSearchOptions]) => {
-        setSearchSettings(searchSettings);
-        if (queryStringSearchOptions)
-          setSearchPageOptions({
-            ...queryStringSearchOptions,
-            dateRangeQuickModeEnabled: false,
-            sortOrder:
-              queryStringSearchOptions.sortOrder ??
-              searchSettings.defaultSearchSort,
-          });
-        else
-          setSearchPageOptions({
-            ...searchPageOptions,
-            sortOrder:
-              searchPageOptions.sortOrder ?? searchSettings.defaultSearchSort,
-          });
+      .then(([searchSettings, mimeTypeFilters, queryStringSearchOptions]) => {
+        setSearchSettings({
+          core: searchSettings,
+          mimeTypeFilters: mimeTypeFilters,
+        });
+        search(
+          queryStringSearchOptions
+            ? {
+                ...queryStringSearchOptions,
+                dateRangeQuickModeEnabled: false,
+                sortOrder:
+                  queryStringSearchOptions.sortOrder ??
+                  searchSettings.defaultSearchSort,
+                displayMode: "list",
+              }
+            : {
+                ...searchPageOptions,
+                sortOrder:
+                  searchPageOptions.sortOrder ??
+                  searchSettings.defaultSearchSort,
+              }
+        );
       })
       .catch((e) => {
-        setShowSpinner(false);
         handleError(e);
       });
-  }, []);
-
-  const isInitialSearch = useRef(true);
-  // Trigger a search when Search options get changed, but skip the initial values.
-  useEffect(() => {
-    if (isInitialSearch.current) {
-      isInitialSearch.current = false;
-    } else {
-      search();
-    }
-  }, [searchPageOptions]);
-
-  useEffect(() => {
-    // If search page is open from a URL which has some query params, updating browser
-    // history for the initial search will produce wrong search option for the second
-    // render. This is because in the second render, we ignore the query param conversion
-    // as the history data has higher priority. So the end result is wrong search options
-    // are displayed in the page.
-    if (isInitialSearch && searchPageOptions === defaultSearchPageOptions) {
-      return;
-    }
-    history.replace({
-      ...history.location,
-      state: { searchPageOptions, filterExpansion },
-    });
-  }, [filterExpansion, pagedSearchResult]);
-
-  // In Selection Session, once a new search result is returned, make each
-  // new search result Item draggable.
-  useEffect(() => {
-    if (isSelectionSessionInStructured()) {
-      pagedSearchResult.results.forEach(({ uuid }) => {
-        prepareDraggable(uuid);
-      });
-    }
-  }, [pagedSearchResult]);
-
-  // When Search options get changed, also update the Classification list.
-  useEffect(() => {
-    if (!isInitialSearch.current) {
-      listClassifications(searchPageOptions)
-        .then((classifications) => setClassifications(classifications))
-        .catch(handleError);
-    }
-  }, [searchPageOptions]);
+  }, [
+    dispatch,
+    handleError,
+    location,
+    search,
+    searchPageOptions,
+    state.status,
+    updateTemplate,
+  ]);
 
   /**
-   * Search items with specified search criteria and show a spinner when the search is in progress.
+   * Searching -> Executing the search (including for classifications) and returning the results.
    */
-  const search = (): void => {
-    setShowSpinner(true);
-    searchItems(searchPageOptions)
-      .then((items: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>) => {
-        setPagedSearchResult(items);
-        // scroll back up to the top of the page
-        window.scrollTo(0, 0);
-      })
-      .catch(handleError)
-      .finally(() => setShowSpinner(false));
-  };
+  useEffect(() => {
+    if (state.status === "searching") {
+      const gallerySearch = async (
+        search: typeof imageGallerySearch | typeof videoGallerySearch,
+        options: SearchPageOptions
+      ): Promise<SearchPageSearchResult> => ({
+        from: "gallery-search",
+        content: await search({
+          ...options,
+          // `mimeTypeFilters` should be ignored in gallery modes
+          mimeTypeFilters: undefined,
+        }),
+      });
 
-  const handleSortOrderChanged = (order: Static<typeof SortOrder>) =>
-    setSearchPageOptions({ ...searchPageOptions, sortOrder: order });
+      const doSearch = async (
+        options: SearchPageOptions
+      ): Promise<SearchPageSearchResult> => {
+        switch (options.displayMode) {
+          case "gallery-image":
+            return gallerySearch(imageGallerySearch, options);
+          case "gallery-video":
+            return gallerySearch(videoGallerySearch, options);
+          case "list":
+            return { from: "item-search", content: await searchItems(options) };
+          default:
+            throw new TypeError("Unexpected `displayMode` for searching");
+        }
+      };
+
+      setSearchPageOptions(state.options);
+      Promise.all([doSearch(state.options), listClassifications(state.options)])
+        .then(
+          ([result, classifications]: [
+            SearchPageSearchResult,
+            Classification[]
+          ]) => {
+            dispatch({
+              type: "search-complete",
+              result: { ...result },
+              classifications: [...classifications],
+            });
+            // Update history
+            history.replace({
+              ...history.location,
+              state: { searchPageOptions: state.options, filterExpansion },
+            });
+            // scroll back up to the top of the page
+            if (state.scrollToTop) window.scrollTo(0, 0);
+          }
+        )
+        .catch(handleError);
+    }
+  }, [dispatch, filterExpansion, handleError, history, state]);
+
+  // In Selection Session, once a new search result is returned, make each
+  // new search result Item draggable. Could probably merge into 'searching'
+  // effect, however this is only required while selection sessions still
+  // involve legacy content.
+  useEffect(() => {
+    if (
+      state.status === "success" &&
+      state.result.from === "item-search" &&
+      isSelectionSessionInStructured()
+    ) {
+      state.result.content.results.forEach(
+        ({ uuid }: OEQ.Search.SearchResultItem) => {
+          prepareDraggable(uuid);
+        }
+      );
+    }
+  }, [state]);
+
+  const handleSortOrderChanged = (order: OEQ.SearchSettings.SortOrder) =>
+    search({ ...searchPageOptions, sortOrder: order });
 
   const handleQueryChanged = (query: string) =>
-    setSearchPageOptions({
+    search({
       ...searchPageOptions,
       query: query,
       currentPage: 0,
       selectedCategories: undefined,
     });
 
+  const handleDisplayModeChanged = (mode: DisplayMode) =>
+    search({ ...searchPageOptions, displayMode: mode });
+
   const handleCollectionSelectionChanged = (collections: Collection[]) => {
-    setSearchPageOptions({
+    search({
       ...searchPageOptions,
       collections: collections,
       currentPage: 0,
@@ -269,42 +423,27 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     setFilterExpansion(!filterExpansion);
   };
 
-  /**
-   * Determines if any collapsible filters have been modified from their defaults
-   */
-  const areCollapsibleFiltersSet = (): boolean => {
-    const getCollapsibleOptions = (options: SearchOptions) =>
-      pick(options, [
-        "lastModifiedDateRange",
-        "owner",
-        "status",
-        "searchAttachments",
-      ]);
-
-    return !isEqual(
-      getCollapsibleOptions(defaultSearchOptions),
-      getCollapsibleOptions(searchPageOptions)
-    );
-  };
-
   const handlePageChanged = (page: number) =>
-    setSearchPageOptions({ ...searchPageOptions, currentPage: page });
+    search({ ...searchPageOptions, currentPage: page });
 
   const handleRowsPerPageChanged = (rowsPerPage: number) =>
-    setSearchPageOptions({
-      ...searchPageOptions,
-      currentPage: 0,
-      rowsPerPage: rowsPerPage,
-    });
+    search(
+      {
+        ...searchPageOptions,
+        currentPage: 0,
+        rowsPerPage: rowsPerPage,
+      },
+      false
+    );
 
   const handleRawModeChanged = (rawMode: boolean) =>
-    setSearchPageOptions({ ...searchPageOptions, rawMode: rawMode });
+    search({ ...searchPageOptions, rawMode: rawMode });
 
   const handleQuickDateRangeModeChange = (
     quickDateRangeMode: boolean,
     dateRange?: DateRange
   ) =>
-    setSearchPageOptions({
+    search({
       ...searchPageOptions,
       dateRangeQuickModeEnabled: quickDateRangeMode,
       // When the mode is changed, the date range may also need to be updated.
@@ -314,28 +453,22 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     });
 
   const handleLastModifiedDateRangeChange = (dateRange?: DateRange) =>
-    setSearchPageOptions({
+    search({
       ...searchPageOptions,
       lastModifiedDateRange: dateRange,
       selectedCategories: undefined,
     });
 
   const handleClearSearchOptions = () => {
-    setSearchPageOptions({
+    search({
       ...defaultSearchPageOptions,
-      sortOrder: searchSettings?.defaultSearchSort,
+      sortOrder: searchSettings.core?.defaultSearchSort,
+      externalMimeTypes: isSelectionSessionOpen()
+        ? searchPageOptions.externalMimeTypes
+        : undefined,
     });
     setFilterExpansion(false);
   };
-
-  const copySearchInfoSnackbar = (
-    <MessageInfo
-      open={showSnackBar}
-      onClose={() => setShowSnackBar(false)}
-      title={searchStrings.shareSearchConfirmationText}
-      variant="success"
-    />
-  );
 
   const handleCopySearch = () => {
     //base institution urls have a trailing / that we need to get rid of
@@ -347,34 +480,58 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     navigator.clipboard
       .writeText(searchUrl)
       .then(() => {
-        setShowSnackBar(true);
+        setSnackBarMessage(searchStrings.shareSearchConfirmationText);
       })
       .catch(() => handleError);
   };
 
+  const handleSaveFavouriteSearch = (name: string) => {
+    // We only need pathname and query strings.
+    const url = `${location.pathname}?${generateQueryStringFromSearchOptions(
+      searchPageOptions
+    )}`;
+
+    return addFavouriteSearch(name, url)
+      .then(() =>
+        setSnackBarMessage(
+          searchStrings.favouriteSearch.saveSearchConfirmationText
+        )
+      )
+      .catch(handleError);
+  };
+
+  const handleMimeTypeFilterChange = (filters: MimeTypeFilter[]) =>
+    search({
+      ...searchPageOptions,
+      mimeTypeFilters: filters,
+      mimeTypes: filters.flatMap((f) => f.mimeTypes),
+      currentPage: 0,
+      selectedCategories: undefined,
+    });
+
   const handleOwnerChange = (owner: OEQ.UserQuery.UserDetails) =>
-    setSearchPageOptions({
+    search({
       ...searchPageOptions,
       owner: { ...owner },
       selectedCategories: undefined,
     });
 
   const handleOwnerClear = () =>
-    setSearchPageOptions({
+    search({
       ...searchPageOptions,
       owner: undefined,
       selectedCategories: undefined,
     });
 
   const handleStatusChange = (status: OEQ.Common.ItemStatus[]) =>
-    setSearchPageOptions({
+    search({
       ...searchPageOptions,
       status: [...status],
       selectedCategories: undefined,
     });
 
   const handleSearchAttachmentsChange = (searchAttachments: boolean) => {
-    setSearchPageOptions({
+    search({
       ...searchPageOptions,
       searchAttachments: searchAttachments,
     });
@@ -384,14 +541,16 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     selectedCategories: SelectedCategories[]
   ) => {
     const getSchemaNode = (id: number) => {
-      const node = classifications.find((c) => c.id === id)?.schemaNode;
+      const node =
+        state.status === "success" &&
+        state.classifications.find((c) => c.id === id)?.schemaNode;
       if (!node) {
         throw new Error(`Unable to find schema node for classification ${id}.`);
       }
       return node;
     };
 
-    setSearchPageOptions({
+    search({
       ...searchPageOptions,
       selectedCategories: selectedCategories.map((c) => ({
         ...c,
@@ -400,7 +559,64 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     });
   };
 
+  /**
+   * Determines if any collapsible filters have been modified from their defaults
+   */
+  const areCollapsibleFiltersSet = (): boolean => {
+    const fields: SearchOptionsFields[] = [
+      "lastModifiedDateRange",
+      "owner",
+      "status",
+      "searchAttachments",
+      "mimeTypeFilters",
+    ];
+    return !isEqual(
+      getPartialSearchOptions(defaultSearchOptions, fields),
+      getPartialSearchOptions(searchPageOptions, fields)
+    );
+  };
+
+  /**
+   * Determines if any search criteria has been set, including classifications, query and all filters.
+   */
+  const isCriteriaSet = (): boolean => {
+    const fields: SearchOptionsFields[] = [
+      "lastModifiedDateRange",
+      "owner",
+      "status",
+      "searchAttachments",
+      "collections",
+      "mimeTypeFilters",
+    ];
+
+    const isQueryOrFiltersSet = !isEqual(
+      getPartialSearchOptions(defaultSearchOptions, fields),
+      getPartialSearchOptions(searchPageOptions, fields)
+    );
+
+    // Field 'selectedCategories' is a bit different. Once a classification is selected, the category will persist in searchPageOptions.
+    // What we really care is if we have got any category that has any classification selected.
+    const isClassificationSelected: boolean =
+      searchPageOptions.selectedCategories?.some(
+        ({ categories }: SelectedCategories) => categories.length > 0
+      ) ?? false;
+
+    return isQueryOrFiltersSet || isClassificationSelected;
+  };
+
   const refinePanelControls: RefinePanelControl[] = [
+    {
+      idSuffix: "DisplayModeSelector",
+      title: displayModeSelectorTitle,
+      component: (
+        <DisplayModeSelector
+          onChange={handleDisplayModeChanged}
+          value={searchPageOptions.displayMode}
+        />
+      ),
+      disabled: false,
+      alwaysVisible: true,
+    },
     {
       idSuffix: "CollectionSelector",
       title: collectionSelectorTitle,
@@ -452,7 +668,22 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         />
       ),
       // Before Search settings are retrieved, do not show.
-      disabled: searchSettings?.searchingDisableDateModifiedFilter ?? true,
+      disabled: searchSettings.core?.searchingDisableDateModifiedFilter ?? true,
+    },
+    {
+      idSuffix: "MIMETypeSelector",
+      title: searchStrings.mimeTypeFilterSelector.title,
+      component: (
+        <MimeTypeFilterSelector
+          value={searchPageOptions.mimeTypeFilters}
+          onChange={handleMimeTypeFilterChange}
+          filters={searchSettings.mimeTypeFilters}
+        />
+      ),
+      disabled:
+        searchPageOptions.displayMode !== "list" ||
+        searchSettings.mimeTypeFilters.length === 0 ||
+        !!searchPageOptions.externalMimeTypes,
     },
     {
       idSuffix: "OwnerSelector",
@@ -464,7 +695,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           value={searchPageOptions.owner}
         />
       ),
-      disabled: searchSettings?.searchingDisableOwnerFilter ?? true,
+      disabled: searchSettings.core?.searchingDisableOwnerFilter ?? true,
     },
     {
       idSuffix: "StatusSelector",
@@ -475,7 +706,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           value={searchPageOptions.status}
         />
       ),
-      disabled: !searchSettings?.searchingShowNonLiveCheckbox ?? true,
+      disabled: !searchSettings.core?.searchingShowNonLiveCheckbox ?? true,
     },
     {
       idSuffix: "SearchAttachmentsSelector",
@@ -490,15 +721,89 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     },
   ];
 
+  const renderSidePanel = () => {
+    const getClassifications = (): Classification[] => {
+      const orEmpty = (c?: Classification[]) => c ?? [];
+
+      switch (state.status) {
+        case "success":
+          return orEmpty(state.classifications);
+        case "searching":
+          return orEmpty(state.previousClassifications);
+      }
+
+      return [];
+    };
+
+    return (
+      <SidePanel
+        refinePanelProps={{
+          controls: refinePanelControls,
+          onChangeExpansion: handleCollapsibleFilterClick,
+          panelExpanded: filterExpansion,
+          showFilterIcon: areCollapsibleFiltersSet(),
+          onClose: () => setShowRefinePanel(false),
+        }}
+        classificationsPanelProps={{
+          classifications: getClassifications(),
+          onSelectedCategoriesChange: handleSelectedCategoriesChange,
+          selectedCategories: searchPageOptions.selectedCategories,
+        }}
+      />
+    );
+  };
+
+  const searchResult = (): SearchPageSearchResult => {
+    const defaultResult: SearchPageSearchResult = {
+      from: "item-search",
+      content: defaultPagedSearchResult,
+    };
+    const orDefault = (r?: SearchPageSearchResult) => r ?? defaultResult;
+
+    switch (state.status) {
+      case "success":
+        return orDefault(state.result);
+      case "searching":
+        return orDefault(state.previousResult);
+    }
+
+    return defaultResult;
+  };
+
+  const renderSearchResults = (): React.ReactNode | null => {
+    const {
+      from,
+      content: { results: searchResults },
+    } = searchResult();
+
+    if (searchResults.length < 1) {
+      return null;
+    }
+
+    const isListItems = (
+      items: unknown
+    ): items is OEQ.Search.SearchResultItem[] => from === "item-search";
+
+    const isGalleryItems = (
+      items: unknown
+    ): items is GallerySearchResultItem[] => from === "gallery-search";
+
+    if (isListItems(searchResults)) {
+      return mapSearchResultItems(searchResults, handleError, highlights);
+    } else if (isGalleryItems(searchResults)) {
+      return <GallerySearchResult items={searchResults} />;
+    }
+
+    throw new TypeError("Unexpected type for searchResults");
+  };
+
   const {
-    available: totalCount,
-    highlight: highlights,
-    results: searchResults,
-  } = pagedSearchResult;
+    content: { available: totalCount, highlight: highlights },
+  } = searchResult();
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item xs={9}>
+        <Grid item sm={12} md={8}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <SearchBar
@@ -506,12 +811,15 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 rawMode={searchPageOptions.rawMode}
                 onQueryChange={handleQueryChanged}
                 onRawModeChange={handleRawModeChanged}
-                doSearch={search}
+                doSearch={() => search(searchPageOptions)}
               />
             </Grid>
             <Grid item xs={12}>
               <SearchResultList
-                showSpinner={showSpinner}
+                showSpinner={
+                  state.status === "initialising" ||
+                  state.status === "searching"
+                }
                 paginationProps={{
                   count: totalCount,
                   currentPage: searchPageOptions.currentPage,
@@ -523,51 +831,49 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                   value: searchPageOptions.sortOrder,
                   onChange: handleSortOrderChanged,
                 }}
+                refineSearchProps={{
+                  showRefinePanel: () => setShowRefinePanel(true),
+                  isCriteriaSet: isCriteriaSet(),
+                }}
                 onClearSearchOptions={handleClearSearchOptions}
                 onCopySearchLink={handleCopySearch}
+                onSaveSearch={() => setShowFavouriteSearchDialog(true)}
               >
-                {searchResults.length > 0 &&
-                  mapSearchResultItems(searchResults, handleError, highlights)}
+                {renderSearchResults()}
               </SearchResultList>
             </Grid>
           </Grid>
         </Grid>
-
-        <Grid item xs={3}>
-          <Grid container direction="column" spacing={2}>
-            <Grid item>
-              <RefineSearchPanel
-                controls={refinePanelControls}
-                onChangeExpansion={handleCollapsibleFilterClick}
-                panelExpanded={filterExpansion}
-                showFilterIcon={areCollapsibleFiltersSet()}
-              />
-            </Grid>
-            {classifications.length > 0 &&
-              classifications.some((c) => c.categories.length > 0) && (
-                <Grid item>
-                  <Card>
-                    <CardContent>
-                      <Typography variant="h5">
-                        {languageStrings.searchpage.categorySelector.title}
-                      </Typography>
-                      <CategorySelector
-                        classifications={classifications}
-                        onSelectedCategoriesChange={
-                          handleSelectedCategoriesChange
-                        }
-                        selectedCategories={
-                          searchPageOptions.selectedCategories
-                        }
-                      />
-                    </CardContent>
-                  </Card>
-                </Grid>
-              )}
+        <Hidden smDown>
+          <Grid item md={4}>
+            {renderSidePanel()}
           </Grid>
-        </Grid>
+        </Hidden>
       </Grid>
-      {copySearchInfoSnackbar}
+      <MessageInfo
+        open={!!snackBarMessage}
+        onClose={() => setSnackBarMessage("")}
+        title={snackBarMessage}
+        variant="success"
+      />
+      <Hidden mdUp>
+        <Drawer
+          open={showRefinePanel}
+          anchor="right"
+          onClose={() => setShowRefinePanel(false)}
+          PaperProps={{ style: { width: "50%" } }}
+        >
+          {renderSidePanel()}
+        </Drawer>
+      </Hidden>
+
+      {showFavouriteSearchDialog && (
+        <FavouriteSearchDialog
+          open={showFavouriteSearchDialog}
+          closeDialog={() => setShowFavouriteSearchDialog(false)}
+          onConfirm={handleSaveFavouriteSearch}
+        />
+      )}
     </>
   );
 };

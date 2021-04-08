@@ -15,31 +15,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-exports.postFile_ = function (options) {
-  return function (errback, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", options.url, true);
-    xhr.onerror = function () {
-      errback(new Error("AJAX request failed: " + options.url));
-    };
-    xhr.onload = function () {
-      callback({
-        status: xhr.status,
-        headers: [],
-        response: xhr.response,
-      });
-    };
-    xhr.upload.addEventListener("progress", options.progress);
-    xhr.responseType = "text";
-    xhr.send(options.file);
+import { Link } from "@material-ui/core";
+import * as React from "react";
 
-    return function (cancelError, cancelErrback, cancelCallback) {
-      try {
-        xhr.abort();
-      } catch (e) {
-        return cancelErrback(e);
-      }
-      return cancelCallback();
-    };
-  };
-};
+interface UploadFileNameProps {
+  /**
+   * The file's name
+   */
+  fileName: string;
+  /**
+   * The link to preview the file
+   */
+  link?: string;
+  /**
+   * `true` if the entry should be indented
+   */
+  indented: boolean;
+}
+
+/**
+ * Display a file name in plain text or as a link, depending on whether the link URL is provided or not.
+ * Indentation is achieved by reusing oEQ existing CSS styles.
+ */
+export const UploadFileName = ({
+  fileName,
+  link,
+  indented,
+}: UploadFileNameProps) => (
+  <div className={indented ? "indent" : ""}>
+    {link ? (
+      <Link href={link} target="_blank" rel="noopener noreferrer">
+        {fileName}
+      </Link>
+    ) : (
+      <div>{fileName}</div>
+    )}
+  </div>
+);

@@ -23,6 +23,7 @@ import com.tle.web.api.search.interfaces.beans.FacetSearchBean;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import java.util.List;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -38,7 +39,7 @@ public interface SearchResource {
   @Path("/facet")
   @ApiOperation(value = "Perform a facet search")
   // @formatter:off
-  public FacetSearchBean searchFacets(
+  FacetSearchBean searchFacets(
       @ApiParam(value = "Comma seperated list of schema nodes to facet over", required = true)
           @QueryParam("nodes")
           CsvList nodes,
@@ -80,6 +81,10 @@ public interface SearchResource {
               defaultValue = "false",
               required = false)
           @QueryParam("showall")
-          String showall);
+          String showall,
+      @ApiParam(
+              "A list of MIME types to filter items based on their attachments matching the specified types.")
+          @QueryParam("mimeTypes")
+          List<String> mimeTypes);
   // @formatter:on
 }

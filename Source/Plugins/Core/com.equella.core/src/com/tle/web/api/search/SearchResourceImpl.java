@@ -202,7 +202,8 @@ public class SearchResourceImpl implements EquellaSearchResource {
       String modifiedAfter,
       String modifiedBefore,
       String owner,
-      String showall) {
+      String showall,
+      List<String> mimeTypes) {
     final String whereClause = where;
     final boolean onlyLive = !(showall != null && Utils.parseLooseBool(showall, false));
     final Collection<String> cols = (collections == null ? null : CsvList.asList(collections));
@@ -223,6 +224,7 @@ public class SearchResourceImpl implements EquellaSearchResource {
             null,
             owner,
             new DefaultSearch());
+    search.setMimeTypes(mimeTypes);
 
     final MatrixResults matrixResults =
         freetextService.matrixSearch(search, nodeList, true, width, true);

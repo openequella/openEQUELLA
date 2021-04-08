@@ -16,58 +16,63 @@
  * limitations under the License.
  */
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Badge,
   Divider,
   Grid,
+  Hidden,
   IconButton,
   List,
   ListItem,
-  ListItemIcon,
-  ListItemSecondaryAction,
   ListItemText,
   Theme,
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import Tooltip from "@material-ui/core/Tooltip";
-import AttachFile from "@material-ui/icons/AttachFile";
-import ExpandMore from "@material-ui/icons/ExpandMore";
-import InsertDriveFile from "@material-ui/icons/InsertDriveFile";
 import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
-import Search from "@material-ui/icons/Search";
+import FavoriteIcon from "@material-ui/icons/Favorite";
+import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
-import { SyntheticEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ReactHtmlParser from "react-html-parser";
 import { HashLink } from "react-router-hash-link";
 import { sprintf } from "sprintf-js";
 import { Date as DateDisplay } from "../../components/Date";
-import ItemAttachmentLink from "../../components/ItemAttachmentLink";
 import { OeqLink } from "../../components/OeqLink";
 import OEQThumb from "../../components/OEQThumb";
 import { StarRating } from "../../components/StarRating";
+import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { routes } from "../../mainui/routes";
-import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
+import {
+  addFavouriteItem,
+  deleteFavouriteItem,
+} from "../../modules/FavouriteModule";
 import {
   buildSelectionSessionItemSummaryLink,
-  selectResource,
+  getSearchPageItemClass,
+  isSelectionSessionInStructured,
   isSelectionSessionOpen,
   isSelectSummaryButtonDisabled,
   prepareDraggable,
-  getSearchPageItemClass,
-  getSearchPageAttachmentClass,
-  isSelectionSessionInStructured,
+  selectResource,
 } from "../../modules/LegacySelectionSessionModule";
+import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
+import { FavouriteItemDialog } from "./FavouriteItemDialog";
+import type {
+  FavDialogConfirmToAdd,
+  FavDialogConfirmToDelete,
+} from "./FavouriteItemDialog";
 import { ResourceSelector } from "./ResourceSelector";
-import {
-  determineAttachmentViewUrl,
-  determineViewer,
-} from "../../modules/ViewerModule";
+import { SearchResultAttachmentsList } from "./SearchResultAttachmentsList";
+
+const {
+  searchResult: searchResultStrings,
+  comments: commentStrings,
+  starRatings: ratingStrings,
+  selectResource: selectResourceStrings,
+  favouriteItem: favouriteItemStrings,
+} = languageStrings.searchpage;
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -85,24 +90,10 @@ const useStyles = makeStyles((theme: Theme) => {
       flexDirection: "row",
       display: "flex",
       paddingTop: theme.spacing(1),
+      alignItems: "center",
     },
     status: {
       textTransform: "capitalize",
-    },
-    nested: {
-      paddingLeft: theme.spacing(4),
-    },
-    attachmentExpander: {
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(2),
-    },
-    attachmentBadge: {
-      backgroundColor: theme.palette.background.paper,
-      color: theme.palette.secondary.main,
-      borderRadius: "50%",
-    },
-    attachmentListItem: {
-      width: "100%",
     },
     highlight: {
       color: theme.palette.secondary.main,
@@ -138,7 +129,9 @@ export default function SearchResult({
   getViewerDetails = getMimeTypeDefaultViewerDetails,
   handleError,
   highlights,
-  item: {
+  item,
+}: SearchResultProps) {
+  const {
     name,
     version,
     uuid,
@@ -148,102 +141,58 @@ export default function SearchResult({
     status,
     displayOptions,
     attachments = [],
-    keywordFoundInAttachment,
     commentCount = 0,
     starRatings,
-  },
-}: SearchResultProps) {
-  interface AttachmentAndViewerDetails {
-    attachment: OEQ.Search.Attachment;
-    viewerDetails?: OEQ.MimeType.MimeTypeViewerDetail;
-  }
+    bookmarkId: bookmarkDefaultId,
+    isLatestVersion,
+  } = item;
   const itemKey = `${uuid}/${version}`;
   const classes = useStyles();
   const inSelectionSession: boolean = isSelectionSessionOpen();
   const inStructured = isSelectionSessionInStructured();
 
-  const [attachExpanded, setAttachExpanded] = useState(
-    (inSelectionSession
-      ? displayOptions?.integrationOpen
-      : displayOptions?.standardOpen) ?? false
-  );
   const [
-    attachmentsWithViewerDetails,
-    setAttachmentsWithViewerDetails,
-  ] = useState<AttachmentAndViewerDetails[]>([]);
-
-  const {
-    searchResult: searchResultStrings,
-    comments: commentStrings,
-    starRatings: ratingStrings,
-    selectResource: selectResourceStrings,
-  } = languageStrings.searchpage;
-
-  // Responsible for determining the MIME type viewer for the provided attachments
-  useEffect(() => {
-    let mounted = true;
-
-    if (!attachments.length) {
-      // If there are no attachments, skip this effect
-      return;
-    }
-
-    const transform = async (
-      a: OEQ.Search.Attachment
-    ): Promise<AttachmentAndViewerDetails> => {
-      let viewerDetails: OEQ.MimeType.MimeTypeViewerDetail | undefined;
-      try {
-        viewerDetails = a.mimeType
-          ? await getViewerDetails(a.mimeType)
-          : undefined;
-      } catch (error) {
-        handleError({
-          ...error,
-          message: `${searchResultStrings.errors.getAttachmentViewerDetailsFailure}: ${error.message}`,
-        });
-      }
-
-      return {
-        attachment: a,
-        viewerDetails: viewerDetails,
-      };
-    };
-
-    (async () => {
-      const viewerDetails = await Promise.all(
-        attachments.map<Promise<AttachmentAndViewerDetails>>(transform)
-      );
-      if (mounted) {
-        setAttachmentsWithViewerDetails(viewerDetails);
-      }
-    })();
-
-    return () => {
-      // Short circuit if this component is unmounted before all its comms are done.
-      mounted = false;
-    };
-  }, [attachments, getViewerDetails]);
+    showFavouriteItemDialog,
+    setShowFavouriteItemDialog,
+  ] = useState<boolean>(false);
+  const [bookmarkId, setBookmarkId] = useState<number | undefined>(
+    bookmarkDefaultId
+  );
 
   // In Selection Session, make each attachment draggable.
   useEffect(() => {
     if (inStructured) {
-      attachmentsWithViewerDetails.forEach(({ attachment }) => {
+      attachments.forEach((attachment) => {
         prepareDraggable(attachment.id, false);
       });
     }
-  }, [attachmentsWithViewerDetails]);
-
-  const handleAttachmentPanelClick = (event: SyntheticEvent) => {
-    /** prevents the SearchResult onClick from firing when attachment panel is clicked */
-    event.stopPropagation();
-    setAttachExpanded(!attachExpanded);
-  };
+  }, [attachments, inStructured]);
 
   const handleSelectResource = (
     itemKey: string,
     attachments: string[] = []
   ) => {
     selectResource(itemKey, attachments).catch((error) => handleError(error));
+  };
+
+  const handleAddFavouriteItem: FavDialogConfirmToAdd = {
+    action: "add",
+    onConfirm: (tags: string[], isAlwaysLatest: boolean) =>
+      addFavouriteItem(`${uuid}/${version}`, tags, isAlwaysLatest)
+        .then(({ bookmarkID }) => setBookmarkId(bookmarkID))
+        .catch(handleError),
+  };
+
+  const handleDeleteFavouriteItem: FavDialogConfirmToDelete = {
+    action: "delete",
+    onConfirm: () => {
+      if (!bookmarkId) {
+        throw new Error("Bookmark ID can't be falsy.");
+      }
+      return deleteFavouriteItem(bookmarkId)
+        .then(() => setBookmarkId(undefined))
+        .catch(handleError);
+    },
   };
 
   const generateItemMetadata = () => {
@@ -268,8 +217,21 @@ export default function SearchResult({
           <DateDisplay displayRelative date={new Date(modifiedDate)} />
         </Typography>
 
+        {metaDataDivider}
+        <TooltipIconButton
+          title={
+            bookmarkId
+              ? favouriteItemStrings.title.remove
+              : favouriteItemStrings.title.add
+          }
+          onClick={() => setShowFavouriteItemDialog(true)}
+          size="small"
+        >
+          {bookmarkId ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+        </TooltipIconButton>
+
         {commentCount > 0 && (
-          <>
+          <Hidden smDown>
             {metaDataDivider}
             <Typography component="span">
               <HashLink
@@ -279,16 +241,16 @@ export default function SearchResult({
                 {formatSize(commentCount, commentStrings)}
               </HashLink>
             </Typography>
-          </>
+          </Hidden>
         )}
 
         {starRatings >= 0 && (
-          <>
+          <Hidden smDown>
             {metaDataDivider}
             <div aria-label={sprintf(ratingStrings.label, starRatings)}>
               <StarRating numberOfStars={5} rating={starRatings} />
             </div>
-          </>
+          </Hidden>
         )}
       </div>
     );
@@ -322,136 +284,6 @@ export default function SearchResult({
       );
     }
   );
-
-  const generateAttachmentList = () => {
-    const attachmentsList = attachmentsWithViewerDetails.map(
-      ({
-        attachment: {
-          attachmentType,
-          description,
-          id,
-          links: { view: defaultViewUrl },
-          mimeType,
-          filePath,
-        },
-        viewerDetails,
-      }: AttachmentAndViewerDetails) => {
-        const viewUrl = determineAttachmentViewUrl(
-          uuid,
-          version,
-          attachmentType,
-          defaultViewUrl,
-          filePath
-        );
-        return (
-          <ListItem
-            key={id}
-            id={id}
-            button
-            className={`${classes.nested} ${getSearchPageAttachmentClass()}`} // Give a class so each attachment can be dropped to the course list.
-            data-itemuuid={uuid} // These 'data-xx' attributes are used in the 'dropCallBack' of 'courselist.js'.
-            data-itemversion={version}
-            data-attachmentuuid={id}
-          >
-            <ListItemIcon>
-              {inStructured ? <DragIndicatorIcon /> : <InsertDriveFile />}
-            </ListItemIcon>
-            <ItemAttachmentLink
-              description={description}
-              mimeType={mimeType}
-              viewerDetails={determineViewer(
-                attachmentType,
-                viewUrl,
-                mimeType,
-                viewerDetails?.viewerId
-              )}
-            >
-              <ListItemText color="primary" primary={description} />
-            </ItemAttachmentLink>
-            {inSelectionSession && (
-              <ListItemSecondaryAction>
-                <ResourceSelector
-                  labelText={selectResourceStrings.attachment}
-                  isStopPropagation
-                  onClick={() => {
-                    handleSelectResource(itemKey, [id]);
-                  }}
-                />
-              </ListItemSecondaryAction>
-            )}
-          </ListItem>
-        );
-      }
-    );
-
-    const accordionText = (
-      <Typography>{searchResultStrings.attachments}</Typography>
-    );
-
-    const accordionSummaryContent = inSelectionSession ? (
-      <Grid container alignItems="center">
-        <Grid item>{accordionText}</Grid>
-        <Grid>
-          <ResourceSelector
-            labelText={selectResourceStrings.allAttachments}
-            isStopPropagation
-            onClick={() => {
-              const attachments = attachmentsWithViewerDetails.map(
-                ({ attachment }) => attachment.id
-              );
-              handleSelectResource(itemKey, attachments);
-            }}
-          />
-        </Grid>
-      </Grid>
-    ) : (
-      accordionText
-    );
-
-    const attachFileBadge = (includeIndicator: boolean) => (
-      <Badge
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        overlap="circle"
-        badgeContent={
-          includeIndicator ? (
-            <Tooltip
-              title={searchResultStrings.keywordFoundInAttachment}
-              aria-label={searchResultStrings.keywordFoundInAttachment}
-            >
-              <Search fontSize="small" className={classes.attachmentBadge} />
-            </Tooltip>
-          ) : undefined
-        }
-      >
-        <AttachFile />
-      </Badge>
-    );
-
-    if (attachmentsList.length > 0)
-      return (
-        <Accordion
-          className={classes.attachmentExpander}
-          expanded={attachExpanded}
-          onClick={(event) => handleAttachmentPanelClick(event)}
-        >
-          <AccordionSummary expandIcon={<ExpandMore />}>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item>{attachFileBadge(keywordFoundInAttachment)}</Grid>
-              <Grid item>{accordionSummaryContent}</Grid>
-            </Grid>
-          </AccordionSummary>
-          <AccordionDetails>
-            <List disablePadding className={classes.attachmentListItem}>
-              {attachmentsList}
-            </List>
-          </AccordionDetails>
-        </Accordion>
-      );
-    return null;
-  };
 
   const highlightField = (fieldValue: string) =>
     ReactHtmlParser(highlight(fieldValue, highlights, classes.highlight));
@@ -508,26 +340,47 @@ export default function SearchResult({
       : itemLink();
 
   return (
-    <ListItem alignItems="flex-start" divider>
-      <OEQThumb
-        attachment={attachments[0]}
-        showPlaceholder={displayOptions?.disableThumbnail ?? false}
-      />
-      <ListItemText
-        primary={itemPrimaryContent}
-        secondary={
-          <>
-            <Typography className={classes.itemDescription}>
-              {highlightField(description ?? "")}
-            </Typography>
-            <List disablePadding>{customDisplayMetadata}</List>
-            {generateAttachmentList()}
-            {generateItemMetadata()}
-          </>
-        }
-        primaryTypographyProps={{ color: "primary", variant: "h6" }}
-        secondaryTypographyProps={{ component: "section" }}
-      />
-    </ListItem>
+    <>
+      <ListItem
+        alignItems="flex-start"
+        divider
+        aria-label={searchResultStrings.ariaLabel}
+      >
+        <OEQThumb
+          attachment={attachments[0]}
+          showPlaceholder={displayOptions?.disableThumbnail ?? false}
+        />
+        <ListItemText
+          primary={itemPrimaryContent}
+          secondary={
+            <>
+              <Typography className={classes.itemDescription}>
+                {highlightField(description ?? "")}
+              </Typography>
+              <List disablePadding>{customDisplayMetadata}</List>
+              <SearchResultAttachmentsList
+                item={item}
+                handleError={handleError}
+                getViewerDetails={getViewerDetails}
+              />
+              {generateItemMetadata()}
+            </>
+          }
+          primaryTypographyProps={{ color: "primary", variant: "h6" }}
+          secondaryTypographyProps={{ component: "section" }}
+        />
+      </ListItem>
+      {showFavouriteItemDialog && (
+        <FavouriteItemDialog
+          isAddedToFavourite={bookmarkId !== undefined}
+          isLatestVersion={isLatestVersion}
+          onConfirmProps={
+            bookmarkId ? handleDeleteFavouriteItem : handleAddFavouriteItem
+          }
+          open={showFavouriteItemDialog}
+          closeDialog={() => setShowFavouriteItemDialog(false)}
+        />
+      )}
+    </>
   );
 }

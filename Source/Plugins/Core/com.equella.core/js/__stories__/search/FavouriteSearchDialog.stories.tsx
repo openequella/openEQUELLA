@@ -15,12 +15,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-exports.runProgress = function (p) {
-  return function (el) {
-    return function () {
-      if (el) {
-        $(el).progression({ Current: p });
-      }
-    };
-  };
+import * as React from "react";
+import type { Meta, Story } from "@storybook/react";
+import {
+  FavouriteSearchDialog,
+  FavouriteSearchDialogProps,
+} from "../../tsrc/search/components/FavouriteSearchDialog";
+
+export default {
+  title: "Search/FavouriteSearchDialog",
+  component: FavouriteSearchDialog,
+  argTypes: {
+    closeDialog: { action: "onClose" },
+    onConfirm: {
+      action: "onConfirm",
+    },
+  },
+} as Meta<FavouriteSearchDialogProps>;
+
+export const Standard: Story<FavouriteSearchDialogProps> = (args) => (
+  <FavouriteSearchDialog {...args} />
+);
+
+Standard.args = {
+  open: true,
 };
