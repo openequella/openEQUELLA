@@ -15,25 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AppConfig } from "../AppConfig";
 
-/** `attachmentType` for file attachments. */
-export const ATYPE_FILE = "file";
-/** `attachmentType` for link/URL attachments. */
-export const ATYPE_LINK = "link";
-/** `attachmentType` for attachments linking to YouTube videos. */
-export const ATYPE_YOUTUBE = "custom/youtube";
+import {
+  buildViewUrl,
+  extractVideoId,
+} from "../../../tsrc/modules/YouTubeModule";
 
-/**
- * Build a direct URL to a file attachment.
- *
- * @param itemUuid The attachment item's UUID
- * @param itemVersion The attachment item's version
- * @param fileAttachmentPath The `filePath` provided by the server
- */
-export const buildFileAttachmentUrl = (
-  itemUuid: string,
-  itemVersion: number,
-  fileAttachmentPath: string
-) =>
-  `${AppConfig.baseUrl}file/${itemUuid}/${itemVersion}/${fileAttachmentPath}`;
+describe("extractVideoId()", () => {
+  it("returns the YouTube video ID from a view URL", () => {
+    const testVideoId = "FakeVideoId";
+    expect(extractVideoId(buildViewUrl(testVideoId))).toEqual(testVideoId);
+  });
+});

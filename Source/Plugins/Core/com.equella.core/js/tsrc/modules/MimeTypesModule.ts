@@ -19,6 +19,14 @@ import * as OEQ from "@openequella/rest-api-client";
 import { memoize } from "lodash";
 import { API_BASE_URL } from "../AppConfig";
 
+export const OEQ_MIMETYPE_TYPE = "openequella";
+/**
+ * A collection of custom internal MIME types for openEQUELLA
+ */
+export const CustomMimeTypes = {
+  YOUTUBE: `${OEQ_MIMETYPE_TYPE}/youtube`,
+};
+
 export const getMIMETypesFromServer = (): Promise<
   OEQ.MimeType.MimeTypeEntry[]
 > => OEQ.MimeType.listMimeTypes(API_BASE_URL);

@@ -17,9 +17,12 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
-import * as E from "fp-ts/lib/Either";
 import * as O from "fp-ts/Option";
-import { basicImageSearchResponse } from "../../../__mocks__/GallerySearchModule.mock";
+import {
+  basicImageSearchResponse,
+  basicVideoSearchResponse,
+} from "../../../__mocks__/GallerySearchModule.mock";
+import { ATYPE_LINK } from "../../../tsrc/modules/AttachmentsModule";
 import {
   AttachmentFilter,
   buildGalleryEntry,
@@ -27,11 +30,14 @@ import {
   GalleryEntry,
   GallerySearchResultItem,
   imageGallerySearch,
+  videoGallerySearch,
 } from "../../../tsrc/modules/GallerySearchModule";
+import { CustomMimeTypes } from "../../../tsrc/modules/MimeTypesModule";
 import {
   defaultSearchOptions,
   searchItems,
 } from "../../../tsrc/modules/SearchModule";
+import { expectRight } from "../FpTsMatchers";
 
 jest.mock("@openequella/rest-api-client");
 jest.mock("../../../tsrc/modules/SearchModule");
@@ -43,33 +49,13 @@ const mockSearchItems = searchItems as jest.Mock<
   Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>>
 >;
 
-/**
- * An expect matcher for Jest to confirm the response is a E.Left - typically to confirm an
- * error result.
- *
- * @param either The E.Either to validate
- */
-const expectLeft = (either: E.Either<unknown, unknown>): void =>
-  expect(E.isLeft(either)).toBeTruthy();
-
-/**
- * An expect matcher for Jest to confirm the response is an E.Right - typically to confirm an
- * success result. The value is also returned, albeit (unfortunately) unioned with an undefined. It
- * is considered safe to access the value via a bang - .e.g `const value = expectRight(either)!;`
- *
- * @param either The E.Either to validate
- * @return The value contained in the E.Right
- */
-const expectRight = <V>(either: E.Either<unknown, V>): V | undefined => {
-  const value = E.isRight(either) ? either.right : undefined;
-  expect(value).toBeTruthy();
-  return value;
-};
-
 describe("buildGalleryEntry", () => {
   const itemUuid = "1eeb3df5-3809-4655-925b-24d994e42ff6";
   const itemVersion = 1;
-  const attachment: OEQ.Search.Attachment = {
+  // Although this example is specifically an image, the data structure is the same for local (i.e.
+  // not YouTube etc) videos - just different `mimeType`s. And really, it's then the same for any
+  // `file` `attachmentType`.
+  const imageAttachment: OEQ.Search.Attachment = {
     attachmentType: "file",
     id: "7186d40d-6159-4d07-8eee-4f7ee0cfdc4e",
     description: "image.png",
@@ -84,36 +70,63 @@ describe("buildGalleryEntry", () => {
     },
     filePath: "image.png",
   };
+  const youtubeAttachment: OEQ.Search.Attachment = {
+    attachmentType: "custom/youtube",
+    id: "b18ed9ab-1ddb-4961-8935-22bbf1095b24",
+    description: "The Odyssey by Homer | Summary & Analysis",
+    preview: false,
+    links: {
+      view:
+        "https://example.com/inst/items/234b9bd6-b603-4e26-8214-b79b8aab0ed9/1/?attachment.uuid=b18ed9ab-1ddb-4961-8935-22bbf1095b24",
+      thumbnail:
+        "https://example.com/inst/thumbs/234b9bd6-b603-4e26-8214-b79b8aab0ed9/1/b18ed9ab-1ddb-4961-8935-22bbf1095b24",
+      externalId: "z7i9AmmZE2o",
+    },
+  };
 
-  it("builds a gallery entry from a valid Attachment", () => {
-    const galleryEntry = buildGalleryEntry(itemUuid, itemVersion, attachment);
-    expectRight(galleryEntry);
+  it.each([
+    ["Image", imageAttachment],
+    ["YouTube", youtubeAttachment],
+  ])(
+    "builds a gallery entry from a valid %s `Attachment`",
+    (_: string, attachment: OEQ.Search.Attachment) => {
+      const galleryEntry = buildGalleryEntry(itemUuid, itemVersion, attachment);
+      expectRight(galleryEntry);
+    }
+  );
+
+  it("fails if Attachment is an unsupported attachment type", () => {
+    const galleryEntry = buildGalleryEntry(itemUuid, itemVersion, {
+      ...imageAttachment,
+      attachmentType: ATYPE_LINK,
+    });
+    expect(galleryEntry).toBeLeft();
   });
 
   it("fails if the Attachment has a missing MIME type", () => {
     const galleryEntry = buildGalleryEntry(itemUuid, itemVersion, {
-      ...attachment,
+      ...imageAttachment,
       mimeType: undefined,
     });
-    expectLeft(galleryEntry);
+    expect(galleryEntry).toBeLeft();
   });
 
   it("fails if the Attachment has a missing attachmentFilePath", () => {
     const galleryEntry = buildGalleryEntry(itemUuid, itemVersion, {
-      ...attachment,
+      ...imageAttachment,
       filePath: undefined,
     });
-    expectLeft(galleryEntry);
+    expect(galleryEntry).toBeLeft();
   });
 
   it.each([false, undefined])(
     "fails if the Attachment has a missing a thumbnail (value: %s)",
     (hasGeneratedThumb) => {
       const galleryEntry = buildGalleryEntry(itemUuid, itemVersion, {
-        ...attachment,
+        ...imageAttachment,
         hasGeneratedThumb,
       });
-      expectLeft(galleryEntry);
+      expect(galleryEntry).toBeLeft();
     }
   );
 });
@@ -204,7 +217,7 @@ describe("buildGallerySearchResultItem", () => {
       searchItem
     );
     const { mainEntry, additionalEntries } = expectRight(result)!;
-    expect(mainEntry.imagePathFull).toBe(
+    expect(mainEntry.directUrl).toBe(
       // Based on the fact there is no base URL set in Jest tests
       "file/535e4e9b-4836-4011-8857-eb29260bf155/1/content.zip/images/ima_3166d0f.jpeg"
     );
@@ -225,7 +238,7 @@ describe("buildGallerySearchResultItem", () => {
       ...searchItem,
       attachments: undefined,
     });
-    expectLeft(result);
+    expect(result).toBeLeft();
   });
 
   // It would've been good to merge this with the above via an `it.each`, but unfortunately
@@ -235,7 +248,7 @@ describe("buildGallerySearchResultItem", () => {
       ...searchItem,
       attachments: [],
     });
-    expectLeft(result);
+    expect(result).toBeLeft();
   });
 
   it("will log and prune any problematic 'additional' attachments", () => {
@@ -250,11 +263,33 @@ describe("buildGallerySearchResultItem", () => {
     const { additionalEntries } = expectRight(result)!;
     expect(consoleSpy).toHaveBeenCalledTimes(1);
     expect(additionalEntries).toHaveLength(1);
-    expect(
-      additionalEntries[0].imagePathFull.endsWith(a3.filePath!)
-    ).toBeTruthy();
+    expect(additionalEntries[0].directUrl.endsWith(a3.filePath!)).toBeTruthy();
   });
 });
+
+const expectValidGalleryResult = (
+  result: OEQ.Search.SearchResult<GallerySearchResultItem>,
+  expectLength: number,
+  mimeTypesValidator: (s: string) => boolean
+) => {
+  // The below is validating a variable, not the length of an array
+  // eslint-disable-next-line jest/prefer-to-have-length
+  expect(result.length).toEqual(expectLength);
+  expect(result.results).toHaveLength(result.length);
+
+  const mimeTypes = result.results
+    .reduce(
+      (acc: GalleryEntry[], cur: GallerySearchResultItem) => [
+        ...acc,
+        cur.mainEntry,
+        ...cur.additionalEntries,
+      ],
+      [] as GalleryEntry[]
+    )
+    .map((entry: GalleryEntry) => entry.mimeType);
+  expect(mimeTypes.length).toBeGreaterThan(1);
+  expect(mimeTypes.every(mimeTypesValidator)).toBeTruthy();
+};
 
 describe("imageGallerySearch", () => {
   beforeEach(() => mockListMimeTypes.mockResolvedValue([]));
@@ -263,24 +298,8 @@ describe("imageGallerySearch", () => {
     mockSearchItems.mockResolvedValue(basicImageSearchResponse);
 
     const result = await imageGallerySearch(defaultSearchOptions);
-    // The below is validating a variable, not the length of an array
-    // eslint-disable-next-line jest/prefer-to-have-length
-    expect(result.length).toEqual(basicImageSearchResponse.length);
-    expect(result.results).toHaveLength(result.length);
-
-    const mimeTypes = result.results
-      .reduce(
-        (acc: GalleryEntry[], cur: GallerySearchResultItem) => [
-          ...acc,
-          cur.mainEntry,
-          ...cur.additionalEntries,
-        ],
-        [] as GalleryEntry[]
-      )
-      .map((entry: GalleryEntry) => entry.mimeType);
-    expect(mimeTypes.length).toBeGreaterThan(1);
-    expect(mimeTypes.filter((s) => s.startsWith("image"))).toHaveLength(
-      mimeTypes.length
+    expectValidGalleryResult(result, basicImageSearchResponse.length, (s) =>
+      s.startsWith("image")
     );
   });
 
@@ -295,5 +314,18 @@ describe("imageGallerySearch", () => {
     expect(consoleSpy).toHaveBeenCalledTimes(1);
     expect(result.results).toHaveLength(2);
     expect(result).toHaveLength(2);
+  });
+});
+
+describe("videoGallerySearch", () => {
+  it("returns a list of GallerySearchItems containing only videos", async () => {
+    mockSearchItems.mockResolvedValue(basicVideoSearchResponse);
+
+    const result = await videoGallerySearch(defaultSearchOptions);
+    expectValidGalleryResult(
+      result,
+      basicVideoSearchResponse.length,
+      (s) => s.startsWith("video") || s === CustomMimeTypes.YOUTUBE
+    );
   });
 });

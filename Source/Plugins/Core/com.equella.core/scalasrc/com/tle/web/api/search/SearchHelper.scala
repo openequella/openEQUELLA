@@ -39,6 +39,7 @@ import com.tle.web.api.item.equella.interfaces.beans.{
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
 import com.tle.web.api.search.model.{SearchParam, SearchResultAttachment, SearchResultItem}
 import com.tle.web.controls.resource.ResourceAttachmentBean
+import com.tle.web.controls.youtube.YoutubeAttachmentBean
 
 import java.time.format.DateTimeParseException
 import java.time.{LocalDate, LocalDateTime, LocalTime, ZoneId}
@@ -111,6 +112,10 @@ object SearchHelper {
       case None    => whereQuery
     }
     search.setFreeTextQuery(freeTextQuery)
+
+    handleMusts(params.musts) foreach {
+      case (field, value) => search.addMust(field, value.asJavaCollection)
+    }
 
     search
   }
@@ -188,6 +193,36 @@ object SearchHelper {
   }
 
   /**
+    * Takes a list of colon delimited strings (i.e. key:value), and splits them to build up a map.
+    * Entries in the map can have multiple values, so each additional `key:value` will simply append
+    * to the existing entry(key).
+    *
+    * @param musts a list of colon delimited strings to be split
+    * @return the processed strings, ready for calls into `DefaultSearch.addMusts` or throws if there
+    *         was an issue processing the strings
+    */
+  def handleMusts(musts: Array[String]): Map[String, List[String]] = {
+    val delimiter         = ':'
+    val oneOrMoreNonDelim = s"([^$delimiter]+)"
+    val mustExprFormat    = s"$oneOrMoreNonDelim$delimiter$oneOrMoreNonDelim".r
+
+    def valid = (xs: Array[String]) => xs.forall(s => s.matches(mustExprFormat.regex))
+
+    if (valid(musts)) {
+      val initialEmptyMap = Map[String, List[String]]()
+      musts.foldLeft(initialEmptyMap)((result, mustExpr) => {
+        val mustExprFormat(k, v) = mustExpr
+        result.get(k) match {
+          case Some(existing) => result ++ Map(k -> (existing :+ v))
+          case None           => result ++ Map(k -> List(v))
+        }
+      })
+    } else {
+      throw new BadRequestException("Provided 'musts' expression(s) was incorrectly formatted.")
+    }
+  }
+
+  /**
     * Create a serializer for ItemBean.
     */
   def createSerializer(itemIds: List[ItemIdKey]): ItemSerializerItemBean = {
@@ -249,7 +284,7 @@ object SearchHelper {
               preview = att.isPreview,
               mimeType = getMimetypeForAttachment(att),
               hasGeneratedThumb = thumbExists(itemKey, att),
-              links = getLinksFromBean(att),
+              links = buildAttachmentLinks(att),
               filePath = getFilePathForAttachment(att)
           ))
           .toList)
@@ -306,6 +341,23 @@ object SearchHelper {
     */
   def getLinksFromBean[T <: AbstractExtendableBean](bean: T) =
     bean.get("links").asInstanceOf[java.util.Map[String, String]]
+
+  /**
+    * Build the links maps for an attachment, which can also include external links (or IDs) for
+    * custom attachments.
+    *
+    * @param attachment to build the links map for
+    * @return a map containing the standard links (view, thumbnail), plus optionally external links
+    *         if suitable for the attachment type.
+    */
+  def buildAttachmentLinks(attachment: AttachmentBean): java.util.Map[String, String] = {
+    val externalIdKey = "externalId"
+    val links         = getLinksFromBean(attachment).asScala
+    (attachment match {
+      case youtube: YoutubeAttachmentBean => links ++ Map(externalIdKey -> youtube.getVideoId)
+      case _                              => links
+    }).asJava
+  }
 
   /**
     * Find the Bookmark linking to the Item and return the Bookmark's ID.

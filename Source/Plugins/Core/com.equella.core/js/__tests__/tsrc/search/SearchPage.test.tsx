@@ -36,7 +36,10 @@ import { act } from "react-dom/test-utils";
 import { Router } from "react-router-dom";
 import { getAdvancedSearchesFromServerResult } from "../../../__mocks__/AdvancedSearchModule.mock";
 import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock";
-import { transformedBasicImageSearchResponse } from "../../../__mocks__/GallerySearchModule.mock";
+import {
+  transformedBasicImageSearchResponse,
+  transformedBasicVideoSearchResponse,
+} from "../../../__mocks__/GallerySearchModule.mock";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import { getMimeTypeFilters } from "../../../__mocks__/MimeTypeFilter.mock";
 import { getRemoteSearchesFromServerResult } from "../../../__mocks__/RemoteSearchModule.mock";
@@ -69,6 +72,7 @@ import { languageStrings } from "../../../tsrc/util/langstrings";
 import { updateMockGetBaseUrl } from "../BaseUrlHelper";
 import { queryPaginatorControls } from "../components/SearchPaginationTestHelper";
 import { updateMockGlobalCourseList } from "../CourseListHelper";
+import { getMuiButtonByText, getMuiTextField } from "../MuiQueries";
 import { selectOption } from "../MuiTestHelpers";
 import { basicRenderData, updateMockGetRenderData } from "../RenderDataHelper";
 import {
@@ -95,7 +99,14 @@ const mockListClassification = jest.spyOn(
   "listClassifications"
 );
 const mockSearch = jest.spyOn(SearchModule, "searchItems");
-const mockGallerySearch = jest.spyOn(GallerySearchModule, "imageGallerySearch");
+const mockImageGallerySearch = jest.spyOn(
+  GallerySearchModule,
+  "imageGallerySearch"
+);
+const mockVideoGallerySearch = jest.spyOn(
+  GallerySearchModule,
+  "videoGallerySearch"
+);
 const mockSearchSettings = jest.spyOn(
   SearchSettingsModule,
   "getSearchSettingsFromServer"
@@ -150,6 +161,13 @@ jest.spyOn(FavouriteModule, "addFavouriteItem").mockResolvedValue({
 });
 
 jest.spyOn(FavouriteModule, "deleteFavouriteItem").mockResolvedValue();
+
+jest.spyOn(FavouriteModule, "addFavouriteSearch").mockResolvedValue({
+  id: 123,
+  name: "test",
+  url:
+    "/page/search?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RATING%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22crab%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D",
+});
 
 const defaultSearchPageOptions: SearchPageOptions = {
   ...SearchModule.defaultSearchOptions,
@@ -887,6 +905,40 @@ describe("Add and remove favourite Item,", () => {
   );
 });
 
+describe("Add favourite search", () => {
+  it("shows FavouriteSearchDialog to add a favourite search", async () => {
+    const page = await renderSearchPage();
+    const heartIcon = getByLabelText(
+      page.container,
+      languageStrings.searchpage.favouriteSearch.title,
+      {
+        selector: "button",
+      }
+    );
+    userEvent.click(heartIcon);
+
+    const dialog = page.getByRole("dialog");
+    const searchNameInput = getMuiTextField(
+      dialog,
+      languageStrings.searchpage.favouriteSearch.text
+    );
+    userEvent.type(searchNameInput, "test");
+    const confirmButton = getMuiButtonByText(
+      dialog,
+      languageStrings.common.action.ok
+    );
+    await act(async () => {
+      await userEvent.click(confirmButton);
+    });
+
+    expect(
+      screen.getByText(
+        languageStrings.searchpage.favouriteSearch.saveSearchConfirmationText
+      )
+    ).toBeInTheDocument();
+  });
+});
+
 describe("Changing display mode", () => {
   const {
     modeGalleryImage,
@@ -940,21 +992,32 @@ describe("Changing display mode", () => {
     expect(queryListItems().length).toBeGreaterThan(0);
   });
 
-  it.each([modeGalleryImage, modeGalleryVideo])(
+  it.each([
+    [
+      modeGalleryImage,
+      mockImageGallerySearch,
+      transformedBasicImageSearchResponse,
+    ],
+    [
+      modeGalleryVideo,
+      mockVideoGallerySearch,
+      transformedBasicVideoSearchResponse,
+    ],
+  ])(
     "supports changing mode - [%s]",
-    async (mode: string) => {
+    async (mode: string, gallerySearch, mockResponse) => {
       expect(queryListItems().length).toBeGreaterThan(0);
       expect(queryGalleryItems()).toHaveLength(0);
 
       // Monitor the search function, and change the mode
-      const gallerySearchPromise = mockGallerySearch.mockResolvedValue(
-        transformedBasicImageSearchResponse
+      const gallerySearchPromise = gallerySearch.mockResolvedValue(
+        mockResponse
       );
       await changeMode(mode);
       await gallerySearchPromise;
 
       // Make sure the search has been triggered
-      expect(mockGallerySearch).toHaveBeenCalledTimes(1);
+      expect(gallerySearch).toHaveBeenCalledTimes(1);
 
       // And now check the visual change
       expect(queryGalleryItems().length).toBeGreaterThan(0);

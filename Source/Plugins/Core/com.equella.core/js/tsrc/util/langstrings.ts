@@ -373,6 +373,11 @@ export const languageStrings = {
         remove: "Remove from favourites",
       },
     },
+    favouriteSearch: {
+      saveSearchConfirmationText: "Search added to favourites",
+      text: "Please enter a name for this search",
+      title: "Add search to favourites",
+    },
     filterOwner: {
       title: "Owner",
       chip: "Owner: ",
@@ -654,9 +659,15 @@ export const languageStrings = {
   },
   lightboxComponent: {
     unsupportedContent: "Provided content is not supported",
+    viewNext: "View next attachment",
+    viewPrevious: "View previous attachment",
+    youTubeVideoMissingId: "The provided YouTube video is missing a video ID",
   },
   fileUploader: {
     noFileSelected: "No attached resources",
     failedToDelete: "Failed to delete '%s' due to error: %s",
+  },
+  youTubePlayer: {
+    title: "YouTube video player",
   },
 };

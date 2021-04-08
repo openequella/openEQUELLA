@@ -45,6 +45,10 @@ import { ErrorResponse } from "../api/errors";
 import MessageInfo from "../components/MessageInfo";
 import { TooltipIconButton } from "../components/TooltipIconButton";
 import { guestUser, PageContent } from "../legacycontent/LegacyContent";
+import {
+  isItemViewedFromIntegration,
+  isSelectionSessionOpen,
+} from "../modules/LegacySelectionSessionModule";
 import { languageStrings } from "../util/langstrings";
 import MainMenu from "./MainMenu";
 import { legacyPageUrl, routes } from "./routes";
@@ -290,7 +294,7 @@ function useFullscreen({ fullscreenMode, hideAppBar }: useFullscreenProps) {
         return true;
 
       default:
-        return false;
+        return isSelectionSessionOpen() || isItemViewedFromIntegration();
     }
   })();
   return hideAppBar || modeIsFullscreen;

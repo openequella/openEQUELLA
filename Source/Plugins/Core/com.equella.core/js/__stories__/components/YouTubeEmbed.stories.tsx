@@ -15,25 +15,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AppConfig } from "../AppConfig";
+import { Meta, Story } from "@storybook/react";
+import * as React from "react";
+import YouTubeEmbed, {
+  YouTubeEmbedProps,
+} from "../../tsrc/components/YouTubeEmbed";
 
-/** `attachmentType` for file attachments. */
-export const ATYPE_FILE = "file";
-/** `attachmentType` for link/URL attachments. */
-export const ATYPE_LINK = "link";
-/** `attachmentType` for attachments linking to YouTube videos. */
-export const ATYPE_YOUTUBE = "custom/youtube";
+export default {
+  title: "component/YouTubeEmbed",
+  component: YouTubeEmbed,
+} as Meta<YouTubeEmbedProps>;
 
-/**
- * Build a direct URL to a file attachment.
- *
- * @param itemUuid The attachment item's UUID
- * @param itemVersion The attachment item's version
- * @param fileAttachmentPath The `filePath` provided by the server
- */
-export const buildFileAttachmentUrl = (
-  itemUuid: string,
-  itemVersion: number,
-  fileAttachmentPath: string
-) =>
-  `${AppConfig.baseUrl}file/${itemUuid}/${itemVersion}/${fileAttachmentPath}`;
+export const EmbeddedYouTubeVideo: Story<YouTubeEmbedProps> = (args) => (
+  <YouTubeEmbed {...args} />
+);
+EmbeddedYouTubeVideo.args = {
+  videoId: "OsctbVek0hs",
+};
+
+export const EmbeddedYouTubeVideoLarge: Story<YouTubeEmbedProps> = (args) => (
+  <YouTubeEmbed {...args} />
+);
+EmbeddedYouTubeVideoLarge.args = {
+  ...EmbeddedYouTubeVideo.args,
+  dimensions: {
+    width: 1120,
+    height: 630,
+  },
+};

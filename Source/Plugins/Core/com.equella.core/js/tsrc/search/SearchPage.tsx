@@ -34,9 +34,11 @@ import {
 } from "../mainui/Template";
 import { getAdvancedSearchesFromServer } from "../modules/AdvancedSearchModule";
 import type { Collection } from "../modules/CollectionsModule";
+import { addFavouriteSearch } from "../modules/FavouriteModule";
 import {
   GallerySearchResultItem,
   imageGallerySearch,
+  videoGallerySearch,
 } from "../modules/GallerySearchModule";
 import {
   buildSelectionSessionAdvancedSearchLink,
@@ -72,12 +74,7 @@ import { languageStrings } from "../util/langstrings";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
 import { CollectionSelector } from "./components/CollectionSelector";
 import DisplayModeSelector from "./components/DisplayModeSelector";
-import {
-  defaultFavouriteItemDialogProps,
-  FavouriteItemDialog,
-  FavouriteItemDialogProps,
-  FavouriteItemInfo,
-} from "./components/FavouriteItemDialog";
+import { FavouriteSearchDialog } from "./components/FavouriteSearchDialog";
 import GallerySearchResult from "./components/GallerySearchResult";
 import { MimeTypeFilterSelector } from "./components/MimeTypeFilterSelector";
 import OwnerSelector from "./components/OwnerSelector";
@@ -226,10 +223,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     searchPageHistoryState?.filterExpansion ??
       defaultSearchPageHistory.filterExpansion
   );
-  const [
-    showSearchCopiedSnackBar,
-    setShowSearchCopiedSnackBar,
-  ] = useState<boolean>(false);
+  const [snackBarMessage, setSnackBarMessage] = useState<string>("");
   const [searchSettings, setSearchSettings] = useState<{
     core: OEQ.SearchSettings.Settings | undefined;
     mimeTypeFilters: MimeTypeFilter[];
@@ -240,23 +234,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   const [showRefinePanel, setShowRefinePanel] = useState<boolean>(false);
   const [
-    favouriteDialogProps,
-    setFavouriteDialogProps,
-  ] = useState<FavouriteItemDialogProps>({
-    ...defaultFavouriteItemDialogProps,
-    closeDialog: () => {
-      setFavouriteDialogProps({ ...favouriteDialogProps, open: false });
-    },
-  });
-
-  // A function passed to SearchResult to help build props of FavouriteItemDialog.
-  const favouriteDialogOnConfirm = (itemInfo: FavouriteItemInfo) => {
-    setFavouriteDialogProps({
-      ...favouriteDialogProps,
-      open: true,
-      ...itemInfo,
-    });
-  };
+    showFavouriteSearchDialog,
+    setShowFavouriteSearchDialog,
+  ] = useState<boolean>(false);
 
   const handleError = useCallback(
     (error: Error) => {
@@ -346,20 +326,26 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
    */
   useEffect(() => {
     if (state.status === "searching") {
+      const gallerySearch = async (
+        search: typeof imageGallerySearch | typeof videoGallerySearch,
+        options: SearchPageOptions
+      ): Promise<SearchPageSearchResult> => ({
+        from: "gallery-search",
+        content: await search({
+          ...options,
+          // `mimeTypeFilters` should be ignored in gallery modes
+          mimeTypeFilters: undefined,
+        }),
+      });
+
       const doSearch = async (
         options: SearchPageOptions
       ): Promise<SearchPageSearchResult> => {
         switch (options.displayMode) {
           case "gallery-image":
-          case "gallery-video": // Coming soon
-            return {
-              from: "gallery-search",
-              content: await imageGallerySearch({
-                ...options,
-                // `mimeTypeFilters` should be ignored in gallery modes
-                mimeTypeFilters: undefined,
-              }),
-            };
+            return gallerySearch(imageGallerySearch, options);
+          case "gallery-video":
+            return gallerySearch(videoGallerySearch, options);
           case "list":
             return { from: "item-search", content: await searchItems(options) };
           default:
@@ -494,9 +480,24 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     navigator.clipboard
       .writeText(searchUrl)
       .then(() => {
-        setShowSearchCopiedSnackBar(true);
+        setSnackBarMessage(searchStrings.shareSearchConfirmationText);
       })
       .catch(() => handleError);
+  };
+
+  const handleSaveFavouriteSearch = (name: string) => {
+    // We only need pathname and query strings.
+    const url = `${location.pathname}?${generateQueryStringFromSearchOptions(
+      searchPageOptions
+    )}`;
+
+    return addFavouriteSearch(name, url)
+      .then(() =>
+        setSnackBarMessage(
+          searchStrings.favouriteSearch.saveSearchConfirmationText
+        )
+      )
+      .catch(handleError);
   };
 
   const handleMimeTypeFilterChange = (filters: MimeTypeFilter[]) =>
@@ -788,12 +789,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     ): items is GallerySearchResultItem[] => from === "gallery-search";
 
     if (isListItems(searchResults)) {
-      return mapSearchResultItems(
-        searchResults,
-        handleError,
-        highlights,
-        favouriteDialogOnConfirm
-      );
+      return mapSearchResultItems(searchResults, handleError, highlights);
     } else if (isGalleryItems(searchResults)) {
       return <GallerySearchResult items={searchResults} />;
     }
@@ -841,6 +837,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 }}
                 onClearSearchOptions={handleClearSearchOptions}
                 onCopySearchLink={handleCopySearch}
+                onSaveSearch={() => setShowFavouriteSearchDialog(true)}
               >
                 {renderSearchResults()}
               </SearchResultList>
@@ -854,9 +851,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         </Hidden>
       </Grid>
       <MessageInfo
-        open={showSearchCopiedSnackBar}
-        onClose={() => setShowSearchCopiedSnackBar(false)}
-        title={searchStrings.shareSearchConfirmationText}
+        open={!!snackBarMessage}
+        onClose={() => setSnackBarMessage("")}
+        title={snackBarMessage}
         variant="success"
       />
       <Hidden mdUp>
@@ -869,8 +866,13 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           {renderSidePanel()}
         </Drawer>
       </Hidden>
-      {favouriteDialogProps.open && (
-        <FavouriteItemDialog {...favouriteDialogProps} />
+
+      {showFavouriteSearchDialog && (
+        <FavouriteSearchDialog
+          open={showFavouriteSearchDialog}
+          closeDialog={() => setShowFavouriteSearchDialog(false)}
+          onConfirm={handleSaveFavouriteSearch}
+        />
       )}
     </>
   );

@@ -104,6 +104,12 @@ export interface SearchOptions {
    * A list of MIME types provided by an Integration (e.g. with Moodle), which has a higher priority than `mimeTypes`.
    */
   externalMimeTypes?: string[];
+  /**
+   * List of search index key/value pairs to filter by. e.g. videothumb:true or realthumb:true.
+   *
+   * @see OEQ.Search.SearchParams for examples
+   */
+  musts?: OEQ.Search.Must[];
 }
 
 /**
@@ -411,6 +417,7 @@ export const searchItems = ({
   mimeTypes,
   mimeTypeFilters,
   externalMimeTypes,
+  musts,
 }: SearchOptions): Promise<
   OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>
 > => {
@@ -436,6 +443,7 @@ export const searchItems = ({
     searchAttachments: searchAttachments,
     whereClause: generateCategoryWhereQuery(selectedCategories),
     mimeTypes: externalMimeTypes ?? _mimeTypes,
+    musts: musts,
   };
 
   return OEQ.Search.search(API_BASE_URL, searchParams);

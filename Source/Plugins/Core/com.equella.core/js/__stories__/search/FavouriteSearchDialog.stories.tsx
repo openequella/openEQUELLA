@@ -15,17 +15,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { isLightboxSupportedMimeType } from "../../../tsrc/components/Lightbox";
+import * as React from "react";
+import type { Meta, Story } from "@storybook/react";
+import {
+  FavouriteSearchDialog,
+  FavouriteSearchDialogProps,
+} from "../../tsrc/search/components/FavouriteSearchDialog";
 
-describe("isLightboxSupportedMimeType", () => {
-  it.each<[string, boolean]>([
-    ["application/pdf", false],
-    ["audio/aac", false],
-    ["audio/ogg", true],
-    ["image/anything", true],
-    ["video/ogg", true],
-    ["video/quicktime", false],
-  ])("MIME type: %s, supported: %s", (mimeType: string, expected: boolean) =>
-    expect(isLightboxSupportedMimeType(mimeType)).toEqual(expected)
-  );
-});
+export default {
+  title: "Search/FavouriteSearchDialog",
+  component: FavouriteSearchDialog,
+  argTypes: {
+    closeDialog: { action: "onClose" },
+    onConfirm: {
+      action: "onConfirm",
+    },
+  },
+} as Meta<FavouriteSearchDialogProps>;
+
+export const Standard: Story<FavouriteSearchDialogProps> = (args) => (
+  <FavouriteSearchDialog {...args} />
+);
+
+Standard.args = {
+  open: true,
+};
