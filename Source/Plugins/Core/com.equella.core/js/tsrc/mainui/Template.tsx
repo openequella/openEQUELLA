@@ -181,6 +181,10 @@ export const useStyles = makeStyles((theme: Theme) => {
   const tabHeight = 48;
   return {
     "@global": {
+      "a, p": {
+        //handle long strings without breaking the layout
+        overflowWrap: "anywhere",
+      },
       a: {
         textDecoration: "none",
         color: theme.palette.primary.main,

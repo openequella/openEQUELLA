@@ -64,6 +64,7 @@ $col2Width: 250px;
 $standardBorderRadius: 4px;
 $roundButtonRadius: 50px;
 $termSelectorHeight: 68px;
+$savePanelWidth: 221px;
 
 @mixin boxShadow {
   box-shadow: $boxShadow;
@@ -1238,6 +1239,16 @@ div.area {
   float: none;
 }
 
+.itemsummary-layout #col1 {
+  //handle long strings  in item summaries without breaking the layout
+  overflow-wrap: anywhere;
+}
+
+.wizard-layout #col1 {
+  //handle wizard control names and descriptions without breaking the layout
+  max-width: calc(100% - #{$savePanelWidth});
+}
+
 .area h3 {
   @include typography-headline-6;
   color: $primaryTextColor;
@@ -1775,7 +1786,7 @@ Search page
   }
 
   #col2 {
-    width: 221px;
+    width: $savePanelWidth;
     margin-left: $doubleMargin;
 
     .box hr {
@@ -2922,7 +2933,7 @@ Contribution wizard styling
 *****************************************************************************/
 .wizard-layout #col2,
 #affix-div {
-  width: 221px;
+  width: $savePanelWidth;
 }
 
 .wizard-layout .contribution-rightNav {
