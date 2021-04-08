@@ -26,7 +26,7 @@ import com.tle.core.services.item.FreetextResult
 import com.tle.exceptions.PrivilegeRequiredException
 import com.tle.legacy.LegacyGuice
 import org.apache.commons.lang.StringEscapeUtils
-
+import java.io.BufferedOutputStream
 import scala.collection.JavaConverters._
 case class CSVHeader(name: String, xpath: String)
 
@@ -211,5 +211,15 @@ object ExportCSVHelper {
 
   def getSchemaFromCollection(collectionId: String): Option[Schema] = {
     Option(LegacyGuice.itemDefinitionService.getByUuid(collectionId)).map(_.getSchema)
+  }
+
+  /**
+    * Write CSV contents into a BufferedOutputStream.
+    * @param bos BufferedOutputStream A BufferedOutputStream wrapping another underlying OutputStream.
+    * @param contents Contents to be written to the BufferedOutputStream.
+    */
+  def writeRow(bos: BufferedOutputStream, contents: String): Unit = {
+    bos.write(s"${contents}\n".getBytes())
+    bos.flush()
   }
 }

@@ -18,20 +18,18 @@
 
 package com.tle.web.api.search
 
-import com.dytech.devlib.PropBagEx
 import com.tle.beans.entity.Schema
 import com.tle.beans.item.ItemIdKey
 import com.tle.common.search.DefaultSearch
 import com.tle.core.item.serializer.ItemSerializerItemBean
-import com.tle.core.services.item.{FreetextResult, FreetextSearchResults}
+import com.tle.core.services.item.FreetextResult
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean
 import com.tle.web.api.search.ExportCSVHelper.{
   buildCSVHeaders,
-  buildCSVRow,
   checkDownloadACL,
-  convertSearchResultToXML,
-  getSchemaFromCollection
+  getSchemaFromCollection,
+  writeRow
 }
 import com.tle.web.api.search.SearchHelper._
 import com.tle.web.api.search.model.{SearchParam, SearchResult, SearchResultItem}
@@ -57,7 +55,8 @@ class SearchResource {
     response = classOf[SearchResult[SearchResultItem]],
   )
   def searchItems(@BeanParam params: SearchParam): Response = {
-    val searchResults           = search(params)
+    val searchResults =
+      search(createSearch(params), params.start, params.length, params.searchAttachments)
     val freetextResults         = searchResults.getSearchResults.asScala.toList
     val itemIds                 = freetextResults.map(_.getItemIdKey)
     val serializer              = createSerializer(itemIds)
@@ -77,10 +76,16 @@ class SearchResource {
   @GET
   @Produces(Array("text/csv"))
   @Path("/export")
-  def export(@BeanParam params: SearchParam,
-             @Context req: HttpServletRequest,
-             @Context resp: HttpServletResponse) = {
+  def exportCSV(@BeanParam params: SearchParam,
+                @Context req: HttpServletRequest,
+                @Context resp: HttpServletResponse): Unit = {
     checkDownloadACL()
+    LegacyGuice.auditLogService.logGeneric("Download",
+                                           "SearchResult",
+                                           "CSV",
+                                           req.getQueryString,
+                                           null,
+                                           null)
 
     if (params.collections.length != 1) {
       throw new BadRequestException("Only one Collection is allowed")
@@ -94,51 +99,21 @@ class SearchResource {
 
     resp.setContentType("text/csv")
     resp.setHeader("Content-Disposition", " attachment; filename=search.csv")
-    LegacyGuice.auditLogService.logGeneric("Download",
-                                           "SearchResult",
-                                           "CSV",
-                                           req.getQueryString,
-                                           null,
-                                           null)
-
-    val bos                 = new BufferedOutputStream(resp.getOutputStream)
-    val csvContentContainer = new StringBuilder
-
-    def inputContents(contents: String*): Unit = {
-      contents.foreach(c => csvContentContainer.append(c))
-    }
-
-    def outputContents(): Unit = {
-      bos.write(csvContentContainer.toString().getBytes())
-      bos.flush()
-      csvContentContainer.clear()
-    }
-
-    def getXmlList: List[PropBagEx] = {
-      convertSearchResultToXML(search(params, Option(-1)).getSearchResults.asScala.toList)
-    }
+    val bos = new BufferedOutputStream(resp.getOutputStream)
 
     // Build the first row for headers.
     val csvHeaders = buildCSVHeaders(schema)
-    csvHeaders.foreach(header => inputContents(header.name, ","))
-    inputContents("\n") // Move to the second row.
-    outputContents()
+    writeRow(bos, s"${csvHeaders.map(c => c.name).mkString(",")}")
 
-    // Build a row for each Item XML.
-    getXmlList.foreach(xml => {
-      inputContents(buildCSVRow(xml, csvHeaders), "\n")
-      outputContents()
-    })
+    LegacyGuice.exportService.export(createSearch(params),
+                                     params.start,
+                                     params.length,
+                                     params.searchAttachments,
+                                     csvHeaders,
+                                     writeRow(bos, _))
 
     bos.close()
   }
-
-  private def search(params: SearchParam,
-                     length: Option[Int] = None): FreetextSearchResults[FreetextResult] =
-    LegacyGuice.freeTextService.search(createSearch(params),
-                                       params.start,
-                                       length.getOrElse(params.length),
-                                       params.searchAttachments)
 }
 
 /**
