@@ -667,4 +667,7 @@ export const languageStrings = {
     noFileSelected: "No attached resources",
     failedToDelete: "Failed to delete '%s' due to error: %s",
   },
+  youTubePlayer: {
+    title: "YouTube video player",
+  },
 };

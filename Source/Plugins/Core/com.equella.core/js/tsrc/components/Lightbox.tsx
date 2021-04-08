@@ -338,6 +338,7 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
 export const isLightboxSupportedMimeType = (mimeType: string): boolean =>
   splitMimeType(mimeType)[0] === "image" ||
   isBrowserSupportedAudio(mimeType) ||
-  isBrowserSupportedVideo(mimeType);
+  isBrowserSupportedVideo(mimeType) ||
+  [CustomMimeTypes.YOUTUBE].includes(mimeType);
 
 export default Lightbox;

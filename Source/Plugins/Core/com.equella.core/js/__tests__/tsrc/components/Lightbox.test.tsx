@@ -17,11 +17,13 @@
  */
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
+import { displayYouTube } from "../../../__stories__/components/Lightbox.stories";
 import Lightbox, {
   isLightboxSupportedMimeType,
   LightboxConfig,
 } from "../../../tsrc/components/Lightbox";
 import { render } from "@testing-library/react";
+import { CustomMimeTypes } from "../../../tsrc/modules/MimeTypesModule";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import "@testing-library/jest-dom/extend-expect";
 
@@ -33,6 +35,7 @@ describe("isLightboxSupportedMimeType", () => {
     ["image/anything", true],
     ["video/ogg", true],
     ["video/quicktime", false],
+    [CustomMimeTypes.YOUTUBE, true],
   ])("MIME type: %s, supported: %s", (mimeType: string, expected: boolean) =>
     expect(isLightboxSupportedMimeType(mimeType)).toEqual(expected)
   );
@@ -94,4 +97,33 @@ describe("view previous/next attachment", () => {
       expect(queryByText(updatedTitle)).toBeInTheDocument();
     }
   );
+});
+
+describe("Support for YouTube videos", () => {
+  const youTubeLightboxConfig = displayYouTube.args!.config!;
+
+  it("displays an embedded YouTube player for valid view URL src", () => {
+    const { queryByTitle } = render(
+      <Lightbox onClose={jest.fn()} open config={youTubeLightboxConfig} />
+    );
+    expect(
+      queryByTitle(languageStrings.youTubePlayer.title)
+    ).toBeInTheDocument();
+  });
+
+  it("displays an error message if the view URL is invalid", () => {
+    const { queryByText } = render(
+      <Lightbox
+        onClose={jest.fn()}
+        open
+        config={{
+          ...youTubeLightboxConfig,
+          src: "https://www.youtube.com/watch/", // missing param v=1234xyz
+        }}
+      />
+    );
+    expect(
+      queryByText(languageStrings.lightboxComponent.youTubeVideoMissingId)
+    ).toBeInTheDocument();
+  });
 });
