@@ -27,7 +27,11 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
+import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
+import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
 import * as React from "react";
 import {
   ReactNode,
@@ -38,14 +42,16 @@ import {
 } from "react";
 import { Literal, match, Unknown } from "runtypes";
 import {
+  CustomMimeTypes,
   isBrowserSupportedAudio,
   isBrowserSupportedVideo,
+  OEQ_MIMETYPE_TYPE,
   splitMimeType,
 } from "../modules/MimeTypesModule";
+import { extractVideoId } from "../modules/YouTubeModule";
 import { languageStrings } from "../util/langstrings";
-import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
-import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import { TooltipIconButton } from "./TooltipIconButton";
+import YouTubeEmbed from "./YouTubeEmbed";
 
 const useStyles = makeStyles((theme: Theme) => ({
   lightboxBackdrop: {
@@ -127,6 +133,7 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
   } = languageStrings.common.action;
   const {
     unsupportedContent: labelUnsupportedContent,
+    youTubeVideoMissingId,
   } = languageStrings.lightboxComponent;
 
   const [content, setContent] = useState<ReactNode | undefined>();
@@ -161,61 +168,88 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
 
   // Update content when config is updated.
   useEffect(() => {
-    const unsupportedContent = (
+    const lightBoxMessage = (msg: string) => (
       <Card>
         <CardContent>
           <Typography variant="h5" component="h2">
-            {labelUnsupportedContent}
+            {msg}
           </Typography>
         </CardContent>
       </Card>
     );
 
+    const unsupportedContent = lightBoxMessage(labelUnsupportedContent);
+
     const buildContent = () =>
-      match(
-        [
-          Literal("image"),
-          () => (
-            <img
-              className={`${classes.lightboxContent} ${classes.lightboxImage}`}
-              alt={title}
-              src={src}
-            />
-          ),
-        ],
-        [
-          Literal("video"),
-          () =>
-            isBrowserSupportedVideo(mimeType) ? (
-              <video
-                className={classes.lightboxContent}
-                controls
+      pipe(
+        splitMimeType(mimeType)[0],
+        match(
+          [
+            Literal("image"),
+            () => (
+              <img
+                className={`${classes.lightboxContent} ${classes.lightboxImage}`}
+                alt={title}
                 src={src}
-                aria-label={title}
               />
-            ) : (
-              unsupportedContent
             ),
-        ],
-        [
-          Literal("audio"),
-          () =>
-            isBrowserSupportedAudio(mimeType) ? (
-              <audio
-                className={classes.lightboxAudio}
-                controls
-                src={src}
-                aria-label={title}
-              />
-            ) : (
-              unsupportedContent
-            ),
-        ],
-        [Unknown, () => unsupportedContent]
-      )(splitMimeType(mimeType)[0]);
+          ],
+          [
+            Literal("video"),
+            () =>
+              isBrowserSupportedVideo(mimeType) ? (
+                <video
+                  className={classes.lightboxContent}
+                  controls
+                  src={src}
+                  aria-label={title}
+                />
+              ) : (
+                unsupportedContent
+              ),
+          ],
+          [
+            Literal("audio"),
+            () =>
+              isBrowserSupportedAudio(mimeType) ? (
+                <audio
+                  className={classes.lightboxAudio}
+                  controls
+                  src={src}
+                  aria-label={title}
+                />
+              ) : (
+                unsupportedContent
+              ),
+          ],
+          [
+            Literal(OEQ_MIMETYPE_TYPE),
+            () =>
+              mimeType === CustomMimeTypes.YOUTUBE
+                ? pipe(
+                    extractVideoId(src),
+                    O.fromNullable,
+                    O.fold(
+                      () => lightBoxMessage(youTubeVideoMissingId),
+                      (id) => <YouTubeEmbed videoId={id} />
+                    )
+                  )
+                : unsupportedContent,
+          ],
+          [Unknown, () => unsupportedContent]
+        )
+      );
 
     setContent(buildContent());
-  }, [lightBoxConfig, classes, mimeType, src, title, labelUnsupportedContent]);
+  }, [
+    lightBoxConfig,
+    classes,
+    mimeType,
+    src,
+    title,
+    labelUnsupportedContent,
+    youTubeVideoMissingId,
+  ]);
 
   const handleOpenInNewWindow = (event: SyntheticEvent) => {
     event.stopPropagation();
@@ -304,6 +338,7 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
 export const isLightboxSupportedMimeType = (mimeType: string): boolean =>
   splitMimeType(mimeType)[0] === "image" ||
   isBrowserSupportedAudio(mimeType) ||
-  isBrowserSupportedVideo(mimeType);
+  isBrowserSupportedVideo(mimeType) ||
+  [CustomMimeTypes.YOUTUBE].includes(mimeType);
 
 export default Lightbox;

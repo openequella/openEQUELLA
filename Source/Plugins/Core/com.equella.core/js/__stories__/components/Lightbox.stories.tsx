@@ -21,6 +21,7 @@ import Lightbox, {
   LightboxConfig,
   LightboxProps,
 } from "../../tsrc/components/Lightbox";
+import { CustomMimeTypes } from "../../tsrc/modules/MimeTypesModule";
 
 export default {
   title: "component/Lightbox",
@@ -49,6 +50,11 @@ const audioConfig: LightboxConfig = {
   mimeType: "audio/ogg",
 };
 
+const youTubeConfig: LightboxConfig = {
+  src: "https://www.youtube.com/watch?v=x0SgN92HP_k",
+  title: "1788-L - N U / V E R / K A",
+  mimeType: CustomMimeTypes.YOUTUBE,
+};
 export const displayImage: Story<LightboxProps> = (args: LightboxProps) => (
   <Lightbox {...args} />
 );
@@ -71,6 +77,14 @@ export const displayVideo: Story<LightboxProps> = (args: LightboxProps) => (
 displayVideo.args = {
   open: true,
   config: videoConfig,
+};
+
+export const displayYouTube: Story<LightboxProps> = (args: LightboxProps) => (
+  <Lightbox {...args} />
+);
+displayYouTube.args = {
+  open: true,
+  config: youTubeConfig,
 };
 
 export const unsupportedContent: Story<LightboxProps> = (

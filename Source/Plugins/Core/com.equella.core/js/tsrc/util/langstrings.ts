@@ -661,9 +661,13 @@ export const languageStrings = {
     unsupportedContent: "Provided content is not supported",
     viewNext: "View next attachment",
     viewPrevious: "View previous attachment",
+    youTubeVideoMissingId: "The provided YouTube video is missing a video ID",
   },
   fileUploader: {
     noFileSelected: "No attached resources",
     failedToDelete: "Failed to delete '%s' due to error: %s",
+  },
+  youTubePlayer: {
+    title: "YouTube video player",
   },
 };
