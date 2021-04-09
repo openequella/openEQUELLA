@@ -266,6 +266,10 @@ describe("SearchModule", () => {
     jest
       .spyOn(SearchFilterSettingsModule, "getMimeTypeFiltersFromServer")
       .mockResolvedValue(getMimeTypeFilters);
+    const defaultConvertedSearchOptions = {
+      ...defaultSearchOptions,
+      rawMode: true,
+    };
 
     it("should return default search for any parameters that aren't supported", async () => {
       const unsupportedQueryString = "?test=nothing&cool=beans";
@@ -273,7 +277,7 @@ describe("SearchModule", () => {
         await legacyQueryStringToSearchOptions(
           new URLSearchParams(unsupportedQueryString)
         )
-      ).toEqual(defaultSearchOptions);
+      ).toEqual(defaultConvertedSearchOptions);
     });
 
     it("should convert legacy search parameters to searchOptions", async () => {
@@ -289,7 +293,7 @@ describe("SearchModule", () => {
       );
 
       const expectedSearchOptions: SearchOptions = {
-        ...defaultSearchOptions,
+        ...defaultConvertedSearchOptions,
         sortOrder: "DATECREATED",
         searchAttachments: true,
         collections: [
@@ -350,7 +354,7 @@ describe("SearchModule", () => {
           new URLSearchParams(queryString)
         );
         expect(convertedSearchOptions).toEqual({
-          ...defaultSearchOptions,
+          ...defaultConvertedSearchOptions,
           lastModifiedDateRange: expectedRange,
         });
       }
@@ -363,7 +367,7 @@ describe("SearchModule", () => {
       const convertedSearchOptions = await legacyQueryStringToSearchOptions(
         new URLSearchParams(collectionQueryString)
       );
-      expect(convertedSearchOptions).toEqual(defaultSearchOptions);
+      expect(convertedSearchOptions).toEqual(defaultConvertedSearchOptions);
     });
   });
 
