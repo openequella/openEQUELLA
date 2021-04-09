@@ -32,7 +32,7 @@ import FavoriteIcon from "@material-ui/icons/Favorite";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ReactHtmlParser from "react-html-parser";
 import { HashLink } from "react-router-hash-link";
 import { sprintf } from "sprintf-js";
@@ -52,7 +52,6 @@ import {
   isSelectionSessionInStructured,
   isSelectionSessionOpen,
   isSelectSummaryButtonDisabled,
-  prepareDraggable,
   selectResource,
 } from "../../modules/LegacySelectionSessionModule";
 import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
@@ -158,15 +157,6 @@ export default function SearchResult({
   const [bookmarkId, setBookmarkId] = useState<number | undefined>(
     bookmarkDefaultId
   );
-
-  // In Selection Session, make each attachment draggable.
-  useEffect(() => {
-    if (inStructured) {
-      attachments.forEach((attachment) => {
-        prepareDraggable(attachment.id, false);
-      });
-    }
-  }, [attachments, inStructured]);
 
   const handleSelectResource = (
     itemKey: string,
