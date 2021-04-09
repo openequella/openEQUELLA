@@ -1026,3 +1026,53 @@ describe("Changing display mode", () => {
     }
   );
 });
+
+describe("Export search result", () => {
+  let page: RenderResult;
+  beforeEach(async () => {
+    page = await renderSearchPage();
+  });
+
+  const selectCollections = async (...collectionNames: string[]) => {
+    userEvent.click(
+      page.getByLabelText(languageStrings.searchpage.collectionSelector.title)
+    );
+    for (const name of collectionNames) {
+      await act(async () => {
+        await userEvent.click(screen.getByText(name));
+      });
+    }
+  };
+
+  const getDownloadButton = () =>
+    page.getByLabelText(languageStrings.searchpage.export.title);
+
+  it("shows a Download Icon button to allow exporting", async () => {
+    await selectCollections(getCollectionMap[0].name);
+    expect(
+      page.queryByLabelText(languageStrings.searchpage.export.title)
+    ).toBeInTheDocument();
+  });
+
+  it("shows a Tick Icon to indicate search result is downloaded already", async () => {
+    await selectCollections(getCollectionMap[0].name);
+    userEvent.click(getDownloadButton());
+    expect(
+      page.queryByTitle(languageStrings.searchpage.export.exportCompleted)
+    ).toBeInTheDocument();
+  });
+
+  it.each([
+    ["zero", []],
+    ["more than one", getCollectionMap.slice(0, 2).map((c) => c.name)],
+  ])(
+    "disables export if %s collection is selected",
+    async (collectionNumber: string, collections: string[]) => {
+      await selectCollections(...collections);
+      userEvent.click(getDownloadButton());
+      expect(
+        screen.getByText(languageStrings.searchpage.export.collectionLimit)
+      ).toBeInTheDocument();
+    }
+  );
+});
