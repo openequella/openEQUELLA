@@ -46,6 +46,7 @@ import {
   isSelectionSessionInSkinny,
   isSelectionSessionInStructured,
   isSelectionSessionOpen,
+  prepareDraggable,
   selectResource,
 } from "../../modules/LegacySelectionSessionModule";
 import {
@@ -119,6 +120,15 @@ export const SearchResultAttachmentsList = ({
     attachmentsAndViewerConfigs,
     setAttachmentsAndViewerConfigs,
   ] = useState<AttachmentAndViewerConfig[]>([]);
+
+  // In Selection Session, make each attachment draggable.
+  useEffect(() => {
+    if (inStructured) {
+      attachmentsAndViewerConfigs.forEach(({ attachment }) => {
+        prepareDraggable(attachment.id, false);
+      });
+    }
+  }, [attachmentsAndViewerConfigs, inStructured]);
 
   // Responsible for determining the MIME type viewer for the provided attachments
   useEffect(() => {
