@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { stringify } from 'query-string';
 import { is } from 'typescript-is';
 import { GET } from './AxiosInstance';
 import * as Common from './Common';
@@ -385,6 +386,7 @@ const processSearchParams = (
   params ? { ...params, musts: processMusts(params.musts) } : undefined;
 
 const SEARCH2_API_PATH = '/search2';
+const EXPORT_PATH = '/search2/export';
 
 /**
  * Communicate with REST endpoint 'search2' to do a search with specified search criteria.
@@ -408,3 +410,11 @@ export const search = (
     ])
   );
 };
+
+/**
+ * Build a full URL for downloading a search result.
+ * @param apiBasePath Base URI to the oEQ institution and API.
+ * @param params Query parameters as search criteria.
+ */
+export const buildExportUrl = (apiBasePath: string, params: SearchParams) =>
+  apiBasePath + EXPORT_PATH + '?' + stringify(params);

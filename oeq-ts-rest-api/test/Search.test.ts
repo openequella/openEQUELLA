@@ -132,3 +132,17 @@ describe('Search for attachments', () => {
     }
   );
 });
+
+describe('Build URL for downloading search result', function () {
+  it('builds a full URL including query strings', () => {
+    const searchParams: OEQ.Search.SearchParams = {
+      query: 'API',
+      start: 0,
+      length: 10,
+      collections: ['a77112e6-3370-fd02-6ac6-6bc5aec22001'],
+    };
+    expect(OEQ.Search.buildExportUrl(TC.API_PATH, searchParams)).toBe(
+      'http://localhost:8080/rest/api/search2/export?collections=a77112e6-3370-fd02-6ac6-6bc5aec22001&length=10&query=API&start=0'
+    );
+  });
+});
