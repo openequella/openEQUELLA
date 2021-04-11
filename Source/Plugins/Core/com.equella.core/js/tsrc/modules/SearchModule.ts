@@ -568,6 +568,7 @@ export const legacyQueryStringToSearchOptions = async (
     mimeTypes,
     mimeTypeFilters,
     externalMimeTypes: getExternalMIMETypes(),
+    rawMode: true,
   };
   return searchOptions;
 };
