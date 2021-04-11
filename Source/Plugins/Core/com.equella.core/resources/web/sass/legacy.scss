@@ -3718,6 +3718,20 @@ Item summary styling
   width: 49%;
 }
 
+.displayNodes p {
+  margin: $doubleMargin 0;
+}
+.displayNodes h3 {
+  padding-top: $doubleMargin;
+}
+
+h3.item-description-title {
+  margin: $doubleMargin 0;
+}
+p.item-description {
+  margin: $doubleMargin 0 0 0;
+}
+
 .action-button.select {
   background-image: url("../images/addselected.ltr.png");
 }
