@@ -85,15 +85,17 @@ object ExportCSVHelper {
         case None       => path
       }
     }
-    schemaNodes.asScala.foldLeft(List.empty[CSVHeader]) {
-      case (list, node) =>
+
+    schemaNodes.asScala
+      .flatMap(node => {
         val xpath = buildFullXpath(node.getName)
-        if (node.hasChildren) {
-          list ++: buildHeadersForSchema(node.getChildNodes, Option(xpath))
-        } else {
-          list :+ CSVHeader(xpath, xpath)
+        node match {
+          case n if n.hasChildren =>
+            buildHeadersForSchema(n.getChildNodes, Option(xpath))
+          case _ => List(CSVHeader(xpath, xpath))
         }
-    }
+      })
+      .toList
   }
 
   /**
