@@ -137,6 +137,8 @@ public class LegacyGuice extends AbstractModule {
 
   @Inject public static EventService eventService;
 
+  @Inject public static ExportService exportService;
+
   @Inject public static FacetedSearchClassificationService facetedSearchClassificationService;
 
   @Inject public static FavouriteSearchService favouriteSearchService;
@@ -252,8 +254,6 @@ public class LegacyGuice extends AbstractModule {
   @Inject public static ViewItemUrlFactory viewItemUrlFactory;
 
   @Inject public static ViewableItemFactory viewableItemFactory;
-
-  @Inject public static ExportService exportService;
 
   @Override
   protected void configure() {

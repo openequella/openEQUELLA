@@ -35,31 +35,25 @@ class ExportService {
   /**
     * Export search results as CSV contents. The full result is chunked by paging and streaming.
     * @param defaultSearch A set of search criteria
-    * @param initialStart Initial start pointing to the first record of the first chunk
-    * @param length The maximum number of search results, or -1 for all.
     * @param searchAttachments Whether to search attachments.
     * @param headers A list of CSV headers
     * @param writeRow Function used to output CSV contents
     */
   @Transactional
   def export(defaultSearch: DefaultSearch,
-             initialStart: Int,
-             length: Int,
              searchAttachments: Boolean,
              headers: List[CSVHeader],
              writeRow: (String) => Unit): Unit = {
     // Get the total count first. As we only do one search, the result of 'countsFromFilters'
     // must be an array that has only one element.
-    val count = LegacyGuice.freeTextService.countsFromFilters(List(defaultSearch).asJava)(0)
-    // The start of each chunk is determined by the total count and length. Also filter out starts that
-    // exceed the total count.
-    val startRange = (0 to math.floor(count / length).toInt).toList
-      .map(r => r * length + initialStart)
-      .filter(start => start < count)
+    val count     = LegacyGuice.freeTextService.countsFromFilters(List(defaultSearch).asJava)(0)
+    val chunkSize = 100
+    val starts: Seq[Int] =
+      for (i <- 0 until count / chunkSize + 1) yield i * chunkSize
 
-    startRange.foreach(start => {
+    starts.foreach(start => {
       convertSearchResultToXML(
-        search(defaultSearch, start, length, searchAttachments).getSearchResults.asScala.toList)
+        search(defaultSearch, start, chunkSize, searchAttachments).getSearchResults.asScala.toList)
         .foreach(xml => {
           writeRow(s"${buildCSVRow(xml, headers)}")
         })

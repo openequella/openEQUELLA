@@ -80,13 +80,6 @@ class SearchResource {
                 @Context req: HttpServletRequest,
                 @Context resp: HttpServletResponse): Unit = {
     checkDownloadACL()
-    LegacyGuice.auditLogService.logGeneric("Download",
-                                           "SearchResult",
-                                           "CSV",
-                                           req.getQueryString,
-                                           null,
-                                           null)
-
     if (params.collections.length != 1) {
       throw new BadRequestException("Only one Collection is allowed")
     }
@@ -97,6 +90,13 @@ class SearchResource {
         throw new NotFoundException(s"Failed to find Schema for Collection: $collectionId")
     }
 
+    LegacyGuice.auditLogService.logGeneric("Download",
+                                           "SearchResult",
+                                           "CSV",
+                                           req.getQueryString,
+                                           null,
+                                           null)
+
     resp.setContentType("text/csv")
     resp.setHeader("Content-Disposition", " attachment; filename=search.csv")
     val bos = new BufferedOutputStream(resp.getOutputStream)
@@ -106,8 +106,6 @@ class SearchResource {
     writeRow(bos, s"${csvHeaders.map(c => c.name).mkString(",")}")
 
     LegacyGuice.exportService.export(createSearch(params),
-                                     params.start,
-                                     params.length,
                                      params.searchAttachments,
                                      csvHeaders,
                                      writeRow(bos, _))
