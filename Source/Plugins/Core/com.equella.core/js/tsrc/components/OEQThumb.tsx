@@ -128,12 +128,12 @@ export default function OEQThumb({
       oeqThumb = <WebIcon {...generalThumbStyles} />;
       break;
     case "custom/resource":
-      if (mimeType === "equella/item") {
-        // resource summaries can be pointed to by a Resource Selector.
-        oeqThumb = <Web {...generalThumbStyles} />;
-      } else {
-        oeqThumb = oeqProvidedThumb;
-      }
+      oeqThumb =
+        mimeType === "equella/item" ? (
+          <Web {...generalThumbStyles} />
+        ) : (
+          oeqProvidedThumb
+        );
       break;
     case "custom/flickr":
     case "custom/youtube":
