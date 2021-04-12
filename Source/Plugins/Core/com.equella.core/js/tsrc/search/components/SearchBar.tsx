@@ -50,8 +50,8 @@ export interface SearchBarProps {
   /** Current value for the search field. */
   query: string;
 
-  /** Current value for the rawMode toggle. */
-  rawMode: boolean;
+  /** Current value for the wildcard mode toggle. */
+  wildcardMode: boolean;
 
   /**
    * Callback fired when the user stops typing (debounced for 500 milliseconds).
@@ -60,10 +60,10 @@ export interface SearchBarProps {
   onQueryChange: (query: string) => void;
 
   /**
-   * Callback fired when the user changes the rawMode.
-   * @param rawMode the new value for Raw Mode
+   * Callback fired when the user changes the wildcardMode.
+   * @param wildcardMode the new value for Wildcard Mode
    */
-  onRawModeChange: (rawMode: boolean) => void;
+  onWildcardModeChange: (wildcardMode: boolean) => void;
 
   /** Called when search button clicked. */
   doSearch: () => void;
@@ -79,12 +79,11 @@ const searchStrings = languageStrings.searchpage;
  */
 export default function SearchBar({
   query,
-  rawMode,
+  wildcardMode,
   onQueryChange,
-  onRawModeChange,
+  onWildcardModeChange,
   doSearch,
 }: SearchBarProps) {
-  const wildcardMode = !rawMode;
   const classes = useStyles();
 
   const [currentQuery, setCurrentQuery] = useState<string>(query);
@@ -142,9 +141,8 @@ export default function SearchBar({
         label={searchStrings.wildcardSearch}
         control={
           <Switch
-            id="rawSearch"
-            // The value of `rawMode` is the logic NOT of `wildcardMode` so add a `!`.
-            onChange={(_, checked) => onRawModeChange(!checked)}
+            id="wildcardSearch"
+            onChange={(_, checked) => onWildcardModeChange(checked)}
             value={wildcardMode}
             checked={wildcardMode}
             name={searchStrings.wildcardSearch}
