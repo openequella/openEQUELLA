@@ -32,9 +32,9 @@ export interface ExportSearchResultLinkProps {
    */
   onExport: () => boolean;
   /**
-   * `true` if an export is not allowed.
+   * `true` if a search result is already exported.
    */
-  exportDisabled: boolean;
+  alreadyExported: boolean;
 }
 
 const exportStrings = languageStrings.searchpage.export;
@@ -46,7 +46,7 @@ const exportStrings = languageStrings.searchpage.export;
 export const ExportSearchResultLink = ({
   url,
   onExport,
-  exportDisabled,
+  alreadyExported,
 }: ExportSearchResultLinkProps) => {
   // Prevent the link from following the URL if an export is invalid.
   const onClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -57,7 +57,7 @@ export const ExportSearchResultLink = ({
     return true;
   };
 
-  return exportDisabled ? (
+  return alreadyExported ? (
     // Just need an Icon instead of an Icon button.
     <Tooltip title={exportStrings.exportCompleted}>
       <DoneIcon color="secondary" />
