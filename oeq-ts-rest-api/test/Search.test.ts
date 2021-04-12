@@ -150,7 +150,7 @@ describe('Exports search results for the specified search params', function () {
   });
 
   it('generates a URL which communicates to the export endpoints', async () => {
-    await OEQ.Auth.login(TC.API_PATH, TC.USERNAME_SUPER, 'a123456');
+    await OEQ.Auth.login(TC.API_PATH, TC.USERNAME_SUPER, TC.PASSWORD_SUPER);
     const exportUrl = OEQ.Search.buildExportUrl(TC.API_PATH, searchParams);
     await expect(
       GET(exportUrl, (data): data is string => is<string>(data))
