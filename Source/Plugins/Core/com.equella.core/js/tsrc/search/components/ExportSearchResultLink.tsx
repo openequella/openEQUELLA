@@ -28,11 +28,12 @@ export interface ExportSearchResultLinkProps {
    */
   url: string;
   /**
-   * Handler fired to check an export. Return `false` to indicate an export is invalid.
+   *  Handler fired before triggering an export. Return `false` to prevent
+   *  an export being triggered.
    */
   onExport: () => boolean;
   /**
-   * `true` if a search result is already exported.
+   * `true` to show a complete indicator and disable additional clicking.
    */
   alreadyExported: boolean;
 }

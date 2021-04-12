@@ -33,10 +33,9 @@ export default {
 export const ExportEnabled: Story<ExportSearchResultLinkProps> = (args) => (
   <ExportSearchResultLink {...args} />
 );
-
 ExportEnabled.args = {
   url: "test",
-  exportDisabled: false,
+  alreadyExported: false,
 };
 
 export const ExportCompleted: Story<ExportSearchResultLinkProps> = (args) => (
@@ -44,5 +43,5 @@ export const ExportCompleted: Story<ExportSearchResultLinkProps> = (args) => (
 );
 ExportCompleted.args = {
   ...ExportEnabled.args,
-  exportDisabled: true,
+  alreadyExported: true,
 };

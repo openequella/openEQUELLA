@@ -269,11 +269,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     [dispatch]
   );
 
-  // Allow exporting a search result when searchPageOptions gets changed.
-  useEffect(() => {
-    setAlreadyDownloaded(false);
-  }, [searchPageOptions]);
-
   /**
    * Error display -> similar to onError hook, however in the context of reducer need to do manually.
    */
@@ -400,6 +395,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
             });
             // scroll back up to the top of the page
             if (state.scrollToTop) window.scrollTo(0, 0);
+            // Allow downloading new search result.
+            setAlreadyDownloaded(false);
           }
         )
         .catch(handleError);
