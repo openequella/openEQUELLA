@@ -25,6 +25,7 @@ import java.util.Collections
 import com.dytech.common.io.DevNullWriter
 import com.tle.beans.item.ItemTaskId
 import com.tle.common.institution.CurrentInstitution
+import com.tle.common.security.SecurityConstants
 import com.tle.common.settings.standard.AutoLogin
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.i18n.CoreStrings
@@ -108,7 +109,8 @@ case class CurrentUserDetails(id: String,
                               guest: Boolean,
                               prefsEditable: Boolean,
                               menuGroups: Iterable[Iterable[MenuItem]],
-                              counts: Option[ItemCounts])
+                              counts: Option[ItemCounts],
+                              canDownloadSearchResult: Boolean)
 
 object LegacyContentController extends AbstractSectionsController with SectionFilter {
 
@@ -344,6 +346,11 @@ class LegacyContentApi {
 
     val accessibilityMode = LegacyGuice.accessibilityModeService.isAccessibilityMode
 
+    val canDownloadSearchResult: Boolean = LegacyGuice.aclManager
+      .filterNonGrantedPrivileges(SecurityConstants.EXPORT_SEARCH_RESULT)
+      .asScala
+      .nonEmpty
+
     val prefsEditable = !(cu.isSystem || cu.isGuest) && !(cu.wasAutoLoggedIn &&
       LegacyGuice.configService.getProperties(new AutoLogin).isEditDetailsDisallowed)
     val menuGroups = {
@@ -403,7 +410,8 @@ class LegacyContentApi {
           prefsEditable = prefsEditable,
           menuGroups = menuGroups,
           counts = counts,
-          accessibilityMode = accessibilityMode
+          accessibilityMode = accessibilityMode,
+          canDownloadSearchResult = canDownloadSearchResult
         )
       )
       .cacheControl(cacheControl)
