@@ -23,7 +23,6 @@ import {
   InputBase,
   Paper,
   Switch,
-  Tooltip,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
@@ -70,6 +69,8 @@ export interface SearchBarProps {
   doSearch: () => void;
 }
 
+const searchStrings = languageStrings.searchpage;
+
 /**
  * Debounced searchbar component to be used in the Search Page.
  * This component does not handle the API query itself,
@@ -83,9 +84,9 @@ export default function SearchBar({
   onRawModeChange,
   doSearch,
 }: SearchBarProps) {
+  const wildcardMode = !rawMode;
   const classes = useStyles();
 
-  const searchStrings = languageStrings.searchpage;
   const [currentQuery, setCurrentQuery] = useState<string>(query);
 
   // The line below triggers the warning:
@@ -130,28 +131,27 @@ export default function SearchBar({
         onChange={handleOnChange}
         value={currentQuery}
         placeholder={
-          rawMode
-            ? searchStrings.rawSearchEnabledPlaceholder
-            : searchStrings.rawSearchDisabledPlaceholder
+          wildcardMode
+            ? searchStrings.wildcardSearchEnabledPlaceholder
+            : searchStrings.wildcardSearchDisabledPlaceholder
         }
       />
       <Divider className={classes.divider} orientation="vertical" />
-      <Tooltip title={searchStrings.rawSearchTooltip}>
-        <FormControlLabel
-          style={{ opacity: 0.6 }}
-          label={searchStrings.rawSearch}
-          control={
-            <Switch
-              id="rawSearch"
-              onChange={(_, checked) => onRawModeChange(checked)}
-              value={rawMode}
-              checked={rawMode}
-              name={searchStrings.rawSearch}
-              size="small"
-            />
-          }
-        />
-      </Tooltip>
+      <FormControlLabel
+        style={{ opacity: 0.6 }}
+        label={searchStrings.wildcardSearch}
+        control={
+          <Switch
+            id="rawSearch"
+            // The value of `rawMode` is the logic NOT of `wildcardMode` so add a `!`.
+            onChange={(_, checked) => onRawModeChange(!checked)}
+            value={wildcardMode}
+            checked={wildcardMode}
+            name={searchStrings.wildcardSearch}
+            size="small"
+          />
+        }
+      />
     </Paper>
   );
 }
