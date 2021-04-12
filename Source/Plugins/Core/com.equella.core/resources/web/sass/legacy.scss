@@ -3715,7 +3715,7 @@ Item summary styling
   display: inline-block;
   vertical-align: top;
   margin: -$doubleMargin $doubleMargin 0 0;
-  width: calc(50% - 2 * $doubleMargin);
+  width: calc(50% - #{2 * $doubleMargin});
 }
 
 .displayNodes p {
