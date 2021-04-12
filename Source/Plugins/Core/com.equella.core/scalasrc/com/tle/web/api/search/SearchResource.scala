@@ -18,27 +18,36 @@
 
 package com.tle.web.api.search
 
+import com.tle.beans.entity.Schema
 import com.tle.beans.item.ItemIdKey
 import com.tle.common.search.DefaultSearch
 import com.tle.core.item.serializer.ItemSerializerItemBean
-import com.tle.core.services.item.{FreetextResult, FreetextSearchResults}
+import com.tle.core.services.item.FreetextResult
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean
+import com.tle.web.api.search.ExportCSVHelper.{
+  buildCSVHeaders,
+  checkDownloadACL,
+  getSchemaFromCollection,
+  writeRow
+}
 import com.tle.web.api.search.SearchHelper._
 import com.tle.web.api.search.model.{SearchParam, SearchResult, SearchResultItem}
 import io.swagger.annotations.{Api, ApiOperation}
-import javax.ws.rs.core.Response
-import javax.ws.rs.{BeanParam, GET, Path, Produces}
+
+import javax.ws.rs.core.{Context, Response}
+import javax.ws.rs.{BadRequestException, BeanParam, GET, NotFoundException, Path, Produces}
 import org.jboss.resteasy.annotations.cache.NoCache
 
+import java.io.BufferedOutputStream
 import scala.collection.JavaConverters._
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
 @NoCache
 @Path("search2")
 @Produces(Array("application/json"))
 @Api("Search V2")
 class SearchResource {
-
   @GET
   @ApiOperation(
     value = "Search items",
@@ -46,11 +55,8 @@ class SearchResource {
     response = classOf[SearchResult[SearchResultItem]],
   )
   def searchItems(@BeanParam params: SearchParam): Response = {
-    val searchResults: FreetextSearchResults[FreetextResult] =
-      LegacyGuice.freeTextService.search(createSearch(params),
-                                         params.start,
-                                         params.length,
-                                         params.searchAttachments)
+    val searchResults =
+      search(createSearch(params), params.start, params.length, params.searchAttachments)
     val freetextResults         = searchResults.getSearchResults.asScala.toList
     val itemIds                 = freetextResults.map(_.getItemIdKey)
     val serializer              = createSerializer(itemIds)
@@ -65,6 +71,46 @@ class SearchResource {
       highlight
     )
     Response.ok.entity(result).build()
+  }
+
+  @GET
+  @Produces(Array("text/csv"))
+  @Path("/export")
+  def exportCSV(@BeanParam params: SearchParam,
+                @Context req: HttpServletRequest,
+                @Context resp: HttpServletResponse): Unit = {
+    checkDownloadACL()
+    if (params.collections.length != 1) {
+      throw new BadRequestException("Only one Collection is allowed")
+    }
+    val collectionId = params.collections(0)
+    val schema: Schema = getSchemaFromCollection(collectionId) match {
+      case Some(s) => s
+      case None =>
+        throw new NotFoundException(s"Failed to find Schema for Collection: $collectionId")
+    }
+
+    LegacyGuice.auditLogService.logGeneric("Download",
+                                           "SearchResult",
+                                           "CSV",
+                                           req.getQueryString,
+                                           null,
+                                           null)
+
+    resp.setContentType("text/csv")
+    resp.setHeader("Content-Disposition", " attachment; filename=search.csv")
+    val bos = new BufferedOutputStream(resp.getOutputStream)
+
+    // Build the first row for headers.
+    val csvHeaders = buildCSVHeaders(schema)
+    writeRow(bos, s"${csvHeaders.map(c => c.name).mkString(",")}")
+
+    LegacyGuice.exportService.export(createSearch(params),
+                                     params.searchAttachments,
+                                     csvHeaders,
+                                     writeRow(bos, _))
+
+    bos.close()
   }
 }
 

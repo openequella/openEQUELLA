@@ -29,6 +29,7 @@ import com.tle.common.search.whereparser.WhereParser
 import com.tle.core.freetext.queries.FreeTextBooleanQuery
 import com.tle.core.item.security.ItemSecurityConstants
 import com.tle.core.item.serializer.{ItemSerializerItemBean, ItemSerializerService}
+import com.tle.core.services.item.{FreetextResult, FreetextSearchResults}
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean
 import com.tle.web.api.item.equella.interfaces.beans.{
@@ -56,6 +57,19 @@ import scala.collection.mutable.ListBuffer
   */
 object SearchHelper {
   val privileges = Array(ItemSecurityConstants.VIEW_ITEM)
+
+  /**
+    * Execute a search with provided search criteria.
+    * @param defaultSearch A set of search criteria
+    * @param start The first record of a search result.
+    * @param length The maximum number of search results, or -1 for all.
+    * @param searchAttachments Whether to search attachments.
+    */
+  def search(defaultSearch: DefaultSearch,
+             start: Int,
+             length: Int,
+             searchAttachments: Boolean): FreetextSearchResults[FreetextResult] =
+    LegacyGuice.freeTextService.search(defaultSearch, start, length, searchAttachments)
 
   /**
     * Create a new search with search criteria.

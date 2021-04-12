@@ -60,6 +60,7 @@ import com.tle.core.services.user.UserSessionService;
 import com.tle.core.settings.service.ConfigurationService;
 import com.tle.core.usermanagement.standard.dao.TLEUserDao;
 import com.tle.web.api.item.ItemLinkService;
+import com.tle.web.api.search.service.ExportService;
 import com.tle.web.contentrestrictions.ContentRestrictionsPrivilegeTreeProvider;
 import com.tle.web.coursedefaults.CourseDefaultsSettingsPrivilegeTreeProvider;
 import com.tle.web.customdateformat.DateFormatSettingsPrivilegeTreeProvider;
@@ -135,6 +136,8 @@ public class LegacyGuice extends AbstractModule {
   @Inject public static EncryptionService encryptionService;
 
   @Inject public static EventService eventService;
+
+  @Inject public static ExportService exportService;
 
   @Inject public static FacetedSearchClassificationService facetedSearchClassificationService;
 

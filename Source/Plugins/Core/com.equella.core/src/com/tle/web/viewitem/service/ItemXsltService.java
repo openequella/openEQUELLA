@@ -19,11 +19,23 @@
 package com.tle.web.viewitem.service;
 
 import com.dytech.devlib.PropBagEx;
+import com.tle.beans.item.Item;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.viewurl.ItemSectionInfo;
 
 public interface ItemXsltService {
+
+  /**
+   * Build a PropBagEx which includes an Item's general information. To get extra information that
+   * relies on SectionInfo, use 'getXmlForXslt' instead.
+   *
+   * @param item Item for which a PropBagEx is built
+   * @param itemInfo ItemSectionInfo related to the Item.
+   * @see #getXmlForXslt
+   */
+  PropBagEx getStandardXmlForXslt(Item item, ItemSectionInfo itemInfo);
+
   PropBagEx getXmlForXslt(SectionInfo info, ItemSectionInfo itemInfo);
 
   String renderSimpleXsltResult(RenderContext info, ItemSectionInfo itemInfo, String xslt);
