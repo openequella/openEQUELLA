@@ -70,6 +70,7 @@ import {
   SearchOptionsFields,
 } from "../modules/SearchModule";
 import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
+import { getCurrentUserDetails } from "../modules/UserModule";
 import SearchBar from "../search/components/SearchBar";
 import { languageStrings } from "../util/langstrings";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
@@ -239,12 +240,17 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     mimeTypeFilters: [],
   });
 
+  const [
+    currentUser,
+    setCurrentUser,
+  ] = React.useState<OEQ.LegacyContent.CurrentUserDetails>();
+
   const [showRefinePanel, setShowRefinePanel] = useState<boolean>(false);
   const [
     showFavouriteSearchDialog,
     setShowFavouriteSearchDialog,
   ] = useState<boolean>(false);
-  const [exportDisabled, setExportDisabled] = useState<boolean>(true);
+  const [alreadyDownloaded, setAlreadyDownloaded] = useState<boolean>(false);
 
   const handleError = useCallback(
     (error: Error) => {
@@ -265,7 +271,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   // Allow exporting a search result when searchPageOptions gets changed.
   useEffect(() => {
-    setExportDisabled(false);
+    setAlreadyDownloaded(false);
   }, [searchPageOptions]);
 
   /**
@@ -297,30 +303,39 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       (location.state as SearchPageHistoryState)
         ? Promise.resolve(undefined)
         : queryStringParamsToSearchOptions(location),
+      getCurrentUserDetails(),
     ])
-      .then(([searchSettings, mimeTypeFilters, queryStringSearchOptions]) => {
-        setSearchSettings({
-          core: searchSettings,
-          mimeTypeFilters: mimeTypeFilters,
-        });
-        search(
-          queryStringSearchOptions
-            ? {
-                ...queryStringSearchOptions,
-                dateRangeQuickModeEnabled: false,
-                sortOrder:
-                  queryStringSearchOptions.sortOrder ??
-                  searchSettings.defaultSearchSort,
-                displayMode: "list",
-              }
-            : {
-                ...searchPageOptions,
-                sortOrder:
-                  searchPageOptions.sortOrder ??
-                  searchSettings.defaultSearchSort,
-              }
-        );
-      })
+      .then(
+        ([
+          searchSettings,
+          mimeTypeFilters,
+          queryStringSearchOptions,
+          currentUserDetails,
+        ]) => {
+          setSearchSettings({
+            core: searchSettings,
+            mimeTypeFilters: mimeTypeFilters,
+          });
+          setCurrentUser(currentUserDetails);
+          search(
+            queryStringSearchOptions
+              ? {
+                  ...queryStringSearchOptions,
+                  dateRangeQuickModeEnabled: false,
+                  sortOrder:
+                    queryStringSearchOptions.sortOrder ??
+                    searchSettings.defaultSearchSort,
+                  displayMode: "list",
+                }
+              : {
+                  ...searchPageOptions,
+                  sortOrder:
+                    searchPageOptions.sortOrder ??
+                    searchSettings.defaultSearchSort,
+                }
+          );
+        }
+      )
       .catch((e) => {
         handleError(e);
       });
@@ -492,7 +507,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       return false;
     }
     // Do not allow exporting the same search result again until searchPageOptions gets changed.
-    setExportDisabled(true);
+    setAlreadyDownloaded(true);
     return true;
   };
 
@@ -865,9 +880,13 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 onCopySearchLink={handleCopySearch}
                 onSaveSearch={() => setShowFavouriteSearchDialog(true)}
                 exportProps={{
-                  url: buildExportUrl(searchPageOptions),
-                  onExport: handleExport,
-                  exportDisabled,
+                  isExportPermitted:
+                    currentUser?.canDownloadSearchResult ?? false,
+                  exportLinkProps: {
+                    url: buildExportUrl(searchPageOptions),
+                    onExport: handleExport,
+                    alreadyExported: alreadyDownloaded,
+                  },
                 }}
               >
                 {renderSearchResults()}

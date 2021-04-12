@@ -106,7 +106,10 @@ export interface SearchResultListProps {
   /**
    * Props required by ExportSearchResultLink.
    */
-  exportProps: ExportSearchResultLinkProps;
+  exportProps: {
+    isExportPermitted: boolean;
+    exportLinkProps: ExportSearchResultLinkProps;
+  };
 }
 
 const searchPageStrings = languageStrings.searchpage;
@@ -132,7 +135,7 @@ export const SearchResultList = ({
   onClearSearchOptions,
   onCopySearchLink,
   onSaveSearch,
-  exportProps,
+  exportProps: { isExportPermitted, exportLinkProps },
 }: SearchResultListProps) => {
   const classes = useStyles();
   const inSelectionSession: boolean = isSelectionSessionOpen();
@@ -176,9 +179,11 @@ export const SearchResultList = ({
                 <FavoriteBorderIcon />
               </TooltipIconButton>
             </Grid>
-            <Grid item>
-              <ExportSearchResultLink {...exportProps} />
-            </Grid>
+            {isExportPermitted && (
+              <Grid item>
+                <ExportSearchResultLink {...exportLinkProps} />
+              </Grid>
+            )}
             <Hidden mdUp>
               <Grid item>
                 <TooltipIconButton
