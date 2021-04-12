@@ -273,7 +273,7 @@ export const SearchResultAttachmentsList = ({
   );
 
   const accordionText = (
-    <Typography>
+    <Typography component="div">
       {searchResultStrings.attachments}&nbsp;&nbsp;
       <Chip label={attachments.length} size="small" color="primary" />
     </Typography>
