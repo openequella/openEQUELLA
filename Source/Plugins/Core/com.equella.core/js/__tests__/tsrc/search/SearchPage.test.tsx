@@ -48,6 +48,7 @@ import {
   getSearchResult,
   getSearchResultsCustom,
 } from "../../../__mocks__/SearchResult.mock";
+import { defaultCurrentUserDetails } from "../../../__mocks__/UserSearch.mock";
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
 import * as AdvancedSearchModule from "../../../tsrc/modules/AdvancedSearchModule";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
@@ -94,6 +95,7 @@ const defaultTheme = createMuiTheme({
 });
 const mockCollections = jest.spyOn(CollectionsModule, "collectionListSummary");
 const mockListUsers = jest.spyOn(UserModule, "listUsers");
+const mockCurrentUser = jest.spyOn(UserModule, "getCurrentUserDetails");
 const mockListClassification = jest.spyOn(
   SearchFacetsModule,
   "listClassifications"
@@ -134,6 +136,7 @@ const searchSettingPromise = mockSearchSettings.mockResolvedValue(
 const searchPromise = mockSearch.mockResolvedValue(getSearchResult);
 mockCollections.mockResolvedValue(getCollectionMap);
 mockListUsers.mockResolvedValue(UserSearchMock.users);
+mockCurrentUser.mockResolvedValue(defaultCurrentUserDetails);
 mockListClassification.mockResolvedValue(CategorySelectorMock.classifications);
 
 // Mock out a collaborator of SearchResult
@@ -1075,4 +1078,17 @@ describe("Export search result", () => {
       ).toBeInTheDocument();
     }
   );
+
+  it("doesn't show the Download button if user have no permission", async () => {
+    // Remove previously rendered result so that we can mock the current user details.
+    page.unmount();
+    mockCurrentUser.mockResolvedValueOnce({
+      ...defaultCurrentUserDetails,
+      canDownloadSearchResult: false,
+    });
+    const { queryByLabelText } = await renderSearchPage();
+    expect(
+      queryByLabelText(languageStrings.searchpage.export.title)
+    ).not.toBeInTheDocument();
+  });
 });

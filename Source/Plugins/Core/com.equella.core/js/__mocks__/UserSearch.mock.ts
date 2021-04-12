@@ -53,6 +53,19 @@ export const users: OEQ.UserQuery.UserDetails[] = [
   },
 ];
 
+export const defaultCurrentUserDetails: OEQ.LegacyContent.CurrentUserDetails = {
+  id: "test",
+  username: "test",
+  firstName: "test",
+  lastName: "test",
+  accessibilityMode: true,
+  autoLoggedIn: false,
+  guest: false,
+  prefsEditable: true,
+  menuGroups: [],
+  canDownloadSearchResult: true,
+};
+
 /**
  * Helper function to inject into component for user retrieval.
  *
