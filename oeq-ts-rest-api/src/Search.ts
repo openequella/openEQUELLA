@@ -386,7 +386,7 @@ const processSearchParams = (
   params ? { ...params, musts: processMusts(params.musts) } : undefined;
 
 const SEARCH2_API_PATH = '/search2';
-const EXPORT_PATH = '/search2/export';
+const EXPORT_PATH = `${SEARCH2_API_PATH}/export`;
 
 /**
  * Communicate with REST endpoint 'search2' to do a search with specified search criteria.

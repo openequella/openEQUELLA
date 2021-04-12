@@ -15,6 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { is } from 'typescript-is';
+import { GET } from '../src/AxiosInstance';
 import * as OEQ from '../src';
 import * as TC from './TestConfig';
 
@@ -133,16 +135,25 @@ describe('Search for attachments', () => {
   );
 });
 
-describe('Build URL for downloading search result', function () {
+describe('Exports search results for the specified search params', function () {
+  const searchParams: OEQ.Search.SearchParams = {
+    query: 'API',
+    start: 0,
+    length: 10,
+    collections: ['a77112e6-3370-fd02-6ac6-6bc5aec22001'],
+  };
+
   it('builds a full URL including query strings', () => {
-    const searchParams: OEQ.Search.SearchParams = {
-      query: 'API',
-      start: 0,
-      length: 10,
-      collections: ['a77112e6-3370-fd02-6ac6-6bc5aec22001'],
-    };
     expect(OEQ.Search.buildExportUrl(TC.API_PATH, searchParams)).toBe(
       'http://localhost:8080/rest/api/search2/export?collections=a77112e6-3370-fd02-6ac6-6bc5aec22001&length=10&query=API&start=0'
     );
+  });
+
+  it('generates a URL which communicates to the export endpoints', async () => {
+    await OEQ.Auth.login(TC.API_PATH, TC.USERNAME_SUPER, 'a123456');
+    const exportUrl = OEQ.Search.buildExportUrl(TC.API_PATH, searchParams);
+    await expect(
+      GET(exportUrl, (data): data is string => is<string>(data))
+    ).resolves.toBeTruthy();
   });
 });
