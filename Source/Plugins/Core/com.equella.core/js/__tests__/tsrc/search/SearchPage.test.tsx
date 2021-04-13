@@ -48,7 +48,7 @@ import {
   getSearchResult,
   getSearchResultsCustom,
 } from "../../../__mocks__/SearchResult.mock";
-import { defaultCurrentUserDetails } from "../../../__mocks__/UserSearch.mock";
+import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
 import * as AdvancedSearchModule from "../../../tsrc/modules/AdvancedSearchModule";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
@@ -136,7 +136,7 @@ const searchSettingPromise = mockSearchSettings.mockResolvedValue(
 const searchPromise = mockSearch.mockResolvedValue(getSearchResult);
 mockCollections.mockResolvedValue(getCollectionMap);
 mockListUsers.mockResolvedValue(UserSearchMock.users);
-mockCurrentUser.mockResolvedValue(defaultCurrentUserDetails);
+mockCurrentUser.mockResolvedValue(getCurrentUserMock);
 mockListClassification.mockResolvedValue(CategorySelectorMock.classifications);
 
 // Mock out a collaborator of SearchResult
@@ -1083,7 +1083,7 @@ describe("Export search result", () => {
     // Remove previously rendered result so that we can mock the current user details.
     page.unmount();
     mockCurrentUser.mockResolvedValueOnce({
-      ...defaultCurrentUserDetails,
+      ...getCurrentUserMock,
       canDownloadSearchResult: false,
     });
     const { queryByLabelText } = await renderSearchPage();
