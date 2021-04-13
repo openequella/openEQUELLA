@@ -100,7 +100,7 @@
     "@types/tinymce": "4.6.0",
     "@types/uuid": "8.3.0",
     "babel-jest": "26.6.3",
-    "core-js": "3.9.1",
+    "core-js": "3.10.1",
     "cross-env": "7.0.3",
     "cross-spawn": "7.0.3",
     "enzyme": "3.11.0",
