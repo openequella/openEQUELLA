@@ -48,7 +48,6 @@ import {
   getSearchResult,
   getSearchResultsCustom,
 } from "../../../__mocks__/SearchResult.mock";
-import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
 import * as AdvancedSearchModule from "../../../tsrc/modules/AdvancedSearchModule";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
@@ -95,7 +94,6 @@ const defaultTheme = createMuiTheme({
 });
 const mockCollections = jest.spyOn(CollectionsModule, "collectionListSummary");
 const mockListUsers = jest.spyOn(UserModule, "listUsers");
-const mockCurrentUser = jest.spyOn(UserModule, "getCurrentUserDetails");
 const mockListClassification = jest.spyOn(
   SearchFacetsModule,
   "listClassifications"
@@ -136,7 +134,6 @@ const searchSettingPromise = mockSearchSettings.mockResolvedValue(
 const searchPromise = mockSearch.mockResolvedValue(getSearchResult);
 mockCollections.mockResolvedValue(getCollectionMap);
 mockListUsers.mockResolvedValue(UserSearchMock.users);
-mockCurrentUser.mockResolvedValue(getCurrentUserMock);
 mockListClassification.mockResolvedValue(CategorySelectorMock.classifications);
 
 // Mock out a collaborator of SearchResult
