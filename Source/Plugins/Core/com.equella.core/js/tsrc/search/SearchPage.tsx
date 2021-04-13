@@ -437,7 +437,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     );
 
   const handleWildcardModeChanged = (wildcardMode: boolean) =>
-    // We use `rawMode` which is login NOT of `wildcardMode` at lower level.
+    // We use `rawMode` which is the logic NOT of `wildcardMode` at lower level.
     search({ ...searchPageOptions, rawMode: !wildcardMode });
 
   const handleQuickDateRangeModeChange = (
