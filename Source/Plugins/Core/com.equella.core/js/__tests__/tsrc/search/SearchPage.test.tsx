@@ -233,17 +233,17 @@ const getQueryBar = (container: Element): HTMLElement => {
 const changeQuery = async (
   container: Element,
   query: string,
-  rawMode?: boolean
+  wildcardMode: boolean = true
 ) => {
   // We will change the debounced query so use fake timer here.
   jest.useFakeTimers("modern");
   // Change search options now.
-  if (rawMode) {
-    const rawModeSwitch = container.querySelector("#rawSearch");
-    if (!rawModeSwitch) {
+  if (!wildcardMode) {
+    const wildcardModeSwitch = container.querySelector("#wildcardSearch");
+    if (!wildcardModeSwitch) {
       throw new Error("Failed to find the raw mode switch!");
     }
-    userEvent.click(rawModeSwitch);
+    userEvent.click(wildcardModeSwitch);
   }
   const _queryBar = () => getQueryBar(container);
   // Would be nice to replace this with a userEvent.type like:
@@ -692,16 +692,16 @@ describe("<SearchPage/>", () => {
     });
   });
 
-  it("sends the query as-is when in raw search mode", async () => {
+  it("sends the query as-is when in non-wildcard search mode", async () => {
     // When a raw mode search is done
-    await changeQuery(page.container, "raw search test", true);
+    await changeQuery(page.container, "non-wildcard search test", false);
     await waitForSearch();
 
     // assert that the query was passed in as-is
     expect(SearchModule.searchItems).toHaveBeenLastCalledWith({
       ...defaultSearchPageOptions,
       rawMode: true,
-      query: "raw search test",
+      query: "non-wildcard search test",
     });
     // There should be three calls:
     // 1. The initial call on component mount

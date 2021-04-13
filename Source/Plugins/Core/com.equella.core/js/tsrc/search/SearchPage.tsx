@@ -461,8 +461,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       false
     );
 
-  const handleRawModeChanged = (rawMode: boolean) =>
-    search({ ...searchPageOptions, rawMode: rawMode });
+  const handleWildcardModeChanged = (wildcardMode: boolean) =>
+    // `wildcardMode` is a presentation concept, in the lower levels its inverse is the value for `rawMode`.
+    search({ ...searchPageOptions, rawMode: !wildcardMode });
 
   const handleQuickDateRangeModeChange = (
     quickDateRangeMode: boolean,
@@ -846,9 +847,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
             <Grid item xs={12}>
               <SearchBar
                 query={searchPageOptions.query ?? ""}
-                rawMode={searchPageOptions.rawMode}
+                wildcardMode={!searchPageOptions.rawMode}
                 onQueryChange={handleQueryChanged}
-                onRawModeChange={handleRawModeChanged}
+                onWildcardModeChange={handleWildcardModeChanged}
                 doSearch={() => search(searchPageOptions)}
               />
             </Grid>
