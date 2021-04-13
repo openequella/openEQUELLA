@@ -92,12 +92,7 @@ class SearchResource {
         throw new NotFoundException(s"Failed to find Schema for Collection: $collectionId")
     }
 
-    LegacyGuice.auditLogService.logGeneric("Download",
-                                           "SearchResult",
-                                           "CSV",
-                                           null,
-                                           null,
-                                           convertParamsToJsonString(params))
+    LegacyGuice.auditLogService.logSearchExport("CSV", convertParamsToJsonString(params))
 
     resp.setContentType("text/csv")
     resp.setHeader("Content-Disposition", " attachment; filename=search.csv")
