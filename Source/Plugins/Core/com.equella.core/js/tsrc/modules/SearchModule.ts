@@ -398,11 +398,10 @@ export const newSearchQueryToSearchOptions = async (
 };
 
 /**
- * A function that takes search options and converts search options to search params,
- * and then does a search and returns a list of Items.
- * @param searchOptions Search options selected on Search page.
+ * A function that converts search options to search params.
+ * @param searchOptions Search options to be converted to search params.
  */
-export const searchItems = ({
+const buildSearchParams = ({
   query,
   rowsPerPage,
   currentPage,
@@ -418,9 +417,7 @@ export const searchItems = ({
   mimeTypeFilters,
   externalMimeTypes,
   musts,
-}: SearchOptions): Promise<
-  OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>
-> => {
+}: SearchOptions): OEQ.Search.SearchParams => {
   const processedQuery = query ? formatQuery(query, !rawMode) : undefined;
   // We use selected filters to generate MIME types. However, in Image Gallery,
   // image MIME types are applied before any filter gets selected.
@@ -430,7 +427,7 @@ export const searchItems = ({
     mimeTypeFilters && mimeTypeFilters.length > 0
       ? mimeTypeFilters.flatMap((f) => f.mimeTypes)
       : mimeTypes;
-  const searchParams: OEQ.Search.SearchParams = {
+  return {
     query: processedQuery,
     start: currentPage * rowsPerPage,
     length: rowsPerPage,
@@ -445,9 +442,26 @@ export const searchItems = ({
     mimeTypes: externalMimeTypes ?? _mimeTypes,
     musts: musts,
   };
-
-  return OEQ.Search.search(API_BASE_URL, searchParams);
 };
+
+/**
+ * A function that executes a search with provided search options.
+ * @param searchOptions Search options selected on Search page.
+ */
+export const searchItems = (
+  searchOptions: SearchOptions
+): Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>> =>
+  OEQ.Search.search(API_BASE_URL, buildSearchParams(searchOptions));
+
+/**
+ * A function that builds a URL for exporting a search result
+ * @param searchOptions Search options selected on Search page.
+ */
+export const buildExportUrl = (searchOptions: SearchOptions): string =>
+  OEQ.Search.buildExportUrl(
+    API_BASE_URL,
+    buildSearchParams({ ...searchOptions, currentPage: 0 })
+  );
 
 const findCollectionsByUuid = async (
   collectionUuids: string[]

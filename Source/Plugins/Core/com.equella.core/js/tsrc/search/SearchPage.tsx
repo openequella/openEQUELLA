@@ -25,7 +25,7 @@ import { useHistory, useLocation } from "react-router";
 import { generateFromError } from "../api/errors";
 import { AppConfig } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
-import MessageInfo from "../components/MessageInfo";
+import MessageInfo, { MessageInfoVariant } from "../components/MessageInfo";
 import { routes } from "../mainui/routes";
 import {
   templateDefaults,
@@ -58,6 +58,7 @@ import {
   MimeTypeFilter,
 } from "../modules/SearchFilterSettingsModule";
 import {
+  buildExportUrl,
   DateRange,
   defaultPagedSearchResult,
   defaultSearchOptions,
@@ -69,6 +70,7 @@ import {
   SearchOptionsFields,
 } from "../modules/SearchModule";
 import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
+import { getCurrentUserDetails } from "../modules/UserModule";
 import SearchBar from "../search/components/SearchBar";
 import { languageStrings } from "../util/langstrings";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
@@ -223,7 +225,13 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     searchPageHistoryState?.filterExpansion ??
       defaultSearchPageHistory.filterExpansion
   );
-  const [snackBarMessage, setSnackBarMessage] = useState<string>("");
+  const [snackBar, setSnackBar] = useState<{
+    message: string;
+    variant?: MessageInfoVariant;
+  }>({
+    message: "",
+  });
+
   const [searchSettings, setSearchSettings] = useState<{
     core: OEQ.SearchSettings.Settings | undefined;
     mimeTypeFilters: MimeTypeFilter[];
@@ -232,11 +240,17 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     mimeTypeFilters: [],
   });
 
+  const [
+    currentUser,
+    setCurrentUser,
+  ] = React.useState<OEQ.LegacyContent.CurrentUserDetails>();
+
   const [showRefinePanel, setShowRefinePanel] = useState<boolean>(false);
   const [
     showFavouriteSearchDialog,
     setShowFavouriteSearchDialog,
   ] = useState<boolean>(false);
+  const [alreadyDownloaded, setAlreadyDownloaded] = useState<boolean>(false);
 
   const handleError = useCallback(
     (error: Error) => {
@@ -284,30 +298,39 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       (location.state as SearchPageHistoryState)
         ? Promise.resolve(undefined)
         : queryStringParamsToSearchOptions(location),
+      getCurrentUserDetails(),
     ])
-      .then(([searchSettings, mimeTypeFilters, queryStringSearchOptions]) => {
-        setSearchSettings({
-          core: searchSettings,
-          mimeTypeFilters: mimeTypeFilters,
-        });
-        search(
-          queryStringSearchOptions
-            ? {
-                ...queryStringSearchOptions,
-                dateRangeQuickModeEnabled: false,
-                sortOrder:
-                  queryStringSearchOptions.sortOrder ??
-                  searchSettings.defaultSearchSort,
-                displayMode: "list",
-              }
-            : {
-                ...searchPageOptions,
-                sortOrder:
-                  searchPageOptions.sortOrder ??
-                  searchSettings.defaultSearchSort,
-              }
-        );
-      })
+      .then(
+        ([
+          searchSettings,
+          mimeTypeFilters,
+          queryStringSearchOptions,
+          currentUserDetails,
+        ]) => {
+          setSearchSettings({
+            core: searchSettings,
+            mimeTypeFilters: mimeTypeFilters,
+          });
+          setCurrentUser(currentUserDetails);
+          search(
+            queryStringSearchOptions
+              ? {
+                  ...queryStringSearchOptions,
+                  dateRangeQuickModeEnabled: false,
+                  sortOrder:
+                    queryStringSearchOptions.sortOrder ??
+                    searchSettings.defaultSearchSort,
+                  displayMode: "list",
+                }
+              : {
+                  ...searchPageOptions,
+                  sortOrder:
+                    searchPageOptions.sortOrder ??
+                    searchSettings.defaultSearchSort,
+                }
+          );
+        }
+      )
       .catch((e) => {
         handleError(e);
       });
@@ -372,6 +395,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
             });
             // scroll back up to the top of the page
             if (state.scrollToTop) window.scrollTo(0, 0);
+            // Allow downloading new search result.
+            setAlreadyDownloaded(false);
           }
         )
         .catch(handleError);
@@ -470,6 +495,19 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     setFilterExpansion(false);
   };
 
+  const handleExport = () => {
+    if (searchPageOptions.collections?.length !== 1) {
+      setSnackBar({
+        message: searchStrings.export.collectionLimit,
+        variant: "warning",
+      });
+      return false;
+    }
+    // Do not allow exporting the same search result again until searchPageOptions gets changed.
+    setAlreadyDownloaded(true);
+    return true;
+  };
+
   const handleCopySearch = () => {
     //base institution urls have a trailing / that we need to get rid of
     const instUrl = AppConfig.baseUrl.slice(0, -1);
@@ -480,7 +518,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     navigator.clipboard
       .writeText(searchUrl)
       .then(() => {
-        setSnackBarMessage(searchStrings.shareSearchConfirmationText);
+        setSnackBar({ message: searchStrings.shareSearchConfirmationText });
       })
       .catch(() => handleError);
   };
@@ -493,9 +531,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
     return addFavouriteSearch(name, url)
       .then(() =>
-        setSnackBarMessage(
-          searchStrings.favouriteSearch.saveSearchConfirmationText
-        )
+        setSnackBar({
+          message: searchStrings.favouriteSearch.saveSearchConfirmationText,
+        })
       )
       .catch(handleError);
   };
@@ -838,6 +876,15 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 onClearSearchOptions={handleClearSearchOptions}
                 onCopySearchLink={handleCopySearch}
                 onSaveSearch={() => setShowFavouriteSearchDialog(true)}
+                exportProps={{
+                  isExportPermitted:
+                    currentUser?.canDownloadSearchResult ?? false,
+                  exportLinkProps: {
+                    url: buildExportUrl(searchPageOptions),
+                    onExport: handleExport,
+                    alreadyExported: alreadyDownloaded,
+                  },
+                }}
               >
                 {renderSearchResults()}
               </SearchResultList>
@@ -851,10 +898,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         </Hidden>
       </Grid>
       <MessageInfo
-        open={!!snackBarMessage}
-        onClose={() => setSnackBarMessage("")}
-        title={snackBarMessage}
-        variant="success"
+        open={!!snackBar.message}
+        onClose={() => setSnackBar({ message: "" })}
+        title={snackBar.message}
+        variant={snackBar.variant ?? "success"}
       />
       <Hidden mdUp>
         <Drawer

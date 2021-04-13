@@ -38,6 +38,10 @@ import * as React from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { isSelectionSessionOpen } from "../../modules/LegacySelectionSessionModule";
 import { languageStrings } from "../../util/langstrings";
+import {
+  ExportSearchResultLink,
+  ExportSearchResultLinkProps,
+} from "./ExportSearchResultLink";
 import SearchOrderSelect, { SearchOrderSelectProps } from "./SearchOrderSelect";
 import { SearchPagination, SearchPaginationProps } from "./SearchPagination";
 import SearchResult from "./SearchResult";
@@ -99,6 +103,13 @@ export interface SearchResultListProps {
    * Props for the Icon button that controls whether show Refine panel in small screens
    */
   refineSearchProps: RefineSearchProps;
+  /**
+   * Props required by ExportSearchResultLink.
+   */
+  exportProps: {
+    isExportPermitted: boolean;
+    exportLinkProps: ExportSearchResultLinkProps;
+  };
 }
 
 const searchPageStrings = languageStrings.searchpage;
@@ -124,6 +135,7 @@ export const SearchResultList = ({
   onClearSearchOptions,
   onCopySearchLink,
   onSaveSearch,
+  exportProps: { isExportPermitted, exportLinkProps },
 }: SearchResultListProps) => {
   const classes = useStyles();
   const inSelectionSession: boolean = isSelectionSessionOpen();
@@ -167,6 +179,11 @@ export const SearchResultList = ({
                 <FavoriteBorderIcon />
               </TooltipIconButton>
             </Grid>
+            {isExportPermitted && (
+              <Grid item>
+                <ExportSearchResultLink {...exportLinkProps} />
+              </Grid>
+            )}
             <Hidden mdUp>
               <Grid item>
                 <TooltipIconButton

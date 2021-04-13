@@ -356,6 +356,11 @@ export const languageStrings = {
     categorySelector: {
       title: "Classifications",
     },
+    export: {
+      collectionLimit: "Download limited to one collection.",
+      exportCompleted: "File downloaded",
+      title: "Download search result to a CSV file",
+    },
     favouriteItem: {
       removeAlert: "Are you sure you want to remove from your favourites?",
       tags: {

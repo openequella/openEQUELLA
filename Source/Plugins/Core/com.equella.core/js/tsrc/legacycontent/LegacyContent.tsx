@@ -58,6 +58,7 @@ export const guestUser: OEQ.LegacyContent.CurrentUserDetails = {
     notifications: 0,
   },
   menuGroups: [],
+  canDownloadSearchResult: false,
 };
 
 export interface ExternalRedirect {

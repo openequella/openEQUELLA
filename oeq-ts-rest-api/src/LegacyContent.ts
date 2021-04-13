@@ -44,6 +44,7 @@ export interface CurrentUserDetails {
   prefsEditable: boolean;
   menuGroups: Array<Array<MenuItem>>;
   counts?: ItemCounts;
+  canDownloadSearchResult: boolean;
 }
 
 /**

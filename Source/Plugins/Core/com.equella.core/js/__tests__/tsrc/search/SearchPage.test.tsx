@@ -48,6 +48,7 @@ import {
   getSearchResult,
   getSearchResultsCustom,
 } from "../../../__mocks__/SearchResult.mock";
+import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
 import * as AdvancedSearchModule from "../../../tsrc/modules/AdvancedSearchModule";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
@@ -94,6 +95,7 @@ const defaultTheme = createMuiTheme({
 });
 const mockCollections = jest.spyOn(CollectionsModule, "collectionListSummary");
 const mockListUsers = jest.spyOn(UserModule, "listUsers");
+const mockCurrentUser = jest.spyOn(UserModule, "getCurrentUserDetails");
 const mockListClassification = jest.spyOn(
   SearchFacetsModule,
   "listClassifications"
@@ -134,6 +136,7 @@ const searchSettingPromise = mockSearchSettings.mockResolvedValue(
 const searchPromise = mockSearch.mockResolvedValue(getSearchResult);
 mockCollections.mockResolvedValue(getCollectionMap);
 mockListUsers.mockResolvedValue(UserSearchMock.users);
+mockCurrentUser.mockResolvedValue(getCurrentUserMock);
 mockListClassification.mockResolvedValue(CategorySelectorMock.classifications);
 
 // Mock out a collaborator of SearchResult
@@ -1025,4 +1028,67 @@ describe("Changing display mode", () => {
       expect(queryMimeTypesSelector(page)).not.toBeInTheDocument();
     }
   );
+});
+
+describe("Export search result", () => {
+  let page: RenderResult;
+  beforeEach(async () => {
+    page = await renderSearchPage();
+  });
+
+  const selectCollections = async (...collectionNames: string[]) => {
+    userEvent.click(
+      page.getByLabelText(languageStrings.searchpage.collectionSelector.title)
+    );
+    for (const name of collectionNames) {
+      await act(async () => {
+        await userEvent.click(screen.getByText(name));
+      });
+    }
+  };
+
+  const getDownloadButton = () =>
+    page.getByLabelText(languageStrings.searchpage.export.title);
+
+  it("shows a Download Icon button to allow exporting", async () => {
+    await selectCollections(getCollectionMap[0].name);
+    expect(
+      page.queryByLabelText(languageStrings.searchpage.export.title)
+    ).toBeInTheDocument();
+  });
+
+  it("shows a Tick Icon to indicate search result is downloaded already", async () => {
+    await selectCollections(getCollectionMap[0].name);
+    userEvent.click(getDownloadButton());
+    expect(
+      page.queryByTitle(languageStrings.searchpage.export.exportCompleted)
+    ).toBeInTheDocument();
+  });
+
+  it.each([
+    ["zero", []],
+    ["more than one", getCollectionMap.slice(0, 2).map((c) => c.name)],
+  ])(
+    "disables export if %s collection is selected",
+    async (collectionNumber: string, collections: string[]) => {
+      await selectCollections(...collections);
+      userEvent.click(getDownloadButton());
+      expect(
+        screen.getByText(languageStrings.searchpage.export.collectionLimit)
+      ).toBeInTheDocument();
+    }
+  );
+
+  it("doesn't show the Download button if user have no permission", async () => {
+    // Remove previously rendered result so that we can mock the current user details.
+    page.unmount();
+    mockCurrentUser.mockResolvedValueOnce({
+      ...getCurrentUserMock,
+      canDownloadSearchResult: false,
+    });
+    const { queryByLabelText } = await renderSearchPage();
+    expect(
+      queryByLabelText(languageStrings.searchpage.export.title)
+    ).not.toBeInTheDocument();
+  });
 });
