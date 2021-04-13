@@ -3714,8 +3714,8 @@ Item summary styling
 .itemsummary-layout #col1 .displayNodeHalf {
   display: inline-block;
   vertical-align: top;
-  margin: -15px 0;
-  width: 49%;
+  margin: -$doubleMargin $doubleMargin 0 0;
+  width: calc(50% - #{2 * $doubleMargin});
 }
 
 .displayNodes p {
