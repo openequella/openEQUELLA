@@ -21,7 +21,6 @@ import PhotoLibraryIcon from "@material-ui/icons/PhotoLibrary";
 import VideoLibraryIcon from "@material-ui/icons/VideoLibrary";
 import * as React from "react";
 import { ReactElement } from "react";
-import { DisplayMode } from "../SearchPage";
 import { languageStrings } from "../../util/langstrings";
 
 const {
@@ -29,6 +28,8 @@ const {
   modeGalleryVideo: labelVideoGallery,
   modeItemList: labelItemList,
 } = languageStrings.searchpage.displayModeSelector;
+
+export type DisplayMode = "list" | "gallery-image" | "gallery-video";
 
 export interface DisplayModeSelectorProps {
   /**

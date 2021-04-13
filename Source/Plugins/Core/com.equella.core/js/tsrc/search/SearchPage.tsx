@@ -75,7 +75,9 @@ import SearchBar from "../search/components/SearchBar";
 import { languageStrings } from "../util/langstrings";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
 import { CollectionSelector } from "./components/CollectionSelector";
-import DisplayModeSelector from "./components/DisplayModeSelector";
+import DisplayModeSelector, {
+  DisplayMode,
+} from "./components/DisplayModeSelector";
 import { FavouriteSearchDialog } from "./components/FavouriteSearchDialog";
 import GallerySearchResult from "./components/GallerySearchResult";
 import { MimeTypeFilterSelector } from "./components/MimeTypeFilterSelector";
@@ -98,8 +100,6 @@ const {
 const { title: collectionSelectorTitle } = searchStrings.collectionSelector;
 const { title: displayModeSelectorTitle } = searchStrings.displayModeSelector;
 
-export type DisplayMode = "list" | "gallery-image" | "gallery-video";
-
 /**
  * Type of search options that are specific to Search page presentation layer.
  */
@@ -108,10 +108,6 @@ export interface SearchPageOptions extends SearchOptions {
    * Whether to enable Quick mode (true) or to use custom date pickers (false).
    */
   dateRangeQuickModeEnabled: boolean;
-  /**
-   * How to display the search results - also determines the type of results.
-   */
-  displayMode: DisplayMode;
 }
 
 /**
@@ -320,7 +316,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                   sortOrder:
                     queryStringSearchOptions.sortOrder ??
                     searchSettings.defaultSearchSort,
-                  displayMode: "list",
                 }
               : {
                   ...searchPageOptions,
