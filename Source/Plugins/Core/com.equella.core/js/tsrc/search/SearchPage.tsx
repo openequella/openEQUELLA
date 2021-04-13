@@ -437,7 +437,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     );
 
   const handleWildcardModeChanged = (wildcardMode: boolean) =>
-    // We use `rawMode` which is the logic NOT of `wildcardMode` at lower level.
+    // `wildcardMode` is a presentation concept, in the lower levels its inverse is the value for `rawMode`.
     search({ ...searchPageOptions, rawMode: !wildcardMode });
 
   const handleQuickDateRangeModeChange = (
