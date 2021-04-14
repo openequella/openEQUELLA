@@ -75,7 +75,7 @@ class SearchResource {
   @HEAD
   @Path("/export")
   def exportCSV(@BeanParam params: SearchParam): Response = {
-    validateExport(params)
+    confirmExport(params)
     Response.ok().build()
   }
 
@@ -83,7 +83,7 @@ class SearchResource {
   @Produces(Array("text/csv"))
   @Path("/export")
   def exportCSV(@BeanParam params: SearchParam, @Context resp: HttpServletResponse): Unit = {
-    validateExport(params)
+    confirmExport(params)
 
     val collectionId = params.collections(0)
     val schema: Schema = getSchemaFromCollection(collectionId) match {
@@ -119,7 +119,7 @@ class SearchResource {
     mapper.writeValueAsString(params)
   }
 
-  private def validateExport(params: SearchParam): Unit = {
+  private def confirmExport(params: SearchParam): Unit = {
     if (params.collections.length != 1) {
       throw new BadRequestException("Download limited to one collection.")
     }
