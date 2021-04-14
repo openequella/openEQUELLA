@@ -645,7 +645,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       component: (
         <DisplayModeSelector
           onChange={handleDisplayModeChanged}
-          value={searchPageOptions.displayMode}
+          value={searchPageOptions.displayMode ?? "list"}
         />
       ),
       disabled: false,

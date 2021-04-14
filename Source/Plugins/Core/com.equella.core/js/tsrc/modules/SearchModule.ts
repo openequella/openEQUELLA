@@ -115,7 +115,7 @@ export interface SearchOptions {
   /**
    * How to display the search results - also determines the type of results.
    */
-  displayMode: DisplayMode;
+  displayMode?: DisplayMode;
 }
 
 /**
