@@ -23,27 +23,24 @@ import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.tle.beans.entity.Schema
 import com.tle.beans.item.ItemIdKey
 import com.tle.common.search.DefaultSearch
+import com.tle.common.security.SecurityConstants
 import com.tle.core.item.serializer.ItemSerializerItemBean
 import com.tle.core.services.item.FreetextResult
+import com.tle.exceptions.PrivilegeRequiredException
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean
-import com.tle.web.api.search.ExportCSVHelper.{
-  buildCSVHeaders,
-  checkDownloadACL,
-  getSchemaFromCollection,
-  writeRow
-}
+import com.tle.web.api.search.ExportCSVHelper.{buildCSVHeaders, getSchemaFromCollection, writeRow}
 import com.tle.web.api.search.SearchHelper._
 import com.tle.web.api.search.model.{SearchParam, SearchResult, SearchResultItem}
 import io.swagger.annotations.{Api, ApiOperation}
 
 import javax.ws.rs.core.{Context, Response}
-import javax.ws.rs.{BadRequestException, BeanParam, GET, NotFoundException, Path, Produces}
+import javax.ws.rs.{BadRequestException, BeanParam, GET, HEAD, NotFoundException, Path, Produces}
 import org.jboss.resteasy.annotations.cache.NoCache
 
 import java.io.BufferedOutputStream
 import scala.collection.JavaConverters._
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import javax.servlet.http.HttpServletResponse
 
 @NoCache
 @Path("search2")
@@ -75,16 +72,19 @@ class SearchResource {
     Response.ok.entity(result).build()
   }
 
+  @HEAD
+  @Path("/export")
+  def exportCSV(@BeanParam params: SearchParam): Response = {
+    validateExport(params)
+    Response.ok().build()
+  }
+
   @GET
   @Produces(Array("text/csv"))
   @Path("/export")
-  def exportCSV(@BeanParam params: SearchParam,
-                @Context req: HttpServletRequest,
-                @Context resp: HttpServletResponse): Unit = {
-    checkDownloadACL()
-    if (params.collections.length != 1) {
-      throw new BadRequestException("Only one Collection is allowed")
-    }
+  def exportCSV(@BeanParam params: SearchParam, @Context resp: HttpServletResponse): Unit = {
+    validateExport(params)
+
     val collectionId = params.collections(0)
     val schema: Schema = getSchemaFromCollection(collectionId) match {
       case Some(s) => s
@@ -117,6 +117,17 @@ class SearchResource {
       .build()
 
     mapper.writeValueAsString(params)
+  }
+
+  private def validateExport(params: SearchParam): Unit = {
+    if (params.collections.length != 1) {
+      throw new BadRequestException("Download limited to one collection.")
+    }
+    if (LegacyGuice.aclManager
+          .filterNonGrantedPrivileges(SecurityConstants.EXPORT_SEARCH_RESULT)
+          .isEmpty) {
+      throw new PrivilegeRequiredException(SecurityConstants.EXPORT_SEARCH_RESULT)
+    }
   }
 }
 
