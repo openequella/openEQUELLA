@@ -62,6 +62,7 @@ import {
   DateRange,
   defaultPagedSearchResult,
   defaultSearchOptions,
+  DisplayMode,
   generateQueryStringFromSearchOptions,
   getPartialSearchOptions,
   queryStringParamsToSearchOptions,
@@ -98,8 +99,6 @@ const {
 const { title: collectionSelectorTitle } = searchStrings.collectionSelector;
 const { title: displayModeSelectorTitle } = searchStrings.displayModeSelector;
 
-export type DisplayMode = "list" | "gallery-image" | "gallery-video";
-
 /**
  * Type of search options that are specific to Search page presentation layer.
  */
@@ -108,10 +107,6 @@ export interface SearchPageOptions extends SearchOptions {
    * Whether to enable Quick mode (true) or to use custom date pickers (false).
    */
   dateRangeQuickModeEnabled: boolean;
-  /**
-   * How to display the search results - also determines the type of results.
-   */
-  displayMode: DisplayMode;
 }
 
 /**
@@ -320,7 +315,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                   sortOrder:
                     queryStringSearchOptions.sortOrder ??
                     searchSettings.defaultSearchSort,
-                  displayMode: "list",
                 }
               : {
                   ...searchPageOptions,
@@ -650,7 +644,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       component: (
         <DisplayModeSelector
           onChange={handleDisplayModeChanged}
-          value={searchPageOptions.displayMode}
+          value={searchPageOptions.displayMode ?? "list"}
         />
       ),
       disabled: false,

@@ -30,6 +30,7 @@ import {
   Record,
   Static,
   String,
+  Undefined,
   Union,
   Unknown,
 } from "runtypes";
@@ -42,6 +43,7 @@ import {
   MimeTypeFilter,
 } from "./SearchFilterSettingsModule";
 import { resolveUsers } from "./UserModule";
+import { pipe } from "fp-ts/function";
 
 /**
  * Type of all search options on Search page
@@ -110,6 +112,10 @@ export interface SearchOptions {
    * @see OEQ.Search.SearchParams for examples
    */
   musts?: OEQ.Search.Must[];
+  /**
+   * How to display the search results - also determines the type of results.
+   */
+  displayMode?: DisplayMode;
 }
 
 /**
@@ -143,12 +149,21 @@ const LegacySearchParams = Union(
   Literal("owner"),
   Literal("in"),
   Literal("mt"),
-  Literal("_int.mimeTypes")
+  Literal("_int.mimeTypes"),
+  Literal("type")
 );
 
 type LegacyParams = Static<typeof LegacySearchParams>;
 
 const isDate = (value: unknown): value is Date => value instanceof Date;
+
+const DisplayModeRuntypes = Union(
+  Literal("list"),
+  Literal("gallery-image"),
+  Literal("gallery-video")
+);
+
+export type DisplayMode = Static<typeof DisplayModeRuntypes>;
 
 /**
  * Represents the shape of data returned from generateQueryStringFromSearchOptions
@@ -185,6 +200,7 @@ const DehydratedSearchOptionsRunTypes = Partial({
   ),
   searchAttachments: Boolean,
   mimeTypeFilters: RuntypeArray(Record({ id: String })),
+  displayMode: DisplayModeRuntypes,
 });
 
 type DehydratedSearchOptions = Static<typeof DehydratedSearchOptionsRunTypes>;
@@ -221,6 +237,7 @@ export const defaultSearchOptions: SearchOptions = {
   owner: undefined,
   mimeTypes: [],
   mimeTypeFilters: [],
+  displayMode: "list",
 };
 
 export const defaultPagedSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> = {
@@ -543,6 +560,22 @@ export const legacyQueryStringToSearchOptions = async (
     )(rangeType.toLowerCase() as RangeType);
   };
 
+  const displayMode: DisplayMode = pipe(
+    getQueryParam("type"),
+    match(
+      // When type is 'standard' or undefined, default to 'list'.
+      [Union(Literal("standard"), Undefined), (): DisplayMode => "list"],
+      [Literal("gallery"), (): DisplayMode => "gallery-image"],
+      [Literal("video"), (): DisplayMode => "gallery-video"],
+      [
+        Unknown,
+        () => {
+          throw new Error("Unknown Legacy display mode");
+        },
+      ]
+    )
+  );
+
   const parseCollectionUuid = async (
     collectionUuid: string | undefined
   ): Promise<Collection[] | undefined> => {
@@ -583,6 +616,7 @@ export const legacyQueryStringToSearchOptions = async (
     mimeTypeFilters,
     externalMimeTypes: getExternalMIMETypes(),
     rawMode: true,
+    displayMode,
   };
   return searchOptions;
 };
