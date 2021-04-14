@@ -76,6 +76,18 @@ public class Search2ExportTest extends AbstractRestApiTest {
     assertEquals(headers.length, 29);
   }
 
+  @Test(description = "Long query string should not break the export")
+  public void exportWithLongQueryString() throws IOException {
+    NameValuePair[] queryStrings = Arrays.copyOf(defaultQueryStrings, 4);
+    queryStrings[3] =
+        new NameValuePair(
+            "query",
+            "LongStringb2be4e8e-a0d4-4e6a-b9ff-4c65a7c8024eb2be4e8e-a0d4-4e6a-b9ff-4c65a7c8024eb2be4e8e-a0d4-4e6a-b9ff-4c65a7c8024eb2be4e8e-a0d4-4e6a-b9ff-4c65a7c8024eb2be4e8e-a0d4-4e6a-b9ff-4c65a7c8024eb2be4e8e-a0d4-4e6a-b9ff-4c65a7c8024eb2be4e8e-a0d4-4e6a-b9ff-4c65a7c8024e");
+    HttpMethod method = buildExportRequest(queryStrings);
+    int statusCode = makeClientRequest(method);
+    assertEquals(statusCode, 200);
+  }
+
   private HttpMethod buildExportRequest(NameValuePair[] queryStrings) {
     final HttpMethod method = new GetMethod(EXPORT_API_ENDPOINT);
     method.addRequestHeader("accept", "text/csv");

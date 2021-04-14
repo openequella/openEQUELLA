@@ -18,6 +18,8 @@
 
 package com.tle.web.api.search
 
+import com.fasterxml.jackson.databind.json.JsonMapper
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.tle.beans.entity.Schema
 import com.tle.beans.item.ItemIdKey
 import com.tle.common.search.DefaultSearch
@@ -90,12 +92,7 @@ class SearchResource {
         throw new NotFoundException(s"Failed to find Schema for Collection: $collectionId")
     }
 
-    LegacyGuice.auditLogService.logGeneric("Download",
-                                           "SearchResult",
-                                           "CSV",
-                                           req.getQueryString,
-                                           null,
-                                           null)
+    LegacyGuice.auditLogService.logSearchExport("CSV", convertParamsToJsonString(params))
 
     resp.setContentType("text/csv")
     resp.setHeader("Content-Disposition", " attachment; filename=search.csv")
@@ -111,6 +108,15 @@ class SearchResource {
                                      writeRow(bos, _))
 
     bos.close()
+  }
+
+  private def convertParamsToJsonString(params: SearchParam): String = {
+    val mapper = JsonMapper
+      .builder()
+      .addModule(DefaultScalaModule)
+      .build()
+
+    mapper.writeValueAsString(params)
   }
 }
 
