@@ -62,6 +62,7 @@ import {
   DateRange,
   defaultPagedSearchResult,
   defaultSearchOptions,
+  DisplayMode,
   generateQueryStringFromSearchOptions,
   getPartialSearchOptions,
   queryStringParamsToSearchOptions,
@@ -75,9 +76,7 @@ import SearchBar from "../search/components/SearchBar";
 import { languageStrings } from "../util/langstrings";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
 import { CollectionSelector } from "./components/CollectionSelector";
-import DisplayModeSelector, {
-  DisplayMode,
-} from "./components/DisplayModeSelector";
+import DisplayModeSelector from "./components/DisplayModeSelector";
 import { FavouriteSearchDialog } from "./components/FavouriteSearchDialog";
 import GallerySearchResult from "./components/GallerySearchResult";
 import { MimeTypeFilterSelector } from "./components/MimeTypeFilterSelector";

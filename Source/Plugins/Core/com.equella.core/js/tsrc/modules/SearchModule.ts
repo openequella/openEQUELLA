@@ -35,7 +35,6 @@ import {
   Unknown,
 } from "runtypes";
 import { API_BASE_URL } from "../AppConfig";
-import { DisplayMode } from "../search/components/DisplayModeSelector";
 import { getISODateString } from "../util/Date";
 import { Collection, collectionListSummary } from "./CollectionsModule";
 import { SelectedCategories } from "./SearchFacetsModule";
@@ -44,6 +43,7 @@ import {
   MimeTypeFilter,
 } from "./SearchFilterSettingsModule";
 import { resolveUsers } from "./UserModule";
+import { pipe } from "fp-ts/function";
 
 /**
  * Type of all search options on Search page
@@ -157,6 +157,14 @@ type LegacyParams = Static<typeof LegacySearchParams>;
 
 const isDate = (value: unknown): value is Date => value instanceof Date;
 
+const DisplayModeRuntypes = Union(
+  Literal("list"),
+  Literal("gallery-image"),
+  Literal("gallery-video")
+);
+
+export type DisplayMode = Static<typeof DisplayModeRuntypes>;
+
 /**
  * Represents the shape of data returned from generateQueryStringFromSearchOptions
  */
@@ -192,11 +200,7 @@ const DehydratedSearchOptionsRunTypes = Partial({
   ),
   searchAttachments: Boolean,
   mimeTypeFilters: RuntypeArray(Record({ id: String })),
-  displayMode: Union(
-    Literal("list"),
-    Literal("gallery-image"),
-    Literal("gallery-video")
-  ),
+  displayMode: DisplayModeRuntypes,
 });
 
 type DehydratedSearchOptions = Static<typeof DehydratedSearchOptionsRunTypes>;
@@ -556,7 +560,8 @@ export const legacyQueryStringToSearchOptions = async (
     )(rangeType.toLowerCase() as RangeType);
   };
 
-  const getDisplayMode = (): DisplayMode =>
+  const displayMode: DisplayMode = pipe(
+    getQueryParam("type"),
     match(
       // When type is 'standard' or undefined, default to 'list'.
       [Union(Literal("standard"), Undefined), (): DisplayMode => "list"],
@@ -568,7 +573,8 @@ export const legacyQueryStringToSearchOptions = async (
           throw new Error("Unknown Legacy display mode");
         },
       ]
-    )(getQueryParam("type"));
+    )
+  );
 
   const parseCollectionUuid = async (
     collectionUuid: string | undefined
@@ -610,7 +616,7 @@ export const legacyQueryStringToSearchOptions = async (
     mimeTypeFilters,
     externalMimeTypes: getExternalMIMETypes(),
     rawMode: true,
-    displayMode: getDisplayMode(),
+    displayMode,
   };
   return searchOptions;
 };
