@@ -333,7 +333,7 @@ export const languageStrings = {
     shareSearchHelperText: "Copy search link to clipboard",
     shareSearchConfirmationText: "Search link saved to clipboard",
     displayModeSelector: {
-      title: "Display Mode",
+      title: "Display mode",
       modeItemList: "Item List",
       modeGalleryImage: "Image Gallery",
       modeGalleryVideo: "Video Gallery",

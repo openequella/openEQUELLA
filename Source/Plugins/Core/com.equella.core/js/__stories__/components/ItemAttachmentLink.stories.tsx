@@ -15,8 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta } from "@storybook/react";
-import { Story } from "@storybook/react/dist/client/preview/types-6-0";
+import { Meta, Story } from "@storybook/react";
 import * as React from "react";
 import ItemAttachmentLink, {
   ItemAttachmentLinkProps,
