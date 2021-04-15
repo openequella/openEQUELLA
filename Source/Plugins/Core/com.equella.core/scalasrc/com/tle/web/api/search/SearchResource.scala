@@ -83,15 +83,7 @@ class SearchResource {
   @Produces(Array("text/csv"))
   @Path("/export")
   def exportCSV(@BeanParam params: SearchParam, @Context resp: HttpServletResponse): Unit = {
-    confirmExport(params)
-
-    val collectionId = params.collections(0)
-    val schema: Schema = getSchemaFromCollection(collectionId) match {
-      case Some(s) => s
-      case None =>
-        throw new NotFoundException(s"Failed to find Schema for Collection: $collectionId")
-    }
-
+    val schema = confirmExport(params)
     LegacyGuice.auditLogService.logSearchExport("CSV", convertParamsToJsonString(params))
 
     resp.setContentType("text/csv")
@@ -119,7 +111,9 @@ class SearchResource {
     mapper.writeValueAsString(params)
   }
 
-  private def confirmExport(params: SearchParam): Unit = {
+  // Check ACL, number of Collections and whether Schema of the Collection can be found.
+  // Return the Schema if all checks pass.
+  private def confirmExport(params: SearchParam): Schema = {
     if (params.collections.length != 1) {
       throw new BadRequestException("Download limited to one collection.")
     }
@@ -127,6 +121,13 @@ class SearchResource {
           .filterNonGrantedPrivileges(SecurityConstants.EXPORT_SEARCH_RESULT)
           .isEmpty) {
       throw new PrivilegeRequiredException(SecurityConstants.EXPORT_SEARCH_RESULT)
+    }
+
+    val collectionId = params.collections(0)
+    getSchemaFromCollection(collectionId) match {
+      case Some(s) => s
+      case None =>
+        throw new NotFoundException(s"Failed to find Schema for Collection: $collectionId")
     }
   }
 }
