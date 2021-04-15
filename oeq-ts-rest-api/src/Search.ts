@@ -421,6 +421,7 @@ export const buildExportUrl = (apiBasePath: string, params: SearchParams) =>
 
 /**
  * Communicate with REST endpoint 'search2/export' to confirm if an export request is valid.
+ *
  * @param apiBasePath Base URI to the oEQ institution and API.
  * @param params Query parameters as search criteria.
  */

@@ -80,6 +80,7 @@ export const HEAD = (
 
 /**
  * Executes a HTTP PUT request for a given path.
+ *
  * @param path The URL path for the target HEAD
  * @param data The data to be sent in POST request
  */
