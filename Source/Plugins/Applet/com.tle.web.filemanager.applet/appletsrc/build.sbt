@@ -1,4 +1,4 @@
-val springVersion = "5.3.5"
+val springVersion = "5.3.6"
 
 libraryDependencies ++= Seq(
   "com.google.guava"         % "guava"           % "18.0",
