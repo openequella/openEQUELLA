@@ -40,11 +40,7 @@ public class Search2ExportTest extends AbstractRestApiTest {
   public void withoutACL() throws IOException {
     // Login as a low privilege user.
     makeClientRequest(buildLoginMethod(AUTOTEST_LOW_PRIVILEGE_LOGON, PASSWORD));
-    List<HttpMethod> requests = buildExportRequests(null);
-    for (HttpMethod request : requests) {
-      int statusCode = makeClientRequest(request);
-      assertEquals(statusCode, 403);
-    }
+    assertResponseCode(null, 403);
   }
 
   @Test(description = "Request to export in format other than CSV should fail")
@@ -61,12 +57,7 @@ public class Search2ExportTest extends AbstractRestApiTest {
   public void onlyOneCollection() throws IOException {
     NameValuePair[] queryStrings = Arrays.copyOf(defaultQueryStrings, 4);
     queryStrings[3] = new NameValuePair("collections", "b2be4e8e-a0d4-4e6a-b9ff-4c65a7c8024e");
-
-    List<HttpMethod> requests = buildExportRequests(queryStrings);
-    for (HttpMethod request : requests) {
-      int statusCode = makeClientRequest(request);
-      assertEquals(statusCode, 400);
-    }
+    assertResponseCode(queryStrings, 400);
   }
 
   @Test(description = "A standard export")
@@ -96,11 +87,14 @@ public class Search2ExportTest extends AbstractRestApiTest {
         new NameValuePair(
             "query",
             "LongStringb2be4e8e-a0d4-4e6a-b9ff-4c65a7c8024eb2be4e8e-a0d4-4e6a-b9ff-4c65a7c8024eb2be4e8e-a0d4-4e6a-b9ff-4c65a7c8024eb2be4e8e-a0d4-4e6a-b9ff-4c65a7c8024eb2be4e8e-a0d4-4e6a-b9ff-4c65a7c8024eb2be4e8e-a0d4-4e6a-b9ff-4c65a7c8024eb2be4e8e-a0d4-4e6a-b9ff-4c65a7c8024e");
+    assertResponseCode(queryStrings, 200);
+  }
 
-    List<HttpMethod> requests = buildExportRequests(null);
+  private void assertResponseCode(NameValuePair[] queryStrings, int expectCode) throws IOException {
+    List<HttpMethod> requests = buildExportRequests(queryStrings);
     for (HttpMethod request : requests) {
       int statusCode = makeClientRequest(request);
-      assertEquals(statusCode, 200);
+      assertEquals(statusCode, expectCode);
     }
   }
 
