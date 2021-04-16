@@ -17,7 +17,7 @@
  */
 import { stringify } from 'query-string';
 import { is } from 'typescript-is';
-import { GET } from './AxiosInstance';
+import { GET, HEAD } from './AxiosInstance';
 import * as Common from './Common';
 import * as Utils from './Utils';
 
@@ -418,3 +418,14 @@ export const search = (
  */
 export const buildExportUrl = (apiBasePath: string, params: SearchParams) =>
   apiBasePath + EXPORT_PATH + '?' + stringify(params);
+
+/**
+ * Communicate with REST endpoint 'search2/export' to confirm if an export request is valid.
+ *
+ * @param apiBasePath Base URI to the oEQ institution and API.
+ * @param params Query parameters as search criteria.
+ */
+export const confirmExportRequest = (
+  apiBasePath: string,
+  params: SearchParams
+) => HEAD(apiBasePath + EXPORT_PATH, params);
