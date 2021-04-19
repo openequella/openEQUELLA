@@ -359,6 +359,11 @@ export const languageStrings = {
       collectionLimit: "Download limited to one collection.",
       exportCompleted: "File downloaded",
       title: "Download search result to a CSV file",
+      errorMessages: {
+        badRequest: "Failed to export as this request is invalid.",
+        unauthorised: "Sorry, you are not authorised to export this search.",
+        notFound: "Failed to find details to export this search.",
+      },
     },
     favouriteItem: {
       removeAlert: "Are you sure you want to remove from your favourites?",

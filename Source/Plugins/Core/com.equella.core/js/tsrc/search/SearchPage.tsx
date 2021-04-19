@@ -509,8 +509,27 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         setAlreadyDownloaded(true);
       })
       .catch((error: OEQ.Errors.ApiError) => {
+        const generateExportErrorMessage = (
+          error: OEQ.Errors.ApiError
+        ): string => {
+          const {
+            badRequest,
+            unauthorised,
+            notFound,
+          } = searchStrings.export.errorMessages;
+          switch (error.status) {
+            case 400:
+              return badRequest;
+            case 403:
+              return unauthorised;
+            case 404:
+              return notFound;
+            default:
+              return error.message;
+          }
+        };
         setSnackBar({
-          message: error.message,
+          message: generateExportErrorMessage(error),
           variant: "warning",
         });
       });
