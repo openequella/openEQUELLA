@@ -129,11 +129,7 @@ export default function SearchBar({
         onKeyDown={handleKeyDown}
         onChange={handleOnChange}
         value={currentQuery}
-        placeholder={
-          wildcardMode
-            ? searchStrings.wildcardSearchEnabledPlaceholder
-            : searchStrings.wildcardSearchDisabledPlaceholder
-        }
+        placeholder={searchStrings.searchBarPlaceholder}
       />
       <Divider className={classes.divider} orientation="vertical" />
       <FormControlLabel

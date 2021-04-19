@@ -326,8 +326,6 @@ export const languageStrings = {
     refineTitle: "Refine search",
     modifiedDate: "Modified",
     wildcardSearch: "Wildcard search",
-    wildcardSearchEnabledPlaceholder: "Search (wildcard)",
-    wildcardSearchDisabledPlaceholder: "Search",
     newSearch: "New search",
     newSearchHelperText: "Clears search text and filters",
     shareSearchHelperText: "Copy search link to clipboard",
@@ -429,6 +427,7 @@ export const languageStrings = {
     searchAttachmentsSelector: {
       title: "Search attachments",
     },
+    searchBarPlaceholder: "Search",
     searchResult: {
       ariaLabel: "Search result list item",
       attachments: "Attachments",
