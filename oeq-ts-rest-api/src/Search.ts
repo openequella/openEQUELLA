@@ -369,7 +369,7 @@ const convertMusts = (musts: Must[]): string[] =>
     []
   );
 
-const processMusts = (musts?: Must[]): string[] | undefined => {
+export const processMusts = (musts?: Must[]): string[] | undefined => {
   if (!musts) {
     return;
   }
@@ -380,6 +380,7 @@ const processMusts = (musts?: Must[]): string[] | undefined => {
   });
   return convertMusts(musts);
 };
+
 const processSearchParams = (
   params?: SearchParams
 ): SearchParamsProcessed | undefined =>

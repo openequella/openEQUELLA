@@ -109,6 +109,14 @@ const mockVideoGallerySearch = jest.spyOn(
   GallerySearchModule,
   "videoGallerySearch"
 );
+const mockListImageGalleryClassifications = jest.spyOn(
+  GallerySearchModule,
+  "listImageGalleryClassifications"
+);
+const mockListVideoGalleryClassifications = jest.spyOn(
+  GallerySearchModule,
+  "listVideoGalleryClassifications"
+);
 const mockSearchSettings = jest.spyOn(
   SearchSettingsModule,
   "getSearchSettingsFromServer"
@@ -999,28 +1007,33 @@ describe("Changing display mode", () => {
     [
       modeGalleryImage,
       mockImageGallerySearch,
+      mockListImageGalleryClassifications,
       transformedBasicImageSearchResponse,
     ],
     [
       modeGalleryVideo,
       mockVideoGallerySearch,
+      mockListVideoGalleryClassifications,
       transformedBasicVideoSearchResponse,
     ],
   ])(
     "supports changing mode - [%s]",
-    async (mode: string, gallerySearch, mockResponse) => {
+    async (mode: string, gallerySearch, listClassifications, mockResponse) => {
       expect(queryListItems().length).toBeGreaterThan(0);
       expect(queryGalleryItems()).toHaveLength(0);
 
-      // Monitor the search function, and change the mode
-      const gallerySearchPromise = gallerySearch.mockResolvedValue(
-        mockResponse
-      );
-      await changeMode(mode);
-      await gallerySearchPromise;
+      // Monitor the search and classifications functions, and change the mode
+      await Promise.all([
+        gallerySearch.mockResolvedValue(mockResponse),
+        listClassifications.mockResolvedValue(
+          CategorySelectorMock.classifications
+        ),
+        changeMode(mode),
+      ]);
 
       // Make sure the search has been triggered
       expect(gallerySearch).toHaveBeenCalledTimes(1);
+      expect(listClassifications).toHaveBeenCalledTimes(1);
 
       // And now check the visual change
       expect(queryGalleryItems().length).toBeGreaterThan(0);
