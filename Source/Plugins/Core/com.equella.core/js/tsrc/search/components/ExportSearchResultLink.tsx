@@ -31,7 +31,7 @@ export interface ExportSearchResultLinkProps {
    *  Handler fired before triggering an export. Return `false` to prevent
    *  an export being triggered.
    */
-  onExport: () => boolean;
+  onExport: () => void;
   /**
    * `true` to show a complete indicator and disable additional clicking.
    */
@@ -44,30 +44,21 @@ const exportStrings = languageStrings.searchpage.export;
  * Build a Download icon button wrapped by a link to export a search result,
  * or a Tick icon to indicate the search result is downloaded already.
  */
-export const ExportSearchResultLink = ({
-  url,
-  onExport,
-  alreadyExported,
-}: ExportSearchResultLinkProps) => {
-  // Prevent the link from following the URL if an export is invalid.
-  const onClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (!onExport()) {
-      e.preventDefault();
-      return false;
-    }
-    return true;
-  };
-
+export const ExportSearchResultLink = React.forwardRef<
+  HTMLAnchorElement,
+  ExportSearchResultLinkProps
+>(({ alreadyExported, url, onExport }, linkRef) => {
   return alreadyExported ? (
     // Just need an Icon instead of an Icon button.
     <Tooltip title={exportStrings.exportCompleted}>
       <DoneIcon color="secondary" />
     </Tooltip>
   ) : (
-    <Link download href={url} onClick={onClick}>
-      <TooltipIconButton title={exportStrings.title}>
+    <>
+      <TooltipIconButton title={exportStrings.title} onClick={onExport}>
         <GetAppIcon />
       </TooltipIconButton>
-    </Link>
+      <Link hidden download href={url} ref={linkRef} />
+    </>
   );
-};
+});

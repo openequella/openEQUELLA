@@ -112,6 +112,7 @@ export interface SearchResultListProps {
    */
   exportProps: {
     isExportPermitted: boolean;
+    linkRef: React.RefObject<HTMLAnchorElement>;
     exportLinkProps: ExportSearchResultLinkProps;
   };
 }
@@ -139,7 +140,7 @@ export const SearchResultList = ({
   onClearSearchOptions,
   onCopySearchLink,
   onSaveSearch,
-  exportProps: { isExportPermitted, exportLinkProps },
+  exportProps: { isExportPermitted, linkRef, exportLinkProps },
 }: SearchResultListProps) => {
   const classes = useStyles();
   const inSelectionSession: boolean = isSelectionSessionOpen();
@@ -185,7 +186,7 @@ export const SearchResultList = ({
             </Grid>
             {isExportPermitted && (
               <Grid item>
-                <ExportSearchResultLink {...exportLinkProps} />
+                <ExportSearchResultLink {...exportLinkProps} ref={linkRef} />
               </Grid>
             )}
             <Hidden mdUp>

@@ -480,6 +480,16 @@ export const buildExportUrl = (searchOptions: SearchOptions): string =>
     buildSearchParams({ ...searchOptions, currentPage: 0 })
   );
 
+/**
+ * Send a request to confirm if an export is valid.
+ * @param searchOptions Search options selected on Search page.
+ */
+export const confirmExport = (searchOptions: SearchOptions): Promise<boolean> =>
+  OEQ.Search.confirmExportRequest(
+    API_BASE_URL,
+    buildSearchParams(searchOptions)
+  );
+
 const findCollectionsByUuid = async (
   collectionUuids: string[]
 ): Promise<Collection[] | undefined> => {
