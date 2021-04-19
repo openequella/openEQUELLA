@@ -186,6 +186,7 @@ export const useStyles = makeStyles((theme: Theme) => {
         overflowWrap: "anywhere",
       },
       button: {
+        //button text should not overflow mid word
         overflowWrap: "break-word",
       },
       a: {
