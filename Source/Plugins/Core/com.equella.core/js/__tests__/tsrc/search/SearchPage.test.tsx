@@ -1057,14 +1057,6 @@ describe("Export search result", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows a Tick Icon to indicate search result is downloaded already", async () => {
-    await selectCollections(getCollectionMap[0].name);
-    userEvent.click(getDownloadButton());
-    expect(
-      page.queryByTitle(languageStrings.searchpage.export.exportCompleted)
-    ).toBeInTheDocument();
-  });
-
   it.each([
     ["zero", []],
     ["more than one", getCollectionMap.slice(0, 2).map((c) => c.name)],

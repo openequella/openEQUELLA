@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Link, Tooltip } from "@material-ui/core";
+import { Tooltip } from "@material-ui/core";
 import DoneIcon from "@material-ui/icons/Done";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import * as React from "react";
@@ -51,14 +51,18 @@ export const ExportSearchResultLink = React.forwardRef<
   return alreadyExported ? (
     // Just need an Icon instead of an Icon button.
     <Tooltip title={exportStrings.exportCompleted}>
-      <DoneIcon color="secondary" />
+      <DoneIcon color="secondary" id="exportCompleted" />
     </Tooltip>
   ) : (
     <>
-      <TooltipIconButton title={exportStrings.title} onClick={onExport}>
+      <TooltipIconButton
+        title={exportStrings.title}
+        onClick={onExport}
+        id="exportSearchResult"
+      >
         <GetAppIcon />
       </TooltipIconButton>
-      <Link hidden download href={url} ref={linkRef} />
+      <a hidden download href={url} ref={linkRef} />
     </>
   );
 });
