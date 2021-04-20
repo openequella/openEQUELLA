@@ -358,7 +358,8 @@ export const languageStrings = {
       exportCompleted: "File downloaded",
       title: "Download search result to a CSV file",
       errorMessages: {
-        badRequest: "Failed to export as this request is invalid.",
+        badRequest:
+          "Export failed due to the server indicating the request was invalid.",
         unauthorised: "Sorry, you are not authorised to export this search.",
         notFound: "Failed to find details to export this search.",
       },

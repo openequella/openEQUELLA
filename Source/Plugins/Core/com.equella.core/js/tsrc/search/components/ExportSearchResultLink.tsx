@@ -28,8 +28,7 @@ export interface ExportSearchResultLinkProps {
    */
   url: string;
   /**
-   *  Handler fired before triggering an export. Return `false` to prevent
-   *  an export being triggered.
+   *  Handler for exporting search result.
    */
   onExport: () => void;
   /**
