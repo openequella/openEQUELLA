@@ -20,7 +20,7 @@ import * as OEQ from "@openequella/rest-api-client";
 
 import { isEqual } from "lodash";
 import * as React from "react";
-import { useCallback, useEffect, useReducer, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { useHistory, useLocation } from "react-router";
 import { generateFromError } from "../api/errors";
 import { AppConfig } from "../AppConfig";
@@ -59,6 +59,7 @@ import {
 } from "../modules/SearchFilterSettingsModule";
 import {
   buildExportUrl,
+  confirmExport,
   DateRange,
   defaultPagedSearchResult,
   defaultSearchOptions,
@@ -246,6 +247,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     setShowFavouriteSearchDialog,
   ] = useState<boolean>(false);
   const [alreadyDownloaded, setAlreadyDownloaded] = useState<boolean>(false);
+  const exportLinkRef = useRef<HTMLAnchorElement>(null);
 
   const handleError = useCallback(
     (error: Error) => {
@@ -496,11 +498,41 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         message: searchStrings.export.collectionLimit,
         variant: "warning",
       });
-      return false;
+      return;
     }
-    // Do not allow exporting the same search result again until searchPageOptions gets changed.
-    setAlreadyDownloaded(true);
-    return true;
+
+    confirmExport(searchPageOptions)
+      .then(() => {
+        // All checks pass so manually trigger a click on the export link.
+        exportLinkRef.current?.click();
+        // Do not allow exporting the same search result again until searchPageOptions gets changed.
+        setAlreadyDownloaded(true);
+      })
+      .catch((error: OEQ.Errors.ApiError) => {
+        const generateExportErrorMessage = (
+          error: OEQ.Errors.ApiError
+        ): string => {
+          const {
+            badRequest,
+            unauthorised,
+            notFound,
+          } = searchStrings.export.errorMessages;
+          switch (error.status) {
+            case 400:
+              return badRequest;
+            case 403:
+              return unauthorised;
+            case 404:
+              return notFound;
+            default:
+              return error.message;
+          }
+        };
+        setSnackBar({
+          message: generateExportErrorMessage(error),
+          variant: "warning",
+        });
+      });
   };
 
   const handleCopySearch = () => {
@@ -874,6 +906,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 exportProps={{
                   isExportPermitted:
                     currentUser?.canDownloadSearchResult ?? false,
+                  linkRef: exportLinkRef,
                   exportLinkProps: {
                     url: buildExportUrl(searchPageOptions),
                     onExport: handleExport,

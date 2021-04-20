@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.tle.beans.entity.Schema
 import com.tle.beans.item.ItemIdKey
+import com.tle.common.i18n.CurrentLocale
 import com.tle.common.search.DefaultSearch
 import com.tle.common.security.SecurityConstants
 import com.tle.core.item.serializer.ItemSerializerItemBean
@@ -29,7 +30,7 @@ import com.tle.core.services.item.FreetextResult
 import com.tle.exceptions.PrivilegeRequiredException
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean
-import com.tle.web.api.search.ExportCSVHelper.{buildCSVHeaders, getSchemaFromCollection, writeRow}
+import com.tle.web.api.search.ExportCSVHelper.{buildCSVHeaders, writeRow}
 import com.tle.web.api.search.SearchHelper._
 import com.tle.web.api.search.model.{SearchParam, SearchResult, SearchResultItem}
 import io.swagger.annotations.{Api, ApiOperation}
@@ -117,17 +118,24 @@ class SearchResource {
     if (params.collections.length != 1) {
       throw new BadRequestException("Download limited to one collection.")
     }
+
+    val collectionId = params.collections(0)
+    val collection = Option(LegacyGuice.itemDefinitionService.getByUuid(collectionId)) match {
+      case Some(c) => c
+      case None    => throw new NotFoundException(s"Failed to find Collection for ID: $collectionId")
+    }
+
     if (LegacyGuice.aclManager
-          .filterNonGrantedPrivileges(SecurityConstants.EXPORT_SEARCH_RESULT)
+          .filterNonGrantedPrivileges(collection, SecurityConstants.EXPORT_SEARCH_RESULT)
           .isEmpty) {
       throw new PrivilegeRequiredException(SecurityConstants.EXPORT_SEARCH_RESULT)
     }
 
-    val collectionId = params.collections(0)
-    getSchemaFromCollection(collectionId) match {
+    Option(collection.getSchema) match {
       case Some(s) => s
       case None =>
-        throw new NotFoundException(s"Failed to find Schema for Collection: $collectionId")
+        throw new NotFoundException(
+          s"Failed to find Schema for Collection: ${CurrentLocale.get(collection.getName)}")
     }
   }
 }

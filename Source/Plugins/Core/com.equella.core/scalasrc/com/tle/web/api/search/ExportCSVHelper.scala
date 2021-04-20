@@ -201,10 +201,6 @@ object ExportCSVHelper {
     })
   }
 
-  def getSchemaFromCollection(collectionId: String): Option[Schema] = {
-    Option(LegacyGuice.itemDefinitionService.getByUuid(collectionId)).map(_.getSchema)
-  }
-
   /**
     * Write CSV contents into a BufferedOutputStream.
     * @param bos BufferedOutputStream A BufferedOutputStream wrapping another underlying OutputStream.
