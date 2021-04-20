@@ -375,20 +375,25 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
       // Depending on what display mode we're in, determine which function we use to list
       // the classifications to match the search.
-      const getClassifications = pipe(state.options.displayMode, (mode) => {
-        switch (mode) {
-          case "gallery-image":
-            return listImageGalleryClassifications;
-          case "gallery-video":
-            return listVideoGalleryClassifications;
-          case "list":
-            return listClassifications;
-          default:
-            throw new TypeError(
-              "Unexpected `displayMode` for determining classifications listing function"
-            );
+      const getClassifications: (
+        _: SearchOptions
+      ) => Promise<Classification[]> = pipe(
+        state.options.displayMode,
+        (mode) => {
+          switch (mode) {
+            case "gallery-image":
+              return listImageGalleryClassifications;
+            case "gallery-video":
+              return listVideoGalleryClassifications;
+            case "list":
+              return listClassifications;
+            default:
+              throw new TypeError(
+                "Unexpected `displayMode` for determining classifications listing function"
+              );
+          }
         }
-      });
+      );
 
       setSearchPageOptions(state.options);
       Promise.all([doSearch(state.options), getClassifications(state.options)])
