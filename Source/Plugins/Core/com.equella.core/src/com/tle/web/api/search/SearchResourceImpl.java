@@ -232,7 +232,7 @@ public class SearchResourceImpl implements EquellaSearchResource {
     // Add 'musts'
     Optional.of(musts)
         .filter(ms -> !ms.isEmpty())
-        .map(ms -> ms.toArray(new String[] {}))
+        .map(ms -> ms.toArray(new String[0]))
         .map(SearchHelper::handleMusts)
         .map(JavaConverters::mapAsJavaMap)
         .ifPresent(
