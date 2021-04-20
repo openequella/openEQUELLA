@@ -17,6 +17,7 @@
  */
 import { Drawer, Grid, Hidden } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
+import { pipe } from "fp-ts/function";
 
 import { isEqual } from "lodash";
 import * as React from "react";
@@ -38,6 +39,8 @@ import { addFavouriteSearch } from "../modules/FavouriteModule";
 import {
   GallerySearchResultItem,
   imageGallerySearch,
+  listImageGalleryClassifications,
+  listVideoGalleryClassifications,
   videoGallerySearch,
 } from "../modules/GallerySearchModule";
 import {
@@ -372,8 +375,30 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         }
       };
 
+      // Depending on what display mode we're in, determine which function we use to list
+      // the classifications to match the search.
+      const getClassifications: (
+        _: SearchOptions
+      ) => Promise<Classification[]> = pipe(
+        state.options.displayMode,
+        (mode) => {
+          switch (mode) {
+            case "gallery-image":
+              return listImageGalleryClassifications;
+            case "gallery-video":
+              return listVideoGalleryClassifications;
+            case "list":
+              return listClassifications;
+            default:
+              throw new TypeError(
+                "Unexpected `displayMode` for determining classifications listing function"
+              );
+          }
+        }
+      );
+
       setSearchPageOptions(state.options);
-      Promise.all([doSearch(state.options), listClassifications(state.options)])
+      Promise.all([doSearch(state.options), getClassifications(state.options)])
         .then(
           ([result, classifications]: [
             SearchPageSearchResult,
