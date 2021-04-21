@@ -45,7 +45,6 @@ import {
 } from "../modules/SearchFilterSettingsModule";
 import {
   DateRange,
-  DisplayMode,
   isDate,
   SearchOptions,
   SearchOptionsFields,
@@ -120,6 +119,18 @@ const LegacySearchParams = Union(
 );
 
 type LegacyParams = Static<typeof LegacySearchParams>;
+
+const DisplayModeRuntypes = Union(
+  Literal("list"),
+  Literal("gallery-image"),
+  Literal("gallery-video")
+);
+
+/**
+ * Type of three display modes.
+ */
+export type DisplayMode = Static<typeof DisplayModeRuntypes>;
+
 /**
  * Represents the shape of data returned from generateQueryStringFromSearchOptions
  */
@@ -143,7 +154,7 @@ const DehydratedSearchPageOptionsRunTypes = Partial({
   ),
   searchAttachments: Boolean,
   mimeTypeFilters: RuntypeArray(Record({ id: String })),
-  //displayMode: DisplayModeRuntypes,
+  displayMode: DisplayModeRuntypes,
   dateRangeQuickModeEnabled: Boolean,
 });
 

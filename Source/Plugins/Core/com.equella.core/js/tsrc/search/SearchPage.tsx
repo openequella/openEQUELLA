@@ -60,7 +60,6 @@ import {
 import {
   buildExportUrl,
   DateRange,
-  DisplayMode,
   searchItems,
   SearchOptions,
   SearchOptionsFields,
@@ -87,6 +86,7 @@ import StatusSelector from "./components/StatusSelector";
 import {
   defaultPagedSearchResult,
   defaultSearchPageOptions,
+  DisplayMode,
   generateQueryStringFromSearchPageOptions,
   generateSearchPageOptionsFromQueryString,
   getPartialSearchOptions,

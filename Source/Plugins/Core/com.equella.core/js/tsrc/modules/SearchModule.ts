@@ -17,7 +17,6 @@
  */
 
 import * as OEQ from "@openequella/rest-api-client";
-import { Literal, Static, Union } from "runtypes";
 import { API_BASE_URL } from "../AppConfig";
 import { buildSearchParams } from "../search/SearchPageHelper";
 import type { Collection } from "./CollectionsModule";
@@ -97,17 +96,6 @@ export interface SearchOptions {
  * The type representing fields of SearchOptions.
  */
 export type SearchOptionsFields = keyof SearchOptions;
-
-export const DisplayModeRuntypes = Union(
-  Literal("list"),
-  Literal("gallery-image"),
-  Literal("gallery-video")
-);
-
-/**
- * Type of three display modes.
- */
-export type DisplayMode = Static<typeof DisplayModeRuntypes>;
 
 /**
  * Represent a date range which has an optional start and end.
