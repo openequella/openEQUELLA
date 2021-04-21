@@ -17,12 +17,23 @@
  */
 
 import * as OEQ from "@openequella/rest-api-client";
+import { Literal, Static, Union } from "runtypes";
 import { API_BASE_URL } from "../AppConfig";
-import { buildSearchParams } from "../search/SearchPageHelper";
+import { buildSearchParams, liveStatuses } from "../search/SearchPageHelper";
 import type { Collection } from "./CollectionsModule";
 import type { SelectedCategories } from "./SearchFacetsModule";
 import type { MimeTypeFilter } from "./SearchFilterSettingsModule";
 
+export const DisplayModeRuntypes = Union(
+  Literal("list"),
+  Literal("gallery-image"),
+  Literal("gallery-video")
+);
+
+/**
+ * Type of three display modes.
+ */
+export type DisplayMode = Static<typeof DisplayModeRuntypes>;
 /**
  * Type of all search options on Search page
  */
@@ -96,6 +107,21 @@ export interface SearchOptions {
  * The type representing fields of SearchOptions.
  */
 export type SearchOptionsFields = keyof SearchOptions;
+
+export const defaultSearchOptions: SearchOptions = {
+  rowsPerPage: 10,
+  currentPage: 0,
+  sortOrder: undefined,
+  rawMode: false,
+  status: liveStatuses,
+  searchAttachments: true,
+  query: "",
+  collections: [],
+  lastModifiedDateRange: { start: undefined, end: undefined },
+  owner: undefined,
+  mimeTypes: [],
+  mimeTypeFilters: [],
+};
 
 /**
  * Represent a date range which has an optional start and end.

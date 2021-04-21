@@ -45,6 +45,7 @@ import {
 } from "../modules/SearchFilterSettingsModule";
 import {
   DateRange,
+  defaultSearchOptions,
   isDate,
   SearchOptions,
   SearchOptionsFields,
@@ -90,8 +91,8 @@ export const defaultSearchPageOptions: SearchPageOptions = {
   owner: undefined,
   mimeTypes: [],
   mimeTypeFilters: [],
-  dateRangeQuickModeEnabled: true,
   displayMode: "list",
+  dateRangeQuickModeEnabled: true,
 };
 
 export const defaultPagedSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> = {
@@ -143,8 +144,6 @@ const DehydratedSearchPageOptionsRunTypes = Partial({
   rawMode: Boolean,
   lastModifiedDateRange: Partial({ start: Guard(isDate), end: Guard(isDate) }),
   owner: Record({ id: String }),
-  // Runtypes guard function would not work when defining the type as Array(OEQ.Common.ItemStatuses) or Guard(OEQ.Common.ItemStatuses.guard),
-  // So the Union of Literals has been copied from the OEQ.Common module.
   status: RuntypeArray(OEQ.Common.ItemStatuses),
   selectedCategories: RuntypeArray(
     Record({
@@ -314,7 +313,6 @@ export const generateQueryStringFromSearchPageOptions = (
       }
     )
   );
-  console.log(params.toString());
   return params.toString();
 };
 
@@ -347,11 +345,9 @@ const rehydrateOwner = async (
  * @param searchOptionsJSON a JSON representation of a SearchPageOptions object.
  * @return searchPageOptions A deserialized representation of that provided by `searchOptionsJSON`
  */
-const newSearchQueryToSearchPageOptions = async (
+export const newSearchQueryToSearchPageOptions = async (
   searchOptionsJSON: string
 ): Promise<SearchPageOptions> => {
-  console.log(searchOptionsJSON);
-
   const parsedOptions: unknown = JSON.parse(searchOptionsJSON, (key, value) => {
     if (key === "lastModifiedDateRange") {
       let { start, end } = value;
@@ -361,8 +357,7 @@ const newSearchQueryToSearchPageOptions = async (
     }
     return value;
   });
-  console.log(parsedOptions);
-  console.log(DehydratedSearchPageOptionsRunTypes);
+
   if (!DehydratedSearchPageOptionsRunTypes.guard(parsedOptions)) {
     console.warn("Invalid search query params received. Using defaults.");
     return defaultSearchPageOptions;
@@ -385,7 +380,7 @@ const newSearchQueryToSearchPageOptions = async (
  * @param params URLSearchParams from a shared `searching.do` URL
  * @return SearchPageOptions object.
  */
-const legacyQueryStringToSearchPageOptions = async (
+export const legacyQueryStringToSearchPageOptions = async (
   params: URLSearchParams
 ): Promise<SearchPageOptions> => {
   const getQueryParam = (paramName: LegacyParams) => {
@@ -451,7 +446,7 @@ const legacyQueryStringToSearchPageOptions = async (
   const parseCollectionUuid = async (
     collectionUuid: string | undefined
   ): Promise<Collection[] | undefined> => {
-    if (!collectionUuid) return defaultSearchPageOptions.collections;
+    if (!collectionUuid) return defaultSearchOptions.collections;
     const collectionDetails:
       | Collection[]
       | undefined = await findCollectionsByUuid([collectionUuid]);
@@ -459,7 +454,7 @@ const legacyQueryStringToSearchPageOptions = async (
     return typeof collectionDetails !== "undefined" &&
       collectionDetails.length > 0
       ? collectionDetails
-      : defaultSearchPageOptions.collections;
+      : defaultSearchOptions.collections;
   };
 
   const sortOrderParam = getQueryParam("sort")?.toUpperCase();
@@ -473,19 +468,17 @@ const legacyQueryStringToSearchPageOptions = async (
   return {
     ...defaultSearchPageOptions,
     collections: await parseCollectionUuid(collectionId),
-    query: getQueryParam("q") ?? defaultSearchPageOptions.query,
-    owner: ownerId
-      ? await findUserById(ownerId)
-      : defaultSearchPageOptions.owner,
+    query: getQueryParam("q") ?? defaultSearchOptions.query,
+    owner: ownerId ? await findUserById(ownerId) : defaultSearchOptions.owner,
     lastModifiedDateRange:
       getLastModifiedDateRange(
         dateRange as RangeType,
         datePrimary ? new Date(parseInt(datePrimary)) : undefined,
         dateSecondary ? new Date(parseInt(dateSecondary)) : undefined
-      ) ?? defaultSearchPageOptions.lastModifiedDateRange,
+      ) ?? defaultSearchOptions.lastModifiedDateRange,
     sortOrder: OEQ.SearchSettings.SortOrderRunTypes.guard(sortOrderParam)
       ? sortOrderParam
-      : defaultSearchPageOptions.sortOrder,
+      : defaultSearchOptions.sortOrder,
     mimeTypes,
     mimeTypeFilters,
     externalMimeTypes: getExternalMIMETypes(),

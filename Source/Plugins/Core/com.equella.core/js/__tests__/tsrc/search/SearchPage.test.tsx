@@ -62,13 +62,15 @@ import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModul
 import * as SearchFacetsModule from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchFilterSettingsModule from "../../../tsrc/modules/SearchFilterSettingsModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
-import {
-  liveStatuses,
-  nonLiveStatuses,
-} from "../../../tsrc/modules/SearchModule";
+import * as SearchHelper from "../../../tsrc/search/SearchPageHelper";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
 import * as UserModule from "../../../tsrc/modules/UserModule";
 import SearchPage, { SearchPageOptions } from "../../../tsrc/search/SearchPage";
+import {
+  generateSearchPageOptionsFromQueryString,
+  liveStatuses,
+  nonLiveStatuses,
+} from "../../../tsrc/search/SearchPageHelper";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { updateMockGetBaseUrl } from "../BaseUrlHelper";
 import { queryPaginatorControls } from "../components/SearchPaginationTestHelper";
@@ -114,8 +116,8 @@ const mockSearchSettings = jest.spyOn(
   "getSearchSettingsFromServer"
 );
 const mockConvertParamsToSearchOptions = jest.spyOn(
-  SearchModule,
-  "queryStringParamsToSearchOptions"
+  SearchHelper,
+  "generateSearchPageOptionsFromQueryString"
 );
 
 const mockMimeTypeFilters = jest
@@ -765,9 +767,7 @@ describe("<SearchPage/>", () => {
     await act(async () => {
       copySearchButton.click();
     });
-    expect(SearchModule.queryStringParamsToSearchOptions).toHaveBeenCalledTimes(
-      1
-    );
+    expect(generateSearchPageOptionsFromQueryString).toHaveBeenCalledTimes(1);
     expect(mockClipboard).toHaveBeenCalledWith(
       "/?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RANK%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22displayMode%22%3A%22list%22%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D"
     );
@@ -793,9 +793,7 @@ describe("conversion of parameters to SearchPageOptions", () => {
 
   it("should call queryStringParamsToSearchOptions using query paramaters in url", async () => {
     await renderSearchPage("?q=test");
-    expect(SearchModule.queryStringParamsToSearchOptions).toHaveBeenCalledTimes(
-      1
-    );
+    expect(generateSearchPageOptionsFromQueryString).toHaveBeenCalledTimes(1);
   });
 });
 
