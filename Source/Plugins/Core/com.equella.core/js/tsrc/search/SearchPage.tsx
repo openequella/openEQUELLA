@@ -60,12 +60,7 @@ import {
 import {
   buildExportUrl,
   DateRange,
-  defaultPagedSearchResult,
-  defaultSearchOptions,
   DisplayMode,
-  generateQueryStringFromSearchOptions,
-  getPartialSearchOptions,
-  queryStringParamsToSearchOptions,
   searchItems,
   SearchOptions,
   SearchOptionsFields,
@@ -89,6 +84,13 @@ import {
 } from "./components/SearchResultList";
 import { SidePanel } from "./components/SidePanel";
 import StatusSelector from "./components/StatusSelector";
+import {
+  defaultPagedSearchResult,
+  defaultSearchOptions,
+  generateQueryStringFromSearchOptions,
+  getPartialSearchOptions,
+  queryStringParamsToSearchOptions,
+} from "./SearchPageHelper";
 
 // destructure strings import
 const { searchpage: searchStrings } = languageStrings;

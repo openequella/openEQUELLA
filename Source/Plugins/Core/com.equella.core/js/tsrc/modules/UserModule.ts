@@ -53,3 +53,17 @@ export const resolveUsers = (
     groups: [],
     roles: [],
   }).then((result: OEQ.UserQuery.SearchResult) => result.users);
+
+/**
+ * Find a user's details by ID.
+ *
+ * @param userId The unique ID of a user
+ */
+export const findUserById = async (
+  userId: string
+): Promise<OEQ.UserQuery.UserDetails | undefined> => {
+  const userDetails = await resolveUsers([userId]);
+  if (userDetails.length > 1)
+    throw new Error(`More than one user was resolved for id: ${userId}`);
+  return userDetails[0];
+};
