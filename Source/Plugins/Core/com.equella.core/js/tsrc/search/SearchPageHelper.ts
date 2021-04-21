@@ -46,13 +46,13 @@ import {
 import {
   DateRange,
   DisplayMode,
-  DisplayModeRuntypes,
   isDate,
   SearchOptions,
   SearchOptionsFields,
 } from "../modules/SearchModule";
 import { findUserById } from "../modules/UserModule";
 import { getISODateString } from "../util/Date";
+import type { SearchPageOptions } from "./SearchPage";
 
 /**
  * This helper is intended to assist with processing related to the Presentation Layer -
@@ -78,7 +78,7 @@ export const nonLiveStatuses: OEQ.Common.ItemStatus[] = OEQ.Common.ItemStatuses.
   .map((status) => status.value)
   .filter(nonLiveStatus);
 
-export const defaultSearchOptions: SearchOptions = {
+export const defaultSearchPageOptions: SearchPageOptions = {
   rowsPerPage: 10,
   currentPage: 0,
   sortOrder: undefined,
@@ -91,6 +91,7 @@ export const defaultSearchOptions: SearchOptions = {
   owner: undefined,
   mimeTypes: [],
   mimeTypeFilters: [],
+  dateRangeQuickModeEnabled: true,
   displayMode: "list",
 };
 
@@ -119,11 +120,10 @@ const LegacySearchParams = Union(
 );
 
 type LegacyParams = Static<typeof LegacySearchParams>;
-
 /**
  * Represents the shape of data returned from generateQueryStringFromSearchOptions
  */
-const DehydratedSearchOptionsRunTypes = Partial({
+const DehydratedSearchPageOptionsRunTypes = Partial({
   query: String,
   rowsPerPage: Number,
   currentPage: Number,
@@ -134,19 +134,7 @@ const DehydratedSearchOptionsRunTypes = Partial({
   owner: Record({ id: String }),
   // Runtypes guard function would not work when defining the type as Array(OEQ.Common.ItemStatuses) or Guard(OEQ.Common.ItemStatuses.guard),
   // So the Union of Literals has been copied from the OEQ.Common module.
-  status: RuntypeArray(
-    Union(
-      Literal("ARCHIVED"),
-      Literal("DELETED"),
-      Literal("DRAFT"),
-      Literal("LIVE"),
-      Literal("MODERATING"),
-      Literal("PERSONAL"),
-      Literal("REJECTED"),
-      Literal("REVIEW"),
-      Literal("SUSPENDED")
-    )
-  ),
+  status: RuntypeArray(OEQ.Common.ItemStatuses),
   selectedCategories: RuntypeArray(
     Record({
       id: Number,
@@ -155,10 +143,13 @@ const DehydratedSearchOptionsRunTypes = Partial({
   ),
   searchAttachments: Boolean,
   mimeTypeFilters: RuntypeArray(Record({ id: String })),
-  displayMode: DisplayModeRuntypes,
+  //displayMode: DisplayModeRuntypes,
+  dateRangeQuickModeEnabled: Boolean,
 });
 
-type DehydratedSearchOptions = Static<typeof DehydratedSearchOptionsRunTypes>;
+type DehydratedSearchPageOptions = Static<
+  typeof DehydratedSearchPageOptionsRunTypes
+>;
 
 /**
  * Helper function, to support formatting of query in raw mode. When _not_ raw mode
@@ -167,7 +158,7 @@ type DehydratedSearchOptions = Static<typeof DehydratedSearchOptionsRunTypes>;
  * @param query the intended search query to be sent to the API
  * @param addWildcard whether a wildcard should be appended
  */
-const formatQuery = (query: string, addWildcard: boolean): string => {
+export const formatQuery = (query: string, addWildcard: boolean): string => {
   const trimmedQuery = query ? query.trim() : "";
   const appendWildcard = addWildcard && trimmedQuery.length > 0;
   return trimmedQuery + (appendWildcard ? "*" : "");
@@ -180,7 +171,7 @@ const formatQuery = (query: string, addWildcard: boolean): string => {
  *
  * @param selectedCategories A list of selected Categories grouped by Classification ID.
  */
-const generateCategoryWhereQuery = (
+export const generateCategoryWhereQuery = (
   selectedCategories?: SelectedCategories[]
 ): string | undefined => {
   if (!selectedCategories || selectedCategories.length === 0) {
@@ -251,29 +242,29 @@ export const buildSearchParams = ({
 };
 
 /**
- * A function that takes and parses a saved search query string from a shared legacy searching.do or /page/search URL, and converts it into a SearchOptions object
+ * A function that takes and parses a saved search query string from a shared legacy searching.do or /page/search URL, and converts it into a SearchPageOptions object.
  * @param location representing a Location which includes search query params - such as from the <SearchPage>
- * @return SearchOptions containing the options encoded in the query string params, or undefined if there were none.
+ * @return SearchPageOptions containing the options encoded in the query string params, or undefined if there were none.
  */
-export const queryStringParamsToSearchOptions = async (
+export const generateSearchPageOptionsFromQueryString = async (
   location: Location
-): Promise<SearchOptions | undefined> => {
+): Promise<SearchPageOptions | undefined> => {
   if (!location.search) {
     return undefined;
   }
   const params = new URLSearchParams(location.search);
-  const searchOptions = params.get("searchOptions");
+  const searchPageOptions = params.get("searchOptions");
 
-  // If the query params contain `searchOptions` convert to `SearchOptions` with `newSearchQueryToSearchOptions`.
+  // If the query params contain `searchOptions` convert to `SearchOptions` with `newSearchQueryToSearchPageOptions`.
   // Else if the query params contain params from legacy `searching.do` (i.e. `LegacySearchParams`) then convert to
-  // `searchOptions` with `legacyQueryStringToSearchOptions`.
+  // `searchOptions` with `legacyQueryStringToSearchPageOptions`.
   // For all else, return `undefined`.
-  if (searchOptions) {
-    return await newSearchQueryToSearchOptions(searchOptions);
+  if (searchPageOptions) {
+    return await newSearchQueryToSearchPageOptions(searchPageOptions);
   } else if (
     Array.from(params.keys()).some((key) => LegacySearchParams.guard(key))
   ) {
-    return await legacyQueryStringToSearchOptions(params);
+    return await legacyQueryStringToSearchPageOptions(params);
   }
   return undefined;
 };
@@ -283,17 +274,17 @@ export const queryStringParamsToSearchOptions = async (
  * Collections and owner properties are both reduced down to their uuid and id properties respectively.
  * Undefined properties are excluded.
  * Intended to be used in conjunction with SearchModule.newSearchQueryToSearchOptions
- * @param searchOptions Search options selected on Search page.
+ * @param searchPageOptions Search options selected on Search page.
  * @return url encoded key/value pair of JSON searchOptions
  */
-export const generateQueryStringFromSearchOptions = (
-  searchOptions: SearchOptions
+export const generateQueryStringFromSearchPageOptions = (
+  searchPageOptions: SearchPageOptions
 ): string => {
   const params = new URLSearchParams();
   params.set(
     "searchOptions",
     JSON.stringify(
-      searchOptions,
+      searchPageOptions,
       (key: string, value: object[] | undefined) => {
         return match(
           [
@@ -312,12 +303,13 @@ export const generateQueryStringFromSearchOptions = (
       }
     )
   );
+  console.log(params.toString());
   return params.toString();
 };
 
 // Use a list of Collection IDs extracted from a dehydrated SearchOptions to find Collections.
 const rehydrateCollections = async (
-  options: DehydratedSearchOptions
+  options: DehydratedSearchPageOptions
 ): Promise<Collection[] | undefined> =>
   options.collections
     ? await findCollectionsByUuid(options.collections.map((c) => c.uuid))
@@ -325,7 +317,7 @@ const rehydrateCollections = async (
 
 // Use a list of MIME type filter IDs extracted from a dehydrated SearchOptions to find MIME type filters.
 const rehydrateMIMETypeFilter = async (
-  options: DehydratedSearchOptions
+  options: DehydratedSearchPageOptions
 ): Promise<MimeTypeFilter[] | undefined> =>
   options.mimeTypeFilters
     ? await getMimeTypeFiltersById(options.mimeTypeFilters.map((f) => f.id))
@@ -333,20 +325,22 @@ const rehydrateMIMETypeFilter = async (
 
 // Use a user ID extracted from a dehydrated SearchOptions to find a user's details.
 const rehydrateOwner = async (
-  options: DehydratedSearchOptions
+  options: DehydratedSearchPageOptions
 ): Promise<OEQ.UserQuery.UserDetails | undefined> =>
   options.owner ? await findUserById(options.owner.id) : undefined;
 
 /**
- * A function that takes a JSON representation of a SearchOptions object, and converts it into an actual SearchOptions object.
+ * A function that takes a JSON representation of a SearchPageOptions object, and converts it into an actual SearchPageOptions object.
  * Note: currently, due to lack of support from runtypes extraneous properties will end up in the resultant object (which then could be stored in state).
  * @see {@link https://github.com/pelotom/runtypes/issues/169 }
- * @param searchOptionsJSON a JSON representation of a SearchOptions object.
- * @return searchOptions A deserialized representation of that provided by `searchOptionsJSON`
+ * @param searchOptionsJSON a JSON representation of a SearchPageOptions object.
+ * @return searchPageOptions A deserialized representation of that provided by `searchOptionsJSON`
  */
-const newSearchQueryToSearchOptions = async (
+const newSearchQueryToSearchPageOptions = async (
   searchOptionsJSON: string
-): Promise<SearchOptions> => {
+): Promise<SearchPageOptions> => {
+  console.log(searchOptionsJSON);
+
   const parsedOptions: unknown = JSON.parse(searchOptionsJSON, (key, value) => {
     if (key === "lastModifiedDateRange") {
       let { start, end } = value;
@@ -356,34 +350,33 @@ const newSearchQueryToSearchOptions = async (
     }
     return value;
   });
-
-  if (!DehydratedSearchOptionsRunTypes.guard(parsedOptions)) {
+  console.log(parsedOptions);
+  console.log(DehydratedSearchPageOptionsRunTypes);
+  if (!DehydratedSearchPageOptionsRunTypes.guard(parsedOptions)) {
     console.warn("Invalid search query params received. Using defaults.");
-    return defaultSearchOptions;
+    return defaultSearchPageOptions;
   }
-
   const mimeTypeFilters = await rehydrateMIMETypeFilter(parsedOptions);
   const mimeTypes = mimeTypeFilters?.flatMap((f) => f.mimeTypes);
 
-  const result: SearchOptions = {
-    ...defaultSearchOptions,
+  return {
+    ...defaultSearchPageOptions,
     ...parsedOptions,
     collections: await rehydrateCollections(parsedOptions),
     owner: await rehydrateOwner(parsedOptions),
     mimeTypeFilters,
     mimeTypes,
   };
-  return result;
 };
 
 /**
- * A function that takes query string params from a shared searching.do URL and converts all applicable params to Search options
+ * A function that takes query string params from a shared searching.do URL and converts all applicable params to SearchPageOptions.
  * @param params URLSearchParams from a shared `searching.do` URL
- * @return SearchOptions object.
+ * @return SearchPageOptions object.
  */
-const legacyQueryStringToSearchOptions = async (
+const legacyQueryStringToSearchPageOptions = async (
   params: URLSearchParams
-): Promise<SearchOptions> => {
+): Promise<SearchPageOptions> => {
   const getQueryParam = (paramName: LegacyParams) => {
     return params.get(paramName) ?? undefined;
   };
@@ -447,7 +440,7 @@ const legacyQueryStringToSearchOptions = async (
   const parseCollectionUuid = async (
     collectionUuid: string | undefined
   ): Promise<Collection[] | undefined> => {
-    if (!collectionUuid) return defaultSearchOptions.collections;
+    if (!collectionUuid) return defaultSearchPageOptions.collections;
     const collectionDetails:
       | Collection[]
       | undefined = await findCollectionsByUuid([collectionUuid]);
@@ -455,7 +448,7 @@ const legacyQueryStringToSearchOptions = async (
     return typeof collectionDetails !== "undefined" &&
       collectionDetails.length > 0
       ? collectionDetails
-      : defaultSearchOptions.collections;
+      : defaultSearchPageOptions.collections;
   };
 
   const sortOrderParam = getQueryParam("sort")?.toUpperCase();
@@ -466,27 +459,28 @@ const legacyQueryStringToSearchOptions = async (
     return integrationMIMETypes.length > 0 ? integrationMIMETypes : undefined;
   };
 
-  const searchOptions: SearchOptions = {
-    ...defaultSearchOptions,
+  return {
+    ...defaultSearchPageOptions,
     collections: await parseCollectionUuid(collectionId),
-    query: getQueryParam("q") ?? defaultSearchOptions.query,
-    owner: ownerId ? await findUserById(ownerId) : defaultSearchOptions.owner,
+    query: getQueryParam("q") ?? defaultSearchPageOptions.query,
+    owner: ownerId
+      ? await findUserById(ownerId)
+      : defaultSearchPageOptions.owner,
     lastModifiedDateRange:
       getLastModifiedDateRange(
         dateRange as RangeType,
         datePrimary ? new Date(parseInt(datePrimary)) : undefined,
         dateSecondary ? new Date(parseInt(dateSecondary)) : undefined
-      ) ?? defaultSearchOptions.lastModifiedDateRange,
+      ) ?? defaultSearchPageOptions.lastModifiedDateRange,
     sortOrder: OEQ.SearchSettings.SortOrderRunTypes.guard(sortOrderParam)
       ? sortOrderParam
-      : defaultSearchOptions.sortOrder,
+      : defaultSearchPageOptions.sortOrder,
     mimeTypes,
     mimeTypeFilters,
     externalMimeTypes: getExternalMIMETypes(),
     rawMode: true,
     displayMode,
   };
-  return searchOptions;
 };
 
 /**

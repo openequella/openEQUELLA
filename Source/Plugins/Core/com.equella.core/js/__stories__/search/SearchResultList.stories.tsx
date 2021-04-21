@@ -22,12 +22,12 @@ import {
   getEmptySearchResult as emptySearch,
   getSearchResult as singlePageSearch,
 } from "../../__mocks__/SearchResult.mock";
-import { defaultSearchOptions } from "../../tsrc/modules/SearchModule";
 import {
   mapSearchResultItems,
   SearchResultList,
   SearchResultListProps,
 } from "../../tsrc/search/components/SearchResultList";
+import { defaultSearchPageOptions } from "../../tsrc/search/SearchPageHelper";
 
 export default {
   title: "Search/SearchResultList",
@@ -38,8 +38,8 @@ export default {
 } as Meta<SearchResultListProps>;
 
 const sharedPaginationArgs = {
-  currentPage: defaultSearchOptions.currentPage,
-  rowsPerPage: defaultSearchOptions.rowsPerPage,
+  currentPage: defaultSearchPageOptions.currentPage,
+  rowsPerPage: defaultSearchPageOptions.rowsPerPage,
   /* I wasn't able to get nested actions to work inside argTypes, so falling back to the old addon-actions for these. See https://github.com/storybookjs/storybook/issues/11525 and https://github.com/storybookjs/storybook/issues/10979#issuecomment-657640744*/
   onPageChange: action("onRowsPerPageChange"),
   onRowsPerPageChange: action("onRowsPerPageChange"),
@@ -57,7 +57,7 @@ EmptyResultListComponent.args = {
   },
   orderSelectProps: {
     onChange: action("orderSelect onChange called"),
-    value: defaultSearchOptions.sortOrder,
+    value: defaultSearchPageOptions.sortOrder,
   },
   refineSearchProps: {
     isCriteriaSet: true,

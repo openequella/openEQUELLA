@@ -18,13 +18,13 @@
 import * as OEQ from "@openequella/rest-api-client";
 import { isEqual, memoize } from "lodash";
 import { API_BASE_URL } from "../AppConfig";
-import { getISODateString } from "../util/Date";
-import { getFacetsFromServer } from "./FacetedSearchSettingsModule";
 import {
   formatQuery,
   generateCategoryWhereQuery,
-  SearchOptions,
-} from "./SearchModule";
+} from "../search/SearchPageHelper";
+import { getISODateString } from "../util/Date";
+import { getFacetsFromServer } from "./FacetedSearchSettingsModule";
+import { SearchOptions } from "./SearchModule";
 
 /**
  * Represents a Classification and its generated categories ready for display.

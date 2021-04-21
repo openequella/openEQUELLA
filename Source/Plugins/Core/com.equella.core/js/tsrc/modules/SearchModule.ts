@@ -20,9 +20,9 @@ import * as OEQ from "@openequella/rest-api-client";
 import { Literal, Static, Union } from "runtypes";
 import { API_BASE_URL } from "../AppConfig";
 import { buildSearchParams } from "../search/SearchPageHelper";
-import { Collection } from "./CollectionsModule";
-import { SelectedCategories } from "./SearchFacetsModule";
-import { MimeTypeFilter } from "./SearchFilterSettingsModule";
+import type { Collection } from "./CollectionsModule";
+import type { SelectedCategories } from "./SearchFacetsModule";
+import type { MimeTypeFilter } from "./SearchFilterSettingsModule";
 
 /**
  * Type of all search options on Search page
@@ -91,10 +91,6 @@ export interface SearchOptions {
    * @see OEQ.Search.SearchParams for examples
    */
   musts?: OEQ.Search.Must[];
-  /**
-   * How to display the search results - also determines the type of results.
-   */
-  displayMode?: DisplayMode;
 }
 
 /**
@@ -108,6 +104,9 @@ export const DisplayModeRuntypes = Union(
   Literal("gallery-video")
 );
 
+/**
+ * Type of three display modes.
+ */
 export type DisplayMode = Static<typeof DisplayModeRuntypes>;
 
 /**

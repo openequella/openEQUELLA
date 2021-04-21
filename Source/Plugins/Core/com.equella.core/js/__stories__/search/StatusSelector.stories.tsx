@@ -18,10 +18,13 @@
 import { action } from "@storybook/addon-actions";
 import { Meta } from "@storybook/react";
 import * as React from "react";
-import { liveStatuses, nonLiveStatuses } from "../../tsrc/modules/SearchModule";
 import StatusSelector, {
   StatusSelectorProps,
 } from "../../tsrc/search/components/StatusSelector";
+import {
+  liveStatuses,
+  nonLiveStatuses,
+} from "../../tsrc/search/SearchPageHelper";
 
 export default {
   title: "Search/StatusSelector",
