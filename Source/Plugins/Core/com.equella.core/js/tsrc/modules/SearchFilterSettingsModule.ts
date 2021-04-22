@@ -45,7 +45,7 @@ export const getMimeTypeFiltersFromServer = (): Promise<MimeTypeFilter[]> =>
   Axios.get(MIME_TYPE_FILTERS_URL).then((res) => res.data);
 
 /**
- * Find a list of MIME type filters by ID.
+ * Find MIME type filters by a list of ID.
  *
  * @param filterIds MIME type filter IDs used to filter the list of all MIME type filters.
  */

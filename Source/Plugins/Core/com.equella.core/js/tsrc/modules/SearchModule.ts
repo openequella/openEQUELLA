@@ -205,7 +205,7 @@ export const generateCategoryWhereQuery = (
  * A function that converts search options to search params.
  * @param searchOptions Search options to be converted to search params.
  */
-export const buildSearchParams = ({
+const buildSearchParams = ({
   query,
   rowsPerPage,
   currentPage,

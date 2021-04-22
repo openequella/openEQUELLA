@@ -33,18 +33,6 @@ import {
   allSearchPageOptions,
   basicSearchPageOptions,
 } from "../../../__mocks__/searchOptions.mock";
-import * as OEQ from "@openequella/rest-api-client";
-
-jest.mock("@openequella/rest-api-client", () => {
-  // We only want to mock module 'Search' because mocking the whole module
-  // will break Runtypes.
-  const restModule: typeof OEQ = jest.requireActual(
-    "@openequella/rest-api-client"
-  );
-  return {
-    ...restModule,
-  };
-});
 
 describe("newSearchQueryToSearchOptions", () => {
   const mockedResolvedUser = jest.spyOn(UserModule, "resolveUsers");

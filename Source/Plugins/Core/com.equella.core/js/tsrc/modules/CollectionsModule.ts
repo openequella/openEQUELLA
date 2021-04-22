@@ -53,7 +53,7 @@ export const collectionListSummary = (
 };
 
 /**
- * Find a list of Collections by ID.
+ * Find Collections by a list of ID.
  *
  * @param collectionUuids Collection UUIDs used to filter the list of all Collections.
  */
