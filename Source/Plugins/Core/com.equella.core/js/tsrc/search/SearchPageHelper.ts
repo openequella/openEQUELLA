@@ -17,6 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
 import { Location } from "history";
 import { pick } from "lodash";
 import {
@@ -244,60 +245,38 @@ export const newSearchQueryToSearchPageOptions = async (
   };
 };
 
-/**
- * A function that takes query string params from a shared searching.do URL and converts all applicable params to SearchPageOptions.
- * @param params URLSearchParams from a shared `searching.do` URL
- * @return SearchPageOptions object.
- */
-export const legacyQueryStringToSearchPageOptions = async (
-  params: URLSearchParams
-): Promise<SearchPageOptions> => {
-  const getQueryParam = (paramName: LegacyParams) => {
-    return params.get(paramName) ?? undefined;
-  };
+type RangeType = "between" | "after" | "before" | "on";
 
-  const collectionId = getQueryParam("in")?.substring(1);
-  const ownerId = getQueryParam("owner");
-  const dateRange = getQueryParam("dr");
-  const datePrimary = getQueryParam("dp");
-  const dateSecondary = getQueryParam("ds");
+const getLastModifiedDateRangeFromLegacyParams = (
+  rangeType: RangeType,
+  primaryDate?: Date,
+  secondaryDate?: Date
+): DateRange | undefined => {
+  if (!primaryDate && !secondaryDate) {
+    return undefined;
+  }
+  return match(
+    [
+      Literal("between"),
+      (): DateRange => ({ start: primaryDate, end: secondaryDate }),
+    ],
+    [Literal("after"), (): DateRange => ({ start: primaryDate })],
+    [Literal("before"), (): DateRange => ({ end: primaryDate })],
+    [
+      Literal("on"),
+      (): DateRange => ({
+        start: primaryDate,
+        end: primaryDate,
+      }),
+    ]
+  )(rangeType.toLowerCase() as RangeType);
+};
 
-  const RangeTypeLiterals = Union(
-    Literal("between"),
-    Literal("after"),
-    Literal("before"),
-    Literal("on")
-  );
-
-  type RangeType = Static<typeof RangeTypeLiterals>;
-
-  const getLastModifiedDateRange = (
-    rangeType: RangeType,
-    primaryDate?: Date,
-    secondaryDate?: Date
-  ): DateRange | undefined => {
-    if (!primaryDate && !secondaryDate) {
-      return undefined;
-    }
-    return match(
-      [
-        Literal("between"),
-        (): DateRange => ({ start: primaryDate, end: secondaryDate }),
-      ],
-      [Literal("after"), (): DateRange => ({ start: primaryDate })],
-      [Literal("before"), (): DateRange => ({ end: primaryDate })],
-      [
-        Literal("on"),
-        (): DateRange => ({
-          start: primaryDate,
-          end: primaryDate,
-        }),
-      ]
-    )(rangeType.toLowerCase() as RangeType);
-  };
-
-  const displayMode: DisplayMode = pipe(
-    getQueryParam("type"),
+const getDisplayModeFromLegacyParams = (
+  legacyDisplayMode: string | undefined
+): DisplayMode =>
+  pipe(
+    legacyDisplayMode,
     match(
       // When type is 'standard' or undefined, default to 'list'.
       [Union(Literal("standard"), Undefined), (): DisplayMode => "list"],
@@ -312,21 +291,58 @@ export const legacyQueryStringToSearchPageOptions = async (
     )
   );
 
-  const parseCollectionUuid = async (
-    collectionUuid: string | undefined
-  ): Promise<Collection[] | undefined> => {
-    if (!collectionUuid) return defaultSearchOptions.collections;
-    const collectionDetails:
-      | Collection[]
-      | undefined = await findCollectionsByUuid([collectionUuid]);
+const getCollectionFromLegacyParams = async (
+  collectionUuid: string | undefined
+): Promise<Collection[] | undefined> => {
+  if (!collectionUuid) return defaultSearchOptions.collections;
+  const collectionDetails:
+    | Collection[]
+    | undefined = await findCollectionsByUuid([collectionUuid]);
 
-    return typeof collectionDetails !== "undefined" &&
-      collectionDetails.length > 0
-      ? collectionDetails
-      : defaultSearchOptions.collections;
+  return typeof collectionDetails !== "undefined" &&
+    collectionDetails.length > 0
+    ? collectionDetails
+    : defaultSearchOptions.collections;
+};
+
+const getOwnerFromLegacyParams = async (ownerId: string | undefined) =>
+  ownerId ? await findUserById(ownerId) : defaultSearchOptions.owner;
+
+/**
+ * A function that takes query string params from a shared searching.do URL and converts all applicable params to SearchPageOptions.
+ * @param params URLSearchParams from a shared `searching.do` URL
+ * @return SearchPageOptions object.
+ */
+export const legacyQueryStringToSearchPageOptions = async (
+  params: URLSearchParams
+): Promise<SearchPageOptions> => {
+  const getQueryParam = (paramName: LegacyParams) => {
+    return params.get(paramName) ?? undefined;
   };
+  const query = getQueryParam("q") ?? defaultSearchOptions.query;
+  const collections = await getCollectionFromLegacyParams(
+    getQueryParam("in")?.substring(1)
+  );
+  const owner = await getOwnerFromLegacyParams(getQueryParam("owner"));
+  const sortOrder = pipe(
+    getQueryParam("sort")?.toUpperCase(),
+    O.fromNullable,
+    O.filter(OEQ.SearchSettings.SortOrderRunTypes.guard),
+    O.fold(
+      () => defaultSearchOptions.sortOrder,
+      (s) => s
+    )
+  );
 
-  const sortOrderParam = getQueryParam("sort")?.toUpperCase();
+  const datePrimary = getQueryParam("dp");
+  const dateSecondary = getQueryParam("ds");
+  const lastModifiedDateRange =
+    getLastModifiedDateRangeFromLegacyParams(
+      getQueryParam("dr") as RangeType,
+      datePrimary ? new Date(parseInt(datePrimary)) : undefined,
+      dateSecondary ? new Date(parseInt(dateSecondary)) : undefined
+    ) ?? defaultSearchOptions.lastModifiedDateRange;
+
   const mimeTypeFilters = await getMimeTypeFiltersById(params.getAll("mt"));
   const mimeTypes = mimeTypeFilters?.flatMap(({ mimeTypes }) => mimeTypes);
   const getExternalMIMETypes = () => {
@@ -334,20 +350,14 @@ export const legacyQueryStringToSearchPageOptions = async (
     return integrationMIMETypes.length > 0 ? integrationMIMETypes : undefined;
   };
 
+  const displayMode = getDisplayModeFromLegacyParams(getQueryParam("type"));
   return {
     ...defaultSearchPageOptions,
-    collections: await parseCollectionUuid(collectionId),
-    query: getQueryParam("q") ?? defaultSearchOptions.query,
-    owner: ownerId ? await findUserById(ownerId) : defaultSearchOptions.owner,
-    lastModifiedDateRange:
-      getLastModifiedDateRange(
-        dateRange as RangeType,
-        datePrimary ? new Date(parseInt(datePrimary)) : undefined,
-        dateSecondary ? new Date(parseInt(dateSecondary)) : undefined
-      ) ?? defaultSearchOptions.lastModifiedDateRange,
-    sortOrder: OEQ.SearchSettings.SortOrderRunTypes.guard(sortOrderParam)
-      ? sortOrderParam
-      : defaultSearchOptions.sortOrder,
+    collections,
+    query,
+    owner,
+    lastModifiedDateRange,
+    sortOrder,
     mimeTypes,
     mimeTypeFilters,
     externalMimeTypes: getExternalMIMETypes(),
