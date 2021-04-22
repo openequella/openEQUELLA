@@ -1820,6 +1820,19 @@
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
+    <id>873675</id>
+    <expression>
+      <id>873674</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>*</targetObject>
+    <privilege>EXPORT_SEARCH_RESULT</privilege>
+    <aggregateOrdering>0100 0000 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>-1900</aclPriority>
+  </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
     <id>18787</id>
     <expression>
       <id>18775</id>

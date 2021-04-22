@@ -19,6 +19,17 @@
       <preview>false</preview>
       <restricted>false</restricted>
     </com.tle.beans.item.attachments.LinkAttachment>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>871528</id>
+      <uuid>161cff44-4aee-45df-a925-7301bf3bb3b0</uuid>
+      <url>display card.txt</url>
+      <description>display card.txt</description>
+      <value1>55</value1>
+      <md5sum>c499aaee0a4b212334dccf191fe54d56</md5sum>
+      <preview>false</preview>
+      <restricted>false</restricted>
+      <erroredIndexing>false</erroredIndexing>
+    </com.tle.beans.item.attachments.FileAttachment>
   </attachments>
   <searchDetails>
     <com.tle.common.Pair>

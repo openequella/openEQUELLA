@@ -29,12 +29,12 @@ public final class SecurityConstants {
   public static final char REVOKE = 'R';
 
   @Deprecated
-  public static enum PrivilegeType {
+  public enum PrivilegeType {
     COLLECTION,
   }
 
   public static final String VIRTUAL_BASE_ENTITY = "%VIRTUAL_BASE%";
-
+  public static final String EXPORT_SEARCH_RESULT = "EXPORT_SEARCH_RESULT";
   public static final String CREATE_ITEM = "CREATE_ITEM";
   public static final String EDIT_ITEM = "EDIT_ITEM";
   public static final String VIEW_ITEM = "VIEW_ITEM";
@@ -139,7 +139,7 @@ public final class SecurityConstants {
 
   public static final String CREATE_PFX = "CREATE_";
 
-  public static enum Recipient {
+  public enum Recipient {
     EVERYONE("*", true),
     USER("U"),
     GROUP("G"),
@@ -153,11 +153,11 @@ public final class SecurityConstants {
     private final String prefix;
     private final boolean standalone;
 
-    private Recipient(String prefix) {
+    Recipient(String prefix) {
       this(prefix, false);
     }
 
-    private Recipient(String prefix, boolean standalone) {
+    Recipient(String prefix, boolean standalone) {
       this.prefix = prefix;
       this.standalone = standalone;
     }

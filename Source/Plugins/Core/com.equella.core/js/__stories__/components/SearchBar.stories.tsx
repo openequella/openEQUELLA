@@ -29,15 +29,17 @@ export default {
 
 const actions = {
   onQueryChange: action("onQueryChange called"),
-  onRawModeChange: action("onRawModeChange called"),
+  onWildcardModeChange: action("onWildcardModeChange called"),
   doSearch: action("doSearch called"),
 };
 
 const values = {
   query: "",
-  rawMode: false,
+  wildcardMode: false,
 };
 
-export const NonRawMode = () => <SearchBar {...actions} {...values} />;
+export const NonWildcardMode = () => <SearchBar {...actions} {...values} />;
 
-export const RawMode = () => <SearchBar {...actions} {...values} rawMode />;
+export const WildcardMode = () => (
+  <SearchBar {...actions} {...values} wildcardMode />
+);

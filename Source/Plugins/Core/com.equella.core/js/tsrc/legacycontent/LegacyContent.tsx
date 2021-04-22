@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { CircularProgress, Grid } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 import Axios from "axios";
 import * as React from "react";
@@ -25,6 +26,14 @@ import {
   generateFromError,
 } from "../api/errors";
 import { API_BASE_URL } from "../AppConfig";
+import { BaseOEQRouteComponentProps } from "../mainui/routes";
+import {
+  templateDefaults,
+  templateError,
+  templatePropsForLegacy,
+} from "../mainui/Template";
+import { LegacyContentRenderer } from "./LegacyContentRenderer";
+import { getEqPageForm, legacyFormId } from "./LegacyForm";
 
 declare global {
   interface Window {
@@ -49,9 +58,10 @@ export const guestUser: OEQ.LegacyContent.CurrentUserDetails = {
     notifications: 0,
   },
   menuGroups: [],
+  canDownloadSearchResult: false,
 };
 
-interface ExternalRedirect {
+export interface ExternalRedirect {
   href: string;
 }
 
@@ -100,16 +110,15 @@ export interface PageContent {
   afterHtml: () => void;
 }
 
-export interface LegacyContentProps {
-  enabled: boolean;
+export interface LegacyContentProps extends BaseOEQRouteComponentProps {
   pathname: string;
   search: string;
   locationKey?: string;
-  userUpdated: () => void;
-  redirected: (redir: { href: string; external: boolean }) => void;
-  onError: (cb: { error: ErrorResponse; fullScreen: boolean }) => void;
-
-  render(content: PageContent | undefined): React.ReactElement;
+  /**
+   * A callback that will display any errors as a full page error.
+   * @param error The error to be displayed
+   */
+  onError: (error: ErrorResponse) => void;
 
   children?: never;
 }
@@ -131,6 +140,12 @@ export function isChangeRoute(
   return (response as ChangeRoute).route !== undefined;
 }
 
+export function isExternalRedirect(
+  response: SubmitResponse
+): response is ExternalRedirect {
+  return (response as ExternalRedirect).href !== undefined;
+}
+
 function submitRequest(path: string, vals: StateData): Promise<SubmitResponse> {
   return Axios.post<SubmitResponse>(
     "api/content/submit" + encodeURI(path),
@@ -139,17 +154,36 @@ function submitRequest(path: string, vals: StateData): Promise<SubmitResponse> {
 }
 
 export const LegacyContent = React.memo(function LegacyContent({
-  enabled,
   locationKey,
   onError,
   pathname,
-  redirected,
-  render,
   search,
-  userUpdated,
+  refreshUser,
+  redirect,
+  setPreventNavigation,
+  updateTemplate,
 }: LegacyContentProps) {
   const [content, setContent] = React.useState<PageContent>();
+  const [updatingContent, setUpdatingContent] = React.useState<boolean>(true);
+
   const baseUrl = document.getElementsByTagName("base")[0].href;
+
+  const redirected = (href: string, external: boolean) => {
+    if (external) {
+      window.location.href = href;
+    } else {
+      const ind = href.indexOf("?");
+      const redirloc =
+        ind < 0
+          ? { pathname: "/" + href, search: "" }
+          : {
+              pathname: "/" + href.substr(0, ind),
+              search: href.substr(ind),
+            };
+      setPreventNavigation(false);
+      redirect(redirloc);
+    }
+  };
 
   function toRelativeUrl(url: string) {
     const relUrl =
@@ -161,6 +195,11 @@ export const LegacyContent = React.memo(function LegacyContent({
     content: LegacyContentResponse,
     scrollTop: boolean
   ) {
+    // Setting the below flag is crucial, as it forces the DOM to change (to display a spinner)
+    // thereby circumventing React rendering/DOM optimisations. This mimics the functioning of a web
+    // browser where it would've reloaded the page. Which is needed based on the way some of the
+    // Legacy AJAX code is written.
+    setUpdatingContent(true);
     updateIncludes(content.js, content.css).then((extraCss) => {
       const pageContent = {
         ...content,
@@ -173,10 +212,27 @@ export const LegacyContent = React.memo(function LegacyContent({
         },
       } as PageContent;
       if (content.userUpdated) {
-        userUpdated();
+        refreshUser();
       }
       setContent(pageContent);
+      setUpdatingContent(false);
     });
+  }
+
+  /**
+   * Appropriately handle/display any error messages while submitting the current form - a la
+   * `submitCurrentForm`.
+   *
+   * @param fullscreen Should the error be displayed fullscreen/page (`true`) or just as a toast
+   *                   or however the `Template` currently does it (`false`).
+   * @param error The error to be handled
+   */
+  function handleError(fullscreen: boolean, error: ErrorResponse): void {
+    if (fullscreen) {
+      onError(error);
+    } else {
+      updateTemplate(templateError(error));
+    }
   }
 
   function submitCurrentForm(
@@ -194,11 +250,11 @@ export const LegacyContent = React.memo(function LegacyContent({
           updatePageContent(content, scrollTop);
         } else if (isChangeRoute(content)) {
           if (content.userUpdated) {
-            userUpdated();
+            refreshUser();
           }
-          redirected({ href: content.route, external: false });
-        } else if (content.href) {
-          redirected({ href: content.href, external: true });
+          redirected(content.route, false);
+        } else if (isExternalRedirect(content)) {
+          redirected(content.href, true);
         }
       })
       .catch((error) => {
@@ -206,7 +262,7 @@ export const LegacyContent = React.memo(function LegacyContent({
           error.response !== undefined
             ? fromAxiosResponse(error.response)
             : generateFromError(error);
-        onError({ error: errorResponse, fullScreen });
+        handleError(fullScreen, errorResponse);
       });
   }
 
@@ -220,9 +276,19 @@ export const LegacyContent = React.memo(function LegacyContent({
           }
         }
       }
-      const form = document.getElementById("eqpageForm") as HTMLFormElement;
-      const vals = collectParams(form, command, [].slice.call(arguments, 1));
-      submitCurrentForm(true, false, form.action, vals);
+      const form = getEqPageForm();
+      if (!form) {
+        onError(
+          generateFromError({
+            name: "stdSubmit Failure",
+            message:
+              "stdSubmit unable to proceed due to missing " + legacyFormId,
+          })
+        );
+      } else {
+        const vals = collectParams(form, command, [].slice.call(arguments, 1));
+        submitCurrentForm(true, false, form.action, vals);
+      }
       return false;
     };
   }
@@ -268,26 +334,48 @@ export const LegacyContent = React.memo(function LegacyContent({
         });
       },
     };
+    // The below is missing `submitCurrentForm` and `stdSubmit` (which depends on
+    // `submitCurrentForm`) from the dependency list. However to add that in would require more
+    // effort than justified - best to rework with a reducer. Long term we aim to not even have the
+    // whole LegacyContent tree, so for now we leave this as is.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   React.useEffect(() => {
-    if (enabled) {
-      const params = new URLSearchParams(search);
-      const urlValues: { [index: string]: string[] } = {};
-      params.forEach((val, key) => {
-        const exVal = urlValues[key];
-        if (exVal) exVal.push(val);
-        else urlValues[key] = [val];
-      });
-      submitCurrentForm(true, true, undefined, urlValues);
-    }
-    if (!enabled) {
-      setContent(undefined);
-      updateStylesheets([]).then(deleteElements);
-    }
-  }, [enabled, pathname, search, locationKey]);
+    const params = new URLSearchParams(search);
+    const urlValues: { [index: string]: string[] } = {};
+    params.forEach((val, key) => {
+      const exVal = urlValues[key];
+      if (exVal) exVal.push(val);
+      else urlValues[key] = [val];
+    });
+    submitCurrentForm(true, true, undefined, urlValues);
+    // The below is missing `submitCurrentForm` from the dependency list. However to add that in
+    // would require more effort than justified - best to rework with a reducer. Long term we aim
+    // to not even have the whole LegacyContent tree, so for now we leave this as is.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname, search, locationKey]);
 
-  return render(enabled ? content : undefined);
+  React.useEffect(
+    () =>
+      updateTemplate((tp) => ({
+        ...tp,
+        ...(content
+          ? templatePropsForLegacy(content)
+          : templateDefaults("Missing content!")),
+      })),
+    [content, updateTemplate]
+  );
+
+  return !updatingContent && content ? (
+    <LegacyContentRenderer {...content} />
+  ) : (
+    <Grid container direction="column" alignItems="center">
+      <Grid item>
+        <CircularProgress />
+      </Grid>
+    </Grid>
+  );
 });
 
 function resolveUrl(url: string) {

@@ -44,6 +44,7 @@
 @import "htmleditorwebcontrol.css";
 @import "userdetails.css";
 @import "auth.css";
+@import "drmlicense.css";
 
 $small-breakpoint-max: "768px";
 $medium-breakpoint-max: "1200px";
@@ -63,6 +64,7 @@ $col2Width: 250px;
 $standardBorderRadius: 4px;
 $roundButtonRadius: 50px;
 $termSelectorHeight: 68px;
+$savePanelWidth: 221px;
 
 @mixin boxShadow {
   box-shadow: $boxShadow;
@@ -1237,6 +1239,16 @@ div.area {
   float: none;
 }
 
+.itemsummary-layout #col1 {
+  //handle long strings  in item summaries without breaking the layout
+  overflow-wrap: anywhere;
+}
+
+.wizard-layout #col1 {
+  //handle wizard control names and descriptions without breaking the layout
+  max-width: calc(100% - #{$savePanelWidth});
+}
+
 .area h3 {
   @include typography-headline-6;
   color: $primaryTextColor;
@@ -1774,7 +1786,7 @@ Search page
   }
 
   #col2 {
-    width: 221px;
+    width: $savePanelWidth;
     margin-left: $doubleMargin;
 
     .box hr {
@@ -2921,7 +2933,7 @@ Contribution wizard styling
 *****************************************************************************/
 .wizard-layout #col2,
 #affix-div {
-  width: 221px;
+  width: $savePanelWidth;
 }
 
 .wizard-layout .contribution-rightNav {
@@ -3702,8 +3714,22 @@ Item summary styling
 .itemsummary-layout #col1 .displayNodeHalf {
   display: inline-block;
   vertical-align: top;
-  margin: -15px 0;
-  width: 49%;
+  margin: -$doubleMargin $doubleMargin 0 0;
+  width: calc(50% - #{2 * $doubleMargin});
+}
+
+.displayNodes p {
+  margin: $doubleMargin 0;
+}
+.displayNodes h3 {
+  padding-top: $doubleMargin;
+}
+
+h3.item-description-title {
+  margin: $doubleMargin 0;
+}
+p.item-description {
+  margin: $doubleMargin 0 0 0;
 }
 
 .action-button.select {
@@ -4428,12 +4454,9 @@ img.warningimg {
   vertical-align: middle;
 }
 
+// The File Uoloader is rewritten in TS and some previous styles applied
+// to the Progress bar must be removed to avoid conflicts with MUI styles.
 .universalresources .progress-bar {
-  @include curvedCorners;
-  width: 200px;
-  height: 14px;
-  border: 1px solid #aaa;
-  margin: 0 10px 0 0;
   float: right;
 }
 
@@ -4466,7 +4489,7 @@ img.warningimg {
 /*****************************************************************************
  Selection Dialog
 *****************************************************************************/
-#wrapper {
+#wrapper:not(.skinny-layout) {
   min-width: 784px;
 }
 
@@ -5562,4 +5585,53 @@ button:focus {
 
 #wizard-controls .autocompleteControl table.zebra {
   margin-top: $termSelectorHeight;
+}
+
+.skinny-layout {
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+
+  #selection-header {
+    position: unset; // Unset position because it is an flex item.
+    height: auto;
+    padding-top: $singleMargin;
+  }
+
+  .navbar-inner {
+    display: flex;
+    justify-content: center; // Ensure the header content is centered.
+  }
+
+  .navbar-content {
+    display: flex; // Two items: '.pull-left' and '.centered-pills'
+  }
+
+  .navbar .pull-left {
+    margin-bottom: 0; // Override the margin-bottom added in '.nav'.
+  }
+
+  .navbar .pull-left li {
+    margin-top: 4px;
+  }
+
+  .navbar .centered-pills ul {
+    display: flex;
+    margin-bottom: 0;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .navbar .centered-pills li {
+    padding: 0 12px 0 12px;
+  }
+
+  .navbar .divider-vertical {
+    display: none;
+  }
+}
+
+#selection-page .area.error {
+  width: 100%;
 }

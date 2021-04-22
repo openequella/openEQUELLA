@@ -15,15 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as Common from './Common';
+import { stringify } from 'query-string';
 import { is } from 'typescript-is';
 import { GET } from './AxiosInstance';
+import * as Common from './Common';
 import * as Utils from './Utils';
 
 /**
- * Type of query parameters that can be used in a search.
+ * Used for specifying must expressions such as `moderating:true`. Neither string should contain
+ * any colons (or other exempt Lucene syntax characters).
  */
-export interface SearchParams {
+export type Must = [string, string[]];
+
+interface SearchParamsBase {
   /**
    * Query string.
    */
@@ -80,6 +84,45 @@ export interface SearchParams {
    * A flag indicating whether to search attachments or not.
    */
   searchAttachments?: boolean;
+  /**
+   * List of MIME types to filter by.
+   */
+  mimeTypes?: string[];
+}
+
+/**
+ * Type of query parameters that can be used in a search.
+ */
+export interface SearchParams extends SearchParamsBase {
+  /**
+   * List of search index key/value pairs to filter by. e.g. videothumb:true or realthumb:true.
+   * If for example you wanted to use the above two in a query, you'd specify them as:
+   *
+   * ```typescript
+   * const musts = [
+   *   ["videothumb": ["true"]],
+   *   ["realthumb": ["true"]],
+   * ];
+   * ```
+   *
+   * If you wanted to search on a list of UUIDs, you'd:
+   *
+   * ```typescript
+   * const musts = [
+   *   ["uuids",
+   *     ["ab16b5f0-a12e-43f5-9d8b-25870528ad41",
+   *      "24b977ec-4df4-4a43-8922-8ca6f82a296a"]],
+   * ];
+   * ```
+   */
+  musts?: Must[];
+}
+
+/**
+ * Provides the lower level implementation of SearchParams for sending directly to the server.
+ */
+interface SearchParamsProcessed extends SearchParamsBase {
+  musts?: string[];
 }
 
 /**
@@ -162,6 +205,11 @@ export interface Attachment {
      * The URL for viewing this attachment's thumbnail.
      */
     thumbnail: string;
+    /**
+     * The ID of the attachment on an external system - as determined by the `attachmentType`.
+     * For example, for `custom/youtube` this is the YouTube video ID.
+     */
+    externalId?: string;
   };
   /**
    * If a file attachment, the path for the represented file
@@ -238,6 +286,14 @@ interface SearchResultItemBase {
      */
     self: string;
   };
+  /**
+   * ID of Bookmark linking to this Item.
+   */
+  bookmarkId?: number;
+  /**
+   * True if this version is the latest version.
+   */
+  isLatestVersion: boolean;
 }
 
 /**
@@ -294,7 +350,43 @@ export interface SearchResult<T> {
   highlight: string[];
 }
 
+const isMustValid = ([field, values]: Must): boolean => {
+  const containsColon = (s: string): boolean => s.match(':') !== null;
+  const noColonsPresent = !containsColon(field) && !values.some(containsColon);
+  const noEmptyValues =
+    values.length > 0 && !values.some((v) => v.trim().length < 1);
+  return field.trim().length > 0 && noEmptyValues && noColonsPresent;
+};
+
+// convert one
+const convertMust = ([field, values]: Must): string[] =>
+  values.map((v) => `${field}:${v}`);
+
+// convert many
+const convertMusts = (musts: Must[]): string[] =>
+  musts.reduce(
+    (prev: string[], must: Must) => prev.concat(convertMust(must)),
+    []
+  );
+
+const processMusts = (musts?: Must[]): string[] | undefined => {
+  if (!musts) {
+    return;
+  }
+  musts.forEach((m) => {
+    if (!isMustValid(m)) {
+      throw new TypeError('Provided must specification is invalid: ' + m);
+    }
+  });
+  return convertMusts(musts);
+};
+const processSearchParams = (
+  params?: SearchParams
+): SearchParamsProcessed | undefined =>
+  params ? { ...params, musts: processMusts(params.musts) } : undefined;
+
 const SEARCH2_API_PATH = '/search2';
+const EXPORT_PATH = `${SEARCH2_API_PATH}/export`;
 
 /**
  * Communicate with REST endpoint 'search2' to do a search with specified search criteria.
@@ -310,7 +402,7 @@ export const search = (
     apiBasePath + SEARCH2_API_PATH,
     (data): data is SearchResult<SearchResultItemRaw> =>
       is<SearchResult<SearchResultItemRaw>>(data),
-    params
+    processSearchParams(params)
   ).then((data) =>
     Utils.convertDateFields<SearchResult<SearchResultItem>>(data, [
       'createdDate',
@@ -318,3 +410,11 @@ export const search = (
     ])
   );
 };
+
+/**
+ * Build a full URL for downloading a search result.
+ * @param apiBasePath Base URI to the oEQ institution and API.
+ * @param params Query parameters as search criteria.
+ */
+export const buildExportUrl = (apiBasePath: string, params: SearchParams) =>
+  apiBasePath + EXPORT_PATH + '?' + stringify(params);

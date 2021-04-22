@@ -51,6 +51,14 @@ public interface AuditLogService {
 
   void logSearch(String type, String freeText, String within, long resultCount);
 
+  /**
+   * Log the request of exporting search result.
+   *
+   * @param format The export file format
+   * @param searchParams Search criteria of the export
+   */
+  void logSearchExport(String format, String searchParams);
+
   void logFederatedSearch(String freeText, String searchId);
 
   /**

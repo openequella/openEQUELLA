@@ -26,19 +26,24 @@ import {
   Literal,
   match,
   Number,
+  Partial,
   Record,
   Static,
   String,
+  Undefined,
   Union,
   Unknown,
-  Partial,
 } from "runtypes";
 import { API_BASE_URL } from "../AppConfig";
 import { getISODateString } from "../util/Date";
 import { Collection, collectionListSummary } from "./CollectionsModule";
 import { SelectedCategories } from "./SearchFacetsModule";
-import { SortOrder } from "./SearchSettingsModule";
+import {
+  getMimeTypeFiltersFromServer,
+  MimeTypeFilter,
+} from "./SearchFilterSettingsModule";
 import { resolveUsers } from "./UserModule";
+import { pipe } from "fp-ts/function";
 
 /**
  * Type of all search options on Search page
@@ -59,7 +64,7 @@ export interface SearchOptions {
   /**
    * Selected search result sorting order.
    */
-  sortOrder: Static<typeof SortOrder> | undefined;
+  sortOrder: OEQ.SearchSettings.SortOrder | undefined;
   /**
    * A list of collections.
    */
@@ -89,7 +94,34 @@ export interface SearchOptions {
    * Whether to search attachments or not.
    */
   searchAttachments?: boolean;
+  /**
+   * A list of MIME types generated from filters or provided by Image/Video Gallery.
+   */
+  mimeTypes?: string[];
+  /**
+   * A list of selected MIME type filters.
+   */
+  mimeTypeFilters?: MimeTypeFilter[];
+  /**
+   * A list of MIME types provided by an Integration (e.g. with Moodle), which has a higher priority than `mimeTypes`.
+   */
+  externalMimeTypes?: string[];
+  /**
+   * List of search index key/value pairs to filter by. e.g. videothumb:true or realthumb:true.
+   *
+   * @see OEQ.Search.SearchParams for examples
+   */
+  musts?: OEQ.Search.Must[];
+  /**
+   * How to display the search results - also determines the type of results.
+   */
+  displayMode?: DisplayMode;
 }
+
+/**
+ * The type representing fields of SearchOptions.
+ */
+export type SearchOptionsFields = keyof SearchOptions;
 
 /**
  * Represent a date range which has an optional start and end.
@@ -115,12 +147,23 @@ const LegacySearchParams = Union(
   Literal("q"),
   Literal("sort"),
   Literal("owner"),
-  Literal("in")
+  Literal("in"),
+  Literal("mt"),
+  Literal("_int.mimeTypes"),
+  Literal("type")
 );
 
 type LegacyParams = Static<typeof LegacySearchParams>;
 
 const isDate = (value: unknown): value is Date => value instanceof Date;
+
+const DisplayModeRuntypes = Union(
+  Literal("list"),
+  Literal("gallery-image"),
+  Literal("gallery-video")
+);
+
+export type DisplayMode = Static<typeof DisplayModeRuntypes>;
 
 /**
  * Represents the shape of data returned from generateQueryStringFromSearchOptions
@@ -129,10 +172,10 @@ const DehydratedSearchOptionsRunTypes = Partial({
   query: String,
   rowsPerPage: Number,
   currentPage: Number,
-  sortOrder: SortOrder,
+  sortOrder: OEQ.SearchSettings.SortOrderRunTypes,
   collections: RuntypeArray(Record({ uuid: String })),
   rawMode: Boolean,
-  lastModifiedDateRange: Record({ start: Guard(isDate), end: Guard(isDate) }),
+  lastModifiedDateRange: Partial({ start: Guard(isDate), end: Guard(isDate) }),
   owner: Record({ id: String }),
   // Runtypes guard function would not work when defining the type as Array(OEQ.Common.ItemStatuses) or Guard(OEQ.Common.ItemStatuses.guard),
   // So the Union of Literals has been copied from the OEQ.Common module.
@@ -156,6 +199,8 @@ const DehydratedSearchOptionsRunTypes = Partial({
     })
   ),
   searchAttachments: Boolean,
+  mimeTypeFilters: RuntypeArray(Record({ id: String })),
+  displayMode: DisplayModeRuntypes,
 });
 
 type DehydratedSearchOptions = Static<typeof DehydratedSearchOptionsRunTypes>;
@@ -186,6 +231,13 @@ export const defaultSearchOptions: SearchOptions = {
   rawMode: false,
   status: liveStatuses,
   searchAttachments: true,
+  query: "",
+  collections: [],
+  lastModifiedDateRange: { start: undefined, end: undefined },
+  owner: undefined,
+  mimeTypes: [],
+  mimeTypeFilters: [],
+  displayMode: "list",
 };
 
 export const defaultPagedSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> = {
@@ -290,6 +342,12 @@ export const generateQueryStringFromSearchOptions = (
             () => value?.map((collection) => pick(collection, ["uuid"])),
           ],
           [Literal("owner"), () => (value ? pick(value, ["id"]) : undefined)],
+          [
+            Literal("mimeTypeFilters"),
+            () => value?.map((filter) => pick(filter, ["id"])),
+          ],
+          // As we can get MIME types from filters, we can skip key "mimeTypes".
+          [Literal("mimeTypes"), () => undefined],
           [Unknown, () => value ?? undefined]
         )(key);
       }
@@ -303,6 +361,13 @@ const rehydrateCollections = async (
 ): Promise<Collection[] | undefined> =>
   options.collections
     ? await findCollectionsByUuid(options.collections.map((c) => c.uuid))
+    : undefined;
+
+const rehydrateMIMETypeFilter = async (
+  options: DehydratedSearchOptions
+): Promise<MimeTypeFilter[] | undefined> =>
+  options.mimeTypeFilters
+    ? await findMIMETypeFiltersById(options.mimeTypeFilters.map((f) => f.id))
     : undefined;
 
 const rehydrateOwner = async (
@@ -334,21 +399,26 @@ export const newSearchQueryToSearchOptions = async (
     console.warn("Invalid search query params received. Using defaults.");
     return defaultSearchOptions;
   }
+
+  const mimeTypeFilters = await rehydrateMIMETypeFilter(parsedOptions);
+  const mimeTypes = mimeTypeFilters?.flatMap((f) => f.mimeTypes);
+
   const result: SearchOptions = {
     ...defaultSearchOptions,
     ...parsedOptions,
     collections: await rehydrateCollections(parsedOptions),
     owner: await rehydrateOwner(parsedOptions),
+    mimeTypeFilters,
+    mimeTypes,
   };
   return result;
 };
 
 /**
- * A function that takes search options and converts search options to search params,
- * and then does a search and returns a list of Items.
- * @param searchOptions Search options selected on Search page.
+ * A function that converts search options to search params.
+ * @param searchOptions Search options to be converted to search params.
  */
-export const searchItems = ({
+const buildSearchParams = ({
   query,
   rowsPerPage,
   currentPage,
@@ -360,11 +430,21 @@ export const searchItems = ({
   status = liveStatuses,
   searchAttachments,
   selectedCategories,
-}: SearchOptions): Promise<
-  OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>
-> => {
+  mimeTypes,
+  mimeTypeFilters,
+  externalMimeTypes,
+  musts,
+}: SearchOptions): OEQ.Search.SearchParams => {
   const processedQuery = query ? formatQuery(query, !rawMode) : undefined;
-  const searchParams: OEQ.Search.SearchParams = {
+  // We use selected filters to generate MIME types. However, in Image Gallery,
+  // image MIME types are applied before any filter gets selected.
+  // So the logic is, we use MIME type filters if any are selected, or specific MIME types
+  // already provided by the Image Gallery.
+  const _mimeTypes =
+    mimeTypeFilters && mimeTypeFilters.length > 0
+      ? mimeTypeFilters.flatMap((f) => f.mimeTypes)
+      : mimeTypes;
+  return {
     query: processedQuery,
     start: currentPage * rowsPerPage,
     length: rowsPerPage,
@@ -376,9 +456,29 @@ export const searchItems = ({
     owner: owner?.id,
     searchAttachments: searchAttachments,
     whereClause: generateCategoryWhereQuery(selectedCategories),
+    mimeTypes: externalMimeTypes ?? _mimeTypes,
+    musts: musts,
   };
-  return OEQ.Search.search(API_BASE_URL, searchParams);
 };
+
+/**
+ * A function that executes a search with provided search options.
+ * @param searchOptions Search options selected on Search page.
+ */
+export const searchItems = (
+  searchOptions: SearchOptions
+): Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>> =>
+  OEQ.Search.search(API_BASE_URL, buildSearchParams(searchOptions));
+
+/**
+ * A function that builds a URL for exporting a search result
+ * @param searchOptions Search options selected on Search page.
+ */
+export const buildExportUrl = (searchOptions: SearchOptions): string =>
+  OEQ.Search.buildExportUrl(
+    API_BASE_URL,
+    buildSearchParams({ ...searchOptions, currentPage: 0 })
+  );
 
 const findCollectionsByUuid = async (
   collectionUuids: string[]
@@ -390,6 +490,13 @@ const findCollectionsByUuid = async (
     collectionUuids.includes(c.uuid)
   );
   return filteredCollectionList.length > 0 ? filteredCollectionList : undefined;
+};
+
+const findMIMETypeFiltersById = async (
+  filterIds: string[]
+): Promise<MimeTypeFilter[] | undefined> => {
+  const allFilters = await getMimeTypeFiltersFromServer();
+  return allFilters.filter(({ id }) => id && filterIds.includes(id));
 };
 
 const findUser = async (
@@ -453,6 +560,22 @@ export const legacyQueryStringToSearchOptions = async (
     )(rangeType.toLowerCase() as RangeType);
   };
 
+  const displayMode: DisplayMode = pipe(
+    getQueryParam("type"),
+    match(
+      // When type is 'standard' or undefined, default to 'list'.
+      [Union(Literal("standard"), Undefined), (): DisplayMode => "list"],
+      [Literal("gallery"), (): DisplayMode => "gallery-image"],
+      [Literal("video"), (): DisplayMode => "gallery-video"],
+      [
+        Unknown,
+        () => {
+          throw new Error("Unknown Legacy display mode");
+        },
+      ]
+    )
+  );
+
   const parseCollectionUuid = async (
     collectionUuid: string | undefined
   ): Promise<Collection[] | undefined> => {
@@ -468,6 +591,13 @@ export const legacyQueryStringToSearchOptions = async (
   };
 
   const sortOrderParam = getQueryParam("sort")?.toUpperCase();
+  const mimeTypeFilters = await findMIMETypeFiltersById(params.getAll("mt"));
+  const mimeTypes = mimeTypeFilters?.flatMap(({ mimeTypes }) => mimeTypes);
+  const getExternalMIMETypes = () => {
+    const integrationMIMETypes = params.getAll("_int.mimeTypes");
+    return integrationMIMETypes.length > 0 ? integrationMIMETypes : undefined;
+  };
+
   const searchOptions: SearchOptions = {
     ...defaultSearchOptions,
     collections: await parseCollectionUuid(collectionId),
@@ -479,9 +609,24 @@ export const legacyQueryStringToSearchOptions = async (
         datePrimary ? new Date(parseInt(datePrimary)) : undefined,
         dateSecondary ? new Date(parseInt(dateSecondary)) : undefined
       ) ?? defaultSearchOptions.lastModifiedDateRange,
-    sortOrder: SortOrder.guard(sortOrderParam)
+    sortOrder: OEQ.SearchSettings.SortOrderRunTypes.guard(sortOrderParam)
       ? sortOrderParam
       : defaultSearchOptions.sortOrder,
+    mimeTypes,
+    mimeTypeFilters,
+    externalMimeTypes: getExternalMIMETypes(),
+    rawMode: true,
+    displayMode,
   };
   return searchOptions;
 };
+
+/**
+ * Call this function to get partial SearchOptions.
+ * @param options An object of SearchOptions
+ * @param fields What fields of SearchOptions to get
+ */
+export const getPartialSearchOptions = (
+  options: SearchOptions,
+  fields: SearchOptionsFields[]
+) => pick(options, fields);

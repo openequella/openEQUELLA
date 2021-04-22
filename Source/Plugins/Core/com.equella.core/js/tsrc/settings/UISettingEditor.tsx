@@ -15,25 +15,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {
+  AccordionDetails,
+  Button,
+  FormControl,
+  FormControlLabel,
+  Grid,
+  Switch,
+} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import * as React from "react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { AppConfig } from "../AppConfig";
+import { routes } from "../mainui/routes";
 import {
   fetchUISetting,
   saveUISetting,
 } from "../modules/GeneralSettingsModule";
-import {
-  ExpansionPanelDetails,
-  Button,
-  FormControl,
-  FormControlLabel,
-  Switch,
-  Grid,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { Link } from "react-router-dom";
-import { routes } from "../mainui/routes";
 import { languageStrings } from "../util/langstrings";
-import { AppConfig } from "../AppConfig";
-import { useEffect, useState } from "react";
 import useError from "../util/useError";
 
 const useStyles = makeStyles({
@@ -105,7 +105,7 @@ const UISettingEditor = (props: UISettingEditorProps) => {
   };
 
   return (
-    <ExpansionPanelDetails>
+    <AccordionDetails>
       <Grid container direction="column">
         <Grid item>
           <div className={classes.enableNewUIColumn}>
@@ -148,7 +148,7 @@ const UISettingEditor = (props: UISettingEditorProps) => {
           </Link>
         </Grid>
       </Grid>
-    </ExpansionPanelDetails>
+    </AccordionDetails>
   );
 };
 

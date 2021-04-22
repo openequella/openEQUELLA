@@ -1,5 +1,9 @@
 {
-  "extends": ["config:base", ":masterIssue", ":maintainLockFilesMonthly"],
+  "extends": [
+    "config:base",
+    ":dependencyDashboard",
+    ":maintainLockFilesMonthly"
+  ],
   "prConcurrentLimit": 20,
   "prHourlyLimit": 2,
   "packageRules": [
@@ -8,67 +12,67 @@
       "automerge": true
     },
     {
-      "packagePatterns": ["^com.fasterxml.jackson"],
+      "matchPackagePatterns": ["^com.fasterxml.jackson"],
       "groupName": "Jackson (XML) packages"
     },
     {
-      "packagePatterns": ["^com.google.inject"],
+      "matchPackagePatterns": ["^com.google.inject"],
       "groupName": "Google Inject/Guice packages"
     },
     {
-      "packagePatterns": ["^com.google.apis"],
+      "matchPackagePatterns": ["^com.google.apis"],
       "groupName": "Google API Packages"
     },
     {
-      "packagePatterns": ["^org.apache.axis2"],
+      "matchPackagePatterns": ["^org.apache.axis2"],
       "groupName": "Apache Axis 2 packages"
     },
     {
-      "packagePatterns": ["^org.apache.curator"],
+      "matchPackagePatterns": ["^org.apache.curator"],
       "groupName": "Apache Curator packages"
     },
     {
-      "packagePatterns": ["^org.apache.cxf"],
+      "matchPackagePatterns": ["^org.apache.cxf"],
       "groupName": "Apache CXF packages"
     },
     {
-      "packagePatterns": ["^org.apache.httpcomponents"],
+      "matchPackagePatterns": ["^org.apache.httpcomponents"],
       "groupName": "Apache HTTP Components packages"
     },
     {
-      "packagePatterns": ["^org.apache.lucene"],
+      "matchPackagePatterns": ["^org.apache.lucene"],
       "groupName": "Apache Lucene packages"
     },
     {
-      "packagePatterns": ["^org.apache.ws.commons.axiom"],
+      "matchPackagePatterns": ["^org.apache.ws.commons.axiom"],
       "groupName": "Apache Axiom packages"
     },
     {
-      "packagePatterns": ["^org.apache.tika"],
+      "matchPackagePatterns": ["^org.apache.tika"],
       "groupName": "Apache Tika packages"
     },
     {
-      "packagePatterns": ["^org.apache.tomcat"],
+      "matchPackagePatterns": ["^org.apache.tomcat"],
       "groupName": "Apache Tomcat packages"
     },
     {
-      "packagePatterns": ["^org.http4s:http4s"],
+      "matchPackagePatterns": ["^org.http4s:http4s"],
       "groupName": "http4s packages"
     },
     {
-      "packagePatterns": ["^org.slf4j"],
+      "matchPackagePatterns": ["^org.slf4j"],
       "groupName": "SLF4J packages"
     },
     {
-      "packagePatterns": ["^io.swagger"],
+      "matchPackagePatterns": ["^io.swagger"],
       "groupName": "Swagger packages"
     },
     {
-      "packagePatterns": ["^com.softwaremill.sttp"],
+      "matchPackagePatterns": ["^com.softwaremill.sttp"],
       "groupName": "Scala HTTP packages"
     },
     {
-      "packageNames": ["@types/tough-cookie"],
+      "matchPackageNames": ["@types/tough-cookie"],
       "rangeStrategy": "replace"
     }
   ]

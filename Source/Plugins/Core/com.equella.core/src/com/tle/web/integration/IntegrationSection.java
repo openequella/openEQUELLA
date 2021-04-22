@@ -36,6 +36,7 @@ import com.tle.web.selection.SelectedResource;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.SelectionsMadeCallback;
 import java.util.Collection;
+import java.util.Set;
 import javax.inject.Inject;
 
 @SuppressWarnings("nls")
@@ -80,12 +81,31 @@ public class IntegrationSection
     @Bookmarked(contexts = BookmarkEvent.CONTEXT_SESSION)
     private String id;
 
+    // This field is primarily used to let the new Search UI filter search results by MIME types
+    // provided by Integrations.
+    // The approach is to add these MIME types to the URL as query strings and then convert
+    // Legacy Search params to SearchOptions.
+    // For example, a URL would be 'searching.do?_sl.stateId=1&_int.id_2&_int.mimeTypes=xxx'.
+    // To achieve this, we must use annotation 'Bookmarked'. For details, please look
+    // 'BookmarkEvent', 'AnnotatedBookmarkScanner',
+    // 'AnnotationBookmarkListener' and 'InfoBookmark - getBookmarkParams'.
+    @Bookmarked(contexts = BookmarkEvent.CONTEXT_SESSION)
+    private Set<String> mimeTypes;
+
     public String getId() {
       return id;
     }
 
     public void setId(String id) {
       this.id = id;
+    }
+
+    public Set<String> getMimeTypes() {
+      return mimeTypes;
+    }
+
+    public void setMimeTypes(Set<String> mimeTypes) {
+      this.mimeTypes = mimeTypes;
     }
   }
 
@@ -97,6 +117,11 @@ public class IntegrationSection
   public void newSession(SectionInfo info, String id) {
     IntegrationModel model = getModel(info);
     model.setId(id);
+  }
+
+  public void updateModelMimeTypes(SectionInfo info, Set<String> mimeTypes) {
+    IntegrationModel model = getModel(info);
+    model.setMimeTypes(mimeTypes);
   }
 
   @Override

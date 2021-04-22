@@ -19,15 +19,9 @@ import {
   AppBar,
   Badge,
   CssBaseline,
-  Divider,
   Drawer,
   Hidden,
-  Icon,
   IconButton,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   Menu,
   MenuItem,
   Toolbar,
@@ -43,14 +37,22 @@ import MenuIcon from "@material-ui/icons/Menu";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 
 import * as OEQ from "@openequella/rest-api-client";
+import clsx, { ClassValue } from "clsx";
 import { LocationDescriptor } from "history";
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { ErrorResponse } from "../api/errors";
 import MessageInfo from "../components/MessageInfo";
-import { guestUser } from "../legacycontent/LegacyContent";
+import { TooltipIconButton } from "../components/TooltipIconButton";
+import { guestUser, PageContent } from "../legacycontent/LegacyContent";
+import {
+  isItemViewedFromIntegration,
+  isSelectionSessionOpen,
+} from "../modules/LegacySelectionSessionModule";
 import { languageStrings } from "../util/langstrings";
-import { routes } from "./routes";
+import MainMenu from "./MainMenu";
+import { legacyPageUrl, routes } from "./routes";
+import ScreenOptions from "./ScreenOptions";
 
 export type MenuMode = "HIDDEN" | "COLLAPSED" | "FULL";
 export type FullscreenMode = "YES" | "YES_WITH_TOOLBAR" | "NO";
@@ -132,6 +134,30 @@ export function templateError(errorResponse: ErrorResponse): TemplateUpdate {
   });
 }
 
+export function templatePropsForLegacy({
+  title,
+  metaTags,
+  html,
+  contentId,
+  hideAppBar,
+  fullscreenMode,
+  menuMode,
+}: PageContent): TemplateProps {
+  const soHtml = html["so"];
+  const menuExtra = soHtml ? (
+    <ScreenOptions optionsHtml={soHtml} contentId={contentId} key={contentId} />
+  ) : undefined;
+  return {
+    title,
+    metaTags,
+    hideAppBar,
+    fullscreenMode: fullscreenMode as FullscreenMode,
+    menuMode: menuMode as MenuMode,
+    menuExtra,
+    children: undefined,
+  };
+}
+
 export const strings = languageStrings.template;
 
 export const coreStrings = languageStrings["com.equella.core"];
@@ -155,6 +181,10 @@ export const useStyles = makeStyles((theme: Theme) => {
   const tabHeight = 48;
   return {
     "@global": {
+      "a, p": {
+        //handle long strings without breaking the layout
+        overflowWrap: "anywhere",
+      },
       a: {
         textDecoration: "none",
         color: theme.palette.primary.main,
@@ -268,13 +298,13 @@ function useFullscreen({ fullscreenMode, hideAppBar }: useFullscreenProps) {
         return true;
 
       default:
-        return false;
+        return isSelectionSessionOpen() || isItemViewedFromIntegration();
     }
   })();
   return hideAppBar || modeIsFullscreen;
 }
 
-export const Template = React.memo(function Template({
+export const Template = ({
   backRoute,
   children,
   currentUser = guestUser,
@@ -290,7 +320,7 @@ export const Template = React.memo(function Template({
   title,
   titleExtra,
   metaTags,
-}: TemplateProps) {
+}: TemplateProps) => {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLElement>();
   const [navMenuOpen, setNavMenuOpen] = React.useState(false);
   const [errorOpen, setErrorOpen] = React.useState(false);
@@ -328,14 +358,10 @@ export const Template = React.memo(function Template({
   }, [title]);
 
   React.useEffect(() => {
-    updateMetaTags(metaTags);
-  }, [metaTags]);
-
-  function updateMetaTags(tags: string | undefined) {
     const head = document.head;
-    if (tags) {
+    if (metaTags) {
       // The meta tags generated on the server side, separated by new line symbols
-      const newMetaTags = tags.split("\n");
+      const newMetaTags = metaTags.split("\n");
       newMetaTags.forEach((newMetaTag) => {
         head.appendChild(
           document.createRange().createContextualFragment(newMetaTag)
@@ -355,7 +381,7 @@ export const Template = React.memo(function Template({
         }
       });
     }
-  }
+  }, [metaTags, googleMetaTags]);
 
   function linkItem(
     link: LocationDescriptor,
@@ -403,52 +429,6 @@ export const Template = React.memo(function Template({
     );
   }
 
-  function navItem(item: OEQ.LegacyContent.MenuItem, ind: number) {
-    return (
-      <ListItem
-        component={(p) => {
-          const props = {
-            ...p,
-            rel: item.newWindow ? "noopener noreferrer" : undefined,
-            target: item.newWindow ? "_blank" : undefined,
-            onClick: () => setNavMenuOpen(false),
-          };
-          return item.route ? (
-            <Link {...props} to={item.route} />
-          ) : (
-            <a {...props} href={item.href}>
-              {}
-            </a>
-          );
-        }}
-        key={ind}
-        button
-      >
-        <ListItemIcon>
-          {item.iconUrl ? (
-            <img src={item.iconUrl} alt={item.title} />
-          ) : (
-            <Icon color="inherit" className={classes.menuIcon}>
-              {item.systemIcon ? item.systemIcon : "folder"}
-            </Icon>
-          )}
-        </ListItemIcon>
-        <ListItemText
-          disableTypography
-          primary={
-            <Typography
-              variant="subtitle1"
-              className={classes.menuItem}
-              component="div"
-            >
-              {item.title}
-            </Typography>
-          }
-        />
-      </ListItem>
-    );
-  }
-
   const hasMenu = menuMode !== "HIDDEN";
 
   const menuContent = React.useMemo(
@@ -456,18 +436,14 @@ export const Template = React.memo(function Template({
       <div className={classes.logo}>
         <img role="presentation" src={logoURL} alt="Logo" />
         {hasMenu && (
-          <div id="menulinks">
-            {currentUser.menuGroups.map((group, ind) => (
-              <React.Fragment key={ind}>
-                {ind > 0 && <Divider />}
-                <List component="nav">{group.map(navItem)}</List>
-              </React.Fragment>
-            ))}
-          </div>
+          <MainMenu
+            menuGroups={currentUser.menuGroups}
+            onClickNavItem={() => setNavMenuOpen(false)}
+          />
         )}
       </div>
     ),
-    [currentUser, hasMenu]
+    [classes.logo, currentUser, hasMenu]
   );
 
   const itemCounts = currentUser.counts
@@ -508,30 +484,27 @@ export const Template = React.memo(function Template({
               {badgedLink(
                 <AssignmentIcon />,
                 itemCounts.tasks,
-                routes.TaskList.to,
+                legacyPageUrl(routes.TaskList.to),
                 topBarString.tasks
               )}
               {badgedLink(
                 <NotificationsIcon />,
                 itemCounts.notifications,
-                routes.Notifications.to,
+                legacyPageUrl(routes.Notifications.to),
                 topBarString.notifications
               )}
             </Hidden>
-            <Tooltip
+            <TooltipIconButton
               title={
                 currentUser
                   ? currentUser.username
                   : strings.menu.usernameUnknown
               }
+              onClick={(e) => setMenuAnchorEl(e.currentTarget)}
+              aria-label={strings.menu.title}
             >
-              <IconButton
-                aria-label={strings.menu.title}
-                onClick={(e) => setMenuAnchorEl(e.currentTarget)}
-              >
-                <AccountIcon />
-              </IconButton>
-            </Tooltip>
+              <AccountIcon />
+            </TooltipIconButton>
             <Menu
               anchorEl={menuAnchorEl}
               open={Boolean(menuAnchorEl)}
@@ -539,9 +512,17 @@ export const Template = React.memo(function Template({
               anchorOrigin={{ vertical: "top", horizontal: "right" }}
               transformOrigin={{ vertical: "top", horizontal: "right" }}
             >
-              {linkItem(routes.Logout.to, true, strings.menu.logout)}
+              {linkItem(
+                legacyPageUrl(routes.Logout.to),
+                true,
+                strings.menu.logout
+              )}
               {currentUser.prefsEditable &&
-                linkItem(routes.UserPreferences.to, false, strings.menu.prefs)}
+                linkItem(
+                  legacyPageUrl(routes.UserPreferences.to),
+                  false,
+                  strings.menu.prefs
+                )}
             </Menu>
           </>
         )}
@@ -549,25 +530,37 @@ export const Template = React.memo(function Template({
     );
   }
 
-  const layout = useFullscreen({ fullscreenMode, hideAppBar }) ? (
-    <main>{children}</main>
-  ) : (
-    <div className={classes.appFrame}>
-      <AppBar className={classes.appBar}>
-        <Toolbar disableGutters>
-          {hasMenu && (
-            <IconButton
-              className={classes.navIconHide}
-              onClick={(_) => setNavMenuOpen(!navMenuOpen)}
-            >
-              <MenuIcon />
-            </IconButton>
-          )}
-          {titleArea()}
-          {menuArea()}
-        </Toolbar>
-        {tabs}
-      </AppBar>
+  const ErrorMessage = ({ error }: { error: ErrorResponse }) => (
+    <MessageInfo
+      open={errorOpen}
+      onClose={() => setErrorOpen(false)}
+      variant="error"
+      title={error.error_description ? error.error_description : error.error}
+    />
+  );
+
+  const fullScreen = useFullscreen({ fullscreenMode, hideAppBar });
+
+  const layoutAppBar = !fullScreen && (
+    <AppBar className={classes.appBar}>
+      <Toolbar disableGutters>
+        {hasMenu && (
+          <IconButton
+            className={classes.navIconHide}
+            onClick={() => setNavMenuOpen(!navMenuOpen)}
+          >
+            <MenuIcon />
+          </IconButton>
+        )}
+        {titleArea()}
+        {menuArea()}
+      </Toolbar>
+      {tabs}
+    </AppBar>
+  );
+
+  const layoutDrawer = !fullScreen && (
+    <>
       <Hidden mdUp>
         <Drawer
           variant="temporary"
@@ -588,37 +581,59 @@ export const Template = React.memo(function Template({
           {menuContent}
         </Drawer>
       </Hidden>
-      <main
-        className={`${classes.content} ${
-          fixedViewPort ? classes.contentFixedHeight : classes.contentMinHeight
-        }`}
-      >
-        <div className={classes.toolbar} />
-        {tabs && <div className={classes.tabs} />}
-        <div className={classes.contentArea}>{children}</div>
-      </main>
-      {footer && <div className={classes.footer}>{footer}</div>}
-    </div>
+    </>
   );
 
-  function renderError(error: ErrorResponse) {
-    return (
-      <MessageInfo
-        open={errorOpen}
-        onClose={() => setErrorOpen(false)}
-        variant="error"
-        title={error.error_description ? error.error_description : error.error}
-      />
-    );
-  }
+  const layoutToolbarAndTabs = !fullScreen && (
+    <>
+      <div className={classes.toolbar} />
+      {tabs && <div className={classes.tabs} />}
+    </>
+  );
+
+  const layoutFooter = !fullScreen && footer && (
+    <div className={classes.footer}>{footer}</div>
+  );
+
+  // Simple wrapper for `clsx` for easy consideration of fullscreen mode.
+  const layoutClasses = (...classes: ClassValue[]): string =>
+    clsx(!fullScreen && classes);
+
+  /**
+   * Defines the main layout of the page by structuring the above `layoutXyz` constants. This is
+   * done to enhance readability to emphasise the structure - especially with regards to support for
+   * fullscreen mode.
+   *
+   * Originally fullscreen mode support was done with a simple ternary expression that would
+   * set the layout as `<main>children</main>` when in fullscreen, but otherwise build up a
+   * component tree similar to the below. However this meant `children` would be unmounted when
+   * changing modes triggering excessive re-rendering. This became an issue with `LegacyContent`
+   * making duplicate calls to the server and ending up with incorrect results.
+   */
+  const layout = (
+    <div className={layoutClasses(classes.appFrame)}>
+      {layoutAppBar}
+      {layoutDrawer}
+      <main
+        className={layoutClasses([
+          classes.content,
+          fixedViewPort ? classes.contentFixedHeight : classes.contentMinHeight,
+        ])}
+      >
+        {layoutToolbarAndTabs}
+        <div className={layoutClasses(classes.contentArea)}>{children}</div>
+      </main>
+      {layoutFooter}
+    </div>
+  );
 
   return (
     <>
       <CssBaseline />
       <div className={classes.root}>
         {layout}
-        {errorResponse && renderError(errorResponse)}
+        {errorResponse && <ErrorMessage error={errorResponse} />}
       </div>
     </>
   );
-});
+};

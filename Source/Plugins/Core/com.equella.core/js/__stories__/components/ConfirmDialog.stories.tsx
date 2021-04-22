@@ -39,3 +39,12 @@ ShowDialog.args = {
   title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
   confirmButtonText: "ok",
 };
+
+export const DisableConfirmButton: Story<ConfirmDialogProps> = (args) => (
+  <ConfirmDialog {...args} />
+);
+
+DisableConfirmButton.args = {
+  ...ShowDialog.args,
+  disableConfirmButton: true,
+};

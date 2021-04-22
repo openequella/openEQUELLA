@@ -15,10 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import JQueryDiv from "./JQueryDiv";
 import { makeStyles } from "@material-ui/core";
+import * as React from "react";
+import HtmlParser from "react-html-parser";
+import JQueryDiv from "./JQueryDiv";
 import { PageContent } from "./LegacyContent";
+import { LegacyForm } from "./LegacyForm";
 
 const useStyles = makeStyles((t) => ({
   noPadding: {
@@ -29,22 +31,42 @@ const useStyles = makeStyles((t) => ({
 export function LegacyContentRenderer({
   afterHtml,
   fullscreenMode,
-  html,
+  html: { body, crumbs, form, upperbody },
   menuMode,
+  noForm,
   script,
+  state,
 }: PageContent) {
   const classes = useStyles();
 
-  const { body, crumbs, upperbody } = html;
+  // Effect responsible for the execution of the legacy scripts etc which were historically
+  // added at the end of the server-side rendered HTML.
+  React.useEffect(() => {
+    // eslint-disable-next-line no-eval
+    if (script) window.eval(script);
+  }, [script]);
+
+  React.useEffect(() => {
+    if (afterHtml) afterHtml();
+  }, [afterHtml]);
+
   const extraClass =
     !fullscreenMode && menuMode !== "HIDDEN" ? classes.noPadding : "";
+
   const mainContent = (
     <div className={`content ${extraClass}`}>
       {crumbs && <JQueryDiv id="breadcrumbs" html={crumbs} />}
       {upperbody && <JQueryDiv html={upperbody} />}
-      <JQueryDiv html={body} script={script} afterHtml={afterHtml} />
+      <JQueryDiv html={body} />
     </div>
   );
 
-  return mainContent;
+  return noForm ? (
+    mainContent
+  ) : (
+    <>
+      <LegacyForm state={state}>{mainContent}</LegacyForm>
+      {form && HtmlParser(form)}
+    </>
+  );
 }

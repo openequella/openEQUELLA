@@ -23,18 +23,25 @@ import {
   CardHeader,
   CircularProgress,
   Grid,
-  IconButton,
+  Hidden,
   List,
   ListItem,
   Tooltip,
   Typography,
 } from "@material-ui/core";
+import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
+import FilterListIcon from "@material-ui/icons/FilterList";
 import { makeStyles } from "@material-ui/core/styles";
 import Share from "@material-ui/icons/Share";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
+import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { isSelectionSessionOpen } from "../../modules/LegacySelectionSessionModule";
 import { languageStrings } from "../../util/langstrings";
+import {
+  ExportSearchResultLink,
+  ExportSearchResultLinkProps,
+} from "./ExportSearchResultLink";
 import SearchOrderSelect, { SearchOrderSelectProps } from "./SearchOrderSelect";
 import { SearchPagination, SearchPaginationProps } from "./SearchPagination";
 import SearchResult from "./SearchResult";
@@ -48,6 +55,17 @@ const useStyles = makeStyles({
     position: "fixed",
   },
 });
+
+interface RefineSearchProps {
+  /**
+   * True when any search criteria has been set
+   */
+  isCriteriaSet: boolean;
+  /**
+   * Function fired to show Refine Search panel.
+   */
+  showRefinePanel: () => void;
+}
 
 /**
  * Props required by component SearchResultList.
@@ -77,7 +95,24 @@ export interface SearchResultListProps {
    * Fired when the copy search button is clicked.
    */
   onCopySearchLink: () => void;
+  /**
+   * Fired when the save search button is clicked.
+   */
+  onSaveSearch: () => void;
+  /**
+   * Props for the Icon button that controls whether show Refine panel in small screens
+   */
+  refineSearchProps: RefineSearchProps;
+  /**
+   * Props required by ExportSearchResultLink.
+   */
+  exportProps: {
+    isExportPermitted: boolean;
+    exportLinkProps: ExportSearchResultLinkProps;
+  };
 }
+
+const searchPageStrings = languageStrings.searchpage;
 
 /**
  * This component is basically a Card which includes a list of search results and a few search controls.
@@ -88,12 +123,20 @@ export interface SearchResultListProps {
 export const SearchResultList = ({
   children,
   showSpinner,
-  orderSelectProps,
-  paginationProps,
+  orderSelectProps: { value, onChange: onOrderChange },
+  paginationProps: {
+    count,
+    currentPage,
+    rowsPerPage,
+    onPageChange,
+    onRowsPerPageChange,
+  },
+  refineSearchProps: { isCriteriaSet, showRefinePanel },
   onClearSearchOptions,
   onCopySearchLink,
+  onSaveSearch,
+  exportProps: { isExportPermitted, exportLinkProps },
 }: SearchResultListProps) => {
-  const searchPageStrings = languageStrings.searchpage;
   const classes = useStyles();
   const inSelectionSession: boolean = isSelectionSessionOpen();
 
@@ -115,14 +158,11 @@ export const SearchResultList = ({
   return (
     <Card>
       <CardHeader
-        title={searchPageStrings.subtitle + ` (${paginationProps.count})`}
+        title={searchPageStrings.subtitle + ` (${count})`}
         action={
           <Grid container spacing={1} alignItems="center">
             <Grid item>
-              <SearchOrderSelect
-                value={orderSelectProps.value}
-                onChange={orderSelectProps.onChange}
-              />
+              <SearchOrderSelect value={value} onChange={onOrderChange} />
             </Grid>
             <Grid item>
               <Tooltip title={searchPageStrings.newSearchHelperText}>
@@ -131,13 +171,38 @@ export const SearchResultList = ({
                 </Button>
               </Tooltip>
             </Grid>
+            <Grid item>
+              <TooltipIconButton
+                title={searchPageStrings.favouriteSearch.title}
+                onClick={onSaveSearch}
+              >
+                <FavoriteBorderIcon />
+              </TooltipIconButton>
+            </Grid>
+            {isExportPermitted && (
+              <Grid item>
+                <ExportSearchResultLink {...exportLinkProps} />
+              </Grid>
+            )}
+            <Hidden mdUp>
+              <Grid item>
+                <TooltipIconButton
+                  title={searchPageStrings.refineSearchPanel.title}
+                  onClick={showRefinePanel}
+                  color={isCriteriaSet ? "secondary" : "primary"}
+                >
+                  <FilterListIcon />
+                </TooltipIconButton>
+              </Grid>
+            </Hidden>
             {!inSelectionSession && (
               <Grid item>
-                <Tooltip title={searchPageStrings.shareSearchHelperText}>
-                  <IconButton onClick={onCopySearchLink}>
-                    <Share />
-                  </IconButton>
-                </Tooltip>
+                <TooltipIconButton
+                  title={searchPageStrings.shareSearchHelperText}
+                  onClick={onCopySearchLink}
+                >
+                  <Share />
+                </TooltipIconButton>
               </Grid>
             )}
           </Grid>
@@ -157,14 +222,12 @@ export const SearchResultList = ({
         <Grid container justify="center">
           <Grid item>
             <SearchPagination
-              count={paginationProps.count}
-              currentPage={paginationProps.currentPage}
-              rowsPerPage={paginationProps.rowsPerPage}
-              onPageChange={(page: number) =>
-                paginationProps.onPageChange(page)
-              }
+              count={count}
+              currentPage={currentPage}
+              rowsPerPage={rowsPerPage}
+              onPageChange={(page: number) => onPageChange(page)}
               onRowsPerPageChange={(rowsPerPage: number) =>
-                paginationProps.onRowsPerPageChange(rowsPerPage)
+                onRowsPerPageChange(rowsPerPage)
               }
             />
           </Grid>
@@ -193,7 +256,7 @@ export const mapSearchResultItems = (
 ): React.ReactNode[] =>
   items.map((item) => (
     <SearchResult
-      key={item.uuid}
+      key={`${item.uuid}/${item.version}`}
       item={item}
       handleError={handleError}
       highlights={highlights}

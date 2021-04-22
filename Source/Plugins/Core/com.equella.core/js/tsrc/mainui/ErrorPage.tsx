@@ -40,7 +40,8 @@ export default React.memo(function ErrorPage({
       <Card>
         <CardContent>
           <Typography variant="h3" color="error">
-            {code} : {error}
+            {code && `${code} : `}
+            {error}
           </Typography>
           {error_description && (
             <Typography variant="h5">{error_description}</Typography>

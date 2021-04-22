@@ -22,9 +22,11 @@ import com.tle.core.guice.Bind;
 import com.tle.web.errors.DefaultExceptionHandler;
 import com.tle.web.integration.service.IntegrationService;
 import com.tle.web.sections.SectionInfo;
+import com.tle.web.sections.SectionUtils;
 import com.tle.web.sections.SectionsController;
 import com.tle.web.sections.events.SectionEvent;
 import com.tle.web.template.Decorations;
+import com.tle.web.template.RenderNewTemplate;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -44,9 +46,14 @@ public class IntegrationExceptionHandler extends DefaultExceptionHandler {
   @Override
   public void handle(
       Throwable exception, SectionInfo info, SectionsController controller, SectionEvent<?> event) {
+    if (RenderNewTemplate.isNewUIEnabled()) {
+      SectionUtils.throwRuntime(exception);
+    }
+
     if (checkRendered(info)) {
       return;
     }
+    markHandled(info);
     SectionInfo newInfo = createNewInfo(exception, info, controller);
     Decorations.getDecorations(newInfo).clearAllDecorations();
     controller.execute(newInfo);

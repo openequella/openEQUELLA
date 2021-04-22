@@ -19,6 +19,14 @@ import * as OEQ from "@openequella/rest-api-client";
 import { memoize } from "lodash";
 import { API_BASE_URL } from "../AppConfig";
 
+export const OEQ_MIMETYPE_TYPE = "openequella";
+/**
+ * A collection of custom internal MIME types for openEQUELLA
+ */
+export const CustomMimeTypes = {
+  YOUTUBE: `${OEQ_MIMETYPE_TYPE}/youtube`,
+};
+
 export const getMIMETypesFromServer = (): Promise<
   OEQ.MimeType.MimeTypeEntry[]
 > => OEQ.MimeType.listMimeTypes(API_BASE_URL);
@@ -59,6 +67,36 @@ export const getMimeTypeDefaultViewerDetails = async (
 
   return viewerDetails;
 };
+
+/**
+ * Produces a predicate function to filter `MimeTypeEntry` collections based on MIME type types -
+ * i.e. the value before the first slash (e.g. `image` in `image/png`).
+ *
+ * @param type the MIME `type` to filter on - e.g. image, video, application, etc.
+ */
+const mimeTypeEntryTypePredicate = (type: string) => (
+  mte: OEQ.MimeType.MimeTypeEntry
+): boolean => {
+  try {
+    return splitMimeType(mte.mimeType)[0] === type;
+  } catch (e) {
+    if (e instanceof TypeError) {
+      return false;
+    } else {
+      throw e;
+    }
+  }
+};
+
+/**
+ * Provides a list of all the `image/` MIME types configured on the server. Results are memoized.
+ */
+export const getImageMimeTypes: () => Promise<string[]> = memoize(
+  async (): Promise<string[]> =>
+    (await getMIMETypesFromServer())
+      .filter(mimeTypeEntryTypePredicate("image"))
+      .map((mte) => mte.mimeType)
+);
 
 /**
  * Given a MIME Type of the form `<type>/<sub-type>`, validate correct form and then return

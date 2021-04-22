@@ -134,6 +134,8 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
   public void selectStatus(boolean allStatus) {
     String buttonText = allStatus ? "All" : "Live";
     WebElement statusSelector = getRefineControl("StatusSelector");
+    // Normally hidden in the collapsed section of the Refine Panel
+    waiter.until(ExpectedConditions.visibilityOf(statusSelector));
     selectFromButtonGroup(statusSelector, buttonText);
   }
 
@@ -145,6 +147,8 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
   public void selectSearchAttachments(boolean search) {
     String buttonText = search ? "Yes" : "No";
     WebElement searchAttachmentsSelector = getRefineControl("SearchAttachmentsSelector");
+    // Normally hidden in the collapsed section of the Refine Panel
+    waiter.until(ExpectedConditions.visibilityOf(searchAttachmentsSelector));
     selectFromButtonGroup(searchAttachmentsSelector, buttonText);
   }
 
@@ -182,6 +186,38 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
     confirmButton.click();
     // Wait until the dialog is closed.
     waiter.until(ExpectedConditions.invisibilityOfElementLocated(By.className("MuiDialog-root")));
+  }
+
+  /**
+   * Returns a By for the aria-label attribute of an attachment link in a search result, given the
+   * attachment title.
+   *
+   * @param text The text to search against to find the name of the attachment within search
+   *     results.
+   * @return a By for the text.
+   */
+  private By attachmentLinkByText(String text) {
+    return By.xpath(String.format("//*[@aria-label='Attachment link %s']", text));
+  }
+
+  /**
+   * Waits until the search results contain an Attachment with a name that matches the given text.
+   *
+   * @param attachmentText the attachment name to be present in the search.
+   */
+  public void verifyAttachmentDisplayed(String attachmentText) {
+    waiter.until(ExpectedConditions.presenceOfElementLocated(attachmentLinkByText(attachmentText)));
+  }
+
+  /**
+   * Waits until the search results contain no attachments with a name that matches the given text.
+   * Uses numberOfElementsToBe(path, 0), as there is no non-presence condition in
+   * ExpectedConditions.
+   *
+   * @param attachmentText the attachment name not to be present in the search.
+   */
+  public void verifyAttachmentNotDisplayed(String attachmentText) {
+    waiter.until(ExpectedConditions.numberOfElementsToBe(attachmentLinkByText(attachmentText), 0));
   }
 
   /**

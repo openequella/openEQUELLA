@@ -88,4 +88,32 @@ public class NewSearchPageTest extends AbstractSessionTest {
     searchPage.selectCollection("Hardware");
     searchPage.waitForSearchCompleted(7);
   }
+
+  @Test(
+      description =
+          "Search with two differently privileged users when there is a restricted attachment")
+  @NewUIOnly
+  public void searchWithRestrictedAttachments() {
+    String attachmentTitle = "https://en.wikipedia.org/wiki/Itanium";
+    String searchTerm = "Itanium";
+    // The Item 'Itanium' has been set with a restricted attachment.
+
+    // To test, logon as TLE_ADMINISTRATOR (who inherently has VIEW_RESTRICTED_ATTACHMENTS)
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
+    searchPage = new NewSearchPage(context).load();
+
+    // and verify the attachment appears when the item appears in a search.
+    searchPage.changeQuery(searchTerm);
+    searchPage.waitForSearchCompleted(1);
+    searchPage.verifyAttachmentDisplayed(attachmentTitle);
+
+    // Then, logon as AutoTest (who doesn't have VIEW_RESTRICTED_ATTACHMENTS)
+    logon(AUTOTEST_LOGON, AUTOTEST_PASSWD);
+    searchPage = new NewSearchPage(context).load();
+
+    // and verify that the attachment doesn't show when the item appears in a search.
+    searchPage.changeQuery(searchTerm);
+    searchPage.waitForSearchCompleted(1);
+    searchPage.verifyAttachmentNotDisplayed(attachmentTitle);
+  }
 }

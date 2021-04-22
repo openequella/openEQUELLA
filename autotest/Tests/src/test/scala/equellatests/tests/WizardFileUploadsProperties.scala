@@ -485,6 +485,9 @@ object WizardFileUploadsProperties
             .map(ctrl.errorExpectation)
             .getOrElse(ctrl.attachNameWaiter(expectedDescription, false))
           ctrl.uploadInline(tf, filename, w)
+          if (failure.isDefined) {
+            ctrl.cancelUpload(filename)
+          }
           (page1, true)
       }
     case StartEditingAttachment(attachUuid) =>

@@ -22,6 +22,9 @@ import com.tle.core.guice.Bind;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.equella.layout.ContentLayout;
+import com.tle.web.sections.render.TextUtils;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -54,5 +57,18 @@ public class RootFavouritesSection extends AbstractRootFavouritesSection {
     return selectionService.getCurrentSession(info) != null
         ? super.getDefaultLayout(info)
         : ContentLayout.ONE_COLUMN;
+  }
+
+  /**
+   * Generate Favourite Item tags by tokenizing a provided string. Each tag will be converted to
+   * lowercase and stored in a Set.
+   *
+   * @param tagString A string where each tag is separated by a space, a comma, or a semi-colon
+   * @return A set of tokenized tags
+   */
+  public static Set<String> tagsFromString(String tagString) {
+    return TextUtils.tokenizeString(tagString, "\\s|,|;")
+        .map(String::toLowerCase)
+        .collect(Collectors.toSet());
   }
 }

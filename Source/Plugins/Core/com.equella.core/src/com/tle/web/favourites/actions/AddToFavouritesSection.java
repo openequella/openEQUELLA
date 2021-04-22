@@ -24,6 +24,7 @@ import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.favourites.service.BookmarkService;
 import com.tle.core.guice.Bind;
 import com.tle.web.favourites.FavouritesDialog;
+import com.tle.web.favourites.RootFavouritesSection;
 import com.tle.web.favourites.actions.AddToFavouritesSection.AddToFavouritesModel;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
@@ -86,7 +87,7 @@ public class AddToFavouritesSection extends AbstractParentViewItemSection<AddToF
   @EventHandlerMethod
   public void addBookmarkClicked(SectionInfo info, String tagString, boolean alwaysLatest) {
     Item item = getItemInfo(info).getItem();
-    bookmarkService.add(item, tagString, alwaysLatest);
+    bookmarkService.add(item, RootFavouritesSection.tagsFromString(tagString), alwaysLatest);
     receiptService.setReceipt(LABEL_RECEIPT);
   }
 
