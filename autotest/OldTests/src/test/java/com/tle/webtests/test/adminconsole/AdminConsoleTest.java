@@ -16,14 +16,11 @@ import java.io.Writer;
 import java.util.Collection;
 import org.fest.swing.annotation.GUITest;
 import org.fest.swing.security.NoExitSecurityManager;
-import org.fest.swing.testng.listener.ScreenshotOnFailureListener;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterClass;
-import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 @GUITest
-@Listeners({ScreenshotOnFailureListener.class})
 public class AdminConsoleTest extends AbstractTest {
   private static final String INSTITUTION_FILE = "institution.tar.gz";
   private static final String SERVER_XML = "server.xml"; // $NON-NLS-1$
