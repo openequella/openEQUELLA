@@ -326,8 +326,7 @@ export const legacyQueryStringToSearchPageOptions = async (
   const owner = await getOwnerFromLegacyParams(getQueryParam("owner"));
   const sortOrder = pipe(
     getQueryParam("sort")?.toUpperCase(),
-    O.fromNullable,
-    O.filter(OEQ.SearchSettings.SortOrderRunTypes.guard),
+    O.fromPredicate(OEQ.SearchSettings.SortOrderRunTypes.guard),
     O.fold(
       () => defaultSearchOptions.sortOrder,
       (s) => s
