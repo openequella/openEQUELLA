@@ -22,7 +22,7 @@ import VideoLibraryIcon from "@material-ui/icons/VideoLibrary";
 import * as React from "react";
 import { ReactElement } from "react";
 import { languageStrings } from "../../util/langstrings";
-import type { DisplayMode } from "../SearchPageHelper";
+import type { DisplayMode } from "../../modules/SearchModule";
 
 const {
   modeGalleryImage: labelImageGallery,

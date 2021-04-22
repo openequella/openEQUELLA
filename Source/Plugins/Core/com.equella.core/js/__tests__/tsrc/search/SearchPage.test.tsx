@@ -49,10 +49,11 @@ import {
   getSearchResultsCustom,
 } from "../../../__mocks__/SearchResult.mock";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
+import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
 import * as AdvancedSearchModule from "../../../tsrc/modules/AdvancedSearchModule";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
-import { Collection } from "../../../tsrc/modules/CollectionsModule";
+import type { Collection } from "../../../tsrc/modules/CollectionsModule";
 import * as FavouriteModule from "../../../tsrc/modules/FavouriteModule";
 import * as GallerySearchModule from "../../../tsrc/modules/GallerySearchModule";
 import { getGlobalCourseList } from "../../../tsrc/modules/LegacySelectionSessionModule";
@@ -61,16 +62,11 @@ import * as RemoteSearchModule from "../../../tsrc/modules/RemoteSearchModule";
 import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchFacetsModule from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchFilterSettingsModule from "../../../tsrc/modules/SearchFilterSettingsModule";
-import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import * as SearchHelper from "../../../tsrc/search/SearchPageHelper";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
 import * as UserModule from "../../../tsrc/modules/UserModule";
 import SearchPage, { SearchPageOptions } from "../../../tsrc/search/SearchPage";
-import {
-  generateSearchPageOptionsFromQueryString,
-  liveStatuses,
-  nonLiveStatuses,
-} from "../../../tsrc/search/SearchPageHelper";
+import { generateSearchPageOptionsFromQueryString } from "../../../tsrc/search/SearchPageHelper";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { updateMockGetBaseUrl } from "../BaseUrlHelper";
 import { queryPaginatorControls } from "../components/SearchPaginationTestHelper";
@@ -322,6 +318,8 @@ describe("Refine search by status", () => {
   const selectStatus = (container: Element, status: string) =>
     fireEvent.click(getByText(getStatusSelector(container), status));
 
+  const liveStatuses = SearchModule.liveStatuses;
+  const nonLiveStatuses = SearchModule.nonLiveStatuses;
   beforeEach(() => {
     // Status selector is disabled by default so enable it before test.
     searchSettingPromise.mockResolvedValueOnce({

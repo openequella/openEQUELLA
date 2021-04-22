@@ -17,6 +17,21 @@
  */
 import { Drawer, Grid, Hidden } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
+import {
+  defaultPagedSearchResult,
+  defaultSearchPageOptions,
+  generateQueryStringFromSearchPageOptions,
+  generateSearchPageOptionsFromQueryString,
+  getPartialSearchOptions,
+} from "./SearchPageHelper";
+import {
+  buildExportUrl,
+  DateRange,
+  DisplayMode,
+  searchItems,
+  SearchOptions,
+  SearchOptionsFields,
+} from "../modules/SearchModule";
 
 import { isEqual } from "lodash";
 import * as React from "react";
@@ -57,13 +72,7 @@ import {
   getMimeTypeFiltersFromServer,
   MimeTypeFilter,
 } from "../modules/SearchFilterSettingsModule";
-import {
-  buildExportUrl,
-  DateRange,
-  searchItems,
-  SearchOptions,
-  SearchOptionsFields,
-} from "../modules/SearchModule";
+
 import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
 import { getCurrentUserDetails } from "../modules/UserModule";
 import SearchBar from "../search/components/SearchBar";
@@ -83,14 +92,6 @@ import {
 } from "./components/SearchResultList";
 import { SidePanel } from "./components/SidePanel";
 import StatusSelector from "./components/StatusSelector";
-import {
-  defaultPagedSearchResult,
-  defaultSearchPageOptions,
-  DisplayMode,
-  generateQueryStringFromSearchPageOptions,
-  generateSearchPageOptionsFromQueryString,
-  getPartialSearchOptions,
-} from "./SearchPageHelper";
 
 // destructure strings import
 const { searchpage: searchStrings } = languageStrings;
@@ -204,7 +205,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const location = useLocation();
 
   const [state, dispatch] = useReducer(reducer, { status: "initialising" });
-
   const defaultSearchPageHistory: SearchPageHistoryState = {
     searchPageOptions: defaultSearchPageOptions,
     filterExpansion: false,

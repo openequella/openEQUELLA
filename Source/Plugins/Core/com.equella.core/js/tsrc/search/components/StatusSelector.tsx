@@ -19,8 +19,8 @@ import { Button, ButtonGroup } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 import { isEqual } from "lodash";
 import * as React from "react";
+import { liveStatuses, nonLiveStatuses } from "../../modules/SearchModule";
 import { languageStrings } from "../../util/langstrings";
-import { liveStatuses, nonLiveStatuses } from "../SearchPageHelper";
 
 export interface StatusSelectorProps {
   /**

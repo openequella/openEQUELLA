@@ -19,11 +19,9 @@ import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import { getMimeTypeFilters } from "../../../__mocks__/MimeTypeFilter.mock";
 import { users } from "../../../__mocks__/UserSearch.mock";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
-import { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchFilterSettingsModule from "../../../tsrc/modules/SearchFilterSettingsModule";
 import { DateRange, SearchOptions } from "../../../tsrc/modules/SearchModule";
 import * as UserModule from "../../../tsrc/modules/UserModule";
-import * as SearchHelper from "../../../tsrc/search/SearchPageHelper";
 import {
   defaultSearchPageOptions,
   generateQueryStringFromSearchPageOptions,
@@ -46,39 +44,6 @@ jest.mock("@openequella/rest-api-client", () => {
   return {
     ...restModule,
   };
-});
-
-describe("generateCategoryWhereQuery", () => {
-  const selectedCategories: SelectedCategories[] = [
-    {
-      id: 766942,
-      schemaNode: "/item/language",
-      categories: ["Java", "Scala"],
-    },
-    {
-      id: 766943,
-      schemaNode: "/item/city",
-      categories: ["Hobart"],
-    },
-  ];
-
-  it("should generate a where clause for one category", () => {
-    const singleCategory = [selectedCategories[1]];
-    expect(SearchHelper.generateCategoryWhereQuery(singleCategory)).toBe(
-      "(/xml/item/city='Hobart')"
-    );
-  });
-
-  it("should generate a where clause for multiple groups of categories", () => {
-    expect(SearchHelper.generateCategoryWhereQuery(selectedCategories)).toBe(
-      "(/xml/item/language='Java' OR /xml/item/language='Scala') AND (/xml/item/city='Hobart')"
-    );
-  });
-
-  it("should return undefined if no categories are selected", () => {
-    expect(SearchHelper.generateCategoryWhereQuery(undefined)).toBeUndefined();
-    expect(SearchHelper.generateCategoryWhereQuery([])).toBeUndefined();
-  });
 });
 
 describe("newSearchQueryToSearchOptions", () => {

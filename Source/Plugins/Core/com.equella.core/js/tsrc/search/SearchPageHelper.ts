@@ -38,7 +38,6 @@ import {
   Collection,
   findCollectionsByUuid,
 } from "../modules/CollectionsModule";
-import { SelectedCategories } from "../modules/SearchFacetsModule";
 import {
   getMimeTypeFiltersById,
   MimeTypeFilter,
@@ -46,12 +45,13 @@ import {
 import {
   DateRange,
   defaultSearchOptions,
+  DisplayMode,
+  DisplayModeRuntypes,
   isDate,
   SearchOptions,
   SearchOptionsFields,
 } from "../modules/SearchModule";
 import { findUserById } from "../modules/UserModule";
-import { getISODateString } from "../util/Date";
 import type { SearchPageOptions } from "./SearchPage";
 
 /**
@@ -59,38 +59,8 @@ import type { SearchPageOptions } from "./SearchPage";
  * as opposed to the Business Layer which is handled by the Modules.
  */
 
-/**
- * List of status which are considered 'live'.
- */
-export const liveStatuses: OEQ.Common.ItemStatus[] = ["LIVE", "REVIEW"];
-
-/**
- * Predicate for checking if a provided status is not one of `liveStatuses`.
- * @param status a status to check for liveliness
- */
-export const nonLiveStatus = (status: OEQ.Common.ItemStatus): boolean =>
-  !liveStatuses.find((liveStatus) => status === liveStatus);
-
-/**
- * List of statuses which are considered non-live.
- */
-export const nonLiveStatuses: OEQ.Common.ItemStatus[] = OEQ.Common.ItemStatuses.alternatives
-  .map((status) => status.value)
-  .filter(nonLiveStatus);
-
 export const defaultSearchPageOptions: SearchPageOptions = {
-  rowsPerPage: 10,
-  currentPage: 0,
-  sortOrder: undefined,
-  rawMode: false,
-  status: liveStatuses,
-  searchAttachments: true,
-  query: "",
-  collections: [],
-  lastModifiedDateRange: { start: undefined, end: undefined },
-  owner: undefined,
-  mimeTypes: [],
-  mimeTypeFilters: [],
+  ...defaultSearchOptions,
   displayMode: "list",
   dateRangeQuickModeEnabled: true,
 };
@@ -121,17 +91,6 @@ const LegacySearchParams = Union(
 
 type LegacyParams = Static<typeof LegacySearchParams>;
 
-const DisplayModeRuntypes = Union(
-  Literal("list"),
-  Literal("gallery-image"),
-  Literal("gallery-video")
-);
-
-/**
- * Type of three display modes.
- */
-export type DisplayMode = Static<typeof DisplayModeRuntypes>;
-
 /**
  * Represents the shape of data returned from generateQueryStringFromSearchOptions
  */
@@ -160,96 +119,6 @@ const DehydratedSearchPageOptionsRunTypes = Partial({
 type DehydratedSearchPageOptions = Static<
   typeof DehydratedSearchPageOptionsRunTypes
 >;
-
-/**
- * Helper function, to support formatting of query in raw mode. When _not_ raw mode
- * we append a wildcard to support the idea of a simple (typeahead) search.
- *
- * @param query the intended search query to be sent to the API
- * @param addWildcard whether a wildcard should be appended
- */
-export const formatQuery = (query: string, addWildcard: boolean): string => {
-  const trimmedQuery = query ? query.trim() : "";
-  const appendWildcard = addWildcard && trimmedQuery.length > 0;
-  return trimmedQuery + (appendWildcard ? "*" : "");
-};
-
-/**
- * Generates a Where clause through Classifications.
- * Each Classification that has categories selected is joined by AND.
- * Each selected category of one Classification is joined by OR.
- *
- * @param selectedCategories A list of selected Categories grouped by Classification ID.
- */
-export const generateCategoryWhereQuery = (
-  selectedCategories?: SelectedCategories[]
-): string | undefined => {
-  if (!selectedCategories || selectedCategories.length === 0) {
-    return undefined;
-  }
-
-  const and = " AND ";
-  const or = " OR ";
-  const processNodeTerms = (
-    categories: string[],
-    schemaNode?: string
-  ): string => categories.map((c) => `/xml${schemaNode}='${c}'`).join(or);
-
-  return selectedCategories
-    .filter((c) => c.categories.length > 0)
-    .map(
-      ({ schemaNode, categories }: SelectedCategories) =>
-        `(${processNodeTerms(categories, schemaNode)})`
-    )
-    .join(and);
-};
-
-/**
- * A function that converts search options to search params.
- * @param searchOptions Search options to be converted to search params.
- */
-export const buildSearchParams = ({
-  query,
-  rowsPerPage,
-  currentPage,
-  sortOrder,
-  collections,
-  rawMode,
-  lastModifiedDateRange,
-  owner,
-  status = liveStatuses,
-  searchAttachments,
-  selectedCategories,
-  mimeTypes,
-  mimeTypeFilters,
-  externalMimeTypes,
-  musts,
-}: SearchOptions): OEQ.Search.SearchParams => {
-  const processedQuery = query ? formatQuery(query, !rawMode) : undefined;
-  // We use selected filters to generate MIME types. However, in Image Gallery,
-  // image MIME types are applied before any filter gets selected.
-  // So the logic is, we use MIME type filters if any are selected, or specific MIME types
-  // already provided by the Image Gallery.
-  const _mimeTypes =
-    mimeTypeFilters && mimeTypeFilters.length > 0
-      ? mimeTypeFilters.flatMap((f) => f.mimeTypes)
-      : mimeTypes;
-  return {
-    query: processedQuery,
-    start: currentPage * rowsPerPage,
-    length: rowsPerPage,
-    status: status,
-    order: sortOrder,
-    collections: collections?.map((collection) => collection.uuid),
-    modifiedAfter: getISODateString(lastModifiedDateRange?.start),
-    modifiedBefore: getISODateString(lastModifiedDateRange?.end),
-    owner: owner?.id,
-    searchAttachments: searchAttachments,
-    whereClause: generateCategoryWhereQuery(selectedCategories),
-    mimeTypes: externalMimeTypes ?? _mimeTypes,
-    musts: musts,
-  };
-};
 
 /**
  * A function that takes and parses a saved search query string from a shared legacy searching.do or /page/search URL, and converts it into a SearchPageOptions object.

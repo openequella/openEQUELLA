@@ -17,6 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
+import { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
 
 jest.mock("@openequella/rest-api-client", () => {
@@ -82,5 +83,38 @@ describe("SearchModule", () => {
       });
       expectSearchQueryToBeValid(`${queryTerm}`);
     });
+  });
+});
+
+describe("generateCategoryWhereQuery", () => {
+  const selectedCategories: SelectedCategories[] = [
+    {
+      id: 766942,
+      schemaNode: "/item/language",
+      categories: ["Java", "Scala"],
+    },
+    {
+      id: 766943,
+      schemaNode: "/item/city",
+      categories: ["Hobart"],
+    },
+  ];
+
+  it("should generate a where clause for one category", () => {
+    const singleCategory = [selectedCategories[1]];
+    expect(SearchModule.generateCategoryWhereQuery(singleCategory)).toBe(
+      "(/xml/item/city='Hobart')"
+    );
+  });
+
+  it("should generate a where clause for multiple groups of categories", () => {
+    expect(SearchModule.generateCategoryWhereQuery(selectedCategories)).toBe(
+      "(/xml/item/language='Java' OR /xml/item/language='Scala') AND (/xml/item/city='Hobart')"
+    );
+  });
+
+  it("should return undefined if no categories are selected", () => {
+    expect(SearchModule.generateCategoryWhereQuery(undefined)).toBeUndefined();
+    expect(SearchModule.generateCategoryWhereQuery([])).toBeUndefined();
   });
 });
