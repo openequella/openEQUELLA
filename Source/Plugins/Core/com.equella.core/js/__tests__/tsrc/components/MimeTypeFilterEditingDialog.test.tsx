@@ -26,9 +26,9 @@ describe("<MimeTypeFilterEditingDialog />", () => {
   const onClose = jest.fn();
   const addOrUpdate = jest.fn();
   const handleError = jest.fn();
-  const renderDialog = (filter: MimeTypeFilter | undefined = undefined) =>
-    act(() => {
-      render(
+  const renderDialog = async (filter: MimeTypeFilter | undefined = undefined) =>
+    await act(async () => {
+      await render(
         <MimeTypeFilterEditingDialog
           open
           onClose={onClose}
@@ -39,6 +39,8 @@ describe("<MimeTypeFilterEditingDialog />", () => {
         />
       );
     });
+  const getSaveButton = () =>
+    screen.queryByTestId("MimeTypeFilterEditingDialog_save");
 
   describe("when filter is defined", () => {
     it("should display 'OK' as the Save button text", () => {
@@ -47,30 +49,22 @@ describe("<MimeTypeFilterEditingDialog />", () => {
         name: "image filter",
         mimeTypes: ["IMAGE/PNG", "IMAGE/JPEG"],
       });
-      const saveButton = screen.queryByTestId(
-        "MimeTypeFilterEditingDialog_save"
-      );
-      expect(saveButton).toHaveTextContent("OK");
+
+      expect(getSaveButton()).toHaveTextContent("OK");
     });
   });
 
   describe("when filter is undefined", () => {
     it("should display 'Add' as the Save button text", () => {
       renderDialog();
-      const saveButton = screen.queryByTestId(
-        "MimeTypeFilterEditingDialog_save"
-      );
-      expect(saveButton).toHaveTextContent("Add");
+      expect(getSaveButton()).toHaveTextContent("Add");
     });
   });
 
   describe("when filter name is empty", () => {
     it("should disable the Save button", () => {
       renderDialog();
-      const saveButton = screen.queryByTestId(
-        "MimeTypeFilterEditingDialog_save"
-      );
-      expect(saveButton).toHaveAttribute("disabled");
+      expect(getSaveButton()).toHaveAttribute("disabled");
     });
   });
 });

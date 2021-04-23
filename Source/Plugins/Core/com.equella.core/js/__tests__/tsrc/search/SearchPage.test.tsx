@@ -328,11 +328,6 @@ describe("Refine search by status", () => {
     });
   });
 
-  afterEach(() => {
-    // Needed to keep tests below happy
-    jest.clearAllMocks();
-  });
-
   it("Should default to LIVE statuses", async () => {
     await renderSearchPage();
     expectSearchItemsCalledWithStatus(liveStatuses);
@@ -359,11 +354,6 @@ describe("Refine search by Owner", () => {
 
   beforeEach(async () => {
     page = await renderSearchPage();
-  });
-
-  afterEach(() => {
-    // Needed to keep tests below happy
-    jest.clearAllMocks();
   });
 
   const getOwnerSelector = (container: Element): HTMLElement =>

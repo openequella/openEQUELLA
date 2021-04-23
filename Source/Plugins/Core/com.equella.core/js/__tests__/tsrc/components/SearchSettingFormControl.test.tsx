@@ -15,10 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import userEvent from "@testing-library/user-event";
 import SearchSettingFormControl from "../../../tsrc/components/SearchSettingFormControl";
 import { TextField } from "@material-ui/core";
 import * as React from "react";
-import { fireEvent, render, RenderResult } from "@testing-library/react";
+import { render, RenderResult } from "@testing-library/react";
 
 describe("SearchSettingFormControl.tsx", () => {
   const onChange = jest.fn();
@@ -40,7 +41,7 @@ describe("SearchSettingFormControl.tsx", () => {
 
   it("should be triggered after call", () => {
     const textField = page.getByRole("textbox");
-    fireEvent.change(textField, { target: { value: "text" } });
-    expect(onChange.mock.calls).toHaveLength(1);
+    userEvent.type(textField, "text");
+    expect(onChange.mock.calls).toHaveLength(4);
   });
 });
