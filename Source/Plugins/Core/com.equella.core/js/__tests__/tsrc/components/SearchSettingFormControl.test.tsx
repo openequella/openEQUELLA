@@ -22,9 +22,9 @@ import { fireEvent, render, RenderResult } from "@testing-library/react";
 
 describe("SearchSettingFormControl.tsx", () => {
   const onChange = jest.fn();
-  let component: RenderResult;
+  let page: RenderResult;
   beforeEach(() => {
-    component = render(
+    page = render(
       <SearchSettingFormControl
         control={
           <TextField id="testTextField" value="test" onChange={onChange} />
@@ -33,17 +33,14 @@ describe("SearchSettingFormControl.tsx", () => {
       />
     );
   });
-  afterEach(() => jest.clearAllMocks);
-  describe("OnChange", () => {
-    it("should not be triggered before call", () => {
-      expect(onChange).not.toHaveBeenCalled();
-    });
 
-    it("should be triggered after call", async () => {
-      const textField = await component.findByRole("input");
-      fireEvent.change(textField, {});
-      expect(onChange).toHaveBeenCalledTimes(1);
-      component.unmount();
-    });
+  it("should not be triggered before call", () => {
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("should be triggered after call", () => {
+    const textField = page.getByRole("textbox");
+    fireEvent.change(textField, { target: { value: "text" } });
+    expect(onChange.mock.calls).toHaveLength(1);
   });
 });
