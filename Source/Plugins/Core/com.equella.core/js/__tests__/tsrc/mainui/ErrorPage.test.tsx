@@ -16,36 +16,27 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { createMount } from "@material-ui/core/test-utils";
 import ErrorPage from "../../../tsrc/mainui/ErrorPage";
+import { render } from "@testing-library/react";
+import "@testing-library/jest-dom/extend-expect";
 
 jest.mock("@material-ui/core/styles", () => ({
   makeStyles: () => () => ({ errorPage: "mock-classname" }),
 }));
 
 describe("<ErrorPage />", () => {
-  let mount: ReturnType<typeof createMount>;
-
-  beforeEach(() => {
-    mount = createMount();
-  });
-
-  afterEach(() => {
-    mount.cleanUp();
-  });
-
   it("should render with no code or description", () => {
-    const wrapper = mount(
+    const { container, queryByText } = render(
       <ErrorPage error={{ id: "mock-error", error: "example" }} />
     );
 
-    expect(wrapper.find(".mock-classname")).toHaveLength(1);
-    expect(wrapper.find("h3")).toHaveLength(1);
-    expect(wrapper.find("h3").text()).toContain("example");
+    expect(container.querySelectorAll(".mock-classname")).toHaveLength(1);
+    expect(container.querySelectorAll("h3")).toHaveLength(1);
+    expect(queryByText("example", { selector: "h3" })).toBeInTheDocument();
   });
 
   it("should render with code and description", () => {
-    const wrapper = mount(
+    const { container, queryByText } = render(
       <ErrorPage
         error={{
           id: "mock-error",
@@ -56,11 +47,14 @@ describe("<ErrorPage />", () => {
       />
     );
 
-    expect(wrapper.find(".mock-classname")).toHaveLength(1);
-    expect(wrapper.find("h3")).toHaveLength(1);
-    expect(wrapper.find("h3").text()).toContain("example");
-    expect(wrapper.find("h3").text()).toContain("404");
-    expect(wrapper.find("h5")).toHaveLength(1);
-    expect(wrapper.find("h5").text()).toContain("mock description");
+    expect(container.querySelectorAll(".mock-classname")).toHaveLength(1);
+    expect(container.querySelectorAll("h3")).toHaveLength(1);
+    expect(
+      queryByText("404 : example", { selector: "h3" })
+    ).toBeInTheDocument();
+    expect(container.querySelectorAll("h5")).toHaveLength(1);
+    expect(
+      queryByText("mock description", { selector: "h5" })
+    ).toBeInTheDocument();
   });
 });
