@@ -71,6 +71,8 @@ public interface UtilsScriptObject extends ScriptObject {
    * @param where A where clause. Can be blank. See <code>searchAdvanced</code> for the format of
    *     the where clause.
    * @return The number of items that were counted.
+   * @throws Exception Only unchecked exceptions, primarily related to searching issues such as
+   *     com.dytech.edge.exceptions.SearchingException
    */
   int queryCount(String[] collectionUuids, String where) throws Exception;
 

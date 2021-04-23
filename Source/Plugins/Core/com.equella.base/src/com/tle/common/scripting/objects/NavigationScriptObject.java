@@ -73,7 +73,7 @@ public interface NavigationScriptObject extends ScriptObject {
    *
    * @param description A display name for the tab. Not shown if there is only one tab present.
    * @param node The node to add the tab to.
-   * @param attachment
+   * @param attachment An attachment to use for the tab
    * @return The new tab that was added
    */
   NavigationTabScriptType addTab(
@@ -110,7 +110,7 @@ public interface NavigationScriptObject extends ScriptObject {
    *
    * @param parentNode The node to remove the children from. If null, all root-level nodes are
    *     removed.
-   * @returns The number of nodes that were removed.
+   * @return The number of nodes that were removed.
    */
   int removeChildNodes(NavigationNodeScriptType parentNode);
 }

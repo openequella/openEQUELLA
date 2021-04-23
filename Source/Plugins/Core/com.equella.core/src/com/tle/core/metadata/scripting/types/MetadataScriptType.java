@@ -27,7 +27,7 @@ public interface MetadataScriptType {
    * Returns the first key found in any type grouping that matches. If there are duplicate keys
    * within groupings then {@link #get(String, String)} should be used
    *
-   * @param key
+   * @param key The identifier who's value should be retrieved.
    * @return The first value found for the key provided or null if key is not present
    */
   String get(String key);
@@ -36,8 +36,8 @@ public interface MetadataScriptType {
    * Returns a specific key within a type grouping e.g LensID for XMP would be get("XMP", "LensID").
    * This method should be used to get specific values when there are duplicate keys in the metadata
    *
-   * @param type
-   * @param key
+   * @param type The identifier of a type grouping
+   * @param key The ID of a specific key in a group to get the value of
    * @return A specific value for a type or null if either type or key is not present
    */
   String get(String type, String key);
@@ -53,7 +53,7 @@ public interface MetadataScriptType {
    * Returns all key values for a specific type e.g getAllForType("XMP") will return all the
    * key/values for the type grouping XMP. If the type does not exist null will be returned
    *
-   * @param type
+   * @param type The type to retrieve all key values for
    * @return All key/values for a specific type grouping
    */
   MapScriptType getAllForType(String type);
