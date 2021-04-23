@@ -44,6 +44,7 @@ import { generateFromError } from "../../../api/errors";
 import MessageDialog from "../../../components/MessageDialog";
 import SettingPageTemplate from "../../../components/SettingPageTemplate";
 import SettingsListHeading from "../../../components/SettingsListHeading";
+import { TooltipIconButton } from "../../../components/TooltipIconButton";
 import { routes } from "../../../mainui/routes";
 import {
   templateDefaults,
@@ -233,7 +234,8 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
             >
               <ListItemText primary={facet.name} />
               <ListItemIcon>
-                <IconButton
+                <TooltipIconButton
+                  title={facetedsearchsettingStrings.edit}
                   color="secondary"
                   onClick={() => {
                     setShowEditingDialog(true);
@@ -241,15 +243,16 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
                   }}
                 >
                   <EditIcon />
-                </IconButton>
+                </TooltipIconButton>
               </ListItemIcon>
               <ListItemIcon>
-                <IconButton
+                <TooltipIconButton
+                  title={facetedsearchsettingStrings.delete}
                   color="secondary"
                   onClick={() => deleteFacet(facet)}
                 >
                   <DeleteIcon />
-                </IconButton>
+                </TooltipIconButton>
               </ListItemIcon>
             </ListItem>
           )}

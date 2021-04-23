@@ -15,19 +15,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { pipe } from "fp-ts/function";
+import * as A from "fp-ts/Array";
+import * as O from "fp-ts/Option";
 import * as React from "react";
-import { act, render, RenderResult } from "@testing-library/react";
+import {
+  act,
+  getByLabelText,
+  getByDisplayValue,
+  queryByText,
+  render,
+  RenderResult,
+  screen,
+  getAllByRole,
+  fireEvent,
+  getByText,
+} from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import "@testing-library/jest-dom/extend-expect";
 import FacetedSearchSettingsPage from "../../../tsrc/settings/Search/facetedsearch/FacetedSearchSettingsPage";
 import * as FacetedSearchSettingsModule from "../../../tsrc/modules/FacetedSearchSettingsModule";
 import { FacetWithFlags } from "../../../tsrc/modules/FacetedSearchSettingsModule";
 import { NavigationGuardProps } from "../../../tsrc/components/NavigationGuard";
 import { getSchemasResp } from "../../../__mocks__/getSchemasResp";
 import { getSchemaUuidResp } from "../../../__mocks__/getSchemaUuidResp";
-import FacetDialog from "../../../tsrc/settings/Search/facetedsearch/FacetDialog";
-import MessageInfo from "../../../tsrc/components/MessageInfo";
-import MessageDialog from "../../../tsrc/components/MessageDialog";
-import { Draggable } from "react-beautiful-dnd";
+// import FacetDialog from "../../../tsrc/settings/Search/facetedsearch/FacetDialog";
+// import MessageInfo from "../../../tsrc/components/MessageInfo";
+// import MessageDialog from "../../../tsrc/components/MessageDialog";
 import * as OEQ from "@openequella/rest-api-client";
+import { languageStrings } from "../../../tsrc/util/langstrings";
+import { getMuiButtonByText } from "../MuiQueries";
+// import {getMuiButtonByText} from "../MuiQueries";
 
 const mockFacets: FacetedSearchSettingsModule.Facet[] = [
   {
@@ -87,61 +105,96 @@ const getFacetsPromise = mockGetFacetsFromServer.mockImplementation(() =>
 );
 
 describe("<FacetedSearchSettingsPage />", () => {
-  enum Actions {
-    Edit,
-    Add,
-  }
-  let component: RenderResult;
-  let root: HTMLDivElement;
+  let page: RenderResult;
   beforeEach(async () => {
-    root = document.createElement("div");
-    document.body.appendChild(root);
-    component = render(
-      <FacetedSearchSettingsPage updateTemplate={jest.fn()} />,
-      { container: root }
-    );
+    page = render(<FacetedSearchSettingsPage updateTemplate={jest.fn()} />);
     await act(async () => {
       await getFacetsPromise;
     });
   });
-  afterEach(() => {
-    jest.clearAllMocks();
-    document.body.removeChild(root);
-  });
 
-  const getListItems = () => component.find(Draggable);
-  const getSaveButton = () => component.find("#_saveButton").hostNodes();
-  const deleteFacet = () => {
-    const deleteButton = getListItems().at(0).find("button").at(1);
-    deleteButton.simulate("click");
-  };
-  const updateFacet = (action: Actions) => {
-    const fields = component.find("input");
-    fields.at(0).simulate("change", {
-      target: { value: action === Actions.Add ? "new facet" : "updated facet" },
-    });
-    fields.at(2).simulate("change", { target: { value: "item/name/first" } });
-    const button = component
-      .findWhere(
-        (node) =>
-          node.text() === (action === Actions.Add ? "Add" : "OK") &&
-          node.type() === "button"
+  const getSaveButton = () => getMuiButtonByText(page.container, "Save");
+
+  const getAllClassifications = (): HTMLElement[] =>
+    Array.from(page.container.querySelectorAll<HTMLElement>("li[draggable]"));
+
+  const getClassification = (facetName: string): HTMLElement =>
+    pipe(
+      getAllClassifications().filter((c) => queryByText(c, facetName) !== null),
+      A.head,
+      O.fold(
+        () => {
+          throw new Error(`Failed to find classification ${facetName}`);
+        },
+        (c) => c
       )
-      .hostNodes();
-    button.simulate("click");
+    );
+
+  const getEditButton = (name: string): HTMLElement =>
+    getByLabelText(
+      getClassification(name),
+      languageStrings.settings.searching.facetedsearchsetting.edit
+    );
+
+  const getDeleteButton = (name: string): HTMLElement =>
+    getByLabelText(
+      getClassification(name),
+      languageStrings.settings.searching.facetedsearchsetting.delete
+    );
+
+  const openDialog = async (name?: string) => {
+    await act(async () => {
+      await userEvent.click(
+        name
+          ? getEditButton(name)
+          : page.getByLabelText(
+              languageStrings.settings.searching.facetedsearchsetting.add
+            )
+      );
+    });
+    return screen.getByRole("dialog");
   };
 
-  const openDialog = async (action: Actions) => {
-    let button: ReactWrapper;
-    if (action === Actions.Add) {
-      button = component.find(".MuiCardActions-root button");
-    } else {
-      button = getListItems().at(0).find("button").at(0);
-    }
+  const deleteClassification = async (name: string) => {
     await act(async () => {
-      await button.simulate("click");
+      userEvent.click(getDeleteButton(name));
     });
-    component.update();
+  };
+
+  const updateClassification = async (name: string, updatedName: string) => {
+    const dialog = await openDialog(name);
+    const nameInput = getByDisplayValue(dialog, name);
+    userEvent.clear(nameInput);
+    userEvent.type(nameInput, updatedName);
+    await act(async () => {
+      await userEvent.click(
+        getMuiButtonByText(dialog, languageStrings.common.action.ok)
+      );
+    });
+  };
+
+  const addClassification = async (name: string) => {
+    const dialog = await openDialog();
+    const [nameInput, schemaInput] = getAllByRole(dialog, "textbox"); // Only two inputs in the dialog are "textbox".
+    userEvent.type(nameInput, name);
+
+    // As the input for Schema node is disabled, use 'fireEvent.change`. Alternatively, we can
+    // click the Schema node selector and select a node;
+    fireEvent.change(schemaInput, { target: { value: "item/year" } });
+
+    await act(async () => {
+      await userEvent.click(
+        getMuiButtonByText(dialog, languageStrings.common.action.add)
+      );
+    });
+  };
+
+  const makeChanges = async () => {
+    await deleteClassification(mockFacets[0].name);
+    await addClassification("new classification");
+    await act(async () => {
+      await userEvent.click(getSaveButton());
+    });
   };
 
   it("should fetch facets", () => {
@@ -151,78 +204,68 @@ describe("<FacetedSearchSettingsPage />", () => {
   });
 
   it("should display a list of facets", () => {
-    expect(getListItems()).toHaveLength(3);
+    expect(getAllClassifications()).toHaveLength(3);
   });
 
   it("should show a dialog when an Edit button is clicked", async () => {
-    await openDialog(Actions.Edit);
-    expect(component.find(FacetDialog).props().open).toBeTruthy();
+    await openDialog(mockFacets[0].name);
+    expect(
+      page.queryByText(
+        languageStrings.settings.searching.facetedsearchsetting.edit
+      )
+    ).toBeInTheDocument();
   });
 
   it("should show a dialog when the Add button is clicked", async () => {
-    await openDialog(Actions.Add);
-    expect(component.find(FacetDialog).props().open).toBeTruthy();
+    await openDialog();
+    expect(
+      page.queryByText(
+        languageStrings.settings.searching.facetedsearchsetting.add
+      )
+    ).toBeInTheDocument();
   });
 
-  it("should remove a facet from the list and enable the Save button when a delete button is clicked", () => {
-    deleteFacet();
-    const items = getListItems();
-    expect(items).toHaveLength(2);
-    expect(getSaveButton().props().disabled).toBeFalsy();
+  it("should remove a facet from the list and enable the Save button when a delete button is clicked", async () => {
+    await deleteClassification(mockFacets[0].name);
+    expect(getAllClassifications()).toHaveLength(2);
+    expect(getSaveButton()).toBeEnabled();
   });
 
   it("should show the updated facet and enable the Save button when a facet is edited through the dialog", async () => {
-    await openDialog(Actions.Edit);
-    updateFacet(Actions.Edit);
-    const items = getListItems();
-    expect(items).toHaveLength(3);
-    expect(items.at(0).text()).toContain("updated facet");
-    expect(getSaveButton().props().disabled).toBeFalsy();
+    const name = mockFacets[0].name;
+    await updateClassification(name, "updated name");
+    expect(getAllClassifications()).toHaveLength(3);
+    expect(getClassification("updated name")).toBeInTheDocument();
+    expect(getSaveButton()).toBeEnabled();
   });
 
   it("should add a facet to the list and enable the Save button when a new facet is added through the dialog", async () => {
-    await openDialog(Actions.Add);
-    updateFacet(Actions.Add);
-    const items = getListItems();
-    expect(items).toHaveLength(4);
-    expect(items.at(3).text()).toContain("new facet");
-    expect(getSaveButton().props().disabled).toBeFalsy();
+    const name = "new item";
+    await addClassification(name);
+    expect(getAllClassifications()).toHaveLength(4);
+    expect(getClassification(name)).toBeInTheDocument();
+    expect(getSaveButton()).toBeEnabled();
   });
 
-  describe("when the Save button is enabled and clicked", () => {
-    const makeChanges = async () => {
-      deleteFacet();
-      await openDialog(Actions.Edit);
-      updateFacet(Actions.Edit);
-    };
-    const save = async (errorsReturned: boolean) => {
-      const deletePromise = mockBatchDelete.mockResolvedValueOnce(
-        errorsReturned ? ["Failed to delete"] : []
-      );
-      const updatePromise = mockBatchUpdateOrAdd.mockResolvedValueOnce(
-        errorsReturned ? ["Failed to update"] : []
-      );
-      await makeChanges();
-      getSaveButton().simulate("click");
-      await act(async () => {
-        await updatePromise;
-        await deletePromise;
-      });
-    };
+  it("should display snackbar if no error messages are returned", async () => {
+    mockBatchDelete.mockResolvedValueOnce([]);
+    mockBatchUpdateOrAdd.mockResolvedValueOnce([]);
+    await makeChanges();
+    expect(
+      screen.getByText(languageStrings.common.result.success)
+    ).toBeInTheDocument();
+  });
 
-    it("should display snackbar if no error messages are returned", async () => {
-      await save(false);
-      component.update();
-      const snackbar = component.find(MessageInfo);
-      expect(snackbar.props().open).toBeTruthy();
-    });
+  it("should display message dialog if error messages are returned", async () => {
+    const failedToDelete = "Failed to delete";
+    const failedToUpdate = "Failed to update";
+    mockBatchDelete.mockResolvedValueOnce([failedToDelete]);
+    mockBatchUpdateOrAdd.mockResolvedValueOnce([failedToUpdate]);
 
-    it("should display message dialog if error messages are returned", async () => {
-      await save(true);
-      component.update();
-      const messageDialog = component.find(MessageDialog);
-      expect(messageDialog.props().open).toBeTruthy();
-    });
+    await makeChanges();
+    const messageDialog = screen.getByRole("dialog");
+    expect(getByText(messageDialog, failedToDelete)).toBeInTheDocument();
+    expect(getByText(messageDialog, failedToUpdate)).toBeInTheDocument();
   });
 
   it("should update order indexes when facets are reordered", () => {
