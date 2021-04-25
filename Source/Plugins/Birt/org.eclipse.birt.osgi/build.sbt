@@ -19,7 +19,7 @@ libraryDependencies := Seq(
 ).map(_ % BirtOsgi)
 
 resolvers += Resolver.url("my-test-repo",
-                          url("http://repository.springsource.com/ivy/bundles/external/"))(
+                          url("https://repository.springsource.com/ivy/bundles/external/"))(
   Patterns(false, "[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"))
 
 ivyConfigurations := overrideConfigs(BirtOsgi, CustomCompile)(ivyConfigurations.value)

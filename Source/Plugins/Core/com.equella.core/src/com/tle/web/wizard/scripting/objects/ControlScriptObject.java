@@ -46,7 +46,7 @@ public interface ControlScriptObject extends ScriptObject {
   /**
    * If set to true, the control is not shown on the page, but will retain it's value.
    *
-   * @param hidden
+   * @param hidden true to hide the control
    */
   void setHidden(boolean hidden);
 
@@ -105,6 +105,7 @@ public interface ControlScriptObject extends ScriptObject {
    * relationship with the ControlScriptObject making the call, and the parent is a list of
    * ControlScriptObjects, such as a repeater.
    *
+   * @param child The child script object to retrieve the index for.
    * @return The index of the ControlScriptObject parameter, relative to it's parent. -1 if not
    *     available.
    */
