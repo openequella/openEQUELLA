@@ -85,6 +85,10 @@ public interface SearchResource {
       @ApiParam(
               "A list of MIME types to filter items based on their attachments matching the specified types.")
           @QueryParam("mimeTypes")
-          List<String> mimeTypes);
+          List<String> mimeTypes,
+      @ApiParam(
+              "List of search index key/value pairs to filter by. e.g. videothumb:true or realthumb:true.")
+          @QueryParam("musts")
+          List<String> musts);
   // @formatter:on
 }

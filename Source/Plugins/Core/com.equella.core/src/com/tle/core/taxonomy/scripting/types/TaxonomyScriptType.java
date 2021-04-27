@@ -62,6 +62,7 @@ public interface TaxonomyScriptType extends Serializable {
    * @param parentFullPath The full path of the parent node. Depending on the taxonomy data source
    *     implementation an exception may be thrown if the parent node cannot be found.
    * @param termValue The node name of the new term.
+   * @return a new {@code TermScriptType} representing the newly inserted taxonomy term
    */
   TermScriptType insertTerm(String parentFullPath, String termValue);
 

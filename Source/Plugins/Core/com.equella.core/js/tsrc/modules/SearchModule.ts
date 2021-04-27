@@ -203,6 +203,7 @@ export const generateCategoryWhereQuery = (
 
 /**
  * A function that converts search options to search params.
+ *
  * @param searchOptions Search options to be converted to search params.
  */
 const buildSearchParams = ({
@@ -250,6 +251,7 @@ const buildSearchParams = ({
 
 /**
  * A function that executes a search with provided search options.
+ *
  * @param searchOptions Search options selected on Search page.
  */
 export const searchItems = (
@@ -259,10 +261,22 @@ export const searchItems = (
 
 /**
  * A function that builds a URL for exporting a search result
+ *
  * @param searchOptions Search options selected on Search page.
  */
 export const buildExportUrl = (searchOptions: SearchOptions): string =>
   OEQ.Search.buildExportUrl(
     API_BASE_URL,
     buildSearchParams({ ...searchOptions, currentPage: 0 })
+  );
+
+/**
+ * Send a request to confirm if an export is valid.
+ *
+ * @param searchOptions Search options selected on Search page.
+ */
+export const confirmExport = (searchOptions: SearchOptions): Promise<boolean> =>
+  OEQ.Search.confirmExportRequest(
+    API_BASE_URL,
+    buildSearchParams(searchOptions)
   );

@@ -418,6 +418,7 @@ public final class PrivilegeTree {
     PrivilegeNode itemDefinition = itemDefinitions.getChildren().get(0);
     itemDefinition.registerPrivilege("SEARCH_COLLECTION");
     itemDefinition.registerPrivilege("CREATE_ITEM");
+    itemDefinition.registerPrivilege(SecurityConstants.EXPORT_SEARCH_RESULT);
     itemDefinition.getChildren().add(itemStatus);
     itemDefinition.getChildren().add(itemMetadata);
 
@@ -552,7 +553,6 @@ public final class PrivilegeTree {
     institution.registerPrivilege("INTEGRATION_SELECTION_SESSION");
     institution.registerPrivilege("VIEW_APIDOCS");
     institution.registerPrivilege("LIST_USERS");
-    institution.registerPrivilege(SecurityConstants.EXPORT_SEARCH_RESULT);
 
     // OAuth hax
     institution.registerPrivilege("ADMINISTER_OAUTH_TOKENS");

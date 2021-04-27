@@ -47,7 +47,7 @@ public interface AttachmentScriptType extends Serializable {
    * Sets the URL for a Link attachment. Do not call this method on a File attachment as the path to
    * the file will be overwritten by the URL.
    *
-   * @param url
+   * @param url The URL for the Link the attachment is pointing to.
    */
   void setUrl(String url);
 
@@ -88,6 +88,8 @@ public interface AttachmentScriptType extends Serializable {
    * Sets the path to the thumbnail for the attachment. The path should be a relative path from the
    * item's filestore location. Use 'suppress' as the path to stop the automatic generation of
    * thumbnails for image attachments.
+   *
+   * @param path The path to the attachment's thumbnail
    */
   void setThumbnail(String path);
 

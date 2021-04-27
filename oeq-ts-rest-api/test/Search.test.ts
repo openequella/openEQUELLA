@@ -156,4 +156,11 @@ describe('Exports search results for the specified search params', function () {
       GET(exportUrl, (data): data is string => is<string>(data))
     ).resolves.toBeTruthy();
   });
+
+  it('confirms if an export is valid by sending a HEAD request', async () => {
+    await OEQ.Auth.login(TC.API_PATH, TC.USERNAME_SUPER, TC.PASSWORD_SUPER);
+    await expect(
+      OEQ.Search.confirmExportRequest(TC.API_PATH, searchParams)
+    ).resolves.toBe(true);
+  });
 });

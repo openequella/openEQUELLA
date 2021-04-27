@@ -31,6 +31,7 @@ export type TooltipIconButtonProps = Omit<TooltipProps, "onClick"> &
  * Provide an IconButton wrapped by a Tooltip.
  */
 export const TooltipIconButton = ({
+  id,
   title,
   onClick,
   children,
@@ -40,6 +41,7 @@ export const TooltipIconButton = ({
 }: TooltipIconButtonProps) => (
   <Tooltip title={title}>
     <IconButton
+      id={id}
       onClick={onClick}
       aria-label={ariaLabel ?? title}
       size={size}

@@ -21,9 +21,7 @@ package com.tle.web.api.search
 import com.dytech.devlib.PropBagEx
 import com.tle.beans.entity.Schema
 import com.tle.beans.entity.Schema.SchemaNode
-import com.tle.common.security.SecurityConstants
 import com.tle.core.services.item.FreetextResult
-import com.tle.exceptions.PrivilegeRequiredException
 import com.tle.legacy.LegacyGuice
 import org.apache.commons.lang.StringEscapeUtils
 import java.io.BufferedOutputStream
@@ -201,18 +199,6 @@ object ExportCSVHelper {
       val fullItemXml: PropBagEx = LegacyGuice.itemXsltService.getStandardXmlForXslt(item, null)
       fullItemXml
     })
-  }
-
-  def checkDownloadACL(): Unit = {
-    if (LegacyGuice.aclManager
-          .filterNonGrantedPrivileges(SecurityConstants.EXPORT_SEARCH_RESULT)
-          .isEmpty) {
-      throw new PrivilegeRequiredException(SecurityConstants.EXPORT_SEARCH_RESULT)
-    }
-  }
-
-  def getSchemaFromCollection(collectionId: String): Option[Schema] = {
-    Option(LegacyGuice.itemDefinitionService.getByUuid(collectionId)).map(_.getSchema)
   }
 
   /**

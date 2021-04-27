@@ -185,6 +185,10 @@ export const useStyles = makeStyles((theme: Theme) => {
         //handle long strings without breaking the layout
         overflowWrap: "anywhere",
       },
+      button: {
+        //button text should not overflow mid word
+        overflowWrap: "break-word",
+      },
       a: {
         textDecoration: "none",
         color: theme.palette.primary.main,

@@ -85,7 +85,8 @@ libraryDependencies ++= Seq(
     // Conflicts with RESTeasy jakarta.xml.bind-api
     ExclusionRule(organization = "javax.xml.bind"),
     // Conflicts with CXF Core
-    ExclusionRule(organization = "com.sun.xml.bind")
+    ExclusionRule(organization = "com.sun.xml.bind"),
+    ExclusionRule(organization = "com.sun.jersey")
   ),
   "com.miglayout"             % "miglayout-swing"          % "4.2",
   "com.ning"                  % "async-http-client"        % "1.9.40",
@@ -205,8 +206,8 @@ libraryDependencies ++= Seq(
   "org.apache.tomcat"           % "tomcat-util"            % TomcatVersion,
   "org.apache.tomcat"           % "tomcat-util-scan"       % TomcatVersion,
   "org.apache.tomcat"           % "tomcat-ssi"             % TomcatVersion,
-  "org.apache.ws.commons.axiom" % "axiom-api"              % "1.2.13",
-  "org.apache.ws.commons.axiom" % "axiom-impl"             % "1.2.13",
+  "org.apache.ws.commons.axiom" % "axiom-api"              % "1.2.15",
+  "org.apache.ws.commons.axiom" % "axiom-impl"             % "1.2.15",
   "org.apache.ws.security"      % "wss4j"                  % "1.6.19",
   "org.apache.zookeeper"        % "zookeeper"              % "3.4.6" excludeAll (
     ExclusionRule(organization = "org.slf4j",
@@ -306,6 +307,7 @@ excludeDependencies ++= Seq(
   "org.apache.ws.commons.schema" % "XmlSchema",
   "woodstox"                     % "wstx-asl",
   "org.codehaus.woodstox"        % "wstx-asl",
+  "org.codehaus.woodstox"        % "woodstox-core-asl",
   "javassist"                    % "javassist",
   "org.sonatype.sisu.inject"     % "cglib",
   "commons-logging"              % "commons-logging",
