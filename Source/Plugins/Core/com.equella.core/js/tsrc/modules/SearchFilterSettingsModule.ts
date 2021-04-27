@@ -48,6 +48,7 @@ export const getMimeTypeFiltersFromServer = (): Promise<MimeTypeFilter[]> =>
  * Find MIME type filters by a list of ID.
  *
  * @param filterIds MIME type filter IDs used to filter the list of all MIME type filters.
+ * @returns { MimeTypeFilter[] | undefined } An array of MimeTypeFilter or undefined.
  */
 export const getMimeTypeFiltersById = async (
   filterIds: string[]

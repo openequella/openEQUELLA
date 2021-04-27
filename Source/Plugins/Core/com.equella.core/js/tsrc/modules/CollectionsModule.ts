@@ -34,10 +34,9 @@ export interface Collection {
 }
 
 /**
- * Provides a simple Map<string,string> summary of available collections, where K is the UUID
- * and V is the collections's name.
+ * Find all available Collections. On failure, an OEQ.Errors.ApiError will be thrown.
  *
- * On failure, an OEQ.Errors.ApiError will be thrown.
+ * @param requiredPrivileges Privileges required to access Collections.
  */
 export const collectionListSummary = (
   requiredPrivileges?: string[]
@@ -56,6 +55,7 @@ export const collectionListSummary = (
  * Find Collections by a list of ID.
  *
  * @param collectionUuids Collection UUIDs used to filter the list of all Collections.
+ * @returns { Collection[] | undefined } An array of Collections or undefined.
  */
 export const findCollectionsByUuid = async (
   collectionUuids: string[]

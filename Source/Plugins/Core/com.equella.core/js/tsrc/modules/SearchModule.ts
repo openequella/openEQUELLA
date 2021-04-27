@@ -43,6 +43,9 @@ export const nonLiveStatuses: OEQ.Common.ItemStatus[] = OEQ.Common.ItemStatuses.
   .map((status) => status.value)
   .filter(nonLiveStatus);
 
+/**
+ * A Runtypes object which represents three display modes: list, gallery-image and gallery-video.
+ */
 export const DisplayModeRuntypes = Union(
   Literal("list"),
   Literal("gallery-image"),
@@ -50,9 +53,11 @@ export const DisplayModeRuntypes = Union(
 );
 
 /**
- * Type of three display modes.
+ * Available modes for displaying search results.
+ * @see DisplayModeRuntypes for original definition.
  */
 export type DisplayMode = Static<typeof DisplayModeRuntypes>;
+
 /**
  * Type of all search options on Search page
  */

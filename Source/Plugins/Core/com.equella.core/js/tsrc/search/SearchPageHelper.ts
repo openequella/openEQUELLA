@@ -123,6 +123,7 @@ type DehydratedSearchPageOptions = Static<
 
 /**
  * A function that takes and parses a saved search query string from a shared legacy searching.do or /page/search URL, and converts it into a SearchPageOptions object.
+ *
  * @param location representing a Location which includes search query params - such as from the <SearchPage>
  * @return SearchPageOptions containing the options encoded in the query string params, or undefined if there were none.
  */
@@ -154,6 +155,7 @@ export const generateSearchPageOptionsFromQueryString = async (
  * Collections and owner properties are both reduced down to their uuid and id properties respectively.
  * Undefined properties are excluded.
  * Intended to be used in conjunction with SearchModule.newSearchQueryToSearchOptions
+ *
  * @param searchPageOptions Search options selected on Search page.
  * @return url encoded key/value pair of JSON searchOptions
  */
@@ -211,6 +213,7 @@ const rehydrateOwner = async (
 /**
  * A function that takes a JSON representation of a SearchPageOptions object, and converts it into an actual SearchPageOptions object.
  * Note: currently, due to lack of support from runtypes extraneous properties will end up in the resultant object (which then could be stored in state).
+ *
  * @see {@link https://github.com/pelotom/runtypes/issues/169 }
  * @param searchOptionsJSON a JSON representation of a SearchPageOptions object.
  * @return searchPageOptions A deserialized representation of that provided by `searchOptionsJSON`
@@ -310,6 +313,7 @@ const getOwnerFromLegacyParams = async (ownerId: string | undefined) =>
 
 /**
  * A function that takes query string params from a shared searching.do URL and converts all applicable params to SearchPageOptions.
+ *
  * @param params URLSearchParams from a shared `searching.do` URL
  * @return SearchPageOptions object.
  */
@@ -367,6 +371,7 @@ export const legacyQueryStringToSearchPageOptions = async (
 
 /**
  * Call this function to get partial SearchOptions.
+ *
  * @param options An object of SearchOptions
  * @param fields What fields of SearchOptions to get
  */

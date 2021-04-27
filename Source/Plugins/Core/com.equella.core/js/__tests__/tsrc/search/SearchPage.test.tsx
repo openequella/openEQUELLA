@@ -325,8 +325,7 @@ describe("Refine search by status", () => {
   const selectStatus = (container: Element, status: string) =>
     fireEvent.click(getByText(getStatusSelector(container), status));
 
-  const liveStatuses = SearchModule.liveStatuses;
-  const nonLiveStatuses = SearchModule.nonLiveStatuses;
+  const { liveStatuses, nonLiveStatuses } = SearchModule;
   beforeEach(() => {
     // Status selector is disabled by default so enable it before test.
     searchSettingPromise.mockResolvedValueOnce({
