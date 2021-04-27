@@ -18,6 +18,27 @@
 import { DateTime } from "luxon";
 
 /**
+ * Represent a date range which has an optional start and end.
+ */
+export interface DateRange {
+  /**
+   * The start date of a date range.
+   */
+  start?: Date;
+  /**
+   * The end date of a date range.
+   */
+  end?: Date;
+}
+
+/**
+ * Type guard used to check whether an object is an instance of Date.
+ *
+ * @param value A unknown type object to be checked.
+ */
+export const isDate = (value: unknown): value is Date => value instanceof Date;
+
+/**
  * Convert a date to string in ISO format but keep time unchanged.
  * One should call 'toISOString()' to get the UTC date in ISO format.
  * @param date The date to be converted to a string in ISO format.

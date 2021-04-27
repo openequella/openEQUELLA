@@ -18,6 +18,7 @@
 import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
+import * as A from "fp-ts/Array";
 import { Location } from "history";
 import { pick } from "lodash";
 import {
@@ -44,15 +45,14 @@ import {
   MimeTypeFilter,
 } from "../modules/SearchFilterSettingsModule";
 import {
-  DateRange,
   defaultSearchOptions,
   DisplayMode,
   DisplayModeRuntypes,
-  isDate,
   SearchOptions,
   SearchOptionsFields,
 } from "../modules/SearchModule";
 import { findUserById } from "../modules/UserModule";
+import { DateRange, isDate } from "../util/Date";
 import type { SearchPageOptions } from "./SearchPage";
 
 /**
@@ -254,26 +254,27 @@ const getLastModifiedDateRangeFromLegacyParams = (
   rangeType: RangeType,
   primaryDate?: Date,
   secondaryDate?: Date
-): DateRange | undefined => {
-  if (!primaryDate && !secondaryDate) {
-    return undefined;
-  }
-  return match(
-    [
-      Literal("between"),
-      (): DateRange => ({ start: primaryDate, end: secondaryDate }),
-    ],
-    [Literal("after"), (): DateRange => ({ start: primaryDate })],
-    [Literal("before"), (): DateRange => ({ end: primaryDate })],
-    [
-      Literal("on"),
-      (): DateRange => ({
-        start: primaryDate,
-        end: primaryDate,
-      }),
-    ]
-  )(rangeType.toLowerCase() as RangeType);
-};
+): DateRange | undefined =>
+  !primaryDate && !secondaryDate
+    ? undefined
+    : pipe(
+        rangeType.toLowerCase() as RangeType,
+        match(
+          [
+            Literal("between"),
+            (): DateRange => ({ start: primaryDate, end: secondaryDate }),
+          ],
+          [Literal("after"), (): DateRange => ({ start: primaryDate })],
+          [Literal("before"), (): DateRange => ({ end: primaryDate })],
+          [
+            Literal("on"),
+            (): DateRange => ({
+              start: primaryDate,
+              end: primaryDate,
+            }),
+          ]
+        )
+      );
 
 const getDisplayModeFromLegacyParams = (
   legacyDisplayMode: string | undefined
@@ -331,10 +332,7 @@ export const legacyQueryStringToSearchPageOptions = async (
   const sortOrder = pipe(
     getQueryParam("sort")?.toUpperCase(),
     O.fromPredicate(OEQ.SearchSettings.SortOrderRunTypes.guard),
-    O.fold(
-      () => defaultSearchOptions.sortOrder,
-      (s) => s
-    )
+    O.getOrElse(() => defaultSearchOptions.sortOrder)
   );
 
   const datePrimary = getQueryParam("dp");
@@ -348,10 +346,11 @@ export const legacyQueryStringToSearchPageOptions = async (
 
   const mimeTypeFilters = await getMimeTypeFiltersById(params.getAll("mt"));
   const mimeTypes = mimeTypeFilters?.flatMap(({ mimeTypes }) => mimeTypes);
-  const getExternalMIMETypes = () => {
-    const integrationMIMETypes = params.getAll("_int.mimeTypes");
-    return integrationMIMETypes.length > 0 ? integrationMIMETypes : undefined;
-  };
+  const externalMimeTypes = pipe(
+    params.getAll("_int.mimeTypes"),
+    O.fromPredicate(A.isNonEmpty),
+    O.toUndefined
+  );
 
   const displayMode = getDisplayModeFromLegacyParams(getQueryParam("type"));
   return {
@@ -363,7 +362,7 @@ export const legacyQueryStringToSearchPageOptions = async (
     sortOrder,
     mimeTypes,
     mimeTypeFilters,
-    externalMimeTypes: getExternalMIMETypes(),
+    externalMimeTypes,
     rawMode: true,
     displayMode,
   };

@@ -19,7 +19,7 @@
 import * as OEQ from "@openequella/rest-api-client";
 import { Literal, Static, Union } from "runtypes";
 import { API_BASE_URL } from "../AppConfig";
-import { getISODateString } from "../util/Date";
+import { DateRange, getISODateString } from "../util/Date";
 import type { Collection } from "./CollectionsModule";
 import type { SelectedCategories } from "./SearchFacetsModule";
 import type { MimeTypeFilter } from "./SearchFilterSettingsModule";
@@ -54,7 +54,7 @@ export const DisplayModeRuntypes = Union(
 
 /**
  * Available modes for displaying search results.
- * @see DisplayModeRuntypes for original definition.
+ * @see { @link DisplayModeRuntypes } for original definition.
  */
 export type DisplayMode = Static<typeof DisplayModeRuntypes>;
 
@@ -146,22 +146,6 @@ export const defaultSearchOptions: SearchOptions = {
   mimeTypes: [],
   mimeTypeFilters: [],
 };
-
-/**
- * Represent a date range which has an optional start and end.
- */
-export interface DateRange {
-  /**
-   * The start date of a date range.
-   */
-  start?: Date;
-  /**
-   * The end date of a date range.
-   */
-  end?: Date;
-}
-
-export const isDate = (value: unknown): value is Date => value instanceof Date;
 
 /**
  * Helper function, to support formatting of query in raw mode. When _not_ raw mode

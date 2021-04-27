@@ -31,7 +31,7 @@ import {
 import { DateTime } from "luxon";
 import * as React from "react";
 import { ReactNode, useEffect, useState } from "react";
-import type { DateRange } from "../modules/SearchModule";
+import type { DateRange } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
 import SettingsToggleSwitch from "./SettingsToggleSwitch";
 

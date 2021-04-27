@@ -38,51 +38,49 @@ const mockedSearch = (OEQ.Search.search as jest.Mock<
   Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>>
 >).mockResolvedValue(getSearchResult);
 
-describe("SearchModule", () => {
-  describe("searchItems", () => {
-    it("should provide a list of items", async () => {
-      const searchResult = await SearchModule.searchItems(
-        SearchModule.defaultSearchOptions
-      );
-      expect(searchResult.available).toBe(12);
-      expect(searchResult.results).toHaveLength(12);
-    });
+describe("searchItems", () => {
+  it("should provide a list of items", async () => {
+    const searchResult = await SearchModule.searchItems(
+      SearchModule.defaultSearchOptions
+    );
+    expect(searchResult.available).toBe(12);
+    expect(searchResult.results).toHaveLength(12);
+  });
 
-    const expectSearchQueryToBeValid = (expectedQuery: string) => {
-      const calls = mockedSearch.mock.calls;
-      const params = calls[0][1]; // Second parameter of the call is the 'params'
-      expect(params.query).toEqual(expectedQuery);
-    };
+  const expectSearchQueryToBeValid = (expectedQuery: string) => {
+    const calls = mockedSearch.mock.calls;
+    const params = calls[0][1]; // Second parameter of the call is the 'params'
+    expect(params.query).toEqual(expectedQuery);
+  };
 
-    it("should not append a wildcard for a search which is empty when trimmed", async () => {
-      mockedSearch.mockReset();
-      await SearchModule.searchItems({
-        ...SearchModule.defaultSearchOptions,
-        query: "   ",
-      });
-      expectSearchQueryToBeValid("");
+  it("should not append a wildcard for a search which is empty when trimmed", async () => {
+    mockedSearch.mockReset();
+    await SearchModule.searchItems({
+      ...SearchModule.defaultSearchOptions,
+      query: "   ",
     });
+    expectSearchQueryToBeValid("");
+  });
 
-    it("should append a wildcard for a search non-rawMode, non-empty query", async () => {
-      mockedSearch.mockReset();
-      const queryTerm = "non RAW";
-      await SearchModule.searchItems({
-        ...SearchModule.defaultSearchOptions,
-        query: queryTerm,
-      });
-      expectSearchQueryToBeValid(`${queryTerm}*`);
+  it("should append a wildcard for a search non-rawMode, non-empty query", async () => {
+    mockedSearch.mockReset();
+    const queryTerm = "non RAW";
+    await SearchModule.searchItems({
+      ...SearchModule.defaultSearchOptions,
+      query: queryTerm,
     });
+    expectSearchQueryToBeValid(`${queryTerm}*`);
+  });
 
-    it("should NOT append a wildcard for a rawMode search with a non-empty query", async () => {
-      mockedSearch.mockReset();
-      const queryTerm = "RAW mode!";
-      await SearchModule.searchItems({
-        ...SearchModule.defaultSearchOptions,
-        query: queryTerm,
-        rawMode: true,
-      });
-      expectSearchQueryToBeValid(`${queryTerm}`);
+  it("should NOT append a wildcard for a rawMode search with a non-empty query", async () => {
+    mockedSearch.mockReset();
+    const queryTerm = "RAW mode!";
+    await SearchModule.searchItems({
+      ...SearchModule.defaultSearchOptions,
+      query: queryTerm,
+      rawMode: true,
     });
+    expectSearchQueryToBeValid(`${queryTerm}`);
   });
 });
 

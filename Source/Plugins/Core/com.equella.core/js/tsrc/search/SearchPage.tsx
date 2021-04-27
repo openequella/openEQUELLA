@@ -17,6 +17,7 @@
  */
 import { Drawer, Grid, Hidden } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
+import type { DateRange } from "../util/Date";
 import {
   defaultPagedSearchResult,
   defaultSearchPageOptions,
@@ -27,7 +28,6 @@ import {
 import {
   buildExportUrl,
   confirmExport,
-  DateRange,
   DisplayMode,
   searchItems,
   SearchOptions,
