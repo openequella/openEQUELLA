@@ -34,6 +34,7 @@ import FilterListIcon from "@material-ui/icons/FilterList";
 import { makeStyles } from "@material-ui/core/styles";
 import Share from "@material-ui/icons/Share";
 import * as OEQ from "@openequella/rest-api-client";
+import clsx from "clsx";
 import * as React from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { isSelectionSessionOpen } from "../../modules/LegacySelectionSessionModule";
@@ -53,6 +54,9 @@ const useStyles = makeStyles({
   centralSpinner: {
     top: "50%",
     position: "fixed",
+  },
+  textCentered: {
+    textAlign: "center",
   },
 });
 
@@ -108,6 +112,7 @@ export interface SearchResultListProps {
    */
   exportProps: {
     isExportPermitted: boolean;
+    linkRef: React.RefObject<HTMLAnchorElement>;
     exportLinkProps: ExportSearchResultLinkProps;
   };
 }
@@ -135,7 +140,7 @@ export const SearchResultList = ({
   onClearSearchOptions,
   onCopySearchLink,
   onSaveSearch,
-  exportProps: { isExportPermitted, exportLinkProps },
+  exportProps: { isExportPermitted, linkRef, exportLinkProps },
 }: SearchResultListProps) => {
   const classes = useStyles();
   const inSelectionSession: boolean = isSelectionSessionOpen();
@@ -181,7 +186,7 @@ export const SearchResultList = ({
             </Grid>
             {isExportPermitted && (
               <Grid item>
-                <ExportSearchResultLink {...exportLinkProps} />
+                <ExportSearchResultLink {...exportLinkProps} ref={linkRef} />
               </Grid>
             )}
             <Hidden mdUp>
@@ -208,12 +213,11 @@ export const SearchResultList = ({
           </Grid>
         }
       />
-      {/*Add an inline style to make the spinner display at the Card's horizontal center.*/}
-      <CardContent style={{ textAlign: "center" }}>
+      <CardContent className={clsx(showSpinner && classes.textCentered)}>
         {showSpinner && (
           <CircularProgress
             variant="indeterminate"
-            className={children ? classes.centralSpinner : ""}
+            className={clsx(children && classes.centralSpinner)}
           />
         )}
         {searchResultList}

@@ -326,8 +326,6 @@ export const languageStrings = {
     refineTitle: "Refine search",
     modifiedDate: "Modified",
     wildcardSearch: "Wildcard search",
-    wildcardSearchEnabledPlaceholder: "Search (wildcard)",
-    wildcardSearchDisabledPlaceholder: "Search",
     newSearch: "New search",
     newSearchHelperText: "Clears search text and filters",
     shareSearchHelperText: "Copy search link to clipboard",
@@ -359,6 +357,12 @@ export const languageStrings = {
       collectionLimit: "Download limited to one collection.",
       exportCompleted: "File downloaded",
       title: "Download search result to a CSV file",
+      errorMessages: {
+        badRequest:
+          "Export failed due to the server indicating the request was invalid.",
+        unauthorised: "Sorry, you are not authorised to export this search.",
+        notFound: "Failed to find details to export this search.",
+      },
     },
     favouriteItem: {
       removeAlert: "Are you sure you want to remove from your favourites?",
@@ -424,6 +428,7 @@ export const languageStrings = {
     searchAttachmentsSelector: {
       title: "Search attachments",
     },
+    searchBarPlaceholder: "Search",
     searchResult: {
       ariaLabel: "Search result list item",
       attachments: "Attachments",

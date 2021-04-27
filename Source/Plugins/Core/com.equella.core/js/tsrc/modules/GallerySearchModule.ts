@@ -28,6 +28,7 @@ import {
   buildFileAttachmentUrl,
 } from "./AttachmentsModule";
 import { CustomMimeTypes, getImageMimeTypes } from "./MimeTypesModule";
+import { Classification, listClassifications } from "./SearchFacetsModule";
 import { searchItems, SearchOptions } from "./SearchModule";
 import * as yt from "./YouTubeModule";
 
@@ -495,6 +496,7 @@ export const imageGallerySearch = async (
     filterAttachmentsByMimeType("image")
   );
 
+const videoGalleryMusts: OEQ.Search.Must[] = [["videothumb", ["true"]]];
 /**
  * Perform a search as per `options` and also request filtering to any items which potentially are
  * have video attachments. The output ideally used to display a gallery of all available videos at
@@ -506,6 +508,30 @@ export const videoGallerySearch = async (
   options: SearchOptions
 ): Promise<OEQ.Search.SearchResult<GallerySearchResultItem>> =>
   gallerySearch(
-    { ...options, musts: [["videothumb", ["true"]]] },
+    { ...options, musts: videoGalleryMusts },
     filterAttachmentsByVideo
   );
+
+/**
+ * Perform a facet search as per `options` and also request facets to only be generated for items
+ * which potentially have image attachments. The output ideally used to alongside the search
+ * results for `imageGallerySearch`.
+ *
+ * @param options Standard `SearchOptions` to refine the faceting by
+ */
+export const listImageGalleryClassifications = async (
+  options: SearchOptions
+): Promise<Classification[]> =>
+  listClassifications({ ...options, mimeTypes: await getImageMimeTypes() });
+
+/**
+ * Perform a facet search as per `options` and also request facets to only be generated for items
+ * which potentially have video attachments. The output ideally used to alongside the search
+ * results for `videoGallerySearch`.
+ *
+ * @param options Standard `SearchOptions` to refine the faceting by
+ */
+export const listVideoGalleryClassifications = async (
+  options: SearchOptions
+): Promise<Classification[]> =>
+  listClassifications({ ...options, musts: videoGalleryMusts });

@@ -37,7 +37,6 @@ const catchHandler = (error: AxiosError | Error): never => {
  * @param path The URL path for the target GET
  * @param validator A function to perform runtime type checking against the result - typically with typescript-is
  * @param queryParams The query parameters to send with the GET request
- * @param transformer A function which returns a copy of the raw data from the GET with any required values transformed - this should NOT mutate the input data (transforms should start on a copy/clone of the input)
  */
 export const GET = <T>(
   path: string,
@@ -60,6 +59,31 @@ export const GET = <T>(
     })
     .catch(catchHandler);
 
+/**
+ * Executes a HTTP HEAD request for a given path. Return a promise of `true`
+ * to indicate the requested resource is available.
+ *
+ * @param path The URL path for the target HEAD
+ * @param queryParams The query parameters to send with the HEAD request
+ */
+export const HEAD = (
+  path: string,
+  queryParams?: Parameters<typeof stringify>[0] // eslint-disable-line @typescript-eslint/ban-types
+): Promise<boolean> =>
+  axios
+    .head(path, {
+      params: queryParams,
+      paramsSerializer: (params) => stringify(params),
+    })
+    .then(() => true)
+    .catch(catchHandler);
+
+/**
+ * Executes a HTTP PUT request for a given path.
+ *
+ * @param path The URL path for the target HEAD
+ * @param data The data to be sent in POST request
+ */
 export const PUT = <T, R>(path: string, data?: T): Promise<R> =>
   axios
     .put(path, data)

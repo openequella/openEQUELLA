@@ -66,10 +66,12 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.core.UriInfo;
 import org.apache.log4j.Logger;
+import scala.collection.JavaConverters;
 
 /** @author Aaron & Dustin */
 @SuppressWarnings("nls")
@@ -203,7 +205,8 @@ public class SearchResourceImpl implements EquellaSearchResource {
       String modifiedBefore,
       String owner,
       String showall,
-      List<String> mimeTypes) {
+      List<String> mimeTypes,
+      List<String> musts) {
     final String whereClause = where;
     final boolean onlyLive = !(showall != null && Utils.parseLooseBool(showall, false));
     final Collection<String> cols = (collections == null ? null : CsvList.asList(collections));
@@ -224,7 +227,18 @@ public class SearchResourceImpl implements EquellaSearchResource {
             null,
             owner,
             new DefaultSearch());
+    // Add MIME types
     search.setMimeTypes(mimeTypes);
+    // Add 'musts'
+    Optional.of(musts)
+        .filter(ms -> !ms.isEmpty())
+        .map(ms -> ms.toArray(new String[0]))
+        .map(SearchHelper::handleMusts)
+        .map(JavaConverters::mapAsJavaMap)
+        .ifPresent(
+            ms ->
+                ms.forEach(
+                    (field, value) -> search.addMust(field, JavaConverters.seqAsJavaList(value))));
 
     final MatrixResults matrixResults =
         freetextService.matrixSearch(search, nodeList, true, width, true);
