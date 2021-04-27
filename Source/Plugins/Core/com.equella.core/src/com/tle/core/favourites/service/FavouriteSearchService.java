@@ -25,7 +25,14 @@ import com.tle.web.sections.SectionInfo;
 import java.util.List;
 
 public interface FavouriteSearchService {
-  void save(FavouriteSearch search);
+
+  /**
+   * Save a search definition to user's search favourites.
+   *
+   * @param search A search definition to be saved to database.
+   * @return A FavouriteSearch instance of the new entry.
+   */
+  FavouriteSearch save(FavouriteSearch search);
 
   SearchFavouritesSearchResults search(Search search, int offset, int perPage);
 

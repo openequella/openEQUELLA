@@ -94,8 +94,10 @@ const convertSearchOptions: (
       owner,
       status,
       rawMode,
+      mimeTypes,
+      musts,
     } = options;
-    let searchFacetsParams: OEQ.SearchFacets.SearchFacetsParams = {
+    const searchFacetsParams: OEQ.SearchFacets.SearchFacetsParams = {
       nodes: [],
       q: query ? formatQuery(query, !rawMode) : undefined,
       modifiedAfter: getISODateString(lastModifiedDateRange?.start),
@@ -105,14 +107,15 @@ const convertSearchOptions: (
         status?.sort(),
         OEQ.Common.ItemStatuses.alternatives.map((i) => i.value).sort()
       ),
+      mimeTypes,
+      musts,
     };
-    if (collections && collections.length > 0) {
-      searchFacetsParams = {
-        ...searchFacetsParams,
-        collections: collections.map((c) => c.uuid),
-      };
-    }
-    return searchFacetsParams;
+    return collections && collections.length > 0
+      ? {
+          ...searchFacetsParams,
+          collections: collections.map((c) => c.uuid),
+        }
+      : searchFacetsParams;
   }
 );
 

@@ -105,17 +105,43 @@ See https://github.com/openequella/openEQUELLA#keystore for more details.
 
 For ideas on how to enhance docker with openEQUELLA, please review the (GitHub issues)[https://github.com/openequella/openEQUELLA/issues?q=is%3Aissue+docker+label%3ADocker] with the `docker` label.
 
-## Setup a local clustering environment of oEQ
+## Setup a local clustered openEQUELLA environment
 
-- From the root use SBT to build the installer;
+First you will need an openEQUELLA installer zip. This can be achieved with the docker build
+image as detailed above. Or if you already have a dev environment simply go to the root of your
+git clone and run:
 
-```
+```bash
 sbt installerZip
 ```
 
-- Copy the installer zip from `Equella/Installer/target` to the docker folder `Equella/docker`
-- Run `docker-compose up -d` from `Equella/docker`
-- Run docker-compose logs | grep 'ClusterMessagingServiceImpl' and you should expect to see `[ClusterMessagingServiceImpl] Successful connection from NODE: xxxx (a string in UUID format)`
-- Open `oeq.localhost/admin/` from a browser, go the oEQ Administer server page and then open Health check, you should expect to see a table which lists all node IDs
-- If you have a new oEQ installer, you can run `docker-compose up -d --force-recreate --build`
-- You can also specify the number of oEQ instance by running 'docker-compose up -d --scale oeq=3', here `oeq` is the service name defined in the yml file
+Next, a couple of pre-requisites:
+
+- You need two directories in the `docker` directory in your git clone. Make sure the user docker
+  will be running as has write permissions. They are:
+  - `filestore`; and
+  - `traefik.toml`
+- Additionally, you will need to add an entry to your `/etc/hosts` file pointing `127.0.0.1` to
+  `oeq.localhost`
+
+After that, it's time to start the cluster:
+
+- From the root of your git clone, copy the installer zip from `Installer/target` to the `docker`
+  folder with the name `equella-installer.zip`
+- Change into the `docker` folder and run `docker-compose up`
+- (optional) Run `docker-compose logs | grep 'ClusterMessagingServiceImpl'` and you should expect to
+  see `[ClusterMessagingServiceImpl] Successful connection from NODE: xxxx (a string in UUID format)`
+- Open <http://oeq.localhost/admin/> from a browser where you'll  have to complete the installation.
+  (NOTE: the trailing backslash is key.)
+- Following that you can go to the Administer server page and then open Health check where you
+  should expect to see a table which lists all node IDs. By default, there is only one, but below
+  you can find instructions for increasing the number.
+
+### Updating
+
+If you have a new oEQ installer, you can run `docker-compose up -d --force-recreate --build`
+
+### Changing the size of the cluster
+
+You can also specify the number of oEQ instances by running `docker-compose up -d --scale oeq=3`,
+here `oeq` is the service name defined in the `docker-compose.yml` file.

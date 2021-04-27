@@ -21,9 +21,10 @@
 import { is } from 'typescript-is';
 import { GET } from './AxiosInstance';
 import { UuidString } from './Common';
+import { Must, processMusts } from './Search';
 import { asCsvList } from './Utils';
 
-export interface SearchFacetsParams {
+interface SearchFacetsParamsBase {
   /**
    * List of XML nodes to search.
    */
@@ -67,6 +68,45 @@ export interface SearchFacetsParams {
    * If `true` then includes items that are not live.
    */
   showall?: boolean;
+  /**
+   * A list of MIME types to filter items based on their attachments matching the specified types.
+   */
+  mimeTypes?: string[];
+}
+
+/**
+ * Parameters which can be passed to a facet search.
+ */
+export interface SearchFacetsParams extends SearchFacetsParamsBase {
+  /**
+   * List of search index key/value pairs to filter by. e.g. videothumb:true or realthumb:true.
+   * If for example you wanted to use the above two in a query, you'd specify them as:
+   *
+   * ```typescript
+   * const musts = [
+   *   ["videothumb": ["true"]],
+   *   ["realthumb": ["true"]],
+   * ];
+   * ```
+   *
+   * If you wanted to search on a list of UUIDs, you'd:
+   *
+   * ```typescript
+   * const musts = [
+   *   ["uuids",
+   *     ["ab16b5f0-a12e-43f5-9d8b-25870528ad41",
+   *      "24b977ec-4df4-4a43-8922-8ca6f82a296a"]],
+   * ];
+   * ```
+   */
+  musts?: Must[];
+}
+
+/**
+ * Provides the lower level implementation of SearchFacetsParams for sending directly to the server.
+ */
+interface SearchFacetsParamsProcessed extends SearchFacetsParamsBase {
+  musts?: string[];
 }
 
 /**
@@ -99,6 +139,11 @@ export interface SearchFacetsResult {
   results: Facet[];
 }
 
+const processSearchFacetsParams = (
+  params?: SearchFacetsParams
+): SearchFacetsParamsProcessed | undefined =>
+  params ? { ...params, musts: processMusts(params.musts) } : undefined;
+
 const SEARCH_FACETS_API_PATH = '/search/facet';
 
 export const searchFacets = (
@@ -109,7 +154,7 @@ export const searchFacets = (
     apiBasePath + SEARCH_FACETS_API_PATH,
     (data): data is SearchFacetsResult => is<SearchFacetsResult>(data),
     {
-      ...params,
+      ...processSearchFacetsParams(params),
       nodes: asCsvList<string>(params.nodes),
       collections: asCsvList<string>(params.collections),
     }

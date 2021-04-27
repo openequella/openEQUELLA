@@ -26,6 +26,43 @@ import { queryByText } from "@testing-library/react";
 export const queryMuiButtonByText = (container: HTMLElement, text: string) =>
   queryByText(
     container,
-    (content: string, element: HTMLElement) =>
-      content === text && (element.parentElement?.matches("button") ?? false)
-  );
+    (content: string, element: Element | null | undefined) =>
+      content === text && (element?.parentElement?.matches("button") ?? false)
+  )?.parentElement ?? null;
+
+/**
+ * Similar to queryMuiButtonByText, but throws an error if the MUI Button is not found.
+ *
+ * @param container A root element to start the search from.
+ * @param text The text to identify the button by.
+ */
+export const getMuiButtonByText = (container: HTMLElement, text: string) => {
+  const button = queryMuiButtonByText(container, text);
+  if (!button) {
+    throw new Error("Failed to find MUI Button.");
+  }
+  return button;
+};
+
+/**
+ * Helper function to find MUI TextField with React Testing Library.
+ *
+ * @param container A root element to start the search from.
+ * @param labelText The text describing the TextField.
+ */
+export const queryMuiTextField = (container: HTMLElement, labelText: string) =>
+  queryByText(container, labelText)?.parentElement?.querySelector("input");
+
+/**
+ * Similar to queryMuiTextField, but throws an error if the MUI TextField is not found.
+ *
+ * @param container A root element to start the search from.
+ * @param labelText The text describing the TextField.
+ */
+export const getMuiTextField = (container: HTMLElement, labelText: string) => {
+  const textField = queryMuiTextField(container, labelText);
+  if (!textField) {
+    throw new Error("Failed to find MUI TextField.");
+  }
+  return textField;
+};

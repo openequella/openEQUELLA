@@ -25,6 +25,7 @@ import com.tle.core.favourites.service.BookmarkService;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.service.ItemService;
 import com.tle.web.favourites.FavouritesDialog;
+import com.tle.web.favourites.RootFavouritesSection;
 import com.tle.web.itemlist.item.AbstractItemlikeListEntry;
 import com.tle.web.itemlist.item.ItemListEntry;
 import com.tle.web.itemlist.item.ItemlikeListEntryExtension;
@@ -149,7 +150,7 @@ public class FavouritesDisplay extends AbstractPrototypeSection<Object>
   @EventHandlerMethod
   public void addFavourite(SectionInfo info, String tagString, boolean latest, String itemId) {
     Item item = itemService.get(new ItemId(itemId));
-    bookmarkService.add(item, tagString, latest);
+    bookmarkService.add(item, RootFavouritesSection.tagsFromString(tagString), latest);
     receiptService.setReceipt(ADD_RECEIPT_LABEL);
   }
 

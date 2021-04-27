@@ -15,21 +15,21 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_config")).value
 
-val jacksonVersion   = "2.11.3"
-val axis2Version     = "1.6.2"
-val TomcatVersion    = "9.0.40"
-val SwaggerVersion   = "1.6.2"
 val RestEasyVersion  = "3.13.2.Final"
-val simpledbaVersion = "0.1.9"
+val SwaggerVersion   = "1.6.2"
+val TomcatVersion    = "9.0.43"
+val axis2Version     = "1.6.2"
 val circeVersion     = "0.12.1"
-val jsoupVersion     = "1.13.1"
-val sttpVersion      = "1.7.2"
-val fs2Version       = "2.4.4"
-val jsassVersion     = "5.10.3"
-val springVersion    = "5.2.9.RELEASE"
-val tikaVersion      = "1.24.1"
 val cxfVersion       = "3.4.1"
+val fs2Version       = "2.4.4"
 val guiceVersion     = "3.0"
+val jacksonVersion   = "2.11.3"
+val jsassVersion     = "5.10.4"
+val jsoupVersion     = "1.13.1"
+val simpledbaVersion = "0.1.9"
+val springVersion    = "5.3.5"
+val sttpVersion      = "1.7.2"
+val tikaVersion      = "1.24.1"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -156,11 +156,11 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "net.sf.ehcache")
   ),
   "org.apache.httpcomponents" % "httpclient"       % "4.5.13",
-  "org.apache.httpcomponents" % "httpcore"         % "4.4.13",
+  "org.apache.httpcomponents" % "httpcore"         % "4.4.14",
   "org.apache.lucene"         % "lucene-analyzers" % "3.6.2",
   "org.apache.lucene"         % "lucene-core"      % "3.6.2",
   "org.apache.lucene"         % "lucene-queries"   % "3.6.2",
-  "org.apache.poi"            % "poi-ooxml"        % "3.9",
+  "org.apache.poi"            % "poi-ooxml"        % "3.17",
   "org.apache.rampart"        % "rampart-core"     % "1.6.2" excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces")
@@ -231,7 +231,7 @@ libraryDependencies ++= Seq(
   "org.reactivestreams"             % "reactive-streams"               % "1.0.3",
   // Upgraded to 2.0.1.Final due to a deduplication issue with jakarta.ws.rs-api
   "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"     % "2.0.1.Final",
-  "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api" % "1.0.1",
+  "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api" % "1.4.1",
   "org.eclipse.microprofile.config"      % "microprofile-config-api"      % "1.4",
   "javax.json.bind"                      % "javax.json.bind-api"          % "1.0",
   "org.jsoup"                            % "jsoup"                        % jsoupVersion,
@@ -270,7 +270,6 @@ libraryDependencies ++= Seq(
   "org.mozilla"                   % "rhino"                     % "1.7.13",
   "io.lemonlabs"                  %% "scala-uri"                % "1.5.1",
   "org.scala-lang.modules"        %% "scala-parser-combinators" % "1.1.2",
-  "io.bit3"                       % "jsass"                     % "5.10.3",
   "io.github.classgraph"          % "classgraph"                % "4.8.90",
   "com.fasterxml"                 % "classmate"                 % "1.5.1",
   "org.glassfish"                 % "javax.el"                  % "3.0.1-b11",
@@ -321,7 +320,7 @@ excludeDependencies ++= Seq(
   // Spring 5 added a default logging bridge.  In oEQ, this results in
   // a [deduplicate: different file contents found in the following] error
   // ...org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.7.30.jar:org/apache/commons/logging/Log.class
-  // ...org.springframework/spring-jcl/jars/spring-jcl-5.2.9.RELEASE.jar:org/apache/commons/logging/Log.class
+  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.5.jar:org/apache/commons/logging/Log.class
   // As per https://github.com/spring-projects/spring-framework/issues/20611 ,
   // since we already have logging in place, we can safely exclude the dep from spring.
   "org.springframework" % "spring-jcl",

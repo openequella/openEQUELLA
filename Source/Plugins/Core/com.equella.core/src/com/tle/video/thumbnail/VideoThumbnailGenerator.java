@@ -81,7 +81,7 @@ public class VideoThumbnailGenerator implements ThumbnailGenerator {
 
   @Override
   public boolean supportsThumbType(ThumbnailType type) {
-    return type != ThumbnailType.TYPE_GALLERY_PREVIEW;
+    return true;
   }
 
   @Override

@@ -15,6 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { is } from 'typescript-is';
+import { GET } from '../src/AxiosInstance';
 import * as OEQ from '../src';
 import * as TC from './TestConfig';
 
@@ -69,6 +71,47 @@ describe('Search for items', () => {
     expect(findItemByStatus(STATUS_LIVE)).toBeTruthy();
     expect(findItemByStatus(STATUS_PERSONAL)).toBeTruthy();
   });
+
+  it('should return results which match one of multiple MIME types', async () => {
+    const searchResult = await doSearch({
+      mimeTypes: ['text/plain', 'application/pdf'],
+    });
+    expect(searchResult.results).toHaveLength(7);
+  });
+
+  it("supports a list of 'musts' specifications", async () => {
+    const searchResult = await doSearch({
+      musts: [
+        ['moderating', ['true']],
+        [
+          'uuid',
+          [
+            'ab16b5f0-a12e-43f5-9d8b-25870528ad41',
+            '24b977ec-4df4-4a43-8922-8ca6f82a296a',
+          ],
+        ],
+      ],
+    });
+    expect(searchResult.results).toHaveLength(2);
+  });
+
+  it.each<[string, [string, string[]][]]>([
+    ['Empty field name', [['', ['a value']]]],
+    [
+      'Empty field name - whitespace',
+      [[' ', ['a value for whitespace field']]],
+    ],
+    ['Empty value array', [['field-no-values', []]]],
+    ['Empty value', [['field-empty-value', ['']]]],
+    ['Empty value - whitespace', [['field-empty-value-whitespace', [' ']]]],
+    ['Colon in field name', [['field:colon', ['value-no-colon']]]],
+    ['Colon in value', [['field-no-colon', ['value:colon']]]],
+  ])(
+    "attempts to validate the 'musts' client side before sending [%s]",
+    async (_, musts) => {
+      await expect(doSearch({ musts })).rejects.toThrow(TypeError);
+    }
+  );
 });
 
 describe('Search for attachments', () => {
@@ -90,4 +133,34 @@ describe('Search for attachments', () => {
       expect(searchResult.results).toHaveLength(expectResultCount);
     }
   );
+});
+
+describe('Exports search results for the specified search params', function () {
+  const searchParams: OEQ.Search.SearchParams = {
+    query: 'API',
+    start: 0,
+    length: 10,
+    collections: ['a77112e6-3370-fd02-6ac6-6bc5aec22001'],
+  };
+
+  it('builds a full URL including query strings', () => {
+    expect(OEQ.Search.buildExportUrl(TC.API_PATH, searchParams)).toBe(
+      'http://localhost:8080/rest/api/search2/export?collections=a77112e6-3370-fd02-6ac6-6bc5aec22001&length=10&query=API&start=0'
+    );
+  });
+
+  it('generates a URL which communicates to the export endpoints', async () => {
+    await OEQ.Auth.login(TC.API_PATH, TC.USERNAME_SUPER, TC.PASSWORD_SUPER);
+    const exportUrl = OEQ.Search.buildExportUrl(TC.API_PATH, searchParams);
+    await expect(
+      GET(exportUrl, (data): data is string => is<string>(data))
+    ).resolves.toBeTruthy();
+  });
+
+  it('confirms if an export is valid by sending a HEAD request', async () => {
+    await OEQ.Auth.login(TC.API_PATH, TC.USERNAME_SUPER, TC.PASSWORD_SUPER);
+    await expect(
+      OEQ.Search.confirmExportRequest(TC.API_PATH, searchParams)
+    ).resolves.toBe(true);
+  });
 });

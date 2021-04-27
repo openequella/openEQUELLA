@@ -65,11 +65,13 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
+export type MessageInfoVariant = "success" | "warning" | "error" | "info";
+
 export interface MessageInfoProps {
   open: boolean;
   onClose: () => void;
   title: string;
-  variant: "success" | "warning" | "error" | "info";
+  variant: MessageInfoVariant;
 }
 
 const MessageInfo = ({ open, title, variant, onClose }: MessageInfoProps) => {

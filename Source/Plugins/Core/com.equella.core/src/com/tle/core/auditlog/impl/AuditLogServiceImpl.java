@@ -60,6 +60,7 @@ public class AuditLogServiceImpl implements AuditLogService {
   private static final String SUMMARY_VIEWED_TYPE = "SUMMARY_VIEWED";
 
   private static final String SEARCH_FEDERATED_TYPE = "FEDERATED";
+  private static final String SEARCH_EXPORT_TYPE = "EXPORT";
 
   private static final String USED_TYPE = "USED";
 
@@ -223,6 +224,13 @@ public class AuditLogServiceImpl implements AuditLogService {
   @Transactional
   public void logSearch(String type, String freeText, String within, long resultCount) {
     logGeneric(SEARCH_CATEGORY, type, freeText, within, Long.toString(resultCount), null);
+  }
+
+  @Override
+  @Transactional
+  public void logSearchExport(String format, String searchParams) {
+    // searchParams could be a long string so use 'data4'.
+    logGeneric(SEARCH_CATEGORY, SEARCH_EXPORT_TYPE, format, null, null, searchParams);
   }
 
   @Override

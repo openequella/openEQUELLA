@@ -53,11 +53,11 @@ describe("<UserSearch/>", () => {
   });
 
   it("displays an error when it can't find requested user", async () => {
-    await renderUserSearch();
+    const container = await renderUserSearch();
 
     // Attempt search for rubbish value
     const noSuchUser = "la blah blah";
-    doSearch(noSuchUser);
+    doSearch(container, noSuchUser);
 
     // Ensure an error was displayed
     await waitFor(() =>
@@ -73,10 +73,10 @@ describe("<UserSearch/>", () => {
   });
 
   it("displays users if there are any returned", async () => {
-    await renderUserSearch();
+    const container = await renderUserSearch();
 
     // Attempt search for known users
-    doSearch("user");
+    doSearch(container, "user");
 
     // Await for search results
     const results = await waitFor(() => screen.getAllByText(/user\d00/));
@@ -85,7 +85,7 @@ describe("<UserSearch/>", () => {
 
   it("should return the user details when a user clicks on a result", async () => {
     const onSelect = jest.fn();
-    await renderUserSearch(onSelect);
+    const container = await renderUserSearch(onSelect);
 
     // Prepare test values - aligning with mock data and function
     const username = "admin999";
@@ -100,7 +100,7 @@ describe("<UserSearch/>", () => {
     }
 
     // Attempt search for a specific user
-    doSearch(username);
+    doSearch(container, username);
 
     // Wait for the results, and then click our user of interest
     const testUserResult = await waitFor<HTMLElement>(() =>

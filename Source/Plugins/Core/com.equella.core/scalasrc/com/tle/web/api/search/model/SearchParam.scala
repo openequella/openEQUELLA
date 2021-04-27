@@ -86,4 +86,13 @@ class SearchParam {
   @ApiParam("Single dynamic collection uuid (:virtualized value)")
   @QueryParam("dynaCollection")
   var dynaCollection: String = _
+
+  @ApiParam("List of MIME types to filter by")
+  @QueryParam("mimeTypes")
+  var mimeTypes: Array[String] = _
+
+  @ApiParam(
+    "List of search index key/value pairs to filter by. e.g. videothumb:true or realthumb:true.")
+  @QueryParam("musts")
+  var musts: Array[String] = _
 }

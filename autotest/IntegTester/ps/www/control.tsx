@@ -1,20 +1,3 @@
-/*
- * Licensed to The Apereo Foundation under one or more contributor license
- * agreements. See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * The Apereo Foundation licenses this file to you under the Apache License,
- * Version 2.0, (the "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at:
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 import * as ReactDOM from "react-dom";
 import * as React from "react";
 import axios, { AxiosResponse } from "axios";
@@ -24,7 +7,7 @@ import {
   Attachment,
   ItemState,
   FileEntries,
-  ControlValidator,
+  ControlValidator
 } from "oeq-cloudproviders/controls";
 
 interface MyConfig {
@@ -47,7 +30,7 @@ function TestControl(p: ControlApi<MyConfig>) {
   const myConfig = p.config;
   const rootNode = myConfig.somethingElse[0];
   const attachXPath = "/xml" + rootNode + "/one//uuid";
-  const myAttachments = function (
+  const myAttachments = function(
     xml: XMLDocument,
     all: Attachment[]
   ): Attachment[] {
@@ -60,7 +43,7 @@ function TestControl(p: ControlApi<MyConfig>) {
         null
       )
     );
-    const filtered = all.filter((a) => uuids.indexOf(a.uuid) != -1);
+    const filtered = all.filter(a => uuids.indexOf(a.uuid) != -1);
     return filtered;
   };
   const [failValidation, setFailValidation] = React.useState(false);
@@ -85,7 +68,7 @@ function TestControl(p: ControlApi<MyConfig>) {
   const [indexFiles, setIndexFiles] = React.useState<string[]>([]);
   React.useEffect(() => {
     p.registerNotification();
-    const updateHandler = function (state: ItemState) {
+    const updateHandler = function(state: ItemState) {
       setCurrentXml(xmlSerializer.serializeToString(state.xml));
       setAttachments(myAttachments(state.xml, state.attachments));
       setFiles(state.files);
@@ -98,7 +81,7 @@ function TestControl(p: ControlApi<MyConfig>) {
 
   const validator: ControlValidator = React.useCallback(
     (editXml, setRequired) => {
-      editXml((d) => {
+      editXml(d => {
         let elem = d.createElement("validated");
         elem.appendChild(d.createTextNode((!failValidation).toString()));
         d.documentElement.appendChild(elem);
@@ -114,11 +97,11 @@ function TestControl(p: ControlApi<MyConfig>) {
     buttonName: string;
     onClick: () => Promise<AxiosResponse<any>>;
   }
-  const TestingButton = (TestingButtonProps) => (
+  const TestingButton = TestingButtonProps => (
     <button
       onClick={() => {
         TestingButtonProps.onClick()
-          .then((resp) => setServiceResponse(resp.data))
+          .then(resp => setServiceResponse(resp.data))
           .catch((err: Error) => {
             setServiceResponse(err.message);
           });
@@ -138,12 +121,12 @@ function TestControl(p: ControlApi<MyConfig>) {
   }, [validator]);
 
   function writeDir(parentPath: string, entries: FileEntries) {
-    return Object.keys(entries).map(function (filename) {
+    return Object.keys(entries).map(function(filename) {
       let entry = entries[filename];
       let newParent = parentPath + filename + "/";
       return (
         <div>
-          <div onClick={(_) => p.deleteFile(parentPath + filename)}>
+          <div onClick={_ => p.deleteFile(parentPath + filename)}>
             {filename} - {entry.size}
           </div>
           {entry.files ? (
@@ -163,7 +146,7 @@ function TestControl(p: ControlApi<MyConfig>) {
         <input
           type="text"
           value={serviceId}
-          onChange={(e) => setServiceId(e.target.value)}
+          onChange={e => setServiceId(e.target.value)}
         />
       </div>
       <div>
@@ -171,7 +154,7 @@ function TestControl(p: ControlApi<MyConfig>) {
         <input
           type="text"
           value={queryString}
-          onChange={(e) => setQueryString(e.target.value)}
+          onChange={e => setQueryString(e.target.value)}
         />
       </div>
       {postRequest && (
@@ -179,7 +162,7 @@ function TestControl(p: ControlApi<MyConfig>) {
           Payload:
           <textarea
             value={serviceContent}
-            onChange={(e) => setServiceContent(e.target.value)}
+            onChange={e => setServiceContent(e.target.value)}
             cols={100}
             rows={10}
           />
@@ -203,7 +186,7 @@ function TestControl(p: ControlApi<MyConfig>) {
         buttonName="POST"
         onClick={() =>
           axios.post(requestUrl(), {
-            data: serviceContent,
+            data: serviceContent
           })
         }
       />
@@ -217,7 +200,7 @@ function TestControl(p: ControlApi<MyConfig>) {
         buttonName="PUT"
         onClick={() =>
           axios.put(requestUrl(), {
-            data: serviceContent,
+            data: serviceContent
           })
         }
       />
@@ -225,7 +208,7 @@ function TestControl(p: ControlApi<MyConfig>) {
   );
 
   function makeAttachments() {
-    p.editXml((doc) => {
+    p.editXml(doc => {
       const frogs = doc.createElement("frogs");
       frogs.appendChild(new Text("hi"));
       doc.firstChild.appendChild(frogs);
@@ -238,9 +221,9 @@ function TestControl(p: ControlApi<MyConfig>) {
           type: "youtube",
           description: "This is a youtube video",
           videoId: "27awNyz-qdQ",
-          uploadedDate: new Date(),
+          uploadedDate: new Date()
         },
-        xmlPath: rootNode + "/two/uuid",
+        xmlPath: rootNode + "/two/uuid"
       },
       {
         command: "addAttachment",
@@ -253,17 +236,17 @@ function TestControl(p: ControlApi<MyConfig>) {
           display: {
             Arbitrary: "Field",
             Size: 0,
-            Ordered: true,
+            Ordered: true
           },
           meta: {
-            viewer: "Something",
+            viewer: "Something"
           },
           indexText,
-          indexFiles,
+          indexFiles
         },
-        xmlPath: rootNode + "/one/uuid",
-      },
-    ]).then((_) => {
+        xmlPath: rootNode + "/one/uuid"
+      }
+    ]).then(_ => {
       setIndexFiles([]);
       setIndexText("");
     });
@@ -280,7 +263,7 @@ function TestControl(p: ControlApi<MyConfig>) {
       <h4>Metadata</h4>
       <div>{currentXml}</div>
       <h4>Attachments</h4>
-      {attachments.map((a) => (
+      {attachments.map(a => (
         <div key={a.uuid}>
           Name: {a.description}&nbsp;UUID: {a.uuid}
           <button
@@ -289,8 +272,8 @@ function TestControl(p: ControlApi<MyConfig>) {
                 {
                   command: "deleteAttachment",
                   uuid: a.uuid,
-                  xmlPath: rootNode + "/one/uuid",
-                },
+                  xmlPath: rootNode + "/one/uuid"
+                }
               ])
             }
           >
@@ -303,9 +286,9 @@ function TestControl(p: ControlApi<MyConfig>) {
                   command: "editAttachment",
                   attachment: {
                     ...a,
-                    description: a.description + " (EDITED)",
-                  },
-                },
+                    description: a.description + " (EDITED)"
+                  }
+                }
               ]);
             }}
           >
@@ -317,11 +300,11 @@ function TestControl(p: ControlApi<MyConfig>) {
       <input
         type="file"
         multiple
-        onChange={(e) => {
-          Array.from(e.currentTarget.files).forEach((f) => {
+        onChange={e => {
+          Array.from(e.currentTarget.files).forEach(f => {
             const filePath = "folder/" + f.name;
-            p.uploadFile(filePath, f).then((_) =>
-              setIndexFiles((files) => [...files, filePath])
+            p.uploadFile(filePath, f).then(_ =>
+              setIndexFiles(files => [...files, filePath])
             );
           });
         }}
@@ -330,7 +313,7 @@ function TestControl(p: ControlApi<MyConfig>) {
       IndexText:{" "}
       <textarea
         value={indexText}
-        onChange={(e) => setIndexText(e.target.value)}
+        onChange={e => setIndexText(e.target.value)}
         cols={100}
         rows={10}
       />
@@ -340,11 +323,11 @@ function TestControl(p: ControlApi<MyConfig>) {
       <h4>Communicate with provider</h4>
       {renderService}
       <div>
-        <button onClick={(_) => setRequired((v) => !v)}>
+        <button onClick={_ => setRequired(v => !v)}>
           Toggle requires filling out - (
           {required ? "Required" : "Not Required"})
         </button>
-        <button onClick={(_) => setFailValidation((v) => !v)}>
+        <button onClick={_ => setFailValidation(v => !v)}>
           Toggle validator - ({failValidation ? "fail" : "succeed"})
         </button>
       </div>
@@ -355,10 +338,10 @@ function TestControl(p: ControlApi<MyConfig>) {
 CloudControl.register<MyConfig>(
   "oeq_autotest",
   "testcontrol",
-  function (params) {
+  function(params) {
     ReactDOM.render(<TestControl {...params} />, params.element);
   },
-  function (elem) {
+  function(elem) {
     ReactDOM.unmountComponentAtNode(elem);
   }
 );

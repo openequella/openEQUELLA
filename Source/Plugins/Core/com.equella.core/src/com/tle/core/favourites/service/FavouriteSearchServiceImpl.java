@@ -34,8 +34,11 @@ import com.tle.core.favourites.bean.FavouriteSearch;
 import com.tle.core.favourites.dao.FavouriteSearchDao;
 import com.tle.core.guice.Bind;
 import com.tle.web.sections.SectionInfo;
+import com.tle.web.sections.SectionsRuntimeException;
+import com.tle.web.template.RenderNewTemplate;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.commons.lang.StringUtils;
@@ -53,8 +56,9 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
 
   @Override
   @Transactional
-  public void save(FavouriteSearch search) {
-    dao.save(search);
+  public FavouriteSearch save(FavouriteSearch search) {
+    Long id = dao.save(search);
+    return dao.getById(id);
   }
 
   @Override
@@ -68,27 +72,42 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
 
   @Override
   public void executeSearch(SectionInfo info, long id) {
-    FavouriteSearch search = dao.getById(id);
-    if (search != null) {
-      String url = search.getUrl();
-      // When user favourites a normal search, cloud search or hierarchy search,
-      // the value of 'url' starts with '/access' if the fav search is added in old oEQ versions,
-      // which results in "no tree for xxx" error. Hence, remove "/access" if it exists.
-      if (url != null
-          && url.startsWith(WebConstants.ACCESS_PATH)
-          && StringUtils.indexOfAny(
-                  url,
-                  new String[] {
-                    WebConstants.SEARCHING_PAGE,
-                    WebConstants.HIERARCHY_PAGE,
-                    WebConstants.CLOUDSEARCH_PAGE
-                  })
-              > -1) {
-        url = "/" + url.replaceFirst(WebConstants.ACCESS_PATH, "");
-      }
-      SectionInfo forward = info.createForwardForUri(url);
-      info.forwardAsBookmark(forward);
+    Optional<FavouriteSearch> search = Optional.ofNullable(dao.getById(id));
+    Optional<String> url = search.map(FavouriteSearch::getUrl);
+    if (!search.isPresent() || !url.isPresent() || url.get().isEmpty()) {
+      throw new SectionsRuntimeException("Favourite search with id " + id + " is invalid.");
     }
+
+    String path = url.get();
+    // If new Search UI is enabled then navigate to it by calling 'forwardToUrl'.
+    // If new Search UI is disabled but the search was added from new Search UI, throw an error.
+    // Else do however it used to do.
+    if (RenderNewTemplate.isNewSearchPageEnabled()) {
+      // Remove the last '/' from 'CurrentInstitution.get().getUrl()' and then construct a full
+      // path.
+      String fullPath = StringUtils.removeEnd(CurrentInstitution.get().getUrl(), "/") + path;
+      info.forwardToUrl(fullPath);
+      return;
+    } else if (path.contains("/page/search")) {
+      throw new SectionsRuntimeException("This favourite search is only available in New UI mode.");
+    }
+
+    // When user favourites a normal search, cloud search or hierarchy search,
+    // the value of 'url' starts with '/access' if the fav search is added in old oEQ versions,
+    // which results in "no tree for xxx" error. Hence, remove "/access" if it exists.
+    if (path.startsWith(WebConstants.ACCESS_PATH)
+        && StringUtils.indexOfAny(
+                path,
+                new String[] {
+                  WebConstants.SEARCHING_PAGE,
+                  WebConstants.HIERARCHY_PAGE,
+                  WebConstants.CLOUDSEARCH_PAGE
+                })
+            > -1) {
+      path = "/" + path.replaceFirst(WebConstants.ACCESS_PATH, "");
+    }
+    SectionInfo forward = info.createForwardForUri(path);
+    info.forwardAsBookmark(forward);
   }
 
   @Override

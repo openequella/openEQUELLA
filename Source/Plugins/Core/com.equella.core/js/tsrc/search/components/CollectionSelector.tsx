@@ -18,10 +18,11 @@
 import { Checkbox, TextField } from "@material-ui/core";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
-import { Autocomplete } from "@material-ui/lab";
+import { Autocomplete, AutocompleteGetTagProps } from "@material-ui/lab";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useEffect, useState } from "react";
+import { TooltipChip } from "../../components/TooltipChip";
 import {
   Collection,
   collectionListSummary,
@@ -69,8 +70,21 @@ export const CollectionSelector = ({
   return (
     <Autocomplete
       multiple
-      fullWidth
       limitTags={2}
+      renderTags={(
+        collections: Collection[],
+        getTagProps: AutocompleteGetTagProps
+      ) =>
+        collections.map((collection: Collection, index: number) => (
+          <TooltipChip
+            key={collection.uuid}
+            id={`collectionChip-${collection.uuid}`}
+            title={collection.name}
+            maxWidth={200}
+            tagProps={getTagProps({ index })}
+          />
+        ))
+      }
       onChange={(_, value: Collection[]) => {
         onSelectionChange(value);
       }}

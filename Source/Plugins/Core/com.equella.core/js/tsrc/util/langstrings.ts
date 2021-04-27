@@ -49,7 +49,7 @@ export function formatSize(size: number, strings: Sizes): string {
   return sprintf(format, size);
 }
 
-interface LanguageStrings {
+export interface LanguageStrings {
   [key: string]: string | LanguageStrings;
 }
 
@@ -325,14 +325,17 @@ export const languageStrings = {
     noResultsFound: "No results found.",
     refineTitle: "Refine search",
     modifiedDate: "Modified",
-    rawSearch: "Raw search",
-    rawSearchEnabledPlaceholder: "Search (raw mode)",
-    rawSearchDisabledPlaceholder: "Search",
-    rawSearchTooltip: "Supports use of Apache Lucene search syntax",
+    wildcardSearch: "Wildcard search",
     newSearch: "New search",
     newSearchHelperText: "Clears search text and filters",
     shareSearchHelperText: "Copy search link to clipboard",
     shareSearchConfirmationText: "Search link saved to clipboard",
+    displayModeSelector: {
+      title: "Display mode",
+      modeItemList: "Item List",
+      modeGalleryImage: "Image Gallery",
+      modeGalleryVideo: "Video Gallery",
+    },
     collectionSelector: {
       title: "Collections",
     },
@@ -350,6 +353,39 @@ export const languageStrings = {
     categorySelector: {
       title: "Classifications",
     },
+    export: {
+      collectionLimit: "Download limited to one collection.",
+      exportCompleted: "File downloaded",
+      title: "Download search result to a CSV file",
+      errorMessages: {
+        badRequest:
+          "Export failed due to the server indicating the request was invalid.",
+        unauthorised: "Sorry, you are not authorised to export this search.",
+        notFound: "Failed to find details to export this search.",
+      },
+    },
+    favouriteItem: {
+      removeAlert: "Are you sure you want to remove from your favourites?",
+      tags: {
+        description: "Tags to help when searching (optional).",
+        selectVersion: "Select version to add:",
+        toThisVersion:
+          "NOTE: Adding this favourite will point to this version forever.",
+        versionOptions: {
+          useLatestVersion: "Always use latest version",
+          useThisVersion: "This version",
+        },
+      },
+      title: {
+        add: "Add to favourites",
+        remove: "Remove from favourites",
+      },
+    },
+    favouriteSearch: {
+      saveSearchConfirmationText: "Search added to favourites",
+      text: "Please enter a name for this search",
+      title: "Add search to favourites",
+    },
     filterOwner: {
       title: "Owner",
       chip: "Owner: ",
@@ -361,6 +397,10 @@ export const languageStrings = {
       startDatePicker: "Modified after",
       endDatePicker: "Modified before",
       quickOptionDropdown: "Last modified date",
+    },
+    mimeTypeFilterSelector: {
+      title: "Filter by Attachment type",
+      helperText: "Attachment types",
     },
     order: {
       relevance: "Relevance",
@@ -388,14 +428,21 @@ export const languageStrings = {
     searchAttachmentsSelector: {
       title: "Search attachments",
     },
+    searchBarPlaceholder: "Search",
     searchResult: {
+      ariaLabel: "Search result list item",
       attachments: "Attachments",
       dateModified: "Modified",
+      attachmentLink: "Attachment link",
       keywordFoundInAttachment: "Search term found in attachment content",
       errors: {
         getAttachmentViewerDetailsFailure:
           "Failed to get attachment viewer details",
       },
+    },
+    gallerySearchResult: {
+      ariaLabel: "Search result gallery item",
+      viewItem: "View item",
     },
     statusSelector: {
       all: "All",
@@ -621,5 +668,15 @@ export const languageStrings = {
   },
   lightboxComponent: {
     unsupportedContent: "Provided content is not supported",
+    viewNext: "View next attachment",
+    viewPrevious: "View previous attachment",
+    youTubeVideoMissingId: "The provided YouTube video is missing a video ID",
+  },
+  fileUploader: {
+    noFileSelected: "No attached resources",
+    failedToDelete: "Failed to delete '%s' due to error: %s",
+  },
+  youTubePlayer: {
+    title: "YouTube video player",
   },
 };

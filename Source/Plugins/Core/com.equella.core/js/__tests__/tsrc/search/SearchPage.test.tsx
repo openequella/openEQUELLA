@@ -15,11 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createMuiTheme, MuiThemeProvider } from "@material-ui/core";
+import type { Theme } from "@material-ui/core/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
 import {
   fireEvent,
+  getByLabelText,
   getByText,
+  queryByLabelText,
   render,
   RenderResult,
   screen,
@@ -32,22 +36,31 @@ import { act } from "react-dom/test-utils";
 import { Router } from "react-router-dom";
 import { getAdvancedSearchesFromServerResult } from "../../../__mocks__/AdvancedSearchModule.mock";
 import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock";
+import {
+  transformedBasicImageSearchResponse,
+  transformedBasicVideoSearchResponse,
+} from "../../../__mocks__/GallerySearchModule.mock";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
+import { getMimeTypeFilters } from "../../../__mocks__/MimeTypeFilter.mock";
 import { getRemoteSearchesFromServerResult } from "../../../__mocks__/RemoteSearchModule.mock";
 import {
   getEmptySearchResult,
   getSearchResult,
   getSearchResultsCustom,
 } from "../../../__mocks__/SearchResult.mock";
+import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
 import * as AdvancedSearchModule from "../../../tsrc/modules/AdvancedSearchModule";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import { Collection } from "../../../tsrc/modules/CollectionsModule";
+import * as FavouriteModule from "../../../tsrc/modules/FavouriteModule";
+import * as GallerySearchModule from "../../../tsrc/modules/GallerySearchModule";
 import { getGlobalCourseList } from "../../../tsrc/modules/LegacySelectionSessionModule";
 import * as MimeTypesModule from "../../../tsrc/modules/MimeTypesModule";
 import * as RemoteSearchModule from "../../../tsrc/modules/RemoteSearchModule";
 import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchFacetsModule from "../../../tsrc/modules/SearchFacetsModule";
+import * as SearchFilterSettingsModule from "../../../tsrc/modules/SearchFilterSettingsModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import {
   liveStatuses,
@@ -60,6 +73,7 @@ import { languageStrings } from "../../../tsrc/util/langstrings";
 import { updateMockGetBaseUrl } from "../BaseUrlHelper";
 import { queryPaginatorControls } from "../components/SearchPaginationTestHelper";
 import { updateMockGlobalCourseList } from "../CourseListHelper";
+import { getMuiButtonByText, getMuiTextField } from "../MuiQueries";
 import { selectOption } from "../MuiTestHelpers";
 import { basicRenderData, updateMockGetRenderData } from "../RenderDataHelper";
 import {
@@ -68,6 +82,7 @@ import {
 } from "./components/OwnerSelectTestHelpers";
 import {
   getRefineSearchComponent,
+  getRefineSearchPanel,
   queryCollectionSelector,
   queryDateRangeSelector,
   queryOwnerSelector,
@@ -75,13 +90,33 @@ import {
   queryStatusSelector,
 } from "./SearchPageHelper";
 
+const defaultTheme = createMuiTheme({
+  props: { MuiWithWidth: { initialWidth: "md" } },
+});
 const mockCollections = jest.spyOn(CollectionsModule, "collectionListSummary");
 const mockListUsers = jest.spyOn(UserModule, "listUsers");
+const mockCurrentUser = jest.spyOn(UserModule, "getCurrentUserDetails");
 const mockListClassification = jest.spyOn(
   SearchFacetsModule,
   "listClassifications"
 );
 const mockSearch = jest.spyOn(SearchModule, "searchItems");
+const mockImageGallerySearch = jest.spyOn(
+  GallerySearchModule,
+  "imageGallerySearch"
+);
+const mockVideoGallerySearch = jest.spyOn(
+  GallerySearchModule,
+  "videoGallerySearch"
+);
+const mockListImageGalleryClassifications = jest.spyOn(
+  GallerySearchModule,
+  "listImageGalleryClassifications"
+);
+const mockListVideoGalleryClassifications = jest.spyOn(
+  GallerySearchModule,
+  "listVideoGalleryClassifications"
+);
 const mockSearchSettings = jest.spyOn(
   SearchSettingsModule,
   "getSearchSettingsFromServer"
@@ -90,6 +125,11 @@ const mockConvertParamsToSearchOptions = jest.spyOn(
   SearchModule,
   "queryStringParamsToSearchOptions"
 );
+
+const mockMimeTypeFilters = jest
+  .spyOn(SearchFilterSettingsModule, "getMimeTypeFiltersFromServer")
+  .mockResolvedValue(getMimeTypeFilters);
+
 //i tried mocking this using window.navigator.clipboard.writeText = jest.fn(), but the navigator object is undefined
 Object.assign(navigator, {
   clipboard: {
@@ -104,6 +144,7 @@ const searchSettingPromise = mockSearchSettings.mockResolvedValue(
 const searchPromise = mockSearch.mockResolvedValue(getSearchResult);
 mockCollections.mockResolvedValue(getCollectionMap);
 mockListUsers.mockResolvedValue(UserSearchMock.users);
+mockCurrentUser.mockResolvedValue(getCurrentUserMock);
 mockListClassification.mockResolvedValue(CategorySelectorMock.classifications);
 
 // Mock out a collaborator of SearchResult
@@ -123,14 +164,33 @@ jest
   .spyOn(AdvancedSearchModule, "getAdvancedSearchesFromServer")
   .mockResolvedValue(getAdvancedSearchesFromServerResult);
 
+jest.spyOn(FavouriteModule, "addFavouriteItem").mockResolvedValue({
+  itemID: "abc",
+  keywords: ["a", "b"],
+  isAlwaysLatest: true,
+  bookmarkID: 456,
+});
+
+jest.spyOn(FavouriteModule, "deleteFavouriteItem").mockResolvedValue();
+
+jest.spyOn(FavouriteModule, "addFavouriteSearch").mockResolvedValue({
+  id: 123,
+  name: "test",
+  url:
+    "/page/search?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RATING%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22crab%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D",
+});
+
 const defaultSearchPageOptions: SearchPageOptions = {
   ...SearchModule.defaultSearchOptions,
   sortOrder: "RANK",
   dateRangeQuickModeEnabled: true,
+  mimeTypeFilters: [],
+  displayMode: "list",
 };
 const defaultCollectionPrivileges = [OEQ.Acl.ACL_SEARCH_COLLECTION];
 
 const SORTORDER_SELECT_ID = "#sort-order-select";
+
 /**
  * Simple helper to wrap the process of waiting for the execution of a search based on checking the
  * `searchPromise`. Being that it is abstracted out, in the future could change as needed to be
@@ -148,7 +208,8 @@ const waitForSearch = async () =>
  * @returns The RenderResult from the `render` of the `<SearchPage>`
  */
 const renderSearchPage = async (
-  queryString?: string
+  queryString?: string,
+  theme: Theme = defaultTheme
 ): Promise<RenderResult> => {
   window.history.replaceState({}, "Clean history state");
   const history = createMemoryHistory();
@@ -156,23 +217,16 @@ const renderSearchPage = async (
   history.push({});
 
   const page = render(
-    <Router history={history}>
-      <SearchPage updateTemplate={jest.fn()} />{" "}
-    </Router>
+    <MuiThemeProvider theme={theme}>
+      <Router history={history}>
+        <SearchPage updateTemplate={jest.fn()} />
+      </Router>
+    </MuiThemeProvider>
   );
   // Wait for the first completion of initial search
   await waitForSearch();
 
   return page;
-};
-
-/**
- * Helper function to unmount current Search page and re-render Search page.
- * @param page Current Search page.
- */
-const reRenderSearchPage = async (page: RenderResult) => {
-  page.unmount();
-  return await renderSearchPage();
 };
 
 const getQueryBar = (container: Element): HTMLElement => {
@@ -187,17 +241,17 @@ const getQueryBar = (container: Element): HTMLElement => {
 const changeQuery = async (
   container: Element,
   query: string,
-  rawMode?: boolean
+  wildcardMode: boolean = true
 ) => {
   // We will change the debounced query so use fake timer here.
   jest.useFakeTimers("modern");
   // Change search options now.
-  if (rawMode) {
-    const rawModeSwitch = container.querySelector("#rawSearch");
-    if (!rawModeSwitch) {
+  if (!wildcardMode) {
+    const wildcardModeSwitch = container.querySelector("#wildcardSearch");
+    if (!wildcardModeSwitch) {
       throw new Error("Failed to find the raw mode switch!");
     }
-    userEvent.click(rawModeSwitch);
+    userEvent.click(wildcardModeSwitch);
   }
   const _queryBar = () => getQueryBar(container);
   // Would be nice to replace this with a userEvent.type like:
@@ -213,6 +267,11 @@ const changeQuery = async (
 const clickCategory = (container: HTMLElement, category: string) => {
   userEvent.click(getByText(container, category));
 };
+
+const queryMimeTypesSelector = (page: RenderResult) =>
+  page.queryByLabelText(
+    languageStrings.searchpage.mimeTypeFilterSelector.helperText
+  );
 
 describe("Refine search by searching attachments", () => {
   let page: RenderResult;
@@ -360,6 +419,28 @@ describe("Refine search by Owner", () => {
   });
 });
 
+describe("Refine search by MIME type filters", () => {
+  it("supports multiple filters", async () => {
+    const filters = getMimeTypeFilters;
+    const page = await renderSearchPage();
+    userEvent.click(
+      page.getByLabelText(
+        languageStrings.searchpage.mimeTypeFilterSelector.helperText
+      )
+    );
+    filters.forEach((filter) => {
+      userEvent.click(screen.getByText(filter.name));
+    });
+    await waitForSearch();
+    expect(SearchModule.searchItems).toHaveBeenLastCalledWith({
+      ...defaultSearchPageOptions,
+      // @ts-ignore IntelliJ complains about missing flatMap - but works fine everywhere else
+      mimeTypes: filters.flatMap((f) => f.mimeTypes),
+      mimeTypeFilters: filters,
+    });
+  });
+});
+
 describe("Collapsible refine filter section", () => {
   let page: RenderResult;
   beforeEach(async () => {
@@ -371,11 +452,7 @@ describe("Collapsible refine filter section", () => {
   });
 
   it("Should contain the correct controls", async () => {
-    const refineSearchPanel = page.getByText("Refine search").closest("div");
-    if (!refineSearchPanel) {
-      throw new Error("Unable to find refine search panel");
-    }
-
+    const refineSearchPanel = getRefineSearchPanel(page.container);
     const collapsibleSection = refineSearchPanel.querySelector(
       ".collapsibleRefinePanel"
     );
@@ -414,70 +491,51 @@ describe("Collapsible refine filter section", () => {
 });
 
 describe("Hide Refine Search controls", () => {
-  let page: RenderResult;
-  beforeEach(async () => {
-    page = await renderSearchPage();
-  });
-
   afterEach(() => {
     jest.clearAllMocks();
   });
-
-  const _queryOwnerSelector = () => queryOwnerSelector(page.container);
-  const _queryDateSelector = () => queryDateRangeSelector(page.container);
-  const _queryStatusSelector = () => queryStatusSelector(page.container);
-  const disableDateSelector = {
-    ...SearchSettingsModule.defaultSearchSettings,
-    searchingDisableDateModifiedFilter: true,
-  };
-  const disableOwnerSelector = {
-    ...SearchSettingsModule.defaultSearchSettings,
-    searchingDisableOwnerFilter: true,
-  };
-  const enableStatusSelector = {
-    ...SearchSettingsModule.defaultSearchSettings,
-    searchingShowNonLiveCheckbox: true,
-  };
 
   it.each([
     // Reuse default Search settings as disableStatusSelector, enableOwnerSelector and enableDateSelector.
     [
       "Owner Selector",
-      _queryOwnerSelector,
-      disableOwnerSelector,
-      SearchSettingsModule.defaultSearchSettings,
+      (container: HTMLElement) => queryOwnerSelector(container),
+      {
+        ...SearchSettingsModule.defaultSearchSettings,
+        searchingDisableOwnerFilter: true,
+      },
     ],
     [
       "Date Selector",
-      _queryDateSelector,
-      disableDateSelector,
-      SearchSettingsModule.defaultSearchSettings,
+      (container: HTMLElement) => queryDateRangeSelector(container),
+      {
+        ...SearchSettingsModule.defaultSearchSettings,
+        searchingDisableDateModifiedFilter: true,
+      },
     ],
     [
       "Status Selector",
-      _queryStatusSelector,
+      (container: HTMLElement) => queryStatusSelector(container),
       SearchSettingsModule.defaultSearchSettings,
-      enableStatusSelector,
     ],
   ])(
     "should be possible to disable %s",
     async (
       testName: string,
-      getSelector: () => HTMLElement | null,
-      disableSelector: SearchSettingsModule.SearchSettings,
-      enableSelector: SearchSettingsModule.SearchSettings
+      getSelector: (container: HTMLElement) => HTMLElement | null,
+      disableSelector: OEQ.SearchSettings.Settings
     ) => {
-      // Explicitly enable selectors.
-      searchSettingPromise.mockResolvedValueOnce(enableSelector);
-      page = await reRenderSearchPage(page);
-      expect(getSelector()).toBeInTheDocument();
-      // Now disable them and re-render the page.
-      searchSettingPromise.mockResolvedValueOnce(disableSelector);
-      page = await reRenderSearchPage(page);
-      // They should disappear.
-      expect(getSelector()).toBeNull();
+      mockSearchSettings.mockResolvedValueOnce(disableSelector);
+      const page = await renderSearchPage();
+      expect(getSelector(page.container)).toBeNull();
     }
   );
+
+  it("If not MIME type filters are available, the selector should be hidden", async () => {
+    mockMimeTypeFilters.mockResolvedValueOnce([]);
+    const page = await renderSearchPage();
+    expect(queryMimeTypesSelector(page)).not.toBeInTheDocument();
+  });
 });
 
 describe("<SearchPage/>", () => {
@@ -642,16 +700,16 @@ describe("<SearchPage/>", () => {
     });
   });
 
-  it("sends the query as-is when in raw search mode", async () => {
+  it("sends the query as-is when in non-wildcard search mode", async () => {
     // When a raw mode search is done
-    await changeQuery(page.container, "raw search test", true);
+    await changeQuery(page.container, "non-wildcard search test", false);
     await waitForSearch();
 
     // assert that the query was passed in as-is
     expect(SearchModule.searchItems).toHaveBeenLastCalledWith({
       ...defaultSearchPageOptions,
       rawMode: true,
-      query: "raw search test",
+      query: "non-wildcard search test",
     });
     // There should be three calls:
     // 1. The initial call on component mount
@@ -719,7 +777,7 @@ describe("<SearchPage/>", () => {
       1
     );
     expect(mockClipboard).toHaveBeenCalledWith(
-      "/?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RANK%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D"
+      "/?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RANK%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22displayMode%22%3A%22list%22%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D"
     );
     expect(
       screen.getByText(languageStrings.searchpage.shareSearchConfirmationText)
@@ -774,9 +832,268 @@ describe("In Selection Session", () => {
   it("should not show the share search button", async () => {
     updateMockGetRenderData(basicRenderData);
     mockSearch.mockResolvedValue(getSearchResult);
-    const copySearchButton = screen.queryByTitle(
+    const { queryByTitle } = await renderSearchPage();
+
+    const copySearchButton = queryByTitle(
       languageStrings.searchpage.shareSearchHelperText
     );
     expect(copySearchButton).not.toBeInTheDocument();
+  });
+});
+
+describe("Responsiveness", () => {
+  const theme = createMuiTheme({
+    props: { MuiWithWidth: { initialWidth: "sm" } },
+  });
+
+  // We can query the Refine Search Panel as it always exists in the Side Panel.
+  const querySidePanel = (page: RenderResult) =>
+    page.queryByText(languageStrings.searchpage.refineSearchPanel.title);
+  let page: RenderResult;
+
+  beforeEach(async () => {
+    page = await renderSearchPage(undefined, theme);
+  });
+
+  it("should hide the side panel in small screens", async () => {
+    expect(querySidePanel(page)).not.toBeInTheDocument();
+  });
+
+  it("should display the button controlling the side panel visibility", async () => {
+    const refineSearchButton = page.queryByTitle(
+      languageStrings.searchpage.refineSearchPanel.title
+    );
+    expect(refineSearchButton).toBeInTheDocument();
+    await act(async () => {
+      // Put this click in an act because it will update some components' state.
+      await userEvent.click(refineSearchButton!); // It's safe to add a '!' now.
+    });
+    expect(querySidePanel(page)).toBeInTheDocument();
+  });
+});
+
+describe("Add and remove favourite Item,", () => {
+  const { add, remove } = languageStrings.searchpage.favouriteItem.title;
+  let page: RenderResult;
+
+  beforeEach(async () => {
+    page = await renderSearchPage();
+  });
+
+  it.each([
+    // The mocked search result has two Items named "a" and "b" so let's use them.
+    [add, remove, "a"],
+    [remove, add, "b"],
+  ])(
+    "shows FavouriteItemDialog to %s",
+    async (defaultIcon, updatedIcon, itemName: string) => {
+      const searchResultItem = page
+        .getByText(itemName, { selector: "a" })
+        .closest("li");
+      if (!searchResultItem) {
+        throw new Error("Failed to find the mocked search result Item.");
+      }
+      const heartIcon = getByLabelText(searchResultItem, defaultIcon, {
+        selector: "button",
+      });
+      userEvent.click(heartIcon);
+
+      const dialog = page.getByRole("dialog");
+      const confirmBtn = dialog.querySelector("#confirm-dialog-confirm-button");
+      if (!confirmBtn) {
+        throw new Error("Failed to find confirm button.");
+      }
+
+      await act(async () => {
+        await userEvent.click(confirmBtn);
+      });
+      // Now a different Heart Icon should be used.
+      const updatedHeartIcon = queryByLabelText(searchResultItem, updatedIcon, {
+        selector: "button",
+      });
+      expect(updatedHeartIcon).toBeInTheDocument();
+    }
+  );
+});
+
+describe("Add favourite search", () => {
+  it("shows FavouriteSearchDialog to add a favourite search", async () => {
+    const page = await renderSearchPage();
+    const heartIcon = getByLabelText(
+      page.container,
+      languageStrings.searchpage.favouriteSearch.title,
+      {
+        selector: "button",
+      }
+    );
+    userEvent.click(heartIcon);
+
+    const dialog = page.getByRole("dialog");
+    const searchNameInput = getMuiTextField(
+      dialog,
+      languageStrings.searchpage.favouriteSearch.text
+    );
+    userEvent.type(searchNameInput, "test");
+    const confirmButton = getMuiButtonByText(
+      dialog,
+      languageStrings.common.action.ok
+    );
+    await act(async () => {
+      await userEvent.click(confirmButton);
+    });
+
+    expect(
+      screen.getByText(
+        languageStrings.searchpage.favouriteSearch.saveSearchConfirmationText
+      )
+    ).toBeInTheDocument();
+  });
+});
+
+describe("Changing display mode", () => {
+  const {
+    modeGalleryImage,
+    modeGalleryVideo,
+    modeItemList,
+  } = languageStrings.searchpage.displayModeSelector;
+  const {
+    searchResult: { ariaLabel: listItemAriaLabel },
+    gallerySearchResult: { ariaLabel: galleryItemAriaLabel },
+  } = languageStrings.searchpage;
+
+  let page: RenderResult;
+
+  const queryListItems = () => page.queryAllByLabelText(listItemAriaLabel);
+
+  const queryGalleryItems = () =>
+    page.queryAllByLabelText(galleryItemAriaLabel);
+
+  const isChecked = (label: string): boolean => {
+    const button = page.getByLabelText(label);
+    const checkedState = button.getAttribute("aria-checked");
+    return (
+      checkedState === "true" &&
+      button.classList.contains("MuiButton-contained")
+    );
+  };
+
+  const changeMode = async (mode: string) => {
+    await act(async () => {
+      await userEvent.click(page.getByLabelText(mode));
+    });
+    expect(isChecked(mode)).toBeTruthy();
+  };
+
+  beforeEach(async () => {
+    page = await renderSearchPage();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("has a default of item list mode", async () => {
+    // Check that the button is visually correct
+    expect(isChecked(modeItemList)).toBeTruthy();
+
+    // Check that it's all wired up correctly - i.e. no mime types were passed to the search
+    expect(mockSearch).toHaveBeenLastCalledWith(defaultSearchPageOptions);
+
+    // And lastly check that it was a item list display - not a gallery
+    expect(queryListItems().length).toBeGreaterThan(0);
+  });
+
+  it.each([
+    [
+      modeGalleryImage,
+      mockImageGallerySearch,
+      mockListImageGalleryClassifications,
+      transformedBasicImageSearchResponse,
+    ],
+    [
+      modeGalleryVideo,
+      mockVideoGallerySearch,
+      mockListVideoGalleryClassifications,
+      transformedBasicVideoSearchResponse,
+    ],
+  ])(
+    "supports changing mode - [%s]",
+    async (mode: string, gallerySearch, listClassifications, mockResponse) => {
+      expect(queryListItems().length).toBeGreaterThan(0);
+      expect(queryGalleryItems()).toHaveLength(0);
+
+      // Monitor the search and classifications functions, and change the mode
+      await Promise.all([
+        gallerySearch.mockResolvedValue(mockResponse),
+        listClassifications.mockResolvedValue(
+          CategorySelectorMock.classifications
+        ),
+        changeMode(mode),
+      ]);
+
+      // Make sure the search has been triggered
+      expect(gallerySearch).toHaveBeenCalledTimes(1);
+      expect(listClassifications).toHaveBeenCalledTimes(1);
+
+      // And now check the visual change
+      expect(queryGalleryItems().length).toBeGreaterThan(0);
+      expect(queryListItems()).toHaveLength(0);
+      expect(queryMimeTypesSelector(page)).not.toBeInTheDocument();
+    }
+  );
+});
+
+describe("Export search result", () => {
+  let page: RenderResult;
+  beforeEach(async () => {
+    page = await renderSearchPage();
+  });
+
+  const selectCollections = async (...collectionNames: string[]) => {
+    userEvent.click(
+      page.getByLabelText(languageStrings.searchpage.collectionSelector.title)
+    );
+    for (const name of collectionNames) {
+      await act(async () => {
+        await userEvent.click(screen.getByText(name));
+      });
+    }
+  };
+
+  const getDownloadButton = () =>
+    page.getByLabelText(languageStrings.searchpage.export.title);
+
+  it("shows a Download Icon button to allow exporting", async () => {
+    await selectCollections(getCollectionMap[0].name);
+    expect(
+      page.queryByLabelText(languageStrings.searchpage.export.title)
+    ).toBeInTheDocument();
+  });
+
+  it.each([
+    ["zero", []],
+    ["more than one", getCollectionMap.slice(0, 2).map((c) => c.name)],
+  ])(
+    "disables export if %s collection is selected",
+    async (collectionNumber: string, collections: string[]) => {
+      await selectCollections(...collections);
+      userEvent.click(getDownloadButton());
+      expect(
+        screen.getByText(languageStrings.searchpage.export.collectionLimit)
+      ).toBeInTheDocument();
+    }
+  );
+
+  it("doesn't show the Download button if user have no permission", async () => {
+    // Remove previously rendered result so that we can mock the current user details.
+    page.unmount();
+    mockCurrentUser.mockResolvedValueOnce({
+      ...getCurrentUserMock,
+      canDownloadSearchResult: false,
+    });
+    const { queryByLabelText } = await renderSearchPage();
+    expect(
+      queryByLabelText(languageStrings.searchpage.export.title)
+    ).not.toBeInTheDocument();
   });
 });

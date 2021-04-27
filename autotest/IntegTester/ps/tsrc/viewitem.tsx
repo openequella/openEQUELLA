@@ -45,11 +45,11 @@ function ViewItem({ query: q }: ViewItemProps) {
 }
 
 ReactDOM.render(
-  <>
+  <React.Fragment>
     <CssBaseline />
     <ThemeProvider theme={theme}>
       <ViewItem query={postValues} />
     </ThemeProvider>
-  </>,
+  </React.Fragment>,
   document.getElementById("app")
 );

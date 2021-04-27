@@ -182,7 +182,7 @@ public final class PrivilegeTree {
     private final boolean virtual;
     private final int overridePriority;
 
-    private Node(boolean virtual, int overridePriority) {
+    Node(boolean virtual, int overridePriority) {
       this.virtual = virtual;
       this.overridePriority = overridePriority;
     }
@@ -418,6 +418,7 @@ public final class PrivilegeTree {
     PrivilegeNode itemDefinition = itemDefinitions.getChildren().get(0);
     itemDefinition.registerPrivilege("SEARCH_COLLECTION");
     itemDefinition.registerPrivilege("CREATE_ITEM");
+    itemDefinition.registerPrivilege(SecurityConstants.EXPORT_SEARCH_RESULT);
     itemDefinition.getChildren().add(itemStatus);
     itemDefinition.getChildren().add(itemMetadata);
 

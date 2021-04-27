@@ -31,11 +31,11 @@ const theme = createMuiTheme({
 });
 
 ReactDOM.render(
-  <>
+  <React.Fragment>
     <CssBaseline />
     <ThemeProvider theme={theme}>
       <UpdateRegistration />
     </ThemeProvider>
-  </>,
+  </React.Fragment>,
   document.getElementById("app")
 );

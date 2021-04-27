@@ -171,11 +171,11 @@ function CloudProvider({ query }: CloudProviderProps) {
 }
 
 ReactDOM.render(
-  <>
+  <React.Fragment>
     <CssBaseline />
     <ThemeProvider theme={theme}>
       <CloudProvider query={parse(window.location.search)} />
     </ThemeProvider>
-  </>,
+  </React.Fragment>,
   document.getElementById("app")
 );

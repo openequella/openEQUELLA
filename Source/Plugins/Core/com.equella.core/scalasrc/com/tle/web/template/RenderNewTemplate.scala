@@ -99,6 +99,11 @@ object RenderNewTemplate {
       .enabled
   }
 
+  // Check if the viewing a resource via integration.
+  def isViewingItemFromIntegration(req: HttpServletRequest): Boolean = {
+    req.getServletPath == "/integ" && req.getPathInfo.startsWith("/gen/")
+  }
+
   // Check if new Search page is enabled.
   def isNewSearchPageEnabled: Boolean = {
     RunWithDB
@@ -209,7 +214,9 @@ object RenderNewTemplate {
         "newSearch",
         java.lang.Boolean.valueOf(isNewSearchPageEnabled),
         "selectionSessionInfo",
-        getSelectionSessionInfo(context).orNull
+        getSelectionSessionInfo(context).orNull,
+        "viewedFromIntegration",
+        java.lang.Boolean.valueOf(isViewingItemFromIntegration(req))
       )
     val renderData =
       Option(req.getAttribute(SetupJSKey).asInstanceOf[ObjectExpression => ObjectExpression])

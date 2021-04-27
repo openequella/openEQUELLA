@@ -17,8 +17,6 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
-import { getRenderData } from "../AppConfig";
-import HtmlParser from "react-html-parser";
 import {
   BrowserRouter,
   Prompt,
@@ -29,19 +27,19 @@ import {
 } from "react-router-dom";
 import { shallowEqual } from "shallow-equal-object";
 import { ErrorResponse } from "../api/errors";
-import {
-  LegacyContent,
-  LegacyContentProps,
-  PageContent,
-} from "../legacycontent/LegacyContent";
-import { LegacyForm } from "../legacycontent/LegacyForm";
+import { getRenderData } from "../AppConfig";
+import { LegacyContent } from "../legacycontent/LegacyContent";
 
 import { getCurrentUserDetails } from "../modules/UserModule";
 import { basePath } from "./App";
 import ErrorPage from "./ErrorPage";
-import { LegacyPage, templatePropsForLegacy } from "./LegacyPage";
 import { defaultNavMessage, NavAwayDialog } from "./PreventNavigation";
-import { OEQRoute, OEQRouteComponentProps, routes } from "./routes";
+import {
+  BaseOEQRouteComponentProps,
+  isNewUIRoute,
+  OEQRouteNewUI,
+  routes,
+} from "./routes";
 import { Template, TemplateProps, TemplateUpdate } from "./Template";
 
 const SearchPage = React.lazy(() => import("../search/SearchPage"));
@@ -65,7 +63,7 @@ export default function IndexPage() {
     getCurrentUserDetails().then(setCurrentUser);
   }, []);
 
-  React.useEffect(() => refreshUser(), []);
+  React.useEffect(() => refreshUser(), [refreshUser]);
 
   const [navAwayCallback, setNavAwayCallback] = React.useState<{
     message: string;
@@ -73,23 +71,10 @@ export default function IndexPage() {
   }>();
 
   const [preventNavMessage, setPreventNavMessage] = React.useState<string>();
-  const [
-    legacyContentProps,
-    setLegacyContentProps,
-  ] = React.useState<LegacyContentProps>({
-    enabled: false,
-    pathname: "",
-    search: "",
-    locationKey: "",
-    userUpdated: refreshUser,
-    redirected: () => {},
-    onError: () => {},
-    render: () => <div />,
-  });
 
   const [templateProps, setTemplateProps] = React.useState<TemplateProps>({
     title: "",
-    fullscreenMode: "YES",
+    fullscreenMode: "NO", // Match default on the server to avoid superfluous template updates
     children: [],
   });
 
@@ -114,33 +99,32 @@ export default function IndexPage() {
       return shallowEqual(edited, tp) ? tp : edited;
     });
   }, []);
-  interface Routes {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [key: string]: OEQRoute<any>;
-  }
-  const oeqRoutes: Routes = routes;
 
-  function mkRouteProps<T>(
-    p: RouteComponentProps<T>
-  ): OEQRouteComponentProps<T> {
-    return {
+  const mkRouteProps = React.useCallback(
+    (p: RouteComponentProps): BaseOEQRouteComponentProps => ({
       ...p,
       updateTemplate,
       refreshUser,
       redirect: p.history.push,
       setPreventNavigation,
       isReloadNeeded: !renderData?.newUI, // Indicate that new UI is displayed but not enabled.
-    };
-  }
+    }),
+    [refreshUser, setPreventNavigation, updateTemplate]
+  );
 
-  const newUIRoutes = React.useMemo(() => {
-    return Object.keys(oeqRoutes).map((key, ind) => {
-      const oeqRoute = oeqRoutes[key];
-      return (
-        (oeqRoute.component || oeqRoute.render) && (
+  const newUIRoutes = React.useMemo(
+    () =>
+      Object.keys(routes)
+        .map<OEQRouteNewUI | undefined>((name) => {
+          // @ts-ignore:  Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Routes'
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const maybeRoute: any = routes[name];
+          return isNewUIRoute(maybeRoute) ? maybeRoute : undefined;
+        })
+        .filter((maybeRoute): maybeRoute is OEQRouteNewUI => !!maybeRoute)
+        .map((oeqRoute: OEQRouteNewUI, ind) => (
           <Route
             key={ind}
-            exact={oeqRoute.exact}
             path={oeqRoute.path}
             render={(p) => {
               const oeqProps = mkRouteProps(p);
@@ -150,18 +134,17 @@ export default function IndexPage() {
               return oeqRoute.render?.(oeqProps);
             }}
           />
-        )
-      );
-    });
-  }, [refreshUser]);
+        )),
+    [mkRouteProps]
+  );
 
-  const errorCallback = React.useCallback((err) => {
+  const errorCallback = React.useCallback((err: ErrorResponse) => {
     errorShowing.current = true;
     setTemplateProps((p) => ({ ...p, fullscreenMode: undefined }));
     setFullPageError(err);
   }, []);
 
-  const routeSwitch = (content?: PageContent) => {
+  const routeSwitch = () => {
     const oldSearchPagePath = "/searching.do";
     const newSearchPagePath = "/page/search";
 
@@ -193,7 +176,7 @@ export default function IndexPage() {
         currentParams.get("in")?.startsWith("P") ?? false;
       const advancedSearchRequested: boolean =
         currentPath.endsWith(oldSearchPagePath) && advancedSearchParamsPresent;
-      // TODO: Before we release 2020.2 this can be removed, as the 'newSearch' toggle wil be removed
+      // TODO: Before we release 2021.1 this can be removed, as the 'newSearch' toggle will be removed
       const newSearchEnabled: boolean =
         typeof renderData !== "undefined" && renderData?.newSearch;
 
@@ -203,13 +186,17 @@ export default function IndexPage() {
       );
     };
 
-    const renderLegacyPage = (p: RouteComponentProps) => (
-      <LegacyPage
-        {...mkRouteProps(p)}
-        errorCallback={errorCallback}
-        legacyContent={{ content, setLegacyContentProps }}
-      />
-    );
+    const renderLegacyContent = (p: RouteComponentProps) => {
+      return (
+        <LegacyContent
+          {...mkRouteProps(p)}
+          search={p.location.search}
+          pathname={p.location.pathname}
+          locationKey={p.location.key}
+          onError={errorCallback}
+        />
+      );
+    };
 
     return (
       <Switch>
@@ -228,11 +215,11 @@ export default function IndexPage() {
             newOrOldSearch(window.location) ? (
               <SearchPage {...mkRouteProps(p)} />
             ) : (
-              renderLegacyPage(p)
+              renderLegacyContent(p)
             )
           }
         />
-        <Route render={renderLegacyPage} />
+        <Route render={renderLegacyContent} />
       </Switch>
     );
   };
@@ -263,41 +250,9 @@ export default function IndexPage() {
           setNavAwayCallback(undefined);
         }}
       />
-      <LegacyContent
-        {...legacyContentProps}
-        render={(content) => {
-          const tp = content
-            ? templatePropsForLegacy(content)
-            : {
-                ...templateProps,
-                fullscreenMode: legacyContentProps.enabled
-                  ? templateProps.fullscreenMode
-                  : undefined,
-              };
-          const withErr = fullPageError
-            ? { ...tp, title: fullPageError.error, fullscreenMode: undefined }
-            : tp;
-          const template = (
-            <Template {...withErr} currentUser={currentUser}>
-              {routeSwitch(content)}
-            </Template>
-          );
-          const render = () => {
-            if (!content || content.noForm) {
-              return template;
-            } else {
-              const { form } = content.html;
-              return (
-                <>
-                  <LegacyForm state={content.state}>{template}</LegacyForm>
-                  {form && HtmlParser(form)}
-                </>
-              );
-            }
-          };
-          return render();
-        }}
-      />
+      <Template {...templateProps} currentUser={currentUser}>
+        {routeSwitch()}
+      </Template>
     </BrowserRouter>
   );
 }

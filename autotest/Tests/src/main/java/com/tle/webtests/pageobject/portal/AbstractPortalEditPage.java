@@ -116,9 +116,13 @@ public abstract class AbstractPortalEditPage<T extends AbstractPortalEditPage<T>
   public T showForExpression(String expression) {
 
     setShowForOthers(true);
+    WebElement before = driver.findElement(getViewExpressionInput());
     executeSubmit("('" + getId() + ".expression', '', '" + expression + "');");
     return ExpectWaiter.waiter(
-            ExpectedConditions.attributeToBe(getViewExpressionInput(), "value", expression), this)
+            ExpectedConditions.and(
+                ExpectedConditions.stalenessOf(before),
+                ExpectedConditions.attributeToBe(getViewExpressionInput(), "value", expression)),
+            this)
         .get();
   }
 
