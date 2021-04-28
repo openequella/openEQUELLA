@@ -20,7 +20,7 @@ import { getMimeTypeFilters } from "../../../__mocks__/MimeTypeFilter.mock";
 import { users } from "../../../__mocks__/UserSearch.mock";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import * as SearchFilterSettingsModule from "../../../tsrc/modules/SearchFilterSettingsModule";
-import { DateRange, SearchOptions } from "../../../tsrc/modules/SearchModule";
+import type { SearchOptions } from "../../../tsrc/modules/SearchModule";
 import * as UserModule from "../../../tsrc/modules/UserModule";
 import {
   defaultSearchPageOptions,
@@ -33,6 +33,7 @@ import {
   allSearchPageOptions,
   basicSearchPageOptions,
 } from "../../../__mocks__/searchOptions.mock";
+import type { DateRange } from "../../../tsrc/util/Date";
 
 describe("newSearchQueryToSearchOptions", () => {
   const mockedResolvedUser = jest.spyOn(UserModule, "resolveUsers");
