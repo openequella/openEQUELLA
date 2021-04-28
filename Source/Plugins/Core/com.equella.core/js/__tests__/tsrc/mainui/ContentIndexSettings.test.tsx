@@ -40,7 +40,7 @@ jest.mock("../../../tsrc/components/NavigationGuard", () => ({
 
 describe("Content Index Settings Page", () => {
   const defaultVals = SearchSettingsModule.defaultSearchSettings;
-  const contentIndexSettings =
+  const contentIndexSettingsStrings =
     languageStrings.settings.searching.contentIndexSettings;
   jest
     .spyOn(SearchSettingsModule, "getSearchSettingsFromServer")
@@ -53,22 +53,27 @@ describe("Content Index Settings Page", () => {
     page = render(<ContentIndexSettings updateTemplate={jest.fn()} />);
   });
 
-  it("Should fetch the search settings", () => {
+  it("Should fetch the search settings on page load", () => {
     expect(
       SearchSettingsModule.getSearchSettingsFromServer
     ).toHaveBeenCalledTimes(1);
   });
 
   it("shows the default Content indexing value", () => {
-    expect(page.queryByText(contentIndexSettings.general)).toBeInTheDocument();
+    expect(
+      page.queryByText(contentIndexSettingsStrings.general)
+    ).toBeInTheDocument();
     const contentIndexingSetting = page
-      .getByText(contentIndexSettings.name)
+      .getByText(contentIndexSettingsStrings.name)
       .closest("li");
     if (contentIndexingSetting === null) {
       throw new Error("Failed to find the Content indexing setting");
     }
     expect(
-      queryByText(contentIndexingSetting, contentIndexSettings.option.none)
+      queryByText(
+        contentIndexingSetting,
+        contentIndexSettingsStrings.option.none
+      )
     ).toBeInTheDocument();
     expect(
       queryByDisplayValue(contentIndexingSetting, defaultVals.urlLevel)
@@ -76,9 +81,15 @@ describe("Content Index Settings Page", () => {
   });
 
   it.each([
-    [contentIndexSettings.titleBoostingTitle, defaultVals.titleBoost],
-    [contentIndexSettings.metaBoostingTitle, defaultVals.descriptionBoost],
-    [contentIndexSettings.attachmentBoostingTitle, defaultVals.attachmentBoost],
+    [contentIndexSettingsStrings.titleBoostingTitle, defaultVals.titleBoost],
+    [
+      contentIndexSettingsStrings.metaBoostingTitle,
+      defaultVals.descriptionBoost,
+    ],
+    [
+      contentIndexSettingsStrings.attachmentBoostingTitle,
+      defaultVals.attachmentBoost,
+    ],
   ])(
     "shows the default %s boosting value",
     (boostingType: string, defaultValue: number) => {

@@ -39,13 +39,9 @@ import { FacetWithFlags } from "../../../tsrc/modules/FacetedSearchSettingsModul
 import { NavigationGuardProps } from "../../../tsrc/components/NavigationGuard";
 import { getSchemasResp } from "../../../__mocks__/getSchemasResp";
 import { getSchemaUuidResp } from "../../../__mocks__/getSchemaUuidResp";
-// import FacetDialog from "../../../tsrc/settings/Search/facetedsearch/FacetDialog";
-// import MessageInfo from "../../../tsrc/components/MessageInfo";
-// import MessageDialog from "../../../tsrc/components/MessageDialog";
 import * as OEQ from "@openequella/rest-api-client";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { getMuiButtonByText } from "../MuiQueries";
-// import {getMuiButtonByText} from "../MuiQueries";
 
 const mockFacets: FacetedSearchSettingsModule.Facet[] = [
   {
@@ -105,6 +101,8 @@ const getFacetsPromise = mockGetFacetsFromServer.mockImplementation(() =>
 );
 
 describe("<FacetedSearchSettingsPage />", () => {
+  const facetedSearchSettingStrings =
+    languageStrings.settings.searching.facetedsearchsetting;
   let page: RenderResult;
   beforeEach(async () => {
     page = render(<FacetedSearchSettingsPage updateTemplate={jest.fn()} />);
@@ -120,36 +118,26 @@ describe("<FacetedSearchSettingsPage />", () => {
 
   const getClassification = (facetName: string): HTMLElement =>
     pipe(
-      getAllClassifications().filter((c) => queryByText(c, facetName) !== null),
+      getAllClassifications(),
+      A.filter((c) => queryByText(c, facetName) !== null),
       A.head,
-      O.fold(
-        () => {
-          throw new Error(`Failed to find classification ${facetName}`);
-        },
-        (c) => c
-      )
+      O.getOrElse(() => {
+        throw new Error(`Failed to find classification ${facetName}`);
+      })
     );
 
   const getEditButton = (name: string): HTMLElement =>
-    getByLabelText(
-      getClassification(name),
-      languageStrings.settings.searching.facetedsearchsetting.edit
-    );
+    getByLabelText(getClassification(name), facetedSearchSettingStrings.edit);
 
   const getDeleteButton = (name: string): HTMLElement =>
-    getByLabelText(
-      getClassification(name),
-      languageStrings.settings.searching.facetedsearchsetting.delete
-    );
+    getByLabelText(getClassification(name), facetedSearchSettingStrings.delete);
 
   const openDialog = async (name?: string) => {
     await act(async () => {
       await userEvent.click(
         name
           ? getEditButton(name)
-          : page.getByLabelText(
-              languageStrings.settings.searching.facetedsearchsetting.add
-            )
+          : page.getByLabelText(facetedSearchSettingStrings.add)
       );
     });
     return screen.getByRole("dialog");
@@ -210,18 +198,14 @@ describe("<FacetedSearchSettingsPage />", () => {
   it("should show a dialog when an Edit button is clicked", async () => {
     await openDialog(mockFacets[0].name);
     expect(
-      page.queryByText(
-        languageStrings.settings.searching.facetedsearchsetting.edit
-      )
+      page.queryByText(facetedSearchSettingStrings.edit)
     ).toBeInTheDocument();
   });
 
   it("should show a dialog when the Add button is clicked", async () => {
     await openDialog();
     expect(
-      page.queryByText(
-        languageStrings.settings.searching.facetedsearchsetting.add
-      )
+      page.queryByText(facetedSearchSettingStrings.add)
     ).toBeInTheDocument();
   });
 
