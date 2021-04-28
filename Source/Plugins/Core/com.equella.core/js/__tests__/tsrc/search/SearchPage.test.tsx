@@ -49,10 +49,11 @@ import {
   getSearchResultsCustom,
 } from "../../../__mocks__/SearchResult.mock";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
+import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
 import * as AdvancedSearchModule from "../../../tsrc/modules/AdvancedSearchModule";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
-import { Collection } from "../../../tsrc/modules/CollectionsModule";
+import type { Collection } from "../../../tsrc/modules/CollectionsModule";
 import * as FavouriteModule from "../../../tsrc/modules/FavouriteModule";
 import * as GallerySearchModule from "../../../tsrc/modules/GallerySearchModule";
 import { getGlobalCourseList } from "../../../tsrc/modules/LegacySelectionSessionModule";
@@ -61,11 +62,7 @@ import * as RemoteSearchModule from "../../../tsrc/modules/RemoteSearchModule";
 import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchFacetsModule from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchFilterSettingsModule from "../../../tsrc/modules/SearchFilterSettingsModule";
-import * as SearchModule from "../../../tsrc/modules/SearchModule";
-import {
-  liveStatuses,
-  nonLiveStatuses,
-} from "../../../tsrc/modules/SearchModule";
+import * as SearchPageHelper from "../../../tsrc/search/SearchPageHelper";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
 import * as UserModule from "../../../tsrc/modules/UserModule";
 import SearchPage, { SearchPageOptions } from "../../../tsrc/search/SearchPage";
@@ -122,8 +119,8 @@ const mockSearchSettings = jest.spyOn(
   "getSearchSettingsFromServer"
 );
 const mockConvertParamsToSearchOptions = jest.spyOn(
-  SearchModule,
-  "queryStringParamsToSearchOptions"
+  SearchPageHelper,
+  "generateSearchPageOptionsFromQueryString"
 );
 
 const mockMimeTypeFilters = jest
@@ -328,6 +325,7 @@ describe("Refine search by status", () => {
   const selectStatus = (container: Element, status: string) =>
     fireEvent.click(getByText(getStatusSelector(container), status));
 
+  const { liveStatuses, nonLiveStatuses } = SearchModule;
   beforeEach(() => {
     // Status selector is disabled by default so enable it before test.
     searchSettingPromise.mockResolvedValueOnce({
@@ -763,9 +761,9 @@ describe("<SearchPage/>", () => {
     await act(async () => {
       copySearchButton.click();
     });
-    expect(SearchModule.queryStringParamsToSearchOptions).toHaveBeenCalledTimes(
-      1
-    );
+    expect(
+      SearchPageHelper.generateSearchPageOptionsFromQueryString
+    ).toHaveBeenCalledTimes(1);
     expect(mockClipboard).toHaveBeenCalledWith(
       "/?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RANK%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22displayMode%22%3A%22list%22%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D"
     );
@@ -791,9 +789,9 @@ describe("conversion of parameters to SearchPageOptions", () => {
 
   it("should call queryStringParamsToSearchOptions using query paramaters in url", async () => {
     await renderSearchPage("?q=test");
-    expect(SearchModule.queryStringParamsToSearchOptions).toHaveBeenCalledTimes(
-      1
-    );
+    expect(
+      SearchPageHelper.generateSearchPageOptionsFromQueryString
+    ).toHaveBeenCalledTimes(1);
   });
 });
 

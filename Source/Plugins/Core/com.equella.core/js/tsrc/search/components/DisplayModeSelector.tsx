@@ -21,8 +21,8 @@ import PhotoLibraryIcon from "@material-ui/icons/PhotoLibrary";
 import VideoLibraryIcon from "@material-ui/icons/VideoLibrary";
 import * as React from "react";
 import { ReactElement } from "react";
-import type { DisplayMode } from "../../modules/SearchModule";
 import { languageStrings } from "../../util/langstrings";
+import type { DisplayMode } from "../../modules/SearchModule";
 
 const {
   modeGalleryImage: labelImageGallery,

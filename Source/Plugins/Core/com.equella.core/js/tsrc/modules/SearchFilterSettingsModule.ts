@@ -44,6 +44,19 @@ const MIME_TYPE_FILTERS_URL = "api/settings/search/filter";
 export const getMimeTypeFiltersFromServer = (): Promise<MimeTypeFilter[]> =>
   Axios.get(MIME_TYPE_FILTERS_URL).then((res) => res.data);
 
+/**
+ * Find MIME type filters by a list of ID.
+ *
+ * @param filterIds MIME type filter IDs used to filter the list of all MIME type filters.
+ * @returns { MimeTypeFilter[] | undefined } An array of `MimeTypeFilter` instances matching the provided IDs or `undefined` if none could be found.
+ */
+export const getMimeTypeFiltersById = async (
+  filterIds: string[]
+): Promise<MimeTypeFilter[] | undefined> => {
+  const allFilters = await getMimeTypeFiltersFromServer();
+  return allFilters.filter(({ id }) => id && filterIds.includes(id));
+};
+
 export const batchUpdateOrAdd = (filters: MimeTypeFilter[]) =>
   Axios.put<BatchOperationResponse[]>(
     MIME_TYPE_FILTERS_URL,

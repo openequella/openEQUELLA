@@ -20,10 +20,23 @@ import { API_BASE_URL } from "../AppConfig";
 import { listEntities } from "./OEQHelpers";
 
 /**
- * Provides a simple Map<string,string> summary of available collections, where K is the UUID
- * and V is the collections's name.
+ * A simplified type of Collection used when only collection uuid and name are required.
+ */
+export interface Collection {
+  /**
+   * Collection's uuid.
+   */
+  uuid: string;
+  /**
+   * Collection's name.
+   */
+  name: string;
+}
+
+/**
+ * Find all available Collections. On failure, an OEQ.Errors.ApiError will be thrown.
  *
- * On failure, an OEQ.Errors.ApiError will be thrown.
+ * @param requiredPrivileges Privileges required to access Collections.
  */
 export const collectionListSummary = (
   requiredPrivileges?: string[]
@@ -37,16 +50,21 @@ export const collectionListSummary = (
     (results) => results
   );
 };
+
 /**
- * A simplified type of Collection used when only collection uuid and name are required.
+ * Find Collections by a list of ID.
+ *
+ * @param collectionUuids Collection UUIDs used to filter the list of all Collections.
+ * @returns { Collection[] | undefined } An array of `Collection` instances matching the specified UUIDs or undefined if none could be found.
  */
-export interface Collection {
-  /**
-   * Collection's uuid.
-   */
-  uuid: string;
-  /**
-   * Collection's name.
-   */
-  name: string;
-}
+export const findCollectionsByUuid = async (
+  collectionUuids: string[]
+): Promise<Collection[] | undefined> => {
+  const collectionList = await collectionListSummary([
+    OEQ.Acl.ACL_SEARCH_COLLECTION,
+  ]);
+  const filteredCollectionList = collectionList.filter((c) =>
+    collectionUuids.includes(c.uuid)
+  );
+  return filteredCollectionList.length > 0 ? filteredCollectionList : undefined;
+};

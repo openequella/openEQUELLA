@@ -17,8 +17,23 @@
  */
 import { debounce, Drawer, Grid, Hidden } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
+import type { DateRange } from "../util/Date";
+import {
+  defaultPagedSearchResult,
+  defaultSearchPageOptions,
+  generateQueryStringFromSearchPageOptions,
+  generateSearchPageOptionsFromQueryString,
+  getPartialSearchOptions,
+} from "./SearchPageHelper";
+import {
+  buildExportUrl,
+  confirmExport,
+  DisplayMode,
+  searchItems,
+  SearchOptions,
+  SearchOptionsFields,
+} from "../modules/SearchModule";
 import { pipe } from "fp-ts/function";
-
 import { isEqual } from "lodash";
 import * as React from "react";
 import {
@@ -67,20 +82,6 @@ import {
   getMimeTypeFiltersFromServer,
   MimeTypeFilter,
 } from "../modules/SearchFilterSettingsModule";
-import {
-  buildExportUrl,
-  confirmExport,
-  DateRange,
-  defaultPagedSearchResult,
-  defaultSearchOptions,
-  DisplayMode,
-  generateQueryStringFromSearchOptions,
-  getPartialSearchOptions,
-  queryStringParamsToSearchOptions,
-  searchItems,
-  SearchOptions,
-  SearchOptionsFields,
-} from "../modules/SearchModule";
 import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
 import { getCurrentUserDetails } from "../modules/UserModule";
 import SearchBar from "../search/components/SearchBar";
@@ -118,6 +119,10 @@ export interface SearchPageOptions extends SearchOptions {
    * Whether to enable Quick mode (true) or to use custom date pickers (false).
    */
   dateRangeQuickModeEnabled: boolean;
+  /**
+   * How to display the search results - also determines the type of results.
+   */
+  displayMode: DisplayMode;
 }
 
 /**
@@ -209,12 +214,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const location = useLocation();
 
   const [state, dispatch] = useReducer(reducer, { status: "initialising" });
-  const defaultSearchPageOptions: SearchPageOptions = {
-    ...defaultSearchOptions,
-    dateRangeQuickModeEnabled: true,
-    displayMode: "list",
-  };
-
   const defaultSearchPageHistory: SearchPageHistoryState = {
     searchPageOptions: defaultSearchPageOptions,
     filterExpansion: false,
@@ -304,7 +303,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       // If the search options are available from browser history, ignore those in the query string.
       (location.state as SearchPageHistoryState)
         ? Promise.resolve(undefined)
-        : queryStringParamsToSearchOptions(location),
+        : generateSearchPageOptionsFromQueryString(location),
       getCurrentUserDetails(),
     ])
       .then(
@@ -579,7 +578,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     const instUrl = AppConfig.baseUrl.slice(0, -1);
     const searchUrl = `${instUrl}${
       location.pathname
-    }?${generateQueryStringFromSearchOptions(searchPageOptions)}`;
+    }?${generateQueryStringFromSearchPageOptions(searchPageOptions)}`;
 
     navigator.clipboard
       .writeText(searchUrl)
@@ -591,9 +590,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   const handleSaveFavouriteSearch = (name: string) => {
     // We only need pathname and query strings.
-    const url = `${location.pathname}?${generateQueryStringFromSearchOptions(
-      searchPageOptions
-    )}`;
+    const url = `${
+      location.pathname
+    }?${generateQueryStringFromSearchPageOptions(searchPageOptions)}`;
 
     return addFavouriteSearch(name, url)
       .then(() =>
@@ -675,7 +674,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       "mimeTypeFilters",
     ];
     return !isEqual(
-      getPartialSearchOptions(defaultSearchOptions, fields),
+      getPartialSearchOptions(defaultSearchPageOptions, fields),
       getPartialSearchOptions(searchPageOptions, fields)
     );
   };
@@ -694,7 +693,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     ];
 
     const isQueryOrFiltersSet = !isEqual(
-      getPartialSearchOptions(defaultSearchOptions, fields),
+      getPartialSearchOptions(defaultSearchPageOptions, fields),
       getPartialSearchOptions(searchPageOptions, fields)
     );
 

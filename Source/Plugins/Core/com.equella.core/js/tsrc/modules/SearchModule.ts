@@ -17,33 +17,46 @@
  */
 
 import * as OEQ from "@openequella/rest-api-client";
-import { Location } from "history";
-import { pick } from "lodash";
-import {
-  Array as RuntypeArray,
-  Boolean,
-  Guard,
-  Literal,
-  match,
-  Number,
-  Partial,
-  Record,
-  Static,
-  String,
-  Undefined,
-  Union,
-  Unknown,
-} from "runtypes";
+import { Literal, Static, Union } from "runtypes";
 import { API_BASE_URL } from "../AppConfig";
-import { getISODateString } from "../util/Date";
-import { Collection, collectionListSummary } from "./CollectionsModule";
-import { SelectedCategories } from "./SearchFacetsModule";
-import {
-  getMimeTypeFiltersFromServer,
-  MimeTypeFilter,
-} from "./SearchFilterSettingsModule";
-import { resolveUsers } from "./UserModule";
-import { pipe } from "fp-ts/function";
+import { DateRange, getISODateString } from "../util/Date";
+import type { Collection } from "./CollectionsModule";
+import type { SelectedCategories } from "./SearchFacetsModule";
+import type { MimeTypeFilter } from "./SearchFilterSettingsModule";
+
+/**
+ * List of status which are considered 'live'.
+ */
+export const liveStatuses: OEQ.Common.ItemStatus[] = ["LIVE", "REVIEW"];
+
+/**
+ * Predicate for checking if a provided status is not one of `liveStatuses`.
+ * @param status a status to check for liveliness
+ */
+export const nonLiveStatus = (status: OEQ.Common.ItemStatus): boolean =>
+  !liveStatuses.find((liveStatus) => status === liveStatus);
+
+/**
+ * List of statuses which are considered non-live.
+ */
+export const nonLiveStatuses: OEQ.Common.ItemStatus[] = OEQ.Common.ItemStatuses.alternatives
+  .map((status) => status.value)
+  .filter(nonLiveStatus);
+
+/**
+ * A Runtypes object which represents three display modes: list, gallery-image and gallery-video.
+ */
+export const DisplayModeRuntypes = Union(
+  Literal("list"),
+  Literal("gallery-image"),
+  Literal("gallery-video")
+);
+
+/**
+ * Available modes for displaying search results.
+ * @see { @link DisplayModeRuntypes } for original definition.
+ */
+export type DisplayMode = Static<typeof DisplayModeRuntypes>;
 
 /**
  * Type of all search options on Search page
@@ -112,117 +125,12 @@ export interface SearchOptions {
    * @see OEQ.Search.SearchParams for examples
    */
   musts?: OEQ.Search.Must[];
-  /**
-   * How to display the search results - also determines the type of results.
-   */
-  displayMode?: DisplayMode;
 }
 
 /**
  * The type representing fields of SearchOptions.
  */
 export type SearchOptionsFields = keyof SearchOptions;
-
-/**
- * Represent a date range which has an optional start and end.
- */
-export interface DateRange {
-  /**
-   * The start date of a date range.
-   */
-  start?: Date;
-  /**
-   * The end date of a date range.
-   */
-  end?: Date;
-}
-
-/**
- * Legacy searching.do parameters currently supported by SearchPage component.
- */
-const LegacySearchParams = Union(
-  Literal("dp"),
-  Literal("ds"),
-  Literal("dr"),
-  Literal("q"),
-  Literal("sort"),
-  Literal("owner"),
-  Literal("in"),
-  Literal("mt"),
-  Literal("_int.mimeTypes"),
-  Literal("type")
-);
-
-type LegacyParams = Static<typeof LegacySearchParams>;
-
-const isDate = (value: unknown): value is Date => value instanceof Date;
-
-const DisplayModeRuntypes = Union(
-  Literal("list"),
-  Literal("gallery-image"),
-  Literal("gallery-video")
-);
-
-export type DisplayMode = Static<typeof DisplayModeRuntypes>;
-
-/**
- * Represents the shape of data returned from generateQueryStringFromSearchOptions
- */
-const DehydratedSearchOptionsRunTypes = Partial({
-  query: String,
-  rowsPerPage: Number,
-  currentPage: Number,
-  sortOrder: OEQ.SearchSettings.SortOrderRunTypes,
-  collections: RuntypeArray(Record({ uuid: String })),
-  rawMode: Boolean,
-  lastModifiedDateRange: Partial({ start: Guard(isDate), end: Guard(isDate) }),
-  owner: Record({ id: String }),
-  // Runtypes guard function would not work when defining the type as Array(OEQ.Common.ItemStatuses) or Guard(OEQ.Common.ItemStatuses.guard),
-  // So the Union of Literals has been copied from the OEQ.Common module.
-  status: RuntypeArray(
-    Union(
-      Literal("ARCHIVED"),
-      Literal("DELETED"),
-      Literal("DRAFT"),
-      Literal("LIVE"),
-      Literal("MODERATING"),
-      Literal("PERSONAL"),
-      Literal("REJECTED"),
-      Literal("REVIEW"),
-      Literal("SUSPENDED")
-    )
-  ),
-  selectedCategories: RuntypeArray(
-    Record({
-      id: Number,
-      categories: RuntypeArray(String),
-    })
-  ),
-  searchAttachments: Boolean,
-  mimeTypeFilters: RuntypeArray(Record({ id: String })),
-  displayMode: DisplayModeRuntypes,
-});
-
-type DehydratedSearchOptions = Static<typeof DehydratedSearchOptionsRunTypes>;
-
-/**
- * List of status which are considered 'live'.
- */
-export const liveStatuses: OEQ.Common.ItemStatus[] = ["LIVE", "REVIEW"];
-
-/**
- * Predicate for checking if a provided status is not one of `liveStatuses`.
- * @param status a status to check for liveliness
- */
-export const nonLiveStatus = (status: OEQ.Common.ItemStatus): boolean =>
-  !liveStatuses.find((liveStatus) => status === liveStatus);
-
-/**
- * List of statuses which are considered non-live.
- */
-export const nonLiveStatuses: OEQ.Common.ItemStatus[] = OEQ.Common.ItemStatuses.alternatives
-  .map((status) => status.value)
-  .filter(nonLiveStatus);
 
 export const defaultSearchOptions: SearchOptions = {
   rowsPerPage: 10,
@@ -237,15 +145,6 @@ export const defaultSearchOptions: SearchOptions = {
   owner: undefined,
   mimeTypes: [],
   mimeTypeFilters: [],
-  displayMode: "list",
-};
-
-export const defaultPagedSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> = {
-  start: 0,
-  length: 10,
-  available: 0,
-  results: [],
-  highlight: [],
 };
 
 /**
@@ -289,129 +188,6 @@ export const generateCategoryWhereQuery = (
         `(${processNodeTerms(categories, schemaNode)})`
     )
     .join(and);
-};
-
-/**
- * A function that takes and parses a saved search query string from a shared legacy searching.do or /page/search URL, and converts it into a SearchOptions object
- * @param location representing a Location which includes search query params - such as from the <SearchPage>
- * @return SearchOptions containing the options encoded in the query string params, or undefined if there were none.
- */
-export const queryStringParamsToSearchOptions = async (
-  location: Location
-): Promise<SearchOptions | undefined> => {
-  if (!location.search) {
-    return undefined;
-  }
-  const params = new URLSearchParams(location.search);
-  const searchOptions = params.get("searchOptions");
-
-  // If the query params contain `searchOptions` convert to `SearchOptions` with `newSearchQueryToSearchOptions`.
-  // Else if the query params contain params from legacy `searching.do` (i.e. `LegacySearchParams`) then convert to
-  // `searchOptions` with `legacyQueryStringToSearchOptions`.
-  // For all else, return `undefined`.
-  if (searchOptions) {
-    return await newSearchQueryToSearchOptions(searchOptions);
-  } else if (
-    Array.from(params.keys()).some((key) => LegacySearchParams.guard(key))
-  ) {
-    return await legacyQueryStringToSearchOptions(params);
-  }
-  return undefined;
-};
-
-/**
- * A function that takes search options and converts it to to a JSON representation.
- * Collections and owner properties are both reduced down to their uuid and id properties respectively.
- * Undefined properties are excluded.
- * Intended to be used in conjunction with SearchModule.newSearchQueryToSearchOptions
- * @param searchOptions Search options selected on Search page.
- * @return url encoded key/value pair of JSON searchOptions
- */
-export const generateQueryStringFromSearchOptions = (
-  searchOptions: SearchOptions
-): string => {
-  const params = new URLSearchParams();
-  params.set(
-    "searchOptions",
-    JSON.stringify(
-      searchOptions,
-      (key: string, value: object[] | undefined) => {
-        return match(
-          [
-            Literal("collections"),
-            () => value?.map((collection) => pick(collection, ["uuid"])),
-          ],
-          [Literal("owner"), () => (value ? pick(value, ["id"]) : undefined)],
-          [
-            Literal("mimeTypeFilters"),
-            () => value?.map((filter) => pick(filter, ["id"])),
-          ],
-          // As we can get MIME types from filters, we can skip key "mimeTypes".
-          [Literal("mimeTypes"), () => undefined],
-          [Unknown, () => value ?? undefined]
-        )(key);
-      }
-    )
-  );
-  return params.toString();
-};
-
-const rehydrateCollections = async (
-  options: DehydratedSearchOptions
-): Promise<Collection[] | undefined> =>
-  options.collections
-    ? await findCollectionsByUuid(options.collections.map((c) => c.uuid))
-    : undefined;
-
-const rehydrateMIMETypeFilter = async (
-  options: DehydratedSearchOptions
-): Promise<MimeTypeFilter[] | undefined> =>
-  options.mimeTypeFilters
-    ? await findMIMETypeFiltersById(options.mimeTypeFilters.map((f) => f.id))
-    : undefined;
-
-const rehydrateOwner = async (
-  options: DehydratedSearchOptions
-): Promise<OEQ.UserQuery.UserDetails | undefined> =>
-  options.owner ? await findUser(options.owner.id) : undefined;
-
-/**
- * A function that takes a JSON representation of a SearchOptions object, and converts it into an actual SearchOptions object.
- * Note: currently, due to lack of support from runtypes extraneous properties will end up in the resultant object (which then could be stored in state).
- * @see {@link https://github.com/pelotom/runtypes/issues/169 }
- * @param searchOptionsJSON a JSON representation of a SearchOptions object.
- * @return searchOptions A deserialized representation of that provided by `searchOptionsJSON`
- */
-export const newSearchQueryToSearchOptions = async (
-  searchOptionsJSON: string
-): Promise<SearchOptions> => {
-  const parsedOptions: unknown = JSON.parse(searchOptionsJSON, (key, value) => {
-    if (key === "lastModifiedDateRange") {
-      let { start, end } = value;
-      start = start ? new Date(start) : undefined;
-      end = end ? new Date(end) : undefined;
-      return { start, end };
-    }
-    return value;
-  });
-
-  if (!DehydratedSearchOptionsRunTypes.guard(parsedOptions)) {
-    console.warn("Invalid search query params received. Using defaults.");
-    return defaultSearchOptions;
-  }
-
-  const mimeTypeFilters = await rehydrateMIMETypeFilter(parsedOptions);
-  const mimeTypes = mimeTypeFilters?.flatMap((f) => f.mimeTypes);
-
-  const result: SearchOptions = {
-    ...defaultSearchOptions,
-    ...parsedOptions,
-    collections: await rehydrateCollections(parsedOptions),
-    owner: await rehydrateOwner(parsedOptions),
-    mimeTypeFilters,
-    mimeTypes,
-  };
-  return result;
 };
 
 /**
@@ -493,154 +269,3 @@ export const confirmExport = (searchOptions: SearchOptions): Promise<boolean> =>
     API_BASE_URL,
     buildSearchParams(searchOptions)
   );
-
-const findCollectionsByUuid = async (
-  collectionUuids: string[]
-): Promise<Collection[] | undefined> => {
-  const collectionList = await collectionListSummary([
-    OEQ.Acl.ACL_SEARCH_COLLECTION,
-  ]);
-  const filteredCollectionList = collectionList.filter((c) =>
-    collectionUuids.includes(c.uuid)
-  );
-  return filteredCollectionList.length > 0 ? filteredCollectionList : undefined;
-};
-
-const findMIMETypeFiltersById = async (
-  filterIds: string[]
-): Promise<MimeTypeFilter[] | undefined> => {
-  const allFilters = await getMimeTypeFiltersFromServer();
-  return allFilters.filter(({ id }) => id && filterIds.includes(id));
-};
-
-const findUser = async (
-  userId: string
-): Promise<OEQ.UserQuery.UserDetails | undefined> => {
-  const userDetails = await resolveUsers([userId]);
-  if (userDetails.length > 1)
-    throw new Error(`More than one user was resolved for id: ${userId}`);
-  return userDetails[0];
-};
-
-/**
- * A function that takes query string params from a shared searching.do URL and converts all applicable params to Search options
- * @param params URLSearchParams from a shared `searching.do` URL
- * @return SearchOptions object.
- */
-export const legacyQueryStringToSearchOptions = async (
-  params: URLSearchParams
-): Promise<SearchOptions> => {
-  const getQueryParam = (paramName: LegacyParams) => {
-    return params.get(paramName) ?? undefined;
-  };
-
-  const collectionId = getQueryParam("in")?.substring(1);
-  const ownerId = getQueryParam("owner");
-  const dateRange = getQueryParam("dr");
-  const datePrimary = getQueryParam("dp");
-  const dateSecondary = getQueryParam("ds");
-
-  const RangeTypeLiterals = Union(
-    Literal("between"),
-    Literal("after"),
-    Literal("before"),
-    Literal("on")
-  );
-
-  type RangeType = Static<typeof RangeTypeLiterals>;
-
-  const getLastModifiedDateRange = (
-    rangeType: RangeType,
-    primaryDate?: Date,
-    secondaryDate?: Date
-  ): DateRange | undefined => {
-    if (!primaryDate && !secondaryDate) {
-      return undefined;
-    }
-    return match(
-      [
-        Literal("between"),
-        (): DateRange => ({ start: primaryDate, end: secondaryDate }),
-      ],
-      [Literal("after"), (): DateRange => ({ start: primaryDate })],
-      [Literal("before"), (): DateRange => ({ end: primaryDate })],
-      [
-        Literal("on"),
-        (): DateRange => ({
-          start: primaryDate,
-          end: primaryDate,
-        }),
-      ]
-    )(rangeType.toLowerCase() as RangeType);
-  };
-
-  const displayMode: DisplayMode = pipe(
-    getQueryParam("type"),
-    match(
-      // When type is 'standard' or undefined, default to 'list'.
-      [Union(Literal("standard"), Undefined), (): DisplayMode => "list"],
-      [Literal("gallery"), (): DisplayMode => "gallery-image"],
-      [Literal("video"), (): DisplayMode => "gallery-video"],
-      [
-        Unknown,
-        () => {
-          throw new Error("Unknown Legacy display mode");
-        },
-      ]
-    )
-  );
-
-  const parseCollectionUuid = async (
-    collectionUuid: string | undefined
-  ): Promise<Collection[] | undefined> => {
-    if (!collectionUuid) return defaultSearchOptions.collections;
-    const collectionDetails:
-      | Collection[]
-      | undefined = await findCollectionsByUuid([collectionUuid]);
-
-    return typeof collectionDetails !== "undefined" &&
-      collectionDetails.length > 0
-      ? collectionDetails
-      : defaultSearchOptions.collections;
-  };
-
-  const sortOrderParam = getQueryParam("sort")?.toUpperCase();
-  const mimeTypeFilters = await findMIMETypeFiltersById(params.getAll("mt"));
-  const mimeTypes = mimeTypeFilters?.flatMap(({ mimeTypes }) => mimeTypes);
-  const getExternalMIMETypes = () => {
-    const integrationMIMETypes = params.getAll("_int.mimeTypes");
-    return integrationMIMETypes.length > 0 ? integrationMIMETypes : undefined;
-  };
-
-  const searchOptions: SearchOptions = {
-    ...defaultSearchOptions,
-    collections: await parseCollectionUuid(collectionId),
-    query: getQueryParam("q") ?? defaultSearchOptions.query,
-    owner: ownerId ? await findUser(ownerId) : defaultSearchOptions.owner,
-    lastModifiedDateRange:
-      getLastModifiedDateRange(
-        dateRange as RangeType,
-        datePrimary ? new Date(parseInt(datePrimary)) : undefined,
-        dateSecondary ? new Date(parseInt(dateSecondary)) : undefined
-      ) ?? defaultSearchOptions.lastModifiedDateRange,
-    sortOrder: OEQ.SearchSettings.SortOrderRunTypes.guard(sortOrderParam)
-      ? sortOrderParam
-      : defaultSearchOptions.sortOrder,
-    mimeTypes,
-    mimeTypeFilters,
-    externalMimeTypes: getExternalMIMETypes(),
-    rawMode: true,
-    displayMode,
-  };
-  return searchOptions;
-};
-
-/**
- * Call this function to get partial SearchOptions.
- * @param options An object of SearchOptions
- * @param fields What fields of SearchOptions to get
- */
-export const getPartialSearchOptions = (
-  options: SearchOptions,
-  fields: SearchOptionsFields[]
-) => pick(options, fields);
