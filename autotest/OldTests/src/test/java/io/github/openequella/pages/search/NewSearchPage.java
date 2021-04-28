@@ -19,6 +19,9 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
   @FindBy(id = "collapsibleRefinePanelButton")
   private WebElement collapsibleRefinePanelButton;
 
+  @FindBy(id = "exportSearchResult")
+  private WebElement exportButton;
+
   public NewSearchPage(PageContext context) {
     super(context);
   }
@@ -76,6 +79,19 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
   public void expandRefineControlPanel() {
     collapsibleRefinePanelButton.click();
   }
+
+  /** Execute an export by clicking the export button. */
+  public void export() {
+    exportButton.click();
+  }
+
+  /** Find the Tick icon. */
+  public WebElement getExportDoneButton() {
+    WebElement tickIcon = driver.findElement(By.id("exportCompleted"));
+    getWaiter().until(ExpectedConditions.visibilityOf(tickIcon));
+    return tickIcon;
+  }
+
   /**
    * Select Collections by typing keywords in the Selector's TextField.
    *
@@ -218,6 +234,22 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
    */
   public void verifyAttachmentNotDisplayed(String attachmentText) {
     waiter.until(ExpectedConditions.numberOfElementsToBe(attachmentLinkByText(attachmentText), 0));
+  }
+
+  /** Verify that the export button is hidden. */
+  public void verifyExportButtonNotDisplayed() {
+    waiter.until(ExpectedConditions.numberOfElementsToBe(By.id("exportSearchResult"), 0));
+  }
+
+  /**
+   * Find the snackbar and verify its message.
+   *
+   * @param message The message expected to be displayed in the snackbar.
+   */
+  public void verifySnackbarMessage(String message) {
+    WebElement snackbar =
+        driver.findElement(By.xpath("//span[@id='client-snackbar' and text()='" + message + "']"));
+    getWaiter().until(ExpectedConditions.visibilityOf(snackbar));
   }
 
   /**

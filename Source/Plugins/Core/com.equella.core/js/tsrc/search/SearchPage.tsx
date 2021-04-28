@@ -17,10 +17,18 @@
  */
 import { debounce, Drawer, Grid, Hidden } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
+import { pipe } from "fp-ts/function";
 
 import { isEqual } from "lodash";
 import * as React from "react";
-import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useReducer,
+  useState,
+} from "react";
 import { useHistory, useLocation } from "react-router";
 import { generateFromError } from "../api/errors";
 import { AppConfig } from "../AppConfig";
@@ -38,6 +46,8 @@ import { addFavouriteSearch } from "../modules/FavouriteModule";
 import {
   GallerySearchResultItem,
   imageGallerySearch,
+  listImageGalleryClassifications,
+  listVideoGalleryClassifications,
   videoGallerySearch,
 } from "../modules/GallerySearchModule";
 import {
@@ -59,6 +69,7 @@ import {
 } from "../modules/SearchFilterSettingsModule";
 import {
   buildExportUrl,
+  confirmExport,
   DateRange,
   defaultPagedSearchResult,
   defaultSearchOptions,
@@ -246,6 +257,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     setShowFavouriteSearchDialog,
   ] = useState<boolean>(false);
   const [alreadyDownloaded, setAlreadyDownloaded] = useState<boolean>(false);
+  const exportLinkRef = useRef<HTMLAnchorElement>(null);
 
   const handleError = useCallback(
     (error: Error) => {
@@ -370,8 +382,30 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         }
       };
 
+      // Depending on what display mode we're in, determine which function we use to list
+      // the classifications to match the search.
+      const getClassifications: (
+        _: SearchOptions
+      ) => Promise<Classification[]> = pipe(
+        state.options.displayMode,
+        (mode) => {
+          switch (mode) {
+            case "gallery-image":
+              return listImageGalleryClassifications;
+            case "gallery-video":
+              return listVideoGalleryClassifications;
+            case "list":
+              return listClassifications;
+            default:
+              throw new TypeError(
+                "Unexpected `displayMode` for determining classifications listing function"
+              );
+          }
+        }
+      );
+
       setSearchPageOptions(state.options);
-      Promise.all([doSearch(state.options), listClassifications(state.options)])
+      Promise.all([doSearch(state.options), getClassifications(state.options)])
         .then(
           ([result, classifications]: [
             SearchPageSearchResult,
@@ -503,11 +537,41 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         message: searchStrings.export.collectionLimit,
         variant: "warning",
       });
-      return false;
+      return;
     }
-    // Do not allow exporting the same search result again until searchPageOptions gets changed.
-    setAlreadyDownloaded(true);
-    return true;
+
+    confirmExport(searchPageOptions)
+      .then(() => {
+        // All checks pass so manually trigger a click on the export link.
+        exportLinkRef.current?.click();
+        // Do not allow exporting the same search result again until searchPageOptions gets changed.
+        setAlreadyDownloaded(true);
+      })
+      .catch((error: OEQ.Errors.ApiError) => {
+        const generateExportErrorMessage = (
+          error: OEQ.Errors.ApiError
+        ): string => {
+          const {
+            badRequest,
+            unauthorised,
+            notFound,
+          } = searchStrings.export.errorMessages;
+          switch (error.status) {
+            case 400:
+              return badRequest;
+            case 403:
+              return unauthorised;
+            case 404:
+              return notFound;
+            default:
+              return error.message;
+          }
+        };
+        setSnackBar({
+          message: generateExportErrorMessage(error),
+          variant: "warning",
+        });
+      });
   };
 
   const handleCopySearch = () => {
@@ -881,6 +945,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 exportProps={{
                   isExportPermitted:
                     currentUser?.canDownloadSearchResult ?? false,
+                  linkRef: exportLinkRef,
                   exportLinkProps: {
                     url: buildExportUrl(searchPageOptions),
                     onExport: handleExport,
