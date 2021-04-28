@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 import * as React from "react";
-
-import { shallow } from "enzyme";
+import "@testing-library/jest-dom/extend-expect";
+import { act, render, screen } from "@testing-library/react";
 import { getMimeTypesFromServer } from "../../../__mocks__/MimeTypes.mock";
 import MimeTypeFilterEditingDialog from "../../../tsrc/settings/Search/searchfilter/MimeTypeFilterEditingDialog";
 import { MimeTypeFilter } from "../../../tsrc/modules/SearchFilterSettingsModule";
@@ -26,43 +26,45 @@ describe("<MimeTypeFilterEditingDialog />", () => {
   const onClose = jest.fn();
   const addOrUpdate = jest.fn();
   const handleError = jest.fn();
-  const renderDialog = (filter: MimeTypeFilter | undefined = undefined) =>
-    shallow(
-      <MimeTypeFilterEditingDialog
-        open
-        onClose={onClose}
-        addOrUpdate={addOrUpdate}
-        mimeTypeFilter={filter}
-        handleError={handleError}
-        mimeTypeSupplier={jest.fn().mockResolvedValue(getMimeTypesFromServer)}
-      />
-    );
+  const renderDialog = async (filter: MimeTypeFilter | undefined = undefined) =>
+    await act(async () => {
+      await render(
+        <MimeTypeFilterEditingDialog
+          open
+          onClose={onClose}
+          addOrUpdate={addOrUpdate}
+          mimeTypeFilter={filter}
+          handleError={handleError}
+          mimeTypeSupplier={jest.fn().mockResolvedValue(getMimeTypesFromServer)}
+        />
+      );
+    });
+  const getSaveButton = () =>
+    screen.queryByTestId("MimeTypeFilterEditingDialog_save");
 
   describe("when filter is defined", () => {
     it("should display 'OK' as the Save button text", () => {
-      const component = renderDialog({
+      renderDialog({
         id: "testing ID",
         name: "image filter",
         mimeTypes: ["IMAGE/PNG", "IMAGE/JPEG"],
       });
-      const saveButton = component.find("#MimeTypeFilterEditingDialog_save");
-      expect(saveButton.text()).toBe("OK");
+
+      expect(getSaveButton()).toHaveTextContent("OK");
     });
   });
 
   describe("when filter is undefined", () => {
     it("should display 'Add' as the Save button text", () => {
-      const component = renderDialog();
-      const saveButton = component.find("#MimeTypeFilterEditingDialog_save");
-      expect(saveButton.text()).toBe("Add");
+      renderDialog();
+      expect(getSaveButton()).toHaveTextContent("Add");
     });
   });
 
   describe("when filter name is empty", () => {
     it("should disable the Save button", () => {
-      const component = renderDialog();
-      const saveButton = component.find("#MimeTypeFilterEditingDialog_save");
-      expect(saveButton.is("[disabled]")).toBeTruthy();
+      renderDialog();
+      expect(getSaveButton()).toHaveAttribute("disabled");
     });
   });
 });

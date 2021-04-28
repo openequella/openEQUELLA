@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import * as NavigationGuardModule from "../../../tsrc/components/NavigationGuard";
 import { Router } from "react-router";
 import { createMemoryHistory } from "history";
@@ -38,7 +38,7 @@ const mockBlockNavigationWithBrowser = jest.spyOn(
 describe("<NavigationGuard />", () => {
   const renderComponent = (when: boolean) => {
     const history = createMemoryHistory();
-    return mount(
+    return render(
       <Router history={history}>
         <NavigationGuardModule.NavigationGuard when={when} />
       </Router>

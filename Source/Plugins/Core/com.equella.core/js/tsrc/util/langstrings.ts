@@ -561,31 +561,32 @@ export const languageStrings = {
         },
       },
       facetedsearchsetting: {
-        name: "Faceted search settings",
-        subHeading: "Classifications",
+        add: "Create classification",
+        delete: "Delete classification",
+        edit: "Edit classification",
         explanationText:
           "Classifications and their categories display in the Refine search panel of the Search page.",
-        add: "Create classification",
-        edit: "Edit classification",
         facetfields: {
+          categoryNumber: "Default number of categories",
+          categoryNumberHelper: "Leave blank to display all categories",
           name: "Classification name",
           nameHelper: "Enter name to display in the Refine search panel",
           schemaNode: "Schema node",
           schemaNodeHelper:
             "The categories will be generated from the selected node",
-          categoryNumber: "Default number of categories",
-          categoryNumberHelper: "Leave blank to display all categories",
         },
+        name: "Faceted search settings",
         schemaSelector: {
-          schema: "Schema",
-          selectASchema: "Select a schema...",
-          permissionsHelperText:
-            "The LIST_SCHEMA permission is required to select a schema",
           nodeSelector: {
             expandAll: "Expand All",
             collapseAll: "Collapse All",
           },
+          permissionsHelperText:
+            "The LIST_SCHEMA permission is required to select a schema",
+          schema: "Schema",
+          selectASchema: "Select a schema...",
         },
+        subHeading: "Classifications",
       },
     },
     ui: { name: "UI", desc: "UI settings" },
