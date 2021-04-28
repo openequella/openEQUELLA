@@ -26,7 +26,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
 import * as React from "react";
-import { useCallback, useEffect, useReducer, useState } from "react";
+import { useCallback, useEffect, useReducer } from "react";
 import { languageStrings } from "../../util/langstrings";
 
 const useStyles = makeStyles({
@@ -68,24 +68,24 @@ export interface SearchBarProps {
 
 const searchStrings = languageStrings.searchpage;
 
-type State =
-  | { status: "init"; query: string }
-  | { status: "searching"; query: string }
-  | { status: "done" };
+interface State {
+  status: "init" | "queryUpdated" | "waiting";
+  query: string;
+}
 
 type Action =
-  | { type: "newSearch"; initialQuery: string }
-  | { type: "debouncedSearch"; debouncedQuery: string }
-  | { type: "waitForNewQuery" };
+  | { type: "clearQuery" }
+  | { type: "updateQuery"; query: string }
+  | { type: "waitForNewQuery"; query: string };
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
-    case "newSearch":
-      return { status: "init", query: action.initialQuery };
-    case "debouncedSearch":
-      return { status: "searching", query: action.debouncedQuery };
+    case "clearQuery":
+      return { status: "init", query: "" };
+    case "updateQuery":
+      return { status: "queryUpdated", query: action.query };
     case "waitForNewQuery":
-      return { status: "done" };
+      return { status: "waiting", query: action.query };
     default:
       throw new TypeError("Unexpected action passed to reducer!");
   }
@@ -106,13 +106,12 @@ export default function SearchBar({
 }: SearchBarProps) {
   const classes = useStyles();
   const [state, dispatch] = useReducer(reducer, { status: "init", query });
-  const [currentQuery, setCurrentQuery] = useState<string>(query);
 
   const search = useCallback(
     (query: string) => {
       dispatch({
-        type: "debouncedSearch",
-        debouncedQuery: query,
+        type: "updateQuery",
+        query,
       });
     },
     [dispatch]
@@ -120,30 +119,29 @@ export default function SearchBar({
 
   useEffect(() => {
     // When props query becomes falsy, it means a new search has been performed to clear SearchPageOptions.
-    // So we dispatch the action of "newSearch".
+    // So we dispatch the action of "clearQuery".
     if (!query) {
       dispatch({
-        type: "newSearch",
-        initialQuery: query,
+        type: "clearQuery",
       });
     }
   }, [query]);
 
   useEffect(() => {
-    if (state.status === "done") {
+    if (state.status === "waiting") {
+      // Most likely called because of a change in onQueryChange so no action required
       return;
-    }
-    setCurrentQuery(state.query);
-    if (state.status === "searching") {
+    } else if (state.status === "queryUpdated") {
       onQueryChange(state.query);
       dispatch({
         type: "waitForNewQuery",
+        query: state.query,
       });
     }
   }, [state, dispatch, onQueryChange]);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Escape" && currentQuery) {
+    if (event.key === "Escape" && state.query) {
       // iff there is a current query, clear it out and trigger a search
       search("");
     }
@@ -163,7 +161,7 @@ export default function SearchBar({
         className={classes.input}
         onKeyDown={handleKeyDown}
         onChange={handleOnChange}
-        value={currentQuery}
+        value={state.query}
         placeholder={
           wildcardMode
             ? searchStrings.wildcardSearchEnabledPlaceholder
