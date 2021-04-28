@@ -55,7 +55,7 @@ export const collectionListSummary = (
  * Find Collections by a list of ID.
  *
  * @param collectionUuids Collection UUIDs used to filter the list of all Collections.
- * @returns { Collection[] | undefined } An array of Collections or undefined.
+ * @returns { Collection[] | undefined } An array of `Collection` instances matching the specified UUIDs or undefined if none could be found.
  */
 export const findCollectionsByUuid = async (
   collectionUuids: string[]
