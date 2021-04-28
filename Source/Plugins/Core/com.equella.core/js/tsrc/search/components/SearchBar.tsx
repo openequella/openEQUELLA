@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import {
-  debounce,
   Divider,
   FormControlLabel,
   IconButton,
@@ -27,10 +26,8 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
 import * as React from "react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useReducer } from "react";
 import { languageStrings } from "../../util/langstrings";
-
-const ESCAPE_KEY_CODE = 27;
 
 const useStyles = makeStyles({
   root: {
@@ -71,8 +68,31 @@ export interface SearchBarProps {
 
 const searchStrings = languageStrings.searchpage;
 
+interface State {
+  status: "init" | "queryUpdated" | "waiting";
+  query: string;
+}
+
+type Action =
+  | { type: "clearQuery" }
+  | { type: "updateQuery"; query: string }
+  | { type: "waitForNewQuery"; query: string };
+
+const reducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case "clearQuery":
+      return { status: "init", query: "" };
+    case "updateQuery":
+      return { status: "queryUpdated", query: action.query };
+    case "waitForNewQuery":
+      return { status: "waiting", query: action.query };
+    default:
+      throw new TypeError("Unexpected action passed to reducer!");
+  }
+};
+
 /**
- * Debounced searchbar component to be used in the Search Page.
+ * Provide a input field to update the query of search criteria.
  * This component does not handle the API query itself,
  * that should be done in the parent component in response to the
  * onXyzChange callbacks and the doSearch.
@@ -85,37 +105,50 @@ export default function SearchBar({
   doSearch,
 }: SearchBarProps) {
   const classes = useStyles();
+  const [state, dispatch] = useReducer(reducer, { status: "init", query });
 
-  const [currentQuery, setCurrentQuery] = useState<string>(query);
+  const search = useCallback(
+    (query: string) => {
+      dispatch({
+        type: "updateQuery",
+        query,
+      });
+    },
+    [dispatch]
+  );
 
-  // The line below triggers the warning:
-  // > React Hook useCallback received a function whose dependencies are unknown. Pass an inline function instead
-  // It was not obvious how to do this with `debounce`, however attempts were made to manually
-  // validate the dependencies.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedOnQueryChange = useCallback(debounce(onQueryChange, 500), [
-    doSearch,
-    onQueryChange,
-  ]);
-
-  // Update state when search query is cleared.
   useEffect(() => {
-    setCurrentQuery(query);
+    // When props query becomes falsy, it means a new search has been performed to clear SearchPageOptions.
+    // So we dispatch the action of "clearQuery".
+    if (!query) {
+      dispatch({
+        type: "clearQuery",
+      });
+    }
   }, [query]);
 
+  useEffect(() => {
+    if (state.status === "waiting") {
+      // Most likely called because of a change in onQueryChange so no action required
+      return;
+    } else if (state.status === "queryUpdated") {
+      onQueryChange(state.query);
+      dispatch({
+        type: "waitForNewQuery",
+        query: state.query,
+      });
+    }
+  }, [state, dispatch, onQueryChange]);
+
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.keyCode === ESCAPE_KEY_CODE && currentQuery) {
+    if (event.key === "Escape" && state.query) {
       // iff there is a current query, clear it out and trigger a search
-      setCurrentQuery("");
-      onQueryChange("");
+      search("");
     }
   };
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const updatedQuery = event.target.value;
-
-    setCurrentQuery(updatedQuery);
-    debouncedOnQueryChange(updatedQuery);
+    search(event.target.value);
   };
 
   return (
@@ -128,7 +161,7 @@ export default function SearchBar({
         className={classes.input}
         onKeyDown={handleKeyDown}
         onChange={handleOnChange}
-        value={currentQuery}
+        value={state.query}
         placeholder={searchStrings.searchBarPlaceholder}
       />
       <Divider className={classes.divider} orientation="vertical" />

@@ -15,13 +15,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Drawer, Grid, Hidden } from "@material-ui/core";
+import { debounce, Drawer, Grid, Hidden } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
 
 import { isEqual } from "lodash";
 import * as React from "react";
-import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useReducer,
+  useState,
+} from "react";
 import { useHistory, useLocation } from "react-router";
 import { generateFromError } from "../api/errors";
 import { AppConfig } from "../AppConfig";
@@ -445,13 +452,20 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const handleSortOrderChanged = (order: OEQ.SearchSettings.SortOrder) =>
     search({ ...searchPageOptions, sortOrder: order });
 
-  const handleQueryChanged = (query: string) =>
-    search({
-      ...searchPageOptions,
-      query: query,
-      currentPage: 0,
-      selectedCategories: undefined,
-    });
+  const handleQueryChanged = useMemo(
+    () =>
+      debounce(
+        (query: string) =>
+          search({
+            ...searchPageOptions,
+            query: query,
+            currentPage: 0,
+            selectedCategories: undefined,
+          }),
+        500
+      ),
+    [searchPageOptions, search]
+  );
 
   const handleDisplayModeChanged = (mode: DisplayMode) =>
     search({ ...searchPageOptions, displayMode: mode });
