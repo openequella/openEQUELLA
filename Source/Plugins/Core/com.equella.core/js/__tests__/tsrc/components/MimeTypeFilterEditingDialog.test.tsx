@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-
+import "@testing-library/jest-dom/extend-expect";
 import { act, render, screen } from "@testing-library/react";
 import { getMimeTypesFromServer } from "../../../__mocks__/MimeTypes.mock";
 import MimeTypeFilterEditingDialog from "../../../tsrc/settings/Search/searchfilter/MimeTypeFilterEditingDialog";
