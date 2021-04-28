@@ -118,10 +118,9 @@ describe("<FacetedSearchSettingsPage />", () => {
 
   const getClassification = (facetName: string): HTMLElement =>
     pipe(
-      getAllClassifications(),
-      A.filter((c) => queryByText(c, facetName) !== null),
+      getAllClassifications().filter((c) => queryByText(c, facetName) !== null),
       A.head,
-      O.getOrElse(() => {
+      O.getOrElse<HTMLElement>(() => {
         throw new Error(`Failed to find classification ${facetName}`);
       })
     );
