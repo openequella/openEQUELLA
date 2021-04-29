@@ -27,7 +27,7 @@ import {
 } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
-import { Link } from "react-router-dom";
+import { useHistory } from "react-router";
 import { useStyles } from "./Template";
 
 interface MainMenuProps {
@@ -49,23 +49,17 @@ interface MainMenuProps {
  */
 const MainMenu = ({ menuGroups, onClickNavItem }: MainMenuProps) => {
   const classes = useStyles(useTheme());
-
+  const history = useHistory();
   const navItem = (item: OEQ.LegacyContent.MenuItem, ind: number) => (
     <ListItem
-      component={(p) => {
-        const props = {
-          ...p,
-          rel: item.newWindow ? "noopener noreferrer" : undefined,
-          target: item.newWindow ? "_blank" : undefined,
-          onClick: onClickNavItem,
-        };
-        return item.route ? (
-          <Link {...props} to={item.route} />
-        ) : (
-          <a {...props} href={item.href}>
-            {}
-          </a>
-        );
+      component="a"
+      href={item.href}
+      onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+        onClickNavItem();
+        if (item.route) {
+          e.preventDefault();
+          history.push(item.route);
+        }
       }}
       key={ind}
       button
