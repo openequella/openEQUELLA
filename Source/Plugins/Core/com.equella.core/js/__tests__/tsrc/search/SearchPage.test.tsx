@@ -20,7 +20,6 @@ import type { Theme } from "@material-ui/core/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
 import {
-  fireEvent,
   getByLabelText,
   getByText,
   queryByLabelText,
@@ -251,13 +250,13 @@ const changeQuery = async (
     userEvent.click(wildcardModeSwitch);
   }
   const _queryBar = () => getQueryBar(container);
-  // Would be nice to replace this with a userEvent.type like:
-  //   await act(async () => await userEvent.type(_queryBar(), query, {delay: 1}));
-  // But initial attempts failed - even with adding a delay (which then caused a Jest timeout).
-  fireEvent.change(_queryBar(), { target: { value: query } });
+  userEvent.type(_queryBar(), query);
+
+  await act(async () => {
+    await jest.advanceTimersByTime(1000);
+  });
   await waitFor(() => {
     expect(_queryBar()).toHaveDisplayValue(query);
-    jest.advanceTimersByTime(1000);
   });
 };
 
@@ -284,7 +283,7 @@ describe("Refine search by searching attachments", () => {
   const getSearchAttachmentsSelector = (container: Element): HTMLElement =>
     getRefineSearchComponent(container, "SearchAttachmentsSelector");
   const changeOption = (selector: HTMLElement, option: string) =>
-    fireEvent.click(getByText(selector, option));
+    userEvent.click(getByText(selector, option));
   const { yes: yesLabel, no: noLabel } = languageStrings.common.action;
 
   it("Should default to searching attachments", async () => {
@@ -323,7 +322,7 @@ describe("Refine search by status", () => {
     getRefineSearchComponent(container, "StatusSelector");
 
   const selectStatus = (container: Element, status: string) =>
-    fireEvent.click(getByText(getStatusSelector(container), status));
+    userEvent.click(getByText(getStatusSelector(container), status));
 
   const { liveStatuses, nonLiveStatuses } = SearchModule;
   beforeEach(() => {
@@ -560,7 +559,7 @@ describe("<SearchPage/>", () => {
     await waitForSearch();
 
     // Perform a new search and check.
-    fireEvent.click(newSearchButton);
+    userEvent.click(newSearchButton);
     await waitFor(() => {
       expect(sortingDropdown).toHaveValue("RANK");
       expect(getQueryBar(container)).toHaveValue("");
