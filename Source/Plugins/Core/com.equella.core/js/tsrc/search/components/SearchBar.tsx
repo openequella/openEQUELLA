@@ -117,15 +117,25 @@ export default function SearchBar({
     [dispatch]
   );
 
+  // The state query should be consistent with prop query. But there are two situations where they
+  // are different.
+  // One is when a new search has been performed to clear SearchPageOptions. In this case, we dispatch
+  // the action of "clearQuery".
+  // The other is when the page is rendered with previously selected search options where a query is
+  // included. We dispatch the action of "waitForNewQuery" to update the state without triggering
+  // an extra search.
   useEffect(() => {
-    // When props query becomes falsy, it means a new search has been performed to clear SearchPageOptions.
-    // So we dispatch the action of "clearQuery".
-    if (!query) {
+    if (!query && state.query) {
       dispatch({
         type: "clearQuery",
       });
+    } else if (query && !state.query) {
+      dispatch({
+        type: "waitForNewQuery",
+        query,
+      });
     }
-  }, [query]);
+  }, [query, state.query]);
 
   useEffect(() => {
     if (state.status === "waiting") {
