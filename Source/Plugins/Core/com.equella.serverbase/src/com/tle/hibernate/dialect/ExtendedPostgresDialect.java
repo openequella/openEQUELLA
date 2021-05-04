@@ -31,7 +31,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import org.hibernate.dialect.PostgreSQLDialect;
+import org.hibernate.dialect.PostgreSQL82Dialect;
 import org.hibernate.dialect.unique.UniqueDelegate;
 import org.hibernate.engine.spi.Mapping;
 import org.hibernate.mapping.Column;
@@ -40,7 +40,7 @@ import org.hibernate.type.CustomType;
 import org.hibernate.type.TextType;
 
 @SuppressWarnings("nls")
-public class ExtendedPostgresDialect extends PostgreSQLDialect implements ExtendedDialect {
+public class ExtendedPostgresDialect extends PostgreSQL82Dialect implements ExtendedDialect {
   private static final String URL_SCHEME = "jdbc:postgresql://";
   private static final CustomType TYPE_BLANKABLE =
       new CustomType(new HibernateEscapedString(Types.VARCHAR), new String[] {"blankable"});
