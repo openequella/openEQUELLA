@@ -27,7 +27,8 @@ excludeDependencies ++= Seq(
 packageOptions in assembly += Package.ManifestAttributes("Permissions" -> "all-permissions")
 assemblyOption in assembly := (assemblyOption in assembly).value
 assemblyMergeStrategy in assembly := {
-  case PathList("org", "xmlpull", "v1", _*)      => MergeStrategy.first
+  case PathList("org", "xmlpull", "v1", _*) => MergeStrategy.first
+  // The following three were added when the hibernate-types was added the the hibernate module
   case PathList("javax", "activation", _*)       => MergeStrategy.first
   case PathList("javax", "xml", _*)              => MergeStrategy.first
   case PathList("META-INF", "versions", "9", _*) => MergeStrategy.first
