@@ -88,6 +88,30 @@ public class AuditLogEntry implements AuditLogTable {
     super();
   }
 
+  public AuditLogEntry(
+      String userId,
+      String sessionId,
+      String category,
+      String type,
+      String d1,
+      String d2,
+      String d3,
+      String d4,
+      Institution institution,
+      String meta) {
+    this.userId = userId;
+    this.sessionId = sessionId;
+    this.eventCategory = category;
+    this.eventType = type;
+    this.data1 = d1;
+    this.data2 = d2;
+    this.data3 = d3;
+    this.data4 = d4;
+    this.institution = institution;
+    this.timestamp = new Date();
+    this.meta = meta;
+  }
+
   @Override
   public long getId() {
     return id;

@@ -19,6 +19,7 @@
 package com.tle.core.auditlog.impl;
 
 import com.tle.beans.Institution;
+import com.tle.beans.audit.AuditLogEntry;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.attachments.IAttachment;
@@ -27,8 +28,8 @@ import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.usermanagement.user.WebAuthenticationDetails;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
+import com.tle.core.auditlog.AuditLogDao;
 import com.tle.core.auditlog.AuditLogExtension;
-import com.tle.core.auditlog.AuditLogJavaDao;
 import com.tle.core.auditlog.AuditLogService;
 import com.tle.core.guice.Bind;
 import com.tle.core.plugins.PluginService;
@@ -64,7 +65,7 @@ public class AuditLogServiceImpl implements AuditLogService {
 
   private static final String USED_TYPE = "USED";
 
-  private static final String TRUNCED = "...";
+  @Inject private AuditLogDao dao;
 
   private PluginTracker<AuditLogExtension> extensionTracker;
 
@@ -77,7 +78,7 @@ public class AuditLogServiceImpl implements AuditLogService {
     c.add(Calendar.DAY_OF_YEAR, -daysOld);
 
     Date date = c.getTime();
-    AuditLogJavaDao.removeEntriesBeforeDate(date);
+    dao.removeEntriesBeforeDate(date);
     for (AuditLogExtension extension : getExtensions()) {
       extension.getDao().removeEntriesBeforeDate(date);
     }
@@ -85,17 +86,19 @@ public class AuditLogServiceImpl implements AuditLogService {
 
   private void logUserEvent(String type, UserState us, HttpServletRequest request) {
     UserBean ub = us.getUserBean();
-    AuditLogJavaDao.logWithRequest(
-        ub.getUniqueID(),
-        us.getSessionID(),
-        USER_CATEGORY,
-        type,
-        us.getIpAddress(),
-        ub.getUniqueID(),
-        ub.getUsername(),
-        us.getTokenSecretId(),
-        us.getInstitution(),
-        request);
+    AuditLogEntry entry =
+        new AuditLogEntry(
+            ub.getUniqueID(),
+            us.getSessionID(),
+            USER_CATEGORY,
+            type,
+            us.getIpAddress(),
+            ub.getUniqueID(),
+            ub.getUsername(),
+            us.getTokenSecretId(),
+            us.getInstitution(),
+            null);
+    dao.logWithRequest(entry, request);
   }
 
   @Override
@@ -144,14 +147,20 @@ public class AuditLogServiceImpl implements AuditLogService {
   @Override
   @Transactional
   public void logSummaryViewed(String category, ItemKey item, HttpServletRequest request) {
-    AuditLogJavaDao.logHttp(
-        category,
-        SUMMARY_VIEWED_TYPE,
-        item.getUuid(),
-        Integer.toString(item.getVersion()),
-        null,
-        null,
-        request);
+    AuditLogEntry entry =
+        new AuditLogEntry(
+            CurrentUser.getUserID(),
+            CurrentUser.getSessionID(),
+            category,
+            SUMMARY_VIEWED_TYPE,
+            item.getUuid(),
+            Integer.toString(item.getVersion()),
+            null,
+            null,
+            CurrentInstitution.get(),
+            null);
+
+    dao.logWithRequest(entry, request);
   }
 
   @Override
@@ -168,14 +177,20 @@ public class AuditLogServiceImpl implements AuditLogService {
       String contentType,
       String path,
       HttpServletRequest request) {
-    AuditLogJavaDao.logHttp(
-        category,
-        CONTENT_VIEWED_TYPE,
-        itemId.getUuid(),
-        Integer.toString(itemId.getVersion()),
-        contentType,
-        path,
-        request);
+    AuditLogEntry entry =
+        new AuditLogEntry(
+            CurrentUser.getUserID(),
+            CurrentUser.getSessionID(),
+            category,
+            CONTENT_VIEWED_TYPE,
+            itemId.getUuid(),
+            Integer.toString(itemId.getVersion()),
+            contentType,
+            path,
+            CurrentInstitution.get(),
+            null);
+
+    dao.logWithRequest(entry, request);
   }
 
   @Override
@@ -264,7 +279,8 @@ public class AuditLogServiceImpl implements AuditLogService {
       String d3,
       String d4,
       Institution institution) {
-    AuditLogJavaDao.log(userId, sessionId, category, type, d1, d2, d3, d4, institution);
+    dao.save(
+        new AuditLogEntry(userId, sessionId, category, type, d1, d2, d3, d4, institution, null));
   }
 
   @Override
@@ -284,7 +300,7 @@ public class AuditLogServiceImpl implements AuditLogService {
   @Override
   @Transactional
   public void removeEntriesForInstitution(Institution institution) {
-    AuditLogJavaDao.removeEntriesForInstitution(institution);
+    dao.removeEntriesForInstitution(institution);
     for (AuditLogExtension extension : getExtensions()) {
       extension.getDao().removeEntriesForInstitution(institution);
     }

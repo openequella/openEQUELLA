@@ -4860,6 +4860,9 @@
     <parameter id="bean" value="bean:com.tle.web.core.servlet.SessionServlet" />
     <parameter id="url-pattern" value="/session" />
   </extension>
+  <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="objects_6_1">
+    <parameter id="class" value="com.tle.beans.audit.AuditLogEntry" />
+  </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="objects_6_2">
     <parameter id="class" value="com.tle.beans.entity.FederatedSearch" />
   </extension>
