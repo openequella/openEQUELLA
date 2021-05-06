@@ -93,6 +93,7 @@ public class AuditLogEntry implements AuditLogTable {
       String sessionId,
       String category,
       String type,
+      Date timestamp,
       String d1,
       String d2,
       String d3,
@@ -108,7 +109,7 @@ public class AuditLogEntry implements AuditLogTable {
     this.data3 = d3;
     this.data4 = d4;
     this.institution = institution;
-    this.timestamp = new Date();
+    this.timestamp = timestamp;
     this.meta = meta;
   }
 

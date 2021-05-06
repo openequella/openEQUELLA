@@ -92,6 +92,7 @@ public class AuditLogServiceImpl implements AuditLogService {
             us.getSessionID(),
             USER_CATEGORY,
             type,
+            new Date(),
             us.getIpAddress(),
             ub.getUniqueID(),
             ub.getUsername(),
@@ -153,6 +154,7 @@ public class AuditLogServiceImpl implements AuditLogService {
             CurrentUser.getSessionID(),
             category,
             SUMMARY_VIEWED_TYPE,
+            new Date(),
             item.getUuid(),
             Integer.toString(item.getVersion()),
             null,
@@ -183,6 +185,7 @@ public class AuditLogServiceImpl implements AuditLogService {
             CurrentUser.getSessionID(),
             category,
             CONTENT_VIEWED_TYPE,
+            new Date(),
             itemId.getUuid(),
             Integer.toString(itemId.getVersion()),
             contentType,
@@ -280,7 +283,8 @@ public class AuditLogServiceImpl implements AuditLogService {
       String d4,
       Institution institution) {
     dao.save(
-        new AuditLogEntry(userId, sessionId, category, type, d1, d2, d3, d4, institution, null));
+        new AuditLogEntry(
+            userId, sessionId, category, type, new Date(), d1, d2, d3, d4, institution, null));
   }
 
   @Override
