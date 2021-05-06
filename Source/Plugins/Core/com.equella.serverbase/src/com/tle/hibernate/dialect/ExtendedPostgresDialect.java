@@ -23,6 +23,7 @@ import com.tle.core.hibernate.ExtendedDialect;
 import com.tle.core.hibernate.type.HibernateCsvType;
 import com.tle.core.hibernate.type.HibernateEscapedString;
 import com.tle.core.hibernate.type.ImmutableHibernateXStreamType;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -169,7 +170,8 @@ public class ExtendedPostgresDialect extends PostgreSQL9Dialect implements Exten
 
   @Override
   public Iterable<? extends BasicType> getExtraTypeOverrides() {
-    return ImmutableList.of(new TextClobType(), TYPE_XSTREAM, TYPE_CSV, TYPE_BLANKABLE);
+    return ImmutableList.of(
+        new TextClobType(), JsonBinaryType.INSTANCE, TYPE_XSTREAM, TYPE_CSV, TYPE_BLANKABLE);
   }
 
   public static class TextClobType extends TextType {

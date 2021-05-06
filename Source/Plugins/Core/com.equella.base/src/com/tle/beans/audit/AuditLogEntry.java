@@ -20,7 +20,6 @@ package com.tle.beans.audit;
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import com.tle.beans.Institution;
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,9 +32,7 @@ import javax.persistence.ManyToOne;
 import org.hibernate.annotations.AttributeAccessor;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
 
-@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 @Entity
 @AttributeAccessor("field")
 public class AuditLogEntry implements AuditLogTable {
