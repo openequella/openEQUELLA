@@ -66,7 +66,7 @@ jobs:
           java-version: 8
 
       - name: Install node dependencies (core)
-        working-directory: Source/Plugins/Core/com.equella.core/js
+        working-directory: react-front-end
         run: |
           npm ci
 
@@ -89,7 +89,7 @@ jobs:
           ./sbt test
 
       - name: Run unit tests (javascript)
-        working-directory: Source/Plugins/Core/com.equella.core/js
+        working-directory: react-front-end
         run: |
           npm cit
 
@@ -141,17 +141,17 @@ jobs:
           node-version: "${{ steps.nvm.outputs.NVMRC }}"
 
       - name: Install node dependencies (core)
-        working-directory: Source/Plugins/Core/com.equella.core/js
+        working-directory: react-front-end
         run: |
           npm ci
 
       - name: Generate Static Storybook instance
-        working-directory: Source/Plugins/Core/com.equella.core/js
+        working-directory: react-front-end
         run: |
           npm run build-storybook
 
       - name: Package Static Storybook instance
-        working-directory: Source/Plugins/Core/com.equella.core/js
+        working-directory: react-front-end
         run: |
           tar cvf storybook.tar storybook-static
 
@@ -159,7 +159,7 @@ jobs:
         uses: actions/upload-artifact@v2.2.3
         with:
           name: Storybook
-          path: Source/Plugins/Core/com.equella.core/js/storybook.tar
+          path: react-front-end/storybook.tar
 
   build_import_export_tool:
     runs-on: ubuntu-latest
