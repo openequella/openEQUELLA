@@ -20,10 +20,7 @@ package com.tle.hibernate.dialect;
 
 import com.google.common.collect.ImmutableList;
 import com.tle.core.hibernate.ExtendedDialect;
-import com.tle.core.hibernate.type.HibernateCsvType;
-import com.tle.core.hibernate.type.HibernateEscapedString;
-import com.tle.core.hibernate.type.ImmutableHibernateXStreamType;
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import com.tle.core.hibernate.type.HibernateCustomTypes;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -37,19 +34,11 @@ import org.hibernate.dialect.unique.UniqueDelegate;
 import org.hibernate.engine.spi.Mapping;
 import org.hibernate.mapping.Column;
 import org.hibernate.type.BasicType;
-import org.hibernate.type.CustomType;
 import org.hibernate.type.TextType;
 
 @SuppressWarnings("nls")
 public class ExtendedPostgresDialect extends PostgreSQL9Dialect implements ExtendedDialect {
   private static final String URL_SCHEME = "jdbc:postgresql://";
-  private static final CustomType TYPE_BLANKABLE =
-      new CustomType(new HibernateEscapedString(Types.VARCHAR), new String[] {"blankable"});
-  private static final CustomType TYPE_XSTREAM =
-      new CustomType(
-          new ImmutableHibernateXStreamType(Types.CLOB), new String[] {"xstream_immutable"});
-  private static final CustomType TYPE_CSV =
-      new CustomType(new HibernateCsvType(Types.VARCHAR), new String[] {"csv"});
   private final UniqueDelegate uniqueDelegate;
 
   public ExtendedPostgresDialect() {
@@ -170,8 +159,9 @@ public class ExtendedPostgresDialect extends PostgreSQL9Dialect implements Exten
 
   @Override
   public Iterable<? extends BasicType> getExtraTypeOverrides() {
-    return ImmutableList.of(
-        new TextClobType(), JsonBinaryType.INSTANCE, TYPE_XSTREAM, TYPE_CSV, TYPE_BLANKABLE);
+    ArrayList<BasicType> customTypes = HibernateCustomTypes.getCustomTypes();
+    customTypes.add(new TextClobType());
+    return ImmutableList.copyOf(customTypes);
   }
 
   public static class TextClobType extends TextType {
