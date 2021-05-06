@@ -1,23 +1,22 @@
 {
-  "name": "openequella-web",
+  "name": "openequella-react-front-end",
   "private": true,
   "config": {
     "buildlang": "target/resources/lang",
-    "devlang": "../target/scala-2.12/classes/lang",
-    "devjs": "../target/scala-2.12/classes/web/reactjs",
-    "psglob": "output/*/*.js",
+    "devjs": "../Source/Plugins/Core/com.equella.core/target/scala-2.12/classes/web/reactjs",
+    "devlang": "../Source/Plugins/Core/com.equella.core/target/scala-2.12/classes/lang",
     "dist": "target/resources/web/reactjs",
+    "languageBundle": "target/compile-language-bundle",
     "jest": {
       "verbose": true
     },
     "parcelEntryFiles": "entrypoint/*.html entrypoint/scripts/*.js",
-    "tools": "target/tools",
-    "languageBundle": "target/compile-language-bundle"
+    "tools": "target/tools"
   },
   "scripts": {
-    "prepare": "cross-env-shell \"cd ../../../../../oeq-ts-rest-api && npm ci build\"",
+    "prepare": "cross-env-shell \"cd ../oeq-ts-rest-api && npm ci build\"",
     "install": "cross-env-shell \"mkdirp ${npm_package_config_devlang} ${npm_package_config_buildlang}\"",
-    "clean": "rm -rf target/ output/ node_modules/ bower_components/ .cache/ .psc-package/ .pulp-cache/",
+    "clean": "rm -rf target/ node_modules/ .cache/",
     "compile:langbundle-tool": "cross-env-shell tsc --types \"node\" --outDir ${npm_package_config_languageBundle} build-tools/BuildLanguageBundle.ts",
     "build:langbundle-tool": "cross-env-shell parcel build ${npm_package_config_languageBundle}/build-tools/BuildLanguageBundle.js --no-minify --no-source-maps --target node --out-dir=${npm_package_config_tools}",
     "build:langbundle": "cross-env-shell \"node ${npm_package_config_tools}/BuildLanguageBundle.js > ${npm_package_config_buildlang}/jsbundle.json\"",
@@ -34,7 +33,7 @@
     "@material-ui/icons": "4.11.2",
     "@material-ui/lab": "4.0.0-alpha.57",
     "@material-ui/pickers": "3.3.10",
-    "@openequella/rest-api-client": "file:../../../../../oeq-ts-rest-api",
+    "@openequella/rest-api-client": "file:../oeq-ts-rest-api",
     "@tinymce/tinymce-react": "3.8.4",
     "axios": "0.21.1",
     "clsx": "1.1.1",
