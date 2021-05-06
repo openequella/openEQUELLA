@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as mockData from "../__mocks__/versioncheck_mock_data";
+import * as mockData from "./__mocks__/versioncheck_mock_data";
 import rewire = require("rewire");
 
 const versioncheck = rewire("../../resources/web/js/versioncheck.js");

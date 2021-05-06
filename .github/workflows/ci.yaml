@@ -93,6 +93,11 @@ jobs:
         run: |
           npm cit
 
+      - name: Run unit tests (javascript - legacy)
+        working-directory: Source/Plugins/Core/com.equella.core/test/javascript
+        run: |
+          npm cit
+
       - name: Build primary artefacts
         run: |
           ./sbt installerZip writeLanguagePack writeScriptingJavadoc
