@@ -228,6 +228,24 @@ writeScriptingJavadoc := {
   outZip
 }
 
+ThisBuild / reactFrontEndDir := baseDirectory.value / "react-front-end"
+ThisBuild / reactFrontEndOutputDir := reactFrontEndDir.value / "target/resources"
+ThisBuild / buildReactFrontEnd := {
+  val dir = reactFrontEndDir.value
+  Common.nodeInstall(dir)
+  Common.nodeScript("build", dir)
+
+  // return the location of the resulting artefacts
+  reactFrontEndOutputDir.value
+}
+ThisBuild / reactFrontEndLanguageBundle := reactFrontEndOutputDir.value / "lang/jsbundle.json"
+
+// Add to the clean to ensure we clean out the react-front-end
+clean := {
+  clean.value
+  Common.nodeScript("clean", reactFrontEndDir.value)
+}
+
 val userBeans: FileFilter = ("GroupBean.java" || "UserBean.java" || "RoleBean.java") &&
   new SimpleFileFilter(_.getParentFile.getName == "valuebean")
 

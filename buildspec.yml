@@ -19,9 +19,10 @@ phases:
       - service postgresql start
   build:
     commands:
-      - (npm ci && cd Source/Plugins/Core/com.equella.core/js && npm ci)
+      - (npm ci && cd react-front-end && npm ci)
       - (npm run check:ts && npm run check:ts-types-source && npm run check:license)
-      - (cd Source/Plugins/Core/com.equella.core/js && npm test)
+      - (cd react-front-end && npm test)
+      - (cd Source/Plugins/Core/com.equella.core/test/javascript && npm cit)
       - ./sbt -no-colors -Dconfig.file=${HOME}/build.conf test installerZip writeLanguagePack writeScriptingJavadoc
       - ./sbt -no-colors "project autotest" installEquella startEquella configureInstall setupForTests Tests/test Tests/Serial/test OldTests/test coverageReport
       - (cd import-export-tool && ./gradlew build)

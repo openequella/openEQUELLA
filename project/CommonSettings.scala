@@ -27,8 +27,13 @@ object CommonSettings extends AutoPlugin {
     lazy val writeLanguagePack     = taskKey[File]("Write the default language pack")
     lazy val writeScriptingJavadoc = taskKey[File]("Write the scripting javadoc")
     lazy val mergeJPF              = inputKey[Unit]("Merge all")
-    lazy val buildJS               = taskKey[Seq[File]]("Build JS resources")
-    lazy val checkJavaCodeStyle    = taskKey[Unit]("Run checkstyle")
+    lazy val buildReactFrontEnd    = taskKey[File]("Build the ReactJS based front-end")
+    lazy val reactFrontEndDir      = settingKey[File]("The base directory of the ReactJS project")
+    lazy val reactFrontEndOutputDir =
+      settingKey[File]("The output/target directory of the ReactJS project")
+    lazy val reactFrontEndLanguageBundle =
+      settingKey[File]("The language bundle file for the ReactJS front-end project")
+    lazy val checkJavaCodeStyle = taskKey[Unit]("Run checkstyle")
 
     lazy val platformCommon  = LocalProject("com_tle_platform_common")
     lazy val platformSwing   = LocalProject("com_tle_platform_swing")
@@ -42,8 +47,6 @@ object CommonSettings extends AutoPlugin {
   override def trigger: PluginTrigger = allRequirements
 
   override def requires: Plugins = HeaderPlugin && JvmPlugin
-
-  import autoImport._
   override def projectSettings = Seq(
     organization := "com.github.equella",
     scalaVersion := "2.12.13",
