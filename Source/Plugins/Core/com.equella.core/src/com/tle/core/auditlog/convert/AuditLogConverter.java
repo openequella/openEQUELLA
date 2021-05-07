@@ -35,6 +35,7 @@ import com.tle.core.hibernate.dao.GenericDao;
 import com.tle.core.institution.convert.AbstractConverter;
 import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.institution.convert.DefaultMessageCallback;
+import com.tle.core.institution.convert.XmlHelper;
 import com.tle.core.institution.convert.service.InstitutionImportService.ConvertType;
 import com.tle.core.institution.convert.service.impl.InstitutionImportServiceImpl.ConverterTasks;
 import java.io.IOException;
@@ -106,7 +107,7 @@ public class AuditLogConverter extends AbstractConverter<Object> {
 
     int count = (int) auditLogDao.countByCriteria(Restrictions.eq("institution", institution));
     if (count > 0) {
-      // Read all audit logs in by paging.
+      // Read all audit logs by paging.
       for (int page = 0; page < count / PER_XML_FILE + 1; page++) {
         List<AuditLogEntry> entries =
             auditLogDao.findAllByCriteria(
@@ -150,7 +151,8 @@ public class AuditLogConverter extends AbstractConverter<Object> {
 
     SubTemporaryFile auditImportFolder = new SubTemporaryFile(staging, AUDITLOGS);
 
-    List<String> filenames = xmlHelper.getXmlFileList(auditImportFolder);
+    List<String> filenames =
+        xmlHelper.getXmlFileListByPattern(auditImportFolder, XmlHelper.EXPORT_BUCKET_FILE_PATTERN);
     DefaultMessageCallback message =
         new DefaultMessageCallback("institutions.converter.generic.genericmsg");
     params.setMessageCallback(message);
