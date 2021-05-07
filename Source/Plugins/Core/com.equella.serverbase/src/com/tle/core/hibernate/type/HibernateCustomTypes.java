@@ -20,8 +20,8 @@ package com.tle.core.hibernate.type;
 
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import org.hibernate.type.BasicType;
 import org.hibernate.type.CustomType;
 
@@ -38,7 +38,7 @@ public class HibernateCustomTypes {
 
   private static final BasicType TYPE_JSONB = new JsonBinaryType(String.class);
 
-  public static ArrayList<BasicType> getCustomTypes() {
-    return new ArrayList<>(Arrays.asList(TYPE_JSONB, TYPE_BLANKABLE, TYPE_CSV, TYPE_XSTREAM));
+  public static List<BasicType> getCustomTypes() {
+    return Arrays.asList(TYPE_JSONB, TYPE_BLANKABLE, TYPE_CSV, TYPE_XSTREAM);
   }
 }

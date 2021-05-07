@@ -159,7 +159,7 @@ public class ExtendedPostgresDialect extends PostgreSQL9Dialect implements Exten
 
   @Override
   public Iterable<? extends BasicType> getExtraTypeOverrides() {
-    ArrayList<BasicType> customTypes = HibernateCustomTypes.getCustomTypes();
+    List<BasicType> customTypes = new ArrayList<>(HibernateCustomTypes.getCustomTypes());
     customTypes.add(new TextClobType());
     return ImmutableList.copyOf(customTypes);
   }
