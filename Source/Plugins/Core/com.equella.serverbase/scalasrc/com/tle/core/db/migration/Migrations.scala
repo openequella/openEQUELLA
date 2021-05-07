@@ -29,5 +29,5 @@ import scala.collection.JavaConverters._
 object Migrations {
 
   def migrationList: util.Collection[MigrationExt] =
-    Iterable[MigrationExt](NewAuditLogColumn, NewViewCountTables, NewEntityTable).asJavaCollection
+    Iterable[MigrationExt](NewViewCountTables, NewEntityTable).asJavaCollection
 }

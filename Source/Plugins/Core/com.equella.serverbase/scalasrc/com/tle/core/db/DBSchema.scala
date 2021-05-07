@@ -82,20 +82,6 @@ trait DBSchema extends StdColumns {
     auditLog.query.where('institution_id, BinOp.EQ).build
   )
 
-  val auditLogTable = auditLog.definition
-
-  val auditLogIndexColumns: TableColumns = auditLog.subset(
-    Cols('institution_id, 'timestamp, 'event_category, 'event_type, 'user_id) ++ Cols(
-      'session_id,
-      'data1,
-      'data2,
-      'data3
-    )
-  )
-
-  allTables += auditLogTable
-  allIndexes ++= indexEach(auditLogIndexColumns, "audit_" + _.name)
-
   val auditLogNewColumns = auditLog.subset(Cols('meta))
 
   val itemViewId    = Cols('inst, 'item_uuid, 'item_version)

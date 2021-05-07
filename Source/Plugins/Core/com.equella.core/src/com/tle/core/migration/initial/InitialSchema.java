@@ -27,6 +27,7 @@ import com.tle.beans.SchemaScript;
 import com.tle.beans.Staging;
 import com.tle.beans.UserPreference;
 import com.tle.beans.activation.ActivateRequest;
+import com.tle.beans.audit.AuditLogEntry;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.EntityLock;
 import com.tle.beans.entity.LanguageBundle;
@@ -81,9 +82,10 @@ import org.java.plugin.registry.Extension.Parameter;
 @Singleton
 public class InitialSchema extends AbstractCreateMigration {
   private PluginTracker<Object> initialTracker;
-  private static PluginResourceHelper r = ResourcesService.getResourceHelper(InitialSchema.class);
+  private static final PluginResourceHelper r =
+      ResourcesService.getResourceHelper(InitialSchema.class);
 
-  private static Class<?>[] clazzes =
+  private static final Class<?>[] clazzes =
       new Class<?>[] {
         ConfigurationProperty.class,
         ItemDefinitionScript.class,
@@ -143,7 +145,8 @@ public class InitialSchema extends AbstractCreateMigration {
         TargetListEntry.class,
         VersionSelection.class,
         BaseEntity.Attribute.class,
-        ACLEntryMapping.class
+        ACLEntryMapping.class,
+        AuditLogEntry.class
       };
 
   @SuppressWarnings("nls")

@@ -22,6 +22,10 @@ assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeSca
 
 assemblyMergeStrategy in assembly := {
   case PathList("org", "xmlpull", "v1", _*) => MergeStrategy.first
+  // The following three were added when the hibernate-types was added the the hibernate module
+  case PathList("javax", "activation", _*)       => MergeStrategy.first
+  case PathList("javax", "xml", "bind", _*)      => MergeStrategy.first
+  case PathList("META-INF", "versions", "9", _*) => MergeStrategy.first
   // Added due to a [deduplicate: different file contents found in the following] error against:
   // org.springframework/spring-context/jars/spring-context-3.2.18.RELEASE.jar:overview.html
   // org.springframework/spring-web/jars/spring-web-3.2.18.RELEASE.jar:overview.html
