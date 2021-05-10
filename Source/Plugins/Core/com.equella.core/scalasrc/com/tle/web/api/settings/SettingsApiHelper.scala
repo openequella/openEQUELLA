@@ -18,6 +18,9 @@
 
 package com.tle.web.api.settings
 
+import com.tle.common.security.SecurityConstants
+import com.tle.exceptions.PrivilegeRequiredException
+import scala.collection.JavaConverters._
 import com.tle.common.settings.ConfigurationProperties
 import com.tle.legacy.LegacyGuice
 
@@ -29,5 +32,13 @@ object SettingsApiHelper {
 
   def updateSettings[T <: ConfigurationProperties](settings: T): Unit = {
     LegacyGuice.configService.setProperties(settings)
+  }
+
+  def checkEditSystemSettingsAcl(): Unit = {
+    val hasSettingsAcl =
+      LegacyGuice.aclManager.hasPrivilege(List(SecurityConstants.EDIT_SYSTEM_SETTINGS).asJava, true)
+    if (!hasSettingsAcl) {
+      throw new PrivilegeRequiredException(SecurityConstants.EDIT_SYSTEM_SETTINGS)
+    }
   }
 }
