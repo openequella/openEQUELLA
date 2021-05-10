@@ -20,7 +20,6 @@ package com.tle.web.searching
 
 import java.util
 import java.util.Collections
-
 import com.dytech.edge.web.WebConstants
 import com.tle.core.db.RunWithDB
 import com.tle.core.i18n.CoreStrings
@@ -43,9 +42,7 @@ object SearchMenuContributor extends MenuContributor {
           .isEmpty) {
       Collections.emptyList()
     } else {
-      val uis = RunWithDB
-        .executeIfInInstitution(UISettings.cachedUISettings)
-        .getOrElse(UISettings.defaultSettings)
+      val uis          = UISettings.getUISettings
       val useNewSearch = uis.newUI.newSearch && RenderNewTemplate.isNewLayout(info)
       val hls = new HtmlLinkState(
         new SimpleBookmark(if (useNewSearch) "page/search" else "searching.do"))

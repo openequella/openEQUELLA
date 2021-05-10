@@ -19,11 +19,7 @@
 package com.tle.web.api.settings
 
 import java.net.URI
-
 import com.tle.common.institution.CurrentInstitution
-import com.tle.core.db.{DB, RunWithDB}
-import com.tle.core.security.AclChecks
-import com.tle.core.settings.SettingsDB
 import com.tle.web.settings.{EditableSettings, SettingsList, UISettings}
 import io.swagger.annotations.Api
 import javax.ws.rs.{GET, PUT, Path, Produces}
@@ -61,12 +57,9 @@ class SettingsResource {
 
   @GET
   @Path("ui")
-  def getUISettings: UISettings =
-    RunWithDB.execute(UISettings.getUISettings).getOrElse(UISettings.defaultSettings)
+  def getUISettings: UISettings = UISettings.getUISettings
 
   @PUT
   @Path("ui")
-  def setUISettings(in: UISettings): Unit = RunWithDB.executeWithPostCommit(
-    SettingsDB.ensureEditSystem(UISettings.setUISettings(in))
-  )
+  def setUISettings(in: UISettings): Unit = UISettings.setUISettings(in)
 }
