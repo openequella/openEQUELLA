@@ -16,19 +16,12 @@
  * limitations under the License.
  */
 
-package com.tle.core.auditlog.convert;
+package com.tle.core.auditlog;
 
-import java.util.Date;
+import com.tle.beans.Institution;
+import com.tle.beans.audit.AuditLogEntry;
+import org.hibernate.criterion.Criterion;
 
-public class AuditLogEntryXml {
-  public Long id;
-  public Date timestamp;
-  public String eventCategory;
-  public String eventType;
-  public String userId;
-  public String sessionId;
-  public String data1;
-  public String data2;
-  public String data3;
-  public String data4;
+public interface AuditLogDao extends AuditLogExtensionDao<AuditLogEntry> {
+  Criterion restrictByInstitution(Institution institution);
 }
