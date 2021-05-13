@@ -79,7 +79,7 @@
     "@types/jest": "26.0.23",
     "@types/lodash": "4.14.168",
     "@types/luxon": "1.26.5",
-    "@types/node": "12.20.12",
+    "@types/node": "12.20.13",
     "@types/react": "17.0.5",
     "@types/react-autosuggest": "9.3.14",
     "@types/react-beautiful-dnd": "13.0.0",
