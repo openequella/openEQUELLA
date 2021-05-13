@@ -15,10 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import { useState } from "react";
-import { ColorResult, SketchPicker } from "react-color";
-import { makeStyles } from "@material-ui/core/styles";
 import {
   Button,
   Dialog,
@@ -26,6 +22,10 @@ import {
   DialogContent,
   DialogTitle,
 } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import * as React from "react";
+import { useState } from "react";
+import { ColorState, SketchPicker } from "react-color";
 import { languageStrings } from "../util/langstrings";
 
 const useStyles = makeStyles({
@@ -54,7 +54,7 @@ const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
   const classes = useStyles();
   const strings = languageStrings.newuisettings.colorPicker;
 
-  const changeHandler = (color: ColorResult) => onColorChange(color.hex);
+  const changeHandler = (color: ColorState) => onColorChange(color.hex);
 
   return (
     <>
