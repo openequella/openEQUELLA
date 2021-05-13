@@ -94,7 +94,7 @@
     "@types/redux-logger": "3.0.8",
     "@types/rewire": "2.5.28",
     "@types/sprintf-js": "1.1.2",
-    "@types/tinymce": "4.6.0",
+    "@types/tinymce": "4.6.1",
     "@types/uuid": "8.3.0",
     "babel-jest": "26.6.3",
     "core-js": "3.12.1",
