@@ -39,7 +39,7 @@
   "devDependencies": {
     "@types/jest": "26.0.23",
     "@types/tough-cookie": "^4.0.0",
-    "@types/lodash": "4.14.168",
+    "@types/lodash": "4.14.169",
     "@typescript-eslint/eslint-plugin": "4.23.0",
     "@typescript-eslint/parser": "4.23.0",
     "core-js": "3.12.1",
