@@ -136,10 +136,10 @@ public class XmlHelper {
   }
 
   /**
-   * Use the provided pattern to find XML files first. If none is found then find by standard
+   * Use the provided pattern to find XML files first. If none are found then find by standard
    * pattern.
    *
-   * @param folder Folder where XML files are searched for.
+   * @param folder Folder in which to search for XML files
    * @param pattern Pattern used to find files.
    * @return List of file names.
    */

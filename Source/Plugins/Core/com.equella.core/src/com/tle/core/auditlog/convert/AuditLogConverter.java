@@ -41,6 +41,7 @@ import com.tle.core.institution.convert.service.impl.InstitutionImportServiceImp
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.IntStream;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -73,9 +74,7 @@ public class AuditLogConverter extends AbstractConverter<Object> {
   }
 
   private long getExportCount(final Institution institution) {
-    long auditLogEntryCount =
-        auditLogDao.countByCriteria(Restrictions.eq("institution", institution));
-
+    long auditLogEntryCount = auditLogService.countByInstitution(institution);
     long numberOfLogs = (long) Math.ceil((double) auditLogEntryCount / PER_XML_FILE);
 
     Collection<AuditLogExtension> extensions = auditLogService.getExtensions();
@@ -95,7 +94,7 @@ public class AuditLogConverter extends AbstractConverter<Object> {
       throws IOException {
     int offs = 0;
     int size = -1;
-    SubTemporaryFile auditFolder = new SubTemporaryFile(staging, AUDITLOGS);
+    final SubTemporaryFile auditFolder = new SubTemporaryFile(staging, AUDITLOGS);
     final DefaultMessageCallback message =
         new DefaultMessageCallback("institutions.converter.generic.calculateitems");
     callback.setMessageCallback(message);
@@ -105,20 +104,18 @@ public class AuditLogConverter extends AbstractConverter<Object> {
     // write out the format details
     xmlHelper.writeExportFormatXmlFile(auditFolder, true);
 
-    int count = (int) auditLogDao.countByCriteria(Restrictions.eq("institution", institution));
+    int count = auditLogService.countByInstitution(institution);
     if (count > 0) {
       // Read all audit logs by paging.
-      for (int page = 0; page < count / PER_XML_FILE + 1; page++) {
-        List<AuditLogEntry> entries =
-            auditLogDao.findAllByCriteria(
-                null,
-                page * PER_XML_FILE,
-                PER_XML_FILE,
-                Restrictions.eq("institution", institution));
-
-        xmlHelper.writeXmlFile(auditFolder, page + ".xml", entries, xstream);
-        message.incrementCurrent();
-      }
+      IntStream.range(0, count / PER_XML_FILE + 1)
+          .forEach(
+              page -> {
+                List<AuditLogEntry> entries =
+                    auditLogService.findAllByInstitution(
+                        null, page * PER_XML_FILE, PER_XML_FILE, institution);
+                xmlHelper.writeXmlFile(auditFolder, page + ".xml", entries, xstream);
+                message.incrementCurrent();
+              });
     }
 
     Collection<AuditLogExtension> extensions = auditLogService.getExtensions();
@@ -126,17 +123,17 @@ public class AuditLogConverter extends AbstractConverter<Object> {
       GenericDao<? extends AuditLogTable, Long> dao = auditLogExtension.getDao();
       offs = 0;
       size = -1;
-      auditFolder =
+      SubTemporaryFile auditExtensionFolder =
           new SubTemporaryFile(staging, AUDITLOGS2 + '/' + auditLogExtension.getShortName());
       // write out the format details
-      xmlHelper.writeExportFormatXmlFile(auditFolder, true);
+      xmlHelper.writeExportFormatXmlFile(auditExtensionFolder, true);
       do {
         List<? extends AuditLogTable> entries =
             dao.findAllByCriteria(
                 null, offs, PER_XML_FILE, Restrictions.eq("institution", institution));
         size = entries.size();
         if (size != 0) {
-          final BucketFile bucketFolder = new BucketFile(auditFolder, offs);
+          final BucketFile bucketFolder = new BucketFile(auditExtensionFolder, offs);
           xmlHelper.writeXmlFile(bucketFolder, offs + "-" + (offs + size) + ".xml", entries);
           offs += size;
           message.incrementCurrent();

@@ -18,6 +18,8 @@
 
 package com.tle.core.auditlog.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tle.beans.Institution;
 import com.tle.beans.audit.AuditLogEntry;
 import com.tle.beans.item.Item;
@@ -37,9 +39,13 @@ import com.tle.core.plugins.PluginTracker;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.log4j.Logger;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.annotation.Transactional;
 
 /** Generic audit logging service. */
@@ -66,7 +72,7 @@ public class AuditLogServiceImpl implements AuditLogService {
   private static final String USED_TYPE = "USED";
 
   @Inject private AuditLogDao dao;
-
+  private static final Logger LOGGER = Logger.getLogger(AuditLogServiceImpl.class);
   private PluginTracker<AuditLogExtension> extensionTracker;
 
   @Override
@@ -86,20 +92,14 @@ public class AuditLogServiceImpl implements AuditLogService {
 
   private void logUserEvent(String type, UserState us, HttpServletRequest request) {
     UserBean ub = us.getUserBean();
-    AuditLogEntry entry =
-        new AuditLogEntry(
-            ub.getUniqueID(),
-            us.getSessionID(),
-            USER_CATEGORY,
-            type,
-            new Date(),
-            us.getIpAddress(),
-            ub.getUniqueID(),
-            ub.getUsername(),
-            us.getTokenSecretId(),
-            us.getInstitution(),
-            null);
-    dao.logWithRequest(entry, request);
+    logWithRequest(
+        USER_CATEGORY,
+        type,
+        us.getIpAddress(),
+        ub.getUniqueID(),
+        ub.getUsername(),
+        us.getTokenSecretId(),
+        request);
   }
 
   @Override
@@ -148,21 +148,14 @@ public class AuditLogServiceImpl implements AuditLogService {
   @Override
   @Transactional
   public void logSummaryViewed(String category, ItemKey item, HttpServletRequest request) {
-    AuditLogEntry entry =
-        new AuditLogEntry(
-            CurrentUser.getUserID(),
-            CurrentUser.getSessionID(),
-            category,
-            SUMMARY_VIEWED_TYPE,
-            new Date(),
-            item.getUuid(),
-            Integer.toString(item.getVersion()),
-            null,
-            null,
-            CurrentInstitution.get(),
-            null);
-
-    dao.logWithRequest(entry, request);
+    logWithRequest(
+        category,
+        SUMMARY_VIEWED_TYPE,
+        item.getUuid(),
+        Integer.toString(item.getVersion()),
+        null,
+        null,
+        request);
   }
 
   @Override
@@ -179,21 +172,14 @@ public class AuditLogServiceImpl implements AuditLogService {
       String contentType,
       String path,
       HttpServletRequest request) {
-    AuditLogEntry entry =
-        new AuditLogEntry(
-            CurrentUser.getUserID(),
-            CurrentUser.getSessionID(),
-            category,
-            CONTENT_VIEWED_TYPE,
-            new Date(),
-            itemId.getUuid(),
-            Integer.toString(itemId.getVersion()),
-            contentType,
-            path,
-            CurrentInstitution.get(),
-            null);
-
-    dao.logWithRequest(entry, request);
+    logWithRequest(
+        category,
+        CONTENT_VIEWED_TYPE,
+        itemId.getUuid(),
+        Integer.toString(itemId.getVersion()),
+        contentType,
+        path,
+        request);
   }
 
   @Override
@@ -252,6 +238,42 @@ public class AuditLogServiceImpl implements AuditLogService {
   }
 
   @Override
+  public void logWithRequest(
+      String category,
+      String type,
+      String d1,
+      String d2,
+      String d3,
+      String d4,
+      HttpServletRequest request) {
+
+    ObjectMapper mapper = new ObjectMapper();
+    AuditLogMetaReferer referer = new AuditLogMetaReferer(request.getHeader("Referer"));
+    String meta = "";
+    try {
+      meta = mapper.writeValueAsString(referer);
+    } catch (JsonProcessingException e) {
+      LOGGER.error("Failed to build a JSON string for meta of audit log.");
+    }
+
+    AuditLogEntry entry =
+        new AuditLogEntry(
+            CurrentUser.getUserID(),
+            CurrentUser.getSessionID(),
+            category,
+            type,
+            new Date(),
+            d1,
+            d2,
+            d3,
+            d4,
+            CurrentInstitution.get(),
+            meta);
+
+    dao.save(entry);
+  }
+
+  @Override
   @Transactional
   public void logFederatedSearch(String freeText, String searchId) {
     logGeneric(SEARCH_CATEGORY, SEARCH_FEDERATED_TYPE, freeText, searchId, null, null);
@@ -307,6 +329,34 @@ public class AuditLogServiceImpl implements AuditLogService {
     dao.removeEntriesForInstitution(institution);
     for (AuditLogExtension extension : getExtensions()) {
       extension.getDao().removeEntriesForInstitution(institution);
+    }
+  }
+
+  @Override
+  public int countByInstitution(Institution institution) {
+    return (int) dao.countByCriteria(Restrictions.eq("institution", institution));
+  }
+
+  @Override
+  public List<AuditLogEntry> findAllByInstitution(
+      Order order, int firstResult, int maxResults, Institution institution) {
+    return dao.findAllByCriteria(
+        order, firstResult, maxResults, Restrictions.eq("institution", institution));
+  }
+
+  static class AuditLogMetaReferer {
+    private String referer;
+
+    public AuditLogMetaReferer(String referer) {
+      this.referer = referer;
+    }
+
+    public String getReferer() {
+      return referer;
+    }
+
+    public void setReferer(String referer) {
+      this.referer = referer;
     }
   }
 }

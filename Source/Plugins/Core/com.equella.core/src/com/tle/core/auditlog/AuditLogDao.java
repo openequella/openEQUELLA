@@ -19,15 +19,5 @@
 package com.tle.core.auditlog;
 
 import com.tle.beans.audit.AuditLogEntry;
-import javax.servlet.http.HttpServletRequest;
 
-public interface AuditLogDao extends AuditLogExtensionDao<AuditLogEntry> {
-
-  /**
-   * Create an audit log with a HTTP request.
-   *
-   * @param entry Instance of AuditLogEntry which contains log information
-   * @param request The request which triggers the log
-   */
-  void logWithRequest(AuditLogEntry entry, HttpServletRequest request);
-}
+public interface AuditLogDao extends AuditLogExtensionDao<AuditLogEntry> {}
