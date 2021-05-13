@@ -43,9 +43,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.log4j.Logger;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.annotation.Transactional;
 
 /** Generic audit logging service. */
@@ -72,7 +70,6 @@ public class AuditLogServiceImpl implements AuditLogService {
   private static final String USED_TYPE = "USED";
 
   @Inject private AuditLogDao dao;
-  private static final Logger LOGGER = Logger.getLogger(AuditLogServiceImpl.class);
   private PluginTracker<AuditLogExtension> extensionTracker;
 
   @Override
@@ -248,12 +245,12 @@ public class AuditLogServiceImpl implements AuditLogService {
       HttpServletRequest request) {
 
     ObjectMapper mapper = new ObjectMapper();
-    AuditLogMetaReferer referer = new AuditLogMetaReferer(request.getHeader("Referer"));
+    HttpRequestMeta referer = new HttpRequestMeta(request);
     String meta = "";
     try {
       meta = mapper.writeValueAsString(referer);
     } catch (JsonProcessingException e) {
-      LOGGER.error("Failed to build a JSON string for meta of audit log.");
+      throw new RuntimeException("Failed to build a JSON string for meta of audit log.");
     }
 
     AuditLogEntry entry =
@@ -334,21 +331,22 @@ public class AuditLogServiceImpl implements AuditLogService {
 
   @Override
   public int countByInstitution(Institution institution) {
-    return (int) dao.countByCriteria(Restrictions.eq("institution", institution));
+    return (int) dao.countByCriteria(dao.restrictByInstitution(institution));
   }
 
   @Override
   public List<AuditLogEntry> findAllByInstitution(
       Order order, int firstResult, int maxResults, Institution institution) {
     return dao.findAllByCriteria(
-        order, firstResult, maxResults, Restrictions.eq("institution", institution));
+        order, firstResult, maxResults, dao.restrictByInstitution(institution));
   }
 
-  static class AuditLogMetaReferer {
+  /** Class which provides metadata of HTTP request. */
+  static class HttpRequestMeta {
     private String referer;
 
-    public AuditLogMetaReferer(String referer) {
-      this.referer = referer;
+    public HttpRequestMeta(HttpServletRequest request) {
+      this.referer = request.getHeader("Referer");
     }
 
     public String getReferer() {

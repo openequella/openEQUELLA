@@ -18,15 +18,22 @@
 
 package com.tle.core.auditlog.impl;
 
+import com.tle.beans.Institution;
 import com.tle.beans.audit.AuditLogEntry;
 import com.tle.core.auditlog.AuditLogDao;
 import com.tle.core.guice.Bind;
 import javax.inject.Singleton;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
 
 @Bind(AuditLogDao.class)
 @Singleton
 public class AuditLogDaoImpl extends AbstractAuditLogDaoImpl<AuditLogEntry> implements AuditLogDao {
   public AuditLogDaoImpl() {
     super(AuditLogEntry.class);
+  }
+
+  public Criterion restrictByInstitution(Institution institution) {
+    return Restrictions.eq("institution", institution);
   }
 }

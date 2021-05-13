@@ -18,6 +18,10 @@
 
 package com.tle.core.auditlog;
 
+import com.tle.beans.Institution;
 import com.tle.beans.audit.AuditLogEntry;
+import org.hibernate.criterion.Criterion;
 
-public interface AuditLogDao extends AuditLogExtensionDao<AuditLogEntry> {}
+public interface AuditLogDao extends AuditLogExtensionDao<AuditLogEntry> {
+  Criterion restrictByInstitution(Institution institution);
+}
