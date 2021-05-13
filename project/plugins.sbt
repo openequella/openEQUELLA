@@ -19,7 +19,7 @@ libraryDependencies ++= Seq(
 ).map(_ % circeVersion)
 
 libraryDependencies ++= Seq(
-  "com.typesafe"           % "config"                % "1.4.0",
+  "com.typesafe"           % "config"                % "1.4.1",
   "org.jacoco"             % "org.jacoco.report"     % "0.8.6",
   "org.jdom"               % "jdom2"                 % "2.0.6",
   "org.apache.axis2"       % "axis2-kernel"          % "1.6.2",
