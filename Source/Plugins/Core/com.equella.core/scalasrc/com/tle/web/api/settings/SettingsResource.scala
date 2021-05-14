@@ -20,7 +20,7 @@ package com.tle.web.api.settings
 
 import java.net.URI
 import com.tle.common.institution.CurrentInstitution
-import com.tle.web.api.settings.SettingsApiHelper.checkEditSystemSettingsAcl
+import com.tle.web.api.settings.SettingsApiHelper.ensureEditSystem
 import com.tle.web.settings.{EditableSettings, SettingsList, UISettings}
 import io.swagger.annotations.Api
 import javax.ws.rs.{GET, PUT, Path, Produces}
@@ -63,7 +63,7 @@ class SettingsResource {
   @PUT
   @Path("ui")
   def setUISettings(in: UISettings): Unit = {
-    checkEditSystemSettingsAcl()
+    ensureEditSystem()
     UISettings.setUISettings(in)
   }
 }

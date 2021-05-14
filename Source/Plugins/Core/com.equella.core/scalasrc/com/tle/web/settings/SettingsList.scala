@@ -21,6 +21,7 @@ package com.tle.web.settings
 import com.tle.common.connectors.ConnectorConstants.{PRIV_CREATE_CONNECTOR, PRIV_EDIT_CONNECTOR}
 import com.tle.common.externaltools.constants.ExternalToolConstants
 import com.tle.common.lti.consumers.LtiConsumerConstants
+import com.tle.common.security.SecurityConstants
 import com.tle.common.userscripts.UserScriptsConstants
 import scala.collection.JavaConverters._
 import com.tle.core.echo.EchoConstants
@@ -66,7 +67,9 @@ object SettingsList {
     "uisettings.name",
     "uisettings.desc",
     "api/settings/ui",
-    () => LegacyGuice.aclManager.hasPrivilege(List("EDIT_SYSTEM_SETTINGS").asJava, true),
+    () =>
+      LegacyGuice.aclManager.hasPrivilege(List(SecurityConstants.EDIT_SYSTEM_SETTINGS).asJava,
+                                          true),
     "rest"
   )
 

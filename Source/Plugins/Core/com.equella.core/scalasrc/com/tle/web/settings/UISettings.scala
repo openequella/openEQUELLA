@@ -18,6 +18,7 @@
 
 package com.tle.web.settings
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import io.circe.syntax._
 import com.tle.legacy.LegacyGuice
 import io.circe.generic.auto._
@@ -26,6 +27,7 @@ import io.circe.parser.parse
 case class NewUISettings(enabled: Boolean, newSearch: Boolean = false)
 
 case class UISettings(newUI: NewUISettings) {
+  @JsonIgnore
   def isNewSearchActive: Boolean = newUI.enabled && newUI.newSearch
 }
 
@@ -36,6 +38,8 @@ object UISettings {
   val defaultSettings = UISettings(NewUISettings(enabled = false))
 
   def getUISettings: UISettings = {
+    // `Circe parse` returns a Either where left is ParsingFailure and right is Json.
+    // So we decode the value of right to UISettings by `Circe as`.
     parse(LegacyGuice.configService.getProperty(UIPropName))
       .flatMap(_.as[UISettings])
       .getOrElse(defaultSettings)

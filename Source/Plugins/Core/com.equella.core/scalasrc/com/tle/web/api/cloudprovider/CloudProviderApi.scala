@@ -23,7 +23,7 @@ import cats.syntax.functor._
 import com.tle.core.cloudproviders._
 import com.tle.core.db._
 import com.tle.legacy.LegacyGuice
-import com.tle.web.api.settings.SettingsApiHelper.checkEditSystemSettingsAcl
+import com.tle.web.api.settings.SettingsApiHelper.ensureEditSystem
 import com.tle.web.api.{ApiHelper, EntityPaging}
 import com.tle.web.settings.SettingsList
 import io.lemonlabs.uri.Url
@@ -80,7 +80,7 @@ class CloudProviderApi {
     checkPermissions()
     UrlParser.parseUrl(providerUrl) match {
       case Success(u: Url) =>
-        checkEditSystemSettingsAcl()
+        ensureEditSystem()
         RunWithDB.execute {
           for {
             token <- CloudProviderDB.createRegistrationToken

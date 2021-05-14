@@ -34,7 +34,7 @@ object SettingsApiHelper {
     LegacyGuice.configService.setProperties(settings)
   }
 
-  def checkEditSystemSettingsAcl(): Unit = {
+  def ensureEditSystem(): Unit = {
     val hasSettingsAcl =
       LegacyGuice.aclManager.hasPrivilege(List(SecurityConstants.EDIT_SYSTEM_SETTINGS).asJava, true)
     if (!hasSettingsAcl) {
