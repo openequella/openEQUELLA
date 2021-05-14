@@ -24,20 +24,20 @@ object JPFPlugin extends AutoPlugin {
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
     scalaVersion := "2.12.13",
     javacOptions ++= Seq("-source", "1.8"),
-    jpfCodeDirs := Seq((classDirectory in Compile).value),
-    resourceDirectory in Compile := baseDirectory.value / "resources",
-    jpfResourceDirs := (resourceDirectories in Compile).value,
+    jpfCodeDirs := Seq((Compile / classDirectory).value),
+    (Compile / resourceDirectory) := baseDirectory.value / "resources",
+    jpfResourceDirs := (Compile / resourceDirectories).value,
     jpfRuntime := JPFRuntime(baseDirectory.value / "plugin-jpf.xml",
                              jpfCodeDirs.value,
                              jpfResourceDirs.value,
                              jpfLibraryJars.value.files,
                              baseDirectory.value.getParentFile.getName),
     jpfLibraryJars := Seq(),
-    managedClasspath in Compile ++= jpfLibraryJars.value,
-    javaSource in Compile := baseDirectory.value / "src",
-    javaSource in Test := baseDirectory.value / "test/java",
-    resourceDirectory in Test := baseDirectory.value / "test/resources",
-    scalaSource in Compile := baseDirectory.value / "scalasrc",
+    (Compile / managedClasspath) ++= jpfLibraryJars.value,
+    (Compile / javaSource) := baseDirectory.value / "src",
+    (Test / javaSource) := baseDirectory.value / "test/java",
+    (Test / resourceDirectory) := baseDirectory.value / "test/resources",
+    (Compile / scalaSource) := baseDirectory.value / "scalasrc",
     updateOptions := updateOptions.value.withCachedResolution(true),
     jpfWriteDevJars := {
       val outBase = target.value / "jpflibs"
@@ -64,7 +64,7 @@ object JPFPlugin extends AutoPlugin {
             .toMap
           val fp    = paramMap("file")
           val group = paramMap.getOrElse("group", "resource-centre")
-          Common.loadLangProperties((resourceDirectory in Compile).value / fp, pfx, group)
+          Common.loadLangProperties((Compile / resourceDirectory).value / fp, pfx, group)
       }
     }
   )

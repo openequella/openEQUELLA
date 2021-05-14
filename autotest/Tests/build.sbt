@@ -49,7 +49,7 @@ libraryDependencies ++= Seq(
   "com.unboundid"    % "unboundid-ldapsdk"         % "5.1.1"
 )
 
-unmanagedBase in Compile := baseDirectory.value / "lib/adminjars"
+(Compile / unmanagedBase) := baseDirectory.value / "lib/adminjars"
 
 def serialFilter(name: String): Boolean = {
   name endsWith "PropertiesSerial"
@@ -61,14 +61,14 @@ def stdFilter(name: String): Boolean = {
 val commonOptions = Seq(
   sbt.Tests.Argument(TestFrameworks.ScalaCheck, "-s", "1")
 )
-testOptions in Serial := commonOptions
+(Serial / testOptions) := commonOptions
 
-testOptions in Test := commonOptions
+(Test / testOptions) := commonOptions
 
-testOptions in Test += sbt.Tests.Filter(stdFilter)
+(Test / testOptions) += sbt.Tests.Filter(stdFilter)
 
-testOptions in Serial += sbt.Tests.Filter(serialFilter)
+(Serial / testOptions) += sbt.Tests.Filter(serialFilter)
 
-parallelExecution in Serial := false
+(Serial / parallelExecution) := false
 
-parallelExecution in Test := autotestBuildConfig.value.getBoolean("tests.parallel")
+(Test / parallelExecution) := autotestBuildConfig.value.getBoolean("tests.parallel")

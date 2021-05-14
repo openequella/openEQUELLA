@@ -24,8 +24,8 @@ resolvers += Resolver.url("my-test-repo",
 
 ivyConfigurations := overrideConfigs(BirtOsgi, CustomCompile)(ivyConfigurations.value)
 
-resourceGenerators in Compile += Def.task {
-  val baseDir  = (resourceManaged in Compile).value
+(Compile / resourceGenerators) += Def.task {
+  val baseDir  = (Compile / resourceManaged).value
   val baseBirt = baseDir / "birt"
   IO.delete(baseBirt)
   val outPlugins = baseBirt / "plugins"
@@ -36,6 +36,8 @@ resourceGenerators in Compile += Def.task {
   val copied         = IO.copy(pluginJars.pair(flat(outPlugins), errorIfNone = false))
   val birtManifest   = baseDirectory.value / "birt-MANIFEST.MF"
   val manifestPlugin = outPlugins / "org.eclipse.birt.api.jar"
-  IO.zip(Seq(birtManifest -> "META-INF/MANIFEST.MF"), manifestPlugin)
+  IO.zip(Seq(birtManifest -> "META-INF/MANIFEST.MF"),
+         manifestPlugin,
+         Option((ThisBuild / buildTimestamp).value))
   unzipped.toSeq ++ copied :+ manifestPlugin
 }.taskValue

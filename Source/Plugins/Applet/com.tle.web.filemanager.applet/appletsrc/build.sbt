@@ -10,7 +10,7 @@ libraryDependencies ++= Seq(
 
 dependsOn(platformSwing, LocalProject("com_tle_common_applet"))
 
-packageOptions in assembly += Package.ManifestAttributes(
+(assembly / packageOptions) += Package.ManifestAttributes(
   "Application-Name"                       -> "EQUELLA File Manager",
   "Permissions"                            -> "all-permissions",
   "Codebase"                               -> "*",
@@ -18,9 +18,9 @@ packageOptions in assembly += Package.ManifestAttributes(
   "Caller-Allowable-Codebase"              -> "*"
 )
 
-assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
+(assembly / assemblyOption) := (assembly / assemblyOption).value.copy(includeScala = false)
 
-assemblyMergeStrategy in assembly := {
+(assembly / assemblyMergeStrategy) := {
   case PathList("org", "xmlpull", "v1", _*) => MergeStrategy.first
   // The following three were added when the hibernate-types was added the the hibernate module
   case PathList("javax", "activation", _*)       => MergeStrategy.first
@@ -42,6 +42,6 @@ assemblyMergeStrategy in assembly := {
   // As per https://stackoverflow.com/questions/54834125/sbt-assembly-deduplicate-module-info-class , discarding is OK for Java 8
   case "module-info.class" => MergeStrategy.discard
   case x =>
-    val oldStrategy = (assemblyMergeStrategy in assembly).value
+    val oldStrategy = (assembly / assemblyMergeStrategy).value
     oldStrategy(x)
 }

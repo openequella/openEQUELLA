@@ -8,8 +8,8 @@ libraryDependencies ++= Seq(
 )
 
 excludeDependencies += "commons-logging" % "commons-logging"
-assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
-assemblyMergeStrategy in assembly := {
+(assembly / assemblyOption) := (assembly / assemblyOption).value.copy(includeScala = false)
+(assembly / assemblyMergeStrategy) := {
   case PathList("META-INF", "cxf", "bus-extensions.txt") => MergeStrategy.first
 
   // Due to the error: deduplicate: different file contents found in the following:
@@ -38,8 +38,8 @@ assemblyMergeStrategy in assembly := {
   // OK to do in Java 8
   case "module-info.class" => MergeStrategy.discard
   case x =>
-    val oldStrategy = (assemblyMergeStrategy in assembly).value
+    val oldStrategy = (assembly / assemblyMergeStrategy).value
     oldStrategy(x)
 }
 
-mainClass in assembly := Some("com.tle.conversion.Main")
+(assembly / mainClass) := Some("com.tle.conversion.Main")

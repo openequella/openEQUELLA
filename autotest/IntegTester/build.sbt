@@ -33,12 +33,12 @@ libraryDependencies ++= Seq(
   "com.nulab-inc" %% "scala-oauth2-core"   % "1.5.0"
 )
 
-resourceGenerators in Compile += Def.task {
+(Compile / resourceGenerators) += Def.task {
   val baseJs = baseDirectory.value / "ps"
   val cached = FileFunction.cached(target.value / "pscache") { files =>
     Common.nodeInstall(baseJs)
     Common.nodeScript("build", baseJs)
-    val outDir       = (resourceManaged in Compile).value / "www"
+    val outDir       = (Compile / resourceManaged).value / "www"
     val baseJsTarget = baseJs / "target/www"
     IO.copy((baseJsTarget ** "*").pair(rebase(baseJsTarget, outDir)))
   }

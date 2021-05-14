@@ -1,17 +1,15 @@
-import java.nio.file.Files
-
-import sbt.Keys._
-import sbt.{Def, _}
-import JPFPlugin.autoImport._
-
-import scala.util.Try
 import Common._
+import CommonSettings.autoImport.buildTimestamp
+import JPFPlugin.autoImport._
 import org.jdom2.Element
 import org.jdom2.output.{Format, XMLOutputter}
-import Path.rebase
-import Path.flatRebase
+import sbt.Keys._
+import sbt._
+import Path.{flatRebase, rebase}
 
+import java.nio.file.Files
 import scala.collection.JavaConverters._
+import scala.util.Try
 
 object JPFRunnerPlugin extends AutoPlugin {
 
@@ -29,15 +27,17 @@ object JPFRunnerPlugin extends AutoPlugin {
       val scope = ScopeFilter(inAggregates(aggregate, includeRoot = false))
       Seq(
         writeJars := {
-          val compileAll  = (fullClasspath in Compile).all(scope).value
+          val compileAll  = (Compile / fullClasspath).all(scope).value
           val allRuntimes = jpfRuntime.all(scope).value ++ additionalPlugins.value
           val outBase     = target.value / "jpfjars"
           IO.delete(outBase)
           allRuntimes.map {
             r =>
-              val allCode = r.code.flatMap(f => (f ** "*.class").pair(rebase(f, "classes/"), false))
+              val allCode = r.code.flatMap(f =>
+                (f ** "*.class").pair(rebase(f, "classes/"), errorIfNone = false))
               val allResources =
-                r.resources.flatMap(f => (f ** "*").pair(rebase(f, "resources/"), false))
+                r.resources.flatMap(f =>
+                  (f ** "*").pair(rebase(f, "resources/"), errorIfNone = false))
               val allJars = r.jars.flatMap(f => flatRebase("lib/").apply(f).map((f, _)))
               val libs = allCode.headOption.map(_ =>
                 JPFLibrary("code", "code", "classes/", Some("*"))) ++
@@ -49,7 +49,7 @@ object JPFRunnerPlugin extends AutoPlugin {
               IO.withTemporaryFile("jpf", "xml") { tf =>
                 IO.write(tf, manifest)
                 val allFiles = (tf, "plugin-jpf.xml") +: (allCode ++ allResources ++ allJars)
-                IO.zip(allFiles, outJar)
+                IO.zip(allFiles, outJar, Option((ThisBuild / buildTimestamp).value))
               }
               ManifestWritten(outJar, id, r.group)
           }
@@ -57,8 +57,6 @@ object JPFRunnerPlugin extends AutoPlugin {
       )
     }
   }
-
-  import autoImport._
 
   def isDirectoryEmpty(f: File): Boolean = {
     Try {

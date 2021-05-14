@@ -15,6 +15,6 @@ libraryDependencies ++= Seq(
   "commons-codec"        % "commons-codec"      % "1.15"
 )
 
-assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
+(assembly / assemblyOption) := (assembly / assemblyOption).value.copy(includeScala = false)
 
 packageOptions += ManifestAttributes(Attributes.Name.CLASS_PATH -> ".")
