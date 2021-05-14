@@ -94,9 +94,8 @@ checkJavaCodeStyle := {
   val errorNumber     = countErrorNumber
   val thresholdNumber = 870
   if (errorNumber > thresholdNumber) {
-    println(
+    throw new MessageOnlyException(
       "Checkstyle error threshold (" + thresholdNumber + ") exceeded with error count of " + errorNumber)
-    System.exit(1)
   }
 }
 
