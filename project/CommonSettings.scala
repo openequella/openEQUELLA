@@ -21,6 +21,7 @@ object CommonSettings extends AutoPlugin {
     lazy val oracleDriverMavenCoordinate =
       settingKey[Seq[ModuleID]]("The Maven coordinate of Oracle JDBC")
     lazy val buildConfig           = settingKey[Config]("The build configuration settings")
+    lazy val buildTimestamp        = settingKey[Long]("Timestamp - in seconds - to use for this build")
     lazy val prepareDevConfig      = taskKey[Unit]("Prepare the dev learningedge-config folder")
     lazy val writeSourceZip        = taskKey[File]("Write out a zip containing all sources")
     lazy val langStrings           = taskKey[Seq[LangStrings]]("Fully qualified language strings")

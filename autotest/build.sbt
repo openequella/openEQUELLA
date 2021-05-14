@@ -249,7 +249,8 @@ collectArtifacts := {
 
   sLog.value.info(s"Collecting test artifacts into ${results.absolutePath}")
   IO.zip(allFiles(Seq(logsDir, scReportDir, oldReportDir, (coverageReport / target).value)),
-         results)
+         results,
+         Option((ThisBuild / buildTimestamp).value))
   results
 }
 

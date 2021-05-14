@@ -458,7 +458,7 @@ additionalPlugins := {
 upgradeZip := {
   val log         = streams.value.log
   val ver         = equellaVersion.value
-  var releaseDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+  val releaseDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
   val outZip
     : File    = target.value / s"tle-upgrade-${ver.major}.${ver.minor}.r${releaseDate} (${ver.semanticVersion}-${ver.releaseType}).zip"
   val plugVer = ver.fullVersion
@@ -471,7 +471,7 @@ upgradeZip := {
   val pluginJars =
     writeJars.value.map(t => (t.file, s"plugins/${t.group}/${t.pluginId}-$plugVer.jar"))
   log.info(s"Creating upgrade zip ${outZip.absolutePath}")
-  IO.zip(zipFiles ++ pluginJars, outZip)
+  IO.zip(zipFiles ++ pluginJars, outZip, Option((ThisBuild / buildTimestamp).value))
   outZip
 }
 
@@ -484,6 +484,6 @@ writeSourceZip := {
   val outZip  = target.value / "equella-sources.zip"
   val allSrcs = sourcesForZip.all(ScopeFilter(inAggregates(allPlugins))).value.flatten
   sLog.value.info(s"Zipping all sources into $outZip")
-  IO.zip(allSrcs, outZip)
+  IO.zip(allSrcs, outZip, Option((ThisBuild / buildTimestamp).value))
   outZip
 }

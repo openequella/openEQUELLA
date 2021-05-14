@@ -1,10 +1,10 @@
 import java.io.FileNotFoundException
 import java.util.Properties
-
 import Path.rebase
 import com.typesafe.sbt.license.LicenseReport
 import sbt.io.Using
 
+import java.time.Instant
 import scala.collection.JavaConverters._
 
 lazy val learningedge_config = project in file("Dev/learningedge-config")
@@ -119,6 +119,7 @@ name := "Equella"
 (ThisBuild / equellaPatch) := 0
 (ThisBuild / equellaStream) := "Alpha"
 (ThisBuild / equellaBuild) := buildConfig.value.getString("build.buildname")
+(ThisBuild / buildTimestamp) := Instant.now().getEpochSecond
 
 version := {
   val shortCommit = git.gitHeadCommit.value.map { sha =>
@@ -179,7 +180,7 @@ writeLanguagePack := {
       }
     val outZip = target.value / "reference-language-pack.zip"
     sLog.value.info(s"Writing ${outZip.absolutePath}")
-    IO.zip(allProps, outZip)
+    IO.zip(allProps, outZip, Option((ThisBuild / buildTimestamp).value))
     outZip
   }
 }
@@ -204,7 +205,7 @@ mergeJPF := {
     pluginAndLibs.all(allPluginsScope).value
   val extensionsOnly =
     (baseDirectory.value / "Source/Plugins/Extensions" * "*" / "plugin-jpf.xml").get
-  val allPluginDirs = _allPluginDirs ++ (extensionsOnly.map(f => (f.getParentFile, Seq.empty)))
+  val allPluginDirs = _allPluginDirs ++ extensionsOnly.map(f => (f.getParentFile, Seq.empty))
   if (args.isEmpty) {
     val plugins = PluginRefactor.findPluginsToMerge(allPluginDirs, adminConsole = adminConsole)
     println(s"mergeJPF <ID> ${plugins.mkString(" ")}")
@@ -224,7 +225,9 @@ writeScriptingJavadoc := {
   val ver        = version.value
   val outZip     = target.value / s"scriptingapi-javadoc-$ver.zip"
   sLog.value.info(s"Writing ${outZip.absolutePath}")
-  IO.zip((javadocDir ** "*").pair(rebase(javadocDir, "")), outZip)
+  IO.zip((javadocDir ** "*").pair(rebase(javadocDir, "")),
+         outZip,
+         Option((ThisBuild / buildTimestamp).value))
   outZip
 }
 

@@ -36,6 +36,8 @@ ivyConfigurations := overrideConfigs(BirtOsgi, CustomCompile)(ivyConfigurations.
   val copied         = IO.copy(pluginJars.pair(flat(outPlugins), errorIfNone = false))
   val birtManifest   = baseDirectory.value / "birt-MANIFEST.MF"
   val manifestPlugin = outPlugins / "org.eclipse.birt.api.jar"
-  IO.zip(Seq(birtManifest -> "META-INF/MANIFEST.MF"), manifestPlugin)
+  IO.zip(Seq(birtManifest -> "META-INF/MANIFEST.MF"),
+         manifestPlugin,
+         Option((ThisBuild / buildTimestamp).value))
   unzipped.toSeq ++ copied :+ manifestPlugin
 }.taskValue
