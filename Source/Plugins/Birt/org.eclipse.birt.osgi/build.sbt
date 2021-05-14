@@ -24,8 +24,8 @@ resolvers += Resolver.url("my-test-repo",
 
 ivyConfigurations := overrideConfigs(BirtOsgi, CustomCompile)(ivyConfigurations.value)
 
-resourceGenerators in Compile += Def.task {
-  val baseDir  = (resourceManaged in Compile).value
+(Compile / resourceGenerators) += Def.task {
+  val baseDir  = (Compile / resourceManaged).value
   val baseBirt = baseDir / "birt"
   IO.delete(baseBirt)
   val outPlugins = baseBirt / "plugins"

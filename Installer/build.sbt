@@ -23,9 +23,9 @@ excludeDependencies ++= Seq(
   "stax"            % "stax-api"
 )
 
-assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
+(assembly / assemblyOption) := (assembly / assemblyOption).value.copy(includeScala = false)
 
-mainClass in assembly := Some("com.dytech.edge.installer.application.Launch")
+(assembly / mainClass) := Some("com.dytech.edge.installer.application.Launch")
 
 lazy val equellaserver  = LocalProject("equellaserver")
 lazy val upgradeManager = LocalProject("UpgradeManager")
@@ -37,7 +37,7 @@ installerZip := {
   val outZip         = target.value / s"$dirname.zip"
   val serverData     = baseDirectory.value / "data/server"
   val allServerFiles = serverData ** "*" pair (relativeTo(serverData), false)
-  val upZip          = (upgradeZip in equellaserver).value
+  val upZip          = (equellaserver / upgradeZip).value
   val allFiles = Seq(
     assembly.value -> "enterprise-install.jar",
     upZip          -> s"manager/updates/${upZip.getName}"

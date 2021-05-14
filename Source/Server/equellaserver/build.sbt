@@ -4,16 +4,16 @@ import java.time.format.DateTimeFormatter
 
 javacOptions ++= Seq("-source", "1.8")
 
-resourceDirectory in Compile := baseDirectory.value / "resources"
+(Compile / resourceDirectory) := baseDirectory.value / "resources"
 
-javaSource in Compile := baseDirectory.value / "src"
-javaSource in Test := baseDirectory.value / "test/java"
+(Compile / javaSource) := baseDirectory.value / "src"
+(Test / javaSource) := baseDirectory.value / "test/java"
 
-scalaSource in Compile := baseDirectory.value / "scalasrc"
+(Compile / scalaSource) := baseDirectory.value / "scalasrc"
 
 updateOptions := updateOptions.value.withCachedResolution(true)
 
-unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_config")).value
+(Runtime / unmanagedClasspath) += (LocalProject("learningedge_config") / baseDirectory).value
 
 val RestEasyVersion  = "3.13.2.Final"
 val SwaggerVersion   = "1.6.2"
@@ -350,7 +350,7 @@ excludeDependencies ++= Seq(
 )
 
 run := {
-  val cp = (fullClasspath in Runtime).value
+  val cp = (Runtime / fullClasspath).value
   val o = ForkOptions().withRunJVMOptions(
     Vector(
       "-cp",
@@ -361,11 +361,11 @@ run := {
   Fork.java(o, Seq("com.tle.core.equella.runner.EQUELLAServer"))
 }
 
-mainClass in assembly := Some("com.tle.core.equella.runner.EQUELLAServer")
+(assembly / mainClass) := Some("com.tle.core.equella.runner.EQUELLAServer")
 
-fullClasspath in assembly := (fullClasspath in Compile).value
+(assembly / fullClasspath) := (Compile / fullClasspath).value
 
-assemblyMergeStrategy in assembly := {
+(assembly / assemblyMergeStrategy) := {
   case PathList("META-INF", "axiom.xml")                    => MergeStrategy.first
   case PathList("javax", "wsdl", _*)                        => MergeStrategy.last
   case PathList("com", "ibm", "wsdl", _*)                   => MergeStrategy.first
@@ -434,7 +434,7 @@ assemblyMergeStrategy in assembly := {
   // Safe to do at least in JDK 8
   case "module-info.class" => MergeStrategy.discard
   case x =>
-    val oldStrategy = (assemblyMergeStrategy in assembly).value
+    val oldStrategy = (assembly / assemblyMergeStrategy).value
     oldStrategy(x)
 }
 
@@ -443,14 +443,14 @@ lazy val collectJars = taskKey[Set[File]]("Collect jars")
 collectJars := {
   val destDir = target.value / "jars"
   IO.delete(destDir)
-  IO.copy((managedClasspath in Compile).value.map(af => (af.data, destDir / af.data.getName)))
+  IO.copy((Compile / managedClasspath).value.map(af => (af.data, destDir / af.data.getName)))
 }
 
 lazy val allPlugins: ProjectReference = LocalProject("allPlugins")
 runnerTasks(allPlugins)
 
 additionalPlugins := {
-  ((baseDirectory in allPlugins).value / "Extensions" * "*" * "plugin-jpf.xml").get.map { mf =>
+  ((allPlugins / baseDirectory).value / "Extensions" * "*" * "plugin-jpf.xml").get.map { mf =>
     JPFRuntime(mf, Seq.empty, Seq.empty, Seq.empty, "Extensions")
   }
 }
@@ -463,10 +463,10 @@ upgradeZip := {
     : File    = target.value / s"tle-upgrade-${ver.major}.${ver.minor}.r${releaseDate} (${ver.semanticVersion}-${ver.releaseType}).zip"
   val plugVer = ver.fullVersion
   val zipFiles = Seq(
-    assembly.value                                          -> "equella-server.jar",
-    (assembly in LocalProject("UpgradeInstallation")).value -> "database-upgrader.jar",
-    (assembly in LocalProject("conversion")).value          -> "conversion-service.jar",
-    (versionProperties in LocalProject("equella")).value    -> "version.properties"
+    assembly.value                                         -> "equella-server.jar",
+    (LocalProject("UpgradeInstallation") / assembly).value -> "database-upgrader.jar",
+    (LocalProject("conversion") / assembly).value          -> "conversion-service.jar",
+    (LocalProject("equella") / versionProperties).value    -> "version.properties"
   )
   val pluginJars =
     writeJars.value.map(t => (t.file, s"plugins/${t.group}/${t.pluginId}-$plugVer.jar"))
@@ -476,7 +476,7 @@ upgradeZip := {
 }
 
 lazy val sourcesForZip = Def.task[Seq[(File, String)]] {
-  val baseJavaSrc = (javaSource in Compile).value
+  val baseJavaSrc = (Compile / javaSource).value
   (baseJavaSrc ** "*.java").pair(rebase(baseJavaSrc, ""))
 }
 

@@ -24,9 +24,9 @@ excludeDependencies ++= Seq(
   "org.springframework" % "spring-jcl"
 )
 
-packageOptions in assembly += Package.ManifestAttributes("Permissions" -> "all-permissions")
-assemblyOption in assembly := (assemblyOption in assembly).value
-assemblyMergeStrategy in assembly := {
+(assembly / packageOptions) += Package.ManifestAttributes("Permissions" -> "all-permissions")
+(assembly / assemblyOption) := (assembly / assemblyOption).value
+(assembly / assemblyMergeStrategy) := {
   case PathList("org", "xmlpull", "v1", _*) => MergeStrategy.first
   // The following three were added when the hibernate-types was added the the hibernate module
   case PathList("javax", "activation", _*)       => MergeStrategy.first
@@ -48,7 +48,7 @@ assemblyMergeStrategy in assembly := {
   // As per https://stackoverflow.com/questions/54834125/sbt-assembly-deduplicate-module-info-class , discarding is OK for Java 8
   case "module-info.class" => MergeStrategy.discard
   case x =>
-    val oldStrategy = (assemblyMergeStrategy in assembly).value
+    val oldStrategy = (assembly / assemblyMergeStrategy).value
     oldStrategy(x)
 }
 dependsOn(platformCommon, platformSwing, platformEquella, LocalProject("com_tle_webstart_admin"))

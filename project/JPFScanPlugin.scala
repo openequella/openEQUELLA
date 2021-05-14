@@ -97,15 +97,15 @@ object JPFScanPlugin extends AutoPlugin {
               val prj = Project(toSbtPrj(pId), baseDir)
                 .dependsOn(prjDeps: _*)
                 .settings(
-                  managedClasspath in Compile ++= (managedClasspath in (parentForPlugin(pjpf), Compile)).value,
-                  managedClasspath in Compile ++= {
+                  (Compile / managedClasspath) ++= (parentForPlugin(pjpf) / Compile / managedClasspath).value,
+                  (Compile / managedClasspath) ++= {
                     jpfLibraryJars
                       .all(ScopeFilter(
                         inProjects(depsWithExports(deps, Set.empty).map(toLocalProject).toSeq: _*)))
                       .value
                       .flatten
                   },
-                  managedClasspath in Test ++= (managedClasspath in Compile).value
+                  (Test / managedClasspath) ++= (Compile / managedClasspath).value
                 )
                 .enablePlugins(JPFPlugin)
               (a, prj :: l)

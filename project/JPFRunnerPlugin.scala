@@ -29,7 +29,7 @@ object JPFRunnerPlugin extends AutoPlugin {
       val scope = ScopeFilter(inAggregates(aggregate, includeRoot = false))
       Seq(
         writeJars := {
-          val compileAll  = (fullClasspath in Compile).all(scope).value
+          val compileAll  = (Compile / fullClasspath).all(scope).value
           val allRuntimes = jpfRuntime.all(scope).value ++ additionalPlugins.value
           val outBase     = target.value / "jpfjars"
           IO.delete(outBase)
