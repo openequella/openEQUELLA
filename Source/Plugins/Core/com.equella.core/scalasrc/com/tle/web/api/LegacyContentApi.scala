@@ -31,6 +31,7 @@ import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.i18n.CoreStrings
 import com.tle.core.notification.standard.indexer.NotificationSearch
 import com.tle.core.plugins.{AbstractPluginService, PluginTracker}
+import com.tle.core.security.ACLChecks.hasAcl
 import com.tle.core.workflow.freetext.TaskListSearch
 import com.tle.legacy.LegacyGuice
 import com.tle.legacy.LegacyGuice.accessibilityModeService
@@ -346,10 +347,7 @@ class LegacyContentApi {
 
     val accessibilityMode = LegacyGuice.accessibilityModeService.isAccessibilityMode
 
-    val canDownloadSearchResult: Boolean = LegacyGuice.aclManager
-      .filterNonGrantedPrivileges(SecurityConstants.EXPORT_SEARCH_RESULT)
-      .asScala
-      .nonEmpty
+    val canDownloadSearchResult: Boolean = hasAcl(SecurityConstants.EXPORT_SEARCH_RESULT)
 
     val prefsEditable = !(cu.isSystem || cu.isGuest) && !(cu.wasAutoLoggedIn &&
       LegacyGuice.configService.getProperties(new AutoLogin).isEditDetailsDisallowed)

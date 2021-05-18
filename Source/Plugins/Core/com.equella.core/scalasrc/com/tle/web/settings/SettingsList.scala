@@ -23,11 +23,10 @@ import com.tle.common.externaltools.constants.ExternalToolConstants
 import com.tle.common.lti.consumers.LtiConsumerConstants
 import com.tle.common.security.SecurityConstants
 import com.tle.common.userscripts.UserScriptsConstants
-import scala.collection.JavaConverters._
 import com.tle.core.echo.EchoConstants
 import com.tle.core.i18n.CoreStrings
 import com.tle.core.oauth.OAuthConstants
-import com.tle.legacy.LegacyGuice
+import com.tle.core.security.ACLChecks.hasAcl
 import com.tle.legacy.LegacyGuice._
 import com.tle.web.cloudprovider.CloudProviderConstants
 import com.tle.web.mimetypes.MimeEditorUtils
@@ -67,9 +66,7 @@ object SettingsList {
     "uisettings.name",
     "uisettings.desc",
     "api/settings/ui",
-    () =>
-      LegacyGuice.aclManager.hasPrivilege(List(SecurityConstants.EDIT_SYSTEM_SETTINGS).asJava,
-                                          true),
+    () => hasAcl(SecurityConstants.EDIT_SYSTEM_SETTINGS, includePossibleOwnerAcls = true),
     "rest"
   )
 

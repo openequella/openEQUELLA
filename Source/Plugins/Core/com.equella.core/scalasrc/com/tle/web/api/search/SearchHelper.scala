@@ -29,6 +29,7 @@ import com.tle.common.search.whereparser.WhereParser
 import com.tle.core.freetext.queries.FreeTextBooleanQuery
 import com.tle.core.item.security.ItemSecurityConstants
 import com.tle.core.item.serializer.{ItemSerializerItemBean, ItemSerializerService}
+import com.tle.core.security.ACLChecks.hasAcl
 import com.tle.core.services.item.{FreetextResult, FreetextSearchResults}
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean
@@ -267,9 +268,8 @@ object SearchHelper {
     */
   def convertToAttachment(attachmentBeans: java.util.List[AttachmentBean],
                           itemKey: ItemIdKey): Option[List[SearchResultAttachment]] = {
-    lazy val hasRestrictedAttachmentPrivileges: Boolean = !LegacyGuice.aclManager
-      .filterNonGrantedPrivileges(AttachmentConfigConstants.VIEW_RESTRICTED_ATTACHMENTS)
-      .isEmpty;
+    lazy val hasRestrictedAttachmentPrivileges: Boolean =
+      hasAcl(AttachmentConfigConstants.VIEW_RESTRICTED_ATTACHMENTS)
 
     Option(attachmentBeans).map(
       beans =>

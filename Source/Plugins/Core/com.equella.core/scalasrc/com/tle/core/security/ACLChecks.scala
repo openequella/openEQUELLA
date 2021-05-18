@@ -30,7 +30,7 @@ object ACLChecks {
     * @param privilege Required ACL, typically defined as a constant in `com.tle.common.security.SecurityConstants`
     * @param includePossibleOwnerAcls `true` to include possible owner ACLs
     */
-  def hasAcl(privilege: String, includePossibleOwnerAcls: Boolean = true): Boolean = {
+  def hasAcl(privilege: String, includePossibleOwnerAcls: Boolean = false): Boolean = {
     LegacyGuice.aclManager.hasPrivilege(Set(privilege).asJava, includePossibleOwnerAcls)
   }
 
