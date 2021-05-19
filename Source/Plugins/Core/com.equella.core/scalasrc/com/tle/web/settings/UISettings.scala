@@ -18,42 +18,39 @@
 
 package com.tle.web.settings
 
-import cats.effect.IO
-import cats.syntax.apply._
-import com.tle.core.cache.{Cache, DBCacheBuilder, InstCacheable}
-import com.tle.core.db.{DB, RunWithDB}
-import com.tle.core.settings.SettingsDB
-import io.circe.generic.extras.Configuration
-import io.circe.generic.extras.auto._
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.tle.common.institution.CurrentInstitution
+import io.circe.syntax._
+import com.tle.legacy.LegacyGuice
+import io.circe.generic.auto._
+import io.circe.parser.parse
 
 case class NewUISettings(enabled: Boolean, newSearch: Boolean = false)
 
 case class UISettings(newUI: NewUISettings) {
+  @JsonIgnore
   def isNewSearchActive: Boolean = newUI.enabled && newUI.newSearch
 }
 
 object UISettings {
-  implicit val customConfig: Configuration = Configuration.default.withDefaults
 
   private val UIPropName = "ui"
 
   val defaultSettings = UISettings(NewUISettings(enabled = false))
 
-  val getUISettings: DB[Option[UISettings]] = SettingsDB.jsonProperty[UISettings](UIPropName).value
-
-  val uiSettingsCache =
-    DBCacheBuilder.buildCache(InstCacheable[Option[UISettings]]("uiSettings", _ => getUISettings))
-
-  def setUISettings(in: UISettings): DB[IO[Unit]] =
-    SettingsDB.setJsonProperty(UIPropName, in) *>
-      uiSettingsCache.invalidate.apply()
-
-  def cachedUISettings: DB[Option[UISettings]] = uiSettingsCache.get.apply()
-}
-
-object UISettingsJava {
-  def getUISettings: UISettings = RunWithDB.executeWithHibernate {
-    UISettings.getUISettings.map(_.getOrElse(UISettings.defaultSettings))
+  def getUISettings: UISettings = {
+    Option(CurrentInstitution.get()) match {
+      case Some(_) =>
+        // `Circe parse` returns a Either where left is ParsingFailure and right is Json.
+        // So we decode the value of right to UISettings by `Circe as`.
+        parse(LegacyGuice.configService.getProperty(UIPropName))
+          .flatMap(_.as[UISettings])
+          .getOrElse(defaultSettings)
+      case None => defaultSettings
+    }
   }
 
+  def setUISettings(settings: UISettings): Unit = {
+    LegacyGuice.configService.setProperty(UIPropName, settings.asJson.noSpaces)
+  }
 }
