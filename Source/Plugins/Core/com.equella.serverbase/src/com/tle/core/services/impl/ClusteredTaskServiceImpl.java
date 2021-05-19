@@ -19,7 +19,6 @@
 package com.tle.core.services.impl;
 
 import com.dytech.edge.common.Version;
-import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ArrayListMultimap;
@@ -72,8 +71,6 @@ import org.apache.curator.framework.recipes.cache.PathChildrenCache.StartMode;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent.Type;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
-import org.apache.curator.framework.recipes.locks.Reaper;
-import org.apache.curator.framework.recipes.locks.Reaper.Mode;
 import org.apache.curator.utils.ZKPaths;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -98,16 +95,16 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
   @Inject private ClusterMessagingService clusterMessagingService;
 
   private CuratorFramework curator;
-  private TaskStatusHandler statusHandler = new TaskStatusHandler();
-  private TaskRunnerHandler runnerHandler = new TaskRunnerHandler();
+  private final TaskStatusHandler statusHandler = new TaskStatusHandler();
+  private final TaskRunnerHandler runnerHandler = new TaskRunnerHandler();
 
   private PathChildrenCache globalCache;
   private PathChildrenCache taskCache;
 
   private final Cache<String, Serializable[]> taskArgs =
       CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).build();
-  private Multimap<String, TaskStatusListener> taskListeners =
-      Multimaps.synchronizedMultimap(ArrayListMultimap.<String, TaskStatusListener>create());
+  private final Multimap<String, TaskStatusListener> taskListeners =
+      Multimaps.synchronizedMultimap(ArrayListMultimap.create());
   private final Cache<String, BlockingQueue<SimpleMessage>> messageResponses =
       CacheBuilder.newBuilder().expireAfterAccess(30, TimeUnit.MINUTES).build();
   private CompletionService<TaskResult> taskRunnerExecutor;
@@ -116,7 +113,7 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
   private String ourNodeId;
   private long suspendedSessionId;
 
-  private Object initialTasksLock = new Object();
+  private final Object initialTasksLock = new Object();
   private boolean startedInitialTasks;
 
   @PostConstruct
@@ -142,15 +139,8 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
     curator = zookeeperService.getCurator();
     ourNodeId = zookeeperService.getNodeId();
 
-    final Reaper reaper = new Reaper(curator, 10000);
-    try {
-      reaper.start();
-    } catch (Exception e1) {
-      Throwables.propagate(e1);
-    }
-    new TaskWatchThread("Task Finisher listener", taskRunnerExecutor, reaper).start();
-    new TaskWatchThread("Priority Task Finisher listener", priorityTaskRunnerExecutor, reaper)
-        .start();
+    new TaskWatchThread("Task Finisher listener", taskRunnerExecutor).start();
+    new TaskWatchThread("Priority Task Finisher listener", priorityTaskRunnerExecutor).start();
   }
 
   @Override
@@ -199,11 +189,12 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
       curator
           .create()
           .creatingParentsIfNeeded()
+          .withMode(CreateMode.CONTAINER)
           .forPath(zookeeperService.getFullPath(ZK_TASKPATH, taskId), taskBytes);
     } catch (NodeExistsException nee) {
       LOGGER.debug("Task " + taskId + " already exists in ZK.");
     } catch (Exception e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
     return taskId;
   }
@@ -221,7 +212,11 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
     try {
       String taskId = UUID.randomUUID().toString();
       try {
-        curator.create().creatingParentsIfNeeded().forPath(globalPath, taskId.getBytes());
+        curator
+            .create()
+            .creatingParentsIfNeeded()
+            .withMode(CreateMode.CONTAINER)
+            .forPath(globalPath, taskId.getBytes());
         return new GlobalTaskStartInfo(startInternal(globalTask, taskId), false);
       } catch (NodeExistsException nee) {
         final String taskFromZk = new String(curator.getData().forPath(globalPath));
@@ -230,7 +225,7 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
         return new GlobalTaskStartInfo(taskFromZk, false);
       }
     } catch (Exception e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 
@@ -560,7 +555,7 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
         Executors.newSingleThreadExecutor(new NamedThreadFactory("TaskServiceImpl.listenerThread"));
 
     public synchronized Map<String, TaskStatus> getAllStatuses() {
-      return Maps.<String, TaskStatus>newHashMap(taskStatuses);
+      return Maps.newHashMap(taskStatuses);
     }
 
     public synchronized TaskStatusImpl getStatus(String taskId) {
@@ -774,12 +769,12 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
         interruptExisting();
       }
 
-      public void close(Reaper reaper) {
+      public void close() {
         if (lockPath != null) {
           try {
             curator.delete().forPath(lockPath);
           } catch (Exception e) {
-            reaper.addPath(lockPath);
+            LOGGER.warn("Failed to delete lock path " + lockPath);
           }
         }
       }
@@ -988,7 +983,7 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
   }
 
   public static class AskUpdatesMessage extends TaskMessage {
-    private Collection<String> taskIds;
+    private final Collection<String> taskIds;
 
     public AskUpdatesMessage(Collection<String> taskIds) {
       super(MsgType.ASK);
@@ -1001,8 +996,8 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
   }
 
   public static class AskFullStatusMessage extends TaskMessage {
-    private Collection<String> taskIds;
-    private String requestingId;
+    private final Collection<String> taskIds;
+    private final String requestingId;
 
     public AskFullStatusMessage(Collection<String> taskIds, String requestingId) {
       super(MsgType.FULL_STATUS);
@@ -1020,7 +1015,7 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
   }
 
   public static class FullStatusResponseMessage extends TaskMessage {
-    private Map<String, TaskStatusImpl> statuses;
+    private final Map<String, TaskStatusImpl> statuses;
 
     public FullStatusResponseMessage(Map<String, TaskStatusImpl> statuses) {
       super(MsgType.FULL_STATUS_RESPONSE);
@@ -1065,8 +1060,8 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
   }
 
   public static class MsgMessage extends TaskMessage {
-    private SimpleMessage msg;
-    private String taskId;
+    private final SimpleMessage msg;
+    private final String taskId;
 
     public MsgMessage(String taskId, SimpleMessage msg) {
       super(MsgType.MSG);
@@ -1249,12 +1244,10 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
   private class TaskWatchThread extends Thread {
     private final String name;
     private final CompletionService<TaskResult> executor;
-    private final Reaper reaper;
 
-    public TaskWatchThread(String name, CompletionService<TaskResult> executor, Reaper reaper) {
+    public TaskWatchThread(String name, CompletionService<TaskResult> executor) {
       this.name = name;
       this.executor = executor;
-      this.reaper = reaper;
     }
 
     @Override
@@ -1296,12 +1289,7 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
               } catch (NoNodeException nne) {
                 // not there
               } catch (Exception ke) {
-                LOGGER.warn(
-                    "Failed to delete path '"
-                        + taskPath
-                        + "' after completion, using reaper instead",
-                    ke);
-                reaper.addPath(taskPath, Mode.REAP_UNTIL_GONE);
+                LOGGER.warn("Failed to delete path '" + taskPath + "' after completion", ke);
               }
               if (globalPath != null) {
                 try {
@@ -1309,22 +1297,16 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
                 } catch (NoNodeException nne) {
                   // not there
                 } catch (Exception ke) {
-                  LOGGER.warn(
-                      "Failed to delete path '"
-                          + globalPath
-                          + "' after completion, using reaper instead",
-                      ke);
-                  reaper.addPath(globalPath, Mode.REAP_UNTIL_GONE);
+                  LOGGER.warn("Failed to delete path '" + globalPath + "' after completion", ke);
                 }
               }
-              reaper.addPath(zookeeperService.getFullPath(ZK_TASKOWNERPATH, taskId));
-              runner.close(reaper);
+              runner.close();
             } else {
               TaskRunner runner = taskResult.getRunner();
               if (runner.isTaskExists()) {
                 executor.submit(runner);
               } else {
-                runner.close(reaper);
+                runner.close();
               }
               String errorMessage = error != null ? error.getMessage() : "(no msg)";
               LOGGER.trace("TaskRunner failed with exception: " + errorMessage);
