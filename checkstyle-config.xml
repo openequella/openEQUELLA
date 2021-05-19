@@ -166,7 +166,13 @@
     <!-- See http://checkstyle.sourceforge.net/config_misc.html -->
     <module name="ArrayTypeStyle"/>
     <!--<module name="FinalParameters"/>-->
-    <module name="TodoComment"/>
+    <!--
+         openEQUELLA seems to have a lot of historical TODO comments - about 202. It'd be handy
+         to keep them around as a form of documentation, as it provides insight when trying to
+         understand what's going on. Hopefully code reviews though will stop people attempting
+         to add new TODO comments.
+    -->
+    <!--<module name="TodoComment"/>-->
     <module name="UpperEll"/>
   </module>
 </module>
