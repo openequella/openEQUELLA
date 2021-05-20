@@ -27,8 +27,8 @@ import java.util.Collection;
 import java.util.Date;
 import javax.inject.Singleton;
 import org.hibernate.HibernateException;
-import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,6 +55,28 @@ public class ReplicatedCacheDaoImpl extends GenericDaoImpl<CachedValue, Long>
                             "FROM CachedValue WHERE key = :key"
                                 + " AND cacheId = :cacheId AND institution = :institution");
                     q.setParameter("key", key);
+                    q.setParameter("cacheId", cacheId);
+                    q.setParameter("institution", CurrentInstitution.get());
+
+                    return q.uniqueResult();
+                  }
+                });
+  }
+
+  @Override
+  @Transactional
+  public CachedValue getByValue(String cacheId, String value) {
+    return (CachedValue)
+        getHibernateTemplate()
+            .execute(
+                new HibernateCallback() {
+                  @Override
+                  public Object doInHibernate(Session session) throws HibernateException {
+                    Query q =
+                        session.createQuery(
+                            "FROM CachedValue WHERE value = :value"
+                                + " AND cacheId = :cacheId AND institution = :institution");
+                    q.setParameter("value", value);
                     q.setParameter("cacheId", cacheId);
                     q.setParameter("institution", CurrentInstitution.get());
 
