@@ -92,7 +92,7 @@ checkJavaCodeStyle := {
     streams = streams.value
   )
   val errorNumber     = countErrorNumber
-  val thresholdNumber = 622
+  val thresholdNumber = 569
   if (errorNumber > thresholdNumber) {
     throw new MessageOnlyException(
       "Checkstyle error threshold (" + thresholdNumber + ") exceeded with error count of " + errorNumber)
