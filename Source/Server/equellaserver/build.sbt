@@ -20,7 +20,6 @@ val SwaggerVersion   = "1.6.2"
 val TomcatVersion    = "9.0.46"
 val axis2Version     = "1.6.2"
 val circeVersion     = "0.12.1"
-val curatorVersion   = "4.3.0"
 val cxfVersion       = "3.4.1"
 val fs2Version       = "2.4.4"
 val guiceVersion     = "3.0"
@@ -126,9 +125,9 @@ libraryDependencies ++= Seq(
   "org.apache.axis2"          % "axis2-adb"                % axis2Version,
   "org.apache.axis2"          % "axis2-transport-http"     % axis2Version,
   "org.apache.axis2"          % "axis2-transport-local"    % axis2Version,
-  "org.apache.curator"        % "curator-client"           % curatorVersion,
-  "org.apache.curator"        % "curator-framework"        % curatorVersion,
-  "org.apache.curator"        % "curator-recipes"          % curatorVersion,
+  "org.apache.curator"        % "curator-client"           % "5.1.0",
+  "org.apache.curator"        % "curator-framework"        % "5.1.0",
+  "org.apache.curator"        % "curator-recipes"          % "5.1.0",
   "org.apache.cxf"            % "cxf-rt-frontend-jaxws"    % cxfVersion,
   "org.apache.cxf"            % "cxf-rt-transports-http"   % cxfVersion,
   "org.apache.cxf"            % "cxf-rt-databinding-aegis" % cxfVersion,
