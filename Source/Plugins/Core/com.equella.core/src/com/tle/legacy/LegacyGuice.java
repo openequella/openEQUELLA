@@ -50,6 +50,7 @@ import com.tle.core.oauth.service.OAuthService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.powersearch.PowerSearchService;
 import com.tle.core.replicatedcache.ReplicatedCacheService;
+import com.tle.core.replicatedcache.dao.ReplicatedCacheDao;
 import com.tle.core.search.service.impl.SearchPrivilegeTreeProvider;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.FileSystemService;
@@ -218,6 +219,8 @@ public class LegacyGuice extends AbstractModule {
   public static QuickContributeAndVersionSettingsPrivilegeTreeProvider quickContribPrivProvider;
 
   @Inject public static RemoteCachingPrivilegeTreeProvider remoteCachePrivProvider;
+
+  @Inject public static ReplicatedCacheDao replicatedCacheDao;
 
   @Inject public static ReplicatedCacheService replicatedCacheService;
 
