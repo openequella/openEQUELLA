@@ -78,7 +78,7 @@ public class NewAuditLogColumn extends AbstractHibernateSchemaMigration {
     @GeneratedValue(strategy = GenerationType.AUTO)
     long id;
 
-    @Type(type = "json_string")
+    @Type(type = "json")
     private String meta;
   }
 }

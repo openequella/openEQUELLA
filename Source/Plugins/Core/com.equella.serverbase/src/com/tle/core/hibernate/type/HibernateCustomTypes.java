@@ -37,8 +37,8 @@ public class HibernateCustomTypes {
       new CustomType(new HibernateCsvType(Types.VARCHAR), new String[] {"csv"});
 
   public static List<BasicType> getCustomTypes(ExtendedDialect dialect) {
-    final CustomType TYPE_JSON_STRING =
-        new CustomType(new JsonStringCustomType(dialect), new String[] {"json_string"});
-    return Arrays.asList(TYPE_JSON_STRING, TYPE_BLANKABLE, TYPE_CSV, TYPE_XSTREAM);
+    final CustomType TYPE_JSON =
+        new CustomType(new JsonStringCustomType(dialect), new String[] {"json"});
+    return Arrays.asList(TYPE_JSON, TYPE_BLANKABLE, TYPE_CSV, TYPE_XSTREAM);
   }
 }
