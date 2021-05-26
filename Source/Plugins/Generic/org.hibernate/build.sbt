@@ -3,7 +3,6 @@ lazy val CustomCompile = config("compile") extend Hibernate
 val springVersion      = "5.2.9.RELEASE"
 
 libraryDependencies := Seq(
-  "com.vladmihalcea"         % "hibernate-types-52"    % "2.10.4",
   "org.hibernate"            % "hibernate-core"        % "5.4.21.Final",
   "org.hibernate"            % "hibernate-validator"   % "6.1.5.Final",
   "javax.persistence"        % "javax.persistence-api" % "2.2",

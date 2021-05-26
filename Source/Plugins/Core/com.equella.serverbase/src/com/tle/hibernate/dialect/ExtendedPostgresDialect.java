@@ -45,6 +45,7 @@ public class ExtendedPostgresDialect extends PostgreSQL9Dialect implements Exten
     super();
     uniqueDelegate = new InPlaceUniqueDelegate(this);
     registerColumnType(Types.BLOB, "bytea");
+    registerColumnType(Types.OTHER, "jsonb");
   }
 
   @Override
@@ -159,7 +160,7 @@ public class ExtendedPostgresDialect extends PostgreSQL9Dialect implements Exten
 
   @Override
   public Iterable<? extends BasicType> getExtraTypeOverrides() {
-    List<BasicType> customTypes = new ArrayList<>(HibernateCustomTypes.getCustomTypes());
+    List<BasicType> customTypes = new ArrayList<>(HibernateCustomTypes.getCustomTypes(this));
     customTypes.add(new TextClobType());
     return ImmutableList.copyOf(customTypes);
   }
