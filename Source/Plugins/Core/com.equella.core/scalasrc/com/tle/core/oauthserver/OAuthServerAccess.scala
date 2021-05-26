@@ -122,9 +122,7 @@ object OAuthServerAccess {
     case CloudProviderClient(clientId, _) =>
       // The value of CachedValue is encoded by Base64 so here we need to encode the client ID.
       val clientIdBytes = clientId.toString.getBytes(StandardCharsets.UTF_8)
-      Option(
-        LegacyGuice.replicatedCacheDao.getByValue(CloudTokenCache,
-                                                  new Base64().encode(clientIdBytes))) match {
+      Option(LegacyGuice.replicatedCacheDao.getByValue(CloudTokenCache, clientIdBytes)) match {
         case Some(tokenEntry) =>
           CloudAuthToken(tokenEntry.getKey,
                          Option(tokenEntry.getTtl).map(_.toInstant).getOrElse(Instant.now))

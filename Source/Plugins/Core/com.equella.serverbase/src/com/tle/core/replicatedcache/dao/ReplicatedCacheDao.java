@@ -26,7 +26,7 @@ import java.util.Date;
 public interface ReplicatedCacheDao extends GenericDao<CachedValue, Long> {
   CachedValue get(String cacheId, String key);
 
-  CachedValue getByValue(String cacheId, String value);
+  CachedValue getByValue(String cacheId, byte[] value);
 
   void put(String cacheId, String key, Date ttl, byte[] value);
 
