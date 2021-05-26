@@ -66,14 +66,11 @@ describe('Retrieval of a specific schema', () => {
     );
   });
 
-  it('Should result in a 404 when attempting to retrieve an unknown UUID', () => {
-    expect.assertions(2);
-
-    return OEQ.Schema.getSchema(TC.API_PATH, 'fake-uuid').catch(
-      (error: OEQ.Errors.ApiError) => {
-        expect(error.status).toBe(404);
-        expect(error.errorResponse).toBeTruthy();
-      }
+  it('Should result in a 404 when attempting to retrieve an unknown UUID', async () => {
+    await expect(() =>
+      OEQ.Schema.getSchema(TC.API_PATH, 'fake-uuid')
+    ).rejects.toThrow(
+      new OEQ.Errors.ApiError('Request failed with status code 404', 404)
     );
   });
 });
