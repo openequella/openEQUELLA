@@ -25,7 +25,6 @@ import com.tle.core.migration.MigrationInfo;
 import com.tle.core.migration.MigrationResult;
 import java.util.List;
 import javax.inject.Singleton;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -79,8 +78,7 @@ public class NewAuditLogColumn extends AbstractHibernateSchemaMigration {
     @GeneratedValue(strategy = GenerationType.AUTO)
     long id;
 
-    @Type(type = "jsonb")
-    @Column(columnDefinition = "jsonb")
+    @Type(type = "json_string")
     private String meta;
   }
 }
