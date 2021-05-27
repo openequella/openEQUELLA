@@ -40,11 +40,13 @@ import org.hibernate.type.TextType;
 public class ExtendedPostgresDialect extends PostgreSQL9Dialect implements ExtendedDialect {
   private static final String URL_SCHEME = "jdbc:postgresql://";
   private final UniqueDelegate uniqueDelegate;
+  public static final int OEQ_JSON = 10000;
 
   public ExtendedPostgresDialect() {
     super();
     uniqueDelegate = new InPlaceUniqueDelegate(this);
     registerColumnType(Types.BLOB, "bytea");
+    registerColumnType(OEQ_JSON, "jsonb");
   }
 
   @Override
@@ -159,7 +161,7 @@ public class ExtendedPostgresDialect extends PostgreSQL9Dialect implements Exten
 
   @Override
   public Iterable<? extends BasicType> getExtraTypeOverrides() {
-    List<BasicType> customTypes = new ArrayList<>(HibernateCustomTypes.getCustomTypes());
+    List<BasicType> customTypes = new ArrayList<>(HibernateCustomTypes.getCustomTypes(this));
     customTypes.add(new TextClobType());
     return ImmutableList.copyOf(customTypes);
   }

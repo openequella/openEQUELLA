@@ -18,7 +18,7 @@
 
 package com.tle.core.hibernate.type;
 
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import com.tle.core.hibernate.ExtendedDialect;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.List;
@@ -36,9 +36,9 @@ public class HibernateCustomTypes {
   private static final CustomType TYPE_CSV =
       new CustomType(new HibernateCsvType(Types.VARCHAR), new String[] {"csv"});
 
-  private static final BasicType TYPE_JSONB = new JsonBinaryType(String.class);
-
-  public static List<BasicType> getCustomTypes() {
-    return Arrays.asList(TYPE_JSONB, TYPE_BLANKABLE, TYPE_CSV, TYPE_XSTREAM);
+  public static List<BasicType> getCustomTypes(ExtendedDialect dialect) {
+    final CustomType TYPE_JSON =
+        new CustomType(new JsonStringCustomType(dialect), new String[] {"json"});
+    return Arrays.asList(TYPE_JSON, TYPE_BLANKABLE, TYPE_CSV, TYPE_XSTREAM);
   }
 }

@@ -147,7 +147,7 @@ public class ExtendedOracle10gDialect extends Oracle10gDialect implements Extend
 
   @Override
   public Iterable<? extends BasicType> getExtraTypeOverrides() {
-    return ImmutableList.copyOf(HibernateCustomTypes.getCustomTypes());
+    return ImmutableList.copyOf(HibernateCustomTypes.getCustomTypes(this));
   }
 
   @Override

@@ -208,7 +208,7 @@ public class SQLServerDialect extends org.hibernate.dialect.SQLServer2005Dialect
 
   @Override
   public Iterable<? extends BasicType> getExtraTypeOverrides() {
-    List<BasicType> customTypes = new ArrayList<>(HibernateCustomTypes.getCustomTypes());
+    List<BasicType> customTypes = new ArrayList<>(HibernateCustomTypes.getCustomTypes(this));
     customTypes.add(new NStringType());
     customTypes.add(new LongNStringType());
     return ImmutableList.copyOf(customTypes);

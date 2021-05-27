@@ -80,8 +80,7 @@ public class AuditLogEntry implements AuditLogTable {
 
   @Lob private String data4;
 
-  @Type(type = "jsonb")
-  @Column(columnDefinition = "jsonb")
+  @Type(type = "json")
   private String meta;
 
   public AuditLogEntry() {
