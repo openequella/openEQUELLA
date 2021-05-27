@@ -287,9 +287,9 @@ public class ItemServiceImpl
   @Transactional
   @Override
   public void incrementViews(Attachment attachment) {
-    if(attachment.getItem() != null) {
+    if (attachment.getItem() != null) {
       ViewCountJavaDao.incrementAttachmentViews(
-        attachment.getItem().getItemId(), attachment.getUuid());
+          attachment.getItem().getItemId(), attachment.getUuid());
     }
   }
 

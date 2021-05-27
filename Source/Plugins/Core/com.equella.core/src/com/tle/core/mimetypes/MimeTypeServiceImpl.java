@@ -465,28 +465,30 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
 
   @Override
   public String getMimeEntryForAttachment(Attachment attachment) {
-    AttachmentType attachType = attachment.getAttachmentType();
-    String type = attachType.name().toLowerCase();
-    if (attachType == AttachmentType.CUSTOM) {
-      type += '/' + ((CustomAttachment) attachment).getType().toLowerCase();
-    }
-    if (type.equals(TYPE_ID)
-        && attachment
-            .getData("type")
-            .equals(Character.toString(SelectedResource.TYPE_ATTACHMENT))) {
-      // Recurse to drill into the linked attachment, so we can use the correct viewer.
-      // If more than one attachment has the linked uuid,
-      // this is a zip or scorm package and we can let it fall through.
-      List<Attachment> attachmentList = attachmentDao.findAllByUuid(attachment.getUrl());
-      if (attachmentList.size() == 1) {
-        return getMimeEntryForAttachment(attachmentList.get(0));
+    if (attachment != null) {
+      AttachmentType attachType = attachment.getAttachmentType();
+      String type = attachType.name().toLowerCase();
+      if (attachType == AttachmentType.CUSTOM) {
+        type += '/' + ((CustomAttachment) attachment).getType().toLowerCase();
       }
-    }
-    Map<String, List<Extension>> map = getExtensionMap();
-    List<Extension> extensions = map.get(type);
-    if (extensions != null) {
-      for (Extension extension : extensions) {
-        return attachmentResources.getBeanByExtension(extension).getMimeType(attachment);
+      if (type.equals(TYPE_ID)
+          && attachment
+              .getData("type")
+              .equals(Character.toString(SelectedResource.TYPE_ATTACHMENT))) {
+        // Recurse to drill into the linked attachment, so we can use the correct viewer.
+        // If more than one attachment has the linked uuid,
+        // this is a zip or scorm package and we can let it fall through.
+        List<Attachment> attachmentList = attachmentDao.findAllByUuid(attachment.getUrl());
+        if (attachmentList.size() == 1) {
+          return getMimeEntryForAttachment(attachmentList.get(0));
+        }
+      }
+      Map<String, List<Extension>> map = getExtensionMap();
+      List<Extension> extensions = map.get(type);
+      if (extensions != null) {
+        for (Extension extension : extensions) {
+          return attachmentResources.getBeanByExtension(extension).getMimeType(attachment);
+        }
       }
     }
 
