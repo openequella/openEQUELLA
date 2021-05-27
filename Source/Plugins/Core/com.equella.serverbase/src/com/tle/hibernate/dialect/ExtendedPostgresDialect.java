@@ -40,12 +40,13 @@ import org.hibernate.type.TextType;
 public class ExtendedPostgresDialect extends PostgreSQL9Dialect implements ExtendedDialect {
   private static final String URL_SCHEME = "jdbc:postgresql://";
   private final UniqueDelegate uniqueDelegate;
+  public static final int OEQ_JSON = 10000;
 
   public ExtendedPostgresDialect() {
     super();
     uniqueDelegate = new InPlaceUniqueDelegate(this);
     registerColumnType(Types.BLOB, "bytea");
-    registerColumnType(Types.OTHER, "jsonb");
+    registerColumnType(OEQ_JSON, "jsonb");
   }
 
   @Override

@@ -48,7 +48,7 @@ public class JsonStringCustomType implements UserType {
 
   @Override
   public int[] sqlTypes() {
-    int jsonStringSqlType = Types.OTHER; // Default to 'OTHER' for Postgres.
+    int jsonStringSqlType = ExtendedPostgresDialect.OEQ_JSON;
 
     if (dialect instanceof SQLServerDialect) {
       jsonStringSqlType = Types.LONGNVARCHAR;
