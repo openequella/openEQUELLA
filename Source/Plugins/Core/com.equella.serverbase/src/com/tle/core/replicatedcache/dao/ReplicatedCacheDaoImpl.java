@@ -124,6 +124,12 @@ public class ReplicatedCacheDaoImpl extends GenericDaoImpl<CachedValue, Long>
 
   @Override
   @Transactional
+  public void delete(CachedValue entity) {
+    super.delete(entity);
+  }
+
+  @Override
+  @Transactional
   public void invalidateExpiredEntries() {
     getHibernateTemplate()
         .execute(
