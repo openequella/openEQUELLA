@@ -534,4 +534,8 @@ export const listImageGalleryClassifications = async (
 export const listVideoGalleryClassifications = async (
   options: SearchOptions
 ): Promise<Classification[]> =>
-  listClassifications({ ...options, musts: videoGalleryMusts });
+  listClassifications({
+    ...options,
+    musts: videoGalleryMusts,
+    mimeTypes: undefined,
+  });
