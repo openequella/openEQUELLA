@@ -508,7 +508,7 @@ export const videoGallerySearch = async (
   options: SearchOptions
 ): Promise<OEQ.Search.SearchResult<GallerySearchResultItem>> =>
   gallerySearch(
-    { ...options, musts: videoGalleryMusts },
+    { ...options, musts: videoGalleryMusts, mimeTypes: undefined },
     filterAttachmentsByVideo
   );
 
@@ -534,4 +534,8 @@ export const listImageGalleryClassifications = async (
 export const listVideoGalleryClassifications = async (
   options: SearchOptions
 ): Promise<Classification[]> =>
-  listClassifications({ ...options, musts: videoGalleryMusts });
+  listClassifications({
+    ...options,
+    musts: videoGalleryMusts,
+    mimeTypes: undefined,
+  });
