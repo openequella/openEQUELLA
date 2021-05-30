@@ -70,7 +70,6 @@ class MimeTypeResource {
     responseContainer = "List"
   )
   def listMimeTypes: Response = {
-    LegacyGuice.mimePrivProvider.checkAuthorised()
     val mimeEntries =
       LegacyGuice.mimeTypeService.searchByMimeType(Constants.BLANK, 0, -1).getResults.asScala
     val mimeTypes = mimeEntries.map(
