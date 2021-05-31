@@ -251,6 +251,9 @@ export const SearchResultAttachmentsList = ({
     }
   }
 
+  const isAttachmentSelectable = (mimeType?: string) =>
+    inSelectionSession && mimeType !== DEAD_ATTACHMENT;
+
   const attachmentsList = attachmentsAndViewerConfigs.map(
     (attachmentAndViewerConfig: AttachmentAndViewerConfig) => {
       const {
@@ -271,7 +274,7 @@ export const SearchResultAttachmentsList = ({
           <ItemAttachmentLink selectedAttachment={attachmentAndViewerConfig}>
             <ListItemText color="primary" primary={description} />
           </ItemAttachmentLink>
-          {inSelectionSession && mimeType !== DEAD_ATTACHMENT && (
+          {isAttachmentSelectable(mimeType) && (
             <ListItemSecondaryAction>
               <ResourceSelector
                 labelText={selectResourceStrings.attachment}
@@ -299,18 +302,20 @@ export const SearchResultAttachmentsList = ({
     .map(({ attachment }) => attachment.mimeType)
     .some((type) => type !== DEAD_ATTACHMENT);
 
+  const showSelectAllAttachments = atLeastOneIntactAttachment && !inSkinny;
+
   const accordionSummaryContent = inSelectionSession ? (
     <Grid container alignItems="center">
       <Grid item>{accordionText}</Grid>
       <Grid>
-        {!inSkinny && atLeastOneIntactAttachment && (
+        {showSelectAllAttachments && (
           <ResourceSelector
             labelText={selectResourceStrings.allAttachments}
             isStopPropagation
             onClick={() => {
               const attachments = attachmentsAndViewerConfigs
                 .filter(
-                  // filter out dead attachments from select all
+                  // filter out dead attachments from select all function
                   ({ attachment }) => attachment.mimeType !== DEAD_ATTACHMENT
                 )
                 .map(({ attachment }) => attachment.id);
