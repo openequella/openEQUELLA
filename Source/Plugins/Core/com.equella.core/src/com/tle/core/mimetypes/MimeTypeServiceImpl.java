@@ -18,12 +18,16 @@
 
 package com.tle.core.mimetypes;
 
+import static com.tle.core.mimetypes.MimeTypeConstants.DEAD_ATTACHMENT;
 import static com.tle.core.mimetypes.MimeTypeConstants.MIME_ITEM;
 import static com.tle.web.controls.resource.ResourceAttachmentBean.TYPE_ID;
 
 import com.google.common.cache.CacheLoader;
 import com.tle.annotation.Nullable;
 import com.tle.beans.Institution;
+import com.tle.beans.item.Item;
+import com.tle.beans.item.ItemId;
+import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.CustomAttachment;
@@ -39,6 +43,7 @@ import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionCache;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.item.dao.AttachmentDao;
+import com.tle.core.item.dao.ItemDao;
 import com.tle.core.mimetypes.dao.MimeEntryDao;
 import com.tle.core.mimetypes.institution.MimeMigrator;
 import com.tle.core.plugins.AbstractPluginService;
@@ -46,9 +51,13 @@ import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.plugins.PluginTracker.ExtensionParamComparator;
 import com.tle.core.security.impl.RequiresPrivilege;
+import com.tle.core.services.FileSystemService;
 import com.tle.exceptions.AccessDeniedException;
+import com.tle.web.api.item.equella.interfaces.beans.AbstractFileAttachmentBean;
 import com.tle.web.controls.resource.ResourceAttachmentBean;
 import com.tle.web.selection.SelectedResource;
+import com.tle.web.viewable.NewDefaultViewableItem;
+import com.tle.web.viewable.impl.ViewableItemFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -77,6 +86,9 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
   @Inject private MimeEntryDao mimeEntryDao;
   @Inject private EventService eventService;
   @Inject private AttachmentDao attachmentDao;
+  @Inject private FileSystemService fileSystemService;
+  @Inject private ViewableItemFactory viewableItemFactory;
+  @Inject private ItemDao itemDao;
 
   private PluginTracker<TextExtracterExtension> textExtracterTracker;
 
@@ -166,6 +178,16 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
   }
 
   @Override
+  public String getMimeTypeForFileAttachment(AbstractFileAttachmentBean bean, ItemKey itemKey){
+    NewDefaultViewableItem item = viewableItemFactory.createNewViewableItem(itemKey);
+    if (fileSystemService.fileExists(item.getFileHandle(), bean.getFilename())) {
+      return getMimeTypeForFilename(bean.getFilename());
+    } else {
+      return DEAD_ATTACHMENT;
+    }
+  }
+
+  @Override
   public String getMimeTypeForFilename(String filename) {
     MimeEntry entry = getEntryForFilename(filename);
     if (entry != null) {
@@ -174,18 +196,31 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
     return DEFAULT_MIMETYPE;
   }
 
-  public String getMimeTypeForAttachmentUuid(String attachmentUuid) {
-    Attachment attachment = attachmentDao.findByUuid(attachmentUuid);
+  public String getMimeTypeForResourceAttachment(ResourceAttachmentBean bean) {
+    Attachment attachment = attachmentDao.findByUuid(bean.getAttachmentUuid());
+    if (attachment == null) {
+      // resource attachment link dead
+      return DEAD_ATTACHMENT;
+    }
     return getMimeEntryForAttachment(attachment);
+  }
+
+  public String getMimeTypeForResourceItem(ResourceAttachmentBean bean) {
+    Item item = itemDao.findByItemId(new ItemId(bean.getItemUuid(), bean.getItemVersion()));
+    if (item == null) {
+      // resource item link dead
+      return DEAD_ATTACHMENT;
+    }
+    return MIME_ITEM;
   }
 
   public String getMimeTypeForResourceAttachmentBean(
       ResourceAttachmentBean resourceAttachmentBean) {
     switch (resourceAttachmentBean.getResourceType()) {
       case SelectedResource.TYPE_ATTACHMENT:
-        return getMimeTypeForAttachmentUuid(resourceAttachmentBean.getAttachmentUuid());
+        return getMimeTypeForResourceAttachment(resourceAttachmentBean);
       case SelectedResource.TYPE_PATH:
-        return MIME_ITEM;
+        return getMimeTypeForResourceItem(resourceAttachmentBean);
       default:
         return resourceAttachmentBean.getRawAttachmentType();
     }

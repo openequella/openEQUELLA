@@ -282,7 +282,7 @@ object SearchHelper {
               id = att.getUuid,
               description = Option(att.getDescription),
               preview = att.isPreview,
-              mimeType = getMimetypeForAttachment(att),
+              mimeType = getMimetypeForAttachment(itemKey, att),
               hasGeneratedThumb = thumbExists(itemKey, att),
               links = buildAttachmentLinks(att),
               filePath = getFilePathForAttachment(att)
@@ -313,16 +313,18 @@ object SearchHelper {
   /**
     * Extract the mimetype for AbstractExtendableBean.
     */
-  def getMimetypeForAttachment[T <: AbstractExtendableBean](bean: T): Option[String] = {
+  def getMimetypeForAttachment[T <: AbstractExtendableBean](itemKey: ItemIdKey,
+                                                            bean: T): Option[String] = {
     bean match {
-      case file: AbstractFileAttachmentBean =>
-        Some(LegacyGuice.mimeTypeService.getMimeTypeForFilename(file.getFilename))
-      case resourceAttachmentBean: ResourceAttachmentBean =>
-        Some(
-          LegacyGuice.mimeTypeService.getMimeTypeForResourceAttachmentBean(resourceAttachmentBean))
-      case _ => None
+          case file: AbstractFileAttachmentBean =>
+            Some(LegacyGuice.mimeTypeService.getMimeTypeForFileAttachment(file, itemKey))
+          case resourceAttachmentBean: ResourceAttachmentBean =>
+            Some(
+              LegacyGuice.mimeTypeService.getMimeTypeForResourceAttachmentBean(
+                resourceAttachmentBean))
+          case _ => None
+        }
     }
-  }
 
   /**
     * If the attachment is a file, then return the path for that attachment.

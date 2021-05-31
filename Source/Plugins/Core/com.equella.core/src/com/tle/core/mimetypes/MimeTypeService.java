@@ -20,9 +20,11 @@ package com.tle.core.mimetypes;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
+import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.mime.MimeEntry;
 import com.tle.core.TextExtracterExtension;
+import com.tle.web.api.item.equella.interfaces.beans.AbstractFileAttachmentBean;
 import com.tle.web.controls.resource.ResourceAttachmentBean;
 import java.util.Collection;
 import java.util.List;
@@ -38,7 +40,9 @@ public interface MimeTypeService {
    */
   String getMimeTypeForFilename(String filename);
 
-  String getMimeTypeForAttachmentUuid(String attachmentUuid);
+  String getMimeTypeForResourceAttachment(ResourceAttachmentBean bean);
+
+  String getMimeTypeForFileAttachment(AbstractFileAttachmentBean bean, ItemKey itemKey);
 
   String getMimeTypeForResourceAttachmentBean(ResourceAttachmentBean resourceAttachmentBean);
 
