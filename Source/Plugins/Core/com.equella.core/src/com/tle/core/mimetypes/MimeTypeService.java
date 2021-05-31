@@ -40,9 +40,34 @@ public interface MimeTypeService {
    */
   String getMimeTypeForFilename(String filename);
 
+  /**
+   * Get MIME type for a given resource attachment. If the attachment it is pointed towards doesn't
+   * exist in the database, it will return dead/attachment.
+   *
+   * @param bean The attachment to get the MIME Type for.
+   * @return MIME type of the attachment
+   */
   String getMimeTypeForResourceAttachment(ResourceAttachmentBean bean);
 
+  /**
+   * Get MIME type for a given file attachment. If the attachment is not accessible from the
+   * filestore, it will return dead/attachment.
+   *
+   * @param bean The attachment to check for a MIME type
+   * @param itemKey The item key for the attachment's item, required as it gives us the location of
+   *     the attachment in the filestore
+   * @return MIME type of the attachment
+   */
   String getMimeTypeForFileAttachment(AbstractFileAttachmentBean bean, ItemKey itemKey);
+
+  /**
+   * Get MIME type for a resource attachment pointing at an item summary. If the item is not
+   * present, it will return dead/attachment. If it is, it will return equella/item.
+   *
+   * @param bean They attachment to check for a MIME type
+   * @return MIME type of the attachment
+   */
+  String getMimeTypeForResourceItem(ResourceAttachmentBean bean);
 
   String getMimeTypeForResourceAttachmentBean(ResourceAttachmentBean resourceAttachmentBean);
 
