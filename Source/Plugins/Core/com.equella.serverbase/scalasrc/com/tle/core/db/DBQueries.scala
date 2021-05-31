@@ -67,12 +67,6 @@ case class EntityQueries(
     allByInst: InstId => Stream[JDBCIO, OEQEntity]
 )
 
-case class CachedValueQueries(
-    insertNew: (Long => CachedValue) => Stream[JDBCIO, CachedValue],
-    writes: WriteQueries[JDBCIO, CachedValue],
-    getForKey: ((String255, String255, InstId)) => Stream[JDBCIO, CachedValue],
-    getForValue: ((String255, String, InstId)) => Stream[JDBCIO, CachedValue])
-
 object DBQueries {
   val logSQL = LoggerFactory.getLogger("org.hibernate.SQL")
 }
@@ -91,6 +85,4 @@ trait DBQueries {
   def settingsQueries: SettingsQueries
 
   def entityQueries: EntityQueries
-
-  def cachedValueQueries: CachedValueQueries
 }

@@ -37,8 +37,6 @@ object SQLServerSchema
 
   override def insertAuditLog = insertIdentity(auditLog)
 
-  override def insertCachedValue = insertIdentity(cachedValues)
-
   def dbUuidCol =
     wrap[String, DbUUID](stringCol,
                          _.isoMap(Iso(_.id.toString, DbUUID.fromString)),
