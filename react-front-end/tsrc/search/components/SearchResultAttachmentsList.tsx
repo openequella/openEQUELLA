@@ -242,7 +242,7 @@ export const SearchResultAttachmentsList = ({
   function buildIcon(mimeType?: string): JSX.Element {
     if (mimeType === DEAD_ATTACHMENT) {
       return (
-        <Tooltip title="This attachment appears to be broken or inaccessible.">
+        <Tooltip title={languageStrings.searchpage.deadAttachmentWarning}>
           <Warning color="secondary" />
         </Tooltip>
       );
