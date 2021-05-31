@@ -37,6 +37,7 @@ import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import InsertDriveFile from "@material-ui/icons/InsertDriveFile";
 import Search from "@material-ui/icons/Search";
+import Warning from "@material-ui/icons/Warning";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { SyntheticEvent, useEffect, useState } from "react";
@@ -49,6 +50,7 @@ import {
   prepareDraggable,
   selectResource,
 } from "../../modules/LegacySelectionSessionModule";
+import { DEAD_ATTACHMENT } from "../../modules/MimeTypesModule";
 import {
   AttachmentAndViewerConfig,
   AttachmentAndViewerDefinition,
@@ -140,6 +142,9 @@ export const SearchResultAttachmentsList = ({
 
     const getViewerID = async (mimeType: string) => {
       let viewerDetails: OEQ.MimeType.MimeTypeViewerDetail | undefined;
+      if (mimeType === DEAD_ATTACHMENT) {
+        return undefined;
+      }
       try {
         viewerDetails = await getViewerDetails(mimeType);
       } catch (error) {
@@ -234,10 +239,22 @@ export const SearchResultAttachmentsList = ({
     setAttachExpanded(!attachExpanded);
   };
 
+  function buildIcon(mimeType?: string): JSX.Element {
+    if (mimeType === DEAD_ATTACHMENT) {
+      return (
+        <Tooltip title="This attachment appears to be broken or inaccessible.">
+          <Warning color="secondary" />
+        </Tooltip>
+      );
+    } else {
+      return inStructured ? <DragIndicatorIcon /> : <InsertDriveFile />;
+    }
+  }
+
   const attachmentsList = attachmentsAndViewerConfigs.map(
     (attachmentAndViewerConfig: AttachmentAndViewerConfig) => {
       const {
-        attachment: { id, description },
+        attachment: { id, description, mimeType },
       } = attachmentAndViewerConfig;
 
       return (
@@ -250,13 +267,11 @@ export const SearchResultAttachmentsList = ({
           data-itemversion={version}
           data-attachmentuuid={id}
         >
-          <ListItemIcon>
-            {inStructured ? <DragIndicatorIcon /> : <InsertDriveFile />}
-          </ListItemIcon>
+          <ListItemIcon>{buildIcon(mimeType)}</ListItemIcon>
           <ItemAttachmentLink selectedAttachment={attachmentAndViewerConfig}>
             <ListItemText color="primary" primary={description} />
           </ItemAttachmentLink>
-          {inSelectionSession && (
+          {inSelectionSession && mimeType !== DEAD_ATTACHMENT && (
             <ListItemSecondaryAction>
               <ResourceSelector
                 labelText={selectResourceStrings.attachment}
@@ -279,11 +294,15 @@ export const SearchResultAttachmentsList = ({
     </Typography>
   );
 
+  const noAttachmentsDead = !attachmentsAndViewerConfigs
+    .map(({ attachment }) => attachment.mimeType)
+    .includes(DEAD_ATTACHMENT);
+
   const accordionSummaryContent = inSelectionSession ? (
     <Grid container alignItems="center">
       <Grid item>{accordionText}</Grid>
       <Grid>
-        {!inSkinny && (
+        {!inSkinny && noAttachmentsDead && (
           <ResourceSelector
             labelText={selectResourceStrings.allAttachments}
             isStopPropagation

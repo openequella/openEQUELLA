@@ -15,9 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Link } from "@material-ui/core";
+import { Link, Typography } from "@material-ui/core";
 import * as React from "react";
 import { SyntheticEvent, useState } from "react";
+import { DEAD_ATTACHMENT } from "../modules/MimeTypesModule";
 import {
   AttachmentAndViewerConfig,
   isViewerLightboxConfig,
@@ -85,10 +86,15 @@ const ItemAttachmentLink = ({
       </>
     );
   };
+
   return isViewerLightboxConfig(viewerConfig) ? (
     buildLightboxLink(viewerConfig)
+  ) : // Lightbox viewer not specified, so go with the default of a simple link.
+  mimeType === DEAD_ATTACHMENT ? (
+    <Typography aria-label={`${attachmentLink} ${description}`}>
+      {description}
+    </Typography>
   ) : (
-    // Lightbox viewer not specified, so go with the default of a simple link.
     <Link
       aria-label={`${attachmentLink} ${description}`}
       href={viewerConfig.url}
