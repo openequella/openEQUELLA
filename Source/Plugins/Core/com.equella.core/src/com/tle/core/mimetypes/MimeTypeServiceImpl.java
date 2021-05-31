@@ -178,7 +178,7 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
   }
 
   @Override
-  public String getMimeTypeForFileAttachment(AbstractFileAttachmentBean bean, ItemKey itemKey){
+  public String getMimeTypeForFileAttachment(AbstractFileAttachmentBean bean, ItemKey itemKey) {
     NewDefaultViewableItem item = viewableItemFactory.createNewViewableItem(itemKey);
     if (fileSystemService.fileExists(item.getFileHandle(), bean.getFilename())) {
       return getMimeTypeForFilename(bean.getFilename());

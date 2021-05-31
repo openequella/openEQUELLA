@@ -316,15 +316,14 @@ object SearchHelper {
   def getMimetypeForAttachment[T <: AbstractExtendableBean](itemKey: ItemIdKey,
                                                             bean: T): Option[String] = {
     bean match {
-          case file: AbstractFileAttachmentBean =>
-            Some(LegacyGuice.mimeTypeService.getMimeTypeForFileAttachment(file, itemKey))
-          case resourceAttachmentBean: ResourceAttachmentBean =>
-            Some(
-              LegacyGuice.mimeTypeService.getMimeTypeForResourceAttachmentBean(
-                resourceAttachmentBean))
-          case _ => None
-        }
+      case file: AbstractFileAttachmentBean =>
+        Some(LegacyGuice.mimeTypeService.getMimeTypeForFileAttachment(file, itemKey))
+      case resourceAttachmentBean: ResourceAttachmentBean =>
+        Some(
+          LegacyGuice.mimeTypeService.getMimeTypeForResourceAttachmentBean(resourceAttachmentBean))
+      case _ => None
     }
+  }
 
   /**
     * If the attachment is a file, then return the path for that attachment.
