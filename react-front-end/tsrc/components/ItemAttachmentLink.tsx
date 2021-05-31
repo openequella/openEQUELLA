@@ -23,6 +23,7 @@ import {
   AttachmentAndViewerConfig,
   isViewerLightboxConfig,
   ViewerLightboxConfig,
+  ViewerLinkConfig,
 } from "../modules/ViewerModule";
 import { languageStrings } from "../util/langstrings";
 import Lightbox, { LightboxProps } from "./Lightbox";
@@ -55,6 +56,22 @@ const ItemAttachmentLink = ({
   const { attachmentLink } = languageStrings.searchpage.searchResult;
   const [lightBoxProps, setLightBoxProps] = useState<LightboxProps>();
 
+  const buildSimpleLink = (viewerConfig: ViewerLinkConfig): JSX.Element => {
+    return mimeType === DEAD_ATTACHMENT ? (
+      <Typography aria-label={`${attachmentLink} ${description}`}>
+        {description}
+      </Typography>
+    ) : (
+      <Link
+        aria-label={`${attachmentLink} ${description}`}
+        href={viewerConfig?.url}
+        target="_blank"
+        rel="noreferrer"
+      >
+        {children}
+      </Link>
+    );
+  };
   const buildLightboxLink = ({ config }: ViewerLightboxConfig): JSX.Element => {
     if (!mimeType) {
       throw new Error(
@@ -87,23 +104,10 @@ const ItemAttachmentLink = ({
     );
   };
 
-  return isViewerLightboxConfig(viewerConfig) ? (
-    buildLightboxLink(viewerConfig)
-  ) : // Lightbox viewer not specified, so go with the default of a simple link.
-  mimeType === DEAD_ATTACHMENT ? (
-    <Typography aria-label={`${attachmentLink} ${description}`}>
-      {description}
-    </Typography>
-  ) : (
-    <Link
-      aria-label={`${attachmentLink} ${description}`}
-      href={viewerConfig.url}
-      target="_blank"
-      rel="noreferrer"
-    >
-      {children}
-    </Link>
-  );
+  return isViewerLightboxConfig(viewerConfig)
+    ? buildLightboxLink(viewerConfig)
+    : // Lightbox viewer not specified, so go with the default of a simple link.
+      buildSimpleLink(viewerConfig);
 };
 
 export default ItemAttachmentLink;
