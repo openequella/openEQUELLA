@@ -16,6 +16,17 @@
  * limitations under the License.
  */
 import { cloneDeep, set } from 'lodash';
+import { is } from 'typescript-is';
+
+/**
+ * The idiomatic modelling for an `object` in Typescript is to use a `Record<string, unknown>`, so
+ * this is a simple type guard to help below where we want to go from an unknown potential object
+ * to a type more suitable for TS contexts.
+ *
+ * @param r a potential `object` / `Record`
+ */
+const isRecord = (r?: unknown): r is Record<string, unknown> =>
+  r !== null && is<Record<string, unknown>>(r);
 
 /**
  * Performs inplace conversion of specified fields with supplied converter.
@@ -31,16 +42,9 @@ const convertFields = <R>(
   recursive: boolean,
   converter: (value: unknown) => R
 ): void => {
-  const entries: [string, unknown][] = Object.entries(input);
-
-  entries.forEach(([field, value]) => {
-    if (value && typeof value === 'object' && recursive) {
-      convertFields(
-        value as Record<string, unknown>,
-        targetFields,
-        recursive,
-        converter
-      );
+  Object.entries(input).forEach(([field, value]) => {
+    if (isRecord(value) && recursive) {
+      convertFields(value, targetFields, recursive, converter);
     } else {
       targetFields
         .filter((targetField) => targetField === field)
@@ -58,9 +62,6 @@ const convertFields = <R>(
  */
 export const convertDateFields = <T>(input: unknown, fields: string[]): T => {
   const cloneRecord = (obj: unknown): Record<string, unknown> => {
-    const isRecord = (r?: unknown): r is Record<string, unknown> =>
-      r !== null && typeof r === 'object';
-
     const cloned = cloneDeep(obj);
     if (isRecord(cloned)) {
       return cloned;
