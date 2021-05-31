@@ -294,22 +294,26 @@ export const SearchResultAttachmentsList = ({
     </Typography>
   );
 
-  const noAttachmentsDead = !attachmentsAndViewerConfigs
+  // Only show the Select All Attachments button if at least one attachment is not dead
+  const atLeastOneIntactAttachment = attachmentsAndViewerConfigs
     .map(({ attachment }) => attachment.mimeType)
-    .includes(DEAD_ATTACHMENT);
+    .some((type) => type !== DEAD_ATTACHMENT);
 
   const accordionSummaryContent = inSelectionSession ? (
     <Grid container alignItems="center">
       <Grid item>{accordionText}</Grid>
       <Grid>
-        {!inSkinny && noAttachmentsDead && (
+        {!inSkinny && atLeastOneIntactAttachment && (
           <ResourceSelector
             labelText={selectResourceStrings.allAttachments}
             isStopPropagation
             onClick={() => {
-              const attachments = attachmentsAndViewerConfigs.map(
-                ({ attachment }) => attachment.id
-              );
+              const attachments = attachmentsAndViewerConfigs
+                .filter(
+                  // filter out dead attachments from select all
+                  ({ attachment }) => attachment.mimeType !== DEAD_ATTACHMENT
+                )
+                .map(({ attachment }) => attachment.id);
               handleSelectResource(itemKey, attachments);
             }}
           />
