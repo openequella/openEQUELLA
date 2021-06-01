@@ -33,18 +33,9 @@ import io.circe.generic.semiauto._
 import io.circe.{Decoder, Encoder}
 import com.tle.core.httpclient._
 import com.tle.core.oauthclient.OAuthClientService.{replicatedCache, responseToState}
-import com.tle.core.oauthclient.OAuthTokenCacheHelper.{
-  buildCacheKey,
-  cacheId,
-  getOrBuildCache,
-  removeFromDB
-}
-import com.tle.core.replicatedcache.dao.CachedValue
+import com.tle.core.oauthclient.OAuthTokenCacheHelper.{buildCacheKey, cacheId, requestToken}
 import com.tle.legacy.LegacyGuice
-import java.nio.charset.StandardCharsets
 import java.util.Date
-import io.circe.syntax._
-import io.circe.parser.parse
 
 object OAuthTokenType extends Enumeration {
   val Bearer, EquellaApi = Value
@@ -96,15 +87,7 @@ object OAuthTokenCacheHelper {
     s"${CurrentInstitution.get().getUniqueId}_${tokenRequest.authTokenUrl}_${tokenRequest.clientId}"
   }
 
-  def getCacheFromDB(token: TokenRequest): Option[CachedValue] = {
-    Option(LegacyGuice.replicatedCacheDao.get(cacheId, token.key))
-  }
-
-  def removeFromDB(token: TokenRequest): Unit = {
-    getCacheFromDB(token).foreach(cv => LegacyGuice.replicatedCacheDao.delete(cv))
-  }
-
-  def requestTokenAndSave(token: TokenRequest): OAuthTokenState = {
+  def requestToken(token: TokenRequest, tokenKey: String): OAuthTokenState = {
     val postRequest = sttp.auth
       .basic(token.clientId, token.clientSecret)
       .body(
@@ -112,41 +95,23 @@ object OAuthTokenCacheHelper {
       )
       .response(asJson[OAuthTokenResponse])
       .post(uri"${token.authTokenUrl}")
-    lazy val oauthTokenState = postRequest
+
+    lazy val newOAuthTokenState = postRequest
       .send()
       .map(_.unsafeBody.fold(de => throw de.error, responseToState))
       .unsafeRunSync()
 
-    LegacyGuice.replicatedCacheDao.put(
-      cacheId,
-      token.key,
-      Date.from(oauthTokenState.expires.getOrElse(Instant.now())),
-      oauthTokenState.asJson.noSpaces.getBytes(StandardCharsets.UTF_8)
-    )
-
-    oauthTokenState
-  }
-
-  def getOrBuildCache(tokenRequest: TokenRequest, tokenKey: String): OAuthTokenState = {
-    getCacheFromDB(tokenRequest) match {
-      case Some(cv) =>
-        parse(new String(cv.getValue)).flatMap(_.as[OAuthTokenState]) match {
-          case Left(failure) =>
-            throw new RuntimeException(
-              s"Failed to get OAUTH token for client: ${tokenRequest.clientId} due to ParsingFailure: ${failure.getMessage}")
-          case Right(tokenState) => tokenState
-        }
-      case None =>
-        val newOAuthTokenState = requestTokenAndSave(tokenRequest)
-        replicatedCache.put(tokenKey, newOAuthTokenState)
-        newOAuthTokenState
-    }
+    // Save the token in both cache and DB.
+    replicatedCache.put(tokenKey,
+                        newOAuthTokenState,
+                        Date.from(newOAuthTokenState.expires.getOrElse(Instant.now())))
+    newOAuthTokenState
   }
 }
 
 object OAuthClientService {
   val replicatedCache = LegacyGuice.replicatedCacheService
-    .getCache[OAuthTokenState](cacheId, 1000, 10, TimeUnit.MINUTES)
+    .getCache[OAuthTokenState](cacheId, 1000, 10, TimeUnit.MINUTES, true)
 
   def responseToState(response: OAuthTokenResponse): OAuthTokenState = {
     val expires = response.expires_in.filterNot(_ == Long.MaxValue).map(Instant.now().plusSeconds)
@@ -156,29 +121,16 @@ object OAuthClientService {
                     response.refresh_token)
   }
 
-  private def tokenStillValid(token: OAuthTokenState): Boolean =
-    token.expires.isEmpty || token.expires.exists(_.isAfter(Instant.now))
-
-  def removeToken(tokenRequest: TokenRequest): Unit = {
-    removeFromDB(tokenRequest)
+  def removeToken(): Unit = {
+    // Not only invalidate the cache but also remove the DB entries.
     replicatedCache.invalidate()
   }
 
   def tokenForClient(tokenRequest: TokenRequest): OAuthTokenState = {
     val tokenKey = buildCacheKey(tokenRequest)
-    // If the token is not saved in Cache, find it from DB.
-    // If it's not saved in DB as well, create a new one and save in DB and Cache.
-    val cachedToken =
-      replicatedCache.get(tokenKey).or(() => getOrBuildCache(tokenRequest, tokenKey))
-
-    // If the token has expired, remove it from Cache and DB, and then create a new one.
-    val refreshedToken = if (tokenStillValid(cachedToken)) {
-      cachedToken
-    } else {
-      removeToken(tokenRequest)
-      getOrBuildCache(tokenRequest, tokenKey)
-    }
-    refreshedToken
+    // The cache returns null when there is no token saved in the token or the token is expired.
+    // In either case, we request a new token.
+    replicatedCache.get(tokenKey).or(() => requestToken(tokenRequest, tokenKey))
   }
 
   def requestWithToken[T](request: Request[T, Stream[IO, ByteBuffer]],
@@ -200,7 +152,7 @@ object OAuthClientService {
     val tokenRequest = TokenRequest(authTokenUrl, clientId, clientSecret)
     val token        = tokenForClient(tokenRequest)
     val res          = requestWithToken(request, token.token, token.tokenType)
-    if (res.code == StatusCodes.Unauthorized) removeToken(tokenRequest)
+    if (res.code == StatusCodes.Unauthorized) removeToken()
     res.pure[DB]
   }
 }
