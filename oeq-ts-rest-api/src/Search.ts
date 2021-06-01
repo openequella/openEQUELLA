@@ -417,8 +417,10 @@ export const search = (
  * @param apiBasePath Base URI to the oEQ institution and API.
  * @param params Query parameters as search criteria.
  */
-export const buildExportUrl = (apiBasePath: string, params: SearchParams) =>
-  apiBasePath + EXPORT_PATH + '?' + stringify(params);
+export const buildExportUrl = (
+  apiBasePath: string,
+  params: SearchParams
+): string => apiBasePath + EXPORT_PATH + '?' + stringify(params);
 
 /**
  * Communicate with REST endpoint 'search2/export' to confirm if an export request is valid.
@@ -429,4 +431,4 @@ export const buildExportUrl = (apiBasePath: string, params: SearchParams) =>
 export const confirmExportRequest = (
   apiBasePath: string,
   params: SearchParams
-) => HEAD(apiBasePath + EXPORT_PATH, params);
+): Promise<boolean> => HEAD(apiBasePath + EXPORT_PATH, params);

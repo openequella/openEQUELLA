@@ -84,6 +84,14 @@ jobs:
           npm run check
           ./sbt headerCheck checkJavaCodeStyle
 
+      # oeq-ts-rest-api has its own ESLint checks seeing the ultimate plan
+      # is that it's moved to its own stand-alone repo. But so here we need
+      # to explicitly run them.
+      - name: Run checks (oeq-ts-rest-api)
+        working-directory: oeq-ts-rest-api
+        run: |
+          npm run lint
+
       - name: Run unit tests (java/scala)
         run: |
           ./sbt test
