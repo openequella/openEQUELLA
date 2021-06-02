@@ -42,48 +42,67 @@ export interface DisplayModeSelectorProps {
    * @param value the new Display Mode
    */
   onChange: (value: DisplayMode) => void;
+  /**
+   * `true` to disable Image mode.
+   */
+  disableImageMode: boolean;
+  /**
+   * `true` to disable Video mode.
+   */
+  disableVideoMode: boolean;
 }
 
 /**
  * A group of toggle buttons to provide a simple means of change the mode the search results are
  * displayed in.
  */
-const DisplayModeSelector = ({ value, onChange }: DisplayModeSelectorProps) => {
+const DisplayModeSelector = ({
+  value,
+  onChange,
+  disableImageMode,
+  disableVideoMode,
+}: DisplayModeSelectorProps) => {
   const options: {
     displayMode: DisplayMode;
     icon: ReactElement;
     label: string;
+    disabled: boolean;
   }[] = [
     {
       displayMode: "list",
       icon: <LibraryBooksIcon />,
       label: labelItemList,
+      disabled: false,
     },
     {
       displayMode: "gallery-image",
       icon: <PhotoLibraryIcon />,
       label: labelImageGallery,
+      disabled: disableImageMode,
     },
     {
       displayMode: "gallery-video",
       icon: <VideoLibraryIcon />,
       label: labelVideoGallery,
+      disabled: disableVideoMode,
     },
   ];
 
-  const buttons = options.map(({ displayMode, icon, label }) => {
+  const buttons = options.map(({ displayMode, icon, label, disabled }) => {
     const currentlySelected = displayMode === value;
 
     return (
-      <Button
-        key={displayMode}
-        variant={currentlySelected ? "contained" : "outlined"}
-        onClick={() => onChange(displayMode)}
-        aria-checked={currentlySelected}
-        aria-label={label}
-      >
-        {icon}
-      </Button>
+      !disabled && (
+        <Button
+          key={displayMode}
+          variant={currentlySelected ? "contained" : "outlined"}
+          onClick={() => onChange(displayMode)}
+          aria-checked={currentlySelected}
+          aria-label={label}
+        >
+          {icon}
+        </Button>
+      )
     );
   });
 

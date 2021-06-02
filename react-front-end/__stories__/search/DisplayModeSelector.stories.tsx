@@ -32,14 +32,18 @@ export default {
 export const ListSelection: Story<DisplayModeSelectorProps> = (args) => (
   <DisplayModeSelector {...args} />
 );
-ListSelection.args = { value: "list" };
+ListSelection.args = {
+  value: "list",
+  disableVideoMode: false,
+  disableImageMode: false,
+};
 
 export const ImageGallerySelection: Story<DisplayModeSelectorProps> = (
   args
 ) => <DisplayModeSelector {...args} />;
-ImageGallerySelection.args = { value: "gallery-image" };
+ImageGallerySelection.args = { ...ListSelection.args, value: "gallery-image" };
 
 export const VideoGallerySelection: Story<DisplayModeSelectorProps> = (
   args
 ) => <DisplayModeSelector {...args} />;
-VideoGallerySelection.args = { value: "gallery-video" };
+VideoGallerySelection.args = { ...ListSelection.args, value: "gallery-video" };
