@@ -87,15 +87,19 @@ export interface AttachmentAndViewerConfig {
  * @param viewUrl the basic view URL returned in search results
  * @param mimeType the MIME type of the attachment to determine the viewer for
  * @param mimeTypeViewerId the server specified `ViewerId` for the attachment
+ * @param broken whether or not this is broken.
  */
 export const determineViewer = (
   attachmentType: string,
   viewUrl: string,
+  broken: boolean,
   mimeType?: string,
   mimeTypeViewerId?: OEQ.MimeType.ViewerId
 ): ViewerDefinition => {
   const simpleLinkView: ViewerDefinition = ["link", viewUrl];
-
+  if (broken) {
+    return simpleLinkView;
+  }
   if (attachmentType !== "file" && attachmentType !== "custom/resource") {
     // For non-file attachments, we currently just defer to the link provided by the server
     return simpleLinkView;
@@ -163,6 +167,7 @@ export const getViewerDefinitionForAttachment = (
     mimeType,
     links: { view: defaultViewUrl },
     filePath,
+    brokenAttachment,
   } = attachment;
   const viewUrl = determineAttachmentViewUrl(
     itemUuid,
@@ -172,7 +177,13 @@ export const getViewerDefinitionForAttachment = (
     filePath
   );
 
-  return determineViewer(attachmentType, viewUrl, mimeType, mimeTypeViewerId);
+  return determineViewer(
+    attachmentType,
+    viewUrl,
+    brokenAttachment,
+    mimeType,
+    mimeTypeViewerId
+  );
 };
 
 /**
