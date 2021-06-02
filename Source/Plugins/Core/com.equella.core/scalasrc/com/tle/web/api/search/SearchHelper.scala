@@ -331,7 +331,7 @@ object SearchHelper {
           }
         case "p" =>
           // Get the child item. If it doesn't exist, this is a dead attachment
-          val childKey = new ItemId(customAttachment.getData("item").asInstanceOf[String],
+          val childKey = new ItemId(customAttachment.getData("uuid").asInstanceOf[String],
                                     customAttachment.getData("version").asInstanceOf[Int])
           val item = LegacyGuice.itemDao.findByItemId(childKey)
           return item == null
