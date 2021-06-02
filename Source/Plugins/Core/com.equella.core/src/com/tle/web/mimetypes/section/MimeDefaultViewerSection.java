@@ -225,6 +225,12 @@ public class MimeDefaultViewerSection
     }
   }
 
+  public boolean isDefaultViewerEnabled(SectionInfo info) {
+    String defaultViewerId = defaultViewer.getSelectedValueAsString(info);
+    Set<String> enabledViewerList = enabledViewers.getSelectedValuesAsStrings(info);
+    return enabledViewerList.contains(defaultViewerId);
+  }
+
   @Override
   public void saveEntry(SectionInfo info, MimeEntry entry) {
     String viewerId = defaultViewer.getSelectedValueAsString(info);
