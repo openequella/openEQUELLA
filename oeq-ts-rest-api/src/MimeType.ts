@@ -78,6 +78,7 @@ export type ViewerId =
   | 'qtiTestViewer'
   | 'tohtml'
   | 'toimg'
+  | 'flvViewer'
   | 'save';
 
 /**
