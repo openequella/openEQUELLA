@@ -174,8 +174,8 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
     return DEFAULT_MIMETYPE;
   }
 
-  public String getMimeTypeForAttachmentUuid(String uuid) {
-    Attachment attachment = attachmentDao.findByUuid(uuid);
+  public String getMimeTypeForAttachmentUuid(String attachmentUuid) {
+    Attachment attachment = attachmentDao.findByUuid(attachmentUuid);
     return getMimeEntryForAttachment(attachment);
   }
 
@@ -477,7 +477,6 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
       // Recurse to drill into the linked attachment, so we can use the correct viewer.
       // If more than one attachment has the linked uuid,
       // this is a zip or scorm package and we can let it fall through.
-      // If none are returned, then this is a broken resource attachment.
       List<Attachment> attachmentList = attachmentDao.findAllByUuid(attachment.getUrl());
       if (attachmentList.size() == 1) {
         return getMimeEntryForAttachment(attachmentList.get(0));
