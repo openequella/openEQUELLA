@@ -263,6 +263,11 @@ export const SearchResultAttachmentsList = ({
 
       return (
         <ListItem
+          onClick={(event) => {
+            if (brokenAttachment) {
+              event.stopPropagation();
+            }
+          }}
           key={id}
           id={id}
           button
