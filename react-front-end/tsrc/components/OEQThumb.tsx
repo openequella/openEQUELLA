@@ -103,10 +103,6 @@ export default function OEQThumb({
    * @return {ReactElement} Image, video and pdf based mimetypes are thumbnailed by oEQ.
    */
   const handleMimeType = (mimeType?: string): React.ReactElement => {
-    if (mimeType === "equella/item") {
-      return <Web {...generalThumbStyles} />;
-    }
-
     if (hasGeneratedThumb) {
       return oeqProvidedThumb;
     }
@@ -134,7 +130,12 @@ export default function OEQThumb({
       oeqThumb = <WebIcon {...generalThumbStyles} />;
       break;
     case "custom/resource":
-      oeqThumb = handleMimeType(mimeType);
+      oeqThumb =
+        mimeType === "equella/item" ? (
+          <Web {...generalThumbStyles} />
+        ) : (
+          oeqProvidedThumb
+        );
       break;
     case "custom/flickr":
     case "custom/youtube":

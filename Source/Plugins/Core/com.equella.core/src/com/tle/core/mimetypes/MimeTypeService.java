@@ -38,6 +38,8 @@ public interface MimeTypeService {
    */
   String getMimeTypeForFilename(String filename);
 
+  String getMimeTypeForAttachmentUuid(String attachmentUuid);
+
   String getMimeTypeForResourceAttachmentBean(ResourceAttachmentBean resourceAttachmentBean);
 
   @Nullable
