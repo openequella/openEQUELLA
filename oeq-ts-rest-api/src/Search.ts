@@ -181,6 +181,11 @@ export interface Attachment {
    * The description of an attachment.
    */
   description?: string;
+
+  /**
+   * Whether or not the attachment has been determined to be broken by the server.
+   */
+  brokenAttachment: boolean;
   /**
    * True if an attachment can be previewed.
    */

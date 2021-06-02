@@ -20,7 +20,6 @@ import { memoize } from "lodash";
 import { API_BASE_URL } from "../AppConfig";
 
 export const OEQ_MIMETYPE_TYPE = "openequella";
-export const DEAD_ATTACHMENT = "dead/attachment";
 /**
  * A collection of custom internal MIME types for openEQUELLA
  */

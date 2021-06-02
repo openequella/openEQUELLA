@@ -50,7 +50,6 @@ import {
   prepareDraggable,
   selectResource,
 } from "../../modules/LegacySelectionSessionModule";
-import { DEAD_ATTACHMENT } from "../../modules/MimeTypesModule";
 import {
   AttachmentAndViewerConfig,
   AttachmentAndViewerDefinition,
@@ -140,9 +139,9 @@ export const SearchResultAttachmentsList = ({
       return;
     }
 
-    const getViewerID = async (mimeType: string) => {
+    const getViewerID = async (broken: boolean, mimeType: string) => {
       let viewerDetails: OEQ.MimeType.MimeTypeViewerDetail | undefined;
-      if (mimeType === DEAD_ATTACHMENT) {
+      if (broken) {
         return undefined;
       }
       try {
@@ -160,8 +159,10 @@ export const SearchResultAttachmentsList = ({
       const attachmentsAndViewerDefinitions = await Promise.all(
         attachments.map<Promise<AttachmentAndViewerDefinition>>(
           async (attachment) => {
-            const { mimeType } = attachment;
-            const viewerId = mimeType ? await getViewerID(mimeType) : undefined;
+            const { mimeType, brokenAttachment } = attachment;
+            const viewerId = mimeType
+              ? await getViewerID(brokenAttachment, mimeType)
+              : undefined;
             return {
               attachment,
               viewerDefinition: getViewerDefinitionForAttachment(
@@ -239,8 +240,8 @@ export const SearchResultAttachmentsList = ({
     setAttachExpanded(!attachExpanded);
   };
 
-  function buildIcon(mimeType?: string): JSX.Element {
-    if (mimeType === DEAD_ATTACHMENT) {
+  function buildIcon(broken: boolean): JSX.Element {
+    if (broken) {
       return (
         <Tooltip title={languageStrings.searchpage.deadAttachmentWarning}>
           <Warning color="secondary" />
@@ -251,13 +252,13 @@ export const SearchResultAttachmentsList = ({
     }
   }
 
-  const isAttachmentSelectable = (mimeType?: string) =>
-    inSelectionSession && mimeType !== DEAD_ATTACHMENT;
+  const isAttachmentSelectable = (broken: boolean) =>
+    inSelectionSession && !broken;
 
   const attachmentsList = attachmentsAndViewerConfigs.map(
     (attachmentAndViewerConfig: AttachmentAndViewerConfig) => {
       const {
-        attachment: { id, description, mimeType },
+        attachment: { id, description, brokenAttachment },
       } = attachmentAndViewerConfig;
 
       return (
@@ -270,11 +271,11 @@ export const SearchResultAttachmentsList = ({
           data-itemversion={version}
           data-attachmentuuid={id}
         >
-          <ListItemIcon>{buildIcon(mimeType)}</ListItemIcon>
+          <ListItemIcon>{buildIcon(brokenAttachment)}</ListItemIcon>
           <ItemAttachmentLink selectedAttachment={attachmentAndViewerConfig}>
             <ListItemText color="primary" primary={description} />
           </ItemAttachmentLink>
-          {isAttachmentSelectable(mimeType) && (
+          {isAttachmentSelectable(brokenAttachment) && (
             <ListItemSecondaryAction>
               <ResourceSelector
                 labelText={selectResourceStrings.attachment}
@@ -299,8 +300,8 @@ export const SearchResultAttachmentsList = ({
 
   // Only show the Select All Attachments button if at least one attachment is not dead
   const atLeastOneIntactAttachment = attachmentsAndViewerConfigs
-    .map(({ attachment }) => attachment.mimeType)
-    .some((type) => type !== DEAD_ATTACHMENT);
+    .map(({ attachment }) => attachment.brokenAttachment)
+    .some((broken) => !broken);
 
   const showSelectAllAttachments = atLeastOneIntactAttachment && !inSkinny;
 
@@ -316,7 +317,7 @@ export const SearchResultAttachmentsList = ({
               const attachments = attachmentsAndViewerConfigs
                 .filter(
                   // filter out dead attachments from select all function
-                  ({ attachment }) => attachment.mimeType !== DEAD_ATTACHMENT
+                  ({ attachment }) => !attachment.brokenAttachment
                 )
                 .map(({ attachment }) => attachment.id);
               handleSelectResource(itemKey, attachments);

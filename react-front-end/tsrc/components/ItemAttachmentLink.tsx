@@ -18,7 +18,6 @@
 import { Link, Typography } from "@material-ui/core";
 import * as React from "react";
 import { SyntheticEvent, useState } from "react";
-import { DEAD_ATTACHMENT } from "../modules/MimeTypesModule";
 import {
   AttachmentAndViewerConfig,
   isViewerLightboxConfig,
@@ -49,7 +48,7 @@ export interface ItemAttachmentLinkProps {
 const ItemAttachmentLink = ({
   children,
   selectedAttachment: {
-    attachment: { description, mimeType },
+    attachment: { description, mimeType, brokenAttachment },
     viewerConfig,
   },
 }: ItemAttachmentLinkProps) => {
@@ -57,7 +56,7 @@ const ItemAttachmentLink = ({
   const [lightBoxProps, setLightBoxProps] = useState<LightboxProps>();
 
   const buildSimpleLink = (viewerConfig: ViewerLinkConfig): JSX.Element => {
-    return mimeType === DEAD_ATTACHMENT ? (
+    return brokenAttachment ? (
       <Typography aria-label={`${attachmentLink} ${description}`}>
         {description}
       </Typography>

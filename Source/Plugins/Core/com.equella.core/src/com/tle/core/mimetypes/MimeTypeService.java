@@ -20,11 +20,9 @@ package com.tle.core.mimetypes;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
-import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.mime.MimeEntry;
 import com.tle.core.TextExtracterExtension;
-import com.tle.web.api.item.equella.interfaces.beans.AbstractFileAttachmentBean;
 import com.tle.web.controls.resource.ResourceAttachmentBean;
 import java.util.Collection;
 import java.util.List;
@@ -39,35 +37,6 @@ public interface MimeTypeService {
    * @return If the extension is not known then application/octet-stream is returned
    */
   String getMimeTypeForFilename(String filename);
-
-  /**
-   * Get MIME type for a given resource attachment. If the attachment it is pointed towards doesn't
-   * exist in the database, it will return dead/attachment.
-   *
-   * @param bean The attachment to get the MIME Type for.
-   * @return MIME type of the attachment
-   */
-  String getMimeTypeForResourceAttachment(ResourceAttachmentBean bean);
-
-  /**
-   * Get MIME type for a given file attachment. If the attachment is not accessible from the
-   * filestore, it will return dead/attachment.
-   *
-   * @param bean The attachment to check for a MIME type
-   * @param itemKey The item key for the attachment's item, required as it gives us the location of
-   *     the attachment in the filestore
-   * @return MIME type of the attachment
-   */
-  String getMimeTypeForFileAttachment(AbstractFileAttachmentBean bean, ItemKey itemKey);
-
-  /**
-   * Get MIME type for a resource attachment pointing at an item summary. If the item is not
-   * present, it will return dead/attachment. If it is, it will return equella/item.
-   *
-   * @param bean They attachment to check for a MIME type
-   * @return MIME type of the attachment
-   */
-  String getMimeTypeForResourceItem(ResourceAttachmentBean bean);
 
   String getMimeTypeForResourceAttachmentBean(ResourceAttachmentBean resourceAttachmentBean);
 

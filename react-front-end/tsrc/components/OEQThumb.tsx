@@ -26,7 +26,6 @@ import DefaultFileIcon from "@material-ui/icons/InsertDriveFile";
 import WebIcon from "@material-ui/icons/Language";
 import Web from "@material-ui/icons/Web";
 import PlaceholderIcon from "@material-ui/icons/TextFields";
-import { DEAD_ATTACHMENT } from "../modules/MimeTypesModule";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -104,9 +103,6 @@ export default function OEQThumb({
    * @return {ReactElement} Image, video and pdf based mimetypes are thumbnailed by oEQ.
    */
   const handleMimeType = (mimeType?: string): React.ReactElement => {
-    if (mimeType === DEAD_ATTACHMENT) {
-      return defaultThumb;
-    }
     if (mimeType === "equella/item") {
       return <Web {...generalThumbStyles} />;
     }
@@ -124,7 +120,9 @@ export default function OEQThumb({
   };
 
   let oeqThumb = defaultThumb;
-
+  if (attachment.brokenAttachment) {
+    return defaultThumb;
+  }
   switch (attachmentType) {
     case "file":
       oeqThumb = handleMimeType(mimeType);

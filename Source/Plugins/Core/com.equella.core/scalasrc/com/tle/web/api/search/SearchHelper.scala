@@ -20,13 +20,15 @@ package com.tle.web.api.search
 
 import com.dytech.edge.exceptions.BadRequestException
 import com.tle.beans.entity.DynaCollection
-import com.tle.beans.item.{Comment, ItemIdKey}
+import com.tle.beans.item.attachments.{Attachment, CustomAttachment, FileAttachment}
+import com.tle.beans.item.{Comment, ItemId, ItemIdKey}
 import com.tle.common.Check
 import com.tle.common.beans.exception.NotFoundException
 import com.tle.common.collection.AttachmentConfigConstants
 import com.tle.common.search.DefaultSearch
 import com.tle.common.search.whereparser.WhereParser
 import com.tle.core.freetext.queries.FreeTextBooleanQuery
+
 import com.tle.core.item.security.ItemSecurityConstants
 import com.tle.core.item.serializer.{ItemSerializerItemBean, ItemSerializerService}
 import com.tle.core.security.ACLChecks.hasAcl
@@ -276,17 +278,21 @@ object SearchHelper {
         beans.asScala
         // Filter out restricted attachments if the user does not have permissions to view them
           .filter(a => !a.isRestricted || hasRestrictedAttachmentPrivileges)
-          .map(att =>
+          .map(att => {
+            val broken =
+              recurseBrokenAttachmentCheck(LegacyGuice.attachmentDao.findByUuid(att.getUuid))
             SearchResultAttachment(
               attachmentType = att.getRawAttachmentType,
               id = att.getUuid,
               description = Option(att.getDescription),
+              brokenAttachment = broken,
               preview = att.isPreview,
-              mimeType = getMimetypeForAttachment(itemKey, att),
+              mimeType = getMimetypeForAttachment(att, broken),
               hasGeneratedThumb = thumbExists(itemKey, att),
               links = buildAttachmentLinks(att),
               filePath = getFilePathForAttachment(att)
-          ))
+            )
+          })
           .toList)
   }
 
@@ -310,14 +316,55 @@ object SearchHelper {
     }
   }
 
+  def checkResourceAttachmentIntegrity(customAttachment: CustomAttachment): Boolean = {
+    if (customAttachment.getType == "resource") {
+      customAttachment.getData("type") match {
+        case "a" =>
+          // if child attachment exists, recurse into it. If it doesn't, this is a dead attachment
+          val attachmentList: java.util.List[Attachment] =
+            LegacyGuice.attachmentDao.findAllByUuid(customAttachment.getUrl)
+          if (attachmentList.isEmpty) {
+            return true
+          }
+          if (attachmentList.size == 1) {
+            return recurseBrokenAttachmentCheck(attachmentList.get(0))
+          }
+        case "p" =>
+          // Get the child item. If it doesn't exist, this is a dead attachment
+          val childKey = new ItemId(customAttachment.getData("item").asInstanceOf[String],
+                                    customAttachment.getData("version").asInstanceOf[Int])
+          val item = LegacyGuice.itemDao.findByItemId(childKey)
+          return item == null
+        case _ => return false
+      }
+    }
+    false;
+  }
+
+  def recurseBrokenAttachmentCheck(attachment: Attachment): Boolean = {
+    attachment match {
+      case fileAttachment: FileAttachment =>
+        //check if file is present in the filestore
+        val item =
+          LegacyGuice.viewableItemFactory.createNewViewableItem(fileAttachment.getItem.getItemId)
+        !LegacyGuice.fileSystemService.fileExists(item.getFileHandle, fileAttachment.getFilename)
+      case customAttachment: CustomAttachment =>
+        checkResourceAttachmentIntegrity(customAttachment)
+      case _ => false
+    }
+  }
+
   /**
     * Extract the mimetype for AbstractExtendableBean.
     */
-  def getMimetypeForAttachment[T <: AbstractExtendableBean](itemKey: ItemIdKey,
-                                                            bean: T): Option[String] = {
+  def getMimetypeForAttachment[T <: AbstractExtendableBean](bean: T,
+                                                            broken: Boolean): Option[String] = {
+    if (broken) {
+      return None
+    }
     bean match {
       case file: AbstractFileAttachmentBean =>
-        Some(LegacyGuice.mimeTypeService.getMimeTypeForFileAttachment(file, itemKey))
+        Some(LegacyGuice.mimeTypeService.getMimeTypeForFilename(file.getFilename))
       case resourceAttachmentBean: ResourceAttachmentBean =>
         Some(
           LegacyGuice.mimeTypeService.getMimeTypeForResourceAttachmentBean(resourceAttachmentBean))

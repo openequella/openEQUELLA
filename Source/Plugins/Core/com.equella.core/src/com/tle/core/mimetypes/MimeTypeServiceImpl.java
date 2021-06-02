@@ -18,16 +18,12 @@
 
 package com.tle.core.mimetypes;
 
-import static com.tle.core.mimetypes.MimeTypeConstants.DEAD_ATTACHMENT;
 import static com.tle.core.mimetypes.MimeTypeConstants.MIME_ITEM;
 import static com.tle.web.controls.resource.ResourceAttachmentBean.TYPE_ID;
 
 import com.google.common.cache.CacheLoader;
 import com.tle.annotation.Nullable;
 import com.tle.beans.Institution;
-import com.tle.beans.item.Item;
-import com.tle.beans.item.ItemId;
-import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.CustomAttachment;
@@ -43,7 +39,6 @@ import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionCache;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.item.dao.AttachmentDao;
-import com.tle.core.item.dao.ItemDao;
 import com.tle.core.mimetypes.dao.MimeEntryDao;
 import com.tle.core.mimetypes.institution.MimeMigrator;
 import com.tle.core.plugins.AbstractPluginService;
@@ -51,13 +46,9 @@ import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.plugins.PluginTracker.ExtensionParamComparator;
 import com.tle.core.security.impl.RequiresPrivilege;
-import com.tle.core.services.FileSystemService;
 import com.tle.exceptions.AccessDeniedException;
-import com.tle.web.api.item.equella.interfaces.beans.AbstractFileAttachmentBean;
 import com.tle.web.controls.resource.ResourceAttachmentBean;
 import com.tle.web.selection.SelectedResource;
-import com.tle.web.viewable.NewDefaultViewableItem;
-import com.tle.web.viewable.impl.ViewableItemFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -86,9 +77,6 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
   @Inject private MimeEntryDao mimeEntryDao;
   @Inject private EventService eventService;
   @Inject private AttachmentDao attachmentDao;
-  @Inject private FileSystemService fileSystemService;
-  @Inject private ViewableItemFactory viewableItemFactory;
-  @Inject private ItemDao itemDao;
 
   private PluginTracker<TextExtracterExtension> textExtracterTracker;
 
@@ -178,16 +166,6 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
   }
 
   @Override
-  public String getMimeTypeForFileAttachment(AbstractFileAttachmentBean bean, ItemKey itemKey) {
-    NewDefaultViewableItem item = viewableItemFactory.createNewViewableItem(itemKey);
-    if (fileSystemService.fileExists(item.getFileHandle(), bean.getFilename())) {
-      return getMimeTypeForFilename(bean.getFilename());
-    } else {
-      return DEAD_ATTACHMENT;
-    }
-  }
-
-  @Override
   public String getMimeTypeForFilename(String filename) {
     MimeEntry entry = getEntryForFilename(filename);
     if (entry != null) {
@@ -196,31 +174,18 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
     return DEFAULT_MIMETYPE;
   }
 
-  public String getMimeTypeForResourceAttachment(ResourceAttachmentBean bean) {
-    Attachment attachment = attachmentDao.findByUuid(bean.getAttachmentUuid());
-    if (attachment == null) {
-      // resource attachment link dead
-      return DEAD_ATTACHMENT;
-    }
+  public String getMimeTypeForAttachmentUuid(String uuid) {
+    Attachment attachment = attachmentDao.findByUuid(uuid);
     return getMimeEntryForAttachment(attachment);
-  }
-
-  public String getMimeTypeForResourceItem(ResourceAttachmentBean bean) {
-    Item item = itemDao.findByItemId(new ItemId(bean.getItemUuid(), bean.getItemVersion()));
-    if (item == null) {
-      // resource item link dead
-      return DEAD_ATTACHMENT;
-    }
-    return MIME_ITEM;
   }
 
   public String getMimeTypeForResourceAttachmentBean(
       ResourceAttachmentBean resourceAttachmentBean) {
     switch (resourceAttachmentBean.getResourceType()) {
       case SelectedResource.TYPE_ATTACHMENT:
-        return getMimeTypeForResourceAttachment(resourceAttachmentBean);
+        return getMimeTypeForAttachmentUuid(resourceAttachmentBean.getAttachmentUuid());
       case SelectedResource.TYPE_PATH:
-        return getMimeTypeForResourceItem(resourceAttachmentBean);
+        return MIME_ITEM;
       default:
         return resourceAttachmentBean.getRawAttachmentType();
     }
@@ -500,37 +465,31 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
 
   @Override
   public String getMimeEntryForAttachment(Attachment attachment) {
-    if (attachment != null) {
-      AttachmentType attachType = attachment.getAttachmentType();
-      String type = attachType.name().toLowerCase();
-      if (attachType == AttachmentType.CUSTOM) {
-        type += '/' + ((CustomAttachment) attachment).getType().toLowerCase();
-      }
-      if (type.equals(TYPE_ID)
-          && attachment
-              .getData("type")
-              .equals(Character.toString(SelectedResource.TYPE_ATTACHMENT))) {
-        // Recurse to drill into the linked attachment, so we can use the correct viewer.
-        // If more than one attachment has the linked uuid,
-        // this is a zip or scorm package and we can let it fall through.
-        // If none are returned, then this is a broken resource attachment.
-        List<Attachment> attachmentList = attachmentDao.findAllByUuid(attachment.getUrl());
-        if (attachmentList.size() == 0) {
-          return DEAD_ATTACHMENT;
-        }
-        if (attachmentList.size() == 1) {
-          return getMimeEntryForAttachment(attachmentList.get(0));
-        }
-      }
-      Map<String, List<Extension>> map = getExtensionMap();
-      List<Extension> extensions = map.get(type);
-      if (extensions != null) {
-        for (Extension extension : extensions) {
-          return attachmentResources.getBeanByExtension(extension).getMimeType(attachment);
-        }
+    AttachmentType attachType = attachment.getAttachmentType();
+    String type = attachType.name().toLowerCase();
+    if (attachType == AttachmentType.CUSTOM) {
+      type += '/' + ((CustomAttachment) attachment).getType().toLowerCase();
+    }
+    if (type.equals(TYPE_ID)
+        && attachment
+            .getData("type")
+            .equals(Character.toString(SelectedResource.TYPE_ATTACHMENT))) {
+      // Recurse to drill into the linked attachment, so we can use the correct viewer.
+      // If more than one attachment has the linked uuid,
+      // this is a zip or scorm package and we can let it fall through.
+      // If none are returned, then this is a broken resource attachment.
+      List<Attachment> attachmentList = attachmentDao.findAllByUuid(attachment.getUrl());
+      if (attachmentList.size() == 1) {
+        return getMimeEntryForAttachment(attachmentList.get(0));
       }
     }
-
+    Map<String, List<Extension>> map = getExtensionMap();
+    List<Extension> extensions = map.get(type);
+    if (extensions != null) {
+      for (Extension extension : extensions) {
+        return attachmentResources.getBeanByExtension(extension).getMimeType(attachment);
+      }
+    }
     return null;
   }
 

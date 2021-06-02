@@ -37,7 +37,6 @@ public final class MimeTypeConstants {
   public static final String MIME_ITEM = "equella/item";
   public static final String MIME_IMS = "equella/ims-package";
   public static final String MIME_SCORM = "equella/scorm-package";
-  public static final String DEAD_ATTACHMENT = "dead/attachment";
 
   public static final String VAL_DEFAULT_VIEWERID = "file";
 
