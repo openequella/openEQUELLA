@@ -71,6 +71,7 @@ export type ViewerId =
   | 'externalToolViewer'
   | 'fancy'
   | 'file'
+  | 'flvViewer'
   | 'googledocviewer'
   | 'htmlFiveViewer'
   | 'kalturaViewer'
@@ -78,7 +79,6 @@ export type ViewerId =
   | 'qtiTestViewer'
   | 'tohtml'
   | 'toimg'
-  | 'flvViewer'
   | 'save';
 
 /**
