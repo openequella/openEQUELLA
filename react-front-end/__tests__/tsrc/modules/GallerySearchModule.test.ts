@@ -62,6 +62,7 @@ describe("buildGalleryEntry", () => {
     preview: false,
     mimeType: "image/png",
     hasGeneratedThumb: true,
+    brokenAttachment: false,
     links: {
       view:
         "https://example.com/inst/items/1eeb3df5-3809-4655-925b-24d994e42ff6/1/?attachment.uuid=7186d40d-6159-4d07-8eee-4f7ee0cfdc4e",
@@ -75,6 +76,7 @@ describe("buildGalleryEntry", () => {
     id: "b18ed9ab-1ddb-4961-8935-22bbf1095b24",
     description: "The Odyssey by Homer | Summary & Analysis",
     preview: false,
+    brokenAttachment: false,
     links: {
       view:
         "https://example.com/inst/items/234b9bd6-b603-4e26-8214-b79b8aab0ed9/1/?attachment.uuid=b18ed9ab-1ddb-4961-8935-22bbf1095b24",
@@ -151,6 +153,7 @@ describe("buildGallerySearchResultItem", () => {
         preview: false,
         mimeType: "image/jpeg",
         hasGeneratedThumb: true,
+        brokenAttachment: false,
         links: {
           view:
             "https://example.com/inst/items/535e4e9b-4836-4011-8857-eb29260bf155/1/?attachment.uuid=e7e84411-7cc6-4516-9bc8-d60dab47fccb",
@@ -166,6 +169,7 @@ describe("buildGallerySearchResultItem", () => {
         preview: false,
         mimeType: "image/jpeg",
         hasGeneratedThumb: true,
+        brokenAttachment: false,
         links: {
           view:
             "https://example.com/inst/items/535e4e9b-4836-4011-8857-eb29260bf155/1/?attachment.uuid=17f3036e-a3c6-4e6d-85cb-aaa78ca2835b",
@@ -181,6 +185,7 @@ describe("buildGallerySearchResultItem", () => {
         preview: false,
         mimeType: "video/mp4",
         hasGeneratedThumb: true,
+        brokenAttachment: false,
         links: {
           view:
             "https://example.com/inst/items/535e4e9b-4836-4011-8857-eb29260bf155/1/?attachment.uuid=16a3d193-430c-45f2-bd0c-6a3fc0a3bcaf",
