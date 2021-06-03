@@ -34,6 +34,7 @@ const linkAttachment = {
   id: "78b8af7e-f0f5-4b5c-9f44-16f212583fe1",
   description: "link",
   preview: false,
+  brokenAttachment: false,
   links: {
     view: githubAvatarUrl,
     thumbnail: "",
@@ -55,6 +56,7 @@ const lightboxAttachment = {
   preview: false,
   mimeType: "image/png",
   hasGeneratedThumb: true,
+  brokenAttachment: false,
   links: {
     view: githubAvatarUrl,
     thumbnail: "./thumb.jpg",
