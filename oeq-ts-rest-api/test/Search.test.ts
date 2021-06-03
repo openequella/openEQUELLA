@@ -166,6 +166,28 @@ describe('Exports search results for the specified search params', function () {
 });
 
 describe('Dead attachment handling', () => {
+  it('should mark an intact file attachment as not broken', async () => {
+    const searchResult = await doSearch({
+      query: 'Keyword found in attachment test item',
+    });
+    const { attachments } = searchResult.results[0];
+    if (attachments != undefined) {
+      const brokenAttachment = attachments[0].brokenAttachment;
+      // eslint-disable-next-line jest/no-conditional-expect
+      expect(brokenAttachment).toBeFalsy();
+    }
+  });
+  it('should mark an intact resource selector attachment as not broken', async () => {
+    const searchResult = await doSearch({
+      query: 'ItemApiViewTest - All attachments',
+    });
+    const { attachments } = searchResult.results[0];
+    if (attachments != undefined) {
+      const brokenAttachment = attachments[1].brokenAttachment;
+      // eslint-disable-next-line jest/no-conditional-expect
+      expect(brokenAttachment).toBeFalsy();
+    }
+  });
   it('should mark a returned file attachment missing from the filestore as broken', async () => {
     const searchResult = await doSearch({
       query: 'DeadAttachmentsTest',
