@@ -1086,6 +1086,12 @@ describe("Export search result", () => {
 });
 
 describe("Hide Gallery", () => {
+  const itemListLabel =
+    languageStrings.searchpage.displayModeSelector.modeItemList;
+  const imageLabel =
+    languageStrings.searchpage.displayModeSelector.modeGalleryImage;
+  const videoLabel =
+    languageStrings.searchpage.displayModeSelector.modeGalleryVideo;
   it.each([
     [
       "image",
@@ -1093,7 +1099,8 @@ describe("Hide Gallery", () => {
         ...SearchSettingsModule.defaultSearchSettings,
         searchingDisableGallery: true,
       },
-      languageStrings.searchpage.displayModeSelector.modeGalleryImage,
+      [itemListLabel, videoLabel],
+      imageLabel,
     ],
     [
       "video",
@@ -1101,18 +1108,36 @@ describe("Hide Gallery", () => {
         ...SearchSettingsModule.defaultSearchSettings,
         searchingDisableVideos: true,
       },
-      languageStrings.searchpage.displayModeSelector.modeGalleryVideo,
+      [itemListLabel, imageLabel],
+      videoLabel,
+    ],
+    [
+      "both image and video",
+      {
+        ...SearchSettingsModule.defaultSearchSettings,
+        searchingDisableVideos: true,
+        searchingDisableGallery: true,
+      },
+      [itemListLabel],
+      videoLabel,
+      imageLabel,
     ],
   ])(
     "hides %s gallery",
     async (
       mode: string,
       settings: OEQ.SearchSettings.Settings,
-      label: string
+      enabledModes: string[],
+      ...disabledModes: string[]
     ) => {
       mockSearchSettings.mockResolvedValueOnce(settings);
       const { queryByLabelText } = await renderSearchPage();
-      expect(queryByLabelText(label)).not.toBeInTheDocument();
+      disabledModes.forEach((hiddenLabel) =>
+        expect(queryByLabelText(hiddenLabel)).not.toBeInTheDocument()
+      );
+      enabledModes.forEach((visibleLabel) =>
+        expect(queryByLabelText(visibleLabel)).toBeInTheDocument()
+      );
     }
   );
 });

@@ -88,11 +88,12 @@ const DisplayModeSelector = ({
     },
   ];
 
-  const buttons = options.map(({ displayMode, icon, label, disabled }) => {
-    const currentlySelected = displayMode === value;
+  const buttons = options
+    .filter((option) => !option.disabled)
+    .map(({ displayMode, icon, label }) => {
+      const currentlySelected = displayMode === value;
 
-    return (
-      !disabled && (
+      return (
         <Button
           key={displayMode}
           variant={currentlySelected ? "contained" : "outlined"}
@@ -102,9 +103,8 @@ const DisplayModeSelector = ({
         >
           {icon}
         </Button>
-      )
-    );
-  });
+      );
+    });
 
   return <ButtonGroup color="secondary">{buttons}</ButtonGroup>;
 };
