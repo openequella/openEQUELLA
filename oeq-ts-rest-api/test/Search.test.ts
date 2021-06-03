@@ -171,13 +171,12 @@ describe('Dead attachment handling', () => {
       query: 'Keyword found in attachment test item',
     });
     const { attachments } = searchResult.results[0];
-    if (attachments != undefined) {
-      const brokenAttachment = attachments[0].brokenAttachment;
-      // eslint-disable-next-line jest/no-conditional-expect
-      expect(brokenAttachment).toBeFalsy();
-    } else {
-      throw new Error('attachments should be defined for this item.');
+    if (attachments == undefined) {
+      throw new Error('Unexpected undefined attachments');
     }
+
+    const brokenAttachment = attachments[0].brokenAttachment;
+    expect(brokenAttachment).toBeFalsy();
   });
 
   it('should mark an intact resource selector attachment as not broken', async () => {
@@ -185,13 +184,12 @@ describe('Dead attachment handling', () => {
       query: 'ItemApiViewTest - All attachments',
     });
     const { attachments } = searchResult.results[0];
-    if (attachments != undefined) {
-      const brokenAttachment = attachments[1].brokenAttachment;
-      // eslint-disable-next-line jest/no-conditional-expect
-      expect(brokenAttachment).toBeFalsy();
-    } else {
-      throw new Error('attachments should be defined for this item.');
+    if (attachments == undefined) {
+      throw new Error('Unexpected undefined attachments');
     }
+
+    const brokenAttachment = attachments[1].brokenAttachment;
+    expect(brokenAttachment).toBeFalsy();
   });
 
   it('should mark a returned file attachment missing from the filestore as broken', async () => {
@@ -199,13 +197,12 @@ describe('Dead attachment handling', () => {
       query: 'DeadAttachmentsTest',
     });
     const { attachments } = searchResult.results[0];
-    if (attachments != undefined) {
-      const brokenAttachment = attachments[0].brokenAttachment;
-      // eslint-disable-next-line jest/no-conditional-expect
-      expect(brokenAttachment).toBeTruthy();
-    } else {
-      throw new Error('attachments should be defined for this item.');
+    if (attachments == undefined) {
+      throw new Error('Unexpected undefined attachments');
     }
+
+    const brokenAttachment = attachments[0].brokenAttachment;
+    expect(brokenAttachment).toBeTruthy();
   });
 
   it('should correctly mark broken nested resource selector attachments', async () => {
@@ -219,12 +216,11 @@ describe('Dead attachment handling', () => {
     //result 3 - attachment points at result 1's attachment (tests nested resource attachments)
 
     searchResult.results.forEach((result) => {
-      if (result.attachments != undefined) {
-        // eslint-disable-next-line jest/no-conditional-expect
-        expect(result.attachments[0].brokenAttachment).toBeTruthy();
-      } else {
-        throw new Error('attachments should be defined for this item.');
+      if (result.attachments == undefined) {
+        throw new Error('Unexpected undefined attachments');
       }
+
+      expect(result.attachments[0].brokenAttachment).toBeTruthy();
     });
   });
 });
