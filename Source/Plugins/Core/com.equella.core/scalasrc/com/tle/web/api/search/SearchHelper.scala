@@ -279,7 +279,6 @@ object SearchHelper {
         // Filter out restricted attachments if the user does not have permissions to view them
           .filter(a => !a.isRestricted || hasRestrictedAttachmentPrivileges)
           .map(att => {
-
             val broken =
               recurseBrokenAttachmentCheck(getUniqueAttachmentForAttachmentBean(att, itemKey))
             SearchResultAttachment(

@@ -200,6 +200,7 @@ const customMetaSearchObj: OEQ.Search.SearchResultItem = {
   },
   isLatestVersion: false,
 };
+
 const oneDeadAttachObj: OEQ.Search.SearchResultItem = {
   uuid: "72558c1d-8788-4515-86c8-b24a28cc451e",
   version: 1,
@@ -303,6 +304,7 @@ const oneDeadOneAliveAttachObj: OEQ.Search.SearchResultItem = {
   },
   isLatestVersion: true,
 };
+
 export {
   basicSearchObj,
   attachSearchObj,
