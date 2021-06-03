@@ -175,6 +175,8 @@ describe('Dead attachment handling', () => {
       const brokenAttachment = attachments[0].brokenAttachment;
       // eslint-disable-next-line jest/no-conditional-expect
       expect(brokenAttachment).toBeFalsy();
+    } else {
+      throw new Error('attachments should be defined for this item.');
     }
   });
 
@@ -187,6 +189,8 @@ describe('Dead attachment handling', () => {
       const brokenAttachment = attachments[1].brokenAttachment;
       // eslint-disable-next-line jest/no-conditional-expect
       expect(brokenAttachment).toBeFalsy();
+    } else {
+      throw new Error('attachments should be defined for this item.');
     }
   });
 
