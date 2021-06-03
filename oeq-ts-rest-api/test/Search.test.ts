@@ -177,6 +177,7 @@ describe('Dead attachment handling', () => {
       expect(brokenAttachment).toBeFalsy();
     }
   });
+
   it('should mark an intact resource selector attachment as not broken', async () => {
     const searchResult = await doSearch({
       query: 'ItemApiViewTest - All attachments',
@@ -188,6 +189,7 @@ describe('Dead attachment handling', () => {
       expect(brokenAttachment).toBeFalsy();
     }
   });
+
   it('should mark a returned file attachment missing from the filestore as broken', async () => {
     const searchResult = await doSearch({
       query: 'DeadAttachmentsTest',

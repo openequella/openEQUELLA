@@ -265,6 +265,7 @@ describe("<SearchResult/>", () => {
         getByTitle(languageStrings.searchpage.deadAttachmentWarning)
       ).toBeInTheDocument();
     });
+
     it("should not render dead attachments as clickable links", async () => {
       //item with one dead attachment and one intact attachment
       const { oneDeadOneAliveAttachObj } = mockData;
@@ -443,6 +444,7 @@ describe("<SearchResult/>", () => {
         queryByLabelText(selectAllAttachmentsString)
       ).not.toBeInTheDocument();
     });
+
     describe("Dead attachments handling", () => {
       it("Should not be possible to select a dead attachment", async () => {
         updateMockGetRenderData({
@@ -454,12 +456,14 @@ describe("<SearchResult/>", () => {
         );
         expect(queryByLabelText(selectAttachmentString)).toBeNull();
       });
+
       it("Should not show the Select All Attachments button if all attachments are dead", async () => {
         const { queryByLabelText } = await renderSearchResult(
           mockData.oneDeadAttachObj
         );
         expect(queryByLabelText(selectAllAttachmentsString)).toBeNull();
       });
+
       it("Should show the Select All Attachments button if at least one attachment is not dead", async () => {
         const { queryByLabelText, getByTitle } = await renderSearchResult(
           mockData.oneDeadOneAliveAttachObj
