@@ -20,7 +20,7 @@ val SwaggerVersion   = "1.6.2"
 val TomcatVersion    = "9.0.46"
 val axis2Version     = "1.6.2"
 val circeVersion     = "0.12.1"
-val cxfVersion       = "3.4.1"
+val cxfVersion       = "3.4.3"
 val fs2Version       = "2.4.4"
 val guiceVersion     = "3.0"
 val jacksonVersion   = "2.11.3"
@@ -385,8 +385,8 @@ run := {
 
   // Due to the error: deduplicate: different file contents found in the following:
   // ...
-  //  .../org.apache.cxf/cxf-rt-frontend-jaxws/bundles/cxf-rt-frontend-jaxws-3.4.1.jar:META-INF/cxf/bus-extensions.txt
-  //  .../org.apache.cxf/cxf-rt-transports-http/bundles/cxf-rt-transports-http-3.4.1.jar:META-INF/cxf/bus-extensions.txt
+  //  .../org.apache.cxf/cxf-rt-frontend-jaxws/bundles/cxf-rt-frontend-jaxws-3.4.3.jar:META-INF/cxf/bus-extensions.txt
+  //  .../org.apache.cxf/cxf-rt-transports-http/bundles/cxf-rt-transports-http-3.4.3.jar:META-INF/cxf/bus-extensions.txt
   // ...
   // As per https://github.com/johnrengelman/shadow/issues/309 , combining the files.
   case PathList("META-INF", "cxf", "bus-extensions.txt") => MergeStrategy.filterDistinctLines
