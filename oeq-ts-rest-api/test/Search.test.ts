@@ -164,3 +164,39 @@ describe('Exports search results for the specified search params', function () {
     ).resolves.toBe(true);
   });
 });
+
+describe('Dead attachment handling', () => {
+  it('should mark a returned file attachment missing from the filestore as broken', async () => {
+    const searchResult = await doSearch({
+      query: 'DeadAttachmentsTest',
+    });
+    const { attachments } = searchResult.results[0];
+    if (attachments != undefined) {
+      const brokenAttachment = attachments[0].brokenAttachment;
+      // eslint-disable-next-line jest/no-conditional-expect
+      expect(brokenAttachment).toBeTruthy();
+    } else {
+      throw new Error('attachments should be defined for this item.');
+    }
+  });
+
+  it('should correctly mark broken nested resource selector attachments', async () => {
+    const searchResult = await doSearch({
+      query: 'NestedDeadResourceAttachmentTest',
+    });
+
+    expect(searchResult.results).toHaveLength(3);
+    //result 1 - attachment points at a no longer existing attachment
+    //result 2 - attachment points at an item summary for an item that doesn't exist
+    //result 3 - attachment points at result 1's attachment (tests nested resource attachments)
+
+    searchResult.results.forEach((result) => {
+      if (result.attachments != undefined) {
+        // eslint-disable-next-line jest/no-conditional-expect
+        expect(result.attachments[0].brokenAttachment).toBeTruthy();
+      } else {
+        throw new Error('attachments should be defined for this item.');
+      }
+    });
+  });
+});
