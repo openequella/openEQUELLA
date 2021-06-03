@@ -87,7 +87,7 @@ export interface AttachmentAndViewerConfig {
  * @param viewUrl the basic view URL returned in search results
  * @param mimeType the MIME type of the attachment to determine the viewer for
  * @param mimeTypeViewerId the server specified `ViewerId` for the attachment
- * @param broken whether or not this is broken.
+ * @param broken whether or not this has been marked as a broken attachment by the server
  */
 export const determineViewer = (
   attachmentType: string,
