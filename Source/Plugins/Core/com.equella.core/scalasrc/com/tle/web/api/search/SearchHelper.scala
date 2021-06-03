@@ -279,8 +279,9 @@ object SearchHelper {
         // Filter out restricted attachments if the user does not have permissions to view them
           .filter(a => !a.isRestricted || hasRestrictedAttachmentPrivileges)
           .map(att => {
+
             val broken =
-              recurseBrokenAttachmentCheck(LegacyGuice.attachmentDao.findByUuid(att.getUuid))
+              recurseBrokenAttachmentCheck(getUniqueAttachmentForAttachmentBean(att, itemKey))
             SearchResultAttachment(
               attachmentType = att.getRawAttachmentType,
               id = att.getUuid,
@@ -294,6 +295,16 @@ object SearchHelper {
             )
           })
           .toList)
+  }
+
+  def getUniqueAttachmentForAttachmentBean(bean: AttachmentBean, key: ItemIdKey): Attachment = {
+    def attachmentList = LegacyGuice.attachmentDao.findAllByUuid(bean.getUuid)
+    attachmentList.forEach { attachment =>
+      if (attachment.getItem.getId == key.getKey) {
+        return attachment;
+      }
+    }
+    null;
   }
 
   def getItemComments(key: ItemIdKey): Option[java.util.List[Comment]] =
@@ -342,6 +353,9 @@ object SearchHelper {
   }
 
   def recurseBrokenAttachmentCheck(attachment: Attachment): Boolean = {
+    if (attachment == null) {
+      return true
+    }
     attachment match {
       case fileAttachment: FileAttachment =>
         //check if file is present in the filestore
