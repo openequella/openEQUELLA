@@ -260,9 +260,9 @@ describe("<SearchResult/>", () => {
   describe("Dead attachments handling", () => {
     it("should display dead attachments with a warning label", async () => {
       const { oneDeadAttachObj } = mockData;
-      const { getByTitle } = await renderSearchResult(oneDeadAttachObj);
+      const { queryByTitle } = await renderSearchResult(oneDeadAttachObj);
       expect(
-        getByTitle(languageStrings.searchpage.deadAttachmentWarning)
+        queryByTitle(languageStrings.searchpage.deadAttachmentWarning)
       ).toBeInTheDocument();
     });
 
@@ -278,7 +278,7 @@ describe("<SearchResult/>", () => {
         getByText(oneDeadOneAliveAttachObj.attachments![0].description!)
       );
 
-      // There is not lightbox, as it is not rendered as a link
+      // There is no lightbox, as it is not rendered as a link
       expect(
         queryByLabelText(languageStrings.common.action.openInNewWindow)
       ).not.toBeInTheDocument();
@@ -454,14 +454,18 @@ describe("<SearchResult/>", () => {
         const { queryByLabelText } = await renderSearchResult(
           mockData.oneDeadAttachObj
         );
-        expect(queryByLabelText(selectAttachmentString)).toBeNull();
+        expect(
+          queryByLabelText(selectAttachmentString)
+        ).not.toBeInTheDocument();
       });
 
       it("Should not show the Select All Attachments button if all attachments are dead", async () => {
         const { queryByLabelText } = await renderSearchResult(
           mockData.oneDeadAttachObj
         );
-        expect(queryByLabelText(selectAllAttachmentsString)).toBeNull();
+        expect(
+          queryByLabelText(selectAllAttachmentsString)
+        ).not.toBeInTheDocument();
       });
 
       it("Should show the Select All Attachments button if at least one attachment is not dead", async () => {
