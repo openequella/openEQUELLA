@@ -94,7 +94,8 @@ public interface MimeTypeService {
    * added to the list dynamically by {@link com.tle.web.mimetypes.section.MimeDefaultViewerSection}
    *
    * @param attributes Configured attributes of MIME type
-   * @return A string representing a list of enabled viewers in the format of array.
+   * @return A string representing a list of enabled viewers and formatted as a JSON array of
+   *     strings (e.g. ["fancy", "toimg"])
    */
   String getEnabledViewerList(Map<String, String> attributes);
 
