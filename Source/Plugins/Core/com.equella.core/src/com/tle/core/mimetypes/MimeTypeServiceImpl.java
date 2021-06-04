@@ -136,13 +136,6 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
   @Override
   public MimeTypesSearchResults searchByMimeType(String mimeType, int offset, int length) {
     String query = (Check.isEmpty(mimeType) ? "" : mimeType.toLowerCase()); // $NON-NLS-1$
-    /*
-     * Map<String, MimeEntry> typeMap =
-     * mimeCache.getCache().getMimeEntries(); List<MimeEntry> mimes = new
-     * ArrayList<MimeEntry>(); for( Entry<String, MimeEntry> entry :
-     * typeMap.entrySet() ) { if( entry.getKey().startsWith(query) ) {
-     * mimes.add(entry.getValue()); } } return mimes;
-     */
     return mimeEntryDao.searchAll(query, offset, length);
   }
 
@@ -393,45 +386,6 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
   @SuppressWarnings("unchecked")
   @Override
   public List<TextExtracterExtension> getTextExtractersForMimeEntry(final MimeEntry mimeEntry) {
-    // Collection<Extension> extensions = textExtracterTracker
-    // .getExtensions(new Filter<Extension>()
-    // {
-    // @Override
-    // public boolean include(Extension t)
-    // {
-    //					Collection<Parameter> mimes = t.getParameters("mimeType"); //$NON-NLS-1$
-    // for( Parameter mime : mimes )
-    // {
-    // String m = mime.valueAsString();
-    // int wildIndex = m.indexOf('*');
-    // if( wildIndex >= 0 )
-    // {
-    // String nonWild = m.substring(0, wildIndex);
-    // if( mimeType.startsWith(nonWild) )
-    // {
-    // return true;
-    // }
-    // }
-    // else
-    // {
-    // if( mimeType.equals(m) )
-    // {
-    // return true;
-    // }
-    // }
-    // }
-    // return false;
-    // }
-    // });
-    //
-    // List<TextExtracterExtension> extracters = new
-    // ArrayList<TextExtracterExtension>();
-    // for( Extension e : extensions )
-    // {
-    // extracters.add(textExtracterTracker.getBeanByExtension(e));
-    // }
-    // return extracters;
-
     List<TextExtracterExtension> extracters = getAllTextExtracters();
     List<TextExtracterExtension> filtered = new ArrayList<TextExtracterExtension>();
     for (TextExtracterExtension extracter : extracters) {
@@ -491,6 +445,29 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
     }
 
     return null;
+  }
+
+  @Override
+  public String getEnabledViewerList(Map<String, String> attributes) {
+    String defaultViewer = attributes.get(MimeTypeConstants.KEY_DEFAULT_VIEWERID);
+    String enabledViewers = attributes.get(MimeTypeConstants.KEY_ENABLED_VIEWERS);
+    // File viewer is handled differently in 'MimeDefaultViewerSection' so there is no need to
+    // add it to the list.
+    if (Check.isEmpty(defaultViewer)
+        || defaultViewer.equals(MimeTypeConstants.VAL_DEFAULT_VIEWERID)) {
+      return enabledViewers;
+    }
+
+    List<String> enabledViewerList = new ArrayList<>();
+    if (!Check.isEmpty(enabledViewers)) {
+      enabledViewerList.addAll(
+          JSONArray.toCollection(JSONArray.fromObject(enabledViewers), String.class));
+    }
+    if (!enabledViewerList.contains(defaultViewer)) {
+      enabledViewerList.add(defaultViewer);
+    }
+
+    return JSONArray.fromObject(enabledViewerList).toString();
   }
 
   private synchronized Map<String, List<Extension>> getExtensionMap() {
