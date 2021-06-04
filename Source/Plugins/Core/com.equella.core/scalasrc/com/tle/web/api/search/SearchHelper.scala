@@ -280,7 +280,8 @@ object SearchHelper {
           .filter(a => !a.isRestricted || hasRestrictedAttachmentPrivileges)
           .map(att => {
             val broken =
-              recurseBrokenAttachmentCheck(getUniqueAttachmentForAttachmentBean(att, itemKey))
+              recurseBrokenAttachmentCheck(
+                getUniqueAttachment(att.getUuid, itemKey.getKey, itemKey.getVersion))
             SearchResultAttachment(
               attachmentType = att.getRawAttachmentType,
               id = att.getUuid,
@@ -294,16 +295,6 @@ object SearchHelper {
             )
           })
           .toList)
-  }
-
-  def getUniqueAttachmentForAttachmentBean(bean: AttachmentBean, key: ItemIdKey): Attachment = {
-    def attachmentList = LegacyGuice.attachmentDao.findAllByUuid(bean.getUuid)
-    attachmentList.forEach { attachment =>
-      if (attachment.getItem.getId == key.getKey) {
-        return attachment;
-      }
-    }
-    null;
   }
 
   def getItemComments(key: ItemIdKey): Option[java.util.List[Comment]] =
@@ -337,7 +328,7 @@ object SearchHelper {
             return true
           }
           if (attachmentList.size == 1) {
-            return recurseBrokenAttachmentCheck(attachmentList.get(0))
+            return recurseBrokenAttachmentCheck(Some(attachmentList.get(0)))
           }
         case "p" =>
           // Get the child item. If it doesn't exist, this is a dead attachment
@@ -351,11 +342,11 @@ object SearchHelper {
     false;
   }
 
-  def recurseBrokenAttachmentCheck(attachment: Attachment): Boolean = {
-    if (attachment == null) {
+  def recurseBrokenAttachmentCheck(attachment: Option[Attachment]): Boolean = {
+    if (attachment.isEmpty) {
       return true
     }
-    attachment match {
+    attachment.get match {
       case fileAttachment: FileAttachment =>
         //check if file is present in the filestore
         val item =
@@ -364,6 +355,13 @@ object SearchHelper {
       case customAttachment: CustomAttachment =>
         checkResourceAttachmentIntegrity(customAttachment)
       case _ => false
+    }
+  }
+
+  def getUniqueAttachment(attachmentUuid: String, id: Long, version: Int): Option[Attachment] = {
+    def attachmentList = LegacyGuice.attachmentDao.findAllByUuid(attachmentUuid)
+    attachmentList.asScala.collectFirst {
+      case a if a.getItem.getId == id && a.getItem.getVersion == version => a
     }
   }
 
