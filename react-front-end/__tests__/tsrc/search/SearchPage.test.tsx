@@ -1086,12 +1086,11 @@ describe("Export search result", () => {
 });
 
 describe("Hide Gallery", () => {
-  const itemListLabel =
-    languageStrings.searchpage.displayModeSelector.modeItemList;
-  const imageLabel =
-    languageStrings.searchpage.displayModeSelector.modeGalleryImage;
-  const videoLabel =
-    languageStrings.searchpage.displayModeSelector.modeGalleryVideo;
+  const {
+    modeItemList: itemListLabel,
+    modeGalleryImage: imageLabel,
+    modeGalleryVideo: videoLabel,
+  } = languageStrings.searchpage.displayModeSelector;
   it.each([
     [
       "image",
@@ -1100,7 +1099,7 @@ describe("Hide Gallery", () => {
         searchingDisableGallery: true,
       },
       [itemListLabel, videoLabel],
-      imageLabel,
+      [imageLabel],
     ],
     [
       "video",
@@ -1109,7 +1108,7 @@ describe("Hide Gallery", () => {
         searchingDisableVideos: true,
       },
       [itemListLabel, imageLabel],
-      videoLabel,
+      [videoLabel],
     ],
     [
       "both image and video",
@@ -1119,8 +1118,7 @@ describe("Hide Gallery", () => {
         searchingDisableGallery: true,
       },
       [itemListLabel],
-      videoLabel,
-      imageLabel,
+      [videoLabel, imageLabel],
     ],
   ])(
     "hides %s gallery",
@@ -1128,7 +1126,7 @@ describe("Hide Gallery", () => {
       mode: string,
       settings: OEQ.SearchSettings.Settings,
       enabledModes: string[],
-      ...disabledModes: string[]
+      disabledModes: string[]
     ) => {
       mockSearchSettings.mockResolvedValueOnce(settings);
       const { queryByLabelText } = await renderSearchPage();
