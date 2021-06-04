@@ -247,9 +247,8 @@ export const SearchResultAttachmentsList = ({
           <Warning color="secondary" />
         </Tooltip>
       );
-    } else {
-      return inStructured ? <DragIndicatorIcon /> : <InsertDriveFile />;
     }
+    return inStructured ? <DragIndicatorIcon /> : <InsertDriveFile />;
   }
 
   const isAttachmentSelectable = (broken: boolean) =>
@@ -304,9 +303,9 @@ export const SearchResultAttachmentsList = ({
   );
 
   // Only show the Select All Attachments button if at least one attachment is not dead
-  const atLeastOneIntactAttachment = attachmentsAndViewerConfigs
-    .map(({ attachment }) => attachment.brokenAttachment)
-    .some((broken) => !broken);
+  const atLeastOneIntactAttachment = attachmentsAndViewerConfigs.some(
+    ({ attachment }) => !attachment.brokenAttachment
+  );
 
   const showSelectAllAttachments = atLeastOneIntactAttachment && !inSkinny;
 
