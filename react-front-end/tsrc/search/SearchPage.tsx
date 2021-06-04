@@ -715,6 +715,12 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         <DisplayModeSelector
           onChange={handleDisplayModeChanged}
           value={searchPageOptions.displayMode ?? "list"}
+          disableImageMode={
+            searchSettings.core?.searchingDisableGallery ?? false
+          }
+          disableVideoMode={
+            searchSettings.core?.searchingDisableVideos ?? false
+          }
         />
       ),
       disabled: false,

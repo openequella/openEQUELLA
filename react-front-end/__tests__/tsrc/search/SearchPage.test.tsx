@@ -134,10 +134,10 @@ Object.assign(navigator, {
 });
 window.scrollTo = jest.fn();
 
-const searchSettingPromise = mockSearchSettings.mockResolvedValue(
+const searchPromise = mockSearch.mockResolvedValue(getSearchResult);
+mockSearchSettings.mockResolvedValue(
   SearchSettingsModule.defaultSearchSettings
 );
-const searchPromise = mockSearch.mockResolvedValue(getSearchResult);
 mockCollections.mockResolvedValue(getCollectionMap);
 mockListUsers.mockResolvedValue(UserSearchMock.users);
 mockCurrentUser.mockResolvedValue(getCurrentUserMock);
@@ -327,7 +327,7 @@ describe("Refine search by status", () => {
   const { liveStatuses, nonLiveStatuses } = SearchModule;
   beforeEach(() => {
     // Status selector is disabled by default so enable it before test.
-    searchSettingPromise.mockResolvedValueOnce({
+    mockSearchSettings.mockResolvedValueOnce({
       ...SearchSettingsModule.defaultSearchSettings,
       searchingShowNonLiveCheckbox: true,
     });
@@ -1083,4 +1083,59 @@ describe("Export search result", () => {
       queryByLabelText(languageStrings.searchpage.export.title)
     ).not.toBeInTheDocument();
   });
+});
+
+describe("Hide Gallery", () => {
+  const {
+    modeItemList: itemListLabel,
+    modeGalleryImage: imageLabel,
+    modeGalleryVideo: videoLabel,
+  } = languageStrings.searchpage.displayModeSelector;
+  it.each([
+    [
+      "image",
+      {
+        ...SearchSettingsModule.defaultSearchSettings,
+        searchingDisableGallery: true,
+      },
+      [itemListLabel, videoLabel],
+      [imageLabel],
+    ],
+    [
+      "video",
+      {
+        ...SearchSettingsModule.defaultSearchSettings,
+        searchingDisableVideos: true,
+      },
+      [itemListLabel, imageLabel],
+      [videoLabel],
+    ],
+    [
+      "both image and video",
+      {
+        ...SearchSettingsModule.defaultSearchSettings,
+        searchingDisableVideos: true,
+        searchingDisableGallery: true,
+      },
+      [itemListLabel],
+      [videoLabel, imageLabel],
+    ],
+  ])(
+    "hides %s gallery",
+    async (
+      mode: string,
+      settings: OEQ.SearchSettings.Settings,
+      enabledModes: string[],
+      disabledModes: string[]
+    ) => {
+      mockSearchSettings.mockResolvedValueOnce(settings);
+      const { queryByLabelText } = await renderSearchPage();
+      disabledModes.forEach((hiddenLabel) =>
+        expect(queryByLabelText(hiddenLabel)).not.toBeInTheDocument()
+      );
+      enabledModes.forEach((visibleLabel) =>
+        expect(queryByLabelText(visibleLabel)).toBeInTheDocument()
+      );
+    }
+  );
 });

@@ -32,14 +32,45 @@ export default {
 export const ListSelection: Story<DisplayModeSelectorProps> = (args) => (
   <DisplayModeSelector {...args} />
 );
-ListSelection.args = { value: "list" };
+ListSelection.args = {
+  value: "list",
+  disableVideoMode: false,
+  disableImageMode: false,
+};
 
 export const ImageGallerySelection: Story<DisplayModeSelectorProps> = (
   args
 ) => <DisplayModeSelector {...args} />;
-ImageGallerySelection.args = { value: "gallery-image" };
+ImageGallerySelection.args = { ...ListSelection.args, value: "gallery-image" };
+
+export const ImageGalleryDisabled: Story<DisplayModeSelectorProps> = (args) => (
+  <DisplayModeSelector {...args} />
+);
+ImageGalleryDisabled.args = {
+  ...ImageGallerySelection.args,
+  disableImageMode: true,
+  value: "list",
+};
 
 export const VideoGallerySelection: Story<DisplayModeSelectorProps> = (
   args
 ) => <DisplayModeSelector {...args} />;
-VideoGallerySelection.args = { value: "gallery-video" };
+VideoGallerySelection.args = { ...ListSelection.args, value: "gallery-video" };
+
+export const VideoGalleryDisabled: Story<DisplayModeSelectorProps> = (args) => (
+  <DisplayModeSelector {...args} />
+);
+VideoGalleryDisabled.args = {
+  ...VideoGallerySelection.args,
+  disableVideoMode: true,
+  value: "list",
+};
+
+export const StandardListOnly: Story<DisplayModeSelectorProps> = (args) => (
+  <DisplayModeSelector {...args} />
+);
+StandardListOnly.args = {
+  ...ListSelection.args,
+  disableVideoMode: true,
+  disableImageMode: true,
+};
