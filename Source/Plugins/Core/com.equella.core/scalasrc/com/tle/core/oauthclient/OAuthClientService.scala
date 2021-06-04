@@ -102,9 +102,11 @@ object OAuthTokenCacheHelper {
       .unsafeRunSync()
 
     // Save the token in both cache and DB.
-    replicatedCache.put(tokenKey,
-                        newOAuthTokenState,
-                        Date.from(newOAuthTokenState.expires.getOrElse(Instant.now())))
+    newOAuthTokenState.expires match {
+      case Some(expire) => replicatedCache.put(tokenKey, newOAuthTokenState, expire)
+      case None         => replicatedCache.put(tokenKey, newOAuthTokenState)
+    }
+
     newOAuthTokenState
   }
 }
@@ -121,14 +123,14 @@ object OAuthClientService {
                     response.refresh_token)
   }
 
-  def removeToken(): Unit = {
+  def removeToken(tokenRequest: TokenRequest): Unit = {
     // Not only invalidate the cache but also remove the DB entries.
-    replicatedCache.invalidate()
+    replicatedCache.invalidate(buildCacheKey(tokenRequest))
   }
 
   def tokenForClient(tokenRequest: TokenRequest): OAuthTokenState = {
     val tokenKey = buildCacheKey(tokenRequest)
-    // The cache returns null when there is no token saved in the token or the token is expired.
+    // The cache returns null when there is no token saved in the cache or the token is expired in both the cache and DB.
     // In either case, we request a new token.
     replicatedCache.get(tokenKey).or(() => requestToken(tokenRequest, tokenKey))
   }
@@ -152,7 +154,7 @@ object OAuthClientService {
     val tokenRequest = TokenRequest(authTokenUrl, clientId, clientSecret)
     val token        = tokenForClient(tokenRequest)
     val res          = requestWithToken(request, token.token, token.tokenType)
-    if (res.code == StatusCodes.Unauthorized) removeToken()
+    if (res.code == StatusCodes.Unauthorized) removeToken(tokenRequest)
     res.pure[DB]
   }
 }

@@ -23,7 +23,7 @@ import com.tle.annotation.NonNull;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.common.Pair;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -71,14 +71,14 @@ public interface ReplicatedCacheService {
 
     /**
      * Similar to { @link #put(String, Serializable)} }, but also allow specifying TTL of the value
-     * saved in DB.
+     * saved in DB to support values that have longer or shorter TTL.
      *
      * @param key Key of the object
      * @param value Value of the object
-     * @param dbEntryTTL TTL of the value saved in DB
+     * @param ttl TTL of the value saved in DB
      */
-    default void put(@NonNull String key, @NonNull V value, Date dbEntryTTL) {
-      put(key, value);
+    default void put(@NonNull String key, @NonNull V value, Instant ttl) {
+      throw new UnsupportedOperationException();
     }
 
     void invalidate(@NonNull String... keys);

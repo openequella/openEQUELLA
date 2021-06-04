@@ -49,6 +49,7 @@ import com.tle.core.replicatedcache.dao.ReplicatedCacheDao;
 import com.tle.core.scheduler.ScheduledTask;
 import com.tle.core.zookeeper.ZookeeperService;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
@@ -181,11 +182,11 @@ public class ReplicatedCacheServiceImpl
 
     @Override
     public synchronized void put(@NonNull String key, @NonNull V value) {
-      put(key, value, new Date(System.currentTimeMillis() + ttlUnit.toMillis(ttl)));
+      put(key, value, Instant.ofEpochMilli(System.currentTimeMillis() + ttlUnit.toMillis(ttl)));
     }
 
     @Override
-    public synchronized void put(@NonNull String key, @NonNull V value, Date dbEntryTTL) {
+    public synchronized void put(@NonNull String key, @NonNull V value, Instant dbEntryTTL) {
       checkNotNull(key);
       checkNotNull(value);
 
@@ -203,7 +204,7 @@ public class ReplicatedCacheServiceImpl
 
       // Update the DB state if it's clustered
       if (alwaysPersist || zookeeperService.isCluster()) {
-        dao.put(cacheId, key, dbEntryTTL, PluginAwareObjectOutputStream.toBytes(value));
+        dao.put(cacheId, key, Date.from(dbEntryTTL), PluginAwareObjectOutputStream.toBytes(value));
       }
 
       // Invalidate other servers caches
