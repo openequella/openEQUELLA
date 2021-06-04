@@ -4262,13 +4262,73 @@ a.modal-control.modal-save {
   }
 }
 
-.urlHandler {
+.urlHandler,
+.kalturaHandler {
   .modal-content .modal-content-background .modal-content-inner .float-left {
     @include editAttachmentDialogStyles;
   }
 
   .modal-content-inner {
     flex-direction: row;
+  }
+}
+
+.kalturaHandler {
+  @include buttonShadowBorder;
+
+  .choice.odd {
+    background-color: white;
+  }
+
+  .choice.even {
+    background-color: #f3f1eb;
+  }
+
+  img#kaltura-logo {
+    position: absolute;
+    bottom: 25px;
+    right: 35px;
+    zoom: 1;
+    filter: alpha(opacity=35);
+    opacity: 0.35;
+  }
+
+  .choice-list div {
+    position: relative;
+    padding: 8px 10px;
+  }
+
+  .choice-list div {
+    padding-bottom: 10px;
+  }
+
+  div.choice-list {
+    border: 1px solid #8f8b7e;
+  }
+
+  div.choice-list .choice {
+    cursor: pointer;
+  }
+
+  div.choice-list .choice:hover {
+    background-color: #ffffcc !important;
+  }
+
+  div.choice-list .choice.selected {
+    background-color: #80d2ee !important;
+  }
+
+  .choice h4 {
+    font-size: 12px;
+    padding-bottom: 4px;
+  }
+
+  #kaltura-query button {
+    background-color: $primaryColor;
+    color: set-text-color($primaryColor);
+    padding-left: $singleMargin;
+    padding-right: $singleMargin;
+    margin-left: $singleMargin;
   }
 }
 
