@@ -46,6 +46,11 @@ import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.MapKeyType;
 import org.hibernate.annotations.Type;
 
+/**
+ * Some existing MIME types do not have their default viewers enabled. This results in error
+ * messages showing in the New Search UI. So we use this migration to ensure the default viewer is
+ * in list of enabled viewers.
+ */
 @Bind
 @Singleton
 public class EnableDefaultViewerMigration extends AbstractHibernateDataMigration {
@@ -58,6 +63,9 @@ public class EnableDefaultViewerMigration extends AbstractHibernateDataMigration
     final List<FakeMimeEntry> entries = session.createQuery("FROM MimeEntry").list();
     for (FakeMimeEntry entry : entries) {
       Map<String, String> attributes = entry.attributes;
+      // Calling 'getEnabledViewerList' to fix this issue as the list returned from this function
+      // include the default viewer whereas the one saved in attributes may have default viewer
+      // missing.
       String enabledViewers = mimeTypeService.getEnabledViewerList(attributes);
       if (!Check.isEmpty(enabledViewers)) {
         attributes.put(MimeTypeConstants.KEY_ENABLED_VIEWERS, enabledViewers);
