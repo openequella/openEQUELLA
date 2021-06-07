@@ -281,7 +281,7 @@ object SearchHelper {
           .map(att => {
             val broken =
               recurseBrokenAttachmentCheck(
-                LegacyGuice.itemService.getNullableAttachmentForUuid(itemKey, att.getUuid))
+                Option(LegacyGuice.itemService.getNullableAttachmentForUuid(itemKey, att.getUuid)))
             SearchResultAttachment(
               attachmentType = att.getRawAttachmentType,
               id = att.getUuid,
@@ -317,38 +317,50 @@ object SearchHelper {
     }
   }
 
-  def checkResourceAttachmentIntegrity(customAttachment: CustomAttachment): Boolean = {
+  /**
+    * Determines if a given customAttachment is invalid. Required as these attachments can be recursive.
+    * @param customAttachment The attachment to check.
+    * @return If true, this attachment is broken.
+    */
+  def getBrokenAttachmentStatusForResourceAttachment(
+      customAttachment: CustomAttachment): Boolean = {
     val key = new ItemId(customAttachment.getData("uuid").asInstanceOf[String],
                          customAttachment.getData("version").asInstanceOf[Int])
-    if (customAttachment.getType == "resource") {
-      customAttachment.getData("type") match {
-        case "a" =>
-          // Recurse into child attachment
-          return recurseBrokenAttachmentCheck(
-            LegacyGuice.itemService.getNullableAttachmentForUuid(key, customAttachment.getUrl))
-        case "p" =>
-          // Get the child item. If it doesn't exist, this is a dead attachment
-          val item = LegacyGuice.itemService.getUnsecureIfExists(key)
-          return item == null
-        case _ => return false
-      }
+    if (customAttachment.getType != "resource") {
+      return false;
     }
-    false
+    customAttachment.getData("type") match {
+      case "a" =>
+        // Recurse into child attachment
+        recurseBrokenAttachmentCheck(
+          Option(
+            LegacyGuice.itemService.getNullableAttachmentForUuid(key, customAttachment.getUrl)))
+      case "p" =>
+        // Get the child item. If it doesn't exist, this is a dead attachment
+        Option(LegacyGuice.itemService.getUnsecureIfExists(key)).isEmpty
+      case _ => false
+    }
   }
 
-  def recurseBrokenAttachmentCheck(attachment: Attachment): Boolean = {
-    if (attachment == null) {
-      return true
-    }
+  /**
+    * Determines if a given attachment is invalid.
+    * If it is a resource selector attachment, this gets handled by
+    * [[getBrokenAttachmentStatusForResourceAttachment(customAttachment: CustomAttachment)]]
+    * which links back in here to recurse through customAttachments to find the root.
+    * @param attachment The attachment to check for brokenness.
+    * @return True if broken, false if intact.
+    */
+  def recurseBrokenAttachmentCheck(attachment: Option[Attachment]): Boolean = {
     attachment match {
-      case fileAttachment: FileAttachment =>
+      case Some(fileAttachment: FileAttachment) =>
         //check if file is present in the filestore
         val item =
           LegacyGuice.viewableItemFactory.createNewViewableItem(fileAttachment.getItem.getItemId)
         !LegacyGuice.fileSystemService.fileExists(item.getFileHandle, fileAttachment.getFilename)
-      case customAttachment: CustomAttachment =>
-        checkResourceAttachmentIntegrity(customAttachment)
-      case _ => false
+      case Some(customAttachment: CustomAttachment) =>
+        getBrokenAttachmentStatusForResourceAttachment(customAttachment)
+      case None    => true
+      case Some(_) => false
     }
   }
 
