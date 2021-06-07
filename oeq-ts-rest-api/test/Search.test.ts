@@ -164,3 +164,68 @@ describe('Exports search results for the specified search params', function () {
     ).resolves.toBe(true);
   });
 });
+
+describe('Dead attachment handling', () => {
+  it.each<[string, string, number, number, boolean]>([
+    [
+      'an intact file attachment as not broken',
+      'Keyword found in attachment test item',
+      0,
+      0,
+      false,
+    ],
+    [
+      'an intact resource selector attachment as not broken',
+      'ItemApiViewTest - All attachments',
+      0,
+      1,
+      false,
+    ],
+    [
+      'a returned file attachment missing from the filestore as broken',
+      'DeadAttachmentsTest',
+      0,
+      0,
+      true,
+    ],
+    [
+      'a resource attachment pointing at a non-existent attachment as broken',
+      'NestedDeadResourceAttachmentTest - Child 1',
+      0,
+      0,
+      true,
+    ],
+    [
+      'a resource attachment pointing at a non-existent item summary as broken',
+      'NestedDeadResourceAttachmentTest - Points at root item summary',
+      0,
+      0,
+      true,
+    ],
+    [
+      'a nested resource attachment with the end of the chain being a non-existent attachment as broken',
+      'NestedDeadResourceAttachmentTest - Child 2',
+      0,
+      0,
+      true,
+    ],
+  ])(
+    'should mark %s',
+    async (
+      _: string,
+      query: string,
+      itemResultIndex: number,
+      attachmentResultIndex: number,
+      expectBrokenStatus: boolean
+    ) => {
+      const searchResult = await doSearch({ query: query });
+      const { attachments } = searchResult.results[itemResultIndex];
+      if (attachments === undefined) {
+        throw new Error('Unexpected undefined attachments');
+      }
+      const brokenAttachment =
+        attachments[attachmentResultIndex].brokenAttachment;
+      expect(brokenAttachment).toEqual(expectBrokenStatus);
+    }
+  );
+});
