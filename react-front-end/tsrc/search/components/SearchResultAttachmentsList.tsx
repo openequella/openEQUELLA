@@ -240,7 +240,7 @@ export const SearchResultAttachmentsList = ({
     setAttachExpanded(!attachExpanded);
   };
 
-  function buildIcon(broken: boolean): JSX.Element {
+  const buildIcon = (broken: boolean) => {
     if (broken) {
       return (
         <Tooltip title={languageStrings.searchpage.deadAttachmentWarning}>
@@ -249,7 +249,7 @@ export const SearchResultAttachmentsList = ({
       );
     }
     return inStructured ? <DragIndicatorIcon /> : <InsertDriveFile />;
-  }
+  };
 
   const isAttachmentSelectable = (broken: boolean) =>
     inSelectionSession && !broken;

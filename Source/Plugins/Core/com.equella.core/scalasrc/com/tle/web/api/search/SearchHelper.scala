@@ -323,7 +323,7 @@ object SearchHelper {
     if (customAttachment.getType == "resource") {
       customAttachment.getData("type") match {
         case "a" =>
-          // if child attachment exists, recurse into it. If it doesn't, this is a dead attachment
+          // Recurse into child attachment
           return recurseBrokenAttachmentCheck(
             LegacyGuice.itemService.getNullableAttachmentForUuid(key, customAttachment.getUrl))
         case "p" =>
