@@ -106,12 +106,6 @@ export default function OEQThumb({
     if (hasGeneratedThumb) {
       return oeqProvidedThumb;
     }
-    if (mimeType === "equella/item") {
-      return <Web {...generalThumbStyles} />;
-    }
-    if (mimeType === "equella/link") {
-      return <LinkIcon {...generalThumbStyles} />;
-    }
     let result = defaultThumb;
     if (mimeType?.startsWith("image")) {
       result = <ImageIcon {...generalThumbStyles} />;
@@ -119,6 +113,25 @@ export default function OEQThumb({
       result = <VideoIcon {...generalThumbStyles} />;
     }
     return result;
+  };
+
+  /**
+   * Resource attachments point to other attachments or items, so we need to use the MIME type
+   * to determine the thumbnail to use, rather than the attachment type which will be custom/resource.
+   *
+   * @param mimeType The MIME type of the resource attachment's target.
+   */
+  const handleResourceAttachmentThumb = (mimeType?: string) => {
+    switch (mimeType) {
+      case "equella/item":
+        return <Web {...generalThumbStyles} />;
+      case "equella/link":
+        return <LinkIcon {...generalThumbStyles} />;
+      case "text/html":
+        return <WebIcon {...generalThumbStyles} />;
+      default:
+        return oeqProvidedThumb;
+    }
   };
 
   let oeqThumb = defaultThumb;
@@ -136,7 +149,7 @@ export default function OEQThumb({
       oeqThumb = <WebIcon {...generalThumbStyles} />;
       break;
     case "custom/resource":
-      oeqThumb = handleMimeType(mimeType);
+      oeqThumb = handleResourceAttachmentThumb(mimeType);
       break;
     case "custom/flickr":
     case "custom/youtube":
