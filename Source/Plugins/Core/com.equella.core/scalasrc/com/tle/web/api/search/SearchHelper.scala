@@ -281,7 +281,7 @@ object SearchHelper {
           .map(att => {
             val broken =
               recurseBrokenAttachmentCheck(
-                getUniqueAttachment(att.getUuid, itemKey.getKey, itemKey.getVersion))
+                LegacyGuice.itemService.getNullableAttachmentForUuid(itemKey, att.getUuid))
             SearchResultAttachment(
               attachmentType = att.getRawAttachmentType,
               id = att.getUuid,
@@ -318,35 +318,29 @@ object SearchHelper {
   }
 
   def checkResourceAttachmentIntegrity(customAttachment: CustomAttachment): Boolean = {
+    val key = new ItemId(customAttachment.getData("uuid").asInstanceOf[String],
+                         customAttachment.getData("version").asInstanceOf[Int])
     if (customAttachment.getType == "resource") {
       customAttachment.getData("type") match {
         case "a" =>
           // if child attachment exists, recurse into it. If it doesn't, this is a dead attachment
-          val attachmentList: java.util.List[Attachment] =
-            LegacyGuice.attachmentDao.findAllByUuid(customAttachment.getUrl)
-          if (attachmentList.isEmpty) {
-            return true
-          }
-          if (attachmentList.size == 1) {
-            return recurseBrokenAttachmentCheck(Some(attachmentList.get(0)))
-          }
+          return recurseBrokenAttachmentCheck(
+            LegacyGuice.itemService.getNullableAttachmentForUuid(key, customAttachment.getUrl))
         case "p" =>
           // Get the child item. If it doesn't exist, this is a dead attachment
-          val childKey = new ItemId(customAttachment.getData("uuid").asInstanceOf[String],
-                                    customAttachment.getData("version").asInstanceOf[Int])
-          val item = LegacyGuice.itemDao.findByItemId(childKey)
+          val item = LegacyGuice.itemDao.findByItemId(key)
           return item == null
         case _ => return false
       }
     }
-    false;
+    false
   }
 
-  def recurseBrokenAttachmentCheck(attachment: Option[Attachment]): Boolean = {
-    if (attachment.isEmpty) {
+  def recurseBrokenAttachmentCheck(attachment: Attachment): Boolean = {
+    if (attachment == null) {
       return true
     }
-    attachment.get match {
+    attachment match {
       case fileAttachment: FileAttachment =>
         //check if file is present in the filestore
         val item =
@@ -355,13 +349,6 @@ object SearchHelper {
       case customAttachment: CustomAttachment =>
         checkResourceAttachmentIntegrity(customAttachment)
       case _ => false
-    }
-  }
-
-  def getUniqueAttachment(attachmentUuid: String, id: Long, version: Int): Option[Attachment] = {
-    def attachmentList = LegacyGuice.attachmentDao.findAllByUuid(attachmentUuid)
-    attachmentList.asScala.collectFirst {
-      case a if a.getItem.getId == id && a.getItem.getVersion == version => a
     }
   }
 
