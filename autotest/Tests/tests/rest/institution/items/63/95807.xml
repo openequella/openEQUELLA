@@ -1,0 +1,102 @@
+<com.tle.beans.item.Item>
+  <id>95807</id>
+  <uuid>a101af01-e13e-4dd3-bb1d-117ae5a92745</uuid>
+  <version>1</version>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2021-06-03 13:50:48.447</dateModified>
+  <dateCreated class="sql-timestamp">2021-06-03 13:50:48.448</dateCreated>
+  <dateForIndex class="sql-timestamp">2021-06-03 13:50:48.447</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.CustomAttachment>
+      <id>95812</id>
+      <uuid>d185b602-020f-4c64-929d-5524f1b6e21d</uuid>
+      <url>fcb5cd6f-16d1-4b75-a53f-436e21b1f23d</url>
+      <description>source.gif</description>
+      <value1>resource</value1>
+      <data>
+        <entry>
+          <string>type</string>
+          <string>a</string>
+        </entry>
+        <entry>
+          <string>uuid</string>
+          <string>918a2381-a445-45f5-95b6-809e113c370d</string>
+        </entry>
+        <entry>
+          <string>version</string>
+          <int>1</int>
+        </entry>
+      </data>
+      <preview>false</preview>
+      <restricted>false</restricted>
+      <erroredIndexing>false</erroredIndexing>
+    </com.tle.beans.item.attachments.CustomAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>95809</id>
+    <liveApprovalDate class="sql-timestamp">2021-06-03 13:50:48.447</liveApprovalDate>
+    <lastAction class="sql-timestamp">2021-06-03 13:50:48.447</lastAction>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>95813</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2021-06-03 13:50:48.447</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>95814</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2021-06-03 13:50:48.447</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>95815</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2021-06-03 13:50:48.447</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>95810</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>95811</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>NestedDeadResourceAttachmentTest - Child 2</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>default</thumb>
+</com.tle.beans.item.Item>

@@ -257,6 +257,44 @@ describe("<SearchResult/>", () => {
     );
   });
 
+  describe("Dead attachments handling", () => {
+    it("should display dead attachments with a warning label", async () => {
+      const { oneDeadAttachObj } = mockData;
+      const { queryByTitle } = await renderSearchResult(oneDeadAttachObj);
+      expect(
+        queryByTitle(languageStrings.searchpage.deadAttachmentWarning)
+      ).toBeInTheDocument();
+    });
+
+    it("should not render dead attachments as clickable links", async () => {
+      //item with one dead attachment and one intact attachment
+      const { oneDeadOneAliveAttachObj } = mockData;
+      const { getByText, queryByLabelText } = await renderSearchResult(
+        oneDeadOneAliveAttachObj
+      );
+
+      // Given a user clicks on a broken attachment
+      userEvent.click(
+        getByText(oneDeadOneAliveAttachObj.attachments![0].description!)
+      );
+
+      // There is no lightbox, as it is not rendered as a link
+      expect(
+        queryByLabelText(languageStrings.common.action.openInNewWindow)
+      ).not.toBeInTheDocument();
+
+      // Now if they click on the intact attachment instead...
+      userEvent.click(
+        getByText(oneDeadOneAliveAttachObj.attachments![1].description!)
+      );
+
+      // ...There is a lightbox
+      expect(
+        queryByLabelText(languageStrings.common.action.openInNewWindow)
+      ).toBeInTheDocument();
+    });
+  });
+
   describe("In Selection Session", () => {
     beforeAll(() => {
       updateMockGlobalCourseList();
@@ -405,6 +443,50 @@ describe("<SearchResult/>", () => {
       expect(
         queryByLabelText(selectAllAttachmentsString)
       ).not.toBeInTheDocument();
+    });
+
+    describe("Dead attachments handling", () => {
+      it("Should not be possible to select a dead attachment", async () => {
+        updateMockGetRenderData({
+          ...basicRenderData,
+          selectionSessionInfo: selectSummaryButtonDisabled,
+        });
+        const { queryByLabelText } = await renderSearchResult(
+          mockData.oneDeadAttachObj
+        );
+        expect(
+          queryByLabelText(selectAttachmentString)
+        ).not.toBeInTheDocument();
+      });
+
+      it("Should not show the Select All Attachments button if all attachments are dead", async () => {
+        const { queryByLabelText } = await renderSearchResult(
+          mockData.oneDeadAttachObj
+        );
+        expect(
+          queryByLabelText(selectAllAttachmentsString)
+        ).not.toBeInTheDocument();
+      });
+
+      it("Should show the Select All Attachments button if at least one attachment is not dead", async () => {
+        const { queryByLabelText, getByTitle } = await renderSearchResult(
+          mockData.oneDeadOneAliveAttachObj
+        );
+        expect(
+          queryByLabelText(selectAllAttachmentsString)
+        ).toBeInTheDocument();
+        // Given the user clicks Select All Attachments for an item with a dead attachment
+        // and an alive attachment...
+        userEvent.click(getByTitle(selectAllAttachmentsString));
+
+        // The function should only have been called with the attachment
+        // 78883eff-7cf6-4b14-ab76-2b7f84dbe833 which is the intact one
+        expect(
+          mockSelectResourceForCourseList
+        ).toHaveBeenCalledWith("72558c1d-8788-4515-86c8-b24a28cc451e/1", [
+          "78883eff-7cf6-4b14-ab76-2b7f84dbe833",
+        ]);
+      });
     });
   });
 });

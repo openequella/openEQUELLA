@@ -69,6 +69,9 @@ case class SearchResultItem(
   * @param attachmentType Attachment's type.
   * @param id The unique ID of an attachment.
   * @param description The description of an attachment.
+  * @param brokenAttachment If true, this attachment is broken or inaccessible.
+  *                          For file attachments, this means that it is not accessible from the filestore.
+  *                          For resource selector attachments, this means that the linked attachment or item summary does not exist.
   * @param preview If an attachment can be previewed or not.
   * @param mimeType Mime Type of file based attachments
   * @param hasGeneratedThumb Indicates if file based attachments have a generated thumbnail store in filestore
@@ -79,6 +82,7 @@ case class SearchResultAttachment(
     attachmentType: String,
     id: String,
     description: Option[String],
+    brokenAttachment: Boolean,
     preview: Boolean,
     mimeType: Option[String],
     hasGeneratedThumb: Option[Boolean],

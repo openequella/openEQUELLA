@@ -66,12 +66,21 @@ public interface ItemService
   List<Item> getNextLiveItems(List<ItemId> items);
 
   /**
-   * @param itemId
-   * @param uuid
-   * @return Never returns null.
+   * @param itemId the Item for which to return an attachment
+   * @param uuid The UUID of the attachment to return
+   * @return Never returns null. Returns attachment or throws.
    * @throws AttachmentNotFoundException
    */
   Attachment getAttachmentForUuid(ItemKey itemId, String uuid);
+
+  /**
+   * As {@link #getAttachmentForUuid(ItemKey itemId, String uuid)}, without the null check.
+   *
+   * @param itemId the Item for which to return an attachment
+   * @param uuid The UUID of the attachment to return
+   * @return Returns null if attachment not found.
+   */
+  Attachment getNullableAttachmentForUuid(ItemKey itemId, String uuid);
 
   Multimap<Item, Attachment> getAttachmentsForItems(Collection<Item> items);
 
