@@ -483,10 +483,7 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
           new ItemId((String) attachment.getData("uuid"), (int) attachment.getData("version"));
       Attachment childAttachment =
           itemService.getNullableAttachmentForUuid(key, attachment.getUrl());
-      if (childAttachment == null) {
-        return null;
-      }
-      return getMimeEntryForAttachment(childAttachment);
+      return childAttachment == null ? null : getMimeEntryForAttachment(childAttachment);
     }
     Map<String, List<Extension>> map = getExtensionMap();
     List<Extension> extensions = map.get(type);
