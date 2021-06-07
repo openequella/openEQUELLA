@@ -328,7 +328,7 @@ object SearchHelper {
             LegacyGuice.itemService.getNullableAttachmentForUuid(key, customAttachment.getUrl))
         case "p" =>
           // Get the child item. If it doesn't exist, this is a dead attachment
-          val item = LegacyGuice.itemDao.findByItemId(key)
+          val item = LegacyGuice.itemService.getUnsecureIfExists(key)
           return item == null
         case _ => return false
       }
