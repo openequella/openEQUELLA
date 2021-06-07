@@ -73,6 +73,15 @@ public interface ItemService
    */
   Attachment getAttachmentForUuid(ItemKey itemId, String uuid);
 
+  /**
+   * As above, without the null check.
+   *
+   * @param itemId
+   * @param uuid
+   * @return Returns null if attachment not found.
+   */
+  Attachment getNullableAttachmentForUuid(ItemKey itemId, String uuid);
+
   Multimap<Item, Attachment> getAttachmentsForItems(Collection<Item> items);
 
   int getLatestVersion(String uuid);
