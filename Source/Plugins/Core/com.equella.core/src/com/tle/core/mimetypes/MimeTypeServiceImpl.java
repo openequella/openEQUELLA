@@ -24,6 +24,7 @@ import static com.tle.web.controls.resource.ResourceAttachmentBean.TYPE_ID;
 import com.google.common.cache.CacheLoader;
 import com.tle.annotation.Nullable;
 import com.tle.beans.Institution;
+import com.tle.beans.item.ItemId;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.CustomAttachment;
@@ -38,7 +39,7 @@ import com.tle.core.events.services.EventService;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionCache;
 import com.tle.core.institution.InstitutionService;
-import com.tle.core.item.dao.AttachmentDao;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.mimetypes.dao.MimeEntryDao;
 import com.tle.core.mimetypes.institution.MimeMigrator;
 import com.tle.core.plugins.AbstractPluginService;
@@ -76,7 +77,7 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
       AbstractPluginService.getMyPluginId(MimeTypeServiceImpl.class) + ".";
   @Inject private MimeEntryDao mimeEntryDao;
   @Inject private EventService eventService;
-  @Inject private AttachmentDao attachmentDao;
+  @Inject private ItemService itemService;
 
   private PluginTracker<TextExtracterExtension> textExtracterTracker;
 
@@ -174,8 +175,8 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
     return DEFAULT_MIMETYPE;
   }
 
-  public String getMimeTypeForAttachmentUuid(String attachmentUuid) {
-    Attachment attachment = attachmentDao.findByUuid(attachmentUuid);
+  public String getMimeTypeForAttachmentUuid(ItemId key, String attachmentUuid) {
+    Attachment attachment = itemService.getAttachmentForUuid(key, attachmentUuid);
     return getMimeEntryForAttachment(attachment);
   }
 
@@ -183,7 +184,10 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
       ResourceAttachmentBean resourceAttachmentBean) {
     switch (resourceAttachmentBean.getResourceType()) {
       case SelectedResource.TYPE_ATTACHMENT:
-        return getMimeTypeForAttachmentUuid(resourceAttachmentBean.getAttachmentUuid());
+        return getMimeTypeForAttachmentUuid(
+            new ItemId(
+                resourceAttachmentBean.getItemUuid(), resourceAttachmentBean.getItemVersion()),
+            resourceAttachmentBean.getAttachmentUuid());
       case SelectedResource.TYPE_PATH:
         return MIME_ITEM;
       default:
@@ -475,12 +479,14 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
             .getData("type")
             .equals(Character.toString(SelectedResource.TYPE_ATTACHMENT))) {
       // Recurse to drill into the linked attachment, so we can use the correct viewer.
-      // If more than one attachment has the linked uuid,
-      // this is a zip or scorm package and we can let it fall through.
-      List<Attachment> attachmentList = attachmentDao.findAllByUuid(attachment.getUrl());
-      if (attachmentList.size() == 1) {
-        return getMimeEntryForAttachment(attachmentList.get(0));
+      ItemId key =
+          new ItemId((String) attachment.getData("uuid"), (int) attachment.getData("version"));
+      Attachment childAttachment =
+          itemService.getNullableAttachmentForUuid(key, attachment.getUrl());
+      if (childAttachment == null) {
+        return null;
       }
+      return getMimeEntryForAttachment(childAttachment);
     }
     Map<String, List<Extension>> map = getExtensionMap();
     List<Extension> extensions = map.get(type);
