@@ -106,6 +106,12 @@ export default function OEQThumb({
     if (hasGeneratedThumb) {
       return oeqProvidedThumb;
     }
+    if (mimeType === "equella/item") {
+      return <Web {...generalThumbStyles} />;
+    }
+    if (mimeType === "equella/link") {
+      return <LinkIcon {...generalThumbStyles} />;
+    }
     let result = defaultThumb;
     if (mimeType?.startsWith("image")) {
       result = <ImageIcon {...generalThumbStyles} />;
@@ -130,12 +136,7 @@ export default function OEQThumb({
       oeqThumb = <WebIcon {...generalThumbStyles} />;
       break;
     case "custom/resource":
-      oeqThumb =
-        mimeType === "equella/item" ? (
-          <Web {...generalThumbStyles} />
-        ) : (
-          oeqProvidedThumb
-        );
+      oeqThumb = handleMimeType(mimeType);
       break;
     case "custom/flickr":
     case "custom/youtube":
