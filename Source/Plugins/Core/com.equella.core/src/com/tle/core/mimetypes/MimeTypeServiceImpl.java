@@ -479,10 +479,13 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
             .getData("type")
             .equals(Character.toString(SelectedResource.TYPE_ATTACHMENT))) {
       // Recurse to drill into the linked attachment, so we can use the correct viewer.
-      ItemId key =
+      // data stored in getData("uuid") and getData("version") for a resource attachment gives the
+      // child item, which we need to determine the attachment to recurse into.
+      ItemId childAttachmentItem =
           new ItemId((String) attachment.getData("uuid"), (int) attachment.getData("version"));
+
       Attachment childAttachment =
-          itemService.getNullableAttachmentForUuid(key, attachment.getUrl());
+          itemService.getNullableAttachmentForUuid(childAttachmentItem, attachment.getUrl());
       return childAttachment == null ? null : getMimeEntryForAttachment(childAttachment);
     }
     Map<String, List<Extension>> map = getExtensionMap();
