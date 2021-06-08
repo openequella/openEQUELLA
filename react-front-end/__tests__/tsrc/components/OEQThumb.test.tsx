@@ -17,6 +17,7 @@
  */
 import { queryByLabelText, render } from "@testing-library/react";
 import * as React from "react";
+import "@testing-library/jest-dom/extend-expect";
 import {
   brokenFileAttachment,
   equellaItemAttachment,
@@ -96,7 +97,7 @@ describe("<OEQThumb/>", () => {
       query: string
     ) => {
       const { container } = buildOEQThumb(attachment, showPlaceHolder);
-      expect(queryByLabelText(container, query)).toBeTruthy();
+      expect(queryByLabelText(container, query)).toBeInTheDocument();
     }
   );
 });
