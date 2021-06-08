@@ -451,6 +451,16 @@ export const languageStrings = {
       live: "Live",
       title: "Status",
     },
+    thumbnails: {
+      html: "HTML Icon",
+      placeholder: "Placeholder Icon",
+      provided: "Provided Icon",
+      file: "Default File Icon",
+      image: "Image Icon",
+      video: "Video Icon",
+      link: "Link Icon",
+      item: "Item Icon",
+    },
     comments: {
       zero: "No comments",
       one: "%d comment",

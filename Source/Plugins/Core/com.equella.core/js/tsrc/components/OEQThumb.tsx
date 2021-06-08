@@ -26,6 +26,7 @@ import DefaultFileIcon from "@material-ui/icons/InsertDriveFile";
 import WebIcon from "@material-ui/icons/Language";
 import Web from "@material-ui/icons/Web";
 import PlaceholderIcon from "@material-ui/icons/TextFields";
+import { languageStrings } from "../util/langstrings";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -48,7 +49,7 @@ interface ThumbProps {
   fontSize: "inherit" | "default" | "small" | "large";
 }
 
-interface OEQThumbProps {
+export interface OEQThumbProps {
   /**
    * On object representing an oEQ attachment. If undefined, a placeholder icon is returned
    */
@@ -70,13 +71,19 @@ export default function OEQThumb({
   showPlaceholder,
 }: OEQThumbProps) {
   const classes = useStyles();
+  const thumbLabels = languageStrings.searchpage.thumbnails;
   const generalThumbStyles: ThumbProps = {
     className: `MuiPaper-elevation1 MuiPaper-rounded ${classes.thumbnail} ${classes.placeholderThumbnail}`,
     fontSize: "large",
   };
 
   if (!attachment || showPlaceholder) {
-    return <PlaceholderIcon {...generalThumbStyles} />;
+    return (
+      <PlaceholderIcon
+        aria-label={thumbLabels.placeholder}
+        {...generalThumbStyles}
+      />
+    );
   }
 
   const {
@@ -89,13 +96,16 @@ export default function OEQThumb({
 
   const oeqProvidedThumb: React.ReactElement = (
     <img
+      aria-label={thumbLabels.provided}
       className={`MuiPaper-elevation1 MuiPaper-rounded ${classes.thumbnail}`}
       src={links.thumbnail}
       alt={description}
     />
   );
 
-  const defaultThumb = <DefaultFileIcon {...generalThumbStyles} />;
+  const defaultThumb = (
+    <DefaultFileIcon aria-label={thumbLabels.file} {...generalThumbStyles} />
+  );
 
   /**
    * We need to check if a thumbnail has been generated, and return a generic icon if not
@@ -106,19 +116,40 @@ export default function OEQThumb({
     if (hasGeneratedThumb) {
       return oeqProvidedThumb;
     }
-    if (mimeType === "equella/item") {
-      return <Web {...generalThumbStyles} />;
-    }
-    if (mimeType === "equella/link") {
-      return <LinkIcon {...generalThumbStyles} />;
-    }
     let result = defaultThumb;
     if (mimeType?.startsWith("image")) {
-      result = <ImageIcon {...generalThumbStyles} />;
+      result = (
+        <ImageIcon aria-label={thumbLabels.image} {...generalThumbStyles} />
+      );
     } else if (mimeType?.startsWith("video")) {
-      result = <VideoIcon {...generalThumbStyles} />;
+      result = (
+        <VideoIcon aria-label={thumbLabels.video} {...generalThumbStyles} />
+      );
     }
     return result;
+  };
+
+  /**
+   * Resource attachments point to other attachments or items, so we need to use the MIME type
+   * to determine the thumbnail to use, rather than the attachment type which will be custom/resource.
+   *
+   * @param mimeType The MIME type of the resource attachment's target.
+   */
+  const handleResourceAttachmentThumb = (mimeType?: string) => {
+    switch (mimeType) {
+      case "equella/item":
+        return <Web aria-label={thumbLabels.item} {...generalThumbStyles} />;
+      case "equella/link":
+        return (
+          <LinkIcon aria-label={thumbLabels.link} {...generalThumbStyles} />
+        );
+      case "text/html":
+        return (
+          <WebIcon aria-label={thumbLabels.html} {...generalThumbStyles} />
+        );
+      default:
+        return oeqProvidedThumb;
+    }
   };
 
   let oeqThumb = defaultThumb;
@@ -130,13 +161,17 @@ export default function OEQThumb({
       oeqThumb = handleMimeType(mimeType);
       break;
     case "link":
-      oeqThumb = <LinkIcon {...generalThumbStyles} />;
+      oeqThumb = (
+        <LinkIcon aria-label={thumbLabels.link} {...generalThumbStyles} />
+      );
       break;
     case "html":
-      oeqThumb = <WebIcon {...generalThumbStyles} />;
+      oeqThumb = (
+        <WebIcon aria-label={thumbLabels.html} {...generalThumbStyles} />
+      );
       break;
     case "custom/resource":
-      oeqThumb = handleMimeType(mimeType);
+      oeqThumb = handleResourceAttachmentThumb(mimeType);
       break;
     case "custom/flickr":
     case "custom/youtube":
