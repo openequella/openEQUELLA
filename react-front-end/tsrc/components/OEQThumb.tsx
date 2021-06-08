@@ -76,11 +76,12 @@ export default function OEQThumb({
   };
 
   if (!attachment || showPlaceholder) {
-    return <PlaceholderIcon id="placeholderIcon" {...generalThumbStyles} />;
+    return (
+      <PlaceholderIcon aria-label="placeholderIcon" {...generalThumbStyles} />
+    );
   }
 
   const {
-    id,
     description,
     mimeType,
     attachmentType,
@@ -90,7 +91,7 @@ export default function OEQThumb({
 
   const oeqProvidedThumb: React.ReactElement = (
     <img
-      id={`providedIcon ${id}`}
+      aria-label="providedIcon"
       className={`MuiPaper-elevation1 MuiPaper-rounded ${classes.thumbnail}`}
       src={links.thumbnail}
       alt={description}
@@ -98,7 +99,7 @@ export default function OEQThumb({
   );
 
   const defaultThumb = (
-    <DefaultFileIcon id={`defaultFileIcon ${id}`} {...generalThumbStyles} />
+    <DefaultFileIcon aria-label="defaultFileIcon" {...generalThumbStyles} />
   );
 
   /**
@@ -112,9 +113,9 @@ export default function OEQThumb({
     }
     let result = defaultThumb;
     if (mimeType?.startsWith("image")) {
-      result = <ImageIcon id={`imageIcon ${id}`} {...generalThumbStyles} />;
+      result = <ImageIcon aria-label="imageIcon" {...generalThumbStyles} />;
     } else if (mimeType?.startsWith("video")) {
-      result = <VideoIcon id={`videoIcon ${id}`} {...generalThumbStyles} />;
+      result = <VideoIcon aria-label="videoIcon" {...generalThumbStyles} />;
     }
     return result;
   };
@@ -128,11 +129,11 @@ export default function OEQThumb({
   const handleResourceAttachmentThumb = (mimeType?: string) => {
     switch (mimeType) {
       case "equella/item":
-        return <Web id={`equellaItemIcon ${id}`} {...generalThumbStyles} />;
+        return <Web aria-label="equellaItemIcon" {...generalThumbStyles} />;
       case "equella/link":
-        return <LinkIcon id={`linkIcon ${id}`} {...generalThumbStyles} />;
+        return <LinkIcon aria-label="linkIcon" {...generalThumbStyles} />;
       case "text/html":
-        return <WebIcon id={`htmlIcon ${id}`} {...generalThumbStyles} />;
+        return <WebIcon aria-label="htmlIcon" {...generalThumbStyles} />;
       default:
         return oeqProvidedThumb;
     }
@@ -147,10 +148,10 @@ export default function OEQThumb({
       oeqThumb = handleMimeType(mimeType);
       break;
     case "link":
-      oeqThumb = <LinkIcon id={`linkIcon ${id}`} {...generalThumbStyles} />;
+      oeqThumb = <LinkIcon aria-label="linkIcon" {...generalThumbStyles} />;
       break;
     case "html":
-      oeqThumb = <WebIcon id={`htmlIcon ${id}`} {...generalThumbStyles} />;
+      oeqThumb = <WebIcon aria-label="htmlIcon" {...generalThumbStyles} />;
       break;
     case "custom/resource":
       oeqThumb = handleResourceAttachmentThumb(mimeType);

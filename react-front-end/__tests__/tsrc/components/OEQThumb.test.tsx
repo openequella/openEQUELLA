@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render } from "@testing-library/react";
+import { queryByLabelText, render } from "@testing-library/react";
 import * as React from "react";
 import {
   brokenFileAttachment,
@@ -37,9 +37,6 @@ describe("<OEQThumb/>", () => {
     render(
       <OEQThumb attachment={attachment} showPlaceholder={showPlaceHolder} />
     );
-  const queryForIconId = (container: Element, query: string) => {
-    return container.querySelector(`[id^="${query}"]`);
-  };
 
   it.each<[string, OEQ.Search.Attachment, boolean, string]>([
     [
@@ -99,7 +96,7 @@ describe("<OEQThumb/>", () => {
       query: string
     ) => {
       const { container } = buildOEQThumb(attachment, showPlaceHolder);
-      expect(queryForIconId(container, query)).toBeTruthy();
+      expect(queryByLabelText(container, query)).toBeTruthy();
     }
   );
 });
