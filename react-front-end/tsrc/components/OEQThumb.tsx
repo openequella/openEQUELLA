@@ -26,6 +26,7 @@ import DefaultFileIcon from "@material-ui/icons/InsertDriveFile";
 import WebIcon from "@material-ui/icons/Language";
 import Web from "@material-ui/icons/Web";
 import PlaceholderIcon from "@material-ui/icons/TextFields";
+import { languageStrings } from "../util/langstrings";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -70,6 +71,7 @@ export default function OEQThumb({
   showPlaceholder,
 }: OEQThumbProps) {
   const classes = useStyles();
+  const thumbLabels = languageStrings.searchpage.thumbnails;
   const generalThumbStyles: ThumbProps = {
     className: `MuiPaper-elevation1 MuiPaper-rounded ${classes.thumbnail} ${classes.placeholderThumbnail}`,
     fontSize: "large",
@@ -77,7 +79,10 @@ export default function OEQThumb({
 
   if (!attachment || showPlaceholder) {
     return (
-      <PlaceholderIcon aria-label="Placeholder Icon" {...generalThumbStyles} />
+      <PlaceholderIcon
+        aria-label={thumbLabels.placeholder}
+        {...generalThumbStyles}
+      />
     );
   }
 
@@ -91,7 +96,7 @@ export default function OEQThumb({
 
   const oeqProvidedThumb: React.ReactElement = (
     <img
-      aria-label="Provided Icon"
+      aria-label={thumbLabels.provided}
       className={`MuiPaper-elevation1 MuiPaper-rounded ${classes.thumbnail}`}
       src={links.thumbnail}
       alt={description}
@@ -99,7 +104,7 @@ export default function OEQThumb({
   );
 
   const defaultThumb = (
-    <DefaultFileIcon aria-label="Default File Icon" {...generalThumbStyles} />
+    <DefaultFileIcon aria-label={thumbLabels.file} {...generalThumbStyles} />
   );
 
   /**
@@ -113,9 +118,13 @@ export default function OEQThumb({
     }
     let result = defaultThumb;
     if (mimeType?.startsWith("image")) {
-      result = <ImageIcon aria-label="Image Icon" {...generalThumbStyles} />;
+      result = (
+        <ImageIcon aria-label={thumbLabels.image} {...generalThumbStyles} />
+      );
     } else if (mimeType?.startsWith("video")) {
-      result = <VideoIcon aria-label="Video Icon" {...generalThumbStyles} />;
+      result = (
+        <VideoIcon aria-label={thumbLabels.video} {...generalThumbStyles} />
+      );
     }
     return result;
   };
@@ -129,13 +138,15 @@ export default function OEQThumb({
   const handleResourceAttachmentThumb = (mimeType?: string) => {
     switch (mimeType) {
       case "equella/item":
-        return (
-          <Web aria-label="openEQUELLA Item Icon" {...generalThumbStyles} />
-        );
+        return <Web aria-label={thumbLabels.item} {...generalThumbStyles} />;
       case "equella/link":
-        return <LinkIcon aria-label="Link Icon" {...generalThumbStyles} />;
+        return (
+          <LinkIcon aria-label={thumbLabels.link} {...generalThumbStyles} />
+        );
       case "text/html":
-        return <WebIcon aria-label="HTML Icon" {...generalThumbStyles} />;
+        return (
+          <WebIcon aria-label={thumbLabels.html} {...generalThumbStyles} />
+        );
       default:
         return oeqProvidedThumb;
     }
@@ -150,10 +161,14 @@ export default function OEQThumb({
       oeqThumb = handleMimeType(mimeType);
       break;
     case "link":
-      oeqThumb = <LinkIcon aria-label="Link Icon" {...generalThumbStyles} />;
+      oeqThumb = (
+        <LinkIcon aria-label={thumbLabels.link} {...generalThumbStyles} />
+      );
       break;
     case "html":
-      oeqThumb = <WebIcon aria-label="HTML Icon" {...generalThumbStyles} />;
+      oeqThumb = (
+        <WebIcon aria-label={thumbLabels.html} {...generalThumbStyles} />
+      );
       break;
     case "custom/resource":
       oeqThumb = handleResourceAttachmentThumb(mimeType);

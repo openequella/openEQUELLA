@@ -29,8 +29,10 @@ import {
 } from "../../../__mocks__/OEQThumb.mock";
 import OEQThumb from "../../../tsrc/components/OEQThumb";
 import * as OEQ from "@openequella/rest-api-client";
+import { languageStrings } from "../../../tsrc/util/langstrings";
 
 describe("<OEQThumb/>", () => {
+  const thumbLabels = languageStrings.searchpage.thumbnails;
   const buildOEQThumb = (
     attachment: OEQ.Search.Attachment,
     showPlaceHolder: boolean
@@ -44,49 +46,49 @@ describe("<OEQThumb/>", () => {
       "shows the placeholder icon when showPlaceholder is true",
       fileAttachment,
       true,
-      "Placeholder Icon",
+      thumbLabels.placeholder,
     ],
     [
       "shows thumbnail image when showPlaceholder is false",
       fileAttachment,
       false,
-      "Provided Icon",
+      thumbLabels.provided,
     ],
     [
       "shows default file thumbnail when brokenAttachment is true",
       brokenFileAttachment,
       false,
-      "Default File Icon",
+      thumbLabels.file,
     ],
     [
       "shows link icon thumbnail for a link attachment",
       linkAttachment,
       false,
-      "Link Icon",
+      thumbLabels.link,
     ],
     [
       "shows link icon thumbnail for a resource link attachment",
       resourceLinkAttachment,
       false,
-      "Link Icon",
+      thumbLabels.link,
     ],
     [
       "shows equella item thumbnail for a resource attachment pointing at an item summary",
       equellaItemAttachment,
       false,
-      "openEQUELLA Item Icon",
+      thumbLabels.item,
     ],
     [
       "shows html thumbnail for a web page attachment",
       htmlAttachment,
       false,
-      "HTML Icon",
+      thumbLabels.html,
     ],
     [
       "shows html thumbnail for a resource web page attachment",
       resourceHtmlAttachment,
       false,
-      "HTML Icon",
+      thumbLabels.html,
     ],
   ])(
     "%s",
