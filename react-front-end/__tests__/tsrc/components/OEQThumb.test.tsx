@@ -30,7 +30,7 @@ import OEQThumb from "../../../tsrc/components/OEQThumb";
 import * as OEQ from "@openequella/rest-api-client";
 
 describe("<OEQThumb/>", () => {
-  const OEQThumbComponent = (
+  const buildOEQThumb = (
     attachment: OEQ.Search.Attachment,
     showPlaceHolder: boolean
   ) =>
@@ -38,7 +38,7 @@ describe("<OEQThumb/>", () => {
       <OEQThumb attachment={attachment} showPlaceholder={showPlaceHolder} />
     );
   const queryForIconId = (container: Element, query: string) => {
-    return container.querySelector(`[id="${query}"]`);
+    return container.querySelector(`[id^="${query}"]`);
   };
 
   it.each<[string, OEQ.Search.Attachment, boolean, string]>([
@@ -98,8 +98,8 @@ describe("<OEQThumb/>", () => {
       showPlaceHolder: boolean,
       query: string
     ) => {
-      const { container } = OEQThumbComponent(attachment, showPlaceHolder);
-      expect(queryForIconId(container, query)).not.toBeNull();
+      const { container } = buildOEQThumb(attachment, showPlaceHolder);
+      expect(queryForIconId(container, query)).toBeTruthy();
     }
   );
 });
