@@ -4288,18 +4288,12 @@ a.modal-control.modal-save {
     position: absolute;
     bottom: 25px;
     right: 35px;
-    zoom: 1;
-    filter: alpha(opacity=35);
     opacity: 0.35;
   }
 
   .choice-list div {
     position: relative;
-    padding: 8px 10px;
-  }
-
-  .choice-list div {
-    padding-bottom: 10px;
+    padding: $doubleMargin;
   }
 
   div.choice-list {
@@ -4311,11 +4305,11 @@ a.modal-control.modal-save {
   }
 
   div.choice-list .choice:hover {
-    background-color: #ffffcc !important;
+    background-color: #ffffcc;
   }
 
   div.choice-list .choice.selected {
-    background-color: #80d2ee !important;
+    background-color: #80d2ee;
   }
 
   .choice h4 {
