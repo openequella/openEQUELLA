@@ -32,6 +32,9 @@ import OEQThumb, { OEQThumbProps } from "../../tsrc/components/OEQThumb";
 export default {
   title: "Component/OEQThumb",
   component: OEQThumb,
+  argTypes: {
+    showPlaceholder: { boolean: false },
+  },
 } as Meta<OEQThumbProps>;
 
 export const fileAttachmentStory: Story<OEQThumbProps> = (args) => (
@@ -40,7 +43,6 @@ export const fileAttachmentStory: Story<OEQThumbProps> = (args) => (
 
 fileAttachmentStory.args = {
   attachment: fileAttachment,
-  showPlaceholder: false,
 };
 
 export const brokenFileAttachmentStory: Story<OEQThumbProps> = (args) => (
@@ -49,7 +51,6 @@ export const brokenFileAttachmentStory: Story<OEQThumbProps> = (args) => (
 
 brokenFileAttachmentStory.args = {
   attachment: brokenFileAttachment,
-  showPlaceholder: false,
 };
 
 export const customResourceAttachmentStory: Story<OEQThumbProps> = (args) => (
@@ -58,7 +59,6 @@ export const customResourceAttachmentStory: Story<OEQThumbProps> = (args) => (
 
 customResourceAttachmentStory.args = {
   attachment: resourceFileAttachment,
-  showPlaceholder: false,
 };
 
 export const linkAttachmentStory: Story<OEQThumbProps> = (args) => (
@@ -67,7 +67,6 @@ export const linkAttachmentStory: Story<OEQThumbProps> = (args) => (
 
 linkAttachmentStory.args = {
   attachment: linkAttachment,
-  showPlaceholder: false,
 };
 
 export const resourceLinkAttachmentStory: Story<OEQThumbProps> = (args) => (
@@ -76,7 +75,6 @@ export const resourceLinkAttachmentStory: Story<OEQThumbProps> = (args) => (
 
 resourceLinkAttachmentStory.args = {
   attachment: resourceLinkAttachment,
-  showPlaceholder: false,
 };
 
 export const equellaItemAttachmentStory: Story<OEQThumbProps> = (args) => (
@@ -85,7 +83,6 @@ export const equellaItemAttachmentStory: Story<OEQThumbProps> = (args) => (
 
 equellaItemAttachmentStory.args = {
   attachment: equellaItemAttachment,
-  showPlaceholder: false,
 };
 
 export const htmlAttachmentStory: Story<OEQThumbProps> = (args) => (
@@ -94,7 +91,6 @@ export const htmlAttachmentStory: Story<OEQThumbProps> = (args) => (
 
 htmlAttachmentStory.args = {
   attachment: htmlAttachment,
-  showPlaceholder: false,
 };
 
 export const resourceHtmlAttachmentStory: Story<OEQThumbProps> = (args) => (
@@ -103,5 +99,13 @@ export const resourceHtmlAttachmentStory: Story<OEQThumbProps> = (args) => (
 
 resourceHtmlAttachmentStory.args = {
   attachment: resourceHtmlAttachment,
-  showPlaceholder: false,
+};
+
+export const placeHolderAttachmentStory: Story<OEQThumbProps> = (args) => (
+  <OEQThumb {...args} />
+);
+
+placeHolderAttachmentStory.args = {
+  attachment: fileAttachment,
+  showPlaceholder: true,
 };
