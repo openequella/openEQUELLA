@@ -50,6 +50,20 @@ export interface ViewerLightboxConfig {
   config: LightboxConfig;
 }
 
+/**
+ * Represent either an Attachment or a GalleryEntry to be displayed in the Lightbox.
+ */
+export interface LightboxEntry {
+  /** ID of the entry. */
+  id: string;
+  /** URL for the item to display in the Lightbox. */
+  src: string;
+  /** Title of the entry displayed at the top of the Lightbox. */
+  title?: string;
+  /** MIME type of the entry specified by `src` */
+  mimeType: string;
+}
+
 export type ViewerConfig = ViewerLinkConfig | ViewerLightboxConfig;
 
 export const isViewerLightboxConfig = (
@@ -187,39 +201,50 @@ export const getViewerDefinitionForAttachment = (
 };
 
 /**
- * Build a function to handler navigation between Lightbox attachments.
- * @param lightboxAttachments All attachments that can be viewed in Lightbox and their Viewer definitions.
- * @param attachmentIndex Index of the attachment to be viewed
+ * Build a function to handler navigation between Lightbox entries.
+ * @param entries A list of Attachment or GalleryEntry that can be viewed in Lightbox.
+ * @param entryIndex Index of the current lightbox entry.
+ * @param isLoopBack `true` to make the navigation looping.
  */
 export const buildLightboxNavigationHandler = (
-  lightboxAttachments: AttachmentAndViewerDefinition[],
-  attachmentIndex: number
-): (() => LightboxConfig) | undefined =>
-  pipe(
-    lightboxAttachments,
-    A.lookup(attachmentIndex),
+  entries: LightboxEntry[],
+  entryIndex: number,
+  isLoopBack = false
+): (() => LightboxConfig) | undefined => {
+  const buildIndexForLoop = (index: number, start: number, end: number) => {
+    if (index < start) {
+      return end;
+    } else if (index > end) {
+      return start;
+    }
+    return index;
+  };
+  const index = isLoopBack
+    ? buildIndexForLoop(entryIndex, 0, entries.length - 1)
+    : entryIndex;
+
+  return pipe(
+    entries,
+    A.lookup(index),
     O.fold(
       () => undefined,
-      ({
-        attachment: { description, mimeType },
-        viewerDefinition: [viewer, viewUrl],
-      }) => {
-        if (viewer === "lightbox") {
-          return () => ({
-            src: viewUrl,
-            title: description,
-            mimeType: mimeType ?? "",
-            onNext: buildLightboxNavigationHandler(
-              lightboxAttachments,
-              attachmentIndex + 1
-            ),
-            onPrevious: buildLightboxNavigationHandler(
-              lightboxAttachments,
-              attachmentIndex - 1
-            ),
-          });
-        }
-        throw new TypeError(`Unexpected viewer configuration: ${viewer}`);
+      ({ title, mimeType, src }) => {
+        return () => ({
+          src,
+          title,
+          mimeType: mimeType ?? "",
+          onNext: buildLightboxNavigationHandler(
+            entries,
+            index + 1,
+            isLoopBack
+          ),
+          onPrevious: buildLightboxNavigationHandler(
+            entries,
+            index - 1,
+            isLoopBack
+          ),
+        });
       }
     )
   );
+};

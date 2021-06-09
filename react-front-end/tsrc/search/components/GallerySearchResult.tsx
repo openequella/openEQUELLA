@@ -32,6 +32,10 @@ import {
   buildSelectionSessionItemSummaryLink,
   isSelectionSessionOpen,
 } from "../../modules/LegacySelectionSessionModule";
+import {
+  buildLightboxNavigationHandler,
+  LightboxEntry,
+} from "../../modules/ViewerModule";
 import { languageStrings } from "../../util/langstrings";
 
 const { ariaLabel, viewItem } = languageStrings.searchpage.gallerySearchResult;
@@ -96,6 +100,18 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
     </GridListTile>
   );
 
+  const lightboxEntries: LightboxEntry[] = items.flatMap(
+    ({ mainEntry, additionalEntries }) =>
+      [mainEntry, ...additionalEntries].map(
+        ({ id, name, mimeType, directUrl }) => ({
+          src: directUrl,
+          title: name,
+          mimeType: mimeType,
+          id,
+        })
+      )
+  );
+
   const mapItemsToTiles = () =>
     items.flatMap(
       ({
@@ -110,7 +126,11 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
           mimeType,
           directUrl: src,
           name,
-        }: GalleryEntry) => () =>
+          id,
+        }: GalleryEntry) => () => {
+          const initialLightboxEntryIndex = lightboxEntries.findIndex(
+            (entry) => entry.id === id
+          );
           setLightboxProps({
             onClose: () => setLightboxProps(undefined),
             open: true,
@@ -118,8 +138,19 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
               src,
               title: name,
               mimeType,
+              onNext: buildLightboxNavigationHandler(
+                lightboxEntries,
+                initialLightboxEntryIndex + 1,
+                true
+              ),
+              onPrevious: buildLightboxNavigationHandler(
+                lightboxEntries,
+                initialLightboxEntryIndex - 1,
+                true
+              ),
             },
           });
+        };
 
         return [
           buildTile(
