@@ -19,7 +19,6 @@
 package com.tle.core.db
 
 import com.tle.core.db.migration.DBSchemaMigration
-import com.tle.core.db.tables.CachedValue
 import com.tle.core.db.types.{DbUUID, InstId, String255}
 import io.doolse.simpledba.Iso
 import io.doolse.simpledba.jdbc._
@@ -43,23 +42,8 @@ object OracleSchema extends DBSchemaMigration with DBSchema with DBQueries with 
 
   override def insertAuditLog = insertWith(auditLog, hibSeq)
 
-  override def insertCachedValue = insertWith(cachedValues, hibSeq)
-
   def dbUuidCol =
     wrap[String, DbUUID](stringCol,
                          _.isoMap(Iso(_.id.toString, DbUUID.fromString)),
                          _.copy(typeName = "VARCHAR(36)"))
-
-  override def cachedValueByValue
-    : ((String255, String, InstId)) => fs2.Stream[JDBCIO, CachedValue] = {
-    val genCV = Generic[CachedValue]
-    JDBCQueries
-      .queryRawSQL(
-        "SELECT id,cache_id,\"key\",ttl,value,institution_id FROM cached_value WHERE cache_id = ? AND to_char(value) = ? AND institution_id = ?",
-        config.record[String255 :: String :: InstId :: HNil],
-        config.record[genCV.Repr]
-      )
-      .as[((String255, String, InstId)) => fs2.Stream[JDBCIO, genCV.Repr]]
-      .andThen(_.map(genCV.from))
-  }
 }

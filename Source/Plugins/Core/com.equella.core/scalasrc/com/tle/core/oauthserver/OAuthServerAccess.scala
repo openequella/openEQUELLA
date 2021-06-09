@@ -18,7 +18,6 @@
 
 package com.tle.core.oauthserver
 
-import com.dytech.devlib.Base64
 import com.tle.common.institution.CurrentInstitution
 import java.time.{Duration, Instant}
 import java.util.{Date, UUID}
@@ -120,7 +119,6 @@ object OAuthServerAccess {
         LegacyGuice.oAuthService.getOrCreateToken(authDetails.getUserId, username, client, code))
 
     case CloudProviderClient(clientId, _) =>
-      // The value of CachedValue is encoded by Base64 so here we need to encode the client ID.
       val clientIdBytes = clientId.toString.getBytes(StandardCharsets.UTF_8)
       Option(LegacyGuice.replicatedCacheDao.getByValue(CloudTokenCache, clientIdBytes)) match {
         case Some(tokenEntry) =>
