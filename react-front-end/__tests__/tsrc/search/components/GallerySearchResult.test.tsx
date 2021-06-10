@@ -30,6 +30,7 @@ const {
   common: {
     action: { openInNewWindow },
   },
+  lightboxComponent: { viewNext, viewPrevious },
 } = languageStrings;
 
 /*
@@ -45,7 +46,7 @@ jest.mock("react-router", () => ({
 
 describe("<GallerySearchResult />", () => {
   const renderGallery = () =>
-    render(<GallerySearchResult items={buildItems(5)} />);
+    render(<GallerySearchResult items={buildItems(5)} />); // 16 entries in total.
 
   it("displays the lightbox when the image is clicked on", () => {
     const { getAllByLabelText, queryAllByLabelText } = renderGallery();
@@ -61,5 +62,25 @@ describe("<GallerySearchResult />", () => {
 
     expect(mockUseHistoryPush).toHaveBeenCalled();
     expect(mockUseHistoryPush.mock.calls[0][0].match("/items/")).toBeTruthy();
+  });
+
+  describe("viewing gallery entries in a loop", () => {
+    it.each([
+      ["first", "next", "last", 15, viewNext],
+      ["last", "previous", "first", 0, viewPrevious],
+    ])(
+      "shows the %s entry when navigate to the %s entry of the %s entry",
+      (
+        currentPosition: string,
+        direction: string,
+        newPosition: string,
+        index: number,
+        arrowButtonLabel: string
+      ) => {
+        const { getAllByLabelText, queryByLabelText } = renderGallery();
+        userEvent.click(getAllByLabelText(ariaLabel)[index]);
+        expect(queryByLabelText(arrowButtonLabel)).toBeInTheDocument();
+      }
+    );
   });
 });
