@@ -122,12 +122,14 @@ export const SearchResultAttachmentsList = ({
     setAttachmentsAndViewerConfigs,
   ] = useState<AttachmentAndViewerConfig[]>([]);
 
-  // In Selection Session, make each attachment draggable.
+  // In Selection Session, make each intact attachment draggable.
   useEffect(() => {
     if (inStructured) {
-      attachmentsAndViewerConfigs.forEach(({ attachment }) => {
-        prepareDraggable(attachment.id, false);
-      });
+      attachmentsAndViewerConfigs
+        .filter(({ attachment }) => !attachment.brokenAttachment)
+        .forEach(({ attachment }) => {
+          prepareDraggable(attachment.id, false);
+        });
     }
   }, [attachmentsAndViewerConfigs, inStructured]);
 

@@ -435,6 +435,25 @@ describe("<SearchResult/>", () => {
       });
     });
 
+    it("should not make broken attachments draggable", async () => {
+      updateMockGetRenderData(basicRenderData);
+      await renderSearchResult(mockData.oneDeadOneAliveAttachObj);
+
+      const deadAttachment = mockData.oneDeadOneAliveAttachObj.attachments![0];
+      const intactAttachment = mockData.oneDeadOneAliveAttachObj
+        .attachments![1];
+
+      //expect intact attachment to be draggable
+      expect(
+        getGlobalCourseList().prepareDraggableAndBind
+      ).toHaveBeenCalledWith(`#${intactAttachment.id}`, false);
+
+      //expect dead attachment not to be draggable
+      expect(
+        getGlobalCourseList().prepareDraggableAndBind
+      ).not.toHaveBeenCalledWith(`#${deadAttachment.id}`, false);
+    });
+
     it("should hide All attachment button in Skinny", async () => {
       updateMockGetRenderData(renderDataForSkinny);
       const { queryByLabelText } = await renderSearchResult(
