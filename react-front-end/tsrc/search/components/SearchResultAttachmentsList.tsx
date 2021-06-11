@@ -126,7 +126,7 @@ export const SearchResultAttachmentsList = ({
   useEffect(() => {
     if (inStructured) {
       attachmentsAndViewerConfigs
-        .filter(({ attachment }) => attachment.brokenAttachment === false)
+        .filter(({ attachment }) => !attachment.brokenAttachment)
         .forEach(({ attachment }) => {
           prepareDraggable(attachment.id, false);
         });
