@@ -239,7 +239,7 @@ class PreLoginNoticeConfigurator extends React.Component<
             <Grid item>
               <React.Suspense fallback={<div>Loading editor...</div>}>
                 <RichTextEditor
-                  htmlInput={this.state.db.notice}
+                  htmlInput={this.state.current.notice}
                   onStateChange={this.handleEditorChange}
                   imageUploadCallBack={uploadPreLoginNoticeImage}
                 />
