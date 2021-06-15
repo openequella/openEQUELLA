@@ -34,7 +34,7 @@
     "@material-ui/lab": "4.0.0-alpha.58",
     "@material-ui/pickers": "3.3.10",
     "@openequella/rest-api-client": "file:../oeq-ts-rest-api",
-    "@tinymce/tinymce-react": "3.8.4",
+    "@tinymce/tinymce-react": "3.12.6",
     "axios": "0.21.1",
     "clsx": "1.1.1",
     "es6-object-assign": "1.1.0",
