@@ -32,6 +32,10 @@ import {
   buildSelectionSessionItemSummaryLink,
   isSelectionSessionOpen,
 } from "../../modules/LegacySelectionSessionModule";
+import {
+  buildLightboxNavigationHandler,
+  LightboxEntry,
+} from "../../modules/ViewerModule";
 import { languageStrings } from "../../util/langstrings";
 
 const { ariaLabel, viewItem } = languageStrings.searchpage.gallerySearchResult;
@@ -96,6 +100,50 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
     </GridListTile>
   );
 
+  // A list of LightboxEntry which includes all main entries and additional entries.
+  const lightboxEntries: LightboxEntry[] = items.flatMap(
+    ({ mainEntry, additionalEntries }) =>
+      [mainEntry, ...additionalEntries].map(
+        ({ id, name, mimeType, directUrl }) => ({
+          src: directUrl,
+          title: name,
+          mimeType: mimeType,
+          id,
+        })
+      )
+  );
+
+  const buildOnClickHandler = ({
+    mimeType,
+    directUrl: src,
+    name,
+    id,
+  }: GalleryEntry) => () => {
+    const initialLightboxEntryIndex = lightboxEntries.findIndex(
+      (entry) => entry.id === id
+    );
+
+    setLightboxProps({
+      onClose: () => setLightboxProps(undefined),
+      open: true,
+      config: {
+        src,
+        title: name,
+        mimeType,
+        onNext: buildLightboxNavigationHandler(
+          lightboxEntries,
+          initialLightboxEntryIndex + 1,
+          true
+        ),
+        onPrevious: buildLightboxNavigationHandler(
+          lightboxEntries,
+          initialLightboxEntryIndex - 1,
+          true
+        ),
+      },
+    });
+  };
+
   const mapItemsToTiles = () =>
     items.flatMap(
       ({
@@ -106,20 +154,6 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
         version,
       }: GallerySearchResultItem) => {
         const itemName = name ?? uuid;
-        const buildOnClickHandler = ({
-          mimeType,
-          directUrl: src,
-          name,
-        }: GalleryEntry) => () =>
-          setLightboxProps({
-            onClose: () => setLightboxProps(undefined),
-            open: true,
-            config: {
-              src,
-              title: name,
-              mimeType,
-            },
-          });
 
         return [
           buildTile(

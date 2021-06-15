@@ -55,6 +55,7 @@ import {
   AttachmentAndViewerDefinition,
   buildLightboxNavigationHandler,
   getViewerDefinitionForAttachment,
+  LightboxEntry,
 } from "../../modules/ViewerModule";
 import { languageStrings } from "../../util/langstrings";
 import { ResourceSelector } from "./ResourceSelector";
@@ -178,15 +179,25 @@ export const SearchResultAttachmentsList = ({
         )
       );
 
-      const lightboxAttachments = attachmentsAndViewerDefinitions.filter(
-        ({ viewerDefinition: [viewer] }) => viewer === "lightbox"
-      );
+      const lightboxEntries: LightboxEntry[] = attachmentsAndViewerDefinitions
+        .filter(({ viewerDefinition: [viewer] }) => viewer === "lightbox")
+        .map(
+          ({
+            attachment: { id, description, mimeType },
+            viewerDefinition: [_, src],
+          }) => ({
+            src,
+            title: description,
+            mimeType: mimeType ?? "",
+            id,
+          })
+        );
 
       // Transform AttachmentAndViewerDefinition to AttachmentAndViewerConfig.
       const attachmentsAndConfigs: AttachmentAndViewerConfig[] = attachmentsAndViewerDefinitions.map(
         ({ viewerDefinition: [viewer, viewUrl], attachment }) => {
-          const lightboxAttachmentIndex = lightboxAttachments.findIndex(
-            (a) => a.attachment.id === attachment.id
+          const initialLightboxEntryIndex = lightboxEntries.findIndex(
+            (entry) => entry.id === attachment.id
           );
           return viewer === "lightbox"
             ? {
@@ -198,12 +209,12 @@ export const SearchResultAttachmentsList = ({
                     title: attachment.description,
                     mimeType: attachment.mimeType ?? "",
                     onNext: buildLightboxNavigationHandler(
-                      lightboxAttachments,
-                      lightboxAttachmentIndex + 1
+                      lightboxEntries,
+                      initialLightboxEntryIndex + 1
                     ),
                     onPrevious: buildLightboxNavigationHandler(
-                      lightboxAttachments,
-                      lightboxAttachmentIndex - 1
+                      lightboxEntries,
+                      initialLightboxEntryIndex - 1
                     ),
                   },
                 },

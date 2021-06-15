@@ -23,6 +23,7 @@ import {
 } from "../../../../tsrc/modules/GallerySearchModule";
 
 const buildGalleryEntry = (name: string): GalleryEntry => ({
+  id: "40e879db-393b-4256-bfe2-9a78771d6437",
   mimeType: "image/png",
   name,
   thumbnailSmall: "./placeholder-135x135.png",

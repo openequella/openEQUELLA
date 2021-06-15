@@ -476,6 +476,7 @@ export const transformedBasicImageSearchResponse: OEQ.Search.SearchResult<Galler
           "http://localhost:8080/ian/api/item/fe79c485-a6dd-4743-81e8-52de66494633/1/",
       },
       mainEntry: {
+        id: "40e879db-393b-4256-bfe2-9a78771d6937",
         mimeType: "image/jpeg",
         name: "Kelpie1.jpg",
         thumbnailSmall:
@@ -497,6 +498,7 @@ export const transformedBasicImageSearchResponse: OEQ.Search.SearchResult<Galler
           "http://localhost:8080/ian/api/item/40e879db-393b-4256-bfe2-9a78771d6937/1/",
       },
       mainEntry: {
+        id: "40e879db-393b-4256-bfe2-9a78771d6932",
         mimeType: "image/jpeg",
         name: "Kelpie2.jpg",
         thumbnailSmall:
@@ -507,6 +509,7 @@ export const transformedBasicImageSearchResponse: OEQ.Search.SearchResult<Galler
       },
       additionalEntries: [
         {
+          id: "40e879db-393b-4256-bfe2-9a78771d6933",
           mimeType: "image/jpeg",
           name: "Kelpie1.jpg",
           thumbnailSmall:
@@ -528,6 +531,7 @@ export const transformedBasicImageSearchResponse: OEQ.Search.SearchResult<Galler
           "http://localhost:8080/ian/api/item/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/",
       },
       mainEntry: {
+        id: "40e879db-393b-4256-bfe2-9a78771d6930",
         mimeType: "image/jpeg",
         name: "Wilkie Collins.jpg",
         thumbnailSmall:
@@ -539,6 +543,7 @@ export const transformedBasicImageSearchResponse: OEQ.Search.SearchResult<Galler
       },
       additionalEntries: [
         {
+          id: "40e879db-393b-4256-bfe2-9a78771d6939",
           mimeType: "image/jpeg",
           name: "Dickens.jpg",
           thumbnailSmall:
@@ -548,6 +553,7 @@ export const transformedBasicImageSearchResponse: OEQ.Search.SearchResult<Galler
           directUrl: "file/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/Dickens.jpg",
         },
         {
+          id: "40e879db-393b-4256-bfe2-9a78771d6938",
           mimeType: "image/jpeg",
           name: "Conrad.jpg",
           thumbnailSmall:
@@ -557,6 +563,7 @@ export const transformedBasicImageSearchResponse: OEQ.Search.SearchResult<Galler
           directUrl: "file/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/Conrad.jpg",
         },
         {
+          id: "40e879db-393b-4256-bfe2-9a78771d6922",
           mimeType: "image/jpeg",
           name: "Eliot.jpg",
           thumbnailSmall:
@@ -587,6 +594,7 @@ export const transformedBasicVideoSearchResponse: OEQ.Search.SearchResult<Galler
           "http://localhost:8080/ian/api/item/de8fcb0b-0b1c-4c34-9173-a83d1b0be6b5/1/",
       },
       mainEntry: {
+        id: "40e879db-393b-4256-bfe2-9a78771d6117",
         mimeType: "openequella/youtube",
         name: "6 Tips For Caring for African Violets",
         thumbnailSmall: "https://i.ytimg.com/vi/9VCudo90K5I/default.jpg",
@@ -606,6 +614,7 @@ export const transformedBasicVideoSearchResponse: OEQ.Search.SearchResult<Galler
           "http://localhost:8080/ian/api/item/59139c45-788b-4200-a9cb-e4a39e76ad35/1/",
       },
       mainEntry: {
+        id: "40e879db-393b-4256-bfe2-9a78771d1937",
         mimeType: "video/mp4",
         name: "Quokka-2021-03-24_14.42.37.mp4",
         thumbnailSmall:
@@ -628,6 +637,7 @@ export const transformedBasicVideoSearchResponse: OEQ.Search.SearchResult<Galler
           "http://localhost:8080/ian/api/item/9d5112d4-87b6-4ac1-b773-ceaa4a6c5205/1/",
       },
       mainEntry: {
+        id: "40e879db-393b-4256-bfe2-9a78773d6937",
         mimeType: "openequella/youtube",
         name:
           "These Simple Words Will Help You Through Life's Most Difficult Situations | Ryan Holiday",
@@ -637,6 +647,7 @@ export const transformedBasicVideoSearchResponse: OEQ.Search.SearchResult<Galler
       },
       additionalEntries: [
         {
+          id: "40e879db-393b-4256-bfe2-9a78771d6237",
           mimeType: "openequella/youtube",
           name: "Stoicism and the Art of Resilience | Ryan Holiday | Epictetus",
           thumbnailSmall: "https://i.ytimg.com/vi/6-UQYo1YabY/default.jpg",
@@ -644,6 +655,7 @@ export const transformedBasicVideoSearchResponse: OEQ.Search.SearchResult<Galler
           directUrl: "https://www.youtube.com/watch?v=6-UQYo1YabY",
         },
         {
+          id: "40e879db-393b-4256-bfe2-9a78771d5937",
           mimeType: "openequella/youtube",
           name:
             "Stoicism's Simple Secret To Being Happier | Ryan Holiday | Daily Stoic",

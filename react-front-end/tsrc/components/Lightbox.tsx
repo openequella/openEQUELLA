@@ -33,13 +33,7 @@ import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as React from "react";
-import {
-  ReactNode,
-  SyntheticEvent,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { ReactNode, SyntheticEvent, useEffect, useState } from "react";
 import { Literal, match, Unknown } from "runtypes";
 import {
   CustomMimeTypes,
@@ -140,22 +134,17 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
   const [lightBoxConfig, setLightBoxConfig] = useState<LightboxConfig>(config);
   const { src, title, mimeType, onPrevious, onNext } = lightBoxConfig;
 
-  const handleOnPrevious = useCallback(() => {
+  const handleNav = (getLightboxConfig: () => LightboxConfig) => {
     setContent(undefined);
-    onPrevious && setLightBoxConfig(onPrevious());
-  }, [onPrevious]);
-
-  const handleOnNext = useCallback(() => {
-    setContent(undefined);
-    onNext && setLightBoxConfig(onNext());
-  }, [onNext]);
+    setLightBoxConfig(getLightboxConfig());
+  };
 
   useEffect(() => {
     const keyDownHandler = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") {
-        handleOnPrevious();
-      } else if (e.key === "ArrowRight") {
-        handleOnNext();
+      if (onPrevious && e.key === "ArrowLeft") {
+        handleNav(onPrevious);
+      } else if (onNext && e.key === "ArrowRight") {
+        handleNav(onNext);
       } else if (e.key === "Escape") {
         onClose();
       }
@@ -164,7 +153,7 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
     return () => {
       window.removeEventListener("keydown", keyDownHandler);
     };
-  }, [handleOnPrevious, handleOnNext, onClose]);
+  }, [onPrevious, onNext, onClose]);
 
   // Update content when config is updated.
   useEffect(() => {
@@ -298,7 +287,7 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
               title={viewPreviousString}
               onClick={(e) => {
                 e.stopPropagation();
-                handleOnPrevious();
+                handleNav(onPrevious);
               }}
             >
               <NavigateBeforeIcon className={classes.arrowButton} />
@@ -315,7 +304,7 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
                 title={viewNextString}
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleOnNext();
+                  handleNav(onNext);
                 }}
               >
                 <NavigateNextIcon className={classes.arrowButton} />

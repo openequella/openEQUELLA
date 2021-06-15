@@ -38,6 +38,10 @@ import * as yt from "./YouTubeModule";
  */
 export interface GalleryEntry {
   /**
+   * The ID of the attachment this points to.
+   */
+  id: string;
+  /**
    * The MIME type for the attachment being represented. Note however that it really only matches
    * the MIME type for `imagePathFull` - as thumbnails generated for small and medium seem to mainly
    * be `image/jpeg` regardless of input type.
@@ -243,6 +247,7 @@ export const buildGalleryEntry = (
   Do(E.either)
     .do(validateAttachmentType(attachment))
     .do(validateThumbnailRequirements(attachment))
+    .bind("id", E.right(attachment.id))
     .bind("mimeType", mimeType(attachment))
     .bind("name", E.right(attachment.description ?? attachment.id))
     .bind("thumbnailSmall", thumbnailLink(attachment, "small"))
