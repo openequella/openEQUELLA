@@ -100,6 +100,7 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
     </GridListTile>
   );
 
+  // A list of LightboxEntry which includes all main entries and additional entries.
   const lightboxEntries: LightboxEntry[] = items.flatMap(
     ({ mainEntry, additionalEntries }) =>
       [mainEntry, ...additionalEntries].map(
@@ -112,6 +113,37 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
       )
   );
 
+  const buildOnClickHandler = ({
+    mimeType,
+    directUrl: src,
+    name,
+    id,
+  }: GalleryEntry) => () => {
+    const initialLightboxEntryIndex = lightboxEntries.findIndex(
+      (entry) => entry.id === id
+    );
+
+    setLightboxProps({
+      onClose: () => setLightboxProps(undefined),
+      open: true,
+      config: {
+        src,
+        title: name,
+        mimeType,
+        onNext: buildLightboxNavigationHandler(
+          lightboxEntries,
+          initialLightboxEntryIndex + 1,
+          true
+        ),
+        onPrevious: buildLightboxNavigationHandler(
+          lightboxEntries,
+          initialLightboxEntryIndex - 1,
+          true
+        ),
+      },
+    });
+  };
+
   const mapItemsToTiles = () =>
     items.flatMap(
       ({
@@ -122,35 +154,6 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
         version,
       }: GallerySearchResultItem) => {
         const itemName = name ?? uuid;
-        const buildOnClickHandler = ({
-          mimeType,
-          directUrl: src,
-          name,
-          id,
-        }: GalleryEntry) => () => {
-          const initialLightboxEntryIndex = lightboxEntries.findIndex(
-            (entry) => entry.id === id
-          );
-          setLightboxProps({
-            onClose: () => setLightboxProps(undefined),
-            open: true,
-            config: {
-              src,
-              title: name,
-              mimeType,
-              onNext: buildLightboxNavigationHandler(
-                lightboxEntries,
-                initialLightboxEntryIndex + 1,
-                true
-              ),
-              onPrevious: buildLightboxNavigationHandler(
-                lightboxEntries,
-                initialLightboxEntryIndex - 1,
-                true
-              ),
-            },
-          });
-        };
 
         return [
           buildTile(

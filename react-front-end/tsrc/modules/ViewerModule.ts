@@ -201,7 +201,7 @@ export const getViewerDefinitionForAttachment = (
 };
 
 /**
- * Build a function to handler navigation between Lightbox entries.
+ * Build a function to handle navigation between Lightbox entries.
  * @param entries A list of Attachment or GalleryEntry that can be viewed in Lightbox.
  * @param entryIndex Index of the current lightbox entry.
  * @param isLoopBack `true` to make the navigation looping.
