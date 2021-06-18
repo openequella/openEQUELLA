@@ -25,7 +25,9 @@ import {
   Toolbar,
   Typography,
 } from "@material-ui/core";
+import MUILink from "@material-ui/core/Link";
 import { makeStyles } from "@material-ui/core/styles";
+import InfoIcon from "@material-ui/icons/Info";
 import CloseIcon from "@material-ui/icons/Close";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
@@ -34,7 +36,13 @@ import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as React from "react";
 import { ReactNode, SyntheticEvent, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { Literal, match, Unknown } from "runtypes";
+import { routes } from "../mainui/routes";
+import {
+  buildSelectionSessionItemSummaryLink,
+  isSelectionSessionOpen,
+} from "../modules/LegacySelectionSessionModule";
 import {
   CustomMimeTypes,
   isBrowserSupportedAudio,
@@ -66,7 +74,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     minHeight: 100,
   },
   menuButton: {
-    color: "inherit",
+    color: "#fafafa",
     "&:hover": {
       background: "#505050",
     },
@@ -112,14 +120,25 @@ export interface LightboxProps {
   open: boolean;
   /** Configuration specifying the Lightbox's content. */
   config: LightboxConfig;
+  /** UUID of the Item which owns the Lightbox content. */
+  itemUUID: string;
+  /** Version of the Item which owns the Lightbox content. */
+  itemVersion: number;
 }
 
 const {
   viewNext: viewNextString,
   viewPrevious: viewPreviousString,
+  openSummaryPage: openSummaryPageString,
 } = languageStrings.lightboxComponent;
 
-const Lightbox = ({ open, onClose, config }: LightboxProps) => {
+const Lightbox = ({
+  open,
+  onClose,
+  config,
+  itemUUID,
+  itemVersion,
+}: LightboxProps) => {
   const classes = useStyles();
   const {
     close: labelClose,
@@ -250,6 +269,31 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
     onClose();
   };
 
+  const buildSummaryPageLink = () => {
+    const commonProps = {
+      className: classes.menuButton,
+      "aria-label": openSummaryPageString,
+    };
+
+    return isSelectionSessionOpen() ? (
+      <IconButton
+        component={MUILink}
+        href={buildSelectionSessionItemSummaryLink(itemUUID, itemVersion)}
+        {...commonProps}
+      >
+        <InfoIcon />
+      </IconButton>
+    ) : (
+      <IconButton
+        component={Link}
+        to={routes.ViewItem.to(itemUUID, itemVersion)}
+        {...commonProps}
+      >
+        <InfoIcon />
+      </IconButton>
+    );
+  };
+
   return (
     <Backdrop
       className={classes.lightboxBackdrop}
@@ -260,6 +304,7 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
         <Typography variant="h6" className={classes.title}>
           {title}
         </Typography>
+        {buildSummaryPageLink()}
         <IconButton
           className={classes.menuButton}
           aria-label={labelOpenInNewWindow}

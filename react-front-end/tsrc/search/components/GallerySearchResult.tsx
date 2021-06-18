@@ -113,12 +113,11 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
       )
   );
 
-  const buildOnClickHandler = ({
-    mimeType,
-    directUrl: src,
-    name,
-    id,
-  }: GalleryEntry) => () => {
+  const buildOnClickHandler = (
+    { mimeType, directUrl: src, name, id }: GalleryEntry,
+    itemUUID: string,
+    itemVersion: number
+  ) => () => {
     const initialLightboxEntryIndex = lightboxEntries.findIndex(
       (entry) => entry.id === id
     );
@@ -126,6 +125,8 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
     setLightboxProps({
       onClose: () => setLightboxProps(undefined),
       open: true,
+      itemUUID,
+      itemVersion,
       config: {
         src,
         title: name,
@@ -162,7 +163,7 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
             `${uuid}-mainEntry`,
             mainEntry.thumbnailLarge,
             `${itemName} - Main Entry (${mainEntry.name})`,
-            buildOnClickHandler(mainEntry)
+            buildOnClickHandler(mainEntry, uuid, version)
           ),
           additionalEntries.map((ae, idx) =>
             buildTile(
@@ -171,7 +172,7 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
               `${uuid}-additionalEntry-${idx}`,
               ae.thumbnailLarge,
               `${itemName} - Additional Entry ${idx + 1} (${ae.name})`,
-              buildOnClickHandler(ae)
+              buildOnClickHandler(ae, uuid, version)
             )
           ),
         ];

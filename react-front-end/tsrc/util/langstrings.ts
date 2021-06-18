@@ -684,6 +684,7 @@ export const languageStrings = {
     viewNext: "View next attachment",
     viewPrevious: "View previous attachment",
     youTubeVideoMissingId: "The provided YouTube video is missing a video ID",
+    openSummaryPage: "Open Item Summary page",
   },
   fileUploader: {
     noFileSelected: "No attached resources",

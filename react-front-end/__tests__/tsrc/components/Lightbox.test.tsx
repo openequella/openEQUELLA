@@ -16,8 +16,13 @@
  * limitations under the License.
  */
 import userEvent from "@testing-library/user-event";
+import { createMemoryHistory } from "history";
 import * as React from "react";
-import { displayYouTube } from "../../../__stories__/components/Lightbox.stories";
+import { Router } from "react-router-dom";
+import {
+  displayImage,
+  displayYouTube,
+} from "../../../__stories__/components/Lightbox.stories";
 import Lightbox, {
   isLightboxSupportedMimeType,
   LightboxConfig,
@@ -26,6 +31,21 @@ import { render } from "@testing-library/react";
 import { CustomMimeTypes } from "../../../tsrc/modules/MimeTypesModule";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import "@testing-library/jest-dom/extend-expect";
+import { updateMockGetBaseUrl } from "../BaseUrlHelper";
+import { basicRenderData, updateMockGetRenderData } from "../RenderDataHelper";
+
+const renderLightbox = (config: LightboxConfig) =>
+  render(
+    <Router history={createMemoryHistory()}>
+      <Lightbox
+        onClose={jest.fn()}
+        open
+        config={config}
+        itemVersion={1}
+        itemUUID="369c92fa-ae59-4845-957d-8fcaa22c15e3"
+      />
+    </Router>
+  );
 
 describe("isLightboxSupportedMimeType", () => {
   it.each<[string, boolean]>([
@@ -88,10 +108,7 @@ describe("view previous/next attachment", () => {
       buttonText: string,
       updatedTitle: string
     ) => {
-      const { getByLabelText, queryByText } = render(
-        <Lightbox onClose={jest.fn()} open config={config} />
-      );
-
+      const { getByLabelText, queryByText } = renderLightbox(config);
       userEvent.click(getByLabelText(buttonText));
       expect(handler).toHaveBeenCalledTimes(1);
       expect(queryByText(updatedTitle)).toBeInTheDocument();
@@ -103,27 +120,44 @@ describe("Support for YouTube videos", () => {
   const youTubeLightboxConfig = displayYouTube.args!.config!;
 
   it("displays an embedded YouTube player for valid view URL src", () => {
-    const { queryByTitle } = render(
-      <Lightbox onClose={jest.fn()} open config={youTubeLightboxConfig} />
-    );
+    const { queryByTitle } = renderLightbox(youTubeLightboxConfig);
     expect(
       queryByTitle(languageStrings.youTubePlayer.title)
     ).toBeInTheDocument();
   });
 
   it("displays an error message if the view URL is invalid", () => {
-    const { queryByText } = render(
-      <Lightbox
-        onClose={jest.fn()}
-        open
-        config={{
-          ...youTubeLightboxConfig,
-          src: "https://www.youtube.com/watch/", // missing param v=1234xyz
-        }}
-      />
-    );
+    const { queryByText } = renderLightbox({
+      ...youTubeLightboxConfig,
+      src: "https://www.youtube.com/watch/", // missing param v=1234xyz
+    });
     expect(
       queryByText(languageStrings.lightboxComponent.youTubeVideoMissingId)
     ).toBeInTheDocument();
   });
+});
+
+describe("supports viewing Item Summary page", () => {
+  it.each([
+    ["normal page", false, "/items/369c92fa-ae59-4845-957d-8fcaa22c15e3/1/"],
+    [
+      "Selection Session",
+      true,
+      "http://localhost:8080/vanilla/items/369c92fa-ae59-4845-957d-8fcaa22c15e3/1/?_sl.stateId=1&a=coursesearch",
+    ],
+  ])(
+    "shows a link to the Summary page in %s",
+    (_: string, inSelectionSession: boolean, url: string) => {
+      if (inSelectionSession) {
+        updateMockGetBaseUrl();
+        updateMockGetRenderData(basicRenderData);
+      }
+      const { queryByLabelText } = renderLightbox(displayImage.args!.config!);
+      const summaryPageLink = queryByLabelText(
+        languageStrings.lightboxComponent.openSummaryPage
+      );
+      expect(summaryPageLink).toBeInTheDocument();
+      expect(summaryPageLink).toHaveAttribute("href", url);
+    }
+  );
 });
