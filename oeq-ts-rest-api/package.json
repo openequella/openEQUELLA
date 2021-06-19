@@ -46,7 +46,7 @@
     "eslint": "7.28.0",
     "eslint-plugin-jest": "24.3.6",
     "jest": "27.0.4",
-    "rollup": "2.51.2",
+    "rollup": "2.52.1",
     "rollup-plugin-typescript2": "0.30.0",
     "ts-jest": "27.0.3",
     "tslib": "2.3.0",
