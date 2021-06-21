@@ -41,8 +41,10 @@ const renderLightbox = (config: LightboxConfig) =>
         onClose={jest.fn()}
         open
         config={config}
-        itemVersion={1}
-        itemUUID="369c92fa-ae59-4845-957d-8fcaa22c15e3"
+        item={{
+          uuid: "369c92fa-ae59-4845-957d-8fcaa22c15e3",
+          version: 1,
+        }}
       />
     </Router>
   );

@@ -115,8 +115,8 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
 
   const buildOnClickHandler = (
     { mimeType, directUrl: src, name, id }: GalleryEntry,
-    itemUUID: string,
-    itemVersion: number
+    uuid: string,
+    version: number
   ) => () => {
     const initialLightboxEntryIndex = lightboxEntries.findIndex(
       (entry) => entry.id === id
@@ -125,8 +125,10 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
     setLightboxProps({
       onClose: () => setLightboxProps(undefined),
       open: true,
-      itemUUID,
-      itemVersion,
+      item: {
+        uuid,
+        version,
+      },
       config: {
         src,
         title: name,

@@ -25,6 +25,12 @@ import { AttachmentAndViewerConfig } from "../../tsrc/modules/ViewerModule";
 export default {
   title: "component/ItemAttachmentLink",
   component: ItemAttachmentLink,
+  args: {
+    item: {
+      uuid: "fe79c485-a6dd-4743-81e8-52de66494635",
+      version: 1,
+    },
+  },
 } as Meta<ItemAttachmentLinkProps>;
 
 const githubAvatarUrl = "https://avatars2.githubusercontent.com/u/54074368";

@@ -120,10 +120,19 @@ export interface LightboxProps {
   open: boolean;
   /** Configuration specifying the Lightbox's content. */
   config: LightboxConfig;
-  /** UUID of the Item which owns the Lightbox content. */
-  itemUUID: string;
-  /** Version of the Item which owns the Lightbox content. */
-  itemVersion: number;
+  /**
+   * Item which the Lightbox content is attached to.
+   */
+  item: {
+    /**
+     * UUID of the Item.
+     */
+    uuid: string;
+    /**
+     * Version of the Item.
+     */
+    version: number;
+  };
 }
 
 const {
@@ -136,8 +145,7 @@ const Lightbox = ({
   open,
   onClose,
   config,
-  itemUUID,
-  itemVersion,
+  item: { uuid, version },
 }: LightboxProps) => {
   const classes = useStyles();
   const {
@@ -278,7 +286,7 @@ const Lightbox = ({
     return isSelectionSessionOpen() ? (
       <IconButton
         component={MUILink}
-        href={buildSelectionSessionItemSummaryLink(itemUUID, itemVersion)}
+        href={buildSelectionSessionItemSummaryLink(uuid, version)}
         {...commonProps}
       >
         <InfoIcon />
@@ -286,7 +294,7 @@ const Lightbox = ({
     ) : (
       <IconButton
         component={Link}
-        to={routes.ViewItem.to(itemUUID, itemVersion)}
+        to={routes.ViewItem.to(uuid, version)}
         {...commonProps}
       >
         <InfoIcon />

@@ -29,6 +29,12 @@ export default {
   argTypes: {
     onClose: { action: "onClose triggered" },
   },
+  args: {
+    item: {
+      uuid: "fe79c485-a6dd-4743-81e8-52de66494632",
+      version: 1,
+    },
+  },
 } as Meta<LightboxProps>;
 
 const imageConfig: LightboxConfig = {

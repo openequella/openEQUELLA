@@ -291,8 +291,10 @@ export const SearchResultAttachmentsList = ({
           <ListItemIcon>{buildIcon(brokenAttachment)}</ListItemIcon>
           <ItemAttachmentLink
             selectedAttachment={attachmentAndViewerConfig}
-            itemUUID={uuid}
-            itemVersion={version}
+            item={{
+              uuid,
+              version,
+            }}
           >
             <ListItemText color="primary" primary={description} />
           </ItemAttachmentLink>

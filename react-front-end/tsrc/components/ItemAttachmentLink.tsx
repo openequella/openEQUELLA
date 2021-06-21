@@ -37,13 +37,18 @@ export interface ItemAttachmentLinkProps {
    */
   selectedAttachment: AttachmentAndViewerConfig;
   /**
-   * UUID of the Item this points to.
+   * Item which this attachment is attached to.
    */
-  itemUUID: string;
-  /**
-   * Version of the Item this points to.
-   */
-  itemVersion: number;
+  item: {
+    /**
+     * UUID of the Item.
+     */
+    uuid: string;
+    /**
+     * Version of the Item.
+     */
+    version: number;
+  };
 }
 
 /**
@@ -59,8 +64,7 @@ const ItemAttachmentLink = ({
     attachment: { description, mimeType, brokenAttachment },
     viewerConfig,
   },
-  itemUUID,
-  itemVersion,
+  item: { uuid, version },
 }: ItemAttachmentLinkProps) => {
   const { attachmentLink } = languageStrings.searchpage.searchResult;
   const [lightBoxProps, setLightBoxProps] = useState<LightboxProps>();
@@ -100,8 +104,7 @@ const ItemAttachmentLink = ({
                 setLightBoxProps(undefined);
               },
               config,
-              itemUUID,
-              itemVersion,
+              item: { uuid, version },
             });
             event.stopPropagation();
           }}
