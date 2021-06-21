@@ -40,7 +40,7 @@ interface OeqLinkProps {
  * Provide a Link which is either a React Route Link or a MUI Link, depending
  * on whether Selection Session is open or not.
  */
-export const OeqLink = ({
+export const OEQItemLink = ({
   children,
   routeLinkUrlProvider,
   muiLinkUrlProvider,
