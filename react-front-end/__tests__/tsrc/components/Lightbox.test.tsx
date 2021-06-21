@@ -34,6 +34,16 @@ import "@testing-library/jest-dom/extend-expect";
 import { updateMockGetBaseUrl } from "../BaseUrlHelper";
 import { basicRenderData, updateMockGetRenderData } from "../RenderDataHelper";
 
+const mockUseHistoryPush = jest.fn();
+jest.mock("react-router", () => ({
+  ...jest.requireActual("react-router"),
+  useHistory: () => ({
+    push: mockUseHistoryPush,
+  }),
+}));
+
+const mockWindowOpen = jest.spyOn(window, "open").mockImplementation(jest.fn());
+
 const renderLightbox = (config: LightboxConfig) =>
   render(
     <Router history={createMemoryHistory()}>
@@ -141,25 +151,27 @@ describe("Support for YouTube videos", () => {
 
 describe("supports viewing Item Summary page", () => {
   it.each([
-    ["normal page", false, "/items/369c92fa-ae59-4845-957d-8fcaa22c15e3/1/"],
-    [
-      "Selection Session",
-      true,
-      "http://localhost:8080/vanilla/items/369c92fa-ae59-4845-957d-8fcaa22c15e3/1/?_sl.stateId=1&a=coursesearch",
-    ],
+    ["normal page", false, mockUseHistoryPush],
+    ["Selection Session", true, mockWindowOpen],
   ])(
-    "shows a link to the Summary page in %s",
-    (_: string, inSelectionSession: boolean, url: string) => {
+    "shows an icon button which is clicked to open the Summary page in %s",
+    (
+      _: string,
+      inSelectionSession: boolean,
+      handler: jest.Mock | jest.SpyInstance
+    ) => {
       if (inSelectionSession) {
         updateMockGetBaseUrl();
         updateMockGetRenderData(basicRenderData);
       }
+
       const { queryByLabelText } = renderLightbox(displayImage.args!.config!);
       const summaryPageLink = queryByLabelText(
         languageStrings.lightboxComponent.openSummaryPage
       );
       expect(summaryPageLink).toBeInTheDocument();
-      expect(summaryPageLink).toHaveAttribute("href", url);
+      userEvent.click(summaryPageLink!);
+      expect(handler).toHaveBeenCalledTimes(1);
     }
   );
 });

@@ -25,9 +25,7 @@ import {
   Toolbar,
   Typography,
 } from "@material-ui/core";
-import MUILink from "@material-ui/core/Link";
 import { makeStyles } from "@material-ui/core/styles";
-import InfoIcon from "@material-ui/icons/Info";
 import CloseIcon from "@material-ui/icons/Close";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
@@ -36,13 +34,7 @@ import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as React from "react";
 import { ReactNode, SyntheticEvent, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { Literal, match, Unknown } from "runtypes";
-import { routes } from "../mainui/routes";
-import {
-  buildSelectionSessionItemSummaryLink,
-  isSelectionSessionOpen,
-} from "../modules/LegacySelectionSessionModule";
 import {
   CustomMimeTypes,
   isBrowserSupportedAudio,
@@ -52,6 +44,7 @@ import {
 } from "../modules/MimeTypesModule";
 import { extractVideoId } from "../modules/YouTubeModule";
 import { languageStrings } from "../util/langstrings";
+import { OEQItemSummaryPageButton } from "./OEQItemSummaryPageButton";
 import { TooltipIconButton } from "./TooltipIconButton";
 import YouTubeEmbed from "./YouTubeEmbed";
 
@@ -141,12 +134,7 @@ const {
   openSummaryPage: openSummaryPageString,
 } = languageStrings.lightboxComponent;
 
-const Lightbox = ({
-  open,
-  onClose,
-  config,
-  item: { uuid, version },
-}: LightboxProps) => {
+const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
   const classes = useStyles();
   const {
     close: labelClose,
@@ -277,31 +265,6 @@ const Lightbox = ({
     onClose();
   };
 
-  const buildSummaryPageLink = () => {
-    const commonProps = {
-      className: classes.menuButton,
-      "aria-label": openSummaryPageString,
-    };
-
-    return isSelectionSessionOpen() ? (
-      <IconButton
-        component={MUILink}
-        href={buildSelectionSessionItemSummaryLink(uuid, version)}
-        {...commonProps}
-      >
-        <InfoIcon />
-      </IconButton>
-    ) : (
-      <IconButton
-        component={Link}
-        to={routes.ViewItem.to(uuid, version)}
-        {...commonProps}
-      >
-        <InfoIcon />
-      </IconButton>
-    );
-  };
-
   return (
     <Backdrop
       className={classes.lightboxBackdrop}
@@ -312,7 +275,9 @@ const Lightbox = ({
         <Typography variant="h6" className={classes.title}>
           {title}
         </Typography>
-        {buildSummaryPageLink()}
+        <OEQItemSummaryPageButton
+          {...{ item, title: openSummaryPageString, color: "inherit" }}
+        />
         <IconButton
           className={classes.menuButton}
           aria-label={labelOpenInNewWindow}
