@@ -158,7 +158,7 @@ describe("supports viewing Item Summary page", () => {
     (
       _: string,
       inSelectionSession: boolean,
-      handler: jest.Mock | jest.SpyInstance
+      onClick: jest.Mock | jest.SpyInstance
     ) => {
       if (inSelectionSession) {
         updateMockGetBaseUrl();
@@ -166,12 +166,12 @@ describe("supports viewing Item Summary page", () => {
       }
 
       const { queryByLabelText } = renderLightbox(displayImage.args!.config!);
-      const summaryPageLink = queryByLabelText(
+      const viewSummaryPageButton = queryByLabelText(
         languageStrings.lightboxComponent.openSummaryPage
       );
-      expect(summaryPageLink).toBeInTheDocument();
-      userEvent.click(summaryPageLink!);
-      expect(handler).toHaveBeenCalledTimes(1);
+      expect(viewSummaryPageButton).toBeInTheDocument();
+      userEvent.click(viewSummaryPageButton!);
+      expect(onClick).toHaveBeenCalledTimes(1);
     }
   );
 });
