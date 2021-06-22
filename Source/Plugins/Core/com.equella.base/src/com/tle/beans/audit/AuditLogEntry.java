@@ -31,8 +31,14 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import org.hibernate.annotations.AttributeAccessor;
 import org.hibernate.annotations.Index;
+import org.hibernate.annotations.NamedQuery;
 import org.hibernate.annotations.Type;
 
+@NamedQuery(
+    name = "deleteAuditLogsByUser",
+    query =
+        "DELETE FROM AuditLogEntry ale WHERE ale.institution = :institution"
+            + " AND ale.userId = :userId")
 @Entity
 @AttributeAccessor("field")
 public class AuditLogEntry implements AuditLogTable {

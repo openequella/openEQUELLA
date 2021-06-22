@@ -130,6 +130,13 @@ public interface AuditLogService {
   void removeEntriesForInstitution(Institution institution);
 
   /**
+   * Remove Audit log entries by user.
+   *
+   * @param userId ID of a user
+   */
+  void removeEntriesForUser(String userId);
+
+  /**
    * Count Audit logs by Institution.
    *
    * @param institution Institution provided to count audit logs
@@ -148,4 +155,11 @@ public interface AuditLogService {
    */
   List<AuditLogEntry> findAllByInstitution(
       @Nullable Order order, int firstResult, int maxResults, Institution institution);
+
+  /**
+   * Search for audit logs of current Institution by user ID
+   *
+   * @param userId ID of a user
+   */
+  List<AuditLogEntry> findByUser(String userId);
 }
