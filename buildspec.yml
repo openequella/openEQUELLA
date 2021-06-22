@@ -19,6 +19,7 @@ phases:
   build:
     commands:
       - (npm ci && cd Source/Plugins/Core/com.equella.core/js && npm ci)
+      - (cd Source/Plugins/Kaltura/com.tle.web.wizard.controls.kaltura/js && npm ci && npm run build)
       - (npm run check:ts && npm run check:ts-types-source && npm run check:license)
       - (cd Source/Plugins/Core/com.equella.core/js && npm test)
       - sbt -no-colors -Dconfig.file=${HOME}/build.conf test installerZip writeLanguagePack writeScriptingJavadoc
