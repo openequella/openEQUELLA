@@ -35,8 +35,6 @@ object SQLServerSchema
   }
   override def autoIdCol: SQLServerColumn[Long] = identityCol[Long]
 
-  override def insertAuditLog = insertIdentity(auditLog)
-
   def dbUuidCol =
     wrap[String, DbUUID](stringCol,
                          _.isoMap(Iso(_.id.toString, DbUUID.fromString)),
