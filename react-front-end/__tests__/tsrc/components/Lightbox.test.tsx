@@ -17,12 +17,15 @@
  */
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
-import { displayYouTube } from "../../../__stories__/components/Lightbox.stories";
+import {
+  displayImage,
+  displayYouTube,
+} from "../../../__stories__/components/Lightbox.stories";
 import Lightbox, {
   isLightboxSupportedMimeType,
   LightboxConfig,
 } from "../../../tsrc/components/Lightbox";
-import { render } from "@testing-library/react";
+import { queryByText, render } from "@testing-library/react";
 import { CustomMimeTypes } from "../../../tsrc/modules/MimeTypesModule";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import "@testing-library/jest-dom/extend-expect";
@@ -124,6 +127,21 @@ describe("Support for YouTube videos", () => {
     );
     expect(
       queryByText(languageStrings.lightboxComponent.youTubeVideoMissingId)
+    ).toBeInTheDocument();
+  });
+});
+
+describe("Provide embed code", () => {
+  it("shows a dialog to allow copying embed code", () => {
+    const page = render(
+      <Lightbox onClose={jest.fn()} open config={displayImage.args!.config!} />
+    );
+    const codeIconButton = page.getByLabelText(languageStrings.embedCode.copy, {
+      selector: "button",
+    });
+    userEvent.click(codeIconButton);
+    expect(
+      queryByText(page.getByRole("dialog"), languageStrings.embedCode.label)
     ).toBeInTheDocument();
   });
 });
