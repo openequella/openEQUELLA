@@ -353,7 +353,7 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
       {openEmbedCodeDialog && content && (
         <EmbedCodeDialog
           open={openEmbedCodeDialog}
-          closeDialog={() => setOpenEmbedCodeDialog(false)}
+          onCloseDialog={() => setOpenEmbedCodeDialog(false)}
           embedCode={generateEmbedCode()}
         />
       )}

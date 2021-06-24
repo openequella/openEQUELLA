@@ -33,7 +33,7 @@ export interface EmbedCodeDialogProps {
   /**
    * Fired when the dialog is closed.
    */
-  closeDialog: () => void;
+  onCloseDialog: () => void;
   /**
    * Embed code of a resource to be displayed in the dialog.
    */
@@ -50,7 +50,7 @@ const {
  */
 export const EmbedCodeDialog = ({
   open,
-  closeDialog,
+  onCloseDialog,
   embedCode,
 }: EmbedCodeDialogProps) => (
   <Dialog open={open} fullWidth>
@@ -62,7 +62,7 @@ export const EmbedCodeDialog = ({
       <Button
         onClick={(event) => {
           event.stopPropagation();
-          navigator.clipboard.writeText(embedCode).then(closeDialog);
+          navigator.clipboard.writeText(embedCode).then(onCloseDialog);
         }}
         color="secondary"
         aria-label={copyEmbedCode}
