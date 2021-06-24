@@ -19,14 +19,14 @@
 package com.tle.web.template
 
 import java.util.concurrent.ConcurrentHashMap
-
 import com.tle.common.i18n.{CurrentLocale, LocaleUtils}
 import com.tle.common.settings.standard.QuickContributeAndVersionSettings
 import com.tle.core.i18n.LocaleLookup
+import com.tle.core.plugins.AbstractPluginService
 import com.tle.legacy.LegacyGuice
 import com.tle.web.DebugSettings
 import com.tle.web.freemarker.FreemarkerFactory
-import com.tle.web.resources.ResourcesService
+import com.tle.web.resources.{ResourcesService}
 import com.tle.web.sections._
 import com.tle.web.sections.equella.ScalaSectionRenderable
 import com.tle.web.sections.events._
@@ -36,6 +36,7 @@ import com.tle.web.sections.js.generic.function.IncludeFile
 import com.tle.web.sections.render._
 import com.tle.web.selection.section.RootSelectionSection
 import com.tle.web.integration.IntegrationSection
+import com.tle.web.sections.render.CssInclude.{Priority, include}
 import com.tle.web.selection.section.RootSelectionSection.Layout
 import com.tle.web.settings.UISettings
 import javax.servlet.http.HttpServletRequest
@@ -82,9 +83,22 @@ object RenderNewTemplate {
       supportIEPolyFills(info)
       info.preRender(bundleJs)
       links.foreach(l => info.addCss(r.url(l.attr("href"))))
+      addKalturaCss(info)
       info.addCss(RenderTemplate.CUSTOMER_CSS)
     }
     (prerender, htmlDoc)
+  }
+
+  def addKalturaCss(info: PreRenderContext): Unit = {
+    val kalturaPluginId = "com.tle.web.wizard.controls.kaltura"
+    val pluginService   = AbstractPluginService.get()
+    if (pluginService.isActivated(kalturaPluginId)) {
+      info.addCss(
+        include(
+          ResourcesService
+            .getResourceHelper(kalturaPluginId)
+            .url("js/UploadControlEntry.css")).priority(Priority.LOWEST).make())
+    }
   }
 
   val NewLayoutKey = "NEW_LAYOUT"

@@ -190,6 +190,10 @@ public abstract class AbstractPluginService extends PluginClassResolver implemen
     }
   }
 
+  public boolean isActivated(String pluginId) {
+    return pluginManager.getRegistry().isPluginDescriptorAvailable(pluginId);
+  }
+
   @SuppressWarnings("nls")
   @Override
   public ExtensionPoint getExtensionPoint(String pluginId, String pointId) {
