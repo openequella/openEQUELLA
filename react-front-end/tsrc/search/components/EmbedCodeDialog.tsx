@@ -55,7 +55,9 @@ export const EmbedCodeDialog = ({
 }: EmbedCodeDialogProps) => (
   <Dialog open={open} fullWidth>
     <DialogTitle>{embedCodeLabel}</DialogTitle>
-    <DialogContent>{embedCode}</DialogContent>
+    <DialogContent>
+      <code>{embedCode}</code>
+    </DialogContent>
     <DialogActions>
       <Button
         onClick={(event) => {

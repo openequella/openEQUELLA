@@ -34,8 +34,13 @@ import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as React from "react";
-import { ReactElement, SyntheticEvent, useEffect, useState } from "react";
-import { renderToStaticMarkup } from "react-dom/server";
+import {
+  ReactElement,
+  SyntheticEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Literal, match, Unknown } from "runtypes";
 import {
   CustomMimeTypes,
@@ -147,6 +152,8 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
     setLightBoxConfig(getLightboxConfig());
   };
 
+  const contentEmbedCodeRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const keyDownHandler = (e: KeyboardEvent) => {
       if (onPrevious && e.key === "ArrowLeft") {
@@ -252,15 +259,20 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
 
   // Generate a HTML string from current Lightbox content.
   // Also use DOMParser to help remove unneeded attributes such as 'class'.
-  const generateEmbedCode = (content: ReactElement): string => {
-    const unneededAttributes = ["class"];
-    const doc = domParser.parseFromString(
-      renderToStaticMarkup(content),
-      "text/xml"
-    );
-    unneededAttributes.forEach((a) => doc.documentElement.removeAttribute(a));
+  const generateEmbedCode = (): string => {
+    const currentContent = contentEmbedCodeRef.current;
+    if (!currentContent) {
+      throw new Error("Failed to generate embed code for empty content");
+    }
 
-    return doc.documentElement.outerHTML;
+    const unneededAttributes = ["class"];
+    const fullHtml: HTMLDocument = domParser.parseFromString(
+      currentContent.innerHTML,
+      "text/html"
+    );
+    const contentHtml = fullHtml.body.childNodes[0] as HTMLElement;
+    unneededAttributes.forEach((a) => contentHtml.removeAttribute(a));
+    return contentHtml.outerHTML;
   };
 
   return (
@@ -318,7 +330,9 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
           )}
         </Grid>
         <Grid item container justify="center" xs={10}>
-          <Grid item>{content}</Grid>
+          <Grid item ref={contentEmbedCodeRef}>
+            {content}
+          </Grid>
         </Grid>
         <Grid item container justify="flex-end" xs={1}>
           <Grid item>
@@ -340,7 +354,7 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
         <EmbedCodeDialog
           open={openEmbedCodeDialog}
           closeDialog={() => setOpenEmbedCodeDialog(false)}
-          embedCode={generateEmbedCode(content)}
+          embedCode={generateEmbedCode()}
         />
       )}
     </Backdrop>
