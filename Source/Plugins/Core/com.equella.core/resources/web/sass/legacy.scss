@@ -280,6 +280,30 @@ $savePanelWidth: 221px;
   padding-left: $width;
 }
 
+@mixin standardButton {
+  @include curvedCorners;
+  padding: 0 $singleMargin 0 $singleMargin;
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: 64px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  background-color: $primaryColor;
+  color: set-text-color($primaryColor);
+  @include typography-button();
+
+  &:hover {
+    background-color: transparentize($primaryColor, 0.1);
+  }
+  &:active {
+    background-color: transparentize($primaryColor, 0.3);
+  }
+}
+
 /*****************************************************************************
 Animations
 *****************************************************************************/
@@ -420,27 +444,7 @@ Buttons
 *****************************************************************************/
 
 .btn {
-  @include curvedCorners;
-  padding: 0 $singleMargin 0 $singleMargin;
-  display: inline-flex;
-  position: relative;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  min-width: 64px;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  background-color: $primaryColor;
-  color: set-text-color($primaryColor);
-  @include typography-button();
-
-  &:hover {
-    background-color: transparentize($primaryColor, 0.1);
-  }
-  &:active {
-    background-color: transparentize($primaryColor, 0.3);
-  }
+  @include standardButton;
 }
 
 .button-expandable {
@@ -4323,6 +4327,10 @@ a.modal-control.modal-save {
     padding-left: $singleMargin;
     padding-right: $singleMargin;
     margin-left: $singleMargin;
+  }
+
+  input[type="submit"] {
+    @include standardButton;
   }
 }
 
