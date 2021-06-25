@@ -23,7 +23,12 @@ import {
   isLightboxSupportedMimeType,
   LightboxConfig,
 } from "../components/Lightbox";
-import { buildFileAttachmentUrl } from "./AttachmentsModule";
+import {
+  ATYPE_FILE,
+  ATYPE_RESOURCE,
+  ATYPE_YOUTUBE,
+  buildFileAttachmentUrl,
+} from "./AttachmentsModule";
 
 export type Viewer = "lightbox" | "link";
 export type ViewerDefinition = [Viewer, string];
@@ -114,7 +119,7 @@ export const determineViewer = (
   if (broken) {
     return simpleLinkView;
   }
-  if (attachmentType !== "file" && attachmentType !== "custom/resource") {
+  if (![ATYPE_FILE, ATYPE_RESOURCE, ATYPE_YOUTUBE].includes(attachmentType)) {
     // For non-file attachments, we currently just defer to the link provided by the server
     return simpleLinkView;
   }

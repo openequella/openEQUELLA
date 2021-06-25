@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 import { AppConfig } from "../AppConfig";
+import { updateYoutubeAttachment } from "./YouTubeModule";
+import * as OEQ from "@openequella/rest-api-client";
 
 /** `attachmentType` for file attachments. */
 export const ATYPE_FILE = "file";
@@ -23,6 +25,8 @@ export const ATYPE_FILE = "file";
 export const ATYPE_LINK = "link";
 /** `attachmentType` for attachments linking to YouTube videos. */
 export const ATYPE_YOUTUBE = "custom/youtube";
+/** `attachmentType` for attachments linking to oEQ resources(e.g. Item). */
+export const ATYPE_RESOURCE = "custom/resource";
 
 /**
  * Build a direct URL to a file attachment.
@@ -37,3 +41,15 @@ export const buildFileAttachmentUrl = (
   fileAttachmentPath: string
 ) =>
   `${AppConfig.baseUrl}file/${itemUuid}/${itemVersion}/${fileAttachmentPath}`;
+
+/**
+ * Call this function to update attachments that require custom information
+ * such as custom MIME type.
+ * @param attachment An attachment that might need custom information
+ */
+export const updateAttachmentForCustomInfo = (
+  attachment: OEQ.Search.Attachment
+): OEQ.Search.Attachment =>
+  attachment.attachmentType === ATYPE_YOUTUBE
+    ? updateYoutubeAttachment(attachment)
+    : attachment;

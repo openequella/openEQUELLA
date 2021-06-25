@@ -43,6 +43,10 @@ import * as React from "react";
 import { SyntheticEvent, useEffect, useState } from "react";
 import ItemAttachmentLink from "../../components/ItemAttachmentLink";
 import {
+  ATYPE_YOUTUBE,
+  updateAttachmentForCustomInfo,
+} from "../../modules/AttachmentsModule";
+import {
   getSearchPageAttachmentClass,
   isSelectionSessionInSkinny,
   isSelectionSessionInStructured,
@@ -142,11 +146,14 @@ export const SearchResultAttachmentsList = ({
       return;
     }
 
-    const getViewerID = async (broken: boolean, mimeType: string) => {
-      let viewerDetails: OEQ.MimeType.MimeTypeViewerDetail | undefined;
-      if (broken) {
-        return undefined;
+    const getViewerID = async (
+      attachmentType: string,
+      mimeType: string
+    ): Promise<OEQ.MimeType.ViewerId | undefined> => {
+      if (attachmentType === ATYPE_YOUTUBE) {
+        return "htmlFiveViewer";
       }
+      let viewerDetails: OEQ.MimeType.MimeTypeViewerDetail | undefined;
       try {
         viewerDetails = await getViewerDetails(mimeType);
       } catch (error) {
@@ -161,11 +168,15 @@ export const SearchResultAttachmentsList = ({
     (async () => {
       const attachmentsAndViewerDefinitions = await Promise.all(
         attachments.map<Promise<AttachmentAndViewerDefinition>>(
-          async (attachment) => {
-            const { mimeType, brokenAttachment } = attachment;
-            const viewerId = mimeType
-              ? await getViewerID(brokenAttachment, mimeType)
-              : undefined;
+          async (originalAttachment) => {
+            const attachment = updateAttachmentForCustomInfo(
+              originalAttachment
+            );
+            const { attachmentType, mimeType, brokenAttachment } = attachment;
+            const viewerId =
+              mimeType && !brokenAttachment
+                ? await getViewerID(attachmentType, mimeType)
+                : undefined;
             return {
               attachment,
               viewerDefinition: getViewerDefinitionForAttachment(
