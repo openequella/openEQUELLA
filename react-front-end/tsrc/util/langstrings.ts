@@ -296,6 +296,7 @@ export const languageStrings = {
   embedCode: {
     label: "Embed code",
     copy: "Copy embed code",
+    closeEmbedCodeDialog: "Close embed code dialog",
   },
   entity: {
     edit: {

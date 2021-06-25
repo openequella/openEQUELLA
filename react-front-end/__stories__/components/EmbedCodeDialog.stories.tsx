@@ -20,7 +20,7 @@ import { Meta, Story } from "@storybook/react";
 import {
   EmbedCodeDialog,
   EmbedCodeDialogProps,
-} from "../../tsrc/search/components/EmbedCodeDialog";
+} from "../../tsrc/components/EmbedCodeDialog";
 
 export default {
   title: "component/EmbedCodeDialog",

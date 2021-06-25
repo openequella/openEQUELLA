@@ -50,7 +50,7 @@ import {
   splitMimeType,
 } from "../modules/MimeTypesModule";
 import { extractVideoId } from "../modules/YouTubeModule";
-import { EmbedCodeDialog } from "../search/components/EmbedCodeDialog";
+import { EmbedCodeDialog } from "./EmbedCodeDialog";
 import { languageStrings } from "../util/langstrings";
 import { TooltipIconButton } from "./TooltipIconButton";
 import YouTubeEmbed from "./YouTubeEmbed";
