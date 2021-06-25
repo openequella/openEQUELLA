@@ -4329,8 +4329,11 @@ a.modal-control.modal-save {
     margin-left: $singleMargin;
   }
 
-  input[type="submit"] {
-    @include standardButton;
+  #kaltura-simple-uploader {
+    input[type="submit"],
+    button {
+      @include standardButton;
+    }
   }
 }
 
