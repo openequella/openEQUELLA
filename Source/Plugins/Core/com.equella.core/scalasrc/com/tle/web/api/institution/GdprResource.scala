@@ -20,21 +20,17 @@ package com.tle.web.api.institution
 
 import java.io.{OutputStream, PrintStream}
 import java.util.zip.{ZipEntry, ZipOutputStream}
-
-import cats.data.Kleisli
+import scala.collection.JavaConverters._
+import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.util.StdDateFormat
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.tle.beans.audit.AuditLogEntry
 import com.tle.common.usermanagement.user.CurrentUser
-import com.tle.core.db.tables.AuditLogEntry
-import com.tle.core.db.types.UserId
-import com.tle.core.db.{DBSchema, RunWithDB}
 import com.tle.exceptions.AccessDeniedException
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.users.UserDetails
-import io.circe.{Json, JsonObject}
 import io.circe.generic.auto._
 import io.circe.syntax._
-import io.doolse.simpledba.jdbc._
-import io.doolse.simpledba.syntax._
 import io.swagger.annotations.{Api, ApiParam}
 import javax.ws.rs._
 import javax.ws.rs.core.{Response, StreamingOutput}
@@ -45,29 +41,39 @@ import javax.ws.rs.core.{Response, StreamingOutput}
 class GdprResource {
 
   val tleUserDao = LegacyGuice.tleUserDao
-  val queries    = DBSchema.queries.auditLogQueries
+  val mapper = JsonMapper
+    .builder()
+    .addModule(DefaultScalaModule)
+    .build()
 
   case class AuditEntry(category: String,
                         `type`: String,
                         timestamp: String,
                         sessionId: String,
-                        data: Map[String, Json])
+                        data: Map[String, String])
 
   object AuditEntry {
     def apply(ale: AuditLogEntry): AuditEntry = {
-      val data = Map("1" -> ale.data1.map(_.value.asJson),
-                     "2" -> ale.data2.map(_.value.asJson),
-                     "3" -> ale.data3.map(_.value.asJson),
-                     "4" -> ale.data4.map(_.asJson)).collect {
-        case (k, Some(v)) => (k, v)
-      } ++ ale.meta.asJson.asObject.map(_.toMap).getOrElse(Map.empty).collect {
-        case (k, j) if !j.isNull => (k, j)
+      val data = Map(("1" -> Option(ale.getData1)),
+                     ("2" -> Option(ale.getData2)),
+                     ("3" -> Option(ale.getData3)),
+                     ("4" -> Option(ale.getData4))).collect {
+        case (key, Some(value)) => (key, value)
       }
-      AuditEntry(ale.event_category.value,
-                 ale.event_type.value,
-                 StdDateFormat.instance.clone().format(ale.timestamp.toEpochMilli),
-                 ale.session_id.value,
-                 data)
+
+      val meta = Option(ale.getMeta) match {
+        case Some(meta) =>
+          mapper.readValue(meta, classOf[Map[String, String]]).collect {
+            case (k, v) if Option(v).isDefined => (k, v)
+          }
+        case None => Map.empty
+      }
+
+      AuditEntry(ale.getEventCategory,
+                 ale.getEventType,
+                 StdDateFormat.instance.clone().format(ale.getTimestamp),
+                 ale.getSessionId,
+                 data ++ meta)
     }
   }
 
@@ -81,9 +87,7 @@ class GdprResource {
   def delete(@PathParam("user") @ApiParam(value = "An ID (not a username) of a user",
                                           required = true) user: String): Response = {
     checkPriv()
-    RunWithDB.execute(Kleisli { uc =>
-      queries.deleteForUser((UserId(user), uc.inst)).flush.compile.drain
-    })
+    LegacyGuice.auditLogService.removeEntriesForUser(user)
     Response.ok().build()
   }
 
@@ -109,20 +113,19 @@ class GdprResource {
               print.print(UserDetails.apply(tleUser).asJson.spaces2)
               print.println("\n, ")
             }
+
             def writeLogs() = {
-              print.println("\"auditlog\": [")
-              var first = true
-              RunWithDB.execute(Kleisli { uc =>
-                queries
-                  .listForUser((UserId(user), uc.inst))
+              val auditLogs =
+                LegacyGuice.auditLogService
+                  .findByUser(user)
+                  .asScala
                   .map { ale =>
-                    if (!first) print.print(", ")
-                    print.print(AuditEntry(ale).asJson.spaces2)
-                    first = false
+                    AuditEntry(ale).asJson.spaces2
                   }
-                  .compile
-                  .drain
-              })
+                  .mkString(", ")
+
+              print.println("\"auditlog\": [")
+              print.print(auditLogs)
               print.print("]")
             }
             writeUser()

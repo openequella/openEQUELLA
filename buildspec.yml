@@ -20,6 +20,7 @@ phases:
   build:
     commands:
       - (npm ci && cd react-front-end && npm ci)
+      - (cd Source/Plugins/Kaltura/com.tle.web.wizard.controls.kaltura/js && npm ci && npm run build)
       - (npm run check:ts && npm run check:ts-types-source && npm run check:license)
       - (cd react-front-end && npm test)
       - (cd Source/Plugins/Core/com.equella.core/test/javascript && npm cit)

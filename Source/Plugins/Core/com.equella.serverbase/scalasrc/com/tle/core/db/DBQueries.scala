@@ -18,24 +18,12 @@
 
 package com.tle.core.db
 
-import java.time.Instant
-
 import com.tle.core.db.tables._
-import com.tle.core.db.types.{DbUUID, InstId, String20, String255, UserId}
+import com.tle.core.db.types.{DbUUID, InstId, String20}
 import fs2.Stream
 import io.doolse.simpledba.{WriteOp, WriteQueries}
 import io.doolse.simpledba.jdbc.{JDBCColumn, JDBCIO, JDBCSQLConfig}
 import org.slf4j.LoggerFactory
-
-case class AuditLogQueries(
-    insertNew: (Long => AuditLogEntry) => Stream[JDBCIO, AuditLogEntry],
-    deleteForUser: ((UserId, InstId)) => Stream[JDBCIO, WriteOp],
-    listForUser: ((UserId, InstId)) => Stream[JDBCIO, AuditLogEntry],
-    deleteForInst: InstId => Stream[JDBCIO, WriteOp],
-    deleteBefore: Instant => Stream[JDBCIO, WriteOp],
-    countForInst: InstId => Stream[JDBCIO, Int],
-    listForInst: InstId => Stream[JDBCIO, AuditLogEntry]
-)
 
 case class ViewCountQueries(
     writeItemCounts: WriteQueries[JDBCIO, ItemViewCount],
@@ -77,8 +65,6 @@ trait DBQueries {
 
   def setupLogging(config: JDBCSQLConfig[C]): JDBCSQLConfig[C] =
     config.withPrepareLogger(sql => DBQueries.logSQL.debug(sql))
-
-  def auditLogQueries: AuditLogQueries
 
   def viewCountQueries: ViewCountQueries
 

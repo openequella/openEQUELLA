@@ -66,24 +66,7 @@ trait DBSchema extends StdColumns {
 
   def autoIdCol: C[Long]
 
-  val auditLog = TableMapper[AuditLogEntry].table("audit_log_entry").edit('id, autoIdCol).key('id)
-
-  def insertAuditLog: (Long => AuditLogEntry) => Stream[JDBCIO, AuditLogEntry]
-
-  val userAndInst = Cols('user_id, 'institution_id)
-
-  val auditLogQueries = AuditLogQueries(
-    insertAuditLog,
-    auditLog.delete.where(userAndInst, BinOp.EQ).build,
-    auditLog.query.where(userAndInst, BinOp.EQ).build,
-    auditLog.delete.where('institution_id, BinOp.EQ).build,
-    auditLog.delete.where('timestamp, BinOp.LT).build,
-    auditLog.select.count.where('institution_id, BinOp.EQ).buildAs[InstId, Int],
-    auditLog.query.where('institution_id, BinOp.EQ).build
-  )
-
-  val auditLogNewColumns = auditLog.subset(Cols('meta))
-
+  val userAndInst   = Cols('user_id, 'institution_id)
   val itemViewId    = Cols('inst, 'item_uuid, 'item_version)
   val itemViewCount = TableMapper[ItemViewCount].table("viewcount_item").keys(itemViewId)
   val attachmentViewCount = TableMapper[AttachmentViewCount]

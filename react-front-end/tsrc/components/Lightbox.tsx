@@ -27,13 +27,20 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
+import CodeIcon from "@material-ui/icons/Code";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as React from "react";
-import { ReactNode, SyntheticEvent, useEffect, useState } from "react";
+import {
+  ReactElement,
+  SyntheticEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Literal, match, Unknown } from "runtypes";
 import {
   CustomMimeTypes,
@@ -43,6 +50,7 @@ import {
   splitMimeType,
 } from "../modules/MimeTypesModule";
 import { extractVideoId } from "../modules/YouTubeModule";
+import { EmbedCodeDialog } from "./EmbedCodeDialog";
 import { languageStrings } from "../util/langstrings";
 import { OEQItemSummaryPageButton } from "./OEQItemSummaryPageButton";
 import { TooltipIconButton } from "./TooltipIconButton";
@@ -96,13 +104,9 @@ export interface LightboxConfig {
   title?: string;
   /** MIME type of the items specified by `src` */
   mimeType: string;
-  /**
-   * Function fired to view previous attachment.
-   */
+  /** Function fired to view previous attachment. */
   onPrevious?: () => LightboxConfig;
-  /**
-   * Function fired to view next attachment.
-   */
+  /** Function fired to view next attachment. */
   onNext?: () => LightboxConfig;
 }
 
@@ -134,25 +138,36 @@ const {
   openSummaryPage: openSummaryPageString,
 } = languageStrings.lightboxComponent;
 
+const {
+  close: labelClose,
+  openInNewWindow: labelOpenInNewWindow,
+} = languageStrings.common.action;
+
+const {
+  unsupportedContent: labelUnsupportedContent,
+  youTubeVideoMissingId,
+} = languageStrings.lightboxComponent;
+
+const { copy: copyEmbedCodeString } = languageStrings.embedCode;
+
+const domParser = new DOMParser();
+
 const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
   const classes = useStyles();
-  const {
-    close: labelClose,
-    openInNewWindow: labelOpenInNewWindow,
-  } = languageStrings.common.action;
-  const {
-    unsupportedContent: labelUnsupportedContent,
-    youTubeVideoMissingId,
-  } = languageStrings.lightboxComponent;
 
-  const [content, setContent] = useState<ReactNode | undefined>();
+  const [content, setContent] = useState<ReactElement | undefined>();
   const [lightBoxConfig, setLightBoxConfig] = useState<LightboxConfig>(config);
+  const [openEmbedCodeDialog, setOpenEmbedCodeDialog] = useState<boolean>(
+    false
+  );
   const { src, title, mimeType, onPrevious, onNext } = lightBoxConfig;
 
   const handleNav = (getLightboxConfig: () => LightboxConfig) => {
     setContent(undefined);
     setLightBoxConfig(getLightboxConfig());
   };
+
+  const contentEmbedCodeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const keyDownHandler = (e: KeyboardEvent) => {
@@ -245,15 +260,7 @@ const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
       );
 
     setContent(buildContent());
-  }, [
-    lightBoxConfig,
-    classes,
-    mimeType,
-    src,
-    title,
-    labelUnsupportedContent,
-    youTubeVideoMissingId,
-  ]);
+  }, [lightBoxConfig, classes, mimeType, src, title]);
 
   const handleOpenInNewWindow = (event: SyntheticEvent) => {
     event.stopPropagation();
@@ -263,6 +270,24 @@ const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
   const handleCloseLightbox = (event: SyntheticEvent) => {
     event.stopPropagation();
     onClose();
+  };
+
+  // Generate a HTML string from current Lightbox content.
+  // Also use DOMParser to help remove unneeded attributes such as 'class'.
+  const generateEmbedCode = (): string => {
+    const currentContent = contentEmbedCodeRef.current;
+    if (!currentContent) {
+      throw new Error("Failed to generate embed code for empty content");
+    }
+
+    const unneededAttributes = ["class"];
+    const fullHtml: HTMLDocument = domParser.parseFromString(
+      currentContent.innerHTML,
+      "text/html"
+    );
+    const contentHtml = fullHtml.body.childNodes[0] as HTMLElement;
+    unneededAttributes.forEach((a) => contentHtml.removeAttribute(a));
+    return contentHtml.outerHTML;
   };
 
   return (
@@ -278,6 +303,16 @@ const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
         <OEQItemSummaryPageButton
           {...{ item, title: openSummaryPageString, color: "inherit" }}
         />
+        <IconButton
+          className={classes.menuButton}
+          aria-label={copyEmbedCodeString}
+          onClick={(event) => {
+            event.stopPropagation();
+            setOpenEmbedCodeDialog(true);
+          }}
+        >
+          <CodeIcon />
+        </IconButton>
         <IconButton
           className={classes.menuButton}
           aria-label={labelOpenInNewWindow}
@@ -313,7 +348,9 @@ const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
           )}
         </Grid>
         <Grid item container justify="center" xs={10}>
-          <Grid item>{content}</Grid>
+          <Grid item ref={contentEmbedCodeRef}>
+            {content}
+          </Grid>
         </Grid>
         <Grid item container justify="flex-end" xs={1}>
           <Grid item>
@@ -331,6 +368,13 @@ const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
           </Grid>
         </Grid>
       </Grid>
+      {openEmbedCodeDialog && content && (
+        <EmbedCodeDialog
+          open={openEmbedCodeDialog}
+          onCloseDialog={() => setOpenEmbedCodeDialog(false)}
+          embedCode={generateEmbedCode()}
+        />
+      )}
     </Backdrop>
   );
 };

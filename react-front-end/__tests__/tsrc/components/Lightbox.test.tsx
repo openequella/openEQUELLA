@@ -16,9 +16,7 @@
  * limitations under the License.
  */
 import userEvent from "@testing-library/user-event";
-import { createMemoryHistory } from "history";
 import * as React from "react";
-import { Router } from "react-router-dom";
 import {
   displayImage,
   displayYouTube,
@@ -27,7 +25,7 @@ import Lightbox, {
   isLightboxSupportedMimeType,
   LightboxConfig,
 } from "../../../tsrc/components/Lightbox";
-import { render } from "@testing-library/react";
+import { queryByText, render } from "@testing-library/react";
 import { CustomMimeTypes } from "../../../tsrc/modules/MimeTypesModule";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import "@testing-library/jest-dom/extend-expect";
@@ -46,17 +44,15 @@ const mockWindowOpen = jest.spyOn(window, "open").mockImplementation(jest.fn());
 
 const renderLightbox = (config: LightboxConfig) =>
   render(
-    <Router history={createMemoryHistory()}>
-      <Lightbox
-        onClose={jest.fn()}
-        open
-        config={config}
-        item={{
-          uuid: "369c92fa-ae59-4845-957d-8fcaa22c15e3",
-          version: 1,
-        }}
-      />
-    </Router>
+    <Lightbox
+      onClose={jest.fn()}
+      open
+      config={config}
+      item={{
+        uuid: "369c92fa-ae59-4845-957d-8fcaa22c15e3",
+        version: 1,
+      }}
+    />
   );
 
 describe("isLightboxSupportedMimeType", () => {
@@ -174,4 +170,17 @@ describe("supports viewing Item Summary page", () => {
       expect(onClick).toHaveBeenCalledTimes(1);
     }
   );
+});
+
+describe("Provide embed code", () => {
+  it("shows a dialog to allow copying embed code", () => {
+    const page = renderLightbox(displayImage.args!.config!);
+    const codeIconButton = page.getByLabelText(languageStrings.embedCode.copy, {
+      selector: "button",
+    });
+    userEvent.click(codeIconButton);
+    expect(
+      queryByText(page.getByRole("dialog"), languageStrings.embedCode.label)
+    ).toBeInTheDocument();
+  });
 });
