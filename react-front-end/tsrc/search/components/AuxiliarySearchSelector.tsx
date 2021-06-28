@@ -21,7 +21,7 @@ import LinkIcon from "@material-ui/icons/Link";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { OEQItemLink } from "../../components/OEQItemLink";
+import { OEQLink } from "../../components/OEQLink";
 
 const useStyles = makeStyles((theme: Theme) => ({
   linkIcon: {
@@ -76,13 +76,13 @@ export const AuxiliarySearchSelector = ({
 
   const buildSearchMenuItems = () =>
     auxiliarySearches.map((summary) => (
-      <OEQItemLink
+      <OEQLink
         routeLinkUrlProvider={() => urlGeneratorForRouteLink(summary.uuid)}
         muiLinkUrlProvider={() => urlGeneratorForMuiLink(summary.uuid)}
         key={summary.uuid}
       >
         {getLinkContent(summary)}
-      </OEQItemLink>
+      </OEQLink>
     ));
 
   return (
