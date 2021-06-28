@@ -15,13 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Link } from "@material-ui/core";
+import { Link, Typography } from "@material-ui/core";
 import * as React from "react";
 import { SyntheticEvent, useState } from "react";
 import {
   AttachmentAndViewerConfig,
   isViewerLightboxConfig,
   ViewerLightboxConfig,
+  ViewerLinkConfig,
 } from "../modules/ViewerModule";
 import { languageStrings } from "../util/langstrings";
 import Lightbox, { LightboxProps } from "./Lightbox";
@@ -47,13 +48,29 @@ export interface ItemAttachmentLinkProps {
 const ItemAttachmentLink = ({
   children,
   selectedAttachment: {
-    attachment: { description, mimeType },
+    attachment: { description, mimeType, brokenAttachment },
     viewerConfig,
   },
 }: ItemAttachmentLinkProps) => {
   const { attachmentLink } = languageStrings.searchpage.searchResult;
   const [lightBoxProps, setLightBoxProps] = useState<LightboxProps>();
 
+  const buildSimpleLink = (viewerConfig: ViewerLinkConfig): JSX.Element => {
+    return brokenAttachment ? (
+      <Typography aria-label={`${attachmentLink} ${description}`}>
+        {description}
+      </Typography>
+    ) : (
+      <Link
+        aria-label={`${attachmentLink} ${description}`}
+        href={viewerConfig?.url}
+        target="_blank"
+        rel="noreferrer"
+      >
+        {children}
+      </Link>
+    );
+  };
   const buildLightboxLink = ({ config }: ViewerLightboxConfig): JSX.Element => {
     if (!mimeType) {
       throw new Error(
@@ -85,19 +102,11 @@ const ItemAttachmentLink = ({
       </>
     );
   };
-  return isViewerLightboxConfig(viewerConfig) ? (
-    buildLightboxLink(viewerConfig)
-  ) : (
-    // Lightbox viewer not specified, so go with the default of a simple link.
-    <Link
-      aria-label={`${attachmentLink} ${description}`}
-      href={viewerConfig.url}
-      target="_blank"
-      rel="noreferrer"
-    >
-      {children}
-    </Link>
-  );
+
+  return isViewerLightboxConfig(viewerConfig)
+    ? buildLightboxLink(viewerConfig)
+    : // Lightbox viewer not specified, so go with the default of a simple link.
+      buildSimpleLink(viewerConfig);
 };
 
 export default ItemAttachmentLink;

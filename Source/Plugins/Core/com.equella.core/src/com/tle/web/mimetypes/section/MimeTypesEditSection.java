@@ -67,7 +67,7 @@ import javax.inject.Inject;
 @SuppressWarnings("nls")
 public class MimeTypesEditSection extends AbstractPrototypeSection<MimeTypesEditModel>
     implements HtmlRenderer {
-  private static PluginResourceHelper resources =
+  private static final PluginResourceHelper resources =
       ResourcesService.getResourceHelper(MimeTypesEditSection.class);
   public static final NameValue TAB_DETAILS =
       new BundleNameValue(resources.key("tab.details"), "details");
@@ -79,6 +79,9 @@ public class MimeTypesEditSection extends AbstractPrototypeSection<MimeTypesEdit
 
   @PlugKey("add.pagetitle")
   private static Label ADD_TITLE_LABEL;
+
+  @PlugKey("mimetypes.default.viewer.not.enabled")
+  private static String DEFAULT_VIEWER_NOT_ENABLED;
 
   @PlugKey("edit.parentbreadcrumb.label")
   private static Label PARENT_BREADCRUMB_LABEL;
@@ -129,6 +132,14 @@ public class MimeTypesEditSection extends AbstractPrototypeSection<MimeTypesEdit
   public void save(final SectionInfo info) {
     MimeTypesEditModel model = getModel(info);
     try {
+      MimeDefaultViewerSection mimeDefaultViewerSection =
+          info.lookupSection(MimeDefaultViewerSection.class);
+      if (!mimeDefaultViewerSection.isDefaultViewerEnabled(info)) {
+        throw new InvalidDataException(
+            new ValidationError(
+                "defaultViewer", DEFAULT_VIEWER_NOT_ENABLED, DEFAULT_VIEWER_NOT_ENABLED));
+      }
+
       mimeService.saveOrUpdate(
           model.getEditId(),
           new MimeEntryChanges() {

@@ -2,8 +2,7 @@ version: 0.2
 
 env:
   variables:
-    # TODO [SpringHib5] keep this in sync with the appropriate oEQ-Kaltura branch before merging into `develop`, and eventually into `master`.
-    KALTURA_BRANCH: "develop"
+    KALTURA_BRANCH: "master"
     AUTOTEST_CONFIG: "autotest/codebuild.conf"
     EQ_EXIFTOOL_PATH: "/usr/bin/exiftool"
     OLD_TEST_NEWUI: true
@@ -20,6 +19,7 @@ phases:
   build:
     commands:
       - (npm ci && cd Source/Plugins/Core/com.equella.core/js && npm ci)
+      - (cd Source/Plugins/Kaltura/com.tle.web.wizard.controls.kaltura/js && npm ci && npm run build)
       - (npm run check:ts && npm run check:ts-types-source && npm run check:license)
       - (cd Source/Plugins/Core/com.equella.core/js && npm test)
       - sbt -no-colors -Dconfig.file=${HOME}/build.conf test installerZip writeLanguagePack writeScriptingJavadoc

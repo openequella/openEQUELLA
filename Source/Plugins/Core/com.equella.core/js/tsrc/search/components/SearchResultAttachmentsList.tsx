@@ -37,6 +37,7 @@ import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import InsertDriveFile from "@material-ui/icons/InsertDriveFile";
 import Search from "@material-ui/icons/Search";
+import Warning from "@material-ui/icons/Warning";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { SyntheticEvent, useEffect, useState } from "react";
@@ -121,12 +122,14 @@ export const SearchResultAttachmentsList = ({
     setAttachmentsAndViewerConfigs,
   ] = useState<AttachmentAndViewerConfig[]>([]);
 
-  // In Selection Session, make each attachment draggable.
+  // In Selection Session, make each intact attachment draggable.
   useEffect(() => {
     if (inStructured) {
-      attachmentsAndViewerConfigs.forEach(({ attachment }) => {
-        prepareDraggable(attachment.id, false);
-      });
+      attachmentsAndViewerConfigs
+        .filter(({ attachment }) => !attachment.brokenAttachment)
+        .forEach(({ attachment }) => {
+          prepareDraggable(attachment.id, false);
+        });
     }
   }, [attachmentsAndViewerConfigs, inStructured]);
 
@@ -138,8 +141,11 @@ export const SearchResultAttachmentsList = ({
       return;
     }
 
-    const getViewerID = async (mimeType: string) => {
+    const getViewerID = async (broken: boolean, mimeType: string) => {
       let viewerDetails: OEQ.MimeType.MimeTypeViewerDetail | undefined;
+      if (broken) {
+        return undefined;
+      }
       try {
         viewerDetails = await getViewerDetails(mimeType);
       } catch (error) {
@@ -155,8 +161,10 @@ export const SearchResultAttachmentsList = ({
       const attachmentsAndViewerDefinitions = await Promise.all(
         attachments.map<Promise<AttachmentAndViewerDefinition>>(
           async (attachment) => {
-            const { mimeType } = attachment;
-            const viewerId = mimeType ? await getViewerID(mimeType) : undefined;
+            const { mimeType, brokenAttachment } = attachment;
+            const viewerId = mimeType
+              ? await getViewerID(brokenAttachment, mimeType)
+              : undefined;
             return {
               attachment,
               viewerDefinition: getViewerDefinitionForAttachment(
@@ -234,14 +242,33 @@ export const SearchResultAttachmentsList = ({
     setAttachExpanded(!attachExpanded);
   };
 
+  const buildIcon = (broken: boolean) => {
+    if (broken) {
+      return (
+        <Tooltip title={languageStrings.searchpage.deadAttachmentWarning}>
+          <Warning color="secondary" />
+        </Tooltip>
+      );
+    }
+    return inStructured ? <DragIndicatorIcon /> : <InsertDriveFile />;
+  };
+
+  const isAttachmentSelectable = (broken: boolean) =>
+    inSelectionSession && !broken;
+
   const attachmentsList = attachmentsAndViewerConfigs.map(
     (attachmentAndViewerConfig: AttachmentAndViewerConfig) => {
       const {
-        attachment: { id, description },
+        attachment: { id, description, brokenAttachment },
       } = attachmentAndViewerConfig;
 
       return (
         <ListItem
+          onClick={(event) => {
+            if (brokenAttachment) {
+              event.stopPropagation();
+            }
+          }}
           key={id}
           id={id}
           button
@@ -250,13 +277,11 @@ export const SearchResultAttachmentsList = ({
           data-itemversion={version}
           data-attachmentuuid={id}
         >
-          <ListItemIcon>
-            {inStructured ? <DragIndicatorIcon /> : <InsertDriveFile />}
-          </ListItemIcon>
+          <ListItemIcon>{buildIcon(brokenAttachment)}</ListItemIcon>
           <ItemAttachmentLink selectedAttachment={attachmentAndViewerConfig}>
             <ListItemText color="primary" primary={description} />
           </ItemAttachmentLink>
-          {inSelectionSession && (
+          {isAttachmentSelectable(brokenAttachment) && (
             <ListItemSecondaryAction>
               <ResourceSelector
                 labelText={selectResourceStrings.attachment}
@@ -279,18 +304,28 @@ export const SearchResultAttachmentsList = ({
     </Typography>
   );
 
+  // Only show the Select All Attachments button if at least one attachment is not dead
+  const atLeastOneIntactAttachment = attachmentsAndViewerConfigs.some(
+    ({ attachment }) => !attachment.brokenAttachment
+  );
+
+  const showSelectAllAttachments = atLeastOneIntactAttachment && !inSkinny;
+
   const accordionSummaryContent = inSelectionSession ? (
     <Grid container alignItems="center">
       <Grid item>{accordionText}</Grid>
       <Grid>
-        {!inSkinny && (
+        {showSelectAllAttachments && (
           <ResourceSelector
             labelText={selectResourceStrings.allAttachments}
             isStopPropagation
             onClick={() => {
-              const attachments = attachmentsAndViewerConfigs.map(
-                ({ attachment }) => attachment.id
-              );
+              const attachments = attachmentsAndViewerConfigs
+                .filter(
+                  // filter out dead attachments from select all function
+                  ({ attachment }) => !attachment.brokenAttachment
+                )
+                .map(({ attachment }) => attachment.id);
               handleSelectResource(itemKey, attachments);
             }}
           />

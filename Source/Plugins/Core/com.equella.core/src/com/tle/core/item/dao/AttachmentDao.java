@@ -36,8 +36,4 @@ public interface AttachmentDao extends GenericDao<Attachment, Long> {
 
   List<CustomAttachment> findResourceAttachmentsByQuery(
       String query, boolean liveOnly, String sortHql);
-
-  Attachment findByUuid(String uuid);
-
-  List<Attachment> findAllByUuid(String uuid);
 }

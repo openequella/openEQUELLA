@@ -24,6 +24,7 @@ import static com.tle.web.controls.resource.ResourceAttachmentBean.TYPE_ID;
 import com.google.common.cache.CacheLoader;
 import com.tle.annotation.Nullable;
 import com.tle.beans.Institution;
+import com.tle.beans.item.ItemId;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.CustomAttachment;
@@ -38,7 +39,7 @@ import com.tle.core.events.services.EventService;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionCache;
 import com.tle.core.institution.InstitutionService;
-import com.tle.core.item.dao.AttachmentDao;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.mimetypes.dao.MimeEntryDao;
 import com.tle.core.mimetypes.institution.MimeMigrator;
 import com.tle.core.plugins.AbstractPluginService;
@@ -76,7 +77,7 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
       AbstractPluginService.getMyPluginId(MimeTypeServiceImpl.class) + ".";
   @Inject private MimeEntryDao mimeEntryDao;
   @Inject private EventService eventService;
-  @Inject private AttachmentDao attachmentDao;
+  @Inject private ItemService itemService;
 
   private PluginTracker<TextExtracterExtension> textExtracterTracker;
 
@@ -136,13 +137,6 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
   @Override
   public MimeTypesSearchResults searchByMimeType(String mimeType, int offset, int length) {
     String query = (Check.isEmpty(mimeType) ? "" : mimeType.toLowerCase()); // $NON-NLS-1$
-    /*
-     * Map<String, MimeEntry> typeMap =
-     * mimeCache.getCache().getMimeEntries(); List<MimeEntry> mimes = new
-     * ArrayList<MimeEntry>(); for( Entry<String, MimeEntry> entry :
-     * typeMap.entrySet() ) { if( entry.getKey().startsWith(query) ) {
-     * mimes.add(entry.getValue()); } } return mimes;
-     */
     return mimeEntryDao.searchAll(query, offset, length);
   }
 
@@ -174,8 +168,8 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
     return DEFAULT_MIMETYPE;
   }
 
-  public String getMimeTypeForAttachmentUuid(String attachmentUuid) {
-    Attachment attachment = attachmentDao.findByUuid(attachmentUuid);
+  public String getMimeTypeForAttachmentUuid(ItemId key, String attachmentUuid) {
+    Attachment attachment = itemService.getAttachmentForUuid(key, attachmentUuid);
     return getMimeEntryForAttachment(attachment);
   }
 
@@ -183,7 +177,10 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
       ResourceAttachmentBean resourceAttachmentBean) {
     switch (resourceAttachmentBean.getResourceType()) {
       case SelectedResource.TYPE_ATTACHMENT:
-        return getMimeTypeForAttachmentUuid(resourceAttachmentBean.getAttachmentUuid());
+        return getMimeTypeForAttachmentUuid(
+            new ItemId(
+                resourceAttachmentBean.getItemUuid(), resourceAttachmentBean.getItemVersion()),
+            resourceAttachmentBean.getAttachmentUuid());
       case SelectedResource.TYPE_PATH:
         return MIME_ITEM;
       default:
@@ -393,45 +390,6 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
   @SuppressWarnings("unchecked")
   @Override
   public List<TextExtracterExtension> getTextExtractersForMimeEntry(final MimeEntry mimeEntry) {
-    // Collection<Extension> extensions = textExtracterTracker
-    // .getExtensions(new Filter<Extension>()
-    // {
-    // @Override
-    // public boolean include(Extension t)
-    // {
-    //					Collection<Parameter> mimes = t.getParameters("mimeType"); //$NON-NLS-1$
-    // for( Parameter mime : mimes )
-    // {
-    // String m = mime.valueAsString();
-    // int wildIndex = m.indexOf('*');
-    // if( wildIndex >= 0 )
-    // {
-    // String nonWild = m.substring(0, wildIndex);
-    // if( mimeType.startsWith(nonWild) )
-    // {
-    // return true;
-    // }
-    // }
-    // else
-    // {
-    // if( mimeType.equals(m) )
-    // {
-    // return true;
-    // }
-    // }
-    // }
-    // return false;
-    // }
-    // });
-    //
-    // List<TextExtracterExtension> extracters = new
-    // ArrayList<TextExtracterExtension>();
-    // for( Extension e : extensions )
-    // {
-    // extracters.add(textExtracterTracker.getBeanByExtension(e));
-    // }
-    // return extracters;
-
     List<TextExtracterExtension> extracters = getAllTextExtracters();
     List<TextExtracterExtension> filtered = new ArrayList<TextExtracterExtension>();
     for (TextExtracterExtension extracter : extracters) {
@@ -475,12 +433,14 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
             .getData("type")
             .equals(Character.toString(SelectedResource.TYPE_ATTACHMENT))) {
       // Recurse to drill into the linked attachment, so we can use the correct viewer.
-      // If more than one attachment has the linked uuid,
-      // this is a zip or scorm package and we can let it fall through.
-      List<Attachment> attachmentList = attachmentDao.findAllByUuid(attachment.getUrl());
-      if (attachmentList.size() == 1) {
-        return getMimeEntryForAttachment(attachmentList.get(0));
-      }
+      // data stored in getData("uuid") and getData("version") for a resource attachment gives the
+      // child item, which we need to determine the attachment to recurse into.
+      ItemId childAttachmentItem =
+          new ItemId((String) attachment.getData("uuid"), (int) attachment.getData("version"));
+
+      Attachment childAttachment =
+          itemService.getNullableAttachmentForUuid(childAttachmentItem, attachment.getUrl());
+      return childAttachment == null ? null : getMimeEntryForAttachment(childAttachment);
     }
     Map<String, List<Extension>> map = getExtensionMap();
     List<Extension> extensions = map.get(type);
@@ -489,8 +449,30 @@ public class MimeTypeServiceImpl implements MimeTypeService, MimeTypesUpdatedLis
         return attachmentResources.getBeanByExtension(extension).getMimeType(attachment);
       }
     }
-
     return null;
+  }
+
+  @Override
+  public String getEnabledViewerList(Map<String, String> attributes) {
+    String defaultViewer = attributes.get(MimeTypeConstants.KEY_DEFAULT_VIEWERID);
+    String enabledViewers = attributes.get(MimeTypeConstants.KEY_ENABLED_VIEWERS);
+    // File viewer is handled differently in 'MimeDefaultViewerSection' so there is no need to
+    // add it to the list.
+    if (Check.isEmpty(defaultViewer)
+        || defaultViewer.equals(MimeTypeConstants.VAL_DEFAULT_VIEWERID)) {
+      return enabledViewers;
+    }
+
+    List<String> enabledViewerList = new ArrayList<>();
+    if (!Check.isEmpty(enabledViewers)) {
+      enabledViewerList.addAll(
+          JSONArray.toCollection(JSONArray.fromObject(enabledViewers), String.class));
+    }
+    if (!enabledViewerList.contains(defaultViewer)) {
+      enabledViewerList.add(defaultViewer);
+    }
+
+    return JSONArray.fromObject(enabledViewerList).toString();
   }
 
   private synchronized Map<String, List<Extension>> getExtensionMap() {

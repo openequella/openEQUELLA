@@ -330,6 +330,8 @@ export const languageStrings = {
     newSearchHelperText: "Clears search text and filters",
     shareSearchHelperText: "Copy search link to clipboard",
     shareSearchConfirmationText: "Search link saved to clipboard",
+    deadAttachmentWarning:
+      "This attachment appears to be broken or inaccessible.",
     displayModeSelector: {
       title: "Display mode",
       modeItemList: "Item List",
@@ -448,6 +450,16 @@ export const languageStrings = {
       all: "All",
       live: "Live",
       title: "Status",
+    },
+    thumbnails: {
+      html: "HTML Icon",
+      placeholder: "Placeholder Icon",
+      provided: "Provided Icon",
+      file: "Default File Icon",
+      image: "Image Icon",
+      video: "Video Icon",
+      link: "Link Icon",
+      item: "Item Icon",
     },
     comments: {
       zero: "No comments",

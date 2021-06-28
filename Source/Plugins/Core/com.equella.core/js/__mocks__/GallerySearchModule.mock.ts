@@ -42,6 +42,7 @@ export const basicImageSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
           preview: false,
           mimeType: "image/jpeg",
           hasGeneratedThumb: true,
+          brokenAttachment: false,
           links: {
             view:
               "http://localhost:8080/ian/items/fe79c485-a6dd-4743-81e8-52de66494633/1/?attachment.uuid=dbd6dd98-d731-4a8f-907e-ceaf9608da3b",
@@ -89,6 +90,7 @@ export const basicImageSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
           preview: false,
           mimeType: "image/jpeg",
           hasGeneratedThumb: true,
+          brokenAttachment: false,
           links: {
             view:
               "http://localhost:8080/ian/items/40e879db-393b-4256-bfe2-9a78771d6937/1/?attachment.uuid=4fddbeb7-8d16-4417-be60-8709ce9d7b15",
@@ -104,6 +106,7 @@ export const basicImageSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
           preview: false,
           mimeType: "image/jpeg",
           hasGeneratedThumb: true,
+          brokenAttachment: false,
           links: {
             view:
               "http://localhost:8080/ian/items/40e879db-393b-4256-bfe2-9a78771d6937/1/?attachment.uuid=df55f129-1bbb-427f-b8a0-46792559bea9",
@@ -117,6 +120,7 @@ export const basicImageSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
           id: "44528005-fb39-4461-bac7-12cd33ce4330",
           description: "Australian Kelpie Pet Profile | Bondi Vet",
           preview: false,
+          brokenAttachment: false,
           links: {
             view:
               "http://localhost:8080/ian/items/40e879db-393b-4256-bfe2-9a78771d6937/1/?attachment.uuid=44528005-fb39-4461-bac7-12cd33ce4330",
@@ -164,6 +168,7 @@ export const basicImageSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
           preview: false,
           mimeType: "image/jpeg",
           hasGeneratedThumb: true,
+          brokenAttachment: false,
           links: {
             view:
               "http://localhost:8080/ian/items/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/?attachment.uuid=a09056f0-c867-40ea-80c0-a1433f487182",
@@ -179,6 +184,7 @@ export const basicImageSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
           preview: false,
           mimeType: "application/pdf",
           hasGeneratedThumb: true,
+          brokenAttachment: false,
           links: {
             view:
               "http://localhost:8080/ian/items/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/?attachment.uuid=6411799f-052a-4926-8c67-0c851447c762",
@@ -194,6 +200,7 @@ export const basicImageSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
           preview: false,
           mimeType: "image/jpeg",
           hasGeneratedThumb: true,
+          brokenAttachment: false,
           links: {
             view:
               "http://localhost:8080/ian/items/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/?attachment.uuid=e3f96e6b-a6aa-4c8e-975c-c2c3870daa34",
@@ -209,6 +216,7 @@ export const basicImageSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
           preview: false,
           mimeType: "image/jpeg",
           hasGeneratedThumb: true,
+          brokenAttachment: false,
           links: {
             view:
               "http://localhost:8080/ian/items/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/?attachment.uuid=f226e79a-1d2c-4894-aaa1-032812351d29",
@@ -224,6 +232,7 @@ export const basicImageSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
           preview: false,
           mimeType: "image/jpeg",
           hasGeneratedThumb: true,
+          brokenAttachment: false,
           links: {
             view:
               "http://localhost:8080/ian/items/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/?attachment.uuid=3afceca2-63d0-47ea-b921-f199b73194fc",
@@ -279,6 +288,7 @@ export const basicVideoSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
           id: "398dbef0-7d12-4b72-af3d-095dd70b019d",
           description: "6 Tips For Caring for African Violets",
           preview: false,
+          brokenAttachment: false,
           links: {
             view:
               "http://localhost:8080/ian/items/de8fcb0b-0b1c-4c34-9173-a83d1b0be6b5/1/?attachment.uuid=398dbef0-7d12-4b72-af3d-095dd70b019d",
@@ -324,6 +334,7 @@ export const basicVideoSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
           preview: false,
           mimeType: "video/mp4",
           hasGeneratedThumb: true,
+          brokenAttachment: false,
           links: {
             view:
               "http://localhost:8080/ian/items/59139c45-788b-4200-a9cb-e4a39e76ad35/1/?attachment.uuid=d81a7599-89a2-474e-b756-50bda202b349",
@@ -370,6 +381,7 @@ export const basicVideoSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
           preview: false,
           mimeType: "image/jpeg",
           hasGeneratedThumb: true,
+          brokenAttachment: false,
           links: {
             view:
               "http://localhost:8080/ian/items/9d5112d4-87b6-4ac1-b773-ceaa4a6c5205/1/?attachment.uuid=e82207be-a9f2-442a-a17f-5c834d5b36cc",
@@ -384,6 +396,7 @@ export const basicVideoSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
           description:
             "These Simple Words Will Help You Through Life's Most Difficult Situations | Ryan Holiday",
           preview: false,
+          brokenAttachment: false,
           links: {
             view:
               "http://localhost:8080/ian/items/9d5112d4-87b6-4ac1-b773-ceaa4a6c5205/1/?attachment.uuid=33eb363d-77f4-4d40-84a3-d0ae1687b5f6",
@@ -398,6 +411,7 @@ export const basicVideoSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
           description:
             "Stoicism and the Art of Resilience | Ryan Holiday | Epictetus",
           preview: false,
+          brokenAttachment: false,
           links: {
             view:
               "http://localhost:8080/ian/items/9d5112d4-87b6-4ac1-b773-ceaa4a6c5205/1/?attachment.uuid=9fc093fa-f03a-45a5-98df-17381d63972f",
@@ -412,6 +426,7 @@ export const basicVideoSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
           description:
             "Stoicism's Simple Secret To Being Happier | Ryan Holiday | Daily Stoic",
           preview: false,
+          brokenAttachment: false,
           links: {
             view:
               "http://localhost:8080/ian/items/9d5112d4-87b6-4ac1-b773-ceaa4a6c5205/1/?attachment.uuid=97bc82ed-fda4-40a9-91ea-e32da76e66a2",
