@@ -17,21 +17,14 @@
  */
 import { GridList, GridListTile, GridListTileBar } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import InfoIcon from "@material-ui/icons/Info";
 import * as React from "react";
 import { useState } from "react";
-import { useHistory } from "react-router";
 import Lightbox, { LightboxProps } from "../../components/Lightbox";
-import { TooltipIconButton } from "../../components/TooltipIconButton";
-import { routes } from "../../mainui/routes";
+import { OEQItemSummaryPageButton } from "../../components/OEQItemSummaryPageButton";
 import {
   GalleryEntry,
   GallerySearchResultItem,
 } from "../../modules/GallerySearchModule";
-import {
-  buildSelectionSessionItemSummaryLink,
-  isSelectionSessionOpen,
-} from "../../modules/LegacySelectionSessionModule";
 import {
   buildLightboxNavigationHandler,
   LightboxEntry,
@@ -62,8 +55,6 @@ const useStyles = makeStyles({
  */
 const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
   const classes = useStyles();
-  const history = useHistory();
-
   const [lightboxProps, setLightboxProps] = useState<
     LightboxProps | undefined
   >();
@@ -82,19 +73,11 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
       <GridListTileBar
         className={classes.titleBar}
         actionIcon={
-          <TooltipIconButton
-            color="secondary"
+          <OEQItemSummaryPageButton
             title={viewItem}
-            onClick={() =>
-              history.push(
-                isSelectionSessionOpen()
-                  ? buildSelectionSessionItemSummaryLink(itemUuid, itemVersion)
-                  : routes.ViewItem.to(itemUuid, itemVersion)
-              )
-            }
-          >
-            <InfoIcon />
-          </TooltipIconButton>
+            color="secondary"
+            item={{ uuid: itemUuid, version: itemVersion }}
+          />
         }
       />
     </GridListTile>
@@ -113,12 +96,11 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
       )
   );
 
-  const buildOnClickHandler = ({
-    mimeType,
-    directUrl: src,
-    name,
-    id,
-  }: GalleryEntry) => () => {
+  const buildOnClickHandler = (
+    { mimeType, directUrl: src, name, id }: GalleryEntry,
+    uuid: string,
+    version: number
+  ) => () => {
     const initialLightboxEntryIndex = lightboxEntries.findIndex(
       (entry) => entry.id === id
     );
@@ -126,6 +108,10 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
     setLightboxProps({
       onClose: () => setLightboxProps(undefined),
       open: true,
+      item: {
+        uuid,
+        version,
+      },
       config: {
         src,
         title: name,
@@ -162,7 +148,7 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
             `${uuid}-mainEntry`,
             mainEntry.thumbnailLarge,
             `${itemName} - Main Entry (${mainEntry.name})`,
-            buildOnClickHandler(mainEntry)
+            buildOnClickHandler(mainEntry, uuid, version)
           ),
           additionalEntries.map((ae, idx) =>
             buildTile(
@@ -171,7 +157,7 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
               `${uuid}-additionalEntry-${idx}`,
               ae.thumbnailLarge,
               `${itemName} - Additional Entry ${idx + 1} (${ae.name})`,
-              buildOnClickHandler(ae)
+              buildOnClickHandler(ae, uuid, version)
             )
           ),
         ];

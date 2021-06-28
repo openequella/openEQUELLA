@@ -90,6 +90,7 @@ export const EmbedCodeDialog = ({
           },
         ].map(({ buttonText, buttonLabel, onClose }) => (
           <Button
+            key={buttonText}
             onClick={(event) => {
               event.stopPropagation();
               onClose();

@@ -52,6 +52,7 @@ import {
 import { extractVideoId } from "../modules/YouTubeModule";
 import { EmbedCodeDialog } from "./EmbedCodeDialog";
 import { languageStrings } from "../util/langstrings";
+import { OEQItemSummaryPageButton } from "./OEQItemSummaryPageButton";
 import { TooltipIconButton } from "./TooltipIconButton";
 import YouTubeEmbed from "./YouTubeEmbed";
 
@@ -74,7 +75,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     minHeight: 100,
   },
   menuButton: {
-    color: "inherit",
+    color: "#fafafa",
     "&:hover": {
       background: "#505050",
     },
@@ -116,11 +117,25 @@ export interface LightboxProps {
   open: boolean;
   /** Configuration specifying the Lightbox's content. */
   config: LightboxConfig;
+  /**
+   * Item which the Lightbox content is attached to.
+   */
+  item: {
+    /**
+     * UUID of the Item.
+     */
+    uuid: string;
+    /**
+     * Version of the Item.
+     */
+    version: number;
+  };
 }
 
 const {
   viewNext: viewNextString,
   viewPrevious: viewPreviousString,
+  openSummaryPage: openSummaryPageString,
 } = languageStrings.lightboxComponent;
 
 const {
@@ -137,7 +152,7 @@ const { copy: copyEmbedCodeString } = languageStrings.embedCode;
 
 const domParser = new DOMParser();
 
-const Lightbox = ({ open, onClose, config }: LightboxProps) => {
+const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
   const classes = useStyles();
 
   const [content, setContent] = useState<ReactElement | undefined>();
@@ -285,6 +300,9 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
         <Typography variant="h6" className={classes.title}>
           {title}
         </Typography>
+        <OEQItemSummaryPageButton
+          {...{ item, title: openSummaryPageString, color: "inherit" }}
+        />
         <IconButton
           className={classes.menuButton}
           aria-label={copyEmbedCodeString}

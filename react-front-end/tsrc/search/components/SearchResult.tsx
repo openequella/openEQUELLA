@@ -37,7 +37,7 @@ import ReactHtmlParser from "react-html-parser";
 import { HashLink } from "react-router-hash-link";
 import { sprintf } from "sprintf-js";
 import { Date as DateDisplay } from "../../components/Date";
-import { OeqLink } from "../../components/OeqLink";
+import { OEQLink } from "../../components/OEQLink";
 import OEQThumb from "../../components/OEQThumb";
 import { StarRating } from "../../components/StarRating";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
@@ -281,14 +281,14 @@ export default function SearchResult({
   const itemLink = () => {
     const itemTitle = name ? highlightField(name) : uuid;
     return (
-      <OeqLink
+      <OEQLink
         routeLinkUrlProvider={() => routes.ViewItem.to(uuid, version)}
         muiLinkUrlProvider={() =>
           buildSelectionSessionItemSummaryLink(uuid, version)
         }
       >
         {itemTitle}
-      </OeqLink>
+      </OEQLink>
     );
   };
 
