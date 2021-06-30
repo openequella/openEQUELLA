@@ -328,12 +328,13 @@ Animations
   }
 }
 
+//need to explicitly exclude youtube preview iframe
 html,
 body,
 div,
 span,
 applet,
-iframe,
+iframe:not[title="YouTube video player"],
 h1,
 h2,
 h3,
