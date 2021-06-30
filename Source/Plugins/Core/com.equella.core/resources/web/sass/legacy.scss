@@ -334,7 +334,6 @@ body,
 div,
 span,
 applet,
-iframe:not[title="YouTube video player"],
 h1,
 h2,
 h3,
@@ -403,6 +402,19 @@ select {
   background: transparent;
   font-family: "Roboto";
 }
+iframe:not[title="YouTube video player"]{
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  font-size: 100%;
+  vertical-align: baseline;
+  background: transparent;
+  font-family: "Roboto";
+}
+
 ul {
   list-style: none;
 }
