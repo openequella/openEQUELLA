@@ -30,6 +30,7 @@ import {
   Theme,
   Typography,
 } from "@material-ui/core";
+
 import { makeStyles } from "@material-ui/core/styles";
 import Tooltip from "@material-ui/core/Tooltip";
 import AttachFile from "@material-ui/icons/AttachFile";
@@ -43,10 +44,6 @@ import * as React from "react";
 import { SyntheticEvent, useEffect, useState } from "react";
 import ItemAttachmentLink from "../../components/ItemAttachmentLink";
 import {
-  ATYPE_YOUTUBE,
-  updateAttachmentForCustomInfo,
-} from "../../modules/AttachmentsModule";
-import {
   getSearchPageAttachmentClass,
   isSelectionSessionInSkinny,
   isSelectionSessionInStructured,
@@ -56,10 +53,7 @@ import {
 } from "../../modules/LegacySelectionSessionModule";
 import {
   AttachmentAndViewerConfig,
-  AttachmentAndViewerDefinition,
-  buildLightboxNavigationHandler,
-  getViewerDefinitionForAttachment,
-  LightboxEntry,
+  buildViewerConfigForAttachment,
 } from "../../modules/ViewerModule";
 import { languageStrings } from "../../util/langstrings";
 import { ResourceSelector } from "./ResourceSelector";
@@ -146,102 +140,19 @@ export const SearchResultAttachmentsList = ({
       return;
     }
 
-    const getViewerID = async (
-      attachmentType: string,
-      mimeType: string
-    ): Promise<OEQ.MimeType.ViewerId | undefined> => {
-      if (attachmentType === ATYPE_YOUTUBE) {
-        return "htmlFiveViewer";
-      }
-      let viewerDetails: OEQ.MimeType.MimeTypeViewerDetail | undefined;
-      try {
-        viewerDetails = await getViewerDetails(mimeType);
-      } catch (error) {
-        handleError({
-          ...error,
-          message: `${searchResultStrings.errors.getAttachmentViewerDetailsFailure}: ${error.message}`,
-        });
-      }
-      return viewerDetails?.viewerId;
-    };
-
     (async () => {
-      const attachmentsAndViewerDefinitions = await Promise.all(
-        attachments.map<Promise<AttachmentAndViewerDefinition>>(
-          async (originalAttachment) => {
-            const attachment = updateAttachmentForCustomInfo(
-              originalAttachment
-            );
-            const { attachmentType, mimeType, brokenAttachment } = attachment;
-            const viewerId =
-              mimeType && !brokenAttachment
-                ? await getViewerID(attachmentType, mimeType)
-                : undefined;
-            return {
-              attachment,
-              viewerDefinition: getViewerDefinitionForAttachment(
-                uuid,
-                version,
-                attachment,
-                viewerId
-              ),
-            };
-          }
-        )
-      );
-
-      const lightboxEntries: LightboxEntry[] = attachmentsAndViewerDefinitions
-        .filter(({ viewerDefinition: [viewer] }) => viewer === "lightbox")
-        .map(
-          ({
-            attachment: { id, description, mimeType },
-            viewerDefinition: [_, src],
-          }) => ({
-            src,
-            title: description,
-            mimeType: mimeType ?? "",
-            id,
-          })
+      try {
+        const attachmentsAndViewerDefinitions = await buildViewerConfigForAttachment(
+          attachments,
+          uuid,
+          version,
+          getViewerDetails
         );
-
-      // Transform AttachmentAndViewerDefinition to AttachmentAndViewerConfig.
-      const attachmentsAndConfigs: AttachmentAndViewerConfig[] = attachmentsAndViewerDefinitions.map(
-        ({ viewerDefinition: [viewer, viewUrl], attachment }) => {
-          const initialLightboxEntryIndex = lightboxEntries.findIndex(
-            (entry) => entry.id === attachment.id
-          );
-          return viewer === "lightbox"
-            ? {
-                attachment,
-                viewerConfig: {
-                  viewerType: viewer,
-                  config: {
-                    src: viewUrl,
-                    title: attachment.description,
-                    mimeType: attachment.mimeType ?? "",
-                    onNext: buildLightboxNavigationHandler(
-                      lightboxEntries,
-                      initialLightboxEntryIndex + 1
-                    ),
-                    onPrevious: buildLightboxNavigationHandler(
-                      lightboxEntries,
-                      initialLightboxEntryIndex - 1
-                    ),
-                  },
-                },
-              }
-            : {
-                attachment,
-                viewerConfig: {
-                  viewerType: viewer,
-                  url: viewUrl,
-                },
-              };
+        if (mounted) {
+          setAttachmentsAndViewerConfigs(attachmentsAndViewerDefinitions);
         }
-      );
-
-      if (mounted) {
-        setAttachmentsAndViewerConfigs(attachmentsAndConfigs);
+      } catch (error) {
+        handleError(new Error(error));
       }
     })();
 
