@@ -126,8 +126,11 @@ export const determineViewer = (
   if (broken) {
     return simpleLinkView;
   }
+  // For an attachment that is not one of the following, refer to the link provided by the server.
+  // 1. File
+  // 2. Custom resource
+  // 3. YouTube Video
   if (![ATYPE_FILE, ATYPE_RESOURCE, ATYPE_YOUTUBE].includes(attachmentType)) {
-    // For non-file attachments, we currently just defer to the link provided by the server
     return simpleLinkView;
   }
 

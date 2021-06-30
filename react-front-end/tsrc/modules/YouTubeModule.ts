@@ -62,7 +62,7 @@ export const extractVideoId = (viewUrl: string): string | null =>
   new URL(viewUrl).searchParams.get("v");
 
 /**
- * Update Youtube Video Attachment with Custom MIME type and View URL.
+ * Update YouTube Video Attachment with Custom MIME type and View URL.
  * @param attachment An Youtube Video Attachment
  */
 export const updateYoutubeAttachment = (
@@ -78,5 +78,5 @@ export const updateYoutubeAttachment = (
     };
   }
 
-  throw new Error("Missing Youtube Video Attachment external ID.");
+  throw new Error("Missing YouTube Video Attachment external ID.");
 };
