@@ -23,15 +23,13 @@ const localStorage = window.localStorage;
  *
  * @param key Key of the data to be retrieved.
  */
-export const getDataFromLocalStorage = <T>(key: string): T | undefined => {
-  const value = localStorage.getItem(key);
-  return value ? JSON.parse(value) : undefined;
-};
+export const getDataFromLocalStorage = (key: string): string | null =>
+  localStorage.getItem(key);
 
 /**
  * Save data to browser local storage.
  * @param key Key of the data.
  * @param value Value of the data.
  */
-export const setDataToLocalStorage = <T>(key: string, value: T) =>
-  localStorage.setItem(key, JSON.stringify(value));
+export const setDataToLocalStorage = (key: string, value: string) =>
+  localStorage.setItem(key, value);

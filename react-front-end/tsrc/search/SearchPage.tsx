@@ -17,27 +17,6 @@
  */
 import { debounce, Drawer, Grid, Hidden } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
-import {
-  getDataFromLocalStorage,
-  setDataToLocalStorage,
-} from "../util/BrowserStorageUtil";
-import type { DateRange } from "../util/Date";
-import {
-  defaultPagedSearchResult,
-  defaultSearchPageOptions,
-  generateQueryStringFromSearchPageOptions,
-  generateSearchPageOptionsFromQueryString,
-  getPartialSearchOptions,
-  WILD_CARD_MODE,
-} from "./SearchPageHelper";
-import {
-  buildExportUrl,
-  confirmExport,
-  DisplayMode,
-  searchItems,
-  SearchOptions,
-  SearchOptionsFields,
-} from "../modules/SearchModule";
 import { pipe } from "fp-ts/function";
 import { isEqual } from "lodash";
 import * as React from "react";
@@ -45,8 +24,8 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useReducer,
+  useRef,
   useState,
 } from "react";
 import { useHistory, useLocation } from "react-router";
@@ -87,9 +66,22 @@ import {
   getMimeTypeFiltersFromServer,
   MimeTypeFilter,
 } from "../modules/SearchFilterSettingsModule";
+import {
+  buildExportUrl,
+  confirmExport,
+  DisplayMode,
+  searchItems,
+  SearchOptions,
+  SearchOptionsFields,
+} from "../modules/SearchModule";
 import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
 import { getCurrentUserDetails } from "../modules/UserModule";
 import SearchBar from "../search/components/SearchBar";
+import {
+  getDataFromLocalStorage,
+  setDataToLocalStorage,
+} from "../util/BrowserStorageUtil";
+import type { DateRange } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
 import { CollectionSelector } from "./components/CollectionSelector";
@@ -106,6 +98,14 @@ import {
 } from "./components/SearchResultList";
 import { SidePanel } from "./components/SidePanel";
 import StatusSelector from "./components/StatusSelector";
+import {
+  defaultPagedSearchResult,
+  defaultSearchPageOptions,
+  generateQueryStringFromSearchPageOptions,
+  generateSearchPageOptionsFromQueryString,
+  getPartialSearchOptions,
+  WILD_CARD_MODE,
+} from "./SearchPageHelper";
 
 // destructure strings import
 const { searchpage: searchStrings } = languageStrings;
@@ -503,12 +503,29 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const handleWildcardModeChanged = (wildcardMode: boolean) => {
     // `wildcardMode` is a presentation concept, in the lower levels its inverse is the value for `rawMode`.
     search({ ...searchPageOptions, rawMode: !wildcardMode });
-    setDataToLocalStorage<boolean>(WILD_CARD_MODE, wildcardMode);
+    try {
+      setDataToLocalStorage(WILD_CARD_MODE, JSON.stringify(wildcardMode));
+    } catch (error) {
+      console.error(
+        `${searchStrings.wildcardMode.errors.save}: ${error.message}`
+      );
+    }
   };
 
-  const getWildcardMode = (): boolean =>
-    getDataFromLocalStorage<boolean>(WILD_CARD_MODE) ??
-    !searchPageOptions.rawMode;
+  const getWildcardMode = (): boolean => {
+    const wildcard = getDataFromLocalStorage(WILD_CARD_MODE);
+    if (wildcard) {
+      try {
+        return JSON.parse(wildcard);
+      } catch (error) {
+        console.error(
+          `${searchStrings.wildcardMode.errors.retrieve}: ${error.message}`
+        );
+      }
+    }
+
+    return !searchPageOptions.rawMode;
+  };
 
   const handleQuickDateRangeModeChange = (
     quickDateRangeMode: boolean,

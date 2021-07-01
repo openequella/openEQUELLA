@@ -541,6 +541,12 @@ export const languageStrings = {
       attachment: "Select attachment",
       allAttachments: "Select all attachments",
     },
+    wildcardMode: {
+      errors: {
+        retrieve: "Failed to retrieve Wildcard mode from browser local storage",
+        save: "Failed to save Wildcard mode to browser local storage",
+      },
+    },
   },
   settings: {
     general: { name: "General", desc: "General settings" },
