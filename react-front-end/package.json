@@ -97,7 +97,7 @@
     "@types/tinymce": "4.6.2",
     "@types/uuid": "8.3.0",
     "babel-jest": "27.0.5",
-    "core-js": "3.15.1",
+    "core-js": "3.15.2",
     "cross-env": "7.0.3",
     "cross-spawn": "7.0.3",
     "jest": "27.0.5",
