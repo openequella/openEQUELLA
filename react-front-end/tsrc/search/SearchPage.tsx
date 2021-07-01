@@ -29,6 +29,7 @@ import {
   useState,
 } from "react";
 import { useHistory, useLocation } from "react-router";
+import { Boolean } from "runtypes";
 import { generateFromError } from "../api/errors";
 import { AppConfig } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
@@ -516,15 +517,19 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   };
 
   const getWildcardMode = (): boolean => {
-    const wildcard = getDataFromLocalStorage(WILDCARD_MODE_STORAGE_KEY);
-    if (wildcard) {
-      try {
-        return JSON.parse(wildcard);
-      } catch (error) {
-        console.error(
-          `${searchStrings.wildcardMode.errors.retrieve}: ${error.message}`
-        );
+    try {
+      const wildcard = getDataFromLocalStorage(WILDCARD_MODE_STORAGE_KEY);
+      if (wildcard) {
+        const parsedValue = JSON.parse(wildcard);
+        if (!Boolean.guard(parsedValue)) {
+          throw new TypeError("unexpected type for wildcard mode");
+        }
+        return parsedValue;
       }
+    } catch (error) {
+      console.error(
+        `${searchStrings.wildcardMode.errors.retrieve}: ${error.message}`
+      );
     }
 
     return !searchPageOptions.rawMode;
