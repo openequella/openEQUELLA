@@ -1140,8 +1140,8 @@ describe("Hide Gallery", () => {
     }
   );
 });
-describe("Interact with Browser local storage", () => {
-  it("saves wildcard mode in local storage", async () => {
+describe("Wildcard mode persistence", () => {
+  it("saves wildcard mode value in browser local storage", async () => {
     const mockSetDataToLocalStorage = jest.spyOn(
       StorageUtil,
       "setDataToLocalStorage"
@@ -1156,7 +1156,7 @@ describe("Interact with Browser local storage", () => {
     expect(mockSetDataToLocalStorage).toHaveBeenCalledTimes(1);
   });
 
-  it("retrieves wildcard mode from local storage", async () => {
+  it("retrieves wildcard mode value from local storage", async () => {
     // By default wildcard mode is turned on, so we save 'false' in local storage.
     const mockGetDataToLocalStorage = jest
       .spyOn(StorageUtil, "getDataFromLocalStorage")

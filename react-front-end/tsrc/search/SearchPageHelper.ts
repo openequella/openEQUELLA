@@ -380,4 +380,4 @@ export const getPartialSearchOptions = (
   fields: SearchOptionsFields[]
 ) => pick(options, fields);
 
-export const WILD_CARD_MODE = `wildcardMode_${AppConfig.baseUrl}`;
+export const WILDCARD_MODE_STORAGE_KEY = `wildcardMode_${AppConfig.baseUrl}`;

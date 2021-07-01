@@ -104,7 +104,7 @@ import {
   generateQueryStringFromSearchPageOptions,
   generateSearchPageOptionsFromQueryString,
   getPartialSearchOptions,
-  WILD_CARD_MODE,
+  WILDCARD_MODE_STORAGE_KEY,
 } from "./SearchPageHelper";
 
 // destructure strings import
@@ -504,7 +504,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     // `wildcardMode` is a presentation concept, in the lower levels its inverse is the value for `rawMode`.
     search({ ...searchPageOptions, rawMode: !wildcardMode });
     try {
-      setDataToLocalStorage(WILD_CARD_MODE, JSON.stringify(wildcardMode));
+      setDataToLocalStorage(
+        WILDCARD_MODE_STORAGE_KEY,
+        JSON.stringify(wildcardMode)
+      );
     } catch (error) {
       console.error(
         `${searchStrings.wildcardMode.errors.save}: ${error.message}`
@@ -513,7 +516,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   };
 
   const getWildcardMode = (): boolean => {
-    const wildcard = getDataFromLocalStorage(WILD_CARD_MODE);
+    const wildcard = getDataFromLocalStorage(WILDCARD_MODE_STORAGE_KEY);
     if (wildcard) {
       try {
         return JSON.parse(wildcard);
