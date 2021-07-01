@@ -17,6 +17,10 @@
  */
 import { debounce, Drawer, Grid, Hidden } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
+import {
+  getDataFromLocalStorage,
+  setDataToLocalStorage,
+} from "../util/BrowserStorageUtil";
 import type { DateRange } from "../util/Date";
 import {
   defaultPagedSearchResult,
@@ -24,6 +28,7 @@ import {
   generateQueryStringFromSearchPageOptions,
   generateSearchPageOptionsFromQueryString,
   getPartialSearchOptions,
+  WILD_CARD_MODE,
 } from "./SearchPageHelper";
 import {
   buildExportUrl,
@@ -495,9 +500,15 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       false
     );
 
-  const handleWildcardModeChanged = (wildcardMode: boolean) =>
+  const handleWildcardModeChanged = (wildcardMode: boolean) => {
     // `wildcardMode` is a presentation concept, in the lower levels its inverse is the value for `rawMode`.
     search({ ...searchPageOptions, rawMode: !wildcardMode });
+    setDataToLocalStorage<boolean>(WILD_CARD_MODE, wildcardMode);
+  };
+
+  const getWildcardMode = (): boolean =>
+    getDataFromLocalStorage<boolean>(WILD_CARD_MODE) ??
+    !searchPageOptions.rawMode;
 
   const handleQuickDateRangeModeChange = (
     quickDateRangeMode: boolean,
@@ -917,7 +928,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
             <Grid item xs={12}>
               <SearchBar
                 query={searchPageOptions.query ?? ""}
-                wildcardMode={!searchPageOptions.rawMode}
+                wildcardMode={getWildcardMode()}
                 onQueryChange={handleQueryChanged}
                 onWildcardModeChange={handleWildcardModeChanged}
                 doSearch={() => search(searchPageOptions)}

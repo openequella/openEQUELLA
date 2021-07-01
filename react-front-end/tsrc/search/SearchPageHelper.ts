@@ -36,6 +36,7 @@ import {
   Union,
   Unknown,
 } from "runtypes";
+import { AppConfig } from "../AppConfig";
 import {
   Collection,
   findCollectionsByUuid,
@@ -378,3 +379,5 @@ export const getPartialSearchOptions = (
   options: SearchOptions,
   fields: SearchOptionsFields[]
 ) => pick(options, fields);
+
+export const WILD_CARD_MODE = `wildcardMode_${AppConfig.baseUrl}`;
