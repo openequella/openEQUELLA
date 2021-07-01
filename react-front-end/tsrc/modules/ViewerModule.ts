@@ -279,7 +279,7 @@ const getViewerId = async (
     try {
       return getViewerDetails();
     } catch (error) {
-      return Promise.reject(
+      throw new Error(
         `${languageStrings.searchpage.searchResult.errors.getAttachmentViewerDetailsFailure}: ${error.message}`
       );
     }
