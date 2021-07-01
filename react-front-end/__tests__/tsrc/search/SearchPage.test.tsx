@@ -85,6 +85,7 @@ import {
   querySearchAttachmentsSelector,
   queryStatusSelector,
 } from "./SearchPageHelper";
+import * as StorageUtil from "../../../tsrc/util/BrowserStorageUtil";
 
 const defaultTheme = createMuiTheme({
   props: { MuiWithWidth: { initialWidth: "md" } },
@@ -1138,4 +1139,32 @@ describe("Hide Gallery", () => {
       );
     }
   );
+});
+describe("Interact with Browser local storage", () => {
+  it("saves wildcard mode in local storage", async () => {
+    const mockSetDataToLocalStorage = jest.spyOn(
+      StorageUtil,
+      "setDataToLocalStorage"
+    );
+    const { getByText } = await renderSearchPage();
+    const wildcardModeSwitch = getByText(
+      languageStrings.searchpage.wildcardSearch
+    );
+    await act(async () => {
+      await userEvent.click(wildcardModeSwitch);
+    });
+    expect(mockSetDataToLocalStorage).toHaveBeenCalledTimes(1);
+  });
+
+  it("retrieves wildcard mode from local storage", async () => {
+    // By default wildcard mode is turned on, so we save 'false' in local storage.
+    const mockGetDataToLocalStorage = jest
+      .spyOn(StorageUtil, "getDataFromLocalStorage")
+      .mockReturnValue("false");
+    const { container } = await renderSearchPage();
+    expect(mockGetDataToLocalStorage).toHaveBeenCalled();
+
+    const wildcardModeSwitch = container.querySelector("#wildcardSearch");
+    expect(wildcardModeSwitch).not.toBeChecked();
+  });
 });
