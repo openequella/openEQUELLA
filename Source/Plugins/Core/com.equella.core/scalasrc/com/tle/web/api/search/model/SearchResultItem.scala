@@ -18,9 +18,12 @@
 
 package com.tle.web.api.search.model
 
+import com.tle.beans.item.DrmSettings
 import java.util.Date
 import com.tle.common.interfaces.I18NString
 import com.tle.web.api.item.equella.interfaces.beans.{DisplayField, DisplayOptions}
+import com.tle.web.viewitem.I18nDRM
+import scala.collection.JavaConverters._
 
 /**
   * This model class includes an item's information required in the new Search page.
@@ -61,7 +64,8 @@ case class SearchResultItem(
     keywordFoundInAttachment: Boolean,
     links: java.util.Map[String, String],
     bookmarkId: Option[Long],
-    isLatestVersion: Boolean
+    isLatestVersion: Boolean,
+    drmSettings: Option[SearchResultItemDrm]
 )
 
 /**
@@ -89,3 +93,44 @@ case class SearchResultAttachment(
     links: java.util.Map[String, String],
     filePath: Option[String]
 )
+
+case class DrmParties(attributeOwnersText: String, parties: List[String])
+
+case class SearchResultItemDrm(terms: Option[String],
+                               permission1: Option[String],
+                               permission2: Option[String],
+                               educationSector: Option[String],
+                               parties: Option[DrmParties])
+object SearchResultItemDrm {
+  def apply(drmSettings: DrmSettings): SearchResultItemDrm = {
+    val drmI18n = new I18nDRM(drmSettings)
+
+    val terms = Option(drmI18n.getTerms) match {
+      case Some(t) if t.trim.nonEmpty => Option(s"${drmI18n.getTermsText} \n $t")
+      case _                          => None
+    }
+
+    val permission1 = Option(drmI18n.getPermissions1List) match {
+      case Some(p) if p.nonEmpty => Option(s"${drmI18n.getItemMayFreelyBeText} $p")
+      case _                     => None
+    }
+
+    val permission2 = Option(drmI18n.getPermissions2List) match {
+      case Some(p) if p.nonEmpty => Option(s"${drmI18n.getAdditionallyUserMayText} $p")
+      case _                     => None
+    }
+
+    val educationSector =
+      if (drmI18n.isUseEducation) Option(drmI18n.getEducationSectorText) else None
+
+    val parties = if (drmI18n.isAttribution && !drmI18n.getParties.isEmpty) {
+      Option(
+        DrmParties(drmI18n.getAttributeOwnersText,
+                   drmI18n.getParties.asScala.map(p => s"${p.getName} ${p.getEmail}").toList))
+    } else {
+      None
+    }
+
+    SearchResultItemDrm(terms, permission1, permission2, educationSector, parties)
+  }
+}

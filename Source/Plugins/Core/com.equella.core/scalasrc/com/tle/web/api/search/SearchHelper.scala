@@ -40,7 +40,12 @@ import com.tle.web.api.item.equella.interfaces.beans.{
   FileAttachmentBean
 }
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
-import com.tle.web.api.search.model.{SearchParam, SearchResultAttachment, SearchResultItem}
+import com.tle.web.api.search.model.{
+  SearchParam,
+  SearchResultAttachment,
+  SearchResultItem,
+  SearchResultItemDrm
+}
 import com.tle.web.controls.resource.ResourceAttachmentBean
 import com.tle.web.controls.youtube.YoutubeAttachmentBean
 
@@ -262,6 +267,7 @@ object SearchHelper {
       links = getLinksFromBean(bean),
       bookmarkId = getBookmarkId(key),
       isLatestVersion = isLatestVersion(key),
+      drmSettings = getItemDrmSettings(item.idKey)
     )
   }
 
@@ -295,6 +301,13 @@ object SearchHelper {
             )
           })
           .toList)
+  }
+
+  def getItemDrmSettings(itemKey: ItemIdKey): Option[SearchResultItemDrm] = {
+    val item = LegacyGuice.itemService.getItemPack(itemKey).getItem
+    // If an Item is not protected by DRM or the DRM has been accepted, 'requiresAcceptance' returns null.
+    Option(LegacyGuice.drmService.requiresAcceptance(item, false, false))
+      .map(drm => SearchResultItemDrm(drm))
   }
 
   def getItemComments(key: ItemIdKey): Option[java.util.List[Comment]] =
