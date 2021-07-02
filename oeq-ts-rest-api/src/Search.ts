@@ -223,6 +223,41 @@ export interface Attachment {
 }
 
 /**
+ * Details of an Item's DRM settings.
+ */
+export interface ItemDrmSettings {
+  /**
+   * Terms that users must accept in order to view the Item.
+   */
+  terms?: string;
+  /**
+   * Actions that users are allowed to do for the Item.
+   */
+  permission1?: string;
+  /**
+   * Additional actions that users are allowed to do.
+   */
+  permission2?: string;
+  /**
+   * Server-side language string describing this item is strictly restricted to the educational sector.
+   */
+  educationSector?: string;
+  /**
+   * A list of parties related to the Item.
+   */
+  parties?: {
+    /**
+     * Server-side Language string for listing DRM parties.
+     */
+    attributeOwnersText: string;
+    /**
+     * A list of party names and email addresses.
+     */
+    details: string[];
+  };
+}
+
+/**
  * Shared properties or raw and transformed search result item
  */
 interface SearchResultItemBase {
@@ -299,6 +334,10 @@ interface SearchResultItemBase {
    * True if this version is the latest version.
    */
   isLatestVersion: boolean;
+  /**
+   * Item's DRM settings. Undefined when Item doesn't have DRM settings or the DRM has been accepted.
+   */
+  drmSettings?: ItemDrmSettings;
 }
 
 /**

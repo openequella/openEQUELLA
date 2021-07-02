@@ -94,7 +94,7 @@ case class SearchResultAttachment(
     filePath: Option[String]
 )
 
-case class DrmParties(attributeOwnersText: String, parties: List[String])
+case class DrmParties(attributeOwnersText: String, details: List[String])
 
 case class SearchResultItemDrm(terms: Option[String],
                                permission1: Option[String],
