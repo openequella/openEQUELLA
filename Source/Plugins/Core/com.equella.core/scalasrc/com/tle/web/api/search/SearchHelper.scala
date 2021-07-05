@@ -304,7 +304,8 @@ object SearchHelper {
   }
 
   def getItemDrmSettings(itemKey: ItemIdKey): Option[SearchResultItemDrm] = {
-    val item = LegacyGuice.itemService.getItemPack(itemKey).getItem
+    // 'getUnsecure' will throw an ItemNotFoundException if there are no items matching the item key.
+    val item = LegacyGuice.itemService.getUnsecure(itemKey)
     // If an Item is not protected by DRM or the DRM has been accepted, 'requiresAcceptance' returns null.
     Option(LegacyGuice.drmService.requiresAcceptance(item, false, false))
       .map(drm => SearchResultItemDrm(drm))
