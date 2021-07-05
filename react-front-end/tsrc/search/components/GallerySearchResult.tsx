@@ -96,39 +96,41 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
       )
   );
 
-  const buildOnClickHandler = (
-    { mimeType, directUrl: src, name, id }: GalleryEntry,
-    uuid: string,
-    version: number
-  ) => () => {
-    const initialLightboxEntryIndex = lightboxEntries.findIndex(
-      (entry) => entry.id === id
-    );
+  const buildOnClickHandler =
+    (
+      { mimeType, directUrl: src, name, id }: GalleryEntry,
+      uuid: string,
+      version: number
+    ) =>
+    () => {
+      const initialLightboxEntryIndex = lightboxEntries.findIndex(
+        (entry) => entry.id === id
+      );
 
-    setLightboxProps({
-      onClose: () => setLightboxProps(undefined),
-      open: true,
-      item: {
-        uuid,
-        version,
-      },
-      config: {
-        src,
-        title: name,
-        mimeType,
-        onNext: buildLightboxNavigationHandler(
-          lightboxEntries,
-          initialLightboxEntryIndex + 1,
-          true
-        ),
-        onPrevious: buildLightboxNavigationHandler(
-          lightboxEntries,
-          initialLightboxEntryIndex - 1,
-          true
-        ),
-      },
-    });
-  };
+      setLightboxProps({
+        onClose: () => setLightboxProps(undefined),
+        open: true,
+        item: {
+          uuid,
+          version,
+        },
+        config: {
+          src,
+          title: name,
+          mimeType,
+          onNext: buildLightboxNavigationHandler(
+            lightboxEntries,
+            initialLightboxEntryIndex + 1,
+            true
+          ),
+          onPrevious: buildLightboxNavigationHandler(
+            lightboxEntries,
+            initialLightboxEntryIndex - 1,
+            true
+          ),
+        },
+      });
+    };
 
   const mapItemsToTiles = () =>
     items.flatMap(

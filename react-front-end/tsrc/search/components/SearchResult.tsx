@@ -150,10 +150,8 @@ export default function SearchResult({
   const inSelectionSession: boolean = isSelectionSessionOpen();
   const inStructured = isSelectionSessionInStructured();
 
-  const [
-    showFavouriteItemDialog,
-    setShowFavouriteItemDialog,
-  ] = useState<boolean>(false);
+  const [showFavouriteItemDialog, setShowFavouriteItemDialog] =
+    useState<boolean>(false);
   const [bookmarkId, setBookmarkId] = useState<number | undefined>(
     bookmarkDefaultId
   );

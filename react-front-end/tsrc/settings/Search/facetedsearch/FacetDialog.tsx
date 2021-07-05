@@ -70,9 +70,8 @@ const FacetDialog = ({
   handleError,
   facet,
 }: FacetDialogProps) => {
-  const {
-    facetedsearchsetting: facetedSearchSettingStrings,
-  } = languageStrings.settings.searching;
+  const { facetedsearchsetting: facetedSearchSettingStrings } =
+    languageStrings.settings.searching;
   const { facetfields: facetFieldStrings } = facetedSearchSettingStrings;
 
   const [name, setName] = useState<string>("");

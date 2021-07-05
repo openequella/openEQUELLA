@@ -50,8 +50,7 @@ const videoConfig: LightboxConfig = {
 };
 
 const audioConfig: LightboxConfig = {
-  src:
-    "https://archive.org/download/Sleep_Music-5629/junior85_-_01_-_Birdsong.ogg",
+  src: "https://archive.org/download/Sleep_Music-5629/junior85_-_01_-_Birdsong.ogg",
   title: "Sleep Music (Tony Higgins) - Birdsong",
   mimeType: "audio/ogg",
 };

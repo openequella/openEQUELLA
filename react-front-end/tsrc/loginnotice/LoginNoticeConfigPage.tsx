@@ -46,8 +46,10 @@ class LoginNoticeConfigPage extends React.Component<
 
   constructor(props: LoginNoticeConfigPageProps) {
     super(props);
-    this.preLoginNoticeConfigurator = React.createRef<PreLoginNoticeConfigurator>();
-    this.postLoginNoticeConfigurator = React.createRef<PostLoginNoticeConfigurator>();
+    this.preLoginNoticeConfigurator =
+      React.createRef<PreLoginNoticeConfigurator>();
+    this.postLoginNoticeConfigurator =
+      React.createRef<PostLoginNoticeConfigurator>();
   }
 
   state: LoginNoticeConfigPageState = {

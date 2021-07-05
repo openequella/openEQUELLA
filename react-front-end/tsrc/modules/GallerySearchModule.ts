@@ -277,14 +277,14 @@ const createMainEntry = (
     )
   );
 
-const attachmentToGalleryEntry = (itemUuid: string, itemVersion: number) => (
-  attachment: OEQ.Search.Attachment
-): E.Either<string, GalleryEntry> =>
-  pipe(
-    buildGalleryEntry(itemUuid, itemVersion, attachment),
-    // Let's log any issues - just so we're aware of any odd data
-    warnOnLeft
-  ) as E.Either<string, GalleryEntry>;
+const attachmentToGalleryEntry =
+  (itemUuid: string, itemVersion: number) =>
+  (attachment: OEQ.Search.Attachment): E.Either<string, GalleryEntry> =>
+    pipe(
+      buildGalleryEntry(itemUuid, itemVersion, attachment),
+      // Let's log any issues - just so we're aware of any odd data
+      warnOnLeft
+    ) as E.Either<string, GalleryEntry>;
 
 /**
  * Similar to `createMainEntry` in intent, but operating on the ideally a provided `A.tail` of
@@ -330,17 +330,17 @@ type AttachmentPredicate = (attachment: OEQ.Search.Attachment) => boolean;
  *
  * @param typeRegex A regular expression to check against an attachment's MIME type/
  */
-const attachmentMimeTypePredicate = (
-  typeRegex: string
-): AttachmentPredicate => (attachment: OEQ.Search.Attachment) =>
-  pipe(
-    attachment.mimeType,
-    O.fromNullable,
-    O.fold(
-      () => false,
-      (mt: string) => mt.match(typeRegex) !== null
-    )
-  );
+const attachmentMimeTypePredicate =
+  (typeRegex: string): AttachmentPredicate =>
+  (attachment: OEQ.Search.Attachment) =>
+    pipe(
+      attachment.mimeType,
+      O.fromNullable,
+      O.fold(
+        () => false,
+        (mt: string) => mt.match(typeRegex) !== null
+      )
+    );
 
 /**
  * Creates an attachment filter using the supplied `AttachmentPredicate`. The resulting filter
@@ -349,14 +349,12 @@ const attachmentMimeTypePredicate = (
  *
  * @param predicate The predicate to specify which attachments to keep.
  */
-const filterAttachments = (
-  predicate: AttachmentPredicate
-): AttachmentFilter => (
-  attachments: OEQ.Search.Attachment[]
-): O.Option<OEQ.Search.Attachment[]> =>
-  pipe(attachments, A.filter(predicate), (xs: OEQ.Search.Attachment[]) =>
-    xs.length === 0 ? O.none : O.some(xs)
-  );
+const filterAttachments =
+  (predicate: AttachmentPredicate): AttachmentFilter =>
+  (attachments: OEQ.Search.Attachment[]): O.Option<OEQ.Search.Attachment[]> =>
+    pipe(attachments, A.filter(predicate), (xs: OEQ.Search.Attachment[]) =>
+      xs.length === 0 ? O.none : O.some(xs)
+    );
 
 /**
  * Provides a means to generate a predicate function for filtering attachments. Needed due to the
@@ -364,10 +362,13 @@ const filterAttachments = (
  *
  * @param typeRegex a regular expression to filter the MIME types by
  */
-const filterAttachmentsByMimeType = (typeRegex: string): AttachmentFilter => (
-  attachments: OEQ.Search.Attachment[]
-): O.Option<OEQ.Search.Attachment[]> =>
-  pipe(attachments, filterAttachments(attachmentMimeTypePredicate(typeRegex)));
+const filterAttachmentsByMimeType =
+  (typeRegex: string): AttachmentFilter =>
+  (attachments: OEQ.Search.Attachment[]): O.Option<OEQ.Search.Attachment[]> =>
+    pipe(
+      attachments,
+      filterAttachments(attachmentMimeTypePredicate(typeRegex))
+    );
 
 /**
  * Filters a list of attachments down to those which are either `file` attachments with a 'video'
@@ -378,9 +379,8 @@ const filterAttachmentsByMimeType = (typeRegex: string): AttachmentFilter => (
 const filterAttachmentsByVideo: AttachmentFilter = (
   attachments: OEQ.Search.Attachment[]
 ): O.Option<OEQ.Search.Attachment[]> => {
-  const videoMimeTypePredicate: AttachmentPredicate = attachmentMimeTypePredicate(
-    "video"
-  );
+  const videoMimeTypePredicate: AttachmentPredicate =
+    attachmentMimeTypePredicate("video");
   // Arguably in the future we may want to change this to looking through a look-up list
   // to include things like Kaltura - for now just straight comparison against the only
   // one we're supporting
@@ -403,52 +403,52 @@ const filterAttachmentsByVideo: AttachmentFilter = (
  *
  * @param attachmentFilter The resultant function from `filterAttachmentsByMimeType`
  */
-export const buildGallerySearchResultItem = (
-  attachmentFilter: AttachmentFilter
-) => ({
-  uuid,
-  version,
-  name,
-  links,
-  attachments,
-}: OEQ.Search.SearchResultItem): E.Either<string, GallerySearchResultItem> =>
-  Do(E.either)
-    .bind(
-      "attachmentsNotEmpty",
-      pipe(
-        attachments,
-        E.fromNullable("No attachments available"),
-        E.chain(
-          flow(
-            attachmentFilter,
-            E.fromOption(
-              () =>
-                `No attachments remain for item ${uuid}/${version} after MIME type filter`
+export const buildGallerySearchResultItem =
+  (attachmentFilter: AttachmentFilter) =>
+  ({
+    uuid,
+    version,
+    name,
+    links,
+    attachments,
+  }: OEQ.Search.SearchResultItem): E.Either<string, GallerySearchResultItem> =>
+    Do(E.either)
+      .bind(
+        "attachmentsNotEmpty",
+        pipe(
+          attachments,
+          E.fromNullable("No attachments available"),
+          E.chain(
+            flow(
+              attachmentFilter,
+              E.fromOption(
+                () =>
+                  `No attachments remain for item ${uuid}/${version} after MIME type filter`
+              )
             )
           )
         )
       )
-    )
-    .bindL("mainEntry", ({ attachmentsNotEmpty }) =>
-      createMainEntry(uuid, version, attachmentsNotEmpty)
-    )
-    .bindL("additionalEntries", ({ attachmentsNotEmpty }) =>
-      pipe(
-        attachmentsNotEmpty,
-        A.tail,
-        (attachments) => createAdditionalEntries(uuid, version, attachments),
-        O.getOrElse(() => [] as GalleryEntry[]),
-        E.right
+      .bindL("mainEntry", ({ attachmentsNotEmpty }) =>
+        createMainEntry(uuid, version, attachmentsNotEmpty)
       )
-    )
-    .return(({ mainEntry, additionalEntries }) => ({
-      uuid,
-      version,
-      name,
-      links,
-      mainEntry,
-      additionalEntries,
-    }));
+      .bindL("additionalEntries", ({ attachmentsNotEmpty }) =>
+        pipe(
+          attachmentsNotEmpty,
+          A.tail,
+          (attachments) => createAdditionalEntries(uuid, version, attachments),
+          O.getOrElse(() => [] as GalleryEntry[]),
+          E.right
+        )
+      )
+      .return(({ mainEntry, additionalEntries }) => ({
+        uuid,
+        version,
+        name,
+        links,
+        mainEntry,
+        additionalEntries,
+      }));
 
 /**
  * Undertakes an `searchItems` based on the supplied `options` filtering out all attachments with

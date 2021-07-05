@@ -121,9 +121,8 @@ describe("newSearchQueryToSearchOptions", () => {
   );
 
   it("should be able to convert SearchOptions to a query string, and back to SearchOptions again", async () => {
-    const queryStringFromSearchOptions = await generateQueryStringFromSearchPageOptions(
-      allSearchPageOptions
-    );
+    const queryStringFromSearchOptions =
+      await generateQueryStringFromSearchPageOptions(allSearchPageOptions);
     expect(
       await newSearchQueryToSearchPageOptions(
         new URLSearchParams(queryStringFromSearchOptions).get(
@@ -142,9 +141,8 @@ describe("convertParamsToSearchOptions", () => {
     state: "",
   };
   it("should return undefined if no query string parameters are defined", async () => {
-    const convertedParamsPromise = await generateSearchPageOptionsFromQueryString(
-      mockLocation
-    );
+    const convertedParamsPromise =
+      await generateSearchPageOptionsFromQueryString(mockLocation);
     expect(convertedParamsPromise).toBeUndefined();
   });
 });

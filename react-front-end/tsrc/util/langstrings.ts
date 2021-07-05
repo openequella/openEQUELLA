@@ -146,8 +146,7 @@ export const languageStrings = {
       introTextThree:
         " and configured on your system. Once installed, the launcher file is then used to open the openEQUELLA Administration Console Launcher dialog to open the Admin Console.",
     },
-    link:
-      "https://github.com/apereo/openEQUELLA-admin-console-package/releases",
+    link: "https://github.com/apereo/openEQUELLA-admin-console-package/releases",
   },
   common: {
     action: {
@@ -232,8 +231,7 @@ export const languageStrings = {
         "User can choose, but default to be the resource version the user is viewing",
       defaultlatest:
         "User can choose, but default to be the latest live resource version",
-      help:
-        "When accessing EQUELLA via this course in an external system, all resources added to the external system will use this version selection strategy",
+      help: "When accessing EQUELLA via this course in an external system, all resources added to the external system will use this version selection strategy",
     },
     students: {
       label: "Unique individuals",
@@ -269,8 +267,7 @@ export const languageStrings = {
       text: "Enter the URL supplied by the cloud provider",
       help: "The URL should start with either http:// or https://",
       disclaimer: {
-        text:
-          "By proceeding with this registration you are acknowleding that you agree to the terms and conditions of the ",
+        text: "By proceeding with this registration you are acknowleding that you agree to the terms and conditions of the ",
         title: "Cloud provider disclaimer",
       },
     },

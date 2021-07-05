@@ -24,8 +24,7 @@ exports.getSchemaUuidResp = {
   description:
     "testing the creation of a CAL schema as demonstrated by the CAL configuration guide",
   descriptionStrings: {
-    en:
-      "testing the creation of a CAL schema as demonstrated by the CAL configuration guide",
+    en: "testing the creation of a CAL schema as demonstrated by the CAL configuration guide",
   },
   modifiedDate: "2014-04-04T12:56:52.870+11:00",
   createdDate: "2012-03-14T17:33:05.767+11:00",
@@ -189,7 +188,6 @@ exports.getSchemaUuidResp = {
   serializedDefinition:
     '<xml><item><copyright><type attribute="true" type="text"/><parenttype attribute="true" type="text"/><title field="true" search="true" type="text"/><abstract search="true" type="text"/><isbn field="true" search="true" type="text"/><authors><author field="true" search="true" type="text"/></authors><editors><editor field="true" search="true" type="text"/></editors><issn field="true" search="true" type="text"/><issue><type search="true" type="text"/><value search="true" type="text"/></issue><volume search="true" type="text"/><publisher type="text"/><publication><year type="text"/><place field="true" search="true" type="text"/></publication><pages type="text"/><portions><portion><title field="true" search="true" type="text"/><authors><author field="true" search="true" type="text"/></authors><abstract search="true" type="text"/><number type="text"/><topics><topic search="true" type="text"/></topics><sections><section><pages type="text"/><attachment type="text"/><type type="text"/><copyrightstatus type="text"/><illustration type="text"/></section></sections></portion></portions></copyright><itembody><name field="true" search="true" type="text"/><description search="true" type="text"/></itembody></item></xml>',
   links: {
-    self:
-      "http://localhost:8080/rest/api/schema/f028746b-0346-fe7e-a223-a2db1240140c",
+    self: "http://localhost:8080/rest/api/schema/f028746b-0346-fe7e-a223-a2db1240140c",
   },
 };

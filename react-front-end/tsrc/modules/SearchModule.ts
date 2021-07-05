@@ -39,9 +39,10 @@ export const nonLiveStatus = (status: OEQ.Common.ItemStatus): boolean =>
 /**
  * List of statuses which are considered non-live.
  */
-export const nonLiveStatuses: OEQ.Common.ItemStatus[] = OEQ.Common.ItemStatuses.alternatives
-  .map((status) => status.value)
-  .filter(nonLiveStatus);
+export const nonLiveStatuses: OEQ.Common.ItemStatus[] =
+  OEQ.Common.ItemStatuses.alternatives
+    .map((status) => status.value)
+    .filter(nonLiveStatus);
 
 /**
  * A Runtypes object which represents three display modes: list, gallery-image and gallery-video.

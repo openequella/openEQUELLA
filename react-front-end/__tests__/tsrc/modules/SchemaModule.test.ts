@@ -21,12 +21,14 @@ import { getSchemaUuidResp } from "../../../__mocks__/getSchemaUuidResp";
 import * as OEQ from "@openequella/rest-api-client";
 
 jest.mock("@openequella/rest-api-client");
-(OEQ.Schema.listSchemas as jest.Mock<
-  Promise<OEQ.Common.PagedResult<OEQ.Common.BaseEntity>>
->).mockResolvedValue(getSchemasResp);
-(OEQ.Schema.getSchema as jest.Mock<
-  Promise<OEQ.Schema.EquellaSchema>
->).mockResolvedValue(getSchemaUuidResp);
+(
+  OEQ.Schema.listSchemas as jest.Mock<
+    Promise<OEQ.Common.PagedResult<OEQ.Common.BaseEntity>>
+  >
+).mockResolvedValue(getSchemasResp);
+(
+  OEQ.Schema.getSchema as jest.Mock<Promise<OEQ.Schema.EquellaSchema>>
+).mockResolvedValue(getSchemaUuidResp);
 
 describe("SchemaModule", () => {
   it("should be able to provide a list of schemas", () =>

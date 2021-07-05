@@ -118,10 +118,8 @@ export const SearchResultAttachmentsList = ({
       : displayOptions?.standardOpen) ?? false
   );
 
-  const [
-    attachmentsAndViewerConfigs,
-    setAttachmentsAndViewerConfigs,
-  ] = useState<AttachmentAndViewerConfig[]>([]);
+  const [attachmentsAndViewerConfigs, setAttachmentsAndViewerConfigs] =
+    useState<AttachmentAndViewerConfig[]>([]);
 
   // In Selection Session, make each intact attachment draggable.
   useEffect(() => {
@@ -194,40 +192,41 @@ export const SearchResultAttachmentsList = ({
         );
 
       // Transform AttachmentAndViewerDefinition to AttachmentAndViewerConfig.
-      const attachmentsAndConfigs: AttachmentAndViewerConfig[] = attachmentsAndViewerDefinitions.map(
-        ({ viewerDefinition: [viewer, viewUrl], attachment }) => {
-          const initialLightboxEntryIndex = lightboxEntries.findIndex(
-            (entry) => entry.id === attachment.id
-          );
-          return viewer === "lightbox"
-            ? {
-                attachment,
-                viewerConfig: {
-                  viewerType: viewer,
-                  config: {
-                    src: viewUrl,
-                    title: attachment.description,
-                    mimeType: attachment.mimeType ?? "",
-                    onNext: buildLightboxNavigationHandler(
-                      lightboxEntries,
-                      initialLightboxEntryIndex + 1
-                    ),
-                    onPrevious: buildLightboxNavigationHandler(
-                      lightboxEntries,
-                      initialLightboxEntryIndex - 1
-                    ),
+      const attachmentsAndConfigs: AttachmentAndViewerConfig[] =
+        attachmentsAndViewerDefinitions.map(
+          ({ viewerDefinition: [viewer, viewUrl], attachment }) => {
+            const initialLightboxEntryIndex = lightboxEntries.findIndex(
+              (entry) => entry.id === attachment.id
+            );
+            return viewer === "lightbox"
+              ? {
+                  attachment,
+                  viewerConfig: {
+                    viewerType: viewer,
+                    config: {
+                      src: viewUrl,
+                      title: attachment.description,
+                      mimeType: attachment.mimeType ?? "",
+                      onNext: buildLightboxNavigationHandler(
+                        lightboxEntries,
+                        initialLightboxEntryIndex + 1
+                      ),
+                      onPrevious: buildLightboxNavigationHandler(
+                        lightboxEntries,
+                        initialLightboxEntryIndex - 1
+                      ),
+                    },
                   },
-                },
-              }
-            : {
-                attachment,
-                viewerConfig: {
-                  viewerType: viewer,
-                  url: viewUrl,
-                },
-              };
-        }
-      );
+                }
+              : {
+                  attachment,
+                  viewerConfig: {
+                    viewerType: viewer,
+                    url: viewUrl,
+                  },
+                };
+          }
+        );
 
       if (mounted) {
         setAttachmentsAndViewerConfigs(attachmentsAndConfigs);
