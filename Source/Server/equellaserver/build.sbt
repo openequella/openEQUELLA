@@ -16,7 +16,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 (Runtime / unmanagedClasspath) += (LocalProject("learningedge_config") / baseDirectory).value
 
 val RestEasyVersion  = "3.13.2.Final"
-val SwaggerVersion   = "1.7.9"
+val SwaggerVersion   = "1.6.2"
 val TomcatVersion    = "9.0.50"
 val axis2Version     = "1.7.9"
 val circeVersion     = "0.12.1"
@@ -162,11 +162,11 @@ libraryDependencies ++= Seq(
   "org.apache.lucene"         % "lucene-core"      % "3.6.2",
   "org.apache.lucene"         % "lucene-queries"   % "3.6.2",
   "org.apache.poi"            % "poi-ooxml"        % "3.17",
-  "org.apache.rampart"        % "rampart-core"     % "1.7.9" excludeAll (
+  "org.apache.rampart"        % "rampart-core"     % "1.6.2" excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces")
   ),
-  "org.apache.rampart" % "rampart-policy" % "1.7.9" excludeAll (
+  "org.apache.rampart" % "rampart-policy" % "1.6.2" excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces")
   ),
