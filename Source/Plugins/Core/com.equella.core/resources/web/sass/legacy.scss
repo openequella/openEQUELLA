@@ -328,7 +328,7 @@ Animations
   }
 }
 
-//need to explicitly exclude youtube preview iframe
+// need to explicitly exclude youtube preview iframe
 html,
 body,
 div,
@@ -354,6 +354,7 @@ del,
 dfn,
 em,
 font,
+iframe:not(.skip-css-reset),
 ins,
 kbd,
 q,
@@ -391,18 +392,6 @@ tr,
 th,
 td,
 select {
-  width: auto;
-  height: auto;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  outline: 0;
-  font-size: 100%;
-  vertical-align: baseline;
-  background: transparent;
-  font-family: "Roboto";
-}
-iframe:not[title="YouTube video player"] {
   width: auto;
   height: auto;
   margin: 0;
