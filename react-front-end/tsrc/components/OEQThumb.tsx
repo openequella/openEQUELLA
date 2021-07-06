@@ -86,13 +86,8 @@ export default function OEQThumb({
     );
   }
 
-  const {
-    description,
-    mimeType,
-    attachmentType,
-    hasGeneratedThumb,
-    links,
-  } = attachment;
+  const { description, mimeType, attachmentType, hasGeneratedThumb, links } =
+    attachment;
 
   const oeqProvidedThumb: React.ReactElement = (
     <img

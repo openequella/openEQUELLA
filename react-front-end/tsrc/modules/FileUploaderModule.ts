@@ -265,13 +265,11 @@ export const newUpload = (
     filename: name,
     size: size,
   };
-  return Axios.post<NewUploadResponse | UploadFailed>(
-    path,
-    uploadData
-  ).then(({ data }) =>
-    isUploadFailed(data)
-      ? data
-      : doUpload(data.uploadUrl, uploadingFile, updateUploadProgress)
+  return Axios.post<NewUploadResponse | UploadFailed>(path, uploadData).then(
+    ({ data }) =>
+      isUploadFailed(data)
+        ? data
+        : doUpload(data.uploadUrl, uploadingFile, updateUploadProgress)
   );
 };
 
@@ -472,14 +470,14 @@ export const generateLocalFile = (file: File): UploadingFile => ({
  * Provide a function used to compare an UploadingFile's ID and a client-generated ID.
  * @param comparedFileId A file ID which must be generated on client side.
  */
-export const generateUploadingFileComparator = (comparedFileId: string) => (
-  file: UploadingFile
-) => file.localId === comparedFileId;
+export const generateUploadingFileComparator =
+  (comparedFileId: string) => (file: UploadingFile) =>
+    file.localId === comparedFileId;
 
 /**
  * Provide a function used to compare an UploadedFile's ID and a server-generated ID.
  * @param comparedFileId A file ID which must be generated on server side.
  */
-export const generateUploadedFileComparator = (comparedFileId: string) => (
-  file: UploadedFile
-) => file.fileEntry.id === comparedFileId;
+export const generateUploadedFileComparator =
+  (comparedFileId: string) => (file: UploadedFile) =>
+    file.fileEntry.id === comparedFileId;

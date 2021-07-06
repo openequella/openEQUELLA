@@ -68,12 +68,14 @@ const mockFacets: FacetedSearchSettingsModule.Facet[] = [
 ];
 
 jest.mock("@openequella/rest-api-client");
-(OEQ.Schema.listSchemas as jest.Mock<
-  Promise<OEQ.Common.PagedResult<OEQ.Common.BaseEntity>>
->).mockResolvedValue(getSchemasResp);
-(OEQ.Schema.getSchema as jest.Mock<
-  Promise<OEQ.Schema.EquellaSchema>
->).mockResolvedValue(getSchemaUuidResp);
+(
+  OEQ.Schema.listSchemas as jest.Mock<
+    Promise<OEQ.Common.PagedResult<OEQ.Common.BaseEntity>>
+  >
+).mockResolvedValue(getSchemasResp);
+(
+  OEQ.Schema.getSchema as jest.Mock<Promise<OEQ.Schema.EquellaSchema>>
+).mockResolvedValue(getSchemaUuidResp);
 
 const mockFacetsWithFlags: FacetWithFlags[] = mockFacets.map((f) => {
   return { ...f, updated: false, deleted: false };

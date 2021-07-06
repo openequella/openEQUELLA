@@ -34,9 +34,11 @@ jest.mock("@openequella/rest-api-client", () => {
   };
 });
 
-const mockedSearch = (OEQ.Search.search as jest.Mock<
-  Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>>
->).mockResolvedValue(getSearchResult);
+const mockedSearch = (
+  OEQ.Search.search as jest.Mock<
+    Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>>
+  >
+).mockResolvedValue(getSearchResult);
 
 describe("searchItems", () => {
   it("should provide a list of items", async () => {

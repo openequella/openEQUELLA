@@ -30,8 +30,7 @@ exports.getCollectionsResp = {
         granted: ["LIST_COLLECTION"],
       },
       links: {
-        self:
-          "http://localhost:8080/vanilla/api/collection/77279582-ce3f-97ee-84c3-66de5af5a4c5",
+        self: "http://localhost:8080/vanilla/api/collection/77279582-ce3f-97ee-84c3-66de5af5a4c5",
       },
     },
     {
@@ -44,8 +43,7 @@ exports.getCollectionsResp = {
         granted: ["LIST_COLLECTION"],
       },
       links: {
-        self:
-          "http://localhost:8080/vanilla/api/collection/2869da6f-e43a-586d-2ad9-ff055e32cb33",
+        self: "http://localhost:8080/vanilla/api/collection/2869da6f-e43a-586d-2ad9-ff055e32cb33",
       },
     },
     {
@@ -58,8 +56,7 @@ exports.getCollectionsResp = {
         granted: ["LIST_COLLECTION"],
       },
       links: {
-        self:
-          "http://localhost:8080/vanilla/api/collection/ef19a911-0b3c-85ed-efd9-a56e56edcf37",
+        self: "http://localhost:8080/vanilla/api/collection/ef19a911-0b3c-85ed-efd9-a56e56edcf37",
       },
     },
     {
@@ -72,8 +69,7 @@ exports.getCollectionsResp = {
         granted: ["LIST_COLLECTION"],
       },
       links: {
-        self:
-          "http://localhost:8080/vanilla/api/collection/855f6055-5271-1e13-ceae-336e70cf5110",
+        self: "http://localhost:8080/vanilla/api/collection/855f6055-5271-1e13-ceae-336e70cf5110",
       },
     },
     {
@@ -86,8 +82,7 @@ exports.getCollectionsResp = {
         granted: ["LIST_COLLECTION"],
       },
       links: {
-        self:
-          "http://localhost:8080/vanilla/api/collection/16815372-d700-0aa8-83d6-cf9906f5a0ef",
+        self: "http://localhost:8080/vanilla/api/collection/16815372-d700-0aa8-83d6-cf9906f5a0ef",
       },
     },
     {
@@ -100,8 +95,7 @@ exports.getCollectionsResp = {
         granted: ["LIST_COLLECTION"],
       },
       links: {
-        self:
-          "http://localhost:8080/vanilla/api/collection/5ac082d2-3015-aba1-a749-cd928a5c6e9c",
+        self: "http://localhost:8080/vanilla/api/collection/5ac082d2-3015-aba1-a749-cd928a5c6e9c",
       },
     },
     {
@@ -114,8 +108,7 @@ exports.getCollectionsResp = {
         granted: ["LIST_COLLECTION"],
       },
       links: {
-        self:
-          "http://localhost:8080/vanilla/api/collection/0bf140ee-f88a-9a3f-9160-90bd67b6b440",
+        self: "http://localhost:8080/vanilla/api/collection/0bf140ee-f88a-9a3f-9160-90bd67b6b440",
       },
     },
     {
@@ -128,8 +121,7 @@ exports.getCollectionsResp = {
         granted: ["LIST_COLLECTION"],
       },
       links: {
-        self:
-          "http://localhost:8080/vanilla/api/collection/4e7e6433-2783-42a6-973a-6fc0e3bc3978",
+        self: "http://localhost:8080/vanilla/api/collection/4e7e6433-2783-42a6-973a-6fc0e3bc3978",
       },
     },
     {
@@ -142,8 +134,7 @@ exports.getCollectionsResp = {
         granted: ["LIST_COLLECTION"],
       },
       links: {
-        self:
-          "http://localhost:8080/vanilla/api/collection/8e3caf16-f3cb-b3dd-d403-e5eb8d545fff",
+        self: "http://localhost:8080/vanilla/api/collection/8e3caf16-f3cb-b3dd-d403-e5eb8d545fff",
       },
     },
     {
@@ -156,8 +147,7 @@ exports.getCollectionsResp = {
         granted: ["LIST_COLLECTION"],
       },
       links: {
-        self:
-          "http://localhost:8080/vanilla/api/collection/e8f050dd-f6c0-4cec-559f-e54d7ef19836",
+        self: "http://localhost:8080/vanilla/api/collection/e8f050dd-f6c0-4cec-559f-e54d7ef19836",
       },
     },
   ],

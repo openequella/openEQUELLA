@@ -39,13 +39,8 @@ export const SearchOrderSelect = ({
   value,
   onChange,
 }: SearchOrderSelectProps) => {
-  const {
-    relevance,
-    lastModified,
-    dateCreated,
-    title,
-    userRating,
-  } = languageStrings.settings.searching.searchPageSettings;
+  const { relevance, lastModified, dateCreated, title, userRating } =
+    languageStrings.settings.searching.searchPageSettings;
 
   /**
    * Provide a data source for search sorting control.
