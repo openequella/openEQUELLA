@@ -55,22 +55,17 @@ const ItemAttachmentLink = ({
   const { attachmentLink } = languageStrings.searchpage.searchResult;
   const [lightBoxProps, setLightBoxProps] = useState<LightboxProps>();
 
-  const buildSimpleLink = (viewerConfig: ViewerLinkConfig): JSX.Element => {
-    return brokenAttachment ? (
-      <Typography aria-label={`${attachmentLink} ${description}`}>
-        {description}
-      </Typography>
-    ) : (
-      <Link
-        aria-label={`${attachmentLink} ${description}`}
-        href={viewerConfig?.url}
-        target="_blank"
-        rel="noreferrer"
-      >
-        {children}
-      </Link>
-    );
-  };
+  const buildSimpleLink = ({ url }: ViewerLinkConfig): JSX.Element => (
+    <Link
+      aria-label={`${attachmentLink} ${description}`}
+      href={url}
+      target="_blank"
+      rel="noreferrer"
+    >
+      {children}
+    </Link>
+  );
+
   const buildLightboxLink = ({ config }: ViewerLightboxConfig): JSX.Element => {
     if (!mimeType) {
       throw new Error(
@@ -102,6 +97,15 @@ const ItemAttachmentLink = ({
       </>
     );
   };
+
+  // Only broken attachments do not have viewer configuration so return a 'Typography'.
+  if (!viewerConfig) {
+    return (
+      <Typography aria-label={`${attachmentLink} ${description}`}>
+        {description}
+      </Typography>
+    );
+  }
 
   return isViewerLightboxConfig(viewerConfig)
     ? buildLightboxLink(viewerConfig)

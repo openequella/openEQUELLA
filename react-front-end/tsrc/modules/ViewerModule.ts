@@ -90,7 +90,7 @@ export interface AttachmentAndViewerDefinition {
   /**
    * Viewer definition for the attachment, including which viewer to be used and the view URL.
    */
-  viewerDefinition: ViewerDefinition;
+  viewerDefinition?: ViewerDefinition;
 }
 
 export interface AttachmentAndViewerConfig {
@@ -101,7 +101,7 @@ export interface AttachmentAndViewerConfig {
   /**
    * Viewer configuration for the attachment.
    */
-  viewerConfig: ViewerConfig;
+  viewerConfig?: ViewerConfig;
 }
 
 /**
@@ -348,19 +348,24 @@ export const buildAttachmentsAndViewerDefinitions = async (
 export const buildLightboxEntries = (
   attachmentsAndViewerDefinitions: AttachmentAndViewerDefinition[]
 ): LightboxEntry[] =>
-  attachmentsAndViewerDefinitions
-    .filter(({ viewerDefinition: [viewer] }) => viewer === "lightbox")
-    .map(
-      ({
-        attachment: { id, description, mimeType },
-        viewerDefinition: [_, src],
-      }) => ({
-        src,
-        title: description,
-        mimeType: mimeType ?? "",
-        id,
-      })
-    );
+  pipe(
+    attachmentsAndViewerDefinitions,
+    A.map(({ attachment: { id, description, mimeType }, viewerDefinition }) =>
+      pipe(
+        viewerDefinition,
+        O.fromNullable,
+        O.filter(([viewer]) => viewer === "lightbox"),
+        O.map(([_, viewerUrl]) => ({
+          src: viewerUrl,
+          title: description,
+          mimeType: mimeType ?? "",
+          id,
+        }))
+      )
+    ),
+    A.filter(O.isSome),
+    A.map((entry) => entry.value)
+  );
 
 /**
  * Convert attachments' viewer definitions to their viewer configurations.
@@ -372,39 +377,48 @@ export const convertViewerDefinitionToViewerConfig = (
   attachmentsAndViewerDefinitions: AttachmentAndViewerDefinition[],
   lightboxEntries: LightboxEntry[]
 ): AttachmentAndViewerConfig[] =>
-  attachmentsAndViewerDefinitions.map(
-    ({ viewerDefinition: [viewer, viewUrl], attachment }) => {
+  pipe(
+    attachmentsAndViewerDefinitions,
+    A.map(({ attachment, viewerDefinition }) => {
       const initialLightboxEntryIndex = lightboxEntries.findIndex(
         (entry) => entry.id === attachment.id
       );
-      return viewer === "lightbox"
-        ? {
-            attachment,
-            viewerConfig: {
-              viewerType: viewer,
-              config: {
-                src: viewUrl,
-                title: attachment.description,
-                mimeType: attachment.mimeType ?? "",
-                onNext: buildLightboxNavigationHandler(
-                  lightboxEntries,
-                  initialLightboxEntryIndex + 1
-                ),
-                onPrevious: buildLightboxNavigationHandler(
-                  lightboxEntries,
-                  initialLightboxEntryIndex - 1
-                ),
-              },
-            },
-          }
-        : {
-            attachment,
-            viewerConfig: {
-              viewerType: viewer,
-              url: viewUrl,
-            },
-          };
-    }
+      return pipe(
+        viewerDefinition,
+        O.fromNullable,
+        O.foldW(
+          () => ({ attachment }), // Broken attachments don't have viewer configuration.
+          ([viewer, viewUrl]) =>
+            viewer === "lightbox"
+              ? {
+                  attachment,
+                  viewerConfig: {
+                    viewerType: viewer,
+                    config: {
+                      src: viewUrl,
+                      title: attachment.description,
+                      mimeType: attachment.mimeType ?? "",
+                      onNext: buildLightboxNavigationHandler(
+                        lightboxEntries,
+                        initialLightboxEntryIndex + 1
+                      ),
+                      onPrevious: buildLightboxNavigationHandler(
+                        lightboxEntries,
+                        initialLightboxEntryIndex - 1
+                      ),
+                    },
+                  },
+                }
+              : {
+                  attachment,
+                  viewerConfig: {
+                    viewerType: viewer,
+                    url: viewUrl,
+                  },
+                }
+        )
+      );
+    })
   );
 
 /**
