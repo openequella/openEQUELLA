@@ -231,11 +231,11 @@ export interface ItemDrmSettings {
    */
   terms?: string;
   /**
-   * Actions that users are allowed to do for the Item.
+   * Actions that users are allowed to perform on the Item.
    */
   permission1?: string;
   /**
-   * Additional actions that users are allowed to do.
+   * Additional actions that users are allowed to perform.
    */
   permission2?: string;
   /**
