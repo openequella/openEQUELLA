@@ -21,7 +21,7 @@ import * as React from "react";
 import { Link } from "react-router-dom";
 import { isSelectionSessionOpen } from "../modules/LegacySelectionSessionModule";
 
-interface OeqLinkProps {
+interface OEQLinkProps {
   /**
    * The content of a link
    */
@@ -40,11 +40,11 @@ interface OeqLinkProps {
  * Provide a Link which is either a React Route Link or a MUI Link, depending
  * on whether Selection Session is open or not.
  */
-export const OeqLink = ({
+export const OEQLink = ({
   children,
   routeLinkUrlProvider,
   muiLinkUrlProvider,
-}: OeqLinkProps) =>
+}: OEQLinkProps) =>
   isSelectionSessionOpen() ? (
     <MUILink href={muiLinkUrlProvider()} underline="none">
       {children}

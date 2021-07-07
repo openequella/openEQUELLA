@@ -94,4 +94,19 @@ public abstract class AbstractAuditLogDaoImpl<T extends AuditLogTable>
               }
             });
   }
+
+  @Override
+  public void removeEntriesForUser(String userId) {
+    getHibernateTemplate()
+        .execute(
+            new HibernateCallback() {
+              @Override
+              public Object doInHibernate(Session session) {
+                Query q = session.getNamedQuery("deleteAuditLogsByUser");
+                q.setParameter("institution", CurrentInstitution.get());
+                q.setParameter("userId", userId);
+                return q.executeUpdate();
+              }
+            });
+  }
 }

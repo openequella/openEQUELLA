@@ -131,7 +131,11 @@ export const basicImageSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
       ],
       thumbnail: "default",
       displayFields: [
-        { type: "node", name: "Resource Type", html: "Supplementary reading" },
+        {
+          type: "node",
+          name: "Resource Type",
+          html: "Supplementary reading",
+        },
       ],
       displayOptions: {
         attachmentType: "STRUCTURED",
@@ -438,7 +442,11 @@ export const basicVideoSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
       ],
       thumbnail: "default",
       displayFields: [
-        { type: "node", name: "Resource Type", html: "Supplementary reading" },
+        {
+          type: "node",
+          name: "Resource Type",
+          html: "Supplementary reading",
+        },
       ],
       displayOptions: {
         attachmentType: "STRUCTURED",

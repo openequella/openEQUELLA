@@ -40,8 +40,6 @@ object OracleSchema extends DBSchemaMigration with DBSchema with DBQueries with 
 
   def autoIdCol = longCol
 
-  override def insertAuditLog = insertWith(auditLog, hibSeq)
-
   def dbUuidCol =
     wrap[String, DbUUID](stringCol,
                          _.isoMap(Iso(_.id.toString, DbUUID.fromString)),

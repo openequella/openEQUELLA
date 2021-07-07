@@ -98,29 +98,94 @@ export function initStrings() {
 }
 
 export const languageStrings = {
-  cp: {
-    title: "Cloud providers",
-    cloudprovideravailable: {
-      zero: "No cloud providers available",
-      one: "%d cloud provider",
-      more: "%d cloud providers",
+  acleditor: {
+    privilege: "Privilege",
+    privileges: "Privileges",
+    selectpriv: "Select privilege",
+    expression: "Expression",
+    privplaceholder: "Please select or add a privilege",
+    dropplaceholder: "Drop targets here",
+    addpriv: "Add Privilege",
+    addexpression: "Add expression",
+    targets: "Targets",
+    new: {
+      ugr: "User, Group or Role",
+      ip: "IP Range",
+      referrer: "HTTP Referrer",
+      token: "Shared secret",
     },
-    newcloudprovider: {
-      title: "Register a new cloud provider",
-      label: "URL",
-      text: "Enter the URL supplied by the cloud provider",
-      help: "The URL should start with either http:// or https://",
-      disclaimer: {
-        text:
-          "By proceeding with this registration you are acknowleding that you agree to the terms and conditions of the ",
-        title: "Cloud provider disclaimer",
-      },
+    notted: "NOT - ",
+    not: "Not",
+    override: "Override",
+    revoked: "Revoked",
+    revoke: "Revoke",
+    required: "* Required",
+    match: {
+      and: "All match",
+      or: "At least one match",
+      notand: "Not all match",
+      notor: "None match",
     },
-    deletecloudprovider: {
-      title: "Are you sure you want to delete cloud provider - '%s'?",
-      message: "It will be permanently deleted.",
+    convertGroup: "Convert to group",
+  },
+  aclterms: {
+    title: {
+      ugr: "Select User / Group / Role",
+      ip: "Select IP range",
+      referrer: "HTTP referrer",
+      token: "Select shared secret",
     },
-    refreshed: "Completed refresh",
+  },
+  adminconsoledownload: {
+    id: "adminconsole",
+    title: "Administration Console",
+    text: {
+      introTextOne:
+        "The Administration Console is no longer accessed from this link. The Administration Console Package must be ",
+      introTextTwo: "downloaded",
+      introTextThree:
+        " and configured on your system. Once installed, the launcher file is then used to open the openEQUELLA Administration Console Launcher dialog to open the Admin Console.",
+    },
+    link:
+      "https://github.com/apereo/openEQUELLA-admin-console-package/releases",
+  },
+  common: {
+    action: {
+      add: "Add",
+      apply: "Apply",
+      browse: "Browse...",
+      cancel: "Cancel",
+      clear: "Clear",
+      close: "Close",
+      copy: "Copy",
+      delete: "Delete",
+      discard: "Discard",
+      dismiss: "Dismiss",
+      done: "Done",
+      edit: "Edit",
+      no: "No",
+      ok: "OK",
+      openInNewWindow: "Open in new window",
+      refresh: "Refresh",
+      register: "Register",
+      resettodefault: "Reset to Default",
+      revertchanges: "Revert Changes",
+      save: "Save",
+      search: "Search",
+      select: "Select",
+      showLess: "Show less",
+      showMore: "Show more",
+      undo: "Undo",
+      yes: "Yes",
+    },
+    result: {
+      success: "Saved successfully.",
+      fail: "Failed to save.",
+      errors: "Some changes are not saved due to errors listed below",
+    },
+    users: "Users",
+    groups: "Groups",
+    roles: "Roles",
   },
   courseedit: {
     title: "Editing course - %s",
@@ -191,12 +256,65 @@ export const languageStrings = {
     includeArchived: "Include archived",
     archived: "Archived",
   },
+  cp: {
+    title: "Cloud providers",
+    cloudprovideravailable: {
+      zero: "No cloud providers available",
+      one: "%d cloud provider",
+      more: "%d cloud providers",
+    },
+    newcloudprovider: {
+      title: "Register a new cloud provider",
+      label: "URL",
+      text: "Enter the URL supplied by the cloud provider",
+      help: "The URL should start with either http:// or https://",
+      disclaimer: {
+        text:
+          "By proceeding with this registration you are acknowleding that you agree to the terms and conditions of the ",
+        title: "Cloud provider disclaimer",
+      },
+    },
+    deletecloudprovider: {
+      title: "Are you sure you want to delete cloud provider - '%s'?",
+      message: "It will be permanently deleted.",
+    },
+    refreshed: "Completed refresh",
+  },
+  dateRangeSelector: {
+    defaultStartDatePickerLabel: "From",
+    defaultEndDatePickerLabel: "To",
+    defaultDropdownLabel: "Quick date ranges",
+    quickOptionSwitchLabel: "Enable quick options",
+    quickOptionLabels: {
+      all: "All",
+      today: "Today",
+      lastSevenDays: "Last seven days",
+      lastMonth: "Last month",
+      thisYear: "This year",
+    },
+  },
+  embedCode: {
+    label: "Embed code",
+    copy: "Copy embed code",
+    closeEmbedCodeDialog: "Close embed code dialog",
+  },
   entity: {
     edit: {
       tab: {
         permissions: "Permissions",
       },
     },
+  },
+  fileUploader: {
+    noFileSelected: "No attached resources",
+    failedToDelete: "Failed to delete '%s' due to error: %s",
+  },
+  lightboxComponent: {
+    unsupportedContent: "Provided content is not supported",
+    viewNext: "View next attachment",
+    viewPrevious: "View previous attachment",
+    youTubeVideoMissingId: "The provided YouTube video is missing a video ID",
+    openSummaryPage: "Open Item Summary page",
   },
   loginnoticepage: {
     title: "Login notice editor",
@@ -226,27 +344,10 @@ export const languageStrings = {
       expired: "This login notice has expired.",
     },
   },
-  template: {
-    navaway: {
-      title: "You have unsaved changes",
-      content: "If you leave this page you will lose your changes.",
-    },
-    menu: {
-      title: "My Account",
-      logout: "Logout",
-      prefs: "My preferences",
-      usernameUnknown: "Username unknown",
-    },
-  },
-  "com.equella.core": {
-    title: "Settings",
-    windowtitlepostfix: " | openEQUELLA",
-    topbar: {
-      link: {
-        notifications: "Notifications",
-        tasks: "Tasks",
-      },
-    },
+  navigationguard: {
+    title: "Close without saving?",
+    message:
+      "You have unsaved changes. Are you sure you want to leave this page without saving?",
   },
   newuisettings: {
     title: "Theme Settings",
@@ -281,42 +382,8 @@ export const languageStrings = {
       dialogTitle: "Select a Color",
     },
   },
-  common: {
-    action: {
-      add: "Add",
-      apply: "Apply",
-      browse: "Browse...",
-      cancel: "Cancel",
-      clear: "Clear",
-      close: "Close",
-      delete: "Delete",
-      discard: "Discard",
-      dismiss: "Dismiss",
-      done: "Done",
-      edit: "Edit",
-      no: "No",
-      ok: "OK",
-      openInNewWindow: "Open in new window",
-      refresh: "Refresh",
-      register: "Register",
-      resettodefault: "Reset to Default",
-      revertchanges: "Revert Changes",
-      save: "Save",
-      search: "Search",
-      select: "Select",
-      showLess: "Show less",
-      showMore: "Show more",
-      undo: "Undo",
-      yes: "Yes",
-    },
-    result: {
-      success: "Saved successfully.",
-      fail: "Failed to save.",
-      errors: "Some changes are not saved due to errors listed below",
-    },
-    users: "Users",
-    groups: "Groups",
-    roles: "Roles",
+  screenoptions: {
+    description: "Screen options",
   },
   searchpage: {
     title: "Search",
@@ -475,24 +542,6 @@ export const languageStrings = {
       allAttachments: "Select all attachments",
     },
   },
-  "com.equella.core.searching.search": {
-    title: "Search",
-  },
-  "com.equella.core.comments": {
-    anonymous: "Anonymous",
-    commentmsg: "Comment",
-    entermsg: "Enter a comment",
-  },
-  uiconfig: {
-    facet: {
-      name: "Name",
-      path: "Path",
-      title: "Search facets",
-    },
-    enableNew: "Enable new UI",
-    enableSearch: "Enable new search page",
-    themeSettingsButton: "Edit Theme Settings",
-  },
   settings: {
     general: { name: "General", desc: "General settings" },
     integration: {
@@ -603,93 +652,51 @@ export const languageStrings = {
     },
     ui: { name: "UI", desc: "UI settings" },
   },
-  adminconsoledownload: {
-    id: "adminconsole",
-    title: "Administration Console",
-    text: {
-      introTextOne:
-        "The Administration Console is no longer accessed from this link. The Administration Console Package must be ",
-      introTextTwo: "downloaded",
-      introTextThree:
-        " and configured on your system. Once installed, the launcher file is then used to open the openEQUELLA Administration Console Launcher dialog to open the Admin Console.",
+  template: {
+    navaway: {
+      title: "You have unsaved changes",
+      content: "If you leave this page you will lose your changes.",
     },
-    link:
-      "https://github.com/apereo/openEQUELLA-admin-console-package/releases",
-  },
-  aclterms: {
-    title: {
-      ugr: "Select User / Group / Role",
-      ip: "Select IP range",
-      referrer: "HTTP referrer",
-      token: "Select shared secret",
+    menu: {
+      title: "My Account",
+      logout: "Logout",
+      prefs: "My preferences",
+      usernameUnknown: "Username unknown",
     },
   },
-  acleditor: {
-    privilege: "Privilege",
-    privileges: "Privileges",
-    selectpriv: "Select privilege",
-    expression: "Expression",
-    privplaceholder: "Please select or add a privilege",
-    dropplaceholder: "Drop targets here",
-    addpriv: "Add Privilege",
-    addexpression: "Add expression",
-    targets: "Targets",
-    new: {
-      ugr: "User, Group or Role",
-      ip: "IP Range",
-      referrer: "HTTP Referrer",
-      token: "Shared secret",
+  uiconfig: {
+    facet: {
+      name: "Name",
+      path: "Path",
+      title: "Search facets",
     },
-    notted: "NOT - ",
-    not: "Not",
-    override: "Override",
-    revoked: "Revoked",
-    revoke: "Revoke",
-    required: "* Required",
-    match: {
-      and: "All match",
-      or: "At least one match",
-      notand: "Not all match",
-      notor: "None match",
-    },
-    convertGroup: "Convert to group",
-  },
-  screenoptions: {
-    description: "Screen options",
-  },
-  navigationguard: {
-    title: "Close without saving?",
-    message:
-      "You have unsaved changes. Are you sure you want to leave this page without saving?",
-  },
-  dateRangeSelector: {
-    defaultStartDatePickerLabel: "From",
-    defaultEndDatePickerLabel: "To",
-    defaultDropdownLabel: "Quick date ranges",
-    quickOptionSwitchLabel: "Enable quick options",
-    quickOptionLabels: {
-      all: "All",
-      today: "Today",
-      lastSevenDays: "Last seven days",
-      lastMonth: "Last month",
-      thisYear: "This year",
-    },
+    enableNew: "Enable new UI",
+    enableSearch: "Enable new search page",
+    themeSettingsButton: "Edit Theme Settings",
   },
   userSearchComponent: {
     failedToFindUsersMessage: "Unable to find any users matching '%s'",
     queryFieldLabel: "Username, first or last name",
   },
-  lightboxComponent: {
-    unsupportedContent: "Provided content is not supported",
-    viewNext: "View next attachment",
-    viewPrevious: "View previous attachment",
-    youTubeVideoMissingId: "The provided YouTube video is missing a video ID",
-  },
-  fileUploader: {
-    noFileSelected: "No attached resources",
-    failedToDelete: "Failed to delete '%s' due to error: %s",
-  },
   youTubePlayer: {
     title: "YouTube video player",
+  },
+  "com.equella.core": {
+    title: "Settings",
+    windowtitlepostfix: " | openEQUELLA",
+    topbar: {
+      link: {
+        notifications: "Notifications",
+        tasks: "Tasks",
+      },
+    },
+  },
+  "com.equella.core.searching.search": {
+    title: "Search",
+  },
+  "com.equella.core.comments": {
+    anonymous: "Anonymous",
+    commentmsg: "Comment",
+    entermsg: "Enter a comment",
   },
 };

@@ -15,32 +15,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as React from "react";
+import { Meta, Story } from "@storybook/react";
+import {
+  EmbedCodeDialog,
+  EmbedCodeDialogProps,
+} from "../../tsrc/components/EmbedCodeDialog";
 
-package com.tle.core.db
+export default {
+  title: "component/EmbedCodeDialog",
+  component: EmbedCodeDialog,
+  argTypes: {
+    closeDialog: { action: "on close dialog" },
+  },
+} as Meta<EmbedCodeDialogProps>;
 
-import com.tle.core.db.migration.DBSchemaMigration
-import com.tle.core.db.types.DbUUID
-import io.doolse.simpledba.Iso
-import io.doolse.simpledba.jdbc._
-import io.doolse.simpledba.jdbc.postgres._
+export const Standard: Story<EmbedCodeDialogProps> = (
+  args: EmbedCodeDialogProps
+) => <EmbedCodeDialog {...args} />;
 
-object PostgresSchema
-    extends DBSchemaMigration
-    with DBSchema
-    with DBQueries
-    with StdPostgresColumns {
-
-  implicit def config = setupLogging(postgresConfig)
-
-  override def jsonColumnMod(ct: ColumnType): ColumnType = ct.copy(typeName = "JSONB")
-
-  lazy val hibSeq = Sequence[Long]("hibernate_sequence")
-
-  def autoIdCol = longCol
-
-  def dbUuidCol =
-    wrap[String, DbUUID](stringCol,
-                         _.isoMap(Iso(_.id.toString, DbUUID.fromString)),
-                         _.copy(typeName = "VARCHAR(36)"))
-
-}
+Standard.args = {
+  open: true,
+  embedCode: `<img alt="placeholder-500x500.png" src="./placeholder-500x500.png"/>`,
+};

@@ -17,15 +17,43 @@
  */
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
-import { displayYouTube } from "../../../__stories__/components/Lightbox.stories";
+import {
+  displayImage,
+  displayYouTube,
+} from "../../../__stories__/components/Lightbox.stories";
 import Lightbox, {
   isLightboxSupportedMimeType,
   LightboxConfig,
 } from "../../../tsrc/components/Lightbox";
-import { render } from "@testing-library/react";
+import { queryByText, render } from "@testing-library/react";
 import { CustomMimeTypes } from "../../../tsrc/modules/MimeTypesModule";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import "@testing-library/jest-dom/extend-expect";
+import { updateMockGetBaseUrl } from "../BaseUrlHelper";
+import { basicRenderData, updateMockGetRenderData } from "../RenderDataHelper";
+
+const mockUseHistoryPush = jest.fn();
+jest.mock("react-router", () => ({
+  ...jest.requireActual("react-router"),
+  useHistory: () => ({
+    push: mockUseHistoryPush,
+  }),
+}));
+
+const mockWindowOpen = jest.spyOn(window, "open").mockImplementation(jest.fn());
+
+const renderLightbox = (config: LightboxConfig) =>
+  render(
+    <Lightbox
+      onClose={jest.fn()}
+      open
+      config={config}
+      item={{
+        uuid: "369c92fa-ae59-4845-957d-8fcaa22c15e3",
+        version: 1,
+      }}
+    />
+  );
 
 describe("isLightboxSupportedMimeType", () => {
   it.each<[string, boolean]>([
@@ -88,10 +116,7 @@ describe("view previous/next attachment", () => {
       buttonText: string,
       updatedTitle: string
     ) => {
-      const { getByLabelText, queryByText } = render(
-        <Lightbox onClose={jest.fn()} open config={config} />
-      );
-
+      const { getByLabelText, queryByText } = renderLightbox(config);
       userEvent.click(getByLabelText(buttonText));
       expect(handler).toHaveBeenCalledTimes(1);
       expect(queryByText(updatedTitle)).toBeInTheDocument();
@@ -103,27 +128,59 @@ describe("Support for YouTube videos", () => {
   const youTubeLightboxConfig = displayYouTube.args!.config!;
 
   it("displays an embedded YouTube player for valid view URL src", () => {
-    const { queryByTitle } = render(
-      <Lightbox onClose={jest.fn()} open config={youTubeLightboxConfig} />
-    );
+    const { queryByTitle } = renderLightbox(youTubeLightboxConfig);
     expect(
       queryByTitle(languageStrings.youTubePlayer.title)
     ).toBeInTheDocument();
   });
 
   it("displays an error message if the view URL is invalid", () => {
-    const { queryByText } = render(
-      <Lightbox
-        onClose={jest.fn()}
-        open
-        config={{
-          ...youTubeLightboxConfig,
-          src: "https://www.youtube.com/watch/", // missing param v=1234xyz
-        }}
-      />
-    );
+    const { queryByText } = renderLightbox({
+      ...youTubeLightboxConfig,
+      src: "https://www.youtube.com/watch/", // missing param v=1234xyz
+    });
     expect(
       queryByText(languageStrings.lightboxComponent.youTubeVideoMissingId)
+    ).toBeInTheDocument();
+  });
+});
+
+describe("supports viewing Item Summary page", () => {
+  it.each([
+    ["normal page", false, mockUseHistoryPush],
+    ["Selection Session", true, mockWindowOpen],
+  ])(
+    "shows an icon button which is clicked to open the Summary page in %s",
+    (
+      _: string,
+      inSelectionSession: boolean,
+      onClick: jest.Mock | jest.SpyInstance
+    ) => {
+      if (inSelectionSession) {
+        updateMockGetBaseUrl();
+        updateMockGetRenderData(basicRenderData);
+      }
+
+      const { queryByLabelText } = renderLightbox(displayImage.args!.config!);
+      const viewSummaryPageButton = queryByLabelText(
+        languageStrings.lightboxComponent.openSummaryPage
+      );
+      expect(viewSummaryPageButton).toBeInTheDocument();
+      userEvent.click(viewSummaryPageButton!);
+      expect(onClick).toHaveBeenCalledTimes(1);
+    }
+  );
+});
+
+describe("Provide embed code", () => {
+  it("shows a dialog to allow copying embed code", () => {
+    const page = renderLightbox(displayImage.args!.config!);
+    const codeIconButton = page.getByLabelText(languageStrings.embedCode.copy, {
+      selector: "button",
+    });
+    userEvent.click(codeIconButton);
+    expect(
+      queryByText(page.getByRole("dialog"), languageStrings.embedCode.label)
     ).toBeInTheDocument();
   });
 });

@@ -17,7 +17,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion  = "3.13.2.Final"
 val SwaggerVersion   = "1.6.2"
-val TomcatVersion    = "9.0.48"
+val TomcatVersion    = "9.0.50"
 val axis2Version     = "1.6.2"
 val circeVersion     = "0.12.1"
 val cxfVersion       = "3.4.4"
@@ -271,7 +271,7 @@ libraryDependencies ++= Seq(
   "org.mozilla"                   % "rhino"                     % "1.7.13",
   "io.lemonlabs"                  %% "scala-uri"                % "1.5.1",
   "org.scala-lang.modules"        %% "scala-parser-combinators" % "1.1.2",
-  "io.github.classgraph"          % "classgraph"                % "4.8.108",
+  "io.github.classgraph"          % "classgraph"                % "4.8.109",
   "com.fasterxml"                 % "classmate"                 % "1.5.1",
   "org.glassfish"                 % "javax.el"                  % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"    % "3.0.0",

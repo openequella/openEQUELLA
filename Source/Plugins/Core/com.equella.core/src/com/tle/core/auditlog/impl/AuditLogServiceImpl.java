@@ -44,6 +44,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.annotation.Transactional;
 
 /** Generic audit logging service. */
@@ -330,6 +331,12 @@ public class AuditLogServiceImpl implements AuditLogService {
   }
 
   @Override
+  @Transactional
+  public void removeEntriesForUser(String userId) {
+    dao.removeEntriesForUser(userId);
+  }
+
+  @Override
   public int countByInstitution(Institution institution) {
     return (int) dao.countByCriteria(dao.restrictByInstitution(institution));
   }
@@ -339,6 +346,13 @@ public class AuditLogServiceImpl implements AuditLogService {
       Order order, int firstResult, int maxResults, Institution institution) {
     return dao.findAllByCriteria(
         order, firstResult, maxResults, dao.restrictByInstitution(institution));
+  }
+
+  @Override
+  public List<AuditLogEntry> findByUser(String userId) {
+    return dao.findAllByCriteria(
+        Restrictions.eq("institution", CurrentInstitution.get()),
+        Restrictions.eq("userId", userId));
   }
 
   /** Class which provides metadata of HTTP request. */

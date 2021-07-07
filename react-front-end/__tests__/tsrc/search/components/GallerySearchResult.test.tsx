@@ -18,6 +18,8 @@
 import "@testing-library/jest-dom/extend-expect";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { createMemoryHistory } from "history";
+import { Router } from "react-router-dom";
 import * as React from "react";
 import GallerySearchResult from "../../../../tsrc/search/components/GallerySearchResult";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
@@ -39,6 +41,7 @@ const {
  */
 const mockUseHistoryPush = jest.fn();
 jest.mock("react-router", () => ({
+  ...jest.requireActual("react-router"), // Only mock 'useHistory'.
   useHistory: () => ({
     push: mockUseHistoryPush,
   }),
@@ -46,7 +49,11 @@ jest.mock("react-router", () => ({
 
 describe("<GallerySearchResult />", () => {
   const renderGallery = () =>
-    render(<GallerySearchResult items={buildItems(5)} />); // 16 entries in total.
+    render(
+      <Router history={createMemoryHistory()}>
+        <GallerySearchResult items={buildItems(5)} />
+      </Router>
+    ); // 16 entries in total.
 
   it("displays the lightbox when the image is clicked on", () => {
     const { getAllByLabelText, queryAllByLabelText } = renderGallery();
