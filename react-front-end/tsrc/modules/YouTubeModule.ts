@@ -63,6 +63,7 @@ export const extractVideoId = (viewUrl: string): string | null =>
 
 /**
  * Update YouTube Video Attachment with Custom MIME type and View URL.
+ *
  * @param attachment An Youtube Video Attachment
  */
 export const updateYoutubeAttachment = (

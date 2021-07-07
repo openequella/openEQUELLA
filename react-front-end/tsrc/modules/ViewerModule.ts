@@ -404,7 +404,7 @@ export const convertViewerDefinitionToViewerConfig = (
  * @param version Version of the Item which the attachments belong to.
  * @param getViewerDetails Function called to retrieve viewer detail for each attachment.
  */
-export const buildViewerConfigForAttachment = async (
+export const buildViewerConfigForAttachments = async (
   attachments: OEQ.Search.Attachment[],
   uuid: string,
   version: number,
@@ -412,7 +412,10 @@ export const buildViewerConfigForAttachment = async (
     mimeType: string
   ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>
 ): Promise<AttachmentAndViewerConfig[]> => {
-  const attachmentsAndViewerDefinitions = await buildAttachmentsAndViewerDefinitions(
+  const attachmentsAndViewerDefinitions: E.Either<
+    string[],
+    AttachmentAndViewerDefinition[]
+  > = await buildAttachmentsAndViewerDefinitions(
     attachments,
     uuid,
     version,

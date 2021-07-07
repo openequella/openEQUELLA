@@ -45,6 +45,7 @@ export const buildFileAttachmentUrl = (
 /**
  * Call this function to update attachments that require custom information
  * such as custom MIME type.
+ *
  * @param attachment An attachment that might need custom information
  */
 export const updateAttachmentForCustomInfo = (

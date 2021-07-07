@@ -18,7 +18,7 @@
 import * as OEQ from "@openequella/rest-api-client";
 import {
   buildAttachmentsAndViewerDefinitions,
-  buildViewerConfigForAttachment,
+  buildViewerConfigForAttachments,
   determineAttachmentViewUrl,
   determineViewer,
 } from "../../../tsrc/modules/ViewerModule";
@@ -141,7 +141,7 @@ describe("determineAttachmentViewUrl()", () => {
 });
 
 describe("buildAttachmentsAndViewerDefinitions()", () => {
-  it("returns a left of Either if any attachment fails to build viewer definition", async () => {
+  it("returns a Left if any attachment fails to build viewer definition", async () => {
     mockGetViewerDetails.mockRejectedValue("Failure");
     const attachmentsAndViewerDefinitions = await buildAttachmentsAndViewerDefinitions(
       attachments,
@@ -152,7 +152,7 @@ describe("buildAttachmentsAndViewerDefinitions()", () => {
     expect(attachmentsAndViewerDefinitions).toBeLeft();
   });
 
-  it("returns a right of Either if viewer definitions are built for all attachments", async () => {
+  it("returns a Right if viewer definitions are built for all attachments", async () => {
     mockGetViewerDetails.mockResolvedValue("Success");
     const attachmentsAndViewerDefinitions = await buildAttachmentsAndViewerDefinitions(
       attachments,
@@ -168,7 +168,7 @@ describe("buildViewerConfigForAttachment", () => {
   it("returns a rejected promise when failed", async () => {
     mockGetViewerDetails.mockRejectedValue("Failure");
     await expect(
-      buildViewerConfigForAttachment(
+      buildViewerConfigForAttachments(
         attachments,
         itemUuid,
         itemVersion,
@@ -180,7 +180,7 @@ describe("buildViewerConfigForAttachment", () => {
   it("returns a resolved promise when successful", async () => {
     mockGetViewerDetails.mockResolvedValue("Success");
     await expect(
-      buildViewerConfigForAttachment(
+      buildViewerConfigForAttachments(
         attachments,
         itemUuid,
         itemVersion,

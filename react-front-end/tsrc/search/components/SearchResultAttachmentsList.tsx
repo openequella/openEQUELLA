@@ -53,7 +53,7 @@ import {
 } from "../../modules/LegacySelectionSessionModule";
 import {
   AttachmentAndViewerConfig,
-  buildViewerConfigForAttachment,
+  buildViewerConfigForAttachments,
 } from "../../modules/ViewerModule";
 import { languageStrings } from "../../util/langstrings";
 import { ResourceSelector } from "./ResourceSelector";
@@ -154,7 +154,7 @@ export const SearchResultAttachmentsList = ({
 
     (async () => {
       try {
-        const attachmentsAndViewerDefinitions = await buildViewerConfigForAttachment(
+        const attachmentsAndViewerDefinitions = await buildViewerConfigForAttachments(
           attachments,
           uuid,
           version,
