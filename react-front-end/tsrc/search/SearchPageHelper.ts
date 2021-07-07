@@ -53,6 +53,7 @@ import {
   SearchOptionsFields,
 } from "../modules/SearchModule";
 import { findUserById } from "../modules/UserModule";
+import { getDataFromLocalStorage } from "../util/BrowserStorageUtil";
 import { DateRange, isDate } from "../util/Date";
 import type { SearchPageOptions } from "./SearchPage";
 
@@ -67,13 +68,14 @@ export const defaultSearchPageOptions: SearchPageOptions = {
   dateRangeQuickModeEnabled: true,
 };
 
-export const defaultPagedSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> = {
-  start: 0,
-  length: 10,
-  available: 0,
-  results: [],
-  highlight: [],
-};
+export const defaultPagedSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> =
+  {
+    start: 0,
+    length: 10,
+    available: 0,
+    results: [],
+    highlight: [],
+  };
 
 /**
  * Legacy searching.do parameters currently supported by SearchPage component.
@@ -300,9 +302,8 @@ const getCollectionFromLegacyParams = async (
   collectionUuid: string | undefined
 ): Promise<Collection[] | undefined> => {
   if (!collectionUuid) return defaultSearchOptions.collections;
-  const collectionDetails:
-    | Collection[]
-    | undefined = await findCollectionsByUuid([collectionUuid]);
+  const collectionDetails: Collection[] | undefined =
+    await findCollectionsByUuid([collectionUuid]);
 
   return typeof collectionDetails !== "undefined" &&
     collectionDetails.length > 0
@@ -380,4 +381,23 @@ export const getPartialSearchOptions = (
   fields: SearchOptionsFields[]
 ) => pick(options, fields);
 
-export const WILDCARD_MODE_STORAGE_KEY = `wildcardMode_${AppConfig.baseUrl}`;
+export const WILDCARD_MODE_STORAGE_KEY = `${AppConfig.baseUrl}_wildcardMode`;
+
+/**
+ * Read the value of wildcard mode from LocalStorage.
+ */
+export const getWildcardModeFromStorage = (): boolean => {
+  try {
+    const wildcard = getDataFromLocalStorage(WILDCARD_MODE_STORAGE_KEY);
+    if (wildcard) {
+      const parsedValue = JSON.parse(wildcard);
+      if (!Boolean.guard(parsedValue)) {
+        throw new TypeError("unexpected type for wildcard mode");
+      }
+      return parsedValue;
+    }
+  } catch (error) {
+    console.error("Failed to read Wildcard mode from browser local storage");
+  }
+  return !defaultSearchOptions.rawMode;
+};

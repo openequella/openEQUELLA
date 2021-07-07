@@ -29,7 +29,6 @@ import {
   useState,
 } from "react";
 import { useHistory, useLocation } from "react-router";
-import { Boolean } from "runtypes";
 import { generateFromError } from "../api/errors";
 import { AppConfig } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
@@ -78,10 +77,7 @@ import {
 import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
 import { getCurrentUserDetails } from "../modules/UserModule";
 import SearchBar from "../search/components/SearchBar";
-import {
-  getDataFromLocalStorage,
-  setDataToLocalStorage,
-} from "../util/BrowserStorageUtil";
+import { setDataToLocalStorage } from "../util/BrowserStorageUtil";
 import type { DateRange } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
@@ -105,15 +101,14 @@ import {
   generateQueryStringFromSearchPageOptions,
   generateSearchPageOptionsFromQueryString,
   getPartialSearchOptions,
+  getWildcardModeFromStorage,
   WILDCARD_MODE_STORAGE_KEY,
 } from "./SearchPageHelper";
 
 // destructure strings import
 const { searchpage: searchStrings } = languageStrings;
-const {
-  title: dateModifiedSelectorTitle,
-  quickOptionDropdown,
-} = searchStrings.lastModifiedDateSelector;
+const { title: dateModifiedSelectorTitle, quickOptionDropdown } =
+  searchStrings.lastModifiedDateSelector;
 const { title: collectionSelectorTitle } = searchStrings.collectionSelector;
 const { title: displayModeSelectorTitle } = searchStrings.displayModeSelector;
 
@@ -229,8 +224,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [searchPageOptions, setSearchPageOptions] = useState<SearchPageOptions>(
     // If the user has gone 'back' to this page, then use their previous options. Otherwise
     // we start fresh - i.e. if a new navigation to Search Page.
-    searchPageHistoryState?.searchPageOptions ??
-      defaultSearchPageHistory.searchPageOptions
+    searchPageHistoryState?.searchPageOptions ?? {
+      ...defaultSearchPageHistory.searchPageOptions,
+      rawMode: !getWildcardModeFromStorage(),
+    }
   );
   const [filterExpansion, setFilterExpansion] = useState(
     searchPageHistoryState?.filterExpansion ??
@@ -251,16 +248,12 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     mimeTypeFilters: [],
   });
 
-  const [
-    currentUser,
-    setCurrentUser,
-  ] = React.useState<OEQ.LegacyContent.CurrentUserDetails>();
+  const [currentUser, setCurrentUser] =
+    React.useState<OEQ.LegacyContent.CurrentUserDetails>();
 
   const [showRefinePanel, setShowRefinePanel] = useState<boolean>(false);
-  const [
-    showFavouriteSearchDialog,
-    setShowFavouriteSearchDialog,
-  ] = useState<boolean>(false);
+  const [showFavouriteSearchDialog, setShowFavouriteSearchDialog] =
+    useState<boolean>(false);
   const [alreadyDownloaded, setAlreadyDownloaded] = useState<boolean>(false);
   const exportLinkRef = useRef<HTMLAnchorElement>(null);
 
@@ -426,6 +419,17 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
               ...history.location,
               state: { searchPageOptions: state.options, filterExpansion },
             });
+            // Update LocalStorage for wildcard mode.
+            try {
+              setDataToLocalStorage(
+                WILDCARD_MODE_STORAGE_KEY,
+                JSON.stringify(!state.options.rawMode)
+              );
+            } catch (error) {
+              console.error(
+                "Failed to save Wildcard mode to browser local storage"
+              );
+            }
             // scroll back up to the top of the page
             if (state.scrollToTop) window.scrollTo(0, 0);
             // Allow downloading new search result.
@@ -501,39 +505,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       false
     );
 
-  const handleWildcardModeChanged = (wildcardMode: boolean) => {
+  const handleWildcardModeChanged = (wildcardMode: boolean) =>
     // `wildcardMode` is a presentation concept, in the lower levels its inverse is the value for `rawMode`.
     search({ ...searchPageOptions, rawMode: !wildcardMode });
-    try {
-      setDataToLocalStorage(
-        WILDCARD_MODE_STORAGE_KEY,
-        JSON.stringify(wildcardMode)
-      );
-    } catch (error) {
-      console.error(
-        `${searchStrings.wildcardMode.errors.save}: ${error.message}`
-      );
-    }
-  };
-
-  const getWildcardMode = (): boolean => {
-    try {
-      const wildcard = getDataFromLocalStorage(WILDCARD_MODE_STORAGE_KEY);
-      if (wildcard) {
-        const parsedValue = JSON.parse(wildcard);
-        if (!Boolean.guard(parsedValue)) {
-          throw new TypeError("unexpected type for wildcard mode");
-        }
-        return parsedValue;
-      }
-    } catch (error) {
-      console.error(
-        `${searchStrings.wildcardMode.errors.retrieve}: ${error.message}`
-      );
-    }
-
-    return !searchPageOptions.rawMode;
-  };
 
   const handleQuickDateRangeModeChange = (
     quickDateRangeMode: boolean,
@@ -586,11 +560,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         const generateExportErrorMessage = (
           error: OEQ.Errors.ApiError
         ): string => {
-          const {
-            badRequest,
-            unauthorised,
-            notFound,
-          } = searchStrings.export.errorMessages;
+          const { badRequest, unauthorised, notFound } =
+            searchStrings.export.errorMessages;
           switch (error.status) {
             case 400:
               return badRequest;
@@ -953,7 +924,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
             <Grid item xs={12}>
               <SearchBar
                 query={searchPageOptions.query ?? ""}
-                wildcardMode={getWildcardMode()}
+                wildcardMode={!searchPageOptions.rawMode}
                 onQueryChange={handleQueryChanged}
                 onWildcardModeChange={handleWildcardModeChanged}
                 doSearch={() => search(searchPageOptions)}
