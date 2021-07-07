@@ -440,8 +440,8 @@ describe("<SearchResult/>", () => {
       await renderSearchResult(mockData.oneDeadOneAliveAttachObj);
 
       const deadAttachment = mockData.oneDeadOneAliveAttachObj.attachments![0];
-      const intactAttachment = mockData.oneDeadOneAliveAttachObj
-        .attachments![1];
+      const intactAttachment =
+        mockData.oneDeadOneAliveAttachObj.attachments![1];
 
       //expect intact attachment to be draggable
       expect(
@@ -500,11 +500,10 @@ describe("<SearchResult/>", () => {
 
         // The function should only have been called with the attachment
         // 78883eff-7cf6-4b14-ab76-2b7f84dbe833 which is the intact one
-        expect(
-          mockSelectResourceForCourseList
-        ).toHaveBeenCalledWith("72558c1d-8788-4515-86c8-b24a28cc451e/1", [
-          "78883eff-7cf6-4b14-ab76-2b7f84dbe833",
-        ]);
+        expect(mockSelectResourceForCourseList).toHaveBeenCalledWith(
+          "72558c1d-8788-4515-86c8-b24a28cc451e/1",
+          ["78883eff-7cf6-4b14-ab76-2b7f84dbe833"]
+        );
       });
     });
   });

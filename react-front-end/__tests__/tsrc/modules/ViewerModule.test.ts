@@ -34,8 +34,7 @@ const attachments = [
     hasGeneratedThumb: true,
     brokenAttachment: false,
     links: {
-      view:
-        "http://localhost:8080/ian/items/40e879db-393b-4256-bfe2-9a78771d6937/1/?attachment.uuid=4fddbeb7-8d16-4417-be60-8709ce9d7b15",
+      view: "http://localhost:8080/ian/items/40e879db-393b-4256-bfe2-9a78771d6937/1/?attachment.uuid=4fddbeb7-8d16-4417-be60-8709ce9d7b15",
       thumbnail:
         "http://localhost:8080/ian/thumbs/40e879db-393b-4256-bfe2-9a78771d6937/1/4fddbeb7-8d16-4417-be60-8709ce9d7b15",
     },
@@ -50,8 +49,7 @@ const attachments = [
     hasGeneratedThumb: true,
     brokenAttachment: false,
     links: {
-      view:
-        "http://localhost:8080/ian/items/40e879db-393b-4256-bfe2-9a78771d6937/1/?attachment.uuid=df55f129-1bbb-427f-b8a0-46792559bea9",
+      view: "http://localhost:8080/ian/items/40e879db-393b-4256-bfe2-9a78771d6937/1/?attachment.uuid=df55f129-1bbb-427f-b8a0-46792559bea9",
       thumbnail:
         "http://localhost:8080/ian/thumbs/40e879db-393b-4256-bfe2-9a78771d6937/1/df55f129-1bbb-427f-b8a0-46792559bea9",
     },
@@ -65,8 +63,7 @@ const attachments = [
     mimeType: "image/gif",
     brokenAttachment: false,
     links: {
-      view:
-        "http://localhost:8080/ian/items/40e879db-393b-4256-bfe2-9a78771d6937/1/?attachment.uuid=44528005-fb39-4461-bac7-12cd33ce4330",
+      view: "http://localhost:8080/ian/items/40e879db-393b-4256-bfe2-9a78771d6937/1/?attachment.uuid=44528005-fb39-4461-bac7-12cd33ce4330",
       thumbnail:
         "http://localhost:8080/ian/thumbs/40e879db-393b-4256-bfe2-9a78771d6937/1/44528005-fb39-4461-bac7-12cd33ce4330",
     },
@@ -143,23 +140,25 @@ describe("determineAttachmentViewUrl()", () => {
 describe("buildAttachmentsAndViewerDefinitions()", () => {
   it("returns a Left if any attachment fails to build viewer definition", async () => {
     mockGetViewerDetails.mockRejectedValue("Failure");
-    const attachmentsAndViewerDefinitions = await buildAttachmentsAndViewerDefinitions(
-      attachments,
-      itemUuid,
-      itemVersion,
-      mockGetViewerDetails
-    );
+    const attachmentsAndViewerDefinitions =
+      await buildAttachmentsAndViewerDefinitions(
+        attachments,
+        itemUuid,
+        itemVersion,
+        mockGetViewerDetails
+      );
     expect(attachmentsAndViewerDefinitions).toBeLeft();
   });
 
   it("returns a Right if viewer definitions are built for all attachments", async () => {
     mockGetViewerDetails.mockResolvedValue({ viewerId: "fancy" });
-    const attachmentsAndViewerDefinitions = await buildAttachmentsAndViewerDefinitions(
-      attachments,
-      itemUuid,
-      itemVersion,
-      mockGetViewerDetails
-    );
+    const attachmentsAndViewerDefinitions =
+      await buildAttachmentsAndViewerDefinitions(
+        attachments,
+        itemUuid,
+        itemVersion,
+        mockGetViewerDetails
+      );
     expect(attachmentsAndViewerDefinitions).toBeRight();
   });
 });

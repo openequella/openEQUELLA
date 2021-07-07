@@ -45,27 +45,19 @@ const searchPageSettingsStrings =
   languageStrings.settings.searching.searchPageSettings;
 
 const SearchPageSettings = ({ updateTemplate }: TemplateUpdateProps) => {
-  const [
-    searchSettings,
-    setSearchSettings,
-  ] = React.useState<OEQ.SearchSettings.Settings>(defaultSearchSettings);
-  const [
-    cloudSettings,
-    setCloudSettings,
-  ] = React.useState<OEQ.SearchSettings.CloudSettings>({
-    disabled: false,
-  });
+  const [searchSettings, setSearchSettings] =
+    React.useState<OEQ.SearchSettings.Settings>(defaultSearchSettings);
+  const [cloudSettings, setCloudSettings] =
+    React.useState<OEQ.SearchSettings.CloudSettings>({
+      disabled: false,
+    });
 
-  const [
-    initialSearchSettings,
-    setInitialSearchSettings,
-  ] = React.useState<OEQ.SearchSettings.Settings>(defaultSearchSettings);
-  const [
-    initialCloudSettings,
-    setInitialCloudSettings,
-  ] = React.useState<OEQ.SearchSettings.CloudSettings>({
-    disabled: false,
-  });
+  const [initialSearchSettings, setInitialSearchSettings] =
+    React.useState<OEQ.SearchSettings.Settings>(defaultSearchSettings);
+  const [initialCloudSettings, setInitialCloudSettings] =
+    React.useState<OEQ.SearchSettings.CloudSettings>({
+      disabled: false,
+    });
 
   const [loadSettings, setLoadSettings] = React.useState<boolean>(true);
   const [showSuccess, setShowSuccess] = React.useState<boolean>(false);

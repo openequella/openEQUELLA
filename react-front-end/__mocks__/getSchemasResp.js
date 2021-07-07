@@ -30,8 +30,7 @@ exports.getSchemasResp = {
         granted: ["LIST_SCHEMA"],
       },
       links: {
-        self:
-          "http://localhost:8080/rest/api/schema/f028746b-0346-fe7e-a223-a2db1240140c",
+        self: "http://localhost:8080/rest/api/schema/f028746b-0346-fe7e-a223-a2db1240140c",
       },
     },
     {
@@ -44,8 +43,7 @@ exports.getSchemasResp = {
         granted: ["LIST_SCHEMA"],
       },
       links: {
-        self:
-          "http://localhost:8080/rest/api/schema/8d6cf2dd-6166-2e2d-f8bb-129de8b90d3d",
+        self: "http://localhost:8080/rest/api/schema/8d6cf2dd-6166-2e2d-f8bb-129de8b90d3d",
       },
     },
     {
@@ -58,8 +56,7 @@ exports.getSchemasResp = {
         granted: ["LIST_SCHEMA"],
       },
       links: {
-        self:
-          "http://localhost:8080/rest/api/schema/d9aba963-4648-e497-d62b-fc1ddf2d0199",
+        self: "http://localhost:8080/rest/api/schema/d9aba963-4648-e497-d62b-fc1ddf2d0199",
       },
     },
     {
@@ -72,8 +69,7 @@ exports.getSchemasResp = {
         granted: ["LIST_SCHEMA"],
       },
       links: {
-        self:
-          "http://localhost:8080/rest/api/schema/71a27a31-d6b0-4681-b124-6db410ed420b",
+        self: "http://localhost:8080/rest/api/schema/71a27a31-d6b0-4681-b124-6db410ed420b",
       },
     },
     {
@@ -86,8 +82,7 @@ exports.getSchemasResp = {
         granted: ["LIST_SCHEMA"],
       },
       links: {
-        self:
-          "http://localhost:8080/rest/api/schema/87e848e3-675b-4ec6-8008-1326a5a45368",
+        self: "http://localhost:8080/rest/api/schema/87e848e3-675b-4ec6-8008-1326a5a45368",
       },
     },
   ],

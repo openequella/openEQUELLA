@@ -58,10 +58,9 @@ export const getMimeTypeFiltersById = async (
 };
 
 export const batchUpdateOrAdd = (filters: MimeTypeFilter[]) =>
-  Axios.put<BatchOperationResponse[]>(
-    MIME_TYPE_FILTERS_URL,
-    filters
-  ).then((res) => groupErrorMessages(res.data));
+  Axios.put<BatchOperationResponse[]>(MIME_TYPE_FILTERS_URL, filters).then(
+    (res) => groupErrorMessages(res.data)
+  );
 
 export const batchDelete = (ids: string[]) =>
   Axios.delete<BatchOperationResponse[]>(

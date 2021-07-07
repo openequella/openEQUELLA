@@ -78,19 +78,19 @@ export const getMimeTypeDefaultViewerDetails = async (
  *
  * @param type the MIME `type` to filter on - e.g. image, video, application, etc.
  */
-const mimeTypeEntryTypePredicate = (type: string) => (
-  mte: OEQ.MimeType.MimeTypeEntry
-): boolean => {
-  try {
-    return splitMimeType(mte.mimeType)[0] === type;
-  } catch (e) {
-    if (e instanceof TypeError) {
-      return false;
-    } else {
-      throw e;
+const mimeTypeEntryTypePredicate =
+  (type: string) =>
+  (mte: OEQ.MimeType.MimeTypeEntry): boolean => {
+    try {
+      return splitMimeType(mte.mimeType)[0] === type;
+    } catch (e) {
+      if (e instanceof TypeError) {
+        return false;
+      } else {
+        throw e;
+      }
     }
-  }
-};
+  };
 
 /**
  * Provides a list of all the `image/` MIME types configured on the server. Results are memoized.

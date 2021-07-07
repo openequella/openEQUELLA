@@ -53,9 +53,11 @@ jest
   .mockResolvedValue([CLASSIFICATION_SUBJECT, CLASSIFICATION_KEYWORD]);
 
 jest.mock("@openequella/rest-api-client");
-const mockedSearchFacets = (OEQ.SearchFacets.searchFacets as jest.Mock<
-  Promise<OEQ.SearchFacets.SearchFacetsResult>
->).mockImplementation(
+const mockedSearchFacets = (
+  OEQ.SearchFacets.searchFacets as jest.Mock<
+    Promise<OEQ.SearchFacets.SearchFacetsResult>
+  >
+).mockImplementation(
   (
     _: string,
     params?: OEQ.SearchFacets.SearchFacetsParams

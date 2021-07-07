@@ -40,16 +40,14 @@ const selectedCategories: SelectedCategories[] = [
   { id: 766943, categories: ["Hobart"] },
 ];
 
-export const noCategoriesSelected: Story<CategorySelectorProps> = CategorySelectorTemplate.bind(
-  {}
-);
+export const noCategoriesSelected: Story<CategorySelectorProps> =
+  CategorySelectorTemplate.bind({});
 noCategoriesSelected.args = {
   classifications: CategorySelectorMock.classifications,
 };
 
-export const categoriesSelected: Story<CategorySelectorProps> = CategorySelectorTemplate.bind(
-  {}
-);
+export const categoriesSelected: Story<CategorySelectorProps> =
+  CategorySelectorTemplate.bind({});
 categoriesSelected.args = {
   ...noCategoriesSelected.args,
   selectedCategories: selectedCategories,

@@ -45,9 +45,8 @@ export const AddFavouriteItemOnOlderVersion: Story<FavouriteItemDialogProps> = (
 
 AddFavouriteItemOnOlderVersion.args = { ...commonProps };
 
-export const AddFavouriteItemOnLatestVersion: Story<FavouriteItemDialogProps> = (
-  args
-) => <FavouriteItemDialog {...args} />;
+export const AddFavouriteItemOnLatestVersion: Story<FavouriteItemDialogProps> =
+  (args) => <FavouriteItemDialog {...args} />;
 
 AddFavouriteItemOnLatestVersion.args = {
   ...commonProps,

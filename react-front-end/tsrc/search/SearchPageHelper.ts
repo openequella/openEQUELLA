@@ -66,13 +66,14 @@ export const defaultSearchPageOptions: SearchPageOptions = {
   dateRangeQuickModeEnabled: true,
 };
 
-export const defaultPagedSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> = {
-  start: 0,
-  length: 10,
-  available: 0,
-  results: [],
-  highlight: [],
-};
+export const defaultPagedSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> =
+  {
+    start: 0,
+    length: 10,
+    available: 0,
+    results: [],
+    highlight: [],
+  };
 
 /**
  * Legacy searching.do parameters currently supported by SearchPage component.
@@ -299,9 +300,8 @@ const getCollectionFromLegacyParams = async (
   collectionUuid: string | undefined
 ): Promise<Collection[] | undefined> => {
   if (!collectionUuid) return defaultSearchOptions.collections;
-  const collectionDetails:
-    | Collection[]
-    | undefined = await findCollectionsByUuid([collectionUuid]);
+  const collectionDetails: Collection[] | undefined =
+    await findCollectionsByUuid([collectionUuid]);
 
   return typeof collectionDetails !== "undefined" &&
     collectionDetails.length > 0

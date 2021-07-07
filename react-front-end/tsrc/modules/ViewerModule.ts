@@ -267,48 +267,47 @@ export const buildAttachmentsAndViewerDefinitions = async (
     mimeType: string
   ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>
 ): Promise<E.Either<string[], AttachmentAndViewerDefinition[]>> => {
-  const either: E.Either<
-    string,
-    AttachmentAndViewerDefinition
-  >[] = await Promise.all(
-    attachments.map(async (originalAttachment) => {
-      const { brokenAttachment } = originalAttachment;
-      // Broken attachments don't have viewer configuration so we just return the attachment.
-      if (brokenAttachment) {
-        return E.right({ attachment: originalAttachment });
-      }
+  const either: E.Either<string, AttachmentAndViewerDefinition>[] =
+    await Promise.all(
+      attachments.map(async (originalAttachment) => {
+        const { brokenAttachment } = originalAttachment;
+        // Broken attachments don't have viewer configuration so we just return the attachment.
+        if (brokenAttachment) {
+          return E.right({ attachment: originalAttachment });
+        }
 
-      const attachment = updateAttachmentForCustomInfo(originalAttachment);
-      const { mimeType } = attachment;
+        const attachment = updateAttachmentForCustomInfo(originalAttachment);
+        const { mimeType } = attachment;
 
-      return await pipe(
-        mimeType,
-        O.fromNullable,
-        O.foldW(
-          // If MIME type is undefined, we just need a TaskEither which returns undefined as ViewerId, otherwise we
-          // call the provided function to retrieve ViewerId.
-          () => TE.right<string, OEQ.MimeType.ViewerId | undefined>(undefined),
-          (m) =>
-            pipe(
-              TE.tryCatch(() => getViewerDetails(m), String),
-              TE.map(
-                (resp: OEQ.MimeType.MimeTypeViewerDetail) => resp?.viewerId
+        return await pipe(
+          mimeType,
+          O.fromNullable,
+          O.foldW(
+            // If MIME type is undefined, we just need a TaskEither which returns undefined as ViewerId, otherwise we
+            // call the provided function to retrieve ViewerId.
+            () =>
+              TE.right<string, OEQ.MimeType.ViewerId | undefined>(undefined),
+            (m) =>
+              pipe(
+                TE.tryCatch(() => getViewerDetails(m), String),
+                TE.map(
+                  (resp: OEQ.MimeType.MimeTypeViewerDetail) => resp?.viewerId
+                )
               )
-            )
-        ),
-        // Then we map ViewerId to AttachmentAndViewerDefinition.
-        TE.map((viewerId: OEQ.MimeType.ViewerId | undefined) => ({
-          attachment,
-          viewerDefinition: getViewerDefinitionForAttachment(
-            uuid,
-            version,
-            attachment,
-            viewerId
           ),
-        }))
-      )();
-    })
-  );
+          // Then we map ViewerId to AttachmentAndViewerDefinition.
+          TE.map((viewerId: OEQ.MimeType.ViewerId | undefined) => ({
+            attachment,
+            viewerDefinition: getViewerDefinitionForAttachment(
+              uuid,
+              version,
+              attachment,
+              viewerId
+            ),
+          }))
+        )();
+      })
+    );
 
   const lefts = A.lefts(either);
   const rights = A.rights(either);
