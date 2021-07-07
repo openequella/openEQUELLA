@@ -153,7 +153,7 @@ describe("buildAttachmentsAndViewerDefinitions()", () => {
   });
 
   it("returns a Right if viewer definitions are built for all attachments", async () => {
-    mockGetViewerDetails.mockResolvedValue("Success");
+    mockGetViewerDetails.mockResolvedValue({ viewerId: "fancy" });
     const attachmentsAndViewerDefinitions = await buildAttachmentsAndViewerDefinitions(
       attachments,
       itemUuid,
