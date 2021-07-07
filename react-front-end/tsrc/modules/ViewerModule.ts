@@ -16,19 +16,16 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { Do } from "fp-ts-contrib/Do";
-
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
+import { Do } from "fp-ts-contrib/Do";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
-
 import {
   isLightboxSupportedMimeType,
   LightboxConfig,
 } from "../components/Lightbox";
-import { languageStrings } from "../util/langstrings";
 import {
   ATYPE_FILE,
   ATYPE_RESOURCE,
@@ -113,19 +110,14 @@ export interface AttachmentAndViewerConfig {
  * @param viewUrl the basic view URL returned in search results
  * @param mimeType the MIME type of the attachment to determine the viewer for
  * @param mimeTypeViewerId the server specified `ViewerId` for the attachment
- * @param broken whether or not this has been marked as a broken attachment by the server
  */
 export const determineViewer = (
   attachmentType: string,
   viewUrl: string,
-  broken: boolean,
   mimeType?: string,
   mimeTypeViewerId?: OEQ.MimeType.ViewerId
 ): ViewerDefinition => {
   const simpleLinkView: ViewerDefinition = ["link", viewUrl];
-  if (broken) {
-    return simpleLinkView;
-  }
   // For an attachment that is not one of the following, refer to the link provided by the server.
   // 1. File
   // 2. Custom resource
@@ -196,7 +188,6 @@ export const getViewerDefinitionForAttachment = (
     mimeType,
     links: { view: defaultViewUrl },
     filePath,
-    brokenAttachment,
   } = attachment;
   const viewUrl = determineAttachmentViewUrl(
     itemUuid,
@@ -206,13 +197,7 @@ export const getViewerDefinitionForAttachment = (
     filePath
   );
 
-  return determineViewer(
-    attachmentType,
-    viewUrl,
-    brokenAttachment,
-    mimeType,
-    mimeTypeViewerId
-  );
+  return determineViewer(attachmentType, viewUrl, mimeType, mimeTypeViewerId);
 };
 
 /**
@@ -265,33 +250,6 @@ export const buildLightboxNavigationHandler = (
 };
 
 /**
- * Find Viewer ID for a given MIME type in a TaskEither. It's guaranteed that the error thrown from 'getViewerDetails'
- * will be caught and converted to a rejected promise.
- *
- * @param getViewerDetails Function called to retrieve Viewer ID.
- */
-const getViewerId = async (
-  getViewerDetails: () => Promise<OEQ.MimeType.MimeTypeViewerDetail>
-): Promise<E.Either<string, OEQ.MimeType.ViewerId>> => {
-  // Since the task passed into 'TE.tryCatch' should never throw an error and 'getViewerDetail' could throw an error,
-  // we use a try-catch block to ensure a rejected promise is returned when an error occurs.
-  const task = () => {
-    try {
-      return getViewerDetails();
-    } catch (error) {
-      throw new Error(
-        `${languageStrings.searchpage.searchResult.errors.getAttachmentViewerDetailsFailure}: ${error.message}`
-      );
-    }
-  };
-
-  return await pipe(
-    TE.tryCatch(task, String),
-    TE.map((resp: OEQ.MimeType.MimeTypeViewerDetail) => resp?.viewerId)
-  )();
-};
-
-/**
  * Build a list of viewer definition for attachments. For each attachment, return an Either where left is a error
  * message and right is 'AttachmentAndViewerDefinition'. However, the final result is an Either where left is a string
  * which accumulates all the error messages and right is an array of 'AttachmentAndViewerDefinition'.
@@ -308,36 +266,53 @@ export const buildAttachmentsAndViewerDefinitions = async (
   getViewerDetails: (
     mimeType: string
   ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>
-): Promise<E.Either<string, AttachmentAndViewerDefinition[]>> => {
+): Promise<E.Either<string[], AttachmentAndViewerDefinition[]>> => {
   const either: E.Either<
     string,
     AttachmentAndViewerDefinition
   >[] = await Promise.all(
     attachments.map(async (originalAttachment) => {
-      const attachment = updateAttachmentForCustomInfo(originalAttachment);
-      const { mimeType, brokenAttachment } = attachment;
-      const viewerId: E.Either<string, OEQ.MimeType.ViewerId> | undefined =
-        mimeType && !brokenAttachment
-          ? await getViewerId(() => getViewerDetails(mimeType))
-          : undefined;
+      const { brokenAttachment } = originalAttachment;
+      // Broken attachments don't have viewer configuration so we just return the attachment.
+      if (brokenAttachment) {
+        return E.right({ attachment: originalAttachment });
+      }
 
-      return viewerId && E.isLeft(viewerId)
-        ? viewerId
-        : E.right({
+      const attachment = updateAttachmentForCustomInfo(originalAttachment);
+      const { mimeType } = attachment;
+
+      return await pipe(
+        mimeType,
+        O.fromNullable,
+        O.foldW(
+          // If MIME type is undefined, we just need a TaskEither which returns undefined as ViewerId, otherwise we
+          // call the provided function to retrieve ViewerId.
+          () => TE.right<string, OEQ.MimeType.ViewerId | undefined>(undefined),
+          (m) =>
+            pipe(
+              TE.tryCatch(() => getViewerDetails(m), String),
+              TE.map(
+                (resp: OEQ.MimeType.MimeTypeViewerDetail) => resp?.viewerId
+              )
+            )
+        ),
+        // Then we map ViewerId to AttachmentAndViewerDefinition.
+        TE.map((viewerId: OEQ.MimeType.ViewerId | undefined) => ({
+          attachment,
+          viewerDefinition: getViewerDefinitionForAttachment(
+            uuid,
+            version,
             attachment,
-            viewerDefinition: getViewerDefinitionForAttachment(
-              uuid,
-              version,
-              attachment,
-              viewerId?.right
-            ),
-          });
+            viewerId
+          ),
+        }))
+      )();
     })
   );
-  const lefts: string[] = A.lefts(either);
-  const rights: AttachmentAndViewerDefinition[] = A.rights(either);
 
-  return A.isEmpty(lefts) ? E.right(rights) : E.left(lefts.join());
+  const lefts = A.lefts(either);
+  const rights = A.rights(either);
+  return A.isEmpty(lefts) ? E.right(rights) : E.left(lefts);
 };
 
 /**
@@ -453,7 +428,7 @@ export const buildViewerConfigForAttachment = async (
       )
       .return(({ ac }) => ac),
     E.fold(
-      (error: string) => Promise.reject(error),
+      (error: string[]) => Promise.reject(error),
       (ac: AttachmentAndViewerConfig[]) => Promise.resolve(ac)
     )
   );

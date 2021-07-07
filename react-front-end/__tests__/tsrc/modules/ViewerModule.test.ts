@@ -85,14 +85,11 @@ describe("determineViewer()", () => {
 
   it("returns link viewer details for non-file attachment", () => {
     const testLink = "http://some.link/blah";
-    expect(determineViewer("blah", testLink, false)).toEqual([
-      linkViewerId,
-      testLink,
-    ]);
+    expect(determineViewer("blah", testLink)).toEqual([linkViewerId, testLink]);
   });
 
   it("returns a 'link' viewer if full parameters aren't provided for 'file' attachments", () => {
-    const [viewer] = determineViewer(fileAttachmentType, fileViewUrl, false);
+    const [viewer] = determineViewer(fileAttachmentType, fileViewUrl);
     expect(viewer).toEqual(linkViewerId);
   });
 
@@ -100,7 +97,6 @@ describe("determineViewer()", () => {
     const [viewer, url] = determineViewer(
       fileAttachmentType,
       fileViewUrl,
-      false,
       "not/used",
       "save"
     );
@@ -115,7 +111,6 @@ describe("determineViewer()", () => {
         determineViewer(
           fileAttachmentType,
           fileViewUrl,
-          false,
           "audio/x-mp3", // rather than test every supported MIME type, just using one to keep things short
           mimeTypeViewerId
         )
