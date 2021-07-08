@@ -91,21 +91,19 @@ export const RefineSearchPanel = ({
 
   const { showMore, showLess } = languageStrings.common.action;
 
-  const {
-    visible: alwaysVisibleControls,
-    collapsed: collapsedControls,
-  } = controls
-    .filter((c) => !c.disabled)
-    .reduce(
-      (acc, cur: RefinePanelControl) => {
-        (cur.alwaysVisible ? acc.visible : acc.collapsed).push(cur);
-        return acc;
-      },
-      {
-        visible: [] as RefinePanelControl[],
-        collapsed: [] as RefinePanelControl[],
-      }
-    );
+  const { visible: alwaysVisibleControls, collapsed: collapsedControls } =
+    controls
+      .filter((c) => !c.disabled)
+      .reduce(
+        (acc, cur: RefinePanelControl) => {
+          (cur.alwaysVisible ? acc.visible : acc.collapsed).push(cur);
+          return acc;
+        },
+        {
+          visible: [] as RefinePanelControl[],
+          collapsed: [] as RefinePanelControl[],
+        }
+      );
 
   const alwaysVisibleSection = (controls: RefinePanelControl[]) =>
     controls.map((control) => renderRefineControl(control));

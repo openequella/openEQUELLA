@@ -328,12 +328,12 @@ Animations
   }
 }
 
+// need to explicitly exclude youtube preview iframe
 html,
 body,
 div,
 span,
 applet,
-iframe,
 h1,
 h2,
 h3,
@@ -354,6 +354,7 @@ del,
 dfn,
 em,
 font,
+iframe:not(.skip-css-reset),
 ins,
 kbd,
 q,
@@ -402,6 +403,7 @@ select {
   background: transparent;
   font-family: "Roboto";
 }
+
 ul {
   list-style: none;
 }

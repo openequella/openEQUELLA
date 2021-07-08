@@ -46,6 +46,7 @@ export interface YouTubeEmbedProps {
  */
 const YouTubeEmbed = ({ dimensions, videoId }: YouTubeEmbedProps) => (
   <iframe
+    className="skip-css-reset"
     width={dimensions?.width ?? 560}
     height={dimensions?.height ?? 315}
     src={`https://www.youtube-nocookie.com/embed/${videoId}`}

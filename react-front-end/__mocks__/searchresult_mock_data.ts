@@ -40,10 +40,8 @@ const basicSearchObj: OEQ.Search.SearchResultItem = {
   },
   keywordFoundInAttachment: false,
   links: {
-    view:
-      "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
-    self:
-      "http://localhost:8080/rest/api/item/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
+    view: "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
+    self: "http://localhost:8080/rest/api/item/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
   },
   bookmarkId: 884874,
   isLatestVersion: true,
@@ -70,8 +68,7 @@ const attachSearchObj: OEQ.Search.SearchResultItem = {
       hasGeneratedThumb: true,
       brokenAttachment: false,
       links: {
-        view:
-          "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/?attachment.uuid=78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
+        view: "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/?attachment.uuid=78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
         thumbnail: "./thumb.jpg",
       },
     },
@@ -86,10 +83,8 @@ const attachSearchObj: OEQ.Search.SearchResultItem = {
   },
   keywordFoundInAttachment: false,
   links: {
-    view:
-      "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
-    self:
-      "http://localhost:8080/rest/api/item/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
+    view: "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
+    self: "http://localhost:8080/rest/api/item/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
   },
   isLatestVersion: true,
 };
@@ -115,8 +110,7 @@ const keywordFoundInAttachmentObj: OEQ.Search.SearchResultItem = {
       hasGeneratedThumb: true,
       brokenAttachment: false,
       links: {
-        view:
-          "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/?attachment.uuid=78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
+        view: "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/?attachment.uuid=78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
         thumbnail: "./thumb.jpg",
       },
     },
@@ -131,10 +125,8 @@ const keywordFoundInAttachmentObj: OEQ.Search.SearchResultItem = {
   },
   keywordFoundInAttachment: true,
   links: {
-    view:
-      "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
-    self:
-      "http://localhost:8080/rest/api/item/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
+    view: "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
+    self: "http://localhost:8080/rest/api/item/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
   },
   isLatestVersion: false,
 };
@@ -160,8 +152,7 @@ const customMetaSearchObj: OEQ.Search.SearchResultItem = {
       hasGeneratedThumb: true,
       brokenAttachment: false,
       links: {
-        view:
-          "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/?attachment.uuid=78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
+        view: "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/?attachment.uuid=78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
         thumbnail: "./thumb.jpg",
       },
     },
@@ -176,8 +167,7 @@ const customMetaSearchObj: OEQ.Search.SearchResultItem = {
     {
       type: "node",
       name: "Url metadata",
-      html:
-        '<a href="http://www.abc.net.au/news">http://www.abc.net.au/news</a>',
+      html: '<a href="http://www.abc.net.au/news">http://www.abc.net.au/news</a>',
     },
     {
       type: "node",
@@ -193,10 +183,8 @@ const customMetaSearchObj: OEQ.Search.SearchResultItem = {
   },
   keywordFoundInAttachment: true,
   links: {
-    view:
-      "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
-    self:
-      "http://localhost:8080/rest/api/item/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
+    view: "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
+    self: "http://localhost:8080/rest/api/item/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
   },
   isLatestVersion: false,
 };
@@ -222,8 +210,7 @@ const oneDeadAttachObj: OEQ.Search.SearchResultItem = {
       hasGeneratedThumb: true,
       brokenAttachment: true,
       links: {
-        view:
-          "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/?attachment.uuid=78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
+        view: "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/?attachment.uuid=78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
         thumbnail: "./thumb.jpg",
       },
     },
@@ -238,10 +225,8 @@ const oneDeadAttachObj: OEQ.Search.SearchResultItem = {
   },
   keywordFoundInAttachment: false,
   links: {
-    view:
-      "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
-    self:
-      "http://localhost:8080/rest/api/item/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
+    view: "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
+    self: "http://localhost:8080/rest/api/item/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
   },
   isLatestVersion: true,
 };
@@ -267,8 +252,7 @@ const oneDeadOneAliveAttachObj: OEQ.Search.SearchResultItem = {
       hasGeneratedThumb: true,
       brokenAttachment: true,
       links: {
-        view:
-          "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/?attachment.uuid=78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
+        view: "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/?attachment.uuid=78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
         thumbnail: "./thumb.jpg",
       },
     },
@@ -281,8 +265,7 @@ const oneDeadOneAliveAttachObj: OEQ.Search.SearchResultItem = {
       hasGeneratedThumb: true,
       brokenAttachment: false,
       links: {
-        view:
-          "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/?attachment.uuid=78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
+        view: "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/?attachment.uuid=78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
         thumbnail: "./thumb.jpg",
       },
     },
@@ -297,10 +280,8 @@ const oneDeadOneAliveAttachObj: OEQ.Search.SearchResultItem = {
   },
   keywordFoundInAttachment: false,
   links: {
-    view:
-      "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
-    self:
-      "http://localhost:8080/rest/api/item/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
+    view: "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
+    self: "http://localhost:8080/rest/api/item/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
   },
   isLatestVersion: true,
 };

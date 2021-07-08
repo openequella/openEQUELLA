@@ -138,15 +138,11 @@ const {
   openSummaryPage: openSummaryPageString,
 } = languageStrings.lightboxComponent;
 
-const {
-  close: labelClose,
-  openInNewWindow: labelOpenInNewWindow,
-} = languageStrings.common.action;
+const { close: labelClose, openInNewWindow: labelOpenInNewWindow } =
+  languageStrings.common.action;
 
-const {
-  unsupportedContent: labelUnsupportedContent,
-  youTubeVideoMissingId,
-} = languageStrings.lightboxComponent;
+const { unsupportedContent: labelUnsupportedContent, youTubeVideoMissingId } =
+  languageStrings.lightboxComponent;
 
 const { copy: copyEmbedCodeString } = languageStrings.embedCode;
 
@@ -157,9 +153,8 @@ const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
 
   const [content, setContent] = useState<ReactElement | undefined>();
   const [lightBoxConfig, setLightBoxConfig] = useState<LightboxConfig>(config);
-  const [openEmbedCodeDialog, setOpenEmbedCodeDialog] = useState<boolean>(
-    false
-  );
+  const [openEmbedCodeDialog, setOpenEmbedCodeDialog] =
+    useState<boolean>(false);
   const { src, title, mimeType, onPrevious, onNext } = lightBoxConfig;
 
   const handleNav = (getLightboxConfig: () => LightboxConfig) => {

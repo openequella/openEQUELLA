@@ -126,10 +126,8 @@ describe("<SearchPagination/>", () => {
 
   it("Triggers the page count callback when the user changes the number of rows per page", () => {
     const { container } = searchPagination(100, 0, 10);
-    const {
-      getItemsPerPageOption,
-      getItemsPerPageSelect,
-    } = queryPaginatorControls(container);
+    const { getItemsPerPageOption, getItemsPerPageSelect } =
+      queryPaginatorControls(container);
 
     userEvent.click(getItemsPerPageSelect());
 

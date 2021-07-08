@@ -156,13 +156,8 @@ export const DateRangeSelector = ({
    * Provide labels and values for options of pre-defined date ranges.
    */
   const getDateRangeOptions = (): Map<string, DateTime | undefined> => {
-    const {
-      today,
-      lastSevenDays,
-      lastMonth,
-      thisYear,
-      all,
-    } = quickOptionLabels;
+    const { today, lastSevenDays, lastMonth, thisYear, all } =
+      quickOptionLabels;
     const now = DateTime.local();
     return new Map([
       [today, now],

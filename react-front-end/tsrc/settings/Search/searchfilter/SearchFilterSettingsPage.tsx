@@ -82,16 +82,12 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const classes = useStyles();
 
   // The general Search settings. Here only configure searchingDisableOwnerFilter and searchingDisableDateModifiedFilter.
-  const [
-    searchSettings,
-    setSearchSettings,
-  ] = useState<OEQ.SearchSettings.Settings>(defaultSearchSettings);
+  const [searchSettings, setSearchSettings] =
+    useState<OEQ.SearchSettings.Settings>(defaultSearchSettings);
 
   // Used to record the initial Search settings and compare if values are changed or not when saving.
-  const [
-    initialSearchSettings,
-    setInitialSearchSettings,
-  ] = useState<OEQ.SearchSettings.Settings>(defaultSearchSettings);
+  const [initialSearchSettings, setInitialSearchSettings] =
+    useState<OEQ.SearchSettings.Settings>(defaultSearchSettings);
 
   // mimeTypeFilters contains all filters displayed in the list, including those saved in the Server and visually added/deleted.
   const [mimeTypeFilters, setMimeTypeFilters] = useState<MimeTypeFilter[]>([]);
@@ -112,10 +108,8 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
   >();
 
   const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
-  const [
-    openMimeTypeFilterEditor,
-    setOpenMimeTypeFilterEditor,
-  ] = useState<boolean>(false);
+  const [openMimeTypeFilterEditor, setOpenMimeTypeFilterEditor] =
+    useState<boolean>(false);
   const [openMessageDialog, setOpenMessageDialog] = useState<boolean>(false);
   const [messageDialogMessages, setMessageDialogMessages] = useState<string[]>(
     []

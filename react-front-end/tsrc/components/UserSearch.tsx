@@ -57,10 +57,8 @@ const UserSearch = ({
   userListProvider = (query?: string) =>
     UserModule.listUsers(query ? `${query}*` : undefined),
 }: UserSearchProps) => {
-  const {
-    failedToFindUsersMessage,
-    queryFieldLabel,
-  } = languageStrings.userSearchComponent;
+  const { failedToFindUsersMessage, queryFieldLabel } =
+    languageStrings.userSearchComponent;
 
   const [query, setQuery] = useState<string>("");
   const [users, setUsers] = useState<OEQ.UserQuery.UserDetails[]>([]);

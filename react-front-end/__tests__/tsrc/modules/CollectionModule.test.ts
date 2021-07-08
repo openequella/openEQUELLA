@@ -20,9 +20,11 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as CollectionModule from "../../../tsrc/modules/CollectionsModule";
 
 jest.mock("@openequella/rest-api-client");
-(OEQ.Collection.listCollections as jest.Mock<
-  Promise<OEQ.Common.PagedResult<OEQ.Common.BaseEntity>>
->).mockResolvedValue(getCollectionsResp);
+(
+  OEQ.Collection.listCollections as jest.Mock<
+    Promise<OEQ.Common.PagedResult<OEQ.Common.BaseEntity>>
+  >
+).mockResolvedValue(getCollectionsResp);
 
 describe("CollectionModule", () => {
   it("should be able to get a list of collections", async () => {

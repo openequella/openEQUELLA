@@ -44,14 +44,10 @@ const contentIndexSettingsStrings =
 const markStrings = contentIndexSettingsStrings.sliderMarks;
 
 const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
-  const [
-    searchSettings,
-    setSearchSettings,
-  ] = React.useState<OEQ.SearchSettings.Settings>(defaultSearchSettings);
-  const [
-    initialSearchSettings,
-    setInitialSearchSettings,
-  ] = React.useState<OEQ.SearchSettings.Settings>(defaultSearchSettings);
+  const [searchSettings, setSearchSettings] =
+    React.useState<OEQ.SearchSettings.Settings>(defaultSearchSettings);
+  const [initialSearchSettings, setInitialSearchSettings] =
+    React.useState<OEQ.SearchSettings.Settings>(defaultSearchSettings);
   const [loadSettings, setLoadSettings] = React.useState<boolean>(true);
   const [showSuccess, setShowSuccess] = React.useState<boolean>(false);
   const [disableSettings, setDisableSettings] = React.useState<boolean>(false);
