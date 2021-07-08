@@ -527,6 +527,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       externalMimeTypes: isSelectionSessionOpen()
         ? searchPageOptions.externalMimeTypes
         : undefined,
+      rawMode: searchPageOptions.rawMode,
     });
     setFilterExpansion(false);
   };
