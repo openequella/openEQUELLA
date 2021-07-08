@@ -40,6 +40,7 @@ import {
   TemplateUpdateProps,
 } from "../mainui/Template";
 import { getAdvancedSearchesFromServer } from "../modules/AdvancedSearchModule";
+import { saveDataToLocalStorage } from "../modules/BrowserStorageModule";
 import type { Collection } from "../modules/CollectionsModule";
 import { addFavouriteSearch } from "../modules/FavouriteModule";
 import {
@@ -77,7 +78,6 @@ import {
 import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
 import { getCurrentUserDetails } from "../modules/UserModule";
 import SearchBar from "../search/components/SearchBar";
-import { setDataToLocalStorage } from "../util/BrowserStorageUtil";
 import type { DateRange } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
@@ -101,8 +101,8 @@ import {
   generateQueryStringFromSearchPageOptions,
   generateSearchPageOptionsFromQueryString,
   getPartialSearchOptions,
-  getWildcardModeFromStorage,
-  WILDCARD_MODE_STORAGE_KEY,
+  getRawModeFromStorage,
+  RAW_MODE_STORAGE_KEY,
 } from "./SearchPageHelper";
 
 // destructure strings import
@@ -226,7 +226,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     // we start fresh - i.e. if a new navigation to Search Page.
     searchPageHistoryState?.searchPageOptions ?? {
       ...defaultSearchPageHistory.searchPageOptions,
-      rawMode: !getWildcardModeFromStorage(),
+      rawMode: getRawModeFromStorage(),
     }
   );
   const [filterExpansion, setFilterExpansion] = useState(
@@ -419,17 +419,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
               ...history.location,
               state: { searchPageOptions: state.options, filterExpansion },
             });
-            // Update LocalStorage for wildcard mode.
-            try {
-              setDataToLocalStorage(
-                WILDCARD_MODE_STORAGE_KEY,
-                JSON.stringify(!state.options.rawMode)
-              );
-            } catch (error) {
-              console.error(
-                "Failed to save Wildcard mode to browser local storage"
-              );
-            }
+            // Save the value of wildcard mode to LocalStorage.
+            saveDataToLocalStorage(RAW_MODE_STORAGE_KEY, state.options.rawMode);
             // scroll back up to the top of the page
             if (state.scrollToTop) window.scrollTo(0, 0);
             // Allow downloading new search result.

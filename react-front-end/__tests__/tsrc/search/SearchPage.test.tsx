@@ -85,7 +85,7 @@ import {
   querySearchAttachmentsSelector,
   queryStatusSelector,
 } from "./SearchPageHelper";
-import * as StorageUtil from "../../../tsrc/util/BrowserStorageUtil";
+import * as BrowserStorageModule from "../../../tsrc/modules/BrowserStorageModule";
 
 const defaultTheme = createMuiTheme({
   props: { MuiWithWidth: { initialWidth: "md" } },
@@ -126,6 +126,15 @@ const mockConvertParamsToSearchOptions = jest.spyOn(
 const mockMimeTypeFilters = jest
   .spyOn(SearchFilterSettingsModule, "getMimeTypeFiltersFromServer")
   .mockResolvedValue(getMimeTypeFilters);
+
+const mockSaveDataToLocalStorage = jest
+  .spyOn(BrowserStorageModule, "saveDataToLocalStorage")
+  .mockImplementation(jest.fn);
+
+const mockReadDataFromLocalStorage = jest.spyOn(
+  BrowserStorageModule,
+  "readDataFromLocalStorage"
+);
 
 //i tried mocking this using window.navigator.clipboard.writeText = jest.fn(), but the navigator object is undefined
 Object.assign(navigator, {
@@ -173,8 +182,7 @@ jest.spyOn(FavouriteModule, "deleteFavouriteItem").mockResolvedValue();
 jest.spyOn(FavouriteModule, "addFavouriteSearch").mockResolvedValue({
   id: 123,
   name: "test",
-  url:
-    "/page/search?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RATING%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22crab%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D",
+  url: "/page/search?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RATING%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22crab%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D",
 });
 
 const defaultSearchPageOptions: SearchPageOptions = {
@@ -308,10 +316,8 @@ describe("Refine search by searching attachments", () => {
 });
 
 describe("Refine search by status", () => {
-  const {
-    live: liveButtonLabel,
-    all: allButtonLabel,
-  } = languageStrings.searchpage.statusSelector;
+  const { live: liveButtonLabel, all: allButtonLabel } =
+    languageStrings.searchpage.statusSelector;
 
   const expectSearchItemsCalledWithStatus = (status: OEQ.Common.ItemStatus[]) =>
     expect(mockSearch).toHaveBeenLastCalledWith({
@@ -611,11 +617,8 @@ describe("<SearchPage/>", () => {
 
   it("should support changing the number of items displayed per page", async () => {
     // Initial items per page is 10
-    const {
-      getPageCount,
-      getItemsPerPageOption,
-      getItemsPerPageSelect,
-    } = queryPaginatorControls(page.container);
+    const { getPageCount, getItemsPerPageOption, getItemsPerPageSelect } =
+      queryPaginatorControls(page.container);
     expect(getPageCount()).toHaveTextContent("1-10 of 12");
 
     userEvent.click(getItemsPerPageSelect());
@@ -631,11 +634,8 @@ describe("<SearchPage/>", () => {
   });
 
   it("navigates to the previous and next page when requested", async () => {
-    const {
-      getNextPageButton,
-      getPageCount,
-      getPreviousPageButton,
-    } = queryPaginatorControls(page.container);
+    const { getNextPageButton, getPageCount, getPreviousPageButton } =
+      queryPaginatorControls(page.container);
 
     userEvent.click(getNextPageButton());
     await waitForSearch();
@@ -650,11 +650,8 @@ describe("<SearchPage/>", () => {
     mockSearch.mockImplementation(() =>
       Promise.resolve(getSearchResultsCustom(30))
     );
-    const {
-      getFirstPageButton,
-      getLastPageButton,
-      getPageCount,
-    } = queryPaginatorControls(page.container);
+    const { getFirstPageButton, getLastPageButton, getPageCount } =
+      queryPaginatorControls(page.container);
     const firstPageCountText = "1-10 of 30";
 
     // ensure baseline
@@ -939,11 +936,8 @@ describe("Add favourite search", () => {
 });
 
 describe("Changing display mode", () => {
-  const {
-    modeGalleryImage,
-    modeGalleryVideo,
-    modeItemList,
-  } = languageStrings.searchpage.displayModeSelector;
+  const { modeGalleryImage, modeGalleryVideo, modeItemList } =
+    languageStrings.searchpage.displayModeSelector;
   const {
     searchResult: { ariaLabel: listItemAriaLabel },
     gallerySearchResult: { ariaLabel: galleryItemAriaLabel },
@@ -1140,31 +1134,21 @@ describe("Hide Gallery", () => {
     }
   );
 });
+
 describe("Wildcard mode persistence", () => {
   it("saves wildcard mode value in browser local storage", async () => {
-    const mockSetDataToLocalStorage = jest.spyOn(
-      StorageUtil,
-      "setDataToLocalStorage"
-    );
-    const { getByText } = await renderSearchPage();
-    const wildcardModeSwitch = getByText(
-      languageStrings.searchpage.wildcardSearch
-    );
-    await act(async () => {
-      await userEvent.click(wildcardModeSwitch);
-    });
-    expect(mockSetDataToLocalStorage).toHaveBeenCalledTimes(1);
+    await renderSearchPage();
+    expect(mockSaveDataToLocalStorage).toHaveBeenCalled();
   });
 
   it("retrieves wildcard mode value from local storage", async () => {
     // By default wildcard mode is turned on, so we save 'false' in local storage.
-    const mockGetDataToLocalStorage = jest
-      .spyOn(StorageUtil, "getDataFromLocalStorage")
-      .mockReturnValue("false");
+    mockReadDataFromLocalStorage.mockReturnValueOnce(true);
     const { container } = await renderSearchPage();
-    expect(mockGetDataToLocalStorage).toHaveBeenCalled();
-
+    expect(mockReadDataFromLocalStorage).toHaveBeenCalled();
     const wildcardModeSwitch = container.querySelector("#wildcardSearch");
+
+    // Since rawMode is true, the checkbox should not be checked.
     expect(wildcardModeSwitch).not.toBeChecked();
   });
 });

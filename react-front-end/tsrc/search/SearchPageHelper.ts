@@ -36,7 +36,7 @@ import {
   Union,
   Unknown,
 } from "runtypes";
-import { AppConfig } from "../AppConfig";
+import { readDataFromLocalStorage } from "../modules/BrowserStorageModule";
 import {
   Collection,
   findCollectionsByUuid,
@@ -53,7 +53,6 @@ import {
   SearchOptionsFields,
 } from "../modules/SearchModule";
 import { findUserById } from "../modules/UserModule";
-import { getDataFromLocalStorage } from "../util/BrowserStorageUtil";
 import { DateRange, isDate } from "../util/Date";
 import type { SearchPageOptions } from "./SearchPage";
 
@@ -381,23 +380,11 @@ export const getPartialSearchOptions = (
   fields: SearchOptionsFields[]
 ) => pick(options, fields);
 
-export const WILDCARD_MODE_STORAGE_KEY = `${AppConfig.baseUrl}_wildcardMode`;
+export const RAW_MODE_STORAGE_KEY = "raw_mode";
 
 /**
  * Read the value of wildcard mode from LocalStorage.
  */
-export const getWildcardModeFromStorage = (): boolean => {
-  try {
-    const wildcard = getDataFromLocalStorage(WILDCARD_MODE_STORAGE_KEY);
-    if (wildcard) {
-      const parsedValue = JSON.parse(wildcard);
-      if (!Boolean.guard(parsedValue)) {
-        throw new TypeError("unexpected type for wildcard mode");
-      }
-      return parsedValue;
-    }
-  } catch (error) {
-    console.error("Failed to read Wildcard mode from browser local storage");
-  }
-  return !defaultSearchOptions.rawMode;
-};
+export const getRawModeFromStorage = (): boolean =>
+  readDataFromLocalStorage(RAW_MODE_STORAGE_KEY, Boolean.guard) ??
+  defaultSearchOptions.rawMode;
