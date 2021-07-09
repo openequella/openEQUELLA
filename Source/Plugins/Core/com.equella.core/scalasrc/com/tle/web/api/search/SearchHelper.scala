@@ -306,7 +306,7 @@ object SearchHelper {
     for {
       item <- Option(LegacyGuice.itemService.getUnsecureIfExists(itemKey))
       _    <- Option(item.getDrmSettings)
-      termAccepted = LegacyGuice.drmService.hasAcceptedOrRequiresNoAcceptance(item, false, false)
+      termsAccepted = LegacyGuice.drmService.hasAcceptedOrRequiresNoAcceptance(item, false, false)
       isAuthorised = try {
         LegacyGuice.drmService.isAuthorised(item, CurrentUser.getUserState.getIpAddress)
         true
@@ -314,7 +314,7 @@ object SearchHelper {
         case _: DRMException => false
       }
     } yield {
-      DrmStatus(termAccepted, isAuthorised)
+      DrmStatus(termsAccepted, isAuthorised)
     }
   }
 

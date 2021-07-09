@@ -229,7 +229,7 @@ export interface DrmStatus {
   /**
    * `true` if DRM terms have been accepted.
    */
-  termAccepted: boolean;
+  termsAccepted: boolean;
   /**
    * `true` if user is authorised to access Item or accept DRM.
    */
@@ -314,7 +314,7 @@ interface SearchResultItemBase {
    */
   isLatestVersion: boolean;
   /**
-   * Item's DRM Status.
+   * Item's DRM Status. Absent if item is not under DRM control
    */
   drmStatus?: DrmStatus;
 }

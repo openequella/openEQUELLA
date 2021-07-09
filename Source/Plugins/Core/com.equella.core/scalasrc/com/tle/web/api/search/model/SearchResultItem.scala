@@ -42,7 +42,7 @@ import com.tle.web.api.item.equella.interfaces.beans.{DisplayField, DisplayOptio
   * @param links Item's links.
   * @param bookmarkId ID of Bookmark linking to this Item.
   * @param isLatestVersion True if this version is the latest version.
-  * @param drmStatus Status of Item's DRM, consisting if terms accepted and if authorised
+  * @param drmStatus Status of Item's DRM, consisting if terms accepted and if authorised, absent if item not DRM controlled.
   */
 case class SearchResultItem(
     uuid: String,
@@ -95,7 +95,7 @@ case class SearchResultAttachment(
 /**
   * Model class providing DRM related status.
   *
-  * @param termAccepted Whether terms have been accepted or not.
+  * @param termsAccepted Whether terms have been accepted or not.
   * @param isAuthorised Whether user is authorised to access Item or accept DRM.
   */
-case class DrmStatus(termAccepted: Boolean, isAuthorised: Boolean)
+case class DrmStatus(termsAccepted: Boolean, isAuthorised: Boolean)
