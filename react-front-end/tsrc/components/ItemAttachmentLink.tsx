@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 import { Link, Typography } from "@material-ui/core";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import { pfTernaryTypeGuard } from "../util/pointfree";
 import * as React from "react";
 import { SyntheticEvent, useState } from "react";
 import {
@@ -113,19 +116,24 @@ const ItemAttachmentLink = ({
     );
   };
 
-  // Only broken attachments do not have viewer configuration so return a 'Typography'.
-  if (!viewerConfig) {
-    return (
-      <Typography aria-label={`${attachmentLink} ${description}`}>
-        {description}
-      </Typography>
-    );
-  }
-
-  return isViewerLightboxConfig(viewerConfig)
-    ? buildLightboxLink(viewerConfig)
-    : // Lightbox viewer not specified, so go with the default of a simple link.
-      buildSimpleLink(viewerConfig);
+  return pipe(
+    viewerConfig,
+    O.fromNullable,
+    O.match(
+      // Broken attachments just have a textual placeholder
+      () => (
+        <Typography aria-label={`${attachmentLink} ${description}`}>
+          {description}
+        </Typography>
+      ),
+      // For other attachments we use the <Lightbox> where suitable
+      pfTernaryTypeGuard(
+        isViewerLightboxConfig,
+        buildLightboxLink,
+        buildSimpleLink
+      )
+    )
+  );
 };
 
 export default ItemAttachmentLink;
