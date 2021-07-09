@@ -32,8 +32,7 @@ import {
   templateError,
   templatePropsForLegacy,
 } from "../mainui/Template";
-import { clearDataFromLocalStorage } from "../modules/BrowserStorageModule";
-import { RAW_MODE_STORAGE_KEY } from "../search/SearchPageHelper";
+import { deleteRawModeFromStorage } from "../search/SearchPageHelper";
 import { LegacyContentRenderer } from "./LegacyContentRenderer";
 import { getEqPageForm, legacyFormId } from "./LegacyForm";
 
@@ -248,7 +247,7 @@ export const LegacyContent = React.memo(function LegacyContent({
       .then((content) => {
         // Clear raw mode saved in local storage after a login request is resolved.
         if (pathname.indexOf("logon.do") > 0) {
-          clearDataFromLocalStorage(RAW_MODE_STORAGE_KEY);
+          deleteRawModeFromStorage();
         }
 
         if (callback) {

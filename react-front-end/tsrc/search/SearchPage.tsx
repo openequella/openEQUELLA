@@ -40,7 +40,6 @@ import {
   TemplateUpdateProps,
 } from "../mainui/Template";
 import { getAdvancedSearchesFromServer } from "../modules/AdvancedSearchModule";
-import { saveDataToLocalStorage } from "../modules/BrowserStorageModule";
 import type { Collection } from "../modules/CollectionsModule";
 import { addFavouriteSearch } from "../modules/FavouriteModule";
 import {
@@ -102,7 +101,7 @@ import {
   generateSearchPageOptionsFromQueryString,
   getPartialSearchOptions,
   getRawModeFromStorage,
-  RAW_MODE_STORAGE_KEY,
+  writeRawModeToStorage,
 } from "./SearchPageHelper";
 
 // destructure strings import
@@ -420,7 +419,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
               state: { searchPageOptions: state.options, filterExpansion },
             });
             // Save the value of wildcard mode to LocalStorage.
-            saveDataToLocalStorage(RAW_MODE_STORAGE_KEY, state.options.rawMode);
+            writeRawModeToStorage(state.options.rawMode);
             // scroll back up to the top of the page
             if (state.scrollToTop) window.scrollTo(0, 0);
             // Allow downloading new search result.
@@ -527,6 +526,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       externalMimeTypes: isSelectionSessionOpen()
         ? searchPageOptions.externalMimeTypes
         : undefined,
+      // As per requirements for persistence of rawMode, it is _not_ reset for New Searches
       rawMode: searchPageOptions.rawMode,
     });
     setFilterExpansion(false);
