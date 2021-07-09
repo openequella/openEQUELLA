@@ -18,7 +18,7 @@
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
-import { pipe } from "fp-ts/function";
+import { flow, pipe } from "fp-ts/function";
 import { Do } from "fp-ts-contrib/Do";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
@@ -249,10 +249,44 @@ export const buildLightboxNavigationHandler = (
   );
 };
 
+// Build AttachmentsAndViewerDefinitions for live attachments.
+const buildLiveAttachmentsAndViewerDefinitions = (
+  attachment: OEQ.Search.Attachment,
+  uuid: string,
+  version: number,
+  getViewerDetails: (
+    mimeType: string
+  ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>
+) =>
+  pipe(
+    attachment.mimeType,
+    O.fromNullable,
+    O.foldW(
+      // If MIME type is undefined, we just need a TaskEither which returns undefined as ViewerId, otherwise we
+      // call the provided function to retrieve ViewerId.
+      () => TE.right<string, OEQ.MimeType.ViewerId | undefined>(undefined),
+      (m) =>
+        pipe(
+          TE.tryCatch(() => getViewerDetails(m), String),
+          TE.map((resp: OEQ.MimeType.MimeTypeViewerDetail) => resp?.viewerId)
+        )
+    ),
+    // Then we map ViewerId to AttachmentAndViewerDefinition.
+    TE.map((viewerId: OEQ.MimeType.ViewerId | undefined) => ({
+      attachment,
+      viewerDefinition: getViewerDefinitionForAttachment(
+        uuid,
+        version,
+        attachment,
+        viewerId
+      ),
+    }))
+  )();
+
 /**
  * Build a list of viewer definition for attachments. For each attachment, return an Either where left is a error
- * message and right is 'AttachmentAndViewerDefinition'. However, the final result is an Either where left is a string
- * which accumulates all the error messages and right is an array of 'AttachmentAndViewerDefinition'.
+ * message and right is 'AttachmentAndViewerDefinition'. The final result is an Either where left is a string array
+ * and right is an array of 'AttachmentAndViewerDefinition'.
  *
  * @param attachments Attachments provided to find their viewer configurations.
  * @param uuid UUID of the Item which the attachments belong to.
@@ -269,44 +303,47 @@ export const buildAttachmentsAndViewerDefinitions = async (
 ): Promise<E.Either<string[], AttachmentAndViewerDefinition[]>> => {
   const either: E.Either<string, AttachmentAndViewerDefinition>[] =
     await Promise.all(
-      attachments.map(async (originalAttachment) => {
-        const { brokenAttachment } = originalAttachment;
-        // Broken attachments don't have viewer configuration so we just return the attachment.
-        if (brokenAttachment) {
-          return E.right({ attachment: originalAttachment });
+      pipe(
+        attachments,
+        A.partitionMapWithIndex((index, attachment) =>
+          attachment.brokenAttachment === true
+            ? E.left({ index, attachment })
+            : E.right({
+                index,
+                attachment: updateAttachmentForCustomInfo(attachment),
+              })
+        ),
+        ({ left, right }) => {
+          const brokenAttachmentsAndViewerDefinition = left.map(
+            ({ index, attachment }) => ({
+              viewerDefinition: Promise.resolve(
+                E.right<string, AttachmentAndViewerDefinition>({ attachment })
+              ),
+              index,
+            })
+          );
+          const liveAttachmentsAndViewerDefinition = right.map(
+            ({ index, attachment }) => ({
+              viewerDefinition: buildLiveAttachmentsAndViewerDefinitions(
+                attachment,
+                uuid,
+                version,
+                getViewerDetails
+              ),
+              index,
+            })
+          );
+
+          // Merge the two collections and sort as per the order on the server.
+          return brokenAttachmentsAndViewerDefinition
+            .concat(liveAttachmentsAndViewerDefinition)
+            .sort(
+              ({ index: prevIndex }, { index: nextIndex }) =>
+                prevIndex - nextIndex
+            )
+            .map(({ viewerDefinition }) => viewerDefinition);
         }
-
-        const attachment = updateAttachmentForCustomInfo(originalAttachment);
-        const { mimeType } = attachment;
-
-        return await pipe(
-          mimeType,
-          O.fromNullable,
-          O.foldW(
-            // If MIME type is undefined, we just need a TaskEither which returns undefined as ViewerId, otherwise we
-            // call the provided function to retrieve ViewerId.
-            () =>
-              TE.right<string, OEQ.MimeType.ViewerId | undefined>(undefined),
-            (m) =>
-              pipe(
-                TE.tryCatch(() => getViewerDetails(m), String),
-                TE.map(
-                  (resp: OEQ.MimeType.MimeTypeViewerDetail) => resp?.viewerId
-                )
-              )
-          ),
-          // Then we map ViewerId to AttachmentAndViewerDefinition.
-          TE.map((viewerId: OEQ.MimeType.ViewerId | undefined) => ({
-            attachment,
-            viewerDefinition: getViewerDefinitionForAttachment(
-              uuid,
-              version,
-              attachment,
-              viewerId
-            ),
-          }))
-        )();
-      })
+      )
     );
 
   const lefts = A.lefts(either);
@@ -315,31 +352,30 @@ export const buildAttachmentsAndViewerDefinitions = async (
 };
 
 /**
- * Build Lightbox entries based on a list of attachments and viewer definitions
+ * Build Lightbox entries based on a list of attachments and viewer definitions. Attachments not viewed in the
+ * Lightbox are dropped.
  *
  * @param attachmentsAndViewerDefinitions A list of attachments and their viewer definitions.
  */
-export const buildLightboxEntries = (
+export const buildLightboxEntries: (
   attachmentsAndViewerDefinitions: AttachmentAndViewerDefinition[]
-): LightboxEntry[] =>
-  pipe(
-    attachmentsAndViewerDefinitions,
-    A.map(({ attachment: { id, description, mimeType }, viewerDefinition }) =>
-      pipe(
-        viewerDefinition,
-        O.fromNullable,
-        O.filter(([viewer]) => viewer === "lightbox"),
-        O.map(([_, viewerUrl]) => ({
-          src: viewerUrl,
-          title: description,
-          mimeType: mimeType ?? "",
-          id,
-        }))
-      )
-    ),
-    A.filter(O.isSome),
-    A.map((entry) => entry.value)
-  );
+) => LightboxEntry[] = flow(
+  A.map(({ attachment: { id, description, mimeType }, viewerDefinition }) =>
+    pipe(
+      viewerDefinition,
+      O.fromNullable,
+      O.filter(([viewer]) => viewer === "lightbox"),
+      O.map(([_, viewerUrl]) => ({
+        src: viewerUrl,
+        title: description,
+        mimeType: mimeType ?? "",
+        id,
+      }))
+    )
+  ),
+  A.filter(O.isSome),
+  A.map((entry) => entry.value)
+);
 
 /**
  * Convert attachments' viewer definitions to their viewer configurations.
@@ -364,36 +400,53 @@ export const convertViewerDefinitionToViewerConfig = (
           () => ({ attachment }), // Broken attachments don't have viewer configuration.
           ([viewer, viewUrl]) =>
             viewer === "lightbox"
-              ? {
+              ? buildLightboxViewerConfig(
                   attachment,
-                  viewerConfig: {
-                    viewerType: viewer,
-                    config: {
-                      src: viewUrl,
-                      title: attachment.description,
-                      mimeType: attachment.mimeType ?? "",
-                      onNext: buildLightboxNavigationHandler(
-                        lightboxEntries,
-                        initialLightboxEntryIndex + 1
-                      ),
-                      onPrevious: buildLightboxNavigationHandler(
-                        lightboxEntries,
-                        initialLightboxEntryIndex - 1
-                      ),
-                    },
-                  },
-                }
-              : {
-                  attachment,
-                  viewerConfig: {
-                    viewerType: viewer,
-                    url: viewUrl,
-                  },
-                }
+                  viewUrl,
+                  lightboxEntries,
+                  initialLightboxEntryIndex
+                )
+              : buildBasicViewerConfig(attachment, viewUrl)
         )
       );
     })
   );
+
+const buildLightboxViewerConfig = (
+  attachment: OEQ.Search.Attachment,
+  viewUrl: string,
+  lightboxEntries: LightboxEntry[],
+  initialLightboxEntryIndex: number
+): AttachmentAndViewerConfig => ({
+  attachment,
+  viewerConfig: {
+    viewerType: "lightbox",
+    config: {
+      src: viewUrl,
+      title: attachment.description,
+      mimeType: attachment.mimeType ?? "",
+      onNext: buildLightboxNavigationHandler(
+        lightboxEntries,
+        initialLightboxEntryIndex + 1
+      ),
+      onPrevious: buildLightboxNavigationHandler(
+        lightboxEntries,
+        initialLightboxEntryIndex - 1
+      ),
+    },
+  },
+});
+
+const buildBasicViewerConfig = (
+  attachment: OEQ.Search.Attachment,
+  viewUrl: string
+): AttachmentAndViewerConfig => ({
+  attachment,
+  viewerConfig: {
+    viewerType: "link",
+    url: viewUrl,
+  },
+});
 
 /**
  * Returns a list of provided attachments and their viewer configurations.
