@@ -346,9 +346,9 @@ export const buildAttachmentsAndViewerDefinitions = async (
       )
     );
 
-  const lefts = A.lefts(either);
-  const rights = A.rights(either);
-  return A.isEmpty(lefts) ? E.right(rights) : E.left(lefts);
+  return pipe(either, A.separate, ({ left, right }) =>
+    A.isEmpty(left) ? E.right(right) : E.left(left)
+  );
 };
 
 /**
