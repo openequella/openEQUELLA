@@ -28,7 +28,7 @@ const buildStorageKey = (key: string) => `${AppConfig.baseUrl}_${key}`;
 
 /**
  * Retrieve data from browser local storage by a key. Return undefined if
- * no data is found.
+ * no data is found, cannot be parsed or fails validation.
  *
  * @param key Key of the data to be read.
  * @param validator A function to perform type checking against the parsed value.
@@ -40,8 +40,7 @@ export const readDataFromLocalStorage = <T>(
   pipe(
     localStorage.getItem(buildStorageKey(key)),
     O.fromNullable,
-    O.fold(
-      () => undefined,
+    O.chain(
       flow(
         J.parse,
         E.mapLeft((error) => `Failed to parse data due to ${error}`),
@@ -50,9 +49,10 @@ export const readDataFromLocalStorage = <T>(
           () => "Data format mismatch with data read from storage"
         ),
         E.mapLeft(console.error),
-        E.getOrElseW(() => undefined)
+        O.fromEither
       )
-    )
+    ),
+    O.toUndefined
   );
 
 /**
@@ -61,7 +61,7 @@ export const readDataFromLocalStorage = <T>(
  * @param key Key of the data.
  * @param value Value of the data.
  */
-export const saveDataToLocalStorage = (key: string, value: unknown) =>
+export const saveDataToLocalStorage = (key: string, value: unknown): void =>
   pipe(
     value,
     J.stringify,
@@ -76,7 +76,8 @@ export const saveDataToLocalStorage = (key: string, value: unknown) =>
 
 /**
  * Clear data from browser local storage.
+ *
  * @param key Key of the data.
  */
-export const clearDataFromLocalStorage = (key: string) =>
+export const clearDataFromLocalStorage = (key: string): void =>
   localStorage.removeItem(buildStorageKey(key));

@@ -48,7 +48,7 @@ describe("readDataFromLocalStorage", () => {
 
   it("supports reading boolean data", () => {
     mockGetItem.mockReturnValueOnce("true");
-    expect(readDataFromLocalStorage("test", booleanValidator)).toBe(true);
+    expect(readDataFromLocalStorage(KEY, booleanValidator)).toBe(true);
   });
 });
 
