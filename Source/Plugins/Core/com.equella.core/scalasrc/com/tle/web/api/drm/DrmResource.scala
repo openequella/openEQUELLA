@@ -30,7 +30,7 @@ import com.tle.web.api.ApiErrorResponse.{
 import io.swagger.annotations.{Api, ApiParam}
 import org.jboss.resteasy.annotations.cache.NoCache
 import javax.ws.rs.core.Response
-import javax.ws.rs.{BadRequestException, POST, Path, PathParam, Produces}
+import javax.ws.rs.{BadRequestException, GET, POST, Path, PathParam, Produces}
 import com.tle.exceptions.AccessDeniedException;
 
 @NoCache
@@ -39,6 +39,21 @@ import com.tle.exceptions.AccessDeniedException;
 @Api("DRM")
 class DrmResource {
   val drmService = LegacyGuice.drmService
+
+  @GET
+  @Path("/{uuid}/{version}")
+  def getDRMTerms(@ApiParam("Item UUID") @PathParam("uuid") uuid: String,
+                  @ApiParam("Item Version") @PathParam("version") version: Int): Response = {
+    try {
+      val item = LegacyGuice.itemService.getUnsecure(new ItemId(uuid, version))
+      Option(item.getDrmSettings) match {
+        case Some(drmSettings) => Response.ok().entity(DrmTerms(drmSettings)).build()
+        case None              => resourceNotFound(s"Failed to find DRM terms for item: $uuid/$version")
+      }
+    } catch {
+      case e: ItemNotFoundException => resourceNotFound(e.getMessage)
+    }
+  }
 
   @POST
   @Path("/{uuid}/{version}")
