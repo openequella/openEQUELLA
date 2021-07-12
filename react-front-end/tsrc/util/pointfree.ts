@@ -51,13 +51,13 @@ export const pfTernary =
  */
 export const pfTernaryTypeGuard =
   <A, B, C>(
-    predicate: (a: A | B) => a is A,
+    guard: (a: A | B) => a is A,
     onRight: (a: A) => C,
     onLeft: (a: B) => C
   ) =>
   (a: A | B): C =>
     pipe(
       a,
-      (a) => (predicate(a) ? E.right(a) : E.left(a)),
+      (a) => (guard(a) ? E.right(a) : E.left(a)),
       E.match(onLeft, onRight)
     );
