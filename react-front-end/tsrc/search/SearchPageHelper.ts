@@ -37,6 +37,11 @@ import {
   Unknown,
 } from "runtypes";
 import {
+  clearDataFromLocalStorage,
+  readDataFromLocalStorage,
+  saveDataToLocalStorage,
+} from "../modules/BrowserStorageModule";
+import {
   Collection,
   findCollectionsByUuid,
 } from "../modules/CollectionsModule";
@@ -378,3 +383,18 @@ export const getPartialSearchOptions = (
   options: SearchOptions,
   fields: SearchOptionsFields[]
 ) => pick(options, fields);
+
+export const RAW_MODE_STORAGE_KEY = "raw_mode";
+
+/**
+ * Read the value of wildcard mode from LocalStorage.
+ */
+export const getRawModeFromStorage = (): boolean =>
+  readDataFromLocalStorage(RAW_MODE_STORAGE_KEY, Boolean.guard) ??
+  defaultSearchOptions.rawMode;
+
+export const writeRawModeToStorage = (value: boolean): void =>
+  saveDataToLocalStorage(RAW_MODE_STORAGE_KEY, value);
+
+export const deleteRawModeFromStorage = (): void =>
+  clearDataFromLocalStorage(RAW_MODE_STORAGE_KEY);

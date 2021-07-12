@@ -85,6 +85,7 @@ import {
   querySearchAttachmentsSelector,
   queryStatusSelector,
 } from "./SearchPageHelper";
+import * as BrowserStorageModule from "../../../tsrc/modules/BrowserStorageModule";
 
 const defaultTheme = createMuiTheme({
   props: { MuiWithWidth: { initialWidth: "md" } },
@@ -125,6 +126,15 @@ const mockConvertParamsToSearchOptions = jest.spyOn(
 const mockMimeTypeFilters = jest
   .spyOn(SearchFilterSettingsModule, "getMimeTypeFiltersFromServer")
   .mockResolvedValue(getMimeTypeFilters);
+
+const mockSaveDataToLocalStorage = jest
+  .spyOn(BrowserStorageModule, "saveDataToLocalStorage")
+  .mockImplementation(jest.fn);
+
+const mockReadDataFromLocalStorage = jest.spyOn(
+  BrowserStorageModule,
+  "readDataFromLocalStorage"
+);
 
 //i tried mocking this using window.navigator.clipboard.writeText = jest.fn(), but the navigator object is undefined
 Object.assign(navigator, {
@@ -1123,4 +1133,22 @@ describe("Hide Gallery", () => {
       );
     }
   );
+});
+
+describe("Wildcard mode persistence", () => {
+  it("saves wildcard mode value in browser local storage", async () => {
+    await renderSearchPage();
+    expect(mockSaveDataToLocalStorage).toHaveBeenCalled();
+  });
+
+  it("retrieves wildcard mode value from local storage", async () => {
+    // By default wildcard mode is turned on, so we save 'false' in local storage.
+    mockReadDataFromLocalStorage.mockReturnValueOnce(true);
+    const { container } = await renderSearchPage();
+    expect(mockReadDataFromLocalStorage).toHaveBeenCalled();
+    const wildcardModeSwitch = container.querySelector("#wildcardSearch");
+
+    // Since rawMode is true, the checkbox should not be checked.
+    expect(wildcardModeSwitch).not.toBeChecked();
+  });
 });

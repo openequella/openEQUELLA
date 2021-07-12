@@ -17,22 +17,6 @@
  */
 import { debounce, Drawer, Grid, Hidden } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
-import type { DateRange } from "../util/Date";
-import {
-  defaultPagedSearchResult,
-  defaultSearchPageOptions,
-  generateQueryStringFromSearchPageOptions,
-  generateSearchPageOptionsFromQueryString,
-  getPartialSearchOptions,
-} from "./SearchPageHelper";
-import {
-  buildExportUrl,
-  confirmExport,
-  DisplayMode,
-  searchItems,
-  SearchOptions,
-  SearchOptionsFields,
-} from "../modules/SearchModule";
 import { pipe } from "fp-ts/function";
 import { isEqual } from "lodash";
 import * as React from "react";
@@ -40,8 +24,8 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useReducer,
+  useRef,
   useState,
 } from "react";
 import { useHistory, useLocation } from "react-router";
@@ -82,9 +66,18 @@ import {
   getMimeTypeFiltersFromServer,
   MimeTypeFilter,
 } from "../modules/SearchFilterSettingsModule";
+import {
+  buildExportUrl,
+  confirmExport,
+  DisplayMode,
+  searchItems,
+  SearchOptions,
+  SearchOptionsFields,
+} from "../modules/SearchModule";
 import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
 import { getCurrentUserDetails } from "../modules/UserModule";
 import SearchBar from "../search/components/SearchBar";
+import type { DateRange } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
 import { CollectionSelector } from "./components/CollectionSelector";
@@ -101,6 +94,15 @@ import {
 } from "./components/SearchResultList";
 import { SidePanel } from "./components/SidePanel";
 import StatusSelector from "./components/StatusSelector";
+import {
+  defaultPagedSearchResult,
+  defaultSearchPageOptions,
+  generateQueryStringFromSearchPageOptions,
+  generateSearchPageOptionsFromQueryString,
+  getPartialSearchOptions,
+  getRawModeFromStorage,
+  writeRawModeToStorage,
+} from "./SearchPageHelper";
 
 // destructure strings import
 const { searchpage: searchStrings } = languageStrings;
@@ -221,8 +223,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [searchPageOptions, setSearchPageOptions] = useState<SearchPageOptions>(
     // If the user has gone 'back' to this page, then use their previous options. Otherwise
     // we start fresh - i.e. if a new navigation to Search Page.
-    searchPageHistoryState?.searchPageOptions ??
-      defaultSearchPageHistory.searchPageOptions
+    searchPageHistoryState?.searchPageOptions ?? {
+      ...defaultSearchPageHistory.searchPageOptions,
+      rawMode: getRawModeFromStorage(),
+    }
   );
   const [filterExpansion, setFilterExpansion] = useState(
     searchPageHistoryState?.filterExpansion ??
@@ -414,6 +418,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
               ...history.location,
               state: { searchPageOptions: state.options, filterExpansion },
             });
+            // Save the value of wildcard mode to LocalStorage.
+            writeRawModeToStorage(state.options.rawMode);
             // scroll back up to the top of the page
             if (state.scrollToTop) window.scrollTo(0, 0);
             // Allow downloading new search result.
@@ -520,6 +526,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       externalMimeTypes: isSelectionSessionOpen()
         ? searchPageOptions.externalMimeTypes
         : undefined,
+      // As per requirements for persistence of rawMode, it is _not_ reset for New Searches
+      rawMode: searchPageOptions.rawMode,
     });
     setFilterExpansion(false);
   };
