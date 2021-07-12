@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 import { Link, Typography } from "@material-ui/core";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import { pfTernaryTypeGuard } from "../util/pointfree";
 import * as React from "react";
 import { SyntheticEvent, useState } from "react";
 import {
@@ -69,22 +72,17 @@ const ItemAttachmentLink = ({
   const { attachmentLink } = languageStrings.searchpage.searchResult;
   const [lightBoxProps, setLightBoxProps] = useState<LightboxProps>();
 
-  const buildSimpleLink = (viewerConfig: ViewerLinkConfig): JSX.Element => {
-    return brokenAttachment ? (
-      <Typography aria-label={`${attachmentLink} ${description}`}>
-        {description}
-      </Typography>
-    ) : (
-      <Link
-        aria-label={`${attachmentLink} ${description}`}
-        href={viewerConfig?.url}
-        target="_blank"
-        rel="noreferrer"
-      >
-        {children}
-      </Link>
-    );
-  };
+  const buildSimpleLink = ({ url }: ViewerLinkConfig): JSX.Element => (
+    <Link
+      aria-label={`${attachmentLink} ${description}`}
+      href={url}
+      target="_blank"
+      rel="noreferrer"
+    >
+      {children}
+    </Link>
+  );
+
   const buildLightboxLink = ({ config }: ViewerLightboxConfig): JSX.Element => {
     if (!mimeType) {
       throw new Error(
@@ -118,10 +116,24 @@ const ItemAttachmentLink = ({
     );
   };
 
-  return isViewerLightboxConfig(viewerConfig)
-    ? buildLightboxLink(viewerConfig)
-    : // Lightbox viewer not specified, so go with the default of a simple link.
-      buildSimpleLink(viewerConfig);
+  return pipe(
+    viewerConfig,
+    O.fromNullable,
+    O.match(
+      // Broken attachments just have a textual placeholder
+      () => (
+        <Typography aria-label={`${attachmentLink} ${description}`}>
+          {description}
+        </Typography>
+      ),
+      // For other attachments we use the <Lightbox> where suitable
+      pfTernaryTypeGuard(
+        isViewerLightboxConfig,
+        buildLightboxLink,
+        buildSimpleLink
+      )
+    )
+  );
 };
 
 export default ItemAttachmentLink;

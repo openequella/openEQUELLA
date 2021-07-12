@@ -55,6 +55,10 @@ export const getMimeTypeViewerConfiguration: (
 export const getMimeTypeDefaultViewerDetails = async (
   mimeType: string
 ): Promise<OEQ.MimeType.MimeTypeViewerDetail> => {
+  if (mimeType === CustomMimeTypes.YOUTUBE) {
+    return { viewerId: "htmlFiveViewer" };
+  }
+
   const cfg = await getMimeTypeViewerConfiguration(mimeType);
   const viewerDetails = cfg.viewers.find(
     (v) => v.viewerId === cfg.defaultViewer
