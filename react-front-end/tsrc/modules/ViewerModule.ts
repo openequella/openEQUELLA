@@ -265,11 +265,10 @@ const buildLiveAttachmentsAndViewerDefinitions = (
       // If MIME type is undefined, we just need a TaskEither which returns undefined as ViewerId, otherwise we
       // call the provided function to retrieve ViewerId.
       () => TE.right<string, OEQ.MimeType.ViewerId | undefined>(undefined),
-      (m) =>
-        pipe(
-          TE.tryCatch(() => getViewerDetails(m), String),
-          TE.map((resp: OEQ.MimeType.MimeTypeViewerDetail) => resp?.viewerId)
-        )
+      flow(
+        TE.tryCatchK(getViewerDetails, String),
+        TE.map((resp: OEQ.MimeType.MimeTypeViewerDetail) => resp?.viewerId)
+      )
     ),
     // Then we map ViewerId to AttachmentAndViewerDefinition.
     TE.map((viewerId: OEQ.MimeType.ViewerId | undefined) => ({
@@ -365,7 +364,7 @@ export const buildLightboxEntries: (
       viewerDefinition,
       O.fromNullable,
       O.filter(([viewer]) => viewer === "lightbox"),
-      O.map(([_, viewerUrl]) => ({
+      O.map<ViewerDefinition, LightboxEntry>(([_, viewerUrl]) => ({
         src: viewerUrl,
         title: description,
         mimeType: mimeType ?? "",
@@ -374,7 +373,7 @@ export const buildLightboxEntries: (
     )
   ),
   A.filter(O.isSome),
-  A.map((entry) => entry.value)
+  A.map((some) => some.value)
 );
 
 /**
