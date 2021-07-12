@@ -306,7 +306,12 @@ object SearchHelper {
     for {
       item <- Option(LegacyGuice.itemService.getUnsecureIfExists(itemKey))
       _    <- Option(item.getDrmSettings)
-      termsAccepted = LegacyGuice.drmService.hasAcceptedOrRequiresNoAcceptance(item, false, false)
+      termsAccepted = try {
+        LegacyGuice.drmService.hasAcceptedOrRequiresNoAcceptance(item, false, false)
+      } catch {
+        // This exception is only thrown when the DRM has maximum number of acceptance allowable times.
+        case _: DRMException => false
+      }
       isAuthorised = try {
         LegacyGuice.drmService.isAuthorised(item, CurrentUser.getUserState.getIpAddress)
         true
