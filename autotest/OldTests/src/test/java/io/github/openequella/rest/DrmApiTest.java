@@ -15,6 +15,7 @@ import org.testng.annotations.Test;
 public class DrmApiTest extends AbstractRestApiTest {
   private final String DRM_API_ENDPOINT = getTestConfig().getInstitutionUrl() + "api/drm/";
   private final String ITEM_UUID = "ea61a83c-b18b-49e2-8096-e6208776be92";
+  private final int ITEM_VERSION = 1;
 
   @Override
   protected TestConfig getTestConfig() {
@@ -26,37 +27,38 @@ public class DrmApiTest extends AbstractRestApiTest {
 
   @Test(description = "Failed to accept DRM terms due to invalid Item ID")
   public void invalidItemId() throws IOException {
-    assertEquals(acceptDrm("abc", 1), 404);
+    assertEquals(acceptDrm("abc", ITEM_VERSION), 404);
   }
 
   @Test(description = "Failed to accept DRM terms due to unauthorised")
   public void unauthorised() throws IOException {
-    assertEquals(acceptDrm("73b67c33-aa72-419f-87aa-72d919fcf9f0", 1), 401);
+    assertEquals(acceptDrm("73b67c33-aa72-419f-87aa-72d919fcf9f0", ITEM_VERSION), 401);
   }
 
   @Test(description = "Successfully accept DRM terms")
   public void accept() throws IOException {
-    assertEquals(acceptDrm(ITEM_UUID, 1), 200);
+    assertEquals(acceptDrm(ITEM_UUID, ITEM_VERSION), 200);
   }
 
   @Test(
       description = "Fail to accept DRM terms due to already accepted",
       dependsOnMethods = "accept")
   public void alreadyAccepted() throws IOException {
-    assertEquals(acceptDrm(ITEM_UUID, 1), 400);
+    assertEquals(acceptDrm(ITEM_UUID, ITEM_VERSION), 400);
   }
 
   @Test(description = "Fail to accept DRM terms due to access denied", priority = 10)
   public void accessDenied() throws IOException {
     logout();
-    assertEquals(acceptDrm(ITEM_UUID, 1), 403);
+    assertEquals(acceptDrm(ITEM_UUID, ITEM_VERSION), 403);
   }
 
   @Test(description = "Successfully list DRM terms")
   public void listTerms() throws IOException {
     JsonNode result = listDrmTerms("677a4bbc-defc-4dc1-b68e-4e2473b66a6a", 1);
-    assertNotNull(result.get("terms"));
-    assertNotNull(result.get("regularPermission"));
+    JsonNode agreements = result.get("agreements");
+    assertNotNull(agreements);
+    assertNotNull(agreements.get("regularPermission"));
   }
 
   private int acceptDrm(String uuid, int version) throws IOException {
