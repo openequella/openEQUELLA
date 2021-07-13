@@ -34,14 +34,13 @@ import javax.ws.rs.{BadRequestException, GET, POST, Path, PathParam, Produces}
 import com.tle.exceptions.AccessDeniedException;
 
 @NoCache
-@Path("drm")
+@Path("item/{uuid}/{version}/drm")
 @Produces(Array("application/json"))
-@Api("DRM")
+@Api("Item DRM")
 class DrmResource {
   val drmService = LegacyGuice.drmService
 
   @GET
-  @Path("/{uuid}/{version}")
   def getDRMTerms(@ApiParam("Item UUID") @PathParam("uuid") uuid: String,
                   @ApiParam("Item Version") @PathParam("version") version: Int): Response = {
     try {
@@ -56,7 +55,6 @@ class DrmResource {
   }
 
   @POST
-  @Path("/{uuid}/{version}")
   def acceptDRM(@ApiParam("Item UUID") @PathParam("uuid") uuid: String,
                 @ApiParam("Item Version") @PathParam("version") version: Int): Response = {
     try {
