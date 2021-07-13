@@ -58,12 +58,25 @@ import {
 } from "../modules/SearchModule";
 import { findUserById } from "../modules/UserModule";
 import { DateRange, isDate } from "../util/Date";
-import type { SearchPageOptions } from "./SearchPage";
 
 /**
  * This helper is intended to assist with processing related to the Presentation Layer -
  * as opposed to the Business Layer which is handled by the Modules.
  */
+
+/**
+ * Type of search options that are specific to Search page presentation layer.
+ */
+export interface SearchPageOptions extends SearchOptions {
+  /**
+   * Whether to enable Quick mode (true) or to use custom date pickers (false).
+   */
+  dateRangeQuickModeEnabled: boolean;
+  /**
+   * How to display the search results - also determines the type of results.
+   */
+  displayMode: DisplayMode;
+}
 
 export const defaultSearchPageOptions: SearchPageOptions = {
   ...defaultSearchOptions,

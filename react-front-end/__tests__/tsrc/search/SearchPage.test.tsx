@@ -48,11 +48,11 @@ import {
   getSearchResultsCustom,
 } from "../../../__mocks__/SearchResult.mock";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
-import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
 import * as AdvancedSearchModule from "../../../tsrc/modules/AdvancedSearchModule";
-import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
+import * as BrowserStorageModule from "../../../tsrc/modules/BrowserStorageModule";
 import type { Collection } from "../../../tsrc/modules/CollectionsModule";
+import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import * as FavouriteModule from "../../../tsrc/modules/FavouriteModule";
 import * as GallerySearchModule from "../../../tsrc/modules/GallerySearchModule";
 import { getGlobalCourseList } from "../../../tsrc/modules/LegacySelectionSessionModule";
@@ -61,10 +61,12 @@ import * as RemoteSearchModule from "../../../tsrc/modules/RemoteSearchModule";
 import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchFacetsModule from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchFilterSettingsModule from "../../../tsrc/modules/SearchFilterSettingsModule";
-import * as SearchPageHelper from "../../../tsrc/search/SearchPageHelper";
+import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
 import * as UserModule from "../../../tsrc/modules/UserModule";
-import SearchPage, { SearchPageOptions } from "../../../tsrc/search/SearchPage";
+import SearchPage from "../../../tsrc/search/SearchPage";
+import * as SearchPageHelper from "../../../tsrc/search/SearchPageHelper";
+import { SearchPageOptions } from "../../../tsrc/search/SearchPageHelper";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { updateMockGetBaseUrl } from "../BaseUrlHelper";
 import { queryPaginatorControls } from "../components/SearchPaginationTestHelper";
@@ -85,7 +87,6 @@ import {
   querySearchAttachmentsSelector,
   queryStatusSelector,
 } from "./SearchPageHelper";
-import * as BrowserStorageModule from "../../../tsrc/modules/BrowserStorageModule";
 
 const defaultTheme = createMuiTheme({
   props: { MuiWithWidth: { initialWidth: "md" } },
