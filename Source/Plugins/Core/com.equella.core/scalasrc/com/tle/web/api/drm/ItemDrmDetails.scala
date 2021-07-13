@@ -24,28 +24,32 @@ import com.tle.web.viewitem.I18nDRM
 import scala.collection.JavaConverters._
 
 case class DrmParties(title: String, partyList: List[String])
-case class CustomTerms(title: String, terms: String)
+case class DrmCustomTerms(title: String, terms: String)
+case class DrmAgreements(
+    regularPermission: Option[String],
+    additionalPermission: Option[String],
+    educationSector: Option[String],
+    parties: Option[DrmParties],
+    customTerms: Option[DrmCustomTerms]
+)
 
-case class DrmTerms(title: String = CoreStrings.text("summary.content.termsofuse.title"),
-                    subtitle: String = CoreStrings.text("summary.content.termsofuse.terms.title"),
-                    description: String =
-                      CoreStrings.text("summary.content.termsofuse.terms.description"),
-                    regularPermission: Option[String],
-                    additionalPermission: Option[String],
-                    educationSector: Option[String],
-                    parties: Option[DrmParties],
-                    customTerms: Option[CustomTerms])
+case class ItemDrmDetails(
+    title: String = CoreStrings.text("summary.content.termsofuse.title"),
+    subtitle: String = CoreStrings.text("summary.content.termsofuse.terms.title"),
+    description: String = CoreStrings.text("summary.content.termsofuse.terms.description"),
+    agreements: DrmAgreements)
 
-object DrmTerms {
+object ItemDrmDetails {
   def buildPermissionText(permissions: String, title: String): Option[String] = {
     if (permissions.nonEmpty) Option(s"$title $permissions") else None
   }
 
-  def apply(drmSettings: DrmSettings): DrmTerms = {
+  def apply(drmSettings: DrmSettings): ItemDrmDetails = {
     val drmI18n = new I18nDRM(drmSettings)
 
     val customTerms =
-      Option(drmI18n.getTerms).map(terms => CustomTerms(CoreStrings.text("drm.mustagree"), terms))
+      Option(drmI18n.getTerms).map(terms =>
+        DrmCustomTerms(CoreStrings.text("drm.mustagree"), terms))
 
     val regularPermission =
       buildPermissionText(drmI18n.getPermissions1List, drmI18n.getItemMayFreelyBeText)
@@ -63,12 +67,14 @@ object DrmTerms {
       None
     }
 
-    DrmTerms(
-      regularPermission = regularPermission,
-      additionalPermission = additionalPermission,
-      educationSector = educationSector,
-      parties = parties,
-      customTerms = customTerms
+    val agreements = DrmAgreements(
+      regularPermission,
+      additionalPermission,
+      educationSector,
+      parties,
+      customTerms
     )
+
+    ItemDrmDetails(agreements = agreements)
   }
 }

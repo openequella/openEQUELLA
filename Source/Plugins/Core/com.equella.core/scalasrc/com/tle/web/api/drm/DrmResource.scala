@@ -47,7 +47,7 @@ class DrmResource {
     try {
       val item = LegacyGuice.itemService.getUnsecure(new ItemId(uuid, version))
       Option(item.getDrmSettings) match {
-        case Some(drmSettings) => Response.ok().entity(DrmTerms(drmSettings)).build()
+        case Some(drmSettings) => Response.ok().entity(ItemDrmDetails(drmSettings)).build()
         case None              => resourceNotFound(s"Failed to find DRM terms for item: $uuid/$version")
       }
     } catch {
