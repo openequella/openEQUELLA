@@ -19,7 +19,7 @@
 package com.tle.web.api.drm
 
 import com.dytech.edge.exceptions.{DRMException, ItemNotFoundException}
-import com.tle.beans.item.{Item, ItemId}
+import com.tle.beans.item.{DrmSettings, Item, ItemId}
 import com.tle.exceptions.AccessDeniedException
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.ApiErrorResponse.{
@@ -32,6 +32,7 @@ import io.swagger.annotations.{Api, ApiOperation, ApiParam}
 import org.jboss.resteasy.annotations.cache.NoCache
 import javax.ws.rs.core.Response
 import javax.ws.rs.{BadRequestException, GET, NotFoundException, POST, Path, PathParam, Produces}
+import scala.util.control.Exception.allCatch
 import scala.util.{Failure, Success, Try}
 
 @NoCache
@@ -49,17 +50,22 @@ class DrmResource {
   )
   def getDrmTerms(@ApiParam("Item UUID") @PathParam("uuid") uuid: String,
                   @ApiParam("Item Version") @PathParam("version") version: Int): Response = {
-    val getTerms = getItem.andThen(_.getDrmSettings)
-    Try {
-      Option(getTerms(new ItemId(uuid, version))) match {
-        case Some(drmSettings) => ItemDrmDetails(drmSettings)
-        case None =>
-          throw new NotFoundException(s"Failed to find DRM terms for item: $uuid/$version")
-      }
-    } match {
-      case Success(drmDetails) => Response.ok().entity(drmDetails).build()
-      case Failure(e)          => mapException(e)(Seq(e.getMessage))
+    val getTerms = (uuid: String, version: Int) =>
+      Try {
+        getItem.andThen(_.getDrmSettings)(new ItemId(uuid, version))
     }
+
+    val mapToItemDrmDetails = (drm: DrmSettings) =>
+      Try {
+        Option(drm) match {
+          case Some(drmSettings) => ItemDrmDetails(drmSettings)
+          case None =>
+            throw new NotFoundException(s"Failed to find DRM terms for item: $uuid/$version")
+        }
+    }
+
+    val result = getTerms(uuid, version) flatMap mapToItemDrmDetails
+    respond(result)
   }
 
   @POST
@@ -72,12 +78,8 @@ class DrmResource {
                 @ApiParam("Item Version") @PathParam("version") version: Int): Response = {
 
     val acceptLicense: Item => Long = drmService.acceptLicenseOrThrow
-    Try {
-      (getItem andThen acceptLicense)(new ItemId(uuid, version))
-    } match {
-      case Success(id) => Response.ok().entity(id).build()
-      case Failure(e)  => mapException(e)(Seq(e.getMessage))
-    }
+    val result                      = allCatch withTry (getItem andThen acceptLicense)(new ItemId(uuid, version))
+    respond(result)
   }
 
   // Take a subtype of Throwable and return a function which takes a sequence of string and returns a Response.
@@ -89,6 +91,12 @@ class DrmResource {
       case _ @(_: ItemNotFoundException | _: NotFoundException) => resourceNotFound
     }
   }
+
+  private def respond[T](attempt: Try[T]): Response =
+    attempt match {
+      case Success(result) => Response.ok().entity(result).build()
+      case Failure(e)      => mapException(e)(Seq(e.getMessage))
+    }
 
   private val getItem: ItemId => Item = LegacyGuice.itemService.getUnsecure
 }
