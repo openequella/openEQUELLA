@@ -13,7 +13,6 @@ import org.testng.annotations.Test;
 
 @TestInstitution("fiveo")
 public class DrmApiTest extends AbstractRestApiTest {
-  private final String DRM_API_ENDPOINT = getTestConfig().getInstitutionUrl() + "api/drm/";
   private final String ITEM_UUID = "ea61a83c-b18b-49e2-8096-e6208776be92";
   private final int ITEM_VERSION = 1;
 
@@ -61,13 +60,17 @@ public class DrmApiTest extends AbstractRestApiTest {
     assertNotNull(agreements.get("regularPermission"));
   }
 
+  private String buildEndpointPath(String uuid, int version) {
+    return getTestConfig().getInstitutionUrl() + "api/item/" + uuid + "/" + version + "/drm";
+  }
+
   private int acceptDrm(String uuid, int version) throws IOException {
-    final PostMethod method = new PostMethod(DRM_API_ENDPOINT + uuid + "/" + version);
+    final PostMethod method = new PostMethod(buildEndpointPath(uuid, version));
     return makeClientRequest(method);
   }
 
   private JsonNode listDrmTerms(String uuid, int version) throws IOException {
-    final GetMethod method = new GetMethod(DRM_API_ENDPOINT + uuid + "/" + version);
+    final GetMethod method = new GetMethod(buildEndpointPath(uuid, version));
     int statusCode = makeClientRequest(method);
     assertEquals(statusCode, 200);
 
