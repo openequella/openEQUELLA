@@ -20,6 +20,7 @@ export * as AdvancedSearch from './AdvancedSearch';
 export * as Auth from './Auth';
 export * as Collection from './Collection';
 export * as Common from './Common';
+export * as Drm from './Drm';
 export * as Errors from './Errors';
 export * as Favourite from './Favourite';
 export * as Heartbeat from './Heartbeat';
