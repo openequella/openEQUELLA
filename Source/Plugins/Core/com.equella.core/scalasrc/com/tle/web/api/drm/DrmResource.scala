@@ -28,7 +28,7 @@ import com.tle.web.api.ApiErrorResponse.{
   resourceNotFound,
   unauthorizedRequest
 }
-import io.swagger.annotations.{Api, ApiParam}
+import io.swagger.annotations.{Api, ApiOperation, ApiParam}
 import org.jboss.resteasy.annotations.cache.NoCache
 import javax.ws.rs.core.Response
 import javax.ws.rs.{BadRequestException, GET, NotFoundException, POST, Path, PathParam, Produces}
@@ -42,6 +42,11 @@ class DrmResource {
   val drmService = LegacyGuice.drmService
 
   @GET
+  @ApiOperation(
+    value = "List DRM terms",
+    notes = "This endpoint is used to list an Item's DRM terms.",
+    response = classOf[ItemDrmDetails],
+  )
   def getDrmTerms(@ApiParam("Item UUID") @PathParam("uuid") uuid: String,
                   @ApiParam("Item Version") @PathParam("version") version: Int): Response = {
     val getTerms = getItem.andThen(_.getDrmSettings)
@@ -58,6 +63,11 @@ class DrmResource {
   }
 
   @POST
+  @ApiOperation(
+    value = "Accept DRM terms",
+    notes = "This endpoint is used to accept an Item's DRM terms.",
+    response = classOf[Long],
+  )
   def acceptDrm(@ApiParam("Item UUID") @PathParam("uuid") uuid: String,
                 @ApiParam("Item Version") @PathParam("version") version: Int): Response = {
 

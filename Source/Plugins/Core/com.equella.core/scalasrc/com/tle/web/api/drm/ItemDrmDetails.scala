@@ -23,20 +23,39 @@ import com.tle.core.i18n.CoreStrings
 import com.tle.web.viewitem.I18nDRM
 import scala.collection.JavaConverters._
 
-case class DrmParties(title: String, partyList: List[String])
-case class DrmCustomTerms(title: String, terms: String)
+case class DrmParties(
+                      /**  Server side language string for DRM party. */
+                      title: String,
+                      /** A list of text consisting each party's name and email. */
+                      partyList: List[String])
+
+case class DrmCustomTerms(
+                          /** Server side language string for DRM terms. */
+                          title: String,
+                          /** Terms of using the Item. */
+                          terms: String)
+
 case class DrmAgreements(
+    /** Text describing what regular permissions are granted to the user. */
     regularPermission: Option[String],
+    /** Text describing what additional permissions are granted to the user. */
     additionalPermission: Option[String],
+    /** Text describing that the use of Item is limited to education sector. */
     educationSector: Option[String],
+    /** Text describing parties related to the Item. */
     parties: Option[DrmParties],
+    /** Other terms and conditions applied to the Item. */
     customTerms: Option[DrmCustomTerms]
 )
 
 case class ItemDrmDetails(
+    /** Server side language string used as the DRM acceptance title */
     title: String = CoreStrings.text("summary.content.termsofuse.title"),
+    /** Server side language string used as the DRM acceptance subtitle */
     subtitle: String = CoreStrings.text("summary.content.termsofuse.terms.title"),
+    /** Server side language string used as the DRM acceptance description */
     description: String = CoreStrings.text("summary.content.termsofuse.terms.description"),
+    /** All terms and conditions that user must accept to use the Item */
     agreements: DrmAgreements)
 
 object ItemDrmDetails {
