@@ -41,6 +41,7 @@ import com.tle.core.events.UserEditEvent;
 import com.tle.core.events.UserIdChangedEvent;
 import com.tle.core.events.listeners.UserChangeListener;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.CoreStrings;
 import com.tle.core.item.dao.DrmAcceptanceDao;
 import com.tle.core.item.event.ItemDeletedEvent;
 import com.tle.core.item.event.listener.ItemDeletedListener;
@@ -48,15 +49,18 @@ import com.tle.core.item.service.DrmService;
 import com.tle.core.security.impl.AclExpressionEvaluator;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.core.settings.service.ConfigurationService;
+import com.tle.exceptions.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -239,6 +243,31 @@ public class DrmServiceImpl implements DrmService, ItemDeletedListener, UserChan
 
       dao.save(agreement);
     }
+  }
+
+  @Override
+  @Transactional(propagation = Propagation.REQUIRED)
+  public long acceptLicenseOrThrow(Item item) {
+    if (CurrentUser.isGuest()
+        || (CurrentUser.wasAutoLoggedIn()
+            && configService.getProperties(new AutoLogin()).isTransientDrmAcceptances())) {
+      throw new AccessDeniedException(CoreStrings.text("drmfilter.drmnotallowedtoaccept"));
+    }
+
+    isAuthorised(item, CurrentUser.getUserState().getIpAddress());
+    // if 'requiresAcceptance' returns null, it means terms have been accepted or the user does not
+    // need to
+    // accept. So throw an exception.
+    Optional.ofNullable(realAcceptanceCheck(item, false, false))
+        .orElseThrow(() -> new BadRequestException(CoreStrings.text("drmfilter.drmtermsaccepted")));
+
+    // Now we are sure the user is allowed to accept DRM.
+    DrmAcceptance agreement = new DrmAcceptance();
+    agreement.setItem(item);
+    agreement.setUser(CurrentUser.getUserID());
+    agreement.setDate(new Date());
+
+    return dao.save(agreement);
   }
 
   @Override
