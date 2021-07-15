@@ -17,9 +17,62 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import {
+  buildAttachmentsAndViewerDefinitions,
+  buildViewerConfigForAttachments,
   determineAttachmentViewUrl,
   determineViewer,
 } from "../../../tsrc/modules/ViewerModule";
+import "../FpTsMatchers";
+
+const attachments = [
+  {
+    attachmentType: "file",
+    id: "4fddbeb7-8d16-4417-be60-8709ce9d7b15",
+    description: "Kelpie2.jpg",
+    preview: false,
+    mimeType: "image/jpeg",
+    hasGeneratedThumb: true,
+    brokenAttachment: false,
+    links: {
+      view: "http://localhost:8080/ian/items/40e879db-393b-4256-bfe2-9a78771d6937/1/?attachment.uuid=4fddbeb7-8d16-4417-be60-8709ce9d7b15",
+      thumbnail:
+        "http://localhost:8080/ian/thumbs/40e879db-393b-4256-bfe2-9a78771d6937/1/4fddbeb7-8d16-4417-be60-8709ce9d7b15",
+    },
+    filePath: "Kelpie2.jpg",
+  },
+  {
+    attachmentType: "file",
+    id: "df55f129-1bbb-427f-b8a0-46792559bea9",
+    description: "Kelpie1.jpg",
+    preview: false,
+    mimeType: "image/png",
+    hasGeneratedThumb: true,
+    brokenAttachment: false,
+    links: {
+      view: "http://localhost:8080/ian/items/40e879db-393b-4256-bfe2-9a78771d6937/1/?attachment.uuid=df55f129-1bbb-427f-b8a0-46792559bea9",
+      thumbnail:
+        "http://localhost:8080/ian/thumbs/40e879db-393b-4256-bfe2-9a78771d6937/1/df55f129-1bbb-427f-b8a0-46792559bea9",
+    },
+    filePath: "Kelpie1.jpg",
+  },
+  {
+    attachmentType: "file",
+    id: "44528005-fb39-4461-bac7-12cd33ce4330",
+    description: "Australian Kelpie Pet Profile | Bondi Vet",
+    preview: false,
+    mimeType: "image/gif",
+    brokenAttachment: false,
+    links: {
+      view: "http://localhost:8080/ian/items/40e879db-393b-4256-bfe2-9a78771d6937/1/?attachment.uuid=44528005-fb39-4461-bac7-12cd33ce4330",
+      thumbnail:
+        "http://localhost:8080/ian/thumbs/40e879db-393b-4256-bfe2-9a78771d6937/1/44528005-fb39-4461-bac7-12cd33ce4330",
+    },
+  },
+];
+
+const itemUuid = "4fddbeb7-8d16-4417-be60-8709ce9d7b15";
+const itemVersion = 1;
+const mockGetViewerDetails = jest.fn();
 
 describe("determineViewer()", () => {
   const fileAttachmentType = "file";
@@ -29,14 +82,11 @@ describe("determineViewer()", () => {
 
   it("returns link viewer details for non-file attachment", () => {
     const testLink = "http://some.link/blah";
-    expect(determineViewer("blah", testLink, false)).toEqual([
-      linkViewerId,
-      testLink,
-    ]);
+    expect(determineViewer("blah", testLink)).toEqual([linkViewerId, testLink]);
   });
 
   it("returns a 'link' viewer if full parameters aren't provided for 'file' attachments", () => {
-    const [viewer] = determineViewer(fileAttachmentType, fileViewUrl, false);
+    const [viewer] = determineViewer(fileAttachmentType, fileViewUrl);
     expect(viewer).toEqual(linkViewerId);
   });
 
@@ -44,7 +94,6 @@ describe("determineViewer()", () => {
     const [viewer, url] = determineViewer(
       fileAttachmentType,
       fileViewUrl,
-      false,
       "not/used",
       "save"
     );
@@ -59,7 +108,6 @@ describe("determineViewer()", () => {
         determineViewer(
           fileAttachmentType,
           fileViewUrl,
-          false,
           "audio/x-mp3", // rather than test every supported MIME type, just using one to keep things short
           mimeTypeViewerId
         )
@@ -87,4 +135,56 @@ describe("determineAttachmentViewUrl()", () => {
         "directory/file.txt"
       )
     ).toEqual("file/uuid/1/directory/file.txt"));
+});
+
+describe("buildAttachmentsAndViewerDefinitions()", () => {
+  it("returns a Left if any attachment fails to build viewer definition", async () => {
+    mockGetViewerDetails.mockRejectedValue("Failure");
+    const attachmentsAndViewerDefinitions =
+      await buildAttachmentsAndViewerDefinitions(
+        attachments,
+        itemUuid,
+        itemVersion,
+        mockGetViewerDetails
+      );
+    expect(attachmentsAndViewerDefinitions).toBeLeft();
+  });
+
+  it("returns a Right if viewer definitions are built for all attachments", async () => {
+    mockGetViewerDetails.mockResolvedValue({ viewerId: "fancy" });
+    const attachmentsAndViewerDefinitions =
+      await buildAttachmentsAndViewerDefinitions(
+        attachments,
+        itemUuid,
+        itemVersion,
+        mockGetViewerDetails
+      );
+    expect(attachmentsAndViewerDefinitions).toBeRight();
+  });
+});
+
+describe("buildViewerConfigForAttachment", () => {
+  it("returns a rejected promise when failed", async () => {
+    mockGetViewerDetails.mockRejectedValue("Failure");
+    await expect(
+      buildViewerConfigForAttachments(
+        attachments,
+        itemUuid,
+        itemVersion,
+        mockGetViewerDetails
+      )
+    ).rejects.toBeTruthy();
+  });
+
+  it("returns a resolved promise when successful", async () => {
+    mockGetViewerDetails.mockResolvedValue("Success");
+    await expect(
+      buildViewerConfigForAttachments(
+        attachments,
+        itemUuid,
+        itemVersion,
+        mockGetViewerDetails
+      )
+    ).resolves.toBeTruthy();
+  });
 });

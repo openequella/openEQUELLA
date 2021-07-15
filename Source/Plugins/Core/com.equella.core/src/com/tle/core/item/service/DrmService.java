@@ -18,6 +18,7 @@
 
 package com.tle.core.item.service;
 
+import com.dytech.edge.exceptions.DRMException;
 import com.dytech.edge.wizard.beans.DRMPage;
 import com.tle.beans.item.DrmAcceptance;
 import com.tle.beans.item.DrmSettings;
@@ -27,6 +28,7 @@ import com.tle.common.Pair;
 import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
 /** @author Nicholas Read */
 public interface DrmService {
@@ -45,6 +47,16 @@ public interface DrmService {
       Item item, boolean isSummaryPage, boolean viewedInComposition);
 
   void acceptLicense(Item item);
+
+  /**
+   * Accept DRM terms.
+   *
+   * @param item Item which is protected by the DRM.
+   * @throws DRMException if user is not authorised to accept.
+   * @throws BadRequestException if user accepted already or does not need to accept.
+   * @return ID of the new DrmAcceptance.
+   */
+  long acceptLicenseOrThrow(Item item);
 
   void revokeAcceptance(Item item, String userID);
 

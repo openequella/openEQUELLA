@@ -18,7 +18,7 @@
 
 package com.tle.web.api.search
 
-import com.dytech.edge.exceptions.BadRequestException
+import com.dytech.edge.exceptions.{BadRequestException, DRMException}
 import com.tle.beans.entity.DynaCollection
 import com.tle.beans.item.attachments.{Attachment, CustomAttachment, FileAttachment}
 import com.tle.beans.item.{Comment, ItemId, ItemIdKey}
@@ -27,8 +27,8 @@ import com.tle.common.beans.exception.NotFoundException
 import com.tle.common.collection.AttachmentConfigConstants
 import com.tle.common.search.DefaultSearch
 import com.tle.common.search.whereparser.WhereParser
+import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.freetext.queries.FreeTextBooleanQuery
-
 import com.tle.core.item.security.ItemSecurityConstants
 import com.tle.core.item.serializer.{ItemSerializerItemBean, ItemSerializerService}
 import com.tle.core.security.ACLChecks.hasAcl
@@ -40,10 +40,14 @@ import com.tle.web.api.item.equella.interfaces.beans.{
   FileAttachmentBean
 }
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
-import com.tle.web.api.search.model.{SearchParam, SearchResultAttachment, SearchResultItem}
+import com.tle.web.api.search.model.{
+  SearchParam,
+  SearchResultAttachment,
+  SearchResultItem,
+  DrmStatus
+}
 import com.tle.web.controls.resource.ResourceAttachmentBean
 import com.tle.web.controls.youtube.YoutubeAttachmentBean
-
 import java.time.format.DateTimeParseException
 import java.time.{LocalDate, LocalDateTime, LocalTime, ZoneId}
 import java.util.Date
@@ -262,6 +266,7 @@ object SearchHelper {
       links = getLinksFromBean(bean),
       bookmarkId = getBookmarkId(key),
       isLatestVersion = isLatestVersion(key),
+      drmStatus = getItemDrmStatus(item.idKey)
     )
   }
 
@@ -295,6 +300,27 @@ object SearchHelper {
             )
           })
           .toList)
+  }
+
+  def getItemDrmStatus(itemKey: ItemIdKey): Option[DrmStatus] = {
+    for {
+      item <- Option(LegacyGuice.itemService.getUnsecureIfExists(itemKey))
+      _    <- Option(item.getDrmSettings)
+      termsAccepted = try {
+        LegacyGuice.drmService.hasAcceptedOrRequiresNoAcceptance(item, false, false)
+      } catch {
+        // This exception is only thrown when the DRM has maximum number of acceptance allowable times.
+        case _: DRMException => false
+      }
+      isAuthorised = try {
+        LegacyGuice.drmService.isAuthorised(item, CurrentUser.getUserState.getIpAddress)
+        true
+      } catch {
+        case _: DRMException => false
+      }
+    } yield {
+      DrmStatus(termsAccepted, isAuthorised)
+    }
   }
 
   def getItemComments(key: ItemIdKey): Option[java.util.List[Comment]] =

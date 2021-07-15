@@ -37,6 +37,11 @@ import {
   Unknown,
 } from "runtypes";
 import {
+  clearDataFromLocalStorage,
+  readDataFromLocalStorage,
+  saveDataToLocalStorage,
+} from "../modules/BrowserStorageModule";
+import {
   Collection,
   findCollectionsByUuid,
 } from "../modules/CollectionsModule";
@@ -53,12 +58,25 @@ import {
 } from "../modules/SearchModule";
 import { findUserById } from "../modules/UserModule";
 import { DateRange, isDate } from "../util/Date";
-import type { SearchPageOptions } from "./SearchPage";
 
 /**
  * This helper is intended to assist with processing related to the Presentation Layer -
  * as opposed to the Business Layer which is handled by the Modules.
  */
+
+/**
+ * Type of search options that are specific to Search page presentation layer.
+ */
+export interface SearchPageOptions extends SearchOptions {
+  /**
+   * Whether to enable Quick mode (true) or to use custom date pickers (false).
+   */
+  dateRangeQuickModeEnabled: boolean;
+  /**
+   * How to display the search results - also determines the type of results.
+   */
+  displayMode: DisplayMode;
+}
 
 export const defaultSearchPageOptions: SearchPageOptions = {
   ...defaultSearchOptions,
@@ -378,3 +396,18 @@ export const getPartialSearchOptions = (
   options: SearchOptions,
   fields: SearchOptionsFields[]
 ) => pick(options, fields);
+
+export const RAW_MODE_STORAGE_KEY = "raw_mode";
+
+/**
+ * Read the value of wildcard mode from LocalStorage.
+ */
+export const getRawModeFromStorage = (): boolean =>
+  readDataFromLocalStorage(RAW_MODE_STORAGE_KEY, Boolean.guard) ??
+  defaultSearchOptions.rawMode;
+
+export const writeRawModeToStorage = (value: boolean): void =>
+  saveDataToLocalStorage(RAW_MODE_STORAGE_KEY, value);
+
+export const deleteRawModeFromStorage = (): void =>
+  clearDataFromLocalStorage(RAW_MODE_STORAGE_KEY);

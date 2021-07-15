@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+import * as OEQ from "@openequella/rest-api-client";
+import { CustomMimeTypes } from "./MimeTypesModule";
+
 /**
  * Builds a URL to access the YouTube provided thumbnail for a video specified with `videoId`. This
  * is based on the URLs return from the Google API in 2021. They could change in the future.
@@ -57,3 +60,24 @@ export const buildViewUrl = (videoId: string): string =>
  */
 export const extractVideoId = (viewUrl: string): string | null =>
   new URL(viewUrl).searchParams.get("v");
+
+/**
+ * Update YouTube Video Attachment with Custom MIME type and View URL.
+ *
+ * @param attachment An Youtube Video Attachment
+ */
+export const updateYoutubeAttachment = (
+  attachment: OEQ.Search.Attachment
+): OEQ.Search.Attachment => {
+  const { links } = attachment;
+  const { externalId } = links;
+  if (externalId) {
+    return {
+      ...attachment,
+      mimeType: CustomMimeTypes.YOUTUBE,
+      links: { ...links, view: buildViewUrl(externalId) },
+    };
+  }
+
+  throw new Error("Missing YouTube Video Attachment external ID.");
+};

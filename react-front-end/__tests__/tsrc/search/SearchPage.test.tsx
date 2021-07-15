@@ -48,11 +48,11 @@ import {
   getSearchResultsCustom,
 } from "../../../__mocks__/SearchResult.mock";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
-import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
 import * as AdvancedSearchModule from "../../../tsrc/modules/AdvancedSearchModule";
-import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
+import * as BrowserStorageModule from "../../../tsrc/modules/BrowserStorageModule";
 import type { Collection } from "../../../tsrc/modules/CollectionsModule";
+import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import * as FavouriteModule from "../../../tsrc/modules/FavouriteModule";
 import * as GallerySearchModule from "../../../tsrc/modules/GallerySearchModule";
 import { getGlobalCourseList } from "../../../tsrc/modules/LegacySelectionSessionModule";
@@ -61,10 +61,12 @@ import * as RemoteSearchModule from "../../../tsrc/modules/RemoteSearchModule";
 import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchFacetsModule from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchFilterSettingsModule from "../../../tsrc/modules/SearchFilterSettingsModule";
-import * as SearchPageHelper from "../../../tsrc/search/SearchPageHelper";
+import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
 import * as UserModule from "../../../tsrc/modules/UserModule";
-import SearchPage, { SearchPageOptions } from "../../../tsrc/search/SearchPage";
+import SearchPage from "../../../tsrc/search/SearchPage";
+import * as SearchPageHelper from "../../../tsrc/search/SearchPageHelper";
+import { SearchPageOptions } from "../../../tsrc/search/SearchPageHelper";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { updateMockGetBaseUrl } from "../BaseUrlHelper";
 import { queryPaginatorControls } from "../components/SearchPaginationTestHelper";
@@ -125,6 +127,15 @@ const mockConvertParamsToSearchOptions = jest.spyOn(
 const mockMimeTypeFilters = jest
   .spyOn(SearchFilterSettingsModule, "getMimeTypeFiltersFromServer")
   .mockResolvedValue(getMimeTypeFilters);
+
+const mockSaveDataToLocalStorage = jest
+  .spyOn(BrowserStorageModule, "saveDataToLocalStorage")
+  .mockImplementation(jest.fn);
+
+const mockReadDataFromLocalStorage = jest.spyOn(
+  BrowserStorageModule,
+  "readDataFromLocalStorage"
+);
 
 //i tried mocking this using window.navigator.clipboard.writeText = jest.fn(), but the navigator object is undefined
 Object.assign(navigator, {
@@ -1123,4 +1134,22 @@ describe("Hide Gallery", () => {
       );
     }
   );
+});
+
+describe("Wildcard mode persistence", () => {
+  it("saves wildcard mode value in browser local storage", async () => {
+    await renderSearchPage();
+    expect(mockSaveDataToLocalStorage).toHaveBeenCalled();
+  });
+
+  it("retrieves wildcard mode value from local storage", async () => {
+    // By default wildcard mode is turned on, so we save 'false' in local storage.
+    mockReadDataFromLocalStorage.mockReturnValueOnce(true);
+    const { container } = await renderSearchPage();
+    expect(mockReadDataFromLocalStorage).toHaveBeenCalled();
+    const wildcardModeSwitch = container.querySelector("#wildcardSearch");
+
+    // Since rawMode is true, the checkbox should not be checked.
+    expect(wildcardModeSwitch).not.toBeChecked();
+  });
 });
