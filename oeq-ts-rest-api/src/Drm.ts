@@ -45,6 +45,10 @@ export interface DrmAgreements {
   customTerms?: DrmCustomTerms;
 }
 
+/**
+ * Data structure for a variety of texts related to accepting DRM terms, including
+ * title, subtitle, description and all agreements that user must accept.
+ */
 export interface ItemDrmDetails {
   /** Server side language string used as the DRM acceptance title. */
   title: string;
@@ -81,12 +85,13 @@ export const listDrmTerms = (
  * @param apiBasePath Base URI to the oEQ institution and API
  * @param uuid UUID of an Item
  * @param version Version of an Item
+ * @return `true` to indicate terms have been accepted.
  */
 export const acceptDrmTerms = (
   apiBasePath: string,
   uuid: string,
   version: number
-): Promise<number> =>
-  POST(buildPath(apiBasePath, uuid, version), (data): data is number =>
-    is<number>(data)
+): Promise<true> =>
+  POST(buildPath(apiBasePath, uuid, version), (data): data is true =>
+    is<true>(data)
   );
