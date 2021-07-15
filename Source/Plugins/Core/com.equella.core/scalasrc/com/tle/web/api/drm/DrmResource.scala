@@ -72,14 +72,14 @@ class DrmResource {
   @ApiOperation(
     value = "Accept DRM terms",
     notes = "This endpoint is used to accept an Item's DRM terms.",
-    response = classOf[Long],
+    response = classOf[Boolean]
   )
   def acceptDrm(@ApiParam("Item UUID") @PathParam("uuid") uuid: String,
                 @ApiParam("Item Version") @PathParam("version") version: Int): Response = {
 
     val acceptLicense: Item => Long = drmService.acceptLicenseOrThrow
     val result                      = allCatch withTry (getItem andThen acceptLicense)(new ItemId(uuid, version))
-    respond(result)
+    respond(result.map(_ => true)) // Always return true for a successful request.
   }
 
   // Take a subtype of Throwable and return a function which takes a sequence of string and returns a Response.
