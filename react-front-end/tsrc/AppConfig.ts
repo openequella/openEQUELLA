@@ -81,3 +81,4 @@ export const AppConfig: Config = {
 };
 export const getBaseUrl = () => AppConfig.baseUrl;
 export const API_BASE_URL = `${AppConfig.baseUrl}api`;
+export const LEGACY_CSS_URL = `${API_BASE_URL}/theme/legacy.css`;
