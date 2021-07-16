@@ -40,6 +40,6 @@ describe('acceptDrmTerms', () => {
   it('supports accepting DRM terms for an Item', async () => {
     await expect(
       acceptDrmTerms(TC.API_PATH_FIVEO, ITEM_UUID, ITEM_VERSION)
-    ).resolves.toBeTruthy();
+    ).resolves.not.toThrow();
   });
 });

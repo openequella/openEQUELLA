@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { is } from 'typescript-is';
-import { GET, POST } from './AxiosInstance';
+import { GET, POST_void } from './AxiosInstance';
 
 export interface DrmParties {
   /**  Server side language string for DRM party. */
@@ -85,13 +85,9 @@ export const listDrmTerms = (
  * @param apiBasePath Base URI to the oEQ institution and API
  * @param uuid UUID of an Item
  * @param version Version of an Item
- * @return `true` to indicate terms have been accepted.
  */
 export const acceptDrmTerms = (
   apiBasePath: string,
   uuid: string,
   version: number
-): Promise<true> =>
-  POST(buildPath(apiBasePath, uuid, version), (data): data is true =>
-    is<true>(data)
-  );
+): Promise<void> => POST_void(buildPath(apiBasePath, uuid, version));
