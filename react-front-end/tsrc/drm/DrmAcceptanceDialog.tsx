@@ -33,7 +33,7 @@ import { range } from "lodash";
 import { useEffect, useReducer } from "react";
 import * as React from "react";
 import * as OEQ from "@openequella/rest-api-client";
-import { pipe } from "fp-ts/function";
+import { flow, pipe } from "fp-ts/function";
 import { commonString } from "../util/commonstrings";
 import { languageStrings } from "../util/langstrings";
 import { pfTernaryTypeGuard } from "../util/pointfree";
@@ -53,7 +53,11 @@ export interface DrmAcceptanceDialogProps {
   /**
    * Function fired when the Accept button is clicked.
    */
-  onAccept: () => void;
+  onAccept: () => Promise<void>;
+  /**
+   * Function fired when accepting terms is successful.
+   */
+  onAcceptCallBack: () => void;
   /**
    * Function fired when the Reject button is clicked.
    */
@@ -64,7 +68,7 @@ export interface DrmAcceptanceDialogProps {
   open: boolean;
 }
 
-// Component for non-standard DRM term which has a title and a list of terms.
+// Child component for displaying non-standard DRM term which usually has a title and a list of terms.
 const NonStandardDrmTerms = ({
   title,
   terms,
@@ -93,7 +97,7 @@ const NonStandardDrmTerms = ({
   );
 };
 
-// Component for all DRM terms.
+// Child component for displaying all DRM terms.
 const DrmTerms = ({
   regularPermission,
   additionalPermission,
@@ -153,14 +157,19 @@ const DrmTerms = ({
   );
 };
 
-const skeletonDialog = {
+// Props for building the Skeleton dialog.
+const SkeletonDialogProps = {
   title: <Skeleton variant="text" width={80} />,
   content: <Skeleton variant="rect" width="100%" height={200} />,
-  buttons: range(2).map((index) => (
-    <Button key={index}>
-      <Skeleton variant="text" width={80} animation={false} />
-    </Button>
-  )),
+  buttons: (
+    <>
+      {range(2).map((index) => (
+        <Button key={index}>
+          <Skeleton variant="text" width={80} animation={false} />
+        </Button>
+      ))}
+    </>
+  ),
 };
 
 type Action =
@@ -168,8 +177,8 @@ type Action =
   | {
       type: "termsRetrieved";
       drmDetails: OEQ.Drm.ItemDrmDetails;
-      onAccept: () => void;
-      onReject: () => void;
+      acceptTerms: () => void; // Handler for accepting terms which consists of 'onAccept', 'onAcceptCallBack' and error handling.
+      rejectTerms: () => void; // Handler for rejecting terms which is just an alias for 'onReject'.
     }
   | { type: "error"; cause: Error; onClose: () => void };
 
@@ -179,7 +188,7 @@ type State =
       dialog: {
         title: JSX.Element;
         content: JSX.Element;
-        buttons: JSX.Element[];
+        buttons: JSX.Element;
       };
     }
   | {
@@ -202,11 +211,11 @@ type State =
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "init":
-      return { status: "initialising", dialog: { ...skeletonDialog } };
+      return { status: "initialising", dialog: { ...SkeletonDialogProps } };
     case "termsRetrieved":
       const {
-        onReject,
-        onAccept,
+        acceptTerms,
+        rejectTerms,
         drmDetails: { title, subtitle, agreements },
       } = action;
       return {
@@ -225,15 +234,16 @@ const reducer = (state: State, action: Action): State => {
           ),
           buttons: (
             <>
-              <Button onClick={onReject} color="secondary" autoFocus>
+              <Button onClick={rejectTerms} color="secondary">
                 {languageStrings.common.action.reject}
               </Button>
               <Button
                 onClick={(event) => {
-                  onAccept();
+                  acceptTerms();
                   event.stopPropagation();
                 }}
                 color="primary"
+                autoFocus
               >
                 {languageStrings.common.action.accept}
               </Button>
@@ -268,36 +278,59 @@ export const DrmAcceptanceDialog = ({
   termsProvider,
   onReject,
   onAccept,
+  onAcceptCallBack,
   open,
 }: DrmAcceptanceDialogProps) => {
   const [state, dispatch] = useReducer(reducer, {
     status: "initialising",
-    dialog: { ...skeletonDialog },
+    dialog: { ...SkeletonDialogProps },
   });
 
+  // Run the given async task in a TaskEither and return an Either where Left is Error and Right is the specified type T.
+  const runInTask = <T,>(task: () => Promise<T>): Promise<E.Either<Error, T>> =>
+    pipe(TE.tryCatch<Error, T>(task, (cause) => new Error(`${cause}`)))();
+
   useEffect(() => {
+    const buildActionForError = (cause: Error): Action => ({
+      type: "error",
+      cause,
+      onClose: onReject,
+    });
+
+    // Call 'onAccept' first, and then call 'onAcceptCallBack' or show error message.
+    const acceptDrmTerms = async () => {
+      const result: E.Either<Error, void> = await runInTask(onAccept);
+      pipe(
+        result,
+        E.fold<Error, void, void>(
+          flow(buildActionForError, dispatch),
+          onAcceptCallBack
+        )
+      );
+    };
+
     if (state.status === "initialising") {
       (async () => {
-        const response: E.Either<Error, OEQ.Drm.ItemDrmDetails> = await pipe(
-          TE.tryCatch(termsProvider, (error) => new Error(`${error}`))
-        )();
+        const result: E.Either<Error, OEQ.Drm.ItemDrmDetails> = await runInTask(
+          termsProvider
+        );
 
         pipe(
-          response,
+          result,
           E.fold<Error, OEQ.Drm.ItemDrmDetails, Action>(
-            (cause) => ({ type: "error", cause, onClose: onReject }),
+            buildActionForError,
             (drmDetails) => ({
               type: "termsRetrieved",
               drmDetails,
-              onReject,
-              onAccept,
+              rejectTerms: onReject,
+              acceptTerms: acceptDrmTerms,
             })
           ),
           dispatch
         );
       })();
     }
-  }, [state, termsProvider, onReject, onAccept]);
+  }, [state, termsProvider, onReject, onAccept, onAcceptCallBack]);
 
   const { title, content, buttons } = state.dialog;
 

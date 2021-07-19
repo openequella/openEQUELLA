@@ -28,6 +28,7 @@ export default {
   component: DrmAcceptanceDialog,
   argTypes: {
     onAccept: { action: "on accept terms" },
+    onAcceptCallBack: { action: "on accepting terms is successful" },
     onReject: { action: "on reject terms" },
   },
   args: {

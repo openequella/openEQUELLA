@@ -30,6 +30,7 @@ describe("<DrmAcceptanceDialog />", () => {
       <DrmAcceptanceDialog
         termsProvider={termsProvider}
         onAccept={jest.fn()}
+        onAcceptCallBack={jest.fn()}
         onReject={jest.fn()}
         open
       />
