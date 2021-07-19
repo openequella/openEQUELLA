@@ -21,7 +21,7 @@ import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import { flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import { Literal, match, Unknown } from "runtypes";
+import { simpleMatchD } from "../util/match";
 import {
   ATYPE_FILE,
   ATYPE_YOUTUBE,
@@ -146,19 +146,21 @@ const mimeType = ({
 }: OEQ.Search.Attachment): E.Either<string, string> =>
   pipe(
     attachmentType,
-    match(
+    simpleMatchD(
       [
-        Literal(ATYPE_FILE),
-        () =>
-          pipe(
-            mimeType,
-            E.fromNullable(
-              `File attachment ${id} is missing a defined MIME type`
-            )
-          ),
+        [
+          ATYPE_FILE,
+          () =>
+            pipe(
+              mimeType,
+              E.fromNullable(
+                `File attachment ${id} is missing a defined MIME type`
+              )
+            ),
+        ],
+        [ATYPE_YOUTUBE, () => E.right(CustomMimeTypes.YOUTUBE)],
       ],
-      [Literal(ATYPE_YOUTUBE), () => E.right(CustomMimeTypes.YOUTUBE)],
-      [Unknown, () => unsupportedAttachmentType(id, attachmentType)]
+      () => unsupportedAttachmentType(id, attachmentType)
     )
   );
 
@@ -207,28 +209,32 @@ const directUrl = (
 ): E.Either<string, string> =>
   pipe(
     attachmentType,
-    match(
+    simpleMatchD(
       [
-        Literal(ATYPE_FILE),
-        () =>
-          pipe(
-            filePath,
-            E.fromNullable(`File attachment ${id} is missing a 'filePath'.`),
-            E.map((path) => buildFileAttachmentUrl(itemUuid, itemVersion, path))
-          ),
-      ],
-      [
-        Literal(ATYPE_YOUTUBE),
-        () =>
-          pipe(
-            links.externalId,
-            E.fromNullable(
-              `YouTube attachment ${id} is missing an 'externalId'.`
+        [
+          ATYPE_FILE,
+          () =>
+            pipe(
+              filePath,
+              E.fromNullable(`File attachment ${id} is missing a 'filePath'.`),
+              E.map((path) =>
+                buildFileAttachmentUrl(itemUuid, itemVersion, path)
+              )
             ),
-            E.map(yt.buildViewUrl)
-          ),
+        ],
+        [
+          ATYPE_YOUTUBE,
+          () =>
+            pipe(
+              links.externalId,
+              E.fromNullable(
+                `YouTube attachment ${id} is missing an 'externalId'.`
+              ),
+              E.map(yt.buildViewUrl)
+            ),
+        ],
       ],
-      [Unknown, () => unsupportedAttachmentType(id, attachmentType)]
+      () => unsupportedAttachmentType(id, attachmentType)
     )
   );
 

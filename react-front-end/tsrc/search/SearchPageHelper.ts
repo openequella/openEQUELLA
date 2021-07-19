@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import * as A from "fp-ts/Array";
 import { Location } from "history";
 import { pick } from "lodash";
 import {
@@ -32,7 +32,6 @@ import {
   Record,
   Static,
   String,
-  Undefined,
   Union,
   Unknown,
 } from "runtypes";
@@ -58,6 +57,7 @@ import {
 } from "../modules/SearchModule";
 import { findUserById } from "../modules/UserModule";
 import { DateRange, isDate } from "../util/Date";
+import { simpleMatch } from "../util/match";
 
 /**
  * This helper is intended to assist with processing related to the Presentation Layer -
@@ -274,43 +274,43 @@ const getLastModifiedDateRangeFromLegacyParams = (
   primaryDate?: Date,
   secondaryDate?: Date
 ): DateRange | undefined =>
-  !primaryDate && !secondaryDate
-    ? undefined
-    : pipe(
-        rangeType.toLowerCase() as RangeType,
-        match(
-          [
-            Literal("between"),
-            (): DateRange => ({ start: primaryDate, end: secondaryDate }),
-          ],
-          [Literal("after"), (): DateRange => ({ start: primaryDate })],
-          [Literal("before"), (): DateRange => ({ end: primaryDate })],
-          [
-            Literal("on"),
-            (): DateRange => ({
-              start: primaryDate,
-              end: primaryDate,
-            }),
-          ]
-        )
-      );
+  pipe(
+    !primaryDate && !secondaryDate
+      ? O.none
+      : O.some<RangeType>(rangeType.toLowerCase() as RangeType),
+    O.map(
+      simpleMatch<DateRange>({
+        between: () => ({ start: primaryDate, end: secondaryDate }),
+        after: () => ({ start: primaryDate }),
+        before: () => ({ end: primaryDate }),
+        on: () => ({
+          start: primaryDate,
+          end: primaryDate,
+        }),
+        _: (range) => {
+          throw new TypeError(`Unknown date range mode [${range}]`);
+        },
+      })
+    ),
+    O.toUndefined
+  );
 
 const getDisplayModeFromLegacyParams = (
   legacyDisplayMode: string | undefined
 ): DisplayMode =>
   pipe(
     legacyDisplayMode,
-    match(
-      // When type is 'standard' or undefined, default to 'list'.
-      [Union(Literal("standard"), Undefined), (): DisplayMode => "list"],
-      [Literal("gallery"), (): DisplayMode => "gallery-image"],
-      [Literal("video"), (): DisplayMode => "gallery-video"],
-      [
-        Unknown,
-        () => {
-          throw new Error("Unknown Legacy display mode");
+    O.fromNullable,
+    O.fold(
+      () => "list", // default to list mode if none defined
+      simpleMatch<DisplayMode>({
+        standard: () => "list",
+        gallery: () => "gallery-image",
+        video: () => "gallery-video",
+        _: (mode) => {
+          throw new TypeError(`Unknown Legacy display mode [${mode}]`);
         },
-      ]
+      })
     )
   );
 
