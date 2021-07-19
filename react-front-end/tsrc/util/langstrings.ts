@@ -150,6 +150,7 @@ export const languageStrings = {
   },
   common: {
     action: {
+      accept: "Accept",
       add: "Add",
       apply: "Apply",
       browse: "Browse...",
@@ -166,6 +167,7 @@ export const languageStrings = {
       ok: "OK",
       openInNewWindow: "Open in new window",
       refresh: "Refresh",
+      reject: "Reject",
       register: "Register",
       resettodefault: "Reset to Default",
       revertchanges: "Revert Changes",
@@ -288,6 +290,11 @@ export const languageStrings = {
       lastSevenDays: "Last seven days",
       lastMonth: "Last month",
       thisYear: "This year",
+    },
+  },
+  drm: {
+    getTerms: {
+      error: "Failed to retrieve DRM terms",
     },
   },
   embedCode: {
