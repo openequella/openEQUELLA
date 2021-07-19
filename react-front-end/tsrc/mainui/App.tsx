@@ -27,7 +27,7 @@ import { ReactNode } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { oeqTheme } from "../theme";
 import { startHeartbeat } from "../util/heartbeat";
-import { simpleMatchD } from "../util/match";
+import { simpleMatch } from "../util/match";
 import type { EntryPage } from "./index";
 
 const SettingsPage = React.lazy(() => import("../settings/SettingsPage"));
@@ -78,46 +78,35 @@ const App = ({ entryPage }: AppProps): JSX.Element => {
   const nop = () => {};
   return pipe(
     entryPage,
-    simpleMatchD<JSX.Element>(
-      [
-        [
-          "mainDiv",
-          () => {
-            startHeartbeat();
-            return (
-              <ThemeProvider theme={oeqTheme}>
-                <IndexPage />
-              </ThemeProvider>
-            );
-          },
-        ],
-        [
-          "searchPage",
-          () => (
-            <NewPage classPrefix="oeq-nsp">
-              <SearchPage updateTemplate={nop} />
-            </NewPage>
-          ),
-        ],
-        [
-          "settingsPage",
-          () => (
-            // When SettingsPage is used in old UI, each route change should trigger a refresh
-            // for the whole page because there are no React component matching routes.
-            <NewPage classPrefix="oeq-nst" forceRefresh>
-              <SettingsPage
-                refreshUser={nop}
-                updateTemplate={nop}
-                isReloadNeeded={false}
-              />
-            </NewPage>
-          ),
-        ],
-      ],
-      (s) => {
+    simpleMatch<JSX.Element>({
+      mainDiv: () => {
+        startHeartbeat();
+        return (
+          <ThemeProvider theme={oeqTheme}>
+            <IndexPage />
+          </ThemeProvider>
+        );
+      },
+      searchPage: () => (
+        <NewPage classPrefix="oeq-nsp">
+          <SearchPage updateTemplate={nop} />
+        </NewPage>
+      ),
+      settingsPage: () => (
+        // When SettingsPage is used in old UI, each route change should trigger a refresh
+        // for the whole page because there are no React component matching routes.
+        <NewPage classPrefix="oeq-nst" forceRefresh>
+          <SettingsPage
+            refreshUser={nop}
+            updateTemplate={nop}
+            isReloadNeeded={false}
+          />
+        </NewPage>
+      ),
+      _: (s: string | number) => {
         throw new TypeError(`Unknown entry page target: ${s}`);
-      }
-    )
+      },
+    })
   );
 };
 
