@@ -75,22 +75,37 @@ export const DrmTerms = ({
       </li>
     ));
 
-  const partyDetails = pipe(
+  const buildNonStandardDrmTerms = <T,>(
+    terms: T | undefined,
+    transformer: (p: T) => {
+      title: string;
+      terms: string[];
+    }
+  ) =>
+    pipe(
+      terms,
+      O.fromNullable,
+      O.map(transformer),
+      O.map(({ title, terms }) => (
+        <NonStandardDrmTerms title={title} terms={terms} />
+      )),
+      O.toUndefined
+    );
+
+  const partyDetails = buildNonStandardDrmTerms<OEQ.Drm.DrmParties>(
     parties,
-    O.fromNullable,
-    O.map(({ title, partyList }) => (
-      <NonStandardDrmTerms title={title} terms={partyList} />
-    )),
-    O.toUndefined
+    ({ title, partyList }: OEQ.Drm.DrmParties) => ({
+      title,
+      terms: partyList,
+    })
   );
 
-  const customTermDetails = pipe(
+  const customTermDetails = buildNonStandardDrmTerms<OEQ.Drm.DrmCustomTerms>(
     customTerms,
-    O.fromNullable,
-    O.map(({ title, terms }) => (
-      <NonStandardDrmTerms title={title} terms={terms.split("\n")} />
-    )),
-    O.toUndefined
+    ({ title, terms: customTerms }: OEQ.Drm.DrmCustomTerms) => ({
+      title,
+      terms: customTerms.split("\n"),
+    })
   );
 
   return (
