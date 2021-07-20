@@ -1,0 +1,103 @@
+/*
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import { Grid, Theme, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import * as OEQ from "@openequella/rest-api-client";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import * as React from "react";
+
+const useStyles = makeStyles((theme: Theme) => ({
+  li: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+  },
+}));
+
+// Child component for displaying non-standard DRM term which usually has a title and a list of terms.
+export const NonStandardDrmTerms = ({
+  title,
+  terms,
+}: {
+  title: string;
+  terms: string[];
+}) => {
+  const classes = useStyles();
+  return (
+    <li className={classes.li} key={title}>
+      <Grid container direction="column">
+        <Grid item>
+          <Typography>{title}</Typography>
+        </Grid>
+        <Grid item>
+          {terms.map((term) => (
+            <Typography key={term}>{term}</Typography>
+          ))}
+        </Grid>
+      </Grid>
+    </li>
+  );
+};
+
+// Child component for displaying all DRM terms.
+export const DrmTerms = ({
+  regularPermission,
+  additionalPermission,
+  educationSector,
+  parties,
+  customTerms,
+}: OEQ.Drm.DrmAgreements) => {
+  const classes = useStyles();
+  const standardTerms = [
+    regularPermission,
+    additionalPermission,
+    educationSector,
+  ]
+    .filter((term) => term !== undefined)
+    .map((term) => (
+      <li className={classes.li} key={term}>
+        <Typography>{term}</Typography>
+      </li>
+    ));
+
+  const partyDetails = pipe(
+    parties,
+    O.fromNullable,
+    O.map(({ title, partyList }) => (
+      <NonStandardDrmTerms title={title} terms={partyList} />
+    )),
+    O.toUndefined
+  );
+
+  const customTermDetails = pipe(
+    customTerms,
+    O.fromNullable,
+    O.map(({ title, terms }) => (
+      <NonStandardDrmTerms title={title} terms={terms.split("\n")} />
+    )),
+    O.toUndefined
+  );
+
+  return (
+    <ol start={1}>
+      {standardTerms}
+      {partyDetails}
+      {customTermDetails}
+    </ol>
+  );
+};
