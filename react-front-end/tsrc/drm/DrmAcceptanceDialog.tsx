@@ -22,6 +22,7 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
+  PropTypes,
   Theme,
   Typography,
 } from "@material-ui/core";
@@ -161,16 +162,15 @@ const DrmTerms = ({
 const SkeletonDialogProps = {
   title: <Skeleton variant="text" width={80} />,
   content: <Skeleton variant="rect" width="100%" height={200} />,
-  buttons: (
-    <>
-      {range(2).map((index) => (
-        <Button key={index}>
-          <Skeleton variant="text" width={80} animation={false} />
-        </Button>
-      ))}
-    </>
-  ),
+  buttons: range(2).map((index) => (
+    <Button key={index}>
+      <Skeleton variant="text" width={80} animation={false} />
+    </Button>
+  )),
 };
+
+const { reject: rejectString, accept: acceptString } =
+  languageStrings.common.action;
 
 type Action =
   | { type: "init" }
@@ -188,7 +188,7 @@ type State =
       dialog: {
         title: JSX.Element;
         content: JSX.Element;
-        buttons: JSX.Element;
+        buttons: JSX.Element[];
       };
     }
   | {
@@ -196,7 +196,7 @@ type State =
       dialog: {
         title: string;
         content: JSX.Element;
-        buttons: JSX.Element;
+        buttons: JSX.Element[];
       };
     }
   | {
@@ -232,23 +232,31 @@ const reducer = (state: State, action: Action): State => {
               </Grid>
             </Grid>
           ),
-          buttons: (
-            <>
-              <Button onClick={rejectTerms} color="secondary">
-                {languageStrings.common.action.reject}
-              </Button>
-              <Button
-                onClick={(event) => {
-                  acceptTerms();
-                  event.stopPropagation();
-                }}
-                color="primary"
-                autoFocus
-              >
-                {languageStrings.common.action.accept}
-              </Button>
-            </>
-          ),
+          buttons: [
+            {
+              handler: rejectTerms,
+              color: "secondary",
+              text: rejectString,
+              autoFocus: false,
+            },
+            {
+              handler: acceptTerms,
+              color: "primary",
+              text: acceptString,
+              autoFocus: true,
+            },
+          ].map(({ handler, color, text, autoFocus }) => (
+            <Button
+              onClick={(event) => {
+                handler();
+                event.stopPropagation();
+              }}
+              color={color as PropTypes.Color}
+              autoFocus={autoFocus}
+            >
+              {text}
+            </Button>
+          )),
         },
       };
     case "error":
