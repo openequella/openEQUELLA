@@ -18,7 +18,7 @@
 import Axios from "axios";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
-import { pipe } from "fp-ts/function";
+import { flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import {
   API_BASE_URL,
@@ -491,8 +491,13 @@ export const selectResource = (
           E.map(A.head),
           E.match(
             (e) => Promise.reject(e),
-            (attachmentUUID) =>
-              selectResourceForSkinny(itemKey, O.toUndefined(attachmentUUID))
+            flow(
+              // If the array was empty, then pass `undefined` to `selectResourceForSkinny` which
+              // indicates no attachment is selected - just the item.
+              O.toUndefined,
+              (attachmentUUID) =>
+                selectResourceForSkinny(itemKey, attachmentUUID)
+            )
           )
         ),
       _: (layout) => {
