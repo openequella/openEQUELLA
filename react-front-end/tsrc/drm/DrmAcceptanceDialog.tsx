@@ -116,7 +116,7 @@ const DrmTerms = ({
       <li className={classes.li} key={term}>
         <Grid container>
           <Grid item>
-            <Typography>{`${term}`}</Typography>
+            <Typography>{term}</Typography>
           </Grid>
         </Grid>
       </li>

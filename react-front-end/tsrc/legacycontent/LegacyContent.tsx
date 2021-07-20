@@ -402,7 +402,7 @@ function updateStylesheets(
 ): Promise<{ [url: string]: HTMLLinkElement }> {
   const sheets = _sheets
     ? _sheets.map(resolveUrl)
-    : [resolveUrl(`${LEGACY_CSS_URL}`)];
+    : [resolveUrl(LEGACY_CSS_URL)];
   const doc = window.document;
   const insertPoint = doc.getElementById("_dynamicInsert");
   const head = doc.getElementsByTagName("head")[0];
