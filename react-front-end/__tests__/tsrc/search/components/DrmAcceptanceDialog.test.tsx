@@ -40,9 +40,7 @@ describe("<DrmAcceptanceDialog />", () => {
     renderDrmDialog(drmTermsResolved);
     await waitFor(() =>
       expect(
-        queryByText(screen.getByRole("dialog"), drmTerms.title, {
-          selector: "h2",
-        })
+        queryByText(screen.getByRole("dialog"), drmTerms.title)
       ).toBeInTheDocument()
     );
   });
@@ -52,9 +50,7 @@ describe("<DrmAcceptanceDialog />", () => {
     renderDrmDialog(() => Promise.reject(error));
 
     await waitFor(() =>
-      expect(
-        queryByText(screen.getByRole("dialog"), error, { selector: "p" })
-      ).toBeInTheDocument()
+      expect(queryByText(screen.getByRole("dialog"), error)).toBeInTheDocument()
     );
   });
 });

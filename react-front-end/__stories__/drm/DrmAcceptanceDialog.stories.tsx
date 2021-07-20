@@ -39,7 +39,6 @@ export default {
 export const Standard: Story<DrmAcceptanceDialogProps> = (args) => (
   <DrmAcceptanceDialog {...args} />
 );
-
 Standard.args = {
   termsProvider: drmTermsResolved,
 };
@@ -47,7 +46,6 @@ Standard.args = {
 export const FailedToGetTerms: Story<DrmAcceptanceDialogProps> = (args) => (
   <DrmAcceptanceDialog {...args} />
 );
-
 FailedToGetTerms.args = {
   termsProvider: drmTermsRejected,
 };
