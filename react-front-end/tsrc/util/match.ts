@@ -48,8 +48,26 @@ export const simpleMatch =
 
 /**
  * A simple function to provide an alternative to `switch` when we don't have a pattern match
- * framework. This one providing support for Dynamic identifiers.
+ * framework. This one providing support for Dynamic identifiers - such as variables and constants
+ * or ones generated functionally.
  *
+ * Example:
+ * ```
+ * const makeOption = (option: number) => `option-${option}`;
+ * pipe(
+ *   "option-2",
+ *   simpleMatchD([
+ *       [makeOption(1), (o) => `You have selected option 1 [${o}]`],
+ *       [makeOption(2), (o) => `You have selected option 2 [${o}]`],
+ *       [makeOption(3), (o) => `You have selected option 3 [${o}]`]
+ *     ],
+ *     (o) => {
+ *      throw new TypeError(`Unknown option was selected: ${o}`);
+ *     }
+ *   ),
+ *   console.log // output: You have selected option 2 [option-2]
+ * );
+ * ```
  * @param matchers A list of strings or numbers to match against, followed by a function to
  *                 execute.
  * @param noMatch A function to execute when no match is found
