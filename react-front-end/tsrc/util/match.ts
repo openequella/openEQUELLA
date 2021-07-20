@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as A from "fp-ts/Array";
-import { identity, pipe } from "fp-ts/function";
+import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 
 /**
@@ -62,8 +62,7 @@ export const simpleMatchD =
   (match: string): R =>
     pipe(
       matchers,
-      A.findFirst(([m, _]) => m === match),
-      O.map(([_, f]) => f),
-      O.match(() => noMatch, identity),
-      (f) => f(match)
+      A.findFirstMap(([m, f]) => (m === match ? O.some(f) : O.none)),
+      O.getOrElse(() => noMatch),
+      (f: MatchFn<R>) => f(match)
     );
