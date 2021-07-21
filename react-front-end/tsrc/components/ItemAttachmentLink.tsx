@@ -18,9 +18,10 @@
 import { Link, Typography } from "@material-ui/core";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
+import { ItemDrmContext } from "../search/components/SearchResult";
 import { pfTernaryTypeGuard } from "../util/pointfree";
 import * as React from "react";
-import { SyntheticEvent, useState } from "react";
+import { SyntheticEvent, useContext, useState } from "react";
 import {
   AttachmentAndViewerConfig,
   isViewerLightboxConfig,
@@ -64,13 +65,17 @@ export interface ItemAttachmentLinkProps {
 const ItemAttachmentLink = ({
   children,
   selectedAttachment: {
-    attachment: { description, mimeType, brokenAttachment },
+    attachment: { description, mimeType },
     viewerConfig,
   },
   item: { uuid, version },
 }: ItemAttachmentLinkProps) => {
   const { attachmentLink } = languageStrings.searchpage.searchResult;
   const [lightBoxProps, setLightBoxProps] = useState<LightboxProps>();
+  const {
+    drmStatus: { isAuthorised, termsAccepted },
+    setOnDrmAcceptCallback,
+  } = useContext(ItemDrmContext);
 
   const buildSimpleLink = ({ url }: ViewerLinkConfig): JSX.Element => (
     <Link
@@ -78,12 +83,31 @@ const ItemAttachmentLink = ({
       href={url}
       target="_blank"
       rel="noreferrer"
+      onClick={(event) => {
+        event.stopPropagation();
+        if (isAuthorised && !termsAccepted) {
+          event.preventDefault();
+          setOnDrmAcceptCallback(() => () => window.open(url, "_blank"));
+          return false;
+        }
+        return true;
+      }}
     >
       {children}
     </Link>
   );
 
   const buildLightboxLink = ({ config }: ViewerLightboxConfig): JSX.Element => {
+    const openLightbox = () =>
+      setLightBoxProps({
+        open: true,
+        onClose: () => {
+          setLightBoxProps(undefined);
+        },
+        config,
+        item: { uuid, version },
+      });
+
     if (!mimeType) {
       throw new Error(
         "'mimeType' must be specified when viewer is 'lightbox'."
@@ -96,14 +120,11 @@ const ItemAttachmentLink = ({
           aria-label={`${attachmentLink} ${description}`}
           component="button"
           onClick={(event: SyntheticEvent) => {
-            setLightBoxProps({
-              open: true,
-              onClose: () => {
-                setLightBoxProps(undefined);
-              },
-              config,
-              item: { uuid, version },
-            });
+            if (isAuthorised && !termsAccepted) {
+              setOnDrmAcceptCallback(() => openLightbox);
+            } else {
+              openLightbox();
+            }
             event.stopPropagation();
           }}
         >
