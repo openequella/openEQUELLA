@@ -75,7 +75,7 @@ export interface GalleryEntry {
 export interface GallerySearchResultItem
   extends Pick<
     OEQ.Search.SearchResultItem,
-    "uuid" | "version" | "name" | "links"
+    "uuid" | "version" | "name" | "links" | "drmStatus"
   > {
   /**
    * The primary asset to be shown to represent an item. (Typically the first attachment returned
@@ -417,6 +417,7 @@ export const buildGallerySearchResultItem =
     name,
     links,
     attachments,
+    drmStatus,
   }: OEQ.Search.SearchResultItem): E.Either<string, GallerySearchResultItem> =>
     Do(E.either)
       .bind(
@@ -454,6 +455,7 @@ export const buildGallerySearchResultItem =
         links,
         mainEntry,
         additionalEntries,
+        drmStatus,
       }));
 
 /**
