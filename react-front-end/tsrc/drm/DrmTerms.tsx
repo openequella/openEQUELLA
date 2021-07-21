@@ -29,7 +29,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-// Child component for displaying non-standard DRM term which usually has a title and a list of terms.
+/**
+ * Child component for displaying non-standard DRM term which usually has a title and a list of terms.
+ */
 export const NonStandardDrmTerms = ({
   title,
   terms,
@@ -54,7 +56,9 @@ export const NonStandardDrmTerms = ({
   );
 };
 
-// Child component for displaying all DRM terms.
+/**
+ * Child component for displaying all DRM terms.
+ */
 export const DrmTerms = ({
   regularPermission,
   additionalPermission,
