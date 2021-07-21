@@ -37,6 +37,7 @@ export const buildItems = (howMany: number): GallerySearchResultItem[] =>
       uuid: uuidV4(),
       version: 1,
       name: `Test item ${i}`,
+      drmStatus: { isAuthorised: true, termsAccepted: true },
       links: {
         self: `link-to-self-${i}`,
         view: `link-to-view-${i}`,
@@ -47,3 +48,16 @@ export const buildItems = (howMany: number): GallerySearchResultItem[] =>
       ),
     })
   );
+
+export const galleryDrmItem: GallerySearchResultItem = {
+  uuid: uuidV4(),
+  version: 1,
+  name: "Test item",
+  drmStatus: { isAuthorised: true, termsAccepted: false },
+  links: {
+    self: "link-to-self",
+    view: "link-to-view",
+  },
+  mainEntry: buildGalleryEntry("Main Entry #1"),
+  additionalEntries: [],
+};

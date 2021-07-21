@@ -16,14 +16,18 @@
  * limitations under the License.
  */
 import "@testing-library/jest-dom/extend-expect";
-import { render } from "@testing-library/react";
+import { queryByText, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
 import { Router } from "react-router-dom";
 import * as React from "react";
+import { drmTerms } from "../../../../__mocks__/Drm.mock";
+import * as DrmModule from "../../../../tsrc/modules/DrmModule";
+import { GallerySearchResultItem } from "../../../../tsrc/modules/GallerySearchModule";
 import GallerySearchResult from "../../../../tsrc/search/components/GallerySearchResult";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
-import { buildItems } from "./GallerySearchResultHelpers";
+import { buildItems, galleryDrmItem } from "./GallerySearchResultHelpers";
+import * as ReactRouterDom from "react-router-dom";
 
 const {
   searchpage: {
@@ -41,17 +45,17 @@ const {
  */
 const mockUseHistoryPush = jest.fn();
 jest.mock("react-router", () => ({
-  ...jest.requireActual("react-router"), // Only mock 'useHistory'.
+  ...(jest.requireActual("react-router") as typeof ReactRouterDom), // Only mock 'useHistory'.
   useHistory: () => ({
     push: mockUseHistoryPush,
   }),
 }));
 
 describe("<GallerySearchResult />", () => {
-  const renderGallery = () =>
+  const renderGallery = (items: GallerySearchResultItem[] = buildItems(5)) =>
     render(
       <Router history={createMemoryHistory()}>
-        <GallerySearchResult items={buildItems(5)} />
+        <GallerySearchResult items={items} />
       </Router>
     ); // 16 entries in total.
 
@@ -89,5 +93,21 @@ describe("<GallerySearchResult />", () => {
         expect(queryByLabelText(arrowButtonLabel)).toBeInTheDocument();
       }
     );
+  });
+
+  describe("DRM support", () => {
+    jest.spyOn(DrmModule, "listDrmTerms").mockResolvedValue(drmTerms);
+    it("shows DRM acceptance dialog when preview a gallery entry protected by DRM", async () => {
+      const { getByLabelText } = await renderGallery([galleryDrmItem]);
+      userEvent.click(
+        getByLabelText(languageStrings.searchpage.gallerySearchResult.ariaLabel)
+      );
+
+      await waitFor(() => {
+        expect(
+          queryByText(screen.getByRole("dialog"), drmTerms.title)
+        ).toBeInTheDocument();
+      });
+    });
   });
 });

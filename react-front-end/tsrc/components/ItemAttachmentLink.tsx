@@ -88,9 +88,7 @@ const ItemAttachmentLink = ({
         if (isAuthorised && !termsAccepted) {
           event.preventDefault();
           setOnDrmAcceptCallback(() => () => window.open(url, "_blank"));
-          return false;
         }
-        return true;
       }}
     >
       {children}
