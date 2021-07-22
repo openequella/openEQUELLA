@@ -289,7 +289,7 @@ const oneDeadOneAliveAttachObj: OEQ.Search.SearchResultItem = {
 const drmAttachObj: OEQ.Search.SearchResultItem = {
   uuid: "72558c1d-8788-4515-86c8-b24a28cc451e",
   version: 1,
-  name: "Little Larry",
+  name: "DRM Item",
   description: "A description of a bird",
   status: "live",
   createdDate: new Date("2020-05-26T13:24:00.889+10:00"),
@@ -301,7 +301,7 @@ const drmAttachObj: OEQ.Search.SearchResultItem = {
     {
       attachmentType: "file",
       id: "9e751549-5cba-47dd-bccb-722c48072287",
-      description: "img.png",
+      description: "DRM Attachment",
       preview: false,
       mimeType: "image/png",
       hasGeneratedThumb: true,
