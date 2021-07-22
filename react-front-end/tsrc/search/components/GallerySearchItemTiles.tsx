@@ -23,8 +23,11 @@ import { useState } from "react";
 import { LightboxProps } from "../../components/Lightbox";
 import { OEQItemSummaryPageButton } from "../../components/OEQItemSummaryPageButton";
 import { DrmAcceptanceDialog } from "../../drm/DrmAcceptanceDialog";
-import { defaultDrmStatus } from "../../drm/DrmHelper";
-import { acceptDrmTerms, listDrmTerms } from "../../modules/DrmModule";
+import {
+  acceptDrmTerms,
+  defaultDrmStatus,
+  listDrmTerms,
+} from "../../modules/DrmModule";
 import {
   GalleryEntry,
   GallerySearchResultItem,
@@ -71,7 +74,7 @@ export interface GallerySearchTileProps {
 }
 
 /**
- * Component which build a list of 'GridListTile' for all gallery entries of an Item.
+ * Component which builds a list of 'GridListTile' for all gallery entries of an Item.
  */
 export const GallerySearchItemTiles = ({
   item: {
@@ -95,7 +98,7 @@ export const GallerySearchItemTiles = ({
   >();
   const closeDrmDialog = () => setOnDrmAcceptCallback(undefined);
 
-  // Build a function which is used to open the Lightbox for each gallery entry.
+  // Used to build the onClick event handler for each tile.
   const buildLightboxHandler = ({
     mimeType,
     directUrl: src,

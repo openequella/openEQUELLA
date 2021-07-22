@@ -99,9 +99,7 @@ describe("<GallerySearchResult />", () => {
     jest.spyOn(DrmModule, "listDrmTerms").mockResolvedValue(drmTerms);
     it("shows DRM acceptance dialog when preview a gallery entry protected by DRM", async () => {
       const { getByLabelText } = await renderGallery([galleryDrmItem]);
-      userEvent.click(
-        getByLabelText(languageStrings.searchpage.gallerySearchResult.ariaLabel)
-      );
+      userEvent.click(getByLabelText(ariaLabel));
 
       await waitFor(() => {
         expect(

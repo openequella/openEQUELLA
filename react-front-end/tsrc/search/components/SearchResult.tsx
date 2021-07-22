@@ -42,8 +42,11 @@ import OEQThumb from "../../components/OEQThumb";
 import { StarRating } from "../../components/StarRating";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { DrmAcceptanceDialog } from "../../drm/DrmAcceptanceDialog";
-import { defaultDrmStatus } from "../../drm/DrmHelper";
-import { acceptDrmTerms, listDrmTerms } from "../../modules/DrmModule";
+import {
+  acceptDrmTerms,
+  defaultDrmStatus,
+  listDrmTerms,
+} from "../../modules/DrmModule";
 import { routes } from "../../mainui/routes";
 import {
   addFavouriteItem,
@@ -127,8 +130,11 @@ export interface SearchResultProps {
   item: OEQ.Search.SearchResultItem;
 }
 
-// DRM is configured on Item level but it also affects how attachments work. So create a DRM context
-// to allow 'ItemAttachmentLink' to easily access DRM status and update the callback.
+/**
+ * DRM is configured on Item level but it also affects how attachments work.
+ * So create a DRM context to allow 'ItemAttachmentLink' to easily access DRM
+ * status and update the callback.
+ */
 export const ItemDrmContext = React.createContext<{
   drmStatus: OEQ.Search.DrmStatus;
   setOnDrmAcceptCallback: (_: undefined | (() => void)) => void;

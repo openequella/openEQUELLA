@@ -519,7 +519,7 @@ describe("<SearchResult/>", () => {
 
   describe("DRM support", () => {
     jest.spyOn(DrmModule, "listDrmTerms").mockResolvedValue(drmTerms);
-    it("shows dialog when preview a DRM item attachment", async () => {
+    it("shows the DRM Accept dialog when attempting to preview an attachment from a DRM item", async () => {
       const { drmAttachObj } = mockData;
       const { getByText } = await renderSearchResult(drmAttachObj);
       userEvent.click(getByText(drmAttachObj.attachments![0].description!));

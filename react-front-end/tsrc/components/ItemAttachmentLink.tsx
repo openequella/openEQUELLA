@@ -118,11 +118,9 @@ const ItemAttachmentLink = ({
           aria-label={`${attachmentLink} ${description}`}
           component="button"
           onClick={(event: SyntheticEvent) => {
-            if (isAuthorised && !termsAccepted) {
-              setOnDrmAcceptCallback(() => openLightbox);
-            } else {
-              openLightbox();
-            }
+            isAuthorised && !termsAccepted
+              ? setOnDrmAcceptCallback(() => openLightbox)
+              : openLightbox();
             event.stopPropagation();
           }}
         >
