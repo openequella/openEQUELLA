@@ -34,6 +34,9 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useState } from "react";
 import ReactHtmlParser from "react-html-parser";
+import { pipe } from "fp-ts/function";
+import { useHistory } from "react-router";
+import * as E from "fp-ts/Either";
 import { HashLink } from "react-router-hash-link";
 import { sprintf } from "sprintf-js";
 import { Date as DateDisplay } from "../../components/Date";
@@ -176,6 +179,7 @@ export default function SearchResult({
     bookmarkDefaultId
   );
 
+  const history = useHistory();
   const [onDrmAcceptCallback, setOnDrmAcceptCallback] = useState<
     (() => void) | undefined
   >();
@@ -305,12 +309,37 @@ export default function SearchResult({
 
   const itemLink = () => {
     const itemTitle = name ? highlightField(name) : uuid;
+    // Use Either to build URL and onClick handler. Left is for selection session
+    // and Right is for normal page.
+    const { url, onClick } = pipe(
+      routes.ViewItem.to(uuid, version),
+      E.fromPredicate<string, string>(
+        () => !inSelectionSession,
+        () => buildSelectionSessionItemSummaryLink(uuid, version)
+      ),
+      E.fold(
+        (url) => ({
+          url,
+          onClick: () => window.open(url, "_self"),
+        }),
+        (url) => ({
+          url,
+          onClick: () => history.push(url),
+        })
+      )
+    );
+
     return (
       <OEQLink
-        routeLinkUrlProvider={() => routes.ViewItem.to(uuid, version)}
-        muiLinkUrlProvider={() =>
-          buildSelectionSessionItemSummaryLink(uuid, version)
-        }
+        routeLinkUrlProvider={() => url}
+        muiLinkUrlProvider={() => url}
+        onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+          const { isAuthorised, termsAccepted } = drmStatus;
+          if (isAuthorised && !termsAccepted) {
+            e.preventDefault();
+            setOnDrmAcceptCallback(() => onClick);
+          }
+        }}
       >
         {itemTitle}
       </OEQLink>
@@ -409,8 +438,8 @@ export default function SearchResult({
           onAccept={() => acceptDrmTerms(uuid, version)}
           onAcceptCallBack={() => {
             setDrmStatus(defaultDrmStatus);
-            onDrmAcceptCallback();
             closeDrmDialog();
+            onDrmAcceptCallback();
           }}
           onReject={closeDrmDialog}
           open={!!onDrmAcceptCallback}
