@@ -25,6 +25,9 @@ import {
   isSelectionSessionOpen,
 } from "../modules/LegacySelectionSessionModule";
 import { TooltipIconButton } from "./TooltipIconButton";
+import * as OEQ from "@openequella/rest-api-client";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
 
 export interface OEQItemSummaryPageButtonProps {
   /**
@@ -43,6 +46,19 @@ export interface OEQItemSummaryPageButtonProps {
      * Version of the Item.
      */
     version: number;
+    /**
+     * DRM related to help handle DRM acceptance.
+     */
+    drm?: {
+      /**
+       * Item's DRM status.
+       */
+      drmStatus: OEQ.Search.DrmStatus;
+      /**
+       * Function to update the callback called after DRM terms are accepted.
+       */
+      setOnDrmAcceptCallback: (_: (() => void) | undefined) => void;
+    };
   };
   /**
    * Color to be used for the button.
@@ -56,22 +72,41 @@ export interface OEQItemSummaryPageButtonProps {
  */
 export const OEQItemSummaryPageButton = ({
   title,
-  item: { uuid, version },
+  item: { uuid, version, drm },
   color = "default",
 }: OEQItemSummaryPageButtonProps) => {
   const history = useHistory();
+  const buildOpenSummaryPageHandler = () => () => {
+    isSelectionSessionOpen()
+      ? window.open(
+          buildSelectionSessionItemSummaryLink(uuid, version),
+          "_self"
+        )
+      : history.push(routes.ViewItem.to(uuid, version));
+  };
+
+  const onClick = pipe(
+    drm,
+    O.fromNullable,
+    O.chain(
+      ({
+        drmStatus: { isAuthorised, termsAccepted },
+        setOnDrmAcceptCallback,
+      }) =>
+        isAuthorised && !termsAccepted
+          ? O.some(() => setOnDrmAcceptCallback(buildOpenSummaryPageHandler))
+          : O.none
+    ),
+    O.getOrElse(buildOpenSummaryPageHandler)
+  );
+
   return (
     <TooltipIconButton
       color={color}
       title={title}
       onClick={(event) => {
         event.stopPropagation();
-        isSelectionSessionOpen()
-          ? window.open(
-              buildSelectionSessionItemSummaryLink(uuid, version),
-              "_self"
-            )
-          : history.push(routes.ViewItem.to(uuid, version));
+        onClick();
       }}
     >
       <InfoIcon />

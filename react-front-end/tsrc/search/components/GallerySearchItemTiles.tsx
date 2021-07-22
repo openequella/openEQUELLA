@@ -166,7 +166,7 @@ export const GallerySearchItemTiles = ({
           <OEQItemSummaryPageButton
             title={viewItem}
             color="secondary"
-            item={{ uuid, version }}
+            item={{ uuid, version, drm: { drmStatus, setOnDrmAcceptCallback } }}
           />
         }
       />
@@ -199,8 +199,8 @@ export const GallerySearchItemTiles = ({
           onAccept={() => acceptDrmTerms(uuid, version)}
           onAcceptCallBack={() => {
             setDrmStatus(defaultDrmStatus);
-            onDrmAcceptCallback();
             closeDrmDialog();
+            onDrmAcceptCallback();
           }}
           onReject={closeDrmDialog}
           open={!!onDrmAcceptCallback}
