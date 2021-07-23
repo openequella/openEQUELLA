@@ -41,8 +41,16 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
   >();
 
   // A list of LightboxEntry which includes all main entries and additional entries.
-  const lightboxEntries: LightboxEntry[] = items.flatMap(
-    ({ mainEntry, additionalEntries }) =>
+  const lightboxEntries: LightboxEntry[] = items
+    .filter(({ drmStatus }) => {
+      if (drmStatus) {
+        const { isAuthorised, termsAccepted } = drmStatus;
+        return isAuthorised && termsAccepted;
+      }
+      // If no a DRM Item, keep it.
+      return true;
+    })
+    .flatMap(({ mainEntry, additionalEntries }) =>
       [mainEntry, ...additionalEntries].map(
         ({ id, name, mimeType, directUrl }) => ({
           src: directUrl,
@@ -51,7 +59,7 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
           id,
         })
       )
-  );
+    );
 
   const mapItemsToTiles = () =>
     items.map((item) => (
