@@ -41,6 +41,12 @@ import { OEQLink } from "../../components/OEQLink";
 import OEQThumb from "../../components/OEQThumb";
 import { StarRating } from "../../components/StarRating";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
+import { DrmAcceptanceDialog } from "../../drm/DrmAcceptanceDialog";
+import {
+  acceptDrmTerms,
+  defaultDrmStatus,
+  listDrmTerms,
+} from "../../modules/DrmModule";
 import { routes } from "../../mainui/routes";
 import {
   addFavouriteItem,
@@ -124,6 +130,19 @@ export interface SearchResultProps {
   item: OEQ.Search.SearchResultItem;
 }
 
+/**
+ * DRM is configured on Item level but it also affects how attachments work.
+ * So create a DRM context to allow 'ItemAttachmentLink' to easily access DRM
+ * status and update the callback.
+ */
+export const ItemDrmContext = React.createContext<{
+  drmStatus: OEQ.Search.DrmStatus;
+  setOnDrmAcceptCallback: (_: undefined | (() => void)) => void;
+}>({
+  drmStatus: defaultDrmStatus,
+  setOnDrmAcceptCallback: () => {},
+});
+
 export default function SearchResult({
   getViewerDetails = getMimeTypeDefaultViewerDetails,
   handleError,
@@ -144,6 +163,7 @@ export default function SearchResult({
     starRatings,
     bookmarkId: bookmarkDefaultId,
     isLatestVersion,
+    drmStatus: initialDrmStatus = defaultDrmStatus,
   } = item;
   const itemKey = `${uuid}/${version}`;
   const classes = useStyles();
@@ -155,6 +175,13 @@ export default function SearchResult({
   const [bookmarkId, setBookmarkId] = useState<number | undefined>(
     bookmarkDefaultId
   );
+
+  const [onDrmAcceptCallback, setOnDrmAcceptCallback] = useState<
+    (() => void) | undefined
+  >();
+  const [drmStatus, setDrmStatus] =
+    useState<OEQ.Search.DrmStatus>(initialDrmStatus);
+  const closeDrmDialog = () => setOnDrmAcceptCallback(undefined);
 
   const handleSelectResource = (
     itemKey: string,
@@ -346,11 +373,18 @@ export default function SearchResult({
                 {highlightField(description ?? "")}
               </Typography>
               <List disablePadding>{customDisplayMetadata}</List>
-              <SearchResultAttachmentsList
-                item={item}
-                handleError={handleError}
-                getViewerDetails={getViewerDetails}
-              />
+              <ItemDrmContext.Provider
+                value={{
+                  drmStatus,
+                  setOnDrmAcceptCallback,
+                }}
+              >
+                <SearchResultAttachmentsList
+                  item={item}
+                  handleError={handleError}
+                  getViewerDetails={getViewerDetails}
+                />
+              </ItemDrmContext.Provider>
               {generateItemMetadata()}
             </>
           }
@@ -367,6 +401,19 @@ export default function SearchResult({
           }
           open={showFavouriteItemDialog}
           closeDialog={() => setShowFavouriteItemDialog(false)}
+        />
+      )}
+      {onDrmAcceptCallback && (
+        <DrmAcceptanceDialog
+          termsProvider={() => listDrmTerms(uuid, version)}
+          onAccept={() => acceptDrmTerms(uuid, version)}
+          onAcceptCallBack={() => {
+            setDrmStatus(defaultDrmStatus);
+            onDrmAcceptCallback();
+            closeDrmDialog();
+          }}
+          onReject={closeDrmDialog}
+          open={!!onDrmAcceptCallback}
         />
       )}
     </>

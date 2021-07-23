@@ -18,12 +18,20 @@
 import { createMuiTheme, MuiThemeProvider, Theme } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
-import { render, RenderResult, fireEvent } from "@testing-library/react";
+import {
+  render,
+  RenderResult,
+  fireEvent,
+  screen,
+  queryByText,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { act } from "react-dom/test-utils";
 import { BrowserRouter } from "react-router-dom";
 import { sprintf } from "sprintf-js";
+import { drmTerms } from "../../../../__mocks__/Drm.mock";
 import * as mockData from "../../../../__mocks__/searchresult_mock_data";
 import type { RenderData } from "../../../../tsrc/AppConfig";
 import {
@@ -33,6 +41,7 @@ import {
   selectResourceForSkinny,
 } from "../../../../tsrc/modules/LegacySelectionSessionModule";
 import * as MimeTypesModule from "../../../../tsrc/modules/MimeTypesModule";
+import * as DrmModule from "../../../../tsrc/modules/DrmModule";
 import * as LegacySelectionSessionModule from "../../../../tsrc/modules/LegacySelectionSessionModule";
 import SearchResult from "../../../../tsrc/search/components/SearchResult";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
@@ -504,6 +513,21 @@ describe("<SearchResult/>", () => {
           "72558c1d-8788-4515-86c8-b24a28cc451e/1",
           ["78883eff-7cf6-4b14-ab76-2b7f84dbe833"]
         );
+      });
+    });
+  });
+
+  describe("DRM support", () => {
+    jest.spyOn(DrmModule, "listDrmTerms").mockResolvedValue(drmTerms);
+    it("shows the DRM Accept dialog when attempting to preview an attachment from a DRM item", async () => {
+      const { drmAttachObj } = mockData;
+      const { getByText } = await renderSearchResult(drmAttachObj);
+      userEvent.click(getByText(drmAttachObj.attachments![0].description!));
+
+      await waitFor(() => {
+        expect(
+          queryByText(screen.getByRole("dialog"), drmTerms.title)
+        ).toBeInTheDocument();
       });
     });
   });
