@@ -139,11 +139,19 @@ export interface SearchResultProps {
  * status and update the callback.
  */
 export const ItemDrmContext = React.createContext<{
+  /**
+   * Item's DRM status.
+   */
   drmStatus: OEQ.Search.DrmStatus;
-  setOnDrmAcceptCallback: (_: undefined | (() => void)) => void;
+  /**
+   * Function to open the DRM Acceptance dialog.
+   *
+   * @param onAccept Function which returns another function as the DRM acceptance callback.
+   */
+  showDrmAcceptDialog: (onAccept: () => void) => void;
 }>({
   drmStatus: defaultDrmStatus,
-  setOnDrmAcceptCallback: () => {},
+  showDrmAcceptDialog: () => {},
 });
 
 export default function SearchResult({
@@ -405,7 +413,7 @@ export default function SearchResult({
               <ItemDrmContext.Provider
                 value={{
                   drmStatus,
-                  setOnDrmAcceptCallback,
+                  showDrmAcceptDialog: setOnDrmAcceptCallback,
                 }}
               >
                 <SearchResultAttachmentsList

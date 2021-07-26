@@ -74,7 +74,7 @@ const ItemAttachmentLink = ({
   const [lightBoxProps, setLightBoxProps] = useState<LightboxProps>();
   const {
     drmStatus: { isAuthorised, termsAccepted },
-    setOnDrmAcceptCallback,
+    showDrmAcceptDialog,
   } = useContext(ItemDrmContext);
 
   const buildSimpleLink = ({ url }: ViewerLinkConfig): JSX.Element => (
@@ -87,7 +87,7 @@ const ItemAttachmentLink = ({
         event.stopPropagation();
         if (isAuthorised && !termsAccepted) {
           event.preventDefault();
-          setOnDrmAcceptCallback(() => () => window.open(url, "_blank"));
+          showDrmAcceptDialog(() => () => window.open(url, "_blank"));
         }
       }}
     >
@@ -119,7 +119,7 @@ const ItemAttachmentLink = ({
           component="button"
           onClick={(event: SyntheticEvent) => {
             isAuthorised && !termsAccepted
-              ? setOnDrmAcceptCallback(() => openLightbox)
+              ? showDrmAcceptDialog(() => openLightbox)
               : openLightbox();
             event.stopPropagation();
           }}
