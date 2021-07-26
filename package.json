@@ -102,7 +102,8 @@
       "react/jsx-curly-brace-presence": "error",
       "react/jsx-fragments": "error",
       "react/jsx-no-useless-fragment": "error",
-      "react/prefer-stateless-function": "error"
+      "react/prefer-stateless-function": "error",
+      "react-hooks/exhaustive-deps": "error"
     },
     "settings": {
       "jest": {
