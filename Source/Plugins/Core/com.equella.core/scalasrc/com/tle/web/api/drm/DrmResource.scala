@@ -20,6 +20,7 @@ package com.tle.web.api.drm
 
 import com.dytech.edge.exceptions.{DRMException, ItemNotFoundException}
 import com.tle.beans.item.{DrmSettings, Item, ItemId}
+import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.exceptions.AccessDeniedException
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.ApiErrorResponse.{
@@ -34,6 +35,11 @@ import javax.ws.rs.core.Response
 import javax.ws.rs.{BadRequestException, GET, NotFoundException, POST, Path, PathParam, Produces}
 import scala.util.control.Exception.allCatch
 import scala.util.{Failure, Success, Try}
+
+/**
+  * Typically used to provide why a DRM Item is unauthorised to view.
+  */
+case class DrmViolation(violation: String)
 
 @NoCache
 @Path("item/{uuid}/{version}/drm")
@@ -81,6 +87,27 @@ class DrmResource {
       : Item => Unit = drmService.acceptLicenseOrThrow // Explicitly discard the internal DB ID and use Unit instead.
     val result       = allCatch withTry (getItem andThen acceptLicense)(new ItemId(uuid, version))
     respond(result)
+  }
+
+  @GET
+  @Path("/violations")
+  @ApiOperation(
+    value = "List DRM violations",
+    notes = "This endpoint is used to List why a DRM Item is unauthorised to view.",
+    response = classOf[DrmViolation]
+  )
+  def getDrmViolations(@ApiParam("Item UUID") @PathParam("uuid") uuid: String,
+                       @ApiParam("Item Version") @PathParam("version") version: Int): Response = {
+    val isAuthorised: Item => Unit = (item: Item) =>
+      drmService.isAuthorised(item, CurrentUser.getUserState.getIpAddress)
+
+    Try {
+      (getItem andThen isAuthorised)(new ItemId(uuid, version))
+    } match {
+      case Success(_)               => badRequest(s"Item ${uuid}/${version} is authorised.")
+      case Failure(e: DRMException) => Response.ok().entity(DrmViolation(e.getMessage)).build()
+      case Failure(e)               => mapException(e)(Seq(e.getMessage))
+    }
   }
 
   // Take a subtype of Throwable and return a function which takes a sequence of string and returns a Response.
