@@ -16,10 +16,16 @@
  * limitations under the License.
  */
 import * as OEQ from '../src';
-import { acceptDrmTerms, ItemDrmDetails, listDrmTerms } from '../src/Drm';
+import {
+  acceptDrmTerms,
+  ItemDrmDetails,
+  listDrmViolations,
+  listDrmTerms,
+} from '../src/Drm';
 import * as TC from './TestConfig';
 
 const ITEM_UUID = 'ea61a83c-b18b-49e2-8096-e6208776be92';
+const UNAUTHORISED_ITEM_UUID = '73b67c33-aa72-419f-87aa-72d919fcf9f0';
 const ITEM_VERSION = 1;
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH_FIVEO, TC.USERNAME, TC.PASSWORD));
@@ -41,5 +47,16 @@ describe('acceptDrmTerms', () => {
     await expect(
       acceptDrmTerms(TC.API_PATH_FIVEO, ITEM_UUID, ITEM_VERSION)
     ).resolves.not.toThrow();
+  });
+});
+
+describe('listDrmViolations', () => {
+  it('supports listing DRM violations', async () => {
+    const { violation }: OEQ.Drm.DrmViolation = await listDrmViolations(
+      TC.API_PATH_FIVEO,
+      UNAUTHORISED_ITEM_UUID,
+      ITEM_VERSION
+    );
+    expect(violation).toBeTruthy();
   });
 });

@@ -60,6 +60,13 @@ export interface ItemDrmDetails {
   agreements: DrmAgreements;
 }
 
+export interface DrmViolation {
+  /**
+   * Violation that causes the Item being unauthorised to view.
+   */
+  violation: string;
+}
+
 const buildPath = (apiBasePath: string, uuid: string, version: number) =>
   `${apiBasePath}/item/${uuid}/${version}/drm`;
 
@@ -91,3 +98,20 @@ export const acceptDrmTerms = (
   uuid: string,
   version: number
 ): Promise<void> => POST_void(buildPath(apiBasePath, uuid, version));
+
+/**
+ * List DRM violations which result in the Item unauthorised to view.
+ *
+ * @param apiBasePath Base URI to the oEQ institution and API
+ * @param uuid UUID of an Item
+ * @param version Version of an Item
+ */
+export const listDrmViolations = (
+  apiBasePath: string,
+  uuid: string,
+  version: number
+): Promise<DrmViolation> =>
+  GET(
+    `${buildPath(apiBasePath, uuid, version)}/violations`,
+    (data): data is DrmViolation => is<DrmViolation>(data)
+  );
