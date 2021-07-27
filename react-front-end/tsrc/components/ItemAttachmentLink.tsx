@@ -72,10 +72,7 @@ const ItemAttachmentLink = ({
 }: ItemAttachmentLinkProps) => {
   const { attachmentLink } = languageStrings.searchpage.searchResult;
   const [lightBoxProps, setLightBoxProps] = useState<LightboxProps>();
-  const {
-    drmStatus: { isAuthorised, termsAccepted },
-    showDrmAcceptDialog,
-  } = useContext(ItemDrmContext);
+  const { checkDrmPermission } = useContext(ItemDrmContext);
 
   const buildSimpleLink = ({ url }: ViewerLinkConfig): JSX.Element => (
     <Link
@@ -85,10 +82,8 @@ const ItemAttachmentLink = ({
       rel="noreferrer"
       onClick={(event) => {
         event.stopPropagation();
-        if (isAuthorised && !termsAccepted) {
-          event.preventDefault();
-          showDrmAcceptDialog(() => () => window.open(url, "_blank"));
-        }
+        event.preventDefault();
+        checkDrmPermission(() => window.open(url, "_blank"));
       }}
     >
       {children}
@@ -118,10 +113,8 @@ const ItemAttachmentLink = ({
           aria-label={`${attachmentLink} ${description}`}
           component="button"
           onClick={(event: SyntheticEvent) => {
-            isAuthorised && !termsAccepted
-              ? showDrmAcceptDialog(() => openLightbox)
-              : openLightbox();
             event.stopPropagation();
+            checkDrmPermission(openLightbox);
           }}
         >
           {children}

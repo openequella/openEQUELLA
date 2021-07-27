@@ -19,15 +19,11 @@ import { GridListTile, GridListTileBar } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LightboxProps } from "../../components/Lightbox";
 import { OEQItemSummaryPageButton } from "../../components/OEQItemSummaryPageButton";
-import { DrmAcceptanceDialog } from "../../drm/DrmAcceptanceDialog";
-import {
-  acceptDrmTerms,
-  defaultDrmStatus,
-  listDrmTerms,
-} from "../../modules/DrmModule";
+import { createDrmDialog } from "../../drm/DrmHelper";
+import { defaultDrmStatus } from "../../modules/DrmModule";
 import {
   GalleryEntry,
   GallerySearchResultItem,
@@ -93,13 +89,31 @@ export const GallerySearchItemTiles = ({
 
   const [drmStatus, setDrmStatus] =
     useState<OEQ.Search.DrmStatus>(initialDrmStatus);
-  const [onDrmAcceptCallback, setOnDrmAcceptCallback] = useState<
+  const [drmCheckOnSuccessHandler, setDrmCheckOnSuccessHandler] = useState<
     (() => void) | undefined
   >();
-  const closeDrmDialog = () => setOnDrmAcceptCallback(undefined);
+  const [drmDialog, setDrmDialog] = useState<JSX.Element | undefined>(
+    undefined
+  );
+
+  const checkDrmPermission = (onSuccess: () => void) =>
+    setDrmCheckOnSuccessHandler(() => onSuccess);
+
+  useEffect(() => {
+    setDrmDialog(
+      createDrmDialog(
+        uuid,
+        version,
+        drmStatus,
+        setDrmStatus,
+        () => setDrmCheckOnSuccessHandler(undefined),
+        drmCheckOnSuccessHandler
+      )
+    );
+  }, [drmCheckOnSuccessHandler, uuid, version, drmStatus]);
 
   // Used to build the onClick event handler for each tile.
-  const buildLightboxHandler = ({
+  const lightboxHandler = ({
     mimeType,
     directUrl: src,
     name,
@@ -109,42 +123,34 @@ export const GallerySearchItemTiles = ({
       (entry) => entry.id === id
     );
 
-    return () =>
-      setLightboxProps({
-        onClose: () => setLightboxProps(undefined),
-        open: true,
-        item: {
-          uuid,
-          version,
-        },
-        config: {
-          src,
-          title: name,
-          mimeType,
-          onNext: buildLightboxNavigationHandler(
-            lightboxEntries,
-            initialLightboxEntryIndex + 1,
-            true
-          ),
-          onPrevious: buildLightboxNavigationHandler(
-            lightboxEntries,
-            initialLightboxEntryIndex - 1,
-            true
-          ),
-        },
-      });
+    return setLightboxProps({
+      onClose: () => setLightboxProps(undefined),
+      open: true,
+      item: {
+        uuid,
+        version,
+      },
+      config: {
+        src,
+        title: name,
+        mimeType,
+        onNext: buildLightboxNavigationHandler(
+          lightboxEntries,
+          initialLightboxEntryIndex + 1,
+          true
+        ),
+        onPrevious: buildLightboxNavigationHandler(
+          lightboxEntries,
+          initialLightboxEntryIndex - 1,
+          true
+        ),
+      },
+    });
   };
 
   // Build a click event handler for each tile.
   const buildOnClickHandler = (entry: GalleryEntry) => () => {
-    const openLightbox = buildLightboxHandler(entry);
-    const { isAuthorised, termsAccepted } = drmStatus;
-
-    if (isAuthorised && !termsAccepted) {
-      setOnDrmAcceptCallback(() => openLightbox);
-    } else {
-      openLightbox();
-    }
+    checkDrmPermission(() => lightboxHandler(entry));
   };
 
   const buildTile = (
@@ -166,7 +172,8 @@ export const GallerySearchItemTiles = ({
           <OEQItemSummaryPageButton
             title={viewItem}
             color="secondary"
-            item={{ uuid, version, drm: { drmStatus, setOnDrmAcceptCallback } }}
+            item={{ uuid, version }}
+            checkDrmPermission={checkDrmPermission}
           />
         }
       />
@@ -193,19 +200,7 @@ export const GallerySearchItemTiles = ({
   return (
     <>
       {tiles}
-      {onDrmAcceptCallback && (
-        <DrmAcceptanceDialog
-          termsProvider={() => listDrmTerms(uuid, version)}
-          onAccept={() => acceptDrmTerms(uuid, version)}
-          onAcceptCallBack={() => {
-            setDrmStatus(defaultDrmStatus);
-            closeDrmDialog();
-            onDrmAcceptCallback();
-          }}
-          onReject={closeDrmDialog}
-          open={!!onDrmAcceptCallback}
-        />
-      )}
+      {drmDialog}
     </>
   );
 };
