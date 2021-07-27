@@ -19,11 +19,7 @@ import { PropTypes } from "@material-ui/core";
 import InfoIcon from "@material-ui/icons/Info";
 import * as React from "react";
 import { useHistory } from "react-router";
-import { routes } from "../mainui/routes";
-import {
-  buildSelectionSessionItemSummaryLink,
-  isSelectionSessionOpen,
-} from "../modules/LegacySelectionSessionModule";
+import { builderOpenSummaryPageHandler } from "../search/SearchPageHelper";
 import { TooltipIconButton } from "./TooltipIconButton";
 
 export interface OEQItemSummaryPageButtonProps {
@@ -68,14 +64,7 @@ export const OEQItemSummaryPageButton = ({
   color = "default",
 }: OEQItemSummaryPageButtonProps) => {
   const history = useHistory();
-  const openSummaryPage = () => {
-    isSelectionSessionOpen()
-      ? window.open(
-          buildSelectionSessionItemSummaryLink(uuid, version),
-          "_self"
-        )
-      : history.push(routes.ViewItem.to(uuid, version));
-  };
+  const { onClick } = builderOpenSummaryPageHandler(uuid, version, history);
 
   return (
     <TooltipIconButton
@@ -84,9 +73,9 @@ export const OEQItemSummaryPageButton = ({
       onClick={(event) => {
         event.stopPropagation();
         if (checkDrmPermission) {
-          checkDrmPermission(openSummaryPage);
+          checkDrmPermission(onClick);
         } else {
-          openSummaryPage();
+          onClick();
         }
       }}
     >

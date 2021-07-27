@@ -34,9 +34,7 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import ReactHtmlParser from "react-html-parser";
-import { pipe } from "fp-ts/function";
 import { useHistory } from "react-router";
-import * as E from "fp-ts/Either";
 import { HashLink } from "react-router-hash-link";
 import { sprintf } from "sprintf-js";
 import { Date as DateDisplay } from "../../components/Date";
@@ -52,7 +50,6 @@ import {
   deleteFavouriteItem,
 } from "../../modules/FavouriteModule";
 import {
-  buildSelectionSessionItemSummaryLink,
   getSearchPageItemClass,
   isSelectionSessionInStructured,
   isSelectionSessionOpen,
@@ -62,6 +59,7 @@ import {
 import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
+import { builderOpenSummaryPageHandler } from "../SearchPageHelper";
 import { FavouriteItemDialog } from "./FavouriteItemDialog";
 import type {
   FavDialogConfirmToAdd,
@@ -328,22 +326,10 @@ export default function SearchResult({
     const itemTitle = name ? highlightField(name) : uuid;
     // Use Either to build URL and onClick handler. Left is for selection session
     // and Right is for normal page.
-    const { url, onClick } = pipe(
-      routes.ViewItem.to(uuid, version),
-      E.fromPredicate<string, string>(
-        () => !inSelectionSession,
-        () => buildSelectionSessionItemSummaryLink(uuid, version)
-      ),
-      E.fold(
-        (url) => ({
-          url,
-          onClick: () => window.open(url, "_self"),
-        }),
-        (url) => ({
-          url,
-          onClick: () => history.push(url),
-        })
-      )
+    const { url, onClick } = builderOpenSummaryPageHandler(
+      uuid,
+      version,
+      history
     );
 
     return (
