@@ -16,10 +16,12 @@
  * limitations under the License.
  */
 import * as React from "react";
+import MessageDialog from "../components/MessageDialog";
 import {
   acceptDrmTerms,
   defaultDrmStatus,
   listDrmTerms,
+  listDrmViolations,
 } from "../modules/DrmModule";
 import { DrmAcceptanceDialog } from "./DrmAcceptanceDialog";
 import * as OEQ from "@openequella/rest-api-client";
@@ -43,14 +45,14 @@ import * as OEQ from "@openequella/rest-api-client";
  * @param closeDrmDialog Function to close the resultant DRM dialog.
  * @param drmProtectedHandler Handler that can't be used until a DRM check is completed.
  */
-export const createDrmDialog = (
+export const createDrmDialog = async (
   uuid: string,
   version: number,
   drmStatus: OEQ.Search.DrmStatus,
   updateDrmStatus: (status: OEQ.Search.DrmStatus) => void,
   closeDrmDialog: () => void,
   drmProtectedHandler: () => void
-): JSX.Element | undefined => {
+): Promise<JSX.Element | undefined> => {
   const { isAuthorised, termsAccepted } = drmStatus;
   if (isAuthorised && !termsAccepted) {
     return (
@@ -64,6 +66,16 @@ export const createDrmDialog = (
         }}
         onReject={closeDrmDialog}
         open={!!drmProtectedHandler}
+      />
+    );
+  } else if (!isAuthorised) {
+    const { violation } = await listDrmViolations(uuid, version);
+    return (
+      <MessageDialog
+        open
+        title="DRM violations"
+        messages={[violation]}
+        close={closeDrmDialog}
       />
     );
   } else {
