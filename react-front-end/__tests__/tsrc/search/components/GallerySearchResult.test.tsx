@@ -97,15 +97,28 @@ describe("<GallerySearchResult />", () => {
 
   describe("DRM support", () => {
     jest.spyOn(DrmModule, "listDrmTerms").mockResolvedValue(drmTerms);
-    it("shows DRM acceptance dialog when preview a gallery entry protected by DRM", async () => {
-      const { getByLabelText } = await renderGallery([galleryDrmItem]);
-      userEvent.click(getByLabelText(ariaLabel));
 
-      await waitFor(() => {
-        expect(
-          queryByText(screen.getByRole("dialog"), drmTerms.title)
-        ).toBeInTheDocument();
-      });
-    });
+    it.each([
+      [
+        "view a DRM Item's summary page",
+        languageStrings.searchpage.gallerySearchResult.viewItem,
+      ],
+      [
+        "preview an gallery entry protected by DRM",
+        languageStrings.searchpage.gallerySearchResult.ariaLabel,
+      ],
+    ])(
+      "shows DRM acceptance dialog when %s",
+      async (_: string, galleryEntryLabel: string) => {
+        const { getByLabelText } = await renderGallery([galleryDrmItem]);
+        userEvent.click(getByLabelText(galleryEntryLabel));
+
+        await waitFor(() => {
+          expect(
+            queryByText(screen.getByRole("dialog"), drmTerms.title)
+          ).toBeInTheDocument();
+        });
+      }
+    );
   });
 });

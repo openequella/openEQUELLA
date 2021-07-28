@@ -32,8 +32,9 @@ import FavoriteIcon from "@material-ui/icons/Favorite";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReactHtmlParser from "react-html-parser";
+import { useHistory } from "react-router";
 import { HashLink } from "react-router-hash-link";
 import { sprintf } from "sprintf-js";
 import { Date as DateDisplay } from "../../components/Date";
@@ -41,19 +42,14 @@ import { OEQLink } from "../../components/OEQLink";
 import OEQThumb from "../../components/OEQThumb";
 import { StarRating } from "../../components/StarRating";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
-import { DrmAcceptanceDialog } from "../../drm/DrmAcceptanceDialog";
-import {
-  acceptDrmTerms,
-  defaultDrmStatus,
-  listDrmTerms,
-} from "../../modules/DrmModule";
+import { createDrmDialog } from "../../drm/DrmHelper";
+import { defaultDrmStatus } from "../../modules/DrmModule";
 import { routes } from "../../mainui/routes";
 import {
   addFavouriteItem,
   deleteFavouriteItem,
 } from "../../modules/FavouriteModule";
 import {
-  buildSelectionSessionItemSummaryLink,
   getSearchPageItemClass,
   isSelectionSessionInStructured,
   isSelectionSessionOpen,
@@ -63,6 +59,7 @@ import {
 import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
+import { buildOpenSummaryPageHandler } from "../SearchPageHelper";
 import { FavouriteItemDialog } from "./FavouriteItemDialog";
 import type {
   FavDialogConfirmToAdd,
@@ -132,15 +129,17 @@ export interface SearchResultProps {
 
 /**
  * DRM is configured on Item level but it also affects how attachments work.
- * So create a DRM context to allow 'ItemAttachmentLink' to easily access DRM
- * status and update the callback.
+ * So create a DRM context to allow 'ItemAttachmentLink' to do a DRM permission check.
  */
 export const ItemDrmContext = React.createContext<{
-  drmStatus: OEQ.Search.DrmStatus;
-  setOnDrmAcceptCallback: (_: undefined | (() => void)) => void;
+  /**
+   * Function to do DRM permission check which will further control whether to show DRM dialog.
+   *
+   * @param onSuccess Handler that should be called once DRM permission check is successful.
+   */
+  checkDrmPermission: (onSuccess: () => void) => void;
 }>({
-  drmStatus: defaultDrmStatus,
-  setOnDrmAcceptCallback: () => {},
+  checkDrmPermission: () => {},
 });
 
 export default function SearchResult({
@@ -176,12 +175,35 @@ export default function SearchResult({
     bookmarkDefaultId
   );
 
-  const [onDrmAcceptCallback, setOnDrmAcceptCallback] = useState<
+  const history = useHistory();
+
+  const [drmDialog, setDrmDialog] = useState<JSX.Element | undefined>(
+    undefined
+  );
+  const [drmCheckOnSuccessHandler, setDrmCheckOnSuccessHandler] = useState<
     (() => void) | undefined
   >();
   const [drmStatus, setDrmStatus] =
     useState<OEQ.Search.DrmStatus>(initialDrmStatus);
-  const closeDrmDialog = () => setOnDrmAcceptCallback(undefined);
+
+  const checkDrmPermission = (onSuccess: () => void) =>
+    setDrmCheckOnSuccessHandler(() => onSuccess);
+
+  useEffect(() => {
+    // If there is nothing requiring DRM permission check then return undefined.
+    const dialog = drmCheckOnSuccessHandler
+      ? createDrmDialog(
+          uuid,
+          version,
+          drmStatus,
+          setDrmStatus,
+          () => setDrmCheckOnSuccessHandler(undefined),
+          drmCheckOnSuccessHandler
+        )
+      : undefined;
+
+    setDrmDialog(dialog);
+  }, [drmCheckOnSuccessHandler, uuid, version, drmStatus]);
 
   const handleSelectResource = (
     itemKey: string,
@@ -305,12 +327,20 @@ export default function SearchResult({
 
   const itemLink = () => {
     const itemTitle = name ? highlightField(name) : uuid;
+    const { url, onClick } = buildOpenSummaryPageHandler(
+      uuid,
+      version,
+      history
+    );
+
     return (
       <OEQLink
-        routeLinkUrlProvider={() => routes.ViewItem.to(uuid, version)}
-        muiLinkUrlProvider={() =>
-          buildSelectionSessionItemSummaryLink(uuid, version)
-        }
+        routeLinkUrlProvider={() => url}
+        muiLinkUrlProvider={() => url}
+        onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+          e.preventDefault();
+          checkDrmPermission(onClick);
+        }}
       >
         {itemTitle}
       </OEQLink>
@@ -375,8 +405,7 @@ export default function SearchResult({
               <List disablePadding>{customDisplayMetadata}</List>
               <ItemDrmContext.Provider
                 value={{
-                  drmStatus,
-                  setOnDrmAcceptCallback,
+                  checkDrmPermission,
                 }}
               >
                 <SearchResultAttachmentsList
@@ -403,19 +432,7 @@ export default function SearchResult({
           closeDialog={() => setShowFavouriteItemDialog(false)}
         />
       )}
-      {onDrmAcceptCallback && (
-        <DrmAcceptanceDialog
-          termsProvider={() => listDrmTerms(uuid, version)}
-          onAccept={() => acceptDrmTerms(uuid, version)}
-          onAcceptCallBack={() => {
-            setDrmStatus(defaultDrmStatus);
-            onDrmAcceptCallback();
-            closeDrmDialog();
-          }}
-          onReject={closeDrmDialog}
-          open={!!onDrmAcceptCallback}
-        />
-      )}
+      {drmDialog}
     </>
   );
 }
