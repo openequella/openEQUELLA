@@ -439,10 +439,12 @@ export const builderOpenSummaryPageHandler = (
       () => buildSelectionSessionItemSummaryLink(uuid, version)
     ),
     E.fold(
+      // Selection session values
       (url) => ({
         url,
         onClick: () => window.open(url, "_self"),
       }),
+      // Normal page values
       (url) => ({
         url,
         onClick: () => history.push(url),
