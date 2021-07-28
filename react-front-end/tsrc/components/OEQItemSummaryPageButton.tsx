@@ -19,7 +19,7 @@ import { PropTypes } from "@material-ui/core";
 import InfoIcon from "@material-ui/icons/Info";
 import * as React from "react";
 import { useHistory } from "react-router";
-import { builderOpenSummaryPageHandler } from "../search/SearchPageHelper";
+import { buildOpenSummaryPageHandler } from "../search/SearchPageHelper";
 import { TooltipIconButton } from "./TooltipIconButton";
 
 export interface OEQItemSummaryPageButtonProps {
@@ -64,7 +64,7 @@ export const OEQItemSummaryPageButton = ({
   color = "default",
 }: OEQItemSummaryPageButtonProps) => {
   const history = useHistory();
-  const { onClick } = builderOpenSummaryPageHandler(uuid, version, history);
+  const { onClick } = buildOpenSummaryPageHandler(uuid, version, history);
 
   return (
     <TooltipIconButton
@@ -72,11 +72,7 @@ export const OEQItemSummaryPageButton = ({
       title={title}
       onClick={(event) => {
         event.stopPropagation();
-        if (checkDrmPermission) {
-          checkDrmPermission(onClick);
-        } else {
-          onClick();
-        }
+        checkDrmPermission ? checkDrmPermission(onClick) : onClick();
       }}
     >
       <InfoIcon />

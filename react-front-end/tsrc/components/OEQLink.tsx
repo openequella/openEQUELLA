@@ -35,7 +35,8 @@ interface OEQLinkProps {
    */
   muiLinkUrlProvider: () => string;
   /**
-   * Function fired when the link is clicked.
+   * Function typically used to intercept calls before the browser navigates away.
+   *
    */
   onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
 }

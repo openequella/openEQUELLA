@@ -427,11 +427,14 @@ export const deleteRawModeFromStorage = (): void =>
  * @param version Item's version.
  * @param history The History object used in the context, which is typically provided by calling 'useHistory' in components.
  */
-export const builderOpenSummaryPageHandler = (
+export const buildOpenSummaryPageHandler = (
   uuid: string,
   version: number,
   history: History
-) =>
+): {
+  url: string;
+  onClick: () => void;
+} =>
   pipe(
     routes.ViewItem.to(uuid, version),
     E.fromPredicate<string, string>(

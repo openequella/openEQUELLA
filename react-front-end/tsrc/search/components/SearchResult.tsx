@@ -59,7 +59,7 @@ import {
 import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
-import { builderOpenSummaryPageHandler } from "../SearchPageHelper";
+import { buildOpenSummaryPageHandler } from "../SearchPageHelper";
 import { FavouriteItemDialog } from "./FavouriteItemDialog";
 import type {
   FavDialogConfirmToAdd,
@@ -190,16 +190,19 @@ export default function SearchResult({
     setDrmCheckOnSuccessHandler(() => onSuccess);
 
   useEffect(() => {
-    setDrmDialog(
-      createDrmDialog(
-        uuid,
-        version,
-        drmStatus,
-        setDrmStatus,
-        () => setDrmCheckOnSuccessHandler(undefined),
-        drmCheckOnSuccessHandler
-      )
-    );
+    // If there is nothing requiring DRM permission check then return undefined.
+    const dialog = drmCheckOnSuccessHandler
+      ? createDrmDialog(
+          uuid,
+          version,
+          drmStatus,
+          setDrmStatus,
+          () => setDrmCheckOnSuccessHandler(undefined),
+          drmCheckOnSuccessHandler
+        )
+      : undefined;
+
+    setDrmDialog(dialog);
   }, [drmCheckOnSuccessHandler, uuid, version, drmStatus]);
 
   const handleSelectResource = (
@@ -324,9 +327,7 @@ export default function SearchResult({
 
   const itemLink = () => {
     const itemTitle = name ? highlightField(name) : uuid;
-    // Use Either to build URL and onClick handler. Left is for selection session
-    // and Right is for normal page.
-    const { url, onClick } = builderOpenSummaryPageHandler(
+    const { url, onClick } = buildOpenSummaryPageHandler(
       uuid,
       version,
       history

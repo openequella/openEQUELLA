@@ -100,16 +100,18 @@ export const GallerySearchItemTiles = ({
     setDrmCheckOnSuccessHandler(() => onSuccess);
 
   useEffect(() => {
-    setDrmDialog(
-      createDrmDialog(
-        uuid,
-        version,
-        drmStatus,
-        setDrmStatus,
-        () => setDrmCheckOnSuccessHandler(undefined),
-        drmCheckOnSuccessHandler
-      )
-    );
+    const dialog = drmCheckOnSuccessHandler
+      ? createDrmDialog(
+          uuid,
+          version,
+          drmStatus,
+          setDrmStatus,
+          () => setDrmCheckOnSuccessHandler(undefined),
+          drmCheckOnSuccessHandler
+        )
+      : undefined;
+
+    setDrmDialog(dialog);
   }, [drmCheckOnSuccessHandler, uuid, version, drmStatus]);
 
   // Used to build the onClick event handler for each tile.

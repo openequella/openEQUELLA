@@ -24,7 +24,7 @@ import * as SearchFilterSettingsModule from "../../../tsrc/modules/SearchFilterS
 import type { SearchOptions } from "../../../tsrc/modules/SearchModule";
 import * as UserModule from "../../../tsrc/modules/UserModule";
 import {
-  builderOpenSummaryPageHandler,
+  buildOpenSummaryPageHandler,
   defaultSearchPageOptions,
   generateQueryStringFromSearchPageOptions,
   generateSearchPageOptionsFromQueryString,
@@ -294,14 +294,14 @@ describe("builderOpenSummaryPageHandler", () => {
   const history = createBrowserHistory();
 
   it("build URLS and onClick handlers for normal pages", () => {
-    const { url } = builderOpenSummaryPageHandler(UUID, VERSION, history);
+    const { url } = buildOpenSummaryPageHandler(UUID, VERSION, history);
     expect(url).toBe("/items/369c92fa-ae59-4845-957d-8fcaa22c15e3/1/");
   });
 
   it("build URLS and onClick handlers for Selection Session", () => {
     updateMockGetBaseUrl();
     updateMockGetRenderData(basicRenderData);
-    const { url } = builderOpenSummaryPageHandler(UUID, VERSION, history);
+    const { url } = buildOpenSummaryPageHandler(UUID, VERSION, history);
     expect(url).toBe(
       "http://localhost:8080/vanilla/items/369c92fa-ae59-4845-957d-8fcaa22c15e3/1/?_sl.stateId=1&a=coursesearch"
     );

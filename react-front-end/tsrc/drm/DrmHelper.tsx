@@ -26,8 +26,15 @@ import * as OEQ from "@openequella/rest-api-client";
 
 /**
  * Given a handler which cannot be used until a DRM check is completed,
- * this function checks DRM status and based on the result build different DRM dialogs.
- * The handler will then be used by interacting with the dialog.
+ * this function checks DRM status and based on the result builds different DRM dialogs.
+ * Depending on which dialog is triggered and which button the user clicks, the handler will then be called.
+ *
+ * Examples:
+ * 1. The DRM check says the user needs to accept terms, then the accept terms dialog will be shown and if the user
+ *    accepts, then the handler will be called;
+ * 2. The DRM check says the user is _not_ authorised, then a dialog will be shown and after which the handler will
+ *    never be called; (TODO: Coming soon.)
+ * 3. DRM checks are all in order, no dialog is displayed and the handler is called immediately.
  *
  * @param uuid Item's UUID.
  * @param version Item's version.
@@ -42,30 +49,25 @@ export const createDrmDialog = (
   drmStatus: OEQ.Search.DrmStatus,
   updateDrmStatus: (status: OEQ.Search.DrmStatus) => void,
   closeDrmDialog: () => void,
-  drmProtectedHandler?: () => void
+  drmProtectedHandler: () => void
 ): JSX.Element | undefined => {
-  // If there is nothing requiring DRM permission check then return undefined.
-  if (drmProtectedHandler) {
-    const { isAuthorised, termsAccepted } = drmStatus;
-    if (isAuthorised && !termsAccepted) {
-      return (
-        <DrmAcceptanceDialog
-          termsProvider={() => listDrmTerms(uuid, version)}
-          onAccept={() => acceptDrmTerms(uuid, version)}
-          onAcceptCallBack={() => {
-            closeDrmDialog();
-            updateDrmStatus(defaultDrmStatus);
-            drmProtectedHandler();
-          }}
-          onReject={closeDrmDialog}
-          open={!!drmProtectedHandler}
-        />
-      );
-    } else {
-      drmProtectedHandler();
-      return;
-    }
+  const { isAuthorised, termsAccepted } = drmStatus;
+  if (isAuthorised && !termsAccepted) {
+    return (
+      <DrmAcceptanceDialog
+        termsProvider={() => listDrmTerms(uuid, version)}
+        onAccept={() => acceptDrmTerms(uuid, version)}
+        onAcceptCallBack={() => {
+          closeDrmDialog();
+          updateDrmStatus(defaultDrmStatus);
+          drmProtectedHandler();
+        }}
+        onReject={closeDrmDialog}
+        open={!!drmProtectedHandler}
+      />
+    );
+  } else {
+    drmProtectedHandler();
+    return;
   }
-
-  return;
 };
