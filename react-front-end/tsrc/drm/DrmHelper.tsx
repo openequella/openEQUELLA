@@ -24,6 +24,18 @@ import {
 import { DrmAcceptanceDialog } from "./DrmAcceptanceDialog";
 import * as OEQ from "@openequella/rest-api-client";
 
+/**
+ * Given a handler which cannot be used until a DRM check is completed,
+ * this function checks DRM status and based on the result build different DRM dialogs.
+ * The handler will then be used by interacting with the dialog.
+ *
+ * @param uuid Item's UUID.
+ * @param version Item's version.
+ * @param drmStatus Item's DRM status.
+ * @param updateDrmStatus Function to update DRM status on client side. Typically, this is a React state setter.
+ * @param closeDrmDialog Function to close the resultant DRM dialog.
+ * @param drmProtectedHandler Handler that can't be used until a DRM check is completed.
+ */
 export const createDrmDialog = (
   uuid: string,
   version: number,
