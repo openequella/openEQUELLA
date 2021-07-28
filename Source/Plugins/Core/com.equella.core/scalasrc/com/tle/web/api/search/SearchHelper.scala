@@ -41,16 +41,17 @@ import com.tle.web.api.item.equella.interfaces.beans.{
 }
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
 import com.tle.web.api.search.model.{
+  DrmStatus,
   SearchParam,
   SearchResultAttachment,
-  SearchResultItem,
-  DrmStatus
+  SearchResultItem
 }
 import com.tle.web.controls.resource.ResourceAttachmentBean
 import com.tle.web.controls.youtube.YoutubeAttachmentBean
+
 import java.time.format.DateTimeParseException
 import java.time.{LocalDate, LocalDateTime, LocalTime, ZoneId}
-import java.util.Date
+import java.util.{Date, Optional}
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ListBuffer
 
@@ -435,11 +436,15 @@ object SearchHelper {
     *         if suitable for the attachment type.
     */
   def buildAttachmentLinks(attachment: AttachmentBean): java.util.Map[String, String] = {
-    val externalIdKey = "externalId"
-    val links         = getLinksFromBean(attachment).asScala
+    val addExternalId = (links: Map[String, String], externalId: Optional[String]) =>
+      if (externalId.isPresent) links ++ Map("externalId" -> externalId.get) else links
+
+    val links = getLinksFromBean(attachment).asScala.toMap
     (attachment match {
-      case youtube: YoutubeAttachmentBean => links ++ Map(externalIdKey -> youtube.getVideoId)
-      case _                              => links
+      case youtube: YoutubeAttachmentBean => addExternalId(links, youtube.getExternalId)
+      case kaltura if attachment.getRawAttachmentType == "custom/kaltura" =>
+        addExternalId(links, kaltura.getExternalId)
+      case _ => links
     }).asJava
   }
 
