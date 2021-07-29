@@ -69,6 +69,14 @@ public class DrmApiTest extends AbstractRestApiTest {
     assertEquals(statusCode, 200);
   }
 
+  @Test(description = "Failed to list DRM violations for authorised Item")
+  public void listViolationsForAuthorisedItem() throws IOException {
+    final GetMethod method =
+        new GetMethod(buildEndpointPath(ITEM_UUID, ITEM_VERSION) + "/violations");
+    int statusCode = makeClientRequest(method);
+    assertEquals(statusCode, 400);
+  }
+
   private String buildEndpointPath(String uuid, int version) {
     return getTestConfig().getInstitutionUrl() + "api/item/" + uuid + "/" + version + "/drm";
   }
