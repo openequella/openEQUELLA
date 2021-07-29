@@ -24,9 +24,11 @@ import * as O from "fp-ts/Option";
 import { simpleMatchD } from "../util/match";
 import {
   ATYPE_FILE,
+  ATYPE_KALTURA,
   ATYPE_YOUTUBE,
   buildFileAttachmentUrl,
 } from "./AttachmentsModule";
+import { EXTERNAL_ID_PARAM } from "./KalturaModule";
 import { CustomMimeTypes, getImageMimeTypes } from "./MimeTypesModule";
 import { Classification, listClassifications } from "./SearchFacetsModule";
 import { searchItems, SearchOptions } from "./SearchModule";
@@ -107,7 +109,7 @@ const validateAttachmentType = (
   pipe(
     attachment.attachmentType,
     E.fromPredicate(
-      (type) => [ATYPE_FILE, ATYPE_YOUTUBE].includes(type),
+      (type) => [ATYPE_FILE, ATYPE_KALTURA, ATYPE_YOUTUBE].includes(type),
       (type) =>
         `Attachments of type ${type} are not supported. Attachment ID: ${attachment.id}`
     )
@@ -158,6 +160,7 @@ const mimeType = ({
               )
             ),
         ],
+        [ATYPE_KALTURA, () => E.right(CustomMimeTypes.KALTURA)],
         [ATYPE_YOUTUBE, () => E.right(CustomMimeTypes.YOUTUBE)],
       ],
       () => unsupportedAttachmentType(id, attachmentType)
@@ -181,7 +184,7 @@ const thumbnailLink = (
   const youTubeLink = (videoId: string): string =>
     yt.buildThumbnailUrl(videoId, isSmall ? "default" : "high");
 
-  return attachmentType === ATYPE_FILE
+  return [ATYPE_FILE, ATYPE_KALTURA].includes(attachmentType)
     ? E.right(fileThumbnailLink(links.thumbnail))
     : pipe(
         links.externalId,
@@ -220,6 +223,24 @@ const directUrl = (
               E.map((path) =>
                 buildFileAttachmentUrl(itemUuid, itemVersion, path)
               )
+            ),
+        ],
+        // For Kaltura media we don't really have a direct URL, we can only view them via the
+        // oEQ view mechanisms - AFAIK. But we add the externalId details onto the end so that
+        // the lightbox can use them with the KalturaPlayerEmbed.
+        [
+          ATYPE_KALTURA,
+          () =>
+            pipe(
+              links.externalId,
+              E.fromNullable(
+                `Kaltura attachment ${id} is missing an 'externalId'.`
+              ),
+              E.map((externalId) => {
+                const u = new URL(links.view);
+                u.searchParams.set(EXTERNAL_ID_PARAM, externalId);
+                return u.toString();
+              })
             ),
         ],
         [
@@ -358,8 +379,10 @@ const attachmentMimeTypePredicate =
 const filterAttachments =
   (predicate: AttachmentPredicate): AttachmentFilter =>
   (attachments: OEQ.Search.Attachment[]): O.Option<OEQ.Search.Attachment[]> =>
-    pipe(attachments, A.filter(predicate), (xs: OEQ.Search.Attachment[]) =>
-      xs.length === 0 ? O.none : O.some(xs)
+    pipe(
+      attachments,
+      A.filter(predicate),
+      O.fromPredicate<OEQ.Search.Attachment[]>(A.isNonEmpty)
     );
 
 /**
@@ -387,11 +410,9 @@ const filterAttachmentsByVideo: AttachmentFilter = (
 ): O.Option<OEQ.Search.Attachment[]> => {
   const videoMimeTypePredicate: AttachmentPredicate =
     attachmentMimeTypePredicate("video");
-  // Arguably in the future we may want to change this to looking through a look-up list
-  // to include things like Kaltura - for now just straight comparison against the only
-  // one we're supporting
   const attachmentTypePredicate: AttachmentPredicate = (a) =>
-    a.attachmentType === ATYPE_YOUTUBE;
+    [ATYPE_KALTURA, ATYPE_YOUTUBE].includes(a.attachmentType);
+
   // The above predicates combined into one
   const combinedPredicate: AttachmentPredicate = (a) =>
     [videoMimeTypePredicate, attachmentTypePredicate].some((predicate) =>

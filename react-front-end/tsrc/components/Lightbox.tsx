@@ -17,8 +17,6 @@
  */
 import {
   Backdrop,
-  Card,
-  CardContent,
   Grid,
   IconButton,
   Theme,
@@ -47,13 +45,13 @@ import {
   isBrowserSupportedVideo,
   splitMimeType,
 } from "../modules/MimeTypesModule";
-import { extractVideoId } from "../modules/YouTubeModule";
 import { languageStrings } from "../util/langstrings";
 import { simpleMatch } from "../util/match";
 import { EmbedCodeDialog } from "./EmbedCodeDialog";
+import { buildCustomEmbed } from "./LightboxHelper";
+import LightboxMessage from "./LightboxMessage";
 import { OEQItemSummaryPageButton } from "./OEQItemSummaryPageButton";
 import { TooltipIconButton } from "./TooltipIconButton";
-import YouTubeEmbed from "./YouTubeEmbed";
 
 const useStyles = makeStyles((theme: Theme) => ({
   lightboxBackdrop: {
@@ -140,7 +138,7 @@ const {
 const { close: labelClose, openInNewWindow: labelOpenInNewWindow } =
   languageStrings.common.action;
 
-const { unsupportedContent: labelUnsupportedContent, youTubeVideoMissingId } =
+const { unsupportedContent: labelUnsupportedContent } =
   languageStrings.lightboxComponent;
 
 const { copy: copyEmbedCodeString } = languageStrings.embedCode;
@@ -154,6 +152,7 @@ const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
   const [lightBoxConfig, setLightBoxConfig] = useState<LightboxConfig>(config);
   const [openEmbedCodeDialog, setOpenEmbedCodeDialog] =
     useState<boolean>(false);
+
   const { src, title, mimeType, onPrevious, onNext } = lightBoxConfig;
 
   const handleNav = (getLightboxConfig: () => LightboxConfig) => {
@@ -181,17 +180,9 @@ const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
 
   // Update content when config is updated.
   useEffect(() => {
-    const lightBoxMessage = (msg: string) => (
-      <Card>
-        <CardContent>
-          <Typography variant="h5" component="h2">
-            {msg}
-          </Typography>
-        </CardContent>
-      </Card>
+    const unsupportedContent = (
+      <LightboxMessage message={labelUnsupportedContent} />
     );
-
-    const unsupportedContent = lightBoxMessage(labelUnsupportedContent);
 
     const buildContent = (): JSX.Element =>
       pipe(
@@ -228,16 +219,10 @@ const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
             ),
           // same as OEQ_MIMETYPE_TYPE but unable to use with simpleMatch :'(
           openequella: () =>
-            mimeType === CustomMimeTypes.YOUTUBE
-              ? pipe(
-                  extractVideoId(src),
-                  O.fromNullable,
-                  O.fold(
-                    () => lightBoxMessage(youTubeVideoMissingId),
-                    (id) => <YouTubeEmbed videoId={id} />
-                  )
-                )
-              : unsupportedContent,
+            pipe(
+              buildCustomEmbed(mimeType, src),
+              O.getOrElse(() => unsupportedContent)
+            ),
           _: () => unsupportedContent,
         })
       );
@@ -270,6 +255,7 @@ const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
     );
     const contentHtml = fullHtml.body.childNodes[0] as HTMLElement;
     unneededAttributes.forEach((a) => contentHtml.removeAttribute(a));
+
     return contentHtml.outerHTML;
   };
 
@@ -373,6 +359,6 @@ export const isLightboxSupportedMimeType = (mimeType: string): boolean =>
   splitMimeType(mimeType)[0] === "image" ||
   isBrowserSupportedAudio(mimeType) ||
   isBrowserSupportedVideo(mimeType) ||
-  [CustomMimeTypes.YOUTUBE].includes(mimeType);
+  [CustomMimeTypes.KALTURA, CustomMimeTypes.YOUTUBE].includes(mimeType);
 
 export default Lightbox;
