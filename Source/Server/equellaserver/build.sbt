@@ -103,7 +103,7 @@ libraryDependencies ++= Seq(
   "commons-daemon"            % "commons-daemon"           % "1.2.4",
   "commons-discovery"         % "commons-discovery"        % "0.5",
   "commons-httpclient"        % "commons-httpclient"       % "3.1",
-  "commons-io"                % "commons-io"               % "2.8.0",
+  "commons-io"                % "commons-io"               % "2.11.0",
   "commons-lang"              % "commons-lang"             % "2.6",
   "dom4j"                     % "dom4j"                    % "1.6.1",
   "com.github.equella.legacy" % "itunesu-api-java"         % "1.7",
