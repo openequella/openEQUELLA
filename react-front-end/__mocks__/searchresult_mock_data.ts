@@ -342,6 +342,10 @@ const drmAttachObj: OEQ.Search.SearchResultItem = {
   drmStatus: { isAuthorised: true, termsAccepted: false },
 };
 
+const drmUnauthorisedObj = {
+  ...drmAttachObj,
+  drmStatus: { isAuthorised: false, termsAccepted: false },
+};
 export {
   basicSearchObj,
   attachSearchObj,
@@ -350,4 +354,5 @@ export {
   oneDeadAttachObj,
   oneDeadOneAliveAttachObj,
   drmAttachObj,
+  drmUnauthorisedObj,
 };

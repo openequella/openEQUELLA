@@ -16,9 +16,6 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import * as E from "fp-ts/Either";
-import { pipe } from "fp-ts/function";
-import * as TE from "fp-ts/TaskEither";
 import { API_BASE_URL } from "../AppConfig";
 
 export const defaultDrmStatus: OEQ.Search.DrmStatus = {
@@ -59,31 +56,3 @@ export const listDrmViolations = (
   version: number
 ): Promise<OEQ.Drm.DrmViolation> =>
   OEQ.Drm.listDrmViolations(API_BASE_URL, uuid, version);
-
-/**
- * Similar to {@link listDrmViolations}, but call the API in a TaskEither and use the provided
- * callback to handle the Either.
- *
- * @param uuid UUID of the Item.
- * @param version Version of the Item.
- * @param callback Function to handle the result which is either a DRM violation or a message describing why failed to list the violation.
- */
-export const listDrmViolationsInTask = async (
-  uuid: string,
-  version: number,
-  callback: (message: string) => void
-) => {
-  const violation = await pipe(
-    TE.tryCatch<Error, OEQ.Drm.DrmViolation>(
-      () => listDrmViolations(uuid, version),
-      (error) => new Error(`${error}`)
-    ),
-    TE.map<OEQ.Drm.DrmViolation, string>(({ violation }) => violation)
-  )();
-
-  pipe(
-    violation,
-    E.getOrElse((error) => `Failed to list DRM error due to ${error.message}`),
-    callback
-  );
-};

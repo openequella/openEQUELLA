@@ -15,6 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as E from "fp-ts/Either";
+import { pipe } from "fp-ts/function";
+import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
 import MessageDialog from "../components/MessageDialog";
 import {
@@ -69,7 +72,7 @@ export const createDrmDialog = async (
       />
     );
   } else if (!isAuthorised) {
-    const { violation } = await listDrmViolations(uuid, version);
+    const violation = await listDrmViolationsInTask(uuid, version);
     return (
       <MessageDialog
         open
@@ -82,4 +85,26 @@ export const createDrmDialog = async (
     drmProtectedHandler();
     return;
   }
+};
+
+// Call the API to list DRM violations in a TaskEither where Left is why fail to
+// list violations and Right is the retrieved violation.
+const listDrmViolationsInTask = async (
+  uuid: string,
+  version: number
+): Promise<string> => {
+  const violation = await pipe(
+    TE.tryCatch<Error, OEQ.Drm.DrmViolation>(
+      () => listDrmViolations(uuid, version),
+      (error) => new Error(`${error}`)
+    ),
+    TE.map<OEQ.Drm.DrmViolation, string>(({ violation }) => violation)
+  )();
+
+  return pipe(
+    violation,
+    E.getOrElse(
+      (error) => `Failed to list DRM violations due to ${error.message}`
+    )
+  );
 };

@@ -56,3 +56,6 @@ export const drmTermsRejected = async () => {
   await withDelay();
   return Promise.reject("network error");
 };
+
+export const DRM_VIOLATION =
+  "User is viewing this item outside of the dates that it is restricted to.";
