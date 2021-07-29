@@ -17,6 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
+import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { Location } from "history";
@@ -35,6 +36,7 @@ import {
   Union,
   Unknown,
 } from "runtypes";
+import { routes } from "../mainui/routes";
 import {
   clearDataFromLocalStorage,
   readDataFromLocalStorage,
@@ -44,6 +46,10 @@ import {
   Collection,
   findCollectionsByUuid,
 } from "../modules/CollectionsModule";
+import {
+  buildSelectionSessionItemSummaryLink,
+  isSelectionSessionOpen,
+} from "../modules/LegacySelectionSessionModule";
 import {
   getMimeTypeFiltersById,
   MimeTypeFilter,
@@ -58,6 +64,7 @@ import {
 import { findUserById } from "../modules/UserModule";
 import { DateRange, isDate } from "../util/Date";
 import { simpleMatch } from "../util/match";
+import { History } from "history";
 
 /**
  * This helper is intended to assist with processing related to the Presentation Layer -
@@ -411,3 +418,39 @@ export const writeRawModeToStorage = (value: boolean): void =>
 
 export const deleteRawModeFromStorage = (): void =>
   clearDataFromLocalStorage(RAW_MODE_STORAGE_KEY);
+
+/**
+ * This function returns an object which consists of a URL of Item Summary page and a onClick handler
+ * which is used to open the Summary page.
+ *
+ * @param uuid Item's UUID.
+ * @param version Item's version.
+ * @param history The History object used in the context, which is typically provided by calling 'useHistory' in components.
+ */
+export const buildOpenSummaryPageHandler = (
+  uuid: string,
+  version: number,
+  history: History
+): {
+  url: string;
+  onClick: () => void;
+} =>
+  pipe(
+    routes.ViewItem.to(uuid, version),
+    E.fromPredicate<string, string>(
+      () => !isSelectionSessionOpen(),
+      () => buildSelectionSessionItemSummaryLink(uuid, version)
+    ),
+    E.fold(
+      // Selection session values
+      (url) => ({
+        url,
+        onClick: () => window.open(url, "_self"),
+      }),
+      // Normal page values
+      (url) => ({
+        url,
+        onClick: () => history.push(url),
+      })
+    )
+  );
