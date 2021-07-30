@@ -32,6 +32,10 @@ import { act } from "react-dom/test-utils";
 import { BrowserRouter } from "react-router-dom";
 import { sprintf } from "sprintf-js";
 import { DRM_VIOLATION, drmTerms } from "../../../../__mocks__/Drm.mock";
+import {
+  DRM_ATTACHMENT_NAME,
+  DRM_ITEM_NAME,
+} from "../../../../__mocks__/searchresult_mock_data";
 import * as mockData from "../../../../__mocks__/searchresult_mock_data";
 import type { RenderData } from "../../../../tsrc/AppConfig";
 import {
@@ -524,8 +528,8 @@ describe("<SearchResult/>", () => {
     jest.spyOn(DrmModule, "listDrmTerms").mockResolvedValue(drmTerms);
 
     it.each([
-      ["view a DRM Item's summary page", "DRM Item"],
-      ["preview an attachment from a DRM item", "DRM Attachment"],
+      ["view a DRM Item's summary page", DRM_ITEM_NAME],
+      ["preview an attachment from a DRM item", DRM_ATTACHMENT_NAME],
     ])(
       "shows the DRM Accept dialog %s",
       async (_: string, linkText: string) => {
@@ -542,8 +546,8 @@ describe("<SearchResult/>", () => {
     );
 
     it.each([
-      ["item", "DRM Item"],
-      ["attachment", "DRM Attachment"],
+      ["item", DRM_ITEM_NAME],
+      ["attachment", DRM_ATTACHMENT_NAME],
     ])(
       "shows a dialog to list DRM violations for %s",
       async (_: string, linkText: string) => {

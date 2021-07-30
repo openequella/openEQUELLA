@@ -111,14 +111,8 @@ describe("<GallerySearchResult />", () => {
     jest.spyOn(DrmModule, "listDrmTerms").mockResolvedValue(drmTerms);
 
     it.each([
-      [
-        "view a DRM Item's summary page",
-        languageStrings.searchpage.gallerySearchResult.viewItem,
-      ],
-      [
-        "preview an gallery entry protected by DRM",
-        languageStrings.searchpage.gallerySearchResult.ariaLabel,
-      ],
+      ["view a DRM Item's summary page", viewItem],
+      ["preview an gallery entry protected by DRM", ariaLabel],
     ])(
       "shows DRM acceptance dialog when %s",
       async (_: string, galleryEntryLabel: string) => {
@@ -136,8 +130,8 @@ describe("<GallerySearchResult />", () => {
     );
 
     it.each([
-      ["item", languageStrings.searchpage.gallerySearchResult.viewItem],
-      ["attachment", languageStrings.searchpage.gallerySearchResult.ariaLabel],
+      ["item", viewItem],
+      ["attachment", ariaLabel],
     ])(
       "shows a dialog to list DRM violations for %s",
       async (_: string, galleryEntryLabel: string) => {
