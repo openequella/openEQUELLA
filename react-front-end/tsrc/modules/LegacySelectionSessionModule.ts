@@ -481,7 +481,7 @@ export const selectResource = (
       skinnysearch: () =>
         pipe(
           attachments,
-          E.fromPredicate<Error, string[]>(
+          E.fromPredicate<string[], Error>(
             (xs: string[]) => xs.length <= 1, // Each selection in Skinny can only have one attachment.
             () =>
               new Error(
