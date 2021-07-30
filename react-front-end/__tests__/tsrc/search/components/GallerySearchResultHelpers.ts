@@ -61,3 +61,8 @@ export const galleryDrmItem: GallerySearchResultItem = {
   mainEntry: buildGalleryEntry("Main Entry #1"),
   additionalEntries: [],
 };
+
+export const galleryDrmUnauthorisedItem = {
+  ...galleryDrmItem,
+  drmStatus: { isAuthorised: false, termsAccepted: false },
+};

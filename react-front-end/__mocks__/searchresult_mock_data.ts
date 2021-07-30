@@ -286,10 +286,13 @@ const oneDeadOneAliveAttachObj: OEQ.Search.SearchResultItem = {
   isLatestVersion: true,
 };
 
+export const DRM_ITEM_NAME = "DRM Item";
+export const DRM_ATTACHMENT_NAME = "DRM Attachment Item";
+
 const drmAttachObj: OEQ.Search.SearchResultItem = {
   uuid: "72558c1d-8788-4515-86c8-b24a28cc451e",
   version: 1,
-  name: "DRM Item",
+  name: DRM_ITEM_NAME,
   description: "A description of a bird",
   status: "live",
   createdDate: new Date("2020-05-26T13:24:00.889+10:00"),
@@ -301,7 +304,7 @@ const drmAttachObj: OEQ.Search.SearchResultItem = {
     {
       attachmentType: "file",
       id: "9e751549-5cba-47dd-bccb-722c48072287",
-      description: "DRM Attachment",
+      description: DRM_ATTACHMENT_NAME,
       preview: false,
       mimeType: "image/png",
       hasGeneratedThumb: true,
@@ -342,6 +345,10 @@ const drmAttachObj: OEQ.Search.SearchResultItem = {
   drmStatus: { isAuthorised: true, termsAccepted: false },
 };
 
+const drmUnauthorisedObj = {
+  ...drmAttachObj,
+  drmStatus: { isAuthorised: false, termsAccepted: false },
+};
 export {
   basicSearchObj,
   attachSearchObj,
@@ -350,4 +357,5 @@ export {
   oneDeadAttachObj,
   oneDeadOneAliveAttachObj,
   drmAttachObj,
+  drmUnauthorisedObj,
 };

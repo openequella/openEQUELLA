@@ -35,6 +35,7 @@ import { act } from "react-dom/test-utils";
 import { Router } from "react-router-dom";
 import { getAdvancedSearchesFromServerResult } from "../../../__mocks__/AdvancedSearchModule.mock";
 import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock";
+import { DRM_VIOLATION } from "../../../__mocks__/Drm.mock";
 import {
   transformedBasicImageSearchResponse,
   transformedBasicVideoSearchResponse,
@@ -53,6 +54,7 @@ import * as AdvancedSearchModule from "../../../tsrc/modules/AdvancedSearchModul
 import * as BrowserStorageModule from "../../../tsrc/modules/BrowserStorageModule";
 import type { Collection } from "../../../tsrc/modules/CollectionsModule";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
+import * as DrmModule from "../../../tsrc/modules/DrmModule";
 import * as FavouriteModule from "../../../tsrc/modules/FavouriteModule";
 import * as GallerySearchModule from "../../../tsrc/modules/GallerySearchModule";
 import { getGlobalCourseList } from "../../../tsrc/modules/LegacySelectionSessionModule";
@@ -136,6 +138,10 @@ const mockReadDataFromLocalStorage = jest.spyOn(
   BrowserStorageModule,
   "readDataFromLocalStorage"
 );
+
+jest
+  .spyOn(DrmModule, "listDrmViolations")
+  .mockResolvedValue({ violation: DRM_VIOLATION });
 
 //i tried mocking this using window.navigator.clipboard.writeText = jest.fn(), but the navigator object is undefined
 Object.assign(navigator, {

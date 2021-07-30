@@ -190,19 +190,21 @@ export default function SearchResult({
     setDrmCheckOnSuccessHandler(() => onSuccess);
 
   useEffect(() => {
-    // If there is nothing requiring DRM permission check then return undefined.
-    const dialog = drmCheckOnSuccessHandler
-      ? createDrmDialog(
-          uuid,
-          version,
-          drmStatus,
-          setDrmStatus,
-          () => setDrmCheckOnSuccessHandler(undefined),
-          drmCheckOnSuccessHandler
-        )
-      : undefined;
+    (async () => {
+      // If there is nothing requiring DRM permission check then return undefined.
+      const dialog = drmCheckOnSuccessHandler
+        ? await createDrmDialog(
+            uuid,
+            version,
+            drmStatus,
+            setDrmStatus,
+            () => setDrmCheckOnSuccessHandler(undefined),
+            drmCheckOnSuccessHandler
+          )
+        : undefined;
 
-    setDrmDialog(dialog);
+      setDrmDialog(dialog);
+    })();
   }, [drmCheckOnSuccessHandler, uuid, version, drmStatus]);
 
   const handleSelectResource = (

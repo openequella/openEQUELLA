@@ -43,3 +43,16 @@ export const listDrmTerms = (
  */
 export const acceptDrmTerms = (uuid: string, version: number): Promise<void> =>
   OEQ.Drm.acceptDrmTerms(API_BASE_URL, uuid, version);
+
+/**
+ * List an Item's DRM violations. Due to the limitation on server side, this function returns only one
+ * violation for each call.
+ *
+ * @param uuid UUID of the Item.
+ * @param version Version of the Item.
+ */
+export const listDrmViolations = (
+  uuid: string,
+  version: number
+): Promise<OEQ.Drm.DrmViolation> =>
+  OEQ.Drm.listDrmViolations(API_BASE_URL, uuid, version);
