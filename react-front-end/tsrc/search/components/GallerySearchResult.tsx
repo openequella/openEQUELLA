@@ -19,9 +19,18 @@ import { GridList } from "@material-ui/core";
 import * as React from "react";
 import { useState } from "react";
 import Lightbox, { LightboxProps } from "../../components/Lightbox";
-import { GallerySearchResultItem } from "../../modules/GallerySearchModule";
-import { LightboxEntry } from "../../modules/ViewerModule";
-import { GallerySearchItemTiles } from "./GallerySearchItemTiles";
+import {
+  GalleryEntry,
+  GallerySearchResultItem,
+} from "../../modules/GallerySearchModule";
+import {
+  buildLightboxNavigationHandler,
+  LightboxEntry,
+} from "../../modules/ViewerModule";
+import {
+  GallerySearchItemTiles,
+  LightboxHandler,
+} from "./GallerySearchItemTiles";
 
 export interface GallerySearchResultProps {
   /**
@@ -40,33 +49,84 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
     LightboxProps | undefined
   >();
 
-  // A list of LightboxEntry which includes all main entries and additional entries.
-  const lightboxEntries: LightboxEntry[] = items
-    .filter(({ drmStatus }) => {
-      if (drmStatus) {
-        const { isAuthorised, termsAccepted } = drmStatus;
-        return isAuthorised && termsAccepted;
-      }
-      // If no a DRM Item, keep it.
-      return true;
-    })
-    .flatMap(({ mainEntry, additionalEntries }) =>
-      [mainEntry, ...additionalEntries].map(
-        ({ id, name, mimeType, directUrl }) => ({
-          src: directUrl,
-          title: name,
-          mimeType: mimeType,
-          id,
-        })
-      )
+  const [galleryItems, setGalleryItems] =
+    useState<GallerySearchResultItem[]>(items);
+
+  // Function to update the Item list, rebuild the Lightbox entry list and return a lightboxHandler.
+  const updateGalleryItemList = (
+    newItem: GallerySearchResultItem
+  ): LightboxHandler => {
+    const newItems = galleryItems.map((i) =>
+      i.uuid === newItem.uuid && i.version === newItem.version ? newItem : i
     );
+    setGalleryItems(newItems);
+
+    // A list of LightboxEntry which includes all main entries and additional entries.
+    const lightboxEntries: LightboxEntry[] = newItems
+      .filter(({ drmStatus }) => {
+        if (drmStatus) {
+          const { isAuthorised, termsAccepted } = drmStatus;
+          return isAuthorised && termsAccepted;
+        }
+        // If no a DRM Item, keep it.
+        return true;
+      })
+      .flatMap(({ mainEntry, additionalEntries }) =>
+        [mainEntry, ...additionalEntries].map(
+          ({ id, name, mimeType, directUrl }) => ({
+            src: directUrl,
+            title: name,
+            mimeType: mimeType,
+            id,
+          })
+        )
+      );
+
+    return (uuid: string, version: number, entry: GalleryEntry) =>
+      lightboxHandler(lightboxEntries, uuid, version, entry);
+  };
+
+  // Handler for opening the Lightbox
+  const lightboxHandler = (
+    lightboxEntries: LightboxEntry[],
+    uuid: string,
+    version: number,
+    { mimeType, directUrl: src, name, id }: GalleryEntry
+  ) => {
+    const initialLightboxEntryIndex = lightboxEntries.findIndex(
+      (entry) => entry.id === id
+    );
+
+    return setLightboxProps({
+      onClose: () => setLightboxProps(undefined),
+      open: true,
+      item: {
+        uuid,
+        version,
+      },
+      config: {
+        src,
+        title: name,
+        mimeType,
+        onNext: buildLightboxNavigationHandler(
+          lightboxEntries,
+          initialLightboxEntryIndex + 1,
+          true
+        ),
+        onPrevious: buildLightboxNavigationHandler(
+          lightboxEntries,
+          initialLightboxEntryIndex - 1,
+          true
+        ),
+      },
+    });
+  };
 
   const mapItemsToTiles = () =>
     items.map((item) => (
       <GallerySearchItemTiles
         item={item}
-        lightboxEntries={lightboxEntries}
-        setLightboxProps={setLightboxProps}
+        updateGalleryItemList={updateGalleryItemList}
         key={`${item.uuid}/${item.version}`}
       />
     ));
