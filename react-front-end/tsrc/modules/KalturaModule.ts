@@ -18,9 +18,22 @@
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
 
+/**
+ * The bare minimum fields to create an embedded player and matches those found over in
+ * `KalturaPlayerEmbedProps`.
+ */
 export interface KalturaPlayerDetails {
+  /**
+   * A Kaltura Partner ID for the Kaltura account which holds the content identified by `entryId`.
+   */
   partnerId: number;
+  /**
+   * The player `uiconf_id` for the player configuration to be used to create the embedded player.
+   */
   uiconfId: number;
+  /**
+   * Kaltura Media Entry ID for the movie, audio, etc to be embedded.
+   */
   entryId: string;
 }
 
