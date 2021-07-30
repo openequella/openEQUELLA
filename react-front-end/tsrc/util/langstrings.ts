@@ -314,11 +314,15 @@ export const languageStrings = {
     failedToDelete: "Failed to delete '%s' due to error: %s",
   },
   lightboxComponent: {
+    kalturaExternalIdIssue:
+      "There is an issue with the format of the externalId for the the Kaltura Video",
+    kalturaMissingId:
+      "The provided Kaltura media is missing externalId details",
+    openSummaryPage: "Open Item Summary page",
     unsupportedContent: "Provided content is not supported",
     viewNext: "View next attachment",
     viewPrevious: "View previous attachment",
     youTubeVideoMissingId: "The provided YouTube video is missing a video ID",
-    openSummaryPage: "Open Item Summary page",
   },
   loginnoticepage: {
     title: "Login notice editor",

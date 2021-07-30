@@ -21,12 +21,14 @@ import * as OEQ from "@openequella/rest-api-client";
 
 /** `attachmentType` for file attachments. */
 export const ATYPE_FILE = "file";
+/** `attachmentType` for attachments linking to Kaltura media. */
+export const ATYPE_KALTURA = "custom/kaltura";
 /** `attachmentType` for link/URL attachments. */
 export const ATYPE_LINK = "link";
-/** `attachmentType` for attachments linking to YouTube videos. */
-export const ATYPE_YOUTUBE = "custom/youtube";
 /** `attachmentType` for attachments linking to oEQ resources(e.g. Item). */
 export const ATYPE_RESOURCE = "custom/resource";
+/** `attachmentType` for attachments linking to YouTube videos. */
+export const ATYPE_YOUTUBE = "custom/youtube";
 
 /**
  * Build a direct URL to a file attachment.
