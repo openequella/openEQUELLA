@@ -43,7 +43,7 @@ import * as OEQ from "@openequella/rest-api-client";
  *
  * @param uuid Item's UUID.
  * @param version Item's version.
- * @param drmStatus Item's DRM status.
+ * @param drmStatus Item's DRM status which defaults to authorised and terms accepted.
  * @param updateDrmStatus Function to update DRM status on client side. Typically, this is a React state setter.
  * @param closeDrmDialog Function to close the resultant DRM dialog.
  * @param drmProtectedHandler Handler that can't be used until a DRM check is completed.
@@ -51,7 +51,7 @@ import * as OEQ from "@openequella/rest-api-client";
 export const createDrmDialog = async (
   uuid: string,
   version: number,
-  drmStatus: OEQ.Search.DrmStatus,
+  drmStatus: OEQ.Search.DrmStatus = defaultDrmStatus,
   updateDrmStatus: (status: OEQ.Search.DrmStatus) => void,
   closeDrmDialog: () => void,
   drmProtectedHandler: () => void

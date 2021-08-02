@@ -51,8 +51,17 @@ const useStyles = makeStyles({
  * Type for the handler of opening Lightbox from Gallery.
  */
 export type LightboxHandler = (
+  /**
+   * @param uuid Item's UUID.
+   */
   uuid: string,
+  /**
+   * @param version Item's Version.
+   */
   version: number,
+  /**
+   * @param entry A Gallery Entry to be viewed in the Lightbox.
+   */
   entry: GalleryEntry
 ) => void;
 
@@ -84,12 +93,13 @@ export const GallerySearchItemTiles = ({
     name,
     uuid,
     version,
-    drmStatus: initialDrmStatus = defaultDrmStatus,
+    drmStatus: initialDrmStatus,
   } = item;
   const itemName = name ?? uuid;
 
-  const [drmStatus, setDrmStatus] =
-    useState<OEQ.Search.DrmStatus>(initialDrmStatus);
+  const [drmStatus, setDrmStatus] = useState<OEQ.Search.DrmStatus | undefined>(
+    initialDrmStatus
+  );
   const [drmCheckOnSuccessHandler, setDrmCheckOnSuccessHandler] = useState<
     (() => void) | undefined
   >();
@@ -119,13 +129,12 @@ export const GallerySearchItemTiles = ({
 
   // Build a click event handler for each tile.
   const buildOnClickHandler = (entry: GalleryEntry) => () => {
-    checkDrmPermission(() =>
-      updateGalleryItemList({ ...item, drmStatus: defaultDrmStatus })(
-        uuid,
-        version,
-        entry
-      )
-    );
+    checkDrmPermission(() => {
+      const updatedItem = drmStatus
+        ? { ...item, drmStatus: defaultDrmStatus }
+        : item;
+      updateGalleryItemList(updatedItem)(uuid, version, entry);
+    });
   };
 
   const buildTile = (

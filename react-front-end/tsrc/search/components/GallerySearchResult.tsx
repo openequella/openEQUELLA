@@ -52,40 +52,6 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
   const [galleryItems, setGalleryItems] =
     useState<GallerySearchResultItem[]>(items);
 
-  // Function to update the Item list, rebuild the Lightbox entry list and return a lightboxHandler.
-  const updateGalleryItemList = (
-    newItem: GallerySearchResultItem
-  ): LightboxHandler => {
-    const newItems = galleryItems.map((i) =>
-      i.uuid === newItem.uuid && i.version === newItem.version ? newItem : i
-    );
-    setGalleryItems(newItems);
-
-    // A list of LightboxEntry which includes all main entries and additional entries.
-    const lightboxEntries: LightboxEntry[] = newItems
-      .filter(({ drmStatus }) => {
-        if (drmStatus) {
-          const { isAuthorised, termsAccepted } = drmStatus;
-          return isAuthorised && termsAccepted;
-        }
-        // If no a DRM Item, keep it.
-        return true;
-      })
-      .flatMap(({ mainEntry, additionalEntries }) =>
-        [mainEntry, ...additionalEntries].map(
-          ({ id, name, mimeType, directUrl }) => ({
-            src: directUrl,
-            title: name,
-            mimeType: mimeType,
-            id,
-          })
-        )
-      );
-
-    return (uuid: string, version: number, entry: GalleryEntry) =>
-      lightboxHandler(lightboxEntries, uuid, version, entry);
-  };
-
   // Handler for opening the Lightbox
   const lightboxHandler = (
     lightboxEntries: LightboxEntry[],
@@ -120,6 +86,40 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
         ),
       },
     });
+  };
+
+  // Function to update the Item list, rebuild the Lightbox entry list and return a lightboxHandler.
+  const updateGalleryItemList = (
+    newItem: GallerySearchResultItem
+  ): LightboxHandler => {
+    const updatedItems = galleryItems.map((i) =>
+      i.uuid === newItem.uuid && i.version === newItem.version ? newItem : i
+    );
+    setGalleryItems(updatedItems);
+
+    // A list of LightboxEntry which includes all main entries and additional entries.
+    const lightboxEntries: LightboxEntry[] = updatedItems
+      .filter(({ drmStatus }) => {
+        if (drmStatus) {
+          const { isAuthorised, termsAccepted } = drmStatus;
+          return isAuthorised && termsAccepted;
+        }
+        // If not a DRM Item, keep it.
+        return true;
+      })
+      .flatMap(({ mainEntry, additionalEntries }) =>
+        [mainEntry, ...additionalEntries].map(
+          ({ id, name, mimeType, directUrl }) => ({
+            src: directUrl,
+            title: name,
+            mimeType: mimeType,
+            id,
+          })
+        )
+      );
+
+    return (uuid: string, version: number, entry: GalleryEntry) =>
+      lightboxHandler(lightboxEntries, uuid, version, entry);
   };
 
   const mapItemsToTiles = () =>
