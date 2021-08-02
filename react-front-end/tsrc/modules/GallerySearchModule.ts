@@ -28,7 +28,7 @@ import {
   ATYPE_YOUTUBE,
   buildFileAttachmentUrl,
 } from "./AttachmentsModule";
-import { EXTERNAL_ID_PARAM } from "./KalturaModule";
+import * as kaltura from "./KalturaModule";
 import { CustomMimeTypes, getImageMimeTypes } from "./MimeTypesModule";
 import { Classification, listClassifications } from "./SearchFacetsModule";
 import { searchItems, SearchOptions } from "./SearchModule";
@@ -236,11 +236,9 @@ const directUrl = (
               E.fromNullable(
                 `Kaltura attachment ${id} is missing an 'externalId'.`
               ),
-              E.map((externalId) => {
-                const u = new URL(links.view);
-                u.searchParams.set(EXTERNAL_ID_PARAM, externalId);
-                return u.toString();
-              })
+              E.map((externalId) =>
+                kaltura.buildViewUrl(links.view, externalId)
+              )
             ),
         ],
         [

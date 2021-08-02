@@ -15,8 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
+import { CustomMimeTypes } from "./MimeTypesModule";
 
 /**
  * The bare minimum fields to create an embedded player and matches those found over in
@@ -72,4 +74,37 @@ export const parseExternalId = (externalId: string): KalturaPlayerDetails => {
     throw new TypeError(result.left);
   }
   return result.right;
+};
+
+/**
+ * Build a URL which embeds the externalId in a fashion commonly used by the Lightbox.
+ */
+export const buildViewUrl = (
+  attachmentViewLink: string,
+  externalId: string
+): string => {
+  const u = new URL(attachmentViewLink);
+  u.searchParams.set(EXTERNAL_ID_PARAM, externalId);
+  return u.toString();
+};
+
+/**
+ * Update Kaltura Media Attachment with Custom MIME type and View URL.
+ *
+ * @param attachment A Kaltura media attachment
+ */
+export const updateKalturaAttachment = (
+  attachment: OEQ.Search.Attachment
+): OEQ.Search.Attachment => {
+  const { links } = attachment;
+  const { externalId } = links;
+  if (externalId) {
+    return {
+      ...attachment,
+      mimeType: CustomMimeTypes.KALTURA,
+      links: { ...links, view: buildViewUrl(links.view, externalId) },
+    };
+  }
+
+  throw new Error("Missing Kaltura media attachment external ID.");
 };
