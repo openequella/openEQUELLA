@@ -23,7 +23,7 @@ import java.util
 import java.util.Collections
 
 import com.dytech.common.io.DevNullWriter
-import com.tle.beans.item.ItemTaskId
+import com.tle.beans.item.{ItemId, ItemKey, ItemTaskId}
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.security.SecurityConstants
 import com.tle.common.settings.standard.AutoLogin
@@ -61,6 +61,8 @@ import com.tle.web.template.section.{HelpAndScreenOptionsSection, MenuContributo
 import com.tle.web.template.{Breadcrumbs, Decorations, RenderTemplate}
 import com.tle.web.viewable.{NewDefaultViewableItem, PreviewableItem}
 import com.tle.web.viewable.servlet.ItemServlet
+import com.tle.web.viewitem.section.RootItemFileSection
+import com.tle.web.viewitem.treeviewer.AbstractTreeViewerSection
 import io.lemonlabs.uri.{Path => _, _}
 import io.swagger.annotations.Api
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
@@ -259,11 +261,30 @@ class LegacyContentApi {
   val LOGGER = LoggerFactory.getLogger(classOf[LegacyContentApi])
 
   def parsePath(path: String): (String, MutableSectionInfo => MutableSectionInfo) = {
+    // Parse the given URL and return a Tuple2 where First is ItemKey and Second is a string representing
+    // file name of the content to be viewed.
+    def parseItemViewerPath(p: String): (ItemKey, Option[String]) = {
+      // Regex for the URL of viewing content which consists of Item UUID, Item version, keyword 'viewcontent' and content ID.
+      // For example: ef1c6d7d-7aec-4743-9126-f847913de3f2/1/viewcontent/42eead4b-cfac-46df-8927-f8e58f4cd491
+      val viewContentPattern = "(.+)/(\\d)/(viewcontent/.+)".r
+
+      p match {
+        case viewContentPattern(itemUUID, itemVersion, fileName) =>
+          (new ItemId(itemUUID, itemVersion.toInt), Option(fileName))
+        case _ => (ItemTaskId.parse(p), None)
+      }
+    }
 
     def itemViewer(p: String, f: (SectionInfo, NewDefaultViewableItem) => NewDefaultViewableItem)
       : (String, MutableSectionInfo => MutableSectionInfo) = {
-      val itemId = ItemTaskId.parse(p)
+      val (itemId, contentFileName) = parseItemViewerPath(p)
       (s"/viewitem/viewitem.do", { info: MutableSectionInfo =>
+        for {
+          section <- Option(info.lookupSection[RootItemFileSection, RootItemFileSection](classOf))
+          name    <- contentFileName
+          _ = section.getModel(info).setFilename(name)
+        } yield ()
+
         info.setAttribute(ItemServlet.VIEWABLE_ITEM,
                           f(info, LegacyGuice.viewableItemFactory.createNewViewableItem(itemId)))
         info
@@ -564,18 +585,28 @@ class LegacyContentApi {
     }
   }
 
-  def loadCss(context: StandardRenderContext): Option[Iterable[String]] = {
+  def loadCss(context: StandardRenderContext): Option[List[String]] = {
+    def getCssFromContext: List[String] =
+      context.getCssFiles.asScala.collect {
+        case css: CssInclude => css.getHref(context)
+      }.toList
+
     val uri = context.getRequest.getRequestURI
     // Below three pages don't need 'legacy.css' so load CSS from server side
     val pagePattern = ".+/(apidocs|editoradmin|reports)\\.do".r
 
-    uri match {
-      case pagePattern(_) =>
-        val cssIncludes = context.getCssFiles.asScala.collect {
-          case css: CssInclude => css.getHref(context)
-        }
-        Option(cssIncludes)
-      case _ => None
+    val useLegacyCss = uri match {
+      case pagePattern(_) => false
+      case _              => true
+    }
+
+    val openTreeViewerFromNewUI =
+      context.getBooleanAttribute(AbstractTreeViewerSection.VIEW_FROM_NEW_UI)
+
+    if (openTreeViewerFromNewUI || !useLegacyCss) {
+      Option(getCssFromContext)
+    } else {
+      None
     }
   }
 

@@ -63,6 +63,7 @@ import com.tle.web.sections.standard.Link;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.template.Decorations;
 import com.tle.web.template.Decorations.FullScreen;
+import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewitem.section.RootItemFileSection;
 import com.tle.web.viewitem.treeviewer.js.TreeLibrary;
@@ -113,6 +114,8 @@ public abstract class AbstractTreeViewerSection<M extends AbstractTreeViewerMode
   @Component
   @PlugKey(value = "navbar.last", icon = Icon.JUMP_TO_LAST)
   private Button last;
+
+  public static final String VIEW_FROM_NEW_UI = "view_from_new_ui";
 
   protected interface NodeUrlGenerator {
     @Nullable
@@ -179,6 +182,12 @@ public abstract class AbstractTreeViewerSection<M extends AbstractTreeViewerMode
     model.setHideTree(oneAttachment);
     model.setHideNavControls(oneAttachment);
     model.setDefinition(getTreeDef(info, tree, new HashSet<String>()));
+
+    // If this section is used in new UI, set a flag to tell LegacyContentApi NOT to use
+    // 'Legacy.css'.
+    if (RenderNewTemplate.isNewUIEnabled()) {
+      info.setAttribute(VIEW_FROM_NEW_UI, true);
+    }
     return viewFactory.createTemplateResult("treeviewer.ftl", this);
   }
 
