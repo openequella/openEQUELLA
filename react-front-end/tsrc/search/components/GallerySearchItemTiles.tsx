@@ -20,7 +20,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { LightboxProps } from "../../components/Lightbox";
 import { OEQItemSummaryPageButton } from "../../components/OEQItemSummaryPageButton";
 import { createDrmDialog } from "../../drm/DrmHelper";
 import { defaultDrmStatus } from "../../modules/DrmModule";
@@ -28,10 +27,6 @@ import {
   GalleryEntry,
   GallerySearchResultItem,
 } from "../../modules/GallerySearchModule";
-import {
-  buildLightboxNavigationHandler,
-  LightboxEntry,
-} from "../../modules/ViewerModule";
 import { languageStrings } from "../../util/langstrings";
 
 const { ariaLabel, viewItem } = languageStrings.searchpage.gallerySearchResult;
@@ -52,43 +47,59 @@ const useStyles = makeStyles({
   },
 });
 
+/**
+ * Type for the handler of opening Lightbox from Gallery.
+ */
+export type LightboxHandler = (
+  /**
+   * @param uuid Item's UUID.
+   */
+  uuid: string,
+  /**
+   * @param version Item's Version.
+   */
+  version: number,
+  /**
+   * @param entry A Gallery Entry to be viewed in the Lightbox.
+   */
+  entry: GalleryEntry
+) => void;
+
 export interface GallerySearchTileProps {
   /**
    * The Item to be displayed in the gallery.
    */
   item: GallerySearchResultItem;
   /**
-   * A list of Lightbox viewable resources.
-   */
-  lightboxEntries: LightboxEntry[];
-  /**
-   * Function to determine whether to open Lightbox or not.
+   * Function to update the list of Items in GallerySearchResult and return a LightboxHandler. Typically used
+   * as a callback of successfully accepting DRM terms.
    *
-   * @param props Props that will be passed to Lightbox, or `undefined` to close Lightbox.
+   * @param item Updated Item which typically only has DRM status changed.
    */
-  setLightboxProps: (props: LightboxProps | undefined) => void;
+  updateGalleryItemList: (item: GallerySearchResultItem) => LightboxHandler;
 }
 
 /**
  * Component which builds a list of 'GridListTile' for all gallery entries of an Item.
  */
 export const GallerySearchItemTiles = ({
-  item: {
+  item,
+  updateGalleryItemList,
+}: GallerySearchTileProps) => {
+  const classes = useStyles();
+  const {
     mainEntry,
     additionalEntries,
     name,
     uuid,
     version,
-    drmStatus: initialDrmStatus = defaultDrmStatus,
-  },
-  lightboxEntries,
-  setLightboxProps,
-}: GallerySearchTileProps) => {
-  const classes = useStyles();
+    drmStatus: initialDrmStatus,
+  } = item;
   const itemName = name ?? uuid;
 
-  const [drmStatus, setDrmStatus] =
-    useState<OEQ.Search.DrmStatus>(initialDrmStatus);
+  const [drmStatus, setDrmStatus] = useState<OEQ.Search.DrmStatus | undefined>(
+    initialDrmStatus
+  );
   const [drmCheckOnSuccessHandler, setDrmCheckOnSuccessHandler] = useState<
     (() => void) | undefined
   >();
@@ -116,45 +127,14 @@ export const GallerySearchItemTiles = ({
     })();
   }, [drmCheckOnSuccessHandler, uuid, version, drmStatus]);
 
-  // Used to build the onClick event handler for each tile.
-  const lightboxHandler = ({
-    mimeType,
-    directUrl: src,
-    name,
-    id,
-  }: GalleryEntry) => {
-    const initialLightboxEntryIndex = lightboxEntries.findIndex(
-      (entry) => entry.id === id
-    );
-
-    return setLightboxProps({
-      onClose: () => setLightboxProps(undefined),
-      open: true,
-      item: {
-        uuid,
-        version,
-      },
-      config: {
-        src,
-        title: name,
-        mimeType,
-        onNext: buildLightboxNavigationHandler(
-          lightboxEntries,
-          initialLightboxEntryIndex + 1,
-          true
-        ),
-        onPrevious: buildLightboxNavigationHandler(
-          lightboxEntries,
-          initialLightboxEntryIndex - 1,
-          true
-        ),
-      },
-    });
-  };
-
   // Build a click event handler for each tile.
   const buildOnClickHandler = (entry: GalleryEntry) => () => {
-    checkDrmPermission(() => lightboxHandler(entry));
+    checkDrmPermission(() => {
+      const updatedItem = drmStatus
+        ? { ...item, drmStatus: defaultDrmStatus }
+        : item;
+      updateGalleryItemList(updatedItem)(uuid, version, entry);
+    });
   };
 
   const buildTile = (
