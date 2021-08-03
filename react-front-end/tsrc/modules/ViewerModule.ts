@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import { Do } from "fp-ts-contrib/Do";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import { flow, pipe } from "fp-ts/function";
-import { Do } from "fp-ts-contrib/Do";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
 import {
@@ -28,6 +28,7 @@ import {
 } from "../components/Lightbox";
 import {
   ATYPE_FILE,
+  ATYPE_KALTURA,
   ATYPE_RESOURCE,
   ATYPE_YOUTUBE,
   buildFileAttachmentUrl,
@@ -119,10 +120,11 @@ export const determineViewer = (
 ): ViewerDefinition => {
   const simpleLinkView: ViewerDefinition = ["link", viewUrl];
   // For an attachment that is not one of the following, refer to the link provided by the server.
-  // 1. File
-  // 2. Custom resource
-  // 3. YouTube Video
-  if (![ATYPE_FILE, ATYPE_RESOURCE, ATYPE_YOUTUBE].includes(attachmentType)) {
+  if (
+    ![ATYPE_FILE, ATYPE_KALTURA, ATYPE_RESOURCE, ATYPE_YOUTUBE].includes(
+      attachmentType
+    )
+  ) {
     return simpleLinkView;
   }
 

@@ -15,9 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AppConfig } from "../AppConfig";
-import { updateYoutubeAttachment } from "./YouTubeModule";
 import * as OEQ from "@openequella/rest-api-client";
+import { identity, pipe } from "fp-ts/function";
+import { AppConfig } from "../AppConfig";
+import { simpleMatchD } from "../util/match";
+import { updateKalturaAttachment } from "./KalturaModule";
+import { updateYoutubeAttachment } from "./YouTubeModule";
 
 /** `attachmentType` for file attachments. */
 export const ATYPE_FILE = "file";
@@ -52,7 +55,17 @@ export const buildFileAttachmentUrl = (
  */
 export const updateAttachmentForCustomInfo = (
   attachment: OEQ.Search.Attachment
-): OEQ.Search.Attachment =>
-  attachment.attachmentType === ATYPE_YOUTUBE
-    ? updateYoutubeAttachment(attachment)
-    : attachment;
+): OEQ.Search.Attachment => {
+  const updateFn = pipe(
+    attachment.attachmentType,
+    simpleMatchD(
+      [
+        [ATYPE_KALTURA, () => updateKalturaAttachment],
+        [ATYPE_YOUTUBE, () => updateYoutubeAttachment],
+      ],
+      () => identity
+    )
+  );
+
+  return updateFn(attachment);
+};

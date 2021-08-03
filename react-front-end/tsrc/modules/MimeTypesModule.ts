@@ -57,7 +57,7 @@ export const getMimeTypeViewerConfiguration: (
 export const getMimeTypeDefaultViewerDetails = async (
   mimeType: string
 ): Promise<OEQ.MimeType.MimeTypeViewerDetail> => {
-  if (mimeType === CustomMimeTypes.YOUTUBE) {
+  if ([CustomMimeTypes.KALTURA, CustomMimeTypes.YOUTUBE].includes(mimeType)) {
     return { viewerId: "htmlFiveViewer" };
   }
 
