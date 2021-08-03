@@ -113,7 +113,7 @@ export const DrmTerms = ({
   );
 
   return (
-    <ol id="DRM-terms" start={1}>
+    <ol className="skip-css-reset" start={1}>
       {standardTerms}
       {partyDetails}
       {customTermDetails}
