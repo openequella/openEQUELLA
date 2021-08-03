@@ -17,7 +17,7 @@
  */
 import { GridList } from "@material-ui/core";
 import * as React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Lightbox, { LightboxProps } from "../../components/Lightbox";
 import {
   GalleryEntry,
@@ -51,6 +51,11 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
 
   const [galleryItems, setGalleryItems] =
     useState<GallerySearchResultItem[]>(items);
+
+  // Ensure gallery entries are consistent with gallery mode.
+  useEffect(() => {
+    setGalleryItems(items);
+  }, [items]);
 
   // Handler for opening the Lightbox
   const lightboxHandler = (
