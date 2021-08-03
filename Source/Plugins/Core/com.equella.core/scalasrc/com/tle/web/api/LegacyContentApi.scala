@@ -264,12 +264,19 @@ class LegacyContentApi {
     // Parse the given URL and return a Tuple2 where First is ItemKey and Second is a string representing
     // file name of the content to be viewed.
     def parseItemViewerPath(p: String): (ItemKey, Option[String]) = {
-      // Regex for the URL of viewing content which consists of Item UUID, Item version, keyword 'viewcontent' and content ID.
-      // For example: ef1c6d7d-7aec-4743-9126-f847913de3f2/1/viewcontent/42eead4b-cfac-46df-8927-f8e58f4cd491
-      val viewContentPattern = "(.+)/(\\d)/(viewcontent/.+)".r
+      // Regex for the URL of viewing content which has 4 groups.
+      // 1. Item UUID
+      // 2. Item version
+      // 3. Content file name which is 'viewcontent/uuid' or 'viewims.jsp'.
+      // 4. additional query strings
+
+      // Examples:
+      // For normal content: ef1c6d7d-7aec-4743-9126-f847913de3f2/1/viewcontent/42eead4b-cfac-46df-8927-f8e58f4cd491
+      // For IMS package: 677a4bbc-defc-4dc1-b68e-4e2473b66a6a/1/viewims.jsp?viewMethod=download
+      val viewContentPattern = "(.+)/(\\d)/(viewcontent/.+|viewims.jsp)(.*)".r
 
       p match {
-        case viewContentPattern(itemUUID, itemVersion, fileName) =>
+        case viewContentPattern(itemUUID, itemVersion, fileName, _) =>
           (new ItemId(itemUUID, itemVersion.toInt), Option(fileName))
         case _ => (ItemTaskId.parse(p), None)
       }
