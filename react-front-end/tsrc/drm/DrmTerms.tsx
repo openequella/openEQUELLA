@@ -113,7 +113,7 @@ export const DrmTerms = ({
   );
 
   return (
-    <ol start={1}>
+    <ol id="DRM-terms" start={1}>
       {standardTerms}
       {partyDetails}
       {customTermDetails}

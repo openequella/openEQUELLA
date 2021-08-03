@@ -26,9 +26,12 @@ import {
   listDrmTerms,
   listDrmViolations,
 } from "../modules/DrmModule";
+import { languageStrings } from "../util/langstrings";
 import { DrmAcceptanceDialog } from "./DrmAcceptanceDialog";
 import * as OEQ from "@openequella/rest-api-client";
 
+const { title: violationTitle, prefix: violationPrefix } =
+  languageStrings.drm.violation;
 /**
  * Given a handler which cannot be used until a DRM check is completed,
  * this function checks DRM status and based on the result builds different DRM dialogs.
@@ -81,8 +84,8 @@ export const createDrmDialog = async (
     return (
       <MessageDialog
         open
-        title="DRM violations"
-        messages={[violation]}
+        title={violationTitle}
+        messages={[violationPrefix, violation]}
         close={closeDrmDialog}
       />
     );

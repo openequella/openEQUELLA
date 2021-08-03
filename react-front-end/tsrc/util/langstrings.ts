@@ -296,6 +296,11 @@ export const languageStrings = {
     getTerms: {
       error: "Failed to retrieve DRM terms",
     },
+    violation: {
+      title: "DRM Violation",
+      prefix:
+        "You are currently unable to access this item due to the following DRM violation: \n",
+    },
   },
   embedCode: {
     label: "Embed code",
