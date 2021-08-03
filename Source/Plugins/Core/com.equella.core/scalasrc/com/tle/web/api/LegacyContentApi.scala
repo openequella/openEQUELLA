@@ -202,6 +202,8 @@ object LegacyContentController extends AbstractSectionsController with SectionFi
 
   val RedirectedAttr = "REDIRECTED"
 
+  val DISABLE_LEGACY_CSS = "DISABLE_LEGACY_CSS"
+
   override protected def getTreeForPath(path: String): SectionTree =
     LegacyGuice.treeRegistry.getTreeForPath(path)
 
@@ -602,15 +604,14 @@ class LegacyContentApi {
     // Below three pages don't need 'legacy.css' so load CSS from server side
     val pagePattern = ".+/(apidocs|editoradmin|reports)\\.do".r
 
-    val useLegacyCss = uri match {
-      case pagePattern(_) => false
-      case _              => true
+    val disableLegacyCss = uri match {
+      case pagePattern(_) => true
+      case _              => false
     }
 
-    val openTreeViewerFromNewUI =
-      context.getBooleanAttribute(AbstractTreeViewerSection.VIEW_FROM_NEW_UI)
-
-    if (openTreeViewerFromNewUI || !useLegacyCss) {
+    // If the context has a boolean attribute saying legacy CSS should be disabled, or the URL matches
+    // above pattern, use CSS provided by the context.
+    if (context.getBooleanAttribute(LegacyContentController.DISABLE_LEGACY_CSS) || disableLegacyCss) {
       Option(getCssFromContext)
     } else {
       None

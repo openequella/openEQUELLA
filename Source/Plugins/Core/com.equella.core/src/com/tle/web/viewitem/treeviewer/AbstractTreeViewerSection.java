@@ -34,6 +34,7 @@ import com.tle.common.NameValue;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.i18n.BundleCache;
 import com.tle.core.url.URLCheckerService;
+import com.tle.web.api.LegacyContentController;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.integration.service.IntegrationService;
@@ -115,8 +116,6 @@ public abstract class AbstractTreeViewerSection<M extends AbstractTreeViewerMode
   @PlugKey(value = "navbar.last", icon = Icon.JUMP_TO_LAST)
   private Button last;
 
-  public static final String VIEW_FROM_NEW_UI = "view_from_new_ui";
-
   protected interface NodeUrlGenerator {
     @Nullable
     String getUrlForNode(ItemNavigationNode node);
@@ -186,7 +185,7 @@ public abstract class AbstractTreeViewerSection<M extends AbstractTreeViewerMode
     // If this section is used in new UI, set a flag to tell LegacyContentApi NOT to use
     // 'Legacy.css'.
     if (RenderNewTemplate.isNewUIEnabled()) {
-      info.setAttribute(VIEW_FROM_NEW_UI, true);
+      info.setAttribute(LegacyContentController.DISABLE_LEGACY_CSS(), true);
     }
     return viewFactory.createTemplateResult("treeviewer.ftl", this);
   }
