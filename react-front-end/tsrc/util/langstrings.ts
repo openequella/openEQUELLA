@@ -414,6 +414,7 @@ export const languageStrings = {
       modeGalleryVideo: "Video Gallery",
     },
     collectionSelector: {
+      noOptions: "All",
       title: "Collections",
     },
     filterLast: {
