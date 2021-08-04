@@ -20,8 +20,8 @@ package com.tle.web.api.search
 
 import com.dytech.edge.exceptions.{BadRequestException, DRMException}
 import com.tle.beans.entity.DynaCollection
-import com.tle.beans.item.attachments.{Attachment, CustomAttachment, FileAttachment}
-import com.tle.beans.item.{Comment, ItemId, ItemIdKey}
+import com.tle.beans.item.attachments.{CustomAttachment, FileAttachment}
+import com.tle.beans.item.{Comment, ItemId, ItemIdKey, ItemKey}
 import com.tle.common.Check
 import com.tle.common.beans.exception.NotFoundException
 import com.tle.common.collection.AttachmentConfigConstants
@@ -285,13 +285,11 @@ object SearchHelper {
         // Filter out restricted attachments if the user does not have permissions to view them
           .filter(a => !a.isRestricted || hasRestrictedAttachmentPrivileges)
           .map(att => {
-            val broken =
-              recurseBrokenAttachmentCheck(
-                Option(LegacyGuice.itemService.getNullableAttachmentForUuid(itemKey, att.getUuid)))
+            val broken = recurseBrokenAttachmentCheck(itemKey, att.getUuid)
             SearchResultAttachment(
               attachmentType = att.getRawAttachmentType,
               id = att.getUuid,
-              description = Option(att.getDescription),
+              description = getAttachmentDescription(itemKey, att.getUuid),
               brokenAttachment = broken,
               preview = att.isPreview,
               mimeType = getMimetypeForAttachment(att, broken),
@@ -359,9 +357,7 @@ object SearchHelper {
     customAttachment.getData("type") match {
       case "a" =>
         // Recurse into child attachment
-        recurseBrokenAttachmentCheck(
-          Option(
-            LegacyGuice.itemService.getNullableAttachmentForUuid(key, customAttachment.getUrl)))
+        recurseBrokenAttachmentCheck(key, customAttachment.getUrl)
       case "p" =>
         // Get the child item. If it doesn't exist, this is a dead attachment
         Option(LegacyGuice.itemService.getUnsecureIfExists(key)).isEmpty
@@ -374,11 +370,13 @@ object SearchHelper {
     * If it is a resource selector attachment, this gets handled by
     * [[getBrokenAttachmentStatusForResourceAttachment(customAttachment: CustomAttachment)]]
     * which links back in here to recurse through customAttachments to find the root.
-    * @param attachment The attachment to check for brokenness.
+    *
+    * @param itemKey the details of the item the attachment belongs to
+    * @param attachmentUuid the UUID of the attachment
     * @return True if broken, false if intact.
     */
-  def recurseBrokenAttachmentCheck(attachment: Option[Attachment]): Boolean = {
-    attachment match {
+  def recurseBrokenAttachmentCheck(itemKey: ItemKey, attachmentUuid: String): Boolean = {
+    Option(LegacyGuice.itemService.getNullableAttachmentForUuid(itemKey, attachmentUuid)) match {
       case Some(fileAttachment: FileAttachment) =>
         //check if file is present in the filestore
         val item =
@@ -463,4 +461,17 @@ object SearchHelper {
     */
   def isLatestVersion(itemID: ItemIdKey): Boolean =
     itemID.getVersion == LegacyGuice.itemService.getLatestVersion(itemID.getUuid)
+
+  /**
+    * Use the `description` from the `Attachment` behind the `AttachmentBean` as this provides
+    * the value more commonly seen in the LegacyUI. And specifically uses any tweaks done for
+    * Custom Attachments - such as with Kaltura where the Kaltura Media `title` is pushed into
+    * the `description` rather than using the optional (and multi-line) Kaltura Media `description`.
+    *
+    * @param itemKey the details of the item the attachment belongs to
+    * @param attachmentUuid the UUID of the attachment
+    * @return the description for the attachment if available
+    */
+  def getAttachmentDescription(itemKey: ItemKey, attachmentUuid: String): Option[String] =
+    Option(LegacyGuice.itemService.getAttachmentForUuid(itemKey, attachmentUuid).getDescription)
 }
