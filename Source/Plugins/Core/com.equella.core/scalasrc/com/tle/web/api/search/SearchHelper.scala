@@ -285,14 +285,16 @@ object SearchHelper {
         // Filter out restricted attachments if the user does not have permissions to view them
           .filter(a => !a.isRestricted || hasRestrictedAttachmentPrivileges)
           .map(att => {
-            val broken = recurseBrokenAttachmentCheck(itemKey, att.getUuid)
+            val broken                             = recurseBrokenAttachmentCheck(itemKey, att.getUuid)
+            def ifNotBroken[T](f: () => Option[T]) = if (!broken) f() else None
+
             SearchResultAttachment(
               attachmentType = att.getRawAttachmentType,
               id = att.getUuid,
-              description = getAttachmentDescription(itemKey, att.getUuid),
+              description = ifNotBroken(() => getAttachmentDescription(itemKey, att.getUuid)),
               brokenAttachment = broken,
               preview = att.isPreview,
-              mimeType = getMimetypeForAttachment(att, broken),
+              mimeType = ifNotBroken(() => getMimetypeForAttachment(att)),
               hasGeneratedThumb = thumbExists(itemKey, att),
               links = buildAttachmentLinks(att),
               filePath = getFilePathForAttachment(att)
@@ -392,11 +394,7 @@ object SearchHelper {
   /**
     * Extract the mimetype for AbstractExtendableBean.
     */
-  def getMimetypeForAttachment[T <: AbstractExtendableBean](bean: T,
-                                                            broken: Boolean): Option[String] = {
-    if (broken) {
-      return None
-    }
+  def getMimetypeForAttachment[T <: AbstractExtendableBean](bean: T): Option[String] =
     bean match {
       case file: AbstractFileAttachmentBean =>
         Some(LegacyGuice.mimeTypeService.getMimeTypeForFilename(file.getFilename))
@@ -405,7 +403,6 @@ object SearchHelper {
           LegacyGuice.mimeTypeService.getMimeTypeForResourceAttachmentBean(resourceAttachmentBean))
       case _ => None
     }
-  }
 
   /**
     * If the attachment is a file, then return the path for that attachment.
