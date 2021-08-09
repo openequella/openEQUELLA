@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.Map;
 
 public abstract class AbstractElementRenderer extends AbstractComponentRenderer {
+  public static final String SKIP_BOOTSTRAP = "skip_bootstrap";
 
   public AbstractElementRenderer(HtmlComponentState state) {
     super(state);

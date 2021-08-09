@@ -132,7 +132,9 @@ public class ButtonRenderer extends AbstractElementRenderer implements JSDisable
 
   @Override
   public void preRender(PreRenderContext info) {
-    info.preRender(Bootstrap.PRERENDER);
+    if (!info.getBooleanAttribute(SKIP_BOOTSTRAP)) {
+      info.preRender(Bootstrap.PRERENDER);
+    }
     super.preRender(info);
   }
 

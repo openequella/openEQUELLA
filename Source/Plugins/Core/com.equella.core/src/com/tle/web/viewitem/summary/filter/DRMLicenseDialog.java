@@ -43,6 +43,8 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
+import com.tle.web.sections.standard.renderers.AbstractElementRenderer;
+import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.viewitem.DRMFilter;
 import com.tle.web.viewitem.I18nDRM;
 import com.tle.web.viewitem.section.RootItemFileSection;
@@ -101,6 +103,13 @@ public class DRMLicenseDialog extends EquellaDialog<DRMDialogModel> {
 
   @Override
   protected SectionRenderable getRenderableContents(RenderContext context) {
+    // In New UI, this dialog is usually NOT opened by 'LegacyContent.tsx'. As a result, CSS files
+    // included in this dialog will be added to the whole page. Given this context, we must exclude
+    // Bootstrap.css from this dialog's three buttons because Bootstrap.css will result in the three
+    // buttons having inconsistent UI and breaking other new UI components.
+    if (RenderNewTemplate.isNewUIEnabled()) {
+      context.setAttribute(AbstractElementRenderer.SKIP_BOOTSTRAP, true);
+    }
     Item item = rootFileSection.getViewableItem(context).getItem();
     DrmSettings rights = drmService.requiresAcceptance(item, false, false);
     DRMDialogModel model = getModel(context);
