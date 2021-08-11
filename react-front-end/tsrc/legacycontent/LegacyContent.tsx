@@ -25,13 +25,14 @@ import {
   fromAxiosResponse,
   generateFromError,
 } from "../api/errors";
-import { API_BASE_URL } from "../AppConfig";
+import { LEGACY_CSS_URL } from "../AppConfig";
 import { BaseOEQRouteComponentProps } from "../mainui/routes";
 import {
   templateDefaults,
   templateError,
   templatePropsForLegacy,
 } from "../mainui/Template";
+import { deleteRawModeFromStorage } from "../search/SearchPageHelper";
 import { LegacyContentRenderer } from "./LegacyContentRenderer";
 import { getEqPageForm, legacyFormId } from "./LegacyForm";
 
@@ -244,6 +245,11 @@ export const LegacyContent = React.memo(function LegacyContent({
   ) {
     submitRequest(toRelativeUrl(formAction || pathname), submitValues)
       .then((content) => {
+        // Clear raw mode saved in local storage after a login request is resolved.
+        if (pathname.indexOf("logon.do") > 0) {
+          deleteRawModeFromStorage();
+        }
+
         if (callback) {
           callback(content);
         } else if (isPageContent(content)) {
@@ -396,7 +402,7 @@ function updateStylesheets(
 ): Promise<{ [url: string]: HTMLLinkElement }> {
   const sheets = _sheets
     ? _sheets.map(resolveUrl)
-    : [resolveUrl(`${API_BASE_URL}/theme/legacy.css`)];
+    : [resolveUrl(LEGACY_CSS_URL)];
   const doc = window.document;
   const insertPoint = doc.getElementById("_dynamicInsert");
   const head = doc.getElementsByTagName("head")[0];

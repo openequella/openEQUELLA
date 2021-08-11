@@ -2,6 +2,7 @@ package io.github.openequella.rest;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
 import java.io.IOException;
@@ -190,6 +191,12 @@ public class Search2ApiTest extends AbstractRestApiTest {
         doSearch(
             200, null, new NameValuePair("musts", "uuid:ab16b5f0-a12e-43f5-9d8b-25870528ad41"));
     assertEquals(getAvailable(result), 1);
+  }
+
+  @Test(description = "Search result should include DRM status for Items that have DRM")
+  public void drmStatus() throws IOException {
+    JsonNode result = doSearch(200, "ItemApiViewTest - DRM and versioning v2");
+    assertNotNull(result.get("results").get(0).get("drmStatus"));
   }
 
   @DataProvider(name = "badMustExpressions")

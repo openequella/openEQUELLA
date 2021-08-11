@@ -16,14 +16,24 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import { Do } from "fp-ts-contrib/Do";
 import * as A from "fp-ts/Array";
-import { pipe } from "fp-ts/function";
+import * as E from "fp-ts/Either";
+import { flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
+import * as TE from "fp-ts/TaskEither";
 import {
   isLightboxSupportedMimeType,
   LightboxConfig,
 } from "../components/Lightbox";
-import { buildFileAttachmentUrl } from "./AttachmentsModule";
+import {
+  ATYPE_FILE,
+  ATYPE_KALTURA,
+  ATYPE_RESOURCE,
+  ATYPE_YOUTUBE,
+  buildFileAttachmentUrl,
+  updateAttachmentForCustomInfo,
+} from "./AttachmentsModule";
 
 export type Viewer = "lightbox" | "link";
 export type ViewerDefinition = [Viewer, string];
@@ -78,7 +88,7 @@ export interface AttachmentAndViewerDefinition {
   /**
    * Viewer definition for the attachment, including which viewer to be used and the view URL.
    */
-  viewerDefinition: ViewerDefinition;
+  viewerDefinition?: ViewerDefinition;
 }
 
 export interface AttachmentAndViewerConfig {
@@ -89,7 +99,7 @@ export interface AttachmentAndViewerConfig {
   /**
    * Viewer configuration for the attachment.
    */
-  viewerConfig: ViewerConfig;
+  viewerConfig?: ViewerConfig;
 }
 
 /**
@@ -101,21 +111,20 @@ export interface AttachmentAndViewerConfig {
  * @param viewUrl the basic view URL returned in search results
  * @param mimeType the MIME type of the attachment to determine the viewer for
  * @param mimeTypeViewerId the server specified `ViewerId` for the attachment
- * @param broken whether or not this has been marked as a broken attachment by the server
  */
 export const determineViewer = (
   attachmentType: string,
   viewUrl: string,
-  broken: boolean,
   mimeType?: string,
   mimeTypeViewerId?: OEQ.MimeType.ViewerId
 ): ViewerDefinition => {
   const simpleLinkView: ViewerDefinition = ["link", viewUrl];
-  if (broken) {
-    return simpleLinkView;
-  }
-  if (attachmentType !== "file" && attachmentType !== "custom/resource") {
-    // For non-file attachments, we currently just defer to the link provided by the server
+  // For an attachment that is not one of the following, refer to the link provided by the server.
+  if (
+    ![ATYPE_FILE, ATYPE_KALTURA, ATYPE_RESOURCE, ATYPE_YOUTUBE].includes(
+      attachmentType
+    )
+  ) {
     return simpleLinkView;
   }
 
@@ -181,7 +190,6 @@ export const getViewerDefinitionForAttachment = (
     mimeType,
     links: { view: defaultViewUrl },
     filePath,
-    brokenAttachment,
   } = attachment;
   const viewUrl = determineAttachmentViewUrl(
     itemUuid,
@@ -191,13 +199,7 @@ export const getViewerDefinitionForAttachment = (
     filePath
   );
 
-  return determineViewer(
-    attachmentType,
-    viewUrl,
-    brokenAttachment,
-    mimeType,
-    mimeTypeViewerId
-  );
+  return determineViewer(attachmentType, viewUrl, mimeType, mimeTypeViewerId);
 };
 
 /**
@@ -245,6 +247,245 @@ export const buildLightboxNavigationHandler = (
           ),
         });
       }
+    )
+  );
+};
+
+// Build AttachmentsAndViewerDefinitions for live attachments.
+const buildLiveAttachmentsAndViewerDefinitions = (
+  attachment: OEQ.Search.Attachment,
+  uuid: string,
+  version: number,
+  getViewerDetails: (
+    mimeType: string
+  ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>
+) =>
+  pipe(
+    attachment.mimeType,
+    O.fromNullable,
+    O.foldW(
+      // If MIME type is undefined, we just need a TaskEither which returns undefined as ViewerId, otherwise we
+      // call the provided function to retrieve ViewerId.
+      () => TE.right<string, OEQ.MimeType.ViewerId | undefined>(undefined),
+      flow(
+        TE.tryCatchK(getViewerDetails, String),
+        TE.map((resp: OEQ.MimeType.MimeTypeViewerDetail) => resp?.viewerId)
+      )
+    ),
+    // Then we map ViewerId to AttachmentAndViewerDefinition.
+    TE.map((viewerId: OEQ.MimeType.ViewerId | undefined) => ({
+      attachment,
+      viewerDefinition: getViewerDefinitionForAttachment(
+        uuid,
+        version,
+        attachment,
+        viewerId
+      ),
+    }))
+  )();
+
+/**
+ * Build a list of viewer definition for attachments. For each attachment, return an Either where left is a error
+ * message and right is 'AttachmentAndViewerDefinition'. The final result is an Either where left is a string array
+ * and right is an array of 'AttachmentAndViewerDefinition'.
+ *
+ * @param attachments Attachments provided to find their viewer configurations.
+ * @param uuid UUID of the Item which the attachments belong to.
+ * @param version Version of the Item which the attachments belong to.
+ * @param getViewerDetails Function called to retrieve viewer detail for each attachment.
+ */
+export const buildAttachmentsAndViewerDefinitions = async (
+  attachments: OEQ.Search.Attachment[],
+  uuid: string,
+  version: number,
+  getViewerDetails: (
+    mimeType: string
+  ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>
+): Promise<E.Either<string[], AttachmentAndViewerDefinition[]>> => {
+  const either: E.Either<string, AttachmentAndViewerDefinition>[] =
+    await Promise.all(
+      pipe(
+        attachments,
+        A.partitionMapWithIndex((index, attachment) =>
+          attachment.brokenAttachment === true
+            ? E.left({ index, attachment })
+            : E.right({
+                index,
+                attachment: updateAttachmentForCustomInfo(attachment),
+              })
+        ),
+        ({ left, right }) => {
+          const brokenAttachmentsAndViewerDefinition = left.map(
+            ({ index, attachment }) => ({
+              viewerDefinition: Promise.resolve(
+                E.right<string, AttachmentAndViewerDefinition>({ attachment })
+              ),
+              index,
+            })
+          );
+          const liveAttachmentsAndViewerDefinition = right.map(
+            ({ index, attachment }) => ({
+              viewerDefinition: buildLiveAttachmentsAndViewerDefinitions(
+                attachment,
+                uuid,
+                version,
+                getViewerDetails
+              ),
+              index,
+            })
+          );
+
+          // Merge the two collections and sort as per the order on the server.
+          return brokenAttachmentsAndViewerDefinition
+            .concat(liveAttachmentsAndViewerDefinition)
+            .sort(
+              ({ index: prevIndex }, { index: nextIndex }) =>
+                prevIndex - nextIndex
+            )
+            .map(({ viewerDefinition }) => viewerDefinition);
+        }
+      )
+    );
+
+  return pipe(either, A.separate, ({ left, right }) =>
+    A.isEmpty(left) ? E.right(right) : E.left(left)
+  );
+};
+
+/**
+ * Build Lightbox entries based on a list of attachments and viewer definitions. Attachments not viewed in the
+ * Lightbox are dropped.
+ *
+ * @param attachmentsAndViewerDefinitions A list of attachments and their viewer definitions.
+ */
+export const buildLightboxEntries: (
+  attachmentsAndViewerDefinitions: AttachmentAndViewerDefinition[]
+) => LightboxEntry[] = flow(
+  A.map(({ attachment: { id, description, mimeType }, viewerDefinition }) =>
+    pipe(
+      viewerDefinition,
+      O.fromNullable,
+      O.filter(([viewer]) => viewer === "lightbox"),
+      O.map<ViewerDefinition, LightboxEntry>(([_, viewerUrl]) => ({
+        src: viewerUrl,
+        title: description,
+        mimeType: mimeType ?? "",
+        id,
+      }))
+    )
+  ),
+  A.filter(O.isSome),
+  A.map((some) => some.value)
+);
+
+/**
+ * Convert attachments' viewer definitions to their viewer configurations.
+ *
+ * @param attachmentsAndViewerDefinitions A list of attachments and their viewer definitions.
+ * @param lightboxEntries A list of attachments that are viewable in the Lightbox.
+ */
+export const convertViewerDefinitionToViewerConfig = (
+  attachmentsAndViewerDefinitions: AttachmentAndViewerDefinition[],
+  lightboxEntries: LightboxEntry[]
+): AttachmentAndViewerConfig[] =>
+  pipe(
+    attachmentsAndViewerDefinitions,
+    A.map(({ attachment, viewerDefinition }) => {
+      const initialLightboxEntryIndex = lightboxEntries.findIndex(
+        (entry) => entry.id === attachment.id
+      );
+      return pipe(
+        viewerDefinition,
+        O.fromNullable,
+        O.foldW(
+          () => ({ attachment }), // Broken attachments don't have viewer configuration.
+          ([viewer, viewUrl]) =>
+            viewer === "lightbox"
+              ? buildLightboxViewerConfig(
+                  attachment,
+                  viewUrl,
+                  lightboxEntries,
+                  initialLightboxEntryIndex
+                )
+              : buildBasicViewerConfig(attachment, viewUrl)
+        )
+      );
+    })
+  );
+
+const buildLightboxViewerConfig = (
+  attachment: OEQ.Search.Attachment,
+  viewUrl: string,
+  lightboxEntries: LightboxEntry[],
+  initialLightboxEntryIndex: number
+): AttachmentAndViewerConfig => ({
+  attachment,
+  viewerConfig: {
+    viewerType: "lightbox",
+    config: {
+      src: viewUrl,
+      title: attachment.description,
+      mimeType: attachment.mimeType ?? "",
+      onNext: buildLightboxNavigationHandler(
+        lightboxEntries,
+        initialLightboxEntryIndex + 1
+      ),
+      onPrevious: buildLightboxNavigationHandler(
+        lightboxEntries,
+        initialLightboxEntryIndex - 1
+      ),
+    },
+  },
+});
+
+const buildBasicViewerConfig = (
+  attachment: OEQ.Search.Attachment,
+  viewUrl: string
+): AttachmentAndViewerConfig => ({
+  attachment,
+  viewerConfig: {
+    viewerType: "link",
+    url: viewUrl,
+  },
+});
+
+/**
+ * Returns a list of provided attachments and their viewer configurations.
+ *
+ * @param attachments Attachments provided to find their viewer configurations.
+ * @param uuid UUID of the Item which the attachments belong to.
+ * @param version Version of the Item which the attachments belong to.
+ * @param getViewerDetails Function called to retrieve viewer detail for each attachment.
+ */
+export const buildViewerConfigForAttachments = async (
+  attachments: OEQ.Search.Attachment[],
+  uuid: string,
+  version: number,
+  getViewerDetails: (
+    mimeType: string
+  ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>
+): Promise<AttachmentAndViewerConfig[]> => {
+  const attachmentsAndViewerDefinitions: E.Either<
+    string[],
+    AttachmentAndViewerDefinition[]
+  > = await buildAttachmentsAndViewerDefinitions(
+    attachments,
+    uuid,
+    version,
+    getViewerDetails
+  );
+
+  return pipe(
+    Do(E.either)
+      .bind("ad", attachmentsAndViewerDefinitions)
+      .bindL("lightboxEntries", ({ ad }) => E.right(buildLightboxEntries(ad)))
+      .bindL("ac", ({ ad, lightboxEntries }) =>
+        E.right(convertViewerDefinitionToViewerConfig(ad, lightboxEntries))
+      )
+      .return(({ ac }) => ac),
+    E.fold(
+      (error: string[]) => Promise.reject(error),
+      (ac: AttachmentAndViewerConfig[]) => Promise.resolve(ac)
     )
   );
 };

@@ -18,6 +18,7 @@
 import Axios, { AxiosResponse, AxiosError } from 'axios';
 import axiosCookieJarSupport from 'axios-cookiejar-support';
 import * as tough from 'tough-cookie';
+import { is } from 'typescript-is';
 import { repackageError } from './Errors';
 import { stringify } from 'query-string';
 
@@ -111,6 +112,29 @@ export const POST = <T, R>(
         );
       }
       return data;
+    })
+    .catch(catchHandler);
+
+type RESPONSE_EMPTY_BODY = undefined | null | '';
+/**
+ * Executes a HTTP POST for a given path where explicitly no response payload is expected. This is
+ * useful for endpoints which simply return a 200 with an empty body to signal request was successful.
+ *
+ * If expecting a response payload, then use `POST` instead.
+ *
+ * @param path The URL path for the target POST
+ * @param data The data to be sent in POST request
+ */
+export const POST_void = <T>(path: string, data?: T): Promise<void> =>
+  axios
+    .post(path, data)
+    .then(({ data }: AxiosResponse<unknown>) => {
+      if (!is<RESPONSE_EMPTY_BODY>(data)) {
+        throw new TypeError(
+          `Data format mismatch with data received from server (expected NO data), on request to: "${path}"`
+        );
+      }
+      return;
     })
     .catch(catchHandler);
 

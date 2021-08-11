@@ -258,7 +258,7 @@ export const basicImageSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
 export const basicVideoSearchResponse: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> =
   {
     start: 0,
-    length: 3,
+    length: 4,
     available: 15,
     results: [
       {
@@ -437,6 +437,46 @@ export const basicVideoSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
           self: "http://localhost:8080/ian/api/item/9d5112d4-87b6-4ac1-b773-ceaa4a6c5205/1/",
         },
         bookmarkId: 89568,
+        isLatestVersion: true,
+      },
+      {
+        uuid: "91406c5e-e2fe-4528-beac-ab22266e0f50",
+        version: 1,
+        name: "[kaltura] snow drifting",
+        description: "from pexels",
+        status: "live",
+        createdDate: new Date("2021-07-20T16:53:24.434+10:00"),
+        modifiedDate: new Date("2021-07-20T16:53:24.430+10:00"),
+        collectionId: "312be657-ae6a-4c60-b6fa-ced02c955915",
+        starRatings: -1,
+        attachments: [
+          {
+            attachmentType: "custom/kaltura",
+            id: "5673f889-6f72-432d-ad50-29b505a28739",
+            description: "From pexels: pexels-nadezhda-moryak-6530229.mp4",
+            brokenAttachment: false,
+            preview: false,
+            links: {
+              view: "http://localhost:8080/ian/items/91406c5e-e2fe-4528-beac-ab22266e0f50/1/?attachment.uuid=5673f889-6f72-432d-ad50-29b505a28739",
+              thumbnail:
+                "http://localhost:8080/ian/thumbs/91406c5e-e2fe-4528-beac-ab22266e0f50/1/5673f889-6f72-432d-ad50-29b505a28739",
+              externalId: "4211234/48123443/1_d1h8f1dx",
+            },
+          },
+        ],
+        thumbnail: "default",
+        displayFields: [],
+        displayOptions: {
+          attachmentType: "STRUCTURED",
+          disableThumbnail: false,
+          standardOpen: false,
+          integrationOpen: false,
+        },
+        keywordFoundInAttachment: false,
+        links: {
+          view: "http://localhost:8080/ian/items/91406c5e-e2fe-4528-beac-ab22266e0f50/1/",
+          self: "http://localhost:8080/ian/api/item/91406c5e-e2fe-4528-beac-ab22266e0f50/1/",
+        },
         isLatestVersion: true,
       },
     ],

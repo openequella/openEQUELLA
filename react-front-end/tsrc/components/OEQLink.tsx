@@ -34,6 +34,11 @@ interface OEQLinkProps {
    * A function providing a URL for MUI Link
    */
   muiLinkUrlProvider: () => string;
+  /**
+   * Function typically used to intercept calls before the browser navigates away.
+   *
+   */
+  onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
 }
 
 /**
@@ -44,11 +49,14 @@ export const OEQLink = ({
   children,
   routeLinkUrlProvider,
   muiLinkUrlProvider,
+  onClick,
 }: OEQLinkProps) =>
   isSelectionSessionOpen() ? (
-    <MUILink href={muiLinkUrlProvider()} underline="none">
+    <MUILink href={muiLinkUrlProvider()} underline="none" onClick={onClick}>
       {children}
     </MUILink>
   ) : (
-    <Link to={routeLinkUrlProvider()}>{children}</Link>
+    <Link to={routeLinkUrlProvider()} onClick={onClick}>
+      {children}
+    </Link>
   );
