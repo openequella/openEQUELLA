@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import * as E from "fp-ts/Either";
+import * as O from "fp-ts/Option";
 
 expect.extend({
   /**
@@ -51,6 +52,38 @@ expect.extend({
           pass: false,
           message: () => `expected E.Right but got E.Left(${received.left})`,
         },
+
+  /**
+   * An expect matcher for Jest to confirm the response is O.None.
+   *
+   * @param received The O.Option to validate
+   */
+  toBeNone: (received: O.Option<any>): jest.CustomMatcherResult =>
+    O.isNone(received)
+      ? {
+          pass: true,
+          message: () => `expected ${received} not to be O.None`,
+        }
+      : {
+          pass: false,
+          message: () => `expected O.None but got O.Some: ${received}`,
+        },
+
+  /**
+   * An expect matcher for Jest to confirm the response is O.Some.
+   *
+   * @param received The O.Option to validate
+   */
+  toBeSome: (received: O.Option<any>): jest.CustomMatcherResult =>
+    O.isSome(received)
+      ? {
+          pass: true,
+          message: () => `expected ${received} not to be O.Some`,
+        }
+      : {
+          pass: false,
+          message: () => `expected O.Some but got O.None`,
+        },
 });
 
 declare global {
@@ -58,7 +91,12 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     interface Matchers<R> {
       toBeLeft(): jest.CustomMatcherResult;
+
       toBeRight(): jest.CustomMatcherResult;
+
+      toBeNone(): jest.CustomMatcherResult;
+
+      toBeSome(): jest.CustomMatcherResult;
     }
   }
 }

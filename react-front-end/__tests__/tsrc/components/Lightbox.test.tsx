@@ -15,6 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import "@testing-library/jest-dom/extend-expect";
+import { queryByText, render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import {
@@ -25,10 +27,8 @@ import Lightbox, {
   isLightboxSupportedMimeType,
   LightboxConfig,
 } from "../../../tsrc/components/Lightbox";
-import { queryByText, render } from "@testing-library/react";
 import { CustomMimeTypes } from "../../../tsrc/modules/MimeTypesModule";
 import { languageStrings } from "../../../tsrc/util/langstrings";
-import "@testing-library/jest-dom/extend-expect";
 import { updateMockGetBaseUrl } from "../BaseUrlHelper";
 import { basicRenderData, updateMockGetRenderData } from "../RenderDataHelper";
 
@@ -64,6 +64,7 @@ describe("isLightboxSupportedMimeType", () => {
     ["video/ogg", true],
     ["video/quicktime", false],
     [CustomMimeTypes.YOUTUBE, true],
+    [CustomMimeTypes.KALTURA, true],
   ])("MIME type: %s, supported: %s", (mimeType: string, expected: boolean) =>
     expect(isLightboxSupportedMimeType(mimeType)).toEqual(expected)
   );
