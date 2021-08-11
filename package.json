@@ -19,6 +19,13 @@
     "format": "run-s format:*",
     "prepare": "husky install"
   },
+  "workspaces": [
+    "oeq-ts-rest-api",
+    "react-front-end",
+    "autotest/IntegTester/ps",
+    "Source/Plugins/Core/com.equella.core/swaggerui",
+    "Source/Plugins/Core/com.equella.core/test/javascript"
+  ],
   "config": {
     "stylesheet_glob": "Source/Plugins/Core/com.equella.core/{js,resources}/**/*.{css,scss}",
     "typescript_glob": "{react-front-end,Source/Plugins/Core/com.equella.core/test/javascript}/**/*.{js,ts,tsx}"
