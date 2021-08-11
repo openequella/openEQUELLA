@@ -65,17 +65,7 @@ jobs:
           distribution: adopt
           java-version: 8
 
-      - name: Install node dependencies (core)
-        working-directory: react-front-end
-        run: |
-          npm ci
-
-      - name: Install node dependencies (IntegTester)
-        working-directory: autotest/IntegTester/ps
-        run: |
-          npm ci
-
-      - name: Install node dependencies (root)
+      - name: Install node dependencies (all)
         run: |
           npm ci
 
@@ -99,12 +89,12 @@ jobs:
       - name: Run unit tests (javascript)
         working-directory: react-front-end
         run: |
-          npm cit
+          npm t
 
       - name: Run unit tests (javascript - legacy)
         working-directory: Source/Plugins/Core/com.equella.core/test/javascript
         run: |
-          npm cit
+          npm t
 
       - name: Build primary artefacts
         run: |
@@ -148,8 +138,7 @@ jobs:
         with:
           node-version: "${{ steps.nvm.outputs.NVMRC }}"
 
-      - name: Install node dependencies (core)
-        working-directory: react-front-end
+      - name: Install node dependencies (all)
         run: |
           npm ci
 
@@ -395,10 +384,14 @@ jobs:
         with:
           node-version: "${{ steps.nvm.outputs.NVMRC }}"
 
+      - name: Install node dependencies (all)
+        run: |
+          npm ci
+
       - name: Run tests
         working-directory: oeq-ts-rest-api
         run: |
-          npm cit
+          npm t
 
       - name: Stop oEQ
         if: failure()
@@ -412,5 +405,3 @@ jobs:
         with:
           name: oEQ-logs-rest-module
           path: autotest/equella-install/logs
-
-
