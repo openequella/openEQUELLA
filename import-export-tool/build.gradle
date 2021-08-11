@@ -19,7 +19,7 @@ allprojects {
   repositories {
     mavenCentral()
   }
-  
+
   sourceSets {
     main {
       java {
@@ -28,7 +28,7 @@ allprojects {
       }
     }
   }
-  
+
   dependencies {
     implementation group: 'com.google.guava', name: 'guava', version: '16.0.1'
     implementation group: 'javax.xml', name: 'jaxrpc-api', version: '1.1'
@@ -54,11 +54,12 @@ subprojects {
 }
 
 task importToolJar(type: Jar, description: 'Create a fat JAR for Import Tool') {
-  baseName = 'import-tool'
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+  archiveBaseName.set('import-tool')
   manifest {
     attributes('Main-Class': 'com.dytech.edge.importexport.importutil.ImportUtility',
       'Implementation-Title': 'import-tool',
-      'Implementation-Version': version
+      'Implementation-Version': archiveVersion
     )
   }
   from {
@@ -68,11 +69,12 @@ task importToolJar(type: Jar, description: 'Create a fat JAR for Import Tool') {
 }
 
 task exportToolJar(type: Jar, description: 'Create a fat JAR for Export Tool') {
-  baseName = 'export-tool'
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+  archiveBaseName.set('export-tool')
   manifest {
     attributes('Main-Class': 'com.dytech.edge.importexport.exportutil.ExportUtility',
       'Implementation-Title': 'export-tool',
-      'Implementation-Version': version
+      'Implementation-Version': archiveVersion
     )
   }
   from {
