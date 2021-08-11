@@ -192,6 +192,11 @@ libraryDependencies ++= Seq(
       // for all merged bus-extensions.txt files.
       organization = "org.apache.cxf",
       name = "cxf-rt-rs-client"
+    ),
+    ExclusionRule(
+      // We manage Jackson related deps by 'jacksonVersion' so exclude the 'jackson-databind' added b tika
+      organization = "com.fasterxml.jackson.core",
+      name = "jackson-databind"
     )
   ),
   "org.apache.tomcat"           % "tomcat-annotations-api" % TomcatVersion,
