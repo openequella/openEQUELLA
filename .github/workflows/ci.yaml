@@ -140,9 +140,9 @@ jobs:
           node-version: "${{ steps.nvm.outputs.NVMRC }}"
           cache: npm
 
-      - name: Install node dependencies (all)
+      - name: Install node dependencies (react-front-end)
         run: |
-          npm ci
+          npm ci --workspace=react-front-end
 
       - name: Generate Static Storybook instance
         working-directory: react-front-end
@@ -387,9 +387,9 @@ jobs:
           node-version: "${{ steps.nvm.outputs.NVMRC }}"
           cache: npm
 
-      - name: Install node dependencies (all)
+      - name: Install node dependencies (oeq-ts-rest-api)
         run: |
-          npm ci
+          npm ci --workspace=oeq-ts-rest-api
 
       - name: Run tests
         working-directory: oeq-ts-rest-api
