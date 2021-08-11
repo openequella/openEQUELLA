@@ -58,6 +58,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: "${{ steps.nvm.outputs.NVMRC }}"
+          cache: npm
 
       - name: Set up JDK 1.8
         uses: actions/setup-java@v2
@@ -137,6 +138,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: "${{ steps.nvm.outputs.NVMRC }}"
+          cache: npm
 
       - name: Install node dependencies (all)
         run: |
@@ -383,6 +385,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: "${{ steps.nvm.outputs.NVMRC }}"
+          cache: npm
 
       - name: Install node dependencies (all)
         run: |
