@@ -1,8 +1,8 @@
 val tikaVersion = "1.27"
 
 libraryDependencies ++= Seq(
-  "org.slf4j"       % "slf4j-api"    % "1.7.31",
-  "org.slf4j"       % "slf4j-simple" % "1.7.31",
+  "org.slf4j"       % "slf4j-api"    % "1.7.32",
+  "org.slf4j"       % "slf4j-simple" % "1.7.32",
   "org.apache.tika" % "tika-core"    % tikaVersion,
   "org.apache.tika" % "tika-parsers" % tikaVersion
 )

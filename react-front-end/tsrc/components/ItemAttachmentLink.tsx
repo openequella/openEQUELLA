@@ -16,8 +16,12 @@
  * limitations under the License.
  */
 import { Link, Typography } from "@material-ui/core";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import { ItemDrmContext } from "../search/components/SearchResult";
+import { pfTernaryTypeGuard } from "../util/pointfree";
 import * as React from "react";
-import { SyntheticEvent, useState } from "react";
+import { SyntheticEvent, useContext, useState } from "react";
 import {
   AttachmentAndViewerConfig,
   isViewerLightboxConfig,
@@ -61,31 +65,42 @@ export interface ItemAttachmentLinkProps {
 const ItemAttachmentLink = ({
   children,
   selectedAttachment: {
-    attachment: { description, mimeType, brokenAttachment },
+    attachment: { description, mimeType },
     viewerConfig,
   },
   item: { uuid, version },
 }: ItemAttachmentLinkProps) => {
   const { attachmentLink } = languageStrings.searchpage.searchResult;
   const [lightBoxProps, setLightBoxProps] = useState<LightboxProps>();
+  const { checkDrmPermission } = useContext(ItemDrmContext);
 
-  const buildSimpleLink = (viewerConfig: ViewerLinkConfig): JSX.Element => {
-    return brokenAttachment ? (
-      <Typography aria-label={`${attachmentLink} ${description}`}>
-        {description}
-      </Typography>
-    ) : (
-      <Link
-        aria-label={`${attachmentLink} ${description}`}
-        href={viewerConfig?.url}
-        target="_blank"
-        rel="noreferrer"
-      >
-        {children}
-      </Link>
-    );
-  };
+  const buildSimpleLink = ({ url }: ViewerLinkConfig): JSX.Element => (
+    <Link
+      aria-label={`${attachmentLink} ${description}`}
+      href={url}
+      target="_blank"
+      rel="noreferrer"
+      onClick={(event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        checkDrmPermission(() => window.open(url, "_blank"));
+      }}
+    >
+      {children}
+    </Link>
+  );
+
   const buildLightboxLink = ({ config }: ViewerLightboxConfig): JSX.Element => {
+    const openLightbox = () =>
+      setLightBoxProps({
+        open: true,
+        onClose: () => {
+          setLightBoxProps(undefined);
+        },
+        config,
+        item: { uuid, version },
+      });
+
     if (!mimeType) {
       throw new Error(
         "'mimeType' must be specified when viewer is 'lightbox'."
@@ -98,15 +113,8 @@ const ItemAttachmentLink = ({
           aria-label={`${attachmentLink} ${description}`}
           component="button"
           onClick={(event: SyntheticEvent) => {
-            setLightBoxProps({
-              open: true,
-              onClose: () => {
-                setLightBoxProps(undefined);
-              },
-              config,
-              item: { uuid, version },
-            });
             event.stopPropagation();
+            checkDrmPermission(openLightbox);
           }}
         >
           {children}
@@ -118,10 +126,24 @@ const ItemAttachmentLink = ({
     );
   };
 
-  return isViewerLightboxConfig(viewerConfig)
-    ? buildLightboxLink(viewerConfig)
-    : // Lightbox viewer not specified, so go with the default of a simple link.
-      buildSimpleLink(viewerConfig);
+  return pipe(
+    viewerConfig,
+    O.fromNullable,
+    O.match(
+      // Broken attachments just have a textual placeholder
+      () => (
+        <Typography aria-label={`${attachmentLink} ${description}`}>
+          {description}
+        </Typography>
+      ),
+      // For other attachments we use the <Lightbox> where suitable
+      pfTernaryTypeGuard(
+        isViewerLightboxConfig,
+        buildLightboxLink,
+        buildSimpleLink
+      )
+    )
+  );
 };
 
 export default ItemAttachmentLink;

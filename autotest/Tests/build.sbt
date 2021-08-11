@@ -21,7 +21,7 @@ libraryDependencies ++= Seq(
 
 libraryDependencies ++= Seq(
   "javax.jws"                 % "javax.jws-api"            % "1.1",
-  "org.apache.commons"        % "commons-lang3"            % "3.11",
+  "org.apache.commons"        % "commons-lang3"            % "3.12.0",
   "org.seleniumhq.selenium"   % "selenium-java"            % "3.141.59",
   "org.easytesting"           % "fest-util"                % "1.2.5",
   "org.easytesting"           % "fest-swing"               % "1.2.1",
@@ -40,7 +40,7 @@ libraryDependencies ++= Seq(
   "org.dspace"       % "oclc-harvester2"           % "0.1.12",
   "org.jvnet.hudson" % "xstream"                   % "1.3.1-hudson-8",
   "com.typesafe"     % "config"                    % "1.4.1",
-  "org.slf4j"        % "slf4j-simple"              % "1.7.31",
+  "org.slf4j"        % "slf4j-simple"              % "1.7.32",
   "org.scalacheck"   %% "scalacheck"               % "1.15.4" % "test,serial",
   "org.http4s"       %% "http4s-async-http-client" % http4sVersion,
   "org.http4s"       %% "http4s-blaze-client"      % http4sVersion,

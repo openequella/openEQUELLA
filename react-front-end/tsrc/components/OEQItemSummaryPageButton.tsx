@@ -19,11 +19,7 @@ import { PropTypes } from "@material-ui/core";
 import InfoIcon from "@material-ui/icons/Info";
 import * as React from "react";
 import { useHistory } from "react-router";
-import { routes } from "../mainui/routes";
-import {
-  buildSelectionSessionItemSummaryLink,
-  isSelectionSessionOpen,
-} from "../modules/LegacySelectionSessionModule";
+import { buildOpenSummaryPageHandler } from "../search/SearchPageHelper";
 import { TooltipIconButton } from "./TooltipIconButton";
 
 export interface OEQItemSummaryPageButtonProps {
@@ -45,6 +41,13 @@ export interface OEQItemSummaryPageButtonProps {
     version: number;
   };
   /**
+   * Optional function which is used to check DRM permission and call the provided callback once
+   * the check is successful.
+   *
+   * @param onSuccess Function to call after the DRM check is successful.
+   */
+  checkDrmPermission?: (onSuccess: () => void) => void;
+  /**
    * Color to be used for the button.
    */
   color?: PropTypes.Color;
@@ -57,21 +60,19 @@ export interface OEQItemSummaryPageButtonProps {
 export const OEQItemSummaryPageButton = ({
   title,
   item: { uuid, version },
+  checkDrmPermission,
   color = "default",
 }: OEQItemSummaryPageButtonProps) => {
   const history = useHistory();
+  const { onClick } = buildOpenSummaryPageHandler(uuid, version, history);
+
   return (
     <TooltipIconButton
       color={color}
       title={title}
       onClick={(event) => {
         event.stopPropagation();
-        isSelectionSessionOpen()
-          ? window.open(
-              buildSelectionSessionItemSummaryLink(uuid, version),
-              "_self"
-            )
-          : history.push(routes.ViewItem.to(uuid, version));
+        checkDrmPermission ? checkDrmPermission(onClick) : onClick();
       }}
     >
       <InfoIcon />

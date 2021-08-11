@@ -47,6 +47,8 @@ interface CollectionSelectorProps {
   value?: Collection[];
 }
 
+const { title, noOptions } = languageStrings.searchpage.collectionSelector;
+
 /**
  * As a refine search control, this component is used to filter search results by collections.
  * The initially selected collections are either provided through props or an empty array.
@@ -56,8 +58,6 @@ export const CollectionSelector = ({
   onSelectionChange,
   value,
 }: CollectionSelectorProps) => {
-  const collectionSelectorStrings =
-    languageStrings.searchpage.collectionSelector;
   const [collections, setCollections] = useState<Collection[]>([]);
   const handleError = useError(onError);
 
@@ -105,12 +105,13 @@ export const CollectionSelector = ({
           {collection.name}
         </>
       )}
+      noOptionsText={noOptions}
       renderInput={(params) => (
         <TextField
           {...params}
           variant="outlined"
-          label={collectionSelectorStrings.title}
-          placeholder={collectionSelectorStrings.title}
+          label={title}
+          placeholder={title}
         />
       )}
     />

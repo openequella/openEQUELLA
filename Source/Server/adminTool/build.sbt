@@ -1,9 +1,9 @@
-val springVersion = "5.3.8"
+val springVersion = "5.3.9"
 
 libraryDependencies ++= Seq(
-  "org.slf4j"              % "jcl-over-slf4j"  % "1.7.31",
-  "org.slf4j"              % "slf4j-api"       % "1.7.31",
-  "org.slf4j"              % "slf4j-simple"    % "1.7.31",
+  "org.slf4j"              % "jcl-over-slf4j"  % "1.7.32",
+  "org.slf4j"              % "slf4j-api"       % "1.7.32",
+  "org.slf4j"              % "slf4j-simple"    % "1.7.32",
   "org.jvnet.hudson"       % "xstream"         % "1.3.1-hudson-8",
   "com.google.guava"       % "guava"           % "18.0",
   "com.github.equella.jpf" % "jpf"             % "1.0.7",

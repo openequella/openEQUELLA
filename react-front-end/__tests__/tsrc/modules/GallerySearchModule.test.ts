@@ -83,10 +83,24 @@ describe("buildGalleryEntry", () => {
       externalId: "z7i9AmmZE2o",
     },
   };
+  const kalturaAttachment: OEQ.Search.Attachment = {
+    attachmentType: "custom/kaltura",
+    id: "0da6100e-332e-4116-bd56-059a114e2130",
+    description: "TeamIT",
+    brokenAttachment: false,
+    preview: false,
+    links: {
+      view: "https://example.com/inst/items/a288b17b-4a6f-416f-9c29-aaad53cf7b23/1/?attachment.uuid=0da6100e-332e-4116-bd56-059a114e2130",
+      thumbnail:
+        "https://example.com/inst/thumbs/a288b17b-4a6f-416f-9c29-aaad53cf7b23/1/0da6100e-332e-4116-bd56-059a114e2130",
+      externalId: "3466623/47988073/1_nd0xv0cp",
+    },
+  };
 
   it.each([
     ["Image", imageAttachment],
     ["YouTube", youtubeAttachment],
+    ["Kaltura", kalturaAttachment],
   ])(
     "builds a gallery entry from a valid %s `Attachment`",
     (_: string, attachment: OEQ.Search.Attachment) => {
@@ -323,7 +337,9 @@ describe("videoGallerySearch", () => {
     expectValidGalleryResult(
       result,
       basicVideoSearchResponse.length,
-      (s) => s.startsWith("video") || s === CustomMimeTypes.YOUTUBE
+      (s) =>
+        s.startsWith("video") ||
+        [CustomMimeTypes.YOUTUBE, CustomMimeTypes.KALTURA].includes(s)
     );
   });
 });
