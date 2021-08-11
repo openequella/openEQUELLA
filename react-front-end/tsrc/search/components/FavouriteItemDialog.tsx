@@ -161,10 +161,8 @@ export const FavouriteItemDialog = ({
   onConfirmProps,
 }: FavouriteItemDialogProps) => {
   const [tags, setTags] = useState<string[]>([]);
-  const [
-    versionOption,
-    setVersionOption,
-  ] = useState<FavouriteItemVersionOption>("latest");
+  const [versionOption, setVersionOption] =
+    useState<FavouriteItemVersionOption>("latest");
 
   const confirmHandler = () => {
     const doConfirm = isConfirmToDelete(onConfirmProps)

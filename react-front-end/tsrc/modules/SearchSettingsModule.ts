@@ -18,16 +18,18 @@
 import { API_BASE_URL } from "../AppConfig";
 import * as OEQ from "@openequella/rest-api-client";
 
-export const getSearchSettingsFromServer = (): Promise<OEQ.SearchSettings.Settings> =>
-  OEQ.SearchSettings.getSearchSettings(API_BASE_URL);
+export const getSearchSettingsFromServer =
+  (): Promise<OEQ.SearchSettings.Settings> =>
+    OEQ.SearchSettings.getSearchSettings(API_BASE_URL);
 
 export const saveSearchSettingsToServer = (
   settings: OEQ.SearchSettings.Settings
 ): Promise<void> =>
   OEQ.SearchSettings.updateSearchSettings(API_BASE_URL, settings);
 
-export const getCloudSettingsFromServer = (): Promise<OEQ.SearchSettings.CloudSettings> =>
-  OEQ.SearchSettings.getCloudSettings(API_BASE_URL);
+export const getCloudSettingsFromServer =
+  (): Promise<OEQ.SearchSettings.CloudSettings> =>
+    OEQ.SearchSettings.getCloudSettings(API_BASE_URL);
 
 export const saveCloudSettingsToServer = (
   settings: OEQ.SearchSettings.CloudSettings

@@ -16,9 +16,10 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import * as A from "fp-ts/Array";
+import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import * as A from "fp-ts/Array";
 import { Location } from "history";
 import { pick } from "lodash";
 import {
@@ -32,14 +33,23 @@ import {
   Record,
   Static,
   String,
-  Undefined,
   Union,
   Unknown,
 } from "runtypes";
+import { routes } from "../mainui/routes";
+import {
+  clearDataFromLocalStorage,
+  readDataFromLocalStorage,
+  saveDataToLocalStorage,
+} from "../modules/BrowserStorageModule";
 import {
   Collection,
   findCollectionsByUuid,
 } from "../modules/CollectionsModule";
+import {
+  buildSelectionSessionItemSummaryLink,
+  isSelectionSessionOpen,
+} from "../modules/LegacySelectionSessionModule";
 import {
   getMimeTypeFiltersById,
   MimeTypeFilter,
@@ -53,12 +63,27 @@ import {
 } from "../modules/SearchModule";
 import { findUserById } from "../modules/UserModule";
 import { DateRange, isDate } from "../util/Date";
-import type { SearchPageOptions } from "./SearchPage";
+import { simpleMatch } from "../util/match";
+import { History } from "history";
 
 /**
  * This helper is intended to assist with processing related to the Presentation Layer -
  * as opposed to the Business Layer which is handled by the Modules.
  */
+
+/**
+ * Type of search options that are specific to Search page presentation layer.
+ */
+export interface SearchPageOptions extends SearchOptions {
+  /**
+   * Whether to enable Quick mode (true) or to use custom date pickers (false).
+   */
+  dateRangeQuickModeEnabled: boolean;
+  /**
+   * How to display the search results - also determines the type of results.
+   */
+  displayMode: DisplayMode;
+}
 
 export const defaultSearchPageOptions: SearchPageOptions = {
   ...defaultSearchOptions,
@@ -66,13 +91,14 @@ export const defaultSearchPageOptions: SearchPageOptions = {
   dateRangeQuickModeEnabled: true,
 };
 
-export const defaultPagedSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> = {
-  start: 0,
-  length: 10,
-  available: 0,
-  results: [],
-  highlight: [],
-};
+export const defaultPagedSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> =
+  {
+    start: 0,
+    length: 10,
+    available: 0,
+    results: [],
+    highlight: [],
+  };
 
 /**
  * Legacy searching.do parameters currently supported by SearchPage component.
@@ -255,43 +281,43 @@ const getLastModifiedDateRangeFromLegacyParams = (
   primaryDate?: Date,
   secondaryDate?: Date
 ): DateRange | undefined =>
-  !primaryDate && !secondaryDate
-    ? undefined
-    : pipe(
-        rangeType.toLowerCase() as RangeType,
-        match(
-          [
-            Literal("between"),
-            (): DateRange => ({ start: primaryDate, end: secondaryDate }),
-          ],
-          [Literal("after"), (): DateRange => ({ start: primaryDate })],
-          [Literal("before"), (): DateRange => ({ end: primaryDate })],
-          [
-            Literal("on"),
-            (): DateRange => ({
-              start: primaryDate,
-              end: primaryDate,
-            }),
-          ]
-        )
-      );
+  pipe(
+    !primaryDate && !secondaryDate
+      ? O.none
+      : O.some<RangeType>(rangeType.toLowerCase() as RangeType),
+    O.map(
+      simpleMatch<DateRange>({
+        between: () => ({ start: primaryDate, end: secondaryDate }),
+        after: () => ({ start: primaryDate }),
+        before: () => ({ end: primaryDate }),
+        on: () => ({
+          start: primaryDate,
+          end: primaryDate,
+        }),
+        _: (range) => {
+          throw new TypeError(`Unknown date range mode [${range}]`);
+        },
+      })
+    ),
+    O.toUndefined
+  );
 
 const getDisplayModeFromLegacyParams = (
   legacyDisplayMode: string | undefined
 ): DisplayMode =>
   pipe(
     legacyDisplayMode,
-    match(
-      // When type is 'standard' or undefined, default to 'list'.
-      [Union(Literal("standard"), Undefined), (): DisplayMode => "list"],
-      [Literal("gallery"), (): DisplayMode => "gallery-image"],
-      [Literal("video"), (): DisplayMode => "gallery-video"],
-      [
-        Unknown,
-        () => {
-          throw new Error("Unknown Legacy display mode");
+    O.fromNullable,
+    O.fold(
+      () => "list", // default to list mode if none defined
+      simpleMatch<DisplayMode>({
+        standard: () => "list",
+        gallery: () => "gallery-image",
+        video: () => "gallery-video",
+        _: (mode) => {
+          throw new TypeError(`Unknown Legacy display mode [${mode}]`);
         },
-      ]
+      })
     )
   );
 
@@ -299,9 +325,8 @@ const getCollectionFromLegacyParams = async (
   collectionUuid: string | undefined
 ): Promise<Collection[] | undefined> => {
   if (!collectionUuid) return defaultSearchOptions.collections;
-  const collectionDetails:
-    | Collection[]
-    | undefined = await findCollectionsByUuid([collectionUuid]);
+  const collectionDetails: Collection[] | undefined =
+    await findCollectionsByUuid([collectionUuid]);
 
   return typeof collectionDetails !== "undefined" &&
     collectionDetails.length > 0
@@ -378,3 +403,54 @@ export const getPartialSearchOptions = (
   options: SearchOptions,
   fields: SearchOptionsFields[]
 ) => pick(options, fields);
+
+export const RAW_MODE_STORAGE_KEY = "raw_mode";
+
+/**
+ * Read the value of wildcard mode from LocalStorage.
+ */
+export const getRawModeFromStorage = (): boolean =>
+  readDataFromLocalStorage(RAW_MODE_STORAGE_KEY, Boolean.guard) ??
+  defaultSearchOptions.rawMode;
+
+export const writeRawModeToStorage = (value: boolean): void =>
+  saveDataToLocalStorage(RAW_MODE_STORAGE_KEY, value);
+
+export const deleteRawModeFromStorage = (): void =>
+  clearDataFromLocalStorage(RAW_MODE_STORAGE_KEY);
+
+/**
+ * This function returns an object which consists of a URL of Item Summary page and a onClick handler
+ * which is used to open the Summary page.
+ *
+ * @param uuid Item's UUID.
+ * @param version Item's version.
+ * @param history The History object used in the context, which is typically provided by calling 'useHistory' in components.
+ */
+export const buildOpenSummaryPageHandler = (
+  uuid: string,
+  version: number,
+  history: History
+): {
+  url: string;
+  onClick: () => void;
+} =>
+  pipe(
+    routes.ViewItem.to(uuid, version),
+    E.fromPredicate<string, string>(
+      () => !isSelectionSessionOpen(),
+      () => buildSelectionSessionItemSummaryLink(uuid, version)
+    ),
+    E.fold(
+      // Selection session values
+      (url) => ({
+        url,
+        onClick: () => window.open(url, "_self"),
+      }),
+      // Normal page values
+      (url) => ({
+        url,
+        onClick: () => history.push(url),
+      })
+    )
+  );

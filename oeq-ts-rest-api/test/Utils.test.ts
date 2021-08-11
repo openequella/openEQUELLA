@@ -71,12 +71,10 @@ describe('Convert date fields', () => {
 
 describe('Support for server CsvList params', () => {
   it('with lists of strings', () =>
-    expect(
-      asCsvList<string>(['one', 'two', 'three'])
-    ).toEqual('one,two,three'));
+    expect(asCsvList<string>(['one', 'two', 'three'])).toEqual(
+      'one,two,three'
+    ));
 
   it('with lists of numbers', () =>
-    expect(
-      asCsvList<number>([1, 2, 3])
-    ).toEqual('1,2,3'));
+    expect(asCsvList<number>([1, 2, 3])).toEqual('1,2,3'));
 });

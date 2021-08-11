@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createBrowserHistory } from "history";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import { getMimeTypeFilters } from "../../../__mocks__/MimeTypeFilter.mock";
 import { users } from "../../../__mocks__/UserSearch.mock";
@@ -23,6 +24,7 @@ import * as SearchFilterSettingsModule from "../../../tsrc/modules/SearchFilterS
 import type { SearchOptions } from "../../../tsrc/modules/SearchModule";
 import * as UserModule from "../../../tsrc/modules/UserModule";
 import {
+  buildOpenSummaryPageHandler,
   defaultSearchPageOptions,
   generateQueryStringFromSearchPageOptions,
   generateSearchPageOptionsFromQueryString,
@@ -34,6 +36,8 @@ import {
   basicSearchPageOptions,
 } from "../../../__mocks__/searchOptions.mock";
 import type { DateRange } from "../../../tsrc/util/Date";
+import { updateMockGetBaseUrl } from "../BaseUrlHelper";
+import { basicRenderData, updateMockGetRenderData } from "../RenderDataHelper";
 
 describe("newSearchQueryToSearchOptions", () => {
   const mockedResolvedUser = jest.spyOn(UserModule, "resolveUsers");
@@ -121,9 +125,8 @@ describe("newSearchQueryToSearchOptions", () => {
   );
 
   it("should be able to convert SearchOptions to a query string, and back to SearchOptions again", async () => {
-    const queryStringFromSearchOptions = await generateQueryStringFromSearchPageOptions(
-      allSearchPageOptions
-    );
+    const queryStringFromSearchOptions =
+      await generateQueryStringFromSearchPageOptions(allSearchPageOptions);
     expect(
       await newSearchQueryToSearchPageOptions(
         new URLSearchParams(queryStringFromSearchOptions).get(
@@ -142,9 +145,8 @@ describe("convertParamsToSearchOptions", () => {
     state: "",
   };
   it("should return undefined if no query string parameters are defined", async () => {
-    const convertedParamsPromise = await generateSearchPageOptionsFromQueryString(
-      mockLocation
-    );
+    const convertedParamsPromise =
+      await generateSearchPageOptionsFromQueryString(mockLocation);
     expect(convertedParamsPromise).toBeUndefined();
   });
 });
@@ -283,5 +285,25 @@ describe("generateQueryStringFromSearchPageOptions", () => {
     expect(
       generateQueryStringFromSearchPageOptions(defaultSearchPageOptions)
     ).not.toContain("sortOrder");
+  });
+});
+
+describe("builderOpenSummaryPageHandler", () => {
+  const UUID = "369c92fa-ae59-4845-957d-8fcaa22c15e3";
+  const VERSION = 1;
+  const history = createBrowserHistory();
+
+  it("build URLS and onClick handlers for normal pages", () => {
+    const { url } = buildOpenSummaryPageHandler(UUID, VERSION, history);
+    expect(url).toBe("/items/369c92fa-ae59-4845-957d-8fcaa22c15e3/1/");
+  });
+
+  it("build URLS and onClick handlers for Selection Session", () => {
+    updateMockGetBaseUrl();
+    updateMockGetRenderData(basicRenderData);
+    const { url } = buildOpenSummaryPageHandler(UUID, VERSION, history);
+    expect(url).toBe(
+      "http://localhost:8080/vanilla/items/369c92fa-ae59-4845-957d-8fcaa22c15e3/1/?_sl.stateId=1&a=coursesearch"
+    );
   });
 });

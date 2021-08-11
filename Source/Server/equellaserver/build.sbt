@@ -17,7 +17,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion  = "3.13.2.Final"
 val SwaggerVersion   = "1.6.2"
-val TomcatVersion    = "9.0.48"
+val TomcatVersion    = "9.0.50"
 val axis2Version     = "1.6.2"
 val circeVersion     = "0.12.1"
 val cxfVersion       = "3.4.4"
@@ -25,9 +25,9 @@ val fs2Version       = "2.4.4"
 val guiceVersion     = "3.0"
 val jacksonVersion   = "2.11.3"
 val jsassVersion     = "5.10.4"
-val jsoupVersion     = "1.13.1"
+val jsoupVersion     = "1.14.1"
 val simpledbaVersion = "0.1.9"
-val springVersion    = "5.3.8"
+val springVersion    = "5.3.9"
 val sttpVersion      = "1.7.2"
 val tikaVersion      = "1.24.1"
 
@@ -103,7 +103,7 @@ libraryDependencies ++= Seq(
   "commons-daemon"            % "commons-daemon"           % "1.2.4",
   "commons-discovery"         % "commons-discovery"        % "0.5",
   "commons-httpclient"        % "commons-httpclient"       % "3.1",
-  "commons-io"                % "commons-io"               % "2.8.0",
+  "commons-io"                % "commons-io"               % "2.11.0",
   "commons-lang"              % "commons-lang"             % "2.6",
   "dom4j"                     % "dom4j"                    % "1.6.1",
   "com.github.equella.legacy" % "itunesu-api-java"         % "1.7",
@@ -243,9 +243,9 @@ libraryDependencies ++= Seq(
   "org.ow2.asm" % "asm" % "5.2",
   postgresDep,
   "org.scannotation"    % "scannotation"           % "1.0.3",
-  "org.slf4j"           % "jcl-over-slf4j"         % "1.7.31",
-  "org.slf4j"           % "slf4j-api"              % "1.7.31",
-  "org.slf4j"           % "slf4j-log4j12"          % "1.7.31",
+  "org.slf4j"           % "jcl-over-slf4j"         % "1.7.32",
+  "org.slf4j"           % "slf4j-api"              % "1.7.32",
+  "org.slf4j"           % "slf4j-log4j12"          % "1.7.32",
   "org.springframework" % "spring-aop"             % springVersion,
   "org.springframework" % "spring-context"         % springVersion,
   "org.springframework" % "spring-context-support" % springVersion excludeAll (
@@ -271,7 +271,7 @@ libraryDependencies ++= Seq(
   "org.mozilla"                   % "rhino"                     % "1.7.13",
   "io.lemonlabs"                  %% "scala-uri"                % "1.5.1",
   "org.scala-lang.modules"        %% "scala-parser-combinators" % "1.1.2",
-  "io.github.classgraph"          % "classgraph"                % "4.8.108",
+  "io.github.classgraph"          % "classgraph"                % "4.8.110",
   "com.fasterxml"                 % "classmate"                 % "1.5.1",
   "org.glassfish"                 % "javax.el"                  % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"    % "3.0.0",
@@ -322,7 +322,7 @@ excludeDependencies ++= Seq(
   // Spring 5 added a default logging bridge.  In oEQ, this results in
   // a [deduplicate: different file contents found in the following] error
   // ...org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.7.30.jar:org/apache/commons/logging/Log.class
-  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.8.jar:org/apache/commons/logging/Log.class
+  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.9.jar:org/apache/commons/logging/Log.class
   // As per https://github.com/spring-projects/spring-framework/issues/20611 ,
   // since we already have logging in place, we can safely exclude the dep from spring.
   "org.springframework" % "spring-jcl",

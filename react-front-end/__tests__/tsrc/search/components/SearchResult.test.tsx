@@ -18,12 +18,24 @@
 import { createMuiTheme, MuiThemeProvider, Theme } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
-import { render, RenderResult, fireEvent } from "@testing-library/react";
+import {
+  render,
+  RenderResult,
+  fireEvent,
+  screen,
+  queryByText,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { act } from "react-dom/test-utils";
 import { BrowserRouter } from "react-router-dom";
 import { sprintf } from "sprintf-js";
+import { DRM_VIOLATION, drmTerms } from "../../../../__mocks__/Drm.mock";
+import {
+  DRM_ATTACHMENT_NAME,
+  DRM_ITEM_NAME,
+} from "../../../../__mocks__/searchresult_mock_data";
 import * as mockData from "../../../../__mocks__/searchresult_mock_data";
 import type { RenderData } from "../../../../tsrc/AppConfig";
 import {
@@ -33,6 +45,7 @@ import {
   selectResourceForSkinny,
 } from "../../../../tsrc/modules/LegacySelectionSessionModule";
 import * as MimeTypesModule from "../../../../tsrc/modules/MimeTypesModule";
+import * as DrmModule from "../../../../tsrc/modules/DrmModule";
 import * as LegacySelectionSessionModule from "../../../../tsrc/modules/LegacySelectionSessionModule";
 import SearchResult from "../../../../tsrc/search/components/SearchResult";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
@@ -440,8 +453,8 @@ describe("<SearchResult/>", () => {
       await renderSearchResult(mockData.oneDeadOneAliveAttachObj);
 
       const deadAttachment = mockData.oneDeadOneAliveAttachObj.attachments![0];
-      const intactAttachment = mockData.oneDeadOneAliveAttachObj
-        .attachments![1];
+      const intactAttachment =
+        mockData.oneDeadOneAliveAttachObj.attachments![1];
 
       //expect intact attachment to be draggable
       expect(
@@ -500,12 +513,54 @@ describe("<SearchResult/>", () => {
 
         // The function should only have been called with the attachment
         // 78883eff-7cf6-4b14-ab76-2b7f84dbe833 which is the intact one
-        expect(
-          mockSelectResourceForCourseList
-        ).toHaveBeenCalledWith("72558c1d-8788-4515-86c8-b24a28cc451e/1", [
-          "78883eff-7cf6-4b14-ab76-2b7f84dbe833",
-        ]);
+        expect(mockSelectResourceForCourseList).toHaveBeenCalledWith(
+          "72558c1d-8788-4515-86c8-b24a28cc451e/1",
+          ["78883eff-7cf6-4b14-ab76-2b7f84dbe833"]
+        );
       });
     });
+  });
+
+  describe("DRM support", () => {
+    jest
+      .spyOn(DrmModule, "listDrmViolations")
+      .mockResolvedValue({ violation: DRM_VIOLATION });
+    jest.spyOn(DrmModule, "listDrmTerms").mockResolvedValue(drmTerms);
+
+    it.each([
+      ["view a DRM Item's summary page", DRM_ITEM_NAME],
+      ["preview an attachment from a DRM item", DRM_ATTACHMENT_NAME],
+    ])(
+      "shows the DRM Accept dialog %s",
+      async (_: string, linkText: string) => {
+        const { drmAttachObj } = mockData;
+        const { getByText } = await renderSearchResult(drmAttachObj);
+        userEvent.click(getByText(linkText));
+
+        await waitFor(() => {
+          expect(
+            queryByText(screen.getByRole("dialog"), drmTerms.title)
+          ).toBeInTheDocument();
+        });
+      }
+    );
+
+    it.each([
+      ["item", DRM_ITEM_NAME],
+      ["attachment", DRM_ATTACHMENT_NAME],
+    ])(
+      "shows a dialog to list DRM violations for %s",
+      async (_: string, linkText: string) => {
+        const { drmUnauthorisedObj } = mockData;
+        const { getByText } = await renderSearchResult(drmUnauthorisedObj);
+        userEvent.click(getByText(linkText));
+
+        await waitFor(() => {
+          expect(
+            queryByText(screen.getByRole("dialog"), DRM_VIOLATION)
+          ).toBeInTheDocument();
+        });
+      }
+    );
   });
 });

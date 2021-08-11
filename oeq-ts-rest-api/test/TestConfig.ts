@@ -19,6 +19,7 @@ export const TARGET_HOST = 'http://localhost:8080/';
 export const API_PATH = `${TARGET_HOST}rest/api`;
 export const API_PATH_VANILLA = `${TARGET_HOST}vanilla/api`;
 export const API_PATH_FACET = `${TARGET_HOST}facet/api`;
+export const API_PATH_FIVEO = `${TARGET_HOST}fiveo/api`;
 export const USERNAME = process.env.USERNAME_AUTOTEST ?? 'AutoTest';
 export const PASSWORD = process.env.PASSWORD_AUTOTEST ?? 'automated';
 export const USERNAME_SUPER = process.env.USERNAME_SUPER ?? 'TLE_ADMINISTRATOR';

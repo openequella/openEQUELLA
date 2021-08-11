@@ -17,17 +17,16 @@
  */
 import { screen } from "@testing-library/react";
 
-const createGetQuery = (
-  elementName: string,
-  fn: () => HTMLElement | null
-): (() => HTMLElement) => () => {
-  const e = fn();
-  if (!e) {
-    throw new Error(`Failed to get element: ${elementName}`);
-  }
+const createGetQuery =
+  (elementName: string, fn: () => HTMLElement | null): (() => HTMLElement) =>
+  () => {
+    const e = fn();
+    if (!e) {
+      throw new Error(`Failed to get element: ${elementName}`);
+    }
 
-  return e;
-};
+    return e;
+  };
 
 /**
  * Contains all the simple functions for querying the common components of the pagination controls.

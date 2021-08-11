@@ -23,8 +23,10 @@ export const OEQ_MIMETYPE_TYPE = "openequella";
 /**
  * A collection of custom internal MIME types for openEQUELLA
  */
+const customType = (type: string): string => `${OEQ_MIMETYPE_TYPE}/${type}`;
 export const CustomMimeTypes = {
-  YOUTUBE: `${OEQ_MIMETYPE_TYPE}/youtube`,
+  YOUTUBE: customType("youtube"),
+  KALTURA: customType("kaltura"),
 };
 
 export const getMIMETypesFromServer = (): Promise<
@@ -55,6 +57,10 @@ export const getMimeTypeViewerConfiguration: (
 export const getMimeTypeDefaultViewerDetails = async (
   mimeType: string
 ): Promise<OEQ.MimeType.MimeTypeViewerDetail> => {
+  if ([CustomMimeTypes.KALTURA, CustomMimeTypes.YOUTUBE].includes(mimeType)) {
+    return { viewerId: "htmlFiveViewer" };
+  }
+
   const cfg = await getMimeTypeViewerConfiguration(mimeType);
   const viewerDetails = cfg.viewers.find(
     (v) => v.viewerId === cfg.defaultViewer
@@ -74,19 +80,19 @@ export const getMimeTypeDefaultViewerDetails = async (
  *
  * @param type the MIME `type` to filter on - e.g. image, video, application, etc.
  */
-const mimeTypeEntryTypePredicate = (type: string) => (
-  mte: OEQ.MimeType.MimeTypeEntry
-): boolean => {
-  try {
-    return splitMimeType(mte.mimeType)[0] === type;
-  } catch (e) {
-    if (e instanceof TypeError) {
-      return false;
-    } else {
-      throw e;
+const mimeTypeEntryTypePredicate =
+  (type: string) =>
+  (mte: OEQ.MimeType.MimeTypeEntry): boolean => {
+    try {
+      return splitMimeType(mte.mimeType)[0] === type;
+    } catch (e) {
+      if (e instanceof TypeError) {
+        return false;
+      } else {
+        throw e;
+      }
     }
-  }
-};
+  };
 
 /**
  * Provides a list of all the `image/` MIME types configured on the server. Results are memoized.

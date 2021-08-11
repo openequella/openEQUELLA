@@ -44,8 +44,7 @@ export const classifications: Classification[] = [
         count: 888,
       },
       {
-        term:
-          "purescript - the last version is xxxxxxxxx because maintenance is so hard!!!",
+        term: "purescript - the last version is xxxxxxxxx because maintenance is so hard!!!",
         count: 1,
       },
     ],

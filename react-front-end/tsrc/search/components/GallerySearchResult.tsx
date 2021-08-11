@@ -15,12 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GridList, GridListTile, GridListTileBar } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { GridList } from "@material-ui/core";
 import * as React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Lightbox, { LightboxProps } from "../../components/Lightbox";
-import { OEQItemSummaryPageButton } from "../../components/OEQItemSummaryPageButton";
 import {
   GalleryEntry,
   GallerySearchResultItem,
@@ -29,9 +27,10 @@ import {
   buildLightboxNavigationHandler,
   LightboxEntry,
 } from "../../modules/ViewerModule";
-import { languageStrings } from "../../util/langstrings";
-
-const { ariaLabel, viewItem } = languageStrings.searchpage.gallerySearchResult;
+import {
+  GallerySearchItemTiles,
+  LightboxHandler,
+} from "./GallerySearchItemTiles";
 
 export interface GallerySearchResultProps {
   /**
@@ -40,72 +39,36 @@ export interface GallerySearchResultProps {
   items: GallerySearchResultItem[];
 }
 
-const useStyles = makeStyles({
-  titleBar: {
-    background:
-      "linear-gradient(to top, rgba(0,0,0,0.5) 0%, " +
-      "rgba(0,0,0,0.1) 70%, rgba(0,0,0,0) 100%)",
-  },
-});
-
 /**
  * Displays the results of a search in a Gallery format rather than a list format (as provided
  * by `SearchResult` with `mapSearchResultItems`). Intended for use with Images and Videos -
  * possibly later audio.
  */
 const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
-  const classes = useStyles();
   const [lightboxProps, setLightboxProps] = useState<
     LightboxProps | undefined
   >();
 
-  // Done as a function, as when done as a component things don't work as expected.
-  const buildTile = (
-    itemUuid: string,
-    itemVersion: number,
-    key: string,
-    imgSrc: string,
-    altText: string,
-    onClick: () => void
-  ) => (
-    <GridListTile key={key} onClick={onClick} aria-label={ariaLabel}>
-      <img style={{ cursor: "zoom-in" }} src={imgSrc} alt={altText} />
-      <GridListTileBar
-        className={classes.titleBar}
-        actionIcon={
-          <OEQItemSummaryPageButton
-            title={viewItem}
-            color="secondary"
-            item={{ uuid: itemUuid, version: itemVersion }}
-          />
-        }
-      />
-    </GridListTile>
-  );
+  const [galleryItems, setGalleryItems] =
+    useState<GallerySearchResultItem[]>(items);
 
-  // A list of LightboxEntry which includes all main entries and additional entries.
-  const lightboxEntries: LightboxEntry[] = items.flatMap(
-    ({ mainEntry, additionalEntries }) =>
-      [mainEntry, ...additionalEntries].map(
-        ({ id, name, mimeType, directUrl }) => ({
-          src: directUrl,
-          title: name,
-          mimeType: mimeType,
-          id,
-        })
-      )
-  );
+  // Ensure gallery entries are consistent with gallery mode.
+  useEffect(() => {
+    setGalleryItems(items);
+  }, [items]);
 
-  const buildOnClickHandler = (
-    { mimeType, directUrl: src, name, id }: GalleryEntry,
+  // Handler for opening the Lightbox
+  const lightboxHandler = (
+    lightboxEntries: LightboxEntry[],
     uuid: string,
-    version: number
-  ) => () => {
+    version: number,
+    { mimeType, directUrl: src, name, id }: GalleryEntry
+  ) => {
     const initialLightboxEntryIndex = lightboxEntries.findIndex(
       (entry) => entry.id === id
     );
 
-    setLightboxProps({
+    return setLightboxProps({
       onClose: () => setLightboxProps(undefined),
       open: true,
       item: {
@@ -130,45 +93,52 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
     });
   };
 
-  const mapItemsToTiles = () =>
-    items.flatMap(
-      ({
-        additionalEntries,
-        mainEntry,
-        name,
-        uuid,
-        version,
-      }: GallerySearchResultItem) => {
-        const itemName = name ?? uuid;
-
-        return [
-          buildTile(
-            uuid,
-            version,
-            `${uuid}-mainEntry`,
-            mainEntry.thumbnailLarge,
-            `${itemName} - Main Entry (${mainEntry.name})`,
-            buildOnClickHandler(mainEntry, uuid, version)
-          ),
-          additionalEntries.map((ae, idx) =>
-            buildTile(
-              uuid,
-              version,
-              `${uuid}-additionalEntry-${idx}`,
-              ae.thumbnailLarge,
-              `${itemName} - Additional Entry ${idx + 1} (${ae.name})`,
-              buildOnClickHandler(ae, uuid, version)
-            )
-          ),
-        ];
-      }
+  // Function to update the Item list, rebuild the Lightbox entry list and return a lightboxHandler.
+  const updateGalleryItemList = (
+    newItem: GallerySearchResultItem
+  ): LightboxHandler => {
+    const updatedItems = galleryItems.map((i) =>
+      i.uuid === newItem.uuid && i.version === newItem.version ? newItem : i
     );
+    setGalleryItems(updatedItems);
+
+    // A list of LightboxEntry which includes all main entries and additional entries.
+    const lightboxEntries: LightboxEntry[] = updatedItems
+      .filter(({ drmStatus }) => {
+        if (drmStatus) {
+          const { isAuthorised, termsAccepted } = drmStatus;
+          return isAuthorised && termsAccepted;
+        }
+        // If not a DRM Item, keep it.
+        return true;
+      })
+      .flatMap(({ mainEntry, additionalEntries }) =>
+        [mainEntry, ...additionalEntries].map(
+          ({ id, name, mimeType, directUrl }) => ({
+            src: directUrl,
+            title: name,
+            mimeType: mimeType,
+            id,
+          })
+        )
+      );
+
+    return (uuid: string, version: number, entry: GalleryEntry) =>
+      lightboxHandler(lightboxEntries, uuid, version, entry);
+  };
+
+  const mapItemsToTiles = () =>
+    items.map((item) => (
+      <GallerySearchItemTiles
+        item={item}
+        updateGalleryItemList={updateGalleryItemList}
+        key={`${item.uuid}/${item.version}`}
+      />
+    ));
 
   return (
     <>
-      <GridList cellHeight={250} cols={4}>
-        {mapItemsToTiles()}
-      </GridList>
+      <GridList>{mapItemsToTiles()}</GridList>
       {lightboxProps && <Lightbox {...lightboxProps} />}
     </>
   );

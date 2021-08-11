@@ -146,11 +146,11 @@ export const languageStrings = {
       introTextThree:
         " and configured on your system. Once installed, the launcher file is then used to open the openEQUELLA Administration Console Launcher dialog to open the Admin Console.",
     },
-    link:
-      "https://github.com/apereo/openEQUELLA-admin-console-package/releases",
+    link: "https://github.com/apereo/openEQUELLA-admin-console-package/releases",
   },
   common: {
     action: {
+      accept: "Accept",
       add: "Add",
       apply: "Apply",
       browse: "Browse...",
@@ -167,6 +167,7 @@ export const languageStrings = {
       ok: "OK",
       openInNewWindow: "Open in new window",
       refresh: "Refresh",
+      reject: "Reject",
       register: "Register",
       resettodefault: "Reset to Default",
       revertchanges: "Revert Changes",
@@ -232,8 +233,7 @@ export const languageStrings = {
         "User can choose, but default to be the resource version the user is viewing",
       defaultlatest:
         "User can choose, but default to be the latest live resource version",
-      help:
-        "When accessing EQUELLA via this course in an external system, all resources added to the external system will use this version selection strategy",
+      help: "When accessing EQUELLA via this course in an external system, all resources added to the external system will use this version selection strategy",
     },
     students: {
       label: "Unique individuals",
@@ -269,8 +269,7 @@ export const languageStrings = {
       text: "Enter the URL supplied by the cloud provider",
       help: "The URL should start with either http:// or https://",
       disclaimer: {
-        text:
-          "By proceeding with this registration you are acknowleding that you agree to the terms and conditions of the ",
+        text: "By proceeding with this registration you are acknowleding that you agree to the terms and conditions of the ",
         title: "Cloud provider disclaimer",
       },
     },
@@ -293,6 +292,16 @@ export const languageStrings = {
       thisYear: "This year",
     },
   },
+  drm: {
+    getTerms: {
+      error: "Failed to retrieve DRM terms",
+    },
+    violation: {
+      title: "DRM Violation",
+      prefix:
+        "You are currently unable to access this item due to the following DRM violation: \n",
+    },
+  },
   embedCode: {
     label: "Embed code",
     copy: "Copy embed code",
@@ -310,11 +319,15 @@ export const languageStrings = {
     failedToDelete: "Failed to delete '%s' due to error: %s",
   },
   lightboxComponent: {
+    kalturaExternalIdIssue:
+      "There is an issue with the format of the externalId for the the Kaltura Video",
+    kalturaMissingId:
+      "The provided Kaltura media is missing externalId details",
+    openSummaryPage: "Open Item Summary page",
     unsupportedContent: "Provided content is not supported",
     viewNext: "View next attachment",
     viewPrevious: "View previous attachment",
     youTubeVideoMissingId: "The provided YouTube video is missing a video ID",
-    openSummaryPage: "Open Item Summary page",
   },
   loginnoticepage: {
     title: "Login notice editor",
@@ -406,6 +419,7 @@ export const languageStrings = {
       modeGalleryVideo: "Video Gallery",
     },
     collectionSelector: {
+      noOptions: "All",
       title: "Collections",
     },
     filterLast: {

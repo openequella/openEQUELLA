@@ -64,8 +64,7 @@ describe("buildGalleryEntry", () => {
     hasGeneratedThumb: true,
     brokenAttachment: false,
     links: {
-      view:
-        "https://example.com/inst/items/1eeb3df5-3809-4655-925b-24d994e42ff6/1/?attachment.uuid=7186d40d-6159-4d07-8eee-4f7ee0cfdc4e",
+      view: "https://example.com/inst/items/1eeb3df5-3809-4655-925b-24d994e42ff6/1/?attachment.uuid=7186d40d-6159-4d07-8eee-4f7ee0cfdc4e",
       thumbnail:
         "https://example.com/inst/thumbs/1eeb3df5-3809-4655-925b-24d994e42ff6/1/7186d40d-6159-4d07-8eee-4f7ee0cfdc4e",
     },
@@ -78,17 +77,30 @@ describe("buildGalleryEntry", () => {
     preview: false,
     brokenAttachment: false,
     links: {
-      view:
-        "https://example.com/inst/items/234b9bd6-b603-4e26-8214-b79b8aab0ed9/1/?attachment.uuid=b18ed9ab-1ddb-4961-8935-22bbf1095b24",
+      view: "https://example.com/inst/items/234b9bd6-b603-4e26-8214-b79b8aab0ed9/1/?attachment.uuid=b18ed9ab-1ddb-4961-8935-22bbf1095b24",
       thumbnail:
         "https://example.com/inst/thumbs/234b9bd6-b603-4e26-8214-b79b8aab0ed9/1/b18ed9ab-1ddb-4961-8935-22bbf1095b24",
       externalId: "z7i9AmmZE2o",
+    },
+  };
+  const kalturaAttachment: OEQ.Search.Attachment = {
+    attachmentType: "custom/kaltura",
+    id: "0da6100e-332e-4116-bd56-059a114e2130",
+    description: "TeamIT",
+    brokenAttachment: false,
+    preview: false,
+    links: {
+      view: "https://example.com/inst/items/a288b17b-4a6f-416f-9c29-aaad53cf7b23/1/?attachment.uuid=0da6100e-332e-4116-bd56-059a114e2130",
+      thumbnail:
+        "https://example.com/inst/thumbs/a288b17b-4a6f-416f-9c29-aaad53cf7b23/1/0da6100e-332e-4116-bd56-059a114e2130",
+      externalId: "3466623/47988073/1_nd0xv0cp",
     },
   };
 
   it.each([
     ["Image", imageAttachment],
     ["YouTube", youtubeAttachment],
+    ["Kaltura", kalturaAttachment],
   ])(
     "builds a gallery entry from a valid %s `Attachment`",
     (_: string, attachment: OEQ.Search.Attachment) => {
@@ -155,8 +167,7 @@ describe("buildGallerySearchResultItem", () => {
         hasGeneratedThumb: true,
         brokenAttachment: false,
         links: {
-          view:
-            "https://example.com/inst/items/535e4e9b-4836-4011-8857-eb29260bf155/1/?attachment.uuid=e7e84411-7cc6-4516-9bc8-d60dab47fccb",
+          view: "https://example.com/inst/items/535e4e9b-4836-4011-8857-eb29260bf155/1/?attachment.uuid=e7e84411-7cc6-4516-9bc8-d60dab47fccb",
           thumbnail:
             "https://example.com/inst/thumbs/535e4e9b-4836-4011-8857-eb29260bf155/1/e7e84411-7cc6-4516-9bc8-d60dab47fccb",
         },
@@ -171,8 +182,7 @@ describe("buildGallerySearchResultItem", () => {
         hasGeneratedThumb: true,
         brokenAttachment: false,
         links: {
-          view:
-            "https://example.com/inst/items/535e4e9b-4836-4011-8857-eb29260bf155/1/?attachment.uuid=17f3036e-a3c6-4e6d-85cb-aaa78ca2835b",
+          view: "https://example.com/inst/items/535e4e9b-4836-4011-8857-eb29260bf155/1/?attachment.uuid=17f3036e-a3c6-4e6d-85cb-aaa78ca2835b",
           thumbnail:
             "https://example.com/inst/thumbs/535e4e9b-4836-4011-8857-eb29260bf155/1/17f3036e-a3c6-4e6d-85cb-aaa78ca2835b",
         },
@@ -187,8 +197,7 @@ describe("buildGallerySearchResultItem", () => {
         hasGeneratedThumb: true,
         brokenAttachment: false,
         links: {
-          view:
-            "https://example.com/inst/items/535e4e9b-4836-4011-8857-eb29260bf155/1/?attachment.uuid=16a3d193-430c-45f2-bd0c-6a3fc0a3bcaf",
+          view: "https://example.com/inst/items/535e4e9b-4836-4011-8857-eb29260bf155/1/?attachment.uuid=16a3d193-430c-45f2-bd0c-6a3fc0a3bcaf",
           thumbnail:
             "https://example.com/inst/thumbs/535e4e9b-4836-4011-8857-eb29260bf155/1/16a3d193-430c-45f2-bd0c-6a3fc0a3bcaf",
         },
@@ -205,10 +214,8 @@ describe("buildGallerySearchResultItem", () => {
     },
     keywordFoundInAttachment: false,
     links: {
-      view:
-        "https://example.com/inst/items/535e4e9b-4836-4011-8857-eb29260bf155/1/",
-      self:
-        "https://example.com/inst/api/item/535e4e9b-4836-4011-8857-eb29260bf155/1/",
+      view: "https://example.com/inst/items/535e4e9b-4836-4011-8857-eb29260bf155/1/",
+      self: "https://example.com/inst/api/item/535e4e9b-4836-4011-8857-eb29260bf155/1/",
     },
     isLatestVersion: true,
   };
@@ -330,7 +337,9 @@ describe("videoGallerySearch", () => {
     expectValidGalleryResult(
       result,
       basicVideoSearchResponse.length,
-      (s) => s.startsWith("video") || s === CustomMimeTypes.YOUTUBE
+      (s) =>
+        s.startsWith("video") ||
+        [CustomMimeTypes.YOUTUBE, CustomMimeTypes.KALTURA].includes(s)
     );
   });
 });

@@ -175,7 +175,7 @@ interface ExtTheme {
 }
 
 export const useStyles = makeStyles((theme: Theme) => {
-  const menuColors = ((theme.palette as unknown) as ExtTheme).menu;
+  const menuColors = (theme.palette as unknown as ExtTheme).menu;
   const desktop = theme.breakpoints.up("md");
   const drawerWidth = 240;
   const tabHeight = 48;

@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 import { getCollectionMap } from "../__mocks__/getCollectionsResp";
-import type { SearchPageOptions } from "../tsrc/search/SearchPage";
-import { defaultSearchPageOptions } from "../tsrc/search/SearchPageHelper";
+import {
+  defaultSearchPageOptions,
+  SearchPageOptions,
+} from "../tsrc/search/SearchPageHelper";
 import { getMimeTypeFilters } from "./MimeTypeFilter.mock";
 import { users } from "./UserSearch.mock";
 

@@ -223,6 +223,20 @@ export interface Attachment {
 }
 
 /**
+ * Status of Item's DRM.
+ */
+export interface DrmStatus {
+  /**
+   * `true` if DRM terms have been accepted.
+   */
+  termsAccepted: boolean;
+  /**
+   * `true` if user is authorised to access Item or accept DRM.
+   */
+  isAuthorised: boolean;
+}
+
+/**
  * Shared properties or raw and transformed search result item
  */
 interface SearchResultItemBase {
@@ -299,6 +313,10 @@ interface SearchResultItemBase {
    * True if this version is the latest version.
    */
   isLatestVersion: boolean;
+  /**
+   * Item's DRM Status. Absent if item is not under DRM control
+   */
+  drmStatus?: DrmStatus;
 }
 
 /**

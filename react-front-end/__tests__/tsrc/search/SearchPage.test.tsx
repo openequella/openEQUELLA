@@ -35,6 +35,7 @@ import { act } from "react-dom/test-utils";
 import { Router } from "react-router-dom";
 import { getAdvancedSearchesFromServerResult } from "../../../__mocks__/AdvancedSearchModule.mock";
 import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock";
+import { DRM_VIOLATION } from "../../../__mocks__/Drm.mock";
 import {
   transformedBasicImageSearchResponse,
   transformedBasicVideoSearchResponse,
@@ -48,11 +49,12 @@ import {
   getSearchResultsCustom,
 } from "../../../__mocks__/SearchResult.mock";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
-import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
 import * as AdvancedSearchModule from "../../../tsrc/modules/AdvancedSearchModule";
-import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
+import * as BrowserStorageModule from "../../../tsrc/modules/BrowserStorageModule";
 import type { Collection } from "../../../tsrc/modules/CollectionsModule";
+import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
+import * as DrmModule from "../../../tsrc/modules/DrmModule";
 import * as FavouriteModule from "../../../tsrc/modules/FavouriteModule";
 import * as GallerySearchModule from "../../../tsrc/modules/GallerySearchModule";
 import { getGlobalCourseList } from "../../../tsrc/modules/LegacySelectionSessionModule";
@@ -61,10 +63,12 @@ import * as RemoteSearchModule from "../../../tsrc/modules/RemoteSearchModule";
 import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchFacetsModule from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchFilterSettingsModule from "../../../tsrc/modules/SearchFilterSettingsModule";
-import * as SearchPageHelper from "../../../tsrc/search/SearchPageHelper";
+import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
 import * as UserModule from "../../../tsrc/modules/UserModule";
-import SearchPage, { SearchPageOptions } from "../../../tsrc/search/SearchPage";
+import SearchPage from "../../../tsrc/search/SearchPage";
+import * as SearchPageHelper from "../../../tsrc/search/SearchPageHelper";
+import { SearchPageOptions } from "../../../tsrc/search/SearchPageHelper";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { updateMockGetBaseUrl } from "../BaseUrlHelper";
 import { queryPaginatorControls } from "../components/SearchPaginationTestHelper";
@@ -126,6 +130,19 @@ const mockMimeTypeFilters = jest
   .spyOn(SearchFilterSettingsModule, "getMimeTypeFiltersFromServer")
   .mockResolvedValue(getMimeTypeFilters);
 
+const mockSaveDataToLocalStorage = jest
+  .spyOn(BrowserStorageModule, "saveDataToLocalStorage")
+  .mockImplementation(jest.fn);
+
+const mockReadDataFromLocalStorage = jest.spyOn(
+  BrowserStorageModule,
+  "readDataFromLocalStorage"
+);
+
+jest
+  .spyOn(DrmModule, "listDrmViolations")
+  .mockResolvedValue({ violation: DRM_VIOLATION });
+
 //i tried mocking this using window.navigator.clipboard.writeText = jest.fn(), but the navigator object is undefined
 Object.assign(navigator, {
   clipboard: {
@@ -172,8 +189,7 @@ jest.spyOn(FavouriteModule, "deleteFavouriteItem").mockResolvedValue();
 jest.spyOn(FavouriteModule, "addFavouriteSearch").mockResolvedValue({
   id: 123,
   name: "test",
-  url:
-    "/page/search?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RATING%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22crab%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D",
+  url: "/page/search?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RATING%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22crab%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D",
 });
 
 const defaultSearchPageOptions: SearchPageOptions = {
@@ -307,10 +323,8 @@ describe("Refine search by searching attachments", () => {
 });
 
 describe("Refine search by status", () => {
-  const {
-    live: liveButtonLabel,
-    all: allButtonLabel,
-  } = languageStrings.searchpage.statusSelector;
+  const { live: liveButtonLabel, all: allButtonLabel } =
+    languageStrings.searchpage.statusSelector;
 
   const expectSearchItemsCalledWithStatus = (status: OEQ.Common.ItemStatus[]) =>
     expect(mockSearch).toHaveBeenLastCalledWith({
@@ -610,11 +624,8 @@ describe("<SearchPage/>", () => {
 
   it("should support changing the number of items displayed per page", async () => {
     // Initial items per page is 10
-    const {
-      getPageCount,
-      getItemsPerPageOption,
-      getItemsPerPageSelect,
-    } = queryPaginatorControls(page.container);
+    const { getPageCount, getItemsPerPageOption, getItemsPerPageSelect } =
+      queryPaginatorControls(page.container);
     expect(getPageCount()).toHaveTextContent("1-10 of 12");
 
     userEvent.click(getItemsPerPageSelect());
@@ -630,11 +641,8 @@ describe("<SearchPage/>", () => {
   });
 
   it("navigates to the previous and next page when requested", async () => {
-    const {
-      getNextPageButton,
-      getPageCount,
-      getPreviousPageButton,
-    } = queryPaginatorControls(page.container);
+    const { getNextPageButton, getPageCount, getPreviousPageButton } =
+      queryPaginatorControls(page.container);
 
     userEvent.click(getNextPageButton());
     await waitForSearch();
@@ -649,11 +657,8 @@ describe("<SearchPage/>", () => {
     mockSearch.mockImplementation(() =>
       Promise.resolve(getSearchResultsCustom(30))
     );
-    const {
-      getFirstPageButton,
-      getLastPageButton,
-      getPageCount,
-    } = queryPaginatorControls(page.container);
+    const { getFirstPageButton, getLastPageButton, getPageCount } =
+      queryPaginatorControls(page.container);
     const firstPageCountText = "1-10 of 30";
 
     // ensure baseline
@@ -938,11 +943,8 @@ describe("Add favourite search", () => {
 });
 
 describe("Changing display mode", () => {
-  const {
-    modeGalleryImage,
-    modeGalleryVideo,
-    modeItemList,
-  } = languageStrings.searchpage.displayModeSelector;
+  const { modeGalleryImage, modeGalleryVideo, modeItemList } =
+    languageStrings.searchpage.displayModeSelector;
   const {
     searchResult: { ariaLabel: listItemAriaLabel },
     gallerySearchResult: { ariaLabel: galleryItemAriaLabel },
@@ -1138,4 +1140,22 @@ describe("Hide Gallery", () => {
       );
     }
   );
+});
+
+describe("Wildcard mode persistence", () => {
+  it("saves wildcard mode value in browser local storage", async () => {
+    await renderSearchPage();
+    expect(mockSaveDataToLocalStorage).toHaveBeenCalled();
+  });
+
+  it("retrieves wildcard mode value from local storage", async () => {
+    // By default wildcard mode is turned on, so we save 'false' in local storage.
+    mockReadDataFromLocalStorage.mockReturnValueOnce(true);
+    const { container } = await renderSearchPage();
+    expect(mockReadDataFromLocalStorage).toHaveBeenCalled();
+    const wildcardModeSwitch = container.querySelector("#wildcardSearch");
+
+    // Since rawMode is true, the checkbox should not be checked.
+    expect(wildcardModeSwitch).not.toBeChecked();
+  });
 });

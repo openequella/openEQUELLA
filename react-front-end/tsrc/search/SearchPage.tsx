@@ -17,22 +17,6 @@
  */
 import { debounce, Drawer, Grid, Hidden } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
-import type { DateRange } from "../util/Date";
-import {
-  defaultPagedSearchResult,
-  defaultSearchPageOptions,
-  generateQueryStringFromSearchPageOptions,
-  generateSearchPageOptionsFromQueryString,
-  getPartialSearchOptions,
-} from "./SearchPageHelper";
-import {
-  buildExportUrl,
-  confirmExport,
-  DisplayMode,
-  searchItems,
-  SearchOptions,
-  SearchOptionsFields,
-} from "../modules/SearchModule";
 import { pipe } from "fp-ts/function";
 import { isEqual } from "lodash";
 import * as React from "react";
@@ -40,8 +24,8 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useReducer,
+  useRef,
   useState,
 } from "react";
 import { useHistory, useLocation } from "react-router";
@@ -82,9 +66,18 @@ import {
   getMimeTypeFiltersFromServer,
   MimeTypeFilter,
 } from "../modules/SearchFilterSettingsModule";
+import {
+  buildExportUrl,
+  confirmExport,
+  DisplayMode,
+  searchItems,
+  SearchOptions,
+  SearchOptionsFields,
+} from "../modules/SearchModule";
 import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
 import { getCurrentUserDetails } from "../modules/UserModule";
 import SearchBar from "../search/components/SearchBar";
+import type { DateRange } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
 import { CollectionSelector } from "./components/CollectionSelector";
@@ -101,29 +94,24 @@ import {
 } from "./components/SearchResultList";
 import { SidePanel } from "./components/SidePanel";
 import StatusSelector from "./components/StatusSelector";
+import {
+  defaultPagedSearchResult,
+  defaultSearchPageOptions,
+  generateQueryStringFromSearchPageOptions,
+  generateSearchPageOptionsFromQueryString,
+  getPartialSearchOptions,
+  getRawModeFromStorage,
+  SearchPageOptions,
+  writeRawModeToStorage,
+} from "./SearchPageHelper";
+import { reducer, SearchPageSearchResult } from "./SearchPageReducer";
 
 // destructure strings import
 const { searchpage: searchStrings } = languageStrings;
-const {
-  title: dateModifiedSelectorTitle,
-  quickOptionDropdown,
-} = searchStrings.lastModifiedDateSelector;
+const { title: dateModifiedSelectorTitle, quickOptionDropdown } =
+  searchStrings.lastModifiedDateSelector;
 const { title: collectionSelectorTitle } = searchStrings.collectionSelector;
 const { title: displayModeSelectorTitle } = searchStrings.displayModeSelector;
-
-/**
- * Type of search options that are specific to Search page presentation layer.
- */
-export interface SearchPageOptions extends SearchOptions {
-  /**
-   * Whether to enable Quick mode (true) or to use custom date pickers (false).
-   */
-  dateRangeQuickModeEnabled: boolean;
-  /**
-   * How to display the search results - also determines the type of results.
-   */
-  displayMode: DisplayMode;
-}
 
 /**
  * Structure of data stored in browser history state, to capture the current state of SearchPage
@@ -139,76 +127,6 @@ interface SearchPageHistoryState {
   filterExpansion: boolean;
 }
 
-/**
- * The types of SearchResultItem that we support within an `OEQ.Search.SearchResult`.
- */
-type SearchPageSearchResult =
-  | {
-      from: "item-search";
-      content: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>;
-    }
-  | {
-      from: "gallery-search";
-      content: OEQ.Search.SearchResult<GallerySearchResultItem>;
-    };
-
-type Action =
-  | { type: "init" }
-  | { type: "search"; options: SearchPageOptions; scrollToTop: boolean }
-  | {
-      type: "search-complete";
-      result: SearchPageSearchResult;
-      classifications: Classification[];
-    }
-  | { type: "error"; cause: Error };
-
-type State =
-  | { status: "initialising" }
-  | {
-      status: "searching";
-      options: SearchPageOptions;
-      previousResult?: SearchPageSearchResult;
-      previousClassifications?: Classification[];
-      scrollToTop: boolean;
-    }
-  | {
-      status: "success";
-      result: SearchPageSearchResult;
-      classifications: Classification[];
-    }
-  | { status: "failure"; cause: Error };
-
-const reducer = (state: State, action: Action): State => {
-  switch (action.type) {
-    case "init":
-      return { status: "initialising" };
-    case "search":
-      const prevResults =
-        state.status === "success"
-          ? {
-              previousResult: state.result,
-              previousClassifications: state.classifications,
-            }
-          : {};
-      return {
-        status: "searching",
-        options: action.options,
-        scrollToTop: action.scrollToTop,
-        ...prevResults,
-      };
-    case "search-complete":
-      return {
-        status: "success",
-        result: action.result,
-        classifications: action.classifications,
-      };
-    case "error":
-      return { status: "failure", cause: action.cause };
-    default:
-      throw new TypeError("Unexpected action passed to reducer!");
-  }
-};
-
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const history = useHistory();
   const location = useLocation();
@@ -223,8 +141,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [searchPageOptions, setSearchPageOptions] = useState<SearchPageOptions>(
     // If the user has gone 'back' to this page, then use their previous options. Otherwise
     // we start fresh - i.e. if a new navigation to Search Page.
-    searchPageHistoryState?.searchPageOptions ??
-      defaultSearchPageHistory.searchPageOptions
+    searchPageHistoryState?.searchPageOptions ?? {
+      ...defaultSearchPageHistory.searchPageOptions,
+      rawMode: getRawModeFromStorage(),
+    }
   );
   const [filterExpansion, setFilterExpansion] = useState(
     searchPageHistoryState?.filterExpansion ??
@@ -245,16 +165,12 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     mimeTypeFilters: [],
   });
 
-  const [
-    currentUser,
-    setCurrentUser,
-  ] = React.useState<OEQ.LegacyContent.CurrentUserDetails>();
+  const [currentUser, setCurrentUser] =
+    React.useState<OEQ.LegacyContent.CurrentUserDetails>();
 
   const [showRefinePanel, setShowRefinePanel] = useState<boolean>(false);
-  const [
-    showFavouriteSearchDialog,
-    setShowFavouriteSearchDialog,
-  ] = useState<boolean>(false);
+  const [showFavouriteSearchDialog, setShowFavouriteSearchDialog] =
+    useState<boolean>(false);
   const [alreadyDownloaded, setAlreadyDownloaded] = useState<boolean>(false);
   const exportLinkRef = useRef<HTMLAnchorElement>(null);
 
@@ -420,6 +336,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
               ...history.location,
               state: { searchPageOptions: state.options, filterExpansion },
             });
+            // Save the value of wildcard mode to LocalStorage.
+            writeRawModeToStorage(state.options.rawMode);
             // scroll back up to the top of the page
             if (state.scrollToTop) window.scrollTo(0, 0);
             // Allow downloading new search result.
@@ -526,6 +444,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       externalMimeTypes: isSelectionSessionOpen()
         ? searchPageOptions.externalMimeTypes
         : undefined,
+      // As per requirements for persistence of rawMode, it is _not_ reset for New Searches
+      rawMode: searchPageOptions.rawMode,
     });
     setFilterExpansion(false);
   };
@@ -550,11 +470,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         const generateExportErrorMessage = (
           error: OEQ.Errors.ApiError
         ): string => {
-          const {
-            badRequest,
-            unauthorised,
-            notFound,
-          } = searchStrings.export.errorMessages;
+          const { badRequest, unauthorised, notFound } =
+            searchStrings.export.errorMessages;
           switch (error.status) {
             case 400:
               return badRequest;
