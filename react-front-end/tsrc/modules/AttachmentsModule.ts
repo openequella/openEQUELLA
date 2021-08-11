@@ -15,18 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AppConfig } from "../AppConfig";
-import { updateYoutubeAttachment } from "./YouTubeModule";
 import * as OEQ from "@openequella/rest-api-client";
+import { identity, pipe } from "fp-ts/function";
+import { AppConfig } from "../AppConfig";
+import { simpleMatchD } from "../util/match";
+import { updateKalturaAttachment } from "./KalturaModule";
+import { updateYoutubeAttachment } from "./YouTubeModule";
 
 /** `attachmentType` for file attachments. */
 export const ATYPE_FILE = "file";
+/** `attachmentType` for attachments linking to Kaltura media. */
+export const ATYPE_KALTURA = "custom/kaltura";
 /** `attachmentType` for link/URL attachments. */
 export const ATYPE_LINK = "link";
-/** `attachmentType` for attachments linking to YouTube videos. */
-export const ATYPE_YOUTUBE = "custom/youtube";
 /** `attachmentType` for attachments linking to oEQ resources(e.g. Item). */
 export const ATYPE_RESOURCE = "custom/resource";
+/** `attachmentType` for attachments linking to YouTube videos. */
+export const ATYPE_YOUTUBE = "custom/youtube";
 
 /**
  * Build a direct URL to a file attachment.
@@ -50,7 +55,17 @@ export const buildFileAttachmentUrl = (
  */
 export const updateAttachmentForCustomInfo = (
   attachment: OEQ.Search.Attachment
-): OEQ.Search.Attachment =>
-  attachment.attachmentType === ATYPE_YOUTUBE
-    ? updateYoutubeAttachment(attachment)
-    : attachment;
+): OEQ.Search.Attachment => {
+  const updateFn = pipe(
+    attachment.attachmentType,
+    simpleMatchD(
+      [
+        [ATYPE_KALTURA, () => updateKalturaAttachment],
+        [ATYPE_YOUTUBE, () => updateYoutubeAttachment],
+      ],
+      () => identity
+    )
+  );
+
+  return updateFn(attachment);
+};

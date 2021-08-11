@@ -51,24 +51,21 @@ public class DRMTest extends AbstractSessionTest {
             .exactQuery("Link to " + name)
             .getResult(1)
             .viewSummary();
-    // Remove when #1160 is fixed. Currently a bug exists that prevents
-    // viewFullScreen in the new UI.
-    if (!item.usingNewUI()) {
-      PackageViewer pack =
-          item.attachments().viewFullscreen(getAgree()).preview(new PackageViewer(context));
-      testItem(pack, name, allowComp);
-      logon("AutoTest", "automated");
 
-      item =
-          new SearchPage(context)
-              .load()
-              .setSort("rank")
-              .exactQuery("Link to " + name)
-              .getResult(1)
-              .viewSummary();
-      pack = item.attachments().viewFullscreen(getAgree()).preview(pack);
-      testItem2(pack, name, allowComp);
-    }
+    PackageViewer pack =
+        item.attachments().viewFullscreen(getAgree()).preview(new PackageViewer(context));
+    testItem(pack, name, allowComp);
+    logon("AutoTest", "automated");
+
+    item =
+        new SearchPage(context)
+            .load()
+            .setSort("rank")
+            .exactQuery("Link to " + name)
+            .getResult(1)
+            .viewSummary();
+    pack = item.attachments().viewFullscreen(getAgree()).preview(pack);
+    testItem2(pack, name, allowComp);
   }
 
   @Test(dataProvider = "items")
@@ -83,26 +80,23 @@ public class DRMTest extends AbstractSessionTest {
             .getResult(1)
             .viewSummary(getAgree())
             .preview(new SummaryPage(context));
-    // Remove when #1160 is fixed. Currently a bug exists that prevents
-    // viewFullScreen in the new UI.
-    if (!item.usingNewUI()) {
-      PackageViewer pack = item.attachments().viewFullscreen();
 
-      testItem(pack, name, allowComp);
+    PackageViewer pack = item.attachments().viewFullscreen();
 
-      logon("AutoTest", "automated");
-      item =
-          new SearchPage(context)
-              .load()
-              .setSort("rank")
-              .exactQuery("Summary DRM - Link to " + name)
-              .getResult(1)
-              .viewSummary(getAgree())
-              .preview(item);
-      pack = item.attachments().viewFullscreen();
+    testItem(pack, name, allowComp);
 
-      testItem2(pack, name, allowComp);
-    }
+    logon("AutoTest", "automated");
+    item =
+        new SearchPage(context)
+            .load()
+            .setSort("rank")
+            .exactQuery("Summary DRM - Link to " + name)
+            .getResult(1)
+            .viewSummary(getAgree())
+            .preview(item);
+    pack = item.attachments().viewFullscreen();
+
+    testItem2(pack, name, allowComp);
   }
 
   @Test(dataProvider = "items")
@@ -115,35 +109,31 @@ public class DRMTest extends AbstractSessionTest {
             .exactQuery("Link to Summary of " + name)
             .getResult(1)
             .viewSummary();
-    // Remove when #1160 is fixed. Currently a bug exists that prevents
-    // viewFullScreen in the new UI.
-    if (!item.usingNewUI()) {
-      PackageViewer pack =
-          item.attachments().viewFullscreen(getAgree()).preview(new PackageViewer(context));
-      pack = pack.clickAttachment(name);
 
-      if (summary && !allowComp) {
-        pack.switchToSelectedAttachment(getAgree()).preview(new SummaryPage(context));
-        pack.returnToPackageViewer();
-      }
+    PackageViewer pack =
+        item.attachments().viewFullscreen(getAgree()).preview(new PackageViewer(context));
+    pack = pack.clickAttachment(name);
 
-      assertTrue(pack.selectedAttachmentContainsText("Music History - The Beatles"));
-
-      AttachmentsPage attachments = pack.switchToSelectedAttachment(new AttachmentsPage(context));
-      attachments.attachmentExists("Music History - The Beatles");
-
-      if (!allowComp && !summary) {
-        pack =
-            attachments
-                .viewAttachment("Music History - The Beatles", getDialogAgree())
-                .preview(new PackageViewer(context));
-      } else {
-        pack =
-            attachments.viewAttachment("Music History - The Beatles", new PackageViewer(context));
-      }
-      assertTrue(
-          pack.selectedAttachmentContainsText("The Beatles were an English rock band, formed in"));
+    if (summary && !allowComp) {
+      pack.switchToSelectedAttachment(getAgree()).preview(new SummaryPage(context));
+      pack.returnToPackageViewer();
     }
+
+    assertTrue(pack.selectedAttachmentContainsText("Music History - The Beatles"));
+
+    AttachmentsPage attachments = pack.switchToSelectedAttachment(new AttachmentsPage(context));
+    attachments.attachmentExists("Music History - The Beatles");
+
+    if (!allowComp && !summary) {
+      pack =
+          attachments
+              .viewAttachment("Music History - The Beatles", getDialogAgree())
+              .preview(new PackageViewer(context));
+    } else {
+      pack = attachments.viewAttachment("Music History - The Beatles", new PackageViewer(context));
+    }
+    assertTrue(
+        pack.selectedAttachmentContainsText("The Beatles were an English rock band, formed in"));
   }
 
   private void testItem(PackageViewer pack, String name, boolean allowComp) {
@@ -221,19 +211,15 @@ public class DRMTest extends AbstractSessionTest {
     assertTrue(
         summaryPage.attachments().attachmentExists("Start: Biscuit factory: complex ratios"));
     // Viewing attachments shows acceptance
-    if (!summaryPage
-        .usingNewUI()) { // Remove when #1160 is fixed. Currently a bug exists that prevents
-      // viewFullScreen in the new UI.
-      summaryPage
-          .attachments()
-          .viewAttachment("Start: Biscuit factory: complex ratios", getDialogAgree())
-          .preview(
-              new VerifyableAttachment(
-                  context, "Curriculum Corporation, 2006, except where indicated"));
+    summaryPage
+        .attachments()
+        .viewAttachment("Start: Biscuit factory: complex ratios", getDialogAgree())
+        .preview(
+            new VerifyableAttachment(
+                context, "Curriculum Corporation, 2006, except where indicated"));
 
-      // Check that URL is attachment URL
-      Assert.assertEquals(getUrl(), context.getBaseUrl() + ATTACHMENT_URL);
-    }
+    // Check that URL is attachment URL
+    Assert.assertEquals(getUrl(), context.getBaseUrl() + ATTACHMENT_URL);
     // Logout
     logout();
 
@@ -286,13 +272,11 @@ public class DRMTest extends AbstractSessionTest {
 
     HomePage loginPage = logon("AutoTest", "automated");
     openUrl(IMS_DOWNLOAD_URL);
-    if (!loginPage.usingNewUI()) {
-      DownloadFilePage dlfPage =
-          getAgree().preview(new DownloadFilePage(context, "Biscuit factory complex ratios.zip"));
-      Assert.assertEquals(getUrl(), context.getBaseUrl() + IMS_DOWNLOAD_URL);
-      assertTrue(dlfPage.fileIsDownloaded());
-      assertTrue(dlfPage.deleteFile());
-    }
+    DownloadFilePage dlfPage =
+        getAgree().preview(new DownloadFilePage(context, "Biscuit factory complex ratios.zip"));
+    Assert.assertEquals(getUrl(), context.getBaseUrl() + IMS_DOWNLOAD_URL);
+    assertTrue(dlfPage.fileIsDownloaded());
+    assertTrue(dlfPage.deleteFile());
   }
 
   private void openUrl(String url) {
