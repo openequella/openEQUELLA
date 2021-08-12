@@ -27,7 +27,7 @@ import {
 } from "react-router-dom";
 import { shallowEqual } from "shallow-equal-object";
 import { ErrorResponse } from "../api/errors";
-import { getRenderData } from "../AppConfig";
+import { getRenderData, LEGACY_CSS_URL } from "../AppConfig";
 import { LegacyContent } from "../legacycontent/LegacyContent";
 
 import { getCurrentUserDetails } from "../modules/UserModule";
@@ -49,6 +49,16 @@ const renderData = getRenderData();
 const beforeunload = function (e: BeforeUnloadEvent) {
   e.returnValue = "Are you sure?";
   return "Are you sure?";
+};
+
+const removeLegacyCss = (): void => {
+  const head = document.getElementsByTagName("head")[0];
+  const legacyCss = window.document.querySelector(
+    `link[href="${LEGACY_CSS_URL}"]`
+  );
+  if (legacyCss) {
+    head.removeChild(legacyCss);
+  }
 };
 
 export default function IndexPage() {
@@ -209,13 +219,14 @@ export default function IndexPage() {
         {newUIRoutes}
         <Route
           path={[newSearchPagePath, oldSearchPagePath]}
-          render={(p) =>
-            newOrOldSearch(window.location) ? (
-              <SearchPage {...mkRouteProps(p)} />
-            ) : (
-              renderLegacyContent(p)
-            )
-          }
+          render={(p) => {
+            if (newOrOldSearch(window.location)) {
+              removeLegacyCss();
+              return <SearchPage {...mkRouteProps(p)} />;
+            }
+
+            return renderLegacyContent(p);
+          }}
         />
         <Route render={renderLegacyContent} />
       </Switch>

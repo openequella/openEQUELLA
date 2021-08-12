@@ -25,11 +25,11 @@ val fs2Version       = "2.4.4"
 val guiceVersion     = "3.0"
 val jacksonVersion   = "2.11.3"
 val jsassVersion     = "5.10.4"
-val jsoupVersion     = "1.13.1"
+val jsoupVersion     = "1.14.1"
 val simpledbaVersion = "0.1.9"
-val springVersion    = "5.3.8"
+val springVersion    = "5.3.9"
 val sttpVersion      = "1.7.2"
-val tikaVersion      = "1.24.1"
+val tikaVersion      = "1.27"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -59,7 +59,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
-  "com.google.api-client" % "google-api-client"           % "1.30.11",
+  "com.google.api-client" % "google-api-client"           % "1.32.1",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20200925-1.30.10",
   "com.google.apis"       % "google-api-services-youtube" % "v3-rev20200618-1.30.9",
   "com.google.code.gson"  % "gson"                        % "2.8.7",
@@ -90,7 +90,7 @@ libraryDependencies ++= Seq(
   ),
   "com.miglayout"             % "miglayout-swing"          % "4.2",
   "com.ning"                  % "async-http-client"        % "1.9.40",
-  "com.rometools"             % "rome"                     % "1.15.0",
+  "com.rometools"             % "rome"                     % "1.16.0",
   "io.swagger"                % "swagger-core"             % SwaggerVersion,
   "io.swagger"                % "swagger-annotations"      % SwaggerVersion,
   "io.swagger"                % "swagger-jaxrs"            % SwaggerVersion,
@@ -103,7 +103,7 @@ libraryDependencies ++= Seq(
   "commons-daemon"            % "commons-daemon"           % "1.2.4",
   "commons-discovery"         % "commons-discovery"        % "0.5",
   "commons-httpclient"        % "commons-httpclient"       % "3.1",
-  "commons-io"                % "commons-io"               % "2.8.0",
+  "commons-io"                % "commons-io"               % "2.11.0",
   "commons-lang"              % "commons-lang"             % "2.6",
   "dom4j"                     % "dom4j"                    % "1.6.1",
   "com.github.equella.legacy" % "itunesu-api-java"         % "1.7",
@@ -113,7 +113,7 @@ libraryDependencies ++= Seq(
   "javax.mail"                % "mail"                     % "1.4.7",
   "javax.servlet"             % "jstl"                     % "1.2",
   "javax.xml"                 % "jaxrpc"                   % "1.1",
-  "jdom"                      % "jdom"                     % "1.0",
+  "jdom"                      % "jdom"                     % "1.1",
   "com.github.equella.jpf"    % "jpf"                      % "1.0.7",
   "log4j"                     % "log4j"                    % "1.2.17",
   "net.oauth.core"            % "oauth"                    % "20100527",
@@ -192,6 +192,11 @@ libraryDependencies ++= Seq(
       // for all merged bus-extensions.txt files.
       organization = "org.apache.cxf",
       name = "cxf-rt-rs-client"
+    ),
+    ExclusionRule(
+      // We manage Jackson related deps by 'jacksonVersion' so exclude the 'jackson-databind' added b tika
+      organization = "com.fasterxml.jackson.core",
+      name = "jackson-databind"
     )
   ),
   "org.apache.tomcat"           % "tomcat-annotations-api" % TomcatVersion,
@@ -206,8 +211,8 @@ libraryDependencies ++= Seq(
   "org.apache.tomcat"           % "tomcat-util"            % TomcatVersion,
   "org.apache.tomcat"           % "tomcat-util-scan"       % TomcatVersion,
   "org.apache.tomcat"           % "tomcat-ssi"             % TomcatVersion,
-  "org.apache.ws.commons.axiom" % "axiom-api"              % "1.2.15",
-  "org.apache.ws.commons.axiom" % "axiom-impl"             % "1.2.15",
+  "org.apache.ws.commons.axiom" % "axiom-api"              % "1.3.0",
+  "org.apache.ws.commons.axiom" % "axiom-impl"             % "1.3.0",
   "org.apache.ws.security"      % "wss4j"                  % "1.6.19",
   "org.apache.zookeeper"        % "zookeeper"              % "3.4.6" excludeAll (
     ExclusionRule(organization = "org.slf4j",
@@ -243,9 +248,9 @@ libraryDependencies ++= Seq(
   "org.ow2.asm" % "asm" % "5.2",
   postgresDep,
   "org.scannotation"    % "scannotation"           % "1.0.3",
-  "org.slf4j"           % "jcl-over-slf4j"         % "1.7.31",
-  "org.slf4j"           % "slf4j-api"              % "1.7.31",
-  "org.slf4j"           % "slf4j-log4j12"          % "1.7.31",
+  "org.slf4j"           % "jcl-over-slf4j"         % "1.7.32",
+  "org.slf4j"           % "slf4j-api"              % "1.7.32",
+  "org.slf4j"           % "slf4j-log4j12"          % "1.7.32",
   "org.springframework" % "spring-aop"             % springVersion,
   "org.springframework" % "spring-context"         % springVersion,
   "org.springframework" % "spring-context-support" % springVersion excludeAll (
@@ -271,7 +276,7 @@ libraryDependencies ++= Seq(
   "org.mozilla"                   % "rhino"                     % "1.7.13",
   "io.lemonlabs"                  %% "scala-uri"                % "1.5.1",
   "org.scala-lang.modules"        %% "scala-parser-combinators" % "1.1.2",
-  "io.github.classgraph"          % "classgraph"                % "4.8.108",
+  "io.github.classgraph"          % "classgraph"                % "4.8.110",
   "com.fasterxml"                 % "classmate"                 % "1.5.1",
   "org.glassfish"                 % "javax.el"                  % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"    % "3.0.0",
@@ -322,7 +327,7 @@ excludeDependencies ++= Seq(
   // Spring 5 added a default logging bridge.  In oEQ, this results in
   // a [deduplicate: different file contents found in the following] error
   // ...org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.7.30.jar:org/apache/commons/logging/Log.class
-  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.8.jar:org/apache/commons/logging/Log.class
+  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.9.jar:org/apache/commons/logging/Log.class
   // As per https://github.com/spring-projects/spring-framework/issues/20611 ,
   // since we already have logging in place, we can safely exclude the dep from spring.
   "org.springframework" % "spring-jcl",
@@ -366,6 +371,7 @@ run := {
 (assembly / fullClasspath) := (Compile / fullClasspath).value
 
 (assembly / assemblyMergeStrategy) := {
+  case PathList("META-INF", "jdom-info.xml")                => MergeStrategy.first
   case PathList("META-INF", "axiom.xml")                    => MergeStrategy.first
   case PathList("javax", "wsdl", _*)                        => MergeStrategy.last
   case PathList("com", "ibm", "wsdl", _*)                   => MergeStrategy.first

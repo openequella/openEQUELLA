@@ -21,12 +21,14 @@ import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import { flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import { Literal, match, Unknown } from "runtypes";
+import { simpleMatchD } from "../util/match";
 import {
   ATYPE_FILE,
+  ATYPE_KALTURA,
   ATYPE_YOUTUBE,
   buildFileAttachmentUrl,
 } from "./AttachmentsModule";
+import * as kaltura from "./KalturaModule";
 import { CustomMimeTypes, getImageMimeTypes } from "./MimeTypesModule";
 import { Classification, listClassifications } from "./SearchFacetsModule";
 import { searchItems, SearchOptions } from "./SearchModule";
@@ -75,7 +77,7 @@ export interface GalleryEntry {
 export interface GallerySearchResultItem
   extends Pick<
     OEQ.Search.SearchResultItem,
-    "uuid" | "version" | "name" | "links"
+    "uuid" | "version" | "name" | "links" | "drmStatus"
   > {
   /**
    * The primary asset to be shown to represent an item. (Typically the first attachment returned
@@ -107,7 +109,7 @@ const validateAttachmentType = (
   pipe(
     attachment.attachmentType,
     E.fromPredicate(
-      (type) => [ATYPE_FILE, ATYPE_YOUTUBE].includes(type),
+      (type) => [ATYPE_FILE, ATYPE_KALTURA, ATYPE_YOUTUBE].includes(type),
       (type) =>
         `Attachments of type ${type} are not supported. Attachment ID: ${attachment.id}`
     )
@@ -146,19 +148,22 @@ const mimeType = ({
 }: OEQ.Search.Attachment): E.Either<string, string> =>
   pipe(
     attachmentType,
-    match(
+    simpleMatchD(
       [
-        Literal(ATYPE_FILE),
-        () =>
-          pipe(
-            mimeType,
-            E.fromNullable(
-              `File attachment ${id} is missing a defined MIME type`
-            )
-          ),
+        [
+          ATYPE_FILE,
+          () =>
+            pipe(
+              mimeType,
+              E.fromNullable(
+                `File attachment ${id} is missing a defined MIME type`
+              )
+            ),
+        ],
+        [ATYPE_KALTURA, () => E.right(CustomMimeTypes.KALTURA)],
+        [ATYPE_YOUTUBE, () => E.right(CustomMimeTypes.YOUTUBE)],
       ],
-      [Literal(ATYPE_YOUTUBE), () => E.right(CustomMimeTypes.YOUTUBE)],
-      [Unknown, () => unsupportedAttachmentType(id, attachmentType)]
+      () => unsupportedAttachmentType(id, attachmentType)
     )
   );
 
@@ -179,7 +184,7 @@ const thumbnailLink = (
   const youTubeLink = (videoId: string): string =>
     yt.buildThumbnailUrl(videoId, isSmall ? "default" : "high");
 
-  return attachmentType === ATYPE_FILE
+  return [ATYPE_FILE, ATYPE_KALTURA].includes(attachmentType)
     ? E.right(fileThumbnailLink(links.thumbnail))
     : pipe(
         links.externalId,
@@ -207,28 +212,48 @@ const directUrl = (
 ): E.Either<string, string> =>
   pipe(
     attachmentType,
-    match(
+    simpleMatchD(
       [
-        Literal(ATYPE_FILE),
-        () =>
-          pipe(
-            filePath,
-            E.fromNullable(`File attachment ${id} is missing a 'filePath'.`),
-            E.map((path) => buildFileAttachmentUrl(itemUuid, itemVersion, path))
-          ),
-      ],
-      [
-        Literal(ATYPE_YOUTUBE),
-        () =>
-          pipe(
-            links.externalId,
-            E.fromNullable(
-              `YouTube attachment ${id} is missing an 'externalId'.`
+        [
+          ATYPE_FILE,
+          () =>
+            pipe(
+              filePath,
+              E.fromNullable(`File attachment ${id} is missing a 'filePath'.`),
+              E.map((path) =>
+                buildFileAttachmentUrl(itemUuid, itemVersion, path)
+              )
             ),
-            E.map(yt.buildViewUrl)
-          ),
+        ],
+        // For Kaltura media we don't really have a direct URL, we can only view them via the
+        // oEQ view mechanisms - AFAIK. But we add the externalId details onto the end so that
+        // the lightbox can use them with the KalturaPlayerEmbed.
+        [
+          ATYPE_KALTURA,
+          () =>
+            pipe(
+              links.externalId,
+              E.fromNullable(
+                `Kaltura attachment ${id} is missing an 'externalId'.`
+              ),
+              E.map((externalId) =>
+                kaltura.buildViewUrl(links.view, externalId)
+              )
+            ),
+        ],
+        [
+          ATYPE_YOUTUBE,
+          () =>
+            pipe(
+              links.externalId,
+              E.fromNullable(
+                `YouTube attachment ${id} is missing an 'externalId'.`
+              ),
+              E.map(yt.buildViewUrl)
+            ),
+        ],
       ],
-      [Unknown, () => unsupportedAttachmentType(id, attachmentType)]
+      () => unsupportedAttachmentType(id, attachmentType)
     )
   );
 
@@ -352,8 +377,10 @@ const attachmentMimeTypePredicate =
 const filterAttachments =
   (predicate: AttachmentPredicate): AttachmentFilter =>
   (attachments: OEQ.Search.Attachment[]): O.Option<OEQ.Search.Attachment[]> =>
-    pipe(attachments, A.filter(predicate), (xs: OEQ.Search.Attachment[]) =>
-      xs.length === 0 ? O.none : O.some(xs)
+    pipe(
+      attachments,
+      A.filter(predicate),
+      O.fromPredicate<OEQ.Search.Attachment[]>(A.isNonEmpty)
     );
 
 /**
@@ -381,11 +408,9 @@ const filterAttachmentsByVideo: AttachmentFilter = (
 ): O.Option<OEQ.Search.Attachment[]> => {
   const videoMimeTypePredicate: AttachmentPredicate =
     attachmentMimeTypePredicate("video");
-  // Arguably in the future we may want to change this to looking through a look-up list
-  // to include things like Kaltura - for now just straight comparison against the only
-  // one we're supporting
   const attachmentTypePredicate: AttachmentPredicate = (a) =>
-    a.attachmentType === ATYPE_YOUTUBE;
+    [ATYPE_KALTURA, ATYPE_YOUTUBE].includes(a.attachmentType);
+
   // The above predicates combined into one
   const combinedPredicate: AttachmentPredicate = (a) =>
     [videoMimeTypePredicate, attachmentTypePredicate].some((predicate) =>
@@ -411,6 +436,7 @@ export const buildGallerySearchResultItem =
     name,
     links,
     attachments,
+    drmStatus,
   }: OEQ.Search.SearchResultItem): E.Either<string, GallerySearchResultItem> =>
     Do(E.either)
       .bind(
@@ -448,6 +474,7 @@ export const buildGallerySearchResultItem =
         links,
         mainEntry,
         additionalEntries,
+        drmStatus,
       }));
 
 /**

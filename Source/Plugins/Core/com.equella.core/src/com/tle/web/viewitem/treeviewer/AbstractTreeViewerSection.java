@@ -34,6 +34,7 @@ import com.tle.common.NameValue;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.i18n.BundleCache;
 import com.tle.core.url.URLCheckerService;
+import com.tle.web.api.LegacyContentController;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.integration.service.IntegrationService;
@@ -63,6 +64,7 @@ import com.tle.web.sections.standard.Link;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.template.Decorations;
 import com.tle.web.template.Decorations.FullScreen;
+import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewitem.section.RootItemFileSection;
 import com.tle.web.viewitem.treeviewer.js.TreeLibrary;
@@ -179,6 +181,12 @@ public abstract class AbstractTreeViewerSection<M extends AbstractTreeViewerMode
     model.setHideTree(oneAttachment);
     model.setHideNavControls(oneAttachment);
     model.setDefinition(getTreeDef(info, tree, new HashSet<String>()));
+
+    // If this section is used in new UI, set a flag to tell LegacyContentApi NOT to use
+    // 'Legacy.css'.
+    if (RenderNewTemplate.isNewUIEnabled()) {
+      info.setAttribute(LegacyContentController.DISABLE_LEGACY_CSS(), true);
+    }
     return viewFactory.createTemplateResult("treeviewer.ftl", this);
   }
 

@@ -30,6 +30,7 @@ import {
   Theme,
   Typography,
 } from "@material-ui/core";
+
 import { makeStyles } from "@material-ui/core/styles";
 import Tooltip from "@material-ui/core/Tooltip";
 import AttachFile from "@material-ui/icons/AttachFile";
@@ -52,10 +53,7 @@ import {
 } from "../../modules/LegacySelectionSessionModule";
 import {
   AttachmentAndViewerConfig,
-  AttachmentAndViewerDefinition,
-  buildLightboxNavigationHandler,
-  getViewerDefinitionForAttachment,
-  LightboxEntry,
+  buildViewerConfigForAttachments,
 } from "../../modules/ViewerModule";
 import { languageStrings } from "../../util/langstrings";
 import { ResourceSelector } from "./ResourceSelector";
@@ -140,96 +138,32 @@ export const SearchResultAttachmentsList = ({
       return;
     }
 
-    const getViewerID = async (broken: boolean, mimeType: string) => {
-      let viewerDetails: OEQ.MimeType.MimeTypeViewerDetail | undefined;
-      if (broken) {
-        return undefined;
-      }
+    // A wrapper for 'getViewerDetails' to ensure it returns a rejected promise with proper error message
+    // rather than throws an error.
+    const viewerDetails = async (mimeType: string) => {
       try {
-        viewerDetails = await getViewerDetails(mimeType);
+        return getViewerDetails(mimeType);
       } catch (error) {
-        handleError({
-          ...error,
-          message: `${searchResultStrings.errors.getAttachmentViewerDetailsFailure}: ${error.message}`,
-        });
+        throw new Error(
+          `${languageStrings.searchpage.searchResult.errors.getAttachmentViewerDetailsFailure}: ${error.message}`
+        );
       }
-      return viewerDetails?.viewerId;
     };
 
     (async () => {
-      const attachmentsAndViewerDefinitions = await Promise.all(
-        attachments.map<Promise<AttachmentAndViewerDefinition>>(
-          async (attachment) => {
-            const { mimeType, brokenAttachment } = attachment;
-            const viewerId = mimeType
-              ? await getViewerID(brokenAttachment, mimeType)
-              : undefined;
-            return {
-              attachment,
-              viewerDefinition: getViewerDefinitionForAttachment(
-                uuid,
-                version,
-                attachment,
-                viewerId
-              ),
-            };
-          }
-        )
-      );
-
-      const lightboxEntries: LightboxEntry[] = attachmentsAndViewerDefinitions
-        .filter(({ viewerDefinition: [viewer] }) => viewer === "lightbox")
-        .map(
-          ({
-            attachment: { id, description, mimeType },
-            viewerDefinition: [_, src],
-          }) => ({
-            src,
-            title: description,
-            mimeType: mimeType ?? "",
-            id,
-          })
-        );
-
-      // Transform AttachmentAndViewerDefinition to AttachmentAndViewerConfig.
-      const attachmentsAndConfigs: AttachmentAndViewerConfig[] =
-        attachmentsAndViewerDefinitions.map(
-          ({ viewerDefinition: [viewer, viewUrl], attachment }) => {
-            const initialLightboxEntryIndex = lightboxEntries.findIndex(
-              (entry) => entry.id === attachment.id
-            );
-            return viewer === "lightbox"
-              ? {
-                  attachment,
-                  viewerConfig: {
-                    viewerType: viewer,
-                    config: {
-                      src: viewUrl,
-                      title: attachment.description,
-                      mimeType: attachment.mimeType ?? "",
-                      onNext: buildLightboxNavigationHandler(
-                        lightboxEntries,
-                        initialLightboxEntryIndex + 1
-                      ),
-                      onPrevious: buildLightboxNavigationHandler(
-                        lightboxEntries,
-                        initialLightboxEntryIndex - 1
-                      ),
-                    },
-                  },
-                }
-              : {
-                  attachment,
-                  viewerConfig: {
-                    viewerType: viewer,
-                    url: viewUrl,
-                  },
-                };
-          }
-        );
-
-      if (mounted) {
-        setAttachmentsAndViewerConfigs(attachmentsAndConfigs);
+      try {
+        const attachmentsAndViewerDefinitions =
+          await buildViewerConfigForAttachments(
+            attachments,
+            uuid,
+            version,
+            viewerDetails
+          );
+        if (mounted) {
+          setAttachmentsAndViewerConfigs(attachmentsAndViewerDefinitions);
+        }
+      } catch (error) {
+        handleError(new Error(error));
       }
     })();
 
