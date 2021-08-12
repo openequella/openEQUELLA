@@ -59,7 +59,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
-  "com.google.api-client" % "google-api-client"           % "1.30.11",
+  "com.google.api-client" % "google-api-client"           % "1.32.1",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20201021-1.32.1",
   "com.google.apis"       % "google-api-services-youtube" % "v3-rev20210706-1.32.1",
   "com.google.code.gson"  % "gson"                        % "2.8.7",
@@ -113,7 +113,7 @@ libraryDependencies ++= Seq(
   "javax.mail"                % "mail"                     % "1.4.7",
   "javax.servlet"             % "jstl"                     % "1.2",
   "javax.xml"                 % "jaxrpc"                   % "1.1",
-  "jdom"                      % "jdom"                     % "1.0",
+  "jdom"                      % "jdom"                     % "1.1",
   "com.github.equella.jpf"    % "jpf"                      % "1.0.7",
   "log4j"                     % "log4j"                    % "1.2.17",
   "net.oauth.core"            % "oauth"                    % "20100527",
@@ -366,6 +366,7 @@ run := {
 (assembly / fullClasspath) := (Compile / fullClasspath).value
 
 (assembly / assemblyMergeStrategy) := {
+  case PathList("META-INF", "jdom-info.xml")                => MergeStrategy.first
   case PathList("META-INF", "axiom.xml")                    => MergeStrategy.first
   case PathList("javax", "wsdl", _*)                        => MergeStrategy.last
   case PathList("com", "ibm", "wsdl", _*)                   => MergeStrategy.first
