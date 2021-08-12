@@ -30,6 +30,8 @@ import com.tle.core.dynacollection.DynaCollectionService;
 import com.tle.core.encryption.EncryptionService;
 import com.tle.core.events.services.EventService;
 import com.tle.core.facetedsearch.service.FacetedSearchClassificationService;
+import com.tle.core.favourites.service.BookmarkService;
+import com.tle.core.favourites.service.FavouriteSearchService;
 import com.tle.core.fedsearch.FederatedSearchService;
 import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.i18n.BundleCache;
@@ -40,6 +42,8 @@ import com.tle.core.item.edit.attachment.AbstractAttachmentEditor;
 import com.tle.core.item.helper.ItemHelper;
 import com.tle.core.item.serializer.ItemSerializerService;
 import com.tle.core.item.serializer.impl.AttachmentSerializerProvider;
+import com.tle.core.item.service.DrmService;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.item.standard.service.ItemCommentService;
 import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.mimetypes.MimeTypeService;
@@ -47,6 +51,7 @@ import com.tle.core.oauth.service.OAuthService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.powersearch.PowerSearchService;
 import com.tle.core.replicatedcache.ReplicatedCacheService;
+import com.tle.core.replicatedcache.dao.ReplicatedCacheDao;
 import com.tle.core.search.service.impl.SearchPrivilegeTreeProvider;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.FileSystemService;
@@ -57,6 +62,7 @@ import com.tle.core.services.user.UserSessionService;
 import com.tle.core.settings.service.ConfigurationService;
 import com.tle.core.usermanagement.standard.dao.TLEUserDao;
 import com.tle.web.api.item.ItemLinkService;
+import com.tle.web.api.search.service.ExportService;
 import com.tle.web.contentrestrictions.ContentRestrictionsPrivilegeTreeProvider;
 import com.tle.web.coursedefaults.CourseDefaultsSettingsPrivilegeTreeProvider;
 import com.tle.web.customdateformat.DateFormatSettingsPrivilegeTreeProvider;
@@ -109,6 +115,8 @@ public class LegacyGuice extends AbstractModule {
 
   @Inject public static BasicFreemarkerFactory basicFreemarkerFactory;
 
+  @Inject public static BookmarkService bookmarkService;
+
   @Inject public static BundleCache bundleCache;
 
   @Inject public static CALService calService;
@@ -125,13 +133,19 @@ public class LegacyGuice extends AbstractModule {
 
   @Inject public static DiagnosticsSettingsPrivilegeTreeProvider diagnosticPrivProvider;
 
+  @Inject public static DrmService drmService;
+
   @Inject public static DynaCollectionService dynaCollectionService;
 
   @Inject public static EncryptionService encryptionService;
 
   @Inject public static EventService eventService;
 
+  @Inject public static ExportService exportService;
+
   @Inject public static FacetedSearchClassificationService facetedSearchClassificationService;
+
+  @Inject public static FavouriteSearchService favouriteSearchService;
 
   @Inject public static FederatedSearchService federatedSearchService;
 
@@ -160,6 +174,8 @@ public class LegacyGuice extends AbstractModule {
   @Inject public static ItemLinkService itemLinkService;
 
   @Inject public static ItemSerializerService itemSerializerService;
+
+  @Inject public static ItemService itemService;
 
   @Inject public static ItemXsltService itemXsltService;
 
@@ -206,6 +222,8 @@ public class LegacyGuice extends AbstractModule {
   public static QuickContributeAndVersionSettingsPrivilegeTreeProvider quickContribPrivProvider;
 
   @Inject public static RemoteCachingPrivilegeTreeProvider remoteCachePrivProvider;
+
+  @Inject public static ReplicatedCacheDao replicatedCacheDao;
 
   @Inject public static ReplicatedCacheService replicatedCacheService;
 

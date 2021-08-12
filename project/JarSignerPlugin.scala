@@ -26,31 +26,31 @@ object JarSignerPlugin extends AutoPlugin {
   import autoImport._
 
   override def projectSettings = Seq(
-    (keystore in ThisBuild) := {
+    (ThisBuild / keystore) := {
       val c = buildConfig.value
       if (c.hasPath("signer.keystore")) file(c.getString("signer.keystore"))
       else {
-        (baseDirectory in ThisProject).value / "generated.keystore"
+        (ThisProject / baseDirectory).value / "generated.keystore"
       }
     },
-    (keyAlias in ThisBuild) := {
+    (ThisBuild / keyAlias) := {
       val c = buildConfig.value
       if (c.hasPath("signer.alias")) c.getString("signer.alias") else "genalias"
     },
-    (storePassword in ThisBuild) := {
+    (ThisBuild / storePassword) := {
       val c = buildConfig.value
       if (c.hasPath("signer.storePassword")) c.getString("signer.storePassword") else "genpassword"
     },
-    (keyPassword in ThisBuild) := {
+    (ThisBuild / keyPassword) := {
       val c = buildConfig.value
       if (c.hasPath("signer.keyPassword")) Some(c.getString("signer.keyPassword")) else None
     },
-    (tsaUrl in ThisBuild) := {
+    (ThisBuild / tsaUrl) := {
       val c       = buildConfig.value
       val seconds = c.getInt("signer.tsaDelay")
       if (c.hasPath("signer.tsaUrl")) Some((c.getString("signer.tsaUrl"), seconds)) else None
     },
-    (jarSigner in ThisBuild) := { (inJar, outJar) =>
+    (ThisBuild / jarSigner) := { (inJar, outJar) =>
       val log     = sLog.value
       val keyFile = keystore.value
       val alias   = keyAlias.value

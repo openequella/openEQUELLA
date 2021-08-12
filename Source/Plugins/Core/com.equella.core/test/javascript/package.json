@@ -1,0 +1,26 @@
+{
+  "name": "openequella-legacyjs-test",
+  "private": true,
+  "config": {
+    "jest": {
+      "verbose": true
+    }
+  },
+  "scripts": {
+    "clean": "rm -rf node_modules/",
+    "test": "jest test"
+  },
+  "dependencies": {},
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/jest": "26.0.23",
+    "@types/rewire": "2.5.28",
+    "@types/uuid": "8.3.0",
+    "babel-jest": "26.6.3",
+    "jest": "26.6.3",
+    "jest-config": "26.6.3",
+    "rewire": "5.0.0",
+    "ts-jest": "26.5.4",
+    "typescript": "4.2.4"
+  }
+}

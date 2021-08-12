@@ -793,6 +793,16 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
           if (response.getCode() == 401) {
             throw new CanvasAuthException(
                 CurrentLocale.get("com.tle.core.connectors.canvas.error.unauthorized"));
+          }
+          if (response.getCode() == 400 && response.getBody().contains("Apache")) {
+            // Invalidating cookie cache, as this is a known source of these errors
+            httpService.clearCookieCache();
+            LOGGER.debug("Error response from Canvas's Apache");
+            LOGGER.debug(response.getCode());
+            LOGGER.debug(response.getMessage());
+            LOGGER.debug(response.getBody());
+            throw new CanvasApacheException(
+                CurrentLocale.get("com.tle.core.connectors.canvas.error.apache"));
           } else {
             final String body = response.getBody();
             throw new RuntimeException(
@@ -988,6 +998,12 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
 
   private static class CanvasAuthException extends RuntimeException {
     public CanvasAuthException(String message) {
+      super(message);
+    }
+  }
+
+  public static class CanvasApacheException extends RuntimeException {
+    public CanvasApacheException(String message) {
       super(message);
     }
   }

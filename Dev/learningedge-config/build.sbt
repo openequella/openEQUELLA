@@ -7,7 +7,7 @@ prepareDevConfig := {
   val baseDir         = baseDirectory.value
   val srcRoot         = baseDir.getParentFile.getParentFile
   val pluginRoots     = Seq(srcRoot / "Source/Plugins", srcRoot / "Platform", srcRoot / "Interface")
-  val installerConfig = (baseDirectory in LocalProject("Installer")).value / "data/server/learningedge-config"
+  val installerConfig = (LocalProject("Installer") / baseDirectory).value / "data/server/learningedge-config"
   val defaultsDir     = baseDirectory.value / "defaults"
   val fromInstaller = Seq(
     installerConfig / "hikari.properties"

@@ -21,6 +21,7 @@ package com.tle.web.api.item.interfaces.beans;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean;
+import java.util.Optional;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
@@ -31,6 +32,7 @@ public abstract class AttachmentBean extends AbstractExtendableBean {
   private String viewer;
   private boolean preview;
   private boolean erroredIndexing;
+  private boolean restricted;
 
   public String getUuid() {
     return uuid;
@@ -67,6 +69,14 @@ public abstract class AttachmentBean extends AbstractExtendableBean {
     this.preview = preview;
   }
 
+  public void setRestricted(boolean restricted) {
+    this.restricted = restricted;
+  }
+
+  public boolean isRestricted() {
+    return restricted;
+  }
+
   /**
    * @see com.tle.beans.item.attachments.IAttachment#isErroredIndexing
    * @return The value of erroredIndexing
@@ -81,5 +91,16 @@ public abstract class AttachmentBean extends AbstractExtendableBean {
    */
   public void setErroredIndexing(boolean erroredIndexing) {
     this.erroredIndexing = erroredIndexing;
+  }
+
+  /**
+   * An ID for an attachment which is located on an external platform. Encoding of this value is
+   * specific to the attachment type. For internal oEQ attachments it will be absent.
+   *
+   * @return a possibly encoded reference to an attachment in an external system, or 'empty' if an
+   *     attachment local to this oEQ institution.
+   */
+  public Optional<String> getExternalId() {
+    return Optional.empty();
   }
 }

@@ -19,12 +19,11 @@
 package com.tle.web.api.cloudprovider
 
 import java.util.UUID
-
 import cats.syntax.functor._
 import com.tle.core.cloudproviders._
 import com.tle.core.db._
-import com.tle.core.settings.SettingsDB
 import com.tle.legacy.LegacyGuice
+import com.tle.web.api.settings.SettingsApiHelper.ensureEditSystem
 import com.tle.web.api.{ApiHelper, EntityPaging}
 import com.tle.web.settings.SettingsList
 import io.lemonlabs.uri.Url
@@ -81,23 +80,22 @@ class CloudProviderApi {
     checkPermissions()
     UrlParser.parseUrl(providerUrl) match {
       case Success(u: Url) =>
+        ensureEditSystem()
         RunWithDB.execute {
-          SettingsDB.ensureEditSystem {
-            for {
-              token <- CloudProviderDB.createRegistrationToken
-            } yield {
-              val returnUrl = ApiHelper
-                .apiUriBuilder()
-                .path(classOf[CloudProviderApi])
-                .path(classOf[CloudProviderApi], "register")
-                .queryParam(TokenParam, token)
-                .build()
-                .toString
-              CloudProviderForward(
-                u.addParam(RegistrationParam, returnUrl)
-                  .addParam(InstUrl, LegacyGuice.urlService.getBaseInstitutionURI.toString)
-                  .toString)
-            }
+          for {
+            token <- CloudProviderDB.createRegistrationToken
+          } yield {
+            val returnUrl = ApiHelper
+              .apiUriBuilder()
+              .path(classOf[CloudProviderApi])
+              .path(classOf[CloudProviderApi], "register")
+              .queryParam(TokenParam, token)
+              .build()
+              .toString
+            CloudProviderForward(
+              u.addParam(RegistrationParam, returnUrl)
+                .addParam(InstUrl, LegacyGuice.urlService.getBaseInstitutionURI.toString)
+                .toString)
           }
         }
       case _ => throw new BadRequestException("Invalid provider registration url")

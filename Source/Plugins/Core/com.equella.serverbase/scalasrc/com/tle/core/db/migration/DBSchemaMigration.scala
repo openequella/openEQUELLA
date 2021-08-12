@@ -60,7 +60,6 @@ trait DBSchemaMigration {
     addTablesAndIndexes(Seq.empty, indexes, progress)
   }
 
-  def auditLogNewColumns: TableColumns
   def viewCountTables: Seq[TableDefinition]
 
   def newEntityTables: Seq[TableDefinition]

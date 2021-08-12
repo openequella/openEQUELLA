@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.inject.Singleton;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 
 @SuppressWarnings("nls")
 @Bind(AttachmentDao.class)
@@ -124,5 +126,14 @@ public class AttachmentDaoImpl extends GenericDaoImpl<Attachment, Long> implemen
                     hql, params.toArray(new String[params.size()]), paramVals.toArray());
     // it's possible that value1 could be
     return attachments;
+  }
+
+  // Criteria for checking attachments against institution of the item and UUID of the
+  // attachment. Detached so that we don't need to create a Hibernate session until one is required.
+  private DetachedCriteria criteriaByUuid(String uuid) {
+    return DetachedCriteria.forClass(Attachment.class)
+        .createAlias("item", "i")
+        .add(Restrictions.eq("i.institution", CurrentInstitution.get()))
+        .add(Restrictions.eq("uuid", uuid));
   }
 }

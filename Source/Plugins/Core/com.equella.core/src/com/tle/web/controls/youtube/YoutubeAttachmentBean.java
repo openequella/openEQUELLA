@@ -20,6 +20,7 @@ package com.tle.web.controls.youtube;
 
 import com.tle.web.api.item.equella.interfaces.beans.EquellaAttachmentBean;
 import java.util.Date;
+import java.util.Optional;
 
 @SuppressWarnings("nls")
 public class YoutubeAttachmentBean extends EquellaAttachmentBean {
@@ -108,5 +109,10 @@ public class YoutubeAttachmentBean extends EquellaAttachmentBean {
 
   public void setCustomParameters(String customParameters) {
     this.customParameters = customParameters;
+  }
+
+  @Override
+  public Optional<String> getExternalId() {
+    return Optional.of(getVideoId());
   }
 }

@@ -52,7 +52,6 @@ class SearchFilterResource {
     responseContainer = "List"
   )
   def listSearchFilters: Response = {
-    searchPrivProvider.checkAuthorised()
     val filters = loadSettings(new SearchSettings).getFilters
     Response.ok().entity(filters).build()
   }
@@ -65,7 +64,6 @@ class SearchFilterResource {
     response = classOf[SearchFilter]
   )
   def getSearchFilter(@ApiParam(value = "filter UUID") @PathParam("uuid") uuid: UUID): Response = {
-    searchPrivProvider.checkAuthorised()
     val searchSettings = loadSettings(new SearchSettings)
     val filterId       = uuid.toString
     getFilterById(filterId, searchSettings) match {
@@ -135,6 +133,7 @@ class SearchFilterResource {
     responseContainer = "List"
   )
   def batchUpdate(searchFilters: Array[SearchFilter]): Response = {
+    searchPrivProvider.checkAuthorised()
     val searchSettings = loadSettings(new SearchSettings)
     val batchResponses = ListBuffer[ApiBatchOperationResponse]()
 

@@ -27,10 +27,10 @@ object YUICompressPlugin extends AutoPlugin {
   }
 
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
-    minify in Compile := {
+    (Compile / minify) := {
       val logger  = streams.value.log
-      val baseDir = (resourceManaged in Compile).value
-      yuiResources.value.pair(rebase((resourceDirectory in Compile).value, "")).map {
+      val baseDir = (Compile / resourceManaged).value
+      yuiResources.value.pair(rebase((Compile / resourceDirectory).value, "")).map {
         case (f, path) =>
           IO.reader(f) {
             br =>
@@ -56,6 +56,6 @@ object YUICompressPlugin extends AutoPlugin {
           }
       }
     },
-    resourceGenerators in Compile += (minify in Compile).taskValue
+    (Compile / resourceGenerators) += (Compile / minify).taskValue
   )
 }

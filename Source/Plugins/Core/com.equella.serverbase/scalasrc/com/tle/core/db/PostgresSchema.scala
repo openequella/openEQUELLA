@@ -18,10 +18,7 @@
 
 package com.tle.core.db
 
-import java.util.UUID
-
 import com.tle.core.db.migration.DBSchemaMigration
-import com.tle.core.db.tables.CachedValue
 import com.tle.core.db.types.DbUUID
 import io.doolse.simpledba.Iso
 import io.doolse.simpledba.jdbc._
@@ -40,10 +37,6 @@ object PostgresSchema
   lazy val hibSeq = Sequence[Long]("hibernate_sequence")
 
   def autoIdCol = longCol
-
-  override def insertAuditLog = insertWith(auditLog, hibSeq)
-
-  override def insertCachedValue = insertWith(cachedValues, hibSeq)
 
   def dbUuidCol =
     wrap[String, DbUUID](stringCol,

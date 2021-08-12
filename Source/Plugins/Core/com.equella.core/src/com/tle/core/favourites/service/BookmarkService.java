@@ -24,13 +24,16 @@ import com.tle.beans.item.ItemKey;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface BookmarkService {
-  void add(Item item, String tags, boolean latest);
+  Bookmark add(Item item, Set<String> tags, boolean latest);
 
   void delete(long id);
 
   Bookmark getByItem(ItemKey itemId);
+
+  Bookmark getById(long id);
 
   /** Return a set of items that are not bookmarked by the current user. */
   List<Item> filterNonBookmarkedItems(Collection<Item> items);

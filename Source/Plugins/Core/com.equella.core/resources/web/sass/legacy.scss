@@ -44,6 +44,7 @@
 @import "htmleditorwebcontrol.css";
 @import "userdetails.css";
 @import "auth.css";
+@import "drmlicense.css";
 
 $small-breakpoint-max: "768px";
 $medium-breakpoint-max: "1200px";
@@ -63,6 +64,7 @@ $col2Width: 250px;
 $standardBorderRadius: 4px;
 $roundButtonRadius: 50px;
 $termSelectorHeight: 68px;
+$savePanelWidth: 221px;
 
 @mixin boxShadow {
   box-shadow: $boxShadow;
@@ -278,6 +280,30 @@ $termSelectorHeight: 68px;
   padding-left: $width;
 }
 
+@mixin standardButton {
+  @include curvedCorners;
+  padding: 0 $singleMargin 0 $singleMargin;
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: 64px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  background-color: $primaryColor;
+  color: set-text-color($primaryColor);
+  @include typography-button();
+
+  &:hover {
+    background-color: transparentize($primaryColor, 0.1);
+  }
+  &:active {
+    background-color: transparentize($primaryColor, 0.3);
+  }
+}
+
 /*****************************************************************************
 Animations
 *****************************************************************************/
@@ -302,12 +328,12 @@ Animations
   }
 }
 
+// need to explicitly exclude youtube preview iframe
 html,
 body,
 div,
 span,
 applet,
-iframe,
 h1,
 h2,
 h3,
@@ -328,6 +354,7 @@ del,
 dfn,
 em,
 font,
+iframe:not(.skip-css-reset),
 ins,
 kbd,
 q,
@@ -347,7 +374,7 @@ center,
 dl,
 dt,
 dd,
-ol,
+ol:not(.skip-css-reset),
 ul,
 li,
 fieldset,
@@ -376,6 +403,7 @@ select {
   background: transparent;
   font-family: "Roboto";
 }
+
 ul {
   list-style: none;
 }
@@ -418,27 +446,7 @@ Buttons
 *****************************************************************************/
 
 .btn {
-  @include curvedCorners;
-  padding: 0 $singleMargin 0 $singleMargin;
-  display: inline-flex;
-  position: relative;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  min-width: 64px;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  background-color: $primaryColor;
-  color: set-text-color($primaryColor);
-  @include typography-button();
-
-  &:hover {
-    background-color: transparentize($primaryColor, 0.1);
-  }
-  &:active {
-    background-color: transparentize($primaryColor, 0.3);
-  }
+  @include standardButton;
 }
 
 .button-expandable {
@@ -1237,6 +1245,16 @@ div.area {
   float: none;
 }
 
+.itemsummary-layout #col1 {
+  //handle long strings  in item summaries without breaking the layout
+  overflow-wrap: anywhere;
+}
+
+.wizard-layout #col1 {
+  //handle wizard control names and descriptions without breaking the layout
+  max-width: calc(100% - #{$savePanelWidth});
+}
+
 .area h3 {
   @include typography-headline-6;
   color: $primaryTextColor;
@@ -1774,7 +1792,7 @@ Search page
   }
 
   #col2 {
-    width: 221px;
+    width: $savePanelWidth;
     margin-left: $doubleMargin;
 
     .box hr {
@@ -2921,7 +2939,7 @@ Contribution wizard styling
 *****************************************************************************/
 .wizard-layout #col2,
 #affix-div {
-  width: 221px;
+  width: $savePanelWidth;
 }
 
 .wizard-layout .contribution-rightNav {
@@ -3702,8 +3720,22 @@ Item summary styling
 .itemsummary-layout #col1 .displayNodeHalf {
   display: inline-block;
   vertical-align: top;
-  margin: -15px 0;
-  width: 49%;
+  margin: -$doubleMargin $doubleMargin 0 0;
+  width: calc(50% - #{2 * $doubleMargin});
+}
+
+.displayNodes p {
+  margin: $doubleMargin 0;
+}
+.displayNodes h3 {
+  padding-top: $doubleMargin;
+}
+
+h3.item-description-title {
+  margin: $doubleMargin 0;
+}
+p.item-description {
+  margin: $doubleMargin 0 0 0;
 }
 
 .action-button.select {
@@ -4236,13 +4268,74 @@ a.modal-control.modal-save {
   }
 }
 
-.urlHandler {
+.urlHandler,
+.kalturaHandler {
   .modal-content .modal-content-background .modal-content-inner .float-left {
     @include editAttachmentDialogStyles;
   }
 
   .modal-content-inner {
     flex-direction: row;
+  }
+}
+
+.kalturaHandler {
+  @include buttonShadowBorder;
+
+  .choice.odd {
+    background-color: white;
+  }
+
+  .choice.even {
+    background-color: #f3f1eb;
+  }
+
+  img#kaltura-logo {
+    position: absolute;
+    bottom: 25px;
+    right: 35px;
+    opacity: 0.35;
+  }
+
+  .choice-list div {
+    position: relative;
+    padding: $doubleMargin;
+  }
+
+  div.choice-list {
+    border: 1px solid #8f8b7e;
+  }
+
+  div.choice-list .choice {
+    cursor: pointer;
+  }
+
+  div.choice-list .choice:hover {
+    background-color: #ffffcc;
+  }
+
+  div.choice-list .choice.selected {
+    background-color: #80d2ee;
+  }
+
+  .choice h4 {
+    font-size: 12px;
+    padding-bottom: $minimalMargin;
+  }
+
+  #kaltura-query button {
+    background-color: $primaryColor;
+    color: set-text-color($primaryColor);
+    padding-left: $singleMargin;
+    padding-right: $singleMargin;
+    margin-left: $singleMargin;
+  }
+
+  #kaltura-simple-uploader {
+    input[type="submit"],
+    button {
+      @include standardButton;
+    }
   }
 }
 
@@ -4428,12 +4521,9 @@ img.warningimg {
   vertical-align: middle;
 }
 
+// The File Uoloader is rewritten in TS and some previous styles applied
+// to the Progress bar must be removed to avoid conflicts with MUI styles.
 .universalresources .progress-bar {
-  @include curvedCorners;
-  width: 200px;
-  height: 14px;
-  border: 1px solid #aaa;
-  margin: 0 10px 0 0;
   float: right;
 }
 
@@ -4466,7 +4556,7 @@ img.warningimg {
 /*****************************************************************************
  Selection Dialog
 *****************************************************************************/
-#wrapper {
+#wrapper:not(.skinny-layout) {
   min-width: 784px;
 }
 
@@ -5562,4 +5652,53 @@ button:focus {
 
 #wizard-controls .autocompleteControl table.zebra {
   margin-top: $termSelectorHeight;
+}
+
+.skinny-layout {
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+
+  #selection-header {
+    position: unset; // Unset position because it is an flex item.
+    height: auto;
+    padding-top: $singleMargin;
+  }
+
+  .navbar-inner {
+    display: flex;
+    justify-content: center; // Ensure the header content is centered.
+  }
+
+  .navbar-content {
+    display: flex; // Two items: '.pull-left' and '.centered-pills'
+  }
+
+  .navbar .pull-left {
+    margin-bottom: 0; // Override the margin-bottom added in '.nav'.
+  }
+
+  .navbar .pull-left li {
+    margin-top: 4px;
+  }
+
+  .navbar .centered-pills ul {
+    display: flex;
+    margin-bottom: 0;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .navbar .centered-pills li {
+    padding: 0 12px 0 12px;
+  }
+
+  .navbar .divider-vertical {
+    display: none;
+  }
+}
+
+#selection-page .area.error {
+  width: 100%;
 }

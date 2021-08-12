@@ -27,9 +27,10 @@ import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.equella.service.InitialiserService;
 import com.tle.core.institution.convert.AbstractMigratableConverter;
 import com.tle.core.institution.convert.ConverterParams;
+import com.tle.core.mimetypes.MimeTypeConstants;
+import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.mimetypes.dao.MimeEntryDao;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
@@ -43,6 +44,7 @@ public class MimeEntryConverter extends AbstractMigratableConverter<Object> {
 
   @Inject private MimeEntryDao mimeDao;
   @Inject private InitialiserService initialiserService;
+  @Inject private MimeTypeService mimeTypeService;
 
   @Override
   public void doDelete(Institution institution, ConverterParams callback) {
@@ -102,15 +104,14 @@ public class MimeEntryConverter extends AbstractMigratableConverter<Object> {
             @Override
             public void run() {
               MimeEntry mimeEntry = xmlHelper.readXmlFile(mimeFolder, entry);
-
               Map<String, String> attrs = mimeEntry.getAttributes();
-              Iterator<String> iter = attrs.values().iterator();
 
-              while (iter.hasNext()) {
-                if (Check.isEmpty(iter.next())) {
-                  iter.remove();
-                }
+              String enabledViewers = mimeTypeService.getEnabledViewerList(attrs);
+              if (!Check.isEmpty(enabledViewers)) {
+                attrs.put(MimeTypeConstants.KEY_ENABLED_VIEWERS, enabledViewers);
               }
+
+              attrs.values().removeIf(Check::isEmpty);
               mimeEntry.setInstitution(institution);
               mimeEntry.setId(0);
 

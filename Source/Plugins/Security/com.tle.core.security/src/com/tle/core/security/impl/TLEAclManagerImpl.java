@@ -149,7 +149,7 @@ public class TLEAclManagerImpl implements TLEAclManager {
       // privileges, and they were all granted...
       if (privs != null
           && privs.keySet().containsAll(privileges)
-          && !privs.values().contains(Boolean.FALSE)) {
+          && !privs.containsValue(Boolean.FALSE)) {
         // ... add the object!
         results.add(obj);
       }
@@ -162,6 +162,11 @@ public class TLEAclManagerImpl implements TLEAclManager {
     final Collection<String> privs =
         Arrays.stream(privilege).map(p -> p.toString()).collect(Collectors.toList());
     return !filterNonGrantedPrivileges(domainObj, privs).isEmpty();
+  }
+
+  @Override
+  public boolean hasPrivilege(Collection<String> privileges, boolean includePossibleOwnerAcls) {
+    return !filterNonGrantedPrivileges(privileges, includePossibleOwnerAcls).isEmpty();
   }
 
   @Override
@@ -746,7 +751,7 @@ public class TLEAclManagerImpl implements TLEAclManager {
           // Avoid infinite loops
           throw new RuntimeException(
               "Loop in security target transformation detected: "
-                  + handledClassNames.toString()
+                  + handledClassNames
                   + " attempting to then go back to "
                   + targetClass.getName()
                   + " again");
@@ -797,9 +802,7 @@ public class TLEAclManagerImpl implements TLEAclManager {
     List<AccessEntry> entries = aclDao.getVirtualAccessEntries(priorities);
     ArrayListMultimap<String, AccessEntry> map = ArrayListMultimap.create();
     for (AccessEntry accessEntry : entries) {
-      map.put(
-          accessEntry.getTargetObject() + Integer.toString(Math.abs(accessEntry.getAclPriority())),
-          accessEntry);
+      map.put(accessEntry.getTargetObject() + Math.abs(accessEntry.getAclPriority()), accessEntry);
     }
     return map;
   }

@@ -23,6 +23,7 @@ import com.tle.annotation.NonNull;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.common.Pair;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -45,11 +46,40 @@ public interface ReplicatedCacheService {
   <V extends Serializable> ReplicatedCache<V> getCache(
       @NonNull String cacheId, long maxLocalCacheSize, long ttl, @NonNull TimeUnit ttlUnit);
 
+  /**
+   * Similar to {@link #getCache(String, long, long, TimeUnit)}, but also allow persisting cache
+   * values in DB.
+   *
+   * @param cacheId unique identifier for this replicated cache.
+   * @param maxLocalCacheSize maximum number of values to be cache in-memory.
+   * @param ttl Time-to-live for cache values.
+   * @param ttlUnit units for ttl value.
+   * @param alwaysPersist `true` to persist cache values in Database.
+   */
+  <V extends Serializable> ReplicatedCache<V> getCache(
+      @NonNull String cacheId,
+      long maxLocalCacheSize,
+      long ttl,
+      @NonNull TimeUnit ttlUnit,
+      boolean alwaysPersist);
+
   @NonNullByDefault
-  public interface ReplicatedCache<V extends Serializable> {
+  interface ReplicatedCache<V extends Serializable> {
     Optional<V> get(@NonNull String key);
 
     void put(@NonNull String key, @NonNull V value);
+
+    /**
+     * Similar to { @link #put(String, Serializable)} }, but also allow specifying TTL of the value
+     * saved in DB to support values that have longer or shorter TTL.
+     *
+     * @param key Key of the object
+     * @param value Value of the object
+     * @param ttl TTL of the value saved in DB
+     */
+    default void put(@NonNull String key, @NonNull V value, Instant ttl) {
+      throw new UnsupportedOperationException();
+    }
 
     void invalidate(@NonNull String... keys);
 

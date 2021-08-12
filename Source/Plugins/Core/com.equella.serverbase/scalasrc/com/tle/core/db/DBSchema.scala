@@ -66,38 +66,7 @@ trait DBSchema extends StdColumns {
 
   def autoIdCol: C[Long]
 
-  val auditLog = TableMapper[AuditLogEntry].table("audit_log_entry").edit('id, autoIdCol).key('id)
-
-  def insertAuditLog: (Long => AuditLogEntry) => Stream[JDBCIO, AuditLogEntry]
-
-  val userAndInst = Cols('user_id, 'institution_id)
-
-  val auditLogQueries = AuditLogQueries(
-    insertAuditLog,
-    auditLog.delete.where(userAndInst, BinOp.EQ).build,
-    auditLog.query.where(userAndInst, BinOp.EQ).build,
-    auditLog.delete.where('institution_id, BinOp.EQ).build,
-    auditLog.delete.where('timestamp, BinOp.LT).build,
-    auditLog.select.count.where('institution_id, BinOp.EQ).buildAs[InstId, Int],
-    auditLog.query.where('institution_id, BinOp.EQ).build
-  )
-
-  val auditLogTable = auditLog.definition
-
-  val auditLogIndexColumns: TableColumns = auditLog.subset(
-    Cols('institution_id, 'timestamp, 'event_category, 'event_type, 'user_id) ++ Cols(
-      'session_id,
-      'data1,
-      'data2,
-      'data3
-    )
-  )
-
-  allTables += auditLogTable
-  allIndexes ++= indexEach(auditLogIndexColumns, "audit_" + _.name)
-
-  val auditLogNewColumns = auditLog.subset(Cols('meta))
-
+  val userAndInst   = Cols('user_id, 'institution_id)
   val itemViewId    = Cols('inst, 'item_uuid, 'item_version)
   val itemViewCount = TableMapper[ItemViewCount].table("viewcount_item").keys(itemViewId)
   val attachmentViewCount = TableMapper[AttachmentViewCount]
@@ -172,20 +141,6 @@ trait DBSchema extends StdColumns {
     entityTable.query.where(Cols('inst_id), BinOp.EQ).build
   )
 
-  def cachedValueByValue: ((String255, String, InstId)) => Stream[JDBCIO, CachedValue] =
-    cachedValues.query.where(Cols('cache_id, 'value, 'institution_id), BinOp.EQ).build
-
-  val cachedValues = TableMapper[CachedValue].table("cached_value").edit('id, autoIdCol).key('id)
-
-  def insertCachedValue: (Long => CachedValue) => Stream[JDBCIO, CachedValue]
-
-  val cachedValueQueries = CachedValueQueries(
-    insertCachedValue,
-    cachedValues.writes,
-    cachedValues.query.where(Cols('cache_id, 'key, 'institution_id), BinOp.EQ).build,
-    cachedValueByValue
-  )
-
   allTables ++= newEntityTables
   allIndexes ++= newEntityIndexes
 
@@ -193,7 +148,6 @@ trait DBSchema extends StdColumns {
     allTables.map(schemaSQL.createTable) ++
       allIndexes.map(i => schemaSQL.createIndex(i._1, i._2))
   }.asJava
-
 }
 
 object DBSchema {

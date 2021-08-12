@@ -1,6 +1,7 @@
 package io.github.openequella.search;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
@@ -87,5 +88,58 @@ public class NewSearchPageTest extends AbstractSessionTest {
     searchPage.waitForSearchCompleted(7);
     searchPage.selectCollection("Hardware");
     searchPage.waitForSearchCompleted(7);
+    searchPage.verifyExportButtonNotDisplayed();
+  }
+
+  @Test(
+      description =
+          "Search with two differently privileged users when there is a restricted attachment")
+  @NewUIOnly
+  public void searchWithRestrictedAttachments() {
+    String attachmentTitle = "https://en.wikipedia.org/wiki/Itanium";
+    String searchTerm = "Itanium";
+    // The Item 'Itanium' has been set with a restricted attachment.
+
+    // To test, logon as TLE_ADMINISTRATOR (who inherently has VIEW_RESTRICTED_ATTACHMENTS)
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
+    searchPage = new NewSearchPage(context).load();
+
+    // and verify the attachment appears when the item appears in a search.
+    searchPage.changeQuery(searchTerm);
+    searchPage.waitForSearchCompleted(1);
+    searchPage.verifyAttachmentDisplayed(attachmentTitle);
+
+    // Then, logon as AutoTest (who doesn't have VIEW_RESTRICTED_ATTACHMENTS)
+    logon(AUTOTEST_LOGON, AUTOTEST_PASSWD);
+    searchPage = new NewSearchPage(context).load();
+
+    // and verify that the attachment doesn't show when the item appears in a search.
+    searchPage.changeQuery(searchTerm);
+    searchPage.waitForSearchCompleted(1);
+    searchPage.verifyAttachmentNotDisplayed(attachmentTitle);
+  }
+
+  @Test(description = "Export search result with a Collection")
+  @NewUIOnly
+  public void export() {
+    final String COLLECTION_ERROR_MESSAGE = "Download limited to one collection.";
+    searchPage = new NewSearchPage(context).load();
+
+    searchPage.newSearch();
+    searchPage.export();
+    // Show snackbar to indicate the Collection selection error.
+    searchPage.verifySnackbarMessage(COLLECTION_ERROR_MESSAGE);
+
+    searchPage.selectCollection("programming");
+    searchPage.waitForSearchCompleted(9);
+    searchPage.export();
+    // Show a Tick icon to indicate an export is done.
+    assertTrue(searchPage.getExportDoneButton().isDisplayed());
+
+    searchPage.selectCollection("hardware");
+    searchPage.waitForSearchCompleted(16);
+    searchPage.export();
+    // Show snackbar again to indicate the Collection selection error.
+    searchPage.verifySnackbarMessage(COLLECTION_ERROR_MESSAGE);
   }
 }

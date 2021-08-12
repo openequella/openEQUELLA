@@ -1,13 +1,13 @@
 lazy val adminConsoleJar = project in file("jarsrc")
 
-resourceGenerators in Compile += Def.task {
-  val outJar  = (resourceManaged in Compile).value / "web/adminconsole.jar"
-  val jarFile = (assembly in adminConsoleJar).value
+(Compile / resourceGenerators) += Def.task {
+  val outJar  = (Compile / resourceManaged).value / "web/adminconsole.jar"
+  val jarFile = (adminConsoleJar / assembly).value
   (jarSigner.value).apply(jarFile, outJar)
   Seq(outJar)
 }.taskValue
 
-assemblyMergeStrategy in assembly := {
+(assembly / assemblyMergeStrategy) := {
   // Post SpringHib5 upgrade, the following error was thrown on build:
   // deduplicate: different file contents found in the following:
   // [error] .../com.fasterxml/classmate/bundles/classmate-1.5.1.jar:module-info.class
@@ -20,6 +20,6 @@ assemblyMergeStrategy in assembly := {
   // As per https://stackoverflow.com/questions/54834125/sbt-assembly-deduplicate-module-info-class , discarding is OK for Java 8
   case "module-info.class" => MergeStrategy.discard
   case x =>
-    val oldStrategy = (assemblyMergeStrategy in assembly).value
+    val oldStrategy = (assembly / assemblyMergeStrategy).value
     oldStrategy(x)
 }

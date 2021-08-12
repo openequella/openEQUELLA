@@ -1,6 +1,6 @@
 {
   "name": "@openequella/rest-api-client",
-  "version": "2020.2.0-Alpha",
+  "version": "2021.2.0-Alpha",
   "license": "Apache-2.0",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
@@ -31,27 +31,26 @@
     "axios": "^0.21.0",
     "axios-cookiejar-support": "^1.0.0",
     "lodash": "^4.17.15",
-    "query-string": "^6.12.1",
-    "runtypes": "^5.0.1",
+    "query-string": "^7.0.0",
+    "runtypes": "^6.0.0",
     "tough-cookie": "^4.0.0",
-    "typescript-is": "^0.17.0"
+    "typescript-is": "^0.18.0"
   },
   "devDependencies": {
-    "@types/jest": "26.0.16",
+    "@types/jest": "26.0.24",
+    "@types/lodash": "4.14.172",
     "@types/tough-cookie": "^4.0.0",
-    "@types/lodash": "4.14.165",
-    "@typescript-eslint/eslint-plugin": "4.9.0",
-    "@typescript-eslint/parser": "4.9.0",
-    "core-js": "3.8.0",
-    "eslint": "7.14.0",
-    "eslint-plugin-jest": "24.1.3",
-    "jest": "26.6.3",
-    "rollup": "2.34.0",
-    "rollup-plugin-typescript2": "0.29.0",
-    "ts-jest": "26.4.4",
-    "ts-node": "9.0.0",
-    "tslib": "2.0.3",
+    "@typescript-eslint/eslint-plugin": "4.29.0",
+    "@typescript-eslint/parser": "4.29.0",
+    "core-js": "3.16.0",
+    "eslint": "7.32.0",
+    "eslint-plugin-jest": "24.4.0",
+    "jest": "27.0.6",
+    "rollup": "2.56.1",
+    "rollup-plugin-typescript2": "0.30.0",
+    "ts-jest": "27.0.4",
+    "tslib": "2.3.0",
     "ttypescript": "1.5.12",
-    "typescript": "4.0.5"
+    "typescript": "4.3.5"
   }
 }

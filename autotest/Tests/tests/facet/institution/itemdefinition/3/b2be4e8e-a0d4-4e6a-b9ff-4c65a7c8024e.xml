@@ -215,25 +215,70 @@
                   <boolean>false</boolean>
                 </entry>
                 <entry>
-                  <string>AllowPreviews</string>
+                  <string>FILE_SCORM_PACKAGE</string>
                   <boolean>false</boolean>
                 </entry>
                 <entry>
-                  <string>AllowMultiple</string>
+                  <string>FILE_NOUNZIP</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
+                  <string>FILE_MAXFILESIZE</string>
+                  <int>0</int>
+                </entry>
+                <entry>
+                  <string>FILE_RESTRICTSIZE</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
+                  <string>FILE_QTI_PACKAGE</string>
                   <boolean>false</boolean>
                 </entry>
                 <entry>
                   <string>AttachmentTypes</string>
                   <set>
+                    <string>fileHandler</string>
                     <string>urlHandler</string>
                   </set>
+                </entry>
+                <entry>
+                  <string>LINK_DUPLICATION_CHECK</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
+                  <string>FILE_DUPLICATION_CHECK</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
+                  <string>AllowPreviews</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
+                  <string>FILE_SUPPRESS_THUMBS</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
+                  <string>AllowMultiple</string>
+                  <boolean>true</boolean>
+                </entry>
+                <entry>
+                  <string>FILE_RESTRICTMIME</string>
+                  <boolean>false</boolean>
+                </entry>
+                <entry>
+                  <string>MIMETYPES</string>
+                  <list/>
+                </entry>
+                <entry>
+                  <string>FILE_PACKAGEONLY</string>
+                  <boolean>false</boolean>
                 </entry>
                 <entry>
                   <string>MaxFiles</string>
                   <int>0</int>
                 </entry>
                 <entry>
-                  <string>LINK_DUPLICATION_CHECK</string>
+                  <string>FILE_SHOW_THUMB_OPT</string>
                   <boolean>false</boolean>
                 </entry>
               </attributes>

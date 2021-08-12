@@ -21,13 +21,12 @@ package com.tle.web.settings
 import com.tle.common.connectors.ConnectorConstants.{PRIV_CREATE_CONNECTOR, PRIV_EDIT_CONNECTOR}
 import com.tle.common.externaltools.constants.ExternalToolConstants
 import com.tle.common.lti.consumers.LtiConsumerConstants
+import com.tle.common.security.SecurityConstants
 import com.tle.common.userscripts.UserScriptsConstants
-import com.tle.core.activation.service.CourseInfoService
-import com.tle.core.db.{DB, RunWithDB}
 import com.tle.core.echo.EchoConstants
 import com.tle.core.i18n.CoreStrings
 import com.tle.core.oauth.OAuthConstants
-import com.tle.core.security.AclChecks
+import com.tle.core.security.ACLChecks.hasAcl
 import com.tle.legacy.LegacyGuice._
 import com.tle.web.cloudprovider.CloudProviderConstants
 import com.tle.web.mimetypes.MimeEditorUtils
@@ -42,25 +41,9 @@ object CoreSettingsPage {
             nameKey: String,
             descKey: String,
             page: String,
-            editable: () => Boolean) =
-    SettingsPage(CoreStrings.lookup, id, group, nameKey, descKey, page, "web", editable)
-}
-
-object CoreSettingsRest {
-  def apply(id: String,
-            group: String,
-            nameKey: String,
-            descKey: String,
-            endpoint: String,
-            editable: DB[Set[String]]) =
-    SettingsPage(CoreStrings.lookup,
-                 id,
-                 group,
-                 nameKey,
-                 descKey,
-                 endpoint,
-                 "rest",
-                 () => RunWithDB.execute(editable).nonEmpty)
+            editable: () => Boolean,
+            uriType: String = "web") =
+    SettingsPage(CoreStrings.lookup, id, group, nameKey, descKey, page, uriType, editable)
 }
 
 object SettingsList {
@@ -77,13 +60,15 @@ object SettingsList {
     new HtmlLinkState(new TextLabel(settings.name), new SimpleBookmark(settings.uri))
   }
 
-  val uiSettings = CoreSettingsRest(
+  val uiSettings = CoreSettingsPage(
     "ui",
     "ui",
     "uisettings.name",
     "uisettings.desc",
     "api/settings/ui",
-    AclChecks.filterNonGrantedPrivileges(Iterable("EDIT_SYSTEM_SETTINGS"), true))
+    () => hasAcl(SecurityConstants.EDIT_SYSTEM_SETTINGS, includePossibleOwnerAcls = true),
+    "rest"
+  )
 
   val loginNoticeSettings = CoreSettingsPage(
     "loginnotice",

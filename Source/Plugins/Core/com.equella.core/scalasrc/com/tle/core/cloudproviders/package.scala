@@ -18,12 +18,10 @@
 
 package com.tle.core
 import java.util.UUID
-
 import com.tle.beans.Institution
 import com.tle.common.usermanagement.user.AbstractUserState
 import com.tle.common.usermanagement.user.valuebean.DefaultUserBean
-import com.tle.exceptions.PrivilegeRequiredException
-import com.tle.legacy.LegacyGuice
+import com.tle.core.security.ACLChecks.hasAclOrThrow
 import com.tle.web.cloudprovider.CloudProviderConstants
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto._
@@ -100,10 +98,6 @@ package object cloudproviders {
   }
 
   def checkPermissions(): Unit = {
-    if (LegacyGuice.aclManager
-          .filterNonGrantedPrivileges(CloudProviderConstants.PRI_MANAGE_CLOUD_PROVIDER)
-          .isEmpty) {
-      throw new PrivilegeRequiredException(CloudProviderConstants.PRI_MANAGE_CLOUD_PROVIDER)
-    }
+    hasAclOrThrow(CloudProviderConstants.PRI_MANAGE_CLOUD_PROVIDER)
   }
 }

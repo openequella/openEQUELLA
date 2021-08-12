@@ -20,10 +20,12 @@ package com.tle.web.sections.render;
 
 import com.tle.common.Check;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /** @author aholland */
 public final class TextUtils {
@@ -69,6 +71,18 @@ public final class TextUtils {
     return text;
   }
 
+  /**
+   * Tokenize a text by regex and put each split text into an array. And return a Stream whose
+   * source is the array.
+   *
+   * @param text Text to be processed.
+   * @param regex Regex used to tokenize the text.
+   * @return A Stream containing an array created by tokenizing the provided text.
+   */
+  public static Stream<String> tokenizeString(String text, String regex) {
+    return Arrays.stream(text.split(regex)).filter(s -> !Check.isEmpty(s));
+  }
+
   private String returnMatchingFraction(String text, Collection<String> terms, int maxLength) {
     ArrayList<Integer> positions = new ArrayList<Integer>();
 
@@ -96,13 +110,13 @@ public final class TextUtils {
         // the beginning
         if (prePosition > 2 * WORDS_SPACE_LENGTH) {
           sub.append((char) 0x2026);
-          sub.append(text.substring(curPosition - WORDS_SPACE_LENGTH, curPosition));
+          sub.append(text, curPosition - WORDS_SPACE_LENGTH, curPosition);
         } else {
-          sub.append(text.substring(0, curPosition));
+          sub.append(text, 0, curPosition);
         }
 
         if (positions.size() == 2) {
-          sub.append(text.substring(curPosition, text.length()));
+          sub.append(text.substring(curPosition));
         }
       }
 
@@ -112,13 +126,13 @@ public final class TextUtils {
         // two terms are too far from each other then add'...' in
         // between
         if (curPosition - prePosition > 2 * WORDS_SPACE_LENGTH) {
-          sub.append(text.substring(prePosition, prePosition + WORDS_SPACE_LENGTH));
+          sub.append(text, prePosition, prePosition + WORDS_SPACE_LENGTH);
           sub.append((char) 0x2026);
-          sub.append(text.substring(curPosition - WORDS_SPACE_LENGTH, curPosition));
+          sub.append(text, curPosition - WORDS_SPACE_LENGTH, curPosition);
         }
         // two terms are close to each other
         else {
-          sub.append(text.substring(prePosition, curPosition));
+          sub.append(text, prePosition, curPosition);
         }
       }
       // found terms' end positions
@@ -126,11 +140,11 @@ public final class TextUtils {
         int prePosition = positions.get(index - 1);
         // handle the ending
         if (index == positions.size() - 1) {
-          sub.append(text.substring(prePosition, text.length()));
+          sub.append(text.substring(prePosition));
         }
         // concatenate search terms
         else {
-          sub.append(text.substring(prePosition, curPosition));
+          sub.append(text, prePosition, curPosition);
         }
       }
     }
