@@ -18,6 +18,7 @@
 
 package com.tle.core.replicatedcache.dao;
 
+import com.dytech.devlib.Base64;
 import com.tle.beans.Institution;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.Bind;
@@ -26,9 +27,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import javax.inject.Singleton;
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import org.hibernate.HibernateException;
-import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,6 +65,44 @@ public class ReplicatedCacheDaoImpl extends GenericDaoImpl<CachedValue, Long>
                     q.setParameter("institution", CurrentInstitution.get());
 
                     return q.uniqueResult();
+                  }
+                });
+  }
+
+  @Override
+  @Transactional
+  public CachedValue getByValue(String cacheId, byte[] value) {
+    return (CachedValue)
+        getHibernateTemplate()
+            .execute(
+                new HibernateCallback() {
+                  @Override
+                  public Object doInHibernate(Session session) throws HibernateException {
+                    EntityManager entityManager = createEntityManager(session);
+                    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+                    CriteriaQuery<CachedValue> criteriaQuery =
+                        criteriaBuilder.createQuery(CachedValue.class);
+                    Root<CachedValue> rootType = criteriaQuery.from(CachedValue.class);
+
+                    Predicate predicateForValue =
+                        criteriaBuilder.equal(rootType.get("value"), new Base64().encode(value));
+                    Predicate predicateForCacheId =
+                        criteriaBuilder.equal(rootType.get("cacheId"), cacheId);
+                    Predicate predicateForInstitution =
+                        criteriaBuilder.equal(
+                            rootType.get("institution"), CurrentInstitution.get());
+
+                    Predicate finalPredicate =
+                        criteriaBuilder.and(
+                            predicateForValue, predicateForCacheId, predicateForInstitution);
+                    criteriaQuery.where(finalPredicate);
+
+                    return entityManager
+                        .createQuery(criteriaQuery)
+                        .setMaxResults(1)
+                        .getResultStream()
+                        .findFirst()
+                        .orElse(null);
                   }
                 });
   }

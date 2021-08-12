@@ -18,7 +18,9 @@
 
 package com.tle.web.api.settings
 
+import com.tle.common.security.SecurityConstants
 import com.tle.common.settings.ConfigurationProperties
+import com.tle.core.security.ACLChecks.hasAclOrThrow
 import com.tle.legacy.LegacyGuice
 
 object SettingsApiHelper {
@@ -29,5 +31,9 @@ object SettingsApiHelper {
 
   def updateSettings[T <: ConfigurationProperties](settings: T): Unit = {
     LegacyGuice.configService.setProperties(settings)
+  }
+
+  def ensureEditSystem(): Unit = {
+    hasAclOrThrow(SecurityConstants.EDIT_SYSTEM_SETTINGS, includePossibleOwnerAcls = true)
   }
 }

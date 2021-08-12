@@ -18,17 +18,21 @@
 
 package com.tle.web.api.search
 
-import com.dytech.edge.exceptions.BadRequestException
+import com.dytech.edge.exceptions.{BadRequestException, DRMException}
 import com.tle.beans.entity.DynaCollection
-import com.tle.beans.item.{Comment, ItemIdKey}
+import com.tle.beans.item.attachments.{CustomAttachment, FileAttachment}
+import com.tle.beans.item.{Comment, ItemId, ItemIdKey, ItemKey}
 import com.tle.common.Check
 import com.tle.common.beans.exception.NotFoundException
 import com.tle.common.collection.AttachmentConfigConstants
 import com.tle.common.search.DefaultSearch
 import com.tle.common.search.whereparser.WhereParser
+import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.freetext.queries.FreeTextBooleanQuery
 import com.tle.core.item.security.ItemSecurityConstants
 import com.tle.core.item.serializer.{ItemSerializerItemBean, ItemSerializerService}
+import com.tle.core.security.ACLChecks.hasAcl
+import com.tle.core.services.item.{FreetextResult, FreetextSearchResults}
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean
 import com.tle.web.api.item.equella.interfaces.beans.{
@@ -36,13 +40,18 @@ import com.tle.web.api.item.equella.interfaces.beans.{
   FileAttachmentBean
 }
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
-import com.tle.web.api.search.model.{SearchParam, SearchResultAttachment, SearchResultItem}
+import com.tle.web.api.search.model.{
+  DrmStatus,
+  SearchParam,
+  SearchResultAttachment,
+  SearchResultItem
+}
 import com.tle.web.controls.resource.ResourceAttachmentBean
 import com.tle.web.controls.youtube.YoutubeAttachmentBean
 
 import java.time.format.DateTimeParseException
 import java.time.{LocalDate, LocalDateTime, LocalTime, ZoneId}
-import java.util.Date
+import java.util.{Date, Optional}
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ListBuffer
 
@@ -56,6 +65,19 @@ import scala.collection.mutable.ListBuffer
   */
 object SearchHelper {
   val privileges = Array(ItemSecurityConstants.VIEW_ITEM)
+
+  /**
+    * Execute a search with provided search criteria.
+    * @param defaultSearch A set of search criteria
+    * @param start The first record of a search result.
+    * @param length The maximum number of search results, or -1 for all.
+    * @param searchAttachments Whether to search attachments.
+    */
+  def search(defaultSearch: DefaultSearch,
+             start: Int,
+             length: Int,
+             searchAttachments: Boolean): FreetextSearchResults[FreetextResult] =
+    LegacyGuice.freeTextService.search(defaultSearch, start, length, searchAttachments)
 
   /**
     * Create a new search with search criteria.
@@ -245,6 +267,7 @@ object SearchHelper {
       links = getLinksFromBean(bean),
       bookmarkId = getBookmarkId(key),
       isLatestVersion = isLatestVersion(key),
+      drmStatus = getItemDrmStatus(item.idKey)
     )
   }
 
@@ -253,27 +276,52 @@ object SearchHelper {
     */
   def convertToAttachment(attachmentBeans: java.util.List[AttachmentBean],
                           itemKey: ItemIdKey): Option[List[SearchResultAttachment]] = {
-    lazy val hasRestrictedAttachmentPrivileges: Boolean = !LegacyGuice.aclManager
-      .filterNonGrantedPrivileges(AttachmentConfigConstants.VIEW_RESTRICTED_ATTACHMENTS)
-      .isEmpty;
+    lazy val hasRestrictedAttachmentPrivileges: Boolean =
+      hasAcl(AttachmentConfigConstants.VIEW_RESTRICTED_ATTACHMENTS)
 
     Option(attachmentBeans).map(
       beans =>
         beans.asScala
         // Filter out restricted attachments if the user does not have permissions to view them
           .filter(a => !a.isRestricted || hasRestrictedAttachmentPrivileges)
-          .map(att =>
+          .map(att => {
+            val broken                             = recurseBrokenAttachmentCheck(itemKey, att.getUuid)
+            def ifNotBroken[T](f: () => Option[T]) = if (!broken) f() else None
+
             SearchResultAttachment(
               attachmentType = att.getRawAttachmentType,
               id = att.getUuid,
-              description = Option(att.getDescription),
+              description = ifNotBroken(() => getAttachmentDescription(itemKey, att.getUuid)),
+              brokenAttachment = broken,
               preview = att.isPreview,
-              mimeType = getMimetypeForAttachment(att),
+              mimeType = ifNotBroken(() => getMimetypeForAttachment(att)),
               hasGeneratedThumb = thumbExists(itemKey, att),
               links = buildAttachmentLinks(att),
               filePath = getFilePathForAttachment(att)
-          ))
+            )
+          })
           .toList)
+  }
+
+  def getItemDrmStatus(itemKey: ItemIdKey): Option[DrmStatus] = {
+    for {
+      item <- Option(LegacyGuice.itemService.getUnsecureIfExists(itemKey))
+      _    <- Option(item.getDrmSettings)
+      termsAccepted = try {
+        LegacyGuice.drmService.hasAcceptedOrRequiresNoAcceptance(item, false, false)
+      } catch {
+        // This exception is only thrown when the DRM has maximum number of acceptance allowable times.
+        case _: DRMException => false
+      }
+      isAuthorised = try {
+        LegacyGuice.drmService.isAuthorised(item, CurrentUser.getUserState.getIpAddress)
+        true
+      } catch {
+        case _: DRMException => false
+      }
+    } yield {
+      DrmStatus(termsAccepted, isAuthorised)
+    }
   }
 
   def getItemComments(key: ItemIdKey): Option[java.util.List[Comment]] =
@@ -297,9 +345,56 @@ object SearchHelper {
   }
 
   /**
+    * Determines if a given customAttachment is invalid. Required as these attachments can be recursive.
+    * @param customAttachment The attachment to check.
+    * @return If true, this attachment is broken.
+    */
+  def getBrokenAttachmentStatusForResourceAttachment(
+      customAttachment: CustomAttachment): Boolean = {
+    val key = new ItemId(customAttachment.getData("uuid").asInstanceOf[String],
+                         customAttachment.getData("version").asInstanceOf[Int])
+    if (customAttachment.getType != "resource") {
+      return false;
+    }
+    customAttachment.getData("type") match {
+      case "a" =>
+        // Recurse into child attachment
+        recurseBrokenAttachmentCheck(key, customAttachment.getUrl)
+      case "p" =>
+        // Get the child item. If it doesn't exist, this is a dead attachment
+        Option(LegacyGuice.itemService.getUnsecureIfExists(key)).isEmpty
+      case _ => false
+    }
+  }
+
+  /**
+    * Determines if a given attachment is invalid.
+    * If it is a resource selector attachment, this gets handled by
+    * [[getBrokenAttachmentStatusForResourceAttachment(customAttachment: CustomAttachment)]]
+    * which links back in here to recurse through customAttachments to find the root.
+    *
+    * @param itemKey the details of the item the attachment belongs to
+    * @param attachmentUuid the UUID of the attachment
+    * @return True if broken, false if intact.
+    */
+  def recurseBrokenAttachmentCheck(itemKey: ItemKey, attachmentUuid: String): Boolean = {
+    Option(LegacyGuice.itemService.getNullableAttachmentForUuid(itemKey, attachmentUuid)) match {
+      case Some(fileAttachment: FileAttachment) =>
+        //check if file is present in the filestore
+        val item =
+          LegacyGuice.viewableItemFactory.createNewViewableItem(fileAttachment.getItem.getItemId)
+        !LegacyGuice.fileSystemService.fileExists(item.getFileHandle, fileAttachment.getFilename)
+      case Some(customAttachment: CustomAttachment) =>
+        getBrokenAttachmentStatusForResourceAttachment(customAttachment)
+      case None    => true
+      case Some(_) => false
+    }
+  }
+
+  /**
     * Extract the mimetype for AbstractExtendableBean.
     */
-  def getMimetypeForAttachment[T <: AbstractExtendableBean](bean: T): Option[String] = {
+  def getMimetypeForAttachment[T <: AbstractExtendableBean](bean: T): Option[String] =
     bean match {
       case file: AbstractFileAttachmentBean =>
         Some(LegacyGuice.mimeTypeService.getMimeTypeForFilename(file.getFilename))
@@ -308,7 +403,6 @@ object SearchHelper {
           LegacyGuice.mimeTypeService.getMimeTypeForResourceAttachmentBean(resourceAttachmentBean))
       case _ => None
     }
-  }
 
   /**
     * If the attachment is a file, then return the path for that attachment.
@@ -337,11 +431,15 @@ object SearchHelper {
     *         if suitable for the attachment type.
     */
   def buildAttachmentLinks(attachment: AttachmentBean): java.util.Map[String, String] = {
-    val externalIdKey = "externalId"
-    val links         = getLinksFromBean(attachment).asScala
+    val addExternalId = (links: Map[String, String], externalId: Optional[String]) =>
+      if (externalId.isPresent) links ++ Map("externalId" -> externalId.get) else links
+
+    val links = getLinksFromBean(attachment).asScala.toMap
     (attachment match {
-      case youtube: YoutubeAttachmentBean => links ++ Map(externalIdKey -> youtube.getVideoId)
-      case _                              => links
+      case youtube: YoutubeAttachmentBean => addExternalId(links, youtube.getExternalId)
+      case kaltura if attachment.getRawAttachmentType == "custom/kaltura" =>
+        addExternalId(links, kaltura.getExternalId)
+      case _ => links
     }).asJava
   }
 
@@ -360,4 +458,17 @@ object SearchHelper {
     */
   def isLatestVersion(itemID: ItemIdKey): Boolean =
     itemID.getVersion == LegacyGuice.itemService.getLatestVersion(itemID.getUuid)
+
+  /**
+    * Use the `description` from the `Attachment` behind the `AttachmentBean` as this provides
+    * the value more commonly seen in the LegacyUI. And specifically uses any tweaks done for
+    * Custom Attachments - such as with Kaltura where the Kaltura Media `title` is pushed into
+    * the `description` rather than using the optional (and multi-line) Kaltura Media `description`.
+    *
+    * @param itemKey the details of the item the attachment belongs to
+    * @param attachmentUuid the UUID of the attachment
+    * @return the description for the attachment if available
+    */
+  def getAttachmentDescription(itemKey: ItemKey, attachmentUuid: String): Option[String] =
+    Option(LegacyGuice.itemService.getAttachmentForUuid(itemKey, attachmentUuid).getDescription)
 }

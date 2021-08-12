@@ -25,7 +25,7 @@ public interface MapScriptType {
   /**
    * Returns the value for the specified key
    *
-   * @param key
+   * @param key The key of the item's value to be retrieved.
    * @return The value for the key
    */
   Object get(Object key);

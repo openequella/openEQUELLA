@@ -1,1 +1,1 @@
-unmanagedJars in Compile += file(sys.props("java.home")) / "lib/javaws.jar"
+(Compile / unmanagedJars) += file(sys.props("java.home")) / "lib/javaws.jar"

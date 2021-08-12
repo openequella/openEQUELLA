@@ -3,7 +3,7 @@
 Handling of unexpected errors such as network problems & server errors can be painful,
 so the `Template` component has a property for displaying them:
 
-`errorResponse` in `TemplateProps` [Template.ts](../../Source/Plugins/Core/com.equella.core/js/tsrc/mainui/Template.tsx)
+`errorResponse` in `TemplateProps` [Template.ts](../../react-front-end/tsrc/mainui/Template.tsx)
 
 Exceptions thrown from REST API's are converted into `ErrorResponse` JSON objects and HTTP status codes
 by the [RestEasyExceptionMapper](../../Source/Plugins/Core/com.equella.core/src/com/tle/web/remoting/resteasy/RestEasyExceptionMapper.java)
@@ -31,5 +31,5 @@ provides great docs for deciding which UI component is appropriate for each situ
 
 One of the prescribed components is the [SnackBar](https://material.io/design/components/snackbars.html),
 which can display a small notification message which will automatically disappear after a set amount of time.
-There is a small wrapper component in openEQUELLA called [MessageInfo](../../Source/Plugins/Core/com.equella.core/js/tsrc/components/MessageInfo.tsx)
+There is a small wrapper component in openEQUELLA called [MessageInfo](../../react-front-end/tsrc/components/MessageInfo.tsx)
 which decorates the standard `SnackBar` with an Icon and colours based on the variant chosen: `success`, `warning`, `error`, `info`.

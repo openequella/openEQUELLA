@@ -52,6 +52,16 @@ public interface PluginService {
 
   void ensureActivated(PluginDescriptor plugin);
 
+  /**
+   * Check if a plugin is activated.
+   *
+   * @param pluginId The ID of plugin
+   * @return `true` if plugin available otherwise false
+   */
+  default boolean isActivated(String pluginId) {
+    throw new UnsupportedOperationException();
+  }
+
   void registerExtensionListener(
       String pluginId, String extensionId, RegistryChangeListener listener);
 

@@ -18,14 +18,18 @@
 
 package com.tle.core.auditlog;
 
+import com.tle.annotation.Nullable;
 import com.tle.beans.Institution;
+import com.tle.beans.audit.AuditLogEntry;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.usermanagement.user.WebAuthenticationDetails;
 import java.util.Collection;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import org.hibernate.criterion.Order;
 
 /** @author Nicholas Read */
 public interface AuditLogService {
@@ -50,6 +54,33 @@ public interface AuditLogService {
   void removeOldLogs(int daysOld);
 
   void logSearch(String type, String freeText, String within, long resultCount);
+
+  /**
+   * Log the request of exporting search result.
+   *
+   * @param format The export file format
+   * @param searchParams Search criteria of the export
+   */
+  void logSearchExport(String format, String searchParams);
+
+  /**
+   * Create an audit log with a HTTP request.
+   *
+   * @param category Category of audit log
+   * @param type Type of audit log
+   * @param d1 First string data where the maximum length is 255
+   * @param d2 Second string data where the maximum length is 255
+   * @param d3 Third string data where the maximum length is 255
+   * @param d4 Fourth string data which doesn't have length limit
+   */
+  void logWithRequest(
+      String category,
+      String type,
+      String d1,
+      String d2,
+      String d3,
+      String d4,
+      HttpServletRequest request);
 
   void logFederatedSearch(String freeText, String searchId);
 
@@ -97,4 +128,38 @@ public interface AuditLogService {
   Collection<AuditLogExtension> getExtensions();
 
   void removeEntriesForInstitution(Institution institution);
+
+  /**
+   * Remove Audit log entries by user.
+   *
+   * @param userId ID of a user
+   */
+  void removeEntriesForUser(String userId);
+
+  /**
+   * Count Audit logs by Institution.
+   *
+   * @param institution Institution provided to count audit logs
+   * @return The number of audit logs of an Institution
+   */
+  int countByInstitution(Institution institution);
+
+  /**
+   * Search for all audit logs of an Institution with pagination.
+   *
+   * @param order The order of a search result. Use null if no order is required.
+   * @param firstResult Number of the first log to be retrieved.
+   * @param maxResults Maximum number of logs in one search result. Use -1 to retrieve all results.
+   * @param institution Institution provided to search audit logs
+   * @return A list of audit logs of an Institution
+   */
+  List<AuditLogEntry> findAllByInstitution(
+      @Nullable Order order, int firstResult, int maxResults, Institution institution);
+
+  /**
+   * Search for audit logs of current Institution by user ID
+   *
+   * @param userId ID of a user
+   */
+  List<AuditLogEntry> findByUser(String userId);
 }

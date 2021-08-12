@@ -1,20 +1,16 @@
-import Path.rebase
-import Path.flat
-
+import Path.{flat, rebase}
 import _root_.io.circe.parser._
 
 langStrings := {
-  val langDir = (resourceDirectory in Compile).value / "com/tle/core/i18n/service/impl"
-  val baseJs  = baseDirectory.value / "js"
-  Common.nodeScript("build:langbundle", baseJs)
+  val langDir = (Compile / resourceDirectory).value / "com/tle/core/i18n/service/impl"
   val bundle =
-    decode[Map[String, String]](IO.read(baseJs / "target/resources/lang/jsbundle.json"))
+    decode[Map[String, String]](IO.read(reactFrontEndLanguageBundle.value))
       .fold(throw _, identity)
   val pluginLangStrings = langStrings.value
   Seq(
     Common.loadLangProperties(langDir / "i18n-resource-centre.properties", "", "resource-centre"),
     Common.loadLangProperties(langDir / "i18n-admin-console.properties", "", "admin-console"),
-    LangStrings("newui", false, bundle)
+    LangStrings("newui", xml = false, bundle)
   ) ++ pluginLangStrings
 }
 
@@ -46,7 +42,7 @@ lazy val jqc    = Seq("jquery-migrate.js", "jquery.js")
 lazy val others = Seq("css/themes/equella/jquery-ui.css")
 
 yuiResources := {
-  val bd      = (resourceDirectory in Compile).value / "web"
+  val bd      = (Compile / resourceDirectory).value / "web"
   val jqlDir  = bd / "jquerylib"
   val jqcDir  = bd / "jquerycore"
   val jqlcDir = bd / "css/jquerylib"
@@ -58,14 +54,14 @@ yuiResources := {
 }
 
 yuiResources ++= Seq("js/bootstrap.js", "css/bootstrap.css").map(p =>
-  (resourceDirectory in Compile).value / "web/bootstrap" / p)
+  (Compile / resourceDirectory).value / "web/bootstrap" / p)
 
 enablePlugins(YUICompressPlugin)
 
 import org.apache.axis2.wsdl.WSDL2Java
 
-sourceGenerators in Compile += Def.task {
-  val gensrc      = (sourceManaged in Compile).value
+Compile / sourceGenerators += Def.task {
+  val gensrc      = (Compile / sourceManaged).value
   val equellaWSDL = baseDirectory.value / "EQUELLA.WS.wsdl"
   val contextWSDL = baseDirectory.value / "Context.WS.wsdl"
 
@@ -98,47 +94,39 @@ sourceGenerators in Compile += Def.task {
   (gensrc ** "*.java").get
 }.taskValue
 
-resourceGenerators in Compile += Def.task {
-  val base = (resourceManaged in Compile).value
+Compile / resourceGenerators += Def.task {
+  val base = (Compile / resourceManaged).value
   IO.copy(Some(versionProperties.value -> base / "web/version.properties")).toSeq
 }.taskValue
 
 lazy val inplaceEditorJar = project in file("jarsrc")
 
-resourceGenerators in Compile += Def.task {
-  val outJar  = (resourceManaged in Compile).value / "web/inplaceedit.jar"
-  val jarFile = (assembly in inplaceEditorJar).value
-  (jarSigner.value).apply(jarFile, outJar)
+Compile / resourceGenerators += Def.task {
+  val outJar  = (Compile / resourceManaged).value / "web/inplaceedit.jar"
+  val jarFile = (inplaceEditorJar / assembly).value
+  jarSigner.value.apply(jarFile, outJar)
   Seq(outJar)
 }.taskValue
 
-resourceGenerators in Compile += Def.task {
+Compile / resourceGenerators += Def.task {
   val baseSwagger = baseDirectory.value / "swaggerui"
   Common.nodeInstall(baseSwagger)
   Common.nodeScript("build", baseSwagger)
-  val outDir = (resourceManaged in Compile).value / "web/apidocs"
+  val outDir = (Compile / resourceManaged).value / "web/apidocs"
   val bundle = baseSwagger / "target/bundle.js"
   val css    = baseSwagger / "node_modules/swagger-ui/dist/swagger-ui.css"
   IO.copy(Seq(bundle, css).pair(flat(outDir))).toSeq
 }.taskValue
 
-buildJS := {
-  val baseJs = baseDirectory.value / "js"
-  Common.nodeInstall(baseJs)
-  Common.nodeScript("build", baseJs)
-  val outDir       = (resourceManaged in Compile).value
-  val baseJsTarget = baseJs / "target/resources"
-  IO.copy(
-      (baseJsTarget ** ("*.js" | "*.css" | "*.json" | "*.html")).pair(rebase(baseJsTarget, outDir)))
-    .toSeq
-}
-
-resourceGenerators in Compile += buildJS.taskValue
+// Pull in the react-front-end
+Compile / resourceGenerators += Def.task {
+  val outDir = (Compile / resourceManaged).value
+  val srcDir = buildReactFrontEnd.value
+  IO.copy((srcDir ** ("*.js" | "*.css" | "*.json" | "*.html")).pair(rebase(srcDir, outDir))).toSeq
+}.taskValue
 
 clean := {
   clean.value
   val baseSwagger = baseDirectory.value / "swaggerui"
-  val baseJs      = baseDirectory.value / "js"
   Common.nodeScript("clean", baseSwagger)
-  Common.nodeScript("clean", baseJs)
 }

@@ -15,8 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { stringify } from 'query-string';
 import { is } from 'typescript-is';
-import { GET } from './AxiosInstance';
+import { GET, HEAD } from './AxiosInstance';
 import * as Common from './Common';
 import * as Utils from './Utils';
 
@@ -180,6 +181,11 @@ export interface Attachment {
    * The description of an attachment.
    */
   description?: string;
+
+  /**
+   * Whether or not the attachment has been determined to be broken by the server.
+   */
+  brokenAttachment: boolean;
   /**
    * True if an attachment can be previewed.
    */
@@ -214,6 +220,20 @@ export interface Attachment {
    * If a file attachment, the path for the represented file
    */
   filePath?: string;
+}
+
+/**
+ * Status of Item's DRM.
+ */
+export interface DrmStatus {
+  /**
+   * `true` if DRM terms have been accepted.
+   */
+  termsAccepted: boolean;
+  /**
+   * `true` if user is authorised to access Item or accept DRM.
+   */
+  isAuthorised: boolean;
 }
 
 /**
@@ -293,6 +313,10 @@ interface SearchResultItemBase {
    * True if this version is the latest version.
    */
   isLatestVersion: boolean;
+  /**
+   * Item's DRM Status. Absent if item is not under DRM control
+   */
+  drmStatus?: DrmStatus;
 }
 
 /**
@@ -368,7 +392,7 @@ const convertMusts = (musts: Must[]): string[] =>
     []
   );
 
-const processMusts = (musts?: Must[]): string[] | undefined => {
+export const processMusts = (musts?: Must[]): string[] | undefined => {
   if (!musts) {
     return;
   }
@@ -379,12 +403,14 @@ const processMusts = (musts?: Must[]): string[] | undefined => {
   });
   return convertMusts(musts);
 };
+
 const processSearchParams = (
   params?: SearchParams
 ): SearchParamsProcessed | undefined =>
   params ? { ...params, musts: processMusts(params.musts) } : undefined;
 
 const SEARCH2_API_PATH = '/search2';
+const EXPORT_PATH = `${SEARCH2_API_PATH}/export`;
 
 /**
  * Communicate with REST endpoint 'search2' to do a search with specified search criteria.
@@ -408,3 +434,24 @@ export const search = (
     ])
   );
 };
+
+/**
+ * Build a full URL for downloading a search result.
+ * @param apiBasePath Base URI to the oEQ institution and API.
+ * @param params Query parameters as search criteria.
+ */
+export const buildExportUrl = (
+  apiBasePath: string,
+  params: SearchParams
+): string => apiBasePath + EXPORT_PATH + '?' + stringify(params);
+
+/**
+ * Communicate with REST endpoint 'search2/export' to confirm if an export request is valid.
+ *
+ * @param apiBasePath Base URI to the oEQ institution and API.
+ * @param params Query parameters as search criteria.
+ */
+export const confirmExportRequest = (
+  apiBasePath: string,
+  params: SearchParams
+): Promise<boolean> => HEAD(apiBasePath + EXPORT_PATH, params);

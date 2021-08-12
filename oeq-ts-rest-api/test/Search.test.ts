@@ -15,6 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { is } from 'typescript-is';
+import { GET } from '../src/AxiosInstance';
 import * as OEQ from '../src';
 import * as TC from './TestConfig';
 
@@ -129,6 +131,101 @@ describe('Search for attachments', () => {
       };
       const searchResult = await doSearch(searchParams);
       expect(searchResult.results).toHaveLength(expectResultCount);
+    }
+  );
+});
+
+describe('Exports search results for the specified search params', function () {
+  const searchParams: OEQ.Search.SearchParams = {
+    query: 'API',
+    start: 0,
+    length: 10,
+    collections: ['a77112e6-3370-fd02-6ac6-6bc5aec22001'],
+  };
+
+  it('builds a full URL including query strings', () => {
+    expect(OEQ.Search.buildExportUrl(TC.API_PATH, searchParams)).toBe(
+      'http://localhost:8080/rest/api/search2/export?collections=a77112e6-3370-fd02-6ac6-6bc5aec22001&length=10&query=API&start=0'
+    );
+  });
+
+  it('generates a URL which communicates to the export endpoints', async () => {
+    await OEQ.Auth.login(TC.API_PATH, TC.USERNAME_SUPER, TC.PASSWORD_SUPER);
+    const exportUrl = OEQ.Search.buildExportUrl(TC.API_PATH, searchParams);
+    await expect(
+      GET(exportUrl, (data): data is string => is<string>(data))
+    ).resolves.toBeTruthy();
+  });
+
+  it('confirms if an export is valid by sending a HEAD request', async () => {
+    await OEQ.Auth.login(TC.API_PATH, TC.USERNAME_SUPER, TC.PASSWORD_SUPER);
+    await expect(
+      OEQ.Search.confirmExportRequest(TC.API_PATH, searchParams)
+    ).resolves.toBe(true);
+  });
+});
+
+describe('Dead attachment handling', () => {
+  it.each<[string, string, number, number, boolean]>([
+    [
+      'an intact file attachment as not broken',
+      'Keyword found in attachment test item',
+      0,
+      0,
+      false,
+    ],
+    [
+      'an intact resource selector attachment as not broken',
+      'ItemApiViewTest - All attachments',
+      0,
+      1,
+      false,
+    ],
+    [
+      'a returned file attachment missing from the filestore as broken',
+      'DeadAttachmentsTest',
+      0,
+      0,
+      true,
+    ],
+    [
+      'a resource attachment pointing at a non-existent attachment as broken',
+      'NestedDeadResourceAttachmentTest - Child 1',
+      0,
+      0,
+      true,
+    ],
+    [
+      'a resource attachment pointing at a non-existent item summary as broken',
+      'NestedDeadResourceAttachmentTest - Points at root item summary',
+      0,
+      0,
+      true,
+    ],
+    [
+      'a nested resource attachment with the end of the chain being a non-existent attachment as broken',
+      'NestedDeadResourceAttachmentTest - Child 2',
+      0,
+      0,
+      true,
+    ],
+  ])(
+    'should mark %s',
+    async (
+      _: string,
+      query: string,
+      itemResultIndex: number,
+      attachmentResultIndex: number,
+      expectBrokenStatus: boolean
+    ) => {
+      const searchResult = await doSearch({ query: query });
+      const { attachments } = searchResult.results[itemResultIndex];
+      if (attachments === undefined) {
+        throw new Error('Unexpected undefined attachments');
+      }
+      const brokenAttachment =
+        attachments[attachmentResultIndex].brokenAttachment;
+      expect(brokenAttachment).toEqual(expectBrokenStatus);
     }
   );
 });

@@ -481,6 +481,11 @@ public class ItemServiceImpl
   }
 
   @Override
+  public Attachment getNullableAttachmentForUuid(ItemKey itemId, String uuid) {
+    return dao.getAttachmentByUuid(itemId, uuid);
+  }
+
+  @Override
   public Map<String, Object> getItemInfo(ItemId id) {
     return dao.getItemInfo(id.getUuid(), id.getVersion());
   }

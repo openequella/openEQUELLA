@@ -20,12 +20,14 @@ package com.tle.core.mimetypes;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
+import com.tle.beans.item.ItemId;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.mime.MimeEntry;
 import com.tle.core.TextExtracterExtension;
 import com.tle.web.controls.resource.ResourceAttachmentBean;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 @NonNullByDefault
 public interface MimeTypeService {
@@ -38,7 +40,7 @@ public interface MimeTypeService {
    */
   String getMimeTypeForFilename(String filename);
 
-  String getMimeTypeForAttachmentUuid(String attachmentUuid);
+  String getMimeTypeForAttachmentUuid(ItemId key, String attachmentUuid);
 
   String getMimeTypeForResourceAttachmentBean(ResourceAttachmentBean resourceAttachmentBean);
 
@@ -86,6 +88,17 @@ public interface MimeTypeService {
 
   @Nullable
   String getMimeEntryForAttachment(Attachment attachment);
+
+  /**
+   * Return a list of enabled viewers. If the default viewer does not exist in the list, add it to
+   * the list. However, if the default viewer is "file", it will not be included because "file" is
+   * added to the list dynamically by {@link com.tle.web.mimetypes.section.MimeDefaultViewerSection}
+   *
+   * @param attributes Configured attributes of MIME type
+   * @return A string representing a list of enabled viewers and formatted as a JSON array of
+   *     strings (e.g. ["fancy", "toimg"])
+   */
+  String getEnabledViewerList(Map<String, String> attributes);
 
   interface MimeEntryChanges {
     void editMimeEntry(MimeEntry entry);

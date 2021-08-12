@@ -16,6 +16,7 @@ import org.testng.annotations.Test;
 
 @TestInstitution("facet")
 public class FacetSearchApiTest extends AbstractRestApiTest {
+
   private final String NODE_KEYWORD = "/item/keywords/keyword";
   private final NameValuePair SINGLE_NODE = new NameValuePair("nodes", NODE_KEYWORD);
   private final String NODE_CATEGORY_NAME = "/item/category/@name";
@@ -23,6 +24,10 @@ public class FacetSearchApiTest extends AbstractRestApiTest {
   private final String COLLECTION_HARDWARE = "b2be4e8e-a0d4-4e6a-b9ff-4c65a7c8024e";
   private final String SEARCH_FACET_API_ENDPOINT =
       getTestConfig().getInstitutionUrl() + "api/search/facet";
+  private final String TERM_ATMEL = "atmel";
+  private final String TERM_JVM = "jvm";
+  private final String TERM_LISP = "lisp";
+  private final String TERM_MULTI = "multi-paradigm";
 
   @Override
   protected TestConfig getTestConfig() {
@@ -49,8 +54,8 @@ public class FacetSearchApiTest extends AbstractRestApiTest {
   public void testSingleCollection() throws IOException {
     JsonNode result = search(SINGLE_NODE, new NameValuePair("collections", COLLECTION_HARDWARE));
     assertResult(result);
-    assertTermPresent(result, "atmel");
-    assertTermAbsent(result, "jvm");
+    assertTermPresent(result, TERM_ATMEL);
+    assertTermAbsent(result, TERM_JVM);
   }
 
   @Test
@@ -60,8 +65,8 @@ public class FacetSearchApiTest extends AbstractRestApiTest {
             SINGLE_NODE,
             new NameValuePair("collections", COLLECTION_HARDWARE + "," + COLLECTION_PROGRAMMING));
     assertResult(result);
-    assertTermPresent(result, "atmel");
-    assertTermPresent(result, "jvm");
+    assertTermPresent(result, TERM_ATMEL);
+    assertTermPresent(result, TERM_JVM);
   }
 
   @Test
@@ -71,14 +76,14 @@ public class FacetSearchApiTest extends AbstractRestApiTest {
 
     JsonNode emptyResult =
         search(SINGLE_NODE, new NameValuePair("owner", "f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a"));
-    assertEquals(emptyResult.get("results").size(), 0);
+    assertNumberOfResults(emptyResult, 0);
   }
 
   @Test
   public void testQuery() throws IOException {
     JsonNode result = search(SINGLE_NODE, new NameValuePair("q", "scala"));
     assertResult(result);
-    assertTermPresent(result, "jvm");
+    assertTermPresent(result, TERM_JVM);
   }
 
   @Test
@@ -86,6 +91,17 @@ public class FacetSearchApiTest extends AbstractRestApiTest {
     JsonNode result = search(SINGLE_NODE, new NameValuePair("mimeTypes", "text/plain"));
     assertResult(result);
     assertTermPresent(result, "Zilog");
+  }
+
+  @Test
+  public void testMusts() throws IOException {
+    JsonNode result =
+        search(
+            SINGLE_NODE, new NameValuePair("musts", "uuid:8adfcbad-28a7-43af-823c-287279119869"));
+    assertNumberOfResults(result, 3);
+    assertTermPresent(result, TERM_JVM);
+    assertTermPresent(result, TERM_LISP);
+    assertTermPresent(result, TERM_MULTI);
   }
 
   @Test
@@ -121,7 +137,7 @@ public class FacetSearchApiTest extends AbstractRestApiTest {
             SINGLE_NODE,
             new NameValuePair("modifiedAfter", startDate),
             new NameValuePair("modifiedBefore", endDate));
-    assertEquals(result.get("results").size(), expectedResults);
+    assertNumberOfResults(result, expectedResults);
   }
 
   private JsonNode search(NameValuePair... params) throws IOException {
@@ -134,6 +150,10 @@ public class FacetSearchApiTest extends AbstractRestApiTest {
 
   private void assertResult(JsonNode result) {
     assertTrue(result.get("results").size() > 0);
+  }
+
+  private void assertNumberOfResults(JsonNode result, int count) {
+    assertEquals(result.get("results").size(), count);
   }
 
   private void assertTermPresent(JsonNode result, String term) throws IOException {

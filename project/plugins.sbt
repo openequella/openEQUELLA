@@ -2,9 +2,9 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-license-report" % "1.2.0")
 
 addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.6.0")
 
-addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.14.10")
+addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.15.0")
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "1.0.0")
+addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "1.0.1")
 
 addSbtPlugin("de.johoop" % "sbt-testng-plugin" % "3.1.1")
 
@@ -19,8 +19,8 @@ libraryDependencies ++= Seq(
 ).map(_ % circeVersion)
 
 libraryDependencies ++= Seq(
-  "com.typesafe"           % "config"                % "1.4.0",
-  "org.jacoco"             % "org.jacoco.report"     % "0.8.6",
+  "com.typesafe"           % "config"                % "1.4.1",
+  "org.jacoco"             % "org.jacoco.report"     % "0.8.7",
   "org.jdom"               % "jdom2"                 % "2.0.6",
   "org.apache.axis2"       % "axis2-kernel"          % "1.6.2",
   "org.apache.axis2"       % "axis2-java2wsdl"       % "1.6.2",
@@ -34,7 +34,7 @@ libraryDependencies ++= Seq(
   "commons-configuration"  % "commons-configuration" % "1.10",
   "commons-beanutils"      % "commons-beanutils"     % "1.9.4",
   "commons-codec"          % "commons-codec"         % "1.15",
-  "org.slf4j"              % "slf4j-nop"             % "1.7.30",
+  "org.slf4j"              % "slf4j-nop"             % "1.7.32",
   "com.yahoo.platform.yui" % "yuicompressor"         % "2.4.8"
 )
-dependencyOverrides += "com.puppycrawl.tools" % "checkstyle" % "8.41"
+dependencyOverrides += "com.puppycrawl.tools" % "checkstyle" % "8.45"

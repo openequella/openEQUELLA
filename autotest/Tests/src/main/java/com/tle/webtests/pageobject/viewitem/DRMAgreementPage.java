@@ -8,6 +8,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class DRMAgreementPage extends AbstractPage<DRMAgreementPage> {
   @FindBy(id = "drm_acceptButton")
@@ -24,6 +25,7 @@ public class DRMAgreementPage extends AbstractPage<DRMAgreementPage> {
   }
 
   public <T extends PageObject> T preview(WaitingPageObject<T> targetPage) {
+    waiter.until(ExpectedConditions.elementToBeClickable(previewButton));
     previewButton.click();
     return targetPage.get();
   }

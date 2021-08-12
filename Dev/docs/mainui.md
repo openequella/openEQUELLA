@@ -2,10 +2,10 @@
 
 When the new UI is turned on, openEQUELLA runs in a Single Page App (SPA) style with the initial HTML markup being supplied by [react.ftl](../../Source/Plugins/Core/com.equella.core/resources/view/layouts/outer/react.ftl).
 
-The entrypoint for the SPA is located at [mainui/index.tsx](../../Source/Plugins/Core/com.equella.core/js/tsrc/mainui/index.tsx).
+The entrypoint for the SPA is located at [mainui/index.tsx](../../react-front-end/tsrc/mainui/index.tsx).
 
 The route component uses [react-router](https://reacttraining.com/react-router/web/guides/quick-start) for routing
-with pages declared inside [mainui/routes.ts](../../Source/Plugins/Core/com.equella.core/js/tsrc/mainui/routes.tsx)
+with pages declared inside [mainui/routes.ts](../../react-front-end/tsrc/mainui/routes.tsx)
 
 ## Template
 
@@ -23,7 +23,7 @@ whole page DOM refresh which is usually visible to the user.
 Instead, pages need to update the properties of the `<Template>` using a callback which is passed
 into their root component. Usually this will be done once in the `componentDidMount()` method or with an effect hook `React.useEffect()`.
 
-See the available properties at: [mainui/Template.tsx](../../Source/Plugins/Core/com.equella.core/js/tsrc/mainui/Template.tsx)
+See the available properties at: [mainui/Template.tsx](../../react-front-end/tsrc/mainui/Template.tsx)
 
 ## HelloWorld page example (hooks and component)
 

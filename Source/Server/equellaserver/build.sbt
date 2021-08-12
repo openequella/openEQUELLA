@@ -4,30 +4,30 @@ import java.time.format.DateTimeFormatter
 
 javacOptions ++= Seq("-source", "1.8")
 
-resourceDirectory in Compile := baseDirectory.value / "resources"
+(Compile / resourceDirectory) := baseDirectory.value / "resources"
 
-javaSource in Compile := baseDirectory.value / "src"
-javaSource in Test := baseDirectory.value / "test/java"
+(Compile / javaSource) := baseDirectory.value / "src"
+(Test / javaSource) := baseDirectory.value / "test/java"
 
-scalaSource in Compile := baseDirectory.value / "scalasrc"
+(Compile / scalaSource) := baseDirectory.value / "scalasrc"
 
 updateOptions := updateOptions.value.withCachedResolution(true)
 
-unmanagedClasspath in Runtime += (baseDirectory in LocalProject("learningedge_config")).value
+(Runtime / unmanagedClasspath) += (LocalProject("learningedge_config") / baseDirectory).value
 
 val RestEasyVersion  = "3.13.2.Final"
 val SwaggerVersion   = "1.6.2"
-val TomcatVersion    = "9.0.43"
+val TomcatVersion    = "9.0.50"
 val axis2Version     = "1.6.2"
 val circeVersion     = "0.12.1"
-val cxfVersion       = "3.4.1"
+val cxfVersion       = "3.4.4"
 val fs2Version       = "2.4.4"
 val guiceVersion     = "3.0"
 val jacksonVersion   = "2.11.3"
 val jsassVersion     = "5.10.4"
-val jsoupVersion     = "1.13.1"
+val jsoupVersion     = "1.14.1"
 val simpledbaVersion = "0.1.9"
-val springVersion    = "5.3.5"
+val springVersion    = "5.3.9"
 val sttpVersion      = "1.7.2"
 val tikaVersion      = "1.24.1"
 
@@ -62,7 +62,7 @@ libraryDependencies ++= Seq(
   "com.google.api-client" % "google-api-client"           % "1.30.11",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20200925-1.30.10",
   "com.google.apis"       % "google-api-services-youtube" % "v3-rev20200618-1.30.9",
-  "com.google.code.gson"  % "gson"                        % "2.8.6",
+  "com.google.code.gson"  % "gson"                        % "2.8.7",
   "com.google.gdata"      % "core"                        % "1.47.1",
   "com.google.guava"      % "guava"                       % "18.0",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
@@ -85,7 +85,8 @@ libraryDependencies ++= Seq(
     // Conflicts with RESTeasy jakarta.xml.bind-api
     ExclusionRule(organization = "javax.xml.bind"),
     // Conflicts with CXF Core
-    ExclusionRule(organization = "com.sun.xml.bind")
+    ExclusionRule(organization = "com.sun.xml.bind"),
+    ExclusionRule(organization = "com.sun.jersey")
   ),
   "com.miglayout"             % "miglayout-swing"          % "4.2",
   "com.ning"                  % "async-http-client"        % "1.9.40",
@@ -99,10 +100,10 @@ libraryDependencies ++= Seq(
   "commons-codec"             % "commons-codec"            % "1.15",
   "commons-collections"       % "commons-collections"      % "3.2.2",
   "commons-configuration"     % "commons-configuration"    % "1.10",
-  "commons-daemon"            % "commons-daemon"           % "1.2.3",
+  "commons-daemon"            % "commons-daemon"           % "1.2.4",
   "commons-discovery"         % "commons-discovery"        % "0.5",
   "commons-httpclient"        % "commons-httpclient"       % "3.1",
-  "commons-io"                % "commons-io"               % "2.8.0",
+  "commons-io"                % "commons-io"               % "2.11.0",
   "commons-lang"              % "commons-lang"             % "2.6",
   "dom4j"                     % "dom4j"                    % "1.6.1",
   "com.github.equella.legacy" % "itunesu-api-java"         % "1.7",
@@ -160,7 +161,7 @@ libraryDependencies ++= Seq(
   "org.apache.lucene"         % "lucene-analyzers" % "3.6.2",
   "org.apache.lucene"         % "lucene-core"      % "3.6.2",
   "org.apache.lucene"         % "lucene-queries"   % "3.6.2",
-  "org.apache.poi"            % "poi-ooxml"        % "3.9",
+  "org.apache.poi"            % "poi-ooxml"        % "3.17",
   "org.apache.rampart"        % "rampart-core"     % "1.6.2" excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces")
@@ -205,8 +206,8 @@ libraryDependencies ++= Seq(
   "org.apache.tomcat"           % "tomcat-util"            % TomcatVersion,
   "org.apache.tomcat"           % "tomcat-util-scan"       % TomcatVersion,
   "org.apache.tomcat"           % "tomcat-ssi"             % TomcatVersion,
-  "org.apache.ws.commons.axiom" % "axiom-api"              % "1.2.13",
-  "org.apache.ws.commons.axiom" % "axiom-impl"             % "1.2.13",
+  "org.apache.ws.commons.axiom" % "axiom-api"              % "1.2.15",
+  "org.apache.ws.commons.axiom" % "axiom-impl"             % "1.2.15",
   "org.apache.ws.security"      % "wss4j"                  % "1.6.19",
   "org.apache.zookeeper"        % "zookeeper"              % "3.4.6" excludeAll (
     ExclusionRule(organization = "org.slf4j",
@@ -225,13 +226,13 @@ libraryDependencies ++= Seq(
   "com.github.equella.legacy"       % "hurl"                           % "1.1",
   "org.jboss.resteasy"              % "resteasy-jaxrs"                 % RestEasyVersion,
   "org.jboss.spec.javax.annotation" % "jboss-annotations-api_1.3_spec" % "2.0.1.Final",
-  "org.jboss.logging"               % "jboss-logging"                  % "3.4.1.Final",
+  "org.jboss.logging"               % "jboss-logging"                  % "3.4.2.Final",
   "org.jboss.logging"               % "jboss-logging-annotations"      % "2.2.1.Final",
   "org.jboss.logging"               % "jboss-logging-processor"        % "2.2.1.Final",
   "org.reactivestreams"             % "reactive-streams"               % "1.0.3",
   // Upgraded to 2.0.1.Final due to a deduplication issue with jakarta.ws.rs-api
   "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"     % "2.0.1.Final",
-  "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api" % "1.0.1",
+  "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api" % "1.4.1",
   "org.eclipse.microprofile.config"      % "microprofile-config-api"      % "1.4",
   "javax.json.bind"                      % "javax.json.bind-api"          % "1.0",
   "org.jsoup"                            % "jsoup"                        % jsoupVersion,
@@ -242,9 +243,9 @@ libraryDependencies ++= Seq(
   "org.ow2.asm" % "asm" % "5.2",
   postgresDep,
   "org.scannotation"    % "scannotation"           % "1.0.3",
-  "org.slf4j"           % "jcl-over-slf4j"         % "1.7.30",
-  "org.slf4j"           % "slf4j-api"              % "1.7.30",
-  "org.slf4j"           % "slf4j-log4j12"          % "1.7.30",
+  "org.slf4j"           % "jcl-over-slf4j"         % "1.7.32",
+  "org.slf4j"           % "slf4j-api"              % "1.7.32",
+  "org.slf4j"           % "slf4j-log4j12"          % "1.7.32",
   "org.springframework" % "spring-aop"             % springVersion,
   "org.springframework" % "spring-context"         % springVersion,
   "org.springframework" % "spring-context-support" % springVersion excludeAll (
@@ -270,12 +271,12 @@ libraryDependencies ++= Seq(
   "org.mozilla"                   % "rhino"                     % "1.7.13",
   "io.lemonlabs"                  %% "scala-uri"                % "1.5.1",
   "org.scala-lang.modules"        %% "scala-parser-combinators" % "1.1.2",
-  "io.github.classgraph"          % "classgraph"                % "4.8.90",
+  "io.github.classgraph"          % "classgraph"                % "4.8.110",
   "com.fasterxml"                 % "classmate"                 % "1.5.1",
-  "org.glassfish"                 % "javax.el"                  % "3.0.1-b11",
+  "org.glassfish"                 % "javax.el"                  % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"    % "3.0.0",
   "com.github.stephenc.jcip"      % "jcip-annotations"          % "1.0-1",
-  "org.jboss.spec.javax.xml.bind" % "jboss-jaxb-api_2.3_spec"   % "2.0.0.Final"
+  "org.jboss.spec.javax.xml.bind" % "jboss-jaxb-api_2.3_spec"   % "2.0.1.Final"
 )
 
 libraryDependencies ++= {
@@ -306,6 +307,7 @@ excludeDependencies ++= Seq(
   "org.apache.ws.commons.schema" % "XmlSchema",
   "woodstox"                     % "wstx-asl",
   "org.codehaus.woodstox"        % "wstx-asl",
+  "org.codehaus.woodstox"        % "woodstox-core-asl",
   "javassist"                    % "javassist",
   "org.sonatype.sisu.inject"     % "cglib",
   "commons-logging"              % "commons-logging",
@@ -320,7 +322,7 @@ excludeDependencies ++= Seq(
   // Spring 5 added a default logging bridge.  In oEQ, this results in
   // a [deduplicate: different file contents found in the following] error
   // ...org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.7.30.jar:org/apache/commons/logging/Log.class
-  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.5.jar:org/apache/commons/logging/Log.class
+  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.9.jar:org/apache/commons/logging/Log.class
   // As per https://github.com/spring-projects/spring-framework/issues/20611 ,
   // since we already have logging in place, we can safely exclude the dep from spring.
   "org.springframework" % "spring-jcl",
@@ -348,7 +350,7 @@ excludeDependencies ++= Seq(
 )
 
 run := {
-  val cp = (fullClasspath in Runtime).value
+  val cp = (Runtime / fullClasspath).value
   val o = ForkOptions().withRunJVMOptions(
     Vector(
       "-cp",
@@ -359,11 +361,11 @@ run := {
   Fork.java(o, Seq("com.tle.core.equella.runner.EQUELLAServer"))
 }
 
-mainClass in assembly := Some("com.tle.core.equella.runner.EQUELLAServer")
+(assembly / mainClass) := Some("com.tle.core.equella.runner.EQUELLAServer")
 
-fullClasspath in assembly := (fullClasspath in Compile).value
+(assembly / fullClasspath) := (Compile / fullClasspath).value
 
-assemblyMergeStrategy in assembly := {
+(assembly / assemblyMergeStrategy) := {
   case PathList("META-INF", "axiom.xml")                    => MergeStrategy.first
   case PathList("javax", "wsdl", _*)                        => MergeStrategy.last
   case PathList("com", "ibm", "wsdl", _*)                   => MergeStrategy.first
@@ -383,8 +385,8 @@ assemblyMergeStrategy in assembly := {
 
   // Due to the error: deduplicate: different file contents found in the following:
   // ...
-  //  .../org.apache.cxf/cxf-rt-frontend-jaxws/bundles/cxf-rt-frontend-jaxws-3.4.1.jar:META-INF/cxf/bus-extensions.txt
-  //  .../org.apache.cxf/cxf-rt-transports-http/bundles/cxf-rt-transports-http-3.4.1.jar:META-INF/cxf/bus-extensions.txt
+  //  .../org.apache.cxf/cxf-rt-frontend-jaxws/bundles/cxf-rt-frontend-jaxws-3.4.4.jar:META-INF/cxf/bus-extensions.txt
+  //  .../org.apache.cxf/cxf-rt-transports-http/bundles/cxf-rt-transports-http-3.4.4.jar:META-INF/cxf/bus-extensions.txt
   // ...
   // As per https://github.com/johnrengelman/shadow/issues/309 , combining the files.
   case PathList("META-INF", "cxf", "bus-extensions.txt") => MergeStrategy.filterDistinctLines
@@ -432,7 +434,7 @@ assemblyMergeStrategy in assembly := {
   // Safe to do at least in JDK 8
   case "module-info.class" => MergeStrategy.discard
   case x =>
-    val oldStrategy = (assemblyMergeStrategy in assembly).value
+    val oldStrategy = (assembly / assemblyMergeStrategy).value
     oldStrategy(x)
 }
 
@@ -441,14 +443,14 @@ lazy val collectJars = taskKey[Set[File]]("Collect jars")
 collectJars := {
   val destDir = target.value / "jars"
   IO.delete(destDir)
-  IO.copy((managedClasspath in Compile).value.map(af => (af.data, destDir / af.data.getName)))
+  IO.copy((Compile / managedClasspath).value.map(af => (af.data, destDir / af.data.getName)))
 }
 
 lazy val allPlugins: ProjectReference = LocalProject("allPlugins")
 runnerTasks(allPlugins)
 
 additionalPlugins := {
-  ((baseDirectory in allPlugins).value / "Extensions" * "*" * "plugin-jpf.xml").get.map { mf =>
+  ((allPlugins / baseDirectory).value / "Extensions" * "*" * "plugin-jpf.xml").get.map { mf =>
     JPFRuntime(mf, Seq.empty, Seq.empty, Seq.empty, "Extensions")
   }
 }
@@ -456,25 +458,25 @@ additionalPlugins := {
 upgradeZip := {
   val log         = streams.value.log
   val ver         = equellaVersion.value
-  var releaseDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+  val releaseDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
   val outZip
     : File    = target.value / s"tle-upgrade-${ver.major}.${ver.minor}.r${releaseDate} (${ver.semanticVersion}-${ver.releaseType}).zip"
   val plugVer = ver.fullVersion
   val zipFiles = Seq(
-    assembly.value                                          -> "equella-server.jar",
-    (assembly in LocalProject("UpgradeInstallation")).value -> "database-upgrader.jar",
-    (assembly in LocalProject("conversion")).value          -> "conversion-service.jar",
-    (versionProperties in LocalProject("equella")).value    -> "version.properties"
+    assembly.value                                         -> "equella-server.jar",
+    (LocalProject("UpgradeInstallation") / assembly).value -> "database-upgrader.jar",
+    (LocalProject("conversion") / assembly).value          -> "conversion-service.jar",
+    (LocalProject("equella") / versionProperties).value    -> "version.properties"
   )
   val pluginJars =
     writeJars.value.map(t => (t.file, s"plugins/${t.group}/${t.pluginId}-$plugVer.jar"))
   log.info(s"Creating upgrade zip ${outZip.absolutePath}")
-  IO.zip(zipFiles ++ pluginJars, outZip)
+  IO.zip(zipFiles ++ pluginJars, outZip, Option((ThisBuild / buildTimestamp).value))
   outZip
 }
 
 lazy val sourcesForZip = Def.task[Seq[(File, String)]] {
-  val baseJavaSrc = (javaSource in Compile).value
+  val baseJavaSrc = (Compile / javaSource).value
   (baseJavaSrc ** "*.java").pair(rebase(baseJavaSrc, ""))
 }
 
@@ -482,6 +484,6 @@ writeSourceZip := {
   val outZip  = target.value / "equella-sources.zip"
   val allSrcs = sourcesForZip.all(ScopeFilter(inAggregates(allPlugins))).value.flatten
   sLog.value.info(s"Zipping all sources into $outZip")
-  IO.zip(allSrcs, outZip)
+  IO.zip(allSrcs, outZip, Option((ThisBuild / buildTimestamp).value))
   outZip
 }

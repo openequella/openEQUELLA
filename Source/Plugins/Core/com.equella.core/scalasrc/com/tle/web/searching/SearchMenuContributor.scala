@@ -20,11 +20,9 @@ package com.tle.web.searching
 
 import java.util
 import java.util.Collections
-
 import com.dytech.edge.web.WebConstants
-import com.tle.core.db.RunWithDB
 import com.tle.core.i18n.CoreStrings
-import com.tle.legacy.LegacyGuice
+import com.tle.core.security.ACLChecks.hasAcl
 import com.tle.web.sections.SectionInfo
 import com.tle.web.sections.result.util.KeyLabel
 import com.tle.web.sections.standard.model.{HtmlLinkState, SimpleBookmark}
@@ -38,14 +36,10 @@ object SearchMenuContributor extends MenuContributor {
   private val ICON_PATH = CoreStrings.lookup.url("images/menu-icon-search.png")
 
   override def getMenuContributions(info: SectionInfo): util.List[MenuContribution] = {
-    if (LegacyGuice.aclManager
-          .filterNonGrantedPrivileges(WebConstants.SEARCH_PAGE_PRIVILEGE)
-          .isEmpty) {
+    if (!hasAcl(WebConstants.SEARCH_PAGE_PRIVILEGE)) {
       Collections.emptyList()
     } else {
-      val uis = RunWithDB
-        .executeIfInInstitution(UISettings.cachedUISettings)
-        .getOrElse(UISettings.defaultSettings)
+      val uis          = UISettings.getUISettings
       val useNewSearch = uis.newUI.newSearch && RenderNewTemplate.isNewLayout(info)
       val hls = new HtmlLinkState(
         new SimpleBookmark(if (useNewSearch) "page/search" else "searching.do"))

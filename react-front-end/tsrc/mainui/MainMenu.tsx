@@ -1,0 +1,103 @@
+/*
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import {
+  Divider,
+  Icon,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+  useTheme,
+} from "@material-ui/core";
+import * as OEQ from "@openequella/rest-api-client";
+import * as React from "react";
+import { useHistory } from "react-router";
+import { useStyles } from "./Template";
+
+interface MainMenuProps {
+  /**
+   * Groups of menu items to display in the menu - typically separated by `Divider`s. These groups
+   * are normally computed on the server and based on the current user.
+   */
+  menuGroups: Array<Array<OEQ.LegacyContent.MenuItem>>;
+  /**
+   * Event handler for when a menu item is clicked - commonly used to show/hide the drawer which the
+   * menu may be residing in at certain responsive break points.
+   */
+  onClickNavItem: () => void;
+}
+
+/**
+ * A component responsible for the menu often found in the left hand side bar (or drawer) of the
+ * main layout.
+ */
+const MainMenu = ({ menuGroups, onClickNavItem }: MainMenuProps) => {
+  const classes = useStyles(useTheme());
+  const history = useHistory();
+  const navItem = (item: OEQ.LegacyContent.MenuItem, ind: number) => (
+    <ListItem
+      component="a"
+      href={item.href}
+      onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+        onClickNavItem();
+        if (item.route) {
+          e.preventDefault();
+          history.push(item.route);
+        }
+      }}
+      key={ind}
+      button
+    >
+      <ListItemIcon>
+        {item.iconUrl ? (
+          <img src={item.iconUrl} alt={item.title} />
+        ) : (
+          <Icon color="inherit" className={classes.menuIcon}>
+            {item.systemIcon ? item.systemIcon : "folder"}
+          </Icon>
+        )}
+      </ListItemIcon>
+      <ListItemText
+        disableTypography
+        primary={
+          <Typography
+            variant="subtitle1"
+            className={classes.menuItem}
+            component="div"
+          >
+            {item.title}
+          </Typography>
+        }
+      />
+    </ListItem>
+  );
+
+  return (
+    <div id="menulinks">
+      {menuGroups.map((group, index) => (
+        <React.Fragment key={index}>
+          {index > 0 && <Divider />}
+          <List component="nav">{group.map(navItem)}</List>
+        </React.Fragment>
+      ))}
+    </div>
+  );
+};
+
+export default React.memo(MainMenu);

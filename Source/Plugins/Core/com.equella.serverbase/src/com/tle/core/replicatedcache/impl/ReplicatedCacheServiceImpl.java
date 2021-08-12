@@ -49,6 +49,7 @@ import com.tle.core.replicatedcache.dao.ReplicatedCacheDao;
 import com.tle.core.scheduler.ScheduledTask;
 import com.tle.core.zookeeper.ZookeeperService;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
@@ -79,12 +80,18 @@ public class ReplicatedCacheServiceImpl
   @Override
   public synchronized <V extends Serializable> ReplicatedCache<V> getCache(
       String cacheId, long maxLocalCacheSize, long ttl, TimeUnit ttlUnit) {
+    return getCache(cacheId, maxLocalCacheSize, ttl, ttlUnit, false);
+  }
+
+  @Override
+  public synchronized <V extends Serializable> ReplicatedCache<V> getCache(
+      String cacheId, long maxLocalCacheSize, long ttl, TimeUnit ttlUnit, boolean alwaysPersist) {
     Preconditions.checkNotNull(cacheId, "cacheId cannot be null");
 
     @SuppressWarnings("unchecked")
     ReplicatedCacheImpl<V> cache = (ReplicatedCacheImpl<V>) caches.getIfPresent(cacheId);
     if (cache == null) {
-      cache = new ReplicatedCacheImpl<V>(cacheId, maxLocalCacheSize, ttl, ttlUnit);
+      cache = new ReplicatedCacheImpl<V>(cacheId, maxLocalCacheSize, ttl, ttlUnit, alwaysPersist);
       caches.put(cacheId, cache);
     }
     return cache;
@@ -96,13 +103,18 @@ public class ReplicatedCacheServiceImpl
     private final LoadingCache<Institution, LoadingCache<String, Optional<ExpiringValue<V>>>> cache;
     private final long ttl;
     private final TimeUnit ttlUnit;
+    private final boolean alwaysPersist;
 
     public ReplicatedCacheImpl(
-        String cacheId, final long maxLocalCacheSize, final long ttl, final TimeUnit ttlUnit) {
+        String cacheId,
+        final long maxLocalCacheSize,
+        final long ttl,
+        final TimeUnit ttlUnit,
+        boolean alwaysPersist) {
       this.cacheId = checkNotNull(cacheId);
       this.ttl = ttl;
       this.ttlUnit = ttlUnit;
-
+      this.alwaysPersist = alwaysPersist;
       // The in-memory caches at both the institution and key/value levels
       // expire after 1 day of not being accessed. No use holding stuff in
       // memory that we're not using.
@@ -124,7 +136,7 @@ public class ReplicatedCacheServiceImpl
                                 @Override
                                 public Optional<ExpiringValue<V>> load(String key)
                                     throws Exception {
-                                  if (!zookeeperService.isCluster()) {
+                                  if (!zookeeperService.isCluster() && !alwaysPersist) {
                                     return Optional.absent();
                                   }
 
@@ -149,7 +161,7 @@ public class ReplicatedCacheServiceImpl
     @Override
     public synchronized Optional<V> get(@NonNull String key) {
       checkNotNull(key);
-      if (zookeeperService.isCluster()) {
+      if (alwaysPersist || zookeeperService.isCluster()) {
         cache.refresh(CurrentInstitution.get());
       }
 
@@ -170,6 +182,11 @@ public class ReplicatedCacheServiceImpl
 
     @Override
     public synchronized void put(@NonNull String key, @NonNull V value) {
+      put(key, value, Instant.ofEpochMilli(System.currentTimeMillis() + ttlUnit.toMillis(ttl)));
+    }
+
+    @Override
+    public synchronized void put(@NonNull String key, @NonNull V value, Instant dbEntryTTL) {
       checkNotNull(key);
       checkNotNull(value);
 
@@ -186,12 +203,8 @@ public class ReplicatedCacheServiceImpl
       }
 
       // Update the DB state if it's clustered
-      if (zookeeperService.isCluster()) {
-        dao.put(
-            cacheId,
-            key,
-            new Date(System.currentTimeMillis() + ttlUnit.toMillis(ttl)),
-            PluginAwareObjectOutputStream.toBytes(value));
+      if (alwaysPersist || zookeeperService.isCluster()) {
+        dao.put(cacheId, key, Date.from(dbEntryTTL), PluginAwareObjectOutputStream.toBytes(value));
       }
 
       // Invalidate other servers caches
@@ -208,7 +221,7 @@ public class ReplicatedCacheServiceImpl
         return;
       }
 
-      if (zookeeperService.isCluster()) {
+      if (alwaysPersist || zookeeperService.isCluster()) {
         dao.invalidate(cacheId, keys);
       }
 

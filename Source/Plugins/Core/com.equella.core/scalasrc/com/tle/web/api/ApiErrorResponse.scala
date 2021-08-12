@@ -27,11 +27,23 @@ case class ApiErrorResponse(errors: Seq[ApiResponseMessage])
 object ApiErrorResponse {
 
   def resourceNotFound(errors: String*): Response = {
-    Response.status(Status.NOT_FOUND).entity(responseBody(errors)).build()
+    buildErrorResponse(Status.NOT_FOUND, errors)
   }
 
   def badRequest(errors: String*): Response = {
-    Response.status(Status.BAD_REQUEST).entity(responseBody(errors)).build()
+    buildErrorResponse(Status.BAD_REQUEST, errors)
+  }
+
+  def unauthorizedRequest(errors: String*): Response = {
+    buildErrorResponse(Status.UNAUTHORIZED, errors)
+  }
+
+  def forbiddenRequest(errors: String*): Response = {
+    buildErrorResponse(Status.FORBIDDEN, errors)
+  }
+
+  private def buildErrorResponse(status: Status, errors: Seq[String]): Response = {
+    Response.status(status).entity(responseBody(errors)).build()
   }
 
   private def responseBody(errors: Seq[String]) = ApiErrorResponse(errors.map(ApiResponseMessage))

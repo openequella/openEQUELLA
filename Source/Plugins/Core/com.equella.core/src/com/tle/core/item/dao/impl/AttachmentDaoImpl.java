@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.inject.Singleton;
-import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 
@@ -136,15 +135,5 @@ public class AttachmentDaoImpl extends GenericDaoImpl<Attachment, Long> implemen
         .createAlias("item", "i")
         .add(Restrictions.eq("i.institution", CurrentInstitution.get()))
         .add(Restrictions.eq("uuid", uuid));
-  }
-
-  @Override
-  public List<Attachment> findAllByUuid(String uuid) {
-    return (List<Attachment>) findByDetachedCriteria(criteriaByUuid(uuid), Criteria::list);
-  }
-
-  @Override
-  public Attachment findByUuid(String uuid) {
-    return (Attachment) findByDetachedCriteria(criteriaByUuid(uuid), Criteria::uniqueResult);
   }
 }

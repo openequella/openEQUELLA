@@ -39,6 +39,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -48,6 +49,7 @@ import org.apache.log4j.Logger;
 @Singleton
 public class XmlHelper {
   private static final Logger LOGGER = Logger.getLogger(XmlHelper.class);
+  public static final String EXPORT_BUCKET_FILE_PATTERN = "*/*.xml";
 
   @Inject private FileSystemService fileSystemService;
   @Inject private XmlService xmlService;
@@ -60,7 +62,7 @@ public class XmlHelper {
   public void writeFile(TemporaryFileHandle staging, String filename, String content) {
     try (Writer out =
         new OutputStreamWriter(
-            fileSystemService.getOutputStream(staging, filename, false), Constants.UTF8)) {
+            fileSystemService.getOutputStream(staging, filename, false), StandardCharsets.UTF_8)) {
       out.write(content);
     } catch (Exception e) {
       throw new RuntimeException(
@@ -83,7 +85,7 @@ public class XmlHelper {
 
   public void writeXmlFile(TemporaryFileHandle file, String path, Object obj, XStream xstream) {
     try (OutputStream outStream = fileSystemService.getOutputStream(file, path, false)) {
-      xstream.toXML(obj, new OutputStreamWriter(outStream, Constants.UTF8));
+      xstream.toXML(obj, new OutputStreamWriter(outStream, StandardCharsets.UTF_8));
     } catch (IOException ioe) {
       throw new RuntimeException("Error writing file " + file.getAbsolutePath(), ioe);
     }
@@ -91,7 +93,7 @@ public class XmlHelper {
 
   public void writeXmlFile(TemporaryFileHandle file, String path, Object obj) {
     try (OutputStream outStream = fileSystemService.getOutputStream(file, path, false)) {
-      xmlService.serialiseToWriter(obj, new OutputStreamWriter(outStream, Constants.UTF8));
+      xmlService.serialiseToWriter(obj, new OutputStreamWriter(outStream, StandardCharsets.UTF_8));
     } catch (IOException ioe) {
       throw new RuntimeException("Error writing file " + file.getAbsolutePath(), ioe);
     }
@@ -119,7 +121,7 @@ public class XmlHelper {
   @SuppressWarnings("unchecked")
   public <O> O readXmlFile(final TemporaryFileHandle file, String path) {
     try (Reader reader = new UnicodeReader(fileSystemService.read(file, path), Constants.UTF8)) {
-      return (O) xmlService.deserialiseFromXml(getClass().getClassLoader(), reader);
+      return xmlService.deserialiseFromXml(getClass().getClassLoader(), reader);
     } catch (IOException re) {
       LOGGER.error("Error reading: " + file.getAbsolutePath());
       throw new RuntimeException(re);
@@ -128,9 +130,25 @@ public class XmlHelper {
 
   public List<String> getXmlFileList(final TemporaryFileHandle folder) {
     if (isBucketed(folder)) {
-      return fileSystemService.grep(folder, "", "*/*.xml");
+      return fileSystemService.grep(folder, "", EXPORT_BUCKET_FILE_PATTERN);
     }
     return fileSystemService.grep(folder, "", "*.xml");
+  }
+
+  /**
+   * Use the provided pattern to find XML files first. If none are found then find by standard
+   * pattern.
+   *
+   * @param folder Folder in which to search for XML files
+   * @param pattern Pattern used to find files.
+   * @return List of file names.
+   */
+  public List<String> getXmlFileListByPattern(final TemporaryFileHandle folder, String pattern) {
+    List<String> files = fileSystemService.grep(folder, "", pattern);
+    if (files.size() == 0) {
+      return fileSystemService.grep(folder, "", "*.xml");
+    }
+    return files;
   }
 
   /**
@@ -185,7 +203,7 @@ public class XmlHelper {
 
   @SuppressWarnings("unchecked")
   public <O> O readXmlString(String xml) {
-    return (O) xmlService.deserialiseFromXml(getClass().getClassLoader(), xml);
+    return xmlService.deserialiseFromXml(getClass().getClassLoader(), xml);
   }
 
   public <O> String writeToXmlString(O obj) {

@@ -18,24 +18,12 @@
 
 package com.tle.core.db
 
-import java.time.Instant
-
 import com.tle.core.db.tables._
-import com.tle.core.db.types.{DbUUID, InstId, String20, String255, UserId}
+import com.tle.core.db.types.{DbUUID, InstId, String20}
 import fs2.Stream
 import io.doolse.simpledba.{WriteOp, WriteQueries}
 import io.doolse.simpledba.jdbc.{JDBCColumn, JDBCIO, JDBCSQLConfig}
 import org.slf4j.LoggerFactory
-
-case class AuditLogQueries(
-    insertNew: (Long => AuditLogEntry) => Stream[JDBCIO, AuditLogEntry],
-    deleteForUser: ((UserId, InstId)) => Stream[JDBCIO, WriteOp],
-    listForUser: ((UserId, InstId)) => Stream[JDBCIO, AuditLogEntry],
-    deleteForInst: InstId => Stream[JDBCIO, WriteOp],
-    deleteBefore: Instant => Stream[JDBCIO, WriteOp],
-    countForInst: InstId => Stream[JDBCIO, Int],
-    listForInst: InstId => Stream[JDBCIO, AuditLogEntry]
-)
 
 case class ViewCountQueries(
     writeItemCounts: WriteQueries[JDBCIO, ItemViewCount],
@@ -67,12 +55,6 @@ case class EntityQueries(
     allByInst: InstId => Stream[JDBCIO, OEQEntity]
 )
 
-case class CachedValueQueries(
-    insertNew: (Long => CachedValue) => Stream[JDBCIO, CachedValue],
-    writes: WriteQueries[JDBCIO, CachedValue],
-    getForKey: ((String255, String255, InstId)) => Stream[JDBCIO, CachedValue],
-    getForValue: ((String255, String, InstId)) => Stream[JDBCIO, CachedValue])
-
 object DBQueries {
   val logSQL = LoggerFactory.getLogger("org.hibernate.SQL")
 }
@@ -84,13 +66,9 @@ trait DBQueries {
   def setupLogging(config: JDBCSQLConfig[C]): JDBCSQLConfig[C] =
     config.withPrepareLogger(sql => DBQueries.logSQL.debug(sql))
 
-  def auditLogQueries: AuditLogQueries
-
   def viewCountQueries: ViewCountQueries
 
   def settingsQueries: SettingsQueries
 
   def entityQueries: EntityQueries
-
-  def cachedValueQueries: CachedValueQueries
 }

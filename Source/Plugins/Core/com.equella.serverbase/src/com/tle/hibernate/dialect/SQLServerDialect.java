@@ -21,12 +21,11 @@ package com.tle.hibernate.dialect;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.tle.core.hibernate.ExtendedDialect;
-import com.tle.core.hibernate.type.HibernateCsvType;
-import com.tle.core.hibernate.type.HibernateEscapedString;
-import com.tle.core.hibernate.type.ImmutableHibernateXStreamType;
+import com.tle.core.hibernate.type.HibernateCustomTypes;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -41,7 +40,6 @@ import org.hibernate.engine.spi.Mapping;
 import org.hibernate.internal.util.StringHelper;
 import org.hibernate.mapping.Column;
 import org.hibernate.type.BasicType;
-import org.hibernate.type.CustomType;
 import org.hibernate.type.StandardBasicTypes;
 
 // TECH_DEBT - StringHelper is now internal - https://github.com/openequella/openEQUELLA/issues/2507
@@ -53,17 +51,8 @@ public class SQLServerDialect extends org.hibernate.dialect.SQLServer2005Dialect
   // queries with '?' in them need to be ordinal ( ie `?4` ).  However, this class
   // does not leverage the JPA / Hibernate logic, so we can leave the `?`s as-is.
 
-  private static final CustomType TYPE_BLANKABLE =
-      new CustomType(new HibernateEscapedString(Types.NVARCHAR), new String[] {"blankable"});
-  private static final CustomType TYPE_XSTREAM =
-      new CustomType(
-          new ImmutableHibernateXStreamType(Types.LONGNVARCHAR),
-          new String[] {"xstream_immutable"});
-  private static final CustomType TYPE_CSV =
-      new CustomType(new HibernateCsvType(Types.NVARCHAR), new String[] {"csv"});
-
   private static final String URL_SCHEME = "jdbc:sqlserver://";
-  private String dropConstraintsSQL;
+  private final String dropConstraintsSQL;
 
   private final UniqueDelegate uniqueDelegate;
 
@@ -85,7 +74,8 @@ public class SQLServerDialect extends org.hibernate.dialect.SQLServer2005Dialect
     try (InputStream inp = getClass().getResourceAsStream("dropconstraints.sql")) {
       // Sonar whinges about the new InputStreamReader not being closed in
       // a finally block, but the existing finally block does that ...?
-      BufferedReader bufReader = new BufferedReader(new InputStreamReader(inp, "UTF-8")); // NOSONAR
+      BufferedReader bufReader =
+          new BufferedReader(new InputStreamReader(inp, StandardCharsets.UTF_8)); // NOSONAR
       String line = null;
       while ((line = bufReader.readLine()) != null) {
         sbuf.append(line);
@@ -218,8 +208,10 @@ public class SQLServerDialect extends org.hibernate.dialect.SQLServer2005Dialect
 
   @Override
   public Iterable<? extends BasicType> getExtraTypeOverrides() {
-    return ImmutableList.of(
-        new NStringType(), new LongNStringType(), TYPE_BLANKABLE, TYPE_XSTREAM, TYPE_CSV);
+    List<BasicType> customTypes = new ArrayList<>(HibernateCustomTypes.getCustomTypes(this));
+    customTypes.add(new NStringType());
+    customTypes.add(new LongNStringType());
+    return ImmutableList.copyOf(customTypes);
   }
 
   /**

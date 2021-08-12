@@ -37,7 +37,7 @@ import com.tle.web.sections.result.util.BundleLabel;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.model.SimpleBookmark;
-import com.tle.web.settings.UISettingsJava;
+import com.tle.web.settings.UISettings;
 import java.util.Collections;
 import java.util.Map;
 import javax.inject.Inject;
@@ -80,7 +80,7 @@ public class SearchCollectionBreadcrumbProvider implements BreadcrumbProvider {
     final HtmlLinkState collectionLink = new HtmlLinkState();
     collectionLink.setLabel(label);
 
-    if (UISettingsJava.getUISettings().isNewSearchActive()) {
+    if (UISettings.getUISettings().isNewSearchActive()) {
       collectionLink.setBookmark(new SimpleBookmark("page/search"));
     } else {
       // "..page=<n>.." can be misleading (when the original search which

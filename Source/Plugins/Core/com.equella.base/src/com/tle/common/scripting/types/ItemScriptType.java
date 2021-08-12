@@ -89,6 +89,7 @@ public interface ItemScriptType extends Serializable {
    * saved.
    *
    * @param userUniqueId The unique ID of the shared owner to remove.
+   * @return true if the userUniqueId was valid, false if it wasn't found.
    */
   boolean removeSharedOwner(String userUniqueId);
 
