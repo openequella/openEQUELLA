@@ -29,7 +29,7 @@ val jsoupVersion     = "1.14.1"
 val simpledbaVersion = "0.1.9"
 val springVersion    = "5.3.9"
 val sttpVersion      = "1.7.2"
-val tikaVersion      = "1.24.1"
+val tikaVersion      = "1.27"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -192,6 +192,11 @@ libraryDependencies ++= Seq(
       // for all merged bus-extensions.txt files.
       organization = "org.apache.cxf",
       name = "cxf-rt-rs-client"
+    ),
+    ExclusionRule(
+      // We manage Jackson related deps by 'jacksonVersion' so exclude the 'jackson-databind' added b tika
+      organization = "com.fasterxml.jackson.core",
+      name = "jackson-databind"
     )
   ),
   "org.apache.tomcat"           % "tomcat-annotations-api" % TomcatVersion,
