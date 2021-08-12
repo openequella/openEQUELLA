@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 import Axios from "axios";
-import { Literal, match } from "runtypes";
+import * as A from "fp-ts/Array";
+import * as E from "fp-ts/Either";
+import { flow, pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
 import {
   API_BASE_URL,
   AppConfig,
@@ -33,6 +36,7 @@ import {
   SubmitResponse,
 } from "../legacycontent/LegacyContent";
 import { routes } from "../mainui/routes";
+import { simpleMatch } from "../util/match";
 
 /**
  *  This Module is all about interacting with the Legacy AJAX endpoints
@@ -469,29 +473,35 @@ export const selectResource = (
   itemKey: string,
   attachments: string[]
 ): Promise<void> =>
-  match(
-    [
-      Literal("coursesearch"),
-      () => selectResourceForCourseList(itemKey, attachments),
-    ],
-    [
-      Literal("search"),
-      () => selectResourceForSelectOrAdd(itemKey, attachments),
-    ],
-    [
-      Literal("skinnysearch"),
-      () => {
-        // Each selection in Skinny can only have one attachment.
-        if (attachments.length <= 1) {
-          const attachmentUUID =
-            attachments.length === 1 ? attachments[0] : undefined;
-          return selectResourceForSkinny(itemKey, attachmentUUID);
-        }
-        return Promise.reject(
-          new Error(
-            "Only one attachment is allowed in Skinny Selection Session."
+  pipe(
+    getSelectionSessionInfo().layout,
+    simpleMatch({
+      coursesearch: () => selectResourceForCourseList(itemKey, attachments),
+      search: () => selectResourceForSelectOrAdd(itemKey, attachments),
+      skinnysearch: () =>
+        pipe(
+          attachments,
+          E.fromPredicate<string[], Error>(
+            (xs: string[]) => xs.length <= 1, // Each selection in Skinny can only have one attachment.
+            () =>
+              new Error(
+                "Only one attachment is allowed in Skinny Selection Session."
+              )
+          ),
+          E.map(A.head),
+          E.match(
+            (e) => Promise.reject(e),
+            flow(
+              // If the array was empty, then pass `undefined` to `selectResourceForSkinny` which
+              // indicates no attachment is selected - just the item.
+              O.toUndefined,
+              (attachmentUUID) =>
+                selectResourceForSkinny(itemKey, attachmentUUID)
+            )
           )
-        );
+        ),
+      _: (layout) => {
+        throw new TypeError(`Unsupported selection session layout: ${layout}`);
       },
-    ]
-  )(getSelectionSessionInfo().layout);
+    })
+  );

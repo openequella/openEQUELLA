@@ -2,7 +2,8 @@
   "extends": [
     "config:base",
     ":dependencyDashboard",
-    ":maintainLockFilesMonthly"
+    ":maintainLockFilesMonthly",
+    "group:definitelyTyped"
   ],
   "prConcurrentLimit": 20,
   "prHourlyLimit": 2,

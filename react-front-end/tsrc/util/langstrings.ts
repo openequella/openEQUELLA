@@ -150,6 +150,7 @@ export const languageStrings = {
   },
   common: {
     action: {
+      accept: "Accept",
       add: "Add",
       apply: "Apply",
       browse: "Browse...",
@@ -166,6 +167,7 @@ export const languageStrings = {
       ok: "OK",
       openInNewWindow: "Open in new window",
       refresh: "Refresh",
+      reject: "Reject",
       register: "Register",
       resettodefault: "Reset to Default",
       revertchanges: "Revert Changes",
@@ -290,6 +292,16 @@ export const languageStrings = {
       thisYear: "This year",
     },
   },
+  drm: {
+    getTerms: {
+      error: "Failed to retrieve DRM terms",
+    },
+    violation: {
+      title: "DRM Violation",
+      prefix:
+        "You are currently unable to access this item due to the following DRM violation: \n",
+    },
+  },
   embedCode: {
     label: "Embed code",
     copy: "Copy embed code",
@@ -307,11 +319,15 @@ export const languageStrings = {
     failedToDelete: "Failed to delete '%s' due to error: %s",
   },
   lightboxComponent: {
+    kalturaExternalIdIssue:
+      "There is an issue with the format of the externalId for the the Kaltura Video",
+    kalturaMissingId:
+      "The provided Kaltura media is missing externalId details",
+    openSummaryPage: "Open Item Summary page",
     unsupportedContent: "Provided content is not supported",
     viewNext: "View next attachment",
     viewPrevious: "View previous attachment",
     youTubeVideoMissingId: "The provided YouTube video is missing a video ID",
-    openSummaryPage: "Open Item Summary page",
   },
   loginnoticepage: {
     title: "Login notice editor",
@@ -403,6 +419,7 @@ export const languageStrings = {
       modeGalleryVideo: "Video Gallery",
     },
     collectionSelector: {
+      noOptions: "All",
       title: "Collections",
     },
     filterLast: {

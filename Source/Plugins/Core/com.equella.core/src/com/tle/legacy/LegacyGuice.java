@@ -42,6 +42,7 @@ import com.tle.core.item.edit.attachment.AbstractAttachmentEditor;
 import com.tle.core.item.helper.ItemHelper;
 import com.tle.core.item.serializer.ItemSerializerService;
 import com.tle.core.item.serializer.impl.AttachmentSerializerProvider;
+import com.tle.core.item.service.DrmService;
 import com.tle.core.item.service.ItemService;
 import com.tle.core.item.standard.service.ItemCommentService;
 import com.tle.core.jackson.ObjectMapperService;
@@ -131,6 +132,8 @@ public class LegacyGuice extends AbstractModule {
   @Inject public static DateFormatSettingsPrivilegeTreeProvider datePrivProvider;
 
   @Inject public static DiagnosticsSettingsPrivilegeTreeProvider diagnosticPrivProvider;
+
+  @Inject public static DrmService drmService;
 
   @Inject public static DynaCollectionService dynaCollectionService;
 

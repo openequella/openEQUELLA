@@ -1,0 +1,111 @@
+<com.tle.beans.item.Item>
+  <id>20715</id>
+  <uuid>73b67c33-aa72-419f-87aa-72d919fcf9f0</uuid>
+  <version>1</version>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2021-07-07 12:06:21.221</dateModified>
+  <dateCreated class="sql-timestamp">2021-07-07 12:06:21.223</dateCreated>
+  <dateForIndex class="sql-timestamp">2021-07-07 12:06:21.221</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="9a961a09-0c6a-b24f-b05b-eb21a696528b"/>
+  <collaborators/>
+  <referencedUrls/>
+  <drmSettings>
+    <id>20716</id>
+    <item reference="../.."/>
+    <drmPageUuid>8a1d54b7-3f82-42e5-b5ad-1895149fe1a3</drmPageUuid>
+    <hideLicencesFromOwner>false</hideLicencesFromOwner>
+    <showLicenceCount>false</showLicenceCount>
+    <allowSummary>false</allowSummary>
+    <ownerMustAccept>false</ownerMustAccept>
+    <studentsMustAcceptIfInCompilation>true</studentsMustAcceptIfInCompilation>
+    <previewAllowed>false</previewAllowed>
+    <restrictToSector>false</restrictToSector>
+    <attributionOfOwnership>false</attributionOfOwnership>
+    <enforceAttribution>true</enforceAttribution>
+    <currentUsageCount>0</currentUsageCount>
+    <maximumUsageCount>0</maximumUsageCount>
+    <contentOwners>
+      <com.tle.beans.item.DrmSettings_-Party>
+        <userID>TLE_ADMINISTRATOR</userID>
+        <name>TLE_ADMINISTRATOR TLE_ADMINISTRATOR [TLE_ADMINISTRATOR]</name>
+        <owner>true</owner>
+      </com.tle.beans.item.DrmSettings_-Party>
+    </contentOwners>
+    <usages>
+      <string>DISPLAY</string>
+      <string>EXECUTE</string>
+      <string>PLAY</string>
+      <string>PRINT</string>
+    </usages>
+    <restrictedToDateRange>
+      <first class="date">2021-05-31 14:00:00.0 UTC</first>
+      <second class="date">2021-06-30 14:00:00.0 UTC</second>
+    </restrictedToDateRange>
+    <requireAcceptanceFrom>* </requireAcceptanceFrom>
+  </drmSettings>
+  <moderation>
+    <id>20718</id>
+    <liveApprovalDate class="sql-timestamp">2021-07-07 12:06:21.221</liveApprovalDate>
+    <lastAction class="sql-timestamp">2021-07-07 12:06:21.221</lastAction>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>20721</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2021-07-07 12:06:21.221</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>20722</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2021-07-07 12:06:21.221</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>20723</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2021-07-07 12:06:21.221</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>20719</id>
+    <strings>
+      <entry>
+        <string>en_GB</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>20720</id>
+          <locale>en_GB</locale>
+          <priority>2</priority>
+          <text>DRM API test</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>default</thumb>
+</com.tle.beans.item.Item>
