@@ -113,7 +113,7 @@ libraryDependencies ++= Seq(
   "javax.mail"                % "mail"                     % "1.4.7",
   "javax.servlet"             % "jstl"                     % "1.2",
   "javax.xml"                 % "jaxrpc"                   % "1.1",
-  "jdom"                      % "jdom"                     % "1.0",
+  "jdom"                      % "jdom"                     % "1.1",
   "com.github.equella.jpf"    % "jpf"                      % "1.0.7",
   "log4j"                     % "log4j"                    % "1.2.17",
   "net.oauth.core"            % "oauth"                    % "20100527",
@@ -366,6 +366,7 @@ run := {
 (assembly / fullClasspath) := (Compile / fullClasspath).value
 
 (assembly / assemblyMergeStrategy) := {
+  case PathList("META-INF", "jdom-info.xml")                => MergeStrategy.first
   case PathList("META-INF", "axiom.xml")                    => MergeStrategy.first
   case PathList("javax", "wsdl", _*)                        => MergeStrategy.last
   case PathList("com", "ibm", "wsdl", _*)                   => MergeStrategy.first
