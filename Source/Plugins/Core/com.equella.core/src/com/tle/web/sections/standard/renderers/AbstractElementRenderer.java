@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.Map;
 
 public abstract class AbstractElementRenderer extends AbstractComponentRenderer {
-
   public AbstractElementRenderer(HtmlComponentState state) {
     super(state);
   }

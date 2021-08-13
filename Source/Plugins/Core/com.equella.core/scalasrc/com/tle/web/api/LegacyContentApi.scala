@@ -203,6 +203,7 @@ object LegacyContentController extends AbstractSectionsController with SectionFi
   val RedirectedAttr = "REDIRECTED"
 
   val DISABLE_LEGACY_CSS = "DISABLE_LEGACY_CSS"
+  val SKIP_BOOTSTRAP     = "skip_bootstrap";
 
   override protected def getTreeForPath(path: String): SectionTree =
     LegacyGuice.treeRegistry.getTreeForPath(path)
