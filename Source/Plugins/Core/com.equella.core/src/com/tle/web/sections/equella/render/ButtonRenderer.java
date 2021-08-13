@@ -19,6 +19,7 @@
 package com.tle.web.sections.equella.render;
 
 import com.tle.common.Check;
+import com.tle.web.api.LegacyContentController;
 import com.tle.web.sections.SectionUtils;
 import com.tle.web.sections.SectionWriter;
 import com.tle.web.sections.events.PreRenderContext;
@@ -132,7 +133,7 @@ public class ButtonRenderer extends AbstractElementRenderer implements JSDisable
 
   @Override
   public void preRender(PreRenderContext info) {
-    if (!info.getBooleanAttribute(SKIP_BOOTSTRAP)) {
+    if (!info.getBooleanAttribute(LegacyContentController.SKIP_BOOTSTRAP())) {
       info.preRender(Bootstrap.PRERENDER);
     }
     super.preRender(info);

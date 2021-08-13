@@ -23,6 +23,7 @@ import com.tle.beans.item.DrmSettings;
 import com.tle.beans.item.Item;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.service.DrmService;
+import com.tle.web.api.LegacyContentController;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionInfo;
@@ -43,7 +44,6 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
-import com.tle.web.sections.standard.renderers.AbstractElementRenderer;
 import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.viewitem.DRMFilter;
 import com.tle.web.viewitem.I18nDRM;
@@ -108,7 +108,7 @@ public class DRMLicenseDialog extends EquellaDialog<DRMDialogModel> {
     // Bootstrap.css from this dialog's three buttons because Bootstrap.css will result in the three
     // buttons having inconsistent UI and breaking other new UI components.
     if (RenderNewTemplate.isNewUIEnabled()) {
-      context.setAttribute(AbstractElementRenderer.SKIP_BOOTSTRAP, true);
+      context.setAttribute(LegacyContentController.SKIP_BOOTSTRAP(), true);
     }
     Item item = rootFileSection.getViewableItem(context).getItem();
     DrmSettings rights = drmService.requiresAcceptance(item, false, false);
