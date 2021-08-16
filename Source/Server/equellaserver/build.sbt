@@ -15,7 +15,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 (Runtime / unmanagedClasspath) += (LocalProject("learningedge_config") / baseDirectory).value
 
-val RestEasyVersion  = "3.13.2.Final"
+val RestEasyVersion  = "3.15.1.Final"
 val SwaggerVersion   = "1.6.2"
 val TomcatVersion    = "9.0.50"
 val axis2Version     = "1.6.2"
@@ -29,7 +29,7 @@ val jsoupVersion     = "1.14.1"
 val simpledbaVersion = "0.1.9"
 val springVersion    = "5.3.9"
 val sttpVersion      = "1.7.2"
-val tikaVersion      = "1.24.1"
+val tikaVersion      = "1.27"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -59,9 +59,9 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
-  "com.google.api-client" % "google-api-client"           % "1.30.11",
-  "com.google.apis"       % "google-api-services-books"   % "v1-rev20200925-1.30.10",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20200618-1.30.9",
+  "com.google.api-client" % "google-api-client"           % "1.32.1",
+  "com.google.apis"       % "google-api-services-books"   % "v1-rev20201021-1.32.1",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20210811-1.32.1",
   "com.google.code.gson"  % "gson"                        % "2.8.7",
   "com.google.gdata"      % "core"                        % "1.47.1",
   "com.google.guava"      % "guava"                       % "18.0",
@@ -90,7 +90,7 @@ libraryDependencies ++= Seq(
   ),
   "com.miglayout"             % "miglayout-swing"          % "4.2",
   "com.ning"                  % "async-http-client"        % "1.9.40",
-  "com.rometools"             % "rome"                     % "1.15.0",
+  "com.rometools"             % "rome"                     % "1.16.0",
   "io.swagger"                % "swagger-core"             % SwaggerVersion,
   "io.swagger"                % "swagger-annotations"      % SwaggerVersion,
   "io.swagger"                % "swagger-jaxrs"            % SwaggerVersion,
@@ -113,7 +113,7 @@ libraryDependencies ++= Seq(
   "javax.mail"                % "mail"                     % "1.4.7",
   "javax.servlet"             % "jstl"                     % "1.2",
   "javax.xml"                 % "jaxrpc"                   % "1.1",
-  "jdom"                      % "jdom"                     % "1.0",
+  "jdom"                      % "jdom"                     % "1.1",
   "com.github.equella.jpf"    % "jpf"                      % "1.0.7",
   "log4j"                     % "log4j"                    % "1.2.17",
   "net.oauth.core"            % "oauth"                    % "20100527",
@@ -192,6 +192,11 @@ libraryDependencies ++= Seq(
       // for all merged bus-extensions.txt files.
       organization = "org.apache.cxf",
       name = "cxf-rt-rs-client"
+    ),
+    ExclusionRule(
+      // We manage Jackson related deps by 'jacksonVersion' so exclude the 'jackson-databind' added b tika
+      organization = "com.fasterxml.jackson.core",
+      name = "jackson-databind"
     )
   ),
   "org.apache.tomcat"           % "tomcat-annotations-api" % TomcatVersion,
@@ -206,8 +211,8 @@ libraryDependencies ++= Seq(
   "org.apache.tomcat"           % "tomcat-util"            % TomcatVersion,
   "org.apache.tomcat"           % "tomcat-util-scan"       % TomcatVersion,
   "org.apache.tomcat"           % "tomcat-ssi"             % TomcatVersion,
-  "org.apache.ws.commons.axiom" % "axiom-api"              % "1.2.15",
-  "org.apache.ws.commons.axiom" % "axiom-impl"             % "1.2.15",
+  "org.apache.ws.commons.axiom" % "axiom-api"              % "1.3.0",
+  "org.apache.ws.commons.axiom" % "axiom-impl"             % "1.3.0",
   "org.apache.ws.security"      % "wss4j"                  % "1.6.19",
   "org.apache.zookeeper"        % "zookeeper"              % "3.4.6" excludeAll (
     ExclusionRule(organization = "org.slf4j",
@@ -231,7 +236,7 @@ libraryDependencies ++= Seq(
   "org.jboss.logging"               % "jboss-logging-processor"        % "2.2.1.Final",
   "org.reactivestreams"             % "reactive-streams"               % "1.0.3",
   // Upgraded to 2.0.1.Final due to a deduplication issue with jakarta.ws.rs-api
-  "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"     % "2.0.1.Final",
+  "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"     % "2.0.2.Final",
   "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api" % "1.4.1",
   "org.eclipse.microprofile.config"      % "microprofile-config-api"      % "1.4",
   "javax.json.bind"                      % "javax.json.bind-api"          % "1.0",
@@ -267,11 +272,11 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "net.sf.saxon")
   ),
   "xml-resolver"                  % "xml-resolver"              % "1.2",
-  "org.scala-sbt"                 %% "io"                       % "1.3.4",
+  "org.scala-sbt"                 %% "io"                       % "1.5.1",
   "org.mozilla"                   % "rhino"                     % "1.7.13",
   "io.lemonlabs"                  %% "scala-uri"                % "1.5.1",
   "org.scala-lang.modules"        %% "scala-parser-combinators" % "1.1.2",
-  "io.github.classgraph"          % "classgraph"                % "4.8.110",
+  "io.github.classgraph"          % "classgraph"                % "4.8.114",
   "com.fasterxml"                 % "classmate"                 % "1.5.1",
   "org.glassfish"                 % "javax.el"                  % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"    % "3.0.0",
@@ -366,6 +371,7 @@ run := {
 (assembly / fullClasspath) := (Compile / fullClasspath).value
 
 (assembly / assemblyMergeStrategy) := {
+  case PathList("META-INF", "jdom-info.xml")                => MergeStrategy.first
   case PathList("META-INF", "axiom.xml")                    => MergeStrategy.first
   case PathList("javax", "wsdl", _*)                        => MergeStrategy.last
   case PathList("com", "ibm", "wsdl", _*)                   => MergeStrategy.first

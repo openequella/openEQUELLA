@@ -407,6 +407,16 @@ public class FeedServlet extends HttpServlet {
     }
 
     @Override
+    public void setLabel(String label) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getLabel() {
+      return label.getText();
+    }
+
+    @Override
     public Class<? extends CopyFrom> getInterface() {
       return SyndCategory.class;
     }
