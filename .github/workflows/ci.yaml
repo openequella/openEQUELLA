@@ -142,7 +142,7 @@ jobs:
 
       - name: Install node dependencies (react-front-end)
         run: |
-          npm ci --workspace=react-front-end
+          npm ci
 
       - name: Generate Static Storybook instance
         working-directory: react-front-end
