@@ -234,7 +234,8 @@ ThisBuild / reactFrontEndDir := baseDirectory.value / "react-front-end"
 ThisBuild / reactFrontEndOutputDir := reactFrontEndDir.value / "target/resources"
 ThisBuild / buildReactFrontEnd := {
   val dir = reactFrontEndDir.value
-  Common.nodeInstall(dir)
+  // TODO: call once at top level to install all dependencies
+  // Common.nodeInstall(dir)
   Common.nodeScript("build", dir)
 
   // return the location of the resulting artefacts
