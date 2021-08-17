@@ -64,7 +64,7 @@ libraryDependencies ++= Seq(
   "com.google.apis"       % "google-api-services-youtube" % "v3-rev20210811-1.32.1",
   "com.google.code.gson"  % "gson"                        % "2.8.7",
   "com.google.gdata"      % "core"                        % "1.47.1",
-  "com.google.guava"      % "guava"                       % "18.0",
+  "com.google.guava"      % "guava"                       % "30.1.1-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
     // Due to deduplicates with aopalliance via Spring AOP.
     ExclusionRule(organization = "aopalliance",
