@@ -110,7 +110,6 @@ Compile / resourceGenerators += Def.task {
 
 Compile / resourceGenerators += Def.task {
   val baseSwagger = baseDirectory.value / "swaggerui"
-  Common.nodeInstall(baseSwagger)
   Common.nodeScript("build", baseSwagger)
   val outDir = (Compile / resourceManaged).value / "web/apidocs"
   val bundle = baseSwagger / "target/bundle.js"
