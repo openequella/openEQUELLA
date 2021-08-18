@@ -182,24 +182,27 @@ libraryDependencies ++= Seq(
   "org.apache.struts" % "struts-extras" % "1.3.10",
   "org.apache.struts" % "struts-taglib" % "1.3.10",
   "org.apache.tika"   % "tika-core"     % tikaVersion,
-  "org.apache.tika"   % "tika-parsers"  % tikaVersion excludeAll (
-    ExclusionRule(
-                  // Due to a deduplication issue with HikariCP-java7-2.4.13 (via tika) and HikariCP-3.4.5
-                  organization = "com.zaxxer",
-                  name = "HikariCP-java7"),
-    ExclusionRule(
-      // Due to a deduplication issue with the first-order CXF dep. (tika @ 1.24.1 pulls in cxf 3.3.6).
-      // oEQ merges all the bus-extensions.txt together, and excluding 3.3.6 here keeps the same version
-      // for all merged bus-extensions.txt files.
-      organization = "org.apache.cxf",
-      name = "cxf-rt-rs-client"
-    ),
-    ExclusionRule(
-      // We manage Jackson related deps by 'jacksonVersion' so exclude the 'jackson-databind' added b tika
-      organization = "com.fasterxml.jackson.core",
-      name = "jackson-databind"
-    )
-  ),
+//  "org.apache.tika"   % "tika-parsers"  % tikaVersion excludeAll (
+//    ExclusionRule(
+//                  // Due to a deduplication issue with HikariCP-java7-2.4.13 (via tika) and HikariCP-3.4.5
+//                  organization = "com.zaxxer",
+//                  name = "HikariCP-java7"),
+//    ExclusionRule(
+//      // Due to a deduplication issue with the first-order CXF dep. (tika @ 1.24.1 pulls in cxf 3.3.6).
+//      // oEQ merges all the bus-extensions.txt together, and excluding 3.3.6 here keeps the same version
+//      // for all merged bus-extensions.txt files.
+//      organization = "org.apache.cxf",
+//      name = "cxf-rt-rs-client"
+//    ),
+//    ExclusionRule(
+//      // We manage Jackson related deps by 'jacksonVersion' so exclude the 'jackson-databind' added b tika
+//      organization = "com.fasterxml.jackson.core",
+//      name = "jackson-databind"
+//    )
+//  ),
+  "org.apache.tika"             % "tika-parsers-standard"  % tikaVersion,
+  "org.apache.tika"             % "tika-parsers-extended"  % tikaVersion,
+  "org.apache.tika"             % "tika-parsers-ml"        % tikaVersion,
   "org.apache.tomcat"           % "tomcat-annotations-api" % TomcatVersion,
   "org.apache.tomcat"           % "tomcat-api"             % TomcatVersion,
   "org.apache.tomcat"           % "tomcat-catalina"        % TomcatVersion,
