@@ -1,12 +1,12 @@
 val tikaVersion = "2.0.0"
 
 libraryDependencies ++= Seq(
-  "org.slf4j"       % "slf4j-api"             % "1.7.32",
-  "org.slf4j"       % "slf4j-simple"          % "1.7.32",
-  "org.apache.tika" % "tika-core"             % tikaVersion,
-  "org.apache.tika" % "tika-parsers-standard" % tikaVersion,
-  "org.apache.tika" % "tika-parsers-extended" % tikaVersion,
-  "org.apache.tika" % "tika-parsers-ml"       % tikaVersion
+  "org.slf4j"       % "slf4j-api"                     % "1.7.32",
+  "org.slf4j"       % "slf4j-simple"                  % "1.7.32",
+  "org.apache.tika" % "tika-core"                     % tikaVersion,
+  "org.apache.tika" % "tika-parsers-standard-package" % tikaVersion,
+  "org.apache.tika" % "tika-parser-scientific-module" % tikaVersion,
+  "org.apache.tika" % "tika-parser-sqlite3-module"    % tikaVersion
 )
 
 excludeDependencies += "commons-logging" % "commons-logging"
