@@ -46,7 +46,7 @@ libraryDependencies ++= Seq(
   "org.http4s"       %% "http4s-blaze-client"      % http4sVersion,
   "org.http4s"       %% "http4s-circe"             % http4sVersion,
   "org.typelevel"    %% "cats-free"                % catsVersion,
-  "com.unboundid"    % "unboundid-ldapsdk"         % "5.1.4"
+  "com.unboundid"    % "unboundid-ldapsdk"         % "6.0.0"
 )
 
 (Compile / unmanagedBase) := baseDirectory.value / "lib/adminjars"
