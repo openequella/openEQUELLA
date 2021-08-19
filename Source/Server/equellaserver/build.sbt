@@ -183,8 +183,6 @@ libraryDependencies ++= Seq(
   "org.apache.struts"           % "struts-taglib"                 % "1.3.10",
   "org.apache.tika"             % "tika-core"                     % tikaVersion,
   "org.apache.tika"             % "tika-parsers-standard-package" % tikaVersion,
-  "org.apache.tika"             % "tika-parser-scientific-module" % tikaVersion,
-  "org.apache.tika"             % "tika-parser-sqlite3-module"    % tikaVersion,
   "org.apache.tomcat"           % "tomcat-annotations-api"        % TomcatVersion,
   "org.apache.tomcat"           % "tomcat-api"                    % TomcatVersion,
   "org.apache.tomcat"           % "tomcat-catalina"               % TomcatVersion,
@@ -374,6 +372,10 @@ run := {
   case PathList("junit", _*)                                => MergeStrategy.discard
   case PathList("org", "apache", "axis2", "transport", "http", "util", "ComplexPart.class") =>
     MergeStrategy.first
+  // Three duplicate classes caused by upgrading tika to version 2.
+  case PathList("org", "slf4j", "impl", "StaticMDCBinder.class")    => MergeStrategy.first
+  case PathList("org", "slf4j", "impl", "StaticLoggerBinder.class") => MergeStrategy.first
+  case PathList("org", "slf4j", "impl", "StaticMarkerBinder.class") => MergeStrategy.first
 
   // Due to the error: deduplicate: different file contents found in the following:
   // ...

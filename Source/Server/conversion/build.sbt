@@ -4,14 +4,17 @@ libraryDependencies ++= Seq(
   "org.slf4j"       % "slf4j-api"                     % "1.7.32",
   "org.slf4j"       % "slf4j-simple"                  % "1.7.32",
   "org.apache.tika" % "tika-core"                     % tikaVersion,
-  "org.apache.tika" % "tika-parsers-standard-package" % tikaVersion,
-  "org.apache.tika" % "tika-parser-scientific-module" % tikaVersion,
-  "org.apache.tika" % "tika-parser-sqlite3-module"    % tikaVersion
+  "org.apache.tika" % "tika-parsers-standard-package" % tikaVersion
 )
 
 excludeDependencies += "commons-logging" % "commons-logging"
 (assembly / assemblyOption) := (assembly / assemblyOption).value.copy(includeScala = false)
 (assembly / assemblyMergeStrategy) := {
+  // Three duplicate classes caused by upgrading tika to version 2.
+  case PathList("org", "slf4j", "impl", "StaticMDCBinder.class")    => MergeStrategy.first
+  case PathList("org", "slf4j", "impl", "StaticLoggerBinder.class") => MergeStrategy.first
+  case PathList("org", "slf4j", "impl", "StaticMarkerBinder.class") => MergeStrategy.first
+
   case PathList("META-INF", "cxf", "bus-extensions.txt") => MergeStrategy.first
 
   // Due to the error: deduplicate: different file contents found in the following:
