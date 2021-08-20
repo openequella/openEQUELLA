@@ -69,14 +69,9 @@ export const BasicSearchResultListComponent: Story<SearchResultListProps> = (
   args
 ) => (
   <SearchResultList {...args}>
-    {mapSearchResultItems(
-      singlePageSearch.results,
-      (error) => console.warn(error),
-      [],
-      async () => ({
-        viewerId: "fancy",
-      })
-    )}
+    {mapSearchResultItems(singlePageSearch.results, [], async () => ({
+      viewerId: "fancy",
+    }))}
   </SearchResultList>
 );
 

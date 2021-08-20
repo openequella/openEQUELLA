@@ -471,7 +471,7 @@ export const selectResourceForSkinny = (
  */
 export const selectResource = (
   itemKey: string,
-  attachments: string[]
+  attachments: string[] = []
 ): Promise<void> =>
   pipe(
     getSelectionSessionInfo().layout,

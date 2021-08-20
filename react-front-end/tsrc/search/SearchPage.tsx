@@ -127,6 +127,15 @@ interface SearchPageHistoryState {
   filterExpansion: boolean;
 }
 
+export const SearchPageRenderErrorContext = React.createContext<{
+  /**
+   * Function to handle errors thrown from Search page components.
+   */
+  handleError: (error: Error) => void;
+}>({
+  handleError: () => {},
+});
+
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const history = useHistory();
   const location = useLocation();
@@ -176,6 +185,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   const handleError = useCallback(
     (error: Error) => {
+      console.log("search page error context", error.message);
       dispatch({ type: "error", cause: error });
     },
     [dispatch]
@@ -502,7 +512,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       .then(() => {
         setSnackBar({ message: searchStrings.shareSearchConfirmationText });
       })
-      .catch(() => handleError);
+      .catch(handleError);
   };
 
   const handleSaveFavouriteSearch = (name: string) => {
@@ -511,13 +521,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       location.pathname
     }?${generateQueryStringFromSearchPageOptions(searchPageOptions)}`;
 
-    return addFavouriteSearch(name, url)
-      .then(() =>
-        setSnackBar({
-          message: searchStrings.favouriteSearch.saveSearchConfirmationText,
-        })
-      )
-      .catch(handleError);
+    return addFavouriteSearch(name, url).then(() =>
+      setSnackBar({
+        message: searchStrings.favouriteSearch.saveSearchConfirmationText,
+      })
+    );
   };
 
   const handleMimeTypeFilterChange = (filters: MimeTypeFilter[]) =>
@@ -648,7 +656,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       title: collectionSelectorTitle,
       component: (
         <CollectionSelector
-          onError={handleError}
           onSelectionChange={handleCollectionSelectionChanged}
           value={searchPageOptions.collections}
         />
@@ -815,7 +822,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     ): items is GallerySearchResultItem[] => from === "gallery-search";
 
     if (isListItems(searchResults)) {
-      return mapSearchResultItems(searchResults, handleError, highlights);
+      return mapSearchResultItems(searchResults, highlights);
     } else if (isGalleryItems(searchResults)) {
       return <GallerySearchResult items={searchResults} />;
     }
@@ -827,7 +834,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     content: { available: totalCount, highlight: highlights },
   } = searchResult();
   return (
-    <>
+    <SearchPageRenderErrorContext.Provider value={{ handleError }}>
       <Grid container spacing={2}>
         <Grid item sm={12} md={8}>
           <Grid container spacing={2}>
@@ -910,7 +917,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           onConfirm={handleSaveFavouriteSearch}
         />
       )}
-    </>
+    </SearchPageRenderErrorContext.Provider>
   );
 };
 
