@@ -25,16 +25,16 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AppConfig } from "../AppConfig";
+import { AppRenderErrorContext } from "../mainui/App";
 import { routes } from "../mainui/routes";
 import {
   fetchUISetting,
   saveUISetting,
 } from "../modules/GeneralSettingsModule";
 import { languageStrings } from "../util/langstrings";
-import useError from "../util/useError";
 
 const useStyles = makeStyles({
   fab: {
@@ -52,56 +52,42 @@ const useStyles = makeStyles({
 
 interface UISettingEditorProps {
   refreshUser: () => void;
-  handleError: (error: Error) => void;
 }
 
-const UISettingEditor = (props: UISettingEditorProps) => {
+const UISettingEditor = ({ refreshUser }: UISettingEditorProps) => {
   const classes = useStyles();
-  const { refreshUser, handleError } = props;
   const { uiconfig } = languageStrings;
 
   const [newUIEnabled, setNewUIEnabled] = useState<boolean>(true);
   const [newSearchEnabled, setNewSearchEnabled] = useState<boolean>(false);
-  const setError = useError(handleError);
+  const { appErrorhandler } = useContext(AppRenderErrorContext);
 
   useEffect(() => {
-    // Use a flag to prevent setting state when component is being unmounted
-    let cleanupTriggered = false;
     fetchUISetting()
       .then((uiSetting) => {
-        if (!cleanupTriggered) {
-          const { enabled, newSearch } = uiSetting.newUI;
-          setNewUIEnabled(enabled);
-          setNewSearchEnabled(newSearch);
-        }
+        const { enabled, newSearch } = uiSetting.newUI;
+        setNewUIEnabled(enabled);
+        setNewSearchEnabled(newSearch);
       })
-      .catch((error) => {
-        setError(error);
-      });
-
-    return () => {
-      cleanupTriggered = true;
-    };
-  }, [setError]);
+      .catch(appErrorhandler);
+  }, [appErrorhandler]);
 
   const setNewUI = (enabled: boolean) => {
-    setNewUIEnabled(enabled);
     saveUISetting(enabled, newSearchEnabled)
       .then((_) => {
+        setNewUIEnabled(enabled);
         window.location.href = AppConfig.baseUrl + "access/settings.do";
       })
-      .catch((error) => {
-        handleError(error);
-      });
+      .catch(appErrorhandler);
   };
 
   const setNewSearch = (enabled: boolean) => {
-    setNewSearchEnabled(enabled);
     saveUISetting(newUIEnabled, enabled)
-      .then((_) => refreshUser())
-      .catch((error) => {
-        handleError(error);
-      });
+      .then((_) => {
+        setNewSearchEnabled(enabled);
+        refreshUser();
+      })
+      .catch(appErrorhandler);
   };
 
   return (
