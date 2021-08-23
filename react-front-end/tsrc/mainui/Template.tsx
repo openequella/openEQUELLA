@@ -35,14 +35,12 @@ import BackIcon from "@material-ui/icons/ArrowBack";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import MenuIcon from "@material-ui/icons/Menu";
 import NotificationsIcon from "@material-ui/icons/Notifications";
-
 import * as OEQ from "@openequella/rest-api-client";
 import clsx, { ClassValue } from "clsx";
 import { LocationDescriptor } from "history";
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { ErrorResponse } from "../api/errors";
-import MessageInfo from "../components/MessageInfo";
 import { TooltipIconButton } from "../components/TooltipIconButton";
 import { guestUser, PageContent } from "../legacycontent/LegacyContent";
 import {
@@ -72,8 +70,6 @@ export interface TemplateProps {
   backRoute?: LocationDescriptor;
   /* Markup to show at the bottom of the main area. E.g. save/cancel options */
   footer?: React.ReactNode;
-  /* Unexpected errors can be displayed by setting this property */
-  errorResponse?: ErrorResponse;
   fullscreenMode?: FullscreenMode;
   hideAppBar?: boolean;
   menuMode?: MenuMode;
@@ -194,7 +190,7 @@ export const useStyles = makeStyles((theme: Theme) => {
         color: theme.palette.primary.main,
       },
     },
-    root: {
+    templateRoot: {
       width: "100%",
       zIndex: 1,
     },
@@ -313,7 +309,6 @@ export const Template = ({
   children,
   currentUser = guestUser,
   disableNotifications,
-  errorResponse,
   fixedViewPort,
   footer,
   fullscreenMode,
@@ -327,18 +322,11 @@ export const Template = ({
 }: TemplateProps) => {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLElement>();
   const [navMenuOpen, setNavMenuOpen] = React.useState(false);
-  const [errorOpen, setErrorOpen] = React.useState(false);
 
   // Record what customised meta tags have been added into <head>
   const [googleMetaTags, setGoogleMetaTags] = React.useState<Array<string>>([]);
 
   const classes = useStyles(useTheme());
-
-  React.useEffect(() => {
-    if (errorResponse) {
-      setErrorOpen(true);
-    }
-  }, [errorResponse]);
 
   React.useEffect(() => {
     const classList = window.document.getElementsByTagName("html")[0].classList;
@@ -534,15 +522,6 @@ export const Template = ({
     );
   }
 
-  const ErrorMessage = ({ error }: { error: ErrorResponse }) => (
-    <MessageInfo
-      open={errorOpen}
-      onClose={() => setErrorOpen(false)}
-      variant="error"
-      title={error.error_description ? error.error_description : error.error}
-    />
-  );
-
   const fullScreen = useFullscreen({ fullscreenMode, hideAppBar });
 
   const layoutAppBar = !fullScreen && (
@@ -634,10 +613,7 @@ export const Template = ({
   return (
     <>
       <CssBaseline />
-      <div className={classes.root}>
-        {layout}
-        {errorResponse && <ErrorMessage error={errorResponse} />}
-      </div>
+      <div className={classes.templateRoot}>{layout}</div>
     </>
   );
 };
