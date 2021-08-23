@@ -25,7 +25,8 @@ import {
 } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { AppRenderErrorContext } from "../../../mainui/App";
 import { getMIMETypesFromServer } from "../../../modules/MimeTypesModule";
 import {
   MimeTypeFilter,
@@ -34,7 +35,6 @@ import {
 import { commonString } from "../../../util/commonstrings";
 import { addElement, deleteElement } from "../../../util/ImmutableArrayUtil";
 import { languageStrings } from "../../../util/langstrings";
-import useError from "../../../util/useError";
 import MimeTypeList from "./MimeTypeList";
 
 export interface MimeTypeFilterEditingDialogProps {
@@ -56,10 +56,6 @@ export interface MimeTypeFilterEditingDialogProps {
    */
   mimeTypeFilter?: MimeTypeFilter;
   /**
-   * Error handling.
-   */
-  handleError: (error: Error) => void;
-  /**
    * An async function that returns a list of MimeTypeEntry.
    */
   mimeTypeSupplier?: () => Promise<OEQ.MimeType.MimeTypeEntry[]>;
@@ -73,7 +69,6 @@ const MimeTypeFilterEditingDialog = ({
   onClose,
   mimeTypeFilter,
   addOrUpdate,
-  handleError,
   mimeTypeSupplier = getMIMETypesFromServer,
 }: MimeTypeFilterEditingDialogProps) => {
   const searchFilterStrings =
@@ -90,15 +85,15 @@ const MimeTypeFilterEditingDialog = ({
   const [selectedMimeTypes, setSelectedMimeTypes] = useState<string[]>(
     mimeTypeFilter ? mimeTypeFilter.mimeTypes : []
   );
-  const setError = useError(handleError);
+  const { appErrorhandler } = useContext(AppRenderErrorContext);
 
   const isNameValid = validateMimeTypeName(filterName);
 
   useEffect(() => {
     mimeTypeSupplier()
       .then((mimeTypes) => setMimeTypeEntries(mimeTypes))
-      .catch(setError);
-  }, [mimeTypeSupplier, setError]);
+      .catch(appErrorhandler);
+  }, [mimeTypeSupplier, appErrorhandler]);
 
   /**
    * If a MIME type is selected and it doesn't exist in the collection of selected MIME types,

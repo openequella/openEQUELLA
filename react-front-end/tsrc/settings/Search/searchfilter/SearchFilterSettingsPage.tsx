@@ -30,18 +30,20 @@ import AddCircleIcon from "@material-ui/icons/AddCircle";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import * as React from "react";
-import { useEffect, useState } from "react";
-import { generateFromError } from "../../../api/errors";
+import { useContext, useEffect, useState } from "react";
+import * as E from "fp-ts/Either";
+import { pipe } from "fp-ts/function";
+import * as TE from "fp-ts/TaskEither";
 import MessageDialog from "../../../components/MessageDialog";
 import SettingPageTemplate from "../../../components/SettingPageTemplate";
 import SettingsList from "../../../components/SettingsList";
 import SettingsListControl from "../../../components/SettingsListControl";
 import SettingsListHeading from "../../../components/SettingsListHeading";
 import SettingsToggleSwitch from "../../../components/SettingsToggleSwitch";
+import { AppRenderErrorContext } from "../../../mainui/App";
 import { routes } from "../../../mainui/routes";
 import {
   templateDefaults,
-  templateError,
   TemplateUpdateProps,
 } from "../../../mainui/Template";
 import {
@@ -64,7 +66,6 @@ import {
   replaceElement,
 } from "../../../util/ImmutableArrayUtil";
 import { languageStrings } from "../../../util/langstrings";
-import useError from "../../../util/useError";
 import MimeTypeFilterEditingDialog from "./MimeTypeFilterEditingDialog";
 import * as OEQ from "@openequella/rest-api-client";
 
@@ -115,10 +116,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
     []
   );
   const [reset, setReset] = useState<boolean>(true);
-
-  const setError = useError((error: Error) => {
-    updateTemplate(templateError(generateFromError(error)));
-  });
+  const { appErrorhandler } = useContext(AppRenderErrorContext);
 
   useEffect(() => {
     updateTemplate((tp) => ({
@@ -138,7 +136,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
           setSearchSettings(settings);
           setInitialSearchSettings(settings);
         })
-        .catch(setError);
+        .catch(appErrorhandler);
     };
 
     /**
@@ -152,12 +150,12 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
           setDeletedMimeTypeFilters([]);
           setChangedMimeTypeFilters([]);
         })
-        .catch(setError);
+        .catch(appErrorhandler);
     };
 
     getSearchSettings();
     getMimeTypeFilters();
-  }, [reset, setError]);
+  }, [reset, appErrorhandler]);
 
   const mimeTypeFilterChanged =
     deletedMimeTypeFilters.length || changedMimeTypeFilters.length;
@@ -230,58 +228,59 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
    * Save general Search setting only when the configuration of Owner filter or Date modified filter has been changed.
    * Save MIME type filters only when they have been updated, delete or just created.
    */
-  const save = () => {
-    const errorMessages: string[] = [];
+  const save = async () => {
     if (!mimeTypeFilterChanged && !generalSearchSettingChanged) {
       return;
     }
-    (generalSearchSettingChanged
-      ? saveSearchSettingsToServer(searchSettings).catch((error) =>
-          handleError(error, true)
+
+    const searchFilterUpdateTask = (): Promise<string[]> =>
+      changedMimeTypeFilters.length > 0
+        ? batchUpdateOrAdd(changedMimeTypeFilters)
+        : Promise.resolve([]);
+
+    const searchFilterDeleteTask = (): Promise<string[]> =>
+      deletedMimeTypeFilters.length > 0
+        ? batchDelete(deletedMimeTypeFilters.map(idExtractor))
+        : Promise.resolve([]);
+
+    const saveTask: Promise<E.Either<Error, string[]>> = pipe(
+      TE.tryCatch<Error, void>(
+        () => saveSearchSettingsToServer(searchSettings),
+        (error) => new Error(`Failed to update Search settings: ${error}`)
+      ),
+      TE.chain<Error, void, string[]>(() =>
+        pipe(
+          TE.tryCatch(
+            searchFilterUpdateTask,
+            (error) => new Error(`Failed to update Search filters: ${error}`)
+          )
         )
-      : Promise.resolve()
-    )
-      .then(
-        (): Promise<number | void> =>
-          changedMimeTypeFilters.length
-            ? batchUpdateOrAdd(changedMimeTypeFilters)
-                .then((messages) => errorMessages.push(...messages))
-                .catch((error) => handleError(error, true))
-            : Promise.resolve()
+      ),
+      TE.chain<Error, string[], string[]>((previousMessages: string[]) =>
+        pipe(
+          TE.tryCatch(
+            searchFilterDeleteTask,
+            (error) => new Error(`Failed to delete Search filters: ${error}`)
+          ),
+          TE.map((messages: string[]) => {
+            return previousMessages.concat(messages);
+          })
+        )
       )
-      .then(
-        (): Promise<number | void> =>
-          // Filters stored in 'deletedMimeTypeFilters' always have an ID.
-          deletedMimeTypeFilters.length
-            ? batchDelete(deletedMimeTypeFilters.map(idExtractor))
-                .then((messages) => errorMessages.push(...messages))
-                .catch((error) => handleError(error, true))
-            : Promise.resolve()
-      )
-      .then(() => {
-        // If the 207 response includes any non-2xx responses then display a dialog to show error messages.
-        if (errorMessages.length > 0) {
-          setMessageDialogMessages(errorMessages);
+    )();
+
+    pipe(
+      await saveTask,
+      E.fold(appErrorhandler, (messages) => {
+        if (messages.length > 0) {
+          setMessageDialogMessages(messages);
           setOpenMessageDialog(true);
         } else {
           setShowSnackBar(true);
         }
-      })
-      .catch(() => {}) // Errors have been handled and subsequent promises have skipped.
-      .finally(() => {
-        // Toggle `reset` to trigger effect
         setReset(!reset);
-      });
-  };
-
-  const handleError = (error: Error, withRethrow = false) => {
-    updateTemplate(templateError(generateFromError(error)));
-    // The reason for throwing an error again is to prevent subsequent REST calls.
-    // Is this a sign of a more fundamental issue? Leaving for now, as now's not
-    // the time to drastically change such things
-    if (withRethrow) {
-      throw new Error(error.message);
-    }
+      })
+    );
   };
 
   return (
@@ -385,7 +384,6 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
             onClose={closeMimeTypeFilterDialog}
             addOrUpdate={addOrUpdateMimeTypeFilter}
             mimeTypeFilter={selectedMimeTypeFilter}
-            handleError={handleError}
           />
         )
       }

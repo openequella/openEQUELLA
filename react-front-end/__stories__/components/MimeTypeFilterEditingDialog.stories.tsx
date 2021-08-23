@@ -29,7 +29,6 @@ export default {
   argTypes: {
     addOrUpdate: { action: "addOrUpdate" },
     onClose: { action: "onClose" },
-    handleError: { action: "handleError" },
   },
 } as Meta<MimeTypeFilterEditingDialogProps>;
 
