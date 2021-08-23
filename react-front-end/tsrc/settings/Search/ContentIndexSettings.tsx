@@ -17,25 +17,21 @@
  */
 import { Card, CardContent, Mark, Slider } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
+import { useCallback, useContext } from "react";
 import * as React from "react";
 import { shallowEqual } from "shallow-equal-object";
-import { generateFromError } from "../../api/errors";
 import SettingPageTemplate from "../../components/SettingPageTemplate";
 import SettingsList from "../../components/SettingsList";
 import SettingsListControl from "../../components/SettingsListControl";
+import { AppRenderErrorContext } from "../../mainui/App";
 import { routes } from "../../mainui/routes";
-import {
-  templateDefaults,
-  templateError,
-  TemplateUpdateProps,
-} from "../../mainui/Template";
+import { templateDefaults, TemplateUpdateProps } from "../../mainui/Template";
 import {
   defaultSearchSettings,
   getSearchSettingsFromServer,
   saveSearchSettingsToServer,
 } from "../../modules/SearchSettingsModule";
 import { languageStrings } from "../../util/langstrings";
-import useError from "../../util/useError";
 import WebPageIndexSetting from "./components/WebPageIndexSetting";
 
 const contentIndexSettingsStrings =
@@ -51,11 +47,15 @@ const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
   const [loadSettings, setLoadSettings] = React.useState<boolean>(true);
   const [showSuccess, setShowSuccess] = React.useState<boolean>(false);
   const [disableSettings, setDisableSettings] = React.useState<boolean>(false);
+  const { appErrorhandler } = useContext(AppRenderErrorContext);
 
-  const setError = useError((error: Error) => {
-    updateTemplate(templateError(generateFromError(error)));
-    setDisableSettings(true);
-  });
+  const setError = useCallback(
+    (error: Error) => {
+      appErrorhandler(error);
+      setDisableSettings(true);
+    },
+    [appErrorhandler]
+  );
 
   const boostVals: Mark[] = [
     { label: markStrings.off, value: 0 },
