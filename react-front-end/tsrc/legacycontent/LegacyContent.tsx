@@ -18,6 +18,7 @@
 import { CircularProgress, Grid } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 import Axios from "axios";
+import { useContext } from "react";
 import * as React from "react";
 import { v4 } from "uuid";
 import {
@@ -26,12 +27,9 @@ import {
   generateFromError,
 } from "../api/errors";
 import { LEGACY_CSS_URL } from "../AppConfig";
+import { AppRenderErrorContext } from "../mainui/App";
 import { BaseOEQRouteComponentProps } from "../mainui/routes";
-import {
-  templateDefaults,
-  templateError,
-  templatePropsForLegacy,
-} from "../mainui/Template";
+import { templateDefaults, templatePropsForLegacy } from "../mainui/Template";
 import { deleteRawModeFromStorage } from "../search/SearchPageHelper";
 import { LegacyContentRenderer } from "./LegacyContentRenderer";
 import { getEqPageForm, legacyFormId } from "./LegacyForm";
@@ -166,6 +164,7 @@ export const LegacyContent = React.memo(function LegacyContent({
 }: LegacyContentProps) {
   const [content, setContent] = React.useState<PageContent>();
   const [updatingContent, setUpdatingContent] = React.useState<boolean>(true);
+  const { appErrorhandler } = useContext(AppRenderErrorContext);
 
   const baseUrl = document.getElementsByTagName("base")[0].href;
 
@@ -232,7 +231,8 @@ export const LegacyContent = React.memo(function LegacyContent({
     if (fullscreen) {
       onError(error);
     } else {
-      updateTemplate(templateError(error));
+      const { error: errorTitle, error_description } = error;
+      appErrorhandler(new Error(error_description ?? errorTitle));
     }
   }
 
