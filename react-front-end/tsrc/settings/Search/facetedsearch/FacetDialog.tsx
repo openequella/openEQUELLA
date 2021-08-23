@@ -54,22 +54,12 @@ export interface FacetDialogProps {
    * The facet to be edited; undefined if the action is to add a new one.
    */
   facet?: FacetWithFlags;
-  /**
-   * Error handling.
-   */
-  handleError: (error: Error) => void;
 }
 
 /**
  * A dialog for adding/editing a facet
  */
-const FacetDialog = ({
-  open,
-  onClose,
-  addOrEdit,
-  handleError,
-  facet,
-}: FacetDialogProps) => {
+const FacetDialog = ({ open, onClose, addOrEdit, facet }: FacetDialogProps) => {
   const { facetedsearchsetting: facetedSearchSettingStrings } =
     languageStrings.settings.searching;
   const { facetfields: facetFieldStrings } = facetedSearchSettingStrings;

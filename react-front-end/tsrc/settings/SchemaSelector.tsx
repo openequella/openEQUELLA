@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { ReactElement } from "react";
+import { ReactElement, useContext } from "react";
 import {
   FormHelperText,
   Grid,
@@ -24,6 +24,7 @@ import {
   MenuItem,
   Select,
 } from "@material-ui/core";
+import { AppRenderErrorContext } from "../mainui/App";
 import {
   schemaListSummary,
   SchemaNode,
@@ -55,28 +56,35 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
   const [schema, setSchema] = React.useState<SchemaNode>();
   const [schemaList, setSchemaList] = React.useState<ReactElement[]>([]);
   const [schemaNodePath, setSchemaNodePath] = React.useState<string>("");
+  const { appErrorhandler } = useContext(AppRenderErrorContext);
 
   React.useEffect(() => {
-    schemaListSummary().then((schemas) => {
-      const defaultListItem = [[undefined, strings.selectASchema]];
-      const schemaArray = defaultListItem.concat(Array.from(schemas));
-      setSchemaList(
-        schemaArray.map(([uuid, name], index) => (
-          <MenuItem id={uuid} value={uuid} key={uuid ?? index}>
-            {name}
-          </MenuItem>
-        ))
-      );
-    });
-  }, []);
+    const buildSchemaList = (schemas: Map<string, string>) => {
+      const defaultSchema = [[undefined, strings.selectASchema]];
+      const schemaArray = defaultSchema.concat(Array.from(schemas));
+      return schemaArray.map(([uuid, name], index) => (
+        <MenuItem id={uuid} value={uuid} key={uuid ?? index}>
+          {name}
+        </MenuItem>
+      ));
+    };
+
+    schemaListSummary()
+      .then((schemas) => {
+        setSchemaList(buildSchemaList(schemas));
+      })
+      .catch(appErrorhandler);
+  }, [appErrorhandler]);
 
   React.useEffect(() => {
     if (selectedSchema?.trim()) {
-      schemaTree(selectedSchema).then((tree) => setSchema(tree));
+      schemaTree(selectedSchema)
+        .then((tree) => setSchema(tree))
+        .catch(appErrorhandler);
     } else {
       setSchema(undefined);
     }
-  }, [selectedSchema]);
+  }, [selectedSchema, appErrorhandler]);
 
   React.useEffect(() => {
     if (schemaNodePath?.trim()) {
