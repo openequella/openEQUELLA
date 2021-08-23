@@ -79,6 +79,13 @@ export const getRenderData = (): RenderData | undefined =>
 export const AppConfig: Config = {
   baseUrl: document?.getElementsByTagName("base")[0]?.href ?? "",
 };
+
 export const getBaseUrl = () => AppConfig.baseUrl;
+
+export const getRouterBaseName = () => {
+  const baseFullPath = new URL(getBaseUrl()).pathname;
+  return baseFullPath.substr(0, baseFullPath.length - 1);
+};
+
 export const API_BASE_URL = `${AppConfig.baseUrl}api`;
 export const LEGACY_CSS_URL = `${API_BASE_URL}/theme/legacy.css`;

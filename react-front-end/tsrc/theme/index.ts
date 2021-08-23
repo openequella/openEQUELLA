@@ -34,33 +34,34 @@ export interface IThemeSettings {
 
 declare const themeSettings: IThemeSettings;
 
-const standardThemeSettings: ThemeOptions = {
-  palette: {
-    primary: {
-      main: themeSettings.primaryColor,
+const getStandardThemeSettings = (): ThemeOptions =>
+  ({
+    palette: {
+      primary: {
+        main: themeSettings.primaryColor,
+      },
+      secondary: {
+        main: themeSettings.secondaryColor,
+      },
+      background: {
+        default: themeSettings.backgroundColor,
+        paper: themeSettings.paperColor,
+      },
+      text: {
+        primary: themeSettings.primaryTextColor,
+        secondary: themeSettings.menuTextColor,
+      },
+      menu: {
+        text: themeSettings.menuItemTextColor,
+        icon: themeSettings.menuItemIconColor,
+        background: themeSettings.menuItemColor,
+      },
     },
-    secondary: {
-      main: themeSettings.secondaryColor,
+    typography: {
+      useNextVariants: true,
+      fontSize: themeSettings.fontSize,
     },
-    background: {
-      default: themeSettings.backgroundColor,
-      paper: themeSettings.paperColor,
-    },
-    text: {
-      primary: themeSettings.primaryTextColor,
-      secondary: themeSettings.menuTextColor,
-    },
-    menu: {
-      text: themeSettings.menuItemTextColor,
-      icon: themeSettings.menuItemIconColor,
-      background: themeSettings.menuItemColor,
-    },
-  },
-  typography: {
-    useNextVariants: true,
-    fontSize: themeSettings.fontSize,
-  },
-} as ThemeOptions;
+  } as ThemeOptions);
 
 const renderData = getRenderData();
 export const autoTestOptions: ThemeOptions =
@@ -72,7 +73,8 @@ export const autoTestOptions: ThemeOptions =
       }
     : {};
 
-export const oeqTheme = createMuiTheme({
-  ...standardThemeSettings,
-  ...autoTestOptions,
-});
+export const getOeqTheme = () =>
+  createMuiTheme({
+    ...getStandardThemeSettings(),
+    ...autoTestOptions,
+  });

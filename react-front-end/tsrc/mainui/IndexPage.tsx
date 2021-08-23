@@ -27,11 +27,9 @@ import {
 } from "react-router-dom";
 import { shallowEqual } from "shallow-equal-object";
 import { ErrorResponse } from "../api/errors";
-import { getRenderData, LEGACY_CSS_URL } from "../AppConfig";
+import { getRenderData, getRouterBaseName, LEGACY_CSS_URL } from "../AppConfig";
 import { LegacyContent } from "../legacycontent/LegacyContent";
-
 import { getCurrentUserDetails } from "../modules/UserModule";
-import { basePath } from "./App";
 import ErrorPage from "./ErrorPage";
 import { defaultNavMessage, NavAwayDialog } from "./PreventNavigation";
 import {
@@ -235,7 +233,7 @@ export default function IndexPage() {
 
   return (
     <BrowserRouter
-      basename={basePath}
+      basename={getRouterBaseName()}
       getUserConfirmation={(message, cb) => {
         if (errorShowing.current) {
           errorShowing.current = false;
