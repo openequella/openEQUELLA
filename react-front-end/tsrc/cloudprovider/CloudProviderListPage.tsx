@@ -26,6 +26,7 @@ import {
 } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloudIcon from "@material-ui/icons/CloudCircleRounded";
+import { AppRenderErrorContext } from "../mainui/App";
 import { CloudProviderEntity } from "./CloudProviderEntity";
 import {
   deleteCloudProvider,
@@ -40,12 +41,7 @@ import { sprintf } from "sprintf-js";
 import ConfirmDialog from "../components/ConfirmDialog";
 import CloudProviderAddDialog from "./CloudProviderAddDialog";
 import EquellaListItem from "../components/EquellaListItem";
-import {
-  templateDefaults,
-  templateError,
-  TemplateUpdateProps,
-} from "../mainui/Template";
-import { generateFromError } from "../api/errors";
+import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import { commonString } from "../util/commonstrings";
 import MessageInfo from "../components/MessageInfo";
 
@@ -60,9 +56,16 @@ const styles = (theme: Theme) =>
     },
   });
 
-interface CloudProviderListPageProps
+interface CloudProviderBasicProps
   extends TemplateUpdateProps,
     WithStyles<typeof styles> {}
+
+interface CloudProviderListPageProps extends CloudProviderBasicProps {
+  /**
+   * Error handler which typically refers to the one provided by 'AppRenderErrorContext'.
+   */
+  appErrorHandler: (error: unknown) => void;
+}
 
 interface CloudProviderListPageState {
   cloudProviders: CloudProviderEntity[];
@@ -86,9 +89,7 @@ class CloudProviderListPage extends React.Component<
     };
   }
 
-  handleError = (error: Error) => {
-    this.props.updateTemplate(templateError(generateFromError(error)));
-  };
+  handleError = this.props.appErrorHandler;
 
   componentDidMount(): void {
     this.getCloudProviderList();
@@ -249,4 +250,12 @@ class CloudProviderListPage extends React.Component<
   }
 }
 
-export default withStyles(styles)(CloudProviderListPage);
+const WithErrorHandler = (props: CloudProviderBasicProps) => (
+  <AppRenderErrorContext.Consumer>
+    {({ appErrorHandler }) => (
+      <CloudProviderListPage {...props} appErrorHandler={appErrorHandler} />
+    )}
+  </AppRenderErrorContext.Consumer>
+);
+
+export default withStyles(styles)(WithErrorHandler);
