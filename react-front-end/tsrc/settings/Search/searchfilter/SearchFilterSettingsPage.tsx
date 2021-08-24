@@ -116,7 +116,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
     []
   );
   const [reset, setReset] = useState<boolean>(true);
-  const { appErrorhandler } = useContext(AppRenderErrorContext);
+  const { appErrorHandler } = useContext(AppRenderErrorContext);
 
   useEffect(() => {
     updateTemplate((tp) => ({
@@ -136,7 +136,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
           setSearchSettings(settings);
           setInitialSearchSettings(settings);
         })
-        .catch(appErrorhandler);
+        .catch(appErrorHandler);
     };
 
     /**
@@ -150,12 +150,12 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
           setDeletedMimeTypeFilters([]);
           setChangedMimeTypeFilters([]);
         })
-        .catch(appErrorhandler);
+        .catch(appErrorHandler);
     };
 
     getSearchSettings();
     getMimeTypeFilters();
-  }, [reset, appErrorhandler]);
+  }, [reset, appErrorHandler]);
 
   const mimeTypeFilterChanged =
     deletedMimeTypeFilters.length || changedMimeTypeFilters.length;
@@ -271,7 +271,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
     pipe(
       await saveTask,
-      E.fold(appErrorhandler, (messages) => {
+      E.fold(appErrorHandler, (messages) => {
         if (messages.length > 0) {
           setMessageDialogMessages(messages);
           setOpenMessageDialog(true);

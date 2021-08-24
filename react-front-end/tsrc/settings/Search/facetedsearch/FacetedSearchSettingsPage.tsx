@@ -90,7 +90,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
     FacetWithFlags | undefined
   >();
   const [reset, setReset] = useState<boolean>(true);
-  const { appErrorhandler } = useContext(AppRenderErrorContext);
+  const { appErrorHandler } = useContext(AppRenderErrorContext);
 
   const listOfUpdates: FacetWithFlags[] = facets.filter(
     (facet) => facet.updated && !facet.deleted
@@ -122,8 +122,8 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
           })
         )
       )
-      .catch(appErrorhandler);
-  }, [reset, appErrorhandler]);
+      .catch(appErrorHandler);
+  }, [reset, appErrorHandler]);
 
   /**
    * Save updated/deleted facets to the server.
@@ -148,7 +148,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
           setShowSnackBar(true);
         }
       })
-      .catch(appErrorhandler)
+      .catch(appErrorHandler)
       .finally(() => setReset(!reset));
   };
 

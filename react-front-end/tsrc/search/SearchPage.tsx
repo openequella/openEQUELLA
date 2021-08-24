@@ -180,7 +180,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [alreadyDownloaded, setAlreadyDownloaded] = useState<boolean>(false);
   const exportLinkRef = useRef<HTMLAnchorElement>(null);
 
-  const { appErrorhandler } = useContext(AppRenderErrorContext);
+  const { appErrorHandler } = useContext(AppRenderErrorContext);
   const searchPageErrorHandler = useCallback(
     (error: Error) => {
       dispatch({ type: "error", cause: error });
@@ -203,9 +203,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
    */
   useEffect(() => {
     if (state.status === "failure") {
-      appErrorhandler(state.cause);
+      appErrorHandler(state.cause);
     }
-  }, [state, appErrorhandler]);
+  }, [state, appErrorHandler]);
 
   /**
    * Page initialisation -> Update the page title, retrieve Search settings and trigger first

@@ -97,16 +97,19 @@ const nop = () => {};
  */
 export const AppRenderErrorContext = React.createContext<{
   /**
-   * Function to handle errors thrown from any component of the APP.
+   * Function to handle a variety of unknown errors thrown from any component of the APP.
    */
-  appErrorhandler: (error: Error) => void;
+  appErrorHandler: (error: unknown) => void;
 }>({
-  appErrorhandler: nop,
+  appErrorHandler: nop,
 });
 
 const App = ({ entryPage }: AppProps): JSX.Element => {
   const [error, setError] = React.useState<Error | undefined>();
-  const appErrorhandler = useCallback((error: Error) => setError(error), []);
+  const appErrorHandler = useCallback(
+    (error: unknown) => setError(new Error(`${error}`)),
+    []
+  );
 
   const appContent = () =>
     pipe(
@@ -143,7 +146,9 @@ const App = ({ entryPage }: AppProps): JSX.Element => {
     );
 
   return (
-    <AppRenderErrorContext.Provider value={{ appErrorhandler }}>
+    <AppRenderErrorContext.Provider
+      value={{ appErrorHandler: appErrorHandler }}
+    >
       {error && (
         <MessageInfo
           open

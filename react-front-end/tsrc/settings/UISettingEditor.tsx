@@ -60,7 +60,7 @@ const UISettingEditor = ({ refreshUser }: UISettingEditorProps) => {
 
   const [newUIEnabled, setNewUIEnabled] = useState<boolean>(true);
   const [newSearchEnabled, setNewSearchEnabled] = useState<boolean>(false);
-  const { appErrorhandler } = useContext(AppRenderErrorContext);
+  const { appErrorHandler } = useContext(AppRenderErrorContext);
 
   useEffect(() => {
     fetchUISetting()
@@ -69,8 +69,8 @@ const UISettingEditor = ({ refreshUser }: UISettingEditorProps) => {
         setNewUIEnabled(enabled);
         setNewSearchEnabled(newSearch);
       })
-      .catch(appErrorhandler);
-  }, [appErrorhandler]);
+      .catch(appErrorHandler);
+  }, [appErrorHandler]);
 
   const setNewUI = (enabled: boolean) => {
     saveUISetting(enabled, newSearchEnabled)
@@ -78,7 +78,7 @@ const UISettingEditor = ({ refreshUser }: UISettingEditorProps) => {
         setNewUIEnabled(enabled);
         window.location.href = AppConfig.baseUrl + "access/settings.do";
       })
-      .catch(appErrorhandler);
+      .catch(appErrorHandler);
   };
 
   const setNewSearch = (enabled: boolean) => {
@@ -87,7 +87,7 @@ const UISettingEditor = ({ refreshUser }: UISettingEditorProps) => {
         setNewSearchEnabled(enabled);
         refreshUser();
       })
-      .catch(appErrorhandler);
+      .catch(appErrorHandler);
   };
 
   return (

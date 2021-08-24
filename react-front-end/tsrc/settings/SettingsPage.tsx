@@ -74,7 +74,7 @@ const SettingsPage = ({
   const [adminDialogOpen, setAdminDialogOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [settingGroups, setSettingGroups] = useState<SettingGroup[]>([]);
-  const { appErrorhandler } = useContext(AppRenderErrorContext);
+  const { appErrorHandler } = useContext(AppRenderErrorContext);
 
   React.useEffect(() => {
     if (isReloadNeeded) {
@@ -97,14 +97,14 @@ const SettingsPage = ({
         }
       })
       .catch((error) => {
-        appErrorhandler(error);
+        appErrorHandler(error);
         setLoading(false);
       });
 
     return () => {
       cleanupTriggered = true;
     };
-  }, [appErrorhandler]);
+  }, [appErrorHandler]);
 
   /**
    * Create the UI content for setting category

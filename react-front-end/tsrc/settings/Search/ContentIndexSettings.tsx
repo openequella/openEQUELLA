@@ -47,14 +47,14 @@ const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
   const [loadSettings, setLoadSettings] = React.useState<boolean>(true);
   const [showSuccess, setShowSuccess] = React.useState<boolean>(false);
   const [disableSettings, setDisableSettings] = React.useState<boolean>(false);
-  const { appErrorhandler } = useContext(AppRenderErrorContext);
+  const { appErrorHandler } = useContext(AppRenderErrorContext);
 
   const setError = useCallback(
-    (error: Error) => {
-      appErrorhandler(error);
+    (error: unknown) => {
+      appErrorHandler(error);
       setDisableSettings(true);
     },
-    [appErrorhandler]
+    [appErrorHandler]
   );
 
   const boostVals: Mark[] = [

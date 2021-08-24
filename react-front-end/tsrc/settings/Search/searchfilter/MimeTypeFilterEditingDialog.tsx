@@ -85,15 +85,15 @@ const MimeTypeFilterEditingDialog = ({
   const [selectedMimeTypes, setSelectedMimeTypes] = useState<string[]>(
     mimeTypeFilter ? mimeTypeFilter.mimeTypes : []
   );
-  const { appErrorhandler } = useContext(AppRenderErrorContext);
+  const { appErrorHandler } = useContext(AppRenderErrorContext);
 
   const isNameValid = validateMimeTypeName(filterName);
 
   useEffect(() => {
     mimeTypeSupplier()
       .then((mimeTypes) => setMimeTypeEntries(mimeTypes))
-      .catch(appErrorhandler);
-  }, [mimeTypeSupplier, appErrorhandler]);
+      .catch(appErrorHandler);
+  }, [mimeTypeSupplier, appErrorHandler]);
 
   /**
    * If a MIME type is selected and it doesn't exist in the collection of selected MIME types,

@@ -56,7 +56,7 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
   const [schema, setSchema] = React.useState<SchemaNode>();
   const [schemaList, setSchemaList] = React.useState<ReactElement[]>([]);
   const [schemaNodePath, setSchemaNodePath] = React.useState<string>("");
-  const { appErrorhandler } = useContext(AppRenderErrorContext);
+  const { appErrorHandler } = useContext(AppRenderErrorContext);
 
   React.useEffect(() => {
     const buildSchemaList = (schemas: Map<string, string>) => {
@@ -73,18 +73,18 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
       .then((schemas) => {
         setSchemaList(buildSchemaList(schemas));
       })
-      .catch(appErrorhandler);
-  }, [appErrorhandler]);
+      .catch(appErrorHandler);
+  }, [appErrorHandler]);
 
   React.useEffect(() => {
     if (selectedSchema?.trim()) {
       schemaTree(selectedSchema)
         .then((tree) => setSchema(tree))
-        .catch(appErrorhandler);
+        .catch(appErrorHandler);
     } else {
       setSchema(undefined);
     }
-  }, [selectedSchema, appErrorhandler]);
+  }, [selectedSchema, appErrorHandler]);
 
   React.useEffect(() => {
     if (schemaNodePath?.trim()) {

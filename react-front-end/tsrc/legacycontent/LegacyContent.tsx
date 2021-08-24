@@ -164,7 +164,7 @@ export const LegacyContent = React.memo(function LegacyContent({
 }: LegacyContentProps) {
   const [content, setContent] = React.useState<PageContent>();
   const [updatingContent, setUpdatingContent] = React.useState<boolean>(true);
-  const { appErrorhandler } = useContext(AppRenderErrorContext);
+  const { appErrorHandler } = useContext(AppRenderErrorContext);
 
   const baseUrl = document.getElementsByTagName("base")[0].href;
 
@@ -232,7 +232,7 @@ export const LegacyContent = React.memo(function LegacyContent({
       onError(error);
     } else {
       const { error: errorTitle, error_description } = error;
-      appErrorhandler(new Error(error_description ?? errorTitle));
+      appErrorHandler(error_description ?? errorTitle);
     }
   }
 
