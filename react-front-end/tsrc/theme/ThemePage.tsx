@@ -38,12 +38,9 @@ import SettingPageTemplate from "../components/SettingPageTemplate";
 import SettingsList from "../components/SettingsList";
 import SettingsListControl from "../components/SettingsListControl";
 import { API_BASE_URL } from "../AppConfig";
+import { AppRenderErrorContext } from "../mainui/App";
 import { routes } from "../mainui/routes";
-import {
-  templateDefaults,
-  templateError,
-  TemplateUpdate,
-} from "../mainui/Template";
+import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import { commonString } from "../util/commonstrings";
 import { languageStrings } from "../util/langstrings";
 import ColorPickerComponent from "./ColorPickerComponent";
@@ -81,8 +78,15 @@ interface ThemeColors {
   secondaryText: string;
 }
 
-interface ThemePageProps {
-  updateTemplate: (update: TemplateUpdate) => void;
+interface ThemePageBasicProps
+  extends TemplateUpdateProps,
+    WithStyles<typeof styles> {}
+
+interface ThemePageProps extends ThemePageBasicProps {
+  /**
+   * Error handler which typically refers to the one provided by 'AppRenderErrorContext'.
+   */
+  appErrorHandler: (error: unknown) => void;
 }
 
 interface ThemePageState extends ThemeColors {
@@ -93,10 +97,7 @@ interface ThemePageState extends ThemeColors {
   showSuccess: boolean;
 }
 
-class ThemePage extends React.Component<
-  ThemePageProps & WithStyles<typeof styles>,
-  ThemePageState
-> {
+class ThemePage extends React.Component<ThemePageProps, ThemePageState> {
   state = {
     primary: themeSettings.primaryColor,
     secondary: themeSettings.secondaryColor,
@@ -242,7 +243,9 @@ class ThemePage extends React.Component<
           break;
       }
       if (errResponse) {
-        this.props.updateTemplate(templateError(errResponse));
+        this.props.appErrorHandler(
+          errResponse.error_description ?? errResponse.error
+        );
       }
     }
   };
@@ -386,4 +389,12 @@ class ThemePage extends React.Component<
   }
 }
 
-export default withStyles(styles)(ThemePage);
+const WithErrorHandler = (props: ThemePageBasicProps) => (
+  <AppRenderErrorContext.Consumer>
+    {({ appErrorHandler }) => (
+      <ThemePage {...props} appErrorHandler={appErrorHandler} />
+    )}
+  </AppRenderErrorContext.Consumer>
+);
+
+export default withStyles(styles)(WithErrorHandler);
