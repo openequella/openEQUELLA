@@ -17,7 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { identity, pipe } from "fp-ts/function";
-import { AppConfig } from "../AppConfig";
+import { getBaseUrl } from "../AppConfig";
 import { simpleMatchD } from "../util/match";
 import { updateKalturaAttachment } from "./KalturaModule";
 import { updateYoutubeAttachment } from "./YouTubeModule";
@@ -44,8 +44,7 @@ export const buildFileAttachmentUrl = (
   itemUuid: string,
   itemVersion: number,
   fileAttachmentPath: string
-) =>
-  `${AppConfig.baseUrl}file/${itemUuid}/${itemVersion}/${fileAttachmentPath}`;
+) => `${getBaseUrl()}file/${itemUuid}/${itemVersion}/${fileAttachmentPath}`;
 
 /**
  * Call this function to update attachments that require custom information

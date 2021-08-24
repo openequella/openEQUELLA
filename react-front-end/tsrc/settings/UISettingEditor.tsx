@@ -27,7 +27,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import * as React from "react";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { AppConfig } from "../AppConfig";
+import { getBaseUrl } from "../AppConfig";
 import { AppRenderErrorContext } from "../mainui/App";
 import { routes } from "../mainui/routes";
 import {
@@ -76,7 +76,7 @@ const UISettingEditor = ({ refreshUser }: UISettingEditorProps) => {
     saveUISetting(enabled, newSearchEnabled)
       .then((_) => {
         setNewUIEnabled(enabled);
-        window.location.href = AppConfig.baseUrl + "access/settings.do";
+        window.location.href = getBaseUrl() + "access/settings.do";
       })
       .catch(appErrorHandler);
   };

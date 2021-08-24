@@ -30,7 +30,7 @@ import {
   useState,
 } from "react";
 import { useHistory, useLocation } from "react-router";
-import { AppConfig } from "../AppConfig";
+import { getBaseUrl } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
 import MessageInfo, { MessageInfoVariant } from "../components/MessageInfo";
 import { AppRenderErrorContext } from "../mainui/App";
@@ -499,7 +499,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   const handleCopySearch = () => {
     //base institution urls have a trailing / that we need to get rid of
-    const instUrl = AppConfig.baseUrl.slice(0, -1);
+    const instUrl = getBaseUrl().slice(0, -1);
     const searchUrl = `${instUrl}${
       location.pathname
     }?${generateQueryStringFromSearchPageOptions(searchPageOptions)}`;

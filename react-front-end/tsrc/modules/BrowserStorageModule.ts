@@ -20,11 +20,11 @@ import * as E from "fp-ts/Either";
 import { pipe, flow } from "fp-ts/function";
 import * as J from "fp-ts/Json";
 import * as O from "fp-ts/Option";
-import { AppConfig } from "../AppConfig";
+import { getBaseUrl } from "../AppConfig";
 
 const localStorage = window.localStorage;
 
-const buildStorageKey = (key: string) => `${AppConfig.baseUrl}_${key}`;
+const buildStorageKey = (key: string) => `${getBaseUrl()}_${key}`;
 
 /**
  * Retrieve data from browser local storage by a key. Return undefined if
