@@ -17,7 +17,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion  = "3.15.1.Final"
 val SwaggerVersion   = "1.6.2"
-val TomcatVersion    = "9.0.50"
+val TomcatVersion    = "9.0.52"
 val axis2Version     = "1.6.2"
 val circeVersion     = "0.12.1"
 val cxfVersion       = "3.4.4"
@@ -29,7 +29,7 @@ val jsoupVersion     = "1.14.2"
 val simpledbaVersion = "0.1.9"
 val springVersion    = "5.3.9"
 val sttpVersion      = "1.7.2"
-val tikaVersion      = "1.27"
+val tikaVersion      = "2.0.0"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -125,6 +125,7 @@ libraryDependencies ++= Seq(
   "org.apache.axis2"          % "axis2-adb"                % axis2Version,
   "org.apache.axis2"          % "axis2-transport-http"     % axis2Version,
   "org.apache.axis2"          % "axis2-transport-local"    % axis2Version,
+  "org.apache.commons"        % "commons-compress"         % "1.21",
   "org.apache.curator"        % "curator-client"           % "2.13.0",
   "org.apache.curator"        % "curator-framework"        % "2.13.0",
   "org.apache.curator"        % "curator-recipes"          % "2.13.0",
@@ -178,43 +179,26 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "antlr",
                   name = "antlr")
   ),
-  "org.apache.struts" % "struts-extras" % "1.3.10",
-  "org.apache.struts" % "struts-taglib" % "1.3.10",
-  "org.apache.tika"   % "tika-core"     % tikaVersion,
-  "org.apache.tika"   % "tika-parsers"  % tikaVersion excludeAll (
-    ExclusionRule(
-                  // Due to a deduplication issue with HikariCP-java7-2.4.13 (via tika) and HikariCP-3.4.5
-                  organization = "com.zaxxer",
-                  name = "HikariCP-java7"),
-    ExclusionRule(
-      // Due to a deduplication issue with the first-order CXF dep. (tika @ 1.24.1 pulls in cxf 3.3.6).
-      // oEQ merges all the bus-extensions.txt together, and excluding 3.3.6 here keeps the same version
-      // for all merged bus-extensions.txt files.
-      organization = "org.apache.cxf",
-      name = "cxf-rt-rs-client"
-    ),
-    ExclusionRule(
-      // We manage Jackson related deps by 'jacksonVersion' so exclude the 'jackson-databind' added b tika
-      organization = "com.fasterxml.jackson.core",
-      name = "jackson-databind"
-    )
-  ),
-  "org.apache.tomcat"           % "tomcat-annotations-api" % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-api"             % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-catalina"        % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-catalina-ha"     % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-coyote"          % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-jsp-api"         % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-juli"            % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-servlet-api"     % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-tribes"          % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-util"            % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-util-scan"       % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-ssi"             % TomcatVersion,
-  "org.apache.ws.commons.axiom" % "axiom-api"              % "1.3.0",
-  "org.apache.ws.commons.axiom" % "axiom-impl"             % "1.3.0",
-  "org.apache.ws.security"      % "wss4j"                  % "1.6.19",
-  "org.apache.zookeeper"        % "zookeeper"              % "3.4.6" excludeAll (
+  "org.apache.struts"           % "struts-extras"                 % "1.3.10",
+  "org.apache.struts"           % "struts-taglib"                 % "1.3.10",
+  "org.apache.tika"             % "tika-core"                     % tikaVersion,
+  "org.apache.tika"             % "tika-parsers-standard-package" % tikaVersion,
+  "org.apache.tomcat"           % "tomcat-annotations-api"        % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-api"                    % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-catalina"               % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-catalina-ha"            % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-coyote"                 % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-jsp-api"                % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-juli"                   % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-servlet-api"            % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-tribes"                 % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-util"                   % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-util-scan"              % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-ssi"                    % TomcatVersion,
+  "org.apache.ws.commons.axiom" % "axiom-api"                     % "1.3.0",
+  "org.apache.ws.commons.axiom" % "axiom-impl"                    % "1.3.0",
+  "org.apache.ws.security"      % "wss4j"                         % "1.6.19",
+  "org.apache.zookeeper"        % "zookeeper"                     % "3.4.6" excludeAll (
     ExclusionRule(organization = "org.slf4j",
                   name = "slf4j-log4j12")
   ),
@@ -237,8 +221,8 @@ libraryDependencies ++= Seq(
   "org.reactivestreams"             % "reactive-streams"               % "1.0.3",
   // Upgraded to 2.0.1.Final due to a deduplication issue with jakarta.ws.rs-api
   "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"     % "2.0.2.Final",
-  "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api" % "1.4.1",
-  "org.eclipse.microprofile.config"      % "microprofile-config-api"      % "1.4",
+  "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api" % "2.0",
+  "org.eclipse.microprofile.config"      % "microprofile-config-api"      % "2.0",
   "javax.json.bind"                      % "javax.json.bind-api"          % "1.0",
   "org.jsoup"                            % "jsoup"                        % jsoupVersion,
   xstreamDep,
@@ -388,6 +372,10 @@ run := {
   case PathList("junit", _*)                                => MergeStrategy.discard
   case PathList("org", "apache", "axis2", "transport", "http", "util", "ComplexPart.class") =>
     MergeStrategy.first
+  // Three duplicate classes caused by upgrading tika to version 2.
+  case PathList("org", "slf4j", "impl", "StaticMDCBinder.class")    => MergeStrategy.first
+  case PathList("org", "slf4j", "impl", "StaticLoggerBinder.class") => MergeStrategy.first
+  case PathList("org", "slf4j", "impl", "StaticMarkerBinder.class") => MergeStrategy.first
 
   // Due to the error: deduplicate: different file contents found in the following:
   // ...

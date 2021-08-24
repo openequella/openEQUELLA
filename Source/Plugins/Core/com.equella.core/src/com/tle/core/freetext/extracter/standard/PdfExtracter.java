@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import javax.inject.Singleton;
 import org.apache.tika.config.TikaConfig;
+import org.apache.tika.exception.WriteLimitReachedException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
@@ -68,7 +69,7 @@ public class PdfExtracter extends AbstractTextExtracterExtension {
 
             appendText(handler, outputText, maxSize);
           } catch (Exception t) {
-            if (wrapped.isWriteLimitReached(t)) {
+            if (WriteLimitReachedException.isWriteLimitReached(t)) {
               // keep going
               LOGGER.info("PDF size limit reached.  Indexing truncated text");
               appendText(handler, outputText, maxSize);
