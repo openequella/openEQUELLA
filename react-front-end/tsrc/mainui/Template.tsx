@@ -39,6 +39,7 @@ import NotificationsIcon from "@material-ui/icons/Notifications";
 import * as OEQ from "@openequella/rest-api-client";
 import clsx, { ClassValue } from "clsx";
 import { LocationDescriptor } from "history";
+import { isEqual } from "lodash";
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { ErrorResponse } from "../api/errors";
@@ -364,14 +365,16 @@ export const Template = ({
   React.useEffect(() => {
     const head = document.head;
     if (metaTags) {
-      // The meta tags generated on the server side, separated by new line symbols
       const newMetaTags = metaTags.split("\n");
-      newMetaTags.forEach((newMetaTag) => {
-        head.appendChild(
-          document.createRange().createContextualFragment(newMetaTag)
-        );
-      });
-      setGoogleMetaTags(newMetaTags);
+      if (!isEqual(newMetaTags, googleMetaTags)) {
+        // The meta tags generated on the server side, separated by new line symbols
+        newMetaTags.forEach((newMetaTag) => {
+          head.appendChild(
+            document.createRange().createContextualFragment(newMetaTag)
+          );
+        });
+        setGoogleMetaTags(newMetaTags);
+      }
     } else {
       // While there are no new meta tags to display, also remove old customised meta tags
       const existingMetaTags = document.querySelectorAll("meta");
