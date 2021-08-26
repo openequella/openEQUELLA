@@ -1,6 +1,7 @@
 package io.github.openequella.rest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import com.tle.webtests.framework.TestConfig;
 import com.tle.webtests.framework.TestInstitution;
@@ -10,6 +11,7 @@ import java.util.List;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.type.TypeReference;
 import org.testng.annotations.Test;
 
@@ -33,6 +35,21 @@ public class AdvancedSearchApiTest extends AbstractRestApiTest {
         "The number of returned advanced searches should match the institution total.",
         3,
         searches.size());
+  }
+
+  @Test(description = "list all Wizard controls of an Sdvanced search")
+  public void testRetrieveWizardDefinition() throws IOException {
+    final String ADVANCED_SEARCH_UUID = "c9fd1ae8-0dc1-ab6f-e923-1f195a22d537";
+    final HttpMethod method =
+        new GetMethod(ADVANCEDSEARCH_API_ENDPOINT + "/" + ADVANCED_SEARCH_UUID);
+    assertEquals(HttpStatus.SC_OK, makeClientRequest(method));
+    JsonNode result = mapper.readTree(method.getResponseBody());
+    // This Advanced Search has 12 controls.
+    assertEquals(12, result.size());
+    result.forEach(
+        control -> {
+          assertNotNull(control.get("controlType"));
+        });
   }
 
   private List<BaseEntitySummary> getAdvancedSearches() throws IOException {

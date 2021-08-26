@@ -18,13 +18,17 @@
 
 package com.tle.web.api.settings
 
+import com.dytech.edge.wizard.beans.control._
+import com.tle.beans.entity.PowerSearch
 import com.tle.legacy.LegacyGuice
+import com.tle.web.api.ApiErrorResponse.resourceNotFound
 import com.tle.web.api.entity.BaseEntitySummary
+import com.tle.web.api.wizard._
 import io.swagger.annotations.{Api, ApiOperation}
+import org.slf4j.LoggerFactory
 import javax.ws.rs.core.Response
-import javax.ws.rs.{GET, Path, Produces}
-
-import scala.collection.JavaConverters.collectionAsScalaIterableConverter
+import javax.ws.rs.{GET, Path, PathParam, Produces}
+import scala.collection.JavaConverters._
 
 /**
   * API for managing Advanced Searches (internally - and historically - known as Power Searches).
@@ -33,6 +37,7 @@ import scala.collection.JavaConverters.collectionAsScalaIterableConverter
 @Produces(value = Array("application/json"))
 @Api(value = "Settings")
 class AdvancedSearchResource {
+  private val LOGGER             = LoggerFactory.getLogger(classOf[AdvancedSearchResource])
   private val powerSearchService = LegacyGuice.powerSearchService
 
   @GET
@@ -52,4 +57,48 @@ class AdvancedSearchResource {
           .asScala
           .map(be => BaseEntitySummary(be)))
       .build()
+
+  @GET
+  @Path("{uuid}")
+  @ApiOperation(
+    value = "Get Advanced Search definition",
+    notes = "This endpoint is used to retrieve Wizard definition of an Advanced Search by UUID.",
+    response = classOf[WizardBasicControl],
+    responseContainer = "list"
+  )
+  def getAdvancedSearchWizardDefinition(@PathParam("uuid") uuid: String): Response = {
+    Option(powerSearchService.getByUuid(uuid)) match {
+      case Some(ps) =>
+        Response
+          .ok()
+          .entity(getWizardDefinition(ps))
+          .build()
+      case None => resourceNotFound(s"Failed to find Advanced search for ID: ${uuid}")
+    }
+  }
+
+  private def getWizardDefinition(ps: PowerSearch): List[WizardControlDefinition] =
+    ps.getWizard.getControls.asScala.map {
+      // These controls do not have special fields
+      case c @ (_: ListBox | _: CheckBoxGroup | _: RadioGroup | _: ShuffleBox | _: Html) =>
+        WizardBasicControl(c)
+      case c: Calendar => WizardCalendarControl(WizardBasicControl(c), c.isRange)
+      case c: ShuffleList =>
+        WizardShuffleListControl(WizardBasicControl(c),
+                                 c.isTokenise,
+                                 c.isForceUnique,
+                                 c.isCheckDuplication)
+      case c: EditBox =>
+        WizardEditBoxControl(WizardBasicControl(c),
+                             c.isAllowLinks,
+                             c.isNumber,
+                             c.isAllowMultiLang,
+                             c.isForceUnique,
+                             c.isCheckDuplication)
+      case c: CustomControl =>
+        WizardCustomControl(WizardBasicControl(c), c.getAttributes.asScala.toMap)
+      case _ =>
+        LOGGER.error("Unknown Wizard Control type")
+        UnknownWizardControl()
+    }.toList
 }
