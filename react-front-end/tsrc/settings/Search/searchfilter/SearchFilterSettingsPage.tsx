@@ -249,11 +249,9 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
         (error) => new Error(`Failed to update Search settings: ${error}`)
       ),
       TE.chain<Error, void, string[]>(() =>
-        pipe(
-          TE.tryCatch(
-            searchFilterUpdateTask,
-            (error) => new Error(`Failed to update Search filters: ${error}`)
-          )
+        TE.tryCatch(
+          searchFilterUpdateTask,
+          (error) => new Error(`Failed to update Search filters: ${error}`)
         )
       ),
       TE.chain<Error, string[], string[]>((previousMessages: string[]) =>
