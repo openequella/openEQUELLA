@@ -78,9 +78,11 @@ interface ThemeColors {
   secondaryText: string;
 }
 
-interface ThemePageProps
+interface ThemePageBasicProps
   extends TemplateUpdateProps,
     WithStyles<typeof styles> {}
+
+type ThemePageProps = ThemePageBasicProps & WithErrorHandlerProps;
 
 interface ThemePageState extends ThemeColors {
   logoToUpload: File | null;
@@ -90,10 +92,7 @@ interface ThemePageState extends ThemeColors {
   showSuccess: boolean;
 }
 
-class ThemePage extends React.Component<
-  ThemePageProps & WithErrorHandlerProps,
-  ThemePageState
-> {
+class ThemePage extends React.Component<ThemePageProps, ThemePageState> {
   state = {
     primary: themeSettings.primaryColor,
     secondary: themeSettings.secondaryColor,
