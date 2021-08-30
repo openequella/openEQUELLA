@@ -18,15 +18,13 @@
 
 package com.tle.web.api.settings
 
-import com.dytech.edge.wizard.beans.control._
-import com.tle.beans.entity.PowerSearch
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.ApiErrorResponse.resourceNotFound
 import com.tle.web.api.entity.BaseEntitySummary
 import com.tle.web.api.language.LanguageStringHelper.getStringFromCurrentLocale
+import com.tle.web.api.wizard.WizardControlHelper.wizardControlConverter
 import com.tle.web.api.wizard._
 import io.swagger.annotations.{Api, ApiModelProperty, ApiOperation}
-import org.slf4j.LoggerFactory
 import javax.ws.rs.core.Response
 import javax.ws.rs.{GET, Path, PathParam, Produces}
 import scala.collection.JavaConverters._
@@ -46,7 +44,6 @@ case class AdvancedSearch(name: Option[String],
 @Produces(value = Array("application/json"))
 @Api(value = "Settings")
 class AdvancedSearchResource {
-  private val LOGGER             = LoggerFactory.getLogger(classOf[AdvancedSearchResource])
   private val powerSearchService = LegacyGuice.powerSearchService
 
   @GET
@@ -77,7 +74,7 @@ class AdvancedSearchResource {
   def getAdvancedSearchWizardDefinition(@PathParam("uuid") uuid: String): Response = {
     Option(powerSearchService.getByUuid(uuid)) match {
       case Some(ps) =>
-        val controls    = getWizardDefinition(ps)
+        val controls    = wizardControlConverter(ps.getWizard.getControls.asScala.toList)
         val collections = ps.getItemdefs.asScala.map(c => c.getUuid).toList
         val name        = getStringFromCurrentLocale(ps.getName)
         val description = getStringFromCurrentLocale(ps.getDescription)
@@ -88,29 +85,4 @@ class AdvancedSearchResource {
       case None => resourceNotFound(s"Failed to find Advanced search for ID: ${uuid}")
     }
   }
-
-  private def getWizardDefinition(ps: PowerSearch): List[WizardControlDefinition] =
-    ps.getWizard.getControls.asScala.map {
-      // These controls do not have special fields
-      case c @ (_: ListBox | _: CheckBoxGroup | _: RadioGroup | _: ShuffleBox | _: Html) =>
-        WizardBasicControl(c)
-      case c: Calendar => WizardCalendarControl(WizardBasicControl(c), c.isRange)
-      case c: ShuffleList =>
-        WizardShuffleListControl(WizardBasicControl(c),
-                                 c.isTokenise,
-                                 c.isForceUnique,
-                                 c.isCheckDuplication)
-      case c: EditBox =>
-        WizardEditBoxControl(WizardBasicControl(c),
-                             c.isAllowLinks,
-                             c.isNumber,
-                             c.isAllowMultiLang,
-                             c.isForceUnique,
-                             c.isCheckDuplication)
-      case c: CustomControl =>
-        WizardCustomControl(WizardBasicControl(c), c.getAttributes.asScala.toMap)
-      case _ =>
-        LOGGER.error("Unknown Wizard Control type")
-        UnknownWizardControl()
-    }.toList
 }
