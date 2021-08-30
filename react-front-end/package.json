@@ -81,7 +81,7 @@
     "@testing-library/user-event": "13.2.1",
     "@types/jest": "27.0.1",
     "@types/lodash": "4.14.172",
-    "@types/luxon": "2.0.1",
+    "@types/luxon": "2.0.2",
     "@types/node": "16.4.10",
     "@types/react": "17.0.19",
     "@types/react-autosuggest": "10.1.5",
