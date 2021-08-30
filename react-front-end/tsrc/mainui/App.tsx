@@ -92,17 +92,40 @@ interface AppProps {
 
 const nop = () => {};
 
-/**
- * Provide an error handler for the whole APP.
- */
-export const AppRenderErrorContext = React.createContext<{
+export interface WithErrorHandlerProps {
   /**
    * Function to handle a variety of unknown errors thrown from any component of the APP.
    */
   appErrorHandler: (error: unknown) => void;
-}>({
-  appErrorHandler: nop,
-});
+}
+
+/**
+ * Provide an error handler for the whole APP.
+ */
+export const AppRenderErrorContext = React.createContext<WithErrorHandlerProps>(
+  {
+    appErrorHandler: nop,
+  }
+);
+
+/**
+ * HOC function to inject the 'appErrorHandler' to a component. Typically used with a class component.
+ * For functional components, use Context to access the 'appErrorHandler'.
+ *
+ * @param Page A class component
+ */
+export const withErrorHandler =
+  <T,>(
+    Page: React.ComponentType<T & WithErrorHandlerProps>
+  ): ((props: T) => JSX.Element) =>
+  (props: T) =>
+    (
+      <AppRenderErrorContext.Consumer>
+        {({ appErrorHandler }) => (
+          <Page {...props} appErrorHandler={appErrorHandler} />
+        )}
+      </AppRenderErrorContext.Consumer>
+    );
 
 const App = ({ entryPage }: AppProps): JSX.Element => {
   const [error, setError] = React.useState<Error | undefined>();

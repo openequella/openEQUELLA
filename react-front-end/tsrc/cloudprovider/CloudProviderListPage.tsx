@@ -26,7 +26,7 @@ import {
 } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloudIcon from "@material-ui/icons/CloudCircleRounded";
-import { AppRenderErrorContext } from "../mainui/App";
+import { withErrorHandler, WithErrorHandlerProps } from "../mainui/App";
 import { CloudProviderEntity } from "./CloudProviderEntity";
 import {
   deleteCloudProvider,
@@ -60,12 +60,8 @@ interface CloudProviderBasicProps
   extends TemplateUpdateProps,
     WithStyles<typeof styles> {}
 
-interface CloudProviderListPageProps extends CloudProviderBasicProps {
-  /**
-   * Error handler which typically refers to the one provided by 'AppRenderErrorContext'.
-   */
-  appErrorHandler: (error: unknown) => void;
-}
+type CloudProviderListPageProps = CloudProviderBasicProps &
+  WithErrorHandlerProps;
 
 interface CloudProviderListPageState {
   cloudProviders: CloudProviderEntity[];
@@ -250,12 +246,5 @@ class CloudProviderListPage extends React.Component<
   }
 }
 
-const WithErrorHandler = (props: CloudProviderBasicProps) => (
-  <AppRenderErrorContext.Consumer>
-    {({ appErrorHandler }) => (
-      <CloudProviderListPage {...props} appErrorHandler={appErrorHandler} />
-    )}
-  </AppRenderErrorContext.Consumer>
-);
-
+const WithErrorHandler = withErrorHandler(CloudProviderListPage);
 export default withStyles(styles)(WithErrorHandler);

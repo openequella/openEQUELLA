@@ -38,7 +38,7 @@ import SettingPageTemplate from "../components/SettingPageTemplate";
 import SettingsList from "../components/SettingsList";
 import SettingsListControl from "../components/SettingsListControl";
 import { API_BASE_URL } from "../AppConfig";
-import { AppRenderErrorContext } from "../mainui/App";
+import { WithErrorHandlerProps, withErrorHandler } from "../mainui/App";
 import { routes } from "../mainui/routes";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import { commonString } from "../util/commonstrings";
@@ -78,16 +78,9 @@ interface ThemeColors {
   secondaryText: string;
 }
 
-interface ThemePageBasicProps
+interface ThemePageProps
   extends TemplateUpdateProps,
     WithStyles<typeof styles> {}
-
-interface ThemePageProps extends ThemePageBasicProps {
-  /**
-   * Error handler which typically refers to the one provided by 'AppRenderErrorContext'.
-   */
-  appErrorHandler: (error: unknown) => void;
-}
 
 interface ThemePageState extends ThemeColors {
   logoToUpload: File | null;
@@ -97,7 +90,10 @@ interface ThemePageState extends ThemeColors {
   showSuccess: boolean;
 }
 
-class ThemePage extends React.Component<ThemePageProps, ThemePageState> {
+class ThemePage extends React.Component<
+  ThemePageProps & WithErrorHandlerProps,
+  ThemePageState
+> {
   state = {
     primary: themeSettings.primaryColor,
     secondary: themeSettings.secondaryColor,
@@ -389,12 +385,5 @@ class ThemePage extends React.Component<ThemePageProps, ThemePageState> {
   }
 }
 
-const WithErrorHandler = (props: ThemePageBasicProps) => (
-  <AppRenderErrorContext.Consumer>
-    {({ appErrorHandler }) => (
-      <ThemePage {...props} appErrorHandler={appErrorHandler} />
-    )}
-  </AppRenderErrorContext.Consumer>
-);
-
+const WithErrorHandler = withErrorHandler(ThemePage);
 export default withStyles(styles)(WithErrorHandler);
