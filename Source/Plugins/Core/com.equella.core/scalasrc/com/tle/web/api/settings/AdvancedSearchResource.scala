@@ -23,12 +23,21 @@ import com.tle.beans.entity.PowerSearch
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.ApiErrorResponse.resourceNotFound
 import com.tle.web.api.entity.BaseEntitySummary
+import com.tle.web.api.language.LanguageStringHelper.getStringFromCurrentLocale
 import com.tle.web.api.wizard._
-import io.swagger.annotations.{Api, ApiOperation}
+import io.swagger.annotations.{Api, ApiModelProperty, ApiOperation}
 import org.slf4j.LoggerFactory
 import javax.ws.rs.core.Response
 import javax.ws.rs.{GET, Path, PathParam, Produces}
 import scala.collection.JavaConverters._
+
+case class AdvancedSearch(name: Option[String],
+                          description: Option[String],
+                          collections: List[String],
+                          // WizardControlDefinition is an abstraction without real data structure so use 'ApiModelProperty'
+                          // to provide a concrete structure.
+                          @ApiModelProperty(dataType = "com.tle.web.api.wizard.WizardBasicControl")
+                          controls: List[WizardControlDefinition])
 
 /**
   * API for managing Advanced Searches (internally - and historically - known as Power Searches).
@@ -63,15 +72,18 @@ class AdvancedSearchResource {
   @ApiOperation(
     value = "Get Advanced Search definition",
     notes = "This endpoint is used to retrieve Wizard definition of an Advanced Search by UUID.",
-    response = classOf[WizardBasicControl],
-    responseContainer = "list"
+    response = classOf[AdvancedSearch],
   )
   def getAdvancedSearchWizardDefinition(@PathParam("uuid") uuid: String): Response = {
     Option(powerSearchService.getByUuid(uuid)) match {
       case Some(ps) =>
+        val controls    = getWizardDefinition(ps)
+        val collections = ps.getItemdefs.asScala.map(c => c.getUuid).toList
+        val name        = getStringFromCurrentLocale(ps.getName)
+        val description = getStringFromCurrentLocale(ps.getDescription)
         Response
           .ok()
-          .entity(getWizardDefinition(ps))
+          .entity(AdvancedSearch(name, description, collections, controls))
           .build()
       case None => resourceNotFound(s"Failed to find Advanced search for ID: ${uuid}")
     }

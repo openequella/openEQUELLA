@@ -21,8 +21,8 @@ package com.tle.web.api.wizard
 import com.dytech.edge.wizard.TargetNode
 import com.dytech.edge.wizard.beans.control.{WizardControl, WizardControlItem}
 import com.fasterxml.jackson.annotation.JsonUnwrapped
-import com.tle.beans.entity.LanguageBundle
-import com.tle.common.i18n.{CurrentLocale, LangUtils}
+import com.tle.common.i18n.{LangUtils}
+import com.tle.web.api.language.LanguageStringHelper.getStringFromCurrentLocale
 import scala.collection.JavaConverters._
 
 /** Data structure for Wizard Control option
@@ -79,10 +79,6 @@ case class WizardBasicControl(
 ) extends WizardControlDefinition
 
 object WizardBasicControl {
-  def getLanguageString(bundle: LanguageBundle): String = {
-    LangUtils.getString(bundle, CurrentLocale.getLocale, null)
-  }
-
   def apply(control: WizardControl): WizardBasicControl = {
     WizardBasicControl(
       mandatory = control.isMandatory,
@@ -91,12 +87,12 @@ object WizardBasicControl {
       size1 = control.getSize1,
       size2 = control.getSize2,
       customName = Option(control.getCustomName),
-      title = Option(getLanguageString(control.getTitle)),
-      description = Option(getLanguageString(control.getDescription)),
+      title = getStringFromCurrentLocale(control.getTitle),
+      description = getStringFromCurrentLocale(control.getDescription),
       visibilityScript = Option(control.getScript),
       targetNodes = control.getTargetnodes.asScala.toList,
       options = control.getItems.asScala.map(i => WizardControlOption(i)).toList,
-      powerSearchFriendlyName = Option(getLanguageString(control.getPowerSearchFriendlyName)),
+      powerSearchFriendlyName = getStringFromCurrentLocale(control.getPowerSearchFriendlyName),
       controlType = control.getClassType
     )
   }

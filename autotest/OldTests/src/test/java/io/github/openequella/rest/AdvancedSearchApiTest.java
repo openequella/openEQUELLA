@@ -44,12 +44,20 @@ public class AdvancedSearchApiTest extends AbstractRestApiTest {
         new GetMethod(ADVANCEDSEARCH_API_ENDPOINT + "/" + ADVANCED_SEARCH_UUID);
     assertEquals(HttpStatus.SC_OK, makeClientRequest(method));
     JsonNode result = mapper.readTree(method.getResponseBody());
+
+    assertEquals("All Controls Power Search", result.get("name").asText());
+
+    // This Advanced Search only covers one Collection.
+    assertEquals(1, result.get("collections").size());
+
     // This Advanced Search has 13 controls.
-    assertEquals(13, result.size());
-    result.forEach(
-        control -> {
-          assertNotNull(control.get("controlType"));
-        });
+    assertEquals(13, result.get("controls").size());
+    result
+        .get("controls")
+        .forEach(
+            control -> {
+              assertNotNull(control.get("controlType"));
+            });
   }
 
   private List<BaseEntitySummary> getAdvancedSearches() throws IOException {
