@@ -50,7 +50,7 @@ const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
   const { appErrorHandler } = useContext(AppRenderErrorContext);
 
   const setError = useCallback(
-    (error: unknown) => {
+    (error: string | Error) => {
       appErrorHandler(error);
       setDisableSettings(true);
     },
@@ -83,13 +83,13 @@ const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
         setSearchSettings(settings);
         setInitialSearchSettings(settings);
       })
-      .catch((error: Error) => setError(error));
+      .catch(setError);
   }, [loadSettings, setError]);
 
   function handleSubmitButton() {
     saveSearchSettingsToServer(searchSettings)
       .then(() => setShowSuccess(true))
-      .catch((error: Error) => setError(error))
+      .catch(setError)
       .finally(() => setLoadSettings(!loadSettings));
   }
 

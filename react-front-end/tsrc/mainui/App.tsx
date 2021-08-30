@@ -96,7 +96,7 @@ export interface WithErrorHandlerProps {
   /**
    * Function to handle a variety of unknown errors thrown from any component of the APP.
    */
-  appErrorHandler: (error: unknown) => void;
+  appErrorHandler: (error: Error | string) => void;
 }
 
 /**
@@ -128,9 +128,9 @@ export const withErrorHandler =
     );
 
 const App = ({ entryPage }: AppProps): JSX.Element => {
-  const [error, setError] = React.useState<Error | undefined>();
+  const [error, setError] = React.useState<Error | string | undefined>();
   const appErrorHandler = useCallback(
-    (error: unknown) => setError(new Error(`${error}`)),
+    (error: Error | string) => setError(error),
     []
   );
 
@@ -177,7 +177,7 @@ const App = ({ entryPage }: AppProps): JSX.Element => {
           open
           onClose={() => setError(undefined)}
           variant="error"
-          title={error.message}
+          title={typeof error === "string" ? error : error.message}
         />
       )}
       {appContent()}

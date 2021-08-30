@@ -61,7 +61,7 @@ const SearchPageSettings = ({ updateTemplate }: TemplateUpdateProps) => {
   const { appErrorHandler } = useContext(AppRenderErrorContext);
 
   const setError = useCallback(
-    (error: unknown) => {
+    (error: string | Error) => {
       appErrorHandler(error);
       setDisableSettings(true);
     },
