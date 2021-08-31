@@ -22,7 +22,6 @@ import { flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import {
   API_BASE_URL,
-  AppConfig,
   getBaseUrl,
   getRenderData,
   SelectionSessionInfo,
@@ -410,7 +409,7 @@ export const selectResourceForSelectOrAdd = (
   );
   const callback = (response: SubmitResponse) => {
     if (isChangeRoute(response)) {
-      leaveSearchPage(`${AppConfig.baseUrl}${response.route}`);
+      leaveSearchPage(`${getBaseUrl()}${response.route}`);
     } else if (isPageContent(response)) {
       updateSelectionSummary(response);
     }
@@ -471,7 +470,7 @@ export const selectResourceForSkinny = (
  */
 export const selectResource = (
   itemKey: string,
-  attachments: string[]
+  attachments: string[] = []
 ): Promise<void> =>
   pipe(
     getSelectionSessionInfo().layout,

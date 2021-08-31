@@ -114,10 +114,6 @@ export interface SearchResultProps {
     mimeType: string
   ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>;
   /**
-   * Error handler for standard management of errors during processing - especially comms errors.
-   */
-  handleError: (error: Error) => void;
-  /**
    * The list of words which should be highlighted.
    */
   highlights: string[];
@@ -144,7 +140,6 @@ export const ItemDrmContext = React.createContext<{
 
 export default function SearchResult({
   getViewerDetails = getMimeTypeDefaultViewerDetails,
-  handleError,
   highlights,
   item,
 }: SearchResultProps) {
@@ -207,19 +202,12 @@ export default function SearchResult({
     })();
   }, [drmCheckOnSuccessHandler, uuid, version, drmStatus]);
 
-  const handleSelectResource = (
-    itemKey: string,
-    attachments: string[] = []
-  ) => {
-    selectResource(itemKey, attachments).catch((error) => handleError(error));
-  };
-
   const handleAddFavouriteItem: FavDialogConfirmToAdd = {
     action: "add",
     onConfirm: (tags: string[], isAlwaysLatest: boolean) =>
-      addFavouriteItem(`${uuid}/${version}`, tags, isAlwaysLatest)
-        .then(({ bookmarkID }) => setBookmarkId(bookmarkID))
-        .catch(handleError),
+      addFavouriteItem(`${uuid}/${version}`, tags, isAlwaysLatest).then(
+        ({ bookmarkID }) => setBookmarkId(bookmarkID)
+      ),
   };
 
   const handleDeleteFavouriteItem: FavDialogConfirmToDelete = {
@@ -228,9 +216,9 @@ export default function SearchResult({
       if (!bookmarkId) {
         throw new Error("Bookmark ID can't be falsy.");
       }
-      return deleteFavouriteItem(bookmarkId)
-        .then(() => setBookmarkId(undefined))
-        .catch(handleError);
+      return deleteFavouriteItem(bookmarkId).then(() =>
+        setBookmarkId(undefined)
+      );
     },
   };
 
@@ -373,9 +361,7 @@ export default function SearchResult({
         <ResourceSelector
           labelText={selectResourceStrings.summaryPage}
           isStopPropagation
-          onClick={() => {
-            handleSelectResource(itemKey);
-          }}
+          onClick={() => selectResource(itemKey)}
         />
       </Grid>
     </Grid>
@@ -412,7 +398,6 @@ export default function SearchResult({
               >
                 <SearchResultAttachmentsList
                   item={item}
-                  handleError={handleError}
                   getViewerDetails={getViewerDetails}
                 />
               </ItemDrmContext.Provider>

@@ -88,9 +88,6 @@ describe("<SearchResult/>", () => {
           <SearchResult
             key={itemResult.uuid}
             item={itemResult}
-            handleError={(error) =>
-              console.warn(`Testing error handler: ${error}`)
-            }
             highlights={[]}
           />
         </BrowserRouter>

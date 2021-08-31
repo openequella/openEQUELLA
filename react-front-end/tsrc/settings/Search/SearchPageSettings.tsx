@@ -16,19 +16,16 @@
  * limitations under the License.
  */
 import { Card, CardContent } from "@material-ui/core";
+import { useCallback, useContext } from "react";
 import * as React from "react";
 import { shallowEqual } from "shallow-equal-object";
-import { generateFromError } from "../../api/errors";
 import SettingPageTemplate from "../../components/SettingPageTemplate";
 import SettingsList from "../../components/SettingsList";
 import SettingsListControl from "../../components/SettingsListControl";
 import SettingsToggleSwitch from "../../components/SettingsToggleSwitch";
+import { AppRenderErrorContext } from "../../mainui/App";
 import { routes } from "../../mainui/routes";
-import {
-  templateDefaults,
-  templateError,
-  TemplateUpdateProps,
-} from "../../mainui/Template";
+import { templateDefaults, TemplateUpdateProps } from "../../mainui/Template";
 import {
   defaultSearchSettings,
   getCloudSettingsFromServer,
@@ -37,7 +34,6 @@ import {
   saveSearchSettingsToServer,
 } from "../../modules/SearchSettingsModule";
 import { languageStrings } from "../../util/langstrings";
-import useError from "../../util/useError";
 import DefaultSortOrderSetting from "./components/DefaultSortOrderSetting";
 import * as OEQ from "@openequella/rest-api-client";
 
@@ -62,11 +58,15 @@ const SearchPageSettings = ({ updateTemplate }: TemplateUpdateProps) => {
   const [loadSettings, setLoadSettings] = React.useState<boolean>(true);
   const [showSuccess, setShowSuccess] = React.useState<boolean>(false);
   const [disableSettings, setDisableSettings] = React.useState<boolean>(false);
+  const { appErrorHandler } = useContext(AppRenderErrorContext);
 
-  const setError = useError((error: Error) => {
-    updateTemplate(templateError(generateFromError(error)));
-    setDisableSettings(true);
-  });
+  const setError = useCallback(
+    (error: string | Error) => {
+      appErrorHandler(error);
+      setDisableSettings(true);
+    },
+    [appErrorHandler]
+  );
 
   const changesUnsaved =
     initialCloudSettings.disabled !== cloudSettings.disabled ||

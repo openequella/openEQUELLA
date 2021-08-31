@@ -21,21 +21,16 @@ import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import { Autocomplete, AutocompleteGetTagProps } from "@material-ui/lab";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { TooltipChip } from "../../components/TooltipChip";
 import {
   Collection,
   collectionListSummary,
 } from "../../modules/CollectionsModule";
 import { languageStrings } from "../../util/langstrings";
-import useError from "../../util/useError";
+import { SearchPageRenderErrorContext } from "../SearchPage";
 
 interface CollectionSelectorProps {
-  /**
-   * Fires if an error is caught that should be reported up.
-   * @param error the caught error.
-   */
-  onError: (error: Error) => void;
   /**
    * Fires when collection selections are changed.
    * @param collections Selected collections.
@@ -54,12 +49,11 @@ const { title, noOptions } = languageStrings.searchpage.collectionSelector;
  * The initially selected collections are either provided through props or an empty array.
  */
 export const CollectionSelector = ({
-  onError,
   onSelectionChange,
   value,
 }: CollectionSelectorProps) => {
   const [collections, setCollections] = useState<Collection[]>([]);
-  const handleError = useError(onError);
+  const { handleError } = useContext(SearchPageRenderErrorContext);
 
   useEffect(() => {
     collectionListSummary([OEQ.Acl.ACL_SEARCH_COLLECTION])

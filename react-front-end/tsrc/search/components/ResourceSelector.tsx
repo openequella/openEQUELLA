@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 import DoubleArrowIcon from "@material-ui/icons/DoubleArrow";
+import { useContext } from "react";
 import * as React from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
+import { SearchPageRenderErrorContext } from "../SearchPage";
 
 export interface ResourceSelectorProps {
   /**
@@ -27,7 +29,7 @@ export interface ResourceSelectorProps {
   /**
    * Handler for clicking the ResourceSelector
    */
-  onClick: () => void;
+  onClick: () => Promise<void>;
   /**
    * Whether to stop the propagation of a click event
    */
@@ -42,18 +44,22 @@ export const ResourceSelector = ({
   labelText,
   onClick,
   isStopPropagation = false,
-}: ResourceSelectorProps) => (
-  <TooltipIconButton
-    title={labelText}
-    color="secondary"
-    aria-label={labelText}
-    onClick={(event) => {
-      if (isStopPropagation) {
-        event.stopPropagation();
-      }
-      onClick();
-    }}
-  >
-    <DoubleArrowIcon />
-  </TooltipIconButton>
-);
+}: ResourceSelectorProps) => {
+  const { handleError } = useContext(SearchPageRenderErrorContext);
+
+  return (
+    <TooltipIconButton
+      title={labelText}
+      color="secondary"
+      aria-label={labelText}
+      onClick={(event) => {
+        if (isStopPropagation) {
+          event.stopPropagation();
+        }
+        onClick().catch(handleError);
+      }}
+    >
+      <DoubleArrowIcon />
+    </TooltipIconButton>
+  );
+};

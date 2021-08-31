@@ -18,20 +18,16 @@
 import * as React from "react";
 import { AxiosError } from "axios";
 import { generateFromError, generateNewErrorID } from "../api/errors";
+import { withErrorHandler, WithErrorHandlerProps } from "../mainui/App";
 import PreLoginNoticeConfigurator from "./PreLoginNoticeConfigurator";
 import PostLoginNoticeConfigurator from "./PostLoginNoticeConfigurator";
 import { strings } from "../modules/LoginNoticeModule";
-import {
-  templateDefaults,
-  templateError,
-  TemplateUpdate,
-} from "../mainui/Template";
+import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import { routes } from "../mainui/routes";
 import SettingPageTemplate from "../components/SettingPageTemplate";
 
-interface LoginNoticeConfigPageProps {
-  updateTemplate: (update: TemplateUpdate) => void;
-}
+type LoginNoticeConfigPageProps = TemplateUpdateProps & WithErrorHandlerProps;
+
 interface LoginNoticeConfigPageState {
   notificationOpen: boolean;
   preventNav: boolean;
@@ -83,7 +79,9 @@ class LoginNoticeConfigPage extends React.Component<
       errResponse = generateFromError(error);
     }
     if (errResponse) {
-      this.props.updateTemplate(templateError(errResponse));
+      this.props.appErrorHandler(
+        errResponse.error_description ?? errResponse.error
+      );
     }
   };
 
@@ -130,4 +128,4 @@ class LoginNoticeConfigPage extends React.Component<
   }
 }
 
-export default LoginNoticeConfigPage;
+export default withErrorHandler(LoginNoticeConfigPage);

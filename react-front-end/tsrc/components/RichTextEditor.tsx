@@ -18,7 +18,7 @@
 import * as React from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { AxiosPromise, AxiosResponse } from "axios";
-import { AppConfig, getRenderData } from "../AppConfig";
+import { getBaseUrl, getRenderData } from "../AppConfig";
 
 import "tinymce/tinymce";
 
@@ -126,7 +126,7 @@ class RichTextEditor extends React.Component<
 
   render() {
     const skinUrl =
-      AppConfig.baseUrl +
+      getBaseUrl() +
       renderData?.baseResources +
       "reactjs/tinymce/skins/ui/oxide";
 

@@ -22,6 +22,7 @@ import { isEqual } from "lodash";
 import * as React from "react";
 import {
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useReducer,
@@ -29,16 +30,12 @@ import {
   useState,
 } from "react";
 import { useHistory, useLocation } from "react-router";
-import { generateFromError } from "../api/errors";
-import { AppConfig } from "../AppConfig";
+import { getBaseUrl } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
 import MessageInfo, { MessageInfoVariant } from "../components/MessageInfo";
+import { AppRenderErrorContext } from "../mainui/App";
 import { routes } from "../mainui/routes";
-import {
-  templateDefaults,
-  templateError,
-  TemplateUpdateProps,
-} from "../mainui/Template";
+import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import { getAdvancedSearchesFromServer } from "../modules/AdvancedSearchModule";
 import type { Collection } from "../modules/CollectionsModule";
 import { addFavouriteSearch } from "../modules/FavouriteModule";
@@ -127,6 +124,15 @@ interface SearchPageHistoryState {
   filterExpansion: boolean;
 }
 
+export const SearchPageRenderErrorContext = React.createContext<{
+  /**
+   * Function to handle errors thrown from Search page components.
+   */
+  handleError: (error: Error) => void;
+}>({
+  handleError: () => {},
+});
+
 const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const history = useHistory();
   const location = useLocation();
@@ -174,7 +180,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [alreadyDownloaded, setAlreadyDownloaded] = useState<boolean>(false);
   const exportLinkRef = useRef<HTMLAnchorElement>(null);
 
-  const handleError = useCallback(
+  const { appErrorHandler } = useContext(AppRenderErrorContext);
+  const searchPageErrorHandler = useCallback(
     (error: Error) => {
       dispatch({ type: "error", cause: error });
     },
@@ -196,9 +203,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
    */
   useEffect(() => {
     if (state.status === "failure") {
-      updateTemplate(templateError(generateFromError(state.cause)));
+      appErrorHandler(state.cause);
     }
-  }, [state, updateTemplate]);
+  }, [state, appErrorHandler]);
 
   /**
    * Page initialisation -> Update the page title, retrieve Search settings and trigger first
@@ -253,11 +260,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         }
       )
       .catch((e) => {
-        handleError(e);
+        searchPageErrorHandler(e);
       });
   }, [
     dispatch,
-    handleError,
+    searchPageErrorHandler,
     location,
     search,
     searchPageOptions,
@@ -344,9 +351,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
             setAlreadyDownloaded(false);
           }
         )
-        .catch(handleError);
+        .catch(searchPageErrorHandler);
     }
-  }, [dispatch, filterExpansion, handleError, history, state]);
+  }, [dispatch, filterExpansion, searchPageErrorHandler, history, state]);
 
   // In Selection Session, once a new search result is returned, make each
   // new search result Item draggable. Could probably merge into 'searching'
@@ -492,7 +499,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   const handleCopySearch = () => {
     //base institution urls have a trailing / that we need to get rid of
-    const instUrl = AppConfig.baseUrl.slice(0, -1);
+    const instUrl = getBaseUrl().slice(0, -1);
     const searchUrl = `${instUrl}${
       location.pathname
     }?${generateQueryStringFromSearchPageOptions(searchPageOptions)}`;
@@ -502,7 +509,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       .then(() => {
         setSnackBar({ message: searchStrings.shareSearchConfirmationText });
       })
-      .catch(() => handleError);
+      .catch(searchPageErrorHandler);
   };
 
   const handleSaveFavouriteSearch = (name: string) => {
@@ -511,13 +518,11 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       location.pathname
     }?${generateQueryStringFromSearchPageOptions(searchPageOptions)}`;
 
-    return addFavouriteSearch(name, url)
-      .then(() =>
-        setSnackBar({
-          message: searchStrings.favouriteSearch.saveSearchConfirmationText,
-        })
-      )
-      .catch(handleError);
+    return addFavouriteSearch(name, url).then(() =>
+      setSnackBar({
+        message: searchStrings.favouriteSearch.saveSearchConfirmationText,
+      })
+    );
   };
 
   const handleMimeTypeFilterChange = (filters: MimeTypeFilter[]) =>
@@ -648,7 +653,6 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       title: collectionSelectorTitle,
       component: (
         <CollectionSelector
-          onError={handleError}
           onSelectionChange={handleCollectionSelectionChanged}
           value={searchPageOptions.collections}
         />
@@ -815,7 +819,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     ): items is GallerySearchResultItem[] => from === "gallery-search";
 
     if (isListItems(searchResults)) {
-      return mapSearchResultItems(searchResults, handleError, highlights);
+      return mapSearchResultItems(searchResults, highlights);
     } else if (isGalleryItems(searchResults)) {
       return <GallerySearchResult items={searchResults} />;
     }
@@ -827,7 +831,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     content: { available: totalCount, highlight: highlights },
   } = searchResult();
   return (
-    <>
+    <SearchPageRenderErrorContext.Provider
+      value={{ handleError: searchPageErrorHandler }}
+    >
       <Grid container spacing={2}>
         <Grid item sm={12} md={8}>
           <Grid container spacing={2}>
@@ -910,7 +916,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           onConfirm={handleSaveFavouriteSearch}
         />
       )}
-    </>
+    </SearchPageRenderErrorContext.Provider>
   );
 };
 

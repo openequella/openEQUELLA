@@ -31,7 +31,7 @@ import AddCircleIcon from "@material-ui/icons/AddCircle";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import * as React from "react";
-import { ReactElement, useEffect, useState } from "react";
+import { ReactElement, useContext, useEffect, useState } from "react";
 import {
   DragDropContext,
   Draggable,
@@ -40,15 +40,14 @@ import {
   DroppableProvided,
   DropResult,
 } from "react-beautiful-dnd";
-import { generateFromError } from "../../../api/errors";
 import MessageDialog from "../../../components/MessageDialog";
 import SettingPageTemplate from "../../../components/SettingPageTemplate";
 import SettingsListHeading from "../../../components/SettingsListHeading";
 import { TooltipIconButton } from "../../../components/TooltipIconButton";
+import { AppRenderErrorContext } from "../../../mainui/App";
 import { routes } from "../../../mainui/routes";
 import {
   templateDefaults,
-  templateError,
   TemplateUpdateProps,
 } from "../../../mainui/Template";
 import {
@@ -65,7 +64,6 @@ import { commonString } from "../../../util/commonstrings";
 import { idExtractor } from "../../../util/idExtractor";
 import { addElement, replaceElement } from "../../../util/ImmutableArrayUtil";
 import { languageStrings } from "../../../util/langstrings";
-import useError from "../../../util/useError";
 import FacetDialog from "./FacetDialog";
 
 const useStyles = makeStyles({
@@ -92,9 +90,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
     FacetWithFlags | undefined
   >();
   const [reset, setReset] = useState<boolean>(true);
-  const handleError = useError((error: Error) => {
-    updateTemplate(templateError(generateFromError(error)));
-  });
+  const { appErrorHandler } = useContext(AppRenderErrorContext);
 
   const listOfUpdates: FacetWithFlags[] = facets.filter(
     (facet) => facet.updated && !facet.deleted
@@ -126,8 +122,8 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
           })
         )
       )
-      .catch(handleError);
-  }, [reset, handleError]);
+      .catch(appErrorHandler);
+  }, [reset, appErrorHandler]);
 
   /**
    * Save updated/deleted facets to the server.
@@ -152,7 +148,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
           setShowSnackBar(true);
         }
       })
-      .catch(handleError)
+      .catch(appErrorHandler)
       .finally(() => setReset(!reset));
   };
 
@@ -312,7 +308,6 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
         addOrEdit={addOrEdit}
         open={showEditingDialog}
         onClose={() => setShowEditingDialog(false)}
-        handleError={handleError}
         facet={currentFacet}
       />
 

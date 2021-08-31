@@ -25,7 +25,6 @@ import { MimeTypeFilter } from "../../../tsrc/modules/SearchFilterSettingsModule
 describe("<MimeTypeFilterEditingDialog />", () => {
   const onClose = jest.fn();
   const addOrUpdate = jest.fn();
-  const handleError = jest.fn();
   const renderDialog = async (filter: MimeTypeFilter | undefined = undefined) =>
     await act(async () => {
       await render(
@@ -34,7 +33,6 @@ describe("<MimeTypeFilterEditingDialog />", () => {
           onClose={onClose}
           addOrUpdate={addOrUpdate}
           mimeTypeFilter={filter}
-          handleError={handleError}
           mimeTypeSupplier={jest.fn().mockResolvedValue(getMimeTypesFromServer)}
         />
       );
