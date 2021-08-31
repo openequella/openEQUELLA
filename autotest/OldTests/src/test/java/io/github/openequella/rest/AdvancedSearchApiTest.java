@@ -1,6 +1,7 @@
 package io.github.openequella.rest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 import com.tle.webtests.framework.TestConfig;
@@ -37,8 +38,10 @@ public class AdvancedSearchApiTest extends AbstractRestApiTest {
         searches.size());
   }
 
-  @Test(description = "list all Wizard controls of an Sdvanced search")
-  public void testRetrieveWizardDefinition() throws IOException {
+  @Test(
+      description =
+          "Get the name, description, Collections and Wizard definition of an Advanced search.")
+  public void testRetrieveAdvancedSearch() throws IOException {
     final String ADVANCED_SEARCH_UUID = "c9fd1ae8-0dc1-ab6f-e923-1f195a22d537";
     final HttpMethod method =
         new GetMethod(ADVANCEDSEARCH_API_ENDPOINT + "/" + ADVANCED_SEARCH_UUID);
@@ -50,13 +53,15 @@ public class AdvancedSearchApiTest extends AbstractRestApiTest {
     // This Advanced Search only covers one Collection.
     assertEquals(1, result.get("collections").size());
 
-    // This Advanced Search has 13 controls.
+    // This Advanced Search has 13 controls and none of them is the control type of `unknown`.
     assertEquals(13, result.get("controls").size());
     result
         .get("controls")
         .forEach(
             control -> {
-              assertNotNull(control.get("controlType"));
+              String controlType = control.get("controlType").asText();
+              assertNotNull(controlType);
+              assertNotEquals("unknown", controlType);
             });
   }
 
