@@ -25,7 +25,7 @@ import com.tle.common.i18n.{LangUtils}
 import com.tle.web.api.language.LanguageStringHelper.getStringFromCurrentLocale
 import scala.collection.JavaConverters._
 
-/** Data structure for Wizard Control option
+/** Data structure representing an option provided by a 'Option' type control such as CheckBox Group and Shuffle List.
   *
   * @param text Text of the option. None in some components like Calendar.
   * @param value  Value of the option.
@@ -41,8 +41,16 @@ object WizardControlOption {
   }
 }
 
+/**
+  * Common properties for controlling unique value. Typically used in text editing type controls like EditBox.
+  *
+  * @param isForceUnique Whether each value must be unique.
+  * @param isCheckDuplication Whether to check duplicated values.
+  */
+case class ControlUniqueConstraints(isForceUnique: Boolean, isCheckDuplication: Boolean)
+
 // This trait is used to support the union type of different Wizard control types.
-// We can probably remove it trait once we can use Scala 3.
+// We can probably remove it once we can use Scala 3.
 sealed trait WizardControlDefinition
 
 /**
@@ -50,16 +58,16 @@ sealed trait WizardControlDefinition
   *
   * @param mandatory Whether the control must have a value.
   * @param reload Whether to reload all controls after this control has different selection. This may affect how scripting works.
-  * @param include #todo
-  * @param size1 #todo
-  * @param size2 #todo
-  * @param customName The controls' customised name.
+  * @param include Whether the control is selectable in Admin Console Advanced Search editor.
+  * @param size1 Number of columns typically used in Radio Button groups and Checkbox groups.
+  * @param size2 Number of rows typically used in EditBox.
+  * @param customName The controls' customised name which is used in the Admin Console.
   * @param title Title of the control.
   * @param description Description of the control.
-  * @param visibilityScript Script running on Client to control the visibility of the control.
+  * @param visibilityScript Script which controls the visibility of the control. (Commonly run when rendering control.)
   * @param targetNodes Schema nodes that the control targets to.
   * @param options Options available for selection.
-  * @param powerSearchFriendlyName #todo
+  * @param powerSearchFriendlyName Text displayed in the criteria summary instead of the Schema node.
   * @param controlType Type of the control.
   */
 case class WizardBasicControl(
@@ -102,7 +110,8 @@ object WizardBasicControl {
   * Data structure for Calendar control.
   *
   * @param basicControl The basic control providing common fields.
-  * @param isRange Whether to support a date range.
+  * @param isRange Whether to support a date range. If false, should only display a single calendar control and supply a single date value.
+  *                 However if true, two controls should be displayed with the values from both representing a range.
   */
 case class WizardCalendarControl(@JsonUnwrapped
                                  basicControl: WizardBasicControl,
@@ -113,16 +122,14 @@ case class WizardCalendarControl(@JsonUnwrapped
   * Data structure for ShuffleList control.
   *
   * @param basicControl The basic control providing common fields.
-  * @param isTokenise Whether to tokenise the value.
-  * @param isForceUnique Whether each value must be unique.
-  * @param isCheckDuplication Whether to check duplicated values.
+  * @param isTokenise Whether to tokenise the value. If true, an '*' must be appended to the schema node in the Lucene query.
   */
 case class WizardShuffleListControl(
     @JsonUnwrapped
     basicControl: WizardBasicControl,
+    @JsonUnwrapped
+    uniqueConstraints: ControlUniqueConstraints,
     isTokenise: Boolean,
-    isForceUnique: Boolean,
-    isCheckDuplication: Boolean
 ) extends WizardControlDefinition
 
 /**
@@ -131,9 +138,7 @@ case class WizardShuffleListControl(
   * @param basicControl The basic control providing common fields.
   * @param isAllowLinks Whether to allow links.
   * @param isNumber Whether to use numbers only.
-  * @param isAllowMultiLang Whether to allow multiple lines.
-  * @param isForceUnique Whether each value must be unique.
-  * @param isCheckDuplication Whether to check duplicated values.
+  * @param isAllowMultiLang Whether to support multiple languages.
   */
 case class WizardEditBoxControl(
     @JsonUnwrapped
@@ -141,20 +146,20 @@ case class WizardEditBoxControl(
     isAllowLinks: Boolean,
     isNumber: Boolean,
     isAllowMultiLang: Boolean,
-    isForceUnique: Boolean,
-    isCheckDuplication: Boolean,
+    @JsonUnwrapped
+    uniqueConstraints: ControlUniqueConstraints,
 ) extends WizardControlDefinition
 
 /**
-  * Data structure for Custom Wizard control.
+  * Data structure for Custom Wizard control such as Term Selector and Owner Selector.
   *
   * @param basicControl The basic control providing common fields.
-  * @param attributes Custom attributes
+  * @param attributes A map where keys and values represent configurations that are specific to a certain type of CustomControl.
   */
 case class WizardCustomControl(
     @JsonUnwrapped
     basicControl: WizardBasicControl,
-    attributes: Map[Object, Object]
+    attributes: Map[String, Object]
 ) extends WizardControlDefinition
 
 /**

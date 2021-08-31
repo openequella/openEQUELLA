@@ -68,7 +68,8 @@ class AdvancedSearchResource {
   @Path("{uuid}")
   @ApiOperation(
     value = "Get Advanced Search definition",
-    notes = "This endpoint is used to retrieve Wizard definition of an Advanced Search by UUID.",
+    notes =
+      "This endpoint is used to retrieve an Advanced Search's name, description, Collections and Wizard definition by UUID.",
     response = classOf[AdvancedSearch],
   )
   def getAdvancedSearchWizardDefinition(@PathParam("uuid") uuid: String): Response = {

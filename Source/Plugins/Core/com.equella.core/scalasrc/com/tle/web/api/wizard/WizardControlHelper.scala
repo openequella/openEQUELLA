@@ -50,18 +50,20 @@ object WizardControlHelper {
       case c: Calendar => WizardCalendarControl(WizardBasicControl(c), c.isRange)
       case c: ShuffleList =>
         WizardShuffleListControl(WizardBasicControl(c),
-                                 c.isTokenise,
-                                 c.isForceUnique,
-                                 c.isCheckDuplication)
+                                 ControlUniqueConstraints(c.isForceUnique, c.isCheckDuplication),
+                                 c.isTokenise)
       case c: EditBox =>
         WizardEditBoxControl(WizardBasicControl(c),
                              c.isAllowLinks,
                              c.isNumber,
                              c.isAllowMultiLang,
-                             c.isForceUnique,
-                             c.isCheckDuplication)
+                             ControlUniqueConstraints(c.isForceUnique, c.isCheckDuplication))
       case c: CustomControl =>
-        WizardCustomControl(WizardBasicControl(c), c.getAttributes.asScala.toMap)
+        // The attribute map in Java is (Object -> Object), but all the keys are actually String, so
+        // here we convert the map to (String -> Object) by calling `toString`.
+        val attributes: Map[Object, Object] = c.getAttributes.asScala.toMap
+        val convertedAttributes             = attributes.map { case (key, value) => (key.toString -> value) }
+        WizardCustomControl(WizardBasicControl(c), convertedAttributes)
       case _ =>
         LOGGER.error("Unknown Wizard Control type")
         UnknownWizardControl()
