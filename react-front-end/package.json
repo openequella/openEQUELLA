@@ -108,6 +108,6 @@
     "parcel-bundler": "1.12.5",
     "rewire": "5.0.0",
     "ts-jest": "27.0.5",
-    "typescript": "4.3.5"
+    "typescript": "4.4.2"
   }
 }
