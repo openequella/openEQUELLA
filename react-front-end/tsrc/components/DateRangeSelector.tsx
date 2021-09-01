@@ -162,7 +162,7 @@ export const DateRangeSelector = ({
     return new Map([
       [today, now],
       [lastSevenDays, now.minus({ days: 7 })],
-      [lastMonth, now.minus({ month: 1 })],
+      [lastMonth, now.minus({ months: 1 })],
       [thisYear, DateTime.local(now.year)],
       [all, undefined],
     ]);
