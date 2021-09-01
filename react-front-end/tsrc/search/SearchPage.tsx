@@ -133,7 +133,15 @@ export const SearchPageRenderErrorContext = React.createContext<{
   handleError: () => {},
 });
 
-const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
+interface SearchPageProps extends TemplateUpdateProps {
+  /**
+   * ID of the currently selected Advanced Search. When it's defined, the component is in
+   * Advanced Search mode, or normal Search page mode otherwise.
+   */
+  advancedSearchId?: string;
+}
+
+const SearchPage = ({ updateTemplate }: SearchPageProps) => {
   const history = useHistory();
   const location = useLocation();
 
@@ -666,7 +674,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       component: (
         <AuxiliarySearchSelector
           auxiliarySearchesSupplier={getAdvancedSearchesFromServer}
-          urlGeneratorForRouteLink={routes.AdvancedSearch.to}
+          urlGeneratorForRouteLink={routes.NewAdvancedSearch.to}
           urlGeneratorForMuiLink={buildSelectionSessionAdvancedSearchLink}
         />
       ),

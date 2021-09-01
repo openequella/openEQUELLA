@@ -270,7 +270,7 @@ export const buildSelectionSessionRemoteSearchLink = (uuid: string): string =>
  * @param uuid The UUID of an Advanced search
  */
 export const buildSelectionSessionAdvancedSearchLink = (uuid: string): string =>
-  buildSelectionSessionLink(routes.AdvancedSearch.to(uuid));
+  buildSelectionSessionLink(routes.OldAdvancedSearch.to(uuid));
 
 /**
  * Update the content of DIV "selection-summary". This function is primarily for

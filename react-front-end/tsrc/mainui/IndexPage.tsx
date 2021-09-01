@@ -153,44 +153,7 @@ export default function IndexPage() {
   const routeSwitch = () => {
     const oldSearchPagePath = "/searching.do";
     const newSearchPagePath = "/page/search";
-
-    /**
-     * Determine whether the **new** search page or the **old/legacy** search page should be
-     * displayed. This is based on the requested path (route) as well as the request params.
-     * This is somewhat complicated due to the need to support shared searches from legacy UI, and
-     * the need to support Advanced Searches in legacy UI which are accessed via `searching.do`.
-     *
-     * (In the future, when all is New UI, this will not be needed.)
-     *
-     * The truth table would look like:
-     *
-     * - path is `newSearchPagePath` : true
-     * - path is **not** `newSearchPagePath` but New Search is enabled and there are no advanced
-     *   search params : true
-     * - path is **not** `newSearchPagePath` but New Search is enabled and there **are** advanced
-     *   search params : false
-     * - and anything else : false
-     *
-     * @param location the applicable `window.location` state
-     * @return `true` for new, or `false` for old
-     */
-    const newOrOldSearch = (location: Location): boolean => {
-      const currentParams = new URLSearchParams(location.search);
-      const currentPath = location.pathname;
-
-      const advancedSearchParamsPresent: boolean =
-        currentParams.get("in")?.startsWith("P") ?? false;
-      const advancedSearchRequested: boolean =
-        currentPath.endsWith(oldSearchPagePath) && advancedSearchParamsPresent;
-      // TODO: Before we release 2021.1 this can be removed, as the 'newSearch' toggle will be removed
-      const newSearchEnabled: boolean =
-        typeof renderData !== "undefined" && renderData?.newSearch;
-
-      return (
-        currentPath.match(newSearchPagePath) !== null ||
-        (newSearchEnabled && !advancedSearchRequested)
-      );
-    };
+    const newAdvancedSearchPagePath = "/page/advancedsearch/";
 
     const renderLegacyContent = (p: RouteComponentProps) => {
       return (
@@ -204,6 +167,27 @@ export default function IndexPage() {
       );
     };
 
+    // If the URL is the new Advanced Search path, get ID from the path.
+    // If it's the old one, get ID from query param.
+    const getAdvancedSearchIdFromLocation = (
+      location: Location
+    ): string | undefined => {
+      if (location.pathname.match(newAdvancedSearchPagePath)) {
+        const advancedSearchPagePath = /(.+)(\/page\/advancedsearch\/)(.+)/;
+        // The third group is the UUID, and use `reverse` to destructure the array.
+        const [advancedSearchId] =
+          window.location.pathname.match(advancedSearchPagePath)?.reverse() ??
+          [];
+
+        return advancedSearchId;
+      }
+
+      const currentParams = new URLSearchParams(location.search);
+      const legacyAdvancedSearchId = currentParams.get("in");
+      return legacyAdvancedSearchId?.startsWith("P")
+        ? legacyAdvancedSearchId.substring(1)
+        : undefined;
+    };
     return (
       <Switch>
         {fullPageError && (
@@ -216,14 +200,21 @@ export default function IndexPage() {
         </Route>
         {newUIRoutes}
         <Route
-          path={[newSearchPagePath, oldSearchPagePath]}
+          path={[
+            oldSearchPagePath,
+            newSearchPagePath,
+            newAdvancedSearchPagePath,
+          ]}
           render={(p) => {
-            if (newOrOldSearch(window.location)) {
-              removeLegacyCss();
-              return <SearchPage {...mkRouteProps(p)} />;
-            }
-
-            return renderLegacyContent(p);
+            removeLegacyCss();
+            return (
+              <SearchPage
+                {...mkRouteProps(p)}
+                advancedSearchId={getAdvancedSearchIdFromLocation(
+                  window.location
+                )}
+              />
+            );
           }}
         />
         <Route render={renderLegacyContent} />

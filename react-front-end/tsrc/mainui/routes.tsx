@@ -62,7 +62,8 @@ interface OEQRouteTo<T = string | ToFunc | ToVersionFunc> {
 }
 
 interface Routes {
-  AdvancedSearch: OEQRouteTo<ToFunc>;
+  OldAdvancedSearch: OEQRouteTo<ToFunc>; // Need this route to support using Advanced Search in Selection Session.
+  NewAdvancedSearch: OEQRouteTo<ToFunc>;
   CloudProviders: OEQRouteNewUI;
   ContentIndexSettings: OEQRouteNewUI;
   FacetedSearchSetting: OEQRouteNewUI;
@@ -103,8 +104,11 @@ export const legacyPageUrl = (to?: string | ToFunc | ToVersionFunc): string => {
 };
 
 export const routes: Routes = {
-  AdvancedSearch: {
+  OldAdvancedSearch: {
     to: (uuid: string) => `/advanced/searching.do?in=P${uuid}&editquery=true`,
+  },
+  NewAdvancedSearch: {
+    to: (uuid: string) => `/page/advancedsearch/${uuid}`,
   },
   CloudProviders: {
     path: "/page/cloudprovider",
