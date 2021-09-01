@@ -206,15 +206,21 @@ export default function IndexPage() {
             newAdvancedSearchPagePath,
           ]}
           render={(p) => {
-            removeLegacyCss();
-            return (
-              <SearchPage
-                {...mkRouteProps(p)}
-                advancedSearchId={getAdvancedSearchIdFromLocation(
-                  window.location
-                )}
-              />
-            );
+            const newSearchEnabled: boolean =
+              typeof renderData !== "undefined" && renderData?.newSearch;
+
+            if (newSearchEnabled) {
+              removeLegacyCss();
+              return (
+                <SearchPage
+                  {...mkRouteProps(p)}
+                  advancedSearchId={getAdvancedSearchIdFromLocation(
+                    window.location
+                  )}
+                />
+              );
+            }
+            return renderLegacyContent(p);
           }}
         />
         <Route render={renderLegacyContent} />
