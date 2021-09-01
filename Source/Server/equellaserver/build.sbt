@@ -62,7 +62,7 @@ libraryDependencies ++= Seq(
   "com.google.api-client" % "google-api-client"           % "1.32.1",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20201021-1.32.1",
   "com.google.apis"       % "google-api-services-youtube" % "v3-rev20210811-1.32.1",
-  "com.google.code.gson"  % "gson"                        % "2.8.7",
+  "com.google.code.gson"  % "gson"                        % "2.8.8",
   "com.google.gdata"      % "core"                        % "1.47.1",
   "com.google.guava"      % "guava"                       % "30.1.1-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
@@ -259,7 +259,7 @@ libraryDependencies ++= Seq(
   "org.scala-sbt"                 %% "io"                       % "1.5.1",
   "org.mozilla"                   % "rhino"                     % "1.7.13",
   "io.lemonlabs"                  %% "scala-uri"                % "1.5.1",
-  "org.scala-lang.modules"        %% "scala-parser-combinators" % "1.1.2",
+  "org.scala-lang.modules"        %% "scala-parser-combinators" % "2.0.0",
   "io.github.classgraph"          % "classgraph"                % "4.8.115",
   "com.fasterxml"                 % "classmate"                 % "1.5.1",
   "org.glassfish"                 % "javax.el"                  % "3.0.1-b12",
