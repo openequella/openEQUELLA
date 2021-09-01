@@ -9,7 +9,7 @@ version := "1.0"
 
 val CirceVersion  = "0.12.1"
 val Http4sVersion = "0.21.8"
-val jsoupVersion  = "1.14.1"
+val jsoupVersion  = "1.14.2"
 
 scalaVersion := "2.12.14"
 scalacOptions += "-Ypartial-unification"
@@ -28,7 +28,7 @@ libraryDependencies ++= Seq(
   "org.http4s"    %% "http4s-blaze-server" % Http4sVersion,
   "org.http4s"    %% "http4s-dsl"          % Http4sVersion,
   "org.http4s"    %% "http4s-circe"        % Http4sVersion,
-  "org.slf4j"     % "slf4j-simple"         % "1.7.31",
+  "org.slf4j"     % "slf4j-simple"         % "1.7.32",
   "org.jsoup"     % "jsoup"                % jsoupVersion,
   "com.nulab-inc" %% "scala-oauth2-core"   % "1.5.0"
 )

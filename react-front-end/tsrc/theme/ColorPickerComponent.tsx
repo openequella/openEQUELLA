@@ -25,7 +25,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import * as React from "react";
 import { useState } from "react";
-import { ColorState, SketchPicker } from "react-color";
+import { ColorResult, SketchPicker } from "react-color";
 import { languageStrings } from "../util/langstrings";
 
 const useStyles = makeStyles({
@@ -54,7 +54,7 @@ const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
   const classes = useStyles();
   const strings = languageStrings.newuisettings.colorPicker;
 
-  const changeHandler = (color: ColorState) => onColorChange(color.hex);
+  const changeHandler = (color: ColorResult) => onColorChange(color.hex);
 
   return (
     <>

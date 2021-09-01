@@ -17,6 +17,14 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import {
+  ATYPE_KALTURA,
+  ATYPE_YOUTUBE,
+} from "../../../tsrc/modules/AttachmentsModule";
+import {
+  CustomMimeTypes,
+  getMimeTypeDefaultViewerDetails,
+} from "../../../tsrc/modules/MimeTypesModule";
+import {
   buildAttachmentsAndViewerDefinitions,
   buildViewerConfigForAttachments,
   determineAttachmentViewUrl,
@@ -112,6 +120,24 @@ describe("determineViewer()", () => {
           mimeTypeViewerId
         )
       ).toEqual(["lightbox", fileViewUrl])
+  );
+
+  it.each([
+    [ATYPE_KALTURA, CustomMimeTypes.KALTURA],
+    [ATYPE_YOUTUBE, CustomMimeTypes.YOUTUBE],
+  ])(
+    "determines lightbox for known special attachment types [%s]",
+    async (attachmentType: string, mimeType: string) => {
+      const testUrl = "https://some.url/";
+      expect(
+        determineViewer(
+          attachmentType,
+          testUrl,
+          mimeType,
+          (await getMimeTypeDefaultViewerDetails(mimeType)).viewerId
+        )
+      ).toEqual(["lightbox", testUrl]);
+    }
   );
 });
 

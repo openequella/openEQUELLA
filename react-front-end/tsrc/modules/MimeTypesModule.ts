@@ -23,8 +23,10 @@ export const OEQ_MIMETYPE_TYPE = "openequella";
 /**
  * A collection of custom internal MIME types for openEQUELLA
  */
+const customType = (type: string): string => `${OEQ_MIMETYPE_TYPE}/${type}`;
 export const CustomMimeTypes = {
-  YOUTUBE: `${OEQ_MIMETYPE_TYPE}/youtube`,
+  YOUTUBE: customType("youtube"),
+  KALTURA: customType("kaltura"),
 };
 
 export const getMIMETypesFromServer = (): Promise<
@@ -55,7 +57,7 @@ export const getMimeTypeViewerConfiguration: (
 export const getMimeTypeDefaultViewerDetails = async (
   mimeType: string
 ): Promise<OEQ.MimeType.MimeTypeViewerDetail> => {
-  if (mimeType === CustomMimeTypes.YOUTUBE) {
+  if ([CustomMimeTypes.KALTURA, CustomMimeTypes.YOUTUBE].includes(mimeType)) {
     return { viewerId: "htmlFiveViewer" };
   }
 

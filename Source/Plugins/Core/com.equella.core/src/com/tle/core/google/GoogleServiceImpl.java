@@ -22,7 +22,7 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.ChannelListResponse;
@@ -184,7 +184,7 @@ public class GoogleServiceImpl implements GoogleService {
       tubeService =
           new YouTube.Builder(
                   new NetHttpTransport(),
-                  new JacksonFactory(),
+                  new GsonFactory(),
                   new HttpRequestInitializer() {
                     @Override
                     public void initialize(HttpRequest request) throws IOException {

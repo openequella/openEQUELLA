@@ -14,6 +14,7 @@ import org.testng.annotations.Test;
 @TestInstitution("fiveo")
 public class DrmApiTest extends AbstractRestApiTest {
   private final String ITEM_UUID = "ea61a83c-b18b-49e2-8096-e6208776be92";
+  private final String UNAUTHORISED_ITEM_UUID = "73b67c33-aa72-419f-87aa-72d919fcf9f0";
   private final int ITEM_VERSION = 1;
 
   @Override
@@ -31,7 +32,7 @@ public class DrmApiTest extends AbstractRestApiTest {
 
   @Test(description = "Failed to accept DRM terms due to unauthorised")
   public void unauthorised() throws IOException {
-    assertEquals(acceptDrm("73b67c33-aa72-419f-87aa-72d919fcf9f0", ITEM_VERSION), 401);
+    assertEquals(acceptDrm(UNAUTHORISED_ITEM_UUID, ITEM_VERSION), 401);
   }
 
   @Test(description = "Successfully accept DRM terms")
@@ -58,6 +59,22 @@ public class DrmApiTest extends AbstractRestApiTest {
     JsonNode agreements = result.get("agreements");
     assertNotNull(agreements);
     assertNotNull(agreements.get("regularPermission"));
+  }
+
+  @Test(description = "List why the DRM Item is unauthorised to view")
+  public void listDrmViolations() throws IOException {
+    final GetMethod method =
+        new GetMethod(buildEndpointPath(UNAUTHORISED_ITEM_UUID, ITEM_VERSION) + "/violations");
+    int statusCode = makeClientRequest(method);
+    assertEquals(statusCode, 200);
+  }
+
+  @Test(description = "Failed to list DRM violations for authorised Item")
+  public void listViolationsForAuthorisedItem() throws IOException {
+    final GetMethod method =
+        new GetMethod(buildEndpointPath(ITEM_UUID, ITEM_VERSION) + "/violations");
+    int statusCode = makeClientRequest(method);
+    assertEquals(statusCode, 400);
   }
 
   private String buildEndpointPath(String uuid, int version) {

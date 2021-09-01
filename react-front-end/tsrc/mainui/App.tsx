@@ -16,17 +16,18 @@
  * limitations under the License.
  */
 
-import { ReactNode } from "react";
-import * as React from "react";
-import { BrowserRouter } from "react-router-dom";
 import {
-  ThemeProvider,
-  StylesProvider,
   createGenerateClassName,
+  StylesProvider,
+  ThemeProvider,
 } from "@material-ui/core";
+import { pipe } from "fp-ts/function";
+import * as React from "react";
+import { ReactNode } from "react";
+import { BrowserRouter } from "react-router-dom";
 import { oeqTheme } from "../theme";
 import { startHeartbeat } from "../util/heartbeat";
-import { Literal, match } from "runtypes";
+import { simpleMatch } from "../util/match";
 import type { EntryPage } from "./index";
 
 const SettingsPage = React.lazy(() => import("../settings/SettingsPage"));
@@ -73,12 +74,12 @@ interface AppProps {
   entryPage: EntryPage;
 }
 
-const App = ({ entryPage }: AppProps) => {
+const App = ({ entryPage }: AppProps): JSX.Element => {
   const nop = () => {};
-  const renderApp = match(
-    [
-      Literal("mainDiv"),
-      () => {
+  return pipe(
+    entryPage,
+    simpleMatch<JSX.Element>({
+      mainDiv: () => {
         startHeartbeat();
         return (
           <ThemeProvider theme={oeqTheme}>
@@ -86,18 +87,12 @@ const App = ({ entryPage }: AppProps) => {
           </ThemeProvider>
         );
       },
-    ],
-    [
-      Literal("searchPage"),
-      () => (
+      searchPage: () => (
         <NewPage classPrefix="oeq-nsp">
           <SearchPage updateTemplate={nop} />
         </NewPage>
       ),
-    ],
-    [
-      Literal("settingsPage"),
-      () => (
+      settingsPage: () => (
         // When SettingsPage is used in old UI, each route change should trigger a refresh
         // for the whole page because there are no React component matching routes.
         <NewPage classPrefix="oeq-nst" forceRefresh>
@@ -108,9 +103,11 @@ const App = ({ entryPage }: AppProps) => {
           />
         </NewPage>
       ),
-    ]
+      _: (s: string | number) => {
+        throw new TypeError(`Unknown entry page target: ${s}`);
+      },
+    })
   );
-  return renderApp(entryPage);
 };
 
 export default App;

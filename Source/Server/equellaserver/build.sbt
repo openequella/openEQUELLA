@@ -15,9 +15,9 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 (Runtime / unmanagedClasspath) += (LocalProject("learningedge_config") / baseDirectory).value
 
-val RestEasyVersion  = "3.13.2.Final"
+val RestEasyVersion  = "3.15.1.Final"
 val SwaggerVersion   = "1.6.2"
-val TomcatVersion    = "9.0.50"
+val TomcatVersion    = "9.0.52"
 val axis2Version     = "1.6.2"
 val circeVersion     = "0.12.1"
 val cxfVersion       = "3.4.4"
@@ -25,11 +25,11 @@ val fs2Version       = "2.4.4"
 val guiceVersion     = "3.0"
 val jacksonVersion   = "2.11.3"
 val jsassVersion     = "5.10.4"
-val jsoupVersion     = "1.14.1"
+val jsoupVersion     = "1.14.2"
 val simpledbaVersion = "0.1.9"
 val springVersion    = "5.3.9"
 val sttpVersion      = "1.7.2"
-val tikaVersion      = "1.24.1"
+val tikaVersion      = "2.0.0"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -59,12 +59,12 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
-  "com.google.api-client" % "google-api-client"           % "1.30.11",
-  "com.google.apis"       % "google-api-services-books"   % "v1-rev20200925-1.30.10",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20200618-1.30.9",
-  "com.google.code.gson"  % "gson"                        % "2.8.7",
+  "com.google.api-client" % "google-api-client"           % "1.32.1",
+  "com.google.apis"       % "google-api-services-books"   % "v1-rev20201021-1.32.1",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20210811-1.32.1",
+  "com.google.code.gson"  % "gson"                        % "2.8.8",
   "com.google.gdata"      % "core"                        % "1.47.1",
-  "com.google.guava"      % "guava"                       % "18.0",
+  "com.google.guava"      % "guava"                       % "30.1.1-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
     // Due to deduplicates with aopalliance via Spring AOP.
     ExclusionRule(organization = "aopalliance",
@@ -80,7 +80,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "aopalliance",
                   name = "aopalliance")
   ),
-  "com.ibm.icu" % "icu4j" % "4.8.2",
+  "com.ibm.icu" % "icu4j" % "69.1",
   sqlServerDep excludeAll (
     // Conflicts with RESTeasy jakarta.xml.bind-api
     ExclusionRule(organization = "javax.xml.bind"),
@@ -90,12 +90,12 @@ libraryDependencies ++= Seq(
   ),
   "com.miglayout"             % "miglayout-swing"          % "4.2",
   "com.ning"                  % "async-http-client"        % "1.9.40",
-  "com.rometools"             % "rome"                     % "1.15.0",
+  "com.rometools"             % "rome"                     % "1.16.0",
   "io.swagger"                % "swagger-core"             % SwaggerVersion,
   "io.swagger"                % "swagger-annotations"      % SwaggerVersion,
   "io.swagger"                % "swagger-jaxrs"            % SwaggerVersion,
   "io.swagger"                %% "swagger-scala-module"    % "1.0.6",
-  "com.zaxxer"                % "HikariCP"                 % "3.4.5",
+  "com.zaxxer"                % "HikariCP"                 % "4.0.3",
   "commons-beanutils"         % "commons-beanutils"        % "1.9.4",
   "commons-codec"             % "commons-codec"            % "1.15",
   "commons-collections"       % "commons-collections"      % "3.2.2",
@@ -103,7 +103,7 @@ libraryDependencies ++= Seq(
   "commons-daemon"            % "commons-daemon"           % "1.2.4",
   "commons-discovery"         % "commons-discovery"        % "0.5",
   "commons-httpclient"        % "commons-httpclient"       % "3.1",
-  "commons-io"                % "commons-io"               % "2.8.0",
+  "commons-io"                % "commons-io"               % "2.11.0",
   "commons-lang"              % "commons-lang"             % "2.6",
   "dom4j"                     % "dom4j"                    % "1.6.1",
   "com.github.equella.legacy" % "itunesu-api-java"         % "1.7",
@@ -113,7 +113,7 @@ libraryDependencies ++= Seq(
   "javax.mail"                % "mail"                     % "1.4.7",
   "javax.servlet"             % "jstl"                     % "1.2",
   "javax.xml"                 % "jaxrpc"                   % "1.1",
-  "jdom"                      % "jdom"                     % "1.0",
+  "jdom"                      % "jdom"                     % "1.1",
   "com.github.equella.jpf"    % "jpf"                      % "1.0.7",
   "log4j"                     % "log4j"                    % "1.2.17",
   "net.oauth.core"            % "oauth"                    % "20100527",
@@ -125,6 +125,7 @@ libraryDependencies ++= Seq(
   "org.apache.axis2"          % "axis2-adb"                % axis2Version,
   "org.apache.axis2"          % "axis2-transport-http"     % axis2Version,
   "org.apache.axis2"          % "axis2-transport-local"    % axis2Version,
+  "org.apache.commons"        % "commons-compress"         % "1.21",
   "org.apache.curator"        % "curator-client"           % "2.13.0",
   "org.apache.curator"        % "curator-framework"        % "2.13.0",
   "org.apache.curator"        % "curator-recipes"          % "2.13.0",
@@ -178,38 +179,26 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "antlr",
                   name = "antlr")
   ),
-  "org.apache.struts" % "struts-extras" % "1.3.10",
-  "org.apache.struts" % "struts-taglib" % "1.3.10",
-  "org.apache.tika"   % "tika-core"     % tikaVersion,
-  "org.apache.tika"   % "tika-parsers"  % tikaVersion excludeAll (
-    ExclusionRule(
-                  // Due to a deduplication issue with HikariCP-java7-2.4.13 (via tika) and HikariCP-3.4.5
-                  organization = "com.zaxxer",
-                  name = "HikariCP-java7"),
-    ExclusionRule(
-      // Due to a deduplication issue with the first-order CXF dep. (tika @ 1.24.1 pulls in cxf 3.3.6).
-      // oEQ merges all the bus-extensions.txt together, and excluding 3.3.6 here keeps the same version
-      // for all merged bus-extensions.txt files.
-      organization = "org.apache.cxf",
-      name = "cxf-rt-rs-client"
-    )
-  ),
-  "org.apache.tomcat"           % "tomcat-annotations-api" % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-api"             % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-catalina"        % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-catalina-ha"     % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-coyote"          % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-jsp-api"         % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-juli"            % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-servlet-api"     % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-tribes"          % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-util"            % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-util-scan"       % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-ssi"             % TomcatVersion,
-  "org.apache.ws.commons.axiom" % "axiom-api"              % "1.2.15",
-  "org.apache.ws.commons.axiom" % "axiom-impl"             % "1.2.15",
-  "org.apache.ws.security"      % "wss4j"                  % "1.6.19",
-  "org.apache.zookeeper"        % "zookeeper"              % "3.4.6" excludeAll (
+  "org.apache.struts"           % "struts-extras"                 % "1.3.10",
+  "org.apache.struts"           % "struts-taglib"                 % "1.3.10",
+  "org.apache.tika"             % "tika-core"                     % tikaVersion,
+  "org.apache.tika"             % "tika-parsers-standard-package" % tikaVersion,
+  "org.apache.tomcat"           % "tomcat-annotations-api"        % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-api"                    % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-catalina"               % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-catalina-ha"            % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-coyote"                 % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-jsp-api"                % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-juli"                   % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-servlet-api"            % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-tribes"                 % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-util"                   % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-util-scan"              % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-ssi"                    % TomcatVersion,
+  "org.apache.ws.commons.axiom" % "axiom-api"                     % "1.3.0",
+  "org.apache.ws.commons.axiom" % "axiom-impl"                    % "1.3.0",
+  "org.apache.ws.security"      % "wss4j"                         % "1.6.19",
+  "org.apache.zookeeper"        % "zookeeper"                     % "3.4.6" excludeAll (
     ExclusionRule(organization = "org.slf4j",
                   name = "slf4j-log4j12")
   ),
@@ -231,9 +220,9 @@ libraryDependencies ++= Seq(
   "org.jboss.logging"               % "jboss-logging-processor"        % "2.2.1.Final",
   "org.reactivestreams"             % "reactive-streams"               % "1.0.3",
   // Upgraded to 2.0.1.Final due to a deduplication issue with jakarta.ws.rs-api
-  "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"     % "2.0.1.Final",
-  "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api" % "1.4.1",
-  "org.eclipse.microprofile.config"      % "microprofile-config-api"      % "1.4",
+  "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"     % "2.0.2.Final",
+  "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api" % "2.0",
+  "org.eclipse.microprofile.config"      % "microprofile-config-api"      % "2.0",
   "javax.json.bind"                      % "javax.json.bind-api"          % "1.0",
   "org.jsoup"                            % "jsoup"                        % jsoupVersion,
   xstreamDep,
@@ -243,9 +232,9 @@ libraryDependencies ++= Seq(
   "org.ow2.asm" % "asm" % "5.2",
   postgresDep,
   "org.scannotation"    % "scannotation"           % "1.0.3",
-  "org.slf4j"           % "jcl-over-slf4j"         % "1.7.31",
-  "org.slf4j"           % "slf4j-api"              % "1.7.31",
-  "org.slf4j"           % "slf4j-log4j12"          % "1.7.31",
+  "org.slf4j"           % "jcl-over-slf4j"         % "1.7.32",
+  "org.slf4j"           % "slf4j-api"              % "1.7.32",
+  "org.slf4j"           % "slf4j-log4j12"          % "1.7.32",
   "org.springframework" % "spring-aop"             % springVersion,
   "org.springframework" % "spring-context"         % springVersion,
   "org.springframework" % "spring-context-support" % springVersion excludeAll (
@@ -267,11 +256,11 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "net.sf.saxon")
   ),
   "xml-resolver"                  % "xml-resolver"              % "1.2",
-  "org.scala-sbt"                 %% "io"                       % "1.3.4",
+  "org.scala-sbt"                 %% "io"                       % "1.5.1",
   "org.mozilla"                   % "rhino"                     % "1.7.13",
   "io.lemonlabs"                  %% "scala-uri"                % "1.5.1",
-  "org.scala-lang.modules"        %% "scala-parser-combinators" % "1.1.2",
-  "io.github.classgraph"          % "classgraph"                % "4.8.110",
+  "org.scala-lang.modules"        %% "scala-parser-combinators" % "2.0.0",
+  "io.github.classgraph"          % "classgraph"                % "4.8.115",
   "com.fasterxml"                 % "classmate"                 % "1.5.1",
   "org.glassfish"                 % "javax.el"                  % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"    % "3.0.0",
@@ -366,6 +355,7 @@ run := {
 (assembly / fullClasspath) := (Compile / fullClasspath).value
 
 (assembly / assemblyMergeStrategy) := {
+  case PathList("META-INF", "jdom-info.xml")                => MergeStrategy.first
   case PathList("META-INF", "axiom.xml")                    => MergeStrategy.first
   case PathList("javax", "wsdl", _*)                        => MergeStrategy.last
   case PathList("com", "ibm", "wsdl", _*)                   => MergeStrategy.first
@@ -382,6 +372,10 @@ run := {
   case PathList("junit", _*)                                => MergeStrategy.discard
   case PathList("org", "apache", "axis2", "transport", "http", "util", "ComplexPart.class") =>
     MergeStrategy.first
+  // Three duplicate classes caused by upgrading tika to version 2.
+  case PathList("org", "slf4j", "impl", "StaticMDCBinder.class")    => MergeStrategy.first
+  case PathList("org", "slf4j", "impl", "StaticLoggerBinder.class") => MergeStrategy.first
+  case PathList("org", "slf4j", "impl", "StaticMarkerBinder.class") => MergeStrategy.first
 
   // Due to the error: deduplicate: different file contents found in the following:
   // ...

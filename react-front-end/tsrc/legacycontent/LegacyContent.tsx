@@ -25,7 +25,7 @@ import {
   fromAxiosResponse,
   generateFromError,
 } from "../api/errors";
-import { API_BASE_URL } from "../AppConfig";
+import { LEGACY_CSS_URL } from "../AppConfig";
 import { BaseOEQRouteComponentProps } from "../mainui/routes";
 import {
   templateDefaults,
@@ -402,7 +402,7 @@ function updateStylesheets(
 ): Promise<{ [url: string]: HTMLLinkElement }> {
   const sheets = _sheets
     ? _sheets.map(resolveUrl)
-    : [resolveUrl(`${API_BASE_URL}/theme/legacy.css`)];
+    : [resolveUrl(LEGACY_CSS_URL)];
   const doc = window.document;
   const insertPoint = doc.getElementById("_dynamicInsert");
   const head = doc.getElementsByTagName("head")[0];
