@@ -138,15 +138,18 @@ export const SearchResultAttachmentsList = ({
       return;
     }
 
+    const stringGetViewerDetailsFailure =
+      languageStrings.searchpage.searchResult.errors
+        .getAttachmentViewerDetailsFailure;
+
     // A wrapper for 'getViewerDetails' to ensure it returns a rejected promise with proper error message
     // rather than throws an error.
     const viewerDetails = async (mimeType: string) => {
       try {
         return getViewerDetails(mimeType);
       } catch (error) {
-        throw new Error(
-          `${languageStrings.searchpage.searchResult.errors.getAttachmentViewerDetailsFailure}: ${error.message}`
-        );
+        const cause = error instanceof Error ? `: ${error.message}` : "";
+        throw new Error(`${stringGetViewerDetailsFailure}: ${cause}`);
       }
     };
 
@@ -163,7 +166,11 @@ export const SearchResultAttachmentsList = ({
           setAttachmentsAndViewerConfigs(attachmentsAndViewerDefinitions);
         }
       } catch (error) {
-        handleError(new Error(error));
+        handleError(
+          error instanceof Error
+            ? error
+            : new Error(`${stringGetViewerDetailsFailure}: ${error}`)
+        );
       }
     })();
 

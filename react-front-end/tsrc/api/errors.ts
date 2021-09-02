@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 import { AxiosError, AxiosResponse } from "axios";
-import { languageStrings } from "../util/langstrings";
 import { v4 } from "uuid";
+import { languageStrings } from "../util/langstrings";
 
 export interface ErrorResponse {
   id: string;
@@ -46,6 +46,10 @@ export const generateFromError = (error: Error): ErrorResponse => {
     error_description: error.message,
   };
 };
+
+export const isAxiosError = (error: unknown): error is AxiosError =>
+  (error as AxiosError).response !== undefined &&
+  (error as AxiosError).response?.status !== undefined;
 
 // For handling standard errors - permissions, 404s, etc.
 export function fromAxiosError(error: AxiosError): ErrorResponse {
