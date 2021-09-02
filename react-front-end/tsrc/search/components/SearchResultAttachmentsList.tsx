@@ -148,7 +148,8 @@ export const SearchResultAttachmentsList = ({
       try {
         return getViewerDetails(mimeType);
       } catch (error) {
-        const cause = error instanceof Error ? `: ${error.message}` : "";
+        const cause =
+          error instanceof Error ? error.message : (error as string);
         throw new Error(`${stringGetViewerDetailsFailure}: ${cause}`);
       }
     };
