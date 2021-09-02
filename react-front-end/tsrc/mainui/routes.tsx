@@ -62,7 +62,8 @@ interface OEQRouteTo<T = string | ToFunc | ToVersionFunc> {
 }
 
 interface Routes {
-  AdvancedSearch: OEQRouteTo<ToFunc>;
+  OldAdvancedSearch: OEQRouteTo<ToFunc>; // Need this route to support using Advanced Search in Selection Session.
+  NewAdvancedSearch: OEQRouteTo<ToFunc>;
   CloudProviders: OEQRouteNewUI;
   ContentIndexSettings: OEQRouteNewUI;
   FacetedSearchSetting: OEQRouteNewUI;
@@ -102,9 +103,18 @@ export const legacyPageUrl = (to?: string | ToFunc | ToVersionFunc): string => {
   throw new TypeError("Expected legacy page URL is undefined");
 };
 
+// The component of Search UI varies, depending on the path and whether New Search UI is enabled.
+// So only export their paths.
+export const OLD_SEARCH_PATH = "/searching.do";
+export const NEW_SEARCH_PATH = "/page/search";
+export const NEW_ADVANCED_SEARCH_PATH = "/page/advancedsearch";
+
 export const routes: Routes = {
-  AdvancedSearch: {
+  OldAdvancedSearch: {
     to: (uuid: string) => `/advanced/searching.do?in=P${uuid}&editquery=true`,
+  },
+  NewAdvancedSearch: {
+    to: (uuid: string) => `${NEW_ADVANCED_SEARCH_PATH}/${uuid}`,
   },
   CloudProviders: {
     path: "/page/cloudprovider",

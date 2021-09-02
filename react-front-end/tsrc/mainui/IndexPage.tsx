@@ -29,13 +29,17 @@ import { shallowEqual } from "shallow-equal-object";
 import { ErrorResponse } from "../api/errors";
 import { getRenderData, getRouterBaseName, LEGACY_CSS_URL } from "../AppConfig";
 import { LegacyContent } from "../legacycontent/LegacyContent";
+import { getAdvancedSearchIdFromLocation } from "../modules/AdvancedSearchModule";
 import { getCurrentUserDetails } from "../modules/UserModule";
 import ErrorPage from "./ErrorPage";
 import { defaultNavMessage, NavAwayDialog } from "./PreventNavigation";
 import {
   BaseOEQRouteComponentProps,
   isNewUIRoute,
+  NEW_ADVANCED_SEARCH_PATH,
+  NEW_SEARCH_PATH,
   OEQRouteNewUI,
+  OLD_SEARCH_PATH,
   routes,
 } from "./routes";
 import { Template, TemplateProps, TemplateUpdate } from "./Template";
@@ -151,47 +155,6 @@ export default function IndexPage() {
   }, []);
 
   const routeSwitch = () => {
-    const oldSearchPagePath = "/searching.do";
-    const newSearchPagePath = "/page/search";
-
-    /**
-     * Determine whether the **new** search page or the **old/legacy** search page should be
-     * displayed. This is based on the requested path (route) as well as the request params.
-     * This is somewhat complicated due to the need to support shared searches from legacy UI, and
-     * the need to support Advanced Searches in legacy UI which are accessed via `searching.do`.
-     *
-     * (In the future, when all is New UI, this will not be needed.)
-     *
-     * The truth table would look like:
-     *
-     * - path is `newSearchPagePath` : true
-     * - path is **not** `newSearchPagePath` but New Search is enabled and there are no advanced
-     *   search params : true
-     * - path is **not** `newSearchPagePath` but New Search is enabled and there **are** advanced
-     *   search params : false
-     * - and anything else : false
-     *
-     * @param location the applicable `window.location` state
-     * @return `true` for new, or `false` for old
-     */
-    const newOrOldSearch = (location: Location): boolean => {
-      const currentParams = new URLSearchParams(location.search);
-      const currentPath = location.pathname;
-
-      const advancedSearchParamsPresent: boolean =
-        currentParams.get("in")?.startsWith("P") ?? false;
-      const advancedSearchRequested: boolean =
-        currentPath.endsWith(oldSearchPagePath) && advancedSearchParamsPresent;
-      // TODO: Before we release 2021.1 this can be removed, as the 'newSearch' toggle will be removed
-      const newSearchEnabled: boolean =
-        typeof renderData !== "undefined" && renderData?.newSearch;
-
-      return (
-        currentPath.match(newSearchPagePath) !== null ||
-        (newSearchEnabled && !advancedSearchRequested)
-      );
-    };
-
     const renderLegacyContent = (p: RouteComponentProps) => {
       return (
         <LegacyContent
@@ -216,14 +179,24 @@ export default function IndexPage() {
         </Route>
         {newUIRoutes}
         <Route
-          path={[newSearchPagePath, oldSearchPagePath]}
+          path={[NEW_SEARCH_PATH, OLD_SEARCH_PATH, NEW_ADVANCED_SEARCH_PATH]}
           render={(p) => {
-            if (newOrOldSearch(window.location)) {
-              removeLegacyCss();
-              return <SearchPage {...mkRouteProps(p)} />;
-            }
+            const newSearchEnabled: boolean =
+              typeof renderData !== "undefined" && renderData?.newSearch;
+            const location = window.location;
 
-            return renderLegacyContent(p);
+            // If the path matches the Old Search UI path and new Search UI is disabled, use `LegacyContent`.
+            // In other situations, use `SearchPage`.
+            if (location.pathname.match(OLD_SEARCH_PATH) && !newSearchEnabled) {
+              return renderLegacyContent(p);
+            }
+            removeLegacyCss();
+            return (
+              <SearchPage
+                {...mkRouteProps(p)}
+                advancedSearchId={getAdvancedSearchIdFromLocation(location)}
+              />
+            );
           }}
         />
         <Route render={renderLegacyContent} />
