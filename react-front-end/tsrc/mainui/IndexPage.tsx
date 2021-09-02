@@ -36,10 +36,10 @@ import { defaultNavMessage, NavAwayDialog } from "./PreventNavigation";
 import {
   BaseOEQRouteComponentProps,
   isNewUIRoute,
-  NEW_ADVANCED_SEARCH_PATH_PATH,
-  NEW_SEARCH_PATH_PATH,
+  NEW_ADVANCED_SEARCH_PATH,
+  NEW_SEARCH_PATH,
   OEQRouteNewUI,
-  OLD_SEARCH_PATH_PATH,
+  OLD_SEARCH_PATH,
   routes,
 } from "./routes";
 import { Template, TemplateProps, TemplateUpdate } from "./Template";
@@ -179,34 +179,24 @@ export default function IndexPage() {
         </Route>
         {newUIRoutes}
         <Route
-          path={[
-            NEW_SEARCH_PATH_PATH,
-            OLD_SEARCH_PATH_PATH,
-            NEW_ADVANCED_SEARCH_PATH_PATH,
-          ]}
+          path={[NEW_SEARCH_PATH, OLD_SEARCH_PATH, NEW_ADVANCED_SEARCH_PATH]}
           render={(p) => {
             const newSearchEnabled: boolean =
               typeof renderData !== "undefined" && renderData?.newSearch;
             const location = window.location;
 
-            // If the path matches new Search page path, use `SearchPage`.
-            // If the path matches old Search page path or new Advanced search path, and new
-            // Search UI is enabled, use `SearchPage`.
-            // Use `LegacyContent` for others.
-            if (
-              location.pathname.match(NEW_SEARCH_PATH_PATH) ||
-              newSearchEnabled
-            ) {
-              removeLegacyCss();
-              return (
-                <SearchPage
-                  {...mkRouteProps(p)}
-                  advancedSearchId={getAdvancedSearchIdFromLocation(location)}
-                />
-              );
+            // If the path matches the Old Search UI path and new Search UI is disabled, use `LegacyContent`.
+            // In other situations, use `SearchPage`.
+            if (location.pathname.match(OLD_SEARCH_PATH) && !newSearchEnabled) {
+              return renderLegacyContent(p);
             }
-
-            return renderLegacyContent(p);
+            removeLegacyCss();
+            return (
+              <SearchPage
+                {...mkRouteProps(p)}
+                advancedSearchId={getAdvancedSearchIdFromLocation(location)}
+              />
+            );
           }}
         />
         <Route render={renderLegacyContent} />

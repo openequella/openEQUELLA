@@ -103,12 +103,18 @@ export const legacyPageUrl = (to?: string | ToFunc | ToVersionFunc): string => {
   throw new TypeError("Expected legacy page URL is undefined");
 };
 
+// The component of Search UI varies, depending on the path and whether New Search UI is enabled.
+// So only export their paths.
+export const OLD_SEARCH_PATH = "/searching.do";
+export const NEW_SEARCH_PATH = "/page/search";
+export const NEW_ADVANCED_SEARCH_PATH = "/page/advancedsearch";
+
 export const routes: Routes = {
   OldAdvancedSearch: {
     to: (uuid: string) => `/advanced/searching.do?in=P${uuid}&editquery=true`,
   },
   NewAdvancedSearch: {
-    to: (uuid: string) => `/page/advancedsearch/${uuid}`,
+    to: (uuid: string) => `${NEW_ADVANCED_SEARCH_PATH}/${uuid}`,
   },
   CloudProviders: {
     path: "/page/cloudprovider",
@@ -164,9 +170,3 @@ export const routes: Routes = {
     to: (uuid: string, version: number) => `/items/${uuid}/${version}/`,
   },
 };
-
-// The component of Search UI varies, depending on the path and whether New Search UI is enabled.
-// So only export their paths.
-export const OLD_SEARCH_PATH_PATH = "/searching.do";
-export const NEW_SEARCH_PATH_PATH = "/page/search";
-export const NEW_ADVANCED_SEARCH_PATH_PATH = "/page/advancedsearch/";
