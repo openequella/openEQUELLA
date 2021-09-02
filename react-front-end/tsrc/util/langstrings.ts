@@ -413,6 +413,9 @@ export const languageStrings = {
     showAdvancedSearchFilter: "Show advanced search filter",
     deadAttachmentWarning:
       "This attachment appears to be broken or inaccessible.",
+    AdvancedSearchPanel: {
+      title: "Advanced Search",
+    },
     displayModeSelector: {
       title: "Display mode",
       modeItemList: "Item List",
