@@ -18,15 +18,15 @@
 import Axios from "axios";
 
 import {
-  ControlApi,
-  ItemCommand,
-  CloudControlRegister,
-  ControlParameters,
-  ItemState,
-  ItemCommandResponse,
   Attachment,
-  FileEntries,
+  CloudControlRegister,
+  ControlApi,
+  ControlParameters,
   ControlValidator,
+  FileEntries,
+  ItemCommand,
+  ItemCommandResponse,
+  ItemState,
 } from "oeq-cloudproviders/controls";
 
 const wgxpath = require("wicked-good-xpath");
@@ -294,7 +294,9 @@ export const CloudControl: CloudControlRegisterImpl = {
         stateVersion: state.stateVersion,
       });
     } catch (err) {
-      currentPromises.forEach((p) => p.rejected(err));
+      const _err =
+        err instanceof Error ? err : new Error("sendBatch() failed: " + err);
+      currentPromises.forEach((p) => p.rejected(_err));
       return state;
     }
   },
