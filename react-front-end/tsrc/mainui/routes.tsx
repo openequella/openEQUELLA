@@ -164,3 +164,9 @@ export const routes: Routes = {
     to: (uuid: string, version: number) => `/items/${uuid}/${version}/`,
   },
 };
+
+// The component of Search UI varies, depending on the path and whether New Search UI is enabled.
+// So only export their paths.
+export const OLD_SEARCH_PATH_PATH = "/searching.do";
+export const NEW_SEARCH_PATH_PATH = "/page/search";
+export const NEW_ADVANCED_SEARCH_PATH_PATH = "/page/advancedsearch/";

@@ -29,13 +29,17 @@ import { shallowEqual } from "shallow-equal-object";
 import { ErrorResponse } from "../api/errors";
 import { getRenderData, getRouterBaseName, LEGACY_CSS_URL } from "../AppConfig";
 import { LegacyContent } from "../legacycontent/LegacyContent";
+import { getAdvancedSearchIdFromLocation } from "../modules/AdvancedSearchModule";
 import { getCurrentUserDetails } from "../modules/UserModule";
 import ErrorPage from "./ErrorPage";
 import { defaultNavMessage, NavAwayDialog } from "./PreventNavigation";
 import {
   BaseOEQRouteComponentProps,
   isNewUIRoute,
+  NEW_ADVANCED_SEARCH_PATH_PATH,
+  NEW_SEARCH_PATH_PATH,
   OEQRouteNewUI,
+  OLD_SEARCH_PATH_PATH,
   routes,
 } from "./routes";
 import { Template, TemplateProps, TemplateUpdate } from "./Template";
@@ -151,10 +155,6 @@ export default function IndexPage() {
   }, []);
 
   const routeSwitch = () => {
-    const oldSearchPagePath = "/searching.do";
-    const newSearchPagePath = "/page/search";
-    const newAdvancedSearchPagePath = "/page/advancedsearch/";
-
     const renderLegacyContent = (p: RouteComponentProps) => {
       return (
         <LegacyContent
@@ -167,27 +167,6 @@ export default function IndexPage() {
       );
     };
 
-    // If the URL is the new Advanced Search path, get ID from the path.
-    // If it's the old one, get ID from query param.
-    const getAdvancedSearchIdFromLocation = (
-      location: Location
-    ): string | undefined => {
-      if (location.pathname.match(newAdvancedSearchPagePath)) {
-        const advancedSearchPagePath = /(.+)(\/page\/advancedsearch\/)(.+)/;
-        // The third group is the UUID, and use `reverse` to destructure the array.
-        const [advancedSearchId] =
-          window.location.pathname.match(advancedSearchPagePath)?.reverse() ??
-          [];
-
-        return advancedSearchId;
-      }
-
-      const currentParams = new URLSearchParams(location.search);
-      const legacyAdvancedSearchId = currentParams.get("in");
-      return legacyAdvancedSearchId?.startsWith("P")
-        ? legacyAdvancedSearchId.substring(1)
-        : undefined;
-    };
     return (
       <Switch>
         {fullPageError && (
@@ -201,16 +180,21 @@ export default function IndexPage() {
         {newUIRoutes}
         <Route
           path={[
-            oldSearchPagePath,
-            newSearchPagePath,
-            newAdvancedSearchPagePath,
+            NEW_SEARCH_PATH_PATH,
+            OLD_SEARCH_PATH_PATH,
+            NEW_ADVANCED_SEARCH_PATH_PATH,
           ]}
           render={(p) => {
             const newSearchEnabled: boolean =
               typeof renderData !== "undefined" && renderData?.newSearch;
             const location = window.location;
+
+            // If the path matches new Search page path, use `SearchPage`.
+            // If the path matches old Search page path or new Advanced search path, and new
+            // Search UI is enabled, use `SearchPage`.
+            // Use `LegacyContent` for others.
             if (
-              location.pathname.match(newSearchPagePath) ||
+              location.pathname.match(NEW_SEARCH_PATH_PATH) ||
               newSearchEnabled
             ) {
               removeLegacyCss();
@@ -221,6 +205,7 @@ export default function IndexPage() {
                 />
               );
             }
+
             return renderLegacyContent(p);
           }}
         />

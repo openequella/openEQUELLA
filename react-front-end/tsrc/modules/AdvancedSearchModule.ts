@@ -29,3 +29,30 @@ export const getAdvancedSearchesFromServer: () => Promise<
   async (): Promise<OEQ.Common.BaseEntitySummary[]> =>
     await OEQ.AdvancedSearch.listAdvancedSearches(API_BASE_URL)
 );
+
+/**
+ * If the URL is the new Advanced Search path, get ID from the path.
+ * If it's the old one, get ID from query param.
+ *
+ * @param location Location of current window.
+ */
+export const getAdvancedSearchIdFromLocation = (
+  location: Location
+): string | undefined => {
+  // Regex of the new Advanced Search page path. The last group is expected to be a UUID. We can use
+  // a more strict regex to ensure it's UUID, but...
+  // For example: /fiveo/page/advancedsearch/c9fd1ae8-0dc1-ab6f-e923-1f195a22d537
+  const advancedSearchPagePath = /(.+)(\/page\/advancedsearch\/)(.+)/;
+  const matches: string[] | null = location.pathname.match(
+    advancedSearchPagePath
+  );
+  if (matches) {
+    return matches.pop() ?? undefined;
+  }
+
+  const currentParams = new URLSearchParams(location.search);
+  const legacyAdvancedSearchId = currentParams.get("in");
+  return legacyAdvancedSearchId?.startsWith("P")
+    ? legacyAdvancedSearchId.substring(1)
+    : undefined;
+};
