@@ -29,7 +29,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useHistory, useLocation } from "react-router";
+import { useHistory, useLocation, useParams } from "react-router";
 import { getBaseUrl } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
 import MessageInfo, { MessageInfoVariant } from "../components/MessageInfo";
@@ -133,7 +133,7 @@ export const SearchPageRenderErrorContext = React.createContext<{
   handleError: () => {},
 });
 
-interface SearchPageProps extends TemplateUpdateProps {
+interface AdvancedSearchParams {
   /**
    * ID of the currently selected Advanced Search. When it's defined, the component is in
    * Advanced Search mode, or normal Search page mode otherwise.
@@ -141,9 +141,19 @@ interface SearchPageProps extends TemplateUpdateProps {
   advancedSearchId?: string;
 }
 
-const SearchPage = ({ updateTemplate }: SearchPageProps) => {
+type SearchPageProps = TemplateUpdateProps & AdvancedSearchParams;
+
+const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
   const history = useHistory();
   const location = useLocation();
+
+  // Retrieve any AdvancedSearchId from the Router
+  const { advancedSearchId: advancedSearchIdParam } =
+    useParams<AdvancedSearchParams>();
+
+  // If an Advanced Search ID has been provided, use that otherwise check to see if one
+  // was passed in by the Router.
+  advancedSearchId = advancedSearchId ?? advancedSearchIdParam;
 
   const [state, dispatch] = useReducer(reducer, { status: "initialising" });
   const defaultSearchPageHistory: SearchPageHistoryState = {
