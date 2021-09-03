@@ -76,6 +76,7 @@ import { getCurrentUserDetails } from "../modules/UserModule";
 import SearchBar from "../search/components/SearchBar";
 import type { DateRange } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
+import { AdvancedSearchPanel } from "./components/AdvancedSearchPanel";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
 import { CollectionSelector } from "./components/CollectionSelector";
 import DisplayModeSelector from "./components/DisplayModeSelector";
@@ -197,6 +198,11 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
     useState<boolean>(false);
   const [alreadyDownloaded, setAlreadyDownloaded] = useState<boolean>(false);
   const exportLinkRef = useRef<HTMLAnchorElement>(null);
+
+  // If there is an `advancedSearchId`, then the first time into and Advanced Search show the panel
+  const [showAdvSearchPanel, setShowAdvSearchPanel] = useState<boolean>(
+    advancedSearchId !== undefined
+  );
 
   const { appErrorHandler } = useContext(AppRenderErrorContext);
   const searchPageErrorHandler = useCallback(
@@ -862,8 +868,31 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
                 onQueryChange={handleQueryChanged}
                 onWildcardModeChange={handleWildcardModeChanged}
                 doSearch={() => search(searchPageOptions)}
+                advancedSearchFilter={
+                  // Only show if we're in advanced search mode
+                  advancedSearchId
+                    ? {
+                        onClick: () =>
+                          setShowAdvSearchPanel(!showAdvSearchPanel),
+                        accent: false,
+                      }
+                    : undefined
+                }
               />
             </Grid>
+            {showAdvSearchPanel && (
+              <Grid item xs={12}>
+                <AdvancedSearchPanel
+                  wizardDefinition={`{title: 'placeholder wizard definition', advancedSearchId: '${advancedSearchId}}`}
+                  onSubmit={
+                    // In the future, this would merge the updated Advanced Search Criteria into
+                    // searchPageOptions before calling search()
+                    (_) => search(searchPageOptions)
+                  }
+                  onClose={() => setShowAdvSearchPanel(false)}
+                />
+              </Grid>
+            )}
             <Grid item xs={12}>
               <SearchResultList
                 showSpinner={
