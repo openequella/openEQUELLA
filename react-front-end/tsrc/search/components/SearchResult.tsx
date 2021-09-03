@@ -190,6 +190,7 @@ export default function SearchResult({
     setDrmCheckOnSuccessHandler(() => onSuccess);
 
   useEffect(() => {
+    let mounted = true;
     (async () => {
       // If there is nothing requiring DRM permission check then return undefined.
       const dialog = drmCheckOnSuccessHandler
@@ -203,8 +204,14 @@ export default function SearchResult({
           )
         : undefined;
 
-      setDrmDialog(dialog);
+      if (mounted) {
+        setDrmDialog(dialog);
+      }
     })();
+
+    return () => {
+      mounted = false;
+    };
   }, [drmCheckOnSuccessHandler, uuid, version, drmStatus]);
 
   const handleSelectResource = (
