@@ -36,7 +36,6 @@ import { defaultNavMessage, NavAwayDialog } from "./PreventNavigation";
 import {
   BaseOEQRouteComponentProps,
   isNewUIRoute,
-  NEW_ADVANCED_SEARCH_PATH,
   NEW_SEARCH_PATH,
   OEQRouteNewUI,
   OLD_SEARCH_PATH,
@@ -137,9 +136,13 @@ export default function IndexPage() {
             key={ind}
             path={oeqRoute.path}
             render={(p) => {
+              removeLegacyCss();
+
               const oeqProps = mkRouteProps(p);
               if (oeqRoute.component) {
-                return <oeqRoute.component {...oeqProps} />;
+                return (
+                  <oeqRoute.component key={p.location.pathname} {...oeqProps} />
+                );
               }
               return oeqRoute.render?.(oeqProps);
             }}
@@ -179,7 +182,7 @@ export default function IndexPage() {
         </Route>
         {newUIRoutes}
         <Route
-          path={[NEW_SEARCH_PATH, OLD_SEARCH_PATH, NEW_ADVANCED_SEARCH_PATH]}
+          path={[NEW_SEARCH_PATH, OLD_SEARCH_PATH]}
           render={(p) => {
             const newSearchEnabled: boolean =
               typeof renderData !== "undefined" && renderData?.newSearch;

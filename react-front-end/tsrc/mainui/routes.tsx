@@ -17,6 +17,7 @@
  */
 import { LocationDescriptor } from "history";
 import * as React from "react";
+import SearchPage from "../search/SearchPage";
 import { TemplateUpdate } from "./Template";
 
 const ThemePage = React.lazy(() => import("../theme/ThemePage"));
@@ -63,7 +64,7 @@ interface OEQRouteTo<T = string | ToFunc | ToVersionFunc> {
 
 interface Routes {
   OldAdvancedSearch: OEQRouteTo<ToFunc>; // Need this route to support using Advanced Search in Selection Session.
-  NewAdvancedSearch: OEQRouteTo<ToFunc>;
+  NewAdvancedSearch: OEQRouteNewUI & OEQRouteTo<ToFunc>;
   CloudProviders: OEQRouteNewUI;
   ContentIndexSettings: OEQRouteNewUI;
   FacetedSearchSetting: OEQRouteNewUI;
@@ -115,6 +116,8 @@ export const routes: Routes = {
   },
   NewAdvancedSearch: {
     to: (uuid: string) => `${NEW_ADVANCED_SEARCH_PATH}/${uuid}`,
+    path: `${NEW_ADVANCED_SEARCH_PATH}/:advancedSearchId`,
+    component: SearchPage,
   },
   CloudProviders: {
     path: "/page/cloudprovider",
