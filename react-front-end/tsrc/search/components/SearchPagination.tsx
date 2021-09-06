@@ -15,18 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
 import {
-  TablePagination,
-  IconButton,
-  Grid,
   createMuiTheme,
+  Grid,
+  IconButton,
+  TablePagination,
 } from "@material-ui/core";
-import { languageStrings } from "../../util/langstrings";
 import FirstPage from "@material-ui/icons/FirstPage";
-import LastPage from "@material-ui/icons/LastPage";
 import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
+import LastPage from "@material-ui/icons/LastPage";
+import * as React from "react";
+import { languageStrings } from "../../util/langstrings";
 
 export interface SearchPaginationProps {
   count: number;
@@ -50,7 +50,7 @@ export const SearchPagination = ({
       component="div"
       count={count}
       page={currentPage}
-      onChangePage={(_, page: number) => onPageChange(page)}
+      onPageChange={(_, page: number) => onPageChange(page)}
       rowsPerPageOptions={[10, 25, 50]}
       labelRowsPerPage={paginationStrings.itemsPerPage}
       rowsPerPage={rowsPerPage}
