@@ -27,19 +27,18 @@ export interface AdvancedSearchSelectorProps {
    */
   advancedSearches: OEQ.Common.BaseEntitySummary[];
   /**
-   * Fires when a different Advanced search is selected.
-   * @param collections Selected collections.
+   * Function fired when the selection is changed.
+   *
+   * @param selection Currently selected Advanced search.
    */
-  onSelectionChange: (
-    advancedSearch: OEQ.Common.BaseEntitySummary | null
-  ) => void;
+  onSelectionChange: (selection: OEQ.Common.BaseEntitySummary | null) => void;
   /**
    * Initially selected Advanced search.
    */
   value?: OEQ.Common.BaseEntitySummary;
 }
 
-const { title } = languageStrings.searchpage.advancedSearchSelector;
+const { label } = languageStrings.searchpage.advancedSearchSelector;
 
 /**
  * Component used to select an Advanced search. Only single selection is supported.
@@ -50,18 +49,21 @@ export const AdvancedSearchSelector = ({
   value,
 }: AdvancedSearchSelectorProps) => (
   <Autocomplete
-    value={value}
+    debug
+    value={value ?? null}
     options={advancedSearches}
+    getOptionSelected={(option, selected) => selected.uuid === option.uuid}
     getOptionLabel={({ name }: OEQ.Common.BaseEntitySummary) => name}
     onChange={(_, value: OEQ.Common.BaseEntitySummary | null) =>
       onSelectionChange(value)
     }
+    renderOption={({ name }) => name}
     renderInput={(params) => (
       <TextField
         {...params}
         variant="outlined"
-        label={title}
-        placeholder={title}
+        label={label}
+        placeholder={label}
       />
     )}
   />

@@ -34,7 +34,7 @@ import { getBaseUrl } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
 import MessageInfo, { MessageInfoVariant } from "../components/MessageInfo";
 import { AppRenderErrorContext } from "../mainui/App";
-import { routes } from "../mainui/routes";
+import { NEW_SEARCH_PATH, routes } from "../mainui/routes";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import { getAdvancedSearchesFromServer } from "../modules/AdvancedSearchModule";
 import type { Collection } from "../modules/CollectionsModule";
@@ -77,6 +77,7 @@ import SearchBar from "../search/components/SearchBar";
 import type { DateRange } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
 import { AdvancedSearchPanel } from "./components/AdvancedSearchPanel";
+import { AdvancedSearchSelector } from "./components/AdvancedSearchSelector";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
 import { CollectionSelector } from "./components/CollectionSelector";
 import DisplayModeSelector from "./components/DisplayModeSelector";
@@ -146,6 +147,7 @@ type SearchPageProps = TemplateUpdateProps & AdvancedSearchParams;
 
 const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
   const history = useHistory();
+  const existAdvancedSearchMode = () => history.push(NEW_SEARCH_PATH);
   const location = useLocation();
 
   // Retrieve any AdvancedSearchId from the Router
@@ -189,6 +191,10 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
     core: undefined,
     mimeTypeFilters: [],
   });
+
+  const [advancedSearches, setAdvancedSearches] = useState<
+    OEQ.Common.BaseEntitySummary[]
+  >([]);
 
   const [currentUser, setCurrentUser] =
     React.useState<OEQ.LegacyContent.CurrentUserDetails>();
@@ -252,6 +258,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
         ? Promise.resolve(undefined)
         : generateSearchPageOptionsFromQueryString(location),
       getCurrentUserDetails(),
+      getAdvancedSearchesFromServer(),
     ])
       .then(
         ([
@@ -259,11 +266,13 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
           mimeTypeFilters,
           queryStringSearchOptions,
           currentUserDetails,
+          advancedSearches,
         ]) => {
           setSearchSettings({
             core: searchSettings,
             mimeTypeFilters: mimeTypeFilters,
           });
+          setAdvancedSearches(advancedSearches);
           setCurrentUser(currentUserDetails);
           search(
             queryStringSearchOptions
@@ -427,6 +436,18 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
     });
   };
 
+  const handleAdvancedSearchChanged = (
+    selection: OEQ.Common.BaseEntitySummary | null
+  ) => {
+    if (selection) {
+      const { uuid } = selection;
+      isSelectionSessionOpen()
+        ? window.open(buildSelectionSessionAdvancedSearchLink(uuid), "_self")
+        : history.push(routes.NewAdvancedSearch.to(uuid));
+    } else {
+      existAdvancedSearchMode();
+    }
+  };
   const handleCollapsibleFilterClick = () => {
     setFilterExpansion(!filterExpansion);
   };
@@ -479,6 +500,10 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
       rawMode: searchPageOptions.rawMode,
     });
     setFilterExpansion(false);
+
+    if (advancedSearchId) {
+      existAdvancedSearchMode();
+    }
   };
 
   const handleExport = () => {
@@ -688,13 +713,13 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
       idSuffix: "AdvancedSearchSelector",
       title: searchStrings.advancedSearchSelector.title,
       component: (
-        <AuxiliarySearchSelector
-          auxiliarySearchesSupplier={getAdvancedSearchesFromServer}
-          urlGeneratorForRouteLink={routes.NewAdvancedSearch.to}
-          urlGeneratorForMuiLink={buildSelectionSessionAdvancedSearchLink}
+        <AdvancedSearchSelector
+          advancedSearches={advancedSearches}
+          onSelectionChange={handleAdvancedSearchChanged}
+          value={advancedSearches.find(({ uuid }) => uuid === advancedSearchId)}
         />
       ),
-      disabled: false,
+      disabled: advancedSearches.length === 0,
       alwaysVisible: true,
     },
     {
