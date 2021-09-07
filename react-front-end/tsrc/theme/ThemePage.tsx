@@ -33,11 +33,12 @@ import {
   ErrorResponse,
   generateFromError,
   generateNewErrorID,
+  isAxiosError,
 } from "../api/errors";
+import { API_BASE_URL } from "../AppConfig";
 import SettingPageTemplate from "../components/SettingPageTemplate";
 import SettingsList from "../components/SettingsList";
 import SettingsListControl from "../components/SettingsListControl";
-import { API_BASE_URL } from "../AppConfig";
 import { routes } from "../mainui/routes";
 import {
   templateDefaults,
@@ -203,7 +204,11 @@ class ThemePage extends React.Component<
       this.setState({ changesUnsaved: false, showSuccess: true });
       this.reload();
     } catch (error) {
-      this.handleError(error);
+      if (isAxiosError(error)) {
+        this.handleError(error);
+      } else {
+        console.error("Unexpected non-Error caught in saveChanges(): " + error);
+      }
     }
   }
 
