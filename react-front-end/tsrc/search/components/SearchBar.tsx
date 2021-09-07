@@ -28,6 +28,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import TuneIcon from "@material-ui/icons/Tune";
 import * as React from "react";
 import { useCallback, useEffect, useReducer } from "react";
+import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { languageStrings } from "../../util/langstrings";
 
 const useStyles = makeStyles({
@@ -189,14 +190,14 @@ export default function SearchBar({
         placeholder={searchStrings.searchBarPlaceholder}
       />
       {advancedSearchFilter && (
-        <IconButton
+        <TooltipIconButton
+          title={searchStrings.showAdvancedSearchFilter}
           onClick={advancedSearchFilter.onClick}
-          aria-label={searchStrings.showAdvancedSearchFilter}
         >
           <TuneIcon
             color={advancedSearchFilter.accent ? "secondary" : "inherit"}
           />
-        </IconButton>
+        </TooltipIconButton>
       )}
       <Divider className={classes.divider} orientation="vertical" />
       <FormControlLabel
