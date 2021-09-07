@@ -506,7 +506,7 @@ select[multiple="multiple"] {
   @include curvedCorners;
   font-size: 16px;
   border: 1px solid #f5f5f5;
-  padding: $doubleMargin;
+  padding: $doubleMargin 0 $doubleMargin $doubleMargin;
   width: auto;
   min-width: 204px;
   float: none;
