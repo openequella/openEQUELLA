@@ -21,11 +21,11 @@ import {
   CardActions,
   CardContent,
   CardHeader,
-  IconButton,
   Typography,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import React from "react";
+import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { languageStrings } from "../../util/langstrings";
 
 export interface AdvancedSearchPanelProps {
