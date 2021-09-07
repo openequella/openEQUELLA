@@ -300,7 +300,7 @@ export const SearchResultAttachmentsList = ({
         vertical: "bottom",
         horizontal: "right",
       }}
-      overlap="circle"
+      overlap="circular"
       badgeContent={
         includeIndicator ? (
           <Tooltip

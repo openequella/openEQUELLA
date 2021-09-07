@@ -101,7 +101,7 @@ export default function SchemaNodeSelector({
   return (
     <>
       {expandControls && (
-        <Grid container direction="row" wrap="nowrap" justify="flex-end">
+        <Grid container direction="row" wrap="nowrap" justifyContent="flex-end">
           <Grid item>
             <Button
               className={classes.button}

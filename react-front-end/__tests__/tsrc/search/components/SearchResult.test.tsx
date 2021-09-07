@@ -15,7 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createMuiTheme, MuiThemeProvider, Theme } from "@material-ui/core";
+import { createTheme } from "@material-ui/core/styles";
+import { MuiThemeProvider, Theme } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
 import {
@@ -72,7 +73,7 @@ const {
   attachment: selectAttachmentString,
 } = languageStrings.searchpage.selectResource;
 
-const defaultTheme = createMuiTheme({
+const defaultTheme = createTheme({
   props: { MuiWithWidth: { initialWidth: "md" } },
 });
 
@@ -180,7 +181,7 @@ describe("<SearchResult/>", () => {
   });
 
   it("hide star rating and comment count in small screen", async () => {
-    const theme = createMuiTheme({
+    const theme = createTheme({
       props: { MuiWithWidth: { initialWidth: "sm" } },
     });
     const { starRatings, commentCount } = mockData.attachSearchObj;

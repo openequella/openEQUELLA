@@ -223,7 +223,7 @@ export const SearchResultList = ({
         {searchResultList}
       </CardContent>
       <CardActions>
-        <Grid container justify="center">
+        <Grid container justifyContent="center">
           <Grid item>
             <SearchPagination
               count={count}

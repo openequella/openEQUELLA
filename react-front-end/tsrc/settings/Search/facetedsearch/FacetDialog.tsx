@@ -98,12 +98,7 @@ const FacetDialog = ({
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      disableBackdropClick
-      disableEscapeKeyDown
-    >
+    <Dialog open={open}>
       <DialogTitle>
         {facet
           ? facetedSearchSettingStrings.edit
