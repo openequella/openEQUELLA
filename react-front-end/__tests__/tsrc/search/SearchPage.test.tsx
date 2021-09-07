@@ -19,6 +19,7 @@ import { createMuiTheme } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
 import {
+  act,
   getByLabelText,
   getByText,
   queryByLabelText,
@@ -27,7 +28,6 @@ import {
   waitFor,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { act } from "react-dom/test-utils";
 import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock";
 import {
   transformedBasicImageSearchResponse,
@@ -140,7 +140,7 @@ const changeQuery = async (
   const _queryBar = () => getQueryBar(container);
   userEvent.type(_queryBar(), query);
 
-  await act(async () => {
+  act(() => {
     jest.advanceTimersByTime(1000);
   });
   await waitFor(() => {
