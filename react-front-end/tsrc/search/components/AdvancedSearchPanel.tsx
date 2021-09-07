@@ -63,12 +63,12 @@ export const AdvancedSearchPanel = ({
     <CardHeader
       title={languageStrings.searchpage.AdvancedSearchPanel.title}
       action={
-        <IconButton
+        <TooltipIconButton
+          title={languageStrings.common.action.close}
           onClick={onClose}
-          aria-label={languageStrings.common.action.close}
         >
           <CloseIcon />
-        </IconButton>
+        </TooltipIconButton>
       }
     />
     <CardContent>
