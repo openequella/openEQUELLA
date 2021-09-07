@@ -15,31 +15,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta } from "@storybook/react";
+import { Meta, Story } from "@storybook/react";
 import * as React from "react";
-import { action } from "@storybook/addon-actions";
-import SearchBar, {
-  SearchBarProps,
-} from "../../tsrc/search/components/SearchBar";
+import {
+  AdvancedSearchPanel,
+  AdvancedSearchPanelProps,
+} from "../../tsrc/search/components/AdvancedSearchPanel";
 
 export default {
-  title: "SearchBar",
-  component: SearchBar,
-} as Meta<SearchBarProps>;
+  title: "Search/AdvancedSearchPanel",
+  component: AdvancedSearchPanel,
+  argTypes: {
+    onSubmit: {
+      action: "onSubmit called",
+    },
+    onClose: {
+      action: "onClose called",
+    },
+  },
+} as Meta<AdvancedSearchPanelProps>;
 
-const actions = {
-  onQueryChange: action("onQueryChange called"),
-  onWildcardModeChange: action("onWildcardModeChange called"),
-  doSearch: action("doSearch called"),
-};
-
-const values = {
-  query: "",
-  wildcardMode: false,
-};
-
-export const NonWildcardMode = () => <SearchBar {...actions} {...values} />;
-
-export const WildcardMode = () => (
-  <SearchBar {...actions} {...values} wildcardMode />
+export const Simple: Story<AdvancedSearchPanelProps> = (args) => (
+  <AdvancedSearchPanel {...args} />
 );
+Simple.args = {
+  wizardDefinition: "{title: 'A Wizard Definition', controls: []}",
+};

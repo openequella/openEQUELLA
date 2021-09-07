@@ -410,8 +410,12 @@ export const languageStrings = {
     newSearchHelperText: "Clears search text and filters",
     shareSearchHelperText: "Copy search link to clipboard",
     shareSearchConfirmationText: "Search link saved to clipboard",
+    showAdvancedSearchFilter: "Show advanced search filter",
     deadAttachmentWarning:
       "This attachment appears to be broken or inaccessible.",
+    AdvancedSearchPanel: {
+      title: "Advanced Search",
+    },
     displayModeSelector: {
       title: "Display mode",
       modeItemList: "Item List",

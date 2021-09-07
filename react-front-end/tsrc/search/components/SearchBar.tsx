@@ -25,8 +25,10 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
+import TuneIcon from "@material-ui/icons/Tune";
 import * as React from "react";
 import { useCallback, useEffect, useReducer } from "react";
+import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { languageStrings } from "../../util/langstrings";
 
 const useStyles = makeStyles({
@@ -64,6 +66,18 @@ export interface SearchBarProps {
 
   /** Called when search button clicked. */
   doSearch: () => void;
+
+  /**
+   * Properties to control the display of the Advanced Search filter button.
+   * If `undefined` the button is not displayed.
+   */
+  advancedSearchFilter?: {
+    /** Called when the filter button is clicked */
+    onClick: () => void;
+
+    /** If true the button wil be highlighted by the Secondary colour. */
+    accent: boolean;
+  };
 }
 
 const searchStrings = languageStrings.searchpage;
@@ -103,6 +117,7 @@ export default function SearchBar({
   onQueryChange,
   onWildcardModeChange,
   doSearch,
+  advancedSearchFilter,
 }: SearchBarProps) {
   const classes = useStyles();
   const [state, dispatch] = useReducer(reducer, { status: "init", query });
@@ -174,6 +189,16 @@ export default function SearchBar({
         value={state.query}
         placeholder={searchStrings.searchBarPlaceholder}
       />
+      {advancedSearchFilter && (
+        <TooltipIconButton
+          title={searchStrings.showAdvancedSearchFilter}
+          onClick={advancedSearchFilter.onClick}
+        >
+          <TuneIcon
+            color={advancedSearchFilter.accent ? "secondary" : "inherit"}
+          />
+        </TooltipIconButton>
+      )}
       <Divider className={classes.divider} orientation="vertical" />
       <FormControlLabel
         style={{ opacity: 0.6 }}

@@ -15,34 +15,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createMuiTheme, MuiThemeProvider } from "@material-ui/core";
-import type { Theme } from "@material-ui/core/styles";
+import { createMuiTheme } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
 import {
+  act,
   getByLabelText,
   getByText,
   queryByLabelText,
-  render,
   RenderResult,
   screen,
   waitFor,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { createMemoryHistory } from "history";
-import * as React from "react";
-import { act } from "react-dom/test-utils";
-import { Router } from "react-router-dom";
-import { getAdvancedSearchesFromServerResult } from "../../../__mocks__/AdvancedSearchModule.mock";
 import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock";
-import { DRM_VIOLATION } from "../../../__mocks__/Drm.mock";
 import {
   transformedBasicImageSearchResponse,
   transformedBasicVideoSearchResponse,
 } from "../../../__mocks__/GallerySearchModule.mock";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import { getMimeTypeFilters } from "../../../__mocks__/MimeTypeFilter.mock";
-import { getRemoteSearchesFromServerResult } from "../../../__mocks__/RemoteSearchModule.mock";
 import {
   getEmptySearchResult,
   getSearchResult,
@@ -50,23 +42,13 @@ import {
 } from "../../../__mocks__/SearchResult.mock";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
-import * as AdvancedSearchModule from "../../../tsrc/modules/AdvancedSearchModule";
-import * as BrowserStorageModule from "../../../tsrc/modules/BrowserStorageModule";
 import type { Collection } from "../../../tsrc/modules/CollectionsModule";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
-import * as DrmModule from "../../../tsrc/modules/DrmModule";
-import * as FavouriteModule from "../../../tsrc/modules/FavouriteModule";
-import * as GallerySearchModule from "../../../tsrc/modules/GallerySearchModule";
 import { getGlobalCourseList } from "../../../tsrc/modules/LegacySelectionSessionModule";
-import * as MimeTypesModule from "../../../tsrc/modules/MimeTypesModule";
-import * as RemoteSearchModule from "../../../tsrc/modules/RemoteSearchModule";
 import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchFacetsModule from "../../../tsrc/modules/SearchFacetsModule";
-import * as SearchFilterSettingsModule from "../../../tsrc/modules/SearchFilterSettingsModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
-import * as UserModule from "../../../tsrc/modules/UserModule";
-import SearchPage from "../../../tsrc/search/SearchPage";
 import * as SearchPageHelper from "../../../tsrc/search/SearchPageHelper";
 import { SearchPageOptions } from "../../../tsrc/search/SearchPageHelper";
 import { languageStrings } from "../../../tsrc/util/langstrings";
@@ -83,114 +65,42 @@ import {
 import {
   getRefineSearchComponent,
   getRefineSearchPanel,
+  initialiseEssentialMocks,
+  mockCollaborators,
   queryCollectionSelector,
   queryDateRangeSelector,
   queryOwnerSelector,
   querySearchAttachmentsSelector,
   queryStatusSelector,
-} from "./SearchPageHelper";
+  renderSearchPage,
+  waitForSearch,
+} from "./SearchPageTestHelper";
 
-const defaultTheme = createMuiTheme({
-  props: { MuiWithWidth: { initialWidth: "md" } },
+const {
+  mockCollections,
+  mockConvertParamsToSearchOptions,
+  mockCurrentUser,
+  mockImageGallerySearch,
+  mockListClassification,
+  mockListImageGalleryClassifications,
+  mockListUsers,
+  mockListVideoGalleryClassifications,
+  mockMimeTypeFilters,
+  mockReadDataFromLocalStorage,
+  mockSaveDataToLocalStorage,
+  mockSearch,
+  mockSearchSettings,
+  mockVideoGallerySearch,
+} = mockCollaborators();
+initialiseEssentialMocks({
+  mockCollections,
+  mockCurrentUser,
+  mockListClassification,
+  mockSearchSettings,
 });
-const mockCollections = jest.spyOn(CollectionsModule, "collectionListSummary");
-const mockListUsers = jest.spyOn(UserModule, "listUsers");
-const mockCurrentUser = jest.spyOn(UserModule, "getCurrentUserDetails");
-const mockListClassification = jest.spyOn(
-  SearchFacetsModule,
-  "listClassifications"
-);
-const mockSearch = jest.spyOn(SearchModule, "searchItems");
-const mockImageGallerySearch = jest.spyOn(
-  GallerySearchModule,
-  "imageGallerySearch"
-);
-const mockVideoGallerySearch = jest.spyOn(
-  GallerySearchModule,
-  "videoGallerySearch"
-);
-const mockListImageGalleryClassifications = jest.spyOn(
-  GallerySearchModule,
-  "listImageGalleryClassifications"
-);
-const mockListVideoGalleryClassifications = jest.spyOn(
-  GallerySearchModule,
-  "listVideoGalleryClassifications"
-);
-const mockSearchSettings = jest.spyOn(
-  SearchSettingsModule,
-  "getSearchSettingsFromServer"
-);
-const mockConvertParamsToSearchOptions = jest.spyOn(
-  SearchPageHelper,
-  "generateSearchPageOptionsFromQueryString"
-);
-
-const mockMimeTypeFilters = jest
-  .spyOn(SearchFilterSettingsModule, "getMimeTypeFiltersFromServer")
-  .mockResolvedValue(getMimeTypeFilters);
-
-const mockSaveDataToLocalStorage = jest
-  .spyOn(BrowserStorageModule, "saveDataToLocalStorage")
-  .mockImplementation(jest.fn);
-
-const mockReadDataFromLocalStorage = jest.spyOn(
-  BrowserStorageModule,
-  "readDataFromLocalStorage"
-);
-
-jest
-  .spyOn(DrmModule, "listDrmViolations")
-  .mockResolvedValue({ violation: DRM_VIOLATION });
-
-//i tried mocking this using window.navigator.clipboard.writeText = jest.fn(), but the navigator object is undefined
-Object.assign(navigator, {
-  clipboard: {
-    writeText: jest.fn(),
-  },
-});
-window.scrollTo = jest.fn();
-
 const searchPromise = mockSearch.mockResolvedValue(getSearchResult);
-mockSearchSettings.mockResolvedValue(
-  SearchSettingsModule.defaultSearchSettings
-);
-mockCollections.mockResolvedValue(getCollectionMap);
+
 mockListUsers.mockResolvedValue(UserSearchMock.users);
-mockCurrentUser.mockResolvedValue(getCurrentUserMock);
-mockListClassification.mockResolvedValue(CategorySelectorMock.classifications);
-
-// Mock out a collaborator of SearchResult
-jest
-  .spyOn(MimeTypesModule, "getMimeTypeDefaultViewerDetails")
-  .mockResolvedValue({
-    viewerId: "fancy",
-  } as OEQ.MimeType.MimeTypeViewerDetail);
-
-// Mock out collaborator which populates the Remote Search selector
-jest
-  .spyOn(RemoteSearchModule, "getRemoteSearchesFromServer")
-  .mockResolvedValue(getRemoteSearchesFromServerResult);
-
-// Mock out collaborator which populates the Advanced Search selector
-jest
-  .spyOn(AdvancedSearchModule, "getAdvancedSearchesFromServer")
-  .mockResolvedValue(getAdvancedSearchesFromServerResult);
-
-jest.spyOn(FavouriteModule, "addFavouriteItem").mockResolvedValue({
-  itemID: "abc",
-  keywords: ["a", "b"],
-  isAlwaysLatest: true,
-  bookmarkID: 456,
-});
-
-jest.spyOn(FavouriteModule, "deleteFavouriteItem").mockResolvedValue();
-
-jest.spyOn(FavouriteModule, "addFavouriteSearch").mockResolvedValue({
-  id: 123,
-  name: "test",
-  url: "/page/search?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RATING%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22crab%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D",
-});
 
 const defaultSearchPageOptions: SearchPageOptions = {
   ...SearchModule.defaultSearchOptions,
@@ -202,44 +112,6 @@ const defaultSearchPageOptions: SearchPageOptions = {
 const defaultCollectionPrivileges = [OEQ.Acl.ACL_SEARCH_COLLECTION];
 
 const SORTORDER_SELECT_ID = "#sort-order-select";
-
-/**
- * Simple helper to wrap the process of waiting for the execution of a search based on checking the
- * `searchPromise`. Being that it is abstracted out, in the future could change as needed to be
- * something other than the `searchPromise`.
- */
-const waitForSearch = async () =>
-  await act(async () => {
-    await searchPromise;
-  });
-
-/**
- * Helper function for the initial render of the `<SearchPage>` for tests below. Also includes
- * the wait for the initial search call.
- *
- * @returns The RenderResult from the `render` of the `<SearchPage>`
- */
-const renderSearchPage = async (
-  queryString?: string,
-  theme: Theme = defaultTheme
-): Promise<RenderResult> => {
-  window.history.replaceState({}, "Clean history state");
-  const history = createMemoryHistory();
-  if (queryString) history.push(queryString);
-  history.push({});
-
-  const page = render(
-    <MuiThemeProvider theme={theme}>
-      <Router history={history}>
-        <SearchPage updateTemplate={jest.fn()} />
-      </Router>
-    </MuiThemeProvider>
-  );
-  // Wait for the first completion of initial search
-  await waitForSearch();
-
-  return page;
-};
 
 const getQueryBar = (container: Element): HTMLElement => {
   const queryBar = container.querySelector<HTMLElement>("#searchBar");
@@ -268,8 +140,8 @@ const changeQuery = async (
   const _queryBar = () => getQueryBar(container);
   userEvent.type(_queryBar(), query);
 
-  await act(async () => {
-    await jest.advanceTimersByTime(1000);
+  act(() => {
+    jest.advanceTimersByTime(1000);
   });
   await waitFor(() => {
     expect(_queryBar()).toHaveDisplayValue(query);
@@ -289,7 +161,7 @@ describe("Refine search by searching attachments", () => {
   let page: RenderResult;
 
   beforeEach(async () => {
-    page = await renderSearchPage();
+    page = await renderSearchPage(searchPromise);
   });
 
   afterEach(() => {
@@ -308,7 +180,7 @@ describe("Refine search by searching attachments", () => {
 
   it("Should not search attachments if No is selected", async () => {
     changeOption(getSearchAttachmentsSelector(page.container), noLabel);
-    await waitForSearch();
+    await waitForSearch(searchPromise);
     expect(mockSearch).toHaveBeenLastCalledWith({
       ...defaultSearchPageOptions,
       searchAttachments: false,
@@ -317,7 +189,7 @@ describe("Refine search by searching attachments", () => {
 
   it("Should search attachments if Yes is selected", async () => {
     changeOption(getSearchAttachmentsSelector(page.container), yesLabel);
-    await waitForSearch();
+    await waitForSearch(searchPromise);
     expect(mockSearch).toHaveBeenLastCalledWith(defaultSearchPageOptions);
   });
 });
@@ -348,21 +220,21 @@ describe("Refine search by status", () => {
   });
 
   it("Should default to LIVE statuses", async () => {
-    await renderSearchPage();
+    await renderSearchPage(searchPromise);
     expectSearchItemsCalledWithStatus(liveStatuses);
   });
 
   it("Should search for items of all statuses if ALL is clicked", async () => {
-    const page = await renderSearchPage();
+    const page = await renderSearchPage(searchPromise);
     selectStatus(page.container, allButtonLabel);
-    await waitForSearch();
+    await waitForSearch(searchPromise);
     expectSearchItemsCalledWithStatus(liveStatuses.concat(nonLiveStatuses));
   });
 
   it("Should search for items of 'live' statuses if LIVE is clicked", async () => {
-    const page = await renderSearchPage();
+    const page = await renderSearchPage(searchPromise);
     selectStatus(page.container, liveButtonLabel);
-    await waitForSearch();
+    await waitForSearch(searchPromise);
     expectSearchItemsCalledWithStatus(liveStatuses);
   });
 });
@@ -372,7 +244,7 @@ describe("Refine search by Owner", () => {
   let page: RenderResult;
 
   beforeEach(async () => {
-    page = await renderSearchPage();
+    page = await renderSearchPage(searchPromise);
   });
 
   const getOwnerSelector = (container: Element): HTMLElement =>
@@ -423,7 +295,7 @@ describe("Refine search by Owner", () => {
 describe("Refine search by MIME type filters", () => {
   it("supports multiple filters", async () => {
     const filters = getMimeTypeFilters;
-    const page = await renderSearchPage();
+    const page = await renderSearchPage(searchPromise);
     userEvent.click(
       page.getByLabelText(
         languageStrings.searchpage.mimeTypeFilterSelector.helperText
@@ -432,7 +304,7 @@ describe("Refine search by MIME type filters", () => {
     filters.forEach((filter) => {
       userEvent.click(screen.getByText(filter.name));
     });
-    await waitForSearch();
+    await waitForSearch(searchPromise);
     expect(SearchModule.searchItems).toHaveBeenLastCalledWith({
       ...defaultSearchPageOptions,
       // @ts-ignore IntelliJ complains about missing flatMap - but works fine everywhere else
@@ -445,7 +317,7 @@ describe("Refine search by MIME type filters", () => {
 describe("Collapsible refine filter section", () => {
   let page: RenderResult;
   beforeEach(async () => {
-    page = await renderSearchPage();
+    page = await renderSearchPage(searchPromise);
   });
 
   afterEach(() => {
@@ -527,14 +399,14 @@ describe("Hide Refine Search controls", () => {
       disableSelector: OEQ.SearchSettings.Settings
     ) => {
       mockSearchSettings.mockResolvedValueOnce(disableSelector);
-      const page = await renderSearchPage();
+      const page = await renderSearchPage(searchPromise);
       expect(getSelector(page.container)).toBeNull();
     }
   );
 
   it("If not MIME type filters are available, the selector should be hidden", async () => {
     mockMimeTypeFilters.mockResolvedValueOnce([]);
-    const page = await renderSearchPage();
+    const page = await renderSearchPage(searchPromise);
     expect(queryMimeTypesSelector(page)).not.toBeInTheDocument();
   });
 });
@@ -547,7 +419,7 @@ describe("<SearchPage/>", () => {
 
   let page: RenderResult;
   beforeEach(async () => {
-    page = await renderSearchPage();
+    page = await renderSearchPage(searchPromise);
   });
 
   afterEach(() => {
@@ -564,13 +436,13 @@ describe("<SearchPage/>", () => {
 
     // Change the defaults
     await changeQuery(container, query);
-    await waitForSearch();
+    await waitForSearch(searchPromise);
     selectOption(
       container,
       "#sort-order-select",
       languageStrings.settings.searching.searchPageSettings.title
     );
-    await waitForSearch();
+    await waitForSearch(searchPromise);
 
     // Perform a new search and check.
     userEvent.click(newSearchButton);
@@ -632,7 +504,7 @@ describe("<SearchPage/>", () => {
     const itemsPerPageDesired = 25;
     userEvent.click(getItemsPerPageOption(itemsPerPageDesired));
 
-    await waitForSearch();
+    await waitForSearch(searchPromise);
     expect(SearchModule.searchItems).toHaveBeenCalledWith({
       ...defaultSearchPageOptions,
       rowsPerPage: itemsPerPageDesired,
@@ -645,11 +517,11 @@ describe("<SearchPage/>", () => {
       queryPaginatorControls(page.container);
 
     userEvent.click(getNextPageButton());
-    await waitForSearch();
+    await waitForSearch(searchPromise);
     expect(getPageCount()).toHaveTextContent("11-12 of 12");
 
     userEvent.click(getPreviousPageButton());
-    await waitForSearch();
+    await waitForSearch(searchPromise);
     expect(getPageCount()).toHaveTextContent("1-10 of 12");
   });
 
@@ -667,12 +539,12 @@ describe("<SearchPage/>", () => {
 
     // Test going to the last page
     userEvent.click(getLastPageButton());
-    await waitForSearch();
+    await waitForSearch(searchPromise);
     expect(getPageCount()).toHaveTextContent("21-30 of 30");
 
     // ... and now back to the first
     userEvent.click(getFirstPageButton());
-    await waitForSearch();
+    await waitForSearch(searchPromise);
     expect(getPageCount()).toHaveTextContent(firstPageCountText);
   });
 
@@ -682,7 +554,7 @@ describe("<SearchPage/>", () => {
       SORTORDER_SELECT_ID,
       languageStrings.settings.searching.searchPageSettings.lastModified
     );
-    await waitForSearch();
+    await waitForSearch(searchPromise);
 
     // Because sorting is done on the server-side and we are using mock data, we can only check if the selected
     // sort order is included in the search params
@@ -695,7 +567,7 @@ describe("<SearchPage/>", () => {
   it("sends the query as-is when in non-wildcard search mode", async () => {
     // When a raw mode search is done
     await changeQuery(page.container, "non-wildcard search test", false);
-    await waitForSearch();
+    await waitForSearch(searchPromise);
 
     // assert that the query was passed in as-is
     expect(SearchModule.searchItems).toHaveBeenLastCalledWith({
@@ -712,7 +584,7 @@ describe("<SearchPage/>", () => {
 
   it("filters by date range derived from 'Quick Options'", async () => {
     selectOption(page.container, "#date_range_selector", "Today");
-    await waitForSearch();
+    await waitForSearch(searchPromise);
 
     expect(SearchModule.searchItems).toHaveBeenLastCalledWith({
       ...defaultSearchPageOptions,
@@ -729,7 +601,7 @@ describe("<SearchPage/>", () => {
       page.getByLabelText(languageStrings.searchpage.collectionSelector.title)
     );
     userEvent.click(screen.getByText(targetCollection.name));
-    await waitForSearch();
+    await waitForSearch(searchPromise);
 
     expect(SearchModule.searchItems).toHaveBeenCalledTimes(2);
     expect(SearchModule.searchItems).toHaveBeenLastCalledWith({
@@ -740,7 +612,7 @@ describe("<SearchPage/>", () => {
 
   it("should search with selected Categories", async () => {
     clickCategory(page.container, JAVA_CATEGORY);
-    await waitForSearch();
+    await waitForSearch(searchPromise);
     expect(SearchModule.searchItems).toHaveBeenLastCalledWith({
       ...defaultSearchPageOptions,
       selectedCategories: selectedCategories,
@@ -749,7 +621,7 @@ describe("<SearchPage/>", () => {
 
   it("should also update Classification list with selected categories", async () => {
     clickCategory(page.container, JAVA_CATEGORY);
-    await waitForSearch(); // The intention of this line is to avoid Jest act warning.
+    await waitForSearch(searchPromise); // The intention of this line is to avoid Jest act warning.
     expect(SearchFacetsModule.listClassifications).toHaveBeenLastCalledWith({
       ...defaultSearchPageOptions,
       selectedCategories: selectedCategories,
@@ -792,7 +664,7 @@ describe("conversion of parameters to SearchPageOptions", () => {
   });
 
   it("should call queryStringParamsToSearchOptions using query paramaters in url", async () => {
-    await renderSearchPage("?q=test");
+    await renderSearchPage(searchPromise, "?q=test");
     expect(
       SearchPageHelper.generateSearchPageOptionsFromQueryString
     ).toHaveBeenCalledTimes(1);
@@ -808,7 +680,7 @@ describe("In Selection Session", () => {
   it("should make each Search result Item draggable", async () => {
     updateMockGetRenderData(basicRenderData);
     mockSearch.mockResolvedValue(getSearchResult);
-    await renderSearchPage();
+    await renderSearchPage(searchPromise);
 
     const searchResults = getSearchResult.results;
     // Make sure the search result definitely has Items.
@@ -824,7 +696,7 @@ describe("In Selection Session", () => {
   it("should not show the share search button", async () => {
     updateMockGetRenderData(basicRenderData);
     mockSearch.mockResolvedValue(getSearchResult);
-    const { queryByTitle } = await renderSearchPage();
+    const { queryByTitle } = await renderSearchPage(searchPromise);
 
     const copySearchButton = queryByTitle(
       languageStrings.searchpage.shareSearchHelperText
@@ -844,7 +716,7 @@ describe("Responsiveness", () => {
   let page: RenderResult;
 
   beforeEach(async () => {
-    page = await renderSearchPage(undefined, theme);
+    page = await renderSearchPage(searchPromise, undefined, undefined, theme);
   });
 
   it("should hide the side panel in small screens", async () => {
@@ -869,7 +741,7 @@ describe("Add and remove favourite Item,", () => {
   let page: RenderResult;
 
   beforeEach(async () => {
-    page = await renderSearchPage();
+    page = await renderSearchPage(searchPromise);
   });
 
   it.each([
@@ -910,7 +782,7 @@ describe("Add and remove favourite Item,", () => {
 
 describe("Add favourite search", () => {
   it("shows FavouriteSearchDialog to add a favourite search", async () => {
-    const page = await renderSearchPage();
+    const page = await renderSearchPage(searchPromise);
     const heartIcon = getByLabelText(
       page.container,
       languageStrings.searchpage.favouriteSearch.title,
@@ -974,7 +846,7 @@ describe("Changing display mode", () => {
   };
 
   beforeEach(async () => {
-    page = await renderSearchPage();
+    page = await renderSearchPage(searchPromise);
   });
 
   afterEach(() => {
@@ -1035,7 +907,7 @@ describe("Changing display mode", () => {
 describe("Export search result", () => {
   let page: RenderResult;
   beforeEach(async () => {
-    page = await renderSearchPage();
+    page = await renderSearchPage(searchPromise);
   });
 
   const selectCollections = async (...collectionNames: string[]) => {
@@ -1080,7 +952,7 @@ describe("Export search result", () => {
       ...getCurrentUserMock,
       canDownloadSearchResult: false,
     });
-    const { queryByLabelText } = await renderSearchPage();
+    const { queryByLabelText } = await renderSearchPage(searchPromise);
     expect(
       queryByLabelText(languageStrings.searchpage.export.title)
     ).not.toBeInTheDocument();
@@ -1131,7 +1003,7 @@ describe("Hide Gallery", () => {
       disabledModes: string[]
     ) => {
       mockSearchSettings.mockResolvedValueOnce(settings);
-      const { queryByLabelText } = await renderSearchPage();
+      const { queryByLabelText } = await renderSearchPage(searchPromise);
       disabledModes.forEach((hiddenLabel) =>
         expect(queryByLabelText(hiddenLabel)).not.toBeInTheDocument()
       );
@@ -1144,14 +1016,14 @@ describe("Hide Gallery", () => {
 
 describe("Wildcard mode persistence", () => {
   it("saves wildcard mode value in browser local storage", async () => {
-    await renderSearchPage();
+    await renderSearchPage(searchPromise);
     expect(mockSaveDataToLocalStorage).toHaveBeenCalled();
   });
 
   it("retrieves wildcard mode value from local storage", async () => {
     // By default wildcard mode is turned on, so we save 'false' in local storage.
     mockReadDataFromLocalStorage.mockReturnValueOnce(true);
-    const { container } = await renderSearchPage();
+    const { container } = await renderSearchPage(searchPromise);
     expect(mockReadDataFromLocalStorage).toHaveBeenCalled();
     const wildcardModeSwitch = container.querySelector("#wildcardSearch");
 
