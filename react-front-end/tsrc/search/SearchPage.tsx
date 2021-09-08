@@ -147,7 +147,7 @@ type SearchPageProps = TemplateUpdateProps & AdvancedSearchParams;
 
 const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
   const history = useHistory();
-  const existAdvancedSearchMode = () => history.push(NEW_SEARCH_PATH);
+  const exitAdvancedSearchMode = () => history.push(NEW_SEARCH_PATH);
   const location = useLocation();
 
   // Retrieve any AdvancedSearchId from the Router
@@ -445,9 +445,10 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
         ? window.open(buildSelectionSessionAdvancedSearchLink(uuid), "_self")
         : history.push(routes.NewAdvancedSearch.to(uuid));
     } else {
-      existAdvancedSearchMode();
+      exitAdvancedSearchMode();
     }
   };
+
   const handleCollapsibleFilterClick = () => {
     setFilterExpansion(!filterExpansion);
   };
@@ -502,7 +503,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
     setFilterExpansion(false);
 
     if (advancedSearchId) {
-      existAdvancedSearchMode();
+      exitAdvancedSearchMode();
     }
   };
 

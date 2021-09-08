@@ -37,10 +37,10 @@ public class AdvancedSearchPageTest extends AbstractSessionTest {
     assertEquals(selected, "DRM Party search");
   }
 
-  @Test(description = "Exist Advanced search mode")
+  @Test(description = "Exit Advanced search mode")
   @NewUIOnly
-  public void existAdvancedSearch() {
-    advancedSearchPage.deleteSelection();
+  public void exitAdvancedSearch() {
+    advancedSearchPage.clearSelection();
     // Check if the filter icon button disappears.
     assertNull(advancedSearchPage.getAdvancedSearchFilterIcon());
     // The selector's value should be an empty string now.

@@ -25,7 +25,7 @@ public class NewAdvancedSearchPage extends NewSearchPage {
     return input.getAttribute("value");
   }
 
-  public void deleteSelection() {
+  public void clearSelection() {
     WebElement input = getAdvancedSearchInput();
     // Click the input to display the Clear icon button.
     input.click();
