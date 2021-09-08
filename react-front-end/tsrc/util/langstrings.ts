@@ -507,6 +507,7 @@ export const languageStrings = {
       title: "Refine search",
     },
     advancedSearchSelector: {
+      label: "Advanced searches",
       title: "Access Advanced searches",
     },
     remoteSearchSelector: {

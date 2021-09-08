@@ -59,7 +59,7 @@ export const AdvancedSearchPanel = ({
   onClose,
   onSubmit,
 }: AdvancedSearchPanelProps) => (
-  <Card>
+  <Card id="advanced-search-panel">
     <CardHeader
       title={languageStrings.searchpage.AdvancedSearchPanel.title}
       action={

@@ -257,7 +257,7 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
    *
    * @param id The ID of a Refine Search control, excluding its prefix.
    */
-  private WebElement getRefineControl(String id) {
+  protected WebElement getRefineControl(String id) {
     return driver.findElement(By.id("RefineSearchPanel-" + id));
   }
 
