@@ -6,6 +6,9 @@
     "build": "pulp build && parcel build --no-autoinstall --out-dir=target/www www/*.html www/*.tsx",
     "dev": "pulp build && parcel watch --no-autoinstall --out-dir=../target/scala-2.12/classes/www www/*.html www/*.tsx"
   },
+  "engines": {
+    "npm": "7.19.1"
+  },
   "dependencies": {
     "@material-ui/core": "4.11.4",
     "axios": "0.21.1",

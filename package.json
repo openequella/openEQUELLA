@@ -23,6 +23,9 @@
     "stylesheet_glob": "Source/Plugins/Core/com.equella.core/{js,resources}/**/*.{css,scss}",
     "typescript_glob": "{react-front-end,Source/Plugins/Core/com.equella.core/test/javascript}/**/*.{js,ts,tsx}"
   },
+  "engines": {
+    "npm": "7.19.1"
+  },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "4.30.0",
     "@typescript-eslint/parser": "4.30.0",
