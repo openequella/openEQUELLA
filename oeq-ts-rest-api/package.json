@@ -18,8 +18,7 @@
     "build": "rollup --config",
     "test": "jest --no-cache",
     "lint": "eslint \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
-    "format": "eslint --fix \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
-    "prepare": "npm run build"
+    "format": "eslint --fix \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\""
   },
   "peerDependencies": {},
   "prettier": {
