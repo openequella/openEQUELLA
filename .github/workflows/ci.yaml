@@ -406,11 +406,6 @@ jobs:
           ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
             installEquella startEquella configureInstall setupForTests
 
-      - name: Setup node
-        uses: actions/setup-node@v2
-        with:
-          node-version: "${{ steps.nvm.outputs.NVMRC }}"
-
       - name: Run tests
         working-directory: oeq-ts-rest-api
         run: |
