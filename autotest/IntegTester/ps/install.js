@@ -27,10 +27,6 @@ https.get(
       tar.x().on("finish", () => {
         if (shell.test("-f", "./psc-package/psc-package")) {
           shell.cp("./psc-package/psc-package", "./node_modules/.bin/");
-          shell.mv(
-            "./psc-package/psc-package",
-            "./psc-package/psc-package.exe"
-          );
         }
       })
     );
