@@ -1,0 +1,217 @@
+/*
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import { UuidString } from '../Common';
+import { SelectionRestriction, TermStorageFormat } from '../Taxonomy';
+import { TargetNode, WizardControlOption } from './WizardCommonTypes';
+
+export type ControlType =
+  | 'calendar'
+  | 'checkboxgroup'
+  | 'editbox'
+  | 'html'
+  | 'listbox'
+  | 'radiogroup'
+  | 'shufflebox'
+  | 'shufflelist'
+  | 'termselector'
+  | 'userselector';
+
+/**
+ * Provide common properties of Wizard Control.
+ */
+export interface WizardBasicControl {
+  /**
+   * Whether the control must have a value.
+   */
+  mandatory: boolean;
+  /**
+   * Whether to reload all controls after a control has different value.
+   */
+  reload: boolean;
+  /**
+   * Whether the control is selectable in Admin Console Advanced Search editor.
+   */
+  include: boolean;
+  /**
+   * Number of columns typically used in Radio Button groups and Checkbox groups.
+   */
+  size1: number;
+  /**
+   * Number of rows typically used in EditBox.
+   */
+  size2: number;
+  /**
+   * The controls' customised name which is used in the Admin Console.
+   */
+  customName?: string;
+  /**
+   * Title of the control.
+   */
+  title?: string;
+  /**
+   * Description of the control.
+   */
+  description?: string;
+  /**
+   * Script which controls the visibility of the control. (Commonly run when rendering control.)
+   */
+  visibilityScript?: string;
+  /**
+   * Schema nodes that the control targets to.
+   */
+  targetNodes: TargetNode[];
+  /**
+   * Options available for selection. Empty for non-option type controls.
+   */
+  options: WizardControlOption[];
+  /**
+   * Text displayed in the criteria summary instead.
+   */
+  powerSearchFriendlyName?: string;
+  /**
+   * Type of the control.
+   */
+  controlType: ControlType;
+}
+
+/**
+ * Abstract type for controls that support text editing.
+ */
+interface WizardTextTypeControl extends WizardBasicControl {
+  /**
+   * Whether each value must be unique.
+   */
+  isForceUnique: boolean;
+  /**
+   * Whether to check duplicated values.
+   */
+  isCheckDuplication: boolean;
+}
+
+export interface WizardCalendarControl extends WizardBasicControl {
+  /**
+   * Whether to support a date range. If false, should only display a single calendar control
+   * and supply a single date value. However if true, two controls should be displayed with the
+   * values from both representing a range.
+   */
+  isRange: boolean;
+}
+
+export interface WizardShuffleListControl extends WizardTextTypeControl {
+  /**
+   * Whether to tokenise the value. If true, an '*' must be appended to the schema node in the
+   * Lucene query.
+   */
+  isTokenise: boolean;
+}
+
+export interface WizardEditBoxControl extends WizardTextTypeControl {
+  /**
+   * Whether to allow links.
+   */
+  isAllowLinks: boolean;
+  /**
+   * Whether to use numbers only.
+   */
+  isNumber: boolean;
+  /**
+   * Whether to support multiple languages.
+   */
+  isAllowMultiLang: boolean;
+}
+
+export interface WizardUserSelectorControl extends WizardBasicControl {
+  /**
+   * Attributes specific to UserSelector.
+   */
+  attributes: {
+    /**
+     * Whether to restrict user selection by groups
+     */
+    IsRestrictedGroups: boolean;
+    /**
+     * Whether selecting multiple users is supported.
+     */
+    IsSelectMultiple: boolean;
+    /**
+     * Groups which the selection is limited to.
+     */
+    RestrictToGroups: UuidString[];
+  };
+}
+
+export interface WizardTermSelectorControl extends WizardBasicControl {
+  /**
+   * Attributes specific to TermSelector.
+   */
+  attributes: {
+    KEY_ALLOW_ADD_TERMS: boolean;
+    /**
+     * Whether to allow multiple terms to be selected.
+     */
+    KEY_ALLOW_MULTIPLE: boolean;
+    /**
+     * Which UI to be displayed - TermSelector has three different UI implementations.
+     */
+    KEY_DISPLAY_TYPE:
+      | 'popupBrowser'
+      | 'autocompleteEditBox'
+      | 'widePopupBrowser';
+    /**
+     * UUID of the selected Taxonomy.
+     */
+    KEY_SELECTED_TAXONOMY: UuidString;
+    /**
+     * The restriction of term selection.
+     */
+    KEY_SELECTION_RESTRICTION: SelectionRestriction;
+    /**
+     * Whether to search the full taxonomy path or only the selected term.
+     * e.g. \a\b\term or term
+     */
+    KEY_TERM_STORAGE_FORMAT: TermStorageFormat;
+    /**
+     * Whether to allow users to navigate the taxonomy by browsing.
+     */
+    POPUP_ALLOW_BROWSING: boolean;
+    /**
+     * Whether to allow users to navigate the taxonomy by searching.
+     */
+    POPUP_ALLOW_SEARCHING: boolean;
+    /**
+     * Whether to reload the page when a term is selected. (Isn't this duplicated ?)
+     */
+    RELOAD_PAGE_ON_SELECTION: boolean;
+  };
+}
+
+/**
+ * For controls which have types not defined in `ControlType`.
+ */
+export interface UnknownWizardControl {
+  controlType: 'unknown';
+}
+
+export type WizardControl =
+  | WizardBasicControl
+  | WizardCalendarControl
+  | WizardEditBoxControl
+  | WizardShuffleListControl
+  | WizardTermSelectorControl
+  | WizardUserSelectorControl
+  | UnknownWizardControl;

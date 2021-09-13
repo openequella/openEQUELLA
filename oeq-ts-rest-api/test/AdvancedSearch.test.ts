@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 import * as OEQ from '../src';
-import { listAdvancedSearches } from '../src/AdvancedSearch';
+import {
+  getAdvancedSearchByUuid,
+  listAdvancedSearches,
+} from '../src/AdvancedSearch';
 import * as TC from './TestConfig';
 
 const API_PATH = TC.API_PATH_VANILLA;
@@ -28,4 +31,14 @@ afterAll(() => OEQ.Auth.logout(API_PATH, true));
 describe('listAdvancedSearches', () => {
   it('lists the available advanced searches in an institution', async () =>
     expect((await listAdvancedSearches(API_PATH)).length).toBeGreaterThan(0));
+});
+
+describe('getAdvancedSearchByUuid', () => {
+  it('retrieves definition of an Advanced search in an institution', async () => {
+    const { controls } = await getAdvancedSearchByUuid(
+      TC.API_PATH_FIVEO,
+      'c9fd1ae8-0dc1-ab6f-e923-1f195a22d537'
+    );
+    expect(controls).toHaveLength(13);
+  });
 });
