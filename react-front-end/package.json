@@ -14,10 +14,10 @@
     "tools": "target/tools"
   },
   "engines": {
-    "npm": "^7.19.1"
+    "npm": "7.19.1"
   },
   "scripts": {
-    "prepare": "cross-env-shell \"cd ../oeq-ts-rest-api && npm ci build\"",
+    "prepare": "cross-env-shell \"cd ../oeq-ts-rest-api && npm ci && npm run build\"",
     "install": "cross-env-shell \"mkdirp ${npm_package_config_devlang} ${npm_package_config_buildlang}\"",
     "clean": "rm -rf target/ node_modules/ .cache/",
     "compile:langbundle-tool": "cross-env-shell tsc --types \"node\" --outDir ${npm_package_config_languageBundle} build-tools/BuildLanguageBundle.ts",

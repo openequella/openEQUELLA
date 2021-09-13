@@ -3,7 +3,7 @@ lazy val adminConsoleJar = project in file("jarsrc")
 (Compile / resourceGenerators) += Def.task {
   val outJar  = (Compile / resourceManaged).value / "web/adminconsole.jar"
   val jarFile = (adminConsoleJar / assembly).value
-  (jarSigner.value).apply(jarFile, outJar)
+  IO copyFile (jarFile, outJar)
   Seq(outJar)
 }.taskValue
 

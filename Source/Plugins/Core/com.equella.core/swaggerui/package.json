@@ -4,6 +4,9 @@
     "clean": "rm -rf target/ node_modules/",
     "dev": "parcel watch index.js --out-dir=../target/scala-2.12/classes/web/apidocs --out-file=bundle.js"
   },
+  "engines": {
+    "npm": "7.19.1"
+  },
   "dependencies": {
     "swagger-ui": "3.52.0"
   },

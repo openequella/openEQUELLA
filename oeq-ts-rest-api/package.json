@@ -10,15 +10,15 @@
     "src"
   ],
   "engines": {
-    "node": ">=10"
+    "node": ">=10",
+    "npm": "7.19.1"
   },
   "scripts": {
     "start": "rollup --config --watch",
     "build": "rollup --config",
     "test": "jest --no-cache",
     "lint": "eslint \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
-    "format": "eslint --fix \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
-    "prepare": "npm run build"
+    "format": "eslint --fix \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\""
   },
   "peerDependencies": {},
   "prettier": {
