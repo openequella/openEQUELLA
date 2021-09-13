@@ -2,13 +2,10 @@
   "name": "integ-tester",
   "private": true,
   "scripts": {
-    "install": "node install.js && npm exec psc-package install",
+    "install": "node install.js && psc-package install",
     "clean": "rm -rf node_modules/ .psc-package/ psc-package",
     "build": "pulp build && parcel build --no-autoinstall --out-dir=target/www www/*.html www/*.tsx",
     "dev": "pulp build && parcel watch --no-autoinstall --out-dir=../target/scala-2.12/classes/www www/*.html www/*.tsx"
-  },
-  "bin": {
-    "psc-package": "./psc-package/psc-package.exe"
   },
   "engines": {
     "npm": "7.19.1"
