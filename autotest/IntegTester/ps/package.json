@@ -2,7 +2,8 @@
   "name": "integ-tester",
   "private": true,
   "scripts": {
-    "install": "psc-package install",
+    "install": "node install.js && psc-package install",
+    "clean": "rm -rf node_modules/ .psc-package/ psc-package",
     "build": "pulp build && parcel build --no-autoinstall --out-dir=target/www www/*.html www/*.tsx",
     "dev": "pulp build && parcel watch --no-autoinstall --out-dir=../target/scala-2.12/classes/www www/*.html www/*.tsx"
   },
@@ -11,7 +12,7 @@
   },
   "dependencies": {
     "@material-ui/core": "4.12.3",
-    "axios": "0.21.1",
+    "axios": "0.21.2",
     "babel-polyfill": "6.26.0",
     "js-md5": "0.7.3",
     "jss": "10.7.1",
@@ -21,13 +22,15 @@
     "react-dom": "17.0.2"
   },
   "devDependencies": {
-    "@types/react": "17.0.19",
+    "@types/react": "17.0.20",
     "@types/react-dom": "17.0.9",
     "mkdirp": "1.0.4",
     "parcel-bundler": "1.12.5",
-    "psc-package": "4.0.1",
     "pulp": "15.0.0",
     "purescript": "0.12.3",
-    "typescript": "4.4.2"
+    "typescript": "4.4.2",
+    "follow-redirects": "1.5.9",
+    "tar": "4.4.18",
+    "shelljs": "0.8.2"
   }
 }

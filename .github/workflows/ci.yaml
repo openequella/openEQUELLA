@@ -244,6 +244,15 @@ jobs:
           distribution: adopt
           java-version: 8
 
+      - name: Read .nvmrc
+        run: echo ::set-output name=NVMRC::$(cat .nvmrc)
+        id: nvm
+
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "${{ steps.nvm.outputs.NVMRC }}"
+
       - uses: actions/checkout@v2
 
       - name: Download Artefacts
@@ -368,6 +377,15 @@ jobs:
           distribution: adopt
           java-version: 8
 
+      - name: Read .nvmrc
+        run: echo ::set-output name=NVMRC::$(cat .nvmrc)
+        id: nvm
+
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "${{ steps.nvm.outputs.NVMRC }}"
+
       - name: Download installer
         uses: actions/download-artifact@v2
         with:
@@ -387,15 +405,6 @@ jobs:
         run: |
           ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
             installEquella startEquella configureInstall setupForTests
-
-      - name: Read .nvmrc
-        run: echo ::set-output name=NVMRC::$(cat .nvmrc)
-        id: nvm
-
-      - name: Setup node
-        uses: actions/setup-node@v2
-        with:
-          node-version: "${{ steps.nvm.outputs.NVMRC }}"
 
       - name: Run tests
         working-directory: oeq-ts-rest-api
