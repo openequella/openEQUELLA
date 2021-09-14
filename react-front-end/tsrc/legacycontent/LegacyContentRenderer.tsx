@@ -17,7 +17,7 @@
  */
 import { makeStyles } from "@material-ui/core";
 import * as React from "react";
-import HtmlParser from "react-html-parser";
+import HTMLReactParser from "html-react-parser";
 import JQueryDiv from "./JQueryDiv";
 import { PageContent } from "./LegacyContent";
 import { LegacyForm } from "./LegacyForm";
@@ -66,7 +66,7 @@ export function LegacyContentRenderer({
   ) : (
     <>
       <LegacyForm state={state}>{mainContent}</LegacyForm>
-      {form && HtmlParser(form)}
+      {form && HTMLReactParser(form)}
     </>
   );
 }

@@ -33,7 +33,7 @@ import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useEffect, useState } from "react";
-import ReactHtmlParser from "react-html-parser";
+import HTMLReactParser from "html-react-parser";
 import { useHistory } from "react-router";
 import { HashLink } from "react-router-hash-link";
 import { sprintf } from "sprintf-js";
@@ -323,7 +323,7 @@ export default function SearchResult({
             {
               /**Custom metadata can contain html tags, we should make sure that is
           preserved */
-              ReactHtmlParser(element.html)
+              HTMLReactParser(element.html)
             }
           </Typography>
         </ListItem>
@@ -332,7 +332,7 @@ export default function SearchResult({
   );
 
   const highlightField = (fieldValue: string) =>
-    ReactHtmlParser(highlight(fieldValue, highlights, classes.highlight));
+    HTMLReactParser(highlight(fieldValue, highlights, classes.highlight));
 
   const itemLink = () => {
     const itemTitle = name ? highlightField(name) : uuid;
