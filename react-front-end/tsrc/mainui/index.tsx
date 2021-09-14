@@ -27,6 +27,17 @@ export type EntryPage = "mainDiv" | "searchPage" | "settingsPage";
 const App = React.lazy(() => import("./App"));
 
 export default function main(entry: EntryPage) {
+  if (process.env.NODE_ENV === "production") {
+    const nop = () => {};
+    console = {
+      ...console,
+      debug: nop,
+      log: nop,
+      time: nop,
+      timeEnd: nop,
+    };
+  }
+
   initStrings();
   ReactDOM.render(
     <React.Suspense fallback={<>loading</>}>
