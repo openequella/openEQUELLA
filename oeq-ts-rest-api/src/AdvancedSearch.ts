@@ -35,7 +35,7 @@ export interface WizardDefinition {
   /**
    * A list of Collections configured to limit the search result.
    */
-  collections: string[];
+  collections: BaseEntitySummary[];
   /**
    * All the Wizard Controls of an Advanced Search.
    */

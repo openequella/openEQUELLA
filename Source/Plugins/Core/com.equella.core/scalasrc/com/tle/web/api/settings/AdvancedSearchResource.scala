@@ -31,7 +31,7 @@ import scala.collection.JavaConverters._
 
 case class AdvancedSearch(name: Option[String],
                           description: Option[String],
-                          collections: List[String],
+                          collections: List[BaseEntitySummary],
                           // WizardControlDefinition is an abstraction without real data structure so use 'ApiModelProperty'
                           // to provide a concrete structure.
                           @ApiModelProperty(dataType = "com.tle.web.api.wizard.WizardBasicControl")
@@ -76,7 +76,7 @@ class AdvancedSearchResource {
     Option(powerSearchService.getByUuid(uuid)) match {
       case Some(ps) =>
         val controls    = wizardControlConverter(ps.getWizard.getControls.asScala.toList)
-        val collections = ps.getItemdefs.asScala.map(c => c.getUuid).toList
+        val collections = ps.getItemdefs.asScala.map(c => BaseEntitySummary(c)).toList
         val name        = getStringFromCurrentLocale(ps.getName)
         val description = getStringFromCurrentLocale(ps.getDescription)
         Response
