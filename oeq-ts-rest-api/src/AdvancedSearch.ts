@@ -23,13 +23,13 @@ import { WizardControl } from './wizard/WizardControl';
 /**
  * Definition of an Advanced Search.
  */
-export interface WizardDefinition {
+export interface AdvancedSearchDefinition {
   /**
-   * Name of an Advanced Search.
+   * Name of the Advanced Search.
    */
   name?: string;
   /**
-   * Description of an Advanced Search.
+   * Description of the Advanced Search.
    */
   description?: string;
   /**
@@ -37,7 +37,7 @@ export interface WizardDefinition {
    */
   collections: BaseEntitySummary[];
   /**
-   * All the Wizard Controls of an Advanced Search.
+   * All the Wizard Controls of the Advanced Search.
    */
   controls: WizardControl[];
 }
@@ -61,8 +61,9 @@ export const listAdvancedSearches = (
 export const getAdvancedSearchByUuid = (
   apiBasePath: string,
   uuid: string
-): Promise<WizardDefinition> =>
+): Promise<AdvancedSearchDefinition> =>
   GET(
     apiBasePath + ADV_SEARCH_SETTINGS_ROOT_PATH + uuid,
-    (data: unknown): data is WizardDefinition => is<WizardDefinition>(data)
+    (data: unknown): data is AdvancedSearchDefinition =>
+      is<AdvancedSearchDefinition>(data)
   );

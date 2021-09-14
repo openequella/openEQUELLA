@@ -26,7 +26,7 @@ export enum SelectionRestriction {
 }
 
 /**
- * Formats which ae used to search for a term.
+ * Formats which are used to search for a term.
  */
 export enum TermStorageFormat {
   FULL_PATH = 'FULL_PATH',

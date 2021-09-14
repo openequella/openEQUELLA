@@ -33,17 +33,17 @@ export interface TargetNode {
    */
   fullTarget: string;
   /**
-   * XOQ path of the target node.
+   * XOQL path of the target node.
    */
   xoqlPath: string;
   /**
-   * Free text field of the target node.
+   * Free text search index of the target node.
    */
   freetextField: string;
 }
 
 /**
- * Options of Option' type control such as CheckBox Group and Shuffle List.
+ * Options of 'Option' type control such as CheckBox Group and Shuffle List.
  */
 export interface WizardControlOption {
   text?: string;

@@ -19,6 +19,9 @@ import { UuidString } from '../Common';
 import { SelectionRestriction, TermStorageFormat } from '../Taxonomy';
 import { TargetNode, WizardControlOption } from './WizardCommonTypes';
 
+/**
+ * Supported Wizard Control types.
+ */
 export type ControlType =
   | 'calendar'
   | 'checkboxgroup'
@@ -143,15 +146,15 @@ export interface WizardUserSelectorControl extends WizardBasicControl {
     /**
      * Whether to restrict user selection by groups
      */
-    IsRestrictedGroups: boolean;
+    isRestrictedGroups: boolean;
     /**
      * Whether selecting multiple users is supported.
      */
-    IsSelectMultiple: boolean;
+    isSelectMultiple: boolean;
     /**
      * Groups which the selection is limited to.
      */
-    RestrictToGroups: UuidString[];
+    restrictToGroups: UuidString[];
   };
 }
 
