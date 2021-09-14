@@ -325,3 +325,25 @@ export const queryCollectionSelector = (container: HTMLElement) =>
  */
 export const queryStatusSelector = (container: HTMLElement) =>
   queryRefineSearchComponent(container, "StatusSelector");
+
+/**
+ * Helper function to assist in finding the Classification panel.
+ * @param container The root container where <ClassificationsPanel/> exists
+ */
+export const queryClassificationPanel = (
+  container: Element
+): HTMLDivElement | null =>
+  container.querySelector<HTMLDivElement>("#classification-panel");
+
+/**
+ * Similar to queryClassificationPanel but throws an error if ClassificationsPanel is not found.
+ * @param container The root container where <ClassificationsPanel/> exists
+ */
+export const getClassificationPanel = (container: Element): HTMLDivElement => {
+  const classificationPanel = queryClassificationPanel(container);
+  if (!classificationPanel) {
+    throw new Error("Unable to find Classification panel");
+  }
+
+  return classificationPanel;
+};

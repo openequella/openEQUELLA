@@ -23,6 +23,8 @@ import { languageStrings } from "../../../tsrc/util/langstrings";
 import {
   initialiseEssentialMocks,
   mockCollaborators,
+  queryClassificationPanel,
+  queryCollectionSelector,
   renderSearchPage,
 } from "./SearchPageTestHelper";
 
@@ -87,5 +89,19 @@ describe("Advanced Search filter button", () => {
     // Toggle to show again
     togglePanel();
     expect(queryAdvSearchPanel()).toBeInTheDocument();
+  });
+});
+
+describe("Hide components", () => {
+  it("does not show Collection Selector", async () => {
+    const { container } = await renderAdvancedSearchPage();
+    expect(queryCollectionSelector(container)).not.toBeInTheDocument();
+  });
+
+  it("does not list Classifications and show Classification panel", async () => {
+    mockListClassification.mockClear();
+    const { container } = await renderAdvancedSearchPage();
+    expect(mockListClassification).not.toHaveBeenCalled();
+    expect(queryClassificationPanel(container)).not.toBeInTheDocument();
   });
 });

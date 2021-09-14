@@ -157,6 +157,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
   // If an Advanced Search ID has been provided, use that otherwise check to see if one
   // was passed in by the Router.
   advancedSearchId = advancedSearchId ?? advancedSearchIdParam;
+  const isInAdvancedSearchMode = advancedSearchId !== undefined;
 
   const [state, dispatch] = useReducer(reducer, { status: "initialising" });
   const defaultSearchPageHistory: SearchPageHistoryState = {
@@ -338,26 +339,27 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
       };
 
       // Depending on what display mode we're in, determine which function we use to list
-      // the classifications to match the search.
+      // the classifications to match the search. However, do not list classifications in
+      // Advanced search mode.
+      const emptyClassifications = () => Promise.resolve<Classification[]>([]);
       const getClassifications: (
         _: SearchOptions
-      ) => Promise<Classification[]> = pipe(
-        state.options.displayMode,
-        (mode) => {
-          switch (mode) {
-            case "gallery-image":
-              return listImageGalleryClassifications;
-            case "gallery-video":
-              return listVideoGalleryClassifications;
-            case "list":
-              return listClassifications;
-            default:
-              throw new TypeError(
-                "Unexpected `displayMode` for determining classifications listing function"
-              );
-          }
-        }
-      );
+      ) => Promise<Classification[]> = isInAdvancedSearchMode
+        ? emptyClassifications
+        : pipe(state.options.displayMode, (mode) => {
+            switch (mode) {
+              case "gallery-image":
+                return listImageGalleryClassifications;
+              case "gallery-video":
+                return listVideoGalleryClassifications;
+              case "list":
+                return listClassifications;
+              default:
+                throw new TypeError(
+                  "Unexpected `displayMode` for determining classifications listing function"
+                );
+            }
+          });
 
       setSearchPageOptions(state.options);
       Promise.all([doSearch(state.options), getClassifications(state.options)])
@@ -386,7 +388,14 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
         )
         .catch(searchPageErrorHandler);
     }
-  }, [dispatch, filterExpansion, searchPageErrorHandler, history, state]);
+  }, [
+    dispatch,
+    filterExpansion,
+    searchPageErrorHandler,
+    history,
+    state,
+    isInAdvancedSearchMode,
+  ]);
 
   // In Selection Session, once a new search result is returned, make each
   // new search result Item draggable. Could probably merge into 'searching'
@@ -707,7 +716,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
           value={searchPageOptions.collections}
         />
       ),
-      disabled: advancedSearchId !== undefined,
+      disabled: isInAdvancedSearchMode,
       alwaysVisible: true,
     },
     {
