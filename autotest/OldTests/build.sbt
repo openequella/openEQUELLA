@@ -1,7 +1,7 @@
 import de.johoop.testngplugin.TestNGPlugin
 import scala.collection.JavaConverters._
 
-libraryDependencies += "com.opencsv" % "opencsv" % "5.5.1"
+libraryDependencies += "com.opencsv" % "opencsv" % "5.5.2"
 libraryDependencies ++= Seq(
   "org.testng"         % "testng"             % "6.14.3" % Test,
   "log4j"              % "log4j"              % "1.2.17" % Test,
