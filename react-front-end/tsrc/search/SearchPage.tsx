@@ -707,7 +707,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
           value={searchPageOptions.collections}
         />
       ),
-      disabled: false,
+      disabled: advancedSearchId !== undefined,
       alwaysVisible: true,
     },
     {
