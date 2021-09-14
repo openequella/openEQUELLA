@@ -263,7 +263,7 @@ class ThemePage extends React.Component<
     const { classes } = this.props;
 
     return (
-      <Grid container spacing={2} direction="row" justify="flex-end">
+      <Grid container spacing={2} direction="row" justifyContent="flex-end">
         <Grid item>
           <Typography className={classes.fileName} color="textSecondary">
             {this.state.fileName ?? ""}

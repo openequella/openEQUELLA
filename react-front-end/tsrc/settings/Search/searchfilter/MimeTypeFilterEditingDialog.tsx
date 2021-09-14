@@ -133,13 +133,7 @@ const MimeTypeFilterEditingDialog = ({
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      disableBackdropClick
-      disableEscapeKeyDown
-      fullWidth
-    >
+    <Dialog open={open} fullWidth>
       <DialogTitle>
         {mimeTypeFilter ? searchFilterStrings.edit : searchFilterStrings.add}
       </DialogTitle>

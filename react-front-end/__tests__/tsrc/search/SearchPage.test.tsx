@@ -15,7 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createMuiTheme, MuiThemeProvider } from "@material-ui/core";
+import { MuiThemeProvider } from "@material-ui/core";
+import { createTheme } from "@material-ui/core/styles";
 import type { Theme } from "@material-ui/core/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
@@ -90,7 +91,7 @@ import {
   queryStatusSelector,
 } from "./SearchPageHelper";
 
-const defaultTheme = createMuiTheme({
+const defaultTheme = createTheme({
   props: { MuiWithWidth: { initialWidth: "md" } },
 });
 const mockCollections = jest.spyOn(CollectionsModule, "collectionListSummary");
@@ -834,7 +835,7 @@ describe("In Selection Session", () => {
 });
 
 describe("Responsiveness", () => {
-  const theme = createMuiTheme({
+  const theme = createTheme({
     props: { MuiWithWidth: { initialWidth: "sm" } },
   });
 
