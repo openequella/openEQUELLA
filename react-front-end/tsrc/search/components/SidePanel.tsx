@@ -28,7 +28,7 @@ interface SidePanelProps {
    */
   refinePanelProps: RefinePanelProps;
   /**
-   * Props passed to Classifications Panel
+   * Props passed to Classifications Panel, if undefined the panel is not displayed.
    */
   classificationsPanelProps?: CategorySelectorProps;
 }

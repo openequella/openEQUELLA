@@ -366,10 +366,9 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
             state.options
           );
           // Do not list classifications in Advanced search mode.
-          const classifications: Classification[] =
-            advancedSearchId === undefined
-              ? await getClassifications(state.options)
-              : [];
+          const classifications: Classification[] = !advancedSearchId
+            ? await getClassifications(state.options)
+            : [];
 
           dispatch({
             type: "search-complete",
@@ -725,7 +724,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
           value={searchPageOptions.collections}
         />
       ),
-      disabled: advancedSearchId !== undefined,
+      disabled: !!advancedSearchId,
       alwaysVisible: true,
     },
     {
@@ -843,13 +842,14 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
           onClose: () => setShowRefinePanel(false),
         }}
         classificationsPanelProps={
-          advancedSearchId !== undefined
-            ? undefined
-            : {
+          // When in advanced search mode, hide classifications panel
+          !advancedSearchId
+            ? {
                 classifications: getClassifications(),
                 onSelectedCategoriesChange: handleSelectedCategoriesChange,
                 selectedCategories: searchPageOptions.selectedCategories,
               }
+            : undefined
         }
       />
     );
