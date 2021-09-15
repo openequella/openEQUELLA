@@ -30,12 +30,45 @@ import com.dytech.edge.wizard.beans.control.{
   ShuffleList,
   WizardControl
 }
+import com.tle.common.taxonomy.wizard.TermSelectorControl
+import com.tle.common.wizard.controls.userselector.UserSelectorControl
 import org.slf4j.LoggerFactory
-
-import scala.collection.JavaConverters._
 
 object WizardControlHelper {
   private val LOGGER = LoggerFactory.getLogger(getClass)
+
+  /**
+    * `CustomControl` has multiple subclasses. Call this function to convert a subclass
+    * to `WizardControlDefinition`. If fail to convert, return `UnknownWizardControl`.
+    *
+    * @param customControl An instance of CustomControl.
+    */
+  def wizardCustomControlConverter(customControl: CustomControl): WizardControlDefinition = {
+    customControl.getClassType match {
+      case UserSelectorControl.CLASS_TYPE =>
+        val control = new UserSelectorControl(customControl)
+        WizardUserSelector(
+          WizardBasicControl(control),
+          control.isSelectMultiple,
+          control.isRestricted(UserSelectorControl.KEY_RESTRICT_USER_GROUPS),
+          control.getRestrictedTo(UserSelectorControl.KEY_RESTRICT_USER_GROUPS)
+        )
+      case TermSelectorControl.CLASS_TYPE =>
+        val control = new TermSelectorControl(customControl)
+        WizardTermSelector(
+          WizardBasicControl(control),
+          control.getDisplayType,
+          control.isAllowAddTerms,
+          control.isAllowMultiple,
+          control.getSelectedTaxonomy,
+          control.getSelectionRestriction,
+          control.getTermStorageFormat
+        )
+      case _ =>
+        LOGGER.error("Unknown Custom Control type")
+        UnknownWizardControl()
+    }
+  }
 
   /**
     * Convert a list of `com.dytech.edge.wizard.beans.control.WizardControl` to a list of `WizardControlDefinition`
@@ -58,12 +91,7 @@ object WizardControlHelper {
                              c.isNumber,
                              c.isAllowMultiLang,
                              ControlUniqueConstraints(c.isForceUnique, c.isCheckDuplication))
-      case c: CustomControl =>
-        // The attribute map in Java is (Object -> Object), but all the keys are actually String, so
-        // here we convert the map to (String -> Object) by calling `toString`.
-        val attributes: Map[Object, Object] = c.getAttributes.asScala.toMap
-        val convertedAttributes             = attributes.map { case (key, value) => (key.toString -> value) }
-        WizardCustomControl(WizardBasicControl(c), convertedAttributes)
+      case c: CustomControl => wizardCustomControlConverter(c)
       case _ =>
         LOGGER.error("Unknown Wizard Control type")
         UnknownWizardControl()

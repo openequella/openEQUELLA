@@ -19,16 +19,12 @@
 /**
  * Restrictions applied to Taxonomy term selection.
  */
-export enum SelectionRestriction {
-  TOP_LEVEL_ONLY = 'TOP_LEVEL_ONLY',
-  LEAF_ONLY = 'LEAF_ONLY',
-  UNRESTRICTED = 'UNRESTRICTED',
-}
+export type SelectionRestriction =
+  | 'TOP_LEVEL_ONLY'
+  | 'LEAF_ONLY'
+  | 'UNRESTRICTED';
 
 /**
  * Formats which are used to search for a term.
  */
-export enum TermStorageFormat {
-  FULL_PATH = 'FULL_PATH',
-  LEAF_ONLY = 'LEAF_ONLY',
-}
+export type TermStorageFormat = 'FULL_PATH' | 'LEAF_ONLY';

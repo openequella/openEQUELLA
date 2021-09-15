@@ -140,67 +140,45 @@ export interface WizardEditBoxControl extends WizardTextTypeControl {
 
 export interface WizardUserSelectorControl extends WizardBasicControl {
   /**
-   * Attributes specific to UserSelector.
+   * Whether to restrict user selection by groups.
    */
-  attributes: {
-    /**
-     * Whether to restrict user selection by groups
-     */
-    isRestrictedGroups: boolean;
-    /**
-     * Whether selecting multiple users is supported.
-     */
-    isSelectMultiple: boolean;
-    /**
-     * Groups which the selection is limited to.
-     */
-    restrictToGroups: UuidString[];
-  };
+  isRestricted: boolean;
+  /**
+   * Whether selecting multiple users is supported.
+   */
+  isSelectMultiple: boolean;
+  /**
+   * Groups which the selection is limited to.
+   */
+  restrictedTo: UuidString[];
 }
 
 export interface WizardTermSelectorControl extends WizardBasicControl {
   /**
-   * Attributes specific to TermSelector.
+   * Whether to allow adding terms.
    */
-  attributes: {
-    KEY_ALLOW_ADD_TERMS: boolean;
-    /**
-     * Whether to allow multiple terms to be selected.
-     */
-    KEY_ALLOW_MULTIPLE: boolean;
-    /**
-     * Which UI to be displayed - TermSelector has three different UI implementations.
-     */
-    KEY_DISPLAY_TYPE:
-      | 'popupBrowser'
-      | 'autocompleteEditBox'
-      | 'widePopupBrowser';
-    /**
-     * UUID of the selected Taxonomy.
-     */
-    KEY_SELECTED_TAXONOMY: UuidString;
-    /**
-     * The restriction of term selection.
-     */
-    KEY_SELECTION_RESTRICTION: SelectionRestriction;
-    /**
-     * Whether to search the full taxonomy path or only the selected term.
-     * e.g. \a\b\term or term
-     */
-    KEY_TERM_STORAGE_FORMAT: TermStorageFormat;
-    /**
-     * Whether to allow users to navigate the taxonomy by browsing.
-     */
-    POPUP_ALLOW_BROWSING: boolean;
-    /**
-     * Whether to allow users to navigate the taxonomy by searching.
-     */
-    POPUP_ALLOW_SEARCHING: boolean;
-    /**
-     * Whether to reload the page when a term is selected. (Isn't this duplicated ?)
-     */
-    RELOAD_PAGE_ON_SELECTION: boolean;
-  };
+  isAllowAddTerms: boolean;
+  /**
+   * Whether to allow multiple terms to be selected.
+   */
+  isAllowMultiple: boolean;
+  /**
+   * Which UI to be displayed - TermSelector has three different UI implementations.
+   */
+  displayType: 'popupBrowser' | 'autocompleteEditBox' | 'widePopupBrowser';
+  /**
+   * UUID of the selected Taxonomy.
+   */
+  selectedTaxonomy: UuidString;
+  /**
+   * The restriction of term selection.
+   */
+  selectionRestriction: SelectionRestriction;
+  /**
+   * Whether to search the full taxonomy path or only the selected term.
+   * e.g. \a\b\term or term
+   */
+  termStorageFormat: TermStorageFormat;
 }
 
 /**

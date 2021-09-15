@@ -37,8 +37,10 @@ public class TermSelectorControl extends CustomControl {
     LEAF_ONLY;
   }
 
+  public static final String CLASS_TYPE = "termselector";
+
   public TermSelectorControl() {
-    setClassType("termselector"); // $NON-NLS-1$
+    setClassType(CLASS_TYPE); // $NON-NLS-1$
   }
 
   public TermSelectorControl(CustomControl cloned) {
