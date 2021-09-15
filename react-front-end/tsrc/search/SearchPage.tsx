@@ -146,6 +146,8 @@ interface AdvancedSearchParams {
 type SearchPageProps = TemplateUpdateProps & AdvancedSearchParams;
 
 const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
+  console.debug("START: <SearchPage>");
+
   const history = useHistory();
   const exitAdvancedSearchMode = () => history.push(NEW_SEARCH_PATH);
   const location = useLocation();
@@ -246,6 +248,10 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
       return;
     }
 
+    const timerId = "sp-init";
+    console.debug("SearchPage: useEffect - initialising");
+    console.time(timerId);
+
     updateTemplate((tp) => ({
       ...templateDefaults(searchStrings.title)(tp),
     }));
@@ -295,6 +301,8 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
       .catch((e) => {
         searchPageErrorHandler(e);
       });
+
+    console.timeEnd(timerId);
   }, [
     dispatch,
     searchPageErrorHandler,
@@ -310,6 +318,10 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
    */
   useEffect(() => {
     if (state.status === "searching") {
+      const timerId = "sp-searching";
+      console.debug("SearchPage: useEffect - searching");
+      console.time(timerId);
+
       const gallerySearch = async (
         search: typeof imageGallerySearch | typeof videoGallerySearch,
         options: SearchPageOptions
@@ -385,6 +397,8 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
           }
         )
         .catch(searchPageErrorHandler);
+
+      console.timeEnd(timerId);
     }
   }, [dispatch, filterExpansion, searchPageErrorHandler, history, state]);
 
