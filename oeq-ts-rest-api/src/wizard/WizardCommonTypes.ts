@@ -25,7 +25,7 @@ export interface TargetNode {
    */
   target: string;
   /**
-   * Attributes of the target node.
+   * Attribute of the target node.
    */
   attribute: string;
   /**

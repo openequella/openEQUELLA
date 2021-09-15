@@ -113,6 +113,7 @@ export interface WizardCalendarControl extends WizardBasicControl {
    * values from both representing a range.
    */
   isRange: boolean;
+  controlType: 'calendar';
 }
 
 export interface WizardShuffleListControl extends WizardTextTypeControl {
@@ -121,6 +122,7 @@ export interface WizardShuffleListControl extends WizardTextTypeControl {
    * Lucene query.
    */
   isTokenise: boolean;
+  controlType: 'shufflelist';
 }
 
 export interface WizardEditBoxControl extends WizardTextTypeControl {
@@ -136,6 +138,7 @@ export interface WizardEditBoxControl extends WizardTextTypeControl {
    * Whether to support multiple languages.
    */
   isAllowMultiLang: boolean;
+  controlType: 'editbox';
 }
 
 export interface WizardUserSelectorControl extends WizardBasicControl {
@@ -151,6 +154,7 @@ export interface WizardUserSelectorControl extends WizardBasicControl {
    * Groups which the selection is limited to.
    */
   restrictedTo: UuidString[];
+  controlType: 'userselector';
 }
 
 export interface WizardTermSelectorControl extends WizardBasicControl {
@@ -179,6 +183,7 @@ export interface WizardTermSelectorControl extends WizardBasicControl {
    * e.g. \a\b\term or term
    */
   termStorageFormat: TermStorageFormat;
+  controlType: 'termselector';
 }
 
 /**
