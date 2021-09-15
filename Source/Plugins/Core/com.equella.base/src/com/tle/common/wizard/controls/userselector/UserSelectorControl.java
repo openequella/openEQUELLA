@@ -29,9 +29,10 @@ public class UserSelectorControl extends CustomControl {
   private static final String KEY_RESTRICT_CHOICES_PREFIX = "RestrictTo";
 
   public static final String KEY_RESTRICT_USER_GROUPS = "Groups";
+  public static final String CLASS_TYPE = "userselector";
 
   public UserSelectorControl() {
-    setClassType("userselector");
+    setClassType(CLASS_TYPE);
   }
 
   public UserSelectorControl(CustomControl cloned) {
