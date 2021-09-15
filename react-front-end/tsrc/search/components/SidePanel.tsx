@@ -30,7 +30,7 @@ interface SidePanelProps {
   /**
    * Props passed to Classifications Panel
    */
-  classificationsPanelProps: CategorySelectorProps;
+  classificationsPanelProps?: CategorySelectorProps;
 }
 
 /**
@@ -44,7 +44,7 @@ export const SidePanel = ({
     <Grid item id="refine-panel">
       <RefineSearchPanel {...refinePanelProps} />
     </Grid>
-    {classificationsPanelProps.classifications.some(
+    {classificationsPanelProps?.classifications.some(
       (c) => c.categories.length > 0
     ) && (
       <Grid item id="classification-panel">
