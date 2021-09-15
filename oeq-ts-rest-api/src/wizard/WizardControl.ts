@@ -201,3 +201,12 @@ export type WizardControl =
   | WizardTermSelectorControl
   | WizardUserSelectorControl
   | UnknownWizardControl;
+
+/**
+ * Type guard to narrow the type from WizardControl down to WizardBasicControl.
+ *
+ * @param control An objet of WizardControl.
+ */
+export const isWizardBasicControl = (
+  control: WizardControl
+): control is WizardBasicControl => control.controlType !== 'unknown';

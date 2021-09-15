@@ -31,6 +31,16 @@ export const getAdvancedSearchesFromServer: () => Promise<
 );
 
 /**
+ * Retrieve definition of the Advanced search by UUID.
+ *
+ * @param uuid UUID of the Advanced search.
+ */
+export const getAdvancedSearchByUuid = (
+  uuid: string
+): Promise<OEQ.AdvancedSearch.AdvancedSearchDefinition> =>
+  OEQ.AdvancedSearch.getAdvancedSearchByUuid(API_BASE_URL, uuid);
+
+/**
  * If the URL is the new Advanced Search path, get ID from the path.
  * If it's the old one, get ID from query param.
  *

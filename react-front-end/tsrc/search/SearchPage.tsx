@@ -36,7 +36,10 @@ import MessageInfo, { MessageInfoVariant } from "../components/MessageInfo";
 import { AppRenderErrorContext } from "../mainui/App";
 import { NEW_SEARCH_PATH, routes } from "../mainui/routes";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
-import { getAdvancedSearchesFromServer } from "../modules/AdvancedSearchModule";
+import {
+  getAdvancedSearchByUuid,
+  getAdvancedSearchesFromServer,
+} from "../modules/AdvancedSearchModule";
 import type { Collection } from "../modules/CollectionsModule";
 import { addFavouriteSearch } from "../modules/FavouriteModule";
 import {
@@ -197,6 +200,9 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
   const [advancedSearches, setAdvancedSearches] = useState<
     OEQ.Common.BaseEntitySummary[]
   >([]);
+  const [wizardDefinition, setWizardDefinition] = useState<
+    OEQ.AdvancedSearch.AdvancedSearchDefinition | undefined
+  >();
 
   const [currentUser, setCurrentUser] =
     React.useState<OEQ.LegacyContent.CurrentUserDetails>();
@@ -265,6 +271,9 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
         : generateSearchPageOptionsFromQueryString(location),
       getCurrentUserDetails(),
       getAdvancedSearchesFromServer(),
+      advancedSearchId
+        ? getAdvancedSearchByUuid(advancedSearchId)
+        : Promise.resolve(undefined),
     ])
       .then(
         ([
@@ -273,6 +282,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
           queryStringSearchOptions,
           currentUserDetails,
           advancedSearches,
+          advancedSearchDefinition,
         ]) => {
           setSearchSettings({
             core: searchSettings,
@@ -280,6 +290,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
           });
           setAdvancedSearches(advancedSearches);
           setCurrentUser(currentUserDetails);
+          setWizardDefinition(advancedSearchDefinition);
           search(
             queryStringSearchOptions
               ? {
@@ -291,6 +302,9 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
                 }
               : {
                   ...searchPageOptions,
+                  collections:
+                    advancedSearchDefinition?.collections ??
+                    searchPageOptions.collections,
                   sortOrder:
                     searchPageOptions.sortOrder ??
                     searchSettings.defaultSearchSort,
@@ -311,6 +325,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
     searchPageOptions,
     state.status,
     updateTemplate,
+    advancedSearchId,
   ]);
 
   /**
@@ -941,10 +956,10 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
                 }
               />
             </Grid>
-            {showAdvSearchPanel && (
+            {showAdvSearchPanel && wizardDefinition && (
               <Grid item xs={12}>
                 <AdvancedSearchPanel
-                  wizardDefinition={`{title: 'placeholder wizard definition', advancedSearchId: '${advancedSearchId}}`}
+                  wizardDefinition={wizardDefinition}
                   onSubmit={
                     // In the future, this would merge the updated Advanced Search Criteria into
                     // searchPageOptions before calling search()

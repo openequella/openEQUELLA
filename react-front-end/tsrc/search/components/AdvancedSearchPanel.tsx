@@ -21,18 +21,20 @@ import {
   CardActions,
   CardContent,
   CardHeader,
+  Grid,
   Typography,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import React from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { languageStrings } from "../../util/langstrings";
+import * as OEQ from "@openequella/rest-api-client";
 
 export interface AdvancedSearchPanelProps {
   /**
    * JSON string defining the advanced search wizard.
    */
-  wizardDefinition: string;
+  wizardDefinition: OEQ.AdvancedSearch.AdvancedSearchDefinition;
 
   /**
    * The values of current Advanced Search criteria.
@@ -72,8 +74,14 @@ export const AdvancedSearchPanel = ({
       }
     />
     <CardContent>
-      <Typography>TODO: AdvancedSearchForm will be here</Typography>
-      <code>{wizardDefinition}</code>
+      <Typography>{wizardDefinition.name}</Typography>
+      <Grid container direction="column">
+        {wizardDefinition.controls
+          .filter(OEQ.AdvancedSearch.isWizardBasicControl)
+          .map((c) => (
+            <Grid item>{c.title}</Grid>
+          ))}
+      </Grid>
     </CardContent>
     <CardActions>
       <Button onClick={() => onSubmit(values)} color="primary">
