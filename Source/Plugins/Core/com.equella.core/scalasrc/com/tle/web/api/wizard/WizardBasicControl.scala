@@ -21,7 +21,9 @@ package com.tle.web.api.wizard
 import com.dytech.edge.wizard.TargetNode
 import com.dytech.edge.wizard.beans.control.{WizardControl, WizardControlItem}
 import com.fasterxml.jackson.annotation.JsonUnwrapped
-import com.tle.common.i18n.{LangUtils}
+import com.tle.common.i18n.LangUtils
+import com.tle.common.taxonomy.SelectionRestriction
+import com.tle.common.taxonomy.wizard.TermSelectorControl.TermStorageFormat
 import com.tle.web.api.language.LanguageStringHelper.getStringFromCurrentLocale
 import scala.collection.JavaConverters._
 
@@ -160,6 +162,44 @@ case class WizardCustomControl(
     @JsonUnwrapped
     basicControl: WizardBasicControl,
     attributes: Map[String, Object]
+) extends WizardControlDefinition
+
+/**
+  * Data structure for TermSelector control.
+  *
+  * @param basicControl The basic control providing common fields.
+  * @param selectedTaxonomy Taxonomy selected to search terms.
+  * @param isAllowMultiple Whether to allow multiple selections.
+  * @param isAllowAddTerms Whether to allow adding terms.
+  * @param termStorageFormat Whether to use full taxonomy path or only the selected term.
+  * @param selectionRestriction The restriction of term selection.
+  * @param displayType Which UI to be displayed - TermSelector has three different UI implementations.
+  */
+case class WizardTermSelector(
+    @JsonUnwrapped
+    basicControl: WizardBasicControl,
+    displayType: String,
+    isAllowAddTerms: Boolean,
+    isAllowMultiple: Boolean,
+    selectedTaxonomy: String,
+    selectionRestriction: SelectionRestriction,
+    termStorageFormat: TermStorageFormat,
+) extends WizardControlDefinition
+
+/**
+  * Data structure for UserSelector control.
+  *
+  * @param basicControl The basic control providing common fields.
+  * @param isSelectMultiple Whether to allow selecting multiple users.
+  * @param isRestricted Whether to restrict user selection by groups.
+  * @param restrictedTo Groups which the selection is limited to.
+  */
+case class WizardUserSelector(
+    @JsonUnwrapped
+    basicControl: WizardBasicControl,
+    isSelectMultiple: Boolean,
+    isRestricted: Boolean,
+    restrictedTo: java.util.Set[String]
 ) extends WizardControlDefinition
 
 /**

@@ -128,6 +128,8 @@ export const withErrorHandler =
     );
 
 const App = ({ entryPage }: AppProps): JSX.Element => {
+  console.debug("START: <App>");
+
   const [error, setError] = React.useState<Error | string | undefined>();
   const appErrorHandler = useCallback(
     (error: Error | string) => setError(error),
