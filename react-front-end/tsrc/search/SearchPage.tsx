@@ -959,7 +959,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
             {showAdvSearchPanel && wizardDefinition && (
               <Grid item xs={12}>
                 <AdvancedSearchPanel
-                  wizardDefinition={wizardDefinition}
+                  wizardControls={wizardDefinition.controls}
                   onSubmit={
                     // In the future, this would merge the updated Advanced Search Criteria into
                     // searchPageOptions before calling search()

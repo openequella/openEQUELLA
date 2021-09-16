@@ -17,6 +17,7 @@
  */
 import { Meta, Story } from "@storybook/react";
 import * as React from "react";
+import { getAdvancedSearchDefinition } from "../../__mocks__/AdvancedSearchModule.mock";
 import {
   AdvancedSearchPanel,
   AdvancedSearchPanelProps,
@@ -39,5 +40,5 @@ export const Simple: Story<AdvancedSearchPanelProps> = (args) => (
   <AdvancedSearchPanel {...args} />
 );
 Simple.args = {
-  wizardDefinition: "{title: 'A Wizard Definition', controls: []}",
+  wizardControls: getAdvancedSearchDefinition.controls,
 };

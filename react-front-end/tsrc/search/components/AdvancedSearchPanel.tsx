@@ -22,7 +22,6 @@ import {
   CardContent,
   CardHeader,
   Grid,
-  Typography,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import React from "react";
@@ -32,9 +31,9 @@ import * as OEQ from "@openequella/rest-api-client";
 
 export interface AdvancedSearchPanelProps {
   /**
-   * JSON string defining the advanced search wizard.
+   * A list of Wizard controls.
    */
-  wizardDefinition: OEQ.AdvancedSearch.AdvancedSearchDefinition;
+  wizardControls: OEQ.WizardControl.WizardControl[];
 
   /**
    * The values of current Advanced Search criteria.
@@ -56,7 +55,7 @@ export interface AdvancedSearchPanelProps {
 }
 
 export const AdvancedSearchPanel = ({
-  wizardDefinition,
+  wizardControls,
   values,
   onClose,
   onSubmit,
@@ -74,10 +73,9 @@ export const AdvancedSearchPanel = ({
       }
     />
     <CardContent>
-      <Typography>{wizardDefinition.name}</Typography>
       <Grid container direction="column">
-        {wizardDefinition.controls
-          .filter(OEQ.AdvancedSearch.isWizardBasicControl)
+        {wizardControls
+          .filter(OEQ.WizardControl.isWizardBasicControl)
           .map((c) => (
             <Grid item>{c.title}</Grid>
           ))}
