@@ -372,35 +372,51 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
       );
 
       setSearchPageOptions(state.options);
-      Promise.all([doSearch(state.options), getClassifications(state.options)])
-        .then(
-          ([result, classifications]: [
-            SearchPageSearchResult,
-            Classification[]
-          ]) => {
-            dispatch({
-              type: "search-complete",
-              result: { ...result },
-              classifications: [...classifications],
-            });
-            // Update history
-            history.replace({
-              ...history.location,
-              state: { searchPageOptions: state.options, filterExpansion },
-            });
-            // Save the value of wildcard mode to LocalStorage.
-            writeRawModeToStorage(state.options.rawMode);
-            // scroll back up to the top of the page
-            if (state.scrollToTop) window.scrollTo(0, 0);
-            // Allow downloading new search result.
-            setAlreadyDownloaded(false);
-          }
-        )
-        .catch(searchPageErrorHandler);
+      (async () => {
+        try {
+          const searchResult: SearchPageSearchResult = await doSearch(
+            state.options
+          );
+          // Do not list classifications in Advanced search mode.
+          const classifications: Classification[] = !advancedSearchId
+            ? await getClassifications(state.options)
+            : [];
 
-      console.timeEnd(timerId);
+          dispatch({
+            type: "search-complete",
+            result: { ...searchResult },
+            classifications,
+          });
+
+          // Update history
+          history.replace({
+            ...history.location,
+            state: { searchPageOptions: state.options, filterExpansion },
+          });
+          // Save the value of wildcard mode to LocalStorage.
+          writeRawModeToStorage(state.options.rawMode);
+          // scroll back up to the top of the page
+          if (state.scrollToTop) window.scrollTo(0, 0);
+          // Allow downloading new search result.
+          setAlreadyDownloaded(false);
+        } catch (error: unknown) {
+          searchPageErrorHandler(
+            error instanceof Error
+              ? error
+              : new Error(`Failed to perform a search: ${error}`)
+          );
+        }
+        console.timeEnd(timerId);
+      })();
     }
-  }, [dispatch, filterExpansion, searchPageErrorHandler, history, state]);
+  }, [
+    dispatch,
+    filterExpansion,
+    searchPageErrorHandler,
+    history,
+    state,
+    advancedSearchId,
+  ]);
 
   // In Selection Session, once a new search result is returned, make each
   // new search result Item draggable. Could probably merge into 'searching'
@@ -721,7 +737,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
           value={searchPageOptions.collections}
         />
       ),
-      disabled: false,
+      disabled: !!advancedSearchId,
       alwaysVisible: true,
     },
     {
@@ -838,11 +854,16 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
           showFilterIcon: areCollapsibleFiltersSet(),
           onClose: () => setShowRefinePanel(false),
         }}
-        classificationsPanelProps={{
-          classifications: getClassifications(),
-          onSelectedCategoriesChange: handleSelectedCategoriesChange,
-          selectedCategories: searchPageOptions.selectedCategories,
-        }}
+        classificationsPanelProps={
+          // When in advanced search mode, hide classifications panel
+          !advancedSearchId
+            ? {
+                classifications: getClassifications(),
+                onSelectedCategoriesChange: handleSelectedCategoriesChange,
+                selectedCategories: searchPageOptions.selectedCategories,
+              }
+            : undefined
+        }
       />
     );
   };
