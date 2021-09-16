@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { UuidString } from '../Common';
-import { SelectionRestriction, TermStorageFormat } from '../Taxonomy';
+import { UuidString } from './Common';
+import { SelectionRestriction, TermStorageFormat } from './Taxonomy';
 import { TargetNode, WizardControlOption } from './WizardCommonTypes';
 
 /**
