@@ -51,7 +51,7 @@ export interface Term {
    */
   index: number;
   /**
-   * UUID of the term. Optional because no all endpoints returning it.
+   * UUID of the term. Optional because not all endpoints returning it.
    */
   uuid?: string;
   /**
@@ -59,7 +59,8 @@ export interface Term {
    */
   parentUuid?: string;
   /**
-   * Extra data associated with the term.
+   * Extra data associated with the term, which could be either a HTML fragment displayed
+   * in the Taxonomy term Pop-up Browser or a custom key/value pair.
    */
   data?: Record<string, string>;
 }
