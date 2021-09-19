@@ -55,7 +55,7 @@ export interface Term {
    */
   uuid?: string;
   /**
-   * UUID of the parent term.
+   * UUID of the parent term. Optional because not all endpoints returning it.
    */
   parentUuid?: string;
   /**
