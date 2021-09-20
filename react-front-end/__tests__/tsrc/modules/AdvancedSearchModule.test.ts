@@ -15,16 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as OEQ from "@openequella/rest-api-client";
-import {
-  getAdvancedSearchDefinition,
-  getAdvancedSearchesFromServerResult,
-} from "../../../__mocks__/AdvancedSearchModule.mock";
-import {
-  getAdvancedSearchByUuid,
-  getAdvancedSearchesFromServer,
-  getAdvancedSearchIdFromLocation,
-} from "../../../tsrc/modules/AdvancedSearchModule";
+import { getAdvancedSearchIdFromLocation } from "../../../tsrc/modules/AdvancedSearchModule";
 
 describe("getAdvancedSearchIdFromLocation", function () {
   const uuid = "c9fd1ae8-0dc1-ab6f-e923-1f195a22d537";
