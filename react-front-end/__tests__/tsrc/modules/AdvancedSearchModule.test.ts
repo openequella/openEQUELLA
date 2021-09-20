@@ -26,38 +26,6 @@ import {
   getAdvancedSearchIdFromLocation,
 } from "../../../tsrc/modules/AdvancedSearchModule";
 
-jest.mock("@openequella/rest-api-client");
-
-(
-  OEQ.AdvancedSearch.listAdvancedSearches as jest.Mock<
-    Promise<OEQ.Common.BaseEntitySummary[]>
-  >
-).mockResolvedValue(getAdvancedSearchesFromServerResult);
-
-const mockGetAdvancedSearchByUuid = (
-  OEQ.AdvancedSearch.getAdvancedSearchByUuid as jest.Mock<
-    Promise<OEQ.AdvancedSearch.AdvancedSearchDefinition>
-  >
-).mockResolvedValue(getAdvancedSearchDefinition);
-
-describe("getAdvancedSearchesFromServer", () => {
-  it("lists all Advanced searches", async () => {
-    const advancedSearches = await getAdvancedSearchesFromServer();
-    expect(advancedSearches).toHaveLength(3);
-  });
-});
-
-describe("getAdvancedSearchByUuid", () => {
-  it("retrieves Advanced search definition by UUID", async () => {
-    const uuid = "e82207be-a9f2-442a-a17f-5c834d5b36cc";
-    const definition = await getAdvancedSearchByUuid(uuid);
-
-    expect(OEQ.AdvancedSearch.getAdvancedSearchByUuid).toHaveBeenCalledTimes(1);
-    expect(mockGetAdvancedSearchByUuid.mock.calls[0][1]).toBe(uuid);
-    expect(definition.controls).toHaveLength(2);
-  });
-});
-
 describe("getAdvancedSearchIdFromLocation", function () {
   const uuid = "c9fd1ae8-0dc1-ab6f-e923-1f195a22d537";
 
