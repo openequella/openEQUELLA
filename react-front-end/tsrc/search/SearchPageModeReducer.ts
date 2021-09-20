@@ -37,24 +37,23 @@ export type Action =
     }
   | {
       type: "toggleAdvSearchPanel";
-      showPanel: boolean;
     }
   | {
       type: "hideAdvSearchPanel";
     };
 
 // function to toggle or hide Adv search panel.
-const toggleOrHidePanel = (
-  state: State,
-  action: "toggle" | "hide",
-  showPanel: boolean
-) => {
+const toggleOrHidePanel = (state: State, action: "toggle" | "hide") => {
   if (state.mode !== "advSearch") {
     throw new Error(
       `Request to ${action} Advanced Search Panel when _not_ in Advanced Search mode. Request ignored.`
     );
   }
-  return { ...state, isAdvSearchPanelOpen: showPanel };
+  return {
+    ...state,
+    isAdvSearchPanelOpen:
+      action === "toggle" ? !state.isAdvSearchPanelOpen : false,
+  };
 };
 
 export const searchPageModeReducer = (state: State, action: Action): State => {
@@ -68,9 +67,9 @@ export const searchPageModeReducer = (state: State, action: Action): State => {
         isAdvSearchPanelOpen: true,
       };
     case "toggleAdvSearchPanel":
-      return toggleOrHidePanel(state, "toggle", action.showPanel);
+      return toggleOrHidePanel(state, "toggle");
 
     case "hideAdvSearchPanel":
-      return toggleOrHidePanel(state, "hide", false);
+      return toggleOrHidePanel(state, "hide");
   }
 };

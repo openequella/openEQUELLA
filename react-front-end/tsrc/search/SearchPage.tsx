@@ -961,8 +961,6 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
                         onClick: () =>
                           searchPageModeDispatch({
                             type: "toggleAdvSearchPanel",
-                            showPanel:
-                              !searchPageModeState.isAdvSearchPanelOpen,
                           }),
                         accent: false,
                       }
