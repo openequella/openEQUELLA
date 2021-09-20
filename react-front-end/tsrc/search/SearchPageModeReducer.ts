@@ -19,10 +19,10 @@ import * as OEQ from "@openequella/rest-api-client";
 
 export type State =
   | {
-      useMode: "normal";
+      mode: "normal";
     }
   | {
-      useMode: "advSearch";
+      mode: "advSearch";
       definition: OEQ.AdvancedSearch.AdvancedSearchDefinition;
       isAdvSearchPanelOpen: boolean;
     };
@@ -32,20 +32,45 @@ export type Action =
       type: "useNormal";
     }
   | {
-      type: "useAdvSearch";
+      type: "showAdvSearchPanel";
       selectedAdvSearch: OEQ.AdvancedSearch.AdvancedSearchDefinition;
+    }
+  | {
+      type: "toggleAdvSearchPanel";
       showPanel: boolean;
+    }
+  | {
+      type: "hideAdvSearchPanel";
     };
+
+// function to toggle or hide Adv search panel.
+const toggleOrHidePanel = (
+  state: State,
+  action: "toggle" | "hide",
+  showPanel: boolean
+) => {
+  if (state.mode !== "advSearch") {
+    throw new Error(
+      `Request to ${action} Advanced Search Panel when _not_ in Advanced Search mode. Request ignored.`
+    );
+  }
+  return { ...state, isAdvSearchPanelOpen: showPanel };
+};
 
 export const searchPageModeReducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "useNormal":
-      return { useMode: "normal" };
-    case "useAdvSearch":
+      return { mode: "normal" };
+    case "showAdvSearchPanel":
       return {
-        useMode: "advSearch",
+        mode: "advSearch",
         definition: action.selectedAdvSearch,
-        isAdvSearchPanelOpen: action.showPanel,
+        isAdvSearchPanelOpen: true,
       };
+    case "toggleAdvSearchPanel":
+      return toggleOrHidePanel(state, "toggle", action.showPanel);
+
+    case "hideAdvSearchPanel":
+      return toggleOrHidePanel(state, "hide", false);
   }
 };

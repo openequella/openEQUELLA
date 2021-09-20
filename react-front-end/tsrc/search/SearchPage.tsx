@@ -166,7 +166,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
   const [state, dispatch] = useReducer(reducer, { status: "initialising" });
   const [searchPageModeState, searchPageModeDispatch] = useReducer(
     searchPageModeReducer,
-    { useMode: "normal" }
+    { mode: "normal" }
   );
 
   const exitAdvancedSearchMode = () => {
@@ -236,21 +236,6 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
         scrollToTop,
       }),
     [dispatch]
-  );
-
-  const showAdvSearchPanel = useCallback(
-    (showPanel: boolean) => {
-      if (searchPageModeState.useMode !== "advSearch") {
-        throw new Error("Control Advanced search panel in wrong state");
-      }
-
-      searchPageModeDispatch({
-        type: "useAdvSearch",
-        selectedAdvSearch: searchPageModeState.definition,
-        showPanel,
-      });
-    },
-    [searchPageModeDispatch, searchPageModeState]
   );
 
   /**
@@ -328,10 +313,10 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
           );
 
           if (advancedSearchDefinition) {
+            // Always show the panel at the first time switching to adv mode.
             searchPageModeDispatch({
-              type: "useAdvSearch",
+              type: "showAdvSearchPanel",
               selectedAdvSearch: advancedSearchDefinition,
-              showPanel: true, // Always show the panel at the first time switching to adv mode.
             });
           }
         }
@@ -572,7 +557,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
     });
     setFilterExpansion(false);
 
-    if (searchPageModeState.useMode === "advSearch") {
+    if (searchPageModeState.mode === "advSearch") {
       exitAdvancedSearchMode();
     }
   };
@@ -777,7 +762,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
           value={searchPageOptions.collections}
         />
       ),
-      disabled: searchPageModeState.useMode === "advSearch",
+      disabled: searchPageModeState.mode === "advSearch",
       alwaysVisible: true,
     },
     {
@@ -896,7 +881,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
         }}
         classificationsPanelProps={
           // When in advanced search mode, hide classifications panel
-          searchPageModeState.useMode !== "advSearch"
+          searchPageModeState.mode !== "advSearch"
             ? {
                 classifications: getClassifications(),
                 onSelectedCategoriesChange: handleSelectedCategoriesChange,
@@ -971,19 +956,21 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
                 doSearch={() => search(searchPageOptions)}
                 advancedSearchFilter={
                   // Only show if we're in advanced search mode
-                  searchPageModeState.useMode === "advSearch"
+                  searchPageModeState.mode === "advSearch"
                     ? {
                         onClick: () =>
-                          showAdvSearchPanel(
-                            !searchPageModeState.isAdvSearchPanelOpen
-                          ),
+                          searchPageModeDispatch({
+                            type: "toggleAdvSearchPanel",
+                            showPanel:
+                              !searchPageModeState.isAdvSearchPanelOpen,
+                          }),
                         accent: false,
                       }
                     : undefined
                 }
               />
             </Grid>
-            {searchPageModeState.useMode === "advSearch" &&
+            {searchPageModeState.mode === "advSearch" &&
               searchPageModeState.isAdvSearchPanelOpen && (
                 <Grid item xs={12}>
                   <AdvancedSearchPanel
@@ -993,7 +980,9 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
                       // searchPageOptions before calling search()
                       (_) => search(searchPageOptions)
                     }
-                    onClose={() => showAdvSearchPanel(false)}
+                    onClose={() =>
+                      searchPageModeDispatch({ type: "hideAdvSearchPanel" })
+                    }
                   />
                 </Grid>
               )}
