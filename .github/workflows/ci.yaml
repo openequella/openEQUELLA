@@ -294,6 +294,10 @@ jobs:
           ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
             OldTests/test dumpCoverage
 
+      - name: Check memory usage
+        if: failure()
+        run: free -h
+
       - name: Save TestNG Reports
         if: failure()
         uses: actions/upload-artifact@v2.2.4
