@@ -23,3 +23,68 @@ export const getAdvancedSearchesFromServerResult: OEQ.Common.BaseEntitySummary[]
     { name: "Advanced Search 2", uuid: "3e7e68dd-3aa0-4e05-a70c-d6a559c53aa3" },
     { name: "Advanced Search 3", uuid: "a07212ff-3af9-4d78-89d5-48c2d263a810" },
   ];
+
+export const getAdvancedSearchDefinition: OEQ.AdvancedSearch.AdvancedSearchDefinition =
+  {
+    name: "All Controls Power Search",
+    collections: [
+      {
+        uuid: "0896be21-77d9-1279-90d9-1765e76e5f84",
+        name: "Power Search Collection",
+      },
+    ],
+    controls: [
+      {
+        mandatory: false,
+        reload: false,
+        include: true,
+        size1: 0,
+        size2: 0,
+        title: "Calender 1",
+        targetNodes: [
+          {
+            target: "/item/controls/calendar/nodefault",
+            attribute: "",
+            fullTarget: "/item/controls/calendar/nodefault",
+            xoqlPath: "/item/controls/calendar/nodefault",
+            freetextField: "/item/controls/calendar/nodefault",
+          },
+        ],
+        options: [
+          {
+            value: "",
+          },
+        ],
+        controlType: "calendar",
+        isRange: true,
+      },
+      {
+        mandatory: false,
+        reload: false,
+        include: true,
+        size1: 1,
+        size2: 0,
+        title: "Check Box Group",
+        targetNodes: [
+          {
+            target: "/item/controls/checkboxes",
+            attribute: "",
+            fullTarget: "/item/controls/checkboxes",
+            xoqlPath: "/item/controls/checkboxes",
+            freetextField: "/item/controls/checkboxes",
+          },
+        ],
+        options: [
+          {
+            text: "1",
+            value: "1",
+          },
+          {
+            text: "2",
+            value: "2",
+          },
+        ],
+        controlType: "checkboxgroup",
+      },
+    ],
+  };

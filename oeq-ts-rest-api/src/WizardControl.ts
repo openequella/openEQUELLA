@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { UuidString } from '../Common';
-import { SelectionRestriction, TermStorageFormat } from '../Taxonomy';
+import { UuidString } from './Common';
+import { SelectionRestriction, TermStorageFormat } from './Taxonomy';
 import { TargetNode, WizardControlOption } from './WizardCommonTypes';
 
 /**
@@ -201,3 +201,12 @@ export type WizardControl =
   | WizardTermSelectorControl
   | WizardUserSelectorControl
   | UnknownWizardControl;
+
+/**
+ * Type guard to narrow the type from WizardControl down to WizardBasicControl.
+ *
+ * @param control An objet of WizardControl.
+ */
+export const isWizardBasicControl = (
+  control: WizardControl
+): control is WizardBasicControl => control.controlType !== 'unknown';

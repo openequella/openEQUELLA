@@ -36,7 +36,10 @@ import MessageInfo, { MessageInfoVariant } from "../components/MessageInfo";
 import { AppRenderErrorContext } from "../mainui/App";
 import { NEW_SEARCH_PATH, routes } from "../mainui/routes";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
-import { getAdvancedSearchesFromServer } from "../modules/AdvancedSearchModule";
+import {
+  getAdvancedSearchByUuid,
+  getAdvancedSearchesFromServer,
+} from "../modules/AdvancedSearchModule";
 import type { Collection } from "../modules/CollectionsModule";
 import { addFavouriteSearch } from "../modules/FavouriteModule";
 import {
@@ -103,6 +106,7 @@ import {
   SearchPageOptions,
   writeRawModeToStorage,
 } from "./SearchPageHelper";
+import { searchPageModeReducer } from "./SearchPageModeReducer";
 import { reducer, SearchPageSearchResult } from "./SearchPageReducer";
 
 // destructure strings import
@@ -149,7 +153,6 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
   console.debug("START: <SearchPage>");
 
   const history = useHistory();
-  const exitAdvancedSearchMode = () => history.push(NEW_SEARCH_PATH);
   const location = useLocation();
 
   // Retrieve any AdvancedSearchId from the Router
@@ -161,6 +164,16 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
   advancedSearchId = advancedSearchId ?? advancedSearchIdParam;
 
   const [state, dispatch] = useReducer(reducer, { status: "initialising" });
+  const [searchPageModeState, searchPageModeDispatch] = useReducer(
+    searchPageModeReducer,
+    { mode: "normal" }
+  );
+
+  const exitAdvancedSearchMode = () => {
+    searchPageModeDispatch({ type: "useNormal" });
+    history.push(NEW_SEARCH_PATH);
+  };
+
   const defaultSearchPageHistory: SearchPageHistoryState = {
     searchPageOptions: defaultSearchPageOptions,
     filterExpansion: false,
@@ -206,11 +219,6 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
     useState<boolean>(false);
   const [alreadyDownloaded, setAlreadyDownloaded] = useState<boolean>(false);
   const exportLinkRef = useRef<HTMLAnchorElement>(null);
-
-  // If there is an `advancedSearchId`, then the first time into and Advanced Search show the panel
-  const [showAdvSearchPanel, setShowAdvSearchPanel] = useState<boolean>(
-    advancedSearchId !== undefined
-  );
 
   const { appErrorHandler } = useContext(AppRenderErrorContext);
   const searchPageErrorHandler = useCallback(
@@ -265,6 +273,9 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
         : generateSearchPageOptionsFromQueryString(location),
       getCurrentUserDetails(),
       getAdvancedSearchesFromServer(),
+      advancedSearchId
+        ? getAdvancedSearchByUuid(advancedSearchId)
+        : Promise.resolve(undefined),
     ])
       .then(
         ([
@@ -273,6 +284,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
           queryStringSearchOptions,
           currentUserDetails,
           advancedSearches,
+          advancedSearchDefinition,
         ]) => {
           setSearchSettings({
             core: searchSettings,
@@ -291,11 +303,22 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
                 }
               : {
                   ...searchPageOptions,
+                  collections:
+                    advancedSearchDefinition?.collections ??
+                    searchPageOptions.collections,
                   sortOrder:
                     searchPageOptions.sortOrder ??
                     searchSettings.defaultSearchSort,
                 }
           );
+
+          if (advancedSearchDefinition) {
+            // Always show the panel at the first time switching to adv mode.
+            searchPageModeDispatch({
+              type: "showAdvSearchPanel",
+              selectedAdvSearch: advancedSearchDefinition,
+            });
+          }
         }
       )
       .catch((e) => {
@@ -311,6 +334,8 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
     searchPageOptions,
     state.status,
     updateTemplate,
+    advancedSearchId,
+    searchPageModeDispatch,
   ]);
 
   /**
@@ -532,7 +557,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
     });
     setFilterExpansion(false);
 
-    if (advancedSearchId) {
+    if (searchPageModeState.mode === "advSearch") {
       exitAdvancedSearchMode();
     }
   };
@@ -737,7 +762,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
           value={searchPageOptions.collections}
         />
       ),
-      disabled: !!advancedSearchId,
+      disabled: searchPageModeState.mode === "advSearch",
       alwaysVisible: true,
     },
     {
@@ -856,7 +881,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
         }}
         classificationsPanelProps={
           // When in advanced search mode, hide classifications panel
-          !advancedSearchId
+          searchPageModeState.mode !== "advSearch"
             ? {
                 classifications: getClassifications(),
                 onSelectedCategoriesChange: handleSelectedCategoriesChange,
@@ -931,29 +956,34 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
                 doSearch={() => search(searchPageOptions)}
                 advancedSearchFilter={
                   // Only show if we're in advanced search mode
-                  advancedSearchId
+                  searchPageModeState.mode === "advSearch"
                     ? {
                         onClick: () =>
-                          setShowAdvSearchPanel(!showAdvSearchPanel),
+                          searchPageModeDispatch({
+                            type: "toggleAdvSearchPanel",
+                          }),
                         accent: false,
                       }
                     : undefined
                 }
               />
             </Grid>
-            {showAdvSearchPanel && (
-              <Grid item xs={12}>
-                <AdvancedSearchPanel
-                  wizardDefinition={`{title: 'placeholder wizard definition', advancedSearchId: '${advancedSearchId}}`}
-                  onSubmit={
-                    // In the future, this would merge the updated Advanced Search Criteria into
-                    // searchPageOptions before calling search()
-                    (_) => search(searchPageOptions)
-                  }
-                  onClose={() => setShowAdvSearchPanel(false)}
-                />
-              </Grid>
-            )}
+            {searchPageModeState.mode === "advSearch" &&
+              searchPageModeState.isAdvSearchPanelOpen && (
+                <Grid item xs={12}>
+                  <AdvancedSearchPanel
+                    wizardControls={searchPageModeState.definition.controls}
+                    onSubmit={
+                      // In the future, this would merge the updated Advanced Search Criteria into
+                      // searchPageOptions before calling search()
+                      (_) => search(searchPageOptions)
+                    }
+                    onClose={() =>
+                      searchPageModeDispatch({ type: "hideAdvSearchPanel" })
+                    }
+                  />
+                </Grid>
+              )}
             <Grid item xs={12}>
               <SearchResultList
                 showSpinner={

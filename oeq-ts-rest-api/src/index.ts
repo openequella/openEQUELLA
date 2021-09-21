@@ -36,3 +36,5 @@ export * as Settings from './Settings';
 export * as Taxonomy from './Taxonomy';
 export * as UserQuery from './UserQuery';
 export * as Utils from './Utils';
+export * as WizardCommonTypes from './WizardCommonTypes';
+export * as WizardControl from './WizardControl';

@@ -15,30 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
-import * as React from "react";
-import { getAdvancedSearchDefinition } from "../../__mocks__/AdvancedSearchModule.mock";
-import {
-  AdvancedSearchPanel,
-  AdvancedSearchPanelProps,
-} from "../../tsrc/search/components/AdvancedSearchPanel";
+import { getAdvancedSearchIdFromLocation } from "../../../tsrc/modules/AdvancedSearchModule";
 
-export default {
-  title: "Search/AdvancedSearchPanel",
-  component: AdvancedSearchPanel,
-  argTypes: {
-    onSubmit: {
-      action: "onSubmit called",
-    },
-    onClose: {
-      action: "onClose called",
-    },
-  },
-} as Meta<AdvancedSearchPanelProps>;
+describe("getAdvancedSearchIdFromLocation", function () {
+  const uuid = "c9fd1ae8-0dc1-ab6f-e923-1f195a22d537";
 
-export const Simple: Story<AdvancedSearchPanelProps> = (args) => (
-  <AdvancedSearchPanel {...args} />
-);
-Simple.args = {
-  wizardControls: getAdvancedSearchDefinition.controls,
-};
+  it.each([
+    [
+      "new",
+      { ...window.location, pathname: `/fiveo/page/advancedsearch/${uuid}` },
+    ],
+    ["old", { ...window.location, search: `in=P${uuid}` }],
+  ])(
+    "supports getting the ID for %s Advanced search URL",
+    (_: string, location: Location) => {
+      expect(getAdvancedSearchIdFromLocation(location)).toBe(uuid);
+    }
+  );
+});
