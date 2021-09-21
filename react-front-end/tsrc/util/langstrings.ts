@@ -179,6 +179,7 @@ export const languageStrings = {
       undo: "Undo",
       yes: "Yes",
     },
+    required: "* Required",
     result: {
       success: "Saved successfully.",
       fail: "Failed to save.",
