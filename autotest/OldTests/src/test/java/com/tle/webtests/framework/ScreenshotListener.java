@@ -107,9 +107,8 @@ public class ScreenshotListener implements IInvokedMethodListener {
           StringBuffer sb = new StringBuffer();
 
           if (null != tw) {
-            String[] stackTraces = Utils.stackTrace(tw, true);
-            fullStackTrace = stackTraces[1];
-            stackTrace = "<div><pre>" + stackTraces[0] + "</pre></div>";
+            fullStackTrace = Utils.longStackTrace(tw, true);
+            stackTrace = "<div><pre>" + Utils.shortStackTrace(tw, true) + "</pre></div>";
 
             sb.append(stackTrace);
             // JavaScript link
