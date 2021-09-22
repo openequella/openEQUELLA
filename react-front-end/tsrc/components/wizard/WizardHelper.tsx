@@ -19,7 +19,7 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import { Eq, struct } from "fp-ts/Eq";
-import { absurd, flow, pipe } from "fp-ts/function";
+import { absurd, constFalse, flow, pipe } from "fp-ts/function";
 import * as N from "fp-ts/number";
 import * as O from "fp-ts/Option";
 import { Refinement } from "fp-ts/Refinement";
@@ -58,19 +58,17 @@ export interface FieldValue {
 }
 
 /**
- * Check the type of the head of an array. Returns `false` if empty.
+ * Creates a function which checks the type of the head of an array using the supplied refinement
+ * function. The resulting function returns true when it is passed an array who's head element
+ * matches the refinement specifications, otherwise (including if the array is empty) it will
+ * return false.
  *
- * @param refinement method to validate head element.
+ * @param refinement function used by returned function to validate head element.
  */
 const isHeadType =
   <T,>(refinement: Refinement<unknown, T>) =>
   (xs: unknown[]): boolean =>
-    pipe(
-      xs,
-      A.head,
-      O.map(refinement),
-      O.getOrElse((): boolean => false)
-    );
+    pipe(xs, A.head, O.map(refinement), O.getOrElse(constFalse));
 
 /**
  * Used to check if the `ControlValue` is of the string[] variety.
