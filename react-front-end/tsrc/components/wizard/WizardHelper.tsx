@@ -19,7 +19,8 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import { Eq, struct } from "fp-ts/Eq";
-import { absurd, constFalse, flow, pipe } from "fp-ts/function";
+import { absurd, constFalse, pipe } from "fp-ts/function";
+import * as NEA from "fp-ts/NonEmptyArray";
 import * as N from "fp-ts/number";
 import * as O from "fp-ts/Option";
 import { Refinement } from "fp-ts/Refinement";
@@ -74,14 +75,14 @@ const isHeadType =
  * Used to check if the `ControlValue` is of the string[] variety.
  * (Not a general purpose array util!)
  */
-const isStringArray = (xs: ControlValue): xs is string[] =>
+const isStringArray = (xs: ControlValue): xs is NEA.NonEmptyArray<string> =>
   pipe(xs as unknown[], isHeadType<string>(S.isString));
 
 /**
  * Used to check if the `ControlValue` is of the number[] variety.
  * (Not a general purpose array util!)
  */
-const isNumberArray = (xs: ControlValue): xs is number[] =>
+const isNumberArray = (xs: ControlValue): xs is NEA.NonEmptyArray<number> =>
   pipe(xs as unknown[], isHeadType<number>(N.isNumber));
 
 const eqControlTarget: Eq<ControlTarget> = struct({
@@ -119,28 +120,21 @@ const buildControlTarget = (
  *
  * @param value a potential string value
  */
-const getStringControlValue = (value?: ControlValue): string | undefined => {
-  const potentialValue: E.Either<Error, string | undefined> = pipe(
+const getStringControlValue = (value: ControlValue): string =>
+  pipe(
     value,
-    O.fromNullable,
-    O.match(
-      () => E.right(undefined),
-      flow(
-        E.fromPredicate(
-          isStringArray,
-          () => new TypeError("Expected string[] but got something else!")
-        ),
-        E.map(flow(A.head, O.toUndefined))
-      )
+    E.fromPredicate(
+      isStringArray,
+      () => new TypeError("Expected string[] but got something else!")
+    ),
+    E.map(NEA.head),
+    E.matchW(
+      (error) => {
+        throw error;
+      },
+      (value) => value
     )
   );
-
-  if (E.isLeft(potentialValue)) {
-    throw potentialValue.left;
-  }
-
-  return potentialValue.right;
-};
 
 /**
  * Factory function responsible for taking a control definition and producing the correct React
@@ -156,6 +150,11 @@ const controlFactory = (
     return <WizardUnsupported />;
   }
 
+  const ifAvailable = <T,>(
+    value: ControlValue | undefined,
+    getter: (_: ControlValue) => T
+  ): T | undefined => pipe(value, O.fromNullable, O.map(getter), O.toUndefined);
+
   const { controlType, mandatory, title, description, size2 } = control;
 
   switch (controlType) {
@@ -167,7 +166,7 @@ const controlFactory = (
           description={description}
           mandatory={mandatory}
           rows={size2}
-          value={getStringControlValue(value)}
+          value={ifAvailable<string>(value, getStringControlValue)}
           onChange={(newValue) => onChange([newValue])}
         />
       );
