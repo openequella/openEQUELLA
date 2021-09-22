@@ -179,6 +179,7 @@ export const languageStrings = {
       undo: "Undo",
       yes: "Yes",
     },
+    required: "* Required",
     result: {
       success: "Saved successfully.",
       fail: "Failed to save.",
@@ -696,6 +697,15 @@ export const languageStrings = {
   userSearchComponent: {
     failedToFindUsersMessage: "Unable to find any users matching '%s'",
     queryFieldLabel: "Username, first or last name",
+  },
+  wizard: {
+    controls: {
+      unsupported: {
+        label: "Unsupported control configured",
+        description:
+          "An unsupported control has been detected, please contact your system administrator.",
+      },
+    },
   },
   youTubePlayer: {
     title: "YouTube video player",
