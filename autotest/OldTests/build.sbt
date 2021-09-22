@@ -13,7 +13,6 @@ enablePlugins(TestNGPlugin)
 testNGOutputDirectory := (target.value / "testng").absolutePath
 
 testNGParameters ++= Seq("-log", autotestBuildConfig.value.getInt("tests.verbose").toString)
-testNGParameters ++= Seq("-usedefaultlisteners", "false")
 
 testNGSuites := {
   val tc = autotestBuildConfig.value.getConfig("tests")
