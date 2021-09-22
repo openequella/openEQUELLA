@@ -97,7 +97,6 @@ tests:
       - com.tle.webtests.test.drm.DRMTest
       - com.tle.webtests.test.drm.DRMTestWithCleanup
       - com.tle.webtests.test.drm.WizardDRMTest
-      - com.tle.webtests.test.dynamichierarchy.DynamicHierarchyTest
       - com.tle.webtests.test.importexport.CloneTest
       - com.tle.webtests.test.importexport.ExportTest
       - com.tle.webtests.test.importexport.ImportTest
