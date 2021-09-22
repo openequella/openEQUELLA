@@ -199,10 +199,10 @@ jobs:
     strategy:
       matrix:
         newui: [true, false]
-        pgsql-image: [latest, 9.6]
-        exclude:
-          - newui: false
-            pgsql-image: latest
+#        pgsql-image: [latest, 9.6]
+#        exclude:
+#          - newui: false
+#            pgsql-image: latest
       fail-fast: false
 
     services:
