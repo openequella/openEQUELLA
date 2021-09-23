@@ -2954,7 +2954,7 @@ Contribution wizard styling
 }
 
 .wizard-layout #col2 {
-  padding-left: $singleMargin;
+  padding-left: $doubleMargin;
 }
 
 #wizard-pagelist {
@@ -3048,8 +3048,7 @@ Contribution wizard styling
 }
 
 #wizard-actions {
-  text-align: right;
-  margin-bottom: 10px;
+  margin: 0 0 $singleMargin $singleMargin;
 }
 
 #more-actions li {
@@ -3057,8 +3056,8 @@ Contribution wizard styling
 }
 
 .action-link {
-  margin-left: 14px;
-  text-align: left;
+  margin-left: $singleMargin;
+  padding: 0;
   font-size: 11px;
 }
 
