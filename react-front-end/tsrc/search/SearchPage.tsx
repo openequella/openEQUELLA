@@ -33,6 +33,7 @@ import { useHistory, useLocation, useParams } from "react-router";
 import { getBaseUrl } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
 import MessageInfo, { MessageInfoVariant } from "../components/MessageInfo";
+import * as WizardHelper from "../components/wizard/WizardHelper";
 import { AppRenderErrorContext } from "../mainui/App";
 import { NEW_SEARCH_PATH, routes } from "../mainui/routes";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
@@ -973,11 +974,17 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
                 <Grid item xs={12}>
                   <AdvancedSearchPanel
                     wizardControls={searchPageModeState.definition.controls}
-                    onSubmit={
-                      // In the future, this would merge the updated Advanced Search Criteria into
-                      // searchPageOptions before calling search()
-                      (_) => search(searchPageOptions)
-                    }
+                    values={searchPageModeState.queryValues}
+                    onSubmit={(
+                      advSearchQueryValues: WizardHelper.FieldValueMap
+                    ) => {
+                      searchPageModeDispatch({
+                        type: "setQueryValues",
+                        values: advSearchQueryValues,
+                      });
+                      // TODO: search() still needs to support using the Advanced Search Query values
+                      search(searchPageOptions);
+                    }}
                     onClose={() =>
                       searchPageModeDispatch({ type: "hideAdvSearchPanel" })
                     }

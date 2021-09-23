@@ -22,12 +22,17 @@ import {
   CardContent,
   CardHeader,
   Grid,
+  Typography,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-import React from "react";
-import { TooltipIconButton } from "../../components/TooltipIconButton";
-import { languageStrings } from "../../util/langstrings";
 import * as OEQ from "@openequella/rest-api-client";
+import * as A from "fp-ts/Array";
+import { constFalse, flow, pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import React, { useCallback, useState } from "react";
+import { TooltipIconButton } from "../../components/TooltipIconButton";
+import * as WizardHelper from "../../components/wizard/WizardHelper";
+import { languageStrings } from "../../util/langstrings";
 
 export interface AdvancedSearchPanelProps {
   /**
@@ -37,16 +42,14 @@ export interface AdvancedSearchPanelProps {
 
   /**
    * The values of current Advanced Search criteria.
-   * TODO: Type still to be defined in later stories. See AdvancedSearchCriteria in design.
    */
-  values?: Map<string, string | number>;
+  values: WizardHelper.FieldValueMap;
 
   /**
    * When the user submits the advanced search criteria to trigger an additional search, this
-   * is called with the updated values.
-   * TODO: Type still to be defined in later stories. See AdvancedSearchCriteria in design.
+   * is called with the current values.
    */
-  onSubmit: (updatedValues?: Map<string, string | number>) => void;
+  onSubmit: (currentValues: WizardHelper.FieldValueMap) => void;
 
   /**
    * Handler for when user selects to close the panel.
@@ -59,32 +62,78 @@ export const AdvancedSearchPanel = ({
   values,
   onClose,
   onSubmit,
-}: AdvancedSearchPanelProps) => (
-  <Card id="advanced-search-panel">
-    <CardHeader
-      title={languageStrings.searchpage.AdvancedSearchPanel.title}
-      action={
-        <TooltipIconButton
-          title={languageStrings.common.action.close}
-          onClick={onClose}
+}: AdvancedSearchPanelProps) => {
+  const [currentValues, setCurrentValues] =
+    useState<WizardHelper.FieldValueMap>(values);
+
+  const hasRequiredFields: boolean = pipe(
+    wizardControls,
+    A.exists(
+      flow(
+        O.fromPredicate(OEQ.WizardControl.isWizardBasicControl),
+        O.map((c) => c.mandatory),
+        O.getOrElse(constFalse)
+      )
+    )
+  );
+
+  const onChangeHandler = useCallback(
+    ({ target, value }: WizardHelper.FieldValue): void => {
+      console.debug("AdvancedSearchPanel : onChangeHandler called.", {
+        currentValues,
+        update: {
+          target,
+          value,
+        },
+      });
+      setCurrentValues(
+        pipe(currentValues, WizardHelper.fieldValueMapInsert(target, value))
+      );
+    },
+    [currentValues, setCurrentValues]
+  );
+
+  return (
+    <Card id="advanced-search-panel">
+      <CardHeader
+        title={languageStrings.searchpage.AdvancedSearchPanel.title}
+        action={
+          <TooltipIconButton
+            title={languageStrings.common.action.close}
+            onClick={onClose}
+          >
+            <CloseIcon />
+          </TooltipIconButton>
+        }
+      />
+      <CardContent>
+        <Grid
+          id="advanced-search-form"
+          container
+          direction="column"
+          spacing={2}
         >
-          <CloseIcon />
-        </TooltipIconButton>
-      }
-    />
-    <CardContent>
-      <Grid container direction="column">
-        {wizardControls
-          .filter(OEQ.WizardControl.isWizardBasicControl)
-          .map((c) => (
-            <Grid item>{c.title}</Grid>
-          ))}
-      </Grid>
-    </CardContent>
-    <CardActions>
-      <Button onClick={() => onSubmit(values)} color="primary">
-        {languageStrings.common.action.search}
-      </Button>
-    </CardActions>
-  </Card>
-);
+          {WizardHelper.render(wizardControls, values, onChangeHandler).map(
+            (e) => (
+              <Grid key={e.props.id} item>
+                {e}
+              </Grid>
+            )
+          )}
+          {hasRequiredFields && (
+            <Grid item>
+              <Typography variant="caption" color="textSecondary">
+                {languageStrings.common.required}
+              </Typography>
+            </Grid>
+          )}
+        </Grid>
+      </CardContent>
+      <CardActions>
+        <Button onClick={() => onSubmit(currentValues)} color="primary">
+          {languageStrings.common.action.search}
+        </Button>
+      </CardActions>
+    </Card>
+  );
+};
