@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import * as E from "fp-ts/Either";
+import { absurd, flow, pipe } from "fp-ts/function";
+import { FieldValueMap } from "../components/wizard/WizardHelper";
 
 export type State =
   | {
@@ -25,6 +28,7 @@ export type State =
       mode: "advSearch";
       definition: OEQ.AdvancedSearch.AdvancedSearchDefinition;
       isAdvSearchPanelOpen: boolean;
+      queryValues: FieldValueMap;
     };
 
 export type Action =
@@ -40,7 +44,22 @@ export type Action =
     }
   | {
       type: "hideAdvSearchPanel";
+    }
+  | {
+      type: "setQueryValues";
+      values: FieldValueMap;
     };
+
+const isAdvancedSearchMode =
+  (errorMessage: string) =>
+  <A extends { state: State }>(a: A): E.Either<Error, A> =>
+    pipe(
+      a,
+      E.fromPredicate(
+        ({ state: { mode } }) => mode === "advSearch",
+        () => new Error(errorMessage)
+      )
+    );
 
 // function to toggle or hide Adv search panel.
 const toggleOrHidePanel = (state: State, action: "toggle" | "hide") => {
@@ -56,6 +75,19 @@ const toggleOrHidePanel = (state: State, action: "toggle" | "hide") => {
   };
 };
 
+const setQueryValues: (_: { state: State; values: FieldValueMap }) => State =
+  flow(
+    isAdvancedSearchMode(
+      "Attempted to set advanced search query values, when _not_ in Advanced Search mode!"
+    ),
+    E.matchW(
+      (e) => {
+        throw e;
+      },
+      ({ state, values }) => ({ ...state, queryValues: values })
+    )
+  );
+
 export const searchPageModeReducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "useNormal":
@@ -65,11 +97,15 @@ export const searchPageModeReducer = (state: State, action: Action): State => {
         mode: "advSearch",
         definition: action.selectedAdvSearch,
         isAdvSearchPanelOpen: true,
+        queryValues: new Map(),
       };
     case "toggleAdvSearchPanel":
       return toggleOrHidePanel(state, "toggle");
-
     case "hideAdvSearchPanel":
       return toggleOrHidePanel(state, "hide");
+    case "setQueryValues":
+      return setQueryValues({ state, values: action.values });
+    default:
+      return absurd(action);
   }
 };

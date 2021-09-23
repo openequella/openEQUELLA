@@ -19,9 +19,9 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import { Eq, struct } from "fp-ts/Eq";
-import { absurd, constFalse, pipe } from "fp-ts/function";
+import { absurd, constFalse, flow, pipe } from "fp-ts/function";
+import * as M from "fp-ts/Map";
 import * as NEA from "fp-ts/NonEmptyArray";
-import * as N from "fp-ts/number";
 import * as O from "fp-ts/Option";
 import { Refinement } from "fp-ts/Refinement";
 import * as S from "fp-ts/string";
@@ -59,6 +59,11 @@ export interface FieldValue {
 }
 
 /**
+ * Collection type alias for specifying a group of field values.
+ */
+export type FieldValueMap = Map<ControlTarget, ControlValue>;
+
+/**
  * Creates a function which checks the type of the head of an array using the supplied refinement
  * function. The resulting function returns true when it is passed an array who's head element
  * matches the refinement specifications, otherwise (including if the array is empty) it will
@@ -78,29 +83,16 @@ const isHeadType =
 const isStringArray = (xs: ControlValue): xs is NEA.NonEmptyArray<string> =>
   pipe(xs as unknown[], isHeadType<string>(S.isString));
 
-/**
- * Used to check if the `ControlValue` is of the number[] variety.
- * (Not a general purpose array util!)
- */
-const isNumberArray = (xs: ControlValue): xs is NEA.NonEmptyArray<number> =>
-  pipe(xs as unknown[], isHeadType<number>(N.isNumber));
-
 const eqControlTarget: Eq<ControlTarget> = struct({
   schemaNode: A.getEq(S.Eq),
   type: S.Eq,
 });
 
-const eqControlValue: Eq<ControlValue> = {
-  equals: (x, y) => {
-    if (isStringArray(x) && isStringArray(y)) {
-      return A.getEq(S.Eq).equals(x, y);
-    } else if (isNumberArray(x) && isNumberArray(y)) {
-      return A.getEq(N.Eq).equals(x, y);
-    }
-    // The two arrays are of different or unsupported types
-    return false;
-  },
-};
+/**
+ * Provides a function to insert values into a `FieldValueMap` returning a new Map instance - i.e.
+ * original Map is unharmed/changed.
+ */
+export const fieldValueMapInsert = M.upsertAt(eqControlTarget);
 
 const buildControlTarget = (
   c: OEQ.WizardControl.WizardBasicControl
@@ -196,43 +188,16 @@ const controlFactory = (
  *
  * @param controls A collection of controls which make up a wizard.
  * @param values A collection of values for the provided controls - if a control currently has
- *               no value, then it will not be in the collection.
+ *               no value, then it should not be in the collection.
  * @param onChange The high level callback to use to update `values` - this will be wrapped so that
  *                 Wizard components only have to worry about calling a typical simple callback
  *                 with their updated value.
  */
 export const render = (
   controls: OEQ.WizardControl.WizardControl[],
-  values: FieldValue[],
+  values: FieldValueMap,
   onChange: (update: FieldValue) => void
 ): JSX.Element[] => {
-  /**
-   * There should only be one unique value across the different nodes the control is targeting,
-   * so validate that and then extract that single value.
-   */
-  const mergeControlValues = (
-    target: ControlTarget
-  ): ControlValue | undefined => {
-    const uniqueValues: ControlValue[] = pipe(
-      values,
-      A.filter((x) => eqControlTarget.equals(target, x.target)),
-      A.map(({ value }: FieldValue) => value),
-      A.uniq(eqControlValue)
-    );
-
-    // Make sure there is only one possible value
-    if (uniqueValues.length > 1) {
-      throw new Error(
-        `There should only be one value per controlType/schemaNodes, however [${
-          target.type
-        } for ${target.schemaNode.join()}] has ${uniqueValues.length}.`
-      );
-    }
-
-    // Return either the single value, or `undefined` if there were no matches
-    return pipe(uniqueValues, A.head, O.toUndefined);
-  };
-
   const buildOnChangeHandler = (
     c: OEQ.WizardControl.WizardControl
   ): ((value: ControlValue) => void) =>
@@ -245,13 +210,19 @@ export const render = (
           );
         };
 
+  const getValue = (target: ControlTarget): O.Option<ControlValue> => {
+    const lookupControlTarget = M.lookup(eqControlTarget);
+    return pipe(values, lookupControlTarget(target));
+  };
+
   // Retrieve the value of the specified control
-  const retrieveControlsValue = (
-    c: OEQ.WizardControl.WizardControl
-  ): ControlValue | undefined =>
-    OEQ.WizardControl.isWizardBasicControl(c)
-      ? pipe(c, buildControlTarget, mergeControlValues)
-      : undefined;
+  const retrieveControlsValue: (
+    _: OEQ.WizardControl.WizardControl
+  ) => ControlValue | undefined = flow(
+    O.fromPredicate(OEQ.WizardControl.isWizardBasicControl),
+    O.chain(flow(buildControlTarget, getValue)),
+    O.toUndefined
+  );
 
   // Build the controls
   return controls.map((c, idx) =>

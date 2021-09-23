@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as M from "fp-ts/Map";
 import { controls } from "../../../../__mocks__/WizardHelper.mock";
 import {
   ControlTarget,
@@ -39,14 +40,18 @@ describe("render()", () => {
     );
     expect(supportedControls.length).toBeGreaterThan(1); // quick assertions we have good test data
 
-    const elements: JSX.Element[] = render(supportedControls, [], logOnChange);
+    const elements: JSX.Element[] = render(
+      supportedControls,
+      new Map(),
+      logOnChange
+    );
     expect(elements).toHaveLength(supportedControls.length);
     // for now, we just expect Editboxes, we'll need to elaborate on this in the future
     expect(elements.every((e) => e.type.name === "WizardEditBox")).toBeTruthy();
   });
 
   it("creates WizardUnsupported components for unknown/unsupported ones", () => {
-    const elements: JSX.Element[] = render(controls, [], logOnChange);
+    const elements: JSX.Element[] = render(controls, new Map(), logOnChange);
     // Current the 'controls' include a radio group which we've not yet written support for
     expect(
       elements.filter((e) => e.type.name === "WizardUnsupported")
@@ -56,7 +61,7 @@ describe("render()", () => {
   it("handles `controlType === 'unknown'` - i.e. `UnknownWizardControl`", () => {
     const elements: JSX.Element[] = render(
       [{ controlType: "unknown" }],
-      [],
+      new Map(),
       logOnChange
     );
     expect(
@@ -87,7 +92,11 @@ describe("render()", () => {
       // smoke test the test data
       expect(value.value[0]).toBeTruthy();
 
-      const elements = render(controls, [value], logOnChange);
+      const elements = render(
+        controls,
+        M.singleton(value.target, value.value),
+        logOnChange
+      );
       // Test the field(s) were set
       expect(
         elements.filter((e) => e.props.value === value.value[0])
@@ -95,20 +104,9 @@ describe("render()", () => {
     }
   );
 
-  it("throws errors when there's a mismatch of ControlValues for ControlTargets", () => {
-    const commonTarget: ControlTarget = nameEditboxTarget;
-    const misMatchedValues: FieldValue[] = [
-      { target: commonTarget, value: ["first value"] },
-      { target: commonTarget, value: ["different value"] },
-    ];
-    expect(() => render(controls, misMatchedValues, logOnChange)).toThrow(
-      Error
-    );
-  });
-
   it("throws an error if the incorrect control value type is provided", () => {
     expect(() =>
-      render(controls, [{ target: nameEditboxTarget, value: [1] }], logOnChange)
+      render(controls, M.singleton(nameEditboxTarget, [1]), logOnChange)
     ).toThrow(TypeError);
   });
 });

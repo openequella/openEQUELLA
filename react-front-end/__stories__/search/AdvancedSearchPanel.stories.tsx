@@ -15,9 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
 import { Meta, Story } from "@storybook/react";
 import * as React from "react";
-import { getAdvancedSearchDefinition } from "../../__mocks__/AdvancedSearchModule.mock";
+import { controls } from "../../__mocks__/WizardHelper.mock";
 import {
   AdvancedSearchPanel,
   AdvancedSearchPanelProps,
@@ -40,5 +41,14 @@ export const Simple: Story<AdvancedSearchPanelProps> = (args) => (
   <AdvancedSearchPanel {...args} />
 );
 Simple.args = {
-  wizardControls: getAdvancedSearchDefinition.controls,
+  wizardControls: controls,
+};
+
+export const NoRequiredFields: Story<AdvancedSearchPanelProps> = (args) => (
+  <AdvancedSearchPanel {...args} />
+);
+NoRequiredFields.args = {
+  wizardControls: controls.map((c) =>
+    OEQ.WizardControl.isWizardBasicControl(c) ? { ...c, mandatory: false } : c
+  ),
 };

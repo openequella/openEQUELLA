@@ -71,6 +71,7 @@ export const WizardEditBox = ({
     />
     <OutlinedInput
       id={id}
+      fullWidth
       multiline={rows > 1}
       rows={rows}
       value={value}
