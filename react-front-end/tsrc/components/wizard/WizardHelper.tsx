@@ -176,7 +176,7 @@ const controlFactory = (
     case "shufflelist":
     case "termselector":
     case "userselector":
-      return <WizardUnsupported />;
+      return <WizardUnsupported id={id} />;
     default:
       return absurd(controlType);
   }
