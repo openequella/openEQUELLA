@@ -24,10 +24,7 @@ import { createMemoryHistory } from "history";
 import * as React from "react";
 import { act } from "react-dom/test-utils";
 import { Router } from "react-router-dom";
-import {
-  getAdvancedSearchDefinition,
-  getAdvancedSearchesFromServerResult,
-} from "../../../__mocks__/AdvancedSearchModule.mock";
+import { getAdvancedSearchesFromServerResult } from "../../../__mocks__/AdvancedSearchModule.mock";
 import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock";
 import { DRM_VIOLATION } from "../../../__mocks__/Drm.mock";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
@@ -87,11 +84,6 @@ export const mockCollaborators = () => {
     .spyOn(AdvancedSearchModule, "getAdvancedSearchesFromServer")
     .mockResolvedValue(getAdvancedSearchesFromServerResult);
 
-  // Mock out collaborator which retrieves an Advanced search
-  jest
-    .spyOn(AdvancedSearchModule, "getAdvancedSearchByUuid")
-    .mockResolvedValue(getAdvancedSearchDefinition);
-
   jest.spyOn(FavouriteModule, "addFavouriteItem").mockResolvedValue({
     itemID: "abc",
     keywords: ["a", "b"],
@@ -149,6 +141,10 @@ export const mockCollaborators = () => {
     mockReadDataFromLocalStorage: jest.spyOn(
       BrowserStorageModule,
       "readDataFromLocalStorage"
+    ),
+    mockGetAdvancedSearchByUuid: jest.spyOn(
+      AdvancedSearchModule,
+      "getAdvancedSearchByUuid"
     ),
   };
 };

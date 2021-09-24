@@ -24,6 +24,55 @@ export const getAdvancedSearchesFromServerResult: OEQ.Common.BaseEntitySummary[]
     { name: "Advanced Search 3", uuid: "a07212ff-3af9-4d78-89d5-48c2d263a810" },
   ];
 
+interface TargetNodeEssentials
+  extends Pick<OEQ.WizardCommonTypes.TargetNode, "target" | "attribute"> {}
+
+const buildTargetNodes = (
+  nodes: TargetNodeEssentials[]
+): OEQ.WizardCommonTypes.TargetNode[] =>
+  nodes.map(({ target, attribute }) => {
+    const fullPath = `${target}${attribute}`;
+    return {
+      target,
+      attribute,
+      fullTarget: fullPath,
+      xoqlPath: fullPath,
+      freetextField: fullPath,
+    };
+  });
+
+/**
+ * The bare necessities to mock an Edit Box
+ */
+export interface EditBoxEssentials
+  extends Pick<
+    OEQ.WizardControl.WizardEditBoxControl,
+    "title" | "description" | "mandatory"
+  > {
+  schemaNodes: TargetNodeEssentials[];
+}
+
+export const mockEditbox = (
+  mockDetails: EditBoxEssentials
+): OEQ.WizardControl.WizardEditBoxControl => ({
+  controlType: "editbox",
+  description: mockDetails.description,
+  include: true,
+  isAllowLinks: false,
+  isAllowMultiLang: false,
+  isCheckDuplication: false,
+  isForceUnique: false,
+  isNumber: false,
+  mandatory: mockDetails.mandatory,
+  options: [],
+  reload: false,
+  size1: 0,
+  size2: 1,
+  targetNodes: buildTargetNodes(mockDetails.schemaNodes),
+  title: mockDetails.title,
+  visibilityScript: "return true;",
+});
+
 export const getAdvancedSearchDefinition: OEQ.AdvancedSearch.AdvancedSearchDefinition =
   {
     name: "All Controls Power Search",

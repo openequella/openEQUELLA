@@ -93,8 +93,9 @@ export const AdvancedSearchPanel = ({
     [currentValues, setCurrentValues]
   );
 
+  const idPrefix = "advanced-search-panel";
   return (
-    <Card id="advanced-search-panel">
+    <Card id={idPrefix}>
       <CardHeader
         title={languageStrings.searchpage.AdvancedSearchPanel.title}
         action={
@@ -130,7 +131,11 @@ export const AdvancedSearchPanel = ({
         </Grid>
       </CardContent>
       <CardActions>
-        <Button onClick={() => onSubmit(currentValues)} color="primary">
+        <Button
+          id={`${idPrefix}-searchBtn`}
+          onClick={() => onSubmit(currentValues)}
+          color="primary"
+        >
           {languageStrings.common.action.search}
         </Button>
       </CardActions>
