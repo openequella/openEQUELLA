@@ -134,7 +134,7 @@ public class ItemSummaryTest extends AbstractCleanupTest {
   public void testAttachmentViewCount() {
     final String linkAttachment = "https://archive.org/";
 
-    final String archiveOrgPreambleString = "div.preamble-whoweare";
+    final By title = By.xpath("//title[contains(text(),'Internet Archive')]");
     logon(AUTOTEST_LOGON, AUTOTEST_PASSWD);
 
     final WizardPageTab wizard = new ContributePage(context).load().openWizard(COLLECTION3);
@@ -145,9 +145,7 @@ public class ItemSummaryTest extends AbstractCleanupTest {
     checkViews(summary, 1, linkAttachment, 0);
 
     // view the attachment and go back
-    summary
-        .attachments()
-        .viewLinkAttachment(linkAttachment, By.cssSelector(archiveOrgPreambleString));
+    summary.attachments().viewLinkAttachment(linkAttachment, title);
     final WebDriver.Navigation navigate = context.getDriver().navigate();
     navigate.back();
     // navigate.refresh();
@@ -157,9 +155,7 @@ public class ItemSummaryTest extends AbstractCleanupTest {
     checkViews(summary, 2, linkAttachment, 1);
 
     // view the attachment again and go back
-    summary
-        .attachments()
-        .viewLinkAttachment(linkAttachment, By.cssSelector(archiveOrgPreambleString));
+    summary.attachments().viewLinkAttachment(linkAttachment, title);
     navigate.back();
     // navigate.refresh();
 
