@@ -25,7 +25,7 @@ public class AdvancedSearchPageTest extends AbstractSessionTest {
     advancedSearchPage = new NewAdvancedSearchPage(context);
     advancedSearchPage.load();
     advancedSearchPage.selectAdvancedSearch("DRM");
-    advancedSearchPage.waitForSearchCompleted(46);
+    advancedSearchPage.waitForSearchCompleted(1);
   }
 
   @Test(description = "Select an Advanced search")
