@@ -21,6 +21,6 @@ import { WizardLabel } from "./WizardLabel";
 
 const { label, description } = languageStrings.wizard.controls.unsupported;
 
-export const WizardUnsupported = () => (
-  <WizardLabel label={label} description={description} />
+export const WizardUnsupported = ({ id }: { id?: string }) => (
+  <WizardLabel id={id} label={label} description={description} />
 );

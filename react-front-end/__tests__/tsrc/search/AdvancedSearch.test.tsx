@@ -15,9 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
-import { act } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import * as A from "fp-ts/Array";
+import { pipe } from "fp-ts/function";
+import * as M from "fp-ts/Map";
+import * as O from "fp-ts/Option";
+import { contramap, Ord } from "fp-ts/Ord";
+import * as S from "fp-ts/string";
+import {
+  EditBoxEssentials,
+  getAdvancedSearchDefinition,
+  mockEditbox,
+} from "../../../__mocks__/AdvancedSearchModule.mock";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import {
@@ -39,6 +51,7 @@ const {
   mockListClassification,
   mockSearch,
   mockSearchSettings,
+  mockGetAdvancedSearchByUuid,
 } = mockCollaborators();
 initialiseEssentialMocks({
   mockCollections,
@@ -48,10 +61,30 @@ initialiseEssentialMocks({
 });
 const searchPromise = mockSearch.mockResolvedValue(getSearchResult);
 
+// Mock out collaborator which retrieves an Advanced search
+mockGetAdvancedSearchByUuid.mockResolvedValue(getAdvancedSearchDefinition);
+
 const testUuid = "4be6ae54-68ca-4d8b-acd0-0ca96fc39280";
 
 const renderAdvancedSearchPage = async () =>
   await renderSearchPage(searchPromise, undefined, testUuid);
+
+const togglePanel = () =>
+  act(() => userEvent.click(screen.getByLabelText(filterButtonLabel)));
+
+const queryAdvSearchPanel = (container: Element): HTMLElement | null =>
+  container.querySelector("#advanced-search-panel");
+
+const clickSearchButton = (container: Element): void => {
+  const searchButton = container.querySelector(
+    "#advanced-search-panel-searchBtn"
+  );
+  if (!searchButton) {
+    throw new Error("Failed to locate Advanced Search 'search' button.");
+  }
+
+  act(() => userEvent.click(searchButton));
+};
 
 describe("Display of Advanced Search Criteria panel", () => {
   it("is hidden for normal searching", async () => {
@@ -77,18 +110,15 @@ describe("Advanced Search filter button", () => {
   });
 
   it("toggles the AdvancedSearchPanel when clicked", async () => {
-    const { getByLabelText, queryByText } = await renderAdvancedSearchPage();
-    const togglePanel = () =>
-      act(() => userEvent.click(getByLabelText(filterButtonLabel)));
-    const queryAdvSearchPanel = () => queryByText(panelTitle);
+    const { container } = await renderAdvancedSearchPage();
 
     // First the panel is displayed for Advanced Search mode, so toggle to hide
     togglePanel();
-    expect(queryAdvSearchPanel()).not.toBeInTheDocument();
+    expect(queryAdvSearchPanel(container)).not.toBeInTheDocument();
 
     // Toggle to show again
     togglePanel();
-    expect(queryAdvSearchPanel()).toBeInTheDocument();
+    expect(queryAdvSearchPanel(container)).toBeInTheDocument();
   });
 });
 
@@ -103,5 +133,113 @@ describe("Hide components", () => {
     const { container } = await renderAdvancedSearchPage();
     expect(mockListClassification).not.toHaveBeenCalled();
     expect(queryClassificationPanel(container)).not.toBeInTheDocument();
+  });
+});
+
+describe("Rendering of wizard", () => {
+  const editBoxTitle = "Test Edit Box";
+  const oneEditBoxWizard = (
+    mandatory: boolean
+  ): OEQ.AdvancedSearch.AdvancedSearchDefinition => ({
+    ...getAdvancedSearchDefinition,
+    controls: [
+      mockEditbox({
+        title: editBoxTitle,
+        mandatory,
+        schemaNodes: [{ target: "/item/name", attribute: "" }],
+      }),
+    ],
+  });
+
+  it("shows an explanatory caption for mandatory fields", async () => {
+    mockGetAdvancedSearchByUuid.mockResolvedValue(oneEditBoxWizard(true));
+    const { queryByText } = await renderAdvancedSearchPage();
+
+    // Mandatory controls should be suffixed '*'
+    expect(queryByText(`${editBoxTitle} *`)).toBeInTheDocument();
+    expect(queryByText(languageStrings.common.required)).toBeInTheDocument();
+  });
+
+  it("does not show the explanatory caption for mandatory fields when there are none", async () => {
+    mockGetAdvancedSearchByUuid.mockResolvedValue(oneEditBoxWizard(false));
+    const { queryByText } = await renderAdvancedSearchPage();
+
+    // Mandatory controls should be suffixed '*' - let's match against the title without it here.
+    expect(queryByText(`${editBoxTitle}`)).toBeInTheDocument();
+    expect(
+      queryByText(languageStrings.common.required)
+    ).not.toBeInTheDocument();
+  });
+
+  // Correct fields are rendered
+  // Values are set
+  // Values remain present once a search has been triggered - i.e. stored in state
+  it("stores values in state when search is clicked, and then re-uses them when the wizard is re-rendered", async () => {
+    // As we go forward, let's build on the below collection of controls,
+    // and add each control type as we build them - for now we only have edit boxes
+    const controlValues: Map<EditBoxEssentials, string> = new Map([
+      [
+        {
+          title: "Edit Box - name",
+          mandatory: false,
+          schemaNodes: [{ target: "/item/name", attribute: "" }],
+        },
+        "a name",
+      ],
+      [
+        {
+          title: "Edit Box - year",
+          mandatory: false,
+          schemaNodes: [{ target: "/item/", attribute: "@year" }],
+        },
+        "2021",
+      ],
+    ]);
+
+    const byTitle: Ord<EditBoxEssentials> = contramap((c: EditBoxEssentials) =>
+      O.fromNullable(c.title)
+    )(O.getOrd(S.Ord));
+    const advancedSearchDefinition: OEQ.AdvancedSearch.AdvancedSearchDefinition =
+      {
+        ...getAdvancedSearchDefinition,
+        controls: pipe(controlValues, M.keys(byTitle), A.map(mockEditbox)),
+      };
+
+    // Test data now setup, let's commence
+    mockGetAdvancedSearchByUuid.mockResolvedValue(advancedSearchDefinition);
+    const { container, getByLabelText } = await renderAdvancedSearchPage();
+
+    // Set all the values
+    const collectByTitle = M.collect(byTitle);
+    const labelsAndValues: { label: string; value: string }[] = pipe(
+      controlValues,
+      collectByTitle((k, value) => ({
+        label: k.title ?? "!!BLANK LABEL!!",
+        value,
+      }))
+    );
+    labelsAndValues.forEach(({ label, value }) => {
+      act(() => userEvent.type(getByLabelText(label), value));
+    });
+
+    // Click search - so as to persist values
+    clickSearchButton(container);
+
+    // Collapse the panel
+    togglePanel();
+    expect(queryAdvSearchPanel(container)).not.toBeInTheDocument();
+
+    // And bring it back
+    togglePanel();
+
+    // Make sure all the values are there as expected
+    const finalValues = pipe(
+      labelsAndValues,
+      A.map(({ label }) => ({
+        label,
+        value: (getByLabelText(label) as HTMLInputElement).value,
+      }))
+    );
+    expect(finalValues).toEqual(labelsAndValues);
   });
 });

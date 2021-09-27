@@ -94,6 +94,11 @@ const eqControlTarget: Eq<ControlTarget> = struct({
  */
 export const fieldValueMapInsert = M.upsertAt(eqControlTarget);
 
+/**
+ * Provides a function to lookup values in a `FieldValueMap`.
+ */
+export const fieldValueMapLookup = M.lookup(eqControlTarget);
+
 const buildControlTarget = (
   c: OEQ.WizardControl.WizardBasicControl
 ): ControlTarget => ({
@@ -171,7 +176,7 @@ const controlFactory = (
     case "shufflelist":
     case "termselector":
     case "userselector":
-      return <WizardUnsupported />;
+      return <WizardUnsupported id={id} />;
     default:
       return absurd(controlType);
   }
@@ -210,10 +215,8 @@ export const render = (
           );
         };
 
-  const getValue = (target: ControlTarget): O.Option<ControlValue> => {
-    const lookupControlTarget = M.lookup(eqControlTarget);
-    return pipe(values, lookupControlTarget(target));
-  };
+  const getValue = (target: ControlTarget): O.Option<ControlValue> =>
+    pipe(values, fieldValueMapLookup(target));
 
   // Retrieve the value of the specified control
   const retrieveControlsValue: (

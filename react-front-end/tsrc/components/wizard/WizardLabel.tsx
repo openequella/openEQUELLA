@@ -20,6 +20,10 @@ import * as React from "react";
 
 export interface WizardLabelProps {
   /**
+   * DOM id
+   */
+  id?: string;
+  /**
    * The label to display for the control.
    */
   label?: string;
@@ -41,12 +45,13 @@ export interface WizardLabelProps {
  * Standardises the display of the header information for each Wizard control.
  */
 export const WizardLabel = ({
+  id,
   label,
   description,
   mandatory = false,
   labelFor,
 }: WizardLabelProps): JSX.Element => (
-  <label htmlFor={labelFor}>
+  <label id={id} htmlFor={labelFor}>
     {label && (
       <Typography variant="h6" gutterBottom>
         {label}
