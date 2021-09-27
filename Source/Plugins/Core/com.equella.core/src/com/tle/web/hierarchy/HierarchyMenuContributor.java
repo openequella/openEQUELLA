@@ -116,7 +116,7 @@ public class HierarchyMenuContributor extends AbstractUpdatableMenuContributor {
     }
 
     if (showMoreLink) {
-      HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("hierarchy.do?hier.topic=ALL"));
+      HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("hierarchy.do?topic=ALL"));
       hls.setLabel(MORE);
 
       MenuContribution mc = new MenuContribution(hls, ICON_PATH, 10, linkPriority++);

@@ -17,7 +17,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion  = "3.15.1.Final"
 val SwaggerVersion   = "1.6.2"
-val TomcatVersion    = "9.0.52"
+val TomcatVersion    = "9.0.53"
 val axis2Version     = "1.6.2"
 val circeVersion     = "0.12.1"
 val cxfVersion       = "3.4.4"
@@ -27,7 +27,7 @@ val jacksonVersion   = "2.11.3"
 val jsassVersion     = "5.10.4"
 val jsoupVersion     = "1.14.2"
 val simpledbaVersion = "0.1.9"
-val springVersion    = "5.3.9"
+val springVersion    = "5.3.10"
 val sttpVersion      = "1.7.2"
 val tikaVersion      = "2.0.0"
 
@@ -61,7 +61,7 @@ libraryDependencies ++= Seq(
   ),
   "com.google.api-client" % "google-api-client"           % "1.32.1",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20201021-1.32.1",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20210811-1.32.1",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20210906-1.32.1",
   "com.google.code.gson"  % "gson"                        % "2.8.8",
   "com.google.gdata"      % "core"                        % "1.47.1",
   "com.google.guava"      % "guava"                       % "30.1.1-jre",
@@ -260,7 +260,7 @@ libraryDependencies ++= Seq(
   "org.mozilla"                   % "rhino"                     % "1.7.13",
   "io.lemonlabs"                  %% "scala-uri"                % "1.5.1",
   "org.scala-lang.modules"        %% "scala-parser-combinators" % "2.0.0",
-  "io.github.classgraph"          % "classgraph"                % "4.8.115",
+  "io.github.classgraph"          % "classgraph"                % "4.8.116",
   "com.fasterxml"                 % "classmate"                 % "1.5.1",
   "org.glassfish"                 % "javax.el"                  % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"    % "3.0.0",
@@ -311,7 +311,7 @@ excludeDependencies ++= Seq(
   // Spring 5 added a default logging bridge.  In oEQ, this results in
   // a [deduplicate: different file contents found in the following] error
   // ...org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.7.30.jar:org/apache/commons/logging/Log.class
-  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.9.jar:org/apache/commons/logging/Log.class
+  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.10.jar:org/apache/commons/logging/Log.class
   // As per https://github.com/spring-projects/spring-framework/issues/20611 ,
   // since we already have logging in place, we can safely exclude the dep from spring.
   "org.springframework" % "spring-jcl",

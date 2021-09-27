@@ -316,12 +316,12 @@ const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
             </TooltipIconButton>
           )}
         </Grid>
-        <Grid item container justify="center" xs={10}>
+        <Grid item container justifyContent="center" xs={10}>
           <Grid item ref={contentEmbedCodeRef}>
             {content}
           </Grid>
         </Grid>
-        <Grid item container justify="flex-end" xs={1}>
+        <Grid item container justifyContent="flex-end" xs={1}>
           <Grid item>
             {onNext && (
               <TooltipIconButton

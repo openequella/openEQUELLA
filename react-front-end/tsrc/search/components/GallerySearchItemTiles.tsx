@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GridListTile, GridListTileBar } from "@material-ui/core";
+import { ImageListItem, ImageListItemBar } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
@@ -143,14 +143,14 @@ export const GallerySearchItemTiles = ({
     altText: string,
     onClick: () => void
   ) => (
-    <GridListTile
+    <ImageListItem
       key={key}
       onClick={onClick}
       aria-label={ariaLabel}
       className={classes.tile}
     >
       <img className={classes.thumbnail} src={imgSrc} alt={altText} />
-      <GridListTileBar
+      <ImageListItemBar
         className={classes.titleBar}
         actionIcon={
           <OEQItemSummaryPageButton
@@ -161,7 +161,7 @@ export const GallerySearchItemTiles = ({
           />
         }
       />
-    </GridListTile>
+    </ImageListItem>
   );
 
   const tiles = [

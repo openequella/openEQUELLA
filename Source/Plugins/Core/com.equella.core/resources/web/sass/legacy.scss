@@ -45,6 +45,7 @@
 @import "userdetails.css";
 @import "auth.css";
 @import "drmlicense.css";
+@import "htmleditor.css";
 
 $small-breakpoint-max: "768px";
 $medium-breakpoint-max: "1200px";
@@ -505,7 +506,7 @@ select[multiple="multiple"] {
   @include curvedCorners;
   font-size: 16px;
   border: 1px solid #f5f5f5;
-  padding: $doubleMargin;
+  padding: $doubleMargin 0 $doubleMargin $doubleMargin;
   width: auto;
   min-width: 204px;
   float: none;
@@ -2953,7 +2954,7 @@ Contribution wizard styling
 }
 
 .wizard-layout #col2 {
-  padding-left: $singleMargin;
+  padding-left: $doubleMargin;
 }
 
 #wizard-pagelist {
@@ -3047,8 +3048,7 @@ Contribution wizard styling
 }
 
 #wizard-actions {
-  text-align: right;
-  margin-bottom: 10px;
+  margin: 0 0 $singleMargin $singleMargin;
 }
 
 #more-actions li {
@@ -3056,8 +3056,8 @@ Contribution wizard styling
 }
 
 .action-link {
-  margin-left: 14px;
-  text-align: left;
+  margin-left: $singleMargin;
+  padding: 0;
   font-size: 11px;
 }
 
@@ -5701,4 +5701,8 @@ button:focus {
 
 #selection-page .area.error {
   width: 100%;
+}
+
+.itemsummary-layout #col2 hr {
+  display: none;
 }

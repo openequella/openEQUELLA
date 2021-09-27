@@ -10,15 +10,15 @@
     "src"
   ],
   "engines": {
-    "node": ">=10"
+    "node": ">=10",
+    "npm": "7.19.1"
   },
   "scripts": {
     "start": "rollup --config --watch",
     "build": "rollup --config",
     "test": "jest --no-cache",
     "lint": "eslint \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
-    "format": "eslint --fix \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
-    "prepare": "npm run build"
+    "format": "eslint --fix \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\""
   },
   "peerDependencies": {},
   "prettier": {
@@ -32,13 +32,13 @@
     "axios-cookiejar-support": "^1.0.0",
     "lodash": "^4.17.15",
     "query-string": "^7.0.0",
-    "runtypes": "^6.0.0",
+    "runtypes": "6.4.0",
     "tough-cookie": "^4.0.0",
     "typescript-is": "^0.18.0"
   },
   "devDependencies": {
     "@types/jest": "27.0.1",
-    "@types/lodash": "4.14.172",
+    "@types/lodash": "4.14.173",
     "@types/tough-cookie": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "4.30.0",
     "@typescript-eslint/parser": "4.30.0",
@@ -51,6 +51,6 @@
     "ts-jest": "27.0.5",
     "tslib": "2.3.1",
     "ttypescript": "1.5.12",
-    "typescript": "4.3.5"
+    "typescript": "4.4.3"
   }
 }

@@ -156,7 +156,7 @@ export const CategorySelector = ({
     expanded,
   }: ShowMoreButtonProps) => (
     <ListItem>
-      <Grid container justify="center">
+      <Grid container justifyContent="center">
         <Grid item>
           <Button
             variant="text"
