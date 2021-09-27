@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createMuiTheme } from "@material-ui/core";
+import { createTheme } from "@material-ui/core/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
 import {
@@ -706,7 +706,7 @@ describe("In Selection Session", () => {
 });
 
 describe("Responsiveness", () => {
-  const theme = createMuiTheme({
+  const theme = createTheme({
     props: { MuiWithWidth: { initialWidth: "sm" } },
   });
 

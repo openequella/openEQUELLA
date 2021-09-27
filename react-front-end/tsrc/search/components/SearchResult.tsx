@@ -33,7 +33,7 @@ import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useEffect, useState } from "react";
-import ReactHtmlParser from "react-html-parser";
+import HTMLReactParser from "html-react-parser";
 import { useHistory } from "react-router";
 import { HashLink } from "react-router-hash-link";
 import { sprintf } from "sprintf-js";
@@ -185,6 +185,7 @@ export default function SearchResult({
     setDrmCheckOnSuccessHandler(() => onSuccess);
 
   useEffect(() => {
+    let mounted = true;
     (async () => {
       // If there is nothing requiring DRM permission check then return undefined.
       const dialog = drmCheckOnSuccessHandler
@@ -198,8 +199,14 @@ export default function SearchResult({
           )
         : undefined;
 
-      setDrmDialog(dialog);
+      if (mounted) {
+        setDrmDialog(dialog);
+      }
     })();
+
+    return () => {
+      mounted = false;
+    };
   }, [drmCheckOnSuccessHandler, uuid, version, drmStatus]);
 
   const handleAddFavouriteItem: FavDialogConfirmToAdd = {
@@ -304,7 +311,7 @@ export default function SearchResult({
             {
               /**Custom metadata can contain html tags, we should make sure that is
           preserved */
-              ReactHtmlParser(element.html)
+              HTMLReactParser(element.html)
             }
           </Typography>
         </ListItem>
@@ -313,7 +320,7 @@ export default function SearchResult({
   );
 
   const highlightField = (fieldValue: string) =>
-    ReactHtmlParser(highlight(fieldValue, highlights, classes.highlight));
+    HTMLReactParser(highlight(fieldValue, highlights, classes.highlight));
 
   const itemLink = () => {
     const itemTitle = name ? highlightField(name) : uuid;

@@ -15,16 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
 import { AxiosError } from "axios";
-import { generateFromError, generateNewErrorID } from "../api/errors";
+import * as React from "react";
+import {
+  generateFromError,
+  generateNewErrorID,
+  isAxiosError,
+} from "../api/errors";
 import { withErrorHandler, WithErrorHandlerProps } from "../mainui/App";
-import PreLoginNoticeConfigurator from "./PreLoginNoticeConfigurator";
-import PostLoginNoticeConfigurator from "./PostLoginNoticeConfigurator";
-import { strings } from "../modules/LoginNoticeModule";
-import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
-import { routes } from "../mainui/routes";
 import SettingPageTemplate from "../components/SettingPageTemplate";
+import { routes } from "../mainui/routes";
+import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
+import { strings } from "../modules/LoginNoticeModule";
+import { languageStrings } from "../util/langstrings";
+import PostLoginNoticeConfigurator from "./PostLoginNoticeConfigurator";
+import PreLoginNoticeConfigurator from "./PreLoginNoticeConfigurator";
+
+const stringsCommonResults = languageStrings.common.result;
 
 type LoginNoticeConfigPageProps = TemplateUpdateProps & WithErrorHandlerProps;
 
@@ -61,9 +68,9 @@ class LoginNoticeConfigPage extends React.Component<
     }));
   }
 
-  handleError = (error: AxiosError) => {
+  handleError = (error: AxiosError | Error) => {
     let errResponse;
-    if (error.response !== undefined) {
+    if (isAxiosError(error) && error.response !== undefined) {
       switch (error.response.status) {
         case 400:
           errResponse = generateNewErrorID(strings.scheduling.endbeforestart);
@@ -96,7 +103,11 @@ class LoginNoticeConfigPage extends React.Component<
       this.setState({ notificationOpen: true });
       this.preventNav(false);
     } catch (error) {
-      this.handleError(error);
+      this.handleError(
+        isAxiosError(error) || error instanceof Error
+          ? error
+          : new Error(stringsCommonResults.fail)
+      );
     }
   };
 

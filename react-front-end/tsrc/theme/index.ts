@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createMuiTheme } from "@material-ui/core";
-import { ThemeOptions } from "@material-ui/core/styles/createMuiTheme";
+import type { ThemeOptions } from "@material-ui/core";
+import { createTheme } from "@material-ui/core/styles";
 import { getRenderData } from "../AppConfig";
 
 export interface IThemeSettings {
@@ -74,7 +74,7 @@ export const autoTestOptions: ThemeOptions =
     : {};
 
 export const getOeqTheme = () =>
-  createMuiTheme({
+  createTheme({
     ...getStandardThemeSettings(),
     ...autoTestOptions,
   });

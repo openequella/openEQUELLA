@@ -170,7 +170,7 @@ const UserSearch = ({
   };
 
   const spinner = (
-    <Grid container justify="center">
+    <Grid container justifyContent="center">
       <Grid item>
         <CircularProgress />
       </Grid>

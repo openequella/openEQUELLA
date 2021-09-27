@@ -33,12 +33,13 @@ import {
   ErrorResponse,
   generateFromError,
   generateNewErrorID,
+  isAxiosError,
 } from "../api/errors";
+import { API_BASE_URL } from "../AppConfig";
+import { WithErrorHandlerProps, withErrorHandler } from "../mainui/App";
 import SettingPageTemplate from "../components/SettingPageTemplate";
 import SettingsList from "../components/SettingsList";
 import SettingsListControl from "../components/SettingsListControl";
-import { API_BASE_URL } from "../AppConfig";
-import { WithErrorHandlerProps, withErrorHandler } from "../mainui/App";
 import { routes } from "../mainui/routes";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import { commonString } from "../util/commonstrings";
@@ -199,7 +200,11 @@ class ThemePage extends React.Component<ThemePageProps, ThemePageState> {
       this.setState({ changesUnsaved: false, showSuccess: true });
       this.reload();
     } catch (error) {
-      this.handleError(error);
+      if (isAxiosError(error)) {
+        this.handleError(error);
+      } else {
+        console.error("Unexpected non-Error caught in saveChanges(): " + error);
+      }
     }
   }
 
@@ -256,7 +261,7 @@ class ThemePage extends React.Component<ThemePageProps, ThemePageState> {
     const { classes } = this.props;
 
     return (
-      <Grid container spacing={2} direction="row" justify="flex-end">
+      <Grid container spacing={2} direction="row" justifyContent="flex-end">
         <Grid item>
           <Typography className={classes.fileName} color="textSecondary">
             {this.state.fileName ?? ""}

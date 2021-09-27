@@ -49,7 +49,7 @@ interface UploadActionsProps {
  * A vertical MUI Divider is added after each action except the last action.
  */
 export const UploadActions = ({ actions }: UploadActionsProps) => (
-  <Grid container spacing={1} className="actions" justify="flex-end">
+  <Grid container spacing={1} className="actions" justifyContent="flex-end">
     {actions.map(({ onClick, text, icon }, index) => (
       <Fragment key={index}>
         <Grid item>
