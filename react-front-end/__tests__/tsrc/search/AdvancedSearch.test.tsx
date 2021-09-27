@@ -17,7 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
-import { act, screen } from "@testing-library/react";
+import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
@@ -75,7 +75,7 @@ const togglePanel = () =>
 const queryAdvSearchPanel = (container: Element): HTMLElement | null =>
   container.querySelector("#advanced-search-panel");
 
-const clickSearchButton = (container: Element): void => {
+const clickSearchButton = async (container: Element): Promise<void> => {
   const searchButton = container.querySelector(
     "#advanced-search-panel-searchBtn"
   );
@@ -83,7 +83,7 @@ const clickSearchButton = (container: Element): void => {
     throw new Error("Failed to locate Advanced Search 'search' button.");
   }
 
-  act(() => userEvent.click(searchButton));
+  await waitFor(() => userEvent.click(searchButton));
 };
 
 describe("Display of Advanced Search Criteria panel", () => {
@@ -223,7 +223,7 @@ describe("Rendering of wizard", () => {
     });
 
     // Click search - so as to persist values
-    clickSearchButton(container);
+    await clickSearchButton(container);
 
     // Collapse the panel
     togglePanel();

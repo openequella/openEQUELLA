@@ -16,7 +16,8 @@
  * limitations under the License.
  */
 
-import { createMuiTheme, MuiThemeProvider } from "@material-ui/core";
+import { MuiThemeProvider } from "@material-ui/core";
+import { createTheme } from "@material-ui/core/styles";
 import type { Theme } from "@material-ui/core/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import { render, RenderResult } from "@testing-library/react";
@@ -174,7 +175,7 @@ export const initialiseEssentialMocks = ({
   );
 };
 
-const defaultTheme = createMuiTheme({
+const defaultTheme = createTheme({
   props: { MuiWithWidth: { initialWidth: "md" } },
 });
 
