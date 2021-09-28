@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PagedResult } from '../dist/Common';
+import { PagedResult } from '../src/Common';
 import * as OEQ from '../src';
 import {
   getTaxonomyChildTerms,
