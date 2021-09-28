@@ -411,7 +411,7 @@ export const languageStrings = {
     newSearchHelperText: "Clears search text and filters",
     shareSearchHelperText: "Copy search link to clipboard",
     shareSearchConfirmationText: "Search link saved to clipboard",
-    showAdvancedSearchFilter: "Show advanced search filter",
+    showAdvancedSearchFilter: "Show advanced search filters",
     deadAttachmentWarning:
       "This attachment appears to be broken or inaccessible.",
     AdvancedSearchPanel: {

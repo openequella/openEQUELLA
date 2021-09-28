@@ -37,7 +37,7 @@ public class NewAdvancedSearchPage extends NewSearchPage {
 
   public WebElement getAdvancedSearchFilterIcon() {
     List<WebElement> buttons =
-        driver.findElements(By.xpath(".//button[@title='Show advanced search filter']"));
+        driver.findElements(By.xpath(".//button[@title='Show advanced search filters']"));
     if (buttons.size() > 0) {
       return buttons.get(0);
     }
