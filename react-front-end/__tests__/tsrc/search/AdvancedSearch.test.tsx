@@ -66,6 +66,20 @@ mockGetAdvancedSearchByUuid.mockResolvedValue(getAdvancedSearchDefinition);
 
 const testUuid = "4be6ae54-68ca-4d8b-acd0-0ca96fc39280";
 
+const editBoxTitle = "Test Edit Box";
+const oneEditBoxWizard = (
+  mandatory: boolean
+): OEQ.AdvancedSearch.AdvancedSearchDefinition => ({
+  ...getAdvancedSearchDefinition,
+  controls: [
+    mockEditbox({
+      title: editBoxTitle,
+      mandatory,
+      schemaNodes: [{ target: "/item/name", attribute: "" }],
+    }),
+  ],
+});
+
 const renderAdvancedSearchPage = async () =>
   await renderSearchPage(searchPromise, undefined, testUuid);
 
@@ -120,6 +134,24 @@ describe("Advanced Search filter button", () => {
     togglePanel();
     expect(queryAdvSearchPanel(container)).toBeInTheDocument();
   });
+
+  it("indicates whether advanced search criteria has been set", async () => {
+    mockGetAdvancedSearchByUuid.mockResolvedValue(oneEditBoxWizard(false));
+    const { container, getByLabelText } = await renderAdvancedSearchPage();
+
+    const getHighlightedFilterButton = () =>
+      getByLabelText(
+        languageStrings.searchpage.showAdvancedSearchFilter
+      ).querySelector(".MuiSvgIcon-colorSecondary");
+
+    // The filter button is not highlighted yet.
+    expect(getHighlightedFilterButton()).not.toBeInTheDocument();
+    // Put some texts in the EditBox.
+    userEvent.type(getByLabelText(editBoxTitle), "text");
+    await clickSearchButton(container);
+    // Now the filter button is highlighted in Secondary color.
+    expect(getHighlightedFilterButton()).toBeInTheDocument();
+  });
 });
 
 describe("Hide components", () => {
@@ -137,20 +169,6 @@ describe("Hide components", () => {
 });
 
 describe("Rendering of wizard", () => {
-  const editBoxTitle = "Test Edit Box";
-  const oneEditBoxWizard = (
-    mandatory: boolean
-  ): OEQ.AdvancedSearch.AdvancedSearchDefinition => ({
-    ...getAdvancedSearchDefinition,
-    controls: [
-      mockEditbox({
-        title: editBoxTitle,
-        mandatory,
-        schemaNodes: [{ target: "/item/name", attribute: "" }],
-      }),
-    ],
-  });
-
   it("shows an explanatory caption for mandatory fields", async () => {
     mockGetAdvancedSearchByUuid.mockResolvedValue(oneEditBoxWizard(true));
     const { queryByText } = await renderAdvancedSearchPage();
