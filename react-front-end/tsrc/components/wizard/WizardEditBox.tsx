@@ -74,7 +74,7 @@ export const WizardEditBox = ({
       fullWidth
       multiline={rows > 1}
       rows={rows}
-      value={value}
+      value={value ?? ""}
       onChange={({ target }: React.ChangeEvent<HTMLInputElement>) =>
         onChange(target.value)
       }

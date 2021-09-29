@@ -219,7 +219,7 @@ describe("Rendering of wizard", () => {
       }))
     );
     labelsAndValues.forEach(({ label, value }) => {
-      act(() => userEvent.type(getByLabelText(label), value));
+      userEvent.type(getByLabelText(label), value);
     });
 
     // Click search - so as to persist values
