@@ -114,13 +114,15 @@ export const AdvancedSearchPanel = ({
           direction="column"
           spacing={2}
         >
-          {WizardHelper.render(wizardControls, values, onChangeHandler).map(
-            (e) => (
-              <Grid key={e.props.id} item>
-                {e}
-              </Grid>
-            )
-          )}
+          {WizardHelper.render(
+            wizardControls,
+            currentValues,
+            onChangeHandler
+          ).map((e) => (
+            <Grid key={e.props.id} item>
+              {e}
+            </Grid>
+          ))}
           {hasRequiredFields && (
             <Grid item>
               <Typography variant="caption" color="textSecondary">

@@ -26,6 +26,7 @@ import * as O from "fp-ts/Option";
 import { Refinement } from "fp-ts/Refinement";
 import * as S from "fp-ts/string";
 import * as React from "react";
+import { WizardCheckBoxGroup } from "./WizardCheckBoxGroup";
 import { WizardEditBox } from "./WizardEditBox";
 import { WizardUnsupported } from "./WizardUnsupported";
 
@@ -83,6 +84,12 @@ const isHeadType =
 const isStringArray = (xs: ControlValue): xs is NEA.NonEmptyArray<string> =>
   pipe(xs as unknown[], isHeadType<string>(S.isString));
 
+/**
+ * Typically used to check if the `ControlValue` of an Option type control (e.g. CheckBox Group) is a non-empty array.
+ * If you also want to confirm if the value is `string`, use `isStringArray`.
+ */
+const isControlValueNonEmpty = (xs: ControlValue): boolean => xs.length > 0;
+
 const eqControlTarget: Eq<ControlTarget> = struct({
   schemaNode: A.getEq(S.Eq),
   type: S.Eq,
@@ -112,19 +119,28 @@ const buildControlTarget = (
 });
 
 /**
- * For a control which just needs a singular value, validate and split out the value from the
- * unionised ControlValue.
+ * For a control which just needs a singular value, always retrieve the first value.
  *
  * @param value a potential string value
  */
 const getStringControlValue = (value: ControlValue): string =>
+  pipe(value, getStringArrayControlValue, NEA.head);
+
+/**
+ * For a control that can have one or more string values (e.g. CheckBox Group), validate and
+ * retrieve the values from the unionised ControlValue.
+ *
+ * @param value A ControlValue which should have at least one string value.
+ */
+const getStringArrayControlValue = (
+  value: ControlValue
+): NEA.NonEmptyArray<string> =>
   pipe(
     value,
     E.fromPredicate(
       isStringArray,
-      () => new TypeError("Expected string[] but got something else!")
+      () => new TypeError("Expected non-empty string[] but got something else!")
     ),
-    E.map(NEA.head),
     E.matchW(
       (error) => {
         throw error;
@@ -150,9 +166,17 @@ const controlFactory = (
   const ifAvailable = <T,>(
     value: ControlValue | undefined,
     getter: (_: ControlValue) => T
-  ): T | undefined => pipe(value, O.fromNullable, O.map(getter), O.toUndefined);
+  ): T | undefined =>
+    pipe(
+      value,
+      O.fromNullable,
+      O.filter(isControlValueNonEmpty),
+      O.map(getter),
+      O.toUndefined
+    );
 
-  const { controlType, mandatory, title, description, size2 } = control;
+  const { controlType, mandatory, title, description, size1, size2, options } =
+    control;
 
   switch (controlType) {
     case "editbox":
@@ -167,8 +191,20 @@ const controlFactory = (
           onChange={(newValue) => onChange([newValue])}
         />
       );
-    case "calendar":
     case "checkboxgroup":
+      return (
+        <WizardCheckBoxGroup
+          id={id}
+          label={title}
+          description={description}
+          mandatory={mandatory}
+          options={options}
+          columns={size1}
+          values={ifAvailable<string[]>(value, getStringArrayControlValue)}
+          onSelect={(newValue: string[]) => onChange(newValue)}
+        />
+      );
+    case "calendar":
     case "html":
     case "listbox":
     case "radiogroup":

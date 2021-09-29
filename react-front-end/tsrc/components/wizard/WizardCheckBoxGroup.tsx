@@ -23,14 +23,14 @@ import { WizardLabel } from "./WizardLabel";
 import { range } from "lodash";
 import { Checkbox } from "@material-ui/core";
 
-const useStyles = makeStyles<Theme, { width: number }>({
+const useStyles = makeStyles<Theme, { optionWidth: number }>({
   checkBoxGroupRow: {
     flexDirection: "row",
     display: "flex",
     alignItems: "center",
   },
   checkBoxGroupColumn: {
-    width: ({ width }) => `${width}%`,
+    width: ({ optionWidth }) => `${optionWidth}%`,
   },
 });
 
@@ -66,7 +66,7 @@ export interface WizardCheckBoxGroupProps {
   /**
    * Handler for selecting an option.
    */
-  onSelect: (_: string[]) => void;
+  onSelect: (selectedValues: string[]) => void;
 }
 
 export const WizardCheckBoxGroup = ({
@@ -81,11 +81,38 @@ export const WizardCheckBoxGroup = ({
 }: WizardCheckBoxGroupProps) => {
   const columnNumber = columns > 0 ? columns : 1;
   const rowNumber = Math.ceil(options.length / columnNumber);
-  const classes = useStyles({ width: Math.round(100 / columnNumber) });
+  const classes = useStyles({ optionWidth: Math.round(100 / columnNumber) });
 
-  // Predicate to filter options by their indexes for each row.
-  const filterOptionsByIndex = (start: number, index: number) =>
-    start * columnNumber <= index && index < columnNumber * (start + 1);
+  // Allocate options to each row, depending on the number of column.
+  const getOptionsForRow = (
+    rowIndex: number
+  ): OEQ.WizardCommonTypes.WizardControlOption[] =>
+    options.filter(
+      (_, optionIndex) =>
+        rowIndex * columnNumber <= optionIndex &&
+        optionIndex < columnNumber * (rowIndex + 1)
+    );
+
+  const buildOption = ({
+    text,
+    value,
+  }: OEQ.WizardCommonTypes.WizardControlOption): JSX.Element => (
+    <FormControlLabel
+      label={text}
+      control={
+        <Checkbox
+          checked={values.some((v) => v === value)}
+          value={value}
+          onChange={(e) => {
+            const selectedValues = e.target.checked
+              ? [...values, value]
+              : values.filter((v) => v !== value);
+            onSelect(selectedValues);
+          }}
+        />
+      }
+    />
+  );
 
   return (
     <>
@@ -96,27 +123,16 @@ export const WizardCheckBoxGroup = ({
         labelFor={id}
       />
       <div id={id}>
-        {range(0, rowNumber).map((i) => (
-          <div className={classes.checkBoxGroupRow} key={`${id}-${i}`}>
-            {options
-              .filter((_, order) => filterOptionsByIndex(i, order))
-              .map(({ text, value }) => (
-                <div
-                  className={classes.checkBoxGroupColumn}
-                  key={`${id}-${i}-${value}`}
-                >
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={values?.some((v) => v === value)}
-                        value={value}
-                        onChange={(e) => onSelect([...values, e.target.value])}
-                      />
-                    }
-                    label={text}
-                  />
-                </div>
-              ))}
+        {range(0, rowNumber).map((rowIndex) => (
+          <div className={classes.checkBoxGroupRow} key={`${id}-${rowIndex}`}>
+            {getOptionsForRow(rowIndex).map((option, optionIndex) => (
+              <div
+                className={classes.checkBoxGroupColumn}
+                key={`${id}-${rowIndex}-${optionIndex}`}
+              >
+                {buildOption(option)}
+              </div>
+            ))}
           </div>
         ))}
       </div>
