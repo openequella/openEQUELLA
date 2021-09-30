@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import { absurd } from "fp-ts/function";
 
 export const getAdvancedSearchesFromServerResult: OEQ.Common.BaseEntitySummary[] =
   [
@@ -41,28 +42,26 @@ const buildTargetNodes = (
     };
   });
 
+export const mockControlOptionLabels = ["First Option", "Second Option"];
+export const mockControlOptions: OEQ.WizardCommonTypes.WizardControlOption[] =
+  mockControlOptionLabels.map((text) => ({ text, value: text }));
+
 /**
- * The bare necessities to mock an Edit Box
+ * The bare necessities to mock a WizardBasicControl.
  */
-export interface EditBoxEssentials
+export interface BasicControlEssentials
   extends Pick<
-    OEQ.WizardControl.WizardEditBoxControl,
-    "title" | "description" | "mandatory"
+    OEQ.WizardControl.WizardBasicControl,
+    "title" | "description" | "mandatory" | "controlType"
   > {
   schemaNodes: TargetNodeEssentials[];
 }
 
-export const mockEditbox = (
-  mockDetails: EditBoxEssentials
-): OEQ.WizardControl.WizardEditBoxControl => ({
-  controlType: "editbox",
+const mockBasicControl = (
+  mockDetails: BasicControlEssentials
+): OEQ.WizardControl.WizardBasicControl => ({
   description: mockDetails.description,
   include: true,
-  isAllowLinks: false,
-  isAllowMultiLang: false,
-  isCheckDuplication: false,
-  isForceUnique: false,
-  isNumber: false,
   mandatory: mockDetails.mandatory,
   options: [],
   reload: false,
@@ -71,7 +70,54 @@ export const mockEditbox = (
   targetNodes: buildTargetNodes(mockDetails.schemaNodes),
   title: mockDetails.title,
   visibilityScript: "return true;",
+  controlType: mockDetails.controlType,
 });
+
+const mockOptionTypeControl = (
+  mockDetails: BasicControlEssentials
+): OEQ.WizardControl.WizardBasicControl => ({
+  ...mockBasicControl(mockDetails),
+  options: mockControlOptions,
+  size1: 1,
+});
+
+const mockEditbox = (
+  mockDetails: BasicControlEssentials
+): OEQ.WizardControl.WizardEditBoxControl => ({
+  ...mockBasicControl(mockDetails),
+  controlType: "editbox",
+  isAllowLinks: false,
+  isAllowMultiLang: false,
+  isCheckDuplication: false,
+  isForceUnique: false,
+  isNumber: false,
+});
+
+const mockUnknownWizardControl: OEQ.WizardControl.UnknownWizardControl = {
+  controlType: "unknown",
+};
+
+export const mockWizardControlFactory = (
+  mockDetails: BasicControlEssentials
+): OEQ.WizardControl.WizardControl => {
+  switch (mockDetails.controlType) {
+    case "editbox":
+      return mockEditbox(mockDetails);
+    case "checkboxgroup":
+      return mockOptionTypeControl(mockDetails);
+    case "calendar":
+    case "html":
+    case "listbox":
+    case "radiogroup":
+    case "shufflebox":
+    case "shufflelist":
+    case "termselector":
+    case "userselector":
+      return mockUnknownWizardControl;
+    default:
+      return absurd(mockDetails.controlType);
+  }
+};
 
 export const getAdvancedSearchDefinition: OEQ.AdvancedSearch.AdvancedSearchDefinition =
   {

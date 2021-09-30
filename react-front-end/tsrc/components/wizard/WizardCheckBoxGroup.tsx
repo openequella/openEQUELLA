@@ -120,22 +120,19 @@ export const WizardCheckBoxGroup = ({
         mandatory={mandatory}
         label={label}
         description={description}
-        labelFor={id}
       />
-      <div id={id}>
-        {range(0, rowNumber).map((rowIndex) => (
-          <div className={classes.checkBoxGroupRow} key={`${id}-${rowIndex}`}>
-            {getOptionsForRow(rowIndex).map((option, optionIndex) => (
-              <div
-                className={classes.checkBoxGroupColumn}
-                key={`${id}-${rowIndex}-${optionIndex}`}
-              >
-                {buildOption(option)}
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
+      {range(0, rowNumber).map((rowIndex) => (
+        <div className={classes.checkBoxGroupRow} key={`${id}-${rowIndex}`}>
+          {getOptionsForRow(rowIndex).map((option, optionIndex) => (
+            <div
+              className={classes.checkBoxGroupColumn}
+              key={`${id}-${rowIndex}-${optionIndex}`}
+            >
+              {buildOption(option)}
+            </div>
+          ))}
+        </div>
+      ))}
     </>
   );
 };
