@@ -17,25 +17,10 @@
  */
 import { OutlinedInput } from "@material-ui/core";
 import * as React from "react";
+import { WizardControlBasicProps } from "./WizardHelper";
 import { WizardLabel } from "./WizardLabel";
 
-export interface WizardEditBoxProps {
-  /**
-   * DOM id
-   */
-  id?: string;
-  /**
-   * The label to display for the control.
-   */
-  label?: string;
-  /**
-   * A description to display alongside the control to assist users.
-   */
-  description?: string;
-  /**
-   * Indicate that this control is 'mandatory' to the user.
-   */
-  mandatory: boolean;
+export interface WizardEditBoxProps extends WizardControlBasicProps {
   /**
    * If greater than 1 creates a multi-line edit box with the specified number of rows.
    */

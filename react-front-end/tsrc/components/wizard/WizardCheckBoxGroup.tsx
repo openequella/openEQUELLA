@@ -15,42 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FormControlLabel, Theme } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Checkbox, FormControlLabel } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client/";
 import * as React from "react";
-import { WizardLabel } from "./WizardLabel";
-import { range } from "lodash";
-import { Checkbox } from "@material-ui/core";
+import { WizardOptionGroup } from "./WizardOptionGroup";
+import { WizardControlBasicProps } from "./WizardHelper";
 
-const useStyles = makeStyles<Theme, { optionWidth: number }>({
-  checkBoxGroupRow: {
-    flexDirection: "row",
-    display: "flex",
-    alignItems: "center",
-  },
-  checkBoxGroupColumn: {
-    width: ({ optionWidth }) => `${optionWidth}%`,
-  },
-});
-
-export interface WizardCheckBoxGroupProps {
-  /**
-   * DOM id.
-   */
-  id?: string;
-  /**
-   * The label to display for the control.
-   */
-  label?: string;
-  /**
-   * A description to display alongside the control to assist users.
-   */
-  description?: string;
-  /**
-   * Indicate that this control is 'mandatory' to the user.
-   */
-  mandatory: boolean;
+export interface WizardCheckBoxGroupProps extends WizardControlBasicProps {
   /**
    * The list of CheckBox options.
    */
@@ -69,30 +40,8 @@ export interface WizardCheckBoxGroupProps {
   onSelect: (selectedValues: string[]) => void;
 }
 
-export const WizardCheckBoxGroup = ({
-  id,
-  label,
-  description,
-  mandatory,
-  columns,
-  options,
-  values = [],
-  onSelect,
-}: WizardCheckBoxGroupProps) => {
-  const columnNumber = columns > 0 ? columns : 1;
-  const rowNumber = Math.ceil(options.length / columnNumber);
-  const classes = useStyles({ optionWidth: Math.round(100 / columnNumber) });
-
-  // Allocate options to each row, depending on the number of column.
-  const getOptionsForRow = (
-    rowIndex: number
-  ): OEQ.WizardCommonTypes.WizardControlOption[] =>
-    options.filter(
-      (_, optionIndex) =>
-        rowIndex * columnNumber <= optionIndex &&
-        optionIndex < columnNumber * (rowIndex + 1)
-    );
-
+export const WizardCheckBoxGroup = (props: WizardCheckBoxGroupProps) => {
+  const values = props.values ?? [];
   const buildOption = ({
     text,
     value,
@@ -107,32 +56,12 @@ export const WizardCheckBoxGroup = ({
             const selectedValues = e.target.checked
               ? [...values, value]
               : values.filter((v) => v !== value);
-            onSelect(selectedValues);
+            props.onSelect(selectedValues);
           }}
         />
       }
     />
   );
 
-  return (
-    <>
-      <WizardLabel
-        mandatory={mandatory}
-        label={label}
-        description={description}
-      />
-      {range(0, rowNumber).map((rowIndex) => (
-        <div className={classes.checkBoxGroupRow} key={`${id}-${rowIndex}`}>
-          {getOptionsForRow(rowIndex).map((option, optionIndex) => (
-            <div
-              className={classes.checkBoxGroupColumn}
-              key={`${id}-${rowIndex}-${optionIndex}`}
-            >
-              {buildOption(option)}
-            </div>
-          ))}
-        </div>
-      ))}
-    </>
-  );
+  return <WizardOptionGroup {...props} buildOption={buildOption} />;
 };

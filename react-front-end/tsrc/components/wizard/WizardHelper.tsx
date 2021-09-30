@@ -31,6 +31,28 @@ import { WizardEditBox } from "./WizardEditBox";
 import { WizardUnsupported } from "./WizardUnsupported";
 
 /**
+ * Provide basic props a Wizard control component needs.
+ */
+export interface WizardControlBasicProps {
+  /**
+   * DOM id.
+   */
+  id?: string;
+  /**
+   * The label to display for the control.
+   */
+  label?: string;
+  /**
+   * A description to display alongside the control to assist users.
+   */
+  description?: string;
+  /**
+   * Indicate that this control is 'mandatory' to the user.
+   */
+  mandatory: boolean;
+}
+
+/**
  * Used to loosely target what a value (typically a `ControlValue`) is being used for.
  */
 export interface ControlTarget {
@@ -178,14 +200,18 @@ const controlFactory = (
   const { controlType, mandatory, title, description, size1, size2, options } =
     control;
 
+  const commonProps = {
+    id,
+    label: title,
+    description,
+    mandatory,
+  };
+
   switch (controlType) {
     case "editbox":
       return (
         <WizardEditBox
-          id={id}
-          label={title}
-          description={description}
-          mandatory={mandatory}
+          {...commonProps}
           rows={size2}
           value={ifAvailable<string>(value, getStringControlValue)}
           onChange={(newValue) => onChange([newValue])}
@@ -194,10 +220,7 @@ const controlFactory = (
     case "checkboxgroup":
       return (
         <WizardCheckBoxGroup
-          id={id}
-          label={title}
-          description={description}
-          mandatory={mandatory}
+          {...commonProps}
           options={options}
           columns={size1}
           values={ifAvailable<string[]>(value, getStringArrayControlValue)}
