@@ -22,7 +22,6 @@ import { absurd } from "fp-ts/function";
 import {
   BasicControlEssentials,
   getAdvancedSearchDefinition,
-  mockControlOptionLabels,
   mockWizardControlFactory,
 } from "../../../__mocks__/AdvancedSearchModule.mock";
 
@@ -33,6 +32,7 @@ export const editBoxEssentials: BasicControlEssentials = {
   mandatory: false,
   schemaNodes: [{ target: "/item/name", attribute: "" }],
   controlType: "editbox",
+  options: [{ text: "default value", value: "test" }],
 };
 
 export const oneEditBoxWizard = (
@@ -67,8 +67,18 @@ const controlValues: Map<BasicControlEssentials, string[]> = new Map([
       schemaNodes: [{ target: "/item/options", attribute: "" }],
       mandatory: false,
       controlType: "checkboxgroup",
+      options: [
+        {
+          text: "CheckBox one",
+          value: "1",
+        },
+        {
+          text: "CheckBox two",
+          value: "2",
+        },
+      ],
     },
-    mockControlOptionLabels,
+    [], //CheckBox Group does not worry about the values
   ],
 ]);
 
@@ -77,15 +87,11 @@ export const controls: OEQ.WizardControl.WizardControl[] = Array.from(
 ).map(mockWizardControlFactory);
 
 export const controlLabelsAndValues = Array.from(controlValues).map(
-  ([{ title, controlType }, values]) => ({
-    // for option type component like CheckBox Group, we need the labels of
-    // control's options, not the label of the control itself.
-    labels:
-      controlType === "checkboxgroup"
-        ? mockControlOptionLabels
-        : [title ?? "!!BLANK LABEL!!"],
+  ([{ title, controlType, options }, values]) => ({
+    label: title ?? `${controlType}-${values.toString()}`,
     values,
     controlType: controlType,
+    optionLabels: options.map(({ text, value }) => text ?? value),
   })
 );
 
@@ -93,24 +99,26 @@ export const controlLabelsAndValues = Array.from(controlValues).map(
  * Trigger a HTML DOM event for a Wizard control.
  *
  * @param container Root container where <AdvancedSearchPanel/> exists
- * @param labels Depending on the control type, the label can be the control's own label or its options' labels.
+ * @param label Label of the control.
  * @param values Depending on the control type, the value can be the control's value or its options' values.
+ * @param optionLabels Labels of the controls' options.
  * @param controlType Type of the control.
  */
 export const updateControlValue = (
   container: HTMLElement,
-  labels: string[],
+  label: string,
   values: string[],
+  optionLabels: string[],
   controlType: OEQ.WizardControl.ControlType
 ) => {
-  const getLabel = (label: string): HTMLElement =>
-    getByLabelText(container, label);
   switch (controlType) {
     case "editbox":
-      userEvent.type(getLabel(labels[0]), values[0]);
+      userEvent.type(getByLabelText(container, label), values[0]);
       break;
     case "checkboxgroup":
-      labels.forEach((l) => userEvent.click(getLabel(l)));
+      optionLabels.forEach((optionLabel) =>
+        userEvent.click(getByLabelText(container, optionLabel))
+      );
       break;
     case "calendar":
     case "html":
@@ -130,24 +138,26 @@ export const updateControlValue = (
  * Validate if a Wizard control or its options have correct values.
  *
  * @param container Root container where <AdvancedSearchPanel/> exists
- * @param labels Depending on the control type, the label can be the control's own label or its options' labels.
+ * @param label Label of the control.
  * @param values Depending on the control type, the value can be the control's value or its options' values.
+ * @param optionLabels Labels of the controls' options.
  * @param controlType Type of the control.
  */
 export const validateControlValue = (
   container: HTMLElement,
-  labels: string[],
+  label: string,
   values: string[],
+  optionLabels: string[],
   controlType: OEQ.WizardControl.ControlType
 ) => {
-  const getLabel = (label: string): HTMLElement =>
-    getByLabelText(container, label);
   switch (controlType) {
     case "editbox":
-      expect(getLabel(labels[0])).toHaveValue(values[0]);
+      expect(getByLabelText(container, label)).toHaveValue(values[0]);
       break;
     case "checkboxgroup":
-      labels.forEach((l) => expect(getLabel(l)).toBeChecked());
+      optionLabels.forEach((optionLabel) =>
+        expect(getByLabelText(container, optionLabel)).toBeChecked()
+      );
       break;
     case "calendar":
     case "html":

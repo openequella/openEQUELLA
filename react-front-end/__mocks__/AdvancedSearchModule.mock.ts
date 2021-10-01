@@ -42,17 +42,13 @@ const buildTargetNodes = (
     };
   });
 
-export const mockControlOptionLabels = ["First Option", "Second Option"];
-export const mockControlOptions: OEQ.WizardCommonTypes.WizardControlOption[] =
-  mockControlOptionLabels.map((text) => ({ text, value: text }));
-
 /**
  * The bare necessities to mock a WizardBasicControl.
  */
 export interface BasicControlEssentials
   extends Pick<
     OEQ.WizardControl.WizardBasicControl,
-    "title" | "description" | "mandatory" | "controlType"
+    "title" | "description" | "mandatory" | "options" | "controlType"
   > {
   schemaNodes: TargetNodeEssentials[];
 }
@@ -63,7 +59,7 @@ const mockBasicControl = (
   description: mockDetails.description,
   include: true,
   mandatory: mockDetails.mandatory,
-  options: [],
+  options: mockDetails.options,
   reload: false,
   size1: 0,
   size2: 1,
@@ -77,8 +73,7 @@ const mockOptionTypeControl = (
   mockDetails: BasicControlEssentials
 ): OEQ.WizardControl.WizardBasicControl => ({
   ...mockBasicControl(mockDetails),
-  options: mockControlOptions,
-  size1: 1,
+  size1: 3,
 });
 
 const mockEditbox = (

@@ -168,9 +168,11 @@ describe("Rendering of wizard", () => {
     const { container } = await renderAdvancedSearchPage();
 
     // For each control, trigger an event to update or select their values.
-    controlLabelsAndValues.forEach(({ labels, values, controlType }) => {
-      updateControlValue(container, labels, values, controlType);
-    });
+    controlLabelsAndValues.forEach(
+      ({ label, values, optionLabels, controlType }) => {
+        updateControlValue(container, label, values, optionLabels, controlType);
+      }
+    );
 
     // Click search - so as to persist values
     await clickSearchButton(container);
@@ -183,8 +185,16 @@ describe("Rendering of wizard", () => {
     togglePanel();
 
     // Make sure all the values are there as expected
-    controlLabelsAndValues.forEach(({ labels, values, controlType }) => {
-      validateControlValue(container, labels, values, controlType);
-    });
+    controlLabelsAndValues.forEach(
+      ({ label, values, optionLabels, controlType }) => {
+        validateControlValue(
+          container,
+          label,
+          values,
+          optionLabels,
+          controlType
+        );
+      }
+    );
   });
 });
