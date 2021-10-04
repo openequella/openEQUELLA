@@ -18,6 +18,7 @@
 import { debounce, Drawer, Grid, Hidden } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
+import * as M from "fp-ts/Map";
 import { isEqual } from "lodash";
 import * as React from "react";
 import {
@@ -963,7 +964,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
                           searchPageModeDispatch({
                             type: "toggleAdvSearchPanel",
                           }),
-                        accent: false,
+                        accent: !M.isEmpty(searchPageModeState.queryValues),
                       }
                     : undefined
                 }
