@@ -25,10 +25,10 @@ import { languageStrings } from "../../../tsrc/util/langstrings";
 import {
   validateControlValue,
   controlLabelsAndValues,
-  editBoxTitle,
   controls,
   oneEditBoxWizard,
   updateControlValue,
+  editBoxEssentials,
 } from "./AdvancedSearchTestHelper";
 import {
   initialiseEssentialMocks,
@@ -140,7 +140,7 @@ describe("Rendering of wizard", () => {
     const { queryByText } = await renderAdvancedSearchPage();
 
     // Mandatory controls should be suffixed '*'
-    expect(queryByText(`${editBoxTitle} *`)).toBeInTheDocument();
+    expect(queryByText(`${editBoxEssentials.title} *`)).toBeInTheDocument();
     expect(queryByText(languageStrings.common.required)).toBeInTheDocument();
   });
 
@@ -149,7 +149,7 @@ describe("Rendering of wizard", () => {
     const { queryByText } = await renderAdvancedSearchPage();
 
     // Mandatory controls should be suffixed '*' - let's match against the title without it here.
-    expect(queryByText(`${editBoxTitle}`)).toBeInTheDocument();
+    expect(queryByText(`${editBoxEssentials.title}`)).toBeInTheDocument();
     expect(
       queryByText(languageStrings.common.required)
     ).not.toBeInTheDocument();

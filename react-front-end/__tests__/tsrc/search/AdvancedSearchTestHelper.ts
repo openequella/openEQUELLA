@@ -25,10 +25,8 @@ import {
   mockWizardControlFactory,
 } from "../../../__mocks__/AdvancedSearchModule.mock";
 
-export const editBoxTitle = "Test Edit Box";
-
 export const editBoxEssentials: BasicControlEssentials = {
-  title: editBoxTitle,
+  title: "Test Edit Box",
   mandatory: false,
   schemaNodes: [{ target: "/item/name", attribute: "" }],
   controlType: "editbox",
