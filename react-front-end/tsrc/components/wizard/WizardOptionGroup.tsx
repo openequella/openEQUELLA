@@ -21,7 +21,7 @@ import * as OEQ from "@openequella/rest-api-client/";
 import * as React from "react";
 import { WizardControlBasicProps } from "./WizardHelper";
 import { WizardLabel } from "./WizardLabel";
-import { range } from "lodash";
+import { chunk } from "lodash";
 
 const useStyles = makeStyles<Theme, { optionWidth: number }>({
   optionRow: {
@@ -65,19 +65,8 @@ export const WizardOptionGroup = ({
   options,
   buildOption,
 }: WizardCheckBoxGroupTemplateProps) => {
-  const columnNumber = columns > 0 ? columns : 1;
-  const rowNumber = Math.ceil(options.length / columnNumber);
+  const columnNumber = Math.max(1, columns);
   const classes = useStyles({ optionWidth: Math.round(100 / columnNumber) });
-
-  // Function to allocate options to each row, depending on the number of column.
-  const getOptionsForRow = (
-    rowIndex: number
-  ): OEQ.WizardCommonTypes.WizardControlOption[] =>
-    options.filter(
-      (_, optionIndex) =>
-        rowIndex * columnNumber <= optionIndex &&
-        optionIndex < columnNumber * (rowIndex + 1)
-    );
 
   return (
     <>
@@ -86,9 +75,12 @@ export const WizardOptionGroup = ({
         label={label}
         description={description}
       />
-      {range(0, rowNumber).map((rowIndex) => (
+      {chunk<OEQ.WizardCommonTypes.WizardControlOption>(
+        options,
+        columnNumber
+      ).map((row, rowIndex) => (
         <div className={classes.optionRow} key={`${id}-${rowIndex}`}>
-          {getOptionsForRow(rowIndex).map((option, optionIndex) => (
+          {row.map((option, optionIndex) => (
             <div
               className={classes.optionColumn}
               key={`${id}-${rowIndex}-${optionIndex}`}
