@@ -15,7 +15,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 (Runtime / unmanagedClasspath) += (LocalProject("learningedge_config") / baseDirectory).value
 
-val RestEasyVersion  = "3.15.1.Final"
+val RestEasyVersion  = "3.15.2.Final"
 val SwaggerVersion   = "1.6.2"
 val TomcatVersion    = "9.0.54"
 val axis2Version     = "1.6.2"
