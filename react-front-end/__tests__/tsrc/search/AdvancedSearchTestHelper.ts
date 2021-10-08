@@ -32,7 +32,6 @@ import { contramap, Ord } from "fp-ts/Ord";
 import * as S from "fp-ts/string";
 import { concatAll } from "fp-ts/lib/Monoid";
 import * as IO from "fp-ts/IO";
-import * as Void from "fp-ts/void";
 
 export const editBoxEssentials: BasicControlEssentials = {
   title: "Test Edit Box",
@@ -114,6 +113,18 @@ const mergeLabelAndValues: (
   _: WizardControlLabelValue[]
 ) => WizardControlLabelValue = concatAll(M.getUnionMonoid(S.Eq, S.Semigroup));
 
+// Function to build a `WizardControlLabelValue` for an Option type control with supplied values.
+const buildLabelValueForOption = (
+  options: OEQ.WizardCommonTypes.WizardControlOption[],
+  values: string[]
+): WizardControlLabelValue =>
+  pipe(
+    options,
+    A.zip(values),
+    A.map(([{ text }, value]) => new Map([[text ?? value, value]])),
+    mergeLabelAndValues
+  );
+
 // Function to build a `WizardControlLabelValue` for the supplied control and its values.
 const buildLabelValue = (
   { controlType, title, options }: BasicControlEssentials,
@@ -125,12 +136,7 @@ const buildLabelValue = (
         [title ?? `${values.toString()}`, values[0]], // EditBox just needs its title and the first value.
       ]);
     case "checkboxgroup":
-      return pipe(
-        options,
-        A.zip(values), // Bind options and supplied values because we don't need the input's real value.
-        A.map(([{ text }, value]) => new Map([[text ?? value, value]])),
-        mergeLabelAndValues
-      );
+      return buildLabelValueForOption(options, values);
     case "calendar":
     case "html":
     case "listbox":
@@ -145,13 +151,6 @@ const buildLabelValue = (
   }
 };
 
-const buildControlValue = (
-  control: BasicControlEssentials,
-  values: string[]
-): MockedControlValue => {
-  return [mockWizardControlFactory(control), buildLabelValue(control, values)];
-};
-
 /**
  * Generate a list of mocked Wizard controls.
  */
@@ -162,6 +161,13 @@ export const generateMockedControls = (): MockedControlValue[] => {
   >((c: BasicControlEssentials) => O.fromNullable(c.title))(O.getOrd(S.Ord));
 
   const collectByTitle = M.collect<BasicControlEssentials>(orderByTitle);
+  const buildControlValue = (
+    control: BasicControlEssentials,
+    values: string[]
+  ): MockedControlValue => [
+    mockWizardControlFactory(control),
+    buildLabelValue(control, values),
+  ];
 
   return pipe(
     controlValues,
@@ -181,15 +187,20 @@ export const updateControlValue = (
   updates: WizardControlLabelValue,
   controlType: OEQ.WizardControl.ControlType
 ): void => {
-  const labels: string[] = pipe(updates, M.keys(S.Ord));
-  const values: string[] = pipe(updates, M.values(S.Ord));
+  const [labels, values] = A.unzip(M.toArray(S.Ord)(updates));
+  // Function to apply a side effect to each update in IO.
+  const traverseUpdates = (f: (label: string, value: string) => IO.IO<void>) =>
+    M.getTraversableWithIndex(S.Ord).traverseWithIndex(IO.Applicative)(
+      updates,
+      f
+    );
 
   switch (controlType) {
     case "editbox":
       userEvent.type(getByLabelText(container, labels[0]), values[0]);
       break;
     case "checkboxgroup":
-      const select = (label: string, value: string): IO.IO<void> => {
+      const selectCheckBox = (label: string, value: string): IO.IO<void> => {
         const checkbox = getByLabelText(container, label) as HTMLInputElement;
         if (
           (value === "true" && !checkbox.checked) ||
@@ -200,13 +211,10 @@ export const updateControlValue = (
           console.error("CheckBox status does not match the new value.");
         }
 
-        return IO.of(Void.Monoid.empty);
+        return IO.Do;
       };
-      const traverseMapWithIO = M.getTraversableWithIndex(
-        S.Ord
-      ).traverseWithIndex(IO.Applicative);
 
-      traverseMapWithIO(updates, select);
+      traverseUpdates(selectCheckBox);
       break;
     case "calendar":
     case "html":
