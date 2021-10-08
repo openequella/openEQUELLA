@@ -19,16 +19,17 @@ import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
 import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import * as A from "fp-ts/Array";
 import { getAdvancedSearchDefinition } from "../../../__mocks__/AdvancedSearchModule.mock";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import {
-  validateControlValue,
-  controlLabelsAndValues,
-  controls,
+  editBoxEssentials,
+  generateMockedControls,
+  getControlValue,
+  MockedControlValue,
   oneEditBoxWizard,
   updateControlValue,
-  editBoxEssentials,
 } from "./AdvancedSearchTestHelper";
 import {
   initialiseEssentialMocks,
@@ -159,20 +160,21 @@ describe("Rendering of wizard", () => {
   // Values are set
   // Values remain present once a search has been triggered - i.e. stored in state
   it("stores values in state when search is clicked, and then re-uses them when the wizard is re-rendered", async () => {
+    const mockedControls: MockedControlValue[] = generateMockedControls();
+    const [controls, mockedLabelsAndValues] = A.unzip(mockedControls);
+
     const advancedSearchDefinition: OEQ.AdvancedSearch.AdvancedSearchDefinition =
       {
         ...getAdvancedSearchDefinition,
-        controls: controls,
+        controls,
       };
     mockGetAdvancedSearchByUuid.mockResolvedValue(advancedSearchDefinition);
     const { container } = await renderAdvancedSearchPage();
 
     // For each control, trigger an event to update or select their values.
-    controlLabelsAndValues.forEach(
-      ({ label, values, optionLabels, controlType }) => {
-        updateControlValue(container, label, values, optionLabels, controlType);
-      }
-    );
+    mockedControls.forEach(([{ controlType }, controlLabelValue]) => {
+      updateControlValue(container, controlLabelValue, controlType);
+    });
 
     // Click search - so as to persist values
     await clickSearchButton(container);
@@ -184,17 +186,11 @@ describe("Rendering of wizard", () => {
     // And bring it back
     togglePanel();
 
-    // Make sure all the values are there as expected
-    controlLabelsAndValues.forEach(
-      ({ label, values, optionLabels, controlType }) => {
-        validateControlValue(
-          container,
-          label,
-          values,
-          optionLabels,
-          controlType
-        );
-      }
+    // Collect all labels and values.
+    const labelsAndValues = mockedControls.map(([c, controlValue]) =>
+      getControlValue(container, Array.from(controlValue.keys()), c.controlType)
     );
+
+    expect(labelsAndValues).toEqual(mockedLabelsAndValues);
   });
 });

@@ -24,6 +24,15 @@ import {
   getAdvancedSearchDefinition,
   mockWizardControlFactory,
 } from "../../../__mocks__/AdvancedSearchModule.mock";
+import * as A from "fp-ts/Array";
+import { pipe } from "fp-ts/function";
+import * as M from "fp-ts/Map";
+import * as O from "fp-ts/Option";
+import { contramap, Ord } from "fp-ts/Ord";
+import * as S from "fp-ts/string";
+import { concatAll } from "fp-ts/lib/Monoid";
+import * as IO from "fp-ts/IO";
+import * as Void from "fp-ts/void";
 
 export const editBoxEssentials: BasicControlEssentials = {
   title: "Test Edit Box",
@@ -74,49 +83,130 @@ const controlValues: Map<BasicControlEssentials, string[]> = new Map([
           text: "CheckBox two",
           value: "2",
         },
+        {
+          text: "CheckBox three",
+          value: "3",
+        },
+        {
+          text: "CheckBox four",
+          value: "4",
+        },
       ],
     },
-    [], //CheckBox Group does not worry about the values
+    ["true", "true", "false", "false"], // The values determine whether to turn on or off a checkbox.
   ],
 ]);
 
-export const controls: OEQ.WizardControl.WizardControl[] = Array.from(
-  controlValues.keys()
-).map(mockWizardControlFactory);
+// Alias for the Map including a Wizard control's labels and values. However, the value can refer to
+// the real input value or the status of attribute `checked`.
+type WizardControlLabelValue = Map<string, string>;
 
-export const controlLabelsAndValues = Array.from(controlValues).map(
-  ([{ title, controlType, options }, values]) => ({
-    label: title ?? `${controlType}-${values.toString()}`,
-    values,
-    controlType: controlType,
-    optionLabels: options.map(({ text, value }) => text ?? value),
-  })
-);
+/**
+ * Provide details of a control and its labels and values for tests.
+ */
+export type MockedControlValue = [
+  OEQ.WizardControl.WizardBasicControl,
+  WizardControlLabelValue
+];
+
+// Function to merge multiple `WizardControlLabelValue` into one.
+const mergeLabelAndValues: (
+  _: WizardControlLabelValue[]
+) => WizardControlLabelValue = concatAll(M.getUnionMonoid(S.Eq, S.Semigroup));
+
+// Function to build a `WizardControlLabelValue` for the supplied control and its values.
+const buildLabelValue = (
+  { controlType, title, options }: BasicControlEssentials,
+  values: string[]
+): WizardControlLabelValue => {
+  switch (controlType) {
+    case "editbox":
+      return new Map([
+        [title ?? `${values.toString()}`, values[0]], // EditBox just needs its title and the first value.
+      ]);
+    case "checkboxgroup":
+      return pipe(
+        options,
+        A.zip(values), // Bind options and supplied values because we don't need the input's real value.
+        A.map(([{ text }, value]) => new Map([[text ?? value, value]])),
+        mergeLabelAndValues
+      );
+    case "calendar":
+    case "html":
+    case "listbox":
+    case "radiogroup":
+    case "shufflebox":
+    case "shufflelist":
+    case "termselector":
+    case "userselector":
+      return new Map<string, string>();
+    default:
+      return absurd(controlType);
+  }
+};
+
+const buildControlValue = (
+  control: BasicControlEssentials,
+  values: string[]
+): MockedControlValue => {
+  return [mockWizardControlFactory(control), buildLabelValue(control, values)];
+};
+
+/**
+ * Generate a list of mocked Wizard controls.
+ */
+export const generateMockedControls = (): MockedControlValue[] => {
+  const orderByTitle: Ord<BasicControlEssentials> = contramap<
+    O.Option<string>,
+    BasicControlEssentials
+  >((c: BasicControlEssentials) => O.fromNullable(c.title))(O.getOrd(S.Ord));
+
+  const collectByTitle = M.collect<BasicControlEssentials>(orderByTitle);
+
+  return pipe(
+    controlValues,
+    collectByTitle<string[], MockedControlValue>(buildControlValue)
+  );
+};
 
 /**
  * Trigger a HTML DOM event for a Wizard control.
  *
  * @param container Root container where <AdvancedSearchPanel/> exists
- * @param label Label of the control.
- * @param values Depending on the control type, the value can be the control's value or its options' values.
- * @param optionLabels Labels of the controls' options.
+ * @param updates A map where key is the label of a Control and value is the Control's new value.
  * @param controlType Type of the control.
  */
 export const updateControlValue = (
   container: HTMLElement,
-  label: string,
-  values: string[],
-  optionLabels: string[],
+  updates: WizardControlLabelValue,
   controlType: OEQ.WizardControl.ControlType
-) => {
+): void => {
+  const labels: string[] = pipe(updates, M.keys(S.Ord));
+  const values: string[] = pipe(updates, M.values(S.Ord));
+
   switch (controlType) {
     case "editbox":
-      userEvent.type(getByLabelText(container, label), values[0]);
+      userEvent.type(getByLabelText(container, labels[0]), values[0]);
       break;
     case "checkboxgroup":
-      optionLabels.forEach((optionLabel) =>
-        userEvent.click(getByLabelText(container, optionLabel))
-      );
+      const select = (label: string, value: string): IO.IO<void> => {
+        const checkbox = getByLabelText(container, label) as HTMLInputElement;
+        if (
+          (value === "true" && !checkbox.checked) ||
+          (value === "false" && checkbox.checked)
+        ) {
+          userEvent.click(getByLabelText(container, label));
+        } else {
+          console.error("CheckBox status does not match the new value.");
+        }
+
+        return IO.of(Void.Monoid.empty);
+      };
+      const traverseMapWithIO = M.getTraversableWithIndex(
+        S.Ord
+      ).traverseWithIndex(IO.Applicative);
+
+      traverseMapWithIO(updates, select);
       break;
     case "calendar":
     case "html":
@@ -133,30 +223,35 @@ export const updateControlValue = (
 };
 
 /**
- * Validate if a Wizard control or its options have correct values.
+ * Find out the values of a control based on the supplied labels.
  *
  * @param container Root container where <AdvancedSearchPanel/> exists
- * @param label Label of the control.
- * @param values Depending on the control type, the value can be the control's value or its options' values.
- * @param optionLabels Labels of the controls' options.
+ * @param labels The control or its options' labels.
  * @param controlType Type of the control.
  */
-export const validateControlValue = (
+export const getControlValue = (
   container: HTMLElement,
-  label: string,
-  values: string[],
-  optionLabels: string[],
+  labels: string[],
   controlType: OEQ.WizardControl.ControlType
-) => {
+): WizardControlLabelValue | undefined => {
+  const getInput = (label: string) =>
+    getByLabelText(container, label) as HTMLInputElement;
+  const buildMap = (label: string, value: string) => new Map([[label, value]]);
+
   switch (controlType) {
     case "editbox":
-      expect(getByLabelText(container, label)).toHaveValue(values[0]);
-      break;
-    case "checkboxgroup":
-      optionLabels.forEach((optionLabel) =>
-        expect(getByLabelText(container, optionLabel)).toBeChecked()
+      return pipe(
+        labels,
+        A.head, // EditBox only needs the first label which should be its title.
+        O.map((label) => buildMap(label, getInput(label).value)),
+        O.toUndefined
       );
-      break;
+    case "checkboxgroup":
+      return pipe(
+        labels,
+        A.map((label) => buildMap(label, `${getInput(label).checked}`)),
+        mergeLabelAndValues
+      );
     case "calendar":
     case "html":
     case "listbox":
@@ -165,7 +260,7 @@ export const validateControlValue = (
     case "shufflelist":
     case "termselector":
     case "userselector":
-      break;
+      return new Map<string, string>();
     default:
       return absurd(controlType);
   }

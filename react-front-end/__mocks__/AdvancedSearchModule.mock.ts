@@ -88,13 +88,9 @@ const mockEditbox = (
   isNumber: false,
 });
 
-const mockUnknownWizardControl: OEQ.WizardControl.UnknownWizardControl = {
-  controlType: "unknown",
-};
-
 export const mockWizardControlFactory = (
   mockDetails: BasicControlEssentials
-): OEQ.WizardControl.WizardControl => {
+): OEQ.WizardControl.WizardBasicControl => {
   switch (mockDetails.controlType) {
     case "editbox":
       return mockEditbox(mockDetails);
@@ -108,7 +104,7 @@ export const mockWizardControlFactory = (
     case "shufflelist":
     case "termselector":
     case "userselector":
-      return mockUnknownWizardControl;
+      return mockBasicControl(mockDetails);
     default:
       return absurd(mockDetails.controlType);
   }
