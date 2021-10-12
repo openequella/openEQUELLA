@@ -28,11 +28,12 @@ import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as O from "fp-ts/Option";
+import * as E from "fp-ts/Either";
 import { contramap, Ord } from "fp-ts/Ord";
 import * as S from "fp-ts/string";
-import { concatAll } from "fp-ts/lib/Monoid";
 import * as IO from "fp-ts/IO";
 
+const blankLabel = "!!BLANK LABEL!!";
 export const editBoxEssentials: BasicControlEssentials = {
   title: "Test Edit Box",
   mandatory: false,
@@ -101,17 +102,13 @@ const controlValues: Map<BasicControlEssentials, string[]> = new Map([
 type WizardControlLabelValue = Map<string, string>;
 
 /**
- * Provide details of a control and its labels and values for tests.
+ * Used to specify the values for a control identified by their labels. Where the first element of
+ * the tuple is the control definition, and the second is an array of labels and values.
  */
 export type MockedControlValue = [
   OEQ.WizardControl.WizardBasicControl,
   WizardControlLabelValue
 ];
-
-// Function to merge multiple `WizardControlLabelValue` into one.
-const mergeLabelAndValues: (
-  _: WizardControlLabelValue[]
-) => WizardControlLabelValue = concatAll(M.getUnionMonoid(S.Eq, S.Semigroup));
 
 // Function to build a `WizardControlLabelValue` for an Option type control with supplied values.
 const buildLabelValueForOption = (
@@ -121,8 +118,9 @@ const buildLabelValueForOption = (
   pipe(
     options,
     A.zip(values),
-    A.map(([{ text }, value]) => new Map([[text ?? value, value]])),
-    mergeLabelAndValues
+    A.reduce(new Map<string, string>(), (m, [{ text }, value]) =>
+      pipe(m, M.upsertAt(S.Eq)(text ?? blankLabel, value))
+    )
   );
 
 // Function to build a `WizardControlLabelValue` for the supplied control and its values.
@@ -133,7 +131,7 @@ const buildLabelValue = (
   switch (controlType) {
     case "editbox":
       return new Map([
-        [title ?? `${values.toString()}`, values[0]], // EditBox just needs its title and the first value.
+        [title ?? "!!BLANK LABEL!!", values[0]], // EditBox just needs its title and the first value.
       ]);
     case "checkboxgroup":
       return buildLabelValueForOption(options, values);
@@ -176,11 +174,12 @@ export const generateMockedControls = (): MockedControlValue[] => {
 };
 
 /**
- * Trigger a HTML DOM event for a Wizard control.
+ * Change the value(s) of a control using the appropriate DOM events mimicking user interaction.
  *
  * @param container Root container where <AdvancedSearchPanel/> exists
- * @param updates A map where key is the label of a Control and value is the Control's new value.
- * @param controlType Type of the control.
+ * @param updates A Map where the keys are labels for the controls to updated, and the values are
+ * the values the specified controls should be set to.
+ * @param controlType Type of the control which is used to determine the method of setting the values.
  */
 export const updateControlValue = (
   container: HTMLElement,
@@ -200,21 +199,30 @@ export const updateControlValue = (
       userEvent.type(getByLabelText(container, labels[0]), values[0]);
       break;
     case "checkboxgroup":
-      const selectCheckBox = (label: string, value: string): IO.IO<void> => {
-        const checkbox = getByLabelText(container, label) as HTMLInputElement;
-        if (
-          (value === "true" && !checkbox.checked) ||
-          (value === "false" && checkbox.checked)
-        ) {
-          userEvent.click(getByLabelText(container, label));
-        } else {
-          console.error("CheckBox status does not match the new value.");
-        }
+      const selectCheckBox =
+        (label: string, value: string): IO.IO<void> =>
+        () => {
+          const checkbox = getByLabelText(container, label) as HTMLInputElement;
+          pipe(
+            value,
+            E.fromPredicate<string, string>(
+              (v) => ["true", "false"].includes(v),
+              () => "Non-boolean specifier provided"
+            ),
+            E.map<string, boolean>((v) => v === "true"),
+            E.chain<string, boolean, boolean>(
+              E.fromPredicate(
+                (t) => t !== checkbox.checked,
+                () => "CheckBox status does not match the new value"
+              )
+            ),
+            E.fold<string, boolean, void>(console.error, () =>
+              userEvent.click(checkbox)
+            )
+          );
+        };
 
-        return IO.Do;
-      };
-
-      traverseUpdates(selectCheckBox);
+      traverseUpdates(selectCheckBox)();
       break;
     case "calendar":
     case "html":
@@ -257,8 +265,10 @@ export const getControlValue = (
     case "checkboxgroup":
       return pipe(
         labels,
-        A.map((label) => buildMap(label, `${getInput(label).checked}`)),
-        mergeLabelAndValues
+        A.map((label) => ({ label, value: `${getInput(label).checked}` })),
+        A.reduce(new Map<string, string>(), (m, { label, value }) =>
+          pipe(m, M.upsertAt(S.Eq)(label, value))
+        )
       );
     case "calendar":
     case "html":
