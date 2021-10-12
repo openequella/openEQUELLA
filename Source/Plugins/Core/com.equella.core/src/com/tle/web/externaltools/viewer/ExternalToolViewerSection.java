@@ -56,6 +56,7 @@ import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.services.ApplicationVersion;
 import com.tle.core.services.http.Request.Method;
+import com.tle.web.integration.service.IntegrationService;
 import com.tle.web.lti.LtiData.OAuthData;
 import com.tle.web.lti.usermanagement.LtiUserState;
 import com.tle.web.oauth.service.OAuthWebService;
@@ -104,6 +105,7 @@ public class ExternalToolViewerSection
   @Named("external.tool.contact.email")
   private String externalToolContactEmail = "";
 
+  @Inject private IntegrationService integrationService;
   @Inject private ExternalToolsService toolService;
   @Inject private OAuthWebService oauthWebService;
   @Inject private InstitutionService institutionService;
@@ -235,6 +237,7 @@ public class ExternalToolViewerSection
     // a neater way of calling "submit" than to have a dedicated one-line
     // javascript file
     formTag.addReadyStatements(
+        integrationService.updateFormSubmittingFlag(true),
         Js.statement(
             Js.methodCall(Jq.$('#' + formTag.getElementId(context)), Js.function("submit"))));
     return null;
