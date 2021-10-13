@@ -95,6 +95,29 @@ const controlValues: Map<BasicControlEssentials, string[]> = new Map([
     },
     ["true", "true", "false", "false"], // The values determine whether to turn on or off a checkbox.
   ],
+  [
+    {
+      title: "RadioButton Group",
+      schemaNodes: [{ target: "/item/option", attribute: "" }],
+      mandatory: false,
+      controlType: "radiogroup",
+      options: [
+        {
+          text: "RadioButton one",
+          value: "1",
+        },
+        {
+          text: "RadioButton two",
+          value: "2",
+        },
+        {
+          text: "RadioButton Three",
+          value: "3",
+        },
+      ],
+    },
+    ["false", "true", "false"], // RadioButton group can have only one option selected so only one value is `true`.
+  ],
 ]);
 
 // Alias for the Map including a Wizard control's labels and values. However, the value can refer to
@@ -134,11 +157,11 @@ const buildLabelValue = (
         [title ?? wizardControlBlankLabel, values[0]], // EditBox just needs its title and the first value.
       ]);
     case "checkboxgroup":
+    case "radiogroup":
       return buildLabelValueForOption(options, values);
     case "calendar":
     case "html":
     case "listbox":
-    case "radiogroup":
     case "shufflebox":
     case "shufflelist":
     case "termselector":
@@ -194,6 +217,20 @@ export const updateControlValue = (
       f
     );
 
+  // We use string literal "true" and "false" to control the status `checked` for mocked WizardCheckbox and WizardRadioButton,
+  // so create this function to validate the status with `Either` and convert the status to a boolean.
+  const convertInputStatusToBoolean = (
+    value: string
+  ): E.Either<string, boolean> =>
+    pipe(
+      value,
+      E.fromPredicate<string, string>(
+        (v) => ["true", "false"].includes(v),
+        () => "Non-boolean specifier provided"
+      ),
+      E.map<string, boolean>((v) => v === "true")
+    );
+
   switch (controlType) {
     case "editbox":
       userEvent.type(getByLabelText(container, labels[0]), values[0]);
@@ -205,14 +242,10 @@ export const updateControlValue = (
           const checkbox = getByLabelText(container, label) as HTMLInputElement;
           pipe(
             value,
-            E.fromPredicate<string, string>(
-              (v) => ["true", "false"].includes(v),
-              () => "Non-boolean specifier provided"
-            ),
-            E.map<string, boolean>((v) => v === "true"),
+            convertInputStatusToBoolean,
             E.chain<string, boolean, boolean>(
               E.fromPredicate(
-                (newValue) => newValue !== checkbox.checked,
+                (toBeSelected) => toBeSelected !== checkbox.checked,
                 () => "CheckBox status does not match the new value"
               )
             ),
@@ -224,10 +257,25 @@ export const updateControlValue = (
 
       traverseUpdates(selectCheckBox)();
       break;
+    case "radiogroup":
+      const selectRadioButton =
+        (label: string, value: string): IO.IO<void> =>
+        () =>
+          pipe(
+            value,
+            convertInputStatusToBoolean,
+            E.fold<string, boolean, void>(console.error, (toBeSelected) => {
+              if (toBeSelected) {
+                userEvent.click(getByLabelText(container, label));
+              }
+            })
+          );
+
+      traverseUpdates(selectRadioButton)();
+      break;
     case "calendar":
     case "html":
     case "listbox":
-    case "radiogroup":
     case "shufflebox":
     case "shufflelist":
     case "termselector":
@@ -263,6 +311,7 @@ export const getControlValue = (
         O.toUndefined
       );
     case "checkboxgroup":
+    case "radiogroup":
       return pipe(
         labels,
         A.map((label) => ({ label, value: `${getInput(label).checked}` })),
@@ -273,7 +322,6 @@ export const getControlValue = (
     case "calendar":
     case "html":
     case "listbox":
-    case "radiogroup":
     case "shufflebox":
     case "shufflelist":
     case "termselector":
