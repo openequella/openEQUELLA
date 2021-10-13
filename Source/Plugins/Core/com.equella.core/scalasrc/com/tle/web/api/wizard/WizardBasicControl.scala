@@ -19,7 +19,7 @@
 package com.tle.web.api.wizard
 
 import com.dytech.edge.wizard.TargetNode
-import com.dytech.edge.wizard.beans.control.{WizardControl, WizardControlItem}
+import com.dytech.edge.wizard.beans.control.{EditBox, WizardControl, WizardControlItem}
 import com.fasterxml.jackson.annotation.JsonUnwrapped
 import com.tle.common.i18n.LangUtils
 import com.tle.common.taxonomy.SelectionRestriction
@@ -32,13 +32,15 @@ import scala.collection.JavaConverters._
   * @param text Text of the option. None in some components like Calendar.
   * @param value  Value of the option.
   */
-case class WizardControlOption(text: Option[String], value: String)
+case class WizardControlOption(text: Option[String], value: String, isDefaultValue: Boolean)
 
 object WizardControlOption {
-  def apply(item: WizardControlItem): WizardControlOption = {
+  def apply(item: WizardControlItem, isEditBox: Boolean): WizardControlOption = {
     WizardControlOption(
       text = Option(item.getName).map(name => LangUtils.getString(name)),
       value = item.getValue,
+      // For historical reasons, although an EditBox has a default value, `isDefaultOption` is still false.
+      isDefaultValue = if (isEditBox) true else item.isDefaultOption
     )
   }
 }
@@ -101,7 +103,9 @@ object WizardBasicControl {
       description = getStringFromCurrentLocale(control.getDescription),
       visibilityScript = Option(control.getScript),
       targetNodes = control.getTargetnodes.asScala.toList,
-      options = control.getItems.asScala.map(i => WizardControlOption(i)).toList,
+      options = control.getItems.asScala
+        .map(i => WizardControlOption(i, EditBox.CLASS.equals(control.getClassType)))
+        .toList,
       powerSearchFriendlyName = getStringFromCurrentLocale(control.getPowerSearchFriendlyName),
       controlType = control.getClassType
     )
