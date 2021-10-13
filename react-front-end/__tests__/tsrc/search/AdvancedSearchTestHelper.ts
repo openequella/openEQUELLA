@@ -22,6 +22,7 @@ import { absurd } from "fp-ts/function";
 import {
   BasicControlEssentials,
   getAdvancedSearchDefinition,
+  mockRawHtmlContent,
   mockWizardControlFactory,
 } from "../../../__mocks__/AdvancedSearchModule.mock";
 import * as A from "fp-ts/Array";
@@ -94,6 +95,16 @@ const controlValues: Map<BasicControlEssentials, string[]> = new Map([
       ],
     },
     ["true", "true", "false", "false"], // The values determine whether to turn on or off a checkbox.
+  ],
+  [
+    {
+      description: mockRawHtmlContent,
+      schemaNodes: [{ target: "/item/rawhtml", attribute: "" }],
+      mandatory: false,
+      controlType: "html",
+      options: [],
+    },
+    [], // Raw HTML doesn't have any value.
   ],
 ]);
 
@@ -224,8 +235,9 @@ export const updateControlValue = (
 
       traverseUpdates(selectCheckBox)();
       break;
-    case "calendar":
     case "html":
+      break; // Nothing really needs to be done.
+    case "calendar":
     case "listbox":
     case "radiogroup":
     case "shufflebox":
@@ -270,8 +282,9 @@ export const getControlValue = (
           pipe(m, M.upsertAt(S.Eq)(label, value))
         )
       );
-    case "calendar":
     case "html":
+      return new Map<string, string>();
+    case "calendar":
     case "listbox":
     case "radiogroup":
     case "shufflebox":

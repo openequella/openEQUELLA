@@ -17,6 +17,7 @@
  */
 import { Meta, Story } from "@storybook/react";
 import * as React from "react";
+import { mockRawHtmlContent } from "../../../__mocks__/AdvancedSearchModule.mock";
 import {
   WizardRawHtml,
   WizardRawHtmlProps,
@@ -28,8 +29,5 @@ export default {
 } as Meta<WizardRawHtmlProps>;
 
 export const Standard: Story<WizardRawHtmlProps> = (args) => (
-  <WizardRawHtml
-    id="wizard-rawhtml-story"
-    description="<div><p>This is a raw HTML control.</p></div>"
-  />
+  <WizardRawHtml id="wizard-rawhtml-story" description={mockRawHtmlContent} />
 );
