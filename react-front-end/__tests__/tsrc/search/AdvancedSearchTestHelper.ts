@@ -33,7 +33,7 @@ import { contramap, Ord } from "fp-ts/Ord";
 import * as S from "fp-ts/string";
 import * as IO from "fp-ts/IO";
 
-const blankLabel = "!!BLANK LABEL!!";
+export const wizardControlBlankLabel = "!!BLANK LABEL!!";
 export const editBoxEssentials: BasicControlEssentials = {
   title: "Test Edit Box",
   mandatory: false,
@@ -119,7 +119,7 @@ const buildLabelValueForOption = (
     options,
     A.zip(values),
     A.reduce(new Map<string, string>(), (m, [{ text }, value]) =>
-      pipe(m, M.upsertAt(S.Eq)(text ?? blankLabel, value))
+      pipe(m, M.upsertAt(S.Eq)(text ?? wizardControlBlankLabel, value))
     )
   );
 
@@ -131,7 +131,7 @@ const buildLabelValue = (
   switch (controlType) {
     case "editbox":
       return new Map([
-        [title ?? blankLabel, values[0]], // EditBox just needs its title and the first value.
+        [title ?? wizardControlBlankLabel, values[0]], // EditBox just needs its title and the first value.
       ]);
     case "checkboxgroup":
       return buildLabelValueForOption(options, values);
