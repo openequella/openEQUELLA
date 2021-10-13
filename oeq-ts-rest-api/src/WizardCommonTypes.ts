@@ -48,4 +48,5 @@ export interface TargetNode {
 export interface WizardControlOption {
   text?: string;
   value: string;
+  isDefaultValue: boolean;
 }
