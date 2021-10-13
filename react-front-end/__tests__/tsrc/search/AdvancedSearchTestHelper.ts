@@ -131,7 +131,7 @@ const buildLabelValue = (
   switch (controlType) {
     case "editbox":
       return new Map([
-        [title ?? "!!BLANK LABEL!!", values[0]], // EditBox just needs its title and the first value.
+        [title ?? blankLabel, values[0]], // EditBox just needs its title and the first value.
       ]);
     case "checkboxgroup":
       return buildLabelValueForOption(options, values);
@@ -212,7 +212,7 @@ export const updateControlValue = (
             E.map<string, boolean>((v) => v === "true"),
             E.chain<string, boolean, boolean>(
               E.fromPredicate(
-                (t) => t !== checkbox.checked,
+                (newValue) => newValue !== checkbox.checked,
                 () => "CheckBox status does not match the new value"
               )
             ),
