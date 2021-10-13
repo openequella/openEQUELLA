@@ -20,18 +20,17 @@ import "@testing-library/jest-dom/extend-expect";
 import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
-import { pipe } from "fp-ts/function";
-import * as M from "fp-ts/Map";
-import * as O from "fp-ts/Option";
-import { contramap, Ord } from "fp-ts/Ord";
-import * as S from "fp-ts/string";
-import {
-  EditBoxEssentials,
-  getAdvancedSearchDefinition,
-  mockEditbox,
-} from "../../../__mocks__/AdvancedSearchModule.mock";
+import { getAdvancedSearchDefinition } from "../../../__mocks__/AdvancedSearchModule.mock";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import { languageStrings } from "../../../tsrc/util/langstrings";
+import {
+  editBoxEssentials,
+  generateMockedControls,
+  getControlValue,
+  MockedControlValue,
+  updateControlValue,
+  oneEditBoxWizard,
+} from "./AdvancedSearchTestHelper";
 import {
   initialiseEssentialMocks,
   mockCollaborators,
@@ -174,7 +173,7 @@ describe("Rendering of wizard", () => {
     const { queryByText } = await renderAdvancedSearchPage();
 
     // Mandatory controls should be suffixed '*'
-    expect(queryByText(`${editBoxTitle} *`)).toBeInTheDocument();
+    expect(queryByText(`${editBoxEssentials.title} *`)).toBeInTheDocument();
     expect(queryByText(languageStrings.common.required)).toBeInTheDocument();
   });
 
@@ -183,7 +182,7 @@ describe("Rendering of wizard", () => {
     const { queryByText } = await renderAdvancedSearchPage();
 
     // Mandatory controls should be suffixed '*' - let's match against the title without it here.
-    expect(queryByText(`${editBoxTitle}`)).toBeInTheDocument();
+    expect(queryByText(`${editBoxEssentials.title}`)).toBeInTheDocument();
     expect(
       queryByText(languageStrings.common.required)
     ).not.toBeInTheDocument();
@@ -193,51 +192,20 @@ describe("Rendering of wizard", () => {
   // Values are set
   // Values remain present once a search has been triggered - i.e. stored in state
   it("stores values in state when search is clicked, and then re-uses them when the wizard is re-rendered", async () => {
-    // As we go forward, let's build on the below collection of controls,
-    // and add each control type as we build them - for now we only have edit boxes
-    const controlValues: Map<EditBoxEssentials, string> = new Map([
-      [
-        {
-          title: "Edit Box - name",
-          mandatory: false,
-          schemaNodes: [{ target: "/item/name", attribute: "" }],
-        },
-        "a name",
-      ],
-      [
-        {
-          title: "Edit Box - year",
-          mandatory: false,
-          schemaNodes: [{ target: "/item/", attribute: "@year" }],
-        },
-        "2021",
-      ],
-    ]);
+    const mockedControls: MockedControlValue[] = generateMockedControls();
+    const [controls, mockedLabelsAndValues] = A.unzip(mockedControls);
 
-    const byTitle: Ord<EditBoxEssentials> = contramap((c: EditBoxEssentials) =>
-      O.fromNullable(c.title)
-    )(O.getOrd(S.Ord));
     const advancedSearchDefinition: OEQ.AdvancedSearch.AdvancedSearchDefinition =
       {
         ...getAdvancedSearchDefinition,
-        controls: pipe(controlValues, M.keys(byTitle), A.map(mockEditbox)),
+        controls,
       };
-
-    // Test data now setup, let's commence
     mockGetAdvancedSearchByUuid.mockResolvedValue(advancedSearchDefinition);
-    const { container, getByLabelText } = await renderAdvancedSearchPage();
+    const { container } = await renderAdvancedSearchPage();
 
-    // Set all the values
-    const collectByTitle = M.collect(byTitle);
-    const labelsAndValues: { label: string; value: string }[] = pipe(
-      controlValues,
-      collectByTitle((k, value) => ({
-        label: k.title ?? "!!BLANK LABEL!!",
-        value,
-      }))
-    );
-    labelsAndValues.forEach(({ label, value }) => {
-      act(() => userEvent.type(getByLabelText(label), value));
+    // For each control, trigger an event to update or select their values.
+    mockedControls.forEach(([{ controlType }, controlLabelValue]) => {
+      updateControlValue(container, controlLabelValue, controlType);
     });
 
     // Click search - so as to persist values
@@ -250,14 +218,11 @@ describe("Rendering of wizard", () => {
     // And bring it back
     togglePanel();
 
-    // Make sure all the values are there as expected
-    const finalValues = pipe(
-      labelsAndValues,
-      A.map(({ label }) => ({
-        label,
-        value: (getByLabelText(label) as HTMLInputElement).value,
-      }))
+    // Collect all labels and values.
+    const labelsAndValues = mockedControls.map(([c, controlValue]) =>
+      getControlValue(container, Array.from(controlValue.keys()), c.controlType)
     );
-    expect(finalValues).toEqual(labelsAndValues);
+
+    expect(labelsAndValues).toEqual(mockedLabelsAndValues);
   });
 });
