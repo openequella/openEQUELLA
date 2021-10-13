@@ -39,7 +39,7 @@ export const editBoxEssentials: BasicControlEssentials = {
   mandatory: false,
   schemaNodes: [{ target: "/item/name", attribute: "" }],
   controlType: "editbox",
-  options: [{ text: "default value", value: "test" }],
+  options: [{ text: "default value", value: "test", isDefaultValue: false }],
 };
 
 export const oneEditBoxWizard = (
@@ -78,18 +78,22 @@ const controlValues: Map<BasicControlEssentials, string[]> = new Map([
         {
           text: "CheckBox one",
           value: "1",
+          isDefaultValue: true,
         },
         {
           text: "CheckBox two",
           value: "2",
+          isDefaultValue: false,
         },
         {
           text: "CheckBox three",
           value: "3",
+          isDefaultValue: false,
         },
         {
           text: "CheckBox four",
           value: "4",
+          isDefaultValue: false,
         },
       ],
     },
