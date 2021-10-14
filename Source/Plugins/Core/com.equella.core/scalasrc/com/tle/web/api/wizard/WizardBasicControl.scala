@@ -32,15 +32,13 @@ import scala.collection.JavaConverters._
   * @param text Text of the option. None in some components like Calendar.
   * @param value  Value of the option.
   */
-case class WizardControlOption(text: Option[String], value: String, isDefaultValue: Boolean)
+case class WizardControlOption(text: Option[String], value: String)
 
 object WizardControlOption {
-  def apply(item: WizardControlItem, isEditBox: Boolean): WizardControlOption = {
+  def apply(item: WizardControlItem): WizardControlOption = {
     WizardControlOption(
       text = Option(item.getName).map(name => LangUtils.getString(name)),
       value = item.getValue,
-      // For historical reasons, although an EditBox has a default value, `isDefaultOption` is still false.
-      isDefaultValue = if (isEditBox) true else item.isDefaultOption
     )
   }
 }
@@ -86,12 +84,18 @@ case class WizardBasicControl(
     visibilityScript: Option[String],
     targetNodes: List[TargetNode],
     options: List[WizardControlOption],
+    defaultValues: List[String],
     powerSearchFriendlyName: Option[String],
     controlType: String
 ) extends WizardControlDefinition
 
 object WizardBasicControl {
+  def getDefaultValues(options: List[WizardControlItem], isEditBox: Boolean): List[String] = {
+    options.filter(o => isEditBox || o.isDefaultOption).map(_.getValue)
+  }
+
   def apply(control: WizardControl): WizardBasicControl = {
+    val options = control.getItems.asScala.toList
     WizardBasicControl(
       mandatory = control.isMandatory,
       reload = control.isReload,
@@ -103,9 +107,8 @@ object WizardBasicControl {
       description = getStringFromCurrentLocale(control.getDescription),
       visibilityScript = Option(control.getScript),
       targetNodes = control.getTargetnodes.asScala.toList,
-      options = control.getItems.asScala
-        .map(i => WizardControlOption(i, EditBox.CLASS.equals(control.getClassType)))
-        .toList,
+      options = options.map(o => WizardControlOption(o)),
+      defaultValues = getDefaultValues(options, EditBox.CLASS.equals(control.getClassType)),
       powerSearchFriendlyName = getStringFromCurrentLocale(control.getPowerSearchFriendlyName),
       controlType = control.getClassType
     )
