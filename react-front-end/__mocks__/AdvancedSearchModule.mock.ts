@@ -95,6 +95,7 @@ export const mockWizardControlFactory = (
     case "editbox":
       return mockEditbox(mockDetails);
     case "checkboxgroup":
+      return mockOptionTypeControl(mockDetails);
     case "radiogroup":
       return mockOptionTypeControl(mockDetails);
     case "calendar":

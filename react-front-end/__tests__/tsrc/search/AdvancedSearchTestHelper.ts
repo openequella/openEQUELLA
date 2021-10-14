@@ -157,6 +157,7 @@ const buildLabelValue = (
         [title ?? wizardControlBlankLabel, values[0]], // EditBox just needs its title and the first value.
       ]);
     case "checkboxgroup":
+      return buildLabelValueForOption(options, values);
     case "radiogroup":
       return buildLabelValueForOption(options, values);
     case "calendar":
@@ -302,6 +303,16 @@ export const getControlValue = (
     getByLabelText(container, label) as HTMLInputElement;
   const buildMap = (label: string, value: string) => new Map([[label, value]]);
 
+  // Function to build WizardControlLabelValue for Controls that use the status of 'checked' as values.
+  const getOptionValues = (_labels: string[]) =>
+    pipe(
+      _labels,
+      A.map((label) => ({ label, value: `${getInput(label).checked}` })),
+      A.reduce(new Map<string, string>(), (m, { label, value }) =>
+        pipe(m, M.upsertAt(S.Eq)(label, value))
+      )
+    );
+
   switch (controlType) {
     case "editbox":
       return pipe(
@@ -311,14 +322,9 @@ export const getControlValue = (
         O.toUndefined
       );
     case "checkboxgroup":
+      return getOptionValues(labels);
     case "radiogroup":
-      return pipe(
-        labels,
-        A.map((label) => ({ label, value: `${getInput(label).checked}` })),
-        A.reduce(new Map<string, string>(), (m, { label, value }) =>
-          pipe(m, M.upsertAt(S.Eq)(label, value))
-        )
-      );
+      return getOptionValues(labels);
     case "calendar":
     case "html":
     case "listbox":
