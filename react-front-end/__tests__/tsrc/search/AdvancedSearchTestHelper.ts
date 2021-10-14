@@ -111,12 +111,12 @@ const controlValues: Map<BasicControlEssentials, string[]> = new Map([
           value: "2",
         },
         {
-          text: "RadioButton Three",
+          text: "RadioButton three",
           value: "3",
         },
       ],
     },
-    ["false", "true", "false"], // RadioButton group can have only one option selected so only one value is `true`.
+    ["true", "false", "false"], // RadioButton group can have only one option selected.
   ],
 ]);
 
@@ -218,20 +218,6 @@ export const updateControlValue = (
       f
     );
 
-  // We use string literal "true" and "false" to control the status `checked` for mocked WizardCheckbox and WizardRadioButton,
-  // so create this function to validate the status with `Either` and convert the status to a boolean.
-  const convertInputStatusToBoolean = (
-    value: string
-  ): E.Either<string, boolean> =>
-    pipe(
-      value,
-      E.fromPredicate<string, string>(
-        (v) => ["true", "false"].includes(v),
-        () => "Non-boolean specifier provided"
-      ),
-      E.map<string, boolean>((v) => v === "true")
-    );
-
   switch (controlType) {
     case "editbox":
       userEvent.type(getByLabelText(container, labels[0]), values[0]);
@@ -243,7 +229,11 @@ export const updateControlValue = (
           const checkbox = getByLabelText(container, label) as HTMLInputElement;
           pipe(
             value,
-            convertInputStatusToBoolean,
+            E.fromPredicate<string, string>(
+              (v) => ["true", "false"].includes(v),
+              () => "Non-boolean specifier provided"
+            ),
+            E.map<string, boolean>((v) => v === "true"),
             E.chain<string, boolean, boolean>(
               E.fromPredicate(
                 (toBeSelected) => toBeSelected !== checkbox.checked,
@@ -259,20 +249,8 @@ export const updateControlValue = (
       traverseUpdates(selectCheckBox)();
       break;
     case "radiogroup":
-      const selectRadioButton =
-        (label: string, value: string): IO.IO<void> =>
-        () =>
-          pipe(
-            value,
-            convertInputStatusToBoolean,
-            E.fold<string, boolean, void>(console.error, (toBeSelected) => {
-              if (toBeSelected) {
-                userEvent.click(getByLabelText(container, label));
-              }
-            })
-          );
-
-      traverseUpdates(selectRadioButton)();
+      // Radiogroup should have onle one label provided.
+      userEvent.click(getByLabelText(container, labels[0]));
       break;
     case "calendar":
     case "html":
