@@ -139,7 +139,6 @@ export const getAdvancedSearchDefinition: OEQ.AdvancedSearch.AdvancedSearchDefin
         options: [
           {
             value: "",
-            isDefaultValue: false,
           },
         ],
         controlType: "calendar",
@@ -165,12 +164,10 @@ export const getAdvancedSearchDefinition: OEQ.AdvancedSearch.AdvancedSearchDefin
           {
             text: "1",
             value: "1",
-            isDefaultValue: false,
           },
           {
             text: "2",
             value: "2",
-            isDefaultValue: false,
           },
         ],
         controlType: "checkboxgroup",

@@ -45,37 +45,30 @@ Normal.args = {
     {
       text: "option1",
       value: "1",
-      isDefaultValue: true,
     },
     {
       text: "option2",
       value: "2",
-      isDefaultValue: false,
     },
     {
       text: "option3",
       value: "3",
-      isDefaultValue: false,
     },
     {
       text: "option4",
       value: "4",
-      isDefaultValue: false,
     },
     {
       text: "option5",
       value: "5",
-      isDefaultValue: false,
     },
     {
       text: "option6",
       value: "6",
-      isDefaultValue: false,
     },
     {
       text: "option7",
       value: "7",
-      isDefaultValue: false,
     },
   ],
 };

@@ -38,12 +38,10 @@ export const controls: OEQ.WizardControl.WizardControl[] = [
       {
         text: "Hide",
         value: "hide",
-        isDefaultValue: false,
       },
       {
         text: "Show",
         value: "",
-        isDefaultValue: false,
       },
     ],
     controlType: "radiogroup",

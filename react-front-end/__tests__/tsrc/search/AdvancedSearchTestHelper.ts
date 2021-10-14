@@ -39,7 +39,7 @@ export const editBoxEssentials: BasicControlEssentials = {
   mandatory: false,
   schemaNodes: [{ target: "/item/name", attribute: "" }],
   controlType: "editbox",
-  options: [{ text: "default value", value: "test", isDefaultValue: false }],
+  options: [{ text: "default value", value: "test" }],
 };
 
 export const oneEditBoxWizard = (
