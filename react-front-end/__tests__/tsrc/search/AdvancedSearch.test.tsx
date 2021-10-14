@@ -219,12 +219,13 @@ describe("Rendering of wizard", () => {
   it("shows each control's description if there is any", async () => {
     mockGetAdvancedSearchByUuid.mockResolvedValue(advancedSearchDefinition);
     const { getByText } = await renderAdvancedSearchPage();
-
-    controls
+    const descriptions: string[] = controls
       .map(({ description }) => description)
-      .filter((d): d is string => typeof d === "string")
-      .forEach((d) => {
-        expect(getByText(d)).toBeInTheDocument();
-      });
+      .filter((d): d is string => typeof d !== "undefined");
+
+    expect.assertions(descriptions.length);
+    descriptions.forEach((d) => {
+      expect(getByText(d)).toBeInTheDocument();
+    });
   });
 });
