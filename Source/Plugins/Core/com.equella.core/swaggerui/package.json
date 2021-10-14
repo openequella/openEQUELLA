@@ -1,8 +1,9 @@
 {
+  "main": "target/bundle.js",
   "scripts": {
-    "build": "parcel build index.js --out-dir=target --out-file=bundle.js",
+    "build": "parcel build index.js --dist-dir=target",
     "clean": "rm -rf target/ node_modules/",
-    "dev": "parcel watch index.js --out-dir=../target/scala-2.12/classes/web/apidocs --out-file=bundle.js"
+    "dev": "parcel watch index.js --dist-dir=../target/scala-2.12/classes/web/apidocs"
   },
   "engines": {
     "npm": "7.24.2"
@@ -12,6 +13,6 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "parcel-bundler": "1.12.5"
+    "parcel": "2.0.0"
   }
 }

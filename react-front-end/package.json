@@ -21,11 +21,11 @@
     "install": "cross-env-shell \"mkdirp ${npm_package_config_devlang} ${npm_package_config_buildlang}\"",
     "clean": "rm -rf target/ node_modules/ .cache/",
     "compile:langbundle-tool": "cross-env-shell tsc --types \"node\" --outDir ${npm_package_config_languageBundle} build-tools/BuildLanguageBundle.ts",
-    "build:langbundle-tool": "cross-env-shell parcel build ${npm_package_config_languageBundle}/build-tools/BuildLanguageBundle.js --no-minify --no-source-maps --target node --out-dir=${npm_package_config_tools}",
+    "build:langbundle-tool": "cross-env-shell parcel build ${npm_package_config_languageBundle}/build-tools/BuildLanguageBundle.js --no-optimize --no-source-maps --dist-dir=${npm_package_config_tools}",
     "build:langbundle": "cross-env-shell \"node ${npm_package_config_tools}/BuildLanguageBundle.js > ${npm_package_config_buildlang}/jsbundle.json\"",
-    "build:bundle": "cross-env-shell parcel build --public-url=. --out-dir=${npm_package_config_dist} ${npm_package_config_parcelEntryFiles}",
+    "build:bundle": "cross-env-shell parcel build --public-url=. --dist-dir=${npm_package_config_dist} ${npm_package_config_parcelEntryFiles}",
     "build": "npm-run-all compile:* build:*",
-    "dev": "npm run build && cross-env-shell parcel watch --no-autoinstall --public-url=. --out-dir=${npm_package_config_devjs} ${npm_package_config_parcelEntryFiles}",
+    "dev": "npm run build && cross-env-shell parcel watch --no-autoinstall --public-url=. --dist-dir=${npm_package_config_devjs} ${npm_package_config_parcelEntryFiles}",
     "test": "jest test",
     "storybook": "start-storybook -s ./node_modules,./__stories__/static-files -p 6006",
     "build-storybook": "build-storybook -s ./node_modules,./__stories__/static-files"
@@ -103,7 +103,7 @@
     "jest-config": "27.2.5",
     "mkdirp": "1.0.4",
     "npm-run-all": "4.1.5",
-    "parcel-bundler": "1.12.5",
+    "parcel": "2.0.0",
     "rewire": "5.0.0",
     "ts-jest": "27.0.5",
     "typescript": "4.4.3"
