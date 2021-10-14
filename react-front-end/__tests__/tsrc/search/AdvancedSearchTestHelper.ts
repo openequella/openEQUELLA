@@ -22,7 +22,6 @@ import { absurd } from "fp-ts/function";
 import {
   BasicControlEssentials,
   getAdvancedSearchDefinition,
-  mockRawHtmlContent,
   mockWizardControlFactory,
 } from "../../../__mocks__/AdvancedSearchModule.mock";
 import * as A from "fp-ts/Array";
@@ -72,6 +71,7 @@ const controlValues: Map<BasicControlEssentials, string[]> = new Map([
   [
     {
       title: "CheckBox Group",
+      description: "This is a CheckBox Group",
       schemaNodes: [{ target: "/item/options", attribute: "" }],
       mandatory: false,
       controlType: "checkboxgroup",
@@ -98,7 +98,7 @@ const controlValues: Map<BasicControlEssentials, string[]> = new Map([
   ],
   [
     {
-      description: mockRawHtmlContent,
+      description: "This is a Raw HTML",
       schemaNodes: [{ target: "/item/rawhtml", attribute: "" }],
       mandatory: false,
       controlType: "html",

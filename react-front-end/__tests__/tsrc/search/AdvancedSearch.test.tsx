@@ -158,6 +158,14 @@ describe("Hide components", () => {
 });
 
 describe("Rendering of wizard", () => {
+  const mockedControls: MockedControlValue[] = generateMockedControls();
+  const [controls, mockedLabelsAndValues] = A.unzip(mockedControls);
+  const advancedSearchDefinition: OEQ.AdvancedSearch.AdvancedSearchDefinition =
+    {
+      ...getAdvancedSearchDefinition,
+      controls,
+    };
+
   it("shows an explanatory caption for mandatory fields", async () => {
     mockGetAdvancedSearchByUuid.mockResolvedValue(oneEditBoxWizard(true));
     const { queryByText } = await renderAdvancedSearchPage();
@@ -182,14 +190,6 @@ describe("Rendering of wizard", () => {
   // Values are set
   // Values remain present once a search has been triggered - i.e. stored in state
   it("stores values in state when search is clicked, and then re-uses them when the wizard is re-rendered", async () => {
-    const mockedControls: MockedControlValue[] = generateMockedControls();
-    const [controls, mockedLabelsAndValues] = A.unzip(mockedControls);
-
-    const advancedSearchDefinition: OEQ.AdvancedSearch.AdvancedSearchDefinition =
-      {
-        ...getAdvancedSearchDefinition,
-        controls,
-      };
     mockGetAdvancedSearchByUuid.mockResolvedValue(advancedSearchDefinition);
     const { container } = await renderAdvancedSearchPage();
 
@@ -214,5 +214,17 @@ describe("Rendering of wizard", () => {
     );
 
     expect(labelsAndValues).toEqual(mockedLabelsAndValues);
+  });
+
+  it("shows each control's description if there is any", async () => {
+    mockGetAdvancedSearchByUuid.mockResolvedValue(advancedSearchDefinition);
+    const { getByText } = await renderAdvancedSearchPage();
+
+    controls
+      .map(({ description }) => description)
+      .filter((d): d is string => typeof d === "string")
+      .forEach((d) => {
+        expect(getByText(d)).toBeInTheDocument();
+      });
   });
 });
