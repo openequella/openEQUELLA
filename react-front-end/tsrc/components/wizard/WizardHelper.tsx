@@ -28,6 +28,7 @@ import * as S from "fp-ts/string";
 import * as React from "react";
 import { WizardCheckBoxGroup } from "./WizardCheckBoxGroup";
 import { WizardEditBox } from "./WizardEditBox";
+import { WizardRadioButtonGroup } from "./WizardRadioButtonGroup";
 import { WizardUnsupported } from "./WizardUnsupported";
 
 /**
@@ -227,10 +228,19 @@ const controlFactory = (
           onSelect={(newValue: string[]) => onChange(newValue)}
         />
       );
+    case "radiogroup":
+      return (
+        <WizardRadioButtonGroup
+          {...commonProps}
+          options={options}
+          columns={size1}
+          value={ifAvailable<string>(value, getStringControlValue)}
+          onSelect={(newValue: string) => onChange([newValue])}
+        />
+      );
     case "calendar":
     case "html":
     case "listbox":
-    case "radiogroup":
     case "shufflebox":
     case "shufflelist":
     case "termselector":

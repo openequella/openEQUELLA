@@ -130,4 +130,5 @@ export const controls: OEQ.WizardControl.WizardControl[] = [
     isForceUnique: false,
     isCheckDuplication: false,
   },
+  { controlType: "unknown" },
 ];
