@@ -215,7 +215,9 @@ const controlFactory = (
           {...commonProps}
           rows={size2}
           value={ifAvailable<string>(value, getStringControlValue)}
-          onChange={(newValue) => onChange([newValue])}
+          onChange={(newValue) =>
+            onChange(S.isEmpty(newValue) ? [] : [newValue])
+          }
         />
       );
     case "checkboxgroup":

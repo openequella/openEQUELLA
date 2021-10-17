@@ -30,7 +30,6 @@ import {
   MockedControlValue,
   updateControlValue,
   oneEditBoxWizard,
-  wizardControlBlankLabel,
 } from "./AdvancedSearchTestHelper";
 import {
   initialiseEssentialMocks,
@@ -124,6 +123,7 @@ describe("Advanced Search filter button", () => {
   it("indicates whether advanced search criteria has been set", async () => {
     mockGetAdvancedSearchByUuid.mockResolvedValue(oneEditBoxWizard(false));
     const { container, getByLabelText } = await renderAdvancedSearchPage();
+    const editBox = getByLabelText(`${editBoxEssentials.title}`);
 
     const getHighlightedFilterButton = () =>
       getByLabelText(
@@ -132,14 +132,18 @@ describe("Advanced Search filter button", () => {
 
     // The filter button is not highlighted yet.
     expect(getHighlightedFilterButton()).not.toBeInTheDocument();
+
     // Put some texts in the EditBox.
-    userEvent.type(
-      getByLabelText(editBoxEssentials.title ?? wizardControlBlankLabel),
-      "text"
-    );
+    userEvent.type(editBox, "text");
     await clickSearchButton(container);
     // Now the filter button is highlighted in Secondary color.
     expect(getHighlightedFilterButton()).toBeInTheDocument();
+
+    // Clear out the content.
+    userEvent.clear(editBox);
+    await clickSearchButton(container);
+    // Now the filter button is not highlighted again.
+    expect(getHighlightedFilterButton()).not.toBeInTheDocument();
   });
 });
 

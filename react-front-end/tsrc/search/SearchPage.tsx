@@ -761,6 +761,15 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
     return isQueryOrFiltersSet || isClassificationSelected;
   };
 
+  const isAdvSearchCriteriaSet = (queryValues: FieldValueMap): boolean => {
+    const isAnyFieldSet: boolean = Array.from(queryValues).some(
+      ([_, values]) => values.length > 0
+    );
+    const isValueMapNoEmpty = !M.isEmpty(queryValues);
+
+    return isValueMapNoEmpty && isAnyFieldSet;
+  };
+
   const refinePanelControls: RefinePanelControl[] = [
     {
       idSuffix: "DisplayModeSelector",
@@ -989,7 +998,9 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
                           searchPageModeDispatch({
                             type: "toggleAdvSearchPanel",
                           }),
-                        accent: !M.isEmpty(searchPageModeState.queryValues),
+                        accent: isAdvSearchCriteriaSet(
+                          searchPageModeState.queryValues
+                        ),
                       }
                     : undefined
                 }
