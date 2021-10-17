@@ -38,6 +38,7 @@ export type Action =
   | {
       type: "showAdvSearchPanel";
       selectedAdvSearch: OEQ.AdvancedSearch.AdvancedSearchDefinition;
+      defaultQueryValues: FieldValueMap;
     }
   | {
       type: "toggleAdvSearchPanel";
@@ -97,7 +98,7 @@ export const searchPageModeReducer = (state: State, action: Action): State => {
         mode: "advSearch",
         definition: action.selectedAdvSearch,
         isAdvSearchPanelOpen: true,
-        queryValues: new Map(),
+        queryValues: action.defaultQueryValues,
       };
     case "toggleAdvSearchPanel":
       return toggleOrHidePanel(state, "toggle");

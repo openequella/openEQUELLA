@@ -129,7 +129,7 @@ export const fieldValueMapInsert = M.upsertAt(eqControlTarget);
  */
 export const fieldValueMapLookup = M.lookup(eqControlTarget);
 
-const buildControlTarget = (
+export const buildControlTarget = (
   c: OEQ.WizardControl.WizardBasicControl
 ): ControlTarget => ({
   /*
