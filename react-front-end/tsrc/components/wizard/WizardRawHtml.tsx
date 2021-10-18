@@ -15,14 +15,58 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { flow, pipe } from "fp-ts/function";
 import * as React from "react";
 import HTMLReactParser from "html-react-parser";
-import { WizardControlBasicProps } from "./WizardHelper";
+import { FieldValueMap, WizardControlBasicProps } from "./WizardHelper";
+import * as A from "fp-ts/Array";
+import * as O from "fp-ts/Option";
 
-export type WizardRawHtmlProps = Pick<
-  WizardControlBasicProps,
-  "id" | "description"
->;
+export interface WizardRawHtmlProps extends WizardControlBasicProps {
+  fieldValueMap: FieldValueMap;
+}
 
-export const WizardRawHtml = ({ id, description }: WizardRawHtmlProps) =>
-  description ? <div id={id}>{HTMLReactParser(description)}</div> : <div />;
+export const WizardRawHtml = ({
+  id,
+  description,
+  fieldValueMap,
+}: WizardRawHtmlProps) => {
+  // Retrieve the metadata for a given path. One schemaNode in theory can be set in different controls,
+  // but here we only use the one found first, and return the concatenated values.
+  const getMetadata = (path: string): string | undefined =>
+    pipe(
+      Array.from(fieldValueMap),
+      A.findFirst(([{ schemaNode }]) => schemaNode.includes(path)),
+      O.map(([_, controlValue]) => controlValue.join()),
+      O.toUndefined
+    );
+
+  const resolveXpath = (description: string): string => {
+    // Regex used to extract the metadata xpath from the control's description.
+    // The description may have 0 or more xpaths and each xpath is wrapped by a pair of curly braces.
+    // For example, a description may look like `name: {/xml/item/name}, age: {/xml/item/age}`.
+    // And the matching result is [{/xml/item/name}, {/xml/item/age}].
+    const xpathPattern = /({(\/.+?)})+/g;
+
+    return pipe(
+      description.match(xpathPattern),
+      O.fromNullable,
+      O.map(
+        flow(
+          A.reduce(description, (d, matched) => {
+            const xpath = matched.substring(1).slice(0, -1); // Remove the curly braces.
+            const value = getMetadata(xpath);
+            return value ? d.replace(matched, value) : d;
+          })
+        )
+      ),
+      O.getOrElse(() => description)
+    );
+  };
+
+  return description ? (
+    <div id={id}>{HTMLReactParser(resolveXpath(description))}</div>
+  ) : (
+    <div />
+  );
+};

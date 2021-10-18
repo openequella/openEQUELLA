@@ -181,6 +181,7 @@ const controlFactory = (
   id: string,
   control: OEQ.WizardControl.WizardControl,
   onChange: (_: ControlValue) => void,
+  fieldValueMap: FieldValueMap,
   value?: ControlValue
 ): JSX.Element => {
   if (!OEQ.WizardControl.isWizardBasicControl(control)) {
@@ -240,7 +241,7 @@ const controlFactory = (
         />
       );
     case "html":
-      return <WizardRawHtml {...commonProps} />;
+      return <WizardRawHtml {...commonProps} fieldValueMap={fieldValueMap} />;
     case "calendar":
     case "listbox":
     case "shufflebox":
@@ -304,6 +305,7 @@ export const render = (
       `wiz-${idx}-${c.controlType}`,
       c,
       buildOnChangeHandler(c),
+      values,
       retrieveControlsValue(c)
     )
   );
