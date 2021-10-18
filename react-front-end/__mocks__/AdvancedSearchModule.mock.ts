@@ -60,6 +60,7 @@ const mockBasicControl = (
   include: true,
   mandatory: mockDetails.mandatory,
   options: mockDetails.options,
+  defaultValues: [],
   reload: false,
   size1: 0,
   size2: 1,
@@ -98,11 +99,12 @@ export const mockWizardControlFactory = (
       return mockEditbox(mockDetails);
     case "checkboxgroup":
       return mockOptionTypeControl(mockDetails);
+    case "radiogroup":
+      return mockOptionTypeControl(mockDetails);
     case "html":
       return mockBasicControl(mockDetails);
     case "calendar":
     case "listbox":
-    case "radiogroup":
     case "shufflebox":
     case "shufflelist":
     case "termselector":
@@ -144,6 +146,7 @@ export const getAdvancedSearchDefinition: OEQ.AdvancedSearch.AdvancedSearchDefin
             value: "",
           },
         ],
+        defaultValues: [],
         controlType: "calendar",
         isRange: true,
       },
@@ -173,6 +176,7 @@ export const getAdvancedSearchDefinition: OEQ.AdvancedSearch.AdvancedSearchDefin
             value: "2",
           },
         ],
+        defaultValues: [],
         controlType: "checkboxgroup",
       },
     ],

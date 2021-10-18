@@ -83,6 +83,10 @@ export interface WizardBasicControl {
    */
   options: WizardControlOption[];
   /**
+   * Default values of control.
+   */
+  defaultValues: string[];
+  /**
    * Text displayed in the criteria summary instead.
    */
   powerSearchFriendlyName?: string;

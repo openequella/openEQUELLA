@@ -44,6 +44,7 @@ export const controls: OEQ.WizardControl.WizardControl[] = [
         value: "",
       },
     ],
+    defaultValues: [],
     controlType: "radiogroup",
   },
   {
@@ -67,6 +68,7 @@ export const controls: OEQ.WizardControl.WizardControl[] = [
       },
     ],
     options: [],
+    defaultValues: [],
     controlType: "editbox",
     isAllowLinks: false,
     isNumber: false,
@@ -95,6 +97,7 @@ export const controls: OEQ.WizardControl.WizardControl[] = [
       },
     ],
     options: [],
+    defaultValues: [],
     controlType: "editbox",
     isAllowLinks: false,
     isNumber: false,
@@ -119,6 +122,7 @@ export const controls: OEQ.WizardControl.WizardControl[] = [
       },
     ],
     options: [],
+    defaultValues: [],
     controlType: "editbox",
     isAllowLinks: false,
     isNumber: false,
@@ -126,4 +130,5 @@ export const controls: OEQ.WizardControl.WizardControl[] = [
     isForceUnique: false,
     isCheckDuplication: false,
   },
+  { controlType: "unknown" },
 ];

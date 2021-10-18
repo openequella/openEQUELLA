@@ -79,22 +79,49 @@ const controlValues: Map<BasicControlEssentials, string[]> = new Map([
         {
           text: "CheckBox one",
           value: "1",
+          isDefaultValue: true,
         },
         {
           text: "CheckBox two",
           value: "2",
+          isDefaultValue: false,
         },
         {
           text: "CheckBox three",
           value: "3",
+          isDefaultValue: false,
         },
         {
           text: "CheckBox four",
           value: "4",
+          isDefaultValue: false,
         },
       ],
     },
     ["true", "true", "false", "false"], // The values determine whether to turn on or off a checkbox.
+  ],
+  [
+    {
+      title: "RadioButton Group",
+      schemaNodes: [{ target: "/item/option", attribute: "" }],
+      mandatory: false,
+      controlType: "radiogroup",
+      options: [
+        {
+          text: "RadioButton one",
+          value: "1",
+        },
+        {
+          text: "RadioButton two",
+          value: "2",
+        },
+        {
+          text: "RadioButton three",
+          value: "3",
+        },
+      ],
+    },
+    ["true", "false", "false"], // RadioButton group can have only one option selected.
   ],
   [
     {
@@ -146,10 +173,11 @@ const buildLabelValue = (
       ]);
     case "checkboxgroup":
       return buildLabelValueForOption(options, values);
+    case "radiogroup":
+      return buildLabelValueForOption(options, values);
     case "calendar":
     case "html":
     case "listbox":
-    case "radiogroup":
     case "shufflebox":
     case "shufflelist":
     case "termselector":
@@ -223,7 +251,7 @@ export const updateControlValue = (
             E.map<string, boolean>((v) => v === "true"),
             E.chain<string, boolean, boolean>(
               E.fromPredicate(
-                (newValue) => newValue !== checkbox.checked,
+                (toBeSelected) => toBeSelected !== checkbox.checked,
                 () => "CheckBox status does not match the new value"
               )
             ),
@@ -235,11 +263,14 @@ export const updateControlValue = (
 
       traverseUpdates(selectCheckBox)();
       break;
+    case "radiogroup":
+      // Radiogroup should have onle one label provided.
+      userEvent.click(getByLabelText(container, labels[0]));
+      break;
     case "html":
       break; // Nothing really needs to be done.
     case "calendar":
     case "listbox":
-    case "radiogroup":
     case "shufflebox":
     case "shufflelist":
     case "termselector":
@@ -266,6 +297,16 @@ export const getControlValue = (
     getByLabelText(container, label) as HTMLInputElement;
   const buildMap = (label: string, value: string) => new Map([[label, value]]);
 
+  // Function to build WizardControlLabelValue for Controls that use the status of 'checked' as values.
+  const getOptionValues = (_labels: string[]) =>
+    pipe(
+      _labels,
+      A.map((label) => ({ label, value: `${getInput(label).checked}` })),
+      A.reduce(new Map<string, string>(), (m, { label, value }) =>
+        pipe(m, M.upsertAt(S.Eq)(label, value))
+      )
+    );
+
   switch (controlType) {
     case "editbox":
       return pipe(
@@ -275,18 +316,13 @@ export const getControlValue = (
         O.toUndefined
       );
     case "checkboxgroup":
-      return pipe(
-        labels,
-        A.map((label) => ({ label, value: `${getInput(label).checked}` })),
-        A.reduce(new Map<string, string>(), (m, { label, value }) =>
-          pipe(m, M.upsertAt(S.Eq)(label, value))
-        )
-      );
+      return getOptionValues(labels);
+    case "radiogroup":
+      return getOptionValues(labels);
     case "html":
       return new Map<string, string>();
     case "calendar":
     case "listbox":
-    case "radiogroup":
     case "shufflebox":
     case "shufflelist":
     case "termselector":

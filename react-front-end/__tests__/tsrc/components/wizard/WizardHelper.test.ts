@@ -52,7 +52,6 @@ describe("render()", () => {
 
   it("creates WizardUnsupported components for unknown/unsupported ones", () => {
     const elements: JSX.Element[] = render(controls, new Map(), logOnChange);
-    // Current the 'controls' include a radio group which we've not yet written support for
     expect(
       elements.filter((e) => e.type.name === "WizardUnsupported")
     ).toHaveLength(1);
