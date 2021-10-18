@@ -8,7 +8,7 @@
     "npm": "7.24.2"
   },
   "dependencies": {
-    "swagger-ui": "3.52.4"
+    "swagger-ui": "3.52.5"
   },
   "license": "Apache-2.0",
   "devDependencies": {
