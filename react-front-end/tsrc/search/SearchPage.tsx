@@ -34,7 +34,7 @@ import { useHistory, useLocation, useParams } from "react-router";
 import { getBaseUrl } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
 import MessageInfo, { MessageInfoVariant } from "../components/MessageInfo";
-import { FieldValueMap } from "../components/wizard/WizardHelper";
+import type { FieldValueMap } from "../components/wizard/WizardHelper";
 import * as WizardHelper from "../components/wizard/WizardHelper";
 import { AppRenderErrorContext } from "../mainui/App";
 import { NEW_SEARCH_PATH, routes } from "../mainui/routes";
