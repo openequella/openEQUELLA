@@ -309,9 +309,15 @@ export const render = (
   );
 };
 
+/**
+ * Extract each Control's target schema node and default values, and build a FieldValueMap
+ * based on extracted data.
+ *
+ * @param controls A list of Wizard controls.
+ */
 export const extractDefaultValues = (
   controls: OEQ.WizardControl.WizardControl[]
-) => {
+): FieldValueMap => {
   const addQueryValueToMap = (
     m: FieldValueMap,
     c: OEQ.WizardControl.WizardBasicControl
