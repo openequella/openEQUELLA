@@ -19,7 +19,6 @@ import { debounce, Drawer, Grid, Hidden } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
-import * as A from "fp-ts/Array";
 import { isEqual } from "lodash";
 import * as React from "react";
 import {
@@ -35,12 +34,7 @@ import { useHistory, useLocation, useParams } from "react-router";
 import { getBaseUrl } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
 import MessageInfo, { MessageInfoVariant } from "../components/MessageInfo";
-import {
-  buildControlTarget,
-  ControlValue,
-  FieldValueMap,
-  fieldValueMapInsert,
-} from "../components/wizard/WizardHelper";
+import { FieldValueMap } from "../components/wizard/WizardHelper";
 import * as WizardHelper from "../components/wizard/WizardHelper";
 import { AppRenderErrorContext } from "../mainui/App";
 import { NEW_SEARCH_PATH, routes } from "../mainui/routes";
@@ -322,28 +316,10 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
           );
 
           if (advancedSearchDefinition) {
-            const addQueryValueToMap = (
-              m: FieldValueMap,
-              c: OEQ.WizardControl.WizardBasicControl
-            ) =>
-              fieldValueMapInsert<ControlValue>(
-                buildControlTarget(c),
-                c.defaultValues
-              )(m);
-
-            const defaultQueryValues: FieldValueMap = pipe(
-              advancedSearchDefinition.controls,
-              A.filter(OEQ.WizardControl.isWizardBasicControl),
-              A.reduce<OEQ.WizardControl.WizardBasicControl, FieldValueMap>(
-                new Map(),
-                addQueryValueToMap
-              )
-            );
             // Always show the panel at the first time switching to adv mode.
             searchPageModeDispatch({
               type: "showAdvSearchPanel",
               selectedAdvSearch: advancedSearchDefinition,
-              defaultQueryValues,
             });
           }
         }
@@ -765,9 +741,9 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
     const isAnyFieldSet: boolean = Array.from(queryValues).some(
       ([_, values]) => values.length > 0
     );
-    const isValueMapNoEmpty = !M.isEmpty(queryValues);
+    const isValueMapNotEmpty = !M.isEmpty(queryValues);
 
-    return isValueMapNoEmpty && isAnyFieldSet;
+    return isValueMapNotEmpty && isAnyFieldSet;
   };
 
   const refinePanelControls: RefinePanelControl[] = [

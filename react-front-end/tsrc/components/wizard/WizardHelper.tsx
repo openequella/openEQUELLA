@@ -308,3 +308,25 @@ export const render = (
     )
   );
 };
+
+export const extractDefaultValues = (
+  controls: OEQ.WizardControl.WizardControl[]
+) => {
+  const addQueryValueToMap = (
+    m: FieldValueMap,
+    c: OEQ.WizardControl.WizardBasicControl
+  ) =>
+    fieldValueMapInsert<ControlValue>(
+      buildControlTarget(c),
+      c.defaultValues
+    )(m);
+
+  return pipe(
+    controls,
+    A.filter(OEQ.WizardControl.isWizardBasicControl),
+    A.reduce<OEQ.WizardControl.WizardBasicControl, FieldValueMap>(
+      new Map(),
+      addQueryValueToMap
+    )
+  );
+};
