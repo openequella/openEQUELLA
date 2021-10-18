@@ -29,5 +29,9 @@ export default {
 } as Meta<WizardRawHtmlProps>;
 
 export const Standard: Story<WizardRawHtmlProps> = (args) => (
-  <WizardRawHtml id="wizard-rawhtml-story" description={mockRawHtmlContent} />
+  <WizardRawHtml
+    id="wizard-rawhtml-story"
+    description={mockRawHtmlContent}
+    mandatory={false}
+  />
 );

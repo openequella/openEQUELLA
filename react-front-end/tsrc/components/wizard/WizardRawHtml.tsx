@@ -23,13 +23,16 @@ import * as A from "fp-ts/Array";
 import * as O from "fp-ts/Option";
 
 export interface WizardRawHtmlProps extends WizardControlBasicProps {
-  fieldValueMap: FieldValueMap;
+  /**
+   * The map which contains all the control targets and values of a Wizard definition.
+   */
+  fieldValueMap?: FieldValueMap;
 }
 
 export const WizardRawHtml = ({
   id,
   description,
-  fieldValueMap,
+  fieldValueMap = new Map(),
 }: WizardRawHtmlProps) => {
   // Retrieve the metadata for a given path. One schemaNode in theory can be set in different controls,
   // but here we only use the one found first, and return the concatenated values.
