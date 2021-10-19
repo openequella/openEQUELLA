@@ -30,7 +30,6 @@ import {
   MockedControlValue,
   updateControlValue,
   oneEditBoxWizard,
-  wizardControlBlankLabel,
 } from "./AdvancedSearchTestHelper";
 import {
   initialiseEssentialMocks,
@@ -124,6 +123,7 @@ describe("Advanced Search filter button", () => {
   it("indicates whether advanced search criteria has been set", async () => {
     mockGetAdvancedSearchByUuid.mockResolvedValue(oneEditBoxWizard(false));
     const { container, getByLabelText } = await renderAdvancedSearchPage();
+    const editBox = getByLabelText(`${editBoxEssentials.title}`);
 
     const getHighlightedFilterButton = () =>
       getByLabelText(
@@ -132,14 +132,18 @@ describe("Advanced Search filter button", () => {
 
     // The filter button is not highlighted yet.
     expect(getHighlightedFilterButton()).not.toBeInTheDocument();
+
     // Put some texts in the EditBox.
-    userEvent.type(
-      getByLabelText(editBoxEssentials.title ?? wizardControlBlankLabel),
-      "text"
-    );
+    userEvent.type(editBox, "text");
     await clickSearchButton(container);
     // Now the filter button is highlighted in Secondary color.
     expect(getHighlightedFilterButton()).toBeInTheDocument();
+
+    // Clear out the content.
+    userEvent.clear(editBox);
+    await clickSearchButton(container);
+    // Now the filter button is not highlighted again.
+    expect(getHighlightedFilterButton()).not.toBeInTheDocument();
   });
 });
 
@@ -158,6 +162,12 @@ describe("Hide components", () => {
 });
 
 describe("Rendering of wizard", () => {
+  // Function to build mocked Wizard controls. The parameter determines whether to use
+  // each control's default values or the values specified in `controlValues`.
+  const buildMockedControls = (
+    useDefaultValues: boolean = false
+  ): MockedControlValue[] => generateMockedControls(useDefaultValues);
+
   it("shows an explanatory caption for mandatory fields", async () => {
     mockGetAdvancedSearchByUuid.mockResolvedValue(oneEditBoxWizard(true));
     const { queryByText } = await renderAdvancedSearchPage();
@@ -182,7 +192,7 @@ describe("Rendering of wizard", () => {
   // Values are set
   // Values remain present once a search has been triggered - i.e. stored in state
   it("stores values in state when search is clicked, and then re-uses them when the wizard is re-rendered", async () => {
-    const mockedControls: MockedControlValue[] = generateMockedControls();
+    const mockedControls = buildMockedControls();
     const [controls, mockedLabelsAndValues] = A.unzip(mockedControls);
 
     const advancedSearchDefinition: OEQ.AdvancedSearch.AdvancedSearchDefinition =
@@ -210,9 +220,34 @@ describe("Rendering of wizard", () => {
 
     // Collect all labels and values.
     const labelsAndValues = mockedControls.map(([c, controlValue]) =>
-      getControlValue(container, Array.from(controlValue.keys()), c.controlType)
+      getControlValue(
+        container,
+        Array.from(controlValue.keys()),
+        c.controlType,
+        true
+      )
     );
 
     expect(labelsAndValues).toEqual(mockedLabelsAndValues);
+  });
+
+  it("shows each control's default value", async () => {
+    const mockedControls = buildMockedControls(true);
+    const [controls, mockedLabelsAndValues] = A.unzip(mockedControls);
+
+    const advancedSearchDefinition: OEQ.AdvancedSearch.AdvancedSearchDefinition =
+      {
+        ...getAdvancedSearchDefinition,
+        controls,
+      };
+    mockGetAdvancedSearchByUuid.mockResolvedValue(advancedSearchDefinition);
+    const { container } = await renderAdvancedSearchPage();
+
+    // Collect all default values.
+    const defaultLabelsAndValues = mockedControls.map(([c, controlValue]) =>
+      getControlValue(container, Array.from(controlValue.keys()), c.controlType)
+    );
+
+    expect(defaultLabelsAndValues).toEqual(mockedLabelsAndValues);
   });
 });
