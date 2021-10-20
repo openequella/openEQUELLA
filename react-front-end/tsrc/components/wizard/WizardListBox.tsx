@@ -73,7 +73,7 @@ export const WizardListBox = ({
       />
       <FormControl fullWidth>
         <Select
-          id={`${id}-select`}
+          id={`${label}-select`}
           value={value ?? ""}
           variant="outlined"
           onChange={({ target: { value } }) => onSelect(value as string)}
