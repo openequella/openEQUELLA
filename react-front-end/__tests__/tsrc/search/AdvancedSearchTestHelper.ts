@@ -348,27 +348,23 @@ export const getControlValue = (
       )
     );
 
+  const getInputValue = (_labels: string[]) =>
+    pipe(
+      _labels,
+      A.head, // EditBox only needs the first label which should be its title.
+      O.map((label) => buildMap(label, getInput(label).value)),
+      O.toUndefined
+    );
+
   switch (controlType) {
     case "editbox":
-      return pipe(
-        labels,
-        A.head, // EditBox only needs the first label which should be its title.
-        O.map((label) => buildMap(label, getInput(label).value)),
-        O.toUndefined
-      );
+      return getInputValue(labels);
     case "checkboxgroup":
       return getOptionValues(labels);
     case "radiogroup":
       return getOptionValues(labels);
     case "listbox":
-      return pipe(
-        labels,
-        A.head, // EditBox only needs the first label which should be its title.
-        O.map((label) => {
-          return buildMap(label, getInput(label).value);
-        }),
-        O.toUndefined
-      );
+      return getInputValue(labels);
     case "calendar":
     case "html":
     case "shufflebox":
