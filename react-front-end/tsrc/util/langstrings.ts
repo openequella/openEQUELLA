@@ -706,6 +706,9 @@ export const languageStrings = {
           "An unsupported control has been detected, please contact your system administrator.",
       },
     },
+    options: {
+      allOptions: "All",
+    },
   },
   youTubePlayer: {
     title: "YouTube video player",
