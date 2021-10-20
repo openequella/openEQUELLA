@@ -18,57 +18,25 @@
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
-import { pipe } from "fp-ts/function";
 import * as React from "react";
-import { useState } from "react";
 import { ShuffleBox } from "../../../tsrc/components/ShuffleBox";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 
 const shuffleBoxStrings = languageStrings.shuffleBox;
-
-const testContainerShuffleBoxId = "shufflebox-test-container";
-const TestContainer = ({
-  options,
-  initValues = new Set<string>([]),
-}: {
-  options: Map<string, string>;
-  initValues?: Set<string>;
-}): JSX.Element => {
-  const [values, setValues] = useState<Set<string>>(initValues);
-
-  return (
-    <ShuffleBox
-      id={testContainerShuffleBoxId}
-      options={options}
-      values={values}
-      onSelect={setValues}
-    />
-  );
-};
 
 const options = {
   one: "first",
   two: "second",
   three: "third",
 };
-const optionsMap = new Map(A.zip(Object.keys(options), Object.values(options)));
+const optionsAllKeys = Object.keys(options);
+const optionsMap = new Map(A.zip(optionsAllKeys, Object.values(options)));
 type optionKeyType = keyof typeof options;
 const optionKey = (o: optionKeyType) => o;
 const optionValue = (o: optionKeyType): string => options[o];
 
 const selectionsListId = (idPrefix: string) => `${idPrefix}-selections`;
 const optionsListId = (idPrefix: string) => `${idPrefix}-options`;
-
-const getParentElementId =
-  (getByText: (text: string) => Element) =>
-  (option: string): string =>
-    getByText(option).parentElement!.id;
-
-const shouldBeIn =
-  (getId: (byText: string) => string) =>
-  (idPrefix: string) =>
-  (option: string): boolean =>
-    getId(option).startsWith(`${idPrefix}`);
 
 describe("<ShuffleBox/>", () => {
   it("places the options in their respective boxes", () => {
@@ -82,82 +50,79 @@ describe("<ShuffleBox/>", () => {
         onSelect={jest.fn()}
       />
     );
-    const isIn = shouldBeIn(getParentElementId(getByText));
+
+    // expect helper
+    const isInList = (listId: string, option: string): boolean =>
+      getByText(option).parentElement!.id.startsWith(listId);
 
     expect(
-      pipe(optionValue(selectedOption), isIn(selectionsListId(id)))
+      isInList(selectionsListId(id), optionValue(selectedOption))
     ).toBeTruthy();
-    expect(pipe(options.one, isIn(optionsListId(id)))).toBeTruthy();
+    expect(isInList(optionsListId(id), options.one)).toBeTruthy();
   });
 
-  it("moves items to the selections list when Add Selected button clicked", () => {
-    const { getByText, getByLabelText } = render(
-      <TestContainer options={optionsMap} />
-    );
-    const isIn = shouldBeIn(getParentElementId(getByText));
-
-    userEvent.click(getByText(options.one));
-    userEvent.click(getByLabelText(shuffleBoxStrings.addSelected));
-
-    expect(
-      pipe(options.one, isIn(selectionsListId(testContainerShuffleBoxId)))
-    ).toBeTruthy();
-  });
-
-  it("removes items to the selections list when Remove Selected button clicked", () => {
-    const selectedOption = optionKey("one");
-    const { getByText, getByLabelText } = render(
-      <TestContainer
+  it("calls onSelect with the existing selections as well as the new ones when the Add Selected button is clicked", () => {
+    const onSelect = jest.fn();
+    const existingSelection = optionKey("one");
+    const { getByLabelText, getByText } = render(
+      <ShuffleBox
         options={optionsMap}
-        initValues={new Set<string>([selectedOption])}
+        values={new Set<string>([existingSelection])}
+        onSelect={onSelect}
       />
     );
-    const isIn = shouldBeIn(getParentElementId(getByText));
+
+    userEvent.click(getByText(options.two));
+    userEvent.click(getByLabelText(shuffleBoxStrings.addSelected));
+
+    expect(onSelect).toHaveBeenCalledWith(
+      new Set<string>([existingSelection, optionKey("two")])
+    );
+  });
+
+  it("calls onSelect with the selected selections removed from existing selections when the Removed Selected button is clicked", () => {
+    const selectedOption = optionKey("one");
+    const remainingOption = optionKey("three");
+    const onSelect = jest.fn();
+    const { getByLabelText, getByText } = render(
+      <ShuffleBox
+        options={optionsMap}
+        values={new Set<string>([selectedOption, remainingOption])}
+        onSelect={onSelect}
+      />
+    );
 
     userEvent.click(getByText(optionValue(selectedOption)));
     userEvent.click(getByLabelText(shuffleBoxStrings.removeSelected));
 
-    expect(
-      pipe(
-        optionValue(selectedOption),
-        isIn(optionsListId(testContainerShuffleBoxId))
-      )
-    ).toBeTruthy();
+    expect(onSelect).toHaveBeenCalledWith(new Set<string>([remainingOption]));
   });
 
-  it("moves ALL items to the expected list when one of the All buttons are clicked", () => {
-    const { getByText, getByLabelText } = render(
-      <TestContainer options={optionsMap} />
+  it("calls onSelect with all possible options when the Select All button is clicked", () => {
+    const onSelect = jest.fn();
+    const { getByLabelText } = render(
+      <ShuffleBox
+        options={optionsMap}
+        values={new Set<string>()}
+        onSelect={onSelect}
+      />
     );
-    const isIn = shouldBeIn(getParentElementId(getByText));
-    const isInSelectionsList = isIn(
-      selectionsListId(testContainerShuffleBoxId)
-    );
-    const isInOptionsList = isIn(optionsListId(testContainerShuffleBoxId));
-    const optionList: string[] = Object.values(options);
-    const howMany = (isInList: (option: string) => boolean): number =>
-      pipe(
-        optionList,
-        A.map(isInList),
-        A.filter((inList) => inList),
-        A.size
-      );
 
-    // -- Begin Test
-    // First, confirm starting state
-    expect(howMany(isInSelectionsList)).toEqual(0);
-    expect(howMany(isInOptionsList)).toEqual(optionList.length);
-
-    // Add/select all
     userEvent.click(getByLabelText(shuffleBoxStrings.addAll));
+    expect(onSelect).toHaveBeenCalledWith(new Set<string>(optionsAllKeys));
+  });
 
-    expect(howMany(isInSelectionsList)).toEqual(optionList.length);
-    expect(howMany(isInOptionsList)).toEqual(0);
+  it("calls onSelect with an empty collection when Remove All button is clicked", () => {
+    const onSelect = jest.fn();
+    const { getByLabelText } = render(
+      <ShuffleBox
+        options={optionsMap}
+        values={new Set<string>()}
+        onSelect={onSelect}
+      />
+    );
 
-    // Remove all
     userEvent.click(getByLabelText(shuffleBoxStrings.removeAll));
-
-    expect(howMany(isInSelectionsList)).toEqual(0);
-    expect(howMany(isInOptionsList)).toEqual(optionList.length);
+    expect(onSelect).toHaveBeenCalledWith(new Set<string>());
   });
 });
