@@ -18,6 +18,7 @@
 
 package com.tle.web.api.wizard
 
+import com.dytech.edge.wizard.beans.control.Calendar.DateFormat
 import com.dytech.edge.wizard.beans.control.{
   Calendar,
   CheckBoxGroup,
@@ -80,7 +81,10 @@ object WizardControlHelper {
       // These controls do not have special fields
       case c @ (_: ListBox | _: CheckBoxGroup | _: RadioGroup | _: ShuffleBox | _: Html) =>
         WizardBasicControl(c)
-      case c: Calendar => WizardCalendarControl(WizardBasicControl(c), c.isRange)
+      case c: Calendar =>
+        WizardCalendarControl(WizardBasicControl(c),
+                              c.isRange,
+                              Option(c.getFormat).getOrElse(DateFormat.DMY).name())
       case c: ShuffleList =>
         WizardShuffleListControl(WizardBasicControl(c),
                                  ControlUniqueConstraints(c.isForceUnique, c.isCheckDuplication),
