@@ -136,6 +136,7 @@ const controlValues: Map<BasicControlEssentials, string[]> = new Map([
       mandatory: false,
       controlType: "html",
       options: [],
+      defaultValues: [],
     },
     [], // Raw HTML doesn't have any value.
   ],
