@@ -48,7 +48,12 @@ const buildTargetNodes = (
 export interface BasicControlEssentials
   extends Pick<
     OEQ.WizardControl.WizardBasicControl,
-    "title" | "description" | "mandatory" | "options" | "controlType"
+    | "title"
+    | "description"
+    | "mandatory"
+    | "options"
+    | "controlType"
+    | "defaultValues"
   > {
   schemaNodes: TargetNodeEssentials[];
 }
@@ -60,7 +65,7 @@ const mockBasicControl = (
   include: true,
   mandatory: mockDetails.mandatory,
   options: mockDetails.options,
-  defaultValues: [],
+  defaultValues: mockDetails.defaultValues,
   reload: false,
   size1: 0,
   size2: 1,

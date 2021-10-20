@@ -130,7 +130,7 @@ export const fieldValueMapInsert = M.upsertAt(eqControlTarget);
  */
 export const fieldValueMapLookup = M.lookup(eqControlTarget);
 
-const buildControlTarget = (
+export const buildControlTarget = (
   c: OEQ.WizardControl.WizardBasicControl
 ): ControlTarget => ({
   /*
@@ -217,7 +217,9 @@ const controlFactory = (
           {...commonProps}
           rows={size2}
           value={ifAvailable<string>(value, getStringControlValue)}
-          onChange={(newValue) => onChange([newValue])}
+          onChange={(newValue) =>
+            onChange(S.isEmpty(newValue) ? [] : [newValue])
+          }
         />
       );
     case "checkboxgroup":
@@ -307,6 +309,34 @@ export const render = (
       buildOnChangeHandler(c),
       values,
       retrieveControlsValue(c)
+    )
+  );
+};
+
+/**
+ * Extract each Control's target schema node and default values, and build a FieldValueMap
+ * based on extracted data.
+ *
+ * @param controls A list of Wizard controls.
+ */
+export const extractDefaultValues = (
+  controls: OEQ.WizardControl.WizardControl[]
+): FieldValueMap => {
+  const addQueryValueToMap = (
+    m: FieldValueMap,
+    c: OEQ.WizardControl.WizardBasicControl
+  ) =>
+    fieldValueMapInsert<ControlValue>(
+      buildControlTarget(c),
+      c.defaultValues
+    )(m);
+
+  return pipe(
+    controls,
+    A.filter(OEQ.WizardControl.isWizardBasicControl),
+    A.reduce<OEQ.WizardControl.WizardBasicControl, FieldValueMap>(
+      new Map(),
+      addQueryValueToMap
     )
   );
 };

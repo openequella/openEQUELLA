@@ -34,6 +34,7 @@ import { useHistory, useLocation, useParams } from "react-router";
 import { getBaseUrl } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
 import MessageInfo, { MessageInfoVariant } from "../components/MessageInfo";
+import type { FieldValueMap } from "../components/wizard/WizardHelper";
 import * as WizardHelper from "../components/wizard/WizardHelper";
 import { AppRenderErrorContext } from "../mainui/App";
 import { NEW_SEARCH_PATH, routes } from "../mainui/routes";
@@ -736,6 +737,15 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
     return isQueryOrFiltersSet || isClassificationSelected;
   };
 
+  const isAdvSearchCriteriaSet = (queryValues: FieldValueMap): boolean => {
+    const isAnyFieldSet: boolean = Array.from(queryValues).some(
+      ([_, values]) => values.length > 0
+    );
+    const isValueMapNotEmpty = !M.isEmpty(queryValues);
+
+    return isValueMapNotEmpty && isAnyFieldSet;
+  };
+
   const refinePanelControls: RefinePanelControl[] = [
     {
       idSuffix: "DisplayModeSelector",
@@ -964,7 +974,9 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
                           searchPageModeDispatch({
                             type: "toggleAdvSearchPanel",
                           }),
-                        accent: !M.isEmpty(searchPageModeState.queryValues),
+                        accent: isAdvSearchCriteriaSet(
+                          searchPageModeState.queryValues
+                        ),
                       }
                     : undefined
                 }

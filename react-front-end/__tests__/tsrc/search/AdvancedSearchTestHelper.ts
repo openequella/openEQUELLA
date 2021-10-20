@@ -40,13 +40,17 @@ export const editBoxEssentials: BasicControlEssentials = {
   schemaNodes: [{ target: "/item/name", attribute: "" }],
   controlType: "editbox",
   options: [{ text: "default value", value: "test" }],
+  defaultValues: ["EditBox default value"],
 };
 
 export const oneEditBoxWizard = (
-  mandatory: boolean
+  mandatory: boolean,
+  defaultValues: string[] = []
 ): OEQ.AdvancedSearch.AdvancedSearchDefinition => ({
   ...getAdvancedSearchDefinition,
-  controls: [{ ...editBoxEssentials, mandatory }].map(mockWizardControlFactory),
+  controls: [{ ...editBoxEssentials, mandatory, defaultValues }].map(
+    mockWizardControlFactory
+  ),
 });
 
 // As we go forward, let's build on the below collection of controls,
@@ -75,6 +79,7 @@ const controlValues: Map<BasicControlEssentials, string[]> = new Map([
       schemaNodes: [{ target: "/item/options", attribute: "" }],
       mandatory: false,
       controlType: "checkboxgroup",
+      defaultValues: ["1"],
       options: [
         {
           text: "CheckBox one",
@@ -106,6 +111,7 @@ const controlValues: Map<BasicControlEssentials, string[]> = new Map([
       schemaNodes: [{ target: "/item/option", attribute: "" }],
       mandatory: false,
       controlType: "radiogroup",
+      defaultValues: ["1"],
       options: [
         {
           text: "RadioButton one",
@@ -190,8 +196,12 @@ const buildLabelValue = (
 
 /**
  * Generate a list of mocked Wizard controls.
+ *
+ * @param useDefaultValues `true` to use each mocked control's default values.
  */
-export const generateMockedControls = (): MockedControlValue[] => {
+export const generateMockedControls = (
+  useDefaultValues: boolean
+): MockedControlValue[] => {
   const orderByTitle: Ord<BasicControlEssentials> = contramap<
     O.Option<string>,
     BasicControlEssentials
@@ -203,7 +213,7 @@ export const generateMockedControls = (): MockedControlValue[] => {
     values: string[]
   ): MockedControlValue => [
     mockWizardControlFactory(control),
-    buildLabelValue(control, values),
+    buildLabelValue(control, useDefaultValues ? control.defaultValues : values),
   ];
 
   return pipe(
@@ -235,7 +245,9 @@ export const updateControlValue = (
 
   switch (controlType) {
     case "editbox":
-      userEvent.type(getByLabelText(container, labels[0]), values[0]);
+      const editBox = getByLabelText(container, labels[0]);
+      userEvent.clear(editBox);
+      userEvent.type(editBox, values[0]);
       break;
     case "checkboxgroup":
       const selectCheckBox =
@@ -287,21 +299,28 @@ export const updateControlValue = (
  * @param container Root container where <AdvancedSearchPanel/> exists
  * @param labels The control or its options' labels.
  * @param controlType Type of the control.
+ * @param useOptionStatus `true` to use the attribute `checked` as the value.
  */
 export const getControlValue = (
   container: HTMLElement,
   labels: string[],
-  controlType: OEQ.WizardControl.ControlType
+  controlType: OEQ.WizardControl.ControlType,
+  useOptionStatus: boolean = false
 ): WizardControlLabelValue | undefined => {
   const getInput = (label: string) =>
     getByLabelText(container, label) as HTMLInputElement;
   const buildMap = (label: string, value: string) => new Map([[label, value]]);
 
-  // Function to build WizardControlLabelValue for Controls that use the status of 'checked' as values.
+  // Function to build WizardControlLabelValue for CheckBox type controls.
   const getOptionValues = (_labels: string[]) =>
     pipe(
       _labels,
-      A.map((label) => ({ label, value: `${getInput(label).checked}` })),
+      A.map((label) =>
+        pipe(label, getInput, (input) => ({
+          label,
+          value: `${useOptionStatus ? input.checked : input.value}`,
+        }))
+      ),
       A.reduce(new Map<string, string>(), (m, { label, value }) =>
         pipe(m, M.upsertAt(S.Eq)(label, value))
       )
