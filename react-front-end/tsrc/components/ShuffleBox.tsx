@@ -25,9 +25,9 @@ import {
 import AllInclusiveIcon from "@material-ui/icons/AllInclusive";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
+import * as SET from "fp-ts/Set";
 import * as S from "fp-ts/string";
 import * as React from "react";
 import { useState } from "react";
@@ -88,11 +88,11 @@ export interface ShuffleBoxProps {
    * The currently selected options - an empty array represents none. These should be a subset of
    * the **keys** of `options`.
    */
-  values: string[];
+  values: Set<string>;
   /**
    * Handler for selecting an option.
    */
-  onSelect: (selectedValues: string[]) => void;
+  onSelect: (selectedValues: Set<string>) => void;
 }
 
 export const ShuffleBox = ({
@@ -103,31 +103,36 @@ export const ShuffleBox = ({
 }: ShuffleBoxProps): JSX.Element => {
   const classes = useStyles();
 
-  const [checkedChoices, setCheckedChoices] = useState<string[]>([]);
-  const [checkedSelections, setCheckedSelections] = useState<string[]>([]);
+  const [checkedChoices, setCheckedChoices] = useState<Set<string>>(SET.empty);
+  const [checkedSelections, setCheckedSelections] = useState<Set<string>>(
+    SET.empty
+  );
 
   const handleAddAll = () => {
-    setCheckedChoices([]);
-    pipe(options, M.keys<string>(OrdAsIs), onSelect);
+    setCheckedChoices(SET.empty);
+    pipe(options, M.keys<string>(OrdAsIs), SET.fromArray(S.Eq), onSelect);
   };
 
   const handleRemoveAll = () => {
-    setCheckedSelections([]);
-    onSelect([]);
+    setCheckedSelections(SET.empty);
+    onSelect(SET.empty);
   };
 
   const handleAddSelected = () => {
-    const newValues: string[] = pipe(values, A.concat(checkedChoices));
-    setCheckedChoices([]);
+    const newValues: Set<string> = pipe(
+      values,
+      SET.union(S.Eq)(checkedChoices)
+    );
+    setCheckedChoices(SET.empty);
     onSelect(newValues);
   };
 
   const handleRemoveSelected = () => {
-    const newValues: string[] = pipe(
+    const newValues: Set<string> = pipe(
       values,
-      A.difference(S.Eq)(checkedSelections)
+      SET.difference(S.Eq)(checkedSelections)
     );
-    setCheckedSelections([]);
+    setCheckedSelections(SET.empty);
     onSelect(newValues);
   };
 
@@ -135,7 +140,7 @@ export const ShuffleBox = ({
   const [choices, selections]: [Map<string, string>, Map<string, string>] =
     pipe(
       options,
-      M.partitionWithIndex((k) => values.includes(k)),
+      M.partitionWithIndex((k) => pipe(values, SET.elem(S.Eq)(k))),
       ({ left, right }) => [left, right]
     );
 

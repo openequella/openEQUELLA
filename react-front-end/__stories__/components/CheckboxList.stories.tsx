@@ -42,7 +42,7 @@ Basic.args = {
     ["second", "And another"],
     ["third", "And a third option"],
   ]),
-  checked: [],
+  checked: new Set<string>(),
 };
 
 export const WithChecked: Story<CheckboxListProps> = (args) => (
@@ -50,5 +50,5 @@ export const WithChecked: Story<CheckboxListProps> = (args) => (
 );
 WithChecked.args = {
   ...Basic.args,
-  checked: ["second"],
+  checked: new Set<string>(["second"]),
 };

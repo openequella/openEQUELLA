@@ -39,7 +39,7 @@ Basic.args = {
     ["option2", "Option Two"],
     ["option3", "Option Three"],
   ]),
-  values: [],
+  values: new Set<string>(),
 };
 
 export const WithSelection: Story<ShuffleBoxProps> = (args) => (
@@ -47,7 +47,7 @@ export const WithSelection: Story<ShuffleBoxProps> = (args) => (
 );
 WithSelection.args = {
   ...Basic.args,
-  values: ["option2"],
+  values: new Set<string>(["option2"]),
 };
 
 export const LotsOfOptions: Story<ShuffleBoxProps> = (args) => (

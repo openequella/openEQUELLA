@@ -29,12 +29,12 @@ const shuffleBoxStrings = languageStrings.shuffleBox;
 const testContainerShuffleBoxId = "shufflebox-test-container";
 const TestContainer = ({
   options,
-  initValues = [],
+  initValues = new Set<string>([]),
 }: {
   options: Map<string, string>;
-  initValues?: string[];
+  initValues?: Set<string>;
 }): JSX.Element => {
-  const [values, setValues] = useState<string[]>(initValues);
+  const [values, setValues] = useState<Set<string>>(initValues);
 
   return (
     <ShuffleBox
@@ -78,7 +78,7 @@ describe("<ShuffleBox/>", () => {
       <ShuffleBox
         id={id}
         options={optionsMap}
-        values={[selectedOption]}
+        values={new Set<string>([selectedOption])}
         onSelect={jest.fn()}
       />
     );
@@ -107,7 +107,10 @@ describe("<ShuffleBox/>", () => {
   it("removes items to the selections list when Remove Selected button clicked", () => {
     const selectedOption = optionKey("one");
     const { getByText, getByLabelText } = render(
-      <TestContainer options={optionsMap} initValues={[selectedOption]} />
+      <TestContainer
+        options={optionsMap}
+        initValues={new Set<string>([selectedOption])}
+      />
     );
     const isIn = shouldBeIn(getParentElementId(getByText));
 

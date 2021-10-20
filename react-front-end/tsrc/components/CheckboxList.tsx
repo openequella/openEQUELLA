@@ -22,13 +22,12 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@material-ui/core";
-import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
+import * as SET from "fp-ts/Set";
 import * as S from "fp-ts/string";
 import * as React from "react";
 import { OrdAsIs } from "../util/Ord";
-import { pfTernary } from "../util/pointfree";
 
 /**
  * Map collect where order is unimportant.
@@ -48,11 +47,11 @@ export interface CheckboxListProps {
   /**
    * The **keys** of the `options` which should be 'checked'/ticked/selected.
    */
-  checked: string[];
+  checked: Set<string>;
   /**
    * On change handler which will return the list of currently `checked` `options`.
    */
-  onChange: (checked: string[]) => void;
+  onChange: (checked: Set<string>) => void;
 }
 
 /**
@@ -68,18 +67,10 @@ export const CheckboxList = ({
   const labelId = (forValue: string): string => `${id}-label-${forValue}`;
 
   const isChecked = (forValue: string): boolean =>
-    pipe(checked, A.elem(S.Eq)(forValue));
+    pipe(checked, SET.elem(S.Eq)(forValue));
 
-  const checkValue = (value: string): void =>
-    pipe(checked, A.append(value), A.uniq(S.Eq), onChange);
-
-  const uncheckValue = (value: string): void =>
-    pipe(
-      checked,
-      A.uniq(S.Eq),
-      A.filter((v) => v !== value),
-      onChange
-    );
+  const handleOnClick = (value: string): void =>
+    pipe(checked, SET.toggle(S.Eq)(value), onChange);
 
   return (
     <List id={id}>
@@ -91,9 +82,7 @@ export const CheckboxList = ({
               key={value}
               dense
               button
-              onClick={() =>
-                pipe(value, pfTernary(isChecked, uncheckValue, checkValue))
-              }
+              onClick={() => pipe(value, handleOnClick)}
             >
               <ListItemIcon>
                 <Checkbox
