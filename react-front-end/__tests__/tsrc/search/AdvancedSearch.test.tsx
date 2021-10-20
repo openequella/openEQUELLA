@@ -245,10 +245,13 @@ describe("Rendering of wizard", () => {
       .map(({ description }) => description)
       .filter((d): d is string => typeof d !== "undefined");
 
-    expect.assertions(descriptions.length);
+    // We must have controls that have descriptions.
+    expect(descriptions.length).toBeGreaterThan(0);
     descriptions.forEach((d) => {
       expect(getByText(d)).toBeInTheDocument();
     });
+
+    expect.assertions(descriptions.length + 1); // Plus the one for checking the number of descriptions.
   });
 
   it("shows each control's default value", async () => {
