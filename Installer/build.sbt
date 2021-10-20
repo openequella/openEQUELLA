@@ -1,7 +1,7 @@
 import Path.relativeTo
 
 libraryDependencies ++= Seq(
-  "com.google.guava" % "guava"         % "30.1.1-jre",
+  "com.google.guava" % "guava"         % "31.0.1-jre",
   "org.slf4j"        % "slf4j-simple"  % "1.7.32",
   "commons-codec"    % "commons-codec" % "1.15",
   postgresDep,
