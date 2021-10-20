@@ -38,12 +38,12 @@ import { TooltipIconButton } from "./TooltipIconButton";
 
 const strings = languageStrings.shuffleBox;
 
-const useStyles = makeStyles((_: Theme) => ({
+const useStyles = makeStyles({
   checkboxListPaper: {
     height: 250,
     overflow: "auto",
   },
-}));
+});
 
 const RightSideBadge = withStyles((_: Theme) =>
   createStyles({
