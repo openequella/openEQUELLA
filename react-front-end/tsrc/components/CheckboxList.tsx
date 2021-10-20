@@ -25,15 +25,15 @@ import {
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
-import * as Ord from "fp-ts/Ord";
 import * as S from "fp-ts/string";
 import * as React from "react";
+import { OrdAsIs } from "../util/Ord";
 import { pfTernary } from "../util/pointfree";
 
 /**
  * Map collect where order is unimportant.
  */
-const collectUnOrd = M.collect<string>(Ord.fromCompare(() => 0));
+const collectUnOrd = M.collect<string>(OrdAsIs);
 
 export interface CheckboxListProps {
   /**

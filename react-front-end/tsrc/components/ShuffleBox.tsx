@@ -28,11 +28,11 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
-import * as Ord from "fp-ts/Ord";
 import * as S from "fp-ts/string";
 import * as React from "react";
 import { useState } from "react";
 import { languageStrings } from "../util/langstrings";
+import { OrdAsIs } from "../util/Ord";
 import { CheckboxList } from "./CheckboxList";
 import { TooltipIconButton } from "./TooltipIconButton";
 
@@ -73,8 +73,6 @@ const RemoveAllIcon = (): JSX.Element => (
     <ChevronLeftIcon fontSize="large" />
   </RightSideBadge>
 );
-
-const OrdAsIs = Ord.fromCompare(() => 0);
 
 export interface ShuffleBoxProps {
   /**
