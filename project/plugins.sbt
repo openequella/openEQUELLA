@@ -37,4 +37,4 @@ libraryDependencies ++= Seq(
   "org.slf4j"              % "slf4j-nop"             % "1.7.32",
   "com.yahoo.platform.yui" % "yuicompressor"         % "2.4.8"
 )
-dependencyOverrides += "com.puppycrawl.tools" % "checkstyle" % "8.45.1"
+dependencyOverrides += "com.puppycrawl.tools" % "checkstyle" % "9.0.1"
