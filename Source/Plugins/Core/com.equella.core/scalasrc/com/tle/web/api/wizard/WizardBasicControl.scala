@@ -124,7 +124,8 @@ object WizardBasicControl {
   */
 case class WizardCalendarControl(@JsonUnwrapped
                                  basicControl: WizardBasicControl,
-                                 isRange: Boolean)
+                                 isRange: Boolean,
+                                 dateFormat: String)
     extends WizardControlDefinition
 
 /**

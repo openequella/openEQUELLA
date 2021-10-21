@@ -117,6 +117,10 @@ export interface WizardCalendarControl extends WizardBasicControl {
    * values from both representing a range.
    */
   isRange: boolean;
+  /**
+   * The configured Date format which supports year only, month and year, and day, month and year.
+   */
+  format: 'DMY' | 'MY' | 'Y';
   controlType: 'calendar';
 }
 
