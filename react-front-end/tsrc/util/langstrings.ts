@@ -672,6 +672,12 @@ export const languageStrings = {
     },
     ui: { name: "UI", desc: "UI settings" },
   },
+  shuffleBox: {
+    addAll: "Add all",
+    addSelected: "Add selected",
+    removeAll: "Remove all",
+    removeSelected: "Remove selected",
+  },
   template: {
     navaway: {
       title: "You have unsaved changes",
