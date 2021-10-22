@@ -26,6 +26,7 @@ import * as O from "fp-ts/Option";
 import { Refinement } from "fp-ts/Refinement";
 import * as S from "fp-ts/string";
 import * as React from "react";
+import { OrdAsIs } from "../../util/Ord";
 import { WizardCheckBoxGroup } from "./WizardCheckBoxGroup";
 import { WizardEditBox } from "./WizardEditBox";
 import { WizardRawHtml } from "./WizardRawHtml";
@@ -75,6 +76,9 @@ export interface ControlTarget {
  */
 export type ControlValue = number[] | string[];
 
+// Tuple for a pair of schema node path and ControlValue.
+type PathValue = [string, ControlValue];
+
 /**
  * Identifies a Wizard 'field' and specifies its value.
  */
@@ -87,6 +91,11 @@ export interface FieldValue {
  * Collection type alias for specifying a group of field values.
  */
 export type FieldValueMap = Map<ControlTarget, ControlValue>;
+
+/**
+ * Type for Map where key is the path of a schema node and value is a ControlValue.
+ */
+export type PathValueMap = Map<string, ControlValue>;
 
 /**
  * Creates a function which checks the type of the head of an array using the supplied refinement
@@ -172,6 +181,42 @@ const getStringArrayControlValue = (
       (value) => value
     )
   );
+
+/**
+ * Function to transform a FieldValueMap into a PathValueMap.
+ *
+ * @param fieldValueMap FieldValueMap to be converted to PathValueMap.
+ */
+export const valuesByNode = (fieldValueMap: FieldValueMap): PathValueMap => {
+  // Build a list of PathValue for each pair of ControlTarget and ControlValue.
+  const buildPathValue = ([{ schemaNode }, value]: [
+    ControlTarget,
+    ControlValue
+  ]): PathValue[] =>
+    pipe(
+      schemaNode,
+      A.map<string, PathValue>((p) => [p, value])
+    );
+
+  // Given a ControlTarget, find its ControlValue from the supplied FieldValueMap
+  // and then build a list of PathValue.
+  const buildPathValues = (key: ControlTarget): PathValue[] =>
+    pipe(
+      fieldValueMap,
+      M.lookupWithKey(eqControlTarget)(key),
+      O.map(buildPathValue),
+      O.getOrElse<PathValue[]>(() => [])
+    );
+
+  return pipe(
+    fieldValueMap,
+    M.keys<ControlTarget>(OrdAsIs),
+    A.chain(buildPathValues),
+    A.reduce(new Map<string, ControlValue>(), (m, [p, v]) =>
+      pipe(m, M.upsertAt(S.Eq)(p, v))
+    )
+  );
+};
 
 /**
  * Factory function responsible for taking a control definition and producing the correct React

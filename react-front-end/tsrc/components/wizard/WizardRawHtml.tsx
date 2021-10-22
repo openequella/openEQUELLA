@@ -18,9 +18,15 @@
 import { flow, pipe } from "fp-ts/function";
 import * as React from "react";
 import HTMLReactParser from "html-react-parser";
-import { FieldValueMap, WizardControlBasicProps } from "./WizardHelper";
+import {
+  FieldValueMap,
+  valuesByNode,
+  WizardControlBasicProps,
+} from "./WizardHelper";
 import * as A from "fp-ts/Array";
 import * as O from "fp-ts/Option";
+import * as M from "fp-ts/Map";
+import * as S from "fp-ts/string";
 
 export interface WizardRawHtmlProps extends WizardControlBasicProps {
   /**
@@ -34,13 +40,14 @@ export const WizardRawHtml = ({
   description,
   fieldValueMap = new Map(),
 }: WizardRawHtmlProps) => {
+  const pathAndValues = valuesByNode(fieldValueMap);
   // Retrieve the metadata for a given path. One schemaNode in theory can be set in different controls,
   // but here we only use the one found first, and return the concatenated values.
   const getMetadata = (path: string): string | undefined =>
     pipe(
-      Array.from(fieldValueMap),
-      A.findFirst(([{ schemaNode }]) => schemaNode.includes(path)),
-      O.map(([_, controlValue]) => controlValue.join()),
+      pathAndValues,
+      M.lookup(S.Eq)(path),
+      O.map((controlValue) => controlValue.join()),
       O.toUndefined
     );
 
