@@ -91,6 +91,10 @@ export interface DateRangeSelectorProps {
    * Label for end date picker.
    */
   endDatePickerLabel?: string;
+  /**
+   * `true` to show the switch used to change the Selector mode.
+   */
+  showModeSwitch?: boolean;
 }
 
 /**
@@ -105,6 +109,7 @@ export const DateRangeSelector = ({
   quickOptionDropdownLabel,
   startDatePickerLabel,
   endDatePickerLabel,
+  showModeSwitch = true,
 }: DateRangeSelectorProps) => {
   const classes = useStyles();
 
@@ -333,21 +338,23 @@ export const DateRangeSelector = ({
         {quickModeEnabled ? quickOptionSelector : customDatePicker}
       </Grid>
       <Grid item>
-        <SettingsToggleSwitch
-          id="modified_date_selector_mode_switch"
-          label={quickOptionSwitchLabel}
-          value={quickModeEnabled}
-          setValue={(value) => {
-            // If selected custom date range matches the option `All` then clear both start and end.
-            const isAllSelected =
-              dateRangeToDateOptionConverter(stateDateRange) ===
-              quickOptionLabels.all;
-            const updatedRange = isAllSelected
-              ? undefined
-              : { ...dateRange, end: undefined };
-            onQuickModeChange(value, updatedRange);
-          }}
-        />
+        {showModeSwitch && (
+          <SettingsToggleSwitch
+            id="modified_date_selector_mode_switch"
+            label={quickOptionSwitchLabel}
+            value={quickModeEnabled}
+            setValue={(value) => {
+              // If selected custom date range matches the option `All` then clear both start and end.
+              const isAllSelected =
+                dateRangeToDateOptionConverter(stateDateRange) ===
+                quickOptionLabels.all;
+              const updatedRange = isAllSelected
+                ? undefined
+                : { ...dateRange, end: undefined };
+              onQuickModeChange(value, updatedRange);
+            }}
+          />
+        )}
       </Grid>
     </Grid>
   );
