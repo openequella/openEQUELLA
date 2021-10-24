@@ -348,10 +348,11 @@ export const getControlValue = (
       )
     );
 
+  // Function to build WizardControlLabelValue for controls that have only one input.
   const getInputValue = (_labels: string[]) =>
     pipe(
       _labels,
-      A.head, // EditBox only needs the first label which should be its title.
+      A.head,
       O.map((label) => buildMap(label, getInput(label).value)),
       O.toUndefined
     );
