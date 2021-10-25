@@ -271,7 +271,7 @@ export const DateRangeSelector = ({
     return dateRangePickers.map(({ field, label, value }) => {
       const isStart = field === "start";
       return (
-        <Grid item key={field} xs={12} xl={6}>
+        <Grid item key={field} xs={12} lg={6}>
           <KeyboardDatePicker
             className={classes.datePickerWidth} // Ensure the picker still takes full width when calender icon is hidden.
             disableFuture
