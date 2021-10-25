@@ -15,9 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { UuidString } from './Common';
-import { SelectionRestriction, TermStorageFormat } from './Taxonomy';
-import { TargetNode, WizardControlOption } from './WizardCommonTypes';
+import type { UuidString } from './Common';
+import type { SelectionRestriction, TermStorageFormat } from './Taxonomy';
+import type {
+  TargetNode,
+  WizardControlOption,
+  WizardDateFormat,
+} from './WizardCommonTypes';
 
 /**
  * Supported Wizard Control types.
@@ -120,7 +124,7 @@ export interface WizardCalendarControl extends WizardBasicControl {
   /**
    * The configured Date format which supports year only, month and year, and day, month and year.
    */
-  format: 'DMY' | 'MY' | 'Y';
+  dateFormat: WizardDateFormat;
   controlType: 'calendar';
 }
 
