@@ -23,17 +23,19 @@ import { absurd, constFalse, flow, pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as O from "fp-ts/Option";
-import { first } from "fp-ts/Semigroup";
 import { Refinement } from "fp-ts/Refinement";
+import { first } from "fp-ts/Semigroup";
+import * as SET from "fp-ts/Set";
 import * as S from "fp-ts/string";
 import * as React from "react";
 import { OrdAsIs } from "../../util/Ord";
 import { WizardCalendar } from "./WizardCalendar";
 import { WizardCheckBoxGroup } from "./WizardCheckBoxGroup";
 import { WizardEditBox } from "./WizardEditBox";
-import { WizardRawHtml } from "./WizardRawHtml";
 import { WizardListBox } from "./WizardListBox";
 import { WizardRadioButtonGroup } from "./WizardRadioButtonGroup";
+import { WizardRawHtml } from "./WizardRawHtml";
+import { WizardShuffleBox } from "./WizardShuffleBox";
 import { WizardUnsupported } from "./WizardUnsupported";
 
 /**
@@ -211,6 +213,20 @@ export const valuesByNode = (fieldValueMap: FieldValueMap): PathValueMap => {
 };
 
 /**
+ * Coverts `WizardControlOption` arrays to a simple Map, where the `value` is also used for the key
+ * if `text` is `undefined`. (Note: The old Wizard UI seemed to support the idea of duplicate
+ * entries - which had the same `value`. But that seemed odd so when processing here to a proper
+ * Map obviously those are dropped and the last entry wins.)
+ */
+const wizardControlOptionsToMap: (
+  _: OEQ.WizardCommonTypes.WizardControlOption[]
+) => Map<string, string> = flow(
+  A.reduce(new Map<string, string>(), (acc, { text, value }) =>
+    pipe(acc, M.upsertAt(S.Eq)(value, text ?? value))
+  )
+);
+
+/**
  * Factory function responsible for taking a control definition and producing the correct React
  * component.
  */
@@ -307,6 +323,20 @@ const controlFactory = (
         />
       );
     case "shufflebox":
+      return (
+        <WizardShuffleBox
+          {...commonProps}
+          options={wizardControlOptionsToMap(options)}
+          values={
+            new Set(
+              ifAvailable<string[]>(value, getStringArrayControlValue) ?? []
+            )
+          }
+          onSelect={flow(SET.toArray<string>(OrdAsIs), onChange)}
+        />
+      );
+    case "calendar":
+    case "html":
     case "shufflelist":
     case "termselector":
     case "userselector":
