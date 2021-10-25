@@ -160,7 +160,7 @@ export const ShuffleBox = ({
   ];
 
   return (
-    <Grid container spacing={2}>
+    <Grid id={id} container spacing={2}>
       <Grid item xs={3}>
         <Paper className={classes.checkboxListPaper} variant="outlined">
           <CheckboxList
