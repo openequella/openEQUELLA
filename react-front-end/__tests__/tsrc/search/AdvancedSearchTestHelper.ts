@@ -32,6 +32,7 @@ import * as E from "fp-ts/Either";
 import { contramap, Ord } from "fp-ts/Ord";
 import * as S from "fp-ts/string";
 import * as IO from "fp-ts/IO";
+import { selectOption } from "../MuiTestHelpers";
 
 export const wizardControlBlankLabel = "!!BLANK LABEL!!";
 export const editBoxEssentials: BasicControlEssentials = {
@@ -140,6 +141,32 @@ const controlValues: Map<BasicControlEssentials, string[]> = new Map([
     },
     [], // Raw HTML doesn't have any value.
   ],
+  [
+    {
+      title: "ListBox",
+      schemaNodes: [{ target: "/item/language", attribute: "" }],
+      mandatory: false,
+      controlType: "listbox",
+      defaultValues: ["option two"],
+      options: [
+        {
+          text: "option one",
+          // Make value the same as text so later on when we call `selectOption`
+          // we can use value as the option label.
+          value: "option one",
+        },
+        {
+          text: "option two",
+          value: "option two",
+        },
+        {
+          text: "option three",
+          value: "option three",
+        },
+      ],
+    },
+    ["option one"],
+  ],
 ]);
 
 // Alias for the Map including a Wizard control's labels and values. However, the value can refer to
@@ -168,6 +195,12 @@ const buildLabelValueForOption = (
     )
   );
 
+// Function to build a `WizardControlLabelValue` for controls that only need title and one value.
+const buildLabelValueForControl = (
+  title: string = wizardControlBlankLabel,
+  value: string
+) => new Map([[title, value]]);
+
 // Function to build a `WizardControlLabelValue` for the supplied control and its values.
 const buildLabelValue = (
   { controlType, title, options }: BasicControlEssentials,
@@ -175,16 +208,15 @@ const buildLabelValue = (
 ): WizardControlLabelValue => {
   switch (controlType) {
     case "editbox":
-      return new Map([
-        [title ?? wizardControlBlankLabel, values[0]], // EditBox just needs its title and the first value.
-      ]);
+      return buildLabelValueForControl(title, values[0]);
     case "checkboxgroup":
       return buildLabelValueForOption(options, values);
     case "radiogroup":
       return buildLabelValueForOption(options, values);
+    case "listbox":
+      return buildLabelValueForControl(title, values[0]);
     case "calendar":
     case "html":
-    case "listbox":
     case "shufflebox":
     case "shufflelist":
     case "termselector":
@@ -282,8 +314,10 @@ export const updateControlValue = (
       break;
     case "html":
       break; // Nothing really needs to be done.
-    case "calendar":
     case "listbox":
+      selectOption(container, `#${labels[0]}-select`, values[0]);
+      break;
+    case "calendar":
     case "shufflebox":
     case "shufflelist":
     case "termselector":
@@ -327,22 +361,26 @@ export const getControlValue = (
       )
     );
 
+  // Function to build WizardControlLabelValue for controls that have only one input.
+  const getInputValue = (_labels: string[]) =>
+    pipe(
+      _labels,
+      A.head,
+      O.map((label) => buildMap(label, getInput(label).value)),
+      O.toUndefined
+    );
+
   switch (controlType) {
     case "editbox":
-      return pipe(
-        labels,
-        A.head, // EditBox only needs the first label which should be its title.
-        O.map((label) => buildMap(label, getInput(label).value)),
-        O.toUndefined
-      );
+      return getInputValue(labels);
     case "checkboxgroup":
       return getOptionValues(labels);
     case "radiogroup":
       return getOptionValues(labels);
-    case "html":
-      return new Map<string, string>();
-    case "calendar":
     case "listbox":
+      return getInputValue(labels);
+    case "calendar":
+    case "html":
     case "shufflebox":
     case "shufflelist":
     case "termselector":

@@ -31,6 +31,7 @@ import { OrdAsIs } from "../../util/Ord";
 import { WizardCheckBoxGroup } from "./WizardCheckBoxGroup";
 import { WizardEditBox } from "./WizardEditBox";
 import { WizardRawHtml } from "./WizardRawHtml";
+import { WizardListBox } from "./WizardListBox";
 import { WizardRadioButtonGroup } from "./WizardRadioButtonGroup";
 import { WizardUnsupported } from "./WizardUnsupported";
 
@@ -245,6 +246,11 @@ const controlFactory = (
     mandatory,
   };
 
+  // For controls that have only one value, when the value is an empty string, call
+  // `onChange` with an empty array instead of an array that has an empty string only.
+  const onChangeForSingleValue = (newValue: string) =>
+    onChange(S.isEmpty(newValue) ? [] : [newValue]);
+
   switch (controlType) {
     case "editbox":
       return (
@@ -252,9 +258,7 @@ const controlFactory = (
           {...commonProps}
           rows={size2}
           value={ifAvailable<string>(value, getStringControlValue)}
-          onChange={(newValue) =>
-            onChange(S.isEmpty(newValue) ? [] : [newValue])
-          }
+          onChange={onChangeForSingleValue}
         />
       );
     case "checkboxgroup":
@@ -264,7 +268,7 @@ const controlFactory = (
           options={options}
           columns={size1}
           values={ifAvailable<string[]>(value, getStringArrayControlValue)}
-          onSelect={(newValue: string[]) => onChange(newValue)}
+          onSelect={onChange}
         />
       );
     case "radiogroup":
@@ -274,13 +278,21 @@ const controlFactory = (
           options={options}
           columns={size1}
           value={ifAvailable<string>(value, getStringControlValue)}
-          onSelect={(newValue: string) => onChange([newValue])}
+          onSelect={onChangeForSingleValue}
         />
       );
     case "html":
       return <WizardRawHtml {...commonProps} fieldValueMap={fieldValueMap} />;
-    case "calendar":
     case "listbox":
+      return (
+        <WizardListBox
+          {...commonProps}
+          options={options}
+          value={ifAvailable<string>(value, getStringControlValue)}
+          onSelect={onChangeForSingleValue}
+        />
+      );
+    case "calendar":
     case "shufflebox":
     case "shufflelist":
     case "termselector":

@@ -108,8 +108,9 @@ export const mockWizardControlFactory = (
       return mockOptionTypeControl(mockDetails);
     case "html":
       return mockBasicControl(mockDetails);
-    case "calendar":
     case "listbox":
+      return mockOptionTypeControl(mockDetails);
+    case "calendar":
     case "shufflebox":
     case "shufflelist":
     case "termselector":
