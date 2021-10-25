@@ -23,6 +23,7 @@ import { absurd, constFalse, flow, pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as O from "fp-ts/Option";
+import { first } from "fp-ts/Semigroup";
 import { Refinement } from "fp-ts/Refinement";
 import * as S from "fp-ts/string";
 import * as React from "react";
@@ -75,9 +76,6 @@ export interface ControlTarget {
  * value.
  */
 export type ControlValue = number[] | string[];
-
-// Tuple for a pair of schema node path and ControlValue.
-type PathValue = [string, ControlValue];
 
 /**
  * Identifies a Wizard 'field' and specifies its value.
@@ -188,32 +186,24 @@ const getStringArrayControlValue = (
  * @param fieldValueMap FieldValueMap to be converted to PathValueMap.
  */
 export const valuesByNode = (fieldValueMap: FieldValueMap): PathValueMap => {
-  // Build a list of PathValue for each pair of ControlTarget and ControlValue.
-  const buildPathValue = ([{ schemaNode }, value]: [
-    ControlTarget,
-    ControlValue
-  ]): PathValue[] =>
+  const buildPathValue = (
+    k: ControlTarget,
+    fullMap: PathValueMap,
+    v: ControlValue
+  ) =>
     pipe(
-      schemaNode,
-      A.map<string, PathValue>((p) => [p, value])
-    );
-
-  // Given a ControlTarget, find its ControlValue from the supplied FieldValueMap
-  // and then build a list of PathValue.
-  const buildPathValues = (key: ControlTarget): PathValue[] =>
-    pipe(
-      fieldValueMap,
-      M.lookupWithKey(eqControlTarget)(key),
-      O.map(buildPathValue),
-      O.getOrElse<PathValue[]>(() => [])
+      k.schemaNode,
+      A.reduce<string, PathValueMap>(new Map(), (m, path) =>
+        pipe(m, M.upsertAt(S.Eq)(path, v))
+      ),
+      M.union<string, ControlValue>(S.Eq, first<ControlValue>())(fullMap)
     );
 
   return pipe(
     fieldValueMap,
-    M.keys<ControlTarget>(OrdAsIs),
-    A.chain(buildPathValues),
-    A.reduce(new Map<string, ControlValue>(), (m, [p, v]) =>
-      pipe(m, M.upsertAt(S.Eq)(p, v))
+    M.reduceWithIndex<ControlTarget>(OrdAsIs)<PathValueMap, ControlValue>(
+      new Map(),
+      buildPathValue
     )
   );
 };
