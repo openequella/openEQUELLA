@@ -32,6 +32,11 @@ export interface DateRange {
 }
 
 /**
+ * Standard ISO date formats.
+ */
+export type ISODateFormat = "yyyy-MM-dd" | "yyyy-MM" | "yyyy";
+
+/**
  * Type guard used to check whether an object is an instance of Date.
  *
  * @param value A unknown type object to be checked.
