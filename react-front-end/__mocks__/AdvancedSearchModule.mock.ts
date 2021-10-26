@@ -94,6 +94,8 @@ const mockEditbox = (
   isNumber: false,
 });
 
+export const mockRawHtmlContent = `<div><p>label for raw HTML control</p><hr></div>`;
+
 export const mockWizardControlFactory = (
   mockDetails: BasicControlEssentials
 ): OEQ.WizardControl.WizardBasicControl => {
@@ -104,9 +106,11 @@ export const mockWizardControlFactory = (
       return mockOptionTypeControl(mockDetails);
     case "radiogroup":
       return mockOptionTypeControl(mockDetails);
-    case "calendar":
     case "html":
+      return mockBasicControl(mockDetails);
     case "listbox":
+      return mockOptionTypeControl(mockDetails);
+    case "calendar":
     case "shufflebox":
     case "shufflelist":
     case "termselector":
