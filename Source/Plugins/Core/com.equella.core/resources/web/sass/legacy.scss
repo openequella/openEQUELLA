@@ -4193,7 +4193,26 @@ table#copyright-table tr td {
   top: $singleMargin;
 }
 
-.attachments-browse.thumbs li.attachmentrow.active {
+.attachments-browse.structured li.attachmentrow {
+  //new droparrow: decide to show the droparrow again
+  //but the old(above) one has some legacy inconsistent style
+  .link-div:after {
+    content: "\e5c5";
+    font-family: "Material Icons";
+    font-size: 20px;
+    color: $menuItemIconColor;
+    vertical-align: middle;
+    padding-right: 6px;
+    float: right;
+  }
+
+  &.active .link-div:after {
+    //no corresponding icon so flip the original one
+    transform: scaleY(-1);
+  }
+}
+
+.attachments-browse.structured li.attachmentrow.active {
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
 
