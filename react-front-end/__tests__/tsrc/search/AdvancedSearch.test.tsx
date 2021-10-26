@@ -231,6 +231,29 @@ describe("Rendering of wizard", () => {
     expect(labelsAndValues).toEqual(mockedLabelsAndValues);
   });
 
+  it("shows each control's description if there is any", async () => {
+    const [controls] = A.unzip(buildMockedControls());
+    const advancedSearchDefinition: OEQ.AdvancedSearch.AdvancedSearchDefinition =
+      {
+        ...getAdvancedSearchDefinition,
+        controls,
+      };
+    mockGetAdvancedSearchByUuid.mockResolvedValue(advancedSearchDefinition);
+
+    const { getByText } = await renderAdvancedSearchPage();
+    const descriptions: string[] = controls
+      .map(({ description }) => description)
+      .filter((d): d is string => typeof d !== "undefined");
+
+    // We must have controls that have descriptions.
+    expect(descriptions.length).toBeGreaterThan(0);
+    descriptions.forEach((d) => {
+      expect(getByText(d)).toBeInTheDocument();
+    });
+
+    expect.assertions(descriptions.length + 1); // Plus the one for checking the number of descriptions.
+  });
+
   it("shows each control's default value", async () => {
     const mockedControls = buildMockedControls(true);
     const [controls, mockedLabelsAndValues] = A.unzip(mockedControls);

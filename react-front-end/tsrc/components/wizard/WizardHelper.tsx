@@ -23,11 +23,14 @@ import { absurd, constFalse, flow, pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as O from "fp-ts/Option";
+import { first } from "fp-ts/Semigroup";
 import { Refinement } from "fp-ts/Refinement";
 import * as S from "fp-ts/string";
 import * as React from "react";
+import { OrdAsIs } from "../../util/Ord";
 import { WizardCheckBoxGroup } from "./WizardCheckBoxGroup";
 import { WizardEditBox } from "./WizardEditBox";
+import { WizardRawHtml } from "./WizardRawHtml";
 import { WizardListBox } from "./WizardListBox";
 import { WizardRadioButtonGroup } from "./WizardRadioButtonGroup";
 import { WizardUnsupported } from "./WizardUnsupported";
@@ -87,6 +90,11 @@ export interface FieldValue {
  * Collection type alias for specifying a group of field values.
  */
 export type FieldValueMap = Map<ControlTarget, ControlValue>;
+
+/**
+ * Type for Map where key is the path of a schema node and value is a ControlValue.
+ */
+export type PathValueMap = Map<string, ControlValue>;
 
 /**
  * Creates a function which checks the type of the head of an array using the supplied refinement
@@ -174,6 +182,34 @@ const getStringArrayControlValue = (
   );
 
 /**
+ * Function to transform a FieldValueMap into a PathValueMap.
+ *
+ * @param fieldValueMap FieldValueMap to be converted to PathValueMap.
+ */
+export const valuesByNode = (fieldValueMap: FieldValueMap): PathValueMap => {
+  const buildPathValue = (
+    k: ControlTarget,
+    fullMap: PathValueMap,
+    v: ControlValue
+  ) =>
+    pipe(
+      k.schemaNode,
+      A.reduce<string, PathValueMap>(new Map(), (m, path) =>
+        pipe(m, M.upsertAt(S.Eq)(path, v))
+      ),
+      M.union<string, ControlValue>(S.Eq, first<ControlValue>())(fullMap)
+    );
+
+  return pipe(
+    fieldValueMap,
+    M.reduceWithIndex<ControlTarget>(OrdAsIs)<PathValueMap, ControlValue>(
+      new Map(),
+      buildPathValue
+    )
+  );
+};
+
+/**
  * Factory function responsible for taking a control definition and producing the correct React
  * component.
  */
@@ -181,6 +217,7 @@ const controlFactory = (
   id: string,
   control: OEQ.WizardControl.WizardControl,
   onChange: (_: ControlValue) => void,
+  fieldValueMap: FieldValueMap,
   value?: ControlValue
 ): JSX.Element => {
   if (!OEQ.WizardControl.isWizardBasicControl(control)) {
@@ -244,6 +281,8 @@ const controlFactory = (
           onSelect={onChangeForSingleValue}
         />
       );
+    case "html":
+      return <WizardRawHtml {...commonProps} fieldValueMap={fieldValueMap} />;
     case "listbox":
       return (
         <WizardListBox
@@ -253,7 +292,6 @@ const controlFactory = (
           onSelect={onChangeForSingleValue}
         />
       );
-    case "html":
     case "calendar":
     case "shufflebox":
     case "shufflelist":
@@ -316,6 +354,7 @@ export const render = (
       `wiz-${idx}-${c.controlType}`,
       c,
       buildOnChangeHandler(c),
+      values,
       retrieveControlsValue(c)
     )
   );

@@ -76,6 +76,7 @@ const controlValues: Map<BasicControlEssentials, string[]> = new Map([
   [
     {
       title: "CheckBox Group",
+      description: "This is a CheckBox Group",
       schemaNodes: [{ target: "/item/options", attribute: "" }],
       mandatory: false,
       controlType: "checkboxgroup",
@@ -128,6 +129,17 @@ const controlValues: Map<BasicControlEssentials, string[]> = new Map([
       ],
     },
     ["true", "false", "false"], // RadioButton group can have only one option selected.
+  ],
+  [
+    {
+      description: "This is a Raw HTML",
+      schemaNodes: [{ target: "/item/rawhtml", attribute: "" }],
+      mandatory: false,
+      controlType: "html",
+      options: [],
+      defaultValues: [],
+    },
+    [], // Raw HTML doesn't have any value.
   ],
   [
     {
@@ -300,11 +312,12 @@ export const updateControlValue = (
       // Radiogroup should have onle one label provided.
       userEvent.click(getByLabelText(container, labels[0]));
       break;
+    case "html":
+      break; // Nothing really needs to be done.
     case "listbox":
       selectOption(container, `#${labels[0]}-select`, values[0]);
       break;
     case "calendar":
-    case "html":
     case "shufflebox":
     case "shufflelist":
     case "termselector":
