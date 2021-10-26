@@ -130,5 +130,43 @@ export const controls: OEQ.WizardControl.WizardControl[] = [
     isForceUnique: false,
     isCheckDuplication: false,
   },
+  {
+    mandatory: false,
+    reload: false,
+    include: true,
+    size1: 0,
+    size2: 0,
+    title: "Sort Order Test",
+    description: "These items should be devoid of any obvious order",
+    targetNodes: [
+      {
+        target: "/item/name",
+        attribute: "",
+        fullTarget: "/item/name",
+        xoqlPath: "/item/name",
+        freetextField: "/item/name",
+      },
+    ],
+    options: [
+      {
+        text: "Zebra",
+        value: "z",
+      },
+      {
+        text: "Ant",
+        value: "a",
+      },
+      {
+        text: "Cat",
+        value: "c",
+      },
+      {
+        text: "Bat",
+        value: "b",
+      },
+    ],
+    defaultValues: [],
+    controlType: "shufflebox",
+  },
   { controlType: "unknown" },
 ];

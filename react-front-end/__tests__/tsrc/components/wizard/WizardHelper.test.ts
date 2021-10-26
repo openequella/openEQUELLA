@@ -15,13 +15,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
+import * as A from "fp-ts/Array";
+import { Eq } from "fp-ts/Eq";
+import { pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
+import * as O from "fp-ts/Option";
+import * as S from "fp-ts/string";
 import { controls } from "../../../../__mocks__/WizardHelper.mock";
 import {
   ControlTarget,
   FieldValue,
   render,
 } from "../../../../tsrc/components/wizard/WizardHelper";
+import { simpleMatch } from "../../../../tsrc/util/match";
+
+/**
+ * Produces a `Map` summarising the number of occurrences in an array identified by keys generated
+ * with `by`.
+ */
+const countBy =
+  <T, K>(eq: Eq<K>, by: (a: T) => K) =>
+  (as: T[]): Map<K, number> =>
+    pipe(
+      as,
+      A.map(by),
+      A.reduce<K, Map<K, number>>(new Map(), (m, k: K) => {
+        const count: number = pipe(
+          m,
+          M.lookup(eq)(k),
+          O.map((n) => n + 1),
+          O.getOrElse<number>(() => 1)
+        );
+
+        return pipe(m, M.upsertAt(eq)(k, count));
+      })
+    );
 
 describe("render()", () => {
   const logOnChange = (update: FieldValue): void =>
@@ -33,21 +62,31 @@ describe("render()", () => {
   };
 
   it("creates JSX.Elements matching definition", () => {
-    // We currently only support editboxes, so just filter to them for now
-    // Each time we add a control, we need to expand this out
-    const supportedControls = controls.filter(
-      (c) => c.controlType === "editbox"
-    );
-    expect(supportedControls.length).toBeGreaterThan(1); // quick assertions we have good test data
+    const elements: JSX.Element[] = render(controls, new Map(), logOnChange);
+    expect(elements).toHaveLength(controls.length);
 
-    const elements: JSX.Element[] = render(
-      supportedControls,
-      new Map(),
-      logOnChange
+    const expectedComponentCount = pipe(
+      controls,
+      countBy<OEQ.WizardControl.WizardControl, string>(
+        S.Eq,
+        ({ controlType }) =>
+          pipe(
+            controlType,
+            simpleMatch<string>({
+              editbox: () => "WizardEditBox",
+              radiogroup: () => "WizardRadioButtonGroup",
+              shufflebox: () => "WizardShuffleBox",
+              _: () => "WizardUnsupported",
+            })
+          )
+      )
     );
-    expect(elements).toHaveLength(supportedControls.length);
-    // for now, we just expect Editboxes, we'll need to elaborate on this in the future
-    expect(elements.every((e) => e.type.name === "WizardEditBox")).toBeTruthy();
+    const componentCount = pipe(
+      elements,
+      countBy<JSX.Element, string>(S.Eq, (e) => e.type.name)
+    );
+
+    expect(componentCount).toStrictEqual(expectedComponentCount);
   });
 
   it("creates WizardUnsupported components for unknown/unsupported ones", () => {
