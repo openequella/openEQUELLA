@@ -37,16 +37,20 @@ export interface WizardCalendarProps extends WizardControlBasicProps {
   /**
    * Currently selected date range which can be
    * 1. `undefined`;
-   * 2. An array that should have two strings.
+   * 2. An array that has two strings in ISO date format.
+   * 3. An array that has one string is ISO date format and one empty string.
    *
-   * For the second situation, the first value represents date of start and the second one
-   * represents date of end. If the value is an empty string it will be considered as `undefined`.
+   * When the array is converted into a date range, the first string represents date of start
+   * and the second one represents date of end. Empty string will be converted to `undefined`.
    */
   values?: string[];
   /**
    * On change handler.
    *
-   * @param values An array which should be empty or should have two strings to represent a date range.
+   * @param values An array which can be:
+   * 1. An empty array;
+   * 2. An array that has two strings in ISO date format.
+   * 3. An array that has one string is ISO date format and one empty string.
    */
   onChange: (values: string[]) => void;
   /**
