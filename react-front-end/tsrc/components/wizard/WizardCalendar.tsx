@@ -158,6 +158,7 @@ export const WizardCalendar = ({
         showModeSwitch={false}
         dateRange={dateRange}
         datePickerCustomPropsProvider={buildDatePickerPropsForWizardControl}
+        id={id}
       />
     </>
   );

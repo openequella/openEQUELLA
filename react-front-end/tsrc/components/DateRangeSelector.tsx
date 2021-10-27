@@ -139,6 +139,10 @@ export interface DateRangeSelectorProps {
    * Function to provide DatePickerCustomProps.
    */
   datePickerCustomPropsProvider?: () => DatePickerCustomProps;
+  /**
+   * DOM id.
+   */
+  id?: string;
 }
 
 /**
@@ -155,6 +159,7 @@ export const DateRangeSelector = ({
   endDatePickerLabel,
   showModeSwitch = true,
   datePickerCustomPropsProvider = buildDatePickerCustomProps,
+  id = "sp-date-range-selector",
 }: DateRangeSelectorProps) => {
   const classes = useStyles();
 
@@ -277,11 +282,13 @@ export const DateRangeSelector = ({
 
   const quickOptionSelector: ReactNode = (
     <FormControl variant="outlined" fullWidth>
-      <InputLabel id="date_range_selector_label">{quickOptionLabel}</InputLabel>
+      <InputLabel id={`${id}-quick-option-label`}>
+        {quickOptionLabel}
+      </InputLabel>
       <Select
         value={dateRangeToDateOptionConverter(stateDateRange)}
-        id="date_range_selector"
-        labelId="date_range_selector_label"
+        id={`${id}-quick-options`}
+        labelId={`${id}-quick-option-label`}
         onChange={(event) =>
           handleQuickDateOptionChange(event.target.value as string)
         }
@@ -320,6 +327,7 @@ export const DateRangeSelector = ({
       return (
         <Grid item key={field} xs={12} lg={6}>
           <KeyboardDatePicker
+            id={`${id}-${field}`}
             views={views}
             className={classes.datePickerWidth} // Ensure the picker still takes full width when calender icon is hidden.
             disableFuture
