@@ -5,6 +5,8 @@
 We welcome contributions via both the raising of issues and submitting pull requests. But before you
 do, please take a moment to consult the below.
 
+[TOC]
+
 ## Chatting
 
 If before any of the below you'd like to discuss an issue or some code, then come and chat with
@@ -98,7 +100,288 @@ thread](https://groups.google.com/a/apereo.org/forum/#!topic/equella-users/bLV_X
 [issue ticket](https://github.com/openequella/openEQUELLA/issues/437). This page will be updated once the
 React UI code is a bit more solidified.
 
-### IDE
+===
+
+Setup note for Ubuntu 20.04
+
+Notice these instructions is mainly for fresh people. Please bear with the redundant and messy information.
+
+```shell
+sudo apt update
+sudp apt-get update
+sudo apt install curl
+```
+
+### Install SDKMAN
+
+https://sdkman.io/
+
+WE suggest using SDKMAN installing/managing JDK, Scala, Gradle - any other JVM bits.
+
+```shell
+curl -s "https://get.sdkman.io" | bash
+source "$HOME/.sdkman/bin/sdkman-init.sh"
+sdk version
+```
+
+#### Install Java 8
+
+```shell
+sdk install java 8.0.302-open
+```
+
+### Install NVM
+
+https://github.com/nvm-sh/nvmFornode/npmIntelliJ
+
+We suggest using NVM to manage different nodejs env.
+
+```
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+```
+
+#### Install nodejs
+
+```
+nvm install node
+```
+
+### Install Docker
+
+https://docs.docker.com/engine/install/
+
+We suggest using docker to have a nice self contained PostgreSQL for local development/testing and also later when you need to test clustered environments etc.
+
+```
+sudo apt-get update
+sudo apt-get install \
+ca-certificates \
+curl \
+gnupg \
+lsb-release
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io
+```
+
+#### Create docker-sql container
+
+Install.
+
+```shell
+sudo docker run --name postgresql-container -p 5432:5432 -e POSTGRES_PASSWORD=somePassword -d postgres
+```
+
+#### Connecting to the PSQL server via CLI :
+
+1. Find the docker-container-id in which the postgres is running using the below command.
+
+   ```
+   sudo docker ps -a
+   ```
+
+2. Run the below command to enter into the container (with the ID from step-1).
+
+   ```
+   sudo docker exec -it <PSQL-Container-ID> bash
+   ```
+
+3. Authenticate to start using as postgres user.
+
+   ```
+   psql -U postgres
+   ```
+
+4. Enter the password used while creating the PSQL server container.
+
+#### Create a user and database in prostgresql
+
+```shell
+CREATE DATABASE equella;
+CREATE USER euqellauser WITH PASSWORD 'password';
+GRANT ALL PRIVILEGES ON DATABASE "equella" to euqellauser;
+```
+
+### Install sbt
+
+https://www.scala-sbt.org/download.html
+
+openEquella use sbt to build project.
+
+```
+echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | sudo tee /etc/apt/sources.list.d/sbt.list
+echo "deb https://repo.scala-sbt.org/scalasbt/debian /" | sudo tee /etc/apt/sources.list.d/sbt_old.list
+curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | sudo apt-key add
+sudo apt-get update
+sudo apt-get install sbt
+```
+
+### Install build-essential
+
+https://packages.ubuntu.com/impish/build-essential
+
+It will install everything required for compiling basic software written in C and C++. We do need this to build openEquella.
+
+```shell
+sudo apt-get install build-essential
+```
+
+### Install Image Magick
+
+Old basic lib used in openEquella.
+
+Which will be used for function of creating new resources, etc. Without it you are not able to contribute a new resource in the web.
+
+```
+sudo apt install imagemagic
+```
+
+### Install ffmepg
+
+```
+sudo apt install ffmepg
+```
+
+### link new lib to other alias
+
+Because openEquella uses some old libs, so link these libs.
+
+```
+ln -s /usr/bin/ffmpeg /usr/bin/avconv
+ln -s /usr/bin/ffplay /usr/bin/avplay
+ln -s /usr/bin/ffprobe /usr/bin/avprobe
+```
+
+### Complete Individual Contributor License Agreement Form
+
+https://www.apereo.org/licensing/agreements/icla
+
+### Add ssh key to your Github account
+
+Generate a ssh key.
+
+```
+ssh-keygen
+```
+
+Copy the public key and add it to your GitHub account.
+
+### Fork and clone openEquella
+
+### Switch to new branch
+
+## Build openEquella on terminal
+
+Make sure all env setup correct and openEquella can be built on your machine.
+
+```
+cd /path/to/openEquella
+```
+
+setup node and npm version
+
+```
+nvm use
+```
+
+### Pre-commit hook
+
+openEQUELLA provides [a script to set up git pre-commit hooks](https://github.com/typicode/husky) to [format the code](#code-formatters) you have [modified before committing](https://github.com/okonet/lint-staged).
+To set it up you must run the installer once (from the root dir):
+
+```bash
+npm ci
+```
+
+### Create dev configuration settings
+
+openEQUELLA requires a configuration folder (`learningedge-config`) in order to start and there
+is an sbt task which will generate configuration files suitable for running with your dev environment:
+
+```bash
+sbt prepareDevConfig
+```
+
+This will create a configuration in the `{openEQUELLA repo}/Dev/learningedge-config` folder which you can
+modify for your needs, in particular you will need to configure `hibernate.properties` to point to
+the database that you have created for openEQUELLA.
+
+The default admin url will be: `http://localhost:8080/`
+
+### Updating plugin library jars for dev mode
+
+When running the server in dev mode, the server runner doesn't have access to the SBT build
+information, so it can't find the jar libraries which some of the plugins require, so an extra SBT
+task is required to copy the jars into a known location for the runner. This task is run by the
+`prepareDevConfig` task too.
+
+```bash
+~$ sbt jpfWriteDevJars
+```
+
+### Running SBT task to generate non-java resources
+
+When you build openEQUELLA from within IntelliJ, it will only compile Scala/Java sources and copy
+resources from the resource folders, it won't run any of the scripts that generate resoureces (such
+as compile code to Javascript), in order to do this you can run:
+
+```bash
+~$ sbt resources
+```
+
+### Running a dev server
+
+Ensure you have your `Dev/learningedge-config` setup.
+
+```bash
+~$ sbt compile equellaserver/run
+```
+
+Alternatively you can run the server from your IDE by running the class:
+
+`com.tle.core.equella.runner.EQUELLAServer`
+
+Inside the `Source/Server/equellaserver` project.
+
+Ensure that your runner settings compiles the whole project before running:
+
+- IntelliJ - `Before Launch -> Build Project`
+
+### Running the admin tool
+
+Ensure you have your server running and know it's
+
+```bash
+~$ sbt compile adminTool/run
+```
+
+or run `com.tle.client.harness.ClientLauncher` in the `Source/Server/adminTool` project.
+
+### Developing the JS code
+
+In the `Source/Plugins/Core/com.equella.core/js` directory you will find a yarn/npm
+project which compiles Purescript/Typescript/Sass into JS and CSS. Currently there are number
+of separate JS bundles which are generated using Parcel. You can use parcel watched mode to
+have changes automatically bundled up and reloaded in the browser:
+
+```sh
+~/Source/Plugins/Core/com.equella.core/js$ npm run dev
+```
+
+This will build the javascript bundles to the correct location for running a dev openEQUELLA and will
+watch for source changes and re-build if required.
+
+#### New UI
+
+in folder`./react-front-end` run `npm run dev` command.
+
+## IDE
 
 The source isn't tied to a particular IDE, so it should be buildable
 with any IDE which has an SBT integration. Having said that IntelliJ is
@@ -106,10 +389,28 @@ what most developers are using.
 
 #### IntelliJ - latest
 
+Install it in ubuntu software or
+
+```shell
+sudo snap install intellij-idea-ultimate --classic
+```
+
 Import as an SBT project and use the default settings.
 
 If you get compile errors in the IDE, but standalone `sbt compile` works, do an sbt refresh from the
 IntelliJ `SBT tool window`.
+
+##### Increase the memory heap
+
+https://www.jetbrains.com/help/idea/increasing-memory-heap.html
+
+1. From the main menu, select **Help | Change Memory Settings**.
+2. Set the necessary amount of memory that you want to allocate and click **Save and Restart**.
+
+##### Disable some plugins
+
+In order to speed up the IDE.
+File -> settings -> Plugins
 
 #### Eclipse - Scala IDE 4.6
 
@@ -138,94 +439,7 @@ Each formatter has various IDE plugins, in particular IntelliJ is well supported
 - scalafmt is built in
 - [Prettier](https://plugins.jetbrains.com/plugin/10456-prettier)
 
-#### Pre-commit hook
-
-openEQUELLA provides [a script to set up git pre-commit hooks](https://github.com/typicode/husky) to [format the code](#code-formatters) you have [modified before committing](https://github.com/okonet/lint-staged).
-To set it up you must run the installer once (from the root dir):
-
-```bash
-npm install
-```
-
-#### Create dev configuration settings
-
-openEQUELLA requires a configuration folder (`learningedge-config`) in order to start and there
-is an sbt task which will generate configuration files suitable for running with your dev environment:
-
-```bash
-sbt prepareDevConfig
-```
-
-This will create a configuration in the `{openEQUELLA repo}/Dev/learningedge-config` folder which you can
-modify for your needs, in particular you will need to configure `hibernate.properties` to point to
-the database that you have created for openEQUELLA.
-
-The default admin url will be: `http://localhost:8080/`
-
-#### Updating plugin library jars for dev mode
-
-When running the server in dev mode, the server runner doesn't have access to the SBT build
-information, so it can't find the jar libraries which some of the plugins require, so an extra SBT
-task is required to copy the jars into a known location for the runner. This task is run by the
-`prepareDevConfig` task too.
-
-```bash
-~$ sbt jpfWriteDevJars
-```
-
-#### Running SBT task to generate non-java resources
-
-When you build openEQUELLA from within IntelliJ, it will only compile Scala/Java sources and copy
-resources from the resource folders, it won't run any of the scripts that generate resoureces (such
-as compile code to Javascript), in order to do this you can run:
-
-```bash
-~$ sbt resources
-```
-
-#### Running a dev server
-
-Ensure you have your `Dev/learningedge-config` setup.
-
-```bash
-~$ sbt compile equellaserver/run
-```
-
-Alternatively you can run the server from your IDE by running the class:
-
-`com.tle.core.equella.runner.EQUELLAServer`
-
-Inside the `Source/Server/equellaserver` project.
-
-Ensure that your runner settings compiles the whole project before running:
-
-- IntelliJ - `Before Launch -> Build Project`
-
-#### Running the admin tool
-
-Ensure you have your server running and know it's
-
-```bash
-~$ sbt compile adminTool/run
-```
-
-or run `com.tle.client.harness.ClientLauncher` in the `Source/Server/adminTool` project.
-
-#### Developing the JS code
-
-In the `Source/Plugins/Core/com.equella.core/js` directory you will find a yarn/npm
-project which compiles Purescript/Typescript/Sass into JS and CSS. Currently there are number
-of separate JS bundles which are generated using Parcel. You can use parcel watched mode to
-have changes automatically bundled up and reloaded in the browser:
-
-```sh
-~/Source/Plugins/Core/com.equella.core/js$ npm run dev
-```
-
-This will build the javascript bundles to the correct location for running a dev openEQUELLA and will
-watch for source changes and re-build if required.
-
-### SBT Notes
+## SBT Notes
 
 The new build uses SBT (very flexible and has a large set of useful plug-ins available). You can
 customize pretty much any aspect of your build process using Scala scripts.
