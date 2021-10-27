@@ -4198,22 +4198,10 @@ table#copyright-table tr td {
   background-image: url(../../images/baseline_arrow_drop_down_black_18dp.png);
 }
 
-.attachments-browse.structured li.attachmentrow.active .droparrow {
-  background-image: url(../../images/baseline_arrow_drop_up_black_18dp.png);
-  background-position: 0;
-  top: $singleMargin;
-}
-
 .attachments-browse.structured li.attachmentrow {
-  //new droparrow: decide to show the droparrow again
-  //but the old(above) one has some legacy inconsistent style
+  //new droparrow: the old(above) one has some legacy inconsistent style
   .link-div:after {
-    content: "\e5c5";
-    font-family: "Material Icons";
-    font-size: 20px;
-    color: $menuItemIconColor;
-    vertical-align: middle;
-    padding-right: 6px;
+    @include materialIcon("\e5c5", $size: 24px);
     float: right;
   }
 
