@@ -305,6 +305,17 @@ $savePanelWidth: 221px;
   }
 }
 
+@mixin materialIcon(
+  $content,
+  $color: $menuItemIconColor,
+  $size: $materialIconFontSize
+) {
+  content: $content;
+  font-family: "Material Icons";
+  font-size: $size;
+  color: $color;
+}
+
 /*****************************************************************************
 Animations
 *****************************************************************************/
