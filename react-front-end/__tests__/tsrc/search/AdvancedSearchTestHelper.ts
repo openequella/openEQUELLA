@@ -18,20 +18,20 @@
 import * as OEQ from "@openequella/rest-api-client";
 import { getByLabelText, getByText } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import * as A from "fp-ts/Array";
+import * as E from "fp-ts/Either";
+import { absurd, constFalse, flow, pipe } from "fp-ts/function";
+import * as IO from "fp-ts/IO";
+import * as M from "fp-ts/Map";
+import * as NEA from "fp-ts/NonEmptyArray";
+import * as O from "fp-ts/Option";
+import { contramap, Ord } from "fp-ts/Ord";
+import * as S from "fp-ts/string";
 import {
   BasicControlEssentials,
   getAdvancedSearchDefinition,
   mockWizardControlFactory,
 } from "../../../__mocks__/AdvancedSearchModule.mock";
-import * as A from "fp-ts/Array";
-import * as NEA from "fp-ts/NonEmptyArray";
-import { absurd, constFalse, flow, pipe } from "fp-ts/function";
-import * as M from "fp-ts/Map";
-import * as O from "fp-ts/Option";
-import * as E from "fp-ts/Either";
-import { contramap, Ord } from "fp-ts/Ord";
-import * as S from "fp-ts/string";
-import * as IO from "fp-ts/IO";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { selectOption } from "../MuiTestHelpers";
 
@@ -253,14 +253,17 @@ const buildLabelValue = (
       return buildLabelValueForOption(options, values);
     case "listbox":
       return buildLabelValueForControl(title, values[0]);
+    case "shufflebox":
+      return buildLabelValueForControl(title, values);
     case "calendar":
       return buildLabelValueForControl(title, values);
     case "html":
-    case "shufflebox":
     case "shufflelist":
     case "termselector":
     case "userselector":
-      return new Map<string, string>();
+      throw new Error(
+        `Unsupported controlType [${controlType}] - please implement!`
+      );
     default:
       return absurd(controlType);
   }
@@ -429,7 +432,9 @@ export const updateControlValue = (
     case "shufflelist":
     case "termselector":
     case "userselector":
-      break;
+      throw new Error(
+        `Unsupported controlType [${controlType}] - please implement!`
+      );
     default:
       return absurd(controlType);
   }
@@ -501,7 +506,9 @@ export const getControlValue = (
     case "shufflelist":
     case "termselector":
     case "userselector":
-      return new Map<string, string>();
+      throw new Error(
+        `Unsupported controlType [${controlType}] - please implement!`
+      );
     default:
       return absurd(controlType);
   }
