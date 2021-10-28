@@ -5,8 +5,6 @@
 We welcome contributions via both the raising of issues and submitting pull requests. But before you
 do, please take a moment to consult the below.
 
-[TOC]
-
 ## Chatting
 
 If before any of the below you'd like to discuss an issue or some code, then come and chat with
@@ -100,127 +98,55 @@ thread](https://groups.google.com/a/apereo.org/forum/#!topic/equella-users/bLV_X
 [issue ticket](https://github.com/openequella/openEQUELLA/issues/437). This page will be updated once the
 React UI code is a bit more solidified.
 
-===
+**Setup note for Ubuntu 20.04**
 
-Setup note for Ubuntu 20.04
-
-Notice these instructions is mainly for fresh people. Please bear with the redundant and messy information.
+Notice these instructions assume a person is starting with a fresh machine. Therefore there'll be additional information which may seem redundant to someone who already has a significantly established development machine.
 
 ```shell
 sudo apt update
-sudp apt-get update
 sudo apt install curl
 ```
 
 ### Install SDKMAN
-
 https://sdkman.io/
 
-WE suggest using SDKMAN installing/managing JDK, Scala, Gradle - any other JVM bits.
+We suggest using SDKMAN for installing (and managing multiple versions of) JDK, Scala, Gradle - any other JVM bits.
+Please follow the installation instructions provided by the tool.
 
-```shell
-curl -s "https://get.sdkman.io" | bash
-source "$HOME/.sdkman/bin/sdkman-init.sh"
-sdk version
-```
-
-#### Install Java 8
-
+### Install Java
+At the time of writing the openEQUELLA is built with Java 8. For this, we prefer to use
+openJDK and that latest version of that is 8.0.302. To install that with SDKMAN:
 ```shell
 sdk install java 8.0.302-open
 ```
 
 ### Install NVM
 
-https://github.com/nvm-sh/nvmFornode/npmIntelliJ
+https://github.com/nvm-sh/nvm
 
-We suggest using NVM to manage different nodejs env.
+We suggest using NVM to manage different NodeJS versions.
+Please follow the installation instructions provided by the tool.
 
+### Install NodeJS / NPM
+
+openEQUELLA has a `.nvmrc` in the root of its repository, as a result installation of the correct version of NodeJS and NPM is as simple as:
 ```
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-```
-
-#### Install nodejs
-
-```
-nvm install node
+nvm install
 ```
 
-### Install Docker
+### Install a local database
 
-https://docs.docker.com/engine/install/
+To run openEQUELLA locally for development and testing, you'll need a local database. By far the easiest to setup
+is PostgreSQL. The two main ways to do this are:
 
-We suggest using docker to have a nice self contained PostgreSQL for local development/testing and also later when you need to test clustered environments etc.
+- Simple install the package as part of your distro; or
+- (Recommended) run an instance in docker to keep it nice and self contained.
 
-```
-sudo apt-get update
-sudo apt-get install \
-ca-certificates \
-curl \
-gnupg \
-lsb-release
+Once you have an instance running, make sure you create a database with a user for access:
 
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
-  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-sudo apt-get update
-sudo apt-get install docker-ce docker-ce-cli containerd.io
-```
-
-#### Create docker-sql container
-
-Install.
-
-```shell
-sudo docker run --name postgresql-container -p 5432:5432 -e POSTGRES_PASSWORD=somePassword -d postgres
-```
-
-#### Connecting to the PSQL server via CLI :
-
-1. Find the docker-container-id in which the postgres is running using the below command.
-
-   ```
-   sudo docker ps -a
-   ```
-
-2. Run the below command to enter into the container (with the ID from step-1).
-
-   ```
-   sudo docker exec -it <PSQL-Container-ID> bash
-   ```
-
-3. Authenticate to start using as postgres user.
-
-   ```
-   psql -U postgres
-   ```
-
-4. Enter the password used while creating the PSQL server container.
-
-#### Create a user and database in prostgresql
-
-```shell
-CREATE DATABASE equella;
-CREATE USER euqellauser WITH PASSWORD 'password';
-GRANT ALL PRIVILEGES ON DATABASE "equella" to euqellauser;
-```
-
-### Install sbt
-
-https://www.scala-sbt.org/download.html
-
-openEquella use sbt to build project.
-
-```
-echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | sudo tee /etc/apt/sources.list.d/sbt.list
-echo "deb https://repo.scala-sbt.org/scalasbt/debian /" | sudo tee /etc/apt/sources.list.d/sbt_old.list
-curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | sudo apt-key add
-sudo apt-get update
-sudo apt-get install sbt
-```
+    CREATE DATABASE equella;
+    CREATE USER euqellauser WITH PASSWORD 'password';
+    GRANT ALL PRIVILEGES ON DATABASE "equella" to euqellauser;
 
 ### Install build-essential
 
@@ -234,15 +160,15 @@ sudo apt-get install build-essential
 
 ### Install Image Magick
 
-Old basic lib used in openEquella.
+Basic lib used in openEquella.
 
 Which will be used for function of creating new resources, etc. Without it you are not able to contribute a new resource in the web.
 
 ```
-sudo apt install imagemagic
+sudo apt install imagemagick
 ```
 
-### Install ffmepg
+### Install FFmepg
 
 ```
 sudo apt install ffmepg
@@ -250,7 +176,10 @@ sudo apt install ffmepg
 
 ### link new lib to other alias
 
-Because openEquella uses some old libs, so link these libs.
+openEQUELLA was originally developed to use libav for thumb-nailing and previewing of videos.
+However [libav has been deprecated](https://github.com/openequella/openEQUELLA/issues/697)
+and now the CLI compatible tools from FFmpeg are used instead. To make this work  symbolic links
+need to be setup as follows:
 
 ```
 ln -s /usr/bin/ffmpeg /usr/bin/avconv
@@ -258,27 +187,9 @@ ln -s /usr/bin/ffplay /usr/bin/avplay
 ln -s /usr/bin/ffprobe /usr/bin/avprobe
 ```
 
-### Complete Individual Contributor License Agreement Form
-
-https://www.apereo.org/licensing/agreements/icla
-
-### Add ssh key to your Github account
-
-Generate a ssh key.
-
-```
-ssh-keygen
-```
-
-Copy the public key and add it to your GitHub account.
-
-### Fork and clone openEquella
-
-### Switch to new branch
-
 ## Build openEquella on terminal
 
-Make sure all env setup correct and openEquella can be built on your machine.
+Make sure everything is setup correctly and openEquella can be built on your machine.
 
 ```
 cd /path/to/openEquella
@@ -391,11 +302,7 @@ what most developers are using.
 
 #### IntelliJ - latest
 
-Install it in ubuntu software or
-
-```shell
-sudo snap install intellij-idea-ultimate --classic
-```
+To install it, follow the instructions provided by JetBrains at https://www.jetbrains.com/help/idea/installation-guide.html
 
 Import as an SBT project and use the default settings.
 
@@ -404,147 +311,14 @@ IntelliJ `SBT tool window`.
 
 ##### Increase the memory heap
 
-https://www.jetbrains.com/help/idea/increasing-memory-heap.html
-
-1. From the main menu, select **Help | Change Memory Settings**.
-2. Set the necessary amount of memory that you want to allocate and click **Save and Restart**.
+Due to the heavy memory requirements of the SBT based build, it is recommended to setup IntelliJ's maximum heap to 4GiB. Documentation on how to do this can be found at <https://www.jetbrains.com/help/idea/increasing-memory-heap.html>.
 
 ##### Plugins recommended
 
 In order to speed up the IDE. We recommend only enable relevant plugins.
+But make sure you enable the Scala plugin as well as support for Typescript and Gradle (you have Java by default).
 
 Plugins can be configured in File -> settings -> Plugins.
-
-<details>
-  <summary>Plugins Recommended Table</summary>
-
-| Group | Name | Recommend |
-| --- | --- | :---: |
-| Scala | Scala |  √  |
-| Android | Android |  |
-| | Small Support |  |
-| Build Tools | Ant |  |
-| | Gradle |  √  |
-| | Gradle Extension |  √  |
-| | Maven |  √  |
-| | Maven Extension |  √  |
-| Code Coverage | Code Coverage for Java |  √  |
-| Database | Database Tools and SQL |  √  |
-| Deployment | Docker |  √  |
-| | FTP/SFTP Connectivity (ex. Remote Hosts Access) ||
-| | GlassFish ||
-| | Jetty ||
-| | Tomcat and TomEE ||
-| | WebLogic ||
-| | WebSphere ||
-| | WildFly ||
-| HTML and XML | HTML Tools |  √  |
-| | Refactor-X ||
-| | XPathView + XSLT |  √  |
-| | XSLT Debugger |  √  |
-| IDE Settings | IDE Settings Sync |  √  |
-| | Settings Repository |  √  |
-| JavaScript Frameworks and Tools | Angular and AngularJS ||
-| | JavaScript and Typescript |  √  |
-| | JavaScript Debugger |  √  |
-| | JavaScript Intention Power Pack |  √  |
-| | Node.Js |  √  |
-| | Spy-js |  √  |
-| | TSLint ||
-| JVM Frameworks | AOP Pointcut Language |  √  |
-| | Grails ||
-| | Hibernate |  √  |
-| | Java EE Platform |  √  |
-| | Java EE: Application Servers |  √  |
-| | Java EE: Batch Applications ||
-| | Java EE: Bean Validation |  √  |
-| | Java EE: Contexts and Dependency Injection (CDI) |  √  |
-| | Java EE: Message Service (JMS) ||
-| | Java EE: Persistence (JPA) |  √  |
-| | Java EE: RESTFul Web Services (JAX-RS) |  √  |
-| | Java EE: Server Faces (JSF) ||
-| | Java EE: Web Services (JAX-WS) |  √  |
-| | Java EE: Web/Servlets |  √  |
-| | Java EE: WebSockets ||
-| | Java HTTP Clients |  √  |
-| | Java SQL Libraries |  √  |
-| | JavaFX ||
-| | Micronaut ||
-| | Quarkus ||
-| | Reactive Streams |  √  |
-| | Spring |  √  |
-| | Spring Batch ||
-| | Spring Boot |  √  |
-| | Spring Dats |  √  |
-| | Spring Integration Patterns ||
-| | Spring Messaging ||
-| | Spring MVC |  √  |
-| | Spring Security |  √  |
-| | Spring Web Services |  √  |
-| | Spring Web Sockets ||
-| Kotlin Frameworks | Ktor ||
-| Languages | Gherkin ||
-| | Groovy |  √  |
-| | Markdown |  √  |
-| | Properties |  √  |
-| | Shell Script |  √  |
-| | YAML |  √  |
-| Microservices | Endpoints ||
-| | gRPC ||
-| | OpenAPI Specifications ||
-| | Protocol Buffers ||
-| Plugin Development | Plugin DevKIt ||
-| Style Sheets | CSS |  √  |
-| | Less ||
-| | Sass |  √  |
-| | Stylus ||
-| | W3C Validators |  √  |
-| Swing | UI Designer |  √  |
-| Template Languages | FreeMarker |  √  |
-| | Haml ||
-| | Java Serve Pages (JSP) |  √  |
-| | Thymeleaf ||
-| | Velocity |  √  |
-| Test Tools | Cucumber for Groovy ||
-| | Cucumber for Java ||
-| | JUnit |  √  |
-| | TestNG |  √  |
-| Tools Integration | Lombok ||
-| Version Controls | ChangeReminder |  √  |
-| | Git |  √  |
-| | GItHub |  √  |
-| | Mercurial ||
-| | Perforce Helix Core ||
-| | Subversion ||
-| Other Tools | Bytecode Viewer |  √  |
-| | Code With Me |  √  |
-| | Copyright |  √  |
-| | Dependency Structure Matrix |  √  |
-| | Diagrams |  √  |
-| | Eclipse Interoperability |  √  |
-| | EditorConfig |  √  |
-| | Grazle |  √  |
-| | HTTP Client |  √  |
-| | IDE Features Trainer ||
-| | IDE Features TRainer: GIt Lessons ||
-| | IntelliLang |  √  |
-| | Java Bytecode Decompiler |  √  |
-| | Java Internationalization |  √  |
-| | Java Stream Debugger |  √  |
-| | Kotlin ||
-| |Machine Learning COde Completion |  √  |
-| | Package Search |  √  |
-| | Performance Testing |  √  |
-| | Recommenders for Java and Python |  √  |
-| | Shared Project Indexes |  √  |
-| | Space ||
-| | Task Management ||
-| | Terminal |  √  |
-| | TextMate Bundles |  √  |
-| | Time Tracking ||
-| | WebP Support |  √  |
-| | ZKM-Unscramble |  √  |
-</details>
 
 #### Eclipse - Scala IDE 4.6
 
