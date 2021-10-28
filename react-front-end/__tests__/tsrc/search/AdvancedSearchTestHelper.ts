@@ -20,7 +20,7 @@ import { getByLabelText, getByText } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
-import { absurd, constFalse, flow, pipe } from "fp-ts/function";
+import { absurd, constFalse, pipe } from "fp-ts/function";
 import * as IO from "fp-ts/IO";
 import * as M from "fp-ts/Map";
 import * as NEA from "fp-ts/NonEmptyArray";
@@ -254,7 +254,6 @@ const buildLabelValue = (
     case "listbox":
       return buildLabelValueForControl(title, values[0]);
     case "shufflebox":
-      return buildLabelValueForControl(title, values);
     case "calendar":
       return buildLabelValueForControl(title, values);
     case "html":
