@@ -17,11 +17,10 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
-import { Eq } from "fp-ts/Eq";
 import { pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
-import * as O from "fp-ts/Option";
-import * as S from "fp-ts/string";
+import * as NEA from "fp-ts/NonEmptyArray";
+import * as R from "fp-ts/Record";
 import { controls } from "../../../../__mocks__/WizardHelper.mock";
 import {
   ControlTarget,
@@ -31,26 +30,13 @@ import {
 import { simpleMatch } from "../../../../tsrc/util/match";
 
 /**
- * Produces a `Map` summarising the number of occurrences in an array identified by keys generated
+ * Produces a summary of the number of occurrences in an array identified by keys generated
  * with `by`.
  */
 const countBy =
-  <T, K>(eq: Eq<K>, by: (a: T) => K) =>
-  (as: T[]): Map<K, number> =>
-    pipe(
-      as,
-      A.map(by),
-      A.reduce<K, Map<K, number>>(new Map(), (m, k: K) => {
-        const count: number = pipe(
-          m,
-          M.lookup(eq)(k),
-          O.map((n) => n + 1),
-          O.getOrElse<number>(() => 1)
-        );
-
-        return pipe(m, M.upsertAt(eq)(k, count));
-      })
-    );
+  <T>(by: (a: T) => string) =>
+  (as: T[]): Record<string, number> =>
+    pipe(as, NEA.groupBy(by), R.map(A.size));
 
 describe("render()", () => {
   const logOnChange = (update: FieldValue): void =>
@@ -67,23 +53,21 @@ describe("render()", () => {
 
     const expectedComponentCount = pipe(
       controls,
-      countBy<OEQ.WizardControl.WizardControl, string>(
-        S.Eq,
-        ({ controlType }) =>
-          pipe(
-            controlType,
-            simpleMatch<string>({
-              editbox: () => "WizardEditBox",
-              radiogroup: () => "WizardRadioButtonGroup",
-              shufflebox: () => "WizardShuffleBox",
-              _: () => "WizardUnsupported",
-            })
-          )
+      countBy<OEQ.WizardControl.WizardControl>(({ controlType }) =>
+        pipe(
+          controlType,
+          simpleMatch<string>({
+            editbox: () => "WizardEditBox",
+            radiogroup: () => "WizardRadioButtonGroup",
+            shufflebox: () => "WizardShuffleBox",
+            _: () => "WizardUnsupported",
+          })
+        )
       )
     );
     const componentCount = pipe(
       elements,
-      countBy<JSX.Element, string>(S.Eq, (e) => e.type.name)
+      countBy<JSX.Element>((e) => e.type.name)
     );
 
     expect(componentCount).toStrictEqual(expectedComponentCount);
