@@ -66,6 +66,7 @@ $standardBorderRadius: 4px;
 $roundButtonRadius: 50px;
 $termSelectorHeight: 68px;
 $savePanelWidth: 221px;
+$materialIconFontSize: 24px;
 
 @mixin boxShadow {
   box-shadow: $boxShadow;
@@ -1554,11 +1555,7 @@ div[class*="fancy-bg"] {
 
 a.feedlink {
   &:before {
-    @include materialIcon(
-      "\e0e5",
-      $color: set-text-color($primaryColor),
-      $size: 24px
-    );
+    @include materialIcon("\e0e5", $color: set-text-color($primaryColor));
   }
 
   padding: 5px;
@@ -1716,7 +1713,7 @@ table.zebra th.sortable div.sortArrow {
 table.zebra th.sortable.sortedasc,
 table.zebra th.sortable.unsorted.sortAsc:hover {
   :before {
-    @include materialIcon("\e5d8", $size: 24px);
+    @include materialIcon("\e5d8");
     vertical-align: middle;
   }
 }
@@ -1724,7 +1721,7 @@ table.zebra th.sortable.unsorted.sortAsc:hover {
 table.zebra th.sortable.sorteddesc,
 table.zebra th.sortable.unsorted.sortDesc:hover {
   :before {
-    @include materialIcon("\e5db", $size: 24px);
+    @include materialIcon("\e5db");
     vertical-align: middle;
   }
 }
@@ -1756,7 +1753,7 @@ Alerts
     border: none;
 
     &:before {
-      @include materialIcon("\e5cd", $color: white, $size: 24px);
+      @include materialIcon("\e5cd", $color: white);
     }
   }
 
@@ -1764,7 +1761,7 @@ Alerts
     background-color: #43a047;
 
     &:after {
-      @include materialIcon("\e86c", $color: white, $size: 24px);
+      @include materialIcon("\e86c", $color: white);
       padding-right: $singleMargin;
     }
   }
@@ -2253,7 +2250,7 @@ ul.ui-autocomplete {
 }
 
 .search-layout a.add-to-favourites:before {
-  @include materialIcon("\E838", $size: 24px);
+  @include materialIcon("\E838");
   vertical-align: -26%;
   padding-right: $minimalMargin;
 }
@@ -2391,22 +2388,14 @@ ul.ui-autocomplete {
     margin-left: 3px;
 
     .icon-user:before {
-      @include materialIcon(
-        "\e7fd",
-        $color: set-text-color($primaryColor),
-        $size: 24px
-      );
+      @include materialIcon("\e7fd", $color: set-text-color($primaryColor));
       padding-right: $minimalMargin;
       font-style: normal;
       vertical-align: middle;
     }
 
     .icon-remove:before {
-      @include materialIcon(
-        "\e5cd",
-        $color: set-text-color($primaryColor),
-        $size: 24px
-      );
+      @include materialIcon("\e5cd", $color: set-text-color($primaryColor));
       padding-right: $minimalMargin;
       font-style: normal;
       vertical-align: middle;
@@ -2477,11 +2466,7 @@ ul.ui-autocomplete {
 }
 
 .icon-envelope:before {
-  @include materialIcon(
-    "\e0be",
-    $color: set-text-color($primaryColor),
-    $size: 24px
-  );
+  @include materialIcon("\e0be", $color: set-text-color($primaryColor));
   font-style: normal;
   vertical-align: middle;
 }
@@ -2546,7 +2531,7 @@ ul.ui-autocomplete {
   padding-right: $singleMargin;
 
   &:before {
-    @include materialIcon("\e2c2", $size: 24px);
+    @include materialIcon("\e2c2");
     font-style: normal;
     vertical-align: middle;
     padding-top: $minimalMargin;
@@ -2773,7 +2758,7 @@ html.wait {
   position: relative;
 
   a:before {
-    @include materialIcon("\e226", $size: 24px);
+    @include materialIcon("\e226");
   }
 }
 
@@ -3084,11 +3069,7 @@ button + .repeater-groups {
 
   i.icon-plus {
     &:before {
-      @include materialIcon(
-        "\e145",
-        $color: set-text-color($primaryColor),
-        $size: 24px
-      );
+      @include materialIcon("\e145", $color: set-text-color($primaryColor));
       vertical-align: top;
       padding-right: $minimalMargin;
       font-style: normal;
@@ -3295,11 +3276,7 @@ button + .repeater-groups {
     margin-left: $singleMargin;
 
     .icon-search:before {
-      @include materialIcon(
-        "\e8b6",
-        $color: set-text-color($primaryColor),
-        $size: 24px
-      );
+      @include materialIcon("\e8b6", $color: set-text-color($primaryColor));
       padding-right: $minimalMargin;
       font-style: normal;
       vertical-align: middle;
@@ -3333,11 +3310,7 @@ button + .repeater-groups {
 
   i.icon-plus {
     &:before {
-      @include materialIcon(
-        "\e145",
-        $color: set-text-color($primaryColor),
-        $size: 24px
-      );
+      @include materialIcon("\e145", $color: set-text-color($primaryColor));
       vertical-align: top;
       padding-right: $minimalMargin;
       font-style: normal;
@@ -3355,11 +3328,7 @@ button + .repeater-groups {
 
 i.icon-remove {
   &:before {
-    @include materialIcon(
-      "\e872",
-      $color: set-text-color($primaryColor),
-      $size: 24px
-    );
+    @include materialIcon("\e872", $color: set-text-color($primaryColor));
     vertical-align: top;
     padding-right: $minimalMargin;
     font-style: normal;
@@ -3368,11 +3337,7 @@ i.icon-remove {
 
 i.icon-pencil {
   &:before {
-    @include materialIcon(
-      "\e3c9",
-      $color: set-text-color($primaryColor),
-      $size: 24px
-    );
+    @include materialIcon("\e3c9", $color: set-text-color($primaryColor));
     vertical-align: top;
     padding-right: $minimalMargin;
     font-style: normal;
@@ -3381,11 +3346,7 @@ i.icon-pencil {
 
 i.icon-ban-circle {
   &:before {
-    @include materialIcon(
-      "\e15b",
-      $color: set-text-color($primaryColor),
-      $size: 24px
-    );
+    @include materialIcon("\e15b", $color: set-text-color($primaryColor));
     vertical-align: top;
     padding-right: $minimalMargin;
     font-style: normal;
@@ -3406,11 +3367,7 @@ i.icon-minus {
 
 i.icon-arrow-left {
   &:before {
-    @include materialIcon(
-      "\e317",
-      $color: set-text-color($primaryColor),
-      $size: 24px
-    );
+    @include materialIcon("\e317", $color: set-text-color($primaryColor));
     vertical-align: top;
     padding-right: $minimalMargin;
     font-style: normal;
@@ -3440,7 +3397,7 @@ i.icon-arrow-left {
 
     a.add {
       &:before {
-        @include materialIcon("\e145", $color: $secondaryColor, $size: 24px);
+        @include materialIcon("\e145", $color: $secondaryColor);
         vertical-align: top;
         padding-right: $minimalMargin;
         font-style: normal;
@@ -3451,7 +3408,7 @@ i.icon-arrow-left {
       padding-left: 0px;
 
       &:before {
-        @include materialIcon("\e417", $color: $secondaryColor, $size: 24px);
+        @include materialIcon("\e417", $color: $secondaryColor);
         vertical-align: top;
         padding-right: $minimalMargin;
         font-style: normal;
@@ -3475,7 +3432,7 @@ i.icon-arrow-left {
 ul.treeview {
   li.collapsable {
     a.hitarea:before {
-      @include materialIcon("\e313", $size: 24px);
+      @include materialIcon("\e313");
       vertical-align: top;
       padding-right: $minimalMargin;
       font-style: normal;
@@ -3484,7 +3441,7 @@ ul.treeview {
 
   li.expandable {
     a.hitarea:before {
-      @include materialIcon("\e315", $size: 24px);
+      @include materialIcon("\e315");
       vertical-align: top;
       padding-right: $minimalMargin;
       font-style: normal;
@@ -3506,7 +3463,7 @@ a.unselect {
   background: none;
 
   &:before {
-    @include materialIcon("\e872", $size: 24px);
+    @include materialIcon("\e872");
     vertical-align: top;
     padding-right: $minimalMargin;
     font-style: normal;
@@ -3530,14 +3487,14 @@ Item summary styling
       color: $primaryTextColor;
 
       .icon-arrow-left:before {
-        @include materialIcon("\e5c4", $color: $primaryTextColor, $size: 24px);
+        @include materialIcon("\e5c4", $color: $primaryTextColor);
         padding-right: $minimalMargin;
         font-style: normal;
         vertical-align: middle;
       }
 
       .icon-arrow-right:before {
-        @include materialIcon("\e5c8", $color: $primaryTextColor, $size: 24px);
+        @include materialIcon("\e5c8", $color: $primaryTextColor);
         padding-right: $minimalMargin;
         font-style: normal;
         vertical-align: middle;
@@ -3746,7 +3703,7 @@ table.versions td {
   }
 
   a:before {
-    @include materialIcon("\e15d", $color: $secondaryColor, $size: 24px);
+    @include materialIcon("\e15d", $color: $secondaryColor);
   }
 }
 
@@ -3756,7 +3713,7 @@ table.versions td {
   }
 
   a:before {
-    @include materialIcon("\e83a", $color: $secondaryColor, $size: 24px);
+    @include materialIcon("\e83a", $color: $secondaryColor);
   }
 }
 
@@ -3767,7 +3724,7 @@ table.versions td {
   }
 
   a:before {
-    @include materialIcon("\e838", $color: $secondaryColor, $size: 24px);
+    @include materialIcon("\e838", $color: $secondaryColor);
   }
 }
 
@@ -4131,7 +4088,7 @@ table#copyright-table tr td {
 .attachments-browse.thumbs li.attachmentrow {
   //new droparrow for both structured and thumbnail mode
   .link-div:after {
-    @include materialIcon("\e5c5", $size: 24px);
+    @include materialIcon("\e5c5");
     float: right;
   }
 
@@ -4185,7 +4142,7 @@ table#copyright-table tr td {
 .extras a {
   .icon-fullscreen {
     &:before {
-      @include materialIcon("\e5d0", $size: 24px);
+      @include materialIcon("\e5d0");
       vertical-align: middle;
       font-style: normal;
     }
@@ -4193,7 +4150,7 @@ table#copyright-table tr td {
 
   .icon-move {
     &:before {
-      @include materialIcon("\e8fe", $size: 24px);
+      @include materialIcon("\e8fe");
       vertical-align: middle;
       font-style: normal;
     }
@@ -4650,7 +4607,7 @@ img.warningimg {
 .compactQuery .compactQueryButton {
   margin: $singleMargin;
   .icon-search:before {
-    @include materialIcon("\E8B6", $color: white, $size: 24px);
+    @include materialIcon("\E8B6", $color: white);
     vertical-align: middle;
     font-style: normal;
   }
