@@ -379,7 +379,9 @@ watch for source changes and re-build if required.
 
 #### New UI
 
-in folder`./react-front-end` run `npm run dev` command.
+in folder`./react-front-end` you need run `npm ci` for the first time to init the sub-project.
+
+And run `npm run dev` command before you dev the code.
 
 ## IDE
 
@@ -407,10 +409,142 @@ https://www.jetbrains.com/help/idea/increasing-memory-heap.html
 1. From the main menu, select **Help | Change Memory Settings**.
 2. Set the necessary amount of memory that you want to allocate and click **Save and Restart**.
 
-##### Disable some plugins
+##### Plugins recommended
 
-In order to speed up the IDE.
-File -> settings -> Plugins
+In order to speed up the IDE. We recommend only enable relevant plugins.
+
+Plugins can be configured in File -> settings -> Plugins.
+
+<details>
+  <summary>Plugins Recommended Table</summary>
+
+| Group | Name | Recommend |
+| --- | --- | :---: |
+| Scala | Scala |  √  |
+| Android | Android |  |
+| | Small Support |  |
+| Build Tools | Ant |  |
+| | Gradle |  √  |
+| | Gradle Extension |  √  |
+| | Maven |  √  |
+| | Maven Extension |  √  |
+| Code Coverage | Code Coverage for Java |  √  |
+| Database | Database Tools and SQL |  √  |
+| Deployment | Docker |  √  |
+| | FTP/SFTP Connectivity (ex. Remote Hosts Access) ||
+| | GlassFish ||
+| | Jetty ||
+| | Tomcat and TomEE ||
+| | WebLogic ||
+| | WebSphere ||
+| | WildFly ||
+| HTML and XML | HTML Tools |  √  |
+| | Refactor-X ||
+| | XPathView + XSLT |  √  |
+| | XSLT Debugger |  √  |
+| IDE Settings | IDE Settings Sync |  √  |
+| | Settings Repository |  √  |
+| JavaScript Frameworks and Tools | Angular and AngularJS ||
+| | JavaScript and Typescript |  √  |
+| | JavaScript Debugger |  √  |
+| | JavaScript Intention Power Pack |  √  |
+| | Node.Js |  √  |
+| | Spy-js |  √  |
+| | TSLint ||
+| JVM Frameworks | AOP Pointcut Language |  √  |
+| | Grails ||
+| | Hibernate |  √  |
+| | Java EE Platform |  √  |
+| | Java EE: Application Servers |  √  |
+| | Java EE: Batch Applications ||
+| | Java EE: Bean Validation |  √  |
+| | Java EE: Contexts and Dependency Injection (CDI) |  √  |
+| | Java EE: Message Service (JMS) ||
+| | Java EE: Persistence (JPA) |  √  |
+| | Java EE: RESTFul Web Services (JAX-RS) |  √  |
+| | Java EE: Server Faces (JSF) ||
+| | Java EE: Web Services (JAX-WS) |  √  |
+| | Java EE: Web/Servlets |  √  |
+| | Java EE: WebSockets ||
+| | Java HTTP Clients |  √  |
+| | Java SQL Libraries |  √  |
+| | JavaFX ||
+| | Micronaut ||
+| | Quarkus ||
+| | Reactive Streams |  √  |
+| | Spring |  √  |
+| | Spring Batch ||
+| | Spring Boot |  √  |
+| | Spring Dats |  √  |
+| | Spring Integration Patterns ||
+| | Spring Messaging ||
+| | Spring MVC |  √  |
+| | Spring Security |  √  |
+| | Spring Web Services |  √  |
+| | Spring Web Sockets ||
+| Kotlin Frameworks | Ktor ||
+| Languages | Gherkin ||
+| | Groovy |  √  |
+| | Markdown |  √  |
+| | Properties |  √  |
+| | Shell Script |  √  |
+| | YAML |  √  |
+| Microservices | Endpoints ||
+| | gRPC ||
+| | OpenAPI Specifications ||
+| | Protocol Buffers ||
+| Plugin Development | Plugin DevKIt ||
+| Style Sheets | CSS |  √  |
+| | Less ||
+| | Sass |  √  |
+| | Stylus ||
+| | W3C Validators |  √  |
+| Swing | UI Designer |  √  |
+| Template Languages | FreeMarker |  √  |
+| | Haml ||
+| | Java Serve Pages (JSP) |  √  |
+| | Thymeleaf ||
+| | Velocity |  √  |
+| Test Tools | Cucumber for Groovy ||
+| | Cucumber for Java ||
+| | JUnit |  √  |
+| | TestNG |  √  |
+| Tools Integration | Lombok ||
+| Version Controls | ChangeReminder |  √  |
+| | Git |  √  |
+| | GItHub |  √  |
+| | Mercurial ||
+| | Perforce Helix Core ||
+| | Subversion ||
+| Other Tools | Bytecode Viewer |  √  |
+| | Code With Me |  √  |
+| | Copyright |  √  |
+| | Dependency Structure Matrix |  √  |
+| | Diagrams |  √  |
+| | Eclipse Interoperability |  √  |
+| | EditorConfig |  √  |
+| | Grazle |  √  |
+| | HTTP Client |  √  |
+| | IDE Features Trainer ||
+| | IDE Features TRainer: GIt Lessons ||
+| | IntelliLang |  √  |
+| | Java Bytecode Decompiler |  √  |
+| | Java Internationalization |  √  |
+| | Java Stream Debugger |  √  |
+| | Kotlin ||
+| |Machine Learning COde Completion |  √  |
+| | Package Search |  √  |
+| | Performance Testing |  √  |
+| | Recommenders for Java and Python |  √  |
+| | Shared Project Indexes |  √  |
+| | Space ||
+| | Task Management ||
+| | Terminal |  √  |
+| | TextMate Bundles |  √  |
+| | Time Tracking ||
+| | WebP Support |  √  |
+| | ZKM-Unscramble |  √  |
+</details>
 
 #### Eclipse - Scala IDE 4.6
 
