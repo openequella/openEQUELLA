@@ -583,7 +583,7 @@ describe("<SearchPage/>", () => {
   });
 
   it("filters by date range derived from 'Quick Options'", async () => {
-    selectOption(page.container, "#date_range_selector", "Today");
+    selectOption(page.container, "#date-range-selector-quick-options", "Today");
     await waitForSearch(searchPromise);
 
     expect(SearchModule.searchItems).toHaveBeenLastCalledWith({

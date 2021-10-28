@@ -49,3 +49,8 @@ export interface WizardControlOption {
   text?: string;
   value: string;
 }
+
+/**
+ * Accepted date formats for Date-related controls like Calendar.
+ */
+export type WizardDateFormat = 'DMY' | 'MY' | 'Y';
