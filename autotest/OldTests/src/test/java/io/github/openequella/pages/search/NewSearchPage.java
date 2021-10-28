@@ -116,7 +116,7 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
    */
   public void selectDateRangeQuickOption(String quickOption) {
     WebElement dateRangeSelector = getRefineControl("DateRangeSelector");
-    WebElement quickOptionSelector = dateRangeSelector.findElement(By.id("date_range_selector"));
+    WebElement quickOptionSelector = dateRangeSelector.findElement(By.id("date-range-selector"));
     quickOptionSelector.click();
     WebElement option = driver.findElement(By.xpath(".//li[@data-value='" + quickOption + "']"));
     option.click();

@@ -159,7 +159,7 @@ export const DateRangeSelector = ({
   endDatePickerLabel,
   showModeSwitch = true,
   datePickerCustomPropsProvider = buildDatePickerCustomProps,
-  id = "sp-date-range-selector",
+  id = "date-range-selector",
 }: DateRangeSelectorProps) => {
   const classes = useStyles();
 
