@@ -4119,19 +4119,17 @@ table#copyright-table tr td {
   @include typography-subtitle-2;
 }
 
-.attachments-browse.structured li.attachmentrow .droparrow {
-  //this droparrow is redundant and shouldn't be rendered.
+.attachments-browse.structured li.attachmentrow .droparrow,
+.attachments-browse.thumbs li.attachmentrow .droparrow {
+  //hide old droparrow for both structured and thumbnail mode
+  //because it's hard to apply material icon on it
+  //and it contains inconsistent style.
   display: none !important;
 }
 
-.attachments-browse.thumbs li.attachmentrow .droparrow {
-  border: none;
-  background-color: transparent;
-  background-image: url(../../images/baseline_arrow_drop_down_black_18dp.png);
-}
-
-.attachments-browse.structured li.attachmentrow {
-  //new droparrow: the old(above) one has some legacy inconsistent style
+.attachments-browse.structured li.attachmentrow,
+.attachments-browse.thumbs li.attachmentrow {
+  //new droparrow for both structured and thumbnail mode
   .link-div:after {
     @include materialIcon("\e5c5", $size: 24px);
     float: right;
@@ -4140,6 +4138,15 @@ table#copyright-table tr td {
   &.active .link-div:after {
     //no corresponding icon so flip the original one
     transform: scaleY(-1);
+  }
+}
+
+.attachments-browse.thumbs li.attachmentrow {
+  //adjust position of droparrow in thumbs mode
+  .link-div:after {
+    position: absolute;
+    top: 0px;
+    right: 0px;
   }
 }
 
