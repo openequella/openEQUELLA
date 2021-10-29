@@ -675,6 +675,8 @@ export const languageStrings = {
   shuffleBox: {
     addAll: "Add all",
     addSelected: "Add selected",
+    availableOptions: "Available options",
+    currentSelections: "Current selections",
     removeAll: "Remove all",
     removeSelected: "Remove selected",
   },
