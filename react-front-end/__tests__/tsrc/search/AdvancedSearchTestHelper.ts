@@ -16,22 +16,23 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { getByLabelText } from "@testing-library/react";
+import { getByLabelText, getByText } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { absurd } from "fp-ts/function";
 import {
   BasicControlEssentials,
   getAdvancedSearchDefinition,
   mockWizardControlFactory,
 } from "../../../__mocks__/AdvancedSearchModule.mock";
 import * as A from "fp-ts/Array";
-import { pipe } from "fp-ts/function";
+import * as NEA from "fp-ts/NonEmptyArray";
+import { absurd, constFalse, flow, pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as O from "fp-ts/Option";
 import * as E from "fp-ts/Either";
 import { contramap, Ord } from "fp-ts/Ord";
 import * as S from "fp-ts/string";
 import * as IO from "fp-ts/IO";
+import { languageStrings } from "../../../tsrc/util/langstrings";
 import { selectOption } from "../MuiTestHelpers";
 
 export const wizardControlBlankLabel = "!!BLANK LABEL!!";
@@ -167,11 +168,22 @@ const controlValues: Map<BasicControlEssentials, string[]> = new Map([
     },
     ["option one"],
   ],
+  [
+    {
+      title: "Calendar",
+      schemaNodes: [{ target: "/item/date", attribute: "" }],
+      mandatory: false,
+      controlType: "calendar",
+      defaultValues: ["2020-10-10", ""],
+      options: [],
+    },
+    ["2021-10-01", "2021-10-21"],
+  ],
 ]);
 
 // Alias for the Map including a Wizard control's labels and values. However, the value can refer to
 // the real input value or the status of attribute `checked`.
-type WizardControlLabelValue = Map<string, string>;
+type WizardControlLabelValue = Map<string, string | string[]>;
 
 /**
  * Used to specify the values for a control identified by their labels. Where the first element of
@@ -181,6 +193,32 @@ export type MockedControlValue = [
   OEQ.WizardControl.WizardBasicControl,
   WizardControlLabelValue
 ];
+
+/**
+ * Finds a Wizard Control which has a _unique_ `title` but finding the `label` element and then
+ * finding the `div` identified by the `for` attribute. This is useful in cases where you can't
+ * use the simple `getByLabelText`.
+ *
+ * @param container a HTML element which includes the target control
+ * @param title a _unique_ title for the control you wish to find
+ */
+const getWizardControlByTitle = (
+  container: HTMLElement,
+  title: string
+): HTMLElement =>
+  pipe(
+    (getByText(container, title).parentElement as HTMLLabelElement)?.htmlFor,
+    E.fromNullable("Failed to find label element"),
+    E.chain((id) =>
+      pipe(
+        container.querySelector<HTMLElement>(`#${id}`),
+        E.fromNullable(`Failed to locate main div with id of ${id}`)
+      )
+    ),
+    E.getOrElseW((e) => {
+      throw new TypeError(e);
+    })
+  );
 
 // Function to build a `WizardControlLabelValue` for an Option type control with supplied values.
 const buildLabelValueForOption = (
@@ -198,7 +236,7 @@ const buildLabelValueForOption = (
 // Function to build a `WizardControlLabelValue` for controls that only need title and one value.
 const buildLabelValueForControl = (
   title: string = wizardControlBlankLabel,
-  value: string
+  value: string | string[]
 ) => new Map([[title, value]]);
 
 // Function to build a `WizardControlLabelValue` for the supplied control and its values.
@@ -216,6 +254,7 @@ const buildLabelValue = (
     case "listbox":
       return buildLabelValueForControl(title, values[0]);
     case "calendar":
+      return buildLabelValueForControl(title, values);
     case "html":
     case "shufflebox":
     case "shufflelist":
@@ -269,18 +308,44 @@ export const updateControlValue = (
   controlType: OEQ.WizardControl.ControlType
 ): void => {
   const [labels, values] = A.unzip(M.toArray(S.Ord)(updates));
+  // Filter down `updates` to only those which have a single value (string vs string[])
+  const singleValueUpdates = (): Map<string, string> =>
+    pipe(updates, M.filter(S.isString));
   // Function to apply a side effect to each update in IO.
   const traverseUpdates = (f: (label: string, value: string) => IO.IO<void>) =>
     M.getTraversableWithIndex(S.Ord).traverseWithIndex(IO.Applicative)(
-      updates,
+      singleValueUpdates(),
       f
+    );
+  const inputFieldDetails = (): { label: string; value: string } =>
+    pipe(
+      [labels, values],
+      E.fromPredicate(
+        (x): x is [string[], string[]] =>
+          pipe(
+            x[1], // i.e. `values`
+            A.head,
+            O.map(S.isString), // is it a `string` (or a `string[]`)
+            O.getOrElse(constFalse)
+          ),
+        () => "Unexpected labels/values combination"
+      ),
+      E.map(([ls, vs]) => ({
+        label: ls[0],
+        value: vs[0],
+      })),
+      E.getOrElseW((e) => {
+        throw new TypeError(e);
+      })
     );
 
   switch (controlType) {
     case "editbox":
-      const editBox = getByLabelText(container, labels[0]);
-      userEvent.clear(editBox);
-      userEvent.type(editBox, values[0]);
+      pipe(inputFieldDetails(), ({ label, value }) => {
+        const editBox = getByLabelText(container, label);
+        userEvent.clear(editBox);
+        userEvent.type(editBox, value);
+      });
       break;
     case "checkboxgroup":
       const selectCheckBox =
@@ -315,9 +380,52 @@ export const updateControlValue = (
     case "html":
       break; // Nothing really needs to be done.
     case "listbox":
-      selectOption(container, `#${labels[0]}-select`, values[0]);
+      pipe(inputFieldDetails(), ({ label, value }) =>
+        selectOption(container, `#${label}-select`, value)
+      );
       break;
     case "calendar":
+      const calendar = getWizardControlByTitle(container, labels[0]);
+      const pickDate =
+        ([value, label]: [string, string]): IO.IO<void> =>
+        () =>
+          pipe(getByLabelText(calendar, label), (input) => {
+            userEvent.clear(input);
+            userEvent.type(input, value);
+          });
+
+      const datePickerLabels: string[] = [
+        languageStrings.dateRangeSelector.defaultStartDatePickerLabel,
+        languageStrings.dateRangeSelector.defaultEndDatePickerLabel,
+      ];
+
+      pipe(
+        values,
+        E.fromPredicate(
+          A.isNonEmpty,
+          () => "No values provided to update Calendar"
+        ),
+        E.chain(
+          flow(
+            NEA.head,
+            E.fromPredicate(
+              (vs): vs is string[] => typeof vs[0] === "string",
+              () => "The type of Calendar values must be an string array"
+            )
+          )
+        ),
+        E.fold<string, string[], string[]>(
+          (e) => {
+            console.error(e);
+            return [];
+          },
+          (vs) => vs
+        ),
+        A.zip<string>(datePickerLabels),
+        A.traverse(IO.Applicative)(pickDate)
+      )();
+
+      break;
     case "shufflebox":
     case "shufflelist":
     case "termselector":
@@ -380,6 +488,15 @@ export const getControlValue = (
     case "listbox":
       return getInputValue(labels);
     case "calendar":
+      const calendar = getWizardControlByTitle(container, labels[0]);
+      const vs = [
+        languageStrings.dateRangeSelector.defaultStartDatePickerLabel,
+        languageStrings.dateRangeSelector.defaultEndDatePickerLabel,
+      ].map(
+        (label) => (getByLabelText(calendar, label) as HTMLInputElement).value
+      );
+
+      return new Map([[labels[0], vs]]);
     case "html":
     case "shufflebox":
     case "shufflelist":
