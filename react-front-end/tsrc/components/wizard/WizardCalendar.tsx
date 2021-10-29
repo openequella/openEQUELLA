@@ -17,7 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import * as E from "fp-ts/Either";
-import { identity, pipe } from "fp-ts/function";
+import { flow, identity, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as S from "fp-ts/string";
 import { DateTime } from "luxon";
@@ -90,11 +90,16 @@ export const WizardCalendar = ({
       )
     );
 
-  const processDateString = (dateString: string): Date | undefined =>
+  const processDateString = (dateString?: string): Date | undefined =>
     pipe(
       dateString,
-      pfTernary(S.isEmpty, () => undefined, identity), // Return undefined for empty string.
       O.fromNullable,
+      O.chain(
+        flow(
+          pfTernary(S.isEmpty, () => undefined, identity), // Return undefined for empty string.
+          O.fromNullable
+        )
+      ),
       O.map(convertToDate),
       O.toUndefined
     );
