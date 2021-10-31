@@ -108,7 +108,8 @@ export const mockRawHtmlContent = `<div><p>label for raw HTML control</p><hr></d
 export const mockWizardControlFactory = (
   mockDetails: BasicControlEssentials
 ): OEQ.WizardControl.WizardBasicControl => {
-  switch (mockDetails.controlType) {
+  const { controlType } = mockDetails;
+  switch (controlType) {
     case "editbox":
       return mockEditbox(mockDetails);
     case "checkboxgroup":
@@ -122,12 +123,16 @@ export const mockWizardControlFactory = (
     case "calendar":
       return mockCalendar(mockDetails);
     case "shufflebox":
+      return mockBasicControl(mockDetails);
+    case "calendar":
     case "shufflelist":
     case "termselector":
     case "userselector":
-      return mockBasicControl(mockDetails);
+      throw new Error(
+        `Unsupported controlType [${controlType}] - please implement!`
+      );
     default:
-      return absurd(mockDetails.controlType);
+      return absurd(controlType);
   }
 };
 
