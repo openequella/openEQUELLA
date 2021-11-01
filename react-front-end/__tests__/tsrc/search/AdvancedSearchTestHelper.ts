@@ -356,6 +356,15 @@ export const generateMockedControls = (
 const selectShuffleBoxOption =
   (shuffleBox: HTMLElement) =>
   (label: string): IO.IO<void> => {
+    // Given the DOM ID for a potential shufflebox list, determine which list it is in. (Or, if
+    // determined not to be a shufflebox list, return `O.none`.)
+    const listFromId = (id: string): O.Option<string> =>
+      pipe(
+        id.match(/.+-(options|selections)-label-.+/), // based on IDs in <ShuffleBox>
+        O.fromNullable,
+        O.chain(A.lookup(1))
+      );
+
     // Capture what list the specified label is in - or undefined if unknown
     const withList = (
       element: HTMLElement
@@ -363,13 +372,7 @@ const selectShuffleBoxOption =
       pipe(
         element.parentElement?.id,
         O.fromNullable,
-        O.chain((id) =>
-          pipe(
-            id.match(/.+-(options|selections)-label-.+/), // based on IDs in <ShuffleBox>
-            O.fromNullable,
-            O.chain(A.lookup(1))
-          )
-        ),
+        O.chain(listFromId),
         O.toUndefined,
         (list) => ({ element, list })
       );
