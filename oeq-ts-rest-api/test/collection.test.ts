@@ -40,8 +40,8 @@ describe('Listing collections', () => {
     expect(result).toHaveLength(howMany);
     // confirm that `full` returned additional information
     expect(result.results[0].createdDate).toBeTruthy();
-    expect(
-      (result.results[0] as OEQ.Collection.Collection).filestoreId
-    ).toEqual('default');
+    expect((result.results[0] as OEQ.Collection.Collection).filestoreId).toBe(
+      'default'
+    );
   });
 });
