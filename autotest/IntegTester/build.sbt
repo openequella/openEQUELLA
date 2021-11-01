@@ -11,7 +11,7 @@ val CirceVersion  = "0.12.1"
 val Http4sVersion = "0.21.8"
 val jsoupVersion  = "1.14.3"
 
-scalaVersion := "2.12.15"
+scalaVersion := "2.13.7"
 scalacOptions += "-Ypartial-unification"
 
 excludeDependencies ++= Seq("org.typelevel" % "scala-library")
