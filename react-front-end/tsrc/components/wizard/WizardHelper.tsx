@@ -335,8 +335,6 @@ const controlFactory = (
           onSelect={flow(SET.toArray<string>(OrdAsIs), onChange)}
         />
       );
-    case "calendar":
-    case "html":
     case "shufflelist":
     case "termselector":
     case "userselector":
