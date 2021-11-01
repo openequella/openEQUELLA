@@ -34,7 +34,7 @@
     "query-string": "^7.0.0",
     "runtypes": "6.5.0",
     "tough-cookie": "^4.0.0",
-    "typescript-is": "^0.18.0"
+    "typescript-is": "^0.19.0"
   },
   "devDependencies": {
     "@types/jest": "27.0.2",
