@@ -307,7 +307,6 @@ const buildLabelValue = (
       return buildLabelValueForControl(title, labels);
     case "html":
       return new Map(); // Nothing to do
-    case "calendar":
     case "shufflelist":
     case "termselector":
     case "userselector":
@@ -563,7 +562,6 @@ export const updateControlValue = (
       // do it!
       makeSelections();
       break;
-    case "calendar":
     case "shufflelist":
     case "termselector":
     case "userselector":
@@ -660,7 +658,6 @@ export const getControlValue = (
       return new Map([[shuffleBoxTitle, shuffleBoxSelections]]);
     case "html":
       return new Map(); // Nothing to do
-    case "calendar":
     case "shufflelist":
     case "termselector":
     case "userselector":

@@ -124,7 +124,6 @@ export const mockWizardControlFactory = (
       return mockCalendar(mockDetails);
     case "shufflebox":
       return mockBasicControl(mockDetails);
-    case "calendar":
     case "shufflelist":
     case "termselector":
     case "userselector":
