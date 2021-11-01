@@ -217,6 +217,14 @@ const controlValues: Map<BasicControlEssentials, string[]> = new Map([
 type WizardControlLabelValue = Map<string, string | string[]>;
 
 /**
+ * Helper for `WizardControlLabelValue` values to determine when they're a string array.
+ *
+ * @param x the value from a `WizardControlLabelValue` entry
+ */
+const isStringArrayValues = (x: string | string[]): x is string[] =>
+  !S.isString(x);
+
+/**
  * Used to specify the values for a control identified by their labels. Where the first element of
  * the tuple is the control definition, and the second is an array of labels and values.
  */
@@ -526,8 +534,8 @@ export const updateControlValue = (
           flow(
             NEA.head,
             E.fromPredicate(
-              (vs): vs is string[] => typeof vs[0] === "string",
-              () => "The type of Calendar values must be an string array"
+              isStringArrayValues,
+              () => "The type of Calendar values must be a string array"
             )
           )
         ),
@@ -553,8 +561,8 @@ export const updateControlValue = (
       const makeSelections = pipe(
         values[0],
         E.fromPredicate(
-          (xs: string | string[]): xs is string[] => !S.isString(xs),
-          () => "Expected values to be an array of strings"
+          isStringArrayValues,
+          () => "Shufflebox requires 'values' to be an array of strings"
         ),
         E.getOrElseW((e) => {
           throw new TypeError(e);
