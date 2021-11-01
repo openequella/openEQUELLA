@@ -59,24 +59,24 @@ describe("splitMimeTypes()", () => {
 
 describe("isBrowserSupportedAudio()", () => {
   it("returns false for unsupported MIME types", () =>
-    expect(isBrowserSupportedAudio("audio/aac")).toEqual(false));
+    expect(isBrowserSupportedAudio("audio/aac")).toBe(false));
 
   it("returns true for supported MIME types", () =>
-    expect(isBrowserSupportedAudio("audio/ogg")).toEqual(true));
+    expect(isBrowserSupportedAudio("audio/ogg")).toBe(true));
 
   it("disregards MIME type attributes", () =>
-    expect(isBrowserSupportedAudio("audio/ogg; attribute1=one")).toEqual(true));
+    expect(isBrowserSupportedAudio("audio/ogg; attribute1=one")).toBe(true));
 });
 
 describe("isBrowserSupportedVideo()", () => {
   it("returns false for unsupported MIME types", () =>
-    expect(isBrowserSupportedVideo("video/quicktime")).toEqual(false));
+    expect(isBrowserSupportedVideo("video/quicktime")).toBe(false));
 
   it("returns true for supported MIME types", () =>
-    expect(isBrowserSupportedVideo("video/ogg")).toEqual(true));
+    expect(isBrowserSupportedVideo("video/ogg")).toBe(true));
 
   it("disregards MIME type attributes", () =>
-    expect(isBrowserSupportedVideo("video/ogg; attribute1=one")).toEqual(true));
+    expect(isBrowserSupportedVideo("video/ogg; attribute1=one")).toBe(true));
 });
 
 describe("getMimeTypeDefaultViewerDetails()", () => {

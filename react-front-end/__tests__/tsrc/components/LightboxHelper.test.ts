@@ -43,7 +43,7 @@ describe("buildCustomEmbed", () => {
       buildViewUrl("fakeId")
     );
     expect(youTubeEmbed).toBeSome();
-    expect(getOptionalComponentName(youTubeEmbed)).toEqual("YouTubeEmbed");
+    expect(getOptionalComponentName(youTubeEmbed)).toBe("YouTubeEmbed");
   });
 
   it("correctly builds a KalturaPlayerEmbed when correctly specified", () => {
@@ -52,9 +52,7 @@ describe("buildCustomEmbed", () => {
       `${kalturaAttachmentUrl}&externalId=4211723/48373143/1_d1h8f1dx`
     );
     expect(youTubeEmbed).toBeSome();
-    expect(getOptionalComponentName(youTubeEmbed)).toEqual(
-      "KalturaPlayerEmbed"
-    );
+    expect(getOptionalComponentName(youTubeEmbed)).toBe("KalturaPlayerEmbed");
   });
 
   it.each([
@@ -74,7 +72,7 @@ describe("buildCustomEmbed", () => {
     (_: string, mimeType: string, src: string) => {
       const component = buildCustomEmbed(mimeType, src);
       expect(component).toBeSome();
-      expect(getOptionalComponentName(component)).toEqual("LightboxMessage");
+      expect(getOptionalComponentName(component)).toBe("LightboxMessage");
     }
   );
 });
