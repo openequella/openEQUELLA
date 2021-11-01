@@ -384,7 +384,7 @@ const selectShuffleBoxOption =
           ({ list }) => list !== undefined,
           () => `Option "${label}" is in the wrong place!`
         ),
-        E.foldW(
+        E.fold(
           (e) => {
             throw new Error(e);
           },
