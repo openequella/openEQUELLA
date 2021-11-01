@@ -416,8 +416,7 @@ export const updateControlValue = (
         ),
         E.fold<string, string[], string[]>(
           (e) => {
-            console.error(e);
-            return [];
+            throw new TypeError(e);
           },
           (vs) => vs
         ),
