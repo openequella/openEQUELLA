@@ -33,17 +33,17 @@ jest.mock("@openequella/rest-api-client");
 describe("SchemaModule", () => {
   it("should be able to provide a list of schemas", () =>
     SchemaModule.schemaListSummary().then((schemas) => {
-      expect(schemas.size).toEqual(5);
+      expect(schemas.size).toBe(5);
     }));
 
   it("should be able to retrieve the schema for a specified UUID", () =>
     SchemaModule.schemaTree("unused due to mocked response").then((schema) => {
       const itemNode = schema.children![0];
       const copyrightNode = itemNode.children![1];
-      expect(itemNode.name).toEqual("item");
-      expect(itemNode.children?.length).toEqual(2);
-      expect(copyrightNode.name).toEqual("copyright");
-      expect(copyrightNode.children?.length).toEqual(14);
+      expect(itemNode.name).toBe("item");
+      expect(itemNode.children?.length).toBe(2);
+      expect(copyrightNode.name).toBe("copyright");
+      expect(copyrightNode.children?.length).toBe(14);
     }));
 });
 
@@ -55,12 +55,10 @@ describe("pathForNode", () => {
   const testNode = testSchema.children![0].children![0].children![0];
 
   it("should correctly generate an oEQ path by default", () =>
-    expect(SchemaModule.pathForNode(testNode)).toEqual(
-      "/child1/child2/child3"
-    ));
+    expect(SchemaModule.pathForNode(testNode)).toBe("/child1/child2/child3"));
 
   it("should correctly include the XML prefix if desired", () =>
-    expect(SchemaModule.pathForNode(testNode, false)).toEqual(
+    expect(SchemaModule.pathForNode(testNode, false)).toBe(
       "/xml/child1/child2/child3"
     ));
 });

@@ -106,7 +106,7 @@ describe("determineViewer()", () => {
       "save"
     );
     expect(viewer).toEqual(linkViewerId);
-    expect(url.endsWith("?.vi=save")).toEqual(true);
+    expect(url.endsWith("?.vi=save")).toBe(true);
   });
 
   it.each<OEQ.MimeType.ViewerId>(["fancy", "file", "htmlFiveViewer"])(
@@ -160,7 +160,7 @@ describe("determineAttachmentViewUrl()", () => {
         viewUrl,
         "directory/file.txt"
       )
-    ).toEqual("file/uuid/1/directory/file.txt"));
+    ).toBe("file/uuid/1/directory/file.txt"));
 });
 
 describe("buildAttachmentsAndViewerDefinitions()", () => {
