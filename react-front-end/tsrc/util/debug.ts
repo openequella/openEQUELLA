@@ -15,9 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /**
- * Utility function for when debugging fp-ts pipelines. Allow the value to be shown in the console
- * log, but then continue its way down the pipeline.
+ * Utility function for debugging fp-ts pipelines. Allow the value to be shown in the console log,
+ * but then continue its way down the pipeline.
  *
  * Example:
  *
