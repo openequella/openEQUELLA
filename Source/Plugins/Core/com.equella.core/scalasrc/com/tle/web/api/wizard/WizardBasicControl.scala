@@ -19,7 +19,7 @@
 package com.tle.web.api.wizard
 
 import com.dytech.edge.wizard.TargetNode
-import com.dytech.edge.wizard.beans.control.{EditBox, WizardControl, WizardControlItem}
+import com.dytech.edge.wizard.beans.control.{Calendar, EditBox, WizardControl, WizardControlItem}
 import com.fasterxml.jackson.annotation.JsonUnwrapped
 import com.tle.common.i18n.LangUtils
 import com.tle.common.taxonomy.SelectionRestriction
@@ -90,8 +90,12 @@ case class WizardBasicControl(
 ) extends WizardControlDefinition
 
 object WizardBasicControl {
-  def getDefaultValues(options: List[WizardControlItem], isEditBox: Boolean): List[String] = {
-    options.filter(o => isEditBox || o.isDefaultOption).map(_.getValue)
+  def getDefaultValues(options: List[WizardControlItem], controlType: String): List[String] = {
+    // Option of controls whose types are in the below list is always the default option.
+    // For those not in the list, check `isDefaultOption` of the option.
+    options
+      .filter(o => List(EditBox.CLASS, Calendar.CLASS).contains(controlType) || o.isDefaultOption)
+      .map(_.getValue)
   }
 
   def apply(control: WizardControl): WizardBasicControl = {
@@ -108,7 +112,7 @@ object WizardBasicControl {
       visibilityScript = Option(control.getScript),
       targetNodes = control.getTargetnodes.asScala.toList,
       options = options.map(o => WizardControlOption(o)),
-      defaultValues = getDefaultValues(options, EditBox.CLASS.equals(control.getClassType)),
+      defaultValues = getDefaultValues(options, control.getClassType),
       powerSearchFriendlyName = getStringFromCurrentLocale(control.getPowerSearchFriendlyName),
       controlType = control.getClassType
     )

@@ -28,6 +28,7 @@ import { Refinement } from "fp-ts/Refinement";
 import * as S from "fp-ts/string";
 import * as React from "react";
 import { OrdAsIs } from "../../util/Ord";
+import { WizardCalendar } from "./WizardCalendar";
 import { WizardCheckBoxGroup } from "./WizardCheckBoxGroup";
 import { WizardEditBox } from "./WizardEditBox";
 import { WizardRawHtml } from "./WizardRawHtml";
@@ -281,6 +282,19 @@ const controlFactory = (
           onSelect={onChangeForSingleValue}
         />
       );
+    case "calendar":
+      const { dateFormat, isRange } =
+        control as OEQ.WizardControl.WizardCalendarControl;
+
+      return (
+        <WizardCalendar
+          {...commonProps}
+          values={ifAvailable<string[]>(value, getStringArrayControlValue)}
+          onChange={(newValue) => onChange(newValue)}
+          dateFormat={dateFormat}
+          isRange={isRange}
+        />
+      );
     case "html":
       return <WizardRawHtml {...commonProps} fieldValueMap={fieldValueMap} />;
     case "listbox":
@@ -292,7 +306,6 @@ const controlFactory = (
           onSelect={onChangeForSingleValue}
         />
       );
-    case "calendar":
     case "shufflebox":
     case "shufflelist":
     case "termselector":

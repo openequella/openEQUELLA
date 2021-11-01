@@ -393,7 +393,7 @@ export const DateRangeSelector = ({
   );
 
   return (
-    <Grid container>
+    <Grid container id={id}>
       <Grid item xs={12}>
         {quickModeEnabled ? quickOptionSelector : customDatePicker}
       </Grid>
