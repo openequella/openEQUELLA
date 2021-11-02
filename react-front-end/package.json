@@ -61,7 +61,7 @@
     "runtypes": "6.5.0",
     "shallow-equal-object": "1.1.1",
     "sprintf-js": "1.1.2",
-    "timeago-react": "2.0.1",
+    "timeago-react": "3.0.4",
     "tinymce": "5.10.0",
     "typescript-fsa": "2.5.0",
     "typescript-fsa-reducers": "0.4.5",
