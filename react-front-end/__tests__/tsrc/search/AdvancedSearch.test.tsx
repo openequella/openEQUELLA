@@ -28,8 +28,8 @@ import {
   generateMockedControls,
   getControlValue,
   MockedControlValue,
-  updateControlValue,
   oneEditBoxWizard,
+  updateControlValue,
 } from "./AdvancedSearchTestHelper";
 import {
   initialiseEssentialMocks,
@@ -38,6 +38,11 @@ import {
   queryCollectionSelector,
   renderSearchPage,
 } from "./SearchPageTestHelper";
+
+// This has some big tests for rendering the Search Page, but also going through and testing
+// all components as one big wizard - e.g.:
+// "stores values in state when search is clicked, and then re-uses them when the wizard is re-rendered"
+jest.setTimeout(10000);
 
 const {
   showAdvancedSearchFilter: filterButtonLabel,
