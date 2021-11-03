@@ -28,6 +28,7 @@ import com.tle.web.api.language.LanguageStringHelper.getStringFromCurrentLocale
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import scala.collection.JavaConverters._
+import scala.util.Try
 
 /** Data structure representing an option provided by a 'Option' type control such as CheckBox Group and Shuffle List.
   *
@@ -96,9 +97,11 @@ object WizardBasicControl {
     def processValue(item: WizardControlItem): String = {
       val value = item.getValue
       controlType match {
-        case Calendar.CLASS if value.matches("^[0-9]+$") =>
+        case Calendar.CLASS =>
           // If the value is numeric, convert it to Int and plus it to today.
-          LocalDate.now.plus(value.toInt, ChronoUnit.DAYS).toString
+          Try(value.toInt).toOption
+            .map(i => LocalDate.now.plus(i, ChronoUnit.DAYS).toString)
+            .getOrElse(value)
         case _ => value
       }
     }
