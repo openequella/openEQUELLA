@@ -100,9 +100,10 @@ React UI code is a bit more solidified.
 
 **Setup note for Ubuntu 20.04**
 
-Notice these instructions assume a person is starting with a fresh machine. Therefore there'll be additional information which may seem redundant to someone who already has a significantly established development machine.
+Notice these instructions assume a person is starting with a fresh machine.
+Therefore there'll be additional information which may seem redundant to someone who already has a significantly established development machine.
 
-```shell
+```bash
 sudo apt update
 sudo apt install curl
 ```
@@ -115,8 +116,9 @@ Please follow the installation instructions provided by the tool.
 
 ### Install Java
 At the time of writing the openEQUELLA is built with Java 8. For this, we prefer to use
-openJDK and that latest version of that is 8.0.302. To install that with SDKMAN:
-```shell
+openJDK which is current at version 8.0.302. To install that with SDKMAN:
+
+```bash
 sdk install java 8.0.302-open
 ```
 
@@ -129,7 +131,9 @@ Please follow the installation instructions provided by the tool.
 
 ### Install NodeJS / NPM
 
-openEQUELLA has a `.nvmrc` in the root of its repository, as a result installation of the correct version of NodeJS and NPM is as simple as:
+openEQUELLA has a `.nvmrc` in the root of its repository, as a result installation of the correct version of NodeJS and NPM is as simple as
+running the following when in the root of your openEQUELLA clone:
+
 ```
 nvm install
 ```
@@ -139,7 +143,7 @@ nvm install
 To run openEQUELLA locally for development and testing, you'll need a local database. By far the easiest to setup
 is PostgreSQL. The two main ways to do this are:
 
-- Simple install the package as part of your distro; or
+- Simply install the package as part of your distro; or
 - (Recommended) run an instance in docker to keep it nice and self contained.
 
 Once you have an instance running, make sure you create a database with a user for access:
@@ -154,15 +158,14 @@ https://packages.ubuntu.com/impish/build-essential
 
 It will install everything required for compiling basic software written in C and C++. We do need this to build openEquella.
 
-```shell
+```bash
 sudo apt-get install build-essential
 ```
 
 ### Install Image Magick
 
-Basic lib used in openEquella.
-
-Which will be used for function of creating new resources, etc. Without it you are not able to contribute a new resource in the web.
+A suite of software (and specifically, command line tools) used by openEQUELLA for querying and manipulating
+image attachments. A key requirement for when contributing items with image attachments.
 
 ```
 sudo apt install imagemagick
@@ -174,7 +177,7 @@ sudo apt install imagemagick
 sudo apt install ffmepg
 ```
 
-### link new lib to other alias
+#### Setup Libav compatible symbolic links
 
 openEQUELLA was originally developed to use libav for thumb-nailing and previewing of videos.
 However [libav has been deprecated](https://github.com/openequella/openEQUELLA/issues/697)
@@ -187,7 +190,7 @@ ln -s /usr/bin/ffplay /usr/bin/avplay
 ln -s /usr/bin/ffprobe /usr/bin/avprobe
 ```
 
-## Build openEquella on terminal
+## Build openEquella in a terminal
 
 Make sure everything is setup correctly and openEquella can be built on your machine.
 
@@ -216,7 +219,7 @@ openEQUELLA requires a configuration folder (`learningedge-config`) in order to 
 is an sbt task which will generate configuration files suitable for running with your dev environment:
 
 ```bash
-sbt prepareDevConfig
+./sbt prepareDevConfig
 ```
 
 This will create a configuration in the `{openEQUELLA repo}/Dev/learningedge-config` folder which you can
@@ -243,7 +246,7 @@ resources from the resource folders, it won't run any of the scripts that genera
 as compile code to Javascript), in order to do this you can run:
 
 ```bash
-~$ sbt resources
+~$ ./sbt resources
 ```
 
 ### Running a dev server
@@ -251,7 +254,7 @@ as compile code to Javascript), in order to do this you can run:
 Ensure you have your `Dev/learningedge-config` setup.
 
 ```bash
-~$ sbt compile equellaserver/run
+~$ ./sbt compile equellaserver/run
 ```
 
 Alternatively you can run the server from your IDE by running the class:
@@ -269,7 +272,7 @@ Ensure that your runner settings compiles the whole project before running:
 Ensure you have your server running and know it's
 
 ```bash
-~$ sbt compile adminTool/run
+~$ ./sbt compile adminTool/run
 ```
 
 or run `com.tle.client.harness.ClientLauncher` in the `Source/Server/adminTool` project.
@@ -306,7 +309,7 @@ To install it, follow the instructions provided by JetBrains at https://www.jetb
 
 Import as an SBT project and use the default settings.
 
-If you get compile errors in the IDE, but standalone `sbt compile` works, do an sbt refresh from the
+If you get compile errors in the IDE, but standalone `./sbt compile` works, do an sbt refresh from the
 IntelliJ `SBT tool window`.
 
 ##### Increase the memory heap
@@ -335,7 +338,9 @@ EclipseKeys.eclipseOutput := Some("target/scala-2.11/classes/")
 
 #### Code Formatters
 
-All code should be formatted using the following formatting tools:
+All code should be formatted using the following tools.
+Assuming you've followed the above steps to install the pre-commit hooks this will be done automatically for you at commit time.
+However if you don't, then the CI pipelines will fail during checking.
 
 - Scala - [scalafmt](https://scalameta.org/scalafmt/)
 - Java - [Google Java Format](https://github.com/google/google-java-format)
@@ -349,7 +354,7 @@ Each formatter has various IDE plugins, in particular IntelliJ is well supported
 
 ## Build configuration
 
-Some aspects of the build can be configured by editing the `build.conf` file.
+Some aspects of the build can be configured by editing the `build.conf` file. This is typically though only done for CI builds.
 
 ### Keystore
 
@@ -378,8 +383,8 @@ It can be done with the Java Control Panel or directly adding the domain in a ne
 This guide runs sbt in non-interactive mode. You can run in interactive mode to save rebuild time by first running 'sbt', and the another command such as 'compile'.
 
 ```bash
-cd to the {Equella repo} directory
-~$ sbt installerZip
+cd /path/to/openEquella
+./sbt installerZip
 ```
 
 ## SBT Notes
