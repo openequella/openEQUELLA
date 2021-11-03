@@ -22,6 +22,7 @@ import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
 import { getAdvancedSearchDefinition } from "../../../__mocks__/AdvancedSearchModule.mock";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
+import { elapsedTime, startTimer } from "../../../tsrc/util/debug";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import {
   editBoxEssentials,
@@ -42,7 +43,7 @@ import {
 // This has some big tests for rendering the Search Page, but also going through and testing
 // all components as one big wizard - e.g.:
 // "stores values in state when search is clicked, and then re-uses them when the wizard is re-rendered"
-jest.setTimeout(10000);
+jest.setTimeout(20000);
 
 const {
   showAdvancedSearchFilter: filterButtonLabel,
@@ -208,10 +209,23 @@ describe("Rendering of wizard", () => {
     mockGetAdvancedSearchByUuid.mockResolvedValue(advancedSearchDefinition);
     const { container } = await renderAdvancedSearchPage();
 
+    // The follow section is known to be long running because it has to manipulate all the controls
+    // which in turn triggers re-renders etc. It is due to this block that we set jest.setTimeout
+    // at the top of the file. To track things though, we've added the various time tracking
+    // and console.table call(s) below.
+    const setValuesTimeSummary = [];
+    const setValuesTimer = startTimer("Set control values - TOTAL");
     // For each control, trigger an event to update or select their values.
     mockedControls.forEach(([{ controlType }, controlLabelValue]) => {
+      const controlTimer = startTimer(`Control [${controlType}]`);
+
+      // Set the value
       updateControlValue(container, controlLabelValue, controlType);
+
+      setValuesTimeSummary.push(elapsedTime(controlTimer));
     });
+    setValuesTimeSummary.push(elapsedTime(setValuesTimer));
+    console.table(setValuesTimeSummary);
 
     // Click search - so as to persist values
     await clickSearchButton(container);

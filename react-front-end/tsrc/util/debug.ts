@@ -38,3 +38,37 @@ export const showValue =
     console.debug(label, value);
     return value;
   };
+
+interface PerfTimer {
+  /**
+   * A name for the timer.
+   */
+  name: string;
+  /**
+   * The start time in milliseconds since epoch.
+   */
+  startTime: number;
+}
+
+/**
+ * A simple function to start a labeled timer where the returned object can then be used with
+ * `elapsedTime` to calculated the elapsed time.
+ *
+ * @param label a name for this timer
+ */
+export const startTimer = (label: string): PerfTimer => ({
+  name: label,
+  startTime: Date.now(),
+});
+
+interface PerfTimerResult extends PerfTimer {
+  /**
+   * The number of milliseconds which have elapsed since the original timer started.
+   */
+  elapsedTime: number;
+}
+
+export const elapsedTime = (timer: PerfTimer): PerfTimerResult => ({
+  ...timer,
+  elapsedTime: Date.now() - timer.startTime,
+});
