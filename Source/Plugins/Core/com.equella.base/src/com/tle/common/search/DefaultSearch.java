@@ -69,10 +69,20 @@ public class DefaultSearch extends VeryBasicSearch {
   protected Collection<DateFilter> dateFilters = Lists.newArrayList();
   private final List<List<Field>> musts = new ArrayList<List<Field>>();
   private final List<List<Field>> mustNots = new ArrayList<List<Field>>();
+  private String customLuceneQuery;
 
   public DefaultSearch() {
     super();
     toplevel = this;
+  }
+
+  @Override
+  public String getCustomLuceneQuery() {
+    return customLuceneQuery;
+  }
+
+  public void setCustomLuceneQuery(String customLuceneQuery) {
+    this.customLuceneQuery = customLuceneQuery;
   }
 
   @Override

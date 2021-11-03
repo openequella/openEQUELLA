@@ -93,4 +93,17 @@ public interface Search {
    * @return True if server time zone is used or otherwise false.
    */
   boolean useServerTimeZone();
+
+  /**
+   * The background of creating this method is to support the Lucene query built in New Advanced
+   * search page.
+   *
+   * <p>The result of calling this method is a String in Lucene query syntax or null. e.g. name:OEQ
+   * AND year:[2021-11-01 TO * ] AND (city:Hobart OR city:Sydney) AND message:"hello world"
+   *
+   * @return A string is Lucene query syntax or null.
+   */
+  default String getCustomLuceneQuery() {
+    return null;
+  }
 }

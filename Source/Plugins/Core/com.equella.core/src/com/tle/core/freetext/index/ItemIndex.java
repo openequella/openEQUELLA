@@ -74,6 +74,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
@@ -964,11 +965,21 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
         }
         query = orQuery;
       }
-      query = addExtraQuery(query, request, reader);
+      Query extraQuery = addExtraQuery(query, request, reader);
+
+      return processCustomLuceneQuery(request.getCustomLuceneQuery())
+          .<Query>map(
+              q -> {
+                BooleanQuery combinedQuery = new BooleanQuery();
+                combinedQuery.add(extraQuery, Occur.MUST);
+                combinedQuery.add(q, Occur.MUST);
+
+                return combinedQuery;
+              })
+          .orElse(query);
     } catch (ParseException ex) {
       throw new InvalidSearchQueryException(queryString, ex);
     }
-    return query;
   }
 
   protected Filter getFilter(Search request) {
@@ -1091,6 +1102,26 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       return new Sort(convFields);
     }
     return new Sort(new SortField(null, SortField.SCORE, false));
+  }
+
+  private Optional<Query> processCustomLuceneQuery(String customLuceneQuery) {
+    QueryParser parser =
+        new QueryParser(LuceneConstants.LATEST_VERSION, FreeTextQuery.FIELD_ALL, getAnalyser());
+
+    return Optional.ofNullable(customLuceneQuery)
+        .map(
+            q -> {
+              try {
+                return parser.parse(q);
+              } catch (ParseException e) {
+                LOGGER.error(
+                    "Failed to parse custom Lucene query: "
+                        + customLuceneQuery
+                        + " due to error: "
+                        + e.getMessage());
+                return null;
+              }
+            });
   }
 
   /** @dytech.jira see Jira Review TLE-784 : http://apps.dytech.com.au/jira/browse/TLE-784 */
