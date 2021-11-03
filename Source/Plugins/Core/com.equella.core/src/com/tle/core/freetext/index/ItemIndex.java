@@ -965,8 +965,11 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
         }
         query = orQuery;
       }
+
+      // This one includes the query built above and all the FreeTextQuery of the search.
       Query extraQuery = addExtraQuery(query, request, reader);
 
+      // if custom Lucene query is provided, combine it with `extraQuery`.
       return processCustomLuceneQuery(request.getCustomLuceneQuery())
           .<Query>map(
               q -> {
@@ -976,7 +979,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
                 return combinedQuery;
               })
-          .orElse(query);
+          .orElse(extraQuery);
     } catch (ParseException ex) {
       throw new InvalidSearchQueryException(queryString, ex);
     }

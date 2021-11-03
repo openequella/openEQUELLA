@@ -120,6 +120,7 @@ object SearchHelper {
       case None    => whereQuery
     }
     search.setFreeTextQuery(freeTextQuery)
+    search.setCustomLuceneQuery(params.customLuceneQuery)
 
     handleMusts(params.musts) foreach {
       case (field, value) => search.addMust(field, value.asJavaCollection)

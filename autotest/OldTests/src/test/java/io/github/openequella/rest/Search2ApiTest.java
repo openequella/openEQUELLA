@@ -124,6 +124,25 @@ public class Search2ApiTest extends AbstractRestApiTest {
     assertEquals(getAvailable(result), 1);
   }
 
+  @DataProvider
+  public Object[][] luceneQueryprovider() {
+    String pathOfName = "/item/name\\*:";
+    String pathOfDescription = "/item/description\\*:";
+
+    return new Object[][] {
+      {pathOfName + "\"SearchApiTest - Crabs\"", 1},
+      {pathOfName + "SearchApiTest - Crabs", 7},
+      {pathOfName + "\"Crabs\" OR " + pathOfName + "\"Basic\"", 2},
+      {pathOfName + "SearchApiTest AND " + pathOfDescription + "\"Description 4\"", 1}
+    };
+  }
+
+  @Test(description = "Search by a custom Lucene query", dataProvider = "luceneQueryprovider")
+  public void customLuceneQueryTest(String q, int expectNumber) throws IOException {
+    JsonNode result = doSearch(200, null, new NameValuePair("customLuceneQuery", q));
+    assertEquals(getAvailable(result), expectNumber);
+  }
+
   @Test(description = "Search by an invalid item status")
   public void invalidItemStatusSearch() throws IOException {
     doSearch(404, null, new NameValuePair("status", "ALIVE"));
