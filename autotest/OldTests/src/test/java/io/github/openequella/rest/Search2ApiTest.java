@@ -125,7 +125,7 @@ public class Search2ApiTest extends AbstractRestApiTest {
   }
 
   @DataProvider
-  public Object[][] luceneQueryprovider() {
+  public Object[][] luceneQueryProvider() {
     String pathOfName = "/item/name\\*:";
     String pathOfDescription = "/item/description\\*:";
 
@@ -137,10 +137,25 @@ public class Search2ApiTest extends AbstractRestApiTest {
     };
   }
 
-  @Test(description = "Search by a custom Lucene query", dataProvider = "luceneQueryprovider")
+  @Test(description = "Search by a custom Lucene query", dataProvider = "luceneQueryProvider")
   public void customLuceneQueryTest(String q, int expectNumber) throws IOException {
     JsonNode result = doSearch(200, null, new NameValuePair("customLuceneQuery", q));
     assertEquals(getAvailable(result), expectNumber);
+  }
+
+  @Test(description = "Search by Lucene query and other params")
+  public void luceneQueryWithOtherParamsTest() throws IOException {
+    JsonNode result =
+        doSearch(
+            200,
+            null,
+            // There are four items that have 'book' in their names.
+            new NameValuePair("customLuceneQuery", "/item/itembody/name\\*:book"),
+            // But only two of them belongs to below Collection.
+            new NameValuePair("collections", "4c147089-cddb-e67c-b5ab-189614eb1463"),
+            // And only one of the two items was modified after 2014-04-01.
+            new NameValuePair("modifiedAfter", "2014-04-01"));
+    assertEquals(getAvailable(result), 1);
   }
 
   @Test(description = "Search by an invalid item status")
