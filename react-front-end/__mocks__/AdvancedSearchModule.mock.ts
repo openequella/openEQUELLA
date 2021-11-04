@@ -125,6 +125,7 @@ export const mockWizardControlFactory = (
     case "shufflebox":
       return mockBasicControl(mockDetails);
     case "shufflelist":
+      return mockBasicControl(mockDetails);
     case "termselector":
     case "userselector":
       throw new Error(
