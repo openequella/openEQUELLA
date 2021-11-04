@@ -25,7 +25,10 @@ import com.tle.common.i18n.LangUtils
 import com.tle.common.taxonomy.SelectionRestriction
 import com.tle.common.taxonomy.wizard.TermSelectorControl.TermStorageFormat
 import com.tle.web.api.language.LanguageStringHelper.getStringFromCurrentLocale
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import scala.collection.JavaConverters._
+import scala.util.Try
 
 /** Data structure representing an option provided by a 'Option' type control such as CheckBox Group and Shuffle List.
   *
@@ -91,11 +94,23 @@ case class WizardBasicControl(
 
 object WizardBasicControl {
   def getDefaultValues(options: List[WizardControlItem], controlType: String): List[String] = {
+    def processValue(item: WizardControlItem): String = {
+      val value = item.getValue
+      controlType match {
+        case Calendar.CLASS =>
+          // If the value is numeric, convert it to Int and plus it to today.
+          Try(value.toInt).toOption
+            .map(i => LocalDate.now.plus(i, ChronoUnit.DAYS).toString)
+            .getOrElse(value)
+        case _ => value
+      }
+    }
+
     // Option of controls whose types are in the below list is always the default option.
     // For those not in the list, check `isDefaultOption` of the option.
     options
       .filter(o => List(EditBox.CLASS, Calendar.CLASS).contains(controlType) || o.isDefaultOption)
-      .map(_.getValue)
+      .map(processValue)
   }
 
   def apply(control: WizardControl): WizardBasicControl = {

@@ -18,22 +18,24 @@
 import * as OEQ from "@openequella/rest-api-client";
 import { getByLabelText, getByText } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import * as A from "fp-ts/Array";
+import * as E from "fp-ts/Either";
+import { absurd, constFalse, flow, pipe } from "fp-ts/function";
+import * as IO from "fp-ts/IO";
+import * as M from "fp-ts/Map";
+import * as NEA from "fp-ts/NonEmptyArray";
+import * as O from "fp-ts/Option";
+import { contramap, Ord } from "fp-ts/Ord";
+import * as S from "fp-ts/string";
 import {
   BasicControlEssentials,
   getAdvancedSearchDefinition,
   mockWizardControlFactory,
 } from "../../../__mocks__/AdvancedSearchModule.mock";
-import * as A from "fp-ts/Array";
-import * as NEA from "fp-ts/NonEmptyArray";
-import { absurd, constFalse, flow, pipe } from "fp-ts/function";
-import * as M from "fp-ts/Map";
-import * as O from "fp-ts/Option";
-import * as E from "fp-ts/Either";
-import { contramap, Ord } from "fp-ts/Ord";
-import * as S from "fp-ts/string";
-import * as IO from "fp-ts/IO";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { selectOption } from "../MuiTestHelpers";
+
+const { shuffleBox: shuffleBoxStrings } = languageStrings;
 
 export const wizardControlBlankLabel = "!!BLANK LABEL!!";
 export const editBoxEssentials: BasicControlEssentials = {
@@ -179,11 +181,48 @@ const controlValues: Map<BasicControlEssentials, string[]> = new Map([
     },
     ["2021-10-01", "2021-10-21"],
   ],
+  [
+    {
+      title: "A Shufflebox",
+      description: "This is a shufflebox",
+      schemaNodes: [{ target: "/item/shuffle", attribute: "" }],
+      mandatory: false,
+      controlType: "shufflebox",
+      defaultValues: ["shuffle1"],
+      options: [
+        {
+          text: "Shuffle Today",
+          value: "shuffle1",
+        },
+        {
+          text: "Shuffle Tomorrow",
+          value: "shuffle2",
+        },
+        {
+          text: "Shuffle Everyday",
+          value: "shuffle3",
+        },
+        {
+          text: "Shuffle for Life",
+          value: "shuffle4",
+        },
+      ],
+    },
+    ["shuffle1", "shuffle2", "shuffle4"], // includes default option
+  ],
 ]);
 
 // Alias for the Map including a Wizard control's labels and values. However, the value can refer to
 // the real input value or the status of attribute `checked`.
 type WizardControlLabelValue = Map<string, string | string[]>;
+
+/**
+ * Helper for `WizardControlLabelValue` values to determine when they're a string array.
+ *
+ * @param x the value from a `WizardControlLabelValue` entry
+ */
+const isStringArrayValues = (x: string | string[]): x is string[] =>
+  !S.isString(x);
 
 /**
  * Used to specify the values for a control identified by their labels. Where the first element of
@@ -255,12 +294,33 @@ const buildLabelValue = (
       return buildLabelValueForControl(title, values[0]);
     case "calendar":
       return buildLabelValueForControl(title, values);
-    case "html":
     case "shufflebox":
+      // For shuffle box we'll rely on unique labels for the options
+      const labels: string[] = pipe(
+        options,
+        A.filter((o) => values.includes(o.value)),
+        A.map(({ text }) =>
+          pipe(
+            text,
+            E.fromPredicate(
+              S.isString,
+              () => "Shufflebox requires 'text' to be defined"
+            ),
+            E.getOrElseW((s) => {
+              throw new TypeError(s);
+            })
+          )
+        )
+      );
+      return buildLabelValueForControl(title, labels);
+    case "html":
+      return new Map(); // Nothing to do
     case "shufflelist":
     case "termselector":
     case "userselector":
-      return new Map<string, string>();
+      throw new Error(
+        `Unsupported controlType [${controlType}] - please implement!`
+      );
     default:
       return absurd(controlType);
   }
@@ -293,6 +353,71 @@ export const generateMockedControls = (
     collectByTitle<string[], MockedControlValue>(buildControlValue)
   );
 };
+
+/**
+ * Produces a function to return an `IO` which given a `label` will add it to the selections
+ * column of the specified `shuffleBox` if its not already there. If it is there, then it just
+ * leaves it alone - but notifies via `console.debug`.
+ *
+ * @param shuffleBox the top level element of a shufflebox
+ */
+const selectShuffleBoxOption =
+  (shuffleBox: HTMLElement) =>
+  (label: string): IO.IO<void> => {
+    // Given the DOM ID for a potential shufflebox list, determine which list it is in. (Or, if
+    // determined not to be a shufflebox list, return `O.none`.)
+    const listFromId = (id: string): O.Option<string> =>
+      pipe(
+        id.match(/.+-(options|selections)-label-.+/), // based on IDs in <ShuffleBox>
+        O.fromNullable,
+        O.chain(A.lookup(1))
+      );
+
+    // Capture what list the specified label is in - or undefined if unknown
+    const withList = (
+      element: HTMLElement
+    ): { element: HTMLElement; list?: string } =>
+      pipe(
+        element.parentElement?.id,
+        O.fromNullable,
+        O.chain(listFromId),
+        O.toUndefined,
+        (list) => ({ element, list })
+      );
+
+    // Functionality to select an option and add it to the 'selections'
+    return () =>
+      pipe(
+        getByText(shuffleBox, label),
+        withList,
+        E.fromPredicate(
+          ({ list }) => list !== undefined,
+          () => `Option "${label}" is in the wrong place!`
+        ),
+        E.fold(
+          (e) => {
+            throw new Error(e);
+          },
+          flow(
+            O.fromPredicate(({ list }) => list === "options"),
+            O.match(
+              () =>
+                console.debug(
+                  `No action taken on "${label}" as already in target list`
+                ),
+              ({ element: optionCheckbox }) => {
+                // tick the option
+                userEvent.click(optionCheckbox);
+                // click button to add to selections
+                userEvent.click(
+                  getByLabelText(shuffleBox, shuffleBoxStrings.addSelected)
+                );
+              }
+            )
+          )
+        )
+      );
+  };
 
 /**
  * Change the value(s) of a control using the appropriate DOM events mimicking user interaction.
@@ -374,7 +499,7 @@ export const updateControlValue = (
       traverseUpdates(selectCheckBox)();
       break;
     case "radiogroup":
-      // Radiogroup should have onle one label provided.
+      // Radiogroup should have only one label provided.
       userEvent.click(getByLabelText(container, labels[0]));
       break;
     case "html":
@@ -409,8 +534,8 @@ export const updateControlValue = (
           flow(
             NEA.head,
             E.fromPredicate(
-              (vs): vs is string[] => typeof vs[0] === "string",
-              () => "The type of Calendar values must be an string array"
+              isStringArrayValues,
+              () => "The type of Calendar values must be a string array"
             )
           )
         ),
@@ -426,10 +551,34 @@ export const updateControlValue = (
 
       break;
     case "shufflebox":
+      // First target in on the actual control - to allow for simple use of labels
+      const shuffleBox: HTMLElement = getWizardControlByTitle(
+        container,
+        labels[0]
+      );
+
+      // Function to traverse over all the options we wish to select and select them
+      const makeSelections = pipe(
+        values[0],
+        E.fromPredicate(
+          isStringArrayValues,
+          () => "Shufflebox requires 'values' to be an array of strings"
+        ),
+        E.getOrElseW((e) => {
+          throw new TypeError(e);
+        }),
+        A.traverse(IO.Applicative)(selectShuffleBoxOption(shuffleBox))
+      );
+
+      // do it!
+      makeSelections();
+      break;
     case "shufflelist":
     case "termselector":
     case "userselector":
-      break;
+      throw new Error(
+        `Unsupported controlType [${controlType}] - please implement!`
+      );
     default:
       return absurd(controlType);
   }
@@ -496,12 +645,36 @@ export const getControlValue = (
       );
 
       return new Map([[labels[0], vs]]);
-    case "html":
     case "shufflebox":
+      const shuffleBoxTitle: string = labels[0];
+      const shuffleBoxSelections: string[] = pipe(
+        getWizardControlByTitle(container, shuffleBoxTitle),
+        (shuffleBox) =>
+          getByLabelText(
+            shuffleBox,
+            shuffleBoxStrings.currentSelections
+          ).querySelector("ul"),
+        E.fromNullable("Failed to find the selections list!"),
+        E.map(
+          flow(
+            (list) => list.querySelectorAll("span.MuiTypography-root"),
+            Array.from,
+            A.map<HTMLSpanElement, string>((e) => e.textContent ?? "")
+          )
+        ),
+        E.getOrElseW((e) => {
+          throw new Error(e);
+        })
+      );
+      return new Map([[shuffleBoxTitle, shuffleBoxSelections]]);
+    case "html":
+      return new Map(); // Nothing to do
     case "shufflelist":
     case "termselector":
     case "userselector":
-      return new Map<string, string>();
+      throw new Error(
+        `Unsupported controlType [${controlType}] - please implement!`
+      );
     default:
       return absurd(controlType);
   }
