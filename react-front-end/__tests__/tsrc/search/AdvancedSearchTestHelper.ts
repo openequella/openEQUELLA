@@ -26,6 +26,7 @@ import * as M from "fp-ts/Map";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as O from "fp-ts/Option";
 import { contramap, Ord } from "fp-ts/Ord";
+import { not } from "fp-ts/Predicate";
 import * as S from "fp-ts/string";
 import {
   BasicControlEssentials,
@@ -35,7 +36,8 @@ import {
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { selectOption } from "../MuiTestHelpers";
 
-const { shuffleBox: shuffleBoxStrings } = languageStrings;
+const { shuffleBox: shuffleBoxStrings, shuffleList: shuffleListStrings } =
+  languageStrings;
 
 export const wizardControlBlankLabel = "!!BLANK LABEL!!";
 export const editBoxEssentials: BasicControlEssentials = {
@@ -210,6 +212,18 @@ const controlValues: Map<BasicControlEssentials, string[]> = new Map([
     },
     ["shuffle1", "shuffle2", "shuffle4"], // includes default option
   ],
+  [
+    {
+      title: "A Shuffle List",
+      description: "This is a shufflelist",
+      schemaNodes: [{ target: "/item/shuffle/list", attribute: "" }],
+      mandatory: false,
+      controlType: "shufflelist",
+      options: [],
+      defaultValues: [], // Does not support default values
+    },
+    ["shuffle list first", "shuffle list second"],
+  ],
 ]);
 
 // Alias for the Map including a Wizard control's labels and values. However, the value can refer to
@@ -316,6 +330,7 @@ const buildLabelValue = (
     case "html":
       return new Map(); // Nothing to do
     case "shufflelist":
+      return buildLabelValueForControl(title, values);
     case "termselector":
     case "userselector":
       throw new Error(
@@ -463,6 +478,18 @@ export const updateControlValue = (
         throw new TypeError(e);
       })
     );
+  const updateShuffleValues = (f: (value: string) => IO.IO<void>) =>
+    pipe(
+      values[0],
+      E.fromPredicate(
+        isStringArrayValues,
+        () => "Shuffle controls require 'values' to be an array of strings"
+      ),
+      E.getOrElseW((e) => {
+        throw new TypeError(e);
+      }),
+      A.traverse(IO.Applicative)(f)
+    );
 
   switch (controlType) {
     case "editbox":
@@ -558,22 +585,33 @@ export const updateControlValue = (
       );
 
       // Function to traverse over all the options we wish to select and select them
-      const makeSelections = pipe(
-        values[0],
-        E.fromPredicate(
-          isStringArrayValues,
-          () => "Shufflebox requires 'values' to be an array of strings"
-        ),
-        E.getOrElseW((e) => {
-          throw new TypeError(e);
-        }),
-        A.traverse(IO.Applicative)(selectShuffleBoxOption(shuffleBox))
+      const makeSelections = updateShuffleValues(
+        selectShuffleBoxOption(shuffleBox)
       );
 
       // do it!
       makeSelections();
       break;
     case "shufflelist":
+      // First target in on the actual control - to allow for simple use of labels
+      const shuffleList: HTMLElement = getWizardControlByTitle(
+        container,
+        labels[0]
+      );
+      const newEntryField: HTMLElement = getByLabelText(
+        shuffleList,
+        shuffleListStrings.newEntry
+      );
+
+      const addValues = updateShuffleValues(
+        (value: string): IO.IO<void> =>
+          () =>
+            userEvent.type(newEntryField, value + "{enter}")
+      );
+
+      // Do it!
+      addValues();
+      break;
     case "termselector":
     case "userselector":
       throw new Error(
@@ -626,6 +664,15 @@ export const getControlValue = (
       O.toUndefined
     );
 
+  // Gets the string values for <ListItem>s in a <List>
+  const getListValues = (list: HTMLUListElement): string[] =>
+    pipe(
+      list.querySelectorAll("span.MuiTypography-root"),
+      Array.from,
+      A.map<HTMLSpanElement, string>((e) => e.textContent ?? ""),
+      A.filter(not(S.isEmpty))
+    );
+
   switch (controlType) {
     case "editbox":
       return getInputValue(labels);
@@ -655,13 +702,7 @@ export const getControlValue = (
             shuffleBoxStrings.currentSelections
           ).querySelector("ul"),
         E.fromNullable("Failed to find the selections list!"),
-        E.map(
-          flow(
-            (list) => list.querySelectorAll("span.MuiTypography-root"),
-            Array.from,
-            A.map<HTMLSpanElement, string>((e) => e.textContent ?? "")
-          )
-        ),
+        E.map(getListValues),
         E.getOrElseW((e) => {
           throw new Error(e);
         })
@@ -670,6 +711,25 @@ export const getControlValue = (
     case "html":
       return new Map(); // Nothing to do
     case "shufflelist":
+      const shuffleListTitle: string = labels[0];
+      const shuffleListValues: string[] = pipe(
+        getWizardControlByTitle(container, shuffleListTitle),
+        (shuffleList) => shuffleList.querySelector("ul"),
+        E.fromNullable(
+          "Failed to find the unordered list of shuffle list values"
+        ),
+        E.map(
+          flow(
+            getListValues,
+            // Strip out the text for the input field
+            A.filter(not(S.startsWith(shuffleListStrings.newEntry)))
+          )
+        ),
+        E.getOrElseW((e) => {
+          throw new Error(e);
+        })
+      );
+      return new Map([[shuffleListTitle, shuffleListValues]]);
     case "termselector":
     case "userselector":
       throw new Error(

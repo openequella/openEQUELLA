@@ -23,6 +23,7 @@ import { absurd, constFalse, flow, pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as O from "fp-ts/Option";
+import * as RSET from "fp-ts/ReadonlySet";
 import { Refinement } from "fp-ts/Refinement";
 import { first } from "fp-ts/Semigroup";
 import * as SET from "fp-ts/Set";
@@ -36,6 +37,7 @@ import { WizardListBox } from "./WizardListBox";
 import { WizardRadioButtonGroup } from "./WizardRadioButtonGroup";
 import { WizardRawHtml } from "./WizardRawHtml";
 import { WizardShuffleBox } from "./WizardShuffleBox";
+import { WizardShuffleList } from "./WizardShuffleList";
 import { WizardUnsupported } from "./WizardUnsupported";
 
 /**
@@ -253,6 +255,9 @@ const controlFactory = (
       O.toUndefined
     );
 
+  const valueAsStringSet = (): Set<string> =>
+    new Set(ifAvailable<string[]>(value, getStringArrayControlValue) ?? []);
+
   const { controlType, mandatory, title, description, size1, size2, options } =
     control;
 
@@ -267,6 +272,10 @@ const controlFactory = (
   // `onChange` with an empty array instead of an array that has an empty string only.
   const onChangeForSingleValue = (newValue: string) =>
     onChange(S.isEmpty(newValue) ? [] : [newValue]);
+
+  // For controls which return a Set<string>, convert to plain ol' array and
+  // call the standard onChange handler.
+  const onChangeForStringSet = flow(SET.toArray<string>(OrdAsIs), onChange);
 
   switch (controlType) {
     case "editbox":
@@ -327,15 +336,18 @@ const controlFactory = (
         <WizardShuffleBox
           {...commonProps}
           options={wizardControlOptionsToMap(options)}
-          values={
-            new Set(
-              ifAvailable<string[]>(value, getStringArrayControlValue) ?? []
-            )
-          }
-          onSelect={flow(SET.toArray<string>(OrdAsIs), onChange)}
+          values={valueAsStringSet()}
+          onSelect={onChangeForStringSet}
         />
       );
     case "shufflelist":
+      return (
+        <WizardShuffleList
+          {...commonProps}
+          values={valueAsStringSet()}
+          onChange={flow(RSET.toSet, onChangeForStringSet)}
+        />
+      );
     case "termselector":
     case "userselector":
       return <WizardUnsupported id={id} />;
@@ -347,7 +359,7 @@ const controlFactory = (
 /**
  * Produces an array of `JSX.Element`s representing the wizard defined by the provided `controls`.
  * Setting their values to those provided in `values` and configuring them with an onChange handler
- * which can set their value in the external instance of `values` - correctly targetted etc.
+ * which can set their value in the external instance of `values` - correctly targeted etc.
  *
  * Later, this will also be used for the evaluation and execution of visibility scripting.
  *
