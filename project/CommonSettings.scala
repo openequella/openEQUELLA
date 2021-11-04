@@ -42,7 +42,7 @@ object CommonSettings extends AutoPlugin {
     lazy val log4jCustom     = LocalProject("com_tle_log4j")
     lazy val xstreamDep      = "com.thoughtworks.xstream" % "xstream" % "1.4.11.1"
     lazy val postgresDep     = "org.postgresql" % "postgresql" % "42.3.1"
-    lazy val sqlServerDep    = "com.microsoft.sqlserver" % "mssql-jdbc" % "6.1.0.jre8"
+    lazy val sqlServerDep    = "com.microsoft.sqlserver" % "mssql-jdbc" % "6.4.0.jre9"
   }
 
   override def trigger: PluginTrigger = allRequirements
