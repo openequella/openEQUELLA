@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 @SuppressWarnings("nls")
 public class DefaultSearch extends VeryBasicSearch {
@@ -77,8 +78,8 @@ public class DefaultSearch extends VeryBasicSearch {
   }
 
   @Override
-  public String getCustomLuceneQuery() {
-    return customLuceneQuery;
+  public Optional<String> getCustomLuceneQuery() {
+    return Optional.ofNullable(customLuceneQuery);
   }
 
   public void setCustomLuceneQuery(String customLuceneQuery) {

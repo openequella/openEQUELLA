@@ -970,15 +970,19 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       Query extraQuery = addExtraQuery(query, request, reader);
 
       // if custom Lucene query is provided, combine it with `extraQuery`.
-      return processCustomLuceneQuery(request.getCustomLuceneQuery())
-          .<Query>map(
-              q -> {
-                BooleanQuery combinedQuery = new BooleanQuery();
-                combinedQuery.add(extraQuery, Occur.MUST);
-                combinedQuery.add(q, Occur.MUST);
+      return request
+          .getCustomLuceneQuery()
+          .<Query>flatMap(
+              luceneQuery ->
+                  processCustomLuceneQuery(luceneQuery)
+                      .map(
+                          q -> {
+                            BooleanQuery combinedQuery = new BooleanQuery();
+                            combinedQuery.add(extraQuery, Occur.MUST);
+                            combinedQuery.add(q, Occur.MUST);
 
-                return combinedQuery;
-              })
+                            return combinedQuery;
+                          }))
           .orElse(extraQuery);
     } catch (ParseException ex) {
       throw new InvalidSearchQueryException(queryString, ex);

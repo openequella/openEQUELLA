@@ -96,7 +96,8 @@ class SearchParam {
   @QueryParam("musts")
   var musts: Array[String] = _
 
-  @ApiParam("Custom Lucene query")
+  @ApiParam(
+    "Custom Lucene query which will be merged with the query generated from the other parameters. The relationship between them is 'AND'.")
   @QueryParam("customLuceneQuery")
   var customLuceneQuery: String = _
 }
