@@ -34,6 +34,7 @@ export * as SearchSettings from './SearchSettings';
 export * as Security from './Security';
 export * as Settings from './Settings';
 export * as Taxonomy from './Taxonomy';
+export * as Tokenisation from './Tokenisation';
 export * as UserQuery from './UserQuery';
 export * as Utils from './Utils';
 export * as WizardCommonTypes from './WizardCommonTypes';
