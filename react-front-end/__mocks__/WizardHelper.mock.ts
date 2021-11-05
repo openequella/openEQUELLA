@@ -267,7 +267,7 @@ export const controls: OEQ.WizardControl.WizardControl[] = [
     size1: 0,
     size2: 0,
     title: "Raw Html",
-    description: "<h1>This is just a raw Html content</h1>>",
+    description: "<h1>This is just a raw Html content</h1>",
     targetNodes: [],
     options: [],
     defaultValues: [],
