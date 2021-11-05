@@ -387,7 +387,7 @@ EclipseKeys.eclipseOutput := Some("target/scala-2.11/classes/")
 
 All code should be formatted using the following tools.
 Assuming you've followed the above steps to install the pre-commit hooks this will be done automatically for you at commit time.
-However if you don't, then the CI pipelines will fail during checking.
+However, if you don't, then the CI pipelines will fail for your pull requests.
 
 - Scala - [scalafmt](https://scalameta.org/scalafmt/)
 - Java - [Google Java Format](https://github.com/google/google-java-format)
