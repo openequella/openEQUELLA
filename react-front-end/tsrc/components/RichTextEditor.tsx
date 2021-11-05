@@ -15,10 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useEffect, useState } from "react";
+
 import * as React from "react";
+import { useEffect, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { AxiosPromise, AxiosResponse } from "axios";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import * as E from "fp-ts/Either";
+import * as TE from "fp-ts/TaskEither";
+
 import { getBaseUrl, getRenderData } from "../AppConfig";
 
 import "tinymce/tinymce";
@@ -101,24 +107,45 @@ const RichTextEditor = ({
     setTimeout(() => {
       // this is a workaround for something related to: https://github.com/tinymce/tinymce-angular/issues/76
       setReady(true);
-      console.log(ready);
     }, 1);
-  });
+  }, []);
+
+  // const uploadImages = (
+  //   blobInfo: BlobInfo,
+  //   success: (msg: string) => void,
+  //   failure: (msg: string) => void
+  // ): void => {
+  //   if (imageUploadCallBack) {
+  //     imageUploadCallBack(blobInfo)
+  //       .then((response: AxiosResponse<ImageReturnType>) =>
+  //         success(response.data.link)
+  //       )
+  //       .catch((error: Error) => failure(error.name + error.message));
+  //   } else {
+  //     failure("No upload path specified.");
+  //   }
+  // };
 
   const uploadImages = (
     blobInfo: BlobInfo,
     success: (msg: string) => void,
     failure: (msg: string) => void
-  ): void => {
-    if (imageUploadCallBack) {
-      imageUploadCallBack(blobInfo)
-        .then((response: AxiosResponse<ImageReturnType>) =>
-          success(response.data.link)
-        )
-        .catch((error: Error) => failure(error.name + error.message));
-    } else {
-      failure("No upload path specified.");
-    }
+  ) => {
+    pipe(
+      imageUploadCallBack,
+      O.fromNullable,
+      O.map((cb) => {
+        TE.tryCatch(
+          () => {
+            return cb(blobInfo);
+          },
+          (error) => failure(error.name + error.message)
+        );
+      }),
+      O.getOrElse(() => {
+        failure("No upload path specified.");
+      })
+    );
   };
 
   const defaultSkinUrl =
