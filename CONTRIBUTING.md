@@ -236,7 +236,7 @@ task is required to copy the jars into a known location for the runner. This tas
 `prepareDevConfig` task too.
 
 ```bash
-~$ sbt jpfWriteDevJars
+./sbt jpfWriteDevJars
 ```
 
 ### Running SBT task to generate non-java resources
@@ -246,7 +246,7 @@ resources from the resource folders, it won't run any of the scripts that genera
 as compile code to Javascript), in order to do this you can run:
 
 ```bash
-~$ ./sbt resources
+./sbt resources
 ```
 
 ### Running a dev server
@@ -254,7 +254,7 @@ as compile code to Javascript), in order to do this you can run:
 Ensure you have your `Dev/learningedge-config` setup.
 
 ```bash
-~$ ./sbt compile equellaserver/run
+./sbt compile equellaserver/run
 ```
 
 Alternatively you can run the server from your IDE by running the class:
@@ -269,33 +269,80 @@ Ensure that your runner settings compiles the whole project before running:
 
 ### Running the admin tool
 
+This guide runs sbt in non-interactive mode. You can run in interactive mode to save rebuild time by first running 'sbt', and the another command such as 'compile'.
+
 Ensure you have your server running and know it's
 
 ```bash
-~$ ./sbt compile adminTool/run
+./sbt compile adminTool/run
 ```
 
 or run `com.tle.client.harness.ClientLauncher` in the `Source/Server/adminTool` project.
 
-### Developing the JS code
+### Building distribution packages
 
-In the `Source/Plugins/Core/com.equella.core/js` directory you will find a yarn/npm
-project which compiles Purescript/Typescript/Sass into JS and CSS. Currently there are number
-of separate JS bundles which are generated using Parcel. You can use parcel watched mode to
-have changes automatically bundled up and reloaded in the browser:
+To create the various distribution packages (installer / upgrader):
 
-```sh
-~/Source/Plugins/Core/com.equella.core/js$ npm run dev
+```bash
+./sbt installerZip
 ```
 
-This will build the javascript bundles to the correct location for running a dev openEQUELLA and will
-watch for source changes and re-build if required.
+## Working with the JS and TS code
 
-#### New UI
+There are two key parts of JS/TS code in openEQUELLA. There is the code for the New UI which is a
+React based SPA; and then there is the legacy JS code which supports AJAX functions when the system
+is in Legacy UI mode.
 
-in folder`./react-front-end` you need run `npm ci` for the first time to init the sub-project.
+### New UI / React SPA
 
-And run `npm run dev` command before you dev the code.
+The New UI consists of two modules:
+
+- The React based SPA located in the `react-front-end` directory; and
+- The REST Module which is located in the `oeq-ts-rest-api` directory.
+
+For the most part, if you wish to work on the new UI you can simply go into the `react-front-end`
+directory and execute:
+
+```bash
+npm ci
+npm run dev
+```
+
+The first will also trigger a build of the REST module, and then `run dev` will build the React App
+and place the output into the directory from which openEQUELLA serves its web resources.
+
+Further to this, you may also wish to utilise the Storybook setup when working on UI  components.
+This can be done by:
+
+```bash
+npm run storybook
+```
+
+Once built, it will launch the endpoint for Storybook into your browser.
+
+Lastly, to run the Jest tests, you can go into either of the modules directories and run:
+
+```bash
+npm run test
+```
+
+(NOTE: to run the tests for the REST module you need a locally running instance of openEQUELLA with
+the required institutions.)
+
+### Legacy UI
+
+In the `Source/Plugins/Core/com.equella.core/resource/web/js` directory you will find the JS code
+used by the various Legacy UI pages which have AJAX functionality. Further in
+`Source/Plugins/Core/com.equella.core/test/js` you will find the unit test setup for any of the
+newer JS files.
+
+### Other
+
+There are also a couple of other places which utilise JS, TS and even Purescript. The main ones
+being:
+
+- The support for Swagger UI at `Source/Plugins/Core/com.equella.core/swaggerui`
+- The IntegTester used for the integration tests and found at `/autotest/IntegTester/ps`
 
 ## IDE
 
@@ -303,7 +350,7 @@ The source isn't tied to a particular IDE, so it should be buildable
 with any IDE which has an SBT integration. Having said that IntelliJ is
 what most developers are using.
 
-#### IntelliJ - latest
+### IntelliJ - latest
 
 To install it, follow the instructions provided by JetBrains at https://www.jetbrains.com/help/idea/installation-guide.html
 
@@ -312,18 +359,18 @@ Import as an SBT project and use the default settings.
 If you get compile errors in the IDE, but standalone `./sbt compile` works, do an sbt refresh from the
 IntelliJ `SBT tool window`.
 
-##### Increase the memory heap
+#### Increase the memory heap
 
 Due to the heavy memory requirements of the SBT based build, it is recommended to setup IntelliJ's maximum heap to 4GiB. Documentation on how to do this can be found at <https://www.jetbrains.com/help/idea/increasing-memory-heap.html>.
 
-##### Plugins recommended
+#### Plugins recommended
 
 In order to speed up the IDE. We recommend only enable relevant plugins.
 But make sure you enable the Scala plugin as well as support for Typescript and Gradle (you have Java by default).
 
 Plugins can be configured in File -> settings -> Plugins.
 
-#### Eclipse - Scala IDE 4.6
+### Eclipse - Scala IDE 4.6
 
 You must use the [sbteclipse](https://github.com/typesafehub/sbteclipse) plug-in to write projects
 out Eclipse projects and you must configure it with the following settings:
@@ -336,7 +383,7 @@ EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.ManagedClas
 EclipseKeys.eclipseOutput := Some("target/scala-2.11/classes/")
 ```
 
-#### Code Formatters
+## Code Formatters
 
 All code should be formatted using the following tools.
 Assuming you've followed the above steps to install the pre-commit hooks this will be done automatically for you at commit time.
@@ -377,15 +424,6 @@ signer {
 To avoid this it is needed to add the domain you want to trust as a security exception in your java configuration.
 It can be done with the Java Control Panel or directly adding the domain in a new line in this file:
 \${user.home}/.java/deployment/security/exception.sites
-
-## Building the installer
-
-This guide runs sbt in non-interactive mode. You can run in interactive mode to save rebuild time by first running 'sbt', and the another command such as 'compile'.
-
-```bash
-cd /path/to/openEquella
-./sbt installerZip
-```
 
 ## SBT Notes
 
