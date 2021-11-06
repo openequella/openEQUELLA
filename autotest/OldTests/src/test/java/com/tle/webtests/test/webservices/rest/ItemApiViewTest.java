@@ -195,7 +195,7 @@ public class ItemApiViewTest extends AbstractItemApiTest {
     assertPackageResource(attachments.get(8));
     assertPackage(attachments.get(9));
     assertZip(attachments.get(11));
-    assertEquals(attachments.size(), 12);
+    assertEquals(attachments.size(), 13);
   }
 
   private void assertAll(ObjectNode tree) {
