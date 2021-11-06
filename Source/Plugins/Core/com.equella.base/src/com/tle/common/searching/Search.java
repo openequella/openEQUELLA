@@ -23,6 +23,7 @@ import com.tle.beans.item.ItemSelect;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public interface Search {
   String INDEX_TASK = "task";
@@ -93,4 +94,18 @@ public interface Search {
    * @return True if server time zone is used or otherwise false.
    */
   boolean useServerTimeZone();
+
+  /**
+   * Returns an optional additional query which is in raw text Lucene query syntax, available to be
+   * merged with other query parameters. e.g. name:OEQ AND year:[2021-11-01 TO * ] AND (city:Hobart
+   * OR city:Sydney) AND message:"hello world"
+   *
+   * <p>The background of creating this method is to support the Lucene query built in New Advanced
+   * search page.
+   *
+   * @return An Optional string in Lucene query syntax.
+   */
+  default Optional<String> getCustomLuceneQuery() {
+    return Optional.empty();
+  }
 }
