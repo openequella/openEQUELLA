@@ -61,6 +61,9 @@ describe("render()", () => {
             radiogroup: () => "WizardRadioButtonGroup",
             shufflebox: () => "WizardShuffleBox",
             shufflelist: () => "WizardShuffleList",
+            checkboxgroup: () => "WizardCheckBoxGroup",
+            listbox: () => "WizardListBox",
+            html: () => "WizardRawHtml",
             _: () => "WizardUnsupported",
           })
         )

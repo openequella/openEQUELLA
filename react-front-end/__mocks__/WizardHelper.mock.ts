@@ -192,5 +192,86 @@ export const controls: OEQ.WizardControl.WizardControl[] = [
     isCheckDuplication: false,
     isTokenise: true,
   },
+  {
+    mandatory: false,
+    reload: false,
+    include: true,
+    size1: 2,
+    size2: 0,
+    title: "Check box group",
+    description: "This is check box group, shows 2 items per row",
+    targetNodes: [
+      {
+        target: "/item/description",
+        attribute: "",
+        fullTarget: "/item/description",
+        xoqlPath: "/item/description",
+        freetextField: "/item/description",
+      },
+    ],
+    options: [
+      {
+        text: "Zebra",
+        value: "z",
+      },
+      {
+        text: "Cat",
+        value: "c",
+      },
+      {
+        text: "Mouse",
+        value: "m",
+      },
+    ],
+    defaultValues: [],
+    controlType: "checkboxgroup",
+  },
+  {
+    mandatory: false,
+    reload: false,
+    include: true,
+    size1: 0,
+    size2: 0,
+    title: "List box",
+    description: "This is list box targeting name",
+    targetNodes: [
+      {
+        target: "/item/name",
+        attribute: "",
+        fullTarget: "/item/name",
+        xoqlPath: "/item/name",
+        freetextField: "/item/name",
+      },
+    ],
+    options: [
+      {
+        text: "Zebra",
+        value: "z",
+      },
+      {
+        text: "Dog",
+        value: "d",
+      },
+      {
+        text: "Monkey",
+        value: "m",
+      },
+    ],
+    defaultValues: [],
+    controlType: "listbox",
+  },
+  {
+    mandatory: false,
+    reload: false,
+    include: true,
+    size1: 0,
+    size2: 0,
+    title: "Raw Html",
+    description: "<h1>This is just a raw Html content</h1>",
+    targetNodes: [],
+    options: [],
+    defaultValues: [],
+    controlType: "html",
+  },
   { controlType: "unknown" },
 ];
