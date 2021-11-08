@@ -30,6 +30,7 @@ import * as A from "fp-ts/Array";
 import { constFalse, flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import React, { useCallback, useState } from "react";
+import * as _ from "lodash";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import * as WizardHelper from "../../components/wizard/WizardHelper";
 import { languageStrings } from "../../util/langstrings";
@@ -93,6 +94,20 @@ export const AdvancedSearchPanel = ({
     [currentValues, setCurrentValues]
   );
 
+  /**
+   * Handler for when user click clear button
+   * set all input field value to []
+   */
+  const onClear = () => {
+    const clearValues = _.cloneDeep(currentValues);
+
+    clearValues.forEach((value, target): void => {
+      clearValues.set(target, []);
+    });
+
+    setCurrentValues(clearValues);
+  };
+
   const idPrefix = "advanced-search-panel";
   return (
     <Card id={idPrefix}>
@@ -139,6 +154,13 @@ export const AdvancedSearchPanel = ({
           color="primary"
         >
           {languageStrings.common.action.search}
+        </Button>
+        <Button
+          id={`${idPrefix}-clearBtn`}
+          onClick={() => onClear()}
+          color="secondary"
+        >
+          {languageStrings.common.action.clear}
         </Button>
       </CardActions>
     </Card>
