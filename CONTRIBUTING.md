@@ -267,11 +267,10 @@ Ensure that your runner settings compiles the whole project before running:
 
 - IntelliJ - `Before Launch -> Build Project`
 
-### Running the admin tool
+### Running the Admin Console
 
-This guide runs sbt in non-interactive mode. You can run in interactive mode to save rebuild time by first running 'sbt', and the another command such as 'compile'.
-
-Ensure you have your server running and know it's
+Once you have successfully started the server with the above commands, you can then launch the Admin Console
+to manage it. To do so from the command line with SBT, run:
 
 ```bash
 ./sbt compile adminTool/run
