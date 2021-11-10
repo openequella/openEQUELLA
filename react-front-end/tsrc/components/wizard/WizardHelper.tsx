@@ -18,8 +18,11 @@
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
+import * as TE from "fp-ts/TaskEither";
+import * as T from "fp-ts/Task";
 import { Eq, struct } from "fp-ts/Eq";
-import { absurd, constFalse, flow, pipe } from "fp-ts/function";
+import { absurd, constFalse, flow, identity, pipe } from "fp-ts/function";
+import { not } from "fp-ts/Predicate";
 import * as M from "fp-ts/Map";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as O from "fp-ts/Option";
@@ -29,6 +32,7 @@ import { first } from "fp-ts/Semigroup";
 import * as SET from "fp-ts/Set";
 import * as S from "fp-ts/string";
 import * as React from "react";
+import { getTokensForText } from "../../modules/TokenisationModule";
 import { OrdAsIs } from "../../util/Ord";
 import { WizardCalendar } from "./WizardCalendar";
 import { WizardCheckBoxGroup } from "./WizardCheckBoxGroup";
@@ -439,4 +443,139 @@ export const extractDefaultValues = (
       addQueryValueToMap
     )
   );
+};
+
+const OR = " OR ";
+const AND = " AND ";
+
+// Function to create a Task which builds a raw Lucene query for each control type.
+const queryFactory = (
+  { type, schemaNode }: ControlTarget,
+  values: ControlValue
+): TE.TaskEither<string, string> => {
+  // Function to build a query string containing only one 'field:value' for one path.
+  const singleValueQueryBuilder = (
+    path: string,
+    values: ControlValue
+  ): string => `${path}:${values[0]}`;
+
+  // Function to build and join multiple 'field:value' into one query string for one path.
+  const multipleValueQueryBuilder = (
+    path: string,
+    values: ControlValue
+  ): string => values.map((v) => `${path}:${v}`).join(OR);
+
+  // Function to build query strings for multiple paths and join all into one query.
+  const buildQueries = (
+    schemaNode: string[],
+    values: ControlValue,
+    builder: (p: string, v: ControlValue) => string = singleValueQueryBuilder,
+    isTokenised = false
+  ): string =>
+    `(${schemaNode
+      .map((n) => builder(`${n}${isTokenised ? "*" : ""}`, values))
+      .join(AND)})`;
+
+  const factory = async (): Promise<string> => {
+    switch (type) {
+      case "calendar":
+        const [start, end] = pipe(
+          values,
+          A.filter(S.isString),
+          A.filter(not(S.isEmpty)) // Only keep non-empty strings
+        );
+        const dateRangeQuery = (path: string) =>
+          `${path}:[${start ?? "*"} TO ${end ?? "*"}]`;
+
+        return pipe(
+          start || end,
+          E.fromPredicate(S.isString, () => ""), // No query needed when both are undefined.
+          E.fold(identity, (_) =>
+            buildQueries(schemaNode, values, dateRangeQuery)
+          )
+        );
+      case "checkboxgroup":
+        return buildQueries(schemaNode, values, multipleValueQueryBuilder);
+      case "editbox":
+        const { tokens } = await getTokensForText(`${values[0]}`);
+        return buildQueries(
+          schemaNode,
+          tokens,
+          multipleValueQueryBuilder,
+          true
+        );
+      case "html":
+        return "";
+      case "listbox":
+        return buildQueries(schemaNode, values);
+      case "radiogroup":
+        return buildQueries(schemaNode, values);
+      case "shufflebox":
+        return buildQueries(schemaNode, values, multipleValueQueryBuilder);
+      case "termselector":
+        return buildQueries(schemaNode, values, multipleValueQueryBuilder);
+      case "userselector":
+        return buildQueries(schemaNode, values, multipleValueQueryBuilder);
+      case "shufflelist":
+        //todo How to support whether to get tokens or not??
+        return "";
+      default:
+        return absurd(type);
+    }
+  };
+
+  return TE.tryCatch(
+    factory,
+    () =>
+      `Failed to build for path ${schemaNode.join()} (control type: ${type})`
+  );
+};
+
+/**
+ * Function to build a raw Lucene query string based on the values of Wizard controls.
+ * Since some controls support tokenisation, the function will send a request to server
+ * to retrieve tokens. As a result, this function returns a Promise of string eventually.
+ *
+ * @param m Map which provides ControlTarget and ControlValue.
+ */
+export const generateRawLuceneQuery = async (
+  m: FieldValueMap
+): Promise<string> => {
+  // Because it's likely to have multiple errors when building the whole query,
+  // lift `queryFactory` so that it returns a TaskEither where left is an array of string.
+  const liftedQueryFactory = (
+    t: ControlTarget,
+    v: ControlValue
+  ): TE.TaskEither<string[], string> =>
+    pipe(
+      queryFactory(t, v),
+      TE.mapLeft((a) => [a])
+    );
+
+  // A task to build and return raw Lucene queries for all the controls,
+  // or throw errors.
+  const queryTask = pipe(
+    m,
+    M.filter<ControlValue>(isControlValueNonEmpty),
+    M.collect<ControlTarget>(OrdAsIs)(liftedQueryFactory),
+    // Convert an array of TE to an TE where left and right are both string[].
+    A.sequence(
+      TE.getApplicativeTaskValidation(
+        T.ApplicativeSeq,
+        A.getSemigroup<string>()
+      )
+    ),
+    T.map(
+      flow(
+        E.fold((e) => {
+          throw new Error(e.join());
+        }, identity)
+      )
+    )
+  );
+
+  // Now run the task.
+  const queries = await queryTask();
+  // Remove any query that is just an empty string and then join the remaining with `AND`.
+  return queries.filter(not(S.isEmpty)).join(AND);
 };
