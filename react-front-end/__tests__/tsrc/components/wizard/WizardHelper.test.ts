@@ -21,13 +21,18 @@ import { pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as R from "fp-ts/Record";
-import { controls } from "../../../../__mocks__/WizardHelper.mock";
+import {
+  controls,
+  mockedFieldValueMap,
+} from "../../../../__mocks__/WizardHelper.mock";
 import {
   ControlTarget,
   FieldValue,
+  generateRawLuceneQuery,
   render,
 } from "../../../../tsrc/components/wizard/WizardHelper";
 import { simpleMatch } from "../../../../tsrc/util/match";
+import * as TokenisationModule from "../../../../tsrc/modules/TokenisationModule";
 
 /**
  * Produces a summary of the number of occurrences in an array identified by keys generated
@@ -134,5 +139,28 @@ describe("render()", () => {
     expect(() =>
       render(controls, M.singleton(nameEditboxTarget, [1]), logOnChange)
     ).toThrow(TypeError);
+  });
+});
+
+describe("generateRawLuceneQuery()", () => {
+  jest
+    .spyOn(TokenisationModule, "getTokensForText")
+    .mockResolvedValue({ tokens: ["hello", "world"] });
+
+  it("builds raw Lucene query for Wizard controls", async () => {
+    const query = await generateRawLuceneQuery(mockedFieldValueMap);
+
+    const expectedQuery =
+      "(/controls/calendar:[2021-11-01 TO *]) AND " +
+      "(/controls/checkbox:(optionA, optionB)) AND " +
+      "(/controls/editbox*:(hello world)) AND " +
+      "(/controls/listbox:optionC) AND " +
+      "(/controls/radiogroup:optionD) AND " +
+      "(/controls/shufflebox:(optionE optionF)) AND " +
+      "(/controls/shufflelist*:(hello world)) AND " +
+      "(/controls/termselector:(programming)) AND " +
+      "(/controls/userselector:(admin))";
+
+    expect(query).toBe(expectedQuery);
   });
 });
