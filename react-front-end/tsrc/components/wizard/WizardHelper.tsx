@@ -34,6 +34,7 @@ import * as S from "fp-ts/string";
 import * as React from "react";
 import { getTokensForText } from "../../modules/TokenisationModule";
 import { OrdAsIs } from "../../util/Ord";
+import { pfTernary } from "../../util/pointfree";
 import { WizardCalendar } from "./WizardCalendar";
 import { WizardCheckBoxGroup } from "./WizardCheckBoxGroup";
 import { WizardEditBox } from "./WizardEditBox";
@@ -134,6 +135,10 @@ const isStringArray = (xs: ControlValue): xs is NEA.NonEmptyArray<string> =>
  * If you also want to confirm if the value is `string`, use `isStringArray`.
  */
 const isControlValueNonEmpty = (xs: ControlValue): boolean => xs.length > 0;
+
+// Type guard which not only checks if a value is string but also checks if the value is not an empty string.
+const isNonEmptyString = (s: string | number): s is string =>
+  S.isString(s) && not(S.isEmpty)(s);
 
 const eqControlTarget: Eq<ControlTarget> = struct({
   schemaNode: A.getEq(S.Eq),
@@ -491,8 +496,7 @@ const queryFactory = (
       case "calendar":
         const [start, end] = pipe(
           values,
-          A.filter(S.isString),
-          A.filter(not(S.isEmpty)) // Only keep non-empty strings
+          A.filter(isNonEmptyString) // Only keep non-empty strings
         );
 
         const dateRangeQueryBuilder = (
@@ -554,7 +558,7 @@ const queryFactory = (
  */
 export const generateRawLuceneQuery = async (
   m: FieldValueMap
-): Promise<string> => {
+): Promise<string | undefined> => {
   // Because it's likely to have multiple errors when building the whole query,
   // lift `queryFactory` so that it returns a TaskEither where left is an array of string.
   const liftedQueryFactory = (
@@ -589,7 +593,17 @@ export const generateRawLuceneQuery = async (
   );
 
   // Now run the task.
-  const queries = await queryTask();
-  // Remove any query that is just an empty string and then join the remaining with `AND`.
-  return queries.filter(not(S.isEmpty)).join(AND);
+  const result: string[] = await queryTask();
+  // Remove any sub query that is just an empty string and then join the remaining with `AND`.
+  const queries: string = result.filter(isNonEmptyString).join(AND);
+
+  // If the final query is still an empty string, return undefined instead.
+  return pipe(
+    queries,
+    pfTernary<string, string | undefined>(
+      isNonEmptyString,
+      identity,
+      () => undefined
+    )
+  );
 };
