@@ -78,6 +78,10 @@ export interface ControlTarget {
    * The type of control that is being targeted.
    */
   type: OEQ.WizardControl.ControlType;
+  /**
+   * Whether to tokenise the value.
+   */
+  isValueTokenised?: boolean;
 }
 
 /**
@@ -157,6 +161,14 @@ export const buildControlTarget = (
    */
   schemaNode: c.targetNodes.map((n) => n.fullTarget),
   type: c.controlType,
+  /**
+   * If the control is an EditBox it always supports tokenisation.
+   * Or if it's ShuffleList, use its the flag `isTokenise`.
+   * False for others.
+   */
+  isValueTokenised:
+    c.controlType === "editbox" ||
+    (OEQ.WizardControl.isWizardShuffleListControl(c) && c.isTokenise),
 });
 
 /**
