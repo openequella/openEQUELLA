@@ -457,12 +457,11 @@ export const extractDefaultValues = (
   );
 };
 
-const OR = " OR ";
 const AND = " AND ";
 
 // Function to create a Task which builds a raw Lucene query for each control type.
 const queryFactory = (
-  { type, schemaNode }: ControlTarget,
+  { type, schemaNode, isValueTokenised }: ControlTarget,
   values: ControlValue
 ): TE.TaskEither<string, string> => {
   // Function to build a query string containing only one 'field:value' for one path.
@@ -475,17 +474,16 @@ const queryFactory = (
   const multipleValueQueryBuilder = (
     path: string,
     values: ControlValue
-  ): string => values.map((v) => `${path}:${v}`).join(OR);
+  ): string => `${path}:(${values.join(" ")})`; // Put all words in one group and separate each word by a whitespace.
 
   // Function to build query strings for multiple paths and join all into one query.
   const buildQueries = (
     schemaNode: string[],
     values: ControlValue,
-    builder: (p: string, v: ControlValue) => string = singleValueQueryBuilder,
-    isTokenised = false
+    builder: (p: string, v: ControlValue) => string = singleValueQueryBuilder
   ): string =>
     `(${schemaNode
-      .map((n) => builder(`${n}${isTokenised ? "*" : ""}`, values))
+      .map((n) => builder(`${n}${isValueTokenised ? "*" : ""}`, values))
       .join(AND)})`;
 
   const factory = async (): Promise<string> => {
@@ -510,12 +508,7 @@ const queryFactory = (
         return buildQueries(schemaNode, values, multipleValueQueryBuilder);
       case "editbox":
         const { tokens } = await getTokensForText(`${values[0]}`);
-        return buildQueries(
-          schemaNode,
-          tokens,
-          multipleValueQueryBuilder,
-          true
-        );
+        return buildQueries(schemaNode, tokens, multipleValueQueryBuilder);
       case "html":
         return "";
       case "listbox":
@@ -524,13 +517,19 @@ const queryFactory = (
         return buildQueries(schemaNode, values);
       case "shufflebox":
         return buildQueries(schemaNode, values, multipleValueQueryBuilder);
+      case "shufflelist":
+        const { tokens: shuffleTokens } = await getTokensForText(
+          values.join(" ")
+        );
+        return buildQueries(
+          schemaNode,
+          shuffleTokens,
+          multipleValueQueryBuilder
+        );
       case "termselector":
         return buildQueries(schemaNode, values, multipleValueQueryBuilder);
       case "userselector":
         return buildQueries(schemaNode, values, multipleValueQueryBuilder);
-      case "shufflelist":
-        //todo How to support whether to get tokens or not??
-        return "";
       default:
         return absurd(type);
     }
@@ -538,8 +537,8 @@ const queryFactory = (
 
   return TE.tryCatch(
     factory,
-    () =>
-      `Failed to build for path ${schemaNode.join()} (control type: ${type})`
+    (e) =>
+      `Failed to build Lucene query or path ${schemaNode.join()} (control type: ${type}) due to error: ${e}`
   );
 };
 
