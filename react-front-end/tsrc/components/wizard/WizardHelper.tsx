@@ -494,14 +494,17 @@ const queryFactory = (
           A.filter(S.isString),
           A.filter(not(S.isEmpty)) // Only keep non-empty strings
         );
-        const dateRangeQuery = (path: string) =>
-          `${path}:[${start ?? "*"} TO ${end ?? "*"}]`;
+
+        const dateRangeQueryBuilder = (
+          path: string,
+          [start, end]: ControlValue
+        ) => `${path}:[${start ?? "*"} TO ${end ?? "*"}]`;
 
         return pipe(
           start || end,
-          E.fromPredicate(S.isString, () => ""), // No query needed when both are undefined.
-          E.fold(identity, (_) =>
-            buildQueries(schemaNode, values, dateRangeQuery)
+          E.fromPredicate(S.isString, () => ""), // No query needed when both are undefined so return an empty string.
+          E.fold(identity, () =>
+            buildQueries(schemaNode, [start, end], dateRangeQueryBuilder)
           )
         );
       case "checkboxgroup":
