@@ -15,20 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import * as React from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { AxiosPromise, AxiosResponse } from "axios";
-
-import { getBaseUrl, getRenderData } from "../AppConfig";
-
-import "tinymce/tinymce";
+import * as React from "react";
 
 import "tinymce/icons/default";
-import "tinymce/themes/silver/theme";
+import "tinymce/plugins/advlist";
 
 import "tinymce/plugins/anchor";
-import "tinymce/plugins/advlist";
 import "tinymce/plugins/autolink";
 import "tinymce/plugins/autoresize";
 import "tinymce/plugins/charmap";
@@ -61,6 +55,10 @@ import "tinymce/plugins/toc";
 import "tinymce/plugins/visualblocks";
 import "tinymce/plugins/visualchars";
 import "tinymce/plugins/wordcount";
+import "tinymce/themes/silver/theme";
+
+import "tinymce/tinymce";
+import { getBaseUrl, getRenderData } from "../AppConfig";
 
 const renderData = getRenderData();
 
