@@ -27,7 +27,6 @@ import {
 import CloseIcon from "@material-ui/icons/Close";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
-import * as M from "fp-ts/Map";
 import { constFalse, flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import React, { useCallback, useState, useEffect } from "react";
