@@ -17,13 +17,8 @@
  */
 
 import * as React from "react";
-import { useEffect, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { AxiosPromise, AxiosResponse } from "axios";
-import { pipe } from "fp-ts/function";
-import * as O from "fp-ts/Option";
-import * as E from "fp-ts/Either";
-import * as TE from "fp-ts/TaskEither";
 
 import { getBaseUrl, getRenderData } from "../AppConfig";
 
@@ -101,57 +96,26 @@ const RichTextEditor = ({
   onStateChange,
   imageUploadCallBack,
 }: RichTextEditorProps) => {
-  const [ready, setReady] = useState<boolean>(false);
-
-  useEffect(() => {
-    setTimeout(() => {
-      // this is a workaround for something related to: https://github.com/tinymce/tinymce-angular/issues/76
-      setReady(true);
-    }, 1);
-  }, []);
-
-  // const uploadImages = (
-  //   blobInfo: BlobInfo,
-  //   success: (msg: string) => void,
-  //   failure: (msg: string) => void
-  // ): void => {
-  //   if (imageUploadCallBack) {
-  //     imageUploadCallBack(blobInfo)
-  //       .then((response: AxiosResponse<ImageReturnType>) =>
-  //         success(response.data.link)
-  //       )
-  //       .catch((error: Error) => failure(error.name + error.message));
-  //   } else {
-  //     failure("No upload path specified.");
-  //   }
-  // };
-
   const uploadImages = (
     blobInfo: BlobInfo,
     success: (msg: string) => void,
     failure: (msg: string) => void
-  ) => {
-    pipe(
-      imageUploadCallBack,
-      O.fromNullable,
-      O.map((cb) => {
-        TE.tryCatch(
-          () => {
-            return cb(blobInfo);
-          },
-          (error) => failure(error.name + error.message)
-        );
-      }),
-      O.getOrElse(() => {
-        failure("No upload path specified.");
-      })
-    );
+  ): void => {
+    if (imageUploadCallBack) {
+      imageUploadCallBack(blobInfo)
+        .then((response: AxiosResponse<ImageReturnType>) =>
+          success(response.data.link)
+        )
+        .catch((error: Error) => failure(error.name + error.message));
+    } else {
+      failure("No upload path specified.");
+    }
   };
 
   const defaultSkinUrl =
     getBaseUrl() + renderData?.baseResources + "reactjs/tinymce/skins/ui/oxide";
 
-  return ready ? (
+  return (
     <Editor
       init={{
         min_height: 500,
@@ -176,7 +140,7 @@ const RichTextEditor = ({
       onEditorChange={onStateChange}
       value={htmlInput}
     />
-  ) : null;
+  );
 };
 
 export default RichTextEditor;
