@@ -27,10 +27,10 @@ import {
 import CloseIcon from "@material-ui/icons/Close";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
+import * as M from "fp-ts/Map";
 import { constFalse, flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import React, { useCallback, useState } from "react";
-import * as _ from "lodash";
+import React, { useCallback, useState, useEffect } from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import * as WizardHelper from "../../components/wizard/WizardHelper";
 import { languageStrings } from "../../util/langstrings";
@@ -66,6 +66,7 @@ export const AdvancedSearchPanel = ({
 }: AdvancedSearchPanelProps) => {
   const [currentValues, setCurrentValues] =
     useState<WizardHelper.FieldValueMap>(values);
+  const [isTriggerClearSearch, setIsTriggerClearSearch] = useState(false);
 
   const hasRequiredFields: boolean = pipe(
     wizardControls,
@@ -96,17 +97,20 @@ export const AdvancedSearchPanel = ({
 
   /**
    * Handler for when user click clear button
-   * set all input field value to []
+   * set state to an empty map
+   * update search results
    */
   const onClear = () => {
-    const clearValues = _.cloneDeep(currentValues);
-
-    clearValues.forEach((value, target): void => {
-      clearValues.set(target, []);
-    });
-
-    setCurrentValues(clearValues);
+    setCurrentValues(new Map());
+    setIsTriggerClearSearch(true);
   };
+
+  useEffect((): void => {
+    if (isTriggerClearSearch) {
+      onSubmit(currentValues);
+      setIsTriggerClearSearch(false);
+    }
+  }, [currentValues, isTriggerClearSearch, onSubmit]);
 
   const idPrefix = "advanced-search-panel";
   return (

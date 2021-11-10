@@ -20,6 +20,9 @@ import "@testing-library/jest-dom/extend-expect";
 import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
+import * as M from "fp-ts/Map";
+import * as O from "fp-ts/Option";
+import { flow, pipe } from "fp-ts/function";
 import { getAdvancedSearchDefinition } from "../../../__mocks__/AdvancedSearchModule.mock";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import { elapsedTime, startTimer } from "../../../tsrc/util/debug";
@@ -31,6 +34,7 @@ import {
   MockedControlValue,
   oneEditBoxWizard,
   updateControlValue,
+  WizardControlLabelValue,
 } from "./AdvancedSearchTestHelper";
 import {
   initialiseEssentialMocks,
@@ -89,6 +93,17 @@ const clickSearchButton = async (container: Element): Promise<void> => {
   }
 
   await waitFor(() => userEvent.click(searchButton));
+};
+
+const clickClearButton = async (container: Element) => {
+  const clearButton = container.querySelector(
+    "#advanced-search-panel-clearBtn"
+  );
+  if (!clearButton) {
+    throw new Error("Failed to locate Advanced Search 'clear' button.");
+  }
+
+  await waitFor(() => userEvent.click(clearButton));
 };
 
 describe("Display of Advanced Search Criteria panel", () => {
@@ -273,7 +288,7 @@ describe("Rendering of wizard", () => {
     expect.assertions(descriptions.length + 1); // Plus the one for checking the number of descriptions.
   });
 
-  it("shows each control's default value", async () => {
+  it("shows each control's default value, and check if the clear button works", async () => {
     const mockedControls = buildMockedControls(true);
     const [controls, mockedLabelsAndValues] = A.unzip(mockedControls);
 
@@ -285,11 +300,67 @@ describe("Rendering of wizard", () => {
     mockGetAdvancedSearchByUuid.mockResolvedValue(advancedSearchDefinition);
     const { container } = await renderAdvancedSearchPage();
 
-    // Collect all default values.
-    const defaultLabelsAndValues = mockedControls.map(([c, controlValue]) =>
-      getControlValue(container, Array.from(controlValue.keys()), c.controlType)
+    // Collect _all_ values.
+    const defaultLabelsAndValues = buildMockedControls().map(
+      ([c, controlValue]) =>
+        getControlValue(
+          container,
+          Array.from(controlValue.keys()),
+          c.controlType
+        )
     );
 
+    // Make sure the current values match the default
     expect(defaultLabelsAndValues).toEqual(mockedLabelsAndValues);
+
+    // Clear all input value
+    await clickClearButton(container);
+
+    const afterClearLabelsAndValues: WizardControlLabelValue[] = pipe(
+      buildMockedControls(),
+      A.map<MockedControlValue, WizardControlLabelValue>(([c, controlValue]) =>
+        pipe(
+          getControlValue(
+            container,
+            Array.from(controlValue.keys()),
+            c.controlType
+          ),
+          O.fromNullable,
+          O.getOrElse(() => new Map())
+        )
+      )
+    );
+
+    const isNotEmptyMap = (m: Map<unknown, unknown>): boolean => {
+      return !M.isEmpty(m);
+    };
+
+    // filter all empty value
+    const filteredLabelsAndValues = pipe(
+      afterClearLabelsAndValues,
+      // filter {}
+      A.filter(isNotEmptyMap),
+      // filter "" and []
+      A.filter(
+        flow(
+          M.filter((mapValue) => !A.isEmpty(mapValue as string[])),
+          isNotEmptyMap
+        )
+      ),
+      // filter ["", ""]
+      A.filter(
+        flow(
+          M.filter((m) =>
+            flow(
+              A.filter((arrayItem) => arrayItem !== ""),
+              A.isNonEmpty
+            )(m as string[])
+          ),
+          isNotEmptyMap
+        )
+      )
+    );
+
+    expect(filteredLabelsAndValues).toEqual([]);
   });
 });

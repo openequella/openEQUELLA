@@ -228,7 +228,7 @@ const controlValues: Map<BasicControlEssentials, string[]> = new Map([
 
 // Alias for the Map including a Wizard control's labels and values. However, the value can refer to
 // the real input value or the status of attribute `checked`.
-type WizardControlLabelValue = Map<string, string | string[]>;
+export type WizardControlLabelValue = Map<string, string | string[]>;
 
 /**
  * Helper for `WizardControlLabelValue` values to determine when they're a string array.
@@ -640,6 +640,11 @@ export const getControlValue = (
     getByLabelText(container, label) as HTMLInputElement;
   const buildMap = (label: string, value: string) => new Map([[label, value]]);
 
+  const inputValueIfChecked = (
+    checked: boolean,
+    value: string
+  ): O.Option<string> => (checked ? O.some(value) : O.none);
+
   // Function to build WizardControlLabelValue for CheckBox type controls.
   const getOptionValues = (_labels: string[]) =>
     pipe(
@@ -647,9 +652,18 @@ export const getControlValue = (
       A.map((label) =>
         pipe(label, getInput, (input) => ({
           label,
-          value: `${useOptionStatus ? input.checked : input.value}`,
+          value: useOptionStatus
+            ? O.some(`${input.checked}`)
+            : inputValueIfChecked(input.checked, input.value),
         }))
       ),
+      A.filter((a): a is { label: string; value: O.Some<string> } =>
+        O.isSome(a.value)
+      ),
+      A.map(({ value, label }) => ({
+        label,
+        value: value.value,
+      })),
       A.reduce(new Map<string, string>(), (m, { label, value }) =>
         pipe(m, M.upsertAt(S.Eq)(label, value))
       )
