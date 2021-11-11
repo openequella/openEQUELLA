@@ -488,7 +488,7 @@ const queryFactory = (
     builder: (p: string, v: ControlValue) => string = singleValueQueryBuilder
   ): string =>
     `(${schemaNode
-      .map((n) => builder(`${n}${isValueTokenised ? "*" : ""}`, values))
+      .map((n) => builder(`${n}${isValueTokenised ? "\\*" : ""}`, values))
       .join(" OR ")})`;
 
   const factory = async (): Promise<string> => {
