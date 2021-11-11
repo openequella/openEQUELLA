@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import type { FieldValueMap } from "../tsrc/components/wizard/WizardHelper";
 
 export const controls: OEQ.WizardControl.WizardControl[] = [
   {
@@ -275,3 +276,51 @@ export const controls: OEQ.WizardControl.WizardControl[] = [
   },
   { controlType: "unknown" },
 ];
+
+export const mockedFieldValueMap: FieldValueMap = new Map([
+  [
+    { schemaNode: ["/controls/calendar1"], type: "calendar" },
+    ["2021-11-01", ""],
+  ],
+  [
+    { schemaNode: ["/controls/calendar2"], type: "calendar" },
+    ["", "2021-11-01"],
+  ],
+  [
+    { schemaNode: ["/controls/calendar3"], type: "calendar" },
+    ["2021-11-01", "2021-11-11"],
+  ],
+  [{ schemaNode: ["/controls/calendar4"], type: "calendar" }, ["", ""]],
+  [
+    { schemaNode: ["/controls/checkbox"], type: "checkboxgroup" },
+    ["optionA, optionB"],
+  ],
+  [
+    {
+      schemaNode: ["/controls/editbox"],
+      type: "editbox",
+      isValueTokenised: true,
+    },
+    ["hello world"],
+  ],
+  [{ schemaNode: ["/controls/html"], type: "html" }, [""]],
+  [{ schemaNode: ["/controls/listbox"], type: "listbox" }, ["optionC"]],
+  [{ schemaNode: ["/controls/radiogroup"], type: "radiogroup" }, ["optionD"]],
+  [
+    { schemaNode: ["/controls/shufflebox"], type: "shufflebox" },
+    ["optionE", "optionF"],
+  ],
+  [
+    {
+      schemaNode: ["/controls/shufflelist"],
+      type: "shufflelist",
+      isValueTokenised: true,
+    },
+    ["The house is nice", "walking"],
+  ],
+  [
+    { schemaNode: ["/controls/termselector"], type: "termselector" },
+    ["programming"],
+  ],
+  [{ schemaNode: ["/controls/userselector"], type: "userselector" }, ["admin"]],
+]);

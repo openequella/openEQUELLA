@@ -18,8 +18,11 @@
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
+import * as TE from "fp-ts/TaskEither";
+import * as T from "fp-ts/Task";
 import { Eq, struct } from "fp-ts/Eq";
-import { absurd, constFalse, flow, pipe } from "fp-ts/function";
+import { absurd, constFalse, flow, identity, pipe } from "fp-ts/function";
+import { not } from "fp-ts/Predicate";
 import * as M from "fp-ts/Map";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as O from "fp-ts/Option";
@@ -29,7 +32,9 @@ import { first } from "fp-ts/Semigroup";
 import * as SET from "fp-ts/Set";
 import * as S from "fp-ts/string";
 import * as React from "react";
+import { getTokensForText } from "../../modules/TokenisationModule";
 import { OrdAsIs } from "../../util/Ord";
+import { pfTernary } from "../../util/pointfree";
 import { WizardCalendar } from "./WizardCalendar";
 import { WizardCheckBoxGroup } from "./WizardCheckBoxGroup";
 import { WizardEditBox } from "./WizardEditBox";
@@ -74,6 +79,10 @@ export interface ControlTarget {
    * The type of control that is being targeted.
    */
   type: OEQ.WizardControl.ControlType;
+  /**
+   * Whether to tokenise the value.
+   */
+  isValueTokenised?: boolean;
 }
 
 /**
@@ -127,6 +136,10 @@ const isStringArray = (xs: ControlValue): xs is NEA.NonEmptyArray<string> =>
  */
 const isControlValueNonEmpty = (xs: ControlValue): boolean => xs.length > 0;
 
+// Type guard which not only checks if a value is string but also checks if the value is not an empty string.
+const isNonEmptyString = (s: string | number): s is string =>
+  S.isString(s) && !S.isEmpty(s);
+
 const eqControlTarget: Eq<ControlTarget> = struct({
   schemaNode: A.getEq(S.Eq),
   type: S.Eq,
@@ -153,6 +166,14 @@ export const buildControlTarget = (
    */
   schemaNode: c.targetNodes.map((n) => n.fullTarget),
   type: c.controlType,
+  /**
+   * If the control is an EditBox it always supports tokenisation.
+   * Or if it's ShuffleList, use its the flag `isTokenise`.
+   * False for others.
+   */
+  isValueTokenised:
+    c.controlType === "editbox" ||
+    (OEQ.WizardControl.isWizardShuffleListControl(c) && c.isTokenise),
 });
 
 /**
@@ -437,6 +458,184 @@ export const extractDefaultValues = (
     A.reduce<OEQ.WizardControl.WizardBasicControl, FieldValueMap>(
       new Map(),
       addQueryValueToMap
+    )
+  );
+};
+
+const AND = " AND ";
+
+/**
+ * Create the fieldname matching the format of the fields used in the oEQ lucene index. Specifically, for any
+ * schema node which is tokenised, there are two fields. One which contains full raw values, and another which
+ * has gone through the analyzer (and tokenizer). This name of this second type of has an asteriks (`*`) suffix.
+ *
+ * This function then looks after adding this special suffix when required based on the `isTokenised` flag.
+ */
+const fieldName = (field: string, isTokenised = false): string =>
+  `${field}${isTokenised ? "\\*" : ""}`;
+
+// Function to create a Task which builds a raw Lucene query for each control type.
+const queryFactory = (
+  { type, schemaNode, isValueTokenised }: ControlTarget,
+  values: ControlValue
+): TE.TaskEither<string, string> => {
+  // Function to build a query string containing only one 'field:value' for one path.
+  const singleValueQueryBuilder = (
+    path: string,
+    values: ControlValue
+  ): string => `${path}:${values[0]}`;
+
+  // Function to build and join multiple 'field:value' into one query string for one path.
+  const multipleValueQueryBuilder = (
+    path: string,
+    values: ControlValue
+  ): string => `${path}:(${values.join(" ")})`; // Put all words in one group and separate each word by a whitespace.
+
+  // Function to build query strings for multiple paths and join all into one query.
+  const buildQueries = (
+    schemaNode: string[],
+    values: ControlValue,
+    builder: (p: string, v: ControlValue) => string = singleValueQueryBuilder
+  ): string =>
+    `(${schemaNode
+      .map((n) => builder(fieldName(n, isValueTokenised), values))
+      .join(" OR ")})`;
+
+  const factory = async (): Promise<string> => {
+    switch (type) {
+      case "calendar":
+        // If the provided date is undefined or is an empty string, use `*` instead.
+        const processDateString = (d: string | undefined): string =>
+          pipe(
+            O.fromNullable(d),
+            O.filter(not(S.isEmpty)),
+            O.getOrElse(() => "*")
+          );
+
+        const dateRangeQueryBuilder = (
+          path: string,
+          [startDate, endDate]: ControlValue
+        ) => `${path}:[${startDate} TO ${endDate}]`;
+
+        // Validate the Calendar value type.
+        const dateRange: NEA.NonEmptyArray<string> = pipe(
+          values,
+          E.fromPredicate(
+            isStringArray,
+            () => "Calendar must have at least one value"
+          ),
+          E.chain(
+            E.fromPredicate(
+              (dates) => A.size(dates) <= 2,
+              () => "Calendar cannot have more than 2 values"
+            )
+          ),
+          E.fold((e) => {
+            throw new TypeError(e);
+          }, identity)
+        );
+
+        return pipe(
+          dateRange,
+          E.fromPredicate(A.exists(not(S.isEmpty)), () => ""), // No query needed when both are undefined so return an empty string.
+          E.map(A.map(processDateString)),
+          E.fold(identity, (dates) =>
+            buildQueries(schemaNode, dates, dateRangeQueryBuilder)
+          )
+        );
+      case "checkboxgroup":
+        return buildQueries(schemaNode, values, multipleValueQueryBuilder);
+      case "editbox":
+        const { tokens } = await getTokensForText(`${values[0]}`);
+        return buildQueries(schemaNode, tokens, multipleValueQueryBuilder);
+      case "html":
+        return "";
+      case "listbox":
+        return buildQueries(schemaNode, values);
+      case "radiogroup":
+        return buildQueries(schemaNode, values);
+      case "shufflebox":
+        return buildQueries(schemaNode, values, multipleValueQueryBuilder);
+      case "shufflelist":
+        const { tokens: shuffleTokens } = await getTokensForText(
+          values.join(" ")
+        );
+        return buildQueries(
+          schemaNode,
+          shuffleTokens,
+          multipleValueQueryBuilder
+        );
+      case "termselector":
+        return buildQueries(schemaNode, values, multipleValueQueryBuilder);
+      case "userselector":
+        return buildQueries(schemaNode, values, multipleValueQueryBuilder);
+      default:
+        return absurd(type);
+    }
+  };
+
+  return TE.tryCatch(
+    factory,
+    (e) =>
+      `Failed to build Lucene query or path ${schemaNode.join()} (control type: ${type}) due to error: ${e}`
+  );
+};
+
+/**
+ * Function to build a raw Lucene query string based on the values of Wizard controls.
+ * Since some controls support tokenisation, the function will send a request to server
+ * to retrieve tokens. As a result, this function returns a Promise of string eventually.
+ *
+ * @param m Map which provides ControlTarget and ControlValue.
+ */
+export const generateRawLuceneQuery = async (
+  m: FieldValueMap
+): Promise<string | undefined> => {
+  // Because it's likely to have multiple errors when building the whole query,
+  // lift `queryFactory` so that it returns a TaskEither where left is an array of string.
+  const liftedQueryFactory = (
+    t: ControlTarget,
+    v: ControlValue
+  ): TE.TaskEither<string[], string> =>
+    pipe(
+      queryFactory(t, v),
+      TE.mapLeft((a) => [a])
+    );
+
+  // A task to build and return raw Lucene queries for all the controls,
+  // or throw errors.
+  const queryTask = pipe(
+    m,
+    M.filter<ControlValue>(isControlValueNonEmpty),
+    M.collect<ControlTarget>(OrdAsIs)(liftedQueryFactory),
+    // Convert an array of TE to an TE where left and right are both string[].
+    A.sequence(
+      TE.getApplicativeTaskValidation(
+        T.ApplicativeSeq,
+        A.getSemigroup<string>()
+      )
+    ),
+    T.map(
+      flow(
+        E.fold((e) => {
+          throw new Error(e.join());
+        }, identity)
+      )
+    )
+  );
+
+  // Now run the task.
+  const result: string[] = await queryTask();
+  // Remove any sub query that is just an empty string and then join the remaining with `AND`.
+  const queries: string = result.filter(isNonEmptyString).join(AND);
+
+  // If the final query is still an empty string, return undefined instead.
+  return pipe(
+    queries,
+    pfTernary<string, string | undefined>(
+      isNonEmptyString,
+      identity,
+      () => undefined
     )
   );
 };
