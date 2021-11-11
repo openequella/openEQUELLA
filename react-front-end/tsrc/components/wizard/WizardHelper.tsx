@@ -512,22 +512,35 @@ const queryFactory = (
             O.getOrElse(() => "*")
           );
 
-        const [start, end] = A.filter(S.isString)(values);
-
         const dateRangeQueryBuilder = (
           path: string,
           [startDate, endDate]: ControlValue
         ) => `${path}:[${startDate} TO ${endDate}]`;
 
-        return pipe(
-          start || end,
-          E.fromPredicate(isNonEmptyString, () => ""), // No query needed when both are undefined so return an empty string.
-          E.fold(identity, () =>
-            buildQueries(
-              schemaNode,
-              [start, end].map(processDateString),
-              dateRangeQueryBuilder
+        // Validate the Calendar value type.
+        const dateRange: NEA.NonEmptyArray<string> = pipe(
+          values,
+          E.fromPredicate(
+            isStringArray,
+            () => "Calendar must have at least one value"
+          ),
+          E.chain(
+            E.fromPredicate(
+              (dates) => A.size(dates) <= 2,
+              () => "Calendar cannot have more than 2 values"
             )
+          ),
+          E.fold((e) => {
+            throw new TypeError(e);
+          }, identity)
+        );
+
+        return pipe(
+          dateRange,
+          E.fromPredicate(A.exists(not(S.isEmpty)), () => ""), // No query needed when both are undefined so return an empty string.
+          E.map(A.map(processDateString)),
+          E.fold(identity, (dates) =>
+            buildQueries(schemaNode, dates, dateRangeQueryBuilder)
           )
         );
       case "checkboxgroup":
