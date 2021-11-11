@@ -279,9 +279,18 @@ export const controls: OEQ.WizardControl.WizardControl[] = [
 
 export const mockedFieldValueMap: FieldValueMap = new Map([
   [
-    { schemaNode: ["/controls/calendar"], type: "calendar" },
+    { schemaNode: ["/controls/calendar1"], type: "calendar" },
     ["2021-11-01", ""],
   ],
+  [
+    { schemaNode: ["/controls/calendar2"], type: "calendar" },
+    ["", "2021-11-01"],
+  ],
+  [
+    { schemaNode: ["/controls/calendar3"], type: "calendar" },
+    ["2021-11-01", "2021-11-11"],
+  ],
+  [{ schemaNode: ["/controls/calendar4"], type: "calendar" }, ["", ""]],
   [
     { schemaNode: ["/controls/checkbox"], type: "checkboxgroup" },
     ["optionA, optionB"],

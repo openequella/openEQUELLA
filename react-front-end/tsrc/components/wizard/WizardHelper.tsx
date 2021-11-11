@@ -138,7 +138,7 @@ const isControlValueNonEmpty = (xs: ControlValue): boolean => xs.length > 0;
 
 // Type guard which not only checks if a value is string but also checks if the value is not an empty string.
 const isNonEmptyString = (s: string | number): s is string =>
-  S.isString(s) && not(S.isEmpty)(s);
+  S.isString(s) && !S.isEmpty(s);
 
 const eqControlTarget: Eq<ControlTarget> = struct({
   schemaNode: A.getEq(S.Eq),
@@ -464,6 +464,16 @@ export const extractDefaultValues = (
 
 const AND = " AND ";
 
+/**
+ * Create the fieldname matching the format of the fields used in the oEQ lucene index. Specifically, for any
+ * schema node which is tokenised, there are two fields. One which contains full raw values, and another which
+ * has gone through the analyzer (and tokenizer). This name of this second type of has an asteriks (`*`) suffix.
+ *
+ * This function then looks after adding this special suffix when required based on the `isTokenised` flag.
+ */
+const fieldName = (field: string, isTokenised = false): string =>
+  `${field}${isTokenised ? "\\*" : ""}`;
+
 // Function to create a Task which builds a raw Lucene query for each control type.
 const queryFactory = (
   { type, schemaNode, isValueTokenised }: ControlTarget,
@@ -488,27 +498,36 @@ const queryFactory = (
     builder: (p: string, v: ControlValue) => string = singleValueQueryBuilder
   ): string =>
     `(${schemaNode
-      .map((n) => builder(`${n}${isValueTokenised ? "\\*" : ""}`, values))
+      .map((n) => builder(fieldName(n, isValueTokenised), values))
       .join(" OR ")})`;
 
   const factory = async (): Promise<string> => {
     switch (type) {
       case "calendar":
-        const [start, end] = pipe(
-          values,
-          A.filter(isNonEmptyString) // Only keep non-empty strings
-        );
+        // If the provided date is undefined or is an empty string, use `*` instead.
+        const processDateString = (d: string | undefined): string =>
+          pipe(
+            O.fromNullable(d),
+            O.filter(not(S.isEmpty)),
+            O.getOrElse(() => "*")
+          );
+
+        const [start, end] = A.filter(S.isString)(values);
 
         const dateRangeQueryBuilder = (
           path: string,
-          [start, end]: ControlValue
-        ) => `${path}:[${start ?? "*"} TO ${end ?? "*"}]`;
+          [startDate, endDate]: ControlValue
+        ) => `${path}:[${startDate} TO ${endDate}]`;
 
         return pipe(
           start || end,
-          E.fromPredicate(S.isString, () => ""), // No query needed when both are undefined so return an empty string.
+          E.fromPredicate(isNonEmptyString, () => ""), // No query needed when both are undefined so return an empty string.
           E.fold(identity, () =>
-            buildQueries(schemaNode, [start, end], dateRangeQueryBuilder)
+            buildQueries(
+              schemaNode,
+              [start, end].map(processDateString),
+              dateRangeQueryBuilder
+            )
           )
         );
       case "checkboxgroup":
