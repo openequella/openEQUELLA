@@ -136,8 +136,13 @@ const isStringArray = (xs: ControlValue): xs is NEA.NonEmptyArray<string> =>
  */
 const isControlValueNonEmpty = (xs: ControlValue): boolean => xs.length > 0;
 
-// Type guard which not only checks if a value is string but also checks if the value is not an empty string.
-const isNonEmptyString = (s: string | number): s is string =>
+/**
+ * Type guard which not only checks if a Wizard control value is string but also checks if the value
+ * is not an empty string. (Not a general purpose string util!)
+ *
+ * @param s A Wizard control value that may be either a string or a number.
+ */
+export const isNonEmptyString = (s: string | number): s is string =>
   S.isString(s) && !S.isEmpty(s);
 
 const eqControlTarget: Eq<ControlTarget> = struct({

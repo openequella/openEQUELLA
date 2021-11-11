@@ -319,6 +319,8 @@ export const languageStrings = {
     noFileSelected: "No attached resources",
     failedToDelete: "Failed to delete '%s' due to error: %s",
   },
+  invalidLuceneQuery:
+    "Your query is invalid. Try simplifying your query to only contain basic terms, and check that you do not have any whitespace around '*' or '+' characters.",
   lightboxComponent: {
     kalturaExternalIdIssue:
       "There is an issue with the format of the externalId for the the Kaltura Video",

@@ -19,6 +19,7 @@
 import * as OEQ from "@openequella/rest-api-client";
 import { Literal, Static, Union } from "runtypes";
 import { API_BASE_URL } from "../AppConfig";
+import type { FieldValueMap } from "../components/wizard/WizardHelper";
 import { DateRange, getISODateString } from "../util/Date";
 import type { Collection } from "./CollectionsModule";
 import type { SelectedCategories } from "./SearchFacetsModule";
@@ -126,6 +127,14 @@ export interface SearchOptions {
    * @see OEQ.Search.SearchParams for examples
    */
   musts?: OEQ.Search.Must[];
+  /**
+   * Raw Lucene query generated from the values of Wizard controls.
+   */
+  customLuceneQuery?: string;
+  /**
+   * Currently configured Advanced search criteria.
+   */
+  advFieldValue?: FieldValueMap;
 }
 
 /**
@@ -212,6 +221,7 @@ const buildSearchParams = ({
   mimeTypeFilters,
   externalMimeTypes,
   musts,
+  customLuceneQuery,
 }: SearchOptions): OEQ.Search.SearchParams => {
   const processedQuery = query ? formatQuery(query, !rawMode) : undefined;
   // We use selected filters to generate MIME types. However, in Image Gallery,
@@ -236,6 +246,7 @@ const buildSearchParams = ({
     whereClause: generateCategoryWhereQuery(selectedCategories),
     mimeTypes: externalMimeTypes ?? _mimeTypes,
     musts: musts,
+    customLuceneQuery: customLuceneQuery,
   };
 };
 

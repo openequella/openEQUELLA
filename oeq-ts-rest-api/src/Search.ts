@@ -88,6 +88,10 @@ interface SearchParamsBase {
    * List of MIME types to filter by.
    */
   mimeTypes?: string[];
+  /**
+   * Custom query in Lucene syntax.
+   */
+  customLuceneQuery?: string;
 }
 
 /**

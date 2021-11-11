@@ -17,8 +17,12 @@
  */
 import { debounce, Drawer, Grid, Hidden } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
-import { pipe } from "fp-ts/function";
+import { flow, pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
+import * as O from "fp-ts/Option";
+import * as A from "fp-ts/Array";
+import * as E from "fp-ts/Either";
+import * as TE from "fp-ts/TaskEither";
 import { isEqual } from "lodash";
 import * as React from "react";
 import {
@@ -34,8 +38,13 @@ import { useHistory, useLocation, useParams } from "react-router";
 import { getBaseUrl } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
 import MessageInfo, { MessageInfoVariant } from "../components/MessageInfo";
+import {
+  ControlValue,
+  extractDefaultValues,
+  generateRawLuceneQuery,
+  isNonEmptyString,
+} from "../components/wizard/WizardHelper";
 import type { FieldValueMap } from "../components/wizard/WizardHelper";
-import * as WizardHelper from "../components/wizard/WizardHelper";
 import { AppRenderErrorContext } from "../mainui/App";
 import { NEW_SEARCH_PATH, routes } from "../mainui/routes";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
@@ -82,6 +91,7 @@ import { getCurrentUserDetails } from "../modules/UserModule";
 import SearchBar from "../search/components/SearchBar";
 import type { DateRange } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
+import { OrdAsIs } from "../util/Ord";
 import { AdvancedSearchPanel } from "./components/AdvancedSearchPanel";
 import { AdvancedSearchSelector } from "./components/AdvancedSearchSelector";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
@@ -281,7 +291,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
         : Promise.resolve(undefined),
     ])
       .then(
-        ([
+        async ([
           searchSettings,
           mimeTypeFilters,
           queryStringSearchOptions,
@@ -295,33 +305,53 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
           });
           setAdvancedSearches(advancedSearches);
           setCurrentUser(currentUserDetails);
-          search(
-            queryStringSearchOptions
-              ? {
-                  ...queryStringSearchOptions,
-                  dateRangeQuickModeEnabled: false,
-                  sortOrder:
-                    queryStringSearchOptions.sortOrder ??
-                    searchSettings.defaultSearchSort,
-                }
-              : {
-                  ...searchPageOptions,
-                  collections:
-                    advancedSearchDefinition?.collections ??
-                    searchPageOptions.collections,
-                  sortOrder:
-                    searchPageOptions.sortOrder ??
-                    searchSettings.defaultSearchSort,
-                }
+
+          // Function to initialise Advanced search and then return the initial query values.
+          const getInitialAdvancedSearchQueryValues = (
+            advancedSearchDefinition: OEQ.AdvancedSearch.AdvancedSearchDefinition
+          ): FieldValueMap => {
+            const initialQueryValues =
+              searchPageOptions.advFieldValue ??
+              extractDefaultValues(advancedSearchDefinition.controls);
+
+            searchPageModeDispatch({
+              type: "initialiseAdvSearch",
+              selectedAdvSearch: advancedSearchDefinition,
+              initialQueryValues,
+            });
+
+            return initialQueryValues;
+          };
+
+          const initialRawLuceneQuery: string | undefined = await pipe(
+            O.fromNullable(advancedSearchDefinition),
+            O.map(
+              flow(getInitialAdvancedSearchQueryValues, generateRawLuceneQuery)
+            ),
+            O.getOrElseW(() => Promise.resolve(undefined))
           );
 
-          if (advancedSearchDefinition) {
-            // Always show the panel at the first time switching to adv mode.
-            searchPageModeDispatch({
-              type: "showAdvSearchPanel",
-              selectedAdvSearch: advancedSearchDefinition,
-            });
-          }
+          // This is the SearchPageOptions for the first searching, not the one created in the first rendering.
+          const initialSearchPageOptions = pipe(
+            queryStringSearchOptions,
+            O.fromNullable,
+            O.map<SearchPageOptions, SearchPageOptions>((options) => ({
+              ...options,
+              dateRangeQuickModeEnabled: false,
+              sortOrder: options.sortOrder ?? searchSettings.defaultSearchSort,
+            })),
+            O.getOrElse<SearchPageOptions>(() => ({
+              ...searchPageOptions,
+              collections:
+                advancedSearchDefinition?.collections ??
+                searchPageOptions.collections,
+              sortOrder:
+                searchPageOptions.sortOrder ?? searchSettings.defaultSearchSort,
+              customLuceneQuery: initialRawLuceneQuery,
+            }))
+          );
+
+          search(initialSearchPageOptions);
         }
       )
       .catch((e) => {
@@ -399,6 +429,13 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
         }
       );
 
+      // todo: do not hide the panel for the first search.
+      if (searchPageModeState.mode === "advSearch") {
+        searchPageModeDispatch({
+          type: "hideAdvSearchPanel",
+        });
+      }
+
       setSearchPageOptions(state.options);
       (async () => {
         try {
@@ -444,6 +481,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
     history,
     state,
     advancedSearchId,
+    searchPageModeState.mode,
   ]);
 
   // In Selection Session, once a new search result is returned, make each
@@ -692,6 +730,29 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
     });
   };
 
+  const handleSubmitAdvancedSearch = async (advFieldValue: FieldValueMap) => {
+    searchPageModeDispatch({
+      type: "setQueryValues",
+      values: advFieldValue,
+    });
+
+    const task = pipe(
+      TE.tryCatch(
+        () => generateRawLuceneQuery(advFieldValue),
+        () => new Error(languageStrings.invalidLuceneQuery)
+      ),
+      TE.map<string | undefined, SearchPageOptions>((customLuceneQuery) => ({
+        ...searchPageOptions,
+        customLuceneQuery,
+        advFieldValue,
+        currentPage: 0,
+      }))
+    );
+
+    // Run the task.
+    pipe(await task(), E.fold(searchPageErrorHandler, search));
+  };
+
   /**
    * Determines if any collapsible filters have been modified from their defaults
    */
@@ -738,8 +799,13 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
   };
 
   const isAdvSearchCriteriaSet = (queryValues: FieldValueMap): boolean => {
-    const isAnyFieldSet: boolean = Array.from(queryValues).some(
-      ([_, values]) => values.length > 0
+    const isAnyFieldSet = pipe(
+      queryValues,
+      // Some controls like Calendar may have an empty string as their default values which should be
+      // filtered out.
+      M.map(A.filter(isNonEmptyString)),
+      M.values<ControlValue>(OrdAsIs),
+      A.some((v) => v.length > 0)
     );
     const isValueMapNotEmpty = !M.isEmpty(queryValues);
 
@@ -988,16 +1054,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
                   <AdvancedSearchPanel
                     wizardControls={searchPageModeState.definition.controls}
                     values={searchPageModeState.queryValues}
-                    onSubmit={(
-                      advSearchQueryValues: WizardHelper.FieldValueMap
-                    ) => {
-                      searchPageModeDispatch({
-                        type: "setQueryValues",
-                        values: advSearchQueryValues,
-                      });
-                      // TODO: search() still needs to support using the Advanced Search Query values
-                      search(searchPageOptions);
-                    }}
+                    onSubmit={handleSubmitAdvancedSearch}
                     onClose={() =>
                       searchPageModeDispatch({ type: "hideAdvSearchPanel" })
                     }

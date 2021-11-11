@@ -71,11 +71,19 @@ mockGetAdvancedSearchByUuid.mockResolvedValue(getAdvancedSearchDefinition);
 
 const testUuid = "4be6ae54-68ca-4d8b-acd0-0ca96fc39280";
 
-const renderAdvancedSearchPage = async () =>
-  await renderSearchPage(searchPromise, undefined, testUuid);
-
 const togglePanel = () =>
   act(() => userEvent.click(screen.getByLabelText(filterButtonLabel)));
+
+const renderAdvancedSearchPage = async () => {
+  const page = await renderSearchPage(searchPromise, undefined, testUuid);
+  // Due to the UI change - hiding the panel when a search is triggered, the tests should
+  // also get updated accordingly. However, as we will make further changes for the UI,
+  // just manually open the panel for now so that we can keep the tests as they are.
+  // We will rework here later when we figure out how to nicely display the panel.
+  togglePanel();
+
+  return page;
+};
 
 const queryAdvSearchPanel = (container: Element): HTMLElement | null =>
   container.querySelector("#advanced-search-panel");
