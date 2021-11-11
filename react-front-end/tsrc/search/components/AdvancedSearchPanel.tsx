@@ -29,7 +29,7 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { constFalse, flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState } from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import * as WizardHelper from "../../components/wizard/WizardHelper";
 import { languageStrings } from "../../util/langstrings";
@@ -65,7 +65,6 @@ export const AdvancedSearchPanel = ({
 }: AdvancedSearchPanelProps) => {
   const [currentValues, setCurrentValues] =
     useState<WizardHelper.FieldValueMap>(values);
-  const [isTriggerClearSearch, setIsTriggerClearSearch] = useState(false);
 
   const hasRequiredFields: boolean = pipe(
     wizardControls,
@@ -95,21 +94,22 @@ export const AdvancedSearchPanel = ({
   );
 
   /**
+   * do search based on input value
+   *
+   * @param value WizardHelper.FieldValueMap, default value is `currentValues`
+   */
+  const doSearch = (value = currentValues) => onSubmit(currentValues);
+
+  /**
    * Handler for when user click clear button
    * set state to an empty map
    * update search results
    */
   const onClear = () => {
-    setCurrentValues(new Map());
-    setIsTriggerClearSearch(true);
+    const emptyValue = new Map();
+    setCurrentValues(emptyValue);
+    doSearch(emptyValue);
   };
-
-  useEffect((): void => {
-    if (isTriggerClearSearch) {
-      onSubmit(currentValues);
-      setIsTriggerClearSearch(false);
-    }
-  }, [currentValues, isTriggerClearSearch, onSubmit]);
 
   const idPrefix = "advanced-search-panel";
   return (
@@ -158,11 +158,7 @@ export const AdvancedSearchPanel = ({
         >
           {languageStrings.common.action.search}
         </Button>
-        <Button
-          id={`${idPrefix}-clearBtn`}
-          onClick={() => onClear()}
-          color="secondary"
-        >
+        <Button id={`${idPrefix}-clearBtn`} onClick={onClear} color="secondary">
           {languageStrings.common.action.clear}
         </Button>
       </CardActions>

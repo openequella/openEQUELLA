@@ -22,6 +22,7 @@ import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
 import * as M from "fp-ts/Map";
 import * as O from "fp-ts/Option";
+import { not } from "fp-ts/Predicate";
 import { flow, pipe } from "fp-ts/function";
 import { getAdvancedSearchDefinition } from "../../../__mocks__/AdvancedSearchModule.mock";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
@@ -331,32 +332,32 @@ describe("Rendering of wizard", () => {
       )
     );
 
-    const isNotEmptyMap = (m: Map<unknown, unknown>): boolean => {
-      return !M.isEmpty(m);
-    };
-
     // filter all empty value
     const filteredLabelsAndValues = pipe(
       afterClearLabelsAndValues,
-      // filter {}
-      A.filter(isNotEmptyMap),
       // filter "" and []
       A.filter(
         flow(
-          M.filter((mapValue) => !A.isEmpty(mapValue as string[])),
-          isNotEmptyMap
+          M.filter((mapValue) =>
+            typeof mapValue === "string"
+              ? mapValue !== ""
+              : not(A.isEmpty)(mapValue)
+          ),
+          not(M.isEmpty)
         )
       ),
-      // filter ["", ""]
+      // filter ["", ""], {}
       A.filter(
         flow(
           M.filter((m) =>
-            flow(
-              A.filter((arrayItem) => arrayItem !== ""),
-              A.isNonEmpty
-            )(m as string[])
+            typeof m !== "string"
+              ? flow(
+                  A.filter((arrayItem) => arrayItem !== ""),
+                  A.isNonEmpty
+                )(m)
+              : false
           ),
-          isNotEmptyMap
+          not(M.isEmpty)
         )
       )
     );
