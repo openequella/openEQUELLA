@@ -489,7 +489,7 @@ const queryFactory = (
   ): string =>
     `(${schemaNode
       .map((n) => builder(`${n}${isValueTokenised ? "*" : ""}`, values))
-      .join(AND)})`;
+      .join(" OR ")})`;
 
   const factory = async (): Promise<string> => {
     switch (type) {
