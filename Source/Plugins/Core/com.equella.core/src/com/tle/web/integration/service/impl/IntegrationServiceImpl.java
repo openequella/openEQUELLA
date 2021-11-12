@@ -51,6 +51,9 @@ import com.tle.web.sections.SectionUtils;
 import com.tle.web.sections.SectionsController;
 import com.tle.web.sections.SectionsRuntimeException;
 import com.tle.web.sections.generic.AbstractSectionFilter;
+import com.tle.web.sections.js.JSStatements;
+import com.tle.web.sections.js.generic.Js;
+import com.tle.web.sections.js.generic.expression.ScriptExpression;
 import com.tle.web.selection.*;
 import com.tle.web.selection.section.RootSelectionSection.Layout;
 import com.tle.web.viewable.ViewableItemResolver;
@@ -70,6 +73,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import org.apache.commons.collections.CollectionUtils;
 
 @SuppressWarnings("nls")
 @Bind(IntegrationService.class)
@@ -471,8 +475,13 @@ public class IntegrationServiceImpl extends AbstractSectionFilter implements Int
 
   private void updateIntegrationMimeTypes(SectionInfo info, IntegrationSection integrationSection) {
     SelectionSession selectionSession = selectionService.getCurrentSession(info);
-    if (selectionSession != null && !selectionSession.getMimeTypes().isEmpty()) {
+    if (selectionSession != null && !CollectionUtils.isEmpty(selectionSession.getMimeTypes())) {
       integrationSection.updateModelMimeTypes(info, selectionSession.getMimeTypes());
     }
+  }
+
+  @Override
+  public JSStatements updateFormSubmittingFlag(boolean isAllowed) {
+    return Js.statement(new ScriptExpression("g_bSubmitting = " + isAllowed));
   }
 }
