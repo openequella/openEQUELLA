@@ -17,7 +17,7 @@
  */
 import { debounce, Drawer, Grid, Hidden } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
-import { flow, pipe } from "fp-ts/function";
+import { pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as O from "fp-ts/Option";
 import * as A from "fp-ts/Array";
@@ -40,8 +40,8 @@ import { DateRangeSelector } from "../components/DateRangeSelector";
 import MessageInfo, { MessageInfoVariant } from "../components/MessageInfo";
 import {
   ControlValue,
-  extractDefaultValues,
   generateRawLuceneQuery,
+  isControlValueNonEmpty,
   isNonEmptyString,
 } from "../components/wizard/WizardHelper";
 import type { FieldValueMap } from "../components/wizard/WizardHelper";
@@ -116,6 +116,7 @@ import {
   generateSearchPageOptionsFromQueryString,
   getPartialSearchOptions,
   getRawModeFromStorage,
+  initialiseAdvancedSearch,
   SearchPageOptions,
   writeRawModeToStorage,
 } from "./SearchPageHelper";
@@ -306,30 +307,14 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
           setAdvancedSearches(advancedSearches);
           setCurrentUser(currentUserDetails);
 
-          // Function to initialise Advanced search and then return the initial query values.
-          const getInitialAdvancedSearchQueryValues = (
-            advancedSearchDefinition: OEQ.AdvancedSearch.AdvancedSearchDefinition
-          ): FieldValueMap => {
-            const initialQueryValues =
-              searchPageOptions.advFieldValue ??
-              extractDefaultValues(advancedSearchDefinition.controls);
-
-            searchPageModeDispatch({
-              type: "initialiseAdvSearch",
-              selectedAdvSearch: advancedSearchDefinition,
-              initialQueryValues,
-            });
-
-            return initialQueryValues;
-          };
-
-          const initialRawLuceneQuery: string | undefined = await pipe(
-            O.fromNullable(advancedSearchDefinition),
-            O.map(
-              flow(getInitialAdvancedSearchQueryValues, generateRawLuceneQuery)
-            ),
-            O.getOrElseW(() => Promise.resolve(undefined))
-          );
+          const initialRawLuceneQuery: string | undefined =
+            advancedSearchDefinition
+              ? await initialiseAdvancedSearch(
+                  advancedSearchDefinition,
+                  searchPageModeDispatch,
+                  searchPageOptions.advFieldValue
+                )
+              : undefined;
 
           // This is the SearchPageOptions for the first searching, not the one created in the first rendering.
           const initialSearchPageOptions = pipe(
@@ -805,7 +790,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
       // filtered out.
       M.map(A.filter(isNonEmptyString)),
       M.values<ControlValue>(OrdAsIs),
-      A.some((v) => v.length > 0)
+      A.some(isControlValueNonEmpty)
     );
     const isValueMapNotEmpty = !M.isEmpty(queryValues);
 

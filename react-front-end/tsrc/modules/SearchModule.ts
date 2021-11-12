@@ -19,7 +19,6 @@
 import * as OEQ from "@openequella/rest-api-client";
 import { Literal, Static, Union } from "runtypes";
 import { API_BASE_URL } from "../AppConfig";
-import type { FieldValueMap } from "../components/wizard/WizardHelper";
 import { DateRange, getISODateString } from "../util/Date";
 import type { Collection } from "./CollectionsModule";
 import type { SelectedCategories } from "./SearchFacetsModule";
@@ -131,10 +130,6 @@ export interface SearchOptions {
    * Raw Lucene query generated from the values of Wizard controls.
    */
   customLuceneQuery?: string;
-  /**
-   * Currently configured Advanced search criteria.
-   */
-  advFieldValue?: FieldValueMap;
 }
 
 /**

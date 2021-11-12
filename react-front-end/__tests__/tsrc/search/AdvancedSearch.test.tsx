@@ -306,10 +306,7 @@ describe("search with Advanced search criteria", () => {
     mockGetAdvancedSearchByUuid.mockResolvedValue(
       oneEditBoxWizard(false, [defaultValue])
     );
-    const { container } = await renderAdvancedSearchPage();
-
-    // Search with the EditBox's default value.
-    await clickSearchButton(container);
+    await renderAdvancedSearchPage();
 
     // Should do a tokenisation.
     expect(mockGetTokensForText).toHaveBeenCalledWith(defaultValue);
