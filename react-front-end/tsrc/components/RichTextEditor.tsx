@@ -19,6 +19,8 @@ import { Editor } from "@tinymce/tinymce-react";
 import { AxiosPromise, AxiosResponse } from "axios";
 import * as React from "react";
 
+import "tinymce/tinymce";
+
 import "tinymce/icons/default";
 import "tinymce/plugins/advlist";
 
@@ -57,7 +59,6 @@ import "tinymce/plugins/visualchars";
 import "tinymce/plugins/wordcount";
 import "tinymce/themes/silver/theme";
 
-import "tinymce/tinymce";
 import { getBaseUrl, getRenderData } from "../AppConfig";
 
 const renderData = getRenderData();
