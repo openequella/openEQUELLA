@@ -20,7 +20,7 @@ import { getByLabelText, getByText } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
-import { absurd, constFalse, flow, pipe } from "fp-ts/function";
+import { absurd, constFalse, constTrue, flow, pipe } from "fp-ts/function";
 import * as IO from "fp-ts/IO";
 import * as M from "fp-ts/Map";
 import * as NEA from "fp-ts/NonEmptyArray";
@@ -34,6 +34,7 @@ import {
   mockWizardControlFactory,
 } from "../../../__mocks__/AdvancedSearchModule.mock";
 import { languageStrings } from "../../../tsrc/util/langstrings";
+import { pfTernaryTypeGuard } from "../../../tsrc/util/pointfree";
 import { selectOption } from "../MuiTestHelpers";
 
 const { shuffleBox: shuffleBoxStrings, shuffleList: shuffleListStrings } =
@@ -753,3 +754,45 @@ export const getControlValue = (
       return absurd(controlType);
   }
 };
+
+/**
+ * Filter all empty values in wizard controls Label Value
+ * Empty value includes: "", [], ["", ""], undefined
+ *
+ * @param labelsAndValues Array contains label and it's value
+ */
+export const filterEmptyValues = (
+  labelsAndValues: (WizardControlLabelValue | undefined)[]
+): WizardControlLabelValue[] =>
+  pipe(
+    labelsAndValues,
+    // convert undefined to {}
+    A.map(
+      flow(
+        O.fromNullable,
+        O.getOrElse(() => new Map())
+      )
+    ),
+    // convert "" and [] to {}
+    A.map(
+      M.filter(
+        pfTernaryTypeGuard<string, string[], boolean>(
+          S.isString,
+          not(S.isEmpty),
+          not(A.isEmpty)
+        )
+      )
+    ),
+    // convert ["", ""] to {}
+    A.map(
+      M.filter(
+        pfTernaryTypeGuard<string[], string, boolean>(
+          isStringArrayValues,
+          flow(A.filter(not(S.isString)), A.isNonEmpty),
+          constTrue
+        )
+      )
+    ),
+    // filter all empty map
+    A.filter(not(M.isEmpty))
+  );

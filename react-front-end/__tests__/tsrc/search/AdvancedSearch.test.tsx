@@ -20,24 +20,20 @@ import "@testing-library/jest-dom/extend-expect";
 import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
-import * as M from "fp-ts/Map";
-import * as O from "fp-ts/Option";
-import * as S from "fp-ts/string";
-import { not } from "fp-ts/Predicate";
-import { flow, pipe } from "fp-ts/function";
+import { pipe } from "fp-ts/function";
 import { getAdvancedSearchDefinition } from "../../../__mocks__/AdvancedSearchModule.mock";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import { elapsedTime, startTimer } from "../../../tsrc/util/debug";
 import { languageStrings } from "../../../tsrc/util/langstrings";
-import { pfTernaryTypeGuard } from "../../../tsrc/util/pointfree";
 import {
-  isStringArrayValues,
   editBoxEssentials,
   generateMockedControls,
   getControlValue,
   MockedControlValue,
   oneEditBoxWizard,
   updateControlValue,
+  filterEmptyValues,
+  WizardControlLabelValue,
 } from "./AdvancedSearchTestHelper";
 import {
   initialiseEssentialMocks,
@@ -304,7 +300,10 @@ describe("Rendering of wizard", () => {
     const { container } = await renderAdvancedSearchPage();
 
     // Collect _all_ values.
-    const getCurrentLabelsAndValues = () =>
+    const getCurrentLabelsAndValues = (): (
+      | WizardControlLabelValue
+      | undefined
+    )[] =>
       buildMockedControls().map(([c, controlValue]) =>
         getControlValue(
           container,
@@ -319,44 +318,6 @@ describe("Rendering of wizard", () => {
     // Clear all input value
     await clickClearButton(container);
 
-    // get current labels and values and
-    // filter all empty value
-    const filteredLabelsAndValues = pipe(
-      getCurrentLabelsAndValues(),
-      // convert undefined to {}
-      A.map(
-        flow(
-          O.fromNullable,
-          O.getOrElse(() => new Map())
-        )
-      ),
-      // convert "" and [] to {}
-      A.map(
-        M.filter(
-          pfTernaryTypeGuard<string, string[], boolean>(
-            S.isString,
-            not(S.isEmpty),
-            not(A.isEmpty)
-          )
-        )
-      ),
-      // convert ["", ""] to {}
-      A.map(
-        M.filter(
-          pfTernaryTypeGuard<string[], string, boolean>(
-            isStringArrayValues,
-            flow(
-              A.filter((arrayItem) => arrayItem !== ""),
-              A.isNonEmpty
-            ),
-            () => false
-          )
-        )
-      ),
-      // filter all non-empty map
-      A.filter(not(M.isEmpty))
-    );
-
-    expect(filteredLabelsAndValues).toEqual([]);
+    expect(pipe(getCurrentLabelsAndValues(), filterEmptyValues)).toEqual([]);
   });
 });
