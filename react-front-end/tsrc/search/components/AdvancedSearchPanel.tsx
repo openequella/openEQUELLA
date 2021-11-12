@@ -98,7 +98,7 @@ export const AdvancedSearchPanel = ({
    *
    * @param value WizardHelper.FieldValueMap, default value is `currentValues`
    */
-  const doSearch = (value = currentValues) => onSubmit(currentValues);
+  const doSearch = (value = currentValues) => onSubmit(value);
 
   /**
    * Handler for when user click clear button

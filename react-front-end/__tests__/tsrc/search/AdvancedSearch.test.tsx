@@ -22,20 +22,22 @@ import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
 import * as M from "fp-ts/Map";
 import * as O from "fp-ts/Option";
+import * as S from "fp-ts/string";
 import { not } from "fp-ts/Predicate";
 import { flow, pipe } from "fp-ts/function";
 import { getAdvancedSearchDefinition } from "../../../__mocks__/AdvancedSearchModule.mock";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import { elapsedTime, startTimer } from "../../../tsrc/util/debug";
 import { languageStrings } from "../../../tsrc/util/langstrings";
+import { pfTernaryTypeGuard } from "../../../tsrc/util/pointfree";
 import {
+  isStringArrayValues,
   editBoxEssentials,
   generateMockedControls,
   getControlValue,
   MockedControlValue,
   oneEditBoxWizard,
   updateControlValue,
-  WizardControlLabelValue,
 } from "./AdvancedSearchTestHelper";
 import {
   initialiseEssentialMocks,
@@ -302,64 +304,57 @@ describe("Rendering of wizard", () => {
     const { container } = await renderAdvancedSearchPage();
 
     // Collect _all_ values.
-    const defaultLabelsAndValues = buildMockedControls().map(
-      ([c, controlValue]) =>
+    const getCurrentLabelsAndValues = () =>
+      buildMockedControls().map(([c, controlValue]) =>
         getControlValue(
           container,
           Array.from(controlValue.keys()),
           c.controlType
         )
-    );
+      );
 
     // Make sure the current values match the default
-    expect(defaultLabelsAndValues).toEqual(mockedLabelsAndValues);
+    expect(getCurrentLabelsAndValues()).toEqual(mockedLabelsAndValues);
 
     // Clear all input value
     await clickClearButton(container);
 
-    const afterClearLabelsAndValues: WizardControlLabelValue[] = pipe(
-      buildMockedControls(),
-      A.map<MockedControlValue, WizardControlLabelValue>(([c, controlValue]) =>
-        pipe(
-          getControlValue(
-            container,
-            Array.from(controlValue.keys()),
-            c.controlType
-          ),
+    // get current labels and values and
+    // filter all empty value
+    const filteredLabelsAndValues = pipe(
+      getCurrentLabelsAndValues(),
+      // convert undefined to {}
+      A.map(
+        flow(
           O.fromNullable,
           O.getOrElse(() => new Map())
         )
-      )
-    );
-
-    // filter all empty value
-    const filteredLabelsAndValues = pipe(
-      afterClearLabelsAndValues,
-      // filter "" and []
-      A.filter(
-        flow(
-          M.filter((mapValue) =>
-            typeof mapValue === "string"
-              ? mapValue !== ""
-              : not(A.isEmpty)(mapValue)
-          ),
-          not(M.isEmpty)
+      ),
+      // convert "" and [] to {}
+      A.map(
+        M.filter(
+          pfTernaryTypeGuard<string, string[], boolean>(
+            S.isString,
+            not(S.isEmpty),
+            not(A.isEmpty)
+          )
         )
       ),
-      // filter ["", ""], {}
-      A.filter(
-        flow(
-          M.filter((m) =>
-            typeof m !== "string"
-              ? flow(
-                  A.filter((arrayItem) => arrayItem !== ""),
-                  A.isNonEmpty
-                )(m)
-              : false
-          ),
-          not(M.isEmpty)
+      // convert ["", ""] to {}
+      A.map(
+        M.filter(
+          pfTernaryTypeGuard<string[], string, boolean>(
+            isStringArrayValues,
+            flow(
+              A.filter((arrayItem) => arrayItem !== ""),
+              A.isNonEmpty
+            ),
+            () => false
+          )
         )
-      )
+      ),
+      // filter all non-empty map
+      A.filter(not(M.isEmpty))
     );
 
     expect(filteredLabelsAndValues).toEqual([]);

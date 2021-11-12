@@ -235,7 +235,7 @@ export type WizardControlLabelValue = Map<string, string | string[]>;
  *
  * @param x the value from a `WizardControlLabelValue` entry
  */
-const isStringArrayValues = (x: string | string[]): x is string[] =>
+export const isStringArrayValues = (x: string | string[]): x is string[] =>
   !S.isString(x);
 
 /**
