@@ -57,6 +57,7 @@ const {
   mockSearch,
   mockSearchSettings,
   mockGetAdvancedSearchByUuid,
+  mockGetTokensForText,
 } = mockCollaborators();
 initialiseEssentialMocks({
   mockCollections,
@@ -137,7 +138,6 @@ describe("Advanced Search filter button", () => {
   it("indicates whether advanced search criteria has been set", async () => {
     mockGetAdvancedSearchByUuid.mockResolvedValue(oneEditBoxWizard(false));
     const { container, getByLabelText } = await renderAdvancedSearchPage();
-    const editBox = getByLabelText(`${editBoxEssentials.title}`);
 
     const getHighlightedFilterButton = () =>
       getByLabelText(
@@ -148,13 +148,14 @@ describe("Advanced Search filter button", () => {
     expect(getHighlightedFilterButton()).not.toBeInTheDocument();
 
     // Put some texts in the EditBox.
-    userEvent.type(editBox, "text");
+    userEvent.type(getByLabelText(`${editBoxEssentials.title}`), "text");
     await clickSearchButton(container);
     // Now the filter button is highlighted in Secondary color.
     expect(getHighlightedFilterButton()).toBeInTheDocument();
 
-    // Clear out the content.
-    userEvent.clear(editBox);
+    // Open the panel and clear out the EditBox's content.
+    togglePanel();
+    userEvent.clear(getByLabelText(`${editBoxEssentials.title}`));
     await clickSearchButton(container);
     // Now the filter button is not highlighted again.
     expect(getHighlightedFilterButton()).not.toBeInTheDocument();
@@ -238,11 +239,7 @@ describe("Rendering of wizard", () => {
     // Click search - so as to persist values
     await clickSearchButton(container);
 
-    // Collapse the panel
-    togglePanel();
-    expect(queryAdvSearchPanel(container)).not.toBeInTheDocument();
-
-    // And bring it back
+    // Open the panel again.
     togglePanel();
 
     // Collect all labels and values.
@@ -299,5 +296,28 @@ describe("Rendering of wizard", () => {
     );
 
     expect(defaultLabelsAndValues).toEqual(mockedLabelsAndValues);
+  });
+});
+
+describe("search with Advanced search criteria", () => {
+  it("supports searching with raw Lucene query", async () => {
+    jest.clearAllMocks();
+    const defaultValue = "hello world";
+    mockGetAdvancedSearchByUuid.mockResolvedValue(
+      oneEditBoxWizard(false, [defaultValue])
+    );
+    const { container } = await renderAdvancedSearchPage();
+
+    // Search with the EditBox's default value.
+    await clickSearchButton(container);
+
+    // Should do a tokenisation.
+    expect(mockGetTokensForText).toHaveBeenCalledWith(defaultValue);
+
+    // The raw Lucene query should be part of the SearchOptions.
+    const [searchOptions] = mockSearch.mock.calls[0];
+    expect(searchOptions.customLuceneQuery).toBe(
+      "(/item/name\\*:(hello world))"
+    );
   });
 });
