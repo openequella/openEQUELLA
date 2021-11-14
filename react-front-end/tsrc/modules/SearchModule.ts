@@ -126,6 +126,10 @@ export interface SearchOptions {
    * @see OEQ.Search.SearchParams for examples
    */
   musts?: OEQ.Search.Must[];
+  /**
+   * Raw Lucene query generated from the values of Wizard controls.
+   */
+  customLuceneQuery?: string;
 }
 
 /**
@@ -212,6 +216,7 @@ const buildSearchParams = ({
   mimeTypeFilters,
   externalMimeTypes,
   musts,
+  customLuceneQuery,
 }: SearchOptions): OEQ.Search.SearchParams => {
   const processedQuery = query ? formatQuery(query, !rawMode) : undefined;
   // We use selected filters to generate MIME types. However, in Image Gallery,
@@ -236,6 +241,7 @@ const buildSearchParams = ({
     whereClause: generateCategoryWhereQuery(selectedCategories),
     mimeTypes: externalMimeTypes ?? _mimeTypes,
     musts: musts,
+    customLuceneQuery: customLuceneQuery,
   };
 };
 

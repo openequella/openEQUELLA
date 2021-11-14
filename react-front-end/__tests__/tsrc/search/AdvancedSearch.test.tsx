@@ -60,6 +60,7 @@ const {
   mockSearch,
   mockSearchSettings,
   mockGetAdvancedSearchByUuid,
+  mockGetTokensForText,
 } = mockCollaborators();
 initialiseEssentialMocks({
   mockCollections,
@@ -74,11 +75,19 @@ mockGetAdvancedSearchByUuid.mockResolvedValue(getAdvancedSearchDefinition);
 
 const testUuid = "4be6ae54-68ca-4d8b-acd0-0ca96fc39280";
 
-const renderAdvancedSearchPage = async () =>
-  await renderSearchPage(searchPromise, undefined, testUuid);
-
 const togglePanel = () =>
   act(() => userEvent.click(screen.getByLabelText(filterButtonLabel)));
+
+const renderAdvancedSearchPage = async () => {
+  const page = await renderSearchPage(searchPromise, undefined, testUuid);
+  // Due to the UI change - hiding the panel when a search is triggered, the tests should
+  // also get updated accordingly. However, as we will make further changes for the UI,
+  // just manually open the panel for now so that we can keep the tests as they are.
+  // We will rework here later when we figure out how to nicely display the panel.
+  togglePanel();
+
+  return page;
+};
 
 const queryAdvSearchPanel = (container: Element): HTMLElement | null =>
   container.querySelector("#advanced-search-panel");
@@ -143,7 +152,6 @@ describe("Advanced Search filter button", () => {
   it("indicates whether advanced search criteria has been set", async () => {
     mockGetAdvancedSearchByUuid.mockResolvedValue(oneEditBoxWizard(false));
     const { container, getByLabelText } = await renderAdvancedSearchPage();
-    const editBox = getByLabelText(`${editBoxEssentials.title}`);
 
     const getHighlightedFilterButton = () =>
       getByLabelText(
@@ -154,13 +162,14 @@ describe("Advanced Search filter button", () => {
     expect(getHighlightedFilterButton()).not.toBeInTheDocument();
 
     // Put some texts in the EditBox.
-    userEvent.type(editBox, "text");
+    userEvent.type(getByLabelText(`${editBoxEssentials.title}`), "text");
     await clickSearchButton(container);
     // Now the filter button is highlighted in Secondary color.
     expect(getHighlightedFilterButton()).toBeInTheDocument();
 
-    // Clear out the content.
-    userEvent.clear(editBox);
+    // Open the panel and clear out the EditBox's content.
+    togglePanel();
+    userEvent.clear(getByLabelText(`${editBoxEssentials.title}`));
     await clickSearchButton(container);
     // Now the filter button is not highlighted again.
     expect(getHighlightedFilterButton()).not.toBeInTheDocument();
@@ -244,11 +253,7 @@ describe("Rendering of wizard", () => {
     // Click search - so as to persist values
     await clickSearchButton(container);
 
-    // Collapse the panel
-    togglePanel();
-    expect(queryAdvSearchPanel(container)).not.toBeInTheDocument();
-
-    // And bring it back
+    // Open the panel again.
     togglePanel();
 
     // Collect all labels and values.
@@ -319,5 +324,25 @@ describe("Rendering of wizard", () => {
     await clickClearButton(container);
 
     expect(pipe(getCurrentLabelsAndValues(), filterEmptyValues)).toEqual([]);
+  });
+});
+
+describe("search with Advanced search criteria", () => {
+  it("supports searching with raw Lucene query", async () => {
+    jest.clearAllMocks();
+    const defaultValue = "hello world";
+    mockGetAdvancedSearchByUuid.mockResolvedValue(
+      oneEditBoxWizard(false, [defaultValue])
+    );
+    await renderAdvancedSearchPage();
+
+    // Should do a tokenisation.
+    expect(mockGetTokensForText).toHaveBeenCalledWith(defaultValue);
+
+    // The raw Lucene query should be part of the SearchOptions.
+    const [searchOptions] = mockSearch.mock.calls[0];
+    expect(searchOptions.customLuceneQuery).toBe(
+      "(/item/name\\*:(hello world))"
+    );
   });
 });

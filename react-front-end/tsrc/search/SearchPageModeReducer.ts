@@ -18,10 +18,7 @@
 import * as OEQ from "@openequella/rest-api-client";
 import * as E from "fp-ts/Either";
 import { absurd, flow, pipe } from "fp-ts/function";
-import {
-  extractDefaultValues,
-  FieldValueMap,
-} from "../components/wizard/WizardHelper";
+import type { FieldValueMap } from "../components/wizard/WizardHelper";
 
 export type State =
   | {
@@ -39,8 +36,9 @@ export type Action =
       type: "useNormal";
     }
   | {
-      type: "showAdvSearchPanel";
+      type: "initialiseAdvSearch";
       selectedAdvSearch: OEQ.AdvancedSearch.AdvancedSearchDefinition;
+      initialQueryValues: FieldValueMap;
     }
   | {
       type: "toggleAdvSearchPanel";
@@ -95,13 +93,13 @@ export const searchPageModeReducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "useNormal":
       return { mode: "normal" };
-    case "showAdvSearchPanel":
+    case "initialiseAdvSearch":
       const { selectedAdvSearch: definition } = action;
       return {
         mode: "advSearch",
         definition,
-        isAdvSearchPanelOpen: true,
-        queryValues: extractDefaultValues(definition.controls),
+        isAdvSearchPanelOpen: false,
+        queryValues: action.initialQueryValues,
       };
     case "toggleAdvSearchPanel":
       return toggleOrHidePanel(state, "toggle");

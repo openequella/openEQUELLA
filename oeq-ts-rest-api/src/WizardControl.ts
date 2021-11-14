@@ -128,6 +128,15 @@ export interface WizardCalendarControl extends WizardBasicControl {
   controlType: 'calendar';
 }
 
+/**
+ * Type guard for WizardShuffleListControl.
+ *
+ * @param c An object of WizardBasicControl.
+ */
+export const isWizardShuffleListControl = (
+  c: WizardBasicControl
+): c is WizardShuffleListControl => c.controlType === 'shufflelist';
+
 export interface WizardShuffleListControl extends WizardTextTypeControl {
   /**
    * Whether to tokenise the value. If true, an '*' must be appended to the schema node in the

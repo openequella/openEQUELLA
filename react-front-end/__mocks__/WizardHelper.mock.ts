@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import type { FieldValueMap } from "../tsrc/components/wizard/WizardHelper";
 
 export const controls: OEQ.WizardControl.WizardControl[] = [
   {
@@ -192,5 +193,134 @@ export const controls: OEQ.WizardControl.WizardControl[] = [
     isCheckDuplication: false,
     isTokenise: true,
   },
+  {
+    mandatory: false,
+    reload: false,
+    include: true,
+    size1: 2,
+    size2: 0,
+    title: "Check box group",
+    description: "This is check box group, shows 2 items per row",
+    targetNodes: [
+      {
+        target: "/item/description",
+        attribute: "",
+        fullTarget: "/item/description",
+        xoqlPath: "/item/description",
+        freetextField: "/item/description",
+      },
+    ],
+    options: [
+      {
+        text: "Zebra",
+        value: "z",
+      },
+      {
+        text: "Cat",
+        value: "c",
+      },
+      {
+        text: "Mouse",
+        value: "m",
+      },
+    ],
+    defaultValues: [],
+    controlType: "checkboxgroup",
+  },
+  {
+    mandatory: false,
+    reload: false,
+    include: true,
+    size1: 0,
+    size2: 0,
+    title: "List box",
+    description: "This is list box targeting name",
+    targetNodes: [
+      {
+        target: "/item/name",
+        attribute: "",
+        fullTarget: "/item/name",
+        xoqlPath: "/item/name",
+        freetextField: "/item/name",
+      },
+    ],
+    options: [
+      {
+        text: "Zebra",
+        value: "z",
+      },
+      {
+        text: "Dog",
+        value: "d",
+      },
+      {
+        text: "Monkey",
+        value: "m",
+      },
+    ],
+    defaultValues: [],
+    controlType: "listbox",
+  },
+  {
+    mandatory: false,
+    reload: false,
+    include: true,
+    size1: 0,
+    size2: 0,
+    title: "Raw Html",
+    description: "<h1>This is just a raw Html content</h1>",
+    targetNodes: [],
+    options: [],
+    defaultValues: [],
+    controlType: "html",
+  },
   { controlType: "unknown" },
 ];
+
+export const mockedFieldValueMap: FieldValueMap = new Map([
+  [
+    { schemaNode: ["/controls/calendar1"], type: "calendar" },
+    ["2021-11-01", ""],
+  ],
+  [
+    { schemaNode: ["/controls/calendar2"], type: "calendar" },
+    ["", "2021-11-01"],
+  ],
+  [
+    { schemaNode: ["/controls/calendar3"], type: "calendar" },
+    ["2021-11-01", "2021-11-11"],
+  ],
+  [{ schemaNode: ["/controls/calendar4"], type: "calendar" }, ["", ""]],
+  [
+    { schemaNode: ["/controls/checkbox"], type: "checkboxgroup" },
+    ["optionA, optionB"],
+  ],
+  [
+    {
+      schemaNode: ["/controls/editbox"],
+      type: "editbox",
+      isValueTokenised: true,
+    },
+    ["hello world"],
+  ],
+  [{ schemaNode: ["/controls/html"], type: "html" }, [""]],
+  [{ schemaNode: ["/controls/listbox"], type: "listbox" }, ["optionC"]],
+  [{ schemaNode: ["/controls/radiogroup"], type: "radiogroup" }, ["optionD"]],
+  [
+    { schemaNode: ["/controls/shufflebox"], type: "shufflebox" },
+    ["optionE", "optionF"],
+  ],
+  [
+    {
+      schemaNode: ["/controls/shufflelist"],
+      type: "shufflelist",
+      isValueTokenised: true,
+    },
+    ["The house is nice", "walking"],
+  ],
+  [
+    { schemaNode: ["/controls/termselector"], type: "termselector" },
+    ["programming"],
+  ],
+  [{ schemaNode: ["/controls/userselector"], type: "userselector" }, ["admin"]],
+]);
