@@ -36,6 +36,11 @@ import {
   Union,
   Unknown,
 } from "runtypes";
+import {
+  extractDefaultValues,
+  FieldValueMap,
+  generateRawLuceneQuery,
+} from "../components/wizard/WizardHelper";
 import { routes } from "../mainui/routes";
 import {
   clearDataFromLocalStorage,
@@ -65,6 +70,7 @@ import { findUserById } from "../modules/UserModule";
 import { DateRange, isDate } from "../util/Date";
 import { simpleMatch } from "../util/match";
 import { History } from "history";
+import { Action as SearchPageModeAction } from "./SearchPageModeReducer";
 
 /**
  * This helper is intended to assist with processing related to the Presentation Layer -
@@ -83,6 +89,10 @@ export interface SearchPageOptions extends SearchOptions {
    * How to display the search results - also determines the type of results.
    */
   displayMode: DisplayMode;
+  /**
+   * Currently configured Advanced search criteria.
+   */
+  advFieldValue?: FieldValueMap;
 }
 
 export const defaultSearchPageOptions: SearchPageOptions = {
@@ -454,3 +464,35 @@ export const buildOpenSummaryPageHandler = (
       })
     )
   );
+
+/**
+ * Function to initialise an Advanced search. There are three tasks done here.
+ *
+ * 1. Confirm the initial FieldValueMap. If there is one, use it. Otherwise, build a new one by extracting the default
+ * Wizard control values.
+ *
+ * 2. Update the state of SearchPageModeReducer to `initialiseAdvSearch`;
+ *
+ * 3. Build and return the initial raw Lucene query.
+ *
+ * @param advancedSearchDefinition The initial Advanced search definition.
+ * @param dispatch The `dispatch` provided by SearchPageModeReducer.
+ * @param currentFieldValue FieldValueMap that may already exist.
+ */
+export const initialiseAdvancedSearch = (
+  advancedSearchDefinition: OEQ.AdvancedSearch.AdvancedSearchDefinition,
+  dispatch: (action: SearchPageModeAction) => void,
+  currentFieldValue?: FieldValueMap
+): Promise<string | undefined> => {
+  const initialQueryValues =
+    currentFieldValue ??
+    extractDefaultValues(advancedSearchDefinition.controls);
+
+  dispatch({
+    type: "initialiseAdvSearch",
+    selectedAdvSearch: advancedSearchDefinition,
+    initialQueryValues,
+  });
+
+  return generateRawLuceneQuery(initialQueryValues);
+};
