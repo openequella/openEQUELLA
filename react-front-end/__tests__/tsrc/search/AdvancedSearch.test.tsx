@@ -27,12 +27,12 @@ import { elapsedTime, startTimer } from "../../../tsrc/util/debug";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import {
   editBoxEssentials,
+  filterEmptyValues,
   generateMockedControls,
   getControlValue,
   MockedControlValue,
   oneEditBoxWizard,
   updateControlValue,
-  filterEmptyValues,
   WizardControlLabelValue,
 } from "./AdvancedSearchTestHelper";
 import {
@@ -320,9 +320,9 @@ describe("Rendering of wizard", () => {
     // Make sure the current values match the default
     expect(getCurrentLabelsAndValues()).toEqual(mockedLabelsAndValues);
 
-    // Clear all input value
+    // Click clear button
     await clickClearButton(container);
-
+    togglePanel();
     expect(pipe(getCurrentLabelsAndValues(), filterEmptyValues)).toEqual([]);
   });
 });

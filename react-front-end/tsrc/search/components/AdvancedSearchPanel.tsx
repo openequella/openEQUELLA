@@ -52,6 +52,11 @@ export interface AdvancedSearchPanelProps {
   onSubmit: (currentValues: WizardHelper.FieldValueMap) => void;
 
   /**
+   * Handler for when user click the clear button.
+   */
+  onClear: () => void;
+
+  /**
    * Handler for when user selects to close the panel.
    */
   onClose: () => void;
@@ -62,6 +67,7 @@ export const AdvancedSearchPanel = ({
   values,
   onClose,
   onSubmit,
+  onClear,
 }: AdvancedSearchPanelProps) => {
   const [currentValues, setCurrentValues] =
     useState<WizardHelper.FieldValueMap>(values);
@@ -92,24 +98,6 @@ export const AdvancedSearchPanel = ({
     },
     [currentValues, setCurrentValues]
   );
-
-  /**
-   * do search based on input value
-   *
-   * @param value WizardHelper.FieldValueMap, default value is `currentValues`
-   */
-  const doSearch = (value = currentValues) => onSubmit(value);
-
-  /**
-   * Handler for when user click clear button
-   * set state to an empty map
-   * update search results
-   */
-  const onClear = () => {
-    const emptyValue = new Map();
-    setCurrentValues(emptyValue);
-    doSearch(emptyValue);
-  };
 
   const idPrefix = "advanced-search-panel";
   return (
