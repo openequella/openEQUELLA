@@ -137,7 +137,10 @@ public class Search2ApiTest extends AbstractRestApiTest {
     };
   }
 
-  @Test(description = "Search by a custom Lucene query", dataProvider = "luceneQueryProvider")
+  @Test(
+      description = "Search by a custom Lucene query",
+      dataProvider = "luceneQueryProvider",
+      enabled = false)
   public void customLuceneQueryTest(String q, int expectNumber) throws IOException {
     JsonNode result = doSearch(200, null, new NameValuePair("customLuceneQuery", q));
     assertEquals(getAvailable(result), expectNumber);

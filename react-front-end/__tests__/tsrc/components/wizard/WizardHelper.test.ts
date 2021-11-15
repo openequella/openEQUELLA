@@ -154,14 +154,14 @@ describe("generateRawLuceneQuery()", () => {
       "(/controls/calendar1:[2021-11-01 TO *]) AND " +
       "(/controls/calendar2:[* TO 2021-11-01]) AND " +
       "(/controls/calendar3:[2021-11-01 TO 2021-11-11]) AND " +
-      "(/controls/checkbox:(optionA, optionB)) AND " +
+      '(/controls/checkbox:("optionA" "optionB")) AND ' +
       "(/controls/editbox\\*:(hello world)) AND " +
-      "(/controls/listbox:optionC) AND " +
-      "(/controls/radiogroup:optionD) AND " +
-      "(/controls/shufflebox:(optionE optionF)) AND " +
+      '(/controls/listbox:"optionC") AND ' +
+      '(/controls/radiogroup:"optionD") AND ' +
+      '(/controls/shufflebox:("optionE" "optionF")) AND ' +
       "(/controls/shufflelist\\*:(hello world)) AND " +
-      "(/controls/termselector:(programming)) AND " +
-      "(/controls/userselector:(admin))";
+      '(/controls/termselector:("programming")) AND ' +
+      '(/controls/userselector:("admin"))';
 
     expect(query).toBe(expectedQuery);
   });
