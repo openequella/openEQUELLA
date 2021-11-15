@@ -480,11 +480,22 @@ const AND = " AND ";
 const fieldName = (field: string, isTokenised = false): string =>
   `${field}${isTokenised ? "\\*" : ""}`;
 
+/**
+ * Given an array of values, wrap each value by a pair of double quotes. This can make sure if a value is a phrase,
+ * the phrase will not get separated into multiple words on server.
+ */
+const fieldValue = (value: ControlValue): string[] =>
+  value.map((v) => `"${v}"`);
+
 // Function to create a Task which builds a raw Lucene query for each control type.
 const queryFactory = (
   { type, schemaNode, isValueTokenised }: ControlTarget,
   values: ControlValue
 ): TE.TaskEither<string, string> => {
+  // Values processed to to have each one wrapped by double quotes. However, Calendar and those doing
+  // tokenisation should not use this.
+  const _values = fieldValue(values);
+
   // Function to build a query string containing only one 'field:value' for one path.
   const singleValueQueryBuilder = (
     path: string,
@@ -550,18 +561,18 @@ const queryFactory = (
           )
         );
       case "checkboxgroup":
-        return buildQueries(schemaNode, values, multipleValueQueryBuilder);
+        return buildQueries(schemaNode, _values, multipleValueQueryBuilder);
       case "editbox":
         const { tokens } = await getTokensForText(`${values[0]}`);
         return buildQueries(schemaNode, tokens, multipleValueQueryBuilder);
       case "html":
         return "";
       case "listbox":
-        return buildQueries(schemaNode, values);
+        return buildQueries(schemaNode, _values);
       case "radiogroup":
-        return buildQueries(schemaNode, values);
+        return buildQueries(schemaNode, _values);
       case "shufflebox":
-        return buildQueries(schemaNode, values, multipleValueQueryBuilder);
+        return buildQueries(schemaNode, _values, multipleValueQueryBuilder);
       case "shufflelist":
         const { tokens: shuffleTokens } = await getTokensForText(
           values.join(" ")
@@ -572,9 +583,9 @@ const queryFactory = (
           multipleValueQueryBuilder
         );
       case "termselector":
-        return buildQueries(schemaNode, values, multipleValueQueryBuilder);
+        return buildQueries(schemaNode, _values, multipleValueQueryBuilder);
       case "userselector":
-        return buildQueries(schemaNode, values, multipleValueQueryBuilder);
+        return buildQueries(schemaNode, _values, multipleValueQueryBuilder);
       default:
         return absurd(type);
     }

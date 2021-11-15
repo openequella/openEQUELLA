@@ -293,7 +293,7 @@ export const mockedFieldValueMap: FieldValueMap = new Map([
   [{ schemaNode: ["/controls/calendar4"], type: "calendar" }, ["", ""]],
   [
     { schemaNode: ["/controls/checkbox"], type: "checkboxgroup" },
-    ["optionA, optionB"],
+    ["optionA", "optionB"],
   ],
   [
     {

@@ -81,6 +81,7 @@ import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
@@ -1113,7 +1114,8 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
   private Optional<Query> processCustomLuceneQuery(String customLuceneQuery) {
     QueryParser parser =
-        new QueryParser(LuceneConstants.LATEST_VERSION, FreeTextQuery.FIELD_ALL, getAnalyser());
+        new QueryParser(
+            LuceneConstants.LATEST_VERSION, FreeTextQuery.FIELD_ALL, new KeywordAnalyzer());
 
     return Optional.ofNullable(customLuceneQuery)
         .map(
