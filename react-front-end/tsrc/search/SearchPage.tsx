@@ -17,11 +17,11 @@
  */
 import { debounce, Drawer, Grid, Hidden } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
+import * as A from "fp-ts/Array";
+import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as O from "fp-ts/Option";
-import * as A from "fp-ts/Array";
-import * as E from "fp-ts/Either";
 import * as TE from "fp-ts/TaskEither";
 import { isEqual } from "lodash";
 import * as React from "react";
@@ -38,13 +38,13 @@ import { useHistory, useLocation, useParams } from "react-router";
 import { getBaseUrl } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
 import MessageInfo, { MessageInfoVariant } from "../components/MessageInfo";
+import type { FieldValueMap } from "../components/wizard/WizardHelper";
 import {
   ControlValue,
   generateRawLuceneQuery,
   isControlValueNonEmpty,
   isNonEmptyString,
 } from "../components/wizard/WizardHelper";
-import type { FieldValueMap } from "../components/wizard/WizardHelper";
 import { AppRenderErrorContext } from "../mainui/App";
 import { NEW_SEARCH_PATH, routes } from "../mainui/routes";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
@@ -1040,6 +1040,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
                     wizardControls={searchPageModeState.definition.controls}
                     values={searchPageModeState.queryValues}
                     onSubmit={handleSubmitAdvancedSearch}
+                    onClear={() => handleSubmitAdvancedSearch(new Map())}
                     onClose={() =>
                       searchPageModeDispatch({ type: "hideAdvSearchPanel" })
                     }

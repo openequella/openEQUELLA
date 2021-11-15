@@ -52,6 +52,11 @@ export interface AdvancedSearchPanelProps {
   onSubmit: (currentValues: WizardHelper.FieldValueMap) => void;
 
   /**
+   * Handler for when user click the clear button.
+   */
+  onClear: () => void;
+
+  /**
    * Handler for when user selects to close the panel.
    */
   onClose: () => void;
@@ -62,6 +67,7 @@ export const AdvancedSearchPanel = ({
   values,
   onClose,
   onSubmit,
+  onClear,
 }: AdvancedSearchPanelProps) => {
   const [currentValues, setCurrentValues] =
     useState<WizardHelper.FieldValueMap>(values);
@@ -139,6 +145,9 @@ export const AdvancedSearchPanel = ({
           color="primary"
         >
           {languageStrings.common.action.search}
+        </Button>
+        <Button id={`${idPrefix}-clearBtn`} onClick={onClear} color="secondary">
+          {languageStrings.common.action.clear}
         </Button>
       </CardActions>
     </Card>

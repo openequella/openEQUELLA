@@ -20,7 +20,7 @@ import { getByLabelText, getByText } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
-import { absurd, constFalse, flow, pipe } from "fp-ts/function";
+import { absurd, constFalse, constTrue, flow, pipe } from "fp-ts/function";
 import * as IO from "fp-ts/IO";
 import * as M from "fp-ts/Map";
 import * as NEA from "fp-ts/NonEmptyArray";
@@ -34,6 +34,7 @@ import {
   mockWizardControlFactory,
 } from "../../../__mocks__/AdvancedSearchModule.mock";
 import { languageStrings } from "../../../tsrc/util/langstrings";
+import { pfTernaryTypeGuard } from "../../../tsrc/util/pointfree";
 import { selectOption } from "../MuiTestHelpers";
 
 const { shuffleBox: shuffleBoxStrings, shuffleList: shuffleListStrings } =
@@ -228,14 +229,14 @@ const controlValues: Map<BasicControlEssentials, string[]> = new Map([
 
 // Alias for the Map including a Wizard control's labels and values. However, the value can refer to
 // the real input value or the status of attribute `checked`.
-type WizardControlLabelValue = Map<string, string | string[]>;
+export type WizardControlLabelValue = Map<string, string | string[]>;
 
 /**
  * Helper for `WizardControlLabelValue` values to determine when they're a string array.
  *
  * @param x the value from a `WizardControlLabelValue` entry
  */
-const isStringArrayValues = (x: string | string[]): x is string[] =>
+export const isStringArrayValues = (x: string | string[]): x is string[] =>
   !S.isString(x);
 
 /**
@@ -640,6 +641,11 @@ export const getControlValue = (
     getByLabelText(container, label) as HTMLInputElement;
   const buildMap = (label: string, value: string) => new Map([[label, value]]);
 
+  const inputValueIfChecked = (
+    checked: boolean,
+    value: string
+  ): O.Option<string> => (checked ? O.some(value) : O.none);
+
   // Function to build WizardControlLabelValue for CheckBox type controls.
   const getOptionValues = (_labels: string[]) =>
     pipe(
@@ -647,9 +653,18 @@ export const getControlValue = (
       A.map((label) =>
         pipe(label, getInput, (input) => ({
           label,
-          value: `${useOptionStatus ? input.checked : input.value}`,
+          value: useOptionStatus
+            ? O.some(`${input.checked}`)
+            : inputValueIfChecked(input.checked, input.value),
         }))
       ),
+      A.filter((a): a is { label: string; value: O.Some<string> } =>
+        O.isSome(a.value)
+      ),
+      A.map(({ value, label }) => ({
+        label,
+        value: value.value,
+      })),
       A.reduce(new Map<string, string>(), (m, { label, value }) =>
         pipe(m, M.upsertAt(S.Eq)(label, value))
       )
@@ -739,3 +754,45 @@ export const getControlValue = (
       return absurd(controlType);
   }
 };
+
+/**
+ * Filter all empty values in wizard controls Label Value
+ * Empty value includes: "", [], ["", ""], undefined
+ *
+ * @param labelsAndValues Array contains label and it's value
+ */
+export const filterEmptyValues = (
+  labelsAndValues: (WizardControlLabelValue | undefined)[]
+): WizardControlLabelValue[] =>
+  pipe(
+    labelsAndValues,
+    // convert undefined to {}
+    A.map(
+      flow(
+        O.fromNullable,
+        O.getOrElse(() => new Map())
+      )
+    ),
+    // convert "" and [] to {}
+    A.map(
+      M.filter(
+        pfTernaryTypeGuard<string, string[], boolean>(
+          S.isString,
+          not(S.isEmpty),
+          not(A.isEmpty)
+        )
+      )
+    ),
+    // convert ["", ""] to {}
+    A.map(
+      M.filter(
+        pfTernaryTypeGuard<string[], string, boolean>(
+          isStringArrayValues,
+          flow(A.filter(not(S.isString)), A.isNonEmpty),
+          constTrue
+        )
+      )
+    ),
+    // filter all empty map
+    A.filter(not(M.isEmpty))
+  );
