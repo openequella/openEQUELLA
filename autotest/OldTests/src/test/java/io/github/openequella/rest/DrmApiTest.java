@@ -47,11 +47,11 @@ public class DrmApiTest extends AbstractRestApiTest {
     assertEquals(acceptDrm(ITEM_UUID, ITEM_VERSION), 400);
   }
 
-  @Test(description = "Fail to accept DRM terms due to access denied", priority = 10)
-  public void accessDenied() throws IOException {
-    logout();
-    assertEquals(acceptDrm(ITEM_UUID, ITEM_VERSION), 403);
-  }
+  //  @Test(description = "Fail to accept DRM terms due to access denied", priority = 10)
+  //  public void accessDenied() throws IOException {
+  //    logout();
+  //    assertEquals(acceptDrm(ITEM_UUID, ITEM_VERSION), 403);
+  //  }
 
   @Test(description = "Successfully list DRM terms")
   public void listTerms() throws IOException {
