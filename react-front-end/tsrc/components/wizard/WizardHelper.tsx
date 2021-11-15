@@ -574,12 +574,14 @@ const queryFactory = (
       case "shufflebox":
         return buildQueries(schemaNode, _values, multipleValueQueryBuilder);
       case "shufflelist":
-        const { tokens: shuffleTokens } = await getTokensForText(
-          values.join(" ")
-        );
+        const getShuffleTokens = async () => {
+          const { tokens } = await getTokensForText(values.join(" "));
+          return tokens;
+        };
+
         return buildQueries(
           schemaNode,
-          shuffleTokens,
+          isValueTokenised ? await getShuffleTokens() : _values,
           multipleValueQueryBuilder
         );
       case "termselector":
