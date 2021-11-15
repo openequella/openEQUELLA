@@ -24,7 +24,7 @@ public class SelectionStatusPage extends AbstractPage<SelectionStatusPage> {
   }
 
   public SelectionCheckoutPage finishSelections() {
-    ExpectWaiter.waiter(ExpectedConditions.invisibilityOf(finishedButton), this);
+    ExpectWaiter.waiter(ExpectedConditions.visibilityOf(finishedButton), this).get();
     scrollToElement(finishedButton);
     finishedButton.click();
     return new SelectionCheckoutPage(context).get();
