@@ -27,7 +27,9 @@ import {
   withStyles,
 } from "@material-ui/core";
 import axios, { AxiosError } from "axios";
+import { useEffect, useState } from "react";
 import * as React from "react";
+import { pipe } from "fp-ts/function";
 import { IThemeSettings } from ".";
 import {
   ErrorResponse,
@@ -70,7 +72,7 @@ const styles = createStyles({
   },
 });
 
-interface ThemeColors {
+interface IThemeColors {
   primary: string;
   secondary: string;
   background: string;
@@ -82,149 +84,160 @@ interface ThemeColors {
   secondaryText: string;
 }
 
-interface ThemePageProps {
+export interface IThemePageProps {
   updateTemplate: (update: TemplateUpdate) => void;
 }
 
-interface ThemePageState extends ThemeColors {
+interface ILogoSettings {
+  logoURL: string;
   logoToUpload: File | null;
   fileName: string;
-  changesUnsaved: boolean;
-  logoURL: string;
-  showSuccess: boolean;
 }
 
-class ThemePage extends React.Component<
-  ThemePageProps & WithStyles<typeof styles>,
-  ThemePageState
-> {
-  state = {
-    primary: themeSettings.primaryColor,
-    secondary: themeSettings.secondaryColor,
-    background: themeSettings.backgroundColor,
-    paper: themeSettings.paperColor,
-    menu: themeSettings.menuItemColor,
-    menuText: themeSettings.menuItemTextColor,
-    menuIcon: themeSettings.menuItemIconColor,
-    primaryText: themeSettings.primaryTextColor,
-    secondaryText: themeSettings.menuTextColor,
-    logoToUpload: null,
-    fileName: "",
-    changesUnsaved: false,
-    logoURL: logoURL,
-    showSuccess: false,
+export const ThemePage = ({
+  updateTemplate,
+  classes,
+}: IThemePageProps & WithStyles<typeof styles>) => {
+  const mapThemeSettings2ThemeColors = (
+    _themeSettings = themeSettings
+  ): IThemeColors => {
+    return {
+      primary: _themeSettings.primaryColor,
+      secondary: _themeSettings.secondaryColor,
+      background: _themeSettings.backgroundColor,
+      paper: _themeSettings.paperColor,
+      menu: _themeSettings.menuItemColor,
+      menuText: _themeSettings.menuItemTextColor,
+      menuIcon: _themeSettings.menuItemIconColor,
+      primaryText: _themeSettings.primaryTextColor,
+      secondaryText: _themeSettings.menuTextColor,
+    };
   };
 
-  componentDidMount = () => {
-    this.props.updateTemplate((tp) => ({
+  const mapThemeColors2ThemeSettings = (
+    _themeColors = themeColors,
+    fontSize = 14
+  ): IThemeSettings => {
+    return {
+      primaryColor: _themeColors.primary,
+      secondaryColor: _themeColors.secondary,
+      backgroundColor: _themeColors.background,
+      paperColor: _themeColors.paper,
+      menuItemColor: _themeColors.menu,
+      menuItemIconColor: _themeColors.menuIcon,
+      menuItemTextColor: _themeColors.menuText,
+      primaryTextColor: _themeColors.primaryText,
+      menuTextColor: _themeColors.secondaryText,
+      fontSize: fontSize,
+    };
+  };
+
+  const [logoSettings, setLogoSettings] = useState<ILogoSettings>({
+    logoURL: logoURL,
+    logoToUpload: null,
+    fileName: "",
+  });
+  const [themeColors, setThemeColors] = useState<IThemeColors>(
+    mapThemeSettings2ThemeColors()
+  );
+  const [isChangesUnsaved, setIsChangesUnsaved] = useState(false);
+  const [isShowSuccess, setIsShowSuccess] = useState(false);
+
+  useEffect(() => {
+    updateTemplate((tp) => ({
       ...templateDefaults(strings.title)(tp),
       backRoute: routes.Settings.to,
     }));
+  }, [updateTemplate]);
+
+  const handleDefaultButton = () => {
+    const defaultThemeColors: IThemeColors = {
+      primary: "#186caf",
+      secondary: "#ff9800",
+      background: "#fafafa",
+      paper: "#ffffff",
+      menuText: "#000000",
+      menu: "#ffffff",
+      menuIcon: "#000000",
+      primaryText: "#000000",
+      secondaryText: "#444444",
+    };
+    setThemeColors(defaultThemeColors);
+    setIsChangesUnsaved(true);
+    pipe(defaultThemeColors, mapThemeColors2ThemeSettings, submitTheme);
   };
 
-  handleDefaultButton = () => {
-    this.setState(
-      {
-        primary: "#186caf",
-        secondary: "#ff9800",
-        background: "#fafafa",
-        paper: "#ffffff",
-        menuText: "#000000",
-        menu: "#ffffff",
-        menuIcon: "#000000",
-        primaryText: "#000000",
-        secondaryText: "#444444",
-        changesUnsaved: true,
-      },
-      () => this.submitTheme()
-    );
+  const setColorPickerDefaults = () => {
+    pipe(mapThemeSettings2ThemeColors(), setThemeColors);
   };
 
-  setColorPickerDefaults = () => {
-    this.setState({
-      primary: themeSettings.primaryColor,
-      secondary: themeSettings.secondaryColor,
-      background: themeSettings.backgroundColor,
-      paper: themeSettings.paperColor,
-      menu: themeSettings.menuItemColor,
-      menuText: themeSettings.menuItemTextColor,
-      menuIcon: themeSettings.menuItemIconColor,
-      primaryText: themeSettings.primaryTextColor,
-      secondaryText: themeSettings.menuTextColor,
-    });
-  };
-
-  reload = () => {
+  const reload = () => {
     window.location.reload();
   };
 
-  handleColorChange = (themeColor: keyof ThemeColors) => (newColor: string) => {
-    const stateUpdates = { ...this.state, changesUnsaved: true };
-    stateUpdates[themeColor] = newColor;
-    this.setState(stateUpdates);
-  };
+  const handleColorChange =
+    (themeColor: keyof IThemeColors) => (newColor: string) => {
+      const themeColorsUpdates = { ...themeColors };
+      themeColorsUpdates[themeColor] = newColor;
+      setThemeColors(themeColorsUpdates);
+      setIsChangesUnsaved(true);
+    };
 
-  handleImageChange = (e: HTMLInputElement) => {
+  const handleImageChange = (e: HTMLInputElement) => {
     const reader = new FileReader();
     if (e.files != null) {
       const file = e.files[0];
       reader.readAsDataURL(file);
       reader.onloadend = () => {
-        this.setState({
+        setLogoSettings({
           logoToUpload: file,
           fileName: file.name,
-          changesUnsaved: true,
+          logoURL: logoURL,
         });
+        setIsChangesUnsaved(true);
       };
     }
   };
 
-  submitTheme = () =>
-    axios.put<IThemeSettings>(`${API_BASE_URL}/theme/settings/`, {
-      primaryColor: this.state.primary,
-      secondaryColor: this.state.secondary,
-      backgroundColor: this.state.background,
-      paperColor: this.state.paper,
-      menuItemColor: this.state.menu,
-      menuItemIconColor: this.state.menuIcon,
-      menuItemTextColor: this.state.menuText,
-      primaryTextColor: this.state.primaryText,
-      menuTextColor: this.state.secondaryText,
-      fontSize: 14,
-    });
+  const submitTheme = (
+    themeSettings: IThemeSettings = mapThemeColors2ThemeSettings()
+  ) =>
+    axios.put<IThemeSettings>(`${API_BASE_URL}/theme/settings/`, themeSettings);
 
-  submitLogo = () =>
-    this.state.logoToUpload &&
-    axios.put(`${API_BASE_URL}/theme/logo/`, this.state.logoToUpload);
+  const submitLogo = () =>
+    logoSettings.logoToUpload &&
+    axios.put(`${API_BASE_URL}/theme/logo/`, logoSettings.logoToUpload);
 
-  async saveChanges() {
+  async function saveChanges() {
     try {
-      await this.submitLogo();
-      await this.submitTheme();
-      this.setState({ changesUnsaved: false, showSuccess: true });
-      this.reload();
+      await submitLogo();
+      await submitTheme();
+      setIsChangesUnsaved(false);
+      setIsShowSuccess(true);
+      reload();
     } catch (error) {
       if (isAxiosError(error)) {
-        this.handleError(error);
+        handleError(error);
       } else {
         console.error("Unexpected non-Error caught in saveChanges(): " + error);
       }
     }
   }
 
-  resetLogo = () => {
+  const resetLogo = () => {
     axios
       .delete(`${API_BASE_URL}/theme/logo/`)
       .then(() => {
-        this.setState({ changesUnsaved: false, showSuccess: true });
-        this.reload();
+        setIsChangesUnsaved(false);
+        setIsShowSuccess(true);
+        reload();
       })
       .catch((error) => {
-        this.handleError(error);
+        handleError(error);
       });
   };
 
-  handleError = (error: AxiosError) => {
+  const handleError = (error: AxiosError) => {
     let errResponse: ErrorResponse;
     if (error.response !== undefined) {
       switch (error.response.status) {
@@ -247,26 +260,24 @@ class ThemePage extends React.Component<
           break;
       }
       if (errResponse) {
-        this.props.updateTemplate(templateError(errResponse));
+        updateTemplate(templateError(errResponse));
       }
     }
   };
 
-  colorPicker = (themeColor: keyof ThemeColors) => (
+  const colorPicker = (themeColor: keyof IThemeColors) => (
     <ColorPickerComponent
-      onColorChange={this.handleColorChange(themeColor)}
-      currentColor={this.state[themeColor]}
+      onColorChange={handleColorChange(themeColor)}
+      currentColor={themeColors[themeColor]}
     />
   );
 
-  LogoPicker = () => {
-    const { classes } = this.props;
-
+  const LogoPicker = () => {
     return (
       <Grid container spacing={2} direction="row" justifyContent="flex-end">
         <Grid item>
           <Typography className={classes.fileName} color="textSecondary">
-            {this.state.fileName ?? ""}
+            {logoSettings.fileName ?? ""}
           </Typography>
         </Grid>
         <Grid item>
@@ -274,7 +285,7 @@ class ThemePage extends React.Component<
             accept="image/*"
             color="textSecondary"
             id="contained-button-file"
-            onChange={(e) => this.handleImageChange(e.target)}
+            onChange={(e) => handleImageChange(e.target)}
             type="file"
             style={{ display: "none" }} // to hide the native file control and allow us to MUI it
           />
@@ -285,7 +296,7 @@ class ThemePage extends React.Component<
           </label>
         </Grid>
         <Grid item>
-          <Button variant="outlined" onClick={this.resetLogo}>
+          <Button variant="outlined" onClick={resetLogo}>
             {commonString.action.resettodefault}
           </Button>
         </Grid>
@@ -293,63 +304,63 @@ class ThemePage extends React.Component<
     );
   };
 
-  ColorSchemeSettings = () => {
+  const ColorSchemeSettings = () => {
     return (
       <Card>
         <CardContent>
           <SettingsList subHeading={strings.colourschemesettings.title}>
             <SettingsListControl
               primaryText={strings.colourschemesettings.primarycolour}
-              control={this.colorPicker("primary")}
+              control={colorPicker("primary")}
               divider
             />
             <SettingsListControl
               primaryText={strings.colourschemesettings.primarytextcolour}
-              control={this.colorPicker("primaryText")}
+              control={colorPicker("primaryText")}
               divider
             />
             <SettingsListControl
               primaryText={strings.colourschemesettings.menubackgroundcolour}
-              control={this.colorPicker("menu")}
+              control={colorPicker("menu")}
               divider
             />
             <SettingsListControl
               primaryText={strings.colourschemesettings.secondarycolour}
-              control={this.colorPicker("secondary")}
+              control={colorPicker("secondary")}
               divider
             />
             <SettingsListControl
               primaryText={strings.colourschemesettings.secondarytextcolour}
-              control={this.colorPicker("secondaryText")}
+              control={colorPicker("secondaryText")}
               divider
             />
             <SettingsListControl
               primaryText={strings.colourschemesettings.backgroundcolour}
-              control={this.colorPicker("background")}
+              control={colorPicker("background")}
               divider
             />
             <SettingsListControl
               primaryText={strings.colourschemesettings.paperColor}
-              control={this.colorPicker("paper")}
+              control={colorPicker("paper")}
               divider
             />
             <SettingsListControl
               primaryText={strings.colourschemesettings.sidebariconcolour}
-              control={this.colorPicker("menuIcon")}
+              control={colorPicker("menuIcon")}
               divider
             />
             <SettingsListControl
               primaryText={strings.colourschemesettings.sidebartextcolour}
-              control={this.colorPicker("menuText")}
+              control={colorPicker("menuText")}
             />
           </SettingsList>
         </CardContent>
 
         <CardActions>
-          <Button variant="outlined" onClick={this.handleDefaultButton}>
+          <Button variant="outlined" onClick={handleDefaultButton}>
             {commonString.action.resettodefault}
           </Button>
-          <Button variant="outlined" onClick={this.setColorPickerDefaults}>
+          <Button variant="outlined" onClick={setColorPickerDefaults}>
             {commonString.action.undo}
           </Button>
         </CardActions>
@@ -357,7 +368,7 @@ class ThemePage extends React.Component<
     );
   };
 
-  LogoSettings = () => {
+  const LogoSettings = () => {
     return (
       <Card>
         <CardContent>
@@ -365,7 +376,7 @@ class ThemePage extends React.Component<
             <SettingsListControl
               primaryText={strings.logoSettings.siteLogo}
               secondaryText={strings.logoSettings.siteLogoDescription}
-              control={<this.LogoPicker />}
+              control={<LogoPicker />}
             />
           </SettingsList>
         </CardContent>
@@ -373,22 +384,20 @@ class ThemePage extends React.Component<
     );
   };
 
-  render() {
-    return (
-      <SettingPageTemplate
-        onSave={() => this.saveChanges()}
-        saveButtonDisabled={!this.state.changesUnsaved}
-        snackbarOpen={this.state.showSuccess}
-        snackBarOnClose={() => {
-          this.setState({ showSuccess: false });
-        }}
-        preventNavigation={this.state.changesUnsaved}
-      >
-        <this.ColorSchemeSettings />
-        <this.LogoSettings />
-      </SettingPageTemplate>
-    );
-  }
-}
+  return (
+    <SettingPageTemplate
+      onSave={() => saveChanges()}
+      saveButtonDisabled={!isChangesUnsaved}
+      snackbarOpen={isShowSuccess}
+      snackBarOnClose={() => {
+        setIsShowSuccess(false);
+      }}
+      preventNavigation={isChangesUnsaved}
+    >
+      <ColorSchemeSettings />
+      <LogoSettings />
+    </SettingPageTemplate>
+  );
+};
 
 export default withStyles(styles)(ThemePage);
