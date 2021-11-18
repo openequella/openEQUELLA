@@ -143,6 +143,19 @@ export const resolveUsersCached =
       return newUsers;
     };
 
+    const retrieveUserDetails: (
+      userIds: ReadonlySet<string>
+    ) => TE.TaskEither<string, ReadonlySet<OEQ.UserQuery.UserDetails>> = flow(
+      RSET.toReadonlyArray<string>(OrdAsIs),
+      (ids) =>
+        TE.tryCatch<string, OEQ.UserQuery.UserDetails[]>(
+          () => resolver(ids),
+          (reason) => `Failed to retrieve users: ${reason}`
+        ),
+      TE.map(updateCache),
+      TE.map(RSET.fromReadonlyArray(eqUserById))
+    );
+
     return pipe(
       users,
       RSET.partitionMap<string, OEQ.UserQuery.UserDetails>(
@@ -155,21 +168,18 @@ export const resolveUsersCached =
           E.fromOption(() => id)
         )
       ),
-      // We now have previously cached users on the `right`, and on the `left` we have users
-      // we need to go and retrieve
+      // We now have previously cached users on the `right`, and on the `left` we potentially have
+      // users we need to go and retrieve
       Separated.mapLeft<
         ReadonlySet<string>,
         TE.TaskEither<string, ReadonlySet<OEQ.UserQuery.UserDetails>>
       >(
         flow(
-          RSET.toReadonlyArray<string>(OrdAsIs),
-          (ids) =>
-            TE.tryCatch<string, OEQ.UserQuery.UserDetails[]>(
-              () => resolver(ids),
-              (reason) => `Failed to retrieve users: ${reason}`
-            ),
-          TE.map(updateCache),
-          TE.map(RSET.fromReadonlyArray(eqUserById))
+          O.fromPredicate(not(RSET.isEmpty)),
+          O.map(retrieveUserDetails),
+          O.getOrElse(() =>
+            TE.right<string, ReadonlySet<OEQ.UserQuery.UserDetails>>(new Set())
+          )
         )
       ),
       // Now merge the cached users with those retrieved
