@@ -719,6 +719,10 @@ export const languageStrings = {
         description:
           "An unsupported control has been detected, please contact your system administrator.",
       },
+      userSelector: {
+        selectUsers: "Select users",
+        userList: "Current selection of users",
+      },
     },
     options: {
       allOptions: "All",
