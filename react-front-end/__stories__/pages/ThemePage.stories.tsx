@@ -18,14 +18,14 @@
 import { Story, Meta } from "@storybook/react";
 import * as React from "react";
 import ThemePage from "../../tsrc/theme/ThemePage";
-import { IThemePageProps } from "../../tsrc/theme/ThemePage";
+import { ThemePageProps } from "../../tsrc/theme/ThemePage";
 
 export default {
   title: "pages/ThemePage",
   component: ThemePage,
-} as Meta<IThemePageProps>;
+} as Meta<ThemePageProps>;
 
-export const standard: Story<IThemePageProps> = (args) => (
+export const standard: Story<ThemePageProps> = (args) => (
   <ThemePage {...args}></ThemePage>
 );
 

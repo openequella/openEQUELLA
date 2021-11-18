@@ -72,7 +72,7 @@ const styles = createStyles({
   },
 });
 
-interface IThemeColors {
+interface ThemeColors {
   primary: string;
   secondary: string;
   background: string;
@@ -84,11 +84,11 @@ interface IThemeColors {
   secondaryText: string;
 }
 
-export interface IThemePageProps {
+export interface ThemePageProps {
   updateTemplate: (update: TemplateUpdate) => void;
 }
 
-interface ILogoSettings {
+interface LogoSettings {
   logoURL: string;
   logoToUpload: File | null;
   fileName: string;
@@ -97,48 +97,42 @@ interface ILogoSettings {
 export const ThemePage = ({
   updateTemplate,
   classes,
-}: IThemePageProps & WithStyles<typeof styles>) => {
-  const mapThemeSettings2ThemeColors = (
-    _themeSettings = themeSettings
-  ): IThemeColors => {
-    return {
-      primary: _themeSettings.primaryColor,
-      secondary: _themeSettings.secondaryColor,
-      background: _themeSettings.backgroundColor,
-      paper: _themeSettings.paperColor,
-      menu: _themeSettings.menuItemColor,
-      menuText: _themeSettings.menuItemTextColor,
-      menuIcon: _themeSettings.menuItemIconColor,
-      primaryText: _themeSettings.primaryTextColor,
-      secondaryText: _themeSettings.menuTextColor,
-    };
-  };
+}: ThemePageProps & WithStyles<typeof styles>) => {
+  const mapSettingsToColors = (settings: IThemeSettings): ThemeColors => ({
+    primary: settings.primaryColor,
+    secondary: settings.secondaryColor,
+    background: settings.backgroundColor,
+    paper: settings.paperColor,
+    menu: settings.menuItemColor,
+    menuText: settings.menuItemTextColor,
+    menuIcon: settings.menuItemIconColor,
+    primaryText: settings.primaryTextColor,
+    secondaryText: settings.menuTextColor,
+  });
 
-  const mapThemeColors2ThemeSettings = (
-    _themeColors = themeColors,
+  const mapColorsToSettings = (
+    colors: ThemeColors,
     fontSize = 14
-  ): IThemeSettings => {
-    return {
-      primaryColor: _themeColors.primary,
-      secondaryColor: _themeColors.secondary,
-      backgroundColor: _themeColors.background,
-      paperColor: _themeColors.paper,
-      menuItemColor: _themeColors.menu,
-      menuItemIconColor: _themeColors.menuIcon,
-      menuItemTextColor: _themeColors.menuText,
-      primaryTextColor: _themeColors.primaryText,
-      menuTextColor: _themeColors.secondaryText,
-      fontSize: fontSize,
-    };
-  };
+  ): IThemeSettings => ({
+    primaryColor: colors.primary,
+    secondaryColor: colors.secondary,
+    backgroundColor: colors.background,
+    paperColor: colors.paper,
+    menuItemColor: colors.menu,
+    menuItemIconColor: colors.menuIcon,
+    menuItemTextColor: colors.menuText,
+    primaryTextColor: colors.primaryText,
+    menuTextColor: colors.secondaryText,
+    fontSize: fontSize,
+  });
 
-  const [logoSettings, setLogoSettings] = useState<ILogoSettings>({
+  const [logoSettings, setLogoSettings] = useState<LogoSettings>({
     logoURL: logoURL,
     logoToUpload: null,
     fileName: "",
   });
-  const [themeColors, setThemeColors] = useState<IThemeColors>(
-    mapThemeSettings2ThemeColors()
+  const [themeColors, setThemeColors] = useState<ThemeColors>(
+    mapSettingsToColors(themeSettings)
   );
   const [isChangesUnsaved, setIsChangesUnsaved] = useState(false);
   const [isShowSuccess, setIsShowSuccess] = useState(false);
@@ -151,7 +145,7 @@ export const ThemePage = ({
   }, [updateTemplate]);
 
   const handleDefaultButton = () => {
-    const defaultThemeColors: IThemeColors = {
+    const defaultThemeColors: ThemeColors = {
       primary: "#186caf",
       secondary: "#ff9800",
       background: "#fafafa",
@@ -164,19 +158,16 @@ export const ThemePage = ({
     };
     setThemeColors(defaultThemeColors);
     setIsChangesUnsaved(true);
-    pipe(defaultThemeColors, mapThemeColors2ThemeSettings, submitTheme);
   };
 
   const setColorPickerDefaults = () => {
-    pipe(mapThemeSettings2ThemeColors(), setThemeColors);
+    pipe(mapSettingsToColors(themeSettings), setThemeColors);
   };
 
-  const reload = () => {
-    window.location.reload();
-  };
+  const reload = () => window.location.reload();
 
   const handleColorChange =
-    (themeColor: keyof IThemeColors) => (newColor: string) => {
+    (themeColor: keyof ThemeColors) => (newColor: string) => {
       const themeColorsUpdates = { ...themeColors };
       themeColorsUpdates[themeColor] = newColor;
       setThemeColors(themeColorsUpdates);
@@ -199,9 +190,7 @@ export const ThemePage = ({
     }
   };
 
-  const submitTheme = (
-    themeSettings: IThemeSettings = mapThemeColors2ThemeSettings()
-  ) =>
+  const submitTheme = (themeSettings: IThemeSettings) =>
     axios.put<IThemeSettings>(`${API_BASE_URL}/theme/settings/`, themeSettings);
 
   const submitLogo = () =>
@@ -211,7 +200,7 @@ export const ThemePage = ({
   async function saveChanges() {
     try {
       await submitLogo();
-      await submitTheme();
+      await submitTheme(mapColorsToSettings(themeColors));
       setIsChangesUnsaved(false);
       setIsShowSuccess(true);
       reload();
@@ -265,7 +254,7 @@ export const ThemePage = ({
     }
   };
 
-  const colorPicker = (themeColor: keyof IThemeColors) => (
+  const colorPicker = (themeColor: keyof ThemeColors) => (
     <ColorPickerComponent
       onColorChange={handleColorChange(themeColor)}
       currentColor={themeColors[themeColor]}
@@ -386,7 +375,7 @@ export const ThemePage = ({
 
   return (
     <SettingPageTemplate
-      onSave={() => saveChanges()}
+      onSave={saveChanges}
       saveButtonDisabled={!isChangesUnsaved}
       snackbarOpen={isShowSuccess}
       snackBarOnClose={() => {
