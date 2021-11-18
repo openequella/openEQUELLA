@@ -18,19 +18,19 @@
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
-import * as TE from "fp-ts/TaskEither";
-import * as T from "fp-ts/Task";
 import { Eq, struct } from "fp-ts/Eq";
 import { absurd, constFalse, flow, identity, pipe } from "fp-ts/function";
-import { not } from "fp-ts/Predicate";
 import * as M from "fp-ts/Map";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as O from "fp-ts/Option";
+import { not } from "fp-ts/Predicate";
 import * as RSET from "fp-ts/ReadonlySet";
 import { Refinement } from "fp-ts/Refinement";
 import { first } from "fp-ts/Semigroup";
 import * as SET from "fp-ts/Set";
 import * as S from "fp-ts/string";
+import * as T from "fp-ts/Task";
+import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
 import { getTokensForText } from "../../modules/TokenisationModule";
 import { OrdAsIs } from "../../util/Ord";
@@ -44,6 +44,7 @@ import { WizardRawHtml } from "./WizardRawHtml";
 import { WizardShuffleBox } from "./WizardShuffleBox";
 import { WizardShuffleList } from "./WizardShuffleList";
 import { WizardUnsupported } from "./WizardUnsupported";
+import { WizardUserSelector } from "./WizardUserSelector";
 
 /**
  * Provide basic props a Wizard control component needs.
@@ -375,8 +376,20 @@ const controlFactory = (
           onChange={flow(RSET.toSet, onChangeForStringSet)}
         />
       );
-    case "termselector":
     case "userselector":
+      return pipe(
+        control as OEQ.WizardControl.WizardUserSelectorControl,
+        ({ isSelectMultiple, isRestricted, restrictedTo }) => (
+          <WizardUserSelector
+            {...commonProps}
+            groupsFilter={isRestricted ? new Set(restrictedTo) : new Set()}
+            multiple={isSelectMultiple}
+            onChange={flow(RSET.toSet, onChangeForStringSet)}
+            users={valueAsStringSet()}
+          />
+        )
+      );
+    case "termselector":
       return <WizardUnsupported id={id} />;
     default:
       return absurd(controlType);
