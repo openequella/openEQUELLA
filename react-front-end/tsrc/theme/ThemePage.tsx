@@ -197,7 +197,7 @@ export const ThemePage = ({
     logoSettings.logoToUpload &&
     axios.put(`${API_BASE_URL}/theme/logo/`, logoSettings.logoToUpload);
 
-  async function saveChanges() {
+  const saveChanges = async () => {
     try {
       await submitLogo();
       await submitTheme(mapColorsToSettings(themeColors));
@@ -211,7 +211,7 @@ export const ThemePage = ({
         console.error("Unexpected non-Error caught in saveChanges(): " + error);
       }
     }
-  }
+  };
 
   const resetLogo = () => {
     axios
