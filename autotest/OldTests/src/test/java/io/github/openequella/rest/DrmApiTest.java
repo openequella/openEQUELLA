@@ -9,7 +9,6 @@ import java.io.IOException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.codehaus.jackson.JsonNode;
-import org.junit.After;
 import org.testng.annotations.Test;
 
 @TestInstitution("fiveo")
@@ -48,7 +47,6 @@ public class DrmApiTest extends AbstractRestApiTest {
     assertEquals(acceptDrm(ITEM_UUID, ITEM_VERSION), 400);
   }
 
-  @After
   @Test(description = "Fail to accept DRM terms due to access denied", priority = 10)
   public void accessDenied() throws IOException {
     logout();
