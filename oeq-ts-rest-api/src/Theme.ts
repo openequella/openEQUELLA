@@ -22,7 +22,7 @@ const THEME_ROOT_PATH = '/theme';
 const THEME_SETTINGS_PATH = `${THEME_ROOT_PATH}/settings`;
 const THEME_LOGO_PATH = `${THEME_ROOT_PATH}/logo`;
 
-export interface IThemeSettings {
+export interface ThemeSettings {
   primaryColor: string;
   secondaryColor: string;
   backgroundColor: string;
@@ -40,12 +40,10 @@ export interface IThemeSettings {
  *
  * @param apiBasePath Base URI to the oEQ institution and API
  */
-export const getThemeSettings = (
-  apiBasePath: string
-): Promise<IThemeSettings> =>
-  GET<IThemeSettings>(
+export const getThemeSettings = (apiBasePath: string): Promise<ThemeSettings> =>
+  GET<ThemeSettings>(
     apiBasePath + THEME_SETTINGS_PATH,
-    (data): data is IThemeSettings => is<IThemeSettings>(data)
+    (data): data is ThemeSettings => is<ThemeSettings>(data)
   );
 
 /**
@@ -56,9 +54,9 @@ export const getThemeSettings = (
  */
 export const updateThemeSettings = (
   apiBasePath: string,
-  updatedSettings: IThemeSettings
+  updatedSettings: ThemeSettings
 ): Promise<void> =>
-  PUT<IThemeSettings, undefined>(
+  PUT<ThemeSettings, undefined>(
     apiBasePath + THEME_SETTINGS_PATH,
     updatedSettings
   );
