@@ -62,15 +62,12 @@ export const updateThemeSettings = (
   );
 
 /**
- * Retrieve theme logo
+ * Retrieve theme logo url
  *
  * @param apiBasePath Base URI to the oEQ institution and API
  */
-export const getThemeLogo = (apiBasePath: string): Promise<string> =>
-  GET<string>(
-    apiBasePath + THEME_ROOT_PATH + '/newLogo.png',
-    (data): data is any => is<any>(data)
-  );
+export const getThemeLogoUrl = (apiBasePath: string): string =>
+  apiBasePath + THEME_ROOT_PATH + '/newLogo.png';
 
 /**
  * Delete theme logo, reset logo to default
@@ -84,7 +81,7 @@ export const deleteLogo = (apiBasePath: string): Promise<void> =>
  * Update theme logo.
  *
  * @param apiBasePath Base URI to the oEQ institution and API
- * @param updatedSettings New theme Settings
+ * @param file New logo file
  */
 export const updateThemeLogo = (
   apiBasePath: string,
