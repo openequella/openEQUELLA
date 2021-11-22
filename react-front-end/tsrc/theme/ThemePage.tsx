@@ -26,11 +26,10 @@ import {
   WithStyles,
   withStyles,
 } from "@material-ui/core";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 import * as React from "react";
 import { pipe } from "fp-ts/function";
-import { IThemeSettings } from ".";
 import {
   ErrorResponse,
   generateFromError,
@@ -50,8 +49,9 @@ import {
 import { commonString } from "../util/commonstrings";
 import { languageStrings } from "../util/langstrings";
 import ColorPickerComponent from "./ColorPickerComponent";
+import * as OEQ from "@openequella/rest-api-client";
 
-declare const themeSettings: IThemeSettings;
+declare const themeSettings: OEQ.Theme.ThemeSettings;
 declare const logoURL: string;
 
 /**
@@ -98,7 +98,9 @@ export const ThemePage = ({
   updateTemplate,
   classes,
 }: ThemePageProps & WithStyles<typeof styles>) => {
-  const mapSettingsToColors = (settings: IThemeSettings): ThemeColors => ({
+  const mapSettingsToColors = (
+    settings: OEQ.Theme.ThemeSettings
+  ): ThemeColors => ({
     primary: settings.primaryColor,
     secondary: settings.secondaryColor,
     background: settings.backgroundColor,
@@ -113,7 +115,7 @@ export const ThemePage = ({
   const mapColorsToSettings = (
     colors: ThemeColors,
     fontSize = 14
-  ): IThemeSettings => ({
+  ): OEQ.Theme.ThemeSettings => ({
     primaryColor: colors.primary,
     secondaryColor: colors.secondary,
     backgroundColor: colors.background,
@@ -190,12 +192,12 @@ export const ThemePage = ({
     }
   };
 
-  const submitTheme = (themeSettings: IThemeSettings) =>
-    axios.put<IThemeSettings>(`${API_BASE_URL}/theme/settings/`, themeSettings);
+  const submitTheme = (themeSettings: OEQ.Theme.ThemeSettings) =>
+    OEQ.Theme.updateThemeSettings(API_BASE_URL, themeSettings);
 
   const submitLogo = () =>
     logoSettings.logoToUpload &&
-    axios.put(`${API_BASE_URL}/theme/logo/`, logoSettings.logoToUpload);
+    OEQ.Theme.updateThemeLogo(API_BASE_URL, logoSettings.logoToUpload);
 
   const saveChanges = async () => {
     try {
@@ -214,8 +216,7 @@ export const ThemePage = ({
   };
 
   const resetLogo = () => {
-    axios
-      .delete(`${API_BASE_URL}/theme/logo/`)
+    OEQ.Theme.deleteLogo(API_BASE_URL)
       .then(() => {
         setIsChangesUnsaved(false);
         setIsShowSuccess(true);
