@@ -261,7 +261,7 @@ export const controls: OEQ.WizardControl.WizardControl[] = [
     defaultValues: [],
     controlType: "listbox",
   },
-  // User select allowing singular selection (isSelectMultiple: false)
+  // User selector limited to singular selection (isSelectMultiple: false)
   {
     mandatory: false,
     reload: false,
@@ -286,7 +286,7 @@ export const controls: OEQ.WizardControl.WizardControl[] = [
     isRestricted: false,
     restrictedTo: [],
   },
-  // User select allowing singular selection (isSelectMultiple: false)
+  // User selector allowing multiple selections (isSelectMultiple: true)
   {
     mandatory: false,
     reload: false,
