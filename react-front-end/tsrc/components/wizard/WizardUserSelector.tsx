@@ -77,7 +77,7 @@ interface ListItemErrorProps {
    */
   error: string;
   /**
-   * What do do when the click the clear button.
+   * Handler for when the clear button is clicked.
    */
   onClear: () => void;
 }
