@@ -67,3 +67,13 @@ export const userDetailsProvider = async (
     query ? users.filter((u) => u.username.search(query) === 0) : users
   );
 };
+
+/**
+ * Helper function to inject into component for user retrieval by an array of ids.
+ *
+ * @param ids A list of user IDs to lookup, should be one of those in `users`
+ */
+export const resolveUsersProvider = async (
+  ids: ReadonlyArray<string>
+): Promise<OEQ.UserQuery.UserDetails[]> =>
+  Promise.resolve(users.filter(({ id }) => ids.includes(id)));
