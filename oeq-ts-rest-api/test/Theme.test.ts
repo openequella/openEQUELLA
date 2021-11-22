@@ -30,6 +30,10 @@ describe('Theme settings', () => {
     settingsAtStart = await OEQ.Theme.getThemeSettings(TC.API_PATH);
   });
 
+  afterAll(async () => {
+    await OEQ.Theme.updateThemeSettings(TC.API_PATH, settingsAtStart);
+  });
+
   it('Should be able to retrieve theme settings', async () => {
     expect(settingsAtStart).not.toBeNull();
   });
@@ -39,7 +43,8 @@ describe('Theme settings', () => {
       ...settingsAtStart,
       fontSize: 666,
     });
-    const settings = await OEQ.Theme.getThemeSettings(TC.API_PATH);
-    expect(settings.fontSize).toBe(666);
+    const newSettings = await OEQ.Theme.getThemeSettings(TC.API_PATH);
+    expect(newSettings).not.toEqual(settingsAtStart);
+    expect(newSettings.fontSize).toBe(666);
   });
 });
