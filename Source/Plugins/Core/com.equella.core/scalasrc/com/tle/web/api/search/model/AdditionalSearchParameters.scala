@@ -50,7 +50,11 @@ object AdditionalSearchParameters {
                                   values: Array[String],
                                   isTokenised: Boolean = false): FreeTextQuery = {
     val queries: Array[FreeTextQuery] =
-      values.map(v => new FreeTextFieldQuery(field, v, false, isTokenised))
+      values.map(v => {
+        val q = new FreeTextFieldQuery(field, v, false)
+        q.setTokenise(isTokenised)
+        q
+      })
 
     new FreeTextBooleanQuery(false, false, queries: _*)
   }
