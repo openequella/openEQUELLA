@@ -96,16 +96,12 @@ public interface Search {
   boolean useServerTimeZone();
 
   /**
-   * Returns an optional additional query which is in raw text Lucene query syntax, available to be
-   * merged with other query parameters. e.g. name:OEQ AND year:[2021-11-01 TO * ] AND (city:Hobart
-   * OR city:Sydney) AND message:"hello world"
+   * Returns an optional additional FreeTextQuery which is generated through processing the Wizard
+   * control values provided by New Advanced search page.
    *
-   * <p>The background of creating this method is to support the Lucene query built in New Advanced
-   * search page.
-   *
-   * @return An Optional string in Lucene query syntax.
+   * @return An Optional FreeTextQuery.
    */
-  default Optional<String> getCustomLuceneQuery() {
+  default Optional<FreeTextQuery> getAdvancedSearchCriteria() {
     return Optional.empty();
   }
 }

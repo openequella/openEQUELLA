@@ -41,6 +41,11 @@ public class FreeTextFieldQuery extends FreeTextQuery {
     this.mustExist = mustExist;
   }
 
+  public FreeTextFieldQuery(String field, String value, boolean mustExist, boolean isTokenise) {
+    this(field, value, mustExist);
+    this.tokenise = isTokenise;
+  }
+
   public String getField() {
     return field;
   }

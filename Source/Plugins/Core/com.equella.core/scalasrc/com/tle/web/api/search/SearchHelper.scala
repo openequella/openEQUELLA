@@ -40,11 +40,13 @@ import com.tle.web.api.item.equella.interfaces.beans.{
   FileAttachmentBean
 }
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
+import com.tle.web.api.search.model.AdvancedSearchCriteria.buildAdvancedSearchCriteria
 import com.tle.web.api.search.model.{
   DrmStatus,
   SearchParam,
   SearchResultAttachment,
-  SearchResultItem
+  SearchResultItem,
+  WizardControlFieldValue
 }
 import com.tle.web.controls.resource.ResourceAttachmentBean
 import com.tle.web.controls.youtube.YoutubeAttachmentBean
@@ -68,6 +70,7 @@ object SearchHelper {
 
   /**
     * Execute a search with provided search criteria.
+    *
     * @param defaultSearch A set of search criteria
     * @param start The first record of a search result.
     * @param length The maximum number of search results, or -1 for all.
@@ -80,12 +83,16 @@ object SearchHelper {
     LegacyGuice.freeTextService.search(defaultSearch, start, length, searchAttachments)
 
   /**
-    * Create a new search with search criteria.
-    * The search criteria is dependent on what parameters are passed in.
+    * Create a new search with search criteria. The search criteria include two parts.
+    * 1. General criteria provided by `SearchParam`.
+    * 2. Advanced search criteria defined by a list of `WizardControlFieldValue`.
+    *
     * @param params Search parameters.
+    * @param fieldValues An option of an array of `WizardControlFieldValue`.
     * @return An instance of DefaultSearch
     */
-  def createSearch(params: SearchParam): DefaultSearch = {
+  def createSearch(params: SearchParam,
+                   fieldValues: Option[Array[WizardControlFieldValue]] = None): DefaultSearch = {
     val search = new DefaultSearch
     search.setUseServerTimeZone(true)
     search.setQuery(params.query)
@@ -120,7 +127,7 @@ object SearchHelper {
       case None    => whereQuery
     }
     search.setFreeTextQuery(freeTextQuery)
-    search.setCustomLuceneQuery(params.customLuceneQuery)
+    search.setAdvancedSearchCriteria(fieldValues.map(buildAdvancedSearchCriteria).orNull)
 
     handleMusts(params.musts) foreach {
       case (field, value) => search.addMust(field, value.asJavaCollection)

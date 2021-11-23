@@ -70,7 +70,7 @@ public class DefaultSearch extends VeryBasicSearch {
   protected Collection<DateFilter> dateFilters = Lists.newArrayList();
   private final List<List<Field>> musts = new ArrayList<List<Field>>();
   private final List<List<Field>> mustNots = new ArrayList<List<Field>>();
-  private String customLuceneQuery;
+  private FreeTextQuery advancedSearchCriteria;
 
   public DefaultSearch() {
     super();
@@ -78,12 +78,12 @@ public class DefaultSearch extends VeryBasicSearch {
   }
 
   @Override
-  public Optional<String> getCustomLuceneQuery() {
-    return Optional.ofNullable(customLuceneQuery);
+  public Optional<FreeTextQuery> getAdvancedSearchCriteria() {
+    return Optional.ofNullable(advancedSearchCriteria);
   }
 
-  public void setCustomLuceneQuery(String customLuceneQuery) {
-    this.customLuceneQuery = customLuceneQuery;
+  public void setAdvancedSearchCriteria(FreeTextQuery advancedSearchCriteria) {
+    this.advancedSearchCriteria = advancedSearchCriteria;
   }
 
   @Override
