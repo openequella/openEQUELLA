@@ -22,6 +22,7 @@ import com.tle.beans.usermanagement.standard.wrapper.SharedSecretSettings
 import com.tle.common.security.SecurityConstants
 import com.tle.common.usermanagement.user.valuebean.{GroupBean, RoleBean, UserBean}
 import com.tle.legacy.LegacyGuice
+import com.tle.web.api.ApiErrorResponse.resourceNotFound
 import io.swagger.annotations.{Api, ApiOperation, ApiParam}
 
 import javax.ws.rs._
@@ -105,7 +106,7 @@ class UserQueryResource {
         val uniqueUsers = users.toSet
         val details     = uniqueUsers.map(UserDetails.apply)
         Response.ok.entity(details).build()
-      case _ => throw new NotFoundException("No users were found matching the specified criteria")
+      case _ => resourceNotFound("No users were found matching the specified criteria")
     }
   }
 
