@@ -101,8 +101,11 @@ class UserQueryResource {
       case _                     => us.searchUsers(q).asScala
     }
     result match {
-      case users if result.nonEmpty => Response.ok.entity(users.map(UserDetails.apply)).build()
-      case _                        => throw new NotFoundException("No users were found matching the specified criteria")
+      case users if users.nonEmpty =>
+        val uniqueUsers = users.toSet
+        val details     = uniqueUsers.map(UserDetails.apply)
+        Response.ok.entity(details).build()
+      case _ => throw new NotFoundException("No users were found matching the specified criteria")
     }
   }
 
