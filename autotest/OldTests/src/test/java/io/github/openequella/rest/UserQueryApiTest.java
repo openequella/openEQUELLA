@@ -32,39 +32,43 @@ public class UserQueryApiTest extends AbstractRestApiTest {
   private final String REASON_UNEXPECTED_NUM_USERS = "Unexpected number of users returned";
   private final String REASON_MISSING_USERS = "Expected users missing!";
 
-  @Test
+  // Using a query of 'e' searches for all users which have an 'e' anywhere in their names. Being
+  // the names are english, this gets most of them.
+  private final String COMMON_QUERY = "e";
+
+  @Test(
+      description =
+          "Search for all users matching a query, with no group filter specified (so all users)")
   public void filter_unfilteredQueryTest() throws IOException {
-    // Search for all the users with 'e'
-    final List<UserDetails> result = filterEndpointQuery(200, "e", null);
-    // ... for which there's many
+    final List<UserDetails> result = filterEndpointQuery(200, COMMON_QUERY, null);
     assertThat(REASON_UNEXPECTED_NUM_USERS, result.size(), is(8));
   }
 
-  @Test
+  @Test(description = "Search for all users matching a query, limiting to a single group")
   public void filter_singleFilterQueryTest() throws IOException {
-    // Search for all the users with 'e', but only in the AutoGroup1
     final List<UserDetails> result =
-        filterEndpointQuery(200, "e", Collections.singleton(GROUPID_AUTOGROUP_1));
-    // ... for which there's only 1
+        filterEndpointQuery(200, COMMON_QUERY, Collections.singleton(GROUPID_AUTOGROUP_1));
     assertThat(REASON_UNEXPECTED_NUM_USERS, result.size(), is(1));
     assertTrue(REASON_MISSING_USERS, collectUserIds(result).contains(USERID_AUTOTEST));
   }
 
-  @Test
+  @Test(description = "Search for all users matching a query, but limited to two groups")
   public void filter_multiFilterQueryTest() throws IOException {
-    // Search for all the users with 'e' across two groups
     final List<UserDetails> result =
         filterEndpointQuery(
-            200, "e", new HashSet<>(Arrays.asList(GROUPID_AUTOGROUP_1, GROUPID_OUTGROUP_1)));
+            200,
+            COMMON_QUERY,
+            new HashSet<>(Arrays.asList(GROUPID_AUTOGROUP_1, GROUPID_OUTGROUP_1)));
     assertThat(REASON_UNEXPECTED_NUM_USERS, result.size(), is(2));
     assertTrue(
         REASON_MISSING_USERS,
         collectUserIds(result).containsAll(Arrays.asList(USERID_AUTOTEST, USERID_DONOTUSE)));
   }
 
-  @Test
+  @Test(
+      description =
+          "Search for a user that could never possibly exist, ensuring we get a not found (404) response")
   public void filter_nothingFoundTest() throws IOException {
-    // Search for a user that could never possibly exist
     filterEndpointQuery(404, "This user could never possibly exist", null);
   }
 
