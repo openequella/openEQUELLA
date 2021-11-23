@@ -39,11 +39,11 @@ case class WizardControlFieldValue(schemaNodes: Array[String],
 /**
   * Provides a list of `WizardControlFieldValue` to help build the full criteria.
   *
-  * @param controlValues A list of `WizardControlFieldValue`.
+  * @param advancedSearchCriteria A list of `WizardControlFieldValue`.
   */
-case class AdvancedSearchCriteria(controlValues: Array[WizardControlFieldValue])
+case class AdditionalSearchParameters(advancedSearchCriteria: Array[WizardControlFieldValue])
 
-object AdvancedSearchCriteria {
+object AdditionalSearchParameters {
   // Build FreeTextFieldQuery for each value and put all values into one FreeTextBooleanQuery.
   // The relationship between each FreeTextFieldQuery is `OR`.
   private def buildTextFieldQuery(field: String,
@@ -66,7 +66,7 @@ object AdvancedSearchCriteria {
           } match {
             case Success(value) => value
             case Failure(e) =>
-              throw new BadRequestException(
+              throw new IllegalArgumentException(
                 s"Failed to build date range query for field $field due to ${e.getMessage}")
           }
       }
@@ -90,7 +90,7 @@ object AdvancedSearchCriteria {
         buildFreeTextDateQuery(getLocalDate(start), None)
       // For others like an empty array or an array having more than 2 values, throw an exception.
       case _ =>
-        throw new BadRequestException(
+        throw new IllegalArgumentException(
           "Wrong data structure for building a date range query - must have one or two values")
     }
   }

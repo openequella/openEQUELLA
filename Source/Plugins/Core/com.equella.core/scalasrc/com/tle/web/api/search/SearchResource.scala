@@ -33,7 +33,7 @@ import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean
 import com.tle.web.api.search.ExportCSVHelper.{buildCSVHeaders, writeRow}
 import com.tle.web.api.search.SearchHelper._
 import com.tle.web.api.search.model.{
-  AdvancedSearchCriteria,
+  AdditionalSearchParameters,
   SearchParam,
   SearchResult,
   SearchResultItem
@@ -80,10 +80,10 @@ class SearchResource {
     response = classOf[SearchResult[SearchResultItem]],
   )
   def searchItemsWithAdvCriteria(@BeanParam params: SearchParam,
-                                 advancedSearchCriteria: AdvancedSearchCriteria): Response = {
-    val AdvancedSearchCriteria(controlValues) = advancedSearchCriteria
+                                 advancedSearchCriteria: AdditionalSearchParameters): Response = {
+    val AdditionalSearchParameters(advancedSearchCriteria) = advancedSearchCriteria
     val searchResult: SearchResult[SearchResultItem] =
-      doSearch(createSearch(params, Option(controlValues)), params)
+      doSearch(createSearch(params, Option(advancedSearchCriteria)), params)
 
     Response.ok.entity(searchResult).build()
   }

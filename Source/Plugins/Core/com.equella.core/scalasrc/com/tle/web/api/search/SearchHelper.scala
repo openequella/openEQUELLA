@@ -40,7 +40,7 @@ import com.tle.web.api.item.equella.interfaces.beans.{
   FileAttachmentBean
 }
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
-import com.tle.web.api.search.model.AdvancedSearchCriteria.buildAdvancedSearchCriteria
+import com.tle.web.api.search.model.AdditionalSearchParameters.buildAdvancedSearchCriteria
 import com.tle.web.api.search.model.{
   DrmStatus,
   SearchParam,
