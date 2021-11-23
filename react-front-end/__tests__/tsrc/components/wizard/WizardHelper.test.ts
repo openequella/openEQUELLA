@@ -31,8 +31,8 @@ import {
   generateRawLuceneQuery,
   render,
 } from "../../../../tsrc/components/wizard/WizardHelper";
-import { simpleMatch } from "../../../../tsrc/util/match";
 import * as TokenisationModule from "../../../../tsrc/modules/TokenisationModule";
+import { simpleMatch } from "../../../../tsrc/util/match";
 
 /**
  * Produces a summary of the number of occurrences in an array identified by keys generated
@@ -62,13 +62,14 @@ describe("render()", () => {
         pipe(
           controlType,
           simpleMatch<string>({
+            checkboxgroup: () => "WizardCheckBoxGroup",
             editbox: () => "WizardEditBox",
+            html: () => "WizardRawHtml",
+            listbox: () => "WizardListBox",
             radiogroup: () => "WizardRadioButtonGroup",
             shufflebox: () => "WizardShuffleBox",
             shufflelist: () => "WizardShuffleList",
-            checkboxgroup: () => "WizardCheckBoxGroup",
-            listbox: () => "WizardListBox",
-            html: () => "WizardRawHtml",
+            userselector: () => "WizardUserSelector",
             _: () => "WizardUnsupported",
           })
         )
