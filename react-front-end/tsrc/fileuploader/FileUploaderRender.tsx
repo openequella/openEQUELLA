@@ -70,7 +70,7 @@ export const render = (
       seed: uniqueMUIStylePrefix,
     });
 
-    import("../theme/index")
+    import("../modules/ThemeModule")
       .then(({ oeqTheme }) => {
         ReactDOM.render(
           <StylesProvider generateClassName={generateClassName}>
