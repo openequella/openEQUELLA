@@ -46,7 +46,7 @@ public class Search2ApiAdditionalTest extends AbstractRestApiTest {
     body.addAll(controlValue);
 
     ObjectNode payload = mapper.createObjectNode();
-    payload.put("controlValues", body);
+    payload.put("advancedSearchCriteria", body);
 
     return payload;
   }

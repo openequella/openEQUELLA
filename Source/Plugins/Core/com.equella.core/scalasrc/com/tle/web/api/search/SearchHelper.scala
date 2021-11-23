@@ -115,19 +115,24 @@ object SearchHelper {
     if (modifiedBefore.isDefined || modifiedAfter.isDefined) {
       search.setDateRange(Array(modifiedAfter.orNull, modifiedBefore.orNull))
     }
-    val dynaCollectionQuery = handleDynaCollection(params.dynaCollection)
-    val whereQuery = Option(params.whereClause) match {
-      case Some(where) => WhereParser.parse(where)
-      case None        => null
-    }
-    // If dynaCollectionQuery is not empty then combine it with whereQuery, and then assign it to freeTextQuery.
-    // Otherwise, just assign whereQuery to freeTextQuery.
-    val freeTextQuery = dynaCollectionQuery match {
-      case Some(q) => q.add(whereQuery)
-      case None    => whereQuery
-    }
+    val dynaCollectionQuery: Option[FreeTextBooleanQuery] = handleDynaCollection(
+      params.dynaCollection)
+    val whereQuery: Option[FreeTextBooleanQuery] = Option(params.whereClause).map(WhereParser.parse)
+    val advSearchCriteria: Option[FreeTextBooleanQuery] =
+      fieldValues.map(buildAdvancedSearchCriteria)
+
+    val freeTextQuery: FreeTextBooleanQuery =
+      List(dynaCollectionQuery, whereQuery, advSearchCriteria)
+        .reduce((q1, q2) =>
+          (q1, q2) match {
+            case (Some(x), Some(y)) => Option(x.add(y))
+            case (Some(x), None)    => Option(x)
+            case (None, Some(y))    => Option(y)
+            case (None, None)       => None
+        })
+        .orNull
+
     search.setFreeTextQuery(freeTextQuery)
-    search.setAdvancedSearchCriteria(fieldValues.map(buildAdvancedSearchCriteria).orNull)
 
     handleMusts(params.musts) foreach {
       case (field, value) => search.addMust(field, value.asJavaCollection)

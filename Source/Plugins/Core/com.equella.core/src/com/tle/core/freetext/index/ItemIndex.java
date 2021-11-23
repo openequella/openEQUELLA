@@ -966,27 +966,11 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       }
 
       // This one includes the query built above and all the FreeTextQuery of the search.
-      Query extraQuery = addExtraQuery(query, request, reader);
-
-      // if Advanced search criteria is provided, combine it with `extraQuery`.
-      return request
-          .getAdvancedSearchCriteria()
-          .<Query>map(
-              c -> {
-                BooleanQuery combinedQuery = new BooleanQuery();
-                combinedQuery.add(extraQuery, Occur.MUST);
-                // Method `convertToBooleanClause` is the key to transform a FreeTextQuery to a
-                // Lucene Query.
-                BooleanClause advancedSearchCriteria = convertToBooleanClause(c, reader);
-                advancedSearchCriteria.setOccur(Occur.MUST);
-                combinedQuery.add(advancedSearchCriteria);
-
-                return combinedQuery;
-              })
-          .orElse(extraQuery);
+      query = addExtraQuery(query, request, reader);
     } catch (ParseException ex) {
       throw new InvalidSearchQueryException(queryString, ex);
     }
+    return query;
   }
 
   protected Filter getFilter(Search request) {

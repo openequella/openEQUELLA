@@ -23,7 +23,6 @@ import com.tle.beans.item.ItemSelect;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 public interface Search {
   String INDEX_TASK = "task";
@@ -94,14 +93,4 @@ public interface Search {
    * @return True if server time zone is used or otherwise false.
    */
   boolean useServerTimeZone();
-
-  /**
-   * Returns an optional additional FreeTextQuery which is generated through processing the Wizard
-   * control values provided by New Advanced search page.
-   *
-   * @return An Optional FreeTextQuery.
-   */
-  default Optional<FreeTextQuery> getAdvancedSearchCriteria() {
-    return Optional.empty();
-  }
 }

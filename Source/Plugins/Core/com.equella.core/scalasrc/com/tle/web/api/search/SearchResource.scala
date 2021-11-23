@@ -81,9 +81,9 @@ class SearchResource {
   )
   def searchItemsWithAdvCriteria(@BeanParam params: SearchParam,
                                  advancedSearchCriteria: AdditionalSearchParameters): Response = {
-    val AdditionalSearchParameters(advancedSearchCriteria) = advancedSearchCriteria
+    val AdditionalSearchParameters(criteria) = advancedSearchCriteria
     val searchResult: SearchResult[SearchResultItem] =
-      doSearch(createSearch(params, Option(advancedSearchCriteria)), params)
+      doSearch(createSearch(params, Option(criteria)), params)
 
     Response.ok.entity(searchResult).build()
   }
