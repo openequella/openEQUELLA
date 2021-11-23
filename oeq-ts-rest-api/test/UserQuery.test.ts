@@ -135,3 +135,25 @@ describe('/userquery/lookup', () => {
     expect(entities).toMatchObject([{ id: id }]);
   });
 });
+
+describe('/userquery/filtered', () => {
+  it('returns users matching the "q" param', async () => {
+    const users = await OEQ.UserQuery.filtered(API_PATH, { q: 'auto' });
+    expect(users).toHaveLength(2);
+  });
+
+  it('filters the users matching the "q" param based on the byGroups param', async () => {
+    const usersWithAdministratorRoleGroup =
+      'e91205b0-684e-51e2-a1be-3ab646aa98dd';
+    const users = await OEQ.UserQuery.filtered(API_PATH, {
+      q: 'auto',
+      byGroups: [usersWithAdministratorRoleGroup],
+    });
+    expect(users).toHaveLength(1);
+  });
+
+  it('returns all users if no params are specified', async () => {
+    const users = await OEQ.UserQuery.filtered(API_PATH, {});
+    expect(users).toHaveLength(12);
+  });
+});
