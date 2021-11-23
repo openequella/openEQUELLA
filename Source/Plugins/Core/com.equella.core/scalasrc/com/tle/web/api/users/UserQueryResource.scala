@@ -22,9 +22,11 @@ import com.tle.beans.usermanagement.standard.wrapper.SharedSecretSettings
 import com.tle.common.security.SecurityConstants
 import com.tle.common.usermanagement.user.valuebean.{GroupBean, RoleBean, UserBean}
 import com.tle.legacy.LegacyGuice
-import io.swagger.annotations.{Api, ApiParam}
-import javax.ws.rs._
+import com.tle.web.api.ApiErrorResponse.resourceNotFound
+import io.swagger.annotations.{Api, ApiOperation, ApiParam}
 
+import javax.ws.rs._
+import javax.ws.rs.core.Response
 import scala.collection.JavaConverters._
 
 case class LookupQuery(users: Seq[String], groups: Seq[String], roles: Seq[String])
@@ -79,6 +81,33 @@ class UserQueryResource {
     LookupQueryResult(users.map(UserDetails.apply),
                       groups.map(GroupQueryResult.apply),
                       roles.filterNot(r => exclude(r.getUniqueID)).map(RoleQueryResult.apply))
+  }
+
+  @GET
+  @Path("filtered")
+  @ApiOperation(
+    value = "Search for users",
+    notes = "Searches for users, but filters the results based on the byGroups parameter.",
+    response = classOf[UserDetails],
+    responseContainer = "List"
+  )
+  def filtered(
+      @QueryParam(value = "q") @ApiParam("Query string") q: String,
+      @QueryParam("byGroups") @ApiParam("A list of group UUIDs to filter the search by") groups: Array[
+        String]
+  ): Response = {
+    val us = LegacyGuice.userService
+    val result: Iterable[UserBean] = groups match {
+      case xs if xs.nonEmpty => xs.flatMap(g => us.searchUsers(q, g, true).asScala)
+      case _                 => us.searchUsers(q).asScala
+    }
+    result match {
+      case users if users.nonEmpty =>
+        val uniqueUsers = users.toSet
+        val details     = uniqueUsers.map(UserDetails.apply)
+        Response.ok.entity(details).build()
+      case _ => resourceNotFound("No users were found matching the specified criteria")
+    }
   }
 
   @GET
