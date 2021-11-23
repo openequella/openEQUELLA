@@ -65,7 +65,7 @@ export interface FilteredParams {
   /** Wildcard supporting text string to filter results by. */
   q?: string;
   /** A list of group UUIDs to filter the search by. */
-  byGroups?: string[];
+  byGroups?: UuidString[];
 }
 
 export interface LookupParams {
