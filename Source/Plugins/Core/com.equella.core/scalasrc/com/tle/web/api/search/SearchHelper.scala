@@ -50,7 +50,8 @@ import com.tle.web.api.search.model.{
 }
 import com.tle.web.controls.resource.ResourceAttachmentBean
 import com.tle.web.controls.youtube.YoutubeAttachmentBean
-
+import cats.implicits._
+import cats.Semigroup
 import java.time.format.DateTimeParseException
 import java.time.{LocalDate, LocalDateTime, LocalTime, ZoneId}
 import java.util.{Date, Optional}
@@ -66,6 +67,9 @@ import scala.collection.mutable.ListBuffer
   * SearchResultItem and SearchResultAttachment, respectively.
   */
 object SearchHelper {
+  implicit val freeTextBooleanQuerySemigroup: Semigroup[FreeTextBooleanQuery] =
+    (x: FreeTextBooleanQuery, y: FreeTextBooleanQuery) => x.add(y)
+
   val privileges = Array(ItemSecurityConstants.VIEW_ITEM)
 
   /**
@@ -123,13 +127,7 @@ object SearchHelper {
 
     val freeTextQuery: FreeTextBooleanQuery =
       List(dynaCollectionQuery, whereQuery, advSearchCriteria)
-        .reduce((q1, q2) =>
-          (q1, q2) match {
-            case (Some(x), Some(y)) => Option(x.add(y))
-            case (Some(x), None)    => Option(x)
-            case (None, Some(y))    => Option(y)
-            case (None, None)       => None
-        })
+        .reduce(_ |+| _)
         .orNull
 
     search.setFreeTextQuery(freeTextQuery)
