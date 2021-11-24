@@ -40,15 +40,18 @@ import com.tle.web.api.item.equella.interfaces.beans.{
   FileAttachmentBean
 }
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
+import com.tle.web.api.search.model.AdditionalSearchParameters.buildAdvancedSearchCriteria
 import com.tle.web.api.search.model.{
   DrmStatus,
   SearchParam,
   SearchResultAttachment,
-  SearchResultItem
+  SearchResultItem,
+  WizardControlFieldValue
 }
 import com.tle.web.controls.resource.ResourceAttachmentBean
 import com.tle.web.controls.youtube.YoutubeAttachmentBean
-
+import cats.implicits._
+import cats.Semigroup
 import java.time.format.DateTimeParseException
 import java.time.{LocalDate, LocalDateTime, LocalTime, ZoneId}
 import java.util.{Date, Optional}
@@ -64,10 +67,14 @@ import scala.collection.mutable.ListBuffer
   * SearchResultItem and SearchResultAttachment, respectively.
   */
 object SearchHelper {
+  implicit val freeTextBooleanQuerySemigroup: Semigroup[FreeTextBooleanQuery] =
+    (x: FreeTextBooleanQuery, y: FreeTextBooleanQuery) => x.add(y)
+
   val privileges = Array(ItemSecurityConstants.VIEW_ITEM)
 
   /**
     * Execute a search with provided search criteria.
+    *
     * @param defaultSearch A set of search criteria
     * @param start The first record of a search result.
     * @param length The maximum number of search results, or -1 for all.
@@ -80,12 +87,16 @@ object SearchHelper {
     LegacyGuice.freeTextService.search(defaultSearch, start, length, searchAttachments)
 
   /**
-    * Create a new search with search criteria.
-    * The search criteria is dependent on what parameters are passed in.
+    * Create a new search with search criteria. The search criteria include two parts.
+    * 1. General criteria provided by `SearchParam`.
+    * 2. Advanced search criteria defined by a list of `WizardControlFieldValue`.
+    *
     * @param params Search parameters.
+    * @param fieldValues An option of an array of `WizardControlFieldValue`.
     * @return An instance of DefaultSearch
     */
-  def createSearch(params: SearchParam): DefaultSearch = {
+  def createSearch(params: SearchParam,
+                   fieldValues: Option[Array[WizardControlFieldValue]] = None): DefaultSearch = {
     val search = new DefaultSearch
     search.setUseServerTimeZone(true)
     search.setQuery(params.query)
@@ -108,19 +119,18 @@ object SearchHelper {
     if (modifiedBefore.isDefined || modifiedAfter.isDefined) {
       search.setDateRange(Array(modifiedAfter.orNull, modifiedBefore.orNull))
     }
-    val dynaCollectionQuery = handleDynaCollection(params.dynaCollection)
-    val whereQuery = Option(params.whereClause) match {
-      case Some(where) => WhereParser.parse(where)
-      case None        => null
-    }
-    // If dynaCollectionQuery is not empty then combine it with whereQuery, and then assign it to freeTextQuery.
-    // Otherwise, just assign whereQuery to freeTextQuery.
-    val freeTextQuery = dynaCollectionQuery match {
-      case Some(q) => q.add(whereQuery)
-      case None    => whereQuery
-    }
+    val dynaCollectionQuery: Option[FreeTextBooleanQuery] = handleDynaCollection(
+      params.dynaCollection)
+    val whereQuery: Option[FreeTextBooleanQuery] = Option(params.whereClause).map(WhereParser.parse)
+    val advSearchCriteria: Option[FreeTextBooleanQuery] =
+      fieldValues.map(buildAdvancedSearchCriteria)
+
+    val freeTextQuery: FreeTextBooleanQuery =
+      List(dynaCollectionQuery, whereQuery, advSearchCriteria)
+        .reduce(_ |+| _)
+        .orNull
+
     search.setFreeTextQuery(freeTextQuery)
-    search.setCustomLuceneQuery(params.customLuceneQuery)
 
     handleMusts(params.musts) foreach {
       case (field, value) => search.addMust(field, value.asJavaCollection)

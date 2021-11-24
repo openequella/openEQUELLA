@@ -39,7 +39,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 
 @SuppressWarnings("nls")
 public class DefaultSearch extends VeryBasicSearch {
@@ -70,20 +69,10 @@ public class DefaultSearch extends VeryBasicSearch {
   protected Collection<DateFilter> dateFilters = Lists.newArrayList();
   private final List<List<Field>> musts = new ArrayList<List<Field>>();
   private final List<List<Field>> mustNots = new ArrayList<List<Field>>();
-  private String customLuceneQuery;
 
   public DefaultSearch() {
     super();
     toplevel = this;
-  }
-
-  @Override
-  public Optional<String> getCustomLuceneQuery() {
-    return Optional.ofNullable(customLuceneQuery);
-  }
-
-  public void setCustomLuceneQuery(String customLuceneQuery) {
-    this.customLuceneQuery = customLuceneQuery;
   }
 
   @Override

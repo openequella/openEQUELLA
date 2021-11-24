@@ -74,14 +74,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
@@ -968,26 +966,11 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       }
 
       // This one includes the query built above and all the FreeTextQuery of the search.
-      Query extraQuery = addExtraQuery(query, request, reader);
-
-      // if custom Lucene query is provided, combine it with `extraQuery`.
-      return request
-          .getCustomLuceneQuery()
-          .<Query>flatMap(
-              luceneQuery ->
-                  processCustomLuceneQuery(luceneQuery)
-                      .map(
-                          q -> {
-                            BooleanQuery combinedQuery = new BooleanQuery();
-                            combinedQuery.add(extraQuery, Occur.MUST);
-                            combinedQuery.add(q, Occur.MUST);
-
-                            return combinedQuery;
-                          }))
-          .orElse(extraQuery);
+      query = addExtraQuery(query, request, reader);
     } catch (ParseException ex) {
       throw new InvalidSearchQueryException(queryString, ex);
     }
+    return query;
   }
 
   protected Filter getFilter(Search request) {
@@ -1110,27 +1093,6 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       return new Sort(convFields);
     }
     return new Sort(new SortField(null, SortField.SCORE, false));
-  }
-
-  private Optional<Query> processCustomLuceneQuery(String customLuceneQuery) {
-    QueryParser parser =
-        new QueryParser(
-            LuceneConstants.LATEST_VERSION, FreeTextQuery.FIELD_ALL, new KeywordAnalyzer());
-
-    return Optional.ofNullable(customLuceneQuery)
-        .map(
-            q -> {
-              try {
-                return parser.parse(q);
-              } catch (ParseException e) {
-                LOGGER.error(
-                    "Failed to parse custom Lucene query: "
-                        + customLuceneQuery
-                        + " due to error: "
-                        + e.getMessage());
-                return null;
-              }
-            });
   }
 
   /** @dytech.jira see Jira Review TLE-784 : http://apps.dytech.com.au/jira/browse/TLE-784 */
