@@ -39,7 +39,6 @@ import {
 import {
   extractDefaultValues,
   FieldValueMap,
-  generateRawLuceneQuery,
 } from "../components/wizard/WizardHelper";
 import { routes } from "../mainui/routes";
 import {
@@ -466,14 +465,12 @@ export const buildOpenSummaryPageHandler = (
   );
 
 /**
- * Function to initialise an Advanced search. There are three tasks done here.
+ * Function to initialise an Advanced search. There are two tasks done here.
  *
  * 1. Confirm the initial FieldValueMap. If there is one, use it. Otherwise, build a new one by extracting the default
  * Wizard control values.
  *
  * 2. Update the state of SearchPageModeReducer to `initialiseAdvSearch`;
- *
- * 3. Build and return the initial raw Lucene query.
  *
  * @param advancedSearchDefinition The initial Advanced search definition.
  * @param dispatch The `dispatch` provided by SearchPageModeReducer.
@@ -483,7 +480,7 @@ export const initialiseAdvancedSearch = (
   advancedSearchDefinition: OEQ.AdvancedSearch.AdvancedSearchDefinition,
   dispatch: (action: SearchPageModeAction) => void,
   currentFieldValue?: FieldValueMap
-): Promise<string | undefined> => {
+): FieldValueMap => {
   const initialQueryValues =
     currentFieldValue ??
     extractDefaultValues(advancedSearchDefinition.controls);
@@ -494,5 +491,5 @@ export const initialiseAdvancedSearch = (
     initialQueryValues,
   });
 
-  return generateRawLuceneQuery(initialQueryValues);
+  return initialQueryValues;
 };

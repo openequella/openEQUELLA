@@ -17,6 +17,9 @@
  */
 
 import * as OEQ from "@openequella/rest-api-client";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import * as A from "fp-ts/Array";
 import { Literal, Static, Union } from "runtypes";
 import { API_BASE_URL } from "../AppConfig";
 import { DateRange, getISODateString } from "../util/Date";
@@ -127,9 +130,9 @@ export interface SearchOptions {
    */
   musts?: OEQ.Search.Must[];
   /**
-   * Raw Lucene query generated from the values of Wizard controls.
+   * Advanced search criteria defined by Wizard controls' schema nodes and values.
    */
-  customLuceneQuery?: string;
+  advancedSearchCriteria?: OEQ.Search.WizardControlFieldValue[];
 }
 
 /**
@@ -216,7 +219,6 @@ const buildSearchParams = ({
   mimeTypeFilters,
   externalMimeTypes,
   musts,
-  customLuceneQuery,
 }: SearchOptions): OEQ.Search.SearchParams => {
   const processedQuery = query ? formatQuery(query, !rawMode) : undefined;
   // We use selected filters to generate MIME types. However, in Image Gallery,
@@ -241,19 +243,31 @@ const buildSearchParams = ({
     whereClause: generateCategoryWhereQuery(selectedCategories),
     mimeTypes: externalMimeTypes ?? _mimeTypes,
     musts: musts,
-    customLuceneQuery: customLuceneQuery,
   };
 };
 
 /**
- * A function that executes a search with provided search options.
+ * A function that executes a search with provided search options. If Advanced search criteria exists
+ * in the search options, do the search through a POST request which puts the Advanced search criteria
+ * in the request body. Otherwise, do the search through a GET request.
  *
  * @param searchOptions Search options selected on Search page.
  */
 export const searchItems = (
   searchOptions: SearchOptions
-): Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>> =>
-  OEQ.Search.search(API_BASE_URL, buildSearchParams(searchOptions));
+): Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>> => {
+  const params = buildSearchParams(searchOptions);
+  return pipe(
+    searchOptions.advancedSearchCriteria,
+    O.fromNullable,
+    O.filter(A.isNonEmpty),
+    O.match(
+      () => OEQ.Search.search(API_BASE_URL, params),
+      (criteria) =>
+        OEQ.Search.searchWithAdvControlValues(API_BASE_URL, criteria, params)
+    )
+  );
+};
 
 /**
  * A function that builds a URL for exporting a search result

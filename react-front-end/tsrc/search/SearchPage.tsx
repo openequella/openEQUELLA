@@ -18,11 +18,9 @@
 import { debounce, Drawer, Grid, Hidden } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
-import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as O from "fp-ts/Option";
-import * as TE from "fp-ts/TaskEither";
 import { isEqual } from "lodash";
 import * as React from "react";
 import {
@@ -41,7 +39,7 @@ import MessageInfo, { MessageInfoVariant } from "../components/MessageInfo";
 import type { FieldValueMap } from "../components/wizard/WizardHelper";
 import {
   ControlValue,
-  generateRawLuceneQuery,
+  generateAdvancedSearchCriteria,
   isControlValueNonEmpty,
   isNonEmptyString,
 } from "../components/wizard/WizardHelper";
@@ -292,7 +290,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
         : Promise.resolve(undefined),
     ])
       .then(
-        async ([
+        ([
           searchSettings,
           mimeTypeFilters,
           queryStringSearchOptions,
@@ -307,14 +305,19 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
           setAdvancedSearches(advancedSearches);
           setCurrentUser(currentUserDetails);
 
-          const initialRawLuceneQuery: string | undefined =
-            advancedSearchDefinition
-              ? await initialiseAdvancedSearch(
-                  advancedSearchDefinition,
-                  searchPageModeDispatch,
-                  searchPageOptions.advFieldValue
-                )
-              : undefined;
+          const initialAdvancedSearchCriteria = pipe(
+            advancedSearchDefinition,
+            O.fromNullable,
+            O.map((def) =>
+              initialiseAdvancedSearch(
+                def,
+                searchPageModeDispatch,
+                searchPageOptions.advFieldValue
+              )
+            ),
+            O.map(generateAdvancedSearchCriteria),
+            O.toUndefined
+          );
 
           // This is the SearchPageOptions for the first searching, not the one created in the first rendering.
           const initialSearchPageOptions = pipe(
@@ -332,7 +335,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
                 searchPageOptions.collections,
               sortOrder:
                 searchPageOptions.sortOrder ?? searchSettings.defaultSearchSort,
-              customLuceneQuery: initialRawLuceneQuery,
+              advancedSearchCriteria: initialAdvancedSearchCriteria,
             }))
           );
 
@@ -721,21 +724,12 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
       values: advFieldValue,
     });
 
-    const task = pipe(
-      TE.tryCatch(
-        () => generateRawLuceneQuery(advFieldValue),
-        () => new Error(languageStrings.invalidLuceneQuery)
-      ),
-      TE.map<string | undefined, SearchPageOptions>((customLuceneQuery) => ({
-        ...searchPageOptions,
-        customLuceneQuery,
-        advFieldValue,
-        currentPage: 0,
-      }))
-    );
-
-    // Run the task.
-    pipe(await task(), E.fold(searchPageErrorHandler, search));
+    search({
+      ...searchPageOptions,
+      advancedSearchCriteria: generateAdvancedSearchCriteria(advFieldValue),
+      advFieldValue,
+      currentPage: 0,
+    });
   };
 
   /**
