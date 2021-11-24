@@ -99,6 +99,11 @@ export const AdvancedSearchPanel = ({
     [currentValues, setCurrentValues]
   );
 
+  const onClearHandler = (): void => {
+    setCurrentValues(new Map());
+    onClear();
+  };
+
   const idPrefix = "advanced-search-panel";
   return (
     <Card id={idPrefix}>
@@ -146,7 +151,11 @@ export const AdvancedSearchPanel = ({
         >
           {languageStrings.common.action.search}
         </Button>
-        <Button id={`${idPrefix}-clearBtn`} onClick={onClear} color="secondary">
+        <Button
+          id={`${idPrefix}-clearBtn`}
+          onClick={onClearHandler}
+          color="secondary"
+        >
           {languageStrings.common.action.clear}
         </Button>
       </CardActions>
