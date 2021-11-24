@@ -485,7 +485,7 @@ export const searchWithAdditionalParams = (
     apiBasePath + SEARCH2_API_PATH,
     searchResultValidator,
     additionalParams,
-    normalParams
+    processSearchParams(normalParams)
   ).then(processRawSearchResult);
 
 /**
