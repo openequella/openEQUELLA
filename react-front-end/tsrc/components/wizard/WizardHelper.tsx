@@ -29,8 +29,6 @@ import { Refinement } from "fp-ts/Refinement";
 import { first } from "fp-ts/Semigroup";
 import * as SET from "fp-ts/Set";
 import * as S from "fp-ts/string";
-import * as T from "fp-ts/Task";
-import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
 import { OrdAsIs } from "../../util/Ord";
 import { WizardCalendar } from "./WizardCalendar";
