@@ -322,7 +322,6 @@ describe("Rendering of wizard", () => {
 
     // Click clear button
     await clickClearButton(container);
-    togglePanel();
     expect(pipe(getCurrentLabelsAndValues(), filterEmptyValues)).toEqual([]);
   });
 });

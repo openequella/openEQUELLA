@@ -235,7 +235,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
   const exportLinkRef = useRef<HTMLAnchorElement>(null);
 
   //set true to keep panel open after search
-  //only worked for one time,
+  //only work for once,
   const keepAdvSearchPanelOpenOnceAfterSearch = useRef<boolean>(false);
 
   const { appErrorHandler } = useContext(AppRenderErrorContext);
