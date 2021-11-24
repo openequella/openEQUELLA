@@ -247,24 +247,41 @@ const buildSearchParams = ({
 };
 
 /**
+ * A function that converts search options to search additional params.
+ *
+ * @param searchOptions Search options to be converted to search additional params.
+ */
+const buildSearchAdditionalParams = ({
+  advancedSearchCriteria,
+}: SearchOptions): OEQ.Search.SearchAdditionalParams => ({
+  advancedSearchCriteria,
+});
+
+/**
  * A function that executes a search with provided search options. If Advanced search criteria exists
- * in the search options, do the search through a POST request which puts the Advanced search criteria
- * in the request body. Otherwise, do the search through a GET request.
+ * in the search options, do the search with normal params and additional params through a POST request.
+ * Otherwise, do the search through a GET request with normal params.
  *
  * @param searchOptions Search options selected on Search page.
  */
 export const searchItems = (
   searchOptions: SearchOptions
 ): Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>> => {
-  const params = buildSearchParams(searchOptions);
+  const normalParams = buildSearchParams(searchOptions);
   return pipe(
-    searchOptions.advancedSearchCriteria,
-    O.fromNullable,
-    O.filter(A.isNonEmpty),
+    searchOptions,
+    O.fromPredicate(
+      ({ advancedSearchCriteria }) =>
+        !!advancedSearchCriteria && A.isNonEmpty(advancedSearchCriteria)
+    ),
     O.match(
-      () => OEQ.Search.search(API_BASE_URL, params),
-      (criteria) =>
-        OEQ.Search.searchWithAdvControlValues(API_BASE_URL, criteria, params)
+      () => OEQ.Search.search(API_BASE_URL, normalParams),
+      (options) =>
+        OEQ.Search.searchWithAdditionalParams(
+          API_BASE_URL,
+          buildSearchAdditionalParams(options),
+          normalParams
+        )
     )
   );
 };

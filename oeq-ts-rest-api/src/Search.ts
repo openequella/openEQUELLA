@@ -140,11 +140,11 @@ export interface WizardControlFieldValue {
 /**
  * Body of the search2 POST request.
  */
-interface SearchBody {
+export interface SearchAdditionalParams {
   /**
    * A list of `WizardControlFieldValue` to build Advanced search criteria.
    */
-  advancedSearchCriteria: WizardControlFieldValue[];
+  advancedSearchCriteria?: WizardControlFieldValue[];
 }
 
 /**
@@ -473,19 +473,19 @@ export const search = (
  * criteria and Advanced search criteria are both supported.
  *
  * @param apiBasePath Base URI to the oEQ institution and API.
- * @param controlValues An array of `WizardControlFieldValue` which will be used to build Advanced search criteria.
- * @param params Query parameters as general search criteria.
+ * @param additionalParams Additional parameters (e.g. Advanced search criteria).
+ * @param normalParams Query parameters as general search criteria.
  */
-export const searchWithAdvControlValues = (
+export const searchWithAdditionalParams = (
   apiBasePath: string,
-  controlValues: WizardControlFieldValue[],
-  params?: SearchParams
+  additionalParams: SearchAdditionalParams,
+  normalParams?: SearchParams
 ): Promise<SearchResult<SearchResultItem>> =>
-  POST<SearchBody, SearchResult<SearchResultItemRaw>>(
+  POST<SearchAdditionalParams, SearchResult<SearchResultItemRaw>>(
     apiBasePath + SEARCH2_API_PATH,
     searchResultValidator,
-    { advancedSearchCriteria: controlValues },
-    params
+    additionalParams,
+    normalParams
   ).then(processRawSearchResult);
 
 /**

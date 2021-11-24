@@ -231,23 +231,25 @@ describe('Dead attachment handling', () => {
 });
 
 describe('search through a POST request', () => {
-  it('supports searching with a payload and query params', async () => {
-    const controlValues: OEQ.Search.WizardControlFieldValue[] = [
-      {
-        schemaNodes: ['/item/name'],
-        values: ['SearchApiTest - Crabs'],
-        queryType: 'Tokenised',
-      },
-    ];
+  it('supports searching with additional params and normal params', async () => {
+    const additionalParams: OEQ.Search.SearchAdditionalParams = {
+      advancedSearchCriteria: [
+        {
+          schemaNodes: ['/item/name'],
+          values: ['SearchApiTest - Crabs'],
+          queryType: 'Tokenised',
+        },
+      ],
+    };
 
-    const params: OEQ.Search.SearchParams = {
+    const normalParams: OEQ.Search.SearchParams = {
       status: ['LIVE'],
     };
 
-    const searchResult = await OEQ.Search.searchWithAdvControlValues(
+    const searchResult = await OEQ.Search.searchWithAdditionalParams(
       TC.API_PATH,
-      controlValues,
-      params
+      additionalParams,
+      normalParams
     );
     expect(searchResult.available).toBe(6);
   });
