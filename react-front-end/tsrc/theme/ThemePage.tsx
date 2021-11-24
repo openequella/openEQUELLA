@@ -199,12 +199,19 @@ export const ThemePage = ({
     (await OEQ.Theme.updateThemeLogo(API_BASE_URL, logoSettings.logoToUpload));
 
   const saveChanges = async () => {
-    await submitTheme(mapColorsToSettings(themeColors))
-      .then(async () => await submitLogo())
-      .then(() => setIsChangesUnsaved(false))
-      .then(() => setIsShowSuccess(true))
-      .catch(setError);
-    reload();
+    try {
+      await submitTheme(mapColorsToSettings(themeColors));
+      await submitLogo();
+      setIsChangesUnsaved(false);
+      setIsChangesUnsaved(false);
+      reload();
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error
+          : new Error(`Unexpected non-Error caught in saveChanges(): $(error)`)
+      );
+    }
   };
 
   const resetLogo = () => {
