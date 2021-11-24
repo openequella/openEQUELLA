@@ -23,6 +23,7 @@ import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import { getAdvancedSearchDefinition } from "../../../__mocks__/AdvancedSearchModule.mock";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
+import { mockedAdvancedSearchCriteria } from "../../../__mocks__/WizardHelper.mock";
 import { elapsedTime, startTimer } from "../../../tsrc/util/debug";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import {
@@ -60,7 +61,6 @@ const {
   mockSearch,
   mockSearchSettings,
   mockGetAdvancedSearchByUuid,
-  mockGetTokensForText,
 } = mockCollaborators();
 initialiseEssentialMocks({
   mockCollections,
@@ -328,21 +328,17 @@ describe("Rendering of wizard", () => {
 });
 
 describe("search with Advanced search criteria", () => {
-  it("supports searching with raw Lucene query", async () => {
+  it("supports searching with Advanced search criteria", async () => {
     jest.clearAllMocks();
-    const defaultValue = "hello world";
+    const defaultValue = ["hello world"];
     mockGetAdvancedSearchByUuid.mockResolvedValue(
-      oneEditBoxWizard(false, [defaultValue])
+      oneEditBoxWizard(false, defaultValue)
     );
     await renderAdvancedSearchPage();
 
-    // Should do a tokenisation.
-    expect(mockGetTokensForText).toHaveBeenCalledWith(defaultValue);
-
-    // The raw Lucene query should be part of the SearchOptions.
     const [searchOptions] = mockSearch.mock.calls[0];
-    expect(searchOptions.customLuceneQuery).toBe(
-      "(/item/name\\*:(hello world))"
+    expect(searchOptions.advancedSearchCriteria).toStrictEqual(
+      mockedAdvancedSearchCriteria
     );
   });
 });

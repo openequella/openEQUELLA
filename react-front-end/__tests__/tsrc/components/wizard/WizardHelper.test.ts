@@ -28,10 +28,9 @@ import {
 import {
   ControlTarget,
   FieldValue,
-  generateRawLuceneQuery,
+  generateAdvancedSearchCriteria,
   render,
 } from "../../../../tsrc/components/wizard/WizardHelper";
-import * as TokenisationModule from "../../../../tsrc/modules/TokenisationModule";
 import { simpleMatch } from "../../../../tsrc/util/match";
 
 /**
@@ -143,27 +142,68 @@ describe("render()", () => {
   });
 });
 
-describe("generateRawLuceneQuery()", () => {
-  jest
-    .spyOn(TokenisationModule, "getTokensForText")
-    .mockResolvedValue({ tokens: ["hello", "world"] });
+describe("generateAdvancedSearchCriteria()", () => {
+  it("builds raw Lucene query for Wizard controls", () => {
+    const query = generateAdvancedSearchCriteria(mockedFieldValueMap);
 
-  it("builds raw Lucene query for Wizard controls", async () => {
-    const query = await generateRawLuceneQuery(mockedFieldValueMap);
+    const expectedCriteria: OEQ.Search.WizardControlFieldValue[] = [
+      {
+        queryType: "DateRange",
+        schemaNodes: ["/controls/calendar1"],
+        values: ["2021-11-01", ""],
+      },
+      {
+        queryType: "DateRange",
+        schemaNodes: ["/controls/calendar2"],
+        values: ["", "2021-11-01"],
+      },
+      {
+        queryType: "DateRange",
+        schemaNodes: ["/controls/calendar3"],
+        values: ["2021-11-01", "2021-11-11"],
+      },
+      {
+        queryType: "Phrase",
+        schemaNodes: ["/controls/checkbox"],
+        values: ["optionA", "optionB"],
+      },
+      {
+        queryType: "Tokenised",
+        schemaNodes: ["/controls/editbox"],
+        values: ["hello world"],
+      },
+      {
+        queryType: "Phrase",
+        schemaNodes: ["/controls/listbox"],
+        values: ["optionC"],
+      },
+      {
+        queryType: "Phrase",
+        schemaNodes: ["/controls/radiogroup"],
+        values: ["optionD"],
+      },
+      {
+        queryType: "Phrase",
+        schemaNodes: ["/controls/shufflebox"],
+        values: ["optionE", "optionF"],
+      },
+      {
+        queryType: "Tokenised",
+        schemaNodes: ["/controls/shufflelist"],
+        values: ["The house is nice", "walking"],
+      },
+      {
+        queryType: "Phrase",
+        schemaNodes: ["/controls/termselector"],
+        values: ["programming"],
+      },
+      {
+        queryType: "Phrase",
+        schemaNodes: ["/controls/userselector"],
+        values: ["admin"],
+      },
+    ];
 
-    const expectedQuery =
-      "(/controls/calendar1:[2021-11-01 TO *]) AND " +
-      "(/controls/calendar2:[* TO 2021-11-01]) AND " +
-      "(/controls/calendar3:[2021-11-01 TO 2021-11-11]) AND " +
-      '(/controls/checkbox:("optionA" "optionB")) AND ' +
-      "(/controls/editbox\\*:(hello world)) AND " +
-      '(/controls/listbox:"optionC") AND ' +
-      '(/controls/radiogroup:"optionD") AND ' +
-      '(/controls/shufflebox:("optionE" "optionF")) AND ' +
-      "(/controls/shufflelist\\*:(hello world)) AND " +
-      '(/controls/termselector:("programming")) AND ' +
-      '(/controls/userselector:("admin"))';
-
-    expect(query).toBe(expectedQuery);
+    expect(query).toStrictEqual(expectedCriteria);
   });
 });
