@@ -229,3 +229,26 @@ describe('Dead attachment handling', () => {
     }
   );
 });
+
+describe('search through a POST request', () => {
+  it('supports searching with a payload and query params', async () => {
+    const controlValues: OEQ.Search.WizardControlFieldValue[] = [
+      {
+        schemaNodes: ['/item/name'],
+        values: ['SearchApiTest - Crabs'],
+        queryType: 'Tokenised',
+      },
+    ];
+
+    const params: OEQ.Search.SearchParams = {
+      status: ['LIVE'],
+    };
+
+    const searchResult = await OEQ.Search.searchWithAdvControlValues(
+      TC.API_PATH,
+      controlValues,
+      params
+    );
+    expect(searchResult.available).toBe(6);
+  });
+});
