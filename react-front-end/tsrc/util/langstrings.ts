@@ -710,6 +710,8 @@ export const languageStrings = {
   },
   userSearchComponent: {
     failedToFindUsersMessage: "Unable to find any users matching '%s'",
+    filterActiveNotice: "Results will be filtered.",
+    filteredByPrelude: "Your search results will be filtered by these groups:",
     queryFieldLabel: "Username, first or last name",
   },
   wizard: {

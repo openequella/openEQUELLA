@@ -15,22 +15,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta } from "@storybook/react";
+import { Meta, Story } from "@storybook/react";
+import * as React from "react";
 import * as UserSearchMock from "../../__mocks__/UserSearch.mock";
 import UserSearch, { UserSearchProps } from "../../tsrc/components/UserSearch";
-import { action } from "@storybook/addon-actions";
-import * as React from "react";
-import { number } from "@storybook/addon-knobs";
 
 export default {
-  title: "UserSearch",
+  title: "component/UserSearch",
   component: UserSearch,
+  argTypes: {
+    onSelect: {
+      action: "onSelect called",
+    },
+  },
 } as Meta<UserSearchProps>;
 
-export const DefaultState = () => (
-  <UserSearch
-    listHeight={number("List Height", 150)}
-    onSelect={action("onSelect")}
-    userListProvider={UserSearchMock.userDetailsProvider}
-  />
+export const Default: Story<UserSearchProps> = (args) => (
+  <UserSearch {...args} />
 );
+Default.args = {
+  listHeight: 150,
+  userListProvider: UserSearchMock.userDetailsProvider,
+};
+
+export const GroupFilter: Story<UserSearchProps> = (args) => (
+  <UserSearch {...args} />
+);
+GroupFilter.args = {
+  ...Default.args,
+  groupFilter: new Set([
+    "35e0b3dc-f243-44be-9f9d-75b094c08a6c",
+    "a47150a6-6d28-4de1-ba12-36fe440f5132",
+  ]),
+};

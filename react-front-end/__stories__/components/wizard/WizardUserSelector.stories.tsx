@@ -22,6 +22,7 @@ import {
   WizardUserSelector,
   WizardUserSelectorProps,
 } from "../../../tsrc/components/wizard/WizardUserSelector";
+import { GroupFilter } from "../UserSearch.stories";
 
 export default {
   title: "Component/Wizard/WizardUserSelector",
@@ -57,6 +58,16 @@ WithUsers.args = {
     UserSearchMock.users[2].id,
   ]),
   multiple: true,
+};
+
+export const WithGroupFilter: Story<WizardUserSelectorProps> = (args) => (
+  <WizardUserSelector {...args} />
+);
+WithGroupFilter.args = {
+  ...NoUsers.args,
+  description:
+    "A user selector (single selection) with no users specified but with a group filter active",
+  groupFilter: GroupFilter.args?.groupFilter,
 };
 
 export const ErrorOnResolvingUserIds: Story<WizardUserSelectorProps> = (

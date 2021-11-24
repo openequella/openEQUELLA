@@ -33,8 +33,13 @@ interface SelectUserDialogProps {
   open: boolean;
   /** Handler for when dialog closes. */
   onClose: (selection?: OEQ.UserQuery.UserDetails) => void;
+  /** A list of group UUIDs to filter the users by. */
+  groupFilter?: ReadonlySet<string>;
   /** Function which will provide the list of users for UserSearch. */
-  userListProvider?: (query?: string) => Promise<OEQ.UserQuery.UserDetails[]>;
+  userListProvider?: (
+    query?: string,
+    groupFilter?: ReadonlySet<string>
+  ) => Promise<OEQ.UserQuery.UserDetails[]>;
 }
 
 /**
@@ -43,6 +48,7 @@ interface SelectUserDialogProps {
 export const SelectUserDialog = ({
   open,
   onClose,
+  groupFilter,
   userListProvider,
 }: SelectUserDialogProps) => {
   const [selectedUser, setSelectedUser] = useState<
@@ -62,6 +68,7 @@ export const SelectUserDialog = ({
       <DialogContent>
         <UserSearch
           onSelect={setSelectedUser}
+          groupFilter={groupFilter}
           userListProvider={userListProvider}
           listHeight={300}
         />
