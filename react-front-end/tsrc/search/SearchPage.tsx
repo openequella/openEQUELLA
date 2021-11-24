@@ -234,6 +234,10 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
   const [alreadyDownloaded, setAlreadyDownloaded] = useState<boolean>(false);
   const exportLinkRef = useRef<HTMLAnchorElement>(null);
 
+  //set true to keep panel open after search
+  //only worked for one time,
+  const keepAdvSearchPanelOpenOnceAfterSearch = useRef<boolean>(false);
+
   const { appErrorHandler } = useContext(AppRenderErrorContext);
   const searchPageErrorHandler = useCallback(
     (error: Error) => {
@@ -414,12 +418,17 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
         }
       );
 
-      // todo: do not hide the panel for the first search.
-      if (searchPageModeState.mode === "advSearch") {
+      if (
+        searchPageModeState.mode === "advSearch" &&
+        !keepAdvSearchPanelOpenOnceAfterSearch.current
+      ) {
         searchPageModeDispatch({
           type: "hideAdvSearchPanel",
         });
       }
+
+      //only used for once, set to false.
+      keepAdvSearchPanelOpenOnceAfterSearch.current = false;
 
       setSearchPageOptions(state.options);
       (async () => {
@@ -738,6 +747,11 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
     pipe(await task(), E.fold(searchPageErrorHandler, search));
   };
 
+  const handleClearAdvancedSearch = async () => {
+    keepAdvSearchPanelOpenOnceAfterSearch.current = true;
+    await handleSubmitAdvancedSearch(new Map());
+  };
+
   /**
    * Determines if any collapsible filters have been modified from their defaults
    */
@@ -1040,7 +1054,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
                     wizardControls={searchPageModeState.definition.controls}
                     values={searchPageModeState.queryValues}
                     onSubmit={handleSubmitAdvancedSearch}
-                    onClear={() => handleSubmitAdvancedSearch(new Map())}
+                    onClear={handleClearAdvancedSearch}
                     onClose={() =>
                       searchPageModeDispatch({ type: "hideAdvSearchPanel" })
                     }
