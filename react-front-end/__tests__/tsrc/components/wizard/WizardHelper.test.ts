@@ -21,14 +21,10 @@ import { pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as R from "fp-ts/Record";
-import {
-  controls,
-  mockedFieldValueMap,
-} from "../../../../__mocks__/WizardHelper.mock";
+import { controls } from "../../../../__mocks__/WizardHelper.mock";
 import {
   ControlTarget,
   FieldValue,
-  generateAdvancedSearchCriteria,
   render,
 } from "../../../../tsrc/components/wizard/WizardHelper";
 import { simpleMatch } from "../../../../tsrc/util/match";
@@ -139,71 +135,5 @@ describe("render()", () => {
     expect(() =>
       render(controls, M.singleton(nameEditboxTarget, [1]), logOnChange)
     ).toThrow(TypeError);
-  });
-});
-
-describe("generateAdvancedSearchCriteria()", () => {
-  it("builds SearchAdditionalParams for Wizard controls", () => {
-    const query = generateAdvancedSearchCriteria(mockedFieldValueMap);
-
-    const expectedCriteria: OEQ.Search.WizardControlFieldValue[] = [
-      {
-        queryType: "DateRange",
-        schemaNodes: ["/controls/calendar1"],
-        values: ["2021-11-01", ""],
-      },
-      {
-        queryType: "DateRange",
-        schemaNodes: ["/controls/calendar2"],
-        values: ["", "2021-11-01"],
-      },
-      {
-        queryType: "DateRange",
-        schemaNodes: ["/controls/calendar3"],
-        values: ["2021-11-01", "2021-11-11"],
-      },
-      {
-        queryType: "Phrase",
-        schemaNodes: ["/controls/checkbox"],
-        values: ["optionA", "optionB"],
-      },
-      {
-        queryType: "Tokenised",
-        schemaNodes: ["/controls/editbox"],
-        values: ["hello world"],
-      },
-      {
-        queryType: "Phrase",
-        schemaNodes: ["/controls/listbox"],
-        values: ["optionC"],
-      },
-      {
-        queryType: "Phrase",
-        schemaNodes: ["/controls/radiogroup"],
-        values: ["optionD"],
-      },
-      {
-        queryType: "Phrase",
-        schemaNodes: ["/controls/shufflebox"],
-        values: ["optionE", "optionF"],
-      },
-      {
-        queryType: "Tokenised",
-        schemaNodes: ["/controls/shufflelist"],
-        values: ["The house is nice", "walking"],
-      },
-      {
-        queryType: "Phrase",
-        schemaNodes: ["/controls/termselector"],
-        values: ["programming"],
-      },
-      {
-        queryType: "Phrase",
-        schemaNodes: ["/controls/userselector"],
-        values: ["admin"],
-      },
-    ];
-
-    expect(query).toStrictEqual(expectedCriteria);
   });
 });

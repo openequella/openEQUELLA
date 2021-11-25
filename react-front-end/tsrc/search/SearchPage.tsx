@@ -39,7 +39,6 @@ import MessageInfo, { MessageInfoVariant } from "../components/MessageInfo";
 import type { FieldValueMap } from "../components/wizard/WizardHelper";
 import {
   ControlValue,
-  generateAdvancedSearchCriteria,
   isControlValueNonEmpty,
   isNonEmptyString,
 } from "../components/wizard/WizardHelper";
@@ -90,6 +89,10 @@ import SearchBar from "../search/components/SearchBar";
 import type { DateRange } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
 import { OrdAsIs } from "../util/Ord";
+import {
+  generateAdvancedSearchCriteria,
+  initialiseAdvancedSearch,
+} from "./AdvancedSearchHelper";
 import { AdvancedSearchPanel } from "./components/AdvancedSearchPanel";
 import { AdvancedSearchSelector } from "./components/AdvancedSearchSelector";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
@@ -114,7 +117,6 @@ import {
   generateSearchPageOptionsFromQueryString,
   getPartialSearchOptions,
   getRawModeFromStorage,
-  initialiseAdvancedSearch,
   SearchPageOptions,
   writeRawModeToStorage,
 } from "./SearchPageHelper";

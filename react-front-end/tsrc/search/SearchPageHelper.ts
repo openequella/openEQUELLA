@@ -36,10 +36,7 @@ import {
   Union,
   Unknown,
 } from "runtypes";
-import {
-  extractDefaultValues,
-  FieldValueMap,
-} from "../components/wizard/WizardHelper";
+import type { FieldValueMap } from "../components/wizard/WizardHelper";
 import { routes } from "../mainui/routes";
 import {
   clearDataFromLocalStorage,
@@ -69,7 +66,6 @@ import { findUserById } from "../modules/UserModule";
 import { DateRange, isDate } from "../util/Date";
 import { simpleMatch } from "../util/match";
 import { History } from "history";
-import { Action as SearchPageModeAction } from "./SearchPageModeReducer";
 
 /**
  * This helper is intended to assist with processing related to the Presentation Layer -
@@ -463,33 +459,3 @@ export const buildOpenSummaryPageHandler = (
       })
     )
   );
-
-/**
- * Function to initialise an Advanced search. There are two tasks done here.
- *
- * 1. Confirm the initial FieldValueMap. If there is one, use it. Otherwise, build a new one by extracting the default
- * Wizard control values.
- *
- * 2. Update the state of SearchPageModeReducer to `initialiseAdvSearch`;
- *
- * @param advancedSearchDefinition The initial Advanced search definition.
- * @param dispatch The `dispatch` provided by SearchPageModeReducer.
- * @param currentFieldValue FieldValueMap that may already exist.
- */
-export const initialiseAdvancedSearch = (
-  advancedSearchDefinition: OEQ.AdvancedSearch.AdvancedSearchDefinition,
-  dispatch: (action: SearchPageModeAction) => void,
-  currentFieldValue?: FieldValueMap
-): FieldValueMap => {
-  const initialQueryValues =
-    currentFieldValue ??
-    extractDefaultValues(advancedSearchDefinition.controls);
-
-  dispatch({
-    type: "initialiseAdvSearch",
-    selectedAdvSearch: advancedSearchDefinition,
-    initialQueryValues,
-  });
-
-  return initialQueryValues;
-};

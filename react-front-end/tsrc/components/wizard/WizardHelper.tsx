@@ -19,11 +19,10 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import { Eq, struct } from "fp-ts/Eq";
-import { absurd, constFalse, flow, identity, pipe } from "fp-ts/function";
+import { absurd, constFalse, flow, pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as O from "fp-ts/Option";
-import { not } from "fp-ts/Predicate";
 import * as RSET from "fp-ts/ReadonlySet";
 import { Refinement } from "fp-ts/Refinement";
 import { first } from "fp-ts/Semigroup";
@@ -124,7 +123,9 @@ const isHeadType =
  * Used to check if the `ControlValue` is of the string[] variety.
  * (Not a general purpose array util!)
  */
-const isStringArray = (xs: ControlValue): xs is NEA.NonEmptyArray<string> =>
+export const isStringArray = (
+  xs: ControlValue
+): xs is NEA.NonEmptyArray<string> =>
   pipe(xs as unknown[], isHeadType<string>(S.isString));
 
 /**
@@ -184,7 +185,7 @@ export const buildControlTarget = (
  *
  * @param value a potential string value
  */
-const getStringControlValue = (value: ControlValue): string =>
+export const getStringControlValue = (value: ControlValue): string =>
   pipe(value, getStringArrayControlValue, NEA.head);
 
 /**
@@ -193,7 +194,7 @@ const getStringControlValue = (value: ControlValue): string =>
  *
  * @param value A ControlValue which should have at least one string value.
  */
-const getStringArrayControlValue = (
+export const getStringArrayControlValue = (
   value: ControlValue
 ): NEA.NonEmptyArray<string> =>
   pipe(
@@ -476,87 +477,3 @@ export const extractDefaultValues = (
     )
   );
 };
-
-// Function to create an Advanced search criterion for each control type.
-const queryFactory = (
-  { type, schemaNode, isValueTokenised }: ControlTarget,
-  values: ControlValue
-): OEQ.Search.WizardControlFieldValue | undefined => {
-  const buildTextFieldQuery = (): OEQ.Search.WizardControlFieldValue => ({
-    schemaNodes: schemaNode,
-    values: getStringArrayControlValue(values),
-    queryType: isValueTokenised ? "Tokenised" : "Phrase",
-  });
-
-  switch (type) {
-    case "calendar":
-      // Validate the Calendar value type.
-      const dateRange: NEA.NonEmptyArray<string> = pipe(
-        values,
-        E.fromPredicate(
-          isStringArray,
-          () => "Calendar must have at least one value"
-        ),
-        E.chain(
-          E.fromPredicate(
-            (dates) => A.size(dates) <= 2,
-            () => "Calendar cannot have more than 2 values"
-          )
-        ),
-        E.fold((e) => {
-          throw new TypeError(e);
-        }, identity)
-      );
-
-      return pipe(
-        dateRange,
-        O.fromPredicate(A.exists(not(S.isEmpty))), // No query needed when both are empty strings.
-        O.map<NEA.NonEmptyArray<string>, OEQ.Search.WizardControlFieldValue>(
-          (vs) => ({
-            schemaNodes: schemaNode,
-            values: vs,
-            queryType: "DateRange",
-          })
-        ),
-        O.toUndefined
-      );
-    case "checkboxgroup":
-      return buildTextFieldQuery();
-    case "editbox":
-      return buildTextFieldQuery();
-    case "html":
-      return undefined;
-    case "listbox":
-      return buildTextFieldQuery();
-    case "radiogroup":
-      return buildTextFieldQuery();
-    case "shufflebox":
-      return buildTextFieldQuery();
-    case "shufflelist":
-      return buildTextFieldQuery();
-    case "termselector":
-      return buildTextFieldQuery();
-    case "userselector":
-      return buildTextFieldQuery();
-    default:
-      return absurd(type);
-  }
-};
-
-/**
- * Function to build Advanced search criteria based on Wizard controls' schema nodes and values.
- *
- * @param m Map which provides ControlTarget and ControlValue.
- */
-export const generateAdvancedSearchCriteria = (
-  m: FieldValueMap
-): OEQ.Search.WizardControlFieldValue[] =>
-  pipe(
-    m,
-    M.filter<ControlValue>(isControlValueNonEmpty),
-    M.collect<ControlTarget>(OrdAsIs)(queryFactory),
-    A.filter(
-      (criterion): criterion is OEQ.Search.WizardControlFieldValue =>
-        criterion !== undefined
-    )
-  );
