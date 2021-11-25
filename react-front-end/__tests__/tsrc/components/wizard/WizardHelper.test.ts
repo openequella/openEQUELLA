@@ -143,7 +143,7 @@ describe("render()", () => {
 });
 
 describe("generateAdvancedSearchCriteria()", () => {
-  it("builds raw Lucene query for Wizard controls", () => {
+  it("builds SearchAdditionalParams for Wizard controls", () => {
     const query = generateAdvancedSearchCriteria(mockedFieldValueMap);
 
     const expectedCriteria: OEQ.Search.WizardControlFieldValue[] = [

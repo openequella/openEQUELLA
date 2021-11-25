@@ -510,7 +510,7 @@ const queryFactory = (
 
       return pipe(
         dateRange,
-        O.fromPredicate(A.exists(not(S.isEmpty))), // No query needed when both are undefined.
+        O.fromPredicate(A.exists(not(S.isEmpty))), // No query needed when both are empty strings.
         O.map<NEA.NonEmptyArray<string>, OEQ.Search.WizardControlFieldValue>(
           (vs) => ({
             schemaNodes: schemaNode,
