@@ -21,7 +21,7 @@ import {
   SearchPageOptions,
 } from "../tsrc/search/SearchPageHelper";
 import { getMimeTypeFilters } from "./MimeTypeFilter.mock";
-import { users } from "./UserSearch.mock";
+import * as UserModuleMock from "./UserModule.mock";
 
 export const allSearchPageOptions: SearchPageOptions = {
   rowsPerPage: 10,
@@ -40,7 +40,7 @@ export const allSearchPageOptions: SearchPageOptions = {
     start: new Date("2020-05-26T13:24:00.889+10:00"),
     end: new Date("2020-05-27T13:24:00.889+10:00"),
   },
-  owner: users[0],
+  owner: UserModuleMock.users[0],
   mimeTypes: ["Image/png", "Image/jpeg", "Application/pdf"],
   mimeTypeFilters: getMimeTypeFilters,
   displayMode: "list",

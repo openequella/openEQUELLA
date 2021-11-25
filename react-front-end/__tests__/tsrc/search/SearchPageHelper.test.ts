@@ -18,7 +18,11 @@
 import { createBrowserHistory } from "history";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import { getMimeTypeFilters } from "../../../__mocks__/MimeTypeFilter.mock";
-import { users } from "../../../__mocks__/UserSearch.mock";
+import {
+  allSearchPageOptions,
+  basicSearchPageOptions,
+} from "../../../__mocks__/searchOptions.mock";
+import * as UserModuleMock from "../../../__mocks__/UserModule.mock";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import * as SearchFilterSettingsModule from "../../../tsrc/modules/SearchFilterSettingsModule";
 import type { SearchOptions } from "../../../tsrc/modules/SearchModule";
@@ -31,10 +35,6 @@ import {
   legacyQueryStringToSearchPageOptions,
   newSearchQueryToSearchPageOptions,
 } from "../../../tsrc/search/SearchPageHelper";
-import {
-  allSearchPageOptions,
-  basicSearchPageOptions,
-} from "../../../__mocks__/searchOptions.mock";
 import type { DateRange } from "../../../tsrc/util/Date";
 import { updateMockGetBaseUrl } from "../BaseUrlHelper";
 import { basicRenderData, updateMockGetRenderData } from "../RenderDataHelper";
@@ -51,7 +51,7 @@ describe("newSearchQueryToSearchOptions", () => {
   );
 
   beforeEach(() => {
-    mockedResolvedUser.mockResolvedValue([users[0]]);
+    mockedResolvedUser.mockResolvedValue([UserModuleMock.users[0]]);
     mockedCollectionListSummary.mockResolvedValueOnce(getCollectionMap);
     mockGetMimeTypeFiltersFromServer.mockResolvedValueOnce(getMimeTypeFilters);
   });
@@ -175,7 +175,7 @@ describe("legacyQueryStringToSearchOptions", () => {
   });
 
   it("should convert legacy search parameters to searchOptions", async () => {
-    mockedResolvedUser.mockResolvedValue([users[0]]);
+    mockedResolvedUser.mockResolvedValue([UserModuleMock.users[0]]);
     mockedCollectionListSummary.mockResolvedValue(getCollectionMap);
 
     //Query string was obtained from legacy UI searching.do->Share URL

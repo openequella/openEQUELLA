@@ -20,6 +20,7 @@ import "@testing-library/jest-dom/extend-expect";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import * as React from "react";
 import { sprintf } from "sprintf-js";
+import * as UserModuleMock from "../../../__mocks__/UserModule.mock";
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
 import { GroupFilter } from "../../../__stories__/components/UserSearch.stories";
 import UserSearch from "../../../tsrc/components/UserSearch";
@@ -100,7 +101,7 @@ describe("<UserSearch/>", () => {
 
     // Prepare test values - aligning with mock data and function
     const username = "admin999";
-    const testUser = UserSearchMock.users.find(
+    const testUser = UserModuleMock.users.find(
       (user: OEQ.UserQuery.UserDetails) => user.username === username
     );
     if (!testUser) {

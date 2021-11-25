@@ -15,13 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import { fireEvent, render } from "@testing-library/react";
-import { languageStrings } from "../../../../tsrc/util/langstrings";
-import OwnerSelector from "../../../../tsrc/search/components/OwnerSelector";
-import * as UserSearchMock from "../../../../__mocks__/UserSearch.mock";
-
 import "@testing-library/jest-dom/extend-expect";
+import { fireEvent, render } from "@testing-library/react";
+import * as React from "react";
+import * as UserModuleMock from "../../../../__mocks__/UserModule.mock";
+import * as UserSearchMock from "../../../../__mocks__/UserSearch.mock";
+import OwnerSelector from "../../../../tsrc/search/components/OwnerSelector";
+import { languageStrings } from "../../../../tsrc/util/langstrings";
 import { queryMuiButtonByText } from "../../MuiQueries";
 import {
   clearSelection,
@@ -31,7 +31,7 @@ import {
 } from "./OwnerSelectTestHelpers";
 
 describe("<OwnerSelector/>", () => {
-  const testUser = UserSearchMock.users[0];
+  const testUser = UserModuleMock.users[0];
 
   it("should show the select button when no user selected", () => {
     const { container } = render(

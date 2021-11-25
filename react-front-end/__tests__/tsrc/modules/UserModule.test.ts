@@ -26,7 +26,7 @@ import * as S from "fp-ts/string";
 import {
   resolveUsersProvider,
   users,
-} from "../../../__mocks__/UserSearch.mock";
+} from "../../../__mocks__/UserModule.mock";
 import {
   resolveUsersCached,
   UserCache,
