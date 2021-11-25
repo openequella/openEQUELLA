@@ -17,6 +17,8 @@
  */
 import { Meta, Story } from "@storybook/react";
 import * as React from "react";
+import * as UserModuleMock from "../../../__mocks__/UserModule.mock";
+import { users } from "../../../__mocks__/UserModule.mock";
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
 import {
   WizardUserSelector,
@@ -43,7 +45,7 @@ NoUsers.args = {
   description: "A user selector (single selection) with no users specified",
   users: new Set<string>([]),
   userListProvider: UserSearchMock.userDetailsProvider,
-  resolveUsersProvider: UserSearchMock.resolveUsersProvider,
+  resolveUsersProvider: UserModuleMock.resolveUsersProvider,
 };
 
 export const WithUsers: Story<WizardUserSelectorProps> = (args) => (
@@ -53,10 +55,7 @@ WithUsers.args = {
   ...NoUsers.args,
   description:
     "A User Selector (multi selection) with users specified - they should be nicely sorted",
-  users: new Set<string>([
-    UserSearchMock.users[1].id,
-    UserSearchMock.users[2].id,
-  ]),
+  users: new Set<string>([users[1].id, users[2].id]),
   multiple: true,
 };
 
@@ -68,6 +67,7 @@ WithGroupFilter.args = {
   description:
     "A user selector (single selection) with no users specified but with a group filter active",
   groupFilter: GroupFilter.args?.groupFilter,
+  resolveGroupsProvider: GroupFilter.args?.resolveGroupsProvider,
 };
 
 export const ErrorOnResolvingUserIds: Story<WizardUserSelectorProps> = (

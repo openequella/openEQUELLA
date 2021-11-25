@@ -17,6 +17,7 @@
  */
 import { Meta, Story } from "@storybook/react";
 import * as React from "react";
+import * as GroupModuleMock from "../../__mocks__/GroupModule.mock";
 import * as UserSearchMock from "../../__mocks__/UserSearch.mock";
 import UserSearch, { UserSearchProps } from "../../tsrc/components/UserSearch";
 
@@ -43,8 +44,6 @@ export const GroupFilter: Story<UserSearchProps> = (args) => (
 );
 GroupFilter.args = {
   ...Default.args,
-  groupFilter: new Set([
-    "35e0b3dc-f243-44be-9f9d-75b094c08a6c",
-    "a47150a6-6d28-4de1-ba12-36fe440f5132",
-  ]),
+  groupFilter: new Set(GroupModuleMock.groups.map(({ id }) => id)),
+  resolveGroupsProvider: GroupModuleMock.resolveGroups,
 };

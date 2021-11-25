@@ -40,16 +40,24 @@ interface SelectUserDialogProps {
     query?: string,
     groupFilter?: ReadonlySet<string>
   ) => Promise<OEQ.UserQuery.UserDetails[]>;
+  /**
+   * Function which will resolve group IDs to full group details so that the group names can be
+   * used for display.
+   */
+  resolveGroupsProvider?: (
+    ids: ReadonlyArray<string>
+  ) => Promise<OEQ.UserQuery.GroupDetails[]>;
 }
 
 /**
- * Simple dialog to prompt user to search and select a user to use in the owner filter.
+ * Simple dialog to prompt user to search and select a user by embedding the SearchUser component.
  */
 export const SelectUserDialog = ({
   open,
   onClose,
   groupFilter,
   userListProvider,
+  resolveGroupsProvider,
 }: SelectUserDialogProps) => {
   const [selectedUser, setSelectedUser] = useState<
     OEQ.UserQuery.UserDetails | undefined
@@ -70,6 +78,7 @@ export const SelectUserDialog = ({
           onSelect={setSelectedUser}
           groupFilter={groupFilter}
           userListProvider={userListProvider}
+          resolveGroupsProvider={resolveGroupsProvider}
           listHeight={300}
         />
       </DialogContent>

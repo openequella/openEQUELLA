@@ -32,12 +32,19 @@ import ErrorOutline from "@material-ui/icons/ErrorOutline";
 import InfoIcon from "@material-ui/icons/Info";
 import SearchIcon from "@material-ui/icons/Search";
 import * as OEQ from "@openequella/rest-api-client";
-import { pipe } from "fp-ts/function";
+import { flow, pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import * as ORD from "fp-ts/Ord";
+import { not } from "fp-ts/Predicate";
 import * as RA from "fp-ts/ReadonlyArray";
 import * as RSET from "fp-ts/ReadonlySet";
+import * as S from "fp-ts/string";
+import * as T from "fp-ts/Task";
+import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
-import { KeyboardEvent, useState } from "react";
+import { KeyboardEvent, useEffect, useState } from "react";
 import { sprintf } from "sprintf-js";
+import * as GroupModule from "../modules/GroupModule";
 import * as UserModule from "../modules/UserModule";
 import { languageStrings } from "../util/langstrings";
 import { OrdAsIs } from "../util/Ord";
@@ -63,6 +70,13 @@ export interface UserSearchProps {
     query?: string,
     groupFilter?: ReadonlySet<string>
   ) => Promise<OEQ.UserQuery.UserDetails[]>;
+  /**
+   * Function which will resolve group IDs to full group details so that the group names can be
+   * used for display.
+   */
+  resolveGroupsProvider?: (
+    ids: ReadonlyArray<string>
+  ) => Promise<OEQ.UserQuery.GroupDetails[]>;
 }
 
 /**
@@ -76,14 +90,43 @@ const UserSearch = ({
   groupFilter,
   userListProvider = (query?: string, groupFilter?: ReadonlySet<string>) =>
     UserModule.listUsers(query ? `${query}*` : undefined, groupFilter),
+  resolveGroupsProvider = GroupModule.resolveGroups,
 }: UserSearchProps) => {
   const [query, setQuery] = useState<string>("");
   const [users, setUsers] = useState<OEQ.UserQuery.UserDetails[]>([]);
+  const [groupDetails, setGroupDetails] = useState<
+    OEQ.UserQuery.GroupDetails[]
+  >([]);
   const [selectedUser, setSelectedUser] = useState<
     OEQ.Common.UuidString | undefined
   >(undefined);
   const [hasSearched, setHasSearched] = useState<boolean>(false);
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!groupFilter) {
+      setGroupDetails([]);
+      return;
+    }
+
+    const retrieveGroupDetails: T.Task<void> = pipe(
+      groupFilter,
+      O.fromPredicate(not(RSET.isEmpty)),
+      O.map(
+        flow(
+          RSET.toReadonlyArray<string>(OrdAsIs),
+          TE.tryCatchK(
+            resolveGroupsProvider,
+            (reason) => `Failed to retrieve full group details: ${reason}`
+          ),
+          TE.match(console.error, setGroupDetails)
+        )
+      ),
+      O.getOrElse(() => T.fromIO(() => setGroupDetails([])))
+    );
+
+    (async () => await retrieveGroupDetails())();
+  }, [groupFilter, resolveGroupsProvider]);
 
   // Simple helper function to assist with providing useful id's for testing and theming.
   const genId = (suffix?: string) =>
@@ -151,10 +194,11 @@ const UserSearch = ({
         <Typography variant="caption">{filteredByPrelude}</Typography>
         <ul>
           {pipe(
-            groupFilter,
-            // TODO, come back and retrieve actual group names
-            RSET.toReadonlyArray<string>(OrdAsIs),
-            RA.map((g) => <li key={g}>{g}</li>)
+            groupDetails,
+            RA.sort(
+              ORD.contramap((g: OEQ.UserQuery.GroupDetails) => g.name)(S.Ord)
+            ),
+            RA.map(({ id, name }) => <li key={id}>{name}</li>)
           )}
         </ul>
       </>
