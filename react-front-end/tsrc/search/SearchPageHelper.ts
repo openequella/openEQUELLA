@@ -20,7 +20,7 @@ import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import { Location } from "history";
+import { History, Location } from "history";
 import { pick } from "lodash";
 import {
   Array as RuntypeArray,
@@ -69,7 +69,6 @@ import {
 import { findUserById } from "../modules/UserModule";
 import { DateRange, isDate } from "../util/Date";
 import { simpleMatch } from "../util/match";
-import { History } from "history";
 import { Action as SearchPageModeAction } from "./SearchPageModeReducer";
 
 /**
@@ -482,15 +481,16 @@ export const buildOpenSummaryPageHandler = (
 export const initialiseAdvancedSearch = (
   advancedSearchDefinition: OEQ.AdvancedSearch.AdvancedSearchDefinition,
   dispatch: (action: SearchPageModeAction) => void,
+  isAdvSearchPanelOpen: boolean,
   currentFieldValue?: FieldValueMap
 ): Promise<string | undefined> => {
   const initialQueryValues =
     currentFieldValue ??
     extractDefaultValues(advancedSearchDefinition.controls);
-
   dispatch({
     type: "initialiseAdvSearch",
     selectedAdvSearch: advancedSearchDefinition,
+    isAdvSearchPanelOpen: isAdvSearchPanelOpen,
     initialQueryValues,
   });
 

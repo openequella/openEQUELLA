@@ -234,9 +234,9 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
   const [alreadyDownloaded, setAlreadyDownloaded] = useState<boolean>(false);
   const exportLinkRef = useRef<HTMLAnchorElement>(null);
 
-  //set true to keep panel open after search
+  //set true to keep panel toggle state after search
   //only work for once,
-  const keepAdvSearchPanelOpenOnceAfterSearch = useRef<boolean>(false);
+  const keepAdvSearchPanelToggleOnceAfterSearch = useRef<boolean>(false);
 
   const { appErrorHandler } = useContext(AppRenderErrorContext);
   const searchPageErrorHandler = useCallback(
@@ -316,9 +316,13 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
               ? await initialiseAdvancedSearch(
                   advancedSearchDefinition,
                   searchPageModeDispatch,
+                  true,
                   searchPageOptions.advFieldValue
                 )
               : undefined;
+
+          //initialiseAdvancedSearch will finally trigger a search
+          keepAdvSearchPanelToggleOnceAfterSearch.current = true;
 
           // This is the SearchPageOptions for the first searching, not the one created in the first rendering.
           const initialSearchPageOptions = pipe(
@@ -420,7 +424,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
 
       if (
         searchPageModeState.mode === "advSearch" &&
-        !keepAdvSearchPanelOpenOnceAfterSearch.current
+        !keepAdvSearchPanelToggleOnceAfterSearch.current
       ) {
         searchPageModeDispatch({
           type: "hideAdvSearchPanel",
@@ -428,7 +432,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
       }
 
       //only used for once, set to false.
-      keepAdvSearchPanelOpenOnceAfterSearch.current = false;
+      keepAdvSearchPanelToggleOnceAfterSearch.current = false;
 
       setSearchPageOptions(state.options);
       (async () => {
@@ -748,7 +752,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
   };
 
   const handleClearAdvancedSearch = async () => {
-    keepAdvSearchPanelOpenOnceAfterSearch.current = true;
+    keepAdvSearchPanelToggleOnceAfterSearch.current = true;
     await handleSubmitAdvancedSearch(new Map());
   };
 
