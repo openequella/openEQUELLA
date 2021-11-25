@@ -200,16 +200,16 @@ export const ThemePage = ({
 
   const saveChanges = async () => {
     try {
-      await submitTheme(mapColorsToSettings(themeColors));
       await submitLogo();
+      await submitTheme(mapColorsToSettings(themeColors));
       setIsChangesUnsaved(false);
-      setIsChangesUnsaved(false);
+      setIsShowSuccess(true);
       reload();
     } catch (error) {
       setError(
         error instanceof Error
           ? error
-          : new Error(`Unexpected non-Error caught in saveChanges(): $(error)`)
+          : new Error(`Unexpected non-Error caught in saveChanges(): ${error}`)
       );
     }
   };
