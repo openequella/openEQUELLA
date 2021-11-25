@@ -382,7 +382,7 @@ const controlFactory = (
         ({ isSelectMultiple, isRestricted, restrictedTo }) => (
           <WizardUserSelector
             {...commonProps}
-            groupsFilter={isRestricted ? new Set(restrictedTo) : new Set()}
+            groupFilter={isRestricted ? new Set(restrictedTo) : new Set()}
             multiple={isSelectMultiple}
             onChange={flow(RSET.toSet, onChangeForStringSet)}
             users={valueAsStringSet()}
