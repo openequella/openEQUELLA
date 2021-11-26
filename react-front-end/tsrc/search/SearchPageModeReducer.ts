@@ -29,6 +29,7 @@ export type State =
       definition: OEQ.AdvancedSearch.AdvancedSearchDefinition;
       isAdvSearchPanelOpen: boolean;
       queryValues: FieldValueMap;
+      isKeepAdvSearchPanelToggleState: boolean;
     };
 
 export type Action =
@@ -49,6 +50,7 @@ export type Action =
   | {
       type: "setQueryValues";
       values: FieldValueMap;
+      isKeepAdvSearchPanelToggleState: boolean;
     };
 
 const isAdvancedSearchMode =
@@ -76,18 +78,25 @@ const toggleOrHidePanel = (state: State, action: "toggle" | "hide") => {
   };
 };
 
-const setQueryValues: (_: { state: State; values: FieldValueMap }) => State =
-  flow(
-    isAdvancedSearchMode(
-      "Attempted to set advanced search query values, when _not_ in Advanced Search mode!"
-    ),
-    E.matchW(
-      (e) => {
-        throw e;
-      },
-      ({ state, values }) => ({ ...state, queryValues: values })
-    )
-  );
+const setQueryValues: (_: {
+  state: State;
+  values: FieldValueMap;
+  isKeepAdvSearchPanelToggleState: boolean;
+}) => State = flow(
+  isAdvancedSearchMode(
+    "Attempted to set advanced search query values, when _not_ in Advanced Search mode!"
+  ),
+  E.matchW(
+    (e) => {
+      throw e;
+    },
+    ({ state, values, isKeepAdvSearchPanelToggleState }) => ({
+      ...state,
+      queryValues: values,
+      isKeepAdvSearchPanelToggleState: isKeepAdvSearchPanelToggleState,
+    })
+  )
+);
 
 export const searchPageModeReducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -100,13 +109,18 @@ export const searchPageModeReducer = (state: State, action: Action): State => {
         definition,
         isAdvSearchPanelOpen: false,
         queryValues: action.initialQueryValues,
+        isKeepAdvSearchPanelToggleState: false,
       };
     case "toggleAdvSearchPanel":
       return toggleOrHidePanel(state, "toggle");
     case "hideAdvSearchPanel":
       return toggleOrHidePanel(state, "hide");
     case "setQueryValues":
-      return setQueryValues({ state, values: action.values });
+      return setQueryValues({
+        state,
+        values: action.values,
+        isKeepAdvSearchPanelToggleState: action.isKeepAdvSearchPanelToggleState,
+      });
     default:
       return absurd(action);
   }

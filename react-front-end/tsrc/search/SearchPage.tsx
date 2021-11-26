@@ -234,10 +234,6 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
   const [alreadyDownloaded, setAlreadyDownloaded] = useState<boolean>(false);
   const exportLinkRef = useRef<HTMLAnchorElement>(null);
 
-  //set true to keep panel open after search
-  //only work for once,
-  const keepAdvSearchPanelOpenOnceAfterSearch = useRef<boolean>(false);
-
   const { appErrorHandler } = useContext(AppRenderErrorContext);
   const searchPageErrorHandler = useCallback(
     (error: Error) => {
@@ -420,15 +416,12 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
 
       if (
         searchPageModeState.mode === "advSearch" &&
-        !keepAdvSearchPanelOpenOnceAfterSearch.current
+        !searchPageModeState.isKeepAdvSearchPanelToggleState
       ) {
         searchPageModeDispatch({
           type: "hideAdvSearchPanel",
         });
       }
-
-      //only used for once, set to false.
-      keepAdvSearchPanelOpenOnceAfterSearch.current = false;
 
       setSearchPageOptions(state.options);
       (async () => {
@@ -475,7 +468,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
     history,
     state,
     advancedSearchId,
-    searchPageModeState.mode,
+    searchPageModeState,
   ]);
 
   // In Selection Session, once a new search result is returned, make each
@@ -724,10 +717,14 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
     });
   };
 
-  const handleSubmitAdvancedSearch = async (advFieldValue: FieldValueMap) => {
+  const handleSubmitAdvancedSearch = async (
+    advFieldValue: FieldValueMap,
+    isKeepAdvSearchPanelToggleState = false
+  ) => {
     searchPageModeDispatch({
       type: "setQueryValues",
       values: advFieldValue,
+      isKeepAdvSearchPanelToggleState: isKeepAdvSearchPanelToggleState,
     });
 
     const task = pipe(
@@ -748,8 +745,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
   };
 
   const handleClearAdvancedSearch = async () => {
-    keepAdvSearchPanelOpenOnceAfterSearch.current = true;
-    await handleSubmitAdvancedSearch(new Map());
+    await handleSubmitAdvancedSearch(new Map(), true);
   };
 
   /**
