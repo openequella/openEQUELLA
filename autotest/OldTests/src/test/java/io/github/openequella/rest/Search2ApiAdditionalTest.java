@@ -66,6 +66,8 @@ public class Search2ApiAdditionalTest extends AbstractRestApiTest {
     JsonNode result = doSearch(Collections.singleton(controlValue));
     // There should be two Items in the result. One Item matches the token 'box' and the other one
     // matches the token 'something'.
+
+    System.out.println(result);
     assertEquals(getAvailable(result), 2);
   }
 
@@ -80,6 +82,8 @@ public class Search2ApiAdditionalTest extends AbstractRestApiTest {
     JsonNode result = doSearch((Collections.singleton(controlValue)));
     // There should be two Items in the result. One Item matches the token 'box' and the other one
     // matches the token 'something'.
+
+    System.out.println(result);
     assertEquals(getAvailable(result), 2);
   }
 
@@ -150,6 +154,7 @@ public class Search2ApiAdditionalTest extends AbstractRestApiTest {
     NameValuePair modifiedAfter = new NameValuePair("modifiedAfter", "2011-04-06");
 
     JsonNode result = doSearch((Collections.singleton(controlValue)), modifiedAfter);
+    System.out.println(result);
     assertEquals(getAvailable(result), 1);
   }
 
