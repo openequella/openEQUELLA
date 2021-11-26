@@ -16,19 +16,21 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { users } from "./UserModule.mock";
+import * as RA from "fp-ts/ReadonlyArray";
+import { API_BASE_URL } from "../AppConfig";
 
 /**
- * Helper function to inject into component for user retrieval.
+ * Lookup groups known in oEQ.
  *
- * @param query A simple string to filter by (no wildcard support)
+ * @param ids An array of oEQ ids
  */
-export const userDetailsProvider = async (
-  query?: string
-): Promise<OEQ.UserQuery.UserDetails[]> => {
-  // A sleep to emulate latency
-  await new Promise((resolve) => setTimeout(resolve, 500));
-  return Promise.resolve(
-    query ? users.filter((u) => u.username.search(query) === 0) : users
-  );
-};
+export const resolveGroups = async (
+  ids: ReadonlyArray<string>
+): Promise<OEQ.UserQuery.GroupDetails[]> =>
+  (
+    await OEQ.UserQuery.lookup(API_BASE_URL, {
+      users: [],
+      groups: RA.toArray<string>(ids),
+      roles: [],
+    })
+  ).groups;

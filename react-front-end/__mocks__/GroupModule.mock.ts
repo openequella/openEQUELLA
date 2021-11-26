@@ -16,19 +16,31 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { users } from "./UserModule.mock";
+
+export const groups: OEQ.UserQuery.GroupDetails[] = [
+  {
+    id: "3d96df92-4d0b-496f-b865-9f1ad4a67d8d",
+    name: "Teachers",
+  },
+  {
+    id: "d0265a33-8f89-4cea-8a36-45fd3c4cf5a1",
+    name: "Systems Administrators",
+  },
+  {
+    id: "e810bee1-f2da-4145-8bc3-dc6fec827429",
+    name: "Content Administrators",
+  },
+];
 
 /**
- * Helper function to inject into component for user retrieval.
+ * A mock of `GroupModule.resolveGroups` which simply looks up the provided ids in `groups` within
+ * `GroupModule.mock.ts`
  *
- * @param query A simple string to filter by (no wildcard support)
+ * @param ids group UUIDs which are in the mocked list of groups
  */
-export const userDetailsProvider = async (
-  query?: string
-): Promise<OEQ.UserQuery.UserDetails[]> => {
-  // A sleep to emulate latency
-  await new Promise((resolve) => setTimeout(resolve, 500));
-  return Promise.resolve(
-    query ? users.filter((u) => u.username.search(query) === 0) : users
-  );
+export const resolveGroups = async (
+  ids: ReadonlyArray<string>
+): Promise<OEQ.UserQuery.GroupDetails[]> => {
+  const result = groups.filter(({ id }) => ids.includes(id));
+  return Promise.resolve(result);
 };

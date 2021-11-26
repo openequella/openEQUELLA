@@ -140,7 +140,7 @@ export interface WizardUserSelectorProps extends WizardControlBasicProps {
   /**
    * Groups to filter the user selection to.
    */
-  groupsFilter: ReadonlySet<string>;
+  groupFilter: ReadonlySet<string>;
   /**
    * Whether to support selection of multiple users.
    */
@@ -157,7 +157,17 @@ export interface WizardUserSelectorProps extends WizardControlBasicProps {
   /**
    * Function which will provide the list of users for UserSearch.
    */
-  userListProvider?: (query?: string) => Promise<OEQ.UserQuery.UserDetails[]>;
+  userListProvider?: (
+    query?: string,
+    groupFilter?: ReadonlySet<string>
+  ) => Promise<OEQ.UserQuery.UserDetails[]>;
+  /**
+   * Function which will resolve group IDs to full group details so that the group names can be
+   * used for display.
+   */
+  resolveGroupsProvider?: (
+    ids: ReadonlyArray<string>
+  ) => Promise<OEQ.UserQuery.GroupDetails[]>;
   /**
    * Function which can provide the full details of specified users based on id.
    */
@@ -171,10 +181,12 @@ export const WizardUserSelector = ({
   label,
   mandatory,
   description,
+  groupFilter,
   multiple,
   onChange,
   users,
   userListProvider,
+  resolveGroupsProvider,
   resolveUsersProvider = resolveUsers,
 }: WizardUserSelectorProps): JSX.Element => {
   const [showSelectUserDialog, setShowSelectUserDialog] =
@@ -293,6 +305,8 @@ export const WizardUserSelector = ({
       <SelectUserDialog
         open={showSelectUserDialog}
         onClose={handleCloseSelectUserDialog}
+        groupFilter={groupFilter}
+        resolveGroupsProvider={resolveGroupsProvider}
         userListProvider={userListProvider}
       />
     </>

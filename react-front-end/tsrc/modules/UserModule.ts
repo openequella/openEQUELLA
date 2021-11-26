@@ -51,16 +51,16 @@ export const userIds: (
  * List users known in oEQ. Useful for filtering by users, or assigning permissions etc.
  *
  * @param query A wildcard supporting string to filter the result based on name
+ * @param groupFilter A list of group UUIDs to filter the search by
  */
-export const listUsers = (
-  query?: string
+export const listUsers = async (
+  query?: string,
+  groupFilter?: ReadonlySet<string>
 ): Promise<OEQ.UserQuery.UserDetails[]> =>
-  OEQ.UserQuery.search(API_BASE_URL, {
+  await OEQ.UserQuery.filtered(API_BASE_URL, {
     q: query,
-    users: true,
-    groups: false,
-    roles: false,
-  }).then((result: OEQ.UserQuery.SearchResult) => result.users);
+    byGroups: groupFilter ? Array.from<string>(groupFilter) : undefined,
+  });
 
 /**
  * Gets the current user's info from the server as OEQ.LegacyContent.CurrentUserDetails.

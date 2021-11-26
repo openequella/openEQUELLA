@@ -18,20 +18,20 @@
 import "@testing-library/jest-dom/extend-expect";
 import { render, waitFor } from "@testing-library/react";
 import * as React from "react";
-import * as UserSearchMock from "../../../../__mocks__/UserSearch.mock";
+import * as UserModuleMock from "../../../../__mocks__/UserModule.mock";
 import { WizardUserSelector } from "../../../../tsrc/components/wizard/WizardUserSelector";
 
 describe("<WizardUserSelector/>", () => {
   it("displays a specified set of users", async () => {
-    const testUser = UserSearchMock.users[1];
+    const testUser = UserModuleMock.users[1];
     const { queryByText } = render(
       <WizardUserSelector
-        groupsFilter={new Set()}
+        groupFilter={new Set()}
         multiple
         onChange={jest.fn()}
         users={new Set([testUser.id])}
         mandatory={false}
-        resolveUsersProvider={UserSearchMock.resolveUsersProvider}
+        resolveUsersProvider={UserModuleMock.resolveUsersProvider}
       />
     );
 

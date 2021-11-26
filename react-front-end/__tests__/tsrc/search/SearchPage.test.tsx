@@ -40,8 +40,8 @@ import {
   getSearchResult,
   getSearchResultsCustom,
 } from "../../../__mocks__/SearchResult.mock";
+import * as UserModuleMock from "../../../__mocks__/UserModule.mock";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
-import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
 import type { Collection } from "../../../tsrc/modules/CollectionsModule";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import { getGlobalCourseList } from "../../../tsrc/modules/LegacySelectionSessionModule";
@@ -103,7 +103,7 @@ initialiseEssentialMocks({
 });
 const searchPromise = mockSearch.mockResolvedValue(getSearchResult);
 
-mockListUsers.mockResolvedValue(UserSearchMock.users);
+mockListUsers.mockResolvedValue(UserModuleMock.users);
 
 const defaultSearchPageOptions: SearchPageOptions = {
   ...SearchModule.defaultSearchOptions,
@@ -243,7 +243,7 @@ describe("Refine search by status", () => {
 });
 
 describe("Refine search by Owner", () => {
-  const testUser = UserSearchMock.users[0];
+  const testUser = UserModuleMock.users[0];
   let page: RenderResult;
 
   beforeEach(async () => {
