@@ -29,7 +29,7 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { constFalse, flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import * as WizardHelper from "../../components/wizard/WizardHelper";
 import { languageStrings } from "../../util/langstrings";
@@ -99,10 +99,10 @@ export const AdvancedSearchPanel = ({
     [currentValues, setCurrentValues]
   );
 
-  const onClearHandler = (): void => {
-    setCurrentValues(new Map());
-    onClear();
-  };
+  // handle props `value` changing event
+  useEffect(() => {
+    setCurrentValues(values);
+  }, [values]);
 
   const idPrefix = "advanced-search-panel";
   return (
@@ -151,11 +151,7 @@ export const AdvancedSearchPanel = ({
         >
           {languageStrings.common.action.search}
         </Button>
-        <Button
-          id={`${idPrefix}-clearBtn`}
-          onClick={onClearHandler}
-          color="secondary"
-        >
+        <Button id={`${idPrefix}-clearBtn`} onClick={onClear} color="secondary">
           {languageStrings.common.action.clear}
         </Button>
       </CardActions>
