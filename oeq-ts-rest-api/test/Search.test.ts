@@ -229,3 +229,28 @@ describe('Dead attachment handling', () => {
     }
   );
 });
+
+describe('search through a POST request', () => {
+  it('supports searching with additional params and normal params', async () => {
+    const additionalParams: OEQ.Search.SearchAdditionalParams = {
+      advancedSearchCriteria: [
+        {
+          schemaNodes: ['/item/name'],
+          values: ['SearchApiTest - Crabs'],
+          queryType: 'Tokenised',
+        },
+      ],
+    };
+
+    const normalParams: OEQ.Search.SearchParams = {
+      status: ['LIVE'],
+    };
+
+    const searchResult = await OEQ.Search.searchWithAdditionalParams(
+      TC.API_PATH,
+      additionalParams,
+      normalParams
+    );
+    expect(searchResult.available).toBe(6);
+  });
+});

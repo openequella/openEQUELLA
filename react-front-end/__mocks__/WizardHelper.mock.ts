@@ -374,3 +374,12 @@ export const mockedFieldValueMap: FieldValueMap = new Map([
   ],
   [{ schemaNode: ["/controls/userselector"], type: "userselector" }, ["admin"]],
 ]);
+
+export const mockedAdvancedSearchCriteria: OEQ.Search.WizardControlFieldValue[] =
+  [
+    {
+      queryType: "Tokenised",
+      schemaNodes: ["/item/name"],
+      values: ["hello world"],
+    },
+  ];
