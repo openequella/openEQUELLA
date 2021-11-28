@@ -25,7 +25,7 @@ import { pipe } from "fp-ts/function";
 import * as React from "react";
 import { ReactNode } from "react";
 import { BrowserRouter } from "react-router-dom";
-import { oeqTheme } from "../theme";
+import { oeqTheme } from "../modules/ThemeModule";
 import { startHeartbeat } from "../util/heartbeat";
 import { simpleMatch } from "../util/match";
 import type { EntryPage } from "./index";

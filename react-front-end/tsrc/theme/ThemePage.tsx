@@ -26,17 +26,10 @@ import {
   WithStyles,
   withStyles,
 } from "@material-ui/core";
-import axios, { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 import * as React from "react";
 import { pipe } from "fp-ts/function";
-import { IThemeSettings } from ".";
-import {
-  ErrorResponse,
-  generateFromError,
-  generateNewErrorID,
-  isAxiosError,
-} from "../api/errors";
+import { generateFromError } from "../api/errors";
 import { API_BASE_URL } from "../AppConfig";
 import SettingPageTemplate from "../components/SettingPageTemplate";
 import SettingsList from "../components/SettingsList";
@@ -49,9 +42,11 @@ import {
 } from "../mainui/Template";
 import { commonString } from "../util/commonstrings";
 import { languageStrings } from "../util/langstrings";
+import useError from "../util/useError";
 import ColorPickerComponent from "./ColorPickerComponent";
+import * as OEQ from "@openequella/rest-api-client";
 
-declare const themeSettings: IThemeSettings;
+declare const themeSettings: OEQ.Theme.ThemeSettings;
 declare const logoURL: string;
 
 /**
@@ -98,7 +93,9 @@ export const ThemePage = ({
   updateTemplate,
   classes,
 }: ThemePageProps & WithStyles<typeof styles>) => {
-  const mapSettingsToColors = (settings: IThemeSettings): ThemeColors => ({
+  const mapSettingsToColors = (
+    settings: OEQ.Theme.ThemeSettings
+  ): ThemeColors => ({
     primary: settings.primaryColor,
     secondary: settings.secondaryColor,
     background: settings.backgroundColor,
@@ -113,7 +110,7 @@ export const ThemePage = ({
   const mapColorsToSettings = (
     colors: ThemeColors,
     fontSize = 14
-  ): IThemeSettings => ({
+  ): OEQ.Theme.ThemeSettings => ({
     primaryColor: colors.primary,
     secondaryColor: colors.secondary,
     backgroundColor: colors.background,
@@ -143,6 +140,10 @@ export const ThemePage = ({
       backRoute: routes.Settings.to,
     }));
   }, [updateTemplate]);
+
+  const setError = useError((error: Error) => {
+    updateTemplate(templateError(generateFromError(error)));
+  });
 
   const handleDefaultButton = () => {
     const defaultThemeColors: ThemeColors = {
@@ -190,12 +191,12 @@ export const ThemePage = ({
     }
   };
 
-  const submitTheme = (themeSettings: IThemeSettings) =>
-    axios.put<IThemeSettings>(`${API_BASE_URL}/theme/settings/`, themeSettings);
+  const submitTheme = async (themeSettings: OEQ.Theme.ThemeSettings) =>
+    await OEQ.Theme.updateThemeSettings(API_BASE_URL, themeSettings);
 
-  const submitLogo = () =>
+  const submitLogo = async () =>
     logoSettings.logoToUpload &&
-    axios.put(`${API_BASE_URL}/theme/logo/`, logoSettings.logoToUpload);
+    (await OEQ.Theme.updateThemeLogo(API_BASE_URL, logoSettings.logoToUpload));
 
   const saveChanges = async () => {
     try {
@@ -205,53 +206,22 @@ export const ThemePage = ({
       setIsShowSuccess(true);
       reload();
     } catch (error) {
-      if (isAxiosError(error)) {
-        handleError(error);
-      } else {
-        console.error("Unexpected non-Error caught in saveChanges(): " + error);
-      }
+      setError(
+        error instanceof Error
+          ? error
+          : new Error(`Unexpected non-Error caught in saveChanges(): ${error}`)
+      );
     }
   };
 
   const resetLogo = () => {
-    axios
-      .delete(`${API_BASE_URL}/theme/logo/`)
+    OEQ.Theme.deleteLogo(API_BASE_URL)
       .then(() => {
         setIsChangesUnsaved(false);
         setIsShowSuccess(true);
         reload();
       })
-      .catch((error) => {
-        handleError(error);
-      });
-  };
-
-  const handleError = (error: AxiosError) => {
-    let errResponse: ErrorResponse;
-    if (error.response !== undefined) {
-      switch (error.response.status) {
-        case 500:
-          errResponse = generateNewErrorID(
-            strings.errors.invalidimagetitle,
-            error.response.status,
-            strings.errors.invalidimagedescription
-          );
-          break;
-        case 403:
-          errResponse = generateNewErrorID(
-            strings.errors.permissiontitle,
-            error.response.status,
-            strings.errors.permissiondescription
-          );
-          break;
-        default:
-          errResponse = generateFromError(error);
-          break;
-      }
-      if (errResponse) {
-        updateTemplate(templateError(errResponse));
-      }
-    }
+      .catch(setError);
   };
 
   const colorPicker = (themeColor: keyof ThemeColors) => (
