@@ -29,7 +29,8 @@ export type State =
       definition: OEQ.AdvancedSearch.AdvancedSearchDefinition;
       isAdvSearchPanelOpen: boolean;
       queryValues: FieldValueMap;
-      // set true to keep search panel open, ignore hide panel action
+      // `true` to keep the Adv search panel open for next search action
+      // (so it will ignore the next action of hiding the panel).
       isKeepAdvSearchPanelOpen: boolean;
     };
 
@@ -73,7 +74,7 @@ const toggleOrHidePanel = (state: State, action: "toggle" | "hide") => {
     );
   }
   if (action === "hide" && state.isKeepAdvSearchPanelOpen) {
-    return state;
+    return { ...state, isKeepAdvSearchPanelOpen: false };
   }
   return {
     ...state,

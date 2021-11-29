@@ -721,7 +721,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
     searchPageModeDispatch({
       type: "setQueryValues",
       values: advFieldValue,
-      isKeepAdvSearchPanelOpen: isKeepAdvSearchPanelOpen,
+      isKeepAdvSearchPanelOpen,
     });
 
     const task = pipe(
@@ -739,10 +739,6 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
 
     // Run the task.
     pipe(await task(), E.fold(searchPageErrorHandler, search));
-  };
-
-  const handleClearAdvancedSearch = async () => {
-    await handleSubmitAdvancedSearch(new Map(), true);
   };
 
   /**
@@ -1047,7 +1043,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
                     wizardControls={searchPageModeState.definition.controls}
                     values={searchPageModeState.queryValues}
                     onSubmit={handleSubmitAdvancedSearch}
-                    onClear={handleClearAdvancedSearch}
+                    onClear={() => handleSubmitAdvancedSearch(new Map(), true)}
                     onClose={() =>
                       searchPageModeDispatch({ type: "hideAdvSearchPanel" })
                     }
