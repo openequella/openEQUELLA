@@ -69,5 +69,7 @@ export const mockedSearchTaxonomyTerms = (
     start: 0,
     length: 6,
     available: 6,
-    results: mockedTaxonomyTerms.filter(({ term }) => term.includes(query)),
+    results: mockedTaxonomyTerms.filter(({ term }) =>
+      term.includes(query.replace(/\*/g, ""))
+    ),
   });

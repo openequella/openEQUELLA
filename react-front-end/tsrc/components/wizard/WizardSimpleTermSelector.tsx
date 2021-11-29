@@ -27,7 +27,6 @@ import {
 import DeleteIcon from "@material-ui/icons/Delete";
 import { Autocomplete } from "@material-ui/lab";
 import * as OEQ from "@openequella/rest-api-client";
-import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import { flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
@@ -102,32 +101,27 @@ export const WizardSimpleTermSelector = ({
   label,
   onSelect,
 }: WizardSimpleTermSelectorProps) => {
-  const [options, setOptions] = useState<string[]>([]);
-  const [value, setValue] = useState<string>("");
+  const [options, setOptions] = useState<OEQ.Taxonomy.Term[]>([]);
+  const [inputValue, setInputValue] = useState<string>("");
 
   const [loading, setLoading] = useState<boolean>(false);
 
   const searchTerms = useMemo(
     () =>
       debounce(async (query: string) => {
-        const task: TE.TaskEither<string, string[]> = pipe(
+        const task: TE.TaskEither<string, OEQ.Taxonomy.Term[]> = pipe(
           TE.tryCatch(
             () =>
               termProvider(
-                query,
+                `*${query}*`, // Always searches in wildcard mode.
                 selectionRestriction,
-                20,
-                termStorageFormat === "FULL_PATH",
+                20, // Always gets up to 20 terms.
+                true, // Always searches full terms.
                 selectedTaxonomy
               ),
             (e) => `Failed to search terms for query ${e}`
           ),
-          TE.map(
-            flow(
-              ({ results }) => results,
-              A.map(({ term }) => term)
-            )
-          )
+          TE.map(flow(({ results }) => results))
         );
 
         // Now begin.
@@ -140,7 +134,7 @@ export const WizardSimpleTermSelector = ({
         );
         setLoading(false);
       }, 500),
-    [selectionRestriction, termStorageFormat, selectedTaxonomy, termProvider]
+    [selectionRestriction, selectedTaxonomy, termProvider]
   );
 
   const removeSelectedTerm = (term: string) =>
@@ -182,21 +176,24 @@ export const WizardSimpleTermSelector = ({
       <Grid container direction="column">
         <Grid item>
           <Autocomplete
-            freeSolo
             loading={loading}
             loadingText={loadingText}
             options={options}
-            onChange={(e, value: string | null) => {
-              pipe(value, O.fromNullable, O.map(insertSingleTerm));
+            onChange={(e, value: OEQ.Taxonomy.Term | null) => {
+              pipe(
+                value,
+                O.fromNullable,
+                O.map((v) => v.term),
+                O.map(insertSingleTerm)
+              );
 
               // Clear the value as we don't want to show the value if the TextField.
-              setValue("");
+              setInputValue("");
             }}
-            // Both `value` and `inputValue` must be controlled by state so that we can reset the value in the onChange event.
-            value={value}
-            inputValue={value}
+            value={null} // We don't really want to select an option for the autocomplete so make the value always null.
+            inputValue={inputValue}
             onInputChange={(event, value) => {
-              setValue(value);
+              setInputValue(value);
               pipe(
                 value.trim(),
                 O.fromPredicate(not(S.isEmpty)),
@@ -207,6 +204,7 @@ export const WizardSimpleTermSelector = ({
             renderInput={(params) => (
               <TextField {...params} variant="outlined" label={placeholder} />
             )}
+            getOptionLabel={(o) => o.fullTerm}
           />
         </Grid>
         <Grid item>
