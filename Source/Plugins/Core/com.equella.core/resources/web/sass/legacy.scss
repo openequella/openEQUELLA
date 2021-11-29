@@ -66,6 +66,7 @@ $standardBorderRadius: 4px;
 $roundButtonRadius: 50px;
 $termSelectorHeight: 68px;
 $savePanelWidth: 221px;
+$materialIconFontSize: 24px;
 
 @mixin boxShadow {
   box-shadow: $boxShadow;
@@ -303,6 +304,17 @@ $savePanelWidth: 221px;
   &:active {
     background-color: transparentize($primaryColor, 0.3);
   }
+}
+
+@mixin materialIcon(
+  $content,
+  $color: $menuItemIconColor,
+  $size: $materialIconFontSize
+) {
+  content: $content;
+  font-family: "Material Icons";
+  font-size: $size;
+  color: $color;
 }
 
 /*****************************************************************************
@@ -908,10 +920,11 @@ Contribution wizard inputs
 }
 
 a[title="move-up"]:before {
-  content: "\e5ce"; //material ui up chevron icon
-  font-family: "Material Icons";
-  font-size: 20px;
-  color: #000000;
+  @include materialIcon(
+    "\e5ce",
+    $color: #000000,
+    $size: 20px
+  ); //material ui up chevron icon
   padding-right: $minimalMargin;
   margin-left: 3px;
   cursor: pointer;
@@ -920,10 +933,11 @@ a[title="move-up"]:before {
   width: 17px;
 }
 a[title="move-down"]:before {
-  content: "\e5cf"; //material ui down chevron icon
-  font-family: "Material Icons";
-  font-size: 20px;
-  color: #000000;
+  @include materialIcon(
+    "\e5cf",
+    $color: #000000,
+    $size: 20px
+  ); //material ui down chevron icon
   padding-right: $minimalMargin;
   margin-left: 3px;
   cursor: pointer;
@@ -1386,10 +1400,7 @@ div[id^="pportlet"] {
 .load-action {
   .dropdown-toggle {
     b:before {
-      content: "\e313";
-      font-family: "Material Icons";
-      font-size: $doubleMargin;
-      color: white;
+      @include materialIcon("\e313", $color: white, $size: $doubleMargin);
       font-style: normal;
       vertical-align: middle;
     }
@@ -1544,10 +1555,7 @@ div[class*="fancy-bg"] {
 
 a.feedlink {
   &:before {
-    content: "\e0e5";
-    font-family: "Material Icons";
-    font-size: 24px;
-    color: set-text-color($primaryColor);
+    @include materialIcon("\e0e5", $color: set-text-color($primaryColor));
   }
 
   padding: 5px;
@@ -1705,10 +1713,7 @@ table.zebra th.sortable div.sortArrow {
 table.zebra th.sortable.sortedasc,
 table.zebra th.sortable.unsorted.sortAsc:hover {
   :before {
-    content: "\e5d8";
-    font-family: "Material Icons";
-    font-size: 24px;
-    color: $menuItemIconColor;
+    @include materialIcon("\e5d8");
     vertical-align: middle;
   }
 }
@@ -1716,10 +1721,7 @@ table.zebra th.sortable.unsorted.sortAsc:hover {
 table.zebra th.sortable.sorteddesc,
 table.zebra th.sortable.unsorted.sortDesc:hover {
   :before {
-    content: "\e5db";
-    font-family: "Material Icons";
-    font-size: 24px;
-    color: $menuItemIconColor;
+    @include materialIcon("\e5db");
     vertical-align: middle;
   }
 }
@@ -1751,10 +1753,7 @@ Alerts
     border: none;
 
     &:before {
-      content: "\e5cd";
-      font-family: "Material Icons";
-      font-size: 24px;
-      color: white;
+      @include materialIcon("\e5cd", $color: white);
     }
   }
 
@@ -1762,10 +1761,7 @@ Alerts
     background-color: #43a047;
 
     &:after {
-      content: "\e86c";
-      font-family: "Material Icons";
-      font-size: 24px;
-      color: white;
+      @include materialIcon("\e86c", $color: white);
       padding-right: $singleMargin;
     }
   }
@@ -2254,10 +2250,7 @@ ul.ui-autocomplete {
 }
 
 .search-layout a.add-to-favourites:before {
-  content: "\E838";
-  font-family: "Material Icons";
-  font-size: 24px;
-  color: $menuItemIconColor;
+  @include materialIcon("\E838");
   vertical-align: -26%;
   padding-right: $minimalMargin;
 }
@@ -2395,20 +2388,14 @@ ul.ui-autocomplete {
     margin-left: 3px;
 
     .icon-user:before {
-      content: "\e7fd";
-      font-family: "Material Icons";
-      font-size: 24px;
-      color: set-text-color($primaryColor);
+      @include materialIcon("\e7fd", $color: set-text-color($primaryColor));
       padding-right: $minimalMargin;
       font-style: normal;
       vertical-align: middle;
     }
 
     .icon-remove:before {
-      content: "\e5cd";
-      font-family: "Material Icons";
-      font-size: 24px;
-      color: set-text-color($primaryColor);
+      @include materialIcon("\e5cd", $color: set-text-color($primaryColor));
       padding-right: $minimalMargin;
       font-style: normal;
       vertical-align: middle;
@@ -2479,10 +2466,7 @@ ul.ui-autocomplete {
 }
 
 .icon-envelope:before {
-  content: "\e0be";
-  font-family: "Material Icons";
-  font-size: 24px;
-  color: set-text-color($primaryColor);
+  @include materialIcon("\e0be", $color: set-text-color($primaryColor));
   font-style: normal;
   vertical-align: middle;
 }
@@ -2506,10 +2490,7 @@ ul.ui-autocomplete {
 #dndOptionsList {
   .dropdown-toggle {
     b:before {
-      content: "\e313";
-      font-family: "Material Icons";
-      font-size: $doubleMargin;
-      color: white;
+      @include materialIcon("\e313", $color: white, $size: $doubleMargin);
       font-style: normal;
       vertical-align: middle;
     }
@@ -2550,10 +2531,7 @@ ul.ui-autocomplete {
   padding-right: $singleMargin;
 
   &:before {
-    content: "\e2c2";
-    font-family: "Material Icons";
-    font-size: 24px;
-    color: $menuItemIconColor;
+    @include materialIcon("\e2c2");
     font-style: normal;
     vertical-align: middle;
     padding-top: $minimalMargin;
@@ -2574,28 +2552,19 @@ ul.ui-autocomplete {
 }
 
 .icon-comment:before {
-  content: "\e253";
-  font-family: "Material Icons";
-  font-size: $doubleMargin;
-  color: white;
+  @include materialIcon("\e253", $color: white, $size: $doubleMargin);
   font-style: normal;
   vertical-align: middle;
 }
 
 .icon-picture:before {
-  content: "\e40b";
-  font-family: "Material Icons";
-  font-size: $doubleMargin;
-  color: white;
+  @include materialIcon("\e40b", $color: white, $size: $doubleMargin);
   font-style: normal;
   vertical-align: middle;
 }
 
 .icon-th-list:before {
-  content: "\e335";
-  font-family: "Material Icons";
-  font-size: $doubleMargin;
-  color: white;
+  @include materialIcon("\e335", $color: white, $size: $doubleMargin);
   font-style: normal;
   vertical-align: middle;
 }
@@ -2789,10 +2758,7 @@ html.wait {
   position: relative;
 
   a:before {
-    content: "\e226";
-    font-family: "Material Icons";
-    font-size: 24px;
-    color: $menuItemIconColor;
+    @include materialIcon("\e226");
   }
 }
 
@@ -2915,10 +2881,7 @@ input.term-paths {
 
 td.unselect a {
   &:before {
-    content: "\e872";
-    font-family: "Material Icons";
-    font-size: 20px;
-    color: $menuItemIconColor;
+    @include materialIcon("\e872", $size: 20px);
     vertical-align: middle;
     padding-right: $singleMargin;
     font-style: normal;
@@ -2981,10 +2944,7 @@ Contribution wizard styling
   background: url(../images/rhs-nav-list-icon-dark.ltr.png) 0 0 no-repeat;
 
   :before {
-    content: "\e24d";
-    font-family: "Material Icons";
-    font-size: 20px;
-    color: $menuItemIconColor;
+    @include materialIcon("\e24d", $size: 20px);
     vertical-align: middle;
     padding-right: $singleMargin;
   }
@@ -2994,10 +2954,7 @@ Contribution wizard styling
   margin: 2px 0 0 0;
 
   &:before {
-    content: "\e24d";
-    font-family: "Material Icons";
-    font-size: 20px;
-    color: $primaryColor;
+    @include materialIcon("\e24d", $color: $primaryColor, $size: 20px);
     vertical-align: middle;
     padding-right: $singleMargin;
   }
@@ -3075,10 +3032,7 @@ Contribution wizard styling
 
 a.add {
   &:before {
-    content: "\e147";
-    font-family: "Material Icons";
-    font-size: 20px;
-    color: $primaryColor;
+    @include materialIcon("\e147", $color: $primaryColor, $size: 20px);
     vertical-align: middle;
     padding-right: $singleMargin;
     padding-left: $singleMargin;
@@ -3115,10 +3069,7 @@ button + .repeater-groups {
 
   i.icon-plus {
     &:before {
-      content: "\e145";
-      font-family: "Material Icons";
-      font-size: 24px;
-      color: set-text-color($primaryColor);
+      @include materialIcon("\e145", $color: set-text-color($primaryColor));
       vertical-align: top;
       padding-right: $minimalMargin;
       font-style: normal;
@@ -3164,10 +3115,7 @@ button + .repeater-groups {
   @include typography-subtitle-1;
 
   &:before {
-    content: "\e2c6";
-    font-family: "Material Icons";
-    font-size: 20px;
-    color: $secondaryColor;
+    @include materialIcon("\e2c6", $color: $secondaryColor, $size: 20px);
     vertical-align: middle;
     padding-right: $singleMargin;
     font-style: normal;
@@ -3176,10 +3124,7 @@ button + .repeater-groups {
 
 .uploadsprogress .progress-bar + a {
   &:before {
-    content: "\e872";
-    font-family: "Material Icons";
-    font-size: 20px;
-    color: $menuItemIconColor;
+    @include materialIcon("\e872", $size: 20px);
     vertical-align: middle;
     padding-right: $singleMargin;
     font-style: normal;
@@ -3331,10 +3276,7 @@ button + .repeater-groups {
     margin-left: $singleMargin;
 
     .icon-search:before {
-      content: "\e8b6";
-      font-family: "Material Icons";
-      font-size: 24px;
-      color: set-text-color($primaryColor);
+      @include materialIcon("\e8b6", $color: set-text-color($primaryColor));
       padding-right: $minimalMargin;
       font-style: normal;
       vertical-align: middle;
@@ -3368,10 +3310,7 @@ button + .repeater-groups {
 
   i.icon-plus {
     &:before {
-      content: "\e145";
-      font-family: "Material Icons";
-      font-size: 24px;
-      color: set-text-color($primaryColor);
+      @include materialIcon("\e145", $color: set-text-color($primaryColor));
       vertical-align: top;
       padding-right: $minimalMargin;
       font-style: normal;
@@ -3389,10 +3328,7 @@ button + .repeater-groups {
 
 i.icon-remove {
   &:before {
-    content: "\e872";
-    font-family: "Material Icons";
-    font-size: 24px;
-    color: set-text-color($primaryColor);
+    @include materialIcon("\e872", $color: set-text-color($primaryColor));
     vertical-align: top;
     padding-right: $minimalMargin;
     font-style: normal;
@@ -3401,10 +3337,7 @@ i.icon-remove {
 
 i.icon-pencil {
   &:before {
-    content: "\e3c9";
-    font-family: "Material Icons";
-    font-size: 24px;
-    color: set-text-color($primaryColor);
+    @include materialIcon("\e3c9", $color: set-text-color($primaryColor));
     vertical-align: top;
     padding-right: $minimalMargin;
     font-style: normal;
@@ -3413,10 +3346,7 @@ i.icon-pencil {
 
 i.icon-ban-circle {
   &:before {
-    content: "\e15b";
-    font-family: "Material Icons";
-    font-size: 24px;
-    color: set-text-color($primaryColor);
+    @include materialIcon("\e15b", $color: set-text-color($primaryColor));
     vertical-align: top;
     padding-right: $minimalMargin;
     font-style: normal;
@@ -3425,10 +3355,11 @@ i.icon-ban-circle {
 
 i.icon-minus {
   &:before {
-    content: "\e15b";
-    font-family: "Material Icons";
-    font-size: 20px;
-    color: set-text-color($primaryColor);
+    @include materialIcon(
+      "\e15b",
+      $color: set-text-color($primaryColor),
+      $size: 20px
+    );
     vertical-align: top;
     font-style: normal;
   }
@@ -3436,10 +3367,7 @@ i.icon-minus {
 
 i.icon-arrow-left {
   &:before {
-    content: "\e317";
-    font-family: "Material Icons";
-    font-size: 24px;
-    color: set-text-color($primaryColor);
+    @include materialIcon("\e317", $color: set-text-color($primaryColor));
     vertical-align: top;
     padding-right: $minimalMargin;
     font-style: normal;
@@ -3469,10 +3397,7 @@ i.icon-arrow-left {
 
     a.add {
       &:before {
-        content: "\e145";
-        font-family: "Material Icons";
-        font-size: 24px;
-        color: $secondaryColor;
+        @include materialIcon("\e145", $color: $secondaryColor);
         vertical-align: top;
         padding-right: $minimalMargin;
         font-style: normal;
@@ -3483,10 +3408,7 @@ i.icon-arrow-left {
       padding-left: 0px;
 
       &:before {
-        content: "\e417";
-        font-family: "Material Icons";
-        font-size: 24px;
-        color: $secondaryColor;
+        @include materialIcon("\e417", $color: $secondaryColor);
         vertical-align: top;
         padding-right: $minimalMargin;
         font-style: normal;
@@ -3510,10 +3432,7 @@ i.icon-arrow-left {
 ul.treeview {
   li.collapsable {
     a.hitarea:before {
-      content: "\e313";
-      font-family: "Material Icons";
-      font-size: 24px;
-      color: $menuItemIconColor;
+      @include materialIcon("\e313");
       vertical-align: top;
       padding-right: $minimalMargin;
       font-style: normal;
@@ -3522,10 +3441,7 @@ ul.treeview {
 
   li.expandable {
     a.hitarea:before {
-      content: "\e315";
-      font-family: "Material Icons";
-      font-size: 24px;
-      color: $menuItemIconColor;
+      @include materialIcon("\e315");
       vertical-align: top;
       padding-right: $minimalMargin;
       font-style: normal;
@@ -3547,10 +3463,7 @@ a.unselect {
   background: none;
 
   &:before {
-    content: "\e872";
-    font-family: "Material Icons";
-    font-size: 24px;
-    color: $menuItemIconColor;
+    @include materialIcon("\e872");
     vertical-align: top;
     padding-right: $minimalMargin;
     font-style: normal;
@@ -3574,20 +3487,14 @@ Item summary styling
       color: $primaryTextColor;
 
       .icon-arrow-left:before {
-        content: "\e5c4";
-        font-family: "Material Icons";
-        font-size: 24px;
-        color: $primaryTextColor;
+        @include materialIcon("\e5c4", $color: $primaryTextColor);
         padding-right: $minimalMargin;
         font-style: normal;
         vertical-align: middle;
       }
 
       .icon-arrow-right:before {
-        content: "\e5c8";
-        font-family: "Material Icons";
-        font-size: 24px;
-        color: $primaryTextColor;
+        @include materialIcon("\e5c8", $color: $primaryTextColor);
         padding-right: $minimalMargin;
         font-style: normal;
         vertical-align: middle;
@@ -3796,10 +3703,7 @@ table.versions td {
   }
 
   a:before {
-    content: "\e15d";
-    font-family: "Material Icons";
-    font-size: 24px;
-    color: $secondaryColor;
+    @include materialIcon("\e15d", $color: $secondaryColor);
   }
 }
 
@@ -3809,10 +3713,7 @@ table.versions td {
   }
 
   a:before {
-    content: "\e83a";
-    font-family: "Material Icons";
-    font-size: 24px;
-    color: $secondaryColor;
+    @include materialIcon("\e83a", $color: $secondaryColor);
   }
 }
 
@@ -3823,10 +3724,7 @@ table.versions td {
   }
 
   a:before {
-    content: "\e838";
-    font-family: "Material Icons";
-    font-size: 24px;
-    color: $secondaryColor;
+    @include materialIcon("\e838", $color: $secondaryColor);
   }
 }
 
@@ -3840,46 +3738,51 @@ table.versions td {
 
   div.star-rating-static-1 {
     &:before {
-      content: "\e838 \e83a \e83a \e83a \e83a";
-      font-family: "Material Icons";
-      font-size: 20px;
-      color: $secondaryColor;
+      @include materialIcon(
+        "\e838 \e83a \e83a \e83a \e83a",
+        $color: $secondaryColor,
+        $size: 20px
+      );
     }
   }
 
   div.star-rating-static-2 {
     &:before {
-      content: "\e838 \e838 \e83a \e83a \e83a";
-      font-family: "Material Icons";
-      font-size: 20px;
-      color: $secondaryColor;
+      @include materialIcon(
+        "\e838 \e838 \e83a \e83a \e83a",
+        $color: $secondaryColor,
+        $size: 20px
+      );
     }
   }
 
   div.star-rating-static-3 {
     &:before {
-      content: "\e838 \e838 \e838 \e83a \e83a";
-      font-family: "Material Icons";
-      font-size: 20px;
-      color: $secondaryColor;
+      @include materialIcon(
+        "\e838 \e838 \e838 \e83a \e83a",
+        $color: $secondaryColor,
+        $size: 20px
+      );
     }
   }
 
   div.star-rating-static-4 {
     &:before {
-      content: "\e838 \e838 \e838 \e838 \e83a";
-      font-family: "Material Icons";
-      font-size: 20px;
-      color: $secondaryColor;
+      @include materialIcon(
+        "\e838 \e838 \e838 \e838 \e83a",
+        $color: $secondaryColor,
+        $size: 20px
+      );
     }
   }
 
   div.star-rating-static-5 {
     &:before {
-      content: "\e838 \e838 \e838 \e838 \e838";
-      font-family: "Material Icons";
-      font-size: 20px;
-      color: $secondaryColor;
+      @include materialIcon(
+        "\e838 \e838 \e838 \e838 \e838",
+        $color: $secondaryColor,
+        $size: 20px
+      );
     }
   }
 }
@@ -3896,10 +3799,7 @@ table.versions td {
   padding: $singleMargin;
 
   &:before {
-    content: "\e7fd";
-    font-family: "Material Icons";
-    font-size: 30px;
-    color: $secondaryColor;
+    @include materialIcon("\e7fd", $color: $secondaryColor, $size: 30px);
     vertical-align: middle;
   }
 
@@ -4176,24 +4076,38 @@ table#copyright-table tr td {
   @include typography-subtitle-2;
 }
 
-.attachments-browse.structured li.attachmentrow .droparrow {
-  //this droparrow is redundant and shouldn't be rendered.
+.attachments-browse.structured li.attachmentrow .droparrow,
+.attachments-browse.thumbs li.attachmentrow .droparrow {
+  //hide old droparrow for both structured and thumbnail mode
+  //because it's hard to apply material icon on it
+  //and it contains inconsistent style.
   display: none !important;
 }
 
-.attachments-browse.thumbs li.attachmentrow .droparrow {
-  border: none;
-  background-color: transparent;
-  background-image: url(../../images/baseline_arrow_drop_down_black_18dp.png);
+.attachments-browse.structured li.attachmentrow,
+.attachments-browse.thumbs li.attachmentrow {
+  //new droparrow for both structured and thumbnail mode
+  .link-div:after {
+    @include materialIcon("\e5c5");
+    float: right;
+  }
+
+  &.active .link-div:after {
+    //no corresponding icon so flip the original one
+    transform: scaleY(-1);
+  }
 }
 
-.attachments-browse.structured li.attachmentrow.active .droparrow {
-  background-image: url(../../images/baseline_arrow_drop_up_black_18dp.png);
-  background-position: 0;
-  top: $singleMargin;
+.attachments-browse.thumbs li.attachmentrow {
+  //adjust position of droparrow in thumbs mode
+  .link-div:after {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+  }
 }
 
-.attachments-browse.thumbs li.attachmentrow.active {
+.attachments-browse.structured li.attachmentrow.active {
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
 
@@ -4208,10 +4122,7 @@ table#copyright-table tr td {
   background-image: none;
 
   .link-div a:before {
-    content: "\e24d";
-    font-family: "Material Icons";
-    font-size: 20px;
-    color: $menuItemIconColor;
+    @include materialIcon("\e24d", $size: 20px);
     vertical-align: middle;
     padding-right: 6px;
   }
@@ -4231,10 +4142,7 @@ table#copyright-table tr td {
 .extras a {
   .icon-fullscreen {
     &:before {
-      content: "\e5d0";
-      font-family: "Material Icons";
-      font-size: 24px;
-      color: $menuItemIconColor;
+      @include materialIcon("\e5d0");
       vertical-align: middle;
       font-style: normal;
     }
@@ -4242,10 +4150,7 @@ table#copyright-table tr td {
 
   .icon-move {
     &:before {
-      content: "\e8fe";
-      font-family: "Material Icons";
-      font-size: 24px;
-      color: $menuItemIconColor;
+      @include materialIcon("\e8fe");
       vertical-align: middle;
       font-style: normal;
     }
@@ -4702,10 +4607,7 @@ img.warningimg {
 .compactQuery .compactQueryButton {
   margin: $singleMargin;
   .icon-search:before {
-    font-family: "Material Icons";
-    font-size: 24px;
-    content: "\E8B6";
-    color: white;
+    @include materialIcon("\E8B6", $color: white);
     vertical-align: middle;
     font-style: normal;
   }
@@ -4787,10 +4689,7 @@ div#sssh_finishedButton {
 
 .alt-links a.favourites {
   &:before {
-    content: "\e838";
-    font-family: "Material Icons";
-    font-size: 20px;
-    color: $secondaryColor;
+    @include materialIcon("\e838", $color: $secondaryColor, $size: 20px);
     padding-right: $minimalMargin;
   }
 }
@@ -4896,10 +4795,11 @@ div#sssh_finishedButton {
 
   .btn {
     .icon-arrow-right:after {
-      content: "\e145";
-      font-family: "Material Icons";
-      font-size: 20px;
-      color: set-text-color($primaryColor);
+      @include materialIcon(
+        "\e145",
+        $color: set-text-color($primaryColor),
+        $size: 20px
+      );
       padding-right: $minimalMargin;
       font-style: normal;
       vertical-align: middle;
@@ -4914,10 +4814,7 @@ div#sssh_finishedButton {
   color: $primaryColor;
 
   .icon-arrow-left:before {
-    content: "\e5c4";
-    font-family: "Material Icons";
-    font-size: 20px;
-    color: $primaryColor;
+    @include materialIcon("\e5c4", $color: $primaryColor, $size: 20px);
     padding-right: $minimalMargin;
     font-style: normal;
     vertical-align: middle;
@@ -4927,10 +4824,11 @@ div#sssh_finishedButton {
 
 #_finishButton {
   .icon-ok:before {
-    content: "\e879";
-    font-family: "Material Icons";
-    font-size: 20px;
-    color: set-text-color($primaryColor);
+    @include materialIcon(
+      "\e879",
+      $color: set-text-color($primaryColor),
+      $size: 20px
+    );
     padding-right: $minimalMargin;
     font-style: normal;
     vertical-align: middle;
@@ -4976,19 +4874,21 @@ div#sssh_finishedButton {
 }
 
 .icon-plus:before {
-  content: "\e145";
-  font-family: "Material Icons";
-  font-size: 20px;
-  color: set-text-color($primaryColor);
+  @include materialIcon(
+    "\e145",
+    $color: set-text-color($primaryColor),
+    $size: 20px
+  );
   font-style: normal;
   vertical-align: middle;
 }
 
 .icon-chevron-up:before {
-  content: "\e316";
-  font-family: "Material Icons";
-  font-size: 20px;
-  color: set-text-color($primaryColor);
+  @include materialIcon(
+    "\e316",
+    $color: set-text-color($primaryColor),
+    $size: 20px
+  );
   padding-right: $minimalMargin;
   font-style: normal;
   vertical-align: middle;
@@ -4996,10 +4896,11 @@ div#sssh_finishedButton {
 }
 
 .icon-chevron-down:before {
-  content: "\e316";
-  font-family: "Material Icons";
-  font-size: 20px;
-  color: set-text-color($primaryColor);
+  @include materialIcon(
+    "\e316",
+    $color: set-text-color($primaryColor),
+    $size: 20px
+  );
   padding-right: $minimalMargin;
   font-style: normal;
   vertical-align: middle;
@@ -5063,10 +4964,11 @@ div#sssh_finishedButton {
   margin-bottom: $singleMargin;
 
   .icon-ok:before {
-    content: "\e161";
-    font-family: "Material Icons";
-    font-size: 20px;
-    color: set-text-color($primaryColor);
+    @include materialIcon(
+      "\e161",
+      $color: set-text-color($primaryColor),
+      $size: 20px
+    );
     padding-right: $minimalMargin;
     font-style: normal;
     vertical-align: middle;

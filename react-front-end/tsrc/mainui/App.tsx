@@ -28,7 +28,7 @@ import { ReactNode, useCallback } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { getRouterBaseName } from "../AppConfig";
 import MessageInfo from "../components/MessageInfo";
-import { getOeqTheme } from "../theme";
+import { getOeqTheme } from "../modules/ThemeModule";
 import { startHeartbeat } from "../util/heartbeat";
 import { simpleMatch } from "../util/match";
 import type { EntryPage } from "./index";

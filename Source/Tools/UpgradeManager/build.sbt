@@ -4,9 +4,9 @@ import sbt.Package.ManifestAttributes
 
 libraryDependencies ++= Seq(
   "commons-fileupload"   % "commons-fileupload" % "1.4",
-  "com.google.guava"     % "guava"              % "30.1.1-jre",
+  "com.google.guava"     % "guava"              % "31.0.1-jre",
   "org.antlr"            % "stringtemplate"     % "3.2.1",
-  "com.google.code.gson" % "gson"               % "2.8.8",
+  "com.google.code.gson" % "gson"               % "2.8.9",
   "org.slf4j"            % "jcl-over-slf4j"     % "1.7.32",
   "commons-io"           % "commons-io"         % "2.11.0",
   "log4j"                % "log4j"              % "1.2.17",

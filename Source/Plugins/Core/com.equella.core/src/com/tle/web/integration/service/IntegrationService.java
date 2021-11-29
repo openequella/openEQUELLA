@@ -27,6 +27,7 @@ import com.tle.web.integration.IntegrationInterface;
 import com.tle.web.integration.IntegrationSessionData;
 import com.tle.web.integration.SingleSignonForm;
 import com.tle.web.sections.SectionInfo;
+import com.tle.web.sections.js.JSStatements;
 import com.tle.web.selection.SelectionSession;
 
 @SuppressWarnings("nls")
@@ -77,4 +78,12 @@ public interface IntegrationService {
       SingleSignonForm form);
 
   void checkIntegrationAllowed() throws AccessDeniedException;
+
+  /**
+   * Function to return a script which controls whether to allow submitting the LTI Launch form.
+   *
+   * @param isAllowed `true` to allow submitting the form.
+   * @return A JS script which will update the flag.
+   */
+  JSStatements updateFormSubmittingFlag(boolean isAllowed);
 }

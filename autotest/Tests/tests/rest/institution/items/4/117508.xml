@@ -251,6 +251,30 @@
       <preview>false</preview>
       <restricted>false</restricted>
     </com.tle.beans.item.attachments.ZipAttachment>
+        <com.tle.beans.item.attachments.CustomAttachment>
+      <id>39144</id>
+      <uuid>0287b02d-a69d-403e-92a5-a87a7c92977c</uuid>
+      <url></url>
+      <description>SearchApiTest - Edits</description>
+      <value1>resource</value1>
+      <data>
+        <entry>
+          <string>type</string>
+          <string>p</string>
+        </entry>
+        <entry>
+          <string>uuid</string>
+          <string>8a9ea41c-e28d-45de-b0a5-d75bca48d701</string>
+        </entry>
+        <entry>
+          <string>version</string>
+          <int>0</int>
+        </entry>
+      </data>
+      <preview>false</preview>
+      <restricted>false</restricted>
+      <erroredIndexing>false</erroredIndexing>
+    </com.tle.beans.item.attachments.CustomAttachment>
   </attachments>
   <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c"/>
   <collaborators>

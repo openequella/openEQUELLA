@@ -15,18 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { AxiosPromise, AxiosResponse } from "axios";
 import { getBaseUrl, getRenderData } from "../AppConfig";
-
+import * as React from "react";
 import "tinymce/tinymce";
-
 import "tinymce/icons/default";
-import "tinymce/themes/silver/theme";
-
-import "tinymce/plugins/anchor";
 import "tinymce/plugins/advlist";
+import "tinymce/plugins/anchor";
 import "tinymce/plugins/autolink";
 import "tinymce/plugins/autoresize";
 import "tinymce/plugins/charmap";
@@ -59,6 +55,7 @@ import "tinymce/plugins/toc";
 import "tinymce/plugins/visualblocks";
 import "tinymce/plugins/visualchars";
 import "tinymce/plugins/wordcount";
+import "tinymce/themes/silver/theme";
 
 const renderData = getRenderData();
 
@@ -87,34 +84,20 @@ interface ImageReturnType {
   link: string;
 }
 
-interface RichTextEditorState {
-  ready: boolean;
-}
-
-class RichTextEditor extends React.Component<
-  RichTextEditorProps,
-  RichTextEditorState
-> {
-  constructor(props: RichTextEditorProps) {
-    super(props);
-    this.state = { ready: false };
-  }
-
-  componentDidMount = () => {
-    setTimeout(() => {
-      // this is a workaround for something related to: https://github.com/tinymce/tinymce-angular/issues/76
-      this.setState({ ready: true });
-    }, 1);
-  };
-
-  uploadImages = (
+const RichTextEditor = ({
+  htmlInput,
+  skinName,
+  skinUrl,
+  onStateChange,
+  imageUploadCallBack,
+}: RichTextEditorProps) => {
+  const uploadImages = (
     blobInfo: BlobInfo,
     success: (msg: string) => void,
     failure: (msg: string) => void
   ): void => {
-    if (this.props.imageUploadCallBack) {
-      this.props
-        .imageUploadCallBack(blobInfo)
+    if (imageUploadCallBack) {
+      imageUploadCallBack(blobInfo)
         .then((response: AxiosResponse<ImageReturnType>) =>
           success(response.data.link)
         )
@@ -124,41 +107,35 @@ class RichTextEditor extends React.Component<
     }
   };
 
-  render() {
-    const skinUrl =
-      getBaseUrl() +
-      renderData?.baseResources +
-      "reactjs/tinymce/skins/ui/oxide";
+  const defaultSkinUrl =
+    getBaseUrl() + renderData?.baseResources + "reactjs/tinymce/skins/ui/oxide";
 
-    return (
-      this.state.ready && (
-        <Editor
-          init={{
-            min_height: 500,
-            automatic_uploads: true,
-            file_picker_types: "image",
-            images_reuse_filename: true,
-            images_upload_handler: this.uploadImages,
-            paste_data_images: true,
-            relative_urls: false,
-            skin: this.props.skinName ?? "oxide",
-            skin_url: this.props.skinUrl ?? skinUrl,
-            media_dimensions: false,
-          }}
-          toolbar="formatselect | bold italic strikethrough underline forecolor backcolor | link image media file | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent hr | removeformat | undo redo | preview | ltr rtl"
-          plugins={
-            "anchor autolink autoresize advlist charmap code codesample  " +
-            "directionality fullscreen help hr image imagetools " +
-            "importcss insertdatetime link lists media nonbreaking noneditable pagebreak paste " +
-            "preview print quickbars save searchreplace table template " +
-            "textpattern toc visualblocks visualchars wordcount"
-          }
-          onEditorChange={this.props.onStateChange}
-          value={this.props.htmlInput}
-        />
-      )
-    );
-  }
-}
+  return (
+    <Editor
+      init={{
+        min_height: 500,
+        automatic_uploads: true,
+        file_picker_types: "image",
+        images_reuse_filename: true,
+        images_upload_handler: uploadImages,
+        paste_data_images: true,
+        relative_urls: false,
+        skin: skinName ?? "oxide",
+        skin_url: skinUrl ?? defaultSkinUrl,
+        media_dimensions: false,
+      }}
+      toolbar="formatselect | bold italic strikethrough underline forecolor backcolor | link image media file | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent hr | removeformat | undo redo | preview | ltr rtl"
+      plugins={
+        "anchor autolink autoresize advlist charmap code codesample  " +
+        "directionality fullscreen help hr image imagetools " +
+        "importcss insertdatetime link lists media nonbreaking noneditable pagebreak paste " +
+        "preview print quickbars save searchreplace table template " +
+        "textpattern toc visualblocks visualchars wordcount"
+      }
+      onEditorChange={onStateChange}
+      value={htmlInput}
+    />
+  );
+};
 
 export default RichTextEditor;

@@ -17,6 +17,7 @@ import com.tle.webtests.pageobject.wizard.ContributePage;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
 import com.tle.webtests.test.AbstractCleanupTest;
 import org.testng.annotations.Test;
+import testng.annotation.RetryTest;
 
 @TestInstitution("manageresources")
 public class BulkMetadataEditTest extends AbstractCleanupTest {
@@ -38,6 +39,7 @@ public class BulkMetadataEditTest extends AbstractCleanupTest {
   private static PrefixedName ITEM_2;
 
   @Test
+  @RetryTest
   public void testBulkMetadataEdit() {
     logon("autotest", "automated");
 

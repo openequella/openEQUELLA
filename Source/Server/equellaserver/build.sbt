@@ -15,19 +15,19 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 (Runtime / unmanagedClasspath) += (LocalProject("learningedge_config") / baseDirectory).value
 
-val RestEasyVersion  = "3.15.1.Final"
-val SwaggerVersion   = "1.6.2"
-val TomcatVersion    = "9.0.53"
-val axis2Version     = "1.6.2"
+val RestEasyVersion  = "3.15.2.Final"
+val SwaggerVersion   = "1.6.3"
+val TomcatVersion    = "9.0.55"
+val axis2Version     = "1.6.3"
 val circeVersion     = "0.12.1"
-val cxfVersion       = "3.4.4"
+val cxfVersion       = "3.4.5"
 val fs2Version       = "2.4.4"
 val guiceVersion     = "3.0"
 val jacksonVersion   = "2.11.3"
 val jsassVersion     = "5.10.4"
-val jsoupVersion     = "1.14.2"
+val jsoupVersion     = "1.14.3"
 val simpledbaVersion = "0.1.9"
-val springVersion    = "5.3.10"
+val springVersion    = "5.3.12"
 val sttpVersion      = "1.7.2"
 val tikaVersion      = "2.0.0"
 
@@ -59,12 +59,12 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
-  "com.google.api-client" % "google-api-client"           % "1.32.1",
+  "com.google.api-client" % "google-api-client"           % "1.32.2",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20201021-1.32.1",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20210906-1.32.1",
-  "com.google.code.gson"  % "gson"                        % "2.8.8",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20210915-1.32.1",
+  "com.google.code.gson"  % "gson"                        % "2.8.9",
   "com.google.gdata"      % "core"                        % "1.47.1",
-  "com.google.guava"      % "guava"                       % "30.1.1-jre",
+  "com.google.guava"      % "guava"                       % "31.0.1-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
     // Due to deduplicates with aopalliance via Spring AOP.
     ExclusionRule(organization = "aopalliance",
@@ -80,7 +80,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "aopalliance",
                   name = "aopalliance")
   ),
-  "com.ibm.icu" % "icu4j" % "69.1",
+  "com.ibm.icu" % "icu4j" % "70.1",
   sqlServerDep excludeAll (
     // Conflicts with RESTeasy jakarta.xml.bind-api
     ExclusionRule(organization = "javax.xml.bind"),
@@ -163,7 +163,7 @@ libraryDependencies ++= Seq(
   "org.apache.lucene"         % "lucene-core"      % "3.6.2",
   "org.apache.lucene"         % "lucene-queries"   % "3.6.2",
   "org.apache.poi"            % "poi-ooxml"        % "3.17",
-  "org.apache.rampart"        % "rampart-core"     % "1.6.2" excludeAll (
+  "org.apache.rampart"        % "rampart-core"     % "1.6.3" excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces")
   ),
@@ -259,8 +259,8 @@ libraryDependencies ++= Seq(
   "org.scala-sbt"                 %% "io"                       % "1.5.1",
   "org.mozilla"                   % "rhino"                     % "1.7.13",
   "io.lemonlabs"                  %% "scala-uri"                % "1.5.1",
-  "org.scala-lang.modules"        %% "scala-parser-combinators" % "2.0.0",
-  "io.github.classgraph"          % "classgraph"                % "4.8.116",
+  "org.scala-lang.modules"        %% "scala-parser-combinators" % "2.1.0",
+  "io.github.classgraph"          % "classgraph"                % "4.8.132",
   "com.fasterxml"                 % "classmate"                 % "1.5.1",
   "org.glassfish"                 % "javax.el"                  % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"    % "3.0.0",
@@ -311,7 +311,7 @@ excludeDependencies ++= Seq(
   // Spring 5 added a default logging bridge.  In oEQ, this results in
   // a [deduplicate: different file contents found in the following] error
   // ...org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.7.30.jar:org/apache/commons/logging/Log.class
-  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.10.jar:org/apache/commons/logging/Log.class
+  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.12.jar:org/apache/commons/logging/Log.class
   // As per https://github.com/spring-projects/spring-framework/issues/20611 ,
   // since we already have logging in place, we can safely exclude the dep from spring.
   "org.springframework" % "spring-jcl",
@@ -379,8 +379,8 @@ run := {
 
   // Due to the error: deduplicate: different file contents found in the following:
   // ...
-  //  .../org.apache.cxf/cxf-rt-frontend-jaxws/bundles/cxf-rt-frontend-jaxws-3.4.4.jar:META-INF/cxf/bus-extensions.txt
-  //  .../org.apache.cxf/cxf-rt-transports-http/bundles/cxf-rt-transports-http-3.4.4.jar:META-INF/cxf/bus-extensions.txt
+  //  .../org.apache.cxf/cxf-rt-frontend-jaxws/bundles/cxf-rt-frontend-jaxws-3.4.5.jar:META-INF/cxf/bus-extensions.txt
+  //  .../org.apache.cxf/cxf-rt-transports-http/bundles/cxf-rt-transports-http-3.4.5.jar:META-INF/cxf/bus-extensions.txt
   // ...
   // As per https://github.com/johnrengelman/shadow/issues/309 , combining the files.
   case PathList("META-INF", "cxf", "bus-extensions.txt") => MergeStrategy.filterDistinctLines

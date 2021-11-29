@@ -122,6 +122,7 @@ public class CanvasContentItemPlacementReturn extends AbstractPrototypeSection<O
       }
     }
     formTag.addReadyStatements(
+        integrationService.updateFormSubmittingFlag(true),
         Js.statement(
             Js.methodCall(Jq.$('#' + formTag.getElementId(context)), Js.function("submit"))));
     return null;

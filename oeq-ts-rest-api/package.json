@@ -11,7 +11,7 @@
   ],
   "engines": {
     "node": ">=10",
-    "npm": "7.19.1"
+    "npm": "7.24.2"
   },
   "scripts": {
     "start": "rollup --config --watch",
@@ -28,29 +28,29 @@
     "trailingComma": "es5"
   },
   "dependencies": {
-    "axios": "^0.21.0",
+    "axios": "^0.24.0",
     "axios-cookiejar-support": "^1.0.0",
     "lodash": "^4.17.15",
     "query-string": "^7.0.0",
-    "runtypes": "6.4.0",
+    "runtypes": "6.5.0",
     "tough-cookie": "^4.0.0",
-    "typescript-is": "^0.18.0"
+    "typescript-is": "^0.19.0"
   },
   "devDependencies": {
-    "@types/jest": "27.0.1",
-    "@types/lodash": "4.14.173",
+    "@types/jest": "27.0.2",
+    "@types/lodash": "4.14.176",
     "@types/tough-cookie": "^4.0.0",
-    "@typescript-eslint/eslint-plugin": "4.30.0",
-    "@typescript-eslint/parser": "4.30.0",
-    "core-js": "3.16.4",
+    "@typescript-eslint/eslint-plugin": "4.33.0",
+    "@typescript-eslint/parser": "4.33.0",
+    "core-js": "3.19.1",
     "eslint": "7.32.0",
-    "eslint-plugin-jest": "24.4.0",
-    "jest": "27.1.0",
-    "rollup": "2.56.3",
+    "eslint-plugin-jest": "25.2.2",
+    "jest": "27.3.1",
+    "rollup": "2.59.0",
     "rollup-plugin-typescript2": "0.30.0",
-    "ts-jest": "27.0.5",
+    "ts-jest": "27.0.7",
     "tslib": "2.3.1",
     "ttypescript": "1.5.12",
-    "typescript": "4.4.3"
+    "typescript": "4.4.4"
   }
 }

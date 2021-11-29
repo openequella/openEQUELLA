@@ -18,23 +18,11 @@
 import type { ThemeOptions } from "@material-ui/core";
 import { createTheme } from "@material-ui/core/styles";
 import { getRenderData } from "../AppConfig";
+import * as OEQ from "@openequella/rest-api-client";
 
-export interface IThemeSettings {
-  primaryColor: string;
-  secondaryColor: string;
-  backgroundColor: string;
-  paperColor: string;
-  menuItemColor: string;
-  menuItemTextColor: string;
-  menuItemIconColor: string;
-  primaryTextColor: string;
-  menuTextColor: string;
-  fontSize: number;
-}
+declare const themeSettings: OEQ.Theme.ThemeSettings;
 
-declare const themeSettings: IThemeSettings;
-
-const getStandardThemeSettings = (): ThemeOptions =>
+const standardThemeSettings = (): ThemeOptions =>
   ({
     palette: {
       primary: {
@@ -64,7 +52,8 @@ const getStandardThemeSettings = (): ThemeOptions =>
   } as ThemeOptions);
 
 const renderData = getRenderData();
-export const autoTestOptions: ThemeOptions =
+
+const autoTestOptions: ThemeOptions =
   typeof renderData == "object" && renderData.autotestMode
     ? {
         transitions: {
@@ -75,6 +64,6 @@ export const autoTestOptions: ThemeOptions =
 
 export const getOeqTheme = () =>
   createTheme({
-    ...getStandardThemeSettings(),
+    ...standardThemeSettings(),
     ...autoTestOptions,
   });

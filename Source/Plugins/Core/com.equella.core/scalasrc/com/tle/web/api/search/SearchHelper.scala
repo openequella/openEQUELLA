@@ -362,8 +362,14 @@ object SearchHelper {
     */
   def getBrokenAttachmentStatusForResourceAttachment(
       customAttachment: CustomAttachment): Boolean = {
-    val key = new ItemId(customAttachment.getData("uuid").asInstanceOf[String],
-                         customAttachment.getData("version").asInstanceOf[Int])
+    val uuid = customAttachment.getData("uuid").asInstanceOf[String]
+    // If version of the linked Item is 0, find the latest version of this Item.
+    val version = customAttachment.getData("version").asInstanceOf[Int] match {
+      case 0           => LegacyGuice.itemService.getLatestVersion(uuid)
+      case realVersion => realVersion
+    }
+
+    val key = new ItemId(uuid, version)
     if (customAttachment.getType != "resource") {
       return false;
     }

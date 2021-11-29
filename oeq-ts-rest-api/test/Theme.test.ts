@@ -17,31 +17,34 @@
  */
 import * as OEQ from '../src';
 import * as TC from './TestConfig';
+import { ThemeSettings } from '../src/Theme';
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 
 afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
 
-describe('Listing collections', () => {
-  it('should be possible list collections with no params', async () => {
-    const result = await OEQ.Collection.listCollections(TC.API_PATH);
-    expect(result.length).toBeGreaterThan(0);
-    expect(result.results).toHaveLength(result.length);
+describe('Theme settings', () => {
+  let settingsAtStart: ThemeSettings;
+
+  beforeAll(async () => {
+    settingsAtStart = await OEQ.Theme.getThemeSettings(TC.API_PATH);
   });
 
-  it('should be possible to retrieve a custom list of collections via params', async () => {
-    await OEQ.Auth.logout(TC.API_PATH, true);
-    await OEQ.Auth.login(TC.API_PATH, TC.USERNAME_SUPER, TC.PASSWORD_SUPER);
-    const howMany = 8;
-    const result = await OEQ.Collection.listCollections(TC.API_PATH, {
-      length: howMany,
-      full: true,
+  afterAll(async () => {
+    await OEQ.Theme.updateThemeSettings(TC.API_PATH, settingsAtStart);
+  });
+
+  it('Should be able to retrieve theme settings', async () => {
+    expect(settingsAtStart).not.toBeNull();
+  });
+
+  it('Should be possible to change the theme settings', async () => {
+    await OEQ.Theme.updateThemeSettings(TC.API_PATH, {
+      ...settingsAtStart,
+      fontSize: 666,
     });
-    expect(result).toHaveLength(howMany);
-    // confirm that `full` returned additional information
-    expect(result.results[0].createdDate).toBeTruthy();
-    expect((result.results[0] as OEQ.Collection.Collection).filestoreId).toBe(
-      'default'
-    );
+    const newSettings = await OEQ.Theme.getThemeSettings(TC.API_PATH);
+    expect(newSettings).not.toEqual(settingsAtStart);
+    expect(newSettings.fontSize).toBe(666);
   });
 });

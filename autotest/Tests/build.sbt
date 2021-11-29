@@ -9,7 +9,7 @@ inConfig(Serial)(Defaults.testTasks)
 val circeVersion  = "0.12.1"
 val http4sVersion = "0.21.8"
 val catsVersion   = "1.6.1"
-val cxfVersion    = "3.4.4"
+val cxfVersion    = "3.4.5"
 
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.3")
 
@@ -46,7 +46,7 @@ libraryDependencies ++= Seq(
   "org.http4s"       %% "http4s-blaze-client"      % http4sVersion,
   "org.http4s"       %% "http4s-circe"             % http4sVersion,
   "org.typelevel"    %% "cats-free"                % catsVersion,
-  "com.unboundid"    % "unboundid-ldapsdk"         % "6.0.1"
+  "com.unboundid"    % "unboundid-ldapsdk"         % "6.0.2"
 )
 
 (Compile / unmanagedBase) := baseDirectory.value / "lib/adminjars"
