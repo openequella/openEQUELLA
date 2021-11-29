@@ -263,7 +263,7 @@ libraryDependencies ++= Seq(
   "io.github.classgraph"          % "classgraph"                % "4.8.137",
   "com.fasterxml"                 % "classmate"                 % "1.5.1",
   "org.glassfish"                 % "javax.el"                  % "3.0.1-b12",
-  "jakarta.validation"            % "jakarta.validation-api"    % "3.0.0",
+  "jakarta.validation"            % "jakarta.validation-api"    % "3.0.1",
   "com.github.stephenc.jcip"      % "jcip-annotations"          % "1.0-1",
   "org.jboss.spec.javax.xml.bind" % "jboss-jaxb-api_2.3_spec"   % "2.0.1.Final"
 )
