@@ -698,6 +698,10 @@ export const languageStrings = {
       usernameUnknown: "Username unknown",
     },
   },
+  termSelector: {
+    placeholder: "Search term",
+    loadingText: "Searching terms...",
+  },
   uiconfig: {
     facet: {
       name: "Name",
