@@ -29,7 +29,8 @@ export type State =
       definition: OEQ.AdvancedSearch.AdvancedSearchDefinition;
       isAdvSearchPanelOpen: boolean;
       queryValues: FieldValueMap;
-      isKeepAdvSearchPanelToggleState: boolean;
+      // set true to keep search panel open, ignore hide panel action
+      isKeepAdvSearchPanelOpen: boolean;
     };
 
 export type Action =
@@ -50,7 +51,7 @@ export type Action =
   | {
       type: "setQueryValues";
       values: FieldValueMap;
-      isKeepAdvSearchPanelToggleState: boolean;
+      isKeepAdvSearchPanelOpen: boolean;
     };
 
 const isAdvancedSearchMode =
@@ -71,6 +72,9 @@ const toggleOrHidePanel = (state: State, action: "toggle" | "hide") => {
       `Request to ${action} Advanced Search Panel when _not_ in Advanced Search mode. Request ignored.`
     );
   }
+  if (action === "hide" && state.isKeepAdvSearchPanelOpen) {
+    return state;
+  }
   return {
     ...state,
     isAdvSearchPanelOpen:
@@ -81,7 +85,7 @@ const toggleOrHidePanel = (state: State, action: "toggle" | "hide") => {
 const setQueryValues: (_: {
   state: State;
   values: FieldValueMap;
-  isKeepAdvSearchPanelToggleState: boolean;
+  isKeepAdvSearchPanelOpen: boolean;
 }) => State = flow(
   isAdvancedSearchMode(
     "Attempted to set advanced search query values, when _not_ in Advanced Search mode!"
@@ -90,10 +94,10 @@ const setQueryValues: (_: {
     (e) => {
       throw e;
     },
-    ({ state, values, isKeepAdvSearchPanelToggleState }) => ({
+    ({ state, values, isKeepAdvSearchPanelOpen }) => ({
       ...state,
       queryValues: values,
-      isKeepAdvSearchPanelToggleState: isKeepAdvSearchPanelToggleState,
+      isKeepAdvSearchPanelOpen: isKeepAdvSearchPanelOpen,
     })
   )
 );
@@ -109,7 +113,7 @@ export const searchPageModeReducer = (state: State, action: Action): State => {
         definition,
         isAdvSearchPanelOpen: false,
         queryValues: action.initialQueryValues,
-        isKeepAdvSearchPanelToggleState: false,
+        isKeepAdvSearchPanelOpen: false,
       };
     case "toggleAdvSearchPanel":
       return toggleOrHidePanel(state, "toggle");
@@ -119,7 +123,7 @@ export const searchPageModeReducer = (state: State, action: Action): State => {
       return setQueryValues({
         state,
         values: action.values,
-        isKeepAdvSearchPanelToggleState: action.isKeepAdvSearchPanelToggleState,
+        isKeepAdvSearchPanelOpen: action.isKeepAdvSearchPanelOpen,
       });
     default:
       return absurd(action);

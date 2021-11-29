@@ -414,10 +414,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
         }
       );
 
-      if (
-        searchPageModeState.mode === "advSearch" &&
-        !searchPageModeState.isKeepAdvSearchPanelToggleState
-      ) {
+      if (searchPageModeState.mode === "advSearch") {
         searchPageModeDispatch({
           type: "hideAdvSearchPanel",
         });
@@ -468,7 +465,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
     history,
     state,
     advancedSearchId,
-    searchPageModeState,
+    searchPageModeState.mode,
   ]);
 
   // In Selection Session, once a new search result is returned, make each
@@ -719,12 +716,12 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
 
   const handleSubmitAdvancedSearch = async (
     advFieldValue: FieldValueMap,
-    isKeepAdvSearchPanelToggleState = false
+    isKeepAdvSearchPanelOpen = false
   ) => {
     searchPageModeDispatch({
       type: "setQueryValues",
       values: advFieldValue,
-      isKeepAdvSearchPanelToggleState: isKeepAdvSearchPanelToggleState,
+      isKeepAdvSearchPanelOpen: isKeepAdvSearchPanelOpen,
     });
 
     const task = pipe(
