@@ -88,6 +88,8 @@ export interface WizardSimpleTermSelectorProps extends WizardControlBasicProps {
 
 const { loadingText, placeholder } = languageStrings.termSelector;
 
+const maxTermNum = 20; // Match the maximum number of terms retrieved in Old UI.
+
 export const WizardSimpleTermSelector = ({
   values,
   isAllowMultiple,
@@ -113,13 +115,13 @@ export const WizardSimpleTermSelector = ({
           TE.tryCatch(
             () =>
               termProvider(
-                `*${query}*`, // Always searches in wildcard mode.
+                `*${query}*`, // Always searches in wildcard mode - because that's how it was in Legacy UI.
                 selectionRestriction,
-                20, // Always gets up to 20 terms.
+                maxTermNum,
                 true, // Always searches full terms.
                 selectedTaxonomy
               ),
-            (e) => `Failed to search terms for query ${e}`
+            (e) => `Failed to search terms for query [${query}]: ${e}`
           ),
           TE.map(flow(({ results }) => results))
         );
@@ -173,26 +175,34 @@ export const WizardSimpleTermSelector = ({
         description={description}
         labelFor={id}
       />
-      <Grid container direction="column">
+      <Grid container direction="column" id={id}>
         <Grid item>
           <Autocomplete
             loading={loading}
             loadingText={loadingText}
             options={options}
-            onChange={(e, value: OEQ.Taxonomy.Term | null) => {
+            onChange={(_, value: OEQ.Taxonomy.Term | null) => {
               pipe(
                 value,
                 O.fromNullable,
-                O.map((v) => v.term),
+                O.map(({ term, fullTerm }) =>
+                  termStorageFormat === "LEAF_ONLY" ? term : fullTerm
+                ),
                 O.map(insertSingleTerm)
               );
 
-              // Clear the value as we don't want to show the value if the TextField.
+              // Clear the value as we don't want to show the value in the TextField.
               setInputValue("");
             }}
             value={null} // We don't really want to select an option for the autocomplete so make the value always null.
             inputValue={inputValue}
-            onInputChange={(event, value) => {
+            onInputChange={(event, value, reason) => {
+              // If this event is triggered by selecting an option where the reason is `reset`,
+              // there is no need to search for terms.
+              if (reason === "reset") {
+                return;
+              }
+
               setInputValue(value);
               pipe(
                 value.trim(),
@@ -200,11 +210,10 @@ export const WizardSimpleTermSelector = ({
                 O.map(searchTerms)
               );
             }}
-            onOpen={() => setOptions([])}
             renderInput={(params) => (
               <TextField {...params} variant="outlined" label={placeholder} />
             )}
-            getOptionLabel={(o) => o.fullTerm}
+            getOptionLabel={({ fullTerm }) => fullTerm}
           />
         </Grid>
         <Grid item>
