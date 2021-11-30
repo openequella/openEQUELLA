@@ -65,6 +65,7 @@ describe("render()", () => {
             shufflebox: () => "WizardShuffleBox",
             shufflelist: () => "WizardShuffleList",
             userselector: () => "WizardUserSelector",
+            termselector: () => "WizardSimpleTermSelector",
             _: () => "WizardUnsupported",
           })
         )
