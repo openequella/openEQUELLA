@@ -35,6 +35,7 @@ import * as RA from "fp-ts/ReadonlyArray";
 import * as RSET from "fp-ts/ReadonlySet";
 import * as S from "fp-ts/string";
 import * as TE from "fp-ts/TaskEither";
+import * as T from "fp-ts/Task";
 import * as React from "react";
 import { useMemo, useState } from "react";
 import { languageStrings } from "../../util/langstrings";
@@ -111,7 +112,7 @@ export const WizardSimpleTermSelector = ({
   const searchTerms = useMemo(
     () =>
       debounce(async (query: string) => {
-        const task: TE.TaskEither<string, OEQ.Taxonomy.Term[]> = pipe(
+        const searchTermTask: TE.TaskEither<string, OEQ.Taxonomy.Term[]> = pipe(
           TE.tryCatch(
             () =>
               termProvider(
@@ -126,15 +127,18 @@ export const WizardSimpleTermSelector = ({
           TE.map(flow(({ results }) => results))
         );
 
-        // Now begin.
-        setLoading(true);
+        const taskChain = pipe(
+          T.fromIO(() => setLoading(true)),
+          T.chain(() => searchTermTask),
+          T.chainFirst(() => T.fromIO(() => setLoading(false)))
+        );
+
         pipe(
-          await task(),
+          await taskChain(),
           E.fold((e) => {
             throw new Error(e);
           }, setOptions)
         );
-        setLoading(false);
       }, 500),
     [selectionRestriction, selectedTaxonomy, termProvider]
   );
