@@ -29,7 +29,6 @@ import { first } from "fp-ts/Semigroup";
 import * as SET from "fp-ts/Set";
 import * as S from "fp-ts/string";
 import * as React from "react";
-import { searchTaxonomyTerms } from "../../modules/TaxonomyModule";
 import { OrdAsIs } from "../../util/Ord";
 import { WizardCalendar } from "./WizardCalendar";
 import { WizardCheckBoxGroup } from "./WizardCheckBoxGroup";
@@ -389,25 +388,25 @@ const controlFactory = (
         )
       );
     case "termselector":
-      const {
-        isAllowMultiple,
-        selectedTaxonomy,
-        selectionRestriction,
-        termStorageFormat,
-      } = control as OEQ.WizardControl.WizardTermSelectorControl;
-
-      //todo: support different display type.
-      return (
-        <WizardSimpleTermSelector
-          {...commonProps}
-          values={valueAsStringSet()}
-          onSelect={flow(RSET.toSet, onChangeForStringSet)}
-          isAllowMultiple={isAllowMultiple}
-          selectedTaxonomy={selectedTaxonomy}
-          selectionRestriction={selectionRestriction}
-          termStorageFormat={termStorageFormat}
-          termProvider={searchTaxonomyTerms}
-        />
+      return pipe(
+        control as OEQ.WizardControl.WizardTermSelectorControl,
+        ({
+          isAllowMultiple,
+          selectedTaxonomy,
+          selectionRestriction,
+          termStorageFormat,
+        }) => (
+          //todo: support different display type.
+          <WizardSimpleTermSelector
+            {...commonProps}
+            values={valueAsStringSet()}
+            onSelect={flow(RSET.toSet, onChangeForStringSet)}
+            isAllowMultiple={isAllowMultiple}
+            selectedTaxonomy={selectedTaxonomy}
+            selectionRestriction={selectionRestriction}
+            termStorageFormat={termStorageFormat}
+          />
+        )
       );
     default:
       return absurd(controlType);
