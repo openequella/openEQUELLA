@@ -38,6 +38,7 @@ import { WizardRadioButtonGroup } from "./WizardRadioButtonGroup";
 import { WizardRawHtml } from "./WizardRawHtml";
 import { WizardShuffleBox } from "./WizardShuffleBox";
 import { WizardShuffleList } from "./WizardShuffleList";
+import { WizardSimpleTermSelector } from "./WizardSimpleTermSelector";
 import { WizardUnsupported } from "./WizardUnsupported";
 import { WizardUserSelector } from "./WizardUserSelector";
 
@@ -387,7 +388,26 @@ const controlFactory = (
         )
       );
     case "termselector":
-      return <WizardUnsupported id={id} />;
+      return pipe(
+        control as OEQ.WizardControl.WizardTermSelectorControl,
+        ({
+          isAllowMultiple,
+          selectedTaxonomy,
+          selectionRestriction,
+          termStorageFormat,
+        }) => (
+          //todo: support different display type.
+          <WizardSimpleTermSelector
+            {...commonProps}
+            values={valueAsStringSet()}
+            onSelect={flow(RSET.toSet, onChangeForStringSet)}
+            isAllowMultiple={isAllowMultiple}
+            selectedTaxonomy={selectedTaxonomy}
+            selectionRestriction={selectionRestriction}
+            termStorageFormat={termStorageFormat}
+          />
+        )
+      );
     default:
       return absurd(controlType);
   }

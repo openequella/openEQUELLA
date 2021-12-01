@@ -38,6 +38,7 @@ import * as TE from "fp-ts/TaskEither";
 import * as T from "fp-ts/Task";
 import * as React from "react";
 import { useMemo, useState } from "react";
+import { searchTaxonomyTerms } from "../../modules/TaxonomyModule";
 import { languageStrings } from "../../util/langstrings";
 import { OrdAsIs } from "../../util/Ord";
 import { TooltipIconButton } from "../TooltipIconButton";
@@ -78,7 +79,7 @@ export interface WizardSimpleTermSelectorProps extends WizardControlBasicProps {
    * @param isSearchFullTerm `true` to search terms by full path.
    * @param taxonomyUuid UUID of the taxonomy collection.
    */
-  termProvider: (
+  termProvider?: (
     query: string,
     restriction: OEQ.Taxonomy.SelectionRestriction,
     maxTermNum: number,
@@ -97,7 +98,7 @@ export const WizardSimpleTermSelector = ({
   selectedTaxonomy,
   termStorageFormat,
   selectionRestriction,
-  termProvider,
+  termProvider = searchTaxonomyTerms,
   mandatory,
   id,
   description,

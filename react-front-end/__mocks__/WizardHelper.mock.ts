@@ -324,6 +324,33 @@ export const controls: OEQ.WizardControl.WizardControl[] = [
     defaultValues: [],
     controlType: "html",
   },
+  {
+    mandatory: false,
+    reload: false,
+    include: true,
+    size1: 0,
+    size2: 0,
+    title: "Select taxonomy terms",
+    description: "This is a Simple TermSelector.",
+    targetNodes: [
+      {
+        target: "/item/terms",
+        attribute: "",
+        fullTarget: "/item/terms",
+        xoqlPath: "/item/terms",
+        freetextField: "/item/terms",
+      },
+    ],
+    options: [],
+    defaultValues: [],
+    controlType: "termselector",
+    isAllowAddTerms: false,
+    isAllowMultiple: true,
+    displayType: "autocompleteEditBox",
+    selectedTaxonomy: "",
+    selectionRestriction: "UNRESTRICTED",
+    termStorageFormat: "FULL_PATH",
+  },
   { controlType: "unknown" },
 ];
 
