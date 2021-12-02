@@ -716,12 +716,12 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
 
   const handleSubmitAdvancedSearch = async (
     advFieldValue: FieldValueMap,
-    isKeepAdvSearchPanelOpen = false
+    overrideHide = false
   ) => {
     searchPageModeDispatch({
       type: "setQueryValues",
       values: advFieldValue,
-      isKeepAdvSearchPanelOpen,
+      overrideHide,
     });
 
     const task = pipe(
