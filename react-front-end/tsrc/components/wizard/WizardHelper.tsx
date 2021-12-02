@@ -75,7 +75,7 @@ export interface WizardControlBasicProps {
 }
 
 /**
- * Runtypes definition for ontrolTarget.
+ * Runtypes definition for ControlTarget.
  */
 export const RuntypesControlTarget = Record({
   /**
