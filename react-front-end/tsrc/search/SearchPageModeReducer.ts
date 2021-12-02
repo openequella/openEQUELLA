@@ -19,6 +19,7 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as E from "fp-ts/Either";
 import { absurd, flow, pipe } from "fp-ts/function";
 import type { FieldValueMap } from "../components/wizard/WizardHelper";
+import { simpleMatch } from "../util/match";
 
 export type State =
   | {
@@ -29,6 +30,12 @@ export type State =
       definition: OEQ.AdvancedSearch.AdvancedSearchDefinition;
       isAdvSearchPanelOpen: boolean;
       queryValues: FieldValueMap;
+      /**
+       * Indicates that the next Hide action should be ignored, so as to support
+       * initial searches and clearing of advanced searches. Will be reset to
+       * false on the next `action === hide`.
+       */
+      overrideHide: boolean;
     };
 
 export type Action =
@@ -49,6 +56,7 @@ export type Action =
   | {
       type: "setQueryValues";
       values: FieldValueMap;
+      overrideHide: boolean;
     };
 
 const isAdvancedSearchMode =
@@ -69,25 +77,52 @@ const toggleOrHidePanel = (state: State, action: "toggle" | "hide") => {
       `Request to ${action} Advanced Search Panel when _not_ in Advanced Search mode. Request ignored.`
     );
   }
-  return {
-    ...state,
-    isAdvSearchPanelOpen:
-      action === "toggle" ? !state.isAdvSearchPanelOpen : false,
-  };
+
+  return pipe(
+    action,
+    simpleMatch<State>({
+      /**
+       * Ignore hide action if overrideHide is 'true',
+       * in order to support initial searches and clearing of advanced searches.
+       * Reset overrideHide to 'false' finally.
+       */
+      hide: () => ({
+        ...state,
+        overrideHide: false,
+        isAdvSearchPanelOpen: state.overrideHide
+          ? state.isAdvSearchPanelOpen
+          : false,
+      }),
+      toggle: () => ({
+        ...state,
+        isAdvSearchPanelOpen: !state.isAdvSearchPanelOpen,
+      }),
+      _: () => {
+        throw new TypeError("Unknown action type for toggleOrHidePanel");
+      },
+    })
+  );
 };
 
-const setQueryValues: (_: { state: State; values: FieldValueMap }) => State =
-  flow(
-    isAdvancedSearchMode(
-      "Attempted to set advanced search query values, when _not_ in Advanced Search mode!"
-    ),
-    E.matchW(
-      (e) => {
-        throw e;
-      },
-      ({ state, values }) => ({ ...state, queryValues: values })
-    )
-  );
+const setQueryValues: (_: {
+  state: State;
+  values: FieldValueMap;
+  overrideHide: boolean;
+}) => State = flow(
+  isAdvancedSearchMode(
+    "Attempted to set advanced search query values, when _not_ in Advanced Search mode!"
+  ),
+  E.matchW(
+    (e) => {
+      throw e;
+    },
+    ({ state, values, overrideHide }) => ({
+      ...state,
+      queryValues: values,
+      overrideHide: overrideHide,
+    })
+  )
+);
 
 export const searchPageModeReducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -100,13 +135,18 @@ export const searchPageModeReducer = (state: State, action: Action): State => {
         definition,
         isAdvSearchPanelOpen: false,
         queryValues: action.initialQueryValues,
+        overrideHide: false,
       };
     case "toggleAdvSearchPanel":
       return toggleOrHidePanel(state, "toggle");
     case "hideAdvSearchPanel":
       return toggleOrHidePanel(state, "hide");
     case "setQueryValues":
-      return setQueryValues({ state, values: action.values });
+      return setQueryValues({
+        state,
+        values: action.values,
+        overrideHide: action.overrideHide,
+      });
     default:
       return absurd(action);
   }

@@ -419,7 +419,6 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
         }
       );
 
-      // todo: do not hide the panel for the first search.
       if (searchPageModeState.mode === "advSearch") {
         searchPageModeDispatch({
           type: "hideAdvSearchPanel",
@@ -720,10 +719,14 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
     });
   };
 
-  const handleSubmitAdvancedSearch = async (advFieldValue: FieldValueMap) => {
+  const handleSubmitAdvancedSearch = async (
+    advFieldValue: FieldValueMap,
+    overrideHide = false
+  ) => {
     searchPageModeDispatch({
       type: "setQueryValues",
       values: advFieldValue,
+      overrideHide,
     });
 
     search({
@@ -1036,7 +1039,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
                     wizardControls={searchPageModeState.definition.controls}
                     values={searchPageModeState.queryValues}
                     onSubmit={handleSubmitAdvancedSearch}
-                    onClear={() => handleSubmitAdvancedSearch(new Map())}
+                    onClear={() => handleSubmitAdvancedSearch(new Map(), true)}
                     onClose={() =>
                       searchPageModeDispatch({ type: "hideAdvSearchPanel" })
                     }
