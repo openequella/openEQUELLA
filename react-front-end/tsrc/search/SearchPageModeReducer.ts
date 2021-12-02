@@ -138,9 +138,9 @@ export const searchPageModeReducer = (state: State, action: Action): State => {
       return {
         mode: "advSearch",
         definition,
-        isAdvSearchPanelOpen: false,
+        isAdvSearchPanelOpen: true,
         queryValues: action.initialQueryValues,
-        overrideHide: false,
+        overrideHide: true,
       };
     case "toggleAdvSearchPanel":
       return toggleOrHidePanel(state, "toggle");
