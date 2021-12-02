@@ -33,9 +33,14 @@ import {
   Record,
   Static,
   String,
+  Tuple,
   Union,
   Unknown,
 } from "runtypes";
+import {
+  RuntypesControlTarget,
+  RuntypesControlValue,
+} from "../components/wizard/WizardHelper";
 import type { FieldValueMap } from "../components/wizard/WizardHelper";
 import { routes } from "../mainui/routes";
 import {
@@ -146,6 +151,9 @@ const DehydratedSearchPageOptionsRunTypes = Partial({
   mimeTypeFilters: RuntypeArray(Record({ id: String })),
   displayMode: DisplayModeRuntypes,
   dateRangeQuickModeEnabled: Boolean,
+  advFieldValue: RuntypeArray(
+    Tuple(RuntypesControlTarget, RuntypesControlValue)
+  ),
 });
 
 type DehydratedSearchPageOptions = Static<
@@ -211,6 +219,12 @@ export const generateQueryStringFromSearchPageOptions = (
           ],
           // As we can get MIME types from filters, we can skip key "mimeTypes".
           [Literal("mimeTypes"), () => undefined],
+          // Skip advancedSearchCriteria as we can build it from `advFieldValue`.
+          [Literal("advancedSearchCriteria"), () => undefined],
+          [
+            Literal("advFieldValue"),
+            () => pipe(value, O.fromNullable, O.map(Array.from), O.toUndefined),
+          ],
           [Unknown, () => value ?? undefined]
         )(key);
       }
@@ -240,6 +254,12 @@ const rehydrateOwner = async (
   options: DehydratedSearchPageOptions
 ): Promise<OEQ.UserQuery.UserDetails | undefined> =>
   options.owner ? await findUserById(options.owner.id) : undefined;
+
+// Use the array of `advFieldValue` extracted from a dehydrated SearchOptions to build FieldValueMap.
+const rehydrateAdvFieldValue = ({
+  advFieldValue,
+}: DehydratedSearchPageOptions): FieldValueMap | undefined =>
+  advFieldValue ? new Map(advFieldValue) : undefined;
 
 /**
  * A function that takes a JSON representation of a SearchPageOptions object, and converts it into an actual SearchPageOptions object.
@@ -276,6 +296,7 @@ export const newSearchQueryToSearchPageOptions = async (
     owner: await rehydrateOwner(parsedOptions),
     mimeTypeFilters,
     mimeTypes,
+    advFieldValue: rehydrateAdvFieldValue(parsedOptions),
   };
 };
 

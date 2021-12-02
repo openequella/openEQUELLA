@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Literal, Static, Union } from 'runtypes';
 import type { UuidString } from './Common';
 import type { SelectionRestriction, TermStorageFormat } from './Taxonomy';
 import type {
@@ -24,19 +25,25 @@ import type {
 } from './WizardCommonTypes';
 
 /**
+ * Runtypes definition for Wizard control type.
+ */
+export const RuntypesControlType = Union(
+  Literal('calendar'),
+  Literal('checkboxgroup'),
+  Literal('editbox'),
+  Literal('html'),
+  Literal('listbox'),
+  Literal('radiogroup'),
+  Literal('shufflebox'),
+  Literal('shufflelist'),
+  Literal('termselector'),
+  Literal('userselector')
+);
+
+/**
  * Supported Wizard Control types.
  */
-export type ControlType =
-  | 'calendar'
-  | 'checkboxgroup'
-  | 'editbox'
-  | 'html'
-  | 'listbox'
-  | 'radiogroup'
-  | 'shufflebox'
-  | 'shufflelist'
-  | 'termselector'
-  | 'userselector';
+export type ControlType = Static<typeof RuntypesControlType>;
 
 /**
  * Provide common properties of Wizard Control.
