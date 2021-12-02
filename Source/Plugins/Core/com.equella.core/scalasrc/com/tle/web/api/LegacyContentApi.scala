@@ -18,10 +18,6 @@
 
 package com.tle.web.api
 
-import java.net.URI
-import java.util
-import java.util.Collections
-
 import com.dytech.common.io.DevNullWriter
 import com.tle.beans.item.{ItemId, ItemKey, ItemTaskId}
 import com.tle.common.institution.CurrentInstitution
@@ -59,18 +55,20 @@ import com.tle.web.sections.standard.renderers.{DivRenderer, LinkRenderer, SpanR
 import com.tle.web.template.Decorations.MenuMode
 import com.tle.web.template.section.{HelpAndScreenOptionsSection, MenuContributor}
 import com.tle.web.template.{Breadcrumbs, Decorations, RenderTemplate}
-import com.tle.web.viewable.{NewDefaultViewableItem, PreviewableItem}
 import com.tle.web.viewable.servlet.ItemServlet
+import com.tle.web.viewable.{NewDefaultViewableItem, PreviewableItem}
 import com.tle.web.viewitem.section.RootItemFileSection
-import com.tle.web.viewitem.treeviewer.AbstractTreeViewerSection
 import io.lemonlabs.uri.{Path => _, _}
-import io.swagger.annotations.Api
+import io.swagger.annotations.{Api, ApiOperation}
+import org.slf4j.LoggerFactory
+
+import java.net.URI
+import java.util
+import java.util.Collections
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import javax.ws.rs._
 import javax.ws.rs.core.Response.{ResponseBuilder, Status}
 import javax.ws.rs.core.{CacheControl, Context, Response, UriInfo}
-import org.slf4j.LoggerFactory
-
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 
@@ -113,7 +111,8 @@ case class CurrentUserDetails(id: String,
                               prefsEditable: Boolean,
                               menuGroups: Iterable[Iterable[MenuItem]],
                               counts: Option[ItemCounts],
-                              canDownloadSearchResult: Boolean)
+                              canDownloadSearchResult: Boolean,
+                              roles: Iterable[String])
 
 object LegacyContentController extends AbstractSectionsController with SectionFilter {
 
@@ -203,7 +202,7 @@ object LegacyContentController extends AbstractSectionsController with SectionFi
   val RedirectedAttr = "REDIRECTED"
 
   val DISABLE_LEGACY_CSS = "DISABLE_LEGACY_CSS"
-  val SKIP_BOOTSTRAP     = "skip_bootstrap";
+  val SKIP_BOOTSTRAP     = "skip_bootstrap"
 
   override protected def getTreeForPath(path: String): SectionTree =
     LegacyGuice.treeRegistry.getTreeForPath(path)
@@ -361,8 +360,12 @@ class LegacyContentApi {
 
   @GET
   @Path("currentuser")
-  @Produces(value = Array("application/json"))
-  def menuOptions(@Context req: HttpServletRequest,
+  @ApiOperation(
+    value = "Current user details",
+    notes = "Get details of the user for the current session",
+    response = classOf[CurrentUserDetails]
+  )
+  def currentuser(@Context req: HttpServletRequest,
                   @Context resp: HttpServletResponse): Response = {
     val contributors = LegacyGuice.menuService.getContributors
     val noInst       = CurrentInstitution.get == null
@@ -418,7 +421,7 @@ class LegacyContentApi {
       val notificationCount = LegacyGuice.freeTextService.countsFromFilters(
         Collections.singletonList(new NotificationSearch))(0)
       val taskCount = LegacyGuice.freeTextService.countsFromFilters(
-        Collections.singletonList(new TaskListSearch))(0);
+        Collections.singletonList(new TaskListSearch))(0)
       ItemCounts(taskCount, notificationCount)
     } else None
     val ub           = cu.getUserBean
@@ -440,7 +443,8 @@ class LegacyContentApi {
           menuGroups = menuGroups,
           counts = counts,
           accessibilityMode = accessibilityMode,
-          canDownloadSearchResult = canDownloadSearchResult
+          canDownloadSearchResult = canDownloadSearchResult,
+          roles = cu.getUsersRoles.asScala
         )
       )
       .cacheControl(cacheControl)
