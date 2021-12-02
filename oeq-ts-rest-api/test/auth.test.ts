@@ -26,7 +26,8 @@ test("That we're able to login", async () => {
   const userDetails = await OEQ.LegacyContent.getCurrentUserDetails(
     TC.API_PATH
   );
-  expect(userDetails).toHaveProperty('username', TC.USERNAME);
+  expect(userDetails.username).toBe(TC.USERNAME);
+  expect(userDetails.roles).toEqual(['TLE_LOGGED_IN_USER_ROLE']);
 });
 
 test('An attempt to login with bad credentials fails', async () => {
