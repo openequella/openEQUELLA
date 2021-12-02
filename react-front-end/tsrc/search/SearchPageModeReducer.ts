@@ -34,6 +34,11 @@ export type State =
        * Indicates that the next Hide action should be ignored, so as to support
        * initial searches and clearing of advanced searches. Will be reset to
        * false on the next `action === hide`.
+       *
+       * This is due to interactions with the SearchPageReducer which this
+       * reducer now probably needs to be merged with. Before the clear
+       * button and the hiding of this pane based on the `search` action
+       * in the SearchPageReducer it was independent, but not any-more.
        */
       overrideHide: boolean;
     };
