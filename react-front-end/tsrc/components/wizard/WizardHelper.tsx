@@ -29,6 +29,16 @@ import { first } from "fp-ts/Semigroup";
 import * as SET from "fp-ts/Set";
 import * as S from "fp-ts/string";
 import * as React from "react";
+import {
+  Array as RuntypeArray,
+  Boolean,
+  Number,
+  Record,
+  Static,
+  String,
+  Union,
+  Optional,
+} from "runtypes";
 import { OrdAsIs } from "../../util/Ord";
 import { WizardCalendar } from "./WizardCalendar";
 import { WizardCheckBoxGroup } from "./WizardCheckBoxGroup";
@@ -65,29 +75,42 @@ export interface WizardControlBasicProps {
 }
 
 /**
- * Used to loosely target what a value (typically a `ControlValue`) is being used for.
+ * Runtypes definition for ontrolTarget.
  */
-export interface ControlTarget {
+export const RuntypesControlTarget = Record({
   /**
    * The 'fullPath's for the targetNode.
    */
-  schemaNode: string[];
+  schemaNode: RuntypeArray(String),
   /**
    * The type of control that is being targeted.
    */
-  type: OEQ.WizardControl.ControlType;
+  type: OEQ.WizardControl.RuntypesControlType,
   /**
    * Whether to tokenise the value.
    */
-  isValueTokenised?: boolean;
-}
+  isValueTokenised: Optional(Boolean),
+});
+
+/**
+ * Used to loosely target what a value (typically a `ControlValue`) is being used for.
+ */
+export type ControlTarget = Static<typeof RuntypesControlTarget>;
+
+/**
+ * Runtypes definition for ControlValue.
+ */
+export const RuntypesControlValue = Union(
+  RuntypeArray(String),
+  RuntypeArray(Number)
+);
 
 /**
  * Convenience type for our way of storing the two main value types across our controls. Represents
  * that some controls are textual, and some are numeric; and that some controls store more than one
  * value.
  */
-export type ControlValue = number[] | string[];
+export type ControlValue = Static<typeof RuntypesControlValue>;
 
 /**
  * Identifies a Wizard 'field' and specifies its value.

@@ -314,7 +314,9 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
               initialiseAdvancedSearch(
                 def,
                 searchPageModeDispatch,
-                searchPageOptions.advFieldValue
+                // queryStringSearchOptions takes precedence.
+                queryStringSearchOptions?.advFieldValue ??
+                  searchPageOptions.advFieldValue
               )
             ),
             O.map(generateAdvancedSearchCriteria),
@@ -329,6 +331,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
               ...options,
               dateRangeQuickModeEnabled: false,
               sortOrder: options.sortOrder ?? searchSettings.defaultSearchSort,
+              advancedSearchCriteria: initialAdvancedSearchCriteria,
             })),
             O.getOrElse<SearchPageOptions>(() => ({
               ...searchPageOptions,
