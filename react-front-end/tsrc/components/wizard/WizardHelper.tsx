@@ -42,11 +42,11 @@ import {
   Array as RuntypeArray,
   Boolean,
   Number,
+  Optional,
   Record,
   Static,
   String,
   Union,
-  Optional,
 } from "runtypes";
 import {
   buildVisibilityScript,
@@ -173,6 +173,17 @@ export const isStringArray = (
  */
 export const isControlValueNonEmpty = (xs: ControlValue): boolean =>
   xs.length > 0;
+
+/**
+ * Converts a `ControlValue` to a string array regardless of whether it contains strings or
+ * numbers.
+ */
+const controlValueToStringArray: (_: ControlValue) => ReadonlyArray<string> =
+  pfTernaryTypeGuard<string[], number[], string[]>(
+    isStringArray,
+    identity,
+    A.map(N.Show.show)
+  );
 
 /**
  * Type guard which not only checks if a Wizard control value is string but also checks if the value
@@ -454,15 +465,9 @@ const controlFactory = (
 const buildXmlScriptObject = (values: PathValueMap): XmlScriptType =>
   pipe(
     values,
-    // First, let's convert our unwieldy ControlValue union to a string only array
-    // as that is all that is expected in script land.
-    M.map<ControlValue, ReadonlyArray<string>>(
-      pfTernaryTypeGuard<string[], number[], string[]>(
-        isStringArray,
-        identity,
-        A.map(N.Show.show)
-      )
-    ),
+    // We convert the `ControlValue`s to a string only array as that's what's
+    // expected in script land.
+    M.map<ControlValue, ReadonlyArray<string>>(controlValueToStringArray),
     // Now build the object
     (m) => ({
       contains: (node, value): boolean =>
