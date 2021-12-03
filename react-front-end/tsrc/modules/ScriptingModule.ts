@@ -21,7 +21,7 @@ import { pipe } from "fp-ts/function";
 /**
  * A cut down version of the server side interface `com.tle.common.scripting.types.XmlScriptType`
  * which is used to pass state of Items and Advanced Searches into scripts. It is recommended to
- * also review the service side interface.
+ * also review the server side interface.
  *
  * Note that all XPath parameters are not `true` XPaths and are limited to simple node/attribute
  * selection and node indexes. E.g. /xml/test/node[2]/@attribute is as complex as it
