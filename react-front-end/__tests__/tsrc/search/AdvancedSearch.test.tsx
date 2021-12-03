@@ -75,8 +75,8 @@ mockGetAdvancedSearchByUuid.mockResolvedValue(getAdvancedSearchDefinition);
 
 const testUuid = "4be6ae54-68ca-4d8b-acd0-0ca96fc39280";
 
-const togglePanel = () =>
-  act(() => userEvent.click(screen.getByLabelText(filterButtonLabel)));
+const togglePanel = async () =>
+  act(async () => userEvent.click(screen.getByLabelText(filterButtonLabel)));
 
 const renderAdvancedSearchPage = async () => {
   const page = await renderSearchPage(searchPromise, undefined, testUuid);
@@ -84,7 +84,7 @@ const renderAdvancedSearchPage = async () => {
   // also get updated accordingly. However, as we will make further changes for the UI,
   // just manually open the panel for now so that we can keep the tests as they are.
   // We will rework here later when we figure out how to nicely display the panel.
-  togglePanel();
+  await togglePanel();
 
   return page;
 };
@@ -141,11 +141,11 @@ describe("Advanced Search filter button", () => {
     const { container } = await renderAdvancedSearchPage();
 
     // First the panel is displayed for Advanced Search mode, so toggle to hide
-    togglePanel();
+    await togglePanel();
     expect(queryAdvSearchPanel(container)).not.toBeInTheDocument();
 
     // Toggle to show again
-    togglePanel();
+    await togglePanel();
     expect(queryAdvSearchPanel(container)).toBeInTheDocument();
   });
 
@@ -168,7 +168,7 @@ describe("Advanced Search filter button", () => {
     expect(getHighlightedFilterButton()).toBeInTheDocument();
 
     // Open the panel and clear out the EditBox's content.
-    togglePanel();
+    await togglePanel();
     userEvent.clear(getByLabelText(`${editBoxEssentials.title}`));
     await clickSearchButton(container);
     // Now the filter button is not highlighted again.
@@ -254,7 +254,7 @@ describe("Rendering of wizard", () => {
     await clickSearchButton(container);
 
     // Open the panel again.
-    togglePanel();
+    await togglePanel();
 
     // Collect all labels and values.
     const labelsAndValues = mockedControls.map(([c, controlValue]) =>
