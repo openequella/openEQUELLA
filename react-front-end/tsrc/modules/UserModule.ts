@@ -34,6 +34,27 @@ import { API_BASE_URL } from "../AppConfig";
 import { OrdAsIs } from "../util/Ord";
 
 /**
+ * A bare bones user, essentially a 'default' user - i.e. start as 'guest'.
+ */
+export const guestUser: OEQ.LegacyContent.CurrentUserDetails = {
+  accessibilityMode: false,
+  firstName: "guest",
+  lastName: "guest",
+  id: "guest",
+  username: "guest",
+  guest: true,
+  autoLoggedIn: false,
+  prefsEditable: false,
+  counts: {
+    tasks: 0,
+    notifications: 0,
+  },
+  menuGroups: [],
+  canDownloadSearchResult: false,
+  roles: [],
+};
+
+/**
  * Eq for `OEQ.UserQuery.UserDetails` with equality based on the user's UUID.
  */
 export const eqUserById: Eq<OEQ.UserQuery.UserDetails> = contramap(

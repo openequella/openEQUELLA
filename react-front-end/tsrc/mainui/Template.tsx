@@ -43,11 +43,12 @@ import * as React from "react";
 import { Link } from "react-router-dom";
 import { ErrorResponse } from "../api/errors";
 import { TooltipIconButton } from "../components/TooltipIconButton";
-import { guestUser, PageContent } from "../legacycontent/LegacyContent";
+import { PageContent } from "../legacycontent/LegacyContent";
 import {
   isItemViewedFromIntegration,
   isSelectionSessionOpen,
 } from "../modules/LegacySelectionSessionModule";
+import { guestUser } from "../modules/UserModule";
 import { languageStrings } from "../util/langstrings";
 import MainMenu from "./MainMenu";
 import { legacyPageUrl, routes } from "./routes";

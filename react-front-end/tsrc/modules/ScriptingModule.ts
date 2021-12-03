@@ -52,6 +52,11 @@ export interface XmlScriptType {
  * server side interface `com.tle.common.scripting.objects.UserScriptObject`.
  */
 export interface UserScriptObject {
+  getEmail: () => string | undefined;
+  getFirstName: () => string;
+  getID: () => string;
+  getLastName: () => string;
+  getUsername: () => string;
   /**
    * Determines if the logged in user has the role with the UUID of `roleUniqueID`
    *
