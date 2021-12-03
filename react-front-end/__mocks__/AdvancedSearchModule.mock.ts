@@ -28,7 +28,7 @@ export const getAdvancedSearchesFromServerResult: OEQ.Common.BaseEntitySummary[]
 interface TargetNodeEssentials
   extends Pick<OEQ.WizardCommonTypes.TargetNode, "target" | "attribute"> {}
 
-const buildTargetNodes = (
+export const buildTargetNodes = (
   nodes: TargetNodeEssentials[]
 ): OEQ.WizardCommonTypes.TargetNode[] =>
   nodes.map(({ target, attribute }) => {

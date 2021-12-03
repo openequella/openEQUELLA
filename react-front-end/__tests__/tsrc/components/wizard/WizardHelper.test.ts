@@ -21,10 +21,12 @@ import { pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as R from "fp-ts/Record";
+import { mockWizardControlFactory } from "../../../../__mocks__/AdvancedSearchModule.mock";
 import { controls } from "../../../../__mocks__/WizardHelper.mock";
 import {
   ControlTarget,
   FieldValue,
+  FieldValueMap,
   render,
 } from "../../../../tsrc/components/wizard/WizardHelper";
 import { simpleMatch } from "../../../../tsrc/util/match";
@@ -137,4 +139,66 @@ describe("render()", () => {
       render(controls, M.singleton(nameEditboxTarget, [1]), logOnChange)
     ).toThrow(TypeError);
   });
+
+  const checkBoxSchemaNode = "/item/checkbox";
+  const checkboxValues = (values: string[]): FieldValueMap =>
+    M.singleton(
+      { schemaNode: [checkBoxSchemaNode], type: "checkboxgroup" },
+      values
+    );
+  const simpleContainsScript = `return xml.contains('${checkBoxSchemaNode}', 'one');`;
+  const simpleGetScript = `return xml.get('${checkBoxSchemaNode}') === 'one';`;
+  it.each<[string, string | undefined, FieldValueMap, number]>([
+    ["control case (no script)", undefined, new Map(), 2],
+    [
+      "simple xml.contains (visible)",
+      simpleContainsScript,
+      checkboxValues(["one"]),
+      2,
+    ],
+    [
+      "simple xml.contains (hidden)",
+      simpleContainsScript,
+      checkboxValues(["two"]),
+      1,
+    ],
+    ["simple xml.get (visible)", simpleGetScript, checkboxValues(["one"]), 2],
+    ["simple xml.get (hidden)", simpleGetScript, checkboxValues(["two"]), 1],
+    [
+      "xml.get when no values available is an empty string",
+      `return xml.get('${checkBoxSchemaNode}') === '';`,
+      new Map(),
+      2,
+    ],
+  ])(
+    "hides controls based on visibility scripts - %s",
+    (_, script, values, controlsVisible) => {
+      const testControls: OEQ.WizardControl.WizardBasicControl[] = [
+        mockWizardControlFactory({
+          controlType: "checkboxgroup",
+          mandatory: false,
+          schemaNodes: [{ target: checkBoxSchemaNode, attribute: "" }],
+          options: [
+            { text: "opt1", value: "one" },
+            { text: "opt2", value: "two" },
+            { text: "opt3", value: "three" },
+          ],
+          defaultValues: [],
+        }),
+        {
+          ...mockWizardControlFactory({
+            controlType: "editbox",
+            mandatory: false,
+            schemaNodes: [{ target: "/item/editbox", attribute: "" }],
+            options: [],
+            defaultValues: [],
+          }),
+          visibilityScript: script,
+        },
+      ];
+
+      const visibleControls = render(testControls, values, jest.fn());
+      expect(visibleControls).toHaveLength(controlsVisible);
+    }
+  );
 });
