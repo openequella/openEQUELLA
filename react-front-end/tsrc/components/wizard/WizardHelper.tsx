@@ -19,10 +19,19 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import { Eq, struct } from "fp-ts/Eq";
-import { absurd, constFalse, flow, pipe } from "fp-ts/function";
+import {
+  absurd,
+  constFalse,
+  constTrue,
+  flow,
+  identity,
+  pipe,
+} from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as NEA from "fp-ts/NonEmptyArray";
+import * as N from "fp-ts/number";
 import * as O from "fp-ts/Option";
+import * as RA from "fp-ts/ReadonlyArray";
 import * as RSET from "fp-ts/ReadonlySet";
 import { Refinement } from "fp-ts/Refinement";
 import { first } from "fp-ts/Semigroup";
@@ -33,13 +42,19 @@ import {
   Array as RuntypeArray,
   Boolean,
   Number,
+  Optional,
   Record,
   Static,
   String,
   Union,
-  Optional,
 } from "runtypes";
+import {
+  buildVisibilityScript,
+  UserScriptObject,
+  XmlScriptType,
+} from "../../modules/ScriptingModule";
 import { OrdAsIs } from "../../util/Ord";
+import { pfTernaryTypeGuard } from "../../util/pointfree";
 import { WizardCalendar } from "./WizardCalendar";
 import { WizardCheckBoxGroup } from "./WizardCheckBoxGroup";
 import { WizardEditBox } from "./WizardEditBox";
@@ -158,6 +173,17 @@ export const isStringArray = (
  */
 export const isControlValueNonEmpty = (xs: ControlValue): boolean =>
   xs.length > 0;
+
+/**
+ * Converts a `ControlValue` to a string array regardless of whether it contains strings or
+ * numbers.
+ */
+const controlValueToStringArray: (_: ControlValue) => ReadonlyArray<string> =
+  pfTernaryTypeGuard<string[], number[], string[]>(
+    isStringArray,
+    identity,
+    A.map(N.Show.show)
+  );
 
 /**
  * Type guard which not only checks if a Wizard control value is string but also checks if the value
@@ -436,6 +462,41 @@ const controlFactory = (
   }
 };
 
+const buildXmlScriptObject = (values: PathValueMap): XmlScriptType =>
+  pipe(
+    values,
+    // We convert the `ControlValue`s to a string only array as that's what's
+    // expected in script land.
+    M.map<ControlValue, ReadonlyArray<string>>(controlValueToStringArray),
+    // Now build the object
+    (m) => ({
+      contains: (node, value): boolean =>
+        pipe(
+          m,
+          M.lookup(S.Eq)(node),
+          O.map(RA.elem(S.Eq)(value)),
+          O.getOrElse(constFalse)
+        ),
+      get: (node): string =>
+        pipe(
+          m,
+          M.lookup(S.Eq)(node),
+          O.chain(RA.head),
+          O.getOrElse(() => S.empty) // as per legacy code
+        ),
+    })
+  );
+
+// TODO: Build proper object from a passed in `OEQ.LegacyContent.CurrentUserDetails`. It is assumed
+// such an object is retrieved earlier and cached somewhere ready for quick consumption here. This
+// function should not be async - that'd be excessive.
+const buildUserScriptObject =
+  (/* userDetails: OEQ.LegacyContent.CurrentUserDetails */): UserScriptObject => ({
+    hasRole: (roleUniqueID) => {
+      throw new Error("TODO: Still need to implement hasRole!!");
+    },
+  });
+
 /**
  * Produces an array of `JSX.Element`s representing the wizard defined by the provided `controls`.
  * Setting their values to those provided in `values` and configuring them with an onChange handler
@@ -481,15 +542,45 @@ export const render = (
     O.toUndefined
   );
 
+  const visibilityScriptContext = {
+    user: buildUserScriptObject(),
+    xml: pipe(values, valuesByNode, buildXmlScriptObject),
+  };
+
+  // Using a control's visibility script (if available) and the current values of other controls,
+  // determine if this control should be visible. Defaults to true/visible if there are any
+  // issues.
+  const isVisible: (_: OEQ.WizardControl.WizardControl) => boolean = flow(
+    O.fromPredicate(OEQ.WizardControl.isWizardBasicControl),
+    O.chain<OEQ.WizardControl.WizardBasicControl, string>(
+      ({ visibilityScript }) => O.fromNullable(visibilityScript)
+    ),
+    O.chain((script) =>
+      pipe(
+        visibilityScriptContext,
+        buildVisibilityScript(script),
+        E.mapLeft((e: Error) => console.error(e.message, script)),
+        O.fromEither
+      )
+    ),
+    // Default to isVisible if there's no script (or it's not a WizardBasicControl)
+    O.getOrElse(constTrue)
+  );
+
   // Build the controls
-  return controls.map((c, idx) =>
-    controlFactory(
-      `wiz-${idx}-${c.controlType}`,
-      c,
-      buildOnChangeHandler(c),
-      values,
-      retrieveControlsValue(c)
-    )
+  return pipe(
+    controls,
+    RA.filter(isVisible),
+    RA.mapWithIndex((idx, c) =>
+      controlFactory(
+        `wiz-${idx}-${c.controlType}`,
+        c,
+        buildOnChangeHandler(c),
+        values,
+        retrieveControlsValue(c)
+      )
+    ),
+    RA.toArray
   );
 };
 
