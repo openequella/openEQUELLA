@@ -259,6 +259,7 @@ object LegacyContentController extends AbstractSectionsController with SectionFi
 
 @Api("Legacy content")
 @Path("content")
+@Produces(value = Array("application/json"))
 class LegacyContentApi {
   val LOGGER = LoggerFactory.getLogger(classOf[LegacyContentApi])
 
@@ -454,7 +455,6 @@ class LegacyContentApi {
   @POST
   @GET
   @Path("/ajax/{path : .+}")
-  @Produces(value = Array("application/json"))
   def ajaxCall(@PathParam("path") _path: String,
                @Context uriInfo: UriInfo,
                @Context req: HttpServletRequest,
@@ -479,7 +479,6 @@ class LegacyContentApi {
 
   @POST
   @Path("/submit/{path : .+}")
-  @Produces(value = Array("application/json"))
   def submit(@PathParam("path") _path: String,
              @Context uriInfo: UriInfo,
              @Context req: HttpServletRequest,
