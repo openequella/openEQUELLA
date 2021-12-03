@@ -18,8 +18,8 @@
 import { CircularProgress, Grid } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 import Axios from "axios";
-import { useContext } from "react";
 import * as React from "react";
+import { useContext } from "react";
 import { v4 } from "uuid";
 import {
   ErrorResponse,
@@ -58,6 +58,7 @@ export const guestUser: OEQ.LegacyContent.CurrentUserDetails = {
   },
   menuGroups: [],
   canDownloadSearchResult: false,
+  roles: [],
 };
 
 export interface ExternalRedirect {

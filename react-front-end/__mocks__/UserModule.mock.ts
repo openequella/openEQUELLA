@@ -64,6 +64,7 @@ export const getCurrentUserMock: OEQ.LegacyContent.CurrentUserDetails = {
   prefsEditable: true,
   menuGroups: [],
   canDownloadSearchResult: true,
+  roles: [],
 };
 
 /**
