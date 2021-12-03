@@ -554,7 +554,7 @@ export const render = (
       pipe(
         visibilityScriptContext,
         buildVisibilityScript(script),
-        E.mapLeft(console.error),
+        E.mapLeft((e: Error) => console.error(e.message, script)),
         O.fromEither
       )
     ),
