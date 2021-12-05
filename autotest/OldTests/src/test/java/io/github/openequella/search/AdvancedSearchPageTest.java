@@ -49,16 +49,16 @@ public class AdvancedSearchPageTest extends AbstractSessionTest {
     assertEquals(selected, "");
   }
 
-  @Test(description = "Open and close Advanced search panel")
+  @Test(description = "Close and open Advanced search panel")
   @NewUIOnly
   public void toggleAdvancedSearchPanel() {
-    // Closed initially.
-    assertNull(advancedSearchPage.getAdvancedSearchPanel());
-    // Open the panel.
-    advancedSearchPage.openAdvancedSearchPanel();
+    // Opened initially.
     assertNotNull(advancedSearchPage.getAdvancedSearchPanel());
-    // Close again.
+    // Close the panel.
     advancedSearchPage.closeAdvancedSearchPanel();
     assertNull(advancedSearchPage.getAdvancedSearchPanel());
+    // Open again.
+    advancedSearchPage.openAdvancedSearchPanel();
+    assertNotNull(advancedSearchPage.getAdvancedSearchPanel());
   }
 }

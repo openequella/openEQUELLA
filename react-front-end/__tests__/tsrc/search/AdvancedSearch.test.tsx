@@ -80,12 +80,6 @@ const togglePanel = () =>
 
 const renderAdvancedSearchPage = async () => {
   const page = await renderSearchPage(searchPromise, undefined, testUuid);
-  // Due to the UI change - hiding the panel when a search is triggered, the tests should
-  // also get updated accordingly. However, as we will make further changes for the UI,
-  // just manually open the panel for now so that we can keep the tests as they are.
-  // We will rework here later when we figure out how to nicely display the panel.
-  togglePanel();
-
   return page;
 };
 
