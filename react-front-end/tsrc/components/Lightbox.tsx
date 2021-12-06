@@ -135,6 +135,8 @@ const {
   openSummaryPage: openSummaryPageString,
 } = languageStrings.lightboxComponent;
 
+const { openInNewTab: openInNewTabString } = languageStrings.common.action;
+
 const { close: labelClose, openInNewWindow: labelOpenInNewWindow } =
   languageStrings.common.action;
 
@@ -282,13 +284,15 @@ const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
         >
           <CodeIcon />
         </IconButton>
-        <IconButton
+        <TooltipIconButton
+          title={openInNewTabString}
+          color="inherit"
           className={classes.menuButton}
           aria-label={labelOpenInNewWindow}
           onClick={handleOpenInNewWindow}
         >
           <OpenInNewIcon />
-        </IconButton>
+        </TooltipIconButton>
         {
           // This following close button is really just added as a security blanket. A common thing
           // with most lightboxes which typically support clicking anywhere outside the content to
