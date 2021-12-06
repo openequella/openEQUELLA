@@ -43,7 +43,7 @@ import { pfTernaryTypeGuard } from "../util/pointfree";
 import { Action as SearchPageModeAction } from "./SearchPageModeReducer";
 
 // Function to pull values of PathValueMap and copy to FieldValueMap for each unique Schema node.
-const buildFieldValueMapFromPathValueMap = (
+export const buildFieldValueMapFromPathValueMap = (
   pathValueMap: PathValueMap,
   fieldValueMap: FieldValueMap
 ): FieldValueMap => {

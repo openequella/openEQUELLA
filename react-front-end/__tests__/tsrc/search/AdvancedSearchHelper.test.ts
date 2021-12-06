@@ -17,7 +17,15 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { mockedFieldValueMap } from "../../../__mocks__/WizardHelper.mock";
-import { generateAdvancedSearchCriteria } from "../../../tsrc/search/AdvancedSearchHelper";
+import type {
+  ControlTarget,
+  FieldValueMap,
+  PathValueMap,
+} from "../../../tsrc/components/wizard/WizardHelper";
+import {
+  buildFieldValueMapFromPathValueMap,
+  generateAdvancedSearchCriteria,
+} from "../../../tsrc/search/AdvancedSearchHelper";
 
 describe("generateAdvancedSearchCriteria()", () => {
   it("builds SearchAdditionalParams for Wizard controls", () => {
@@ -82,5 +90,23 @@ describe("generateAdvancedSearchCriteria()", () => {
     ];
 
     expect(query).toStrictEqual(expectedCriteria);
+  });
+});
+
+describe("buildFieldValueMapFromPathValueMap", () => {
+  it("updates the values of FieldValueMap by pulling the values of PathValueMap", () => {
+    const path = "/item/name";
+    const controlTarget: ControlTarget = {
+      schemaNode: [path],
+      type: "editbox",
+    };
+    const fieldValueMap: FieldValueMap = new Map([[controlTarget, []]]);
+    const pathValueMap: PathValueMap = new Map([[path, ["hello"]]]);
+    const updatedMap = buildFieldValueMapFromPathValueMap(
+      pathValueMap,
+      fieldValueMap
+    );
+
+    expect(updatedMap).toStrictEqual(new Map([[controlTarget, ["hello"]]]));
   });
 });
