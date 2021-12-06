@@ -18,6 +18,7 @@
 
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
+import * as RA from "fp-ts/ReadonlyArray";
 import * as E from "fp-ts/Either";
 import { absurd, identity, pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
@@ -28,35 +29,71 @@ import * as S from "fp-ts/string";
 import {
   ControlTarget,
   ControlValue,
+  controlValueToStringArray,
   extractDefaultValues,
   FieldValueMap,
   getStringArrayControlValue,
   isControlValueNonEmpty,
+  isPathValueMap,
   isStringArray,
+  PathValueMap,
 } from "../components/wizard/WizardHelper";
 import { OrdAsIs } from "../util/Ord";
+import { pfTernaryTypeGuard } from "../util/pointfree";
 import { Action as SearchPageModeAction } from "./SearchPageModeReducer";
+
+// Function to pull values of PathValueMap and copy to FieldValueMap for each unique Schema node.
+const buildFieldValueMapFromPathValueMap = (
+  pathValueMap: PathValueMap,
+  fieldValueMap: FieldValueMap
+): FieldValueMap => {
+  const pMap = pipe(pathValueMap, M.map(controlValueToStringArray));
+
+  return pipe(
+    fieldValueMap,
+    M.map(controlValueToStringArray),
+    M.mapWithIndex<ControlTarget, ReadonlyArray<string>, ControlValue>(
+      ({ schemaNode }, v) =>
+        pipe(
+          schemaNode,
+          A.map((n) => pMap.get(n) ?? v),
+          A.map(RA.toArray),
+          A.flatten // flatten
+        )
+    )
+  );
+};
 
 /**
  * Function to initialise an Advanced search. There are two tasks done here.
  *
- * 1. Confirm the initial FieldValueMap. If there is one, use it. Otherwise, build a new one by extracting the default
- * Wizard control values.
- *
+ * 1. Confirm the initial FieldValueMap. If there is one, use it depending on whether it's a FieldValueMap
+ * or a PathValueMap. Otherwise, build a new one by extracting the default Wizard control values.
  * 2. Update the state of SearchPageModeReducer to `initialiseAdvSearch`;
  *
  * @param advancedSearchDefinition The initial Advanced search definition.
  * @param dispatch The `dispatch` provided by SearchPageModeReducer.
- * @param currentFieldValue FieldValueMap that may already exist.
+ * @param currentFieldValue A Map which can be either a FieldValueMap or a PathValueMap.
  */
 export const initialiseAdvancedSearch = (
   advancedSearchDefinition: OEQ.AdvancedSearch.AdvancedSearchDefinition,
   dispatch: (action: SearchPageModeAction) => void,
-  currentFieldValue?: FieldValueMap
+  currentFieldValue?: FieldValueMap | PathValueMap
 ): FieldValueMap => {
-  const initialQueryValues =
-    currentFieldValue ??
-    extractDefaultValues(advancedSearchDefinition.controls);
+  const defaultValues = extractDefaultValues(advancedSearchDefinition.controls);
+
+  const initialQueryValues = pipe(
+    currentFieldValue,
+    O.fromNullable,
+    O.map(
+      pfTernaryTypeGuard<PathValueMap, FieldValueMap, FieldValueMap>(
+        isPathValueMap,
+        (m) => buildFieldValueMapFromPathValueMap(m, defaultValues),
+        identity
+      )
+    ),
+    O.getOrElse(() => defaultValues)
+  );
 
   dispatch({
     type: "initialiseAdvSearch",
