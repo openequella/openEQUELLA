@@ -470,7 +470,7 @@ const buildPathValueMap = (
 
 // Convert a XML string into a Map where key is a string representing a unique schema node
 // and value is an array of string.
-const processLegacyAdvSearchCriteria = (
+export const processLegacyAdvSearchCriteria = (
   s: string
 ): PathValueMap | undefined => {
   const parser = new DOMParser();
