@@ -15,14 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Backdrop,
-  Grid,
-  IconButton,
-  Theme,
-  Toolbar,
-  Typography,
-} from "@material-ui/core";
+import { Backdrop, Grid, Theme, Toolbar, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
 import CodeIcon from "@material-ui/icons/Code";
@@ -135,9 +128,9 @@ const {
   openSummaryPage: openSummaryPageString,
 } = languageStrings.lightboxComponent;
 
-const { openInNewTab: openInNewTabString } = languageStrings.common.action;
+const { copy: labelCopy } = languageStrings.embedCode;
 
-const { close: labelClose, openInNewWindow: labelOpenInNewWindow } =
+const { close: labelClose, openInNewTab: labelOpenInNewTab } =
   languageStrings.common.action;
 
 const { unsupportedContent: labelUnsupportedContent } =
@@ -274,7 +267,9 @@ const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
         <OEQItemSummaryPageButton
           {...{ item, title: openSummaryPageString, color: "inherit" }}
         />
-        <IconButton
+        <TooltipIconButton
+          title={labelCopy}
+          color="inherit"
           className={classes.menuButton}
           aria-label={copyEmbedCodeString}
           onClick={(event) => {
@@ -283,12 +278,12 @@ const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
           }}
         >
           <CodeIcon />
-        </IconButton>
+        </TooltipIconButton>
         <TooltipIconButton
-          title={openInNewTabString}
+          title={labelOpenInNewTab}
           color="inherit"
           className={classes.menuButton}
-          aria-label={labelOpenInNewWindow}
+          aria-label={labelOpenInNewTab}
           onClick={handleOpenInNewWindow}
         >
           <OpenInNewIcon />
@@ -298,13 +293,15 @@ const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
           // with most lightboxes which typically support clicking anywhere outside the content to
           // trigger a close.
         }
-        <IconButton
+        <TooltipIconButton
+          title={labelClose}
+          color="inherit"
           className={classes.menuButton}
           aria-label={labelClose}
           onClick={handleCloseLightbox}
         >
           <CloseIcon />
-        </IconButton>
+        </TooltipIconButton>
       </Toolbar>
       <Grid container alignItems="center">
         <Grid item xs={1}>
