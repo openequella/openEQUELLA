@@ -19,8 +19,10 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
+import * as M from "fp-ts/Map";
 import * as O from "fp-ts/Option";
-import { Location } from "history";
+import * as S from "fp-ts/string";
+import { History, Location } from "history";
 import { pick } from "lodash";
 import {
   Array as RuntypeArray,
@@ -37,11 +39,14 @@ import {
   Union,
   Unknown,
 } from "runtypes";
+import type {
+  FieldValueMap,
+  PathValueMap,
+} from "../components/wizard/WizardHelper";
 import {
   RuntypesControlTarget,
   RuntypesControlValue,
 } from "../components/wizard/WizardHelper";
-import type { FieldValueMap } from "../components/wizard/WizardHelper";
 import { routes } from "../mainui/routes";
 import {
   clearDataFromLocalStorage,
@@ -70,7 +75,6 @@ import {
 import { findUserById } from "../modules/UserModule";
 import { DateRange, isDate } from "../util/Date";
 import { simpleMatch } from "../util/match";
-import { History } from "history";
 
 /**
  * This helper is intended to assist with processing related to the Presentation Layer -
@@ -93,6 +97,11 @@ export interface SearchPageOptions extends SearchOptions {
    * Currently configured Advanced search criteria.
    */
   advFieldValue?: FieldValueMap;
+  /**
+   * Advanced search criteria configured in the Old UI. This props is intended to support searches shared
+   * or favourited from Old UI.
+   */
+  legacyAdvSearchCriteria?: PathValueMap;
 }
 
 export const defaultSearchPageOptions: SearchPageOptions = {
@@ -123,7 +132,8 @@ const LegacySearchParams = Union(
   Literal("in"),
   Literal("mt"),
   Literal("_int.mimeTypes"),
-  Literal("type")
+  Literal("type"),
+  Literal("doc")
 );
 
 type LegacyParams = Static<typeof LegacySearchParams>;
@@ -416,7 +426,62 @@ export const legacyQueryStringToSearchPageOptions = async (
     externalMimeTypes,
     rawMode: true,
     displayMode,
+    legacyAdvSearchCriteria: pipe(
+      getQueryParam("doc"),
+      O.fromNullable,
+      O.map(processLegacyAdvSearchCriteria),
+      O.toUndefined
+    ),
   };
+};
+
+// Function to build a PathValueMap by walking through a XML tree.
+const buildPathValueMap = (
+  node: ChildNode,
+  parentPath = ""
+): PathValueMap | undefined => {
+  const { nodeType, nodeName, textContent, childNodes, TEXT_NODE } = node;
+  // Skip the path if the node is a TEXT NODE or the node is "xml".
+  const path =
+    nodeType === TEXT_NODE || nodeName === "xml" ? S.empty : `/${nodeName}`;
+  const fullPath = parentPath + path;
+  const buildWithFullPath = (n: ChildNode) => buildPathValueMap(n, fullPath);
+
+  // Function to merge the values of two maps into one array.
+  // For example, given two maps like "/item/options/ => ['a']", "/item/options/ => ['b']",
+  // the result is "/item/options/ => ['a', 'b']"
+  const mergeMaps = (
+    firstMap: Map<string, string[]>,
+    secondMap: Map<string, string[]>
+  ) => pipe(firstMap, M.union(S.Eq, A.getSemigroup<string>())(secondMap));
+
+  const buildMapForLastNode = () =>
+    textContent ? new Map([[fullPath, [textContent]]]) : undefined;
+
+  return node.hasChildNodes()
+    ? pipe(
+        Array.from(childNodes),
+        A.map(buildWithFullPath),
+        A.filter((m): m is Map<string, string[]> => typeof m !== "undefined"),
+        A.reduce(new Map(), mergeMaps)
+      )
+    : buildMapForLastNode();
+};
+
+// Convert a XML string into a Map where key is a string representing a unique schema node
+// and value is an array of string.
+const processLegacyAdvSearchCriteria = (
+  s: string
+): PathValueMap | undefined => {
+  const parser = new DOMParser();
+  const tree = parser.parseFromString(s, "text/xml");
+
+  return pipe(
+    tree.firstChild, // The tree should always have node `xml` as its first child.
+    O.fromNullable,
+    O.map(buildPathValueMap),
+    O.toUndefined
+  );
 };
 
 /**
