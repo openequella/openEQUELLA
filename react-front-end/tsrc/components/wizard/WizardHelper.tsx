@@ -50,6 +50,7 @@ import {
 } from "runtypes";
 import {
   buildVisibilityScript,
+  ScriptContext,
   UserScriptObject,
   XmlScriptType,
 } from "../../modules/ScriptingModule";
@@ -487,15 +488,30 @@ const buildXmlScriptObject = (values: PathValueMap): XmlScriptType =>
     })
   );
 
-// TODO: Build proper object from a passed in `OEQ.LegacyContent.CurrentUserDetails`. It is assumed
-// such an object is retrieved earlier and cached somewhere ready for quick consumption here. This
-// function should not be async - that'd be excessive.
-const buildUserScriptObject =
-  (/* userDetails: OEQ.LegacyContent.CurrentUserDetails */): UserScriptObject => ({
-    hasRole: (roleUniqueID) => {
-      throw new Error("TODO: Still need to implement hasRole!!");
-    },
-  });
+const buildUserScriptObject = (
+  userDetails: OEQ.LegacyContent.CurrentUserDetails
+): UserScriptObject => ({
+  getEmail: () => userDetails.emailAddress,
+  getFirstName: () => userDetails.firstName,
+  getID: () => userDetails.id,
+  getLastName: () => userDetails.lastName,
+  getUsername: () => userDetails.username,
+  hasRole: (roleUniqueID) => userDetails.roles.includes(roleUniqueID),
+});
+
+/**
+ * Build a script context suitable for visibility scripts based on the current values of a wizard
+ * and a user's details.
+ * @param fieldValues the values of the various fields in the current wizard
+ * @param user details of typically the current user
+ */
+export const buildVisibilityScriptContext = (
+  fieldValues: FieldValueMap,
+  user: OEQ.LegacyContent.CurrentUserDetails
+): ScriptContext => ({
+  xml: pipe(fieldValues, valuesByNode, buildXmlScriptObject),
+  user: buildUserScriptObject(user),
+});
 
 /**
  * Produces an array of `JSX.Element`s representing the wizard defined by the provided `controls`.
@@ -512,11 +528,14 @@ const buildUserScriptObject =
  * @param onChange The high level callback to use to update `values` - this will be wrapped so that
  *                 Wizard components only have to worry about calling a typical simple callback
  *                 with their updated value.
+ * @param visibilityScriptContext The `ScriptContext` to be used when evaluating any visibility
+ *                                scripts defined in the `controls`.
  */
 export const render = (
   controls: OEQ.WizardControl.WizardControl[],
   values: FieldValueMap,
-  onChange: (update: FieldValue) => void
+  onChange: (update: FieldValue) => void,
+  visibilityScriptContext: ScriptContext
 ): JSX.Element[] => {
   const buildOnChangeHandler = (
     c: OEQ.WizardControl.WizardControl
@@ -541,11 +560,6 @@ export const render = (
     O.chain(flow(buildControlTarget, getValue)),
     O.toUndefined
   );
-
-  const visibilityScriptContext = {
-    user: buildUserScriptObject(),
-    xml: pipe(values, valuesByNode, buildXmlScriptObject),
-  };
 
   // Using a control's visibility script (if available) and the current values of other controls,
   // determine if this control should be visible. Defaults to true/visible if there are any

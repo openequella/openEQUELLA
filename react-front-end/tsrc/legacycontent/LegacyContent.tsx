@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { CircularProgress, Grid } from "@material-ui/core";
-import * as OEQ from "@openequella/rest-api-client";
 import Axios from "axios";
 import * as React from "react";
 import { useContext } from "react";
@@ -42,24 +41,6 @@ declare global {
 
   const _trigger: (value: string) => boolean;
 }
-
-export const guestUser: OEQ.LegacyContent.CurrentUserDetails = {
-  accessibilityMode: false,
-  firstName: "guest",
-  lastName: "guest",
-  id: "guest",
-  username: "guest",
-  guest: true,
-  autoLoggedIn: false,
-  prefsEditable: false,
-  counts: {
-    tasks: 0,
-    notifications: 0,
-  },
-  menuGroups: [],
-  canDownloadSearchResult: false,
-  roles: [],
-};
 
 export interface ExternalRedirect {
   href: string;

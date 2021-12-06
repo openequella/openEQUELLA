@@ -29,10 +29,14 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { constFalse, flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import React, { useCallback, useEffect, useState } from "react";
+import * as TE from "fp-ts/TaskEither";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import * as WizardHelper from "../../components/wizard/WizardHelper";
+import { buildVisibilityScriptContext } from "../../components/wizard/WizardHelper";
+import { getCurrentUserDetails, guestUser } from "../../modules/UserModule";
 import { languageStrings } from "../../util/langstrings";
+import { SearchPageRenderErrorContext } from "../SearchPage";
 
 export interface AdvancedSearchPanelProps {
   /**
@@ -69,8 +73,31 @@ export const AdvancedSearchPanel = ({
   onSubmit,
   onClear,
 }: AdvancedSearchPanelProps) => {
+  const { handleError } = useContext(SearchPageRenderErrorContext);
   const [currentValues, setCurrentValues] =
     useState<WizardHelper.FieldValueMap>(values);
+  const [currentUser, setCurrentUser] =
+    useState<OEQ.LegacyContent.CurrentUserDetails>(guestUser);
+
+  // For visibility scripting we need to have the current user's details
+  useEffect(() => {
+    const initUser = pipe(
+      TE.tryCatch(getCurrentUserDetails, (reason: unknown) =>
+        reason instanceof Error
+          ? reason
+          : new Error("Failed to retrieve current user details: " + reason)
+      ),
+      TE.match(handleError, setCurrentUser)
+    );
+
+    (async () => await initUser())();
+  }, [handleError]);
+
+  // Keep the values in state (CurrentValues) in sync with those passed in
+  // by props (values). Key when the clear button is triggered.
+  useEffect(() => {
+    setCurrentValues(values);
+  }, [values]);
 
   const hasRequiredFields: boolean = pipe(
     wizardControls,
@@ -99,11 +126,6 @@ export const AdvancedSearchPanel = ({
     [currentValues, setCurrentValues]
   );
 
-  // handle props `value` changing event
-  useEffect(() => {
-    setCurrentValues(values);
-  }, [values]);
-
   const idPrefix = "advanced-search-panel";
   return (
     <Card id={idPrefix}>
@@ -128,7 +150,8 @@ export const AdvancedSearchPanel = ({
           {WizardHelper.render(
             wizardControls,
             currentValues,
-            onChangeHandler
+            onChangeHandler,
+            buildVisibilityScriptContext(currentValues, currentUser)
           ).map((e) => (
             <Grid key={e.props.id} item>
               {e}

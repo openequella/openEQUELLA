@@ -75,13 +75,11 @@ mockGetAdvancedSearchByUuid.mockResolvedValue(getAdvancedSearchDefinition);
 
 const testUuid = "4be6ae54-68ca-4d8b-acd0-0ca96fc39280";
 
-const togglePanel = () =>
-  act(() => userEvent.click(screen.getByLabelText(filterButtonLabel)));
+const togglePanel = async () =>
+  act(async () => userEvent.click(screen.getByLabelText(filterButtonLabel)));
 
-const renderAdvancedSearchPage = async () => {
-  const page = await renderSearchPage(searchPromise, undefined, testUuid);
-  return page;
-};
+const renderAdvancedSearchPage = async () =>
+  await renderSearchPage(searchPromise, undefined, testUuid);
 
 const queryAdvSearchPanel = (container: Element): HTMLElement | null =>
   container.querySelector("#advanced-search-panel");
@@ -135,11 +133,11 @@ describe("Advanced Search filter button", () => {
     const { container } = await renderAdvancedSearchPage();
 
     // First the panel is displayed for Advanced Search mode, so toggle to hide
-    togglePanel();
+    await togglePanel();
     expect(queryAdvSearchPanel(container)).not.toBeInTheDocument();
 
     // Toggle to show again
-    togglePanel();
+    await togglePanel();
     expect(queryAdvSearchPanel(container)).toBeInTheDocument();
   });
 
@@ -162,7 +160,7 @@ describe("Advanced Search filter button", () => {
     expect(getHighlightedFilterButton()).toBeInTheDocument();
 
     // Open the panel and clear out the EditBox's content.
-    togglePanel();
+    await togglePanel();
     userEvent.clear(getByLabelText(`${editBoxEssentials.title}`));
     await clickSearchButton(container);
     // Now the filter button is not highlighted again.
@@ -248,7 +246,7 @@ describe("Rendering of wizard", () => {
     await clickSearchButton(container);
 
     // Open the panel again.
-    togglePanel();
+    await togglePanel();
 
     // Collect all labels and values.
     const labelsAndValues = mockedControls.map(([c, controlValue]) =>

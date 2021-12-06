@@ -33,6 +33,11 @@ describe("buildVisibilityScript", () => {
   // A static easy to test implementation closing over `testData` above.
   const scriptContext: ScriptContext = {
     user: {
+      getEmail: () => undefined,
+      getID: () => "tester",
+      getFirstName: () => "Test",
+      getLastName: () => "User",
+      getUsername: () => "tester",
       hasRole: (uuid: string): boolean => uuid === testData.uuid,
     },
     xml: {
