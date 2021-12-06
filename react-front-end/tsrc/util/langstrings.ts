@@ -323,7 +323,7 @@ export const languageStrings = {
       "There is an issue with the format of the externalId for the the Kaltura Video",
     kalturaMissingId:
       "The provided Kaltura media is missing externalId details",
-    openSummaryPage: "Open Item Summary page",
+    openSummaryPage: "Open resource summary page",
     unsupportedContent: "Provided content is not supported",
     viewNext: "View next attachment",
     viewPrevious: "View previous attachment",
