@@ -332,6 +332,8 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
               dateRangeQuickModeEnabled: false,
               sortOrder: options.sortOrder ?? searchSettings.defaultSearchSort,
               advancedSearchCriteria: initialAdvancedSearchCriteria,
+              collections:
+                advancedSearchDefinition?.collections ?? options.collections,
             })),
             O.getOrElse<SearchPageOptions>(() => ({
               ...searchPageOptions,
