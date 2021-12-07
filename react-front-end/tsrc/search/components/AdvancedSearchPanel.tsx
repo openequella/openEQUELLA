@@ -130,7 +130,7 @@ export const AdvancedSearchPanel = ({
             currentValues,
             onChangeHandler
           ).map((e) => (
-            <Grid key={e.props.id} item>
+            <Grid key={e.props.id} item container direction="column">
               {e}
             </Grid>
           ))}
