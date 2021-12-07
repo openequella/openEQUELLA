@@ -43,8 +43,8 @@ const countBy =
     pipe(as, NEA.groupBy(by), R.map(A.size));
 
 describe("render()", () => {
-  const logOnChange = (update: FieldValue): void =>
-    console.debug("onChange called", update);
+  const logOnChange = (updates: FieldValue[]): void =>
+    console.debug("onChange called", updates);
 
   const noFieldValues = new Map();
 
@@ -245,4 +245,39 @@ describe("render()", () => {
       expect(visibleControls).toHaveLength(controlsVisible);
     }
   );
+
+  it("calls onChange to clear the value for any hidden control", () => {
+    const testNode = "/item/hidden";
+    const testTarget: ControlTarget = {
+      schemaNode: [testNode],
+      type: "editbox",
+      isValueTokenised: true,
+    };
+    const testValues: FieldValueMap = M.singleton(testTarget, ["test value"]);
+    const mockOnChange = jest.fn();
+
+    render(
+      [
+        {
+          ...mockWizardControlFactory({
+            controlType: "editbox",
+            mandatory: false,
+            schemaNodes: [{ target: testNode, attribute: "" }],
+            options: [],
+            defaultValues: [],
+          }),
+          visibilityScript: "return false;", // i.e. always hidden - no need to get tricky
+        },
+      ],
+      testValues,
+      mockOnChange,
+      buildVisibilityScriptContext(testValues, guestUser)
+    );
+
+    expect(mockOnChange).toHaveBeenCalledTimes(1);
+    // Note value being cleared via `[]`
+    expect(mockOnChange).toHaveBeenCalledWith([
+      { target: testTarget, value: [] },
+    ]);
+  });
 });

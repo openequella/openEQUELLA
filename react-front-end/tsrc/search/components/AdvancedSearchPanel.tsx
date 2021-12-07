@@ -111,16 +111,21 @@ export const AdvancedSearchPanel = ({
   );
 
   const onChangeHandler = useCallback(
-    ({ target, value }: WizardHelper.FieldValue): void => {
+    (updates: WizardHelper.FieldValue[]): void => {
       console.debug("AdvancedSearchPanel : onChangeHandler called.", {
         currentValues,
-        update: {
-          target,
-          value,
-        },
+        updates,
       });
-      setCurrentValues(
-        pipe(currentValues, WizardHelper.fieldValueMapInsert(target, value))
+      pipe(
+        updates,
+        A.reduce(
+          currentValues,
+          (
+            valueMap: WizardHelper.FieldValueMap,
+            { target, value }: WizardHelper.FieldValue
+          ) => pipe(valueMap, WizardHelper.fieldValueMapInsert(target, value))
+        ),
+        setCurrentValues
       );
     },
     [currentValues, setCurrentValues]

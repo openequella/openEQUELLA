@@ -35,6 +35,7 @@ import * as RA from "fp-ts/ReadonlyArray";
 import * as RSET from "fp-ts/ReadonlySet";
 import { Refinement } from "fp-ts/Refinement";
 import { first } from "fp-ts/Semigroup";
+import * as SEP from "fp-ts/Separated";
 import * as SET from "fp-ts/Set";
 import * as S from "fp-ts/string";
 import * as React from "react";
@@ -527,14 +528,16 @@ export const buildVisibilityScriptContext = (
  *               no value, then it should not be in the collection.
  * @param onChange The high level callback to use to update `values` - this will be wrapped so that
  *                 Wizard components only have to worry about calling a typical simple callback
- *                 with their updated value.
+ *                 with their updated value. Takes an array so as to support bulk-updating of values
+ *                 for controls which may be hidden due to visibility scripting. (But could also be
+ *                 used for other optimisations.)
  * @param visibilityScriptContext The `ScriptContext` to be used when evaluating any visibility
  *                                scripts defined in the `controls`.
  */
 export const render = (
   controls: OEQ.WizardControl.WizardControl[],
   values: FieldValueMap,
-  onChange: (update: FieldValue) => void,
+  onChange: (updates: FieldValue[]) => void,
   visibilityScriptContext: ScriptContext
 ): JSX.Element[] => {
   const buildOnChangeHandler = (
@@ -542,7 +545,7 @@ export const render = (
   ): ((value: ControlValue) => void) =>
     OEQ.WizardControl.isWizardBasicControl(c)
       ? (value: ControlValue) =>
-          onChange({ target: buildControlTarget(c), value })
+          onChange([{ target: buildControlTarget(c), value }])
       : (_) => {
           throw new Error(
             "Unexpected onChange called for non-WizardBasicControl."
@@ -559,6 +562,46 @@ export const render = (
     O.fromPredicate(OEQ.WizardControl.isWizardBasicControl),
     O.chain(flow(buildControlTarget, getValue)),
     O.toUndefined
+  );
+
+  // Check to see if the control currently has a value
+  const hasValue: (_: OEQ.WizardControl.WizardBasicControl) => boolean = flow(
+    retrieveControlsValue,
+    O.fromNullable,
+    O.map(isControlValueNonEmpty),
+    O.getOrElse(constFalse)
+  );
+
+  const clearControls: (
+    _: ReadonlyArray<OEQ.WizardControl.WizardControl>
+  ) => O.Option<void> = flow(
+    RA.filter(OEQ.WizardControl.isWizardBasicControl),
+    // Only call the onChange if field currently has a value - or we'll end up in an infinite render
+    RA.filter(hasValue),
+    // Only call the onChange if there are changes - or we'll end up in an infinite render loop
+    O.fromPredicate(RA.isNonEmpty),
+    O.map(
+      flow(
+        RA.map((c) => ({ target: buildControlTarget(c), value: [] })),
+        RA.toArray,
+        onChange
+      )
+    )
+  );
+
+  const buildWizardControls: (
+    _: ReadonlyArray<OEQ.WizardControl.WizardControl>
+  ) => JSX.Element[] = flow(
+    RA.mapWithIndex((idx, c) =>
+      controlFactory(
+        `wiz-${idx}-${c.controlType}`,
+        c,
+        buildOnChangeHandler(c),
+        values,
+        retrieveControlsValue(c)
+      )
+    ),
+    RA.toArray
   );
 
   // Using a control's visibility script (if available) and the current values of other controls,
@@ -581,20 +624,14 @@ export const render = (
     O.getOrElse(constTrue)
   );
 
-  // Build the controls
   return pipe(
     controls,
-    RA.filter(isVisible),
-    RA.mapWithIndex((idx, c) =>
-      controlFactory(
-        `wiz-${idx}-${c.controlType}`,
-        c,
-        buildOnChangeHandler(c),
-        values,
-        retrieveControlsValue(c)
-      )
-    ),
-    RA.toArray
+    RA.partition(isVisible),
+    // Clear values of all hidden controls - with a bulk call to onChange
+    SEP.mapLeft(clearControls),
+    // For all visible controls, build JSX.Elements
+    SEP.map(buildWizardControls),
+    SEP.right
   );
 };
 
