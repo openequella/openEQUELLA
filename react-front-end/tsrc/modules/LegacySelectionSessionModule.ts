@@ -194,7 +194,7 @@ export const isSelectSummaryButtonDisabled = (): boolean => {
  * Validate the selectionSessionInfo included in renderData.
  * And return selectionSessionInfo if the checking is passed, or throw a type error.
  */
-const getSelectionSessionInfo = (): SelectionSessionInfo => {
+export const getSelectionSessionInfo = (): SelectionSessionInfo => {
   const selectionSessionInfo = getRenderData()?.selectionSessionInfo;
   if (isSelectionSessionInfo(selectionSessionInfo)) {
     return selectionSessionInfo;

@@ -18,9 +18,9 @@
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
-import { pipe } from "fp-ts/function";
+import { identity, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import { Location } from "history";
+import { History, Location } from "history";
 import { pick } from "lodash";
 import {
   Array as RuntypeArray,
@@ -37,11 +37,12 @@ import {
   Union,
   Unknown,
 } from "runtypes";
+import { getBaseUrl } from "../AppConfig";
+import type { FieldValueMap } from "../components/wizard/WizardHelper";
 import {
   RuntypesControlTarget,
   RuntypesControlValue,
 } from "../components/wizard/WizardHelper";
-import type { FieldValueMap } from "../components/wizard/WizardHelper";
 import { routes } from "../mainui/routes";
 import {
   clearDataFromLocalStorage,
@@ -54,6 +55,7 @@ import {
 } from "../modules/CollectionsModule";
 import {
   buildSelectionSessionItemSummaryLink,
+  getSelectionSessionInfo,
   isSelectionSessionOpen,
 } from "../modules/LegacySelectionSessionModule";
 import {
@@ -70,7 +72,6 @@ import {
 import { findUserById } from "../modules/UserModule";
 import { DateRange, isDate } from "../util/Date";
 import { simpleMatch } from "../util/match";
-import { History } from "history";
 
 /**
  * This helper is intended to assist with processing related to the Presentation Layer -
@@ -480,3 +481,28 @@ export const buildOpenSummaryPageHandler = (
       })
     )
   );
+
+export const openSearchPageInSelectionSession = () => {
+  const { stateId, integId, layout } = getSelectionSessionInfo();
+  const layoutType = pipe(
+    layout,
+    simpleMatch<string>({
+      coursesearch: () => "access/course",
+      search: () => "selectoradd",
+      skinnysearch: () => "access/skinny",
+      _: () => {
+        throw new Error("Unknown Selection Session layout");
+      },
+    }),
+    identity
+  );
+
+  const url = new URL(`${layoutType}/searching.do`, getBaseUrl());
+  url.searchParams.append("_sl.stateId", stateId);
+
+  if (integId) {
+    url.searchParams.append("_int.id", integId);
+  }
+
+  window.open(url.toString(), "_self");
+};

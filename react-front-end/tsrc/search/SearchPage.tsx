@@ -117,6 +117,7 @@ import {
   generateSearchPageOptionsFromQueryString,
   getPartialSearchOptions,
   getRawModeFromStorage,
+  openSearchPageInSelectionSession,
   SearchPageOptions,
   writeRawModeToStorage,
 } from "./SearchPageHelper";
@@ -185,7 +186,11 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
 
   const exitAdvancedSearchMode = () => {
     searchPageModeDispatch({ type: "useNormal" });
-    history.push(NEW_SEARCH_PATH);
+    if (isSelectionSessionOpen()) {
+      openSearchPageInSelectionSession();
+    } else {
+      history.push(NEW_SEARCH_PATH);
+    }
   };
 
   const defaultSearchPageHistory: SearchPageHistoryState = {
