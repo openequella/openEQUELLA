@@ -176,7 +176,7 @@ describe("<SearchResult/>", () => {
 
     // Then they see the lightbox
     expect(
-      queryByLabelText(languageStrings.common.action.openInNewWindow)
+      queryByLabelText(languageStrings.common.action.openInNewTab)
     ).toBeInTheDocument();
   });
 
@@ -304,7 +304,7 @@ describe("<SearchResult/>", () => {
 
       // ...There is a lightbox
       expect(
-        queryByLabelText(languageStrings.common.action.openInNewWindow)
+        queryByLabelText(languageStrings.common.action.openInNewTab)
       ).toBeInTheDocument();
     });
   });

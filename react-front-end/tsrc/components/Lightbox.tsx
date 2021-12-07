@@ -15,14 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Backdrop,
-  Grid,
-  IconButton,
-  Theme,
-  Toolbar,
-  Typography,
-} from "@material-ui/core";
+import { Backdrop, Grid, Theme, Toolbar, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
 import CodeIcon from "@material-ui/icons/Code";
@@ -52,6 +45,19 @@ import { buildCustomEmbed } from "./LightboxHelper";
 import LightboxMessage from "./LightboxMessage";
 import { OEQItemSummaryPageButton } from "./OEQItemSummaryPageButton";
 import { TooltipIconButton } from "./TooltipIconButton";
+
+const {
+  common: {
+    action: { close: labelClose, openInNewTab: labelOpenInNewTab },
+  },
+  lightboxComponent: {
+    viewNext: labelViewNext,
+    viewPrevious: labelViewPrevious,
+    openSummaryPage: labelOpenSummaryPage,
+    unsupportedContent: labelUnsupportedContent,
+  },
+  embedCode: { copy: labelCopyEmbedCode },
+} = languageStrings;
 
 const useStyles = makeStyles((theme: Theme) => ({
   lightboxBackdrop: {
@@ -128,20 +134,6 @@ export interface LightboxProps {
     version: number;
   };
 }
-
-const {
-  viewNext: viewNextString,
-  viewPrevious: viewPreviousString,
-  openSummaryPage: openSummaryPageString,
-} = languageStrings.lightboxComponent;
-
-const { close: labelClose, openInNewWindow: labelOpenInNewWindow } =
-  languageStrings.common.action;
-
-const { unsupportedContent: labelUnsupportedContent } =
-  languageStrings.lightboxComponent;
-
-const { copy: copyEmbedCodeString } = languageStrings.embedCode;
 
 const domParser = new DOMParser();
 
@@ -270,43 +262,49 @@ const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
           {title}
         </Typography>
         <OEQItemSummaryPageButton
-          {...{ item, title: openSummaryPageString, color: "inherit" }}
+          {...{ item, title: labelOpenSummaryPage, color: "inherit" }}
         />
-        <IconButton
+        <TooltipIconButton
+          title={labelCopyEmbedCode}
+          color="inherit"
           className={classes.menuButton}
-          aria-label={copyEmbedCodeString}
+          aria-label={labelCopyEmbedCode}
           onClick={(event) => {
             event.stopPropagation();
             setOpenEmbedCodeDialog(true);
           }}
         >
           <CodeIcon />
-        </IconButton>
-        <IconButton
+        </TooltipIconButton>
+        <TooltipIconButton
+          title={labelOpenInNewTab}
+          color="inherit"
           className={classes.menuButton}
-          aria-label={labelOpenInNewWindow}
+          aria-label={labelOpenInNewTab}
           onClick={handleOpenInNewWindow}
         >
           <OpenInNewIcon />
-        </IconButton>
+        </TooltipIconButton>
         {
           // This following close button is really just added as a security blanket. A common thing
           // with most lightboxes which typically support clicking anywhere outside the content to
           // trigger a close.
         }
-        <IconButton
+        <TooltipIconButton
+          title={labelClose}
+          color="inherit"
           className={classes.menuButton}
           aria-label={labelClose}
           onClick={handleCloseLightbox}
         >
           <CloseIcon />
-        </IconButton>
+        </TooltipIconButton>
       </Toolbar>
       <Grid container alignItems="center">
         <Grid item xs={1}>
           {onPrevious && (
             <TooltipIconButton
-              title={viewPreviousString}
+              title={labelViewPrevious}
               onClick={(e) => {
                 e.stopPropagation();
                 handleNav(onPrevious);
@@ -325,7 +323,7 @@ const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
           <Grid item>
             {onNext && (
               <TooltipIconButton
-                title={viewNextString}
+                title={labelViewNext}
                 onClick={(e) => {
                   e.stopPropagation();
                   handleNav(onNext);

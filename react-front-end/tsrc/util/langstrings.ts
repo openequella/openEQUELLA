@@ -166,6 +166,7 @@ export const languageStrings = {
       no: "No",
       ok: "OK",
       openInNewWindow: "Open in new window",
+      openInNewTab: "Open in new tab",
       refresh: "Refresh",
       reject: "Reject",
       register: "Register",

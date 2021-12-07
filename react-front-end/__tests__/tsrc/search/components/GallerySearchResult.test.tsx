@@ -39,7 +39,7 @@ const {
     gallerySearchResult: { ariaLabel, viewItem },
   },
   common: {
-    action: { openInNewWindow },
+    action: { openInNewTab },
   },
   lightboxComponent: { viewNext, viewPrevious },
 } = languageStrings;
@@ -71,7 +71,7 @@ describe("<GallerySearchResult />", () => {
     });
 
     // Then they see the lightbox
-    expect(queryAllByLabelText(openInNewWindow)[0]).toBeInTheDocument();
+    expect(queryAllByLabelText(openInNewTab)[0]).toBeInTheDocument();
   });
 
   it("navigates to the images item when the information icon is clicked on", async () => {
