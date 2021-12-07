@@ -46,6 +46,19 @@ import LightboxMessage from "./LightboxMessage";
 import { OEQItemSummaryPageButton } from "./OEQItemSummaryPageButton";
 import { TooltipIconButton } from "./TooltipIconButton";
 
+const {
+  common: {
+    action: { close: labelClose, openInNewTab: labelOpenInNewTab },
+  },
+  lightboxComponent: {
+    viewNext: labelViewNext,
+    viewPrevious: labelViewPrevious,
+    openSummaryPage: labelOpenSummaryPage,
+    unsupportedContent: labelUnsupportedContent,
+  },
+  embedCode: { copy: labelCopyEmbedCode },
+} = languageStrings;
+
 const useStyles = makeStyles((theme: Theme) => ({
   lightboxBackdrop: {
     backgroundColor: "#000000cc",
@@ -121,22 +134,6 @@ export interface LightboxProps {
     version: number;
   };
 }
-
-const {
-  viewNext: viewNextString,
-  viewPrevious: viewPreviousString,
-  openSummaryPage: openSummaryPageString,
-} = languageStrings.lightboxComponent;
-
-const { copy: labelCopy } = languageStrings.embedCode;
-
-const { close: labelClose, openInNewTab: labelOpenInNewTab } =
-  languageStrings.common.action;
-
-const { unsupportedContent: labelUnsupportedContent } =
-  languageStrings.lightboxComponent;
-
-const { copy: copyEmbedCodeString } = languageStrings.embedCode;
 
 const domParser = new DOMParser();
 
@@ -265,13 +262,13 @@ const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
           {title}
         </Typography>
         <OEQItemSummaryPageButton
-          {...{ item, title: openSummaryPageString, color: "inherit" }}
+          {...{ item, title: labelOpenSummaryPage, color: "inherit" }}
         />
         <TooltipIconButton
-          title={labelCopy}
+          title={labelCopyEmbedCode}
           color="inherit"
           className={classes.menuButton}
-          aria-label={copyEmbedCodeString}
+          aria-label={labelCopyEmbedCode}
           onClick={(event) => {
             event.stopPropagation();
             setOpenEmbedCodeDialog(true);
@@ -307,7 +304,7 @@ const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
         <Grid item xs={1}>
           {onPrevious && (
             <TooltipIconButton
-              title={viewPreviousString}
+              title={labelViewPrevious}
               onClick={(e) => {
                 e.stopPropagation();
                 handleNav(onPrevious);
@@ -326,7 +323,7 @@ const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
           <Grid item>
             {onNext && (
               <TooltipIconButton
-                title={viewNextString}
+                title={labelViewNext}
                 onClick={(e) => {
                   e.stopPropagation();
                   handleNav(onNext);
