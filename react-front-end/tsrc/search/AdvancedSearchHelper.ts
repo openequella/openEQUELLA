@@ -40,6 +40,7 @@ import {
 } from "../components/wizard/WizardHelper";
 import { OrdAsIs } from "../util/Ord";
 import { pfTernaryTypeGuard } from "../util/pointfree";
+import type { SearchPageOptions } from "./SearchPageHelper";
 import { Action as SearchPageModeAction } from "./SearchPageModeReducer";
 
 /**
@@ -83,25 +84,42 @@ export const buildFieldValueMapFromPathValueMap = (
 };
 
 /**
- * Function to initialise an Advanced search. There are two tasks done here.
+ * Function to initialise an Advanced search. There are three tasks done here.
  *
- * 1. Confirm the initial FieldValueMap. If there is one, use it depending on whether it's a FieldValueMap
+ * 1. Confirm the initial FieldValueMap. If there is an existing one, use it depending on whether it's a FieldValueMap
  * or a PathValueMap. Otherwise, build a new one by extracting the default Wizard control values.
- * 2. Update the state of SearchPageModeReducer to `initialiseAdvSearch`;
+ *
+ * 2. Generate the initial Advanced search criteria from the initial FieldValueMap.
+ *
+ * 3. Update the state of SearchPageModeReducer to `initialiseAdvSearch`.
  *
  * @param advancedSearchDefinition The initial Advanced search definition.
  * @param dispatch The `dispatch` provided by SearchPageModeReducer.
- * @param currentFieldValue A Map which can be either a FieldValueMap or a PathValueMap.
+ * @param stateSearchOptions The SearchPageOptions managed by State.
+ * @param queryStringSearchOptions The SearchPageOptions transformed from query strings.
+ *
+ * @return A tuple including the initial FieldValueMap and the initial Advanced search criteria.
  */
 export const initialiseAdvancedSearch = (
   advancedSearchDefinition: OEQ.AdvancedSearch.AdvancedSearchDefinition,
   dispatch: (action: SearchPageModeAction) => void,
-  currentFieldValue?: FieldValueMap | PathValueMap
-): FieldValueMap => {
+  stateSearchOptions: SearchPageOptions,
+  queryStringSearchOptions?: SearchPageOptions
+): [FieldValueMap, OEQ.Search.WizardControlFieldValue[]] => {
+  const existingFieldValue: FieldValueMap | PathValueMap | undefined = pipe(
+    queryStringSearchOptions,
+    O.fromNullable,
+    O.map(
+      ({ advFieldValue, legacyAdvSearchCriteria }) =>
+        advFieldValue ?? legacyAdvSearchCriteria
+    ),
+    O.getOrElseW(() => stateSearchOptions.advFieldValue)
+  );
+
   const defaultValues = extractDefaultValues(advancedSearchDefinition.controls);
 
   const initialQueryValues = pipe(
-    currentFieldValue,
+    existingFieldValue,
     O.fromNullable,
     O.map(
       pfTernaryTypeGuard<PathValueMap, FieldValueMap, FieldValueMap>(
@@ -113,13 +131,16 @@ export const initialiseAdvancedSearch = (
     O.getOrElse(() => defaultValues)
   );
 
+  const initialAdvancedSearchCriteria =
+    generateAdvancedSearchCriteria(initialQueryValues);
+
   dispatch({
     type: "initialiseAdvSearch",
     selectedAdvSearch: advancedSearchDefinition,
     initialQueryValues,
   });
 
-  return initialQueryValues;
+  return [initialQueryValues, initialAdvancedSearchCriteria];
 };
 
 // Function to create an Advanced search criterion for each control type.

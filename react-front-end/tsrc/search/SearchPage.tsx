@@ -36,10 +36,7 @@ import { useHistory, useLocation, useParams } from "react-router";
 import { getBaseUrl } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
 import MessageInfo, { MessageInfoVariant } from "../components/MessageInfo";
-import type {
-  FieldValueMap,
-  PathValueMap,
-} from "../components/wizard/WizardHelper";
+import type { FieldValueMap } from "../components/wizard/WizardHelper";
 import {
   ControlValue,
   isControlValueNonEmpty,
@@ -310,36 +307,20 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
           setAdvancedSearches(advancedSearches);
           setCurrentUser(currentUserDetails);
 
-          const currentFieldValue: FieldValueMap | PathValueMap | undefined =
+          const [initialAdvSearchFieldValueMap, initialAdvancedSearchCriteria] =
             pipe(
-              queryStringSearchOptions,
+              advancedSearchDefinition,
               O.fromNullable,
-              O.map(
-                ({ advFieldValue, legacyAdvSearchCriteria }) =>
-                  advFieldValue ?? legacyAdvSearchCriteria
+              O.map((def) =>
+                initialiseAdvancedSearch(
+                  def,
+                  searchPageModeDispatch,
+                  searchPageOptions,
+                  queryStringSearchOptions
+                )
               ),
-              O.getOrElseW(() => searchPageOptions.advFieldValue)
+              O.getOrElseW(() => [])
             );
-
-          const initialAdvSearchFieldValueMap = pipe(
-            advancedSearchDefinition,
-            O.fromNullable,
-            O.map((def) =>
-              initialiseAdvancedSearch(
-                def,
-                searchPageModeDispatch,
-                currentFieldValue
-              )
-            ),
-            O.toUndefined
-          );
-
-          const initialAdvancedSearchCriteria = pipe(
-            initialAdvSearchFieldValueMap,
-            O.fromNullable,
-            O.map(generateAdvancedSearchCriteria),
-            O.toUndefined
-          );
 
           // This is the SearchPageOptions for the first searching, not the one created in the first rendering.
           const initialSearchPageOptions = pipe(
