@@ -70,8 +70,8 @@ export const buildFieldValueMapFromPathValueMap = (
           O.getOrElse(() => defaultValue)
         )
       ),
-      A.map(RA.toArray),
-      A.flatten
+      RA.flatten,
+      RA.toArray
     );
 
   return pipe(
