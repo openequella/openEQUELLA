@@ -98,7 +98,7 @@ export interface SearchPageOptions extends SearchOptions {
    */
   advFieldValue?: FieldValueMap;
   /**
-   * Advanced search criteria configured in the Old UI. This props is intended to support searches shared
+   * Advanced search criteria configured in the Old UI. This prop is intended to support searches shared
    * or favourited from Old UI.
    */
   legacyAdvSearchCriteria?: PathValueMap;
@@ -373,6 +373,78 @@ const getCollectionFromLegacyParams = async (
 const getOwnerFromLegacyParams = async (ownerId: string | undefined) =>
   ownerId ? await findUserById(ownerId) : defaultSearchOptions.owner;
 
+// Function to build a PathValueMap by walking through a XML tree.
+const buildPathValueMap = (
+  node: ChildNode,
+  parentPath = ""
+): PathValueMap | undefined => {
+  const { nodeType, nodeName, textContent, childNodes, TEXT_NODE } = node;
+  // Skip the path if the node is a TEXT NODE or the node is "xml".
+  const path =
+    nodeType === TEXT_NODE || nodeName === "xml" ? S.empty : `/${nodeName}`;
+  const fullPath = parentPath + path;
+  const buildWithFullPath = (n: ChildNode) => buildPathValueMap(n, fullPath);
+
+  // Function to merge the values of two maps into one array.
+  // For example, given two maps like "/item/options/ => ['a']", "/item/options/ => ['b']",
+  // the result is "/item/options/ => ['a', 'b']"
+  const mergeMaps = (
+    firstMap: Map<string, string[]>,
+    secondMap: Map<string, string[]>
+  ) => pipe(firstMap, M.union(S.Eq, A.getSemigroup<string>())(secondMap));
+
+  const buildMapForLastNode = () =>
+    textContent ? new Map([[fullPath, [textContent]]]) : undefined;
+
+  return node.hasChildNodes()
+    ? pipe(
+        Array.from(childNodes),
+        A.map(buildWithFullPath),
+        A.filter((m): m is Map<string, string[]> => typeof m !== "undefined"),
+        A.reduce(new Map(), mergeMaps)
+      )
+    : buildMapForLastNode();
+};
+
+/**
+ * Convert a XML string into a Map where key is a string representing a unique schema node
+ * and value is an array of strings.
+ *
+ * @param s A XML string representing Legacy Advanced search criteria
+ */
+export const processLegacyAdvSearchCriteria = (
+  s: string
+): PathValueMap | undefined => {
+  const parser = new DOMParser();
+
+  // Return `true` when the first node is `<xml>` or when it's null.
+  const validateFirstNode = ({ nodeName }: ChildNode): boolean =>
+    nodeName === "xml";
+
+  return pipe(
+    E.tryCatch(
+      () => parser.parseFromString(s, "text/xml"),
+      (reason) =>
+        reason instanceof Error
+          ? reason.message
+          : "Failed to parse the provided XML string"
+    ),
+    E.chainNullableK("Failed to find the root node.")(
+      ({ firstChild }) => firstChild
+    ),
+    E.chain(
+      E.fromPredicate(
+        validateFirstNode,
+        () => "Name of the XML root node must be `xml`."
+      )
+    ),
+    E.mapLeft(console.error),
+    O.fromEither,
+    O.map(buildPathValueMap),
+    O.toUndefined
+  );
+};
+
 /**
  * A function that takes query string params from a shared searching.do URL and converts all applicable params to SearchPageOptions.
  *
@@ -433,55 +505,6 @@ export const legacyQueryStringToSearchPageOptions = async (
       O.toUndefined
     ),
   };
-};
-
-// Function to build a PathValueMap by walking through a XML tree.
-const buildPathValueMap = (
-  node: ChildNode,
-  parentPath = ""
-): PathValueMap | undefined => {
-  const { nodeType, nodeName, textContent, childNodes, TEXT_NODE } = node;
-  // Skip the path if the node is a TEXT NODE or the node is "xml".
-  const path =
-    nodeType === TEXT_NODE || nodeName === "xml" ? S.empty : `/${nodeName}`;
-  const fullPath = parentPath + path;
-  const buildWithFullPath = (n: ChildNode) => buildPathValueMap(n, fullPath);
-
-  // Function to merge the values of two maps into one array.
-  // For example, given two maps like "/item/options/ => ['a']", "/item/options/ => ['b']",
-  // the result is "/item/options/ => ['a', 'b']"
-  const mergeMaps = (
-    firstMap: Map<string, string[]>,
-    secondMap: Map<string, string[]>
-  ) => pipe(firstMap, M.union(S.Eq, A.getSemigroup<string>())(secondMap));
-
-  const buildMapForLastNode = () =>
-    textContent ? new Map([[fullPath, [textContent]]]) : undefined;
-
-  return node.hasChildNodes()
-    ? pipe(
-        Array.from(childNodes),
-        A.map(buildWithFullPath),
-        A.filter((m): m is Map<string, string[]> => typeof m !== "undefined"),
-        A.reduce(new Map(), mergeMaps)
-      )
-    : buildMapForLastNode();
-};
-
-// Convert a XML string into a Map where key is a string representing a unique schema node
-// and value is an array of string.
-export const processLegacyAdvSearchCriteria = (
-  s: string
-): PathValueMap | undefined => {
-  const parser = new DOMParser();
-  const tree = parser.parseFromString(s, "text/xml");
-
-  return pipe(
-    tree.firstChild, // The tree should always have node `xml` as its first child.
-    O.fromNullable,
-    O.map(buildPathValueMap),
-    O.toUndefined
-  );
 };
 
 /**

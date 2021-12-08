@@ -182,7 +182,7 @@ describe("legacyQueryStringToSearchOptions", () => {
 
     //Query string was obtained from legacy UI searching.do->Share URL
     const fullQueryString =
-      "?in=C8e3caf16-f3cb-b3dd-d403-e5eb8d545fff&q=test&sort=datecreated&owner=680f5eb7-22e2-4ab6-bcea-25205165e36e&dp=1601510400000&dr=AFTER&doc=<editbox>box</editbox>";
+      "?in=C8e3caf16-f3cb-b3dd-d403-e5eb8d545fff&q=test&sort=datecreated&owner=680f5eb7-22e2-4ab6-bcea-25205165e36e&dp=1601510400000&dr=AFTER&doc=<xml><editbox>box</editbox></xml>";
 
     const convertedParamsPromise = await legacyQueryStringToSearchPageOptions(
       new URLSearchParams(fullQueryString)
