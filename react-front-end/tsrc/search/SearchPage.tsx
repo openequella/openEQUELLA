@@ -61,6 +61,7 @@ import {
 import {
   buildSelectionSessionAdvancedSearchLink,
   buildSelectionSessionRemoteSearchLink,
+  buildSelectionSessionSearchPageLink,
   isSelectionSessionInStructured,
   isSelectionSessionOpen,
   prepareDraggable,
@@ -117,7 +118,6 @@ import {
   generateSearchPageOptionsFromQueryString,
   getPartialSearchOptions,
   getRawModeFromStorage,
-  openSearchPageInSelectionSession,
   SearchPageOptions,
   writeRawModeToStorage,
 } from "./SearchPageHelper";
@@ -187,7 +187,12 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
   const exitAdvancedSearchMode = () => {
     searchPageModeDispatch({ type: "useNormal" });
     if (isSelectionSessionOpen()) {
-      openSearchPageInSelectionSession();
+      window.open(
+        buildSelectionSessionSearchPageLink(
+          searchPageOptions.externalMimeTypes
+        ),
+        "_self"
+      );
     } else {
       history.push(NEW_SEARCH_PATH);
     }
@@ -537,7 +542,13 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
     if (selection) {
       const { uuid } = selection;
       isSelectionSessionOpen()
-        ? window.open(buildSelectionSessionAdvancedSearchLink(uuid), "_self")
+        ? window.open(
+            buildSelectionSessionAdvancedSearchLink(
+              uuid,
+              searchPageOptions.externalMimeTypes
+            ),
+            "_self"
+          )
         : history.push(routes.NewAdvancedSearch.to(uuid));
     } else {
       exitAdvancedSearchMode();

@@ -18,7 +18,7 @@
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
-import { identity, pipe } from "fp-ts/function";
+import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { History, Location } from "history";
 import { pick } from "lodash";
@@ -37,7 +37,6 @@ import {
   Union,
   Unknown,
 } from "runtypes";
-import { getBaseUrl } from "../AppConfig";
 import type { FieldValueMap } from "../components/wizard/WizardHelper";
 import {
   RuntypesControlTarget,
@@ -55,7 +54,6 @@ import {
 } from "../modules/CollectionsModule";
 import {
   buildSelectionSessionItemSummaryLink,
-  getSelectionSessionInfo,
   isSelectionSessionOpen,
 } from "../modules/LegacySelectionSessionModule";
 import {
@@ -481,28 +479,3 @@ export const buildOpenSummaryPageHandler = (
       })
     )
   );
-
-export const openSearchPageInSelectionSession = () => {
-  const { stateId, integId, layout } = getSelectionSessionInfo();
-  const layoutType = pipe(
-    layout,
-    simpleMatch<string>({
-      coursesearch: () => "access/course",
-      search: () => "selectoradd",
-      skinnysearch: () => "access/skinny",
-      _: () => {
-        throw new Error("Unknown Selection Session layout");
-      },
-    }),
-    identity
-  );
-
-  const url = new URL(`${layoutType}/searching.do`, getBaseUrl());
-  url.searchParams.append("_sl.stateId", stateId);
-
-  if (integId) {
-    url.searchParams.append("_int.id", integId);
-  }
-
-  window.open(url.toString(), "_self");
-};
