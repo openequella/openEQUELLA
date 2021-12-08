@@ -23,6 +23,7 @@ import com.tle.common.security.SecurityConstants
 import com.tle.common.usermanagement.user.valuebean.{GroupBean, RoleBean, UserBean}
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.ApiErrorResponse.resourceNotFound
+import com.tle.core.security.ACLChecks.hasAclOrThrow
 import io.swagger.annotations.{Api, ApiOperation, ApiParam}
 
 import javax.ws.rs._
@@ -57,6 +58,7 @@ class UserQueryResource {
   @POST
   @Path("lookup")
   def lookup(queries: LookupQuery): LookupQueryResult = {
+    hasAclOrThrow(SecurityConstants.LIST_USERS)
     val us     = LegacyGuice.userService
     val users  = us.getInformationForUsers(queries.users.asJava)
     val groups = us.getInformationForGroups(queries.groups.asJava)
@@ -74,6 +76,7 @@ class UserQueryResource {
       @QueryParam("groups") @DefaultValue("true") @ApiParam("Include groups") sgroups: Boolean,
       @QueryParam("roles") @DefaultValue("true") @ApiParam("Include roles") sroles: Boolean)
     : LookupQueryResult = {
+    hasAclOrThrow(SecurityConstants.LIST_USERS)
     val us     = LegacyGuice.userService
     val users  = if (susers) us.searchUsers(q).asScala else Iterable.empty
     val groups = if (sgroups) us.searchGroups(q).asScala else Iterable.empty
@@ -96,6 +99,7 @@ class UserQueryResource {
       @QueryParam("byGroups") @ApiParam("A list of group UUIDs to filter the search by") groups: Array[
         String]
   ): Response = {
+    hasAclOrThrow(SecurityConstants.LIST_USERS)
     val us = LegacyGuice.userService
     val result: Iterable[UserBean] = groups match {
       case xs if xs.nonEmpty => xs.flatMap(g => us.searchUsers(q, g, true).asScala)

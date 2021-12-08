@@ -162,7 +162,8 @@ export const AdvancedSearchPanel = ({
               onChangeHandler,
               buildVisibilityScriptContext(currentValues, currentUser)
             ).map((e) => (
-              <Grid key={e.props.id} item>
+              // width is a tricky way to fix additional whitespace issue caused by user selector
+              <Grid key={e.props.id} item style={{ width: "100%" }}>
                 {e}
               </Grid>
             ))}
