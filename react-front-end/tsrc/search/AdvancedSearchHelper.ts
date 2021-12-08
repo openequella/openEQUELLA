@@ -42,24 +42,42 @@ import { OrdAsIs } from "../util/Ord";
 import { pfTernaryTypeGuard } from "../util/pointfree";
 import { Action as SearchPageModeAction } from "./SearchPageModeReducer";
 
-// Function to pull values of PathValueMap and copy to FieldValueMap for each unique Schema node.
+/**
+ *  Function to pull values of PathValueMap and copy to FieldValueMap for each unique Schema node.
+ *
+ * @param pathValueMap PathValueMap which provides values of all Schema nodes
+ * @param fieldValueMap FieldValueMap where values will be updated based on the supplied PathValueMap.
+ */
 export const buildFieldValueMapFromPathValueMap = (
   pathValueMap: PathValueMap,
   fieldValueMap: FieldValueMap
 ): FieldValueMap => {
   const pMap = pipe(pathValueMap, M.map(controlValueToStringArray));
 
+  // Given a list of Schema nodes, find out the array of values for each node and then flatten all values into
+  // one array.
+  const fromPathValueMap = (
+    { schemaNode }: ControlTarget,
+    defaultValue: ReadonlyArray<string>
+  ): ControlValue =>
+    pipe(
+      schemaNode,
+      A.map((node) =>
+        pipe(
+          pMap,
+          M.lookup(S.Eq)(node),
+          O.getOrElse(() => defaultValue)
+        )
+      ),
+      A.map(RA.toArray),
+      A.flatten
+    );
+
   return pipe(
     fieldValueMap,
     M.map(controlValueToStringArray),
     M.mapWithIndex<ControlTarget, ReadonlyArray<string>, ControlValue>(
-      ({ schemaNode }, v) =>
-        pipe(
-          schemaNode,
-          A.map((n) => pMap.get(n) ?? v),
-          A.map(RA.toArray),
-          A.flatten // flatten
-        )
+      fromPathValueMap
     )
   );
 };
