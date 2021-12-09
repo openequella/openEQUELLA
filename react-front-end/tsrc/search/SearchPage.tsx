@@ -18,7 +18,7 @@
 import { debounce, Drawer, Grid, Hidden } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
-import { pipe } from "fp-ts/function";
+import { constant, pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as O from "fp-ts/Option";
 import { isEqual } from "lodash";
@@ -43,7 +43,11 @@ import {
   isNonEmptyString,
 } from "../components/wizard/WizardHelper";
 import { AppRenderErrorContext } from "../mainui/App";
-import { NEW_SEARCH_PATH, routes } from "../mainui/routes";
+import {
+  NEW_ADVANCED_SEARCH_PATH,
+  NEW_SEARCH_PATH,
+  routes,
+} from "../mainui/routes";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import {
   getAdvancedSearchByUuid,
@@ -266,6 +270,13 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
     [dispatch]
   );
 
+  const pathname = pipe(
+    advancedSearchId,
+    O.fromNullable,
+    O.map((id) => `${NEW_ADVANCED_SEARCH_PATH}/${id}`),
+    O.getOrElse(constant(NEW_SEARCH_PATH))
+  );
+
   /**
    * Error display -> similar to onError hook, however in the context of reducer need to do manually.
    */
@@ -321,21 +332,20 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
           setAdvancedSearches(advancedSearches);
           setCurrentUser(currentUserDetails);
 
-          const initialAdvancedSearchCriteria = pipe(
-            advancedSearchDefinition,
-            O.fromNullable,
-            O.map((def) =>
-              initialiseAdvancedSearch(
-                def,
-                searchPageModeDispatch,
-                // queryStringSearchOptions takes precedence.
-                queryStringSearchOptions?.advFieldValue ??
-                  searchPageOptions.advFieldValue
-              )
-            ),
-            O.map(generateAdvancedSearchCriteria),
-            O.toUndefined
-          );
+          const [initialAdvSearchFieldValueMap, initialAdvancedSearchCriteria] =
+            pipe(
+              advancedSearchDefinition,
+              O.fromNullable,
+              O.map((def) =>
+                initialiseAdvancedSearch(
+                  def,
+                  searchPageModeDispatch,
+                  searchPageOptions,
+                  queryStringSearchOptions
+                )
+              ),
+              O.getOrElseW(() => [])
+            );
 
           // This is the SearchPageOptions for the first searching, not the one created in the first rendering.
           const initialSearchPageOptions = pipe(
@@ -346,6 +356,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
               dateRangeQuickModeEnabled: false,
               sortOrder: options.sortOrder ?? searchSettings.defaultSearchSort,
               advancedSearchCriteria: initialAdvancedSearchCriteria,
+              advFieldValue: initialAdvSearchFieldValueMap,
               collections:
                 advancedSearchDefinition?.collections ?? options.collections,
             })),
@@ -657,10 +668,9 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
   const handleCopySearch = () => {
     //base institution urls have a trailing / that we need to get rid of
     const instUrl = getBaseUrl().slice(0, -1);
-    const searchUrl = `${instUrl}${
-      location.pathname
-    }?${generateQueryStringFromSearchPageOptions(searchPageOptions)}`;
-
+    const searchUrl = `${instUrl}${pathname}?${generateQueryStringFromSearchPageOptions(
+      searchPageOptions
+    )}`;
     navigator.clipboard
       .writeText(searchUrl)
       .then(() => {
@@ -671,9 +681,9 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
 
   const handleSaveFavouriteSearch = (name: string) => {
     // We only need pathname and query strings.
-    const url = `${
-      location.pathname
-    }?${generateQueryStringFromSearchPageOptions(searchPageOptions)}`;
+    const url = `${pathname}?${generateQueryStringFromSearchPageOptions(
+      searchPageOptions
+    )}`;
 
     return addFavouriteSearch(name, url).then(() =>
       setSnackBar({

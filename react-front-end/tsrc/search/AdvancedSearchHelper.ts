@@ -18,6 +18,7 @@
 
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
+import * as RA from "fp-ts/ReadonlyArray";
 import * as E from "fp-ts/Either";
 import { absurd, identity, pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
@@ -28,35 +29,110 @@ import * as S from "fp-ts/string";
 import {
   ControlTarget,
   ControlValue,
+  controlValueToStringArray,
   extractDefaultValues,
   FieldValueMap,
   getStringArrayControlValue,
   isControlValueNonEmpty,
+  isPathValueMap,
   isStringArray,
+  PathValueMap,
 } from "../components/wizard/WizardHelper";
 import { OrdAsIs } from "../util/Ord";
+import { pfTernaryTypeGuard } from "../util/pointfree";
+import type { SearchPageOptions } from "./SearchPageHelper";
 import { Action as SearchPageModeAction } from "./SearchPageModeReducer";
 
 /**
- * Function to initialise an Advanced search. There are two tasks done here.
+ *  Function to pull values of PathValueMap and copy to FieldValueMap for each unique Schema node.
  *
- * 1. Confirm the initial FieldValueMap. If there is one, use it. Otherwise, build a new one by extracting the default
- * Wizard control values.
+ * @param pathValueMap PathValueMap which provides values of all Schema nodes
+ * @param fieldValueMap FieldValueMap where values will be updated based on the supplied PathValueMap.
+ */
+export const buildFieldValueMapFromPathValueMap = (
+  pathValueMap: PathValueMap,
+  fieldValueMap: FieldValueMap
+): FieldValueMap => {
+  const pMap = pipe(pathValueMap, M.map(controlValueToStringArray));
+
+  // Given a list of Schema nodes, find out the array of values for each node and then flatten all values into
+  // one array.
+  const fromPathValueMap = (
+    { schemaNode }: ControlTarget,
+    defaultValue: ReadonlyArray<string>
+  ): ControlValue =>
+    pipe(
+      schemaNode,
+      A.map((node) =>
+        pipe(
+          pMap,
+          M.lookup(S.Eq)(node),
+          O.getOrElse(() => defaultValue)
+        )
+      ),
+      RA.flatten,
+      RA.toArray
+    );
+
+  return pipe(
+    fieldValueMap,
+    M.map(controlValueToStringArray),
+    M.mapWithIndex<ControlTarget, ReadonlyArray<string>, ControlValue>(
+      fromPathValueMap
+    )
+  );
+};
+
+/**
+ * Function to initialise an Advanced search. There are three tasks done here.
  *
- * 2. Update the state of SearchPageModeReducer to `initialiseAdvSearch`;
+ * 1. Confirm the initial FieldValueMap. If there is an existing one, use it depending on whether it's a FieldValueMap
+ * or a PathValueMap. Otherwise, build a new one by extracting the default Wizard control values.
+ *
+ * 2. Generate the initial Advanced search criteria from the initial FieldValueMap.
+ *
+ * 3. Update the state of SearchPageModeReducer to `initialiseAdvSearch`.
  *
  * @param advancedSearchDefinition The initial Advanced search definition.
  * @param dispatch The `dispatch` provided by SearchPageModeReducer.
- * @param currentFieldValue FieldValueMap that may already exist.
+ * @param stateSearchOptions The SearchPageOptions managed by State.
+ * @param queryStringSearchOptions The SearchPageOptions transformed from query strings.
+ *
+ * @return A tuple including the initial FieldValueMap and the initial Advanced search criteria.
  */
 export const initialiseAdvancedSearch = (
   advancedSearchDefinition: OEQ.AdvancedSearch.AdvancedSearchDefinition,
   dispatch: (action: SearchPageModeAction) => void,
-  currentFieldValue?: FieldValueMap
-): FieldValueMap => {
-  const initialQueryValues =
-    currentFieldValue ??
-    extractDefaultValues(advancedSearchDefinition.controls);
+  stateSearchOptions: SearchPageOptions,
+  queryStringSearchOptions?: SearchPageOptions
+): [FieldValueMap, OEQ.Search.WizardControlFieldValue[]] => {
+  const existingFieldValue: FieldValueMap | PathValueMap | undefined = pipe(
+    queryStringSearchOptions,
+    O.fromNullable,
+    O.map(
+      ({ advFieldValue, legacyAdvSearchCriteria }) =>
+        advFieldValue ?? legacyAdvSearchCriteria
+    ),
+    O.getOrElseW(() => stateSearchOptions.advFieldValue)
+  );
+
+  const defaultValues = extractDefaultValues(advancedSearchDefinition.controls);
+
+  const initialQueryValues = pipe(
+    existingFieldValue,
+    O.fromNullable,
+    O.map(
+      pfTernaryTypeGuard<PathValueMap, FieldValueMap, FieldValueMap>(
+        isPathValueMap,
+        (m) => buildFieldValueMapFromPathValueMap(m, defaultValues),
+        identity
+      )
+    ),
+    O.getOrElse(() => defaultValues)
+  );
+
+  const initialAdvancedSearchCriteria =
+    generateAdvancedSearchCriteria(initialQueryValues);
 
   dispatch({
     type: "initialiseAdvSearch",
@@ -64,7 +140,7 @@ export const initialiseAdvancedSearch = (
     initialQueryValues,
   });
 
-  return initialQueryValues;
+  return [initialQueryValues, initialAdvancedSearchCriteria];
 };
 
 // Function to create an Advanced search criterion for each control type.

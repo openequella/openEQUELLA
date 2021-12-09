@@ -18,8 +18,10 @@
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
-import { pipe } from "fp-ts/function";
+import { flow, pipe } from "fp-ts/function";
+import * as M from "fp-ts/Map";
 import * as O from "fp-ts/Option";
+import * as S from "fp-ts/string";
 import { History, Location } from "history";
 import { pick } from "lodash";
 import {
@@ -37,7 +39,10 @@ import {
   Union,
   Unknown,
 } from "runtypes";
-import type { FieldValueMap } from "../components/wizard/WizardHelper";
+import type {
+  FieldValueMap,
+  PathValueMap,
+} from "../components/wizard/WizardHelper";
 import {
   RuntypesControlTarget,
   RuntypesControlValue,
@@ -70,6 +75,7 @@ import {
 import { findUserById } from "../modules/UserModule";
 import { DateRange, isDate } from "../util/Date";
 import { simpleMatch } from "../util/match";
+import { pfTernary } from "../util/pointfree";
 
 /**
  * This helper is intended to assist with processing related to the Presentation Layer -
@@ -92,6 +98,11 @@ export interface SearchPageOptions extends SearchOptions {
    * Currently configured Advanced search criteria.
    */
   advFieldValue?: FieldValueMap;
+  /**
+   * Advanced search criteria configured in the Old UI. This prop is intended to support searches shared
+   * or favourited from Old UI.
+   */
+  legacyAdvSearchCriteria?: PathValueMap;
 }
 
 export const defaultSearchPageOptions: SearchPageOptions = {
@@ -122,7 +133,8 @@ const LegacySearchParams = Union(
   Literal("in"),
   Literal("mt"),
   Literal("_int.mimeTypes"),
-  Literal("type")
+  Literal("type"),
+  Literal("doc")
 );
 
 type LegacyParams = Static<typeof LegacySearchParams>;
@@ -362,6 +374,88 @@ const getCollectionFromLegacyParams = async (
 const getOwnerFromLegacyParams = async (ownerId: string | undefined) =>
   ownerId ? await findUserById(ownerId) : defaultSearchOptions.owner;
 
+// Function to build a PathValueMap by walking through a XML tree.
+const buildPathValueMap = (node: Element, parentPath = ""): PathValueMap => {
+  const { nodeType, nodeName, textContent, children, TEXT_NODE, attributes } =
+    node;
+  // Skip the path if the node is a TEXT NODE or the node is "xml".
+  const path =
+    nodeType === TEXT_NODE || nodeName === "xml" ? S.empty : `/${nodeName}`;
+  const fullPath = parentPath + path;
+  const buildWithFullPath = (n: Element) => buildPathValueMap(n, fullPath);
+
+  // Function to merge the values of two maps into one array.
+  // For example, given two maps like "/item/options/ => ['a']", "/item/options/ => ['b']",
+  // the result is "/item/options/ => ['a', 'b']"
+  const mergeMaps = (
+    firstMap: Map<string, string[]>,
+    secondMap: Map<string, string[]>
+  ) => pipe(firstMap, M.union(S.Eq, A.getUnionSemigroup(S.Eq))(secondMap));
+
+  const buildMapForLastNode = () =>
+    textContent ? new Map([[fullPath, [textContent]]]) : new Map();
+
+  const valueMap: Map<string, string[]> = pipe(
+    Array.from(children),
+    pfTernary(
+      A.isNonEmpty,
+      flow(
+        A.map(buildWithFullPath),
+        A.filter((m): m is Map<string, string[]> => typeof m !== "undefined"),
+        A.reduce(new Map(), mergeMaps)
+      ),
+      buildMapForLastNode
+    )
+  );
+
+  const attributeMap: Map<string, string[]> = pipe(
+    Array.from(attributes),
+    A.map<Attr, [string, [string]]>(({ name, value }) => [
+      `${fullPath}/@${name}`,
+      [value],
+    ]),
+    M.fromFoldable(S.Eq, A.getSemigroup<string>(), A.Foldable)
+  );
+
+  return mergeMaps(valueMap, attributeMap);
+};
+
+/**
+ * Convert a XML string into a Map where key is a string representing a unique schema node
+ * and value is an array of strings.
+ *
+ * @param s A XML string representing Legacy Advanced search criteria
+ */
+export const processLegacyAdvSearchCriteria = (
+  s: string
+): PathValueMap | undefined => {
+  const parser = new DOMParser();
+
+  // Validate the root element. The element name should be `xml`.
+  const validateFirstNode: (node: Element) => E.Either<string, Element> = flow(
+    E.fromPredicate(
+      ({ nodeName }) => nodeName === "xml",
+      () => "Failed to find root node `xml`"
+    )
+  );
+
+  return pipe(
+    E.tryCatch(
+      () => parser.parseFromString(s, "text/xml"),
+      (reason) =>
+        reason instanceof Error
+          ? reason.message
+          : "Failed to parse the provided XML string"
+    ),
+    E.map(({ documentElement }) => documentElement),
+    E.chain(validateFirstNode),
+    E.mapLeft(console.error),
+    O.fromEither,
+    O.map(buildPathValueMap),
+    O.toUndefined
+  );
+};
+
 /**
  * A function that takes query string params from a shared searching.do URL and converts all applicable params to SearchPageOptions.
  *
@@ -415,6 +509,12 @@ export const legacyQueryStringToSearchPageOptions = async (
     externalMimeTypes,
     rawMode: true,
     displayMode,
+    legacyAdvSearchCriteria: pipe(
+      getQueryParam("doc"),
+      O.fromNullable,
+      O.map(processLegacyAdvSearchCriteria),
+      O.toUndefined
+    ),
   };
 };
 

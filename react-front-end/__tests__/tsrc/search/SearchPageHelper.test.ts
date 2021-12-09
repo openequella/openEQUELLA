@@ -34,6 +34,8 @@ import {
   generateSearchPageOptionsFromQueryString,
   legacyQueryStringToSearchPageOptions,
   newSearchQueryToSearchPageOptions,
+  processLegacyAdvSearchCriteria,
+  SearchPageOptions,
 } from "../../../tsrc/search/SearchPageHelper";
 import type { DateRange } from "../../../tsrc/util/Date";
 import { updateMockGetBaseUrl } from "../BaseUrlHelper";
@@ -180,13 +182,13 @@ describe("legacyQueryStringToSearchOptions", () => {
 
     //Query string was obtained from legacy UI searching.do->Share URL
     const fullQueryString =
-      "?in=C8e3caf16-f3cb-b3dd-d403-e5eb8d545fff&q=test&sort=datecreated&owner=680f5eb7-22e2-4ab6-bcea-25205165e36e&dp=1601510400000&dr=AFTER";
+      "?in=C8e3caf16-f3cb-b3dd-d403-e5eb8d545fff&q=test&sort=datecreated&owner=680f5eb7-22e2-4ab6-bcea-25205165e36e&dp=1601510400000&dr=AFTER&doc=<xml><editbox>box</editbox></xml>";
 
     const convertedParamsPromise = await legacyQueryStringToSearchPageOptions(
       new URLSearchParams(fullQueryString)
     );
 
-    const expectedSearchOptions: SearchOptions = {
+    const expectedSearchOptions: SearchPageOptions = {
       ...defaultConvertedSearchOptions,
       sortOrder: "DATECREATED",
       searchAttachments: true,
@@ -204,6 +206,7 @@ describe("legacyQueryStringToSearchOptions", () => {
         lastName: "Hobson",
       },
       lastModifiedDateRange: { start: new Date("2020-10-01T00:00:00.000Z") },
+      legacyAdvSearchCriteria: new Map([["/editbox", ["box"]]]),
     };
 
     expect(convertedParamsPromise).toEqual(expectedSearchOptions);
@@ -311,6 +314,44 @@ describe("builderOpenSummaryPageHandler", () => {
     const { url } = buildOpenSummaryPageHandler(UUID, VERSION, history);
     expect(url).toBe(
       "http://localhost:8080/vanilla/items/369c92fa-ae59-4845-957d-8fcaa22c15e3/1/?_sl.stateId=1&a=coursesearch"
+    );
+  });
+});
+
+describe("processLegacyAdvSearchCriteria", () => {
+  it("converts a XML string into a PathValueMap", () => {
+    const pathValueMap = processLegacyAdvSearchCriteria(
+      "<xml><name>hello</name></xml>"
+    );
+    expect(pathValueMap).toStrictEqual(new Map([["/name", ["hello"]]]));
+  });
+
+  it("supports one path which has multiple values", () => {
+    const pathValueMap = processLegacyAdvSearchCriteria(
+      "<xml><name>hello</name><name>world</name></xml>"
+    );
+    expect(pathValueMap).toStrictEqual(
+      new Map([["/name", ["hello", "world"]]])
+    );
+  });
+
+  it("drops path which does not have values", () => {
+    const pathValueMap = processLegacyAdvSearchCriteria(
+      "<xml><country>aus</country><city></city><town/></xml>"
+    );
+    expect(pathValueMap).toStrictEqual(new Map([["/country", ["aus"]]]));
+  });
+
+  it("supports a Schema node that targets to an attribute", () => {
+    const pathValueMap = processLegacyAdvSearchCriteria(
+      "<xml><country population='100'><city size='small'>Hobart</city><city size='small'>Darwin</city><city size='medium'>Canberra</city></country></xml>"
+    );
+    expect(pathValueMap).toStrictEqual(
+      new Map([
+        ["/country/city", ["Hobart", "Darwin", "Canberra"]],
+        ["/country/city/@size", ["small", "medium"]],
+        ["/country/@population", ["100"]],
+      ])
     );
   });
 });

@@ -157,6 +157,16 @@ export type FieldValueMap = Map<ControlTarget, ControlValue>;
 export type PathValueMap = Map<string, ControlValue>;
 
 /**
+ * Type guard to check whether a Map is a PathValueMap or FieldValueMap.
+ *
+ * @param m A map that is either a PathValueMap or FieldValueMap.
+ */
+export const isPathValueMap = (
+  m: PathValueMap | FieldValueMap
+): m is PathValueMap =>
+  pipe(m, M.keys(OrdAsIs), isHeadType<string>(S.isString));
+
+/**
  * Creates a function which checks the type of the head of an array using the supplied refinement
  * function. The resulting function returns true when it is passed an array who's head element
  * matches the refinement specifications, otherwise (including if the array is empty) it will
@@ -189,12 +199,13 @@ export const isControlValueNonEmpty = (xs: ControlValue): boolean =>
  * Converts a `ControlValue` to a string array regardless of whether it contains strings or
  * numbers.
  */
-const controlValueToStringArray: (_: ControlValue) => ReadonlyArray<string> =
-  pfTernaryTypeGuard<string[], number[], string[]>(
-    isStringArray,
-    identity,
-    A.map(N.Show.show)
-  );
+export const controlValueToStringArray: (
+  _: ControlValue
+) => ReadonlyArray<string> = pfTernaryTypeGuard<string[], number[], string[]>(
+  isStringArray,
+  identity,
+  A.map(N.Show.show)
+);
 
 /**
  * Type guard which not only checks if a Wizard control value is string but also checks if the value
