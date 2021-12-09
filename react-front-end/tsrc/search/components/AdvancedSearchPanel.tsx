@@ -33,7 +33,10 @@ import * as TE from "fp-ts/TaskEither";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import * as WizardHelper from "../../components/wizard/WizardHelper";
-import { buildVisibilityScriptContext } from "../../components/wizard/WizardHelper";
+import {
+  buildVisibilityScriptContext,
+  WizardErrorContext,
+} from "../../components/wizard/WizardHelper";
 import { getCurrentUserDetails, guestUser } from "../../modules/UserModule";
 import { languageStrings } from "../../util/langstrings";
 import { SearchPageRenderErrorContext } from "../SearchPage";
@@ -152,17 +155,19 @@ export const AdvancedSearchPanel = ({
           direction="column"
           spacing={2}
         >
-          {WizardHelper.render(
-            wizardControls,
-            currentValues,
-            onChangeHandler,
-            buildVisibilityScriptContext(currentValues, currentUser)
-          ).map((e) => (
-            // width is a tricky way to fix additional whitespace issue caused by user selector
-            <Grid key={e.props.id} item style={{ width: "100%" }}>
-              {e}
-            </Grid>
-          ))}
+          <WizardErrorContext.Provider value={{ handleError }}>
+            {WizardHelper.render(
+              wizardControls,
+              currentValues,
+              onChangeHandler,
+              buildVisibilityScriptContext(currentValues, currentUser)
+            ).map((e) => (
+              // width is a tricky way to fix additional whitespace issue caused by user selector
+              <Grid key={e.props.id} item style={{ width: "100%" }}>
+                {e}
+              </Grid>
+            ))}
+          </WizardErrorContext.Provider>
           {hasRequiredFields && (
             <Grid item>
               <Typography variant="caption" color="textSecondary">

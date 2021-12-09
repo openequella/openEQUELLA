@@ -69,6 +69,15 @@ import { WizardSimpleTermSelector } from "./WizardSimpleTermSelector";
 import { WizardUnsupported } from "./WizardUnsupported";
 import { WizardUserSelector } from "./WizardUserSelector";
 
+export const WizardErrorContext = React.createContext<{
+  /**
+   * Function to handle errors thrown from wizard components.
+   */
+  handleError: (error: Error) => void;
+}>({
+  handleError: () => {},
+});
+
 /**
  * Provide basic props a Wizard control component needs.
  */

@@ -34,15 +34,15 @@ import { not } from "fp-ts/Predicate";
 import * as RA from "fp-ts/ReadonlyArray";
 import * as RSET from "fp-ts/ReadonlySet";
 import * as S from "fp-ts/string";
-import * as TE from "fp-ts/TaskEither";
 import * as T from "fp-ts/Task";
+import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
-import { useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { searchTaxonomyTerms } from "../../modules/TaxonomyModule";
 import { languageStrings } from "../../util/langstrings";
 import { OrdAsIs } from "../../util/Ord";
 import { TooltipIconButton } from "../TooltipIconButton";
-import { WizardControlBasicProps } from "./WizardHelper";
+import { WizardControlBasicProps, WizardErrorContext } from "./WizardHelper";
 import { WizardLabel } from "./WizardLabel";
 
 export interface WizardSimpleTermSelectorProps extends WizardControlBasicProps {
@@ -110,6 +110,8 @@ export const WizardSimpleTermSelector = ({
 
   const [loading, setLoading] = useState<boolean>(false);
 
+  const { handleError } = useContext(WizardErrorContext);
+
   const searchTerms = useMemo(
     () =>
       debounce(async (query: string) => {
@@ -136,12 +138,10 @@ export const WizardSimpleTermSelector = ({
 
         pipe(
           await taskChain(),
-          E.fold((e) => {
-            throw new Error(e);
-          }, setOptions)
+          E.fold(flow(E.toError, handleError), setOptions)
         );
       }, 500),
-    [selectionRestriction, selectedTaxonomy, termProvider]
+    [handleError, selectedTaxonomy, selectionRestriction, termProvider]
   );
 
   const removeSelectedTerm = (term: string) =>
