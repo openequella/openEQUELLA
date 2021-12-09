@@ -344,12 +344,12 @@ describe("processLegacyAdvSearchCriteria", () => {
 
   it("supports a Schema node that targets to an attribute", () => {
     const pathValueMap = processLegacyAdvSearchCriteria(
-      "<xml><country population='100'><city size='small'>hobart</city></country></xml>"
+      "<xml><country population='100'><city size='small'>Hobart</city><city size='small'>Darwin</city><city size='medium'>Canberra</city></country></xml>"
     );
     expect(pathValueMap).toStrictEqual(
       new Map([
-        ["/country/city", ["hobart"]],
-        ["/country/city/@size", ["small"]],
+        ["/country/city", ["Hobart", "Darwin", "Canberra"]],
+        ["/country/city/@size", ["small", "medium"]],
         ["/country/@population", ["100"]],
       ])
     );

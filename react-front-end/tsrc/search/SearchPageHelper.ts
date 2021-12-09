@@ -390,7 +390,7 @@ const buildPathValueMap = (node: Element, parentPath = ""): PathValueMap => {
   const mergeMaps = (
     firstMap: Map<string, string[]>,
     secondMap: Map<string, string[]>
-  ) => pipe(firstMap, M.union(S.Eq, A.getSemigroup<string>())(secondMap));
+  ) => pipe(firstMap, M.union(S.Eq, A.getUnionSemigroup(S.Eq))(secondMap));
 
   const buildMapForLastNode = () =>
     textContent ? new Map([[fullPath, [textContent]]]) : new Map();
@@ -417,7 +417,7 @@ const buildPathValueMap = (node: Element, parentPath = ""): PathValueMap => {
     M.fromFoldable(S.Eq, A.getSemigroup<string>(), A.Foldable)
   );
 
-  return pipe(valueMap, M.union(S.Eq, A.getSemigroup<string>())(attributeMap));
+  return mergeMaps(valueMap, attributeMap);
 };
 
 /**
