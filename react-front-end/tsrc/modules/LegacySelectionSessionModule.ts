@@ -17,6 +17,7 @@
  */
 import Axios from "axios";
 import * as A from "fp-ts/Array";
+import * as IO from "fp-ts/IO";
 import * as E from "fp-ts/Either";
 import { flow, identity, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
@@ -243,11 +244,14 @@ const buildSelectionSessionLink = (
   if (includeLayout) {
     url.searchParams.append("a", layout);
   }
-  if (A.isNonEmpty(externalMimeTypes)) {
-    externalMimeTypes.forEach((m) =>
-      url.searchParams.append("_int.mimeTypes", m)
-    );
-  }
+
+  pipe(
+    externalMimeTypes,
+    A.traverse(IO.Applicative)(
+      (mimeType) => () => url.searchParams.append("_int.mimeTypes", mimeType)
+    )
+  )();
+
   return url.toString();
 };
 
