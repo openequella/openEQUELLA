@@ -18,7 +18,7 @@
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
-import { pipe } from "fp-ts/function";
+import { flow, pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as O from "fp-ts/Option";
 import * as S from "fp-ts/string";
@@ -417,9 +417,14 @@ export const processLegacyAdvSearchCriteria = (
 ): PathValueMap | undefined => {
   const parser = new DOMParser();
 
-  // Return `true` when the first node is `<xml>` or when it's null.
-  const validateFirstNode = ({ nodeName }: ChildNode): boolean =>
-    nodeName === "xml";
+  // Return an Either where left is a string of why the validation fails and right is the validated node.
+  const validateFirstNode: (node: ChildNode) => E.Either<string, ChildNode> =
+    flow(
+      E.fromPredicate(
+        ({ nodeName }) => nodeName === "xml",
+        () => "Name of the XML root node must be `xml`."
+      )
+    );
 
   return pipe(
     E.tryCatch(
@@ -432,12 +437,7 @@ export const processLegacyAdvSearchCriteria = (
     E.chainNullableK("Failed to find the root node.")(
       ({ firstChild }) => firstChild
     ),
-    E.chain(
-      E.fromPredicate(
-        validateFirstNode,
-        () => "Name of the XML root node must be `xml`."
-      )
-    ),
+    E.chain(validateFirstNode),
     E.mapLeft(console.error),
     O.fromEither,
     O.map(buildPathValueMap),
