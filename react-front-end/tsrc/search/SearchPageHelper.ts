@@ -75,6 +75,7 @@ import {
 import { findUserById } from "../modules/UserModule";
 import { DateRange, isDate } from "../util/Date";
 import { simpleMatch } from "../util/match";
+import { pfTernary } from "../util/pointfree";
 
 /**
  * This helper is intended to assist with processing related to the Presentation Layer -
@@ -374,16 +375,14 @@ const getOwnerFromLegacyParams = async (ownerId: string | undefined) =>
   ownerId ? await findUserById(ownerId) : defaultSearchOptions.owner;
 
 // Function to build a PathValueMap by walking through a XML tree.
-const buildPathValueMap = (
-  node: ChildNode,
-  parentPath = ""
-): PathValueMap | undefined => {
-  const { nodeType, nodeName, textContent, childNodes, TEXT_NODE } = node;
+const buildPathValueMap = (node: Element, parentPath = ""): PathValueMap => {
+  const { nodeType, nodeName, textContent, children, TEXT_NODE, attributes } =
+    node;
   // Skip the path if the node is a TEXT NODE or the node is "xml".
   const path =
     nodeType === TEXT_NODE || nodeName === "xml" ? S.empty : `/${nodeName}`;
   const fullPath = parentPath + path;
-  const buildWithFullPath = (n: ChildNode) => buildPathValueMap(n, fullPath);
+  const buildWithFullPath = (n: Element) => buildPathValueMap(n, fullPath);
 
   // Function to merge the values of two maps into one array.
   // For example, given two maps like "/item/options/ => ['a']", "/item/options/ => ['b']",
@@ -394,16 +393,31 @@ const buildPathValueMap = (
   ) => pipe(firstMap, M.union(S.Eq, A.getSemigroup<string>())(secondMap));
 
   const buildMapForLastNode = () =>
-    textContent ? new Map([[fullPath, [textContent]]]) : undefined;
+    textContent ? new Map([[fullPath, [textContent]]]) : new Map();
 
-  return node.hasChildNodes()
-    ? pipe(
-        Array.from(childNodes),
+  const valueMap: Map<string, string[]> = pipe(
+    Array.from(children),
+    pfTernary(
+      A.isNonEmpty,
+      flow(
         A.map(buildWithFullPath),
         A.filter((m): m is Map<string, string[]> => typeof m !== "undefined"),
         A.reduce(new Map(), mergeMaps)
-      )
-    : buildMapForLastNode();
+      ),
+      buildMapForLastNode
+    )
+  );
+
+  const attributeMap: Map<string, string[]> = pipe(
+    Array.from(attributes),
+    A.map<Attr, [string, [string]]>(({ name, value }) => [
+      `${fullPath}/@${name}`,
+      [value],
+    ]),
+    M.fromFoldable(S.Eq, A.getSemigroup<string>(), A.Foldable)
+  );
+
+  return pipe(valueMap, M.union(S.Eq, A.getSemigroup<string>())(attributeMap));
 };
 
 /**
@@ -417,14 +431,13 @@ export const processLegacyAdvSearchCriteria = (
 ): PathValueMap | undefined => {
   const parser = new DOMParser();
 
-  // Return an Either where left is a string of why the validation fails and right is the validated node.
-  const validateFirstNode: (node: ChildNode) => E.Either<string, ChildNode> =
-    flow(
-      E.fromPredicate(
-        ({ nodeName }) => nodeName === "xml",
-        () => "Name of the XML root node must be `xml`."
-      )
-    );
+  // Validate the root element. The element name should be `xml`.
+  const validateFirstNode: (node: Element) => E.Either<string, Element> = flow(
+    E.fromPredicate(
+      ({ nodeName }) => nodeName === "xml",
+      () => "Failed to find root node `xml`"
+    )
+  );
 
   return pipe(
     E.tryCatch(
@@ -434,9 +447,7 @@ export const processLegacyAdvSearchCriteria = (
           ? reason.message
           : "Failed to parse the provided XML string"
     ),
-    E.chainNullableK("Failed to find the root node.")(
-      ({ firstChild }) => firstChild
-    ),
+    E.map(({ documentElement }) => documentElement),
     E.chain(validateFirstNode),
     E.mapLeft(console.error),
     O.fromEither,

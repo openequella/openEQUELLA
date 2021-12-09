@@ -341,4 +341,17 @@ describe("processLegacyAdvSearchCriteria", () => {
     );
     expect(pathValueMap).toStrictEqual(new Map([["/country", ["aus"]]]));
   });
+
+  it("supports a Schema node that targets to an attribute", () => {
+    const pathValueMap = processLegacyAdvSearchCriteria(
+      "<xml><country population='100'><city size='small'>hobart</city></country></xml>"
+    );
+    expect(pathValueMap).toStrictEqual(
+      new Map([
+        ["/country/city", ["hobart"]],
+        ["/country/city/@size", ["small"]],
+        ["/country/@population", ["100"]],
+      ])
+    );
+  });
 });
