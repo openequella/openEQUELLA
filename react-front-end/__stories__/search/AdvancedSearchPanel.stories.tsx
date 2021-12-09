@@ -42,6 +42,7 @@ export const Simple: Story<AdvancedSearchPanelProps> = (args) => (
 );
 Simple.args = {
   wizardControls: controls,
+  values: new Map(),
 };
 
 export const NoRequiredFields: Story<AdvancedSearchPanelProps> = (args) => (
@@ -51,4 +52,5 @@ NoRequiredFields.args = {
   wizardControls: controls.map((c) =>
     OEQ.WizardControl.isWizardBasicControl(c) ? { ...c, mandatory: false } : c
   ),
+  values: new Map(),
 };

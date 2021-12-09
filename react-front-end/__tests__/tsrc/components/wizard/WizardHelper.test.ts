@@ -24,11 +24,13 @@ import * as R from "fp-ts/Record";
 import { mockWizardControlFactory } from "../../../../__mocks__/AdvancedSearchModule.mock";
 import { controls } from "../../../../__mocks__/WizardHelper.mock";
 import {
+  buildVisibilityScriptContext,
   ControlTarget,
   FieldValue,
   FieldValueMap,
   render,
 } from "../../../../tsrc/components/wizard/WizardHelper";
+import { guestUser } from "../../../../tsrc/modules/UserModule";
 import { simpleMatch } from "../../../../tsrc/util/match";
 
 /**
@@ -41,8 +43,10 @@ const countBy =
     pipe(as, NEA.groupBy(by), R.map(A.size));
 
 describe("render()", () => {
-  const logOnChange = (update: FieldValue): void =>
-    console.debug("onChange called", update);
+  const logOnChange = (updates: FieldValue[]): void =>
+    console.debug("onChange called", updates);
+
+  const noFieldValues = new Map();
 
   const nameEditboxTarget: ControlTarget = {
     type: "editbox",
@@ -50,7 +54,12 @@ describe("render()", () => {
   };
 
   it("creates JSX.Elements matching definition", () => {
-    const elements: JSX.Element[] = render(controls, new Map(), logOnChange);
+    const elements: JSX.Element[] = render(
+      controls,
+      noFieldValues,
+      logOnChange,
+      buildVisibilityScriptContext(noFieldValues, guestUser)
+    );
     expect(elements).toHaveLength(controls.length);
 
     const expectedComponentCount = pipe(
@@ -82,7 +91,12 @@ describe("render()", () => {
   });
 
   it("creates WizardUnsupported components for unknown/unsupported ones", () => {
-    const elements: JSX.Element[] = render(controls, new Map(), logOnChange);
+    const elements: JSX.Element[] = render(
+      controls,
+      noFieldValues,
+      logOnChange,
+      buildVisibilityScriptContext(noFieldValues, guestUser)
+    );
     expect(
       elements.filter((e) => e.type.name === "WizardUnsupported")
     ).toHaveLength(1);
@@ -91,8 +105,9 @@ describe("render()", () => {
   it("handles `controlType === 'unknown'` - i.e. `UnknownWizardControl`", () => {
     const elements: JSX.Element[] = render(
       [{ controlType: "unknown" }],
-      new Map(),
-      logOnChange
+      noFieldValues,
+      logOnChange,
+      buildVisibilityScriptContext(noFieldValues, guestUser)
     );
     expect(
       elements.filter((e) => e.type.name === "WizardUnsupported")
@@ -122,10 +137,12 @@ describe("render()", () => {
       // smoke test the test data
       expect(value.value[0]).toBeTruthy();
 
+      const fieldValues = M.singleton(value.target, value.value);
       const elements = render(
         controls,
-        M.singleton(value.target, value.value),
-        logOnChange
+        fieldValues,
+        logOnChange,
+        buildVisibilityScriptContext(fieldValues, guestUser)
       );
       // Test the field(s) were set
       expect(
@@ -135,8 +152,14 @@ describe("render()", () => {
   );
 
   it("throws an error if the incorrect control value type is provided", () => {
+    const fieldValues = M.singleton(nameEditboxTarget, [1]);
     expect(() =>
-      render(controls, M.singleton(nameEditboxTarget, [1]), logOnChange)
+      render(
+        controls,
+        fieldValues,
+        logOnChange,
+        buildVisibilityScriptContext(fieldValues, guestUser)
+      )
     ).toThrow(TypeError);
   });
 
@@ -148,6 +171,7 @@ describe("render()", () => {
     );
   const simpleContainsScript = `return xml.contains('${checkBoxSchemaNode}', 'one');`;
   const simpleGetScript = `return xml.get('${checkBoxSchemaNode}') === 'one';`;
+  const aRoleUuid = "f618d610-2191-4a2c-b699-acb833d5b10f";
   it.each<[string, string | undefined, FieldValueMap, number]>([
     ["control case (no script)", undefined, new Map(), 2],
     [
@@ -169,6 +193,18 @@ describe("render()", () => {
       `return xml.get('${checkBoxSchemaNode}') === '';`,
       new Map(),
       2,
+    ],
+    [
+      "user.hasRole (visible)",
+      `return user.hasRole('${aRoleUuid}');`,
+      new Map(),
+      2,
+    ],
+    [
+      "user.hasRole (hidden - due to not having role)",
+      `return user.hasRole('rubbish-role');`,
+      new Map(),
+      1,
     ],
   ])(
     "hides controls based on visibility scripts - %s",
@@ -197,8 +233,51 @@ describe("render()", () => {
         },
       ];
 
-      const visibleControls = render(testControls, values, jest.fn());
+      const visibleControls = render(
+        testControls,
+        values,
+        jest.fn(),
+        buildVisibilityScriptContext(values, {
+          ...guestUser,
+          roles: [aRoleUuid],
+        })
+      );
       expect(visibleControls).toHaveLength(controlsVisible);
     }
   );
+
+  it("calls onChange to clear the value for any hidden control", () => {
+    const testNode = "/item/hidden";
+    const testTarget: ControlTarget = {
+      schemaNode: [testNode],
+      type: "editbox",
+      isValueTokenised: true,
+    };
+    const testValues: FieldValueMap = M.singleton(testTarget, ["test value"]);
+    const mockOnChange = jest.fn();
+
+    render(
+      [
+        {
+          ...mockWizardControlFactory({
+            controlType: "editbox",
+            mandatory: false,
+            schemaNodes: [{ target: testNode, attribute: "" }],
+            options: [],
+            defaultValues: [],
+          }),
+          visibilityScript: "return false;", // i.e. always hidden - no need to get tricky
+        },
+      ],
+      testValues,
+      mockOnChange,
+      buildVisibilityScriptContext(testValues, guestUser)
+    );
+
+    expect(mockOnChange).toHaveBeenCalledTimes(1);
+    // Note value being cleared via `[]`
+    expect(mockOnChange).toHaveBeenCalledWith([
+      { target: testTarget, value: [] },
+    ]);
+  });
 });

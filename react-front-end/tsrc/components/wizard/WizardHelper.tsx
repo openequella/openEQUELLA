@@ -35,6 +35,7 @@ import * as RA from "fp-ts/ReadonlyArray";
 import * as RSET from "fp-ts/ReadonlySet";
 import { Refinement } from "fp-ts/Refinement";
 import { first } from "fp-ts/Semigroup";
+import * as SEP from "fp-ts/Separated";
 import * as SET from "fp-ts/Set";
 import * as S from "fp-ts/string";
 import * as React from "react";
@@ -50,6 +51,7 @@ import {
 } from "runtypes";
 import {
   buildVisibilityScript,
+  ScriptContext,
   UserScriptObject,
   XmlScriptType,
 } from "../../modules/ScriptingModule";
@@ -66,6 +68,15 @@ import { WizardShuffleList } from "./WizardShuffleList";
 import { WizardSimpleTermSelector } from "./WizardSimpleTermSelector";
 import { WizardUnsupported } from "./WizardUnsupported";
 import { WizardUserSelector } from "./WizardUserSelector";
+
+export const WizardErrorContext = React.createContext<{
+  /**
+   * Function to handle errors thrown from wizard components.
+   */
+  handleError: (error: Error) => void;
+}>({
+  handleError: () => {},
+});
 
 /**
  * Provide basic props a Wizard control component needs.
@@ -498,15 +509,30 @@ const buildXmlScriptObject = (values: PathValueMap): XmlScriptType =>
     })
   );
 
-// TODO: Build proper object from a passed in `OEQ.LegacyContent.CurrentUserDetails`. It is assumed
-// such an object is retrieved earlier and cached somewhere ready for quick consumption here. This
-// function should not be async - that'd be excessive.
-const buildUserScriptObject =
-  (/* userDetails: OEQ.LegacyContent.CurrentUserDetails */): UserScriptObject => ({
-    hasRole: (roleUniqueID) => {
-      throw new Error("TODO: Still need to implement hasRole!!");
-    },
-  });
+const buildUserScriptObject = (
+  userDetails: OEQ.LegacyContent.CurrentUserDetails
+): UserScriptObject => ({
+  getEmail: () => userDetails.emailAddress,
+  getFirstName: () => userDetails.firstName,
+  getID: () => userDetails.id,
+  getLastName: () => userDetails.lastName,
+  getUsername: () => userDetails.username,
+  hasRole: (roleUniqueID) => userDetails.roles.includes(roleUniqueID),
+});
+
+/**
+ * Build a script context suitable for visibility scripts based on the current values of a wizard
+ * and a user's details.
+ * @param fieldValues the values of the various fields in the current wizard
+ * @param user details of typically the current user
+ */
+export const buildVisibilityScriptContext = (
+  fieldValues: FieldValueMap,
+  user: OEQ.LegacyContent.CurrentUserDetails
+): ScriptContext => ({
+  xml: pipe(fieldValues, valuesByNode, buildXmlScriptObject),
+  user: buildUserScriptObject(user),
+});
 
 /**
  * Produces an array of `JSX.Element`s representing the wizard defined by the provided `controls`.
@@ -522,19 +548,24 @@ const buildUserScriptObject =
  *               no value, then it should not be in the collection.
  * @param onChange The high level callback to use to update `values` - this will be wrapped so that
  *                 Wizard components only have to worry about calling a typical simple callback
- *                 with their updated value.
+ *                 with their updated value. Takes an array so as to support bulk-updating of values
+ *                 for controls which may be hidden due to visibility scripting. (But could also be
+ *                 used for other optimisations.)
+ * @param visibilityScriptContext The `ScriptContext` to be used when evaluating any visibility
+ *                                scripts defined in the `controls`.
  */
 export const render = (
   controls: OEQ.WizardControl.WizardControl[],
   values: FieldValueMap,
-  onChange: (update: FieldValue) => void
+  onChange: (updates: FieldValue[]) => void,
+  visibilityScriptContext: ScriptContext
 ): JSX.Element[] => {
   const buildOnChangeHandler = (
     c: OEQ.WizardControl.WizardControl
   ): ((value: ControlValue) => void) =>
     OEQ.WizardControl.isWizardBasicControl(c)
       ? (value: ControlValue) =>
-          onChange({ target: buildControlTarget(c), value })
+          onChange([{ target: buildControlTarget(c), value }])
       : (_) => {
           throw new Error(
             "Unexpected onChange called for non-WizardBasicControl."
@@ -553,10 +584,45 @@ export const render = (
     O.toUndefined
   );
 
-  const visibilityScriptContext = {
-    user: buildUserScriptObject(),
-    xml: pipe(values, valuesByNode, buildXmlScriptObject),
-  };
+  // Check to see if the control currently has a value
+  const hasValue: (_: OEQ.WizardControl.WizardBasicControl) => boolean = flow(
+    retrieveControlsValue,
+    O.fromNullable,
+    O.map(isControlValueNonEmpty),
+    O.getOrElse(constFalse)
+  );
+
+  const clearControls: (
+    _: ReadonlyArray<OEQ.WizardControl.WizardControl>
+  ) => O.Option<void> = flow(
+    RA.filter(OEQ.WizardControl.isWizardBasicControl),
+    // Only call the onChange if field currently has a value - or we'll end up in an infinite render
+    RA.filter(hasValue),
+    // Only call the onChange if there are changes - or we'll end up in an infinite render loop
+    O.fromPredicate(RA.isNonEmpty),
+    O.map(
+      flow(
+        RA.map((c) => ({ target: buildControlTarget(c), value: [] })),
+        RA.toArray,
+        onChange
+      )
+    )
+  );
+
+  const buildWizardControls: (
+    _: ReadonlyArray<OEQ.WizardControl.WizardControl>
+  ) => JSX.Element[] = flow(
+    RA.mapWithIndex((idx, c) =>
+      controlFactory(
+        `wiz-${idx}-${c.controlType}`,
+        c,
+        buildOnChangeHandler(c),
+        values,
+        retrieveControlsValue(c)
+      )
+    ),
+    RA.toArray
+  );
 
   // Using a control's visibility script (if available) and the current values of other controls,
   // determine if this control should be visible. Defaults to true/visible if there are any
@@ -578,20 +644,14 @@ export const render = (
     O.getOrElse(constTrue)
   );
 
-  // Build the controls
   return pipe(
     controls,
-    RA.filter(isVisible),
-    RA.mapWithIndex((idx, c) =>
-      controlFactory(
-        `wiz-${idx}-${c.controlType}`,
-        c,
-        buildOnChangeHandler(c),
-        values,
-        retrieveControlsValue(c)
-      )
-    ),
-    RA.toArray
+    RA.partition(isVisible),
+    // Clear values of all hidden controls - with a bulk call to onChange
+    SEP.mapLeft(clearControls),
+    // For all visible controls, build JSX.Elements
+    SEP.map(buildWizardControls),
+    SEP.right
   );
 };
 

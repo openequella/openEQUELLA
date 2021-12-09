@@ -28,6 +28,7 @@ import { ReactNode, useCallback } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { getRouterBaseName } from "../AppConfig";
 import MessageInfo from "../components/MessageInfo";
+import { getAdvancedSearchIdFromLocation } from "../modules/AdvancedSearchModule";
 import { getOeqTheme } from "../modules/ThemeModule";
 import { startHeartbeat } from "../util/heartbeat";
 import { simpleMatch } from "../util/match";
@@ -150,7 +151,12 @@ const App = ({ entryPage }: AppProps): JSX.Element => {
         },
         searchPage: () => (
           <NewPage classPrefix="oeq-nsp">
-            <SearchPage updateTemplate={nop} />
+            <SearchPage
+              updateTemplate={nop}
+              advancedSearchId={getAdvancedSearchIdFromLocation(
+                window.location
+              )}
+            />
           </NewPage>
         ),
         settingsPage: () => (

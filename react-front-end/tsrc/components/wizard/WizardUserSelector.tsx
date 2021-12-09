@@ -26,12 +26,11 @@ import {
 } from "@material-ui/core";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import AddIcon from "@material-ui/icons/Add";
-import ClearIcon from "@material-ui/icons/Clear";
 import DeleteIcon from "@material-ui/icons/Delete";
-import ErrorIcon from "@material-ui/icons/Error";
 import ListIcon from "@material-ui/icons/List";
 import * as OEQ from "@openequella/rest-api-client";
-import { flow, pipe } from "fp-ts/function";
+import * as E from "fp-ts/Either";
+import { flow, identity, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as ORD from "fp-ts/Ord";
 import * as RA from "fp-ts/ReadonlyArray";
@@ -39,7 +38,7 @@ import * as RSET from "fp-ts/ReadonlySet";
 import * as S from "fp-ts/string";
 import * as T from "fp-ts/Task";
 import * as TE from "fp-ts/TaskEither";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   eqUserById,
   resolveUsers,
@@ -50,7 +49,7 @@ import {
 import { languageStrings } from "../../util/langstrings";
 import { SelectUserDialog } from "../SelectUserDialog";
 import { TooltipIconButton } from "../TooltipIconButton";
-import { WizardControlBasicProps } from "./WizardHelper";
+import { WizardControlBasicProps, WizardErrorContext } from "./WizardHelper";
 import { WizardLabel } from "./WizardLabel";
 
 const {
@@ -70,32 +69,6 @@ let userCache: UserCache = {};
 const updateUserCache = (newCache: UserCache): void => {
   userCache = newCache;
 };
-
-interface ListItemErrorProps {
-  /**
-   * The error to display.
-   */
-  error: string;
-  /**
-   * Handler for when the clear button is clicked.
-   */
-  onClear: () => void;
-}
-
-/**
- * Display component for display any errors in the list of users.
- */
-const ListItemError = ({ error, onClear }: ListItemErrorProps): JSX.Element => (
-  <ListItem>
-    <ListItemIcon>
-      <ErrorIcon />
-    </ListItemIcon>
-    <ListItemText primary={error} />
-    <TooltipIconButton title={commonActionStrings.clear} onClick={onClear}>
-      <ClearIcon />
-    </TooltipIconButton>
-  </ListItem>
-);
 
 interface ListItemUserProps {
   /**
@@ -191,10 +164,11 @@ export const WizardUserSelector = ({
 }: WizardUserSelectorProps): JSX.Element => {
   const [showSelectUserDialog, setShowSelectUserDialog] =
     useState<boolean>(false);
-  const [error, setError] = useState<string>();
   const [fullUsers, setFullUsers] = useState<
     ReadonlySet<OEQ.UserQuery.UserDetails>
   >(new Set());
+
+  const { handleError } = useContext(WizardErrorContext);
 
   // Update `fullUsers` when `users` changes
   useEffect(() => {
@@ -218,16 +192,31 @@ export const WizardUserSelector = ({
       // We use the cached version to avoid excessive server calls in the two way binding
       // of `users` and `onChange`
       resolveUsersCached(userCache, updateUserCache, resolveUsersProvider),
-      TE.match(setError, updateFullUsers)
+      // Report any errors
+      TE.mapLeft(flow(E.toError, handleError)),
+      // But either way ensure we've got something to show
+      TE.match(
+        () =>
+          pipe(
+            users,
+            RSET.map(eqUserById)((id: string) => ({
+              id,
+              username: id,
+              firstName: S.empty,
+              lastName: S.empty,
+            }))
+          ),
+        identity
+      ),
+      T.map(updateFullUsers)
     );
 
     (async () => await processUsersUpdate())();
-  }, [users, fullUsers, resolveUsersProvider]);
+  }, [fullUsers, handleError, resolveUsersProvider, users]);
 
   const handleCloseSelectUserDialog = (
     selection?: OEQ.UserQuery.UserDetails
   ) => {
-    setError(undefined);
     setShowSelectUserDialog(false);
 
     const callOnChange = (
@@ -279,12 +268,6 @@ export const WizardUserSelector = ({
               </ListItemSecondaryAction>
             </ListItem>
             {!RSET.isEmpty(users) && <Divider />}
-            {error && (
-              <ListItemError
-                error={error}
-                onClear={() => setError(undefined)}
-              />
-            )}
             {pipe(
               fullUsersArray,
               RA.map<OEQ.UserQuery.UserDetails, JSX.Element>(

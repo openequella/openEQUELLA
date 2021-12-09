@@ -29,10 +29,17 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { constFalse, flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import React, { useCallback, useEffect, useState } from "react";
+import * as TE from "fp-ts/TaskEither";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import * as WizardHelper from "../../components/wizard/WizardHelper";
+import {
+  buildVisibilityScriptContext,
+  WizardErrorContext,
+} from "../../components/wizard/WizardHelper";
+import { getCurrentUserDetails, guestUser } from "../../modules/UserModule";
 import { languageStrings } from "../../util/langstrings";
+import { SearchPageRenderErrorContext } from "../SearchPage";
 
 export interface AdvancedSearchPanelProps {
   /**
@@ -69,8 +76,31 @@ export const AdvancedSearchPanel = ({
   onSubmit,
   onClear,
 }: AdvancedSearchPanelProps) => {
+  const { handleError } = useContext(SearchPageRenderErrorContext);
   const [currentValues, setCurrentValues] =
     useState<WizardHelper.FieldValueMap>(values);
+  const [currentUser, setCurrentUser] =
+    useState<OEQ.LegacyContent.CurrentUserDetails>(guestUser);
+
+  // For visibility scripting we need to have the current user's details
+  useEffect(() => {
+    const initUser = pipe(
+      TE.tryCatch(getCurrentUserDetails, (reason: unknown) =>
+        reason instanceof Error
+          ? reason
+          : new Error("Failed to retrieve current user details: " + reason)
+      ),
+      TE.match(handleError, setCurrentUser)
+    );
+
+    (async () => await initUser())();
+  }, [handleError]);
+
+  // Keep the values in state (CurrentValues) in sync with those passed in
+  // by props (values). Key when the clear button is triggered.
+  useEffect(() => {
+    setCurrentValues(values);
+  }, [values]);
 
   const hasRequiredFields: boolean = pipe(
     wizardControls,
@@ -84,25 +114,25 @@ export const AdvancedSearchPanel = ({
   );
 
   const onChangeHandler = useCallback(
-    ({ target, value }: WizardHelper.FieldValue): void => {
+    (updates: WizardHelper.FieldValue[]): void => {
       console.debug("AdvancedSearchPanel : onChangeHandler called.", {
         currentValues,
-        update: {
-          target,
-          value,
-        },
+        updates,
       });
-      setCurrentValues(
-        pipe(currentValues, WizardHelper.fieldValueMapInsert(target, value))
+      pipe(
+        updates,
+        A.reduce(
+          currentValues,
+          (
+            valueMap: WizardHelper.FieldValueMap,
+            { target, value }: WizardHelper.FieldValue
+          ) => pipe(valueMap, WizardHelper.fieldValueMapInsert(target, value))
+        ),
+        setCurrentValues
       );
     },
     [currentValues, setCurrentValues]
   );
-
-  // handle props `value` changing event
-  useEffect(() => {
-    setCurrentValues(values);
-  }, [values]);
 
   const idPrefix = "advanced-search-panel";
   return (
@@ -125,15 +155,19 @@ export const AdvancedSearchPanel = ({
           direction="column"
           spacing={2}
         >
-          {WizardHelper.render(
-            wizardControls,
-            currentValues,
-            onChangeHandler
-          ).map((e) => (
-            <Grid key={e.props.id} item>
-              {e}
-            </Grid>
-          ))}
+          <WizardErrorContext.Provider value={{ handleError }}>
+            {WizardHelper.render(
+              wizardControls,
+              currentValues,
+              onChangeHandler,
+              buildVisibilityScriptContext(currentValues, currentUser)
+            ).map((e) => (
+              // width is a tricky way to fix additional whitespace issue caused by user selector
+              <Grid key={e.props.id} item style={{ width: "100%" }}>
+                {e}
+              </Grid>
+            ))}
+          </WizardErrorContext.Provider>
           {hasRequiredFields && (
             <Grid item>
               <Typography variant="caption" color="textSecondary">
