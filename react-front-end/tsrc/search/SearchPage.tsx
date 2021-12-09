@@ -184,18 +184,22 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
     { mode: "normal" }
   );
 
+  // Function to navigate Search page or Advanced search page to another page. If in Selection Session,
+  // call the provided path builder to generate a Selection Session specific path.
+  const navigateTo = (
+    normalPath: string,
+    selectionSessionPathBuilder: () => string
+  ) => {
+    isSelectionSessionOpen()
+      ? window.open(selectionSessionPathBuilder(), "_self")
+      : history.push(normalPath);
+  };
+
   const exitAdvancedSearchMode = () => {
     searchPageModeDispatch({ type: "useNormal" });
-    if (isSelectionSessionOpen()) {
-      window.open(
-        buildSelectionSessionSearchPageLink(
-          searchPageOptions.externalMimeTypes
-        ),
-        "_self"
-      );
-    } else {
-      history.push(NEW_SEARCH_PATH);
-    }
+    navigateTo(NEW_SEARCH_PATH, () =>
+      buildSelectionSessionSearchPageLink(searchPageOptions.externalMimeTypes)
+    );
   };
 
   const defaultSearchPageHistory: SearchPageHistoryState = {
@@ -541,15 +545,12 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
   ) => {
     if (selection) {
       const { uuid } = selection;
-      isSelectionSessionOpen()
-        ? window.open(
-            buildSelectionSessionAdvancedSearchLink(
-              uuid,
-              searchPageOptions.externalMimeTypes
-            ),
-            "_self"
-          )
-        : history.push(routes.NewAdvancedSearch.to(uuid));
+      navigateTo(routes.NewAdvancedSearch.to(uuid), () =>
+        buildSelectionSessionAdvancedSearchLink(
+          uuid,
+          searchPageOptions.externalMimeTypes
+        )
+      );
     } else {
       exitAdvancedSearchMode();
     }
