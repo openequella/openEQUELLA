@@ -235,6 +235,7 @@ describe("buildSelectionSessionAdvancedSearchLink", () => {
     updateMockGetRenderData(basicRenderData);
     updateMockGetBaseUrl();
   });
+
   const advSearchId = "72558c1d-8788-4515-86c8-b24a28cc451e";
 
   it("builds a link for accessing an Advanced search", () => {

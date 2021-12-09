@@ -19,7 +19,7 @@ import Axios from "axios";
 import * as A from "fp-ts/Array";
 import * as IO from "fp-ts/IO";
 import * as E from "fp-ts/Either";
-import { flow, identity, pipe } from "fp-ts/function";
+import { flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import {
   API_BASE_URL,
@@ -275,7 +275,7 @@ export const buildSelectionSessionRemoteSearchLink = (uuid: string): string =>
   buildSelectionSessionLink(routes.RemoteSearch.to(uuid));
 
 /**
- * Build a Selection Session specific Advanced search Link. The link will contains a list of MIME types if provided by LMS.
+ * Build a Selection Session specific Advanced search Link. The link will contain a list of MIME types if provided by LMS.
  * Recommended to first call `isSelectionSessionOpen()` before use.
  *
  * @param uuid The UUID of an Advanced search
@@ -293,7 +293,7 @@ export const buildSelectionSessionAdvancedSearchLink = (
 
 /**
  * Build a Selection Session specific Search page link. The three Selection Session layouts are supported.
- * The link will contains a list of MIME types if provided by LMS.
+ * The link will contain a list of MIME types if provided by LMS.
  * Recommended to first call `isSelectionSessionOpen()` before use.
  *
  * @param externalMimeTypes A list of MIME types provided by LMS.
@@ -311,8 +311,7 @@ export const buildSelectionSessionSearchPageLink = (
       _: () => {
         throw new Error("Unknown Selection Session layout");
       },
-    }),
-    identity
+    })
   );
 
   return buildSelectionSessionLink(
