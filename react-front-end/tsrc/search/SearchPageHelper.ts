@@ -20,7 +20,7 @@ import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import { Location } from "history";
+import { History, Location } from "history";
 import { pick } from "lodash";
 import {
   Array as RuntypeArray,
@@ -37,11 +37,11 @@ import {
   Union,
   Unknown,
 } from "runtypes";
+import type { FieldValueMap } from "../components/wizard/WizardHelper";
 import {
   RuntypesControlTarget,
   RuntypesControlValue,
 } from "../components/wizard/WizardHelper";
-import type { FieldValueMap } from "../components/wizard/WizardHelper";
 import { routes } from "../mainui/routes";
 import {
   clearDataFromLocalStorage,
@@ -70,7 +70,6 @@ import {
 import { findUserById } from "../modules/UserModule";
 import { DateRange, isDate } from "../util/Date";
 import { simpleMatch } from "../util/match";
-import { History } from "history";
 
 /**
  * This helper is intended to assist with processing related to the Presentation Layer -

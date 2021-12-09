@@ -16,11 +16,13 @@
  * limitations under the License.
  */
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
-import type { RenderData } from "../../../tsrc/AppConfig";
+import type { RenderData, SelectionSessionInfo } from "../../../tsrc/AppConfig";
 import {
   buildPostDataForSelectOrAdd,
   buildPostDataForStructured,
+  buildSelectionSessionAdvancedSearchLink,
   buildSelectionSessionItemSummaryLink,
+  buildSelectionSessionSearchPageLink,
   isSelectionSessionOpen,
   isSelectSummaryButtonDisabled,
   SelectionSessionPostData,
@@ -29,6 +31,7 @@ import { languageStrings } from "../../../tsrc/util/langstrings";
 import { defaultBaseUrl, updateMockGetBaseUrl } from "../BaseUrlHelper";
 import {
   basicRenderData,
+  basicSelectionSessionInfo,
   renderDataForSelectOrAdd,
   selectSummaryButtonDisabled,
   updateMockGetRenderData,
@@ -223,6 +226,58 @@ describe("isSelectSummaryButtonDisabled", () => {
     ) => {
       updateMockGetRenderData(renderData);
       expect(isSelectSummaryButtonDisabled()).toBe(isButtonDisabled);
+    }
+  );
+});
+
+describe("buildSelectionSessionAdvancedSearchLink", () => {
+  beforeEach(() => {
+    updateMockGetRenderData(basicRenderData);
+    updateMockGetBaseUrl();
+  });
+
+  const advSearchId = "72558c1d-8788-4515-86c8-b24a28cc451e";
+
+  it("builds a link for accessing an Advanced search", () => {
+    const link = buildSelectionSessionAdvancedSearchLink(advSearchId);
+    expect(link).toBe(
+      "http://localhost:8080/vanilla/advanced/searching.do?in=P72558c1d-8788-4515-86c8-b24a28cc451e&editquery=true&_sl.stateId=1"
+    );
+  });
+
+  it("supports including external MIME types in the link", () => {
+    const link = buildSelectionSessionAdvancedSearchLink(advSearchId, [
+      "image/gif",
+    ]);
+    expect(link).toBe(
+      "http://localhost:8080/vanilla/advanced/searching.do?in=P72558c1d-8788-4515-86c8-b24a28cc451e&editquery=true&_sl.stateId=1&_int.mimeTypes=image%2Fgif"
+    );
+  });
+});
+
+describe("buildSelectionSessionSearchPageLink", () => {
+  it.each<[string, SelectionSessionInfo, string]>([
+    ["structured", basicSelectionSessionInfo, "access/course"],
+    [
+      "selectoradd",
+      { ...basicSelectionSessionInfo, layout: "search" },
+      "selectoradd",
+    ],
+    [
+      "skinny",
+      { ...basicSelectionSessionInfo, layout: "skinnysearch" },
+      "access/skinny",
+    ],
+  ])(
+    "builds a link for accessing search page in %s layout",
+    (layout: string, selectionSessionInfo: SelectionSessionInfo, path) => {
+      updateMockGetRenderData({ ...basicRenderData, selectionSessionInfo });
+      updateMockGetBaseUrl();
+      const link = buildSelectionSessionSearchPageLink(["image/gif"]);
+
+      expect(link).toBe(
+        `http://localhost:8080/vanilla/${path}/searching.do?_sl.stateId=1&_int.mimeTypes=image%2Fgif`
+      );
     }
   );
 });
