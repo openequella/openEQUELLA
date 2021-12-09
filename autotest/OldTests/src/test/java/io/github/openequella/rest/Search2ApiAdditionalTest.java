@@ -123,6 +123,7 @@ public class Search2ApiAdditionalTest extends AbstractRestApiTest {
             new String[] {"/item/controls/checkboxes"}, new String[] {"1", "2"}, "Phrase");
 
     JsonNode result = doSearch((Collections.singleton(controlValue)));
+    System.out.println(result.get("results"));
     assertEquals(getAvailable(result), 3);
   }
 
@@ -164,6 +165,7 @@ public class Search2ApiAdditionalTest extends AbstractRestApiTest {
             "DateRange");
 
     JsonNode result = doSearch((Collections.singleton(controlValue)));
+    System.out.println(result.get("results"));
     assertEquals(getAvailable(result), expectNumber);
   }
 
