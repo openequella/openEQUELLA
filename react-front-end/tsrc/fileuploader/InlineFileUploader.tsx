@@ -296,14 +296,15 @@ export const InlineFileUploader = ({
    */
   const buildActions = (file: UploadedFile | UploadingFile): UploadAction[] => {
     if (isUploadedFile(file)) {
+      if (!editable) return [];
       const basicAction = [
         {
           onClick: () => onDelete(file),
           text: strings.delete,
         },
       ];
-      const { id, editable } = file.fileEntry;
-      return editable
+      const { id, editable: fileEditable } = file.fileEntry;
+      return fileEditable
         ? [
             {
               onClick: () => onEdit(id),
