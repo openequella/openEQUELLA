@@ -295,8 +295,20 @@ export const InlineFileUploader = ({
    * Build three text buttons for UploadedFile or one icon button for UploadingFile.
    */
   const buildActions = (file: UploadedFile | UploadingFile): UploadAction[] => {
-    if (isUploadedFile(file)) {
-      if (!editable) return [];
+    const uploadComplete = isUploadedFile(file);
+
+    if (!uploadComplete) {
+      return [
+        {
+          onClick: () => onCancel(file.localId),
+          text: strings.cancel,
+          icon: <CancelIcon />,
+        },
+      ];
+    } else if (!editable) {
+      // No further actions available
+      return [];
+    } else {
       const basicAction = [
         {
           onClick: () => onDelete(file),
@@ -304,7 +316,7 @@ export const InlineFileUploader = ({
         },
       ];
       const { id, editable: fileEditable } = file.fileEntry;
-      return fileEditable
+      const actions = fileEditable
         ? [
             {
               onClick: () => onEdit(id),
@@ -317,14 +329,8 @@ export const InlineFileUploader = ({
             ...basicAction,
           ]
         : basicAction;
+      return actions;
     }
-    return [
-      {
-        onClick: () => onCancel(file.localId),
-        text: strings.cancel,
-        icon: <CancelIcon />,
-      },
-    ];
   };
 
   // Build an Icon button for adding resources. In Old UI, this is achieved by legacy CSS styles.
