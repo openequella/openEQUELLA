@@ -71,10 +71,10 @@ export const render = (
     });
 
     import("../modules/ThemeModule")
-      .then(({ oeqTheme }) => {
+      .then(({ getOeqTheme }) => {
         ReactDOM.render(
           <StylesProvider generateClassName={generateClassName}>
-            <ThemeProvider theme={oeqTheme}>{fileUploader}</ThemeProvider>
+            <ThemeProvider theme={getOeqTheme()}>{fileUploader}</ThemeProvider>
           </StylesProvider>,
           props.elem
         );

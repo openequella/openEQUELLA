@@ -17,29 +17,42 @@
  */
 import { debounce, Drawer, Grid, Hidden } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
-import { pipe } from "fp-ts/function";
+import * as A from "fp-ts/Array";
+import { constant, pipe } from "fp-ts/function";
+import * as M from "fp-ts/Map";
+import * as O from "fp-ts/Option";
 import { isEqual } from "lodash";
 import * as React from "react";
 import {
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useReducer,
   useRef,
   useState,
 } from "react";
-import { useHistory, useLocation } from "react-router";
-import { generateFromError } from "../api/errors";
-import { AppConfig } from "../AppConfig";
+import { useHistory, useLocation, useParams } from "react-router";
+import { getBaseUrl } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
 import MessageInfo, { MessageInfoVariant } from "../components/MessageInfo";
-import { routes } from "../mainui/routes";
+import type { FieldValueMap } from "../components/wizard/WizardHelper";
 import {
-  templateDefaults,
-  templateError,
-  TemplateUpdateProps,
-} from "../mainui/Template";
-import { getAdvancedSearchesFromServer } from "../modules/AdvancedSearchModule";
+  ControlValue,
+  isControlValueNonEmpty,
+  isNonEmptyString,
+} from "../components/wizard/WizardHelper";
+import { AppRenderErrorContext } from "../mainui/App";
+import {
+  NEW_ADVANCED_SEARCH_PATH,
+  NEW_SEARCH_PATH,
+  routes,
+} from "../mainui/routes";
+import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
+import {
+  getAdvancedSearchByUuid,
+  getAdvancedSearchesFromServer,
+} from "../modules/AdvancedSearchModule";
 import type { Collection } from "../modules/CollectionsModule";
 import { addFavouriteSearch } from "../modules/FavouriteModule";
 import {
@@ -52,6 +65,7 @@ import {
 import {
   buildSelectionSessionAdvancedSearchLink,
   buildSelectionSessionRemoteSearchLink,
+  buildSelectionSessionSearchPageLink,
   isSelectionSessionInStructured,
   isSelectionSessionOpen,
   prepareDraggable,
@@ -79,6 +93,13 @@ import { getCurrentUserDetails } from "../modules/UserModule";
 import SearchBar from "../search/components/SearchBar";
 import type { DateRange } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
+import { OrdAsIs } from "../util/Ord";
+import {
+  generateAdvancedSearchCriteria,
+  initialiseAdvancedSearch,
+} from "./AdvancedSearchHelper";
+import { AdvancedSearchPanel } from "./components/AdvancedSearchPanel";
+import { AdvancedSearchSelector } from "./components/AdvancedSearchSelector";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
 import { CollectionSelector } from "./components/CollectionSelector";
 import DisplayModeSelector from "./components/DisplayModeSelector";
@@ -104,6 +125,7 @@ import {
   SearchPageOptions,
   writeRawModeToStorage,
 } from "./SearchPageHelper";
+import { searchPageModeReducer } from "./SearchPageModeReducer";
 import { reducer, SearchPageSearchResult } from "./SearchPageReducer";
 
 // destructure strings import
@@ -127,11 +149,63 @@ interface SearchPageHistoryState {
   filterExpansion: boolean;
 }
 
-const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
+export const SearchPageRenderErrorContext = React.createContext<{
+  /**
+   * Function to handle errors thrown from Search page components.
+   */
+  handleError: (error: Error) => void;
+}>({
+  handleError: () => {},
+});
+
+interface AdvancedSearchParams {
+  /**
+   * ID of the currently selected Advanced Search. When it's defined, the component is in
+   * Advanced Search mode, or normal Search page mode otherwise.
+   */
+  advancedSearchId?: string;
+}
+
+type SearchPageProps = TemplateUpdateProps & AdvancedSearchParams;
+
+const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
+  console.debug("START: <SearchPage>");
+
   const history = useHistory();
   const location = useLocation();
 
+  // Retrieve any AdvancedSearchId from the Router
+  const { advancedSearchId: advancedSearchIdParam } =
+    useParams<AdvancedSearchParams>();
+
+  // If an Advanced Search ID has been provided, use that otherwise check to see if one
+  // was passed in by the Router.
+  advancedSearchId = advancedSearchId ?? advancedSearchIdParam;
+
   const [state, dispatch] = useReducer(reducer, { status: "initialising" });
+  const [searchPageModeState, searchPageModeDispatch] = useReducer(
+    searchPageModeReducer,
+    { mode: "normal" }
+  );
+
+  // Function to navigate Search page or Advanced search page to another page. If in Selection Session,
+  // call the provided path builder to generate a Selection Session specific path.
+  const navigateTo = (
+    normalPath: string,
+    selectionSessionPathBuilder: () => string
+  ) => {
+    isSelectionSessionOpen()
+      ? window.open(selectionSessionPathBuilder(), "_self")
+      : history.push(normalPath);
+  };
+
+  const exitAdvancedSearchMode = () => {
+    searchPageModeDispatch({ type: "useNormal" });
+    navigateTo(NEW_SEARCH_PATH, () =>
+      buildSelectionSessionSearchPageLink(searchPageOptions.externalMimeTypes)
+    );
+  };
+
   const defaultSearchPageHistory: SearchPageHistoryState = {
     searchPageOptions: defaultSearchPageOptions,
     filterExpansion: false,
@@ -165,6 +239,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     mimeTypeFilters: [],
   });
 
+  const [advancedSearches, setAdvancedSearches] = useState<
+    OEQ.Common.BaseEntitySummary[]
+  >([]);
+
   const [currentUser, setCurrentUser] =
     React.useState<OEQ.LegacyContent.CurrentUserDetails>();
 
@@ -174,7 +252,8 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [alreadyDownloaded, setAlreadyDownloaded] = useState<boolean>(false);
   const exportLinkRef = useRef<HTMLAnchorElement>(null);
 
-  const handleError = useCallback(
+  const { appErrorHandler } = useContext(AppRenderErrorContext);
+  const searchPageErrorHandler = useCallback(
     (error: Error) => {
       dispatch({ type: "error", cause: error });
     },
@@ -191,14 +270,21 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     [dispatch]
   );
 
+  const pathname = pipe(
+    advancedSearchId,
+    O.fromNullable,
+    O.map((id) => `${NEW_ADVANCED_SEARCH_PATH}/${id}`),
+    O.getOrElse(constant(NEW_SEARCH_PATH))
+  );
+
   /**
    * Error display -> similar to onError hook, however in the context of reducer need to do manually.
    */
   useEffect(() => {
     if (state.status === "failure") {
-      updateTemplate(templateError(generateFromError(state.cause)));
+      appErrorHandler(state.cause);
     }
-  }, [state, updateTemplate]);
+  }, [state, appErrorHandler]);
 
   /**
    * Page initialisation -> Update the page title, retrieve Search settings and trigger first
@@ -208,6 +294,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     if (state.status !== "initialising") {
       return;
     }
+
+    const timerId = "sp-init";
+    console.debug("SearchPage: useEffect - initialising");
+    console.time(timerId);
 
     updateTemplate((tp) => ({
       ...templateDefaults(searchStrings.title)(tp),
@@ -221,6 +311,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         ? Promise.resolve(undefined)
         : generateSearchPageOptionsFromQueryString(location),
       getCurrentUserDetails(),
+      getAdvancedSearchesFromServer(),
+      advancedSearchId
+        ? getAdvancedSearchByUuid(advancedSearchId)
+        : Promise.resolve(undefined),
     ])
       .then(
         ([
@@ -228,41 +322,73 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           mimeTypeFilters,
           queryStringSearchOptions,
           currentUserDetails,
+          advancedSearches,
+          advancedSearchDefinition,
         ]) => {
           setSearchSettings({
             core: searchSettings,
             mimeTypeFilters: mimeTypeFilters,
           });
+          setAdvancedSearches(advancedSearches);
           setCurrentUser(currentUserDetails);
-          search(
-            queryStringSearchOptions
-              ? {
-                  ...queryStringSearchOptions,
-                  dateRangeQuickModeEnabled: false,
-                  sortOrder:
-                    queryStringSearchOptions.sortOrder ??
-                    searchSettings.defaultSearchSort,
-                }
-              : {
-                  ...searchPageOptions,
-                  sortOrder:
-                    searchPageOptions.sortOrder ??
-                    searchSettings.defaultSearchSort,
-                }
+
+          const [initialAdvSearchFieldValueMap, initialAdvancedSearchCriteria] =
+            pipe(
+              advancedSearchDefinition,
+              O.fromNullable,
+              O.map((def) =>
+                initialiseAdvancedSearch(
+                  def,
+                  searchPageModeDispatch,
+                  searchPageOptions,
+                  queryStringSearchOptions
+                )
+              ),
+              O.getOrElseW(() => [])
+            );
+
+          // This is the SearchPageOptions for the first searching, not the one created in the first rendering.
+          const initialSearchPageOptions = pipe(
+            queryStringSearchOptions,
+            O.fromNullable,
+            O.map<SearchPageOptions, SearchPageOptions>((options) => ({
+              ...options,
+              dateRangeQuickModeEnabled: false,
+              sortOrder: options.sortOrder ?? searchSettings.defaultSearchSort,
+              advancedSearchCriteria: initialAdvancedSearchCriteria,
+              advFieldValue: initialAdvSearchFieldValueMap,
+              collections:
+                advancedSearchDefinition?.collections ?? options.collections,
+            })),
+            O.getOrElse<SearchPageOptions>(() => ({
+              ...searchPageOptions,
+              collections:
+                advancedSearchDefinition?.collections ??
+                searchPageOptions.collections,
+              sortOrder:
+                searchPageOptions.sortOrder ?? searchSettings.defaultSearchSort,
+              advancedSearchCriteria: initialAdvancedSearchCriteria,
+            }))
           );
+
+          search(initialSearchPageOptions);
         }
       )
       .catch((e) => {
-        handleError(e);
+        searchPageErrorHandler(e);
       });
+
+    console.timeEnd(timerId);
   }, [
     dispatch,
-    handleError,
+    searchPageErrorHandler,
     location,
     search,
     searchPageOptions,
     state.status,
     updateTemplate,
+    advancedSearchId,
+    searchPageModeDispatch,
   ]);
 
   /**
@@ -270,6 +396,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
    */
   useEffect(() => {
     if (state.status === "searching") {
+      const timerId = "sp-searching";
+      console.debug("SearchPage: useEffect - searching");
+      console.time(timerId);
+
       const gallerySearch = async (
         search: typeof imageGallerySearch | typeof videoGallerySearch,
         options: SearchPageOptions
@@ -319,34 +449,59 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         }
       );
 
+      if (searchPageModeState.mode === "advSearch") {
+        searchPageModeDispatch({
+          type: "hideAdvSearchPanel",
+        });
+      }
+
       setSearchPageOptions(state.options);
-      Promise.all([doSearch(state.options), getClassifications(state.options)])
-        .then(
-          ([result, classifications]: [
-            SearchPageSearchResult,
-            Classification[]
-          ]) => {
-            dispatch({
-              type: "search-complete",
-              result: { ...result },
-              classifications: [...classifications],
-            });
-            // Update history
-            history.replace({
-              ...history.location,
-              state: { searchPageOptions: state.options, filterExpansion },
-            });
-            // Save the value of wildcard mode to LocalStorage.
-            writeRawModeToStorage(state.options.rawMode);
-            // scroll back up to the top of the page
-            if (state.scrollToTop) window.scrollTo(0, 0);
-            // Allow downloading new search result.
-            setAlreadyDownloaded(false);
-          }
-        )
-        .catch(handleError);
+      (async () => {
+        try {
+          const searchResult: SearchPageSearchResult = await doSearch(
+            state.options
+          );
+          // Do not list classifications in Advanced search mode.
+          const classifications: Classification[] = !advancedSearchId
+            ? await getClassifications(state.options)
+            : [];
+
+          dispatch({
+            type: "search-complete",
+            result: { ...searchResult },
+            classifications,
+          });
+
+          // Update history
+          history.replace({
+            ...history.location,
+            state: { searchPageOptions: state.options, filterExpansion },
+          });
+          // Save the value of wildcard mode to LocalStorage.
+          writeRawModeToStorage(state.options.rawMode);
+          // scroll back up to the top of the page
+          if (state.scrollToTop) window.scrollTo(0, 0);
+          // Allow downloading new search result.
+          setAlreadyDownloaded(false);
+        } catch (error: unknown) {
+          searchPageErrorHandler(
+            error instanceof Error
+              ? error
+              : new Error(`Failed to perform a search: ${error}`)
+          );
+        }
+        console.timeEnd(timerId);
+      })();
     }
-  }, [dispatch, filterExpansion, handleError, history, state]);
+  }, [
+    dispatch,
+    filterExpansion,
+    searchPageErrorHandler,
+    history,
+    state,
+    advancedSearchId,
+    searchPageModeState.mode,
+  ]);
 
   // In Selection Session, once a new search result is returned, make each
   // new search result Item draggable. Could probably merge into 'searching'
@@ -394,6 +549,22 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       currentPage: 0,
       selectedCategories: undefined,
     });
+  };
+
+  const handleAdvancedSearchChanged = (
+    selection: OEQ.Common.BaseEntitySummary | null
+  ) => {
+    if (selection) {
+      const { uuid } = selection;
+      navigateTo(routes.NewAdvancedSearch.to(uuid), () =>
+        buildSelectionSessionAdvancedSearchLink(
+          uuid,
+          searchPageOptions.externalMimeTypes
+        )
+      );
+    } else {
+      exitAdvancedSearchMode();
+    }
   };
 
   const handleCollapsibleFilterClick = () => {
@@ -448,6 +619,10 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       rawMode: searchPageOptions.rawMode,
     });
     setFilterExpansion(false);
+
+    if (searchPageModeState.mode === "advSearch") {
+      exitAdvancedSearchMode();
+    }
   };
 
   const handleExport = () => {
@@ -492,32 +667,29 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   const handleCopySearch = () => {
     //base institution urls have a trailing / that we need to get rid of
-    const instUrl = AppConfig.baseUrl.slice(0, -1);
-    const searchUrl = `${instUrl}${
-      location.pathname
-    }?${generateQueryStringFromSearchPageOptions(searchPageOptions)}`;
-
+    const instUrl = getBaseUrl().slice(0, -1);
+    const searchUrl = `${instUrl}${pathname}?${generateQueryStringFromSearchPageOptions(
+      searchPageOptions
+    )}`;
     navigator.clipboard
       .writeText(searchUrl)
       .then(() => {
         setSnackBar({ message: searchStrings.shareSearchConfirmationText });
       })
-      .catch(() => handleError);
+      .catch(searchPageErrorHandler);
   };
 
   const handleSaveFavouriteSearch = (name: string) => {
     // We only need pathname and query strings.
-    const url = `${
-      location.pathname
-    }?${generateQueryStringFromSearchPageOptions(searchPageOptions)}`;
+    const url = `${pathname}?${generateQueryStringFromSearchPageOptions(
+      searchPageOptions
+    )}`;
 
-    return addFavouriteSearch(name, url)
-      .then(() =>
-        setSnackBar({
-          message: searchStrings.favouriteSearch.saveSearchConfirmationText,
-        })
-      )
-      .catch(handleError);
+    return addFavouriteSearch(name, url).then(() =>
+      setSnackBar({
+        message: searchStrings.favouriteSearch.saveSearchConfirmationText,
+      })
+    );
   };
 
   const handleMimeTypeFilterChange = (filters: MimeTypeFilter[]) =>
@@ -579,6 +751,24 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     });
   };
 
+  const handleSubmitAdvancedSearch = async (
+    advFieldValue: FieldValueMap,
+    overrideHide = false
+  ) => {
+    searchPageModeDispatch({
+      type: "setQueryValues",
+      values: advFieldValue,
+      overrideHide,
+    });
+
+    search({
+      ...searchPageOptions,
+      advancedSearchCriteria: generateAdvancedSearchCriteria(advFieldValue),
+      advFieldValue,
+      currentPage: 0,
+    });
+  };
+
   /**
    * Determines if any collapsible filters have been modified from their defaults
    */
@@ -624,6 +814,20 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     return isQueryOrFiltersSet || isClassificationSelected;
   };
 
+  const isAdvSearchCriteriaSet = (queryValues: FieldValueMap): boolean => {
+    const isAnyFieldSet = pipe(
+      queryValues,
+      // Some controls like Calendar may have an empty string as their default values which should be
+      // filtered out.
+      M.map(A.filter(isNonEmptyString)),
+      M.values<ControlValue>(OrdAsIs),
+      A.some(isControlValueNonEmpty)
+    );
+    const isValueMapNotEmpty = !M.isEmpty(queryValues);
+
+    return isValueMapNotEmpty && isAnyFieldSet;
+  };
+
   const refinePanelControls: RefinePanelControl[] = [
     {
       idSuffix: "DisplayModeSelector",
@@ -648,25 +852,24 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
       title: collectionSelectorTitle,
       component: (
         <CollectionSelector
-          onError={handleError}
           onSelectionChange={handleCollectionSelectionChanged}
           value={searchPageOptions.collections}
         />
       ),
-      disabled: false,
+      disabled: searchPageModeState.mode === "advSearch",
       alwaysVisible: true,
     },
     {
       idSuffix: "AdvancedSearchSelector",
       title: searchStrings.advancedSearchSelector.title,
       component: (
-        <AuxiliarySearchSelector
-          auxiliarySearchesSupplier={getAdvancedSearchesFromServer}
-          urlGeneratorForRouteLink={routes.AdvancedSearch.to}
-          urlGeneratorForMuiLink={buildSelectionSessionAdvancedSearchLink}
+        <AdvancedSearchSelector
+          advancedSearches={advancedSearches}
+          onSelectionChange={handleAdvancedSearchChanged}
+          value={advancedSearches.find(({ uuid }) => uuid === advancedSearchId)}
         />
       ),
-      disabled: false,
+      disabled: advancedSearches.length === 0,
       alwaysVisible: true,
     },
     {
@@ -770,11 +973,16 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           showFilterIcon: areCollapsibleFiltersSet(),
           onClose: () => setShowRefinePanel(false),
         }}
-        classificationsPanelProps={{
-          classifications: getClassifications(),
-          onSelectedCategoriesChange: handleSelectedCategoriesChange,
-          selectedCategories: searchPageOptions.selectedCategories,
-        }}
+        classificationsPanelProps={
+          // When in advanced search mode, hide classifications panel
+          searchPageModeState.mode !== "advSearch"
+            ? {
+                classifications: getClassifications(),
+                onSelectedCategoriesChange: handleSelectedCategoriesChange,
+                selectedCategories: searchPageOptions.selectedCategories,
+              }
+            : undefined
+        }
       />
     );
   };
@@ -815,7 +1023,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     ): items is GallerySearchResultItem[] => from === "gallery-search";
 
     if (isListItems(searchResults)) {
-      return mapSearchResultItems(searchResults, handleError, highlights);
+      return mapSearchResultItems(searchResults, highlights);
     } else if (isGalleryItems(searchResults)) {
       return <GallerySearchResult items={searchResults} />;
     }
@@ -827,7 +1035,9 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     content: { available: totalCount, highlight: highlights },
   } = searchResult();
   return (
-    <>
+    <SearchPageRenderErrorContext.Provider
+      value={{ handleError: searchPageErrorHandler }}
+    >
       <Grid container spacing={2}>
         <Grid item sm={12} md={8}>
           <Grid container spacing={2}>
@@ -838,8 +1048,36 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 onQueryChange={handleQueryChanged}
                 onWildcardModeChange={handleWildcardModeChanged}
                 doSearch={() => search(searchPageOptions)}
+                advancedSearchFilter={
+                  // Only show if we're in advanced search mode
+                  searchPageModeState.mode === "advSearch"
+                    ? {
+                        onClick: () =>
+                          searchPageModeDispatch({
+                            type: "toggleAdvSearchPanel",
+                          }),
+                        accent: isAdvSearchCriteriaSet(
+                          searchPageModeState.queryValues
+                        ),
+                      }
+                    : undefined
+                }
               />
             </Grid>
+            {searchPageModeState.mode === "advSearch" &&
+              searchPageModeState.isAdvSearchPanelOpen && (
+                <Grid item xs={12}>
+                  <AdvancedSearchPanel
+                    wizardControls={searchPageModeState.definition.controls}
+                    values={searchPageModeState.queryValues}
+                    onSubmit={handleSubmitAdvancedSearch}
+                    onClear={() => handleSubmitAdvancedSearch(new Map(), true)}
+                    onClose={() =>
+                      searchPageModeDispatch({ type: "hideAdvSearchPanel" })
+                    }
+                  />
+                </Grid>
+              )}
             <Grid item xs={12}>
               <SearchResultList
                 showSpinner={
@@ -910,7 +1148,7 @@ const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           onConfirm={handleSaveFavouriteSearch}
         />
       )}
-    </>
+    </SearchPageRenderErrorContext.Provider>
   );
 };
 

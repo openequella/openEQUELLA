@@ -15,15 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { Theme, ThemeOptions } from "@material-ui/core";
+import type { ThemeOptions } from "@material-ui/core";
 import { createTheme } from "@material-ui/core/styles";
 import { getRenderData } from "../AppConfig";
 import * as OEQ from "@openequella/rest-api-client";
 
 declare const themeSettings: OEQ.Theme.ThemeSettings;
 
-const createOeqTheme = (): Theme => {
-  const standardThemeSettings: ThemeOptions = {
+const standardThemeSettings = (): ThemeOptions =>
+  ({
     palette: {
       primary: {
         main: themeSettings.primaryColor,
@@ -49,23 +49,21 @@ const createOeqTheme = (): Theme => {
       useNextVariants: true,
       fontSize: themeSettings.fontSize,
     },
-  } as ThemeOptions;
+  } as ThemeOptions);
 
-  const renderData = getRenderData();
+const renderData = getRenderData();
 
-  const autoTestOptions: ThemeOptions =
-    typeof renderData == "object" && renderData.autotestMode
-      ? {
-          transitions: {
-            create: () => "none",
-          },
-        }
-      : {};
+const autoTestOptions: ThemeOptions =
+  typeof renderData == "object" && renderData.autotestMode
+    ? {
+        transitions: {
+          create: () => "none",
+        },
+      }
+    : {};
 
-  return createTheme({
-    ...standardThemeSettings,
+export const getOeqTheme = () =>
+  createTheme({
+    ...standardThemeSettings(),
     ...autoTestOptions,
   });
-};
-
-export const oeqTheme = createOeqTheme();

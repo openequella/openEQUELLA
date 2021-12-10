@@ -95,4 +95,9 @@ class SearchParam {
     "List of search index key/value pairs to filter by. e.g. videothumb:true or realthumb:true.")
   @QueryParam("musts")
   var musts: Array[String] = _
+
+  @ApiParam(
+    "Custom Lucene query which will be merged with the query generated from the other parameters. The relationship between them is 'AND'.")
+  @QueryParam("customLuceneQuery")
+  var customLuceneQuery: String = _
 }

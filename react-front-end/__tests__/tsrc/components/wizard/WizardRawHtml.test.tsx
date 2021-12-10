@@ -16,20 +16,31 @@
  * limitations under the License.
  */
 import * as React from "react";
-import type { Meta, Story } from "@storybook/react";
-import AppBarQuery, {
-  AppBarQueryProps,
-} from "../../tsrc/components/AppBarQuery";
+import "@testing-library/jest-dom/extend-expect";
+import { render } from "@testing-library/react";
+import type { FieldValueMap } from "../../../../tsrc/components/wizard/WizardHelper";
+import { WizardRawHtml } from "../../../../tsrc/components/wizard/WizardRawHtml";
 
-export default {
-  title: "AppBarQuery",
-  component: AppBarQuery,
-  argTypes: {
-    onChange: { action: "onClick" },
-  },
-} as Meta<AppBarQueryProps>;
+describe("<WizardRawHtml/>", () => {
+  it("supports displaying metadata", () => {
+    const xpath = "/item/name";
+    const mockedMap: FieldValueMap = new Map([
+      [
+        {
+          schemaNode: [xpath],
+          type: "editbox",
+        },
+        ["test"],
+      ],
+    ]);
+    const { queryByText } = render(
+      <WizardRawHtml
+        mandatory={false}
+        fieldValueMap={mockedMap}
+        description={`name: {${xpath}}`}
+      />
+    );
 
-export const QueryText: Story<AppBarQueryProps> = (args) => (
-  <AppBarQuery {...args} />
-);
-QueryText.args = { query: "" };
+    expect(queryByText("name: test")).toBeInTheDocument();
+  });
+});

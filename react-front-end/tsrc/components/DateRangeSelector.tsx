@@ -28,12 +28,52 @@ import {
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
+import type { DatePickerView } from "@material-ui/pickers/DatePicker/DatePicker";
 import { DateTime } from "luxon";
 import * as React from "react";
 import { ReactNode, useEffect, useState } from "react";
-import type { DateRange } from "../util/Date";
+import type { DateRange, ISODateFormat } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
 import SettingsToggleSwitch from "./SettingsToggleSwitch";
+import * as O from "fp-ts/Option";
+import { pipe } from "fp-ts/function";
+
+/**
+ * Type definition for DatePicker props that needs customisation.
+ */
+export interface DatePickerCustomProps {
+  /**
+   * A list of DatePickerView controlling the views of DatePicker.
+   */
+  views: DatePickerView[];
+  /**
+   * Standard date format used in the DatePicker.
+   */
+  format: ISODateFormat;
+  /**
+   * Function to control what is displayed in the DatePicker input.
+   */
+  labelFunc: (d: DateTime | null) => string;
+  /**
+   * Function to transform a given date to another date (e.g. convert a day to the first day of a month).
+   */
+  transformDate: (d: DateTime) => DateTime;
+}
+
+/**
+ * Function to build a DatePickerCustomProps based on the provided ISO date format. The format
+ * defaults to "yyyy-MM-dd".
+ *
+ * @param format Date format which must one of the three standard ISO date formats.
+ */
+export const buildDatePickerCustomProps = (
+  format: ISODateFormat = "yyyy-MM-dd"
+): DatePickerCustomProps => ({
+  views: ["year", "month", "date"],
+  format,
+  labelFunc: (d: DateTime | null) => d?.toFormat(format) ?? "",
+  transformDate: (d: DateTime) => d,
+});
 
 interface DatePickerProps {
   /**
@@ -91,6 +131,18 @@ export interface DateRangeSelectorProps {
    * Label for end date picker.
    */
   endDatePickerLabel?: string;
+  /**
+   * `true` to show the switch used to change the Selector mode.
+   */
+  showModeSwitch?: boolean;
+  /**
+   * Function to provide DatePickerCustomProps.
+   */
+  datePickerCustomPropsProvider?: () => DatePickerCustomProps;
+  /**
+   * DOM id.
+   */
+  id?: string;
 }
 
 /**
@@ -105,6 +157,9 @@ export const DateRangeSelector = ({
   quickOptionDropdownLabel,
   startDatePickerLabel,
   endDatePickerLabel,
+  showModeSwitch = true,
+  datePickerCustomPropsProvider = buildDatePickerCustomProps,
+  id = "date-range-selector",
 }: DateRangeSelectorProps) => {
   const classes = useStyles();
 
@@ -227,11 +282,13 @@ export const DateRangeSelector = ({
 
   const quickOptionSelector: ReactNode = (
     <FormControl variant="outlined" fullWidth>
-      <InputLabel id="date_range_selector_label">{quickOptionLabel}</InputLabel>
+      <InputLabel id={`${id}-quick-option-label`}>
+        {quickOptionLabel}
+      </InputLabel>
       <Select
         value={dateRangeToDateOptionConverter(stateDateRange)}
-        id="date_range_selector"
-        labelId="date_range_selector_label"
+        id={`${id}-quick-options`}
+        labelId={`${id}-quick-option-label`}
         onChange={(event) =>
           handleQuickDateOptionChange(event.target.value as string)
         }
@@ -250,6 +307,8 @@ export const DateRangeSelector = ({
    * Generate two date pickers and wrap them with Grid items.
    */
   const getDatePickers = (): ReactNode => {
+    const { views, format, labelFunc, transformDate } =
+      datePickerCustomPropsProvider();
     const dateRangePickers: DatePickerProps[] = [
       {
         field: "start",
@@ -266,8 +325,10 @@ export const DateRangeSelector = ({
     return dateRangePickers.map(({ field, label, value }) => {
       const isStart = field === "start";
       return (
-        <Grid item key={field} xs={12} xl={6}>
+        <Grid item key={field} xs={12} lg={6}>
           <KeyboardDatePicker
+            id={`${id}-${field}`}
+            views={views}
             className={classes.datePickerWidth} // Ensure the picker still takes full width when calender icon is hidden.
             disableFuture
             variant="dialog"
@@ -277,26 +338,30 @@ export const DateRangeSelector = ({
             }}
             inputVariant="outlined"
             autoOk
-            // Show date in ISO format string, or nothing if date is null.
-            labelFunc={(date, _) => {
-              return date?.toISODate() ?? "";
-            }}
-            // TextField inputs are parsed to this format.
-            format="yyyy-MM-dd"
+            labelFunc={labelFunc}
+            format={format}
             // The maximum start date is the range's end whereas minimum end date is the range's start.
             minDate={!isStart ? stateDateRange?.start : undefined}
             maxDate={isStart ? stateDateRange?.end : undefined}
             label={label}
             // When value is undefined use null instead so nothing is displayed in the TextField.
             value={value ?? null}
-            onChange={(newDate, _) => {
-              const newRange = {
-                ...stateDateRange,
-                [field]: newDate?.toJSDate(),
-              };
-              setStateDateRange(newRange);
-              handleDateRangeChange(newRange);
-            }}
+            onChange={(newDate, _) =>
+              pipe(
+                newDate,
+                O.fromNullable,
+                O.map((d) => transformDate(d).toJSDate()),
+                O.toUndefined,
+                (d) => {
+                  const newRange = {
+                    ...stateDateRange,
+                    [field]: d,
+                  };
+                  setStateDateRange(newRange);
+                  handleDateRangeChange(newRange);
+                }
+              )
+            }
           />
         </Grid>
       );
@@ -328,26 +393,28 @@ export const DateRangeSelector = ({
   );
 
   return (
-    <Grid container>
+    <Grid container id={id}>
       <Grid item xs={12}>
         {quickModeEnabled ? quickOptionSelector : customDatePicker}
       </Grid>
       <Grid item>
-        <SettingsToggleSwitch
-          id="modified_date_selector_mode_switch"
-          label={quickOptionSwitchLabel}
-          value={quickModeEnabled}
-          setValue={(value) => {
-            // If selected custom date range matches the option `All` then clear both start and end.
-            const isAllSelected =
-              dateRangeToDateOptionConverter(stateDateRange) ===
-              quickOptionLabels.all;
-            const updatedRange = isAllSelected
-              ? undefined
-              : { ...dateRange, end: undefined };
-            onQuickModeChange(value, updatedRange);
-          }}
-        />
+        {showModeSwitch && (
+          <SettingsToggleSwitch
+            id="modified_date_selector_mode_switch"
+            label={quickOptionSwitchLabel}
+            value={quickModeEnabled}
+            setValue={(value) => {
+              // If selected custom date range matches the option `All` then clear both start and end.
+              const isAllSelected =
+                dateRangeToDateOptionConverter(stateDateRange) ===
+                quickOptionLabels.all;
+              const updatedRange = isAllSelected
+                ? undefined
+                : { ...dateRange, end: undefined };
+              onQuickModeChange(value, updatedRange);
+            }}
+          />
+        )}
       </Grid>
     </Grid>
   );

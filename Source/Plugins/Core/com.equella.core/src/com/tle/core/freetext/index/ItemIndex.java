@@ -964,6 +964,8 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
         }
         query = orQuery;
       }
+
+      // This one includes the query built above and all the FreeTextQuery of the search.
       query = addExtraQuery(query, request, reader);
     } catch (ParseException ex) {
       throw new InvalidSearchQueryException(queryString, ex);

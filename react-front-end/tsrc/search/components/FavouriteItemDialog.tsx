@@ -26,11 +26,12 @@ import {
   TextField,
 } from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import * as React from "react";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import type { FavouriteItemVersionOption } from "../../modules/FavouriteModule";
 import { languageStrings } from "../../util/langstrings";
+import { SearchPageRenderErrorContext } from "../SearchPage";
 
 /**
  * Type that includes a function which is fired to add a favourite Item and
@@ -163,17 +164,20 @@ export const FavouriteItemDialog = ({
   const [tags, setTags] = useState<string[]>([]);
   const [versionOption, setVersionOption] =
     useState<FavouriteItemVersionOption>("latest");
+  const { handleError } = useContext(SearchPageRenderErrorContext);
 
   const confirmHandler = () => {
     const doConfirm = isConfirmToDelete(onConfirmProps)
       ? () => onConfirmProps.onConfirm()
       : () => onConfirmProps.onConfirm(tags, versionOption === "latest");
 
-    doConfirm().finally(() => {
-      // Need to reset versionOption to match the RadioGroup's default selected value .
-      setVersionOption("latest");
-      closeDialog();
-    });
+    doConfirm()
+      .then(() => {
+        // Need to reset versionOption to match the RadioGroup's default selected value .
+        setVersionOption("latest");
+        closeDialog();
+      })
+      .catch(handleError);
   };
 
   return (

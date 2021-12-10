@@ -41,7 +41,7 @@ import Search from "@material-ui/icons/Search";
 import Warning from "@material-ui/icons/Warning";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
-import { SyntheticEvent, useEffect, useState } from "react";
+import { SyntheticEvent, useContext, useEffect, useState } from "react";
 import ItemAttachmentLink from "../../components/ItemAttachmentLink";
 import {
   getSearchPageAttachmentClass,
@@ -56,6 +56,7 @@ import {
   buildViewerConfigForAttachments,
 } from "../../modules/ViewerModule";
 import { languageStrings } from "../../util/langstrings";
+import { SearchPageRenderErrorContext } from "../SearchPage";
 import { ResourceSelector } from "./ResourceSelector";
 
 const {
@@ -86,10 +87,6 @@ export interface SearchResultAttachmentsListProps {
   getViewerDetails: (
     mimeType: string
   ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>;
-  /**
-   * Error handler for standard management of errors during processing - especially comms errors.
-   */
-  handleError: (error: Error) => void;
 }
 
 export const SearchResultAttachmentsList = ({
@@ -101,7 +98,6 @@ export const SearchResultAttachmentsList = ({
     attachments = [],
   },
   getViewerDetails,
-  handleError,
 }: SearchResultAttachmentsListProps) => {
   const itemKey = `${uuid}/${version}`;
 
@@ -109,6 +105,8 @@ export const SearchResultAttachmentsList = ({
   const inSelectionSession: boolean = isSelectionSessionOpen();
   const inSkinny = isSelectionSessionInSkinny();
   const inStructured = isSelectionSessionInStructured();
+
+  const { handleError } = useContext(SearchPageRenderErrorContext);
 
   const [attachExpanded, setAttachExpanded] = useState(
     (inSelectionSession
@@ -181,13 +179,6 @@ export const SearchResultAttachmentsList = ({
     };
   }, [attachments, getViewerDetails, handleError, uuid, version]);
 
-  const handleSelectResource = (
-    itemKey: string,
-    attachments: string[] = []
-  ) => {
-    selectResource(itemKey, attachments).catch(handleError);
-  };
-
   const handleAttachmentPanelClick = (event: SyntheticEvent) => {
     /** prevents the SearchResult onClick from firing when attachment panel is clicked */
     event.stopPropagation();
@@ -244,9 +235,7 @@ export const SearchResultAttachmentsList = ({
               <ResourceSelector
                 labelText={selectResourceStrings.attachment}
                 isStopPropagation
-                onClick={() => {
-                  handleSelectResource(itemKey, [id]);
-                }}
+                onClick={() => selectResource(itemKey, [id])}
               />
             </ListItemSecondaryAction>
           )}
@@ -284,7 +273,7 @@ export const SearchResultAttachmentsList = ({
                   ({ attachment }) => !attachment.brokenAttachment
                 )
                 .map(({ attachment }) => attachment.id);
-              handleSelectResource(itemKey, attachments);
+              return selectResource(itemKey, attachments);
             }}
           />
         )}

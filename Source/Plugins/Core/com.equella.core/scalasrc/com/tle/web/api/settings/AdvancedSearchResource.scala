@@ -19,12 +19,23 @@
 package com.tle.web.api.settings
 
 import com.tle.legacy.LegacyGuice
+import com.tle.web.api.ApiErrorResponse.resourceNotFound
 import com.tle.web.api.entity.BaseEntitySummary
-import io.swagger.annotations.{Api, ApiOperation}
+import com.tle.web.api.language.LanguageStringHelper.getStringFromCurrentLocale
+import com.tle.web.api.wizard.WizardControlHelper.wizardControlConverter
+import com.tle.web.api.wizard._
+import io.swagger.annotations.{Api, ApiModelProperty, ApiOperation}
 import javax.ws.rs.core.Response
-import javax.ws.rs.{GET, Path, Produces}
+import javax.ws.rs.{GET, Path, PathParam, Produces}
+import scala.collection.JavaConverters._
 
-import scala.collection.JavaConverters.collectionAsScalaIterableConverter
+case class AdvancedSearch(name: Option[String],
+                          description: Option[String],
+                          collections: List[BaseEntitySummary],
+                          // WizardControlDefinition is an abstraction without real data structure so use 'ApiModelProperty'
+                          // to provide a concrete structure.
+                          @ApiModelProperty(dataType = "com.tle.web.api.wizard.WizardBasicControl")
+                          controls: List[WizardControlDefinition])
 
 /**
   * API for managing Advanced Searches (internally - and historically - known as Power Searches).
@@ -52,4 +63,27 @@ class AdvancedSearchResource {
           .asScala
           .map(be => BaseEntitySummary(be)))
       .build()
+
+  @GET
+  @Path("{uuid}")
+  @ApiOperation(
+    value = "Get Advanced Search definition",
+    notes =
+      "This endpoint is used to retrieve an Advanced Search's name, description, Collections and Wizard definition by UUID.",
+    response = classOf[AdvancedSearch],
+  )
+  def getAdvancedSearchWizardDefinition(@PathParam("uuid") uuid: String): Response = {
+    Option(powerSearchService.getByUuid(uuid)) match {
+      case Some(ps) =>
+        val controls    = wizardControlConverter(ps.getWizard.getControls.asScala.toList)
+        val collections = ps.getItemdefs.asScala.map(c => BaseEntitySummary(c)).toList
+        val name        = getStringFromCurrentLocale(ps.getName)
+        val description = getStringFromCurrentLocale(ps.getDescription)
+        Response
+          .ok()
+          .entity(AdvancedSearch(name, description, collections, controls))
+          .build()
+      case None => resourceNotFound(s"Failed to find Advanced search for ID: ${uuid}")
+    }
+  }
 }

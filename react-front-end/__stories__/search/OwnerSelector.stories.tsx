@@ -15,13 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { action } from "@storybook/addon-actions";
 import { Meta } from "@storybook/react";
 import * as React from "react";
+import * as UserModuleMock from "../../__mocks__/UserModule.mock";
+import * as UserSearchMock from "../../__mocks__/UserSearch.mock";
 import OwnerSelector, {
   OwnerSelectorProps,
 } from "../../tsrc/search/components/OwnerSelector";
-import { action } from "@storybook/addon-actions";
-import * as UserSearchMock from "../../__mocks__/UserSearch.mock";
 
 export default {
   title: "Search/OwnerSelector",
@@ -37,5 +38,5 @@ const commonParams = {
 export const NoSelectedUser = () => <OwnerSelector {...commonParams} />;
 
 export const SelectedUser = () => (
-  <OwnerSelector {...commonParams} value={UserSearchMock.users[0]} />
+  <OwnerSelector {...commonParams} value={UserModuleMock.users[0]} />
 );

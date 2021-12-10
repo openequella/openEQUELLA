@@ -17,10 +17,9 @@
  */
 import * as React from "react";
 import { generateFromError } from "../api/errors";
-import { TemplateUpdateProps, templateError } from "../mainui/Template";
+import { templateError, TemplateUpdateProps } from "../mainui/Template";
 
 export { default as Error } from "./Error";
-export { default as AppBarQuery } from "./AppBarQuery";
 
 export function handleUnexpectedApiError<P extends TemplateUpdateProps>({
   props: { updateTemplate },

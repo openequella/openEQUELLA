@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 import { CircularProgress, Grid } from "@material-ui/core";
-import * as OEQ from "@openequella/rest-api-client";
 import Axios from "axios";
 import * as React from "react";
+import { useContext } from "react";
 import { v4 } from "uuid";
 import {
   ErrorResponse,
@@ -26,12 +26,9 @@ import {
   generateFromError,
 } from "../api/errors";
 import { LEGACY_CSS_URL } from "../AppConfig";
+import { AppRenderErrorContext } from "../mainui/App";
 import { BaseOEQRouteComponentProps } from "../mainui/routes";
-import {
-  templateDefaults,
-  templateError,
-  templatePropsForLegacy,
-} from "../mainui/Template";
+import { templateDefaults, templatePropsForLegacy } from "../mainui/Template";
 import { deleteRawModeFromStorage } from "../search/SearchPageHelper";
 import { LegacyContentRenderer } from "./LegacyContentRenderer";
 import { getEqPageForm, legacyFormId } from "./LegacyForm";
@@ -44,23 +41,6 @@ declare global {
 
   const _trigger: (value: string) => boolean;
 }
-
-export const guestUser: OEQ.LegacyContent.CurrentUserDetails = {
-  accessibilityMode: false,
-  firstName: "guest",
-  lastName: "guest",
-  id: "guest",
-  username: "guest",
-  guest: true,
-  autoLoggedIn: false,
-  prefsEditable: false,
-  counts: {
-    tasks: 0,
-    notifications: 0,
-  },
-  menuGroups: [],
-  canDownloadSearchResult: false,
-};
 
 export interface ExternalRedirect {
   href: string;
@@ -166,6 +146,7 @@ export const LegacyContent = React.memo(function LegacyContent({
 }: LegacyContentProps) {
   const [content, setContent] = React.useState<PageContent>();
   const [updatingContent, setUpdatingContent] = React.useState<boolean>(true);
+  const { appErrorHandler } = useContext(AppRenderErrorContext);
 
   const baseUrl = document.getElementsByTagName("base")[0].href;
 
@@ -232,7 +213,8 @@ export const LegacyContent = React.memo(function LegacyContent({
     if (fullscreen) {
       onError(error);
     } else {
-      updateTemplate(templateError(error));
+      const { error: errorTitle, error_description } = error;
+      appErrorHandler(error_description ?? errorTitle);
     }
   }
 

@@ -15,15 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as OEQ from "@openequella/rest-api-client";
-import * as React from "react";
-import { useState } from "react";
 import {
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Grid,
   IconButton,
   List,
@@ -34,7 +27,10 @@ import {
 } from "@material-ui/core";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import DeleteIcon from "@material-ui/icons/Delete";
-import UserSearch from "../../components/UserSearch";
+import * as OEQ from "@openequella/rest-api-client";
+import * as React from "react";
+import { useState } from "react";
+import { SelectUserDialog } from "../../components/SelectUserDialog";
 import { languageStrings } from "../../util/langstrings";
 
 export interface OwnerSelectorProps {
@@ -105,61 +101,6 @@ const OwnerSelector = ({
         userListProvider={userListProvider}
       />
     </>
-  );
-};
-
-interface SelectUserDialogProps {
-  /** Controls displaying of dialog. */
-  open: boolean;
-  /** Handler for when dialog closes. */
-  onClose: (selection?: OEQ.UserQuery.UserDetails) => void;
-  /** Function which will provide the list of users for UserSearch. */
-  userListProvider?: (query?: string) => Promise<OEQ.UserQuery.UserDetails[]>;
-}
-
-/**
- * Simple dialog to prompt user to search and select a user to use in the owner filter.
- */
-const SelectUserDialog = ({
-  open,
-  onClose,
-  userListProvider,
-}: SelectUserDialogProps) => {
-  const [selectedUser, setSelectedUser] = useState<
-    OEQ.UserQuery.UserDetails | undefined
-  >(undefined);
-
-  const handleClose = () => {
-    onClose(selectedUser);
-    setSelectedUser(undefined);
-  };
-
-  return (
-    <Dialog open={open} onClose={handleClose} fullWidth>
-      <DialogTitle>
-        {languageStrings.searchpage.filterOwner.selectTitle}
-      </DialogTitle>
-      <DialogContent>
-        <UserSearch
-          onSelect={setSelectedUser}
-          userListProvider={userListProvider}
-          listHeight={300}
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={() => onClose()} color="primary">
-          {languageStrings.common.action.cancel}
-        </Button>
-        <Button
-          onClick={handleClose}
-          color="primary"
-          autoFocus
-          disabled={!selectedUser}
-        >
-          {languageStrings.common.action.select}
-        </Button>
-      </DialogActions>
-    </Dialog>
   );
 };
 

@@ -15,8 +15,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { is } from 'typescript-is';
 import { GET } from './AxiosInstance';
 import { BaseEntitySummary, isBaseEntitySummaryArray } from './Common';
+import { WizardControl } from './WizardControl';
+
+/**
+ * Definition of an Advanced Search.
+ */
+export interface AdvancedSearchDefinition {
+  /**
+   * Name of the Advanced Search.
+   */
+  name?: string;
+  /**
+   * Description of the Advanced Search.
+   */
+  description?: string;
+  /**
+   * A list of Collections configured to limit the search result.
+   */
+  collections: BaseEntitySummary[];
+  /**
+   * All the Wizard Controls of the Advanced Search.
+   */
+  controls: WizardControl[];
+}
 
 const ADV_SEARCH_SETTINGS_ROOT_PATH = '/settings/advancedsearch/';
 
@@ -27,3 +51,19 @@ export const listAdvancedSearches = (
   apiBasePath: string
 ): Promise<BaseEntitySummary[]> =>
   GET(apiBasePath + ADV_SEARCH_SETTINGS_ROOT_PATH, isBaseEntitySummaryArray);
+
+/**
+ * Retrieve an Advanced search's definition by UUID.
+ *
+ * @param apiBasePath Base URI to the oEQ institution and API
+ * @param uuid UUID of an Advanced search.
+ */
+export const getAdvancedSearchByUuid = (
+  apiBasePath: string,
+  uuid: string
+): Promise<AdvancedSearchDefinition> =>
+  GET(
+    apiBasePath + ADV_SEARCH_SETTINGS_ROOT_PATH + uuid,
+    (data: unknown): data is AdvancedSearchDefinition =>
+      is<AdvancedSearchDefinition>(data)
+  );

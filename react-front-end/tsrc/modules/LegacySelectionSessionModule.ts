@@ -17,12 +17,12 @@
  */
 import Axios from "axios";
 import * as A from "fp-ts/Array";
+import * as IO from "fp-ts/IO";
 import * as E from "fp-ts/Either";
 import { flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import {
   API_BASE_URL,
-  AppConfig,
   getBaseUrl,
   getRenderData,
   SelectionSessionInfo,
@@ -195,7 +195,7 @@ export const isSelectSummaryButtonDisabled = (): boolean => {
  * Validate the selectionSessionInfo included in renderData.
  * And return selectionSessionInfo if the checking is passed, or throw a type error.
  */
-const getSelectionSessionInfo = (): SelectionSessionInfo => {
+export const getSelectionSessionInfo = (): SelectionSessionInfo => {
   const selectionSessionInfo = getRenderData()?.selectionSessionInfo;
   if (isSelectionSessionInfo(selectionSessionInfo)) {
     return selectionSessionInfo;
@@ -231,7 +231,8 @@ const submitSelection = <T>(
 
 const buildSelectionSessionLink = (
   routerPath: string,
-  includeLayout = false
+  includeLayout = false,
+  externalMimeTypes: string[] = []
 ) => {
   const { stateId, integId, layout } = getSelectionSessionInfo();
   const url = new URL(routerPath.substr(1), getBaseUrl()); // Drop routerPath's first '/'.
@@ -243,6 +244,14 @@ const buildSelectionSessionLink = (
   if (includeLayout) {
     url.searchParams.append("a", layout);
   }
+
+  pipe(
+    externalMimeTypes,
+    A.traverse(IO.Applicative)(
+      (mimeType) => () => url.searchParams.append("_int.mimeTypes", mimeType)
+    )
+  )();
+
   return url.toString();
 };
 
@@ -266,12 +275,51 @@ export const buildSelectionSessionRemoteSearchLink = (uuid: string): string =>
   buildSelectionSessionLink(routes.RemoteSearch.to(uuid));
 
 /**
- * Build a Selection Session specific Advanced search Link. Recommended to first call `isSelectionSessionOpen()`
- * before use.
+ * Build a Selection Session specific Advanced search Link. The link will contain a list of MIME types if provided by LMS.
+ * Recommended to first call `isSelectionSessionOpen()` before use.
+ *
  * @param uuid The UUID of an Advanced search
+ * @param externalMimeTypes A list of MIME types provided by LMS.
  */
-export const buildSelectionSessionAdvancedSearchLink = (uuid: string): string =>
-  buildSelectionSessionLink(routes.AdvancedSearch.to(uuid));
+export const buildSelectionSessionAdvancedSearchLink = (
+  uuid: string,
+  externalMimeTypes?: string[]
+): string =>
+  buildSelectionSessionLink(
+    routes.OldAdvancedSearch.to(uuid),
+    false,
+    externalMimeTypes
+  );
+
+/**
+ * Build a Selection Session specific Search page link. The three Selection Session layouts are supported.
+ * The link will contain a list of MIME types if provided by LMS.
+ * Recommended to first call `isSelectionSessionOpen()` before use.
+ *
+ * @param externalMimeTypes A list of MIME types provided by LMS.
+ */
+export const buildSelectionSessionSearchPageLink = (
+  externalMimeTypes?: string[]
+) => {
+  const { layout } = getSelectionSessionInfo();
+  const legacySelectionSessionPath = pipe(
+    layout,
+    simpleMatch<string>({
+      coursesearch: () => "access/course",
+      search: () => "selectoradd",
+      skinnysearch: () => "access/skinny",
+      _: () => {
+        throw new Error("Unknown Selection Session layout");
+      },
+    })
+  );
+
+  return buildSelectionSessionLink(
+    `/${legacySelectionSessionPath}/searching.do`,
+    false,
+    externalMimeTypes
+  );
+};
 
 /**
  * Update the content of DIV "selection-summary". This function is primarily for
@@ -410,7 +458,7 @@ export const selectResourceForSelectOrAdd = (
   );
   const callback = (response: SubmitResponse) => {
     if (isChangeRoute(response)) {
-      leaveSearchPage(`${AppConfig.baseUrl}${response.route}`);
+      leaveSearchPage(`${getBaseUrl()}${response.route}`);
     } else if (isPageContent(response)) {
       updateSelectionSummary(response);
     }
@@ -471,7 +519,7 @@ export const selectResourceForSkinny = (
  */
 export const selectResource = (
   itemKey: string,
-  attachments: string[]
+  attachments: string[] = []
 ): Promise<void> =>
   pipe(
     getSelectionSessionInfo().layout,

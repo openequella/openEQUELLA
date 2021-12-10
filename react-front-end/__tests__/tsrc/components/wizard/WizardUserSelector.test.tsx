@@ -15,31 +15,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta } from "@storybook/react";
+import "@testing-library/jest-dom/extend-expect";
+import { render, waitFor } from "@testing-library/react";
 import * as React from "react";
-import { action } from "@storybook/addon-actions";
-import SearchBar, {
-  SearchBarProps,
-} from "../../tsrc/search/components/SearchBar";
+import * as UserModuleMock from "../../../../__mocks__/UserModule.mock";
+import { WizardUserSelector } from "../../../../tsrc/components/wizard/WizardUserSelector";
 
-export default {
-  title: "SearchBar",
-  component: SearchBar,
-} as Meta<SearchBarProps>;
+describe("<WizardUserSelector/>", () => {
+  it("displays a specified set of users", async () => {
+    const testUser = UserModuleMock.users[1];
+    const { queryByText } = render(
+      <WizardUserSelector
+        groupFilter={new Set()}
+        multiple
+        onChange={jest.fn()}
+        users={new Set([testUser.id])}
+        mandatory={false}
+        resolveUsersProvider={UserModuleMock.resolveUsersProvider}
+      />
+    );
 
-const actions = {
-  onQueryChange: action("onQueryChange called"),
-  onWildcardModeChange: action("onWildcardModeChange called"),
-  doSearch: action("doSearch called"),
-};
-
-const values = {
-  query: "",
-  wildcardMode: false,
-};
-
-export const NonWildcardMode = () => <SearchBar {...actions} {...values} />;
-
-export const WildcardMode = () => (
-  <SearchBar {...actions} {...values} wildcardMode />
-);
+    await waitFor(() =>
+      expect(queryByText(testUser.username)).toBeInTheDocument()
+    );
+  });
+});

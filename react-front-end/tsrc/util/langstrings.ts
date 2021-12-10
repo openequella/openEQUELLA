@@ -180,6 +180,7 @@ export const languageStrings = {
       undo: "Undo",
       yes: "Yes",
     },
+    required: "* Required",
     result: {
       success: "Saved successfully.",
       fail: "Failed to save.",
@@ -319,6 +320,8 @@ export const languageStrings = {
     noFileSelected: "No attached resources",
     failedToDelete: "Failed to delete '%s' due to error: %s",
   },
+  invalidLuceneQuery:
+    "Your query is invalid. Try simplifying your query to only contain basic terms, and check that you do not have any whitespace around '*' or '+' characters.",
   lightboxComponent: {
     kalturaExternalIdIssue:
       "There is an issue with the format of the externalId for the the Kaltura Video",
@@ -411,8 +414,12 @@ export const languageStrings = {
     newSearchHelperText: "Clears search text and filters",
     shareSearchHelperText: "Copy search link to clipboard",
     shareSearchConfirmationText: "Search link saved to clipboard",
+    showAdvancedSearchFilter: "Show advanced search filters",
     deadAttachmentWarning:
       "This attachment appears to be broken or inaccessible.",
+    AdvancedSearchPanel: {
+      title: "Advanced Search",
+    },
     displayModeSelector: {
       title: "Display mode",
       modeItemList: "Item List",
@@ -504,6 +511,7 @@ export const languageStrings = {
       title: "Refine search",
     },
     advancedSearchSelector: {
+      label: "Advanced searches",
       title: "Access Advanced searches",
     },
     remoteSearchSelector: {
@@ -667,6 +675,18 @@ export const languageStrings = {
     },
     ui: { name: "UI", desc: "UI settings" },
   },
+  shuffleBox: {
+    addAll: "Add all",
+    addSelected: "Add selected",
+    availableOptions: "Available options",
+    currentSelections: "Current selections",
+    removeAll: "Remove all",
+    removeSelected: "Remove selected",
+  },
+  shuffleList: {
+    newEntry: "New entry",
+    valueList: "Current list of values",
+  },
   template: {
     navaway: {
       title: "You have unsaved changes",
@@ -678,6 +698,10 @@ export const languageStrings = {
       prefs: "My preferences",
       usernameUnknown: "Username unknown",
     },
+  },
+  termSelector: {
+    placeholder: "Search term",
+    loadingText: "Searching terms...",
   },
   uiconfig: {
     facet: {
@@ -691,7 +715,25 @@ export const languageStrings = {
   },
   userSearchComponent: {
     failedToFindUsersMessage: "Unable to find any users matching '%s'",
+    filterActiveNotice: "Results will be filtered.",
+    filteredByPrelude: "Your search results will be filtered by these groups:",
     queryFieldLabel: "Username, first or last name",
+  },
+  wizard: {
+    controls: {
+      unsupported: {
+        label: "Unsupported control configured",
+        description:
+          "An unsupported control has been detected, please contact your system administrator.",
+      },
+      userSelector: {
+        selectUsers: "Select users",
+        userList: "Current selection of users",
+      },
+    },
+    options: {
+      allOptions: "All",
+    },
   },
   youTubePlayer: {
     title: "YouTube video player",

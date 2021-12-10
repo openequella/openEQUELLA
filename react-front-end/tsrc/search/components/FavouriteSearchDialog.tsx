@@ -16,10 +16,11 @@
  * limitations under the License.
  */
 import { TextField } from "@material-ui/core";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import * as React from "react";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import { languageStrings } from "../../util/langstrings";
+import { SearchPageRenderErrorContext } from "../SearchPage";
 
 export interface FavouriteSearchDialogProps {
   /**
@@ -48,7 +49,9 @@ export const FavouriteSearchDialog = ({
   closeDialog,
 }: FavouriteSearchDialogProps) => {
   const [searchName, setSearchName] = useState<string>("");
-  const confirmHandler = () => onConfirm(searchName).finally(closeDialog);
+  const { handleError } = useContext(SearchPageRenderErrorContext);
+  const confirmHandler = () =>
+    onConfirm(searchName).catch(handleError).finally(closeDialog);
 
   return (
     <ConfirmDialog

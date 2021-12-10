@@ -1,6 +1,8 @@
 package io.github.openequella.rest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
 import com.tle.webtests.framework.TestConfig;
 import com.tle.webtests.framework.TestInstitution;
@@ -10,6 +12,7 @@ import java.util.List;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.type.TypeReference;
 import org.testng.annotations.Test;
 
@@ -33,6 +36,33 @@ public class AdvancedSearchApiTest extends AbstractRestApiTest {
         "The number of returned advanced searches should match the institution total.",
         3,
         searches.size());
+  }
+
+  @Test(
+      description =
+          "Get the name, description, Collections and Wizard definition of an Advanced search.")
+  public void testRetrieveAdvancedSearch() throws IOException {
+    final String ADVANCED_SEARCH_UUID = "c9fd1ae8-0dc1-ab6f-e923-1f195a22d537";
+    final HttpMethod method =
+        new GetMethod(ADVANCEDSEARCH_API_ENDPOINT + "/" + ADVANCED_SEARCH_UUID);
+    assertEquals(HttpStatus.SC_OK, makeClientRequest(method));
+    JsonNode result = mapper.readTree(method.getResponseBody());
+
+    assertEquals("All Controls Power Search", result.get("name").asText());
+
+    // This Advanced Search only covers one Collection.
+    assertEquals(1, result.get("collections").size());
+
+    // This Advanced Search has 13 controls and none of them is the control type of `unknown`.
+    assertEquals(13, result.get("controls").size());
+    result
+        .get("controls")
+        .forEach(
+            control -> {
+              String controlType = control.get("controlType").asText();
+              assertNotNull(controlType);
+              assertNotEquals("unknown", controlType);
+            });
   }
 
   private List<BaseEntitySummary> getAdvancedSearches() throws IOException {

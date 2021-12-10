@@ -97,14 +97,19 @@ export const PUT = <T, R>(path: string, data?: T): Promise<R> =>
  * @param path The URL path for the target POST
  * @param validator A function to perform runtime type checking against the result - typically with typescript-is
  * @param data The data to be sent in POST request
+ * @param queryParams The query parameters to send with the POST request
  */
 export const POST = <T, R>(
   path: string,
   validator: (data: unknown) => data is R,
-  data?: T
+  data?: T,
+  queryParams?: Parameters<typeof stringify>[0]
 ): Promise<R> =>
   axios
-    .post(path, data)
+    .post(path, data, {
+      params: queryParams,
+      paramsSerializer: (params) => stringify(params),
+    })
     .then(({ data }: AxiosResponse<unknown>) => {
       if (!validator(data)) {
         throw new TypeError(

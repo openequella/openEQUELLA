@@ -17,13 +17,11 @@
  */
 import { Editor } from "@tinymce/tinymce-react";
 import { AxiosPromise, AxiosResponse } from "axios";
+import { getBaseUrl, getRenderData } from "../AppConfig";
 import * as React from "react";
-
 import "tinymce/tinymce";
-
 import "tinymce/icons/default";
 import "tinymce/plugins/advlist";
-
 import "tinymce/plugins/anchor";
 import "tinymce/plugins/autolink";
 import "tinymce/plugins/autoresize";
@@ -58,8 +56,6 @@ import "tinymce/plugins/visualblocks";
 import "tinymce/plugins/visualchars";
 import "tinymce/plugins/wordcount";
 import "tinymce/themes/silver/theme";
-
-import { getBaseUrl, getRenderData } from "../AppConfig";
 
 const renderData = getRenderData();
 

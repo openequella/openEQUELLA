@@ -18,7 +18,11 @@
 import { createBrowserHistory } from "history";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import { getMimeTypeFilters } from "../../../__mocks__/MimeTypeFilter.mock";
-import { users } from "../../../__mocks__/UserSearch.mock";
+import {
+  allSearchPageOptions,
+  basicSearchPageOptions,
+} from "../../../__mocks__/searchOptions.mock";
+import * as UserModuleMock from "../../../__mocks__/UserModule.mock";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import * as SearchFilterSettingsModule from "../../../tsrc/modules/SearchFilterSettingsModule";
 import type { SearchOptions } from "../../../tsrc/modules/SearchModule";
@@ -30,11 +34,9 @@ import {
   generateSearchPageOptionsFromQueryString,
   legacyQueryStringToSearchPageOptions,
   newSearchQueryToSearchPageOptions,
+  processLegacyAdvSearchCriteria,
+  SearchPageOptions,
 } from "../../../tsrc/search/SearchPageHelper";
-import {
-  allSearchPageOptions,
-  basicSearchPageOptions,
-} from "../../../__mocks__/searchOptions.mock";
 import type { DateRange } from "../../../tsrc/util/Date";
 import { updateMockGetBaseUrl } from "../BaseUrlHelper";
 import { basicRenderData, updateMockGetRenderData } from "../RenderDataHelper";
@@ -51,7 +53,7 @@ describe("newSearchQueryToSearchOptions", () => {
   );
 
   beforeEach(() => {
-    mockedResolvedUser.mockResolvedValue([users[0]]);
+    mockedResolvedUser.mockResolvedValue([UserModuleMock.users[0]]);
     mockedCollectionListSummary.mockResolvedValueOnce(getCollectionMap);
     mockGetMimeTypeFiltersFromServer.mockResolvedValueOnce(getMimeTypeFilters);
   });
@@ -62,7 +64,7 @@ describe("newSearchQueryToSearchOptions", () => {
 
   it("should convert query string to searchOptions", async () => {
     const longSearch =
-      '{"rowsPerPage":10,"currentPage":0,"sortOrder":"NAME","query":"test machine","rawMode":true,"status":["LIVE","REVIEW"],"searchAttachments":true,"selectedCategories":[{"id":766943,"categories":["Hobart"]},{"id":766944,"categories":["Some cool things"]}],"collections":[{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545fff"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffe"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffg"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffa"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffb"}],"lastModifiedDateRange":{"start":"2020-05-26T03:24:00.889Z","end":"2020-05-27T03:24:00.889Z"},"owner":{"id":"680f5eb7-22e2-4ab6-bcea-25205165e36e"}, "mimeTypeFilters": [{"id":"fe79c485-a6dd-4743-81e8-52de66494632"},{"id":"fe79c485-a6dd-4743-81e8-52de66494631"}]}';
+      '{"rowsPerPage":10,"currentPage":0,"sortOrder":"NAME","query":"test machine","rawMode":true,"status":["LIVE","REVIEW"],"searchAttachments":true,"selectedCategories":[{"id":766943,"categories":["Hobart"]},{"id":766944,"categories":["Some cool things"]}],"collections":[{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545fff"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffe"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffg"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffa"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffb"}],"lastModifiedDateRange":{"start":"2020-05-26T03:24:00.889Z","end":"2020-05-27T03:24:00.889Z"},"owner":{"id":"680f5eb7-22e2-4ab6-bcea-25205165e36e"}, "mimeTypeFilters": [{"id":"fe79c485-a6dd-4743-81e8-52de66494632"},{"id":"fe79c485-a6dd-4743-81e8-52de66494631"}],"advFieldValue": [[{"schemaNode": ["/controls/editbox"], "type": "editbox", "isValueTokenised": true}, ["hello world"]]] }';
     const convertedParamsPromise = await newSearchQueryToSearchPageOptions(
       longSearch
     );
@@ -175,18 +177,18 @@ describe("legacyQueryStringToSearchOptions", () => {
   });
 
   it("should convert legacy search parameters to searchOptions", async () => {
-    mockedResolvedUser.mockResolvedValue([users[0]]);
+    mockedResolvedUser.mockResolvedValue([UserModuleMock.users[0]]);
     mockedCollectionListSummary.mockResolvedValue(getCollectionMap);
 
     //Query string was obtained from legacy UI searching.do->Share URL
     const fullQueryString =
-      "?in=C8e3caf16-f3cb-b3dd-d403-e5eb8d545fff&q=test&sort=datecreated&owner=680f5eb7-22e2-4ab6-bcea-25205165e36e&dp=1601510400000&dr=AFTER";
+      "?in=C8e3caf16-f3cb-b3dd-d403-e5eb8d545fff&q=test&sort=datecreated&owner=680f5eb7-22e2-4ab6-bcea-25205165e36e&dp=1601510400000&dr=AFTER&doc=<xml><editbox>box</editbox></xml>";
 
     const convertedParamsPromise = await legacyQueryStringToSearchPageOptions(
       new URLSearchParams(fullQueryString)
     );
 
-    const expectedSearchOptions: SearchOptions = {
+    const expectedSearchOptions: SearchPageOptions = {
       ...defaultConvertedSearchOptions,
       sortOrder: "DATECREATED",
       searchAttachments: true,
@@ -204,6 +206,7 @@ describe("legacyQueryStringToSearchOptions", () => {
         lastName: "Hobson",
       },
       lastModifiedDateRange: { start: new Date("2020-10-01T00:00:00.000Z") },
+      legacyAdvSearchCriteria: new Map([["/editbox", ["box"]]]),
     };
 
     expect(convertedParamsPromise).toEqual(expectedSearchOptions);
@@ -274,9 +277,18 @@ describe("legacyQueryStringToSearchOptions", () => {
 describe("generateQueryStringFromSearchPageOptions", () => {
   it("converts all searchOptions to a url encoded json string", () => {
     expect(generateQueryStringFromSearchPageOptions(allSearchPageOptions)).toBe(
-      "searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22NAME%22%2C%22rawMode%22%3Atrue%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22test+machine%22%2C%22collections%22%3A%5B%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545fff%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffe%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffg%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffa%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffb%22%7D%5D%2C%22selectedCategories%22%3A%5B%7B%22id%22%3A766943%2C%22categories%22%3A%5B%22Hobart%22%5D%7D%2C%7B%22id%22%3A766944%2C%22categories%22%3A%5B%22Some+cool+things%22%5D%7D%5D%2C%22lastModifiedDateRange%22%3A%7B%22start%22%3A%222020-05-26T03%3A24%3A00.889Z%22%2C%22end%22%3A%222020-05-27T03%3A24%3A00.889Z%22%7D%2C%22owner%22%3A%7B%22id%22%3A%22680f5eb7-22e2-4ab6-bcea-25205165e36e%22%7D%2C%22mimeTypeFilters%22%3A%5B%7B%22id%22%3A%22fe79c485-a6dd-4743-81e8-52de66494632%22%7D%2C%7B%22id%22%3A%22fe79c485-a6dd-4743-81e8-52de66494631%22%7D%5D%2C%22displayMode%22%3A%22list%22%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D"
+      "searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22NAME%22%2C%22rawMode%22%3Atrue%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22test+machine%22%2C%22collections%22%3A%5B%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545fff%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffe%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffg%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffa%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffb%22%7D%5D%2C%22selectedCategories%22%3A%5B%7B%22id%22%3A766943%2C%22categories%22%3A%5B%22Hobart%22%5D%7D%2C%7B%22id%22%3A766944%2C%22categories%22%3A%5B%22Some+cool+things%22%5D%7D%5D%2C%22lastModifiedDateRange%22%3A%7B%22start%22%3A%222020-05-26T03%3A24%3A00.889Z%22%2C%22end%22%3A%222020-05-27T03%3A24%3A00.889Z%22%7D%2C%22owner%22%3A%7B%22id%22%3A%22680f5eb7-22e2-4ab6-bcea-25205165e36e%22%7D%2C%22mimeTypeFilters%22%3A%5B%7B%22id%22%3A%22fe79c485-a6dd-4743-81e8-52de66494632%22%7D%2C%7B%22id%22%3A%22fe79c485-a6dd-4743-81e8-52de66494631%22%7D%5D%2C%22displayMode%22%3A%22list%22%2C%22dateRangeQuickModeEnabled%22%3Atrue%2C%22advFieldValue%22%3A%5B%5B%7B%22schemaNode%22%3A%5B%22%2Fcontrols%2Feditbox%22%5D%2C%22type%22%3A%22editbox%22%2C%22isValueTokenised%22%3Atrue%7D%2C%5B%22hello+world%22%5D%5D%5D%7D"
     );
   });
+
+  it.each([["advancedSearchCriteria"], ["mimeTypes"]])(
+    "always skips field %s",
+    (field: string) => {
+      expect(
+        generateQueryStringFromSearchPageOptions(defaultSearchPageOptions)
+      ).not.toContain(field);
+    }
+  );
 
   it("excludes any undefined properties", () => {
     //defaultSearchOptions contains an undefined sortOrder property
@@ -302,6 +314,44 @@ describe("builderOpenSummaryPageHandler", () => {
     const { url } = buildOpenSummaryPageHandler(UUID, VERSION, history);
     expect(url).toBe(
       "http://localhost:8080/vanilla/items/369c92fa-ae59-4845-957d-8fcaa22c15e3/1/?_sl.stateId=1&a=coursesearch"
+    );
+  });
+});
+
+describe("processLegacyAdvSearchCriteria", () => {
+  it("converts a XML string into a PathValueMap", () => {
+    const pathValueMap = processLegacyAdvSearchCriteria(
+      "<xml><name>hello</name></xml>"
+    );
+    expect(pathValueMap).toStrictEqual(new Map([["/name", ["hello"]]]));
+  });
+
+  it("supports one path which has multiple values", () => {
+    const pathValueMap = processLegacyAdvSearchCriteria(
+      "<xml><name>hello</name><name>world</name></xml>"
+    );
+    expect(pathValueMap).toStrictEqual(
+      new Map([["/name", ["hello", "world"]]])
+    );
+  });
+
+  it("drops path which does not have values", () => {
+    const pathValueMap = processLegacyAdvSearchCriteria(
+      "<xml><country>aus</country><city></city><town/></xml>"
+    );
+    expect(pathValueMap).toStrictEqual(new Map([["/country", ["aus"]]]));
+  });
+
+  it("supports a Schema node that targets to an attribute", () => {
+    const pathValueMap = processLegacyAdvSearchCriteria(
+      "<xml><country population='100'><city size='small'>Hobart</city><city size='small'>Darwin</city><city size='medium'>Canberra</city></country></xml>"
+    );
+    expect(pathValueMap).toStrictEqual(
+      new Map([
+        ["/country/city", ["Hobart", "Darwin", "Canberra"]],
+        ["/country/city/@size", ["small", "medium"]],
+        ["/country/@population", ["100"]],
+      ])
     );
   });
 });

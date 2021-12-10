@@ -20,31 +20,24 @@ import {
   Card,
   CardActions,
   CardContent,
-  createStyles,
   Grid,
+  makeStyles,
   Typography,
-  WithStyles,
-  withStyles,
 } from "@material-ui/core";
-import { useEffect, useState } from "react";
-import * as React from "react";
+import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
-import { generateFromError } from "../api/errors";
+import * as React from "react";
+import { useContext, useEffect, useState } from "react";
 import { API_BASE_URL } from "../AppConfig";
 import SettingPageTemplate from "../components/SettingPageTemplate";
 import SettingsList from "../components/SettingsList";
 import SettingsListControl from "../components/SettingsListControl";
+import { AppRenderErrorContext } from "../mainui/App";
 import { routes } from "../mainui/routes";
-import {
-  templateDefaults,
-  templateError,
-  TemplateUpdate,
-} from "../mainui/Template";
+import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import { commonString } from "../util/commonstrings";
 import { languageStrings } from "../util/langstrings";
-import useError from "../util/useError";
 import ColorPickerComponent from "./ColorPickerComponent";
-import * as OEQ from "@openequella/rest-api-client";
 
 declare const themeSettings: OEQ.Theme.ThemeSettings;
 declare const logoURL: string;
@@ -54,7 +47,7 @@ declare const logoURL: string;
  */
 export const strings = languageStrings.newuisettings;
 
-const styles = createStyles({
+const useStyles = makeStyles({
   fileName: {
     marginTop: "8px",
   },
@@ -79,9 +72,7 @@ interface ThemeColors {
   secondaryText: string;
 }
 
-export interface ThemePageProps {
-  updateTemplate: (update: TemplateUpdate) => void;
-}
+export interface ThemePageProps extends TemplateUpdateProps {}
 
 interface LogoSettings {
   logoURL: string;
@@ -89,10 +80,10 @@ interface LogoSettings {
   fileName: string;
 }
 
-export const ThemePage = ({
-  updateTemplate,
-  classes,
-}: ThemePageProps & WithStyles<typeof styles>) => {
+export const ThemePage = ({ updateTemplate }: ThemePageProps) => {
+  const classes = useStyles();
+  const { appErrorHandler } = useContext(AppRenderErrorContext);
+
   const mapSettingsToColors = (
     settings: OEQ.Theme.ThemeSettings
   ): ThemeColors => ({
@@ -128,6 +119,7 @@ export const ThemePage = ({
     logoToUpload: null,
     fileName: "",
   });
+
   const [themeColors, setThemeColors] = useState<ThemeColors>(
     mapSettingsToColors(themeSettings)
   );
@@ -140,10 +132,6 @@ export const ThemePage = ({
       backRoute: routes.Settings.to,
     }));
   }, [updateTemplate]);
-
-  const setError = useError((error: Error) => {
-    updateTemplate(templateError(generateFromError(error)));
-  });
 
   const handleDefaultButton = () => {
     const defaultThemeColors: ThemeColors = {
@@ -206,11 +194,11 @@ export const ThemePage = ({
       setIsShowSuccess(true);
       reload();
     } catch (error) {
-      setError(
-        error instanceof Error
-          ? error
-          : new Error(`Unexpected non-Error caught in saveChanges(): ${error}`)
-      );
+      if (error instanceof Error) {
+        appErrorHandler(error);
+      } else {
+        console.error("Unexpected non-Error caught in saveChanges(): " + error);
+      }
     }
   };
 
@@ -221,7 +209,7 @@ export const ThemePage = ({
         setIsShowSuccess(true);
         reload();
       })
-      .catch(setError);
+      .catch(appErrorHandler);
   };
 
   const colorPicker = (themeColor: keyof ThemeColors) => (
@@ -359,4 +347,4 @@ export const ThemePage = ({
   );
 };
 
-export default withStyles(styles)(ThemePage);
+export default ThemePage;

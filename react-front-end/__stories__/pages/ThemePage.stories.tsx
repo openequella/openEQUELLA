@@ -26,7 +26,7 @@ export default {
 } as Meta<ThemePageProps>;
 
 export const standard: Story<ThemePageProps> = (args) => (
-  <ThemePage {...args}></ThemePage>
+  <ThemePage {...args} />
 );
 
 standard.args = {
