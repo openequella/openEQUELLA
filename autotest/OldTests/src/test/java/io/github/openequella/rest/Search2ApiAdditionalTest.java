@@ -178,6 +178,7 @@ public class Search2ApiAdditionalTest extends AbstractRestApiTest {
     if (queryVals != null) {
       queryParams.addAll(Arrays.asList(queryVals));
     }
+    queryParams.add(new NameValuePair("collections", "0896be21-77d9-1279-90d9-1765e76e5f84"));
     method.setQueryString(queryParams.toArray(new NameValuePair[0]));
 
     int statusCode = makeClientRequest(method);

@@ -57,7 +57,6 @@ import com.tle.web.api.settings.RemoteSearchResource;
 import com.tle.web.api.settings.SearchFilterResource;
 import com.tle.web.api.settings.SearchSettingsResource;
 import com.tle.web.api.settings.SettingsResource;
-import com.tle.web.api.tokenisation.TokenisationResource;
 import com.tle.web.api.users.UserQueryResource;
 import com.tle.web.api.wizard.WizardApi;
 import com.tle.web.remoting.rest.resource.InstitutionSecurityFilter;
@@ -128,7 +127,6 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
           SearchSettingsResource.class,
           SelectionApi.class,
           SettingsResource.class,
-          TokenisationResource.class,
           UserQueryResource.class,
           WizardApi.class);
 

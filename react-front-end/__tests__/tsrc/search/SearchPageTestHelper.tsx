@@ -44,7 +44,6 @@ import * as SearchFacetsModule from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchFilterSettingsModule from "../../../tsrc/modules/SearchFilterSettingsModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
-import * as TokenisationModule from "../../../tsrc/modules/TokenisationModule";
 import * as UserModule from "../../../tsrc/modules/UserModule";
 import SearchPage from "../../../tsrc/search/SearchPage";
 import * as SearchPageHelper from "../../../tsrc/search/SearchPageHelper";
@@ -148,9 +147,6 @@ export const mockCollaborators = () => {
       AdvancedSearchModule,
       "getAdvancedSearchByUuid"
     ),
-    mockGetTokensForText: jest
-      .spyOn(TokenisationModule, "getTokensForText")
-      .mockResolvedValue({ tokens: ["hello", "world"] }),
   };
 };
 
