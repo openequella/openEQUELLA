@@ -864,7 +864,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
       title: searchStrings.advancedSearchSelector.title,
       component: (
         <AdvancedSearchSelector
-          advancedSearches={advancedSearches}
+          advancedSearches={advancedSearches.sort()}
           onSelectionChange={handleAdvancedSearchChanged}
           value={advancedSearches.find(({ uuid }) => uuid === advancedSearchId)}
         />
@@ -882,7 +882,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
           urlGeneratorForMuiLink={buildSelectionSessionRemoteSearchLink}
         />
       ),
-      disabled: true,
+      disabled: searchPageModeState.mode === "advSearch",
     },
     {
       idSuffix: "DateRangeSelector",
