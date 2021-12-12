@@ -1068,6 +1068,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
               searchPageModeState.isAdvSearchPanelOpen && (
                 <Grid item xs={12}>
                   <AdvancedSearchPanel
+                    name={searchPageModeState.definition.name}
                     wizardControls={searchPageModeState.definition.controls}
                     values={searchPageModeState.queryValues}
                     onSubmit={handleSubmitAdvancedSearch}

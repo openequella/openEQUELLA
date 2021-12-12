@@ -43,6 +43,10 @@ import { SearchPageRenderErrorContext } from "../SearchPage";
 
 export interface AdvancedSearchPanelProps {
   /**
+   * Name of the Advanced search.
+   */
+  name?: string;
+  /**
    * A list of Wizard controls.
    */
   wizardControls: OEQ.WizardControl.WizardControl[];
@@ -75,6 +79,7 @@ export const AdvancedSearchPanel = ({
   onClose,
   onSubmit,
   onClear,
+  name,
 }: AdvancedSearchPanelProps) => {
   const { handleError } = useContext(SearchPageRenderErrorContext);
   const [currentValues, setCurrentValues] =
@@ -138,7 +143,7 @@ export const AdvancedSearchPanel = ({
   return (
     <Card id={idPrefix}>
       <CardHeader
-        title={languageStrings.searchpage.AdvancedSearchPanel.title}
+        title={name ?? languageStrings.searchpage.AdvancedSearchPanel.title}
         action={
           <TooltipIconButton
             title={languageStrings.common.action.close}
