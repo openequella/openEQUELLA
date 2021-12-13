@@ -94,6 +94,7 @@ import SearchBar from "../search/components/SearchBar";
 import type { DateRange } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
 import { OrdAsIs } from "../util/Ord";
+import { sortArrayOfObjects } from "../util/sort";
 import {
   generateAdvancedSearchCriteria,
   initialiseAdvancedSearch,
@@ -864,7 +865,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
       title: searchStrings.advancedSearchSelector.title,
       component: (
         <AdvancedSearchSelector
-          advancedSearches={advancedSearches}
+          advancedSearches={sortArrayOfObjects(advancedSearches, "name")}
           onSelectionChange={handleAdvancedSearchChanged}
           value={advancedSearches.find(({ uuid }) => uuid === advancedSearchId)}
         />

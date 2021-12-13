@@ -28,6 +28,7 @@ import {
   collectionListSummary,
 } from "../../modules/CollectionsModule";
 import { languageStrings } from "../../util/langstrings";
+import { sortArrayOfObjects } from "../../util/sort";
 import { SearchPageRenderErrorContext } from "../SearchPage";
 
 interface CollectionSelectorProps {
@@ -57,7 +58,9 @@ export const CollectionSelector = ({
 
   useEffect(() => {
     collectionListSummary([OEQ.Acl.ACL_SEARCH_COLLECTION])
-      .then((collections: Collection[]) => setCollections(collections))
+      .then((collections: Collection[]) =>
+        setCollections(sortArrayOfObjects(collections, "name"))
+      )
       .catch(handleError);
   }, [handleError]);
 
