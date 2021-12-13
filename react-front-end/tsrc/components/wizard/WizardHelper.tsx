@@ -31,6 +31,7 @@ import * as M from "fp-ts/Map";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as N from "fp-ts/number";
 import * as O from "fp-ts/Option";
+import { not } from "fp-ts/Predicate";
 import * as RA from "fp-ts/ReadonlyArray";
 import * as RSET from "fp-ts/ReadonlySet";
 import { Refinement } from "fp-ts/Refinement";
@@ -630,7 +631,10 @@ export const render = (
   const isVisible: (_: OEQ.WizardControl.WizardControl) => boolean = flow(
     O.fromPredicate(OEQ.WizardControl.isWizardBasicControl),
     O.chain<OEQ.WizardControl.WizardBasicControl, string>(
-      ({ visibilityScript }) => O.fromNullable(visibilityScript)
+      flow(
+        O.fromNullableK(({ visibilityScript }) => visibilityScript),
+        O.filter(not(S.isEmpty))
+      )
     ),
     O.chain((script) =>
       pipe(
