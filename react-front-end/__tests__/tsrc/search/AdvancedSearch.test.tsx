@@ -21,7 +21,10 @@ import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
-import { getAdvancedSearchDefinition } from "../../../__mocks__/AdvancedSearchModule.mock";
+import {
+  getAdvancedSearchDefinition,
+  mockWizardControlFactory,
+} from "../../../__mocks__/AdvancedSearchModule.mock";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import { mockedAdvancedSearchCriteria } from "../../../__mocks__/WizardHelper.mock";
 import { elapsedTime, startTimer } from "../../../tsrc/util/debug";
@@ -333,5 +336,38 @@ describe("search with Advanced search criteria", () => {
     expect(searchOptions.advancedSearchCriteria).toStrictEqual(
       mockedAdvancedSearchCriteria
     );
+  });
+});
+
+describe("Detect duplicated control target", () => {
+  const duplicateWarning =
+    languageStrings.searchpage.AdvancedSearchPanel.duplicateTargetWarning;
+
+  it("shows a warning when there is any same control type targeting to same node", async () => {
+    mockGetAdvancedSearchByUuid.mockResolvedValueOnce({
+      ...getAdvancedSearchDefinition,
+      controls: A.replicate(2, mockWizardControlFactory(editBoxEssentials)),
+    });
+
+    const { queryByText } = await renderAdvancedSearchPage();
+
+    expect(queryByText(duplicateWarning)).toBeInTheDocument();
+  });
+
+  it("does not show the warning if same node is targeted by different control types", async () => {
+    mockGetAdvancedSearchByUuid.mockResolvedValueOnce({
+      ...getAdvancedSearchDefinition,
+      controls: [
+        mockWizardControlFactory(editBoxEssentials),
+        mockWizardControlFactory({
+          ...editBoxEssentials,
+          controlType: "calendar",
+        }),
+      ],
+    });
+
+    const { queryByText } = await renderAdvancedSearchPage();
+
+    expect(queryByText(duplicateWarning)).not.toBeInTheDocument();
   });
 });
