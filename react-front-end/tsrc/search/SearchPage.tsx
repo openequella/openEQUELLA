@@ -882,7 +882,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
           urlGeneratorForMuiLink={buildSelectionSessionRemoteSearchLink}
         />
       ),
-      disabled: false,
+      disabled: searchPageModeState.mode === "advSearch",
     },
     {
       idSuffix: "DateRangeSelector",
