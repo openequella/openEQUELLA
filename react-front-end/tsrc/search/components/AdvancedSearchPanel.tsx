@@ -45,7 +45,7 @@ export interface AdvancedSearchPanelProps {
   /**
    * Name of the Advanced search.
    */
-  name?: string;
+  title?: string;
   /**
    * A list of Wizard controls.
    */
@@ -79,7 +79,7 @@ export const AdvancedSearchPanel = ({
   onClose,
   onSubmit,
   onClear,
-  name,
+  title,
 }: AdvancedSearchPanelProps) => {
   const { handleError } = useContext(SearchPageRenderErrorContext);
   const [currentValues, setCurrentValues] =
@@ -143,7 +143,7 @@ export const AdvancedSearchPanel = ({
   return (
     <Card id={idPrefix}>
       <CardHeader
-        title={name ?? languageStrings.searchpage.AdvancedSearchPanel.title}
+        title={title ?? languageStrings.searchpage.AdvancedSearchPanel.title}
         action={
           <TooltipIconButton
             title={languageStrings.common.action.close}
