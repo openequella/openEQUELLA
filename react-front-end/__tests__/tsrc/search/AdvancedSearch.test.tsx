@@ -51,8 +51,10 @@ jest.setTimeout(20000);
 
 const {
   showAdvancedSearchFilter: filterButtonLabel,
-  AdvancedSearchPanel: { title: panelTitle },
+  AdvancedSearchPanel: { title: defaultPanelTitle },
 } = languageStrings.searchpage;
+
+const panelTitle = getAdvancedSearchDefinition.name ?? defaultPanelTitle;
 
 const {
   mockCollections,

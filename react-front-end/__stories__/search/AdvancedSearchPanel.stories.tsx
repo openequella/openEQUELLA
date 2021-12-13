@@ -41,6 +41,7 @@ export const Simple: Story<AdvancedSearchPanelProps> = (args) => (
   <AdvancedSearchPanel {...args} />
 );
 Simple.args = {
+  title: "Simple Advanced search",
   wizardControls: controls,
   values: new Map(),
 };
