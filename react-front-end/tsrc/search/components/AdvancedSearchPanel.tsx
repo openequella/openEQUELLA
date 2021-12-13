@@ -43,7 +43,7 @@ import { SearchPageRenderErrorContext } from "../SearchPage";
 
 export interface AdvancedSearchPanelProps {
   /**
-   * Name of the Advanced search.
+   * Title of the Advanced search panel. Defaults to language string `languageStrings.searchpage.AdvancedSearchPanel.title`.
    */
   title?: string;
   /**
