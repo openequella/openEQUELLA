@@ -45,6 +45,13 @@ export interface XmlScriptType {
    * @return The value from the XML document
    */
   get: (xpath: string) => string;
+  /**
+   * Returns all node text values for a given XPath.
+   *
+   * @param xpath The XPath to the node(s)
+   * @return An array of all the text values of the matching nodes
+   */
+  getAll: (xpath: string) => ReadonlyArray<string>;
 }
 
 /**
