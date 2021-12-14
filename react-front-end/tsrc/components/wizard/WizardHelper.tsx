@@ -518,6 +518,12 @@ const buildXmlScriptObject = (values: PathValueMap): XmlScriptType =>
           O.chain(RA.head),
           O.getOrElse(() => S.empty) // as per legacy code
         ),
+      getAll: (node): ReadonlyArray<string> =>
+        pipe(
+          m,
+          M.lookup(S.Eq)(node),
+          O.getOrElse<ReadonlyArray<string>>(() => RA.empty)
+        ),
     })
   );
 
