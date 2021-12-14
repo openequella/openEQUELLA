@@ -27,14 +27,22 @@ import {
 import CloseIcon from "@material-ui/icons/Close";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
+import * as SET from "fp-ts/Set";
 import { constFalse, flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import * as WizardHelper from "../../components/wizard/WizardHelper";
 import {
   buildVisibilityScriptContext,
+  eqFullTargetAndControlType,
   WizardErrorContext,
 } from "../../components/wizard/WizardHelper";
 import { getCurrentUserDetails, guestUser } from "../../modules/UserModule";
@@ -73,6 +81,9 @@ export interface AdvancedSearchPanelProps {
   onClose: () => void;
 }
 
+const { title: defaultTitle, duplicateTargetWarning } =
+  languageStrings.searchpage.AdvancedSearchPanel;
+
 export const AdvancedSearchPanel = ({
   wizardControls,
   values,
@@ -86,6 +97,23 @@ export const AdvancedSearchPanel = ({
     useState<WizardHelper.FieldValueMap>(values);
   const [currentUser, setCurrentUser] =
     useState<OEQ.LegacyContent.CurrentUserDetails>(guestUser);
+
+  const duplicateTarget: boolean = useMemo(
+    () =>
+      pipe(
+        wizardControls,
+        A.filter(OEQ.WizardControl.isWizardBasicControl),
+        A.map(({ controlType, targetNodes }) =>
+          targetNodes.map(({ fullTarget }) => ({ controlType, fullTarget }))
+        ),
+        A.flatten,
+        (xs) => {
+          const set = SET.fromArray(eqFullTargetAndControlType)(xs);
+          return SET.size(set) < A.size(xs);
+        }
+      ),
+    [wizardControls]
+  );
 
   // For visibility scripting we need to have the current user's details
   useEffect(() => {
@@ -143,7 +171,7 @@ export const AdvancedSearchPanel = ({
   return (
     <Card id={idPrefix}>
       <CardHeader
-        title={title ?? languageStrings.searchpage.AdvancedSearchPanel.title}
+        title={title ?? defaultTitle}
         action={
           <TooltipIconButton
             title={languageStrings.common.action.close}
@@ -151,6 +179,11 @@ export const AdvancedSearchPanel = ({
           >
             <CloseIcon />
           </TooltipIconButton>
+        }
+        subheader={
+          duplicateTarget && (
+            <Typography color="secondary">{duplicateTargetWarning}</Typography>
+          )
         }
       />
       <CardContent>

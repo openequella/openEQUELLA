@@ -419,6 +419,8 @@ export const languageStrings = {
       "This attachment appears to be broken or inaccessible.",
     AdvancedSearchPanel: {
       title: "Advanced Search",
+      duplicateTargetWarning:
+        "Warning: This Advanced search has multiple matching control types pointing to the same metadata schema node.",
     },
     displayModeSelector: {
       title: "Display mode",

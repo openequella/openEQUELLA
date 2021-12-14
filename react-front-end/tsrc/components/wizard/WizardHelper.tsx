@@ -223,6 +223,17 @@ const eqControlTarget: Eq<ControlTarget> = struct({
 });
 
 /**
+ * An Eq used to check if there are multiple matching control types pointing to the same metadata schema node.
+ */
+export const eqFullTargetAndControlType: Eq<{
+  fullTarget: string;
+  controlType: OEQ.WizardControl.ControlType;
+}> = struct({
+  fullTarget: S.Eq,
+  controlType: S.Eq,
+});
+
+/**
  * Provides a function to insert values into a `FieldValueMap` returning a new Map instance - i.e.
  * original Map is unharmed/changed.
  */
