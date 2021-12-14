@@ -58,7 +58,9 @@ export const AdvancedSearchSelector = ({
     options={pipe(
       advancedSearches,
       A.sort(
-        ORD.contramap((as: OEQ.Common.BaseEntitySummary) => as.name)(S.Ord)
+        ORD.contramap<string, OEQ.Common.BaseEntitySummary>(({ name }) => name)(
+          S.Ord
+        )
       )
     )}
     getOptionSelected={(option, selected) => selected.uuid === option.uuid}
