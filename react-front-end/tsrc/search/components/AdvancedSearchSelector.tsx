@@ -18,6 +18,10 @@
 import { TextField } from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
 import * as OEQ from "@openequella/rest-api-client";
+import * as A from "fp-ts/Array";
+import { pipe } from "fp-ts/function";
+import * as ORD from "fp-ts/Ord";
+import * as S from "fp-ts/string";
 import * as React from "react";
 import { languageStrings } from "../../util/langstrings";
 
@@ -51,7 +55,12 @@ export const AdvancedSearchSelector = ({
   <Autocomplete
     debug
     value={value ?? null}
-    options={advancedSearches}
+    options={pipe(
+      advancedSearches,
+      A.sort(
+        ORD.contramap((as: OEQ.Common.BaseEntitySummary) => as.name)(S.Ord)
+      )
+    )}
     getOptionSelected={(option, selected) => selected.uuid === option.uuid}
     getOptionLabel={({ name }: OEQ.Common.BaseEntitySummary) => name}
     onChange={(_, value: OEQ.Common.BaseEntitySummary | null) =>

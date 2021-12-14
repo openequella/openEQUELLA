@@ -32,7 +32,6 @@ import {
   collectionListSummary,
 } from "../../modules/CollectionsModule";
 import { languageStrings } from "../../util/langstrings";
-
 import { SearchPageRenderErrorContext } from "../SearchPage";
 
 interface CollectionSelectorProps {
@@ -66,7 +65,7 @@ export const CollectionSelector = ({
         setCollections(
           pipe(
             collections,
-            A.sort(ORD.contramap((as: Collection) => as.name)(S.Ord))
+            A.sort(ORD.contramap<string, Collection>(({ name }) => name)(S.Ord))
           )
         )
       )

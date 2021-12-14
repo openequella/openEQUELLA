@@ -21,8 +21,6 @@ import * as A from "fp-ts/Array";
 import { constant, pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as O from "fp-ts/Option";
-import * as ORD from "fp-ts/Ord";
-import * as S from "fp-ts/string";
 import { isEqual } from "lodash";
 import * as React from "react";
 import {
@@ -866,14 +864,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
       title: searchStrings.advancedSearchSelector.title,
       component: (
         <AdvancedSearchSelector
-          advancedSearches={pipe(
-            advancedSearches,
-            A.sort(
-              ORD.contramap((as: OEQ.Common.BaseEntitySummary) => as.name)(
-                S.Ord
-              )
-            )
-          )}
+          advancedSearches={advancedSearches}
           onSelectionChange={handleAdvancedSearchChanged}
           value={advancedSearches.find(({ uuid }) => uuid === advancedSearchId)}
         />
