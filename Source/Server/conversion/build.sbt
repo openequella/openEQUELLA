@@ -1,15 +1,21 @@
-val tikaVersion = "1.24.1"
+val tikaVersion = "2.0.0"
 
 libraryDependencies ++= Seq(
-  "org.slf4j"       % "slf4j-api"    % "1.7.30",
-  "org.slf4j"       % "slf4j-simple" % "1.7.30",
-  "org.apache.tika" % "tika-core"    % tikaVersion,
-  "org.apache.tika" % "tika-parsers" % tikaVersion
+  "org.slf4j"       % "slf4j-api"                     % "1.7.32",
+  "org.slf4j"       % "slf4j-simple"                  % "1.7.32",
+  "org.apache.tika" % "tika-core"                     % tikaVersion,
+  "org.apache.tika" % "tika-parsers-standard-package" % tikaVersion excludeAll ExclusionRule(
+    organization = "org.apache.logging.log4j")
 )
 
 excludeDependencies += "commons-logging" % "commons-logging"
-assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
-assemblyMergeStrategy in assembly := {
+(assembly / assemblyOption) := (assembly / assemblyOption).value.copy(includeScala = false)
+(assembly / assemblyMergeStrategy) := {
+  // Three duplicate classes caused by upgrading tika to version 2.
+  case PathList("org", "slf4j", "impl", "StaticMDCBinder.class")    => MergeStrategy.first
+  case PathList("org", "slf4j", "impl", "StaticLoggerBinder.class") => MergeStrategy.first
+  case PathList("org", "slf4j", "impl", "StaticMarkerBinder.class") => MergeStrategy.first
+
   case PathList("META-INF", "cxf", "bus-extensions.txt") => MergeStrategy.first
 
   // Due to the error: deduplicate: different file contents found in the following:
@@ -38,8 +44,8 @@ assemblyMergeStrategy in assembly := {
   // OK to do in Java 8
   case "module-info.class" => MergeStrategy.discard
   case x =>
-    val oldStrategy = (assemblyMergeStrategy in assembly).value
+    val oldStrategy = (assembly / assemblyMergeStrategy).value
     oldStrategy(x)
 }
 
-mainClass in assembly := Some("com.tle.conversion.Main")
+(assembly / mainClass) := Some("com.tle.conversion.Main")

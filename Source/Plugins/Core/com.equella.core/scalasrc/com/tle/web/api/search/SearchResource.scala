@@ -32,11 +32,24 @@ import com.tle.legacy.LegacyGuice
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean
 import com.tle.web.api.search.ExportCSVHelper.{buildCSVHeaders, writeRow}
 import com.tle.web.api.search.SearchHelper._
-import com.tle.web.api.search.model.{SearchParam, SearchResult, SearchResultItem}
+import com.tle.web.api.search.model.{
+  AdditionalSearchParameters,
+  SearchParam,
+  SearchResult,
+  SearchResultItem
+}
 import io.swagger.annotations.{Api, ApiOperation}
-
 import javax.ws.rs.core.{Context, Response}
-import javax.ws.rs.{BadRequestException, BeanParam, GET, HEAD, NotFoundException, Path, Produces}
+import javax.ws.rs.{
+  BadRequestException,
+  BeanParam,
+  GET,
+  HEAD,
+  NotFoundException,
+  POST,
+  Path,
+  Produces
+}
 import org.jboss.resteasy.annotations.cache.NoCache
 
 import java.io.BufferedOutputStream
@@ -55,24 +68,46 @@ class SearchResource {
     response = classOf[SearchResult[SearchResultItem]],
   )
   def searchItems(@BeanParam params: SearchParam): Response = {
+    val searchResult: SearchResult[SearchResultItem] = doSearch(createSearch(params), params)
+    Response.ok.entity(searchResult).build()
+  }
+
+  @POST
+  @ApiOperation(
+    value = "Search items with Advanced search criteria",
+    notes =
+      "This endpoint is used to search for items based on specified criteria, including Advanced search criteria.",
+    response = classOf[SearchResult[SearchResultItem]],
+  )
+  def searchItemsWithAdvCriteria(@BeanParam params: SearchParam,
+                                 advancedSearchCriteria: AdditionalSearchParameters): Response = {
+    val AdditionalSearchParameters(criteria) = advancedSearchCriteria
+    val searchResult: SearchResult[SearchResultItem] =
+      doSearch(createSearch(params, Option(criteria)), params)
+
+    Response.ok.entity(searchResult).build()
+  }
+
+  def doSearch(searchRequest: DefaultSearch,
+               params: SearchParam): SearchResult[SearchResultItem] = {
     val searchResults =
-      search(createSearch(params), params.start, params.length, params.searchAttachments)
+      search(searchRequest, params.start, params.length, params.searchAttachments)
+
     val freetextResults         = searchResults.getSearchResults.asScala.toList
     val itemIds                 = freetextResults.map(_.getItemIdKey)
     val serializer              = createSerializer(itemIds)
     val items: List[SearchItem] = freetextResults.map(result => SearchItem(result, serializer))
     val highlight =
       new DefaultSearch.QueryParser(params.query).getHilightedList.asScala.toList
-    val result = SearchResult(
+
+    SearchResult(
       searchResults.getOffset,
       searchResults.getCount,
       searchResults.getAvailable,
       items.map(convertToItem),
       highlight
     )
-    Response.ok.entity(result).build()
   }
-
   @HEAD
   @Path("/export")
   def exportCSV(@BeanParam params: SearchParam): Response = {

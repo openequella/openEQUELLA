@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GET, POST } from './AxiosInstance';
 import { is } from 'typescript-is';
+import { GET, POST } from './AxiosInstance';
 import { UuidString } from './Common';
 
 export interface UserDetails {
@@ -61,6 +61,13 @@ export interface SearchParams {
   users: boolean;
 }
 
+export interface FilteredParams {
+  /** Wildcard supporting text string to filter results by. */
+  q?: string;
+  /** A list of group UUIDs to filter the search by. */
+  byGroups?: UuidString[];
+}
+
 export interface LookupParams {
   /** List of User IDs to lookup. */
   users: string[];
@@ -88,6 +95,22 @@ export const search = (
   GET<SearchResult>(
     apiBasePath + USERQUERY_ROOT_PATH + '/search',
     isSearchResult,
+    params
+  );
+
+/**
+ * Searches for users, but filters the results based on the byGroups parameter.
+ *
+ * @param apiBasePath Base URI to the oEQ institution and API
+ * @param params Query parameters to customize result
+ */
+export const filtered = (
+  apiBasePath: string,
+  params: FilteredParams
+): Promise<UserDetails[]> =>
+  GET<UserDetails[]>(
+    apiBasePath + USERQUERY_ROOT_PATH + '/filtered',
+    (result: unknown): result is UserDetails[] => is<UserDetails[]>(result),
     params
   );
 

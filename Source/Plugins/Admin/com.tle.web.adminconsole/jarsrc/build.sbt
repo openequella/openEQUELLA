@@ -1,10 +1,10 @@
-val springVersion = "5.3.5"
+val springVersion = "5.3.13"
 
 libraryDependencies ++= Seq(
   "com.github.equella.jpf" % "jpf"             % "1.0.7",
-  "com.google.guava"       % "guava"           % "18.0",
-  "org.slf4j"              % "jcl-over-slf4j"  % "1.7.30",
-  "org.slf4j"              % "slf4j-simple"    % "1.7.30",
+  "com.google.guava"       % "guava"           % "31.0.1-jre",
+  "org.slf4j"              % "jcl-over-slf4j"  % "1.7.32",
+  "org.slf4j"              % "slf4j-simple"    % "1.7.32",
   "org.springframework"    % "spring-web"      % springVersion,
   "org.springframework"    % "spring-aop"      % springVersion,
   "org.springframework"    % "spring-context"  % springVersion,
@@ -18,16 +18,20 @@ excludeDependencies ++= Seq(
   // Spring 5 added a default logging bridge.  In oEQ, this results in
   // a [deduplicate: different file contents found in the following] error
   // ...org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.7.30.jar:org/apache/commons/logging/Log.class
-  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.5.jar:org/apache/commons/logging/Log.class
+  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.13.jar:org/apache/commons/logging/Log.class
   // As per https://github.com/spring-projects/spring-framework/issues/20611 ,
   // since we already have logging in place, we can safely exclude the dep from spring.
   "org.springframework" % "spring-jcl"
 )
 
-packageOptions in assembly += Package.ManifestAttributes("Permissions" -> "all-permissions")
-assemblyOption in assembly := (assemblyOption in assembly).value
-assemblyMergeStrategy in assembly := {
+(assembly / packageOptions) += Package.ManifestAttributes("Permissions" -> "all-permissions")
+(assembly / assemblyOption) := (assembly / assemblyOption).value
+(assembly / assemblyMergeStrategy) := {
   case PathList("org", "xmlpull", "v1", _*) => MergeStrategy.first
+  // The following three were added when the hibernate-types was added the the hibernate module
+  case PathList("javax", "activation", _*)       => MergeStrategy.first
+  case PathList("javax", "xml", _*)              => MergeStrategy.first
+  case PathList("META-INF", "versions", "9", _*) => MergeStrategy.first
   // Added due to a [deduplicate: different file contents found in the following] error against:
   // org.springframework/spring-context/jars/spring-context-3.2.18.RELEASE.jar:overview.html
   // org.springframework/spring-web/jars/spring-web-3.2.18.RELEASE.jar:overview.html
@@ -44,7 +48,7 @@ assemblyMergeStrategy in assembly := {
   // As per https://stackoverflow.com/questions/54834125/sbt-assembly-deduplicate-module-info-class , discarding is OK for Java 8
   case "module-info.class" => MergeStrategy.discard
   case x =>
-    val oldStrategy = (assemblyMergeStrategy in assembly).value
+    val oldStrategy = (assembly / assemblyMergeStrategy).value
     oldStrategy(x)
 }
 dependsOn(platformCommon, platformSwing, platformEquella, LocalProject("com_tle_webstart_admin"))

@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GET } from './AxiosInstance';
 import { is } from 'typescript-is';
+import { GET } from './AxiosInstance';
 
 export interface ItemCounts {
   tasks: number;
@@ -45,6 +45,10 @@ export interface CurrentUserDetails {
   menuGroups: Array<Array<MenuItem>>;
   counts?: ItemCounts;
   canDownloadSearchResult: boolean;
+  /**
+   * UUIDs of the roles assigned to the user - as well as `TLE_LOGGED_IN_USER_ROLE` where applicable.
+   */
+  roles: string[];
 }
 
 /**

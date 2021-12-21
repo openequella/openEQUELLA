@@ -21,7 +21,6 @@ package com.tle.web.template
 import java.util.concurrent.ConcurrentHashMap
 import com.tle.common.i18n.{CurrentLocale, LocaleUtils}
 import com.tle.common.settings.standard.QuickContributeAndVersionSettings
-import com.tle.core.db.RunWithDB
 import com.tle.core.i18n.LocaleLookup
 import com.tle.core.plugins.AbstractPluginService
 import com.tle.legacy.LegacyGuice
@@ -106,11 +105,7 @@ object RenderNewTemplate {
 
   // Check if new UI is enabled.
   def isNewUIEnabled: Boolean = {
-    RunWithDB
-      .executeIfInInstitution(UISettings.cachedUISettings)
-      .getOrElse(UISettings.defaultSettings)
-      .newUI
-      .enabled
+    UISettings.getUISettings.newUI.enabled
   }
 
   // Check if the viewing a resource via integration.
@@ -120,10 +115,7 @@ object RenderNewTemplate {
 
   // Check if new Search page is enabled.
   def isNewSearchPageEnabled: Boolean = {
-    RunWithDB
-      .executeIfInInstitution(UISettings.cachedUISettings)
-      .getOrElse(UISettings.defaultSettings)
-      .isNewSearchActive
+    UISettings.getUISettings.isNewSearchActive
   }
 
   // Check if New UI is being used, but there is no guarantee that New UI is enabled.

@@ -1,6 +1,6 @@
 {
   "name": "@openequella/rest-api-client",
-  "version": "2020.2.0-Alpha",
+  "version": "2021.2.0-Alpha",
   "license": "Apache-2.0",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
@@ -10,15 +10,15 @@
     "src"
   ],
   "engines": {
-    "node": ">=10"
+    "node": ">=10",
+    "npm": "8.1.4"
   },
   "scripts": {
     "start": "rollup --config --watch",
     "build": "rollup --config",
     "test": "jest --no-cache",
     "lint": "eslint \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
-    "format": "eslint --fix \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
-    "prepare": "npm run build"
+    "format": "eslint --fix \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\""
   },
   "peerDependencies": {},
   "prettier": {
@@ -28,30 +28,29 @@
     "trailingComma": "es5"
   },
   "dependencies": {
-    "axios": "^0.21.0",
+    "axios": "^0.24.0",
     "axios-cookiejar-support": "^1.0.0",
     "lodash": "^4.17.15",
     "query-string": "^7.0.0",
-    "runtypes": "^5.1.0",
+    "runtypes": "6.5.0",
     "tough-cookie": "^4.0.0",
-    "typescript-is": "^0.18.0"
+    "typescript-is": "^0.19.0"
   },
   "devDependencies": {
-    "@types/jest": "26.0.22",
+    "@types/jest": "27.0.2",
+    "@types/lodash": "4.14.176",
     "@types/tough-cookie": "^4.0.0",
-    "@types/lodash": "4.14.168",
-    "@typescript-eslint/eslint-plugin": "4.22.0",
-    "@typescript-eslint/parser": "4.22.0",
-    "core-js": "3.10.1",
-    "eslint": "7.24.0",
-    "eslint-plugin-jest": "24.3.5",
-    "jest": "26.6.3",
-    "rollup": "2.42.3",
+    "@typescript-eslint/eslint-plugin": "4.33.0",
+    "@typescript-eslint/parser": "4.33.0",
+    "core-js": "3.19.3",
+    "eslint": "7.32.0",
+    "eslint-plugin-jest": "25.2.2",
+    "jest": "27.3.1",
+    "rollup": "2.60.2",
     "rollup-plugin-typescript2": "0.30.0",
-    "ts-jest": "26.5.4",
-    "ts-node": "9.1.1",
-    "tslib": "2.2.0",
-    "ttypescript": "1.5.12",
-    "typescript": "4.2.4"
+    "ts-jest": "27.0.7",
+    "tslib": "2.3.1",
+    "ttypescript": "1.5.13",
+    "typescript": "4.4.4"
   }
 }

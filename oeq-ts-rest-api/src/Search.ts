@@ -17,7 +17,7 @@
  */
 import { stringify } from 'query-string';
 import { is } from 'typescript-is';
-import { GET, HEAD } from './AxiosInstance';
+import { GET, HEAD, POST } from './AxiosInstance';
 import * as Common from './Common';
 import * as Utils from './Utils';
 
@@ -88,6 +88,10 @@ interface SearchParamsBase {
    * List of MIME types to filter by.
    */
   mimeTypes?: string[];
+  /**
+   * Custom query in Lucene syntax.
+   */
+  customLuceneQuery?: string;
 }
 
 /**
@@ -116,6 +120,31 @@ export interface SearchParams extends SearchParamsBase {
    * ```
    */
   musts?: Must[];
+}
+
+export interface WizardControlFieldValue {
+  /**
+   * A list of schema nodes targeted by a Wizard control.
+   */
+  schemaNodes: string[];
+  /**
+   * Values of a Wizard control.
+   */
+  values: string[];
+  /**
+   * Currently supported Query types.
+   */
+  queryType: 'DateRange' | 'Phrase' | 'Tokenised';
+}
+
+/**
+ * Body of the search2 POST request.
+ */
+export interface SearchAdditionalParams {
+  /**
+   * A list of `WizardControlFieldValue` to build Advanced search criteria.
+   */
+  advancedSearchCriteria?: WizardControlFieldValue[];
 }
 
 /**
@@ -223,6 +252,20 @@ export interface Attachment {
 }
 
 /**
+ * Status of Item's DRM.
+ */
+export interface DrmStatus {
+  /**
+   * `true` if DRM terms have been accepted.
+   */
+  termsAccepted: boolean;
+  /**
+   * `true` if user is authorised to access Item or accept DRM.
+   */
+  isAuthorised: boolean;
+}
+
+/**
  * Shared properties or raw and transformed search result item
  */
 interface SearchResultItemBase {
@@ -299,6 +342,10 @@ interface SearchResultItemBase {
    * True if this version is the latest version.
    */
   isLatestVersion: boolean;
+  /**
+   * Item's DRM Status. Absent if item is not under DRM control
+   */
+  drmStatus?: DrmStatus;
 }
 
 /**
@@ -394,6 +441,17 @@ const processSearchParams = (
 const SEARCH2_API_PATH = '/search2';
 const EXPORT_PATH = `${SEARCH2_API_PATH}/export`;
 
+const searchResultValidator = (
+  data: unknown
+): data is SearchResult<SearchResultItemRaw> =>
+  is<SearchResult<SearchResultItemRaw>>(data);
+
+const processRawSearchResult = (data: SearchResult<SearchResultItemRaw>) =>
+  Utils.convertDateFields<SearchResult<SearchResultItem>>(data, [
+    'createdDate',
+    'modifiedDate',
+  ]);
+
 /**
  * Communicate with REST endpoint 'search2' to do a search with specified search criteria.
  *
@@ -403,27 +461,42 @@ const EXPORT_PATH = `${SEARCH2_API_PATH}/export`;
 export const search = (
   apiBasePath: string,
   params?: SearchParams
-): Promise<SearchResult<SearchResultItem>> => {
-  return GET<SearchResult<SearchResultItemRaw>>(
+): Promise<SearchResult<SearchResultItem>> =>
+  GET<SearchResult<SearchResultItemRaw>>(
     apiBasePath + SEARCH2_API_PATH,
-    (data): data is SearchResult<SearchResultItemRaw> =>
-      is<SearchResult<SearchResultItemRaw>>(data),
+    searchResultValidator,
     processSearchParams(params)
-  ).then((data) =>
-    Utils.convertDateFields<SearchResult<SearchResultItem>>(data, [
-      'createdDate',
-      'modifiedDate',
-    ])
-  );
-};
+  ).then(processRawSearchResult);
+
+/**
+ * Communicate with the variation of REST endpoint 'search2' which handles a POST request. General search
+ * criteria and Advanced search criteria are both supported.
+ *
+ * @param apiBasePath Base URI to the oEQ institution and API.
+ * @param additionalParams Additional parameters (e.g. Advanced search criteria).
+ * @param normalParams Query parameters as general search criteria.
+ */
+export const searchWithAdditionalParams = (
+  apiBasePath: string,
+  additionalParams: SearchAdditionalParams,
+  normalParams?: SearchParams
+): Promise<SearchResult<SearchResultItem>> =>
+  POST<SearchAdditionalParams, SearchResult<SearchResultItemRaw>>(
+    apiBasePath + SEARCH2_API_PATH,
+    searchResultValidator,
+    additionalParams,
+    processSearchParams(normalParams)
+  ).then(processRawSearchResult);
 
 /**
  * Build a full URL for downloading a search result.
  * @param apiBasePath Base URI to the oEQ institution and API.
  * @param params Query parameters as search criteria.
  */
-export const buildExportUrl = (apiBasePath: string, params: SearchParams) =>
-  apiBasePath + EXPORT_PATH + '?' + stringify(params);
+export const buildExportUrl = (
+  apiBasePath: string,
+  params: SearchParams
+): string => apiBasePath + EXPORT_PATH + '?' + stringify(params);
 
 /**
  * Communicate with REST endpoint 'search2/export' to confirm if an export request is valid.
@@ -434,4 +507,4 @@ export const buildExportUrl = (apiBasePath: string, params: SearchParams) =>
 export const confirmExportRequest = (
   apiBasePath: string,
   params: SearchParams
-) => HEAD(apiBasePath + EXPORT_PATH, params);
+): Promise<boolean> => HEAD(apiBasePath + EXPORT_PATH, params);

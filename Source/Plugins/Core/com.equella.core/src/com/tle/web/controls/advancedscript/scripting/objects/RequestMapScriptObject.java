@@ -33,7 +33,7 @@ public interface RequestMapScriptObject extends ScriptObject {
   /**
    * Returns a single value posted by this control. Note that you must use ${prefix} on the name of
    * any input you are going to read on the server. E.g. &lt;input type="hidden"
-   * name="${prefix}myInput" value="test"> will be read as request.get('myInput') in script
+   * name="${prefix}myInput" value="test"&gt; will be read as request.get('myInput') in script
    *
    * @param key The un-prefixed name of the value to read
    * @return A single value, or null if nothing with the specified key was posted
@@ -44,9 +44,8 @@ public interface RequestMapScriptObject extends ScriptObject {
    * Returns a list of values posted by this control. This is used in the case of checkboxes or
    * multiple input fields with the same name. Note that you must use ${prefix} on the name of any
    * input you are going to read on the server. E.g. &lt;input type="hidden" name="${prefix}myInput"
-   * value="test"><br>
-   * &lt;input type="hidden" name="${prefix}myInput" value="test2"> will be read as
-   * request.getList('myInput') in script
+   * value="test"&gt;&lt;br&gt; &lt;input type="hidden" name="${prefix}myInput" value="test2"&gt;
+   * will be read as request.getList('myInput') in script
    *
    * @param key The un-prefixed name of the values to read
    * @return An array of values, or null if nothing with the specified key was posted

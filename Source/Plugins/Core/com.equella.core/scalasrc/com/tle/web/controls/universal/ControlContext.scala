@@ -69,12 +69,16 @@ trait ControlContext {
 }
 
 object FileStagingContext {
+  // Can't find property 'LAST_MODIFIED' from Tika v2 so create a val with
+  // how 'LAST_MODIFIED' is created in Tika v1.27
+  val lastModified = Property.internalDate("Last-Modified")
+
   val tikaMapping = Iterable(
-    MSOffice.AUTHOR           -> "author",
-    DublinCore.PUBLISHER      -> "publisher",
-    HttpHeaders.LAST_MODIFIED -> "lastmodified",
-    MSOffice.PAGE_COUNT       -> "pagecount",
-    MSOffice.WORD_COUNT       -> "wordcount"
+    Office.AUTHOR        -> "author",
+    DublinCore.PUBLISHER -> "publisher",
+    lastModified         -> "lastmodified",
+    Office.PAGE_COUNT    -> "pagecount",
+    Office.WORD_COUNT    -> "wordcount"
   )
 
   val tikaMimes = Set("application/msword",
@@ -123,7 +127,7 @@ class FileStagingContext(stgId: Option[String],
          .flatMap { inp =>
            val tried = Try {
              val meta = new Metadata
-             meta.set(TikaMetadataKeys.RESOURCE_NAME_KEY, filepath)
+             meta.set(TikaCoreProperties.RESOURCE_NAME_KEY, filepath)
              val bcHandler = new BodyContentHandler
              val parser    = new AutoDetectParser(new TikaConfig(getClass.getClassLoader))
              parser.parse(inp, bcHandler, meta, new ParseContext)
@@ -135,10 +139,9 @@ class FileStagingContext(stgId: Option[String],
          .toOption
          .map { m =>
            tikaMapping.flatMap {
-             case (HttpHeaders.LAST_MODIFIED, "lastmodified") =>
-               Option(m.getDate(HttpHeaders.LAST_MODIFIED)).map(("lastmodified", _))
+             case (FileStagingContext.lastModified, "lastmodified") =>
+               Option(m.getDate(FileStagingContext.lastModified)).map(("lastmodified", _))
              case (f: Property, ef) => Option(m.get(f)).map((ef, _))
-             case (f: String, ef)   => Option(m.get(f)).map((ef, _))
            }
          }
      } else None).getOrElse(Iterable.empty)

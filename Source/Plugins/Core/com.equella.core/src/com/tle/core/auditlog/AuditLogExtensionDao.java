@@ -27,4 +27,6 @@ public interface AuditLogExtensionDao<T extends AuditLogTable> extends GenericDa
   void removeEntriesBeforeDate(Date date);
 
   void removeEntriesForInstitution(Institution institution);
+
+  void removeEntriesForUser(String userId);
 }

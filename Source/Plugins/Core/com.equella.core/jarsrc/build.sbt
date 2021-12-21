@@ -1,23 +1,28 @@
-val springVersion = "5.3.5"
+val springVersion = "5.3.13"
 
 libraryDependencies ++= Seq(
   "net.java.dev.jna"    % "platform"     % "3.5.2",
   "org.rococoa"         % "rococoa-core" % "0.5",
-  "com.google.guava"    % "guava"        % "18.0",
+  "com.google.guava"    % "guava"        % "31.0.1-jre",
   "org.springframework" % "spring-web"   % springVersion,
   "org.springframework" % "spring-aop"   % springVersion
 )
 
-packageOptions in assembly += Package.ManifestAttributes(
+(assembly / packageOptions) += Package.ManifestAttributes(
   "Application-Name"                       -> "EQUELLA In-place File Editor",
   "Permissions"                            -> "all-permissions",
   "Codebase"                               -> "*",
   "Application-Library-Allowable-Codebase" -> "*",
   "Caller-Allowable-Codebase"              -> "*"
 )
-assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
+(assembly / assemblyOption) := (assembly / assemblyOption).value.copy(includeScala = false)
 
-assemblyMergeStrategy in assembly := {
+(assembly / assemblyMergeStrategy) := {
+  case PathList("org", "xmlpull", "v1", _*) => MergeStrategy.first
+  // The following three were added when the hibernate-types was added the the hibernate module
+  case PathList("javax", "activation", _*)       => MergeStrategy.first
+  case PathList("javax", "xml", "bind", _*)      => MergeStrategy.first
+  case PathList("META-INF", "versions", "9", _*) => MergeStrategy.first
   // Added due to a [deduplicate: different file contents found in the following] error against:
   // org.springframework/spring-context/jars/spring-context-3.2.18.RELEASE.jar:overview.html
   // org.springframework/spring-web/jars/spring-web-3.2.18.RELEASE.jar:overview.html
@@ -34,7 +39,7 @@ assemblyMergeStrategy in assembly := {
   // As per https://stackoverflow.com/questions/54834125/sbt-assembly-deduplicate-module-info-class , discarding is OK for Java 8
   case "module-info.class" => MergeStrategy.discard
   case x =>
-    val oldStrategy = (assemblyMergeStrategy in assembly).value
+    val oldStrategy = (assembly / assemblyMergeStrategy).value
     oldStrategy(x)
 }
 

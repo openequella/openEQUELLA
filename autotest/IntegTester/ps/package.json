@@ -2,29 +2,35 @@
   "name": "integ-tester",
   "private": true,
   "scripts": {
-    "install": "psc-package install",
+    "install": "node install.js && psc-package install",
+    "clean": "rm -rf node_modules/ .psc-package/ psc-package",
     "build": "pulp build && parcel build --no-autoinstall --out-dir=target/www www/*.html www/*.tsx",
     "dev": "pulp build && parcel watch --no-autoinstall --out-dir=../target/scala-2.12/classes/www www/*.html www/*.tsx"
   },
+  "engines": {
+    "npm": "8.1.4"
+  },
   "dependencies": {
-    "@material-ui/core": "4.11.3",
-    "axios": "0.21.1",
+    "@material-ui/core": "4.12.3",
+    "axios": "0.24.0",
     "babel-polyfill": "6.26.0",
     "js-md5": "0.7.3",
-    "jss": "10.6.0",
-    "oeq-cloudproviders": "git+https://github.com/apereo/openEQUELLA-cloudprovidersdk.git#32d958ddfff64ca748e7e1b2eae0f0487946a487",
-    "query-string": "7.0.0",
-    "react": "16.14.0",
-    "react-dom": "16.14.0"
+    "jss": "10.8.2",
+    "oeq-cloudproviders": "https://github.com/openequella/openEQUELLA-cloudprovidersdk/archive/refs/tags/v0.0.1.tar.gz",
+    "query-string": "7.0.1",
+    "react": "17.0.2",
+    "react-dom": "17.0.2"
   },
   "devDependencies": {
-    "@types/react": "16.14.5",
-    "@types/react-dom": "16.9.11",
+    "@types/react": "17.0.34",
+    "@types/react-dom": "17.0.11",
     "mkdirp": "1.0.4",
     "parcel-bundler": "1.12.5",
-    "psc-package": "3.0.1",
-    "pulp": "12.4.2",
+    "pulp": "15.0.0",
     "purescript": "0.12.3",
-    "typescript": "4.2.4"
+    "typescript": "4.4.4",
+    "follow-redirects": "1.14.5",
+    "tar": "6.1.11",
+    "shelljs": "0.8.4"
   }
 }

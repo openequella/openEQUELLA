@@ -20,9 +20,7 @@ package com.tle.hibernate.dialect;
 
 import com.google.common.collect.ImmutableList;
 import com.tle.core.hibernate.ExtendedDialect;
-import com.tle.core.hibernate.type.HibernateCsvType;
-import com.tle.core.hibernate.type.HibernateEscapedString;
-import com.tle.core.hibernate.type.ImmutableHibernateXStreamType;
+import com.tle.core.hibernate.type.HibernateCustomTypes;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -31,30 +29,24 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import org.hibernate.dialect.PostgreSQLDialect;
+import org.hibernate.dialect.PostgreSQL9Dialect;
 import org.hibernate.dialect.unique.UniqueDelegate;
 import org.hibernate.engine.spi.Mapping;
 import org.hibernate.mapping.Column;
 import org.hibernate.type.BasicType;
-import org.hibernate.type.CustomType;
 import org.hibernate.type.TextType;
 
 @SuppressWarnings("nls")
-public class ExtendedPostgresDialect extends PostgreSQLDialect implements ExtendedDialect {
+public class ExtendedPostgresDialect extends PostgreSQL9Dialect implements ExtendedDialect {
   private static final String URL_SCHEME = "jdbc:postgresql://";
-  private static final CustomType TYPE_BLANKABLE =
-      new CustomType(new HibernateEscapedString(Types.VARCHAR), new String[] {"blankable"});
-  private static final CustomType TYPE_XSTREAM =
-      new CustomType(
-          new ImmutableHibernateXStreamType(Types.CLOB), new String[] {"xstream_immutable"});
-  private static final CustomType TYPE_CSV =
-      new CustomType(new HibernateCsvType(Types.VARCHAR), new String[] {"csv"});
   private final UniqueDelegate uniqueDelegate;
+  public static final int OEQ_JSON = 10000;
 
   public ExtendedPostgresDialect() {
     super();
     uniqueDelegate = new InPlaceUniqueDelegate(this);
     registerColumnType(Types.BLOB, "bytea");
+    registerColumnType(OEQ_JSON, "jsonb");
   }
 
   @Override
@@ -169,7 +161,9 @@ public class ExtendedPostgresDialect extends PostgreSQLDialect implements Extend
 
   @Override
   public Iterable<? extends BasicType> getExtraTypeOverrides() {
-    return ImmutableList.of(new TextClobType(), TYPE_XSTREAM, TYPE_CSV, TYPE_BLANKABLE);
+    List<BasicType> customTypes = new ArrayList<>(HibernateCustomTypes.getCustomTypes(this));
+    customTypes.add(new TextClobType());
+    return ImmutableList.copyOf(customTypes);
   }
 
   public static class TextClobType extends TextType {

@@ -32,7 +32,7 @@ public interface MetadataScriptObject extends ScriptObject {
    * Returns a {@link MetadataScriptType} object for the file provided. If the file does not exist
    * or cannot be read an empty object will be returned.
    *
-   * @param file
+   * @param f A handle to a file to retrieve the metadata of - e.g. image, video, etc.
    * @return the metadata for the file
    */
   MetadataScriptType getMetadata(FileHandleScriptType f);
@@ -41,7 +41,7 @@ public interface MetadataScriptObject extends ScriptObject {
    * Returns a {@link MetadataScriptType} object for the attachment provided. If the attachment type
    * is unsupported an empty object will be returned
    *
-   * @param attachment
+   * @param a A reference to an attachment to retrieve the metadata of
    * @return the metadata for the attachment
    */
   MetadataScriptType getMetadata(AttachmentScriptType a);

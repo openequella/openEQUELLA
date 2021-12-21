@@ -76,7 +76,7 @@ public interface DrmSettingsScriptType extends Serializable {
   /**
    * Owners of the rights over item content
    *
-   * @return List<DrmPartyScriptType> owners of the rights of item content
+   * @return {@code List<DrmPartyScriptType>} owners of the rights of item content
    * @see DrmPartyScriptType
    */
   List<DrmPartyScriptType> getContentOwners();

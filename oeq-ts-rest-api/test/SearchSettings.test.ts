@@ -48,7 +48,7 @@ describe('SearchSettings', () => {
         defaultSearchSort: 'RATING',
       });
       const settings = await OEQ.SearchSettings.getSearchSettings(TC.API_PATH);
-      expect(settings.defaultSearchSort).toEqual('RATING');
+      expect(settings.defaultSearchSort).toBe('RATING');
     });
   });
 

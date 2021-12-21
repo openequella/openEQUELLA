@@ -44,7 +44,7 @@ public class GroupsAndDisabling extends AbstractWizardControlsTest {
     assertFalse(groupItem1.isEditboxDisabled(1));
     assertFalse(groupItem1.shuffleList(3).isDisabled());
     assertFalse(groupItem1.shuffleGroup(5, 3).isDisabled());
-    groupItem1.editbox(1, "Edit Box");
+    groupItem1.editbox(1, "Edit");
     group.toggleGroup("group2");
     groupItem2.selectDropDown(1, "1");
     groupItem2.setCheck(2, "2", true);
@@ -78,7 +78,7 @@ public class GroupsAndDisabling extends AbstractWizardControlsTest {
     assertEquals(itemXml, "item/same/checkboxes", Arrays.asList("1", "2", "5", "6"));
     PropBagEx cXml = itemXml.getSubtree("item/controls");
     assertEquals(cXml, "group", Arrays.asList("group1"));
-    assertEquals(cXml, "editbox", "Edit Box");
+    assertEquals(cXml, "editbox", "Edit");
     assertFalse(cXml.nodeExists("checkboxes"));
     assertFalse(cXml.nodeExists("listbox"));
     PropBagEx kXml = itemXml.getSubtree("item/keep");

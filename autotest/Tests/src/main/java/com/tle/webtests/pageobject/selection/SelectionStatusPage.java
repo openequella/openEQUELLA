@@ -2,13 +2,11 @@ package com.tle.webtests.pageobject.selection;
 
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 public class SelectionStatusPage extends AbstractPage<SelectionStatusPage> {
-  @FindBy(id = "ss_finishedButton")
-  private WebElement finishedButton;
-
   @FindBy(id = "selection-summary")
   private WebElement summaryDiv;
 
@@ -22,6 +20,7 @@ public class SelectionStatusPage extends AbstractPage<SelectionStatusPage> {
   }
 
   public SelectionCheckoutPage finishSelections() {
+    WebElement finishedButton = waitForElement(By.id("ss_finishedButton"));
     scrollToElement(finishedButton);
     finishedButton.click();
     return new SelectionCheckoutPage(context).get();

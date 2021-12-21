@@ -23,6 +23,7 @@ import com.tle.annotation.Nullable;
 import java.io.Serializable;
 import java.util.List;
 import java.util.function.Function;
+import javax.persistence.EntityManager;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -100,7 +101,7 @@ public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernat
   @SuppressWarnings("unchecked")
   @Override
   public <A> A findAnyById(Class<A> clazz, Serializable id) {
-    return (A) getHibernateTemplate().get(clazz, id);
+    return getHibernateTemplate().get(clazz, id);
   }
 
   @Override
@@ -155,7 +156,7 @@ public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernat
   @Override
   @SuppressWarnings("unchecked")
   public T findById(ID id) {
-    return (T) getHibernateTemplate().get(getPersistentClass(), id);
+    return getHibernateTemplate().get(getPersistentClass(), id);
   }
 
   /*
@@ -321,14 +322,14 @@ public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernat
   @SuppressWarnings("unchecked")
   @Transactional(propagation = Propagation.MANDATORY)
   public T merge(T entity) {
-    return (T) getHibernateTemplate().merge(entity);
+    return getHibernateTemplate().merge(entity);
   }
 
   @Override
   @SuppressWarnings("unchecked")
   @Transactional(propagation = Propagation.MANDATORY)
   public <O> O mergeAny(O obj) {
-    return (O) getHibernateTemplate().merge(obj);
+    return getHibernateTemplate().merge(obj);
   }
 
   @Override
@@ -377,5 +378,14 @@ public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernat
       throw new RuntimeException("Expected unique result by found " + results.size() + " results");
     }
     return results.get(0);
+  }
+
+  /**
+   * Return an EntityManager to help criteria query building.
+   *
+   * @param session An active Hibernate Session
+   */
+  protected EntityManager createEntityManager(Session session) {
+    return session.getEntityManagerFactory().createEntityManager();
   }
 }

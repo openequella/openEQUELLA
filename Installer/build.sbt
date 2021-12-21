@@ -1,8 +1,8 @@
 import Path.relativeTo
 
 libraryDependencies ++= Seq(
-  "com.google.guava" % "guava"         % "18.0",
-  "org.slf4j"        % "slf4j-simple"  % "1.7.30",
+  "com.google.guava" % "guava"         % "31.0.1-jre",
+  "org.slf4j"        % "slf4j-simple"  % "1.7.32",
   "commons-codec"    % "commons-codec" % "1.15",
   postgresDep,
   sqlServerDep
@@ -23,9 +23,9 @@ excludeDependencies ++= Seq(
   "stax"            % "stax-api"
 )
 
-assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
+(assembly / assemblyOption) := (assembly / assemblyOption).value.copy(includeScala = false)
 
-mainClass in assembly := Some("com.dytech.edge.installer.application.Launch")
+(assembly / mainClass) := Some("com.dytech.edge.installer.application.Launch")
 
 lazy val equellaserver  = LocalProject("equellaserver")
 lazy val upgradeManager = LocalProject("UpgradeManager")
@@ -37,12 +37,14 @@ installerZip := {
   val outZip         = target.value / s"$dirname.zip"
   val serverData     = baseDirectory.value / "data/server"
   val allServerFiles = serverData ** "*" pair (relativeTo(serverData), false)
-  val upZip          = (upgradeZip in equellaserver).value
+  val upZip          = (equellaserver / upgradeZip).value
   val allFiles = Seq(
     assembly.value -> "enterprise-install.jar",
     upZip          -> s"manager/updates/${upZip.getName}"
   ) ++ allServerFiles
   log.info(s"Creating installer ${outZip.absolutePath}")
-  IO.zip(allFiles.map(t => (t._1, s"$dirname/${t._2}")), outZip)
+  IO.zip(allFiles.map(t => (t._1, s"$dirname/${t._2}")),
+         outZip,
+         Option((ThisBuild / buildTimestamp).value))
   outZip
 }

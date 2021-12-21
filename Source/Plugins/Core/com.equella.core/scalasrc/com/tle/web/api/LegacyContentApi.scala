@@ -18,12 +18,8 @@
 
 package com.tle.web.api
 
-import java.net.URI
-import java.util
-import java.util.Collections
-
 import com.dytech.common.io.DevNullWriter
-import com.tle.beans.item.ItemTaskId
+import com.tle.beans.item.{ItemId, ItemKey, ItemTaskId}
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.security.SecurityConstants
 import com.tle.common.settings.standard.AutoLogin
@@ -31,6 +27,7 @@ import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.i18n.CoreStrings
 import com.tle.core.notification.standard.indexer.NotificationSearch
 import com.tle.core.plugins.{AbstractPluginService, PluginTracker}
+import com.tle.core.security.ACLChecks.hasAcl
 import com.tle.core.workflow.freetext.TaskListSearch
 import com.tle.legacy.LegacyGuice
 import com.tle.legacy.LegacyGuice.accessibilityModeService
@@ -58,16 +55,20 @@ import com.tle.web.sections.standard.renderers.{DivRenderer, LinkRenderer, SpanR
 import com.tle.web.template.Decorations.MenuMode
 import com.tle.web.template.section.{HelpAndScreenOptionsSection, MenuContributor}
 import com.tle.web.template.{Breadcrumbs, Decorations, RenderTemplate}
-import com.tle.web.viewable.{NewDefaultViewableItem, PreviewableItem}
 import com.tle.web.viewable.servlet.ItemServlet
+import com.tle.web.viewable.{NewDefaultViewableItem, PreviewableItem}
+import com.tle.web.viewitem.section.RootItemFileSection
 import io.lemonlabs.uri.{Path => _, _}
-import io.swagger.annotations.Api
+import io.swagger.annotations.{Api, ApiOperation}
+import org.slf4j.LoggerFactory
+
+import java.net.URI
+import java.util
+import java.util.Collections
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import javax.ws.rs._
 import javax.ws.rs.core.Response.{ResponseBuilder, Status}
 import javax.ws.rs.core.{CacheControl, Context, Response, UriInfo}
-import org.slf4j.LoggerFactory
-
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 
@@ -110,7 +111,8 @@ case class CurrentUserDetails(id: String,
                               prefsEditable: Boolean,
                               menuGroups: Iterable[Iterable[MenuItem]],
                               counts: Option[ItemCounts],
-                              canDownloadSearchResult: Boolean)
+                              canDownloadSearchResult: Boolean,
+                              roles: Iterable[String])
 
 object LegacyContentController extends AbstractSectionsController with SectionFilter {
 
@@ -199,6 +201,9 @@ object LegacyContentController extends AbstractSectionsController with SectionFi
 
   val RedirectedAttr = "REDIRECTED"
 
+  val DISABLE_LEGACY_CSS = "DISABLE_LEGACY_CSS"
+  val SKIP_BOOTSTRAP     = "skip_bootstrap"
+
   override protected def getTreeForPath(path: String): SectionTree =
     LegacyGuice.treeRegistry.getTreeForPath(path)
 
@@ -254,15 +259,42 @@ object LegacyContentController extends AbstractSectionsController with SectionFi
 
 @Api("Legacy content")
 @Path("content")
+@Produces(value = Array("application/json"))
 class LegacyContentApi {
   val LOGGER = LoggerFactory.getLogger(classOf[LegacyContentApi])
 
   def parsePath(path: String): (String, MutableSectionInfo => MutableSectionInfo) = {
+    // Parse the given URL and return a Tuple2 where First is ItemKey and Second is a string representing
+    // file name of the content to be viewed.
+    def parseItemViewerPath(p: String): (ItemKey, Option[String]) = {
+      // Regex for the URL of viewing content which has 4 groups.
+      // 1. Item UUID
+      // 2. Item version
+      // 3. Content file name which is 'viewcontent/uuid' or 'viewims.jsp'.
+      // 4. additional query strings
+
+      // Examples:
+      // For normal content: ef1c6d7d-7aec-4743-9126-f847913de3f2/1/viewcontent/42eead4b-cfac-46df-8927-f8e58f4cd491
+      // For IMS package: 677a4bbc-defc-4dc1-b68e-4e2473b66a6a/1/viewims.jsp?viewMethod=download
+      val viewContentPattern = "(.+)/(\\d)/(viewcontent/.+|viewims.jsp)(.*)".r
+
+      p match {
+        case viewContentPattern(itemUUID, itemVersion, fileName, _) =>
+          (new ItemId(itemUUID, itemVersion.toInt), Option(fileName))
+        case _ => (ItemTaskId.parse(p), None)
+      }
+    }
 
     def itemViewer(p: String, f: (SectionInfo, NewDefaultViewableItem) => NewDefaultViewableItem)
       : (String, MutableSectionInfo => MutableSectionInfo) = {
-      val itemId = ItemTaskId.parse(p)
+      val (itemId, contentFileName) = parseItemViewerPath(p)
       (s"/viewitem/viewitem.do", { info: MutableSectionInfo =>
+        for {
+          section <- Option(info.lookupSection[RootItemFileSection, RootItemFileSection](classOf))
+          name    <- contentFileName
+          _ = section.getModel(info).setFilename(name)
+        } yield ()
+
         info.setAttribute(ItemServlet.VIEWABLE_ITEM,
                           f(info, LegacyGuice.viewableItemFactory.createNewViewableItem(itemId)))
         info
@@ -329,8 +361,12 @@ class LegacyContentApi {
 
   @GET
   @Path("currentuser")
-  @Produces(value = Array("application/json"))
-  def menuOptions(@Context req: HttpServletRequest,
+  @ApiOperation(
+    value = "Current user details",
+    notes = "Get details of the user for the current session",
+    response = classOf[CurrentUserDetails]
+  )
+  def currentuser(@Context req: HttpServletRequest,
                   @Context resp: HttpServletResponse): Response = {
     val contributors = LegacyGuice.menuService.getContributors
     val noInst       = CurrentInstitution.get == null
@@ -346,10 +382,7 @@ class LegacyContentApi {
 
     val accessibilityMode = LegacyGuice.accessibilityModeService.isAccessibilityMode
 
-    val canDownloadSearchResult: Boolean = LegacyGuice.aclManager
-      .filterNonGrantedPrivileges(SecurityConstants.EXPORT_SEARCH_RESULT)
-      .asScala
-      .nonEmpty
+    val canDownloadSearchResult: Boolean = hasAcl(SecurityConstants.EXPORT_SEARCH_RESULT)
 
     val prefsEditable = !(cu.isSystem || cu.isGuest) && !(cu.wasAutoLoggedIn &&
       LegacyGuice.configService.getProperties(new AutoLogin).isEditDetailsDisallowed)
@@ -389,7 +422,7 @@ class LegacyContentApi {
       val notificationCount = LegacyGuice.freeTextService.countsFromFilters(
         Collections.singletonList(new NotificationSearch))(0)
       val taskCount = LegacyGuice.freeTextService.countsFromFilters(
-        Collections.singletonList(new TaskListSearch))(0);
+        Collections.singletonList(new TaskListSearch))(0)
       ItemCounts(taskCount, notificationCount)
     } else None
     val ub           = cu.getUserBean
@@ -411,7 +444,8 @@ class LegacyContentApi {
           menuGroups = menuGroups,
           counts = counts,
           accessibilityMode = accessibilityMode,
-          canDownloadSearchResult = canDownloadSearchResult
+          canDownloadSearchResult = canDownloadSearchResult,
+          roles = cu.getUsersRoles.asScala
         )
       )
       .cacheControl(cacheControl)
@@ -421,7 +455,6 @@ class LegacyContentApi {
   @POST
   @GET
   @Path("/ajax/{path : .+}")
-  @Produces(value = Array("application/json"))
   def ajaxCall(@PathParam("path") _path: String,
                @Context uriInfo: UriInfo,
                @Context req: HttpServletRequest,
@@ -446,7 +479,6 @@ class LegacyContentApi {
 
   @POST
   @Path("/submit/{path : .+}")
-  @Produces(value = Array("application/json"))
   def submit(@PathParam("path") _path: String,
              @Context uriInfo: UriInfo,
              @Context req: HttpServletRequest,
@@ -566,18 +598,27 @@ class LegacyContentApi {
     }
   }
 
-  def loadCss(context: StandardRenderContext): Option[Iterable[String]] = {
+  def loadCss(context: StandardRenderContext): Option[List[String]] = {
+    def getCssFromContext: List[String] =
+      context.getCssFiles.asScala.collect {
+        case css: CssInclude => css.getHref(context)
+      }.toList
+
     val uri = context.getRequest.getRequestURI
     // Below three pages don't need 'legacy.css' so load CSS from server side
     val pagePattern = ".+/(apidocs|editoradmin|reports)\\.do".r
 
-    uri match {
-      case pagePattern(_) =>
-        val cssIncludes = context.getCssFiles.asScala.collect {
-          case css: CssInclude => css.getHref(context)
-        }
-        Option(cssIncludes)
-      case _ => None
+    val disableLegacyCss = uri match {
+      case pagePattern(_) => true
+      case _              => false
+    }
+
+    // If the context has a boolean attribute saying legacy CSS should be disabled, or the URL matches
+    // above pattern, use CSS provided by the context.
+    if (context.getBooleanAttribute(LegacyContentController.DISABLE_LEGACY_CSS) || disableLegacyCss) {
+      Option(getCssFromContext)
+    } else {
+      None
     }
   }
 

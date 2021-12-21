@@ -11,10 +11,10 @@ import scala.collection.JavaConverters._
 
 name := "equella-autotests"
 
-libraryDependencies += "org.jacoco" % "org.jacoco.agent" % "0.8.6" classifier "runtime"
+libraryDependencies += "org.jacoco" % "org.jacoco.agent" % "0.8.7" classifier "runtime"
 
 lazy val config = (project in file("config"))
-  .settings(resourceDirectory in Compile := baseDirectory.value / "resources")
+  .settings((Compile / resourceDirectory) := baseDirectory.value / "resources")
 
 lazy val IntegTester = project in file("IntegTester")
 
@@ -22,7 +22,7 @@ lazy val Tests = project in file("Tests")
 
 lazy val OldTests = (project in file("OldTests")).dependsOn(Tests, config)
 
-autotestBuildConfig in ThisBuild := {
+(ThisBuild / autotestBuildConfig) := {
   val defaultConfig = ConfigFactory.parseFile(file("autotest/autotest-defaults.conf"))
   val configFile = file(
     sys.props.getOrElse(
@@ -73,7 +73,7 @@ autotestInstallerZip := {
   val bc                    = autotestBuildConfig.value
   val equellaFullVersion    = equellaVersion.value
   val installerFileName     = s"equella-installer-${equellaFullVersion.semanticVersion}.zip"
-  val installerDirectory    = (target in LocalProject("Installer")).value
+  val installerDirectory    = (LocalProject("Installer") / target).value
   val installerAbsolutePath = installerDirectory / installerFileName
   // If the Installer named as installerFileName exists then return it, otherwise returns the default Installer
   if (installerAbsolutePath.exists) {
@@ -145,8 +145,8 @@ val saxBuilder = {
   sb
 }
 
-sourceDirectory in coverageReport := target.value / "all_srcs"
-target in coverageReport := {
+(coverageReport / sourceDirectory) := target.value / "all_srcs"
+(coverageReport / target) := {
   val cc = autotestBuildConfig.value.getConfig("coverage")
   optPath(cc, "reportdir").getOrElse(target.value / "coverage-report")
 }
@@ -174,9 +174,9 @@ coverageReport := {
   }
 
   val srcZip  = sourceZip.value
-  val allSrcs = (sourceDirectory in coverageReport).value
+  val allSrcs = (coverageReport / sourceDirectory).value
   srcZip.foreach(z => IO.unzip(z, allSrcs))
-  val coverageDir = (target in coverageReport).value
+  val coverageDir = (coverageReport / target).value
   log.info(s"Creating coverage report at ${coverageDir.absolutePath}")
   CoverageReporter.createReport(execLoader,
                                 allPlugins.groupBy(_._1).mapValues(_.map(_._2)).toSeq,
@@ -216,27 +216,27 @@ stopEquella := serviceCommand(installOptions.value, "stop")
 val TestPrj = LocalProject("Tests")
 
 setupForTests := {
-  val run = (runner in (TestPrj, Test)).value
+  val run = (TestPrj / Test / runner).value
   val log = sLog.value
   run
     .run("equellatests.SetupForTests",
-         (fullClasspath in (TestPrj, Test)).value.files,
+         (TestPrj / Test / fullClasspath).value.files,
          spaceDelimited("<arg>").parsed,
          log)
     .get
 }
 
 configureInstall := {
-  val run = (runner in (TestPrj, Test)).value
+  val run = (TestPrj / Test / runner).value
   run
     .run("equellatests.InstallFirstTime",
-         (fullClasspath in (TestPrj, Test)).value.files,
+         (TestPrj / Test / fullClasspath).value.files,
          Seq(),
          sLog.value)
     .get
 }
 
-aggregate in test := false
+(test / aggregate) := false
 
 collectArtifacts := {
   val results = target.value / "test-artifacts.zip"
@@ -244,16 +244,17 @@ collectArtifacts := {
     files.flatMap(f => (f ** "*").pair(rebase(f, f.getName)))
   }
   val logsDir      = installDir.value / "logs"
-  val scReportDir  = (target in LocalProject("Tests")).value / "test-reports"
-  val oldReportDir = file((testNGOutputDirectory in OldTests).value)
+  val scReportDir  = (LocalProject("Tests") / target).value / "test-reports"
+  val oldReportDir = file((OldTests / testNGOutputDirectory).value)
 
   sLog.value.info(s"Collecting test artifacts into ${results.absolutePath}")
-  IO.zip(allFiles(Seq(logsDir, scReportDir, oldReportDir, (target in coverageReport).value)),
-         results)
+  IO.zip(allFiles(Seq(logsDir, scReportDir, oldReportDir, (coverageReport / target).value)),
+         results,
+         Option((ThisBuild / buildTimestamp).value))
   results
 }
 
-concurrentRestrictions in Global := {
+(Global / concurrentRestrictions) := {
   val testConfig = autotestBuildConfig.value.getConfig("tests")
   if (testConfig.hasPath("maxthreads")) {
     Seq(

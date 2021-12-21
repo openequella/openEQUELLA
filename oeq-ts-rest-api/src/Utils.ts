@@ -15,7 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { cloneDeep } from 'lodash';
+import { cloneDeep, set } from 'lodash';
+import { is } from 'typescript-is';
+
+/**
+ * The idiomatic modelling for an `object` in Typescript is to use a `Record<string, unknown>`, so
+ * this is a simple type guard to help below where we want to go from an unknown potential object
+ * to a type more suitable for TS contexts.
+ *
+ * @param r a potential `object` / `Record`
+ */
+const isRecord = (r?: unknown): r is Record<string, unknown> =>
+  r !== null && is<Record<string, unknown>>(r);
 
 /**
  * Performs inplace conversion of specified fields with supplied converter.
@@ -25,23 +36,19 @@ import { cloneDeep } from 'lodash';
  * @param recursive True if processing nested objects is required.
  * @param converter A function converting fields' type.
  */
-const convertFields = <T, R>(
-  input: unknown,
+const convertFields = <R>(
+  input: Record<string, unknown>,
   targetFields: string[],
   recursive: boolean,
-  converter: (value: T) => R
+  converter: (value: unknown) => R
 ): void => {
-  const entries: [string, any][] = Object.entries(input as any);
-
-  entries.forEach(([field, value]) => {
-    if (typeof value === 'object' && recursive) {
+  Object.entries(input).forEach(([field, value]) => {
+    if (isRecord(value) && recursive) {
       convertFields(value, targetFields, recursive, converter);
     } else {
       targetFields
         .filter((targetField) => targetField === field)
-        .forEach(
-          (targetField) => ((input as any)[targetField] = converter(value))
-        );
+        .forEach((targetField) => set(input, targetField, converter(value)));
     }
   });
 };
@@ -54,11 +61,31 @@ const convertFields = <T, R>(
  * @param fields List of the names of fields to convert.
  */
 export const convertDateFields = <T>(input: unknown, fields: string[]): T => {
-  const inputClone: any = cloneDeep(input);
-  convertFields(inputClone, fields, true, (value: string) =>
-    isNaN(Date.parse(value)) ? undefined : new Date(value)
-  );
-  return inputClone;
+  const cloneRecord = (obj: unknown): Record<string, unknown> => {
+    const cloned = cloneDeep(obj);
+    if (isRecord(cloned)) {
+      return cloned;
+    } else {
+      throw new TypeError('Cloned object was not an object!');
+    }
+  };
+
+  const potentialStringToDate = (
+    maybeDateString: unknown
+  ): Date | undefined => {
+    if (typeof maybeDateString === 'string') {
+      return isNaN(Date.parse(maybeDateString))
+        ? undefined
+        : new Date(maybeDateString);
+    } else {
+      return undefined;
+    }
+  };
+
+  const inputClone: Record<string, unknown> = cloneRecord(input);
+  convertFields(inputClone, fields, true, potentialStringToDate);
+
+  return inputClone as T;
 };
 
 /**
