@@ -1,4 +1,5 @@
 import Path.rebase
+
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -179,26 +180,27 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "antlr",
                   name = "antlr")
   ),
-  "org.apache.struts"           % "struts-extras"                 % "1.3.10",
-  "org.apache.struts"           % "struts-taglib"                 % "1.3.10",
-  "org.apache.tika"             % "tika-core"                     % tikaVersion,
-  "org.apache.tika"             % "tika-parsers-standard-package" % tikaVersion,
-  "org.apache.tomcat"           % "tomcat-annotations-api"        % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-api"                    % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-catalina"               % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-catalina-ha"            % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-coyote"                 % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-jsp-api"                % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-juli"                   % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-servlet-api"            % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-tribes"                 % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-util"                   % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-util-scan"              % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-ssi"                    % TomcatVersion,
-  "org.apache.ws.commons.axiom" % "axiom-api"                     % "1.3.0",
-  "org.apache.ws.commons.axiom" % "axiom-impl"                    % "1.3.0",
-  "org.apache.ws.security"      % "wss4j"                         % "1.6.19",
-  "org.apache.zookeeper"        % "zookeeper"                     % "3.4.6" excludeAll (
+  "org.apache.struts" % "struts-extras"                 % "1.3.10",
+  "org.apache.struts" % "struts-taglib"                 % "1.3.10",
+  "org.apache.tika"   % "tika-core"                     % tikaVersion,
+  "org.apache.tika"   % "tika-parsers-standard-package" % tikaVersion excludeAll ExclusionRule(
+    organization = "org.apache.logging.log4j"),
+  "org.apache.tomcat"           % "tomcat-annotations-api" % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-api"             % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-catalina"        % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-catalina-ha"     % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-coyote"          % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-jsp-api"         % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-juli"            % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-servlet-api"     % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-tribes"          % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-util"            % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-util-scan"       % TomcatVersion,
+  "org.apache.tomcat"           % "tomcat-ssi"             % TomcatVersion,
+  "org.apache.ws.commons.axiom" % "axiom-api"              % "1.3.0",
+  "org.apache.ws.commons.axiom" % "axiom-impl"             % "1.3.0",
+  "org.apache.ws.security"      % "wss4j"                  % "1.6.19",
+  "org.apache.zookeeper"        % "zookeeper"              % "3.4.6" excludeAll (
     ExclusionRule(organization = "org.slf4j",
                   name = "slf4j-log4j12")
   ),

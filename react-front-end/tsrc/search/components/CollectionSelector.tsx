@@ -22,6 +22,10 @@ import { Autocomplete, AutocompleteGetTagProps } from "@material-ui/lab";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useContext, useEffect, useState } from "react";
+import * as A from "fp-ts/Array";
+import { pipe } from "fp-ts/function";
+import * as ORD from "fp-ts/Ord";
+import * as S from "fp-ts/string";
 import { TooltipChip } from "../../components/TooltipChip";
 import {
   Collection,
@@ -57,7 +61,14 @@ export const CollectionSelector = ({
 
   useEffect(() => {
     collectionListSummary([OEQ.Acl.ACL_SEARCH_COLLECTION])
-      .then((collections: Collection[]) => setCollections(collections))
+      .then((collections: Collection[]) =>
+        setCollections(
+          pipe(
+            collections,
+            A.sort(ORD.contramap<string, Collection>(({ name }) => name)(S.Ord))
+          )
+        )
+      )
       .catch(handleError);
   }, [handleError]);
 

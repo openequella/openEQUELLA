@@ -31,6 +31,7 @@ import * as M from "fp-ts/Map";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as N from "fp-ts/number";
 import * as O from "fp-ts/Option";
+import { not } from "fp-ts/Predicate";
 import * as RA from "fp-ts/ReadonlyArray";
 import * as RSET from "fp-ts/ReadonlySet";
 import { Refinement } from "fp-ts/Refinement";
@@ -219,6 +220,17 @@ export const isNonEmptyString = (s: string | number): s is string =>
 const eqControlTarget: Eq<ControlTarget> = struct({
   schemaNode: A.getEq(S.Eq),
   type: S.Eq,
+});
+
+/**
+ * An Eq used to check if there are multiple matching control types pointing to the same metadata schema node.
+ */
+export const eqFullTargetAndControlType: Eq<{
+  fullTarget: string;
+  controlType: OEQ.WizardControl.ControlType;
+}> = struct({
+  fullTarget: S.Eq,
+  controlType: S.Eq,
 });
 
 /**
@@ -506,6 +518,12 @@ const buildXmlScriptObject = (values: PathValueMap): XmlScriptType =>
           O.chain(RA.head),
           O.getOrElse(() => S.empty) // as per legacy code
         ),
+      getAll: (node): ReadonlyArray<string> =>
+        pipe(
+          m,
+          M.lookup(S.Eq)(node),
+          O.getOrElse<ReadonlyArray<string>>(() => RA.empty)
+        ),
     })
   );
 
@@ -630,7 +648,10 @@ export const render = (
   const isVisible: (_: OEQ.WizardControl.WizardControl) => boolean = flow(
     O.fromPredicate(OEQ.WizardControl.isWizardBasicControl),
     O.chain<OEQ.WizardControl.WizardBasicControl, string>(
-      ({ visibilityScript }) => O.fromNullable(visibilityScript)
+      flow(
+        O.fromNullableK(({ visibilityScript }) => visibilityScript),
+        O.filter(not(S.isEmpty))
+      )
     ),
     O.chain((script) =>
       pipe(

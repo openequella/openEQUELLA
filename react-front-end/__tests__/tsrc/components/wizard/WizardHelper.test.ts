@@ -206,6 +206,7 @@ describe("render()", () => {
       new Map(),
       1,
     ],
+    ["empty string (visible)", ``, new Map(), 2],
   ])(
     "hides controls based on visibility scripts - %s",
     (_, script, values, controlsVisible) => {

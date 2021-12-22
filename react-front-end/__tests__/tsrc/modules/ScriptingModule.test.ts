@@ -45,6 +45,8 @@ describe("buildVisibilityScript", () => {
         xpath === testData.path && value === testData.value,
       get: (xpath: string): string =>
         xpath === testData.path ? testData.value : "unknown xpath",
+      getAll: (xpath: string): ReadonlyArray<string> =>
+        xpath === testData.path ? [testData.value] : [],
     },
   };
 
@@ -54,6 +56,7 @@ var bRet = false; // 'var bRet' is used to be similar to the UI generated script
 const results = [
     xml.contains('${testData.path}', '${testData.value}'),
     xml.get('${testData.path}') == '${testData.value}',
+    xml.getAll('${testData.path}').includes('${testData.value}'),
     user.hasRole('${testData.uuid}')
 ];
 if (results.every(v => v === true)) {
