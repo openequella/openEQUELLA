@@ -67,7 +67,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@babel/core": "7.16.5",
+    "@babel/core": "7.16.7",
     "@storybook/addon-a11y": "6.3.12",
     "@storybook/addon-essentials": "6.3.12",
     "@storybook/addon-knobs": "6.3.1",
