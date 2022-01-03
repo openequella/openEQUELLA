@@ -146,6 +146,8 @@ export const LegacyContent = React.memo(function LegacyContent({
 }: LegacyContentProps) {
   const [content, setContent] = React.useState<PageContent>();
   const [updatingContent, setUpdatingContent] = React.useState<boolean>(true);
+  // Indicate whether there is a request submitted to `LegacyContentApi` already but not completed yet.
+  const submittingForm = React.useRef(false);
   const { appErrorHandler } = useContext(AppRenderErrorContext);
 
   const baseUrl = document.getElementsByTagName("base")[0].href;
@@ -225,6 +227,12 @@ export const LegacyContent = React.memo(function LegacyContent({
     submitValues: StateData,
     callback?: (response: SubmitResponse) => void
   ) {
+    if (submittingForm.current) {
+      console.error(`ignore redundant submission to ${formAction}`);
+      return;
+    }
+    submittingForm.current = true;
+
     submitRequest(toRelativeUrl(formAction || pathname), submitValues)
       .then((content) => {
         // Clear raw mode saved in local storage after a login request is resolved.
@@ -251,7 +259,8 @@ export const LegacyContent = React.memo(function LegacyContent({
             ? fromAxiosResponse(error.response)
             : generateFromError(error);
         handleError(fullScreen, errorResponse);
-      });
+      })
+      .finally(() => (submittingForm.current = false));
   }
 
   function stdSubmit(validate: boolean) {
