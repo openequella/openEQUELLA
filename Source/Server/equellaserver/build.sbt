@@ -200,7 +200,7 @@ libraryDependencies ++= Seq(
   "org.apache.ws.commons.axiom" % "axiom-api"              % "1.3.0",
   "org.apache.ws.commons.axiom" % "axiom-impl"             % "1.3.0",
   "org.apache.ws.security"      % "wss4j"                  % "1.6.19",
-  "org.apache.zookeeper"        % "zookeeper"              % "3.4.6" excludeAll (
+  "org.apache.zookeeper"        % "zookeeper"              % "3.7.0" excludeAll (
     ExclusionRule(organization = "org.slf4j",
                   name = "slf4j-log4j12")
   ),
