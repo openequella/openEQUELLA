@@ -70,7 +70,7 @@
     "@babel/core": "7.16.7",
     "@storybook/addon-a11y": "6.3.12",
     "@storybook/addon-essentials": "6.3.12",
-    "@storybook/addon-knobs": "6.3.1",
+    "@storybook/addon-knobs": "6.4.0",
     "@storybook/react": "6.3.12",
     "@testing-library/jest-dom": "5.16.1",
     "@testing-library/react": "12.1.2",
