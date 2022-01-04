@@ -227,11 +227,14 @@ export const LegacyContent = React.memo(function LegacyContent({
     submitValues: StateData,
     callback?: (response: SubmitResponse) => void
   ) {
-    if (submittingForm.current) {
-      console.error(`ignore redundant submission to ${formAction}`);
-      return;
+    if (formAction) {
+      if (submittingForm.current) {
+        console.error(`ignore redundant submission to ${formAction}`);
+        return;
+      }
+
+      submittingForm.current = true;
     }
-    submittingForm.current = true;
 
     submitRequest(toRelativeUrl(formAction || pathname), submitValues)
       .then((content) => {
@@ -260,7 +263,11 @@ export const LegacyContent = React.memo(function LegacyContent({
             : generateFromError(error);
         handleError(fullScreen, errorResponse);
       })
-      .finally(() => (submittingForm.current = false));
+      .finally(() => {
+        if (formAction) {
+          submittingForm.current = false;
+        }
+      });
   }
 
   function stdSubmit(validate: boolean) {
