@@ -110,10 +110,10 @@
     },
     "settings": {
       "jest": {
-        "version": 26
+        "version": 27
       },
       "react": {
-        "version": "16.13"
+        "version": "17.0"
       }
     },
     "overrides": [
