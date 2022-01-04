@@ -474,11 +474,9 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
                 Integer.valueOf(value));
           }
         } else if (key.equals("visible")) {
-          content.setAvailable(Integer.parseInt(value) == 1 ? true : false);
+          content.setAvailable(Integer.parseInt(value) == 1);
           content.setAttribute(
-              "visible",
-              getKey("moodle.finduses.visible"),
-              Integer.parseInt(value) == 1 ? true : false);
+              "visible", getKey("moodle.finduses.visible"), Integer.parseInt(value) == 1);
         } else if (key.equals("key")) {
           attributeKey = value;
         } else if (key.equals(VALUE_NODE)) {
