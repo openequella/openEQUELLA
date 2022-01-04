@@ -9,7 +9,7 @@ inConfig(Serial)(Defaults.testTasks)
 val circeVersion  = "0.12.1"
 val http4sVersion = "0.21.8"
 val catsVersion   = "1.6.1"
-val cxfVersion    = "3.4.5"
+val cxfVersion    = "3.5.0"
 
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.3")
 
