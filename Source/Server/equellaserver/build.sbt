@@ -127,9 +127,9 @@ libraryDependencies ++= Seq(
   "org.apache.axis2"          % "axis2-transport-http"     % axis2Version,
   "org.apache.axis2"          % "axis2-transport-local"    % axis2Version,
   "org.apache.commons"        % "commons-compress"         % "1.21",
-  "org.apache.curator"        % "curator-client"           % "2.13.0",
-  "org.apache.curator"        % "curator-framework"        % "2.13.0",
-  "org.apache.curator"        % "curator-recipes"          % "2.13.0",
+  "org.apache.curator"        % "curator-client"           % "5.1.0",
+  "org.apache.curator"        % "curator-framework"        % "5.1.0",
+  "org.apache.curator"        % "curator-recipes"          % "5.1.0",
   "org.apache.cxf"            % "cxf-rt-frontend-jaxws"    % cxfVersion,
   "org.apache.cxf"            % "cxf-rt-transports-http"   % cxfVersion,
   "org.apache.cxf"            % "cxf-rt-databinding-aegis" % cxfVersion,
@@ -200,7 +200,7 @@ libraryDependencies ++= Seq(
   "org.apache.ws.commons.axiom" % "axiom-api"              % "1.3.0",
   "org.apache.ws.commons.axiom" % "axiom-impl"             % "1.3.0",
   "org.apache.ws.security"      % "wss4j"                  % "1.6.19",
-  "org.apache.zookeeper"        % "zookeeper"              % "3.4.6" excludeAll (
+  "org.apache.zookeeper"        % "zookeeper"              % "3.7.0" excludeAll (
     ExclusionRule(organization = "org.slf4j",
                   name = "slf4j-log4j12")
   ),
