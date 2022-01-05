@@ -33,6 +33,7 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { getBaseUrl } from "../AppConfig";
 import { AppRenderErrorContext } from "../mainui/App";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import { fetchSettings } from "../modules/GeneralSettingsModule";
@@ -78,7 +79,7 @@ const SettingsPage = ({
 
   React.useEffect(() => {
     if (isReloadNeeded) {
-      window.location.reload();
+      window.location.href = getBaseUrl() + "access/settings.do";
     }
   }, [isReloadNeeded]);
 
