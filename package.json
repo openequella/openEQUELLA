@@ -27,6 +27,8 @@
     "npm": "8.1.4"
   },
   "devDependencies": {
+    "@commitlint/cli": "16.0.1",
+    "@commitlint/config-conventional": "16.0.0",
     "@typescript-eslint/eslint-plugin": "5.9.0",
     "@typescript-eslint/parser": "5.9.0",
     "babel-eslint": "10.1.0",
@@ -51,6 +53,11 @@
     "remark-lint-no-dead-urls": "1.1.0",
     "remark-validate-links": "11.0.2",
     "typescript": "4.4.4"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   },
   "lint-staged": {
     "*.{js,ts,tsx}": "eslint --fix",
