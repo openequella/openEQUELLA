@@ -21,14 +21,14 @@ val SwaggerVersion   = "1.6.3"
 val TomcatVersion    = "9.0.56"
 val axis2Version     = "1.6.3"
 val circeVersion     = "0.12.1"
-val cxfVersion       = "3.4.5"
+val cxfVersion       = "3.5.0"
 val fs2Version       = "2.4.4"
 val guiceVersion     = "3.0"
 val jacksonVersion   = "2.11.3"
 val jsassVersion     = "5.10.4"
 val jsoupVersion     = "1.14.3"
 val simpledbaVersion = "0.1.9"
-val springVersion    = "5.3.13"
+val springVersion    = "5.3.14"
 val sttpVersion      = "1.7.2"
 val tikaVersion      = "2.0.0"
 
@@ -91,7 +91,7 @@ libraryDependencies ++= Seq(
   ),
   "com.miglayout"             % "miglayout-swing"          % "4.2",
   "com.ning"                  % "async-http-client"        % "1.9.40",
-  "com.rometools"             % "rome"                     % "1.16.0",
+  "com.rometools"             % "rome"                     % "1.18.0",
   "io.swagger"                % "swagger-core"             % SwaggerVersion,
   "io.swagger"                % "swagger-annotations"      % SwaggerVersion,
   "io.swagger"                % "swagger-jaxrs"            % SwaggerVersion,
@@ -258,7 +258,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "net.sf.saxon")
   ),
   "xml-resolver"                  % "xml-resolver"              % "1.2",
-  "org.scala-sbt"                 %% "io"                       % "1.5.1",
+  "org.scala-sbt"                 %% "io"                       % "1.6.0",
   "org.mozilla"                   % "rhino"                     % "1.7.13",
   "io.lemonlabs"                  %% "scala-uri"                % "1.5.1",
   "org.scala-lang.modules"        %% "scala-parser-combinators" % "2.1.0",
@@ -313,7 +313,7 @@ excludeDependencies ++= Seq(
   // Spring 5 added a default logging bridge.  In oEQ, this results in
   // a [deduplicate: different file contents found in the following] error
   // ...org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.7.30.jar:org/apache/commons/logging/Log.class
-  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.13.jar:org/apache/commons/logging/Log.class
+  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.14.jar:org/apache/commons/logging/Log.class
   // As per https://github.com/spring-projects/spring-framework/issues/20611 ,
   // since we already have logging in place, we can safely exclude the dep from spring.
   "org.springframework" % "spring-jcl",
@@ -381,8 +381,8 @@ run := {
 
   // Due to the error: deduplicate: different file contents found in the following:
   // ...
-  //  .../org.apache.cxf/cxf-rt-frontend-jaxws/bundles/cxf-rt-frontend-jaxws-3.4.5.jar:META-INF/cxf/bus-extensions.txt
-  //  .../org.apache.cxf/cxf-rt-transports-http/bundles/cxf-rt-transports-http-3.4.5.jar:META-INF/cxf/bus-extensions.txt
+  //  .../org.apache.cxf/cxf-rt-frontend-jaxws/bundles/cxf-rt-frontend-jaxws-3.5.0.jar:META-INF/cxf/bus-extensions.txt
+  //  .../org.apache.cxf/cxf-rt-transports-http/bundles/cxf-rt-transports-http-3.5.0.jar:META-INF/cxf/bus-extensions.txt
   // ...
   // As per https://github.com/johnrengelman/shadow/issues/309 , combining the files.
   case PathList("META-INF", "cxf", "bus-extensions.txt") => MergeStrategy.filterDistinctLines
