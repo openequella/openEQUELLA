@@ -17,11 +17,11 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import Axios from "axios";
+import { stringify as encodeQuery } from "query-string";
 import {
   BatchOperationResponse,
   groupErrorMessages,
 } from "../api/BatchOperationResponse";
-import { encodeQuery } from "../util/encodequery";
 
 export interface MimeTypeFilter {
   /**
@@ -64,7 +64,7 @@ export const batchUpdateOrAdd = (filters: MimeTypeFilter[]) =>
 
 export const batchDelete = (ids: string[]) =>
   Axios.delete<BatchOperationResponse[]>(
-    `${MIME_TYPE_FILTERS_URL}/${encodeQuery({ ids: ids })}`
+    `${MIME_TYPE_FILTERS_URL}/?${encodeQuery({ ids: ids })}`
   ).then((res) => groupErrorMessages(res.data));
 
 export const getMimeTypeDetail = (entry: OEQ.MimeType.MimeTypeEntry) => {

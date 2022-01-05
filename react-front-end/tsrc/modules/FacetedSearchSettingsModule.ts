@@ -17,11 +17,11 @@
  */
 
 import Axios from "axios";
+import { stringify as encodeQuery } from "query-string";
 import {
   BatchOperationResponse,
   groupErrorMessages,
 } from "../api/BatchOperationResponse";
-import { encodeQuery } from "../util/encodequery";
 
 export interface Facet {
   /**
@@ -73,7 +73,7 @@ export const batchUpdateOrAdd = (facets: FacetWithFlags[]): Promise<string[]> =>
 
 export const batchDelete = (ids: string[]): Promise<string[]> =>
   Axios.delete<BatchOperationResponse[]>(
-    `${FACETED_SEARCH_API_URL}/${encodeQuery({ ids: ids })}`
+    `${FACETED_SEARCH_API_URL}/?${encodeQuery({ ids: ids })}`
   ).then((res) => {
     return groupErrorMessages(res.data);
   });
