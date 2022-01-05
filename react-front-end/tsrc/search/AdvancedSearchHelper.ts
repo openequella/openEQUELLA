@@ -18,13 +18,13 @@
 
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
-import * as RA from "fp-ts/ReadonlyArray";
 import * as E from "fp-ts/Either";
-import { absurd, identity, pipe } from "fp-ts/function";
+import { absurd, flow, identity, pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as O from "fp-ts/Option";
 import { not } from "fp-ts/Predicate";
+import * as RA from "fp-ts/ReadonlyArray";
 import * as S from "fp-ts/string";
 import {
   ControlTarget,
@@ -154,28 +154,29 @@ const queryFactory = (
     queryType: isValueTokenised ? "Tokenised" : "Phrase",
   });
 
+  // Validate the Calendar value type.
+  const validDateRangeOrThrow: (_: ControlValue) => NEA.NonEmptyArray<string> =
+    flow(
+      E.fromPredicate(
+        isStringArray,
+        () => "Calendar must have at least one value"
+      ),
+      E.chain(
+        E.fromPredicate(
+          (dates) => A.size(dates) <= 2,
+          () => "Calendar cannot have more than 2 values"
+        )
+      ),
+      E.fold((e) => {
+        throw new TypeError(e);
+      }, identity)
+    );
+
   switch (type) {
     case "calendar":
-      // Validate the Calendar value type.
-      const dateRange: NEA.NonEmptyArray<string> = pipe(
-        values,
-        E.fromPredicate(
-          isStringArray,
-          () => "Calendar must have at least one value"
-        ),
-        E.chain(
-          E.fromPredicate(
-            (dates) => A.size(dates) <= 2,
-            () => "Calendar cannot have more than 2 values"
-          )
-        ),
-        E.fold((e) => {
-          throw new TypeError(e);
-        }, identity)
-      );
-
       return pipe(
-        dateRange,
+        values,
+        validDateRangeOrThrow,
         O.fromPredicate(A.exists(not(S.isEmpty))), // No query needed when both are empty strings.
         O.map<NEA.NonEmptyArray<string>, OEQ.Search.WizardControlFieldValue>(
           (vs) => ({

@@ -271,12 +271,13 @@ export const CloudControl: CloudControlRegisterImpl = {
           case "deleted":
             att = att.filter((at) => at.uuid !== change.uuid);
             break;
-          case "edited":
+          case "edited": {
             const ind = att.findIndex(
               (at) => at.uuid === change.attachment.uuid
             );
             att[ind] = change.attachment;
             break;
+          }
         }
       };
 

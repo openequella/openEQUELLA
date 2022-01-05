@@ -18,6 +18,7 @@
 import { Button, Grid, PropTypes, Typography } from "@material-ui/core";
 import { Skeleton } from "@material-ui/lab";
 import * as OEQ from "@openequella/rest-api-client";
+import { pipe } from "fp-ts/function";
 import { range } from "lodash";
 import * as React from "react";
 import { commonString } from "../util/commonstrings";
@@ -75,57 +76,69 @@ export type State =
     };
 
 export const drmReducer = (state: State, action: Action): State => {
+  const buildButtons = (
+    buttons: {
+      handler: () => void;
+      color: PropTypes.Color;
+      text: string;
+      autoFocus: boolean;
+    }[]
+  ): JSX.Element[] =>
+    buttons.map(({ handler, color, text, autoFocus }) => (
+      <Button
+        key={text}
+        onClick={(event) => {
+          handler();
+          event.stopPropagation();
+        }}
+        color={color}
+        autoFocus={autoFocus}
+      >
+        {text}
+      </Button>
+    ));
+
   switch (action.type) {
     case "init":
       return { status: "initialising", dialog: { ...skeletonDialogStructure } };
     case "termsRetrieved":
-      const {
-        acceptTerms,
-        rejectTerms,
-        drmDetails: { title, subtitle, agreements },
-      } = action;
-      return {
-        status: "successful",
-        dialog: {
-          title,
-          content: (
-            <Grid container>
-              <Grid item>
-                <Typography variant="subtitle1">{subtitle}</Typography>
+      return pipe(
+        action,
+        ({
+          acceptTerms,
+          rejectTerms,
+          drmDetails: { title, subtitle, agreements },
+        }) => ({
+          status: "successful",
+          dialog: {
+            title,
+            content: (
+              <Grid container>
+                <Grid item>
+                  <Typography variant="subtitle1">{subtitle}</Typography>
+                </Grid>
+                <Grid item>
+                  <DrmTerms {...agreements} />
+                </Grid>
               </Grid>
-              <Grid item>
-                <DrmTerms {...agreements} />
-              </Grid>
-            </Grid>
-          ),
-          buttons: [
-            {
-              handler: rejectTerms,
-              color: "secondary",
-              text: rejectString,
-              autoFocus: false,
-            },
-            {
-              handler: acceptTerms,
-              color: "primary",
-              text: acceptString,
-              autoFocus: true,
-            },
-          ].map(({ handler, color, text, autoFocus }) => (
-            <Button
-              key={text}
-              onClick={(event) => {
-                handler();
-                event.stopPropagation();
-              }}
-              color={color as PropTypes.Color}
-              autoFocus={autoFocus}
-            >
-              {text}
-            </Button>
-          )),
-        },
-      };
+            ),
+            buttons: buildButtons([
+              {
+                handler: rejectTerms,
+                color: "secondary",
+                text: rejectString,
+                autoFocus: false,
+              },
+              {
+                handler: acceptTerms,
+                color: "primary",
+                text: acceptString,
+                autoFocus: true,
+              },
+            ]),
+          },
+        })
+      );
     case "error":
       return {
         status: "failed",
