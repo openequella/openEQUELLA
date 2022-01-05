@@ -311,7 +311,7 @@ const buildLabelValue = (
       return buildLabelValueForControl(title, values);
     case "shufflebox":
       // For shuffle box we'll rely on unique labels for the options
-      const labels: string[] = pipe(
+      return pipe(
         options,
         A.filter((o) => values.includes(o.value)),
         A.map(({ text }) =>
@@ -325,9 +325,9 @@ const buildLabelValue = (
               throw new TypeError(s);
             })
           )
-        )
+        ),
+        (labels: string[]) => buildLabelValueForControl(title, labels)
       );
-      return buildLabelValueForControl(title, labels);
     case "html":
       return new Map(); // Nothing to do
     case "shufflelist":
@@ -500,7 +500,7 @@ export const updateControlValue = (
         userEvent.type(editBox, value);
       });
       break;
-    case "checkboxgroup":
+    case "checkboxgroup": {
       const selectCheckBox =
         (label: string, value: string): IO.IO<void> =>
         () => {
@@ -526,6 +526,7 @@ export const updateControlValue = (
 
       traverseUpdates(selectCheckBox)();
       break;
+    }
     case "radiogroup":
       // Radiogroup should have only one label provided.
       userEvent.click(getByLabelText(container, labels[0]));
@@ -537,7 +538,7 @@ export const updateControlValue = (
         selectOption(container, `#${label}-select`, value)
       );
       break;
-    case "calendar":
+    case "calendar": {
       const calendar = getWizardControlByTitle(container, labels[0]);
       const pickDate =
         ([value, label]: [string, string]): IO.IO<void> =>
@@ -578,40 +579,25 @@ export const updateControlValue = (
       )();
 
       break;
+    }
     case "shufflebox":
-      // First target in on the actual control - to allow for simple use of labels
-      const shuffleBox: HTMLElement = getWizardControlByTitle(
-        container,
-        labels[0]
-      );
-
-      // Function to traverse over all the options we wish to select and select them
-      const makeSelections = updateShuffleValues(
-        selectShuffleBoxOption(shuffleBox)
-      );
-
-      // do it!
-      makeSelections();
+      pipe(
+        getWizardControlByTitle(container, labels[0]),
+        selectShuffleBoxOption,
+        updateShuffleValues
+      )();
       break;
     case "shufflelist":
-      // First target in on the actual control - to allow for simple use of labels
-      const shuffleList: HTMLElement = getWizardControlByTitle(
-        container,
-        labels[0]
-      );
-      const newEntryField: HTMLElement = getByLabelText(
-        shuffleList,
-        shuffleListStrings.newEntry
-      );
-
-      const addValues = updateShuffleValues(
-        (value: string): IO.IO<void> =>
+      pipe(
+        getWizardControlByTitle(container, labels[0]),
+        (shuffleList) =>
+          getByLabelText(shuffleList, shuffleListStrings.newEntry),
+        (newEntryField) =>
+          (value: string): IO.IO<void> =>
           () =>
-            userEvent.type(newEntryField, value + "{enter}")
-      );
-
-      // Do it!
-      addValues();
+            userEvent.type(newEntryField, value + "{enter}"),
+        updateShuffleValues
+      )();
       break;
     case "termselector":
     case "userselector":
@@ -698,19 +684,23 @@ export const getControlValue = (
     case "listbox":
       return getInputValue(labels);
     case "calendar":
-      const calendar = getWizardControlByTitle(container, labels[0]);
-      const vs = [
-        languageStrings.dateRangeSelector.defaultStartDatePickerLabel,
-        languageStrings.dateRangeSelector.defaultEndDatePickerLabel,
-      ].map(
-        (label) => (getByLabelText(calendar, label) as HTMLInputElement).value
+      return pipe(
+        getWizardControlByTitle(container, labels[0]),
+        (calendar) =>
+          (dateLabel: string): string =>
+            (getByLabelText(calendar, dateLabel) as HTMLInputElement).value,
+        (getDateValue) =>
+          M.singleton(
+            labels[0],
+            [
+              languageStrings.dateRangeSelector.defaultStartDatePickerLabel,
+              languageStrings.dateRangeSelector.defaultEndDatePickerLabel,
+            ].map(getDateValue)
+          )
       );
-
-      return new Map([[labels[0], vs]]);
     case "shufflebox":
-      const shuffleBoxTitle: string = labels[0];
-      const shuffleBoxSelections: string[] = pipe(
-        getWizardControlByTitle(container, shuffleBoxTitle),
+      return pipe(
+        getWizardControlByTitle(container, labels[0]),
         (shuffleBox) =>
           getByLabelText(
             shuffleBox,
@@ -720,15 +710,14 @@ export const getControlValue = (
         E.map(getListValues),
         E.getOrElseW((e) => {
           throw new Error(e);
-        })
+        }),
+        (shuffleBoxSelections) => M.singleton(labels[0], shuffleBoxSelections)
       );
-      return new Map([[shuffleBoxTitle, shuffleBoxSelections]]);
     case "html":
       return new Map(); // Nothing to do
     case "shufflelist":
-      const shuffleListTitle: string = labels[0];
-      const shuffleListValues: string[] = pipe(
-        getWizardControlByTitle(container, shuffleListTitle),
+      return pipe(
+        getWizardControlByTitle(container, labels[0]),
         (shuffleList) => shuffleList.querySelector("ul"),
         E.fromNullable(
           "Failed to find the unordered list of shuffle list values"
@@ -742,9 +731,9 @@ export const getControlValue = (
         ),
         E.getOrElseW((e) => {
           throw new Error(e);
-        })
+        }),
+        (shuffleListValues) => M.singleton(labels[0], shuffleListValues)
       );
-      return new Map([[shuffleListTitle, shuffleListValues]]);
     case "termselector":
     case "userselector":
       throw new Error(

@@ -76,7 +76,7 @@ export function prepLangStrings(
     } else {
       const newOut: LanguageStrings = {};
       for (const key in val) {
-        if (val.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(val, key)) {
           newOut[key] = overrideVal(prefix + "." + key, val[key]);
         }
       }

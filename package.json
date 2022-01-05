@@ -72,6 +72,7 @@
   "eslintConfig": {
     "root": true,
     "extends": [
+      "eslint:recommended",
       "react-app",
       "plugin:jest/recommended",
       "plugin:jest/style",
