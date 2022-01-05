@@ -143,12 +143,19 @@ export const LegacyContent = React.memo(function LegacyContent({
   redirect,
   setPreventNavigation,
   updateTemplate,
+  isReloadNeeded,
 }: LegacyContentProps) {
   const [content, setContent] = React.useState<PageContent>();
   const [updatingContent, setUpdatingContent] = React.useState<boolean>(true);
   const { appErrorHandler } = useContext(AppRenderErrorContext);
 
   const baseUrl = document.getElementsByTagName("base")[0].href;
+
+  React.useEffect(() => {
+    if (isReloadNeeded) {
+      window.location.reload();
+    }
+  }, [isReloadNeeded]);
 
   const redirected = (href: string, external: boolean) => {
     if (external) {
