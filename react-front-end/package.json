@@ -49,7 +49,7 @@
     "lodash": "4.17.21",
     "luxon": "1.28.0",
     "oeq-cloudproviders": "git+https://github.com/apereo/openEQUELLA-cloudprovidersdk.git#32d958ddfff64ca748e7e1b2eae0f0487946a487",
-    "prop-types": "15.7.2",
+    "prop-types": "15.8.1",
     "query-string": "7.0.1",
     "react": "17.0.2",
     "react-beautiful-dnd": "13.1.0",
