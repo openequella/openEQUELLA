@@ -31,6 +31,6 @@
     "typescript": "4.5.4",
     "follow-redirects": "1.14.6",
     "tar": "6.1.11",
-    "shelljs": "0.8.4"
+    "shelljs": "0.8.5"
   }
 }
