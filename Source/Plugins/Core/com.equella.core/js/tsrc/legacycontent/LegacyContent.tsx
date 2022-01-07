@@ -117,7 +117,7 @@ export const LegacyContent = React.memo(function LegacyContent(
   const baseUrl = (document.getElementsByTagName("base")[0] as HTMLBaseElement)
     .href;
   const submittingForm = React.useRef<LegacyContentSubmission>({
-    submitting: false,
+    submitting: false
   });
 
   function toRelativeUrl(url: string) {
@@ -166,12 +166,12 @@ export const LegacyContent = React.memo(function LegacyContent(
       submittingForm.current = {
         submitting: true,
         action: formAction,
-        payload: submitValues,
+        payload: submitValues
       };
     }
 
     submitRequest(toRelativeUrl(formAction || props.pathname), submitValues)
-      .then((content) => {
+      .then(content => {
         if (callback) {
           callback(content);
         } else if (isPageContent(content)) {
