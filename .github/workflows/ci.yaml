@@ -17,6 +17,7 @@ on:
       - release/**
       - stable-*
       - component/**
+      - hotfix/**
 
 jobs:
   build_and_check:
