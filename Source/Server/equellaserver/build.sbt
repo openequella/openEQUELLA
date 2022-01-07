@@ -251,7 +251,6 @@ libraryDependencies ++= Seq(
 //    ),
   "stax"                      % "stax-api"          % "1.0.1",
   "taglibs"                   % "standard"          % "1.1.2",
-  "tomcat"                    % "jsp-api"           % "5.5.23",
   "com.github.equella.legacy" % "qtiworks-jqtiplus" % "1.0-beta3" excludeAll (
     ExclusionRule(organization = "org.slf4j"),
     ExclusionRule(organization = "ch.qos.logback"),
