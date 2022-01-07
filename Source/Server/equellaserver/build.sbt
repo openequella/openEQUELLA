@@ -138,7 +138,6 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "javax.xml.bind"),
     ExclusionRule(organization = "javax.xml.soap"),
     ExclusionRule(organization = "xml-resolver"),
-    ExclusionRule(organization = "asm"),
     ExclusionRule(organization = "org.springframework"),
     ExclusionRule(organization = "aopalliance"),
     ExclusionRule(organization = "org.jvnet"),
@@ -228,10 +227,7 @@ libraryDependencies ++= Seq(
   "javax.json.bind"                      % "javax.json.bind-api"          % "1.0",
   "org.jsoup"                            % "jsoup"                        % jsoupVersion,
   xstreamDep,
-  "org.opensaml" % "xmltooling" % "1.3.1" excludeAll (
-    ExclusionRule(organization = "org.slf4j")
-  ),
-  "org.ow2.asm" % "asm" % "5.2",
+  "org.opensaml" % "xmltooling" % "1.3.1" excludeAll ExclusionRule(organization = "org.slf4j"),
   postgresDep,
   "org.scannotation"    % "scannotation"           % "1.0.3",
   "org.slf4j"           % "jcl-over-slf4j"         % "1.7.32",
@@ -281,7 +277,6 @@ dependencyOverrides += "javax.mail" % "mail" % "1.4.7"
 
 excludeDependencies ++= Seq(
   "com.google.guava"             % "guava-jdk5",
-  "asm"                          % "asm",
   "javax.servlet"                % "servlet-api",
   "org.mortbay.jetty"            % "servlet-api",
   "antlr"                        % "antlr",
