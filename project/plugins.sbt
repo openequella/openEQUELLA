@@ -9,6 +9,23 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "1.0.2")
 addSbtPlugin("de.johoop" % "sbt-testng-plugin" % "3.1.1")
 
 addSbtPlugin("com.etsy" % "sbt-checkstyle-plugin" % "3.1.1")
+
+// Provides access to the OWASP Dependency Check to search for
+// vulnerabilities in our dependencies. Most useful:
+// - ./sbt dependencyCheckAnyProject
+//
+// NOTE: Uses a lot of temporary file storage, you may need to:
+//   export JVM_OPTS="-Djava.io.tmpdir=/var/tmp"
+addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "3.3.0")
+
+// Provides support for all the tasks found at:
+// https://github.com/sbt/sbt-dependency-graph#main-tasks
+// Especially
+// - dependencyTree
+// - whatDependsOn <organization> <module> <revision>
+//    - revision is optional
+addDependencyTreePlugin
+
 // Old version used because something else depends on an old JAWN
 val circeVersion = "0.7.1"
 
