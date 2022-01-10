@@ -20,12 +20,13 @@ package com.tle.hibernate.dialect;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.log4j.Logger;
 import org.hibernate.boot.model.naming.Identifier;
 import org.hibernate.boot.model.naming.ImplicitBasicColumnNameSource;
 import org.hibernate.boot.model.naming.ImplicitForeignKeyNameSource;
 import org.hibernate.boot.model.naming.ImplicitJoinTableNameSource;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handles the naming strategy prior to the values being sent to the physical naming strategy logic.
@@ -34,7 +35,7 @@ import org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl;
  * appropriately.
  */
 public class OeqImplicitNamingStrategy extends ImplicitNamingStrategyJpaCompliantImpl {
-  private static final Logger LOGGER = Logger.getLogger(OeqImplicitNamingStrategy.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(OeqImplicitNamingStrategy.class);
 
   private final Map<String, String> joinTableOverrides = new HashMap<>();
 

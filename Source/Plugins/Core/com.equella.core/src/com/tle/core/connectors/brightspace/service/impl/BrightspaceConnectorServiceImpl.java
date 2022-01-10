@@ -100,7 +100,8 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
  * For Brightspace API documentation, go to
@@ -112,7 +113,7 @@ import org.apache.log4j.Logger;
 @Singleton
 public class BrightspaceConnectorServiceImpl extends AbstractIntegrationConnectorRespository
     implements BrightspaceConnectorService {
-  private static final Logger LOGGER = Logger.getLogger(BrightspaceConnectorService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(BrightspaceConnectorService.class);
 
   private static final byte[] SHAREPASS =
       new byte[] {45, 123, -112, 2, 89, 124, 19, 74, 0, 24, -118, 98, 5, 100, 92, 7};

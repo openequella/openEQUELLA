@@ -51,10 +51,11 @@ import java.util.Set;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,7 +65,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SuppressWarnings("nls")
 public class TLEGroupServiceImpl
     implements TLEGroupService, UserChangeListener, GroupChangedListener {
-  private static final Logger LOGGER = Logger.getLogger(TLEGroupServiceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TLEGroupServiceImpl.class);
   private static final String[] BLANKS = {"name"};
 
   @Inject private TLEGroupDao dao;

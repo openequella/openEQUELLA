@@ -47,7 +47,8 @@ import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -60,7 +61,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Bind(ThumbnailRequestService.class)
 @Singleton
 /* package protected */ class ThumbnailRequestServiceImpl implements ThumbnailRequestService {
-  private static final Logger LOGGER = Logger.getLogger(ThumbnailRequestServiceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ThumbnailRequestServiceImpl.class);
 
   @Inject private ThumbnailRequestDao thumbRequestDao;
   @Inject private FileSystemService fileSystemService;

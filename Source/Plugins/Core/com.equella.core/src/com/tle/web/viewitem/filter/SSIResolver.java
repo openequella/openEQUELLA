@@ -29,11 +29,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.catalina.ssi.SSIExternalResolver;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author jmaginnis */
 public class SSIResolver implements SSIExternalResolver {
-  private static final Logger LOGGER = Logger.getLogger(SSIResolver.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SSIResolver.class);
 
   private FileSystemService fsys;
   private FileHandle handle;

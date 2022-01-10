@@ -34,13 +34,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.log4j.Logger;
 import org.apache.lucene.document.Field;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class XmlSchemaIndexer {
   private static final String XPATH_EXT = "/$XPATH$"; // $NON-NLS-1$
 
-  private static final Logger LOGGER = Logger.getLogger(XmlSchemaIndexer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(XmlSchemaIndexer.class);
 
   private final Map<String, StringBuilder> pathValuesMap = new HashMap<String, StringBuilder>();
   private final Set<String> pathsIndexed = new HashSet<String>();
@@ -80,7 +81,7 @@ public class XmlSchemaIndexer {
               new ByteArrayInputStream(value.getBytes("UTF-8")); // $NON-NLS-1$
           value = new HTMLFilter(bais).getSummary(16384);
         } catch (Exception e) {
-          LOGGER.warn(e);
+          LOGGER.warn(e.getMessage());
           value = ""; // $NON-NLS-1$
         }
       } else if (!type.equals("text")) // $NON-NLS-1$

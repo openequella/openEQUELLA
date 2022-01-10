@@ -40,10 +40,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class XMLRecordFactory extends RecordFactory {
-  private static final Logger LOGGER = Logger.getLogger(XMLRecordFactory.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(XMLRecordFactory.class);
 
   @Inject private ItemService itemService;
   @Inject private SchemaService schemaService;

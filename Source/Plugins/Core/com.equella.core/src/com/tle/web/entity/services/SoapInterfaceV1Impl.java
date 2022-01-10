@@ -62,13 +62,14 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind
 @Singleton
 public class SoapInterfaceV1Impl extends AbstractSoapService
     implements com.tle.core.remoting.SoapInterfaceV1 {
-  private static final Logger LOGGER = Logger.getLogger(SoapInterfaceV1Impl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SoapInterfaceV1Impl.class);
   private static final int MAX_QUERY_RESULTS = 100;
 
   @Inject private ItemService itemService;

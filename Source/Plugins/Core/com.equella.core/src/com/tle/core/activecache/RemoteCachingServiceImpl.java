@@ -44,13 +44,14 @@ import java.util.List;
 import java.util.Objects;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind(RemoteCachingService.class)
 @Singleton
 public class RemoteCachingServiceImpl
     implements RemoteCachingService, ItemDefinitionDeletionListener {
-  private static final Logger LOGGER = Logger.getLogger(RemoteCachingServiceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RemoteCachingServiceImpl.class);
 
   private Object cacheLock = new Object();
 

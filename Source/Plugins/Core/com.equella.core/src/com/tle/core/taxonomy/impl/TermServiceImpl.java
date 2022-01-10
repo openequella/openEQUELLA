@@ -59,10 +59,11 @@ import java.util.Objects;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,7 +71,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Bind(TermService.class)
 @Singleton
 public class TermServiceImpl implements TermService {
-  private static final Logger LOGGER = Logger.getLogger(TermService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TermService.class);
 
   private static final PluginResourceHelper resources =
       ResourcesService.getResourceHelper(TermServiceImpl.class);

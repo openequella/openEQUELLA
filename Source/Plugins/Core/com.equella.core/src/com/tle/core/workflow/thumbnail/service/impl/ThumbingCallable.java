@@ -46,15 +46,16 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
 import org.java.plugin.registry.Extension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 /** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
 public class ThumbingCallable implements Callable<ThumbingCallableResult> {
-  private static final Logger LOGGER = Logger.getLogger(ThumbingCallable.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ThumbingCallable.class);
 
   @Inject private RunAsInstitution runAs;
   @Inject private ThumbnailRequestService thumbnailRequestService;

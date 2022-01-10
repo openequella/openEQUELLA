@@ -48,14 +48,15 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author aholland */
 @SuppressWarnings("nls")
 @Bind(MimeTemplateService.class)
 @Singleton
 public class MimeTemplateServiceImpl implements MimeTemplateService, MimeTypesUpdatedListener {
-  private static final Logger LOGGER = Logger.getLogger(MimeTemplateService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MimeTemplateService.class);
 
   @Inject private RunAsInstitution runAs;
   @Inject private MimeTypeService mimeService;

@@ -43,7 +43,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author Aaron */
 @SuppressWarnings("nls")
@@ -51,7 +52,7 @@ import org.apache.log4j.Logger;
 @Bind
 @Singleton
 public class ThumbnailSupervisor implements SchemaListener {
-  private static final Logger LOGGER = Logger.getLogger(ThumbnailSupervisor.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ThumbnailSupervisor.class);
 
   private static final long SUPERVISOR_CHECK_PERIOD = TimeUnit.SECONDS.toMillis(20);
   private static final long TASK_WAIT_WARN_TIME = TimeUnit.MINUTES.toMillis(2);

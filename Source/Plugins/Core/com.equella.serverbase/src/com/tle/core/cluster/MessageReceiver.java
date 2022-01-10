@@ -30,13 +30,14 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 public class MessageReceiver implements Runnable {
   private static final int MAX_ATTEMPT = 1000;
 
-  private static final Logger LOGGER = Logger.getLogger(MessageReceiver.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MessageReceiver.class);
 
   private final String host;
   private final int port;

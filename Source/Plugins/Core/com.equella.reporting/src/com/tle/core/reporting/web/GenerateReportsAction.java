@@ -94,7 +94,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
 import org.eclipse.birt.report.engine.api.IAction;
 import org.eclipse.birt.report.engine.api.IGetParameterDefinitionTask;
 import org.eclipse.birt.report.engine.api.IHTMLActionHandler;
@@ -104,11 +103,13 @@ import org.eclipse.birt.report.engine.api.IParameterGroupDefn;
 import org.eclipse.birt.report.engine.api.IScalarParameterDefn;
 import org.eclipse.birt.report.engine.api.script.IReportContext;
 import org.eclipse.birt.report.model.api.util.ParameterValidationUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 public class GenerateReportsAction extends AbstractPrototypeSection<ReportingForm>
     implements HtmlRenderer {
-  private static final Logger LOGGER = Logger.getLogger(GenerateReportsAction.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GenerateReportsAction.class);
 
   private static final String PFX_PARAM = "p.";
   private static final String PFX_PARAM_TEXT = "pt.";

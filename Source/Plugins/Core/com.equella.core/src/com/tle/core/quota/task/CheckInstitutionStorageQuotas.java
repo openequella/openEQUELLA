@@ -32,12 +32,13 @@ import java.util.List;
 import java.util.concurrent.Future;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind
 @Singleton
 public class CheckInstitutionStorageQuotas implements ScheduledTask {
-  private static final Logger LOGGER = Logger.getLogger(CheckInstitutionStorageQuotas.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CheckInstitutionStorageQuotas.class);
 
   @Inject private QuotaService quotaService;
   @Inject private EmailService emailService;

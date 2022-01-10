@@ -31,13 +31,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.SQLServerDialect;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.jdbc.Work;
 import org.hibernate.mapping.Table;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This migration only applies to SQL Server. Our custom types were hardcoded to varchar, but there
@@ -49,7 +50,8 @@ import org.hibernate.mapping.Table;
 @Bind
 @Singleton
 public class ConvertVarcharDatabaseMigration extends AbstractHibernateSchemaMigration {
-  private static final Logger LOGGER = Logger.getLogger(ConvertVarcharDatabaseMigration.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(ConvertVarcharDatabaseMigration.class);
 
   @Override
   public boolean isBackwardsCompatible() {

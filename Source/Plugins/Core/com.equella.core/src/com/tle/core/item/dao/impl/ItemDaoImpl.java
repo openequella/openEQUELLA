@@ -68,11 +68,12 @@ import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,7 +84,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Singleton
 @SuppressWarnings({"nls", "unchecked"})
 public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implements ItemDao {
-  private static final Logger LOGGER = Logger.getLogger(ItemDaoImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ItemDaoImpl.class);
 
   @Inject private ItemLockingDao itemLockingDao;
 

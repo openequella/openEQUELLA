@@ -28,7 +28,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A small class to parse the robots.txt file that resides on servers to indicate which paths can be
@@ -48,7 +49,7 @@ import org.apache.log4j.Logger;
  * @author cofarrell
  */
 public class Robots {
-  private static final Logger LOGGER = Logger.getLogger(Robots.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(Robots.class);
   private URL robot;
   private Set<String> disallowedPaths;
   private Set<String> allowedPaths;

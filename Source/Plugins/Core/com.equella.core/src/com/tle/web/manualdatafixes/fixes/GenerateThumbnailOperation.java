@@ -29,11 +29,12 @@ import com.tle.core.workflow.thumbnail.service.ThumbnailService;
 import com.tle.core.workflow.video.VideoService;
 import java.util.List;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 public class GenerateThumbnailOperation extends AbstractWorkflowOperation {
-  private static final Logger LOGGER = Logger.getLogger(GenerateThumbnailOperation.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GenerateThumbnailOperation.class);
 
   @Inject private ThumbnailService thumbnailService;
   @Inject private VideoService videoService;

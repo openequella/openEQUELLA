@@ -53,7 +53,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 
 /**
@@ -66,7 +67,7 @@ import org.w3c.dom.Node;
 @Bind
 @Singleton
 public class WebdavServlet extends HttpServlet {
-  private static final Logger LOGGER = Logger.getLogger(WebdavServlet.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(WebdavServlet.class);
   private static final String CONTENT_TYPE_XML = "text/xml; charset=utf-8";
   private static final int SC_MULTI_STATUS = 207;
   private static final String METHODS_ALLOWED =

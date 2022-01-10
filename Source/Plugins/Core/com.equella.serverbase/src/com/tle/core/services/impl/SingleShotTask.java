@@ -18,11 +18,12 @@
 
 package com.tle.core.services.impl;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** "Single Shot" tasks always exit after running once. */
 public abstract class SingleShotTask extends Task {
-  private static final Logger LOGGER = Logger.getLogger(SingleShotTask.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SingleShotTask.class);
 
   @SuppressWarnings("nls")
   @Override

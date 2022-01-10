@@ -55,9 +55,10 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
 import org.apache.lucene.document.Fieldable;
 import org.ccil.cowan.tagsoup.Parser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -68,7 +69,7 @@ import org.xml.sax.helpers.DefaultHandler;
 @Bind
 @Singleton
 public class TextExtracter {
-  private static final Logger LOGGER = Logger.getLogger(TextExtracter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TextExtracter.class);
 
   // Max size supported by Tika
   private static final int SUMMARY_SIZE = 100000;

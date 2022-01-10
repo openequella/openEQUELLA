@@ -68,9 +68,10 @@ import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,7 +79,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Singleton
 @SuppressWarnings({"deprecation", "nls"})
 public class InstitutionImportServiceImpl implements InstitutionImportService {
-  private static final Logger LOGGER = Logger.getLogger(InstitutionImportServiceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(InstitutionImportServiceImpl.class);
   @Deprecated private static final String OLD_INSTITUTION_FILE = "institutionData.xml";
   private static final String INSTITUTION_FILE = "institutionInfo.xml";
 
@@ -461,7 +462,7 @@ public class InstitutionImportServiceImpl implements InstitutionImportService {
       try {
         params.setOldServerURL(new URL(newInstInfo.getServerURL()));
       } catch (MalformedURLException e) {
-        LOGGER.warn(e, e);
+        LOGGER.warn(e.getMessage(), e);
       }
     }
 

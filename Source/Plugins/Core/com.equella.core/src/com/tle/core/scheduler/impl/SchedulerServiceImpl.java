@@ -66,16 +66,17 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author Nicholas Read */
 @Singleton
 @SuppressWarnings("nls")
 @Bind(SchedulerService.class)
 public class SchedulerServiceImpl implements SchedulerService, SchemaListener {
-  private static final Logger LOGGER = Logger.getLogger(SchedulerServiceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SchedulerServiceImpl.class);
 
   private static final long TASK_WAIT_WARN_TIME =
       TimeUnit.HOURS.toMillis(1) + TimeUnit.MINUTES.toMillis(15);

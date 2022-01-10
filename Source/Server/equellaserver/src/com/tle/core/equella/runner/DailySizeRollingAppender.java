@@ -27,11 +27,12 @@ import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.log4j.FileAppender;
-import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.CountingQuietWriter;
 import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.helpers.OptionConverter;
 import org.apache.log4j.spi.LoggingEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 public class DailySizeRollingAppender extends FileAppender {
@@ -183,7 +184,7 @@ public class DailySizeRollingAppender extends FileAppender {
   }
 
   public static void main(String args[]) {
-    Logger logger = Logger.getLogger(DailySizeRollingAppender.class);
+    Logger logger = LoggerFactory.getLogger(DailySizeRollingAppender.class);
     do {
       logger.info("This is an info statement");
       logger.warn("This is a warning");
@@ -191,7 +192,7 @@ public class DailySizeRollingAppender extends FileAppender {
       try {
         throw new Exception();
       } catch (Exception ex) {
-        logger.fatal("This is fatal", ex);
+        logger.error("This is fatal", ex);
       }
     } while (true);
   }

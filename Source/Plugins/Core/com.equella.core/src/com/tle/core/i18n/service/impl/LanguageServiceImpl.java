@@ -59,9 +59,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,7 +71,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Bind(LanguageService.class)
 @Singleton
 public class LanguageServiceImpl implements LanguageService {
-  private static final Logger LOGGER = Logger.getLogger(LanguageServiceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LanguageServiceImpl.class);
 
   private static final String LOCALE_PROPERTIES_FILE = "locale.properties";
   private static final String LOCALE_RESOURCE_CENTRE = "resource-centre.xml";

@@ -67,13 +67,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 @Bind
 public class FreemarkerPortletRenderer
     extends PortletContentRenderer<FreemarkerPortletRenderer.FreemarkerPortletRendererModel> {
-  private static final Logger LOGGER = Logger.getLogger(FreemarkerPortletRenderer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(FreemarkerPortletRenderer.class);
 
   private static final JSCallable HANDLE_SUBMIT_FUNCTION =
       new ExternallyDefinedFunction(

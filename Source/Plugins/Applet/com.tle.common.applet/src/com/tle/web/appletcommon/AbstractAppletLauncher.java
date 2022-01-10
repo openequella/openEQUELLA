@@ -36,13 +36,13 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JApplet;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 public abstract class AbstractAppletLauncher extends JApplet {
@@ -54,7 +54,7 @@ public abstract class AbstractAppletLauncher extends JApplet {
   public static final String COOKIE_PARAMETER = PARAMETER_PREFIX + "COOKIE";
   public static final String RTL_PARAMETER = PARAMETER_PREFIX + "RTL";
 
-  protected final Logger logger = Logger.getLogger(getClass().getName());
+  protected final Logger logger = LoggerFactory.getLogger(getClass().getName());
 
   protected GlassProgressWorker<?> worker;
   protected boolean loaded;
@@ -188,6 +188,6 @@ public abstract class AbstractAppletLauncher extends JApplet {
   }
 
   private void logErrorStartingApplet(Throwable th) {
-    logger.log(Level.SEVERE, "Error starting applet", th);
+    logger.error("Error starting applet", th);
   }
 }

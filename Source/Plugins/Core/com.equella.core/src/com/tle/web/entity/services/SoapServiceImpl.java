@@ -97,7 +97,8 @@ import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.WebServiceContext;
 import org.apache.cxf.transport.http.AbstractHTTPDestination;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of SoapService41 + SoapService50
@@ -107,7 +108,7 @@ import org.apache.log4j.Logger;
 @Bind
 @Singleton
 public class SoapServiceImpl implements SoapService50 {
-  private static final Logger LOGGER = Logger.getLogger(SoapServiceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SoapServiceImpl.class);
 
   /**
    * Maps enums to the bitmask defined for <code>getComments</code>. Don't change the order or

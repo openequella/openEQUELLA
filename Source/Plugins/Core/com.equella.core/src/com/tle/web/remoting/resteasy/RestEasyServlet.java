@@ -79,7 +79,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
-import org.apache.log4j.Logger;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
 import org.jboss.resteasy.core.Dispatcher;
@@ -90,6 +89,8 @@ import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.GetRestful;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scala.collection.GenTraversableOnce;
 
 @Bind
@@ -98,7 +99,7 @@ import scala.collection.GenTraversableOnce;
 public class RestEasyServlet extends HttpServletDispatcher implements MapperExtension {
   private static final long serialVersionUID = 1L;
 
-  private static final Logger LOGGER = Logger.getLogger(RestEasyServlet.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RestEasyServlet.class);
 
   @Inject private UserSessionService userSessionService;
   @Inject private PluginTracker<Object> tracker;

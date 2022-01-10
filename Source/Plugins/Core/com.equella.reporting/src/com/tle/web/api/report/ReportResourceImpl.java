@@ -39,7 +39,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 @Bind(ReportResource.class)
@@ -48,7 +49,7 @@ public class ReportResourceImpl
     extends AbstractBaseEntityResource<Report, BaseEntitySecurityBean, ReportBean>
     implements ReportResource {
 
-  private static final Logger LOGGER = Logger.getLogger(ReportResourceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ReportResourceImpl.class);
 
   @Inject private ReportingService reportingService;
 

@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 
 /**
  * With the addition of the SHEX and MEX harvesters which differ from the LORAX harvester only in

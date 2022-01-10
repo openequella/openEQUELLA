@@ -43,17 +43,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
-import org.apache.log4j.Logger;
 import org.java.plugin.PluginManager.PluginLocation;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.ManifestInfo;
 import org.java.plugin.registry.PluginDescriptor;
 import org.java.plugin.registry.PluginRegistry;
 import org.java.plugin.util.IoUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 public class PluginServiceImpl extends AbstractPluginService implements PrivatePluginService {
-  private static final Logger LOGGER = Logger.getLogger(PluginServiceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(PluginServiceImpl.class);
   private static final String PLUGIN_JPF_XML = "plugin-jpf.xml";
 
   private static final Pattern JAR_PATTERN = Pattern.compile("(.*)-\\d+\\.\\d+\\.(\\d+).jar");

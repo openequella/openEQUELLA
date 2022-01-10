@@ -31,12 +31,13 @@ import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 public class LinuxOpener extends AbstractListDialogOpener {
-  private static final Logger LOGGER = Logger.getLogger(LinuxOpener.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(LinuxOpener.class.getName());
   private static String XDG_DATA_DIR = "XDG_DATA_DIRS";
 
   @Override
@@ -218,7 +219,7 @@ public class LinuxOpener extends AbstractListDialogOpener {
     public Object run() {
       try {
         if (!fileToRead.exists() || !fileToRead.canRead()) {
-          LOGGER.warning(fileToRead.toString() + " does not exist or cannot be read");
+          LOGGER.warn(fileToRead.toString() + " does not exist or cannot be read");
           return null;
         } else if (haveTriedAndWarnedInOtherDir) {
           LOGGER.info(fileToRead.toString() + " found, reading ...");

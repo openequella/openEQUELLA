@@ -82,14 +82,15 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind
 @Singleton
 public class CanvasConnectorService extends AbstractIntegrationConnectorRespository {
-  private static final Logger LOGGER = Logger.getLogger(CanvasConnectorService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CanvasConnectorService.class);
 
   private static String KEY_PFX =
       AbstractPluginService.getMyPluginId(CanvasConnectorService.class) + ".";
@@ -798,7 +799,7 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
             // Invalidating cookie cache, as this is a known source of these errors
             httpService.clearCookieCache();
             LOGGER.debug("Error response from Canvas's Apache");
-            LOGGER.debug(response.getCode());
+            LOGGER.debug(Integer.toString(response.getCode()));
             LOGGER.debug(response.getMessage());
             LOGGER.debug(response.getBody());
             throw new CanvasApacheException(

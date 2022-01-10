@@ -46,7 +46,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Served up at /blackboardrestauth */
 @SuppressWarnings("nls")
@@ -56,7 +57,8 @@ import org.apache.log4j.Logger;
 public class BlackboardRestOauthSignonServlet extends HttpServlet {
   private static final String STATE_CALLBACK_PARAMETER = "state";
 
-  private static final Logger LOGGER = Logger.getLogger(BlackboardRestOauthSignonServlet.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(BlackboardRestOauthSignonServlet.class);
   @Inject private HttpService httpService;
   @Inject private ConnectorService connectorService;
   @Inject private EncryptionService encryptionService;

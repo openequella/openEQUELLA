@@ -31,10 +31,11 @@ import com.tle.common.workflow.node.WorkflowNode;
 import com.tle.core.item.standard.operations.workflow.TaskOperation;
 import com.tle.core.notification.beans.Notification;
 import java.util.Set;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ScriptStatus extends AbstractNodeStatus {
-  private static final Logger LOGGER = Logger.getLogger(ScriptStatus.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ScriptStatus.class);
 
   private final ScriptEvaluator scriptEvaluator;
   private ScriptNode scriptNode;

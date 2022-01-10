@@ -87,7 +87,8 @@ import com.tle.web.sections.standard.model.Option;
 import java.util.Collection;
 import java.util.List;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 @SuppressWarnings("nls")
@@ -95,7 +96,7 @@ import org.apache.log4j.Logger;
 public class BulkMoveContentOperation
     extends AbstractPrototypeSection<BulkMoveContentOperation.BulkMoveContentOperationModel>
     implements BulkOperationExtension {
-  private static final Logger LOGGER = Logger.getLogger(BulkMoveContentOperation.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(BulkMoveContentOperation.class);
 
   private static final PluginResourceHelper resources =
       ResourcesService.getResourceHelper(BulkMoveContentOperation.class);

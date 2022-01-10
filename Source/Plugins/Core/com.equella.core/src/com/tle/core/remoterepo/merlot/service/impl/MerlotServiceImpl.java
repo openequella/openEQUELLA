@@ -56,7 +56,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author agibb
@@ -89,7 +90,7 @@ public class MerlotServiceImpl implements MerlotService {
   private static final String MERLOT_MATERIALAUDIENCES_URL =
       MERLOT_BASE_URL + "materialAudiences.rest";
 
-  private static final Logger LOGGER = Logger.getLogger(MerlotService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MerlotService.class);
 
   @Inject private HttpService httpService;
   @Inject private ConfigurationService configService;

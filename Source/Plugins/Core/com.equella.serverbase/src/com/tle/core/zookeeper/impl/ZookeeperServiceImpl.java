@@ -46,13 +46,14 @@ import org.apache.curator.framework.recipes.nodes.PersistentEphemeralNode.Mode;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.EnsurePath;
 import org.apache.curator.utils.ZKPaths;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind(ZookeeperService.class)
 @Singleton
 @SuppressWarnings("nls")
 public class ZookeeperServiceImpl implements ZookeeperService, StartupBean {
-  private static final Logger LOGGER = Logger.getLogger(ZookeeperServiceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ZookeeperServiceImpl.class);
 
   private static final String BASE_FULLPATH = "equella";
   private static final String SERVER_REL_PATH = "server";

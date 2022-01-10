@@ -58,8 +58,9 @@ import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 /** @author Nicholas Read */
@@ -68,7 +69,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Bind(TLEUserService.class)
 public class TLEUserServiceImpl
     implements TLEUserService, UserChangeListener, GroupChangedListener {
-  private static final Logger LOGGER = Logger.getLogger(TLEUserServiceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TLEUserServiceImpl.class);
   private static final String[] BLANKS = {
     "username", "lastName", "firstName",
   };

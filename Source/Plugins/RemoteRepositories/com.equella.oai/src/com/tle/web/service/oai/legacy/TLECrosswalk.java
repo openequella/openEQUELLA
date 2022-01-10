@@ -38,13 +38,14 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Deprecated
 @Bind
 @Singleton
 public class TLECrosswalk extends Crosswalks {
-  private static final Logger LOGGER = Logger.getLogger(TLECrosswalk.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TLECrosswalk.class);
 
   public static final String DC_FORMAT = "oai_dc"; // $NON-NLS-1$
 

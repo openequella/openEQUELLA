@@ -41,13 +41,14 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
 public class ScormResultsExtension implements IntegrationSessionExtension {
-  private static final Logger LOGGER = Logger.getLogger(ScormResultsExtension.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ScormResultsExtension.class);
 
   @Inject private ItemResolver itemResolver;
   @Inject private ItemFileService itemFileService;

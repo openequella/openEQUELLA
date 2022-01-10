@@ -51,15 +51,16 @@ import javax.inject.Singleton;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import org.apache.log4j.Logger;
 import org.hibernate.annotations.AccessType;
 import org.hibernate.proxy.HibernateProxy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 
 @Bind(InitialiserService.class)
 @Singleton
 public class InitialiserServiceImpl extends AbstractHibernateDao implements InitialiserService {
-  private static final Logger LOGGER = Logger.getLogger(InitialiserServiceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(InitialiserServiceImpl.class);
 
   private final Map<Class<?>, CacheObject> cache = new HashMap<Class<?>, CacheObject>();
 

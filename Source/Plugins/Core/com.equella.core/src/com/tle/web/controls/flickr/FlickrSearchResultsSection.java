@@ -64,9 +64,10 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author larry */
 @SuppressWarnings("nls")
@@ -76,7 +77,7 @@ public class FlickrSearchResultsSection
         FlickrSearchEvent,
         FlickrSearchResultsEvent,
         AbstractSearchResultsSection.SearchResultsModel> {
-  private static final Logger LOGGER = Logger.getLogger(FlickrSearchResultsSection.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(FlickrSearchResultsSection.class);
 
   private static final String FLICKR_HOME = "www.flickr.com";
 

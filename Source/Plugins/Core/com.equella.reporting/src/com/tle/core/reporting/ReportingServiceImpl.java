@@ -67,7 +67,6 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
 import org.eclipse.birt.core.exception.BirtException;
 import org.eclipse.birt.core.framework.Platform;
 import org.eclipse.birt.report.engine.api.EXCELRenderOption;
@@ -94,6 +93,8 @@ import org.eclipse.birt.report.model.api.elements.DesignChoiceConstants;
 import org.eclipse.birt.report.model.api.util.ParameterValidationUtil;
 import org.java.plugin.util.IoUtil;
 import org.mozilla.javascript.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 @SecureEntity(RemoteReportingService.ENTITY_TYPE)
@@ -102,7 +103,7 @@ import org.mozilla.javascript.Context;
 public class ReportingServiceImpl
     extends AbstractEntityServiceImpl<EntityEditingBean, Report, ReportingService>
     implements ReportingService {
-  private static final Logger LOGGER = Logger.getLogger(ReportingService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ReportingService.class);
 
   private static final String[] BLANKS = {"name"};
 
@@ -196,7 +197,7 @@ public class ReportingServiceImpl
 
     @Override
     public void publish(LogRecord record) {
-      Logger logger = Logger.getLogger(record.getLoggerName());
+      Logger logger = LoggerFactory.getLogger(record.getLoggerName());
       Level level = record.getLevel();
       String message = record.getMessage();
       try {
@@ -212,7 +213,7 @@ public class ReportingServiceImpl
       }
 
       if (Level.SEVERE.equals(level)) {
-        logger.fatal(message);
+        logger.error(message);
       } else if (Level.INFO.equals(level)) {
         logger.info(message);
       } else if (Level.WARNING.equals(level)) {
@@ -220,7 +221,7 @@ public class ReportingServiceImpl
       } else if (Level.FINE.equals(level)
           || Level.FINER.equals(level)
           || Level.FINEST.equals(level)) {
-        logger.trace(record);
+        logger.trace(record.getMessage());
       }
     }
   }

@@ -21,12 +21,13 @@ package com.tle.hibernate.dialect;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.log4j.Logger;
 import org.hibernate.boot.model.naming.Identifier;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 import org.hibernate.cfg.ImprovedNamingStrategy;
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 import org.hibernate.internal.util.StringHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // TECH_DEBT - StringHelper is now internal - https://github.com/openequella/openEQUELLA/issues/2507
 
@@ -37,7 +38,7 @@ import org.hibernate.internal.util.StringHelper;
 @SuppressWarnings("nls")
 public class OeqPhysicalNamingStrategy extends ImprovedNamingStrategy
     implements PhysicalNamingStrategy, Serializable {
-  private static final Logger LOGGER = Logger.getLogger(OeqPhysicalNamingStrategy.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(OeqPhysicalNamingStrategy.class);
 
   private static final long serialVersionUID = 1L;
 

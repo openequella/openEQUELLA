@@ -47,7 +47,8 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 @Bind
@@ -56,7 +57,7 @@ public class OAIProtocol extends AbstractHarvesterProtocol {
       new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"); // $NON-NLS-1$
   private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd"); // $NON-NLS-1$
   private static final String FULL_GRANULARITY = "YYYY-MM-DDThh:mm:ssZ"; // $NON-NLS-1$
-  private static final Logger LOGGER = Logger.getLogger(OAIProtocol.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(OAIProtocol.class);
 
   private OAIClient client;
   private String format;

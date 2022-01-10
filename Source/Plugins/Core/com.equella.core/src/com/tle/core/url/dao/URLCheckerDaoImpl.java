@@ -38,12 +38,13 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Singleton;
 import javax.validation.ConstraintViolationException;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,7 +53,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Bind(URLCheckerDao.class)
 public class URLCheckerDaoImpl extends GenericDaoImpl<ReferencedURL, Long>
     implements URLCheckerDao {
-  private static final Logger LOGGER = Logger.getLogger(URLCheckerDao.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(URLCheckerDao.class);
   private static final long MSGTIMEOUT = TimeUnit.SECONDS.toMillis(30);
 
   @Inject private InstitutionService institutionService;

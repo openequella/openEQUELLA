@@ -64,7 +64,8 @@ import org.apache.cxf.service.model.OperationInfo;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.apache.cxf.wsdl.service.factory.AbstractServiceConfiguration;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 
 /** @author aholland */
@@ -72,7 +73,7 @@ import org.w3c.dom.Node;
 @Bind(EquellaRepoService.class)
 @Singleton
 public class EquellaRepoServiceImpl implements EquellaRepoService {
-  private static final Logger LOGGER = Logger.getLogger(EquellaRepoService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(EquellaRepoService.class);
 
   private static final String HARVESTER_ENDPOINT = "services/SoapHarvesterService";
   // This is not ideal...

@@ -55,7 +55,8 @@ import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import javax.naming.ldap.LdapName;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class which authenticates a user from their LDAP account.
@@ -71,7 +72,7 @@ public class LDAP {
   public static final String OBJECTCLASS = "objectclass";
   public static final String[] ATTRIBUTES_NONE = {};
 
-  private static final Logger LOGGER = Logger.getLogger(LDAP.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LDAP.class);
 
   protected final LDAPSettings config;
 
@@ -221,12 +222,10 @@ public class LDAP {
       if (ne.hasMore()) {
         return ne;
       }
-    } catch (PartialResultException pre) {
-      LOGGER.info(pre);
-    } catch (SizeLimitExceededException slee) {
-      LOGGER.info(slee);
+    } catch (PartialResultException | SizeLimitExceededException e) {
+      LOGGER.info(e.getMessage());
     } catch (Exception e) {
-      LOGGER.warn(e);
+      LOGGER.warn(e.getMessage(), e);
     }
 
     return null;
@@ -280,10 +279,8 @@ public class LDAP {
         SearchResult sr = ne.next();
         collector.addResult(sr, base);
       }
-    } catch (PartialResultException pre) {
-      LOGGER.info(pre);
-    } catch (SizeLimitExceededException slee) {
-      LOGGER.info(slee);
+    } catch (PartialResultException | SizeLimitExceededException e) {
+      LOGGER.info(e.getMessage());
     } catch (Exception e) {
       LOGGER.error("Error searching", e);
     }
@@ -799,7 +796,7 @@ public class LDAP {
       Name name = LDAP.parse(groupID);
       return new LDAPResult(name, getAttributes(ctx, name, attrs));
     } catch (InvalidNameException e) {
-      LOGGER.debug(e, e);
+      LOGGER.debug(e.getMessage());
       return null;
     }
   }

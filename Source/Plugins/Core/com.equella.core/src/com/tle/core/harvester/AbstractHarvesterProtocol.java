@@ -35,11 +35,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 public abstract class AbstractHarvesterProtocol implements ContentRepository {
-  private static final Logger LOGGER = Logger.getLogger(AbstractHarvesterProtocol.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractHarvesterProtocol.class);
   protected static final String KEY_PFX =
       AbstractPluginService.getMyPluginId(AbstractHarvesterProtocol.class) + ".";
 

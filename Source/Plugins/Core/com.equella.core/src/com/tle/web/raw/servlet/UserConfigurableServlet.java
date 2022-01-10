@@ -38,7 +38,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Mostly for OER who need to be able to edit a file (configurable.txt) and have it served up by
@@ -51,7 +52,7 @@ import org.apache.log4j.Logger;
 @Bind
 @Singleton
 public class UserConfigurableServlet extends HttpServlet {
-  private static final Logger LOGGER = Logger.getLogger(UserConfigurableServlet.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(UserConfigurableServlet.class);
 
   private static final String NO_CONTENT = "\0";
 

@@ -42,8 +42,9 @@ import com.tle.core.workflow.thumbnail.service.ThumbnailRequestService;
 import com.tle.core.workflow.thumbnail.service.ThumbnailService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
 import org.java.plugin.registry.Extension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,7 +53,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Bind(ThumbnailService.class)
 @Singleton
 public class ThumbnailServiceImpl implements ThumbnailService, ItemDeletedListener {
-  private static final Logger LOGGER = Logger.getLogger(ThumbnailServiceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ThumbnailServiceImpl.class);
 
   @Inject private FileSystemService fileSystemService;
   @Inject private MimeTypeService mimeTypeService;
