@@ -18,6 +18,7 @@
 import { CircularProgress, Grid } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 import Axios from "axios";
+import { isEqual } from "lodash";
 import * as React from "react";
 import { v4 } from "uuid";
 import {
@@ -123,6 +124,21 @@ export interface LegacyContentProps extends BaseOEQRouteComponentProps {
   children?: never;
 }
 
+interface LegacyContentSubmission {
+  /**
+   * Indicate whether there is a request submitted to `LegacyContentApi` already but not completed yet.
+   */
+  submitting: boolean;
+  /**
+   * Where to send the form data.
+   */
+  action?: string;
+  /**
+   * Payload of the submission.
+   */
+  payload?: StateData;
+}
+
 export type SubmitResponse =
   | ExternalRedirect
   | LegacyContentResponse
@@ -165,6 +181,9 @@ export const LegacyContent = React.memo(function LegacyContent({
 }: LegacyContentProps) {
   const [content, setContent] = React.useState<PageContent>();
   const [updatingContent, setUpdatingContent] = React.useState<boolean>(true);
+  const submittingForm = React.useRef<LegacyContentSubmission>({
+    submitting: false,
+  });
 
   const baseUrl = document.getElementsByTagName("base")[0].href;
 
@@ -242,6 +261,24 @@ export const LegacyContent = React.memo(function LegacyContent({
     submitValues: StateData,
     callback?: (response: SubmitResponse) => void
   ) {
+    if (formAction) {
+      const { submitting, action, payload } = submittingForm.current;
+      if (
+        submitting &&
+        formAction === action &&
+        isEqual(submitValues, payload)
+      ) {
+        console.error(`ignore redundant submission to ${formAction}`);
+        return;
+      }
+
+      submittingForm.current = {
+        submitting: true,
+        action: formAction,
+        payload: submitValues,
+      };
+    }
+
     submitRequest(toRelativeUrl(formAction || pathname), submitValues)
       .then((content) => {
         if (callback) {
@@ -263,6 +300,11 @@ export const LegacyContent = React.memo(function LegacyContent({
             ? fromAxiosResponse(error.response)
             : generateFromError(error);
         handleError(fullScreen, errorResponse);
+      })
+      .finally(() => {
+        if (formAction) {
+          submittingForm.current = { submitting: false };
+        }
       });
   }
 
