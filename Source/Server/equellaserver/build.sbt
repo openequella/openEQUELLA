@@ -175,14 +175,8 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces")
   ),
-  "org.apache.struts" % "struts-core" % "1.3.10" excludeAll (
-    ExclusionRule(organization = "antlr",
-                  name = "antlr")
-  ),
-  "org.apache.struts" % "struts-extras"                 % "1.3.10",
-  "org.apache.struts" % "struts-taglib"                 % "1.3.10",
-  "org.apache.tika"   % "tika-core"                     % tikaVersion,
-  "org.apache.tika"   % "tika-parsers-standard-package" % tikaVersion excludeAll ExclusionRule(
+  "org.apache.tika" % "tika-core"                     % tikaVersion,
+  "org.apache.tika" % "tika-parsers-standard-package" % tikaVersion excludeAll ExclusionRule(
     organization = "org.apache.logging.log4j"),
   "org.apache.tomcat"           % "tomcat-annotations-api" % TomcatVersion,
   "org.apache.tomcat"           % "tomcat-api"             % TomcatVersion,

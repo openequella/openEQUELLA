@@ -1,7 +1,5 @@
-import sbt.IO
 import Path.rebase
-
-import scala.sys.process.Process
+import sbt.IO
 
 name := "IntegTester"
 
@@ -31,6 +29,13 @@ libraryDependencies ++= Seq(
   "org.slf4j"     % "slf4j-simple"         % "1.7.32",
   "org.jsoup"     % "jsoup"                % jsoupVersion,
   "com.nulab-inc" %% "scala-oauth2-core"   % "1.5.0"
+)
+
+val strutsVersion = "1.3.10"
+libraryDependencies ++= Seq(
+  "org.apache.struts" % "struts-core"   % strutsVersion,
+  "org.apache.struts" % "struts-extras" % strutsVersion,
+  "org.apache.struts" % "struts-taglib" % strutsVersion
 )
 
 (Compile / resourceGenerators) += Def.task {
