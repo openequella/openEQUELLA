@@ -31,13 +31,6 @@ libraryDependencies ++= Seq(
   "com.nulab-inc" %% "scala-oauth2-core"   % "1.5.0"
 )
 
-val strutsVersion = "1.3.10"
-libraryDependencies ++= Seq(
-  "org.apache.struts" % "struts-core"   % strutsVersion,
-  "org.apache.struts" % "struts-extras" % strutsVersion,
-  "org.apache.struts" % "struts-taglib" % strutsVersion
-)
-
 (Compile / resourceGenerators) += Def.task {
   val baseJs = baseDirectory.value / "ps"
   val cached = FileFunction.cached(target.value / "pscache") { files =>
