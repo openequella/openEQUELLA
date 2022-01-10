@@ -3,6 +3,7 @@ import { ErrorResponse, fromAxiosResponse } from "../api/errors";
 import Axios from "axios";
 import { v4 } from "uuid";
 import { Config } from "../config";
+import { isEqual } from "lodash";
 
 declare global {
   interface Window {
@@ -75,6 +76,21 @@ export interface LegacyContentProps {
 
 type SubmitResponse = ExternalRedirect | LegacyContent | ChangeRoute;
 
+interface LegacyContentSubmission {
+  /**
+   * Indicate whether there is a request submitted to `LegacyContentApi` already but not completed yet.
+   */
+  submitting: boolean;
+  /**
+   * Where to send the form data.
+   */
+  action?: string;
+  /**
+   * Payload of the submission.
+   */
+  payload?: StateData;
+}
+
 function isPageContent(response: SubmitResponse): response is LegacyContent {
   return (response as LegacyContent).html !== undefined;
 }
@@ -100,6 +116,9 @@ export const LegacyContent = React.memo(function LegacyContent(
   const { enabled } = props;
   const baseUrl = (document.getElementsByTagName("base")[0] as HTMLBaseElement)
     .href;
+  const submittingForm = React.useRef<LegacyContentSubmission>({
+    submitting: false
+  });
 
   function toRelativeUrl(url: string) {
     let relUrl =
@@ -133,6 +152,24 @@ export const LegacyContent = React.memo(function LegacyContent(
     submitValues: StateData,
     callback?: (response: SubmitResponse) => void
   ) {
+    if (formAction) {
+      const { submitting, action, payload } = submittingForm.current;
+      if (
+        submitting &&
+        formAction === action &&
+        isEqual(submitValues, payload)
+      ) {
+        console.error(`ignore redundant submission to ${formAction}`);
+        return;
+      }
+
+      submittingForm.current = {
+        submitting: true,
+        action: formAction,
+        payload: submitValues
+      };
+    }
+
     submitRequest(toRelativeUrl(formAction || props.pathname), submitValues)
       .then(content => {
         if (callback) {
@@ -150,6 +187,11 @@ export const LegacyContent = React.memo(function LegacyContent(
       })
       .catch(error => {
         props.onError({ error: fromAxiosResponse(error.response), fullScreen });
+      })
+      .finally(() => {
+        if (formAction) {
+          submittingForm.current = { submitting: false };
+        }
       });
   }
 
