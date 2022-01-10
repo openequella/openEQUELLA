@@ -4,7 +4,7 @@
 		<name>openEQUELLA</name>
 		<company>Apereo</company>
 	</product>
-	<image uri="/images/equella.jpg"/>
+	<image uri="/images/vertical-banner.png"/>
 	<pages>
 		<page>
 			<controls>
@@ -13,8 +13,12 @@
 				</control>
 				<control class="paragraph">
 					<title>What is openEQUELLA?</title>
-					<description>openEQUELLA is an award–winning Digital Repository that incorporates Learning Objects, Learning Content Management and integrated content authoring. openEQUELLA is revolutionising the way institutions search, manage and create content online.</description>
+					<description>Designed specifically to fit snugly in the education ecosystem, openEQUELLA sits in the centre of your edTech stack and acts as a ‘single source of truth’ to house your teaching and learning, research, media and library content.</description>
 				</control>
+        <control class="paragraph">
+          <title></title>
+          <description>openEQUELLA has been deployed for copyright resource collections, research materials, managing and exposing materials through websites and portals, content authoring, workflow, institutional policy and organisational resources.</description>
+        </control>
 				<control class="paragraph">
 					<title></title>
 					<description>Please ensure you have reviewed the openEQUELLA Installation and Administration Guide available from</description>
@@ -79,9 +83,9 @@
 					<description>Select the database type from the list of currently supported databases.</description>
 					<target>datasource/dbtype</target>
 					<items>
-						<item name="SQL Server" value="sqlserver" default="true"/>
-						<item name="Oracle Server 9i or greater" value="oracle"/>
-						<item name="PostgreSQL 8 or greater" value="postgresql"/>
+						<item name="MS SQL Server - 2019+" value="sqlserver" default="true"/>
+						<item name="Oracle - 12c+" value="oracle"/>
+						<item name="PostgreSQL - 9.6+" value="postgresql"/>
 					</items>
 				</control>
 				<control class="hosteditor">
