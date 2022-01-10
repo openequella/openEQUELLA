@@ -30,7 +30,7 @@ val jsoupVersion     = "1.14.3"
 val simpledbaVersion = "0.1.9"
 val springVersion    = "5.3.14"
 val sttpVersion      = "1.7.2"
-val tikaVersion      = "2.0.0"
+val tikaVersion      = "2.2.1"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
