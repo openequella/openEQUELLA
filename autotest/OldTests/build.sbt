@@ -3,9 +3,9 @@ import scala.collection.JavaConverters._
 
 libraryDependencies += "com.opencsv" % "opencsv" % "5.5.2"
 libraryDependencies ++= Seq(
-  "org.testng"         % "testng"             % "6.14.3" % Test,
-  "log4j"              % "log4j"              % "1.2.17" % Test,
-  "commons-httpclient" % "commons-httpclient" % "3.1"    % Test
+  "org.testng"               % "testng"             % "6.14.3" % Test,
+  "org.apache.logging.log4j" % "log4j"              % "2.17.1" % Test,
+  "commons-httpclient"       % "commons-httpclient" % "3.1"    % Test
 )
 
 enablePlugins(TestNGPlugin)

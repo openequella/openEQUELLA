@@ -116,7 +116,8 @@ libraryDependencies ++= Seq(
   "javax.xml"                 % "jaxrpc"                   % "1.1",
   "jdom"                      % "jdom"                     % "1.1",
   "com.github.equella.jpf"    % "jpf"                      % "1.0.7",
-  "log4j"                     % "log4j"                    % "1.2.17",
+  "org.apache.logging.log4j"  % "log4j"                    % "2.17.1",
+  "org.apache.logging.log4j"  % "log4j-slf4j-impl"         % "2.17.1",
   "net.oauth.core"            % "oauth"                    % "20100527",
   "net.oauth.core"            % "oauth-provider"           % "20100527",
   "net.sf.ezmorph"            % "ezmorph"                  % "1.0.6",
@@ -225,7 +226,6 @@ libraryDependencies ++= Seq(
   "org.scannotation"    % "scannotation"           % "1.0.3",
   "org.slf4j"           % "jcl-over-slf4j"         % "1.7.33",
   "org.slf4j"           % "slf4j-api"              % "1.7.33",
-  "org.slf4j"           % "slf4j-log4j12"          % "1.7.33",
   "org.springframework" % "spring-aop"             % springVersion,
   "org.springframework" % "spring-context"         % springVersion,
   "org.springframework" % "spring-context-support" % springVersion excludeAll (
