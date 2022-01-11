@@ -1,7 +1,5 @@
-import sbt.IO
 import Path.rebase
-
-import scala.sys.process.Process
+import sbt.IO
 
 name := "IntegTester"
 

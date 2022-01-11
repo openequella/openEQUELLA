@@ -1,6 +1,8 @@
 import Path.{flat, rebase}
 import _root_.io.circe.parser._
 
+libraryDependencies += "org.mockito" % "mockito-core" % "4.2.0" % Test
+
 langStrings := {
   val langDir = (Compile / resourceDirectory).value / "com/tle/core/i18n/service/impl"
   val bundle =
