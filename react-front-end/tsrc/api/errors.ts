@@ -24,6 +24,7 @@ export interface ErrorResponse {
   error: string;
   error_description?: string;
   code?: number;
+  hideNav?: boolean;
 }
 
 export const generateNewErrorID = (
@@ -85,16 +86,18 @@ export function fromAxiosResponse(
     const [error, error_description] = (function () {
       switch (response.status) {
         case 404:
-          return ["Not Found", ""];
+          return ["Not Found", response.request.responseURL];
         default:
           return [response.statusText, ""];
       }
     })();
+    const data = JSON.parse(response.config.data);
     return {
       id: v4(),
       error,
       error_description,
       code: response.status,
+      hideNav: data["temp.hn"] ? data["temp.hn"][0] === "true" : undefined,
     };
   }
 }
