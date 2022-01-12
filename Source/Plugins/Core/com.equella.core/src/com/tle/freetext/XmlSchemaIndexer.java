@@ -81,7 +81,7 @@ public class XmlSchemaIndexer {
               new ByteArrayInputStream(value.getBytes("UTF-8")); // $NON-NLS-1$
           value = new HTMLFilter(bais).getSummary(16384);
         } catch (Exception e) {
-          LOGGER.warn(e.getMessage());
+          LOGGER.warn(e.getMessage(), e);
           value = ""; // $NON-NLS-1$
         }
       } else if (!type.equals("text")) // $NON-NLS-1$

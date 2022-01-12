@@ -221,7 +221,7 @@ public class ReportingServiceImpl
       } else if (Level.FINE.equals(level)
           || Level.FINER.equals(level)
           || Level.FINEST.equals(level)) {
-        logger.trace(record.getMessage());
+        logger.trace(message);
       }
     }
   }
