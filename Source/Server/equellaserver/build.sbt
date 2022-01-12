@@ -118,6 +118,7 @@ libraryDependencies ++= Seq(
   "com.github.equella.jpf"    % "jpf"                      % "1.0.7",
   "org.apache.logging.log4j"  % "log4j"                    % "2.17.1",
   "org.apache.logging.log4j"  % "log4j-slf4j-impl"         % "2.17.1",
+  "org.apache.logging.log4j"  % "log4j-1.2-api"            % "2.17.1",
   "net.oauth.core"            % "oauth"                    % "20100527",
   "net.oauth.core"            % "oauth-provider"           % "20100527",
   "net.sf.ezmorph"            % "ezmorph"                  % "1.0.6",
@@ -324,7 +325,9 @@ excludeDependencies ++= Seq(
   // [error] deduplicate: different file contents found in the following:
   // [error] com.sun.activation/jakarta.activation/jars/jakarta.activation-1.2.1.jar:com/sun/activation/viewers/TextViewer.class
   // [error] com.sun.activation/javax.activation/jars/javax.activation-1.2.0.jar:com/sun/activation/viewers/TextViewer.class
-  "com.sun.activation" % "javax.activation"
+  "com.sun.activation" % "javax.activation",
+  // Older log4j can be a transitive dep so exclude it
+  "log4j" % "log4j"
 )
 
 run := {

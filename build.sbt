@@ -42,13 +42,12 @@ lazy val UpgradeInstallation = (project in file("Source/Tools/UpgradeInstallatio
   .settings(legacyPaths)
   .dependsOn(
     platformCommon,
-    platformEquella,
-    log4jCustom
+    platformEquella
   )
 
 lazy val UpgradeManager = (project in file("Source/Tools/UpgradeManager"))
   .settings(legacyPaths)
-  .dependsOn(platformCommon, platformEquella, log4jCustom)
+  .dependsOn(platformCommon, platformEquella)
 
 lazy val Installer = (project in file("Installer"))
   .settings(legacyPaths)

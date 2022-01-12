@@ -31,7 +31,7 @@ import org.apache.log4j.NDC;
 public abstract class AuthenticatedThread extends Thread {
   private UserState callingThreadsAuthentication;
   private Institution callingThreadsInstitution;
-  private Stack<?> loggingContext;
+  private Stack<String> loggingContext;
 
   public AuthenticatedThread() {
     super();
