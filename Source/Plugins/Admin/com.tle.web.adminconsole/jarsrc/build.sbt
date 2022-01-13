@@ -3,8 +3,8 @@ val springVersion = "5.3.14"
 libraryDependencies ++= Seq(
   "com.github.equella.jpf" % "jpf"             % "1.0.7",
   "com.google.guava"       % "guava"           % "31.0.1-jre",
-  "org.slf4j"              % "jcl-over-slf4j"  % "1.7.32",
-  "org.slf4j"              % "slf4j-simple"    % "1.7.32",
+  "org.slf4j"              % "jcl-over-slf4j"  % "1.7.33",
+  "org.slf4j"              % "slf4j-simple"    % "1.7.33",
   "org.springframework"    % "spring-web"      % springVersion,
   "org.springframework"    % "spring-aop"      % springVersion,
   "org.springframework"    % "spring-context"  % springVersion,
