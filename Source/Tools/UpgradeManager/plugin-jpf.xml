@@ -1,7 +1,6 @@
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin version="1" id="TLE Upgrade Manager">
 	<requires>
-		<import plugin-id="com.tle.log4j" />
 		<import plugin-id="com.tle.platform.common" />
 		<import plugin-id="com.tle.platform.equella" />
 		<import plugin-id="commons-fileupload:commons-fileupload" />
