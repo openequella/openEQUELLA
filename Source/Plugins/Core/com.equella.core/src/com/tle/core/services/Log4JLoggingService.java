@@ -60,7 +60,7 @@ public class Log4JLoggingService implements LoggingService {
     if (logger == null) {
       logger =
           new Log4JLoggingService.Log4JLogger(
-              org.apache.log4j.Logger.getLogger(clazz), this, DebugSettings.isDebuggingMode());
+              org.slf4j.LoggerFactory.getLogger(clazz), this, DebugSettings.isDebuggingMode());
       LOGGERS.put(clazz, logger);
     }
     return logger;
@@ -137,12 +137,11 @@ public class Log4JLoggingService implements LoggingService {
   }
 
   public static class Log4JLogger implements Logger {
-    private final org.apache.log4j.Logger l;
+    private final org.slf4j.Logger l;
     private final Log4JLoggingService service;
     private final boolean enforcedDebug;
 
-    public Log4JLogger(
-        org.apache.log4j.Logger l, Log4JLoggingService service, boolean enforcedDebug) {
+    public Log4JLogger(org.slf4j.Logger l, Log4JLoggingService service, boolean enforcedDebug) {
       this.l = l;
       this.service = service;
       this.enforcedDebug = enforcedDebug;
