@@ -148,8 +148,8 @@
 		<destination uri="${install.path}/learningedge-config/mandatory-config.properties"/>
 	</command>
 	<command class="resolver">
-		<source uri="${installer/local}/learningedge-config/learningedge-log4j.properties"/>
-		<destination uri="${install.path}/learningedge-config/learningedge-log4j.properties"/>
+		<source uri="${installer/local}/learningedge-config/learningedge-log4j.yaml"/>
+		<destination uri="${install.path}/learningedge-config/learningedge-log4j.yaml"/>
 	</command>
 	<command class="resolver">
 		<source uri="${installer/local}/learningedge-config/optional-config.properties"/>
