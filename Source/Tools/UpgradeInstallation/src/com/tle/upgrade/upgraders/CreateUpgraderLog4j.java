@@ -36,9 +36,9 @@ public class CreateUpgraderLog4j extends AbstractUpgrader {
 
   @Override
   public void upgrade(UpgradeResult result, File tleInstallDir) throws Exception {
-    final File out = new File(tleInstallDir, "manager/upgrader-log4j.properties");
+    final File out = new File(tleInstallDir, "manager/upgrader-log4j.yaml");
     if (!out.exists()) {
-      copyResource("upgrader-log4j.properties", out);
+      copyResource("upgrader-log4j.yaml", out);
     }
   }
 }

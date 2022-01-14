@@ -118,8 +118,8 @@
 		<destination uri="${install.path}/manager/log4j.yaml"/>
 	</command>
 	<command class="copy">
-		<source uri="${installer/local}/manager/all/upgrader-log4j.properties"/>
-		<destination uri="${install.path}/manager/upgrader-log4j.properties"/>
+		<source uri="${installer/local}/manager/all/upgrader-log4j.yaml"/>
+		<destination uri="${install.path}/manager/upgrader-log4j.yaml"/>
 	</command>
 	<command class="copy">
 		<source uri="${installer/local}/manager/all/manager.jar"/>
