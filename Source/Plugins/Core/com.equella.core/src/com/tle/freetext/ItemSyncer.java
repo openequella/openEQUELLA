@@ -40,17 +40,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.NumericRangeQuery;
 import org.apache.lucene.search.TermQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ItemSyncer implements Callable<Void> {
   private static final int BATCH_INDEXSYNC = 1000;
-  private static final Logger LOGGER = Logger.getLogger(ItemSyncer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ItemSyncer.class);
 
   @Inject private ItemDao itemDao;
   @Inject private FreetextIndex freetextIndex;

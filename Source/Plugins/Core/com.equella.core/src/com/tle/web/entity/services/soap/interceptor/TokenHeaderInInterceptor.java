@@ -32,14 +32,15 @@ import org.apache.cxf.headers.Header;
 import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.phase.Phase;
 import org.apache.cxf.transport.http.AbstractHTTPDestination;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 @SuppressWarnings("nls")
 @Bind
 @Singleton
 public class TokenHeaderInInterceptor extends AbstractSoapInterceptor {
-  private static final Logger LOGGER = Logger.getLogger(TokenHeaderInInterceptor.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TokenHeaderInInterceptor.class);
 
   @Inject private UserService userService;
 

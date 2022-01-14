@@ -44,12 +44,13 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind
 @SuppressWarnings("nls")
 public class EQUELLAProtocol extends AbstractHarvesterProtocol {
-  private static final Logger LOGGR = Logger.getLogger(EQUELLAProtocol.class);
+  private static final Logger LOGGR = LoggerFactory.getLogger(EQUELLAProtocol.class);
   private static final String HARVESTER_END_POINT = "services/SoapHarvesterService";
 
   private final XStream customAttachXstream = XStreamSecurityManager.newXStream();

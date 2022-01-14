@@ -25,11 +25,12 @@ import com.tle.core.institution.RunAsInstitution;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind
 public class IndexerThread extends Thread {
-  private static final Logger LOGGER = Logger.getLogger(IndexerThread.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(IndexerThread.class);
 
   @Inject private RunAsInstitution runAs;
 

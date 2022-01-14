@@ -51,14 +51,15 @@ import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 public class WorkflowFlowchartSection extends AbstractPrototypeSection<Object>
     implements ViewItemViewer {
   private static final String IMG_FILENAME = "statusimage.png";
 
-  private static final Logger LOGGER = Logger.getLogger(WorkflowFlowchartSection.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(WorkflowFlowchartSection.class);
 
   private static final Color COMPLETE_TASKS = new Color(200, 235, 200);
   private static final Color INCOMPLETE_TASKS = new Color(255, 150, 150);
@@ -111,7 +112,7 @@ public class WorkflowFlowchartSection extends AbstractPrototypeSection<Object>
       response.setContentType("image/png");
       visualiser.writeToPng(response.getOutputStream());
     } catch (Exception ex) {
-      LOGGER.fatal("Error generating workflow status image", ex);
+      LOGGER.error("Error generating workflow status image", ex);
       throw new SectionsRuntimeException(ex);
     }
     info.setRendered();

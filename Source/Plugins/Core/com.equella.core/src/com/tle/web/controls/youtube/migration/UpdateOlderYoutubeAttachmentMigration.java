@@ -34,10 +34,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import org.apache.log4j.Logger;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Solution for Redmine #7946. Older youtube attachments record only the playUrl, and not the
@@ -64,7 +65,7 @@ import org.hibernate.annotations.AccessType;
 @Singleton
 public class UpdateOlderYoutubeAttachmentMigration extends AbstractHibernateDataMigration {
   private static final Logger LOGGER =
-      Logger.getLogger(UpdateOlderYoutubeAttachmentMigration.class);
+      LoggerFactory.getLogger(UpdateOlderYoutubeAttachmentMigration.class);
   private static final String keyPrefix =
       PluginServiceImpl.getMyPluginId(UpdateOlderYoutubeAttachmentMigration.class) + ".migration.";
 

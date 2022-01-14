@@ -65,14 +65,15 @@ import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent.Type;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.apache.curator.utils.ZKPaths;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Singleton
 @SuppressWarnings("nls")
 @Bind(ClusterMessagingService.class)
 public class ClusterMessagingServiceImpl
     implements ClusterMessagingService, StartupBean, PathChildrenCacheListener {
-  private static final Logger LOGGER = Logger.getLogger(ClusterMessagingServiceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ClusterMessagingServiceImpl.class);
   private static final String MESSAGING_ZKPATH = "messaging";
 
   @Inject(optional = true)

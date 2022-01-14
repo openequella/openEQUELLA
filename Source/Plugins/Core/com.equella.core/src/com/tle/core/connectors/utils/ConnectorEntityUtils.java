@@ -27,12 +27,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // Thread safe, and currently leveraged for the generic LTI flows
 // As/If this class becomes more widely used, the blackboard.beans.* should be generalized.
 public class ConnectorEntityUtils {
-  private static final Logger LOGGER = Logger.getLogger(ConnectorEntityUtils.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConnectorEntityUtils.class);
 
   public static Optional<ConnectorFolder> parseFolder(
       Content currentRawFolder, ConnectorCourse course, Map<String, List<Content>> folderMap) {

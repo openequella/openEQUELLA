@@ -33,14 +33,15 @@ import java.util.Enumeration;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author Nicholas Read */
 @SuppressWarnings("nls")
 @Bind(UrlService.class)
 @Singleton
 public class UrlServiceImpl implements UrlService {
-  private static final Logger LOGGER = Logger.getLogger(UrlServiceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(UrlServiceImpl.class);
 
   public static final String PREVIEW = "preview/";
   public static final String ITEMS = "items/";

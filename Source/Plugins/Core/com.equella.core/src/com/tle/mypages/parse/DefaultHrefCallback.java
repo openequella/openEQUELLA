@@ -28,12 +28,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.log4j.Logger;
 import org.ccil.cowan.tagsoup.AttributesImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 public class DefaultHrefCallback implements HrefCallback {
-  private static final Logger LOGGER = Logger.getLogger(DefaultHrefCallback.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultHrefCallback.class);
 
   protected static final List<String> PROTOCOLS =
       Arrays.asList(new String[] {"http", "https", "ftp", "file", "jar"});

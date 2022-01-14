@@ -45,15 +45,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
 import org.ccil.cowan.tagsoup.AttributesImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author aholland */
 // Sonar maintains that 'Class cannot be instantiated and does not provide any
 // static methods or fields', but methinks thats bunkum
 public class UnusedContentCleanupOperation extends AbstractWorkflowOperation // NOSONAR
 {
-  private static final Logger LOGGR = Logger.getLogger(UnusedContentCleanupOperation.class);
+  private static final Logger LOGGR = LoggerFactory.getLogger(UnusedContentCleanupOperation.class);
 
   private final Collection<String> metadataHtmls;
 

@@ -31,12 +31,13 @@ import java.util.Comparator;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind(EQUELLAHarvesterService.class)
 @Singleton
 public class EQUELLAHarvesterServiceImpl implements EQUELLAHarvesterService {
-  private static final Logger LOGGER = Logger.getLogger(EQUELLAHarvesterService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(EQUELLAHarvesterService.class);
 
   @Inject private SoapClientFactory clientFactory;
 

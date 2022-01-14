@@ -68,7 +68,8 @@ import javax.inject.Singleton;
 import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -81,7 +82,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Bind(InstitutionResource.class)
 @Singleton
 public class InstitutionResourceImpl implements InstitutionResource {
-  private static final Logger LOGGER = Logger.getLogger(InstitutionResource.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(InstitutionResource.class);
 
   @Inject private InstitutionService institutionService;
   @Inject private SystemConfigService systemConfigService;

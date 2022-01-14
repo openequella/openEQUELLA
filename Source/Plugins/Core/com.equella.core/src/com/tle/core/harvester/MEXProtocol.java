@@ -20,12 +20,13 @@ package com.tle.core.harvester;
 
 import com.tle.common.harvester.MEXHarvesterSettings;
 import com.tle.core.guice.Bind;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind
 @SuppressWarnings("nls")
 public class MEXProtocol extends AbstractTLFProtocol {
-  private static final Logger LOGGR = Logger.getLogger(MEXProtocol.class);
+  private static final Logger LOGGR = LoggerFactory.getLogger(MEXProtocol.class);
   private static final String MEX_NAMESPACE_END = "/services/lorax/2008/07";
   private static final String MEX_WEB_SERVICE = MEX_NAMESPACE_END + "/Lorax.svc";
   private static final String MEX_QUERY_SYNTAX = MEX_NAMESPACE_END + "/Definitions/QuerySyntax";

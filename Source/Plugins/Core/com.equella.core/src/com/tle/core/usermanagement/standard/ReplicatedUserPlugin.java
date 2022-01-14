@@ -48,7 +48,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
@@ -58,7 +59,7 @@ public class ReplicatedUserPlugin extends AbstractUserDirectory {
   // queries with '?' in them need to be ordinal ( ie `?4` ).  However, this class
   // does not leverage the JPA / Hibernate logic, so we can leave the `?`s as-is.
 
-  private static Logger LOGGER = Logger.getLogger(ReplicatedUserPlugin.class);
+  private static Logger LOGGER = LoggerFactory.getLogger(ReplicatedUserPlugin.class);
 
   // need to chunk the IN statement into manageable chunks (there is a 1000
   // maximum limit to the size of IN statements on Oracle)

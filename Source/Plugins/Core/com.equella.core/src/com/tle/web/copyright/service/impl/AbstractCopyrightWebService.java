@@ -40,13 +40,14 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author Aaron */
 @SuppressWarnings("nls")
 public abstract class AbstractCopyrightWebService<H extends Holding>
     implements CopyrightWebService<H> {
-  private static final Logger LOGGER = Logger.getLogger(CopyrightWebService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CopyrightWebService.class);
 
   private static final String ATTACHMENT_MAP = "COPYRIGHT_ATTACH_MAP";
   private static final String ACTIVATIONS_MAP = "COPYRIGHT_ACTIVATIONS_MAP";

@@ -18,7 +18,8 @@
 
 package com.tle.core.services.impl;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * "Always Running" tasks will never exit unless joining a cluster means there are now two of them,
@@ -26,7 +27,7 @@ import org.apache.log4j.Logger;
  */
 @SuppressWarnings("nls")
 public abstract class AlwaysRunningTask<T> extends Task {
-  private final Logger LOGGER = Logger.getLogger(getClass());
+  private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
   @Override
   public Void call() throws Exception {

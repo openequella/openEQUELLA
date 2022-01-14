@@ -42,13 +42,14 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 @Bind
 @Singleton
 public class XmlHelper {
-  private static final Logger LOGGER = Logger.getLogger(XmlHelper.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(XmlHelper.class);
   public static final String EXPORT_BUCKET_FILE_PATTERN = "*/*.xml";
 
   @Inject private FileSystemService fileSystemService;

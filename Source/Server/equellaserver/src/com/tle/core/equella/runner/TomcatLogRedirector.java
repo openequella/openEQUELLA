@@ -24,6 +24,7 @@ import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import org.apache.commons.logging.LogFactory;
+import org.slf4j.LoggerFactory;
 
 /** Writes Tomcat JDK log messages to log4j log. */
 @SuppressWarnings("nls")
@@ -61,7 +62,7 @@ public class TomcatLogRedirector {
       Throwable exception = record.getThrown();
       Level level = record.getLevel();
 
-      org.apache.log4j.Logger log4j = org.apache.log4j.Logger.getLogger("TomcatLog");
+      org.slf4j.Logger log4j = LoggerFactory.getLogger("TomcatLog");
 
       // if tomcat log is not configured
       if (log4j == null) {

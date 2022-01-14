@@ -35,14 +35,15 @@ import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
 import org.java.plugin.registry.Extension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
 public class MigrationConverter extends AbstractConverter<Object> {
-  private static final Logger LOGGER = Logger.getLogger(MigrationConverter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MigrationConverter.class);
 
   @Inject private PluginTracker<Migrator> xmlMigs;
   @Inject private PluginTracker<ItemXmlMigrator> itemXmlMigs;

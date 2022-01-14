@@ -44,14 +44,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BackgroundIndexerImpl implements BackgroundIndexer {
   private static final int BATCH_PREPARE = 10;
 
   protected static final int MAX_WAITING = 10000;
 
-  private static final Logger LOGGER = Logger.getLogger(BackgroundIndexerImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(BackgroundIndexerImpl.class);
 
   private static final int MAXTHREADS = 4;
   private static final int REAL_MAXTHREADS = MAXTHREADS * 2;

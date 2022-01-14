@@ -26,13 +26,14 @@ import com.tle.core.plugins.AbstractPluginService;
 import com.tle.core.scheduler.ScheduledTask;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
 public class RunHarvestersTask implements ScheduledTask {
-  private static final Logger LOGGER = Logger.getLogger(RunHarvestersTask.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RunHarvestersTask.class);
   protected static final String KEY_PFX =
       AbstractPluginService.getMyPluginId(RunHarvestersTask.class) + ".";
 

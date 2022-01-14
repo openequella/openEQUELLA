@@ -39,10 +39,11 @@ import net.oauth.OAuthAccessor;
 import net.oauth.OAuthConsumer;
 import net.oauth.OAuthException;
 import net.oauth.OAuthMessage;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractOAuthV1UserStateHook implements UserStateHook {
-  private static final Logger LOGGER = Logger.getLogger(AbstractOAuthV1UserStateHook.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractOAuthV1UserStateHook.class);
 
   @PlugKey("oauth.v1.error.")
   protected static String OAUTH_ERROR_PREFIX;

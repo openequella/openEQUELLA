@@ -36,7 +36,8 @@ import com.tle.core.wizard.controls.WizardPage;
 import com.tle.web.sections.result.util.KeyLabel;
 import java.text.ParseException;
 import java.util.TimeZone;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides the model for a calendar control.
@@ -47,7 +48,7 @@ import org.apache.log4j.Logger;
 @NonNullByDefault
 public class CCalendar extends EditableCtrl {
   private static final long serialVersionUID = 1L;
-  private static final Logger LOGGER = Logger.getLogger(CCalendar.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CCalendar.class);
 
   private final DateFormat format;
   private final boolean range;

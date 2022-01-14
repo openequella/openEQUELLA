@@ -27,15 +27,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.internal.util.SerializationHelper;
 import org.hibernate.type.SerializationException;
 import org.hibernate.usertype.UserType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HibernateCsvType implements UserType {
-  private static final Logger LOGGER = Logger.getLogger(HibernateCsvType.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(HibernateCsvType.class);
 
   private final int sqlType;
 

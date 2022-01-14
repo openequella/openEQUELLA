@@ -70,7 +70,8 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.core.UriInfo;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scala.collection.JavaConverters;
 
 /** @author Aaron & Dustin */
@@ -78,7 +79,7 @@ import scala.collection.JavaConverters;
 @Bind(EquellaSearchResource.class)
 @Singleton
 public class SearchResourceImpl implements EquellaSearchResource {
-  private static final Logger LOGGER = Logger.getLogger(SearchResourceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SearchResourceImpl.class);
 
   @Inject private FreeTextService freetextService;
   @Inject private ItemSerializerService itemSerializerService;

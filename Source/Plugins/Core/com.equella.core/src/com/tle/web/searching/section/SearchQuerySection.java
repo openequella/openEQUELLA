@@ -118,7 +118,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 @SuppressWarnings("nls")
@@ -133,7 +134,7 @@ public class SearchQuerySection
 
   private static final String KEY_SEARCHED = "$SEARCHED$-";
   private static final String KEY_XML = "$POWERXML$";
-  private static final Logger LOGGER = Logger.getLogger(SearchQuerySection.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SearchQuerySection.class);
 
   private static final String DIV_QUERY = "searchform";
 

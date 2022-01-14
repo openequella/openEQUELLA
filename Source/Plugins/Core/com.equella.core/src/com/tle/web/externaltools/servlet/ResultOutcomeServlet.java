@@ -43,7 +43,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // @formatter:off
 
@@ -81,7 +82,7 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("nls")
 public class ResultOutcomeServlet extends HttpServlet {
   private static final long serialVersionUID = 545872120021L;
-  private static final Logger LOGGER = Logger.getLogger(ResultOutcomeServlet.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ResultOutcomeServlet.class);
 
   @Inject private LtiService ltiService;
   @Inject private LtiConsumerService ltiConsumerService;

@@ -37,14 +37,12 @@ import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
 import java.util.Map;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
 
 @SuppressWarnings("nls")
 @Bind
 public class BlackboardRESTConnectorEditor
     extends AbstractConnectorEditorSection<
         BlackboardRESTConnectorEditor.BlackboardRESTConnectorEditorModel> {
-  private static final Logger LOGGER = Logger.getLogger(BlackboardRESTConnectorEditor.class);
 
   @Inject private EncryptionService encryptionService;
 

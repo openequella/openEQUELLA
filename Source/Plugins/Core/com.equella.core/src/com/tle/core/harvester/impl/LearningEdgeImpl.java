@@ -57,14 +57,15 @@ import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 @Bind(LearningEdge.class)
 @Singleton
 @SuppressWarnings("nls")
 public class LearningEdgeImpl implements LearningEdge {
-  private static final Logger LOGGER = Logger.getLogger(LearningEdgeImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LearningEdgeImpl.class);
   protected static final String KEY_PFX =
       AbstractPluginService.getMyPluginId(LearningEdgeImpl.class) + ".";
 

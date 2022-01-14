@@ -49,7 +49,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author Nicholas Read */
 @NonNullByDefault
@@ -58,7 +59,7 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("nls")
 public final class UserSessionServiceImpl
     implements UserSessionService, UserSessionLoginListener, UserSessionLogoutListener {
-  private static final Logger LOGGER = Logger.getLogger(UserSessionService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(UserSessionService.class);
 
   private final ThreadLocal<SessionState> sessionLocal = new ThreadLocal<SessionState>();
 

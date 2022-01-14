@@ -31,12 +31,13 @@ import java.io.Reader;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind
 @Singleton
 public class JsonHelper {
-  private static final Logger LOGGER = Logger.getLogger(JsonHelper.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(JsonHelper.class);
 
   @Inject private FileSystemService fileSystemService;
   @Inject private ObjectMapperService objectMapperService;

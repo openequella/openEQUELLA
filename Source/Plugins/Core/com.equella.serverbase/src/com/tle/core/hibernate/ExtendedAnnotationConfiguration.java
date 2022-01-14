@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
-import org.apache.log4j.Logger;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.model.relational.AuxiliaryDatabaseObject;
 import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
@@ -43,11 +42,14 @@ import org.hibernate.mapping.RootClass;
 import org.hibernate.mapping.Table;
 import org.hibernate.service.spi.SessionFactoryServiceRegistry;
 import org.hibernate.type.BasicType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ExtendedAnnotationConfiguration extends Configuration {
   private static final long serialVersionUID = 1L;
 
-  private static final Logger LOGGER = Logger.getLogger(ExtendedAnnotationConfiguration.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(ExtendedAnnotationConfiguration.class);
 
   private static class MetadataCapture implements Integrator {
     private Metadata metadata;

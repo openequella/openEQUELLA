@@ -59,12 +59,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind
 public class GenericLtiContentItemPlacementReturn extends AbstractPrototypeSection<Object>
     implements HtmlRenderer {
-  private static final Logger LOGGER = Logger.getLogger(GenericLtiContentItemPlacementReturn.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(GenericLtiContentItemPlacementReturn.class);
 
   @Inject private SelectionService selectionService;
   @Inject private IntegrationService integrationService;

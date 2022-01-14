@@ -29,7 +29,8 @@ import java.net.URI;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.ed.ph.jqtiplus.JqtiExtensionManager;
 import uk.ac.ed.ph.jqtiplus.attribute.Attribute;
 import uk.ac.ed.ph.jqtiplus.exception.QtiAttributeException;
@@ -64,7 +65,7 @@ import uk.ac.ed.ph.jqtiplus.value.Value;
 @Bind(QtiService.class)
 @Singleton
 public class QtiServiceImpl implements QtiService {
-  private static final Logger LOGGER = Logger.getLogger(QtiService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(QtiService.class);
   private static final JqtiExtensionManager jqtiExtensionManager = new JqtiExtensionManager();
 
   @Inject private FileSystemService fileSystem;

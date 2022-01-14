@@ -33,7 +33,8 @@ import java.nio.file.Path;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 /** @author Nicholas Read */
@@ -41,7 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Singleton
 @SuppressWarnings("nls")
 public class StagingServiceImpl implements StagingService {
-  private static final Logger LOGGER = Logger.getLogger(StagingServiceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(StagingServiceImpl.class);
 
   @Inject private StagingDao stagingDao;
   @Inject private FileSystemService fileSystemService;

@@ -73,14 +73,15 @@ import java.util.Collection;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind
 @Singleton
 @NonNullByDefault
 @SuppressWarnings("nls")
 public class GenericLtiIntegration extends AbstractIntegrationService<GenericLtiSessionData> {
-  private static final Logger LOGGER = Logger.getLogger(GenericLtiIntegration.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GenericLtiIntegration.class);
 
   private static final String CONTENT_ITEM_SELECTION_REQUEST = "ContentItemSelectionRequest";
 
@@ -323,7 +324,7 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
               connectorRepoService.getAuthorisationUrl(
                   findConnector(data).get(), convertToRedirect(info, data, session, form), null));
         } else {
-          LOGGER.fatal("Unknown LMS Type to authorize: " + connLmsType);
+          LOGGER.error("Unknown LMS Type to authorize: " + connLmsType);
         }
       }
 
@@ -347,7 +348,7 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
                   foldersNode.add(convert(folder, data));
                 });
       } else {
-        LOGGER.fatal("Unable to build folder structure - connector was not found");
+        LOGGER.error("Unable to build folder structure - connector was not found");
       }
 
       final PrettyPrinter pp = new MinimalPrettyPrinter();

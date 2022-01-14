@@ -52,13 +52,14 @@ import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 @SuppressWarnings("nls")
 @Bind
 public class EditConnectorContentDialog extends AbstractOkayableDialog<EditConnectorModel> {
-  private static final Logger LOGGER = Logger.getLogger(EditConnectorContentDialog.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(EditConnectorContentDialog.class);
 
   @PlugKey("manage.edit.dialog.title")
   private static Label TITLE;

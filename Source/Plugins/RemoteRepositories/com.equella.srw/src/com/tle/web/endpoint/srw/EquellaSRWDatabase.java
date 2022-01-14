@@ -48,11 +48,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.axis.types.NonNegativeInteger;
 import org.apache.axis.types.PositiveInteger;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.z3950.zing.cql.CQLTermNode;
 
 public class EquellaSRWDatabase extends SRWDatabase {
-  private static final Logger LOGGER = Logger.getLogger(EquellaSRWDatabase.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(EquellaSRWDatabase.class);
   private static final ThreadLocal<String> EXPLAIN = new ThreadLocal<String>();
 
   protected static final Map<String, SchemaInfo> SCHEMAS = new HashMap<String, SchemaInfo>();
@@ -228,7 +229,7 @@ public class EquellaSRWDatabase extends SRWDatabase {
         try {
           schema(schemaInfoBuf, info);
         } catch (Exception e) {
-          LOGGER.error(e, e);
+          LOGGER.error(e.getMessage(), e);
         }
       }
     }

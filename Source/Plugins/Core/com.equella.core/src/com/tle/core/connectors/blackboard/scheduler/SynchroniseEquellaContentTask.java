@@ -33,14 +33,15 @@ import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 /** @author Aaron */
 @Bind
 @Singleton
 public class SynchroniseEquellaContentTask implements ScheduledTask {
-  private static final Logger LOGGER = Logger.getLogger(SynchroniseEquellaContentTask.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SynchroniseEquellaContentTask.class);
 
   @Inject private ConnectorService connectorService;
   @Inject private BlackboardConnectorService blackboardConnectorService;

@@ -39,11 +39,12 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.selection.SelectionService;
 import java.util.Collections;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HierarchyResultsSection
     extends AbstractFreetextResultsSection<StandardItemListEntry, SearchResultsModel> {
-  private static final Logger LOGGER = Logger.getLogger(HierarchyResultsSection.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(HierarchyResultsSection.class);
 
   @Inject private HierarchyItemList itemList;
   @Inject private SelectionService selectionService;

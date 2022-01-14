@@ -43,13 +43,14 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author Aaron */
 @NonNullByDefault
 @Bind
 public class LMSAuthDialog extends AbstractOkayableDialog<LMSAuthDialog.Model> {
-  private static final Logger LOGGER = Logger.getLogger(LMSAuthDialog.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LMSAuthDialog.class);
 
   @PlugKey("dialog.lmsauth.title")
   private static Label LABEL_TITLE;

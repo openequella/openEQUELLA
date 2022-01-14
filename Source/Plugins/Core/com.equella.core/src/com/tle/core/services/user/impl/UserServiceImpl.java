@@ -92,9 +92,10 @@ import java.util.regex.Pattern;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 @SuppressWarnings("nls")
@@ -108,7 +109,7 @@ public class UserServiceImpl
         GroupChangedListener,
         UserSessionLogoutListener,
         UserSessionLoginListener {
-  private static final Logger LOGGER = Logger.getLogger(UserServiceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
   /** Retrieves the last IP address in a possibly comma-separated list of them. */
   private static final Pattern FORWARD_FOR_PATTERN =

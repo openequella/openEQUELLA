@@ -27,14 +27,15 @@ import com.tle.web.sections.TreeIndexed;
 import com.tle.web.sections.events.RenderContext;
 import java.util.List;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author Aaron */
 @TreeIndexed
 public abstract class AbstractItemList<
         LE extends AbstractItemListEntry, M extends AbstractItemList.Model<LE>>
     extends AbstractItemlikeList<Item, LE, M> implements ItemList<LE> {
-  private static final Logger LOGGER = Logger.getLogger(AbstractItemList.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractItemList.class);
 
   @Inject private StandardItemListEntryFactory factory;
 

@@ -93,13 +93,14 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 @Bind
 public class ExternalToolViewerSection
     extends AbstractViewerSection<ExternalToolViewerSection.ToolModel> {
-  private static final Logger LOGGER = Logger.getLogger(ExternalToolViewerSection.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ExternalToolViewerSection.class);
 
   @Inject
   @Named("external.tool.contact.email")

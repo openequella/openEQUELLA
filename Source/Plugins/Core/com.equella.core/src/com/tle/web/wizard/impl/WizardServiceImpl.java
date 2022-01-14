@@ -125,7 +125,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author jmaginnis
@@ -167,7 +168,7 @@ public class WizardServiceImpl
 
   private PluginTracker<WizardScriptObjectContributor> scriptObjectTracker;
 
-  private static final Logger LOGGER = Logger.getLogger(WizardServiceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(WizardServiceImpl.class);
 
   public WizardServiceImpl() {
     super();

@@ -84,8 +84,9 @@ import java.util.Map.Entry;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
 import org.ccil.cowan.tagsoup.Parser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -94,7 +95,7 @@ import org.xml.sax.XMLReader;
 @Bind
 @Singleton
 public class MoodleConnectorService extends AbstractIntegrationConnectorRespository {
-  private static final Logger LOGGER = Logger.getLogger(MoodleConnectorService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MoodleConnectorService.class);
 
   @Inject private HttpService httpService;
   @Inject private ConfigurationService configService;

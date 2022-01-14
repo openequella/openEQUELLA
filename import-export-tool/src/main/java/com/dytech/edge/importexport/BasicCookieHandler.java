@@ -23,8 +23,6 @@ import java.util.Map;
  * @author aholland
  */
 public class BasicCookieHandler extends CookieHandler {
-  // private static final Logger LOGGER =
-  // Logger.getLogger(ListCookieHandler.class.getName());
 
   private final List<Cookie> cache = new LinkedList<Cookie>();
 

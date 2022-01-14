@@ -33,11 +33,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 public class ListCookieHandler extends CookieHandler {
-  private static final Logger LOGGER = Logger.getLogger(ListCookieHandler.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(ListCookieHandler.class.getName());
 
   private List<Cookie> cache = new LinkedList<Cookie>();
   private boolean ignoreCookieOverrideAttempts;

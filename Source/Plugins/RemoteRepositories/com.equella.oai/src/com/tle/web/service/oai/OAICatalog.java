@@ -69,7 +69,8 @@ import java.util.UUID;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This uses Dynamic Collections rather than normal Collections. If a DC is virtualised, its value
@@ -77,7 +78,7 @@ import org.apache.log4j.Logger;
  */
 @SuppressWarnings("nls")
 public class OAICatalog extends AbstractCatalog {
-  private static final Logger LOGGER = Logger.getLogger(OAICatalog.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(OAICatalog.class);
   private static final int MAX_RESULTS = 10;
   private static final String OAI_USAGE = "oaiUsage";
 

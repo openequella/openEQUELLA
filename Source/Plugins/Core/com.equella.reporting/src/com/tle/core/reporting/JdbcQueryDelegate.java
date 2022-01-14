@@ -46,8 +46,9 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.sql.DataSource;
-import org.apache.log4j.Logger;
 import org.eclipse.datatools.connectivity.oda.OdaException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.ConnectionCallback;
@@ -60,7 +61,7 @@ import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
 @Singleton
 @SuppressWarnings("nls")
 public class JdbcQueryDelegate implements QueryDelegate {
-  private static final Logger LOGGER = Logger.getLogger(JdbcQueryDelegate.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(JdbcQueryDelegate.class);
 
   private final InstitutionService institutionService;
   private final SchemaDataSourceService dataSourceService;

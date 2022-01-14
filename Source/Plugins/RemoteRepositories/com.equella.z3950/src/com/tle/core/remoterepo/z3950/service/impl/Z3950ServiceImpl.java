@@ -46,13 +46,14 @@ import com.tle.web.resources.ResourcesService;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
 import org.jafer.exception.JaferException;
 import org.jafer.interfaces.QueryBuilder;
 import org.jafer.record.DataObject;
 import org.jafer.record.Field;
 import org.jafer.record.RecordFactory;
 import org.jafer.zclient.ZClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -67,7 +68,7 @@ public class Z3950ServiceImpl implements Z3950Service {
    * z3950 is inherently dodgy, don't log full stack traces or you will end up with massive log
    * files.
    */
-  private static final Logger LOGGER = Logger.getLogger(Z3950Service.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(Z3950Service.class);
 
   private static final Z3950SearchResults NO_RESULTS =
       new Z3950SearchResults(new ArrayList<Z3950SearchResult>(), 0, 0, 0);

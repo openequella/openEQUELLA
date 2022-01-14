@@ -91,7 +91,8 @@ import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author aholland */
 @SuppressWarnings("nls")
@@ -103,7 +104,7 @@ public class HttpServiceImpl implements HttpService {
   private static final Cache<String, Cookies> COOKIE_CACHE =
       CacheBuilder.newBuilder().softValues().expireAfterAccess(30, TimeUnit.MINUTES).build();
 
-  private static final Logger LOGGER = Logger.getLogger(HttpService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(HttpService.class);
 
   private final PoolingClientConnectionManager conMan;
 

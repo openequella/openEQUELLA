@@ -40,9 +40,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.BridgeMethodResolver;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
@@ -51,7 +52,7 @@ import org.springframework.util.ObjectUtils;
 @Bind
 @Singleton
 public class SecurityAttributeSource {
-  private static final Logger LOGGER = Logger.getLogger(SecurityAttributeSource.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SecurityAttributeSource.class);
   private static final SecurityAttribute NULL_SECURITY_ATTRIBUTE = new SecurityAttribute();
 
   @Inject

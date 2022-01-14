@@ -79,7 +79,8 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author Nicholas Read */
 @Bind(FreeTextService.class)
@@ -94,7 +95,7 @@ public class FreeTextServiceImpl
         IndexItemNowListener,
         InstitutionListener {
 
-  private static final Logger LOGGER = Logger.getLogger(FreeTextServiceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(FreeTextServiceImpl.class);
 
   @Inject private FreetextIndex indexer;
   @Inject private ItemService itemService;

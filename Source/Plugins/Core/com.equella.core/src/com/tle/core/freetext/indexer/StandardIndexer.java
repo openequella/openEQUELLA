@@ -52,7 +52,6 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Store;
@@ -60,6 +59,8 @@ import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.document.NumericField;
 import org.hibernate.Hibernate;
 import org.hibernate.type.SerializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind
 @Singleton
@@ -74,7 +75,7 @@ public class StandardIndexer extends AbstractIndexingExtension {
   private static final String DATA_VERSION = "version"; // $NON-NLS-1$
 
   private static NumberFormat FORMAT = new DecimalFormat("0.00"); // $NON-NLS-1$
-  private static Logger LOGGER = Logger.getLogger(StandardIndexer.class);
+  private static Logger LOGGER = LoggerFactory.getLogger(StandardIndexer.class);
 
   @Inject private TextExtracter textExtracter;
   @Inject private FreetextIndex freetextIndex;

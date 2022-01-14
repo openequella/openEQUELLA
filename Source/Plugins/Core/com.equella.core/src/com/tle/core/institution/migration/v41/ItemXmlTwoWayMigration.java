@@ -37,11 +37,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author aholland */
 @SuppressWarnings("nls")
@@ -61,7 +62,7 @@ public class ItemXmlTwoWayMigration extends AbstractHibernateSchemaMigration {
   // new
   private static final String ITEMXML_ID_COLUMN = "item_xml_id";
 
-  private static final Logger LOGGER = Logger.getLogger(ItemXmlTwoWayMigration.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ItemXmlTwoWayMigration.class);
 
   private boolean forgiving = false;
 

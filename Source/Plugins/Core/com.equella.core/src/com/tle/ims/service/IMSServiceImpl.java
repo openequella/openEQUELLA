@@ -46,13 +46,14 @@ import java.io.OutputStream;
 import java.io.Writer;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind(IMSService.class)
 @Singleton
 @SuppressWarnings("nls")
 public class IMSServiceImpl implements IMSService {
-  private static final Logger LOGGER = Logger.getLogger(FileSystemServiceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(FileSystemServiceImpl.class);
 
   @Inject private FileSystemService fileSystemService;
 
@@ -126,10 +127,10 @@ public class IMSServiceImpl implements IMSService {
         return (IMSManifest)
             getXstream().fromXML(new UnicodeReader(finp, "UTF-8"), IMSManifest.class);
       } catch (FileNotFoundException e) {
-        LOGGER.error(e);
+        LOGGER.error(e.getMessage(), e);
         // shouldn't ever happen
       } catch (Exception e) {
-        LOGGER.error(e);
+        LOGGER.error(e.getMessage(), e);
         // what
       }
     }

@@ -87,13 +87,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 @Bind
 public class FindUsesContentSection
     extends AbstractContentSection<FindUsesContentSection.FindUsesModel> {
-  private static final Logger LOGGER = Logger.getLogger(FindUsesContentSection.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(FindUsesContentSection.class);
   private static final PluginResourceHelper resources =
       ResourcesService.getResourceHelper(FindUsesContentSection.class);
 

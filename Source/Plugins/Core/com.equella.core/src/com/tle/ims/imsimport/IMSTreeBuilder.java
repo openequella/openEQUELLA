@@ -49,13 +49,14 @@ import java.util.Collection;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 @Bind
 @Singleton
 public class IMSTreeBuilder implements PackageTreeBuilder {
-  private static final Logger LOGGER = Logger.getLogger(IMSTreeBuilder.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(IMSTreeBuilder.class);
 
   @Inject private FileSystemService fileSystem;
   @Inject private IMSService imsService;

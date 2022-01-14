@@ -25,7 +25,6 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
 import javax.sql.DataSource;
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
@@ -35,9 +34,11 @@ import org.hibernate.engine.spi.Mapping;
 import org.hibernate.service.UnknownUnwrapTypeException;
 import org.hibernate.service.spi.Configurable;
 import org.hibernate.service.spi.Stoppable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HibernateFactory {
-  private static final Logger LOGGER = Logger.getLogger(HibernateFactory.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(HibernateFactory.class);
 
   private Mapping mapping;
   private ExtendedAnnotationConfiguration config;

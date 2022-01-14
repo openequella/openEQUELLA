@@ -19,11 +19,12 @@
 package com.tle.core.freetext.reindex;
 
 import java.util.Arrays;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author Nicholas Read */
 public class ItemMetadataFilter extends ReindexFilter {
-  private static final Logger LOGGER = Logger.getLogger(ItemMetadataFilter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ItemMetadataFilter.class);
 
   private static final long serialVersionUID = 1L;
 

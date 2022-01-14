@@ -32,12 +32,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.type.StandardBasicTypes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,7 +49,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Bind(AccessExpressionDao.class)
 public class AccessExpressionDaoImpl extends GenericDaoImpl<AccessExpression, Long>
     implements AccessExpressionDao {
-  private static final Logger LOGGER = Logger.getLogger(AccessExpressionDaoImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AccessExpressionDaoImpl.class);
 
   public AccessExpressionDaoImpl() {
     super(AccessExpression.class);

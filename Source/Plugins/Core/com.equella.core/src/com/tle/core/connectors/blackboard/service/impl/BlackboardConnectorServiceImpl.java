@@ -136,12 +136,12 @@ import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.protocol.Protocol;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.apache.rampart.handler.WSSHandlerConstants;
 import org.apache.rampart.handler.config.OutflowConfiguration;
 import org.apache.ws.security.WSPasswordCallback;
 import org.apache.ws.security.handler.WSHandlerConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 @SuppressWarnings({"nls", "deprecation"})
@@ -149,7 +149,7 @@ import org.apache.ws.security.handler.WSHandlerConstants;
 @Singleton
 public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnectorRespository
     implements BlackboardConnectorService {
-  private static final Logger LOGGER = Logger.getLogger(BlackboardConnectorService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(BlackboardConnectorService.class);
 
   private static String KEY_PFX =
       AbstractPluginService.getMyPluginId(BlackboardConnectorService.class) + ".";
@@ -214,10 +214,7 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
   @Inject private AttachmentResourceService attachmentResourceService;
 
   public BlackboardConnectorServiceImpl() {
-    // Ewwww
     BlindSSLSocketFactory.register();
-    // Turn off spurious Pre-emptive Authentication bollocks
-    Logger.getLogger("org.apache.commons.httpclient.HttpMethodDirector").setLevel(Level.ERROR);
   }
 
   @Override

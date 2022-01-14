@@ -72,7 +72,8 @@ import java.util.Collection;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Note: This is actually UNUSED for the current Building Block. It exists for legacy reasons only.
@@ -82,7 +83,7 @@ import org.apache.log4j.Logger;
 @Singleton
 @SuppressWarnings("nls")
 public class BlackboardIntegration extends AbstractIntegrationService<BlackBoardSessionData> {
-  private static final Logger LOGGER = Logger.getLogger(BlackboardIntegration.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(BlackboardIntegration.class);
 
   @Inject private ItemHelper itemHelper;
   @Inject private FileSystemService fileSystemService;

@@ -31,13 +31,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONSerializer;
 import org.apache.commons.fileupload.ProgressListener;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind
 @Singleton
 public class ProgressServlet extends HttpServlet {
   private static final String KEY_PREFIX = "progress"; // $NON-NLS-1$
-  private static final Logger LOGGER = Logger.getLogger(ProgressServlet.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProgressServlet.class);
 
   @Inject private UserSessionService sessionService;
 

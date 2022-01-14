@@ -105,9 +105,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
@@ -121,7 +122,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 public abstract class AbstractEntityServiceImpl<
         B extends EntityEditingBean, T extends BaseEntity, S extends AbstractEntityService<B, T>>
     implements AbstractEntityService<B, T>, DeleteHandler, UserChangeListener {
-  private static final Logger LOGGER = Logger.getLogger(AbstractEntityService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractEntityService.class);
   private static final String ENTITY_XML = "_entity.xml";
 
   private final AbstractEntityDao<T> entityDao;

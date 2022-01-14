@@ -29,13 +29,14 @@ import com.tle.web.core.filter.UserStateResult.Result;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author Aaron */
 @Bind
 @Singleton
 public class TokenUserStateHook implements UserStateHook {
-  private static final Logger LOGGER = Logger.getLogger(TokenUserStateHook.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TokenUserStateHook.class);
 
   @Inject private UserService userService;
 

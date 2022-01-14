@@ -66,10 +66,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.NRTManager;
 import org.apache.lucene.search.NRTManager.TrackingIndexWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 /** @author jmaginnis */
@@ -78,7 +79,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SuppressWarnings("nls")
 public class FreetextIndexImpl
     implements FreetextIndex, InstitutionListener, ServiceCheckRequestListener {
-  private static final Logger LOGGER = Logger.getLogger(FreetextIndexImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(FreetextIndexImpl.class);
   private static final String KEY_PFX =
       PluginServiceImpl.getMyPluginId(FreetextIndexImpl.class) + '.';
 
@@ -168,7 +169,7 @@ public class FreetextIndexImpl
           getIndexer(searchReq.getSearchType()).search(searchReq, start, count, searchAttachments);
     } catch (SearchingException ex) {
       if (!ex.isLogged()) {
-        LOGGER.error(ex);
+        LOGGER.error(ex.getMessage(), ex);
       }
       throw ex;
     }
@@ -182,7 +183,7 @@ public class FreetextIndexImpl
       throw iqe;
     } catch (SearchingException ex) {
       if (!ex.isLogged()) {
-        LOGGER.error(ex);
+        LOGGER.error(ex.getMessage(), ex);
       }
       throw ex;
     }
@@ -199,7 +200,7 @@ public class FreetextIndexImpl
       return getIndexer(searchReq.getSearchType()).count(searchReq, searchNotInAttachment);
     } catch (SearchingException ex) {
       if (!ex.isLogged()) {
-        LOGGER.error(ex);
+        LOGGER.error(ex.getMessage(), ex);
       }
       throw ex;
     }
@@ -394,7 +395,7 @@ public class FreetextIndexImpl
       return getIndexer("item").suggestTerm(request, prefix, isSearchAttachment());
     } catch (SearchingException ex) {
       if (!ex.isLogged()) {
-        LOGGER.error(ex);
+        LOGGER.error(ex.getMessage(), ex);
       }
       throw ex;
     }

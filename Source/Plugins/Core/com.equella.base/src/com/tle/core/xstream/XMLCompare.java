@@ -23,9 +23,10 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -36,7 +37,7 @@ import org.xml.sax.SAXException;
 /** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class XMLCompare {
-  private static final Logger LOGGER = Logger.getLogger(XMLCompare.class.toString());
+  private static final Logger LOGGER = LoggerFactory.getLogger(XMLCompare.class.toString());
   /** A shared instance of the document builder factory. */
   private static DocumentBuilderFactory documentFactory;
 
@@ -68,7 +69,7 @@ public class XMLCompare {
 
     if (children1.getLength() != children2.getLength()) {
       if (sizeWithoutEmptyText(children1) != sizeWithoutEmptyText(children2)) {
-        LOGGER.fine("Number of children for " + n1.getNodeName() + " not equivalent");
+        LOGGER.trace("Number of children for " + n1.getNodeName() + " not equivalent");
         return false;
       }
     }
@@ -109,15 +110,15 @@ public class XMLCompare {
       }
 
       if (!matchFound) {
-        LOGGER.fine(
+        LOGGER.trace(
             "No equivalent child named " + child1.getNodeName() + " for " + n1.getNodeName());
 
         if (matchFoundExceptAttributes) {
-          LOGGER.fine("A possible match was found, but attributes were not equivalent");
+          LOGGER.trace("A possible match was found, but attributes were not equivalent");
         }
 
         if (matchFoundExceptValue) {
-          LOGGER.fine(
+          LOGGER.trace(
               "A possible match was found, but values were not equivalent for '"
                   + child1.getNodeValue()
                   + "'");

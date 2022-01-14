@@ -44,14 +44,15 @@ import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** See the interface class for the @Path annotations. */
 @SuppressWarnings("nls")
 @Bind(EquellaUserResource.class)
 @Singleton
 public class UserManagementResourceImpl implements EquellaUserResource {
-  private static final Logger LOGGER = Logger.getLogger(UserManagementResourceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(UserManagementResourceImpl.class);
 
   @SuppressWarnings("unused")
   private static final String APIDOC_USERLOGNAME = "The login name of the user";
