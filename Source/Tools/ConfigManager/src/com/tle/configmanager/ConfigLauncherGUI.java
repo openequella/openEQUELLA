@@ -36,7 +36,7 @@ public class ConfigLauncherGUI extends JFrame implements ActionListener {
   public static final String MANDATORY_CONFIG = "mandatory-config.properties";
   public static final String OPTIONAL_CONFIG = "optional-config.properties";
   public static final String HIBERNATE_CONFIG = "hibernate.properties";
-  public static final String LOGGING_CONFIG = "learningedge-log4j.properties";
+  public static final String LOGGING_CONFIG = "learningedge-log4j.yaml";
   public static final String IMAGEMAGICK_CONFIG =
       "plugins/com.tle.core.imagemagick/config.properties.unresolved";
   public static final String HIKARI_CONFIG = "hikari.properties";
@@ -284,8 +284,7 @@ public class ConfigLauncherGUI extends JFrame implements ActionListener {
 
     // Copy custom development logging file
     FileUtils.copyFile(
-        new File("./learningedge-log4j.properties"),
-        new File(destDir + "/learningedge-log4j.properties"));
+        new File("./learningedge-log4j.yaml"), new File(destDir + "/learningedge-log4j.yaml"));
 
     // Other Miscellaneous Files
     FileUtils.copyFile(
