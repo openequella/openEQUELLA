@@ -347,6 +347,16 @@ run := {
 (assembly / fullClasspath) := (Compile / fullClasspath).value
 
 (assembly / assemblyMergeStrategy) := {
+  case PathList("META-INF",
+                "org",
+                "apache",
+                "logging",
+                "log4j",
+                "core",
+                "config",
+                "plugins",
+                "Log4j2Plugins.dat") =>
+    MergeStrategy.last
   case PathList("META-INF", "jdom-info.xml")                => MergeStrategy.first
   case PathList("META-INF", "axiom.xml")                    => MergeStrategy.first
   case PathList("javax", "wsdl", _*)                        => MergeStrategy.last
