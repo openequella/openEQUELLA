@@ -7,7 +7,6 @@
 		<import plugin-id="it.tidalwave.imageio:reajent" />
 		<import plugin-id="jai_codec:jai_codec" />
 		<import plugin-id="jai_core:jai_core" />
-		<import plugin-id="log4j:log4j" />
 		<import plugin-id="mlibwrapper_jai:mlibwrapper_jai" />
 		<import plugin-id="freehep:freehep" />
 	</requires>
