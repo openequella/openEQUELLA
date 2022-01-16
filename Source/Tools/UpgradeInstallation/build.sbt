@@ -6,7 +6,10 @@ libraryDependencies ++= Seq(
   xstreamDep,
   "commons-configuration" % "commons-configuration" % "1.10",
   "commons-io"            % "commons-io"            % "2.11.0",
-  "commons-lang"          % "commons-lang"          % "2.6"
+  "commons-lang"          % "commons-lang"          % "2.6",
+  // Need these two jackson deps to allow processing log4j yaml config files.
+  "com.fasterxml.jackson.core"       % "jackson-databind"        % "2.11.3",
+  "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % "2.11.3"
 )
 
 excludeDependencies ++= Seq(
@@ -18,6 +21,7 @@ excludeDependencies ++= Seq(
 
 (assembly / assemblyMergeStrategy) := {
   case PathList("org", "xmlpull", "v1", _*) => MergeStrategy.first
+  case "module-info.class"                  => MergeStrategy.discard
   case x =>
     val oldStrategy = (assembly / assemblyMergeStrategy).value
     oldStrategy(x)
