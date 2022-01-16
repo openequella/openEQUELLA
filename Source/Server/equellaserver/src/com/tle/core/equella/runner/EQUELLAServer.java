@@ -98,7 +98,7 @@ public class EQUELLAServer {
       }
     }
 
-    URL log4jConfigFile = loader.getResource("learningedge-log4j.properties");
+    URL log4jConfigFile = loader.getResource("learningedge-log4j.yaml");
     if (log4jConfigFile != null) {
       System.getProperties().setProperty("log4j2.configurationFile", log4jConfigFile.toString());
     }
