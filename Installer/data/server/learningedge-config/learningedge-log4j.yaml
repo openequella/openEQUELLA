@@ -25,6 +25,10 @@ Configuration:
         Filters:
           ThresholdFilter:
             level: DEBUG
+          RegexFilter:
+            regex: ".*(HHH90000022|HHH90000014).*"
+            onMatch: "DENY"
+            onMismatch: "NEUTRAL"
         HTMLLayout:
           title: TLE Resource Centre
           datePattern: ISO8601
