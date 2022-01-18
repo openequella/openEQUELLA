@@ -16,9 +16,11 @@
  * limitations under the License.
  */
 import { CircularProgress, Grid } from "@material-ui/core";
-import Axios from "axios";
+import Axios, { AxiosResponse } from "axios";
+import { pipe } from "fp-ts/function";
 import { isEqual } from "lodash";
 import * as React from "react";
+import * as O from "fp-ts/Option";
 import { useContext } from "react";
 import { v4 } from "uuid";
 import {
@@ -118,6 +120,18 @@ interface LegacyContentSubmission {
    * Payload of the submission.
    */
   payload?: StateData;
+}
+
+/**
+ * temp.hn and temp.hb are two possible params contains in the request and response
+ * and are used in old UI to hide navigation (menu bar) and banner.
+ * In new UI, for normal legacy content we have a template props `fullscreenMode`
+ * received from server to hide menu bar, but not the error page.
+ * Thus, it is used to set `fullscreenMode` for error page.
+ */
+interface AxiosResponseConfigData {
+  "temp.hn"?: [string];
+  "temp.hb"?: [string];
 }
 
 export type SubmitResponse =
@@ -290,11 +304,28 @@ export const LegacyContent = React.memo(function LegacyContent({
         }
       })
       .catch((error) => {
-        const errorResponse: ErrorResponse =
-          error.response !== undefined
-            ? fromAxiosResponse(error.response)
-            : generateFromError(error);
-        handleError(fullScreen, errorResponse);
+        pipe(
+          O.fromNullable(error.response),
+          O.map((e: AxiosResponse) => {
+            const configData: AxiosResponseConfigData = JSON.parse(
+              e.config.data
+            );
+
+            const isFullscreenMode = configData["temp.hn"]
+              ? configData["temp.hn"][0] === "true"
+              : false;
+
+            updateTemplate((tp) => ({
+              ...tp,
+              fullscreenMode: isFullscreenMode ? "YES" : undefined,
+            }));
+            return fromAxiosResponse(e);
+          }),
+          O.getOrElseW<ErrorResponse>(() => generateFromError(error)),
+          (e) => {
+            handleError(fullScreen, e);
+          }
+        );
       })
       .finally(() => {
         if (formAction) {

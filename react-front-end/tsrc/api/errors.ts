@@ -24,19 +24,6 @@ export interface ErrorResponse {
   error: string;
   error_description?: string;
   code?: number;
-  hideNav?: boolean;
-}
-
-/**
- * temp.hn and temp.hb are two possible params contains in the request and response
- * and are used in old UI to hide navigation (menu bar) and banner.
- * In new UI, for normal legacy content we have a template props `fullscreenMode`
- * received from server to hide menu bar, but not the error page.
- * Thus, it is used to set `fullscreenMode` for error page.
- */
-interface AxiosResponseConfigData {
-  "temp.hn"?: [string];
-  "temp.hb"?: [string];
 }
 
 export const generateNewErrorID = (
@@ -103,17 +90,12 @@ export function fromAxiosResponse(
           return [response.statusText, ""];
       }
     })();
-    const configData: AxiosResponseConfigData = JSON.parse(
-      response.config.data
-    );
+
     return {
       id: v4(),
       error,
       error_description,
       code: response.status,
-      hideNav: configData["temp.hn"]
-        ? configData["temp.hn"][0] === "true"
-        : undefined,
     };
   }
 }
