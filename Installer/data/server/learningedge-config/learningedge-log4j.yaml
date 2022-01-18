@@ -91,12 +91,10 @@ Configuration:
         ref: FILE
     Logger:
       - name: org.eclipse.birt
-        additivity: false
         level: INFO
         AppenderRef:
           ref: REPORT
       - name: TomcatLog
-        additivity: false
         level: INFO
         AppenderRef:
           ref: TOMCAT

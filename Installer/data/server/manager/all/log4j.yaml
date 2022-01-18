@@ -50,7 +50,4 @@ Configuration:
         - ref: ROLLING_FILE
     Logger:
       name: com.tle.common.util.ExecUtils
-      additivity: false
       level: warn
-      AppenderRef:
-        ref: STDOUT
