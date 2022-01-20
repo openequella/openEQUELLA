@@ -26,6 +26,7 @@ Configuration:
           ThresholdFilter:
             level: DEBUG
           RegexFilter:
+            # Filter out Hibernate Criteria deprecation warning and Generator warning.
             regex: ".*(HHH90000022|HHH90000014).*"
             onMatch: "DENY"
             onMismatch: "NEUTRAL"

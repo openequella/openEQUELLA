@@ -14,6 +14,7 @@ Configuration:
         Pattern: "%d{ABSOLUTE} %-5p [%c{10}] %m%n"
       Filters:
         RegexFilter:
+          # Filter out Hibernate Criteria deprecation warning and Generator warning.
           regex: ".*(HHH90000022|HHH90000014).*"
           onMatch: "DENY"
           onMismatch: "NEUTRAL"
@@ -29,6 +30,10 @@ Configuration:
         immediateFlush: true
         append: true
         Filters:
+          RegexFilter:
+            regex: ".*(HHH90000022|HHH90000014).*"
+            onMatch: "DENY"
+            onMismatch: "NEUTRAL"
           ThresholdFilter:
             level: DEBUG
         HTMLLayout:
