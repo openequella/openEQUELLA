@@ -24,8 +24,8 @@ const useStyles = makeStyles((t) => ({
     display: "flex",
     justifyContent: "center",
     marginTop: t.spacing(8),
-    marginLeft: t.spacing(3),
-    marginRight: t.spacing(3),
+    marginLeft: t.spacing(2),
+    marginRight: t.spacing(2),
   },
 }));
 
