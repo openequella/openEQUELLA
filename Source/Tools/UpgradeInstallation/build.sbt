@@ -1,3 +1,5 @@
+val jacksonVersion = "2.11.3"
+
 libraryDependencies ++= Seq(
   "com.google.guava" % "guava"          % "31.0.1-jre",
   "org.slf4j"        % "jcl-over-slf4j" % "1.7.33",
@@ -8,8 +10,8 @@ libraryDependencies ++= Seq(
   "commons-io"            % "commons-io"            % "2.11.0",
   "commons-lang"          % "commons-lang"          % "2.6",
   // Need these two jackson deps to allow processing log4j yaml config files.
-  "com.fasterxml.jackson.core"       % "jackson-databind"        % "2.11.3",
-  "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % "2.11.3"
+  "com.fasterxml.jackson.core"       % "jackson-databind"        % jacksonVersion,
+  "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % jacksonVersion
 )
 
 excludeDependencies ++= Seq(
