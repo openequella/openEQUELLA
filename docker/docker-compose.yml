@@ -5,7 +5,7 @@ services:
     build:
       context: .
       args:
-        - OEQ_INSTALL_FILE=equella-installer.zip
+        - OEQ_INSTALL_FILE=installer.zip
     networks:
       - oeq-cluster
     links:

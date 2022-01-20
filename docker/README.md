@@ -2,7 +2,15 @@
 
 ## Setup
 
-Install Docker. For example, if you are on Ubuntu, follow the instructions [here|https://docs.docker.com/install/linux/docker-ce/ubuntu/].
+Before you can build the docker image there are a few pre-requisites:
+
+1. You (obviously) need docker installed; and
+2. You need an openEQUELLA installer zip for the version you wish to use.
+
+### Install Docker
+
+For example, if you are on Ubuntu, follow the instructions
+[here|https://docs.docker.com/install/linux/docker-ce/ubuntu/].
 
 Consider enabling the ability to run docker commands without sudo:
 
@@ -16,21 +24,48 @@ Check your version of Docker (The install and build images have been tested with
 docker --version
 ```
 
+### Obtain an installer zip
+
+There are three main ways to get an installer zip:
+
+1. Download for the [releases page](https://github.com/openequella/openEQUELLA/releases) on GitHub;
+2. Build one from source (i.e. using `./sbt installerZip` from the root directory; or
+3. Follow the instructions further down to do it with docker.
+
+Once that is complete, copy the resultant installer zip so that it is along side the `Dockerfile`
+and give it a simple name like `installer.zip`.
+
 ## Default Dockerfile
 
-Starting with an installer zip (output from `Dockerfile-build`), it installs openEQUELLA and is ready to run the application. When the container starts, it keys off of configurable properties such as DB host/name/username/password, admin url, etc.
+Starting with an installer zip, it installs openEQUELLA and is ready to run the application. When
+the container starts, it keys off of configurable properties such as DB host/name/username/password,
+admin url, etc.
 
-Meant for automated builds of openEQUELLA, but can be used as a quickstart to use openEQUELLA (not vetted for production use yet).
+This can be used as a quickstart to use openEQUELLA (not vetted for production use yet). And you'll
+see there are also docker compose files showing how you can use it to spin up an openEQUELLA
+cluster.
 
-Note - the zip and the root directory in the zip are not always the same, hence the different env variables.
+To build the image:
 
 ```sh
-$ cd docker
-$ docker build -t apereo/oeq-install-VER . --build-arg OEQ_INSTALL_FILE=equella-installer-VER.zip --build-arg OEQ_INSTALL_ZIP_ROOT_DIR=equella-installer-VER
-$ docker run -t --name oeq -e EQ_HTTP_PORT=8080 -e EQ_ADMIN_URL=http://172.17.0.2:8080/admin/ -e EQ_HIBERNATE_CONNECTION_URL=jdbc:postgresql://your-db-host-here:5432/eqdocker -e EQ_HIBERNATE_CONNECTION_USERNAME=equellauser -e EQ_HIBERNATE_CONNECTION_PASSWORD="your-db-pw-here" oeq-install-VER
+$ docker build -t openequella/openequella:<version> . --build-arg OEQ_INSTALL_FILE=installer.zip
 ```
 
-To access the terminal of the container:
+Then to run the image:
+
+```sh
+$ docker run -t --name oeq \
+    -e EQ_HTTP_PORT=8080 \
+    -e EQ_ADMIN_URL=http://172.17.0.2:8080/admin/ \
+    -e EQ_HIBERNATE_CONNECTION_URL=jdbc:postgresql://your-db-host-here:5432/eqdocker \
+    -e EQ_HIBERNATE_CONNECTION_USERNAME=equellauser \
+    -e EQ_HIBERNATE_CONNECTION_PASSWORD="your-db-pw-here" \
+    openequella/openequella:<version>
+```
+
+NOTE: In the above `:<version>` can be omitted and docker will automatically use the `latest` tag.
+
+To access the terminal of the running container:
 
 ```sh
 docker exec -it oeq /bin/bash
@@ -38,7 +73,10 @@ docker exec -it oeq /bin/bash
 
 ## docker-build
 
-Pulls the latest Equella repo, sets up the environment, and copies over the helper scripts to build and save the openEQUELLA installer and upgrader. While there is an Oracle JDK version of the docker build file, you need to ensure you're within the bounds of the Oracle JDK licensing terms and conditions. All examples will use the openJDK technology so as to avoid the licensing issues.
+Pulls the latest openEQUELLA repo, sets up the environment, and copies over the helper scripts to
+build and save the openEQUELLA installer and upgrader. While there is an Oracle JDK version of the
+docker build file, you need to ensure you're within the bounds of the Oracle JDK licensing terms and
+conditions. All examples will use the openJDK technology so as to avoid the licensing issues.
 
 ```sh
 $ cd docker/docker-build
