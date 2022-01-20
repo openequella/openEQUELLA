@@ -46,7 +46,6 @@ object CommonSettings extends AutoPlugin {
     lazy val log4jVersion   = "2.17.1"
     lazy val log4j          = "org.apache.logging.log4j" % "log4j" % log4jVersion
     lazy val log4jSlf4jImpl = "org.apache.logging.log4j" % "log4j-slf4j-impl" % log4jVersion
-    lazy val log4jBridgeApi = "org.apache.logging.log4j" % "log4j-1.2-api" % log4jVersion
   }
 
   override def trigger: PluginTrigger = allRequirements

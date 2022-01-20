@@ -118,7 +118,6 @@ libraryDependencies ++= Seq(
   "com.github.equella.jpf"    % "jpf"                   % "1.0.7",
   log4j,
   log4jSlf4jImpl,
-  log4jBridgeApi,
   "net.oauth.core"     % "oauth"                    % "20100527",
   "net.oauth.core"     % "oauth-provider"           % "20100527",
   "net.sf.ezmorph"     % "ezmorph"                  % "1.0.6",

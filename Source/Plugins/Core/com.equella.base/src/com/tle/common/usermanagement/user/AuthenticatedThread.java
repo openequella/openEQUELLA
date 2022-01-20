@@ -21,7 +21,7 @@ package com.tle.common.usermanagement.user;
 import com.tle.beans.Institution;
 import com.tle.common.institution.CurrentInstitution;
 import java.util.Stack;
-import org.apache.log4j.NDC;
+import org.apache.logging.log4j.ThreadContext;
 
 /**
  * Copies over security context from a calling thread to the new thread.
@@ -31,7 +31,7 @@ import org.apache.log4j.NDC;
 public abstract class AuthenticatedThread extends Thread {
   private UserState callingThreadsAuthentication;
   private Institution callingThreadsInstitution;
-  private Stack<String> loggingContext;
+  private Stack<String> loggingContext = new Stack<>();
 
   public AuthenticatedThread() {
     super();
@@ -51,20 +51,23 @@ public abstract class AuthenticatedThread extends Thread {
   private void setup() {
     callingThreadsAuthentication = CurrentUser.getUserState();
     callingThreadsInstitution = CurrentInstitution.get();
-    loggingContext = NDC.cloneStack();
+
+    for (final String item : ThreadContext.cloneStack().asList()) {
+      loggingContext.push(item);
+    }
   }
 
   @Override
   public final void run() {
     try {
-      NDC.inherit(loggingContext);
+      ThreadContext.setStack(loggingContext);
       CurrentUser.setUserState(callingThreadsAuthentication);
       CurrentInstitution.set(callingThreadsInstitution);
       doRun();
     } finally {
       CurrentInstitution.remove();
       CurrentUser.setUserState(null);
-      NDC.remove();
+      ThreadContext.removeStack();
     }
   }
 
