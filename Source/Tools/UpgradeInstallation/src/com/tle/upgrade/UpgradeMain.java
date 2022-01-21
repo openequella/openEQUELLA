@@ -46,7 +46,6 @@ import com.tle.upgrade.upgraders.RemoveQuartzPropertiesFile;
 import com.tle.upgrade.upgraders.RenameBehindProxyConfig;
 import com.tle.upgrade.upgraders.UpdateClusterConfig;
 import com.tle.upgrade.upgraders.UpdateHibernateProperties;
-import com.tle.upgrade.upgraders.UpdateLog4jConfigForTomcatLog;
 import com.tle.upgrade.upgraders.UpdateManagerJar;
 import com.tle.upgrade.upgraders.UpdateServiceWrapper;
 import com.tle.upgrade.upgraders.UpdateToApacheCommonsDaemon;
@@ -112,7 +111,6 @@ public class UpgradeMain {
         new AddNonHttpOnly(),
         new UpgradeToEmbeddedTomcat(),
         new AddExifToolConfg(),
-        new UpdateLog4jConfigForTomcatLog(),
         new ConvertBoneCPtoHikariCP(),
         new AddLDAPPoolingOptions(),
         new AddLibAvConfig(),

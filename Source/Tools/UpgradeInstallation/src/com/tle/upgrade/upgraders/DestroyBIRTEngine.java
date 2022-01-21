@@ -68,28 +68,6 @@ public class DestroyBIRTEngine extends AbstractUpgrader {
     if (!newReportingLogsLocation.exists()) {
       newReportingLogsLocation.mkdirs();
     }
-
-    // modify log4j
-    result.info("Modifying log4j properties");
-    new PropertyFileModifier(new File(configFolder, "learningedge-log4j.properties")) {
-      @Override
-      protected boolean modifyProperties(PropertiesConfiguration props) {
-        props.addProperty(
-            "log4j.appender.REPORT.File",
-            new File(newReportingLogsLocation, "/log.html")
-                .getAbsolutePath()
-                .replaceAll("\\\\", "/"));
-        props.addProperty("log4j.logger.org.eclipse.birt", "INFO, REPORT");
-        props.addProperty(
-            "log4j.appender.REPORT", "com.dytech.common.log4j.DailySizeRollingAppender");
-        props.addProperty("log4j.appender.REPORT.Threshold", "DEBUG");
-        props.addProperty("log4j.appender.REPORT.ImmediateFlush", "true");
-        props.addProperty("log4j.appender.REPORT.Append", "true");
-        props.addProperty("log4j.appender.REPORT.layout", "com.dytech.common.log4j.HTMLLayout3");
-        props.addProperty("log4j.appender.REPORT.layout.title", "EQUELLA Reporting Logs");
-        return true;
-      }
-    }.updateProperties();
   }
 
   @Override

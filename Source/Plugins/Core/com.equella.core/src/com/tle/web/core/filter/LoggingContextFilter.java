@@ -34,7 +34,7 @@ import javax.inject.Singleton;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.MDC;
+import org.apache.logging.log4j.ThreadContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,7 +98,7 @@ public class LoggingContextFilter extends AbstractWebFilter {
               thread.setName(oldThreadName);
             }
 
-            MDC.remove(Constants.MDC_SESSION_ID);
+            ThreadContext.remove(Constants.MDC_SESSION_ID);
           }
         });
   }

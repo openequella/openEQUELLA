@@ -113,7 +113,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.MDC;
+import org.apache.logging.log4j.ThreadContext;
 import org.hibernate.Hibernate;
 import org.hibernate.criterion.DetachedCriteria;
 import org.java.plugin.registry.Extension;
@@ -690,7 +690,7 @@ public class ItemServiceImpl
   protected ItemPack<Item> runOperation(
       ItemKey key, ItemOperationParams params, WorkflowOperation... operations) {
     try {
-      MDC.put(Constants.MDC_ITEM_ID, Integer.toString(mdcNums.nextInt() & 0xfff));
+      ThreadContext.put(Constants.MDC_ITEM_ID, Integer.toString(mdcNums.nextInt() & 0xfff));
 
       ItemPack<Item> pack = null;
       long itemId = 0;
@@ -737,7 +737,7 @@ public class ItemServiceImpl
         throw new WorkflowException(t);
       }
     } finally {
-      MDC.remove(Constants.MDC_ITEM_ID);
+      ThreadContext.remove(Constants.MDC_ITEM_ID);
       dao.flush();
     }
     return params.getItemPack();

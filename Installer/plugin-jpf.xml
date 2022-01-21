@@ -1,7 +1,6 @@
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin version="1" id="TLE Installer">
 	<requires>
-		<import plugin-id="com.tle.log4j" />
 		<import plugin-id="com.tle.platform.swing" />
 		<import plugin-id="com.tle.platform.equella" />
 		<import plugin-id="com.tle.platform.common" />
@@ -11,7 +10,6 @@
 		<import plugin-id="com.oracle:ojdbc6" />
 		<import plugin-id="com.microsoft.sqlserver:mssql-jdbc" />
 		<import plugin-id="com.microsoft.azure:azure-keyvault" />
-		<import plugin-id="log4j:log4j" />
 		<import plugin-id="commons-io:commons-io" />
 		<import plugin-id="org.apache.httpcomponents:httpclient" />
 		<import plugin-id="org.apache.httpcomponents:httpcore" />

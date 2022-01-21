@@ -188,9 +188,6 @@ public class UpgradeToEmbeddedTomcat extends AbstractUpgrader {
       updateConfig(result, managerDir, "equellaserver", classPath, false);
     }
 
-    // Update Logging properties
-    updateLoggingProperties(result, config.getConfigDir());
-
     // Cleanup
     FileUtils.deleteDirectory(tempDir);
   }
@@ -263,32 +260,6 @@ public class UpgradeToEmbeddedTomcat extends AbstractUpgrader {
           }
         }.update();
       }
-    } catch (IOException e) {
-      throw new RuntimeException("Failed to update config file", e);
-    }
-  }
-
-  private void updateLoggingProperties(final UpgradeResult result, File configDir) {
-    try {
-      new LineFileModifier(new File(configDir, "learningedge-log4j.properties"), result) {
-        @Override
-        protected String processLine(String line) {
-          if (line.startsWith("log4j.appender.FILE") && !line.startsWith("log4j.appender.FILE.")) {
-            return "log4j.appender.FILE=com.tle.core.equella.runner.DailySizeRollingAppender";
-          } else if (line.startsWith("log4j.appender.FILE.layout")
-              && !line.startsWith("log4j.appender.FILE.layout.")) {
-            return "log4j.appender.FILE.layout=com.tle.core.equella.runner.HTMLLayout3";
-          } else if (line.startsWith("log4j.appender.REPORT")
-              && !line.startsWith("log4j.appender.REPORT.")) {
-            return "log4j.appender.REPORT=com.tle.core.equella.runner.DailySizeRollingAppender";
-          } else if (line.startsWith("log4j.appender.REPORT.layout")
-              && !line.startsWith("log4j.appender.REPORT.layout.")) {
-            return "log4j.appender.REPORT.layout=com.tle.core.equella.runner.HTMLLayout3";
-          }
-          return line;
-        }
-      }.update();
-
     } catch (IOException e) {
       throw new RuntimeException("Failed to update config file", e);
     }

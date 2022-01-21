@@ -1,0 +1,18 @@
+Configuration:
+  status: warn
+
+  appenders:
+    Console:
+      name: STDOUT
+      target: SYSTEM_OUT
+      Filters:
+        ThresholdFilter:
+          level: debug
+      PatternLayout:
+        Pattern: "%d{ABSOLUTE} %-5p [%c{1}] %m%n"
+
+  Loggers:
+    Root:
+      level: info
+      AppenderRef:
+        ref: STDOUT
