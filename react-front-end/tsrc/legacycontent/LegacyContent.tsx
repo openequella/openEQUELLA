@@ -17,7 +17,9 @@
  */
 import { CircularProgress, Grid } from "@material-ui/core";
 import Axios from "axios";
+import { constFalse, pipe } from "fp-ts/function";
 import { isEqual } from "lodash";
+import * as O from "fp-ts/Option";
 import * as React from "react";
 import { useContext } from "react";
 import { v4 } from "uuid";
@@ -252,14 +254,17 @@ export const LegacyContent = React.memo(function LegacyContent({
    * Thus, it is used to set `fullscreenMode` for error page.
    */
   function preUpdateFullscreenMode(submitValues: StateData) {
-    const isFullscreenMode = submitValues["temp.hn"]
-      ? submitValues["temp.hn"][0] === "true"
-      : false;
-
-    updateTemplate((tp) => ({
-      ...tp,
-      fullscreenMode: isFullscreenMode ? "YES" : tp.fullscreenMode,
-    }));
+    pipe(
+      O.fromNullable(submitValues["temp.hn"]),
+      O.map(([firstValue]) => firstValue === "true"),
+      O.getOrElse(constFalse),
+      (isFullscreenMode) => {
+        updateTemplate((tp) => ({
+          ...tp,
+          fullscreenMode: isFullscreenMode ? "YES" : tp.fullscreenMode,
+        }));
+      }
+    );
   }
 
   function submitCurrentForm(
