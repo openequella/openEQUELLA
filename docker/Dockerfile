@@ -1,4 +1,4 @@
-FROM openjdk:8u312-jre as baseequella
+FROM openjdk:8-jre as baseequella
 
 # Install needed tools to install and run openEQUELLA, clean up the apt cache afterwards.
 
