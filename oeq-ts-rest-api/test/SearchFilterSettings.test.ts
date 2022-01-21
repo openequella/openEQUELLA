@@ -16,8 +16,9 @@
  * limitations under the License.
  */
 import * as OEQ from '../src';
-import { MimeTypeFilter } from '../src/SearchFilterSettings';
 import * as TC from './TestConfig';
+import { BatchOperationResponse } from '../src/BatchOperationResponse';
+import { MimeTypeFilter } from '../src/SearchFilterSettings';
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
@@ -25,22 +26,49 @@ afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
 describe('SearchFilterSettings', () => {
   let filterSettingsAtStart: MimeTypeFilter[];
 
+  const isString = (value: any): value is string => {
+    return typeof value === 'string';
+  };
+
+  const getIds = (mimeTypes: MimeTypeFilter[]): string[] => {
+    return mimeTypes
+      .map(({ id }) => id)
+      .filter((id) => isString(id)) as string[];
+  };
+
+  const newFilterSettingsData = [
+    {
+      name: 'filter1',
+      mimeTypes: ['image/png'],
+    },
+    {
+      name: 'filter2',
+      mimeTypes: ['video/mp4'],
+    },
+  ];
+
+  const createNewFilterSettings = async (): Promise<
+    BatchOperationResponse[]
+  > => {
+    const responses = OEQ.SearchFilterSettings.batchUpdateSearchFilterSetting(
+      TC.API_PATH,
+      newFilterSettingsData
+    );
+    return responses;
+  };
+
   beforeAll(async () => {
     filterSettingsAtStart =
       await OEQ.SearchFilterSettings.getSearchFilterSettings(TC.API_PATH);
   });
 
-  // clear all filter which is not appear at start
-  afterAll(async () => {
+  // Clear all filters which were not present at the start of the test.
+  afterEach(async () => {
     const filterSettingsAtEnd =
       await OEQ.SearchFilterSettings.getSearchFilterSettings(TC.API_PATH);
 
-    const start_ids = filterSettingsAtStart
-      .filter((fs) => fs.id != undefined)
-      .map((fs) => fs.id) as string[];
-    const end_ids = filterSettingsAtEnd
-      .filter((fs) => fs.id != undefined)
-      .map((fs) => fs.id) as string[];
+    const start_ids = getIds(filterSettingsAtStart);
+    const end_ids = getIds(filterSettingsAtEnd);
 
     const ids = end_ids.filter((id) => !start_ids.includes(id));
     await OEQ.SearchFilterSettings.batchDeleteSearchFilterSetting(
@@ -52,31 +80,21 @@ describe('SearchFilterSettings', () => {
   it('Should be possible to retrieve the filter settings', () =>
     expect(filterSettingsAtStart).toBeTruthy());
 
-  it('Should be possible to create/change and delete a batch of the filter settings', async () => {
-    // create new filter
-    const newFilterSettingsData = [
-      {
-        name: 'filter1',
-        mimeTypes: ['image/png'],
-      },
-      {
-        name: 'filter2',
-        mimeTypes: ['video/mp4'],
-      },
-    ];
-
-    await OEQ.SearchFilterSettings.batchUpdateSearchFilterSetting(
-      TC.API_PATH,
-      newFilterSettingsData
-    );
-    const newFilterSettings =
+  it('Should be possible to create a batch of the filter settings', async () => {
+    // Create new filters
+    await createNewFilterSettings();
+    const allFilterSettings =
       await OEQ.SearchFilterSettings.getSearchFilterSettings(TC.API_PATH);
-    expect(newFilterSettings).toHaveLength(2);
+    expect(allFilterSettings).toHaveLength(
+      filterSettingsAtStart.length + newFilterSettingsData.length
+    );
+  });
 
-    // get new filter ids and create update data
-    const ids = newFilterSettings
-      .filter((fs) => fs.id != undefined)
-      .map((fs) => fs.id) as string[];
+  it('Should be possible to update a batch of the filter settings', async () => {
+    // Create new filter settings
+    const responses = await createNewFilterSettings();
+    // Get new filter ids and create update data
+    const ids = responses.map(({ id }) => id);
     const updateFilterSettingsData = [
       {
         id: ids[0],
@@ -90,7 +108,7 @@ describe('SearchFilterSettings', () => {
       },
     ];
 
-    // update filter
+    // update filters
     await OEQ.SearchFilterSettings.batchUpdateSearchFilterSetting(
       TC.API_PATH,
       updateFilterSettingsData
@@ -98,13 +116,18 @@ describe('SearchFilterSettings', () => {
     const updatedFilterSettings =
       await OEQ.SearchFilterSettings.getSearchFilterSettings(TC.API_PATH);
     expect(updatedFilterSettings).toEqual(updateFilterSettingsData);
+  });
 
-    // delete filters
+  it('Should be possible to delete a batch of the filter settings', async () => {
+    // Create new filter settings
+    const responses = await createNewFilterSettings();
+    const ids = responses.map(({ id }) => id);
+
+    // Delete filters
     await OEQ.SearchFilterSettings.batchDeleteSearchFilterSetting(
       TC.API_PATH,
       ids
     );
-
     const finalFilterSettings =
       await OEQ.SearchFilterSettings.getSearchFilterSettings(TC.API_PATH);
     expect(finalFilterSettings).toHaveLength(filterSettingsAtStart.length);

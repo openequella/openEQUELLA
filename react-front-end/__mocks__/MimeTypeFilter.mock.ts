@@ -15,9 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { MimeTypeFilter } from "../tsrc/modules/SearchFilterSettingsModule";
+import * as OEQ from "@openequella/rest-api-client";
 
-export const getMimeTypeFilters: MimeTypeFilter[] = [
+export const getMimeTypeFilters: OEQ.SearchFilterSettings.MimeTypeFilter[] = [
   {
     id: "fe79c485-a6dd-4743-81e8-52de66494632",
     name: "Image filter",

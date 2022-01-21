@@ -18,8 +18,8 @@
 export * as Acl from './Acl';
 export * as AdvancedSearch from './AdvancedSearch';
 export * as Auth from './Auth';
-export * as Collection from './Collection';
 export * as BatchOperationResponse from './BatchOperationResponse';
+export * as Collection from './Collection';
 export * as Common from './Common';
 export * as Drm from './Drm';
 export * as Errors from './Errors';

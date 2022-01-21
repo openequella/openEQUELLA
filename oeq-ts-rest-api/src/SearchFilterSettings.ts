@@ -15,9 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { BatchOperationResponse } from './BatchOperationResponse';
 import { DELETE, GET, PUT } from './AxiosInstance';
 import { is } from 'typescript-is';
-import { BatchOperationResponse } from './BatchOperationResponse';
 
 export interface MimeTypeFilter {
   /**
@@ -35,7 +35,7 @@ export interface MimeTypeFilter {
   mimeTypes: string[];
 }
 
-const SEARCH_FILTER_SEARCH_URL = '/settings/search/filter';
+const SEARCH_FILTER_SETTINGS_URL = '/settings/search/filter';
 
 /**
  * Retrieve search filters.
@@ -46,35 +46,35 @@ export const getSearchFilterSettings = (
   apiBasePath: string
 ): Promise<MimeTypeFilter[]> =>
   GET<MimeTypeFilter[]>(
-    apiBasePath + SEARCH_FILTER_SEARCH_URL,
+    apiBasePath + SEARCH_FILTER_SETTINGS_URL,
     (data): data is MimeTypeFilter[] => is<MimeTypeFilter[]>(data)
   );
 
 /**
- * Update batch search filters to those provided.
+ * Update one or more search filters in a single request (batch).
  *
  * @param apiBasePath Base URI to the oEQ institution and API
- * @param updatedSettings Search Filter Settings
+ * @param searchFilterSettings The filters to be updated with the provided values.
  */
 export const batchUpdateSearchFilterSetting = (
   apiBasePath: string,
   searchFilterSettings: MimeTypeFilter[]
 ): Promise<BatchOperationResponse[]> =>
   PUT<MimeTypeFilter[], BatchOperationResponse[]>(
-    apiBasePath + SEARCH_FILTER_SEARCH_URL,
+    apiBasePath + SEARCH_FILTER_SETTINGS_URL,
     searchFilterSettings
   );
 
 /**
- * Delete batch search filters to those provided.
+ * Delete one or more filters in a single request (batch).
  *
  * @param apiBasePath Base URI to the oEQ institution and API
- * @param updatedSettings Search Filter Settings ID array
+ * @param searchFilterSettingsIds IDs of the filters to delete
  */
 export const batchDeleteSearchFilterSetting = (
   apiBasePath: string,
   searchFilterSettingsIds: string[]
 ): Promise<BatchOperationResponse[]> =>
-  DELETE<BatchOperationResponse[]>(apiBasePath + SEARCH_FILTER_SEARCH_URL, {
+  DELETE<BatchOperationResponse[]>(apiBasePath + SEARCH_FILTER_SETTINGS_URL, {
     ids: searchFilterSettingsIds,
   });

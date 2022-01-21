@@ -18,11 +18,9 @@
 import * as OEQ from "@openequella/rest-api-client";
 import { API_BASE_URL } from "../AppConfig";
 
-export interface MimeTypeFilter
-  extends OEQ.SearchFilterSettings.MimeTypeFilter {}
-
-export const getMimeTypeFiltersFromServer = (): Promise<MimeTypeFilter[]> =>
-  OEQ.SearchFilterSettings.getSearchFilterSettings(API_BASE_URL);
+export const getMimeTypeFiltersFromServer = (): Promise<
+  OEQ.SearchFilterSettings.MimeTypeFilter[]
+> => OEQ.SearchFilterSettings.getSearchFilterSettings(API_BASE_URL);
 
 /**
  * Find MIME type filters by a list of ID.
@@ -32,12 +30,14 @@ export const getMimeTypeFiltersFromServer = (): Promise<MimeTypeFilter[]> =>
  */
 export const getMimeTypeFiltersById = async (
   filterIds: string[]
-): Promise<MimeTypeFilter[] | undefined> => {
+): Promise<OEQ.SearchFilterSettings.MimeTypeFilter[] | undefined> => {
   const allFilters = await getMimeTypeFiltersFromServer();
   return allFilters.filter(({ id }) => id && filterIds.includes(id));
 };
 
-export const batchUpdateOrAdd = (filters: MimeTypeFilter[]) =>
+export const batchUpdateOrAdd = (
+  filters: OEQ.SearchFilterSettings.MimeTypeFilter[]
+) =>
   OEQ.SearchFilterSettings.batchUpdateSearchFilterSetting(
     API_BASE_URL,
     filters
@@ -63,6 +63,9 @@ export const validateMimeTypeName = (name: string | undefined): boolean =>
 /**
  * Return a function which does reference comparison for two filters.
  */
-export const filterComparator = (targetFilter: MimeTypeFilter) => {
-  return (filter: MimeTypeFilter) => filter === targetFilter;
+export const filterComparator = (
+  targetFilter: OEQ.SearchFilterSettings.MimeTypeFilter
+) => {
+  return (filter: OEQ.SearchFilterSettings.MimeTypeFilter) =>
+    filter === targetFilter;
 };

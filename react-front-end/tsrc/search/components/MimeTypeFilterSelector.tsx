@@ -15,29 +15,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
 import { Checkbox, TextField } from "@material-ui/core";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import { Autocomplete, AutocompleteGetTagProps } from "@material-ui/lab";
 import * as React from "react";
 import { TooltipChip } from "../../components/TooltipChip";
-import { MimeTypeFilter } from "../../modules/SearchFilterSettingsModule";
 import { languageStrings } from "../../util/langstrings";
 
 export interface MimeTypeFilterSelectorProps {
   /**
    * MIME type filters that have been selected.
    */
-  value?: MimeTypeFilter[];
+  value?: OEQ.SearchFilterSettings.MimeTypeFilter[];
   /**
    * Function fired on selecting different MIME type filters.
    * @param filters A list of currently selected MIME type filters.
    */
-  onChange: (filters: MimeTypeFilter[]) => void;
+  onChange: (filters: OEQ.SearchFilterSettings.MimeTypeFilter[]) => void;
   /**
    * All configured MIME type filters.
    */
-  filters: MimeTypeFilter[];
+  filters: OEQ.SearchFilterSettings.MimeTypeFilter[];
 }
 
 const { helperText } = languageStrings.searchpage.mimeTypeFilterSelector;
@@ -53,7 +53,7 @@ export const MimeTypeFilterSelector = ({
   <Autocomplete
     multiple
     renderTags={(
-      filters: MimeTypeFilter[],
+      filters: OEQ.SearchFilterSettings.MimeTypeFilter[],
       getTagProps: AutocompleteGetTagProps
     ) =>
       filters.map((filter, index) => (
@@ -65,7 +65,7 @@ export const MimeTypeFilterSelector = ({
         />
       ))
     }
-    onChange={(_, value: MimeTypeFilter[]) => {
+    onChange={(_, value: OEQ.SearchFilterSettings.MimeTypeFilter[]) => {
       onChange(value);
     }}
     value={value ?? []}

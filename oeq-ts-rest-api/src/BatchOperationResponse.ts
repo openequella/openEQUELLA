@@ -15,6 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/**
+ * Responses for batch operations
+ * such as batch create, update and delete
+ */
 export interface BatchOperationResponse {
   id: string;
   status: number;
@@ -24,10 +28,10 @@ export interface BatchOperationResponse {
 /**
  * Group responses that have a 4xx or 5xx status code, and return their messages
  */
-export function groupErrorMessages(
+export const groupErrorMessages = (
   responses: BatchOperationResponse[]
-): string[] {
+): string[] => {
   return responses
-    .filter((response) => response.status >= 400)
-    .map((response) => response.message);
-}
+    .filter(({ status }) => status >= 400)
+    .map(({ message }) => message);
+};
