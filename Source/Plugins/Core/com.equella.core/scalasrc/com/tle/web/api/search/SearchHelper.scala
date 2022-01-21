@@ -20,8 +20,7 @@ package com.tle.web.api.search
 
 import com.dytech.edge.exceptions.{BadRequestException, DRMException}
 import com.tle.beans.entity.DynaCollection
-import com.tle.beans.item.attachments.{CustomAttachment, FileAttachment}
-import com.tle.beans.item.{Comment, ItemId, ItemIdKey, ItemKey}
+import com.tle.beans.item.{Comment, ItemIdKey}
 import com.tle.common.Check
 import com.tle.common.beans.exception.NotFoundException
 import com.tle.common.collection.AttachmentConfigConstants
@@ -35,26 +34,22 @@ import com.tle.core.security.ACLChecks.hasAcl
 import com.tle.core.services.item.{FreetextResult, FreetextSearchResults}
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean
-import com.tle.web.api.item.equella.interfaces.beans.{
-  AbstractFileAttachmentBean,
-  FileAttachmentBean
-}
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
+import com.tle.web.api.search.AttachmentHelper.{buildAttachmentLinks, sanitiseAttachmentBean}
 import com.tle.web.api.search.model.AdditionalSearchParameters.buildAdvancedSearchCriteria
-import com.tle.web.api.search.model.{
-  DrmStatus,
-  SearchParam,
-  SearchResultAttachment,
-  SearchResultItem,
-  WizardControlFieldValue
-}
-import com.tle.web.controls.resource.ResourceAttachmentBean
-import com.tle.web.controls.youtube.YoutubeAttachmentBean
-import cats.implicits._
 import cats.Semigroup
+import cats.implicits._
+import com.tle.web.api.search.model._
+import com.tle.web.api.search.service.AttachmentResourceService.{
+  getAttachmentDescription,
+  getFilePathForAttachment,
+  getMimetypeForAttachment,
+  recurseBrokenAttachmentCheck,
+  thumbExists
+}
 import java.time.format.DateTimeParseException
 import java.time.{LocalDate, LocalDateTime, LocalTime, ZoneId}
-import java.util.{Date, Optional}
+import java.util.Date
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ListBuffer
 
@@ -295,6 +290,7 @@ object SearchHelper {
         beans.asScala
         // Filter out restricted attachments if the user does not have permissions to view them
           .filter(a => !a.isRestricted || hasRestrictedAttachmentPrivileges)
+          .map(sanitiseAttachmentBean)
           .map(att => {
             val broken                             = recurseBrokenAttachmentCheck(itemKey, att.getUuid)
             def ifNotBroken[T](f: () => Option[T]) = if (!broken) f() else None
@@ -342,123 +338,10 @@ object SearchHelper {
     Option(LegacyGuice.itemCommentService.getCommentCountWithACLCheck(key))
 
   /**
-    * Determines if attachment contains a generated thumbnail in filestore
-    */
-  def thumbExists(itemKey: ItemIdKey, attachBean: AttachmentBean): Option[Boolean] = {
-    attachBean match {
-      case fileBean: FileAttachmentBean =>
-        val item = LegacyGuice.viewableItemFactory.createNewViewableItem(itemKey)
-        Option(fileBean.getThumbnail).map {
-          LegacyGuice.fileSystemService.fileExists(item.getFileHandle, _)
-        }
-      case _ => None
-    }
-  }
-
-  /**
-    * Determines if a given customAttachment is invalid. Required as these attachments can be recursive.
-    * @param customAttachment The attachment to check.
-    * @return If true, this attachment is broken.
-    */
-  def getBrokenAttachmentStatusForResourceAttachment(
-      customAttachment: CustomAttachment): Boolean = {
-    val uuid = customAttachment.getData("uuid").asInstanceOf[String]
-    // If version of the linked Item is 0, find the latest version of this Item.
-    val version = customAttachment.getData("version").asInstanceOf[Int] match {
-      case 0           => LegacyGuice.itemService.getLatestVersion(uuid)
-      case realVersion => realVersion
-    }
-
-    val key = new ItemId(uuid, version)
-    if (customAttachment.getType != "resource") {
-      return false;
-    }
-    customAttachment.getData("type") match {
-      case "a" =>
-        // Recurse into child attachment
-        recurseBrokenAttachmentCheck(key, customAttachment.getUrl)
-      case "p" =>
-        // Get the child item. If it doesn't exist, this is a dead attachment
-        Option(LegacyGuice.itemService.getUnsecureIfExists(key)).isEmpty
-      case _ => false
-    }
-  }
-
-  /**
-    * Determines if a given attachment is invalid.
-    * If it is a resource selector attachment, this gets handled by
-    * [[getBrokenAttachmentStatusForResourceAttachment(customAttachment: CustomAttachment)]]
-    * which links back in here to recurse through customAttachments to find the root.
-    *
-    * @param itemKey the details of the item the attachment belongs to
-    * @param attachmentUuid the UUID of the attachment
-    * @return True if broken, false if intact.
-    */
-  def recurseBrokenAttachmentCheck(itemKey: ItemKey, attachmentUuid: String): Boolean = {
-    Option(LegacyGuice.itemService.getNullableAttachmentForUuid(itemKey, attachmentUuid)) match {
-      case Some(fileAttachment: FileAttachment) =>
-        //check if file is present in the filestore
-        val item =
-          LegacyGuice.viewableItemFactory.createNewViewableItem(fileAttachment.getItem.getItemId)
-        !LegacyGuice.fileSystemService.fileExists(item.getFileHandle, fileAttachment.getFilename)
-      case Some(customAttachment: CustomAttachment) =>
-        getBrokenAttachmentStatusForResourceAttachment(customAttachment)
-      case None    => true
-      case Some(_) => false
-    }
-  }
-
-  /**
-    * Extract the mimetype for AbstractExtendableBean.
-    */
-  def getMimetypeForAttachment[T <: AbstractExtendableBean](bean: T): Option[String] =
-    bean match {
-      case file: AbstractFileAttachmentBean =>
-        Some(LegacyGuice.mimeTypeService.getMimeTypeForFilename(file.getFilename))
-      case resourceAttachmentBean: ResourceAttachmentBean =>
-        Some(
-          LegacyGuice.mimeTypeService.getMimeTypeForResourceAttachmentBean(resourceAttachmentBean))
-      case _ => None
-    }
-
-  /**
-    * If the attachment is a file, then return the path for that attachment.
-    *
-    * @param attachment a potential file attachment
-    * @return the path of the provided file attachment
-    */
-  def getFilePathForAttachment(attachment: AttachmentBean): Option[String] =
-    attachment match {
-      case fileAttachment: FileAttachmentBean => Option(fileAttachment.getFilename)
-      case _                                  => None
-    }
-
-  /**
     * Extract the value of 'links' from the 'extras' of AbstractExtendableBean.
     */
   def getLinksFromBean[T <: AbstractExtendableBean](bean: T) =
     bean.get("links").asInstanceOf[java.util.Map[String, String]]
-
-  /**
-    * Build the links maps for an attachment, which can also include external links (or IDs) for
-    * custom attachments.
-    *
-    * @param attachment to build the links map for
-    * @return a map containing the standard links (view, thumbnail), plus optionally external links
-    *         if suitable for the attachment type.
-    */
-  def buildAttachmentLinks(attachment: AttachmentBean): java.util.Map[String, String] = {
-    val addExternalId = (links: Map[String, String], externalId: Optional[String]) =>
-      if (externalId.isPresent) links ++ Map("externalId" -> externalId.get) else links
-
-    val links = getLinksFromBean(attachment).asScala.toMap
-    (attachment match {
-      case youtube: YoutubeAttachmentBean => addExternalId(links, youtube.getExternalId)
-      case kaltura if attachment.getRawAttachmentType == "custom/kaltura" =>
-        addExternalId(links, kaltura.getExternalId)
-      case _ => links
-    }).asJava
-  }
 
   /**
     * Find the Bookmark linking to the Item and return the Bookmark's ID.
@@ -475,17 +358,4 @@ object SearchHelper {
     */
   def isLatestVersion(itemID: ItemIdKey): Boolean =
     itemID.getVersion == LegacyGuice.itemService.getLatestVersion(itemID.getUuid)
-
-  /**
-    * Use the `description` from the `Attachment` behind the `AttachmentBean` as this provides
-    * the value more commonly seen in the LegacyUI. And specifically uses any tweaks done for
-    * Custom Attachments - such as with Kaltura where the Kaltura Media `title` is pushed into
-    * the `description` rather than using the optional (and multi-line) Kaltura Media `description`.
-    *
-    * @param itemKey the details of the item the attachment belongs to
-    * @param attachmentUuid the UUID of the attachment
-    * @return the description for the attachment if available
-    */
-  def getAttachmentDescription(itemKey: ItemKey, attachmentUuid: String): Option[String] =
-    Option(LegacyGuice.itemService.getAttachmentForUuid(itemKey, attachmentUuid).getDescription)
 }
