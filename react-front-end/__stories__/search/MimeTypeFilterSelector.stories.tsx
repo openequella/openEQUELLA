@@ -15,10 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
 import { Meta, Story } from "@storybook/react";
 import * as React from "react";
 import { getMimeTypeFilters } from "../../__mocks__/MimeTypeFilter.mock";
-import { MimeTypeFilter } from "../../tsrc/modules/SearchFilterSettingsModule";
 import {
   MimeTypeFilterSelector,
   MimeTypeFilterSelectorProps,
@@ -32,7 +32,8 @@ export default {
   },
 } as Meta<MimeTypeFilterSelectorProps>;
 
-const mockedFilters: MimeTypeFilter[] = getMimeTypeFilters;
+const mockedFilters: OEQ.SearchFilterSettings.MimeTypeFilter[] =
+  getMimeTypeFilters;
 const commonProps = {
   filters: mockedFilters,
 };

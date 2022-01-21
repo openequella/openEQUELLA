@@ -15,13 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import type { Meta, Story } from "@storybook/react";
 import { getMimeTypesFromServer } from "../../__mocks__/MimeTypes.mock";
 import MimeTypeFilterEditingDialog, {
   MimeTypeFilterEditingDialogProps,
 } from "../../tsrc/settings/Search/searchfilter/MimeTypeFilterEditingDialog";
-import type { MimeTypeFilter } from "../../tsrc/modules/SearchFilterSettingsModule";
 
 export default {
   title: "MimeTypeFilterDialog",
@@ -32,7 +32,7 @@ export default {
   },
 } as Meta<MimeTypeFilterEditingDialogProps>;
 
-const mimeTypeFilter: MimeTypeFilter = {
+const mimeTypeFilter: OEQ.SearchFilterSettings.MimeTypeFilter = {
   id: "f8eab6cf-98bc-4c5f-a9a2-8ecdd07533d0",
   name: "Image filter",
   mimeTypes: ["image/png", "image/jpeg"],
