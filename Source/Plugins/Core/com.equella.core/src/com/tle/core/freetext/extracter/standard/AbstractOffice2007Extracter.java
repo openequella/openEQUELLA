@@ -22,12 +22,12 @@ import com.google.common.base.Throwables;
 import com.tle.core.util.archive.ArchiveEntry;
 import com.tle.core.util.archive.ArchiveExtractor;
 import com.tle.core.util.archive.ArchiveType;
+import io.github.xstream.mxparser.MXParser;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import org.xmlpull.mxp1.MXParser;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 

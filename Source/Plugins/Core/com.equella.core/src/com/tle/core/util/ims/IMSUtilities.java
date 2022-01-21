@@ -24,6 +24,7 @@ import com.google.common.io.CharStreams;
 import com.google.common.io.Closeables;
 import com.tle.common.Utils;
 import com.tle.core.util.ims.beans.IMSManifest;
+import io.github.xstream.mxparser.MXParser;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,7 +42,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import org.xmlpull.mxp1.MXParser;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
