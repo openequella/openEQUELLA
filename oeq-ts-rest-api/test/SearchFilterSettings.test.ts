@@ -30,11 +30,8 @@ describe('SearchFilterSettings', () => {
     return typeof value === 'string';
   };
 
-  const getIds = (mimeTypes: MimeTypeFilter[]): string[] => {
-    return mimeTypes
-      .map(({ id }) => id)
-      .filter((id) => isString(id)) as string[];
-  };
+  const getIds = (mimeTypes: MimeTypeFilter[]): string[] =>
+    mimeTypes.map(({ id }) => id).filter((id) => isString(id)) as string[];
 
   const newFilterSettingsData = [
     {
