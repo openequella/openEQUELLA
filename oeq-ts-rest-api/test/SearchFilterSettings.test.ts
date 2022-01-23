@@ -26,7 +26,7 @@ afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
 describe('SearchFilterSettings', () => {
   let filterSettingsAtStart: MimeTypeFilter[];
 
-  const isString = (value: any): value is string => {
+  const isString = (value: unknown): value is string => {
     return typeof value === 'string';
   };
 
@@ -47,11 +47,10 @@ describe('SearchFilterSettings', () => {
   const createNewFilterSettings = async (): Promise<
     BatchOperationResponse[]
   > => {
-    const responses = OEQ.SearchFilterSettings.batchUpdateSearchFilterSetting(
+    return OEQ.SearchFilterSettings.batchUpdateSearchFilterSetting(
       TC.API_PATH,
       newFilterSettingsData
     );
-    return responses;
   };
 
   beforeAll(async () => {
