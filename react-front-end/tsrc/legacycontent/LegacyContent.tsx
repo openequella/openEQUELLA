@@ -17,7 +17,7 @@
  */
 import { CircularProgress, Grid } from "@material-ui/core";
 import Axios from "axios";
-import { constFalse, pipe } from "fp-ts/function";
+import { pipe } from "fp-ts/function";
 import { isEqual } from "lodash";
 import * as O from "fp-ts/Option";
 import * as React from "react";
@@ -31,7 +31,11 @@ import {
 import { LEGACY_CSS_URL } from "../AppConfig";
 import { AppRenderErrorContext } from "../mainui/App";
 import { BaseOEQRouteComponentProps } from "../mainui/routes";
-import { templateDefaults, templatePropsForLegacy } from "../mainui/Template";
+import {
+  FullscreenMode,
+  templateDefaults,
+  templatePropsForLegacy,
+} from "../mainui/Template";
 import { deleteRawModeFromStorage } from "../search/SearchPageHelper";
 import { LegacyContentRenderer } from "./LegacyContentRenderer";
 import { getEqPageForm, legacyFormId } from "./LegacyForm";
@@ -253,19 +257,20 @@ export const LegacyContent = React.memo(function LegacyContent({
    * received from server to hide menu bar, but not the error page.
    * Thus, it is used to set `fullscreenMode` for error page.
    */
-  function preUpdateFullscreenMode(submitValues: StateData) {
+  const preUpdateFullscreenMode = (submitValues: StateData) => {
     pipe(
       O.fromNullable(submitValues["temp.hn"]),
-      O.map(([firstValue]) => firstValue === "true"),
-      O.getOrElse(constFalse),
-      (isFullscreenMode) => {
+      O.chain<string[], FullscreenMode>(([firstValue]) =>
+        firstValue === "true" ? O.some("YES") : O.none
+      ),
+      O.map((value) =>
         updateTemplate((tp) => ({
           ...tp,
-          fullscreenMode: isFullscreenMode ? "YES" : tp.fullscreenMode,
-        }));
-      }
+          fullscreenMode: value,
+        }))
+      )
     );
-  }
+  };
 
   function submitCurrentForm(
     fullScreen: boolean,
