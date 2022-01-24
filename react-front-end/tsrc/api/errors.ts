@@ -85,11 +85,12 @@ export function fromAxiosResponse(
     const [error, error_description] = (function () {
       switch (response.status) {
         case 404:
-          return ["Not Found", ""];
+          return ["Not Found", response.request.responseURL];
         default:
           return [response.statusText, ""];
       }
     })();
+
     return {
       id: v4(),
       error,
