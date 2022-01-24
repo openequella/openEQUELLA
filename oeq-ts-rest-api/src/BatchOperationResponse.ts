@@ -20,8 +20,11 @@
  * such as batch create, update and delete
  */
 export interface BatchOperationResponse {
+  /** The ID of the item the response belongs to. */
   id: string;
+  /** An HTTP status code indicating what the result was. */
   status: number;
+  /** A human-readable message about the result. */
   message: string;
 }
 

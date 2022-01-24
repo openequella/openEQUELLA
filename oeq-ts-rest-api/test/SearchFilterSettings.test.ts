@@ -26,9 +26,8 @@ afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
 describe('SearchFilterSettings', () => {
   let filterSettingsAtStart: MimeTypeFilter[];
 
-  const isString = (value: unknown): value is string => {
-    return typeof value === 'string';
-  };
+  const isString = (value: unknown): value is string =>
+    typeof value === 'string';
 
   const getIds = (mimeTypes: MimeTypeFilter[]): string[] =>
     mimeTypes.map(({ id }) => id).filter((id) => isString(id)) as string[];
