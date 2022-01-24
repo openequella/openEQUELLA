@@ -15,17 +15,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as OEQ from "@openequella/rest-api-client";
+/**
+ * Responses for batch operations
+ * such as batch create, update and delete
+ */
+export interface BatchOperationResponse {
+  /** The ID of the item the response belongs to. */
+  id: string;
+  /** An HTTP status code indicating what the result was. */
+  status: number;
+  /** A human-readable message about the result. */
+  message: string;
+}
 
-export const getMimeTypeFilters: OEQ.SearchFilterSettings.MimeTypeFilter[] = [
-  {
-    id: "fe79c485-a6dd-4743-81e8-52de66494632",
-    name: "Image filter",
-    mimeTypes: ["Image/png", "Image/jpeg"],
-  },
-  {
-    id: "fe79c485-a6dd-4743-81e8-52de66494631",
-    name: "PDF filter",
-    mimeTypes: ["Application/pdf"],
-  },
-];
+/**
+ * Group responses that have a 4xx or 5xx status code, and return their messages
+ */
+export const groupErrorMessages = (
+  responses: BatchOperationResponse[]
+): string[] => {
+  return responses
+    .filter(({ status }) => status >= 400)
+    .map(({ message }) => message);
+};

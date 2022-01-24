@@ -18,6 +18,7 @@
 export * as Acl from './Acl';
 export * as AdvancedSearch from './AdvancedSearch';
 export * as Auth from './Auth';
+export * as BatchOperationResponse from './BatchOperationResponse';
 export * as Collection from './Collection';
 export * as Common from './Common';
 export * as Drm from './Drm';
@@ -30,6 +31,7 @@ export * as RemoteSearch from './RemoteSearch';
 export * as Schema from './Schema';
 export * as Search from './Search';
 export * as SearchFacets from './SearchFacets';
+export * as SearchFilterSettings from './SearchFilterSettings';
 export * as SearchSettings from './SearchSettings';
 export * as Security from './Security';
 export * as Settings from './Settings';

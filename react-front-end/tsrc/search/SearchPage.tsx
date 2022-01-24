@@ -76,10 +76,7 @@ import {
   listClassifications,
   SelectedCategories,
 } from "../modules/SearchFacetsModule";
-import {
-  getMimeTypeFiltersFromServer,
-  MimeTypeFilter,
-} from "../modules/SearchFilterSettingsModule";
+import { getMimeTypeFiltersFromServer } from "../modules/SearchFilterSettingsModule";
 import {
   buildExportUrl,
   confirmExport,
@@ -233,7 +230,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
 
   const [searchSettings, setSearchSettings] = useState<{
     core: OEQ.SearchSettings.Settings | undefined;
-    mimeTypeFilters: MimeTypeFilter[];
+    mimeTypeFilters: OEQ.SearchFilterSettings.MimeTypeFilter[];
   }>({
     core: undefined,
     mimeTypeFilters: [],
@@ -692,7 +689,9 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
     );
   };
 
-  const handleMimeTypeFilterChange = (filters: MimeTypeFilter[]) =>
+  const handleMimeTypeFilterChange = (
+    filters: OEQ.SearchFilterSettings.MimeTypeFilter[]
+  ) =>
     search({
       ...searchPageOptions,
       mimeTypeFilters: filters,
