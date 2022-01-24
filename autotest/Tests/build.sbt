@@ -36,17 +36,16 @@ libraryDependencies ++= Seq(
   "axis"                      % "axis"                     % "1.4",
   "com.jcraft"                % "jsch"                     % "0.1.55",
 //  "jpf" % "jpf-tools" % "1.0.5",
-  "org.jacoco"       % "org.jacoco.report"         % "0.8.7",
-  "org.dspace"       % "oclc-harvester2"           % "0.1.12",
-  "org.jvnet.hudson" % "xstream"                   % "1.3.1-hudson-8",
-  "com.typesafe"     % "config"                    % "1.4.1",
-  "org.slf4j"        % "slf4j-simple"              % "1.7.33",
-  "org.scalacheck"   %% "scalacheck"               % "1.15.4" % "test,serial",
-  "org.http4s"       %% "http4s-async-http-client" % http4sVersion,
-  "org.http4s"       %% "http4s-blaze-client"      % http4sVersion,
-  "org.http4s"       %% "http4s-circe"             % http4sVersion,
-  "org.typelevel"    %% "cats-free"                % catsVersion,
-  "com.unboundid"    % "unboundid-ldapsdk"         % "6.0.3"
+  "org.jacoco"     % "org.jacoco.report"         % "0.8.7",
+  "org.dspace"     % "oclc-harvester2"           % "0.1.12",
+  "com.typesafe"   % "config"                    % "1.4.1",
+  "org.slf4j"      % "slf4j-simple"              % "1.7.33",
+  "org.scalacheck" %% "scalacheck"               % "1.15.4" % "test,serial",
+  "org.http4s"     %% "http4s-async-http-client" % http4sVersion,
+  "org.http4s"     %% "http4s-blaze-client"      % http4sVersion,
+  "org.http4s"     %% "http4s-circe"             % http4sVersion,
+  "org.typelevel"  %% "cats-free"                % catsVersion,
+  "com.unboundid"  % "unboundid-ldapsdk"         % "6.0.3"
 )
 
 (Compile / unmanagedBase) := baseDirectory.value / "lib/adminjars"
