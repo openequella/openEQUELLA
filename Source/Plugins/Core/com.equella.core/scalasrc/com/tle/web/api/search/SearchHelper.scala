@@ -35,13 +35,16 @@ import com.tle.core.services.item.{FreetextResult, FreetextSearchResults}
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
-import com.tle.web.api.search.AttachmentHelper.{buildAttachmentLinks, sanitiseAttachmentBean}
+import com.tle.web.api.search.AttachmentHelper.{
+  buildAttachmentLinks,
+  getAttachmentDescription,
+  sanitiseAttachmentBean
+}
 import com.tle.web.api.search.model.AdditionalSearchParameters.buildAdvancedSearchCriteria
 import cats.Semigroup
 import cats.implicits._
 import com.tle.web.api.search.model._
-import com.tle.web.api.search.service.AttachmentResourceService.{
-  getAttachmentDescription,
+import com.tle.core.item.service.AttachmentService.{
   getFilePathForAttachment,
   getMimetypeForAttachment,
   recurseBrokenAttachmentCheck,
