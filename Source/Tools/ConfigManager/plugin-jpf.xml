@@ -13,7 +13,6 @@
 		<import plugin-id="commons-configuration:commons-configuration" />
 		<import plugin-id="commons-lang:commons-lang" />
 		<import plugin-id="org.slf4j:slf4j-api" exported="true" />
-		<import plugin-id="log4j:log4j" exported="true" />
 	</requires>
 </plugin>
 

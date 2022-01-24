@@ -32,7 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import org.apache.log4j.PropertyConfigurator;
 import org.java.plugin.ObjectFactory;
 import org.java.plugin.Plugin;
 import org.java.plugin.PluginClassLoader;
@@ -98,7 +97,12 @@ public class EQUELLAServer {
         // Do not stop - But unable to delete equella.lock
       }
     }
-    PropertyConfigurator.configure(loader.getResource("learningedge-log4j.properties"));
+
+    URL log4jConfigFile = loader.getResource("learningedge-log4j.yaml");
+    if (log4jConfigFile != null) {
+      System.getProperties().setProperty("log4j2.configurationFile", log4jConfigFile.toString());
+    }
+
     Properties mandatory = new Properties();
     Properties optional = new Properties();
 

@@ -1,0 +1,40 @@
+Configuration:
+  status: warn
+
+  properties:
+    property:
+      - name: filePath
+        value: "../logs/conversion-service"
+      - name: fileName
+        value: "${filePath}/conversion.html"
+      - name: filePattern
+        value: "${filePath}/%d{yyyy-MM-dd}/conversion-%i.html"
+
+  appenders:
+    RollingFile:
+      name: ROLLING_FILE
+      fileName: "${fileName}"
+      filePattern: "${filePattern}"
+      immediateFlush: true
+      append: true
+      Filters:
+        ThresholdFilter:
+          level: info
+      HTMLLayout:
+        title: TLE Service Manager
+        datePattern: ISO8601
+        locationInfo: true
+      Policies:
+        TimeBasedTriggeringPolicy:
+          interval: 1
+          modulate: true
+        SizeBasedTriggeringPolicy:
+          size: 10 MB
+      DefaultRollOverStrategy:
+        max: 20
+
+  Loggers:
+    Root:
+      level: debug
+      AppenderRef:
+        ref: ROLLING_FILE

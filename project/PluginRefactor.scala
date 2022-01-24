@@ -45,7 +45,6 @@ object PluginRefactor {
     Set("com.tle.platform.common", "com.tle.platform.swing", "com.tle.platform.equella")
 
   val keepPlugins = Set(
-    "com.tle.log4j",
     "com.tle.webstart.admin",
     "com.tle.core.application",
     "com.tle.core.security",
