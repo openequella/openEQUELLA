@@ -54,7 +54,7 @@ import {
   batchDelete,
   batchUpdateOrAdd,
   facetComparator,
-  FacetWithFlags,
+  FacetedSearchClassificationWithFlags,
   getFacetsFromServer,
   getHighestOrderIndex,
   removeFacetFromList,
@@ -85,17 +85,19 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [showResultDialog, setShowResultDialog] = useState<boolean>(false);
   const [resultMessages, setResultMessagesMessages] = useState<string[]>([]);
   const [showEditingDialog, setShowEditingDialog] = useState<boolean>(false);
-  const [facets, setFacets] = useState<FacetWithFlags[]>([]);
+  const [facets, setFacets] = useState<FacetedSearchClassificationWithFlags[]>(
+    []
+  );
   const [currentFacet, setCurrentFacet] = useState<
-    FacetWithFlags | undefined
+    FacetedSearchClassificationWithFlags | undefined
   >();
   const [reset, setReset] = useState<boolean>(true);
   const { appErrorHandler } = useContext(AppRenderErrorContext);
 
-  const listOfUpdates: FacetWithFlags[] = facets.filter(
+  const listOfUpdates: FacetedSearchClassificationWithFlags[] = facets.filter(
     (facet) => facet.updated && !facet.deleted
   );
-  const listOfDeleted: FacetWithFlags[] = facets.filter(
+  const listOfDeleted: FacetedSearchClassificationWithFlags[] = facets.filter(
     (facet) => facet.deleted
   );
   const changesUnsaved = listOfUpdates.length > 0 || listOfDeleted.length > 0;
@@ -160,7 +162,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
     schemaNode: string,
     maxResults: number | undefined
   ) => {
-    let newFacet: FacetWithFlags;
+    let newFacet: FacetedSearchClassificationWithFlags;
     if (currentFacet) {
       newFacet = {
         ...currentFacet,
@@ -188,7 +190,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
   /**
    * Visually delete a facet.
    */
-  const deleteFacet = (deletedfacet: FacetWithFlags) => {
+  const deleteFacet = (deletedfacet: FacetedSearchClassificationWithFlags) => {
     setFacets(removeFacetFromList(facets, deletedfacet.orderIndex));
   };
 

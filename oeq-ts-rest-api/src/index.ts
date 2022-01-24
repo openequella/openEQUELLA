@@ -23,6 +23,7 @@ export * as Collection from './Collection';
 export * as Common from './Common';
 export * as Drm from './Drm';
 export * as Errors from './Errors';
+export * as FacetedSearchSettings from './FacetedSearchSettings';
 export * as Favourite from './Favourite';
 export * as Heartbeat from './Heartbeat';
 export * as LegacyContent from './LegacyContent';

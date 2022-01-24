@@ -35,7 +35,7 @@ import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom/extend-expect";
 import FacetedSearchSettingsPage from "../../../tsrc/settings/Search/facetedsearch/FacetedSearchSettingsPage";
 import * as FacetedSearchSettingsModule from "../../../tsrc/modules/FacetedSearchSettingsModule";
-import { FacetWithFlags } from "../../../tsrc/modules/FacetedSearchSettingsModule";
+import { FacetedSearchClassificationWithFlags } from "../../../tsrc/modules/FacetedSearchSettingsModule";
 import { NavigationGuardProps } from "../../../tsrc/components/NavigationGuard";
 import { getSchemasResp } from "../../../__mocks__/getSchemasResp";
 import { getSchemaUuidResp } from "../../../__mocks__/getSchemaUuidResp";
@@ -43,7 +43,7 @@ import * as OEQ from "@openequella/rest-api-client";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { getMuiButtonByText } from "../MuiQueries";
 
-const mockFacets: FacetedSearchSettingsModule.Facet[] = [
+const mockFacets: OEQ.FacetedSearchSettings.FacetedSearchClassification[] = [
   {
     id: 1,
     name: "mocked facet1",
@@ -77,9 +77,10 @@ jest.mock("@openequella/rest-api-client");
   OEQ.Schema.getSchema as jest.Mock<Promise<OEQ.Schema.EquellaSchema>>
 ).mockResolvedValue(getSchemaUuidResp);
 
-const mockFacetsWithFlags: FacetWithFlags[] = mockFacets.map((f) => {
-  return { ...f, updated: false, deleted: false };
-});
+const mockFacetsWithFlags: FacetedSearchClassificationWithFlags[] =
+  mockFacets.map((f) => {
+    return { ...f, updated: false, deleted: false };
+  });
 
 // This test does not need NavigationGuard which is part of the Setting page template.
 jest.mock("../../../tsrc/components/NavigationGuard", () => ({
@@ -270,7 +271,7 @@ describe("<FacetedSearchSettingsPage />", () => {
 
   describe("when remove a facet", () => {
     // Add a new mock facet which does not have an ID.
-    const newFacet: FacetWithFlags = {
+    const newFacet: FacetedSearchClassificationWithFlags = {
       name: "mocked facet4",
       schemaNode: "item/age",
       maxResults: 4,
