@@ -19,7 +19,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 val RestEasyVersion  = "3.15.3.Final"
 val SwaggerVersion   = "1.6.3"
 val TomcatVersion    = "9.0.58"
-val axis2Version     = "1.6.3"
+val axis2Version     = "1.7.9"
 val circeVersion     = "0.12.1"
 val cxfVersion       = "3.5.0"
 val fs2Version       = "2.4.4"
@@ -178,22 +178,20 @@ libraryDependencies ++= Seq(
   "org.apache.tika" % "tika-core"                     % tikaVersion,
   "org.apache.tika" % "tika-parsers-standard-package" % tikaVersion excludeAll ExclusionRule(
     organization = "org.apache.logging.log4j"),
-  "org.apache.tomcat"           % "tomcat-annotations-api" % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-api"             % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-catalina"        % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-catalina-ha"     % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-coyote"          % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-jsp-api"         % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-juli"            % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-servlet-api"     % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-tribes"          % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-util"            % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-util-scan"       % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-ssi"             % TomcatVersion,
-  "org.apache.ws.commons.axiom" % "axiom-api"              % "1.3.0",
-  "org.apache.ws.commons.axiom" % "axiom-impl"             % "1.3.0",
-  "org.apache.ws.security"      % "wss4j"                  % "1.6.19",
-  "org.apache.zookeeper"        % "zookeeper"              % "3.7.0" excludeAll (
+  "org.apache.tomcat"      % "tomcat-annotations-api" % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-api"             % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-catalina"        % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-catalina-ha"     % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-coyote"          % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-jsp-api"         % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-juli"            % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-servlet-api"     % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-tribes"          % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-util"            % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-util-scan"       % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-ssi"             % TomcatVersion,
+  "org.apache.ws.security" % "wss4j"                  % "1.6.19",
+  "org.apache.zookeeper"   % "zookeeper"              % "3.7.0" excludeAll (
     ExclusionRule(organization = "org.slf4j",
                   name = "slf4j-log4j12")
   ),
