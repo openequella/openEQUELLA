@@ -55,6 +55,7 @@ import com.tle.upgrade.upgraders.UpgradeToTomcat6_0_26;
 import com.tle.upgrade.upgraders.UpgradeToTomcat6_0_32;
 import com.tle.upgrade.upgraders.UpgradeToTomcat6_0_35;
 import com.tle.upgrade.upgraders.UpgradeToTomcat7_0_37;
+import com.tle.upgrade.upgraders.log4j2.UpdateLog4JConfigFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -115,7 +116,8 @@ public class UpgradeMain {
         new AddLDAPPoolingOptions(),
         new AddLibAvConfig(),
         new AddFreetextAnalyzerConfig(),
-        new AddPostHib5UpgradeConfig()
+        new AddPostHib5UpgradeConfig(),
+        new UpdateLog4JConfigFile()
       };
 
   public static void main(String[] args) throws Throwable {

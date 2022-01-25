@@ -5,13 +5,15 @@ libraryDependencies ++= Seq(
   "org.slf4j"        % "jcl-over-slf4j" % "1.7.33",
   log4j,
   log4jSlf4jImpl,
+  "org.typelevel"            %% "cats-core"       % "2.7.0",
   xstreamDep,
   "commons-configuration" % "commons-configuration" % "1.10",
   "commons-io"            % "commons-io"            % "2.11.0",
   "commons-lang"          % "commons-lang"          % "2.6",
   // Need these two jackson deps to allow processing log4j yaml config files.
   "com.fasterxml.jackson.core"       % "jackson-databind"        % jacksonVersion,
-  "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % jacksonVersion
+  "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % jacksonVersion,
+  "com.fasterxml.jackson.module"     %% "jackson-module-scala"   % jacksonVersion
 )
 
 excludeDependencies ++= Seq(
@@ -19,7 +21,7 @@ excludeDependencies ++= Seq(
 )
 
 (assembly / mainClass) := Some("com.tle.upgrade.UpgradeMain")
-(assembly / assemblyOption) := (assembly / assemblyOption).value.copy(includeScala = false)
+(assembly / assemblyOption) := (assembly / assemblyOption).value.withIncludeScala(true)
 
 (assembly / assemblyMergeStrategy) := {
   case PathList("org", "xmlpull", "v1", _*) => MergeStrategy.first
