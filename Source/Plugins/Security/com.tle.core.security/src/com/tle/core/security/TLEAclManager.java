@@ -49,6 +49,15 @@ public interface TLEAclManager extends RemoteTLEAclManager {
    */
   boolean hasPrivilege(Object domainObj, Privilege... privilege);
 
+  /**
+   * Check if user has the supplied privileges for any object.
+   *
+   * @param privileges List of privileges to be checked
+   * @param includePossibleOwnerAcls true to include 'ownerAcl'.
+   * @return true if ANY of the supplied privileges are granted.
+   */
+  boolean hasPrivilege(Collection<String> privileges, boolean includePossibleOwnerAcls);
+
   /** Return a map of domain objects to maps of privileges. */
   <T> Map<T, Map<String, Boolean>> getPrivilegesForObjects(
       Collection<String> privileges, Collection<T> domainObjs);
