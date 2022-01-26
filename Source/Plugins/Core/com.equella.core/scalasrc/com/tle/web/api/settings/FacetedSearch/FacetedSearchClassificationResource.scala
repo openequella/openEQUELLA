@@ -136,7 +136,9 @@ class FacetedSearchClassificationResource {
             newClassification.setDateModified(new Date())
             newClassification.setInstitution(CurrentInstitution.get)
             service.add(newClassification)
-            ApiBatchOperationResponse(id, 200, s"A new classification has been created.")
+            ApiBatchOperationResponse(newClassification.getId,
+                                      200,
+                                      s"A new classification has been created.")
           } else {
             Option(service.getById(id)) match {
               case Some(oldClassification) =>
