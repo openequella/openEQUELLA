@@ -5,7 +5,7 @@ libraryDependencies ++= Seq(
   "org.slf4j"        % "jcl-over-slf4j" % "1.7.33",
   log4j,
   log4jSlf4jImpl,
-  "org.typelevel"            %% "cats-core"       % "2.7.0",
+  "org.typelevel" %% "cats-core" % "2.7.0",
   xstreamDep,
   "commons-configuration" % "commons-configuration" % "1.10",
   "commons-io"            % "commons-io"            % "2.11.0",
