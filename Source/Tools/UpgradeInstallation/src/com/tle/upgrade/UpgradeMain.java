@@ -65,6 +65,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -76,6 +77,14 @@ import org.apache.commons.logging.LogFactory;
 
 @SuppressWarnings("nls")
 public class UpgradeMain {
+  static {
+    URL log4jConfigFile =
+        ClassLoader.getSystemResource("com/tle/upgrade/upgraders/upgrader-log4j.yaml");
+    if (log4jConfigFile != null) {
+      System.getProperties().setProperty("log4j2.configurationFile", log4jConfigFile.toString());
+    }
+  }
+
   private static final Log LOGGER = LogFactory.getLog(UpgradeMain.class);
 
   private static String commit = "476-g5014b34";

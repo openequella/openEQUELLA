@@ -58,7 +58,6 @@ public final class DatabaseUpgraderInvoker {
       final File managerDir = config.getManagerDir();
       List<String> args = Lists.newArrayList();
       args.add(config.getJavaBin().getAbsolutePath());
-      args.add("-Dlog4j2.configurationFile=file:upgrader-log4j.yaml");
       args.add("-classpath");
       args.add(managerDir.getAbsolutePath());
       args.add("-jar");
@@ -66,13 +65,6 @@ public final class DatabaseUpgraderInvoker {
       if (install) {
         args.add("--install");
       }
-
-      /*
-       * StringBuilder command = new StringBuilder(); boolean first =
-       * true; for( String a : args ) { if( !first ) {
-       * command.append(" "); } command.append(a); first = false; }
-       * System.out.println("Executing " + command.toString());
-       */
 
       final ProcessBuilder pbuilder = new ProcessBuilder(args);
       pbuilder.directory(config.getManagerDir());
