@@ -73,14 +73,15 @@ object Filter {
                  props: Properties): ValidatedNec[String, Option[Map[String, Seq[Filter]]]] = {
     (getRegexFilters(appender, props), getThresholdFilter(appender, props)).mapN {
       case (regexFilters, thresholdFilter) =>
-        // Currently, we support RegexFilter and ThresholdFilter.
-        // So convert a list of Filter to a Map where key is either "RegexFilter" or "ThresholdFilter"
-        // and value is a list of RegexFilter or ThresholdFilter.
-        def groupFilter(filters: Seq[RegexFilter],
-                        filter: ThresholdFilter): Map[String, Seq[Filter]] =
-          Map("RegexFilter" -> filters, "ThresholdFilter" -> Seq(filter))
+        // Group filters by their types.
+        def group(filters: Seq[Filter]) = {
+          filters.groupBy(_.getClass.getSimpleName)
+        }
 
-        regexFilters.map2(thresholdFilter)(groupFilter)
+        (regexFilters ++ thresholdFilter.map(Seq(_)))
+          .reduceOption(_ ++ _)
+          .map(group)
+
     }
   }
 }
