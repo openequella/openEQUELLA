@@ -13,7 +13,7 @@ prepareDevConfig := {
     installerConfig / "hikari.properties"
   ).pair(rebase(installerConfig, baseDir))
   val fromDefaults = Seq(
-    "learningedge-log4j.properties",
+    "learningedge-log4j.yaml",
     "optional-config.properties",
     "hibernate.properties"
   ).map(f => (defaultsDir / s"$f.default", baseDir / f))
