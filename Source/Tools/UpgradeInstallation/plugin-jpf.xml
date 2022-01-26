@@ -1,5 +1,5 @@
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
-<plugin version="1" id="TLE Installation Upgrade">
+<plugin version="1" id="UpgradeInstallation">
 	<requires>
 		<import plugin-id="com.tle.platform.equella" />
 		<import plugin-id="com.tle.platform.common" />
