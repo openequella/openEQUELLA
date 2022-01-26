@@ -25,11 +25,11 @@ export interface FacetedSearchClassification {
    */
   id?: number;
   /**
-   * Date time when a facet was created. Not required for batch create or update.
+   * Date time when a facet was created. Unnecessary for create or update.
    */
   dateCreated?: string;
   /**
-   * Latest date time when a facet was modified. Not required for batch create or update.
+   * Latest date time when a facet was modified. Unnecessary for create or update.
    */
   dateModified?: string;
   /**
@@ -50,10 +50,10 @@ export interface FacetedSearchClassification {
   orderIndex: number;
 }
 
-const FACETED_SEARCH_SETTINGS_URL = '/settings/facetedsearch/classfication';
+const FACETED_SEARCH_SETTINGS_URL = '/settings/facetedsearch/classification';
 
 /**
- * Retrieve faceted search settings
+ * Retrieve faceted search settings (classification)
  *
  * @param apiBasePath Base URI to the oEQ institution and API
  */
@@ -67,30 +67,46 @@ export const getFacetedSearchSettings = (
   );
 
 /**
- * Update one or more faceted search classifications in a single request (batch).
+ * Retrieve a faceted search setting (classification) by a provided ID
  *
  * @param apiBasePath Base URI to the oEQ institution and API
- * @param facetSearchClassifications The faceted search classification to be updated with the provided values.
+ * @param id Faceted search setting ID
  */
-export const batchUpdateFacetedSearchSetting = (
+export const getFacetedSearchSettingById = (
   apiBasePath: string,
-  facetSearchClassifications: FacetedSearchClassification[]
-): Promise<BatchOperationResponse[]> =>
-  PUT<FacetedSearchClassification[], BatchOperationResponse[]>(
-    apiBasePath + FACETED_SEARCH_SETTINGS_URL,
-    facetSearchClassifications
+  id: number | string
+): Promise<FacetedSearchClassification> =>
+  GET<FacetedSearchClassification>(
+    `${apiBasePath}${FACETED_SEARCH_SETTINGS_URL}/${id}`,
+    (data): data is FacetedSearchClassification =>
+      is<FacetedSearchClassification>(data)
   );
 
 /**
- * Delete one or more faceted search classifications in a single request (batch).
+ * Update one or more faceted search settings (classifications) in a single request (batch).
  *
  * @param apiBasePath Base URI to the oEQ institution and API
- * @param facetSearchClassificationIds IDs of the faceted search classification to delete
+ * @param facetedSearchClassifications The faceted search classification to be updated with the provided values.
+ */
+export const batchUpdateFacetedSearchSetting = (
+  apiBasePath: string,
+  facetedSearchClassifications: FacetedSearchClassification[]
+): Promise<BatchOperationResponse[]> =>
+  PUT<FacetedSearchClassification[], BatchOperationResponse[]>(
+    apiBasePath + FACETED_SEARCH_SETTINGS_URL,
+    facetedSearchClassifications
+  );
+
+/**
+ * Delete one or more faceted search settings (classifications) in a single request (batch).
+ *
+ * @param apiBasePath Base URI to the oEQ institution and API
+ * @param facetedSearchClassificationIds IDs of the faceted search classification to delete
  */
 export const batchDeleteFacetedSearchSetting = (
   apiBasePath: string,
-  facetSearchClassificationIds: string[]
+  facetedSearchClassificationIds: number[] | string[]
 ): Promise<BatchOperationResponse[]> =>
   DELETE<BatchOperationResponse[]>(apiBasePath + FACETED_SEARCH_SETTINGS_URL, {
-    ids: facetSearchClassificationIds,
+    ids: facetedSearchClassificationIds,
   });
