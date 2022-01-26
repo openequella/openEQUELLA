@@ -278,6 +278,7 @@ object SearchHelper {
         beans.asScala
         // Filter out restricted attachments if the user does not have permissions to view them
           .filter(a => !a.isRestricted || hasRestrictedAttachmentPrivileges)
+          .map(sanitiseAttachmentBean)
           .map(att => {
             val broken =
               recurseBrokenAttachmentCheck(
@@ -318,20 +319,32 @@ object SearchHelper {
   }
 
   /**
+    * Find out the latest version of the Item which a Custom Attachment points to.
+    *
+    * @param version Version of a linked Item. It is either 0 or 1 where 0 means using the latest version
+    *                and 1 means always using version 1.
+    * @param uuid UUID of the linked Item.
+    */
+  def getLatestVersionForCustomAttachment(version: Int, uuid: String): Int = {
+    version match {
+      // If version of is 0, find the real latest version of this Item.
+      case 0           => LegacyGuice.itemService.getLatestVersion(uuid)
+      case realVersion => realVersion
+    }
+  }
+
+  /**
     * Determines if a given customAttachment is invalid. Required as these attachments can be recursive.
     * @param customAttachment The attachment to check.
     * @return If true, this attachment is broken.
     */
   def getBrokenAttachmentStatusForResourceAttachment(
       customAttachment: CustomAttachment): Boolean = {
-    val uuid = customAttachment.getData("uuid").asInstanceOf[String]
-    // If version of the linked Item is 0, find the latest version of this Item.
-    val version = customAttachment.getData("version").asInstanceOf[Int] match {
-      case 0           => LegacyGuice.itemService.getLatestVersion(uuid)
-      case realVersion => realVersion
-    }
+    val uuid    = customAttachment.getData("uuid").asInstanceOf[String]
+    val version = customAttachment.getData("version").asInstanceOf[Int]
 
-    val key = new ItemId(uuid, version)
+    val key = new ItemId(uuid, getLatestVersionForCustomAttachment(version, uuid))
+
     if (customAttachment.getType != "resource") {
       return false;
     }
@@ -438,4 +451,23 @@ object SearchHelper {
     */
   def isLatestVersion(itemID: ItemIdKey): Boolean =
     itemID.getVersion == LegacyGuice.itemService.getLatestVersion(itemID.getUuid)
+
+  /**
+    * When an AttachmentBean is converted to SearchResultAttachment, it may require some extra sanitising
+    * to complete the conversion. The sanitising work includes tasks listed below.
+    *
+    * 1. Help ResourceAttachmentBean check the version of its linked resource.
+    *
+    * @param att An AttachmentBean to be sanitised.
+    */
+  def sanitiseAttachmentBean(att: AttachmentBean): AttachmentBean = {
+    att match {
+      case bean: ResourceAttachmentBean =>
+        val latestVersion =
+          getLatestVersionForCustomAttachment(bean.getItemVersion, bean.getItemUuid)
+        bean.setItemVersion(latestVersion)
+      case _ =>
+    }
+    att
+  }
 }
