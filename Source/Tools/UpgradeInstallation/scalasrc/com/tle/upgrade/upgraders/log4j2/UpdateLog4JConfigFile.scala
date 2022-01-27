@@ -92,7 +92,7 @@ class UpdateLog4JConfigFile extends AbstractUpgrader {
             s"Failed to update Log4J configuration for file ${propertyFile.getName} due to \n ${e
               .mkString_("\n")}")
         case Valid(config) =>
-          mapper.writeValue(new File(propertyFile.getParent, yamlFileName(propertyFile)), config);
+          mapper.writeValue(new File(propertyFile.getParent, yamlFileName(propertyFile)), config)
           result.info(s"Successfully update Log4J configuration for file ${propertyFile.getName}")
       }
     }

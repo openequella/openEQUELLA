@@ -32,25 +32,33 @@ case class HTMLLayout(title: Option[String],
     extends Layout
 
 object Layout {
+
+  /**
+    * Build an Appender layout based on the supplied configuration.
+    *
+    * @param layoutKey The property key used to define the layout.
+    * @param props Property file which provides details of the layout.
+    * @return `ValidatedNec` where left is a list of error messages and right is the layout.
+    */
   def getLayout(layoutKey: String, props: Properties): ValidatedNec[String, Layout] = {
     readProperty(layoutKey, props)
-      .map {
+      .toRight(s"Failed to find layout for $layoutKey")
+      .flatMap {
         case "org.apache.log4j.PatternLayout" =>
-          readProperty(s"${layoutKey}.ConversionPattern", props)
+          readProperty(s"$layoutKey.ConversionPattern", props)
             .map(PatternLayout)
-            .toRight(s"Failed to find layout pattern for ${layoutKey}")
+            .toRight(s"Failed to find layout pattern for $layoutKey")
 
         case "org.apache.log4j.HTMLLayout" | "com.dytech.common.log4j.HTMLLayout2" |
             "com.tle.core.equella.runner.HTMLLayout3" =>
-          val title = readProperty(s"${layoutKey}.title", props)
+          val title = readProperty(s"$layoutKey.title", props)
           val locationInfo =
-            readBooleanProperty(s"${layoutKey}.LocationInfo", props)
-          val datePattern = readProperty(s"${layoutKey}.datePattern", props)
+            readBooleanProperty(s"$layoutKey.LocationInfo", props)
+          val datePattern = readProperty(s"$layoutKey.datePattern", props)
           Right(HTMLLayout(title, datePattern, locationInfo))
 
         case unsupported => Left(s"Unsupported layout $unsupported")
       }
-      .getOrElse(Left(s"Failed to find layout for $layoutKey"))
       .toValidatedNec
   }
 }

@@ -33,6 +33,14 @@ case class ThresholdFilter(level: String) extends Filter
 case class RegexFilter(regex: String, onMatch: String, onMismatch: String) extends Filter
 
 object Filter {
+
+  /**
+    * Find out if an Appender is configured to use ThresholdFilter. If yes, build a ThresholdFilter.
+    *
+    * @param appender Appender for which a ThresholdFilter is built.
+    * @param props Property file providing details of the ThresholdFilter.
+    * @return A ThresholdFilter or None, or a list of errors captured during the build.
+    */
   def getThresholdFilter(appender: String,
                          props: Properties): ValidatedNec[String, Option[ThresholdFilter]] = {
     def buildFilter(level: String) =
@@ -42,10 +50,17 @@ object Filter {
               "Unknown Threshold filter level")
         .toValidatedNec
 
-    readProperty(s"${appender}.Threshold", props)
+    readProperty(s"$appender.Threshold", props)
       .traverse(buildFilter)
   }
 
+  /**
+    * Find out if an Appender is configured to use RegexFilter. If yes, build a list of RegexFilter.
+    *
+    * @param appender Appender for which a list of RegexFilter is built.
+    * @param props Property file providing details of the RegexFilter.
+    * @return A list of RegexFilter or None, or a list of errors captured during the build.
+    */
   def getRegexFilters(appender: String,
                       props: Properties): ValidatedNec[String, Option[Seq[RegexFilter]]] = {
 
@@ -54,13 +69,13 @@ object Filter {
         if (value) Result.NEUTRAL.toString else Result.DENY.toString
 
       def acceptOnMatch =
-        readBooleanProperty(s"${key}.AcceptOnMatch", props)
-          .toValidNec(s"Failed to find the value of AcceptOnMatch for ${key}")
+        readBooleanProperty(s"$key.AcceptOnMatch", props)
+          .toValidNec(s"Failed to find the value of AcceptOnMatch for $key")
 
       def stringToMatch =
-        readProperty(s"${key}.StringToMatch", props)
-          .map(regex => s".*${regex}.*")
-          .toValidNec(s"Failed to find the value of StringToMatch for ${key}")
+        readProperty(s"$key.StringToMatch", props)
+          .map(regex => s".*$regex.*")
+          .toValidNec(s"Failed to find the value of StringToMatch for $key")
 
       props.getProperty(key) match {
         case "org.apache.log4j.varia.StringMatchFilter" =>
@@ -70,12 +85,13 @@ object Filter {
                           onMatch = filterResult(onMatch),
                           onMismatch = filterResult(!onMatch))
           }
-        case unsupported => Validated.invalidNec(s"Unsupported filter ${unsupported}")
+        case unsupported => Validated.invalidNec(s"Unsupported filter $unsupported")
       }
     }
+
     // Regex for the format of an Appender filter definition.
     // For example: log4j.appender.FILE.filter.1
-    val filterKeyRegex = s"^${appender}\\.filter\\.\\d{1}$$"
+    val filterKeyRegex = s"^$appender\\.filter\\.\\d{1}$$"
 
     props
       .stringPropertyNames()
@@ -87,6 +103,14 @@ object Filter {
       .map(Option(_).filter(_.nonEmpty))
   }
 
+  /**
+    * Find out if an Appender is configured to any filter. If yes, build all the filters
+    *
+    * @param appender Appender for which a list of RegexFilter is built.
+    * @param props Property file providing details of all the filters.
+    * @return None if no filter is used, or a Map where key is the filter type and value is a list of the filters.
+    *          Or a list of errors captured during the build.
+    */
   def getFilters(appender: String,
                  props: Properties): ValidatedNec[String, Option[Map[String, Seq[Filter]]]] = {
     (getRegexFilters(appender, props), getThresholdFilter(appender, props)).mapN {
