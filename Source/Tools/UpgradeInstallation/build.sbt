@@ -2,7 +2,7 @@ val jacksonVersion = "2.11.3"
 
 libraryDependencies ++= Seq(
   "com.google.guava" % "guava"          % "31.0.1-jre",
-  "org.slf4j"        % "jcl-over-slf4j" % "1.7.33",
+  "org.slf4j"        % "jcl-over-slf4j" % "1.7.35",
   log4j,
   log4jSlf4jImpl,
   xstreamDep,
