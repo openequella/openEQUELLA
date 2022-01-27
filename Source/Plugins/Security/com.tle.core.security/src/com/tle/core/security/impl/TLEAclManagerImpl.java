@@ -165,6 +165,11 @@ public class TLEAclManagerImpl implements TLEAclManager {
   }
 
   @Override
+  public boolean hasPrivilege(Collection<String> privileges, boolean includePossibleOwnerAcls) {
+    return !filterNonGrantedPrivileges(privileges, includePossibleOwnerAcls).isEmpty();
+  }
+
+  @Override
   @Transactional
   public <T> Map<T, Map<String, Boolean>> getPrivilegesForObjects(
       Collection<String> privileges, Collection<T> domainObjs) {
