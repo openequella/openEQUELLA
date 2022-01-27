@@ -29,7 +29,6 @@ import com.tle.upgrade.UpgradeResult
 import com.tle.upgrade.upgraders.AbstractUpgrader
 import com.tle.upgrade.upgraders.log4j2.Appender.buildAppenders
 import com.tle.upgrade.upgraders.log4j2.Logger.buildLoggerConfig
-
 import java.io.File
 import java.nio.file.{Files, Paths, StandardCopyOption}
 
@@ -46,6 +45,20 @@ case class Configuration(
     Loggers: LoggerConfig
 )
 
+/**
+  * This migration is intended to update Log4J configuration files to use the new syntax and YAML format.
+  *
+  * Files to be updated:
+  * 1. 'learningedge-log4j.properties' under folder `learningedge-config`;
+  * 2. 'log4j.properties' under folder `manager`;
+  * 3. 'upgrader-log4j.properties' under folder `manager`.
+  *
+  * The result of this migration is to have three YAML files in above folders alongside the original
+  * configuration files.
+  *
+  * All the errors captured during the update will be printed out and the default configurations files
+  * will be copied and pasted to above folders.
+  */
 class UpdateLog4JConfigFile extends AbstractUpgrader {
   val mapper = new ObjectMapper(new YAMLFactory())
     .registerModule(DefaultScalaModule)
