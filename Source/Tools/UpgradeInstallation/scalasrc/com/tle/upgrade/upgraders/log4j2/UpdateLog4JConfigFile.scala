@@ -25,14 +25,13 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import com.tle.common.util.EquellaConfig
-import com.tle.upgrade.{PropertyFileModifier, UpgradeResult}
+import com.tle.upgrade.UpgradeResult
 import com.tle.upgrade.upgraders.AbstractUpgrader
 import com.tle.upgrade.upgraders.log4j2.Appender.buildAppenders
 import com.tle.upgrade.upgraders.log4j2.Logger.buildLoggerConfig
 
 import java.io.File
-import java.util.Properties
+import java.nio.file.{Files, Paths, StandardCopyOption}
 
 /**
   * Data structure for the Log4j2 configuration in YAML format.
@@ -58,14 +57,30 @@ class UpdateLog4JConfigFile extends AbstractUpgrader {
   override def isBackwardsCompatible: Boolean = false
 
   override def upgrade(result: UpgradeResult, installDir: File): Unit = {
-    def buildYamlFile(file: File): Unit = {
-      val props = loadProperties(file)
+    def yamlFileName(propertyFile: File) = {
+      propertyFile.getName.replace(".properties", ".yaml")
+    }
+
+    def copyDefaultConfigFile(propertyFile: File): Unit = {
+      val name = yamlFileName(propertyFile)
+      Files.copy(
+        getClass.getClassLoader.getResourceAsStream(s"com/tle/upgrade/upgraders/$name"),
+        Paths.get(s"${propertyFile.getParent}/$name"),
+        StandardCopyOption.REPLACE_EXISTING
+      )
+    }
+
+    def buildYamlFile(propertyFile: File): Unit = {
+      val props = loadProperties(propertyFile)
       (buildAppenders(props), buildLoggerConfig(props)).mapN(Configuration("warn", _, _)) match {
-        case Invalid(e) => result.info(e.mkString_("\n"))
+        case Invalid(e) =>
+          copyDefaultConfigFile(propertyFile)
+          result.info(
+            s"Failed to update Log4J configuration for file ${propertyFile.getName} due to \n ${e
+              .mkString_("\n")}")
         case Valid(config) =>
-          result.info("Successfully convert Log4J configuration!")
-          mapper.writeValue(new File(file.getParent, file.getName.replace(".properties", ".yaml")),
-                            config);
+          mapper.writeValue(new File(propertyFile.getParent, yamlFileName(propertyFile)), config);
+          result.info(s"Successfully update Log4J configuration for file ${propertyFile.getName}")
       }
     }
 
@@ -75,11 +90,4 @@ class UpdateLog4JConfigFile extends AbstractUpgrader {
       new File(installDir, Constants.MANAGER_FOLDER + "/upgrader-log4j.properties")
     ).foreach(buildYamlFile)
   }
-}
-
-object main extends App {
-  val f = new File("/home/penghai/Edalex/forks/2021",
-                   Constants.MANAGER_FOLDER + "/upgrader-log4j.properties")
-  println("name: " + f.getName)
-  println("name: " + f.getParent)
 }
