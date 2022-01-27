@@ -1,4 +1,5 @@
 import de.johoop.testngplugin.TestNGPlugin
+
 import scala.collection.JavaConverters._
 
 libraryDependencies += "com.opencsv" % "opencsv" % "5.5.2"
@@ -7,6 +8,15 @@ libraryDependencies ++= Seq(
   // The older Log4j is required by dependency "oclc-harvester2" at runtime.
   "log4j"              % "log4j"              % "1.2.17" % Test,
   "commons-httpclient" % "commons-httpclient" % "3.1"    % Test
+)
+
+/*
+Although very old and has vulns, axis 1.4 is required for the SRW tests (SRWTest etc) and is needed
+when using the very old (and unsure where the code is) oclc-srw.
+ */
+libraryDependencies ++= Seq(
+  "axis"            % "axis"     % "1.4"          % Test,
+  "org.dspace.oclc" % "oclc-srw" % "1.0.20080328" % Test
 )
 
 enablePlugins(TestNGPlugin)

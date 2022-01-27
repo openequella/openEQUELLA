@@ -46,7 +46,6 @@ libraryDependencies ++= Seq(
   "com.softwaremill.sttp"          %% "circe"                         % sttpVersion,
   "io.github.doolse"               %% "simpledba-jdbc"                % simpledbaVersion,
   "io.github.doolse"               %% "simpledba-circe"               % simpledbaVersion,
-  "axis"                           % "axis"                           % "1.4",
   "cglib"                          % "cglib"                          % "3.3.0",
   "com.fasterxml.jackson.core"     % "jackson-core"                   % jacksonVersion,
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"        % jacksonVersion,
@@ -200,9 +199,8 @@ libraryDependencies ++= Seq(
   //   com.fasterxml.woodstox/woodstox-core/bundles/woodstox-core-5.0.3.jar:...
   //   org.codehaus.woodstox/woodstox-core-asl/jars/woodstox-core-asl-4.4.1.jar:...
   //"org.codehaus.woodstox"  % "woodstox-core-asl" % "5.0.3",
-  "org.codehaus.xfire" % "xfire-aegis" % "1.2.6",
-  "org.dspace"         % "cql-java"    % "1.0",
-  //  "org.dspace.oclc" % "oclc-srw" % "1.0.20080328",
+  "org.codehaus.xfire"              % "xfire-aegis"                    % "1.2.6",
+  "org.dspace"                      % "cql-java"                       % "1.0",
   "org.omegat"                      % "jmyspell-core"                  % "1.0.0-beta-2",
   "org.freemarker"                  % "freemarker"                     % "2.3.23",
   "com.github.equella.legacy"       % "hurl"                           % "1.1",
@@ -255,6 +253,13 @@ libraryDependencies ++= Seq(
   "com.github.stephenc.jcip"      % "jcip-annotations"          % "1.0-1",
   "org.jboss.spec.javax.xml.bind" % "jboss-jaxb-api_2.3_spec"   % "2.0.1.Final"
 )
+
+/*
+Although very old and has vulns, axis 1.4 is required for the SRW feature and is needed when
+using the very old (and unsure where the code is) oclc-srw.
+See Source/Plugins/RemoteRepositories/com.equella.srw/build.sbt
+ */
+libraryDependencies += "axis" % "axis" % "1.4"
 
 libraryDependencies ++= {
   if (bundleOracleDriver.value) {
