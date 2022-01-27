@@ -28,7 +28,7 @@ object PropertyHelper {
     *
     * @param key Key of a property.
     * @param props The property configuration to be read.
-    * @return An Option of String.
+    * @return None if the key is not found in the provided properties, otherwise the value as a String.
     */
   def readProperty(key: String, props: Properties): Option[String] =
     Option(props.getProperty(key))
@@ -39,31 +39,27 @@ object PropertyHelper {
     *
     * @param key Key of a property.
     * @param props The property configuration to be read.
-    * @return An Option of Boolean.
+    * @return None if the key is not found in the provided properties or the key can't be parsed to a Boolean,
+    *         otherwise the value as a Boolean.
     */
   def readBooleanProperty(key: String, props: Properties): Option[Boolean] =
-    readProperty(key, props).map(s =>
+    readProperty(key, props).flatMap(s =>
       Try {
         s.toBoolean
-      } match {
-        case Success(value) => value
-        case Failure(_)     => false
-    })
+      }.toOption)
 
   /**
     * Get an Int value from the property configurations by the supplied key.
     *
     * @param key Key of a property.
     * @param props The property configuration to be read.
-    * @return An Option of Int.
+    * @return None if the key is not found in the provided properties or the key can't be parsed to a Int,
+    *         otherwise the value as a Int.
     */
   def readIntProperty(key: String, props: Properties): Option[Int] =
     readProperty(key, props)
-      .map(s =>
+      .flatMap(s =>
         Try {
           s.toInt
-        } match {
-          case Success(value) => value
-          case Failure(_)     => 0
-      })
+        }.toOption)
 }
