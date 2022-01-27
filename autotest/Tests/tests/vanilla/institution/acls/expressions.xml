@@ -114,4 +114,9 @@
     <dynamic>false</dynamic>
     <expression>U:f2ce5cf5-e6d2-8d1a-4627-4e917b4e6ba3</expression>
   </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>33572</id>
+    <dynamic>false</dynamic>
+    <expression>U:b09a4042-b091-87ed-eba9-6fb3c0fbe9a6 R:ROLE_SYSTEM_ADMINISTRATOR OR </expression>
+  </com.tle.beans.security.AccessExpression>
 </list>

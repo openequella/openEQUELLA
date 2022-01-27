@@ -21,10 +21,10 @@ package com.tle.web.api.users
 import com.tle.beans.usermanagement.standard.wrapper.SharedSecretSettings
 import com.tle.common.security.SecurityConstants
 import com.tle.common.usermanagement.user.valuebean.{GroupBean, RoleBean, UserBean}
+import com.tle.core.security.AclChecks.hasAclOrThrow
 import com.tle.legacy.LegacyGuice
 import io.swagger.annotations.{Api, ApiParam}
 import javax.ws.rs._
-
 import scala.collection.JavaConverters._
 
 case class LookupQuery(users: Seq[String], groups: Seq[String], roles: Seq[String])
@@ -55,6 +55,7 @@ class UserQueryResource {
   @POST
   @Path("lookup")
   def lookup(queries: LookupQuery): LookupQueryResult = {
+    hasAclOrThrow(SecurityConstants.LIST_USERS)
     val us     = LegacyGuice.userService
     val users  = us.getInformationForUsers(queries.users.asJava)
     val groups = us.getInformationForGroups(queries.groups.asJava)
@@ -72,6 +73,7 @@ class UserQueryResource {
       @QueryParam("groups") @DefaultValue("true") @ApiParam("Include groups") sgroups: Boolean,
       @QueryParam("roles") @DefaultValue("true") @ApiParam("Include roles") sroles: Boolean)
     : LookupQueryResult = {
+    hasAclOrThrow(SecurityConstants.LIST_USERS)
     val us     = LegacyGuice.userService
     val users  = if (susers) us.searchUsers(q).asScala else Iterable.empty
     val groups = if (sgroups) us.searchGroups(q).asScala else Iterable.empty

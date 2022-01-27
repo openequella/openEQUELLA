@@ -25,6 +25,7 @@ import com.tle.common.security.SecurityConstants
 import com.tle.common.security.SecurityConstants.GRANT
 import com.tle.core.db.{DB, UserContext}
 import com.tle.exceptions.PrivilegeRequiredException
+import com.tle.legacy.LegacyGuice
 import io.doolse.simpledba.jdbc._
 
 import scala.collection.JavaConverters._
@@ -107,4 +108,25 @@ object AclChecks {
       }
   }
 
+  /**
+    * Checks if the current user has the specified ACL.
+    *
+    * @param privilege Required ACL, typically defined as a constant in `com.tle.common.security.SecurityConstants`
+    * @param includePossibleOwnerAcls `true` to include possible owner ACLs
+    */
+  def hasAcl(privilege: String, includePossibleOwnerAcls: Boolean = false): Boolean = {
+    LegacyGuice.aclManager.hasPrivilege(Set(privilege).asJava, includePossibleOwnerAcls)
+  }
+
+  /**
+    * Checks if the current user has the specified ACL or throws `PrivilegeRequiredException`.
+    *
+    * @param privilege Required ACL, typically defined as a constant in `com.tle.common.security.SecurityConstants`
+    * @param includePossibleOwnerAcls `true` to include possible owner ACLs
+    */
+  def hasAclOrThrow(privilege: String, includePossibleOwnerAcls: Boolean = false): Unit = {
+    if (!hasAcl(privilege, includePossibleOwnerAcls)) {
+      throw new PrivilegeRequiredException(privilege)
+    }
+  }
 }
