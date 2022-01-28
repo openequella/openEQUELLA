@@ -107,9 +107,12 @@ object Appender {
     *
     * @param key The property key used to define the Rolling File Appender.
     * @param props Property file which provides details of the Appender.
+    * @param isCustomRollingFile `true` to build OEQ custom Rolling File Appender which always has a TimeBasedTriggeringPolicy.
     * @return `ValidatedNec` where left is a list of error messages and right is a Rolling File Appender.
     */
-  def buildRollingFile(key: String, props: Properties): ValidatedNec[String, RollingFile] = {
+  def buildRollingFile(key: String,
+                       props: Properties,
+                       isCustomRollingFile: Boolean = true): ValidatedNec[String, RollingFile] = {
     def fileName =
       readProperty(s"$key.File", props)
         .toValidNec(s"Must specify a file name for $key")
@@ -147,6 +150,17 @@ object Appender {
       }
     }
 
+    def triggeringPolicy: Map[String, RollingPolicy] = {
+      val sizedBasedPolicy = Map(
+        "SizeBasedTriggeringPolicy" -> SizeBasedTriggeringPolicy(maxFileSize))
+
+      if (isCustomRollingFile) {
+        sizedBasedPolicy + ("TimeBasedTriggeringPolicy" -> TimeBasedTriggeringPolicy())
+      } else {
+        sizedBasedPolicy
+      }
+    }
+
     (fileName, getLayout(s"$key.layout", props), getFilters(key, props)).mapN(
       (filename, layout, filters) => {
         RollingFile(
@@ -158,8 +172,7 @@ object Appender {
           layout = layout,
           Filters = filters,
           DefaultRollOverStrategy = RollOverStrategy(maxBackupIndex),
-          Policies = Map("TimeBasedTriggeringPolicy" -> TimeBasedTriggeringPolicy(),
-                         "SizeBasedTriggeringPolicy" -> SizeBasedTriggeringPolicy(maxFileSize))
+          Policies = triggeringPolicy
         )
       }
     )
@@ -171,10 +184,10 @@ object Appender {
       .map {
         case "org.apache.log4j.ConsoleAppender" => buildConsole(key, props)
         case "com.tle.core.equella.runner.DailySizeRollingAppender" |
-            "com.dytech.common.log4j.DailySizeRollingAppender" |
-            "org.apache.log4j.RollingFileAppender" =>
+            "com.dytech.common.log4j.DailySizeRollingAppender" =>
           buildRollingFile(key, props)
-        case unsupported => Validated.invalidNec(s"Unsupported Appender $unsupported")
+        case "org.apache.log4j.RollingFileAppender" => buildRollingFile(key, props, false)
+        case unsupported                            => Validated.invalidNec(s"Unsupported Appender $unsupported")
       }
       .getOrElse(Validated.invalidNec(s"Must specify an Appender for $key"))
   }
