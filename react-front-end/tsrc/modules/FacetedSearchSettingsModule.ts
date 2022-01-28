@@ -48,7 +48,7 @@ export const batchUpdateOrAdd = (
 export const batchDelete = (ids: string[]): Promise<string[]> =>
   OEQ.FacetedSearchSettings.batchDeleteFacetedSearchSetting(
     API_BASE_URL,
-    ids
+    ids.map((id) => parseInt(id))
   ).then((data) => {
     return OEQ.BatchOperationResponse.groupErrorMessages(data);
   });

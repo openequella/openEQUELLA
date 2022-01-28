@@ -21,15 +21,17 @@ import { is } from 'typescript-is';
 
 export interface FacetedSearchClassification {
   /**
-   * ID of a facet; being undefined means this facet is dirty(i.e., not saved to the server).
+   * ID of a facet; being undefined means this facet is dirty (i.e., not saved to the server).
    */
   id?: number;
   /**
    * Date time when a facet was created. Unnecessary for create or update.
+   * Example: 2022-01-25T11:01:12.991+11:00
    */
   dateCreated?: string;
   /**
    * Latest date time when a facet was modified. Unnecessary for create or update.
+   * Example: 2022-01-25T11:01:12.991+11:00
    */
   dateModified?: string;
   /**
@@ -41,11 +43,11 @@ export interface FacetedSearchClassification {
    */
   schemaNode: string;
   /**
-   * The number of category of a facet; Being undefined means the number is unlimited.
+   * The number of categories to display for a facet; Being undefined means the number is unlimited.
    */
   maxResults?: number;
   /**
-   * Used for re-ordering facets.
+   * Used to control the order of list of facets in the UI.
    */
   orderIndex: number;
 }
@@ -53,7 +55,7 @@ export interface FacetedSearchClassification {
 const FACETED_SEARCH_SETTINGS_URL = '/settings/facetedsearch/classification';
 
 /**
- * Retrieve faceted search settings (classification)
+ * Return a list of the settings for all available faceted searches (classifications).
  *
  * @param apiBasePath Base URI to the oEQ institution and API
  */
@@ -105,7 +107,7 @@ export const batchUpdateFacetedSearchSetting = (
  */
 export const batchDeleteFacetedSearchSetting = (
   apiBasePath: string,
-  facetedSearchClassificationIds: number[] | string[]
+  facetedSearchClassificationIds: number[]
 ): Promise<BatchOperationResponse[]> =>
   DELETE<BatchOperationResponse[]>(apiBasePath + FACETED_SEARCH_SETTINGS_URL, {
     ids: facetedSearchClassificationIds,
