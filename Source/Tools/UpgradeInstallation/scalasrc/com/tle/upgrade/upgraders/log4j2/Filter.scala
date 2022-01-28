@@ -79,12 +79,12 @@ object Filter {
 
       props.getProperty(key) match {
         case "org.apache.log4j.varia.StringMatchFilter" =>
-          (stringToMatch, acceptOnMatch).mapN {
-            case (regex, onMatch) =>
+          (stringToMatch, acceptOnMatch).mapN(
+            (regex, onMatch) =>
               RegexFilter(regex = regex,
                           onMatch = filterResult(onMatch),
                           onMismatch = filterResult(!onMatch))
-          }
+          )
         case unsupported => Validated.invalidNec(s"Unsupported filter $unsupported")
       }
     }
@@ -113,17 +113,16 @@ object Filter {
     */
   def getFilters(appender: String,
                  props: Properties): ValidatedNec[String, Option[Map[String, Seq[Filter]]]] = {
-    (getRegexFilters(appender, props), getThresholdFilter(appender, props)).mapN {
-      case (regexFilters, thresholdFilter) =>
-        // Group filters by their types.
-        def group(filters: Seq[Filter]) = {
-          filters.groupBy(_.getClass.getSimpleName)
-        }
+    // Group filters by their types.
+    def group(filters: Seq[Filter]) = {
+      filters.groupBy(_.getClass.getSimpleName)
+    }
 
+    (getRegexFilters(appender, props), getThresholdFilter(appender, props)).mapN(
+      (regexFilters, thresholdFilter) =>
         (regexFilters ++ thresholdFilter.map(Seq(_)))
           .reduceOption(_ ++ _)
           .map(group)
-
-    }
+    )
   }
 }
