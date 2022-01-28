@@ -168,6 +168,7 @@ public class UpgradeMain {
           "Path '" + tleInstallDir + "' does not appear to be an EQUELLA install directory");
     }
     xstream = new XStream();
+    xstream.allowTypes(new Class[] {com.tle.upgrade.UpgradeLog.class});
     upgradeLogFile = new File(configDir, "upgrade-log.xml");
   }
 

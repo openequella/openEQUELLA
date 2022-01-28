@@ -51,7 +51,6 @@ import {
   batchUpdateOrAdd,
   filterComparator,
   getMimeTypeFiltersFromServer,
-  MimeTypeFilter,
 } from "../../../modules/SearchFilterSettingsModule";
 import {
   defaultSearchSettings,
@@ -91,21 +90,23 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
     useState<OEQ.SearchSettings.Settings>(defaultSearchSettings);
 
   // mimeTypeFilters contains all filters displayed in the list, including those saved in the Server and visually added/deleted.
-  const [mimeTypeFilters, setMimeTypeFilters] = useState<MimeTypeFilter[]>([]);
+  const [mimeTypeFilters, setMimeTypeFilters] = useState<
+    OEQ.SearchFilterSettings.MimeTypeFilter[]
+  >([]);
 
   // changedMimeTypeFilters contains filters to be added or edited on the Server.
   const [changedMimeTypeFilters, setChangedMimeTypeFilters] = useState<
-    MimeTypeFilter[]
+    OEQ.SearchFilterSettings.MimeTypeFilter[]
   >([]);
 
   // deletedMimeTypeFilters contains filters to be deleted from the Server.
   const [deletedMimeTypeFilters, setDeletedMimeTypeFilters] = useState<
-    MimeTypeFilter[]
+    OEQ.SearchFilterSettings.MimeTypeFilter[]
   >([]);
 
   // selectedMimeTypeFilter refers to the filter to be edited in the dialog.
   const [selectedMimeTypeFilter, setSelectedMimeTypeFilter] = useState<
-    MimeTypeFilter | undefined
+    OEQ.SearchFilterSettings.MimeTypeFilter | undefined
   >();
 
   const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
@@ -145,7 +146,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
      */
     const getMimeTypeFilters = () => {
       getMimeTypeFiltersFromServer()
-        .then((filters: MimeTypeFilter[]) => {
+        .then((filters: OEQ.SearchFilterSettings.MimeTypeFilter[]) => {
           setMimeTypeFilters(filters);
           setDeletedMimeTypeFilters([]);
           setChangedMimeTypeFilters([]);
@@ -174,7 +175,9 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
    * 'filter' to the 'mimeTypeFilters' and 'changedMimeTypeFilters'; otherwise replace 'selectedMimeTypeFilter'
    * with 'filter'.
    */
-  const addOrUpdateMimeTypeFilter = (filter: MimeTypeFilter) => {
+  const addOrUpdateMimeTypeFilter = (
+    filter: OEQ.SearchFilterSettings.MimeTypeFilter
+  ) => {
     if (!selectedMimeTypeFilter) {
       setMimeTypeFilters(addElement(mimeTypeFilters, filter));
       setChangedMimeTypeFilters(addElement(changedMimeTypeFilters, filter));
@@ -201,7 +204,9 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
    * Remove 'filter' from 'mimeTypeFilters' and 'changedMimeTypeFilters'.
    * If the filter has an ID then add it to 'deletedMimeTypeFilters'.
    */
-  const deleteMimeTypeFilter = (filter: MimeTypeFilter) => {
+  const deleteMimeTypeFilter = (
+    filter: OEQ.SearchFilterSettings.MimeTypeFilter
+  ) => {
     setMimeTypeFilters(
       deleteElement(mimeTypeFilters, filterComparator(filter), 1)
     );
@@ -215,7 +220,9 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
     }
   };
 
-  const openMimeTypeFilterDialog = (filter?: MimeTypeFilter) => {
+  const openMimeTypeFilterDialog = (
+    filter?: OEQ.SearchFilterSettings.MimeTypeFilter
+  ) => {
     setOpenMimeTypeFilterEditor(true);
     setSelectedMimeTypeFilter(filter);
   };

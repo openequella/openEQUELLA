@@ -61,10 +61,7 @@ import {
   buildSelectionSessionItemSummaryLink,
   isSelectionSessionOpen,
 } from "../modules/LegacySelectionSessionModule";
-import {
-  getMimeTypeFiltersById,
-  MimeTypeFilter,
-} from "../modules/SearchFilterSettingsModule";
+import { getMimeTypeFiltersById } from "../modules/SearchFilterSettingsModule";
 import {
   defaultSearchOptions,
   DisplayMode,
@@ -255,7 +252,7 @@ const rehydrateCollections = async (
 // Use a list of MIME type filter IDs extracted from a dehydrated SearchOptions to find MIME type filters.
 const rehydrateMIMETypeFilter = async (
   options: DehydratedSearchPageOptions
-): Promise<MimeTypeFilter[] | undefined> =>
+): Promise<OEQ.SearchFilterSettings.MimeTypeFilter[] | undefined> =>
   options.mimeTypeFilters
     ? await getMimeTypeFiltersById(options.mimeTypeFilters.map((f) => f.id))
     : undefined;

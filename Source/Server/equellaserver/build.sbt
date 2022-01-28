@@ -220,8 +220,8 @@ libraryDependencies ++= Seq(
   "org.opensaml" % "xmltooling" % "1.3.1" excludeAll ExclusionRule(organization = "org.slf4j"),
   postgresDep,
   "org.scannotation"    % "scannotation"           % "1.0.3",
-  "org.slf4j"           % "jcl-over-slf4j"         % "1.7.33",
-  "org.slf4j"           % "slf4j-api"              % "1.7.33",
+  "org.slf4j"           % "jcl-over-slf4j"         % "1.7.35",
+  "org.slf4j"           % "slf4j-api"              % "1.7.35",
   "org.springframework" % "spring-aop"             % springVersion,
   "org.springframework" % "spring-context"         % springVersion,
   "org.springframework" % "spring-context-support" % springVersion excludeAll (

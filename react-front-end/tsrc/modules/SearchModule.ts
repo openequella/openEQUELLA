@@ -25,7 +25,6 @@ import { API_BASE_URL } from "../AppConfig";
 import { DateRange, getISODateString } from "../util/Date";
 import type { Collection } from "./CollectionsModule";
 import type { SelectedCategories } from "./SearchFacetsModule";
-import type { MimeTypeFilter } from "./SearchFilterSettingsModule";
 
 /**
  * List of status which are considered 'live'.
@@ -118,7 +117,7 @@ export interface SearchOptions {
   /**
    * A list of selected MIME type filters.
    */
-  mimeTypeFilters?: MimeTypeFilter[];
+  mimeTypeFilters?: OEQ.SearchFilterSettings.MimeTypeFilter[];
   /**
    * A list of MIME types provided by an Integration (e.g. with Moodle), which has a higher priority than `mimeTypes`.
    */
