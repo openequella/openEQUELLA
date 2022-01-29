@@ -134,7 +134,8 @@ object JPFScanPlugin extends AutoPlugin {
     val baseDir = proj.base
     val allManifests = (baseDir / "Source/Plugins" * "*" * "*" / "plugin-jpf.xml").get ++
       (baseDir / "Platform/Plugins" * "*" / "plugin-jpf.xml").get ++
-      (baseDir / "Interface/Plugins" * "*" / "plugin-jpf.xml").get
+      (baseDir / "Interface/Plugins" * "*" / "plugin-jpf.xml").get ++
+      (baseDir / "Source/Tools/UpgradeInstallation/plugin-jpf.xml").get
     val manifestMap = allManifests.map(parseJPF).map(p => (p.id, p)).toMap
 
 //    val adminPlugins = manifestMap.values.filter(_.adminConsole).map(_.id).toSet
