@@ -28,7 +28,7 @@ import {
 import { commonString } from "../../../util/commonstrings";
 import { languageStrings } from "../../../util/langstrings";
 import {
-  FacetWithFlags,
+  FacetedSearchClassificationWithFlags,
   validateFacetFields,
 } from "../../../modules/FacetedSearchSettingsModule";
 import SchemaSelector from "../../SchemaSelector";
@@ -53,7 +53,7 @@ export interface FacetDialogProps {
   /**
    * The facet to be edited; undefined if the action is to add a new one.
    */
-  facet?: FacetWithFlags;
+  facet?: FacetedSearchClassificationWithFlags;
 }
 
 /**

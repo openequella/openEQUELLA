@@ -15,38 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
+import { API_BASE_URL } from "../AppConfig";
 
-import Axios from "axios";
-import { stringify as encodeQuery } from "query-string";
-import {
-  BatchOperationResponse,
-  groupErrorMessages,
-} from "../api/BatchOperationResponse";
-
-export interface Facet {
-  /**
-   * ID of a facet; being undefined means this facet is dirty(i.e., not saved to the server).
-   */
-  id?: number;
-  /**
-   * Name of a facet.
-   */
-  name: string;
-  /**
-   * Schema node of a facet.
-   */
-  schemaNode: string;
-  /**
-   * The number of category of a facet; Being undefined means the number is unlimited.
-   */
-  maxResults?: number;
-  /**
-   * Used for re-ordering facets.
-   */
-  orderIndex: number;
-}
-
-export interface FacetWithFlags extends Facet {
+export interface FacetedSearchClassificationWithFlags
+  extends OEQ.FacetedSearchSettings.FacetedSearchClassification {
   /**
    * A flag indicating a facet has been visually updated/created.
    */
@@ -57,25 +30,27 @@ export interface FacetWithFlags extends Facet {
   deleted: boolean;
 }
 
-const FACETED_SEARCH_API_URL = "api/settings/facetedsearch/classification";
-
-export const getFacetsFromServer = (): Promise<Facet[]> =>
-  Axios.get(FACETED_SEARCH_API_URL).then((res) => res.data);
+export const getFacetsFromServer = (): Promise<
+  OEQ.FacetedSearchSettings.FacetedSearchClassification[]
+> => OEQ.FacetedSearchSettings.getFacetedSearchSettings(API_BASE_URL);
 
 /**
  * * * Remove the flags and then save to the server.
  */
-export const batchUpdateOrAdd = (facets: FacetWithFlags[]): Promise<string[]> =>
-  Axios.put<BatchOperationResponse[]>(
-    FACETED_SEARCH_API_URL,
+export const batchUpdateOrAdd = (
+  facets: FacetedSearchClassificationWithFlags[]
+): Promise<string[]> =>
+  OEQ.FacetedSearchSettings.batchUpdateFacetedSearchSetting(
+    API_BASE_URL,
     facets.map((facet) => removeFlags(facet))
-  ).then((res) => groupErrorMessages(res.data));
+  ).then((data) => OEQ.BatchOperationResponse.groupErrorMessages(data));
 
 export const batchDelete = (ids: string[]): Promise<string[]> =>
-  Axios.delete<BatchOperationResponse[]>(
-    `${FACETED_SEARCH_API_URL}/?${encodeQuery({ ids: ids })}`
-  ).then((res) => {
-    return groupErrorMessages(res.data);
+  OEQ.FacetedSearchSettings.batchDeleteFacetedSearchSetting(
+    API_BASE_URL,
+    ids.map((id) => parseInt(id))
+  ).then((data) => {
+    return OEQ.BatchOperationResponse.groupErrorMessages(data);
   });
 
 /**
@@ -93,7 +68,7 @@ export const removeFlags = ({
   deleted,
   updated,
   ...facet
-}: FacetWithFlags): Facet => {
+}: FacetedSearchClassificationWithFlags): OEQ.FacetedSearchSettings.FacetedSearchClassification => {
   return facet;
 };
 
@@ -101,7 +76,9 @@ export const removeFlags = ({
  * Given a list of facets, return the highest order index of non-deleted facets.
  * If the list is empty then return -1.
  */
-export const getHighestOrderIndex = (facets: FacetWithFlags[]) => {
+export const getHighestOrderIndex = (
+  facets: FacetedSearchClassificationWithFlags[]
+) => {
   if (facets.length === 0) {
     return -1;
   }
@@ -110,8 +87,10 @@ export const getHighestOrderIndex = (facets: FacetWithFlags[]) => {
   );
 };
 
-export const facetComparator = (target: FacetWithFlags) => {
-  return (facet: FacetWithFlags) => facet === target;
+export const facetComparator = (
+  target: FacetedSearchClassificationWithFlags
+) => {
+  return (facet: FacetedSearchClassificationWithFlags) => facet === target;
 };
 
 /**
@@ -128,10 +107,10 @@ export const facetComparator = (target: FacetWithFlags) => {
  * @param endIndex  New index of the dragged facet.
  */
 export const reorder = (
-  facets: FacetWithFlags[],
+  facets: FacetedSearchClassificationWithFlags[],
   startIndex: number,
   endIndex: number
-): FacetWithFlags[] =>
+): FacetedSearchClassificationWithFlags[] =>
   facets.map((facet) => {
     let newOrderIndex = 0;
     if (facet.deleted) {
@@ -162,9 +141,9 @@ export const reorder = (
  * @param deletedOrderIndex Order index of the deleted facet.
  */
 export const removeFacetFromList = (
-  facets: FacetWithFlags[],
+  facets: FacetedSearchClassificationWithFlags[],
   deletedOrderIndex: number
-): FacetWithFlags[] => {
+): FacetedSearchClassificationWithFlags[] => {
   return facets
     .map((facet) => {
       if (facet.orderIndex === deletedOrderIndex) {
