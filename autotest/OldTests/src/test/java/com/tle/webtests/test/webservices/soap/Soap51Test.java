@@ -971,8 +971,12 @@ public class Soap51Test extends AbstractCleanupTest {
   }
 
   private void checkTopic(PropBagEx xml, String name, String uuid) {
-    String errorGet = "Topic does not match requested topic";
-    assertTrue(xml.getNode("name").equals(name) && xml.getNode("@uuid").equals(uuid), errorGet);
+    String actualName = xml.getNode("name");
+    String actualUuid = xml.getNode("@uuid");
+
+    String expectedTopic = uuid + " - " + name;
+    String actualTopic = actualUuid + " - " + actualName;
+    assertEquals(actualTopic, expectedTopic, "Topic does not match requested topic.");
   }
 
   private List<String> removeThumbFiles(String[] filenames) {

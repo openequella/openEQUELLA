@@ -28,24 +28,27 @@ addDependencyTreePlugin
 
 // Old version used because something else depends on an old JAWN
 val circeVersion = "0.7.1"
-
 libraryDependencies ++= Seq(
-  "io.circe" %% "circe-core",
-  "io.circe" %% "circe-generic",
-  "io.circe" %% "circe-parser"
-).map(_ % circeVersion)
+  "io.circe" %% "circe-core"    % circeVersion,
+  "io.circe" %% "circe-generic" % circeVersion,
+  "io.circe" %% "circe-parser"  % circeVersion
+)
+
+val axis2Version = "1.7.9"
+libraryDependencies ++= Seq(
+  "org.apache.axis2" % "axis2-kernel"      % axis2Version,
+  "org.apache.axis2" % "axis2-java2wsdl"   % axis2Version,
+  "org.apache.axis2" % "axis2-adb"         % axis2Version,
+  "org.apache.axis2" % "axis2-jaxbri"      % axis2Version,
+  "org.apache.axis2" % "axis2-adb-codegen" % axis2Version,
+  "org.apache.axis2" % "axis2-codegen"     % axis2Version,
+  "org.apache.axis2" % "axis2-xmlbeans"    % axis2Version
+)
 
 libraryDependencies ++= Seq(
   "com.typesafe"           % "config"                % "1.4.1",
   "org.jacoco"             % "org.jacoco.report"     % "0.8.7",
   "org.jdom"               % "jdom2"                 % "2.0.6.1",
-  "org.apache.axis2"       % "axis2-kernel"          % "1.6.2",
-  "org.apache.axis2"       % "axis2-java2wsdl"       % "1.6.2",
-  "org.apache.axis2"       % "axis2-adb"             % "1.6.2",
-  "org.apache.axis2"       % "axis2-jaxbri"          % "1.6.2",
-  "org.apache.axis2"       % "axis2-adb-codegen"     % "1.6.2",
-  "org.apache.axis2"       % "axis2-codegen"         % "1.6.2",
-  "org.apache.axis2"       % "axis2-xmlbeans"        % "1.6.2",
   "commons-logging"        % "commons-logging"       % "1.2",
   "commons-discovery"      % "commons-discovery"     % "0.5",
   "commons-configuration"  % "commons-configuration" % "1.10",

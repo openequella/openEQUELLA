@@ -19,7 +19,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 val RestEasyVersion  = "3.15.3.Final"
 val SwaggerVersion   = "1.6.3"
 val TomcatVersion    = "9.0.58"
-val axis2Version     = "1.6.3"
+val axis2Version     = "1.7.9"
 val circeVersion     = "0.12.1"
 val cxfVersion       = "3.5.0"
 val fs2Version       = "2.4.4"
@@ -46,7 +46,6 @@ libraryDependencies ++= Seq(
   "com.softwaremill.sttp"          %% "circe"                         % sttpVersion,
   "io.github.doolse"               %% "simpledba-jdbc"                % simpledbaVersion,
   "io.github.doolse"               %% "simpledba-circe"               % simpledbaVersion,
-  "axis"                           % "axis"                           % "1.4",
   "cglib"                          % "cglib"                          % "3.3.0",
   "com.fasterxml.jackson.core"     % "jackson-core"                   % jacksonVersion,
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"        % jacksonVersion,
@@ -178,22 +177,20 @@ libraryDependencies ++= Seq(
   "org.apache.tika" % "tika-core"                     % tikaVersion,
   "org.apache.tika" % "tika-parsers-standard-package" % tikaVersion excludeAll ExclusionRule(
     organization = "org.apache.logging.log4j"),
-  "org.apache.tomcat"           % "tomcat-annotations-api" % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-api"             % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-catalina"        % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-catalina-ha"     % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-coyote"          % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-jsp-api"         % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-juli"            % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-servlet-api"     % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-tribes"          % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-util"            % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-util-scan"       % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-ssi"             % TomcatVersion,
-  "org.apache.ws.commons.axiom" % "axiom-api"              % "1.3.0",
-  "org.apache.ws.commons.axiom" % "axiom-impl"             % "1.3.0",
-  "org.apache.ws.security"      % "wss4j"                  % "1.6.19",
-  "org.apache.zookeeper"        % "zookeeper"              % "3.7.0" excludeAll (
+  "org.apache.tomcat"      % "tomcat-annotations-api" % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-api"             % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-catalina"        % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-catalina-ha"     % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-coyote"          % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-jsp-api"         % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-juli"            % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-servlet-api"     % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-tribes"          % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-util"            % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-util-scan"       % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-ssi"             % TomcatVersion,
+  "org.apache.ws.security" % "wss4j"                  % "1.6.19",
+  "org.apache.zookeeper"   % "zookeeper"              % "3.7.0" excludeAll (
     ExclusionRule(organization = "org.slf4j",
                   name = "slf4j-log4j12")
   ),
@@ -202,9 +199,8 @@ libraryDependencies ++= Seq(
   //   com.fasterxml.woodstox/woodstox-core/bundles/woodstox-core-5.0.3.jar:...
   //   org.codehaus.woodstox/woodstox-core-asl/jars/woodstox-core-asl-4.4.1.jar:...
   //"org.codehaus.woodstox"  % "woodstox-core-asl" % "5.0.3",
-  "org.codehaus.xfire" % "xfire-aegis" % "1.2.6",
-  "org.dspace"         % "cql-java"    % "1.0",
-  //  "org.dspace.oclc" % "oclc-srw" % "1.0.20080328",
+  "org.codehaus.xfire"              % "xfire-aegis"                    % "1.2.6",
+  "org.dspace"                      % "cql-java"                       % "1.0",
   "org.omegat"                      % "jmyspell-core"                  % "1.0.0-beta-2",
   "org.freemarker"                  % "freemarker"                     % "2.3.23",
   "com.github.equella.legacy"       % "hurl"                           % "1.1",
@@ -257,6 +253,13 @@ libraryDependencies ++= Seq(
   "com.github.stephenc.jcip"      % "jcip-annotations"          % "1.0-1",
   "org.jboss.spec.javax.xml.bind" % "jboss-jaxb-api_2.3_spec"   % "2.0.1.Final"
 )
+
+/*
+Although very old and has vulns, axis 1.4 is required for the SRW feature and is needed when
+using the very old (and unsure where the code is) oclc-srw.
+See Source/Plugins/RemoteRepositories/com.equella.srw/build.sbt
+ */
+libraryDependencies += "axis" % "axis" % "1.4"
 
 libraryDependencies ++= {
   if (bundleOracleDriver.value) {
