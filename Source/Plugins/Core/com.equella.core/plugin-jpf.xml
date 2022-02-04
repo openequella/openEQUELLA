@@ -1678,7 +1678,7 @@
   <extension plugin-id="com.tle.core.migration" point-id="migration" id="NewViewCountTables">
     <parameter id="id" value="NewViewCountTables" />
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v66.NewViewCountTables" />
-    <parameter id="date" value="2018-06-01" />
+    <parameter id="date" value="2018-06-26" />
   </extension>
   <extension plugin-id="com.tle.core.migration" point-id="migration" id="NewAuditLogColumn">
     <parameter id="id" value="NewAuditLogColumn" />
