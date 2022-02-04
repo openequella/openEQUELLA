@@ -1675,6 +1675,11 @@
     <parameter id="bean" value="bean:com.tle.core.legacy.initial.AuditLogData4Migration" />
     <parameter id="date" value="1970-01-01" />
   </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="NewViewCountTables">
+    <parameter id="id" value="NewViewCountTables" />
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v66.NewViewCountTables" />
+    <parameter id="date" value="2018-06-01" />
+  </extension>
   <extension plugin-id="com.tle.core.migration" point-id="migration" id="NewAuditLogColumn">
     <parameter id="id" value="NewAuditLogColumn" />
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v66.NewAuditLogColumn" />
