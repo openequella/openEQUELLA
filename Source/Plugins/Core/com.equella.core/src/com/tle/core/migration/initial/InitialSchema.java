@@ -45,6 +45,8 @@ import com.tle.beans.security.SharePass;
 import com.tle.beans.user.TLEGroup;
 import com.tle.beans.user.TLEUser;
 import com.tle.beans.user.UserInfoBackup;
+import com.tle.beans.viewcount.ViewcountAttachment;
+import com.tle.beans.viewcount.ViewcountItem;
 import com.tle.common.security.TargetListEntry;
 import com.tle.common.workflow.Workflow;
 import com.tle.common.workflow.WorkflowItemStatus;
@@ -146,7 +148,9 @@ public class InitialSchema extends AbstractCreateMigration {
         VersionSelection.class,
         BaseEntity.Attribute.class,
         ACLEntryMapping.class,
-        AuditLogEntry.class
+        AuditLogEntry.class,
+        ViewcountItem.class,
+        ViewcountAttachment.class,
       };
 
   @SuppressWarnings("nls")
