@@ -114,8 +114,8 @@
 		<destination uri="${install.path}/manager/users.properties" />
 	</command>
 	<command class="copy">
-		<source uri="${installer/local}/manager/all/log4j.yaml"/>
-		<destination uri="${install.path}/manager/log4j.yaml"/>
+		<source uri="${installer/local}/manager/all/log4j2.yaml"/>
+		<destination uri="${install.path}/manager/log4j2.yaml"/>
 	</command>
 	<command class="copy">
 		<source uri="${installer/local}/manager/all/upgrader-log4j.yaml"/>
@@ -192,8 +192,8 @@
 		<destination uri="${install.path}/conversion/export.xml"/>
 	</command>
 	<command class="copy" platform="win32 linux solaris-sparc">
-		<source uri="${installer/local}/conversion/all/log4j.yaml"/>
-		<destination uri="${install.path}/conversion/log4j.yaml"/>
+		<source uri="${installer/local}/conversion/all/log4j2.yaml"/>
+		<destination uri="${install.path}/conversion/log4j2.yaml"/>
 	</command>
 	<command class="move" platform="win32 linux solaris-sparc">
 		<source uri="${install.path}/conversion/dhf_htmlli.dat"/>
