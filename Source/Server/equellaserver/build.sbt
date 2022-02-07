@@ -24,7 +24,6 @@ val circeVersion     = "0.12.1"
 val cxfVersion       = "3.5.0"
 val fs2Version       = "2.4.4"
 val guiceVersion     = "3.0"
-val jacksonVersion   = "2.11.3"
 val jsassVersion     = "5.10.4"
 val jsoupVersion     = "1.14.3"
 val simpledbaVersion = "0.1.9"
@@ -49,13 +48,13 @@ libraryDependencies ++= Seq(
   "cglib"                          % "cglib"                          % "3.3.0",
   "com.fasterxml.jackson.core"     % "jackson-core"                   % jacksonVersion,
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"        % jacksonVersion,
-  "com.fasterxml.jackson.module"   %% "jackson-module-scala"          % jacksonVersion,
   "com.fasterxml.jackson.core"     % "jackson-annotations"            % jacksonVersion,
-  "com.fasterxml.jackson.core"     % "jackson-databind"               % jacksonVersion,
   "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-base"             % jacksonVersion,
   "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-json-provider"    % jacksonVersion,
-  "io.bit3"                        % "jsass"                          % jsassVersion,
-  "com.flickr4java"                % "flickr4java"                    % "2.16" excludeAll (
+  jacksonDataBind,
+  jacksonModuleScala,
+  "io.bit3"         % "jsass"       % jsassVersion,
+  "com.flickr4java" % "flickr4java" % "2.16" excludeAll (
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
