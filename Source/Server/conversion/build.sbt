@@ -26,13 +26,6 @@ excludeDependencies += "commons-logging" % "commons-logging"
   // Different blueprint.handlers may specify different classes.  Using the first one allows testing to pass.
   case PathList("META-INF", "blueprint.handlers") => MergeStrategy.first
 
-  // OK to do in Java 8 - interesting that the global case for module-info.class didn't pick up the bouncy castle files
-  // deduplicate: different file contents found in the following:
-  //  .../org.bouncycastle/bcmail-jdk15on/jars/bcmail-jdk15on-1.65.jar:META-INF/versions/9/module-info.class
-  //  .../org.bouncycastle/bcpkix-jdk15on/jars/bcpkix-jdk15on-1.65.jar:META-INF/versions/9/module-info.class
-  //  .../org.bouncycastle/bcprov-jdk15on/jars/bcprov-jdk15on-1.65.jar:META-INF/versions/9/module-info.class
-  case PathList("META-INF", "versions", "9", "module-info.class") => MergeStrategy.first
-
   // The idea is to keep the later suffix list.
   // Due to the error: deduplicate: different file contents found in the following:
   // ...
@@ -41,10 +34,8 @@ excludeDependencies += "commons-logging" % "commons-logging"
   // ...
   case PathList("mozilla", "public-suffix-list.txt") => MergeStrategy.last
 
-  // OK to do in Java 8
-  case "module-info.class" => MergeStrategy.discard
   case x =>
-    val oldStrategy = (assembly / assemblyMergeStrategy).value
+    val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
     oldStrategy(x)
 }
 

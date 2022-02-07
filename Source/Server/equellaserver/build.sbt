@@ -396,14 +396,6 @@ run := {
   // Different blueprint.handlers may specify different classes.  Using the first one allows testing to pass.
   case PathList("META-INF", "blueprint.handlers") => MergeStrategy.first
 
-  // OK to do in Java 8 - interesting that the global case for module-info.class didn't pick up the bouncy castle files
-  // deduplicate: different file contents found in the following:
-  //  .../io.github.classgraph/classgraph/jars/classgraph-4.8.87.jar:META-INF/versions/9/module-info.class
-  //  .../org.bouncycastle/bcmail-jdk15on/jars/bcmail-jdk15on-1.65.jar:META-INF/versions/9/module-info.class
-  //  .../org.bouncycastle/bcpkix-jdk15on/jars/bcpkix-jdk15on-1.65.jar:META-INF/versions/9/module-info.class
-  //  .../org.bouncycastle/bcprov-jdk15on/jars/bcprov-jdk15on-1.65.jar:META-INF/versions/9/module-info.class
-  case PathList("META-INF", "versions", "9", "module-info.class") => MergeStrategy.first
-
   // Curious that it's xml vs soap.  testing passes using the first one.
   // Due to the error: deduplicate: different file contents found in the following:
   // ...
@@ -428,10 +420,8 @@ run := {
   // ...
   case PathList("META-INF", "cxf", "java2wsbeans.xml") => MergeStrategy.first
 
-  // Safe to do at least in JDK 8
-  case "module-info.class" => MergeStrategy.discard
   case x =>
-    val oldStrategy = (assembly / assemblyMergeStrategy).value
+    val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
     oldStrategy(x)
 }
 
