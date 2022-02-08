@@ -205,7 +205,7 @@ libraryDependencies ++= Seq(
   "com.github.equella.legacy"       % "hurl"                           % "1.1",
   "org.jboss.resteasy"              % "resteasy-jaxrs"                 % RestEasyVersion,
   "org.jboss.spec.javax.annotation" % "jboss-annotations-api_1.3_spec" % "2.0.1.Final",
-  "org.jboss.logging"               % "jboss-logging"                  % "3.4.2.Final",
+  "org.jboss.logging"               % "jboss-logging"                  % "3.4.3.Final",
   "org.jboss.logging"               % "jboss-logging-annotations"      % "2.2.1.Final",
   "org.jboss.logging"               % "jboss-logging-processor"        % "2.2.1.Final",
   "org.reactivestreams"             % "reactive-streams"               % "1.0.3",
