@@ -326,7 +326,7 @@ public class ExternalToolsServiceImpl
   @Override
   public String customParamListToString(List<NameValue> customParams) {
     StringBuilder value = new StringBuilder("");
-    if (customParams.size() > 0) {
+    if (!Check.isEmpty(customParams)) {
       Iterator<NameValue> iterator = customParams.iterator();
       while (iterator.hasNext()) {
         NameValue param = iterator.next();
