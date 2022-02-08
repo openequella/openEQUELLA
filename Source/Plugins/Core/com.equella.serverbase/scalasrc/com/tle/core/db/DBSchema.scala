@@ -73,10 +73,6 @@ trait DBSchema extends StdColumns {
     .table("viewcount_attachment")
     .keys(itemViewId ++ Cols('attachment))
 
-  val viewCountTables = Seq(itemViewCount.definition, attachmentViewCount.definition)
-
-  allTables ++= viewCountTables
-
   val countByCol = JDBCQueries.queryRawSQL(
     "select sum(\"count\") from viewcount_item vci " +
       "inner join item i on vci.item_uuid = i.uuid and vci.item_version = i.version " +
