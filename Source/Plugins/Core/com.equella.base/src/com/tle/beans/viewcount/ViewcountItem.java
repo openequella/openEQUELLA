@@ -23,6 +23,7 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import org.hibernate.annotations.AttributeAccessor;
 
+/** This entity represents table 'viewcount_item' which provides the view count of an Item. */
 @Entity
 @AttributeAccessor("field")
 public class ViewcountItem {

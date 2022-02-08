@@ -22,6 +22,7 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+/** This entity represents the composite primary key of table 'viewcount_attachment'. */
 @Embeddable
 public class ViewcountAttachmentId implements Serializable {
   private static final long serialVersionUID = 1L;
