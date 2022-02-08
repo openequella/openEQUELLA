@@ -18,8 +18,8 @@ Configuration:
   appenders:
     RollingFile:
       - name: FILE
-        fileName: "${install.path}/logs/resource-centre/application.html"
-        filePattern: "${install.path}/logs/resource-centre/%d{yyyy-MM-dd}/application-%i.html"
+        fileName: "${install.path#t\/}/logs/resource-centre/application.html"
+        filePattern: "${install.path#t\/}/logs/resource-centre/%d{yyyy-MM-dd}/application-%i.html"
         immediateFlush: true
         append: true
         Filters:
@@ -44,8 +44,8 @@ Configuration:
           max: 20
 
       - name: REPORT
-        fileName: "${install.path}/logs/reporting/log.html"
-        filePattern: "${install.path}/logs/reporting/%d{yyyy-MM-dd}/log-%i.html"
+        fileName: "${install.path#t\/}/logs/reporting/log.html"
+        filePattern: "${install.path#t\/}/logs/reporting/%d{yyyy-MM-dd}/log-%i.html"
         immediateFlush: true
         append: true
         Filters:
@@ -65,8 +65,8 @@ Configuration:
           max: 20
 
       - name: TOMCAT
-        fileName: "${install.path}/logs/tomcat/tomcat.html"
-        filePattern: "${install.path}/logs/tomcat/%d{yyyy-MM-dd}/tomcat-%i.html"
+        fileName: "${install.path#t\/}/logs/tomcat/tomcat.html"
+        filePattern: "${install.path#t\/}/logs/tomcat/%d{yyyy-MM-dd}/tomcat-%i.html"
         immediateFlush: true
         append: true
         Filters:

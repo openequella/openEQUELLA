@@ -70,8 +70,16 @@ class UpdateLog4JConfigFile extends AbstractUpgrader {
   override def isBackwardsCompatible: Boolean = false
 
   override def upgrade(result: UpgradeResult, installDir: File): Unit = {
+    val oldDefaultConfigFileName = "log4j.properties"
+    val newDefaultConfigFileName = "log4j2.yaml"
+
     def yamlFileName(propertyFile: File) = {
-      propertyFile.getName.replace(".properties", ".yaml")
+      val fileName = propertyFile.getName
+      if (fileName == oldDefaultConfigFileName) {
+        newDefaultConfigFileName
+      } else {
+        fileName.replace(".properties", ".yaml")
+      }
     }
 
     def copyDefaultConfigFile(propertyFile: File): Unit = {
@@ -99,7 +107,7 @@ class UpdateLog4JConfigFile extends AbstractUpgrader {
 
     List(
       new File(installDir, Constants.LEARNINGEDGE_CONFIG_FOLDER + "/learningedge-log4j.properties"),
-      new File(installDir, Constants.MANAGER_FOLDER + "/log4j.properties"),
+      new File(installDir, Constants.MANAGER_FOLDER + "/" + oldDefaultConfigFileName),
       new File(installDir, Constants.MANAGER_FOLDER + "/upgrader-log4j.properties")
     ).foreach(buildYamlFile)
   }

@@ -12,8 +12,17 @@ libraryDependencies ++= Seq(
   log4j,
   log4jSlf4jImpl,
   "commons-daemon" % "commons-daemon" % "1.2.4",
-  "commons-codec"  % "commons-codec"  % "1.15"
+  "commons-codec"  % "commons-codec"  % "1.15",
+  jacksonDataBind,
+  jacksonDataFormatYaml
 )
+
+(assembly / assemblyMergeStrategy) := {
+  case "module-info.class" => MergeStrategy.discard
+  case x =>
+    val oldStrategy = (assembly / assemblyMergeStrategy).value
+    oldStrategy(x)
+}
 
 (assembly / assemblyOption) := (assembly / assemblyOption).value.copy(includeScala = false)
 

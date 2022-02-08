@@ -22,6 +22,13 @@ excludeDependencies ++= Seq(
   "stax"            % "stax-api"
 )
 
+(assembly / assemblyMergeStrategy) := {
+  case "module-info.class" => MergeStrategy.discard
+  case x =>
+    val oldStrategy = (assembly / assemblyMergeStrategy).value
+    oldStrategy(x)
+}
+
 (assembly / assemblyOption) := (assembly / assemblyOption).value.copy(includeScala = false)
 
 (assembly / mainClass) := Some("com.dytech.edge.installer.application.Launch")
