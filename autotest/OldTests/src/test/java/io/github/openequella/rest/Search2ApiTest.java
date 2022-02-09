@@ -5,6 +5,7 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -18,7 +19,6 @@ import java.util.stream.StreamSupport;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.codehaus.jackson.JsonNode;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -226,7 +226,7 @@ public class Search2ApiTest extends AbstractRestApiTest {
             .orElseThrow(
                 () -> new IllegalStateException("Failed to access attachments for validation"));
 
-    final Iterable<JsonNode> attachmentsIterable = attachments::getElements;
+    final Iterable<JsonNode> attachmentsIterable = attachments::elements;
     final Predicate<JsonNode> isYouTubeAttachment =
         attachment ->
             Optional.of(attachment.get("attachmentType"))

@@ -2,6 +2,8 @@ package com.tle.webtests.test.webservices.rest;
 
 import static org.testng.AssertJUnit.assertEquals;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.tle.common.Pair;
 import com.tle.webtests.pageobject.viewitem.ItemId;
 import java.io.IOException;
@@ -11,8 +13,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ObjectNode;
 import org.testng.annotations.Test;
 
 public class CommentApiTest extends AbstractItemApiTest {
@@ -109,9 +109,9 @@ public class CommentApiTest extends AbstractItemApiTest {
     JsonNode comments = getComments(itemid.getUuid(), itemid.getVersion());
     JsonNode comment = comments.get(0);
 
-    assertEquals(comment.get("comment").getTextValue(), commentText);
-    assertEquals(comment.get("rating").getIntValue(), commentRating);
-    assertEquals(comment.get("anonymous").getBooleanValue(), isAnonymous);
+    assertEquals(comment.get("comment").asText(), commentText);
+    assertEquals(comment.get("rating").asInt(), commentRating);
+    assertEquals(comment.get("anonymous").asBoolean(), isAnonymous);
   }
 
   @Test
@@ -126,7 +126,7 @@ public class CommentApiTest extends AbstractItemApiTest {
 
     JsonNode comments = getComments(itemid.getUuid(), itemid.getVersion());
     JsonNode comment = comments.get(0);
-    commentUuid = comment.get("uuid").getTextValue();
+    commentUuid = comment.get("uuid").asText();
 
     HttpResponse deleteResponse = deleteComment(itemid, commentUuid);
     assertResponse(deleteResponse, 200, "error");

@@ -1,5 +1,9 @@
 package com.tle.webtests.test.webservices.rest;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
@@ -59,10 +63,6 @@ import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
 import org.testng.Assert;
 import org.testng.AssertJUnit;
 import org.testng.annotations.BeforeClass;
@@ -179,7 +179,7 @@ public abstract class AbstractRestApiTest extends AbstractSessionTest {
             + client.getSecret();
     final HttpResponse response = execute(new HttpGet(tokenGetUrl), false);
     final JsonNode tokenNode = readJson(mapper, response);
-    return tokenNode.get("access_token").getTextValue();
+    return tokenNode.get("access_token").asText();
   }
 
   protected String requestToken(String id) throws IOException {

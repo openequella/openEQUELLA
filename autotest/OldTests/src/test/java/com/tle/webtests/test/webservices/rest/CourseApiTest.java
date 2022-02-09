@@ -4,13 +4,13 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.tle.common.Pair;
 import java.net.URI;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import org.apache.http.HttpResponse;
-import org.codehaus.jackson.JsonNode;
 import org.testng.annotations.Test;
 
 /** @author larry */
@@ -58,7 +58,7 @@ public class CourseApiTest extends AbstractRestApiTest {
     // retrieve the freshly created course
     String apiPlusUuid = uri.toString() + "/" + newUuid;
     JsonNode postGetNode = getEntity(apiPlusUuid, token);
-    assertEquals(postGetNode.get("code").getTextValue(), COURSE_CODE_RECOGNISABLE);
+    assertEquals(postGetNode.get("code").asText(), COURSE_CODE_RECOGNISABLE);
 
     int purged = purge(token);
     assertEquals(purged, 1, "Expected to purge 1.");

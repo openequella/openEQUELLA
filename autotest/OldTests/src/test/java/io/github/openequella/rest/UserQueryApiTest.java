@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.testng.AssertJUnit.assertTrue;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,7 +17,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.codehaus.jackson.type.TypeReference;
 import org.testng.annotations.Test;
 
 public class UserQueryApiTest extends AbstractRestApiTest {

@@ -5,6 +5,8 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.tle.common.Pair;
 import java.net.URI;
 import java.util.Calendar;
@@ -12,8 +14,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
 import org.apache.http.HttpResponse;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ObjectNode;
 import org.testng.annotations.Test;
 
 /** @author larry */

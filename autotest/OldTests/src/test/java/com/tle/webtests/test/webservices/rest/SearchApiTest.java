@@ -4,6 +4,8 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.tle.common.Pair;
@@ -18,8 +20,6 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ObjectNode;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -271,7 +271,7 @@ public class SearchApiTest extends AbstractRestApiTest {
     JsonNode result = resultComposite.get("results");
     String dynaCollCompoundId = null;
 
-    for (Iterator<JsonNode> iter = result.getElements(); iter.hasNext(); ) {
+    for (Iterator<JsonNode> iter = result.elements(); iter.hasNext(); ) {
       JsonNode aDynaColl = iter.next();
       if (target.equalsIgnoreCase(aDynaColl.get("name").asText())) {
         dynaCollCompoundId = aDynaColl.get("compoundId").asText();

@@ -2,6 +2,8 @@ package com.tle.webtests.test.webservices.rest;
 
 import static org.testng.Assert.assertEquals;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import com.tle.common.Pair;
 import com.tle.webtests.test.files.Attachments;
@@ -9,8 +11,6 @@ import java.io.IOException;
 import java.util.List;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
 import org.testng.annotations.Test;
 
 public class ScrapbookApiTest extends AbstractItemApiTest {

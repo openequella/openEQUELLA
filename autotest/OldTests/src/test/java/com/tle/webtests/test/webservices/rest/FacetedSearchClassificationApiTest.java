@@ -2,12 +2,12 @@ package com.tle.webtests.test.webservices.rest;
 
 import static org.junit.Assert.assertEquals;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.tle.common.Pair;
 import java.util.List;
 import org.apache.http.HttpResponse;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 

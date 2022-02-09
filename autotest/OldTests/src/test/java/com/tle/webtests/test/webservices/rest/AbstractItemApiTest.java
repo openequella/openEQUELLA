@@ -1,9 +1,13 @@
 package com.tle.webtests.test.webservices.rest;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
 
 import com.dytech.devlib.PropBagEx;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import com.tle.webtests.pageobject.viewitem.ItemId;
 import java.io.IOException;
@@ -17,9 +21,6 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
 
 /** @author Aaron */
 public abstract class AbstractItemApiTest extends AbstractRestApiTest {
@@ -194,9 +195,9 @@ public abstract class AbstractItemApiTest extends AbstractRestApiTest {
 
   protected void assertNameVersionStatus(
       JsonNode itemNode, String name, int version, String status) {
-    assertEquals(itemNode.get("name").getTextValue(), name);
-    assertEquals(itemNode.get("version").getIntValue(), version);
-    assertEquals(itemNode.get("status").getTextValue(), status);
+    assertEquals(itemNode.get("name").asText(), name);
+    assertEquals(itemNode.get("version").asInt(), version);
+    assertEquals(itemNode.get("status").asText(), status);
   }
 
   protected void assertNulls(JsonNode tree, String... nodes) {
@@ -206,7 +207,7 @@ public abstract class AbstractItemApiTest extends AbstractRestApiTest {
   }
 
   protected void assertMetadata(JsonNode tree, String... pathsAndValues) {
-    PropBagEx metaXml = new PropBagEx(tree.get("metadata").getTextValue());
+    PropBagEx metaXml = new PropBagEx(tree.get("metadata").asText());
     for (int i = 0; i < pathsAndValues.length; i += 2) {
       String path = pathsAndValues[i];
       String value = pathsAndValues[i + 1];
@@ -230,8 +231,8 @@ public abstract class AbstractItemApiTest extends AbstractRestApiTest {
       JsonNode urlAttachment, ItemId itemId, String title, String url) {
     asserter.assertAttachmentBasics(
         urlAttachment, itemId, "url", "32a79ea6-8b67-4b38-af85-341b2d512f09", title);
-    assertEquals(urlAttachment.get("url").getTextValue(), url);
-    assertEquals(urlAttachment.get("disabled").getBooleanValue(), false);
+    assertEquals(urlAttachment.get("url").asText(), url);
+    assertFalse(urlAttachment.get("disabled").asBoolean());
   }
 
   protected ItemId addDeletable(ObjectNode item) {

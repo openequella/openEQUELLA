@@ -3,6 +3,8 @@ package com.tle.webtests.test.webservices.rest;
 import static org.testng.Assert.assertFalse;
 
 import com.dytech.devlib.PropBagEx;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.tle.common.Pair;
 import com.tle.webtests.pageobject.cal.CALSummaryPage;
 import com.tle.webtests.pageobject.viewitem.ItemId;
@@ -10,8 +12,6 @@ import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import java.io.IOException;
 import java.util.List;
 import org.apache.http.HttpResponse;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ObjectNode;
 import org.testng.AssertJUnit;
 import org.testng.annotations.Test;
 

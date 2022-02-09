@@ -2,10 +2,10 @@ package com.tle.webtests.test.webservices.rest;
 
 import static org.testng.Assert.assertNotNull;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.tle.common.Pair;
 import java.net.URI;
 import java.util.List;
-import org.codehaus.jackson.JsonNode;
 import org.testng.annotations.Test;
 
 /** @author larry */

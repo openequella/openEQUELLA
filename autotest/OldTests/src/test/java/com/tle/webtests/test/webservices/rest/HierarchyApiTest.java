@@ -4,11 +4,11 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.tle.common.Pair;
 import java.net.URI;
 import java.util.List;
 import org.apache.http.HttpResponse;
-import org.codehaus.jackson.JsonNode;
 import org.testng.annotations.Test;
 
 /**

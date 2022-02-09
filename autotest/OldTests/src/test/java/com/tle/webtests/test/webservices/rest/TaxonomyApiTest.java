@@ -2,6 +2,9 @@ package com.tle.webtests.test.webservices.rest;
 
 import static org.testng.Assert.assertEquals;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import com.tle.annotation.Nullable;
 import com.tle.common.Pair;
@@ -17,9 +20,6 @@ import java.util.Locale;
 import java.util.UUID;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
 import org.testng.annotations.Test;
 
 public class TaxonomyApiTest extends AbstractRestApiTest {
@@ -296,7 +296,7 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
 
     final List<Pair<String, String>> level0Terms =
         createChildTerms(taxonomyUuid, null, nodesPerLevel, null);
-    rootTermNames.addAll(Lists.transform(level0Terms, (t) -> t.getSecond()));
+    rootTermNames.addAll(Lists.transform(level0Terms, Pair::getSecond));
 
     // You could do this recursively, but we want to keep track of certain nodes
     for (int level0Index = 0; level0Index < level0Terms.size(); level0Index++) {
@@ -333,8 +333,8 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
 
     // We now know the sorted terms to expect at each level
     alphaSort(rootTermNames);
-    for (int i = 0; i < levelTermData.size(); i++) {
-      alphaSort(levelTermData.get(i).childrenNames);
+    for (TermTestData levelTermDatum : levelTermData) {
+      alphaSort(levelTermDatum.childrenNames);
     }
   }
 
@@ -349,21 +349,20 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
     final ArrayNode arrayNode = getChildren(taxonomyUuid, null);
     for (int i = 0; i < arrayNode.size(); i++) {
       final JsonNode node = arrayNode.get(i);
-      final String termName = node.get("term").getTextValue();
+      final String termName = node.get("term").asText();
       returnedSortedRootTerms.add(termName);
     }
     assertEquals(rootTermNames, returnedSortedRootTerms);
 
-    for (int i = 0; i < levelTermData.size(); i++) {
+    for (TermTestData levelTermDatum : levelTermData) {
       final List<String> returnedSortedChildTerms = new ArrayList<>(nodesPerLevel);
-      final ArrayNode testTermSortedChildren =
-          getChildren(taxonomyUuid, levelTermData.get(i).termPath);
+      final ArrayNode testTermSortedChildren = getChildren(taxonomyUuid, levelTermDatum.termPath);
       for (int j = 0; j < testTermSortedChildren.size(); j++) {
         final JsonNode node = testTermSortedChildren.get(j);
-        final String termName = node.get("term").getTextValue();
+        final String termName = node.get("term").asText();
         returnedSortedChildTerms.add(termName);
       }
-      assertEquals(levelTermData.get(i).childrenNames, returnedSortedChildTerms);
+      assertEquals(levelTermDatum.childrenNames, returnedSortedChildTerms);
     }
   }
 
@@ -376,7 +375,7 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
       List<Pair<String, String>> children) {
     final TermTestData testData = levelTermData.get(level);
     if (termIndex == testData.termIndex) {
-      testData.childrenNames = new ArrayList<>(Lists.transform(children, (t) -> t.getSecond()));
+      testData.childrenNames = new ArrayList<>(Lists.transform(children, Pair::getSecond));
       testData.termUuid = term.getFirst();
       testData.termName = term.getSecond();
       testData.termPath =
@@ -407,7 +406,7 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
       final String termUuid = UUID.randomUUID().toString();
 
       createTerm(taxonomyUuid, termUuid, termName, parentTermUuid, -1);
-      result.add(new Pair<String, String>(termUuid, termName));
+      result.add(new Pair<>(termUuid, termName));
     }
     return result;
   }
@@ -515,7 +514,7 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
     final List<String> nodeNames = new ArrayList<>();
     for (int i = 0; i < nodes.size(); i++) {
       final JsonNode node = nodes.get(i);
-      final String termName = node.get("term").getTextValue();
+      final String termName = node.get("term").asText();
       nodeNames.add(termName);
     }
     return nodeNames;
@@ -533,7 +532,7 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
             API_TAXONOMY_PATH,
             taxonomyUuid,
             API_TERM_PATH_PART,
-            node.get("uuid").getTextValue());
+            node.get("uuid").asText());
     HttpResponse putRequest = getPut(putUrl, node, getToken());
     assertResponse(putRequest, 200, "failed to move term");
   }

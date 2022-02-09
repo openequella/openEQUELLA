@@ -3,13 +3,13 @@ package io.github.openequella.rest;
 import static org.junit.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import java.util.List;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.type.TypeReference;
 import org.testng.annotations.Test;
 
 public class MimeTypeApiTest extends AbstractRestApiTest {
