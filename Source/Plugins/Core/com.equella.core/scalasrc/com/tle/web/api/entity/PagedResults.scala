@@ -81,9 +81,14 @@ object PagedResults {
     }
 
     def getAvailable: Int = {
-      // It's acceptable to retrieve all because targeted BaseEntities are all small datasets.
-      val entities = getBaseEntities(0, -1)
-      filterByPermission(entities).length
+      // We only return the full number of available entities because filtering entities by ACL is very slow.
+      // Here is an example that would it.
+      // val entities = getBaseEntities(0, -1)
+      // filterByPermission(entities).length
+
+      res.getEntityService
+        .countAll(new EnumerateOptions(q, 0, -1, system, if (includeDisabled) null else false))
+        .toInt
     }
 
     def collectMore(length: Int, initialOffset: Int): (Int, List[PagedEntity[BE]]) = {
