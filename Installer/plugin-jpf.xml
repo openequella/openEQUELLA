@@ -4,7 +4,7 @@
 		<import plugin-id="com.tle.platform.swing" />
 		<import plugin-id="com.tle.platform.equella" />
 		<import plugin-id="com.tle.platform.common" />
-		<import plugin-id="TLE Upgrade Manager" />
+		<import plugin-id="UpgradeManager" />
 		<import plugin-id="jpf:jpf" />
 		<import plugin-id="org.postgresql:postgresql" />
 		<import plugin-id="com.oracle:ojdbc6" />

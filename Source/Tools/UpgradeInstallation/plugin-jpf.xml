@@ -7,7 +7,7 @@
 		<import plugin-id="commons-io:commons-io" />
 		<import plugin-id="commons-lang:commons-lang" />
 		<import plugin-id="org.jvnet.hudson:xstream" />
-		<import plugin-id="TLE Upgrade Manager" />
+		<import plugin-id="UpgradeManager" />
 		<import plugin-id="com.google.guava:guava" />
 	</requires>
 	<runtime>
