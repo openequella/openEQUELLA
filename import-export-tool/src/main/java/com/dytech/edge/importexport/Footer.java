@@ -5,7 +5,6 @@ import com.dytech.gui.JImage;
 import java.awt.Dimension;
 import javax.swing.JPanel;
 
-/** @author nread */
 public class Footer extends JPanel {
   protected JImage footer;
   protected JImage working;
@@ -16,8 +15,11 @@ public class Footer extends JPanel {
     footer = Icons.getFooter();
     working = Icons.getWorking();
 
-    footer.setBounds(0, 0, 350, 21);
-    working.setBounds(10, 7, 43, 8);
+    final int footerWidth = 350;
+    final int workingWidth = 43;
+    footer.setBounds(0, 0, footerWidth, 21);
+    // Offset working icon from right-hand side of footer - then add a bit of padding
+    working.setBounds(footerWidth - workingWidth - 8, 9, 43, 8);
 
     setWorking(false);
   }
