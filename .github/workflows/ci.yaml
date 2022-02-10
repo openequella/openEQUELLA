@@ -194,7 +194,7 @@ jobs:
   functional_testing:
     needs: build_and_check
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
