@@ -32,6 +32,16 @@ public class ViewcountItem {
   private int count;
   private Instant lastViewed;
 
+  public ViewcountItem() {
+    super();
+  }
+
+  public ViewcountItem(ViewcountItemId id, int count, Instant lastViewed) {
+    this.id = id;
+    this.count = count;
+    this.lastViewed = lastViewed;
+  }
+
   public ViewcountItemId getId() {
     return id;
   }

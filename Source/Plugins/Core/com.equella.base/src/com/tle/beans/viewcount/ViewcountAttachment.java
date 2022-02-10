@@ -35,6 +35,16 @@ public class ViewcountAttachment {
   private int count;
   private Instant lastViewed;
 
+  public ViewcountAttachment() {
+    super();
+  }
+
+  public ViewcountAttachment(ViewcountAttachmentId id, int count, Instant lastViewed) {
+    this.id = id;
+    this.count = count;
+    this.lastViewed = lastViewed;
+  }
+
   public ViewcountAttachmentId getId() {
     return id;
   }
