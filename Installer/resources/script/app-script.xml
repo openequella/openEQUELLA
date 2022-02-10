@@ -83,7 +83,7 @@
 					<description>Select the database type from the list of currently supported databases.</description>
 					<target>datasource/dbtype</target>
 					<items>
-						<item name="MS SQL Server - 2019+" value="sqlserver" default="true"/>
+						<item name="MS SQL Server - 2012+" value="sqlserver" default="true"/>
 						<item name="Oracle - 12c+" value="oracle"/>
 						<item name="PostgreSQL - 9.6+" value="postgresql"/>
 					</items>
@@ -141,6 +141,17 @@
 						<item name="Service name" value="/" />
 					</items>
 				</control>
+        <control class="mssqltrustservercerts">
+          <title>Trust Server Certificates</title>
+          <description>
+            Do you want to trust the SSL certficates used by your DB server - thereby, skipping
+            certificate validation. (Relates to JDBC URL option 'trustServerCertificate'.)
+          </description>
+          <target>datasource/trustservercerts</target>
+          <items>
+            <item name="Enable" value="/" default="false" />
+          </items>
+        </control>
 			</controls>
 			<buttons>
 				<button label="Back" callback="com.dytech.installer.BasicBackCallback" icon="/images/back.gif" align="left"/>

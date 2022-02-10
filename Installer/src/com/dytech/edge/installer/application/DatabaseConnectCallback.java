@@ -18,13 +18,20 @@
 
 package com.dytech.edge.installer.application;
 
+import static com.dytech.edge.installer.DatasourceConfig.SUBSTITUTION_MARKER;
+import static com.dytech.edge.installer.DatasourceConfig.extractDatasourceConfig;
+import static com.dytech.edge.installer.DatasourceConfig.updateHostAndPort;
+
+import com.dytech.common.text.Substitution;
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.Constants;
 import com.dytech.edge.installer.DatabaseCommand;
 import com.dytech.edge.installer.DatabaseCommand.NonUnicodeEncodingException;
+import com.dytech.edge.installer.DatasourceConfig.DatasourceNodes;
 import com.dytech.gui.workers.GlassSwingWorker;
 import com.dytech.installer.Callback;
 import com.dytech.installer.Wizard;
+import com.dytech.installer.XpathResolver;
 import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -36,27 +43,15 @@ import javax.swing.JOptionPane;
 public class DatabaseConnectCallback implements Callback {
   @Override
   public void task(final Wizard installer) {
-    PropBagEx output = installer.getOutputNow();
+    PropBagEx fullConfig = installer.getOutputNow();
+    final String installerPath = fullConfig.getNode("installer/local");
 
-    final String installerPath = output.getNode("installer/local");
-    final String database = output.getNode("datasource/database");
-    final String username = output.getNode("datasource/username");
-    final String password = output.getNode("datasource/password");
-    final String dbtype = output.getNode("datasource/dbtype");
-    final String idtype = output.getNode("datasource/idtype");
-
-    String h = output.getNode("datasource/host");
-    int p;
-    if (h.indexOf(':') >= 0) {
-      String[] bits = h.split(":");
-      h = bits[0];
-      p = Integer.parseInt(bits[1]);
-    } else {
-      p = DatabaseCommand.getDefaultPort(dbtype);
-    }
-
-    final String host = h;
-    final String port = Integer.toString(p);
+    // Create a dedicated datasource config so that we can mutate it below with updateHostAndPort
+    PropBagEx datasourceConfig = extractDatasourceConfig(fullConfig);
+    final String database = datasourceConfig.getNode(DatasourceNodes.DATABASE.path());
+    final String username = datasourceConfig.getNode(DatasourceNodes.USERNAME.path());
+    final String password = datasourceConfig.getNode(DatasourceNodes.PASSWORD.path());
+    final String dbtype = datasourceConfig.getNode(DatasourceNodes.TYPE.path());
 
     GlassSwingWorker<?> worker =
         new GlassSwingWorker<Object>() {
@@ -65,7 +60,7 @@ public class DatabaseConnectCallback implements Callback {
            * @see com.dytech.gui.workers.AdvancedSwingWorker#construct()
            */
           @Override
-          public Object construct() throws SQLException, Exception {
+          public Object construct() throws Exception {
             Properties properties = new Properties();
             FileInputStream fis =
                 new FileInputStream(
@@ -78,11 +73,10 @@ public class DatabaseConnectCallback implements Callback {
             fis.close();
 
             String driver = properties.getProperty("hibernate.connection.driver_class");
-            String connectionUrl = properties.getProperty("hibernate.connection.url");
-            connectionUrl = connectionUrl.replace("${datasource/host}", host);
-            connectionUrl = connectionUrl.replace("${datasource/port}", port);
-            connectionUrl = connectionUrl.replace("${datasource/database}", database);
-            connectionUrl = connectionUrl.replace("${datasource/idtype}", idtype);
+            String connectionUrl =
+                new Substitution(
+                        new XpathResolver(updateHostAndPort(datasourceConfig)), SUBSTITUTION_MARKER)
+                    .resolve(properties.getProperty("hibernate.connection.url"));
 
             testDatabase(driver, connectionUrl, username, password, dbtype, database);
 
@@ -112,7 +106,7 @@ public class DatabaseConnectCallback implements Callback {
               }
               JOptionPane.showMessageDialog(
                   installer.getFrame(),
-                  "An error occured while attempting to connect to the database. \n"
+                  "An error occurred while attempting to connect to the database. \n"
                       + "Please check that you have entered the correct values as specified in the\n"
                       + " installation documentation and try again.\n"
                       + "The error provided by the application was: \n"

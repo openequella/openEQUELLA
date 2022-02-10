@@ -29,6 +29,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 
 public class DatasourceConfig extends ForeignCommand {
+
+  public static final String ROOT_NODE = "datasource";
+  /** Marker used in configuration template files to mark variables to be substituted. */
+  public static final String SUBSTITUTION_MARKER = "${ }";
+
   private final String localPath;
   private final String database;
   private final String installPath;
@@ -36,9 +41,9 @@ public class DatasourceConfig extends ForeignCommand {
   public DatasourceConfig(PropBagEx commandBag, PropBagEx resultBag) throws InstallerException {
     super(commandBag, resultBag);
 
-    database = resultBag.getNode("datasource/dbtype"); // $NON-NLS-1$
-    localPath = resultBag.getNode("installer/local"); // $NON-NLS-1$
-    installPath = resultBag.getNode("install.path"); // $NON-NLS-1$
+    database = resultBag.getNode(DatasourceNodes.TYPE.path());
+    localPath = resultBag.getNode("installer/local");
+    installPath = resultBag.getNode("install.path");
   }
 
   /**
@@ -62,18 +67,88 @@ public class DatasourceConfig extends ForeignCommand {
   private void copy(String source, String destination) {
     try (BufferedReader in = new BufferedReader(new FileReader(source));
         BufferedWriter out = new BufferedWriter(new FileWriter(destination))) {
-      Substitution sub = new Substitution(new XpathResolver(resultBag), "${ }"); // $NON-NLS-1$
+      Substitution sub = new Substitution(new XpathResolver(resultBag), SUBSTITUTION_MARKER);
       sub.resolve(in, out);
       propogateSubtaskCompleted();
     } catch (Exception ex) {
       ex.printStackTrace();
-      throw new InstallerException("Problem copying datasources.xml");
+      throw new InstallerException("Problem copying Hibernate property files.");
     }
   }
 
   /** Return a nice string for the progress box to show. */
   @Override
   public String toString() {
-    return "Updating data sources XML...";
+    return "Updating Hibernate property files...";
+  }
+
+  public static PropBagEx extractDatasourceConfig(PropBagEx config) {
+    final PropBagEx cfg = new PropBagEx().newSubtree("cfg");
+    cfg.append("", config.getSubtree(ROOT_NODE));
+    return cfg;
+  }
+
+  /**
+   * Given a PropBag with at least the datasource/host specified, will attempt to use that to
+   * attempt to set the port. This is done by either splitting the host on the port delimiter (':')
+   * or using the default port determined by datasource/dbtype.
+   *
+   * @param config a PropBag with expected values ready to process
+   * @return the original config mutated in place
+   */
+  public static PropBagEx updateHostAndPort(PropBagEx config) {
+    String dbhost = config.getNode(DatasourceNodes.HOST.path());
+    if (dbhost.indexOf(':') >= 0) {
+      String[] parts = dbhost.split(":");
+      config.setNode(DatasourceNodes.HOST.path(), parts[0]);
+      config.setNode(DatasourceNodes.PORT.path(), parts[1]);
+    } else {
+      String dbtype = config.getNode(DatasourceNodes.TYPE.path());
+      config.setNode(DatasourceNodes.PORT.path(), DatabaseCommand.getDefaultPort(dbtype));
+    }
+
+    return config;
+  }
+  /** Names of the various names under `datasource/` used for configuration. */
+  public enum DatasourceNodes {
+    HOST("host"),
+    PORT("port"),
+    TYPE("dbtype"),
+    USERNAME("username"),
+    PASSWORD("password"),
+    DATABASE("database"),
+    /** Configures the Oracle JDBC driver to use either SID or Service based access. */
+    ORACLE_IDTYPE("idtype"),
+    /**
+     * Controls whether the MSSQL JDBC driver option `trustServerCertificate` should be true or
+     * false.
+     */
+    MSSQL_TRUSTCERTS("trustservercerts");
+
+    private final String path;
+
+    DatasourceNodes(String node) {
+      path = ROOT_NODE + "/" + node;
+    }
+
+    public String path() {
+      return this.path;
+    }
+  }
+
+  public enum DatabaseTypes {
+    MSSQL("sqlserver"),
+    ORACLE("oracle"),
+    PGSQL("postgresql");
+
+    private final String id;
+
+    DatabaseTypes(String id) {
+      this.id = id;
+    }
+
+    public String id() {
+      return id;
+    }
   }
 }
