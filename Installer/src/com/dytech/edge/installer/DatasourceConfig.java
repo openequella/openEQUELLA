@@ -109,6 +109,7 @@ public class DatasourceConfig extends ForeignCommand {
 
     return config;
   }
+
   /** Names of the various names under `datasource/` used for configuration. */
   public enum DatasourceNodes {
     HOST("host"),
