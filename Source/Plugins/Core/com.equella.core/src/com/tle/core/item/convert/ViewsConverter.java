@@ -20,28 +20,34 @@ package com.tle.core.item.convert;
 
 import com.tle.beans.Institution;
 import com.tle.beans.item.ItemId;
+import com.tle.beans.viewcount.ViewcountAttachment;
+import com.tle.beans.viewcount.ViewcountAttachmentId;
+import com.tle.beans.viewcount.ViewcountItem;
+import com.tle.beans.viewcount.ViewcountItemId;
 import com.tle.common.NameValue;
 import com.tle.common.filesystem.handle.BucketFile;
 import com.tle.common.filesystem.handle.SubTemporaryFile;
 import com.tle.common.filesystem.handle.TemporaryFileHandle;
-import com.tle.core.db.tables.AttachmentViewCount;
-import com.tle.core.db.tables.ItemViewCount;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.institution.convert.service.AbstractJsonConverter;
 import com.tle.core.institution.convert.service.InstitutionImportService.ConvertType;
 import com.tle.core.institution.convert.service.impl.InstitutionImportServiceImpl.ConverterTasks;
-import com.tle.core.item.ViewCountJavaDao;
+import com.tle.core.viewcount.service.ViewCountService;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Bind
 @Singleton
 public class ViewsConverter extends AbstractJsonConverter<Object> {
   private static final String VIEWS_FOLDER = "item_views";
+
+  @Inject private ViewCountService viewCountService;
 
   @Override
   public void doDelete(Institution institution, ConverterParams callback) {
@@ -55,22 +61,22 @@ public class ViewsConverter extends AbstractJsonConverter<Object> {
     final SubTemporaryFile viewsExportFolder = new SubTemporaryFile(staging, VIEWS_FOLDER);
     xmlHelper.writeExportFormatXmlFile(viewsExportFolder, true);
 
-    for (ItemViewCount itemViewCount : ViewCountJavaDao.getAllSummaryViewCount(institution)) {
-      final String uuid = itemViewCount.item_uuid().toString();
-      final int version = itemViewCount.item_version();
+    for (ViewcountItem itemViewCount : viewCountService.getItemViewCountList(institution)) {
+      final String uuid = itemViewCount.getId().getItemUuid();
+      final int version = itemViewCount.getId().getItemVersion();
 
       final ItemViewsExport ive = new ItemViewsExport();
       ive.itemUuid = uuid;
       ive.itemVersion = version;
-      ive.count = itemViewCount.count();
-      ive.lastViewed = itemViewCount.last_viewed().toEpochMilli();
+      ive.count = itemViewCount.getCount();
+      ive.lastViewed = itemViewCount.getLastViewed().toEpochMilli();
 
-      for (AttachmentViewCount attachmentViewCount :
-          ViewCountJavaDao.getAllAttachmentViewCount(institution, new ItemId(uuid, version))) {
+      for (ViewcountAttachment viewcountAttachment :
+          viewCountService.getAttachmentViewCountList(institution, new ItemId(uuid, version))) {
         final AttachmentViewsExport ave = new AttachmentViewsExport();
-        ave.attachmentUuid = attachmentViewCount.attachment().toString();
-        ave.count = attachmentViewCount.count();
-        ave.lastViewed = attachmentViewCount.last_viewed().toEpochMilli();
+        ave.attachmentUuid = viewcountAttachment.getId().getAttachment();
+        ave.count = viewcountAttachment.getCount();
+        ave.lastViewed = viewcountAttachment.getLastViewed().toEpochMilli();
 
         ive.attachments.add(ave);
       }
@@ -85,19 +91,23 @@ public class ViewsConverter extends AbstractJsonConverter<Object> {
       throws IOException {
     final SubTemporaryFile viewsImportFolder = new SubTemporaryFile(staging, VIEWS_FOLDER);
     final List<String> entries = json.getFileList(viewsImportFolder);
+    final long institutionId = CurrentInstitution.get().getDatabaseId();
     for (String entry : entries) {
       final ItemViewsExport views = json.read(viewsImportFolder, entry, ItemViewsExport.class);
       if (views != null) {
-        final ItemId itemId = new ItemId(views.itemUuid, views.itemVersion);
+        final ViewcountItemId id =
+            new ViewcountItemId(institutionId, views.itemUuid, views.itemVersion);
+        viewCountService.setItemViewCount(
+            new ViewcountItem(id, views.count, Instant.ofEpochMilli(views.lastViewed)));
 
-        ViewCountJavaDao.setSummaryViews(
-            itemId, views.count, Instant.ofEpochMilli(views.lastViewed));
         for (AttachmentViewsExport attachment : views.attachments) {
-          ViewCountJavaDao.setAttachmentViews(
-              itemId,
-              attachment.attachmentUuid,
-              attachment.count,
-              Instant.ofEpochMilli(attachment.lastViewed));
+          final ViewcountAttachmentId attachmentId =
+              new ViewcountAttachmentId(
+                  institutionId, views.itemUuid, views.itemVersion, attachment.attachmentUuid);
+
+          viewCountService.setAttachmentViewCount(
+              new ViewcountAttachment(
+                  attachmentId, attachment.count, Instant.ofEpochMilli(attachment.lastViewed)));
         }
       }
     }

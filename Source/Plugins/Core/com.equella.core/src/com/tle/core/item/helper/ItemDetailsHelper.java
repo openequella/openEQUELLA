@@ -29,7 +29,7 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.Privilege;
 import com.tle.common.util.LocalDate;
 import com.tle.core.guice.Bind;
-import com.tle.core.item.ViewCountJavaDao;
+import com.tle.core.viewcount.service.ViewCountService;
 import java.util.Arrays;
 import java.util.Set;
 import javax.inject.Inject;
@@ -40,6 +40,7 @@ import javax.inject.Singleton;
 @Singleton
 public class ItemDetailsHelper extends AbstractHelper {
   private final ItemXmlSecurity security;
+  @Inject private ViewCountService viewCountService;
 
   @Inject
   public ItemDetailsHelper(ItemXmlSecurity security) {
@@ -83,7 +84,7 @@ public class ItemDetailsHelper extends AbstractHelper {
     setNode(xml, "/rating/@average", item.getRating());
 
     if (security.hasPrivilege(item, Privilege.VIEW_VIEWCOUNT)) {
-      final int views = ViewCountJavaDao.getSummaryViewCount(item.getItemId());
+      final int views = viewCountService.getItemViewCount(item.getItemId());
       if (views > 0) {
         setNode(xml, "/views", views);
       }

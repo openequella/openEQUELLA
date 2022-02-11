@@ -30,10 +30,11 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.scripting.types.CollectionScriptType;
 import com.tle.common.scripting.types.ItemScriptType;
 import com.tle.common.security.SecurityConstants;
-import com.tle.core.item.ViewCountJavaDao;
 import com.tle.core.item.helper.ItemHelper;
 import com.tle.core.item.service.ItemService;
 import com.tle.core.security.TLEAclManager;
+import com.tle.core.viewcount.service.ViewCountService;
+import com.tle.web.scripting.ScriptTypeFactory;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -44,6 +45,8 @@ public class ItemScriptTypeImpl implements ItemScriptType {
   @Inject private ItemService service;
   @Inject private TLEAclManager aclService;
   @Inject private ItemHelper itemHelper;
+  @Inject private ViewCountService viewCountService;
+  @Inject private ScriptTypeFactory scriptTypeFactory;
 
   private final ItemId itemId;
 
@@ -123,7 +126,7 @@ public class ItemScriptTypeImpl implements ItemScriptType {
 
   @Override
   public CollectionScriptType getCollection() {
-    return new CollectionScriptTypeImpl(getItem().getItemDefinition());
+    return scriptTypeFactory.createCollection(getItem().getItemDefinition());
   }
 
   @Override
@@ -158,7 +161,7 @@ public class ItemScriptTypeImpl implements ItemScriptType {
       return viewCount;
     }
     if (!aclService.filterNonGrantedPrivileges(item, SecurityConstants.VIEW_VIEWCOUNT).isEmpty()) {
-      viewCount = ViewCountJavaDao.getSummaryViewCount(itemId);
+      viewCount = viewCountService.getItemViewCount(itemId);
     }
     viewCountRetrieved = true;
     return viewCount;

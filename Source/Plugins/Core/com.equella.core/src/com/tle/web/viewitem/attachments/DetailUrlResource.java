@@ -23,10 +23,10 @@ import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.Check;
 import com.tle.common.security.SecurityConstants;
-import com.tle.core.item.ViewCountJavaDao;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.url.URLCheckerService;
 import com.tle.core.url.URLCheckerService.URLCheckMode;
+import com.tle.core.viewcount.service.ViewCountService;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.annotation.PluginResourceHandler;
 import com.tle.web.sections.render.Label;
@@ -71,16 +71,19 @@ public class DetailUrlResource extends SimpleUrlResource {
 
   private final URLCheckerService urlCheckerService;
   private final TLEAclManager aclService;
+  private ViewCountService viewCountService;
 
   public DetailUrlResource(
       ViewableResource resource,
       String url,
       String description,
       URLCheckerService urlCheckerService,
-      TLEAclManager aclService) {
+      TLEAclManager aclService,
+      ViewCountService viewCountService) {
     super(resource, url, description, urlCheckerService.isUrlDisabled(url));
     this.urlCheckerService = urlCheckerService;
     this.aclService = aclService;
+    this.viewCountService = viewCountService;
   }
 
   @Override
@@ -115,7 +118,7 @@ public class DetailUrlResource extends SimpleUrlResource {
               att.getItem(), Collections.singleton(SecurityConstants.VIEW_VIEWCOUNT))
           .isEmpty()) {
         Integer views =
-            ViewCountJavaDao.getAttachmentViewCount(getViewableItem().getItemId(), att.getUuid());
+            viewCountService.getAttachmentViewCount(getViewableItem().getItemId(), att.getUuid());
         if (views != null) {
           commonDetails.add(makeDetail(VIEWS, new CountLabel(views)));
         }

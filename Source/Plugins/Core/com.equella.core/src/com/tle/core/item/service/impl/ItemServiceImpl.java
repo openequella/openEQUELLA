@@ -74,7 +74,6 @@ import com.tle.core.events.ApplicationEvent;
 import com.tle.core.events.services.EventService;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.ItemIdExtension;
-import com.tle.core.item.ViewCountJavaDao;
 import com.tle.core.item.dao.ItemDao;
 import com.tle.core.item.event.ItemOperationBatchEvent;
 import com.tle.core.item.event.ItemOperationEvent;
@@ -107,6 +106,7 @@ import com.tle.core.security.impl.SecureOnReturn;
 import com.tle.core.services.LoggingService;
 import com.tle.core.services.user.UserService;
 import com.tle.core.settings.service.ConfigurationService;
+import com.tle.core.viewcount.service.ViewCountService;
 import com.tle.exceptions.AccessDeniedException;
 import java.lang.annotation.Annotation;
 import java.util.*;
@@ -154,6 +154,7 @@ public class ItemServiceImpl
   @Inject private UserService userService;
   @Inject private NotificationService notificationService;
   @Inject private ConfigurationService configurationService;
+  @Inject private ViewCountService viewCountService;
 
   // plugin extensions
   @Inject private PluginTracker<WorkflowOperation> operationTracker;
@@ -281,13 +282,13 @@ public class ItemServiceImpl
   @Transactional
   @Override
   public void incrementViews(Item item) {
-    ViewCountJavaDao.incrementSummaryViews(item.getItemId());
+    viewCountService.incrementItemViewCount(item.getItemId());
   }
 
   @Transactional
   @Override
   public void incrementViews(Attachment attachment) {
-    ViewCountJavaDao.incrementAttachmentViews(
+    viewCountService.incrementAttachmentViewCount(
         attachment.getItem().getItemId(), attachment.getUuid());
   }
 

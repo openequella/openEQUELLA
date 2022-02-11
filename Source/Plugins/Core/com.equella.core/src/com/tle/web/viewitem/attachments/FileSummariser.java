@@ -28,11 +28,11 @@ import com.tle.common.Check;
 import com.tle.common.FileSizeUtils;
 import com.tle.common.security.SecurityConstants;
 import com.tle.core.guice.Bind;
-import com.tle.core.item.ViewCountJavaDao;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.mimetypes.RegisterMimeTypeExtension;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.FileSystemService;
+import com.tle.core.viewcount.service.ViewCountService;
 import com.tle.freetext.SupportedVideoMimeTypeExtension;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
@@ -101,6 +101,7 @@ public class FileSummariser
   @Inject private ViewItemUrlFactory urlFactory;
   @Inject private FileSystemService fileSystemService;
   @Inject private TLEAclManager aclService;
+  @Inject private ViewCountService viewCountService;
 
   @Override
   public ViewableResource process(
@@ -192,7 +193,7 @@ public class FileSummariser
                 att.getItem(), Collections.singleton(SecurityConstants.VIEW_VIEWCOUNT))
             .isEmpty()) {
           Integer views =
-              ViewCountJavaDao.getAttachmentViewCount(getViewableItem().getItemId(), att.getUuid());
+              viewCountService.getAttachmentViewCount(getViewableItem().getItemId(), att.getUuid());
           if (views != null) {
             commonDetails.add(makeDetail(VIEWS, new CountLabel(views)));
           }

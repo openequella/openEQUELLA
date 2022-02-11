@@ -25,8 +25,8 @@ import com.tle.beans.item.Item;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.SecurityConstants;
-import com.tle.core.item.ViewCountJavaDao;
 import com.tle.core.security.TLEAclManager;
+import com.tle.core.viewcount.service.ViewCountService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.navigation.BreadcrumbService;
@@ -68,6 +68,7 @@ public abstract class AbstractItemDetailsSection<
   private UserLinkSection userLinkSection;
   @Inject private BreadcrumbService breadcrumbService;
   @Inject private TLEAclManager aclService;
+  @Inject private ViewCountService viewCountService;
 
   @EventFactory private EventGenerator events;
   @ViewFactory private FreemarkerFactory view;
@@ -119,7 +120,7 @@ public abstract class AbstractItemDetailsSection<
     model.setStatus(CurrentLocale.get(ItemStatusKeys.get(item.getStatus())));
     model.setVersion(new NumberLabel(item.getVersion()));
     if (!aclService.filterNonGrantedPrivileges(item, SecurityConstants.VIEW_VIEWCOUNT).isEmpty()) {
-      model.setViews(ViewCountJavaDao.getSummaryViewCount(item.getItemId()));
+      model.setViews(viewCountService.getItemViewCount(item.getItemId()));
     }
 
     List<SectionRenderable> sections =
