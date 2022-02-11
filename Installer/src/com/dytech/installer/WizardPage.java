@@ -35,6 +35,7 @@ import com.dytech.installer.controls.GShuffleBox;
 import com.dytech.installer.controls.GuiControl;
 import com.dytech.installer.controls.HelpButton;
 import com.dytech.installer.controls.HostEditor;
+import com.dytech.installer.controls.MsSqlTrustServerCertsSelector;
 import com.dytech.installer.controls.OracleIdSelector;
 import com.dytech.installer.gui.JPanelAA;
 import java.awt.FlowLayout;
@@ -68,7 +69,7 @@ public class WizardPage {
     this.pageBag = pageBag;
     this.parent = parent;
 
-    controls = new Vector<GuiControl>();
+    controls = new Vector<>();
   }
 
   public GuiControl controlFactory(PropBagEx controlBag) throws InstallerException {
@@ -104,6 +105,8 @@ public class WizardPage {
       control = new HostEditor(controlBag);
     } else if (cclass.equalsIgnoreCase("oracleidselector")) {
       control = new OracleIdSelector(controlBag, parent);
+    } else if (cclass.equalsIgnoreCase("mssqltrustservercerts")) {
+      control = new MsSqlTrustServerCertsSelector(controlBag, parent);
     } else if (cclass.equalsIgnoreCase("link")) {
       control = new GLink(controlBag);
     } else {

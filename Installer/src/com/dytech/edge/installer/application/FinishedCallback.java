@@ -18,8 +18,9 @@
 
 package com.dytech.edge.installer.application;
 
+import static com.dytech.edge.installer.DatasourceConfig.updateHostAndPort;
+
 import com.dytech.devlib.PropBagEx;
-import com.dytech.edge.installer.DatabaseCommand;
 import com.dytech.installer.Callback;
 import com.dytech.installer.Wizard;
 import com.tle.common.hash.Hash;
@@ -91,16 +92,7 @@ public class FinishedCallback implements Callback {
 
     installer.finished();
 
-    // This needs to happen AFTER finished() call to make sure host isn't
-    // overridden
-    String dbhost = output.getNode("datasource/host");
-    if (dbhost.indexOf(':') >= 0) {
-      String[] bits = dbhost.split(":");
-      output.setNode("datasource/host", bits[0]);
-      output.setNode("datasource/port", bits[1]);
-    } else {
-      String dbtype = output.getNode("datasource/dbtype");
-      output.setNode("datasource/port", DatabaseCommand.getDefaultPort(dbtype));
-    }
+    // This needs to happen AFTER finished() call to make sure host isn't overridden
+    updateHostAndPort(output);
   }
 }
