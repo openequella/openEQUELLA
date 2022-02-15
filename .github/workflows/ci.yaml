@@ -22,8 +22,6 @@ jobs:
   build_and_check:
     runs-on: ubuntu-latest
     steps:
-      # Using v1 (rather than v2) through-out this workflow due to issue:
-      # https://github.com/actions/checkout/issues/237
       - uses: actions/checkout@v2
 
       - name: NPM Cache
@@ -244,6 +242,8 @@ jobs:
           distribution: adopt
           java-version: 8
 
+      - uses: actions/checkout@v2
+
       - name: Read .nvmrc
         run: echo ::set-output name=NVMRC::$(cat .nvmrc)
         id: nvm
@@ -252,8 +252,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: "${{ steps.nvm.outputs.NVMRC }}"
-
-      - uses: actions/checkout@v2
 
       - name: Download Artefacts
         uses: actions/download-artifact@v2
