@@ -18,20 +18,12 @@
 
 package com.tle.core.db
 
-import java.util
-
-import com.tle.core.db.migration.DBSchemaMigration
 import com.tle.core.db.tables._
-import com.tle.core.db.types.{DbUUID, InstId, JsonColumn, String255}
+import com.tle.core.db.types.{DbUUID, JsonColumn}
 import com.tle.core.hibernate.factory.guice.HibernateFactoryModule
-import fs2.Stream
-import io.circe.{Json, JsonObject}
+import io.circe.Json
 import io.doolse.simpledba._
 import io.doolse.simpledba.jdbc._
-import io.doolse.simpledba.syntax._
-import shapeless._
-
-import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 trait DBSchema extends StdColumns {
@@ -86,29 +78,16 @@ trait DBSchema extends StdColumns {
 
   val entityTable = TableMapper[OEQEntity].table("entities").keys(Cols('inst_id, 'uuid))
 
-  val entityTypeIdx = (entityTable.subset(Cols('inst_id, 'typeid)), "entityTypeIdx")
-
-  val newEntityTables  = Seq(entityTable.definition)
-  val newEntityIndexes = Seq(entityTypeIdx)
-
   val entityQueries = EntityQueries(
     entityTable.writes,
     entityTable.query.where(Cols('inst_id, 'typeid), BinOp.EQ).build,
     entityTable.byPK,
     entityTable.query.where(Cols('inst_id), BinOp.EQ).build
   )
-
-  allTables ++= newEntityTables
-  allIndexes ++= newEntityIndexes
-
-  def creationSQL: util.Collection[String] = {
-    allTables.map(schemaSQL.createTable) ++
-      allIndexes.map(i => schemaSQL.createIndex(i._1, i._2))
-  }.asJava
 }
 
 object DBSchema {
-  lazy private val schemaForDBType: DBSchema with DBQueries with DBSchemaMigration = {
+  lazy private val schemaForDBType: DBSchema with DBQueries = {
     val p = new HibernateFactoryModule
     p.getProperty("hibernate.connection.driver_class") match {
       case "org.postgresql.Driver"                        => PostgresSchema
@@ -118,8 +97,6 @@ object DBSchema {
   }
 
   def schema: DBSchema = schemaForDBType
-
-  def schemaMigration: DBSchemaMigration = schemaForDBType
 
   def queries: DBQueries = schemaForDBType
 }

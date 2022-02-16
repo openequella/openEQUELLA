@@ -1685,6 +1685,11 @@
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v66.NewAuditLogColumn" />
     <parameter id="date" value="2018-06-01" />
   </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="NewEntityTable">
+    <parameter id="id" value="NewEntityTable" />
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20191.NewEntityTable" />
+    <parameter id="date" value="2019-02-05" />
+  </extension>
   <extension plugin-id="com.tle.core.migration" point-id="migration" id="addIndexes">
     <parameter id="id" value="com.tle.core.migration.initial.EnsureForeignKeyIndexes" />
     <parameter id="bean" value="bean:com.tle.core.legacy.initial.EnsureForeignKeyIndexes" />

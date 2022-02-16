@@ -17,17 +17,13 @@
  */
 
 package com.tle.core.db
-import com.tle.core.db.migration.DBSchemaMigration
+
 import com.tle.core.db.types.DbUUID
 import io.doolse.simpledba.Iso
 import io.doolse.simpledba.jdbc.StandardJDBC
 import io.doolse.simpledba.jdbc.sqlserver._
 
-object SQLServerSchema
-    extends DBSchema
-    with DBQueries
-    with DBSchemaMigration
-    with StdSQLServerColumns {
+object SQLServerSchema extends DBSchema with DBQueries with StdSQLServerColumns {
 
   implicit lazy val config = {
     val escaped = StandardJDBC.escapeReserved(StandardJDBC.DefaultReserved + "key") _
