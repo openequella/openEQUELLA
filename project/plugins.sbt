@@ -46,7 +46,7 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "com.typesafe"           % "config"                % "1.4.1",
+  "com.typesafe"           % "config"                % "1.4.2",
   "org.jacoco"             % "org.jacoco.report"     % "0.8.7",
   "org.jdom"               % "jdom2"                 % "2.0.6.1",
   "commons-logging"        % "commons-logging"       % "1.2",
