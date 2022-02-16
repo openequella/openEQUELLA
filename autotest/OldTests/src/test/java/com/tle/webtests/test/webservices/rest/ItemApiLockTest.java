@@ -1,12 +1,12 @@
 package com.tle.webtests.test.webservices.rest;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.tle.common.Pair;
 import java.io.IOException;
 import java.util.List;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ObjectNode;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 

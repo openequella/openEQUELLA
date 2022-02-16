@@ -2,6 +2,9 @@ package io.github.openequella.rest;
 
 import static org.testng.Assert.assertEquals;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.tle.webtests.framework.TestConfig;
 import com.tle.webtests.framework.TestInstitution;
 import java.io.IOException;
@@ -13,9 +16,6 @@ import java.util.List;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 

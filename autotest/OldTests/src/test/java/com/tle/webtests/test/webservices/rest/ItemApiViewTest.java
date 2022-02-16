@@ -2,12 +2,13 @@ package com.tle.webtests.test.webservices.rest;
 
 import static org.testng.Assert.assertEquals;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.tle.common.Pair;
 import com.tle.webtests.pageobject.viewitem.ItemId;
+import java.text.ParseException;
 import java.util.List;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
 import org.testng.annotations.Test;
 
 public class ItemApiViewTest extends AbstractItemApiTest {
@@ -103,10 +104,10 @@ public class ItemApiViewTest extends AbstractItemApiTest {
     assertStdDRM(drmNode);
     drmNode = tree.get(1).get("drm").get("options");
     assertStdDRM(drmNode);
-    assertEquals(drmNode.get("termsOfAgreement").getTextValue(), "Verifiable use statement");
+    assertEquals(drmNode.get("termsOfAgreement").asText(), "Verifiable use statement");
     drmNode = tree.get(2).get("drm").get("options");
     assertStdDRM(drmNode);
-    assertEquals(drmNode.get("termsOfAgreement").getTextValue(), "Verifiable use statement");
+    assertEquals(drmNode.get("termsOfAgreement").asText(), "Verifiable use statement");
   }
 
   @Test
@@ -129,33 +130,33 @@ public class ItemApiViewTest extends AbstractItemApiTest {
   }
 
   private void assertStdDRM(JsonNode drmNode) {
-    assertEquals(drmNode.get("drmPageUuid").getTextValue(), "8a1d54b7-3f82-42e5-b5ad-1895149fe1a3");
-    assertEquals(drmNode.get("hideLicencesFromOwner").getBooleanValue(), false);
-    assertEquals(drmNode.get("showLicenceCount").getBooleanValue(), false);
-    assertEquals(drmNode.get("allowSummary").getBooleanValue(), false);
-    assertEquals(drmNode.get("ownerMustAccept").getBooleanValue(), false);
-    assertEquals(drmNode.get("studentsMustAcceptIfInCompilation").getBooleanValue(), true);
-    assertEquals(drmNode.get("previewAllowed").getBooleanValue(), false);
-    assertEquals(drmNode.get("attributionOfOwnership").getBooleanValue(), false);
-    assertEquals(drmNode.get("enforceAttribution").getBooleanValue(), true);
+    assertEquals(drmNode.get("drmPageUuid").asText(), "8a1d54b7-3f82-42e5-b5ad-1895149fe1a3");
+    assertEquals(drmNode.get("hideLicencesFromOwner").asBoolean(), false);
+    assertEquals(drmNode.get("showLicenceCount").asBoolean(), false);
+    assertEquals(drmNode.get("allowSummary").asBoolean(), false);
+    assertEquals(drmNode.get("ownerMustAccept").asBoolean(), false);
+    assertEquals(drmNode.get("studentsMustAcceptIfInCompilation").asBoolean(), true);
+    assertEquals(drmNode.get("previewAllowed").asBoolean(), false);
+    assertEquals(drmNode.get("attributionOfOwnership").asBoolean(), false);
+    assertEquals(drmNode.get("enforceAttribution").asBoolean(), true);
     JsonNode owners = drmNode.get("contentOwners");
     JsonNode owner1 = owners.get(0);
-    assertEquals(owner1.get("userId").getTextValue(), AUTOTEST_USERID);
-    assertEquals(owner1.get("name").getTextValue(), "Auto Test [AutoTest]");
-    assertEquals(owner1.get("email").getTextValue(), "auto@test.com");
-    assertEquals(owner1.get("owner").getBooleanValue(), true);
+    assertEquals(owner1.get("userId").asText(), AUTOTEST_USERID);
+    assertEquals(owner1.get("name").asText(), "Auto Test [AutoTest]");
+    assertEquals(owner1.get("email").asText(), "auto@test.com");
+    assertEquals(owner1.get("owner").asBoolean(), true);
     JsonNode usages = drmNode.get("usages");
-    assertEquals(usages.get(0).getTextValue(), "DISPLAY");
-    assertEquals(usages.get(1).getTextValue(), "EXECUTE");
-    assertEquals(usages.get(2).getTextValue(), "PLAY");
-    assertEquals(usages.get(3).getTextValue(), "PRINT");
-    assertEquals(drmNode.get("requireAcceptanceFrom").getTextValue(), "* ");
+    assertEquals(usages.get(0).asText(), "DISPLAY");
+    assertEquals(usages.get(1).asText(), "EXECUTE");
+    assertEquals(usages.get(2).asText(), "PLAY");
+    assertEquals(usages.get(3).asText(), "PRINT");
+    assertEquals(drmNode.get("requireAcceptanceFrom").asText(), "* ");
     JsonNode restrictNode = drmNode.get("restriction");
-    assertEquals(restrictNode.get("educationalSector").getBooleanValue(), false);
-    assertEquals(restrictNode.get("maximumUsage").getIntValue(), 0);
+    assertEquals(restrictNode.get("educationalSector").asBoolean(), false);
+    assertEquals(restrictNode.get("maximumUsage").asInt(), 0);
   }
 
-  private void assertComments(JsonNode comments) {
+  private void assertComments(JsonNode comments) throws ParseException {
     asserter.assertComment(
         comments.get(0),
         "4ffdbed8-d286-4a10-a7b3-c771696005fb",
@@ -182,7 +183,7 @@ public class ItemApiViewTest extends AbstractItemApiTest {
         1330060203140L);
   }
 
-  private void assertAttachments(JsonNode tree) {
+  private void assertAttachments(JsonNode tree) throws ParseException {
     JsonNode attachments = tree.get("attachments");
     assertFileAttachment(attachments.get(0));
     assertResourceAttachment(attachments.get(1));
@@ -198,7 +199,7 @@ public class ItemApiViewTest extends AbstractItemApiTest {
     assertEquals(attachments.size(), 13);
   }
 
-  private void assertAll(ObjectNode tree) {
+  private void assertAll(ObjectNode tree) throws ParseException {
     asserter.assertBasic(tree, "ItemApiViewTest - All attachments", null);
     asserter.assertDetails(
         tree,
@@ -214,7 +215,7 @@ public class ItemApiViewTest extends AbstractItemApiTest {
     assertLinks(tree, ITEM_ID);
   }
 
-  private void assertHistory(JsonNode history) {
+  private void assertHistory(JsonNode history) throws ParseException {
     asserter.assertHistory(history.get(0), AUTOTEST_USERID, 1330041445613L, "contributed", "draft");
     asserter.assertHistory(history.get(1), AUTOTEST_USERID, 1330041445613L, "edit", "draft");
     asserter.assertHistory(history.get(2), AUTOTEST_USERID, 1330041445613L, "statechange", "live");
@@ -334,20 +335,20 @@ public class ItemApiViewTest extends AbstractItemApiTest {
     asserter.assertAttachmentBasics(
         webAttachment, ITEM_ID, "htmlpage", "78a2de74-96de-48de-8865-22856c22ae49", "Web Page");
     assertEquals(
-        webAttachment.get("filename").getTextValue(),
+        webAttachment.get("filename").asText(),
         "_mypages/78a2de74-96de-48de-8865-22856c22ae49/page.html");
-    assertEquals(webAttachment.get("size").getIntValue(), 24);
+    assertEquals(webAttachment.get("size").asInt(), 24);
   }
 
   private void assertFileAttachment(JsonNode fileAttachment) {
     asserter.assertAttachmentBasics(
         fileAttachment, ITEM_ID, "file", "63862d54-1b6d-4dce-9a79-44b3a8c9e107", "avatar.png");
-    assertEquals(fileAttachment.get("viewer").getTextValue(), "livNavTreeViewer");
-    assertEquals(fileAttachment.get("filename").getTextValue(), "avatar.png");
-    assertEquals(fileAttachment.get("size").getIntValue(), 12627);
-    assertEquals(fileAttachment.get("md5").getTextValue(), "5a4e69eeae86aa557c4a27d52257b757");
-    assertEquals(fileAttachment.get("thumbFilename").getTextValue(), "_THUMBS/avatar.png.jpeg");
-    assertEquals(fileAttachment.get("conversion").getBooleanValue(), false);
+    assertEquals(fileAttachment.get("viewer").asText(), "livNavTreeViewer");
+    assertEquals(fileAttachment.get("filename").asText(), "avatar.png");
+    assertEquals(fileAttachment.get("size").asInt(), 12627);
+    assertEquals(fileAttachment.get("md5").asText(), "5a4e69eeae86aa557c4a27d52257b757");
+    assertEquals(fileAttachment.get("thumbFilename").asText(), "_THUMBS/avatar.png.jpeg");
+    assertEquals(fileAttachment.get("conversion").asBoolean(), false);
   }
 
   private void assertResourceAttachment(JsonNode resAttachment) {
@@ -357,17 +358,16 @@ public class ItemApiViewTest extends AbstractItemApiTest {
         "linked-resource",
         "32f45d7c-6df7-44d8-926a-3d6f841c2009",
         "SearchStemming - Walking");
-    assertEquals(
-        resAttachment.get("itemUuid").getTextValue(), "072c40d8-c8a8-412d-8ad2-3ef188ea016d");
-    assertEquals(resAttachment.get("itemVersion").getIntValue(), 1);
-    assertEquals(resAttachment.get("resourceType").getTextValue(), "p");
-    assertEquals(resAttachment.get("resourcePath").getTextValue(), "");
+    assertEquals(resAttachment.get("itemUuid").asText(), "072c40d8-c8a8-412d-8ad2-3ef188ea016d");
+    assertEquals(resAttachment.get("itemVersion").asInt(), 1);
+    assertEquals(resAttachment.get("resourceType").asText(), "p");
+    assertEquals(resAttachment.get("resourcePath").asText(), "");
   }
 
   private void assertZip(JsonNode zipAttachment) {
     asserter.assertAttachmentBasics(
         zipAttachment, ITEM_ID, "zip", "4398bcda-4127-41d7-ab42-d2f0f8b9b100", "resttodo.zip");
-    assertEquals(zipAttachment.get("folder").getTextValue(), "_zips/resttodo.zip");
+    assertEquals(zipAttachment.get("folder").asText(), "_zips/resttodo.zip");
     assertEquals(zipAttachment.get("mapped").asBoolean(), false);
   }
 
@@ -375,37 +375,37 @@ public class ItemApiViewTest extends AbstractItemApiTest {
     asserter.assertAttachmentBasics(
         bookAttachment, ITEM_ID, "googlebook", "b24aa5fa-de50-4021-b7c4-ac4d3a918129", "Book!");
     assertEquals(
-        bookAttachment.get("bookId").getTextValue(),
+        bookAttachment.get("bookId").asText(),
         "http://www.google.com/books/feeds/volumes/NBMDtWq1MnUC");
     assertEquals(
-        bookAttachment.get("viewUrl").getTextValue(),
+        bookAttachment.get("viewUrl").asText(),
         "http://books.google.com/books?id=NBMDtWq1MnUC&ie=ISO-8859-1&source=gbs_gdata");
     assertEquals(
-        bookAttachment.get("thumbUrl").getTextValue(),
+        bookAttachment.get("thumbUrl").asText(),
         "http://bks6.books.google.com/books?id=NBMDtWq1MnUC&printsec=frontcover&img=1&zoom=5&edge=curl&source=gbs_gdata");
-    assertEquals(bookAttachment.get("publishedDate").getTextValue(), "2001-09-17");
-    assertEquals(bookAttachment.get("pages").getTextValue(), "44");
+    assertEquals(bookAttachment.get("publishedDate").asText(), "2001-09-17");
+    assertEquals(bookAttachment.get("pages").asText(), "44");
   }
 
-  private void assertYoutubeAttachment(JsonNode youtubeAttachment) {
+  private void assertYoutubeAttachment(JsonNode youtubeAttachment) throws ParseException {
     asserter.assertAttachmentBasics(
         youtubeAttachment,
         ITEM_ID,
         "youtube",
         "dd26b4ac-9592-4062-bd15-cb9691bfe9a3",
         "Test Your Awareness: Do The Test");
-    assertEquals(youtubeAttachment.get("videoId").getTextValue(), "Ahg6qcgoay4");
-    assertEquals(youtubeAttachment.get("uploader").getTextValue(), "dothetest");
+    assertEquals(youtubeAttachment.get("videoId").asText(), "Ahg6qcgoay4");
+    assertEquals(youtubeAttachment.get("uploader").asText(), "dothetest");
     asserter.assertDate(youtubeAttachment.get("uploadedDate"), 1205170217000L);
     asserter.assertViewerAndPreview(youtubeAttachment, null, false);
     assertEquals(
-        youtubeAttachment.get("viewUrl").getTextValue(),
+        youtubeAttachment.get("viewUrl").asText(),
         "http://www.youtube.com/v/Ahg6qcgoay4?version=3&f=videos&c=EQUELLA&app=youtube_gdata");
     assertEquals(
-        youtubeAttachment.get("thumbUrl").getTextValue(),
+        youtubeAttachment.get("thumbUrl").asText(),
         "http://i.ytimg.com/vi/Ahg6qcgoay4/default.jpg");
     assertEquals(
-        youtubeAttachment.get("tags").getTextValue(),
+        youtubeAttachment.get("tags").asText(),
         "test, awareness, basketball, visual, do, the, attention, span, bike, ad, cycling, TFL, safety, moonwalking, bear");
     assertEquals(youtubeAttachment.get("duration").asText(), "PT1M9S");
   }
@@ -413,23 +413,23 @@ public class ItemApiViewTest extends AbstractItemApiTest {
   private void assertFlickrAttachment(JsonNode flickrAttachment) {
     asserter.assertAttachmentBasics(
         flickrAttachment, ITEM_ID, "flickr", "221b8a48-3a35-4d29-ad3a-0f04a1536b3b", "Gold C64");
-    assertEquals(flickrAttachment.get("author").getTextValue(), "FRaNKy--");
+    assertEquals(flickrAttachment.get("author").asText(), "FRaNKy--");
     asserter.assertDate(flickrAttachment.get("datePosted"), "2006-10-24T05:46:16.000-05:00");
     asserter.assertDate(flickrAttachment.get("dateTaken"), "2006-10-21T12:50:12.000-05:00");
 
-    assertEquals(flickrAttachment.get("licenseName").getTextValue(), "All Rights Reserved");
+    assertEquals(flickrAttachment.get("licenseName").asText(), "All Rights Reserved");
     assertEquals(
-        flickrAttachment.get("viewUrl").getTextValue(),
+        flickrAttachment.get("viewUrl").asText(),
         "http://flickr.com/photos/19017538@N00/277527331");
     assertEquals(
-        flickrAttachment.get("thumbUrl").getTextValue(),
+        flickrAttachment.get("thumbUrl").asText(),
         "http://farm1.staticflickr.com/88/277527331_ab0fa4348e_t.jpg");
 
-    assertEquals(flickrAttachment.get("licenseCode").getTextValue(), "not-for-display");
-    assertEquals(flickrAttachment.get("licenseKey").getTextValue(), "0");
-    assertEquals(flickrAttachment.get("photoId").getTextValue(), "277527331");
+    assertEquals(flickrAttachment.get("licenseCode").asText(), "not-for-display");
+    assertEquals(flickrAttachment.get("licenseKey").asText(), "0");
+    assertEquals(flickrAttachment.get("photoId").asText(), "277527331");
     assertEquals(
-        flickrAttachment.get("mediumUrl").getTextValue(),
+        flickrAttachment.get("mediumUrl").asText(),
         "http://farm1.staticflickr.com/88/277527331_ab0fa4348e.jpg");
   }
 
@@ -441,9 +441,9 @@ public class ItemApiViewTest extends AbstractItemApiTest {
         "20196bbc-7f5f-44a4-980d-55dab4e6eec9",
         "SGA Roundup 01-31-11");
     assertEquals(
-        itunesAttachment.get("playUrl").getTextValue(),
+        itunesAttachment.get("playUrl").asText(),
         "http://deimos.apple.com/WebObjects/Core.woa/Browsev2/utm.edu.6530144102");
-    assertEquals(itunesAttachment.get("trackName").getTextValue(), "SGA Roundup 01-31-11");
+    assertEquals(itunesAttachment.get("trackName").asText(), "SGA Roundup 01-31-11");
   }
 
   private void assertPackageResource(JsonNode pkgresAttachment) {
@@ -454,9 +454,8 @@ public class ItemApiViewTest extends AbstractItemApiTest {
         "bb4f8b1d-8760-4082-a4bc-c3cea9ad0ce7",
         "index.html");
     assertEquals(
-        pkgresAttachment.get("filename").getTextValue(),
-        "The vile vendor go figure.zip/index.html");
-    assertEquals(pkgresAttachment.get("size").getIntValue(), 0);
+        pkgresAttachment.get("filename").asText(), "The vile vendor go figure.zip/index.html");
+    assertEquals(pkgresAttachment.get("size").asInt(), 0);
   }
 
   private void assertPackage(JsonNode pkgAttachment) {
@@ -466,7 +465,7 @@ public class ItemApiViewTest extends AbstractItemApiTest {
         "package",
         "034dfcb7-b66a-45bf-98c8-03da9011c74d",
         "The vile vendor: go figure");
-    assertEquals(pkgAttachment.get("size").getIntValue(), 21718);
-    assertEquals(pkgAttachment.get("packageFile").getTextValue(), "The vile vendor go figure.zip");
+    assertEquals(pkgAttachment.get("size").asInt(), 21718);
+    assertEquals(pkgAttachment.get("packageFile").asText(), "The vile vendor go figure.zip");
   }
 }

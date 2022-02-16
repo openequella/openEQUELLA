@@ -3,13 +3,13 @@ package com.tle.webtests.test.webservices.rest;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.tle.common.Pair;
 import java.io.IOException;
 import java.util.List;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpHead;
-import org.codehaus.jackson.JsonNode;
 import org.testng.annotations.Test;
 
 public class FileListingApiTest extends AbstractItemApiTest {
@@ -56,12 +56,12 @@ public class FileListingApiTest extends AbstractItemApiTest {
       // folders)
       boolean found = false;
       for (int counter = 0; counter < files.size(); counter++) {
-        if (files.get(counter).get("name").getTextValue().equals(FILENAME)) {
+        if (files.get(counter).get("name").asText().equals(FILENAME)) {
           found = true;
 
           Header contentLength =
               getHeaders(
-                  files.get(counter).get("links").get("self").getTextValue(),
+                  files.get(counter).get("links").get("self").asText(),
                   getToken(),
                   "Content-Length");
           assertEquals(contentLength.getValue(), "12627");

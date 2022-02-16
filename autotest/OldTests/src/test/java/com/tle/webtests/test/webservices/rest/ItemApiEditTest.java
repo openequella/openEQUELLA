@@ -6,6 +6,9 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
 import com.dytech.devlib.PropBagEx;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Closeables;
 import com.tle.annotation.Nullable;
@@ -28,9 +31,6 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.util.EntityUtils;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 import org.testng.collections.Maps;
@@ -229,9 +229,9 @@ public class ItemApiEditTest extends AbstractItemApiTest {
     // get item
     ObjectNode item = getItem(ITEM_UUID, 1, "drm,basic", token);
 
-    String itemName = item.get("name").getTextValue();
-    String itemUuid = item.get("uuid").getTextValue();
-    int itemVersion = item.get("version").getIntValue();
+    String itemName = item.get("name").asText();
+    String itemUuid = item.get("uuid").asText();
+    int itemVersion = item.get("version").asInt();
 
     logon("AutoTest", "automated");
     context.getDriver().get(context.getBaseUrl() + "items/" + itemUuid + "/" + itemVersion);
@@ -331,7 +331,7 @@ public class ItemApiEditTest extends AbstractItemApiTest {
     assertFirstNavNode(item.get("navigation").get("nodes"), "avatar.png");
 
     // modify metadata
-    PropBagEx metadata = new PropBagEx(item.get("metadata").getTextValue());
+    PropBagEx metadata = new PropBagEx(item.get("metadata").asText());
     metadata.setNode("item/name", "ItemApiEditTest - All attachments from JSON - Edited");
     item.put("metadata", metadata.toString());
 
@@ -568,7 +568,7 @@ public class ItemApiEditTest extends AbstractItemApiTest {
 
     item = getItem(ITEM_UUID, 1, "all", token);
     assertTrue(item.has("attachments"));
-    assertEquals(item.get("attachments").get(0).get("url").getTextValue(), "http://google.com.au/");
+    assertEquals(item.get("attachments").get(0).get("url").asText(), "http://google.com.au/");
 
     // revoke view item
     permissions.createNode("checkboxes", "VIEW_ITEM");
@@ -582,7 +582,7 @@ public class ItemApiEditTest extends AbstractItemApiTest {
 
     // ensure discoverable
     JsonNode searchResults = doSearch("ItemApiEditTest - Permissions from JSON", token);
-    assertEquals(searchResults.get("available").getIntValue(), 1);
+    assertEquals(searchResults.get("available").asInt(), 1);
 
     // restore view item and revoke discover
     permissions.setNode("checkboxes", "DISCOVER_ITEM");
@@ -593,11 +593,11 @@ public class ItemApiEditTest extends AbstractItemApiTest {
     // make sure we can see attachments
     item = getItem(ITEM_UUID, 1, "all", token);
     assertTrue(item.has("attachments"));
-    assertEquals(item.get("attachments").get(0).get("url").getTextValue(), "http://google.com.au/");
+    assertEquals(item.get("attachments").get(0).get("url").asText(), "http://google.com.au/");
 
     // ensure not discoverable
     searchResults = doSearch("ItemApiEditTest - Permissions from JSON", token);
-    assertEquals(searchResults.get("available").getIntValue(), 0);
+    assertEquals(searchResults.get("available").asInt(), 0);
   }
 
   private HttpResponse lock(String uuid, int version, String token, int assertCode)
@@ -719,10 +719,10 @@ public class ItemApiEditTest extends AbstractItemApiTest {
 
     item = getItem(ITEM_ID, "all", token);
 
-    String attachmentUuid = item.get("attachments").findValue("uuid").getTextValue();
+    String attachmentUuid = item.get("attachments").findValue("uuid").asText();
     assertFalse(
         attachmentUuid.equals("uuid:0"), "The attachment should have been given a correct uuid");
-    String navAttachmentUuid = item.get("navigation").findValue("$ref").getTextValue();
+    String navAttachmentUuid = item.get("navigation").findValue("$ref").asText();
     assertEquals(attachmentUuid, navAttachmentUuid, "The uuids should be the same");
 
     attachmentRef = (ObjectNode) navigation.findValue("attachment");
@@ -805,9 +805,9 @@ public class ItemApiEditTest extends AbstractItemApiTest {
   }
 
   private void assertError(JsonNode error, int code, String title, String message, boolean regex) {
-    assertEquals(error.get("code").getIntValue(), code);
-    assertEquals(error.get("error").getTextValue(), title);
-    String errorDescription = error.get("error_description").getTextValue();
+    assertEquals(error.get("code").asInt(), code);
+    assertEquals(error.get("error").asText(), title);
+    String errorDescription = error.get("error_description").asText();
     if (regex) {
       Pattern pattern = Pattern.compile(message);
       Matcher matcher = pattern.matcher(errorDescription);

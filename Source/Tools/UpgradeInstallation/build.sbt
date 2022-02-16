@@ -21,14 +21,6 @@ excludeDependencies ++= Seq(
 (assembly / mainClass) := Some("com.tle.upgrade.UpgradeMain")
 (assembly / assemblyOption) := (assembly / assemblyOption).value.withIncludeScala(true)
 
-(assembly / assemblyMergeStrategy) := {
-  case PathList("org", "xmlpull", "v1", _*) => MergeStrategy.first
-  case "module-info.class"                  => MergeStrategy.discard
-  case x =>
-    val oldStrategy = (assembly / assemblyMergeStrategy).value
-    oldStrategy(x)
-}
-
 val upgradeManager = LocalProject("UpgradeManager")
 
 (Compile / resourceGenerators) += Def.task {

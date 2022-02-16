@@ -1,5 +1,6 @@
 package com.tle.webtests.bugs;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.tle.common.Pair;
 import com.tle.webtests.pageobject.ErrorPage;
 import com.tle.webtests.pageobject.oauth.OAuthDefaultRedirectPage;
@@ -11,6 +12,7 @@ import com.tle.webtests.test.webservices.rest.ApiAssertions;
 import com.tle.webtests.test.webservices.rest.OAuthClient;
 import com.tle.webtests.test.webservices.rest.OAuthUtils;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.UUID;
 import org.apache.http.Header;
@@ -18,7 +20,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.message.BasicHeader;
-import org.codehaus.jackson.JsonNode;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -83,7 +84,7 @@ public class OAuthTest extends AbstractRestApiTest {
    * @throws IOException
    */
   @Test
-  public void testOAuthServerSideFlow() throws IllegalStateException, IOException {
+  public void testOAuthServerSideFlow() throws IllegalStateException, IOException, ParseException {
     logon("AutoTest", "automated");
     OAuthClient client = new OAuthClient();
     client.setName(CLIENT_ID_SERVER_FLOW);

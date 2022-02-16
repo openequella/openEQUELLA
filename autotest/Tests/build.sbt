@@ -25,8 +25,6 @@ libraryDependencies ++= Seq(
   "org.seleniumhq.selenium"   % "selenium-java"             % "3.141.59",
   "org.easytesting"           % "fest-util"                 % "1.2.5",
   "org.easytesting"           % "fest-swing"                % "1.2.1",
-  "org.codehaus.jackson"      % "jackson-core-asl"          % "1.9.13",
-  "org.codehaus.jackson"      % "jackson-mapper-asl"        % "1.9.13",
   "xalan"                     % "xalan"                     % "2.7.2",
   "org.apache.cxf"            % "cxf-rt-frontend-simple"    % cxfVersion,
   "org.apache.cxf"            % "cxf-rt-databinding-aegis"  % cxfVersion,
@@ -42,7 +40,8 @@ libraryDependencies ++= Seq(
   "org.http4s"                %% "http4s-blaze-client"      % http4sVersion,
   "org.http4s"                %% "http4s-circe"             % http4sVersion,
   "org.typelevel"             %% "cats-free"                % catsVersion,
-  "com.unboundid"             % "unboundid-ldapsdk"         % "6.0.3"
+  "com.unboundid"             % "unboundid-ldapsdk"         % "6.0.3",
+  jacksonDataBind
 )
 
 (Compile / unmanagedBase) := baseDirectory.value / "lib/adminjars"

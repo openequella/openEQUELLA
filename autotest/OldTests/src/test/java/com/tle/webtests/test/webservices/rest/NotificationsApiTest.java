@@ -3,6 +3,7 @@ package com.tle.webtests.test.webservices.rest;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -27,7 +28,6 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
-import org.codehaus.jackson.JsonNode;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
@@ -70,20 +70,18 @@ public class NotificationsApiTest extends AbstractItemApiTest {
 
     WebDriverWait notificationsIndexedWaiter = new WebDriverWait(context.getDriver(), 10);
     notificationsIndexedWaiter.until(
-        new Function<WebDriver, Boolean>() {
-          @Override
-          public Boolean apply(WebDriver driver) {
-            try {
-              JsonNode resultsNode =
-                  doNotificationsSearch(
-                      "NotificationsApiTest", "all", ImmutableMap.of("order", "name"), token);
-              return resultsNode.get("available").asInt() == 5;
-            } catch (Exception e) {
-              e.printStackTrace();
-              return true;
-            }
-          }
-        });
+        (Function<WebDriver, Boolean>)
+            driver -> {
+              try {
+                JsonNode resultsNode =
+                    doNotificationsSearch(
+                        "NotificationsApiTest", "all", ImmutableMap.of("order", "name"), token);
+                return resultsNode.get("available").asInt() == 5;
+              } catch (Exception e) {
+                e.printStackTrace();
+                return true;
+              }
+            });
   }
 
   public void setupNotifications() {
@@ -257,6 +255,6 @@ public class NotificationsApiTest extends AbstractItemApiTest {
     HttpGet get = new HttpGet(context.getBaseUrl() + "api/item/" + uuid + "/" + version);
     HttpResponse response = execute(get, false, token);
     JsonNode jsonNode = mapper.readTree(response.getEntity().getContent());
-    return jsonNode.get("name").getTextValue();
+    return jsonNode.get("name").asText();
   }
 }

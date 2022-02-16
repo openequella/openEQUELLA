@@ -98,6 +98,15 @@ checkJavaCodeStyle := {
   }
 }
 
+// We currently build for Java 8, so let's drop module info files
+ThisBuild / assemblyMergeStrategy := {
+  case PathList("module-info.class")         => MergeStrategy.discard
+  case x if x.endsWith("/module-info.class") => MergeStrategy.discard
+  case x =>
+    val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
+    oldStrategy(x)
+}
+
 (ThisBuild / bundleOracleDriver) := {
   val path = "build.bundleOracleDriver"
   if (buildConfig.value.hasPath(path)) {

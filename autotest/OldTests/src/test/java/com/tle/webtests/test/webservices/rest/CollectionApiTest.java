@@ -4,10 +4,10 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.tle.common.Pair;
 import java.net.URI;
 import java.util.List;
-import org.codehaus.jackson.JsonNode;
 import org.testng.annotations.Test;
 
 public class CollectionApiTest extends AbstractRestApiTest {
