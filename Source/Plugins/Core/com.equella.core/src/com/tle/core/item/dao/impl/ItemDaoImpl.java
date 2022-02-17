@@ -55,7 +55,8 @@ import com.tle.core.item.dao.ItemDaoExtension;
 import com.tle.core.item.dao.ItemLockingDao;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
-import com.tle.core.viewcount.service.ViewCountService;
+import com.tle.core.viewcount.dao.AttachmentViewCountDao;
+import com.tle.core.viewcount.dao.ItemViewCountDao;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -87,7 +88,8 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
   private static final Logger LOGGER = LoggerFactory.getLogger(ItemDaoImpl.class);
 
   @Inject private ItemLockingDao itemLockingDao;
-  @Inject private ViewCountService viewCountService;
+  @Inject private ItemViewCountDao itemViewCountDao;
+  @Inject private AttachmentViewCountDao attachmentViewCountDao;
 
   private PluginTracker<ItemDaoExtension> itemDaoTracker;
 
@@ -507,7 +509,9 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
   @Override
   public void delete(Item entity) {
     itemLockingDao.deleteForItem(entity);
-    viewCountService.deleteViewCount(CurrentInstitution.get(), entity.getItemId());
+    itemViewCountDao.deleteItemViewCount(CurrentInstitution.get(), entity.getItemId());
+    attachmentViewCountDao.deleteAttachmentViewCountForItem(
+        CurrentInstitution.get(), entity.getItemId());
     Map<String, ItemDaoExtension> beans = itemDaoTracker.getBeanMap();
     for (ItemDaoExtension extension : beans.values()) {
       extension.delete(entity);
