@@ -1,8 +1,8 @@
 val tikaVersion = "2.2.1"
 
 libraryDependencies ++= Seq(
-  "org.slf4j"       % "slf4j-api"                     % "1.7.35",
-  "org.slf4j"       % "slf4j-simple"                  % "1.7.35",
+  "org.slf4j"       % "slf4j-api"                     % "1.7.36",
+  "org.slf4j"       % "slf4j-simple"                  % "1.7.36",
   "org.apache.tika" % "tika-core"                     % tikaVersion,
   "org.apache.tika" % "tika-parsers-standard-package" % tikaVersion excludeAll ExclusionRule(
     organization = "org.apache.logging.log4j")
