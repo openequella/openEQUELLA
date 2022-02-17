@@ -35,7 +35,7 @@ import org.hibernate.annotations.NamedQuery;
             + "inner join com.tle.beans.item.attachments.Attachment a on vca.id.attachment = a.uuid "
             + "inner join com.tle.beans.item.Item i on a.item.id = i.id "
             + "inner join com.tle.beans.entity.BaseEntity be on be.id = i.itemDefinition.id "
-            + "WHERE be.id= :collectionId")
+            + "WHERE be.id= :collectionId and vca.id.inst = :institutionId")
 @NamedQuery(
     name = "deleteAttachmentViewCountForItem",
     query =

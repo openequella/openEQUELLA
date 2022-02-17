@@ -22,6 +22,7 @@ import com.tle.beans.Institution;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.viewcount.ViewcountItem;
 import com.tle.beans.viewcount.ViewcountItemId;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericInstitionalDaoImpl;
 import java.util.Optional;
@@ -46,6 +47,7 @@ public class ItemViewCountDaoImpl extends GenericInstitionalDaoImpl<ViewcountIte
                         session
                             .getNamedQuery("getItemViewCountForCollection")
                             .setParameter("collectionId", collectionId)
+                            .setParameter("institutionId", CurrentInstitution.get().getDatabaseId())
                             .uniqueResult());
 
     return Optional.ofNullable(count).map(Long::intValue).orElse(0);

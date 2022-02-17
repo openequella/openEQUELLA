@@ -31,7 +31,7 @@ import org.hibernate.annotations.NamedQuery;
         "SELECT sum(vci.count) FROM ViewcountItem vci "
             + "inner join com.tle.beans.item.Item i on vci.id.itemUuid = i.uuid and vci.id.itemVersion = i.version "
             + "inner join com.tle.beans.entity.BaseEntity be on be.id = i.itemDefinition.id "
-            + "WHERE be.id= :collectionId")
+            + "WHERE be.id= :collectionId and vci.id.inst = :institutionId")
 @NamedQuery(
     name = "deleteItemViewCount",
     query =

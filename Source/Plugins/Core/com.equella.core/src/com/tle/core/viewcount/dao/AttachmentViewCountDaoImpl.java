@@ -22,6 +22,7 @@ import com.tle.beans.Institution;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.viewcount.ViewcountAttachment;
 import com.tle.beans.viewcount.ViewcountAttachmentId;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericInstitionalDaoImpl;
 import java.util.Optional;
@@ -46,6 +47,7 @@ public class AttachmentViewCountDaoImpl
                     session ->
                         session
                             .getNamedQuery("getAttachmentViewCountForCollection")
+                            .setParameter("institutionId", CurrentInstitution.get().getDatabaseId())
                             .setParameter("collectionId", collectionId)
                             .uniqueResult());
 

@@ -52,13 +52,13 @@ public interface ViewCountService {
    */
   List<ViewcountAttachment> getAttachmentViewCountList(Institution institution, ItemKey itemKey);
   /**
-   * The total Item view count of a Collection.
+   * The total Item view count of a Collection limited to current Institution.
    *
    * @param col The collection for which to get the total Item view count.
    */
   int getItemViewCountForCollection(ItemDefinition col);
   /**
-   * The total Attachment view count of a Collection.
+   * The total Attachment view count of a Collection limited to current Institution.
    *
    * @param col The collection for which to get the total Attachment view count.
    */
