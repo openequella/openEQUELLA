@@ -74,7 +74,7 @@ public class ViewCountServiceImpl implements ViewCountService {
   }
 
   @Override
-  public void incrementItemViewCount(ItemKey itemKey) {
+  public int incrementItemViewCount(ItemKey itemKey) {
     ViewcountItemId id = buildViewCountItemId(itemKey);
 
     ViewcountItem viewcountItem =
@@ -88,10 +88,12 @@ public class ViewCountServiceImpl implements ViewCountService {
             .orElse(new ViewcountItem(id, 1, Instant.now()));
 
     setItemViewCount(viewcountItem);
+
+    return viewcountItem.getCount();
   }
 
   @Override
-  public void incrementAttachmentViewCount(ItemKey itemKey, String attachmentUuid) {
+  public int incrementAttachmentViewCount(ItemKey itemKey, String attachmentUuid) {
     ViewcountAttachmentId id = buildViewCountAttachmentId(itemKey, attachmentUuid);
 
     ViewcountAttachment viewcountAttachment =
@@ -105,6 +107,8 @@ public class ViewCountServiceImpl implements ViewCountService {
             .orElse(new ViewcountAttachment(id, 1, Instant.now()));
 
     setAttachmentViewCount(viewcountAttachment);
+
+    return viewcountAttachment.getCount();
   }
 
   @Override

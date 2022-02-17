@@ -32,6 +32,7 @@ public interface ViewCountService {
    * @param itemKey The Item's unique key.
    */
   int getItemViewCount(ItemKey itemKey);
+
   /**
    * Get the view count of an Attachment.
    *
@@ -39,57 +40,68 @@ public interface ViewCountService {
    * @param attachmentUuid UUID of the Attachment.
    */
   int getAttachmentViewCount(ItemKey itemKey, String attachmentUuid);
+
   /**
    * Get all the entity {@link ViewcountItem} of an Institution.
    *
    * @param institution The Institution from where to get a list of `ViewcountItem`.
    */
   List<ViewcountItem> getItemViewCountList(Institution institution);
+
   /**
    * Get all the entity `{@link ViewcountAttachment} of an Institution.
    *
    * @param institution The Institution from where to get a list of `ViewcountAttachment`.
    */
   List<ViewcountAttachment> getAttachmentViewCountList(Institution institution, ItemKey itemKey);
+
   /**
    * The total Item view count of a Collection limited to current Institution.
    *
    * @param col The collection for which to get the total Item view count.
    */
   int getItemViewCountForCollection(ItemDefinition col);
+
   /**
    * The total Attachment view count of a Collection limited to current Institution.
    *
    * @param col The collection for which to get the total Attachment view count.
    */
   int getAttachmentViewCountForCollection(ItemDefinition col);
+
   /**
    * Add or update an instance of {@link ViewcountItem} for an Item.
    *
    * @param viewcountItem The instance of ViewcountItem to be updated.
    */
   void setItemViewCount(ViewcountItem viewcountItem);
+
   /**
    * Add or update an instance of {@link ViewcountAttachment} for an Attachment.
    *
    * @param viewcountAttachment The instance of ViewcountAttachment to be updated.
    */
   void setAttachmentViewCount(ViewcountAttachment viewcountAttachment);
+
   /**
    * Increase an Item's view count by 1. If the Item does not have any view count yet, initialise
    * the count to 1.
    *
    * @param itemKey The Item's unique key.
+   * @return The increased view count.
    */
-  void incrementItemViewCount(ItemKey itemKey);
+  int incrementItemViewCount(ItemKey itemKey);
+
   /**
    * Increase an Attachment's view count by 1. If the Attachment does not have any view count yet,
    * initialise the count to 1.
    *
    * @param itemKey The Item's unique key.
    * @param attachmentUuid UUID of the Attachment.
+   * @return The increased view count.
    */
-  void incrementAttachmentViewCount(ItemKey itemKey, String attachmentUuid);
+  int incrementAttachmentViewCount(ItemKey itemKey, String attachmentUuid);
+
   /**
    * Delete view count of both an Item and the Item's Attachments.
    *
