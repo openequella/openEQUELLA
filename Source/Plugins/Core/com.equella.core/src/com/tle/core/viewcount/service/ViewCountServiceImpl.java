@@ -21,6 +21,7 @@ package com.tle.core.viewcount.service;
 import com.tle.beans.Institution;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.item.ItemKey;
+import com.tle.beans.viewcount.AbstractViewcount;
 import com.tle.beans.viewcount.ViewcountAttachment;
 import com.tle.beans.viewcount.ViewcountAttachmentId;
 import com.tle.beans.viewcount.ViewcountItem;
@@ -61,6 +62,23 @@ public class ViewCountServiceImpl implements ViewCountService {
     return Restrictions.eq("id.inst", institution.getDatabaseId());
   }
 
+  // If the given ViewCount exists, plus the current view count by 1, update the last viewed
+  // time and return it.
+  private <T extends AbstractViewcount> Optional<T> updateIfExists(T viewCount) {
+    return Optional.ofNullable(viewCount)
+        .map(
+            vc -> {
+              vc.setCount(vc.getCount() + 1);
+              vc.setLastViewed(Instant.now());
+              return vc;
+            });
+  }
+
+  // If the given ViewCount exists, return the count. Otherwise, return 0.
+  private int getViewCount(AbstractViewcount viewCount) {
+    return Optional.ofNullable(viewCount).map(AbstractViewcount::getCount).orElse(0);
+  }
+
   @Override
   @Transactional
   public void setItemViewCount(ViewcountItem viewcountItem) {
@@ -78,17 +96,10 @@ public class ViewCountServiceImpl implements ViewCountService {
     ViewcountItemId id = buildViewCountItemId(itemKey);
 
     ViewcountItem viewcountItem =
-        Optional.ofNullable(itemViewCountDao.findById(id))
-            .map(
-                viewCount -> {
-                  viewCount.setCount(viewCount.getCount() + 1);
-                  viewCount.setLastViewed(Instant.now());
-                  return viewCount;
-                })
+        updateIfExists(itemViewCountDao.findById(id))
             .orElse(new ViewcountItem(id, 1, Instant.now()));
 
-    setItemViewCount(viewcountItem);
-
+    itemViewCountDao.saveOrUpdate(viewcountItem);
     return viewcountItem.getCount();
   }
 
@@ -97,33 +108,23 @@ public class ViewCountServiceImpl implements ViewCountService {
     ViewcountAttachmentId id = buildViewCountAttachmentId(itemKey, attachmentUuid);
 
     ViewcountAttachment viewcountAttachment =
-        Optional.ofNullable(attachmentViewCountDao.findById(id))
-            .map(
-                viewCount -> {
-                  viewCount.setCount(viewCount.getCount() + 1);
-                  viewCount.setLastViewed(Instant.now());
-                  return viewCount;
-                })
+        updateIfExists(attachmentViewCountDao.findById(id))
             .orElse(new ViewcountAttachment(id, 1, Instant.now()));
 
-    setAttachmentViewCount(viewcountAttachment);
+    attachmentViewCountDao.saveOrUpdate(viewcountAttachment);
 
     return viewcountAttachment.getCount();
   }
 
   @Override
   public int getItemViewCount(ItemKey itemKey) {
-    return Optional.ofNullable(itemViewCountDao.findById(buildViewCountItemId(itemKey)))
-        .map(ViewcountItem::getCount)
-        .orElse(0);
+    return getViewCount(itemViewCountDao.findById(buildViewCountItemId(itemKey)));
   }
 
   @Override
   public int getAttachmentViewCount(ItemKey itemKey, String attachmentUuid) {
-    return Optional.ofNullable(
-            attachmentViewCountDao.findById(buildViewCountAttachmentId(itemKey, attachmentUuid)))
-        .map(ViewcountAttachment::getCount)
-        .orElse(0);
+    return getViewCount(
+        attachmentViewCountDao.findById(buildViewCountAttachmentId(itemKey, attachmentUuid)));
   }
 
   @Override
@@ -134,7 +135,10 @@ public class ViewCountServiceImpl implements ViewCountService {
   @Override
   public List<ViewcountAttachment> getAttachmentViewCountList(
       Institution institution, ItemKey itemKey) {
-    return attachmentViewCountDao.findAllByCriteria(restrictedByInstitution(institution));
+    return attachmentViewCountDao.findAllByCriteria(
+        restrictedByInstitution(institution),
+        Restrictions.eq("id.itemVersion", itemKey.getVersion()),
+        Restrictions.eq("id.itemUuid", itemKey.getUuid()));
   }
 
   @Override

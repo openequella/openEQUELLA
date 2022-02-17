@@ -43,11 +43,9 @@ import org.hibernate.annotations.NamedQuery;
             + "Where id.itemVersion = :itemVersion and id.itemUuid = :itemUuid and id.inst = :institutionId")
 @Entity
 @AttributeAccessor("field")
-public class ViewcountAttachment {
+public class ViewcountAttachment extends AbstractViewcount {
 
   @EmbeddedId private ViewcountAttachmentId id;
-  private int count;
-  private Instant lastViewed;
 
   public ViewcountAttachment() {
     super();
@@ -55,8 +53,8 @@ public class ViewcountAttachment {
 
   public ViewcountAttachment(ViewcountAttachmentId id, int count, Instant lastViewed) {
     this.id = id;
-    this.count = count;
-    this.lastViewed = lastViewed;
+    setCount(count);
+    setLastViewed(lastViewed);
   }
 
   public ViewcountAttachmentId getId() {
@@ -65,21 +63,5 @@ public class ViewcountAttachment {
 
   public void setId(ViewcountAttachmentId id) {
     this.id = id;
-  }
-
-  public int getCount() {
-    return count;
-  }
-
-  public void setCount(int count) {
-    this.count = count;
-  }
-
-  public Instant getLastViewed() {
-    return lastViewed;
-  }
-
-  public void setLastViewed(Instant lastViewed) {
-    this.lastViewed = lastViewed;
   }
 }
