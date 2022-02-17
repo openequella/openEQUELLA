@@ -105,8 +105,7 @@ public class UrlServiceImpl implements UrlService {
    * In order to correctly set up schema for an internal forward request, such as a redirect request
    * to error.do, this func will overwrite the schema based on the request and base institution url.
    *
-   * @param request HttpServletRequest
-   * @return UriBuilder
+   * @return UriBuilder with new schema
    */
   private UriBuilder getUriBuilderForRequest(HttpServletRequest request) {
     URI uri = getBaseInstitutionURI();
