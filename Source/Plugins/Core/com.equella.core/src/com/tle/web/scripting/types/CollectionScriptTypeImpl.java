@@ -22,11 +22,13 @@ import com.google.inject.assistedinject.Assisted;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.scripting.types.CollectionScriptType;
-import com.tle.core.item.ViewCountJavaDao;
+import com.tle.core.viewcount.service.ViewCountService;
 import javax.inject.Inject;
 
 public class CollectionScriptTypeImpl implements CollectionScriptType {
   private static final long serialVersionUID = 1L;
+
+  @Inject private ViewCountService viewCountService;
 
   private final ItemDefinition collection;
 
@@ -68,7 +70,7 @@ public class CollectionScriptTypeImpl implements CollectionScriptType {
     if (itemViewCountRetrieved) {
       return itemViewCount;
     }
-    itemViewCount = ViewCountJavaDao.getSummaryViewsForCollection(collection);
+    itemViewCount = viewCountService.getItemViewCountForCollection(collection);
     itemViewCountRetrieved = true;
     return itemViewCount;
   }
@@ -78,7 +80,7 @@ public class CollectionScriptTypeImpl implements CollectionScriptType {
     if (attachmentViewCountRetrieved) {
       return attachmentViewCount;
     }
-    attachmentViewCount = ViewCountJavaDao.getAttachmentViewsForCollection(collection);
+    attachmentViewCount = viewCountService.getAttachmentViewCountForCollection(collection);
     attachmentViewCountRetrieved = true;
     return attachmentViewCount;
   }

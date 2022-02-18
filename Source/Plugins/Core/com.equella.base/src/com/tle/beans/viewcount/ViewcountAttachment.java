@@ -22,18 +22,40 @@ import java.time.Instant;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import org.hibernate.annotations.AttributeAccessor;
+import org.hibernate.annotations.NamedQuery;
 
 /**
  * This entity represents table 'viewcount_attachment' which provides the view count of an
  * Attachment.
  */
+@NamedQuery(
+    name = "getAttachmentViewCountForCollection",
+    query =
+        "SELECT sum(vca.count) FROM ViewcountAttachment vca "
+            + "inner join com.tle.beans.item.attachments.Attachment a on vca.id.attachment = a.uuid "
+            + "inner join com.tle.beans.item.Item i on a.item.id = i.id "
+            + "inner join com.tle.beans.entity.BaseEntity be on be.id = i.itemDefinition.id "
+            + "WHERE be.id= :collectionId and vca.id.inst = :institutionId")
+@NamedQuery(
+    name = "deleteAttachmentViewCountForItem",
+    query =
+        "DELETE FROM ViewcountAttachment "
+            + "Where id.itemVersion = :itemVersion and id.itemUuid = :itemUuid and id.inst = :institutionId")
 @Entity
 @AttributeAccessor("field")
-public class ViewcountAttachment {
+public class ViewcountAttachment extends AbstractViewcount {
 
   @EmbeddedId private ViewcountAttachmentId id;
-  private int count;
-  private Instant lastViewed;
+
+  public ViewcountAttachment() {
+    super();
+  }
+
+  public ViewcountAttachment(ViewcountAttachmentId id, int count, Instant lastViewed) {
+    this.id = id;
+    setCount(count);
+    setLastViewed(lastViewed);
+  }
 
   public ViewcountAttachmentId getId() {
     return id;
@@ -41,21 +63,5 @@ public class ViewcountAttachment {
 
   public void setId(ViewcountAttachmentId id) {
     this.id = id;
-  }
-
-  public int getCount() {
-    return count;
-  }
-
-  public void setCount(int count) {
-    this.count = count;
-  }
-
-  public Instant getLastViewed() {
-    return lastViewed;
-  }
-
-  public void setLastViewed(Instant lastViewed) {
-    this.lastViewed = lastViewed;
   }
 }

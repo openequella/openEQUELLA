@@ -16,21 +16,17 @@
  * limitations under the License.
  */
 
-package com.tle.core.db.tables
+package com.tle.core.viewcount.dao;
 
-import java.time.Instant
+import com.tle.beans.Institution;
+import com.tle.beans.item.ItemKey;
+import com.tle.beans.viewcount.ViewcountAttachment;
+import com.tle.beans.viewcount.ViewcountAttachmentId;
+import com.tle.core.hibernate.dao.GenericInstitutionalDao;
 
-import com.tle.core.db.types.{DbUUID, InstId}
+public interface AttachmentViewCountDao
+    extends GenericInstitutionalDao<ViewcountAttachment, ViewcountAttachmentId> {
+  int getAttachmentViewCountForCollection(long collectionId);
 
-case class ItemViewCount(inst: InstId,
-                         item_uuid: DbUUID,
-                         item_version: Int,
-                         count: Int,
-                         last_viewed: Instant)
-
-case class AttachmentViewCount(inst: InstId,
-                               item_uuid: DbUUID,
-                               item_version: Int,
-                               attachment: DbUUID,
-                               count: Int,
-                               last_viewed: Instant)
+  void deleteAttachmentViewCountForItem(Institution institution, ItemKey itemKey);
+}

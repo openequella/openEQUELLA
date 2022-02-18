@@ -22,15 +22,36 @@ import java.time.Instant;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import org.hibernate.annotations.AttributeAccessor;
+import org.hibernate.annotations.NamedQuery;
 
 /** This entity represents table 'viewcount_item' which provides the view count of an Item. */
+@NamedQuery(
+    name = "getItemViewCountForCollection",
+    query =
+        "SELECT sum(vci.count) FROM ViewcountItem vci "
+            + "inner join com.tle.beans.item.Item i on vci.id.itemUuid = i.uuid and vci.id.itemVersion = i.version "
+            + "inner join com.tle.beans.entity.BaseEntity be on be.id = i.itemDefinition.id "
+            + "WHERE be.id= :collectionId and vci.id.inst = :institutionId")
+@NamedQuery(
+    name = "deleteItemViewCount",
+    query =
+        "DELETE FROM ViewcountItem "
+            + "Where id.itemVersion = :itemVersion and id.itemUuid = :itemUuid and id.inst = :institutionId")
 @Entity
 @AttributeAccessor("field")
-public class ViewcountItem {
+public class ViewcountItem extends AbstractViewcount {
 
   @EmbeddedId private ViewcountItemId id;
-  private int count;
-  private Instant lastViewed;
+
+  public ViewcountItem() {
+    super();
+  }
+
+  public ViewcountItem(ViewcountItemId id, int count, Instant lastViewed) {
+    this.id = id;
+    setCount(count);
+    setLastViewed(lastViewed);
+  }
 
   public ViewcountItemId getId() {
     return id;
@@ -38,21 +59,5 @@ public class ViewcountItem {
 
   public void setId(ViewcountItemId id) {
     this.id = id;
-  }
-
-  public int getCount() {
-    return count;
-  }
-
-  public void setCount(int count) {
-    this.count = count;
-  }
-
-  public Instant getLastViewed() {
-    return lastViewed;
-  }
-
-  public void setLastViewed(Instant lastViewed) {
-    this.lastViewed = lastViewed;
   }
 }

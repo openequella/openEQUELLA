@@ -24,6 +24,7 @@ import com.tle.core.mimetypes.MimeTypeConstants;
 import com.tle.core.mimetypes.RegisterMimeTypeExtension;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.url.URLCheckerService;
+import com.tle.core.viewcount.service.ViewCountService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.attachments.AttachmentResourceExtension;
@@ -36,12 +37,18 @@ public class LinkResource
     implements AttachmentResourceExtension<Attachment>, RegisterMimeTypeExtension<Attachment> {
   @Inject private URLCheckerService urlCheckerService;
   @Inject private TLEAclManager aclService;
+  @Inject private ViewCountService viewCountService;
 
   @Override
   public ViewableResource process(
       SectionInfo info, ViewableResource resource, Attachment attachment) {
     return new DetailUrlResource(
-        resource, attachment.getUrl(), attachment.getDescription(), urlCheckerService, aclService);
+        resource,
+        attachment.getUrl(),
+        attachment.getDescription(),
+        urlCheckerService,
+        aclService,
+        viewCountService);
   }
 
   @Override

@@ -66,47 +66,8 @@ trait DBSchema extends StdColumns {
 
   def autoIdCol: C[Long]
 
-  val userAndInst   = Cols('user_id, 'institution_id)
-  val itemViewId    = Cols('inst, 'item_uuid, 'item_version)
-  val itemViewCount = TableMapper[ItemViewCount].table("viewcount_item").keys(itemViewId)
-  val attachmentViewCount = TableMapper[AttachmentViewCount]
-    .table("viewcount_attachment")
-    .keys(itemViewId ++ Cols('attachment))
-
-  val countByCol = JDBCQueries.queryRawSQL(
-    "select sum(\"count\") from viewcount_item vci " +
-      "inner join item i on vci.item_uuid = i.uuid and vci.item_version = i.version " +
-      "inner join base_entity be on be.id = i.item_definition_id where be.id = ?",
-    config.record[Long :: HNil],
-    config.record[Option[Int] :: HNil]
-  )
-
-  val attachmentViewCountByCol = JDBCQueries.queryRawSQL(
-    "select sum(\"count\") from viewcount_attachment vca " +
-      "inner join attachment a on vca.attachment = a.uuid " +
-      "inner join item i on a.item_id = i.id " +
-      "inner join base_entity be on be.id = i.item_definition_id where be.id = ?",
-    config.record[Long :: HNil],
-    config.record[Option[Int] :: HNil]
-  )
-
-  val viewCountQueries = {
-    val del1 = itemViewCount.delete.where(itemViewId, BinOp.EQ).build[(InstId, DbUUID, Int)]
-    val del2 = attachmentViewCount.delete.where(itemViewId, BinOp.EQ).build[(InstId, DbUUID, Int)]
-    ViewCountQueries(
-      itemViewCount.writes,
-      attachmentViewCount.writes,
-      itemViewCount.byPK,
-      itemViewCount.query.where(Cols('inst), BinOp.EQ).build,
-      attachmentViewCount.byPK,
-      attachmentViewCount.query.where(Cols('inst, 'item_uuid, 'item_version), BinOp.EQ).build,
-      countByCol.as[Long => Stream[JDBCIO, Option[Int]]].andThen(_.map(_.getOrElse(0))),
-      attachmentViewCountByCol
-        .as[Long => Stream[JDBCIO, Option[Int]]]
-        .andThen(_.map(_.getOrElse(0))),
-      id => del1(id) ++ del2(id)
-    )
-  }
+  val userAndInst = Cols('user_id, 'institution_id)
+  val itemViewId  = Cols('inst, 'item_uuid, 'item_version)
 
   val settingsRel =
     TableMapper[Setting].table("configuration_property").keys(Cols('institution_id, 'property))
