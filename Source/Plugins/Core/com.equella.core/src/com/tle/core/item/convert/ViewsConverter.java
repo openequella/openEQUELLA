@@ -20,15 +20,13 @@ package com.tle.core.item.convert;
 
 import com.tle.beans.Institution;
 import com.tle.beans.item.ItemId;
+import com.tle.beans.item.ItemKey;
 import com.tle.beans.viewcount.ViewcountAttachment;
-import com.tle.beans.viewcount.ViewcountAttachmentId;
 import com.tle.beans.viewcount.ViewcountItem;
-import com.tle.beans.viewcount.ViewcountItemId;
 import com.tle.common.NameValue;
 import com.tle.common.filesystem.handle.BucketFile;
 import com.tle.common.filesystem.handle.SubTemporaryFile;
 import com.tle.common.filesystem.handle.TemporaryFileHandle;
-import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.institution.convert.service.AbstractJsonConverter;
@@ -91,23 +89,19 @@ public class ViewsConverter extends AbstractJsonConverter<Object> {
       throws IOException {
     final SubTemporaryFile viewsImportFolder = new SubTemporaryFile(staging, VIEWS_FOLDER);
     final List<String> entries = json.getFileList(viewsImportFolder);
-    final long institutionId = CurrentInstitution.get().getDatabaseId();
     for (String entry : entries) {
       final ItemViewsExport views = json.read(viewsImportFolder, entry, ItemViewsExport.class);
       if (views != null) {
-        final ViewcountItemId id =
-            new ViewcountItemId(institutionId, views.itemUuid, views.itemVersion);
+        ItemKey itemKey = new ItemId(views.itemUuid, views.itemVersion);
         viewCountService.setItemViewCount(
-            new ViewcountItem(id, views.count, Instant.ofEpochMilli(views.lastViewed)));
+            itemKey, views.count, Instant.ofEpochMilli(views.lastViewed));
 
         for (AttachmentViewsExport attachment : views.attachments) {
-          final ViewcountAttachmentId attachmentId =
-              new ViewcountAttachmentId(
-                  institutionId, views.itemUuid, views.itemVersion, attachment.attachmentUuid);
-
           viewCountService.setAttachmentViewCount(
-              new ViewcountAttachment(
-                  attachmentId, attachment.count, Instant.ofEpochMilli(attachment.lastViewed)));
+              itemKey,
+              attachment.attachmentUuid,
+              attachment.count,
+              Instant.ofEpochMilli(attachment.lastViewed));
         }
       }
     }

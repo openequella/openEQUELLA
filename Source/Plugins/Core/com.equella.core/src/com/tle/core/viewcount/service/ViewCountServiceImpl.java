@@ -81,14 +81,17 @@ public class ViewCountServiceImpl implements ViewCountService {
 
   @Override
   @Transactional
-  public void setItemViewCount(ViewcountItem viewcountItem) {
-    itemViewCountDao.saveOrUpdate(viewcountItem);
+  public void setItemViewCount(ItemKey itemKey, int viewCount, Instant lastViewed) {
+    ViewcountItemId id = buildViewCountItemId(itemKey);
+    itemViewCountDao.saveOrUpdate(new ViewcountItem(id, viewCount, lastViewed));
   }
 
   @Override
   @Transactional
-  public void setAttachmentViewCount(ViewcountAttachment viewcountAttachment) {
-    attachmentViewCountDao.saveOrUpdate(viewcountAttachment);
+  public void setAttachmentViewCount(
+      ItemKey itemKey, String attachmentUuid, int viewCount, Instant lastViewed) {
+    ViewcountAttachmentId id = buildViewCountAttachmentId(itemKey, attachmentUuid);
+    attachmentViewCountDao.saveOrUpdate(new ViewcountAttachment(id, viewCount, lastViewed));
   }
 
   @Override

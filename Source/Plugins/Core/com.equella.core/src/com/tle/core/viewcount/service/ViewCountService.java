@@ -23,6 +23,7 @@ import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.viewcount.ViewcountAttachment;
 import com.tle.beans.viewcount.ViewcountItem;
+import java.time.Instant;
 import java.util.List;
 
 public interface ViewCountService {
@@ -70,18 +71,24 @@ public interface ViewCountService {
   int getAttachmentViewCountForCollection(ItemDefinition col);
 
   /**
-   * Add or update an instance of {@link ViewcountItem} for an Item.
+   * Add or update the view count for an Item.
    *
-   * @param viewcountItem The instance of ViewcountItem to be updated.
+   * @param itemKey The unique key of the Item.
+   * @param viewCount The total view count of the Item.
+   * @param lastViewed The last time when the Item was viewed.
    */
-  void setItemViewCount(ViewcountItem viewcountItem);
+  void setItemViewCount(ItemKey itemKey, int viewCount, Instant lastViewed);
 
   /**
-   * Add or update an instance of {@link ViewcountAttachment} for an Attachment.
+   * Add or update the view count for an Attachment.
    *
-   * @param viewcountAttachment The instance of ViewcountAttachment to be updated.
+   * @param itemKey The unique key of the Item.
+   * @param attachmentUuid The UUID of the Attachment.
+   * @param viewCount The total view count of the Attachment.
+   * @param lastViewed The last time when the Attachment was viewed.
    */
-  void setAttachmentViewCount(ViewcountAttachment viewcountAttachment);
+  void setAttachmentViewCount(
+      ItemKey itemKey, String attachmentUuid, int viewCount, Instant lastViewed);
 
   /**
    * Increase an Item's view count by 1. If the Item does not have any view count yet, initialise
