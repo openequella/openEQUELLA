@@ -38,6 +38,7 @@ import com.tle.beans.item.*;
 import com.tle.beans.item.attachments.*;
 import com.tle.beans.item.cal.request.CourseInfo;
 import com.tle.beans.mime.MimeEntry;
+import com.tle.beans.newentity.Entity;
 import com.tle.beans.security.ACLEntryMapping;
 import com.tle.beans.security.AccessEntry;
 import com.tle.beans.security.AccessExpression;
@@ -57,7 +58,6 @@ import com.tle.common.workflow.node.ScriptNode;
 import com.tle.common.workflow.node.SerialNode;
 import com.tle.common.workflow.node.WorkflowItem;
 import com.tle.common.workflow.node.WorkflowNode;
-import com.tle.core.db.DBSchema$;
 import com.tle.core.facetedsearch.bean.FacetedSearchClassification;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.impl.AllDataHibernateMigrationFilter;
@@ -151,6 +151,7 @@ public class InitialSchema extends AbstractCreateMigration {
         AuditLogEntry.class,
         ViewcountItem.class,
         ViewcountAttachment.class,
+        Entity.class
       };
 
   @SuppressWarnings("nls")
@@ -183,7 +184,6 @@ public class InitialSchema extends AbstractCreateMigration {
   @SuppressWarnings("nls")
   @Override
   protected void addExtraStatements(HibernateMigrationHelper helper, List<String> sql) {
-    sql.addAll(DBSchema$.MODULE$.schema().creationSQL());
     sql.addAll(helper.getAddIndexesRaw("bookmark_keywords", "bookkeywords", "bookmark_id"));
 
     sql.addAll(

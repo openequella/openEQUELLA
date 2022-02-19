@@ -18,15 +18,12 @@
 
 package com.tle.core.db
 
-import com.tle.core.db.migration.DBSchemaMigration
-import com.tle.core.db.types.{DbUUID, InstId, String255}
+import com.tle.core.db.types.DbUUID
 import io.doolse.simpledba.Iso
 import io.doolse.simpledba.jdbc._
 import io.doolse.simpledba.jdbc.oracle._
-import shapeless.{::, Generic, HNil}
-import io.doolse.simpledba.syntax._
 
-object OracleSchema extends DBSchemaMigration with DBSchema with DBQueries with StdOracleColumns {
+object OracleSchema extends DBSchema with DBQueries with StdOracleColumns {
   // General note on the queries in this class - With the advent of hibernate 5,
   // queries with '?' in them need to be ordinal ( ie `?4` ).  However, this class
   // does not leverage the JPA / Hibernate logic, so we can leave the `?`s as-is.

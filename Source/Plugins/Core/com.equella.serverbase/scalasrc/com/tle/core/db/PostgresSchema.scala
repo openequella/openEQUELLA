@@ -18,17 +18,12 @@
 
 package com.tle.core.db
 
-import com.tle.core.db.migration.DBSchemaMigration
 import com.tle.core.db.types.DbUUID
 import io.doolse.simpledba.Iso
 import io.doolse.simpledba.jdbc._
 import io.doolse.simpledba.jdbc.postgres._
 
-object PostgresSchema
-    extends DBSchemaMigration
-    with DBSchema
-    with DBQueries
-    with StdPostgresColumns {
+object PostgresSchema extends DBSchema with DBQueries with StdPostgresColumns {
 
   implicit def config = setupLogging(postgresConfig)
 
