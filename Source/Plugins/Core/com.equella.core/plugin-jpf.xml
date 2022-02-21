@@ -6012,6 +6012,9 @@
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="ViewcountAttachment">
     <parameter id="class" value="com.tle.beans.viewcount.ViewcountAttachment" />
   </extension>
+  <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="NewEntity">
+    <parameter id="class" value="com.tle.beans.newentity.Entity" />
+  </extension>
   <extension plugin-id="com.tle.core.freetext" point-id="indexingExtension" id="favouritesIndexer">
     <parameter id="class" value="bean:com.tle.core.favourites.index.FavouritesIndexer" />
   </extension>
