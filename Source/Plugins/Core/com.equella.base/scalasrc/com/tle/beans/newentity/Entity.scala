@@ -18,9 +18,9 @@
 
 package com.tle.beans.newentity
 
-import org.hibernate.annotations.{AttributeAccessor, Type}
 import java.time.Instant
-import javax.persistence._
+import javax.persistence.{Column, Embeddable, EmbeddedId, Index, Lob, Table}
+import org.hibernate.annotations.{AttributeAccessor, NamedQuery, Type}
 
 @Embeddable
 class EntityID extends Serializable {
@@ -34,6 +34,8 @@ class EntityID extends Serializable {
 @Table(name = "entities", indexes = Array {
   new Index(name = "entityTypeIdx", columnList = "inst_id, typeid")
 })
+@NamedQuery(name = "deleteAllEntityByInst",
+            query = "DELETE FROM Entity WHERE id.inst_id = :institutionId")
 class Entity {
   @EmbeddedId
   var id: EntityID = _
