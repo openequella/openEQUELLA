@@ -18,6 +18,7 @@
 
 package com.tle.core.newentity.convert;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.tle.beans.Institution;
 import com.tle.beans.newentity.Entity;
 import com.tle.common.NameValue;
@@ -66,7 +67,7 @@ public class NewEntityConverter extends AbstractJsonConverter<Object> {
       entityExport.descriptionStrings = entity.description_strings();
       entityExport.created = entity.created().toEpochMilli();
       entityExport.modified = entity.modified().toEpochMilli();
-      entityExport.data = entity.data();
+      entityExport.data = json.getMapper().readTree(entity.data());
       entityExport.owner = entity.owner();
 
       json.write(
@@ -96,7 +97,7 @@ public class NewEntityConverter extends AbstractJsonConverter<Object> {
                     Instant.ofEpochMilli(entityExport.created),
                     Instant.ofEpochMilli(entityExport.modified),
                     entityExport.owner,
-                    entityExport.data,
+                    entityExport.data.toString(),
                     institution);
 
                 return null;
@@ -119,6 +120,6 @@ public class NewEntityConverter extends AbstractJsonConverter<Object> {
     public String owner;
     public long created;
     public long modified;
-    public String data;
+    public JsonNode data;
   }
 }

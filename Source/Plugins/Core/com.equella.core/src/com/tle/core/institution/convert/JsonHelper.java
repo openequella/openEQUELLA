@@ -68,7 +68,7 @@ public class JsonHelper {
 
   public void write(TemporaryFileHandle file, String path, Object obj) {
     try (OutputStream outStream = fileSystemService.getOutputStream(file, path, false)) {
-      getMapper().writeValue(outStream, obj);
+      getMapper().writerWithDefaultPrettyPrinter().writeValue(outStream, obj);
     } catch (IOException ioe) {
       throw new RuntimeException("Error writing file " + file.getAbsolutePath(), ioe);
     }
