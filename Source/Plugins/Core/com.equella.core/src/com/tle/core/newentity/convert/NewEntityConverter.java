@@ -87,7 +87,7 @@ public class NewEntityConverter extends AbstractJsonConverter<Object> {
       Optional.ofNullable(json.read(viewsImportFolder, entry, EntityExport.class))
           .map(
               entityExport -> {
-                entityService.setEntity(
+                entityService.createOrUpdate(
                     entityExport.uuid,
                     entityExport.typeId,
                     entityExport.name,
