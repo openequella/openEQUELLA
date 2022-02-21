@@ -62,9 +62,9 @@ public class NewEntityConverter extends AbstractJsonConverter<Object> {
       entityExport.uuid = uuid;
       entityExport.typeId = typeId;
       entityExport.name = entity.name();
-      entityExport.nameStrings = entity.name_strings();
+      entityExport.nameStrings = entity.nameStrings();
       entityExport.description = entity.description();
-      entityExport.descriptionStrings = entity.description_strings();
+      entityExport.descriptionStrings = entity.descriptionStrings();
       entityExport.created = entity.created().toEpochMilli();
       entityExport.modified = entity.modified().toEpochMilli();
       entityExport.data = json.getMapper().readTree(entity.data());

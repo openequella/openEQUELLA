@@ -44,11 +44,11 @@ class Entity {
   @Lob
   var name: String = _
   @Type(`type` = "json")
-  var name_strings: String = _
+  var nameStrings: String = _
   @Lob
   var description: String = _
   @Type(`type` = "json")
-  var description_strings: String = _
+  var descriptionStrings: String = _
   @Column
   var owner: String     = _
   var created: Instant  = _

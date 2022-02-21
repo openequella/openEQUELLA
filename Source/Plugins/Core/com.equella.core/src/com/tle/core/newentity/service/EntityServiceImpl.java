@@ -58,9 +58,9 @@ public class EntityServiceImpl implements EntityService {
     Entity entity = new Entity();
     entity.id_$eq(id);
     entity.name_$eq(name);
-    entity.name_strings_$eq(nameStrings);
+    entity.nameStrings_$eq(nameStrings);
     entity.description_$eq(description);
-    entity.description_strings_$eq(descriptionStrings);
+    entity.descriptionStrings_$eq(descriptionStrings);
     entity.created_$eq(created);
     entity.modified_$eq(modified);
     entity.owner_$eq(owner);
