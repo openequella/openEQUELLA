@@ -18,8 +18,11 @@
 
 package com.tle.web.api.search
 
+import cats.Semigroup
+import cats.implicits._
 import com.dytech.edge.exceptions.{BadRequestException, DRMException}
 import com.tle.beans.entity.DynaCollection
+import com.tle.beans.item.attachments.Attachment
 import com.tle.beans.item.{Comment, ItemIdKey}
 import com.tle.common.Check
 import com.tle.common.beans.exception.NotFoundException
@@ -30,26 +33,21 @@ import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.freetext.queries.FreeTextBooleanQuery
 import com.tle.core.item.security.ItemSecurityConstants
 import com.tle.core.item.serializer.{ItemSerializerItemBean, ItemSerializerService}
-import com.tle.core.security.ACLChecks.hasAcl
-import com.tle.core.services.item.{FreetextResult, FreetextSearchResults}
-import com.tle.legacy.LegacyGuice
-import com.tle.web.api.interfaces.beans.AbstractExtendableBean
-import com.tle.web.api.item.interfaces.beans.AttachmentBean
-import com.tle.web.api.search.AttachmentHelper.{
-  buildAttachmentLinks,
-  getAttachmentDescription,
-  sanitiseAttachmentBean
-}
-import com.tle.web.api.search.model.AdditionalSearchParameters.buildAdvancedSearchCriteria
-import cats.Semigroup
-import cats.implicits._
-import com.tle.web.api.search.model._
 import com.tle.core.item.service.AttachmentService.{
   getFilePathForAttachment,
   getMimetypeForAttachment,
   recurseBrokenAttachmentCheck,
   thumbExists
 }
+import com.tle.core.security.ACLChecks.hasAcl
+import com.tle.core.services.item.{FreetextResult, FreetextSearchResults}
+import com.tle.legacy.LegacyGuice
+import com.tle.web.api.interfaces.beans.AbstractExtendableBean
+import com.tle.web.api.item.interfaces.beans.AttachmentBean
+import com.tle.web.api.search.AttachmentHelper.{buildAttachmentLinks, sanitiseAttachmentBean}
+import com.tle.web.api.search.model.AdditionalSearchParameters.buildAdvancedSearchCriteria
+import com.tle.web.api.search.model._
+
 import java.time.format.DateTimeParseException
 import java.time.{LocalDate, LocalDateTime, LocalTime, ZoneId}
 import java.util.Date
@@ -294,20 +292,28 @@ object SearchHelper {
         // Filter out restricted attachments if the user does not have permissions to view them
           .filter(a => !a.isRestricted || hasRestrictedAttachmentPrivileges)
           .map(sanitiseAttachmentBean)
-          .map(att => {
-            val broken                             = recurseBrokenAttachmentCheck(itemKey, att.getUuid)
-            def ifNotBroken[T](f: () => Option[T]) = if (!broken) f() else None
+          .map(bean => {
+            val attachment = recurseBrokenAttachmentCheck(itemKey, bean.getUuid)
+            def ifNotBroken[T](f: Attachment => Option[T], default: Option[T] = None) =
+              if (attachment.isDefined) f(attachment.get) else default
 
             SearchResultAttachment(
-              attachmentType = att.getRawAttachmentType,
-              id = att.getUuid,
-              description = ifNotBroken(() => getAttachmentDescription(itemKey, att.getUuid)),
-              brokenAttachment = broken,
-              preview = att.isPreview,
-              mimeType = ifNotBroken(() => getMimetypeForAttachment(att)),
-              hasGeneratedThumb = thumbExists(itemKey, att),
-              links = buildAttachmentLinks(att),
-              filePath = getFilePathForAttachment(att)
+              attachmentType = bean.getRawAttachmentType,
+              id = bean.getUuid,
+              preview = bean.isPreview,
+              hasGeneratedThumb = thumbExists(itemKey, bean),
+              links = buildAttachmentLinks(bean),
+              filePath = getFilePathForAttachment(bean),
+              brokenAttachment = attachment.isEmpty,
+              // Use the `description` from the `Attachment` behind the `AttachmentBean` as this provides
+              // the value more commonly seen in the LegacyUI. And specifically uses any tweaks done for
+              // Custom Attachments - such as with Kaltura where the Kaltura Media `title` is pushed into
+              // the `description` rather than using the optional (and multi-line) Kaltura Media `description`.
+              // But if not available due to broken attachments, well something is better than
+              // nothing so use the on in `AttachmentBean`.
+              description = ifNotBroken((a: Attachment) => Option(a.getDescription),
+                                        Option(bean.getDescription)),
+              mimeType = ifNotBroken(_ => getMimetypeForAttachment(bean)),
             )
           })
           .toList)

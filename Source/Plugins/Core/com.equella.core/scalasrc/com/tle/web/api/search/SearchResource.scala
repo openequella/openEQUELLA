@@ -108,6 +108,7 @@ class SearchResource {
       highlight
     )
   }
+
   @HEAD
   @Path("/export")
   def exportCSV(@BeanParam params: SearchParam): Response = {
