@@ -104,7 +104,7 @@ class SearchResource {
       searchResults.getOffset,
       searchResults.getCount,
       searchResults.getAvailable,
-      items.map(convertToItem),
+      items.map(i => convertToItem(i, params.includeAttachments)),
       highlight
     )
   }

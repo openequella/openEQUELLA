@@ -248,11 +248,13 @@ object SearchHelper {
 
   /**
     * Convert a SearchItem to an instance of SearchResultItem.
-    * @param item Represents a SearchItem, containing an ItemIdKey, EquellaItemBean, and
-    * Boolean indicating if a search term has been found inside attachment content
-    * @return An instance of SearchResultItem.
+    *
+    * @param item Details of an item to convert.
+    *  @param includeAttachments Controls whether to populate the 'attachments' property as that
+    *                            process can be intensive and slow down searches.
+    * @return The result of converting `item` to a `SearchResultItem`.
     */
-  def convertToItem(item: SearchItem): SearchResultItem = {
+  def convertToItem(item: SearchItem, includeAttachments: Boolean = true): SearchResultItem = {
     val key  = item.idKey
     val bean = item.bean
     SearchResultItem(
@@ -266,7 +268,8 @@ object SearchHelper {
       collectionId = bean.getCollection.getUuid,
       commentCount = getItemCommentCount(key),
       starRatings = bean.getRating,
-      attachments = convertToAttachment(bean.getAttachments, key),
+      attachmentCount = bean.getAttachments.size(),
+      attachments = if (includeAttachments) convertToAttachment(bean.getAttachments, key) else None,
       thumbnail = bean.getThumbnail,
       displayFields = bean.getDisplayFields.asScala.toList,
       displayOptions = Option(bean.getDisplayOptions),
