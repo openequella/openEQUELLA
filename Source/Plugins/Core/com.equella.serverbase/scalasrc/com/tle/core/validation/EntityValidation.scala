@@ -18,25 +18,35 @@
 
 package com.tle.core.validation
 
-import java.time.Instant
+import cats.data.{Validated, ValidatedNec}
+import cats.implicits._
+import com.tle.core.db.types.LocaleStrings
 import java.util.Locale
 
-import cats.data.{Validated, ValidatedNec}
-import com.tle.core.db.types.LocaleStrings
-import cats.syntax.validated._
-import com.tle.core.db.tables.OEQEntity
+/**
+  * Data structure for Entity standard fields.
+  *
+  * @param name Name of the Entity.
+  * @param nameStrings Name of the Entity including current locale.
+  * @param description Description of the Entity.
+  * @param descriptionStrings Description of the Entity including current locale.
+  */
+case class EntityStdEdits(name: String,
+                          nameStrings: Option[Map[String, String]] = None,
+                          description: Option[String] = None,
+                          descriptionStrings: Option[Map[String, String]] = None)
 
-case class EntityValidation(field: String, reason: String)
-
-trait OEQEntityEdits {
-  def name: String
-  def nameStrings: Option[Map[String, String]]
-  def description: Option[String]
-  def descriptionStrings: Option[Map[String, String]]
+/**
+  * Data structure representing a failed Entity validation.
+  *
+  * @param field The field being validated.
+  * @param reason Why the validation fails.
+  */
+case class EntityValidation(field: String, reason: String) {
+  override def toString: String = s"$field: $reason"
 }
 
 object EntityValidation {
-
   final val NameField = "name"
   final val FailBlank = "blank"
 
@@ -61,25 +71,23 @@ object EntityValidation {
     Validated.condNec(string.nonEmpty, string, EntityValidation(field, FailBlank))
 
   def standardValidation(
-      edits: OEQEntityEdits,
-      oeq: OEQEntity,
+      edits: EntityStdEdits,
       locale: Locale
-  ): ValidatedNec[EntityValidation, OEQEntity] = {
+  ): ValidatedNec[EntityValidation, EntityStdEdits] = {
     EntityValidation
       .nonBlankStrings(NameField, edits.name, edits.nameStrings, locale)
-      .map { n =>
-        val desc = LocaleStrings.fromStrings(
-          edits.description.getOrElse(""),
-          edits.descriptionStrings,
-          locale
-        )
-        oeq.copy(
-          name = n._1,
-          name_strings = n._2,
-          description = desc.map(_._1),
-          modified = Instant.now,
-          description_strings = desc.map(_._2).getOrElse(LocaleStrings.empty)
-        )
-      }
+      .map(validated => {
+        val (name, nameStrings) = validated
+        val (desc, descStrings) = LocaleStrings
+          .fromStrings(
+            edits.description.getOrElse(""),
+            edits.descriptionStrings,
+            locale
+          )
+          .separate
+
+        // Return a copy of the provided edits with validated values.
+        edits.copy(name, Option(nameStrings.strings), desc, descStrings.map(_.strings))
+      })
   }
 }

@@ -18,22 +18,26 @@
 
 package com.tle.web.api.cloudprovider
 
-import java.util.UUID
+import cats.data.NonEmptyChain
 import cats.syntax.functor._
+import com.tle.common.institution.CurrentInstitution
 import com.tle.core.cloudproviders._
-import com.tle.core.db._
+import com.tle.core.validation.EntityValidation
 import com.tle.legacy.LegacyGuice
+import com.tle.web.api.ApiErrorResponse.{badRequest, resourceNotFound}
 import com.tle.web.api.settings.SettingsApiHelper.ensureEditSystem
 import com.tle.web.api.{ApiHelper, EntityPaging}
 import com.tle.web.settings.SettingsList
 import io.lemonlabs.uri.Url
 import io.lemonlabs.uri.parsing.UrlParser
 import io.swagger.annotations.{Api, ApiOperation}
+
 import javax.ws.rs._
 import javax.ws.rs.core._
 import org.jboss.resteasy.annotations.cache.NoCache
 
 import scala.util.Success
+import java.util.UUID
 
 case class CloudProviderForward(url: String)
 @NoCache
@@ -44,27 +48,31 @@ class CloudProviderApi {
 
   import CloudProviderApi._
 
+  val registrationService = LegacyGuice.cloudProviderRegistrationService
+  val entityService       = LegacyGuice.entityService
+
+  private def collectErrors(validations: NonEmptyChain[EntityValidation]): List[String] =
+    validations.toNonEmptyList.toList.map(_.toString)
+
   @POST
   @Path("register")
   @ApiOperation(value = "Register a cloud provider",
                 response = classOf[CloudProviderRegistrationResponse])
   def register(@QueryParam(TokenParam) @DefaultValue("") regtoken: String,
                registration: CloudProviderRegistration): Response = {
-    ApiHelper.runAndBuild {
-      for {
-        ctx               <- getContext
-        validatedInstance <- CloudProviderDB.register(regtoken, registration)
-      } yield {
-        val forwardUrl = UriBuilder
-          .fromUri(ctx.inst.getUrlAsUri)
-          .path(SettingsList.CloudProviderListPage)
-          .build()
-          .toString
-        ApiHelper.validationOrEntity(validatedInstance.map { inst =>
-          CloudProviderRegistrationResponse(inst, forwardUrl)
-        })
-      }
-    }
+    def forwardUrl: String =
+      UriBuilder
+        .fromUri(CurrentInstitution.get.getUrlAsUri)
+        .path(SettingsList.CloudProviderListPage)
+        .build()
+        .toString
+
+    registrationService
+      .register(regtoken, registration)
+      .map(CloudProviderRegistrationResponse(_, forwardUrl))
+      .map(Response.ok(_).build)
+      .leftMap(collectErrors)
+      .valueOr(badRequest(_: _*))
   }
 
   @POST
@@ -80,27 +88,22 @@ class CloudProviderApi {
     checkPermissions()
     UrlParser.parseUrl(providerUrl) match {
       case Success(u: Url) =>
+        def returnUrl: String =
+          ApiHelper
+            .apiUriBuilder()
+            .path(classOf[CloudProviderApi])
+            .path(classOf[CloudProviderApi], "register")
+            .queryParam(TokenParam, registrationService.createRegistrationToken)
+            .build()
+            .toString
+
         ensureEditSystem()
-        RunWithDB.execute {
-          for {
-            token <- CloudProviderDB.createRegistrationToken
-          } yield {
-            val returnUrl = ApiHelper
-              .apiUriBuilder()
-              .path(classOf[CloudProviderApi])
-              .path(classOf[CloudProviderApi], "register")
-              .queryParam(TokenParam, token)
-              .build()
-              .toString
-            CloudProviderForward(
-              u.addParam(RegistrationParam, returnUrl)
-                .addParam(InstUrl, LegacyGuice.urlService.getBaseInstitutionURI.toString)
-                .toString)
-          }
-        }
+        CloudProviderForward(
+          u.addParam(RegistrationParam, returnUrl)
+            .addParam(InstUrl, LegacyGuice.urlService.getBaseInstitutionURI.toString)
+            .toString)
       case _ => throw new BadRequestException("Invalid provider registration url")
     }
-
   }
 
   @PUT
@@ -109,24 +112,24 @@ class CloudProviderApi {
   def editServiceDetails(@PathParam("uuid") uuid: UUID,
                          registration: CloudProviderRegistration): Response = {
     checkPermissions()
-    ApiHelper.runAndBuild {
-      CloudProviderDB
-        .editRegistered(uuid, registration)
-        .map { validatedInstance =>
-          ApiHelper.validationOr(validatedInstance.map { inst =>
-            Response.noContent()
-          })
-        }
-        .getOrElse(Response.status(404))
-    }
+    Option(entityService.getByUuid(uuid.toString))
+      .map(registrationService.editRegistered(_, registration))
+      .map(
+        _.map(_ => Response.noContent.build)
+          .leftMap(collectErrors)
+          .valueOr(badRequest(_: _*)))
+      .getOrElse(resourceNotFound(s"Failed to find Cloud provider matching UUID: $uuid"))
   }
 
   @DELETE
   @Path("provider/{uuid}")
   @ApiOperation(value = "Delete a cloud provider")
-  def deleteRegistration(@PathParam("uuid") uuid: UUID): Response = ApiHelper.runAndBuild {
+  def deleteRegistration(@PathParam("uuid") uuid: UUID): Response = {
     checkPermissions()
-    CloudProviderDB.deleteRegistration(uuid).as(Response.noContent())
+    Option(entityService.getByUuid(uuid.toString))
+      .map(entityService.delete)
+      .map(_ => Response.noContent().build())
+      .getOrElse(resourceNotFound(s"Not Cloud Provider matching UUID: $uuid"))
   }
 
   @POST
@@ -142,11 +145,10 @@ class CloudProviderApi {
   @ApiOperation("List current cloud providers")
   def list(): EntityPaging[CloudProviderDetails] = {
     checkPermissions()
-    RunWithDB.execute {
-      ApiHelper.allEntities {
-        CloudProviderDB.allProviders
-      }
-    }
+    registrationService.getAllProviders
+      .map(EntityPaging.allResults)
+      .leftMap(collectErrors)
+      .valueOr(s => throw new BadRequestException(s.mkString))
   }
 }
 
