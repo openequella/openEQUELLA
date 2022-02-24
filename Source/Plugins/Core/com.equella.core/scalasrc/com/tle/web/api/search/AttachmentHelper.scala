@@ -72,17 +72,4 @@ object AttachmentHelper {
     }
     att
   }
-
-  /**
-    * Use the `description` from the `Attachment` behind the `AttachmentBean` as this provides
-    * the value more commonly seen in the LegacyUI. And specifically uses any tweaks done for
-    * Custom Attachments - such as with Kaltura where the Kaltura Media `title` is pushed into
-    * the `description` rather than using the optional (and multi-line) Kaltura Media `description`.
-    *
-    * @param itemKey the details of the item the attachment belongs to
-    * @param attachmentUuid the UUID of the attachment
-    * @return the description for the attachment if available
-    */
-  def getAttachmentDescription(itemKey: ItemKey, attachmentUuid: String): Option[String] =
-    Option(LegacyGuice.itemService.getAttachmentForUuid(itemKey, attachmentUuid).getDescription)
 }

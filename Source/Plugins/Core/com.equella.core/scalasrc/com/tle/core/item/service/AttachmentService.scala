@@ -18,7 +18,7 @@
 
 package com.tle.core.item.service
 
-import com.tle.beans.item.attachments.{CustomAttachment, FileAttachment}
+import com.tle.beans.item.attachments.{Attachment, CustomAttachment, FileAttachment}
 import com.tle.beans.item.{ItemId, ItemIdKey, ItemKey}
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean
@@ -100,12 +100,12 @@ object AttachmentService {
     val key = new ItemId(uuid, getLatestVersionForCustomAttachment(version, uuid))
 
     if (customAttachment.getType != "resource") {
-      return false;
+      return false
     }
     customAttachment.getData("type") match {
       case "a" =>
         // Recurse into child attachment
-        recurseBrokenAttachmentCheck(key, customAttachment.getUrl)
+        recurseBrokenAttachmentCheck(key, customAttachment.getUrl).isEmpty
       case "p" =>
         // Get the child item. If it doesn't exist, this is a dead attachment
         Option(LegacyGuice.itemService.getUnsecureIfExists(key)).isEmpty
@@ -114,26 +114,30 @@ object AttachmentService {
   }
 
   /**
-    * Determines if a given attachment is invalid.
-    * If it is a resource selector attachment, this gets handled by
-    * [[isCustomAttachmentBroken(customAttachment: CustomAttachment)]]
+    * Determines if a given attachment is invalid. If it is a resource selector attachment, this
+    * gets handled by [[isCustomAttachmentBroken(customAttachment: CustomAttachment)]]
     * which links back in here to recurse through customAttachments to find the root.
     *
     * @param itemKey the details of the item the attachment belongs to
     * @param attachmentUuid the UUID of the attachment
-    * @return True if broken, false if intact.
+    * @return None if the attachment is broken, otherwise the attachment which was found wrapped in
+    *         an Option
     */
-  def recurseBrokenAttachmentCheck(itemKey: ItemKey, attachmentUuid: String): Boolean = {
-    Option(LegacyGuice.itemService.getNullableAttachmentForUuid(itemKey, attachmentUuid)) match {
-      case Some(fileAttachment: FileAttachment) =>
-        //check if file is present in the filestore
-        val item =
-          LegacyGuice.viewableItemFactory.createNewViewableItem(fileAttachment.getItem.getItemId)
-        !LegacyGuice.fileSystemService.fileExists(item.getFileHandle, fileAttachment.getFilename)
-      case Some(customAttachment: CustomAttachment) =>
-        isCustomAttachmentBroken(customAttachment)
-      case None    => true
-      case Some(_) => false
+  def recurseBrokenAttachmentCheck(itemKey: ItemKey, attachmentUuid: String): Option[Attachment] = {
+    // check if file is present in the file-store
+    def fileAttachmentExists(fa: FileAttachment): Boolean = {
+      val item =
+        LegacyGuice.viewableItemFactory.createNewViewableItem(fa.getItem.getItemId)
+      LegacyGuice.fileSystemService.fileExists(item.getFileHandle, fa.getFilename)
+    }
+
+    def customAttachmentExists(ca: CustomAttachment): Boolean = !isCustomAttachmentBroken(ca)
+
+    LegacyGuice.itemService.getNullableAttachmentForUuid(itemKey, attachmentUuid) match {
+      case fa: FileAttachment   => Option(fa).filter(fileAttachmentExists)
+      case ca: CustomAttachment => Option(ca).filter(customAttachmentExists)
+      case a: Attachment        => Option(a)
+      case _                    => None
     }
   }
 }
