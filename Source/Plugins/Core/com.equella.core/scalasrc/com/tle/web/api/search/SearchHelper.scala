@@ -268,7 +268,7 @@ object SearchHelper {
       collectionId = bean.getCollection.getUuid,
       commentCount = getItemCommentCount(key),
       starRatings = bean.getRating,
-      attachmentCount = bean.getAttachments.size(),
+      attachmentCount = Option(bean.getAttachments).map(_.size()).getOrElse(0),
       attachments = if (includeAttachments) convertToAttachment(bean.getAttachments, key) else None,
       thumbnail = bean.getThumbnail,
       displayFields = bean.getDisplayFields.asScala.toList,
