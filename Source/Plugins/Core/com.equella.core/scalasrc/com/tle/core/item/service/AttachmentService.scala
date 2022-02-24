@@ -131,13 +131,13 @@ object AttachmentService {
       LegacyGuice.fileSystemService.fileExists(item.getFileHandle, fa.getFilename)
     }
 
-    Option(LegacyGuice.itemService.getNullableAttachmentForUuid(itemKey, attachmentUuid)) match {
-      case Some(fileAttachment: FileAttachment) =>
-        Some(fileAttachment).filter(fileAttachmentExists)
-      case Some(customAttachment: CustomAttachment) =>
-        Some(customAttachment).filter(ca => !isCustomAttachmentBroken(ca))
-      case Some(attachment) => Some(attachment)
-      case _                => None
+    def customAttachmentExists(ca: CustomAttachment): Boolean = !isCustomAttachmentBroken(ca)
+
+    LegacyGuice.itemService.getNullableAttachmentForUuid(itemKey, attachmentUuid) match {
+      case fa: FileAttachment   => Option(fa).filter(fileAttachmentExists)
+      case ca: CustomAttachment => Option(ca).filter(customAttachmentExists)
+      case a: Attachment        => Option(a)
+      case _                    => None
     }
   }
 }
