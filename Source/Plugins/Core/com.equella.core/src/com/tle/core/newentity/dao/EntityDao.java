@@ -25,7 +25,9 @@ import com.tle.core.hibernate.dao.GenericDao;
 import java.util.List;
 
 public interface EntityDao extends GenericDao<Entity, EntityID> {
-  List<Entity> getAll(Institution institution);
+  List<Entity> getAllByInstitution(Institution institution);
+
+  List<Entity> getAllByType(String type);
 
   void deleteAll(Institution institution);
 }

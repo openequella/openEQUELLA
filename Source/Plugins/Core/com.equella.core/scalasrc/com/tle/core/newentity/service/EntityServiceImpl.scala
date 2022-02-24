@@ -20,10 +20,13 @@ package com.tle.core.newentity.service
 
 import com.tle.beans.Institution
 import com.tle.beans.newentity.{Entity, EntityID}
+import com.tle.common.institution.CurrentInstitution
 import com.tle.core.guice.Bind
 import com.tle.core.newentity.dao.EntityDao
+import org.springframework.transaction.annotation.Transactional
 import javax.inject.Singleton
 import java.time.Instant
+import java.util
 import javax.inject.Inject
 
 @Bind(classOf[EntityService])
@@ -31,9 +34,17 @@ import javax.inject.Inject
 class EntityServiceImpl extends EntityService {
   @Inject var entityDao: EntityDao = _
 
-  override def getAllEntity(institution: Institution): java.util.List[Entity] =
-    entityDao.getAll(institution)
+  override def getByUuid(uuid: String): Entity =
+    entityDao.findById(EntityID(uuid, CurrentInstitution.get().getDatabaseId))
 
+  override def getAllByInstitution(institution: Institution): java.util.List[Entity] =
+    entityDao.getAllByInstitution(institution)
+
+  override def getAllByType(typeId: String): util.List[Entity] = {
+    entityDao.getAllByType(typeId)
+  }
+
+  @Transactional
   override def createOrUpdate(uuid: String,
                               typeId: String,
                               name: String,
@@ -60,8 +71,19 @@ class EntityServiceImpl extends EntityService {
     entity.owner = owner
     entity.typeid = typeId
     entity.data = data
+    createOrUpdate(entity)
+  }
+
+  @Transactional
+  override def createOrUpdate(entity: Entity): Unit = {
     entityDao.saveOrUpdate(entity)
   }
 
+  @Transactional
+  override def delete(entity: Entity): Unit = {
+    entityDao.delete(entity)
+  }
+
+  @Transactional
   override def deleteAllEntity(institution: Institution): Unit = entityDao.deleteAll(institution)
 }

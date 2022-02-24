@@ -18,6 +18,9 @@
 
 package com.tle.beans.newentity
 
+import com.tle.common.institution.CurrentInstitution
+import com.tle.common.usermanagement.user.CurrentUser
+import java.util.UUID
 import java.time.Instant
 import javax.persistence.{Column, Embeddable, EmbeddedId, Index, Lob, Table}
 import org.hibernate.annotations.{AttributeAccessor, NamedQuery, Type}
@@ -27,6 +30,13 @@ class EntityID extends Serializable {
   @Column(length = 36)
   var uuid: String  = _
   var inst_id: Long = _
+
+  override def equals(obj: Any): Boolean = obj match {
+    case that: EntityID => that.uuid == that.uuid && this.inst_id == that.inst_id
+    case _              => false
+  }
+
+  override def hashCode(): Int = inst_id.hashCode + uuid.hashCode
 }
 
 @javax.persistence.Entity
@@ -36,6 +46,8 @@ class EntityID extends Serializable {
 })
 @NamedQuery(name = "deleteAllEntityByInst",
             query = "DELETE FROM Entity WHERE id.inst_id = :institutionId")
+@NamedQuery(name = "getAllByType",
+            query = "from Entity WHERE id.inst_id = :institutionId and typeid = :typeId")
 class Entity {
   @EmbeddedId
   var id: EntityID = _
@@ -55,4 +67,56 @@ class Entity {
   var modified: Instant = _
   @Type(`type` = "json")
   var data: String = _
+}
+
+object EntityID {
+  def apply(uuid: String, inst_id: Long): EntityID = {
+    val id = new EntityID
+    id.uuid = uuid
+    id.inst_id = inst_id
+    id
+  }
+}
+
+object Entity {
+  def apply(uuid: String,
+            inst_id: Long,
+            typeId: String,
+            name: String,
+            nameStrings: String,
+            description: String,
+            descriptionStrings: String,
+            owner: String,
+            created: Instant,
+            modified: Instant,
+            data: String): Entity = {
+    val entity = new Entity
+    entity.id = EntityID(uuid, inst_id)
+    entity.typeid = typeId
+    entity.name = name
+    entity.nameStrings = nameStrings
+    entity.description = description
+    entity.descriptionStrings = descriptionStrings
+    entity.owner = owner
+    entity.created = created
+    entity.modified = modified
+    entity.data = data
+
+    entity
+  }
+
+  def blankEntity(typeId: String): Entity =
+    Entity(
+      uuid = UUID.randomUUID().toString,
+      inst_id = CurrentInstitution.get().getDatabaseId,
+      typeId = typeId,
+      name = "",
+      nameStrings = "",
+      description = "",
+      descriptionStrings = "",
+      owner = CurrentUser.getDetails.getUniqueID,
+      created = Instant.now(),
+      modified = Instant.now(),
+      data = ""
+    )
 }
