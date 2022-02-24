@@ -58,7 +58,7 @@ class SearchParam {
   var searchAttachments: Boolean = _
 
   @ApiParam(
-    "Whether to search include full attachment details in results. Including attachments incurs extra processing and can slow down response times.")
+    "Whether to include full attachment details in results. Including attachments incurs extra processing and can slow down response times.")
   @DefaultValue("true")
   @QueryParam("includeAttachments")
   var includeAttachments: Boolean = _

@@ -250,8 +250,8 @@ object SearchHelper {
     * Convert a SearchItem to an instance of SearchResultItem.
     *
     * @param item Details of an item to convert.
-    *  @param includeAttachments Controls whether to populate the 'attachments' property as that
-    *                            process can be intensive and slow down searches.
+    * @param includeAttachments Controls whether to populate the 'attachments' property as that
+    *                           process can be intensive and slow down searches.
     * @return The result of converting `item` to a `SearchResultItem`.
     */
   def convertToItem(item: SearchItem, includeAttachments: Boolean = true): SearchResultItem = {
