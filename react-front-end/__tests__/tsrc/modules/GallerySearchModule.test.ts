@@ -157,6 +157,7 @@ describe("buildGallerySearchResultItem", () => {
     collectionId: "312be657-ae6a-4c60-b6fa-ced02c955915",
     commentCount: 0,
     starRatings: -1,
+    attachmentCount: 3,
     attachments: [
       {
         attachmentType: "file",
