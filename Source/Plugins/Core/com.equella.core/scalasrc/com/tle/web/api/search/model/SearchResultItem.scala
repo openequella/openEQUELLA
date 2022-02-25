@@ -34,6 +34,7 @@ import com.tle.web.api.item.equella.interfaces.beans.{DisplayField, DisplayOptio
   * @param collectionId The ID of a collection which the item belongs to.
   * @param commentCount The count of an item's comments.
   * @param starRatings The star ratings of an Item.
+  * @param attachmentCount The total number of attachments for this item.
   * @param attachments A list of Item's attachments.
   * @param thumbnail Item's thumbnail.
   * @param displayFields A list of Item's displayFields.
@@ -55,6 +56,7 @@ case class SearchResultItem(
     collectionId: String,
     commentCount: Option[Integer],
     starRatings: Float,
+    attachmentCount: Int,
     attachments: Option[List[SearchResultAttachment]],
     thumbnail: String,
     displayFields: List[DisplayField],

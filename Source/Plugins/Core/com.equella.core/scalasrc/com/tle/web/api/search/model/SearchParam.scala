@@ -58,6 +58,12 @@ class SearchParam {
   var searchAttachments: Boolean = _
 
   @ApiParam(
+    "Whether to include full attachment details in results. Including attachments incurs extra processing and can slow down response times.")
+  @DefaultValue("true")
+  @QueryParam("includeAttachments")
+  var includeAttachments: Boolean = _
+
+  @ApiParam(
     "An advanced search UUID. If a value is supplied, the collections in the advanced search will be used and the collections parameter will be ignored.")
   @QueryParam("advancedSearch")
   var advancedSearch: String = _
