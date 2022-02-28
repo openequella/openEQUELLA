@@ -25,7 +25,7 @@ import java.time.Instant
 trait EntityService {
 
   /**
-    * Get an Entity by UUID.
+    * Get an Entity by UUID limited to those in the current institution.
     *
     * @param uuid UUID of the Entity.
     */
@@ -39,7 +39,7 @@ trait EntityService {
   def getAllByInstitution(institution: Institution): java.util.List[Entity]
 
   /**
-    * Get a list of Entity by Entity type.
+    * Get a list of Entity by Entity type limited to those in the current institution.
     * @param typeId The type representing an Entity (e.g. cloudprovider)
     */
   def getAllByType(typeId: String): java.util.List[Entity]

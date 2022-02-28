@@ -82,6 +82,8 @@ class CloudProviderRegistrationService {
     entity.nameStrings = edits.nameStrings.asJson.noSpaces
     entity.description = edits.description.getOrElse("")
     entity.descriptionStrings = edits.descriptionStrings.map(_.asJson.noSpaces).orNull
+
+    // Persist the new Entity
     entityService.createOrUpdate(entity)
 
     toInstance(entity, data)
