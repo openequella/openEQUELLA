@@ -20,7 +20,7 @@ package com.tle.beans.newentity
 
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.usermanagement.user.CurrentUser
-import java.util.UUID
+import java.util.{Objects, UUID}
 import java.time.Instant
 import javax.persistence.{Column, Embeddable, EmbeddedId, Index, Lob, Table}
 import org.hibernate.annotations.{AttributeAccessor, NamedQuery, Type}
@@ -32,11 +32,11 @@ class EntityID extends Serializable {
   var inst_id: Long = _
 
   override def equals(obj: Any): Boolean = obj match {
-    case that: EntityID => that.uuid == that.uuid && this.inst_id == that.inst_id
+    case that: EntityID => this.uuid == that.uuid && this.inst_id == that.inst_id
     case _              => false
   }
 
-  override def hashCode(): Int = inst_id.hashCode + uuid.hashCode
+  override def hashCode: Int = Objects.hash(inst_id, uuid)
 }
 
 @javax.persistence.Entity
