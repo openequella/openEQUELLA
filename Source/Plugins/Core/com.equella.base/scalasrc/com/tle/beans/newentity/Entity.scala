@@ -36,7 +36,7 @@ class EntityID extends Serializable {
     case _              => false
   }
 
-  override def hashCode: Int = Objects.hash(inst_id, uuid)
+  override def hashCode: Int = Objects.hash(inst_id: java.lang.Long, uuid: java.lang.String)
 }
 
 @javax.persistence.Entity
