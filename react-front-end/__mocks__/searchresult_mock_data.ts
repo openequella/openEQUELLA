@@ -29,6 +29,7 @@ const basicSearchObj: OEQ.Search.SearchResultItem = {
   collectionId: "b28f1ffe-2008-4f5e-d559-83c8acd79316",
   commentCount: 1,
   starRatings: 1,
+  attachmentCount: 0,
   attachments: [],
   thumbnail: "default",
   displayFields: [],
@@ -58,6 +59,7 @@ const attachSearchObj: OEQ.Search.SearchResultItem = {
   collectionId: "b28f1ffe-2008-4f5e-d559-83c8acd79316",
   commentCount: 2,
   starRatings: 1.5,
+  attachmentCount: 1,
   attachments: [
     {
       attachmentType: "file",
@@ -100,6 +102,7 @@ const keywordFoundInAttachmentObj: OEQ.Search.SearchResultItem = {
   collectionId: "b28f1ffe-2008-4f5e-d559-83c8acd79316",
   commentCount: 0,
   starRatings: -1,
+  attachmentCount: 1,
   attachments: [
     {
       attachmentType: "file",
@@ -142,6 +145,7 @@ const customMetaSearchObj: OEQ.Search.SearchResultItem = {
   collectionId: "b28f1ffe-2008-4f5e-d559-83c8acd79316",
   commentCount: 0,
   starRatings: -1,
+  attachmentCount: 1,
   attachments: [
     {
       attachmentType: "file",
@@ -200,6 +204,7 @@ const oneDeadAttachObj: OEQ.Search.SearchResultItem = {
   collectionId: "b28f1ffe-2008-4f5e-d559-83c8acd79316",
   commentCount: 2,
   starRatings: 1.5,
+  attachmentCount: 1,
   attachments: [
     {
       attachmentType: "file",
@@ -242,6 +247,7 @@ const oneDeadOneAliveAttachObj: OEQ.Search.SearchResultItem = {
   collectionId: "b28f1ffe-2008-4f5e-d559-83c8acd79316",
   commentCount: 2,
   starRatings: 1.5,
+  attachmentCount: 2,
   attachments: [
     {
       attachmentType: "file",
@@ -300,6 +306,7 @@ const drmAttachObj: OEQ.Search.SearchResultItem = {
   collectionId: "b28f1ffe-2008-4f5e-d559-83c8acd79316",
   commentCount: 2,
   starRatings: 1.5,
+  attachmentCount: 2,
   attachments: [
     {
       attachmentType: "file",

@@ -81,6 +81,11 @@ interface SearchParamsBase {
    */
   dynaCollection?: string;
   /**
+   * Whether to include full attachment details in results. Including attachments incurs extra
+   * processing and can slow down response times.
+   */
+  includeAttachments?: boolean;
+  /**
    * A flag indicating whether to search attachments or not.
    */
   searchAttachments?: boolean;
@@ -302,9 +307,14 @@ interface SearchResultItemBase {
    */
   starRatings: number;
   /**
-   * Item's attachments.
+   * Item's attachments. Will not be present if `includeAttachments` in search params is `false` or
+   * if the item has none.
    */
   attachments?: Attachment[];
+  /**
+   * How many attachments this item has - present regardless of `includeAttachments`.
+   */
+  attachmentCount: number;
   /**
    * Item's thumbnail.
    */

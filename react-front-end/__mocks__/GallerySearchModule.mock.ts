@@ -35,6 +35,7 @@ export const basicImageSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
         collectionId: "b790e41a-577e-4d9a-92c4-6736c18b2ba6",
         commentCount: 0,
         starRatings: -1.0,
+        attachmentCount: 1,
         attachments: [
           {
             attachmentType: "file",
@@ -80,6 +81,7 @@ export const basicImageSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
         collectionId: "b790e41a-577e-4d9a-92c4-6736c18b2ba6",
         commentCount: 0,
         starRatings: -1.0,
+        attachmentCount: 3,
         attachments: [
           {
             attachmentType: "file",
@@ -157,6 +159,7 @@ export const basicImageSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
         collectionId: "b790e41a-577e-4d9a-92c4-6736c18b2ba6",
         commentCount: 0,
         starRatings: -1.0,
+        attachmentCount: 5,
         attachments: [
           {
             attachmentType: "file",
@@ -273,6 +276,7 @@ export const basicVideoSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
         collectionId: "b790e41a-577e-4d9a-92c4-6736c18b2ba6",
         commentCount: 0,
         starRatings: -1.0,
+        attachmentCount: 1,
         attachments: [
           {
             attachmentType: "custom/youtube",
@@ -314,6 +318,7 @@ export const basicVideoSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
         collectionId: "b790e41a-577e-4d9a-92c4-6736c18b2ba6",
         commentCount: 0,
         starRatings: -1.0,
+        attachmentCount: 1,
         attachments: [
           {
             attachmentType: "file",
@@ -358,6 +363,7 @@ export const basicVideoSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
         collectionId: "b790e41a-577e-4d9a-92c4-6736c18b2ba6",
         commentCount: 0,
         starRatings: -1.0,
+        attachmentCount: 4,
         attachments: [
           {
             attachmentType: "file",
@@ -449,6 +455,7 @@ export const basicVideoSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
         modifiedDate: new Date("2021-07-20T16:53:24.430+10:00"),
         collectionId: "312be657-ae6a-4c60-b6fa-ced02c955915",
         starRatings: -1,
+        attachmentCount: 1,
         attachments: [
           {
             attachmentType: "custom/kaltura",

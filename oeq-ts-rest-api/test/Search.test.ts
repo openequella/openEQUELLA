@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 import { is } from 'typescript-is';
-import { GET } from '../src/AxiosInstance';
 import * as OEQ from '../src';
+import { GET } from '../src/AxiosInstance';
 import * as TC from './TestConfig';
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
@@ -114,12 +114,12 @@ describe('Search for items', () => {
   );
 });
 
-describe('Search for attachments', () => {
+describe('Params related to attachments', () => {
   test.each([
-    ['include attachments', true, 4],
-    ['exclude attachments', false, 3],
+    ['within attachments and their metadata', true, 4],
+    ['within item metadata only (exclude searching attachments)', false, 3],
   ])(
-    'should be possible to %s in a search',
+    'should be possible to search %s',
     async (
       _testName: string,
       searchAttachments: boolean,
@@ -133,9 +133,19 @@ describe('Search for attachments', () => {
       expect(searchResult.results).toHaveLength(expectResultCount);
     }
   );
+
+  it('is possible to exclude attachment details from search results', async () => {
+    const searchResults = await doSearch({
+      includeAttachments: false,
+      mimeTypes: ['application/pdf'],
+    });
+    const firstItem = searchResults.results[0];
+    expect(firstItem.attachmentCount).toBeGreaterThan(0);
+    expect(firstItem.attachments).toBeFalsy();
+  });
 });
 
-describe('Exports search results for the specified search params', function () {
+describe('Exports search results for the specified search params', () => {
   const searchParams: OEQ.Search.SearchParams = {
     query: 'API',
     start: 0,
