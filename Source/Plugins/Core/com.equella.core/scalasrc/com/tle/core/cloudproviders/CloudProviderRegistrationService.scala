@@ -71,11 +71,10 @@ class CloudProviderRegistrationService {
     )
   }
 
-  // Save an Entity with provided values, and return the CloudProviderInstance representing
-  // this Entity.
-  private def save(entity: Entity,
-                   values: (EntityStdEdits, CloudProviderData)): CloudProviderInstance = {
-    val (edits, data) = values
+  // Apply the provided Cloud provider details to the provided Entity.
+  private def applyValues(entity: Entity,
+                          edits: EntityStdEdits,
+                          data: CloudProviderData): Entity = {
     entity.data = data.asJson.noSpaces
     entity.modified = Instant.now
     entity.name = edits.name
@@ -83,10 +82,7 @@ class CloudProviderRegistrationService {
     entity.description = edits.description.getOrElse("")
     entity.descriptionStrings = edits.descriptionStrings.map(_.asJson.noSpaces).orNull
 
-    // Persist the new Entity
-    entityService.createOrUpdate(entity)
-
-    toInstance(entity, data)
+    entity
   }
 
   /**
@@ -138,20 +134,23 @@ class CloudProviderRegistrationService {
     : ValidatedNec[EntityValidation, CloudProviderInstance] =
     (validToken(regToken), validateRegistrationFields(registration))
       .mapN(
-        (_, fields) =>
-          save(
-            Entity.blankEntity(typeId),
-            (fields,
-             CloudProviderData(
-               baseUrl = registration.baseUrl,
-               iconUrl = registration.iconUrl,
-               vendorId = registration.vendorId,
-               providerAuth = registration.providerAuth,
-               oeqAuth = CloudOAuthCredentials.random(),
-               serviceUrls = registration.serviceUrls,
-               viewers = registration.viewers
-             ))
-        ))
+        (token, fields) => {
+          val newData = CloudProviderData(
+            baseUrl = registration.baseUrl,
+            iconUrl = registration.iconUrl,
+            vendorId = registration.vendorId,
+            providerAuth = registration.providerAuth,
+            oeqAuth = CloudOAuthCredentials.random(),
+            serviceUrls = registration.serviceUrls,
+            viewers = registration.viewers
+          )
+          val entity = applyValues(Entity.blankEntity(typeId), fields, newData)
+
+          tokenCache.invalidate(token)         // Invalidate the token so it can't be reused.
+          entityService.createOrUpdate(entity) // Persist the new Entity.
+          toInstance(entity, newData)          // Return the CloudProviderInstance representing the new Entity.
+        }
+      )
 
   /**
     * Update details of a Cloud provider.
@@ -175,7 +174,10 @@ class CloudProviderRegistrationService {
           serviceUrls = reg.serviceUrls,
           viewers = reg.viewers
         )
-        save(entity, (fields, validatedData))
+        val entity = applyValues(entity, fields, validatedData)
+
+        entityService.createOrUpdate(entity)
+        toInstance(entity, validatedData)
       })
 
   /**
