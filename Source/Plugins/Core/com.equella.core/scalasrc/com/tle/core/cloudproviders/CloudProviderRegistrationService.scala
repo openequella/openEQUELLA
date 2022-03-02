@@ -174,7 +174,7 @@ class CloudProviderRegistrationService {
           serviceUrls = reg.serviceUrls,
           viewers = reg.viewers
         )
-        val entity = applyValues(entity, fields, validatedData)
+        applyValues(entity, fields, validatedData)
 
         entityService.createOrUpdate(entity)
         toInstance(entity, validatedData)
