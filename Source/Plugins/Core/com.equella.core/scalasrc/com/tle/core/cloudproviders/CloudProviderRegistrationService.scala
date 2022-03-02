@@ -90,17 +90,16 @@ class CloudProviderRegistrationService {
   }
 
   /**
-    * Check whether a registration token is valid. If yes, invalidate the token.
+    * Check whether a registration token is valid. If yes, return the token.
     * If no, return an EntityValidation indicating the failure.
     *
     * @param regToken The token to be checked.
     */
-  def validToken(regToken: String): ValidatedNec[EntityValidation, Unit] =
-    if (!tokenCache.get(regToken).isPresent)
-      EntityValidation("token", "invalid").invalidNec
+  def validToken(regToken: String): ValidatedNec[EntityValidation, String] =
+    if (tokenCache.get(regToken).isPresent)
+      regToken.validNec
     else {
-      tokenCache.invalidate(regToken)
-      ().validNec
+      EntityValidation("token", "invalid").invalidNec
     }
 
   /**
@@ -158,7 +157,7 @@ class CloudProviderRegistrationService {
     * Update details of a Cloud provider.
     *
     * @param entity Entity representing a Cloud provider instance.
-    * @param registration Cloud provider registration data to be used to update a Cloud provider instance.
+    * @param reg Cloud provider registration data to be used to update a Cloud provider instance.
     * @return ValidatedNec where left is all the errors accumulated during the update and right is
     *         the details of the updated Cloud provider.
     */
