@@ -20,17 +20,20 @@ package com.tle.core.cloudproviders
 
 import cats.data.ValidatedNec
 import cats.implicits._
+import com.softwaremill.sttp._
+import com.softwaremill.sttp.circe._
 import com.tle.beans.newentity.Entity
 import com.tle.common.i18n.CurrentLocale
+import com.tle.core.cloudproviders.CloudProviderHelper.{extractData, toInstance}
 import com.tle.core.guice.Bind
 import com.tle.core.newentity.service.EntityService
 import com.tle.core.replicatedcache.ReplicatedCacheService
 import com.tle.core.validation.{EntityStdEdits, EntityValidation}
 import com.tle.legacy.LegacyGuice
 import com.tle.web.DebugSettings
-import io.circe.parser._
 import io.circe.syntax._
 import org.slf4j.LoggerFactory
+
 import java.time.Instant
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -48,28 +51,6 @@ class CloudProviderRegistrationService {
   val RefreshServiceId = "refresh"
   val typeId           = "cloudprovider"
   val Logger           = LoggerFactory.getLogger(getClass)
-
-  // Transform an Entity's custom data from String to CloudProviderData.
-  private def extractData(data: String): ValidatedNec[EntityValidation, CloudProviderData] =
-    decode[CloudProviderData](data)
-      .leftMap(err => EntityValidation("data", err.getMessage))
-      .toValidatedNec
-
-  // Build a CloudProviderInstance by Entity and CloudProviderData
-  private def toInstance(entity: Entity, data: CloudProviderData): CloudProviderInstance = {
-    CloudProviderInstance(
-      id = UUID.fromString(entity.id.uuid),
-      name = entity.name,
-      description = Option(entity.description),
-      vendorId = data.vendorId,
-      baseUrl = data.baseUrl,
-      iconUrl = data.iconUrl,
-      providerAuth = data.providerAuth,
-      oeqAuth = data.oeqAuth,
-      serviceUrls = data.serviceUrls,
-      viewers = data.viewers
-    )
-  }
 
   // Apply the provided Cloud provider details to the provided Entity.
   private def applyValues(entity: Entity,

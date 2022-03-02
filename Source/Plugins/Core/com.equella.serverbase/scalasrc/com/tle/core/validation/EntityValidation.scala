@@ -18,7 +18,7 @@
 
 package com.tle.core.validation
 
-import cats.data.{Validated, ValidatedNec}
+import cats.data.{NonEmptyChain, Validated, ValidatedNec}
 import cats.implicits._
 import com.tle.core.db.types.LocaleStrings
 import java.util.Locale
@@ -90,4 +90,15 @@ object EntityValidation {
         edits.copy(name, Option(nameStrings.strings), desc, descStrings.map(_.strings))
       })
   }
+
+  /**
+    * Given a list of EntityValidation, which typically is wrapped by a NonEmptyChain,
+    * convert each EntityValidation to a more readable error message and put all messages
+    * in one list.
+    *
+    * @param validations A list of EntityValidation captured during the process of `Entity`
+    * @return A list of error messages transformed from the list of EntityValidation.
+    */
+  def collectErrors(validations: NonEmptyChain[EntityValidation]): List[String] =
+    validations.toList.map(_.toString)
 }

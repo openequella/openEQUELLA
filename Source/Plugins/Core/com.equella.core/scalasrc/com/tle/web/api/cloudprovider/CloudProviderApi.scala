@@ -18,11 +18,10 @@
 
 package com.tle.web.api.cloudprovider
 
-import cats.data.NonEmptyChain
 import cats.syntax.functor._
 import com.tle.common.institution.CurrentInstitution
 import com.tle.core.cloudproviders._
-import com.tle.core.validation.EntityValidation
+import com.tle.core.validation.EntityValidation.collectErrors
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.ApiErrorResponse.{badRequest, resourceNotFound}
 import com.tle.web.api.settings.SettingsApiHelper.ensureEditSystem
@@ -50,9 +49,6 @@ class CloudProviderApi {
 
   val registrationService = LegacyGuice.cloudProviderRegistrationService
   val entityService       = LegacyGuice.entityService
-
-  private def collectErrors(validations: NonEmptyChain[EntityValidation]): List[String] =
-    validations.toNonEmptyList.toList.map(_.toString)
 
   @POST
   @Path("register")
