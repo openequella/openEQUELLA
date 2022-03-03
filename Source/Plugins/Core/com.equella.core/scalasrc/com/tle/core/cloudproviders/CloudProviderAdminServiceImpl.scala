@@ -21,7 +21,6 @@ package com.tle.core.cloudproviders
 import java.util
 
 import com.tle.beans.cloudproviders._
-import com.tle.core.db.RunWithDB
 import com.tle.core.guice.Bind
 import com.tle.core.remoting.CloudProviderAdminService
 

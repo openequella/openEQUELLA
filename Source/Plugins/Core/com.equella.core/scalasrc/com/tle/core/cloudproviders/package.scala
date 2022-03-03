@@ -77,6 +77,25 @@ package object cloudproviders {
                                   vendorId: String,
                                   canRefresh: Boolean)
 
+  case class CloudProviderData(baseUrl: String,
+                               iconUrl: Option[String],
+                               vendorId: String,
+                               providerAuth: CloudOAuthCredentials,
+                               oeqAuth: CloudOAuthCredentials,
+                               serviceUrls: Map[String, ServiceUrl],
+                               viewers: Map[String, Map[String, Viewer]])
+
+  object CloudProviderData {
+    implicit val decoderV = deriveDecoder[Viewer]
+    implicit val encoderV = deriveEncoder[Viewer]
+    implicit val decoderS = deriveDecoder[ServiceUrl]
+    implicit val encoderS = deriveEncoder[ServiceUrl]
+    implicit val decoderC = deriveDecoder[CloudOAuthCredentials]
+    implicit val encoderC = deriveEncoder[CloudOAuthCredentials]
+    implicit val decoder  = deriveDecoder[CloudProviderData]
+    implicit val encoder  = deriveEncoder[CloudProviderData]
+  }
+
   case class CloudProviderRefreshRequest(id: UUID)
 
   object CloudProviderRefreshRequest {
