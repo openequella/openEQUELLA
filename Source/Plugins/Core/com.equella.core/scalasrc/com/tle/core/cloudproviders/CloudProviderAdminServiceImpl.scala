@@ -31,6 +31,6 @@ import scala.collection.JavaConverters._
 class CloudProviderAdminServiceImpl extends CloudProviderAdminService {
 
   override def listControls: util.List[CloudControlDefinition] = {
-    RunWithDB.execute(CloudProviderService.queryControls()).asJava
+    CloudProviderService.queryControls.asJava
   }
 }

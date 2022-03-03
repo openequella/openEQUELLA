@@ -150,11 +150,11 @@ object OAuthClientService {
   def authorizedRequest[T](authTokenUrl: String,
                            clientId: String,
                            clientSecret: String,
-                           request: Request[T, Stream[IO, ByteBuffer]]): DB[Response[T]] = {
+                           request: Request[T, Stream[IO, ByteBuffer]]): Response[T] = {
     val tokenRequest = TokenRequest(authTokenUrl, clientId, clientSecret)
     val token        = tokenForClient(tokenRequest)
     val res          = requestWithToken(request, token.token, token.tokenType)
     if (res.code == StatusCodes.Unauthorized) removeToken(tokenRequest)
-    res.pure[DB]
+    res
   }
 }

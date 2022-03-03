@@ -18,13 +18,13 @@
 
 package com.tle.core.cloudproviders
 
-import cats.data.ValidatedNec
+import cats.data.{Validated, ValidatedNec}
 import cats.implicits._
 import com.softwaremill.sttp._
 import com.softwaremill.sttp.circe._
 import com.tle.beans.newentity.Entity
 import com.tle.common.i18n.CurrentLocale
-import com.tle.core.cloudproviders.CloudProviderHelper.{extractData, toInstance}
+import com.tle.core.cloudproviders.CloudProviderHelper._
 import com.tle.core.guice.Bind
 import com.tle.core.newentity.service.EntityService
 import com.tle.core.replicatedcache.ReplicatedCacheService
@@ -127,9 +127,9 @@ class CloudProviderRegistrationService {
           )
           val entity = applyValues(Entity.blankEntity(typeId), fields, newData)
 
-          tokenCache.invalidate(token)         // Invalidate the token so it can't be reused.
-          entityService.createOrUpdate(entity) // Persist the new Entity.
-          toInstance(entity, newData)          // Return the CloudProviderInstance representing the new Entity.
+          tokenCache.invalidate(token)                // Invalidate the token so it can't be reused.
+          entityService.createOrUpdate(entity)        // Persist the new Entity.
+          buildCloudProviderInstance(entity, newData) // Return the CloudProviderInstance representing the new Entity.
         }
       )
 
@@ -158,7 +158,7 @@ class CloudProviderRegistrationService {
         applyValues(entity, fields, validatedData)
 
         entityService.createOrUpdate(entity)
-        toInstance(entity, validatedData)
+        buildCloudProviderInstance(entity, validatedData)
       })
 
   /**
@@ -184,5 +184,50 @@ class CloudProviderRegistrationService {
       }
       .toList
       .sequence
+  }
+
+  /**
+    * Refresh and update a registered Cloud provider.
+    *
+    * @param entity Entity where the type must be 'cloudprovider'.
+    * @return Validated where left is an error message and right is an option of CloudProviderInstance.
+    */
+  def refreshRegistration(entity: Entity): Validated[String, Option[CloudProviderInstance]] = {
+    def refresh(
+        provider: CloudProviderInstance): Validated[String, Option[CloudProviderInstance]] = {
+      provider.serviceUrls
+        .get(RefreshServiceId)
+        .map(
+          refreshService =>
+            CloudProviderService
+              .serviceRequest(
+                refreshService,
+                provider,
+                Map.empty,
+                uri =>
+                  sttp
+                    .post(uri)
+                    .body(CloudProviderRefreshRequest(provider.id))
+                    .response(asJson[CloudProviderRegistration])
+              )
+              .map(
+                // Body is a nested Either.
+                _.body match {
+                  case Right(Right(registration)) =>
+                    // Update with the new registration. If errors happen during the update, combine all errors
+                    // into one string.
+                    editRegistered(entity, registration).leftMap(
+                      EntityValidation.collectErrors(_).mkString)
+
+                  case Right(Left(deserializationError)) => deserializationError.message.invalid
+                  case Left(error)                       => error.invalid
+                }
+              )
+              .unsafeRunSync
+        )
+        .sequence
+    }
+
+    refresh(entity) // Entity is implicitly converted CloudProviderInstance here!
   }
 }

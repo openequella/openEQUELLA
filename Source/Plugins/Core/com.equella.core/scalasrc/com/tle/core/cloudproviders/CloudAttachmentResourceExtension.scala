@@ -23,20 +23,17 @@ import java.nio.ByteBuffer
 import java.nio.channels.Channels
 import java.util
 import java.util.Collections
-
 import cats.data.OptionT
 import cats.effect.IO
 import com.softwaremill.sttp._
 import com.tle.beans.item.Item
 import com.tle.beans.item.attachments.{CustomAttachment, IAttachment}
 import com.tle.common.NameValue
-import com.tle.core.db.{DB, RunWithDB}
 import com.tle.legacy.LegacyGuice
 import com.tle.web.sections.equella.viewers.AbstractResourceViewer
 import com.tle.web.sections.render.TextLabel
 import com.tle.web.sections.standard.model.SimpleBookmark
-import com.tle.web.sections.standard.renderers.LinkTagRenderer
-import com.tle.web.sections.{Bookmark, BookmarkModifier, SectionId, SectionInfo}
+import com.tle.web.sections.{Bookmark, SectionId, SectionInfo}
 import com.tle.web.stream.{AbstractContentStream, ContentStream}
 import com.tle.web.viewable.ViewableItem
 import com.tle.web.viewitem.section.RootItemFileSection
@@ -84,20 +81,15 @@ case class CloudAttachmentViewableResource(info: SectionInfo,
   def cloudViewer(provider: CloudProviderInstance): String = {
     viewerId.filter(vId => viewerForId(provider, vId).isDefined).getOrElse("")
   }
-  lazy val providerO = RunWithDB.executeWithHibernate {
-    CloudProviderDB.get(fields.providerId).value
-  }
+  lazy val providerO = CloudProviderHelper.getByUuid(fields.providerId)
 
-  lazy val directLink = RunWithDB.executeWithHibernate {
-    (for {
-      cp <- OptionT.fromOption[DB](providerO)
-      viewerDeets <- OptionT.fromOption[DB](
-        serviceUriForViewer(cp, cloudViewer(cp)).filterNot(_._2.authenticated))
-      viewerUri <- OptionT {
-        CloudProviderService.serviceUri(cp, viewerDeets._2, uriParameters).map(_.toOption)
-      }
-    } yield viewerUri).value
-  }
+  lazy val directLink =
+    for {
+      cp          <- providerO
+      viewerDeets <- serviceUriForViewer(cp, cloudViewer(cp)).filterNot(_._2.authenticated)
+      viewerUri   <- CloudProviderService.serviceUri(cp, viewerDeets._2, uriParameters).toOption
+
+    } yield viewerUri
 
   def viewerMap(provider: CloudProviderInstance): Option[Map[String, Viewer]] =
     provider.viewers.get(fields.cloudType)
@@ -173,20 +165,18 @@ case class CloudAttachmentViewableResource(info: SectionInfo,
   override def hasContentStream: Boolean = directLink.isEmpty
 
   override def getContentStream: ContentStream = {
-    RunWithDB.executeWithHibernate {
-      (for {
-        provider <- OptionT.fromOption[DB](providerO)
-        viewerDetails <- OptionT.fromOption[DB] {
-          serviceUriForViewer(provider, cloudViewer(provider))
-        }
-        response <- OptionT.liftF(
-          CloudProviderService.serviceRequest(
-            viewerDetails._2,
-            provider,
-            uriParameters,
-            uri => sttp.get(uri).response(asStream[Stream[IO, ByteBuffer]])))
-      } yield response).value
-    } match {
+    (for {
+      provider <- OptionT.fromOption[IO](providerO)
+      viewerDetails <- OptionT.fromOption[IO] {
+        serviceUriForViewer(provider, cloudViewer(provider))
+      }
+      response <- OptionT.liftF(
+        CloudProviderService.serviceRequest(
+          viewerDetails._2,
+          provider,
+          uriParameters,
+          uri => sttp.get(uri).response(asStream[Stream[IO, ByteBuffer]])))
+    } yield response).value map {
       case None => EmptyResponseStream
       case Some(response) =>
         response.body match {
@@ -194,8 +184,7 @@ case class CloudAttachmentViewableResource(info: SectionInfo,
           case Left(failure)         => sys.error(failure)
         }
     }
-  }
-
+  }.unsafeRunSync
 }
 
 object MetaJsonFolder extends Folder[Any] {

@@ -18,7 +18,7 @@
 
 package com.tle.web.api.cloudprovider
 
-import cats.syntax.functor._
+import cats.data.Validated.{Invalid, Valid}
 import com.tle.common.institution.CurrentInstitution
 import com.tle.core.cloudproviders._
 import com.tle.core.validation.EntityValidation.collectErrors
@@ -131,9 +131,15 @@ class CloudProviderApi {
   @POST
   @Path("provider/{uuid}/refresh")
   @ApiOperation(value = "Refresh a cloud provider")
-  def refreshRegistration(@PathParam("uuid") uuid: UUID): Response = ApiHelper.runAndBuild {
+  def refreshRegistration(@PathParam("uuid") uuid: UUID): Response = {
     checkPermissions()
-    CloudProviderDB.refreshRegistration(uuid).value.as(Response.noContent())
+    Option(entityService.getByUuid(uuid.toString))
+      .map(registrationService.refreshRegistration)
+      .map {
+        case Invalid(error)   => Response.serverError.entity(error).build
+        case Valid(refreshed) => Response.ok(refreshed).build()
+      }
+      .getOrElse(resourceNotFound(s"Failed to find Cloud provider matching UUID: $uuid"))
   }
 
   @GET
