@@ -218,6 +218,22 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
   }
 
   /**
+   * Give the unique title for a search result, click on the attachments section to display all the
+   * attachments.
+   *
+   * @param itemTitle the unique title of an item to show the attachments for
+   */
+  public void expandAttachments(String itemTitle) {
+    WebElement titleLink = driver.findElement(By.linkText(itemTitle));
+    WebElement searchResultItem = titleLink.findElement(By.xpath("ancestor::li[@data-item-id]"));
+    String itemUuid = searchResultItem.getAttribute("data-item-id");
+    String itemVersion = searchResultItem.getAttribute("data-item-version");
+
+    String id = "attachments-list-" + itemUuid + ":" + itemVersion;
+    searchResultItem.findElement(By.id(id)).click();
+  }
+
+  /**
    * Waits until the search results contain an Attachment with a name that matches the given text.
    *
    * @param attachmentText the attachment name to be present in the search.

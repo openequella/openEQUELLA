@@ -418,7 +418,13 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
           case "gallery-video":
             return gallerySearch(videoGallerySearch, options);
           case "list":
-            return { from: "item-search", content: await searchItems(options) };
+            return {
+              from: "item-search",
+              content: await searchItems({
+                ...options,
+                includeAttachments: false,
+              }),
+            };
           default:
             throw new TypeError("Unexpected `displayMode` for searching");
         }

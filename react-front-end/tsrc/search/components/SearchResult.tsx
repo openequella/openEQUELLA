@@ -57,6 +57,7 @@ import {
   selectResource,
 } from "../../modules/LegacySelectionSessionModule";
 import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
+import { searchItemAttachments } from "../../modules/SearchModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
 import { buildOpenSummaryPageHandler } from "../SearchPageHelper";
@@ -114,6 +115,13 @@ export interface SearchResultProps {
     mimeType: string
   ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>;
   /**
+   * A function which can retrieve attachments for a specified item.
+   */
+  getItemAttachments?: (
+    uuid: string,
+    version: number
+  ) => Promise<OEQ.Search.Attachment[]>;
+  /**
    * The list of words which should be highlighted.
    */
   highlights: string[];
@@ -140,6 +148,7 @@ export const ItemDrmContext = React.createContext<{
 
 export default function SearchResult({
   getViewerDetails = getMimeTypeDefaultViewerDetails,
+  getItemAttachments = searchItemAttachments,
   highlights,
   item,
 }: SearchResultProps) {
@@ -385,6 +394,8 @@ export default function SearchResult({
         alignItems="flex-start"
         divider
         aria-label={searchResultStrings.ariaLabel}
+        data-item-id={uuid}
+        data-item-version={version}
       >
         <OEQThumb
           attachment={attachments[0]}
@@ -406,6 +417,7 @@ export default function SearchResult({
                 <SearchResultAttachmentsList
                   item={item}
                   getViewerDetails={getViewerDetails}
+                  getItemAttachments={getItemAttachments}
                 />
               </ItemDrmContext.Provider>
               {generateItemMetadata()}

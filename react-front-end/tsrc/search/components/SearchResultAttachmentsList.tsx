@@ -35,13 +35,17 @@ import { makeStyles } from "@material-ui/core/styles";
 import Tooltip from "@material-ui/core/Tooltip";
 import AttachFile from "@material-ui/icons/AttachFile";
 import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
+import ErrorIcon from "@material-ui/icons/Error";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import InsertDriveFile from "@material-ui/icons/InsertDriveFile";
 import Search from "@material-ui/icons/Search";
 import Warning from "@material-ui/icons/Warning";
+import { Skeleton } from "@material-ui/lab";
 import * as OEQ from "@openequella/rest-api-client";
+import { pipe } from "fp-ts/function";
+import * as NEA from "fp-ts/NonEmptyArray";
 import * as React from "react";
-import { SyntheticEvent, useContext, useEffect, useState } from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 import ItemAttachmentLink from "../../components/ItemAttachmentLink";
 import {
   getSearchPageAttachmentClass,
@@ -56,7 +60,6 @@ import {
   buildViewerConfigForAttachments,
 } from "../../modules/ViewerModule";
 import { languageStrings } from "../../util/langstrings";
-import { SearchPageRenderErrorContext } from "../SearchPage";
 import { ResourceSelector } from "./ResourceSelector";
 
 const {
@@ -83,10 +86,23 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export interface SearchResultAttachmentsListProps {
+  /**
+   * The item to display attachments for.
+   */
   item: OEQ.Search.SearchResultItem;
+  /**
+   * A function which can provide Viewer Details for attachments.
+   */
   getViewerDetails: (
     mimeType: string
   ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>;
+  /**
+   * A function which can retrieve attachments for a specified item.
+   */
+  getItemAttachments: (
+    uuid: string,
+    version: number
+  ) => Promise<OEQ.Search.Attachment[]>;
 }
 
 export const SearchResultAttachmentsList = ({
@@ -95,9 +111,10 @@ export const SearchResultAttachmentsList = ({
     version,
     displayOptions,
     keywordFoundInAttachment,
-    attachments = [],
+    attachmentCount,
   },
   getViewerDetails,
+  getItemAttachments,
 }: SearchResultAttachmentsListProps) => {
   const itemKey = `${uuid}/${version}`;
 
@@ -106,9 +123,7 @@ export const SearchResultAttachmentsList = ({
   const inSkinny = isSelectionSessionInSkinny();
   const inStructured = isSelectionSessionInStructured();
 
-  const { handleError } = useContext(SearchPageRenderErrorContext);
-
-  const [attachExpanded, setAttachExpanded] = useState(
+  const [attachExpanded, setAttachExpanded] = useState<boolean>(
     (inSelectionSession
       ? displayOptions?.integrationOpen
       : displayOptions?.standardOpen) ?? false
@@ -116,6 +131,8 @@ export const SearchResultAttachmentsList = ({
 
   const [attachmentsAndViewerConfigs, setAttachmentsAndViewerConfigs] =
     useState<AttachmentAndViewerConfig[]>([]);
+
+  const [error, setError] = useState<Error>();
 
   // In Selection Session, make each intact attachment draggable.
   useEffect(() => {
@@ -128,11 +145,16 @@ export const SearchResultAttachmentsList = ({
     }
   }, [attachmentsAndViewerConfigs, inStructured]);
 
-  // Responsible for determining the MIME type viewer for the provided attachments
+  // Responsible for retrieving the attachments and then determining the MIME type viewer for each.
   useEffect(() => {
     let mounted = true;
-    if (!attachments.length) {
-      // If there are no attachments, skip this effect
+    if (!attachExpanded) {
+      // clear any previous errors on collapse of attachments
+      setError(undefined);
+
+      return;
+    } else if (attachmentCount < 1 || attachmentsAndViewerConfigs.length > 0) {
+      // If there are no attachments or if they've already been processed, skip this effect
       return;
     }
 
@@ -154,6 +176,11 @@ export const SearchResultAttachmentsList = ({
 
     (async () => {
       try {
+        const attachments: OEQ.Search.Attachment[] = await getItemAttachments(
+          uuid,
+          version
+        );
+
         const attachmentsAndViewerDefinitions =
           await buildViewerConfigForAttachments(
             attachments,
@@ -165,7 +192,7 @@ export const SearchResultAttachmentsList = ({
           setAttachmentsAndViewerConfigs(attachmentsAndViewerDefinitions);
         }
       } catch (error) {
-        handleError(
+        setError(
           error instanceof Error
             ? error
             : new Error(`${stringGetViewerDetailsFailure}: ${error}`)
@@ -177,7 +204,16 @@ export const SearchResultAttachmentsList = ({
       // Short circuit if this component is unmounted before all its comms are done.
       mounted = false;
     };
-  }, [attachments, getViewerDetails, handleError, uuid, version]);
+  }, [
+    attachExpanded,
+    attachmentCount,
+    attachmentsAndViewerConfigs.length,
+    getItemAttachments,
+    getViewerDetails,
+    setError,
+    uuid,
+    version,
+  ]);
 
   const handleAttachmentPanelClick = (event: SyntheticEvent) => {
     /** prevents the SearchResult onClick from firing when attachment panel is clicked */
@@ -198,6 +234,21 @@ export const SearchResultAttachmentsList = ({
 
   const isAttachmentSelectable = (broken: boolean) =>
     inSelectionSession && !broken;
+
+  const buildSkeletonList = (howMany: number): JSX.Element[] =>
+    pipe(
+      NEA.range(1, howMany),
+      NEA.map((id) => (
+        <ListItem key={id}>
+          <ListItemIcon>
+            <Skeleton variant="rect" width={24} height={24} animation="wave" />
+          </ListItemIcon>
+          <ListItemText>
+            <Skeleton variant="text" animation="wave" />
+          </ListItemText>
+        </ListItem>
+      ))
+    );
 
   const attachmentsList = attachmentsAndViewerConfigs.map(
     (attachmentAndViewerConfig: AttachmentAndViewerConfig) => {
@@ -244,10 +295,32 @@ export const SearchResultAttachmentsList = ({
     }
   );
 
+  const buildErrorListItem = (e: Error) => (
+    <ListItem>
+      <ListItemIcon>
+        <ErrorIcon color="secondary" />
+      </ListItemIcon>
+      <ListItemText color="primary" primary={e.message} />
+    </ListItem>
+  );
+
+  const buildAttachmentList = (): JSX.Element => {
+    const items =
+      attachmentsList.length > 0
+        ? attachmentsList
+        : buildSkeletonList(attachmentCount);
+
+    return (
+      <List disablePadding className={classes.attachmentListItem}>
+        {error ? buildErrorListItem(error) : items}
+      </List>
+    );
+  };
+
   const accordionText = (
     <Typography component="div">
       {searchResultStrings.attachments}&nbsp;&nbsp;
-      <Chip label={attachments.length} size="small" color="primary" />
+      <Chip label={attachmentCount} size="small" color="primary" />
     </Typography>
   );
 
@@ -305,8 +378,9 @@ export const SearchResultAttachmentsList = ({
     </Badge>
   );
 
-  return attachmentsList.length > 0 ? (
+  return attachmentCount > 0 ? (
     <Accordion
+      id={`attachments-list-${uuid}:${version}`}
       className={classes.attachmentExpander}
       expanded={attachExpanded}
       onClick={(event) => handleAttachmentPanelClick(event)}
@@ -318,9 +392,7 @@ export const SearchResultAttachmentsList = ({
         </Grid>
       </AccordionSummary>
       <AccordionDetails>
-        <List disablePadding className={classes.attachmentListItem}>
-          {attachmentsList}
-        </List>
+        {attachExpanded && buildAttachmentList()}
       </AccordionDetails>
     </Accordion>
   ) : null;
