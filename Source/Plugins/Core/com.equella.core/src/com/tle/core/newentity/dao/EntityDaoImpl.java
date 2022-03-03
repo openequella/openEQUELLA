@@ -21,6 +21,7 @@ package com.tle.core.newentity.dao;
 import com.tle.beans.Institution;
 import com.tle.beans.newentity.Entity;
 import com.tle.beans.newentity.EntityID;
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericDaoImpl;
 import java.util.List;
@@ -35,13 +36,25 @@ public class EntityDaoImpl extends GenericDaoImpl<Entity, EntityID> implements E
   }
 
   @Override
-  public List<Entity> getAll(Institution institution) {
+  public List<Entity> getAllByInstitution(Institution institution) {
     return getHibernateTemplate()
         .execute(
             session ->
                 session
                     .createQuery("from Entity WHERE id.inst_id = :institutionId")
                     .setParameter("institutionId", institution.getDatabaseId())
+                    .getResultList());
+  }
+
+  @Override
+  public List<Entity> getAllByType(String typeId) {
+    return getHibernateTemplate()
+        .execute(
+            session ->
+                session
+                    .getNamedQuery("getAllByType")
+                    .setParameter("institutionId", CurrentInstitution.get().getDatabaseId())
+                    .setParameter("typeId", typeId)
                     .getResultList());
   }
 

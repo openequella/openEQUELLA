@@ -20,21 +20,16 @@ package com.tle.core.cloudproviders
 
 import java.util.concurrent.TimeUnit
 import java.util.{Locale, UUID}
-
-import cats.data.Validated.{Invalid, Valid}
 import cats.data.{OptionT, ValidatedNec}
-import cats.effect.{IO, LiftIO}
-import cats.syntax.applicative._
+import cats.effect.IO
 import cats.syntax.apply._
-import cats.syntax.validated._
 import com.softwaremill.sttp._
 import com.softwaremill.sttp.circe._
 import com.tle.core.db._
 import com.tle.core.db.dao.{EntityDB, EntityDBExt}
 import com.tle.core.db.tables.OEQEntity
-import com.tle.core.validation.{EntityValidation, OEQEntityEdits}
+import com.tle.core.validation.{EntityStdEdits, EntityValidation}
 import com.tle.legacy.LegacyGuice
-import com.tle.web.DebugSettings
 import fs2.Stream
 import io.circe.generic.semiauto._
 import io.doolse.simpledba.Iso
@@ -103,65 +98,26 @@ object CloudProviderDB {
     )
   }
 
-  case class ProviderStdEdits(reg: CloudProviderRegistration) extends OEQEntityEdits {
-    override def name               = reg.name
-    override def nameStrings        = None
-    override def description        = reg.description
-    override def descriptionStrings = None
-  }
-
   def validateRegistrationFields(oeq: OEQEntity,
                                  reg: CloudProviderRegistration,
                                  oeqAuth: CloudOAuthCredentials,
                                  locale: Locale): CloudProviderVal[CloudProviderDB] = {
     EntityValidation.nonBlankString(FieldVendorId, reg.vendorId) *>
-      EntityValidation.standardValidation(ProviderStdEdits(reg), oeq, locale).map { newOeq =>
-        val data = CloudProviderData(
-          baseUrl = reg.baseUrl,
-          iconUrl = reg.iconUrl,
-          vendorId = reg.vendorId,
-          providerAuth = reg.providerAuth,
-          oeqAuth = oeqAuth,
-          serviceUrls = reg.serviceUrls,
-          viewers = reg.viewers
-        )
-        CloudProviderDB(newOeq, data)
-      }
+      EntityValidation
+        .standardValidation(EntityStdEdits(name = reg.name, description = reg.description), locale)
+        .map { _ =>
+          val data = CloudProviderData(
+            baseUrl = reg.baseUrl,
+            iconUrl = reg.iconUrl,
+            vendorId = reg.vendorId,
+            providerAuth = reg.providerAuth,
+            oeqAuth = oeqAuth,
+            serviceUrls = reg.serviceUrls,
+            viewers = reg.viewers
+          )
+          CloudProviderDB(oeq, data)
+        }
   }
-
-  def validToken(regToken: String): DB[CloudProviderVal[Unit]] = {
-    LiftIO[DB].liftIO(IO {
-      if (!tokenCache.get(regToken).isPresent)
-        EntityValidation("token", "invalid").invalidNec
-      else {
-        tokenCache.invalidate(regToken)
-        ().validNec
-      }
-    })
-  }
-
-  def register(
-      regToken: String,
-      registration: CloudProviderRegistration): DB[CloudProviderVal[CloudProviderInstance]] =
-    validToken(regToken).flatMap {
-      case Valid(_) =>
-        for {
-          oeq    <- EntityDB.newEntity(UUID.randomUUID())
-          locale <- getContext.map(_.locale)
-          validated = validateRegistrationFields(oeq,
-                                                 registration,
-                                                 CloudOAuthCredentials.random(),
-                                                 locale)
-          _ <- validated.traverse(cdb => flushDB(EntityDB.create(cdb)))
-        } yield validated.map(toInstance)
-      case Invalid(e) => e.invalid[CloudProviderInstance].pure[DB]
-    }
-
-  def editRegistered(id: UUID, registration: CloudProviderRegistration)
-    : OptionT[DB, CloudProviderVal[CloudProviderInstance]] =
-    EntityDB.readOne(id).semiflatMap { oeq =>
-      doEdit(oeq, registration)
-    }
 
   private def doEdit(
       oeq: CloudProviderDB,
@@ -200,34 +156,9 @@ object CloudProviderDB {
       }
     } yield validated
 
-  val createRegistrationToken: DB[String] = {
-    LiftIO[DB].liftIO(IO {
-      val newToken = UUID.randomUUID().toString
-      tokenCache.put(newToken, newToken)
-      newToken
-    })
-  }
-
   val readAll: Stream[DB, CloudProviderInstance] = {
     EntityDB.readAll[CloudProviderDB].map(toInstance)
   }
-
-  val allProviders: Stream[DB, CloudProviderDetails] = {
-    EntityDB.readAll[CloudProviderDB].map { cp =>
-      val oeq = cp.entity
-      CloudProviderDetails(
-        id = oeq.uuid.id,
-        name = oeq.name,
-        description = oeq.description,
-        vendorId = cp.data.vendorId,
-        iconUrl = cp.data.iconUrl,
-        canRefresh = DebugSettings.isDevMode && cp.data.serviceUrls.contains(RefreshServiceId)
-      )
-    }
-  }
-
-  def deleteRegistration(id: UUID): DB[Unit] =
-    EntityDB.delete(id).compile.drain
 
   def get(id: UUID): OptionT[DB, CloudProviderInstance] = {
     EntityDB.readOne(id).map(toInstance)

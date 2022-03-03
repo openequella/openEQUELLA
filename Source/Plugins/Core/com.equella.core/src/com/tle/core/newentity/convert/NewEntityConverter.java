@@ -54,7 +54,7 @@ public class NewEntityConverter extends AbstractJsonConverter<Object> {
   public void doExport(
       TemporaryFileHandle staging, Institution institution, ConverterParams callback)
       throws IOException {
-    for (Entity entity : entityService.getAllEntity(institution)) {
+    for (Entity entity : entityService.getAllByInstitution(institution)) {
       String uuid = entity.id().uuid();
       String typeId = entity.typeid();
 

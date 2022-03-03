@@ -20,17 +20,29 @@ package com.tle.core.newentity.service
 
 import com.tle.beans.Institution
 import com.tle.beans.newentity.Entity
-
 import java.time.Instant
 
 trait EntityService {
+
+  /**
+    * Get an Entity by UUID limited to those in the current institution.
+    *
+    * @param uuid UUID of the Entity.
+    */
+  def getByUuid(uuid: String): Entity
 
   /**
     * Get all the Entity of an Institution.
     *
     * @param institution The Institution from where to get the list of Entity.
     */
-  def getAllEntity(institution: Institution): java.util.List[Entity]
+  def getAllByInstitution(institution: Institution): java.util.List[Entity]
+
+  /**
+    * Get a list of Entity by Entity type limited to those in the current institution.
+    * @param typeId The type representing an Entity (e.g. cloudprovider)
+    */
+  def getAllByType(typeId: String): java.util.List[Entity]
 
   /**
     * Create a new Entity or update an existing entity.
@@ -60,6 +72,22 @@ trait EntityService {
                      owner: String,
                      data: String,
                      institution: Institution): Unit
+
+  /**
+    * Create a new Entity or update an existing entity.
+    *
+    *
+    *
+    * @param entity The Entity to be created or updated.
+    */
+  def createOrUpdate(entity: Entity): Unit
+
+  /**
+    * Delete an Entity.
+    *
+    * @param entity The Entity to be delted.
+    */
+  def delete(entity: Entity): Unit
 
   /**
     * Delete all the Entity of an Institution.
