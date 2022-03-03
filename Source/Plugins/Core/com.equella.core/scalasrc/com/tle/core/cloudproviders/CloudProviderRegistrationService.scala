@@ -79,7 +79,7 @@ class CloudProviderRegistrationService {
     entity.modified = Instant.now
     entity.name = edits.name
     entity.nameStrings = edits.nameStrings.asJson.noSpaces
-    entity.description = edits.description.getOrElse("")
+    entity.description = edits.description.orNull
     entity.descriptionStrings = edits.descriptionStrings.map(_.asJson.noSpaces).orNull
 
     entity
