@@ -20,7 +20,7 @@ package com.tle.core.validation
 
 import cats.data.{NonEmptyChain, Validated, ValidatedNec}
 import cats.implicits._
-import com.tle.core.db.types.LocaleStrings
+import com.tle.core.i18n.LocaleStrings
 import java.util.Locale
 
 /**

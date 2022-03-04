@@ -26,7 +26,6 @@ val fs2Version       = "2.4.4"
 val guiceVersion     = "3.0"
 val jsassVersion     = "5.10.4"
 val jsoupVersion     = "1.14.3"
-val simpledbaVersion = "0.1.9"
 val springVersion    = "5.3.16"
 val sttpVersion      = "1.7.2"
 val tikaVersion      = "2.3.0"
@@ -43,8 +42,6 @@ libraryDependencies ++= Seq(
   "com.softwaremill.sttp"          %% "core"                          % sttpVersion,
   "com.softwaremill.sttp"          %% "async-http-client-backend-fs2" % sttpVersion,
   "com.softwaremill.sttp"          %% "circe"                         % sttpVersion,
-  "io.github.doolse"               %% "simpledba-jdbc"                % simpledbaVersion,
-  "io.github.doolse"               %% "simpledba-circe"               % simpledbaVersion,
   "cglib"                          % "cglib"                          % "3.3.0",
   "com.fasterxml.jackson.core"     % "jackson-core"                   % jacksonVersion,
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"        % jacksonVersion,

@@ -16,15 +16,14 @@
  * limitations under the License.
  */
 
-package com.tle.core.db.types
-import java.util.Locale
+package com.tle.core.i18n
 
+import java.util.Locale
 import com.tle.common.i18n.LangUtils
 import io.circe.{Decoder, Encoder}
-import io.doolse.simpledba.circe._
 import scala.collection.JavaConverters._
 
-case class LocaleStrings(strings: Map[String, String]) extends JsonColumn {
+case class LocaleStrings(strings: Map[String, String]) {
   def stringsOrNone: Option[Map[String, String]] =
     if (strings.size > 1) {
       Some(strings)
@@ -39,7 +38,6 @@ object LocaleStrings {
   val empty        = LocaleStrings(Map.empty)
   implicit val enc = Encoder.encodeMap[String, String].contramap[LocaleStrings](_.strings)
   implicit val dec = Decoder.decodeMap[String, String].map(LocaleStrings.apply)
-  implicit val iso = circeIso(empty)
 
   def fromStrings(
       single: String,

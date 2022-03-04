@@ -22,11 +22,9 @@ import java.nio.ByteBuffer
 import java.time.Instant
 import java.util.concurrent._
 import cats.effect.IO
-import cats.syntax.applicative._
 import com.softwaremill.sttp._
 import com.softwaremill.sttp.circe._
 import com.tle.common.institution.CurrentInstitution
-import com.tle.core.db._
 import com.tle.web.oauth.OAuthWebConstants
 import fs2.Stream
 import io.circe.generic.semiauto._
@@ -35,7 +33,6 @@ import com.tle.core.httpclient._
 import com.tle.core.oauthclient.OAuthClientService.{replicatedCache, responseToState}
 import com.tle.core.oauthclient.OAuthTokenCacheHelper.{buildCacheKey, cacheId, requestToken}
 import com.tle.legacy.LegacyGuice
-import java.util.Date
 
 object OAuthTokenType extends Enumeration {
   val Bearer, EquellaApi = Value
