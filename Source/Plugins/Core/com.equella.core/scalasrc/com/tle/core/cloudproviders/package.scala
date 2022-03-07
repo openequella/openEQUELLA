@@ -85,6 +85,10 @@ package object cloudproviders {
                                serviceUrls: Map[String, ServiceUrl],
                                viewers: Map[String, Map[String, Viewer]])
 
+  /**
+    * Object to provide Circe encoders and decoders for the types of CloudProviderData,
+    * Viewer, ServiceUrl and CloudOAuthCredentials.
+    */
   object CloudProviderData {
     implicit val decoderV = deriveDecoder[Viewer]
     implicit val encoderV = deriveEncoder[Viewer]

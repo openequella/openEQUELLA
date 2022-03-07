@@ -214,8 +214,7 @@ class CloudProviderRegistrationService {
                 // Body is a nested Either.
                 _.body match {
                   case Right(Right(registration)) =>
-                    // Update with the new registration. If errors happen during the update, combine all errors
-                    // into one string.
+                    // Update with the new registration. If errors happen during the update, combine all errors into one string.
                     editRegistered(entity, registration).leftMap(
                       EntityValidation.collectErrors(_).mkString)
 
