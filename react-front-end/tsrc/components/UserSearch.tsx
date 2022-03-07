@@ -63,6 +63,8 @@ export interface UserSearchProps {
   listHeight?: number;
   /** Callback triggered when a user entry is clicked on. */
   onSelect: (username: OEQ.UserQuery.UserDetails) => void;
+  /** Callback triggered when an api error is raised, except 404 error */
+  onError?: (error: OEQ.Errors.ApiError) => void;
   /** A list of group UUIDs to filter the users by. */
   groupFilter?: ReadonlySet<string>;
   /** Function which will provide the list of users. */
@@ -87,6 +89,7 @@ const UserSearch = ({
   id,
   listHeight,
   onSelect,
+  onError,
   groupFilter,
   userListProvider = (query?: string, groupFilter?: ReadonlySet<string>) =>
     UserModule.listUsers(query ? `${query}*` : undefined, groupFilter),
@@ -101,6 +104,7 @@ const UserSearch = ({
     OEQ.Common.UuidString | undefined
   >(undefined);
   const [hasSearched, setHasSearched] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<String | null>(null);
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
 
   useEffect(() => {
@@ -134,16 +138,26 @@ const UserSearch = ({
 
   const handleOnSearch = () => {
     setShowSpinner(true);
+    setErrorMessage(null);
     userListProvider(query, groupFilter)
       .then((userDetails: OEQ.UserQuery.UserDetails[]) => {
-        setHasSearched(true);
         setUsers(
           userDetails.sort((a, b) =>
             a.username.toLowerCase().localeCompare(b.username.toLowerCase())
           )
         );
       })
-      .finally(() => setShowSpinner(false));
+      .catch((error: OEQ.Errors.ApiError) => {
+        setUsers([]);
+        if (error.status !== 404) {
+          setErrorMessage(error.message);
+          onError?.(error);
+        }
+      })
+      .finally(() => {
+        setShowSpinner(false);
+        setHasSearched(true);
+      });
   };
 
   const handleQueryFieldKeypress = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -253,10 +267,12 @@ const UserSearch = ({
         ) : (
           <ListItem>
             <ListItemIcon>
-              <ErrorOutline />
+              <ErrorOutline color={errorMessage ? "secondary" : "inherit"} />
             </ListItemIcon>
             <ListItemText
-              secondary={sprintf(failedToFindUsersMessage, query)}
+              secondary={
+                errorMessage ?? sprintf(failedToFindUsersMessage, query)
+              }
             />
           </ListItem>
         )}
