@@ -18,29 +18,18 @@
 
 package com.tle.web.api
 
-import cats.data.{NonEmptyChain, OptionT, Validated}
+import cats.data.{NonEmptyChain, Validated}
 import com.tle.beans.entity.BaseEntity
-import com.tle.core.db.{DB, RunWithDB}
 import com.tle.core.i18n.TextBundle
 import com.tle.legacy.LegacyGuice
-import fs2.Stream
 import javax.ws.rs.core.Response.{ResponseBuilder, Status}
 import javax.ws.rs.core.{Response, UriBuilder}
 
 object ApiHelper {
   private val bundleCache = LegacyGuice.bundleCache
 
-  def runAndBuild(db: DB[ResponseBuilder]): Response =
-    RunWithDB.execute(db.map(_.build()))
-
   def entityOrNotFound[A](o: Option[A]): ResponseBuilder =
     o.fold(Response.status(Status.NOT_FOUND))(Response.ok(_))
-
-  def entityOrNotFoundDB[A](db: OptionT[DB, A]): DB[ResponseBuilder] =
-    db.value.map(entityOrNotFound)
-
-  def allEntities[A](stream: Stream[DB, A]): DB[EntityPaging[A]] =
-    stream.compile.toVector.map(EntityPaging.allResults)
 
   def validationOrOk[A](validated: Validated[NonEmptyChain[A], Boolean]): ResponseBuilder =
     validationOr(validated.map(ok => if (ok) Response.ok() else Response.status(Status.NOT_FOUND)))

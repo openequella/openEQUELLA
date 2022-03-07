@@ -18,11 +18,10 @@
 
 package com.tle.web.api.cloudprovider
 
-import cats.data.NonEmptyChain
-import cats.syntax.functor._
+import cats.data.Validated.{Invalid, Valid}
 import com.tle.common.institution.CurrentInstitution
 import com.tle.core.cloudproviders._
-import com.tle.core.validation.EntityValidation
+import com.tle.core.validation.EntityValidation.collectErrors
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.ApiErrorResponse.{badRequest, resourceNotFound}
 import com.tle.web.api.settings.SettingsApiHelper.ensureEditSystem
@@ -50,9 +49,6 @@ class CloudProviderApi {
 
   val registrationService = LegacyGuice.cloudProviderRegistrationService
   val entityService       = LegacyGuice.entityService
-
-  private def collectErrors(validations: NonEmptyChain[EntityValidation]): List[String] =
-    validations.toNonEmptyList.toList.map(_.toString)
 
   @POST
   @Path("register")
@@ -135,9 +131,15 @@ class CloudProviderApi {
   @POST
   @Path("provider/{uuid}/refresh")
   @ApiOperation(value = "Refresh a cloud provider")
-  def refreshRegistration(@PathParam("uuid") uuid: UUID): Response = ApiHelper.runAndBuild {
+  def refreshRegistration(@PathParam("uuid") uuid: UUID): Response = {
     checkPermissions()
-    CloudProviderDB.refreshRegistration(uuid).value.as(Response.noContent())
+    Option(entityService.getByUuid(uuid.toString))
+      .map(registrationService.refreshRegistration)
+      .map {
+        case Invalid(error)   => Response.serverError.entity(error.mkString("\n")).build
+        case Valid(refreshed) => Response.ok(refreshed).build()
+      }
+      .getOrElse(resourceNotFound(s"Failed to find Cloud provider matching UUID: $uuid"))
   }
 
   @GET

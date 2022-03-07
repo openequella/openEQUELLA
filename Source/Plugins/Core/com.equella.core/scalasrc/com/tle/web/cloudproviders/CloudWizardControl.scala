@@ -18,24 +18,18 @@
 
 package com.tle.web.cloudproviders
 
-import java.util.UUID
-
-import cats.data.OptionT
 import com.dytech.edge.wizard.beans.control.CustomControl
 import com.softwaremill.sttp.Uri
 import com.tle.common.usermanagement.user.CurrentUser
-import com.tle.core.cloudproviders.{CloudProviderDB, CloudProviderInstance, CloudProviderService}
-import com.tle.core.db.{DB, RunWithDB}
+import com.tle.core.cloudproviders.{
+  CloudProviderHelper,
+  CloudProviderInstance,
+  CloudProviderService
+}
 import com.tle.core.wizard.controls.HTMLControl
 import com.tle.web.api.item.equella.interfaces.beans.EquellaAttachmentBean
 import com.tle.web.resources.ResourcesService
-import com.tle.web.sections.events.{
-  ParametersEvent,
-  ParametersEventListener,
-  PreRenderContext,
-  RenderContext,
-  RenderEventContext
-}
+import com.tle.web.sections.events._
 import com.tle.web.sections.js.generic.Js
 import com.tle.web.sections.js.generic.expression.{
   ElementByIdExpression,
@@ -45,13 +39,14 @@ import com.tle.web.sections.js.generic.expression.{
 import com.tle.web.sections.js.generic.function.{ExternallyDefinedFunction, IncludeFile}
 import com.tle.web.sections.js.generic.statement.DeclarationStatement
 import com.tle.web.sections.js.{ElementId, JSExpression}
-import com.tle.web.sections.render.{CssInclude, TagState}
+import com.tle.web.sections.render.TagState
 import com.tle.web.sections.standard.renderers.DivRenderer
 import com.tle.web.sections.{SectionInfo, SectionResult}
 import com.tle.web.wizard.controls.{AbstractWebControl, WebControl, WebControlModel}
 import com.tle.web.wizard.render.WizardFreemarkerFactory
 import com.tle.web.wizard.{BrokenWebControl, WizardStateInterface}
 
+import java.util.UUID
 import scala.collection.JavaConverters._
 
 object CloudWizardControl {
@@ -94,16 +89,12 @@ object CloudWizardControl {
   def cloudControl(controlDef: HTMLControl): WebControl = {
     controlDef.getControlBean.getClassType match {
       case ProviderRegex(providerIds, controlId) =>
-        val providerId = UUID.fromString(providerIds)
-        RunWithDB.execute {
-          (for {
-            provider   <- CloudProviderDB.get(providerId)
-            serviceUri <- OptionT.fromOption[DB](provider.serviceUrls.get(s"control_$controlId"))
-            uri <- OptionT(
-              CloudProviderService.serviceUri(provider, serviceUri, Map.empty).map(_.toOption))
-          } yield new CloudWizardControl(uri, controlDef, provider, controlId))
-            .getOrElse(new BrokenWebControl(controlDef))
-        }
+        (for {
+          provider   <- CloudProviderHelper.getByUuid(UUID.fromString(providerIds))
+          serviceUri <- provider.serviceUrls.get(s"control_$controlId")
+          uri        <- CloudProviderService.serviceUri(provider, serviceUri, Map.empty).toOption
+        } yield new CloudWizardControl(uri, controlDef, provider, controlId))
+          .getOrElse(new BrokenWebControl(controlDef))
       case _ => null
     }
   }

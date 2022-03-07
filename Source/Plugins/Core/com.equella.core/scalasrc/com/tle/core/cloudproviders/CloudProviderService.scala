@@ -18,27 +18,22 @@
 
 package com.tle.core.cloudproviders
 
-import java.nio.ByteBuffer
-import java.time.Instant
-import java.util
-import java.util.Collections
-import java.util.function.Consumer
-
 import cats.effect.IO
-import cats.syntax.applicative._
-import cats.syntax.either._
+import cats.implicits._
 import com.softwaremill.sttp._
 import com.softwaremill.sttp.circe._
 import com.tle.beans.cloudproviders.{CloudControlDefinition, ProviderControlDefinition}
 import com.tle.beans.item.attachments.{CustomAttachment, UnmodifiableAttachments}
-import com.tle.core.cache.{Cacheable, DBCacheBuilder}
-import com.tle.core.db._
+import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.httpclient._
 import com.tle.core.oauthclient.OAuthClientService
+import com.tle.legacy.LegacyGuice
 import fs2.Stream
 import org.apache.commons.lang.RandomStringUtils
 import org.slf4j.LoggerFactory
-
+import java.nio.ByteBuffer
+import java.util.Collections
+import java.util.concurrent.TimeUnit
 import scala.collection.JavaConverters._
 
 sealed trait CloudProviderError
@@ -57,6 +52,9 @@ object CloudProviderService {
   final val ControlsServiceId   = "controls"
   final val CloudAttachmentType = "cloud"
 
+  val controlListCache = LegacyGuice.replicatedCacheService
+    .getCache[List[CloudControlDefinition]]("cloudControlLists", 1000, 1, TimeUnit.MINUTES)
+
   def tokenUrlForProvider(provider: CloudProviderInstance): IO[Uri] = {
     provider.serviceUrls
       .get(OAuthServiceId)
@@ -69,106 +67,91 @@ object CloudProviderService {
 
   def serviceUri(provider: CloudProviderInstance,
                  serviceUri: ServiceUrl,
-                 params: Map[String, Any]): DB[Either[UriParseError, Uri]] = {
-    contextParams.map { ctxParams =>
-      UriTemplateService.replaceVariables(serviceUri.url, provider.baseUrl, ctxParams ++ params)
-    }
+                 params: Map[String, Any]): Either[UriParseError, Uri] = {
+    UriTemplateService.replaceVariables(serviceUri.url, provider.baseUrl, contextParams ++ params)
   }
 
-  def contextParams: DB[Map[String, Any]] =
-    getContext.map(c => Map("userid" -> c.user.getUserBean.getUniqueID))
+  // Use Any probably because this map will later concat with other maps which have unknown type for values.
+  def contextParams: Map[String, Any] = Map("userid" -> CurrentUser.getDetails.getUniqueID)
 
   def serviceRequest[T](serviceUri: ServiceUrl,
                         provider: CloudProviderInstance,
                         params: Map[String, Any],
-                        f: Uri => Request[T, Stream[IO, ByteBuffer]]): DB[Response[T]] =
+                        f: Uri => Request[T, Stream[IO, ByteBuffer]]): IO[Response[T]] = {
     for {
-      cparams <- contextParams
-      uri <- dbLiftIO.liftIO {
-        IO.fromEither(
-          UriTemplateService.replaceVariables(serviceUri.url, provider.baseUrl, cparams ++ params))
-      }
+      uri <- IO.fromEither(
+        UriTemplateService
+          .replaceVariables(serviceUri.url, provider.baseUrl, contextParams ++ params))
+
       req            = f(uri)
       requestContext = "[" + RandomStringUtils.randomAlphanumeric(6) + "] provider: " + provider.id + ", vendor: " + provider.vendorId
       _ = Logger.debug(
         requestContext + ", method: " + req.method.m + ", request: " + uri.toString.split('?')(0))
       auth = provider.providerAuth
       response <- if (serviceUri.authenticated) {
-        dbLiftIO.liftIO(tokenUrlForProvider(provider)).flatMap { oauthUrl =>
+        tokenUrlForProvider(provider).map { oauthUrl =>
           OAuthClientService
             .authorizedRequest(oauthUrl.toString, auth.clientId, auth.clientSecret, req)
         }
-      } else dbLiftIO.liftIO(req.send())
+      } else req.send()
 
     } yield {
       Logger.debug(requestContext + ", response status: " + response.code)
       response
     }
+  }
 
-  case class ControlListCacheValue(
-      expiry: Instant,
-      result: Either[CloudProviderError, Iterable[CloudControlDefinition]])
-
-  object ControlListCache extends Cacheable[CloudProviderInstance, ControlListCacheValue] {
-    override def cacheId: String = "cloudControlLists"
-
-    override def key(userContext: UserContext, v: CloudProviderInstance): String =
-      s"${userContext.inst.getUniqueId}_${v.id}"
-
-    def withTimeout(result: Either[CloudProviderError, Iterable[CloudControlDefinition]])
-      : ControlListCacheValue = {
-      val timeoutSeconds =
-        if (result.isLeft) InvalidControlRetrySeconds else ControlCacheValidSeconds
-      ControlListCacheValue(Instant.now().plusSeconds(timeoutSeconds), result)
-    }
-    override def query: CloudProviderInstance => DB[ControlListCacheValue] = provider => {
-      provider.serviceUrls.get(ControlsServiceId) match {
-        case None => withTimeout(Right(Iterable.empty)).pure[DB]
-        case Some(controlsService) =>
-          dbAttempt {
-            serviceRequest(
-              controlsService,
-              provider,
-              Map(),
-              u => sttp.get(u).response(asJson[Map[String, ProviderControlDefinition]]))
-          }.map { responseOrError =>
-            withTimeout {
-              for {
-                response   <- responseOrError.leftMap(IOError)
-                controlMap <- response.body.leftMap(HttpError).flatMap(_.leftMap(JSONError))
-              } yield {
-                controlMap.map {
-                  case (controlId, config) =>
-                    CloudControlDefinition(provider.id,
-                                           controlId,
-                                           config.name,
-                                           config.iconUrl.getOrElse("/icons/control.gif"),
-                                           config.configuration)
-                }
-              }
+  private def getControlDefinition(
+      provider: CloudProviderInstance): Either[String, List[CloudControlDefinition]] = {
+    provider.serviceUrls.get(ControlsServiceId) match {
+      case None => Right(List.empty)
+      case Some(controlsService) => {
+        serviceRequest(
+          controlsService,
+          provider,
+          Map(),
+          u => sttp.get(u).response(asJson[Map[String, ProviderControlDefinition]])).attempt
+          .map { responseOrError =>
+            for {
+              response   <- responseOrError.leftMap(IOError)
+              controlMap <- response.body.leftMap(HttpError).flatMap(_.leftMap(JSONError))
+            } yield {
+              controlMap.map {
+                case (controlId, config) =>
+                  CloudControlDefinition(provider.id,
+                                         controlId,
+                                         config.name,
+                                         config.iconUrl.getOrElse("/icons/control.gif"),
+                                         config.configuration)
+              }.toList
             }
           }
+          .map(_.leftMap(err =>
+            s"Failed to retrieve the Cloud Control definitions of ${provider.name} due to $err"))
+          .unsafeRunSync
       }
     }
   }
 
-  val controlListCache = DBCacheBuilder.buildCache(ControlListCache)
+  def queryControls: List[CloudControlDefinition] = {
+    val cacheKey = "cloudControlDefs"
 
-  def queryControls(): DB[Vector[CloudControlDefinition]] =
-    CloudProviderDB.readAll
-      .evalMap { cp =>
-        controlListCache
-          .getIfValid(cp, _.expiry.isAfter(Instant.now()))
-          .map(cv => cp.name -> cv.result)
+    def controls: List[CloudControlDefinition] =
+      CloudProviderHelper.getAll
+        .map(getControlDefinition)
+        .separate match {
+        case (errors: List[String], cloudControlDefs: List[List[CloudControlDefinition]]) =>
+          errors.foreach(Logger.error) // Log all the errors captured during the whole process.
+          val defs = cloudControlDefs.flatten // Put all the control definitions in one list.
+          controlListCache.put(cacheKey, defs) // Save the definition list to cache and return it.
+          defs
+        case _ =>
+          Logger.error("Unknown type returned when retrieving CloudControlDefinition")
+          List.empty
       }
-      .flatMap {
-        case (name, Left(error)) =>
-          Logger.info(s"Failed querying $name - $error")
-          Stream.empty
-        case (_, Right(controls)) => Stream.emits(controls.toSeq)
-      }
-      .compile
-      .toVector
+
+    controlListCache.get(cacheKey).or(() => controls)
+  }
 
   def collectBodyText(attachments: UnmodifiableAttachments): String = {
     attachments

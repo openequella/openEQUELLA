@@ -23,8 +23,11 @@ import java.time.{Duration, Instant}
 import java.util.{Date, UUID}
 import com.tle.common.oauth.beans.{OAuthClient, OAuthToken}
 import com.tle.common.usermanagement.user.{ModifiableUserState, UserState}
-import com.tle.core.cloudproviders.{CloudOAuthCredentials, CloudProviderDB, CloudProviderUserState}
-import com.tle.core.db._
+import com.tle.core.cloudproviders.{
+  CloudOAuthCredentials,
+  CloudProviderHelper,
+  CloudProviderUserState
+}
 import com.tle.core.i18n.CoreStrings
 import com.tle.core.oauth.OAuthConstants
 import com.tle.legacy.LegacyGuice
@@ -88,16 +91,10 @@ object OAuthServerAccess {
         StdOAuthClient(client): IOAuthClient
       }
       .orElse {
-        RunWithDB
-          .execute {
-            CloudProviderDB.readAll
-              .collectFirst {
-                case client if client.oeqAuth.clientId == clientId =>
-                  CloudProviderClient(client.id, client.oeqAuth)
-              }
-              .compile
-              .last
-          }
+        CloudProviderHelper.getAll.collectFirst {
+          case client if client.oeqAuth.clientId == clientId =>
+            CloudProviderClient(client.id, client.oeqAuth)
+        }
       }
       .orNull
   }
@@ -155,16 +152,12 @@ object OAuthServerAccess {
           new CloudProviderUserState(UUID.fromString(new String(cachedValue.getValue)),
                                      CurrentInstitution.get()))
 
-    def getCloudProviderName: String = {
-      val cloudProvider =
-        cpUser.map(user => CloudProviderDB.getStream(user.providerId).compile.lastOrError)
-
-      cloudProvider match {
-        case Some(cp) => RunWithDB.execute(cp.map(_.name))
+    def getCloudProviderName: String =
+      cpUser.flatMap(user => CloudProviderHelper.getByUuid(user.providerId)) match {
+        case Some(cp) => cp.name
         case None =>
           throw new NotFoundException(s"Failed to find Cloud provider for token ${tokenData}")
       }
-    }
 
     impersonateId match {
       case Some(userid) =>
