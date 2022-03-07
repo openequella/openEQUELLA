@@ -104,7 +104,7 @@ const UserSearch = ({
     OEQ.Common.UuidString | undefined
   >(undefined);
   const [hasSearched, setHasSearched] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<String | null>(null);
+  const [errorMessage, setErrorMessage] = useState<String>();
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
 
   useEffect(() => {
@@ -138,7 +138,7 @@ const UserSearch = ({
 
   const handleOnSearch = () => {
     setShowSpinner(true);
-    setErrorMessage(null);
+    setErrorMessage(undefined);
     userListProvider(query, groupFilter)
       .then((userDetails: OEQ.UserQuery.UserDetails[]) => {
         setUsers(
