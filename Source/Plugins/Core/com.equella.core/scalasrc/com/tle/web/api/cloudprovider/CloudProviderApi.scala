@@ -136,7 +136,7 @@ class CloudProviderApi {
     Option(entityService.getByUuid(uuid.toString))
       .map(registrationService.refreshRegistration)
       .map {
-        case Invalid(error)   => Response.serverError.entity(error).build
+        case Invalid(error)   => Response.serverError.entity(error.mkString("\n")).build
         case Valid(refreshed) => Response.ok(refreshed).build()
       }
       .getOrElse(resourceNotFound(s"Failed to find Cloud provider matching UUID: $uuid"))

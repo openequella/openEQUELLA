@@ -192,9 +192,10 @@ class CloudProviderRegistrationService {
     * @param entity Entity where the type must be 'cloudprovider'.
     * @return Validated where left is an error message and right is an option of CloudProviderInstance.
     */
-  def refreshRegistration(entity: Entity): Validated[String, Option[CloudProviderInstance]] = {
+  def refreshRegistration(
+      entity: Entity): Validated[List[String], Option[CloudProviderInstance]] = {
     def refresh(
-        provider: CloudProviderInstance): Validated[String, Option[CloudProviderInstance]] = {
+        provider: CloudProviderInstance): Validated[List[String], Option[CloudProviderInstance]] = {
       provider.serviceUrls
         .get(RefreshServiceId)
         .map(
@@ -215,11 +216,11 @@ class CloudProviderRegistrationService {
                 _.body match {
                   case Right(Right(registration)) =>
                     // Update with the new registration. If errors happen during the update, combine all errors into one string.
-                    editRegistered(entity, registration).leftMap(
-                      EntityValidation.collectErrors(_).mkString)
+                    editRegistered(entity, registration).leftMap(EntityValidation.collectErrors)
 
-                  case Right(Left(deserializationError)) => deserializationError.message.invalid
-                  case Left(error)                       => error.invalid
+                  case Right(Left(deserializationError)) =>
+                    List(deserializationError.message).invalid
+                  case Left(error) => List(error).invalid
                 }
               )
               .unsafeRunSync
