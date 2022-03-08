@@ -16,20 +16,19 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 (Runtime / unmanagedClasspath) += (LocalProject("learningedge_config") / baseDirectory).value
 
-val RestEasyVersion  = "3.15.3.Final"
-val SwaggerVersion   = "1.6.5"
-val TomcatVersion    = "9.0.59"
-val axis2Version     = "1.7.9"
-val circeVersion     = "0.12.1"
-val cxfVersion       = "3.5.1"
-val fs2Version       = "2.4.4"
-val guiceVersion     = "3.0"
-val jsassVersion     = "5.10.4"
-val jsoupVersion     = "1.14.3"
-val simpledbaVersion = "0.1.9"
-val springVersion    = "5.3.16"
-val sttpVersion      = "1.7.2"
-val tikaVersion      = "2.3.0"
+val RestEasyVersion = "3.15.3.Final"
+val SwaggerVersion  = "1.6.5"
+val TomcatVersion   = "9.0.59"
+val axis2Version    = "1.7.9"
+val circeVersion    = "0.12.1"
+val cxfVersion      = "3.5.1"
+val fs2Version      = "2.4.4"
+val guiceVersion    = "3.0"
+val jsassVersion    = "5.10.4"
+val jsoupVersion    = "1.14.3"
+val springVersion   = "5.3.16"
+val sttpVersion     = "1.7.2"
+val tikaVersion     = "2.3.0"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -43,8 +42,6 @@ libraryDependencies ++= Seq(
   "com.softwaremill.sttp"          %% "core"                          % sttpVersion,
   "com.softwaremill.sttp"          %% "async-http-client-backend-fs2" % sttpVersion,
   "com.softwaremill.sttp"          %% "circe"                         % sttpVersion,
-  "io.github.doolse"               %% "simpledba-jdbc"                % simpledbaVersion,
-  "io.github.doolse"               %% "simpledba-circe"               % simpledbaVersion,
   "cglib"                          % "cglib"                          % "3.3.0",
   "com.fasterxml.jackson.core"     % "jackson-core"                   % jacksonVersion,
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"        % jacksonVersion,
