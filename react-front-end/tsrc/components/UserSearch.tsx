@@ -101,6 +101,7 @@ const UserSearch = ({
     OEQ.Common.UuidString | undefined
   >(undefined);
   const [hasSearched, setHasSearched] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<String>();
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
 
   useEffect(() => {
@@ -134,16 +135,25 @@ const UserSearch = ({
 
   const handleOnSearch = () => {
     setShowSpinner(true);
+    setErrorMessage(undefined);
     userListProvider(query, groupFilter)
       .then((userDetails: OEQ.UserQuery.UserDetails[]) => {
-        setHasSearched(true);
         setUsers(
           userDetails.sort((a, b) =>
             a.username.toLowerCase().localeCompare(b.username.toLowerCase())
           )
         );
       })
-      .finally(() => setShowSpinner(false));
+      .catch((error: OEQ.Errors.ApiError) => {
+        setUsers([]);
+        if (error.status !== 404) {
+          setErrorMessage(error.message);
+        }
+      })
+      .finally(() => {
+        setShowSpinner(false);
+        setHasSearched(true);
+      });
   };
 
   const handleQueryFieldKeypress = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -253,10 +263,12 @@ const UserSearch = ({
         ) : (
           <ListItem>
             <ListItemIcon>
-              <ErrorOutline />
+              <ErrorOutline color={errorMessage ? "secondary" : "inherit"} />
             </ListItemIcon>
             <ListItemText
-              secondary={sprintf(failedToFindUsersMessage, query)}
+              secondary={
+                errorMessage ?? sprintf(failedToFindUsersMessage, query)
+              }
             />
           </ListItem>
         )}
