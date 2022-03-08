@@ -18,9 +18,10 @@
 
 package com.tle.web.api.search.model
 
-import java.util.Date
 import com.tle.common.interfaces.I18NString
 import com.tle.web.api.item.equella.interfaces.beans.{DisplayField, DisplayOptions}
+
+import java.util.Date
 
 /**
   * This model class includes an item's information required in the new Search page.
@@ -59,6 +60,7 @@ case class SearchResultItem(
     attachmentCount: Int,
     attachments: Option[List[SearchResultAttachment]],
     thumbnail: String,
+    thumbnailDetails: Option[ThumbnailDetails],
     displayFields: List[DisplayField],
     displayOptions: Option[DisplayOptions],
     keywordFoundInAttachment: Boolean,
@@ -101,3 +103,16 @@ case class SearchResultAttachment(
   * @param isAuthorised Whether user is authorised to access Item or accept DRM.
   */
 case class DrmStatus(termsAccepted: Boolean, isAuthorised: Boolean)
+
+/**
+  * Provides details to assist with displaying a thumbnail for a search result, based on the
+  * attachment that is designated to be used as the basis for the thumbnail of this item (typically
+  * the first attachment).
+  *
+  * @param attachmentType The broad indicator of attachment type which which drives the content of
+  *                       the other properties. Example values are `file`, `link`, `custom/xyz`.
+  * @param mimeType Mostly used when `attachmentType` is `file` but also when `custom/resource`.
+  * @param link If the server has generated a specific thumbnail for this item, then this will
+  *             provide the URL for it.
+  */
+case class ThumbnailDetails(attachmentType: String, mimeType: Option[String], link: Option[String])
