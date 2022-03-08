@@ -89,7 +89,7 @@
     "@types/react-test-renderer": "17.0.1",
     "@types/rewire": "2.5.28",
     "@types/sprintf-js": "1.1.2",
-    "@types/tinymce": "4.6.4",
+    "@types/tinymce": "4.6.5",
     "@types/uuid": "8.3.4",
     "babel-jest": "27.4.6",
     "core-js": "3.21.1",
