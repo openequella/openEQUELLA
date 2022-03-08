@@ -1,7 +1,7 @@
 val springVersion = "5.3.16"
 
 libraryDependencies ++= Seq(
-  "com.google.guava"         % "guava"           % "31.0.1-jre",
+  "com.google.guava"         % "guava"           % "31.1-jre",
   "com.github.insubstantial" % "flamingo"        % "7.3",
   "com.miglayout"            % "miglayout-swing" % "4.2",
   "org.springframework"      % "spring-web"      % springVersion,

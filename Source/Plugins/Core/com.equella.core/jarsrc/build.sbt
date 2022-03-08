@@ -3,7 +3,7 @@ val springVersion = "5.3.16"
 libraryDependencies ++= Seq(
   "net.java.dev.jna"    % "platform"     % "3.5.2",
   "org.rococoa"         % "rococoa-core" % "0.5",
-  "com.google.guava"    % "guava"        % "31.0.1-jre",
+  "com.google.guava"    % "guava"        % "31.1-jre",
   "org.springframework" % "spring-web"   % springVersion,
   "org.springframework" % "spring-aop"   % springVersion
 )
