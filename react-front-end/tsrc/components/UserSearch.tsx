@@ -63,8 +63,6 @@ export interface UserSearchProps {
   listHeight?: number;
   /** Callback triggered when a user entry is clicked on. */
   onSelect: (username: OEQ.UserQuery.UserDetails) => void;
-  /** Callback triggered when an api error is raised, except 404 error */
-  onError?: (error: OEQ.Errors.ApiError) => void;
   /** A list of group UUIDs to filter the users by. */
   groupFilter?: ReadonlySet<string>;
   /** Function which will provide the list of users. */
@@ -89,7 +87,6 @@ const UserSearch = ({
   id,
   listHeight,
   onSelect,
-  onError,
   groupFilter,
   userListProvider = (query?: string, groupFilter?: ReadonlySet<string>) =>
     UserModule.listUsers(query ? `${query}*` : undefined, groupFilter),
@@ -151,7 +148,6 @@ const UserSearch = ({
         setUsers([]);
         if (error.status !== 404) {
           setErrorMessage(error.message);
-          onError?.(error);
         }
       })
       .finally(() => {
