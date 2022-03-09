@@ -18,13 +18,15 @@
 
 package com.tle.web.api.search
 
-import com.tle.beans.item.ItemKey
-import com.tle.legacy.LegacyGuice
+import com.tle.beans.item.ItemIdKey
+import com.tle.beans.item.attachments.Attachment
+import com.tle.core.item.service.AttachmentService._
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
 import com.tle.web.api.search.SearchHelper.getLinksFromBean
-import com.tle.core.item.service.AttachmentService.getLatestVersionForCustomAttachment
+import com.tle.web.api.search.model.SearchResultAttachment
 import com.tle.web.controls.resource.ResourceAttachmentBean
 import com.tle.web.controls.youtube.YoutubeAttachmentBean
+
 import java.util.Optional
 import scala.collection.JavaConverters._
 
@@ -71,5 +73,50 @@ object AttachmentHelper {
       case _ =>
     }
     att
+  }
+
+  /**
+    * Produces a function to support checking whether a user has permission to view an attachment.
+    * Currently only checking around the concept of 'restricted attachments', but could be expanded
+    * if other checks required.
+    *
+    * @param hasRestrictedAttachmentPrivileges typically a `lazy val` from hasAcl(AttachmentConfigConstants.VIEW_RESTRICTED_ATTACHMENTS)
+    * @param att the attachment to check if the user is allows to view
+    * @return True if viewable, otherwise false
+    */
+  def isViewable(hasRestrictedAttachmentPrivileges: => Boolean)(att: AttachmentBean) =
+    !att.isRestricted || hasRestrictedAttachmentPrivileges
+
+  /**
+    * Given an `AttachmentBean` and details of the owning Item, builds a `SearchResultAttachment` for
+    * use in search results.
+    *
+    * @param itemKey Key for the owning item of `att`.
+    * @param att The attachment to convert.
+    * @return The resultant `SearchResultAttachment`.
+    */
+  def toSearchResultAttachment(itemKey: ItemIdKey, att: AttachmentBean): SearchResultAttachment = {
+    val attachment = recurseBrokenAttachmentCheck(itemKey, att.getUuid)
+    def ifNotBroken[T](f: Attachment => Option[T], default: Option[T] = None) =
+      if (attachment.isDefined) f(attachment.get) else default
+
+    SearchResultAttachment(
+      attachmentType = att.getRawAttachmentType,
+      id = att.getUuid,
+      preview = att.isPreview,
+      hasGeneratedThumb = thumbExists(itemKey, att),
+      links = buildAttachmentLinks(att),
+      filePath = getFilePathForAttachment(att),
+      brokenAttachment = attachment.isEmpty,
+      // Use the `description` from the `Attachment` behind the `AttachmentBean` as this provides
+      // the value more commonly seen in the LegacyUI. And specifically uses any tweaks done for
+      // Custom Attachments - such as with Kaltura where the Kaltura Media `title` is pushed into
+      // the `description` rather than using the optional (and multi-line) Kaltura Media `description`.
+      // But if not available due to broken attachments, well something is better than
+      // nothing so use the on in `AttachmentBean`.
+      description =
+        ifNotBroken((a: Attachment) => Option(a.getDescription), Option(att.getDescription)),
+      mimeType = ifNotBroken(_ => getMimetypeForAttachment(att)),
+    )
   }
 }

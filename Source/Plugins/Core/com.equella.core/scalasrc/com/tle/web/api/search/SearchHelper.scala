@@ -22,7 +22,6 @@ import cats.Semigroup
 import cats.implicits._
 import com.dytech.edge.exceptions.{BadRequestException, DRMException}
 import com.tle.beans.entity.DynaCollection
-import com.tle.beans.item.attachments.Attachment
 import com.tle.beans.item.{Comment, ItemIdKey}
 import com.tle.common.Check
 import com.tle.common.beans.exception.NotFoundException
@@ -33,18 +32,17 @@ import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.freetext.queries.FreeTextBooleanQuery
 import com.tle.core.item.security.ItemSecurityConstants
 import com.tle.core.item.serializer.{ItemSerializerItemBean, ItemSerializerService}
-import com.tle.core.item.service.AttachmentService.{
-  getFilePathForAttachment,
-  getMimetypeForAttachment,
-  recurseBrokenAttachmentCheck,
-  thumbExists
-}
 import com.tle.core.security.ACLChecks.hasAcl
 import com.tle.core.services.item.{FreetextResult, FreetextSearchResults}
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean
+import com.tle.web.api.item.impl.ItemLinkServiceImpl
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
-import com.tle.web.api.search.AttachmentHelper.{buildAttachmentLinks, sanitiseAttachmentBean}
+import com.tle.web.api.search.AttachmentHelper.{
+  isViewable,
+  sanitiseAttachmentBean,
+  toSearchResultAttachment
+}
 import com.tle.web.api.search.model.AdditionalSearchParameters.buildAdvancedSearchCriteria
 import com.tle.web.api.search.model._
 
@@ -271,6 +269,7 @@ object SearchHelper {
       attachmentCount = Option(bean.getAttachments).map(_.size).getOrElse(0),
       attachments = if (includeAttachments) convertToAttachment(bean.getAttachments, key) else None,
       thumbnail = bean.getThumbnail,
+      thumbnailDetails = getThumbnailDetails(bean.getAttachments, key),
       displayFields = bean.getDisplayFields.asScala.toList,
       displayOptions = Option(bean.getDisplayOptions),
       keywordFoundInAttachment = item.keywordFound,
@@ -293,32 +292,9 @@ object SearchHelper {
       beans =>
         beans.asScala
         // Filter out restricted attachments if the user does not have permissions to view them
-          .filter(a => !a.isRestricted || hasRestrictedAttachmentPrivileges)
+          .filter(isViewable(hasRestrictedAttachmentPrivileges))
           .map(sanitiseAttachmentBean)
-          .map(bean => {
-            val attachment = recurseBrokenAttachmentCheck(itemKey, bean.getUuid)
-            def ifNotBroken[T](f: Attachment => Option[T], default: Option[T] = None) =
-              if (attachment.isDefined) f(attachment.get) else default
-
-            SearchResultAttachment(
-              attachmentType = bean.getRawAttachmentType,
-              id = bean.getUuid,
-              preview = bean.isPreview,
-              hasGeneratedThumb = thumbExists(itemKey, bean),
-              links = buildAttachmentLinks(bean),
-              filePath = getFilePathForAttachment(bean),
-              brokenAttachment = attachment.isEmpty,
-              // Use the `description` from the `Attachment` behind the `AttachmentBean` as this provides
-              // the value more commonly seen in the LegacyUI. And specifically uses any tweaks done for
-              // Custom Attachments - such as with Kaltura where the Kaltura Media `title` is pushed into
-              // the `description` rather than using the optional (and multi-line) Kaltura Media `description`.
-              // But if not available due to broken attachments, well something is better than
-              // nothing so use the on in `AttachmentBean`.
-              description = ifNotBroken((a: Attachment) => Option(a.getDescription),
-                                        Option(bean.getDescription)),
-              mimeType = ifNotBroken(_ => getMimetypeForAttachment(bean)),
-            )
-          })
+          .map(toSearchResultAttachment(itemKey, _))
           .toList)
   }
 
@@ -370,4 +346,46 @@ object SearchHelper {
     */
   def isLatestVersion(itemID: ItemIdKey): Boolean =
     itemID.getVersion == LegacyGuice.itemService.getLatestVersion(itemID.getUuid)
+
+  def getThumbnailDetails(attachmentBeans: java.util.List[AttachmentBean],
+                          itemKey: ItemIdKey): Option[ThumbnailDetails] = {
+    lazy val hasRestrictedAttachmentPrivileges: Boolean =
+      hasAcl(AttachmentConfigConstants.VIEW_RESTRICTED_ATTACHMENTS)
+
+    def determineThumbnailLink(searchResultAttachment: SearchResultAttachment): Option[String] =
+      Option(searchResultAttachment)
+        .filterNot(_.brokenAttachment)
+        .filter(a =>
+          (a.attachmentType, a.mimeType, a.hasGeneratedThumb) match {
+            // If a file attachment has a generatedThumb we use it
+            case ("file", _, Some(true)) => true
+            // If a 'custom/resource' (i.e. oEQ resource attachment) is of a mimeType other than
+            // those specified, we use the server provided thumbnail
+            case ("custom/resource", Some(mimeType), _)
+                if !List("equella/item", "equella/link", "text/html").contains(mimeType) =>
+              true
+            // For the custom attachment types pointing to external systems, we use the server
+            // provided thumbnail - which is typically a thumbnail provided by those systems
+            case (custom, _, _)
+                if custom
+                  .startsWith("custom/") && List("flickr", "googlebook", "kaltura", "youtube")
+                  .contains(custom.split("/").last) =>
+              true
+            // For all others, no thumbnail is provided
+            case _ => false
+        })
+        .flatMap(_.links.asScala.get(ItemLinkServiceImpl.REL_THUMB))
+
+    Option(attachmentBeans)
+      .flatMap(
+        _.asScala
+          .find(isViewable(hasRestrictedAttachmentPrivileges))
+      )
+      .map(toSearchResultAttachment(itemKey, _))
+      .map(
+        a =>
+          ThumbnailDetails(attachmentType = a.attachmentType,
+                           mimeType = a.mimeType,
+                           link = determineThumbnailLink(a)))
+  }
 }

@@ -53,11 +53,11 @@ public class ItemLinkServiceImpl implements ItemLinkService {
   private static final String CONTEXT_FILE_CONTENT = "content";
   private static final String CONTEXT_FILE_DIR = "dir";
 
-  private static final String REL_SELF = "self";
-  private static final String REL_VIEW = "view";
-  private static final String REL_CONTENT = "content";
-  private static final String REL_DIR = "dir";
-  private static final String REL_THUMB = "thumbnail";
+  public static final String REL_SELF = "self";
+  public static final String REL_VIEW = "view";
+  public static final String REL_CONTENT = "content";
+  public static final String REL_DIR = "dir";
+  public static final String REL_THUMB = "thumbnail";
 
   @Inject private ViewItemLinkFactory linkFactory;
   @Inject private InstitutionService institutionService;
