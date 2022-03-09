@@ -266,7 +266,7 @@ describe('search through a POST request', () => {
 });
 
 describe('Details for thumbnails', () => {
-  it('includes provides no thumbnailDetails for items with no attachments', async () => {
+  it('provides no thumbnailDetails for items with no attachments', async () => {
     const searchResult = await doSearch({
       query: 'SearchApiTest - Basic',
     });
