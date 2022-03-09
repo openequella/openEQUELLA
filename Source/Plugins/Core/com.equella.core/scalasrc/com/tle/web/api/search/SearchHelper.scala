@@ -352,8 +352,8 @@ object SearchHelper {
     lazy val hasRestrictedAttachmentPrivileges: Boolean =
       hasAcl(AttachmentConfigConstants.VIEW_RESTRICTED_ATTACHMENTS)
 
-    def determineThumbnailLink(a: SearchResultAttachment): Option[String] =
-      Option(a)
+    def determineThumbnailLink(searchResultAttachment: SearchResultAttachment): Option[String] =
+      Option(searchResultAttachment)
         .filterNot(_.brokenAttachment)
         .filter(a =>
           (a.attachmentType, a.mimeType, a.hasGeneratedThumb) match {
