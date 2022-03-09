@@ -37,7 +37,8 @@ import java.util.Date
   * @param starRatings The star ratings of an Item.
   * @param attachmentCount The total number of attachments for this item.
   * @param attachments A list of Item's attachments.
-  * @param thumbnail Item's thumbnail.
+  * @param thumbnail Item's thumbnail type.
+  * @param thumbnailDetails Details for displaying a thumbnail for an item.
   * @param displayFields A list of Item's displayFields.
   * @param displayOptions Item's displayOptions which can be null.
   * @param keywordFoundInAttachment Indicates if a search term has been found inside attachment content
