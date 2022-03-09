@@ -275,7 +275,7 @@ export interface DrmStatus {
  * attachment that is designated to be used as the basis for the thumbnail of this item (typically
  * the first attachment).
  */
-interface ThumbnailDetails {
+export interface ThumbnailDetails {
   /**
    * The broad indicator of attachment type which drives the content of the other properties.
    * Example values are `file`, `link`, `custom/xyz`.
