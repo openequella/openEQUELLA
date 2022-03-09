@@ -44,7 +44,7 @@
     "@typescript-eslint/eslint-plugin": "5.12.1",
     "@typescript-eslint/parser": "5.12.1",
     "core-js": "3.21.1",
-    "eslint": "8.9.0",
+    "eslint": "8.10.0",
     "eslint-plugin-jest": "26.1.1",
     "jest": "27.4.7",
     "rollup": "2.68.0",
