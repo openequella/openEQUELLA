@@ -264,3 +264,29 @@ describe('search through a POST request', () => {
     expect(searchResult.available).toBe(6);
   });
 });
+
+describe('Details for thumbnails', () => {
+  it('provides no thumbnailDetails for items with no attachments', async () => {
+    const searchResult = await doSearch({
+      query: 'SearchApiTest - Basic',
+    });
+
+    expect(searchResult.results).toHaveLength(1);
+    const thumbnailDetails = searchResult.results.pop()!.thumbnailDetails;
+    expect(thumbnailDetails).toBeUndefined();
+  });
+
+  it('includes details for items which should have an explicit thumbnail', async () => {
+    const searchResult = await doSearch({
+      query: 'ItemApiViewTest - All attachments',
+    });
+
+    expect(searchResult.results).toHaveLength(1);
+    const thumbnailDetails = searchResult.results.pop()!.thumbnailDetails;
+    expect(thumbnailDetails).toBeDefined();
+    // The expected item should have a fully qualified thumbnail, so the optional fields
+    // are expected to be present.
+    expect(thumbnailDetails!.mimeType).toBeDefined();
+    expect(thumbnailDetails!.link).toBeDefined();
+  });
+});
