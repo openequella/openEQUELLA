@@ -78,7 +78,7 @@ public class InitialMigration extends AbstractHibernateSchemaMigration {
       filter.setIncludeGenerators(true);
     }
     session.close();
-    return helper.getCreationSql(filter);
+    return helper.getCreationSql(filter, true);
   }
 
   @Override

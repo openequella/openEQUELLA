@@ -53,9 +53,14 @@ public class ExtendedAnnotationConfiguration extends Configuration {
 
   private static class MetadataCapture implements Integrator {
     private Metadata metadata;
+    private final Map<String, Table> systemTables = new HashMap<>();
 
     public Metadata getMetadata() {
       return metadata;
+    }
+
+    public Map<String, Table> getSystemTables() {
+      return systemTables;
     }
 
     @Override
@@ -64,6 +69,15 @@ public class ExtendedAnnotationConfiguration extends Configuration {
         SessionFactoryImplementor sessionFactory,
         SessionFactoryServiceRegistry serviceRegistry) {
       LOGGER.trace("integrating metadata");
+
+      // When this.metadata is null, the metadata passed in must provide the entity
+      // bindings for system tables such as 'sys_schema_id'.
+      if (this.metadata == null) {
+        for (Table t : metadata.collectTableMappings()) {
+          systemTables.put(t.getName(), t);
+        }
+      }
+
       this.metadata = metadata;
     }
 
@@ -90,7 +104,7 @@ public class ExtendedAnnotationConfiguration extends Configuration {
     logProps(super.getProperties(), "Hibernate properties after building config object");
   }
 
-  public Map<String, Table> getTableMap() {
+  public Map<String, Table> getNormalTableMap() {
     if (METADATA_CAPTURE.getMetadata() == null) {
       throw new IllegalStateException(
           "Cannot access Hibernate Metadata before a SessionFactory has been created");
@@ -100,6 +114,10 @@ public class ExtendedAnnotationConfiguration extends Configuration {
       tables.put(t.getName(), t);
     }
     return tables;
+  }
+
+  public Map<String, Table> getSysTableMap() {
+    return METADATA_CAPTURE.getSystemTables();
   }
 
   public List<AuxiliaryDatabaseObject> getAuxiliaryDatabaseObjects() {
