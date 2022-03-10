@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@material-ui/core": "4.12.3",
-    "axios": "0.26.0",
+    "axios": "0.26.1",
     "babel-polyfill": "6.26.0",
     "js-md5": "0.7.3",
     "jss": "10.9.0",
