@@ -18,14 +18,14 @@
 import { Meta, Story } from "@storybook/react";
 import * as React from "react";
 import {
-  brokenFileAttachment,
-  resourceFileAttachment,
-  equellaItemAttachment,
-  fileAttachment,
-  htmlAttachment,
-  linkAttachment,
-  resourceLinkAttachment,
-  resourceHtmlAttachment,
+  brokenFileDetails,
+  equellaItemDetails,
+  fileDetails,
+  htmlDetails,
+  linkDetails,
+  resourceFileDetails,
+  resourceHtmlDetails,
+  resourceLinkDetails,
 } from "../../__mocks__/OEQThumb.mock";
 import OEQThumb, { OEQThumbProps } from "../../tsrc/components/OEQThumb";
 
@@ -37,75 +37,59 @@ export default {
   },
 } as Meta<OEQThumbProps>;
 
-export const fileAttachmentStory: Story<OEQThumbProps> = (args) => (
-  <OEQThumb {...args} />
-);
-
-fileAttachmentStory.args = {
-  attachment: fileAttachment,
+export const file: Story<OEQThumbProps> = (args) => <OEQThumb {...args} />;
+file.args = {
+  details: fileDetails,
 };
 
-export const brokenFileAttachmentStory: Story<OEQThumbProps> = (args) => (
+export const brokenFile: Story<OEQThumbProps> = (args) => (
   <OEQThumb {...args} />
 );
-
-brokenFileAttachmentStory.args = {
-  attachment: brokenFileAttachment,
+brokenFile.args = {
+  details: brokenFileDetails,
 };
 
-export const customResourceAttachmentStory: Story<OEQThumbProps> = (args) => (
+export const customResource: Story<OEQThumbProps> = (args) => (
   <OEQThumb {...args} />
 );
-
-customResourceAttachmentStory.args = {
-  attachment: resourceFileAttachment,
+customResource.args = {
+  details: resourceFileDetails,
 };
 
-export const linkAttachmentStory: Story<OEQThumbProps> = (args) => (
-  <OEQThumb {...args} />
-);
-
-linkAttachmentStory.args = {
-  attachment: linkAttachment,
+export const link: Story<OEQThumbProps> = (args) => <OEQThumb {...args} />;
+link.args = {
+  details: linkDetails,
 };
 
-export const resourceLinkAttachmentStory: Story<OEQThumbProps> = (args) => (
+export const resourceLink: Story<OEQThumbProps> = (args) => (
   <OEQThumb {...args} />
 );
-
-resourceLinkAttachmentStory.args = {
-  attachment: resourceLinkAttachment,
+resourceLink.args = {
+  details: resourceLinkDetails,
 };
 
-export const equellaItemAttachmentStory: Story<OEQThumbProps> = (args) => (
+export const equellaItem: Story<OEQThumbProps> = (args) => (
   <OEQThumb {...args} />
 );
-
-equellaItemAttachmentStory.args = {
-  attachment: equellaItemAttachment,
+equellaItem.args = {
+  details: equellaItemDetails,
 };
 
-export const htmlAttachmentStory: Story<OEQThumbProps> = (args) => (
-  <OEQThumb {...args} />
-);
-
-htmlAttachmentStory.args = {
-  attachment: htmlAttachment,
+export const html: Story<OEQThumbProps> = (args) => <OEQThumb {...args} />;
+html.args = {
+  details: htmlDetails,
 };
 
-export const resourceHtmlAttachmentStory: Story<OEQThumbProps> = (args) => (
+export const resourceHtml: Story<OEQThumbProps> = (args) => (
   <OEQThumb {...args} />
 );
-
-resourceHtmlAttachmentStory.args = {
-  attachment: resourceHtmlAttachment,
+resourceHtml.args = {
+  details: resourceHtmlDetails,
 };
 
-export const placeHolderAttachmentStory: Story<OEQThumbProps> = (args) => (
+export const placeHolder: Story<OEQThumbProps> = (args) => (
   <OEQThumb {...args} />
 );
-
-placeHolderAttachmentStory.args = {
-  attachment: fileAttachment,
-  showPlaceholder: true,
+placeHolder.args = {
+  details: undefined,
 };
