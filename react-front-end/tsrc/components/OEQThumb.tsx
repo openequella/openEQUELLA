@@ -56,7 +56,7 @@ interface ThumbProps {
 
 export interface OEQThumbProps {
   /**
-   * Details to determine what and how the thumbnail should be displayed. Of if none are provided
+   * Details to determine what and how the thumbnail should be displayed. Or if none are provided
    * a simple placeholder icon will be used instead.
    *
    * If `details` includes a `link` then that will have priority over any others and be used to
