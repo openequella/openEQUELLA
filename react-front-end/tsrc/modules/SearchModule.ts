@@ -324,7 +324,7 @@ export const searchItemAttachments = async (
     item: OEQ.Search.SearchResultItem
   ) => OEQ.Search.Attachment[] = flow(
     ({ attachments }) => attachments,
-    O.fromPredicate((x): x is OEQ.Search.Attachment[] => x !== undefined),
+    O.fromNullable,
     O.getOrElse(() => [] as OEQ.Search.Attachment[])
   );
 
