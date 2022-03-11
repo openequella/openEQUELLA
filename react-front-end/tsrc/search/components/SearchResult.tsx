@@ -318,8 +318,8 @@ export default function SearchResult({
             color="textPrimary"
           >
             {
-              /**Custom metadata can contain html tags, we should make sure that is
-                             preserved */
+              // Custom metadata can contain html tags,
+              // we should make sure that is preserved
               HTMLReactParser(element.html)
             }
           </Typography>
