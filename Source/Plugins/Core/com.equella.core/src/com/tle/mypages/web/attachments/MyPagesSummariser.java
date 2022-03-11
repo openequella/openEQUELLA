@@ -185,7 +185,7 @@ public class MyPagesSummariser
 
     @Override
     public ViewAuditEntry getViewAuditEntry() {
-      return new ViewAuditEntry("htmlpage", attachment.getDescription());
+      return new ViewAuditEntry("file:" + getMimeType(), attachment.getFilename());
     }
 
     public class MyPagesContentStream extends WrappedContentStream {
