@@ -6011,12 +6011,6 @@
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="NewEntity">
     <parameter id="class" value="com.tle.beans.newentity.Entity" />
   </extension>
-  <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="SchemaId">
-    <parameter id="class" value="com.tle.core.migration.beans.SchemaId" />
-  </extension>
-  <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="MigrationLog">
-    <parameter id="class" value="com.tle.core.migration.log.MigrationLog" />
-  </extension>
   <extension plugin-id="com.tle.core.freetext" point-id="indexingExtension" id="favouritesIndexer">
     <parameter id="class" value="bean:com.tle.core.favourites.index.FavouritesIndexer" />
   </extension>
