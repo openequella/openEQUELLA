@@ -153,7 +153,6 @@ export default function SearchResult({
   item,
 }: SearchResultProps) {
   const {
-    thumbnailDetails,
     bookmarkId: bookmarkDefaultId,
     commentCount = 0,
     description,
@@ -165,6 +164,7 @@ export default function SearchResult({
     name,
     starRatings,
     status,
+    thumbnailDetails,
     uuid,
     version,
   } = item;
