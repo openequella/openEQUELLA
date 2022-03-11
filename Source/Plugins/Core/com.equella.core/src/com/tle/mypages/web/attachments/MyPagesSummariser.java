@@ -196,6 +196,12 @@ public class MyPagesSummariser
       }
 
       @Override
+      public boolean useDefaultCacheControl() {
+        // Use the default cache control so that an audit log is created for each view of a webpage.
+        return true;
+      }
+
+      @Override
       public File getDirectFile() {
         return null;
       }

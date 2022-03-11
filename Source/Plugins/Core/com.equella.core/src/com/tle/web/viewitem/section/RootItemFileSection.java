@@ -228,17 +228,18 @@ public class RootItemFileSection
     RootItemFileModel model = getModel(info);
     ViewItemViewer viewer = model.getActualViewer();
     ViewItemResource resource = model.getResource();
+    IAttachment attachment = resource.getAttachment();
+    ViewAuditEntry vae =
+        viewer == null ? resource.getViewAuditEntry() : viewer.getAuditEntry(info, resource);
     try {
       ViewableItem<?> viewableItem = resource.getViewableItem();
       checkRestrictedResource(info, resource, viewer);
       if (viewer == null) {
         ensureOnePrivilege(
             resource.getPrivileges(), ViewItemViewer.VIEW_ITEM_AND_VIEW_ATTACHMENTS_PRIV);
-        ViewAuditEntry vae = resource.getViewAuditEntry();
         if (viewableItem.isItemForReal()
             && vae != null
             && viewableItem.getItemExtensionType() == null) {
-          IAttachment attachment = resource.getAttachment();
           if (attachment == null) {
             auditor.audit(info.getRequest(), vae, ((ViewableItem<Item>) viewableItem));
           } else {
@@ -251,10 +252,11 @@ public class RootItemFileSection
       }
       ensureOnePrivilege(resource.getPrivileges(), viewer.ensureOnePrivilege());
       if (viewableItem.isItemForReal() && viewableItem.getItemExtensionType() == null) {
-        auditor.audit(
-            info.getRequest(),
-            viewer.getAuditEntry(info, resource),
-            (ViewableItem<Item>) viewableItem);
+        if (attachment == null) {
+          auditor.audit(info.getRequest(), vae, (ViewableItem<Item>) viewableItem);
+        } else {
+          auditor.audit(info.getRequest(), vae, viewableItem.getItemId(), attachment);
+        }
       }
       return viewer.view(info, resource);
     } catch (AccessDeniedException ade) {
