@@ -347,11 +347,12 @@ export const searchItemAttachments = async (
     TE.mapLeft(E.toError)
   )();
 
-  if (E.isLeft(attachmentsMaybe)) {
-    throw attachmentsMaybe.left;
-  }
-
-  return attachmentsMaybe.right;
+  return pipe(
+    attachmentsMaybe,
+    E.getOrElseW((err) => {
+      throw err;
+    })
+  );
 };
 
 /**
