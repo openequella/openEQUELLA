@@ -42,8 +42,11 @@ import Search from "@material-ui/icons/Search";
 import Warning from "@material-ui/icons/Warning";
 import { Skeleton } from "@material-ui/lab";
 import * as OEQ from "@openequella/rest-api-client";
+import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as NEA from "fp-ts/NonEmptyArray";
+import * as O from "fp-ts/Option";
+import { not } from "fp-ts/Predicate";
 import * as React from "react";
 import { SyntheticEvent, useEffect, useState } from "react";
 import ItemAttachmentLink from "../../components/ItemAttachmentLink";
@@ -304,18 +307,17 @@ export const SearchResultAttachmentsList = ({
     </ListItem>
   );
 
-  const buildAttachmentList = (): JSX.Element => {
-    const items =
-      attachmentsList.length > 0
-        ? attachmentsList
-        : buildSkeletonList(attachmentCount);
-
-    return (
-      <List disablePadding className={classes.attachmentListItem}>
-        {error ? buildErrorListItem(error) : items}
-      </List>
-    );
-  };
+  const buildAttachmentList = (): JSX.Element => (
+    <List disablePadding className={classes.attachmentListItem}>
+      {error
+        ? buildErrorListItem(error)
+        : pipe(
+            attachmentsList,
+            O.fromPredicate(not(A.isEmpty)),
+            O.getOrElse(() => buildSkeletonList(attachmentCount))
+          )}
+    </List>
+  );
 
   const accordionText = (
     <Typography component="div">
