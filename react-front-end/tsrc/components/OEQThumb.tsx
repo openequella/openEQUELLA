@@ -15,18 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import { Theme } from "@material-ui/core";
-import * as OEQ from "@openequella/rest-api-client";
+import { makeStyles } from "@material-ui/core/styles";
+import DefaultFileIcon from "@material-ui/icons/InsertDriveFile";
+import WebIcon from "@material-ui/icons/Language";
 import LinkIcon from "@material-ui/icons/Link";
 import VideoIcon from "@material-ui/icons/Movie";
 import ImageIcon from "@material-ui/icons/Panorama";
-import DefaultFileIcon from "@material-ui/icons/InsertDriveFile";
-import WebIcon from "@material-ui/icons/Language";
-import Web from "@material-ui/icons/Web";
 import PlaceholderIcon from "@material-ui/icons/TextFields";
+import Web from "@material-ui/icons/Web";
+import * as OEQ from "@openequella/rest-api-client";
+import { flow, pipe } from "fp-ts/function";
+import * as React from "react";
 import { languageStrings } from "../util/langstrings";
+import * as O from "fp-ts/Option";
+import { simpleMatch } from "../util/match";
+import * as S from "fp-ts/string";
+import * as RNEA from "fp-ts/ReadonlyNonEmptyArray";
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -51,25 +56,20 @@ interface ThumbProps {
 
 export interface OEQThumbProps {
   /**
-   * On object representing an oEQ attachment. If undefined, a placeholder icon is returned
+   * Details to determine what and how the thumbnail should be displayed. Or if none are provided
+   * a simple placeholder icon will be used instead.
+   *
+   * If `details` includes a `link` then that will have priority over any others and be used to
+   * display an image based thumbnail.
    */
-  attachment?: OEQ.Search.Attachment;
-  /**
-   * True indicates that a placeholder icon should be used instead of the 'real' thumbnail
-   */
-  showPlaceholder: boolean;
+  details?: OEQ.Search.ThumbnailDetails;
 }
 
 /**
- * OEQThumb component
- * Takes an OEQ.Search.Attachment object as a parameter.
- * The thumbnail will be served up from oEQ if the attachment has had a thumbnail generated (Image, video, pdf based files, Youtube, Flickr, Google books)
- * Otherwise, an appropriate Icon is returned
+ * Displays a standard thumbnail using either the details provided to display an appropriate icon or
+ * image from the server. Of if no details provided will display a generic placeholder.
  */
-export default function OEQThumb({
-  attachment,
-  showPlaceholder,
-}: OEQThumbProps) {
+export default function OEQThumb({ details }: OEQThumbProps) {
   const classes = useStyles();
   const thumbLabels = languageStrings.searchpage.thumbnails;
   const generalThumbStyles: ThumbProps = {
@@ -77,103 +77,110 @@ export default function OEQThumb({
     fontSize: "large",
   };
 
-  if (!attachment || showPlaceholder) {
-    return (
-      <PlaceholderIcon
-        aria-label={thumbLabels.placeholder}
-        {...generalThumbStyles}
-      />
-    );
-  }
-
-  const { description, mimeType, attachmentType, hasGeneratedThumb, links } =
-    attachment;
-
-  const oeqProvidedThumb: React.ReactElement = (
-    <img
-      aria-label={thumbLabels.provided}
-      className={`MuiPaper-elevation1 MuiPaper-rounded ${classes.thumbnail}`}
-      src={links.thumbnail}
-      alt={description}
-    />
-  );
-
-  const defaultThumb = (
+  const defaultThumb = () => (
     <DefaultFileIcon aria-label={thumbLabels.file} {...generalThumbStyles} />
   );
 
   /**
-   * We need to check if a thumbnail has been generated, and return a generic icon if not
-   * @param {string} mimeType - Attachment's Mimetype. eg. image/png application/pdf
-   * @return {ReactElement} Image, video and pdf based mimetypes are thumbnailed by oEQ.
+   * Build an `img` based thumb if link is available, otherwise use the `defaultThumb`.
+   *
+   * @param link a URL to an image thumbnail on the server
    */
-  const handleMimeType = (mimeType?: string): React.ReactElement => {
-    if (hasGeneratedThumb) {
-      return oeqProvidedThumb;
-    }
-    let result = defaultThumb;
-    if (mimeType?.startsWith("image")) {
-      result = (
-        <ImageIcon aria-label={thumbLabels.image} {...generalThumbStyles} />
-      );
-    } else if (mimeType?.startsWith("video")) {
-      result = (
-        <VideoIcon aria-label={thumbLabels.video} {...generalThumbStyles} />
-      );
-    }
-    return result;
-  };
+  const buildServerProvidedThumb = (link?: string): JSX.Element =>
+    link ? (
+      <img
+        aria-label={thumbLabels.provided}
+        className={`MuiPaper-elevation1 MuiPaper-rounded ${classes.thumbnail}`}
+        src={link}
+        alt={thumbLabels.provided}
+      />
+    ) : (
+      defaultThumb()
+    );
 
   /**
-   * Resource attachments point to other attachments or items, so we need to use the MIME type
-   * to determine the thumbnail to use, rather than the attachment type which will be custom/resource.
+   * Builds generic thumbs for files based on the supplied `mimeType`.
    *
-   * @param mimeType The MIME type of the resource attachment's target.
+   * @param mimeType expects values like `image/jpeg` or `video/mpeg` etc.
    */
-  const handleResourceAttachmentThumb = (mimeType?: string) => {
-    switch (mimeType) {
-      case "equella/item":
-        return <Web aria-label={thumbLabels.item} {...generalThumbStyles} />;
-      case "equella/link":
-        return (
-          <LinkIcon aria-label={thumbLabels.link} {...generalThumbStyles} />
-        );
-      case "text/html":
-        return (
-          <WebIcon aria-label={thumbLabels.html} {...generalThumbStyles} />
-        );
-      default:
-        return oeqProvidedThumb;
-    }
+  const buildGenericFileThumb = (mimeType?: string): JSX.Element => {
+    const mimeTypeBasedThumb = (type: string): JSX.Element =>
+      pipe(
+        type,
+        simpleMatch<JSX.Element>({
+          image: () => (
+            <ImageIcon aria-label={thumbLabels.image} {...generalThumbStyles} />
+          ),
+          video: () => (
+            <VideoIcon aria-label={thumbLabels.video} {...generalThumbStyles} />
+          ),
+          _: defaultThumb,
+        })
+      );
+
+    return pipe(
+      mimeType,
+      O.fromNullable,
+      O.map(flow(S.split("/"), RNEA.head, mimeTypeBasedThumb)),
+      O.getOrElse(defaultThumb)
+    );
   };
 
-  let oeqThumb = defaultThumb;
-  if (attachment.brokenAttachment) {
-    return defaultThumb;
-  }
-  switch (attachmentType) {
-    case "file":
-      oeqThumb = handleMimeType(mimeType);
-      break;
-    case "link":
-      oeqThumb = (
-        <LinkIcon aria-label={thumbLabels.link} {...generalThumbStyles} />
-      );
-      break;
-    case "html":
-      oeqThumb = (
-        <WebIcon aria-label={thumbLabels.html} {...generalThumbStyles} />
-      );
-      break;
-    case "custom/resource":
-      oeqThumb = handleResourceAttachmentThumb(mimeType);
-      break;
-    case "custom/flickr":
-    case "custom/youtube":
-    case "custom/kaltura":
-    case "custom/googlebook":
-      oeqThumb = oeqProvidedThumb;
-      break;
-  }
-  return oeqThumb;
+  const buildGenericResourceAttachmentThumb = (
+    mimeType?: string
+  ): JSX.Element =>
+    pipe(
+      mimeType,
+      O.fromNullable,
+      O.map(
+        simpleMatch<JSX.Element>({
+          "equella/item": () => (
+            <Web aria-label={thumbLabels.item} {...generalThumbStyles} />
+          ),
+          "equella/link": () => (
+            <LinkIcon aria-label={thumbLabels.link} {...generalThumbStyles} />
+          ),
+          "text/html": () => (
+            <WebIcon aria-label={thumbLabels.html} {...generalThumbStyles} />
+          ),
+          _: defaultThumb,
+        })
+      ),
+      O.getOrElse(defaultThumb)
+    );
+
+  const buildGenericThumb = (
+    attachmentType: string,
+    mimeType?: string
+  ): JSX.Element =>
+    pipe(
+      attachmentType,
+      simpleMatch<JSX.Element>({
+        link: () => (
+          <LinkIcon aria-label={thumbLabels.link} {...generalThumbStyles} />
+        ),
+        html: () => (
+          <WebIcon aria-label={thumbLabels.html} {...generalThumbStyles} />
+        ),
+        file: () => buildGenericFileThumb(mimeType),
+        "custom/resource": () => buildGenericResourceAttachmentThumb(mimeType),
+        _: defaultThumb,
+      })
+    );
+
+  return pipe(
+    details,
+    O.fromNullable,
+    O.map(({ attachmentType, mimeType, link }) =>
+      link
+        ? buildServerProvidedThumb(link)
+        : buildGenericThumb(attachmentType, mimeType)
+    ),
+    O.getOrElse(() => (
+      <PlaceholderIcon
+        aria-label={thumbLabels.placeholder}
+        {...generalThumbStyles}
+      />
+    ))
+  );
 }

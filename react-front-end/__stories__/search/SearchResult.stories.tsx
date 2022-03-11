@@ -42,6 +42,7 @@ export const AttachmentSearchResult: Story<SearchResultProps> = (args) => (
 AttachmentSearchResult.args = {
   ...BasicSearchResult.args,
   item: mockData.attachSearchObj,
+  getItemAttachments: async () => mockData.attachSearchObj.attachments ?? [],
 };
 
 export const KeywordFoundInAttachmentSearchResult: Story<SearchResultProps> = (
@@ -50,6 +51,7 @@ export const KeywordFoundInAttachmentSearchResult: Story<SearchResultProps> = (
 KeywordFoundInAttachmentSearchResult.args = {
   ...BasicSearchResult.args,
   item: { ...mockData.attachSearchObj, keywordFoundInAttachment: true },
+  getItemAttachments: async () => mockData.attachSearchObj.attachments ?? [],
 };
 
 export const CustomMetadataSearchResult: Story<SearchResultProps> = (args) => (
@@ -61,6 +63,8 @@ CustomMetadataSearchResult.args = {
     ...mockData.customMetaSearchObj,
     keywordFoundInAttachment: false,
   },
+  getItemAttachments: async () =>
+    mockData.customMetaSearchObj.attachments ?? [],
 };
 
 export const HighlightedSearchResult: Story<SearchResultProps> = (args) => (

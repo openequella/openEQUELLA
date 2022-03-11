@@ -15,90 +15,70 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
+import "@testing-library/jest-dom/extend-expect";
 import { queryByLabelText, render } from "@testing-library/react";
 import * as React from "react";
-import "@testing-library/jest-dom/extend-expect";
 import {
-  brokenFileAttachment,
-  equellaItemAttachment,
-  fileAttachment,
-  htmlAttachment,
-  linkAttachment,
-  resourceHtmlAttachment,
-  resourceLinkAttachment,
+  brokenFileDetails,
+  equellaItemDetails,
+  fileDetails,
+  htmlDetails,
+  linkDetails,
+  resourceHtmlDetails,
+  resourceLinkDetails,
 } from "../../../__mocks__/OEQThumb.mock";
 import OEQThumb from "../../../tsrc/components/OEQThumb";
-import * as OEQ from "@openequella/rest-api-client";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 
 describe("<OEQThumb/>", () => {
   const thumbLabels = languageStrings.searchpage.thumbnails;
-  const buildOEQThumb = (
-    attachment: OEQ.Search.Attachment,
-    showPlaceHolder: boolean
-  ) =>
-    render(
-      <OEQThumb attachment={attachment} showPlaceholder={showPlaceHolder} />
-    );
 
-  it.each<[string, OEQ.Search.Attachment, boolean, string]>([
+  it.each<[string, OEQ.Search.ThumbnailDetails | undefined, string]>([
     [
-      "shows the placeholder icon when showPlaceholder is true",
-      fileAttachment,
-      true,
+      "shows the placeholder icon when no details are provided",
+      undefined,
       thumbLabels.placeholder,
     ],
+    ["shows thumbnail image when available", fileDetails, thumbLabels.provided],
     [
-      "shows thumbnail image when showPlaceholder is false",
-      fileAttachment,
-      false,
-      thumbLabels.provided,
-    ],
-    [
-      "shows default file thumbnail when brokenAttachment is true",
-      brokenFileAttachment,
-      false,
-      thumbLabels.file,
+      "shows thumbnail based on MIME type when no thumbnail link is provided for file attachments - e.g. broken attachments",
+      brokenFileDetails,
+      thumbLabels.image,
     ],
     [
       "shows link icon thumbnail for a link attachment",
-      linkAttachment,
-      false,
+      linkDetails,
       thumbLabels.link,
     ],
     [
       "shows link icon thumbnail for a resource link attachment",
-      resourceLinkAttachment,
-      false,
+      resourceLinkDetails,
       thumbLabels.link,
     ],
     [
       "shows equella item thumbnail for a resource attachment pointing at an item summary",
-      equellaItemAttachment,
-      false,
+      equellaItemDetails,
       thumbLabels.item,
     ],
     [
       "shows html thumbnail for a web page attachment",
-      htmlAttachment,
-      false,
+      htmlDetails,
       thumbLabels.html,
     ],
     [
       "shows html thumbnail for a resource web page attachment",
-      resourceHtmlAttachment,
-      false,
+      resourceHtmlDetails,
       thumbLabels.html,
     ],
   ])(
     "%s",
     (
       _: string,
-      attachment: OEQ.Search.Attachment,
-      showPlaceHolder: boolean,
+      details: OEQ.Search.ThumbnailDetails | undefined,
       query: string
     ) => {
-      const { container } = buildOEQThumb(attachment, showPlaceHolder);
+      const { container } = render(<OEQThumb details={details} />);
       expect(queryByLabelText(container, query)).toBeInTheDocument();
     }
   );

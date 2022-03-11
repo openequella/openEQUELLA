@@ -83,13 +83,16 @@ describe("<SearchResult/>", () => {
     theme: Theme = defaultTheme
   ) => {
     const renderResult = render(
-      //This needs to be wrapped inside a BrowserRouter, to prevent an `Invariant failed: You should not use <Link> outside a <Router>` error  because of the <Link/> tag within SearchResult
+      // This needs to be wrapped inside a BrowserRouter, to prevent an
+      // `Invariant failed: You should not use <Link> outside a <Router>`
+      // error  because of the <Link/> tag within SearchResult
       <MuiThemeProvider theme={theme}>
         <BrowserRouter>
           <SearchResult
             key={itemResult.uuid}
             item={itemResult}
             highlights={[]}
+            getItemAttachments={async () => itemResult.attachments!}
           />
         </BrowserRouter>
       </MuiThemeProvider>
@@ -428,7 +431,7 @@ describe("<SearchResult/>", () => {
         mockData.keywordFoundInAttachmentObj
       );
       expect(expandedAttachment.queryByText("image.png")).toBeVisible();
-      expect(collapsedAttachment.queryByText("config.json")).not.toBeVisible();
+      expect(collapsedAttachment.queryByText("config.json")).toBeFalsy(); // i.e. not rendered so not visible
     });
 
     it("should make each attachment draggable", async () => {

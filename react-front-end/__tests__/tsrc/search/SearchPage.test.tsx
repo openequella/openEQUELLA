@@ -28,6 +28,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { omit } from "lodash";
 import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock";
 import {
   transformedBasicImageSearchResponse,
@@ -47,6 +48,7 @@ import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import { getGlobalCourseList } from "../../../tsrc/modules/LegacySelectionSessionModule";
 import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchFacetsModule from "../../../tsrc/modules/SearchFacetsModule";
+import { SearchOptions } from "../../../tsrc/modules/SearchModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
 import * as SearchPageHelper from "../../../tsrc/search/SearchPageHelper";
@@ -111,6 +113,7 @@ const defaultSearchPageOptions: SearchPageOptions = {
   dateRangeQuickModeEnabled: true,
   mimeTypeFilters: [],
   displayMode: "list",
+  includeAttachments: false, // in 'list' displayMode we exclude attachments
 };
 const defaultCollectionPrivileges = [OEQ.Acl.ACL_SEARCH_COLLECTION];
 
@@ -625,10 +628,19 @@ describe("<SearchPage/>", () => {
   it("should also update Classification list with selected categories", async () => {
     clickCategory(page.container, JAVA_CATEGORY);
     await waitForSearch(searchPromise); // The intention of this line is to avoid Jest act warning.
-    expect(SearchFacetsModule.listClassifications).toHaveBeenLastCalledWith({
-      ...defaultSearchPageOptions,
-      selectedCategories: selectedCategories,
-    });
+
+    // Drop 'includeAttachments' as it is not passed in for listClassification calls
+    const expected: SearchOptions = omit(
+      {
+        ...defaultSearchPageOptions,
+        selectedCategories: selectedCategories,
+      },
+      "includeAttachments"
+    );
+
+    expect(SearchFacetsModule.listClassifications).toHaveBeenLastCalledWith(
+      expected
+    );
   });
 
   it("should copy a search link to clipboard, and show a snackbar", async () => {
