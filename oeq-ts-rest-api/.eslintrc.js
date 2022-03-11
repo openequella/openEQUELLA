@@ -48,9 +48,19 @@ module.exports = {
       },
     ],
   },
+  overrides: [
+    {
+      files: ['*.test.ts'],
+      rules: {
+        // It is useful in tests to be able to use non-null-assertions - especially for values
+        // which will then be checked with expect matchers.
+        '@typescript-eslint/no-non-null-assertion': 'off',
+      },
+    },
+  ],
   settings: {
     jest: {
-      version: 26,
+      version: 27,
     },
   },
 };
