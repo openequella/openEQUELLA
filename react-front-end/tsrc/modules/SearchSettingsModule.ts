@@ -27,15 +27,6 @@ export const saveSearchSettingsToServer = (
 ): Promise<void> =>
   OEQ.SearchSettings.updateSearchSettings(API_BASE_URL, settings);
 
-export const getCloudSettingsFromServer =
-  (): Promise<OEQ.SearchSettings.CloudSettings> =>
-    OEQ.SearchSettings.getCloudSettings(API_BASE_URL);
-
-export const saveCloudSettingsToServer = (
-  settings: OEQ.SearchSettings.CloudSettings
-): Promise<void> =>
-  OEQ.SearchSettings.updateCloudSettings(API_BASE_URL, settings);
-
 export const defaultSearchSettings: OEQ.SearchSettings.Settings = {
   searchingShowNonLiveCheckbox: false,
   searchingDisableGallery: false,

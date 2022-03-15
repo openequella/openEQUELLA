@@ -51,24 +51,4 @@ describe('SearchSettings', () => {
       expect(settings.defaultSearchSort).toBe('RATING');
     });
   });
-
-  describe('Cloud settings', () => {
-    const defaultCloudSettings: OEQ.SearchSettings.CloudSettings = {
-      disabled: false,
-    };
-
-    it('retrieves Cloud Search settings in an institution', async () => {
-      const settings = await OEQ.SearchSettings.getCloudSettings(TC.API_PATH);
-      expect(settings).not.toBeNull();
-    });
-
-    it('updates Cloud Search settings in an institution', async () => {
-      await OEQ.SearchSettings.updateCloudSettings(TC.API_PATH, {
-        ...defaultCloudSettings,
-        disabled: true,
-      });
-      const settings = await OEQ.SearchSettings.getCloudSettings(TC.API_PATH);
-      expect(settings.disabled).toBe(true);
-    });
-  });
 });

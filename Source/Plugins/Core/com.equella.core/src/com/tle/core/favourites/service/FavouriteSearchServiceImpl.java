@@ -97,12 +97,7 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
     // which results in "no tree for xxx" error. Hence, remove "/access" if it exists.
     if (path.startsWith(WebConstants.ACCESS_PATH)
         && StringUtils.indexOfAny(
-                path,
-                new String[] {
-                  WebConstants.SEARCHING_PAGE,
-                  WebConstants.HIERARCHY_PAGE,
-                  WebConstants.CLOUDSEARCH_PAGE
-                })
+                path, new String[] {WebConstants.SEARCHING_PAGE, WebConstants.HIERARCHY_PAGE})
             > -1) {
       path = "/" + path.replaceFirst(WebConstants.ACCESS_PATH, "");
     }
