@@ -27,6 +27,11 @@ import javax.annotation.Nullable;
 public abstract class WrappedContentStream implements ContentStream {
   protected ContentStream inner;
 
+  // Set 'max-age' to 0 so that the content of cache is always stale.
+  // Hence, the browser sends every request to the the Equella server which will then
+  // re-validate the content.
+  private final String defaultCacheControl = "max-age=0, s-maxage=0, must-revalidate";
+
   public WrappedContentStream(ContentStream inner) {
     this.inner = inner;
   }
@@ -82,9 +87,13 @@ public abstract class WrappedContentStream implements ContentStream {
     return inner.getInputStream();
   }
 
+  public boolean useDefaultCacheControl() {
+    return false;
+  }
+
   @Override
   public String getCacheControl() {
-    return inner.getCacheControl();
+    return useDefaultCacheControl() ? defaultCacheControl : inner.getCacheControl();
   }
 
   @Override

@@ -182,13 +182,9 @@ public class ItemFilestoreServlet extends HttpServlet {
       this.itemId = itemId;
     }
 
-    @SuppressWarnings("nls")
     @Override
-    public String getCacheControl() {
-      // Set 'max-age' to 0 so that the content of cache is always stale.
-      // Hence, the browser sends every request to the the Equella server which will then
-      // re-validate the content.
-      return "max-age=0, s-maxage=0, must-revalidate";
+    public boolean useDefaultCacheControl() {
+      return true;
     }
 
     @Override
