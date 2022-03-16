@@ -133,7 +133,7 @@ public interface EquellaSearchResource extends SearchResource {
                   "DRAFT,LIVE,REJECTED,MODERATING,ARCHIVED,SUSPENDED,DELETED,REVIEW,PERSONAL",
               allowMultiple = true)
           @QueryParam("status")
-          String status,
+          CsvList status,
       @ApiParam(value = "An ISO date format (yyyy-MM-dd)", required = false)
           @QueryParam("modifiedAfter")
           String modifiedAfter,

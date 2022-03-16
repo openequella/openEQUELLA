@@ -67,6 +67,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.core.UriInfo;
@@ -100,7 +101,7 @@ public class SearchResourceImpl implements EquellaSearchResource {
       CsvList info,
       String showall,
       String dynaCollectionCompound,
-      String status,
+      CsvList status,
       String modifiedAfter,
       String modifiedBefore,
       String advancedSearch,
@@ -267,7 +268,7 @@ public class SearchResourceImpl implements EquellaSearchResource {
       String modifiedAfter,
       String modifiedBefore,
       String dynaCollectionCompound,
-      String status,
+      CsvList status,
       String owner,
       DefaultSearch search) {
     FreeTextBooleanQuery freetextQuery = null;
@@ -308,7 +309,11 @@ public class SearchResourceImpl implements EquellaSearchResource {
     boolean useStatus = false;
     if (status != null) {
       try {
-        search.setItemStatuses(ItemStatus.valueOf(status.toUpperCase()));
+        List<ItemStatus> statusT =
+            CsvList.asList(status).stream()
+                .map(sta -> ItemStatus.valueOf(sta.toUpperCase()))
+                .collect(Collectors.toList());
+        search.setItemStatuses(statusT);
         useStatus = true;
       } catch (IllegalArgumentException iae) {
         // Invalid status
