@@ -28,9 +28,7 @@ import { routes } from "../../mainui/routes";
 import { templateDefaults, TemplateUpdateProps } from "../../mainui/Template";
 import {
   defaultSearchSettings,
-  getCloudSettingsFromServer,
   getSearchSettingsFromServer,
-  saveCloudSettingsToServer,
   saveSearchSettingsToServer,
 } from "../../modules/SearchSettingsModule";
 import { languageStrings } from "../../util/langstrings";
@@ -43,17 +41,9 @@ const searchPageSettingsStrings =
 const SearchPageSettings = ({ updateTemplate }: TemplateUpdateProps) => {
   const [searchSettings, setSearchSettings] =
     React.useState<OEQ.SearchSettings.Settings>(defaultSearchSettings);
-  const [cloudSettings, setCloudSettings] =
-    React.useState<OEQ.SearchSettings.CloudSettings>({
-      disabled: false,
-    });
 
   const [initialSearchSettings, setInitialSearchSettings] =
     React.useState<OEQ.SearchSettings.Settings>(defaultSearchSettings);
-  const [initialCloudSettings, setInitialCloudSettings] =
-    React.useState<OEQ.SearchSettings.CloudSettings>({
-      disabled: false,
-    });
 
   const [loadSettings, setLoadSettings] = React.useState<boolean>(true);
   const [showSuccess, setShowSuccess] = React.useState<boolean>(false);
@@ -68,9 +58,7 @@ const SearchPageSettings = ({ updateTemplate }: TemplateUpdateProps) => {
     [appErrorHandler]
   );
 
-  const changesUnsaved =
-    initialCloudSettings.disabled !== cloudSettings.disabled ||
-    !shallowEqual(searchSettings, initialSearchSettings);
+  const changesUnsaved = !shallowEqual(searchSettings, initialSearchSettings);
 
   React.useEffect(() => {
     updateTemplate((tp) => ({
@@ -85,20 +73,11 @@ const SearchPageSettings = ({ updateTemplate }: TemplateUpdateProps) => {
         setSearchSettings(settings);
         setInitialSearchSettings(settings);
       })
-      .then(() =>
-        getCloudSettingsFromServer().then(
-          (settings: OEQ.SearchSettings.CloudSettings) => {
-            setCloudSettings(settings);
-            setInitialCloudSettings(settings);
-          }
-        )
-      )
       .catch(setError);
   }, [loadSettings, setError]);
 
   function handleSubmitButton() {
     saveSearchSettingsToServer(searchSettings)
-      .then(() => saveCloudSettingsToServer(cloudSettings))
       .then(() => setShowSuccess(true))
       .catch(setError)
       .finally(() => setLoadSettings(!loadSettings));
@@ -168,21 +147,6 @@ const SearchPageSettings = ({ updateTemplate }: TemplateUpdateProps) => {
                   }
                   disabled={disableSettings}
                   id="_authenticateByDefault"
-                />
-              }
-            />
-            {/*Cloud Searching*/}
-            <SettingsListControl
-              primaryText={searchPageSettingsStrings.cloudSearching}
-              secondaryText={searchPageSettingsStrings.cloudSearchingLabel}
-              control={
-                <SettingsToggleSwitch
-                  value={cloudSettings.disabled}
-                  setValue={(value) =>
-                    setCloudSettings({ ...cloudSettings, disabled: value })
-                  }
-                  disabled={disableSettings}
-                  id="cs_dc"
                 />
               }
             />

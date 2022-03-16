@@ -7,7 +7,6 @@ tests:
       - com.tle.webtests.test.searching.SearchAutoCompleteTest
       - com.tle.webtests.test.contribute.EquellaConnectorTest
       - com.tle.webtests.test.contribute.DiscoverabilityTest
-      - com.tle.webtests.test.searching.CloudSearchingTest
       - com.tle.webtests.test.users.TokenLoginTest
       - com.tle.webtests.test.dashboard.PortalsTest
       - com.tle.webtests.test.drm.DRMTest

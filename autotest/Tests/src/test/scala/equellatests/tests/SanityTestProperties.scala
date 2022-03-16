@@ -4,7 +4,6 @@ import com.tle.webtests.framework.PageContext
 import equellatests.browserpage.LoadablePage
 import equellatests.domain.{Fairness, TestLogon}
 import equellatests.instgen.fiveo._
-import equellatests.pages.cloud.CloudSearchPage
 import equellatests.pages.copyright.ManageActivationsPage
 import equellatests.pages.moderate.{ManageTasksPage, TaskListPage}
 import equellatests.pages.{HomePage, RemoteReposPage, ReportsPage}
@@ -23,8 +22,7 @@ object SanityTestProperties extends StatefulProperties("Sanity test") with Simpl
 
   object Pages extends Enumeration {
     val Home, Contribute, ManageTasks, ManageResources, TaskList, Notifications, Reports,
-    MyResources, Searching, Hierarchy, Harvester, RemoteRepos, Favourites, ManageActivations,
-    CloudSearch = Value
+    MyResources, Searching, Hierarchy, Harvester, RemoteRepos, Favourites, ManageActivations = Value
   }
   import Pages._
   case class SanityState(completedPages: Pages.ValueSet = Pages.ValueSet.empty)
@@ -60,7 +58,6 @@ object SanityTestProperties extends StatefulProperties("Sanity test") with Simpl
       case RemoteRepos       => RemoteReposPage
       case Favourites        => FavouritesPage
       case ManageActivations => ManageActivationsPage
-      case CloudSearch       => CloudSearchPage
     }
     val page = lp(b.page.ctx).load()
     (page, Prop(page.error.isEmpty).label(c.toString))
