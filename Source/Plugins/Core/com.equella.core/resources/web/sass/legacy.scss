@@ -484,7 +484,7 @@ select[multiple="multiple"] {
   border-bottom: 1px solid rgba(0, 0, 0, 0.42);
   border-radius: $standardBorderRadius $standardBorderRadius 0 0;
   background-color: #f5f5f5;
-  &:not(#q):not(.prompt) {
+  &:not(#q) {
     //so as to avoid affecting searchbars
     padding: $doubleMargin;
     font-size: 16px;
