@@ -16,7 +16,6 @@ import com.tle.webtests.pageobject.searching.SearchPage;
 import com.tle.webtests.pageobject.searching.SearchScreenOptions;
 import com.tle.webtests.pageobject.searching.SearchSettingsPage;
 import com.tle.webtests.pageobject.searching.SearchSettingsPage.Order;
-import com.tle.webtests.pageobject.searching.SearchTabsPage;
 import com.tle.webtests.pageobject.searching.ShareSearchQuerySection;
 import com.tle.webtests.test.AbstractCleanupAutoTest;
 import java.io.InputStream;
@@ -125,32 +124,6 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
 
     results = SearchPage.searchExact(context, "SearchSettings - Draft Item");
     assertTrue(!results.doesResultExist("SearchSettings - Draft Item", 1));
-  }
-
-  @Test
-  public void testDisableCloud() {
-    logon("AutoTest", "automated");
-    SearchSettingsPage ssp = new SettingsPage(context).load().searchSettings().load();
-    ssp.setDisableCloud(true);
-    ssp.save();
-
-    // go to search page, test non-cloudiness
-    SearchPage searchPage = new SearchPage(context).load();
-    SearchTabsPage searchTabs = searchPage.getSearchTabs();
-    assertTrue(!searchTabs.hasTab("cloud"), "Can still see cloud tab");
-
-    ssp = new SettingsPage(context).load().searchSettings().load();
-    assertTrue(ssp.isDisableCloud(), "Cloud was not disabled");
-    ssp.setDisableCloud(false);
-    ssp.save();
-
-    // go to search page, test cloudiness
-    searchPage = new SearchPage(context).load();
-    searchTabs = searchPage.getSearchTabs();
-    assertTrue(searchTabs.hasTab("cloud"), "Can not see cloud tab");
-
-    ssp = new SettingsPage(context).load().searchSettings().load();
-    assertTrue(!ssp.isDisableCloud(), "Cloud was not enabled");
   }
 
   @Test
