@@ -254,7 +254,7 @@ jobs:
           node-version: "${{ steps.nvm.outputs.NVMRC }}"
 
       - name: Download Artefacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           path: Artefacts
           name: Artefacts
@@ -385,7 +385,7 @@ jobs:
           node-version: "${{ steps.nvm.outputs.NVMRC }}"
 
       - name: Download installer
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           path: Artefacts
           name: Artefacts
