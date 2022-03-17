@@ -26,7 +26,7 @@ val fs2Version      = "2.4.4"
 val guiceVersion    = "3.0"
 val jsassVersion    = "5.10.4"
 val jsoupVersion    = "1.14.3"
-val springVersion   = "5.3.16"
+val springVersion   = "5.3.17"
 val sttpVersion     = "1.7.2"
 val tikaVersion     = "2.3.0"
 
@@ -296,7 +296,7 @@ excludeDependencies ++= Seq(
   // Spring 5 added a default logging bridge.  In oEQ, this results in
   // a [deduplicate: different file contents found in the following] error
   // ...org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.7.30.jar:org/apache/commons/logging/Log.class
-  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.16.jar:org/apache/commons/logging/Log.class
+  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.17.jar:org/apache/commons/logging/Log.class
   // As per https://github.com/spring-projects/spring-framework/issues/20611 ,
   // since we already have logging in place, we can safely exclude the dep from spring.
   "org.springframework" % "spring-jcl",
