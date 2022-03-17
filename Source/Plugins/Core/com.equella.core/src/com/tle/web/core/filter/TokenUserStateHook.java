@@ -26,6 +26,8 @@ import com.tle.core.guice.Bind;
 import com.tle.core.services.user.UserService;
 import com.tle.exceptions.TokenException;
 import com.tle.web.core.filter.UserStateResult.Result;
+import com.tle.web.login.LogonSection;
+import com.tle.web.template.RenderNewTemplate;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
@@ -62,7 +64,17 @@ public class TokenUserStateHook implements UserStateHook {
           return null;
         } catch (TokenException ex) {
           LOGGER.warn("Error with token:" + token);
-          request.setAttribute(WebConstants.KEY_LOGIN_EXCEPTION, ex);
+
+          // We can save the login token error in the request attribute in Old UI, but we can't do
+          // this
+          // in New UI because New UI sends another POST request to query the page content. So we
+          // should
+          // call 'LogonSection.setLoginTokenError' to save the error.
+          if (RenderNewTemplate.isNewUIEnabled()) {
+            LogonSection.setLoginTokenError(ex.getLocalizedMessage());
+          } else {
+            request.setAttribute(WebConstants.KEY_LOGIN_EXCEPTION, ex);
+          }
 
           if (!noExistingSessionOrGuest) {
             // We want to make sure they logout of their invalid

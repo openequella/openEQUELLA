@@ -67,6 +67,7 @@ import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.template.Decorations;
 import com.tle.web.template.Decorations.MenuMode;
+import com.tle.web.template.RenderNewTemplate;
 import hurl.build.UriBuilder;
 import java.io.IOException;
 import java.net.URI;
@@ -115,6 +116,18 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
   @Component
   @PlugKey("logon.login")
   private Button logonButton;
+
+  private static String loginTokenError;
+
+  /**
+   * Save a login token error captured when login with a shared secret in New UI. This method should
+   * only be used when New UI is turned on.
+   *
+   * @param error Error message which is typically extracted from `TokenException`.
+   */
+  public static void setLoginTokenError(String error) {
+    loginTokenError = error;
+  }
 
   @Override
   public String getDefaultPropertyName() {
@@ -244,6 +257,12 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
       }
     }
     model.setLoginLinks(loginLinksRenderables);
+
+    // In New UI, if a login token error is captured, update the model to show the error.
+    if (RenderNewTemplate.isNewUIEnabled() && loginTokenError != null) {
+      model.setError(loginTokenError);
+      setLoginTokenError(null);
+    }
 
     return viewFactory.createResult("logon/logon.ftl", context);
   }
