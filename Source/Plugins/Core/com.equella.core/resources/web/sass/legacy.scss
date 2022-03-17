@@ -484,7 +484,7 @@ select[multiple="multiple"] {
   border-bottom: 1px solid rgba(0, 0, 0, 0.42);
   border-radius: $standardBorderRadius $standardBorderRadius 0 0;
   background-color: #f5f5f5;
-  &:not(#q) {
+  &:not(#q):not(.prompt) {
     //so as to avoid affecting searchbars
     padding: $doubleMargin;
     font-size: 16px;
@@ -4602,6 +4602,12 @@ img.warningimg {
   margin: 0 3px 0 0;
   padding: 5px 5px $minimalMargin;
   box-sizing: border-box;
+}
+
+.compactQuery input.prompt {
+  //fix overlapping issue
+  padding: $doubleMargin;
+  font-size: 16px;
 }
 
 .compactQuery .compactQueryButton {
