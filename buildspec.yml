@@ -2,7 +2,6 @@ version: 0.2
 
 env:
   variables:
-    # TODO [SpringHib5] keep this in sync with the appropriate oEQ-Kaltura branch before merging into `develop`, and eventually into `master`.
     KALTURA_BRANCH: "master"
     AUTOTEST_CONFIG: "autotest/codebuild.conf"
     EQ_EXIFTOOL_PATH: "/usr/bin/exiftool"
