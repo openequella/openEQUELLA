@@ -119,6 +119,7 @@ public class SearchResourceImpl implements EquellaSearchResource {
     final int offset = (start < 0 ? 0 : start);
     final int count = (length < 0 ? 10 : length);
     final List<String> infos = CsvList.asList(info, ItemSerializerService.CATEGORY_BASIC);
+    final List<String> statuses = Optional.ofNullable(status).map(CsvList::asList).orElse(null);
 
     // String dynaCollectionCompound =
     // uriInfo.getQueryParameters().getFirst("dynacollection");
@@ -149,7 +150,7 @@ public class SearchResourceImpl implements EquellaSearchResource {
             modifiedAfter,
             modifiedBefore,
             dynaCollectionCompound,
-            status,
+            statuses,
             owner,
             new DefaultSearch());
 
@@ -268,7 +269,7 @@ public class SearchResourceImpl implements EquellaSearchResource {
       String modifiedAfter,
       String modifiedBefore,
       String dynaCollectionCompound,
-      CsvList status,
+      List<String> statuses,
       String owner,
       DefaultSearch search) {
     FreeTextBooleanQuery freetextQuery = null;
@@ -307,16 +308,18 @@ public class SearchResourceImpl implements EquellaSearchResource {
     search.setFreeTextQuery(freetextQuery);
 
     boolean useStatus = false;
-    if (status != null) {
+    if (statuses != null) {
       try {
-        List<ItemStatus> statusT =
-            CsvList.asList(status).stream()
-                .map(sta -> ItemStatus.valueOf(sta.toUpperCase()))
+        List<ItemStatus> itemStatuses =
+            statuses.stream()
+                .map(String::toUpperCase)
+                .map(ItemStatus::valueOf)
                 .collect(Collectors.toList());
-        search.setItemStatuses(statusT);
+        search.setItemStatuses(itemStatuses);
         useStatus = true;
       } catch (IllegalArgumentException iae) {
         // Invalid status
+        LOGGER.warn("Illegal statuses: " + statuses.toString());
       }
     }
     if (!useStatus && onlyLive) {
