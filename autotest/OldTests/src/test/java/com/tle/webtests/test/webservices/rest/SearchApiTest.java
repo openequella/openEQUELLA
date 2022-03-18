@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.tle.beans.item.ItemStatus;
 import com.tle.common.Pair;
 import java.net.URI;
 import java.util.HashMap;
@@ -112,6 +113,32 @@ public class SearchApiTest extends AbstractRestApiTest {
       String[] itemDeets = ITEMS[itemIndexes[i]];
       asserter.assertBasic((ObjectNode) itemNode, itemDeets[0], itemDeets[1]);
     }
+  }
+
+  @Test
+  public void testStatuses() throws Exception {
+    String token = requestToken(OAUTH_CLIENT_ID);
+
+    JsonNode liveResultsNode =
+        doSearch(BASIC, SEARCH_API_TEST, ImmutableMap.of("status", ItemStatus.LIVE), token);
+    Integer liveItemLength = liveResultsNode.get("length").asInt();
+    Integer liveItemAvailable = liveResultsNode.get("available").asInt();
+
+    JsonNode draftResultsNode =
+        doSearch(BASIC, SEARCH_API_TEST, ImmutableMap.of("status", ItemStatus.DRAFT), token);
+    Integer draftItemLength = draftResultsNode.get("length").asInt();
+    Integer draftItemAvailable = draftResultsNode.get("available").asInt();
+
+    JsonNode draftAndLiveResultsNode =
+        doSearch(
+            BASIC,
+            SEARCH_API_TEST,
+            ImmutableMap.of("status", String.format("%s,%s", ItemStatus.DRAFT, ItemStatus.LIVE)),
+            token);
+    assertEquals(draftAndLiveResultsNode.get("start").asInt(), 0);
+    assertEquals(draftAndLiveResultsNode.get("length").asInt(), liveItemLength + draftItemLength);
+    assertEquals(
+        draftAndLiveResultsNode.get("available").asInt(), liveItemAvailable + draftItemAvailable);
   }
 
   @Test
