@@ -42,6 +42,7 @@ import com.tle.web.sections.js.generic.function.ParentFrameFunction;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
+import com.tle.web.template.RenderNewTemplate;
 import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,6 +112,7 @@ public class LMSAuthDialog extends AbstractOkayableDialog<LMSAuthDialog.Model> {
   @EventHandlerMethod
   public void finishedAuth(SectionInfo info) {
     LOGGER.trace("Finishing up the auth sequence.");
+    info.setAttribute(RenderNewTemplate.DisableNewUI(), true);
     closeDialog(info, parentCallback, (Object) null);
   }
 
