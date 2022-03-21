@@ -44,7 +44,7 @@ public class TokenLoginTest extends AbstractSessionTest {
     token = TokenSecurity.createSecureToken("tokenuser", "sso_group", "sso_group", null);
     openHome(token);
 
-    // Browser should stay in the login page now the page should show the token warning.
+    // Browser should stay in the login page and show the token warning.
     new LoginPage(context).get();
     assertTrue(isTextPresent("You do not have permissions to use this token"));
   }
