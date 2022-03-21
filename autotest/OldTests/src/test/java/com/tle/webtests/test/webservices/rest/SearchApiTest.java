@@ -115,6 +115,34 @@ public class SearchApiTest extends AbstractRestApiTest {
   }
 
   @Test
+  public void testStatuses() throws Exception {
+    String token = requestToken(OAUTH_CLIENT_ID);
+    final String LIVE = "LIVE";
+    final String DRAFT = "DRAFT";
+
+    JsonNode liveResultsNode =
+        doSearch(BASIC, SEARCH_API_TEST, ImmutableMap.of("status", LIVE), token);
+    Integer liveItemLength = liveResultsNode.get("length").asInt();
+    Integer liveItemAvailable = liveResultsNode.get("available").asInt();
+
+    JsonNode draftResultsNode =
+        doSearch(BASIC, SEARCH_API_TEST, ImmutableMap.of("status", DRAFT), token);
+    Integer draftItemLength = draftResultsNode.get("length").asInt();
+    Integer draftItemAvailable = draftResultsNode.get("available").asInt();
+
+    JsonNode draftAndLiveResultsNode =
+        doSearch(
+            BASIC,
+            SEARCH_API_TEST,
+            ImmutableMap.of("status", String.format("%s,%s", DRAFT, LIVE)),
+            token);
+    assertEquals(draftAndLiveResultsNode.get("start").asInt(), 0);
+    assertEquals(draftAndLiveResultsNode.get("length").asInt(), liveItemLength + draftItemLength);
+    assertEquals(
+        draftAndLiveResultsNode.get("available").asInt(), liveItemAvailable + draftItemAvailable);
+  }
+
+  @Test
   public void testStartAndLength() throws Exception {
     String token = requestToken(OAUTH_CLIENT_ID);
     JsonNode resultsNode =
