@@ -5,6 +5,7 @@ import static org.testng.Assert.assertTrue;
 
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.HomePage;
+import com.tle.webtests.pageobject.LoginPage;
 import com.tle.webtests.test.AbstractSessionTest;
 import java.net.URLEncoder;
 import org.testng.annotations.Test;
@@ -42,9 +43,9 @@ public class TokenLoginTest extends AbstractSessionTest {
     logout();
     token = TokenSecurity.createSecureToken("tokenuser", "sso_group", "sso_group", null);
     openHome(token);
-    if (!home.usingNewUI()) {
-      // error handling for this is not yet implemented in the new UI
-      assertTrue(isTextPresent("You do not have permissions to use this token"));
-    }
+
+    // Browser should stay in the login page and show the token warning.
+    new LoginPage(context).get();
+    assertTrue(isTextPresent("You do not have permissions to use this token"));
   }
 }

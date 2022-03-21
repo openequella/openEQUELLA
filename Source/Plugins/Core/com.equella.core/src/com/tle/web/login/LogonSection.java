@@ -67,6 +67,7 @@ import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.template.Decorations;
 import com.tle.web.template.Decorations.MenuMode;
+import com.tle.web.template.RenderNewTemplate;
 import hurl.build.UriBuilder;
 import java.io.IOException;
 import java.net.URI;
@@ -74,6 +75,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import javax.inject.Inject;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -244,6 +246,16 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
       }
     }
     model.setLoginLinks(loginLinksRenderables);
+
+    // In New UI, if a login token error is captured and saved in Session, update the model
+    // to show the error and then clear the error from Session.
+    Optional.ofNullable(sessionService.<String>getAttribute(WebConstants.KEY_LOGIN_EXCEPTION))
+        .filter(err -> RenderNewTemplate.isNewUIEnabled())
+        .ifPresent(
+            err -> {
+              model.setError(err);
+              sessionService.removeAttribute(WebConstants.KEY_LOGIN_EXCEPTION);
+            });
 
     return viewFactory.createResult("logon/logon.ftl", context);
   }
