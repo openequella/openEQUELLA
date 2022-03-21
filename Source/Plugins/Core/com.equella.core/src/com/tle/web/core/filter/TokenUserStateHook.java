@@ -67,10 +67,10 @@ public class TokenUserStateHook implements UserStateHook {
           LOGGER.warn("Error with token:" + token);
 
           // We can save the login token error in the request attribute in Old UI, but we can't do
-          // this
-          // in New UI because New UI sends another POST request to query the page content. So we
-          // should
-          // call 'LogonSection.setLoginTokenError' to save the error.
+          // this in New UI because it sends another POST request to query the page content.
+          // Instead,
+          // we need to store it in the current session so that it can be persisted across the two
+          // requests.
           if (RenderNewTemplate.isNewUIEnabled()) {
             sessionService.setAttribute(WebConstants.KEY_LOGIN_EXCEPTION, ex.getLocalizedMessage());
           } else {
