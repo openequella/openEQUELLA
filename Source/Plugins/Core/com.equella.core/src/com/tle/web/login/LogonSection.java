@@ -75,6 +75,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import javax.inject.Inject;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -248,11 +249,13 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
 
     // In New UI, if a login token error is captured and saved in Session, update the model
     // to show the error and then clear the error from Session.
-    String loginTokenError = sessionService.getAttribute(WebConstants.KEY_LOGIN_EXCEPTION);
-    if (RenderNewTemplate.isNewUIEnabled() && loginTokenError != null) {
-      model.setError(loginTokenError);
-      sessionService.removeAttribute(WebConstants.KEY_LOGIN_EXCEPTION);
-    }
+    Optional.ofNullable(sessionService.<String>getAttribute(WebConstants.KEY_LOGIN_EXCEPTION))
+        .filter(err -> RenderNewTemplate.isNewUIEnabled())
+        .ifPresent(
+            err -> {
+              model.setError(err);
+              sessionService.removeAttribute(WebConstants.KEY_LOGIN_EXCEPTION);
+            });
 
     return viewFactory.createResult("logon/logon.ftl", context);
   }
