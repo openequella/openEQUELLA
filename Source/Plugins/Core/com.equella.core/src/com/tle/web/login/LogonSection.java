@@ -117,18 +117,6 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
   @PlugKey("logon.login")
   private Button logonButton;
 
-  private static String loginTokenError;
-
-  /**
-   * Save a login token error captured when login with a shared secret in New UI. This method should
-   * only be used when New UI is turned on.
-   *
-   * @param error Error message which is typically extracted from `TokenException`.
-   */
-  public static void setLoginTokenError(String error) {
-    loginTokenError = error;
-  }
-
   @Override
   public String getDefaultPropertyName() {
     return "";
@@ -258,10 +246,12 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
     }
     model.setLoginLinks(loginLinksRenderables);
 
-    // In New UI, if a login token error is captured, update the model to show the error.
+    // In New UI, if a login token error is captured and saved in Session, update the model
+    // to show the error and then clear the error from Session.
+    String loginTokenError = sessionService.getAttribute(WebConstants.KEY_LOGIN_EXCEPTION);
     if (RenderNewTemplate.isNewUIEnabled() && loginTokenError != null) {
       model.setError(loginTokenError);
-      setLoginTokenError(null);
+      sessionService.removeAttribute(WebConstants.KEY_LOGIN_EXCEPTION);
     }
 
     return viewFactory.createResult("logon/logon.ftl", context);

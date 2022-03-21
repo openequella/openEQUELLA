@@ -24,9 +24,9 @@ import com.tle.common.Check;
 import com.tle.common.usermanagement.user.UserState;
 import com.tle.core.guice.Bind;
 import com.tle.core.services.user.UserService;
+import com.tle.core.services.user.UserSessionService;
 import com.tle.exceptions.TokenException;
 import com.tle.web.core.filter.UserStateResult.Result;
-import com.tle.web.login.LogonSection;
 import com.tle.web.template.RenderNewTemplate;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -41,6 +41,7 @@ public class TokenUserStateHook implements UserStateHook {
   private static final Logger LOGGER = LoggerFactory.getLogger(TokenUserStateHook.class);
 
   @Inject private UserService userService;
+  @Inject private UserSessionService sessionService;
 
   @Override
   public UserStateResult getUserState(HttpServletRequest request, UserState userState)
@@ -71,7 +72,7 @@ public class TokenUserStateHook implements UserStateHook {
           // should
           // call 'LogonSection.setLoginTokenError' to save the error.
           if (RenderNewTemplate.isNewUIEnabled()) {
-            LogonSection.setLoginTokenError(ex.getLocalizedMessage());
+            sessionService.setAttribute(WebConstants.KEY_LOGIN_EXCEPTION, ex.getLocalizedMessage());
           } else {
             request.setAttribute(WebConstants.KEY_LOGIN_EXCEPTION, ex);
           }
