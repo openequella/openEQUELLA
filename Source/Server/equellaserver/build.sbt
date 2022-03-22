@@ -156,8 +156,8 @@ libraryDependencies ++= Seq(
   "org.apache.httpcomponents" % "httpclient"       % "4.5.13",
   "org.apache.httpcomponents" % "httpcore"         % "4.4.15",
   "org.apache.lucene"         % "lucene-analyzers" % "3.6.2",
-  "org.apache.lucene"         % "lucene-core"      % "3.6.2",
-  "org.apache.lucene"         % "lucene-queries"   % "3.6.2",
+  "org.apache.lucene"         % "lucene-core"      % "9.1.0",
+  "org.apache.lucene"         % "lucene-queries"   % "9.1.0",
   "org.apache.rampart"        % "rampart-core"     % "1.6.3" excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces")
