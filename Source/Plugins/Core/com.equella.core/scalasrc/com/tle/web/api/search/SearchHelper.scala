@@ -253,9 +253,10 @@ object SearchHelper {
     * @return The result of converting `item` to a `SearchResultItem`.
     */
   def convertToItem(item: SearchItem, includeAttachments: Boolean = true): SearchResultItem = {
-    val key                      = item.idKey
-    val bean                     = item.bean
-    val sanitisedAttachmentBeans = bean.getAttachments.asScala.map(sanitiseAttachmentBean).toList
+    val key  = item.idKey
+    val bean = item.bean
+    val sanitisedAttachmentBeans =
+      Option(bean.getAttachments).map(_.asScala.map(sanitiseAttachmentBean).toList)
 
     SearchResultItem(
       uuid = key.getUuid,
@@ -286,12 +287,12 @@ object SearchHelper {
   /**
     * Convert a list of AttachmentBean to a list of SearchResultAttachment
     */
-  def convertToAttachment(attachmentBeans: List[AttachmentBean],
+  def convertToAttachment(attachmentBeans: Option[List[AttachmentBean]],
                           itemKey: ItemIdKey): Option[List[SearchResultAttachment]] = {
     lazy val hasRestrictedAttachmentPrivileges: Boolean =
       hasAcl(AttachmentConfigConstants.VIEW_RESTRICTED_ATTACHMENTS)
 
-    Option(attachmentBeans).map(
+    attachmentBeans.map(
       beans =>
         beans
         // Filter out restricted attachments if the user does not have permissions to view them
@@ -349,7 +350,7 @@ object SearchHelper {
   def isLatestVersion(itemID: ItemIdKey): Boolean =
     itemID.getVersion == LegacyGuice.itemService.getLatestVersion(itemID.getUuid)
 
-  def getThumbnailDetails(attachmentBeans: List[AttachmentBean],
+  def getThumbnailDetails(attachmentBeans: Option[List[AttachmentBean]],
                           itemKey: ItemIdKey): Option[ThumbnailDetails] = {
     lazy val hasRestrictedAttachmentPrivileges: Boolean =
       hasAcl(AttachmentConfigConstants.VIEW_RESTRICTED_ATTACHMENTS)
@@ -378,7 +379,7 @@ object SearchHelper {
         })
         .flatMap(_.links.asScala.get(ItemLinkServiceImpl.REL_THUMB))
 
-    Option(attachmentBeans)
+    attachmentBeans
       .flatMap(
         _.find(isViewable(hasRestrictedAttachmentPrivileges))
       )
