@@ -253,8 +253,10 @@ object SearchHelper {
     * @return The result of converting `item` to a `SearchResultItem`.
     */
   def convertToItem(item: SearchItem, includeAttachments: Boolean = true): SearchResultItem = {
-    val key  = item.idKey
-    val bean = item.bean
+    val key                      = item.idKey
+    val bean                     = item.bean
+    val sanitisedAttachmentBeans = bean.getAttachments.asScala.map(sanitiseAttachmentBean).toList
+
     SearchResultItem(
       uuid = key.getUuid,
       version = key.getVersion,
@@ -267,9 +269,10 @@ object SearchHelper {
       commentCount = getItemCommentCount(key),
       starRatings = bean.getRating,
       attachmentCount = Option(bean.getAttachments).map(_.size).getOrElse(0),
-      attachments = if (includeAttachments) convertToAttachment(bean.getAttachments, key) else None,
+      attachments =
+        if (includeAttachments) convertToAttachment(sanitisedAttachmentBeans, key) else None,
       thumbnail = bean.getThumbnail,
-      thumbnailDetails = getThumbnailDetails(bean.getAttachments, key),
+      thumbnailDetails = getThumbnailDetails(sanitisedAttachmentBeans, key),
       displayFields = bean.getDisplayFields.asScala.toList,
       displayOptions = Option(bean.getDisplayOptions),
       keywordFoundInAttachment = item.keywordFound,
@@ -283,19 +286,18 @@ object SearchHelper {
   /**
     * Convert a list of AttachmentBean to a list of SearchResultAttachment
     */
-  def convertToAttachment(attachmentBeans: java.util.List[AttachmentBean],
+  def convertToAttachment(attachmentBeans: List[AttachmentBean],
                           itemKey: ItemIdKey): Option[List[SearchResultAttachment]] = {
     lazy val hasRestrictedAttachmentPrivileges: Boolean =
       hasAcl(AttachmentConfigConstants.VIEW_RESTRICTED_ATTACHMENTS)
 
     Option(attachmentBeans).map(
       beans =>
-        beans.asScala
+        beans
         // Filter out restricted attachments if the user does not have permissions to view them
           .filter(isViewable(hasRestrictedAttachmentPrivileges))
-          .map(sanitiseAttachmentBean)
           .map(toSearchResultAttachment(itemKey, _))
-          .toList)
+    )
   }
 
   def getItemDrmStatus(itemKey: ItemIdKey): Option[DrmStatus] = {
@@ -347,7 +349,7 @@ object SearchHelper {
   def isLatestVersion(itemID: ItemIdKey): Boolean =
     itemID.getVersion == LegacyGuice.itemService.getLatestVersion(itemID.getUuid)
 
-  def getThumbnailDetails(attachmentBeans: java.util.List[AttachmentBean],
+  def getThumbnailDetails(attachmentBeans: List[AttachmentBean],
                           itemKey: ItemIdKey): Option[ThumbnailDetails] = {
     lazy val hasRestrictedAttachmentPrivileges: Boolean =
       hasAcl(AttachmentConfigConstants.VIEW_RESTRICTED_ATTACHMENTS)
@@ -378,8 +380,7 @@ object SearchHelper {
 
     Option(attachmentBeans)
       .flatMap(
-        _.asScala
-          .find(isViewable(hasRestrictedAttachmentPrivileges))
+        _.find(isViewable(hasRestrictedAttachmentPrivileges))
       )
       .map(toSearchResultAttachment(itemKey, _))
       .map(
