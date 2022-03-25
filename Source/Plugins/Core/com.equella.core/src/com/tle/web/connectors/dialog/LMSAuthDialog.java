@@ -37,6 +37,7 @@ import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.dialog.AbstractOkayableDialog;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.js.BookmarkAndModify;
+import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.generic.function.CallAndReferenceFunction;
 import com.tle.web.sections.js.generic.function.ParentFrameFunction;
 import com.tle.web.sections.render.Label;
@@ -62,6 +63,11 @@ public class LMSAuthDialog extends AbstractOkayableDialog<LMSAuthDialog.Model> {
 
   @ViewFactory private FreemarkerFactory view;
 
+  /*
+  In order to return the correct function to automatically close the auth dialog in new UI,
+  add this property to overwrite the close function.
+   */
+  private JSCallable customCloseFunction;
   private ParentFrameFunction parentCallback;
   @Nullable private LMSAuthUrlCallable authUrlCallable;
 
@@ -107,6 +113,22 @@ public class LMSAuthDialog extends AbstractOkayableDialog<LMSAuthDialog.Model> {
   public void treeFinished(String id, SectionTree tree) {
     super.treeFinished(id, tree);
     parentCallback = new ParentFrameFunction(CallAndReferenceFunction.get(getOkCallback(), this));
+  }
+
+  public JSCallable getCustomCloseFunction() {
+    return this.customCloseFunction;
+  }
+
+  public void setCustomCloseFunction(JSCallable func) {
+    this.customCloseFunction = func;
+  }
+
+  @Override
+  public JSCallable getCloseFunction() {
+    if (customCloseFunction != null) {
+      return getCustomCloseFunction();
+    }
+    return super.getCloseFunction();
   }
 
   @EventHandlerMethod

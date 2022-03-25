@@ -40,6 +40,8 @@ import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.events.js.EventGenerator;
+import com.tle.web.sections.jquery.libraries.JQueryFancyBox;
+import com.tle.web.sections.js.generic.function.ParentFrameFunction;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.result.util.KeyLabel;
@@ -47,6 +49,7 @@ import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.Div;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
+import com.tle.web.template.RenderNewTemplate;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -125,6 +128,19 @@ public class BrightspaceConnectorEditor
   @Override
   protected SectionRenderable renderFields(
       RenderEventContext context, EntityEditingSession<ConnectorEditingBean, Connector> session) {
+    // Set custom close function to auto close fancy dialog in new UI.
+    // Because the script is inside the iframe so the close function should be a
+    // ParentFrameFunction.
+    // Otherwise, it won't be able to close the auth dialog where outside the iframe.
+    // Besides, this change will cause redundant submission (don't know why) and pop up an alert in
+    // old UI,
+    // therefore reset to null if in old UI (the whole page will be refreshed and dialog will
+    // disappear anyway).
+    if (RenderNewTemplate.isNewUIEnabled()) {
+      authDialog.setCustomCloseFunction(new ParentFrameFunction(JQueryFancyBox.CLOSE));
+    } else {
+      authDialog.setCustomCloseFunction(null);
+    }
     final BrightspaceConnectorEditorModel model = getModel(context);
     final ConnectorEditingBean connector = session.getBean();
 
