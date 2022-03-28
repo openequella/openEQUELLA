@@ -20,6 +20,7 @@ package com.tle.web.api.search;
 
 import com.tle.common.interfaces.CsvList;
 import com.tle.web.api.interfaces.beans.SearchBean;
+import com.tle.web.api.item.interfaces.ItemResource;
 import com.tle.web.api.item.interfaces.beans.ItemBean;
 import com.tle.web.api.search.interfaces.SearchResource;
 import io.swagger.annotations.Api;
@@ -108,7 +109,12 @@ public interface EquellaSearchResource extends SearchResource {
               required = false)
           @QueryParam("where")
           String where,
-      @ApiParam(value = "How much information to return for the results", required = false)
+      @ApiParam(
+              value =
+                  "How much information to return for the results"
+                      + "\nAvailable values: "
+                      + ItemResource.ALL_ALLOWABLE_INFOS,
+              required = false)
           @QueryParam("info")
           CsvList info,
       @ApiParam(
@@ -121,7 +127,13 @@ public interface EquellaSearchResource extends SearchResource {
       @ApiParam(value = "single dynamic collection uuid (:virtualized value)", required = false)
           @QueryParam("dynacollection")
           String dynaCollectionCompound,
-      @ApiParam(value = "Filter by item status", required = false) @QueryParam("status")
+      @ApiParam(
+              value =
+                  "Filter by item status"
+                      + "\nAvailable values: "
+                      + "DRAFT,LIVE,REJECTED,MODERATING,ARCHIVED,SUSPENDED,DELETED,REVIEW,PERSONAL",
+              required = false)
+          @QueryParam("status")
           CsvList status,
       @ApiParam(value = "An ISO date format (yyyy-MM-dd)", required = false)
           @QueryParam("modifiedAfter")
