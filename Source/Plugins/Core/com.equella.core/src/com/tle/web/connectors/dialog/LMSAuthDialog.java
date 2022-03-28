@@ -40,7 +40,6 @@ import com.tle.web.sections.events.js.BookmarkAndModify;
 import com.tle.web.sections.jquery.JQuerySelector;
 import com.tle.web.sections.jquery.JQuerySelector.Type;
 import com.tle.web.sections.jquery.JQueryStatement;
-import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.generic.expression.ScriptExpression;
 import com.tle.web.sections.js.generic.function.CallAndReferenceFunction;
 import com.tle.web.sections.js.generic.function.ParentFrameFunction;
@@ -142,13 +141,8 @@ public class LMSAuthDialog extends AbstractOkayableDialog<LMSAuthDialog.Model> {
     closeBtn.setContextExpr(
         new ScriptExpression(
             "window.parent.document")); // The script is possible in the iframe, for example in
-                                        // BrightSpace.
+    // BrightSpace.
     return new JQueryStatement(closeBtn, new ScriptExpression("click()")); // Click the button
-  }
-
-  @Override
-  public JSCallable getCloseFunction() {
-    return super.getCloseFunction();
   }
 
   @EventHandlerMethod
