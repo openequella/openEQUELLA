@@ -37,9 +37,14 @@ import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.dialog.AbstractOkayableDialog;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.js.BookmarkAndModify;
+import com.tle.web.sections.jquery.JQuerySelector;
+import com.tle.web.sections.jquery.JQuerySelector.Type;
+import com.tle.web.sections.jquery.JQueryStatement;
 import com.tle.web.sections.js.JSCallable;
+import com.tle.web.sections.js.generic.expression.ScriptExpression;
 import com.tle.web.sections.js.generic.function.CallAndReferenceFunction;
 import com.tle.web.sections.js.generic.function.ParentFrameFunction;
+import com.tle.web.sections.js.generic.statement.FunctionCallStatement;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
@@ -64,10 +69,10 @@ public class LMSAuthDialog extends AbstractOkayableDialog<LMSAuthDialog.Model> {
   @ViewFactory private FreemarkerFactory view;
 
   /*
-  In order to return the correct function to automatically close the auth dialog in new UI,
-  add this property to overwrite the close function.
-   */
-  private JSCallable customCloseFunction;
+   This property controls whether it needs to add a new JS statement which mocks a click action on close button
+   in order to correctly close the auth dialog.
+  */
+  private boolean isUseMockCloseDialog;
   private ParentFrameFunction parentCallback;
   @Nullable private LMSAuthUrlCallable authUrlCallable;
 
@@ -115,27 +120,46 @@ public class LMSAuthDialog extends AbstractOkayableDialog<LMSAuthDialog.Model> {
     parentCallback = new ParentFrameFunction(CallAndReferenceFunction.get(getOkCallback(), this));
   }
 
-  public JSCallable getCustomCloseFunction() {
-    return this.customCloseFunction;
+  public boolean isUseMockCloseDialog() {
+    return this.isUseMockCloseDialog;
   }
 
-  public void setCustomCloseFunction(JSCallable func) {
-    this.customCloseFunction = func;
+  public void setIsUseMockCloseDialog(boolean value) {
+    this.isUseMockCloseDialog = value;
+  }
+
+  /**
+   * Js statement for closing the dialog by clicking the close button. Because the script could be
+   * existing inside the iframe so the close function should have window.parent.ducoment prefix.
+   * Otherwise, it won't be able to close the auth dialog where outside the iframe.
+   */
+  private JQueryStatement mockCloseDialog(SectionInfo info) {
+    JQuerySelector closeBtn =
+        new JQuerySelector(
+            Type.ID,
+            getElementId(info)
+                + "_close"); // ID of the close button must be the dialog id plus "_close".
+    closeBtn.setContextExpr(
+        new ScriptExpression(
+            "window.parent.document")); // The script is possible in the iframe, for example in
+                                        // BrightSpace.
+    return new JQueryStatement(closeBtn, new ScriptExpression("click()")); // Click the button
   }
 
   @Override
   public JSCallable getCloseFunction() {
-    if (customCloseFunction != null) {
-      return getCustomCloseFunction();
-    }
     return super.getCloseFunction();
   }
 
   @EventHandlerMethod
   public void finishedAuth(SectionInfo info) {
     LOGGER.trace("Finishing up the auth sequence.");
+    // Keep in old new to avoid 500 error in new UI.
     info.setAttribute(RenderNewTemplate.DisableNewUI(), true);
-    closeDialog(info, parentCallback, (Object) null);
+    closeDialog(
+        info,
+        new FunctionCallStatement(parentCallback),
+        this.isUseMockCloseDialog ? this.mockCloseDialog(info) : null);
   }
 
   @EventHandlerMethod
