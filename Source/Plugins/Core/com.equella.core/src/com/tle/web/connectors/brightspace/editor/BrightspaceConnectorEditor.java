@@ -174,6 +174,8 @@ public class BrightspaceConnectorEditor
         ajax.getAjaxUpdateDomFunction(
             tree, this, events.getEventHandler("testApp"), getAjaxDivId()));
     authDialog.setOkCallback(events.getSubmitValuesFunction("adminSignIn"));
+    // Use mockCloseDialog function to correctly close the fancy dialog in BrightSpace.
+    authDialog.setIsExternalAuthDialog(true);
   }
 
   @EventHandlerMethod
