@@ -71,7 +71,7 @@ public class LMSAuthDialog extends AbstractOkayableDialog<LMSAuthDialog.Model> {
    This property controls whether it needs to add a new JS statement which mocks a click action on close button
    in order to correctly close the auth dialog.
   */
-  private boolean isUseMockCloseDialog;
+  private boolean isExternalAuthDialog;
   private ParentFrameFunction parentCallback;
   @Nullable private LMSAuthUrlCallable authUrlCallable;
 
@@ -119,20 +119,20 @@ public class LMSAuthDialog extends AbstractOkayableDialog<LMSAuthDialog.Model> {
     parentCallback = new ParentFrameFunction(CallAndReferenceFunction.get(getOkCallback(), this));
   }
 
-  public boolean isUseMockCloseDialog() {
-    return this.isUseMockCloseDialog;
+  public boolean isExternalAuthDialog() {
+    return this.isExternalAuthDialog;
   }
 
-  public void setIsUseMockCloseDialog(boolean value) {
-    this.isUseMockCloseDialog = value;
+  public void setIsExternalAuthDialog(boolean value) {
+    this.isExternalAuthDialog = value;
   }
 
   /**
-   * Js statement for closing the dialog by clicking the close button. Because the script could be
-   * existing inside the iframe so the close function should have window.parent.ducoment prefix.
-   * Otherwise, it won't be able to close the auth dialog where outside the iframe.
+   * JS statement for closing the dialog by clicking the close button. Because the script could be
+   * existing inside the iframe the close function should have window.parent.document prefix.
+   * Otherwise, it won't be able to close the auth dialog when outside the iframe.
    */
-  private JQueryStatement mockCloseDialog(SectionInfo info) {
+  private JQueryStatement closeExternalAuthDialog(SectionInfo info) {
     JQuerySelector closeBtn =
         new JQuerySelector(
             Type.ID,
@@ -148,12 +148,12 @@ public class LMSAuthDialog extends AbstractOkayableDialog<LMSAuthDialog.Model> {
   @EventHandlerMethod
   public void finishedAuth(SectionInfo info) {
     LOGGER.trace("Finishing up the auth sequence.");
-    // Keep in old new to avoid 500 error in new UI.
+    // Return old ui in order to avoid 500 error in BrightSpace.
     info.setAttribute(RenderNewTemplate.DisableNewUI(), true);
     closeDialog(
         info,
         new FunctionCallStatement(parentCallback),
-        this.isUseMockCloseDialog ? this.mockCloseDialog(info) : null);
+        this.isExternalAuthDialog ? this.closeExternalAuthDialog(info) : null);
   }
 
   @EventHandlerMethod
