@@ -19,16 +19,19 @@
 package com.tle.web.sections
 
 import io.lemonlabs.uri.QueryString
+import org.slf4j.LoggerFactory
+
 import scala.collection.JavaConverters._
 
 object QueryParams {
+  val Logger = LoggerFactory.getLogger(getClass)
 
   def paramString(map: java.util.Map[String, Array[String]]): String = {
     val paramVector = map.asScala.toVector.flatMap {
       case (n, vals) => vals.map(v => n -> Some(v))
     }
     val queryParams = QueryString(paramVector).toString
-    println(s"scala uri query params: $queryParams")
+    Logger.info(s"scala uri query params: $queryParams")
     queryParams
   }
 }
