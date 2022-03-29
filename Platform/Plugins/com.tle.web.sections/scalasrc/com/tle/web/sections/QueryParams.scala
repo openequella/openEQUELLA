@@ -27,6 +27,8 @@ object QueryParams {
     val paramVector = map.asScala.toVector.flatMap {
       case (n, vals) => vals.map(v => n -> Some(v))
     }
-    QueryString(paramVector).toString
+    val queryParams = QueryString(paramVector).toString
+    println(s"scala uri query params: $queryParams")
+    queryParams
   }
 }
