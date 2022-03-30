@@ -131,7 +131,7 @@ public interface EquellaSearchResource extends SearchResource {
               value =
                   "Filter by item status"
                       + "\nAvailable values: "
-                      + "DRAFT,LIVE,REJECTED,MODERATING,ARCHIVED,SUSPENDED,DELETED,REVIEW,PERSONAL",
+                      + ItemResource.ALL_ALLOWABLE_STATUSES,
               required = false)
           @QueryParam("status")
           CsvList status,
