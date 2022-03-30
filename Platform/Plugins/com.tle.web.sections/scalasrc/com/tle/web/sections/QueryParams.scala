@@ -24,14 +24,14 @@ import org.slf4j.LoggerFactory
 import scala.collection.JavaConverters._
 
 object QueryParams {
-  val Logger = LoggerFactory.getLogger(getClass)
 
   def paramString(map: java.util.Map[String, Array[String]]): String = {
     val paramVector = map.asScala.toVector.flatMap {
       case (n, vals) => vals.map(v => n -> Some(v))
     }
-    val queryParams = QueryString(paramVector).toString
-    Logger.info(s"scala uri query params: $queryParams")
-    queryParams
+    QueryString(paramVector).toString() match {
+      case "" => ""
+      case o  => o.substring(0)
+    }
   }
 }
