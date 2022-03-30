@@ -29,9 +29,6 @@ object QueryParams {
     val paramVector = map.asScala.toVector.flatMap {
       case (n, vals) => vals.map(v => n -> Some(v))
     }
-    QueryString(paramVector).toString() match {
-      case "" => ""
-      case o  => o.substring(0)
-    }
+    QueryString(paramVector).toString
   }
 }
