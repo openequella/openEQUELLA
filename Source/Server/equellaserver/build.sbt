@@ -56,8 +56,8 @@ libraryDependencies ++= Seq(
                   name = "axis")
   ),
   "com.google.api-client" % "google-api-client"           % "1.33.4",
-  "com.google.apis"       % "google-api-services-books"   % "v1-rev20201021-1.32.1",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20220312-1.32.1",
+  "com.google.apis"       % "google-api-services-books"   % "v1-rev20220318-1.32.1",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20220320-1.32.1",
   "com.google.code.gson"  % "gson"                        % "2.9.0",
   "com.google.gdata"      % "core"                        % "1.47.1",
   "com.google.guava"      % "guava"                       % "31.1-jre",
