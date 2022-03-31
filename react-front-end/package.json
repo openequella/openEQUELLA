@@ -42,7 +42,7 @@
     "clsx": "1.1.1",
     "es6-object-assign": "1.1.0",
     "fp-ts": "2.11.9",
-    "fp-ts-contrib": "0.1.27",
+    "fp-ts-contrib": "0.1.29",
     "history": "4.10.1",
     "html-react-parser": "1.4.9",
     "jspolyfill-array.prototype.find": "0.1.3",
