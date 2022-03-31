@@ -60,7 +60,7 @@ object CommonSettings extends AutoPlugin {
   override def requires: Plugins = HeaderPlugin && JvmPlugin
   override def projectSettings = Seq(
     organization := "com.github.equella",
-    scalaVersion := "2.12.15",
+    scalaVersion := "2.13.8",
     scalacOptions += "-Ypartial-unification",
     addCompilerPlugin("io.tryp" % "splain" % "0.5.8" cross CrossVersion.patch),
     scalacOptions ++= Seq("-P:splain:implicits:true", "-P:splain:color:false"),
