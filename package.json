@@ -24,7 +24,7 @@
     "typescript_glob": "{react-front-end,Source/Plugins/Core/com.equella.core/test/javascript}/**/*.{js,ts,tsx}"
   },
   "engines": {
-    "npm": "8.1.4"
+    "npm": "8.6.0"
   },
   "devDependencies": {
     "@commitlint/cli": "16.2.3",

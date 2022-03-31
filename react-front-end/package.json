@@ -14,7 +14,7 @@
     "tools": "target/tools"
   },
   "engines": {
-    "npm": "8.1.4"
+    "npm": "8.6.0"
   },
   "scripts": {
     "prepare": "cross-env-shell \"cd ../oeq-ts-rest-api && npm ci && npm run build\"",
