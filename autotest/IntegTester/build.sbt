@@ -10,7 +10,6 @@ val Http4sVersion = "0.21.8"
 val jsoupVersion  = "1.14.3"
 
 scalaVersion := "2.13.8"
-scalacOptions += "-Ypartial-unification"
 
 excludeDependencies ++= Seq("org.typelevel" % "scala-library")
 

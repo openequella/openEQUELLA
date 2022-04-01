@@ -61,7 +61,6 @@ object CommonSettings extends AutoPlugin {
   override def projectSettings = Seq(
     organization := "com.github.equella",
     scalaVersion := "2.13.8",
-    scalacOptions += "-Ypartial-unification",
     addCompilerPlugin("io.tryp" % "splain" % "1.0.0" cross CrossVersion.patch),
     scalacOptions ++= Seq("-Vimplicits:true"),
     javacOptions ++= Seq("-source", "1.8", "-target", "8"),
