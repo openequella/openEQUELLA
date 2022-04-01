@@ -2,7 +2,7 @@
   "name": "openequella",
   "private": true,
   "scripts": {
-    "postinstall": "cross-env-shell \"./coursier bootstrap com.geirsson:scalafmt-cli_2.12:1.5.1 -f -o node_modules/.bin/scalafmt && ./coursier bootstrap com.google.googlejavaformat:google-java-format:1.7 -f -o node_modules/.bin/google-java-format\"",
+    "postinstall": "cross-env-shell \"./coursier bootstrap com.geirsson:scalafmt-cli_2.13:1.5.1 -f -o node_modules/.bin/scalafmt && ./coursier bootstrap com.google.googlejavaformat:google-java-format:1.7 -f -o node_modules/.bin/google-java-format\"",
     "format:scala": "find . -name \"*.scala\" -o -name \"*.sbt\" | xargs scalafmt",
     "format:java": "find . -name \"*.java\" | xargs google-java-format -r",
     "format:scss": "prettier --write ${npm_package_config_stylesheet_glob}",

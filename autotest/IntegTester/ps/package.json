@@ -5,7 +5,7 @@
     "install": "node install.js && psc-package install",
     "clean": "rm -rf node_modules/ .psc-package/ psc-package",
     "build": "pulp build && parcel build --no-autoinstall --out-dir=target/www www/*.html www/*.tsx",
-    "dev": "pulp build && parcel watch --no-autoinstall --out-dir=../target/scala-2.12/classes/www www/*.html www/*.tsx"
+    "dev": "pulp build && parcel watch --no-autoinstall --out-dir=../target/scala-2.13/classes/www www/*.html www/*.tsx"
   },
   "engines": {
     "npm": "8.1.4"
