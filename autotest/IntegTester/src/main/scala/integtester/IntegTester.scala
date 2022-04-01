@@ -52,7 +52,9 @@ object IntegTester extends IOApp with Http4sDsl[IO] {
   def appHtml(request: Request[IO], dir: String = ""): IO[Response[IO]] = request.decode[UrlForm] {
     form =>
       val formJson =
-        (form.values.mapValues(_.toVector) ++ request.uri.query.multiParams).asJson.noSpaces
+        (form.values.view
+          .mapValues(_.toVector)
+          .toMap ++ request.uri.query.multiParams).asJson.noSpaces
       val doc = integDocument.clone()
       doc.body().insertChildren(0, new Element("script").text(s"var postValues = $formJson"))
       Ok(doc.toString, `Content-Type`(MediaType.text.html))
