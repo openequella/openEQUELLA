@@ -20,6 +20,7 @@ libraryDependencies ++= Seq(
 ).map(_ % circeVersion)
 
 libraryDependencies ++= Seq(
+  "org.scala-lang"            % "scala-reflect"             % scalaVersion.value,
   "javax.jws"                 % "javax.jws-api"             % "1.1",
   "org.apache.commons"        % "commons-lang3"             % "3.12.0",
   "org.seleniumhq.selenium"   % "selenium-java"             % "3.141.59",
