@@ -53,7 +53,7 @@ import javax.ws.rs.{
 import org.jboss.resteasy.annotations.cache.NoCache
 
 import java.io.BufferedOutputStream
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import javax.servlet.http.HttpServletResponse
 
 @NoCache

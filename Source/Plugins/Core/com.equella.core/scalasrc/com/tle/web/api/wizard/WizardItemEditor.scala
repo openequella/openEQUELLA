@@ -31,8 +31,7 @@ import com.tle.core.item.edit.{DRMEditor, ItemEditor, ItemEditorChangeTracker, N
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean
 import com.tle.web.wizard.WizardStateInterface
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection.mutable
 
 class WizardItemEditor(wsi: WizardStateInterface) extends ItemEditor with ItemEditorChangeTracker {

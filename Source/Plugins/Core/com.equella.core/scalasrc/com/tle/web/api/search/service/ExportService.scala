@@ -26,7 +26,7 @@ import com.tle.web.api.search.ExportCSVHelper.{buildCSVRow, convertSearchResultT
 import com.tle.web.api.search.SearchHelper.search
 import org.springframework.transaction.annotation.Transactional
 import javax.inject.Singleton
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 @Bind
 @Singleton

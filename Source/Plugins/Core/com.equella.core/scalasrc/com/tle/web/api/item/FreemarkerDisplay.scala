@@ -29,8 +29,7 @@ import com.tle.web.api.item.interfaces.beans.{HtmlSummarySection, ItemSummarySec
 import com.tle.web.sections.events.StandardRenderContext
 import com.tle.web.sections.{SectionInfo, SectionUtils}
 import com.tle.web.viewurl.ItemSectionInfo
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object FreemarkerDisplay {
 

@@ -59,8 +59,7 @@ import com.tle.web.sections.{SectionInfo, SectionTree}
 import com.tle.web.workflow.servlet.WorkflowMessageServlet
 import com.tle.web.workflow.tasks.CurrentTaskSection
 import javax.inject.Inject
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success}
 
 case class UploadedFile(getLink: HtmlLinkState,

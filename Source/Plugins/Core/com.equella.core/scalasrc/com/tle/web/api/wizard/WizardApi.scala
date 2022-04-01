@@ -43,7 +43,7 @@ import javax.ws.rs._
 import javax.ws.rs.core.Response.{ResponseBuilder, Status}
 import javax.ws.rs.core.{Context, Response, StreamingOutput, UriInfo}
 import org.jboss.resteasy.annotations.cache.NoCache
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 case class FileInfo(size: Long, files: Option[Map[String, FileInfo]])
 case class ItemState(xml: String,

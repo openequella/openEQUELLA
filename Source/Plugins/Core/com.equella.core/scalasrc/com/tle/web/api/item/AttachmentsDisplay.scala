@@ -33,8 +33,7 @@ import com.tle.web.sections.events.{RenderContext, StandardRenderContext}
 import com.tle.web.sections.render.TextLabel
 import com.tle.web.sections.{SectionInfo, SectionUtils}
 import com.tle.web.viewable.NewDefaultViewableItem
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object AttachmentsDisplay {
 

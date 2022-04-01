@@ -23,8 +23,7 @@ import com.tle.common.Check
 import com.tle.web.api.item.interfaces.beans.{CommentSummarySection, ItemSummarySection}
 import com.tle.web.viewitem.summary.section.CommentsSection.NameDisplayType
 import com.tle.web.viewurl.ItemSectionInfo
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object CommentsDisplay {
 

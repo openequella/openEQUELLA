@@ -13,8 +13,7 @@ import org.http4s.dsl.Http4sDsl
 import org.http4s.server.AuthMiddleware
 import org.http4s.util.CaseInsensitiveString
 import scalaoauth2.provider._
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.concurrent.{ExecutionContext, Future}
 
 case class TestUser(clientId: String)
@@ -76,9 +75,9 @@ class TestingCloudProvider(implicit val cs: ContextShift[IO]) extends Http4sDsl[
   )
 
   def headerMap(request: Request[IO]): Map[String, Seq[String]] =
-    request.headers.toList.groupBy(_.name.value).mapValues(_.map(_.value).toSeq)
+    request.headers.toList.groupBy(_.name.value).view.mapValues(_.map(_.value).toSeq).toMap
 
-  val authUser: Kleisli[OptionT[IO, ?], Request[IO], TestUser] =
+  val authUser: Kleisli[OptionT[IO, *], Request[IO], TestUser] =
     Kleisli { request =>
       val resourceReq = new ProtectedResourceRequest(headerMap(request), Map.empty)
       OptionT {
@@ -90,8 +89,8 @@ class TestingCloudProvider(implicit val cs: ContextShift[IO]) extends Http4sDsl[
   val publicServices = HttpRoutes.of[IO] {
     case request @ POST -> Root / "access_token" =>
       request.decode[UrlForm] { formData =>
-        val formMap = formData.values.mapValues(_.toVector)
-        val authReq = new AuthorizationRequest(headerMap(request), formMap)
+        val formMap = formData.values.view.mapValues(_.toVector)
+        val authReq = new AuthorizationRequest(headerMap(request), formMap.toMap)
         IO.fromFuture { IO(TestTokenEndpoint.handleRequest(authReq, TestTokenEndpoint)) }.flatMap {
           case Left(err) => Forbidden(err.description)
           case Right(result) =>

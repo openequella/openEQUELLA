@@ -38,8 +38,7 @@ import com.tle.web.sections.result.util._
 import com.tle.web.workflow.notification.NotificationLangStrings._
 import com.tle.web.workflow.servlet.WorkflowMessageServlet
 import javax.inject.{Inject, Singleton}
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object TaskNotifications {
 

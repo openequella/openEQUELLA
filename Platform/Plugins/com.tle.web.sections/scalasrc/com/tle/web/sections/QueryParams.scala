@@ -19,7 +19,7 @@
 package com.tle.web.sections
 
 import io.lemonlabs.uri.QueryString
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object QueryParams {
 

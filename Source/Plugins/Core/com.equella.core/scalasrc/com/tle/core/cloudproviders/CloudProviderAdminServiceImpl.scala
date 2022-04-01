@@ -23,8 +23,7 @@ import java.util
 import com.tle.beans.cloudproviders._
 import com.tle.core.guice.Bind
 import com.tle.core.remoting.CloudProviderAdminService
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 @Bind(classOf[CloudProviderAdminService])
 class CloudProviderAdminServiceImpl extends CloudProviderAdminService {

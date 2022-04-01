@@ -97,7 +97,7 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with
             randomUser <- Gen.oneOf("admin", "SimpleModerator")
             op <- Fairness.favour3to1[BulkOp](Seq(Approve(msg), Reject(msg), Reassign(randomUser)),
                                               b => s.scenarios.contains(b.typ))
-          } yield List(SelectItems(selections), PerformOp(op), VerifyItems)
+          } yield List(SelectItems(selections.toSeq), PerformOp(op), VerifyItems)
         case _ => List()
       }
     } yield com

@@ -73,7 +73,7 @@ import javax.inject.Singleton;
 import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scala.collection.JavaConverters;
+import scala.jdk.CollectionConverters;
 
 /** @author Aaron & Dustin */
 @SuppressWarnings("nls")
@@ -237,11 +237,14 @@ public class SearchResourceImpl implements EquellaSearchResource {
         .filter(ms -> !ms.isEmpty())
         .map(ms -> ms.toArray(new String[0]))
         .map(SearchHelper::handleMusts)
-        .map(JavaConverters::mapAsJavaMap)
+        .map(CollectionConverters::MapHasAsJava)
         .ifPresent(
             ms ->
-                ms.forEach(
-                    (field, value) -> search.addMust(field, JavaConverters.seqAsJavaList(value))));
+                ms.asJava()
+                    .forEach(
+                        (field, value) ->
+                            search.addMust(
+                                field, CollectionConverters.SeqHasAsJava(value).asJava())));
 
     final MatrixResults matrixResults =
         freetextService.matrixSearch(search, nodeList, true, width, true);

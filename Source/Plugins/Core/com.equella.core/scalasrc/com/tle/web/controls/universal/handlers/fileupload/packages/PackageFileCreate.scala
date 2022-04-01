@@ -31,8 +31,7 @@ import com.tle.web.controls.universal.{ControlContext, StagingContext}
 import com.tle.web.sections.SectionInfo
 import com.tle.web.sections.render.Label
 import com.tle.web.wizard.PackageInfo
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 trait PackageAttachmentExtension {
   def treatAsLabel: Label

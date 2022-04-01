@@ -4,7 +4,7 @@ import com.tle.webtests.framework.PageContext
 import equellatests.browserpage.WaitingBrowserPage
 import org.openqa.selenium.By
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class ModerationView(val ctx: PageContext) extends WaitingBrowserPage {
   def approve(): ApproveDialog = {
@@ -29,6 +29,7 @@ class ModerationView(val ctx: PageContext) extends WaitingBrowserPage {
       .findElements(By.xpath("id('moderation-comments')/div[contains(@class, 'modcomment')]"))
       .asScala
       .map(ModerationComment(ctx))
+      .toSeq
   }
 
 }

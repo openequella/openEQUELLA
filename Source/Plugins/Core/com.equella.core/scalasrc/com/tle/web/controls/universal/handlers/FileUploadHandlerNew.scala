@@ -20,8 +20,6 @@ package com.tle.web.controls.universal.handlers
 
 import java.util
 import java.util.{Collections, UUID}
-
-import com.google.common.collect.Iterables
 import com.google.common.io.ByteStreams
 import com.tle.beans.item.ItemId
 import com.tle.beans.item.attachments._
@@ -57,7 +55,6 @@ import com.tle.web.sections.equella.ajaxupload._
 import com.tle.web.sections.equella.annotation.PlugKey
 import com.tle.web.sections.equella.render.EquellaFileUploadExtension
 import com.tle.web.sections.events.RenderContext
-import com.tle.web.sections.events.js.BookmarkAndModify
 import com.tle.web.sections.generic.InfoBookmark
 import com.tle.web.sections.js.generic.expression.ObjectExpression
 import com.tle.web.sections.js.generic.function.{
@@ -84,8 +81,7 @@ import com.tle.web.viewurl.{AttachmentDetail, ViewItemService, ViewableResource}
 import io.circe.parser.decode
 import io.circe.syntax._
 import javax.inject.Inject
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.io.Source
 
 class FileUploadHandlerModel
@@ -602,7 +598,11 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
         case fa: FileAttachment => eds.commitUnzipPaths.get._1
         case za: ZipAttachment  => WebFileUploads.removeZipPath(za.getUrl)
       }
-      fileSystemService.enumerateTree(stagingContext.stgFile, zipFolder, null).getFiles.asScala
+      fileSystemService
+        .enumerateTree(stagingContext.stgFile, zipFolder, null)
+        .getFiles
+        .asScala
+        .toSeq
     }
 
     object EmptyZipProgress extends ZipProgress {

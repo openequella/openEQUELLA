@@ -5,7 +5,7 @@ import com.typesafe.sbt.license.LicenseReport
 import sbt.io.Using
 
 import java.time.Instant
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 lazy val learningedge_config = project in file("Dev/learningedge-config")
 

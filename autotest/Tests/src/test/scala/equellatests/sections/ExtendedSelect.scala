@@ -1,8 +1,7 @@
 package equellatests.sections
 
 import com.tle.webtests.pageobject.generic.component.EquellaSelect
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object ExtendedSelect {
   implicit class ExtendedSelect(eq: EquellaSelect) {

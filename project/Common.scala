@@ -9,7 +9,7 @@ import sbt._
 import sbt.io.Using
 
 import scala.annotation.tailrec
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object Common {
 

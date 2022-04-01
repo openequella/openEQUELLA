@@ -20,7 +20,7 @@ package com.tle.web.api.institution
 
 import java.io.{OutputStream, PrintStream}
 import java.util.zip.{ZipEntry, ZipOutputStream}
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.util.StdDateFormat
 import com.fasterxml.jackson.module.scala.DefaultScalaModule

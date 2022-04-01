@@ -36,8 +36,7 @@ import com.tle.web.sections.SectionInfo
 import com.tle.web.viewable.NewDefaultViewableItem
 import com.tle.web.viewurl.ItemSectionInfo
 import org.jsoup.Jsoup
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object CalSummaryDisplay {
 

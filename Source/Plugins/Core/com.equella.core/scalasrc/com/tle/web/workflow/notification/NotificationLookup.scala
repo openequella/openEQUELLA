@@ -30,8 +30,7 @@ import com.tle.web.sections.result.util.{BundleLabel, ItemNameLabel, UserLabel}
 import com.tle.web.viewurl.ViewItemUrlFactory
 import com.tle.web.workflow.tasks.RootTaskListSection
 import javax.inject.Inject
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.util.Try
 
 trait NotificationLookup {

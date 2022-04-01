@@ -30,8 +30,7 @@ import com.tle.core.notification.service.NotificationEmailer._
 import com.tle.core.notification.{EmailKey, NotificationExtension}
 import com.tle.core.plugins.{AbstractPluginService, PluginTracker}
 import org.slf4j.LoggerFactory
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object NotificationEmailer {
   val MAX_EMAIL_NOTIFICATIONS = 30

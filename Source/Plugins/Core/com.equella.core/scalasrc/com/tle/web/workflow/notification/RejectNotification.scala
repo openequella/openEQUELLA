@@ -25,8 +25,8 @@ import com.tle.core.services.user.{LazyUserLookup, UserService}
 import com.tle.web.sections.render.TextLabel
 import com.tle.web.sections.result.util.{BundleLabel, UserLabel}
 import javax.inject.{Inject, Singleton}
+import scala.jdk.CollectionConverters._
 
-import scala.collection.JavaConverters._
 @Bind
 @Singleton
 class RejectNotification

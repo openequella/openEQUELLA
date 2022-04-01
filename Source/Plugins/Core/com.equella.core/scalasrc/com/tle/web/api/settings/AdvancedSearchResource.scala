@@ -27,7 +27,7 @@ import com.tle.web.api.wizard._
 import io.swagger.annotations.{Api, ApiModelProperty, ApiOperation}
 import javax.ws.rs.core.Response
 import javax.ws.rs.{GET, Path, PathParam, Produces}
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 case class AdvancedSearch(name: Option[String],
                           description: Option[String],

@@ -3,8 +3,7 @@ import sbt._
 import sbt.plugins.JvmPlugin
 import CommonSettings.autoImport._
 import Path.flat
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object JPFPlugin extends AutoPlugin {
   override def trigger: PluginTrigger = noTrigger

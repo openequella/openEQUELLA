@@ -30,7 +30,7 @@ import io.swagger.annotations.{Api, ApiOperation, ApiParam}
 import javax.ws.rs.core.Response
 import javax.ws.rs.core.Response.Status
 import javax.ws.rs.{DELETE, POST, Path, PathParam, Produces, QueryParam}
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 /**
   * Model class for Items to be saved to user's favourites.

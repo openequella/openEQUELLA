@@ -21,7 +21,7 @@ package com.tle.web.api.drm
 import com.tle.beans.item.DrmSettings
 import com.tle.core.i18n.CoreStrings
 import com.tle.web.viewitem.I18nDRM
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 case class DrmParties(
                       /**  Server side language string for DRM party. */
