@@ -10,8 +10,7 @@
     "src"
   ],
   "engines": {
-    "node": ">=10",
-    "npm": "8.1.4"
+    "node": ">=10"
   },
   "scripts": {
     "start": "rollup --config --watch",
