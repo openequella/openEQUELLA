@@ -29,7 +29,7 @@ excludeDependencies ++= Seq(
     oldStrategy(x)
 }
 
-(assembly / assemblyOption) := (assembly / assemblyOption).value.copy(includeScala = false)
+(assembly / assemblyOption) := (assembly / assemblyOption).value.withIncludeScala(false)
 
 (assembly / mainClass) := Some("com.dytech.edge.installer.application.Launch")
 

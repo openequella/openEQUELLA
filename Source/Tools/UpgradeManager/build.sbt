@@ -24,6 +24,6 @@ libraryDependencies ++= Seq(
     oldStrategy(x)
 }
 
-(assembly / assemblyOption) := (assembly / assemblyOption).value.copy(includeScala = false)
+(assembly / assemblyOption) := (assembly / assemblyOption).value.withIncludeScala(false)
 
 packageOptions += ManifestAttributes(Attributes.Name.CLASS_PATH -> ".")
