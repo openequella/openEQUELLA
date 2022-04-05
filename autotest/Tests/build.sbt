@@ -31,7 +31,7 @@ libraryDependencies ++= Seq(
   "org.apache.cxf"            % "cxf-rt-transports-http"    % cxfVersion,
   "org.apache.httpcomponents" % "httpclient"                % "4.5.13",
   "com.jcraft"                % "jsch"                      % "0.1.55",
-  "org.jacoco"                % "org.jacoco.report"         % "0.8.7",
+  "org.jacoco"                % "org.jacoco.report"         % "0.8.8",
   "org.dspace"                % "oclc-harvester2"           % "0.1.12",
   "com.typesafe"              % "config"                    % "1.4.2",
   "org.slf4j"                 % "slf4j-simple"              % "1.7.36",
