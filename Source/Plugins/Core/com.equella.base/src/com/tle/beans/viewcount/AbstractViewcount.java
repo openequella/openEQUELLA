@@ -19,11 +19,14 @@
 package com.tle.beans.viewcount;
 
 import java.time.Instant;
+import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public abstract class AbstractViewcount {
+  @Column(name = "`count`")
   private int count;
+
   private Instant lastViewed;
 
   public int getCount() {
