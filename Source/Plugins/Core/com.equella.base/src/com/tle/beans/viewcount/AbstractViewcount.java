@@ -24,6 +24,7 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public abstract class AbstractViewcount {
   private int count;
+
   private Instant lastViewed;
 
   public int getCount() {
