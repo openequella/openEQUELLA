@@ -28,6 +28,11 @@ import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.dialect.Oracle9iDialect;
 
+/**
+ * This migration renames the 'count' column in the viewcount_* tables on Oracle. This was required
+ * due to some odd naming which resulted from the original implementation with SimpleDBA. The new
+ * naming aligns with conventional Oracle usage as well as Hibernate defaults.
+ */
 @Bind
 @Singleton
 public class RenameViewCount extends AbstractHibernateSchemaMigration {
