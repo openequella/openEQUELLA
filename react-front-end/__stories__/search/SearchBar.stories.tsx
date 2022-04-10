@@ -73,8 +73,9 @@ AdvancedSearchModeAccented.args = {
   },
 };
 
-export const AdvancedSearchModeAccentedAndWildcardMode: Story<SearchBarProps> =
-  (args) => <SearchBar {...args} />;
+export const AdvancedSearchModeAccentedAndWildcardMode: Story<
+  SearchBarProps
+> = (args) => <SearchBar {...args} />;
 AdvancedSearchModeAccentedAndWildcardMode.args = {
   ...AdvancedSearchModeAccented.args,
   wildcardMode: true,

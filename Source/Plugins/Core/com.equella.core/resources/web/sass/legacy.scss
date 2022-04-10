@@ -4604,6 +4604,12 @@ img.warningimg {
   box-sizing: border-box;
 }
 
+.compactQuery input.prompt {
+  //fix overlapping issue
+  padding: $doubleMargin;
+  font-size: 16px;
+}
+
 .compactQuery .compactQueryButton {
   margin: $singleMargin;
   .icon-search:before {

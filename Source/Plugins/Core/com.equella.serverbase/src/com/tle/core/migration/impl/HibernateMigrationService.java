@@ -21,6 +21,7 @@ package com.tle.core.migration.impl;
 import com.google.inject.Singleton;
 import com.tle.beans.ConfigurationProperty;
 import com.tle.beans.ConfigurationProperty.PropertyKey;
+import com.tle.beans.DatabaseSchema;
 import com.tle.beans.Institution;
 import com.tle.common.Check;
 import com.tle.common.hash.Hash;
@@ -88,6 +89,7 @@ public class HibernateMigrationService {
               ConfigurationProperty.class,
               ConfigurationProperty.PropertyKey.class,
               SystemConfig.class,
+              DatabaseSchema.class,
               SchemaId.class);
     }
     return configuration;
@@ -101,12 +103,12 @@ public class HibernateMigrationService {
         new HibernateMigrationHelper(getHibernateFactory(), dataSource.getDefaultSchema());
     if (!helper.tableExists(session, "migration_log")) {
       Transaction tx = session.beginTransaction();
-      List<String> tableScripts = helper.getCreationSql(new TablesOnlyFilter("migration_log"));
+      List<String> tableScripts =
+          helper.getCreationSql(new TablesOnlyFilter("migration_log"), true);
       for (String sql : tableScripts) {
         session.createSQLQuery(sql).executeUpdate();
       }
-      if (helper.tableExists(session, "item")) // $NON-NLS-1$
-      {
+      if (helper.tableExists(session, "item")) {
         MigrationLog log = new MigrationLog();
         log.setStatus(LogStatus.SKIPPED);
         log.setExecuted(new Date());
@@ -116,11 +118,10 @@ public class HibernateMigrationService {
       }
       tx.commit();
     }
-    if (!helper.tableExists(session, "sys_schema_id")) // $NON-NLS-1$
-    {
+    if (!helper.tableExists(session, "sys_schema_id")) {
       Transaction tx = session.beginTransaction();
       List<String> tableScripts =
-          helper.getCreationSql(new TablesOnlyFilter("sys_schema_id")); // $NON-NLS-1$
+          helper.getCreationSql(new TablesOnlyFilter("sys_schema_id"), true);
       for (String sql : tableScripts) {
         session.createSQLQuery(sql).executeUpdate();
       }

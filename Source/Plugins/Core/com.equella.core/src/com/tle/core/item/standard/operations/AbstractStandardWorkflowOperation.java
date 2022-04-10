@@ -45,11 +45,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author jmaginnis */
 public abstract class AbstractStandardWorkflowOperation extends AbstractWorkflowOperation {
-  protected static final Logger LOGGER = Logger.getLogger(AbstractStandardWorkflowOperation.class);
+  protected static final Logger LOGGER =
+      LoggerFactory.getLogger(AbstractStandardWorkflowOperation.class);
 
   @Inject protected UserService userService;
   @Inject protected ItemOperationFactory operationFactory;

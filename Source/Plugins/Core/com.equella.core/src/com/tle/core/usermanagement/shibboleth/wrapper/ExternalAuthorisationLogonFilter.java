@@ -35,13 +35,15 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author aholland */
 @Bind
 @SuppressWarnings("nls")
 public class ExternalAuthorisationLogonFilter implements UserManagementLogonFilter {
-  private static final Logger LOGGER = Logger.getLogger(ExternalAuthorisationLogonFilter.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(ExternalAuthorisationLogonFilter.class);
   private static final String PARAM_NO_AUTO_LOGIN = "NO_AUTO_LOGIN";
 
   @Inject private UserService userService;

@@ -9,7 +9,6 @@ tests:
       - io.github.openequella.search
     classes:
       - com.tle.webtests.test.searching.BrowsebyTest
-      - com.tle.webtests.test.searching.CloudSearchingTest
       - com.tle.webtests.test.searching.GallerySearchTest
       - com.tle.webtests.test.searching.GuidedSearchingTest
       - com.tle.webtests.test.searching.PowerSearchTest

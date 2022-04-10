@@ -19,6 +19,7 @@
 package com.tle.web.viewitem.guice;
 
 import com.tle.core.config.guice.PropertiesModule;
+import com.tle.web.sections.equella.SectionAuditable.AuditLevel;
 import com.tle.web.sections.equella.guice.SectionsModule;
 
 public class ViewItemModule extends SectionsModule {
@@ -30,7 +31,7 @@ public class ViewItemModule extends SectionsModule {
   public static class ViewItemPropsModule extends PropertiesModule {
     @Override
     protected void configure() {
-      bindProp("audit.level"); // $NON-NLS-1$
+      bindProp("audit.level", AuditLevel.NONE.name());
     }
 
     @Override

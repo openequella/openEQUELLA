@@ -50,7 +50,6 @@ import com.tle.web.api.loginnotice.PreLoginNoticeResource;
 import com.tle.web.api.newuitheme.NewUIThemeResource;
 import com.tle.web.api.search.SearchResource;
 import com.tle.web.api.settings.AdvancedSearchResource;
-import com.tle.web.api.settings.CloudSearchSettingsResource;
 import com.tle.web.api.settings.FacetedSearch.FacetedSearchClassificationResource;
 import com.tle.web.api.settings.MimeTypeResource;
 import com.tle.web.api.settings.RemoteSearchResource;
@@ -79,7 +78,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
-import org.apache.log4j.Logger;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
 import org.jboss.resteasy.core.Dispatcher;
@@ -90,6 +88,8 @@ import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.GetRestful;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scala.collection.GenTraversableOnce;
 
 @Bind
@@ -98,7 +98,7 @@ import scala.collection.GenTraversableOnce;
 public class RestEasyServlet extends HttpServletDispatcher implements MapperExtension {
   private static final long serialVersionUID = 1L;
 
-  private static final Logger LOGGER = Logger.getLogger(RestEasyServlet.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RestEasyServlet.class);
 
   @Inject private UserSessionService userSessionService;
   @Inject private PluginTracker<Object> tracker;
@@ -113,7 +113,6 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
           AdvancedSearchResource.class,
           Auth.class,
           CloudProviderApi.class,
-          CloudSearchSettingsResource.class,
           DrmResource.class,
           FacetedSearchClassificationResource.class,
           FavouriteResource.class,

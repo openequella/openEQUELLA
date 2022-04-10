@@ -50,12 +50,13 @@ import com.tle.core.dao.helpers.CollectionPartitioner;
 import com.tle.core.dao.helpers.DMLPartitioner;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericInstitionalDaoImpl;
-import com.tle.core.item.ViewCountJavaDao;
 import com.tle.core.item.dao.ItemDao;
 import com.tle.core.item.dao.ItemDaoExtension;
 import com.tle.core.item.dao.ItemLockingDao;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
+import com.tle.core.viewcount.dao.AttachmentViewCountDao;
+import com.tle.core.viewcount.dao.ItemViewCountDao;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -68,11 +69,12 @@ import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,9 +85,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Singleton
 @SuppressWarnings({"nls", "unchecked"})
 public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implements ItemDao {
-  private static final Logger LOGGER = Logger.getLogger(ItemDaoImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ItemDaoImpl.class);
 
   @Inject private ItemLockingDao itemLockingDao;
+  @Inject private ItemViewCountDao itemViewCountDao;
+  @Inject private AttachmentViewCountDao attachmentViewCountDao;
 
   private PluginTracker<ItemDaoExtension> itemDaoTracker;
 
@@ -505,7 +509,9 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
   @Override
   public void delete(Item entity) {
     itemLockingDao.deleteForItem(entity);
-    ViewCountJavaDao.deleteForItem(entity.getItemId());
+    itemViewCountDao.deleteItemViewCount(CurrentInstitution.get(), entity.getItemId());
+    attachmentViewCountDao.deleteAttachmentViewCountForItem(
+        CurrentInstitution.get(), entity.getItemId());
     Map<String, ItemDaoExtension> beans = itemDaoTracker.getBeanMap();
     for (ItemDaoExtension extension : beans.values()) {
       extension.delete(entity);

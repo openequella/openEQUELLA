@@ -42,13 +42,12 @@ lazy val UpgradeInstallation = (project in file("Source/Tools/UpgradeInstallatio
   .settings(legacyPaths)
   .dependsOn(
     platformCommon,
-    platformEquella,
-    log4jCustom
+    platformEquella
   )
 
 lazy val UpgradeManager = (project in file("Source/Tools/UpgradeManager"))
   .settings(legacyPaths)
-  .dependsOn(platformCommon, platformEquella, log4jCustom)
+  .dependsOn(platformCommon, platformEquella)
 
 lazy val Installer = (project in file("Installer"))
   .settings(legacyPaths)
@@ -99,6 +98,15 @@ checkJavaCodeStyle := {
   }
 }
 
+// We currently build for Java 8, so let's drop module info files
+ThisBuild / assemblyMergeStrategy := {
+  case PathList("module-info.class")         => MergeStrategy.discard
+  case x if x.endsWith("/module-info.class") => MergeStrategy.discard
+  case x =>
+    val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
+    oldStrategy(x)
+}
+
 (ThisBuild / bundleOracleDriver) := {
   val path = "build.bundleOracleDriver"
   if (buildConfig.value.hasPath(path)) {
@@ -113,10 +121,10 @@ checkJavaCodeStyle := {
 
 name := "Equella"
 
-(ThisBuild / equellaMajor) := 2021
-(ThisBuild / equellaMinor) := 2
-(ThisBuild / equellaPatch) := 3
-(ThisBuild / equellaStream) := "Stable"
+(ThisBuild / equellaMajor) := 2022
+(ThisBuild / equellaMinor) := 1
+(ThisBuild / equellaPatch) := 0
+(ThisBuild / equellaStream) := "RC1"
 (ThisBuild / equellaBuild) := buildConfig.value.getString("build.buildname")
 (ThisBuild / buildTimestamp) := Instant.now().getEpochSecond
 

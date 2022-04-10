@@ -9,7 +9,6 @@
 /access/remoterepo.do
 /access/reports.do
 /access/tasklist.do
-/cloudsearch.do
 /cloud/viewitem.do
 /harvest.do
 /hierarchy.do

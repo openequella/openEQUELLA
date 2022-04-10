@@ -63,7 +63,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author Aaron */
 @SuppressWarnings("nls")
@@ -71,7 +72,7 @@ import org.apache.log4j.Logger;
 @Bind(TinyMceAddonService.class)
 @Singleton
 public class TinyMceAddonServiceImpl implements TinyMceAddonService {
-  private static final Logger LOGGER = Logger.getLogger(TinyMceAddonService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TinyMceAddonService.class);
 
   @Inject private HtmlEditorPluginService htmlEditorPluginService;
   @Inject private InstitutionService institutionService;

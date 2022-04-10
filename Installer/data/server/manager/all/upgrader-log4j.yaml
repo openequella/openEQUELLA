@@ -1,0 +1,53 @@
+Configuration:
+  status: warn
+
+  properties:
+    property:
+      - name: filePath
+        value: "../logs/equella-upgrader"
+      - name: fileName
+        value: "${filePath}/upgrader.html"
+      - name: filePattern
+        value: "${filePath}/%d{yyyy-MM-dd}/upgrader-%i.html"
+
+  appenders:
+    Console:
+      name: STDOUT
+      target: SYSTEM_OUT
+      Filters:
+        ThresholdFilter:
+          level: info
+      PatternLayout:
+        Pattern: "%d{ABSOLUTE} %-5p [%c{1}] %m%n"
+
+    RollingFile:
+      name: ROLLING_FILE
+      fileName: "${fileName}"
+      filePattern: "${filePattern}"
+      immediateFlush: true
+      append: true
+      Filters:
+        ThresholdFilter:
+          level: info
+      HTMLLayout:
+        title: TLE Service Manager
+        datePattern: ISO8601
+        locationInfo: true
+      Policies:
+        TimeBasedTriggeringPolicy:
+          interval: 1
+          modulate: true
+        SizeBasedTriggeringPolicy:
+          size: 10 MB
+      DefaultRollOverStrategy:
+        max: 20
+
+  Loggers:
+    Root:
+      level: debug
+      AppenderRef:
+        - ref: STDOUT
+        - ref: ROLLING_FILE
+    Logger:
+      name: com.tle.common.util.ExecUtils
+      level: warn

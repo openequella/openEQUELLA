@@ -67,10 +67,12 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.core.UriInfo;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scala.collection.JavaConverters;
 
 /** @author Aaron & Dustin */
@@ -78,7 +80,7 @@ import scala.collection.JavaConverters;
 @Bind(EquellaSearchResource.class)
 @Singleton
 public class SearchResourceImpl implements EquellaSearchResource {
-  private static final Logger LOGGER = Logger.getLogger(SearchResourceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SearchResourceImpl.class);
 
   @Inject private FreeTextService freetextService;
   @Inject private ItemSerializerService itemSerializerService;
@@ -99,7 +101,7 @@ public class SearchResourceImpl implements EquellaSearchResource {
       CsvList info,
       String showall,
       String dynaCollectionCompound,
-      String status,
+      CsvList status,
       String modifiedAfter,
       String modifiedBefore,
       String advancedSearch,
@@ -117,6 +119,7 @@ public class SearchResourceImpl implements EquellaSearchResource {
     final int offset = (start < 0 ? 0 : start);
     final int count = (length < 0 ? 10 : length);
     final List<String> infos = CsvList.asList(info, ItemSerializerService.CATEGORY_BASIC);
+    final List<String> statuses = Optional.ofNullable(status).map(CsvList::asList).orElse(null);
 
     // String dynaCollectionCompound =
     // uriInfo.getQueryParameters().getFirst("dynacollection");
@@ -147,7 +150,7 @@ public class SearchResourceImpl implements EquellaSearchResource {
             modifiedAfter,
             modifiedBefore,
             dynaCollectionCompound,
-            status,
+            statuses,
             owner,
             new DefaultSearch());
 
@@ -266,7 +269,7 @@ public class SearchResourceImpl implements EquellaSearchResource {
       String modifiedAfter,
       String modifiedBefore,
       String dynaCollectionCompound,
-      String status,
+      List<String> statuses,
       String owner,
       DefaultSearch search) {
     FreeTextBooleanQuery freetextQuery = null;
@@ -305,12 +308,18 @@ public class SearchResourceImpl implements EquellaSearchResource {
     search.setFreeTextQuery(freetextQuery);
 
     boolean useStatus = false;
-    if (status != null) {
+    if (statuses != null) {
       try {
-        search.setItemStatuses(ItemStatus.valueOf(status.toUpperCase()));
+        List<ItemStatus> itemStatuses =
+            statuses.stream()
+                .map(String::toUpperCase)
+                .map(ItemStatus::valueOf)
+                .collect(Collectors.toList());
+        search.setItemStatuses(itemStatuses);
         useStatus = true;
       } catch (IllegalArgumentException iae) {
         // Invalid status
+        LOGGER.warn("Illegal statuses: " + statuses.toString());
       }
     }
     if (!useStatus && onlyLive) {

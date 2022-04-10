@@ -150,7 +150,7 @@ public class Main {
           new String[] {
             config.getJavaBin().getAbsolutePath(),
             "-Dequella.offline=true",
-            "-Dlog4j.configuration=file:upgrader-log4j.properties",
+            "-Dlog4j2.configurationFile=file:upgrader-log4j.yaml",
             "-classpath",
             managerDir.getAbsolutePath(),
             "-jar",

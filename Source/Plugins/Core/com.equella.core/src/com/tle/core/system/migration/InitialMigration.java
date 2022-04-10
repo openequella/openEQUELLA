@@ -36,6 +36,11 @@ import java.util.List;
 import javax.inject.Singleton;
 import org.hibernate.Session;
 
+/**
+ * This migration creates two tables: sys_system_config and sys_database_schema. Usually, it's
+ * executed after we fill out the OEQ new instance form and click the 'install' button. And then it
+ * will save the form data to the two tables.
+ */
 @Bind
 @Singleton
 @SuppressWarnings("nls")
@@ -78,7 +83,9 @@ public class InitialMigration extends AbstractHibernateSchemaMigration {
       filter.setIncludeGenerators(true);
     }
     session.close();
-    return helper.getCreationSql(filter);
+    // Because `SystemConfig` and `DatabaseSchema` are classified as system tables,
+    //  pass `true` to `getCreationSql`.
+    return helper.getCreationSql(filter, true);
   }
 
   @Override

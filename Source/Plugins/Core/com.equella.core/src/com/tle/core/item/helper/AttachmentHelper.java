@@ -34,7 +34,7 @@ import com.tle.common.Check;
 import com.tle.common.security.Privilege;
 import com.tle.common.security.streaming.XStreamSecurityManager;
 import com.tle.core.guice.Bind;
-import com.tle.core.item.ViewCountJavaDao;
+import com.tle.core.viewcount.service.ViewCountService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -50,6 +50,8 @@ import javax.inject.Singleton;
 public class AttachmentHelper extends AbstractHelper {
   private final XStream customAttachXstream = XStreamSecurityManager.newXStream();
   private final ItemXmlSecurity security;
+
+  @Inject private ViewCountService viewCountService;
 
   @Inject
   public AttachmentHelper(ItemXmlSecurity security) {
@@ -112,7 +114,7 @@ public class AttachmentHelper extends AbstractHelper {
 
             if (canViewCounts) {
               final int views =
-                  ViewCountJavaDao.getAttachmentViewCount(bean.getItemId(), attachment.getUuid());
+                  viewCountService.getAttachmentViewCount(bean.getItemId(), attachment.getUuid());
               if (views > 0) {
                 setNode(aXml, "/views", views);
               }

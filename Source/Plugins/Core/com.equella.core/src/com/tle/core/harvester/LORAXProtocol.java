@@ -35,13 +35,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author larry */
 @Bind
 @SuppressWarnings("nls")
 public class LORAXProtocol extends AbstractTLFProtocol {
-  private static final Logger LOGGR = Logger.getLogger(LORAXProtocol.class);
+  private static final Logger LOGGR = LoggerFactory.getLogger(LORAXProtocol.class);
   private static final String LORAX_NAMESPACE_PATH = "/webservices/2006/12";
   private static final String LORAX_NAMESPACE_END = "/LORAX";
   private static final String LORAX_WEB_SERVICE = LORAX_NAMESPACE_PATH + "/LORAX.asmx";

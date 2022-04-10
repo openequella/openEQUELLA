@@ -101,14 +101,15 @@ import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author aholland */
 @SuppressWarnings("nls")
 @Bind(TinyMceService.class)
 @Singleton
 public class TinyMceServiceImpl implements TinyMceService {
-  private static final Logger LOGGER = Logger.getLogger(TinyMceService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TinyMceService.class);
   private static final PluginResourceHelper RESOURCES =
       ResourcesService.getResourceHelper(TinyMceServiceImpl.class);
 

@@ -28,10 +28,7 @@ import * as React from "react";
 import { useContext, useEffect, useState } from "react";
 import { AppRenderErrorContext } from "../../../mainui/App";
 import { getMIMETypesFromServer } from "../../../modules/MimeTypesModule";
-import {
-  MimeTypeFilter,
-  validateMimeTypeName,
-} from "../../../modules/SearchFilterSettingsModule";
+import { validateMimeTypeName } from "../../../modules/SearchFilterSettingsModule";
 import { commonString } from "../../../util/commonstrings";
 import { addElement, deleteElement } from "../../../util/ImmutableArrayUtil";
 import { languageStrings } from "../../../util/langstrings";
@@ -50,11 +47,11 @@ export interface MimeTypeFilterEditingDialogProps {
    * Fired when clicking the ADD or OK button.
    * @param filter The filter that has been added or edited
    */
-  addOrUpdate: (filter: MimeTypeFilter) => void;
+  addOrUpdate: (filter: OEQ.SearchFilterSettings.MimeTypeFilter) => void;
   /**
    * The filter to be edited, or undefined if the action is to add a new filter.
    */
-  mimeTypeFilter?: MimeTypeFilter;
+  mimeTypeFilter?: OEQ.SearchFilterSettings.MimeTypeFilter;
   /**
    * An async function that returns a list of MimeTypeEntry.
    */

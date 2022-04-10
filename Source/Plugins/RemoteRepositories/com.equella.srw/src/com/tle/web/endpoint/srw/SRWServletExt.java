@@ -27,14 +27,15 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind
 @Singleton
 public class SRWServletExt extends ORG.oclc.os.SRW.SRWServlet {
   private static final long serialVersionUID = 1L;
 
-  private static final Logger LOGGER = Logger.getLogger(SRWServletExt.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SRWServletExt.class);
   private static final String DB_NAME = "tle"; // $NON-NLS-1$
 
   @Override

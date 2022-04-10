@@ -42,13 +42,14 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind
 @SuppressWarnings("nls")
 public class CASLogonFilter implements UserManagementLogonFilter {
 
-  private static final Logger LOGGER = Logger.getLogger(CASLogonFilter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CASLogonFilter.class);
 
   private static final String TICKET_VALIDATE_SUCCESS = "yes";
   private static final String PARAM_TICKET = "ticket";

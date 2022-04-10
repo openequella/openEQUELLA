@@ -22,14 +22,11 @@ import java.io.{InputStream, OutputStream}
 import java.nio.ByteBuffer
 import java.nio.channels.Channels
 import java.util.UUID
-
-import cats.data.OptionT
 import cats.effect.{Blocker, IO}
 import com.softwaremill.sttp._
 import com.tle.beans.item.{Item, ItemPack}
 import com.tle.common.filesystem.FileEntry
-import com.tle.core.cloudproviders.{CloudProviderDB, CloudProviderService}
-import com.tle.core.db.{DB, RunWithDB}
+import com.tle.core.cloudproviders.{CloudProviderHelper, CloudProviderService}
 import com.tle.core.httpclient._
 import com.tle.core.item.operations.{ItemOperationParams, WorkflowOperation}
 import com.tle.core.item.standard.operations.DuringSaveOperation
@@ -46,9 +43,7 @@ import javax.ws.rs._
 import javax.ws.rs.core.Response.{ResponseBuilder, Status}
 import javax.ws.rs.core.{Context, Response, StreamingOutput, UriInfo}
 import org.jboss.resteasy.annotations.cache.NoCache
-
 import scala.collection.JavaConverters._
-import scala.concurrent.ExecutionContext.Implicits
 
 case class FileInfo(size: Long, files: Option[Map[String, FileInfo]])
 case class ItemState(xml: String,
@@ -166,22 +161,24 @@ class WizardApi {
       ()
     }
     val queryParams = uriInfo.getQueryParameters.asScala.mapValues(_.asScala).toMap
-    RunWithDB
-      .execute {
-        (for {
-          cp         <- CloudProviderDB.get(providerId)
-          serviceUri <- OptionT.fromOption[DB](cp.serviceUrls.get(serviceId))
-          response <- OptionT.liftF(
-            CloudProviderService.serviceRequest(
-              serviceUri,
-              cp,
-              queryParams,
-              uri => f(uri).response(asStream[Stream[IO, ByteBuffer]])))
-        } yield streamedResponse(response))
-          .getOrElse(Response.status(Status.NOT_FOUND))
-      }
+    CloudProviderHelper
+      .getByUuid(providerId)
+      .flatMap(cp => {
+        cp.serviceUrls
+          .get(serviceId)
+          .map(
+            serviceUri =>
+              CloudProviderService
+                .serviceRequest(serviceUri,
+                                cp,
+                                queryParams,
+                                uri => f(uri).response(asStream[Stream[IO, ByteBuffer]]))
+                .unsafeRunSync
+          )
+          .map(streamedResponse)
+      })
+      .getOrElse(Response.status(Status.NOT_FOUND))
       .build()
-
   }
 
   private def getStreamedBody(content: InputStream): Stream[IO, ByteBuffer] = {
@@ -295,14 +292,23 @@ case class NotifyProvider(providerId: UUID) extends DuringSaveOperation with Ser
   override def createPreSaveWorkflowOperation(): WorkflowOperation = new SimpleWorkflowOperation
 
   override def createPostSaveWorkflowOperation(): WorkflowOperation = new SimpleWorkflowOperation {
-    override def execute(): Boolean = RunWithDB.executeWithHibernate {
-      (for {
-        cp         <- CloudProviderDB.get(providerId)
-        serviceUri <- OptionT.fromOption[DB](cp.serviceUrls.get("itemNotification"))
-        notifyParams = Map("uuid" -> getItem.getUuid, "version" -> getItem.getVersion.toString)
-        _ <- OptionT.liftF(
-          CloudProviderService.serviceRequest(serviceUri, cp, notifyParams, sttp.post))
-      } yield false).getOrElse(false)
-    }
+    override def execute(): Boolean =
+      CloudProviderHelper
+        .getByUuid(providerId)
+        .flatMap(
+          cp =>
+            cp.serviceUrls
+              .get("itemNotification")
+              .map(serviceUri => {
+                CloudProviderService
+                  .serviceRequest(serviceUri,
+                                  cp,
+                                  Map("uuid"    -> getItem.getUuid,
+                                      "version" -> getItem.getVersion.toString),
+                                  sttp.post)
+                  .unsafeRunSync
+                false
+              }))
+        .getOrElse(false)
   }
 }

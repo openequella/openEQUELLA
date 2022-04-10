@@ -185,7 +185,7 @@ public class MyPagesSummariser
 
     @Override
     public ViewAuditEntry getViewAuditEntry() {
-      return new ViewAuditEntry("htmlpage", attachment.getDescription());
+      return new ViewAuditEntry("file:" + getMimeType(), attachment.getFilename());
     }
 
     public class MyPagesContentStream extends WrappedContentStream {
@@ -193,6 +193,12 @@ public class MyPagesSummariser
 
       public MyPagesContentStream(ContentStream inner) {
         super(inner);
+      }
+
+      @Override
+      public boolean useDefaultCacheControl() {
+        // Use the default cache control so that an audit log is created for each view of a webpage.
+        return true;
       }
 
       @Override

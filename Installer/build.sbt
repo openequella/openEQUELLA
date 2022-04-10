@@ -1,8 +1,7 @@
 import Path.relativeTo
 
 libraryDependencies ++= Seq(
-  "com.google.guava" % "guava"         % "31.0.1-jre",
-  "org.slf4j"        % "slf4j-simple"  % "1.7.32",
+  "com.google.guava" % "guava"         % "31.1-jre",
   "commons-codec"    % "commons-codec" % "1.15",
   postgresDep,
   sqlServerDep
@@ -22,6 +21,13 @@ excludeDependencies ++= Seq(
   "commons-logging" % "commons-logging",
   "stax"            % "stax-api"
 )
+
+(assembly / assemblyMergeStrategy) := {
+  case "module-info.class" => MergeStrategy.discard
+  case x =>
+    val oldStrategy = (assembly / assemblyMergeStrategy).value
+    oldStrategy(x)
+}
 
 (assembly / assemblyOption) := (assembly / assemblyOption).value.copy(includeScala = false)
 

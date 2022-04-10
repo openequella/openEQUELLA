@@ -9,7 +9,6 @@
 
 /access/selection/checkout.do
 /access/selection/home.do
-/access/course/cloudsearch.do
 /access/course/searching.do
 /access/skinny/favourites.do
 /access/skinny/hierarchy.do

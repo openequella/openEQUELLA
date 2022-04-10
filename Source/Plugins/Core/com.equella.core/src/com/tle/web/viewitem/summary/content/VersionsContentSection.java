@@ -21,9 +21,9 @@ package com.tle.web.viewitem.summary.content;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
 import com.tle.common.security.Privilege;
-import com.tle.core.item.ViewCountJavaDao;
 import com.tle.core.item.service.ItemService;
 import com.tle.core.security.TLEAclManager;
+import com.tle.core.viewcount.service.ViewCountService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionInfo;
@@ -72,6 +72,7 @@ public class VersionsContentSection extends AbstractContentSection<Object> {
   @Inject private ItemService itemService;
   @Inject private ViewItemUrlFactory viewItemUrlFactory;
   @Inject private TLEAclManager aclService;
+  @Inject private ViewCountService viewCountService;
 
   @Component(name = "v")
   private Table versionsTable;
@@ -112,7 +113,7 @@ public class VersionsContentSection extends AbstractContentSection<Object> {
       if (anyViews) {
         Integer views = null;
         if (showViews.contains(item.getItemId())) {
-          views = ViewCountJavaDao.getSummaryViewCount(item.getItemId());
+          views = viewCountService.getItemViewCount(item.getItemId());
         }
         TableRow row = versionTableState.addRow(version, linkState, item.getStatus(), views);
         row.setSortData(version, null, null, views);

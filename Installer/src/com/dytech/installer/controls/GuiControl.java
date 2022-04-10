@@ -32,12 +32,12 @@ import javax.swing.JPanel;
 
 public abstract class GuiControl {
   protected List targets;
-  protected Vector items;
+  protected Vector<Item> items;
   protected String title;
   protected String description;
 
   public GuiControl(PropBagEx controlBag) {
-    items = new Vector();
+    items = new Vector<>();
     targets = new ArrayList();
 
     createControl(controlBag);
@@ -127,6 +127,20 @@ public abstract class GuiControl {
 
       Item item = new Item(name, value, selected);
       items.add(item);
+    }
+  }
+
+  /**
+   * Hides the control by clearing title and description, while also setting all 'items' to
+   * invisible.
+   */
+  protected void hide() {
+    this.title = "";
+    this.description = "";
+    for (Item item : this.items) {
+      if (item != null && item.getButton() != null) {
+        item.getButton().setVisible(false);
+      }
     }
   }
 }

@@ -56,6 +56,7 @@ import com.tle.upgrade.upgraders.UpgradeToTomcat6_0_26;
 import com.tle.upgrade.upgraders.UpgradeToTomcat6_0_32;
 import com.tle.upgrade.upgraders.UpgradeToTomcat6_0_35;
 import com.tle.upgrade.upgraders.UpgradeToTomcat7_0_37;
+import com.tle.upgrade.upgraders.log4j2.UpdateLog4JConfigFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -64,6 +65,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -75,6 +77,14 @@ import org.apache.commons.logging.LogFactory;
 
 @SuppressWarnings("nls")
 public class UpgradeMain {
+  static {
+    URL log4jConfigFile =
+        ClassLoader.getSystemResource("com/tle/upgrade/upgraders/upgrader-log4j.yaml");
+    if (log4jConfigFile != null) {
+      System.getProperties().setProperty("log4j2.configurationFile", log4jConfigFile.toString());
+    }
+  }
+
   private static final Log LOGGER = LogFactory.getLog(UpgradeMain.class);
 
   private static String commit = "476-g5014b34";
@@ -88,6 +98,7 @@ public class UpgradeMain {
 
   public static Upgrader[] upgraders =
       new Upgrader[] {
+        new UpdateLog4jConfigForTomcatLog(),
         new UpdateHibernateProperties(),
         new UpdateManagerJar(),
         new UpdateServiceWrapper(),
@@ -112,12 +123,12 @@ public class UpgradeMain {
         new AddNonHttpOnly(),
         new UpgradeToEmbeddedTomcat(),
         new AddExifToolConfg(),
-        new UpdateLog4jConfigForTomcatLog(),
         new ConvertBoneCPtoHikariCP(),
         new AddLDAPPoolingOptions(),
         new AddLibAvConfig(),
         new AddFreetextAnalyzerConfig(),
-        new AddPostHib5UpgradeConfig()
+        new AddPostHib5UpgradeConfig(),
+        new UpdateLog4JConfigFile()
       };
 
   public static void main(String[] args) throws Throwable {
@@ -170,6 +181,7 @@ public class UpgradeMain {
           "Path '" + tleInstallDir + "' does not appear to be an EQUELLA install directory");
     }
     xstream = new XStream();
+    xstream.allowTypes(new Class[] {com.tle.upgrade.UpgradeLog.class});
     upgradeLogFile = new File(configDir, "upgrade-log.xml");
   }
 

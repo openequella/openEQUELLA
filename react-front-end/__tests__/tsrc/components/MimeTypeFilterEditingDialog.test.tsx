@@ -15,17 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import "@testing-library/jest-dom/extend-expect";
 import { act, render, screen } from "@testing-library/react";
 import { getMimeTypesFromServer } from "../../../__mocks__/MimeTypes.mock";
 import MimeTypeFilterEditingDialog from "../../../tsrc/settings/Search/searchfilter/MimeTypeFilterEditingDialog";
-import { MimeTypeFilter } from "../../../tsrc/modules/SearchFilterSettingsModule";
 
 describe("<MimeTypeFilterEditingDialog />", () => {
   const onClose = jest.fn();
   const addOrUpdate = jest.fn();
-  const renderDialog = async (filter: MimeTypeFilter | undefined = undefined) =>
+  const renderDialog = async (
+    filter: OEQ.SearchFilterSettings.MimeTypeFilter | undefined = undefined
+  ) =>
     await act(async () => {
       await render(
         <MimeTypeFilterEditingDialog

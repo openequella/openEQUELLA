@@ -153,7 +153,6 @@ export default function IndexPage() {
 
   const errorCallback = React.useCallback((err: ErrorResponse) => {
     errorShowing.current = true;
-    setTemplateProps((p) => ({ ...p, fullscreenMode: undefined }));
     setFullPageError(err);
   }, []);
 

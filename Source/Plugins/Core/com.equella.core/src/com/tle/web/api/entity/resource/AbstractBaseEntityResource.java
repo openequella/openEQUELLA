@@ -68,8 +68,6 @@ import org.springframework.transaction.annotation.Transactional;
 public abstract class AbstractBaseEntityResource<
         BE extends BaseEntity, SB extends BaseEntitySecurityBean, B extends BaseEntityBean>
     implements BaseEntityResource<B, SB> {
-  // private static final Logger LOGGER =
-  // Logger.getLogger(BaseEntityResource.class);
 
   protected abstract Node[] getAllNodes();
 

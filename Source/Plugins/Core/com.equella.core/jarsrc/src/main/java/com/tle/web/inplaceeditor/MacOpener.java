@@ -35,7 +35,6 @@ import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PropertyPermission;
-import java.util.logging.Logger;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -45,6 +44,8 @@ import org.rococoa.ObjCObject;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSAutoreleasePool;
 import org.rococoa.cocoa.foundation.NSString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The reference documents are available from the developer.apple.com site. For Rococoa,
@@ -142,7 +143,7 @@ public class MacOpener extends AbstractListDialogOpener {
 
   private CCarbonWrapper ccarbon = CCarbonWrapper.INSTANCE;
 
-  private static final Logger LOGGER = Logger.getLogger(MacOpener.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(MacOpener.class.getName());
   // Copies of Apple constants
   public static final int kLSRolesNone = 0x00000001;
   public static final int kLSRolesViewer = 0x00000002;
@@ -689,7 +690,7 @@ public class MacOpener extends AbstractListDialogOpener {
     LOGGER.info("Added read RuntimePermission for 'loadLibrary.*'");
 
     permissions.add(new RuntimePermission("loadLibrary.jnidispatch"));
-    LOGGER.finest("Added read RuntimePermission for 'loadLibrary.jnidispatch'");
+    LOGGER.trace("Added read RuntimePermission for 'loadLibrary.jnidispatch'");
 
     permissions.add(new RuntimePermission("loadLibrary.Carbon"));
     LOGGER.info("Added RuntimePermission for 'loadLibrary.Carbon'");
@@ -831,46 +832,6 @@ public class MacOpener extends AbstractListDialogOpener {
    * @return
    */
   private String getDisplayNameForApplication() {
-    String prettyName = null;
-    // @formatter:off
-    // Use the Carbon methods to get a nice name from the file URL
-    // Create a CURLREf from the plain "file://...." String
-    // Pointer curlref = ccarbon.CFURLCreateWithString(null, toCFString(originalAppName), null);
-    // String curlstr = curlref.toString();
-    // Object cfstrURL = ccarbon.CFURLGetString(curlref);
-    // if (cfstrURL != null)
-    // {
-    // 		curlstr = fromCFString(cfstrURL);
-    // }
-    // LOGGER.info("Created CFURLRef (" + curlstr + ") from originalAppName " + originalAppName);
-    // PointerByReference fsRefReturned = new PointerByReference();
-    // boolean opSuccess = ccarbon.CFURLGetFSRef(curlref, fsRefReturned);
-    // // this causes a crash ...!? ?
-    // ccarbon.CFRelease(curlref);
-    // LOGGER.info("Successful call on CFRelease(curlref)");
-    //
-    // if (opSuccess)
-    // {
-    // 		LOGGER.info("Successful call on CFURLGetFSRef");
-    // 		PointerByReference outDisplayName = new PointerByReference();
-    // 		int osstatus =
-    // 			ccarbon.LSCopyDisplayNameForRef(fsRefReturned.getPointer().getPointer(0),
-    // 				outDisplayName);
-    // 		if (osstatus == 0)
-    // 		{
-    // 			LOGGER.info("Successful call on LSCopyDisplayNameForRef");
-    // 			prettyName = fromCFString(outDisplayName.getPointer().getPointer(0));
-    // 			LOGGER.info("Pretty name is " + prettyName);
-    // 		}
-    // 		else
-    // 			LOGGER.info("FAILED call on LSCopyDisplayNameForRef");
-    // 		ccarbon.CFRelease(fsRefReturned.getPointer().getPointer(0));
-    // 		LOGGER.info("Successful call on CFRelease(fsRefReturned.getPointer().getPointer(0))");
-    // }
-    // else
-    // 		LOGGER.info("FAILED call on CFURLGetFSRef");
-    // @formatter:on
-
-    return prettyName;
+    return null;
   }
 }

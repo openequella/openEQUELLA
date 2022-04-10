@@ -116,12 +116,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 @Bind
 public class LMSExportSection extends AbstractContentSection<LMSExportSection.LMSExporterModel> {
-  private static final Logger LOGGER = Logger.getLogger(LMSExportSection.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LMSExportSection.class);
   private static final PluginResourceHelper resources =
       ResourcesService.getResourceHelper(LMSExportSection.class);
   private static final IncludeFile INCLUDE =

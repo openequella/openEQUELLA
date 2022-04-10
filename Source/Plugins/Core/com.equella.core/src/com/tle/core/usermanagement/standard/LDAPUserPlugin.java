@@ -44,12 +44,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind
 @SuppressWarnings("nls")
 public class LDAPUserPlugin extends AbstractUserDirectory {
-  private static final Logger LOGGER = Logger.getLogger(LDAPUserPlugin.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LDAPUserPlugin.class);
 
   private final Cache<String, List<String>> initGroupsCache = makeCache();
 

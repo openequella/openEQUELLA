@@ -29,8 +29,8 @@ import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.common.item.AttachmentUtils;
 import com.tle.common.scripting.types.AttachmentScriptType;
 import com.tle.common.security.SecurityConstants;
-import com.tle.core.item.ViewCountJavaDao;
 import com.tle.core.security.TLEAclManager;
+import com.tle.core.viewcount.service.ViewCountService;
 import java.util.LinkedHashMap;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -40,6 +40,7 @@ public class AttachmentScriptTypeImpl implements AttachmentScriptType {
   private static final long serialVersionUID = 1L;
 
   @Inject private TLEAclManager aclService;
+  @Inject private ViewCountService viewCountService;
 
   private final Attachment wrapped;
   private final FileHandle staging;
@@ -174,7 +175,7 @@ public class AttachmentScriptTypeImpl implements AttachmentScriptType {
         .filterNonGrantedPrivileges(wrapped.getItem(), SecurityConstants.VIEW_VIEWCOUNT)
         .isEmpty()) {
       viewCount =
-          ViewCountJavaDao.getAttachmentViewCount(wrapped.getItem().getItemId(), wrapped.getUuid());
+          viewCountService.getAttachmentViewCount(wrapped.getItem().getItemId(), wrapped.getUuid());
     }
     viewCountRetrieved = true;
     return viewCount;

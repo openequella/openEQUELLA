@@ -66,14 +66,15 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
-import org.apache.log4j.Logger;
 import org.jboss.resteasy.util.DateUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 @Bind(StagingResource.class)
 @Singleton
 public class StagingResourceImpl implements StagingResource {
-  private static final Logger LOGGER = Logger.getLogger(StagingResourceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(StagingResourceImpl.class);
 
   @Inject private MimeTypeService mimeService;
   @Inject private StagingService stagingService;

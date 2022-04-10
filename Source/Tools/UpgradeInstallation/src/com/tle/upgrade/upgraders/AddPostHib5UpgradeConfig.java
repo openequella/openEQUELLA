@@ -50,9 +50,6 @@ public class AddPostHib5UpgradeConfig extends AbstractUpgrader {
 
     result.addLogMessage("Updating hibernate properties");
     updateHibernateProperties(result, config.getConfigDir());
-
-    result.addLogMessage("Updating log4j properties");
-    updateLog4jProperties(result, config.getConfigDir());
   }
 
   private void updateHibernateProperties(final UpgradeResult result, File configDir) {
@@ -74,50 +71,6 @@ public class AddPostHib5UpgradeConfig extends AbstractUpgrader {
               String line4 = "hibernate.query.omit_join_of_superclass_tables=false";
               return Lists.newArrayList(
                   Constants.BLANK, line1, line2, Constants.BLANK, line3, line4);
-            }
-          };
-
-      lineMod.update();
-    } catch (IOException e) {
-      throw new RuntimeException("Failed to update config file", e);
-    }
-  }
-
-  private void updateLog4jProperties(final UpgradeResult result, File configDir) {
-    try {
-      LineFileModifier lineMod =
-          new LineFileModifier(new File(configDir, PropertyFileModifier.LOG4J_CONFIG), result) {
-            @Override
-            protected String processLine(String line) {
-              // Do nothing
-              return line;
-            }
-
-            @Override
-            protected List<String> addLines() {
-              // This assumes the config file does not contain appender filters.  This will
-              // override `filter.1` and `filter.2` if defined previously in the file.
-              String line1 = "# Criteria deprecation warning suppression";
-              String line2 =
-                  "log4j.appender.FILE.filter.1=org.apache.log4j.varia.StringMatchFilter";
-              String line3 = "log4j.appender.FILE.filter.1.StringToMatch=HHH90000022";
-              String line4 = "log4j.appender.FILE.filter.1.AcceptOnMatch=false";
-              String line5 = "# Generator warning suppression";
-              String line6 =
-                  "log4j.appender.FILE.filter.2=org.apache.log4j.varia.StringMatchFilter";
-              String line7 = "log4j.appender.FILE.filter.2.StringToMatch=HHH90000014";
-              String line8 = "log4j.appender.FILE.filter.2.AcceptOnMatch=false";
-              return Lists.newArrayList(
-                  Constants.BLANK,
-                  line1,
-                  line2,
-                  line3,
-                  line4,
-                  Constants.BLANK,
-                  line5,
-                  line6,
-                  line7,
-                  line8);
             }
           };
 

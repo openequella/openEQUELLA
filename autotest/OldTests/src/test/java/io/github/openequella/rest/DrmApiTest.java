@@ -3,12 +3,12 @@ package io.github.openequella.rest;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.tle.webtests.framework.TestConfig;
 import com.tle.webtests.framework.TestInstitution;
 import java.io.IOException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.codehaus.jackson.JsonNode;
 import org.testng.annotations.Test;
 
 @TestInstitution("fiveo")

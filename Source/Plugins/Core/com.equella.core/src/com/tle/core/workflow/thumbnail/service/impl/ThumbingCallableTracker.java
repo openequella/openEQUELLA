@@ -38,14 +38,15 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 @Singleton
 /* package protected */ class ThumbingCallableTracker {
-  private static final Logger LOGGER = Logger.getLogger(ThumbingCallableTracker.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ThumbingCallableTracker.class);
 
   @Inject private ThumbnailRequestService thumbnailRequestService;
   @Inject private ThumbingCallableFactory callableFactory;

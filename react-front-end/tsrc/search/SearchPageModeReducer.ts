@@ -134,14 +134,16 @@ export const searchPageModeReducer = (state: State, action: Action): State => {
     case "useNormal":
       return { mode: "normal" };
     case "initialiseAdvSearch":
-      const { selectedAdvSearch: definition } = action;
-      return {
-        mode: "advSearch",
-        definition,
-        isAdvSearchPanelOpen: true,
-        queryValues: action.initialQueryValues,
-        overrideHide: true,
-      };
+      return pipe(
+        action,
+        ({ initialQueryValues, selectedAdvSearch: definition }) => ({
+          mode: "advSearch",
+          definition,
+          isAdvSearchPanelOpen: true,
+          queryValues: initialQueryValues,
+          overrideHide: true,
+        })
+      );
     case "toggleAdvSearchPanel":
       return toggleOrHidePanel(state, "toggle");
     case "hideAdvSearchPanel":

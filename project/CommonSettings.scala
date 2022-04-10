@@ -39,10 +39,20 @@ object CommonSettings extends AutoPlugin {
     lazy val platformCommon  = LocalProject("com_tle_platform_common")
     lazy val platformSwing   = LocalProject("com_tle_platform_swing")
     lazy val platformEquella = LocalProject("com_tle_platform_equella")
-    lazy val log4jCustom     = LocalProject("com_tle_log4j")
-    lazy val xstreamDep      = "com.thoughtworks.xstream" % "xstream" % "1.4.11.1"
-    lazy val postgresDep     = "org.postgresql" % "postgresql" % "42.3.1"
-    lazy val sqlServerDep    = "com.microsoft.sqlserver" % "mssql-jdbc" % "6.1.0.jre8"
+    lazy val postgresDep     = "org.postgresql" % "postgresql" % "42.3.3"
+    lazy val sqlServerDep    = "com.microsoft.sqlserver" % "mssql-jdbc" % "10.2.0.jre8"
+
+    lazy val log4jVersion   = "2.17.2"
+    lazy val log4j          = "org.apache.logging.log4j" % "log4j" % log4jVersion
+    lazy val log4jSlf4jImpl = "org.apache.logging.log4j" % "log4j-slf4j-impl" % log4jVersion
+
+    lazy val xstreamVersion = "1.4.19"
+    lazy val xstreamDep     = "com.thoughtworks.xstream" % "xstream" % xstreamVersion
+
+    lazy val jacksonVersion        = "2.13.2"
+    lazy val jacksonDataBind       = "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion
+    lazy val jacksonDataFormatYaml = "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % jacksonVersion
+    lazy val jacksonModuleScala    = "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion
   }
 
   override def trigger: PluginTrigger = allRequirements

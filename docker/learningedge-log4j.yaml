@@ -1,0 +1,108 @@
+Configuration:
+  status: warn
+
+  properties:
+    property:
+      name: filePath
+      value: "/home/equella/equella/logs"
+
+  appenders:
+    Console:
+      name: STDOUT
+      target: SYSTEM_OUT
+      PatternLayout:
+        Pattern: "%d{ABSOLUTE} %-5p [%c{10}] %m%n"
+      Filters:
+        RegexFilter:
+          # Filter out Hibernate Criteria deprecation warning and Generator warning.
+          regex: ".*(HHH90000022|HHH90000014).*"
+          onMatch: "DENY"
+          onMismatch: "NEUTRAL"
+        ThresholdFilter:
+          level: "DEBUG"
+          onMatch: "ACCEPT"
+          onMismatch: "DENY"
+
+    RollingFile:
+      - name: FILE
+        fileName: "${filePath}/resource-centre/application.html"
+        filePattern: "${filePath}/resource-centre/%d{yyyy-MM-dd}/application-%i.html"
+        immediateFlush: true
+        append: true
+        Filters:
+          RegexFilter:
+            regex: ".*(HHH90000022|HHH90000014).*"
+            onMatch: "DENY"
+            onMismatch: "NEUTRAL"
+          ThresholdFilter:
+            level: DEBUG
+        HTMLLayout:
+          title: TLE Resource Centre
+          datePattern: ISO8601
+          locationInfo: true
+        Policies:
+          TimeBasedTriggeringPolicy:
+            interval: 1
+            modulate: true
+          SizeBasedTriggeringPolicy:
+            size: 10 MB
+        DefaultRollOverStrategy:
+          max: 20
+
+      - name: REPORT
+        fileName: "${filePath}/reporting/log.html"
+        filePattern: "${filePath}/reporting/%d{yyyy-MM-dd}/log-%i.html"
+        immediateFlush: true
+        append: true
+        Filters:
+          ThresholdFilter:
+            level: DEBUG
+        HTMLLayout:
+          title: EQUELLA Reporting Logs
+          datePattern: ISO8601
+          locationInfo: true
+        Policies:
+          TimeBasedTriggeringPolicy:
+            interval: 1
+            modulate: true
+          SizeBasedTriggeringPolicy:
+            size: 10 MB
+        DefaultRollOverStrategy:
+          max: 20
+
+      - name: TOMCAT
+        fileName: "${filePath}/tomcat/tomcat.html"
+        filePattern: "${filePath}/tomcat/%d{yyyy-MM-dd}/tomcat-%i.html"
+        immediateFlush: true
+        append: true
+        Filters:
+          ThresholdFilter:
+            level: DEBUG
+        HTMLLayout:
+          title: Tomcat Logs
+          datePattern: ISO8601
+          locationInfo: true
+        Policies:
+          TimeBasedTriggeringPolicy:
+            interval: 1
+            modulate: true
+          SizeBasedTriggeringPolicy:
+            size: 10 MB
+        DefaultRollOverStrategy:
+          max: 20
+
+  Loggers:
+    Root:
+      level: info
+      AppenderRef:
+        - ref: FILE
+        - ref: STDOUT
+    Logger:
+      - name: org.eclipse.birt
+        level: INFO
+        AppenderRef:
+          ref: REPORT
+      - name: TomcatLog
+        level: INFO
+        AppenderRef:
+          ref: TOMCAT

@@ -38,12 +38,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author aholland */
 public abstract class AbstractSharedSecretWrapper<S extends AbstractSharedSecretValue>
     extends AbstractUserDirectory {
-  private static final Logger LOGGER = Logger.getLogger(AbstractSharedSecretWrapper.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSharedSecretWrapper.class);
 
   @Inject private TLEUserService tleUserService;
   @Inject private RunAsInstitution runAs;

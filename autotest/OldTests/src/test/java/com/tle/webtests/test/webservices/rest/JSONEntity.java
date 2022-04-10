@@ -1,11 +1,11 @@
 package com.tle.webtests.test.webservices.rest;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.OutputStream;
 import org.apache.http.entity.ContentProducer;
 import org.apache.http.entity.EntityTemplate;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 
 public class JSONEntity extends EntityTemplate {
 

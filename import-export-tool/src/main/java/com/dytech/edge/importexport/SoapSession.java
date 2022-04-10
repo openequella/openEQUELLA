@@ -14,8 +14,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import org.apache.commons.codec.binary.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Note: to compile this class you need to run the generate-source target in the build script
@@ -24,7 +25,7 @@ import org.apache.commons.codec.binary.Base64;
  */
 @SuppressWarnings("nls")
 public final class SoapSession {
-  protected static final Logger LOGGER = Logger.getLogger(SoapSession.class.getName());
+  protected static final Logger LOGGER = LoggerFactory.getLogger(SoapSession.class.getName());
 
   protected final SoapService51 client;
   protected final URL institutionUrl;

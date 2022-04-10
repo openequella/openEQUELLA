@@ -12,25 +12,25 @@
   },
   "dependencies": {
     "@material-ui/core": "4.12.3",
-    "axios": "0.24.0",
+    "axios": "0.26.1",
     "babel-polyfill": "6.26.0",
     "js-md5": "0.7.3",
-    "jss": "10.8.2",
+    "jss": "10.9.0",
     "oeq-cloudproviders": "https://github.com/openequella/openEQUELLA-cloudprovidersdk/archive/refs/tags/v0.0.1.tar.gz",
-    "query-string": "7.0.1",
+    "query-string": "7.1.1",
     "react": "17.0.2",
     "react-dom": "17.0.2"
   },
   "devDependencies": {
-    "@types/react": "17.0.34",
-    "@types/react-dom": "17.0.11",
+    "@types/react": "17.0.41",
+    "@types/react-dom": "17.0.14",
     "mkdirp": "1.0.4",
     "parcel-bundler": "1.12.5",
     "pulp": "15.0.0",
     "purescript": "0.12.3",
-    "typescript": "4.4.4",
-    "follow-redirects": "1.14.5",
+    "typescript": "4.6.2",
+    "follow-redirects": "1.14.9",
     "tar": "6.1.11",
-    "shelljs": "0.8.4"
+    "shelljs": "0.8.5"
   }
 }

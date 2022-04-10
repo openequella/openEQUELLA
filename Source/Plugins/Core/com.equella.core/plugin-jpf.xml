@@ -128,9 +128,6 @@
     <parameter id="class" value="com.tle.tomcat.guice.TomcatModule" />
     <parameter id="class" value="com.tle.web.activation.guice.ActivationsModule" />
     <parameter id="class" value="com.tle.web.browseby.guice.BrowseByModule" />
-    <parameter id="class" value="com.tle.web.cloud.guice.CloudCourseSearchModule" />
-    <parameter id="class" value="com.tle.web.cloud.guice.CloudSearchModule" />
-    <parameter id="class" value="com.tle.web.cloud.guice.CloudViewItemModule" />
     <parameter id="class" value="com.tle.web.connectors.guice.ConnectorsModule" />
     <parameter id="class" value="com.tle.web.connectors.guice.ManageConnectorsSearchModule" />
     <parameter id="class" value="com.tle.web.contentrestrictions.ContentRestrictionsModule" />
@@ -235,10 +232,6 @@
   <extension plugin-id="com.tle.core.events" point-id="applicationEventListener" id="listeners_12">
     <parameter id="listenerClass" value="com.tle.core.healthcheck.listeners.ServiceCheckResponseListener" />
   </extension>
-  <extension plugin-id="com.tle.core.events" point-id="applicationEventListener" id="cacheInvalidator">
-    <parameter id="listenerClass" value="com.tle.core.cache.CacheInvalidation" />
-    <parameter id="listener" value="object:com.tle.core.cache.DBCacheBuilder" />
-  </extension>
   <extension plugin-id="com.tle.web.wizard" point-id="webControl" id="groupselector">
     <parameter id="class" value="bean:com.tle.web.controls.groupselector.GroupSelectorWebControl" />
     <parameter id="type" value="groupselector" />
@@ -291,34 +284,6 @@
   <extension plugin-id="com.tle.web.wizard.controls.universal" point-id="universalResourceHandler" id="mypagesHandler">
     <parameter id="class" value="bean:com.tle.web.controls.mypages.MyPagesHandler" />
     <parameter id="order" value="400" />
-  </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="searching_14">
-    <parameter id="path" value="/cloudsearch.do" />
-    <parameter id="root" value="bean:/cloudsearch" />
-  </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="newIntegSearching">
-    <parameter id="path" value="/access/course/cloudsearch.do" />
-    <parameter id="root" value="bean:/access/course/cloudsearch" />
-  </extension>
-  <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="viewitem">
-    <parameter id="path" value="/cloud/viewitem.do" />
-    <parameter id="root" value="bean:/cloud/viewitem" />
-  </extension>
-  <extension plugin-id="com.tle.web.core" point-id="webServlet" id="cloudItemServlet">
-    <parameter id="bean" value="bean:com.tle.web.cloud.view.servlet.CloudItemServlet" />
-    <parameter id="url-pattern" value="/cloud/*" />
-  </extension>
-  <extension plugin-id="com.tle.web.searching" point-id="searchTab" id="cloudResultsTab">
-    <parameter id="bean" value="bean:com.tle.web.cloud.search.CloudResultsTab" />
-    <parameter id="order" value="1000" />
-  </extension>
-  <extension plugin-id="com.tle.web.viewurl" point-id="attachmentResource" id="cloudResource">
-    <parameter id="type" value="other" />
-    <parameter id="class" value="bean:com.tle.web.cloud.attachment.CloudAttachmentSummariser" />
-  </extension>
-  <extension plugin-id="com.tle.web.viewurl" point-id="viewableItemResolver" id="cloudViewableItemResolver">
-    <parameter id="id" value="cloud" />
-    <parameter id="bean" value="bean:com.tle.web.cloud.viewable.impl.CloudViewableItemResolver" />
   </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="searching_13">
     <parameter id="path" value="/access/quickcontributeandversionsettings.do" />
@@ -675,10 +640,6 @@
   <extension plugin-id="com.tle.web.services" point-id="invoker" id="cloudProviderInvoker">
     <parameter id="class" value="com.tle.core.remoting.CloudProviderAdminService" />
     <parameter id="bean" value="bean:com.tle.core.remoting.CloudProviderAdminService" />
-  </extension>
-  <extension plugin-id="com.tle.core.item" point-id="itemResolver" id="cloud">
-    <parameter id="id" value="cloud" />
-    <parameter id="bean" value="bean:com.tle.core.cloud.service.CloudService" />
   </extension>
   <extension plugin-id="com.tle.web.remoting.rest" point-id="resource" id="collectionResource">
     <parameter id="class" value="com.tle.web.api.collection.interfaces.CollectionResource" />
@@ -1675,10 +1636,20 @@
     <parameter id="bean" value="bean:com.tle.core.legacy.initial.AuditLogData4Migration" />
     <parameter id="date" value="1970-01-01" />
   </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="NewViewCountTables">
+    <parameter id="id" value="NewViewCountTables" />
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v66.NewViewCountTables" />
+    <parameter id="date" value="2018-06-26" />
+  </extension>
   <extension plugin-id="com.tle.core.migration" point-id="migration" id="NewAuditLogColumn">
     <parameter id="id" value="NewAuditLogColumn" />
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v66.NewAuditLogColumn" />
     <parameter id="date" value="2018-06-01" />
+  </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="NewEntityTable">
+    <parameter id="id" value="NewEntityTable" />
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20191.NewEntityTable" />
+    <parameter id="date" value="2019-02-05" />
   </extension>
   <extension plugin-id="com.tle.core.migration" point-id="migration" id="addIndexes">
     <parameter id="id" value="com.tle.core.migration.initial.EnsureForeignKeyIndexes" />
@@ -5996,6 +5967,15 @@
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="facetedSearchClassificationObject">
     <parameter id="class" value="com.tle.core.facetedsearch.bean.FacetedSearchClassification" />
   </extension>
+  <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="ViewcountItem">
+    <parameter id="class" value="com.tle.beans.viewcount.ViewcountItem" />
+  </extension>
+  <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="ViewcountAttachment">
+    <parameter id="class" value="com.tle.beans.viewcount.ViewcountAttachment" />
+  </extension>
+  <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="NewEntity">
+    <parameter id="class" value="com.tle.beans.newentity.Entity" />
+  </extension>
   <extension plugin-id="com.tle.core.freetext" point-id="indexingExtension" id="favouritesIndexer">
     <parameter id="class" value="bean:com.tle.core.favourites.index.FavouritesIndexer" />
   </extension>
@@ -6068,6 +6048,11 @@
     <parameter id="id" value="com.tle.core.institution.migration.v20202.AddIndexingErrorColumnMigration"/>
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v20202.AddIndexingErrorColumnMigration"/>
     <parameter id="date" value="2020-11-18"/>
+  </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="RenameViewCount">
+    <parameter id="id" value="com.tle.core.institution.migration.v20221.RenameViewCount"/>
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20221.RenameViewCount"/>
+    <parameter id="date" value="2022-04-07"/>
   </extension>
   <extension plugin-id="com.tle.core.migration" point-id="migration" id="EnableDefaultViewerMigration">
     <parameter id="id" value="com.tle.core.institution.migration.v20211.EnableDefaultViewerMigration"/>

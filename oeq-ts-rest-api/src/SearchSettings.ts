@@ -52,10 +52,6 @@ export interface Settings {
   attachmentBoost: number;
 }
 
-export interface CloudSettings {
-  disabled: boolean;
-}
-
 export const SEARCH_SETTINGS_URL = '/settings/search';
 export const CLOUD_SETTINGS_URL = `${SEARCH_SETTINGS_URL}/cloud`;
 
@@ -78,24 +74,3 @@ export const updateSearchSettings = (
   settings: Settings
 ): Promise<void> =>
   PUT<Settings, void>(apiBasePath + SEARCH_SETTINGS_URL, settings);
-
-/**
- * Retrieve the general Cloud settings for OEQ.
- * @param apiBasePath Base URI to the oEQ institution and API
- */
-export const getCloudSettings = (apiBasePath: string): Promise<CloudSettings> =>
-  GET<CloudSettings>(
-    apiBasePath + CLOUD_SETTINGS_URL,
-    (data): data is CloudSettings => is<CloudSettings>(data)
-  );
-
-/**
- * Update the Cloud settings.
- * @param apiBasePath Base URI to the oEQ institution and API
- * @param settings New Cloud settings
- */
-export const updateCloudSettings = (
-  apiBasePath: string,
-  settings: CloudSettings
-): Promise<void> =>
-  PUT<CloudSettings, void>(apiBasePath + CLOUD_SETTINGS_URL, settings);

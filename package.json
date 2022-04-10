@@ -27,30 +27,37 @@
     "npm": "8.1.4"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "4.33.0",
-    "@typescript-eslint/parser": "4.33.0",
+    "@commitlint/cli": "16.2.3",
+    "@commitlint/config-conventional": "16.2.1",
+    "@typescript-eslint/eslint-plugin": "5.15.0",
+    "@typescript-eslint/parser": "5.15.0",
     "babel-eslint": "10.1.0",
     "cross-env": "7.0.3",
-    "eslint": "7.32.0",
-    "eslint-config-prettier": "8.3.0",
-    "eslint-config-react-app": "6.0.0",
-    "eslint-plugin-flowtype": "6.1.1",
-    "eslint-plugin-import": "2.25.3",
-    "eslint-plugin-jest": "25.2.2",
+    "eslint": "8.11.0",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-config-react-app": "7.0.0",
+    "eslint-plugin-flowtype": "8.0.3",
+    "eslint-plugin-import": "2.25.4",
+    "eslint-plugin-jest": "26.1.2",
     "eslint-plugin-jsx-a11y": "6.5.1",
     "eslint-plugin-notice": "0.9.10",
     "eslint-plugin-prettier": "4.0.0",
-    "eslint-plugin-react": "7.27.1",
+    "eslint-plugin-react": "7.29.4",
     "eslint-plugin-react-hooks": "4.3.0",
     "husky": "7.0.4",
     "licensee": "8.2.0",
-    "lint-staged": "11.2.6",
+    "lint-staged": "12.3.7",
     "npm-run-all": "4.1.5",
-    "prettier": "2.4.1",
+    "prettier": "2.6.0",
     "remark-cli": "10.0.1",
     "remark-lint-no-dead-urls": "1.1.0",
     "remark-validate-links": "11.0.2",
-    "typescript": "4.4.4"
+    "typescript": "4.6.2"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   },
   "lint-staged": {
     "*.{js,ts,tsx}": "eslint --fix",
@@ -72,6 +79,7 @@
   "eslintConfig": {
     "root": true,
     "extends": [
+      "eslint:recommended",
       "react-app",
       "plugin:jest/recommended",
       "plugin:jest/style",
@@ -110,10 +118,10 @@
     },
     "settings": {
       "jest": {
-        "version": 26
+        "version": 27
       },
       "react": {
-        "version": "16.13"
+        "version": "17.0"
       }
     },
     "overrides": [

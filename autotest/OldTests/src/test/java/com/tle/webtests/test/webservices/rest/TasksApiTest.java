@@ -4,9 +4,12 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.tle.common.Pair;
+import java.text.ParsePosition;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,8 +20,6 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.util.ISO8601Utils;
 import org.testng.annotations.Test;
 
 public class TasksApiTest extends AbstractRestApiTest {
@@ -224,7 +225,7 @@ public class TasksApiTest extends AbstractRestApiTest {
         first = new Date(2298153600000l); // 2042
         continue;
       }
-      Date due = ISO8601Utils.parse(dateNode.asText());
+      Date due = ISO8601Utils.parse(dateNode.asText(), new ParsePosition(0));
       assertTrue(
           due.after(first) || due.equals(first),
           "Results were not sorted by due date: " + first + " before " + due);
@@ -238,7 +239,7 @@ public class TasksApiTest extends AbstractRestApiTest {
 
     for (int i = 0; i < results; i++) {
       JsonNode dateNode = jsonNode.get("results").get(i).get("startDate");
-      Date started = ISO8601Utils.parse(dateNode.asText());
+      Date started = ISO8601Utils.parse(dateNode.asText(), new ParsePosition(0));
       assertTrue(
           started.after(first) || started.equals(first), "Results were not sorted by waiting date");
       first = started;

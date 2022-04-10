@@ -27,7 +27,8 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author Nicholas Read */
 @SuppressWarnings("nls")
@@ -49,7 +50,7 @@ public class ClientLocaleImplementation extends AbstractCurrentLocale {
     this.keyPrefix = keyPrefix;
     this.rtl = rtl;
 
-    final Logger logger = Logger.getLogger(getClass().getName());
+    final Logger logger = LoggerFactory.getLogger(getClass().getName());
 
     text = new Properties();
     for (String bundleGroup : bundleGroups) {

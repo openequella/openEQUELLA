@@ -125,7 +125,6 @@ object JPFScanPlugin extends AutoPlugin {
     "com.tle.webstart.admin",
     "com.tle.platform.common",
     "com.tle.platform.equella",
-    "com.tle.log4j",
     "com.tle.web.adminconsole"
   )
 
@@ -135,7 +134,9 @@ object JPFScanPlugin extends AutoPlugin {
     val baseDir = proj.base
     val allManifests = (baseDir / "Source/Plugins" * "*" * "*" / "plugin-jpf.xml").get ++
       (baseDir / "Platform/Plugins" * "*" / "plugin-jpf.xml").get ++
-      (baseDir / "Interface/Plugins" * "*" / "plugin-jpf.xml").get
+      (baseDir / "Interface/Plugins" * "*" / "plugin-jpf.xml").get ++
+      // Also include UpgradeInstallation and UpgradeManager
+      (baseDir / "Source/Tools" * "Upgrade*" / "plugin-jpf.xml").get
     val manifestMap = allManifests.map(parseJPF).map(p => (p.id, p)).toMap
 
 //    val adminPlugins = manifestMap.values.filter(_.adminConsole).map(_.id).toSet

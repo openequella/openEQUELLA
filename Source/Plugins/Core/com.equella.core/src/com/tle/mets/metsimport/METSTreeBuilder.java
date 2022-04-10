@@ -77,13 +77,14 @@ import java.util.Map;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind
 @Singleton
 @SuppressWarnings("nls")
 public class METSTreeBuilder implements PackageTreeBuilder {
-  private static final Logger LOGGER = Logger.getLogger(METSTreeBuilder.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(METSTreeBuilder.class);
   private static PluginResourceHelper r = ResourcesService.getResourceHelper(METSTreeBuilder.class);
 
   private PluginTracker<MetsAttachmentImporterExporter> attachmentExporters;
@@ -218,7 +219,7 @@ public class METSTreeBuilder implements PackageTreeBuilder {
   }
 
   protected class METSTreeHelper implements AttachmentAdder {
-    private final Logger HELPER_LOGGER = Logger.getLogger(METSTreeHelper.class);
+    private final Logger HELPER_LOGGER = LoggerFactory.getLogger(METSTreeHelper.class);
     protected final Item item;
     protected final Map<String, Integer> kidCount;
     protected final FileHandle staging;

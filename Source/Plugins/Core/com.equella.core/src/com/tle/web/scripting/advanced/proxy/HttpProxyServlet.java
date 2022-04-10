@@ -57,8 +57,6 @@ import javax.servlet.http.HttpServletResponse;
 @Singleton
 @SuppressWarnings("nls")
 public class HttpProxyServlet extends HttpServlet {
-  // private static final Logger LOGGER =
-  // Logger.getLogger(HttpProxyServlet.class);
   private static final long serialVersionUID = 1L;
 
   @Inject private HttpService httpService;

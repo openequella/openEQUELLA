@@ -47,8 +47,6 @@ import com.tle.web.search.event.FreetextSearchResultEvent;
 import com.tle.web.search.filter.AbstractResetFiltersQuerySection;
 import com.tle.web.search.service.AutoCompleteResult;
 import com.tle.web.search.service.AutoCompleteService;
-import com.tle.web.searching.OnSearchExtension;
-import com.tle.web.searching.OnSearchExtensionHandler;
 import com.tle.web.searching.SearchWhereModel;
 import com.tle.web.searching.SearchWhereModel.WhereEntry;
 import com.tle.web.searching.WithinType;
@@ -118,7 +116,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 @SuppressWarnings("nls")
@@ -133,7 +132,7 @@ public class SearchQuerySection
 
   private static final String KEY_SEARCHED = "$SEARCHED$-";
   private static final String KEY_XML = "$POWERXML$";
-  private static final Logger LOGGER = Logger.getLogger(SearchQuerySection.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SearchQuerySection.class);
 
   private static final String DIV_QUERY = "searchform";
 
@@ -192,8 +191,6 @@ public class SearchQuerySection
   private JSCallable reloadFunction;
   private JSCallable updateInterface;
   private JSCallable restoreSkinnySearchActions;
-
-  private OnSearchExtensionHandler onSearchCollector;
 
   @Override
   protected String getAjaxDiv() {
@@ -258,9 +255,6 @@ public class SearchQuerySection
   public void registered(String id, SectionTree tree) {
     super.registered(id, tree);
 
-    onSearchCollector = new OnSearchExtensionHandler();
-    tree.addRegistrationHandler(onSearchCollector);
-
     searchButton.setLabel(LABEL_SEARCH);
     searchButton.setComponentAttribute(ButtonTrait.class, ButtonTrait.PRIMARY);
 
@@ -309,12 +303,7 @@ public class SearchQuerySection
         CallAndReferenceFunction.get(
             searchResults.getResultsUpdater(tree, events.getEventHandler("saveQuery"), DIV_QUERY),
             searchButton));
-    List<OnSearchExtension> onSearchExtensions = onSearchCollector.getAllImplementors(tree);
-    for (OnSearchExtension ose : onSearchExtensions) {
-      onSearchFunctions.add(ose.getOnSearchCallable());
-      onSearchFunctions.add(
-          new ExternallyDefinedFunction("fadeResultsContainerIn", UPDATE_INCLUDE));
-    }
+    onSearchFunctions.add(new ExternallyDefinedFunction("fadeResultsContainerIn", UPDATE_INCLUDE));
 
     ExternallyDefinedFunction searchFunction =
         new ExternallyDefinedFunction("searchFunction", UPDATE_INCLUDE);

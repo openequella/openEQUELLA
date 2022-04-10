@@ -54,7 +54,8 @@ import javax.inject.Singleton;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author Nicholas Read */
 @Bind
@@ -70,7 +71,7 @@ public class InstitutionFilter extends OncePerRequestFilter implements Instituti
     ".css", ".js", ".jpeg", ".jpg", ".gif", ".png", ".ico", ".zip", ".war", ".jar", ".woff",
   };
 
-  private static final Logger LOGGER = Logger.getLogger(InstitutionFilter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(InstitutionFilter.class);
 
   private String adminUrl;
 

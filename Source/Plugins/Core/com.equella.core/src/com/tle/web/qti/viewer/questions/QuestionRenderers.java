@@ -76,7 +76,8 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.ed.ph.jqtiplus.node.ForeignElement;
 import uk.ac.ed.ph.jqtiplus.node.QtiNode;
 import uk.ac.ed.ph.jqtiplus.node.content.InfoControl;
@@ -174,7 +175,7 @@ import uk.ac.ed.ph.jqtiplus.node.test.TestFeedback;
 @Bind
 @Singleton
 public class QuestionRenderers {
-  private static final Logger LOGGER = Logger.getLogger(QuestionRenderers.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(QuestionRenderers.class);
 
   @Inject private Factory qfac;
 

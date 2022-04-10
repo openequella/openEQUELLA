@@ -32,11 +32,12 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 public abstract class AbstractFreemarkerFactory {
-  private static final Logger LOGGER = Logger.getLogger(AbstractFreemarkerFactory.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractFreemarkerFactory.class);
 
   protected Configuration configuration;
 

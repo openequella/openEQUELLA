@@ -16,27 +16,28 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { Facet } from "../../../tsrc/modules/FacetedSearchSettingsModule";
 import * as FacetedSearchSettingsModule from "../../../tsrc/modules/FacetedSearchSettingsModule";
 import {
   Classification,
   listClassifications,
 } from "../../../tsrc/modules/SearchFacetsModule";
 
-const CLASSIFICATION_SUBJECT: Facet = {
-  id: 0,
-  name: "Classification 1",
-  schemaNode: "/item/subject",
-  maxResults: 1,
-  orderIndex: 0,
-};
-const CLASSIFICATION_KEYWORD: Facet = {
-  id: 1,
-  name: "Classification 2",
-  schemaNode: "/item/keyword",
-  orderIndex: 1,
-  maxResults: 10,
-};
+const CLASSIFICATION_SUBJECT: OEQ.FacetedSearchSettings.FacetedSearchClassification =
+  {
+    id: 0,
+    name: "Classification 1",
+    schemaNode: "/item/subject",
+    maxResults: 1,
+    orderIndex: 0,
+  };
+const CLASSIFICATION_KEYWORD: OEQ.FacetedSearchSettings.FacetedSearchClassification =
+  {
+    id: 1,
+    name: "Classification 2",
+    schemaNode: "/item/keyword",
+    orderIndex: 1,
+    maxResults: 10,
+  };
 const CATEGORIES_SUBJECT: OEQ.SearchFacets.Facet[] = [
   { term: "subject1", count: 10 },
   { term: "subject2", count: 20 },

@@ -42,12 +42,13 @@ import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import net.oauth.OAuthMessage;
 import net.oauth.server.OAuthServlet;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind
 @Singleton
 public class LtiConsumerUserStateHook extends AbstractOAuthV1UserStateHook {
-  private static final Logger LOGGER = Logger.getLogger(LtiConsumerUserStateHook.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LtiConsumerUserStateHook.class);
 
   @PlugKey("oauth.lti.error.")
   private static String LTI_ERROR_PREFIX;

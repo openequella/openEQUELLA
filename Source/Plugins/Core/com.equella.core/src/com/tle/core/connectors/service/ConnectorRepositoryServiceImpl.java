@@ -56,13 +56,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 @Bind(ConnectorRepositoryService.class)
 public class ConnectorRepositoryServiceImpl implements ConnectorRepositoryService {
   private static final String USERNAME_SCRIPT_VARIABLE = "username";
-  private static final Logger LOGGER = Logger.getLogger(ConnectorRepositoryService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConnectorRepositoryService.class);
 
   private PluginTracker<ConnectorRepositoryImplementation> implTracker;
   @Inject private ScriptingService scriptingService;

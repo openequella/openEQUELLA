@@ -36,12 +36,13 @@ import com.tle.web.viewurl.ResourceViewerFilter;
 import com.tle.web.viewurl.ViewItemUrl;
 import com.tle.web.viewurl.ViewableResource;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 public abstract class AbstractCopyrightResourceViewerFilter implements ResourceViewerFilter {
   private static final Logger LOGGER =
-      Logger.getLogger(AbstractCopyrightResourceViewerFilter.class);
+      LoggerFactory.getLogger(AbstractCopyrightResourceViewerFilter.class);
 
   protected abstract Class<? extends AbstractCopyrightAgreementDialog> getDialogClass();
 

@@ -5,6 +5,7 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -14,11 +15,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.codehaus.jackson.JsonNode;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -160,6 +161,37 @@ public class Search2ApiTest extends AbstractRestApiTest {
     assertEquals(getAvailable(result), expectNumber);
   }
 
+  @Test(description = "Test that attachment details can be optionally excluded")
+  public void excludeAttachments() throws IOException {
+    JsonNode result =
+        doSearch(
+            200,
+            null,
+            new NameValuePair("mimeTypes", "application/pdf"),
+            new NameValuePair("includeAttachments", "false"));
+    // Make sure we've got items to test with
+    assertTrue(getAvailable(result) > 0);
+
+    // First, let's make sure we only have items with attachments
+    final Predicate<JsonNode> hasOneOrMoreAttachments =
+        item ->
+            Optional.of(item.get("attachmentCount"))
+                .map(JsonNode::asInt)
+                .map(n -> n > 0)
+                .orElse(false);
+    assertEquals(
+        buildResultsStream(result).filter(hasOneOrMoreAttachments).count(),
+        getAvailable(result),
+        "Expected only items with attachments.");
+
+    // Next, make sure all the attachments have been excluded - i.e. no 'attachments' element
+    final Predicate<JsonNode> hasNoAttachments = item -> item.get("attachments") == null;
+    assertEquals(
+        buildResultsStream(result).filter(hasNoAttachments).count(),
+        getAvailable(result),
+        "All items should have NO 'attachments' element.");
+  }
+
   @Test(description = "Search for a known MIME type")
   public void validMimeTypeSearch() throws IOException {
     JsonNode result = doSearch(200, null, new NameValuePair("mimeTypes", "text/plain"));
@@ -220,30 +252,56 @@ public class Search2ApiTest extends AbstractRestApiTest {
     assertEquals(getAvailable(result), 1); // Confirm we've kind of got what we expect
 
     final JsonNode attachments =
-        Optional.of(result.get("results"))
+        Optional.ofNullable(result.get("results"))
             .map(results -> results.get(0))
             .map(item -> item.get("attachments"))
             .orElseThrow(
                 () -> new IllegalStateException("Failed to access attachments for validation"));
 
-    final Iterable<JsonNode> attachmentsIterable = attachments::getElements;
     final Predicate<JsonNode> isYouTubeAttachment =
         attachment ->
-            Optional.of(attachment.get("attachmentType"))
+            Optional.ofNullable(attachment.get("attachmentType"))
                 .map(JsonNode::asText)
                 .map(typeString -> typeString.compareTo("custom/youtube") == 0)
                 .orElse(false);
     final Predicate<JsonNode> hasExternalId =
         attachment ->
-            Optional.of(attachment.get("links")).map(links -> links.get("externalId")).isPresent();
+            Optional.ofNullable(attachment.get("links"))
+                .map(links -> links.get("externalId"))
+                .isPresent();
 
     final long validAttachments =
-        StreamSupport.stream(attachmentsIterable.spliterator(), false)
+        StreamSupport.stream(attachments.spliterator(), false)
             .filter(isYouTubeAttachment)
             .filter(hasExternalId)
             .count();
 
     assertEquals(validAttachments, 1);
+  }
+
+  @Test(description = "Search for item with no thumbnail")
+  public void noThumbnailTest() throws IOException {
+    String itemName = "SearchApiTest - Basic";
+
+    JsonNode result = doSearch(200, itemName);
+    assertEquals(getAvailable(result), 1);
+    assertFalse(getThumbnailDetails(result, itemName).isPresent());
+  }
+
+  @Test(description = "Search for item with full thumbnail details")
+  public void thumbnailTest() throws IOException {
+    String itemName = "ItemApiViewTest - All attachments";
+
+    JsonNode result = doSearch(200, itemName);
+    assertEquals(getAvailable(result), 1);
+
+    Optional<JsonNode> thumbnailDetails = getThumbnailDetails(result, itemName);
+    assertTrue(thumbnailDetails.isPresent());
+
+    JsonNode details = thumbnailDetails.get();
+    for (String fieldName : Arrays.asList("attachmentType", "mimeType", "link")) {
+      assertNotNull(details.get(fieldName));
+    }
   }
 
   private JsonNode doSearch(int expectedCode, String query, NameValuePair... queryVals)
@@ -267,5 +325,27 @@ public class Search2ApiTest extends AbstractRestApiTest {
 
   private int getAvailable(JsonNode result) {
     return result.get("available").asInt();
+  }
+
+  private Stream<JsonNode> buildResultsStream(JsonNode result) {
+    return Optional.ofNullable(result.get("results"))
+        .map(JsonNode::spliterator)
+        .map(spliterator -> StreamSupport.stream(spliterator, false))
+        .orElseThrow(() -> new IllegalStateException("Missing 'results' element in 'result'"));
+  }
+
+  private Optional<JsonNode> getThumbnailDetails(JsonNode result, String itemName) {
+    Predicate<JsonNode> resultByUuid =
+        (r) ->
+            Optional.ofNullable(r.get("name"))
+                .filter(JsonNode::isTextual)
+                .map(JsonNode::textValue)
+                .map(id -> id.compareToIgnoreCase(itemName) == 0)
+                .orElse(false);
+
+    return buildResultsStream(result)
+        .filter(resultByUuid)
+        .findFirst()
+        .flatMap(r -> Optional.ofNullable(r.get("thumbnailDetails")));
   }
 }

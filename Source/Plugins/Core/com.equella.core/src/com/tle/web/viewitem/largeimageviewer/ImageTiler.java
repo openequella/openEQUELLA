@@ -39,7 +39,8 @@ import java.util.List;
 import java.util.Properties;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 @Bind
@@ -48,7 +49,7 @@ public class ImageTiler {
   private static final int TILE_SIZE = 256;
   private static final String TILE_PROPERTIES_FILENAME = "info.properties";
   private static final String ERROR_FILENAME = "error.txt";
-  private static final Logger LOGGER = Logger.getLogger(ImageTiler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ImageTiler.class);
   private static final String ORIGINAL_TILE_FOLDER = "/orig/";
 
   @Inject private ImageMagickService imageMagickService;

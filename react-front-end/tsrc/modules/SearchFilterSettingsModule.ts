@@ -16,33 +16,11 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import Axios from "axios";
-import {
-  BatchOperationResponse,
-  groupErrorMessages,
-} from "../api/BatchOperationResponse";
-import { encodeQuery } from "../util/encodequery";
+import { API_BASE_URL } from "../AppConfig";
 
-export interface MimeTypeFilter {
-  /**
-   * The unique ID a MIME type filter. It's generated on the Server.
-   * So it can be null if the filter is created but not saved.
-   */
-  id?: string;
-  /**
-   * The name of a MIME type filter.
-   */
-  name: string;
-  /**
-   * A list of MIME types belonging to a MIME type filter.
-   */
-  mimeTypes: string[];
-}
-
-const MIME_TYPE_FILTERS_URL = "api/settings/search/filter";
-
-export const getMimeTypeFiltersFromServer = (): Promise<MimeTypeFilter[]> =>
-  Axios.get(MIME_TYPE_FILTERS_URL).then((res) => res.data);
+export const getMimeTypeFiltersFromServer = (): Promise<
+  OEQ.SearchFilterSettings.MimeTypeFilter[]
+> => OEQ.SearchFilterSettings.getSearchFilterSettings(API_BASE_URL);
 
 /**
  * Find MIME type filters by a list of ID.
@@ -52,20 +30,24 @@ export const getMimeTypeFiltersFromServer = (): Promise<MimeTypeFilter[]> =>
  */
 export const getMimeTypeFiltersById = async (
   filterIds: string[]
-): Promise<MimeTypeFilter[] | undefined> => {
+): Promise<OEQ.SearchFilterSettings.MimeTypeFilter[] | undefined> => {
   const allFilters = await getMimeTypeFiltersFromServer();
   return allFilters.filter(({ id }) => id && filterIds.includes(id));
 };
 
-export const batchUpdateOrAdd = (filters: MimeTypeFilter[]) =>
-  Axios.put<BatchOperationResponse[]>(MIME_TYPE_FILTERS_URL, filters).then(
-    (res) => groupErrorMessages(res.data)
-  );
+export const batchUpdateOrAdd = (
+  filters: OEQ.SearchFilterSettings.MimeTypeFilter[]
+) =>
+  OEQ.SearchFilterSettings.batchUpdateSearchFilterSetting(
+    API_BASE_URL,
+    filters
+  ).then((res) => OEQ.BatchOperationResponse.groupErrorMessages(res));
 
 export const batchDelete = (ids: string[]) =>
-  Axios.delete<BatchOperationResponse[]>(
-    `${MIME_TYPE_FILTERS_URL}/${encodeQuery({ ids: ids })}`
-  ).then((res) => groupErrorMessages(res.data));
+  OEQ.SearchFilterSettings.batchDeleteSearchFilterSetting(
+    API_BASE_URL,
+    ids
+  ).then((res) => OEQ.BatchOperationResponse.groupErrorMessages(res));
 
 export const getMimeTypeDetail = (entry: OEQ.MimeType.MimeTypeEntry) => {
   const { mimeType, desc } = entry;
@@ -81,6 +63,9 @@ export const validateMimeTypeName = (name: string | undefined): boolean =>
 /**
  * Return a function which does reference comparison for two filters.
  */
-export const filterComparator = (targetFilter: MimeTypeFilter) => {
-  return (filter: MimeTypeFilter) => filter === targetFilter;
+export const filterComparator = (
+  targetFilter: OEQ.SearchFilterSettings.MimeTypeFilter
+) => {
+  return (filter: OEQ.SearchFilterSettings.MimeTypeFilter) =>
+    filter === targetFilter;
 };

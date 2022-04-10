@@ -107,6 +107,7 @@ public class NewSearchPageTest extends AbstractSessionTest {
     // and verify the attachment appears when the item appears in a search.
     searchPage.changeQuery(searchTerm);
     searchPage.waitForSearchCompleted(1);
+    searchPage.expandAttachments(searchTerm);
     searchPage.verifyAttachmentDisplayed(attachmentTitle);
 
     // Then, logon as AutoTest (who doesn't have VIEW_RESTRICTED_ATTACHMENTS)
@@ -116,6 +117,7 @@ public class NewSearchPageTest extends AbstractSessionTest {
     // and verify that the attachment doesn't show when the item appears in a search.
     searchPage.changeQuery(searchTerm);
     searchPage.waitForSearchCompleted(1);
+    searchPage.expandAttachments(searchTerm);
     searchPage.verifyAttachmentNotDisplayed(attachmentTitle);
   }
 

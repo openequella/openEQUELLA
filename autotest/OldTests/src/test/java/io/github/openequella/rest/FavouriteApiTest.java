@@ -5,14 +5,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ObjectNode;
 import org.testng.annotations.Test;
 
 public class FavouriteApiTest extends AbstractRestApiTest {
@@ -35,7 +37,9 @@ public class FavouriteApiTest extends AbstractRestApiTest {
     assertEquals(HttpStatus.SC_CREATED, makeClientRequest(method));
 
     JsonNode response = mapper.readTree(method.getResponseBody());
-    String[] keywords = mapper.readValue(response.get("keywords"), String[].class);
+    ObjectReader stringArrayReader = mapper.readerFor(new TypeReference<String[]>() {});
+    String[] keywords = stringArrayReader.readValue((JsonNode) response.withArray("keywords"));
+
     assertEquals(ITEM_KEY, response.get("itemID").asText());
     assertTrue(response.get("isAlwaysLatest").asBoolean());
     assertArrayEquals(tags, keywords);

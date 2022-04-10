@@ -1,11 +1,11 @@
 package com.tle.webtests.test.webservices.rest;
 
 import com.dytech.devlib.PropBagEx;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.tle.common.Pair;
 import com.tle.webtests.pageobject.viewitem.ItemId;
 import java.io.IOException;
 import java.util.List;
-import org.codehaus.jackson.node.ObjectNode;
 import org.testng.annotations.Test;
 
 public class ItemApiActionsTest extends AbstractItemApiTest {

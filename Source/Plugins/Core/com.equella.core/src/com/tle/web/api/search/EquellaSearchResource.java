@@ -110,10 +110,11 @@ public interface EquellaSearchResource extends SearchResource {
           @QueryParam("where")
           String where,
       @ApiParam(
-              value = "How much information to return for the results",
-              required = false,
-              allowableValues = ItemResource.ALL_ALLOWABLE_INFOS,
-              allowMultiple = true)
+              value =
+                  "How much information to return for the results"
+                      + "\nAvailable values: "
+                      + ItemResource.ALL_ALLOWABLE_INFOS,
+              required = false)
           @QueryParam("info")
           CsvList info,
       @ApiParam(
@@ -127,13 +128,13 @@ public interface EquellaSearchResource extends SearchResource {
           @QueryParam("dynacollection")
           String dynaCollectionCompound,
       @ApiParam(
-              value = "Filter by item status",
-              required = false,
-              allowableValues =
-                  "DRAFT,LIVE,REJECTED,MODERATING,ARCHIVED,SUSPENDED,DELETED,REVIEW,PERSONAL",
-              allowMultiple = true)
+              value =
+                  "Filter by item status"
+                      + "\nAvailable values: "
+                      + ItemResource.ALL_ALLOWABLE_STATUSES,
+              required = false)
           @QueryParam("status")
-          String status,
+          CsvList status,
       @ApiParam(value = "An ISO date format (yyyy-MM-dd)", required = false)
           @QueryParam("modifiedAfter")
           String modifiedAfter,

@@ -104,10 +104,11 @@ class SearchResource {
       searchResults.getOffset,
       searchResults.getCount,
       searchResults.getAvailable,
-      items.map(convertToItem),
+      items.map(convertToItem(_, params.includeAttachments)),
       highlight
     )
   }
+
   @HEAD
   @Path("/export")
   def exportCSV(@BeanParam params: SearchParam): Response = {

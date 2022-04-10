@@ -3,6 +3,7 @@ package io.github.openequella.rest;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.tle.webtests.framework.TestConfig;
 import com.tle.webtests.framework.TestInstitution;
 import java.io.IOException;
@@ -10,7 +11,6 @@ import java.util.stream.StreamSupport;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.codehaus.jackson.JsonNode;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 

@@ -25,6 +25,7 @@ import com.tle.common.scripting.service.ScriptingService;
 import com.tle.core.accessibility.AccessibilityModeService;
 import com.tle.core.activation.service.ActivationService;
 import com.tle.core.auditlog.AuditLogService;
+import com.tle.core.cloudproviders.CloudProviderRegistrationService;
 import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.dynacollection.DynaCollectionService;
 import com.tle.core.encryption.EncryptionService;
@@ -47,6 +48,7 @@ import com.tle.core.item.service.ItemService;
 import com.tle.core.item.standard.service.ItemCommentService;
 import com.tle.core.jackson.ObjectMapperService;
 import com.tle.core.mimetypes.MimeTypeService;
+import com.tle.core.newentity.service.EntityService;
 import com.tle.core.oauth.service.OAuthService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.powersearch.PowerSearchService;
@@ -124,6 +126,8 @@ public class LegacyGuice extends AbstractModule {
 
   @Inject public static CALWebServiceImpl calWebService;
 
+  @Inject public static CloudProviderRegistrationService cloudProviderRegistrationService;
+
   @Inject public static ConfigurationService configService;
 
   @Inject public static ContentRestrictionsPrivilegeTreeProvider contentRestricPrivProvider;
@@ -139,6 +143,8 @@ public class LegacyGuice extends AbstractModule {
   @Inject public static DynaCollectionService dynaCollectionService;
 
   @Inject public static EncryptionService encryptionService;
+
+  @Inject public static EntityService entityService;
 
   @Inject public static EventService eventService;
 

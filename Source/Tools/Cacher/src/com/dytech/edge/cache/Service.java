@@ -33,11 +33,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author Nicholas Read */
 public class Service extends Thread {
-  private static final Logger LOGGER = Logger.getLogger(Service.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(Service.class);
   private final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
   private static final int DEFAULT_HTTP_PORT = 80;
   private static final String RESOURCES_XML = "/cache.xml";

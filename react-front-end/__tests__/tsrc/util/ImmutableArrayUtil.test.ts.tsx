@@ -15,12 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
 import {
   addElement,
   deleteElement,
   replaceElement,
 } from "../../../tsrc/util/ImmutableArrayUtil";
-import { MimeTypeFilter } from "../../../tsrc/modules/SearchFilterSettingsModule";
 
 describe("ImmutableArrayUtil", () => {
   describe("create new arrays of primitives", () => {
@@ -45,13 +45,13 @@ describe("ImmutableArrayUtil", () => {
   });
 
   describe("create new arrays of objects", () => {
-    const testingArray: MimeTypeFilter[] = [
+    const testingArray: OEQ.SearchFilterSettings.MimeTypeFilter[] = [
       { id: "1", name: "PNG Image filter", mimeTypes: ["image/png"] },
     ];
-    let newArray: MimeTypeFilter[] = [];
-    const comparator = (filter: MimeTypeFilter) =>
+    let newArray: OEQ.SearchFilterSettings.MimeTypeFilter[] = [];
+    const comparator = (filter: OEQ.SearchFilterSettings.MimeTypeFilter) =>
       filter.name === "PNG Image filter";
-    const videoFilter: MimeTypeFilter = {
+    const videoFilter: OEQ.SearchFilterSettings.MimeTypeFilter = {
       id: "2",
       name: "Video filter",
       mimeTypes: ["video/mp4"],

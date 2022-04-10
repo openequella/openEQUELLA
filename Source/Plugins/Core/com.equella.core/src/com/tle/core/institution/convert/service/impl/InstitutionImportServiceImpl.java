@@ -41,11 +41,11 @@ import com.tle.core.filesystem.staging.service.StagingService;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.institution.InstitutionValidationError;
-import com.tle.core.institution.OEQEntityConverter;
 import com.tle.core.institution.RunAsInstitution;
 import com.tle.core.institution.convert.*;
 import com.tle.core.institution.convert.extension.InstitutionInfoInitialiser;
 import com.tle.core.institution.convert.service.InstitutionImportService;
+import com.tle.core.newentity.convert.NewEntityConverter;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.security.impl.SecureOnCallSystem;
@@ -68,9 +68,10 @@ import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,7 +79,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Singleton
 @SuppressWarnings({"deprecation", "nls"})
 public class InstitutionImportServiceImpl implements InstitutionImportService {
-  private static final Logger LOGGER = Logger.getLogger(InstitutionImportServiceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(InstitutionImportServiceImpl.class);
   @Deprecated private static final String OLD_INSTITUTION_FILE = "institutionData.xml";
   private static final String INSTITUTION_FILE = "institutionInfo.xml";
 
@@ -96,6 +97,7 @@ public class InstitutionImportServiceImpl implements InstitutionImportService {
   @Inject private PluginTracker<InstitutionInfoInitialiser> institutionInfoInitialisers;
   @Inject private ZippingConverter zippingConverter;
   @Inject private FilestoreConverter filestoreConverter;
+  @Inject private NewEntityConverter newEntityConverter;
 
   private List<Converter> converterList;
   private Map<String, Converter> converterMap;
@@ -175,11 +177,10 @@ public class InstitutionImportServiceImpl implements InstitutionImportService {
     if (converterList == null) {
       converterMap = Maps.newHashMap();
       converterList = Lists.newArrayList(converterTracker.getBeanList());
-      OEQEntityConverter oeqConverter = new OEQEntityConverter();
-      converterList.add(oeqConverter);
+      converterList.add(newEntityConverter);
       converterList.add(filestoreConverter);
       converterList.add(zippingConverter);
-      converterMap.put(OEQEntityConverter.TaskId(), oeqConverter);
+      converterMap.put(NewEntityConverter.ID, newEntityConverter);
       converterMap.put(FilestoreConverter.CONVERTER_ID, filestoreConverter);
       converterMap.put(FilestoreConverter.CLEANUP_ID, filestoreConverter);
       converterMap.put(ZippingConverter.ID, zippingConverter);
@@ -461,7 +462,7 @@ public class InstitutionImportServiceImpl implements InstitutionImportService {
       try {
         params.setOldServerURL(new URL(newInstInfo.getServerURL()));
       } catch (MalformedURLException e) {
-        LOGGER.warn(e, e);
+        LOGGER.warn(e.getMessage(), e);
       }
     }
 

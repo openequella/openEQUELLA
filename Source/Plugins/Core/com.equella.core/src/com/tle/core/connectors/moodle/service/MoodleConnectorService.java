@@ -84,8 +84,9 @@ import java.util.Map.Entry;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
 import org.ccil.cowan.tagsoup.Parser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -94,7 +95,7 @@ import org.xml.sax.XMLReader;
 @Bind
 @Singleton
 public class MoodleConnectorService extends AbstractIntegrationConnectorRespository {
-  private static final Logger LOGGER = Logger.getLogger(MoodleConnectorService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MoodleConnectorService.class);
 
   @Inject private HttpService httpService;
   @Inject private ConfigurationService configService;
@@ -474,11 +475,9 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
                 Integer.valueOf(value));
           }
         } else if (key.equals("visible")) {
-          content.setAvailable(Integer.parseInt(value) == 1 ? true : false);
+          content.setAvailable(Integer.parseInt(value) == 1);
           content.setAttribute(
-              "visible",
-              getKey("moodle.finduses.visible"),
-              Integer.parseInt(value) == 1 ? true : false);
+              "visible", getKey("moodle.finduses.visible"), Integer.parseInt(value) == 1);
         } else if (key.equals("key")) {
           attributeKey = value;
         } else if (key.equals(VALUE_NODE)) {

@@ -29,12 +29,13 @@ import com.tle.core.guice.Bind;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind
 public class AppletSharedSecretWrapper
     extends AbstractSharedSecretWrapper<AppletSharedSecretValue> {
-  private static final Logger LOGGER = Logger.getLogger(AppletSharedSecretWrapper.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AppletSharedSecretWrapper.class);
 
   @Override
   protected boolean initialise(UserManagementSettings settings) {

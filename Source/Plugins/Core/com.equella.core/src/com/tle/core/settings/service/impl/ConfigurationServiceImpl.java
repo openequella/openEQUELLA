@@ -52,20 +52,21 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.criterion.CriteriaQuery;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.engine.spi.TypedValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 @Singleton
 @SuppressWarnings("nls")
 @Bind(ConfigurationService.class)
 public class ConfigurationServiceImpl implements ConfigurationService, ConfigurationChangeListener {
-  private static final Logger LOGGER = Logger.getLogger(ConfigurationServiceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationServiceImpl.class);
 
   private static final Object CACHED_NULL = new Object();
   private InstitutionCache<Cache<Object, Object>> cache;

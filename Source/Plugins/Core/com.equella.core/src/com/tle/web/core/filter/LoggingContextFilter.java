@@ -34,15 +34,16 @@ import javax.inject.Singleton;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
-import org.apache.log4j.MDC;
+import org.apache.logging.log4j.ThreadContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author Nicholas Read */
 @SuppressWarnings("nls")
 @Bind
 @Singleton
 public class LoggingContextFilter extends AbstractWebFilter {
-  private static final Logger LOGGER = Logger.getLogger(LoggingContextFilter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LoggingContextFilter.class);
   private static final long LOG_IF_REQUEST_LONGER_THAN = TimeUnit.SECONDS.toMillis(5);
 
   @Nullable private RequestLogger requestLogger;
@@ -97,7 +98,7 @@ public class LoggingContextFilter extends AbstractWebFilter {
               thread.setName(oldThreadName);
             }
 
-            MDC.remove(Constants.MDC_SESSION_ID);
+            ThreadContext.remove(Constants.MDC_SESSION_ID);
           }
         });
   }
@@ -106,7 +107,7 @@ public class LoggingContextFilter extends AbstractWebFilter {
   // There is no guarantee that all sensitive information will be blanked!
   private static class RequestLogger {
     private static final Logger REQUEST_LOGGER =
-        Logger.getLogger(LoggingContextFilter.class.getName() + ".RequestLogger");
+        LoggerFactory.getLogger(LoggingContextFilter.class.getName() + ".RequestLogger");
 
     public void logRequest(HttpServletRequest request) {
       final StringBuilder params =

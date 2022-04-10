@@ -57,7 +57,9 @@ public interface ItemResource {
   static final String APIDOC_FILEID = "The id of a file area to use";
 
   static final String ALL_ALLOWABLE_INFOS =
-      "basic,metadata,attachment,detail,navigation,drm,display,all";
+      "basic, metadata, attachment, detail, navigation, drm, display, all";
+  static final String ALL_ALLOWABLE_STATUSES =
+      "draft, live, rejected, moderating, archived, suspended, deleted, review, personal";
 
   @GET
   @Path("/{uuid}/{version}")

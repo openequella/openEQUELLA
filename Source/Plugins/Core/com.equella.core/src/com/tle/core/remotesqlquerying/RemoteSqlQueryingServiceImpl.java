@@ -25,7 +25,8 @@ import com.zaxxer.hikari.HikariDataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
@@ -33,7 +34,7 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 @Singleton
 @SuppressWarnings("nls")
 public class RemoteSqlQueryingServiceImpl implements RemoteRemoteSqlQueryingService {
-  private static final Logger LOGGER = Logger.getLogger(RemoteSqlQueryingServiceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RemoteSqlQueryingServiceImpl.class);
 
   @Override
   public void testConnection(String driverClass, String jdbcUrl, String username, String password) {

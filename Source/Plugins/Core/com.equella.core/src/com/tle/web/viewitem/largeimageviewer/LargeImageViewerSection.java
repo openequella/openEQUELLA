@@ -77,14 +77,15 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 @Bind
 public class LargeImageViewerSection
     extends AbstractViewerSection<LargeImageViewerSection.LargeImageViewerModel>
     implements ViewItemFilter {
-  private static final Logger LOGGER = Logger.getLogger(LargeImageViewerSection.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LargeImageViewerSection.class);
   private static final long TIMEOUT = TimeUnit.MINUTES.toMillis(5);
   private static final long RELOAD_INTERVAL = TimeUnit.SECONDS.toMillis(7);
   private static final int[] ROTATION_TO_ANGLE = new int[] {270, 180, 90};

@@ -6,19 +6,18 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.tle.common.Pair;
 import com.tle.common.PathUtils;
 import java.util.List;
 import org.apache.http.HttpResponse;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
 import org.testng.annotations.Test;
 
 public class SearchSettingApiTest extends AbstractRestApiTest {
   private static final String OAUTH_CLIENT_ID = "SearchSettingApiTestClient";
   private static final String API_SEARCH_SETTINGS_PATH = "api/settings/search";
-  private static final String API_CLOUD_SETTINGS_PATH = "api/settings/search/cloud";
   private static final String API_SEARCH_FILTER_PATH = "api/settings/search/filter";
 
   private static final String DEFAULT_SORT_ORDER = "defaultSearchSort";
@@ -128,23 +127,6 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
     assertEquals(updatedSearchSettings.get(ATTACHMENT_BOOST).asInt(), 4);
 
     assertEquals(updatedSearchSettings.get(URL_LEVEL).asInt(), 1);
-  }
-
-  @Test
-  public void testCloudSettings() throws Exception {
-    String token = requestToken(OAUTH_CLIENT_ID);
-    final String uri = PathUtils.urlPath(context.getBaseUrl(), API_CLOUD_SETTINGS_PATH);
-
-    final JsonNode initialCloudSettings = getEntity(uri, token);
-    assertFalse(initialCloudSettings.get(DISABLE_CLOUD).asBoolean());
-
-    final ObjectNode newCloudSettings = mapper.createObjectNode();
-    newCloudSettings.put(DISABLE_CLOUD, true);
-    HttpResponse response = putEntity(newCloudSettings.toString(), uri, token, true);
-    assertEquals(response.getStatusLine().getStatusCode(), 204);
-
-    final JsonNode updatedCloudSettings = getEntity(uri, token);
-    assertTrue(updatedCloudSettings.get(DISABLE_CLOUD).asBoolean());
   }
 
   @Test(dependsOnMethods = "testSearchSettings")

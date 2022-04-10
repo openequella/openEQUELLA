@@ -38,7 +38,6 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.annotation.PostConstruct;
-import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
@@ -52,6 +51,8 @@ import org.apache.lucene.search.NRTManager.TrackingIndexWriter;
 import org.apache.lucene.search.NRTManagerReopenThread;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * When Lucene creates an IndexSearcher it keeps a snap-shot of the index at that point in time, and
@@ -85,7 +86,7 @@ import org.apache.lucene.util.Version;
  */
 @SuppressWarnings("nls")
 public abstract class AbstractIndexEngine {
-  protected final Logger LOGGER = Logger.getLogger(getClass());
+  protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
   private File indexPath;
   private PerFieldAnalyzerWrapper analyzer = null;
   private File stopWordsFile;

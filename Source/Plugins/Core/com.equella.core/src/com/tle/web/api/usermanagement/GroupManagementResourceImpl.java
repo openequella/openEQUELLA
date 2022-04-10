@@ -51,14 +51,15 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** See the interface class for the @Path annotations. */
 @SuppressWarnings("nls")
 @Bind(EquellaGroupResource.class)
 @Singleton
 public class GroupManagementResourceImpl implements EquellaGroupResource {
-  private static final Logger LOGGER = Logger.getLogger(GroupManagementResourceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GroupManagementResourceImpl.class);
   private static final String APIDOC_GROUPUUID = "The uuid of the group";
 
   @Inject private TLEAclManager aclManager;

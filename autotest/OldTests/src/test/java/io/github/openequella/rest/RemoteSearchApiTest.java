@@ -2,6 +2,7 @@ package io.github.openequella.rest;
 
 import static org.junit.Assert.assertEquals;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.tle.webtests.framework.TestConfig;
 import com.tle.webtests.framework.TestInstitution;
 import io.github.openequella.rest.models.BaseEntitySummary;
@@ -10,7 +11,6 @@ import java.util.List;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.codehaus.jackson.type.TypeReference;
 import org.testng.annotations.Test;
 
 @TestInstitution("vanilla")

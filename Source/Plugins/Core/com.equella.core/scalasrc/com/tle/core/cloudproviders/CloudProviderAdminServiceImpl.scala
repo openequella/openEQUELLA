@@ -21,7 +21,6 @@ package com.tle.core.cloudproviders
 import java.util
 
 import com.tle.beans.cloudproviders._
-import com.tle.core.db.RunWithDB
 import com.tle.core.guice.Bind
 import com.tle.core.remoting.CloudProviderAdminService
 
@@ -31,6 +30,6 @@ import scala.collection.JavaConverters._
 class CloudProviderAdminServiceImpl extends CloudProviderAdminService {
 
   override def listControls: util.List[CloudControlDefinition] = {
-    RunWithDB.execute(CloudProviderService.queryControls()).asJava
+    CloudProviderService.queryControls.asJava
   }
 }

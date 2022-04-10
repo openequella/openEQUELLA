@@ -42,8 +42,9 @@ import javax.inject.Singleton;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
-import org.apache.log4j.MDC;
+import org.apache.logging.log4j.ThreadContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Sets up the TLE session.
@@ -53,7 +54,7 @@ import org.apache.log4j.MDC;
 @Bind
 @Singleton
 public class TleSessionFilter extends AbstractWebFilter {
-  private static final Logger LOGGER = Logger.getLogger(TleSessionFilter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TleSessionFilter.class);
 
   @Inject private UserSessionService sessionService;
   @Inject private UserService userService;
@@ -102,7 +103,7 @@ public class TleSessionFilter extends AbstractWebFilter {
             "Session ID for current user is null: "
                 + userState.getUserBean().getUsername()); // $NON-NLS-1$
       } else {
-        MDC.put(Constants.MDC_SESSION_ID, userState.getSessionID());
+        ThreadContext.put(Constants.MDC_SESSION_ID, userState.getSessionID());
       }
     } catch (Exception t) {
       userService.logoutToGuest(userService.getWebAuthenticationDetails(request), false);

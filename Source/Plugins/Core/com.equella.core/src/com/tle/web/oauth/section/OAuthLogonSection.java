@@ -75,7 +75,6 @@ import javax.servlet.http.HttpServletRequest;
 @SuppressWarnings("nls")
 public class OAuthLogonSection extends AbstractPrototypeSection<OAuthLogonSection.OAuthLogonModel>
     implements HtmlRenderer, AfterParametersListener, BookmarkEventListener {
-  // private static final Logger LOGGER = Logger.getLogger(OAuthLogonSection.class);
 
   @PlugKey("oauth.error.clientnotfound")
   private static String KEY_CLIENT_NOT_FOUND;

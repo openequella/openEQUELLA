@@ -33,14 +33,15 @@ import java.util.Enumeration;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author Nicholas Read */
 @SuppressWarnings("nls")
 @Bind(UrlService.class)
 @Singleton
 public class UrlServiceImpl implements UrlService {
-  private static final Logger LOGGER = Logger.getLogger(UrlServiceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(UrlServiceImpl.class);
 
   public static final String PREVIEW = "preview/";
   public static final String ITEMS = "items/";
@@ -100,11 +101,22 @@ public class UrlServiceImpl implements UrlService {
     return qbuilder;
   }
 
-  @Override
-  public URI getUriForRequest(HttpServletRequest request, String query) {
+  /**
+   * In order to correctly set up schema for an internal forward request, such as a redirect request
+   * to error.do, this func will overwrite the schema based on the request and base institution url.
+   *
+   * @return UriBuilder with new schema
+   */
+  private UriBuilder getUriBuilderForRequest(HttpServletRequest request) {
     URI uri = getBaseInstitutionURI();
     UriBuilder builder = UriBuilder.create(uri);
-    builder.setScheme(request.isSecure() ? "https" : "http");
+    builder.setScheme(request.isSecure() ? "https" : uri.getScheme());
+    return builder;
+  }
+
+  @Override
+  public URI getUriForRequest(HttpServletRequest request, String query) {
+    UriBuilder builder = getUriBuilderForRequest(request);
     builder.setPath(request.getRequestURI());
     builder.setQuery(query);
     return builder.build();
@@ -112,9 +124,7 @@ public class UrlServiceImpl implements UrlService {
 
   @Override
   public URI getBaseUriFromRequest(HttpServletRequest request) {
-    URI uri = getBaseInstitutionURI();
-    UriBuilder builder = UriBuilder.create(uri);
-    builder.setScheme(request.isSecure() ? "https" : "http");
+    UriBuilder builder = getUriBuilderForRequest(request);
     return builder.build();
   }
 

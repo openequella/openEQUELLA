@@ -31,9 +31,9 @@ import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import * as OEQ from "@openequella/rest-api-client";
+import HTMLReactParser from "html-react-parser";
 import * as React from "react";
 import { useEffect, useState } from "react";
-import HTMLReactParser from "html-react-parser";
 import { useHistory } from "react-router";
 import { HashLink } from "react-router-hash-link";
 import { sprintf } from "sprintf-js";
@@ -43,8 +43,8 @@ import OEQThumb from "../../components/OEQThumb";
 import { StarRating } from "../../components/StarRating";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { createDrmDialog } from "../../drm/DrmHelper";
-import { defaultDrmStatus } from "../../modules/DrmModule";
 import { routes } from "../../mainui/routes";
+import { defaultDrmStatus } from "../../modules/DrmModule";
 import {
   addFavouriteItem,
   deleteFavouriteItem,
@@ -57,14 +57,15 @@ import {
   selectResource,
 } from "../../modules/LegacySelectionSessionModule";
 import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
+import { searchItemAttachments } from "../../modules/SearchModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
 import { buildOpenSummaryPageHandler } from "../SearchPageHelper";
-import { FavouriteItemDialog } from "./FavouriteItemDialog";
 import type {
   FavDialogConfirmToAdd,
   FavDialogConfirmToDelete,
 } from "./FavouriteItemDialog";
+import { FavouriteItemDialog } from "./FavouriteItemDialog";
 import { ResourceSelector } from "./ResourceSelector";
 import { SearchResultAttachmentsList } from "./SearchResultAttachmentsList";
 
@@ -114,6 +115,13 @@ export interface SearchResultProps {
     mimeType: string
   ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>;
   /**
+   * A function which can retrieve attachments for a specified item.
+   */
+  getItemAttachments?: (
+    uuid: string,
+    version: number
+  ) => Promise<OEQ.Search.Attachment[]>;
+  /**
    * The list of words which should be highlighted.
    */
   highlights: string[];
@@ -140,24 +148,25 @@ export const ItemDrmContext = React.createContext<{
 
 export default function SearchResult({
   getViewerDetails = getMimeTypeDefaultViewerDetails,
+  getItemAttachments = searchItemAttachments,
   highlights,
   item,
 }: SearchResultProps) {
   const {
-    name,
-    version,
-    uuid,
+    bookmarkId: bookmarkDefaultId,
+    commentCount = 0,
     description,
     displayFields,
-    modifiedDate,
-    status,
     displayOptions,
-    attachments = [],
-    commentCount = 0,
-    starRatings,
-    bookmarkId: bookmarkDefaultId,
-    isLatestVersion,
     drmStatus: initialDrmStatus = defaultDrmStatus,
+    isLatestVersion,
+    modifiedDate,
+    name,
+    starRatings,
+    status,
+    thumbnailDetails,
+    uuid,
+    version,
   } = item;
   const itemKey = `${uuid}/${version}`;
   const classes = useStyles();
@@ -309,8 +318,8 @@ export default function SearchResult({
             color="textPrimary"
           >
             {
-              /**Custom metadata can contain html tags, we should make sure that is
-          preserved */
+              // Custom metadata can contain html tags,
+              // we should make sure that is preserved
               HTMLReactParser(element.html)
             }
           </Typography>
@@ -385,10 +394,13 @@ export default function SearchResult({
         alignItems="flex-start"
         divider
         aria-label={searchResultStrings.ariaLabel}
+        data-item-id={uuid}
+        data-item-version={version}
       >
         <OEQThumb
-          attachment={attachments[0]}
-          showPlaceholder={displayOptions?.disableThumbnail ?? false}
+          details={
+            displayOptions?.disableThumbnail ? undefined : thumbnailDetails
+          }
         />
         <ListItemText
           primary={itemPrimaryContent}
@@ -406,6 +418,7 @@ export default function SearchResult({
                 <SearchResultAttachmentsList
                   item={item}
                   getViewerDetails={getViewerDetails}
+                  getItemAttachments={getItemAttachments}
                 />
               </ItemDrmContext.Provider>
               {generateItemMetadata()}

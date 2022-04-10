@@ -29,11 +29,12 @@ import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BlackboardScormAPI implements ScormAPI, Serializable {
   private static final long serialVersionUID = 1L;
-  private static final Logger LOGGER = Logger.getLogger(BlackboardScormAPI.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(BlackboardScormAPI.class);
 
   private String cookies;
   private URL servletURL;

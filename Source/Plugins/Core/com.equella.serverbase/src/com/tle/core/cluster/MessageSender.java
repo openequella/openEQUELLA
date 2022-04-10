@@ -27,11 +27,12 @@ import java.text.MessageFormat;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 public class MessageSender {
-  private static final Logger LOGGER = Logger.getLogger(MessageSender.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MessageSender.class);
 
   private String receiverId; // Remote node
   private final BlockingDeque<byte[]> msgQueue = new LinkedBlockingDeque<>();

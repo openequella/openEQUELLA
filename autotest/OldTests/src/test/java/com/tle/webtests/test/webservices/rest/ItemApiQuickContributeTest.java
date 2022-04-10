@@ -4,6 +4,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.tle.common.Pair;
 import com.tle.webtests.pageobject.settings.QuickContributeAndVersionPage;
 import com.tle.webtests.test.files.Attachments;
@@ -15,7 +16,6 @@ import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.InputStreamEntity;
-import org.codehaus.jackson.JsonNode;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -51,10 +51,9 @@ public class ItemApiQuickContributeTest extends AbstractItemApiTest {
     String itemUri = headerLocation.getValue();
 
     JsonNode itemNode = getItemJson(itemUri, "basic,detail", token);
-    String attachmentUuid = itemNode.get("uuid").getTextValue();
-    assertEquals(itemNode.get("name").getTextValue(), FILENAME);
-    assertEquals(
-        itemNode.get("collection").get("uuid").getTextValue(), QUICKCONTRIB_COLLECTION_UUID);
+    String attachmentUuid = itemNode.get("uuid").asText();
+    assertEquals(itemNode.get("name").asText(), FILENAME);
+    assertEquals(itemNode.get("collection").get("uuid").asText(), QUICKCONTRIB_COLLECTION_UUID);
     // upload again to verify uuid
     putfileResponse = putFile(FILENAME, Attachments.get(FILENAME), token, true);
     assertResponse(putfileResponse, 201, "HTTP Status code error");
@@ -63,7 +62,7 @@ public class ItemApiQuickContributeTest extends AbstractItemApiTest {
     itemUri = headerLocation.getValue();
 
     itemNode = getItemJson(itemUri, "basic,detail", token);
-    assertEquals(itemNode.get("uuid").getTextValue(), attachmentUuid);
+    assertEquals(itemNode.get("uuid").asText(), attachmentUuid);
   }
 
   @Test
@@ -77,7 +76,7 @@ public class ItemApiQuickContributeTest extends AbstractItemApiTest {
         statusCode == 405 || statusCode == 500,
         "HTTP Status code, expected 405 or 500, but got " + statusCode);
     JsonNode itemNode = mapper.readTree(putfileResponse.getEntity().getContent());
-    String errMsg = itemNode.get("error").getTextValue();
+    String errMsg = itemNode.get("error").asText();
     assertTrue(errMsg.equals("Internal Server Error") || errMsg.equals("Method Not Allowed"));
   }
 

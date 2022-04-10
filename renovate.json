@@ -25,6 +25,10 @@
       "groupName": "Google API Packages"
     },
     {
+      "matchPackagePatterns": ["^com.thoughtworks.xstream"],
+      "groupName": "XStream packages"
+    },
+    {
       "matchPackagePatterns": ["^org.apache.axis2"],
       "groupName": "Apache Axis 2 packages"
     },

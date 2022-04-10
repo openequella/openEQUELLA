@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.ServiceUnavailableException;
 
 public abstract class AbstractSectionsController implements SectionsController {
 
@@ -109,7 +110,10 @@ public abstract class AbstractSectionsController implements SectionsController {
       @Nullable Map<String, String[]> params,
       @Nullable Map<Object, Object> attrs) {
     SectionTree tree = getTreeForPath(path);
-    if (tree == null) {
+    // The SectionTree working for Cloud Search is dropped in 2022.1.
+    if (path.contains("cloudsearch.do")) {
+      throw new ServiceUnavailableException("Cloud search is no longer supported");
+    } else if (tree == null) {
       throw new SectionsRuntimeException("There is no tree for:" + path);
     }
     return createInfo(tree, path, request, response, info, params, attrs);

@@ -17,15 +17,17 @@
  */
 
 import * as OEQ from "@openequella/rest-api-client";
-import { pipe } from "fp-ts/function";
-import * as O from "fp-ts/Option";
 import * as A from "fp-ts/Array";
+import * as E from "fp-ts/Either";
+import { flow, pipe } from "fp-ts/function";
+import * as NEA from "fp-ts/NonEmptyArray";
+import * as O from "fp-ts/Option";
+import * as TE from "fp-ts/TaskEither";
 import { Literal, Static, Union } from "runtypes";
 import { API_BASE_URL } from "../AppConfig";
 import { DateRange, getISODateString } from "../util/Date";
 import type { Collection } from "./CollectionsModule";
 import type { SelectedCategories } from "./SearchFacetsModule";
-import type { MimeTypeFilter } from "./SearchFilterSettingsModule";
 
 /**
  * List of status which are considered 'live'.
@@ -108,6 +110,13 @@ export interface SearchOptions {
    */
   selectedCategories?: SelectedCategories[];
   /**
+   * Whether to include full attachment details in results. Including attachments incurs extra
+   * processing and can slow down response times. In a typical 'list' search we don't include
+   * them so that they're only requested _if_ a user expands out the attachments. This allows
+   * the search page to render quicker.
+   */
+  includeAttachments?: boolean;
+  /**
    * Whether to search attachments or not.
    */
   searchAttachments?: boolean;
@@ -118,7 +127,7 @@ export interface SearchOptions {
   /**
    * A list of selected MIME type filters.
    */
-  mimeTypeFilters?: MimeTypeFilter[];
+  mimeTypeFilters?: OEQ.SearchFilterSettings.MimeTypeFilter[];
   /**
    * A list of MIME types provided by an Integration (e.g. with Moodle), which has a higher priority than `mimeTypes`.
    */
@@ -213,6 +222,7 @@ const buildSearchParams = ({
   lastModifiedDateRange,
   owner,
   status = liveStatuses,
+  includeAttachments,
   searchAttachments,
   selectedCategories,
   mimeTypes,
@@ -239,6 +249,7 @@ const buildSearchParams = ({
     modifiedAfter: getISODateString(lastModifiedDateRange?.start),
     modifiedBefore: getISODateString(lastModifiedDateRange?.end),
     owner: owner?.id,
+    includeAttachments: includeAttachments,
     searchAttachments: searchAttachments,
     whereClause: generateCategoryWhereQuery(selectedCategories),
     mimeTypes: externalMimeTypes ?? _mimeTypes,
@@ -283,6 +294,64 @@ export const searchItems = (
           normalParams
         )
     )
+  );
+};
+
+/**
+ * Retrieve the search results for a single item - including attachment details. Useful if a
+ * search has been done excluding attachment results to delay retrieval of attachments to a later
+ * time.
+ *
+ * @param uuid The UUID of the target item
+ * @param version The specific version of the target item
+ */
+export const searchItemAttachments = async (
+  uuid: string,
+  version: number
+): Promise<OEQ.Search.Attachment[]> => {
+  const extractAndValidateItem: (
+    searchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>
+  ) => TE.TaskEither<string, OEQ.Search.SearchResultItem> = flow(
+    ({ results }) => results,
+    TE.fromPredicate(
+      A.isNonEmpty,
+      () => `Search for item ${uuid}/${version} returned no results`
+    ),
+    TE.map(NEA.head)
+  );
+
+  const extractAttachments: (
+    item: OEQ.Search.SearchResultItem
+  ) => OEQ.Search.Attachment[] = flow(
+    ({ attachments }) => attachments,
+    O.fromNullable,
+    O.getOrElse(() => [] as OEQ.Search.Attachment[])
+  );
+
+  const attachmentsMaybe = await pipe(
+    TE.tryCatch(
+      () =>
+        searchItems({
+          ...defaultSearchOptions,
+          musts: [
+            ["uuid", [uuid]],
+            ["version", [`${version}`]],
+          ],
+          searchAttachments: false,
+        }),
+      (reason) =>
+        `Failed to retrieve details of item ${uuid}/${version}: ${reason}`
+    ),
+    TE.chain(extractAndValidateItem),
+    TE.map(extractAttachments),
+    TE.mapLeft(E.toError)
+  )();
+
+  return pipe(
+    attachmentsMaybe,
+    E.getOrElseW((err) => {
+      throw err;
+    })
   );
 };
 

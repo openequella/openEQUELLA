@@ -1,0 +1,15 @@
+Configuration:
+  status: warn
+
+  appenders:
+    Console:
+      name: STDOUT
+      target: SYSTEM_OUT
+      PatternLayout:
+        Pattern: "%d{ABSOLUTE} %-5p [%c{1}] %m%n"
+
+  Loggers:
+    Root:
+      level: debug
+      AppenderRef:
+        ref: STDOUT

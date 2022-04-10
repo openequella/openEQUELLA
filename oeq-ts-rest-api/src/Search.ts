@@ -81,6 +81,11 @@ interface SearchParamsBase {
    */
   dynaCollection?: string;
   /**
+   * Whether to include full attachment details in results. Including attachments incurs extra
+   * processing and can slow down response times.
+   */
+  includeAttachments?: boolean;
+  /**
    * A flag indicating whether to search attachments or not.
    */
   searchAttachments?: boolean;
@@ -266,6 +271,28 @@ export interface DrmStatus {
 }
 
 /**
+ * Provides details to assist with displaying a thumbnail for a search result, based on the
+ * attachment that is designated to be used as the basis for the thumbnail of this item (typically
+ * the first attachment).
+ */
+export interface ThumbnailDetails {
+  /**
+   * The broad indicator of attachment type which drives the content of the other properties.
+   * Example values are `file`, `link`, `custom/xyz`.
+   */
+  attachmentType: string;
+  /**
+   * Mostly used when `attachmentType` is `file` but also when `custom/resource`.
+   */
+  mimeType?: string;
+  /**
+   * If the server has generated a specific thumbnail for this item, then this will provide the URL
+   * for it.
+   */
+  link?: string;
+}
+
+/**
  * Shared properties or raw and transformed search result item
  */
 interface SearchResultItemBase {
@@ -302,13 +329,23 @@ interface SearchResultItemBase {
    */
   starRatings: number;
   /**
-   * Item's attachments.
+   * Item's attachments. Will not be present if `includeAttachments` in search params is `false` or
+   * if the item has none.
    */
   attachments?: Attachment[];
+  /**
+   * How many attachments this item has - present regardless of `includeAttachments`.
+   */
+  attachmentCount: number;
   /**
    * Item's thumbnail.
    */
   thumbnail: string;
+  /**
+   * Details for a thumbnail to represent this item - if available (depends on the item having
+   * attachments).
+   */
+  thumbnailDetails?: ThumbnailDetails;
   /**
    * Item's display fields.
    */

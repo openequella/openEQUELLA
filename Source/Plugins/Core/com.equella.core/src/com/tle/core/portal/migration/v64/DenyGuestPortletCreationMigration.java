@@ -37,17 +37,19 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 @Singleton
 public class DenyGuestPortletCreationMigration extends AbstractHibernateDataMigration {
-  private static final Logger LOGGER = Logger.getLogger(DenyGuestPortletCreationMigration.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(DenyGuestPortletCreationMigration.class);
 
   private static final String KEY_PREFIX =
       PluginServiceImpl.getMyPluginId(DenyGuestPortletCreationMigration.class) + ".";

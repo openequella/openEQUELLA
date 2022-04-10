@@ -82,8 +82,8 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 @SuppressWarnings({"nls", "deprecation"})
@@ -91,7 +91,8 @@ import org.apache.log4j.Logger;
 @Singleton
 public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConnectorRespository
     implements BlackboardRESTConnectorService {
-  private static final Logger LOGGER = Logger.getLogger(BlackboardRESTConnectorService.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(BlackboardRESTConnectorService.class);
   private static final String KEY_PFX =
       AbstractPluginService.getMyPluginId(BlackboardRESTConnectorService.class) + ".";
 
@@ -146,10 +147,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
   }
 
   public BlackboardRESTConnectorServiceImpl() {
-    // Ewwww
     BlindSSLSocketFactory.register();
-    // Turn off spurious Pre-emptive Authentication bollocks
-    Logger.getLogger("org.apache.commons.httpclient.HttpMethodDirector").setLevel(Level.ERROR);
   }
 
   @Override

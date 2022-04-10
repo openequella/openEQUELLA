@@ -29,6 +29,7 @@ import com.tle.beans.entity.itemdef.mapping.IMSMapping;
 import com.tle.beans.entity.itemdef.mapping.IMSMapping.MappingType;
 import com.tle.common.Check;
 import com.tle.common.Pair;
+import io.github.xstream.mxparser.MXParser;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -38,7 +39,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.xmlpull.mxp1.MXParser;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 

@@ -4,6 +4,8 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.tle.common.Pair;
@@ -18,8 +20,6 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ObjectNode;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -112,6 +112,34 @@ public class SearchApiTest extends AbstractRestApiTest {
       String[] itemDeets = ITEMS[itemIndexes[i]];
       asserter.assertBasic((ObjectNode) itemNode, itemDeets[0], itemDeets[1]);
     }
+  }
+
+  @Test
+  public void testStatuses() throws Exception {
+    String token = requestToken(OAUTH_CLIENT_ID);
+    final String LIVE = "LIVE";
+    final String DRAFT = "DRAFT";
+
+    JsonNode liveResultsNode =
+        doSearch(BASIC, SEARCH_API_TEST, ImmutableMap.of("status", LIVE), token);
+    Integer liveItemLength = liveResultsNode.get("length").asInt();
+    Integer liveItemAvailable = liveResultsNode.get("available").asInt();
+
+    JsonNode draftResultsNode =
+        doSearch(BASIC, SEARCH_API_TEST, ImmutableMap.of("status", DRAFT), token);
+    Integer draftItemLength = draftResultsNode.get("length").asInt();
+    Integer draftItemAvailable = draftResultsNode.get("available").asInt();
+
+    JsonNode draftAndLiveResultsNode =
+        doSearch(
+            BASIC,
+            SEARCH_API_TEST,
+            ImmutableMap.of("status", String.format("%s,%s", DRAFT, LIVE)),
+            token);
+    assertEquals(draftAndLiveResultsNode.get("start").asInt(), 0);
+    assertEquals(draftAndLiveResultsNode.get("length").asInt(), liveItemLength + draftItemLength);
+    assertEquals(
+        draftAndLiveResultsNode.get("available").asInt(), liveItemAvailable + draftItemAvailable);
   }
 
   @Test
@@ -271,7 +299,7 @@ public class SearchApiTest extends AbstractRestApiTest {
     JsonNode result = resultComposite.get("results");
     String dynaCollCompoundId = null;
 
-    for (Iterator<JsonNode> iter = result.getElements(); iter.hasNext(); ) {
+    for (Iterator<JsonNode> iter = result.elements(); iter.hasNext(); ) {
       JsonNode aDynaColl = iter.next();
       if (target.equalsIgnoreCase(aDynaColl.get("name").asText())) {
         dynaCollCompoundId = aDynaColl.get("compoundId").asText();

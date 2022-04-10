@@ -35,12 +35,13 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RequestDispatchFilter implements Filter {
-  private static final Logger LOGGER = Logger.getLogger(RequestDispatchFilter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RequestDispatchFilter.class);
 
   private static final String CALLBACKS_KEY = "com.tle.web.core.filtercallbacks";
   private PluginTracker<WebFilter> filterTracker;

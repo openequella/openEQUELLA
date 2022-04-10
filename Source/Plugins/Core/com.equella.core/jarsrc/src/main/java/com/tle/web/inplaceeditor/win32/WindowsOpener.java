@@ -24,11 +24,12 @@ import java.security.Permissions;
 import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
 import java.util.PropertyPermission;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 public class WindowsOpener implements Opener {
-  private static final Logger LOGGER = Logger.getLogger(WindowsOpener.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(WindowsOpener.class.getName());
 
   private final Shell32Ex shell32 = Shell32Ex.SHELL32;
 
@@ -38,24 +39,24 @@ public class WindowsOpener implements Opener {
 
   @Override
   public void openWith(Component parent, final String filepath, String mimetype) {
-    LOGGER.finest(
+    LOGGER.trace(
         "OS is windows.  Invoking ShellExecute with shell32.dll,OpenAs_RunDLL " + filepath);
 
     final Permissions permissions = new Permissions();
     permissions.add(new PropertyPermission("w32.ascii", "read"));
-    LOGGER.finest("Added read PropertyPermission for 'w32.ascii'");
+    LOGGER.trace("Added read PropertyPermission for 'w32.ascii'");
 
     permissions.add(new PropertyPermission("jna.boot.library.path", "read"));
-    LOGGER.finest("Added read PropertyPermission for 'jna.boot.library.path'");
+    LOGGER.trace("Added read PropertyPermission for 'jna.boot.library.path'");
 
     permissions.add(new PropertyPermission("os.arch", "read"));
-    LOGGER.finest("Added read PropertyPermission for 'os.arch'");
+    LOGGER.trace("Added read PropertyPermission for 'os.arch'");
 
     permissions.add(new PropertyPermission("os.name", "read"));
-    LOGGER.finest("Added read PropertyPermission for 'os.name'");
+    LOGGER.trace("Added read PropertyPermission for 'os.name'");
 
     permissions.add(new RuntimePermission("loadLibrary.jnidispatch"));
-    LOGGER.finest("Added read RuntimePermission for 'loadLibrary.jnidispatch'");
+    LOGGER.trace("Added read RuntimePermission for 'loadLibrary.jnidispatch'");
 
     final AccessControlContext context =
         new AccessControlContext(new ProtectionDomain[] {new ProtectionDomain(null, permissions)});

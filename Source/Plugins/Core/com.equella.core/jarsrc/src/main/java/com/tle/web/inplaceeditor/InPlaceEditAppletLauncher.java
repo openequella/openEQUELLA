@@ -56,7 +56,6 @@ import java.security.ProtectionDomain;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
-import java.util.logging.Level;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -224,13 +223,13 @@ public class InPlaceEditAppletLauncher extends AbstractAppletLauncher implements
 
     final File lock = new File(System.getProperty("java.io.tmpdir"), instanceid + ".lock");
     if (lock.exists()) {
-      logger.log(Level.INFO, "Lock file " + lock.getAbsolutePath() + " exists, doing nothing.");
+      logger.info("Lock file " + lock.getAbsolutePath() + " exists, doing nothing.");
       return;
     }
     try {
       lock.createNewFile();
     } catch (IOException e1) {
-      logger.log(Level.SEVERE, "Error creating lock file", e1);
+      logger.error("Error creating lock file", e1);
     }
 
     final Pair<InputStream, Integer> remoteFile = readFileFromServer();
@@ -342,7 +341,7 @@ public class InPlaceEditAppletLauncher extends AbstractAppletLauncher implements
   }
 
   private RuntimeException logException(String msg, Exception ex) {
-    logger.log(Level.SEVERE, msg, ex);
+    logger.error(msg, ex);
     throw new RuntimeException(msg, ex);
   }
 
@@ -452,9 +451,9 @@ public class InPlaceEditAppletLauncher extends AbstractAppletLauncher implements
 
   private void doSyncFile() {
     try {
-      logger.entering("InPlaceEditAppletLauncher", "syncFile");
+      logger.trace("InPlaceEditAppletLauncher", "syncFile");
       if (file == null) {
-        logger.severe("File not loaded yet!");
+        logger.error("File not loaded yet!");
         return;
       }
 
@@ -523,10 +522,10 @@ public class InPlaceEditAppletLauncher extends AbstractAppletLauncher implements
 
   private void doOpen() {
     try {
-      logger.entering("InPlaceEditAppletLauncher", "open");
+      logger.trace("InPlaceEditAppletLauncher", "open");
 
       if (file == null) {
-        logger.severe("file not loaded yet!");
+        logger.error("file not loaded yet!");
         return;
       }
 
@@ -543,10 +542,10 @@ public class InPlaceEditAppletLauncher extends AbstractAppletLauncher implements
 
   private void doOpenWith() {
     try {
-      logger.entering("InPlaceEditAppletLauncher", "openWith");
+      logger.trace("InPlaceEditAppletLauncher", "openWith");
 
       if (file == null) {
-        logger.severe("file not loaded yet!");
+        logger.error("file not loaded yet!");
         return;
       }
 
@@ -581,7 +580,7 @@ public class InPlaceEditAppletLauncher extends AbstractAppletLauncher implements
   private void doHasPendingSync() {
     synchronized (resultLock) {
       try {
-        logger.entering("InPlaceEditAppletLauncher", "hasPendingSync");
+        logger.trace("InPlaceEditAppletLauncher", "hasPendingSync");
         if (file != null) {
           synchronized (file) {
             boolean hasPending = file.hasChangedSinceLastSync();
@@ -750,7 +749,7 @@ public class InPlaceEditAppletLauncher extends AbstractAppletLauncher implements
   protected class FileWatcherTask extends TimerTask {
     @Override
     public void run() {
-      logger.entering("InPlaceEditAppletLauncher.FileWatcherTask", "run");
+      logger.trace("InPlaceEditAppletLauncher.FileWatcherTask", "run");
       if (file != null && file.hasChangedSinceLastSync()) {
         saveButton.setVisible(true);
         ignoreChangesButton.setVisible(true);

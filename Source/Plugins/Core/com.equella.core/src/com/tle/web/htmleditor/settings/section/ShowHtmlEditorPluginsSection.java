@@ -59,7 +59,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
@@ -68,7 +69,7 @@ public class ShowHtmlEditorPluginsSection
     extends AbstractShowEntitiesSection<
         HtmlEditorPlugin, ShowHtmlEditorPluginsSection.ShowHtmlEditorPluginsModel>
     implements ModalHtmlEditorSettingsSection {
-  private static final Logger LOGGER = Logger.getLogger(ShowHtmlEditorPluginsSection.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ShowHtmlEditorPluginsSection.class);
 
   @PlugKey("settings.plugins.front.link")
   private static Label LABEL_SETTING_LINK;

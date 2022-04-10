@@ -28,7 +28,6 @@ import com.tle.common.Check;
 import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.common.beans.exception.ValidationError;
 import com.tle.core.application.StartupBean;
-import com.tle.core.db.migration.Migrations;
 import com.tle.core.events.services.EventService;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.DataSourceService;
@@ -165,7 +164,6 @@ public class MigrationServiceImpl implements MigrationService, StartupBean, Task
   public synchronized Set<MigrationExt> getOrderedMigrations() {
     if (orderedMigrations == null || migrateTracker.needsUpdate()) {
       List<MigrationExt> migrationList = new ArrayList<MigrationExt>();
-      migrationList.addAll(Migrations.migrationList());
       for (Extension extension : migrateTracker.getExtensions()) {
         String id = extension.getParameter("id").valueAsString();
         Parameter initialParam = extension.getParameter("initial");

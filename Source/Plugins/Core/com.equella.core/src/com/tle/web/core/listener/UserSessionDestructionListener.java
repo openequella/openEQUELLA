@@ -33,12 +33,14 @@ import javax.inject.Singleton;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind
 @Singleton
 public class UserSessionDestructionListener implements HttpSessionListener {
-  private static final Logger LOGGER = Logger.getLogger(UserSessionDestructionListener.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(UserSessionDestructionListener.class);
 
   @Inject private UserSessionService sessionService;
   @Inject private InstitutionService institutionService;

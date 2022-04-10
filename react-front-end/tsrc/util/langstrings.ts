@@ -76,7 +76,7 @@ export function prepLangStrings(
     } else {
       const newOut: LanguageStrings = {};
       for (const key in val) {
-        if (val.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(val, key)) {
           newOut[key] = overrideVal(prefix + "." + key, val[key]);
         }
       }
@@ -602,9 +602,6 @@ export const languageStrings = {
         disableFileCount: "Disable File Count",
         disableFileCountDesc:
           "Removes the file count that displays on each thumbnail in the Images and Videos views",
-        cloudSearching: "Cloud searching",
-        cloudSearchingLabel:
-          "Do not show cloud results when performing searches.",
         disableCloud: "Disable cloud searching",
         save: "Save",
         success: "Settings saved successfully.",

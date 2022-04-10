@@ -24,7 +24,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.function.Function;
 import javax.persistence.EntityManager;
-import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -32,6 +31,8 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +43,7 @@ public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernat
     implements GenericDao<T, ID> {
   protected static final String INSTITUTION = "institution";
 
-  private static final Logger LOGGER = Logger.getLogger(GenericDaoImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GenericDaoImpl.class);
 
   private final Class<T> persistentClass;
 

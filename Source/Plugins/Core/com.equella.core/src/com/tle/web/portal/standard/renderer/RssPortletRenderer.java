@@ -73,11 +73,12 @@ import javax.xml.parsers.SAXParserFactory;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.input.sax.XMLReaderJDOMFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
@@ -89,7 +90,7 @@ public class RssPortletRenderer
   protected static final PluginResourceHelper RESOURCES =
       ResourcesService.getResourceHelper(RssPortletRenderer.class);
 
-  private static Logger LOGGER = Logger.getLogger(RssPortletRenderer.class);
+  private static Logger LOGGER = LoggerFactory.getLogger(RssPortletRenderer.class);
 
   @Inject private FileSystemService fileService;
   @Inject private PortalStandardConstants portalSettings;

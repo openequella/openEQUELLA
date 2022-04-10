@@ -20,7 +20,7 @@ import type { Meta, Story } from "@storybook/react";
 import FacetDialog, {
   FacetDialogProps,
 } from "../../tsrc/settings/Search/facetedsearch/FacetDialog";
-import type { FacetWithFlags } from "../../tsrc/modules/FacetedSearchSettingsModule";
+import type { FacetedSearchClassificationWithFlags } from "../../tsrc/modules/FacetedSearchSettingsModule";
 
 export default {
   title: "FacetDialog",
@@ -31,7 +31,7 @@ export default {
     handleError: { action: "handleError" },
   },
 } as Meta<FacetDialogProps>;
-const facet: FacetWithFlags = {
+const facet: FacetedSearchClassificationWithFlags = {
   name: "mocked facet",
   schemaNode: "item/name",
   maxResults: 1,

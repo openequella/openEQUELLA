@@ -86,16 +86,23 @@ public class HibernateMigrationHelper {
     return drops;
   }
 
-  @SuppressWarnings("unchecked")
   public List<String> getCreationSql(HibernateCreationFilter filter) {
+    return getCreationSql(filter, false);
+  }
+
+  @SuppressWarnings("unchecked")
+  public List<String> getCreationSql(HibernateCreationFilter filter, Boolean sysTables) {
     List<String> sqlStrings = new ArrayList<String>();
+    Map<String, Table> tables =
+        sysTables ? configuration.getSysTableMap() : configuration.getNormalTableMap();
+
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("Tables registered:" + configuration.getTableMap().keySet());
+      LOGGER.debug("Tables registered:" + tables.keySet());
     }
 
-    sqlStrings.addAll(getCreationSqlForTables(filter));
+    sqlStrings.addAll(getCreationSqlForTables(filter, tables.values()));
 
-    sqlStrings.addAll(getCreationSqlForTableIndexAndFks(filter));
+    sqlStrings.addAll(getCreationSqlForTableIndexAndFks(filter, tables.values()));
 
     sqlStrings.addAll(getCreationSqlForIdGenerators(filter));
 
@@ -104,10 +111,11 @@ public class HibernateMigrationHelper {
     return sqlStrings;
   }
 
-  private List<String> getCreationSqlForTables(HibernateCreationFilter filter) {
+  private List<String> getCreationSqlForTables(
+      HibernateCreationFilter filter, Collection<Table> tables) {
     List<String> sqlStrings = new ArrayList<String>();
 
-    for (Table table : configuration.getTableMap().values()) {
+    for (Table table : tables) {
       if (table.isPhysicalTable() && filter.includeTable(table)) {
         final String sql = table.sqlCreateString(dialect, mapping, defaultCatalog, defaultSchema);
         LOGGER.debug("Table create SQL: " + sql);
@@ -118,10 +126,11 @@ public class HibernateMigrationHelper {
     return sqlStrings;
   }
 
-  private List<String> getCreationSqlForTableIndexAndFks(HibernateCreationFilter filter) {
+  private List<String> getCreationSqlForTableIndexAndFks(
+      HibernateCreationFilter filter, Collection<Table> tables) {
     List<String> sqlStrings = new ArrayList<String>();
 
-    for (Table table : configuration.getTableMap().values()) {
+    for (Table table : tables) {
       if (table.isPhysicalTable()) {
 
         Iterator<Index> subIter = table.getIndexIterator();
@@ -777,7 +786,7 @@ public class HibernateMigrationHelper {
   }
 
   private Table findTable(String tableName) {
-    Map<String, Table> tableMap = configuration.getTableMap();
+    Map<String, Table> tableMap = configuration.getNormalTableMap();
     Table table = tableMap.get(tableName);
     if (table == null) {
       throw new RuntimeException("Failed to find table: " + tableName);

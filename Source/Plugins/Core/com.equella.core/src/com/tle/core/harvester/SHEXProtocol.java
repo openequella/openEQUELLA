@@ -20,13 +20,14 @@ package com.tle.core.harvester;
 
 import com.tle.common.harvester.SHEXHarvesterSettings;
 import com.tle.core.guice.Bind;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author larry */
 @Bind
 @SuppressWarnings("nls")
 public class SHEXProtocol extends AbstractTLFProtocol {
-  private static final Logger LOGGR = Logger.getLogger(SHEXProtocol.class);
+  private static final Logger LOGGR = LoggerFactory.getLogger(SHEXProtocol.class);
   private static final String SHEX_NAMESPACE_END = "/services/lorax/2008/07";
   private static final String SHEX_WEB_SERVICE = SHEX_NAMESPACE_END + "/Lorax.svc";
   private static final String SHEX_QUERY_SYNTAX = SHEX_NAMESPACE_END + "/Definitions/QuerySyntax";

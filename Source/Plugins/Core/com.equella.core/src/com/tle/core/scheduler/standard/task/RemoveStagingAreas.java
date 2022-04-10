@@ -24,13 +24,14 @@ import com.tle.core.scheduler.ScheduledTask;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author Nicholas Read */
 @Bind
 @Singleton
 public class RemoveStagingAreas implements ScheduledTask {
-  private static final Logger LOGGER = Logger.getLogger(RemoveStagingAreas.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RemoveStagingAreas.class);
 
   @Inject private StagingService stagingService;
 

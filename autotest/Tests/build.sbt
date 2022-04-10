@@ -9,7 +9,7 @@ inConfig(Serial)(Defaults.testTasks)
 val circeVersion  = "0.12.1"
 val http4sVersion = "0.21.8"
 val catsVersion   = "1.6.1"
-val cxfVersion    = "3.4.5"
+val cxfVersion    = "3.5.1"
 
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.3")
 
@@ -20,33 +20,28 @@ libraryDependencies ++= Seq(
 ).map(_ % circeVersion)
 
 libraryDependencies ++= Seq(
-  "javax.jws"                 % "javax.jws-api"            % "1.1",
-  "org.apache.commons"        % "commons-lang3"            % "3.12.0",
-  "org.seleniumhq.selenium"   % "selenium-java"            % "3.141.59",
-  "org.easytesting"           % "fest-util"                % "1.2.5",
-  "org.easytesting"           % "fest-swing"               % "1.2.1",
-  "org.codehaus.jackson"      % "jackson-core-asl"         % "1.9.13",
-  "org.codehaus.jackson"      % "jackson-mapper-asl"       % "1.9.13",
-  "xalan"                     % "xalan"                    % "2.7.2",
-  "org.dspace.oclc"           % "oclc-srw"                 % "1.0.20080328",
-  "org.apache.cxf"            % "cxf-rt-frontend-simple"   % cxfVersion,
-  "org.apache.cxf"            % "cxf-rt-databinding-aegis" % cxfVersion,
-  "org.apache.cxf"            % "cxf-rt-transports-http"   % cxfVersion,
-  "org.apache.httpcomponents" % "httpclient"               % "4.5.13",
-  "axis"                      % "axis"                     % "1.4",
-  "com.jcraft"                % "jsch"                     % "0.1.55",
-//  "jpf" % "jpf-tools" % "1.0.5",
-  "org.jacoco"       % "org.jacoco.report"         % "0.8.7",
-  "org.dspace"       % "oclc-harvester2"           % "0.1.12",
-  "org.jvnet.hudson" % "xstream"                   % "1.3.1-hudson-8",
-  "com.typesafe"     % "config"                    % "1.4.1",
-  "org.slf4j"        % "slf4j-simple"              % "1.7.32",
-  "org.scalacheck"   %% "scalacheck"               % "1.15.4" % "test,serial",
-  "org.http4s"       %% "http4s-async-http-client" % http4sVersion,
-  "org.http4s"       %% "http4s-blaze-client"      % http4sVersion,
-  "org.http4s"       %% "http4s-circe"             % http4sVersion,
-  "org.typelevel"    %% "cats-free"                % catsVersion,
-  "com.unboundid"    % "unboundid-ldapsdk"         % "6.0.3"
+  "javax.jws"                 % "javax.jws-api"             % "1.1",
+  "org.apache.commons"        % "commons-lang3"             % "3.12.0",
+  "org.seleniumhq.selenium"   % "selenium-java"             % "3.141.59",
+  "org.easytesting"           % "fest-util"                 % "1.2.5",
+  "org.easytesting"           % "fest-swing"                % "1.2.1",
+  "xalan"                     % "xalan"                     % "2.7.2",
+  "org.apache.cxf"            % "cxf-rt-frontend-simple"    % cxfVersion,
+  "org.apache.cxf"            % "cxf-rt-databinding-aegis"  % cxfVersion,
+  "org.apache.cxf"            % "cxf-rt-transports-http"    % cxfVersion,
+  "org.apache.httpcomponents" % "httpclient"                % "4.5.13",
+  "com.jcraft"                % "jsch"                      % "0.1.55",
+  "org.jacoco"                % "org.jacoco.report"         % "0.8.7",
+  "org.dspace"                % "oclc-harvester2"           % "0.1.12",
+  "com.typesafe"              % "config"                    % "1.4.2",
+  "org.slf4j"                 % "slf4j-simple"              % "1.7.36",
+  "org.scalacheck"            %% "scalacheck"               % "1.15.4" % "test,serial",
+  "org.http4s"                %% "http4s-async-http-client" % http4sVersion,
+  "org.http4s"                %% "http4s-blaze-client"      % http4sVersion,
+  "org.http4s"                %% "http4s-circe"             % http4sVersion,
+  "org.typelevel"             %% "cats-free"                % catsVersion,
+  "com.unboundid"             % "unboundid-ldapsdk"         % "6.0.4",
+  jacksonDataBind
 )
 
 (Compile / unmanagedBase) := baseDirectory.value / "lib/adminjars"

@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   variables:
-    KALTURA_BRANCH: "pre-2022.1-support"
+    KALTURA_BRANCH: master
     AUTOTEST_CONFIG: "autotest/codebuild.conf"
     EQ_EXIFTOOL_PATH: "/usr/bin/exiftool"
     OLD_TEST_NEWUI: true

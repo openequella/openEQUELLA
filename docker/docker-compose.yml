@@ -5,7 +5,7 @@ services:
     build:
       context: .
       args:
-        - OEQ_INSTALL_FILE=equella-installer.zip
+        - OEQ_INSTALL_FILE=installer.zip
     networks:
       - oeq-cluster
     links:
@@ -32,7 +32,7 @@ services:
     volumes:
       - ./filestore:/home/equella/equella/filestore
       - ./hikari.properties:/home/equella/equella/learningedge-config/hikari.properties
-      - ./learningedge-log4j.properties:/home/equella/equella/learningedge-config/learningedge-log4j.properties
+      - ./learningedge-log4j.yaml:/home/equella/equella/learningedge-config/learningedge-log4j.yaml
 
   zookeeper:
     image: zookeeper:3.7.0
@@ -45,7 +45,7 @@ services:
       - oeq-cluster
 
   database:
-    image: postgres:9.6
+    image: postgres:14.2
     restart: always
     networks:
       - oeq-cluster
@@ -55,7 +55,7 @@ services:
       - POSTGRES_PASSWORD=$OEQ_DATABASE_PASSWORD
 
   traefik:
-    image: traefik:v1.7.33
+    image: traefik:v1.7.34
     restart: always
     command: --api --docker
     ports:

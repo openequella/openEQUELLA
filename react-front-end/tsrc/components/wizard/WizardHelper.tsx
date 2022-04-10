@@ -417,17 +417,17 @@ const controlFactory = (
         />
       );
     case "calendar":
-      const { dateFormat, isRange } =
-        control as OEQ.WizardControl.WizardCalendarControl;
-
-      return (
-        <WizardCalendar
-          {...commonProps}
-          values={ifAvailable<string[]>(value, getStringArrayControlValue)}
-          onChange={(newValue) => onChange(newValue)}
-          dateFormat={dateFormat}
-          isRange={isRange}
-        />
+      return pipe(
+        control as OEQ.WizardControl.WizardCalendarControl,
+        ({ dateFormat, isRange }) => (
+          <WizardCalendar
+            {...commonProps}
+            values={ifAvailable<string[]>(value, getStringArrayControlValue)}
+            onChange={(newValue) => onChange(newValue)}
+            dateFormat={dateFormat}
+            isRange={isRange}
+          />
+        )
       );
     case "html":
       return <WizardRawHtml {...commonProps} fieldValueMap={fieldValueMap} />;

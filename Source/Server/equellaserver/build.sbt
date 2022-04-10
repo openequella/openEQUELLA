@@ -16,21 +16,19 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 (Runtime / unmanagedClasspath) += (LocalProject("learningedge_config") / baseDirectory).value
 
-val RestEasyVersion  = "3.15.3.Final"
-val SwaggerVersion   = "1.6.3"
-val TomcatVersion    = "9.0.55"
-val axis2Version     = "1.6.3"
-val circeVersion     = "0.12.1"
-val cxfVersion       = "3.4.5"
-val fs2Version       = "2.4.4"
-val guiceVersion     = "3.0"
-val jacksonVersion   = "2.11.3"
-val jsassVersion     = "5.10.4"
-val jsoupVersion     = "1.14.3"
-val simpledbaVersion = "0.1.9"
-val springVersion    = "5.3.13"
-val sttpVersion      = "1.7.2"
-val tikaVersion      = "2.0.0"
+val RestEasyVersion = "3.15.3.Final"
+val SwaggerVersion  = "1.6.5"
+val TomcatVersion   = "9.0.60"
+val axis2Version    = "1.7.9"
+val circeVersion    = "0.12.1"
+val cxfVersion      = "3.5.1"
+val fs2Version      = "2.4.4"
+val guiceVersion    = "3.0"
+val jsassVersion    = "5.10.4"
+val jsoupVersion    = "1.14.3"
+val springVersion   = "5.3.17"
+val sttpVersion     = "1.7.2"
+val tikaVersion     = "2.3.0"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -44,28 +42,25 @@ libraryDependencies ++= Seq(
   "com.softwaremill.sttp"          %% "core"                          % sttpVersion,
   "com.softwaremill.sttp"          %% "async-http-client-backend-fs2" % sttpVersion,
   "com.softwaremill.sttp"          %% "circe"                         % sttpVersion,
-  "io.github.doolse"               %% "simpledba-jdbc"                % simpledbaVersion,
-  "io.github.doolse"               %% "simpledba-circe"               % simpledbaVersion,
-  "axis"                           % "axis"                           % "1.4",
   "cglib"                          % "cglib"                          % "3.3.0",
   "com.fasterxml.jackson.core"     % "jackson-core"                   % jacksonVersion,
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"        % jacksonVersion,
-  "com.fasterxml.jackson.module"   %% "jackson-module-scala"          % jacksonVersion,
   "com.fasterxml.jackson.core"     % "jackson-annotations"            % jacksonVersion,
-  "com.fasterxml.jackson.core"     % "jackson-databind"               % jacksonVersion,
   "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-base"             % jacksonVersion,
   "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-json-provider"    % jacksonVersion,
-  "io.bit3"                        % "jsass"                          % jsassVersion,
-  "com.flickr4java"                % "flickr4java"                    % "2.16" excludeAll (
+  jacksonDataBind,
+  jacksonModuleScala,
+  "io.bit3"         % "jsass"       % jsassVersion,
+  "com.flickr4java" % "flickr4java" % "2.16" excludeAll (
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
-  "com.google.api-client" % "google-api-client"           % "1.32.2",
+  "com.google.api-client" % "google-api-client"           % "1.33.2",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20201021-1.32.1",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20210915-1.32.1",
-  "com.google.code.gson"  % "gson"                        % "2.8.9",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20220312-1.32.1",
+  "com.google.code.gson"  % "gson"                        % "2.9.0",
   "com.google.gdata"      % "core"                        % "1.47.1",
-  "com.google.guava"      % "guava"                       % "31.0.1-jre",
+  "com.google.guava"      % "guava"                       % "31.1-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
     // Due to deduplicates with aopalliance via Spring AOP.
     ExclusionRule(organization = "aopalliance",
@@ -89,56 +84,56 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "com.sun.xml.bind"),
     ExclusionRule(organization = "com.sun.jersey")
   ),
-  "com.miglayout"             % "miglayout-swing"          % "4.2",
-  "com.ning"                  % "async-http-client"        % "1.9.40",
-  "com.rometools"             % "rome"                     % "1.16.0",
-  "io.swagger"                % "swagger-core"             % SwaggerVersion,
-  "io.swagger"                % "swagger-annotations"      % SwaggerVersion,
-  "io.swagger"                % "swagger-jaxrs"            % SwaggerVersion,
-  "io.swagger"                %% "swagger-scala-module"    % "1.0.6",
-  "com.zaxxer"                % "HikariCP"                 % "4.0.3",
-  "commons-beanutils"         % "commons-beanutils"        % "1.9.4",
-  "commons-codec"             % "commons-codec"            % "1.15",
-  "commons-collections"       % "commons-collections"      % "3.2.2",
-  "commons-configuration"     % "commons-configuration"    % "1.10",
-  "commons-daemon"            % "commons-daemon"           % "1.2.4",
-  "commons-discovery"         % "commons-discovery"        % "0.5",
-  "commons-httpclient"        % "commons-httpclient"       % "3.1",
-  "commons-io"                % "commons-io"               % "2.11.0",
-  "commons-lang"              % "commons-lang"             % "2.6",
-  "dom4j"                     % "dom4j"                    % "1.6.1",
-  "com.github.equella.legacy" % "itunesu-api-java"         % "1.7",
-  "com.github.equella.legacy" % "mets"                     % "1.0",
-  "com.metamx"                % "extendedset"              % "1.5.0-mmx",
-  "javax.inject"              % "javax.inject"             % "1",
-  "javax.mail"                % "mail"                     % "1.4.7",
-  "javax.servlet"             % "jstl"                     % "1.2",
-  "javax.xml"                 % "jaxrpc"                   % "1.1",
-  "jdom"                      % "jdom"                     % "1.1",
-  "com.github.equella.jpf"    % "jpf"                      % "1.0.7",
-  "log4j"                     % "log4j"                    % "1.2.17",
-  "net.oauth.core"            % "oauth"                    % "20100527",
-  "net.oauth.core"            % "oauth-provider"           % "20100527",
-  "net.sf.ezmorph"            % "ezmorph"                  % "1.0.6",
-  "net.sf.json-lib"           % "json-lib"                 % "2.4" classifier "jdk15",
-  "net.sf.transmorph"         % "transmorph"               % "3.1.3",
-  "org.apache.axis2"          % "axis2-kernel"             % axis2Version,
-  "org.apache.axis2"          % "axis2-adb"                % axis2Version,
-  "org.apache.axis2"          % "axis2-transport-http"     % axis2Version,
-  "org.apache.axis2"          % "axis2-transport-local"    % axis2Version,
-  "org.apache.commons"        % "commons-compress"         % "1.21",
-  "org.apache.curator"        % "curator-client"           % "2.13.0",
-  "org.apache.curator"        % "curator-framework"        % "2.13.0",
-  "org.apache.curator"        % "curator-recipes"          % "2.13.0",
-  "org.apache.cxf"            % "cxf-rt-frontend-jaxws"    % cxfVersion,
-  "org.apache.cxf"            % "cxf-rt-transports-http"   % cxfVersion,
-  "org.apache.cxf"            % "cxf-rt-databinding-aegis" % cxfVersion,
-  "org.apache.cxf"            % "cxf-core"                 % cxfVersion excludeAll (
+  "com.miglayout"             % "miglayout-swing"       % "4.2",
+  "com.ning"                  % "async-http-client"     % "1.9.40",
+  "com.rometools"             % "rome"                  % "1.18.0",
+  "io.swagger"                % "swagger-core"          % SwaggerVersion,
+  "io.swagger"                % "swagger-annotations"   % SwaggerVersion,
+  "io.swagger"                % "swagger-jaxrs"         % SwaggerVersion,
+  "io.swagger"                %% "swagger-scala-module" % "1.0.6",
+  "com.zaxxer"                % "HikariCP"              % "4.0.3",
+  "commons-beanutils"         % "commons-beanutils"     % "1.9.4",
+  "commons-codec"             % "commons-codec"         % "1.15",
+  "commons-collections"       % "commons-collections"   % "3.2.2",
+  "commons-configuration"     % "commons-configuration" % "1.10",
+  "commons-daemon"            % "commons-daemon"        % "1.3.0",
+  "commons-discovery"         % "commons-discovery"     % "0.5",
+  "commons-httpclient"        % "commons-httpclient"    % "3.1",
+  "commons-io"                % "commons-io"            % "2.11.0",
+  "commons-lang"              % "commons-lang"          % "2.6",
+  "dom4j"                     % "dom4j"                 % "1.6.1",
+  "com.github.equella.legacy" % "itunesu-api-java"      % "1.7",
+  "com.github.equella.legacy" % "mets"                  % "1.0",
+  "com.metamx"                % "extendedset"           % "1.5.0-mmx",
+  "javax.inject"              % "javax.inject"          % "1",
+  "javax.mail"                % "mail"                  % "1.4.7",
+  "javax.servlet"             % "jstl"                  % "1.2",
+  "javax.xml"                 % "jaxrpc"                % "1.1",
+  "jdom"                      % "jdom"                  % "1.1",
+  "com.github.equella.jpf"    % "jpf"                   % "1.0.7",
+  log4j,
+  log4jSlf4jImpl,
+  "net.oauth.core"     % "oauth"                    % "20100527",
+  "net.oauth.core"     % "oauth-provider"           % "20100527",
+  "net.sf.ezmorph"     % "ezmorph"                  % "1.0.6",
+  "net.sf.json-lib"    % "json-lib"                 % "2.4" classifier "jdk15",
+  "net.sf.transmorph"  % "transmorph"               % "3.1.3",
+  "org.apache.axis2"   % "axis2-kernel"             % axis2Version,
+  "org.apache.axis2"   % "axis2-adb"                % axis2Version,
+  "org.apache.axis2"   % "axis2-transport-http"     % axis2Version,
+  "org.apache.axis2"   % "axis2-transport-local"    % axis2Version,
+  "org.apache.commons" % "commons-compress"         % "1.21",
+  "org.apache.curator" % "curator-client"           % "5.2.1",
+  "org.apache.curator" % "curator-framework"        % "5.2.1",
+  "org.apache.curator" % "curator-recipes"          % "5.2.1",
+  "org.apache.cxf"     % "cxf-rt-frontend-jaxws"    % cxfVersion,
+  "org.apache.cxf"     % "cxf-rt-transports-http"   % cxfVersion,
+  "org.apache.cxf"     % "cxf-rt-databinding-aegis" % cxfVersion,
+  "org.apache.cxf"     % "cxf-core"                 % cxfVersion excludeAll (
     ExclusionRule(organization = "org.apache.geronimo.specs"),
     ExclusionRule(organization = "javax.xml.bind"),
     ExclusionRule(organization = "javax.xml.soap"),
     ExclusionRule(organization = "xml-resolver"),
-    ExclusionRule(organization = "asm"),
     ExclusionRule(organization = "org.springframework"),
     ExclusionRule(organization = "aopalliance"),
     ExclusionRule(organization = "org.jvnet"),
@@ -159,11 +154,10 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "net.sf.ehcache")
   ),
   "org.apache.httpcomponents" % "httpclient"       % "4.5.13",
-  "org.apache.httpcomponents" % "httpcore"         % "4.4.14",
+  "org.apache.httpcomponents" % "httpcore"         % "4.4.15",
   "org.apache.lucene"         % "lucene-analyzers" % "3.6.2",
   "org.apache.lucene"         % "lucene-core"      % "3.6.2",
   "org.apache.lucene"         % "lucene-queries"   % "3.6.2",
-  "org.apache.poi"            % "poi-ooxml"        % "3.17",
   "org.apache.rampart"        % "rampart-core"     % "1.6.3" excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces")
@@ -176,31 +170,23 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces")
   ),
-  "org.apache.struts" % "struts-core" % "1.3.10" excludeAll (
-    ExclusionRule(organization = "antlr",
-                  name = "antlr")
-  ),
-  "org.apache.struts" % "struts-extras"                 % "1.3.10",
-  "org.apache.struts" % "struts-taglib"                 % "1.3.10",
-  "org.apache.tika"   % "tika-core"                     % tikaVersion,
-  "org.apache.tika"   % "tika-parsers-standard-package" % tikaVersion excludeAll ExclusionRule(
+  "org.apache.tika" % "tika-core"                     % tikaVersion,
+  "org.apache.tika" % "tika-parsers-standard-package" % tikaVersion excludeAll ExclusionRule(
     organization = "org.apache.logging.log4j"),
-  "org.apache.tomcat"           % "tomcat-annotations-api" % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-api"             % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-catalina"        % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-catalina-ha"     % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-coyote"          % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-jsp-api"         % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-juli"            % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-servlet-api"     % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-tribes"          % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-util"            % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-util-scan"       % TomcatVersion,
-  "org.apache.tomcat"           % "tomcat-ssi"             % TomcatVersion,
-  "org.apache.ws.commons.axiom" % "axiom-api"              % "1.3.0",
-  "org.apache.ws.commons.axiom" % "axiom-impl"             % "1.3.0",
-  "org.apache.ws.security"      % "wss4j"                  % "1.6.19",
-  "org.apache.zookeeper"        % "zookeeper"              % "3.4.6" excludeAll (
+  "org.apache.tomcat"      % "tomcat-annotations-api" % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-api"             % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-catalina"        % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-catalina-ha"     % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-coyote"          % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-jsp-api"         % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-juli"            % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-servlet-api"     % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-tribes"          % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-util"            % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-util-scan"       % TomcatVersion,
+  "org.apache.tomcat"      % "tomcat-ssi"             % TomcatVersion,
+  "org.apache.ws.security" % "wss4j"                  % "1.6.19",
+  "org.apache.zookeeper"   % "zookeeper"              % "3.7.0" excludeAll (
     ExclusionRule(organization = "org.slf4j",
                   name = "slf4j-log4j12")
   ),
@@ -209,34 +195,26 @@ libraryDependencies ++= Seq(
   //   com.fasterxml.woodstox/woodstox-core/bundles/woodstox-core-5.0.3.jar:...
   //   org.codehaus.woodstox/woodstox-core-asl/jars/woodstox-core-asl-4.4.1.jar:...
   //"org.codehaus.woodstox"  % "woodstox-core-asl" % "5.0.3",
-  "org.codehaus.xfire" % "xfire-aegis" % "1.2.6",
-  "org.dspace"         % "cql-java"    % "1.0",
-  //  "org.dspace.oclc" % "oclc-srw" % "1.0.20080328",
+  "org.codehaus.xfire"              % "xfire-aegis"                    % "1.2.6",
+  "org.dspace"                      % "cql-java"                       % "1.0",
   "org.omegat"                      % "jmyspell-core"                  % "1.0.0-beta-2",
   "org.freemarker"                  % "freemarker"                     % "2.3.23",
   "com.github.equella.legacy"       % "hurl"                           % "1.1",
   "org.jboss.resteasy"              % "resteasy-jaxrs"                 % RestEasyVersion,
   "org.jboss.spec.javax.annotation" % "jboss-annotations-api_1.3_spec" % "2.0.1.Final",
-  "org.jboss.logging"               % "jboss-logging"                  % "3.4.2.Final",
-  "org.jboss.logging"               % "jboss-logging-annotations"      % "2.2.1.Final",
-  "org.jboss.logging"               % "jboss-logging-processor"        % "2.2.1.Final",
   "org.reactivestreams"             % "reactive-streams"               % "1.0.3",
   // Upgraded to 2.0.1.Final due to a deduplication issue with jakarta.ws.rs-api
   "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"     % "2.0.2.Final",
   "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api" % "2.0",
-  "org.eclipse.microprofile.config"      % "microprofile-config-api"      % "2.0",
+  "org.eclipse.microprofile.config"      % "microprofile-config-api"      % "2.0.1",
   "javax.json.bind"                      % "javax.json.bind-api"          % "1.0",
   "org.jsoup"                            % "jsoup"                        % jsoupVersion,
   xstreamDep,
-  "org.opensaml" % "xmltooling" % "1.3.1" excludeAll (
-    ExclusionRule(organization = "org.slf4j")
-  ),
-  "org.ow2.asm" % "asm" % "5.2",
+  "org.opensaml" % "xmltooling" % "1.3.1" excludeAll ExclusionRule(organization = "org.slf4j"),
   postgresDep,
   "org.scannotation"    % "scannotation"           % "1.0.3",
-  "org.slf4j"           % "jcl-over-slf4j"         % "1.7.32",
-  "org.slf4j"           % "slf4j-api"              % "1.7.32",
-  "org.slf4j"           % "slf4j-log4j12"          % "1.7.32",
+  "org.slf4j"           % "jcl-over-slf4j"         % "1.7.36",
+  "org.slf4j"           % "slf4j-api"              % "1.7.36",
   "org.springframework" % "spring-aop"             % springVersion,
   "org.springframework" % "spring-context"         % springVersion,
   "org.springframework" % "spring-context-support" % springVersion excludeAll (
@@ -251,24 +229,30 @@ libraryDependencies ++= Seq(
 //    ),
   "stax"                      % "stax-api"          % "1.0.1",
   "taglibs"                   % "standard"          % "1.1.2",
-  "tomcat"                    % "jsp-api"           % "5.5.23",
   "com.github.equella.legacy" % "qtiworks-jqtiplus" % "1.0-beta3" excludeAll (
     ExclusionRule(organization = "org.slf4j"),
     ExclusionRule(organization = "ch.qos.logback"),
     ExclusionRule(organization = "net.sf.saxon")
   ),
   "xml-resolver"                  % "xml-resolver"              % "1.2",
-  "org.scala-sbt"                 %% "io"                       % "1.5.1",
-  "org.mozilla"                   % "rhino"                     % "1.7.13",
+  "org.scala-sbt"                 %% "io"                       % "1.6.0",
+  "org.mozilla"                   % "rhino"                     % "1.7.14",
   "io.lemonlabs"                  %% "scala-uri"                % "1.5.1",
-  "org.scala-lang.modules"        %% "scala-parser-combinators" % "2.1.0",
-  "io.github.classgraph"          % "classgraph"                % "4.8.137",
+  "org.scala-lang.modules"        %% "scala-parser-combinators" % "2.1.1",
+  "io.github.classgraph"          % "classgraph"                % "4.8.141",
   "com.fasterxml"                 % "classmate"                 % "1.5.1",
   "org.glassfish"                 % "javax.el"                  % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"    % "3.0.1",
   "com.github.stephenc.jcip"      % "jcip-annotations"          % "1.0-1",
   "org.jboss.spec.javax.xml.bind" % "jboss-jaxb-api_2.3_spec"   % "2.0.1.Final"
 )
+
+/*
+Although very old and has vulns, axis 1.4 is required for the SRW feature and is needed when
+using the very old (and unsure where the code is) oclc-srw.
+See Source/Plugins/RemoteRepositories/com.equella.srw/build.sbt
+ */
+libraryDependencies += "axis" % "axis" % "1.4"
 
 libraryDependencies ++= {
   if (bundleOracleDriver.value) {
@@ -281,7 +265,6 @@ dependencyOverrides += "javax.mail" % "mail" % "1.4.7"
 
 excludeDependencies ++= Seq(
   "com.google.guava"             % "guava-jdk5",
-  "asm"                          % "asm",
   "javax.servlet"                % "servlet-api",
   "org.mortbay.jetty"            % "servlet-api",
   "antlr"                        % "antlr",
@@ -313,7 +296,7 @@ excludeDependencies ++= Seq(
   // Spring 5 added a default logging bridge.  In oEQ, this results in
   // a [deduplicate: different file contents found in the following] error
   // ...org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.7.30.jar:org/apache/commons/logging/Log.class
-  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.13.jar:org/apache/commons/logging/Log.class
+  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.17.jar:org/apache/commons/logging/Log.class
   // As per https://github.com/spring-projects/spring-framework/issues/20611 ,
   // since we already have logging in place, we can safely exclude the dep from spring.
   "org.springframework" % "spring-jcl",
@@ -337,7 +320,9 @@ excludeDependencies ++= Seq(
   // [error] deduplicate: different file contents found in the following:
   // [error] com.sun.activation/jakarta.activation/jars/jakarta.activation-1.2.1.jar:com/sun/activation/viewers/TextViewer.class
   // [error] com.sun.activation/javax.activation/jars/javax.activation-1.2.0.jar:com/sun/activation/viewers/TextViewer.class
-  "com.sun.activation" % "javax.activation"
+  "com.sun.activation" % "javax.activation",
+  // Older log4j can be a transitive dep so exclude it
+  "log4j" % "log4j"
 )
 
 run := {
@@ -357,6 +342,16 @@ run := {
 (assembly / fullClasspath) := (Compile / fullClasspath).value
 
 (assembly / assemblyMergeStrategy) := {
+  case PathList("META-INF",
+                "org",
+                "apache",
+                "logging",
+                "log4j",
+                "core",
+                "config",
+                "plugins",
+                "Log4j2Plugins.dat") =>
+    MergeStrategy.last
   case PathList("META-INF", "jdom-info.xml")                => MergeStrategy.first
   case PathList("META-INF", "axiom.xml")                    => MergeStrategy.first
   case PathList("javax", "wsdl", _*)                        => MergeStrategy.last
@@ -381,8 +376,8 @@ run := {
 
   // Due to the error: deduplicate: different file contents found in the following:
   // ...
-  //  .../org.apache.cxf/cxf-rt-frontend-jaxws/bundles/cxf-rt-frontend-jaxws-3.4.5.jar:META-INF/cxf/bus-extensions.txt
-  //  .../org.apache.cxf/cxf-rt-transports-http/bundles/cxf-rt-transports-http-3.4.5.jar:META-INF/cxf/bus-extensions.txt
+  //  .../org.apache.cxf/cxf-rt-frontend-jaxws/bundles/cxf-rt-frontend-jaxws-3.5.1.jar:META-INF/cxf/bus-extensions.txt
+  //  .../org.apache.cxf/cxf-rt-transports-http/bundles/cxf-rt-transports-http-3.5.1.jar:META-INF/cxf/bus-extensions.txt
   // ...
   // As per https://github.com/johnrengelman/shadow/issues/309 , combining the files.
   case PathList("META-INF", "cxf", "bus-extensions.txt") => MergeStrategy.filterDistinctLines
@@ -394,14 +389,6 @@ run := {
   // ...
   // Different blueprint.handlers may specify different classes.  Using the first one allows testing to pass.
   case PathList("META-INF", "blueprint.handlers") => MergeStrategy.first
-
-  // OK to do in Java 8 - interesting that the global case for module-info.class didn't pick up the bouncy castle files
-  // deduplicate: different file contents found in the following:
-  //  .../io.github.classgraph/classgraph/jars/classgraph-4.8.87.jar:META-INF/versions/9/module-info.class
-  //  .../org.bouncycastle/bcmail-jdk15on/jars/bcmail-jdk15on-1.65.jar:META-INF/versions/9/module-info.class
-  //  .../org.bouncycastle/bcpkix-jdk15on/jars/bcpkix-jdk15on-1.65.jar:META-INF/versions/9/module-info.class
-  //  .../org.bouncycastle/bcprov-jdk15on/jars/bcprov-jdk15on-1.65.jar:META-INF/versions/9/module-info.class
-  case PathList("META-INF", "versions", "9", "module-info.class") => MergeStrategy.first
 
   // Curious that it's xml vs soap.  testing passes using the first one.
   // Due to the error: deduplicate: different file contents found in the following:
@@ -427,10 +414,8 @@ run := {
   // ...
   case PathList("META-INF", "cxf", "java2wsbeans.xml") => MergeStrategy.first
 
-  // Safe to do at least in JDK 8
-  case "module-info.class" => MergeStrategy.discard
   case x =>
-    val oldStrategy = (assembly / assemblyMergeStrategy).value
+    val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
     oldStrategy(x)
 }
 

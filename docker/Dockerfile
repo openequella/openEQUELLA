@@ -1,4 +1,4 @@
-FROM openjdk@sha256:0e25c8428a56e32861fe996b528a107933155c98fb2a9998a4a4e9423aad734d as baseequella
+FROM openjdk:8u312-jre as baseequella
 
 # Install needed tools to install and run openEQUELLA, clean up the apt cache afterwards.
 
@@ -10,14 +10,18 @@ RUN useradd -ms /bin/bash equella \
   && apt-get install -y --no-install-recommends \
     curl \
     imagemagick \
-    libav-tools \
+    ffmpeg \
     unzip \
+  # Setup ffmpeg to act like libav-tools
+  && ln -s /usr/bin/ffmpeg /usr/bin/avconv \
+  && ln -s /usr/bin/ffplay /usr/bin/avplay \
+  && ln -s /usr/bin/ffprobe /usr/bin/avprobe \
   && rm -rf /var/lib/apt/lists/*
 
 # Install openEQUELLA
 FROM baseequella as installer
 
-ARG OEQ_INSTALL_FILE=equella-installer-2019.2.0.zip
+ARG OEQ_INSTALL_FILE=installer.zip
 
 COPY ["$OEQ_INSTALL_FILE","defaults.xml", "./"]
 
@@ -29,7 +33,7 @@ RUN unzip $OEQ_INSTALL_FILE -d /tmp \
   && chown -R equella:equella /home/equella
 WORKDIR /home/equella/equella
 USER equella
-COPY learningedge-log4j.properties learningedge-config/
+COPY learningedge-log4j.yaml learningedge-config/
 
 # Now build the final image
 FROM baseequella as equella

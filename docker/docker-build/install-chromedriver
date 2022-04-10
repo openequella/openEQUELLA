@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -euxo pipefail
+
+VER=$(google-chrome --version | awk '{ print $3 }')
+URL=https://chromedriver.storage.googleapis.com/$VER/chromedriver_linux64.zip
+FILENAME_DL=driver.zip
+FILENAME_DRIVER=chromedriver
+
+wget -nv -O $FILENAME_DL "$URL"
+unzip $FILENAME_DL
+rm $FILENAME_DL
+chmod a+x $FILENAME_DRIVER
+mv $FILENAME_DRIVER "$1"

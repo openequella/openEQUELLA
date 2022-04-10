@@ -24,20 +24,24 @@ import com.tle.common.Check;
 import com.tle.common.usermanagement.user.UserState;
 import com.tle.core.guice.Bind;
 import com.tle.core.services.user.UserService;
+import com.tle.core.services.user.UserSessionService;
 import com.tle.exceptions.TokenException;
 import com.tle.web.core.filter.UserStateResult.Result;
+import com.tle.web.template.RenderNewTemplate;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author Aaron */
 @Bind
 @Singleton
 public class TokenUserStateHook implements UserStateHook {
-  private static final Logger LOGGER = Logger.getLogger(TokenUserStateHook.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TokenUserStateHook.class);
 
   @Inject private UserService userService;
+  @Inject private UserSessionService sessionService;
 
   @Override
   public UserStateResult getUserState(HttpServletRequest request, UserState userState)
@@ -61,7 +65,17 @@ public class TokenUserStateHook implements UserStateHook {
           return null;
         } catch (TokenException ex) {
           LOGGER.warn("Error with token:" + token);
-          request.setAttribute(WebConstants.KEY_LOGIN_EXCEPTION, ex);
+
+          // We can save the login token error in the request attribute in Old UI, but we can't do
+          // this in New UI because it sends another POST request to query the page content.
+          // Instead,
+          // we need to store it in the current session so that it can be persisted across the two
+          // requests.
+          if (RenderNewTemplate.isNewUIEnabled()) {
+            sessionService.setAttribute(WebConstants.KEY_LOGIN_EXCEPTION, ex.getLocalizedMessage());
+          } else {
+            request.setAttribute(WebConstants.KEY_LOGIN_EXCEPTION, ex);
+          }
 
           if (!noExistingSessionOrGuest) {
             // We want to make sure they logout of their invalid
