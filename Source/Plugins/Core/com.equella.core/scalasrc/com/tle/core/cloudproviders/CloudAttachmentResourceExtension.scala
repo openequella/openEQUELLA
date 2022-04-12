@@ -203,7 +203,7 @@ object MetaJsonFolder extends Folder[Any] {
   override def onArray(value: Vector[Json]): Any = value.map(_.foldWith(this))
 
   override def onObject(value: JsonObject): Any =
-    value.toMap.mapValues(_.foldWith(this))
+    value.toMap.view.mapValues(_.foldWith(this))
 }
 
 case class SttpResponseContentStream(response: Response[fs2.Stream[IO, ByteBuffer]],

@@ -30,7 +30,7 @@ object IntegTester extends IOApp with Http4sDsl[IO] {
 
   def viewItemHtml(request: Request[IO]): IO[Response[IO]] =
     request.decode[UrlForm] { form =>
-      val formJson = form.values.mapValues(_.toVector) ++ request.uri.query.multiParams ++ Seq(
+      val formJson = form.values.view.mapValues(_.toVector) ++ request.uri.query.multiParams ++ Seq(
         "authenticated" ->
           Seq(request.headers.get(Authorization).isDefined.toString))
 

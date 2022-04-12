@@ -59,7 +59,7 @@ class NotificationEmailer(batched: Boolean,
     val inst     = CurrentInstitution.get()
     val user     = userBean.getUniqueID
     dao.updateLastAttempt(user, batched, processDate, attemptId)
-    val reasonMap = dao.getReasonCounts(user, attemptId).asScala.mapValues(_.intValue()).toMap
+    val reasonMap = dao.getReasonCounts(user, attemptId).asScala.view.mapValues(_.intValue()).toMap
     val canSend = emailService.hasMailSettings && Option(userBean.getEmailAddress)
       .exists(_.nonEmpty)
     val ext2Reasons = reasonMap.keys.groupBy(extensionForType)

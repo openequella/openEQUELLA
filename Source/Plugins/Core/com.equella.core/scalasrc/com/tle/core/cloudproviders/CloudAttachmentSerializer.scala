@@ -68,7 +68,7 @@ class CloudAttachmentSerializer extends AbstractAttachmentSerializer {
     smap.map(_.view.mapValues(_.foldWith(javaFolder)).toMap.asJava).orNull
 
   def toScalaMap(jmap: java.util.Map[String, Object]): Option[Map[String, Json]] =
-    Option(jmap).map(_.asScala.mapValues(fromJava).toMap)
+    Option(jmap).map(_.asScala.view.mapValues(fromJava).toMap)
 
   override def getAttachmentBeanTypes: util.Map[String, Class[_ <: EquellaAttachmentBean]] =
     ImmutableMap.of("cloud", classOf[CloudAttachmentBean])
@@ -100,7 +100,7 @@ object CloudAttachmentSerializer {
     override def onArray(value: Vector[Json]): AnyRef = value.map(_.foldWith(this)).asJava
 
     override def onObject(value: JsonObject): AnyRef =
-      value.toMap.mapValues(_.foldWith(this)).asJava
+      value.toMap.view.mapValues(_.foldWith(this)).asJava
   }
 
   def fromJava(obj: Any): Json = obj match {

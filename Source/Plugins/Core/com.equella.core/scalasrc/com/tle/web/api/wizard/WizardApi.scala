@@ -160,7 +160,7 @@ class WizardApi {
     withWizardState(wizid, request, false) { _ =>
       ()
     }
-    val queryParams = uriInfo.getQueryParameters.asScala.mapValues(_.asScala).toMap
+    val queryParams = uriInfo.getQueryParameters.asScala.view.mapValues(_.asScala).toMap
     CloudProviderHelper
       .getByUuid(providerId)
       .flatMap(cp => {
