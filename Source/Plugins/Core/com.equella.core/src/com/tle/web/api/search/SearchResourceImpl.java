@@ -66,6 +66,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
@@ -237,14 +238,17 @@ public class SearchResourceImpl implements EquellaSearchResource {
         .filter(ms -> !ms.isEmpty())
         .map(ms -> ms.toArray(new String[0]))
         .map(SearchHelper::handleMusts)
-        .map(CollectionConverters::MapHasAsJava)
-        .ifPresent(
-            ms ->
-                ms.asJava()
-                    .forEach(
-                        (field, value) ->
-                            search.addMust(
-                                field, CollectionConverters.SeqHasAsJava(value).asJava())));
+        // Scala map to Java Map
+        .map(scalaMap -> CollectionConverters.MapHasAsJava(scalaMap).asJava())
+        // Java Map[String, Scala List] to Java Map[String, Java List]
+        .map(
+            javaMap ->
+                javaMap.entrySet().stream()
+                    .collect(
+                        Collectors.toMap(
+                            Map.Entry::getKey,
+                            entry -> CollectionConverters.SeqHasAsJava(entry.getValue()).asJava())))
+        .ifPresent(ms -> ms.forEach(search::addMust));
 
     final MatrixResults matrixResults =
         freetextService.matrixSearch(search, nodeList, true, width, true);
