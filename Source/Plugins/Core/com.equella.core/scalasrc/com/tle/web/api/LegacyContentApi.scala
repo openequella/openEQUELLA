@@ -659,13 +659,13 @@ class LegacyContentApi {
     val bc = Breadcrumbs.get(context)
     if (d.isForceBreadcrumbsOn || (d.isBreadcrumbs && !bc.getLinks.isEmpty)) Option {
       val ct = new TagState("breadcrumb-inner")
-      val allCrumbs = bc.getLinks.asScala.toSeq.map {
+      val allCrumbs = bc.getLinks.asScala.map {
         case ls: HtmlLinkState => new LinkRenderer(ls)
         case o                 => new TagRenderer("span", o)
       } :+ Option(bc.getForcedLastCrumb).getOrElse(d.getTitle)
-      new SpanRenderer(
-        ct,
-        new DelimitedRenderer(" " + CoreStrings.text("breadcrumb.separator") + " ", allCrumbs: _*))
+      new SpanRenderer(ct,
+                       new DelimitedRenderer(" " + CoreStrings.text("breadcrumb.separator") + " ",
+                                             allCrumbs.asJava))
     } else None
   }
 
