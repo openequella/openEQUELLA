@@ -665,7 +665,7 @@ class LegacyContentApi {
       } :+ Option(bc.getForcedLastCrumb).getOrElse(d.getTitle)
       new SpanRenderer(ct,
                        new DelimitedRenderer(" " + CoreStrings.text("breadcrumb.separator") + " ",
-                                             allCrumbs.asJava))
+                                             allCrumbs.toArray))
     } else None
   }
 
