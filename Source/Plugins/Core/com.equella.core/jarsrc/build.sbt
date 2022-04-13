@@ -1,4 +1,4 @@
-val springVersion = "5.3.18"
+val springVersion = "5.3.19"
 
 libraryDependencies ++= Seq(
   "net.java.dev.jna"    % "platform"     % "3.5.2",
