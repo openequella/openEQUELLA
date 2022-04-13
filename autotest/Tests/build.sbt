@@ -8,10 +8,10 @@ inConfig(Serial)(Defaults.testTasks)
 
 val circeVersion  = "0.12.1"
 val http4sVersion = "0.21.8"
-val catsVersion   = "1.6.1"
+val catsVersion   = "2.7.0"
 val cxfVersion    = "3.5.1"
 
-addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.3")
+addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full)
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -20,6 +20,7 @@ libraryDependencies ++= Seq(
 ).map(_ % circeVersion)
 
 libraryDependencies ++= Seq(
+  "org.scala-lang"            % "scala-reflect"             % scalaVersion.value,
   "javax.jws"                 % "javax.jws-api"             % "1.1",
   "org.apache.commons"        % "commons-lang3"             % "3.12.0",
   "org.seleniumhq.selenium"   % "selenium-java"             % "3.141.59",

@@ -20,7 +20,7 @@ package com.tle.core.security
 
 import com.tle.exceptions.PrivilegeRequiredException
 import com.tle.legacy.LegacyGuice
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object ACLChecks {
 

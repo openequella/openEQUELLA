@@ -3,8 +3,7 @@ import sbt._
 import sbt.plugins.JvmPlugin
 import CommonSettings.autoImport._
 import Path.flat
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object JPFPlugin extends AutoPlugin {
   override def trigger: PluginTrigger = noTrigger
@@ -22,7 +21,7 @@ object JPFPlugin extends AutoPlugin {
   import autoImport._
 
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
-    scalaVersion := "2.12.15",
+    scalaVersion := "2.13.8",
     javacOptions ++= Seq("-source", "1.8"),
     jpfCodeDirs := Seq((Compile / classDirectory).value),
     (Compile / resourceDirectory) := baseDirectory.value / "resources",

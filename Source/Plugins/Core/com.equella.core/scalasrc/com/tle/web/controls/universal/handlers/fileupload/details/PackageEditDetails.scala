@@ -38,8 +38,7 @@ import com.tle.web.sections.standard.annotations.Component
 import com.tle.web.sections.standard.model.{LabelOption, SimpleHtmlListModel}
 import com.tle.web.sections.standard.{Checkbox, SingleSelectionList, TextField, model}
 import com.tle.web.sections.{SectionInfo, SectionTree}
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object PackageEditDetails {
   val KEY_PFXBUTTON = WebFileUploads.r.key("handlers.file.packagedetails.")

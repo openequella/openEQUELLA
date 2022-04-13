@@ -23,8 +23,7 @@ import com.tle.beans.entity.itemdef.DisplayNode
 import com.tle.common.Utils
 import com.tle.common.i18n.LangUtils
 import com.tle.web.api.item.interfaces.beans.MetaDisplay
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object DisplayNodes {
 

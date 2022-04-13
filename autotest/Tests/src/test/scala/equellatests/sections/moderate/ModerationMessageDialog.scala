@@ -7,8 +7,7 @@ import equellatests.domain.TestFile
 import equellatests.pages.moderate.TaskListPage
 import org.openqa.selenium.{By, WebElement}
 import org.openqa.selenium.support.ui.{ExpectedCondition, ExpectedConditions}
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 abstract class ModerationMessageDialog(pfx: String) extends WaitingBrowserPage {
 

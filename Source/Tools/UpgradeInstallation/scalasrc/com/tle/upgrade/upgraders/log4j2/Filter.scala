@@ -23,7 +23,7 @@ import cats.implicits._
 import cats.data.{Validated, ValidatedNec}
 import com.tle.upgrade.upgraders.log4j2.PropertyHelper.{readBooleanProperty, readProperty}
 import org.apache.logging.log4j.spi.StandardLevel
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import org.apache.logging.log4j.core.Filter.Result
 
 sealed trait Filter

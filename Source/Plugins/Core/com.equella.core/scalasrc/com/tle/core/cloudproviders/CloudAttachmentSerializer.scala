@@ -20,7 +20,6 @@ package com.tle.core.cloudproviders
 
 import java.util
 import java.util.UUID
-
 import com.google.common.collect.ImmutableMap
 import com.tle.beans.item.attachments.{Attachment, CustomAttachment}
 import com.tle.core.item.edit.ItemEditor
@@ -29,8 +28,7 @@ import com.tle.web.api.item.equella.interfaces.beans.{CloudAttachmentBean, Equel
 import io.circe.Json.Folder
 import io.circe.syntax._
 import io.circe.{Json, JsonNumber, JsonObject}
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class CloudAttachmentSerializer extends AbstractAttachmentSerializer {
   import CloudAttachmentSerializer._
@@ -67,10 +65,10 @@ class CloudAttachmentSerializer extends AbstractAttachmentSerializer {
     }
 
   def toJavaMap(smap: Option[Map[String, Json]]): java.util.Map[String, Object] =
-    smap.map(_.mapValues(_.foldWith(javaFolder)).asJava).orNull
+    smap.map(_.view.mapValues(_.foldWith(javaFolder)).toMap.asJava).orNull
 
   def toScalaMap(jmap: java.util.Map[String, Object]): Option[Map[String, Json]] =
-    Option(jmap).map(_.asScala.mapValues(fromJava).toMap)
+    Option(jmap).map(_.asScala.view.mapValues(fromJava).toMap)
 
   override def getAttachmentBeanTypes: util.Map[String, Class[_ <: EquellaAttachmentBean]] =
     ImmutableMap.of("cloud", classOf[CloudAttachmentBean])
@@ -102,7 +100,7 @@ object CloudAttachmentSerializer {
     override def onArray(value: Vector[Json]): AnyRef = value.map(_.foldWith(this)).asJava
 
     override def onObject(value: JsonObject): AnyRef =
-      value.toMap.mapValues(_.foldWith(this)).asJava
+      value.toMap.view.mapValues(_.foldWith(this)).asJava
   }
 
   def fromJava(obj: Any): Json = obj match {

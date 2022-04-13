@@ -22,8 +22,7 @@ import com.tle.beans.item.Item
 import com.tle.core.guice.Bind
 import com.tle.core.notification.beans.Notification
 import javax.inject.Singleton
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 @Bind
 @Singleton

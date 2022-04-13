@@ -80,8 +80,7 @@ import com.tle.web.wizard.section.WizardBodySection
 import io.circe.parser._
 import io.circe.syntax._
 import javax.inject.Inject
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.io.Source
 
 class UniversalWebControlModel extends WebControlModel

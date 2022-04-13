@@ -49,8 +49,7 @@ import com.tle.web.viewurl.{
 import fs2.Stream
 import io.circe.Json.Folder
 import io.circe.{Json, JsonNumber, JsonObject}
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class CloudAttachmentResourceExtension extends AttachmentResourceExtension[IAttachment] {
   override def process(info: SectionInfo,
@@ -106,7 +105,10 @@ case class CloudAttachmentViewableResource(info: SectionInfo,
 
   def uriParameters: Map[String, Any] = {
     val metaParams =
-      fields.cloudJson.meta.map(_.mapValues(_.foldWith(MetaJsonFolder))).getOrElse(Map.empty)
+      fields.cloudJson.meta
+        .map(_.view.mapValues(_.foldWith(MetaJsonFolder)))
+        .getOrElse(Map.empty)
+        .toMap
     metaParams ++ Map("item"       -> itemId.getUuid,
                       "version"    -> itemId.getVersion,
                       "attachment" -> attach.getUuid,
@@ -201,7 +203,7 @@ object MetaJsonFolder extends Folder[Any] {
   override def onArray(value: Vector[Json]): Any = value.map(_.foldWith(this))
 
   override def onObject(value: JsonObject): Any =
-    value.toMap.mapValues(_.foldWith(this))
+    value.toMap.view.mapValues(_.foldWith(this))
 }
 
 case class SttpResponseContentStream(response: Response[fs2.Stream[IO, ByteBuffer]],

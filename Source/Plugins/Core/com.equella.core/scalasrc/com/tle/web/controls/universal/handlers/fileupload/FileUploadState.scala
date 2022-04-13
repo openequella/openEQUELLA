@@ -21,8 +21,7 @@ import java.time.Instant
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicReference
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object FileUploadState {
   val UPLOADS_FOLDER = "_uploads"

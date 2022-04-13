@@ -1,6 +1,5 @@
 import de.johoop.testngplugin.TestNGPlugin
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 libraryDependencies += "com.opencsv" % "opencsv" % "5.6"
 libraryDependencies ++= Seq(

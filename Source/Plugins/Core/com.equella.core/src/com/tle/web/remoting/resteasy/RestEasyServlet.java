@@ -90,7 +90,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.util.GetRestful;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scala.collection.GenTraversableOnce;
+import scala.collection.IterableOnce;
 
 @Bind
 @Singleton
@@ -228,7 +228,7 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
     @Override
     public ObjectMapper getContext(Class<?> beanClass) {
       if (scala.Product.class.isAssignableFrom(beanClass)
-          || GenTraversableOnce.class.isAssignableFrom(beanClass)) {
+          || IterableOnce.class.isAssignableFrom(beanClass)) {
         return scalaObjectMapper;
       }
       return objectMapper;

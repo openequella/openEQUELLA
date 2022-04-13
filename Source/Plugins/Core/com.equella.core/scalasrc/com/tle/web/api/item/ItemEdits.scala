@@ -26,8 +26,7 @@ import com.tle.beans.item.{Item, ItemEditingException}
 import com.tle.core.item.edit.ItemEditor
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.item.equella.interfaces.beans.EquellaAttachmentBean
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 @JsonTypeInfo(use = Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "command")
 @JsonSubTypes(

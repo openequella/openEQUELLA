@@ -9,12 +9,11 @@ val CirceVersion  = "0.12.1"
 val Http4sVersion = "0.21.8"
 val jsoupVersion  = "1.14.3"
 
-scalaVersion := "2.12.15"
-scalacOptions += "-Ypartial-unification"
+scalaVersion := "2.13.8"
 
 excludeDependencies ++= Seq("org.typelevel" % "scala-library")
 
-addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.9")
+addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full)
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",

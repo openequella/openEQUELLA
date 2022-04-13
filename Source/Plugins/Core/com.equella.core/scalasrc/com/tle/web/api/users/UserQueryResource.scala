@@ -28,7 +28,7 @@ import io.swagger.annotations.{Api, ApiOperation, ApiParam}
 
 import javax.ws.rs._
 import javax.ws.rs.core.Response
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 case class LookupQuery(users: Seq[String], groups: Seq[String], roles: Seq[String])
 

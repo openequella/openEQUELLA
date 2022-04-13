@@ -4,7 +4,7 @@ import sbt.Keys._
 import sbt._
 
 import scala.annotation.tailrec
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object JPFScanPlugin extends AutoPlugin {
   val serverRef = LocalProject("equellaserver")

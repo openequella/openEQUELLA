@@ -1,6 +1,5 @@
 import java.util
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class OrderedProperties extends java.util.Properties {
   override def keys: util.Enumeration[Object] = {

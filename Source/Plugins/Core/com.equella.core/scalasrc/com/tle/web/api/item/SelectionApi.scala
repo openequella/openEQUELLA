@@ -29,8 +29,7 @@ import io.swagger.annotations.Api
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import javax.ws.rs.core.{Context, Response}
 import javax.ws.rs.{POST, Path, PathParam, QueryParam}
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 case class SelectionKey(uuid: String,
                         version: Int,
