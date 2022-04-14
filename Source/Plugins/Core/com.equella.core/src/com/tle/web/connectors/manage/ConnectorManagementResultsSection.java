@@ -222,7 +222,8 @@ public class ConnectorManagementResultsSection
 
   @Override
   protected ConnectorManagmentSearchResultEvent createResultsEvent(
-      SectionInfo info, ConnectorManagementSearchEvent connectorSearchEvent) {
+      SectionInfo info, ConnectorManagementSearchEvent connectorSearchEvent)
+      throws RuntimeException {
     try {
       Connector connector = connectorSearchEvent.getConnector();
       List<ConnectorContent> allUsage = new ArrayList<ConnectorContent>();
@@ -300,6 +301,13 @@ public class ConnectorManagementResultsSection
 
     } catch (LmsUserNotFoundException e) {
       throw new RuntimeException(e);
+    } catch (UnsupportedOperationException e) {
+      ConnectorManagmentSearchResultEvent erroredSearchResultEvent =
+          new ConnectorManagmentSearchResultEvent(
+              null, null, null, 0, connectorSearchEvent.getConnector());
+      erroredSearchResultEvent.setErrored(true);
+      erroredSearchResultEvent.setErrorMessage(e.getMessage());
+      return erroredSearchResultEvent;
     }
   }
 

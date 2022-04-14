@@ -411,8 +411,8 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       int count,
       ConnectorRepositoryService.ExternalContentSortType sortType,
       boolean reverseSort)
-      throws LmsUserNotFoundException {
-    return null;
+      throws LmsUserNotFoundException, UnsupportedOperationException {
+    throw new UnsupportedOperationException("Feature not supported by Blackboard Rest");
   }
 
   @Override
