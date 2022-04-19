@@ -414,10 +414,6 @@ run := {
   // ...
   case PathList("META-INF", "cxf", "java2wsbeans.xml") => MergeStrategy.first
 
-  // Duplicated dependencies caused by the update of co.fs2:fs2-io to v2.5.10.
-  // .../com/github/mpilquist/simulacrum_2.12/0.19.0/simulacrum_2.12-0.19.0.jar:simulacrum/*.class
-  // .../org/typelevel/simulacrum-scalafix-annotations_2.12/0.5.4/simulacrum-scalafix-annotations_2.12-0.5.4.jar:simulacrum/*.class
-  case PathList("simulacrum", _*) => MergeStrategy.last
   case x =>
     val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
     oldStrategy(x)
