@@ -8,10 +8,10 @@ inConfig(Serial)(Defaults.testTasks)
 
 val circeVersion  = "0.12.1"
 val http4sVersion = "0.21.8"
-val catsVersion   = "1.6.1"
-val cxfVersion    = "3.5.1"
+val catsVersion   = "2.7.0"
+val cxfVersion    = "3.5.2"
 
-addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.3")
+addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full)
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -20,6 +20,7 @@ libraryDependencies ++= Seq(
 ).map(_ % circeVersion)
 
 libraryDependencies ++= Seq(
+  "org.scala-lang"            % "scala-reflect"             % scalaVersion.value,
   "javax.jws"                 % "javax.jws-api"             % "1.1",
   "org.apache.commons"        % "commons-lang3"             % "3.12.0",
   "org.seleniumhq.selenium"   % "selenium-java"             % "3.141.59",
@@ -31,11 +32,11 @@ libraryDependencies ++= Seq(
   "org.apache.cxf"            % "cxf-rt-transports-http"    % cxfVersion,
   "org.apache.httpcomponents" % "httpclient"                % "4.5.13",
   "com.jcraft"                % "jsch"                      % "0.1.55",
-  "org.jacoco"                % "org.jacoco.report"         % "0.8.7",
+  "org.jacoco"                % "org.jacoco.report"         % "0.8.8",
   "org.dspace"                % "oclc-harvester2"           % "0.1.12",
   "com.typesafe"              % "config"                    % "1.4.2",
   "org.slf4j"                 % "slf4j-simple"              % "1.7.36",
-  "org.scalacheck"            %% "scalacheck"               % "1.15.4" % "test,serial",
+  "org.scalacheck"            %% "scalacheck"               % "1.16.0" % "test,serial",
   "org.http4s"                %% "http4s-async-http-client" % http4sVersion,
   "org.http4s"                %% "http4s-blaze-client"      % http4sVersion,
   "org.http4s"                %% "http4s-circe"             % http4sVersion,

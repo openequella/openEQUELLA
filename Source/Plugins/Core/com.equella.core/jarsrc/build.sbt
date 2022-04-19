@@ -1,4 +1,4 @@
-val springVersion = "5.3.17"
+val springVersion = "5.3.19"
 
 libraryDependencies ++= Seq(
   "net.java.dev.jna"    % "platform"     % "3.5.2",
@@ -15,7 +15,7 @@ libraryDependencies ++= Seq(
   "Application-Library-Allowable-Codebase" -> "*",
   "Caller-Allowable-Codebase"              -> "*"
 )
-(assembly / assemblyOption) := (assembly / assemblyOption).value.copy(includeScala = false)
+(assembly / assemblyOption) := (assembly / assemblyOption).value.withIncludeScala(false)
 
 (assembly / assemblyMergeStrategy) := {
   case PathList("org", "xmlpull", "v1", _*) => MergeStrategy.first

@@ -45,9 +45,8 @@ import com.tle.web.sections.{SectionInfo, SectionResult}
 import com.tle.web.wizard.controls.{AbstractWebControl, WebControl, WebControlModel}
 import com.tle.web.wizard.render.WizardFreemarkerFactory
 import com.tle.web.wizard.{BrokenWebControl, WizardStateInterface}
-
 import java.util.UUID
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object CloudWizardControl {
 

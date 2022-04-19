@@ -26,9 +26,8 @@ import com.tle.web.api.search.SearchHelper.getLinksFromBean
 import com.tle.web.api.search.model.SearchResultAttachment
 import com.tle.web.controls.resource.ResourceAttachmentBean
 import com.tle.web.controls.youtube.YoutubeAttachmentBean
-
 import java.util.Optional
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 /**
   * Object to provide helper functions for building a SearchResultAttachment.

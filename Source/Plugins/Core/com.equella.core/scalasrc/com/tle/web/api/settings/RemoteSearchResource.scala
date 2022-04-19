@@ -23,8 +23,7 @@ import com.tle.web.api.entity.BaseEntitySummary
 import io.swagger.annotations.{Api, ApiOperation}
 import javax.ws.rs.core.Response
 import javax.ws.rs.{GET, Path, Produces}
-
-import scala.collection.JavaConverters.collectionAsScalaIterableConverter
+import scala.jdk.CollectionConverters._
 
 @Path("settings/remotesearch/")
 @Produces(value = Array("application/json"))

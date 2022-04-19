@@ -22,8 +22,7 @@ import java.util.{Optional, UUID}
 
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto._
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 case class CloudConfigOption(name: String, value: String)
 

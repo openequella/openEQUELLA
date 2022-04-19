@@ -43,8 +43,7 @@ import com.tle.web.sections.standard.annotations.Component
 import com.tle.web.sections.standard.model.{DynamicHtmlListModel, LabelOption}
 import com.tle.web.sections.standard.{Button, SingleSelectionList}
 import com.tle.web.sections.{SectionInfo, SectionTree}
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object FileOptions {
   val TITLE               = WebFileUploads.label("handlers.file.packageoption.title")

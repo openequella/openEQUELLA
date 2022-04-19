@@ -17,16 +17,16 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 (Runtime / unmanagedClasspath) += (LocalProject("learningedge_config") / baseDirectory).value
 
 val RestEasyVersion = "3.15.3.Final"
-val SwaggerVersion  = "1.6.5"
-val TomcatVersion   = "9.0.60"
+val SwaggerVersion  = "1.6.6"
+val TomcatVersion   = "9.0.62"
 val axis2Version    = "1.7.9"
 val circeVersion    = "0.12.1"
-val cxfVersion      = "3.5.1"
+val cxfVersion      = "3.5.2"
 val fs2Version      = "2.5.10"
 val guiceVersion    = "5.1.0"
 val jsassVersion    = "5.10.4"
 val jsoupVersion    = "1.14.3"
-val springVersion   = "5.3.17"
+val springVersion   = "5.3.19"
 val sttpVersion     = "1.7.2"
 val tikaVersion     = "2.3.0"
 
@@ -55,9 +55,9 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
-  "com.google.api-client" % "google-api-client"           % "1.33.2",
-  "com.google.apis"       % "google-api-services-books"   % "v1-rev20201021-1.32.1",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20220312-1.32.1",
+  "com.google.api-client" % "google-api-client"           % "1.34.0",
+  "com.google.apis"       % "google-api-services-books"   % "v1-rev20220318-1.32.1",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20220409-1.32.1",
   "com.google.code.gson"  % "gson"                        % "2.9.0",
   "com.google.gdata"      % "core"                        % "1.47.1",
   "com.google.guava"      % "guava"                       % "31.1-jre",
@@ -76,7 +76,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "aopalliance",
                   name = "aopalliance")
   ),
-  "com.ibm.icu" % "icu4j" % "70.1",
+  "com.ibm.icu" % "icu4j" % "71.1",
   sqlServerDep excludeAll (
     // Conflicts with RESTeasy jakarta.xml.bind-api
     ExclusionRule(organization = "javax.xml.bind"),
@@ -205,8 +205,8 @@ libraryDependencies ++= Seq(
   "org.reactivestreams"             % "reactive-streams"               % "1.0.3",
   // Upgraded to 2.0.1.Final due to a deduplication issue with jakarta.ws.rs-api
   "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"     % "2.0.2.Final",
-  "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api" % "2.0",
-  "org.eclipse.microprofile.config"      % "microprofile-config-api"      % "2.0.1",
+  "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api" % "3.0",
+  "org.eclipse.microprofile.config"      % "microprofile-config-api"      % "3.0.1",
   "javax.json.bind"                      % "javax.json.bind-api"          % "1.0",
   "org.jsoup"                            % "jsoup"                        % jsoupVersion,
   xstreamDep,
@@ -237,9 +237,9 @@ libraryDependencies ++= Seq(
   "xml-resolver"                  % "xml-resolver"              % "1.2",
   "org.scala-sbt"                 %% "io"                       % "1.6.0",
   "org.mozilla"                   % "rhino"                     % "1.7.14",
-  "io.lemonlabs"                  %% "scala-uri"                % "1.5.1",
+  "io.lemonlabs"                  %% "scala-uri"                % "4.0.2",
   "org.scala-lang.modules"        %% "scala-parser-combinators" % "2.1.1",
-  "io.github.classgraph"          % "classgraph"                % "4.8.141",
+  "io.github.classgraph"          % "classgraph"                % "4.8.143",
   "com.fasterxml"                 % "classmate"                 % "1.5.1",
   "org.glassfish"                 % "javax.el"                  % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"    % "3.0.1",
@@ -296,7 +296,7 @@ excludeDependencies ++= Seq(
   // Spring 5 added a default logging bridge.  In oEQ, this results in
   // a [deduplicate: different file contents found in the following] error
   // ...org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.7.30.jar:org/apache/commons/logging/Log.class
-  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.17.jar:org/apache/commons/logging/Log.class
+  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.19.jar:org/apache/commons/logging/Log.class
   // As per https://github.com/spring-projects/spring-framework/issues/20611 ,
   // since we already have logging in place, we can safely exclude the dep from spring.
   "org.springframework" % "spring-jcl",
@@ -376,8 +376,8 @@ run := {
 
   // Due to the error: deduplicate: different file contents found in the following:
   // ...
-  //  .../org.apache.cxf/cxf-rt-frontend-jaxws/bundles/cxf-rt-frontend-jaxws-3.5.1.jar:META-INF/cxf/bus-extensions.txt
-  //  .../org.apache.cxf/cxf-rt-transports-http/bundles/cxf-rt-transports-http-3.5.1.jar:META-INF/cxf/bus-extensions.txt
+  //  .../org.apache.cxf/cxf-rt-frontend-jaxws/bundles/cxf-rt-frontend-jaxws-3.5.2.jar:META-INF/cxf/bus-extensions.txt
+  //  .../org.apache.cxf/cxf-rt-transports-http/bundles/cxf-rt-transports-http-3.5.2.jar:META-INF/cxf/bus-extensions.txt
   // ...
   // As per https://github.com/johnrengelman/shadow/issues/309 , combining the files.
   case PathList("META-INF", "cxf", "bus-extensions.txt") => MergeStrategy.filterDistinctLines

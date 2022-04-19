@@ -66,6 +66,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
@@ -73,7 +74,7 @@ import javax.inject.Singleton;
 import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scala.collection.JavaConverters;
+import scala.jdk.CollectionConverters;
 
 /** @author Aaron & Dustin */
 @SuppressWarnings("nls")
@@ -237,11 +238,17 @@ public class SearchResourceImpl implements EquellaSearchResource {
         .filter(ms -> !ms.isEmpty())
         .map(ms -> ms.toArray(new String[0]))
         .map(SearchHelper::handleMusts)
-        .map(JavaConverters::mapAsJavaMap)
-        .ifPresent(
-            ms ->
-                ms.forEach(
-                    (field, value) -> search.addMust(field, JavaConverters.seqAsJavaList(value))));
+        // Scala map to Java Map
+        .map(scalaMap -> CollectionConverters.MapHasAsJava(scalaMap).asJava())
+        // Java Map[String, Scala List] to Java Map[String, Java List]
+        .map(
+            javaMap ->
+                javaMap.entrySet().stream()
+                    .collect(
+                        Collectors.toMap(
+                            Map.Entry::getKey,
+                            entry -> CollectionConverters.SeqHasAsJava(entry.getValue()).asJava())))
+        .ifPresent(ms -> ms.forEach(search::addMust));
 
     final MatrixResults matrixResults =
         freetextService.matrixSearch(search, nodeList, true, width, true);

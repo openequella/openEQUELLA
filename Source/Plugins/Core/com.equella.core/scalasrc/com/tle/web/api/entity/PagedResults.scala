@@ -23,8 +23,7 @@ import com.tle.core.entity.EnumerateOptions
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.entity.resource.AbstractBaseEntityResource
 import com.tle.web.api.interfaces.beans.{BaseEntityBean, BaseEntityReadOnly, PagingBean}
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection.mutable.ListBuffer
 
 /**

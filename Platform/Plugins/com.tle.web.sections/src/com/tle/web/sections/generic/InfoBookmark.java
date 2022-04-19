@@ -19,8 +19,8 @@
 package com.tle.web.sections.generic;
 
 import com.tle.web.sections.Bookmark;
-import com.tle.web.sections.QueryParams;
 import com.tle.web.sections.SectionInfo;
+import com.tle.web.sections.SectionUtils;
 import com.tle.web.sections.events.BookmarkEvent;
 import hurl.build.UriBuilder;
 import java.net.URI;
@@ -116,7 +116,9 @@ public class InfoBookmark implements Bookmark {
 
   public String getQuery() {
     if (query == null) {
-      query = QueryParams.paramString(getBookmarkParams());
+      query =
+          SectionUtils.getParameterString(
+              SectionUtils.getParameterNameValues(getBookmarkParams(), false));
     }
     return query;
   }

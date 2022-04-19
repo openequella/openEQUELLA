@@ -32,7 +32,7 @@ import javax.ws.rs.core.Response
 import javax.ws.rs.core.Response.Status
 import javax.ws.rs.{DELETE, GET, POST, PUT, Path, PathParam, Produces, QueryParam}
 import org.jboss.resteasy.annotations.cache.NoCache
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 
 @NoCache
@@ -257,8 +257,11 @@ class SearchFilterResource {
   }
 
   private def validMimeTypes: List[String] = {
-    val mimeEntries: Seq[MimeEntry] =
-      LegacyGuice.mimeTypeService.searchByMimeType(Constants.BLANK, 0, -1).getResults.asScala
-    mimeEntries.map(_.getType).toList
+    LegacyGuice.mimeTypeService
+      .searchByMimeType(Constants.BLANK, 0, -1)
+      .getResults
+      .asScala
+      .map(_.getType)
+      .toList
   }
 }

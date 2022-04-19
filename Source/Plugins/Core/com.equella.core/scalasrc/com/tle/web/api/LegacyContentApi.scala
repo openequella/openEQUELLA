@@ -61,7 +61,6 @@ import com.tle.web.viewitem.section.RootItemFileSection
 import io.lemonlabs.uri.{Path => _, _}
 import io.swagger.annotations.{Api, ApiOperation}
 import org.slf4j.LoggerFactory
-
 import java.net.URI
 import java.util
 import java.util.Collections
@@ -69,7 +68,7 @@ import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import javax.ws.rs._
 import javax.ws.rs.core.Response.{ResponseBuilder, Status}
 import javax.ws.rs.core.{CacheControl, Context, Response, UriInfo}
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection.mutable
 
 case class InternalRedirect(route: String, userUpdated: Boolean)
@@ -664,9 +663,9 @@ class LegacyContentApi {
         case ls: HtmlLinkState => new LinkRenderer(ls)
         case o                 => new TagRenderer("span", o)
       } :+ Option(bc.getForcedLastCrumb).getOrElse(d.getTitle)
-      new SpanRenderer(
-        ct,
-        new DelimitedRenderer(" " + CoreStrings.text("breadcrumb.separator") + " ", allCrumbs: _*))
+      new SpanRenderer(ct,
+                       new DelimitedRenderer(" " + CoreStrings.text("breadcrumb.separator") + " ",
+                                             allCrumbs.toSeq: _*))
     } else None
   }
 

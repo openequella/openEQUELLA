@@ -5,13 +5,10 @@
     "install": "node install.js && psc-package install",
     "clean": "rm -rf node_modules/ .psc-package/ psc-package",
     "build": "pulp build && parcel build --no-autoinstall --out-dir=target/www www/*.html www/*.tsx",
-    "dev": "pulp build && parcel watch --no-autoinstall --out-dir=../target/scala-2.12/classes/www www/*.html www/*.tsx"
-  },
-  "engines": {
-    "npm": "8.1.4"
+    "dev": "pulp build && parcel watch --no-autoinstall --out-dir=../target/scala-2.13/classes/www www/*.html www/*.tsx"
   },
   "dependencies": {
-    "@material-ui/core": "4.12.3",
+    "@material-ui/core": "4.12.4",
     "axios": "0.26.1",
     "babel-polyfill": "6.26.0",
     "js-md5": "0.7.3",
@@ -22,13 +19,13 @@
     "react-dom": "17.0.2"
   },
   "devDependencies": {
-    "@types/react": "17.0.41",
-    "@types/react-dom": "17.0.14",
+    "@types/react": "17.0.44",
+    "@types/react-dom": "17.0.15",
     "mkdirp": "1.0.4",
     "parcel-bundler": "1.12.5",
     "pulp": "15.0.0",
     "purescript": "0.12.3",
-    "typescript": "4.6.2",
+    "typescript": "4.6.3",
     "follow-redirects": "1.14.9",
     "tar": "6.1.11",
     "shelljs": "0.8.5"

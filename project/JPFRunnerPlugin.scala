@@ -8,7 +8,7 @@ import sbt._
 import Path.{flatRebase, rebase}
 
 import java.nio.file.Files
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.util.Try
 
 object JPFRunnerPlugin extends AutoPlugin {

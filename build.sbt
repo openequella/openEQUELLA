@@ -5,7 +5,7 @@ import com.typesafe.sbt.license.LicenseReport
 import sbt.io.Using
 
 import java.time.Instant
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 lazy val learningedge_config = project in file("Dev/learningedge-config")
 
@@ -122,7 +122,7 @@ ThisBuild / assemblyMergeStrategy := {
 name := "Equella"
 
 (ThisBuild / equellaMajor) := 2022
-(ThisBuild / equellaMinor) := 1
+(ThisBuild / equellaMinor) := 2
 (ThisBuild / equellaPatch) := 0
 (ThisBuild / equellaStream) := "Alpha"
 (ThisBuild / equellaBuild) := buildConfig.value.getString("build.buildname")

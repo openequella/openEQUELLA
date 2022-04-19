@@ -10,9 +10,6 @@
     "clean": "rm -rf node_modules/",
     "test": "jest test"
   },
-  "engines": {
-    "npm": "7.19.1"
-  },
   "dependencies": {},
   "license": "Apache-2.0",
   "devDependencies": {

@@ -25,7 +25,7 @@ import com.tle.core.validation.EntityValidation
 import com.tle.legacy.LegacyGuice
 import io.circe.parser.decode
 import java.util.UUID
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object CloudProviderHelper {
 

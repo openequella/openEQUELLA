@@ -21,8 +21,7 @@ package com.tle.core.item.standard
 import com.tle.core.item.standard.operations.AbstractStandardWorkflowOperation
 import com.tle.core.notification.beans.Notification
 import com.tle.core.services.user.UserPreferenceService
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object NotifyMyLive {
 

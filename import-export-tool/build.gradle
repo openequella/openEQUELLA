@@ -43,8 +43,8 @@ allprojects {
     implementation group: 'wsdl4j', name: 'wsdl4j', version: '1.6.3'
     implementation group: 'net.sf.jpf', name: 'jpf', version: '1.5'
     implementation group: 'org.slf4j', name: 'jcl-over-slf4j', version: '1.7.36'
-    implementation fileTree(dir: '../Platform/Plugins/com.tle.platform.common/target/scala-2.12', include: ['*.jar'])
-    implementation fileTree(dir: '../Source/Plugins/Platform/com.tle.platform.swing/target/scala-2.12', include: ['*.jar'])
+    implementation fileTree(dir: '../Platform/Plugins/com.tle.platform.common/target/scala-2.13', include: ['*.jar'])
+    implementation fileTree(dir: '../Source/Plugins/Platform/com.tle.platform.swing/target/scala-2.13', include: ['*.jar'])
     testImplementation group: 'junit', name: 'junit', version: '4.13.2'
   }
 }

@@ -37,8 +37,7 @@ import com.tle.web.resources.ResourcesService
 import com.tle.web.sections.SectionInfo
 import com.tle.web.sections.result.util.KeyLabel
 import javax.inject.Inject
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 @Bind
 class QtiPackageAttachmentHandlerNew extends PackageAttachmentExtension {

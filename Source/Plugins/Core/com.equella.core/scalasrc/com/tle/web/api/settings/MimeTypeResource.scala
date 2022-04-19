@@ -28,7 +28,7 @@ import javax.ws.rs.{GET, Path, PathParam, Produces}
 import org.apache.http.HttpStatus
 import org.jboss.resteasy.annotations.cache.NoCache
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection.mutable
 
 /**
@@ -104,7 +104,7 @@ class MimeTypeResource {
             case Some(value) => value
             case None        => MimeTypeConstants.VAL_DEFAULT_VIEWERID
           },
-          viewers = enabledViewers
+          viewers = enabledViewers.toSeq
             .map(
               v =>
                 MimeTypeViewerDetail(

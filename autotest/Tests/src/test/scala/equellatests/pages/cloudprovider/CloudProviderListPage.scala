@@ -4,7 +4,7 @@ import com.tle.webtests.framework.PageContext
 import equellatests.browserpage.NewTitledPage
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.{By, WebElement}
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 case class CloudProviderListPage(ctx: PageContext)
     extends NewTitledPage("Cloud providers", "page/cloudprovider") {

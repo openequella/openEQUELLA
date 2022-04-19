@@ -2,7 +2,7 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-license-report" % "1.2.0")
 
 addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.6.5")
 
-addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "1.1.0")
+addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "1.2.0")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "1.0.2")
 
@@ -16,7 +16,7 @@ addSbtPlugin("com.etsy" % "sbt-checkstyle-plugin" % "3.1.1")
 //
 // NOTE: Uses a lot of temporary file storage, you may need to:
 //   export JVM_OPTS="-Djava.io.tmpdir=/var/tmp"
-addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "3.4.1")
+addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "4.0.0")
 
 // Provides support for all the tasks found at:
 // https://github.com/sbt/sbt-dependency-graph#main-tasks
@@ -46,7 +46,7 @@ libraryDependencies ++= Seq(
 
 libraryDependencies ++= Seq(
   "com.typesafe"           % "config"                % "1.4.2",
-  "org.jacoco"             % "org.jacoco.report"     % "0.8.7",
+  "org.jacoco"             % "org.jacoco.report"     % "0.8.8",
   "org.jdom"               % "jdom2"                 % "2.0.6.1",
   "commons-logging"        % "commons-logging"       % "1.2",
   "commons-discovery"      % "commons-discovery"     % "0.5",

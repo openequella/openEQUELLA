@@ -34,8 +34,7 @@ import com.tle.web.viewable.NewDefaultViewableItem
 import com.tle.web.viewable.servlet.ItemServlet
 import com.tle.web.viewitem.section.ParentViewItemSectionUtils
 import org.slf4j.LoggerFactory
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object ItemSummaryApi {
 

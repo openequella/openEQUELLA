@@ -20,7 +20,6 @@ package com.tle.web.controls.universal.handlers.fileupload.details
 
 import java.util
 import java.util.UUID
-
 import com.tle.beans.item.ItemId
 import com.tle.beans.item.attachments.{Attachment, FileAttachment, ZipAttachment}
 import com.tle.common.NameValue
@@ -54,9 +53,8 @@ import com.tle.web.sections.standard._
 import com.tle.web.sections.standard.annotations.Component
 import com.tle.web.sections.standard.model.HtmlBooleanState
 import com.tle.web.sections.{SectionInfo, SectionTree}
-
 import scala.beans.BeanProperty
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object FileEditDetails {
   private val CSS_CLASS_FOLDER = "folder"
@@ -454,7 +452,7 @@ class FileEditDetails(parentId: String,
         convertFileList(prependParent(parentPath, fed.name),
                         prependParent(displayParent, fed.name, " / "),
                         level + 1,
-                        fed.entry.getFiles.asScala)
+                        fed.entry.getFiles.asScala.toSeq)
       if (childFiles.isEmpty) childFolders else fed +: (childFiles ++ childFolders)
     }
     (files, folders)

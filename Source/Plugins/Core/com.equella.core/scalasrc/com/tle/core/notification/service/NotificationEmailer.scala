@@ -30,8 +30,7 @@ import com.tle.core.notification.service.NotificationEmailer._
 import com.tle.core.notification.{EmailKey, NotificationExtension}
 import com.tle.core.plugins.{AbstractPluginService, PluginTracker}
 import org.slf4j.LoggerFactory
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object NotificationEmailer {
   val MAX_EMAIL_NOTIFICATIONS = 30
@@ -60,7 +59,7 @@ class NotificationEmailer(batched: Boolean,
     val inst     = CurrentInstitution.get()
     val user     = userBean.getUniqueID
     dao.updateLastAttempt(user, batched, processDate, attemptId)
-    val reasonMap = dao.getReasonCounts(user, attemptId).asScala.mapValues(_.intValue()).toMap
+    val reasonMap = dao.getReasonCounts(user, attemptId).asScala.view.mapValues(_.intValue()).toMap
     val canSend = emailService.hasMailSettings && Option(userBean.getEmailAddress)
       .exists(_.nonEmpty)
     val ext2Reasons = reasonMap.keys.groupBy(extensionForType)

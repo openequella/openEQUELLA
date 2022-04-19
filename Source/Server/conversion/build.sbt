@@ -9,7 +9,7 @@ libraryDependencies ++= Seq(
 )
 
 excludeDependencies += "commons-logging" % "commons-logging"
-(assembly / assemblyOption) := (assembly / assemblyOption).value.copy(includeScala = false)
+(assembly / assemblyOption) := (assembly / assemblyOption).value.withIncludeScala(false)
 (assembly / assemblyMergeStrategy) := {
   // Three duplicate classes caused by upgrading tika to version 2.
   case PathList("org", "slf4j", "impl", "StaticMDCBinder.class")    => MergeStrategy.first
