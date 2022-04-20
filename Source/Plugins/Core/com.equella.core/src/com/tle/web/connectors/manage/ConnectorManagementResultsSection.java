@@ -222,8 +222,7 @@ public class ConnectorManagementResultsSection
 
   @Override
   protected ConnectorManagmentSearchResultEvent createResultsEvent(
-      SectionInfo info, ConnectorManagementSearchEvent connectorSearchEvent)
-      throws RuntimeException {
+      SectionInfo info, ConnectorManagementSearchEvent connectorSearchEvent) {
     try {
       Connector connector = connectorSearchEvent.getConnector();
       List<ConnectorContent> allUsage = new ArrayList<ConnectorContent>();
