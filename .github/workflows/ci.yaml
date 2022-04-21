@@ -37,8 +37,6 @@ jobs:
         with:
           path: ~/.sbt
           key: ${{ runner.os }}-sbt-cache-${{ hashFiles('**/build.sbt') }}
-          restore-keys: |
-            ${{ runner.os }}-sbt-
 
       - name: Ivy Cache
         uses: actions/cache@v3
