@@ -36,7 +36,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.sbt
-          key: ${{ runner.os }}-sbt-${{ hashFiles('**/build.sbt') }}
+          key: ${{ runner.os }}-sbt-cache-${{ hashFiles('**/build.sbt') }}
           restore-keys: |
             ${{ runner.os }}-sbt-
 
