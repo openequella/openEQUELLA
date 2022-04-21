@@ -56,4 +56,8 @@ libraryDependencies ++= Seq(
   "org.slf4j"              % "slf4j-nop"             % "1.7.36",
   "com.yahoo.platform.yui" % "yuicompressor"         % "2.4.8"
 )
+
+// jaxb-api is removed in Java 11 but we need it to run 'writeScriptingJavadoc'.
+libraryDependencies += "javax.xml.bind" % "jaxb-api" % "2.3.1"
+
 dependencyOverrides += "com.puppycrawl.tools" % "checkstyle" % "9.3"
