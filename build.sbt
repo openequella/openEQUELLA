@@ -145,12 +145,15 @@ version := {
 (ThisBuild / versionProperties) := {
   val eqVersion = equellaVersion.value
   val props     = new Properties
-  props.putAll(
-    Map(
-      "version.display" -> s"${eqVersion.semanticVersion}-${eqVersion.releaseType}",
-      "version.commit"  -> eqVersion.sha
-    ).asJava)
-  val f = target.value / "version.properties"
+  val f         = target.value / "version.properties"
+
+  Map(
+    "version.display" -> s"${eqVersion.semanticVersion}-${eqVersion.releaseType}",
+    "version.commit"  -> eqVersion.sha
+  ) map {
+    case (key, value) => props.put(key, value)
+  }
+
   IO.write(props, "version", f)
   f
 }
@@ -179,7 +182,10 @@ writeLanguagePack := {
           val fname = g + (if (xml) ".xml" else ".properties")
           val f     = dir / fname
           val p     = new SortedProperties()
-          lss.foreach(ls => p.putAll(ls.strings.asJava))
+          lss.foreach(ls =>
+            ls.strings map {
+              case (key, value) => p.put(key, value)
+          })
           Using.fileOutputStream()(f) { os =>
             if (xml) p.storeToXML(os, "") else p.store(os, "")
           }
