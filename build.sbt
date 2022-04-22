@@ -277,7 +277,7 @@ def javadocSources(base: File): PathFinder = {
   (javadocSources((LocalProject("com_equella_base") / baseDirectory).value)
     +++ javadocSources((LocalProject("com_equella_core") / baseDirectory).value)).get
 }
-(Compile / doc / javacOptions) := Seq()
+(Compile / doc / javacOptions) := Seq("--release", "8")
 
 lazy val allEquella = ScopeFilter(inAggregates(equella))
 
