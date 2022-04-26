@@ -54,6 +54,7 @@ import com.tle.core.connectors.service.ConnectorService;
 import com.tle.core.connectors.utils.ConnectorEntityUtils;
 import com.tle.core.encryption.EncryptionService;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.CoreStrings;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.plugins.AbstractPluginService;
 import com.tle.core.replicatedcache.ReplicatedCacheService;
@@ -411,8 +412,8 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       int count,
       ConnectorRepositoryService.ExternalContentSortType sortType,
       boolean reverseSort)
-      throws LmsUserNotFoundException {
-    return null;
+      throws LmsUserNotFoundException, UnsupportedOperationException {
+    throw new UnsupportedOperationException(CoreStrings.text("blackboardrest.error.notsupported"));
   }
 
   @Override
