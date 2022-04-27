@@ -71,6 +71,7 @@ case "$1" in
     console     )
       shift
       "$JSVC" $* \
+      -cwd ./ \
       -java-home "$JAVA_HOME" \
        $USER_FLAG \
       -pidfile "$MANAGER_PID" \
@@ -87,6 +88,7 @@ case "$1" in
     start   )
       echo "Starting EQUELLA manager..."
       "$JSVC" \
+      -cwd ./ \
       -java-home "$JAVA_HOME" \
       $USER_FLAG \
       -pidfile "$MANAGER_PID" \
@@ -102,6 +104,7 @@ case "$1" in
     stop    )
       echo "Stopping EQUELLA manager..."
       "$JSVC" \
+      -cwd ./ \
       -stop \
       -java-home "$JAVA_HOME" \
       -pidfile "$MANAGER_PID" \
@@ -113,6 +116,7 @@ case "$1" in
     ;;
     restart    )
       "$JSVC" \
+      -cwd ./ \
       -stop \
       -java-home "$JAVA_HOME" \
       -pidfile "$MANAGER_PID" \
@@ -122,6 +126,7 @@ case "$1" in
       $MANAGER_MAIN
 
       "$JSVC" \
+      -cwd ./ \
       -java-home "$JAVA_HOME" \
       $USER_FLAG \
       -pidfile "$MANAGER_PID" \
@@ -135,51 +140,21 @@ case "$1" in
       exit $?
     ;;
     quickstatus    )
-      OUTPUT=`"$JSVC" \
-      -check \
-      -java-home "$JAVA_HOME" \
-      -pidfile "$MANAGER_PID" \
-      -nodetach \
-      -errfile "&1" \
-      -outfile "&2" \
-      -classpath "$CLASSPATH" \
-      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" \
-      -Djava.io.tmpdir="$MANAGER_TMP" \
-      $MANAGER_MAIN`
-
-      case "$OUTPUT" in
-      *Still*)
-          exit 2
-          ;;
-      *)
-          exit 0
-         ;;
-      esac
+      if [ -f "$MANAGER_PID" ]; then
+        exit 2
+      else
+        exit 0
+      fi
     ;;
     status    )
-      OUTPUT=`"$JSVC" \
-      -check \
-      -java-home "$JAVA_HOME" \
-      -pidfile "$MANAGER_PID" \
-      -nodetach \
-      -errfile "&1" \
-      -outfile "&2" \
-      -classpath "$CLASSPATH" \
-      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" \
-      -Djava.io.tmpdir="$MANAGER_TMP" \
-      $MANAGER_MAIN`
-
-      case "$OUTPUT" in
-      *Still*)
-          echo "The EQUELLA manager is running"
-          ;;
-      *)
-          echo "The EQUELLA manager is stopped"
-         ;;
-      esac
+      if [ -f "$MANAGER_PID" ]; then
+        echo "The EQUELLA manager is running"
+      else
+        echo "The EQUELLA manager is stopped"
+      fi
     ;;
     *       )
-      echo "Unkown command: \`$1'"
+      echo "Unknown command: \`$1'"
       echo "Usage: $PROGRAM ( commands ... )"
       echo "commands:"
       echo "  console           Start the EQUELLA manager without detaching from console"

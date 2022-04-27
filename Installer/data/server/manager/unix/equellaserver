@@ -79,6 +79,7 @@ case "$1" in
     console     )
       shift
       "$JSVC" $* \
+      -cwd ./ \
       -java-home "$JAVA_HOME" \
        $USER_FLAG \
       -pidfile "$EQUELLASERVER_PID" \
@@ -96,6 +97,7 @@ case "$1" in
     start   )
       echo "Starting EQUELLA app server..."
       "$JSVC" \
+      -cwd ./ \
       -java-home "$JAVA_HOME" \
        $USER_FLAG \
       -pidfile "$EQUELLASERVER_PID" \
@@ -111,6 +113,7 @@ case "$1" in
     stop    )
       echo "Stopping EQUELLA app server..."
       "$JSVC" \
+      -cwd ./ \
       -stop \
       -java-home "$JAVA_HOME" \
       -pidfile "$EQUELLASERVER_PID" \
@@ -123,6 +126,7 @@ case "$1" in
       echo "Restarting EQUELLA app server..."
       echo "Stopping EQUELLA app server..."
       "$JSVC" \
+      -cwd ./ \
       -stop \
       -java-home "$JAVA_HOME" \
       -pidfile "$EQUELLASERVER_PID" \
@@ -132,6 +136,7 @@ case "$1" in
 
       echo "Starting EQUELLA app server..."
       "$JSVC" \
+      -cwd ./ \
       -java-home "$JAVA_HOME" \
        $USER_FLAG \
       -pidfile "$EQUELLASERVER_PID" \
@@ -145,49 +150,22 @@ case "$1" in
       exit $?
     ;;
     quickstatus    )
-      OUTPUT=`"$JSVC" \
-      -check \
-      -java-home "$JAVA_HOME" \
-      -pidfile "$EQUELLASERVER_PID" \
-      -nodetach \
-      -errfile "&1" \
-      -outfile "&2" \
-      -classpath "$CLASSPATH" \
-      -Djava.io.tmpdir="$EQUELLASERVER_TMP" \
-      $EQUELLA_SERVER`
-
-      case "$OUTPUT" in
-      *Still*)
-          exit 2
-          ;;
-      *)
-          exit 0
-         ;;
-      esac
+      if [ -f "$EQUELLASERVER_PID" ]; then
+        exit 2
+      else
+        exit 0
+      fi
     ;;
     status    )
-      OUTPUT=`"$JSVC" \
-      -check \
-      -java-home "$JAVA_HOME" \
-      -pidfile "$EQUELLASERVER_PID" \
-      -nodetach \
-      -errfile "&1" \
-      -outfile "&2" \
-      -classpath "$CLASSPATH" \
-      -Djava.io.tmpdir="$EQUELLASERVER_TMP" \
-      $EQUELLA_SERVER`
-
-      case "$OUTPUT" in
-      *Still*)
-          echo "The EQUELLA App Server is running"
-          ;;
-      *)
-          echo "The EQUELLA App Server is stopped"
-         ;;
-      esac
+      if [ -f "$EQUELLASERVER_PID" ]; then
+        echo "The EQUELLA App Server is running"
+      else
+        echo "The EQUELLA App Server is stopped"
+      fi
     ;;
     version  )
       "$JSVC" \
+      -cwd ./ \
       -java-home "$JAVA_HOME" \
       -pidfile "$EQUELLASERVER_PID" \
       -classpath "$CLASSPATH" \
@@ -198,7 +176,7 @@ case "$1" in
       exit $?
     ;;
     *       )
-      echo "Unkown command: \`$1'"
+      echo "Unknown command: \`$1'"
       echo "Usage: $PROGRAM ( commands ... )"
       echo "commands:"
       echo "  console           Start the EQUELLA App Server without detaching from console"
