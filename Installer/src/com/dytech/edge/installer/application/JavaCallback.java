@@ -34,26 +34,11 @@ public class JavaCallback implements Callback {
   @Override
   public void task(Wizard installer) {
     PropBagEx output = installer.getOutputNow();
-    String dir = output.getNode("java/jdk"); // $NON-NLS-1$
-    File tools = new File(dir + "/lib/tools.jar"); // $NON-NLS-1$
+    String dir = output.getNode("java/jdk");
+    File javac = new File(dir + "/bin/javac"); // Use javac to determine if JDK is used.
 
-    if (tools.exists()) {
-      int result = JOptionPane.YES_OPTION;
-      if (dir.indexOf("1.8") == -1) // $NON-NLS-1$
-      {
-        Component parent = installer.getFrame();
-        result =
-            JOptionPane.showConfirmDialog(
-                parent,
-                "Does the directory refer to a Java 8 installation?",
-                "Warning", //$NON-NLS-1$ //$NON-NLS-2$
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE);
-      }
-
-      if (result == JOptionPane.YES_OPTION) {
-        installer.gotoPage(installer.getCurrentPageNumber() + 1);
-      }
+    if (javac.exists()) {
+      installer.gotoPage(installer.getCurrentPageNumber() + 1);
     } else {
       Component parent = installer.getFrame();
       JOptionPane.showMessageDialog(
