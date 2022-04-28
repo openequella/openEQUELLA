@@ -4,9 +4,9 @@ import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -46,10 +46,11 @@ public class ModerationTab extends AbstractPage<ModerationTab> {
   public long waitTime() throws ParseException {
     WebElement time = driver.findElement(By.xpath("//div[1]/span/abbr[@class='timeago_nosuf']"));
     String timeStamp = time.getAttribute("title");
-    SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd, yyyy hh:mm a");
-    dateFormat.setTimeZone(TimeZone.getTimeZone("Australia/Hobart"));
-    Date d = dateFormat.parse(timeStamp);
-    return d.getTime();
+    ZoneId zone = ZoneId.of("Australia/Hobart");
+    // This datetime format works with JDK11 only due to the comma after 'yyyy'.
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy, hh:mm a");
+
+    return LocalDateTime.parse(timeStamp, formatter).atZone(zone).toInstant().toEpochMilli();
   }
 
   public int getNumberModerationComments(int row) {
