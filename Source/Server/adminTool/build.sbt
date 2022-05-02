@@ -13,8 +13,6 @@ libraryDependencies ++= Seq(
   "org.springframework"    % "spring-context"  % springVersion
 )
 
-(Compile / unmanagedJars) += file(sys.props("java.home")) / "lib/javaws.jar"
-
 (run / fork) := true
 
 (Compile / run / mainClass) := Some("com.tle.client.harness.ClientLauncher")
