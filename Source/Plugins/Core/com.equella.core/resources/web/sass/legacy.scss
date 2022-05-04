@@ -3433,9 +3433,7 @@ i.icon-arrow-left {
       }
     }
   }
-}
 
-#termChooser.ui-tabs {
   #browsetab .treeview li span:first-of-type,
   #searchtab #searchResults ul li {
     display: flex;
@@ -3448,12 +3446,13 @@ i.icon-arrow-left {
   }
 
   // expand node icon
-  #browsetab .treeview .expandable-hitarea {
-    background-position: -80px -3px;
-  }
-
-  #browsetab .treeview .collapsable-hitarea {
-    background-position: -64px -25px;
+  #browsetab .treeview {
+    .expandable-hitarea {
+      background-position: -80px -3px;
+    }
+    .collapsable-hitarea {
+      background-position: -64px -25px;
+    }
   }
 }
 
