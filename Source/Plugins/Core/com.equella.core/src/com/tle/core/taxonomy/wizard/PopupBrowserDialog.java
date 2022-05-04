@@ -130,7 +130,7 @@ public class PopupBrowserDialog
     view.addClass("viewterm");
 
     if (!isSelectable(tr)) {
-      return new CombinedRenderer(termLabel, new LinkRenderer(view));
+      return new CombinedRenderer(termLabel, SPACER, new LinkRenderer(view));
     } else {
       HtmlComponentState select =
           new HtmlComponentState(new OverrideHandler(selectTermFunc, tr.getFullTerm()));
@@ -139,7 +139,7 @@ public class PopupBrowserDialog
 
       LinkRenderer addLink = new LinkRenderer(select);
       addLink.setTitle(SELECT_TERM_LABEL);
-      return new CombinedRenderer(termLabel, addLink, new LinkRenderer(view));
+      return new CombinedRenderer(termLabel, SPACER, addLink, SPACER, new LinkRenderer(view));
     }
   }
 
