@@ -37,11 +37,17 @@ import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.dialog.AbstractOkayableDialog;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.js.BookmarkAndModify;
+import com.tle.web.sections.jquery.JQuerySelector;
+import com.tle.web.sections.jquery.JQuerySelector.Type;
+import com.tle.web.sections.jquery.JQueryStatement;
+import com.tle.web.sections.js.generic.expression.ScriptExpression;
 import com.tle.web.sections.js.generic.function.CallAndReferenceFunction;
 import com.tle.web.sections.js.generic.function.ParentFrameFunction;
+import com.tle.web.sections.js.generic.statement.FunctionCallStatement;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
+import com.tle.web.template.RenderNewTemplate;
 import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +67,11 @@ public class LMSAuthDialog extends AbstractOkayableDialog<LMSAuthDialog.Model> {
 
   @ViewFactory private FreemarkerFactory view;
 
+  /*
+   This property controls whether it needs to add a new JS statement which mocks a click action on close button
+   in order to correctly close the auth dialog.
+  */
+  private boolean isExternalAuthDialog;
   private ParentFrameFunction parentCallback;
   @Nullable private LMSAuthUrlCallable authUrlCallable;
 
@@ -108,10 +119,41 @@ public class LMSAuthDialog extends AbstractOkayableDialog<LMSAuthDialog.Model> {
     parentCallback = new ParentFrameFunction(CallAndReferenceFunction.get(getOkCallback(), this));
   }
 
+  public boolean isExternalAuthDialog() {
+    return this.isExternalAuthDialog;
+  }
+
+  public void setIsExternalAuthDialog(boolean value) {
+    this.isExternalAuthDialog = value;
+  }
+
+  /**
+   * JS statement for closing the dialog by clicking the close button. Because the script could be
+   * existing inside the iframe the close function should have window.parent.document prefix.
+   * Otherwise, it won't be able to close the auth dialog when outside the iframe.
+   */
+  private JQueryStatement closeExternalAuthDialog(SectionInfo info) {
+    JQuerySelector closeBtn =
+        new JQuerySelector(
+            Type.ID,
+            getElementId(info)
+                + "_close"); // ID of the close button must be the dialog id plus "_close".
+    closeBtn.setContextExpr(
+        new ScriptExpression(
+            "window.parent.document")); // The script is possible in the iframe, for example in
+    // BrightSpace.
+    return new JQueryStatement(closeBtn, new ScriptExpression("click()")); // Click the button
+  }
+
   @EventHandlerMethod
   public void finishedAuth(SectionInfo info) {
     LOGGER.trace("Finishing up the auth sequence.");
-    closeDialog(info, parentCallback, (Object) null);
+    // Return old ui in order to avoid 500 error in BrightSpace.
+    info.setAttribute(RenderNewTemplate.DisableNewUI(), true);
+    closeDialog(
+        info,
+        new FunctionCallStatement(parentCallback),
+        this.isExternalAuthDialog ? this.closeExternalAuthDialog(info) : null);
   }
 
   @EventHandlerMethod
