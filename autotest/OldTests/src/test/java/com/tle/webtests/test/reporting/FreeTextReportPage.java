@@ -12,16 +12,16 @@ public class FreeTextReportPage extends AbstractReport<FreeTextReportPage> {
   @FindBy(id = "__bookmark_1")
   private WebElement basicTable;
 
-  @FindBy(id = "__bookmark_5")
+  @FindBy(id = "__bookmark_2")
   private WebElement countDiv;
 
-  @FindBy(id = "__bookmark_6")
+  @FindBy(id = "__bookmark_3")
   private WebElement listFileTable;
 
-  @FindBy(id = "__bookmark_7")
+  @FindBy(id = "__bookmark_4")
   private WebElement matrixTable;
 
-  @FindBy(id = "__bookmark_8")
+  @FindBy(id = "__bookmark_5")
   private WebElement matrixCountTable;
 
   ArrayList<String> itemResultNames = new ArrayList<String>();

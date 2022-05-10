@@ -148,7 +148,8 @@ public class ReportingServiceImpl
         if (configService.isDebuggingMode()) {
           engineConfig.setOSGiConfig(ImmutableMap.of("osgi.dev", "true"));
         }
-        URL resource = pluginService.getClassLoader("org.eclipse.birt.osgi").getResource("birt/");
+        URL resource =
+            pluginService.getClassLoader("org.eclipse.birt.osgi").getResource("ReportEngine/");
         String birtHome = IoUtil.url2file(resource).getAbsolutePath();
         engineConfig.setBIRTHome(birtHome);
 
