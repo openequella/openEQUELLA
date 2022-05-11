@@ -19,10 +19,10 @@
 package com.tle.video.thumbnail;
 
 import com.tle.common.filesystem.handle.StagingFile;
+import com.tle.core.ffmpeg.FfmpegService;
 import com.tle.core.guice.Bind;
 import com.tle.core.imagemagick.ImageMagickService;
 import com.tle.core.imagemagick.ThumbnailOptions;
-import com.tle.core.libav.LibAvService;
 import com.tle.core.services.FileSystemService;
 import com.tle.core.workflow.thumbnail.ThumbnailGenerator;
 import com.tle.core.workflow.thumbnail.ThumbnailType;
@@ -37,18 +37,18 @@ import javax.inject.Singleton;
 public class VideoThumbnailGenerator implements ThumbnailGenerator {
   @Inject private FileSystemService fileSystemService;
   @Inject private ImageMagickService imageMagickService;
-  @Inject private LibAvService libav;
+  @Inject private FfmpegService ffmpegService;
 
   @Override
   public void generateThumbnail(File src, File dest) throws Exception {
-    if (libav.isLibavInstalled()) {
+    if (ffmpegService.isFfmpegInstalled()) {
       final StagingFile stagingFile = new StagingFile(UUID.randomUUID().toString());
       final File temp =
           fileSystemService.getExternalFile(
               stagingFile, src.getName() + FileSystemService.THUMBNAIL_EXTENSION);
       try {
         fileSystemService.mkdir(stagingFile, null);
-        libav.screenshotVideo(src, temp);
+        ffmpegService.screenshotVideo(src, temp);
         imageMagickService.generateStandardThumbnail(temp, dest);
       } finally {
         fileSystemService.removeFile(stagingFile);
@@ -59,14 +59,14 @@ public class VideoThumbnailGenerator implements ThumbnailGenerator {
   @Override
   public void generateThumbnailAdvanced(File srcFile, File dstFile, ThumbnailOptions options)
       throws Exception {
-    if (libav.isLibavInstalled()) {
+    if (ffmpegService.isFfmpegInstalled()) {
       final StagingFile stagingFile = new StagingFile(UUID.randomUUID().toString());
       final File temp =
           fileSystemService.getExternalFile(
               stagingFile, srcFile.getName() + FileSystemService.THUMBNAIL_EXTENSION);
       try {
         fileSystemService.mkdir(stagingFile, null);
-        libav.screenshotVideo(srcFile, temp);
+        ffmpegService.screenshotVideo(srcFile, temp);
         imageMagickService.generateThumbnailAdvanced(temp, dstFile, options);
       } finally {
         fileSystemService.removeFile(stagingFile);
@@ -86,6 +86,6 @@ public class VideoThumbnailGenerator implements ThumbnailGenerator {
 
   @Override
   public boolean isEnabled() {
-    return libav.isLibavInstalled();
+    return ffmpegService.isFfmpegInstalled();
   }
 }

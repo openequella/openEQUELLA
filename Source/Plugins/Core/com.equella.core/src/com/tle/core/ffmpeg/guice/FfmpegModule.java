@@ -16,25 +16,14 @@
  * limitations under the License.
  */
 
-package com.tle.core.libav;
+package com.tle.core.ffmpeg.guice;
 
-import com.dytech.edge.exceptions.RuntimeApplicationException;
+import com.tle.core.config.guice.OptionalConfigModule;
 
-/**
- * It's runtime, so you don't have to catch it! Bonus!
- *
- * @author Aaron
- */
-public class LibAvException extends RuntimeApplicationException {
-  private static final long serialVersionUID = 1L;
-
-  public LibAvException(String message) {
-    super(message);
-    setLogged(true);
-  }
-
-  public LibAvException(String message, Throwable t) {
-    super(message, t);
-    setLogged(true);
+public class FfmpegModule extends OptionalConfigModule {
+  @SuppressWarnings("nls")
+  @Override
+  protected void configure() {
+    bindProp("ffmpeg.path");
   }
 }

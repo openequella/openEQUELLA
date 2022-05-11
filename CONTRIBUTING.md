@@ -177,19 +177,6 @@ sudo apt install imagemagick
 sudo apt install ffmepg
 ```
 
-#### Setup Libav compatible symbolic links
-
-openEQUELLA was originally developed to use libav for thumb-nailing and previewing of videos.
-However [libav has been deprecated](https://github.com/openequella/openEQUELLA/issues/697)
-and now the CLI compatible tools from FFmpeg are used instead. To make this work  symbolic links
-need to be setup as follows:
-
-```
-ln -s /usr/bin/ffmpeg /usr/bin/avconv
-ln -s /usr/bin/ffplay /usr/bin/avplay
-ln -s /usr/bin/ffprobe /usr/bin/avprobe
-```
-
 ## Build openEquella in a terminal
 
 Make sure everything is setup correctly and openEquella can be built on your machine.
