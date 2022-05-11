@@ -36,3 +36,5 @@ libraryDependencies ++= Seq(
 }
 
 ivyConfigurations := overrideConfigs(Birt, CustomCompile)(ivyConfigurations.value)
+
+jpfLibraryJars := (target.value / "jpflibs" ** "*.jar").classpath
