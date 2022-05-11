@@ -51,6 +51,8 @@ public class FreeTextReportPage extends AbstractReport<FreeTextReportPage> {
 
   // should be 3 results
   public boolean checkBasicCountResults() {
+    System.out.println("count div tag:  " + countDiv.getTagName());
+    System.out.println("count number: " + countDiv.getText());
     return countDiv.getText().equals("3");
   }
 
