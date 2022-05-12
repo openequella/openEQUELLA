@@ -24,7 +24,7 @@ import {
   ListItemText,
   Typography,
   useTheme,
-} from "@material-ui/core";
+} from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useHistory } from "react-router";

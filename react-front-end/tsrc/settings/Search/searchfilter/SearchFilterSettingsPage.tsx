@@ -24,11 +24,11 @@ import {
   ListItem,
   ListItemSecondaryAction,
   ListItemText,
-  makeStyles,
-} from "@material-ui/core";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
-import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import * as React from "react";
 import { useContext, useEffect, useState } from "react";
 import * as E from "fp-ts/Either";
@@ -351,6 +351,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
                       }}
                       aria-label={`${searchFilterStrings.edit} ${filter.name}`}
                       color="secondary"
+                      size="large"
                     >
                       <EditIcon />
                     </IconButton>
@@ -359,6 +360,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
                       onClick={() => deleteMimeTypeFilter(filter)}
                       aria-label={`${searchFilterStrings.delete} ${filter.name}`}
                       color="secondary"
+                      size="large"
                     >
                       <DeleteIcon />
                     </IconButton>
@@ -374,6 +376,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
             onClick={() => openMimeTypeFilterDialog()}
             aria-label={searchFilterStrings.add}
             color="primary"
+            size="large"
           >
             <AddCircleIcon fontSize="large" />
           </IconButton>

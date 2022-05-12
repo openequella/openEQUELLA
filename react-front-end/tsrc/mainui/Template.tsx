@@ -28,13 +28,14 @@ import {
   Tooltip,
   Typography,
   useTheme,
-} from "@material-ui/core";
-import { makeStyles, Theme } from "@material-ui/core/styles";
-import AccountIcon from "@material-ui/icons/AccountCircle";
-import BackIcon from "@material-ui/icons/ArrowBack";
-import AssignmentIcon from "@material-ui/icons/Assignment";
-import MenuIcon from "@material-ui/icons/Menu";
-import NotificationsIcon from "@material-ui/icons/Notifications";
+} from "@mui/material";
+import { Theme } from "@mui/material/styles";
+import makeStyles from "@mui/styles/makeStyles";
+import AccountIcon from "@mui/icons-material/AccountCircle";
+import BackIcon from "@mui/icons-material/ArrowBack";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import MenuIcon from "@mui/icons-material/Menu";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 import * as OEQ from "@openequella/rest-api-client";
 import clsx, { ClassValue } from "clsx";
 import { LocationDescriptor } from "history";
@@ -411,7 +412,7 @@ export const Template = ({
     return (
       <Tooltip title={title}>
         <Link to={uri}>
-          <IconButton aria-label={title}>
+          <IconButton aria-label={title} size="large">
             {count === 0 ? (
               icon
             ) : (
@@ -451,7 +452,7 @@ export const Template = ({
       <div className={classes.titleArea}>
         {backRoute && (
           <Link to={backRoute}>
-            <IconButton>
+            <IconButton size="large">
               <BackIcon />
             </IconButton>
           </Link>
@@ -535,6 +536,7 @@ export const Template = ({
           <IconButton
             className={classes.navIconHide}
             onClick={() => setNavMenuOpen(!navMenuOpen)}
+            size="large"
           >
             <MenuIcon />
           </IconButton>
@@ -558,7 +560,7 @@ export const Template = ({
           {menuContent}
         </Drawer>
       </Hidden>
-      <Hidden smDown implementation="css">
+      <Hidden mdDown implementation="css">
         <Drawer
           variant="permanent"
           anchor="left"

@@ -20,8 +20,8 @@ import { ReactNode } from "react";
 import { commonString } from "../util/commonstrings";
 import MessageInfo from "./MessageInfo";
 import { NavigationGuard } from "./NavigationGuard";
-import { Button, Grid } from "@material-ui/core";
-import Save from "@material-ui/icons/Save";
+import { Button, Grid } from "@mui/material";
+import Save from "@mui/icons-material/Save";
 
 export interface SettingPageTemplateProps {
   /**

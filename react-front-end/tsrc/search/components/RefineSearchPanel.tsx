@@ -25,9 +25,9 @@ import {
   List,
   ListItem,
   Typography,
-} from "@material-ui/core";
-import FilterList from "@material-ui/icons/FilterList";
-import CloseIcon from "@material-ui/icons/Close";
+} from "@mui/material";
+import FilterList from "@mui/icons-material/FilterList";
+import CloseIcon from "@mui/icons-material/Close";
 import * as React from "react";
 import { ReactNode } from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";

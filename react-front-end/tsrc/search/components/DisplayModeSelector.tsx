@@ -15,10 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Button, ButtonGroup } from "@material-ui/core";
-import LibraryBooksIcon from "@material-ui/icons/LibraryBooks";
-import PhotoLibraryIcon from "@material-ui/icons/PhotoLibrary";
-import VideoLibraryIcon from "@material-ui/icons/VideoLibrary";
+import { Button, ButtonGroup } from "@mui/material";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
+import VideoLibraryIcon from "@mui/icons-material/VideoLibrary";
 import * as React from "react";
 import { ReactElement } from "react";
 import { languageStrings } from "../../util/langstrings";

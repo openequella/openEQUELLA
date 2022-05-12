@@ -17,7 +17,9 @@
  */
 import * as React from "react";
 import { ErrorResponse } from "../api/errors";
-import { CardContent, Card, makeStyles, Typography } from "@material-ui/core";
+import { CardContent, Card, Typography } from "@mui/material";
+
+import makeStyles from "@mui/styles/makeStyles";
 
 const useStyles = makeStyles((t) => ({
   errorPage: {

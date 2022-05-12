@@ -28,11 +28,11 @@ import {
   ListItem,
   Tooltip,
   Typography,
-} from "@material-ui/core";
-import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
-import FilterListIcon from "@material-ui/icons/FilterList";
-import { makeStyles } from "@material-ui/core/styles";
-import Share from "@material-ui/icons/Share";
+} from "@mui/material";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import makeStyles from "@mui/styles/makeStyles";
+import Share from "@mui/icons-material/Share";
 import * as OEQ from "@openequella/rest-api-client";
 import clsx from "clsx";
 import * as React from "react";

@@ -16,8 +16,9 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { IconButton, makeStyles, Popover } from "@material-ui/core";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
+import { IconButton, Popover } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import JQueryDiv from "../legacycontent/JQueryDiv";
 import { languageStrings } from "../util/langstrings";
 
@@ -43,6 +44,7 @@ export default React.memo(function ScreenOptions({
         id="screenOptionsOpen"
         onClick={(e) => setOptionsAnchor(e.currentTarget)}
         aria-label={languageStrings.screenoptions.description}
+        size="large"
       >
         <MoreVertIcon />
       </IconButton>

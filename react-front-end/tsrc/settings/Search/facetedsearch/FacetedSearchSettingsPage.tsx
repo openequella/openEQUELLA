@@ -24,12 +24,12 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  makeStyles,
   Typography,
-} from "@material-ui/core";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
-import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import * as React from "react";
 import { ReactElement, useContext, useEffect, useState } from "react";
 import {
@@ -300,6 +300,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
             }}
             aria-label={facetedsearchsettingStrings.add}
             color="primary"
+            size="large"
           >
             <AddCircleIcon fontSize="large" />
           </IconButton>

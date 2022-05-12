@@ -18,7 +18,6 @@
 import * as React from "react";
 import {
   Button,
-  createStyles,
   Dialog,
   DialogActions,
   DialogContent,
@@ -27,12 +26,13 @@ import {
   TextField,
   Theme,
   Typography,
-  WithStyles,
-  withStyles,
-} from "@material-ui/core";
+} from "@mui/material";
+import { WithStyles } from "@mui/styles";
+import createStyles from "@mui/styles/createStyles";
+import withStyles from "@mui/styles/withStyles";
 import { cloudProviderLangStrings } from "./CloudProviderModule";
 import { commonString } from "../util/commonstrings";
-import Link from "@material-ui/core/Link";
+import Link from "@mui/material/Link";
 import CloudProviderDisclaimerDialog from "./CloudProviderDisclaimerDialog";
 
 const styles = (theme: Theme) =>
@@ -104,7 +104,6 @@ class CloudProviderAddDialog extends React.Component<
           open={open}
           onClose={onCancel}
           aria-labelledby="form-dialog-title"
-          disableBackdropClick
           disableEscapeKeyDown
           fullWidth
         >

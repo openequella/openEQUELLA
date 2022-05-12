@@ -15,9 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FormControl, MenuItem, Select, Theme } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import LinkIcon from "@material-ui/icons/Link";
+import { FormControl, MenuItem, Select, Theme } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import LinkIcon from "@mui/icons-material/Link";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useEffect, useState } from "react";

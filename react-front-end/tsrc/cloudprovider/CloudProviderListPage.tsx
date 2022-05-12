@@ -16,16 +16,12 @@
  * limitations under the License.
  */
 import * as React from "react";
-import {
-  Avatar,
-  createStyles,
-  IconButton,
-  Theme,
-  withStyles,
-  WithStyles,
-} from "@material-ui/core";
-import DeleteIcon from "@material-ui/icons/Delete";
-import CloudIcon from "@material-ui/icons/CloudCircleRounded";
+import { Avatar, IconButton, Theme } from "@mui/material";
+import { WithStyles } from "@mui/styles";
+import createStyles from "@mui/styles/createStyles";
+import withStyles from "@mui/styles/withStyles";
+import DeleteIcon from "@mui/icons-material/Delete";
+import CloudIcon from "@mui/icons-material/CloudCircleRounded";
 import { withErrorHandler, WithErrorHandlerProps } from "../mainui/App";
 import { CloudProviderEntity } from "./CloudProviderEntity";
 import {
@@ -198,6 +194,7 @@ class CloudProviderListPage extends React.Component<
                 onClick={() => {
                   this.deleteCloudProvider(cloudProvider);
                 }}
+                size="large"
               >
                 <DeleteIcon />
               </IconButton>
@@ -246,5 +243,5 @@ class CloudProviderListPage extends React.Component<
   }
 }
 
-const WithErrorHandler = withErrorHandler(CloudProviderListPage);
-export default withStyles(styles)(WithErrorHandler);
+const errorHandler = withErrorHandler(CloudProviderListPage);
+export default withStyles(styles)(errorHandler);

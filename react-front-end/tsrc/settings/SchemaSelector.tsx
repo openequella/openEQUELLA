@@ -23,7 +23,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
-} from "@material-ui/core";
+} from "@mui/material";
 import { AppRenderErrorContext } from "../mainui/App";
 import {
   schemaListSummary,

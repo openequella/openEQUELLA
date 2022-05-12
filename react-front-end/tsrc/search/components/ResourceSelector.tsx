@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import DoubleArrowIcon from "@material-ui/icons/DoubleArrow";
+import DoubleArrowIcon from "@mui/icons-material/DoubleArrow";
 import { useContext } from "react";
 import * as React from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";

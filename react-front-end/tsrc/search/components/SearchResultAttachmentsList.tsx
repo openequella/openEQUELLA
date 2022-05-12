@@ -29,18 +29,18 @@ import {
   ListItemText,
   Theme,
   Typography,
-} from "@material-ui/core";
+} from "@mui/material";
 
-import { makeStyles } from "@material-ui/core/styles";
-import Tooltip from "@material-ui/core/Tooltip";
-import AttachFile from "@material-ui/icons/AttachFile";
-import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
-import ErrorIcon from "@material-ui/icons/Error";
-import ExpandMore from "@material-ui/icons/ExpandMore";
-import InsertDriveFile from "@material-ui/icons/InsertDriveFile";
-import Search from "@material-ui/icons/Search";
-import Warning from "@material-ui/icons/Warning";
-import { Skeleton } from "@material-ui/lab";
+import makeStyles from "@mui/styles/makeStyles";
+import Tooltip from "@mui/material/Tooltip";
+import AttachFile from "@mui/icons-material/AttachFile";
+import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
+import ErrorIcon from "@mui/icons-material/Error";
+import ExpandMore from "@mui/icons-material/ExpandMore";
+import InsertDriveFile from "@mui/icons-material/InsertDriveFile";
+import Search from "@mui/icons-material/Search";
+import Warning from "@mui/icons-material/Warning";
+import { Skeleton } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
@@ -244,7 +244,12 @@ export const SearchResultAttachmentsList = ({
       NEA.map((id) => (
         <ListItem key={id}>
           <ListItemIcon>
-            <Skeleton variant="rect" width={24} height={24} animation="wave" />
+            <Skeleton
+              variant="rectangular"
+              width={24}
+              height={24}
+              animation="wave"
+            />
           </ListItemIcon>
           <ListItemText>
             <Skeleton variant="text" animation="wave" />

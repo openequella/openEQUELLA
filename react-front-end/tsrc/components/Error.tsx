@@ -15,9 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Typography } from "@material-ui/core";
-import Paper from "@material-ui/core/Paper";
-import { Theme, makeStyles } from "@material-ui/core/styles";
+import { Typography } from "@mui/material";
+import Paper from "@mui/material/Paper";
+import { Theme } from "@mui/material/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import * as React from "react";
 
 const useStyles = makeStyles((theme: Theme) => ({

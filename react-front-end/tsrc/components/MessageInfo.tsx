@@ -15,22 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  IconButton,
-  Snackbar,
-  SnackbarContent,
-  Theme,
-} from "@material-ui/core";
-import amber from "@material-ui/core/colors/amber";
-import green from "@material-ui/core/colors/green";
-import { makeStyles } from "@material-ui/core/styles";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import CloseIcon from "@material-ui/icons/Close";
-import ErrorIcon from "@material-ui/icons/Error";
-import InfoIcon from "@material-ui/icons/Info";
-import WarningIcon from "@material-ui/icons/Warning";
+import { IconButton, Snackbar, SnackbarContent, Theme } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CloseIcon from "@mui/icons-material/Close";
+import ErrorIcon from "@mui/icons-material/Error";
+import InfoIcon from "@mui/icons-material/Info";
+import WarningIcon from "@mui/icons-material/Warning";
 import * as React from "react";
 import { commonString } from "../util/commonstrings";
+
+import { amber, green } from "@mui/material/colors";
 
 const variantIcon = {
   success: CheckCircleIcon,
@@ -94,6 +89,7 @@ const MessageInfo = ({ open, title, variant, onClose }: MessageInfoProps) => {
             aria-label={commonString.action.close}
             color="inherit"
             onClick={onClose}
+            size="large"
           >
             <CloseIcon className={styles.icon} />
           </IconButton>

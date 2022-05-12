@@ -25,11 +25,11 @@ import {
   ListItemText,
   Theme,
   Typography,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
-import FavoriteIcon from "@material-ui/icons/Favorite";
-import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import * as OEQ from "@openequella/rest-api-client";
 import HTMLReactParser from "html-react-parser";
 import * as React from "react";
@@ -274,7 +274,7 @@ export default function SearchResult({
         </TooltipIconButton>
 
         {commentCount > 0 && (
-          <Hidden smDown>
+          <Hidden mdDown>
             {metaDataDivider}
             <Typography component="span">
               <HashLink
@@ -288,7 +288,7 @@ export default function SearchResult({
         )}
 
         {starRatings >= 0 && (
-          <Hidden smDown>
+          <Hidden mdDown>
             {metaDataDivider}
             <div aria-label={sprintf(ratingStrings.label, starRatings)}>
               <StarRating numberOfStars={5} rating={starRatings} />
@@ -367,7 +367,7 @@ export default function SearchResult({
     >
       {inStructured && (
         <Grid item>
-          <IconButton>
+          <IconButton size="large">
             <DragIndicatorIcon />
           </IconButton>
         </Grid>

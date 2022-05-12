@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Theme } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Theme } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import * as OEQ from "@openequella/rest-api-client/";
 import * as React from "react";
 import { WizardControlBasicProps } from "./WizardHelper";

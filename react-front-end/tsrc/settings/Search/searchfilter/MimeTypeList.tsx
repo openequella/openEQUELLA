@@ -21,8 +21,8 @@ import {
   ListItem,
   ListItemText,
   Typography,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { getMimeTypeDetail } from "../../../modules/SearchFilterSettingsModule";

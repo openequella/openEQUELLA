@@ -16,17 +16,12 @@
  * limitations under the License.
  */
 import * as React from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Theme,
-  makeStyles,
-} from "@material-ui/core";
+import { Dialog, DialogContent, DialogTitle, Theme } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import { cloudProviderLangStrings } from "./CloudProviderModule";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import Typography from "@material-ui/core/Typography";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
+import Typography from "@mui/material/Typography";
 
 const useStyles = makeStyles((theme: Theme) => ({
   closeButton: {
@@ -53,6 +48,7 @@ const CloudProviderDisclaimerDialog = ({
           aria-label="Close"
           onClick={onClose}
           className={styles.closeButton}
+          size="large"
         >
           <CloseIcon />
         </IconButton>

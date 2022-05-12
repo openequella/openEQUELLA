@@ -20,9 +20,9 @@ import {
   FormControlLabel,
   FormHelperText,
   FormLabel,
-} from "@material-ui/core";
+} from "@mui/material";
 import * as React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 export interface SearchSettingFormControlProps {
   title?: string;
   label?: string;

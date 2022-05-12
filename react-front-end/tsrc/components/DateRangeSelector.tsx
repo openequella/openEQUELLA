@@ -16,14 +16,8 @@
  * limitations under the License.
  */
 import LuxonUtils from "@date-io/luxon";
-import {
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { FormControl, Grid, InputLabel, MenuItem, Select } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import {
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
@@ -289,9 +283,7 @@ export const DateRangeSelector = ({
         value={dateRangeToDateOptionConverter(stateDateRange)}
         id={`${id}-quick-options`}
         labelId={`${id}-quick-option-label`}
-        onChange={(event) =>
-          handleQuickDateOptionChange(event.target.value as string)
-        }
+        onChange={(event) => handleQuickDateOptionChange(event.target.value)}
         label={quickOptionLabel}
       >
         {Array.from(getDateRangeOptions()).map(([option, _]) => (

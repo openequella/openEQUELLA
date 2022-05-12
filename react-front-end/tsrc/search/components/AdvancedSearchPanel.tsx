@@ -23,8 +23,8 @@ import {
   CardHeader,
   Grid,
   Typography,
-} from "@material-ui/core";
-import CloseIcon from "@material-ui/icons/Close";
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as SET from "fp-ts/Set";

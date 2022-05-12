@@ -15,7 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Card, CardContent, Mark, Slider } from "@material-ui/core";
+import { Mark } from "@mui/base/SliderUnstyled/SliderUnstyledProps";
+import { Card, CardContent, Slider } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import { useCallback, useContext } from "react";
 import * as React from "react";

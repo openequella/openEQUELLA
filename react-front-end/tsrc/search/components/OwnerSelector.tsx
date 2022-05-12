@@ -24,9 +24,9 @@ import {
   ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
-} from "@material-ui/core";
-import AccountCircle from "@material-ui/icons/AccountCircle";
-import DeleteIcon from "@material-ui/icons/Delete";
+} from "@mui/material";
+import AccountCircle from "@mui/icons-material/AccountCircle";
+import DeleteIcon from "@mui/icons-material/Delete";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useState } from "react";
@@ -77,6 +77,7 @@ const OwnerSelector = ({
                   <IconButton
                     aria-label={languageStrings.searchpage.filterOwner.clear}
                     onClick={onClearSelect}
+                    size="large"
                   >
                     <DeleteIcon />
                   </IconButton>

@@ -15,12 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  FormControl,
-  MenuItem,
-  OutlinedInput,
-  Select,
-} from "@material-ui/core";
+import { FormControl, MenuItem, OutlinedInput, Select } from "@mui/material";
 import * as React from "react";
 import { languageStrings } from "../../../util/langstrings";
 import * as OEQ from "@openequella/rest-api-client";
@@ -48,7 +43,7 @@ export default function WebPageIndexSetting({
         variant="outlined"
         value={value}
         autoWidth
-        input={<OutlinedInput labelWidth={0} id="_contentIndex" />}
+        input={<OutlinedInput id="_contentIndex" />}
       >
         <MenuItem value={0}>{contentIndexSettingsStrings.option.none}</MenuItem>
         <MenuItem value={1}>

@@ -15,15 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Theme } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import DefaultFileIcon from "@material-ui/icons/InsertDriveFile";
-import WebIcon from "@material-ui/icons/Language";
-import LinkIcon from "@material-ui/icons/Link";
-import VideoIcon from "@material-ui/icons/Movie";
-import ImageIcon from "@material-ui/icons/Panorama";
-import PlaceholderIcon from "@material-ui/icons/TextFields";
-import Web from "@material-ui/icons/Web";
+import { Theme } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import DefaultFileIcon from "@mui/icons-material/InsertDriveFile";
+import WebIcon from "@mui/icons-material/Language";
+import LinkIcon from "@mui/icons-material/Link";
+import VideoIcon from "@mui/icons-material/Movie";
+import ImageIcon from "@mui/icons-material/Panorama";
+import PlaceholderIcon from "@mui/icons-material/TextFields";
+import Web from "@mui/icons-material/Web";
 import * as OEQ from "@openequella/rest-api-client";
 import { flow, pipe } from "fp-ts/function";
 import * as React from "react";
@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme: Theme) => {
 
 interface ThumbProps {
   className: string;
-  fontSize: "inherit" | "default" | "small" | "large";
+  fontSize: "inherit" | "medium" | "large" | "small" | undefined;
 }
 
 export interface OEQThumbProps {

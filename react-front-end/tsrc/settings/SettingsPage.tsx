@@ -25,10 +25,10 @@ import {
   ListItemText,
   Theme,
   Typography,
-} from "@material-ui/core";
-import MUILink from "@material-ui/core/Link";
-import { makeStyles } from "@material-ui/core/styles";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+} from "@mui/material";
+import MUILink from "@mui/material/Link";
+import makeStyles from "@mui/styles/makeStyles";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useContext, useEffect, useState } from "react";

@@ -24,8 +24,8 @@ import {
   Radio,
   RadioGroup,
   TextField,
-} from "@material-ui/core";
-import { Autocomplete } from "@material-ui/lab";
+} from "@mui/material";
+import { Autocomplete } from "@mui/material";
 import { useContext, useState } from "react";
 import * as React from "react";
 import ConfirmDialog from "../../components/ConfirmDialog";

@@ -16,12 +16,13 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { TreeItem, TreeView } from "@material-ui/lab";
-import Add from "@material-ui/icons/Add";
-import Remove from "@material-ui/icons/Remove";
+import { TreeItem, TreeView } from "@mui/lab";
+import Add from "@mui/icons-material/Add";
+import Remove from "@mui/icons-material/Remove";
 import { getAllPaths, pathForNode, SchemaNode } from "../modules/SchemaModule";
-import { Button, Grid } from "@material-ui/core";
-import { makeStyles, Theme } from "@material-ui/core/styles";
+import { Button, Grid } from "@mui/material";
+import { Theme } from "@mui/material/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import { languageStrings } from "../util/langstrings";
 
 const useStyles = makeStyles((theme: Theme) => {

@@ -24,7 +24,7 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
-} from "@material-ui/core";
+} from "@mui/material";
 import { commonString } from "../../../util/commonstrings";
 import { languageStrings } from "../../../util/langstrings";
 import {

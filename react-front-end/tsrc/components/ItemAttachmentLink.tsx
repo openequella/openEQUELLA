@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Link, Typography } from "@material-ui/core";
+import { Link, Typography } from "@mui/material";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { ItemDrmContext } from "../search/components/SearchResult";

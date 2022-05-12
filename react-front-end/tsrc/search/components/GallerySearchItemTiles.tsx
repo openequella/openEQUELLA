@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ImageListItem, ImageListItemBar } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { ImageListItem, ImageListItemBar } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useEffect, useState } from "react";
@@ -80,7 +80,7 @@ export interface GallerySearchTileProps {
 }
 
 /**
- * Component which builds a list of 'GridListTile' for all gallery entries of an Item.
+ * Component which builds a list of 'ImageListItem' for all gallery entries of an Item.
  */
 export const GallerySearchItemTiles = ({
   item,

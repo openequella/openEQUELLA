@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { List } from "@material-ui/core";
+import { List } from "@mui/material";
 import * as React from "react";
 import { ReactNode } from "react";
 import SettingsListHeading from "./SettingsListHeading";

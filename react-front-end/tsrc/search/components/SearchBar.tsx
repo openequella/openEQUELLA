@@ -22,10 +22,10 @@ import {
   InputBase,
   Paper,
   Switch,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import SearchIcon from "@material-ui/icons/Search";
-import TuneIcon from "@material-ui/icons/Tune";
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import SearchIcon from "@mui/icons-material/Search";
+import TuneIcon from "@mui/icons-material/Tune";
 import * as React from "react";
 import { useCallback, useEffect, useReducer } from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
@@ -178,7 +178,11 @@ export default function SearchBar({
 
   return (
     <Paper className={classes.root}>
-      <IconButton onClick={doSearch} aria-label={searchStrings.title}>
+      <IconButton
+        onClick={doSearch}
+        aria-label={searchStrings.title}
+        size="large"
+      >
         <SearchIcon />
       </IconButton>
       <InputBase

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import SearchSettingFormControl from "./SearchSettingFormControl";
-import { Switch } from "@material-ui/core";
+import { Switch } from "@mui/material";
 import * as React from "react";
 
 export interface SettingsToggleSwitchProps {

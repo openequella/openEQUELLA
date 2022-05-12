@@ -15,11 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  createGenerateClassName,
-  StylesProvider,
-  ThemeProvider,
-} from "@material-ui/core";
+import { ThemeProvider, Theme, StyledEngineProvider } from "@mui/material";
+import createGenerateClassName from "@mui/styles/createGenerateClassName";
+import StylesProvider from "@mui/styles/StylesProvider";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { getRenderData } from "../AppConfig";
@@ -31,6 +29,11 @@ import {
   UniversalFileUploader,
   UniversalFileUploaderProps,
 } from "./UniversalFileUploader";
+
+declare module "@mui/styles/defaultTheme" {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
 
 // A type guard used to check if the props passed from server is 'InlineFileUploaderProps' or 'UniversalFileUploaderProps'.
 const isInlineFileUploaderProps = (
@@ -74,7 +77,11 @@ export const render = (
       .then(({ getOeqTheme }) => {
         ReactDOM.render(
           <StylesProvider generateClassName={generateClassName}>
-            <ThemeProvider theme={getOeqTheme()}>{fileUploader}</ThemeProvider>
+            <StyledEngineProvider injectFirst>
+              <ThemeProvider theme={getOeqTheme()}>
+                {fileUploader}
+              </ThemeProvider>
+            </StyledEngineProvider>
           </StylesProvider>,
           props.elem
         );

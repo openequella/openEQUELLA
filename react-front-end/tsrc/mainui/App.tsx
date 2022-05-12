@@ -16,12 +16,9 @@
  * limitations under the License.
  */
 
-import {
-  createGenerateClassName,
-  StylesProvider,
-  Theme,
-  ThemeProvider,
-} from "@material-ui/core";
+import { Theme, ThemeProvider, StyledEngineProvider } from "@mui/material";
+import createGenerateClassName from "@mui/styles/createGenerateClassName";
+import StylesProvider from "@mui/styles/StylesProvider";
 import { pipe } from "fp-ts/function";
 import * as React from "react";
 import { ReactNode, useCallback } from "react";
@@ -33,6 +30,11 @@ import { getOeqTheme } from "../modules/ThemeModule";
 import { startHeartbeat } from "../util/heartbeat";
 import { simpleMatch } from "../util/match";
 import type { EntryPage } from "./index";
+
+declare module "@mui/styles/defaultTheme" {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
 
 const SettingsPage = React.lazy(() => import("../settings/SettingsPage"));
 const SearchPage = React.lazy(() => import("../search/SearchPage"));
@@ -78,11 +80,13 @@ const NewPage = ({
 
   return (
     <StylesProvider generateClassName={generateClassName}>
-      <ThemeProvider theme={theme}>
-        <BrowserRouter basename={basename} forceRefresh={forceRefresh}>
-          {children}
-        </BrowserRouter>
-      </ThemeProvider>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          <BrowserRouter basename={basename} forceRefresh={forceRefresh}>
+            {children}
+          </BrowserRouter>
+        </ThemeProvider>
+      </StyledEngineProvider>
     </StylesProvider>
   );
 };
@@ -144,9 +148,11 @@ const App = ({ entryPage }: AppProps): JSX.Element => {
         mainDiv: () => {
           startHeartbeat();
           return (
-            <ThemeProvider theme={getOeqTheme()}>
-              <IndexPage />
-            </ThemeProvider>
+            <StyledEngineProvider injectFirst>
+              <ThemeProvider theme={getOeqTheme()}>
+                <IndexPage />
+              </ThemeProvider>
+            </StyledEngineProvider>
           );
         },
         searchPage: () => (

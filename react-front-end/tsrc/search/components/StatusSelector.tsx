@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Button, ButtonGroup } from "@material-ui/core";
+import { Button, ButtonGroup } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import { isEqual } from "lodash";
 import * as React from "react";

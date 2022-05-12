@@ -15,14 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ThemeOptions } from "@material-ui/core";
-import { createTheme } from "@material-ui/core/styles";
+import type { DeprecatedThemeOptions } from "@mui/material";
+import { createTheme, adaptV4Theme } from "@mui/material/styles";
 import { getRenderData } from "../AppConfig";
 import * as OEQ from "@openequella/rest-api-client";
 
 declare const themeSettings: OEQ.Theme.ThemeSettings;
 
-const standardThemeSettings = (): ThemeOptions =>
+const standardThemeSettings = (): DeprecatedThemeOptions =>
   ({
     palette: {
       primary: {
@@ -49,11 +49,11 @@ const standardThemeSettings = (): ThemeOptions =>
       useNextVariants: true,
       fontSize: themeSettings.fontSize,
     },
-  } as ThemeOptions);
+  } as DeprecatedThemeOptions);
 
 const renderData = getRenderData();
 
-const autoTestOptions: ThemeOptions =
+const autoTestOptions: DeprecatedThemeOptions =
   typeof renderData == "object" && renderData.autotestMode
     ? {
         transitions: {
@@ -63,7 +63,10 @@ const autoTestOptions: ThemeOptions =
     : {};
 
 export const getOeqTheme = () =>
-  createTheme({
-    ...standardThemeSettings(),
-    ...autoTestOptions,
-  });
+  //todo: drop adaptV4Theme
+  createTheme(
+    adaptV4Theme({
+      ...standardThemeSettings(),
+      ...autoTestOptions,
+    })
+  );

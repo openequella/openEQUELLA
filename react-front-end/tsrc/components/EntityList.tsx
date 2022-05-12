@@ -23,9 +23,9 @@ import {
   Paper,
   Theme,
   Typography,
-  makeStyles,
-} from "@material-ui/core";
-import AddIcon from "@material-ui/icons/Add";
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import AddIcon from "@mui/icons-material/Add";
 
 const useStyles = makeStyles((theme: Theme) => ({
   overall: {

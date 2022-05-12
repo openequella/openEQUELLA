@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { Typography, Tooltip } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
+import { Typography, Tooltip } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import { DateTime } from "luxon";
 
 const useStyles = makeStyles({

@@ -15,15 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  FormControl,
-  MenuItem,
-  OutlinedInput,
-  Select,
-} from "@material-ui/core";
+import { FormControl, MenuItem, OutlinedInput, Select } from "@mui/material";
 import * as React from "react";
 import { languageStrings } from "../../../util/langstrings";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import * as OEQ from "@openequella/rest-api-client";
 
 export interface DefaultSortOrderSettingProps {
@@ -57,7 +52,7 @@ export default function DefaultSortOrderSetting({
         variant="outlined"
         value={value}
         className={classes.select}
-        input={<OutlinedInput labelWidth={0} id="_sortOrder" />}
+        input={<OutlinedInput id="_sortOrder" />}
       >
         <MenuItem value="RANK">{searchPageSettingsStrings.relevance}</MenuItem>
         <MenuItem value={validateSortOrder("DATEMODIFIED")}>

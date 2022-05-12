@@ -15,14 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  ListItem,
-  ListItemSecondaryAction,
-  ListItemText,
-} from "@material-ui/core";
+import { ListItem, ListItemSecondaryAction, ListItemText } from "@mui/material";
 import * as React from "react";
 import { ReactNode } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 
 export interface SettingsListControlProps {
   /**

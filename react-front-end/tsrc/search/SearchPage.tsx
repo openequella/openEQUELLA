@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { debounce, Drawer, Grid, Hidden } from "@material-ui/core";
+import { debounce, Drawer, Grid, Hidden } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { constant, pipe } from "fp-ts/function";
@@ -1124,7 +1124,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
             </Grid>
           </Grid>
         </Grid>
-        <Hidden smDown>
+        <Hidden mdDown>
           <Grid item md={4}>
             {renderSidePanel()}
           </Grid>
