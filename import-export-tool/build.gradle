@@ -92,7 +92,7 @@ task createImportExportTools(dependsOn: [importToolJar,exportToolJar], descripti
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
 task compileSbtProject(type: Exec, description: 'Assemble sbt dependencies') {
-  def commands = ['sbt','com_tle_platform_swing/assembly','com_tle_platform_common/assembly']
+  def commands = ['./sbt','com_tle_platform_swing/assembly','com_tle_platform_common/assembly']
   if (DefaultNativePlatform.getCurrentOperatingSystem().isWindows()) {
     commands.addAll(0, ['cmd', '/c'])
   }
