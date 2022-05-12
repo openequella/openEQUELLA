@@ -1,0 +1,3 @@
+include:
+  project: edalex-group/development/oeq/openequella-ci
+  file: build/main.yml
