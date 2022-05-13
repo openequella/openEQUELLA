@@ -18,9 +18,9 @@
 import {
   AppBar,
   Badge,
+  Box,
   CssBaseline,
   Drawer,
-  Hidden,
   IconButton,
   Menu,
   MenuItem,
@@ -57,6 +57,7 @@ import ScreenOptions from "./ScreenOptions";
 
 export type MenuMode = "HIDDEN" | "COLLAPSED" | "FULL";
 export type FullscreenMode = "YES" | "YES_WITH_TOOLBAR" | "NO";
+
 export interface TemplateProps {
   title: String;
   /* Fix the height of the main content, otherwise use min-height */
@@ -477,7 +478,7 @@ export const Template = ({
         {menuExtra}
         {!disableNotifications && !currentUser.guest && (
           <>
-            <Hidden smDown>
+            <Box sx={{ display: { xs: "none", sm: "block" } }}>
               {badgedLink(
                 <AssignmentIcon />,
                 itemCounts.tasks,
@@ -490,7 +491,7 @@ export const Template = ({
                 legacyPageUrl(routes.Notifications.to),
                 topBarString.notifications
               )}
-            </Hidden>
+            </Box>
             <TooltipIconButton
               title={
                 currentUser
@@ -550,26 +551,24 @@ export const Template = ({
 
   const layoutDrawer = !fullScreen && (
     <>
-      <Hidden mdUp>
-        <Drawer
-          variant="temporary"
-          anchor="left"
-          open={navMenuOpen}
-          onClose={(_) => setNavMenuOpen(false)}
-        >
-          {menuContent}
-        </Drawer>
-      </Hidden>
-      <Hidden mdDown implementation="css">
-        <Drawer
-          variant="permanent"
-          anchor="left"
-          open
-          classes={{ paper: classes.drawerPaper }}
-        >
-          {menuContent}
-        </Drawer>
-      </Hidden>
+      <Drawer
+        sx={{ display: { md: "none", xs: "block" } }}
+        variant="temporary"
+        anchor="left"
+        open={navMenuOpen}
+        onClose={(_) => setNavMenuOpen(false)}
+      >
+        {menuContent}
+      </Drawer>
+      <Drawer
+        sx={{ display: { xs: "none", md: "block" } }}
+        variant="permanent"
+        anchor="left"
+        open
+        classes={{ paper: classes.drawerPaper }}
+      >
+        {menuContent}
+      </Drawer>
     </>
   );
 

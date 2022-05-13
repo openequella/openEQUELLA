@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 import {
+  Box,
   Divider,
   Grid,
-  Hidden,
   IconButton,
   List,
   ListItem,
@@ -285,7 +285,7 @@ export default function SearchResult({
         </TooltipIconButton>
 
         {commentCount > 0 && (
-          <Hidden mdDown>
+          <Box sx={{ display: { xs: "none", md: "block" } }}>
             {metaDataDivider}
             <Typography component="span">
               <HashLink
@@ -295,16 +295,16 @@ export default function SearchResult({
                 {formatSize(commentCount, commentStrings)}
               </HashLink>
             </Typography>
-          </Hidden>
+          </Box>
         )}
 
         {starRatings >= 0 && (
-          <Hidden mdDown>
+          <Box sx={{ display: { xs: "none", md: "block" } }}>
             {metaDataDivider}
             <div aria-label={sprintf(ratingStrings.label, starRatings)}>
               <StarRating numberOfStars={5} rating={starRatings} />
             </div>
-          </Hidden>
+          </Box>
         )}
       </div>
     );

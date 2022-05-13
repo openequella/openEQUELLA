@@ -21,7 +21,6 @@ import {
   CardContent,
   Collapse,
   Grid,
-  Hidden,
   List,
   ListItem,
   Typography,
@@ -157,14 +156,13 @@ export const RefineSearchPanel = ({
             <Typography variant="h5">{title}</Typography>
           </Grid>
           <Grid item xs={1}>
-            <Hidden mdUp>
-              <TooltipIconButton
-                title={languageStrings.common.action.close}
-                onClick={onClose}
-              >
-                <CloseIcon />
-              </TooltipIconButton>
-            </Hidden>
+            <TooltipIconButton
+              sx={{ display: { md: "none", xs: "block" } }}
+              title={languageStrings.common.action.close}
+              onClick={onClose}
+            >
+              <CloseIcon />
+            </TooltipIconButton>
           </Grid>
         </Grid>
         <List>

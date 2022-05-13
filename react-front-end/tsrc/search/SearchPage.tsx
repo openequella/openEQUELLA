@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { debounce, Drawer, Grid, Hidden } from "@mui/material";
+import { debounce, Drawer, Grid } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { constant, pipe } from "fp-ts/function";
@@ -1124,11 +1124,9 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
             </Grid>
           </Grid>
         </Grid>
-        <Hidden mdDown>
-          <Grid item md={4}>
-            {renderSidePanel()}
-          </Grid>
-        </Hidden>
+        <Grid item md={4} sx={{ display: { xs: "none", md: "block" } }}>
+          {renderSidePanel()}
+        </Grid>
       </Grid>
       <MessageInfo
         open={!!snackBar.message}
@@ -1136,16 +1134,15 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
         title={snackBar.message}
         variant={snackBar.variant ?? "success"}
       />
-      <Hidden mdUp>
-        <Drawer
-          open={showRefinePanel}
-          anchor="right"
-          onClose={() => setShowRefinePanel(false)}
-          PaperProps={{ style: { width: "50%" } }}
-        >
-          {renderSidePanel()}
-        </Drawer>
-      </Hidden>
+      <Drawer
+        sx={{ display: { md: "none", xs: "block" } }}
+        open={showRefinePanel}
+        anchor="right"
+        onClose={() => setShowRefinePanel(false)}
+        PaperProps={{ style: { width: "50%" } }}
+      >
+        {renderSidePanel()}
+      </Drawer>
 
       {showFavouriteSearchDialog && (
         <FavouriteSearchDialog

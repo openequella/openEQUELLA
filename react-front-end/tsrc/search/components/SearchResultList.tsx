@@ -23,7 +23,6 @@ import {
   CardHeader,
   CircularProgress,
   Grid,
-  Hidden,
   List,
   ListItem,
   Tooltip,
@@ -196,17 +195,15 @@ export const SearchResultList = ({
                 <ExportSearchResultLink {...exportLinkProps} ref={linkRef} />
               </Grid>
             )}
-            <Hidden mdUp>
-              <Grid item>
-                <TooltipIconButton
-                  title={searchPageStrings.refineSearchPanel.title}
-                  onClick={showRefinePanel}
-                  color={isCriteriaSet ? "secondary" : "primary"}
-                >
-                  <FilterListIcon />
-                </TooltipIconButton>
-              </Grid>
-            </Hidden>
+            <Grid item sx={{ display: { md: "none", xs: "block" } }}>
+              <TooltipIconButton
+                title={searchPageStrings.refineSearchPanel.title}
+                onClick={showRefinePanel}
+                color={isCriteriaSet ? "secondary" : "primary"}
+              >
+                <FilterListIcon />
+              </TooltipIconButton>
+            </Grid>
             {!inSelectionSession && (
               <Grid item>
                 <TooltipIconButton
