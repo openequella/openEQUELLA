@@ -16,13 +16,18 @@
  * limitations under the License.
  */
 import { Typography } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
-import { Theme } from "@mui/material/styles";
-import makeStyles from "@mui/styles/makeStyles";
 import * as React from "react";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  error: {
+const PREFIX = "Error";
+
+const classes = {
+  error: `${PREFIX}-error`,
+};
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  [`& .${classes.error}`]: {
     padding: theme.spacing(3),
     backgroundColor: "rgb(255, 220, 220)",
   },
@@ -33,13 +38,12 @@ export interface ErrorProps {
 }
 
 const Error = ({ children }: ErrorProps) => {
-  const styles = useStyles();
   return (
-    <Paper className={styles.error}>
+    <StyledPaper className={classes.error}>
       <Typography color="error" align="center">
         {children}
       </Typography>
-    </Paper>
+    </StyledPaper>
   );
 };
 

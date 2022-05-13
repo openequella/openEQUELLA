@@ -22,19 +22,27 @@ import {
   DialogContent,
   DialogTitle,
 } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { styled } from "@mui/material/styles";
 import * as React from "react";
 import { useState } from "react";
 import { ColorResult, SketchPicker } from "react-color";
 import { languageStrings } from "../util/langstrings";
 
-const useStyles = makeStyles({
-  color: {
+const PREFIX = "ColorPickerComponent";
+
+const classes = {
+  color: `${PREFIX}-color`,
+  swatch: `${PREFIX}-swatch`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled("div")({
+  [`& .${classes.color}`]: {
     width: "36px",
     height: "14px",
     borderRadius: "2px",
   },
-  swatch: {
+  [`& .${classes.swatch}`]: {
     padding: "5px",
     background: "#fff",
     borderRadius: "1px",
@@ -51,13 +59,13 @@ interface ColorProps {
 
 const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
   const [displayColorPicker, setDisplayColorPicker] = useState<boolean>(false);
-  const classes = useStyles();
+
   const strings = languageStrings.newuisettings.colorPicker;
 
   const changeHandler = (color: ColorResult) => onColorChange(color.hex);
 
   return (
-    <>
+    <Root>
       <div
         className={classes.swatch}
         onClick={() => setDisplayColorPicker(true)}
@@ -90,7 +98,7 @@ const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
           </DialogActions>
         </Dialog>
       )}
-    </>
+    </Root>
   );
 };
 

@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
+import { styled } from "@mui/material/styles";
 import {
   Button,
   Dialog,
@@ -24,28 +25,31 @@ import {
   DialogContentText,
   DialogTitle,
   TextField,
-  Theme,
   Typography,
 } from "@mui/material";
-import { WithStyles } from "@mui/styles";
-import createStyles from "@mui/styles/createStyles";
-import withStyles from "@mui/styles/withStyles";
 import { cloudProviderLangStrings } from "./CloudProviderModule";
 import { commonString } from "../util/commonstrings";
 import Link from "@mui/material/Link";
 import CloudProviderDisclaimerDialog from "./CloudProviderDisclaimerDialog";
 
-const styles = (theme: Theme) =>
-  createStyles({
-    disclaimerText: {
-      marginTop: theme.spacing(1),
-    },
-    link: {
-      cursor: "pointer",
-    },
-  });
+const PREFIX = "CloudProviderAddDialog";
 
-interface CloudProviderAddDialogProps extends WithStyles<typeof styles> {
+const classes = {
+  disclaimerText: `${PREFIX}-disclaimerText`,
+  link: `${PREFIX}-link`,
+};
+
+const Root = styled("div")(({ theme }) => ({
+  [`& .${classes.disclaimerText}`]: {
+    marginTop: theme.spacing(1),
+  },
+
+  [`& .${classes.link}`]: {
+    cursor: "pointer",
+  },
+}));
+
+interface CloudProviderAddDialogProps {
   open: boolean;
   onCancel: () => void;
   onRegister: (url: string) => void;
@@ -95,11 +99,11 @@ class CloudProviderAddDialog extends React.Component<
   };
 
   render() {
-    const { open, onCancel, onRegister, classes } = this.props;
+    const { open, onCancel, onRegister } = this.props;
     const { cloudProviderUrl, disclaimerDialogOpen } = this.state;
     const isUrlValid = this.validateUrl();
     return (
-      <div>
+      <Root>
         <Dialog
           open={open}
           onClose={onCancel}
@@ -161,9 +165,9 @@ class CloudProviderAddDialog extends React.Component<
           openDialog={disclaimerDialogOpen}
           onClose={this.closeDisclaimerDialog}
         />
-      </div>
+      </Root>
     );
   }
 }
 
-export default withStyles(styles)(CloudProviderAddDialog);
+export default CloudProviderAddDialog;

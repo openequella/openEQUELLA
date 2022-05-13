@@ -16,18 +16,23 @@
  * limitations under the License.
  */
 import * as React from "react";
+import { styled } from "@mui/material/styles";
 import { ErrorResponse } from "../api/errors";
 import { CardContent, Card, Typography } from "@mui/material";
 
-import makeStyles from "@mui/styles/makeStyles";
+const PREFIX = "ErrorPage";
 
-const useStyles = makeStyles((t) => ({
-  errorPage: {
+const classes = {
+  errorPage: `${PREFIX}-errorPage`,
+};
+
+const Root = styled("div")(({ theme }) => ({
+  [`&.${classes.errorPage}`]: {
     display: "flex",
     justifyContent: "center",
-    marginTop: t.spacing(8),
-    marginLeft: t.spacing(2),
-    marginRight: t.spacing(2),
+    marginTop: theme.spacing(8),
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
   },
 }));
 
@@ -38,9 +43,8 @@ interface ErrorPageProps {
 export default React.memo(function ErrorPage({
   error: { code, error, error_description },
 }: ErrorPageProps) {
-  const classes = useStyles();
   return (
-    <div id="errorPage" className={classes.errorPage}>
+    <Root id="errorPage" className={classes.errorPage}>
       <Card>
         <CardContent>
           <Typography variant="h3" color="error">
@@ -52,6 +56,6 @@ export default React.memo(function ErrorPage({
           )}
         </CardContent>
       </Card>
-    </div>
+    </Root>
   );
 });

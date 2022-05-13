@@ -25,7 +25,7 @@ import {
   ListItemSecondaryAction,
   ListItemText,
 } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { styled } from "@mui/material/styles";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -68,8 +68,14 @@ import { languageStrings } from "../../../util/langstrings";
 import MimeTypeFilterEditingDialog from "./MimeTypeFilterEditingDialog";
 import * as OEQ from "@openequella/rest-api-client";
 
-const useStyles = makeStyles({
-  cardAction: {
+const PREFIX = "SearchFilterPage";
+
+const classes = {
+  cardAction: `${PREFIX}-cardAction`,
+};
+
+const StyledSettingPageTemplate = styled(SettingPageTemplate)({
+  [`& .${classes.cardAction}`]: {
     display: "flex",
     justifyContent: "flex-end",
   },
@@ -79,8 +85,6 @@ const searchFilterStrings =
   languageStrings.settings.searching.searchfiltersettings;
 
 const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
-  const classes = useStyles();
-
   // The general Search settings. Here only configure searchingDisableOwnerFilter and searchingDisableDateModifiedFilter.
   const [searchSettings, setSearchSettings] =
     useState<OEQ.SearchSettings.Settings>(defaultSearchSettings);
@@ -289,7 +293,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
   };
 
   return (
-    <SettingPageTemplate
+    <StyledSettingPageTemplate
       onSave={save}
       saveButtonDisabled={!changesUnsaved}
       snackbarOpen={showSnackBar}
@@ -402,7 +406,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
         title={commonString.result.errors}
         close={() => setOpenMessageDialog(false)}
       />
-    </SettingPageTemplate>
+    </StyledSettingPageTemplate>
   );
 };
 

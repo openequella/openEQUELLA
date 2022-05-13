@@ -16,10 +16,7 @@
  * limitations under the License.
  */
 import { Badge, Grid, Paper } from "@mui/material";
-import { Theme } from "@mui/material/styles";
-import createStyles from "@mui/styles/createStyles";
-import makeStyles from "@mui/styles/makeStyles";
-import withStyles from "@mui/styles/withStyles";
+import { styled } from "@mui/material/styles";
 import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
@@ -34,40 +31,45 @@ import { OrdAsIs } from "../util/Ord";
 import { CheckboxList } from "./CheckboxList";
 import { TooltipIconButton } from "./TooltipIconButton";
 
-const strings = languageStrings.shuffleBox;
+const PREFIX = "ShuffleBox";
 
-const useStyles = makeStyles({
-  checkboxListPaper: {
+const classes = {
+  badge: `${PREFIX}-badge`,
+  badge2: `${PREFIX}-badge2`,
+  checkboxListPaper: `${PREFIX}-checkboxListPaper`,
+};
+
+const StyledGrid = styled(Grid)({
+  [`& .${classes.checkboxListPaper}`]: {
     height: 250,
     overflow: "auto",
   },
 });
 
-const RightSideBadge = withStyles((_: Theme) =>
-  createStyles({
-    badge: {
-      top: 17,
-    },
-  })
-)(Badge);
+const strings = languageStrings.shuffleBox;
 
-const LeftSideBadge = withStyles((_: Theme) =>
-  createStyles({
-    badge: {
-      right: 35,
-      top: 17,
-    },
-  })
-)(Badge);
+const RightSideBadge = Badge;
+
+const LeftSideBadge = Badge;
 
 const AddAllIcon = (): JSX.Element => (
-  <LeftSideBadge badgeContent={<AllInclusiveIcon fontSize="small" />}>
+  <LeftSideBadge
+    badgeContent={<AllInclusiveIcon fontSize="small" />}
+    classes={{
+      badge: classes.badge2,
+    }}
+  >
     <ChevronRightIcon fontSize="large" />
   </LeftSideBadge>
 );
 
 const RemoveAllIcon = (): JSX.Element => (
-  <RightSideBadge badgeContent={<AllInclusiveIcon fontSize="small" />}>
+  <RightSideBadge
+    badgeContent={<AllInclusiveIcon fontSize="small" />}
+    classes={{
+      badge: classes.badge,
+    }}
+  >
     <ChevronLeftIcon fontSize="large" />
   </RightSideBadge>
 );
@@ -99,8 +101,6 @@ export const ShuffleBox = ({
   onSelect,
   values,
 }: ShuffleBoxProps): JSX.Element => {
-  const classes = useStyles();
-
   const [checkedChoices, setCheckedChoices] = useState<Set<string>>(SET.empty);
   const [checkedSelections, setCheckedSelections] = useState<Set<string>>(
     SET.empty
@@ -158,7 +158,7 @@ export const ShuffleBox = ({
   ];
 
   return (
-    <Grid id={id} container spacing={2}>
+    <StyledGrid id={id} container spacing={2}>
       <Grid item xs>
         <Paper
           className={classes.checkboxListPaper}
@@ -200,6 +200,6 @@ export const ShuffleBox = ({
           />
         </Paper>
       </Grid>
-    </Grid>
+    </StyledGrid>
   );
 };

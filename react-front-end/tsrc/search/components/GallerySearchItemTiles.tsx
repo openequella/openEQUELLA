@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { ImageListItem, ImageListItemBar } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useEffect, useState } from "react";
@@ -29,23 +29,32 @@ import {
 } from "../../modules/GallerySearchModule";
 import { languageStrings } from "../../util/langstrings";
 
-const { ariaLabel, viewItem } = languageStrings.searchpage.gallerySearchResult;
+const PREFIX = "GallerySearchItemTiles";
 
-const useStyles = makeStyles({
-  tile: {
+const classes = {
+  tile: `${PREFIX}-tile`,
+  titleBar: `${PREFIX}-titleBar`,
+  thumbnail: `${PREFIX}-thumbnail`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled("div")({
+  [`& .${classes.tile}`]: {
     width: "25%",
     height: 250,
     padding: 2,
   },
-  titleBar: {
+  [`& .${classes.titleBar}`]: {
     background:
       "linear-gradient(to top, rgba(0,0,0,0.5) 0%, " +
       "rgba(0,0,0,0.1) 70%, rgba(0,0,0,0) 100%)",
   },
-  thumbnail: {
+  [`& .${classes.thumbnail}`]: {
     cursor: "zoom-in",
   },
 });
+
+const { ariaLabel, viewItem } = languageStrings.searchpage.gallerySearchResult;
 
 /**
  * Type for the handler of opening Lightbox from Gallery.
@@ -86,7 +95,6 @@ export const GallerySearchItemTiles = ({
   item,
   updateGalleryItemList,
 }: GallerySearchTileProps) => {
-  const classes = useStyles();
   const {
     mainEntry,
     additionalEntries,
@@ -182,9 +190,9 @@ export const GallerySearchItemTiles = ({
   ];
 
   return (
-    <>
+    <Root>
       {tiles}
       {drmDialog}
-    </>
+    </Root>
   );
 };

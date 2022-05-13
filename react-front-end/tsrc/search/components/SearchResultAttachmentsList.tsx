@@ -27,11 +27,10 @@ import {
   ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
-  Theme,
   Typography,
 } from "@mui/material";
 
-import makeStyles from "@mui/styles/makeStyles";
+import { styled } from "@mui/material/styles";
 import Tooltip from "@mui/material/Tooltip";
 import AttachFile from "@mui/icons-material/AttachFile";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
@@ -65,28 +64,40 @@ import {
 import { languageStrings } from "../../util/langstrings";
 import { ResourceSelector } from "./ResourceSelector";
 
-const {
-  searchResult: searchResultStrings,
-  selectResource: selectResourceStrings,
-} = languageStrings.searchpage;
+const PREFIX = "SearchResultAttachmentsList";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  nested: {
+const classes = {
+  nested: `${PREFIX}-nested`,
+  attachmentExpander: `${PREFIX}-attachmentExpander`,
+  attachmentBadge: `${PREFIX}-attachmentBadge`,
+  attachmentListItem: `${PREFIX}-attachmentListItem`,
+};
+
+const StyledAccordion = styled(Accordion)(({ theme }) => ({
+  [`& .${classes.nested}`]: {
     paddingLeft: theme.spacing(4),
   },
-  attachmentExpander: {
+
+  [`&.${classes.attachmentExpander}`]: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
   },
-  attachmentBadge: {
+
+  [`& .${classes.attachmentBadge}`]: {
     backgroundColor: theme.palette.background.paper,
     color: theme.palette.secondary.main,
     borderRadius: "50%",
   },
-  attachmentListItem: {
+
+  [`& .${classes.attachmentListItem}`]: {
     width: "100%",
   },
 }));
+
+const {
+  searchResult: searchResultStrings,
+  selectResource: selectResourceStrings,
+} = languageStrings.searchpage;
 
 export interface SearchResultAttachmentsListProps {
   /**
@@ -121,7 +132,6 @@ export const SearchResultAttachmentsList = ({
 }: SearchResultAttachmentsListProps) => {
   const itemKey = `${uuid}/${version}`;
 
-  const classes = useStyles();
   const inSelectionSession: boolean = isSelectionSessionOpen();
   const inSkinny = isSelectionSessionInSkinny();
   const inStructured = isSelectionSessionInStructured();
@@ -386,7 +396,7 @@ export const SearchResultAttachmentsList = ({
   );
 
   return attachmentCount > 0 ? (
-    <Accordion
+    <StyledAccordion
       id={`attachments-list-${uuid}:${version}`}
       className={classes.attachmentExpander}
       expanded={attachExpanded}
@@ -401,6 +411,6 @@ export const SearchResultAttachmentsList = ({
       <AccordionDetails>
         {attachExpanded && buildAttachmentList()}
       </AccordionDetails>
-    </Accordion>
+    </StyledAccordion>
   ) : null;
 };

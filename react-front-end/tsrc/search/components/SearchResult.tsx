@@ -23,10 +23,9 @@ import {
   List,
   ListItem,
   ListItemText,
-  Theme,
   Typography,
 } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { styled } from "@mui/material/styles";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -69,6 +68,45 @@ import { FavouriteItemDialog } from "./FavouriteItemDialog";
 import { ResourceSelector } from "./ResourceSelector";
 import { SearchResultAttachmentsList } from "./SearchResultAttachmentsList";
 
+const PREFIX = "ItemDrmContext";
+
+const classes = {
+  inline: `${PREFIX}-inline`,
+  heading: `${PREFIX}-heading`,
+  itemDescription: `${PREFIX}-itemDescription`,
+  additionalDetails: `${PREFIX}-additionalDetails`,
+  status: `${PREFIX}-status`,
+  highlight: `${PREFIX}-highlight`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled("div")(({ theme }) => {
+  return {
+    [`& .${classes.inline}`]: {
+      display: "inline",
+    },
+    [`& .${classes.heading}`]: {
+      fontWeight: "bold",
+      paddingRight: theme.spacing(1),
+    },
+    [`& .${classes.itemDescription}`]: {
+      paddingBottom: theme.spacing(1),
+    },
+    [`& .${classes.additionalDetails}`]: {
+      flexDirection: "row",
+      display: "flex",
+      paddingTop: theme.spacing(1),
+      alignItems: "center",
+    },
+    [`& .${classes.status}`]: {
+      textTransform: "capitalize",
+    },
+    [`& .${classes.highlight}`]: {
+      color: theme.palette.secondary.main,
+    },
+  };
+});
+
 const {
   searchResult: searchResultStrings,
   comments: commentStrings,
@@ -76,33 +114,6 @@ const {
   selectResource: selectResourceStrings,
   favouriteItem: favouriteItemStrings,
 } = languageStrings.searchpage;
-
-const useStyles = makeStyles((theme: Theme) => {
-  return {
-    inline: {
-      display: "inline",
-    },
-    heading: {
-      fontWeight: "bold",
-      paddingRight: theme.spacing(1),
-    },
-    itemDescription: {
-      paddingBottom: theme.spacing(1),
-    },
-    additionalDetails: {
-      flexDirection: "row",
-      display: "flex",
-      paddingTop: theme.spacing(1),
-      alignItems: "center",
-    },
-    status: {
-      textTransform: "capitalize",
-    },
-    highlight: {
-      color: theme.palette.secondary.main,
-    },
-  };
-});
 
 export interface SearchResultProps {
   /**
@@ -169,7 +180,7 @@ export default function SearchResult({
     version,
   } = item;
   const itemKey = `${uuid}/${version}`;
-  const classes = useStyles();
+
   const inSelectionSession: boolean = isSelectionSessionOpen();
   const inStructured = isSelectionSessionInStructured();
 
@@ -389,7 +400,7 @@ export default function SearchResult({
       : itemLink();
 
   return (
-    <>
+    <Root>
       <ListItem
         alignItems="flex-start"
         divider
@@ -440,6 +451,6 @@ export default function SearchResult({
         />
       )}
       {drmDialog}
-    </>
+    </Root>
   );
 }

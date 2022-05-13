@@ -23,11 +23,10 @@ import {
   List,
   ListItem,
   ListItemText,
-  Theme,
   Typography,
 } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import MUILink from "@mui/material/Link";
-import makeStyles from "@mui/styles/makeStyles";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
@@ -42,17 +41,25 @@ import { languageStrings } from "../util/langstrings";
 import { groupMap, SettingGroup } from "./SettingGroups";
 import UISettingEditor from "./UISettingEditor";
 
-const useStyles = makeStyles((theme: Theme) => {
+const PREFIX = "SettingsPage";
+
+const classes = {
+  heading: `${PREFIX}-heading`,
+  secondaryHeading: `${PREFIX}-secondaryHeading`,
+  progress: `${PREFIX}-progress`,
+};
+
+const Root = styled("div")(({ theme }) => {
   return {
-    heading: {
+    [`& .${classes.heading}`]: {
       fontSize: theme.typography.pxToRem(15),
       flexBasis: "33.33%",
       flexShrink: 0,
     },
-    secondaryHeading: {
+    [`& .${classes.secondaryHeading}`]: {
       fontSize: theme.typography.pxToRem(15),
     },
-    progress: {
+    [`& .${classes.progress}`]: {
       display: "flex",
       marginTop: theme.spacing(4),
       justifyContent: "center",
@@ -70,8 +77,6 @@ const SettingsPage = ({
   updateTemplate,
   isReloadNeeded,
 }: SettingsPageProps) => {
-  const classes = useStyles();
-
   const [adminDialogOpen, setAdminDialogOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [settingGroups, setSettingGroups] = useState<SettingGroup[]>([]);
@@ -139,7 +144,7 @@ const SettingsPage = ({
    * @returns {ReactElement} A link to the setting's page
    */
   const SettingLink = (setting: OEQ.Settings.GeneralSetting) => {
-    let link = <div />;
+    let link = <Root />;
     if (setting.links.route) {
       link = <Link to={setting.links.route}>{setting.name}</Link>;
     } else if (setting.links.href) {

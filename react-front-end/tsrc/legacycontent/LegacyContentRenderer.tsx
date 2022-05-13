@@ -15,15 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import makeStyles from "@mui/styles/makeStyles";
+import { styled } from "@mui/material/styles";
 import * as React from "react";
 import HTMLReactParser from "html-react-parser";
 import JQueryDiv from "./JQueryDiv";
 import { PageContent } from "./LegacyContent";
 import { LegacyForm } from "./LegacyForm";
 
-const useStyles = makeStyles((t) => ({
-  noPadding: {
+const PREFIX = "LegacyContentRenderer";
+
+const classes = {
+  noPadding: `${PREFIX}-noPadding`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled("div")(({ theme }) => ({
+  [`& .${classes.noPadding}`]: {
     padding: 0,
   },
 }));
@@ -37,8 +44,6 @@ export function LegacyContentRenderer({
   script,
   state,
 }: PageContent) {
-  const classes = useStyles();
-
   // Effect responsible for the execution of the legacy scripts etc which were historically
   // added at the end of the server-side rendered HTML.
   React.useEffect(() => {
@@ -64,9 +69,9 @@ export function LegacyContentRenderer({
   return noForm ? (
     mainContent
   ) : (
-    <>
+    <Root>
       <LegacyForm state={state}>{mainContent}</LegacyForm>
       {form && HTMLReactParser(form)}
-    </>
+    </Root>
   );
 }

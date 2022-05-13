@@ -26,7 +26,7 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { styled } from "@mui/material/styles";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -66,8 +66,14 @@ import { addElement, replaceElement } from "../../../util/ImmutableArrayUtil";
 import { languageStrings } from "../../../util/langstrings";
 import FacetDialog from "./FacetDialog";
 
-const useStyles = makeStyles({
-  cardAction: {
+const PREFIX = "FacetedSearchSettingsPage";
+
+const classes = {
+  cardAction: `${PREFIX}-cardAction`,
+};
+
+const StyledSettingPageTemplate = styled(SettingPageTemplate)({
+  [`& .${classes.cardAction}`]: {
     display: "flex",
     justifyContent: "flex-end",
   },
@@ -79,7 +85,6 @@ const useStyles = makeStyles({
 const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const facetedsearchsettingStrings =
     languageStrings.settings.searching.facetedsearchsetting;
-  const classes = useStyles();
 
   const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
   const [showResultDialog, setShowResultDialog] = useState<boolean>(false);
@@ -275,7 +280,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
   );
 
   return (
-    <SettingPageTemplate
+    <StyledSettingPageTemplate
       onSave={save}
       saveButtonDisabled={!changesUnsaved}
       snackbarOpen={showSnackBar}
@@ -320,7 +325,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
         title={commonString.result.errors}
         close={() => setShowResultDialog(false)}
       />
-    </SettingPageTemplate>
+    </StyledSettingPageTemplate>
   );
 };
 

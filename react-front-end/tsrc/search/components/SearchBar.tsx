@@ -23,7 +23,7 @@ import {
   Paper,
   Switch,
 } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { styled } from "@mui/material/styles";
 import SearchIcon from "@mui/icons-material/Search";
 import TuneIcon from "@mui/icons-material/Tune";
 import * as React from "react";
@@ -31,15 +31,23 @@ import { useCallback, useEffect, useReducer } from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { languageStrings } from "../../util/langstrings";
 
-const useStyles = makeStyles({
-  root: {
+const PREFIX = "SearchBar";
+
+const classes = {
+  root: `${PREFIX}-root`,
+  input: `${PREFIX}-input`,
+  divider: `${PREFIX}-divider`,
+};
+
+const StyledPaper = styled(Paper)({
+  [`&.${classes.root}`]: {
     display: "flex",
     alignItems: "center",
   },
-  input: {
+  [`& .${classes.input}`]: {
     flex: "auto",
   },
-  divider: {
+  [`& .${classes.divider}`]: {
     height: 28,
     margin: "4px 12px",
   },
@@ -119,7 +127,6 @@ export default function SearchBar({
   doSearch,
   advancedSearchFilter,
 }: SearchBarProps) {
-  const classes = useStyles();
   const [state, dispatch] = useReducer(reducer, { status: "init", query });
 
   const search = useCallback(
@@ -177,7 +184,7 @@ export default function SearchBar({
   };
 
   return (
-    <Paper className={classes.root}>
+    <StyledPaper className={classes.root}>
       <IconButton
         onClick={doSearch}
         aria-label={searchStrings.title}
@@ -218,6 +225,6 @@ export default function SearchBar({
           />
         }
       />
-    </Paper>
+    </StyledPaper>
   );
 }

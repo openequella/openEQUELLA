@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 import LuxonUtils from "@date-io/luxon";
+import { styled } from "@mui/material/styles";
 import { FormControl, Grid, InputLabel, MenuItem, Select } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
 import {
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
@@ -31,6 +31,22 @@ import { languageStrings } from "../util/langstrings";
 import SettingsToggleSwitch from "./SettingsToggleSwitch";
 import * as O from "fp-ts/Option";
 import { pipe } from "fp-ts/function";
+
+const PREFIX = "DateRangeSelector";
+
+const classes = {
+  hideCalenderIcon: `${PREFIX}-hideCalenderIcon`,
+  datePickerWidth: `${PREFIX}-datePickerWidth`,
+};
+
+const StyledGrid = styled(Grid)({
+  [`& .${classes.hideCalenderIcon}`]: {
+    display: "none",
+  },
+  [`& .${classes.datePickerWidth}`]: {
+    width: "100%",
+  },
+});
 
 /**
  * Type definition for DatePicker props that needs customisation.
@@ -83,15 +99,6 @@ interface DatePickerProps {
    */
   value?: Date;
 }
-
-const useStyles = makeStyles({
-  hideCalenderIcon: {
-    display: "none",
-  },
-  datePickerWidth: {
-    width: "100%",
-  },
-});
 
 export interface DateRangeSelectorProps {
   /**
@@ -155,8 +162,6 @@ export const DateRangeSelector = ({
   datePickerCustomPropsProvider = buildDatePickerCustomProps,
   id = "date-range-selector",
 }: DateRangeSelectorProps) => {
-  const classes = useStyles();
-
   const {
     quickOptionSwitchLabel,
     quickOptionLabels,
@@ -317,7 +322,7 @@ export const DateRangeSelector = ({
     return dateRangePickers.map(({ field, label, value }) => {
       const isStart = field === "start";
       return (
-        <Grid item key={field} xs={12} lg={6}>
+        <StyledGrid item key={field} xs={12} lg={6}>
           <KeyboardDatePicker
             id={`${id}-${field}`}
             views={views}
@@ -355,7 +360,7 @@ export const DateRangeSelector = ({
               )
             }
           />
-        </Grid>
+        </StyledGrid>
       );
     });
   };

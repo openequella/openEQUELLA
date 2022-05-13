@@ -23,7 +23,7 @@ import {
   Grid,
   Switch,
 } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { styled } from "@mui/material/styles";
 import * as React from "react";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -36,16 +36,24 @@ import {
 } from "../modules/GeneralSettingsModule";
 import { languageStrings } from "../util/langstrings";
 
-const useStyles = makeStyles({
-  fab: {
+const PREFIX = "UISettingEditor";
+
+const classes = {
+  fab: `${PREFIX}-fab`,
+  enableNewUIColumn: `${PREFIX}-enableNewUIColumn`,
+  enableNewSearchColumn: `${PREFIX}-enableNewSearchColumn`,
+};
+
+const StyledAccordionDetails = styled(AccordionDetails)({
+  [`& .${classes.fab}`]: {
     position: "absolute",
     bottom: 0,
     right: 16,
   },
-  enableNewUIColumn: {
+  [`& .${classes.enableNewUIColumn}`]: {
     flexBasis: "33.3%",
   },
-  enableNewSearchColumn: {
+  [`& .${classes.enableNewSearchColumn}`]: {
     flexBasis: "33.3%",
   },
 });
@@ -55,7 +63,6 @@ interface UISettingEditorProps {
 }
 
 const UISettingEditor = ({ refreshUser }: UISettingEditorProps) => {
-  const classes = useStyles();
   const { uiconfig } = languageStrings;
 
   const [newUIEnabled, setNewUIEnabled] = useState<boolean>(true);
@@ -91,7 +98,7 @@ const UISettingEditor = ({ refreshUser }: UISettingEditorProps) => {
   };
 
   return (
-    <AccordionDetails>
+    <StyledAccordionDetails>
       <Grid container direction="column">
         <Grid item>
           <div className={classes.enableNewUIColumn}>
@@ -134,7 +141,7 @@ const UISettingEditor = ({ refreshUser }: UISettingEditorProps) => {
           </Link>
         </Grid>
       </Grid>
-    </AccordionDetails>
+    </StyledAccordionDetails>
   );
 };
 

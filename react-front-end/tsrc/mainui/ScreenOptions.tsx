@@ -16,14 +16,21 @@
  * limitations under the License.
  */
 import * as React from "react";
+import { styled } from "@mui/material/styles";
 import { IconButton, Popover } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import JQueryDiv from "../legacycontent/JQueryDiv";
 import { languageStrings } from "../util/langstrings";
 
-const useStyles = makeStyles((t) => ({
-  screenOptions: {
+const PREFIX = "ScreenOptions";
+
+const classes = {
+  screenOptions: `${PREFIX}-screenOptions`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled("div")(({ theme }) => ({
+  [`& .${classes.screenOptions}`]: {
     margin: 20,
   },
 }));
@@ -37,9 +44,9 @@ export default React.memo(function ScreenOptions({
   optionsHtml,
 }: ScreenOptionsProps) {
   const [optionsAnchor, setOptionsAnchor] = React.useState<HTMLElement>();
-  const classes = useStyles();
+
   return (
-    <>
+    <Root>
       <IconButton
         id="screenOptionsOpen"
         onClick={(e) => setOptionsAnchor(e.currentTarget)}
@@ -63,6 +70,6 @@ export default React.memo(function ScreenOptions({
           html={optionsHtml}
         />
       </Popover>
-    </>
+    </Root>
   );
 });

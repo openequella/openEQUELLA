@@ -16,10 +16,8 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { Avatar, IconButton, Theme } from "@mui/material";
-import { WithStyles } from "@mui/styles";
-import createStyles from "@mui/styles/createStyles";
-import withStyles from "@mui/styles/withStyles";
+import { styled } from "@mui/material/styles";
+import { Avatar, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloudIcon from "@mui/icons-material/CloudCircleRounded";
 import { withErrorHandler, WithErrorHandlerProps } from "../mainui/App";
@@ -41,20 +39,26 @@ import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import { commonString } from "../util/commonstrings";
 import MessageInfo from "../components/MessageInfo";
 
-const styles = (theme: Theme) =>
-  createStyles({
-    searchResultContent: {
-      marginTop: theme.spacing(1),
-    },
-    cloudIcon: {
-      width: 40,
-      height: 40,
-    },
-  });
+const PREFIX = "CloudProviderListPage";
 
-interface CloudProviderBasicProps
-  extends TemplateUpdateProps,
-    WithStyles<typeof styles> {}
+const classes = {
+  searchResultContent: `${PREFIX}-searchResultContent`,
+  cloudIcon: `${PREFIX}-cloudIcon`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled("div")(({ theme }) => ({
+  [`& .${classes.searchResultContent}`]: {
+    marginTop: theme.spacing(1),
+  },
+
+  [`& .${classes.cloudIcon}`]: {
+    width: 40,
+    height: 40,
+  },
+}));
+
+interface CloudProviderBasicProps extends TemplateUpdateProps {}
 
 type CloudProviderListPageProps = CloudProviderBasicProps &
   WithErrorHandlerProps;
@@ -153,7 +157,7 @@ class CloudProviderListPage extends React.Component<
   render() {
     const { cloudProviders, deleteDialogOpen, registerDialogOpen } = this.state;
     return (
-      <>
+      <Root>
         <MessageInfo
           variant="success"
           open={this.state.showRefreshed}
@@ -205,7 +209,7 @@ class CloudProviderListPage extends React.Component<
                 alt={cloudProvider.description}
               >
                 {!cloudProvider.iconUrl && (
-                  <CloudIcon className={this.props.classes.cloudIcon} />
+                  <CloudIcon className={classes.cloudIcon} />
                 )}
               </Avatar>
             );
@@ -238,10 +242,10 @@ class CloudProviderListPage extends React.Component<
             );
           })}
         </EntityList>
-      </>
+      </Root>
     );
   }
 }
 
 const errorHandler = withErrorHandler(CloudProviderListPage);
-export default withStyles(styles)(errorHandler);
+export default errorHandler;

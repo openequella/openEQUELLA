@@ -29,9 +29,9 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FilterListIcon from "@mui/icons-material/FilterList";
-import makeStyles from "@mui/styles/makeStyles";
 import Share from "@mui/icons-material/Share";
 import * as OEQ from "@openequella/rest-api-client";
 import clsx from "clsx";
@@ -47,15 +47,23 @@ import SearchOrderSelect, { SearchOrderSelectProps } from "./SearchOrderSelect";
 import { SearchPagination, SearchPaginationProps } from "./SearchPagination";
 import SearchResult from "./SearchResult";
 
-const useStyles = makeStyles({
-  transparentList: {
+const PREFIX = "SearchResultList";
+
+const classes = {
+  transparentList: `${PREFIX}-transparentList`,
+  centralSpinner: `${PREFIX}-centralSpinner`,
+  textCentered: `${PREFIX}-textCentered`,
+};
+
+const StyledCard = styled(Card)({
+  [`& .${classes.transparentList}`]: {
     opacity: 0.2,
   },
-  centralSpinner: {
+  [`& .${classes.centralSpinner}`]: {
     top: "50%",
     position: "fixed",
   },
-  textCentered: {
+  [`& .${classes.textCentered}`]: {
     textAlign: "center",
   },
 });
@@ -142,7 +150,6 @@ export const SearchResultList = ({
   onSaveSearch,
   exportProps: { isExportPermitted, linkRef, exportLinkProps },
 }: SearchResultListProps) => {
-  const classes = useStyles();
   const inSelectionSession: boolean = isSelectionSessionOpen();
 
   /**
@@ -161,7 +168,7 @@ export const SearchResultList = ({
   );
 
   return (
-    <Card>
+    <StyledCard>
       <CardHeader
         title={searchPageStrings.subtitle + ` (${count})`}
         action={
@@ -237,7 +244,7 @@ export const SearchResultList = ({
           </Grid>
         </Grid>
       </CardActions>
-    </Card>
+    </StyledCard>
   );
 };
 

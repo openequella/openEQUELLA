@@ -15,24 +15,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Theme } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client/";
 import * as React from "react";
 import { WizardControlBasicProps } from "./WizardHelper";
 import { WizardLabel } from "./WizardLabel";
 import { chunk } from "lodash";
 
-const useStyles = makeStyles<Theme, { optionWidth: number }>({
-  optionRow: {
+const PREFIX = "WizardOptionGroup";
+
+const classes = {
+  optionRow: `${PREFIX}-optionRow`,
+  optionColumn: `${PREFIX}-optionColumn`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled("div", {
+  shouldForwardProp: (prop) => prop !== "optionWidth",
+})<{ optionWidth: number }>(({ theme, optionWidth }) => ({
+  [`& .${classes.optionRow}`]: {
     flexDirection: "row",
     display: "flex",
     alignItems: "center",
   },
-  optionColumn: {
-    width: ({ optionWidth }) => `${optionWidth}%`,
+  [`& .${classes.optionColumn}`]: {
+    width: `${optionWidth}%`,
   },
-});
+}));
 
 export interface WizardCheckBoxGroupTemplateProps
   extends WizardControlBasicProps {
@@ -66,10 +75,9 @@ export const WizardOptionGroup = ({
   buildOption,
 }: WizardCheckBoxGroupTemplateProps) => {
   const columnNumber = Math.max(1, columns);
-  const classes = useStyles({ optionWidth: Math.round(100 / columnNumber) });
 
   return (
-    <>
+    <Root optionWidth={Math.round(100 / columnNumber)}>
       <WizardLabel
         mandatory={mandatory}
         label={label}
@@ -90,6 +98,6 @@ export const WizardOptionGroup = ({
           ))}
         </div>
       ))}
-    </>
+    </Root>
   );
 };

@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Backdrop, Grid, Theme, Toolbar, Typography } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { Backdrop, Grid, Toolbar, Typography } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";
 import CodeIcon from "@mui/icons-material/Code";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
@@ -46,6 +46,67 @@ import LightboxMessage from "./LightboxMessage";
 import { OEQItemSummaryPageButton } from "./OEQItemSummaryPageButton";
 import { TooltipIconButton } from "./TooltipIconButton";
 
+const PREFIX = "Lightbox";
+
+const classes = {
+  lightboxBackdrop: `${PREFIX}-lightboxBackdrop`,
+  lightboxAudio: `${PREFIX}-lightboxAudio`,
+  lightboxContent: `${PREFIX}-lightboxContent`,
+  lightboxImage: `${PREFIX}-lightboxImage`,
+  menuButton: `${PREFIX}-menuButton`,
+  title: `${PREFIX}-title`,
+  toolbar: `${PREFIX}-toolbar`,
+  arrowButton: `${PREFIX}-arrowButton`,
+};
+
+const StyledBackdrop = styled(Backdrop)(({ theme }) => ({
+  [`& .${classes.lightboxBackdrop}`]: {
+    backgroundColor: "#000000cc",
+    cursor: "default", // Replace the backdrop 'pointer' style
+    zIndex: theme.zIndex.drawer + 1,
+  },
+
+  [`& .${classes.lightboxAudio}`]: {
+    minWidth: 200,
+    width: "60vw",
+  },
+
+  [`& .${classes.lightboxContent}`]: {
+    maxWidth: "80vw",
+    maxHeight: "80vh",
+  },
+
+  [`& .${classes.lightboxImage}`]: {
+    minWidth: 100,
+    minHeight: 100,
+  },
+
+  [`& .${classes.menuButton}`]: {
+    color: "#fafafa",
+    "&:hover": {
+      background: "#505050",
+    },
+  },
+
+  [`& .${classes.title}`]: {
+    flexGrow: 1,
+  },
+
+  [`& .${classes.toolbar}`]: {
+    backgroundColor: "#0a0a0a",
+    color: "#fafafa",
+    position: "absolute",
+    top: 0,
+    width: "100%",
+  },
+
+  [`& .${classes.arrowButton}`]: {
+    width: 48,
+    height: 48,
+    color: "#fafafa",
+  },
+}));
+
 const {
   common: {
     action: { close: labelClose, openInNewTab: labelOpenInNewTab },
@@ -58,47 +119,6 @@ const {
   },
   embedCode: { copy: labelCopyEmbedCode },
 } = languageStrings;
-
-const useStyles = makeStyles((theme: Theme) => ({
-  lightboxBackdrop: {
-    backgroundColor: "#000000cc",
-    cursor: "default", // Replace the backdrop 'pointer' style
-    zIndex: theme.zIndex.drawer + 1,
-  },
-  lightboxAudio: {
-    minWidth: 200,
-    width: "60vw",
-  },
-  lightboxContent: {
-    maxWidth: "80vw",
-    maxHeight: "80vh",
-  },
-  lightboxImage: {
-    minWidth: 100,
-    minHeight: 100,
-  },
-  menuButton: {
-    color: "#fafafa",
-    "&:hover": {
-      background: "#505050",
-    },
-  },
-  title: {
-    flexGrow: 1,
-  },
-  toolbar: {
-    backgroundColor: "#0a0a0a",
-    color: "#fafafa",
-    position: "absolute",
-    top: 0,
-    width: "100%",
-  },
-  arrowButton: {
-    width: 48,
-    height: 48,
-    color: "#fafafa",
-  },
-}));
 
 export interface LightboxConfig {
   /** URL for the item to display in the Lightbox. */
@@ -138,8 +158,6 @@ export interface LightboxProps {
 const domParser = new DOMParser();
 
 const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
-  const classes = useStyles();
-
   const [content, setContent] = useState<ReactElement | undefined>();
   const [lightBoxConfig, setLightBoxConfig] = useState<LightboxConfig>(config);
   const [openEmbedCodeDialog, setOpenEmbedCodeDialog] =
@@ -220,7 +238,7 @@ const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
       );
 
     setContent(buildContent());
-  }, [lightBoxConfig, classes, mimeType, src, title]);
+  }, [lightBoxConfig, mimeType, src, title]);
 
   const handleOpenInNewWindow = (event: SyntheticEvent) => {
     event.stopPropagation();
@@ -252,7 +270,7 @@ const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
   };
 
   return (
-    <Backdrop
+    <StyledBackdrop
       className={classes.lightboxBackdrop}
       open={open}
       onClick={handleCloseLightbox}
@@ -342,7 +360,7 @@ const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
           embedCode={generateEmbedCode()}
         />
       )}
-    </Backdrop>
+    </StyledBackdrop>
   );
 };
 

@@ -17,14 +17,20 @@
  */
 import * as React from "react";
 import { Typography, Tooltip } from "@mui/material";
-import { makeStyles } from "@mui/styles";
 import { DateTime } from "luxon";
+import { styled } from "@mui/material/styles";
 
-const useStyles = makeStyles({
-  dateModified: {
+const PREFIX = "Date";
+
+const classes = {
+  dateModified: `${PREFIX}-dateModified`,
+};
+
+const StyledTooltip = styled(Tooltip)(() => ({
+  [`& .${classes.dateModified}`]: {
     display: "inline-block",
   },
-});
+}));
 export interface DateProps {
   /**
    * If true, relative date will be used as primary display. Timestamp will be displayed as tooltip on hover
@@ -36,7 +42,6 @@ export interface DateProps {
   date: Date;
 }
 export default function Date({ displayRelative, date }: DateProps) {
-  const classes = useStyles();
   const luxDate = DateTime.fromJSDate(date);
   let primaryDate: string | null = luxDate.toLocaleString(
     DateTime.DATETIME_MED
@@ -48,11 +53,11 @@ export default function Date({ displayRelative, date }: DateProps) {
   }
 
   return (
-    <Tooltip title={hoverDate ?? "undefined"}>
+    <StyledTooltip title={hoverDate ?? "undefined"}>
       <Typography className={classes.dateModified} component="span">
         {primaryDate}
       </Typography>
-    </Tooltip>
+    </StyledTooltip>
   );
 }
 export { Date };

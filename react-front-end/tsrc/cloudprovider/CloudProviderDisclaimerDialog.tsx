@@ -16,15 +16,21 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { Dialog, DialogContent, DialogTitle, Theme } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { styled } from "@mui/material/styles";
+import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { cloudProviderLangStrings } from "./CloudProviderModule";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Typography from "@mui/material/Typography";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  closeButton: {
+const PREFIX = "CloudProviderDisclaimerDialog";
+
+const classes = {
+  closeButton: `${PREFIX}-closeButton`,
+};
+
+const StyledDialog = styled(Dialog)(({ theme }) => ({
+  [`& .${classes.closeButton}`]: {
     position: "absolute",
     right: theme.spacing(1),
   },
@@ -39,15 +45,14 @@ const CloudProviderDisclaimerDialog = ({
   openDialog,
   onClose,
 }: CloudProviderDisclaimerDialogProps) => {
-  const styles = useStyles();
   return (
-    <Dialog fullWidth open={openDialog} onClose={onClose}>
+    <StyledDialog fullWidth open={openDialog} onClose={onClose}>
       <DialogTitle>
         {cloudProviderLangStrings.newcloudprovider.disclaimer.title}
         <IconButton
           aria-label="Close"
           onClick={onClose}
-          className={styles.closeButton}
+          className={classes.closeButton}
           size="large"
         >
           <CloseIcon />
@@ -91,7 +96,7 @@ const CloudProviderDisclaimerDialog = ({
           and receiving any Materials from it.
         </Typography>
       </DialogContent>
-    </Dialog>
+    </StyledDialog>
   );
 };
 

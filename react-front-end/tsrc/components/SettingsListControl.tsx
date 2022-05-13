@@ -16,9 +16,27 @@
  * limitations under the License.
  */
 import { ListItem, ListItemSecondaryAction, ListItemText } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import * as React from "react";
 import { ReactNode } from "react";
-import makeStyles from "@mui/styles/makeStyles";
+const PREFIX = "SettingsListControl";
+
+const classes = {
+  listItemText: `${PREFIX}-listItemText`,
+  secondaryAction: `${PREFIX}-secondaryAction`,
+};
+
+const StyledListItem = styled(ListItem)({
+  [`& .${classes.listItemText}`]: {
+    maxWidth: "40%",
+    minHeight: "38px",
+  },
+  [`& .${classes.secondaryAction}`]: {
+    width: "55%",
+    display: "flex",
+    justifyContent: "flex-end",
+  },
+});
 
 export interface SettingsListControlProps {
   /**
@@ -39,18 +57,6 @@ export interface SettingsListControlProps {
   control: ReactNode;
 }
 
-const useStyles = makeStyles({
-  listItemText: {
-    maxWidth: "40%",
-    minHeight: "38px",
-  },
-  secondaryAction: {
-    width: "55%",
-    display: "flex",
-    justifyContent: "flex-end",
-  },
-});
-
 /**
  * This component is used to define a row inside a SettingsList to be used in the page/settings/* pages.
  * It should be placed within a SettingsList.
@@ -61,9 +67,8 @@ export default function SettingsListControl({
   secondaryText,
   control,
 }: SettingsListControlProps) {
-  const classes = useStyles();
   return (
-    <ListItem alignItems="flex-start" divider={divider}>
+    <StyledListItem alignItems="flex-start" divider={divider}>
       <ListItemText
         className={classes.listItemText}
         primary={primaryText}
@@ -72,6 +77,6 @@ export default function SettingsListControl({
       <ListItemSecondaryAction className={classes.secondaryAction}>
         {control}
       </ListItemSecondaryAction>
-    </ListItem>
+    </StyledListItem>
   );
 }

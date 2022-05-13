@@ -15,8 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Theme } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { styled } from "@mui/material/styles";
 import DefaultFileIcon from "@mui/icons-material/InsertDriveFile";
 import WebIcon from "@mui/icons-material/Language";
 import LinkIcon from "@mui/icons-material/Link";
@@ -33,15 +32,22 @@ import { simpleMatch } from "../util/match";
 import * as S from "fp-ts/string";
 import * as RNEA from "fp-ts/ReadonlyNonEmptyArray";
 
-const useStyles = makeStyles((theme: Theme) => {
+const PREFIX = "OEQThumb";
+
+const classes = {
+  thumbnail: `${PREFIX}-thumbnail`,
+  placeholderThumbnail: `${PREFIX}-placeholderThumbnail`,
+};
+
+const Root = styled("div")(({ theme }) => {
   return {
-    thumbnail: {
+    [`& .${classes.thumbnail}`]: {
       //if material UI changes such that the MuiPaper-elevation1 MuiPaper-rounded no longer map, add the rules here.
       marginRight: theme.spacing(2),
       width: 88,
       height: "auto",
     },
-    placeholderThumbnail: {
+    [`& .${classes.placeholderThumbnail}`]: {
       color: theme.palette.text.secondary,
       opacity: 0.4,
       height: 66,
@@ -70,7 +76,6 @@ export interface OEQThumbProps {
  * image from the server. Of if no details provided will display a generic placeholder.
  */
 export default function OEQThumb({ details }: OEQThumbProps) {
-  const classes = useStyles();
   const thumbLabels = languageStrings.searchpage.thumbnails;
   const generalThumbStyles: ThumbProps = {
     className: `MuiPaper-elevation1 MuiPaper-rounded ${classes.thumbnail} ${classes.placeholderThumbnail}`,
@@ -168,19 +173,23 @@ export default function OEQThumb({ details }: OEQThumbProps) {
       })
     );
 
-  return pipe(
-    details,
-    O.fromNullable,
-    O.map(({ attachmentType, mimeType, link }) =>
-      link
-        ? buildServerProvidedThumb(link)
-        : buildGenericThumb(attachmentType, mimeType)
-    ),
-    O.getOrElse(() => (
-      <PlaceholderIcon
-        aria-label={thumbLabels.placeholder}
-        {...generalThumbStyles}
-      />
-    ))
+  return (
+    <Root>
+      {pipe(
+        details,
+        O.fromNullable,
+        O.map(({ attachmentType, mimeType, link }) =>
+          link
+            ? buildServerProvidedThumb(link)
+            : buildGenericThumb(attachmentType, mimeType)
+        ),
+        O.getOrElse(() => (
+          <PlaceholderIcon
+            aria-label={thumbLabels.placeholder}
+            {...generalThumbStyles}
+          />
+        ))
+      )}
+    </Root>
   );
 }

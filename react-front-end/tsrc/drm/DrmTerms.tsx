@@ -15,15 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Grid, Theme, Typography } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { Grid, Typography } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as React from "react";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  li: {
+const PREFIX = "NonStandardDrmTerms";
+
+const classes = {
+  li: `${PREFIX}-li`,
+};
+
+const Root = styled("ol")(({ theme }) => ({
+  [`& .${classes.li}`]: {
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1),
   },
@@ -39,7 +45,6 @@ export const NonStandardDrmTerms = ({
   title: string;
   terms: string[];
 }) => {
-  const classes = useStyles();
   return (
     <li className={classes.li} key={title}>
       <Grid container direction="column">
@@ -66,7 +71,6 @@ export const DrmTerms = ({
   parties,
   customTerms,
 }: OEQ.Drm.DrmAgreements) => {
-  const classes = useStyles();
   const standardTerms = [
     regularPermission,
     additionalPermission,
@@ -113,10 +117,10 @@ export const DrmTerms = ({
   );
 
   return (
-    <ol className="skip-css-reset" start={1}>
+    <Root className="skip-css-reset" start={1}>
       {standardTerms}
       {partyDetails}
       {customTermDetails}
-    </ol>
+    </Root>
   );
 };

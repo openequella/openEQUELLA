@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IconButton, Snackbar, SnackbarContent, Theme } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import { IconButton, Snackbar, SnackbarContent } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CloseIcon from "@mui/icons-material/Close";
 import ErrorIcon from "@mui/icons-material/Error";
@@ -27,38 +27,56 @@ import { commonString } from "../util/commonstrings";
 
 import { amber, green } from "@mui/material/colors";
 
+const PREFIX = "MessageInfo";
+
+const classes = {
+  success: `${PREFIX}-success`,
+  error: `${PREFIX}-error`,
+  info: `${PREFIX}-info`,
+  warning: `${PREFIX}-warning`,
+  icon: `${PREFIX}-icon`,
+  iconVariant: `${PREFIX}-iconVariant`,
+  message: `${PREFIX}-message`,
+};
+
+const StyledSnackbar = styled(Snackbar)(({ theme }) => ({
+  [`& .${classes.success}`]: {
+    backgroundColor: green[600],
+  },
+
+  [`& .${classes.error}`]: {
+    backgroundColor: theme.palette.error.dark,
+  },
+
+  [`& .${classes.info}`]: {
+    backgroundColor: theme.palette.primary.dark,
+  },
+
+  [`& .${classes.warning}`]: {
+    backgroundColor: amber[700],
+  },
+
+  [`& .${classes.icon}`]: {
+    fontSize: 20,
+  },
+
+  [`& .${classes.iconVariant}`]: {
+    opacity: 0.9,
+    marginRight: theme.spacing(1),
+  },
+
+  [`& .${classes.message}`]: {
+    display: "flex",
+    alignItems: "center",
+  },
+}));
+
 const variantIcon = {
   success: CheckCircleIcon,
   warning: WarningIcon,
   error: ErrorIcon,
   info: InfoIcon,
 };
-
-const useStyles = makeStyles((theme: Theme) => ({
-  success: {
-    backgroundColor: green[600],
-  },
-  error: {
-    backgroundColor: theme.palette.error.dark,
-  },
-  info: {
-    backgroundColor: theme.palette.primary.dark,
-  },
-  warning: {
-    backgroundColor: amber[700],
-  },
-  icon: {
-    fontSize: 20,
-  },
-  iconVariant: {
-    opacity: 0.9,
-    marginRight: theme.spacing(1),
-  },
-  message: {
-    display: "flex",
-    alignItems: "center",
-  },
-}));
 
 export type MessageInfoVariant = "success" | "warning" | "error" | "info";
 
@@ -70,16 +88,15 @@ export interface MessageInfoProps {
 }
 
 const MessageInfo = ({ open, title, variant, onClose }: MessageInfoProps) => {
-  const styles = useStyles();
   const Icon = variantIcon[variant];
   return (
-    <Snackbar open={open} onClose={onClose} autoHideDuration={5000}>
+    <StyledSnackbar open={open} onClose={onClose} autoHideDuration={5000}>
       <SnackbarContent
-        className={styles[variant]}
+        className={classes[variant]}
         aria-describedby="client-snackbar"
         message={
-          <span id="client-snackbar" className={styles.message}>
-            <Icon className={`${styles.icon} ${styles.iconVariant}`} />
+          <span id="client-snackbar" className={classes.message}>
+            <Icon className={`${classes.icon} ${classes.iconVariant}`} />
             {title}
           </span>
         }
@@ -91,11 +108,11 @@ const MessageInfo = ({ open, title, variant, onClose }: MessageInfoProps) => {
             onClick={onClose}
             size="large"
           >
-            <CloseIcon className={styles.icon} />
+            <CloseIcon className={classes.icon} />
           </IconButton>
         }
       />
-    </Snackbar>
+    </StyledSnackbar>
   );
 };
 

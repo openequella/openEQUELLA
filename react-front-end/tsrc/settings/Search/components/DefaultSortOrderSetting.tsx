@@ -16,21 +16,28 @@
  * limitations under the License.
  */
 import { FormControl, MenuItem, OutlinedInput, Select } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import * as React from "react";
 import { languageStrings } from "../../../util/langstrings";
-import makeStyles from "@mui/styles/makeStyles";
 import * as OEQ from "@openequella/rest-api-client";
+
+const PREFIX = "DefaultSortOrderSetting";
+
+const classes = {
+  select: `${PREFIX}-select`,
+};
+
+const StyledFormControl = styled(FormControl)({
+  [`& .${classes.select}`]: {
+    width: "200px",
+  },
+});
 
 export interface DefaultSortOrderSettingProps {
   disabled: boolean;
   value?: OEQ.SearchSettings.SortOrder;
   setValue: (order: OEQ.SearchSettings.SortOrder) => void;
 }
-const useStyles = makeStyles({
-  select: {
-    width: "200px",
-  },
-});
 export default function DefaultSortOrderSetting({
   disabled,
   value,
@@ -38,13 +45,12 @@ export default function DefaultSortOrderSetting({
 }: DefaultSortOrderSettingProps) {
   const searchPageSettingsStrings =
     languageStrings.settings.searching.searchPageSettings;
-  const classes = useStyles();
 
   const validateSortOrder = (value: unknown): OEQ.SearchSettings.SortOrder =>
     OEQ.SearchSettings.SortOrderRunTypes.check(value);
 
   return (
-    <FormControl variant="outlined">
+    <StyledFormControl variant="outlined">
       <Select
         SelectDisplayProps={{ id: "_sortOrder" }}
         disabled={disabled}
@@ -68,6 +74,6 @@ export default function DefaultSortOrderSetting({
           {searchPageSettingsStrings.userRating}
         </MenuItem>
       </Select>
-    </FormControl>
+    </StyledFormControl>
   );
 }
