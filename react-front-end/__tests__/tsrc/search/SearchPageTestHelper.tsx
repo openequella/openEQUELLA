@@ -16,9 +16,13 @@
  * limitations under the License.
  */
 
-import { MuiThemeProvider } from "@material-ui/core";
-import { createTheme } from "@material-ui/core/styles";
-import type { Theme } from "@material-ui/core/styles";
+import {
+  ThemeProvider,
+  StyledEngineProvider,
+  adaptV4Theme,
+} from "@mui/material";
+import { createTheme } from "@mui/material/styles";
+import type { Theme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import { render, RenderResult } from "@testing-library/react";
 import { createMemoryHistory } from "history";
@@ -175,9 +179,11 @@ export const initialiseEssentialMocks = ({
   );
 };
 
-const defaultTheme = createTheme({
-  props: { MuiWithWidth: { initialWidth: "md" } },
-});
+const defaultTheme = createTheme(
+  adaptV4Theme({
+    // props: { MuiWithWidth: { initialWidth: "md" } },
+  })
+);
 
 /**
  * A mock specifically for the Promise for when searches are executed to be able to watch for when
@@ -220,14 +226,16 @@ export const renderSearchPage = async (
   history.push({});
 
   const page = render(
-    <MuiThemeProvider theme={theme}>
-      <Router history={history}>
-        <SearchPage
-          updateTemplate={jest.fn()}
-          advancedSearchId={advancedSearchId}
-        />
-      </Router>
-    </MuiThemeProvider>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>
+        <Router history={history}>
+          <SearchPage
+            updateTemplate={jest.fn()}
+            advancedSearchId={advancedSearchId}
+          />
+        </Router>
+      </ThemeProvider>
+    </StyledEngineProvider>
   );
   // Wait for the first completion of initial search
   await waitForSearch(searchPromise);

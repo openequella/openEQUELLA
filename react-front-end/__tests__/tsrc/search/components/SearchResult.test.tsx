@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createTheme } from "@material-ui/core/styles";
-import { MuiThemeProvider, Theme } from "@material-ui/core";
+import { createTheme, adaptV4Theme } from "@mui/material/styles";
+import { ThemeProvider, StyledEngineProvider, Theme } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
 import {
@@ -73,9 +73,11 @@ const {
   attachment: selectAttachmentString,
 } = languageStrings.searchpage.selectResource;
 
-const defaultTheme = createTheme({
-  props: { MuiWithWidth: { initialWidth: "md" } },
-});
+const defaultTheme = createTheme(
+  adaptV4Theme({
+    // props: {MuiWithWidth: {initialWidth: "md"}},
+  })
+);
 
 describe("<SearchResult/>", () => {
   const renderSearchResult = async (
@@ -86,16 +88,18 @@ describe("<SearchResult/>", () => {
       // This needs to be wrapped inside a BrowserRouter, to prevent an
       // `Invariant failed: You should not use <Link> outside a <Router>`
       // error  because of the <Link/> tag within SearchResult
-      <MuiThemeProvider theme={theme}>
-        <BrowserRouter>
-          <SearchResult
-            key={itemResult.uuid}
-            item={itemResult}
-            highlights={[]}
-            getItemAttachments={async () => itemResult.attachments!}
-          />
-        </BrowserRouter>
-      </MuiThemeProvider>
+      <BrowserRouter>
+        <StyledEngineProvider injectFirst>
+          <ThemeProvider theme={theme}>
+            <SearchResult
+              key={itemResult.uuid}
+              item={itemResult}
+              highlights={[]}
+              getItemAttachments={async () => itemResult.attachments!}
+            />
+          </ThemeProvider>
+        </StyledEngineProvider>
+      </BrowserRouter>
     );
 
     // Make sure we wait for the resolution of viewers - which will update the attachment lists
@@ -181,9 +185,11 @@ describe("<SearchResult/>", () => {
   });
 
   it("hide star rating and comment count in small screen", async () => {
-    const theme = createTheme({
-      props: { MuiWithWidth: { initialWidth: "sm" } },
-    });
+    const theme = createTheme(
+      adaptV4Theme({
+        // props: {MuiWithWidth: {initialWidth: "sm"}},
+      })
+    );
     const { starRatings, commentCount } = mockData.attachSearchObj;
     const { queryByLabelText, queryByText } = await renderSearchResult(
       mockData.attachSearchObj,
@@ -274,9 +280,9 @@ describe("<SearchResult/>", () => {
   describe("Dead attachments handling", () => {
     it("should display dead attachments with a warning label", async () => {
       const { oneDeadAttachObj } = mockData;
-      const { queryByTitle } = await renderSearchResult(oneDeadAttachObj);
+      const { queryByLabelText } = await renderSearchResult(oneDeadAttachObj);
       expect(
-        queryByTitle(languageStrings.searchpage.deadAttachmentWarning)
+        queryByLabelText(languageStrings.searchpage.deadAttachmentWarning)
       ).toBeInTheDocument();
     });
 
@@ -493,6 +499,7 @@ describe("<SearchResult/>", () => {
       });
 
       it("Should not show the Select All Attachments button if all attachments are dead", async () => {
+        updateMockGetRenderData(basicRenderData);
         const { queryByLabelText } = await renderSearchResult(
           mockData.oneDeadAttachObj
         );
@@ -502,15 +509,17 @@ describe("<SearchResult/>", () => {
       });
 
       it("Should show the Select All Attachments button if at least one attachment is not dead", async () => {
-        const { queryByLabelText, getByTitle } = await renderSearchResult(
+        updateMockGetRenderData(basicRenderData);
+        const { queryByLabelText, getByLabelText } = await renderSearchResult(
           mockData.oneDeadOneAliveAttachObj
         );
+
         expect(
           queryByLabelText(selectAllAttachmentsString)
         ).toBeInTheDocument();
         // Given the user clicks Select All Attachments for an item with a dead attachment
         // and an alive attachment...
-        userEvent.click(getByTitle(selectAllAttachmentsString));
+        userEvent.click(getByLabelText(selectAllAttachmentsString));
 
         // The function should only have been called with the attachment
         // 78883eff-7cf6-4b14-ab76-2b7f84dbe833 which is the intact one

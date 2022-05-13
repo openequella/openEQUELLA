@@ -17,7 +17,7 @@
  */
 import userEvent from "@testing-library/user-event";
 import SearchSettingFormControl from "../../../tsrc/components/SearchSettingFormControl";
-import { TextField } from "@material-ui/core";
+import { TextField } from "@mui/material";
 import * as React from "react";
 import { render, RenderResult } from "@testing-library/react";
 

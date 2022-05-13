@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createTheme } from "@material-ui/core/styles";
+import { createTheme, adaptV4Theme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
 import {
@@ -504,7 +504,7 @@ describe("<SearchPage/>", () => {
     // Initial items per page is 10
     const { getPageCount, getItemsPerPageOption, getItemsPerPageSelect } =
       queryPaginatorControls(page.container);
-    expect(getPageCount()).toHaveTextContent("1-10 of 12");
+    expect(getPageCount()).toHaveTextContent("1–10 of 12");
 
     userEvent.click(getItemsPerPageSelect());
     const itemsPerPageDesired = 25;
@@ -515,7 +515,7 @@ describe("<SearchPage/>", () => {
       ...defaultSearchPageOptions,
       rowsPerPage: itemsPerPageDesired,
     });
-    expect(getPageCount()).toHaveTextContent("1-12 of 12");
+    expect(getPageCount()).toHaveTextContent("1–12 of 12");
   });
 
   it("navigates to the previous and next page when requested", async () => {
@@ -524,11 +524,11 @@ describe("<SearchPage/>", () => {
 
     userEvent.click(getNextPageButton());
     await waitForSearch(searchPromise);
-    expect(getPageCount()).toHaveTextContent("11-12 of 12");
+    expect(getPageCount()).toHaveTextContent("11–12 of 12");
 
     userEvent.click(getPreviousPageButton());
     await waitForSearch(searchPromise);
-    expect(getPageCount()).toHaveTextContent("1-10 of 12");
+    expect(getPageCount()).toHaveTextContent("1–10 of 12");
   });
 
   it("moves to the first and last page when requested", async () => {
@@ -537,8 +537,7 @@ describe("<SearchPage/>", () => {
     );
     const { getFirstPageButton, getLastPageButton, getPageCount } =
       queryPaginatorControls(page.container);
-    const firstPageCountText = "1-10 of 30";
-
+    const firstPageCountText = "1–10 of 30";
     // ensure baseline
     await changeQuery(page.container, "baseline");
     expect(getPageCount()).toHaveTextContent(firstPageCountText);
@@ -546,7 +545,7 @@ describe("<SearchPage/>", () => {
     // Test going to the last page
     userEvent.click(getLastPageButton());
     await waitForSearch(searchPromise);
-    expect(getPageCount()).toHaveTextContent("21-30 of 30");
+    expect(getPageCount()).toHaveTextContent("21–30 of 30");
 
     // ... and now back to the first
     userEvent.click(getFirstPageButton());
@@ -645,7 +644,7 @@ describe("<SearchPage/>", () => {
 
   it("should copy a search link to clipboard, and show a snackbar", async () => {
     const mockClipboard = jest.spyOn(navigator.clipboard, "writeText");
-    const copySearchButton = screen.getByTitle(
+    const copySearchButton = screen.getByLabelText(
       languageStrings.searchpage.shareSearchHelperText
     );
     mockClipboard.mockResolvedValueOnce();
@@ -721,9 +720,11 @@ describe("In Selection Session", () => {
 });
 
 describe("Responsiveness", () => {
-  const theme = createTheme({
-    props: { MuiWithWidth: { initialWidth: "sm" } },
-  });
+  const theme = createTheme(
+    adaptV4Theme({
+      // props: { MuiWithWidth: { initialWidth: "sm" } },
+    })
+  );
 
   // We can query the Refine Search Panel as it always exists in the Side Panel.
   const querySidePanel = (page: RenderResult) =>
