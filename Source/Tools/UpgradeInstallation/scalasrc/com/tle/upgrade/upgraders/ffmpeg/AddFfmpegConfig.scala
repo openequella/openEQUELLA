@@ -26,6 +26,7 @@ import com.tle.upgrade.upgraders.AbstractUpgrader
 
 import java.io.{File, IOException}
 import java.util
+import java.util.regex.Pattern
 
 /**
   * This migration is intended to replace tool libav with ffmpeg.
@@ -44,46 +45,36 @@ class AddFfmpegConfig extends AbstractUpgrader {
   @throws[Exception]
   override def upgrade(result: UpgradeResult, tleInstallDir: File): Unit = {
     val config: EquellaConfig = new EquellaConfig(tleInstallDir)
-    result.addLogMessage("Updating optional-config properties")
     updateOptionalProperties(result, config.getConfigDir)
   }
 
   private def updateOptionalProperties(result: UpgradeResult, configDir: File): Unit = {
-    class FfmpegLineFileModifier
-        extends LineFileModifier((new File(configDir, PropertyFileModifier.OPTIONAL_CONFIG)),
-                                 result) {
-      var removeLibavComment   = false;
-      var removeLibavPath      = false;
-      var removeLibavBlankLine = false;
-
-      override protected def processLine(line: String): String = {
-        if (!removeLibavComment && line.equals("# Libav path. For example C:/Libav/usr/bin")) {
-          removeLibavComment = true;
-          return null;
-        } else if (!removeLibavPath && line.contains("libav.path =")) {
-          removeLibavPath = true;
-          return null;
-        } else if (removeLibavComment && removeLibavPath && !removeLibavBlankLine && line.equals(
-                     "")) {
-          removeLibavBlankLine = true;
-          return null;
-        }
-        line
-      }
-
-      override protected def addLines: util.List[String] = {
-        val ffmpegComment: String = "# FFmpeg path"
-        val ffmpegProp: String    = "#ffmpeg.path = /path/to/ffmpeg"
-        Lists.newArrayList(Constants.BLANK, ffmpegComment, ffmpegProp)
-      }
-    }
-
     try {
-      val lineMod: LineFileModifier = new FfmpegLineFileModifier()
+      val lineMod: LineFileModifier =
+        new LineFileModifier((new File(configDir, PropertyFileModifier.OPTIONAL_CONFIG)), result) {
+          val libavCommentPattern = "^#.*Libav path. For example C:/Libav/usr/bin.*"
+          val libavPathPattern    = ".*libav.path =.*"
+
+          override protected def processLine(line: String): String = {
+            if (Pattern.matches(libavCommentPattern, line) || Pattern.matches(libavPathPattern,
+                                                                              line)) {
+              return null;
+            }
+            line
+          }
+
+          override protected def addLines: util.List[String] = {
+            val ffmpegComment: String = "# FFmpeg path"
+            val ffmpegProp: String    = "#ffmpeg.path = /path/to/ffmpeg"
+            Lists.newArrayList(Constants.BLANK, ffmpegComment, ffmpegProp)
+          }
+        }
       lineMod.update()
     } catch {
       case e: IOException =>
-        throw new RuntimeException("Failed to update config file", e)
+        throw new RuntimeException(
+          "Failed to update optional-config.properties to support use of FFmpeg.",
+          e)
     }
   }
 }
