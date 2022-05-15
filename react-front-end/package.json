@@ -3,8 +3,8 @@
   "private": true,
   "config": {
     "buildlang": "target/resources/lang",
-    "devjs": "../Source/Plugins/Core/com.equella.core/target/scala-2.12/classes/web/reactjs",
-    "devlang": "../Source/Plugins/Core/com.equella.core/target/scala-2.12/classes/lang",
+    "devjs": "../Source/Plugins/Core/com.equella.core/target/scala-2.13/classes/web/reactjs",
+    "devlang": "../Source/Plugins/Core/com.equella.core/target/scala-2.13/classes/lang",
     "dist": "target/resources/web/reactjs",
     "languageBundle": "target/compile-language-bundle",
     "jest": {
