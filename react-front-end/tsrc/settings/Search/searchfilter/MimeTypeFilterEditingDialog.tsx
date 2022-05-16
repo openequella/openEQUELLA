@@ -138,6 +138,7 @@ const MimeTypeFilterEditingDialog = ({
           fullWidth
           onChange={(event) => setFilterName(event.target.value)}
           error={!!filterName && !isNameValid}
+          variant="standard"
         />
         <MimeTypeList
           entries={mimeTypeEntries}
