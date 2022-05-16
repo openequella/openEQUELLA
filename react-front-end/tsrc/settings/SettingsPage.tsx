@@ -144,7 +144,7 @@ const SettingsPage = ({
    * @returns {ReactElement} A link to the setting's page
    */
   const SettingLink = (setting: OEQ.Settings.GeneralSetting) => {
-    let link = <Root />;
+    let link = <div />;
     if (setting.links.route) {
       link = <Link to={setting.links.route}>{setting.name}</Link>;
     } else if (setting.links.href) {
@@ -171,7 +171,7 @@ const SettingsPage = ({
   };
 
   return (
-    <div id="settingsPage">
+    <Root id="settingsPage">
       <AdminDownloadDialog
         open={adminDialogOpen}
         onClose={() => setAdminDialogOpen(false)}
@@ -199,7 +199,7 @@ const SettingsPage = ({
           })
         )
       }
-    </div>
+    </Root>
   );
 };
 
