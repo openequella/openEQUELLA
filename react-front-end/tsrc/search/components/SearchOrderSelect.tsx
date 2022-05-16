@@ -71,6 +71,7 @@ export const SearchOrderSelect = ({
             OEQ.SearchSettings.SortOrderRunTypes.check(event.target.value)
           )
         }
+        variant="standard"
       >
         {Array.from(sortingOptionStrings).map(([value, text]) => (
           <MenuItem key={value} value={value}>
