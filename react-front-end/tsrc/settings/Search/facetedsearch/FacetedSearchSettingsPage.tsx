@@ -72,7 +72,7 @@ const classes = {
   cardAction: `${PREFIX}-cardAction`,
 };
 
-const StyledSettingPageTemplate = styled(SettingPageTemplate)({
+const Root = styled("div")({
   [`& .${classes.cardAction}`]: {
     display: "flex",
     justifyContent: "flex-end",
@@ -280,52 +280,54 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
   );
 
   return (
-    <StyledSettingPageTemplate
-      onSave={save}
-      saveButtonDisabled={!changesUnsaved}
-      snackbarOpen={showSnackBar}
-      snackBarOnClose={() => setShowSnackBar(false)}
-      preventNavigation={changesUnsaved}
-    >
-      <Card>
-        <CardContent>
-          <SettingsListHeading
-            heading={facetedsearchsettingStrings.subHeading}
-          />
-          <Typography variant="caption">
-            {facetedsearchsettingStrings.explanationText}
-          </Typography>
-          {facetList}
-        </CardContent>
-        <CardActions className={classes.cardAction}>
-          <IconButton
-            onClick={() => {
-              setCurrentFacet(undefined);
-              setShowEditingDialog(true);
-            }}
-            aria-label={facetedsearchsettingStrings.add}
-            color="primary"
-            size="large"
-          >
-            <AddCircleIcon fontSize="large" />
-          </IconButton>
-        </CardActions>
-      </Card>
+    <Root>
+      <SettingPageTemplate
+        onSave={save}
+        saveButtonDisabled={!changesUnsaved}
+        snackbarOpen={showSnackBar}
+        snackBarOnClose={() => setShowSnackBar(false)}
+        preventNavigation={changesUnsaved}
+      >
+        <Card>
+          <CardContent>
+            <SettingsListHeading
+              heading={facetedsearchsettingStrings.subHeading}
+            />
+            <Typography variant="caption">
+              {facetedsearchsettingStrings.explanationText}
+            </Typography>
+            {facetList}
+          </CardContent>
+          <CardActions className={classes.cardAction}>
+            <IconButton
+              onClick={() => {
+                setCurrentFacet(undefined);
+                setShowEditingDialog(true);
+              }}
+              aria-label={facetedsearchsettingStrings.add}
+              color="primary"
+              size="large"
+            >
+              <AddCircleIcon fontSize="large" />
+            </IconButton>
+          </CardActions>
+        </Card>
 
-      <FacetDialog
-        addOrEdit={addOrEdit}
-        open={showEditingDialog}
-        onClose={() => setShowEditingDialog(false)}
-        facet={currentFacet}
-      />
+        <FacetDialog
+          addOrEdit={addOrEdit}
+          open={showEditingDialog}
+          onClose={() => setShowEditingDialog(false)}
+          facet={currentFacet}
+        />
 
-      <MessageDialog
-        open={showResultDialog}
-        messages={resultMessages}
-        title={commonString.result.errors}
-        close={() => setShowResultDialog(false)}
-      />
-    </StyledSettingPageTemplate>
+        <MessageDialog
+          open={showResultDialog}
+          messages={resultMessages}
+          title={commonString.result.errors}
+          close={() => setShowResultDialog(false)}
+        />
+      </SettingPageTemplate>
+    </Root>
   );
 };
 

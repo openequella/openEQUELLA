@@ -109,6 +109,7 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
               onChange={(event) => {
                 setSelectedSchema(event.target.value as string | undefined);
               }}
+              variant="standard"
             >
               {schemaList}
             </Select>

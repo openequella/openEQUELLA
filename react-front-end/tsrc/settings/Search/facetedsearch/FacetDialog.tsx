@@ -104,6 +104,7 @@ const FacetDialog = ({ open, onClose, addOrEdit, facet }: FacetDialogProps) => {
           fullWidth
           onChange={(event) => setName(event.target.value)}
           error={!!name && isNameInvalid}
+          variant="standard"
         />
         <TextField
           type="number"
@@ -117,6 +118,7 @@ const FacetDialog = ({ open, onClose, addOrEdit, facet }: FacetDialogProps) => {
             )
           }
           helperText={facetFieldStrings.categoryNumberHelper}
+          variant="standard"
         />
         <TextField
           margin="dense"
@@ -130,6 +132,7 @@ const FacetDialog = ({ open, onClose, addOrEdit, facet }: FacetDialogProps) => {
           fullWidth
           disabled
           error={!!schemaNode && validateFacetFields(schemaNode)}
+          variant="standard"
         />
         <SchemaSelector
           setSchemaNode={(node) => {
