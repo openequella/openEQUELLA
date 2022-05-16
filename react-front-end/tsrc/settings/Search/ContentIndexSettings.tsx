@@ -15,8 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Mark } from "@mui/base/SliderUnstyled/SliderUnstyledProps";
+import type { Mark } from "@mui/base/SliderUnstyled/SliderUnstyledProps";
 import { Card, CardContent, Slider } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import { useCallback, useContext } from "react";
 import * as React from "react";
@@ -39,6 +40,15 @@ const contentIndexSettingsStrings =
   languageStrings.settings.searching.contentIndexSettings;
 
 const markStrings = contentIndexSettingsStrings.sliderMarks;
+
+const TermBoostingSlider = styled(Slider)(({ theme }) => ({
+  color: theme.palette.primary.main,
+  height: 2,
+  padding: "15px 0",
+  "& .MuiSlider-track": {
+    border: "none",
+  },
+}));
 
 const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
   const [searchSettings, setSearchSettings] =
@@ -147,7 +157,7 @@ const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
               primaryText={contentIndexSettingsStrings.titleBoostingTitle}
               divider
               control={
-                <Slider
+                <TermBoostingSlider
                   disabled={disableSettings}
                   marks={boostVals}
                   min={0}
@@ -165,7 +175,7 @@ const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
               primaryText={contentIndexSettingsStrings.metaBoostingTitle}
               divider
               control={
-                <Slider
+                <TermBoostingSlider
                   disabled={disableSettings}
                   marks={boostVals}
                   min={0}
@@ -182,7 +192,7 @@ const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
             <SettingsListControl
               primaryText={contentIndexSettingsStrings.attachmentBoostingTitle}
               control={
-                <Slider
+                <TermBoostingSlider
                   disabled={disableSettings}
                   marks={boostVals}
                   min={0}
