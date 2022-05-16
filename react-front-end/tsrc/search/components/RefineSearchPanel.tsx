@@ -24,9 +24,11 @@ import {
   List,
   ListItem,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import FilterList from "@mui/icons-material/FilterList";
 import CloseIcon from "@mui/icons-material/Close";
+import type { Theme } from "@mui/material/styles";
 import * as React from "react";
 import { ReactNode } from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
@@ -86,6 +88,10 @@ export const RefineSearchPanel = ({
   showFilterIcon,
   onClose,
 }: RefinePanelProps) => {
+  const isMdDown = useMediaQuery<Theme>((theme) =>
+    theme.breakpoints.down("md")
+  );
+
   const { title } = languageStrings.searchpage.refineSearchPanel;
 
   const { showMore, showLess } = languageStrings.common.action;
@@ -156,13 +162,14 @@ export const RefineSearchPanel = ({
             <Typography variant="h5">{title}</Typography>
           </Grid>
           <Grid item xs={1}>
-            <TooltipIconButton
-              sx={{ display: { md: "none", xs: "block" } }}
-              title={languageStrings.common.action.close}
-              onClick={onClose}
-            >
-              <CloseIcon />
-            </TooltipIconButton>
+            {isMdDown && (
+              <TooltipIconButton
+                title={languageStrings.common.action.close}
+                onClick={onClose}
+              >
+                <CloseIcon />
+              </TooltipIconButton>
+            )}
           </Grid>
         </Grid>
         <List>

@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import {
-  Box,
   Divider,
   Grid,
   IconButton,
@@ -24,8 +23,10 @@ import {
   ListItem,
   ListItemText,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import type { Theme } from "@mui/material/styles";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -163,6 +164,8 @@ export default function SearchResult({
   highlights,
   item,
 }: SearchResultProps) {
+  const isMdUp = useMediaQuery<Theme>((theme) => theme.breakpoints.up("md"));
+
   const {
     bookmarkId: bookmarkDefaultId,
     commentCount = 0,
@@ -284,8 +287,8 @@ export default function SearchResult({
           {bookmarkId ? <FavoriteIcon /> : <FavoriteBorderIcon />}
         </TooltipIconButton>
 
-        {commentCount > 0 && (
-          <Box sx={{ display: { xs: "none", md: "block" } }}>
+        {commentCount > 0 && isMdUp && (
+          <>
             {metaDataDivider}
             <Typography component="span">
               <HashLink
@@ -295,16 +298,16 @@ export default function SearchResult({
                 {formatSize(commentCount, commentStrings)}
               </HashLink>
             </Typography>
-          </Box>
+          </>
         )}
 
-        {starRatings >= 0 && (
-          <Box sx={{ display: { xs: "none", md: "block" } }}>
+        {starRatings >= 0 && isMdUp && (
+          <>
             {metaDataDivider}
             <div aria-label={sprintf(ratingStrings.label, starRatings)}>
               <StarRating numberOfStars={5} rating={starRatings} />
             </div>
-          </Box>
+          </>
         )}
       </div>
     );

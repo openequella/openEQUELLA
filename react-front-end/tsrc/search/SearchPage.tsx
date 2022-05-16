@@ -15,7 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { debounce, Drawer, Grid } from "@mui/material";
+import { debounce, Drawer, Grid, useMediaQuery } from "@mui/material";
+import type { Theme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { constant, pipe } from "fp-ts/function";
@@ -167,6 +168,8 @@ type SearchPageProps = TemplateUpdateProps & AdvancedSearchParams;
 
 const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
   console.debug("START: <SearchPage>");
+
+  const isMdUp = useMediaQuery<Theme>((theme) => theme.breakpoints.up("md"));
 
   const history = useHistory();
   const location = useLocation();
@@ -1124,9 +1127,11 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item md={4} sx={{ display: { xs: "none", md: "block" } }}>
-          {renderSidePanel()}
-        </Grid>
+        {isMdUp && (
+          <Grid item md={4}>
+            {renderSidePanel()}
+          </Grid>
+        )}
       </Grid>
       <MessageInfo
         open={!!snackBar.message}
@@ -1134,15 +1139,17 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
         title={snackBar.message}
         variant={snackBar.variant ?? "success"}
       />
-      <Drawer
-        sx={{ display: { md: "none", xs: "block" } }}
-        open={showRefinePanel}
-        anchor="right"
-        onClose={() => setShowRefinePanel(false)}
-        PaperProps={{ style: { width: "50%" } }}
-      >
-        {renderSidePanel()}
-      </Drawer>
+      {!isMdUp && (
+        <Drawer
+          sx={{ display: { md: "none", xs: "block" } }}
+          open={showRefinePanel}
+          anchor="right"
+          onClose={() => setShowRefinePanel(false)}
+          PaperProps={{ style: { width: "50%" } }}
+        >
+          {renderSidePanel()}
+        </Drawer>
+      )}
 
       {showFavouriteSearchDialog && (
         <FavouriteSearchDialog

@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createTheme, adaptV4Theme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
 import {
@@ -720,19 +719,13 @@ describe("In Selection Session", () => {
 });
 
 describe("Responsiveness", () => {
-  const theme = createTheme(
-    adaptV4Theme({
-      // props: { MuiWithWidth: { initialWidth: "sm" } },
-    })
-  );
-
   // We can query the Refine Search Panel as it always exists in the Side Panel.
   const querySidePanel = (page: RenderResult) =>
     page.queryByText(languageStrings.searchpage.refineSearchPanel.title);
   let page: RenderResult;
 
   beforeEach(async () => {
-    page = await renderSearchPage(searchPromise, undefined, undefined, theme);
+    page = await renderSearchPage(searchPromise, undefined, undefined, 600);
   });
 
   it("should hide the side panel in small screens", async () => {
@@ -740,7 +733,7 @@ describe("Responsiveness", () => {
   });
 
   it("should display the button controlling the side panel visibility", async () => {
-    const refineSearchButton = page.queryByTitle(
+    const refineSearchButton = page.queryByLabelText(
       languageStrings.searchpage.refineSearchPanel.title
     );
     expect(refineSearchButton).toBeInTheDocument();

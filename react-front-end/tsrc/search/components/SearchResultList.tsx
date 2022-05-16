@@ -27,8 +27,11 @@ import {
   ListItem,
   Tooltip,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import type { Theme } from "@mui/material/styles";
+
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import Share from "@mui/icons-material/Share";
@@ -150,6 +153,9 @@ export const SearchResultList = ({
   exportProps: { isExportPermitted, linkRef, exportLinkProps },
 }: SearchResultListProps) => {
   const inSelectionSession: boolean = isSelectionSessionOpen();
+  const isMdDown = useMediaQuery<Theme>((theme) =>
+    theme.breakpoints.down("md")
+  );
 
   /**
    * A list that consists of search result items. Lower the list's opacity when spinner displays.
@@ -195,15 +201,17 @@ export const SearchResultList = ({
                 <ExportSearchResultLink {...exportLinkProps} ref={linkRef} />
               </Grid>
             )}
-            <Grid item sx={{ display: { md: "none", xs: "block" } }}>
-              <TooltipIconButton
-                title={searchPageStrings.refineSearchPanel.title}
-                onClick={showRefinePanel}
-                color={isCriteriaSet ? "secondary" : "primary"}
-              >
-                <FilterListIcon />
-              </TooltipIconButton>
-            </Grid>
+            {isMdDown && (
+              <Grid item>
+                <TooltipIconButton
+                  title={searchPageStrings.refineSearchPanel.title}
+                  onClick={showRefinePanel}
+                  color={isCriteriaSet ? "secondary" : "primary"}
+                >
+                  <FilterListIcon />
+                </TooltipIconButton>
+              </Grid>
+            )}
             {!inSelectionSession && (
               <Grid item>
                 <TooltipIconButton

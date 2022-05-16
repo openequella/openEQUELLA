@@ -16,13 +16,8 @@
  * limitations under the License.
  */
 
-import {
-  ThemeProvider,
-  StyledEngineProvider,
-  adaptV4Theme,
-} from "@mui/material";
+import { ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
-import type { Theme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import { render, RenderResult } from "@testing-library/react";
 import { createMemoryHistory } from "history";
@@ -34,6 +29,7 @@ import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock"
 import { DRM_VIOLATION } from "../../../__mocks__/Drm.mock";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import { getMimeTypeFilters } from "../../../__mocks__/MimeTypeFilter.mock";
+import { createMatchMedia } from "../../../__mocks__/MockUseMediaQuery";
 import { getRemoteSearchesFromServerResult } from "../../../__mocks__/RemoteSearchModule.mock";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import * as AdvancedSearchModule from "../../../tsrc/modules/AdvancedSearchModule";
@@ -179,12 +175,6 @@ export const initialiseEssentialMocks = ({
   );
 };
 
-const defaultTheme = createTheme(
-  adaptV4Theme({
-    // props: { MuiWithWidth: { initialWidth: "md" } },
-  })
-);
-
 /**
  * A mock specifically for the Promise for when searches are executed to be able to watch for when
  * a search etc. has occurred.
@@ -210,7 +200,7 @@ export const waitForSearch = async (searchPromise: MockedSearchPromise) =>
  * @param searchPromise a mocked promise for searchItems in SearchModule
  * @param queryString a string to set the query bar to for initial search
  * @param advancedSearchId a UUID to pass to the search page which will trigger Advanced Search mode
- * @param theme control the MUI Theme for the context the search page is rendered in
+ * @param screenWidth The emulated screen width, default to 1280px.
  *
  * @returns The RenderResult from the `render` of the `<SearchPage>`
  */
@@ -218,24 +208,24 @@ export const renderSearchPage = async (
   searchPromise: MockedSearchPromise,
   queryString?: string,
   advancedSearchId?: string,
-  theme: Theme = defaultTheme
+  screenWidth: number = 1280
 ): Promise<RenderResult> => {
   window.history.replaceState({}, "Clean history state");
+  window.matchMedia = createMatchMedia(screenWidth);
+
   const history = createMemoryHistory();
   if (queryString) history.push(queryString);
   history.push({});
 
   const page = render(
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={theme}>
-        <Router history={history}>
-          <SearchPage
-            updateTemplate={jest.fn()}
-            advancedSearchId={advancedSearchId}
-          />
-        </Router>
-      </ThemeProvider>
-    </StyledEngineProvider>
+    <ThemeProvider theme={createTheme()}>
+      <Router history={history}>
+        <SearchPage
+          updateTemplate={jest.fn()}
+          advancedSearchId={advancedSearchId}
+        />
+      </Router>
+    </ThemeProvider>
   );
   // Wait for the first completion of initial search
   await waitForSearch(searchPromise);

@@ -18,7 +18,6 @@
 import {
   AppBar,
   Badge,
-  Box,
   CssBaseline,
   Drawer,
   IconButton,
@@ -27,9 +26,10 @@ import {
   Toolbar,
   Tooltip,
   Typography,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { Theme } from "@mui/material/styles";
+import type { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import AccountIcon from "@mui/icons-material/AccountCircle";
 import BackIcon from "@mui/icons-material/ArrowBack";
@@ -331,6 +331,7 @@ export const Template = ({
   const [googleMetaTags, setGoogleMetaTags] = React.useState<Array<string>>([]);
 
   const classes = useStyles(useTheme());
+  const isMdUp = useMediaQuery<Theme>((theme) => theme.breakpoints.up("md"));
 
   React.useEffect(() => {
     const classList = window.document.getElementsByTagName("html")[0].classList;
@@ -478,20 +479,22 @@ export const Template = ({
         {menuExtra}
         {!disableNotifications && !currentUser.guest && (
           <>
-            <Box sx={{ display: { xs: "none", sm: "block" } }}>
-              {badgedLink(
-                <AssignmentIcon />,
-                itemCounts.tasks,
-                legacyPageUrl(routes.TaskList.to),
-                topBarString.tasks
-              )}
-              {badgedLink(
-                <NotificationsIcon />,
-                itemCounts.notifications,
-                legacyPageUrl(routes.Notifications.to),
-                topBarString.notifications
-              )}
-            </Box>
+            {isMdUp && (
+              <>
+                {badgedLink(
+                  <AssignmentIcon />,
+                  itemCounts.tasks,
+                  legacyPageUrl(routes.TaskList.to),
+                  topBarString.tasks
+                )}
+                {badgedLink(
+                  <NotificationsIcon />,
+                  itemCounts.notifications,
+                  legacyPageUrl(routes.Notifications.to),
+                  topBarString.notifications
+                )}
+              </>
+            )}
             <TooltipIconButton
               title={
                 currentUser
@@ -551,24 +554,26 @@ export const Template = ({
 
   const layoutDrawer = !fullScreen && (
     <>
-      <Drawer
-        sx={{ display: { md: "none", xs: "block" } }}
-        variant="temporary"
-        anchor="left"
-        open={navMenuOpen}
-        onClose={(_) => setNavMenuOpen(false)}
-      >
-        {menuContent}
-      </Drawer>
-      <Drawer
-        sx={{ display: { xs: "none", md: "block" } }}
-        variant="permanent"
-        anchor="left"
-        open
-        classes={{ paper: classes.drawerPaper }}
-      >
-        {menuContent}
-      </Drawer>
+      {!isMdUp && (
+        <Drawer
+          variant="temporary"
+          anchor="left"
+          open={navMenuOpen}
+          onClose={(_) => setNavMenuOpen(false)}
+        >
+          {menuContent}
+        </Drawer>
+      )}
+      {isMdUp && (
+        <Drawer
+          variant="permanent"
+          anchor="left"
+          open
+          classes={{ paper: classes.drawerPaper }}
+        >
+          {menuContent}
+        </Drawer>
+      )}
     </>
   );
 
