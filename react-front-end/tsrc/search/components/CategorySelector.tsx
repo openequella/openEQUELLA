@@ -168,6 +168,7 @@ export const CategorySelector = ({
           <Button
             variant="text"
             onClick={() => onShowMore(classificationID, !expanded)}
+            color="inherit"
           >
             {expanded
               ? languageStrings.common.action.showLess

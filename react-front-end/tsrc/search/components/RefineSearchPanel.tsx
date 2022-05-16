@@ -131,6 +131,7 @@ export const RefineSearchPanel = ({
               />
             ) : undefined
           }
+          color="inherit"
         >
           {panelExpanded ? showLess : showMore}
         </Button>

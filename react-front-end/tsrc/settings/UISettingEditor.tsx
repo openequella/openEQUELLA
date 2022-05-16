@@ -108,6 +108,7 @@ const UISettingEditor = ({ refreshUser }: UISettingEditorProps) => {
                   <Switch
                     checked={newUIEnabled}
                     onChange={(_, checked) => setNewUI(checked)}
+                    color="secondary"
                   />
                 }
                 label={uiconfig.enableNew}
@@ -125,6 +126,7 @@ const UISettingEditor = ({ refreshUser }: UISettingEditorProps) => {
                     checked={newSearchEnabled}
                     disabled={!newUIEnabled}
                     onChange={(_, checked) => setNewSearch(checked)}
+                    color="secondary"
                   />
                 }
                 label={uiconfig.enableSearch}

@@ -183,7 +183,11 @@ export const SearchResultList = ({
             </Grid>
             <Grid item>
               <Tooltip title={searchPageStrings.newSearchHelperText}>
-                <Button variant="outlined" onClick={onClearSearchOptions}>
+                <Button
+                  variant="outlined"
+                  onClick={onClearSearchOptions}
+                  color="inherit"
+                >
                   {searchPageStrings.newSearch}
                 </Button>
               </Tooltip>

@@ -66,7 +66,7 @@ export default function SettingsToggleSwitch({
     <SearchSettingFormControl
       disabled={disabled}
       onChange={(_, checked) => setValue(checked)}
-      control={<Switch id={id} checked={value} />}
+      control={<Switch id={id} checked={value} color="secondary" />}
       label={label}
       title={title}
       formHelperText={formHelperText}

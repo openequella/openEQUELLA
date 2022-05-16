@@ -217,11 +217,12 @@ export default function SearchBar({
         control={
           <Switch
             id="wildcardSearch"
-            onChange={(_, checked) => onWildcardModeChange(checked)}
+            onChange={(event) => onWildcardModeChange(event.target.checked)}
             value={wildcardMode}
             checked={wildcardMode}
             name={searchStrings.wildcardSearch}
             size="small"
+            color="secondary"
           />
         }
       />
