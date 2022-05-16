@@ -78,6 +78,7 @@ const classes = {
   additionalDetails: `${PREFIX}-additionalDetails`,
   status: `${PREFIX}-status`,
   highlight: `${PREFIX}-highlight`,
+  divider: `${PREFIX}-divider`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
@@ -104,6 +105,9 @@ const Root = styled("div")(({ theme }) => {
     },
     [`& .${classes.highlight}`]: {
       color: theme.palette.secondary.main,
+    },
+    [`& .${classes.divider}`]: {
+      margin: "0px 16px",
     },
   };
 });
@@ -259,6 +263,7 @@ export default function SearchResult({
         component="span"
         variant="middle"
         orientation="vertical"
+        className={classes.divider}
       />
     );
 
