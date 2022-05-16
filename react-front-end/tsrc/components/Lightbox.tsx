@@ -59,7 +59,7 @@ const classes = {
   arrowButton: `${PREFIX}-arrowButton`,
 };
 
-const StyledBackdrop = styled(Backdrop)(({ theme }) => ({
+const Root = styled("div")(({ theme }) => ({
   [`& .${classes.lightboxBackdrop}`]: {
     backgroundColor: "#000000cc",
     cursor: "default", // Replace the backdrop 'pointer' style
@@ -270,97 +270,99 @@ const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
   };
 
   return (
-    <StyledBackdrop
-      className={classes.lightboxBackdrop}
-      open={open}
-      onClick={handleCloseLightbox}
-    >
-      <Toolbar className={classes.toolbar}>
-        <Typography variant="h6" className={classes.title}>
-          {title}
-        </Typography>
-        <OEQItemSummaryPageButton
-          {...{ item, title: labelOpenSummaryPage, color: "inherit" }}
-        />
-        <TooltipIconButton
-          title={labelCopyEmbedCode}
-          color="inherit"
-          className={classes.menuButton}
-          aria-label={labelCopyEmbedCode}
-          onClick={(event) => {
-            event.stopPropagation();
-            setOpenEmbedCodeDialog(true);
-          }}
-        >
-          <CodeIcon />
-        </TooltipIconButton>
-        <TooltipIconButton
-          title={labelOpenInNewTab}
-          color="inherit"
-          className={classes.menuButton}
-          aria-label={labelOpenInNewTab}
-          onClick={handleOpenInNewWindow}
-        >
-          <OpenInNewIcon />
-        </TooltipIconButton>
-        {
-          // This following close button is really just added as a security blanket. A common thing
-          // with most lightboxes which typically support clicking anywhere outside the content to
-          // trigger a close.
-        }
-        <TooltipIconButton
-          title={labelClose}
-          color="inherit"
-          className={classes.menuButton}
-          aria-label={labelClose}
-          onClick={handleCloseLightbox}
-        >
-          <CloseIcon />
-        </TooltipIconButton>
-      </Toolbar>
-      <Grid container alignItems="center">
-        <Grid item xs={1}>
-          {onPrevious && (
-            <TooltipIconButton
-              title={labelViewPrevious}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleNav(onPrevious);
-              }}
-            >
-              <NavigateBeforeIcon className={classes.arrowButton} />
-            </TooltipIconButton>
-          )}
-        </Grid>
-        <Grid item container justifyContent="center" xs={10}>
-          <Grid item ref={contentEmbedCodeRef}>
-            {content}
-          </Grid>
-        </Grid>
-        <Grid item container justifyContent="flex-end" xs={1}>
-          <Grid item>
-            {onNext && (
+    <Root>
+      <Backdrop
+        className={classes.lightboxBackdrop}
+        open={open}
+        onClick={handleCloseLightbox}
+      >
+        <Toolbar className={classes.toolbar}>
+          <Typography variant="h6" className={classes.title}>
+            {title}
+          </Typography>
+          <OEQItemSummaryPageButton
+            {...{ item, title: labelOpenSummaryPage, color: "inherit" }}
+          />
+          <TooltipIconButton
+            title={labelCopyEmbedCode}
+            color="inherit"
+            className={classes.menuButton}
+            aria-label={labelCopyEmbedCode}
+            onClick={(event) => {
+              event.stopPropagation();
+              setOpenEmbedCodeDialog(true);
+            }}
+          >
+            <CodeIcon />
+          </TooltipIconButton>
+          <TooltipIconButton
+            title={labelOpenInNewTab}
+            color="inherit"
+            className={classes.menuButton}
+            aria-label={labelOpenInNewTab}
+            onClick={handleOpenInNewWindow}
+          >
+            <OpenInNewIcon />
+          </TooltipIconButton>
+          {
+            // This following close button is really just added as a security blanket. A common thing
+            // with most lightboxes which typically support clicking anywhere outside the content to
+            // trigger a close.
+          }
+          <TooltipIconButton
+            title={labelClose}
+            color="inherit"
+            className={classes.menuButton}
+            aria-label={labelClose}
+            onClick={handleCloseLightbox}
+          >
+            <CloseIcon />
+          </TooltipIconButton>
+        </Toolbar>
+        <Grid container alignItems="center">
+          <Grid item xs={1}>
+            {onPrevious && (
               <TooltipIconButton
-                title={labelViewNext}
+                title={labelViewPrevious}
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleNav(onNext);
+                  handleNav(onPrevious);
                 }}
               >
-                <NavigateNextIcon className={classes.arrowButton} />
+                <NavigateBeforeIcon className={classes.arrowButton} />
               </TooltipIconButton>
             )}
           </Grid>
+          <Grid item container justifyContent="center" xs={10}>
+            <Grid item ref={contentEmbedCodeRef}>
+              {content}
+            </Grid>
+          </Grid>
+          <Grid item container justifyContent="flex-end" xs={1}>
+            <Grid item>
+              {onNext && (
+                <TooltipIconButton
+                  title={labelViewNext}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleNav(onNext);
+                  }}
+                >
+                  <NavigateNextIcon className={classes.arrowButton} />
+                </TooltipIconButton>
+              )}
+            </Grid>
+          </Grid>
         </Grid>
-      </Grid>
-      {openEmbedCodeDialog && content && (
-        <EmbedCodeDialog
-          open={openEmbedCodeDialog}
-          onCloseDialog={() => setOpenEmbedCodeDialog(false)}
-          embedCode={generateEmbedCode()}
-        />
-      )}
-    </StyledBackdrop>
+        {openEmbedCodeDialog && content && (
+          <EmbedCodeDialog
+            open={openEmbedCodeDialog}
+            onCloseDialog={() => setOpenEmbedCodeDialog(false)}
+            embedCode={generateEmbedCode()}
+          />
+        )}
+      </Backdrop>
+    </Root>
   );
 };
 
