@@ -45,31 +45,30 @@ class AddFfmpegConfig extends AbstractUpgrader {
   @throws[Exception]
   override def upgrade(result: UpgradeResult, tleInstallDir: File): Unit = {
     val config: EquellaConfig = new EquellaConfig(tleInstallDir)
+    result.addLogMessage("Updating optional-config properties to support use of FFmpeg")
     updateOptionalProperties(result, config.getConfigDir)
   }
 
   private def updateOptionalProperties(result: UpgradeResult, configDir: File): Unit = {
     try {
-      val lineMod: LineFileModifier =
-        new LineFileModifier((new File(configDir, PropertyFileModifier.OPTIONAL_CONFIG)), result) {
-          val libavCommentPattern = "^#.*Libav path. For example C:/Libav/usr/bin.*"
-          val libavPathPattern    = ".*libav.path =.*"
+      new LineFileModifier((new File(configDir, PropertyFileModifier.OPTIONAL_CONFIG)), result) {
+        val libavCommentPattern = "^#.*Libav path. For example C:/Libav/usr/bin.*"
+        val libavPathPattern    = ".*libav.path =.*"
 
-          override protected def processLine(line: String): String = {
-            if (Pattern.matches(libavCommentPattern, line) || Pattern.matches(libavPathPattern,
-                                                                              line)) {
-              return null;
-            }
-            line
-          }
-
-          override protected def addLines: util.List[String] = {
-            val ffmpegComment: String = "# FFmpeg path"
-            val ffmpegProp: String    = "#ffmpeg.path = /path/to/ffmpeg"
-            Lists.newArrayList(Constants.BLANK, ffmpegComment, ffmpegProp)
+        override protected def processLine(line: String): String = {
+          line match {
+            case l if Pattern.matches(libavCommentPattern, l) => null
+            case l if Pattern.matches(libavPathPattern, l)    => null
+            case _                                            => line
           }
         }
-      lineMod.update()
+
+        override protected def addLines: util.List[String] = {
+          val ffmpegComment: String = "# FFmpeg path"
+          val ffmpegProp: String    = "#ffmpeg.path = /path/to/ffmpeg"
+          Lists.newArrayList(Constants.BLANK, ffmpegComment, ffmpegProp)
+        }
+      }.update()
     } catch {
       case e: IOException =>
         throw new RuntimeException(
