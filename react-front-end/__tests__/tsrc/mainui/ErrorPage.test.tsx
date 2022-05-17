@@ -26,7 +26,7 @@ describe("<ErrorPage />", () => {
       <ErrorPage error={{ id: "mock-error", error: "example" }} />
     );
 
-    expect(container.querySelectorAll(".ErrorPage-errorPage")).toHaveLength(1);
+    expect(container.querySelector("#errorPage")).toBeInTheDocument();
     expect(container.querySelectorAll("h3")).toHaveLength(1);
     expect(queryByText("example", { selector: "h3" })).toBeInTheDocument();
   });
@@ -43,7 +43,7 @@ describe("<ErrorPage />", () => {
       />
     );
 
-    expect(container.querySelectorAll(".ErrorPage-errorPage")).toHaveLength(1);
+    expect(container.querySelector("#errorPage")).toBeInTheDocument();
     expect(container.querySelectorAll("h3")).toHaveLength(1);
     expect(
       queryByText("404 : example", { selector: "h3" })
