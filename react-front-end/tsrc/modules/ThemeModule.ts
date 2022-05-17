@@ -49,6 +49,17 @@ const standardThemeSettings = (): DeprecatedThemeOptions =>
       useNextVariants: true,
       fontSize: themeSettings.fontSize,
     },
+    // MUI 5 has changed the values of these breakpoints. To avoid any UI inconsistency,
+    // explicitly define these breakpoints with the same values of MUI 4.
+    breakpoints: {
+      values: {
+        xs: 0,
+        sm: 600,
+        md: 960,
+        lg: 1280,
+        xl: 1920,
+      },
+    },
   } as DeprecatedThemeOptions);
 
 const renderData = getRenderData();
