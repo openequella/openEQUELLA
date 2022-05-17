@@ -22,23 +22,13 @@ import { WizardControlBasicProps } from "./WizardHelper";
 import { WizardLabel } from "./WizardLabel";
 import { chunk } from "lodash";
 
-const PREFIX = "WizardOptionGroup";
-
-const classes = {
-  optionRow: `${PREFIX}-optionRow`,
-  optionColumn: `${PREFIX}-optionColumn`,
-};
-
-// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled("div", {
+const StyledDiv = styled("div", {
   shouldForwardProp: (prop) => prop !== "optionWidth",
-})<{ optionWidth: number }>(({ theme, optionWidth }) => ({
-  [`& .${classes.optionRow}`]: {
-    flexDirection: "row",
-    display: "flex",
-    alignItems: "center",
-  },
-  [`& .${classes.optionColumn}`]: {
+})<{ optionWidth: number }>(({ optionWidth }) => ({
+  flexDirection: "row",
+  display: "flex",
+  alignItems: "center",
+  div: {
     width: `${optionWidth}%`,
   },
 }));
@@ -77,7 +67,7 @@ export const WizardOptionGroup = ({
   const columnNumber = Math.max(1, columns);
 
   return (
-    <Root optionWidth={Math.round(100 / columnNumber)}>
+    <>
       <WizardLabel
         mandatory={mandatory}
         label={label}
@@ -87,17 +77,17 @@ export const WizardOptionGroup = ({
         options,
         columnNumber
       ).map((row, rowIndex) => (
-        <div className={classes.optionRow} key={`${id}-${rowIndex}`}>
+        <StyledDiv
+          optionWidth={Math.round(100 / columnNumber)}
+          key={`${id}-${rowIndex}`}
+        >
           {row.map((option, optionIndex) => (
-            <div
-              className={classes.optionColumn}
-              key={`${id}-${rowIndex}-${optionIndex}`}
-            >
+            <div key={`${id}-${rowIndex}-${optionIndex}`}>
               {buildOption(option)}
             </div>
           ))}
-        </div>
+        </StyledDiv>
       ))}
-    </Root>
+    </>
   );
 };

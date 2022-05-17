@@ -39,24 +39,10 @@ import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import { commonString } from "../util/commonstrings";
 import MessageInfo from "../components/MessageInfo";
 
-const PREFIX = "CloudProviderListPage";
-
-const classes = {
-  searchResultContent: `${PREFIX}-searchResultContent`,
-  cloudIcon: `${PREFIX}-cloudIcon`,
-};
-
-// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled("div")(({ theme }) => ({
-  [`& .${classes.searchResultContent}`]: {
-    marginTop: theme.spacing(1),
-  },
-
-  [`& .${classes.cloudIcon}`]: {
-    width: 40,
-    height: 40,
-  },
-}));
+const StyledCloudIcon = styled(CloudIcon)({
+  width: 40,
+  height: 40,
+});
 
 interface CloudProviderBasicProps extends TemplateUpdateProps {}
 
@@ -157,7 +143,7 @@ class CloudProviderListPage extends React.Component<
   render() {
     const { cloudProviders, deleteDialogOpen, registerDialogOpen } = this.state;
     return (
-      <Root>
+      <>
         <MessageInfo
           variant="success"
           open={this.state.showRefreshed}
@@ -208,9 +194,7 @@ class CloudProviderListPage extends React.Component<
                 src={cloudProvider.iconUrl}
                 alt={cloudProvider.description}
               >
-                {!cloudProvider.iconUrl && (
-                  <CloudIcon className={classes.cloudIcon} />
-                )}
+                {!cloudProvider.iconUrl && <StyledCloudIcon />}
               </Avatar>
             );
 
@@ -242,10 +226,9 @@ class CloudProviderListPage extends React.Component<
             );
           })}
         </EntityList>
-      </Root>
+      </>
     );
   }
 }
 
-const errorHandler = withErrorHandler(CloudProviderListPage);
-export default errorHandler;
+export default withErrorHandler(CloudProviderListPage);

@@ -22,18 +22,9 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import JQueryDiv from "../legacycontent/JQueryDiv";
 import { languageStrings } from "../util/langstrings";
 
-const PREFIX = "ScreenOptions";
-
-const classes = {
-  screenOptions: `${PREFIX}-screenOptions`,
-};
-
-// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled("div")(({ theme }) => ({
-  [`& .${classes.screenOptions}`]: {
-    margin: 20,
-  },
-}));
+const StyledJQueryDiv = styled(JQueryDiv)({
+  margin: 20,
+});
 
 interface ScreenOptionsProps {
   optionsHtml: string;
@@ -46,7 +37,7 @@ export default React.memo(function ScreenOptions({
   const [optionsAnchor, setOptionsAnchor] = React.useState<HTMLElement>();
 
   return (
-    <Root>
+    <>
       <IconButton
         id="screenOptionsOpen"
         onClick={(e) => setOptionsAnchor(e.currentTarget)}
@@ -64,12 +55,8 @@ export default React.memo(function ScreenOptions({
         anchorEl={optionsAnchor}
         onClose={(_) => setOptionsAnchor(undefined)}
       >
-        <JQueryDiv
-          id="screenOptions"
-          className={classes.screenOptions}
-          html={optionsHtml}
-        />
+        <StyledJQueryDiv id="screenOptions" html={optionsHtml} />
       </Popover>
-    </Root>
+    </>
   );
 });

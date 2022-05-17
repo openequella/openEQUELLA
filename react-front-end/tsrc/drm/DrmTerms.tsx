@@ -22,17 +22,9 @@ import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as React from "react";
 
-const PREFIX = "NonStandardDrmTerms";
-
-const classes = {
-  li: `${PREFIX}-li`,
-};
-
-const Root = styled("ol")(({ theme }) => ({
-  [`& .${classes.li}`]: {
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-  },
+const StyledLi = styled("li")(({ theme }) => ({
+  marginTop: theme.spacing(1),
+  marginBottom: theme.spacing(1),
 }));
 
 /**
@@ -46,7 +38,7 @@ export const NonStandardDrmTerms = ({
   terms: string[];
 }) => {
   return (
-    <li className={classes.li} key={title}>
+    <StyledLi key={title}>
       <Grid container direction="column">
         <Grid item>
           <Typography>{title}</Typography>
@@ -57,7 +49,7 @@ export const NonStandardDrmTerms = ({
           ))}
         </Grid>
       </Grid>
-    </li>
+    </StyledLi>
   );
 };
 
@@ -78,9 +70,9 @@ export const DrmTerms = ({
   ]
     .filter((term) => term !== undefined)
     .map((term) => (
-      <li className={classes.li} key={term}>
+      <StyledLi key={term}>
         <Typography>{term}</Typography>
-      </li>
+      </StyledLi>
     ));
 
   const buildNonStandardDrmTerms = <T,>(
@@ -117,10 +109,10 @@ export const DrmTerms = ({
   );
 
   return (
-    <Root className="skip-css-reset" start={1}>
+    <ol className="skip-css-reset" start={1}>
       {standardTerms}
       {partyDetails}
       {customTermDetails}
-    </Root>
+    </ol>
   );
 };

@@ -32,22 +32,13 @@ import { commonString } from "../util/commonstrings";
 import Link from "@mui/material/Link";
 import CloudProviderDisclaimerDialog from "./CloudProviderDisclaimerDialog";
 
-const PREFIX = "CloudProviderAddDialog";
-
-const classes = {
-  disclaimerText: `${PREFIX}-disclaimerText`,
-  link: `${PREFIX}-link`,
-};
-
-const Root = styled("div")(({ theme }) => ({
-  [`& .${classes.disclaimerText}`]: {
-    marginTop: theme.spacing(1),
-  },
-
-  [`& .${classes.link}`]: {
-    cursor: "pointer",
-  },
+const StyledTypography = styled(Typography)(({ theme }) => ({
+  marginTop: theme.spacing(1),
 }));
+
+const StyledLink = styled(Link)({
+  cursor: "pointer",
+});
 
 interface CloudProviderAddDialogProps {
   open: boolean;
@@ -103,7 +94,7 @@ class CloudProviderAddDialog extends React.Component<
     const { cloudProviderUrl, disclaimerDialogOpen } = this.state;
     const isUrlValid = this.validateUrl();
     return (
-      <Root>
+      <div>
         <Dialog
           open={open}
           onClose={onCancel}
@@ -131,18 +122,17 @@ class CloudProviderAddDialog extends React.Component<
               helperText={cloudProviderLangStrings.newcloudprovider.help}
             />
 
-            <Typography variant="body2" className={classes.disclaimerText}>
+            <StyledTypography variant="body2">
               {cloudProviderLangStrings.newcloudprovider.disclaimer.text}
-              <Link
-                className={classes.link}
+              <StyledLink
                 underline="always"
                 onClick={this.openDisclaimerDialog}
               >
                 <b>
                   {cloudProviderLangStrings.newcloudprovider.disclaimer.title}
                 </b>
-              </Link>
-            </Typography>
+              </StyledLink>
+            </StyledTypography>
           </DialogContent>
           <DialogActions>
             <Button id="cancel-register" onClick={onCancel} color="primary">
@@ -165,7 +155,7 @@ class CloudProviderAddDialog extends React.Component<
           openDialog={disclaimerDialogOpen}
           onClose={this.closeDisclaimerDialog}
         />
-      </Root>
+      </div>
     );
   }
 }

@@ -20,20 +20,12 @@ import { styled } from "@mui/material/styles";
 import { ErrorResponse } from "../api/errors";
 import { CardContent, Card, Typography } from "@mui/material";
 
-const PREFIX = "ErrorPage";
-
-const classes = {
-  errorPage: `${PREFIX}-errorPage`,
-};
-
-const Root = styled("div")(({ theme }) => ({
-  [`&.${classes.errorPage}`]: {
-    display: "flex",
-    justifyContent: "center",
-    marginTop: theme.spacing(8),
-    marginLeft: theme.spacing(2),
-    marginRight: theme.spacing(2),
-  },
+const StyledDiv = styled("div")(({ theme }) => ({
+  display: "flex",
+  justifyContent: "center",
+  marginTop: theme.spacing(8),
+  marginLeft: theme.spacing(2),
+  marginRight: theme.spacing(2),
 }));
 
 interface ErrorPageProps {
@@ -44,7 +36,7 @@ export default React.memo(function ErrorPage({
   error: { code, error, error_description },
 }: ErrorPageProps) {
   return (
-    <Root id="errorPage" className={classes.errorPage}>
+    <StyledDiv id="errorPage">
       <Card>
         <CardContent>
           <Typography variant="h3" color="error">
@@ -56,6 +48,6 @@ export default React.memo(function ErrorPage({
           )}
         </CardContent>
       </Card>
-    </Root>
+    </StyledDiv>
   );
 });

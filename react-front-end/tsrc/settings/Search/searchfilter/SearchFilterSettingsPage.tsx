@@ -68,17 +68,9 @@ import { languageStrings } from "../../../util/langstrings";
 import MimeTypeFilterEditingDialog from "./MimeTypeFilterEditingDialog";
 import * as OEQ from "@openequella/rest-api-client";
 
-const PREFIX = "SearchFilterPage";
-
-const classes = {
-  cardAction: `${PREFIX}-cardAction`,
-};
-
-const Root = styled("div")({
-  [`& .${classes.cardAction}`]: {
-    display: "flex",
-    justifyContent: "flex-end",
-  },
+const StyledCardActions = styled(CardActions)({
+  display: "flex",
+  justifyContent: "flex-end",
 });
 
 const searchFilterStrings =
@@ -293,124 +285,120 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
   };
 
   return (
-    <Root>
-      <SettingPageTemplate
-        onSave={save}
-        saveButtonDisabled={!changesUnsaved}
-        snackbarOpen={showSnackBar}
-        snackBarOnClose={() => setShowSnackBar(false)}
-        preventNavigation={changesUnsaved}
-      >
-        <Card>
-          <CardContent>
-            <SettingsList
-              subHeading={searchFilterStrings.visibilityconfigtitle}
-            >
-              <SettingsListControl
-                divider
-                primaryText={searchFilterStrings.disableownerfilter}
-                control={
-                  <SettingsToggleSwitch
-                    value={searchSettings.searchingDisableOwnerFilter}
-                    setValue={(disabled) => {
-                      setSearchSettings({
-                        ...searchSettings,
-                        searchingDisableOwnerFilter: disabled,
-                      });
-                    }}
-                    id="disable_owner_filter_toggle"
-                  />
-                }
-              />
-              <SettingsListControl
-                primaryText={searchFilterStrings.disabledatemodifiedfilter}
-                control={
-                  <SettingsToggleSwitch
-                    value={searchSettings.searchingDisableDateModifiedFilter}
-                    setValue={(disabled) => {
-                      setSearchSettings({
-                        ...searchSettings,
-                        searchingDisableDateModifiedFilter: disabled,
-                      });
-                    }}
-                    id="disable_date_modified_filter_toggle"
-                  />
-                }
-              />
-            </SettingsList>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent>
-            <SettingsListHeading
-              heading={searchFilterStrings.mimetypefiltertitle}
+    <SettingPageTemplate
+      onSave={save}
+      saveButtonDisabled={!changesUnsaved}
+      snackbarOpen={showSnackBar}
+      snackBarOnClose={() => setShowSnackBar(false)}
+      preventNavigation={changesUnsaved}
+    >
+      <Card>
+        <CardContent>
+          <SettingsList subHeading={searchFilterStrings.visibilityconfigtitle}>
+            <SettingsListControl
+              divider
+              primaryText={searchFilterStrings.disableownerfilter}
+              control={
+                <SettingsToggleSwitch
+                  value={searchSettings.searchingDisableOwnerFilter}
+                  setValue={(disabled) => {
+                    setSearchSettings({
+                      ...searchSettings,
+                      searchingDisableOwnerFilter: disabled,
+                    });
+                  }}
+                  id="disable_owner_filter_toggle"
+                />
+              }
             />
-            <List>
-              {mimeTypeFilters.map((filter, index) => {
-                return (
-                  <ListItem divider key={index}>
-                    <ListItemText primary={filter.name} />
-                    <ListItemSecondaryAction>
-                      <IconButton
-                        onClick={() => {
-                          openMimeTypeFilterDialog(filter);
-                        }}
-                        aria-label={`${searchFilterStrings.edit} ${filter.name}`}
-                        color="secondary"
-                        size="large"
-                      >
-                        <EditIcon />
-                      </IconButton>
-                      |
-                      <IconButton
-                        onClick={() => deleteMimeTypeFilter(filter)}
-                        aria-label={`${searchFilterStrings.delete} ${filter.name}`}
-                        color="secondary"
-                        size="large"
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                );
-              })}
-            </List>
-          </CardContent>
-
-          <CardActions className={classes.cardAction}>
-            <IconButton
-              onClick={() => openMimeTypeFilterDialog()}
-              aria-label={searchFilterStrings.add}
-              color="primary"
-              size="large"
-            >
-              <AddCircleIcon fontSize="large" />
-            </IconButton>
-          </CardActions>
-        </Card>
-
-        {
-          // Delay creation of the MimeTypeFilterEditingDialog so that related REST calls are only
-          // made when needed.
-          openMimeTypeFilterEditor && (
-            <MimeTypeFilterEditingDialog
-              open={openMimeTypeFilterEditor}
-              onClose={closeMimeTypeFilterDialog}
-              addOrUpdate={addOrUpdateMimeTypeFilter}
-              mimeTypeFilter={selectedMimeTypeFilter}
+            <SettingsListControl
+              primaryText={searchFilterStrings.disabledatemodifiedfilter}
+              control={
+                <SettingsToggleSwitch
+                  value={searchSettings.searchingDisableDateModifiedFilter}
+                  setValue={(disabled) => {
+                    setSearchSettings({
+                      ...searchSettings,
+                      searchingDisableDateModifiedFilter: disabled,
+                    });
+                  }}
+                  id="disable_date_modified_filter_toggle"
+                />
+              }
             />
-          )
-        }
+          </SettingsList>
+        </CardContent>
+      </Card>
 
-        <MessageDialog
-          open={openMessageDialog}
-          messages={messageDialogMessages}
-          title={commonString.result.errors}
-          close={() => setOpenMessageDialog(false)}
-        />
-      </SettingPageTemplate>
-    </Root>
+      <Card>
+        <CardContent>
+          <SettingsListHeading
+            heading={searchFilterStrings.mimetypefiltertitle}
+          />
+          <List>
+            {mimeTypeFilters.map((filter, index) => {
+              return (
+                <ListItem divider key={index}>
+                  <ListItemText primary={filter.name} />
+                  <ListItemSecondaryAction>
+                    <IconButton
+                      onClick={() => {
+                        openMimeTypeFilterDialog(filter);
+                      }}
+                      aria-label={`${searchFilterStrings.edit} ${filter.name}`}
+                      color="secondary"
+                      size="large"
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    |
+                    <IconButton
+                      onClick={() => deleteMimeTypeFilter(filter)}
+                      aria-label={`${searchFilterStrings.delete} ${filter.name}`}
+                      color="secondary"
+                      size="large"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              );
+            })}
+          </List>
+        </CardContent>
+
+        <StyledCardActions>
+          <IconButton
+            onClick={() => openMimeTypeFilterDialog()}
+            aria-label={searchFilterStrings.add}
+            color="primary"
+            size="large"
+          >
+            <AddCircleIcon fontSize="large" />
+          </IconButton>
+        </StyledCardActions>
+      </Card>
+
+      {
+        // Delay creation of the MimeTypeFilterEditingDialog so that related REST calls are only
+        // made when needed.
+        openMimeTypeFilterEditor && (
+          <MimeTypeFilterEditingDialog
+            open={openMimeTypeFilterEditor}
+            onClose={closeMimeTypeFilterDialog}
+            addOrUpdate={addOrUpdateMimeTypeFilter}
+            mimeTypeFilter={selectedMimeTypeFilter}
+          />
+        )
+      }
+
+      <MessageDialog
+        open={openMessageDialog}
+        messages={messageDialogMessages}
+        title={commonString.result.errors}
+        close={() => setOpenMessageDialog(false)}
+      />
+    </SettingPageTemplate>
   );
 };
 

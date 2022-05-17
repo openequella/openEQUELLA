@@ -26,7 +26,7 @@ const classes = {
   secondaryAction: `${PREFIX}-secondaryAction`,
 };
 
-const Root = styled("div")({
+const StyledListItem = styled(ListItem)({
   [`& .${classes.listItemText}`]: {
     maxWidth: "40%",
     minHeight: "38px",
@@ -68,17 +68,15 @@ export default function SettingsListControl({
   control,
 }: SettingsListControlProps) {
   return (
-    <Root>
-      <ListItem alignItems="flex-start" divider={divider}>
-        <ListItemText
-          className={classes.listItemText}
-          primary={primaryText}
-          secondary={secondaryText}
-        />
-        <ListItemSecondaryAction className={classes.secondaryAction}>
-          {control}
-        </ListItemSecondaryAction>
-      </ListItem>
-    </Root>
+    <StyledListItem alignItems="flex-start" divider={divider}>
+      <ListItemText
+        className={classes.listItemText}
+        primary={primaryText}
+        secondary={secondaryText}
+      />
+      <ListItemSecondaryAction className={classes.secondaryAction}>
+        {control}
+      </ListItemSecondaryAction>
+    </StyledListItem>
   );
 }

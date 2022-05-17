@@ -35,20 +35,17 @@ const classes = {
   swatch: `${PREFIX}-swatch`,
 };
 
-// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled("div")({
-  [`& .${classes.color}`]: {
+const StyledDiv = styled("div")({
+  padding: "5px",
+  background: "#fff",
+  borderRadius: "1px",
+  boxShadow: "0 0 0 1px rgba(0,0,0,.1)",
+  display: "inline-block",
+  cursor: "pointer",
+  div: {
     width: "36px",
     height: "14px",
     borderRadius: "2px",
-  },
-  [`& .${classes.swatch}`]: {
-    padding: "5px",
-    background: "#fff",
-    borderRadius: "1px",
-    boxShadow: "0 0 0 1px rgba(0,0,0,.1)",
-    display: "inline-block",
-    cursor: "pointer",
   },
 });
 
@@ -65,13 +62,13 @@ const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
   const changeHandler = (color: ColorResult) => onColorChange(color.hex);
 
   return (
-    <Root>
-      <div
+    <>
+      <StyledDiv
         className={classes.swatch}
         onClick={() => setDisplayColorPicker(true)}
       >
         <div style={{ background: currentColor }} className={classes.color} />
-      </div>
+      </StyledDiv>
       {displayColorPicker && (
         <Dialog
           open={displayColorPicker}
@@ -98,7 +95,7 @@ const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
           </DialogActions>
         </Dialog>
       )}
-    </Root>
+    </>
   );
 };
 

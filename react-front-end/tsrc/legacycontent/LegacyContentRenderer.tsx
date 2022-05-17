@@ -22,18 +22,15 @@ import JQueryDiv from "./JQueryDiv";
 import { PageContent } from "./LegacyContent";
 import { LegacyForm } from "./LegacyForm";
 
-const PREFIX = "LegacyContentRenderer";
-
-const classes = {
-  noPadding: `${PREFIX}-noPadding`,
-};
-
-// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled("div")(({ theme }) => ({
-  [`& .${classes.noPadding}`]: {
-    padding: 0,
-  },
-}));
+const StyledDiv = styled("div", {
+  shouldForwardProp: (prop) => prop !== "useExtraClass",
+})<{ useExtraClass: boolean }>(({ useExtraClass }) =>
+  useExtraClass
+    ? {
+        padding: 0,
+      }
+    : {}
+);
 
 export function LegacyContentRenderer({
   afterHtml,
@@ -55,23 +52,23 @@ export function LegacyContentRenderer({
     if (afterHtml) afterHtml();
   }, [afterHtml]);
 
-  const extraClass =
-    !fullscreenMode && menuMode !== "HIDDEN" ? classes.noPadding : "";
-
   const mainContent = (
-    <div className={`content ${extraClass}`}>
+    <StyledDiv
+      className="content"
+      useExtraClass={!fullscreenMode && menuMode !== "HIDDEN"}
+    >
       {crumbs && <JQueryDiv id="breadcrumbs" html={crumbs} />}
       {upperbody && <JQueryDiv html={upperbody} />}
       <JQueryDiv html={body} />
-    </div>
+    </StyledDiv>
   );
 
   return noForm ? (
     mainContent
   ) : (
-    <Root>
+    <>
       <LegacyForm state={state}>{mainContent}</LegacyForm>
       {form && HTMLReactParser(form)}
-    </Root>
+    </>
   );
 }
