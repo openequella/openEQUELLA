@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ImageList } from "@mui/material";
+import { Grid } from "@mui/material";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import Lightbox, { LightboxProps } from "../../components/Lightbox";
@@ -138,7 +138,11 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
 
   return (
     <>
-      <ImageList>{mapItemsToTiles()}</ImageList>
+      {/*
+        Can't use the MUI V5 ImageList due to issue: https://github.com/mui/material-ui/issues/6261.
+        So use Grid instead.
+      */}
+      <Grid container>{mapItemsToTiles()}</Grid>
       {lightboxProps && <Lightbox {...lightboxProps} />}
     </>
   );

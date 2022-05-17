@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ImageListItem, ImageListItemBar } from "@mui/material";
+import { Grid, ImageListItem, ImageListItemBar } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
@@ -32,18 +32,11 @@ import { languageStrings } from "../../util/langstrings";
 const PREFIX = "GallerySearchItemTiles";
 
 const classes = {
-  tile: `${PREFIX}-tile`,
   titleBar: `${PREFIX}-titleBar`,
   thumbnail: `${PREFIX}-thumbnail`,
 };
 
-// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled("div")({
-  [`& .${classes.tile}`]: {
-    width: "25%",
-    height: 250,
-    padding: 2,
-  },
+const StyledGridItem = styled(Grid)({
   [`& .${classes.titleBar}`]: {
     background:
       "linear-gradient(to top, rgba(0,0,0,0.5) 0%, " +
@@ -51,6 +44,7 @@ const Root = styled("div")({
   },
   [`& .${classes.thumbnail}`]: {
     cursor: "zoom-in",
+    height: "100%",
   },
 });
 
@@ -151,25 +145,33 @@ export const GallerySearchItemTiles = ({
     altText: string,
     onClick: () => void
   ) => (
-    <ImageListItem
-      key={key}
-      onClick={onClick}
-      aria-label={ariaLabel}
-      className={classes.tile}
-    >
-      <img className={classes.thumbnail} src={imgSrc} alt={altText} />
-      <ImageListItemBar
-        className={classes.titleBar}
-        actionIcon={
-          <OEQItemSummaryPageButton
-            title={viewItem}
-            color="secondary"
-            item={{ uuid, version }}
-            checkDrmPermission={checkDrmPermission}
-          />
-        }
-      />
-    </ImageListItem>
+    // We use Grid as the container so each ImageListItem must be wrapped by a Grid item.
+    <StyledGridItem item md={3} sm={6} key={key}>
+      <ImageListItem
+        component="div"
+        onClick={onClick}
+        aria-label={ariaLabel}
+        // Don't use the default ImageListItem style so override here.
+        style={{
+          width: "100%",
+          height: 250,
+          padding: 2,
+        }}
+      >
+        <img className={classes.thumbnail} src={imgSrc} alt={altText} />
+        <ImageListItemBar
+          className={classes.titleBar}
+          actionIcon={
+            <OEQItemSummaryPageButton
+              title={viewItem}
+              color="secondary"
+              item={{ uuid, version }}
+              checkDrmPermission={checkDrmPermission}
+            />
+          }
+        />
+      </ImageListItem>
+    </StyledGridItem>
   );
 
   const tiles = [
@@ -190,9 +192,9 @@ export const GallerySearchItemTiles = ({
   ];
 
   return (
-    <Root>
+    <>
       {tiles}
       {drmDialog}
-    </Root>
+    </>
   );
 };
