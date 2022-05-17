@@ -78,7 +78,7 @@ import {
 } from "./SearchPageTestHelper";
 
 // This has some big tests for rendering the Search Page, so we need a longer timeout
-jest.setTimeout(6000);
+jest.setTimeout(10000);
 
 const {
   mockCollections,
