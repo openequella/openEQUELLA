@@ -18,7 +18,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion = "3.15.3.Final"
 val SwaggerVersion  = "1.6.6"
-val TomcatVersion   = "9.0.62"
+val TomcatVersion   = "9.0.63"
 val axis2Version    = "1.7.9"
 val circeVersion    = "0.12.1"
 val cxfVersion      = "3.5.2"
@@ -26,7 +26,7 @@ val fs2Version      = "2.5.11"
 val guiceVersion    = "5.1.0"
 val jsassVersion    = "5.10.4"
 val jsoupVersion    = "1.14.3"
-val springVersion   = "5.3.19"
+val springVersion   = "5.3.20"
 val sttpVersion     = "1.7.2"
 val tikaVersion     = "2.4.0"
 
@@ -55,7 +55,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
-  "com.google.api-client" % "google-api-client"           % "1.34.0",
+  "com.google.api-client" % "google-api-client"           % "1.34.1",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20220318-1.32.1",
   "com.google.apis"       % "google-api-services-youtube" % "v3-rev20220418-1.32.1",
   "com.google.code.gson"  % "gson"                        % "2.9.0",
@@ -96,7 +96,7 @@ libraryDependencies ++= Seq(
   "commons-codec"             % "commons-codec"         % "1.15",
   "commons-collections"       % "commons-collections"   % "3.2.2",
   "commons-configuration"     % "commons-configuration" % "1.10",
-  "commons-daemon"            % "commons-daemon"        % "1.3.0",
+  "commons-daemon"            % "commons-daemon"        % "1.3.1",
   "commons-discovery"         % "commons-discovery"     % "0.5",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
   "commons-io"                % "commons-io"            % "2.11.0",
@@ -296,7 +296,7 @@ excludeDependencies ++= Seq(
   // Spring 5 added a default logging bridge.  In oEQ, this results in
   // a [deduplicate: different file contents found in the following] error
   // ...org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.7.30.jar:org/apache/commons/logging/Log.class
-  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.19.jar:org/apache/commons/logging/Log.class
+  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.20.jar:org/apache/commons/logging/Log.class
   // As per https://github.com/spring-projects/spring-framework/issues/20611 ,
   // since we already have logging in place, we can safely exclude the dep from spring.
   "org.springframework" % "spring-jcl",
