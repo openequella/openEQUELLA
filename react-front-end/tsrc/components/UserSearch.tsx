@@ -188,6 +188,7 @@ const UserSearch = ({
           }}
           onKeyDown={handleQueryFieldKeypress}
           fullWidth
+          variant="standard"
         />
       </Grid>
     </Grid>
