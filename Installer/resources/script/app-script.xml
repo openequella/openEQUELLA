@@ -339,15 +339,15 @@
 		<page>
 			<controls>
 				<control class="heading">
-					<title>Libav</title>
+					<title>FFmpeg</title>
 				</control>
 				<control class="paragraph">
-					<description>Libav is a free, third-party product utilised by openEQUELLA to produce thumbnails and previews for video files uploaded to the openEQUELLA repository. If you do not have Libav installed, or would like more information about the product, please visit https://libav.org/</description>
+					<description>FFmpeg is a free, third-party product utilised by openEQUELLA to produce thumbnails and previews for video files uploaded to the openEQUELLA repository. If you do not have FFmpeg installed, or would like more information about the product, please visit https://ffmpeg.org/</description>
 				</control>
 				<control class="directoryselector">
-					<title>Directory to Libav Programs</title>
-					<description>Libav comprises a set of different programs, and openEQUELLA needs to know the directory that contains these programs. For example, running 'which avconv' on a Unix-like system may return '/usr/bin/avconv' so you should enter '/usr/bin'. On a Windows system, you may have installed to 'C:/Libav', then the programs can be found somewhere inside that path, such as ‘C:/Libav/usr/bin’.</description>
-					<target>libav/path</target>
+					<title>Directory to FFmpeg Programs</title>
+					<description>FFmpeg comprises a set of different programs, and openEQUELLA needs to know the directory that contains these programs. For example, running 'which ffmpeg' on a Unix-like system may return '/usr/bin/ffmpeg' so you should enter '/usr/bin'. On a Windows system, you may have installed to 'C:/FFmpeg', then the programs can be found somewhere inside that path, such as ‘C:/FFmpeg/usr/bin’.</description>
+					<target>ffmpeg/path</target>
 					<items>
 						<item name="" value=""/>
 					</items>
@@ -355,7 +355,7 @@
 			</controls>
 			<buttons>
 				<button label="Back" callback="com.dytech.installer.BasicBackCallback" icon="/images/back.gif" align="left"/>
-				<button label="Next" callback="com.dytech.edge.installer.application.LibAvCallback" icon="/images/next.gif" align="right"/>
+				<button label="Next" callback="com.dytech.edge.installer.application.FfmpegCallback" icon="/images/next.gif" align="right"/>
 				<button label="Cancel" callback="com.dytech.installer.BasicQuitCallback" icon="/images/quit.gif" align="right"/>
 			</buttons>
 		</page>

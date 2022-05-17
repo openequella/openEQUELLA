@@ -46,9 +46,9 @@
 <imagemagick>
   <path>/usr/bin</path>
 </imagemagick>
-<libav>
+<ffmpeg>
   <path>/usr/bin</path>
-</libav>
+</ffmpeg>
 <hashed.admin.password>SHA256:2a0fd3498c35eced0663c523a80125cbfd3fb8d1634ce87c2ccc020b924ac2d9</hashed.admin.password>
 <datastore>
   <initialise>true</initialise>

@@ -25,20 +25,20 @@ import java.awt.Component;
 import java.io.File;
 import javax.swing.JOptionPane;
 
-public class LibAvCallback implements Callback {
+public class FfmpegCallback implements Callback {
   private static final String[] EXE_TYPES = {"", ".exe"}; // $NON-NLS-1$
 
   @Override
   public void task(Wizard installer) {
     PropBagEx output = installer.getOutputNow();
-    File dir = new File(output.getNode("libav/path")); // $NON-NLS-1$
+    File dir = new File(output.getNode("ffmpeg/path")); // $NON-NLS-1$
     int result = JOptionPane.NO_OPTION;
     if (dir.getPath().equals("")) {
       Component parent = installer.getFrame();
       result =
           JOptionPane.showConfirmDialog(
               parent,
-              "You have not entered a Libav path which means no thumbnailing or previewing of video files can occur in EQUELLA. Are you sure?",
+              "You have not entered a FFmpeg path which means no thumbnailing or previewing of video files can occur in EQUELLA. Are you sure?",
               "Warning", //$NON-NLS-1$ //$NON-NLS-2$
               JOptionPane.YES_NO_OPTION,
               JOptionPane.WARNING_MESSAGE);
@@ -48,18 +48,18 @@ public class LibAvCallback implements Callback {
             installer.getFrame(),
             "You have not specified"
                 + " a valid directory.\nPlease select the correct path, and try again.",
-            "Incorrect Libav Directory",
+            "Incorrect FFmpeg Directory",
             JOptionPane.ERROR_MESSAGE);
         return;
       }
 
-      File avconv = findExe(installer, dir, "avconv");
-      if (avconv == null) {
+      File ffmpeg = findExe(installer, dir, "ffmpeg");
+      if (ffmpeg == null) {
         return;
       }
 
-      File avprobe = findExe(installer, dir, "avprobe");
-      if (avprobe == null) {
+      File ffprobe = findExe(installer, dir, "ffprobe");
+      if (ffprobe == null) {
         return;
       }
 
@@ -81,11 +81,11 @@ public class LibAvCallback implements Callback {
     JOptionPane.showMessageDialog(
         installer.getFrame(),
         "The directory you have specified"
-            + " does not contain the Libav program '"
+            + " does not contain the FFmpeg program '"
             + exe
             + "'.\nPlease select the"
             + " correct path, and try again.",
-        "Incorrect LibAv Directory",
+        "Incorrect FFmpeg Directory",
         JOptionPane.ERROR_MESSAGE);
     return null;
   }
