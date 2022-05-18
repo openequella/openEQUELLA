@@ -20,8 +20,8 @@ package com.tle.core.workflow.video;
 
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.common.filesystem.handle.FileHandle;
+import com.tle.core.ffmpeg.FfmpegService;
 import com.tle.core.guice.Bind;
-import com.tle.core.libav.LibAvService;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 public class VideoServiceImpl implements VideoService {
   private static final Logger LOGGER = LoggerFactory.getLogger(VideoServiceImpl.class);
 
-  @Inject private LibAvService libAvService;
+  @Inject private FfmpegService ffmpegService;
   @Inject private FileSystemService fileSystemService;
   @Inject private MimeTypeService mimeTypeService;
 
@@ -76,10 +76,10 @@ public class VideoServiceImpl implements VideoService {
 
   @Override
   public boolean makeGalleryVideoPreviews(FileHandle handle, String filename) {
-    if (libAvService.isLibavInstalled()) {
+    if (ffmpegService.isFfmpegInstalled()) {
       try {
 
-        libAvService.generatePreviewVideo(handle, filename);
+        ffmpegService.generatePreviewVideo(handle, filename);
       } catch (Exception ex) {
         LOGGER.error("Error generating video preview ", ex); // $NON-NLS-1$
         return false;
@@ -87,7 +87,7 @@ public class VideoServiceImpl implements VideoService {
       return true;
     }
 
-    // go away, libav is not even installed
+    // go away, ffmpeg is not even installed
     return false;
   }
 

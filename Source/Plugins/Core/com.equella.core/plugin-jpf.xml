@@ -101,7 +101,7 @@
     <parameter id="class" value="com.tle.core.item.guice.ItemModule" />
     <parameter id="class" value="com.tle.core.item.serializer.impl.ItemSerializerModule" />
     <parameter id="class" value="com.tle.core.item.standard.guice.ItemStandardModule" />
-    <parameter id="class" value="com.tle.core.libav.guice.LibAvModule" />
+    <parameter id="class" value="com.tle.core.ffmpeg.guice.FfmpegModule" />
     <parameter id="class" value="com.tle.core.metadata.exiftool.guice.ExifToolModule" />
     <parameter id="class" value="com.tle.core.metadata.guice.MetadataHandlerTrackerModule" />
     <parameter id="class" value="com.tle.core.office2html.guice.Office2HtmlModule" />

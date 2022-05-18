@@ -18,7 +18,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion = "3.15.3.Final"
 val SwaggerVersion  = "1.6.6"
-val TomcatVersion   = "9.0.62"
+val TomcatVersion   = "9.0.63"
 val axis2Version    = "1.7.9"
 val circeVersion    = "0.12.1"
 val cxfVersion      = "3.5.2"
@@ -57,7 +57,7 @@ libraryDependencies ++= Seq(
   ),
   "com.google.api-client" % "google-api-client"           % "1.34.1",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20220318-1.32.1",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20220418-1.32.1",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20220515-1.32.1",
   "com.google.code.gson"  % "gson"                        % "2.9.0",
   "com.google.gdata"      % "core"                        % "1.47.1",
   "com.google.guava"      % "guava"                       % "31.1-jre",
