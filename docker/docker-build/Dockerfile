@@ -1,6 +1,6 @@
 # A bare image ready for building oEQ and also running test suites
 
-FROM openjdk:8 as basebuild
+FROM openjdk:19 as basebuild
 
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
