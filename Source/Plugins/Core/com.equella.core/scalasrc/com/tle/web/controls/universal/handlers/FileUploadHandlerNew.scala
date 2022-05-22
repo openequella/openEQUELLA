@@ -288,7 +288,8 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
         editingArea.foreach(sf => stagingService.removeStagingArea(sf, true))
       def commit(): Unit = (a, zipAttachment) match {
         case (fa: FileAttachment, true) =>
-          val newName = fa.getFilename.replaceFirst("^_uploads/.*/", "")
+          val UPLOADS_FOLDER = FileUploadState.UPLOADS_FOLDER
+          val newName        = fa.getFilename.replaceFirst(s"^$UPLOADS_FOLDER/.*/", "")
           stagingContext.moveFile(fa.getFilename, WebFileUploads.zipPath(newName))
           commitUnzipPaths.foreach(p => stagingContext.moveFile(p._1, newName))
           fa.setFilename(newName)
