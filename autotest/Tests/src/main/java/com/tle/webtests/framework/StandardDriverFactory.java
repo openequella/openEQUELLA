@@ -30,6 +30,7 @@ import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.LocalFileDetector;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import java.util.logging.Level;
 
 public class StandardDriverFactory {
 
@@ -130,6 +131,7 @@ public class StandardDriverFactory {
         }
         capabilities.setCapability(ChromeOptions.CAPABILITY, options);
         RemoteWebDriver rdriver = new RemoteWebDriver(getChromeService().getUrl(), capabilities);
+        rdriver.setLogLevel(Level.FINE);
         driver = new Augmenter().augment(rdriver);
         if (chromeHeadless) {
           enableHeadlessDownloads(rdriver, downDir);
