@@ -113,6 +113,7 @@ public class StandardDriverFactory {
         options.addArguments("test-type");
         options.addArguments("disable-gpu");
         options.addArguments("no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
         if (chromeHeadless) {
           options.addArguments("headless");
           options.addArguments("--lang=en-US");
