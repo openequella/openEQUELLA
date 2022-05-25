@@ -18,7 +18,6 @@ phases:
       - service postgresql start
   build:
     commands:
-      - echo test
       - (npm ci && cd react-front-end && npm ci)
       - (cd Source/Plugins/Kaltura/com.tle.web.wizard.controls.kaltura/js && npm ci && npm run build)
       - (npm run check:ts && npm run check:ts-types-source && npm run check:license)
