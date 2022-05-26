@@ -202,7 +202,7 @@ libraryDependencies ++= Seq(
   "com.github.equella.legacy"       % "hurl"                           % "1.1",
   "org.jboss.resteasy"              % "resteasy-jaxrs"                 % RestEasyVersion,
   "org.jboss.spec.javax.annotation" % "jboss-annotations-api_1.3_spec" % "2.0.1.Final",
-  "org.reactivestreams"             % "reactive-streams"               % "1.0.3",
+  "org.reactivestreams"             % "reactive-streams"               % "1.0.4",
   // Upgraded to 2.0.1.Final due to a deduplication issue with jakarta.ws.rs-api
   "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"     % "2.0.2.Final",
   "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api" % "3.0",
