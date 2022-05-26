@@ -45,6 +45,7 @@ case class InstallOptions(installDir: File,
         <database>{dbname}</database>
         <username>{dbuser}</username>
         <password>{dbpassword}</password>
+        <trustservercerts>true</trustservercerts>
         <idtype>:</idtype>
       </datasource>
       <webserver>
