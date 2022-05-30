@@ -269,14 +269,14 @@ exports.mockReleases = [
     ref: "0b94c18552b10696d21327a53c9233bc8d3ea44e",
   },
   {
-    version: "2019.1.0",
+    version: "2019.1",
     html_url:
       "https://github.com/openequella/openEQUELLA/releases/tag/2019.1-Stable",
     release_date: "2019-07-31",
     ref: "ad37d9a4da99bc5ba74eef7e3d2baf96cf08b56b",
   },
   {
-    version: "2018.2.0",
+    version: "2018.2",
     html_url:
       "https://github.com/openequella/openEQUELLA/releases/tag/2018.2-Stable",
     release_date: "2018-12-21",
