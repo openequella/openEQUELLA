@@ -1,7 +1,6 @@
 function checkVersion(currentVersion, callback) {
-  const releaseCheckUrl =
-    "https://api.github.com/repos/openequella/openEQUELLA/releases";
-  $.ajax(releaseCheckUrl).done(function(data) {
+  const releaseCheckUrl = "https://openequella.github.io/versions.json";
+  $.ajax(releaseCheckUrl).done(function (data) {
     const checkResult = createCheckResult(currentVersion, data);
     callback(checkResult.newer, JSON.stringify(checkResult.newerReleases));
   });
@@ -35,7 +34,7 @@ function createCheckResult(currentVersion, data) {
     newerReleases = {
       majorUpdate: latestMajorRelease,
       minorUpdate: latestMinorRelease,
-      patchUpdate: latestPatchRelease
+      patchUpdate: latestPatchRelease,
     };
   } else {
     console.log(
@@ -47,8 +46,8 @@ function createCheckResult(currentVersion, data) {
 
 function getReleaseList(data) {
   const releaseList = [];
-  data.forEach(function(value) {
-    const releaseVersion = value.name;
+  data.forEach(function (value) {
+    const releaseVersion = value.version;
     const releaseUrl = value.html_url;
     const parsedVersion = parseVersion(releaseVersion);
     // We only want releases which support the semantic version
@@ -57,7 +56,7 @@ function getReleaseList(data) {
         major: parsedVersion.major,
         minor: parsedVersion.minor,
         patch: parsedVersion.patch,
-        url: releaseUrl
+        url: releaseUrl,
       });
     }
   });
@@ -66,7 +65,7 @@ function getReleaseList(data) {
 
 function getLatestMajorRelease(releaseList, parsedVersion) {
   // Find out all major releases published after current version
-  const majorReleaseList = releaseList.filter(function(release) {
+  const majorReleaseList = releaseList.filter(function (release) {
     return release.major > parsedVersion.major;
   });
 
@@ -94,7 +93,7 @@ function getLatestMajorRelease(releaseList, parsedVersion) {
 
 function getLatestMinorRelease(releaseList, parsedVersion) {
   // Find out all minor releases published after current version
-  const minorReleaseList = releaseList.filter(function(release) {
+  const minorReleaseList = releaseList.filter(function (release) {
     return (
       release.major === parsedVersion.major &&
       release.minor > parsedVersion.minor
@@ -120,7 +119,7 @@ function getLatestMinorRelease(releaseList, parsedVersion) {
 
 function getLatestPatchRelease(releaseList, parsedVersion) {
   // Find out all patch releases published after current version
-  const patchReleaseList = releaseList.filter(function(release) {
+  const patchReleaseList = releaseList.filter(function (release) {
     return (
       release.major === parsedVersion.major &&
       release.minor === parsedVersion.minor &&
@@ -154,7 +153,7 @@ function parseVersion(version) {
     result = {
       major: parsedVersion[1],
       minor: parsedVersion[2],
-      patch: parsedVersion[3]
+      patch: parsedVersion[3],
     };
   }
   return result;
