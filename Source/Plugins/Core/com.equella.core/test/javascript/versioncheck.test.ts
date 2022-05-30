@@ -26,7 +26,7 @@ describe("versioncheck", () => {
     it("should support major updates", () => {
       const checkResult = createCheckResult("2018.1.0", mockData.mockReleases);
       expect(checkResult.newer).toBe(true);
-      expect(checkResult.newerReleases.majorUpdate.major).toBe("2019");
+      expect(checkResult.newerReleases.majorUpdate.major).toBe("2022");
     });
 
     it("should support minor updates", () => {
@@ -45,11 +45,11 @@ describe("versioncheck", () => {
       const patchUpdateRelease = checkResult.newerReleases.patchUpdate;
       expect(patchUpdateRelease.major).toBe("2019");
       expect(patchUpdateRelease.minor).toBe("2");
-      expect(patchUpdateRelease.patch).toBe("1");
+      expect(patchUpdateRelease.patch).toBe("6");
     });
 
     it("should do nothing when there are no updates", () => {
-      const checkResult = createCheckResult("2020.1.0", mockData.mockReleases);
+      const checkResult = createCheckResult("2022.1.0", mockData.mockReleases);
       expect(checkResult.newer).toBe(false);
 
       expect(checkResult.newerReleases.majorUpdate).toBeNull();
