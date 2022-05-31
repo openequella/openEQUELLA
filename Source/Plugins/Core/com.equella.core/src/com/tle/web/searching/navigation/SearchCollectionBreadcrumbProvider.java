@@ -38,10 +38,13 @@ import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.model.SimpleBookmark;
 import com.tle.web.settings.UISettings;
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** @author aholland */
 @Bind
@@ -81,7 +84,19 @@ public class SearchCollectionBreadcrumbProvider implements BreadcrumbProvider {
     collectionLink.setLabel(label);
 
     if (UISettings.getUISettings().isNewSearchActive()) {
-      collectionLink.setBookmark(new SimpleBookmark("page/search"));
+      String baseBreadcrumbUrl = "page/search";
+      String query = "";
+      try {
+        query =
+            "?searchOptions="
+                + URLEncoder.encode(
+                    String.format("{\"collections\":[{\"uuid\": \"%s\"}]}", collectionUuid),
+                    "UTF-8");
+      } catch (Exception e) {
+        Logger LOGGER = LoggerFactory.getLogger(SearchCollectionBreadcrumbProvider.class);
+        LOGGER.warn("Failed to encode url:", e);
+      }
+      collectionLink.setBookmark(new SimpleBookmark(baseBreadcrumbUrl + query));
     } else {
       // "..page=<n>.." can be misleading (when the original search which
       // rendered the item we are now viewing was an "All Resources" search),
