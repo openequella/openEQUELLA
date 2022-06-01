@@ -38,6 +38,7 @@ import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.model.SimpleBookmark;
 import com.tle.web.settings.UISettings;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.Map;
@@ -50,6 +51,9 @@ import org.slf4j.LoggerFactory;
 @Bind
 @Singleton
 public class SearchCollectionBreadcrumbProvider implements BreadcrumbProvider {
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(SearchCollectionBreadcrumbProvider.class);
+
   @PlugKey("breadcrumb.collection.untitled")
   private static Label LABEL_UNTITLED;
 
@@ -92,8 +96,7 @@ public class SearchCollectionBreadcrumbProvider implements BreadcrumbProvider {
                 + URLEncoder.encode(
                     String.format("{\"collections\":[{\"uuid\": \"%s\"}]}", collectionUuid),
                     "UTF-8");
-      } catch (Exception e) {
-        Logger LOGGER = LoggerFactory.getLogger(SearchCollectionBreadcrumbProvider.class);
+      } catch (UnsupportedEncodingException e) {
         LOGGER.warn("Failed to encode url:", e);
       }
       collectionLink.setBookmark(new SimpleBookmark(baseBreadcrumbUrl + query));
