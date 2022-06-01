@@ -6,4 +6,4 @@ workflow:
 include:
   project: edalex-group/development/oeq/openequella-ci
   file: build/main.yml
-  ref: 3dc5f33a75c9d648e63ab7c395e418194f3f0aab
+  ref: 587cf264af843ae5604e5251f5cbaab77a1b5162
