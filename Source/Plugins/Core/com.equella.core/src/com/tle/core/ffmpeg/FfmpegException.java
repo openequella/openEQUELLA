@@ -16,19 +16,25 @@
  * limitations under the License.
  */
 
-package com.tle.core.libav;
+package com.tle.core.ffmpeg;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.tle.common.filesystem.handle.FileHandle;
-import java.io.File;
-import java.io.IOException;
+import com.dytech.edge.exceptions.RuntimeApplicationException;
 
-public interface LibAvService {
-  void screenshotVideo(File srcFile, File dstFile) throws IOException;
+/**
+ * It's runtime, so you don't have to catch it! Bonus!
+ *
+ * @author Aaron
+ */
+public class FfmpegException extends RuntimeApplicationException {
+  private static final long serialVersionUID = 1L;
 
-  void generatePreviewVideo(FileHandle handle, String filename) throws IOException;
+  public FfmpegException(String message) {
+    super(message);
+    setLogged(true);
+  }
 
-  ObjectNode getVideoInfo(File srcFile) throws IOException;
-
-  boolean isLibavInstalled();
+  public FfmpegException(String message, Throwable t) {
+    super(message, t);
+    setLogged(true);
+  }
 }

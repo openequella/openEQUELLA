@@ -317,6 +317,27 @@ $materialIconFontSize: 24px;
   color: $color;
 }
 
+@mixin materialIconButton(
+  $content,
+  $color: $menuItemIconColor,
+  $size: $materialIconFontSize
+) {
+  border-radius: 100%;
+  padding: 12px;
+
+  &:before {
+    @include materialIcon($content, $color, $size);
+    display: flex;
+    align-items: center;
+    width: $size;
+    height: $size;
+    padding: 0px;
+  }
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+}
+
 /*****************************************************************************
 Animations
 *****************************************************************************/
@@ -3396,23 +3417,12 @@ i.icon-arrow-left {
     }
 
     a.add {
-      &:before {
-        @include materialIcon("\e145", $color: $secondaryColor);
-        vertical-align: top;
-        padding-right: $minimalMargin;
-        font-style: normal;
-      }
+      @include materialIconButton("\e145", $color: $secondaryColor);
     }
 
     a.viewterm {
       padding-left: 0px;
-
-      &:before {
-        @include materialIcon("\e417", $color: $secondaryColor);
-        vertical-align: top;
-        padding-right: $minimalMargin;
-        font-style: normal;
-      }
+      @include materialIconButton("\e417", $color: $secondaryColor);
     }
 
     &.ui-tabs-active {
@@ -3421,6 +3431,27 @@ i.icon-arrow-left {
       a {
         color: $primaryTextColor;
       }
+    }
+  }
+
+  #browsetab .treeview li span:first-of-type,
+  #searchtab #searchResults ul li {
+    display: flex;
+    align-items: center;
+
+    .termname {
+      pointer-events: none;
+      flex-grow: 1;
+    }
+  }
+
+  // expand node icon
+  #browsetab .treeview {
+    .expandable-hitarea {
+      background-position: -80px -3px;
+    }
+    .collapsable-hitarea {
+      background-position: -64px -25px;
     }
   }
 }

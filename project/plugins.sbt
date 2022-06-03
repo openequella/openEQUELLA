@@ -1,6 +1,6 @@
 addSbtPlugin("com.typesafe.sbt" % "sbt-license-report" % "1.2.0")
 
-addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.6.5")
+addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.7.0")
 
 addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "1.2.0")
 
@@ -16,7 +16,7 @@ addSbtPlugin("com.etsy" % "sbt-checkstyle-plugin" % "3.1.1")
 //
 // NOTE: Uses a lot of temporary file storage, you may need to:
 //   export JVM_OPTS="-Djava.io.tmpdir=/var/tmp"
-addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "4.0.0")
+addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "4.1.0")
 
 // Provides support for all the tasks found at:
 // https://github.com/sbt/sbt-dependency-graph#main-tasks
@@ -26,7 +26,7 @@ addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "4.0.0")
 //    - revision is optional
 addDependencyTreePlugin
 
-val circeVersion = "0.14.1"
+val circeVersion = "0.14.2"
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core"    % circeVersion,
   "io.circe" %% "circe-generic" % circeVersion,

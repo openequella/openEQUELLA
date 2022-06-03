@@ -101,7 +101,7 @@
     <parameter id="class" value="com.tle.core.item.guice.ItemModule" />
     <parameter id="class" value="com.tle.core.item.serializer.impl.ItemSerializerModule" />
     <parameter id="class" value="com.tle.core.item.standard.guice.ItemStandardModule" />
-    <parameter id="class" value="com.tle.core.libav.guice.LibAvModule" />
+    <parameter id="class" value="com.tle.core.ffmpeg.guice.FfmpegModule" />
     <parameter id="class" value="com.tle.core.metadata.exiftool.guice.ExifToolModule" />
     <parameter id="class" value="com.tle.core.metadata.guice.MetadataHandlerTrackerModule" />
     <parameter id="class" value="com.tle.core.office2html.guice.Office2HtmlModule" />
@@ -6048,6 +6048,11 @@
     <parameter id="id" value="com.tle.core.institution.migration.v20202.AddIndexingErrorColumnMigration"/>
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v20202.AddIndexingErrorColumnMigration"/>
     <parameter id="date" value="2020-11-18"/>
+  </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="RenameViewCount">
+    <parameter id="id" value="com.tle.core.institution.migration.v20221.RenameViewCount"/>
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20221.RenameViewCount"/>
+    <parameter id="date" value="2022-04-07"/>
   </extension>
   <extension plugin-id="com.tle.core.migration" point-id="migration" id="EnableDefaultViewerMigration">
     <parameter id="id" value="com.tle.core.institution.migration.v20211.EnableDefaultViewerMigration"/>

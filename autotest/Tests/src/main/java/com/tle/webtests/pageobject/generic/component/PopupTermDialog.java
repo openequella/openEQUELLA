@@ -67,7 +67,8 @@ public class PopupTermDialog extends AbstractPage<PopupTermDialog> {
 
     String term =
         getDialog()
-            .findElement(By.xpath("id('searchResults')/ul/li[" + result + "]"))
+            .findElement(
+                By.xpath("id('searchResults')/ul/li[" + result + "]/span[@class='termname']"))
             .getText()
             .replaceAll("Select   View", "")
             .trim();
@@ -137,7 +138,7 @@ public class PopupTermDialog extends AbstractPage<PopupTermDialog> {
 
     public TermEntry(SearchContext parent, String name) {
       this.parent = parent;
-      childBy = By.xpath(".//li[starts-with(span/text(), " + quoteXPath(name) + ")]");
+      childBy = By.xpath(".//li[starts-with(span/span/text(), " + quoteXPath(name) + ")]");
       this.name = name;
     }
 
@@ -155,7 +156,7 @@ public class PopupTermDialog extends AbstractPage<PopupTermDialog> {
                   + quoteXPath(name)
                   + "]");
       WaitingPageObject<PopupTermDialog> visibilityWaiter = visibilityWaiter(getDialog(), xpath);
-      getElement().findElement(By.xpath("span/a[text()='View']")).click();
+      getElement().findElement(By.xpath("span/a[@title='View']")).click();
       visibilityWaiter.get();
     }
 
