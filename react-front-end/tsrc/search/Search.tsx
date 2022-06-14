@@ -139,15 +139,15 @@ interface SearchProps extends TemplateUpdateProps {
   /**
    * Child components which are dependent on SearchContext.
    */
-  children: ReactNode;
+  children: ReactNode[];
   /**
-   * In the cases where custom SearchPageOptions is needed in the initial search, call this function to combine
-   * the custom SearchPageOptions with the General SearchPageOptions.
+   * This function will be called before the initial search, allowing for any additional customisation
+   * to the initial search options.
    *
    * @param searchPageOptions General SearchPageOptions for the initial search.
    * @param queryStringSearchOptions The SearchPageOptions transformed from query strings.
    */
-  addCustomSearchPageOptions?: (
+  customiseInitialSearchOptions?: (
     searchPageOptions: SearchPageOptions,
     queryStringSearchOptions?: SearchPageOptions
   ) => SearchPageOptions;
@@ -161,7 +161,7 @@ interface SearchProps extends TemplateUpdateProps {
 export const Search = ({
   updateTemplate,
   children,
-  addCustomSearchPageOptions = identity,
+  customiseInitialSearchOptions = identity,
 }: SearchProps) => {
   const history = useHistory();
   const location = useLocation();
@@ -277,7 +277,7 @@ export const Search = ({
           setAdvancedSearches(advancedSearches);
 
           const mergeSearchPageOptions = (options: SearchPageOptions) =>
-            addCustomSearchPageOptions(options, queryStringSearchOptions);
+            customiseInitialSearchOptions(options, queryStringSearchOptions);
 
           // This is the SearchPageOptions for the first searching, not the one created in the first rendering.
           const initialSearchPageOptions = pipe(
@@ -310,7 +310,7 @@ export const Search = ({
     searchPageOptions,
     searchState.status,
     updateTemplate,
-    addCustomSearchPageOptions,
+    customiseInitialSearchOptions,
   ]);
 
   /**
