@@ -139,7 +139,7 @@ interface SearchProps extends TemplateUpdateProps {
   /**
    * Child components which are dependent on SearchContext.
    */
-  children: ReactNode[];
+  children: ReactNode;
   /**
    * This function will be called before the initial search, allowing for any additional customisation
    * to the initial search options.
