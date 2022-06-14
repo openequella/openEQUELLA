@@ -20,6 +20,7 @@ import { pipe } from "fp-ts/function";
 import type { GallerySearchResultItem } from "../modules/GallerySearchModule";
 import type { Classification } from "../modules/SearchFacetsModule";
 import type { SearchPageOptions } from "./SearchPageHelper";
+import { absurd } from "fp-ts/function";
 
 /**
  * The types of SearchResultItem that we support within an `OEQ.Search.SearchResult`.
@@ -158,6 +159,6 @@ export const reducerRefactored = (
     case "error":
       return { status: "failure", cause: action.cause };
     default:
-      throw new TypeError("Unexpected action passed to reducer!");
+      return absurd(action);
   }
 };
