@@ -80,11 +80,6 @@ export const mockCollaborators = () => {
     .spyOn(RemoteSearchModule, "getRemoteSearchesFromServer")
     .mockResolvedValue(getRemoteSearchesFromServerResult);
 
-  // Mock out collaborator which populates the Advanced Search selector
-  jest
-    .spyOn(AdvancedSearchModule, "getAdvancedSearchesFromServer")
-    .mockResolvedValue(getAdvancedSearchesFromServerResult);
-
   jest.spyOn(FavouriteModule, "addFavouriteItem").mockResolvedValue({
     itemID: "abc",
     keywords: ["a", "b"],
@@ -101,6 +96,9 @@ export const mockCollaborators = () => {
   });
 
   return {
+    mockGetAdvancedSearchesFromServer: jest
+      .spyOn(AdvancedSearchModule, "getAdvancedSearchesFromServer")
+      .mockResolvedValue(getAdvancedSearchesFromServerResult),
     mockCollections: jest.spyOn(CollectionsModule, "collectionListSummary"),
     mockListUsers: jest.spyOn(UserModule, "listUsers"),
     mockCurrentUser: jest.spyOn(UserModule, "getCurrentUserDetails"),

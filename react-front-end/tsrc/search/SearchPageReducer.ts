@@ -91,3 +91,73 @@ export const reducer = (state: State, action: Action): State => {
       throw new TypeError("Unexpected action passed to reducer!");
   }
 };
+
+export type ActionRefactored =
+  | { type: "init" }
+  | {
+      type: "search";
+      options: SearchPageOptions;
+      searchClassification: boolean;
+      callback?: () => void;
+    }
+  | {
+      type: "search-complete";
+      result: SearchPageSearchResult;
+      classifications: Classification[];
+    }
+  | { type: "error"; cause: Error };
+
+// todo: rename the type.
+export type StateRefactored =
+  | { status: "initialising" }
+  | {
+      status: "searching";
+      options: SearchPageOptions;
+      previousResult?: SearchPageSearchResult;
+      previousClassifications?: Classification[];
+      searchClassification: boolean;
+      callback?: () => void;
+    }
+  | {
+      status: "success";
+      result: SearchPageSearchResult;
+      classifications: Classification[];
+    }
+  | { status: "failure"; cause: Error };
+
+// todo: rename this type and update the types used.
+export const reducerRefactored = (
+  state: StateRefactored,
+  action: ActionRefactored
+): StateRefactored => {
+  switch (action.type) {
+    case "init":
+      return { status: "initialising" };
+    case "search":
+      return pipe(
+        state.status === "success"
+          ? {
+              previousResult: state.result,
+              previousClassifications: state.classifications,
+            }
+          : {},
+        (prevResults) => ({
+          status: "searching",
+          options: action.options,
+          callback: action.callback,
+          searchClassification: action.searchClassification,
+          ...prevResults,
+        })
+      );
+    case "search-complete":
+      return {
+        status: "success",
+        result: action.result,
+        classifications: action.classifications,
+      };
+    case "error":
+      return { status: "failure", cause: action.cause };
+    default:
+      throw new TypeError("Unexpected action passed to reducer!");
+  }
+};
