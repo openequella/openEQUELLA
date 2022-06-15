@@ -94,7 +94,7 @@ export const reducer = (state: State, action: Action): State => {
 };
 
 export type ActionRefactored =
-  | { type: "init" }
+  | { type: "init"; options: SearchPageOptions }
   | {
       type: "search";
       options: SearchPageOptions;
@@ -103,14 +103,15 @@ export type ActionRefactored =
     }
   | {
       type: "search-complete";
+      options: SearchPageOptions;
       result: SearchPageSearchResult;
       classifications: Classification[];
     }
-  | { type: "error"; cause: Error };
+  | { type: "error"; options: SearchPageOptions; cause: Error };
 
 // todo: rename the type.
 export type StateRefactored =
-  | { status: "initialising" }
+  | { status: "initialising"; options: SearchPageOptions }
   | {
       status: "searching";
       options: SearchPageOptions;
@@ -121,10 +122,11 @@ export type StateRefactored =
     }
   | {
       status: "success";
+      options: SearchPageOptions;
       result: SearchPageSearchResult;
       classifications: Classification[];
     }
-  | { status: "failure"; cause: Error };
+  | { status: "failure"; options: SearchPageOptions; cause: Error };
 
 // todo: rename this type and update the types used.
 export const reducerRefactored = (
@@ -133,7 +135,7 @@ export const reducerRefactored = (
 ): StateRefactored => {
   switch (action.type) {
     case "init":
-      return { status: "initialising" };
+      return { status: "initialising", options: action.options };
     case "search":
       return pipe(
         state.status === "success"
@@ -153,11 +155,16 @@ export const reducerRefactored = (
     case "search-complete":
       return {
         status: "success",
+        options: action.options,
         result: action.result,
         classifications: action.classifications,
       };
     case "error":
-      return { status: "failure", cause: action.cause };
+      return {
+        status: "failure",
+        options: action.options,
+        cause: action.cause,
+      };
     default:
       return absurd(action);
   }

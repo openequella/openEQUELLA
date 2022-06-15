@@ -62,7 +62,6 @@ import {
 import {
   reducerRefactored,
   SearchPageSearchResult,
-  State,
   StateRefactored,
 } from "./SearchPageReducer";
 
@@ -99,10 +98,6 @@ interface SearchContextProps {
    */
   searchState: StateRefactored;
   /**
-   * The currently configured SearchPageOptions.
-   */
-  searchPageOptions: SearchPageOptions;
-  /**
    * Search settings retrieved from server, including MIME type filters.
    */
   searchSettings: {
@@ -123,12 +118,12 @@ interface SearchContextProps {
   searchPageErrorHandler: (error: Error) => void;
 }
 
-const initialSearchState: State = { status: "initialising" };
-
 export const SearchContext = React.createContext<SearchContextProps>({
   search: nop,
-  searchState: initialSearchState,
-  searchPageOptions: defaultSearchPageOptions,
+  searchState: {
+    status: "initialising",
+    options: defaultSearchPageOptions,
+  },
   searchSettings: { core: defaultSearchSettings, mimeTypeFilters: [] },
   currentUser: undefined,
   advancedSearches: [],
@@ -166,25 +161,17 @@ export const Search = ({
   const history = useHistory();
   const location = useLocation();
 
-  const defaultSearchPageHistory: SearchPageHistoryState = {
-    searchPageOptions: defaultSearchPageOptions,
-  };
-
-  const [searchState, dispatch] = useReducer(
-    reducerRefactored,
-    initialSearchState
-  );
   const searchPageHistoryState: SearchPageHistoryState | undefined = history
     .location.state as SearchPageHistoryState;
 
-  const [searchPageOptions, setSearchPageOptions] = useState<SearchPageOptions>(
-    // If the user has gone 'back' to this page, then use their previous options. Otherwise
-    // we start fresh - i.e. if a new navigation to Search Page.
-    searchPageHistoryState?.searchPageOptions ?? {
-      ...defaultSearchPageHistory.searchPageOptions,
+  const [searchState, dispatch] = useReducer(reducerRefactored, {
+    status: "initialising",
+    options: searchPageHistoryState?.searchPageOptions ?? {
+      ...defaultSearchPageOptions,
       rawMode: getRawModeFromStorage(),
-    }
-  );
+    },
+  });
+  const { options: searchPageOptions } = searchState;
 
   const [searchSettings, setSearchSettings] = useState<{
     core: OEQ.SearchSettings.Settings | undefined;
@@ -204,9 +191,9 @@ export const Search = ({
   const { appErrorHandler } = useContext(AppRenderErrorContext);
   const searchPageErrorHandler = useCallback(
     (error: Error) => {
-      dispatch({ type: "error", cause: error });
+      dispatch({ type: "error", options: searchPageOptions, cause: error });
     },
-    [dispatch]
+    [searchPageOptions]
   );
 
   const search = useCallback(
@@ -376,7 +363,6 @@ export const Search = ({
         }
       });
 
-      setSearchPageOptions(options);
       (async () => {
         try {
           const searchResult: SearchPageSearchResult = await doSearch(options);
@@ -386,6 +372,7 @@ export const Search = ({
 
           dispatch({
             type: "search-complete",
+            options,
             result: { ...searchResult },
             classifications,
           });
@@ -433,7 +420,6 @@ export const Search = ({
       value={{
         search,
         searchState,
-        searchPageOptions,
         searchSettings,
         currentUser,
         advancedSearches,
