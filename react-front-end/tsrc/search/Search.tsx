@@ -47,10 +47,7 @@ import {
 } from "../modules/SearchFacetsModule";
 import { getMimeTypeFiltersFromServer } from "../modules/SearchFilterSettingsModule";
 import { searchItems, SearchOptions } from "../modules/SearchModule";
-import {
-  defaultSearchSettings,
-  getSearchSettingsFromServer,
-} from "../modules/SearchSettingsModule";
+import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
 import { getCurrentUserDetails } from "../modules/UserModule";
 import { languageStrings } from "../util/langstrings";
 import {
@@ -78,6 +75,18 @@ interface SearchPageHistoryState {
 const { searchpage: searchStrings } = languageStrings;
 const nop = () => {};
 
+interface GeneralSearchSettings {
+  core: OEQ.SearchSettings.Settings | undefined;
+  mimeTypeFilters: OEQ.SearchFilterSettings.MimeTypeFilter[];
+  advancedSearches: OEQ.Common.BaseEntitySummary[];
+}
+
+const defaultGeneralSearchSettings: GeneralSearchSettings = {
+  core: undefined,
+  mimeTypeFilters: [],
+  advancedSearches: [],
+};
+
 /**
  * Data structure for what SearchContext provides.
  */
@@ -98,20 +107,13 @@ interface SearchContextProps {
    */
   searchState: StateRefactored;
   /**
-   * Search settings retrieved from server, including MIME type filters.
+   * Search settings retrieved from server, including MIME type filters and Advanced searches.
    */
-  searchSettings: {
-    core: OEQ.SearchSettings.Settings | undefined;
-    mimeTypeFilters: OEQ.SearchFilterSettings.MimeTypeFilter[];
-  };
+  searchSettings: GeneralSearchSettings;
   /**
    * Currently signed in user.
    */
   currentUser: OEQ.LegacyContent.CurrentUserDetails | undefined;
-  /**
-   * Available Advanced searches retrieved from server.
-   */
-  advancedSearches: OEQ.Common.BaseEntitySummary[];
   /**
    * Error handler specific to the New Search UI.
    */
@@ -124,9 +126,8 @@ export const SearchContext = React.createContext<SearchContextProps>({
     status: "initialising",
     options: defaultSearchPageOptions,
   },
-  searchSettings: { core: defaultSearchSettings, mimeTypeFilters: [] },
+  searchSettings: defaultGeneralSearchSettings,
   currentUser: undefined,
-  advancedSearches: [],
   searchPageErrorHandler: nop,
 });
 
@@ -173,20 +174,12 @@ export const Search = ({
   });
   const { options: searchPageOptions } = searchState;
 
-  const [searchSettings, setSearchSettings] = useState<{
-    core: OEQ.SearchSettings.Settings | undefined;
-    mimeTypeFilters: OEQ.SearchFilterSettings.MimeTypeFilter[];
-  }>({
-    core: undefined,
-    mimeTypeFilters: [],
-  });
+  const [searchSettings, setSearchSettings] = useState<GeneralSearchSettings>(
+    defaultGeneralSearchSettings
+  );
 
   const [currentUser, setCurrentUser] =
     React.useState<OEQ.LegacyContent.CurrentUserDetails>();
-
-  const [advancedSearches, setAdvancedSearches] = useState<
-    OEQ.Common.BaseEntitySummary[]
-  >([]);
 
   const { appErrorHandler } = useContext(AppRenderErrorContext);
   const searchPageErrorHandler = useCallback(
@@ -258,10 +251,10 @@ export const Search = ({
         ]) => {
           setSearchSettings({
             core: searchSettings,
-            mimeTypeFilters: mimeTypeFilters,
+            mimeTypeFilters,
+            advancedSearches,
           });
           setCurrentUser(currentUserDetails);
-          setAdvancedSearches(advancedSearches);
 
           const mergeSearchPageOptions = (options: SearchPageOptions) =>
             customiseInitialSearchOptions(options, queryStringSearchOptions);
@@ -422,7 +415,6 @@ export const Search = ({
         searchState,
         searchSettings,
         currentUser,
-        advancedSearches,
         searchPageErrorHandler,
       }}
     >
