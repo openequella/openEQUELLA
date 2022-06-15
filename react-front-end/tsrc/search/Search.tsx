@@ -86,12 +86,12 @@ interface SearchContextProps {
   /**
    * Function to perform a search.
    * @param searchPageOptions The SearchPageOptions to be applied in a search.
-   * @param searchClassification Whether to search classifications.
+   * @param listClassifications Whether to update the list of classifications based on the current search criteria.
    * @param callback Callback fired after a search is completed.
    */
   search: (
     searchPageOptions: SearchPageOptions,
-    searchClassification?: boolean,
+    updateClassifications?: boolean,
     callback?: () => void
   ) => void;
   /**
@@ -212,13 +212,13 @@ export const Search = ({
   const search = useCallback(
     (
       searchPageOptions: SearchPageOptions,
-      searchClassification = true,
+      updateClassifications = true,
       callback: () => void = nop
     ): void => {
       dispatch({
         type: "search",
         options: searchPageOptions,
-        searchClassification,
+        updateClassifications,
         callback,
       });
     },
@@ -322,7 +322,7 @@ export const Search = ({
       console.debug("SearchPage: useEffect - searching");
       console.time(timerId);
 
-      const { options, searchClassification, callback } = searchState;
+      const { options, updateClassifications, callback } = searchState;
 
       const gallerySearch = async (
         search: typeof imageGallerySearch | typeof videoGallerySearch,
@@ -380,7 +380,7 @@ export const Search = ({
       (async () => {
         try {
           const searchResult: SearchPageSearchResult = await doSearch(options);
-          const classifications: Classification[] = searchClassification
+          const classifications: Classification[] = updateClassifications
             ? await getClassifications(options)
             : [];
 

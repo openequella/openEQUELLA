@@ -98,7 +98,7 @@ export type ActionRefactored =
   | {
       type: "search";
       options: SearchPageOptions;
-      searchClassification: boolean;
+      updateClassifications: boolean;
       callback?: () => void;
     }
   | {
@@ -116,7 +116,7 @@ export type StateRefactored =
       options: SearchPageOptions;
       previousResult?: SearchPageSearchResult;
       previousClassifications?: Classification[];
-      searchClassification: boolean;
+      updateClassifications: boolean;
       callback?: () => void;
     }
   | {
@@ -146,7 +146,7 @@ export const reducerRefactored = (
           status: "searching",
           options: action.options,
           callback: action.callback,
-          searchClassification: action.searchClassification,
+          updateClassifications: action.updateClassifications,
           ...prevResults,
         })
       );
