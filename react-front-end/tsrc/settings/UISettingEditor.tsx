@@ -28,7 +28,7 @@ import * as React from "react";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getBaseUrl } from "../AppConfig";
-import { AppRenderErrorContext } from "../mainui/App";
+import { AppContext } from "../mainui/App";
 import { routes } from "../mainui/routes";
 import {
   fetchUISetting,
@@ -50,17 +50,15 @@ const useStyles = makeStyles({
   },
 });
 
-interface UISettingEditorProps {
-  refreshUser: () => void;
-}
+const { uiconfig } = languageStrings;
 
-const UISettingEditor = ({ refreshUser }: UISettingEditorProps) => {
+const UISettingEditor = () => {
   const classes = useStyles();
-  const { uiconfig } = languageStrings;
+  const { refreshUser } = useContext(AppContext);
 
   const [newUIEnabled, setNewUIEnabled] = useState<boolean>(true);
   const [newSearchEnabled, setNewSearchEnabled] = useState<boolean>(false);
-  const { appErrorHandler } = useContext(AppRenderErrorContext);
+  const { appErrorHandler } = useContext(AppContext);
 
   useEffect(() => {
     fetchUISetting()

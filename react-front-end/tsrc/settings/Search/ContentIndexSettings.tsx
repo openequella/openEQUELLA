@@ -23,7 +23,7 @@ import { shallowEqual } from "shallow-equal-object";
 import SettingPageTemplate from "../../components/SettingPageTemplate";
 import SettingsList from "../../components/SettingsList";
 import SettingsListControl from "../../components/SettingsListControl";
-import { AppRenderErrorContext } from "../../mainui/App";
+import { AppContext } from "../../mainui/App";
 import { routes } from "../../mainui/routes";
 import { templateDefaults, TemplateUpdateProps } from "../../mainui/Template";
 import {
@@ -47,7 +47,7 @@ const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
   const [loadSettings, setLoadSettings] = React.useState<boolean>(true);
   const [showSuccess, setShowSuccess] = React.useState<boolean>(false);
   const [disableSettings, setDisableSettings] = React.useState<boolean>(false);
-  const { appErrorHandler } = useContext(AppRenderErrorContext);
+  const { appErrorHandler } = useContext(AppContext);
 
   const setError = useCallback(
     (error: string | Error) => {

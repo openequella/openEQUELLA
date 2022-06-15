@@ -29,7 +29,7 @@ import {
   generateFromError,
 } from "../api/errors";
 import { LEGACY_CSS_URL } from "../AppConfig";
-import { AppRenderErrorContext } from "../mainui/App";
+import { AppContext } from "../mainui/App";
 import { BaseOEQRouteComponentProps } from "../mainui/routes";
 import {
   FullscreenMode,
@@ -161,18 +161,19 @@ export const LegacyContent = React.memo(function LegacyContent({
   onError,
   pathname,
   search,
-  refreshUser,
   redirect,
   setPreventNavigation,
   updateTemplate,
   isReloadNeeded,
 }: LegacyContentProps) {
+  const { refreshUser } = useContext(AppContext);
+
   const [content, setContent] = React.useState<PageContent>();
   const [updatingContent, setUpdatingContent] = React.useState<boolean>(true);
   const submittingForm = React.useRef<LegacyContentSubmission>({
     submitting: false,
   });
-  const { appErrorHandler } = useContext(AppRenderErrorContext);
+  const { appErrorHandler } = useContext(AppContext);
 
   const baseUrl = document.getElementsByTagName("base")[0].href;
 

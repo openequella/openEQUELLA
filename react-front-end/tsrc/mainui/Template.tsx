@@ -35,10 +35,10 @@ import BackIcon from "@material-ui/icons/ArrowBack";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import MenuIcon from "@material-ui/icons/Menu";
 import NotificationsIcon from "@material-ui/icons/Notifications";
-import * as OEQ from "@openequella/rest-api-client";
 import clsx, { ClassValue } from "clsx";
 import { LocationDescriptor } from "history";
 import { isEqual } from "lodash";
+import { useContext } from "react";
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { ErrorResponse } from "../api/errors";
@@ -50,6 +50,7 @@ import {
 } from "../modules/LegacySelectionSessionModule";
 import { guestUser } from "../modules/UserModule";
 import { languageStrings } from "../util/langstrings";
+import { AppContext } from "./App";
 import MainMenu from "./MainMenu";
 import { legacyPageUrl, routes } from "./routes";
 import ScreenOptions from "./ScreenOptions";
@@ -76,7 +77,6 @@ export interface TemplateProps {
   hideAppBar?: boolean;
   menuMode?: MenuMode;
   disableNotifications?: boolean;
-  currentUser?: OEQ.LegacyContent.CurrentUserDetails;
   /* Extra meta tags */
   metaTags?: string;
 }
@@ -309,7 +309,6 @@ function useFullscreen({ fullscreenMode, hideAppBar }: useFullscreenProps) {
 export const Template = ({
   backRoute,
   children,
-  currentUser = guestUser,
   disableNotifications,
   fixedViewPort,
   footer,
@@ -322,6 +321,7 @@ export const Template = ({
   titleExtra,
   metaTags,
 }: TemplateProps) => {
+  const currentUser = useContext(AppContext).currentUser ?? guestUser;
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLElement>();
   const [navMenuOpen, setNavMenuOpen] = React.useState(false);
 

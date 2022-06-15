@@ -28,7 +28,7 @@ import {
 } from "react";
 import * as React from "react";
 import { useHistory, useLocation } from "react-router";
-import { AppRenderErrorContext } from "../mainui/App";
+import { AppContext } from "../mainui/App";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import { getAdvancedSearchesFromServer } from "../modules/AdvancedSearchModule";
 import {
@@ -181,7 +181,7 @@ export const Search = ({
   const [currentUser, setCurrentUser] =
     React.useState<OEQ.LegacyContent.CurrentUserDetails>();
 
-  const { appErrorHandler } = useContext(AppRenderErrorContext);
+  const { appErrorHandler } = useContext(AppContext);
   const searchPageErrorHandler = useCallback(
     (error: Error) => {
       dispatch({ type: "error", options: searchPageOptions, cause: error });
