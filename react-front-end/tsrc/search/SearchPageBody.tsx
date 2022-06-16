@@ -24,6 +24,7 @@ import { useHistory } from "react-router";
 import { getBaseUrl } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
 import MessageInfo, { MessageInfoVariant } from "../components/MessageInfo";
+import { AppContext } from "../mainui/App";
 import { NEW_SEARCH_PATH, routes } from "../mainui/routes";
 import { getAdvancedSearchIdFromLocation } from "../modules/AdvancedSearchModule";
 import { Collection } from "../modules/CollectionsModule";
@@ -156,11 +157,12 @@ export const SearchPageBody = ({
     searchState: state,
     searchSettings,
     searchPageErrorHandler,
-    currentUser,
   } = useContext(SearchContext);
+
   const { options: searchPageOptions } = state;
   const { advancedSearches } = searchSettings;
 
+  const { currentUser } = useContext(AppContext);
   const history = useHistory();
 
   const [snackBar, setSnackBar] = useState<{
