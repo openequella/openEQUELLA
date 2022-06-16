@@ -100,6 +100,10 @@ export interface SearchPageOptions extends SearchOptions {
    * or favourited from Old UI.
    */
   legacyAdvSearchCriteria?: PathValueMap;
+  /**
+   * Open/closed state of refine expansion panel
+   */
+  filterExpansion?: boolean;
 }
 
 export const defaultSearchPageOptions: SearchPageOptions = {
@@ -107,6 +111,52 @@ export const defaultSearchPageOptions: SearchPageOptions = {
   displayMode: "list",
   dateRangeQuickModeEnabled: true,
 };
+
+export interface SearchPageHeaderControl {
+  useCSVExportButton?: boolean;
+  useShareSearchButton?: boolean;
+  additionalHeaders?: JSX.Element[];
+  customSortingOptions?: Map<OEQ.SearchSettings.SortOrder, string>;
+}
+
+export const defaultSearchPageHeaderControl: SearchPageHeaderControl = {
+  useCSVExportButton: true,
+  useShareSearchButton: true,
+};
+
+export interface SearchPageRefinePanelControl {
+  useDisplayModeSelector?: boolean;
+  useCollectionSelector?: boolean;
+  useAdvancedSearchSelector?: boolean;
+  useRemoteSearchSelector?: boolean;
+  useDateRangeSelector?: boolean;
+  useMimeTypeSelector?: boolean;
+  useOwnerSelector?: boolean;
+  useItemStatusSelector?: boolean;
+  useSearchAttachmentsSelector?: boolean;
+}
+
+export const defaultSearchPageRefinePanelControl: SearchPageRefinePanelControl =
+  {
+    useDisplayModeSelector: true,
+    useCollectionSelector: true,
+    useAdvancedSearchSelector: true,
+    useRemoteSearchSelector: true,
+    useDateRangeSelector: true,
+    useMimeTypeSelector: true,
+    useOwnerSelector: true,
+    useItemStatusSelector: true,
+    useSearchAttachmentsSelector: true,
+  };
+
+export interface SearchPageSearchBarControl {
+  advancedSearchFilter: {
+    /** Called when the filter button is clicked */
+    onClick: () => void;
+    /** If true the button wil be highlighted by the Secondary colour. */
+    accent: boolean;
+  };
+}
 
 export const defaultPagedSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> =
   {

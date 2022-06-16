@@ -33,11 +33,13 @@ export interface SearchOrderSelectProps {
    * @param sortOrder The new order.
    */
   onChange: (sortOrder: OEQ.SearchSettings.SortOrder) => void;
+  customSortingOptions?: Map<OEQ.SearchSettings.SortOrder, string>;
 }
 
 export const SearchOrderSelect = ({
   value,
   onChange,
+  customSortingOptions,
 }: SearchOrderSelectProps) => {
   const { relevance, lastModified, dateCreated, title, userRating } =
     languageStrings.settings.searching.searchPageSettings;
@@ -45,7 +47,10 @@ export const SearchOrderSelect = ({
   /**
    * Provide a data source for search sorting control.
    */
-  const sortingOptionStrings = new Map<OEQ.SearchSettings.SortOrder, string>([
+  const defaultSortingOptionStrings = new Map<
+    OEQ.SearchSettings.SortOrder,
+    string
+  >([
     ["RANK", relevance],
     ["DATEMODIFIED", lastModified],
     ["DATECREATED", dateCreated],
@@ -72,11 +77,13 @@ export const SearchOrderSelect = ({
           )
         }
       >
-        {Array.from(sortingOptionStrings).map(([value, text]) => (
-          <MenuItem key={value} value={value}>
-            {text}
-          </MenuItem>
-        ))}
+        {Array.from(customSortingOptions ?? defaultSortingOptionStrings).map(
+          ([value, text]) => (
+            <MenuItem key={value} value={value}>
+              {text}
+            </MenuItem>
+          )
+        )}
       </Select>
     </>
   );
