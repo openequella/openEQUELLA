@@ -48,7 +48,6 @@ import {
 import { getMimeTypeFiltersFromServer } from "../modules/SearchFilterSettingsModule";
 import { searchItems, SearchOptions } from "../modules/SearchModule";
 import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
-import { getCurrentUserDetails } from "../modules/UserModule";
 import { languageStrings } from "../util/langstrings";
 import {
   defaultSearchPageOptions,
@@ -94,7 +93,7 @@ interface SearchContextProps {
   /**
    * Function to perform a search.
    * @param searchPageOptions The SearchPageOptions to be applied in a search.
-   * @param listClassifications Whether to update the list of classifications based on the current search criteria.
+   * @param updateClassifications Whether to update the list of classifications based on the current search criteria.
    * @param callback Callback fired after a search is completed.
    */
   search: (
@@ -111,10 +110,6 @@ interface SearchContextProps {
    */
   searchSettings: GeneralSearchSettings;
   /**
-   * Currently signed in user.
-   */
-  currentUser: OEQ.LegacyContent.CurrentUserDetails | undefined;
-  /**
    * Error handler specific to the New Search UI.
    */
   searchPageErrorHandler: (error: Error) => void;
@@ -127,7 +122,6 @@ export const SearchContext = React.createContext<SearchContextProps>({
     options: defaultSearchPageOptions,
   },
   searchSettings: defaultGeneralSearchSettings,
-  currentUser: undefined,
   searchPageErrorHandler: nop,
 });
 
@@ -177,9 +171,6 @@ export const Search = ({
   const [searchSettings, setSearchSettings] = useState<GeneralSearchSettings>(
     defaultGeneralSearchSettings
   );
-
-  const [currentUser, setCurrentUser] =
-    React.useState<OEQ.LegacyContent.CurrentUserDetails>();
 
   const { appErrorHandler } = useContext(AppContext);
   const searchPageErrorHandler = useCallback(
@@ -238,7 +229,6 @@ export const Search = ({
       (location.state as SearchPageHistoryState)
         ? Promise.resolve(undefined)
         : generateSearchPageOptionsFromQueryString(location),
-      getCurrentUserDetails(),
       getAdvancedSearchesFromServer(),
     ])
       .then(
@@ -246,7 +236,6 @@ export const Search = ({
           searchSettings,
           mimeTypeFilters,
           queryStringSearchOptions,
-          currentUserDetails,
           advancedSearches,
         ]) => {
           setSearchSettings({
@@ -254,7 +243,6 @@ export const Search = ({
             mimeTypeFilters,
             advancedSearches,
           });
-          setCurrentUser(currentUserDetails);
 
           const mergeSearchPageOptions = (options: SearchPageOptions) =>
             customiseInitialSearchOptions(options, queryStringSearchOptions);
@@ -414,7 +402,6 @@ export const Search = ({
         search,
         searchState,
         searchSettings,
-        currentUser,
         searchPageErrorHandler,
       }}
     >
