@@ -103,11 +103,10 @@ export type ActionRefactored =
     }
   | {
       type: "search-complete";
-      options: SearchPageOptions;
       result: SearchPageSearchResult;
       classifications: Classification[];
     }
-  | { type: "error"; options: SearchPageOptions; cause: Error };
+  | { type: "error"; cause: Error };
 
 // todo: rename the type.
 export type StateRefactored =
@@ -155,14 +154,14 @@ export const reducerRefactored = (
     case "search-complete":
       return {
         status: "success",
-        options: action.options,
+        options: state.options,
         result: action.result,
         classifications: action.classifications,
       };
     case "error":
       return {
         status: "failure",
-        options: action.options,
+        options: state.options,
         cause: action.cause,
       };
     default:

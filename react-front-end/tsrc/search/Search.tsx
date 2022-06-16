@@ -175,9 +175,9 @@ export const Search = ({
   const { appErrorHandler } = useContext(AppContext);
   const searchPageErrorHandler = useCallback(
     (error: Error) => {
-      dispatch({ type: "error", options: searchPageOptions, cause: error });
+      dispatch({ type: "error", cause: error });
     },
-    [searchPageOptions]
+    [dispatch]
   );
 
   const search = useCallback(
@@ -353,7 +353,6 @@ export const Search = ({
 
           dispatch({
             type: "search-complete",
-            options,
             result: { ...searchResult },
             classifications,
           });
