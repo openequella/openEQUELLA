@@ -146,7 +146,7 @@ export const SearchResultList = ({
   onCopySearchLink,
   onSaveSearch,
   exportProps: { isExportPermitted, linkRef, exportLinkProps },
-  useShareSearchButton,
+  useShareSearchButton = true,
   additionalHeaders,
 }: SearchResultListProps) => {
   const classes = useStyles();
