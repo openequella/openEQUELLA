@@ -54,7 +54,6 @@ const { uiconfig } = languageStrings;
 
 const UISettingEditor = () => {
   const classes = useStyles();
-  const { refreshUser } = useContext(AppContext);
 
   const [newUIEnabled, setNewUIEnabled] = useState<boolean>(true);
   const [newSearchEnabled, setNewSearchEnabled] = useState<boolean>(false);
@@ -83,7 +82,6 @@ const UISettingEditor = () => {
     saveUISetting(newUIEnabled, enabled)
       .then((_) => {
         setNewSearchEnabled(enabled);
-        refreshUser();
       })
       .catch(appErrorHandler);
   };

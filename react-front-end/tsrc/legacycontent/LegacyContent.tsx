@@ -166,14 +166,12 @@ export const LegacyContent = React.memo(function LegacyContent({
   updateTemplate,
   isReloadNeeded,
 }: LegacyContentProps) {
-  const { refreshUser } = useContext(AppContext);
-
   const [content, setContent] = React.useState<PageContent>();
   const [updatingContent, setUpdatingContent] = React.useState<boolean>(true);
   const submittingForm = React.useRef<LegacyContentSubmission>({
     submitting: false,
   });
-  const { appErrorHandler } = useContext(AppContext);
+  const { appErrorHandler, refreshUser } = useContext(AppContext);
 
   const baseUrl = document.getElementsByTagName("base")[0].href;
 
