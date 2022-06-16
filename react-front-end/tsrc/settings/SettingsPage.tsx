@@ -34,7 +34,7 @@ import * as React from "react";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getBaseUrl } from "../AppConfig";
-import { AppRenderErrorContext } from "../mainui/App";
+import { AppContext } from "../mainui/App";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import { fetchSettings } from "../modules/GeneralSettingsModule";
 import AdminDownloadDialog from "../settings/AdminDownloadDialog";
@@ -61,12 +61,10 @@ const useStyles = makeStyles((theme: Theme) => {
 });
 
 interface SettingsPageProps extends TemplateUpdateProps {
-  refreshUser: () => void;
   isReloadNeeded: boolean;
 }
 
 const SettingsPage = ({
-  refreshUser,
   updateTemplate,
   isReloadNeeded,
 }: SettingsPageProps) => {
@@ -75,7 +73,7 @@ const SettingsPage = ({
   const [adminDialogOpen, setAdminDialogOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [settingGroups, setSettingGroups] = useState<SettingGroup[]>([]);
-  const { appErrorHandler } = useContext(AppRenderErrorContext);
+  const { appErrorHandler } = useContext(AppContext);
 
   React.useEffect(() => {
     if (isReloadNeeded) {
@@ -115,7 +113,7 @@ const SettingsPage = ({
    */
   const buildAccordionContent = ({ category, settings }: SettingGroup) => {
     if (category.name === languageStrings.settings.ui.name) {
-      return <UISettingEditor refreshUser={refreshUser} />;
+      return <UISettingEditor />;
     }
     return (
       <AccordionDetails>

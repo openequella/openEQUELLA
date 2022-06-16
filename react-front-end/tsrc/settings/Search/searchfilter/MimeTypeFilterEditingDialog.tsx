@@ -26,7 +26,7 @@ import {
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useContext, useEffect, useState } from "react";
-import { AppRenderErrorContext } from "../../../mainui/App";
+import { AppContext } from "../../../mainui/App";
 import { getMIMETypesFromServer } from "../../../modules/MimeTypesModule";
 import { validateMimeTypeName } from "../../../modules/SearchFilterSettingsModule";
 import { commonString } from "../../../util/commonstrings";
@@ -82,7 +82,7 @@ const MimeTypeFilterEditingDialog = ({
   const [selectedMimeTypes, setSelectedMimeTypes] = useState<string[]>(
     mimeTypeFilter ? mimeTypeFilter.mimeTypes : []
   );
-  const { appErrorHandler } = useContext(AppRenderErrorContext);
+  const { appErrorHandler } = useContext(AppContext);
 
   const isNameValid = validateMimeTypeName(filterName);
 

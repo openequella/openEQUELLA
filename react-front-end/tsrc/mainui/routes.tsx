@@ -45,7 +45,6 @@ export interface BaseOEQRouteComponentProps {
   updateTemplate: (edit: TemplateUpdate) => void;
   redirect: (to: LocationDescriptor) => void;
   setPreventNavigation: (b: boolean) => void;
-  refreshUser: () => void;
   isReloadNeeded: boolean;
 }
 

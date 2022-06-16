@@ -20,6 +20,7 @@ import { pipe } from "fp-ts/function";
 import type { GallerySearchResultItem } from "../modules/GallerySearchModule";
 import type { Classification } from "../modules/SearchFacetsModule";
 import type { SearchPageOptions } from "./SearchPageHelper";
+import { absurd } from "fp-ts/function";
 
 /**
  * The types of SearchResultItem that we support within an `OEQ.Search.SearchResult`.
@@ -89,5 +90,81 @@ export const reducer = (state: State, action: Action): State => {
       return { status: "failure", cause: action.cause };
     default:
       throw new TypeError("Unexpected action passed to reducer!");
+  }
+};
+
+export type ActionRefactored =
+  | { type: "init"; options: SearchPageOptions }
+  | {
+      type: "search";
+      options: SearchPageOptions;
+      updateClassifications: boolean;
+      callback?: () => void;
+    }
+  | {
+      type: "search-complete";
+      result: SearchPageSearchResult;
+      classifications: Classification[];
+    }
+  | { type: "error"; cause: Error };
+
+// todo: rename the type.
+export type StateRefactored =
+  | { status: "initialising"; options: SearchPageOptions }
+  | {
+      status: "searching";
+      options: SearchPageOptions;
+      previousResult?: SearchPageSearchResult;
+      previousClassifications?: Classification[];
+      updateClassifications: boolean;
+      callback?: () => void;
+    }
+  | {
+      status: "success";
+      options: SearchPageOptions;
+      result: SearchPageSearchResult;
+      classifications: Classification[];
+    }
+  | { status: "failure"; options: SearchPageOptions; cause: Error };
+
+// todo: rename this type and update the types used.
+export const reducerRefactored = (
+  state: StateRefactored,
+  action: ActionRefactored
+): StateRefactored => {
+  switch (action.type) {
+    case "init":
+      return { status: "initialising", options: action.options };
+    case "search":
+      return pipe(
+        state.status === "success"
+          ? {
+              previousResult: state.result,
+              previousClassifications: state.classifications,
+            }
+          : {},
+        (prevResults) => ({
+          status: "searching",
+          options: action.options,
+          callback: action.callback,
+          updateClassifications: action.updateClassifications,
+          ...prevResults,
+        })
+      );
+    case "search-complete":
+      return {
+        status: "success",
+        options: state.options,
+        result: action.result,
+        classifications: action.classifications,
+      };
+    case "error":
+      return {
+        status: "failure",
+        options: state.options,
+        cause: action.cause,
+      };
+    default:
+      return absurd(action);
   }
 };

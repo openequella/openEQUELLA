@@ -22,14 +22,16 @@ import {
   Theme,
   ThemeProvider,
 } from "@material-ui/core";
+import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
 import * as React from "react";
-import { ReactNode, useCallback } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { getRouterBaseName } from "../AppConfig";
 import MessageInfo from "../components/MessageInfo";
 import { getAdvancedSearchIdFromLocation } from "../modules/AdvancedSearchModule";
 import { getOeqTheme } from "../modules/ThemeModule";
+import { getCurrentUserDetails } from "../modules/UserModule";
 import { startHeartbeat } from "../util/heartbeat";
 import { simpleMatch } from "../util/match";
 import type { EntryPage } from "./index";
@@ -93,49 +95,67 @@ interface AppProps {
 
 const nop = () => {};
 
-export interface WithErrorHandlerProps {
+export interface AppContextProps {
   /**
    * Function to handle a variety of unknown errors thrown from any component of the APP.
    */
   appErrorHandler: (error: Error | string) => void;
+  /**
+   * Details of the current user.
+   */
+  currentUser: OEQ.LegacyContent.CurrentUserDetails | undefined;
+  /**
+   * Function to refresh the current user.
+   */
+  refreshUser: () => void;
 }
 
 /**
- * Provide an error handler for the whole APP.
+ * This is the very top level Context and it provides
+ * 1. An error handler for the whole APP.
+ * 2. Details of the current user.
+ * 3. Function to refresh the current user.
  */
-export const AppRenderErrorContext = React.createContext<WithErrorHandlerProps>(
-  {
-    appErrorHandler: nop,
-  }
-);
+export const AppContext = React.createContext<AppContextProps>({
+  appErrorHandler: nop,
+  currentUser: undefined,
+  refreshUser: nop,
+});
 
 /**
- * HOC function to inject the 'appErrorHandler' to a component. Typically used with a class component.
- * For functional components, use Context to access the 'appErrorHandler'.
+ * HOC function to inject what AppContext provides to a component. Typically used with a class component.
+ * For functional components, use `useContext` to access the Context.
  *
  * @param Page A class component
  */
-export const withErrorHandler =
+export const withAppContext =
   <T,>(
-    Page: React.ComponentType<T & WithErrorHandlerProps>
+    Page: React.ComponentType<T & AppContextProps>
   ): ((props: T) => JSX.Element) =>
   (props: T) =>
     (
-      <AppRenderErrorContext.Consumer>
-        {({ appErrorHandler }) => (
-          <Page {...props} appErrorHandler={appErrorHandler} />
-        )}
-      </AppRenderErrorContext.Consumer>
+      <AppContext.Consumer>
+        {(appContextProps) => <Page {...props} {...appContextProps} />}
+      </AppContext.Consumer>
     );
 
 const App = ({ entryPage }: AppProps): JSX.Element => {
   console.debug("START: <App>");
 
-  const [error, setError] = React.useState<Error | string | undefined>();
+  const [currentUser, setCurrentUser] =
+    React.useState<OEQ.LegacyContent.CurrentUserDetails>();
+
+  const refreshUser = useCallback(() => {
+    getCurrentUserDetails().then(setCurrentUser);
+  }, []);
+
+  const [error, setError] = useState<Error | string | undefined>();
   const appErrorHandler = useCallback(
     (error: Error | string) => setError(error),
     []
   );
+
+  useEffect(() => refreshUser(), [refreshUser]);
 
   const appContent = () =>
     pipe(
@@ -163,11 +183,7 @@ const App = ({ entryPage }: AppProps): JSX.Element => {
           // When SettingsPage is used in old UI, each route change should trigger a refresh
           // for the whole page because there are no React component matching routes.
           <NewPage classPrefix="oeq-nst" forceRefresh>
-            <SettingsPage
-              refreshUser={nop}
-              updateTemplate={nop}
-              isReloadNeeded={false}
-            />
+            <SettingsPage updateTemplate={nop} isReloadNeeded={false} />
           </NewPage>
         ),
         _: (s: string | number) => {
@@ -177,9 +193,7 @@ const App = ({ entryPage }: AppProps): JSX.Element => {
     );
 
   return (
-    <AppRenderErrorContext.Provider
-      value={{ appErrorHandler: appErrorHandler }}
-    >
+    <AppContext.Provider value={{ appErrorHandler, currentUser, refreshUser }}>
       {error && (
         <MessageInfo
           open
@@ -189,7 +203,7 @@ const App = ({ entryPage }: AppProps): JSX.Element => {
         />
       )}
       {appContent()}
-    </AppRenderErrorContext.Provider>
+    </AppContext.Provider>
   );
 };
 

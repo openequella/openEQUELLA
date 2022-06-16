@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import {
   BrowserRouter,
@@ -30,7 +29,6 @@ import { ErrorResponse } from "../api/errors";
 import { getRenderData, getRouterBaseName, LEGACY_CSS_URL } from "../AppConfig";
 import { LegacyContent } from "../legacycontent/LegacyContent";
 import { getAdvancedSearchIdFromLocation } from "../modules/AdvancedSearchModule";
-import { getCurrentUserDetails } from "../modules/UserModule";
 import ErrorPage from "./ErrorPage";
 import { defaultNavMessage, NavAwayDialog } from "./PreventNavigation";
 import {
@@ -63,16 +61,8 @@ const removeLegacyCss = (): void => {
 };
 
 export default function IndexPage() {
-  const [currentUser, setCurrentUser] =
-    React.useState<OEQ.LegacyContent.CurrentUserDetails>();
   const [fullPageError, setFullPageError] = React.useState<ErrorResponse>();
   const errorShowing = React.useRef(false);
-
-  const refreshUser = React.useCallback(() => {
-    getCurrentUserDetails().then(setCurrentUser);
-  }, []);
-
-  React.useEffect(() => refreshUser(), [refreshUser]);
 
   const [navAwayCallback, setNavAwayCallback] = React.useState<{
     message: string;
@@ -113,12 +103,11 @@ export default function IndexPage() {
     (p: RouteComponentProps): BaseOEQRouteComponentProps => ({
       ...p,
       updateTemplate,
-      refreshUser,
       redirect: p.history.push,
       setPreventNavigation,
       isReloadNeeded: !renderData?.newUI, // Indicate that new UI is displayed but not enabled.
     }),
-    [refreshUser, setPreventNavigation, updateTemplate]
+    [setPreventNavigation, updateTemplate]
   );
 
   const newUIRoutes = React.useMemo(
@@ -232,9 +221,7 @@ export default function IndexPage() {
           setNavAwayCallback(undefined);
         }}
       />
-      <Template {...templateProps} currentUser={currentUser}>
-        {routeSwitch()}
-      </Template>
+      <Template {...templateProps}>{routeSwitch()}</Template>
     </BrowserRouter>
   );
 }

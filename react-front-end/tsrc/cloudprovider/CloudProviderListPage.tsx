@@ -26,7 +26,7 @@ import {
 } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloudIcon from "@material-ui/icons/CloudCircleRounded";
-import { withErrorHandler, WithErrorHandlerProps } from "../mainui/App";
+import { withAppContext, AppContextProps } from "../mainui/App";
 import { CloudProviderEntity } from "./CloudProviderEntity";
 import {
   deleteCloudProvider,
@@ -60,8 +60,7 @@ interface CloudProviderBasicProps
   extends TemplateUpdateProps,
     WithStyles<typeof styles> {}
 
-type CloudProviderListPageProps = CloudProviderBasicProps &
-  WithErrorHandlerProps;
+type CloudProviderListPageProps = CloudProviderBasicProps & AppContextProps;
 
 interface CloudProviderListPageState {
   cloudProviders: CloudProviderEntity[];
@@ -246,5 +245,5 @@ class CloudProviderListPage extends React.Component<
   }
 }
 
-const WithErrorHandler = withErrorHandler(CloudProviderListPage);
+const WithErrorHandler = withAppContext(CloudProviderListPage);
 export default withStyles(styles)(WithErrorHandler);

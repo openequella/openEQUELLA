@@ -42,7 +42,7 @@ import {
   isControlValueNonEmpty,
   isNonEmptyString,
 } from "../components/wizard/WizardHelper";
-import { AppRenderErrorContext } from "../mainui/App";
+import { AppContext } from "../mainui/App";
 import {
   NEW_ADVANCED_SEARCH_PATH,
   NEW_SEARCH_PATH,
@@ -249,7 +249,7 @@ const SearchPage = ({ updateTemplate, advancedSearchId }: SearchPageProps) => {
   const [alreadyDownloaded, setAlreadyDownloaded] = useState<boolean>(false);
   const exportLinkRef = useRef<HTMLAnchorElement>(null);
 
-  const { appErrorHandler } = useContext(AppRenderErrorContext);
+  const { appErrorHandler } = useContext(AppContext);
   const searchPageErrorHandler = useCallback(
     (error: Error) => {
       dispatch({ type: "error", cause: error });
