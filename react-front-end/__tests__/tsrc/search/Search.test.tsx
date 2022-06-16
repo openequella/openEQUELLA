@@ -85,10 +85,6 @@ describe("performing general tasks", () => {
     expect(mockMimeTypeFilters).toHaveBeenCalledTimes(1);
   });
 
-  it("retrieves current user details", () => {
-    expect(mockCurrentUser).toHaveBeenCalledTimes(1);
-  });
-
   it("retrieves advanced searches", () => {
     expect(mockGetAdvancedSearchesFromServer).toHaveBeenCalledTimes(1);
   });
