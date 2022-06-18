@@ -38,7 +38,6 @@ libraryDependencies ++= Seq(
   "org.apache.axis2" % "axis2-kernel"      % axis2Version,
   "org.apache.axis2" % "axis2-java2wsdl"   % axis2Version,
   "org.apache.axis2" % "axis2-adb"         % axis2Version,
-  "org.apache.axis2" % "axis2-jaxbri"      % axis2Version,
   "org.apache.axis2" % "axis2-adb-codegen" % axis2Version,
   "org.apache.axis2" % "axis2-codegen"     % axis2Version,
   "org.apache.axis2" % "axis2-xmlbeans"    % axis2Version
