@@ -26,9 +26,9 @@ val fs2Version      = "2.5.11"
 val guiceVersion    = "5.1.0"
 val jsassVersion    = "5.10.4"
 val jsoupVersion    = "1.14.3"
-val springVersion   = "5.3.20"
+val springVersion   = "5.3.21"
 val sttpVersion     = "1.7.2"
-val tikaVersion     = "2.4.0"
+val tikaVersion     = "2.4.1"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -57,7 +57,7 @@ libraryDependencies ++= Seq(
   ),
   "com.google.api-client" % "google-api-client"           % "1.35.1",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20220318-1.32.1",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20220515-1.32.1",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20220612-1.32.1",
   "com.google.code.gson"  % "gson"                        % "2.9.0",
   "com.google.gdata"      % "core"                        % "1.47.1",
   "com.google.guava"      % "guava"                       % "31.1-jre",
@@ -296,7 +296,7 @@ excludeDependencies ++= Seq(
   // Spring 5 added a default logging bridge.  In oEQ, this results in
   // a [deduplicate: different file contents found in the following] error
   // ...org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.7.30.jar:org/apache/commons/logging/Log.class
-  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.20.jar:org/apache/commons/logging/Log.class
+  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.21.jar:org/apache/commons/logging/Log.class
   // As per https://github.com/spring-projects/spring-framework/issues/20611 ,
   // since we already have logging in place, we can safely exclude the dep from spring.
   "org.springframework" % "spring-jcl",
