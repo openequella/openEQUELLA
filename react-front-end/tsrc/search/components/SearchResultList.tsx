@@ -104,7 +104,7 @@ export interface SearchResultListProps {
    */
   onSaveSearch: () => void;
   /**
-   * True to use enable the Share search button.
+   * True to enable the Share search button.
    */
   useShareSearchButton?: boolean;
   /**
@@ -119,6 +119,9 @@ export interface SearchResultListProps {
     linkRef: React.RefObject<HTMLAnchorElement>;
     exportLinkProps: ExportSearchResultLinkProps;
   };
+  /**
+   * Additional components to be displayed in the CardHeader.
+   */
   additionalHeaders?: JSX.Element[];
 }
 
@@ -218,7 +221,7 @@ export const SearchResultList = ({
               </Grid>
             )}
             {additionalHeaders?.map((header) => (
-              <Grid item> {header} </Grid>
+              <Grid item>{header}</Grid>
             ))}
           </Grid>
         }
