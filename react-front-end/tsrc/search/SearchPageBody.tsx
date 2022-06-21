@@ -93,7 +93,7 @@ const { title: displayModeSelectorTitle } = searchStrings.displayModeSelector;
 
 export interface SearchPageBodyProps {
   /**
-   * Pathname representing where the component is used.
+   * URL path representing where the component is used.
    */
   pathname: string;
   /**
@@ -121,7 +121,8 @@ export interface SearchPageBodyProps {
 }
 
 /**
- * This component is focused on the UI structure of the Search page.
+ * This component is focused on UI structure of the Search page and it must be
+ * used as a child component of component `Search`.
  *
  * 1. Controlling how to display major components - SearchBar, SearchResultList, Refine search panel and Classification panel.
  * 2. Creating event handlers for all the child Search components.
@@ -200,6 +201,13 @@ export const SearchPageBody = ({
     [enableClassification, search]
   );
 
+  /**
+   * Depending on the whether in the context of a Selection Session, this function will
+   * use the appropriate method to navigate to the provided `normalPath`.
+   *
+   * @param normalPath The path which the page will be navigated to.
+   * @param selectionSessionPathBuilder Function to convert the supplied path to a Selection Session specific path.
+   */
   const navigateTo = (
     normalPath: string,
     selectionSessionPathBuilder: () => string
