@@ -27,9 +27,9 @@ import {
   SearchPageBodyProps,
 } from "../../tsrc/search/SearchPageBody";
 import {
-  defaultSearchPageHeaderControl,
+  defaultSearchPageHeaderConfig,
   defaultSearchPageOptions,
-  defaultSearchPageRefinePanelControl,
+  defaultSearchPageRefinePanelConfig,
 } from "../../tsrc/search/SearchPageHelper";
 
 const nop = () => {};
@@ -49,7 +49,7 @@ const searchPageBodyProps: SearchPageBodyProps = {
   pathname: "/page/search",
 };
 
-const buildDecorator =
+const buildSearchContextDecorator =
   (searchContextProps: SearchContextProps = defaultSearchContextProps) =>
   (Story: Story) =>
     (
@@ -61,7 +61,7 @@ const buildDecorator =
 export default {
   title: "Search/SearchPageBody",
   component: SearchPageBody,
-  decorators: [buildDecorator()],
+  decorators: [buildSearchContextDecorator()],
 } as Meta<SearchPageBodyProps>;
 
 export const Initialising: Story<SearchPageBodyProps> = (args) => (
@@ -75,7 +75,7 @@ export const WithSearchResult: Story<SearchPageBodyProps> = (args) => (
   <SearchPageBody {...args} />
 );
 WithSearchResult.decorators = [
-  buildDecorator({
+  buildSearchContextDecorator({
     ...defaultSearchContextProps,
     searchState: {
       status: "success",
@@ -111,7 +111,7 @@ export const AdditionalHeader: Story<SearchPageBodyProps> = (args) => (
 AdditionalHeader.args = {
   ...searchPageBodyProps,
   headerConfig: {
-    ...defaultSearchPageHeaderControl,
+    ...defaultSearchPageHeaderConfig,
     additionalHeaders: [<Button color="secondary">Test</Button>],
   },
 };
@@ -122,8 +122,8 @@ export const DisableCollectionFilter: Story<SearchPageBodyProps> = (args) => (
 DisableCollectionFilter.args = {
   ...searchPageBodyProps,
   refinePanelConfig: {
-    ...defaultSearchPageRefinePanelControl,
-    useCollectionSelector: false,
+    ...defaultSearchPageRefinePanelConfig,
+    enableCollectionSelector: false,
   },
 };
 
@@ -133,7 +133,7 @@ export const CustomSortingOptions: Story<SearchPageBodyProps> = (args) => (
 CustomSortingOptions.args = {
   ...searchPageBodyProps,
   headerConfig: {
-    ...defaultSearchPageHeaderControl,
+    ...defaultSearchPageHeaderConfig,
     customSortingOptions: new Map([
       ["RANK", "custom option 1"],
       ["DATEMODIFIED", "custom option 2"],
