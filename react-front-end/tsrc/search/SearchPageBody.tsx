@@ -82,6 +82,8 @@ import {
   writeRawModeToStorage,
 } from "./SearchPageHelper";
 import { SearchPageSearchResult } from "./SearchPageReducer";
+import * as O from "fp-ts/Option";
+import { pipe } from "fp-ts/function";
 
 const { searchpage: searchStrings } = languageStrings;
 const { title: dateModifiedSelectorTitle, quickOptionDropdown } =
@@ -214,20 +216,20 @@ export const SearchPageBody = ({
   };
 
   const handleAdvancedSearchChanged = (
-    selection: OEQ.Common.BaseEntitySummary | null
-  ) => {
-    if (selection) {
-      const { uuid } = selection;
-      navigateTo(routes.NewAdvancedSearch.to(uuid), () =>
-        buildSelectionSessionAdvancedSearchLink(
-          uuid,
-          searchPageOptions.externalMimeTypes
+    advancedSearch: OEQ.Common.BaseEntitySummary | null
+  ) =>
+    pipe(
+      O.fromNullable(advancedSearch),
+      O.map(({ uuid }) =>
+        navigateTo(routes.NewAdvancedSearch.to(uuid), () =>
+          buildSelectionSessionAdvancedSearchLink(
+            uuid,
+            searchPageOptions.externalMimeTypes
+          )
         )
-      );
-    } else {
-      exitAdvancedSearch();
-    }
-  };
+      ),
+      O.getOrElse(() => exitAdvancedSearch())
+    );
 
   const handleClearSearchOptions = () => {
     doSearch({
@@ -270,6 +272,7 @@ export const SearchPageBody = ({
       })
       .catch(searchPageErrorHandler);
   };
+
   const handleDisplayModeChanged = (mode: DisplayMode) =>
     doSearch({ ...searchPageOptions, displayMode: mode });
 
