@@ -69,15 +69,15 @@ import StatusSelector from "./components/StatusSelector";
 import { SearchContext } from "./Search";
 import {
   defaultPagedSearchResult,
-  defaultSearchPageHeaderControl,
+  defaultSearchPageHeaderConfig,
   defaultSearchPageOptions,
-  defaultSearchPageRefinePanelControl,
+  defaultSearchPageRefinePanelConfig,
   generateQueryStringFromSearchPageOptions,
   getPartialSearchOptions,
-  SearchPageHeaderControl,
+  SearchPageHeaderConfig,
   SearchPageOptions,
-  SearchPageRefinePanelControl,
-  SearchPageSearchBarControl,
+  SearchPageRefinePanelConfig,
+  SearchPageSearchBarConfig,
   writeRawModeToStorage,
 } from "./SearchPageHelper";
 import { SearchPageSearchResult } from "./SearchPageReducer";
@@ -101,11 +101,11 @@ export interface SearchPageBodyProps {
    * Configuration for Search page headers, including whether to enable some common components(e.g. Share search),
    * custom sorting options and custom components.
    */
-  headerConfig?: SearchPageHeaderControl;
+  headerConfig?: SearchPageHeaderConfig;
   /**
    * Configuration for whether to enable filters of the Refine search panel.
    */
-  refinePanelConfig?: SearchPageRefinePanelControl;
+  refinePanelConfig?: SearchPageRefinePanelConfig;
   /**
    * `true` to enable the faceted search.
    */
@@ -114,7 +114,7 @@ export interface SearchPageBodyProps {
    * Configuration for any custom components in Search bar. Currently, only support enabling/disabling the
    * Advanced search filter.
    */
-  searchBarConfig?: SearchPageSearchBarControl;
+  searchBarConfig?: SearchPageSearchBarConfig;
 }
 
 /**
@@ -129,27 +129,27 @@ export const SearchPageBody = ({
   pathname,
   additionalPanels,
   searchBarConfig,
-  headerConfig = defaultSearchPageHeaderControl,
-  refinePanelConfig = defaultSearchPageRefinePanelControl,
+  headerConfig = defaultSearchPageHeaderConfig,
+  refinePanelConfig = defaultSearchPageRefinePanelConfig,
   enableClassification = true,
 }: SearchPageBodyProps) => {
   const {
-    useCSVExportButton,
-    useShareSearchButton,
+    enableCSVExportButton,
+    enableShareSearchButton,
     additionalHeaders,
     customSortingOptions,
   } = headerConfig;
 
   const {
-    useAdvancedSearchSelector,
-    useCollectionSelector,
-    useDateRangeSelector,
-    useDisplayModeSelector,
-    useItemStatusSelector,
-    useRemoteSearchSelector,
-    useMimeTypeSelector,
-    useOwnerSelector,
-    useSearchAttachmentsSelector,
+    enableAdvancedSearchSelector,
+    enableCollectionSelector,
+    enableDateRangeSelector,
+    enableDisplayModeSelector,
+    enableItemStatusSelector,
+    enableRemoteSearchSelector,
+    enableMimeTypeSelector,
+    enableOwnerSelector,
+    enableSearchAttachmentsSelector,
   } = refinePanelConfig;
 
   const {
@@ -502,7 +502,7 @@ export const SearchPageBody = ({
           }
         />
       ),
-      disabled: !useDisplayModeSelector,
+      disabled: !enableDisplayModeSelector,
       alwaysVisible: true,
     },
     {
@@ -514,7 +514,7 @@ export const SearchPageBody = ({
           value={searchPageOptions.collections}
         />
       ),
-      disabled: !useCollectionSelector,
+      disabled: !enableCollectionSelector,
       alwaysVisible: true,
     },
     {
@@ -530,7 +530,7 @@ export const SearchPageBody = ({
           )}
         />
       ),
-      disabled: advancedSearches.length === 0 || !useAdvancedSearchSelector,
+      disabled: advancedSearches.length === 0 || !enableAdvancedSearchSelector,
       alwaysVisible: true,
     },
     {
@@ -543,7 +543,7 @@ export const SearchPageBody = ({
           urlGeneratorForMuiLink={buildSelectionSessionRemoteSearchLink}
         />
       ),
-      disabled: !useRemoteSearchSelector,
+      disabled: !enableRemoteSearchSelector,
     },
     {
       idSuffix: "DateRangeSelector",
@@ -559,7 +559,7 @@ export const SearchPageBody = ({
       ),
       // Before Search settings are retrieved, do not show.
       disabled:
-        !useDateRangeSelector ||
+        !enableDateRangeSelector ||
         (searchSettings.core?.searchingDisableDateModifiedFilter ?? true),
     },
     {
@@ -573,7 +573,7 @@ export const SearchPageBody = ({
         />
       ),
       disabled:
-        !useMimeTypeSelector ||
+        !enableMimeTypeSelector ||
         searchPageOptions.displayMode !== "list" ||
         searchSettings.mimeTypeFilters.length === 0 ||
         !!searchPageOptions.externalMimeTypes,
@@ -589,7 +589,7 @@ export const SearchPageBody = ({
         />
       ),
       disabled:
-        !useOwnerSelector ||
+        !enableOwnerSelector ||
         (searchSettings.core?.searchingDisableOwnerFilter ?? true),
     },
     {
@@ -602,7 +602,7 @@ export const SearchPageBody = ({
         />
       ),
       disabled:
-        !useItemStatusSelector ||
+        !enableItemStatusSelector ||
         (!searchSettings.core?.searchingShowNonLiveCheckbox ?? true),
     },
     {
@@ -614,7 +614,7 @@ export const SearchPageBody = ({
           onChange={handleSearchAttachmentsChange}
         />
       ),
-      disabled: !useSearchAttachmentsSelector,
+      disabled: !enableSearchAttachmentsSelector,
     },
   ];
 
@@ -749,7 +749,7 @@ export const SearchPageBody = ({
                 onSaveSearch={() => setShowFavouriteSearchDialog(true)}
                 exportProps={{
                   isExportPermitted:
-                    (useCSVExportButton &&
+                    (enableCSVExportButton &&
                       currentUser?.canDownloadSearchResult) ??
                     false,
                   linkRef: exportLinkRef,
@@ -759,7 +759,7 @@ export const SearchPageBody = ({
                     alreadyExported: alreadyDownloaded,
                   },
                 }}
-                useShareSearchButton={useShareSearchButton}
+                useShareSearchButton={enableShareSearchButton}
                 additionalHeaders={additionalHeaders}
               >
                 {renderSearchResults()}

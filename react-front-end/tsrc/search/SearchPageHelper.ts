@@ -112,44 +112,94 @@ export const defaultSearchPageOptions: SearchPageOptions = {
   dateRangeQuickModeEnabled: true,
 };
 
-export interface SearchPageHeaderControl {
-  useCSVExportButton?: boolean;
-  useShareSearchButton?: boolean;
+/**
+ * Type definition for the configuration of SearchPageHeader.
+ */
+export interface SearchPageHeaderConfig {
+  /**
+   * `true` to enable the CSV Export button.
+   */
+  enableCSVExportButton?: boolean;
+  /**
+   * `true` to enable the Share Search button.
+   */
+  enableShareSearchButton?: boolean;
+  /**
+   * Additional components displayed in the CardHeader.
+   */
   additionalHeaders?: JSX.Element[];
+  /**
+   * Customised options for sorting the search result.
+   */
   customSortingOptions?: Map<OEQ.SearchSettings.SortOrder, string>;
 }
 
-export const defaultSearchPageHeaderControl: SearchPageHeaderControl = {
-  useCSVExportButton: true,
-  useShareSearchButton: true,
+export const defaultSearchPageHeaderConfig: SearchPageHeaderConfig = {
+  enableCSVExportButton: true,
+  enableShareSearchButton: true,
 };
 
-export interface SearchPageRefinePanelControl {
-  useDisplayModeSelector?: boolean;
-  useCollectionSelector?: boolean;
-  useAdvancedSearchSelector?: boolean;
-  useRemoteSearchSelector?: boolean;
-  useDateRangeSelector?: boolean;
-  useMimeTypeSelector?: boolean;
-  useOwnerSelector?: boolean;
-  useItemStatusSelector?: boolean;
-  useSearchAttachmentsSelector?: boolean;
+/**
+ * Type definition for the configuration of SearchPageRefinePanel.
+ */
+export interface SearchPageRefinePanelConfig {
+  /**
+   * `true` to enable the Display Mode selector.
+   */
+  enableDisplayModeSelector?: boolean;
+  /**
+   * `true` to enable the Collection selector.
+   */
+  enableCollectionSelector?: boolean;
+  /**
+   * `true` to enable the Advanced Search selector.
+   */
+  enableAdvancedSearchSelector?: boolean;
+  /**
+   * `true` to enable the Remote Search selector.
+   */
+  enableRemoteSearchSelector?: boolean;
+  /**
+   * `true` to enable the Date Range selector.
+   */
+  enableDateRangeSelector?: boolean;
+  /**
+   * `true` to enable the MIME Type selector.
+   */
+  enableMimeTypeSelector?: boolean;
+  /**
+   * `true` to enable the Owner selector.
+   */
+  enableOwnerSelector?: boolean;
+  /**
+   * `true` to enable the Item Status selector.
+   */
+  enableItemStatusSelector?: boolean;
+  /**
+   * `true` to enable the Search Attachment selector.
+   */
+  enableSearchAttachmentsSelector?: boolean;
 }
 
-export const defaultSearchPageRefinePanelControl: SearchPageRefinePanelControl =
-  {
-    useDisplayModeSelector: true,
-    useCollectionSelector: true,
-    useAdvancedSearchSelector: true,
-    useRemoteSearchSelector: true,
-    useDateRangeSelector: true,
-    useMimeTypeSelector: true,
-    useOwnerSelector: true,
-    useItemStatusSelector: true,
-    useSearchAttachmentsSelector: true,
-  };
+export const defaultSearchPageRefinePanelConfig: SearchPageRefinePanelConfig = {
+  enableDisplayModeSelector: true,
+  enableCollectionSelector: true,
+  enableAdvancedSearchSelector: true,
+  enableRemoteSearchSelector: true,
+  enableDateRangeSelector: true,
+  enableMimeTypeSelector: true,
+  enableOwnerSelector: true,
+  enableItemStatusSelector: true,
+  enableSearchAttachmentsSelector: true,
+};
 
-export interface SearchPageSearchBarControl {
+/**
+ * Type definition for the configuration of SearchPageSearchBar.
+ */
+export interface SearchPageSearchBarConfig {
+  /**
+   * Configuration for the Advanced Search filter.
+   */
   advancedSearchFilter: {
     /** Called when the filter button is clicked */
     onClick: () => void;

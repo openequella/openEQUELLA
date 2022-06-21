@@ -23,7 +23,7 @@ import {
   SearchPageBodyProps,
 } from "../../../tsrc/search/SearchPageBody";
 import "@testing-library/jest-dom/extend-expect";
-import { defaultSearchPageRefinePanelControl } from "../../../tsrc/search/SearchPageHelper";
+import { defaultSearchPageRefinePanelConfig } from "../../../tsrc/search/SearchPageHelper";
 import { queryCollectionSelector } from "./SearchPageTestHelper";
 
 const defaultSearchPageBodyProps: SearchPageBodyProps = {
@@ -62,9 +62,9 @@ describe("<SearchPageBody />", () => {
     const { container } = renderSearchPageBody({
       ...defaultSearchPageBodyProps,
       refinePanelConfig: {
-        ...defaultSearchPageRefinePanelControl,
+        ...defaultSearchPageRefinePanelConfig,
         // Do not display CollectionSelector.
-        useCollectionSelector: false,
+        enableCollectionSelector: false,
       },
     });
 
