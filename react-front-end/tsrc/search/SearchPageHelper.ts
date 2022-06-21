@@ -71,6 +71,7 @@ import {
 } from "../modules/SearchModule";
 import { findUserById } from "../modules/UserModule";
 import { DateRange, isDate } from "../util/Date";
+import { languageStrings } from "../util/langstrings";
 import { simpleMatch } from "../util/match";
 import { pfTernary } from "../util/pointfree";
 
@@ -676,3 +677,25 @@ export const buildOpenSummaryPageHandler = (
       })
     )
   );
+
+/**
+ * Given an `ApiError`, return an error message depending on the status code.
+ *
+ * @param error API error captured when exporting a search result.
+ */
+export const generateExportErrorMessage = (
+  error: OEQ.Errors.ApiError
+): string => {
+  const { badRequest, unauthorised, notFound } =
+    languageStrings.searchpage.export.errorMessages;
+
+  return pipe(
+    error.message,
+    simpleMatch<string>({
+      400: () => badRequest,
+      403: () => unauthorised,
+      404: () => notFound,
+      _: () => error.message,
+    })
+  );
+};

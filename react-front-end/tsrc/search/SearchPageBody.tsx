@@ -72,6 +72,7 @@ import {
   defaultSearchPageHeaderConfig,
   defaultSearchPageOptions,
   defaultSearchPageRefinePanelConfig,
+  generateExportErrorMessage,
   generateQueryStringFromSearchPageOptions,
   getPartialSearchOptions,
   SearchPageHeaderConfig,
@@ -288,28 +289,12 @@ export const SearchPageBody = ({
         // Do not allow exporting the same search result again until searchPageOptions gets changed.
         setAlreadyDownloaded(true);
       })
-      .catch((error: OEQ.Errors.ApiError) => {
-        const generateExportErrorMessage = (
-          error: OEQ.Errors.ApiError
-        ): string => {
-          const { badRequest, unauthorised, notFound } =
-            searchStrings.export.errorMessages;
-          switch (error.status) {
-            case 400:
-              return badRequest;
-            case 403:
-              return unauthorised;
-            case 404:
-              return notFound;
-            default:
-              return error.message;
-          }
-        };
+      .catch((error: OEQ.Errors.ApiError) =>
         setSnackBar({
           message: generateExportErrorMessage(error),
           variant: "warning",
-        });
-      });
+        })
+      );
   };
 
   const handleLastModifiedDateRangeChange = (dateRange?: DateRange) =>
