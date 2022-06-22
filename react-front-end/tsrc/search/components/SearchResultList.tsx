@@ -104,6 +104,10 @@ export interface SearchResultListProps {
    */
   onSaveSearch: () => void;
   /**
+   * True to enable the Share search button.
+   */
+  useShareSearchButton?: boolean;
+  /**
    * Props for the Icon button that controls whether show Refine panel in small screens
    */
   refineSearchProps: RefineSearchProps;
@@ -115,6 +119,10 @@ export interface SearchResultListProps {
     linkRef: React.RefObject<HTMLAnchorElement>;
     exportLinkProps: ExportSearchResultLinkProps;
   };
+  /**
+   * Additional components to be displayed in the CardHeader.
+   */
+  additionalHeaders?: JSX.Element[];
 }
 
 const searchPageStrings = languageStrings.searchpage;
@@ -128,7 +136,7 @@ const searchPageStrings = languageStrings.searchpage;
 export const SearchResultList = ({
   children,
   showSpinner,
-  orderSelectProps: { value, onChange: onOrderChange },
+  orderSelectProps,
   paginationProps: {
     count,
     currentPage,
@@ -141,6 +149,8 @@ export const SearchResultList = ({
   onCopySearchLink,
   onSaveSearch,
   exportProps: { isExportPermitted, linkRef, exportLinkProps },
+  useShareSearchButton = true,
+  additionalHeaders,
 }: SearchResultListProps) => {
   const classes = useStyles();
   const inSelectionSession: boolean = isSelectionSessionOpen();
@@ -167,7 +177,7 @@ export const SearchResultList = ({
         action={
           <Grid container spacing={1} alignItems="center">
             <Grid item>
-              <SearchOrderSelect value={value} onChange={onOrderChange} />
+              <SearchOrderSelect {...orderSelectProps} />
             </Grid>
             <Grid item>
               <Tooltip title={searchPageStrings.newSearchHelperText}>
@@ -200,7 +210,7 @@ export const SearchResultList = ({
                 </TooltipIconButton>
               </Grid>
             </Hidden>
-            {!inSelectionSession && (
+            {!inSelectionSession && useShareSearchButton && (
               <Grid item>
                 <TooltipIconButton
                   title={searchPageStrings.shareSearchHelperText}
@@ -210,6 +220,9 @@ export const SearchResultList = ({
                 </TooltipIconButton>
               </Grid>
             )}
+            {additionalHeaders?.map((header) => (
+              <Grid item>{header}</Grid>
+            ))}
           </Grid>
         }
       />

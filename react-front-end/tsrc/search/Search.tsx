@@ -89,7 +89,7 @@ const defaultGeneralSearchSettings: GeneralSearchSettings = {
 /**
  * Data structure for what SearchContext provides.
  */
-interface SearchContextProps {
+export interface SearchContextProps {
   /**
    * Function to perform a search.
    * @param searchPageOptions The SearchPageOptions to be applied in a search.

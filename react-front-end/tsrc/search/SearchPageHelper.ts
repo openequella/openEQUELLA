@@ -71,6 +71,7 @@ import {
 } from "../modules/SearchModule";
 import { findUserById } from "../modules/UserModule";
 import { DateRange, isDate } from "../util/Date";
+import { languageStrings } from "../util/langstrings";
 import { simpleMatch } from "../util/match";
 import { pfTernary } from "../util/pointfree";
 
@@ -100,6 +101,10 @@ export interface SearchPageOptions extends SearchOptions {
    * or favourited from Old UI.
    */
   legacyAdvSearchCriteria?: PathValueMap;
+  /**
+   * Open/closed state of refine expansion panel
+   */
+  filterExpansion?: boolean;
 }
 
 export const defaultSearchPageOptions: SearchPageOptions = {
@@ -107,6 +112,102 @@ export const defaultSearchPageOptions: SearchPageOptions = {
   displayMode: "list",
   dateRangeQuickModeEnabled: true,
 };
+
+/**
+ * Type definition for the configuration of SearchPageHeader.
+ */
+export interface SearchPageHeaderConfig {
+  /**
+   * `true` to enable the CSV Export button.
+   */
+  enableCSVExportButton?: boolean;
+  /**
+   * `true` to enable the Share Search button.
+   */
+  enableShareSearchButton?: boolean;
+  /**
+   * Additional components displayed in the CardHeader.
+   */
+  additionalHeaders?: JSX.Element[];
+  /**
+   * Customised options for sorting the search result.
+   */
+  customSortingOptions?: Map<OEQ.SearchSettings.SortOrder, string>;
+}
+
+export const defaultSearchPageHeaderConfig: SearchPageHeaderConfig = {
+  enableCSVExportButton: true,
+  enableShareSearchButton: true,
+};
+
+/**
+ * Type definition for the configuration of SearchPageRefinePanel.
+ */
+export interface SearchPageRefinePanelConfig {
+  /**
+   * `true` to enable the Display Mode selector.
+   */
+  enableDisplayModeSelector?: boolean;
+  /**
+   * `true` to enable the Collection selector.
+   */
+  enableCollectionSelector?: boolean;
+  /**
+   * `true` to enable the Advanced Search selector.
+   */
+  enableAdvancedSearchSelector?: boolean;
+  /**
+   * `true` to enable the Remote Search selector.
+   */
+  enableRemoteSearchSelector?: boolean;
+  /**
+   * `true` to enable the Date Range selector.
+   */
+  enableDateRangeSelector?: boolean;
+  /**
+   * `true` to enable the MIME Type selector.
+   */
+  enableMimeTypeSelector?: boolean;
+  /**
+   * `true` to enable the Owner selector.
+   */
+  enableOwnerSelector?: boolean;
+  /**
+   * `true` to enable the Item Status selector.
+   */
+  enableItemStatusSelector?: boolean;
+  /**
+   * `true` to enable the Search Attachment selector.
+   */
+  enableSearchAttachmentsSelector?: boolean;
+}
+
+export const defaultSearchPageRefinePanelConfig: SearchPageRefinePanelConfig = {
+  enableDisplayModeSelector: true,
+  enableCollectionSelector: true,
+  enableAdvancedSearchSelector: true,
+  enableRemoteSearchSelector: true,
+  enableDateRangeSelector: true,
+  enableMimeTypeSelector: true,
+  enableOwnerSelector: true,
+  enableItemStatusSelector: true,
+  enableSearchAttachmentsSelector: true,
+};
+
+/**
+ * Type definition for the configuration of SearchPageSearchBar.
+ */
+export interface SearchPageSearchBarConfig {
+  /**
+   * Configuration for the Advanced Search filter.
+   */
+  advancedSearchFilter: {
+    /** Called when the filter button is clicked */
+    onClick: () => void;
+    /** If true the button wil be highlighted by the Secondary colour. */
+    accent: boolean;
+  };
+}
 
 export const defaultPagedSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> =
   {
@@ -576,3 +677,25 @@ export const buildOpenSummaryPageHandler = (
       })
     )
   );
+
+/**
+ * Given an `ApiError`, return an error message depending on the status code.
+ *
+ * @param error API error captured when exporting a search result.
+ */
+export const generateExportErrorMessage = (
+  error: OEQ.Errors.ApiError
+): string => {
+  const { badRequest, unauthorised, notFound } =
+    languageStrings.searchpage.export.errorMessages;
+
+  return pipe(
+    error.message,
+    simpleMatch<string>({
+      400: () => badRequest,
+      403: () => unauthorised,
+      404: () => notFound,
+      _: () => error.message,
+    })
+  );
+};
