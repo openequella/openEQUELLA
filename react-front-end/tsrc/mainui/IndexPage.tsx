@@ -41,7 +41,7 @@ import {
 } from "./routes";
 import { Template, TemplateProps, TemplateUpdate } from "./Template";
 
-const SearchPage = React.lazy(() => import("../search/SearchPageRefactored"));
+const SearchPage = React.lazy(() => import("../search/SearchPage"));
 const AdvancedSearchPage = React.lazy(
   () => import("../search/AdvancedSearchPage")
 );
