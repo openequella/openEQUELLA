@@ -167,19 +167,16 @@ export const confirmInitialFieldValueMap = (
     O.fromNullable,
     O.map(
       ({ advFieldValue, legacyAdvSearchCriteria }) =>
-        advFieldValue ??
-        legacyAdvSearchCriteria ??
-        stateSearchOptions.advFieldValue
+        advFieldValue ?? legacyAdvSearchCriteria
     ),
-    O.chain(
-      flow(
-        O.fromNullable,
-        O.map(
-          pfTernaryTypeGuard<PathValueMap, FieldValueMap, FieldValueMap>(
-            isPathValueMap,
-            (m) => buildFieldValueMapFromPathValueMap(m, defaultValues),
-            identity
-          )
+    O.getOrElseW(() => stateSearchOptions.advFieldValue),
+    flow(
+      O.fromNullable,
+      O.map(
+        pfTernaryTypeGuard<PathValueMap, FieldValueMap, FieldValueMap>(
+          isPathValueMap,
+          (m) => buildFieldValueMapFromPathValueMap(m, defaultValues),
+          identity
         )
       )
     ),
