@@ -23,10 +23,18 @@ import com.tle.web.sections.events.RenderEventContext
 import com.tle.web.sections.render.SimpleSectionResult
 
 object RenderNewSearchPage {
-  def renderNewSearchPage(context: RenderEventContext): SimpleSectionResult = {
-    val (p, body) = RenderNewTemplate.parseEntryHtml("SearchPage.html")
+  private def buildSection(context: RenderEventContext, file: String): SimpleSectionResult = {
+    val (p, body) = RenderNewTemplate.parseEntryHtml(file)
     context.getBody.addPreRenderable(p)
     context.getBody.addPreRenderable(AjaxEffects.EFFECTS_LIB)
     new SimpleSectionResult(body.body().children())
+  }
+
+  def renderNewSearchPage(context: RenderEventContext): SimpleSectionResult = {
+    buildSection(context, "SearchPage.html")
+  }
+
+  def renderNewAdvancedSearchPage(context: RenderEventContext): SimpleSectionResult = {
+    buildSection(context, "AdvancedSearchPage.html")
   }
 }

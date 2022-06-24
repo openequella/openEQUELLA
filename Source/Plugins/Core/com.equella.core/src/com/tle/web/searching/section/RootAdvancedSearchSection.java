@@ -30,6 +30,11 @@ import com.tle.web.selection.section.SelectionSummarySection;
 public class RootAdvancedSearchSection extends RootSearchSection {
 
   @Override
+  protected boolean isAdvancedSearch() {
+    return true;
+  }
+
+  @Override
   public SectionResult renderHtml(RenderEventContext context) {
     SelectionSession selectionSession = selectionService.getCurrentSession(context);
     if (selectionSession != null) {
