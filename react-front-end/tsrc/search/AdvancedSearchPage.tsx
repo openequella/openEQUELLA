@@ -177,6 +177,7 @@ export const AdvancedSearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
             enableCollectionSelector: false,
           }}
           enableClassification={false}
+          customSearchCallback={() => setOpenAdvSearchPanel(false)}
         />
       </Search>
     </AdvancedSearchPageContext.Provider>

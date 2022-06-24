@@ -118,6 +118,10 @@ export interface SearchPageBodyProps {
    * Advanced search filter.
    */
   searchBarConfig?: SearchPageSearchBarConfig;
+  /**
+   * Customised callback fired after a search is complete.
+   */
+  customSearchCallback?: () => void;
 }
 
 /**
@@ -136,6 +140,7 @@ export const SearchPageBody = ({
   headerConfig = defaultSearchPageHeaderConfig,
   refinePanelConfig = defaultSearchPageRefinePanelConfig,
   enableClassification = true,
+  customSearchCallback,
 }: SearchPageBodyProps) => {
   const {
     enableCSVExportButton,
@@ -194,11 +199,12 @@ export const SearchPageBody = ({
         if (scrollToTop) window.scrollTo(0, 0);
         // Allow downloading new search result.
         setAlreadyDownloaded(false);
+        customSearchCallback?.();
       };
 
       search(searchPageOptions, enableClassification, callback);
     },
-    [enableClassification, search]
+    [enableClassification, search, customSearchCallback]
   );
 
   /**
