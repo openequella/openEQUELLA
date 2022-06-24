@@ -148,7 +148,7 @@ interface InitialSearchConfig {
 }
 
 const defaultInitialSearchConfig: InitialSearchConfig = {
-  ready: false,
+  ready: true,
   listInitialClassifications: true,
   customiseInitialSearchOptions: identity,
 };
@@ -288,6 +288,7 @@ export const Search = ({
             mergeSearchPageOptions
           );
 
+          console.log(ready);
           ready && search(initialSearchPageOptions, listInitialClassifications);
         }
       )

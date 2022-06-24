@@ -32,6 +32,7 @@ import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import { getMimeTypeFilters } from "../../../__mocks__/MimeTypeFilter.mock";
 import { getRemoteSearchesFromServerResult } from "../../../__mocks__/RemoteSearchModule.mock";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
+import { AppContext } from "../../../tsrc/mainui/App";
 import * as AdvancedSearchModule from "../../../tsrc/modules/AdvancedSearchModule";
 import * as BrowserStorageModule from "../../../tsrc/modules/BrowserStorageModule";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
@@ -45,8 +46,8 @@ import * as SearchFilterSettingsModule from "../../../tsrc/modules/SearchFilterS
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
 import * as UserModule from "../../../tsrc/modules/UserModule";
-import SearchPage from "../../../tsrc/search/SearchPage";
 import * as SearchPageHelper from "../../../tsrc/search/SearchPageHelper";
+import SearchPageRefactored from "../../../tsrc/search/SearchPageRefactored";
 
 /**
  * Provides a centralised place to mock all the Collaborators used by SearchPage, providing an object
@@ -173,7 +174,7 @@ export const initialiseEssentialMocks = ({
   );
 };
 
-const defaultTheme = createTheme({
+export const defaultTheme = createTheme({
   props: { MuiWithWidth: { initialWidth: "md" } },
 });
 
@@ -201,18 +202,16 @@ export const waitForSearch = async (searchPromise: MockedSearchPromise) =>
  *
  * @param searchPromise a mocked promise for searchItems in SearchModule
  * @param queryString a string to set the query bar to for initial search
- * @param advancedSearchId a UUID to pass to the search page which will trigger Advanced Search mode
  * @param theme control the MUI Theme for the context the search page is rendered in
- *
+ * @param currentUser Details of currently signed in user.
  * @returns The RenderResult from the `render` of the `<SearchPage>`
  */
 export const renderSearchPage = async (
   searchPromise: MockedSearchPromise,
   queryString?: string,
-  advancedSearchId?: string,
-  theme: Theme = defaultTheme
+  theme: Theme = defaultTheme,
+  currentUser: OEQ.LegacyContent.CurrentUserDetails = getCurrentUserMock
 ): Promise<RenderResult> => {
-  window.history.replaceState({}, "Clean history state");
   const history = createMemoryHistory();
   if (queryString) history.push(queryString);
   history.push({});
@@ -220,10 +219,15 @@ export const renderSearchPage = async (
   const page = render(
     <MuiThemeProvider theme={theme}>
       <Router history={history}>
-        <SearchPage
-          updateTemplate={jest.fn()}
-          advancedSearchId={advancedSearchId}
-        />
+        <AppContext.Provider
+          value={{
+            appErrorHandler: jest.fn(),
+            refreshUser: jest.fn(),
+            currentUser,
+          }}
+        >
+          <SearchPageRefactored updateTemplate={jest.fn()} />
+        </AppContext.Provider>
       </Router>
     </MuiThemeProvider>
   );
