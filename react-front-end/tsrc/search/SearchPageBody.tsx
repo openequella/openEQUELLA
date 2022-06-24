@@ -522,7 +522,7 @@ export const SearchPageBody = ({
           onSelectionChange={handleAdvancedSearchChanged}
           value={advancedSearches.find(
             ({ uuid }) =>
-              uuid === getAdvancedSearchIdFromLocation(window.location)
+              uuid === getAdvancedSearchIdFromLocation(history.location)
           )}
         />
       ),

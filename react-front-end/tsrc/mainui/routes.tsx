@@ -17,7 +17,7 @@
  */
 import { LocationDescriptor } from "history";
 import * as React from "react";
-import SearchPage from "../search/SearchPage";
+import AdvancedSearchPage from "../search/AdvancedSearchPage";
 import { TemplateUpdate } from "./Template";
 
 const ThemePage = React.lazy(() => import("../theme/ThemePage"));
@@ -116,7 +116,7 @@ export const routes: Routes = {
   NewAdvancedSearch: {
     to: (uuid: string) => `${NEW_ADVANCED_SEARCH_PATH}/${uuid}`,
     path: `${NEW_ADVANCED_SEARCH_PATH}/:advancedSearchId`,
-    component: SearchPage,
+    component: AdvancedSearchPage,
   },
   CloudProviders: {
     path: "/page/cloudprovider",

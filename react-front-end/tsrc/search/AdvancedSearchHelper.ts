@@ -34,6 +34,7 @@ import {
   FieldValueMap,
   getStringArrayControlValue,
   isControlValueNonEmpty,
+  isNonEmptyString,
   isPathValueMap,
   isStringArray,
   PathValueMap,
@@ -143,6 +144,48 @@ export const initialiseAdvancedSearch = (
   return [initialQueryValues, initialAdvancedSearchCriteria];
 };
 
+/**
+ * Function to confirm the initial FieldValueMap.
+ * 1. Extract FieldValueMap or PathValueMap from query strings. If none is returned, fall back to the FieldValueMap
+ *    provided by the state.
+ * 2. If the first steps returns PathValueMap then converts it to FieldValueMap.
+ * 3. Return the FieldValueMap if it is defined. Otherwise, return the supplied default FieldValueMap.
+ *
+ * @param defaultValues The default
+ * @param stateSearchOptions The SearchPageOptions managed by State.
+ * @param queryStringSearchOptions The SearchPageOptions transformed from query strings.
+ *
+ * @return A tuple including the initial FieldValueMap and the initial Advanced search criteria.
+ */
+export const confirmInitialFieldValueMap = (
+  defaultValues: FieldValueMap,
+  stateSearchOptions: SearchPageOptions,
+  queryStringSearchOptions?: SearchPageOptions
+): FieldValueMap =>
+  pipe(
+    queryStringSearchOptions,
+    O.fromNullable,
+    O.map(
+      ({ advFieldValue, legacyAdvSearchCriteria }) =>
+        advFieldValue ??
+        legacyAdvSearchCriteria ??
+        stateSearchOptions.advFieldValue
+    ),
+    O.chain(
+      flow(
+        O.fromNullable,
+        O.map(
+          pfTernaryTypeGuard<PathValueMap, FieldValueMap, FieldValueMap>(
+            isPathValueMap,
+            (m) => buildFieldValueMapFromPathValueMap(m, defaultValues),
+            identity
+          )
+        )
+      )
+    ),
+    O.getOrElse(() => defaultValues)
+  );
+
 // Function to create an Advanced search criterion for each control type.
 const queryFactory = (
   { type, schemaNode, isValueTokenised }: ControlTarget,
@@ -227,3 +270,32 @@ export const generateAdvancedSearchCriteria = (
         criterion !== undefined
     )
   );
+
+/**
+ * Check if any Advanced search criteria has been set.
+ *
+ * @param queryValues FieldValueMap which contains a list of ControlTargets and their values.
+ */
+export const isAdvSearchCriteriaSet = (queryValues: FieldValueMap): boolean => {
+  const isAnyFieldSet = pipe(
+    queryValues,
+    // Some controls like Calendar may have an empty string as their default values which should be
+    // filtered out.
+    M.map(A.filter(isNonEmptyString)),
+    M.values<ControlValue>(OrdAsIs),
+    A.some(isControlValueNonEmpty)
+  );
+  const isValueMapNotEmpty = !M.isEmpty(queryValues);
+
+  return isValueMapNotEmpty && isAnyFieldSet;
+};
+
+/**
+ * Check if the current URL represents the legacy Advanced search path.
+ * @param location Location of current window.
+ */
+export const isLegacyAdvancedSearchUrl = (location: Location) => {
+  const params = new URLSearchParams(location.search);
+  const legacyAdvancedSearchId = params.get("in");
+  return legacyAdvancedSearchId?.startsWith("P") ?? false;
+};

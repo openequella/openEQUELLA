@@ -29,7 +29,6 @@ import { ReactNode, useCallback, useEffect, useState } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { getRouterBaseName } from "../AppConfig";
 import MessageInfo from "../components/MessageInfo";
-import { getAdvancedSearchIdFromLocation } from "../modules/AdvancedSearchModule";
 import { getOeqTheme } from "../modules/ThemeModule";
 import { getCurrentUserDetails } from "../modules/UserModule";
 import { startHeartbeat } from "../util/heartbeat";
@@ -37,7 +36,10 @@ import { simpleMatch } from "../util/match";
 import type { EntryPage } from "./index";
 
 const SettingsPage = React.lazy(() => import("../settings/SettingsPage"));
-const SearchPage = React.lazy(() => import("../search/SearchPage"));
+const SearchPage = React.lazy(() => import("../search/SearchPageRefactored"));
+const AdvancedSearchPage = React.lazy(
+  () => import("../search/AdvancedSearchPage")
+);
 const IndexPage = React.lazy(() => import("./IndexPage"));
 
 interface NewPageProps {
@@ -171,12 +173,12 @@ const App = ({ entryPage }: AppProps): JSX.Element => {
         },
         searchPage: () => (
           <NewPage classPrefix="oeq-nsp">
-            <SearchPage
-              updateTemplate={nop}
-              advancedSearchId={getAdvancedSearchIdFromLocation(
-                window.location
-              )}
-            />
+            <SearchPage updateTemplate={nop} />
+          </NewPage>
+        ),
+        advancedSearchPage: () => (
+          <NewPage classPrefix="oeq-nsp">
+            <AdvancedSearchPage updateTemplate={nop} />
           </NewPage>
         ),
         settingsPage: () => (

@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import { Location } from "history";
 import { memoize } from "lodash";
 import { API_BASE_URL } from "../AppConfig";
 
@@ -51,8 +52,8 @@ export const getAdvancedSearchIdFromLocation = (
 ): string | undefined => {
   // Regex of the new Advanced Search page path. The last group is expected to be a UUID. We can use
   // a more strict regex to ensure it's UUID, but...
-  // For example: /fiveo/page/advancedsearch/c9fd1ae8-0dc1-ab6f-e923-1f195a22d537
-  const advancedSearchPagePath = /(.+)(\/page\/advancedsearch\/)(.+)/;
+  // For example: /page/advancedsearch/c9fd1ae8-0dc1-ab6f-e923-1f195a22d537
+  const advancedSearchPagePath = /(\/page\/advancedsearch\/)(.+)/;
   const matches: string[] | null = location.pathname.match(
     advancedSearchPagePath
   );

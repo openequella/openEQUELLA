@@ -20,7 +20,11 @@ import * as ReactDOM from "react-dom";
 import { initStrings } from "../util/langstrings";
 import "../util/polyfill";
 
-export type EntryPage = "mainDiv" | "searchPage" | "settingsPage";
+export type EntryPage =
+  | "advancedSearchPage"
+  | "mainDiv"
+  | "searchPage"
+  | "settingsPage";
 
 // Lazy import 'App' in order to initialise language strings (independent of imports)
 // before loading of the full app.
