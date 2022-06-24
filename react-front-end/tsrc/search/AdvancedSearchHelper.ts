@@ -30,7 +30,6 @@ import {
   ControlTarget,
   ControlValue,
   controlValueToStringArray,
-  extractDefaultValues,
   FieldValueMap,
   getStringArrayControlValue,
   isControlValueNonEmpty,
@@ -42,7 +41,6 @@ import {
 import { OrdAsIs } from "../util/Ord";
 import { pfTernaryTypeGuard } from "../util/pointfree";
 import type { SearchPageOptions } from "./SearchPageHelper";
-import { Action as SearchPageModeAction } from "./SearchPageModeReducer";
 
 /**
  *  Function to pull values of PathValueMap and copy to FieldValueMap for each unique Schema node.
@@ -82,66 +80,6 @@ export const buildFieldValueMapFromPathValueMap = (
       fromPathValueMap
     )
   );
-};
-
-/**
- * Function to initialise an Advanced search. There are three tasks done here.
- *
- * 1. Confirm the initial FieldValueMap. If there is an existing one, use it depending on whether it's a FieldValueMap
- * or a PathValueMap. Otherwise, build a new one by extracting the default Wizard control values.
- *
- * 2. Generate the initial Advanced search criteria from the initial FieldValueMap.
- *
- * 3. Update the state of SearchPageModeReducer to `initialiseAdvSearch`.
- *
- * @param advancedSearchDefinition The initial Advanced search definition.
- * @param dispatch The `dispatch` provided by SearchPageModeReducer.
- * @param stateSearchOptions The SearchPageOptions managed by State.
- * @param queryStringSearchOptions The SearchPageOptions transformed from query strings.
- *
- * @return A tuple including the initial FieldValueMap and the initial Advanced search criteria.
- */
-export const initialiseAdvancedSearch = (
-  advancedSearchDefinition: OEQ.AdvancedSearch.AdvancedSearchDefinition,
-  dispatch: (action: SearchPageModeAction) => void,
-  stateSearchOptions: SearchPageOptions,
-  queryStringSearchOptions?: SearchPageOptions
-): [FieldValueMap, OEQ.Search.WizardControlFieldValue[]] => {
-  const existingFieldValue: FieldValueMap | PathValueMap | undefined = pipe(
-    queryStringSearchOptions,
-    O.fromNullable,
-    O.map(
-      ({ advFieldValue, legacyAdvSearchCriteria }) =>
-        advFieldValue ?? legacyAdvSearchCriteria
-    ),
-    O.getOrElseW(() => stateSearchOptions.advFieldValue)
-  );
-
-  const defaultValues = extractDefaultValues(advancedSearchDefinition.controls);
-
-  const initialQueryValues = pipe(
-    existingFieldValue,
-    O.fromNullable,
-    O.map(
-      pfTernaryTypeGuard<PathValueMap, FieldValueMap, FieldValueMap>(
-        isPathValueMap,
-        (m) => buildFieldValueMapFromPathValueMap(m, defaultValues),
-        identity
-      )
-    ),
-    O.getOrElse(() => defaultValues)
-  );
-
-  const initialAdvancedSearchCriteria =
-    generateAdvancedSearchCriteria(initialQueryValues);
-
-  dispatch({
-    type: "initialiseAdvSearch",
-    selectedAdvSearch: advancedSearchDefinition,
-    initialQueryValues,
-  });
-
-  return [initialQueryValues, initialAdvancedSearchCriteria];
 };
 
 /**

@@ -47,7 +47,7 @@ import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
 import * as UserModule from "../../../tsrc/modules/UserModule";
 import * as SearchPageHelper from "../../../tsrc/search/SearchPageHelper";
-import SearchPageRefactored from "../../../tsrc/search/SearchPageRefactored";
+import SearchPage from "../../../tsrc/search/SearchPage";
 
 /**
  * Provides a centralised place to mock all the Collaborators used by SearchPage, providing an object
@@ -226,7 +226,7 @@ export const renderSearchPage = async (
             currentUser,
           }}
         >
-          <SearchPageRefactored updateTemplate={jest.fn()} />
+          <SearchPage updateTemplate={jest.fn()} />
         </AppContext.Provider>
       </Router>
     </MuiThemeProvider>

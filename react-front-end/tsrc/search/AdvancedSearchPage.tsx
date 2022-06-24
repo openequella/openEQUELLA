@@ -36,7 +36,7 @@ import {
   confirmInitialFieldValueMap,
   isAdvSearchCriteriaSet,
 } from "./AdvancedSearchHelper";
-import { AdvancedSearchPanelRefactored } from "./components/AdvancedSearchPanelRefactored";
+import { AdvancedSearchPanel } from "./components/AdvancedSearchPanel";
 import { Search } from "./Search";
 import { SearchPageBody } from "./SearchPageBody";
 import {
@@ -131,7 +131,7 @@ export const AdvancedSearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   );
 
   const panel = (
-    <AdvancedSearchPanelRefactored
+    <AdvancedSearchPanel
       title={advancedSearchDefinition?.name}
       wizardControls={advancedSearchDefinition?.controls ?? []}
       values={fieldValueMap ?? new Map()}

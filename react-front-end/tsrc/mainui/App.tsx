@@ -36,7 +36,7 @@ import { simpleMatch } from "../util/match";
 import type { EntryPage } from "./index";
 
 const SettingsPage = React.lazy(() => import("../settings/SettingsPage"));
-const SearchPage = React.lazy(() => import("../search/SearchPageRefactored"));
+const SearchPage = React.lazy(() => import("../search/SearchPage"));
 const AdvancedSearchPage = React.lazy(
   () => import("../search/AdvancedSearchPage")
 );
