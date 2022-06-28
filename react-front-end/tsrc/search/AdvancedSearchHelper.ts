@@ -93,7 +93,7 @@ export const buildFieldValueMapFromPathValueMap = (
  * @param stateSearchOptions The SearchPageOptions managed by State.
  * @param queryStringSearchOptions The SearchPageOptions transformed from query strings.
  *
- * @return A tuple including the initial FieldValueMap and the initial Advanced search criteria.
+ * @return The FieldValueMap used in the initial Search.
  */
 export const confirmInitialFieldValueMap = (
   defaultValues: FieldValueMap,
