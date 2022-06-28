@@ -118,7 +118,9 @@ export const AdvancedSearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     })();
   }, [advancedSearchId, appErrorHandler]);
 
-  const initialise = useCallback(
+  // Function to override `collections`, `advFieldValue` and `advancedSearchCriteria`
+  // for the initial search in Advanced Search.
+  const buildInitialAdvancedSearchOptions = useCallback(
     (
       searchPageOptions: SearchPageOptions,
       queryStringSearchOptions?: SearchPageOptions
@@ -183,7 +185,7 @@ export const AdvancedSearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         updateTemplate={updateTemplate}
         initialSearchConfig={{
           ready: definitionRetrieved,
-          customiseInitialSearchOptions: initialise,
+          customiseInitialSearchOptions: buildInitialAdvancedSearchOptions,
           listInitialClassifications: false,
         }}
       >

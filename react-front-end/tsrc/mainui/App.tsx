@@ -177,7 +177,7 @@ const App = ({ entryPage }: AppProps): JSX.Element => {
           </NewPage>
         ),
         advancedSearchPage: () => (
-          <NewPage classPrefix="oeq-nsp">
+          <NewPage classPrefix="oeq-nasp">
             <AdvancedSearchPage updateTemplate={nop} />
           </NewPage>
         ),

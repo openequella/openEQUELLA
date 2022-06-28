@@ -125,6 +125,9 @@ export const SearchContext = React.createContext<SearchContextProps>({
   searchPageErrorHandler: nop,
 });
 
+/**
+ * Type definition for configuration of the initial search.
+ */
 interface InitialSearchConfig {
   /**
    * Perform the initial search when the value is `true`.
@@ -288,7 +291,6 @@ export const Search = ({
             mergeSearchPageOptions
           );
 
-          console.log(ready);
           ready && search(initialSearchPageOptions, listInitialClassifications);
         }
       )
