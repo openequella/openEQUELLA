@@ -37,7 +37,6 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.generic.InfoBookmark;
 import com.tle.web.sections.render.Label;
-import com.tle.web.sections.render.SimpleSectionResult;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.template.RenderNewSearchPage;
 import com.tle.web.template.RenderNewTemplate;
@@ -78,10 +77,6 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
     return true;
   }
 
-  protected boolean isAdvancedSearch() {
-    return false;
-  }
-
   @Override
   public SectionResult renderHtml(RenderEventContext context) {
     if (aclManager.filterNonGrantedPrivileges(WebConstants.SEARCH_PAGE_PRIVILEGE).isEmpty()) {
@@ -100,12 +95,7 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
     // is in 'structured' mode. If yes, then render the new search page if it's enabled.
     SelectionSession selectionSession = selectionService.getCurrentSession(context);
     if (isNewSearchUIInSelectionSession(selectionSession) && useNewSearch()) {
-      SimpleSectionResult content =
-          isAdvancedSearch()
-              ? RenderNewSearchPage.renderNewAdvancedSearchPage(context)
-              : RenderNewSearchPage.renderNewSearchPage(context);
-
-      getModel(context).setNewSearchUIContent(content);
+      getModel(context).setNewSearchUIContent(RenderNewSearchPage.renderNewSearchPage(context));
     }
     return super.renderHtml(context);
   }
