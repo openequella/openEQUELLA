@@ -16,15 +16,24 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { constFalse, pipe } from "fp-ts/function";
+import { constFalse, flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
+import * as E from "fp-ts/Either";
+import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
-import { createContext, useCallback, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { useLocation } from "react-router";
 import {
   extractDefaultValues,
   FieldValueMap,
 } from "../components/wizard/WizardHelper";
+import { AppContext } from "../mainui/App";
 import { NEW_ADVANCED_SEARCH_PATH } from "../mainui/routes";
 import { TemplateUpdateProps } from "../mainui/Template";
 import {
@@ -81,18 +90,33 @@ export const AdvancedSearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [openAdvSearchPanel, setOpenAdvSearchPanel] = useState(true);
 
   const location = useLocation();
-
-  const advancedSearchId = pipe(
-    getAdvancedSearchIdFromLocation(location),
-    O.fromNullable,
-    O.getOrElseW(() => {
-      throw new Error("Failed to extract Advanced search ID from the URL.");
-    })
+  const [advancedSearchId] = useState(
+    getAdvancedSearchIdFromLocation(location)
   );
+  const { appErrorHandler } = useContext(AppContext);
 
   useEffect(() => {
-    getAdvancedSearchByUuid(advancedSearchId).then(setAdvancedSearchDefinition);
-  }, [advancedSearchId]);
+    const getDefinition = pipe(
+      advancedSearchId,
+      TE.fromNullable("Advanced search ID must not be empty"),
+      TE.chain(
+        flow(
+          TE.tryCatchK(
+            getAdvancedSearchByUuid,
+            () =>
+              `Failed to retrieve Advanced search definition for ${advancedSearchId}`
+          )
+        )
+      )
+    );
+
+    (async () => {
+      pipe(
+        await getDefinition(),
+        E.fold(appErrorHandler, setAdvancedSearchDefinition)
+      );
+    })();
+  }, [advancedSearchId, appErrorHandler]);
 
   const initialise = useCallback(
     (
