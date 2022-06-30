@@ -18,15 +18,24 @@
 
 package com.tle.web.template
 
+import com.tle.web.searching.section.{RootAdvancedSearchSection, RootSearchSection}
 import com.tle.web.sections.ajax.AjaxEffects
 import com.tle.web.sections.events.RenderEventContext
 import com.tle.web.sections.render.SimpleSectionResult
 
 object RenderNewSearchPage {
-  def renderNewSearchPage(context: RenderEventContext): SimpleSectionResult = {
-    val (p, body) = RenderNewTemplate.parseEntryHtml("SearchPage.html")
+  private def buildSection(context: RenderEventContext, file: String): SimpleSectionResult = {
+    val (p, body) = RenderNewTemplate.parseEntryHtml(file)
     context.getBody.addPreRenderable(p)
     context.getBody.addPreRenderable(AjaxEffects.EFFECTS_LIB)
     new SimpleSectionResult(body.body().children())
+  }
+
+  def renderNewSearchPage(context: RenderEventContext): SimpleSectionResult = {
+    val file = context.getSectionObject match {
+      case _: RootAdvancedSearchSection => "AdvancedSearchPage.html"
+      case _: RootSearchSection         => "SearchPage.html"
+    }
+    buildSection(context, file)
   }
 }

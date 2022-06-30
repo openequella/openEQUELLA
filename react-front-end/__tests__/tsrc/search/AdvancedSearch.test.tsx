@@ -15,18 +15,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { MuiThemeProvider } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
-import { act, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
+import { createMemoryHistory } from "history";
+import * as React from "react";
+import { Router } from "react-router-dom";
 import {
   getAdvancedSearchDefinition,
   mockWizardControlFactory,
 } from "../../../__mocks__/AdvancedSearchModule.mock";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
+import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import { mockedAdvancedSearchCriteria } from "../../../__mocks__/WizardHelper.mock";
+import { AppContext } from "../../../tsrc/mainui/App";
+import AdvancedSearchPage from "../../../tsrc/search/AdvancedSearchPage";
 import { elapsedTime, startTimer } from "../../../tsrc/util/debug";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import {
@@ -40,11 +47,12 @@ import {
   WizardControlLabelValue,
 } from "./AdvancedSearchTestHelper";
 import {
+  defaultTheme,
   initialiseEssentialMocks,
   mockCollaborators,
   queryClassificationPanel,
   queryCollectionSelector,
-  renderSearchPage,
+  waitForSearch,
 } from "./SearchPageTestHelper";
 
 // This has some big tests for rendering the Search Page, but also going through and testing
@@ -78,13 +86,33 @@ const searchPromise = mockSearch.mockResolvedValue(getSearchResult);
 // Mock out collaborator which retrieves an Advanced search
 mockGetAdvancedSearchByUuid.mockResolvedValue(getAdvancedSearchDefinition);
 
-const testUuid = "4be6ae54-68ca-4d8b-acd0-0ca96fc39280";
-
 const togglePanel = async () =>
   act(async () => userEvent.click(screen.getByLabelText(filterButtonLabel)));
 
-const renderAdvancedSearchPage = async () =>
-  await renderSearchPage(searchPromise, undefined, testUuid);
+const renderAdvancedSearchPage = async () => {
+  const history = createMemoryHistory();
+  history.push("/page/advancedsearch/4be6ae54-68ca-4d8b-acd0-0ca96fc39280");
+
+  const page = render(
+    <MuiThemeProvider theme={defaultTheme}>
+      <Router history={history}>
+        <AppContext.Provider
+          value={{
+            appErrorHandler: jest.fn(),
+            refreshUser: jest.fn(),
+            currentUser: getCurrentUserMock,
+          }}
+        >
+          <AdvancedSearchPage updateTemplate={jest.fn()} />
+        </AppContext.Provider>
+      </Router>
+    </MuiThemeProvider>
+  );
+  // Wait for the first completion of initial search
+  await waitForSearch(searchPromise);
+
+  return page;
+};
 
 const queryAdvSearchPanel = (container: Element): HTMLElement | null =>
   container.querySelector("#advanced-search-panel");
@@ -112,11 +140,6 @@ const clickClearButton = async (container: Element) => {
 };
 
 describe("Display of Advanced Search Criteria panel", () => {
-  it("is hidden for normal searching", async () => {
-    const { queryByText } = await renderSearchPage(searchPromise);
-    expect(queryByText(panelTitle)).not.toBeInTheDocument();
-  });
-
   it("is displayed in advanced search mode", async () => {
     const { queryByText } = await renderAdvancedSearchPage();
     expect(queryByText(panelTitle)).toBeInTheDocument();
@@ -127,11 +150,6 @@ describe("Advanced Search filter button", () => {
   it("is available in advanced search mode", async () => {
     const { queryByLabelText } = await renderAdvancedSearchPage();
     expect(queryByLabelText(filterButtonLabel)).toBeInTheDocument();
-  });
-
-  it("is hidden for normal searching", async () => {
-    const { queryByLabelText } = await renderSearchPage(searchPromise);
-    expect(queryByLabelText(filterButtonLabel)).not.toBeInTheDocument();
   });
 
   it("toggles the AdvancedSearchPanel when clicked", async () => {

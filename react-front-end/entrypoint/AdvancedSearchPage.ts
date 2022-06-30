@@ -15,23 +15,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import { NEW_SEARCH_PATH } from "../mainui/routes";
-import { TemplateUpdateProps } from "../mainui/Template";
-import { Search } from "./Search";
-import { SearchPageBody } from "./SearchPageBody";
-
-/**
- * This component is for the most common New Search UI.
- */
-export const SearchPageRefactored = ({
-  updateTemplate,
-}: TemplateUpdateProps) => {
-  return (
-    <Search updateTemplate={updateTemplate}>
-      <SearchPageBody pathname={NEW_SEARCH_PATH} />
-    </Search>
-  );
-};
-
-export default SearchPageRefactored;
+import main from "../tsrc/mainui";
+main("advancedSearchPage");

@@ -125,11 +125,18 @@ export const SearchContext = React.createContext<SearchContextProps>({
   searchPageErrorHandler: nop,
 });
 
-interface SearchProps extends TemplateUpdateProps {
+/**
+ * Type definition for configuration of the initial search.
+ */
+interface InitialSearchConfig {
   /**
-   * Child components which are dependent on SearchContext.
+   * Perform the initial search when the value is `true`.
    */
-  children: ReactNode;
+  ready: boolean;
+  /**
+   * `true` to list the initial classifications.
+   */
+  listInitialClassifications: boolean;
   /**
    * This function will be called before the initial search, allowing for any additional customisation
    * to the initial search options.
@@ -137,10 +144,27 @@ interface SearchProps extends TemplateUpdateProps {
    * @param searchPageOptions General SearchPageOptions for the initial search.
    * @param queryStringSearchOptions The SearchPageOptions transformed from query strings.
    */
-  customiseInitialSearchOptions?: (
+  customiseInitialSearchOptions: (
     searchPageOptions: SearchPageOptions,
     queryStringSearchOptions?: SearchPageOptions
   ) => SearchPageOptions;
+}
+
+const defaultInitialSearchConfig: InitialSearchConfig = {
+  ready: true,
+  listInitialClassifications: true,
+  customiseInitialSearchOptions: identity,
+};
+
+interface SearchProps extends TemplateUpdateProps {
+  /**
+   * Child components which are dependent on SearchContext.
+   */
+  children: ReactNode;
+  /**
+   * Configuration for the initial search.
+   */
+  initialSearchConfig?: InitialSearchConfig;
 }
 
 /**
@@ -151,7 +175,7 @@ interface SearchProps extends TemplateUpdateProps {
 export const Search = ({
   updateTemplate,
   children,
-  customiseInitialSearchOptions = identity,
+  initialSearchConfig = defaultInitialSearchConfig,
 }: SearchProps) => {
   const history = useHistory();
   const location = useLocation();
@@ -218,6 +242,9 @@ export const Search = ({
     console.debug("SearchPage: useEffect - initialising");
     console.time(timerId);
 
+    const { ready, customiseInitialSearchOptions, listInitialClassifications } =
+      initialSearchConfig;
+
     updateTemplate((tp) => ({
       ...templateDefaults(searchStrings.title)(tp),
     }));
@@ -264,7 +291,7 @@ export const Search = ({
             mergeSearchPageOptions
           );
 
-          search(initialSearchPageOptions);
+          ready && search(initialSearchPageOptions, listInitialClassifications);
         }
       )
       .catch(searchPageErrorHandler);
@@ -278,7 +305,7 @@ export const Search = ({
     searchPageOptions,
     searchState.status,
     updateTemplate,
-    customiseInitialSearchOptions,
+    initialSearchConfig,
   ]);
 
   /**
