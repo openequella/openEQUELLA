@@ -18,9 +18,9 @@
 
 package com.tle.core.harvester.old.dsoap;
 
-import com.dytech.devlib.Base64;
 import com.tle.common.Utils;
 import java.io.StringWriter;
+import java.util.Base64;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -139,8 +139,7 @@ public class RequestParameter {
     this.name = name;
     this.type = RP_BYTES;
 
-    Base64 encoder = new Base64();
-    value = encoder.encode(bytes);
+    value = Base64.getEncoder().encodeToString(bytes);
   }
 
   public RequestParameter(String name, Element element) {
