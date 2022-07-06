@@ -15,14 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { memoize } from "lodash";
 import { API_BASE_URL } from "../AppConfig";
 import * as OEQ from "@openequella/rest-api-client";
 
-export const getSearchSettingsFromServer = memoize(
+export const getSearchSettingsFromServer =
   (): Promise<OEQ.SearchSettings.Settings> =>
-    OEQ.SearchSettings.getSearchSettings(API_BASE_URL)
-);
+    OEQ.SearchSettings.getSearchSettings(API_BASE_URL);
 
 export const saveSearchSettingsToServer = (
   settings: OEQ.SearchSettings.Settings
