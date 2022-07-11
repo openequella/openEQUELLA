@@ -225,6 +225,13 @@ jobs:
       OLD_TEST_NEWUI: ${{ matrix.newui }}
 
     steps:
+      # Increase swap space to protect against
+      # `java.lang.ClassCastException: java.lang.OutOfMemoryError cannot be cast to xsbti.FullReload`
+      - name: Increase Swap Space
+        uses: pierotofy/set-swap-space@v1.0
+        with:
+          swap-size-gb: 8
+
       - name: Install OS dependencies
         run: |
           sudo apt-get update
