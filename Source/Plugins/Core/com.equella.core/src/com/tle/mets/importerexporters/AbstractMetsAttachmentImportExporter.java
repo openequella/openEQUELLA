@@ -18,7 +18,6 @@
 
 package com.tle.mets.importerexporters;
 
-import com.dytech.devlib.Base64;
 import com.dytech.devlib.PropBagEx;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
@@ -44,6 +43,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
@@ -119,7 +119,7 @@ public abstract class AbstractMetsAttachmentImportExporter
       ByteStreams.copy(in, baos);
 
       BinData data = new BinData();
-      data.getContent().add(new PCData(new Base64().encode(baos.toByteArray())));
+      data.getContent().add(new PCData(Base64.getEncoder().encodeToString(baos.toByteArray())));
       return data;
     } catch (IOException io) {
       throw Throwables.propagate(io);
@@ -147,7 +147,7 @@ public abstract class AbstractMetsAttachmentImportExporter
       for (Object data : pc.getContent()) {
         base64data.append(data);
       }
-      final byte[] bytes = new Base64().decode(base64data.toString());
+      final byte[] bytes = Base64.getDecoder().decode(base64data.toString());
 
       try {
         fileSystemService.write(staging, resultFilepath, new ByteArrayInputStream(bytes), true);

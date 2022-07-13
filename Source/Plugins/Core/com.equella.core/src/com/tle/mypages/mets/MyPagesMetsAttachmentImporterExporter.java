@@ -18,7 +18,6 @@
 
 package com.tle.mypages.mets;
 
-import com.dytech.devlib.Base64;
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.Constants;
 import com.dytech.edge.common.FileInfo;
@@ -51,6 +50,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
@@ -128,7 +128,9 @@ public class MyPagesMetsAttachmentImporterExporter extends AbstractMetsAttachmen
 
       final BinData data = new BinData();
       data.getContent()
-          .add(new PCData(new Base64().encode(wrt.toString().getBytes(Constants.UTF8))));
+          .add(
+              new PCData(
+                  Base64.getEncoder().encodeToString(wrt.toString().getBytes(Constants.UTF8))));
       return data;
     }
   }

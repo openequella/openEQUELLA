@@ -18,12 +18,12 @@
 
 package com.tle.core.replicatedcache.dao;
 
-import com.dytech.devlib.Base64;
 import com.tle.beans.Institution;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.dao.GenericDaoImpl;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 import javax.inject.Singleton;
@@ -85,7 +85,8 @@ public class ReplicatedCacheDaoImpl extends GenericDaoImpl<CachedValue, Long>
                     Root<CachedValue> rootType = criteriaQuery.from(CachedValue.class);
 
                     Predicate predicateForValue =
-                        criteriaBuilder.equal(rootType.get("value"), new Base64().encode(value));
+                        criteriaBuilder.equal(
+                            rootType.get("value"), Base64.getEncoder().encodeToString(value));
                     Predicate predicateForCacheId =
                         criteriaBuilder.equal(rootType.get("cacheId"), cacheId);
                     Predicate predicateForInstitution =

@@ -18,10 +18,10 @@
 
 package com.tle.core.encryption.impl;
 
-import com.dytech.devlib.Base64;
 import com.tle.common.Check;
 import com.tle.core.encryption.EncryptionService;
 import com.tle.core.guice.Bind;
+import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
@@ -46,8 +46,7 @@ public class EncryptionServiceImpl implements EncryptionService {
 
         // Encrypt
         byte[] enc = ecipher.doFinal(value.getBytes());
-        return new Base64().encode(enc);
-
+        return Base64.getEncoder().encodeToString(enc);
       } catch (Exception e) {
         throw new RuntimeException("Error encrypting", e);
       }
@@ -60,7 +59,7 @@ public class EncryptionServiceImpl implements EncryptionService {
   public String decrypt(String value) {
     if (!Check.isEmpty(value)) {
       try {
-        byte[] bytes = new Base64().decode(value);
+        byte[] bytes = Base64.getDecoder().decode(value);
         SecretKey key = new SecretKeySpec(SHAREPASS, "AES");
         Cipher ecipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         ecipher.init(Cipher.DECRYPT_MODE, key, INITVEC);
