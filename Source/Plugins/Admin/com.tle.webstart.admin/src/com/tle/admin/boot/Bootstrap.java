@@ -19,7 +19,6 @@
 package com.tle.admin.boot;
 
 import com.dytech.common.net.Proxy;
-import com.dytech.devlib.Base64;
 import com.dytech.edge.common.Version;
 import com.tle.admin.PluginServiceImpl;
 import com.tle.client.ListCookieHandler;
@@ -38,6 +37,7 @@ import java.io.OutputStream;
 import java.net.CookieHandler;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -135,7 +135,7 @@ public final class Bootstrap {
       String tokenParam = System.getProperty(TOKEN_PARAMETER);
       if (tokenParam != null) {
         String token =
-            new String(new Base64().decode(System.getProperty(TOKEN_PARAMETER)), "UTF-8");
+            new String(Base64.getDecoder().decode(System.getProperty(TOKEN_PARAMETER)), "UTF-8");
         Map<String, String> params = new HashMap<>();
         params.put("token", token);
         SessionLogin.postLogin(endpointUrl, params);

@@ -19,8 +19,8 @@
 package com.tle.web.controls.universal.handlers.fileupload.details
 
 import com.tle.common.wizard.controls.universal.handlers.FileUploadSettings
-import com.tle.web.controls.universal.handlers.fileupload.packages.PackageFileCreate
 import com.tle.web.controls.universal.handlers.fileupload.{
+  AttachmentCreate,
   PackageType,
   ValidatedUpload,
   WebFileUploads
@@ -43,6 +43,7 @@ import com.tle.web.sections.standard.annotations.Component
 import com.tle.web.sections.standard.model.{DynamicHtmlListModel, LabelOption}
 import com.tle.web.sections.standard.{Button, SingleSelectionList}
 import com.tle.web.sections.{SectionInfo, SectionTree}
+
 import scala.jdk.CollectionConverters._
 
 object FileOptions {
@@ -127,7 +128,7 @@ class FileOptions(parentId: String,
     override protected def populateModel(info: SectionInfo): java.lang.Iterable[TreatAsOption] = {
       val dynamicOptions = getModel(info).vu.detected.map { pt =>
         val t = PackageType.packageTypeString(pt)
-        TreatAsOption(PackageFileCreate.packageCreateById(t).treatAsLabel, t)
+        TreatAsOption(AttachmentCreate.packageCreateById(t).treatAsLabel, t)
       }
       (dynamicOptions ++ defaultOptions).asJava
     }

@@ -731,7 +731,7 @@ describe("Responsiveness", () => {
   let page: RenderResult;
 
   beforeEach(async () => {
-    page = await renderSearchPage(searchPromise, undefined, undefined, theme);
+    page = await renderSearchPage(searchPromise, undefined, theme);
   });
 
   it("should hide the side panel in small screens", async () => {
@@ -920,12 +920,10 @@ describe("Changing display mode", () => {
 });
 
 describe("Export search result", () => {
-  let page: RenderResult;
-  beforeEach(async () => {
-    page = await renderSearchPage(searchPromise);
-  });
-
-  const selectCollections = async (...collectionNames: string[]) => {
+  const selectCollections = async (
+    page: RenderResult,
+    ...collectionNames: string[]
+  ) => {
     userEvent.click(
       page.getByLabelText(languageStrings.searchpage.collectionSelector.title)
     );
@@ -936,11 +934,9 @@ describe("Export search result", () => {
     }
   };
 
-  const getDownloadButton = () =>
-    page.getByLabelText(languageStrings.searchpage.export.title);
-
   it("shows a Download Icon button to allow exporting", async () => {
-    await selectCollections(getCollectionMap[0].name);
+    const page = await renderSearchPage(searchPromise);
+    await selectCollections(page, getCollectionMap[0].name);
     expect(
       page.queryByLabelText(languageStrings.searchpage.export.title)
     ).toBeInTheDocument();
@@ -952,8 +948,11 @@ describe("Export search result", () => {
   ])(
     "disables export if %s collection is selected",
     async (collectionNumber: string, collections: string[]) => {
-      await selectCollections(...collections);
-      userEvent.click(getDownloadButton());
+      const page = await renderSearchPage(searchPromise);
+      await selectCollections(page, ...collections);
+      userEvent.click(
+        page.getByLabelText(languageStrings.searchpage.export.title)
+      );
       expect(
         screen.getByText(languageStrings.searchpage.export.collectionLimit)
       ).toBeInTheDocument();
@@ -962,12 +961,16 @@ describe("Export search result", () => {
 
   it("doesn't show the Download button if user have no permission", async () => {
     // Remove previously rendered result so that we can mock the current user details.
-    page.unmount();
-    mockCurrentUser.mockResolvedValueOnce({
-      ...getCurrentUserMock,
-      canDownloadSearchResult: false,
-    });
-    const { queryByLabelText } = await renderSearchPage(searchPromise);
+    const { queryByLabelText } = await renderSearchPage(
+      searchPromise,
+      undefined,
+      undefined,
+      {
+        ...getCurrentUserMock,
+        canDownloadSearchResult: false,
+      }
+    );
+
     expect(
       queryByLabelText(languageStrings.searchpage.export.title)
     ).not.toBeInTheDocument();

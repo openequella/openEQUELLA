@@ -18,7 +18,6 @@
 
 package com.tle.web.mimetypes.section;
 
-import com.dytech.devlib.Base64;
 import com.google.common.io.ByteStreams;
 import com.tle.beans.mime.MimeEntry;
 import com.tle.common.NameValue;
@@ -62,6 +61,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Base64;
 import java.util.Random;
 import javax.inject.Inject;
 
@@ -236,7 +236,7 @@ public class EditIconSection extends AbstractPrototypeSection<EditIconSection.Ed
       try (InputStream iconStream = fileSystemService.read(stagingFile, ICON_FILENAME)) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ByteStreams.copy(iconStream, baos);
-        String base64Icon = new Base64().encode(baos.toByteArray());
+        String base64Icon = Base64.getEncoder().encodeToString(baos.toByteArray());
         webMimeTypeService.setIconBase64(entry, base64Icon);
       } catch (IOException e) {
         throw new RuntimeException(e);

@@ -28,7 +28,7 @@ import { shallowEqual } from "shallow-equal-object";
 import { ErrorResponse } from "../api/errors";
 import { getRenderData, getRouterBaseName, LEGACY_CSS_URL } from "../AppConfig";
 import { LegacyContent } from "../legacycontent/LegacyContent";
-import { getAdvancedSearchIdFromLocation } from "../modules/AdvancedSearchModule";
+import { isLegacyAdvancedSearchUrl } from "../search/AdvancedSearchHelper";
 import ErrorPage from "./ErrorPage";
 import { defaultNavMessage, NavAwayDialog } from "./PreventNavigation";
 import {
@@ -42,6 +42,9 @@ import {
 import { Template, TemplateProps, TemplateUpdate } from "./Template";
 
 const SearchPage = React.lazy(() => import("../search/SearchPage"));
+const AdvancedSearchPage = React.lazy(
+  () => import("../search/AdvancedSearchPage")
+);
 
 const renderData = getRenderData();
 
@@ -182,11 +185,12 @@ export default function IndexPage() {
               return renderLegacyContent(p);
             }
             removeLegacyCss();
-            return (
-              <SearchPage
-                {...mkRouteProps(p)}
-                advancedSearchId={getAdvancedSearchIdFromLocation(location)}
-              />
+
+            const props = mkRouteProps(p);
+            return isLegacyAdvancedSearchUrl(location) ? (
+              <AdvancedSearchPage {...props} />
+            ) : (
+              <SearchPage {...props} />
             );
           }}
         />

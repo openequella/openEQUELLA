@@ -21,8 +21,9 @@ package com.tle.mets.packagehandler
 import com.tle.beans.item.attachments.{Attachment, CustomAttachment}
 import com.tle.common.PathUtils
 import com.tle.core.guice.Bind
+import com.tle.mets.MetsConstants.{METS_FOLDER_PREFIX, METS_TYPE}
 import com.tle.mets.metsimport.METSTreeBuilder
-import com.tle.web.controls.universal.ControlContext
+import com.tle.web.controls.universal.{ControlContext, StagingContext}
 import com.tle.web.controls.universal.handlers.fileupload._
 import com.tle.web.controls.universal.handlers.fileupload.packages.{
   IMSPackageExtension,
@@ -31,6 +32,7 @@ import com.tle.web.controls.universal.handlers.fileupload.packages.{
 import com.tle.web.resources.ResourcesService
 import com.tle.web.sections.SectionInfo
 import com.tle.web.sections.result.util.KeyLabel
+
 import javax.inject.Inject
 
 @Bind
@@ -38,7 +40,7 @@ class MetsPackageAttachmentHandlerNew extends PackageAttachmentExtension {
 
   @Inject var metsTreeBuilder: METSTreeBuilder = _
 
-  val MetsType = OtherPackage("METS")
+  val MetsType = OtherPackage(METS_TYPE.toUpperCase())
 
   def handlesPackage(upload: SuccessfulUpload, d: Seq[PackageType]) = d.contains(MetsType)
 
@@ -47,9 +49,9 @@ class MetsPackageAttachmentHandlerNew extends PackageAttachmentExtension {
     AttachmentCreate(
       { stg =>
         val ma = new CustomAttachment
-        ma.setType("mets")
+        ma.setType(METS_TYPE)
         IMSPackageExtension.standardPackageDetails(ma, pkgInfo, upload)
-        val destFile  = PathUtils.filePath("_METS", upload.originalFilename)
+        val destFile  = PathUtils.filePath(METS_FOLDER_PREFIX, upload.originalFilename)
         val pkgFolder = upload.originalFilename
         metsTreeBuilder.createTree(ctx.repo.getItem,
                                    stg.stgFile,
@@ -64,8 +66,7 @@ class MetsPackageAttachmentHandlerNew extends PackageAttachmentExtension {
         ma.setUrl(destFile)
         ma
       },
-      (a, stg) => a,
-      (a, stg) => delete(ctx, a).deleteFiles(stg)
+      MetsPackageCommit
     )
   }
 
@@ -74,15 +75,30 @@ class MetsPackageAttachmentHandlerNew extends PackageAttachmentExtension {
 
   override def delete(ctx: ControlContext, a: Attachment): AttachmentDelete = AttachmentDelete(
     Seq(a), { stg =>
-      stg.delete(a.getUrl)
-      if (a.getUrl.startsWith("_METS/")) {
-        stg.delete(a.getUrl.substring(6))
-      }
+      MetsPackageCommit.cancel(a, stg)
     }
   )
 
   def handles(a: Attachment): Boolean = a match {
-    case ca: CustomAttachment if ca.getType == "mets" => true
-    case _                                            => false
+    case ca: CustomAttachment if ca.getType == METS_TYPE => true
+    case _                                               => false
+  }
+
+  /**
+    * Mets package commit type.
+    * Simply returns the attachment on apply,
+    * but on cancel ensures all content is deleted from the dedicated METS package folder and unpack folder in the staging area.
+    */
+  object MetsPackageCommit extends AttachmentCommit {
+    override def apply(a: Attachment, stg: StagingContext): Attachment = a
+
+    override def cancel(a: Attachment, stg: StagingContext): Unit = {
+      // delete Mets package file
+      stg.delete(a.getUrl)
+      // delete Mets unpack folder
+      if (a.getUrl.startsWith(s"${METS_FOLDER_PREFIX}/")) {
+        stg.delete(a.getUrl.substring(s"${METS_FOLDER_PREFIX}/".length))
+      }
+    }
   }
 }

@@ -16,13 +16,11 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { memoize } from "lodash";
 import { API_BASE_URL } from "../AppConfig";
 
-export const getMimeTypeFiltersFromServer = memoize(
-  (): Promise<OEQ.SearchFilterSettings.MimeTypeFilter[]> =>
-    OEQ.SearchFilterSettings.getSearchFilterSettings(API_BASE_URL)
-);
+export const getMimeTypeFiltersFromServer = (): Promise<
+  OEQ.SearchFilterSettings.MimeTypeFilter[]
+> => OEQ.SearchFilterSettings.getSearchFilterSettings(API_BASE_URL);
 
 /**
  * Find MIME type filters by a list of ID.

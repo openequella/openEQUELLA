@@ -16,19 +16,20 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 (Runtime / unmanagedClasspath) += (LocalProject("learningedge_config") / baseDirectory).value
 
-val RestEasyVersion = "3.15.3.Final"
-val SwaggerVersion  = "1.6.6"
-val TomcatVersion   = "9.0.64"
-val axis2Version    = "1.7.9"
-val circeVersion    = "0.12.1"
-val cxfVersion      = "3.5.2"
-val fs2Version      = "2.5.11"
-val guiceVersion    = "5.1.0"
-val jsassVersion    = "5.10.4"
-val jsoupVersion    = "1.14.3"
-val springVersion   = "5.3.21"
-val sttpVersion     = "1.7.2"
-val tikaVersion     = "2.4.1"
+val RestEasyVersion   = "3.15.3.Final"
+val SwaggerVersion    = "1.6.6"
+val TomcatVersion     = "9.0.64"
+val axis2Version      = "1.7.9"
+val circeVersion      = "0.12.1"
+val cxfVersion        = "3.5.2"
+val fs2Version        = "2.5.11"
+val guiceVersion      = "5.1.0"
+val jsassVersion      = "5.10.4"
+val jsoupVersion      = "1.14.3"
+val prometheusVersion = "0.16.0"
+val springVersion     = "5.3.21"
+val sttpVersion       = "1.7.2"
+val tikaVersion       = "2.4.1"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -36,6 +37,13 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-parser",
   "io.circe" %% "circe-generic-extras"
 ).map(_ % circeVersion)
+
+val prometheusGroup = "io.prometheus"
+libraryDependencies ++= Seq(
+  prometheusGroup % "simpleclient",
+  prometheusGroup % "simpleclient_hotspot",
+  prometheusGroup % "simpleclient_servlet"
+).map(_ % prometheusVersion)
 
 libraryDependencies ++= Seq(
   "co.fs2"                         %% "fs2-io"                        % fs2Version,

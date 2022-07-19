@@ -15,18 +15,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package com.tle.mets;
-
-public final class MetsConstants {
-  /** The name of the METS record file when inside a ZIP package */
-  public static final String METS_FILENAME = "mets-manifest.xml"; // $NON-NLS-1$
-
-  public static final String METS_FOLDER_PREFIX = "_METS";
-
-  public static final String METS_TYPE = "mets";
-
-  private MetsConstants() {
-    throw new Error();
-  }
-}
+import main from "../tsrc/mainui";
+main("advancedSearchPage");
