@@ -18,16 +18,16 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion   = "3.15.3.Final"
 val SwaggerVersion    = "1.6.6"
-val TomcatVersion     = "9.0.64"
+val TomcatVersion     = "9.0.65"
 val axis2Version      = "1.7.9"
 val circeVersion      = "0.12.1"
-val cxfVersion        = "3.5.2"
+val cxfVersion        = "3.5.3"
 val fs2Version        = "2.5.11"
 val guiceVersion      = "5.1.0"
 val jsassVersion      = "5.10.4"
 val jsoupVersion      = "1.14.3"
 val prometheusVersion = "0.16.0"
-val springVersion     = "5.3.21"
+val springVersion     = "5.3.22"
 val sttpVersion       = "1.7.2"
 val tikaVersion       = "2.4.1"
 
@@ -63,9 +63,9 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
-  "com.google.api-client" % "google-api-client"           % "1.35.1",
+  "com.google.api-client" % "google-api-client"           % "1.35.2",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20220318-1.32.1",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20220612-1.32.1",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20220719-1.32.1",
   "com.google.code.gson"  % "gson"                        % "2.9.0",
   "com.google.gdata"      % "core"                        % "1.47.1",
   "com.google.guava"      % "guava"                       % "31.1-jre",
@@ -131,9 +131,9 @@ libraryDependencies ++= Seq(
   "org.apache.axis2"   % "axis2-transport-http"     % axis2Version,
   "org.apache.axis2"   % "axis2-transport-local"    % axis2Version,
   "org.apache.commons" % "commons-compress"         % "1.21",
-  "org.apache.curator" % "curator-client"           % "5.2.1",
-  "org.apache.curator" % "curator-framework"        % "5.2.1",
-  "org.apache.curator" % "curator-recipes"          % "5.2.1",
+  "org.apache.curator" % "curator-client"           % "5.3.0",
+  "org.apache.curator" % "curator-framework"        % "5.3.0",
+  "org.apache.curator" % "curator-recipes"          % "5.3.0",
   "org.apache.cxf"     % "cxf-rt-frontend-jaxws"    % cxfVersion,
   "org.apache.cxf"     % "cxf-rt-transports-http"   % cxfVersion,
   "org.apache.cxf"     % "cxf-rt-databinding-aegis" % cxfVersion,
@@ -247,7 +247,7 @@ libraryDependencies ++= Seq(
   "org.mozilla"                   % "rhino"                     % "1.7.14",
   "io.lemonlabs"                  %% "scala-uri"                % "4.0.2",
   "org.scala-lang.modules"        %% "scala-parser-combinators" % "2.1.1",
-  "io.github.classgraph"          % "classgraph"                % "4.8.147",
+  "io.github.classgraph"          % "classgraph"                % "4.8.149",
   "com.fasterxml"                 % "classmate"                 % "1.5.1",
   "org.glassfish"                 % "javax.el"                  % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"    % "3.0.2",
@@ -304,7 +304,7 @@ excludeDependencies ++= Seq(
   // Spring 5 added a default logging bridge.  In oEQ, this results in
   // a [deduplicate: different file contents found in the following] error
   // ...org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.7.30.jar:org/apache/commons/logging/Log.class
-  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.21.jar:org/apache/commons/logging/Log.class
+  // ...org.springframework/spring-jcl/jars/spring-jcl-5.3.22.jar:org/apache/commons/logging/Log.class
   // As per https://github.com/spring-projects/spring-framework/issues/20611 ,
   // since we already have logging in place, we can safely exclude the dep from spring.
   "org.springframework" % "spring-jcl",
@@ -384,8 +384,8 @@ run := {
 
   // Due to the error: deduplicate: different file contents found in the following:
   // ...
-  //  .../org.apache.cxf/cxf-rt-frontend-jaxws/bundles/cxf-rt-frontend-jaxws-3.5.2.jar:META-INF/cxf/bus-extensions.txt
-  //  .../org.apache.cxf/cxf-rt-transports-http/bundles/cxf-rt-transports-http-3.5.2.jar:META-INF/cxf/bus-extensions.txt
+  //  .../org.apache.cxf/cxf-rt-frontend-jaxws/bundles/cxf-rt-frontend-jaxws-3.5.3.jar:META-INF/cxf/bus-extensions.txt
+  //  .../org.apache.cxf/cxf-rt-transports-http/bundles/cxf-rt-transports-http-3.5.3.jar:META-INF/cxf/bus-extensions.txt
   // ...
   // As per https://github.com/johnrengelman/shadow/issues/309 , combining the files.
   case PathList("META-INF", "cxf", "bus-extensions.txt") => MergeStrategy.filterDistinctLines
