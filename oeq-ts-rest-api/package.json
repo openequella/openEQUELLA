@@ -42,7 +42,7 @@
     "@types/tough-cookie": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "5.29.0",
     "@typescript-eslint/parser": "5.29.0",
-    "core-js": "3.23.5",
+    "core-js": "3.24.0",
     "eslint": "8.20.0",
     "eslint-plugin-jest": "26.6.0",
     "jest": "27.5.1",
