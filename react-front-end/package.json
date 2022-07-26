@@ -36,7 +36,7 @@
     "@openequella/rest-api-client": "file:../oeq-ts-rest-api",
     "@tinymce/tinymce-react": "4.1.0",
     "axios": "0.27.2",
-    "clsx": "1.1.1",
+    "clsx": "1.2.1",
     "es6-object-assign": "1.1.0",
     "fp-ts": "2.12.2",
     "fp-ts-contrib": "0.1.29",
