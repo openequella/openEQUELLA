@@ -191,7 +191,11 @@ coverageReport := {
 
   val srcZip  = sourceZip.value
   val allSrcs = (coverageReport / sourceDirectory).value
-  srcZip.foreach(z => IO.unzip(z, allSrcs))
+  srcZip.foreach(z => {
+    log.info(s"Using source zip file: $z")
+    log.info(s"Extracting to: ${allSrcs.absolutePath}")
+    IO.unzip(z, allSrcs)
+  })
   val coverageDir = (coverageReport / target).value
   log.info(s"Creating coverage report at ${coverageDir.absolutePath}")
   CoverageReporter.createReport(execLoader,
