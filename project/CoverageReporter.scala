@@ -21,7 +21,7 @@ object CoverageReporter {
     val htmlFormatter = new HTMLFormatter
     val visitor       = htmlFormatter.createVisitor(new FileMultiReportOutput(outDir))
     visitor.visitInfo(loader.getSessionInfoStore.getInfos, loader.getExecutionDataStore.getContents)
-    val topGroup = visitor.visitGroup("EQUELLA")
+    val topGroup = visitor.visitGroup("openEQUELLA")
     groups.foreach {
       case (g, plugins) =>
         val v = topGroup.visitGroup(g)

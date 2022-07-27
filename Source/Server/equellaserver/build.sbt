@@ -465,8 +465,10 @@ upgradeZip := {
 }
 
 lazy val sourcesForZip = Def.task[Seq[(File, String)]] {
-  val baseJavaSrc = (Compile / javaSource).value
-  (baseJavaSrc ** "*.java").pair(rebase(baseJavaSrc, ""))
+  val baseJavaSrc  = (Compile / javaSource).value
+  val baseScalaSrc = (Compile / scalaSource).value
+  (baseJavaSrc ** "*.java").pair(rebase(baseJavaSrc, "")) ++
+    (baseScalaSrc ** "*.scala").pair(rebase(baseScalaSrc, ""))
 }
 
 writeSourceZip := {
