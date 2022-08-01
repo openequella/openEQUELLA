@@ -49,6 +49,10 @@ export interface CurrentUserDetails {
    * UUIDs of the roles assigned to the user - as well as `TLE_LOGGED_IN_USER_ROLE` where applicable.
    */
   roles: string[];
+  /**
+   * `true` if accessing to Scrapbook is enabled.
+   */
+  scrapbookEnabled: boolean;
 }
 
 /**
