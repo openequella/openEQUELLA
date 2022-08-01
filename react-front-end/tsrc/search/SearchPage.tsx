@@ -24,9 +24,7 @@ import { SearchPageBody } from "./SearchPageBody";
 /**
  * This component is for the most common New Search UI.
  */
-export const SearchPageRefactored = ({
-  updateTemplate,
-}: TemplateUpdateProps) => {
+export const SearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   return (
     <Search updateTemplate={updateTemplate}>
       <SearchPageBody pathname={NEW_SEARCH_PATH} />
@@ -34,4 +32,4 @@ export const SearchPageRefactored = ({
   );
 };
 
-export default SearchPageRefactored;
+export default SearchPage;
