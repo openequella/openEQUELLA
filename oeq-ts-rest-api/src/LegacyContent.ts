@@ -50,7 +50,7 @@ export interface CurrentUserDetails {
    */
   roles: string[];
   /**
-   * `true` if accessing to Scrapbook is enabled.
+   * `true` if access to Scrapbook is enabled.
    */
   scrapbookEnabled: boolean;
 }
