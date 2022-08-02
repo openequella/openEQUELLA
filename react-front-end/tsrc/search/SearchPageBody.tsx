@@ -150,6 +150,7 @@ export const SearchPageBody = ({
   } = headerConfig;
 
   const {
+    customRefinePanelControl = [],
     enableAdvancedSearchSelector,
     enableCollectionSelector,
     enableDateRangeSelector,
@@ -488,137 +489,139 @@ export const SearchPageBody = ({
     return isQueryOrFiltersSet || isClassificationSelected;
   };
 
-  const refinePanelControls: RefinePanelControl[] = [
-    {
-      idSuffix: "DisplayModeSelector",
-      title: displayModeSelectorTitle,
-      component: (
-        <DisplayModeSelector
-          onChange={handleDisplayModeChanged}
-          value={searchPageOptions.displayMode ?? "list"}
-          disableImageMode={
-            searchSettings.core?.searchingDisableGallery ?? false
-          }
-          disableVideoMode={
-            searchSettings.core?.searchingDisableVideos ?? false
-          }
-        />
-      ),
-      disabled: !enableDisplayModeSelector,
-      alwaysVisible: true,
-    },
-    {
-      idSuffix: "CollectionSelector",
-      title: collectionSelectorTitle,
-      component: (
-        <CollectionSelector
-          onSelectionChange={handleCollectionSelectionChanged}
-          value={searchPageOptions.collections}
-        />
-      ),
-      disabled: !enableCollectionSelector,
-      alwaysVisible: true,
-    },
-    {
-      idSuffix: "AdvancedSearchSelector",
-      title: searchStrings.advancedSearchSelector.title,
-      component: (
-        <AdvancedSearchSelector
-          advancedSearches={advancedSearches}
-          onSelectionChange={handleAdvancedSearchChanged}
-          value={advancedSearches.find(
-            ({ uuid }) =>
-              uuid === getAdvancedSearchIdFromLocation(history.location)
-          )}
-        />
-      ),
-      disabled: advancedSearches.length === 0 || !enableAdvancedSearchSelector,
-      alwaysVisible: true,
-    },
-    {
-      idSuffix: "RemoteSearchSelector",
-      title: searchStrings.remoteSearchSelector.title,
-      component: (
-        <AuxiliarySearchSelector
-          auxiliarySearchesSupplier={getRemoteSearchesFromServer}
-          urlGeneratorForRouteLink={routes.RemoteSearch.to}
-          urlGeneratorForMuiLink={buildSelectionSessionRemoteSearchLink}
-        />
-      ),
-      disabled: !enableRemoteSearchSelector,
-    },
-    {
-      idSuffix: "DateRangeSelector",
-      title: dateModifiedSelectorTitle,
-      component: (
-        <DateRangeSelector
-          onDateRangeChange={handleLastModifiedDateRangeChange}
-          onQuickModeChange={handleQuickDateRangeModeChange}
-          quickOptionDropdownLabel={quickOptionDropdown}
-          dateRange={searchPageOptions.lastModifiedDateRange}
-          quickModeEnabled={searchPageOptions.dateRangeQuickModeEnabled}
-        />
-      ),
-      // Before Search settings are retrieved, do not show.
-      disabled:
-        !enableDateRangeSelector ||
-        (searchSettings.core?.searchingDisableDateModifiedFilter ?? true),
-    },
-    {
-      idSuffix: "MIMETypeSelector",
-      title: searchStrings.mimeTypeFilterSelector.title,
-      component: (
-        <MimeTypeFilterSelector
-          value={searchPageOptions.mimeTypeFilters}
-          onChange={handleMimeTypeFilterChange}
-          filters={searchSettings.mimeTypeFilters}
-        />
-      ),
-      disabled:
-        !enableMimeTypeSelector ||
-        searchPageOptions.displayMode !== "list" ||
-        searchSettings.mimeTypeFilters.length === 0 ||
-        !!searchPageOptions.externalMimeTypes,
-    },
-    {
-      idSuffix: "OwnerSelector",
-      title: searchStrings.filterOwner.title,
-      component: (
-        <OwnerSelector
-          onClearSelect={handleOwnerClear}
-          onSelect={handleOwnerChange}
-          value={searchPageOptions.owner}
-        />
-      ),
-      disabled:
-        !enableOwnerSelector ||
-        (searchSettings.core?.searchingDisableOwnerFilter ?? true),
-    },
-    {
-      idSuffix: "StatusSelector",
-      title: searchStrings.statusSelector.title,
-      component: (
-        <StatusSelector
-          onChange={handleStatusChange}
-          value={searchPageOptions.status}
-        />
-      ),
-      disabled:
-        !enableItemStatusSelector ||
-        (!searchSettings.core?.searchingShowNonLiveCheckbox ?? true),
-    },
-    {
-      idSuffix: "SearchAttachmentsSelector",
-      title: searchStrings.searchAttachmentsSelector.title,
-      component: (
-        <SearchAttachmentsSelector
-          value={searchPageOptions.searchAttachments}
-          onChange={handleSearchAttachmentsChange}
-        />
-      ),
-      disabled: !enableSearchAttachmentsSelector,
-    },
-  ];
+  const refinePanelControls: RefinePanelControl[] =
+    customRefinePanelControl.concat([
+      {
+        idSuffix: "DisplayModeSelector",
+        title: displayModeSelectorTitle,
+        component: (
+          <DisplayModeSelector
+            onChange={handleDisplayModeChanged}
+            value={searchPageOptions.displayMode ?? "list"}
+            disableImageMode={
+              searchSettings.core?.searchingDisableGallery ?? false
+            }
+            disableVideoMode={
+              searchSettings.core?.searchingDisableVideos ?? false
+            }
+          />
+        ),
+        disabled: !enableDisplayModeSelector,
+        alwaysVisible: true,
+      },
+      {
+        idSuffix: "CollectionSelector",
+        title: collectionSelectorTitle,
+        component: (
+          <CollectionSelector
+            onSelectionChange={handleCollectionSelectionChanged}
+            value={searchPageOptions.collections}
+          />
+        ),
+        disabled: !enableCollectionSelector,
+        alwaysVisible: true,
+      },
+      {
+        idSuffix: "AdvancedSearchSelector",
+        title: searchStrings.advancedSearchSelector.title,
+        component: (
+          <AdvancedSearchSelector
+            advancedSearches={advancedSearches}
+            onSelectionChange={handleAdvancedSearchChanged}
+            value={advancedSearches.find(
+              ({ uuid }) =>
+                uuid === getAdvancedSearchIdFromLocation(history.location)
+            )}
+          />
+        ),
+        disabled:
+          advancedSearches.length === 0 || !enableAdvancedSearchSelector,
+        alwaysVisible: true,
+      },
+      {
+        idSuffix: "RemoteSearchSelector",
+        title: searchStrings.remoteSearchSelector.title,
+        component: (
+          <AuxiliarySearchSelector
+            auxiliarySearchesSupplier={getRemoteSearchesFromServer}
+            urlGeneratorForRouteLink={routes.RemoteSearch.to}
+            urlGeneratorForMuiLink={buildSelectionSessionRemoteSearchLink}
+          />
+        ),
+        disabled: !enableRemoteSearchSelector,
+      },
+      {
+        idSuffix: "DateRangeSelector",
+        title: dateModifiedSelectorTitle,
+        component: (
+          <DateRangeSelector
+            onDateRangeChange={handleLastModifiedDateRangeChange}
+            onQuickModeChange={handleQuickDateRangeModeChange}
+            quickOptionDropdownLabel={quickOptionDropdown}
+            dateRange={searchPageOptions.lastModifiedDateRange}
+            quickModeEnabled={searchPageOptions.dateRangeQuickModeEnabled}
+          />
+        ),
+        // Before Search settings are retrieved, do not show.
+        disabled:
+          !enableDateRangeSelector ||
+          (searchSettings.core?.searchingDisableDateModifiedFilter ?? true),
+      },
+      {
+        idSuffix: "MIMETypeSelector",
+        title: searchStrings.mimeTypeFilterSelector.title,
+        component: (
+          <MimeTypeFilterSelector
+            value={searchPageOptions.mimeTypeFilters}
+            onChange={handleMimeTypeFilterChange}
+            filters={searchSettings.mimeTypeFilters}
+          />
+        ),
+        disabled:
+          !enableMimeTypeSelector ||
+          searchPageOptions.displayMode !== "list" ||
+          searchSettings.mimeTypeFilters.length === 0 ||
+          !!searchPageOptions.externalMimeTypes,
+      },
+      {
+        idSuffix: "OwnerSelector",
+        title: searchStrings.filterOwner.title,
+        component: (
+          <OwnerSelector
+            onClearSelect={handleOwnerClear}
+            onSelect={handleOwnerChange}
+            value={searchPageOptions.owner}
+          />
+        ),
+        disabled:
+          !enableOwnerSelector ||
+          (searchSettings.core?.searchingDisableOwnerFilter ?? true),
+      },
+      {
+        idSuffix: "StatusSelector",
+        title: searchStrings.statusSelector.title,
+        component: (
+          <StatusSelector
+            onChange={handleStatusChange}
+            value={searchPageOptions.status}
+          />
+        ),
+        disabled:
+          !enableItemStatusSelector ||
+          (!searchSettings.core?.searchingShowNonLiveCheckbox ?? true),
+      },
+      {
+        idSuffix: "SearchAttachmentsSelector",
+        title: searchStrings.searchAttachmentsSelector.title,
+        component: (
+          <SearchAttachmentsSelector
+            value={searchPageOptions.searchAttachments}
+            onChange={handleSearchAttachmentsChange}
+          />
+        ),
+        disabled: !enableSearchAttachmentsSelector,
+      },
+    ]);
 
   const renderSidePanel = () => {
     const getClassifications = (): Classification[] => {
