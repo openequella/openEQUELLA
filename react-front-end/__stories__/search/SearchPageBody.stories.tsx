@@ -19,6 +19,7 @@ import { Button, Card, CardContent, CardHeader } from "@material-ui/core";
 import { Meta, Story } from "@storybook/react";
 import * as React from "react";
 import { classifications } from "../../__mocks__/CategorySelector.mock";
+import { customRefinePanelControl } from "../../__mocks__/RefinePanelControl.mock";
 import { getSearchResult } from "../../__mocks__/SearchResult.mock";
 import { defaultSearchSettings } from "../../tsrc/modules/SearchSettingsModule";
 import { SearchContext, SearchContextProps } from "../../tsrc/search/Search";
@@ -151,5 +152,16 @@ ShowAdvancedSearchFilter.args = {
       onClick: () => {},
       accent: true,
     },
+  },
+};
+
+export const CustomRefinePanelControls: Story<SearchPageBodyProps> = (args) => (
+  <SearchPageBody {...args} />
+);
+CustomRefinePanelControls.args = {
+  ...searchPageBodyProps,
+  refinePanelConfig: {
+    ...defaultSearchPageRefinePanelConfig,
+    customRefinePanelControl: [customRefinePanelControl],
   },
 };

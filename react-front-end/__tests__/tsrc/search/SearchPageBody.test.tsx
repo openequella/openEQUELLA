@@ -15,26 +15,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { MuiThemeProvider } from "@material-ui/core";
+import { createTheme } from "@material-ui/core/styles";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { render, screen } from "@testing-library/react";
+import { customRefinePanelControl } from "../../../__mocks__/RefinePanelControl.mock";
 import {
   SearchPageBody,
   SearchPageBodyProps,
 } from "../../../tsrc/search/SearchPageBody";
 import "@testing-library/jest-dom/extend-expect";
 import { defaultSearchPageRefinePanelConfig } from "../../../tsrc/search/SearchPageHelper";
-import { queryCollectionSelector } from "./SearchPageTestHelper";
+import {
+  queryCollectionSelector,
+  queryRefineSearchComponent,
+} from "./SearchPageTestHelper";
 
 const defaultSearchPageBodyProps: SearchPageBodyProps = {
   pathname: "/page/search",
 };
 
+// Refine panel is hidden in small screens, so we mock the screen size to make it bigger.
+const defaultTheme = createTheme({
+  props: { MuiWithWidth: { initialWidth: "md" } },
+});
+
 describe("<SearchPageBody />", () => {
   const renderSearchPageBody = (
     props: SearchPageBodyProps = defaultSearchPageBodyProps
   ) => {
-    return render(<SearchPageBody {...props} />);
+    return render(
+      <MuiThemeProvider theme={defaultTheme}>
+        <SearchPageBody {...props} />
+      </MuiThemeProvider>
+    );
   };
 
   it("supports additional panels", () => {
@@ -86,5 +101,19 @@ describe("<SearchPageBody />", () => {
     }
     userEvent.click(sortingDropdown);
     expect(screen.queryByText(option)).toBeInTheDocument();
+  });
+
+  it("supports displaying custom Refine panel controls", () => {
+    const { container } = renderSearchPageBody({
+      ...defaultSearchPageBodyProps,
+      refinePanelConfig: {
+        ...defaultSearchPageRefinePanelConfig,
+        customRefinePanelControl: [customRefinePanelControl],
+      },
+    });
+
+    expect(
+      queryRefineSearchComponent(container, customRefinePanelControl.idSuffix)
+    ).toBeInTheDocument();
   });
 });

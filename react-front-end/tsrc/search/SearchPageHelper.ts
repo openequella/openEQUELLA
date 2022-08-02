@@ -74,6 +74,7 @@ import { DateRange, isDate } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
 import { simpleMatch } from "../util/match";
 import { pfTernary } from "../util/pointfree";
+import type { RefinePanelControl } from "./components/RefineSearchPanel";
 
 /**
  * This helper is intended to assist with processing related to the Presentation Layer -
@@ -144,6 +145,10 @@ export const defaultSearchPageHeaderConfig: SearchPageHeaderConfig = {
  * Type definition for the configuration of SearchPageRefinePanel.
  */
 export interface SearchPageRefinePanelConfig {
+  /**
+   * A list of custom Refine panel control.
+   */
+  customRefinePanelControl?: RefinePanelControl[];
   /**
    * `true` to enable the Display Mode selector.
    */
