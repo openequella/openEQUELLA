@@ -161,6 +161,10 @@ interface SearchProps extends TemplateUpdateProps {
    * Configuration for the initial search.
    */
   initialSearchConfig?: InitialSearchConfig;
+  /**
+   * Title of the page where this component is used.
+   */
+  pageTitle?: string;
 }
 
 /**
@@ -172,6 +176,7 @@ export const Search = ({
   updateTemplate,
   children,
   initialSearchConfig = defaultInitialSearchConfig,
+  pageTitle = searchStrings.title,
 }: SearchProps) => {
   const history = useHistory();
   const location = useLocation();
@@ -242,7 +247,7 @@ export const Search = ({
       initialSearchConfig;
 
     updateTemplate((tp) => ({
-      ...templateDefaults(searchStrings.title)(tp),
+      ...templateDefaults(pageTitle)(tp),
     }));
 
     Promise.all([
@@ -302,6 +307,7 @@ export const Search = ({
     searchState.status,
     updateTemplate,
     initialSearchConfig,
+    pageTitle,
   ]);
 
   /**

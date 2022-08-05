@@ -361,6 +361,9 @@ export const languageStrings = {
       expired: "This login notice has expired.",
     },
   },
+  myResources: {
+    title: "My resources",
+  },
   navigationguard: {
     title: "Close without saving?",
     message:
