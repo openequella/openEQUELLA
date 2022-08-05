@@ -55,11 +55,7 @@ import {
   getRawModeFromStorage,
   SearchPageOptions,
 } from "./SearchPageHelper";
-import {
-  reducerRefactored,
-  SearchPageSearchResult,
-  StateRefactored,
-} from "./SearchPageReducer";
+import { reducer, SearchPageSearchResult, State } from "./SearchPageReducer";
 
 /**
  * Structure of data stored in browser history state, to capture the current state of SearchPage
@@ -104,7 +100,7 @@ export interface SearchContextProps {
   /**
    * The state controlling the status of searching.
    */
-  searchState: StateRefactored;
+  searchState: State;
   /**
    * Search settings retrieved from server, including MIME type filters and Advanced searches.
    */
@@ -183,7 +179,7 @@ export const Search = ({
   const searchPageHistoryState: SearchPageHistoryState | undefined = history
     .location.state as SearchPageHistoryState;
 
-  const [searchState, dispatch] = useReducer(reducerRefactored, {
+  const [searchState, dispatch] = useReducer(reducer, {
     status: "initialising",
     options: searchPageHistoryState?.searchPageOptions ?? {
       ...defaultSearchPageOptions,
