@@ -23,12 +23,9 @@ import { NEW_MY_RESOURCES_PATH } from "../mainui/routes";
 import { TemplateUpdateProps } from "../mainui/Template";
 import { languageStrings } from "../util/langstrings";
 import { MyResourcesSelector } from "./components/MyResourcesSelector";
-import {
-  getMyResourcesTypeFromLegacyQueryParam,
-  myResourcesTypeToItemStatus,
-} from "./MyResourcesPageHelper";
+import { myResourcesTypeToItemStatus } from "./MyResourcesPageHelper";
 import type { MyResourcesType } from "./MyResourcesPageHelper";
-import { Search } from "./Search";
+import { Search, SearchPageHistoryState } from "./Search";
 import { SearchPageBody } from "./SearchPageBody";
 import {
   defaultSearchPageRefinePanelConfig,
@@ -36,12 +33,12 @@ import {
 } from "./SearchPageHelper";
 
 interface MyResourcesPageContextProps {
-  setResourceType: (resourceType: MyResourcesType) => void;
+  onChange: (resourceType: MyResourcesType) => void;
 }
 
 export const MyResourcesPageContext =
   createContext<MyResourcesPageContextProps>({
-    setResourceType: () => {},
+    onChange: () => {},
   });
 
 const { title } = languageStrings.myResources;
@@ -54,13 +51,11 @@ const { title } = languageStrings.myResources;
  */
 export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const { currentUser } = useContext(AppContext);
-  const history = useHistory<{ myResourcesType: MyResourcesType }>();
+  const history = useHistory<SearchPageHistoryState<MyResourcesType>>();
   const [resourceType, setResourceType] = useState<MyResourcesType>(
-    // Data saved in browser history takes precedence over query params.
-    // But if both are undefined, default to 'Published'.
-    history.location.state?.myResourcesType ??
-      getMyResourcesTypeFromLegacyQueryParam(history.location) ??
-      "Published"
+    // Todo: support getting the resource type from query string. Data saved in browser history
+    // takes precedence over query params. But if both are undefined, default to 'Published'.
+    history.location.state?.customData?.["myResourcesType"] ?? "Published"
   );
 
   const myResourcesInitialSearchOptions = useCallback(
@@ -72,12 +67,25 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     [currentUser, resourceType]
   );
 
-  const scrapbookUnselected = resourceType !== "Scrapbook";
+  const scrapbookSelected = resourceType === "Scrapbook";
+
+  const onChange = (resourcesType: MyResourcesType) => {
+    setResourceType(resourcesType);
+
+    // Also save the selected My resources type in the browser history.
+    history.replace({
+      ...history.location,
+      state: {
+        ...history.location.state,
+        customData: {
+          myResourcesType: resourcesType,
+        },
+      },
+    });
+  };
 
   return (
-    <MyResourcesPageContext.Provider
-      value={{ setResourceType: setResourceType }}
-    >
+    <MyResourcesPageContext.Provider value={{ onChange }}>
       <Search
         updateTemplate={updateTemplate}
         initialSearchConfig={{
@@ -89,14 +97,15 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
       >
         <SearchPageBody
           pathname={NEW_MY_RESOURCES_PATH}
+          enableClassification={false}
           refinePanelConfig={{
             ...defaultSearchPageRefinePanelConfig,
             enableItemStatusSelector: [
               "All resources",
               "Moderation queue",
             ].includes(resourceType),
-            enableDisplayModeSelector: scrapbookUnselected,
-            enableCollectionSelector: scrapbookUnselected,
+            enableDisplayModeSelector: !scrapbookSelected,
+            enableCollectionSelector: !scrapbookSelected,
             enableAdvancedSearchSelector: false,
             enableRemoteSearchSelector: false,
             enableOwnerSelector: false,

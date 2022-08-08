@@ -54,7 +54,7 @@ const defaultOptions: MyResourcesType[] = [
 export const MyResourcesSelector = ({ value }: MyResourcesSelectorProps) => {
   const { search, searchState } = useContext(SearchContext);
   const { scrapbookEnabled } = useContext(AppContext).currentUser ?? guestUser;
-  const { setResourceType } = useContext(MyResourcesPageContext);
+  const { onChange } = useContext(MyResourcesPageContext);
 
   // When access to Scrapbook is not enabled, drop the option of Scrapbook.
   const options: MyResourcesType[] = defaultOptions.filter(
@@ -67,7 +67,7 @@ export const MyResourcesSelector = ({ value }: MyResourcesSelectorProps) => {
       options={options}
       disableClearable
       onChange={(_, selected: MyResourcesType) => {
-        setResourceType(selected);
+        onChange(selected);
         search({
           ...searchState.options,
           status: myResourcesTypeToItemStatus(selected),

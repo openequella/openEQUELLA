@@ -27,7 +27,7 @@ import {
   useState,
 } from "react";
 import * as React from "react";
-import { useHistory, useLocation } from "react-router";
+import { useHistory } from "react-router";
 import { AppContext } from "../mainui/App";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import { getAdvancedSearchesFromServer } from "../modules/AdvancedSearchModule";
@@ -58,13 +58,20 @@ import {
 import { reducer, SearchPageSearchResult, State } from "./SearchPageReducer";
 
 /**
- * Structure of data stored in browser history state, to capture the current state of SearchPage
+ * Structure of data stored in browser history state, to capture the current state of SearchPage as well as
+ * custom data required by certain Search components.
  */
-interface SearchPageHistoryState {
+export interface SearchPageHistoryState<T = unknown> {
   /**
    * SearchPageOptions to store in history
    */
   searchPageOptions: SearchPageOptions;
+  /**
+   * Custom data saved in the browser history.
+   */
+  customData?: {
+    [key: string]: T;
+  };
 }
 
 const { searchpage: searchStrings } = languageStrings;
@@ -178,11 +185,9 @@ export const Search = ({
   initialSearchConfig = defaultInitialSearchConfig,
   pageTitle = searchStrings.title,
 }: SearchProps) => {
-  const history = useHistory();
-  const location = useLocation();
-
-  const searchPageHistoryState: SearchPageHistoryState | undefined = history
-    .location.state as SearchPageHistoryState;
+  const history = useHistory<SearchPageHistoryState>();
+  const searchPageHistoryState: SearchPageHistoryState | undefined =
+    history.location.state;
 
   const [searchState, dispatch] = useReducer(reducer, {
     status: "initialising",
@@ -254,9 +259,9 @@ export const Search = ({
       getSearchSettingsFromServer(),
       getMimeTypeFiltersFromServer(),
       // If the search options are available from browser history, ignore those in the query string.
-      (location.state as SearchPageHistoryState)
+      searchPageHistoryState
         ? Promise.resolve(undefined)
-        : generateSearchPageOptionsFromQueryString(location),
+        : generateSearchPageOptionsFromQueryString(history.location),
       getAdvancedSearchesFromServer(),
     ])
       .then(
@@ -301,13 +306,14 @@ export const Search = ({
   }, [
     dispatch,
     searchPageErrorHandler,
-    location,
     search,
     searchPageOptions,
     searchState.status,
     updateTemplate,
     initialSearchConfig,
     pageTitle,
+    history.location,
+    searchPageHistoryState,
   ]);
 
   /**
@@ -386,10 +392,13 @@ export const Search = ({
             classifications,
           });
 
-          // Update history
+          // Save searchPageOptions in the browser history.
           history.replace({
             ...history.location,
-            state: { searchPageOptions: options },
+            state: {
+              ...searchPageHistoryState,
+              searchPageOptions: options,
+            },
           });
 
           // Run provided callback.
@@ -404,7 +413,13 @@ export const Search = ({
         console.timeEnd(timerId);
       })();
     }
-  }, [dispatch, searchPageErrorHandler, history, searchState]);
+  }, [
+    dispatch,
+    searchPageErrorHandler,
+    history,
+    searchState,
+    searchPageHistoryState,
+  ]);
 
   // In Selection Session, once a new search result is returned, make each
   // new search result Item draggable. Could probably merge into 'searching'
