@@ -19,7 +19,7 @@ import * as OEQ from "@openequella/rest-api-client";
 import { absurd, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { Location } from "history";
-import { liveStatuses, nonLiveStatuses } from "../modules/SearchModule";
+import { nonDeletedStatuses } from "../modules/SearchModule";
 import { simpleMatch } from "../util/match";
 
 export type MyResourcesType =
@@ -50,10 +50,7 @@ export const myResourcesTypeToItemStatus = (
     case "Archive":
       return ["ARCHIVED"];
     case "All resources":
-      // todo: confirm whether to exclude SUSPENDED as well.
-      return liveStatuses
-        .concat(nonLiveStatuses)
-        .filter((s) => s !== "DELETED");
+      return nonDeletedStatuses;
     default:
       return absurd(resourceType);
   }
