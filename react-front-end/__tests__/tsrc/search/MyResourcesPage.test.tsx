@@ -18,7 +18,9 @@
 import { MuiThemeProvider } from "@material-ui/core";
 import { createTheme } from "@material-ui/core/styles";
 import * as OEQ from "@openequella/rest-api-client";
-import { render } from "@testing-library/react";
+import { CurrentUserDetails } from "@openequella/rest-api-client/dist/LegacyContent";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
 import * as React from "react";
 import { Router } from "react-router-dom";
@@ -31,6 +33,7 @@ import { guestUser } from "../../../tsrc/modules/UserModule";
 import MyResourcesPage from "../../../tsrc/search/MyResourcesPage";
 import type { MyResourcesType } from "../../../tsrc/search/MyResourcesPageHelper";
 import { defaultSearchPageOptions } from "../../../tsrc/search/SearchPageHelper";
+import { languageStrings } from "../../../tsrc/util/langstrings";
 import {
   initialiseEssentialMocks,
   mockCollaborators,
@@ -125,6 +128,7 @@ describe("<MyResourcesPage/>", () => {
       }
     );
   });
+
   describe("Refine search panel", () => {
     it("always displays MyResourcesSelector", async () => {
       const { container } = await renderMyResourcesPage();
@@ -133,15 +137,19 @@ describe("<MyResourcesPage/>", () => {
       ).toBeInTheDocument();
     });
 
-    it.each([
-      ["Advanced search selector", "AdvancedSearchSelector"],
-      ["Remote search selector", "RemoteSearchSelector"],
-      ["Owner selector", "OwnerSelector"],
-    ])("always hides %s", async (_: string, componentSuffix: string) => {
+    it("always hides Advanced search selector, Remote search selector and Owner selector", async () => {
       const { container } = await renderMyResourcesPage();
-      expect(
-        queryRefineSearchComponent(container, componentSuffix)
-      ).not.toBeInTheDocument();
+      [
+        "AdvancedSearchSelector",
+        "RemoteSearchSelector",
+        "OwnerSelector",
+      ].forEach((componentSuffix) =>
+        expect(
+          queryRefineSearchComponent(container, componentSuffix)
+        ).not.toBeInTheDocument()
+      );
+
+      expect.assertions(3);
     });
 
     it("hides Collection selector for Scrapbook", async () => {
@@ -190,5 +198,31 @@ describe("<MyResourcesPage/>", () => {
         },
       });
     });
+  });
+
+  describe("Access to Scrapbook", () => {
+    it.each([
+      ["shows", "enabled", getCurrentUserMock, true],
+      ["hides", "disabled", undefined, false],
+    ])(
+      "%s the option of Scrapbook if access to Scrapbook is %s",
+      async (
+        _: string,
+        status: string,
+        user: CurrentUserDetails | undefined,
+        expecting: boolean
+      ) => {
+        const { getByText } = await renderMyResourcesPage("Published", user);
+
+        userEvent.click(
+          getByText(languageStrings.myResources.resourceType.published)
+        );
+        const scrapbookOptionFound = !!screen.queryByText("Scrapbook", {
+          selector: "li",
+        });
+
+        expect(scrapbookOptionFound).toBe(expecting);
+      }
+    );
   });
 });
