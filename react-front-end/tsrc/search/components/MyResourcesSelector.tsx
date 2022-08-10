@@ -22,18 +22,17 @@ import * as React from "react";
 import { AppContext } from "../../mainui/App";
 import { guestUser } from "../../modules/UserModule";
 import { languageStrings } from "../../util/langstrings";
-import { MyResourcesPageContext } from "../MyResourcesPage";
-import {
-  MyResourcesType,
-  myResourcesTypeToItemStatus,
-} from "../MyResourcesPageHelper";
-import { SearchContext } from "../Search";
+import { MyResourcesType } from "../MyResourcesPageHelper";
 
 export interface MyResourcesSelectorProps {
   /**
    * Initially selected My resources type.
    */
   value: MyResourcesType;
+  /**
+   * Handler for selecting a different resource type.
+   */
+  onChange: (resourceType: MyResourcesType) => void;
 }
 
 const { title } = languageStrings.myResources;
@@ -51,10 +50,11 @@ const defaultOptions: MyResourcesType[] = [
  * This component displays My resources types and the selection of each type
  * triggers a search. This component should be used under 'MyResourcesPageContext'.
  */
-export const MyResourcesSelector = ({ value }: MyResourcesSelectorProps) => {
-  const { search, searchState } = useContext(SearchContext);
+export const MyResourcesSelector = ({
+  value,
+  onChange,
+}: MyResourcesSelectorProps) => {
   const { scrapbookEnabled } = useContext(AppContext).currentUser ?? guestUser;
-  const { onChange } = useContext(MyResourcesPageContext);
 
   // When access to Scrapbook is not enabled, drop the option of Scrapbook.
   const options: MyResourcesType[] = defaultOptions.filter(
@@ -68,10 +68,6 @@ export const MyResourcesSelector = ({ value }: MyResourcesSelectorProps) => {
       disableClearable
       onChange={(_, selected: MyResourcesType) => {
         onChange(selected);
-        search({
-          ...searchState.options,
-          status: myResourcesTypeToItemStatus(selected),
-        });
       }}
       getOptionSelected={(option, selected) => selected === option}
       renderInput={(params) => (

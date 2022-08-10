@@ -25,7 +25,7 @@ import { languageStrings } from "../util/langstrings";
 import { MyResourcesSelector } from "./components/MyResourcesSelector";
 import { myResourcesTypeToItemStatus } from "./MyResourcesPageHelper";
 import type { MyResourcesType } from "./MyResourcesPageHelper";
-import { Search, SearchPageHistoryState } from "./Search";
+import { Search, SearchContext, SearchPageHistoryState } from "./Search";
 import { SearchPageBody } from "./SearchPageBody";
 import {
   defaultSearchPageRefinePanelConfig,
@@ -69,58 +69,69 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   const scrapbookSelected = resourceType === "Scrapbook";
 
-  const onChange = (resourcesType: MyResourcesType) => {
-    setResourceType(resourcesType);
-
-    // Also save the selected My resources type in the browser history.
-    history.replace({
-      ...history.location,
-      state: {
-        ...history.location.state,
-        customData: {
-          myResourcesType: resourcesType,
-        },
-      },
-    });
-  };
-
   return (
-    <MyResourcesPageContext.Provider value={{ onChange }}>
-      <Search
-        updateTemplate={updateTemplate}
-        initialSearchConfig={{
-          ready: true,
-          listInitialClassifications: true,
-          customiseInitialSearchOptions: myResourcesInitialSearchOptions,
-        }}
-        pageTitle={title}
-      >
-        <SearchPageBody
-          pathname={NEW_MY_RESOURCES_PATH}
-          enableClassification={false}
-          refinePanelConfig={{
-            ...defaultSearchPageRefinePanelConfig,
-            enableItemStatusSelector: [
-              "All resources",
-              "Moderation queue",
-            ].includes(resourceType),
-            enableDisplayModeSelector: !scrapbookSelected,
-            enableCollectionSelector: !scrapbookSelected,
-            enableAdvancedSearchSelector: false,
-            enableRemoteSearchSelector: false,
-            enableOwnerSelector: false,
-            customRefinePanelControl: [
-              {
-                idSuffix: "MyResourcesSelector",
-                title,
-                component: <MyResourcesSelector value={resourceType} />,
-                alwaysVisible: true,
-              },
-            ],
-          }}
-        />
-      </Search>
-    </MyResourcesPageContext.Provider>
+    <Search
+      updateTemplate={updateTemplate}
+      initialSearchConfig={{
+        ready: true,
+        listInitialClassifications: true,
+        customiseInitialSearchOptions: myResourcesInitialSearchOptions,
+      }}
+      pageTitle={title}
+    >
+      <SearchContext.Consumer>
+        {({ search, searchState }) => (
+          <SearchPageBody
+            pathname={NEW_MY_RESOURCES_PATH}
+            enableClassification={false}
+            refinePanelConfig={{
+              ...defaultSearchPageRefinePanelConfig,
+              enableItemStatusSelector: [
+                "All resources",
+                "Moderation queue",
+              ].includes(resourceType),
+              enableDisplayModeSelector: !scrapbookSelected,
+              enableCollectionSelector: !scrapbookSelected,
+              enableAdvancedSearchSelector: false,
+              enableRemoteSearchSelector: false,
+              enableOwnerSelector: false,
+              customRefinePanelControl: [
+                {
+                  idSuffix: "MyResourcesSelector",
+                  title,
+                  component: (
+                    <MyResourcesSelector
+                      value={resourceType}
+                      onChange={(resourcesType) => {
+                        setResourceType(resourcesType);
+
+                        // Trigger a search with Item statuses that match the new resource type.
+                        search({
+                          ...searchState.options,
+                          status: myResourcesTypeToItemStatus(resourcesType),
+                        });
+
+                        // Also save the selected My resources type in the browser history.
+                        history.replace({
+                          ...history.location,
+                          state: {
+                            ...history.location.state,
+                            customData: {
+                              myResourcesType: resourcesType,
+                            },
+                          },
+                        });
+                      }}
+                    />
+                  ),
+                  alwaysVisible: true,
+                },
+              ],
+            }}
+          />
+        )}
+      </SearchContext.Consumer>
+    </Search>
   );
 };
 
