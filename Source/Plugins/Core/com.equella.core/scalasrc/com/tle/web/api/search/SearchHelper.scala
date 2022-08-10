@@ -20,12 +20,14 @@ package com.tle.web.api.search
 
 import cats.Semigroup
 import cats.implicits._
+import com.dytech.devlib.PropBagEx
 import com.dytech.edge.exceptions.{BadRequestException, DRMException}
 import com.tle.beans.entity.DynaCollection
-import com.tle.beans.item.{Comment, ItemIdKey}
+import com.tle.beans.item.{Comment, ItemIdKey, ItemStatus}
 import com.tle.common.Check
 import com.tle.common.beans.exception.NotFoundException
 import com.tle.common.collection.AttachmentConfigConstants
+import com.tle.common.interfaces.SimpleI18NString
 import com.tle.common.search.DefaultSearch
 import com.tle.common.search.whereparser.WhereParser
 import com.tle.common.usermanagement.user.CurrentUser
@@ -36,6 +38,7 @@ import com.tle.core.security.ACLChecks.hasAcl
 import com.tle.core.services.item.{FreetextResult, FreetextSearchResults}
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean
+import com.tle.web.api.item.equella.interfaces.beans.{DisplayField, EquellaItemBean}
 import com.tle.web.api.item.impl.ItemLinkServiceImpl
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
 import com.tle.web.api.search.AttachmentHelper.{
@@ -274,7 +277,7 @@ object SearchHelper {
         if (includeAttachments) convertToAttachment(sanitisedAttachmentBeans, key) else None,
       thumbnail = bean.getThumbnail,
       thumbnailDetails = getThumbnailDetails(sanitisedAttachmentBeans, key),
-      displayFields = bean.getDisplayFields.asScala.toList,
+      displayFields = getDisplayFields(bean),
       displayOptions = Option(bean.getDisplayOptions),
       keywordFoundInAttachment = item.keywordFound,
       links = getLinksFromBean(bean),
@@ -389,5 +392,22 @@ object SearchHelper {
           ThumbnailDetails(attachmentType = a.attachmentType,
                            mimeType = a.mimeType,
                            link = determineThumbnailLink(a)))
+  }
+
+  def getDisplayFields(bean: EquellaItemBean): List[DisplayField] = {
+    def standardDisplayFields = bean.getDisplayFields.asScala.toList
+
+    def customDisplayFields: Option[DisplayField] = {
+      def personalTags =
+        Option(bean.getMetadata)
+          .map(new PropBagEx(_).getNode("keywords"))
+          .filter(!Check.isEmpty(_))
+          .map(new SimpleI18NString(_)) // DisplayField requires its value to be an I18N string.
+          .map(new DisplayField("node", new SimpleI18NString("Tags"), _))
+
+      Option.when(bean.getStatus == ItemStatus.PERSONAL.toString)(personalTags).flatten
+    }
+
+    standardDisplayFields ++ customDisplayFields
   }
 }
