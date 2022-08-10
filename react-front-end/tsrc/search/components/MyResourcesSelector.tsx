@@ -15,14 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TextField } from "@material-ui/core";
-import { Autocomplete } from "@material-ui/lab";
+import { MenuItem, Select } from "@material-ui/core";
 import { useContext } from "react";
 import * as React from "react";
 import { AppContext } from "../../mainui/App";
 import { guestUser } from "../../modules/UserModule";
-import { languageStrings } from "../../util/langstrings";
-import { MyResourcesType } from "../MyResourcesPageHelper";
+import type { MyResourcesType } from "../MyResourcesPageHelper";
 
 export interface MyResourcesSelectorProps {
   /**
@@ -34,8 +32,6 @@ export interface MyResourcesSelectorProps {
    */
   onChange: (resourceType: MyResourcesType) => void;
 }
-
-const { title } = languageStrings.myResources;
 
 const defaultOptions: MyResourcesType[] = [
   "Published",
@@ -62,22 +58,19 @@ export const MyResourcesSelector = ({
   );
 
   return (
-    <Autocomplete
+    <Select
+      fullWidth
       value={value}
-      options={options}
-      disableClearable
-      onChange={(_, selected: MyResourcesType) => {
-        onChange(selected);
+      onChange={({ target: { value } }) => {
+        onChange(value as MyResourcesType);
       }}
-      getOptionSelected={(option, selected) => selected === option}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          variant="outlined"
-          label={title}
-          placeholder={title}
-        />
-      )}
-    />
+      variant="outlined"
+    >
+      {options.map((option) => (
+        <MenuItem key={option} value={option}>
+          {option}
+        </MenuItem>
+      ))}
+    </Select>
   );
 };
