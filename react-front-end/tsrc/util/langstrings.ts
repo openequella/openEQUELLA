@@ -363,6 +363,14 @@ export const languageStrings = {
   },
   myResources: {
     title: "My resources",
+    resourceType: {
+      published: "Published",
+      drafts: "Drafts",
+      scrapbook: "Scrapbook",
+      modqueue: "Moderation queue",
+      archive: "Archive",
+      all: "All resources",
+    },
   },
   navigationguard: {
     title: "Close without saving?",

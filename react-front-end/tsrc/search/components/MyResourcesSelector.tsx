@@ -16,11 +16,15 @@
  * limitations under the License.
  */
 import { MenuItem, Select } from "@material-ui/core";
+import { pipe } from "fp-ts/function";
 import { useContext } from "react";
 import * as React from "react";
 import { AppContext } from "../../mainui/App";
 import { guestUser } from "../../modules/UserModule";
+import { languageStrings } from "../../util/langstrings";
+import { OrdAsIs } from "../../util/Ord";
 import type { MyResourcesType } from "../MyResourcesPageHelper";
+import * as M from "fp-ts/Map";
 
 export interface MyResourcesSelectorProps {
   /**
@@ -33,14 +37,17 @@ export interface MyResourcesSelectorProps {
   onChange: (resourceType: MyResourcesType) => void;
 }
 
-const defaultOptions: MyResourcesType[] = [
-  "Published",
-  "Drafts",
-  "Scrapbook",
-  "Moderation queue",
-  "Archive",
-  "All resources",
-];
+const { published, drafts, scrapbook, modqueue, archive, all } =
+  languageStrings.myResources.resourceType;
+
+const defaultOptions = new Map<MyResourcesType, string>([
+  ["Published", published],
+  ["Drafts", drafts],
+  ["Scrapbook", scrapbook],
+  ["Moderation queue", modqueue],
+  ["Archive", archive],
+  ["All resources", all],
+]);
 
 /**
  * This component displays My resources types and the selection of each type
@@ -52,9 +59,16 @@ export const MyResourcesSelector = ({
 }: MyResourcesSelectorProps) => {
   const { scrapbookEnabled } = useContext(AppContext).currentUser ?? guestUser;
 
-  // When access to Scrapbook is not enabled, drop the option of Scrapbook.
-  const options: MyResourcesType[] = defaultOptions.filter(
-    (s) => scrapbookEnabled || s !== "Scrapbook"
+  const options: JSX.Element[] = pipe(
+    defaultOptions,
+    // When access to Scrapbook is not enabled, drop the option of Scrapbook.
+    M.filter((value) => scrapbookEnabled || value !== scrapbook),
+    M.mapWithIndex((key, value) => (
+      <MenuItem key={key} value={key}>
+        {value}
+      </MenuItem>
+    )),
+    M.values<JSX.Element>(OrdAsIs)
   );
 
   return (
@@ -66,11 +80,7 @@ export const MyResourcesSelector = ({
       }}
       variant="outlined"
     >
-      {options.map((option) => (
-        <MenuItem key={option} value={option}>
-          {option}
-        </MenuItem>
-      ))}
+      {options}
     </Select>
   );
 };
