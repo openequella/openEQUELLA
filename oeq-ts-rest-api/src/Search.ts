@@ -397,6 +397,23 @@ interface SearchResultItemRaw extends SearchResultItemBase {
    * The last date when item is modified.
    */
   modifiedDate: string;
+  /**
+   * Details of an Item's moderation.
+   */
+  moderationDetails?: {
+    /**
+     * When was the last moderation action performed.
+     */
+    lastActionDate: string;
+    /**
+     * When was the Item submitted to moderation.
+     */
+    submittedDate: string;
+    /**
+     * Message for why the Item was rejected.
+     */
+    rejectionMessage?: string;
+  };
 }
 
 /**
@@ -411,6 +428,23 @@ export interface SearchResultItem extends SearchResultItemBase {
    * The last date when item is modified.
    */
   modifiedDate: Date;
+  /**
+   * Details of an Item's moderation.
+   */
+  moderationDetails: {
+    /**
+     * When was the last moderation action performed.
+     */
+    lastActionDate: Date;
+    /**
+     * When was the Item submitted to moderation.
+     */
+    submittedDate: Date;
+    /**
+     * Message for why the Item was rejected.
+     */
+    rejectionMessage?: string;
+  };
 }
 
 /**
@@ -487,6 +521,8 @@ const processRawSearchResult = (data: SearchResult<SearchResultItemRaw>) =>
   Utils.convertDateFields<SearchResult<SearchResultItem>>(data, [
     'createdDate',
     'modifiedDate',
+    'moderationDetails.lastActionDate',
+    'moderationDetails.submittedDate',
   ]);
 
 /**
