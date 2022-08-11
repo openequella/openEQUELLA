@@ -50,8 +50,8 @@ const defaultOptions = new Map<MyResourcesType, string>([
 ]);
 
 /**
- * This component displays My resources types and the selection of each type
- * triggers a search. This component should be used under 'MyResourcesPageContext'.
+ * This component provides a Dropdown to allow selecting a single My resources type. The option of Scrapbook
+ * may not be available, depending on whether the user has access to Scrapbook.
  */
 export const MyResourcesSelector = ({
   value,
