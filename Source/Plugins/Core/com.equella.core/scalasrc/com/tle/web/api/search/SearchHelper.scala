@@ -23,7 +23,7 @@ import cats.implicits._
 import com.dytech.devlib.PropBagEx
 import com.dytech.edge.exceptions.{BadRequestException, DRMException}
 import com.tle.beans.entity.DynaCollection
-import com.tle.beans.item.{Comment, ItemIdKey, ItemStatus}
+import com.tle.beans.item.{Comment, Item, ItemIdKey, ItemStatus}
 import com.tle.common.Check
 import com.tle.common.beans.exception.NotFoundException
 import com.tle.common.collection.AttachmentConfigConstants
@@ -48,7 +48,7 @@ import com.tle.web.api.search.AttachmentHelper.{
 }
 import com.tle.web.api.search.model.AdditionalSearchParameters.buildAdvancedSearchCriteria
 import com.tle.web.api.search.model._
-
+import com.tle.beans.item.ItemStatus.{REJECTED, REVIEW, MODERATING};
 import java.time.format.DateTimeParseException
 import java.time.{LocalDate, LocalDateTime, LocalTime, ZoneId}
 import java.util.Date
@@ -260,6 +260,7 @@ object SearchHelper {
     val bean = item.bean
     val sanitisedAttachmentBeans =
       Option(bean.getAttachments).map(_.asScala.map(sanitiseAttachmentBean).toList)
+    val rawItem = LegacyGuice.itemService.getUnsecureIfExists(key)
 
     SearchResultItem(
       uuid = key.getUuid,
@@ -283,7 +284,8 @@ object SearchHelper {
       links = getLinksFromBean(bean),
       bookmarkId = getBookmarkId(key),
       isLatestVersion = isLatestVersion(key),
-      drmStatus = getItemDrmStatus(item.idKey)
+      drmStatus = getItemDrmStatus(rawItem),
+      moderationDetails = getModerationDetails(rawItem),
     )
   }
 
@@ -304,9 +306,9 @@ object SearchHelper {
     )
   }
 
-  def getItemDrmStatus(itemKey: ItemIdKey): Option[DrmStatus] = {
+  def getItemDrmStatus(rawItem: Item): Option[DrmStatus] = {
     for {
-      item <- Option(LegacyGuice.itemService.getUnsecureIfExists(itemKey))
+      item <- Option(rawItem)
       _    <- Option(item.getDrmSettings)
       termsAccepted = try {
         LegacyGuice.drmService.hasAcceptedOrRequiresNoAcceptance(item, false, false)
@@ -324,6 +326,12 @@ object SearchHelper {
       DrmStatus(termsAccepted, isAuthorised)
     }
   }
+
+  def getModerationDetails(rawItem: Item): Option[ModerationDetails] =
+    for {
+      item <- Option(rawItem) if Array(REJECTED, REVIEW, MODERATING).contains(item.getStatus)
+      mod  <- Option(item.getModeration)
+    } yield ModerationDetails(mod.getLastAction, mod.getStart, Option(mod.getRejectedMessage))
 
   def getItemComments(key: ItemIdKey): Option[java.util.List[Comment]] =
     Option(LegacyGuice.itemCommentService.getCommentsWithACLCheck(key, null, null, -1))
