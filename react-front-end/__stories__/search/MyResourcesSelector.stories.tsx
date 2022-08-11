@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta } from "@storybook/react";
+import { Meta, Story } from "@storybook/react";
 import * as React from "react";
 import {
   MyResourcesSelector,
@@ -25,6 +25,16 @@ import {
 export default {
   title: "Search/MyResourcesSelector",
   component: MyResourcesSelector,
+  argTypes: {
+    onChange: {
+      action: "onChange called",
+    },
+  },
 } as Meta<MyResourcesSelectorProps>;
 
-export const Standard = () => <MyResourcesSelector value="Published" />;
+export const Standard: Story<MyResourcesSelectorProps> = (args) => (
+  <MyResourcesSelector {...args} />
+);
+Standard.args = {
+  value: "Published",
+};
