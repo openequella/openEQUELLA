@@ -6,6 +6,7 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -229,6 +230,22 @@ public class Search2ApiTest extends AbstractRestApiTest {
   public void drmStatus() throws IOException {
     JsonNode result = doSearch(200, "ItemApiViewTest - DRM and versioning v2");
     assertNotNull(result.get("results").get(0).get("drmStatus"));
+  }
+
+  @Test(description = "Search result should include moderation details for Items in moderation")
+  public void moderationDetails() throws IOException {
+    JsonNode result =
+        doSearch(200, "MyResourcesApiTest - Moderating", new NameValuePair("status", "MODERATING"));
+    assertNotNull(result.get("results").get(0).get("moderationDetails"));
+  }
+
+  @Test(
+      description = "Search result should include Scrapbook tags as a Display field for Scrapbook")
+  public void scrapbookTags() throws IOException {
+    JsonNode result =
+        doSearch(200, "scrapbookItemTestTitlemypages", new NameValuePair("status", "PERSONAL"));
+    ArrayNode displayField = (ArrayNode) result.get("results").get(0).get("displayFields");
+    assertEquals(displayField.get(0).get("html").asText(), "key word");
   }
 
   @DataProvider(name = "badMustExpressions")
