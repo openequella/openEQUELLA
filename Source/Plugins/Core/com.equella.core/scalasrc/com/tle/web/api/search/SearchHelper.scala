@@ -327,13 +327,11 @@ object SearchHelper {
     }
   }
 
-  def getModerationDetails(rawItem: Item): Option[ModerationDetails] = {
-    Option(rawItem)
-      .filter(item => Array(REJECTED, REVIEW, MODERATING).contains(item.getStatus))
-      .map(_.getModeration)
-      .map(mod =>
-        ModerationDetails(mod.getLastAction, mod.getStart, Option(mod.getRejectedMessage)))
-  }
+  def getModerationDetails(rawItem: Item): Option[ModerationDetails] =
+    for {
+      item <- Option(rawItem) if Array(REJECTED, REVIEW, MODERATING).contains(item.getStatus)
+      mod  <- Option(item.getModeration)
+    } yield ModerationDetails(mod.getLastAction, mod.getStart, Option(mod.getRejectedMessage))
 
   def getItemComments(key: ItemIdKey): Option[java.util.List[Comment]] =
     Option(LegacyGuice.itemCommentService.getCommentsWithACLCheck(key, null, null, -1))
