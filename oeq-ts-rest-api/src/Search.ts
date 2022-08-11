@@ -431,7 +431,7 @@ export interface SearchResultItem extends SearchResultItemBase {
   /**
    * Details of an Item's moderation.
    */
-  moderationDetails: {
+  moderationDetails?: {
     /**
      * When was the last moderation action performed.
      */
