@@ -40,6 +40,7 @@ const FacetedSearchSettingsPage = React.lazy(
 const ContentIndexSettings = React.lazy(
   () => import("../settings/Search/ContentIndexSettings")
 );
+const MyResourcesPage = React.lazy(() => import("../search/MyResourcesPage"));
 
 export interface BaseOEQRouteComponentProps {
   updateTemplate: (edit: TemplateUpdate) => void;
@@ -69,6 +70,7 @@ interface Routes {
   FacetedSearchSetting: OEQRouteNewUI;
   LoginNoticeConfig: OEQRouteNewUI;
   Logout: OEQRouteTo<string>;
+  MyResources: OEQRouteNewUI;
   Notifications: OEQRouteTo<string>;
   RemoteSearch: OEQRouteTo<ToFunc>;
   SearchFilterSettings: OEQRouteNewUI;
@@ -108,6 +110,7 @@ export const legacyPageUrl = (to?: string | ToFunc | ToVersionFunc): string => {
 export const OLD_SEARCH_PATH = "/searching.do";
 export const NEW_SEARCH_PATH = "/page/search";
 export const NEW_ADVANCED_SEARCH_PATH = "/page/advancedsearch";
+export const NEW_MY_RESOURCES_PATH = "/page/myresources";
 
 export const routes: Routes = {
   OldAdvancedSearch: {
@@ -137,6 +140,10 @@ export const routes: Routes = {
   Logout: {
     // lack of '/' is significant
     to: "logon.do?logout=true",
+  },
+  MyResources: {
+    path: NEW_MY_RESOURCES_PATH,
+    component: MyResourcesPage,
   },
   Notifications: {
     to: "/access/notifications.do",

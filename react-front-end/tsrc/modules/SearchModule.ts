@@ -50,6 +50,14 @@ export const nonLiveStatuses: OEQ.Common.ItemStatus[] =
     .filter(nonLiveStatus);
 
 /**
+ * All statuses except "DELETED".
+ */
+export const nonDeletedStatuses: OEQ.Common.ItemStatus[] =
+  OEQ.Common.ItemStatuses.alternatives
+    .map((status) => status.value)
+    .filter((status) => status !== "DELETED");
+
+/**
  * A Runtypes object which represents three display modes: list, gallery-image and gallery-video.
  */
 export const DisplayModeRuntypes = Union(

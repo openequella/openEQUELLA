@@ -27,6 +27,7 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.model.SimpleBookmark;
+import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.template.section.MenuContributor;
 import java.util.Collections;
 import java.util.List;
@@ -47,9 +48,14 @@ public class MyResourcesMenuContributor implements MenuContributor {
       return Collections.emptyList();
     }
 
-    HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("access/myresources.do"));
+    boolean newUIEnabled = RenderNewTemplate.isNewUIEnabled();
+    HtmlLinkState hls =
+        new HtmlLinkState(
+            new SimpleBookmark(newUIEnabled ? "page/myresources" : "access/myresources.do"));
     hls.setLabel(LABEL_KEY);
-    MenuContribution mc = new MenuContribution(hls, ICON_PATH, 1, 20, "assignment_ind");
+    MenuContribution mc =
+        new MenuContribution(
+            hls, ICON_PATH, 1, 20, "assignment_ind", newUIEnabled ? "/page/myresources" : null);
     return Collections.singletonList(mc);
   }
 
