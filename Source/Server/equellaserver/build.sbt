@@ -59,7 +59,7 @@ libraryDependencies ++= Seq(
   jacksonDataBind,
   jacksonModuleScala,
   "io.bit3"         % "jsass"       % jsassVersion,
-  "com.flickr4java" % "flickr4java" % "2.16" excludeAll (
+  "com.flickr4java" % "flickr4java" % "2.19" excludeAll (
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
