@@ -51,11 +51,10 @@ const defaultTheme = createTheme({
   props: { MuiWithWidth: { initialWidth: "md" } },
 });
 
-const search = jest.fn();
-
-const history = createMemoryHistory();
-
 describe("<SearchPageBody />", () => {
+  const history = createMemoryHistory();
+  const search = jest.fn();
+
   const renderSearchPageBody = (
     props: SearchPageBodyProps = defaultSearchPageBodyProps
   ) => {
