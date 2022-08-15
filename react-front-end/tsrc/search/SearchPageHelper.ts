@@ -134,6 +134,19 @@ export interface SearchPageHeaderConfig {
    * Customised options for sorting the search result.
    */
   customSortingOptions?: Map<OEQ.SearchSettings.SortOrder, string>;
+  /**
+   * Custom configuration for how to perform a new search.
+   */
+  newSearchConfig?: {
+    /**
+     * Where the page should be navigated.
+     */
+    to: string;
+    /**
+     * Search criteria that should be included in a new search.
+     */
+    newSearchCriteria?: SearchPageOptions;
+  };
 }
 
 export const defaultSearchPageHeaderConfig: SearchPageHeaderConfig = {

@@ -28,6 +28,8 @@ import type { MyResourcesType } from "./MyResourcesPageHelper";
 import { Search, SearchContext, SearchPageHistoryState } from "./Search";
 import { SearchPageBody } from "./SearchPageBody";
 import {
+  defaultSearchPageHeaderConfig,
+  defaultSearchPageOptions,
   defaultSearchPageRefinePanelConfig,
   SearchPageOptions,
 } from "./SearchPageHelper";
@@ -84,6 +86,17 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
           <SearchPageBody
             pathname={NEW_MY_RESOURCES_PATH}
             enableClassification={false}
+            headerConfig={{
+              ...defaultSearchPageHeaderConfig,
+              newSearchConfig: {
+                to: NEW_MY_RESOURCES_PATH,
+                newSearchCriteria: {
+                  ...defaultSearchPageOptions,
+                  owner: currentUser,
+                  status: myResourcesTypeToItemStatus(resourceType),
+                },
+              },
+            }}
             refinePanelConfig={{
               ...defaultSearchPageRefinePanelConfig,
               enableItemStatusSelector: [
