@@ -346,6 +346,7 @@ export const searchItemAttachments = async (
             ["version", [`${version}`]],
           ],
           searchAttachments: false,
+          status: [], // As we are searching for a specific Item we should discard the default Item status.
         }),
       (reason) =>
         `Failed to retrieve details of item ${uuid}/${version}: ${reason}`
