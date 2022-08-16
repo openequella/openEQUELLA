@@ -149,8 +149,8 @@ describe("<SearchPageBody />", () => {
   });
 
   it("supports custom new search criteria", () => {
-    const newPath = "/test";
-    const newSearchCriteria: SearchPageOptions = {
+    const path = "/test";
+    const criteria: SearchPageOptions = {
       ...defaultSearchPageOptions,
       query: "test",
       sortOrder: "RANK",
@@ -162,8 +162,8 @@ describe("<SearchPageBody />", () => {
       headerConfig: {
         ...defaultSearchPageHeaderConfig,
         newSearchConfig: {
-          to: newPath,
-          newSearchCriteria,
+          path,
+          criteria,
         },
       },
     });
@@ -173,7 +173,7 @@ describe("<SearchPageBody />", () => {
 
     // The first parameter should be the custom new search criteria and the new path
     // should have been pushed the history.
-    expect(search.mock.calls[0][0]).toStrictEqual(newSearchCriteria);
-    expect(history.location.pathname).toBe(newPath);
+    expect(search.mock.calls[0][0]).toStrictEqual(criteria);
+    expect(history.location.pathname).toBe(path);
   });
 });

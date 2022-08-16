@@ -89,8 +89,8 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
             headerConfig={{
               ...defaultSearchPageHeaderConfig,
               newSearchConfig: {
-                to: NEW_MY_RESOURCES_PATH,
-                newSearchCriteria: {
+                path: NEW_MY_RESOURCES_PATH,
+                criteria: {
                   ...defaultSearchPageOptions,
                   owner: currentUser,
                   status: myResourcesTypeToItemStatus(resourceType),

@@ -251,7 +251,7 @@ export const SearchPageBody = ({
   const handleClearSearchOptions = () => {
     doSearch({
       ...defaultSearchPageOptions,
-      ...newSearchConfig?.newSearchCriteria,
+      ...newSearchConfig?.criteria,
       sortOrder: searchSettings.core?.defaultSearchSort,
       externalMimeTypes: isSelectionSessionOpen()
         ? searchPageOptions.externalMimeTypes
@@ -262,7 +262,8 @@ export const SearchPageBody = ({
     setFilterExpansion(false);
 
     // If there is no custom new search config, we go to the normal search page.
-    navigateTo(newSearchConfig?.to ?? NEW_SEARCH_PATH, () =>
+    navigateTo(newSearchConfig?.path ?? NEW_SEARCH_PATH, () =>
+      // Todo: support custom new search in Selection Session when working on OEQ-1327.
       buildSelectionSessionSearchPageLink(searchPageOptions.externalMimeTypes)
     );
   };
