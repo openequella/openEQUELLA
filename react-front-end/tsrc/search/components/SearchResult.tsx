@@ -33,7 +33,7 @@ import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import * as OEQ from "@openequella/rest-api-client";
 import HTMLReactParser from "html-react-parser";
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import { HashLink } from "react-router-hash-link";
 import { sprintf } from "sprintf-js";
@@ -129,6 +129,11 @@ export interface SearchResultProps {
    * The details of the items to display.
    */
   item: OEQ.Search.SearchResultItem;
+  /**
+   * Custom action buttons to be displayed. Each button will be separated by a vertical divider,
+   * and they are displayed next to the FavoriteIcon.
+   */
+  customActionButtons?: JSX.Element[];
 }
 
 /**
@@ -151,6 +156,7 @@ export default function SearchResult({
   getItemAttachments = searchItemAttachments,
   highlights,
   item,
+  customActionButtons,
 }: SearchResultProps) {
   const {
     bookmarkId: bookmarkDefaultId,
@@ -272,6 +278,12 @@ export default function SearchResult({
         >
           {bookmarkId ? <FavoriteIcon /> : <FavoriteBorderIcon />}
         </TooltipIconButton>
+
+        {customActionButtons?.map((button, index) => (
+          <Fragment key={index}>
+            {metaDataDivider} {button}
+          </Fragment>
+        ))}
 
         {commentCount > 0 && (
           <Hidden smDown>
