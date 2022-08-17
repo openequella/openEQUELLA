@@ -147,6 +147,7 @@ export const SearchPageBody = ({
     enableShareSearchButton,
     additionalHeaders,
     customSortingOptions,
+    newSearchConfig,
   } = headerConfig;
 
   const {
@@ -224,12 +225,6 @@ export const SearchPageBody = ({
       : history.push(normalPath);
   };
 
-  const exitAdvancedSearch = () => {
-    navigateTo(NEW_SEARCH_PATH, () =>
-      buildSelectionSessionSearchPageLink(searchPageOptions.externalMimeTypes)
-    );
-  };
-
   const handleAdvancedSearchChanged = (
     advancedSearch: OEQ.Common.BaseEntitySummary | null
   ) =>
@@ -243,12 +238,20 @@ export const SearchPageBody = ({
           )
         )
       ),
-      O.getOrElse(() => exitAdvancedSearch())
+      // Go to the normal mode if none is selected.
+      O.getOrElse(() =>
+        navigateTo(NEW_SEARCH_PATH, () =>
+          buildSelectionSessionSearchPageLink(
+            searchPageOptions.externalMimeTypes
+          )
+        )
+      )
     );
 
   const handleClearSearchOptions = () => {
     doSearch({
       ...defaultSearchPageOptions,
+      ...newSearchConfig?.criteria,
       sortOrder: searchSettings.core?.defaultSearchSort,
       externalMimeTypes: isSelectionSessionOpen()
         ? searchPageOptions.externalMimeTypes
@@ -258,7 +261,11 @@ export const SearchPageBody = ({
     });
     setFilterExpansion(false);
 
-    exitAdvancedSearch();
+    // If there is no custom new search config, we go to the normal search page.
+    navigateTo(newSearchConfig?.path ?? NEW_SEARCH_PATH, () =>
+      // Todo: support custom new search in Selection Session when working on OEQ-1327.
+      buildSelectionSessionSearchPageLink(searchPageOptions.externalMimeTypes)
+    );
   };
 
   const handleCollapsibleFilterClick = () => {

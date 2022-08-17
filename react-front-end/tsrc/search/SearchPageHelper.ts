@@ -134,6 +134,21 @@ export interface SearchPageHeaderConfig {
    * Customised options for sorting the search result.
    */
   customSortingOptions?: Map<OEQ.SearchSettings.SortOrder, string>;
+  /**
+   * Custom configuration to be used with a 'new search' - e.g. when the 'New Search' button is clicked,
+   * or when other actions which trigger the search state to be cleared.
+   */
+  newSearchConfig?: {
+    /**
+     * A path which is recognised by the React Router which points to a page
+     * the user will be navigated to execute the new search.
+     */
+    path: string;
+    /**
+     * Search criteria that should be included in a new search.
+     */
+    criteria?: SearchPageOptions;
+  };
 }
 
 export const defaultSearchPageHeaderConfig: SearchPageHeaderConfig = {

@@ -18,15 +18,25 @@
 import { MuiThemeProvider } from "@material-ui/core";
 import { createTheme } from "@material-ui/core/styles";
 import userEvent from "@testing-library/user-event";
+import { createMemoryHistory } from "history";
 import * as React from "react";
 import { render, screen } from "@testing-library/react";
+import { Router } from "react-router-dom";
 import { customRefinePanelControl } from "../../../__mocks__/RefinePanelControl.mock";
+import { defaultSearchSettings } from "../../../tsrc/modules/SearchSettingsModule";
+import { SearchContext } from "../../../tsrc/search/Search";
 import {
   SearchPageBody,
   SearchPageBodyProps,
 } from "../../../tsrc/search/SearchPageBody";
 import "@testing-library/jest-dom/extend-expect";
-import { defaultSearchPageRefinePanelConfig } from "../../../tsrc/search/SearchPageHelper";
+import {
+  defaultSearchPageHeaderConfig,
+  defaultSearchPageOptions,
+  defaultSearchPageRefinePanelConfig,
+  SearchPageOptions,
+} from "../../../tsrc/search/SearchPageHelper";
+import { languageStrings } from "../../../tsrc/util/langstrings";
 import {
   queryCollectionSelector,
   queryRefineSearchComponent,
@@ -115,5 +125,59 @@ describe("<SearchPageBody />", () => {
     expect(
       queryRefineSearchComponent(container, customRefinePanelControl.idSuffix)
     ).toBeInTheDocument();
+  });
+
+  it("supports custom new search criteria", () => {
+    const history = createMemoryHistory();
+    const search = jest.fn();
+
+    const path = "/test";
+    const criteria: SearchPageOptions = {
+      ...defaultSearchPageOptions,
+      query: "test",
+      sortOrder: "RANK",
+      externalMimeTypes: undefined,
+    };
+
+    const searchPageBodyProps: SearchPageBodyProps = {
+      ...defaultSearchPageBodyProps,
+      headerConfig: {
+        ...defaultSearchPageHeaderConfig,
+        newSearchConfig: {
+          path,
+          criteria,
+        },
+      },
+    };
+
+    const { getByText } = render(
+      <Router history={history}>
+        <SearchContext.Provider
+          value={{
+            search,
+            searchState: {
+              status: "initialising",
+              options: defaultSearchPageOptions,
+            },
+            searchSettings: {
+              core: defaultSearchSettings,
+              mimeTypeFilters: [],
+              advancedSearches: [],
+            },
+            searchPageErrorHandler: jest.fn(),
+          }}
+        >
+          <SearchPageBody {...searchPageBodyProps} />
+        </SearchContext.Provider>
+      </Router>
+    );
+
+    const newSearchButton = getByText(languageStrings.searchpage.newSearch);
+    userEvent.click(newSearchButton);
+
+    // The first parameter should be the custom new search criteria and the new path
+    // should have been pushed the history.
+    expect(search.mock.calls[0][0]).toStrictEqual(criteria);
+    expect(history.location.pathname).toBe(path);
   });
 });
