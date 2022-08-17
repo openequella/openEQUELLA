@@ -52,33 +52,12 @@ const defaultTheme = createTheme({
 });
 
 describe("<SearchPageBody />", () => {
-  const history = createMemoryHistory();
-  const search = jest.fn();
-
   const renderSearchPageBody = (
     props: SearchPageBodyProps = defaultSearchPageBodyProps
   ) => {
     return render(
       <MuiThemeProvider theme={defaultTheme}>
-        <Router history={history}>
-          <SearchContext.Provider
-            value={{
-              search,
-              searchState: {
-                status: "initialising",
-                options: defaultSearchPageOptions,
-              },
-              searchSettings: {
-                core: defaultSearchSettings,
-                mimeTypeFilters: [],
-                advancedSearches: [],
-              },
-              searchPageErrorHandler: jest.fn(),
-            }}
-          >
-            <SearchPageBody {...props} />
-          </SearchContext.Provider>
-        </Router>
+        <SearchPageBody {...props} />
       </MuiThemeProvider>
     );
   };
@@ -149,6 +128,9 @@ describe("<SearchPageBody />", () => {
   });
 
   it("supports custom new search criteria", () => {
+    const history = createMemoryHistory();
+    const search = jest.fn();
+
     const path = "/test";
     const criteria: SearchPageOptions = {
       ...defaultSearchPageOptions,
@@ -157,7 +139,7 @@ describe("<SearchPageBody />", () => {
       externalMimeTypes: undefined,
     };
 
-    const { getByText } = renderSearchPageBody({
+    const searchPageBodyProps: SearchPageBodyProps = {
       ...defaultSearchPageBodyProps,
       headerConfig: {
         ...defaultSearchPageHeaderConfig,
@@ -166,7 +148,29 @@ describe("<SearchPageBody />", () => {
           criteria,
         },
       },
-    });
+    };
+
+    const { getByText } = render(
+      <Router history={history}>
+        <SearchContext.Provider
+          value={{
+            search,
+            searchState: {
+              status: "initialising",
+              options: defaultSearchPageOptions,
+            },
+            searchSettings: {
+              core: defaultSearchSettings,
+              mimeTypeFilters: [],
+              advancedSearches: [],
+            },
+            searchPageErrorHandler: jest.fn(),
+          }}
+        >
+          <SearchPageBody {...searchPageBodyProps} />
+        </SearchContext.Provider>
+      </Router>
+    );
 
     const newSearchButton = getByText(languageStrings.searchpage.newSearch);
     userEvent.click(newSearchButton);
