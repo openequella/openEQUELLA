@@ -19,7 +19,14 @@ import { debounce, Drawer, Grid, Hidden } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 import { isEqual } from "lodash";
 import * as React from "react";
-import { useCallback, useContext, useMemo, useRef, useState } from "react";
+import {
+  ReactNode,
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useHistory } from "react-router";
 import { getBaseUrl } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
@@ -122,6 +129,12 @@ export interface SearchPageBodyProps {
    * Customised callback fired after a search is complete.
    */
   customSearchCallback?: () => void;
+  /**
+   * Function to render custom UI for a list of SearchResultItem or GallerySearchResultItem.
+   */
+  customRenderSearchResults?: (
+    searchResult: SearchPageSearchResult
+  ) => ReactNode;
 }
 
 /**
@@ -141,6 +154,7 @@ export const SearchPageBody = ({
   refinePanelConfig = defaultSearchPageRefinePanelConfig,
   enableClassification = true,
   customSearchCallback,
+  customRenderSearchResults,
 }: SearchPageBodyProps) => {
   const {
     enableCSVExportButton,
@@ -774,7 +788,12 @@ export const SearchPageBody = ({
                 useShareSearchButton={enableShareSearchButton}
                 additionalHeaders={additionalHeaders}
               >
-                {renderSearchResults()}
+                {pipe(
+                  customRenderSearchResults,
+                  O.fromNullable,
+                  O.map((s) => s(searchResult())),
+                  O.getOrElse(() => renderSearchResults())
+                )}
               </SearchResultList>
             </Grid>
           </Grid>

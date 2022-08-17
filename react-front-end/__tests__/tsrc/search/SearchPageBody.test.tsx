@@ -22,7 +22,9 @@ import { createMemoryHistory } from "history";
 import * as React from "react";
 import { render, screen } from "@testing-library/react";
 import { Router } from "react-router-dom";
+import { classifications } from "../../../__mocks__/CategorySelector.mock";
 import { customRefinePanelControl } from "../../../__mocks__/RefinePanelControl.mock";
+import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import { defaultSearchSettings } from "../../../tsrc/modules/SearchSettingsModule";
 import { SearchContext } from "../../../tsrc/search/Search";
 import {
@@ -38,6 +40,10 @@ import {
 } from "../../../tsrc/search/SearchPageHelper";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import {
+  SearchPageSearchResult,
+  State,
+} from "../../../tsrc/search/SearchPageReducer";
+import {
   queryCollectionSelector,
   queryRefineSearchComponent,
 } from "./SearchPageTestHelper";
@@ -51,6 +57,9 @@ const defaultTheme = createTheme({
   props: { MuiWithWidth: { initialWidth: "md" } },
 });
 
+const mockSearch = jest.fn();
+const mockHistory = createMemoryHistory();
+
 describe("<SearchPageBody />", () => {
   const renderSearchPageBody = (
     props: SearchPageBodyProps = defaultSearchPageBodyProps
@@ -61,6 +70,32 @@ describe("<SearchPageBody />", () => {
       </MuiThemeProvider>
     );
   };
+
+  const renderSearchPageBodyWithContext = (
+    props: SearchPageBodyProps,
+    state: State = {
+      status: "initialising",
+      options: defaultSearchPageOptions,
+    }
+  ) =>
+    render(
+      <Router history={mockHistory}>
+        <SearchContext.Provider
+          value={{
+            search: mockSearch,
+            searchState: state,
+            searchSettings: {
+              core: defaultSearchSettings,
+              mimeTypeFilters: [],
+              advancedSearches: [],
+            },
+            searchPageErrorHandler: jest.fn(),
+          }}
+        >
+          <SearchPageBody {...props} />
+        </SearchContext.Provider>
+      </Router>
+    );
 
   it("supports additional panels", () => {
     const label = "additional Panel";
@@ -128,9 +163,6 @@ describe("<SearchPageBody />", () => {
   });
 
   it("supports custom new search criteria", () => {
-    const history = createMemoryHistory();
-    const search = jest.fn();
-
     const path = "/test";
     const criteria: SearchPageOptions = {
       ...defaultSearchPageOptions,
@@ -150,34 +182,41 @@ describe("<SearchPageBody />", () => {
       },
     };
 
-    const { getByText } = render(
-      <Router history={history}>
-        <SearchContext.Provider
-          value={{
-            search,
-            searchState: {
-              status: "initialising",
-              options: defaultSearchPageOptions,
-            },
-            searchSettings: {
-              core: defaultSearchSettings,
-              mimeTypeFilters: [],
-              advancedSearches: [],
-            },
-            searchPageErrorHandler: jest.fn(),
-          }}
-        >
-          <SearchPageBody {...searchPageBodyProps} />
-        </SearchContext.Provider>
-      </Router>
-    );
+    const { getByText } = renderSearchPageBodyWithContext(searchPageBodyProps);
 
     const newSearchButton = getByText(languageStrings.searchpage.newSearch);
     userEvent.click(newSearchButton);
 
     // The first parameter should be the custom new search criteria and the new path
     // should have been pushed the history.
-    expect(search.mock.calls[0][0]).toStrictEqual(criteria);
-    expect(history.location.pathname).toBe(path);
+    expect(mockSearch.mock.calls[0][0]).toStrictEqual(criteria);
+    expect(mockHistory.location.pathname).toBe(path);
+  });
+
+  it("displays custom UI for search results", () => {
+    const text = "This is a custom search result";
+    const searchPageBodyProps: SearchPageBodyProps = {
+      ...defaultSearchPageBodyProps,
+      customRenderSearchResults: (searchResult: SearchPageSearchResult) =>
+        searchResult.content.results.map((_, index) => (
+          <p key={index}>{text}</p>
+        )),
+    };
+
+    const { getAllByText } = renderSearchPageBodyWithContext(
+      searchPageBodyProps,
+      {
+        status: "success",
+        options: defaultSearchPageOptions,
+        result: {
+          from: "item-search",
+          content: getSearchResult,
+        },
+        classifications,
+      }
+    );
+
+    // The search result list has 12 Items, so we should see that text 12 times.
+    expect(getAllByText(text, { selector: "p" })).toHaveLength(12);
   });
 });
