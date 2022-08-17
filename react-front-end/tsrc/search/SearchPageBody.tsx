@@ -36,6 +36,7 @@ import { NEW_SEARCH_PATH, routes } from "../mainui/routes";
 import { getAdvancedSearchIdFromLocation } from "../modules/AdvancedSearchModule";
 import { Collection } from "../modules/CollectionsModule";
 import { addFavouriteSearch } from "../modules/FavouriteModule";
+import type { GallerySearchResultItem } from "../modules/GallerySearchModule";
 import {
   buildSelectionSessionAdvancedSearchLink,
   buildSelectionSessionRemoteSearchLink,
@@ -696,11 +697,13 @@ export const SearchPageBody = ({
     return defaultResult;
   };
 
-  const defaultRenderSearchResults = (): ReactNode => {
+  const defaultRenderSearchResults = (
+    searchPageSearchResult: SearchPageSearchResult
+  ): ReactNode => {
     const {
       from,
       content: { results: searchResults },
-    } = searchResult();
+    } = searchPageSearchResult;
 
     if (searchResults.length < 1) {
       return null;
@@ -710,11 +713,17 @@ export const SearchPageBody = ({
       items: unknown
     ): items is OEQ.Search.SearchResultItem[] => from === "item-search";
 
+    const isGalleryItems = (
+      items: unknown
+    ): items is GallerySearchResultItem[] => from === "gallery-search";
+
     if (isListItems(searchResults)) {
       return mapSearchResultItems(searchResults, highlights);
-    } else {
+    } else if (isGalleryItems(searchResults)) {
       return <GallerySearchResult items={searchResults} />;
     }
+
+    throw new TypeError("Unexpected type for searchResults");
   };
 
   const {
@@ -781,9 +790,10 @@ export const SearchPageBody = ({
                 useShareSearchButton={enableShareSearchButton}
                 additionalHeaders={additionalHeaders}
               >
-                {customRenderSearchResults
-                  ? customRenderSearchResults(searchResult())
-                  : defaultRenderSearchResults()}
+                {pipe(
+                  searchResult(),
+                  customRenderSearchResults ?? defaultRenderSearchResults
+                )}
               </SearchResultList>
             </Grid>
           </Grid>
