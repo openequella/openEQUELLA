@@ -19,7 +19,14 @@ import { debounce, Drawer, Grid, Hidden } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
 import { isEqual } from "lodash";
 import * as React from "react";
-import { useCallback, useContext, useMemo, useRef, useState } from "react";
+import {
+  ReactNode,
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useHistory } from "react-router";
 import { getBaseUrl } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
@@ -29,7 +36,7 @@ import { NEW_SEARCH_PATH, routes } from "../mainui/routes";
 import { getAdvancedSearchIdFromLocation } from "../modules/AdvancedSearchModule";
 import { Collection } from "../modules/CollectionsModule";
 import { addFavouriteSearch } from "../modules/FavouriteModule";
-import { GallerySearchResultItem } from "../modules/GallerySearchModule";
+import type { GallerySearchResultItem } from "../modules/GallerySearchModule";
 import {
   buildSelectionSessionAdvancedSearchLink,
   buildSelectionSessionRemoteSearchLink,
@@ -122,6 +129,12 @@ export interface SearchPageBodyProps {
    * Customised callback fired after a search is complete.
    */
   customSearchCallback?: () => void;
+  /**
+   * Function to render custom UI for a list of SearchResultItem or GallerySearchResultItem.
+   */
+  customRenderSearchResults?: (
+    searchResult: SearchPageSearchResult
+  ) => ReactNode;
 }
 
 /**
@@ -141,6 +154,7 @@ export const SearchPageBody = ({
   refinePanelConfig = defaultSearchPageRefinePanelConfig,
   enableClassification = true,
   customSearchCallback,
+  customRenderSearchResults,
 }: SearchPageBodyProps) => {
   const {
     enableCSVExportButton,
@@ -683,11 +697,13 @@ export const SearchPageBody = ({
     return defaultResult;
   };
 
-  const renderSearchResults = (): React.ReactNode | null => {
+  const defaultRenderSearchResults = (
+    searchPageSearchResult: SearchPageSearchResult
+  ): ReactNode => {
     const {
       from,
       content: { results: searchResults },
-    } = searchResult();
+    } = searchPageSearchResult;
 
     if (searchResults.length < 1) {
       return null;
@@ -774,7 +790,10 @@ export const SearchPageBody = ({
                 useShareSearchButton={enableShareSearchButton}
                 additionalHeaders={additionalHeaders}
               >
-                {renderSearchResults()}
+                {pipe(
+                  searchResult(),
+                  customRenderSearchResults ?? defaultRenderSearchResults
+                )}
               </SearchResultList>
             </Grid>
           </Grid>
