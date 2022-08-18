@@ -15,7 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Button, Card, CardContent, CardHeader } from "@material-ui/core";
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  List,
+  ListItem,
+} from "@material-ui/core";
 import { Meta, Story } from "@storybook/react";
 import * as React from "react";
 import { classifications } from "../../__mocks__/CategorySelector.mock";
@@ -32,6 +39,7 @@ import {
   defaultSearchPageOptions,
   defaultSearchPageRefinePanelConfig,
 } from "../../tsrc/search/SearchPageHelper";
+import { SearchPageSearchResult } from "../../tsrc/search/SearchPageReducer";
 
 const nop = () => {};
 
@@ -164,4 +172,21 @@ CustomRefinePanelControls.args = {
     ...defaultSearchPageRefinePanelConfig,
     customRefinePanelControl: [customRefinePanelControl],
   },
+};
+
+export const CustomSearchResult: Story<SearchPageBodyProps> = (args) => (
+  <SearchPageBody {...args} />
+);
+CustomSearchResult.decorators = WithSearchResult.decorators;
+CustomSearchResult.args = {
+  ...searchPageBodyProps,
+  customRenderSearchResults: (searchResult: SearchPageSearchResult) => (
+    <List>
+      {searchResult.content.results.map(({ name, uuid, version }) => (
+        <ListItem>
+          name: {name} | uuid: {uuid} | version: {version}
+        </ListItem>
+      ))}
+    </List>
+  ),
 };
