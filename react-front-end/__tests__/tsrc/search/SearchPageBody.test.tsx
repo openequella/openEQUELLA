@@ -20,9 +20,13 @@ import { createTheme } from "@material-ui/core/styles";
 import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
 import * as React from "react";
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import { Router } from "react-router-dom";
 import { customRefinePanelControl } from "../../../__mocks__/RefinePanelControl.mock";
+import { getRemoteSearchesFromServerResult } from "../../../__mocks__/RemoteSearchModule.mock";
+import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
+import * as RemoteSearchModule from "../../../tsrc/modules/RemoteSearchModule";
+import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import { defaultSearchSettings } from "../../../tsrc/modules/SearchSettingsModule";
 import { SearchContext } from "../../../tsrc/search/Search";
 import {
@@ -42,6 +46,13 @@ import {
   queryRefineSearchComponent,
 } from "./SearchPageTestHelper";
 
+const remoteSearchesPromise = jest
+  .spyOn(RemoteSearchModule, "getRemoteSearchesFromServer")
+  .mockResolvedValue(getRemoteSearchesFromServerResult);
+const collectionPromise = jest
+  .spyOn(CollectionsModule, "collectionListSummary")
+  .mockResolvedValue(getCollectionMap);
+
 const defaultSearchPageBodyProps: SearchPageBodyProps = {
   pathname: "/page/search",
 };
@@ -52,19 +63,26 @@ const defaultTheme = createTheme({
 });
 
 describe("<SearchPageBody />", () => {
-  const renderSearchPageBody = (
+  const renderSearchPageBody = async (
     props: SearchPageBodyProps = defaultSearchPageBodyProps
   ) => {
-    return render(
+    const page = render(
       <MuiThemeProvider theme={defaultTheme}>
         <SearchPageBody {...props} />
       </MuiThemeProvider>
     );
+
+    await act(async () => {
+      await remoteSearchesPromise;
+      await collectionPromise;
+    });
+
+    return page;
   };
 
-  it("supports additional panels", () => {
+  it("supports additional panels", async () => {
     const label = "additional Panel";
-    const { queryByLabelText } = renderSearchPageBody({
+    const { queryByLabelText } = await renderSearchPageBody({
       ...defaultSearchPageBodyProps,
       additionalPanels: [<div aria-label={label} />],
     });
@@ -72,9 +90,9 @@ describe("<SearchPageBody />", () => {
     expect(queryByLabelText(label)).toBeInTheDocument();
   });
 
-  it("supports additional headers", () => {
+  it("supports additional headers", async () => {
     const text = "additional button";
-    const { queryByText } = renderSearchPageBody({
+    const { queryByText } = await renderSearchPageBody({
       ...defaultSearchPageBodyProps,
       additionalPanels: [<button>{text}</button>],
     });
@@ -82,9 +100,9 @@ describe("<SearchPageBody />", () => {
     expect(queryByText(text, { selector: "button" })).toBeInTheDocument();
   });
 
-  it("controls the visibility of Refine search filters", () => {
+  it("controls the visibility of Refine search filters", async () => {
     // Because each filter is controlled in the same way, we use CollectionSelector as the testing target.
-    const { container } = renderSearchPageBody({
+    const { container } = await renderSearchPageBody({
       ...defaultSearchPageBodyProps,
       refinePanelConfig: {
         ...defaultSearchPageRefinePanelConfig,
@@ -96,9 +114,9 @@ describe("<SearchPageBody />", () => {
     expect(queryCollectionSelector(container)).not.toBeInTheDocument();
   });
 
-  it("supports custom sorting options", () => {
+  it("supports custom sorting options", async () => {
     const option = "custom option";
-    const { container } = renderSearchPageBody({
+    const { container } = await renderSearchPageBody({
       ...defaultSearchPageBodyProps,
       headerConfig: {
         customSortingOptions: new Map([["RANK", option]]),
@@ -113,8 +131,8 @@ describe("<SearchPageBody />", () => {
     expect(screen.queryByText(option)).toBeInTheDocument();
   });
 
-  it("supports displaying custom Refine panel controls", () => {
-    const { container } = renderSearchPageBody({
+  it("supports displaying custom Refine panel controls", async () => {
+    const { container } = await renderSearchPageBody({
       ...defaultSearchPageBodyProps,
       refinePanelConfig: {
         ...defaultSearchPageRefinePanelConfig,
