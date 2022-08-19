@@ -51,7 +51,7 @@ const buildMyResourcesSearchPageOptions = (
 ) => ({
   ...defaultSearchPageOptions,
   status,
-  owner: guestUser,
+  owner: getCurrentUserMock,
   sortOrder: "RANK",
 });
 
@@ -78,7 +78,7 @@ const searchPromise = mockSearch.mockResolvedValue(getSearchResult);
 describe("<MyResourcesPage/>", () => {
   const renderMyResourcesPage = async (
     resourceType: MyResourcesType = "Published",
-    currentUser: OEQ.LegacyContent.CurrentUserDetails = guestUser
+    currentUser: OEQ.LegacyContent.CurrentUserDetails = getCurrentUserMock
   ) => {
     history.push("/page/myresources", {
       customData: {
@@ -203,7 +203,7 @@ describe("<MyResourcesPage/>", () => {
   describe("Access to Scrapbook", () => {
     it.each([
       ["shows", "enabled", getCurrentUserMock, true],
-      ["hides", "disabled", undefined, false],
+      ["hides", "disabled", guestUser, false],
     ])(
       "%s the option of Scrapbook if access to Scrapbook is %s",
       async (
