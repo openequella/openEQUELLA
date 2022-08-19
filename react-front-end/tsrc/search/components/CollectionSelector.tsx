@@ -65,7 +65,11 @@ export const CollectionSelector = ({
         setCollections(
           pipe(
             collections,
-            A.sort(ORD.contramap<string, Collection>(({ name }) => name)(S.Ord))
+            A.sort(
+              ORD.contramap<string, Collection>(({ name }) =>
+                name.toLowerCase()
+              )(S.Ord)
+            )
           )
         )
       )
