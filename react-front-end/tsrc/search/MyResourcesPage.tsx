@@ -25,13 +25,20 @@ import { languageStrings } from "../util/langstrings";
 import { MyResourcesSelector } from "./components/MyResourcesSelector";
 import { myResourcesTypeToItemStatus } from "./MyResourcesPageHelper";
 import type { MyResourcesType } from "./MyResourcesPageHelper";
-import { Search, SearchContext, SearchPageHistoryState } from "./Search";
+import {
+  Search,
+  SearchContext,
+  SearchContextProps,
+  SearchPageHistoryState,
+} from "./Search";
 import { SearchPageBody } from "./SearchPageBody";
 import {
   defaultSearchPageHeaderConfig,
   defaultSearchPageOptions,
   defaultSearchPageRefinePanelConfig,
+  SearchPageHeaderConfig,
   SearchPageOptions,
+  SearchPageRefinePanelConfig,
 } from "./SearchPageHelper";
 
 interface MyResourcesPageContextProps {
@@ -69,7 +76,70 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     [currentUser, resourceType]
   );
 
-  const scrapbookSelected = resourceType === "Scrapbook";
+  const customSearchCriteria = (
+    myResourcesType: MyResourcesType = resourceType
+  ): SearchPageOptions => ({
+    ...defaultSearchPageOptions,
+    owner: currentUser,
+    status: myResourcesTypeToItemStatus(myResourcesType),
+  });
+
+  // Build an onChange event handler for MyResourcesSelector to do:
+  // 1. Updating currently selected resources type.
+  // 2. Performing a search with custom search criteria.
+  // 3. Saving currently selected resources type to the browser history.
+  const onChangeBuilder =
+    ({ search }: SearchContextProps) =>
+    (value: MyResourcesType) => {
+      setResourceType(value);
+
+      search(customSearchCriteria(value));
+
+      history.replace({
+        ...history.location,
+        state: {
+          ...history.location.state,
+          customData: {
+            myResourcesType: value,
+          },
+        },
+      });
+    };
+
+  const searchPageHeaderConfig: SearchPageHeaderConfig = {
+    ...defaultSearchPageHeaderConfig,
+    newSearchConfig: {
+      path: NEW_MY_RESOURCES_PATH,
+      criteria: customSearchCriteria(),
+    },
+  };
+
+  const searchPageRefinePanelConfig = (
+    searchContextProps: SearchContextProps
+  ): SearchPageRefinePanelConfig => ({
+    ...defaultSearchPageRefinePanelConfig,
+    enableItemStatusSelector: ["All resources", "Moderation queue"].includes(
+      resourceType
+    ),
+    enableDisplayModeSelector: resourceType !== "Moderation queue",
+    enableCollectionSelector: resourceType !== "Scrapbook",
+    enableAdvancedSearchSelector: false,
+    enableRemoteSearchSelector: false,
+    enableOwnerSelector: false,
+    customRefinePanelControl: [
+      {
+        idSuffix: "MyResourcesSelector",
+        title,
+        component: (
+          <MyResourcesSelector
+            value={resourceType}
+            onChange={onChangeBuilder(searchContextProps)}
+          />
+        ),
+        alwaysVisible: true,
+      },
+    ],
+  });
 
   return (
     <Search
@@ -82,65 +152,12 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
       pageTitle={title}
     >
       <SearchContext.Consumer>
-        {({ search, searchState }) => (
+        {(searchContextProps: SearchContextProps) => (
           <SearchPageBody
             pathname={NEW_MY_RESOURCES_PATH}
             enableClassification={false}
-            headerConfig={{
-              ...defaultSearchPageHeaderConfig,
-              newSearchConfig: {
-                path: NEW_MY_RESOURCES_PATH,
-                criteria: {
-                  ...defaultSearchPageOptions,
-                  owner: currentUser,
-                  status: myResourcesTypeToItemStatus(resourceType),
-                },
-              },
-            }}
-            refinePanelConfig={{
-              ...defaultSearchPageRefinePanelConfig,
-              enableItemStatusSelector: [
-                "All resources",
-                "Moderation queue",
-              ].includes(resourceType),
-              enableDisplayModeSelector: !scrapbookSelected,
-              enableCollectionSelector: !scrapbookSelected,
-              enableAdvancedSearchSelector: false,
-              enableRemoteSearchSelector: false,
-              enableOwnerSelector: false,
-              customRefinePanelControl: [
-                {
-                  idSuffix: "MyResourcesSelector",
-                  title,
-                  component: (
-                    <MyResourcesSelector
-                      value={resourceType}
-                      onChange={(resourcesType) => {
-                        setResourceType(resourcesType);
-
-                        // Trigger a search with Item statuses that match the new resource type.
-                        search({
-                          ...searchState.options,
-                          status: myResourcesTypeToItemStatus(resourcesType),
-                        });
-
-                        // Also save the selected My resources type in the browser history.
-                        history.replace({
-                          ...history.location,
-                          state: {
-                            ...history.location.state,
-                            customData: {
-                              myResourcesType: resourcesType,
-                            },
-                          },
-                        });
-                      }}
-                    />
-                  ),
-                  alwaysVisible: true,
-                },
-              ],
-            }}
+            headerConfig={searchPageHeaderConfig}
+            refinePanelConfig={searchPageRefinePanelConfig(searchContextProps)}
           />
         )}
       </SearchContext.Consumer>
