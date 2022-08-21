@@ -20,7 +20,7 @@ import { DELETE } from './AxiosInstance';
 const SCRAPBOOK_API_PATH = '/scrapbook';
 
 /**
- * Send a DELETE request to the endpoint for Scrapbook to delete one Scrapbook Item.
+ * Deletes the Scrapbook Item specified by `uuid`.
  *
  * @param apiBasePath Base URI to the oEQ institution and API.
  * @param uuid UUID of the Scrapbook Item.
