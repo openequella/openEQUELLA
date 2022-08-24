@@ -15,8 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
 import { action } from "@storybook/addon-actions";
-import { Meta } from "@storybook/react";
+import { Meta, Story } from "@storybook/react";
 import * as React from "react";
 import { liveStatuses, nonLiveStatuses } from "../../tsrc/modules/SearchModule";
 import StatusSelector, {
@@ -28,19 +29,42 @@ export default {
   component: StatusSelector,
 } as Meta<StatusSelectorProps>;
 
-const commonParams = {
-  onChange: action("onChange"),
+const onChange = action("onChange");
+
+const basicSelectorParams = (
+  value: OEQ.Common.ItemStatus[] = liveStatuses,
+  advancedUse = false
+): StatusSelectorProps => ({
+  value,
+  advancedUse,
+  onChange,
+});
+
+export const BasicSelectorLiveOnly: Story<StatusSelectorProps> = (args) => (
+  <StatusSelector {...args} />
+);
+BasicSelectorLiveOnly.args = basicSelectorParams();
+
+export const BasicSelectorAllStatuses: Story<StatusSelectorProps> = (args) => (
+  <StatusSelector {...args} />
+);
+BasicSelectorAllStatuses.args = basicSelectorParams(
+  liveStatuses.concat(nonLiveStatuses)
+);
+
+export const DefaultAdvancedSelector: Story<StatusSelectorProps> = (args) => (
+  <StatusSelector {...args} />
+);
+DefaultAdvancedSelector.args = basicSelectorParams(
+  ["LIVE", "PERSONAL", "DRAFT"],
+  true
+);
+
+export const AdvancedSelectorCustomOptions: Story<StatusSelectorProps> = (
+  args
+) => <StatusSelector {...args} />;
+AdvancedSelectorCustomOptions.args = {
+  ...DefaultAdvancedSelector.args,
+  value: ["REVIEW"],
+  options: ["MODERATING", "REVIEW", "REJECTED"],
 };
-
-export const DefaultSelection = () => <StatusSelector {...commonParams} />;
-
-export const LiveSelection = () => (
-  <StatusSelector {...commonParams} value={liveStatuses} />
-);
-
-export const AllSelection = () => (
-  <StatusSelector
-    {...commonParams}
-    value={liveStatuses.concat(nonLiveStatuses)}
-  />
-);
