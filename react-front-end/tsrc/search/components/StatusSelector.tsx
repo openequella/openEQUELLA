@@ -39,7 +39,7 @@ export interface StatusSelectorProps {
   /**
    * A list of the currently selected statuses.
    *
-   * In normal node, this list is then used to determine one of two
+   * In normal mode, this list is then used to determine one of two
    * possible sets: live OR all. The main reason to not simply abstract this out to a boolean, is
    * to support the easy passing and storing of a value used in calls to the `SearchModule`.
    *
