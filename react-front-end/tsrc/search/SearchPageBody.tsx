@@ -72,7 +72,9 @@ import {
   SearchResultList,
 } from "./components/SearchResultList";
 import { SidePanel } from "./components/SidePanel";
-import StatusSelector from "./components/StatusSelector";
+import StatusSelector, {
+  StatusSelectorProps,
+} from "./components/StatusSelector";
 import { SearchContext } from "./Search";
 import {
   defaultPagedSearchResult,
@@ -175,6 +177,7 @@ export const SearchPageBody = ({
     enableMimeTypeSelector,
     enableOwnerSelector,
     enableSearchAttachmentsSelector,
+    statusSelectorCustomConfig = { alwaysEnabled: false },
   } = refinePanelConfig;
 
   const {
@@ -510,6 +513,18 @@ export const SearchPageBody = ({
     return isQueryOrFiltersSet || isClassificationSelected;
   };
 
+  const buildStatusSelector = () =>
+    pipe(
+      statusSelectorCustomConfig.selectorProps,
+      O.fromNullable,
+      O.getOrElse<StatusSelectorProps>(() => ({
+        advancedUse: false,
+        value: searchPageOptions.status,
+        onChange: handleStatusChange,
+      })),
+      (props) => <StatusSelector {...props} />
+    );
+
   const refinePanelControls: RefinePanelControl[] =
     customRefinePanelControl.concat([
       {
@@ -621,15 +636,11 @@ export const SearchPageBody = ({
       {
         idSuffix: "StatusSelector",
         title: searchStrings.statusSelector.title,
-        component: (
-          <StatusSelector
-            onChange={handleStatusChange}
-            value={searchPageOptions.status}
-          />
-        ),
+        component: buildStatusSelector(),
         disabled:
-          !enableItemStatusSelector ||
-          (!searchSettings.core?.searchingShowNonLiveCheckbox ?? true),
+          !statusSelectorCustomConfig?.alwaysEnabled &&
+          (!enableItemStatusSelector ||
+            (!searchSettings.core?.searchingShowNonLiveCheckbox ?? true)),
       },
       {
         idSuffix: "SearchAttachmentsSelector",
