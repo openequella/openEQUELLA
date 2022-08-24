@@ -23,6 +23,7 @@ import { AppContext } from "../mainui/App";
 import { NEW_MY_RESOURCES_PATH } from "../mainui/routes";
 import { TemplateUpdateProps } from "../mainui/Template";
 import { nonDeletedStatuses } from "../modules/SearchModule";
+import { defaultSearchSettings } from "../modules/SearchSettingsModule";
 import { languageStrings } from "../util/langstrings";
 import { MyResourcesSelector } from "./components/MyResourcesSelector";
 import type { StatusSelectorProps } from "./components/StatusSelector";
@@ -83,11 +84,13 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
   );
 
   const customSearchCriteria = (
-    myResourcesType: MyResourcesType = resourceType
+    myResourcesType: MyResourcesType,
+    { defaultSearchSort }: OEQ.SearchSettings.Settings = defaultSearchSettings
   ): SearchPageOptions => ({
     ...defaultSearchPageOptions,
     owner: currentUser,
     status: myResourcesTypeToItemStatus(myResourcesType),
+    sortOrder: defaultSearchSort,
   });
 
   // Build an onChange event handler for MyResourcesSelector to do:
@@ -95,12 +98,12 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
   // 2. Performing a search with custom search criteria.
   // 3. Saving currently selected resources type to the browser history.
   const onChangeBuilder =
-    ({ search }: SearchContextProps) =>
+    ({ search, searchSettings: { core } }: SearchContextProps) =>
     (value: MyResourcesType) => {
       setResourceType(value);
       setSubStatus([]);
 
-      search(customSearchCriteria(value));
+      search(customSearchCriteria(value, core));
 
       history.replace({
         ...history.location,
@@ -113,13 +116,15 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
       });
     };
 
-  const searchPageHeaderConfig: SearchPageHeaderConfig = {
+  const searchPageHeaderConfig = ({
+    searchSettings: { core },
+  }: SearchContextProps): SearchPageHeaderConfig => ({
     ...defaultSearchPageHeaderConfig,
     newSearchConfig: {
       path: NEW_MY_RESOURCES_PATH,
-      criteria: customSearchCriteria(),
+      criteria: customSearchCriteria(resourceType, core),
     },
-  };
+  });
 
   // Build custom configuration for Status selector.
   // 1. Turn on the Advanced mode to allow the selection of individual status.
@@ -200,7 +205,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
           <SearchPageBody
             pathname={NEW_MY_RESOURCES_PATH}
             enableClassification={false}
-            headerConfig={searchPageHeaderConfig}
+            headerConfig={searchPageHeaderConfig(searchContextProps)}
             refinePanelConfig={searchPageRefinePanelConfig(searchContextProps)}
           />
         )}
