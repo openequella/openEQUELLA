@@ -41,7 +41,7 @@
     "fp-ts": "2.12.2",
     "fp-ts-contrib": "0.1.29",
     "history": "4.10.1",
-    "html-react-parser": "3.0.1",
+    "html-react-parser": "3.0.4",
     "jspolyfill-array.prototype.find": "0.1.3",
     "lodash": "4.17.21",
     "luxon": "1.28.0",
