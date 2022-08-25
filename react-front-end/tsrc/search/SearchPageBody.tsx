@@ -518,7 +518,6 @@ export const SearchPageBody = ({
       statusSelectorCustomConfig.selectorProps,
       O.fromNullable,
       O.getOrElse<StatusSelectorProps>(() => ({
-        advancedUse: false,
         value: searchPageOptions.status,
         onChange: handleStatusChange,
       })),

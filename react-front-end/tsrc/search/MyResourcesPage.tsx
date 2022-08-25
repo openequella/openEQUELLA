@@ -146,8 +146,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     };
 
     return {
-      advancedUse: true,
-      options,
+      advancedMode: { options },
       onChange,
       value: subStatus,
     };

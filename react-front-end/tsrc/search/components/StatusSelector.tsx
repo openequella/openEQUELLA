@@ -22,26 +22,21 @@ import { Autocomplete } from "@material-ui/lab";
 import * as OEQ from "@openequella/rest-api-client";
 import { isEqual } from "lodash";
 import * as React from "react";
-import {
-  liveStatuses,
-  nonDeletedStatuses,
-  nonLiveStatuses,
-} from "../../modules/SearchModule";
+import { liveStatuses, nonLiveStatuses } from "../../modules/SearchModule";
 import { languageStrings } from "../../util/langstrings";
 
 const { title, live, all } = languageStrings.searchpage.statusSelector;
 
+interface AdvancedModeProps {
+  options: OEQ.Common.ItemStatus[];
+}
+
 export interface StatusSelectorProps {
-  /**
-   * `true` to show a Drop-down and `false` to show a Button group.
-   */
-  advancedUse: boolean;
   /**
    * A list of the currently selected statuses.
    *
    * In normal mode, this list is then used to determine one of two
-   * possible sets: live OR all. The main reason to not simply abstract this out to a boolean, is
-   * to support the easy passing and storing of a value used in calls to the `SearchModule`.
+   * possible sets: live OR all.
    *
    * In advanced mode, this list determines what statuses have been selected.
    */
@@ -54,9 +49,16 @@ export interface StatusSelectorProps {
    */
   onChange: (value: OEQ.Common.ItemStatus[]) => void;
   /**
-   * Custom Item statuses used in the advanced mode as the Drop-down options.
+   * Use the component in advanced mode with a list of Item statuses.
    */
-  options?: OEQ.Common.ItemStatus[];
+  advancedMode?: AdvancedModeProps;
+}
+
+interface AdvancedSelectorProps extends StatusSelectorProps {
+  /**
+   * Override advancedMode to make it mandatory.
+   */
+  advancedMode: AdvancedModeProps;
 }
 
 const NormalSelector = ({
@@ -90,9 +92,9 @@ const NormalSelector = ({
 
 const AdvancedSelector = ({
   value,
-  options = nonDeletedStatuses,
+  advancedMode: { options },
   onChange,
-}: StatusSelectorProps) => (
+}: AdvancedSelectorProps) => (
   <Autocomplete
     fullWidth
     multiple
@@ -137,8 +139,8 @@ const AdvancedSelector = ({
  * customising Drop-down options and multiple selections.
  */
 const StatusSelector = (props: StatusSelectorProps) =>
-  props.advancedUse ? (
-    <AdvancedSelector {...props} />
+  props.advancedMode ? (
+    <AdvancedSelector {...props} advancedMode={props.advancedMode} />
   ) : (
     <NormalSelector {...props} />
   );
