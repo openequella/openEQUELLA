@@ -43,6 +43,7 @@ import {
   SearchPageOptions,
   SearchPageRefinePanelConfig,
 } from "./SearchPageHelper";
+import * as A from "fp-ts/Array";
 
 interface MyResourcesPageContextProps {
   onChange: (resourceType: MyResourcesType) => void;
@@ -139,7 +140,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     const onChange = (value: OEQ.Common.ItemStatus[]) => {
       search({
         ...searchPageOptions,
-        status: value.length > 0 ? value : options,
+        status: A.isEmpty(value) ? value : options,
       });
       setSubStatus(value);
     };
