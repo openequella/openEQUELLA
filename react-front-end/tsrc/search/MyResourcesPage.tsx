@@ -15,14 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { createContext, useCallback, useContext, useState } from "react";
 import { useHistory } from "react-router";
 import { AppContext } from "../mainui/App";
 import { NEW_MY_RESOURCES_PATH } from "../mainui/routes";
 import { TemplateUpdateProps } from "../mainui/Template";
+import { nonDeletedStatuses } from "../modules/SearchModule";
 import { languageStrings } from "../util/langstrings";
 import { MyResourcesSelector } from "./components/MyResourcesSelector";
+import type { StatusSelectorProps } from "./components/StatusSelector";
 import { myResourcesTypeToItemStatus } from "./MyResourcesPageHelper";
 import type { MyResourcesType } from "./MyResourcesPageHelper";
 import {
@@ -40,6 +43,7 @@ import {
   SearchPageOptions,
   SearchPageRefinePanelConfig,
 } from "./SearchPageHelper";
+import * as A from "fp-ts/Array";
 
 interface MyResourcesPageContextProps {
   onChange: (resourceType: MyResourcesType) => void;
@@ -67,6 +71,9 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     history.location.state?.customData?.["myResourcesType"] ?? "Published"
   );
 
+  // The sub-statuses refer to Item statuses that can be selected from Moderation queue and All resources.
+  const [subStatus, setSubStatus] = useState<OEQ.Common.ItemStatus[]>([]);
+
   const myResourcesInitialSearchOptions = useCallback(
     (searchPageOptions: SearchPageOptions): SearchPageOptions => ({
       ...searchPageOptions,
@@ -85,13 +92,14 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
   });
 
   // Build an onChange event handler for MyResourcesSelector to do:
-  // 1. Updating currently selected resources type.
+  // 1. Updating currently selected resources type and clear selected sub-statuses.
   // 2. Performing a search with custom search criteria.
   // 3. Saving currently selected resources type to the browser history.
   const onChangeBuilder =
     ({ search }: SearchContextProps) =>
     (value: MyResourcesType) => {
       setResourceType(value);
+      setSubStatus([]);
 
       search(customSearchCriteria(value));
 
@@ -114,13 +122,40 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     },
   };
 
+  // Build custom configuration for Status selector.
+  // 1. Turn on the Advanced mode to allow the selection of individual status.
+  // 2. The available status options are "MODERATING", "REVIEW" and "REJECTED" for Moderation queue
+  // and all statuses except "DELETED" for All resources.
+  // 3. The 'onChange' handler includes all available statuses in the search criteria when no status is selected,
+  // and it also updates the selected sub-status.
+  const buildStatusSelectorCustomConfig = ({
+    search,
+    searchState: { options: searchPageOptions },
+  }: SearchContextProps): StatusSelectorProps => {
+    const options: OEQ.Common.ItemStatus[] =
+      "Moderation queue" === resourceType
+        ? ["MODERATING", "REVIEW", "REJECTED"]
+        : nonDeletedStatuses;
+
+    const onChange = (value: OEQ.Common.ItemStatus[]) => {
+      search({
+        ...searchPageOptions,
+        status: A.isNonEmpty(value) ? value : options,
+      });
+      setSubStatus(value);
+    };
+
+    return {
+      advancedMode: { options },
+      onChange,
+      value: subStatus,
+    };
+  };
+
   const searchPageRefinePanelConfig = (
     searchContextProps: SearchContextProps
   ): SearchPageRefinePanelConfig => ({
     ...defaultSearchPageRefinePanelConfig,
-    enableItemStatusSelector: ["All resources", "Moderation queue"].includes(
-      resourceType
-    ),
     enableDisplayModeSelector: resourceType !== "Moderation queue",
     enableCollectionSelector: resourceType !== "Scrapbook",
     enableAdvancedSearchSelector: false,
@@ -139,6 +174,15 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
         alwaysVisible: true,
       },
     ],
+    // Always enable Status selector for Moderation queue and All resources through the custom config,
+    // so set `false` to 'enableItemStatusSelector' for other resource types.
+    enableItemStatusSelector: false,
+    statusSelectorCustomConfig: {
+      alwaysEnabled: ["Moderation queue", "All resources"].includes(
+        resourceType
+      ),
+      selectorProps: buildStatusSelectorCustomConfig(searchContextProps),
+    },
   });
 
   return (

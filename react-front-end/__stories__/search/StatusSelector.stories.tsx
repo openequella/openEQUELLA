@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { action } from "@storybook/addon-actions";
-import { Meta } from "@storybook/react";
+import { Meta, Story } from "@storybook/react";
 import * as React from "react";
 import { liveStatuses, nonLiveStatuses } from "../../tsrc/modules/SearchModule";
 import StatusSelector, {
@@ -28,19 +28,31 @@ export default {
   component: StatusSelector,
 } as Meta<StatusSelectorProps>;
 
-const commonParams = {
-  onChange: action("onChange"),
+const onChange = action("onChange");
+
+export const BasicSelectorLiveOnly: Story<StatusSelectorProps> = (args) => (
+  <StatusSelector {...args} />
+);
+BasicSelectorLiveOnly.args = {
+  value: liveStatuses,
+  onChange,
 };
 
-export const DefaultSelection = () => <StatusSelector {...commonParams} />;
-
-export const LiveSelection = () => (
-  <StatusSelector {...commonParams} value={liveStatuses} />
+export const BasicSelectorAllStatuses: Story<StatusSelectorProps> = (args) => (
+  <StatusSelector {...args} />
 );
+BasicSelectorAllStatuses.args = {
+  ...BasicSelectorLiveOnly.args,
+  value: liveStatuses.concat(nonLiveStatuses),
+};
 
-export const AllSelection = () => (
-  <StatusSelector
-    {...commonParams}
-    value={liveStatuses.concat(nonLiveStatuses)}
-  />
-);
+export const AdvancedSelectorCustomOptions: Story<StatusSelectorProps> = (
+  args
+) => <StatusSelector {...args} />;
+AdvancedSelectorCustomOptions.args = {
+  ...BasicSelectorLiveOnly.args,
+  value: ["REVIEW"],
+  advancedMode: {
+    options: ["MODERATING", "REVIEW", "REJECTED"],
+  },
+};

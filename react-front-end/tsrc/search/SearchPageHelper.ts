@@ -75,6 +75,7 @@ import { languageStrings } from "../util/langstrings";
 import { simpleMatch } from "../util/match";
 import { pfTernary } from "../util/pointfree";
 import type { RefinePanelControl } from "./components/RefineSearchPanel";
+import type { StatusSelectorProps } from "./components/StatusSelector";
 
 /**
  * This helper is intended to assist with processing related to the Presentation Layer -
@@ -193,13 +194,27 @@ export interface SearchPageRefinePanelConfig {
    */
   enableOwnerSelector?: boolean;
   /**
-   * `true` to enable the Item Status selector.
-   */
-  enableItemStatusSelector?: boolean;
-  /**
    * `true` to enable the Search Attachment selector.
    */
   enableSearchAttachmentsSelector?: boolean;
+  /**
+   * `true` to enable the Item Status selector. However, whether the selector is displayed
+   * also depends on the Search settings.
+   */
+  enableItemStatusSelector?: boolean;
+  /**
+   * Custom configuration for Status selector.
+   */
+  statusSelectorCustomConfig?: {
+    /**
+     * `true` to always show the selector regardless of 'enableItemStatusSelector' and the Search settings.
+     */
+    alwaysEnabled: boolean;
+    /**
+     * Props passed to the selector for customisation.
+     */
+    selectorProps?: StatusSelectorProps;
+  };
 }
 
 export const defaultSearchPageRefinePanelConfig: SearchPageRefinePanelConfig = {

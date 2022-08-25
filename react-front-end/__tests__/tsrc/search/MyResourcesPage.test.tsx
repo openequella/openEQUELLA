@@ -163,13 +163,26 @@ describe("<MyResourcesPage/>", () => {
     });
 
     it.each([["Moderation queue"], ["All resources"]])(
-      "shows Item status selector for %s",
+      "uses Item status selector in advanced mode for %s even though the selector is not enabled in Search settings",
       async (resourceType: string) => {
+        mockSearchSettings.mockResolvedValueOnce({
+          ...defaultSearchSettings,
+          searchingShowNonLiveCheckbox: false,
+        });
+
         const { container } = await renderMyResourcesPage(
           resourceType as MyResourcesType
         );
+
+        const statusSelector = queryRefineSearchComponent(
+          container,
+          "StatusSelector"
+        );
+        expect(statusSelector).toBeInTheDocument();
+
+        // The selector is used in advanced mode so there should be a text input within it.
         expect(
-          queryRefineSearchComponent(container, "StatusSelector")
+          statusSelector?.querySelector("input[type='text']")
         ).toBeInTheDocument();
       }
     );
