@@ -140,7 +140,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     const onChange = (value: OEQ.Common.ItemStatus[]) => {
       search({
         ...searchPageOptions,
-        status: A.isEmpty(value) ? value : options,
+        status: A.isNonEmpty(value) ? value : options,
       });
       setSubStatus(value);
     };
