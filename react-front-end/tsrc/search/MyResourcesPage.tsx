@@ -26,7 +26,10 @@ import { nonDeletedStatuses } from "../modules/SearchModule";
 import { languageStrings } from "../util/langstrings";
 import { MyResourcesSelector } from "./components/MyResourcesSelector";
 import type { StatusSelectorProps } from "./components/StatusSelector";
-import { myResourcesTypeToItemStatus } from "./MyResourcesPageHelper";
+import {
+  defaultSortOrder,
+  myResourcesTypeToItemStatus,
+} from "./MyResourcesPageHelper";
 import type { MyResourcesType } from "./MyResourcesPageHelper";
 import {
   Search,
@@ -78,8 +81,15 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ...searchPageOptions,
       owner: currentUser,
       status: myResourcesTypeToItemStatus(resourceType),
+      // The sort order in My resources initial search is a bit different. If no sort order
+      // is present in either the browser history or query string, we use the custom default
+      // sort order rather than the one configured in Search settings.
+      sortOrder:
+        // todo: support getting the sort order from query string.
+        history.location.state?.searchPageOptions?.sortOrder ??
+        defaultSortOrder(resourceType),
     }),
-    [currentUser, resourceType]
+    [currentUser, history, resourceType]
   );
 
   const customSearchCriteria = (
@@ -88,6 +98,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     ...defaultSearchPageOptions,
     owner: currentUser,
     status: myResourcesTypeToItemStatus(myResourcesType),
+    sortOrder: defaultSortOrder(resourceType),
   });
 
   // Build an onChange event handler for MyResourcesSelector to do:

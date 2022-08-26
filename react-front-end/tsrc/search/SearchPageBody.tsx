@@ -268,13 +268,14 @@ export const SearchPageBody = ({
   const handleClearSearchOptions = () => {
     doSearch({
       ...defaultSearchPageOptions,
-      ...newSearchConfig?.criteria,
       sortOrder: searchSettings.core?.defaultSearchSort,
       externalMimeTypes: isSelectionSessionOpen()
         ? searchPageOptions.externalMimeTypes
         : undefined,
       // As per requirements for persistence of rawMode, it is _not_ reset for New Searches
       rawMode: searchPageOptions.rawMode,
+      // Apply custom new search criteria.
+      ...newSearchConfig?.criteria,
     });
     setFilterExpansion(false);
 
