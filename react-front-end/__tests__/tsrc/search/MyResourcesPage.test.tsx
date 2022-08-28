@@ -31,6 +31,7 @@ import { nonDeletedStatuses } from "../../../tsrc/modules/SearchModule";
 import { defaultSearchSettings } from "../../../tsrc/modules/SearchSettingsModule";
 import { guestUser } from "../../../tsrc/modules/UserModule";
 import MyResourcesPage from "../../../tsrc/search/MyResourcesPage";
+import { defaultSortOrder } from "../../../tsrc/search/MyResourcesPageHelper";
 import type { MyResourcesType } from "../../../tsrc/search/MyResourcesPageHelper";
 import { defaultSearchPageOptions } from "../../../tsrc/search/SearchPageHelper";
 import { languageStrings } from "../../../tsrc/util/langstrings";
@@ -47,12 +48,13 @@ const defaultTheme = createTheme({
   props: { MuiWithWidth: { initialWidth: "md" } },
 });
 const buildMyResourcesSearchPageOptions = (
-  status: OEQ.Common.ItemStatus[]
+  status: OEQ.Common.ItemStatus[],
+  resourcesType: MyResourcesType
 ) => ({
   ...defaultSearchPageOptions,
   status,
   owner: getCurrentUserMock,
-  sortOrder: "RANK",
+  sortOrder: defaultSortOrder(resourcesType),
 });
 
 const {
@@ -122,7 +124,7 @@ describe("<MyResourcesPage/>", () => {
       ) => {
         await renderMyResourcesPage(resourcesType);
         expect(mockSearch).toHaveBeenLastCalledWith({
-          ...buildMyResourcesSearchPageOptions(statuses),
+          ...buildMyResourcesSearchPageOptions(statuses, resourcesType),
           includeAttachments: false,
         });
       }
@@ -203,9 +205,13 @@ describe("<MyResourcesPage/>", () => {
 
   describe("Browser history data", () => {
     it("saves currently selected My resources type in the browser history", async () => {
-      await renderMyResourcesPage("Archive");
+      const resourceType: MyResourcesType = "Archive";
+      await renderMyResourcesPage(resourceType);
       expect(history.location.state).toEqual({
-        searchPageOptions: buildMyResourcesSearchPageOptions(["ARCHIVED"]),
+        searchPageOptions: buildMyResourcesSearchPageOptions(
+          ["ARCHIVED"],
+          resourceType
+        ),
         customData: {
           myResourcesType: "Archive",
         },
