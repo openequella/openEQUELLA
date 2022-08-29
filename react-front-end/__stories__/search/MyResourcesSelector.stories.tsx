@@ -20,7 +20,7 @@ import * as React from "react";
 import {
   MyResourcesSelector,
   MyResourcesSelectorProps,
-} from "../../tsrc/search/components/MyResourcesSelector";
+} from "../../tsrc/myresources/components/MyResourcesSelector";
 
 export default {
   title: "Search/MyResourcesSelector",

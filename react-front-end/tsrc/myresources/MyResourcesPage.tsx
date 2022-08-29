@@ -25,7 +25,7 @@ import { TemplateUpdateProps } from "../mainui/Template";
 import { nonDeletedStatuses } from "../modules/SearchModule";
 import { languageStrings } from "../util/langstrings";
 import { MyResourcesSelector } from "./components/MyResourcesSelector";
-import type { StatusSelectorProps } from "./components/StatusSelector";
+import type { StatusSelectorProps } from "../search/components/StatusSelector";
 import {
   defaultSortOrder,
   myResourcesTypeToItemStatus,
@@ -36,8 +36,8 @@ import {
   SearchContext,
   SearchContextProps,
   SearchPageHistoryState,
-} from "./Search";
-import { SearchPageBody } from "./SearchPageBody";
+} from "../search/Search";
+import { SearchPageBody } from "../search/SearchPageBody";
 import {
   defaultSearchPageHeaderConfig,
   defaultSearchPageOptions,
@@ -45,7 +45,7 @@ import {
   SearchPageHeaderConfig,
   SearchPageOptions,
   SearchPageRefinePanelConfig,
-} from "./SearchPageHelper";
+} from "../search/SearchPageHelper";
 import * as A from "fp-ts/Array";
 
 interface MyResourcesPageContextProps {
