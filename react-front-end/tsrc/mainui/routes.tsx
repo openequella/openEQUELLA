@@ -40,7 +40,9 @@ const FacetedSearchSettingsPage = React.lazy(
 const ContentIndexSettings = React.lazy(
   () => import("../settings/Search/ContentIndexSettings")
 );
-const MyResourcesPage = React.lazy(() => import("../search/MyResourcesPage"));
+const MyResourcesPage = React.lazy(
+  () => import("../myresources/MyResourcesPage")
+);
 
 export interface BaseOEQRouteComponentProps {
   updateTemplate: (edit: TemplateUpdate) => void;

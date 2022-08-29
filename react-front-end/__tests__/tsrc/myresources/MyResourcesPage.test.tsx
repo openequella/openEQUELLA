@@ -30,9 +30,9 @@ import { AppContext } from "../../../tsrc/mainui/App";
 import { nonDeletedStatuses } from "../../../tsrc/modules/SearchModule";
 import { defaultSearchSettings } from "../../../tsrc/modules/SearchSettingsModule";
 import { guestUser } from "../../../tsrc/modules/UserModule";
-import MyResourcesPage from "../../../tsrc/search/MyResourcesPage";
-import { defaultSortOrder } from "../../../tsrc/search/MyResourcesPageHelper";
-import type { MyResourcesType } from "../../../tsrc/search/MyResourcesPageHelper";
+import MyResourcesPage from "../../../tsrc/myresources/MyResourcesPage";
+import { defaultSortOrder } from "../../../tsrc/myresources/MyResourcesPageHelper";
+import type { MyResourcesType } from "../../../tsrc/myresources/MyResourcesPageHelper";
 import { defaultSearchPageOptions } from "../../../tsrc/search/SearchPageHelper";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import {
@@ -40,7 +40,7 @@ import {
   mockCollaborators,
   queryRefineSearchComponent,
   waitForSearch,
-} from "./SearchPageTestHelper";
+} from "../search/SearchPageTestHelper";
 import "@testing-library/jest-dom/extend-expect";
 
 const history = createMemoryHistory();
