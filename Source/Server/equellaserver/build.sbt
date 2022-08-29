@@ -174,7 +174,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces")
   ),
-  "org.apache.rampart" % "rampart-trust" % "1.6.2" excludeAll (
+  "org.apache.rampart" % "rampart-trust" % "1.7.1" excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces")
   ),
