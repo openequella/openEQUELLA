@@ -23,7 +23,7 @@ import {
 } from "../../tsrc/myresources/components/MyResourcesSelector";
 
 export default {
-  title: "Search/MyResourcesSelector",
+  title: "My Resources/MyResourcesSelector",
   component: MyResourcesSelector,
   argTypes: {
     onChange: {
