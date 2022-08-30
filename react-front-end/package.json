@@ -47,7 +47,7 @@
     "luxon": "1.28.0",
     "oeq-cloudproviders": "git+https://github.com/apereo/openEQUELLA-cloudprovidersdk.git#0debbd148bb47d0dfc2270bb47db028e70a22f74",
     "react": "17.0.2",
-    "react-beautiful-dnd": "13.1.0",
+    "react-beautiful-dnd": "13.1.1",
     "react-color": "2.19.3",
     "react-dom": "17.0.2",
     "react-dropzone": "14.2.2",
