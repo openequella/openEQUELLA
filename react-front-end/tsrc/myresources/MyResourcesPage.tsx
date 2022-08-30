@@ -19,23 +19,13 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { absurd } from "fp-ts/function";
 import * as React from "react";
-import { createContext, ReactNode, useContext, useMemo, useState } from "react";
+import { ReactNode, useContext, useMemo, useState } from "react";
 import { useHistory } from "react-router";
 import { AppContext } from "../mainui/App";
 import { NEW_MY_RESOURCES_PATH } from "../mainui/routes";
 import { TemplateUpdateProps } from "../mainui/Template";
 import { nonDeletedStatuses } from "../modules/SearchModule";
-import { languageStrings } from "../util/langstrings";
-import { MyResourcesSelector } from "./components/MyResourcesSelector";
 import type { StatusSelectorProps } from "../search/components/StatusSelector";
-import type { MyResourcesType } from "./MyResourcesPageHelper";
-import {
-  customUIForMyResources,
-  defaultSortOrder,
-  myResourcesTypeToItemStatus,
-  renderAllResources,
-  scrapbookSearchResult,
-} from "./MyResourcesPageHelper";
 import {
   Search,
   SearchContext,
@@ -52,15 +42,16 @@ import {
   SearchPageRefinePanelConfig,
 } from "../search/SearchPageHelper";
 import type { SearchPageSearchResult } from "../search/SearchPageReducer";
-
-interface MyResourcesPageContextProps {
-  onChange: (resourceType: MyResourcesType) => void;
-}
-
-export const MyResourcesPageContext =
-  createContext<MyResourcesPageContextProps>({
-    onChange: () => {},
-  });
+import { languageStrings } from "../util/langstrings";
+import { MyResourcesSelector } from "./components/MyResourcesSelector";
+import type { MyResourcesType } from "./MyResourcesPageHelper";
+import {
+  customUIForMyResources,
+  defaultSortOrder,
+  myResourcesTypeToItemStatus,
+  renderAllResources,
+  scrapbookSearchResult,
+} from "./MyResourcesPageHelper";
 
 const { title } = languageStrings.myResources;
 
