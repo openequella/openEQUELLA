@@ -17,7 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
-import { createContext, useCallback, useContext, useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 import { useHistory } from "react-router";
 import { AppContext } from "../mainui/App";
 import { NEW_MY_RESOURCES_PATH } from "../mainui/routes";
@@ -77,20 +77,30 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
   // The sub-statuses refer to Item statuses that can be selected from Moderation queue and All resources.
   const [subStatus, setSubStatus] = useState<OEQ.Common.ItemStatus[]>([]);
 
-  const myResourcesInitialSearchOptions = useCallback(
-    (searchPageOptions: SearchPageOptions): SearchPageOptions => ({
-      ...searchPageOptions,
-      owner: currentUser,
-      status: myResourcesTypeToItemStatus(resourceType),
-      // The sort order in My resources initial search is a bit different. If no sort order
-      // is present in either the browser history or query string, we use the custom default
-      // sort order rather than the one configured in Search settings.
-      sortOrder:
-        // todo: support getting the sort order from query string.
-        history.location.state?.searchPageOptions?.sortOrder ??
-        defaultSortOrder(resourceType),
+  const initialSearchConfig = useMemo(
+    () => ({
+      ready: true,
+      listInitialClassifications: true,
+      customiseInitialSearchOptions: (
+        searchPageOptions: SearchPageOptions
+      ): SearchPageOptions => ({
+        ...searchPageOptions,
+        owner: currentUser,
+        status: myResourcesTypeToItemStatus(resourceType),
+        // The sort order in My resources initial search is a bit different. If no sort order
+        // is present in either the browser history or query string, we use the custom default
+        // sort order rather than the one configured in Search settings.
+        sortOrder:
+          // todo: support getting the sort order from query string.
+          history.location.state?.searchPageOptions?.sortOrder ??
+          defaultSortOrder(resourceType),
+      }),
     }),
-    [currentUser, history, resourceType]
+    [
+      currentUser,
+      history.location.state?.searchPageOptions?.sortOrder,
+      resourceType,
+    ]
   );
 
   const customSearchCriteria = (
@@ -199,11 +209,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
   return (
     <Search
       updateTemplate={updateTemplate}
-      initialSearchConfig={{
-        ready: true,
-        listInitialClassifications: true,
-        customiseInitialSearchOptions: myResourcesInitialSearchOptions,
-      }}
+      initialSearchConfig={initialSearchConfig}
       pageTitle={title}
     >
       <SearchContext.Consumer>
