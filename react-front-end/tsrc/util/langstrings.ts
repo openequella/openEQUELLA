@@ -371,6 +371,9 @@ export const languageStrings = {
       archive: "Archive",
       all: "All resources",
     },
+    moderating: {
+      since: "Moderating since",
+    },
   },
   navigationguard: {
     title: "Close without saving?",

@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import * as A from "fp-ts/Array";
+import { absurd } from "fp-ts/function";
 import * as React from "react";
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, ReactNode, useContext, useMemo, useState } from "react";
 import { useHistory } from "react-router";
 import { AppContext } from "../mainui/App";
 import { NEW_MY_RESOURCES_PATH } from "../mainui/routes";
@@ -26,11 +28,14 @@ import { nonDeletedStatuses } from "../modules/SearchModule";
 import { languageStrings } from "../util/langstrings";
 import { MyResourcesSelector } from "./components/MyResourcesSelector";
 import type { StatusSelectorProps } from "../search/components/StatusSelector";
+import type { MyResourcesType } from "./MyResourcesPageHelper";
 import {
+  customUIForMyResources,
   defaultSortOrder,
   myResourcesTypeToItemStatus,
+  renderAllResources,
+  scrapbookSearchResult,
 } from "./MyResourcesPageHelper";
-import type { MyResourcesType } from "./MyResourcesPageHelper";
 import {
   Search,
   SearchContext,
@@ -46,7 +51,7 @@ import {
   SearchPageOptions,
   SearchPageRefinePanelConfig,
 } from "../search/SearchPageHelper";
-import * as A from "fp-ts/Array";
+import type { SearchPageSearchResult } from "../search/SearchPageReducer";
 
 interface MyResourcesPageContextProps {
   onChange: (resourceType: MyResourcesType) => void;
@@ -135,6 +140,41 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
       });
     };
 
+  // Return a function to render custom UI for the SearchResult in Scrapbook, Moderation queue
+  // and All resources. For others, return undefined.
+  const customSearchResultBuilder = ():
+    | ((searchResult: SearchPageSearchResult) => ReactNode)
+    | undefined => {
+    const scrapbookSearchResultBuilder = scrapbookSearchResult(
+      () => {}, // todo: Open the legacy page for editing Scrapbook.
+      () => {} // todo: Delete the Scrapbook and do a search again.
+    );
+
+    switch (resourceType) {
+      case "Published":
+        return undefined;
+      case "Drafts":
+        return undefined;
+      // todo: OEQ-1009: custom UI for Scrapbook
+      case "Scrapbook":
+        return undefined;
+      // todo: OEQ-990: custom UI for Moderation queue
+      case "Moderation queue":
+        return undefined;
+      case "Archive":
+        return undefined;
+      case "All resources":
+        return (result: SearchPageSearchResult) =>
+          customUIForMyResources(
+            result,
+            (items: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>) =>
+              renderAllResources(items, scrapbookSearchResultBuilder)
+          );
+      default:
+        return absurd(resourceType);
+    }
+  };
+
   const searchPageHeaderConfig: SearchPageHeaderConfig = {
     ...defaultSearchPageHeaderConfig,
     newSearchConfig: {
@@ -219,6 +259,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
             enableClassification={false}
             headerConfig={searchPageHeaderConfig}
             refinePanelConfig={searchPageRefinePanelConfig(searchContextProps)}
+            customRenderSearchResults={customSearchResultBuilder()}
           />
         )}
       </SearchContext.Consumer>

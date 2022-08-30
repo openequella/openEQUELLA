@@ -19,7 +19,12 @@ import { MuiThemeProvider } from "@material-ui/core";
 import { createTheme } from "@material-ui/core/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import { CurrentUserDetails } from "@openequella/rest-api-client/dist/LegacyContent";
-import { render, screen } from "@testing-library/react";
+import {
+  queryByLabelText,
+  queryByText,
+  render,
+  screen,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
 import * as React from "react";
@@ -243,5 +248,35 @@ describe("<MyResourcesPage/>", () => {
         expect(scrapbookOptionFound).toBe(expecting);
       }
     );
+  });
+
+  describe("custom UI for SearchResult", () => {
+    it("displays custom UI for Scrapbook in All resources", async () => {
+      const { getByText } = await renderMyResourcesPage("All resources");
+
+      // There is one Scrapbook in the search result and an Edit Icon button should be displayed for the Scrapbook.
+      const scrapbook = getByText("personal").closest("li");
+      if (!scrapbook) {
+        throw new Error("Failed to render SearchResult for Scrapbook");
+      }
+      expect(
+        queryByLabelText(scrapbook, languageStrings.common.action.edit)
+      ).toBeInTheDocument();
+
+      // There is one moderating Item in the search result so the text of 'Moderating since'
+      // should be displayed for this Item.
+      const moderatingItem = getByText("moderating").closest("li");
+      if (!moderatingItem) {
+        throw new Error(
+          "Failed to render SearchResult for Items in moderation"
+        );
+      }
+      expect(
+        queryByText(
+          moderatingItem,
+          languageStrings.myResources.moderating.since
+        )
+      ).toBeInTheDocument();
+    });
   });
 });
