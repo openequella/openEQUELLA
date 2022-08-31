@@ -23,7 +23,7 @@ import cats.implicits._
 import com.dytech.devlib.PropBagEx
 import com.dytech.edge.exceptions.{BadRequestException, DRMException}
 import com.tle.beans.entity.DynaCollection
-import com.tle.beans.item.{Comment, Item, ItemIdKey, ItemStatus}
+import com.tle.beans.item.{Comment, Item, ItemId, ItemIdKey, ItemStatus}
 import com.tle.common.Check
 import com.tle.common.beans.exception.NotFoundException
 import com.tle.common.collection.AttachmentConfigConstants
@@ -48,7 +48,8 @@ import com.tle.web.api.search.AttachmentHelper.{
 }
 import com.tle.web.api.search.model.AdditionalSearchParameters.buildAdvancedSearchCriteria
 import com.tle.web.api.search.model._
-import com.tle.beans.item.ItemStatus.{REJECTED, REVIEW, MODERATING};
+import com.tle.beans.item.ItemStatus.{MODERATING, REJECTED, REVIEW}
+
 import java.time.format.DateTimeParseException
 import java.time.{LocalDate, LocalDateTime, LocalTime, ZoneId}
 import java.util.Date
@@ -406,14 +407,36 @@ object SearchHelper {
     def standardDisplayFields = bean.getDisplayFields.asScala.toList
 
     def customDisplayFields: Option[DisplayField] = {
-      def personalTags =
-        Option(bean.getMetadata)
-          .map(new PropBagEx(_).getNode("keywords"))
+      def buildDisplayField(fieldName: String, content: Option[String]) =
+        content
           .filter(!Check.isEmpty(_))
-          .map(new SimpleI18NString(_)) // DisplayField requires its value to be an I18N string.
-          .map(new DisplayField("node", new SimpleI18NString("Tags"), _))
+          .map(new SimpleI18NString(_))
+          .map(new DisplayField("node", new SimpleI18NString(fieldName), _))
 
-      Option.when(bean.getStatus == ItemStatus.PERSONAL.toString)(personalTags).flatten
+      // If a Scrapbook is a file, the Display Field will show the file tags.
+      // If a Scrapbook is a web page, the Display Field will show a link which targets to the page.
+      def scrapbookDisplayField = {
+        def fileTags(properties: PropBagEx) =
+          Option(properties.getNode("keywords"))
+
+        def webPageTitle = {
+          val link = LegacyGuice.viewItemUrlFactory
+            .createFullItemUrl(new ItemId(bean.getUuid, bean.getVersion))
+          bean.getAttachments.asScala.headOption.map(page =>
+            s"<a href='${link.getHref + "viewpages.jsp"}'>${page.getDescription}</a>")
+        }
+
+        for {
+          properties <- Option(bean.getMetadata).map(new PropBagEx(_))
+          displayField <- properties.getNode("//content_type") match {
+            case "myresource" => buildDisplayField("Tags", fileTags(properties))
+            case "mypages"    => buildDisplayField("Web pages", webPageTitle)
+            case _            => None
+          }
+        } yield displayField
+      }
+
+      Option.when(bean.getStatus == ItemStatus.PERSONAL.toString)(scrapbookDisplayField).flatten
     }
 
     standardDisplayFields ++ customDisplayFields
