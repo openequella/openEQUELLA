@@ -23,6 +23,7 @@ import cats.implicits._
 import com.dytech.devlib.PropBagEx
 import com.dytech.edge.exceptions.{BadRequestException, DRMException}
 import com.tle.beans.entity.DynaCollection
+import com.tle.beans.item.ItemStatus.{MODERATING, REJECTED, REVIEW}
 import com.tle.beans.item.{Comment, Item, ItemIdKey, ItemStatus}
 import com.tle.common.Check
 import com.tle.common.beans.exception.NotFoundException
@@ -30,6 +31,7 @@ import com.tle.common.collection.AttachmentConfigConstants
 import com.tle.common.interfaces.SimpleI18NString
 import com.tle.common.search.DefaultSearch
 import com.tle.common.search.whereparser.WhereParser
+import com.tle.common.searching.SortField
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.freetext.queries.FreeTextBooleanQuery
 import com.tle.core.item.security.ItemSecurityConstants
@@ -48,12 +50,12 @@ import com.tle.web.api.search.AttachmentHelper.{
 }
 import com.tle.web.api.search.model.AdditionalSearchParameters.buildAdvancedSearchCriteria
 import com.tle.web.api.search.model._
-import com.tle.beans.item.ItemStatus.{REJECTED, REVIEW, MODERATING};
+
 import java.time.format.DateTimeParseException
 import java.time.{LocalDate, LocalDateTime, LocalTime, ZoneId}
 import java.util.Date
-import scala.jdk.CollectionConverters._
 import scala.collection.mutable.ListBuffer
+import scala.jdk.CollectionConverters._
 
 /**
   * This object provides functions that help validate a variety of search criteria(e.g.
@@ -100,9 +102,7 @@ object SearchHelper {
     search.setOwner(params.owner)
     search.setMimeTypes(params.mimeTypes.toList.asJava)
 
-    val orderType =
-      DefaultSearch.getOrderType(Option(params.order).map(_.toLowerCase).orNull, params.query)
-    search.setSortFields(orderType.getSortField(params.reverseOrder))
+    search.setSortFields(handleOrder(params))
 
     val collectionUuids = handleCollections(params.advancedSearch, params.collections)
     search.setCollectionUuids(collectionUuids.orNull)
@@ -134,6 +134,24 @@ object SearchHelper {
     }
 
     search
+  }
+
+  /**
+    * Using a number of the fields from `params` determines what is the requested sort order and
+    * captures that in a `SortField` which is used in setting the order in DefaultSearch. However
+    * if none of the specified orders apply - or the order param is absent or not matched - then
+    * a standard default order is applied.
+    *
+    * @param params the parameters supplied to a search request
+    * @return the definition of ordering to be used with DefaultSearch
+    */
+  def handleOrder(params: SearchParam): SortField = {
+    val providedOrder = Option(params.order).map(_.toLowerCase)
+    val order: SortField = providedOrder.flatMap(TaskSortOrder.apply) getOrElse DefaultSearch
+      .getOrderType(providedOrder.orNull, params.query)
+      .getSortField
+
+    if (params.reverseOrder) order.reversed() else order
   }
 
   /**

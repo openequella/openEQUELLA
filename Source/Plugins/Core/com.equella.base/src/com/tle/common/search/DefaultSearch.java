@@ -545,16 +545,25 @@ public class DefaultSearch extends VeryBasicSearch {
   // Used by a couple of API resource classes at least. Parking it here to
   // save duplication.
 
-  public static SortType getOrderType(String order, String q) {
+  /**
+   * Given a string used in the UI and REST APIs covert to the internal SortType to be used for
+   * searching. The result in some cases is also dependent on the presence or absence of a query
+   * string.
+   *
+   * @param order the UI/REST string used to specify the various orders - i.e. relevance (or rank),
+   *     modified (or datemodified), name, rating and created (or datecreated). Can be null.
+   * @param query the query string also intended to be use with this sort order - this changes the
+   *     result for relevance/rank as well as the default value (when order is null).
+   * @return a result type which matches the UI string provided in order, and modified as needed by
+   *     the presence or absence of a query string.
+   */
+  public static SortType getOrderType(String order, String query) {
     if (order != null) {
       // Allowed values are relevance, modified, name, rating and created.
       // However due to the inconsistent order values, rank, datemodified and datecreated are also
       // accepted.
       if (order.equals("relevance") || order.equals("rank")) {
-        if (Check.isEmpty(q)) {
-          return SortType.DATEMODIFIED;
-        }
-        return SortType.RANK;
+        return Check.isEmpty(query) ? SortType.DATEMODIFIED : SortType.RANK;
       } else if (order.equals("modified") || order.equals("datemodified")) {
         return SortType.DATEMODIFIED;
       } else if (order.equals("name")) {
@@ -568,10 +577,7 @@ public class DefaultSearch extends VeryBasicSearch {
 
     // default is 'modified' for a blank query and 'relevance' for anything
     // else (as is the case for the UI)
-    if (Check.isEmpty(q)) {
-      return SortType.DATEMODIFIED;
-    }
-    return SortType.RANK;
+    return Check.isEmpty(query) ? SortType.DATEMODIFIED : SortType.RANK;
   }
 
   public boolean isSortReversed() {
