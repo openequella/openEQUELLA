@@ -17,7 +17,6 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
-import { absurd } from "fp-ts/function";
 import * as React from "react";
 import { ReactNode, useContext, useMemo, useState } from "react";
 import { useHistory } from "react-router";
@@ -142,17 +141,11 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     );
 
     switch (resourceType) {
-      case "Published":
-        return undefined;
-      case "Drafts":
-        return undefined;
       // todo: OEQ-1009: custom UI for Scrapbook
       case "Scrapbook":
         return undefined;
       // todo: OEQ-990: custom UI for Moderation queue
       case "Moderation queue":
-        return undefined;
-      case "Archive":
         return undefined;
       case "All resources":
         return (result: SearchPageSearchResult) =>
@@ -162,7 +155,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
               renderAllResources(items, renderScrapbook)
           );
       default:
-        return absurd(resourceType);
+        return undefined;
     }
   };
 
