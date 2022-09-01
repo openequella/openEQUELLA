@@ -263,7 +263,7 @@ export default function SearchResult({
         {metaDataDivider}
         <Typography component="span">
           {searchResultStrings.dateModified}&nbsp;
-          <DateDisplay displayRelative date={new Date(modifiedDate)} />
+          <DateDisplay displayRelative date={modifiedDate} />
         </Typography>
 
         {metaDataDivider}
