@@ -44,7 +44,8 @@ class SearchParam {
   var collections: Array[String] = _
 
   @ApiParam(value = "The order of the search results",
-            allowableValues = "relevance,modified,name,rating,created")
+            allowableValues =
+              "relevance,modified,name,rating,created,task_submitted,task_lastaction")
   @QueryParam("order")
   var order: String = ""
 
