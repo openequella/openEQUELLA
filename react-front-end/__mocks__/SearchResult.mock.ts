@@ -107,7 +107,7 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
         uuid: "925f5dd2-66eb-4b68-85be-93837af785d0",
         version: 1,
         name: "new title",
-        status: "personal",
+        status: "moderating",
         createdDate: new Date("2014-06-10T16:01:25.817+10:00"),
         modifiedDate: new Date("2014-06-10T16:01:25.967+10:00"),
         collectionId: "6b356e2e-e6a0-235a-5730-15ad1d8ad630",
@@ -134,6 +134,11 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
           self: "http://localhost:8080/rest/api/item/925f5dd2-66eb-4b68-85be-93837af785d0/1/",
         },
         isLatestVersion: true,
+        moderationDetails: {
+          submittedDate: new Date("2022-08-30"),
+          lastActionDate: Date.now(),
+          rejectionMessage: "rejected",
+        },
       },
       {
         uuid: "266bb0ff-a730-4658-aec0-c68bbefc2271",

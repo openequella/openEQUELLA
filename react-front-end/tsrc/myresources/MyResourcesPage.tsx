@@ -18,7 +18,7 @@
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as React from "react";
-import { useCallback, useContext, useState } from "react";
+import { ReactNode, useContext, useMemo, useState } from "react";
 import { useHistory } from "react-router";
 import { AppContext } from "../mainui/App";
 import { NEW_MY_RESOURCES_PATH } from "../mainui/routes";
@@ -26,6 +26,7 @@ import { TemplateUpdateProps } from "../mainui/Template";
 import { nonDeletedStatuses } from "../modules/SearchModule";
 import type { StatusSelectorProps } from "../search/components/StatusSelector";
 import {
+  InitialSearchConfig,
   Search,
   SearchContext,
   SearchContextProps,
@@ -40,12 +41,16 @@ import {
   SearchPageOptions,
   SearchPageRefinePanelConfig,
 } from "../search/SearchPageHelper";
+import type { SearchPageSearchResult } from "../search/SearchPageReducer";
 import { languageStrings } from "../util/langstrings";
 import { MyResourcesSelector } from "./components/MyResourcesSelector";
 import type { MyResourcesType } from "./MyResourcesPageHelper";
 import {
+  customUIForMyResources,
   defaultSortOrder,
   myResourcesTypeToItemStatus,
+  renderAllResources,
+  buildRenderScrapbookResult,
 } from "./MyResourcesPageHelper";
 
 const { title } = languageStrings.myResources;
@@ -68,8 +73,10 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
   // The sub-statuses refer to Item statuses that can be selected from Moderation queue and All resources.
   const [subStatus, setSubStatus] = useState<OEQ.Common.ItemStatus[]>([]);
 
-  const myResourcesInitialSearchOptions = useCallback(
-    (searchPageOptions: SearchPageOptions): SearchPageOptions => ({
+  const initialSearchConfig = useMemo<InitialSearchConfig>(() => {
+    const customiseInitialSearchOptions = (
+      searchPageOptions: SearchPageOptions
+    ): SearchPageOptions => ({
       ...searchPageOptions,
       owner: currentUser,
       status: myResourcesTypeToItemStatus(resourceType),
@@ -80,9 +87,18 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
         // todo: support getting the sort order from query string.
         history.location.state?.searchPageOptions?.sortOrder ??
         defaultSortOrder(resourceType),
-    }),
-    [currentUser, history, resourceType]
-  );
+    });
+
+    return {
+      ready: true,
+      listInitialClassifications: true,
+      customiseInitialSearchOptions,
+    };
+  }, [
+    currentUser,
+    history.location.state?.searchPageOptions?.sortOrder,
+    resourceType,
+  ]);
 
   const customSearchCriteria = (
     myResourcesType: MyResourcesType = resourceType
@@ -115,6 +131,35 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
         },
       });
     };
+
+  // Return a function to render custom UI for the SearchResult in Scrapbook, Moderation queue
+  // and All resources. For others, return undefined.
+  const customSearchResultBuilder = ():
+    | ((searchResult: SearchPageSearchResult) => ReactNode)
+    | undefined => {
+    const renderScrapbook = buildRenderScrapbookResult(
+      () => {}, // todo: Open the legacy page for editing Scrapbook.
+      () => {} // todo: Delete the Scrapbook and do a search again.
+    );
+
+    switch (resourceType) {
+      // todo: OEQ-1009: custom UI for Scrapbook
+      case "Scrapbook":
+        return undefined;
+      // todo: OEQ-990: custom UI for Moderation queue
+      case "Moderation queue":
+        return undefined;
+      case "All resources":
+        return (result: SearchPageSearchResult) =>
+          customUIForMyResources(
+            result,
+            (items: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>) =>
+              renderAllResources(items, renderScrapbook)
+          );
+      default:
+        return undefined;
+    }
+  };
 
   const searchPageHeaderConfig: SearchPageHeaderConfig = {
     ...defaultSearchPageHeaderConfig,
@@ -190,11 +235,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
   return (
     <Search
       updateTemplate={updateTemplate}
-      initialSearchConfig={{
-        ready: true,
-        listInitialClassifications: true,
-        customiseInitialSearchOptions: myResourcesInitialSearchOptions,
-      }}
+      initialSearchConfig={initialSearchConfig}
       pageTitle={title}
     >
       <SearchContext.Consumer>
@@ -204,6 +245,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
             enableClassification={false}
             headerConfig={searchPageHeaderConfig}
             refinePanelConfig={searchPageRefinePanelConfig(searchContextProps)}
+            customRenderSearchResults={customSearchResultBuilder()}
           />
         )}
       </SearchContext.Consumer>
