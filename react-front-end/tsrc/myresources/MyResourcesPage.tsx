@@ -26,6 +26,7 @@ import { TemplateUpdateProps } from "../mainui/Template";
 import { nonDeletedStatuses } from "../modules/SearchModule";
 import type { StatusSelectorProps } from "../search/components/StatusSelector";
 import {
+  InitialSearchConfig,
   Search,
   SearchContext,
   SearchContextProps,
@@ -72,31 +73,32 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
   // The sub-statuses refer to Item statuses that can be selected from Moderation queue and All resources.
   const [subStatus, setSubStatus] = useState<OEQ.Common.ItemStatus[]>([]);
 
-  const initialSearchConfig = useMemo(
-    () => ({
+  const initialSearchConfig = useMemo<InitialSearchConfig>(() => {
+    const customiseInitialSearchOptions = (
+      searchPageOptions: SearchPageOptions
+    ): SearchPageOptions => ({
+      ...searchPageOptions,
+      owner: currentUser,
+      status: myResourcesTypeToItemStatus(resourceType),
+      // The sort order in My resources initial search is a bit different. If no sort order
+      // is present in either the browser history or query string, we use the custom default
+      // sort order rather than the one configured in Search settings.
+      sortOrder:
+        // todo: support getting the sort order from query string.
+        history.location.state?.searchPageOptions?.sortOrder ??
+        defaultSortOrder(resourceType),
+    });
+
+    return {
       ready: true,
       listInitialClassifications: true,
-      customiseInitialSearchOptions: (
-        searchPageOptions: SearchPageOptions
-      ): SearchPageOptions => ({
-        ...searchPageOptions,
-        owner: currentUser,
-        status: myResourcesTypeToItemStatus(resourceType),
-        // The sort order in My resources initial search is a bit different. If no sort order
-        // is present in either the browser history or query string, we use the custom default
-        // sort order rather than the one configured in Search settings.
-        sortOrder:
-          // todo: support getting the sort order from query string.
-          history.location.state?.searchPageOptions?.sortOrder ??
-          defaultSortOrder(resourceType),
-      }),
-    }),
-    [
-      currentUser,
-      history.location.state?.searchPageOptions?.sortOrder,
-      resourceType,
-    ]
-  );
+      customiseInitialSearchOptions,
+    };
+  }, [
+    currentUser,
+    history.location.state?.searchPageOptions?.sortOrder,
+    resourceType,
+  ]);
 
   const customSearchCriteria = (
     myResourcesType: MyResourcesType = resourceType
