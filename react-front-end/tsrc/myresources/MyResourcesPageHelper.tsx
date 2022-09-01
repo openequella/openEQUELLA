@@ -95,6 +95,14 @@ export const getMyResourcesTypeFromLegacyQueryParam = (
   );
 
 /**
+ * Type definition for functions that render custom UI for SearchResult in My resources page.
+ */
+export type RenderFunc = (
+  item: SearchResultItem,
+  highlight: string[]
+) => JSX.Element;
+
+/**
  * Return the default sort order for My resources page.
  * todo: Return "Submitted" for Moderation queue when working on OEQ-1343.
  */
@@ -108,7 +116,7 @@ export const defaultSortOrder = (
  * @param item A standard search result Item.
  * @param highlight A list of keywords to be highlighted.
  */
-export const standardSearchResult = (
+export const renderStandardResult: RenderFunc = (
   item: SearchResultItem,
   highlight: string[]
 ) => (
@@ -126,7 +134,7 @@ export const standardSearchResult = (
  * @param item A standard search result Item and its status must be 'moderating'.
  * @param highlight A list of keywords to be highlighted.
  */
-export const moderatingSearchResult = (
+export const renderModeratingResult: RenderFunc = (
   item: OEQ.Search.SearchResultItem,
   highlight: string[]
 ) => {
@@ -172,8 +180,11 @@ export const moderatingSearchResult = (
  * @param onEdit Handler for editing the Scrapbook.
  * @param onDelete Handler for deleting the Scrapbook.
  */
-export const scrapbookSearchResult =
-  (onEdit: (uuid: string) => void, onDelete: (uuid: string) => void) =>
+export const buildRenderScrapbookResult =
+  (
+    onEdit: (uuid: string) => void,
+    onDelete: (uuid: string) => void
+  ): RenderFunc =>
   (item: OEQ.Search.SearchResultItem, highlight: string[]) =>
     (
       <SearchResult
@@ -214,15 +225,15 @@ export const scrapbookSearchResult =
  */
 export const renderAllResources = (
   { results, highlight }: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>,
-  renderScrapbook: (item: SearchResultItem, highlight: string[]) => JSX.Element
-) =>
+  renderScrapbook: RenderFunc
+): ReactNode =>
   results.map((item) =>
     pipe(
       item.status,
       simpleMatch({
         personal: () => renderScrapbook,
-        moderating: () => moderatingSearchResult,
-        _: () => standardSearchResult,
+        moderating: () => renderModeratingResult,
+        _: () => renderStandardResult,
       }),
       (renderFunc) => renderFunc(item, highlight)
     )
@@ -242,7 +253,7 @@ export const customUIForMyResources = (
   renderList: (
     searchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>
   ) => ReactNode
-) =>
+): ReactNode =>
   searchPageSearchResult.from === "gallery-search" ? (
     <GallerySearchResult items={searchPageSearchResult.content.results} />
   ) : (

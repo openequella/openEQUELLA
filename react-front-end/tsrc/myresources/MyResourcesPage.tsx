@@ -50,7 +50,7 @@ import {
   defaultSortOrder,
   myResourcesTypeToItemStatus,
   renderAllResources,
-  scrapbookSearchResult,
+  buildRenderScrapbookResult,
 } from "./MyResourcesPageHelper";
 
 const { title } = languageStrings.myResources;
@@ -136,7 +136,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const customSearchResultBuilder = ():
     | ((searchResult: SearchPageSearchResult) => ReactNode)
     | undefined => {
-    const scrapbookSearchResultBuilder = scrapbookSearchResult(
+    const renderScrapbook = buildRenderScrapbookResult(
       () => {}, // todo: Open the legacy page for editing Scrapbook.
       () => {} // todo: Delete the Scrapbook and do a search again.
     );
@@ -159,7 +159,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
           customUIForMyResources(
             result,
             (items: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>) =>
-              renderAllResources(items, scrapbookSearchResultBuilder)
+              renderAllResources(items, renderScrapbook)
           );
       default:
         return absurd(resourceType);
