@@ -251,7 +251,7 @@ describe("<MyResourcesPage/>", () => {
   });
 
   describe("custom UI for SearchResult", () => {
-    it("displays custom UI for Scrapbook in All resources", async () => {
+    it("displays custom UI for Scrapbook and Moderating items in All resources", async () => {
       const { getByText } = await renderMyResourcesPage("All resources");
 
       // There is one Scrapbook in the search result and an Edit Icon button should be displayed for the Scrapbook.
