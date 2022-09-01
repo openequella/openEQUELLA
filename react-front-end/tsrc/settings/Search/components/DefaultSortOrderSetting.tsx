@@ -41,12 +41,20 @@ export default function DefaultSortOrderSetting({
   value,
   setValue,
 }: DefaultSortOrderSettingProps) {
-  const searchPageSettingsStrings =
+  const { relevance, lastModified, dateCreated, title, userRating } =
     languageStrings.settings.searching.searchPageSettings;
   const classes = useStyles();
 
   const validateSortOrder = (value: unknown): OEQ.Search.SortOrder =>
     OEQ.Search.SortOrderRunTypes.check(value);
+
+  const options: [OEQ.Search.SortOrder, string][] = [
+    ["rank", relevance],
+    ["datemodified", lastModified],
+    ["datecreated", dateCreated],
+    ["name", title],
+    ["rating", userRating],
+  ];
 
   return (
     <FormControl variant="outlined">
@@ -59,19 +67,11 @@ export default function DefaultSortOrderSetting({
         className={classes.select}
         input={<OutlinedInput labelWidth={0} id="_sortOrder" />}
       >
-        <MenuItem value="RANK">{searchPageSettingsStrings.relevance}</MenuItem>
-        <MenuItem value={validateSortOrder("DATEMODIFIED")}>
-          {searchPageSettingsStrings.lastModified}
-        </MenuItem>
-        <MenuItem value={validateSortOrder("DATECREATED")}>
-          {searchPageSettingsStrings.dateCreated}
-        </MenuItem>
-        <MenuItem value={validateSortOrder("NAME")}>
-          {searchPageSettingsStrings.title}
-        </MenuItem>
-        <MenuItem value={validateSortOrder("RATING")}>
-          {searchPageSettingsStrings.userRating}
-        </MenuItem>
+        {options.map(([value, label]) => (
+          <MenuItem key={value} value={value}>
+            {label}
+          </MenuItem>
+        ))}
       </Select>
     </FormControl>
   );
