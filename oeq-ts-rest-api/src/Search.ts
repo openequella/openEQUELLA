@@ -521,8 +521,8 @@ const processRawSearchResult = (data: SearchResult<SearchResultItemRaw>) =>
   Utils.convertDateFields<SearchResult<SearchResultItem>>(data, [
     'createdDate',
     'modifiedDate',
-    'moderationDetails.lastActionDate',
-    'moderationDetails.submittedDate',
+    'lastActionDate',
+    'submittedDate',
   ]);
 
 /**

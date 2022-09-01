@@ -145,8 +145,7 @@ export const renderModeratingResult: RenderFunc = (
     O.fromNullable,
     O.chain(
       flow(
-        ({ submittedDate }) => new Date(submittedDate),
-        getISODateString,
+        ({ submittedDate }) => getISODateString(submittedDate),
         O.fromNullable
       )
     ),
