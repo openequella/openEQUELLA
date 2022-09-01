@@ -109,7 +109,7 @@ mockListUsers.mockResolvedValue(UserModuleMock.users);
 
 const defaultSearchPageOptions: SearchPageOptions = {
   ...SearchModule.defaultSearchOptions,
-  sortOrder: "RANK",
+  sortOrder: "rank",
   dateRangeQuickModeEnabled: true,
   mimeTypeFilters: [],
   displayMode: "list",
@@ -435,7 +435,8 @@ describe("<SearchPage/>", () => {
   it("should clear search options and perform a new search", async () => {
     const { container } = page;
     const query = "clear query";
-    const sortingDropdown = screen.getByDisplayValue("RANK");
+    const sortOrder: OEQ.Search.SortOrder = "rank";
+    const sortingDropdown = screen.getByDisplayValue(sortOrder);
     const newSearchButton = screen.getByText(
       languageStrings.searchpage.newSearch
     );
@@ -453,7 +454,7 @@ describe("<SearchPage/>", () => {
     // Perform a new search and check.
     userEvent.click(newSearchButton);
     await waitFor(() => {
-      expect(sortingDropdown).toHaveValue("RANK");
+      expect(sortingDropdown).toHaveValue(sortOrder);
       expect(getQueryBar(container)).toHaveValue("");
     });
     // Four searches have been performed: initial search, one for query change and
@@ -566,7 +567,7 @@ describe("<SearchPage/>", () => {
     // sort order is included in the search params
     expect(SearchModule.searchItems).toHaveBeenCalledWith({
       ...defaultSearchPageOptions,
-      sortOrder: "DATEMODIFIED",
+      sortOrder: "datemodified",
     });
   });
 
@@ -656,7 +657,7 @@ describe("<SearchPage/>", () => {
       SearchPageHelper.generateSearchPageOptionsFromQueryString
     ).toHaveBeenCalledTimes(1);
     expect(mockClipboard).toHaveBeenCalledWith(
-      "/page/search?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RANK%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22displayMode%22%3A%22list%22%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D"
+      "/page/search?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22rank%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22displayMode%22%3A%22list%22%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D"
     );
     expect(
       screen.getByText(languageStrings.searchpage.shareSearchConfirmationText)

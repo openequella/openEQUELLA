@@ -28,8 +28,8 @@ import * as OEQ from "@openequella/rest-api-client";
 
 export interface DefaultSortOrderSettingProps {
   disabled: boolean;
-  value?: OEQ.SearchSettings.SortOrder;
-  setValue: (order: OEQ.SearchSettings.SortOrder) => void;
+  value?: OEQ.Search.SortOrder;
+  setValue: (order: OEQ.Search.SortOrder) => void;
 }
 const useStyles = makeStyles({
   select: {
@@ -45,8 +45,8 @@ export default function DefaultSortOrderSetting({
     languageStrings.settings.searching.searchPageSettings;
   const classes = useStyles();
 
-  const validateSortOrder = (value: unknown): OEQ.SearchSettings.SortOrder =>
-    OEQ.SearchSettings.SortOrderRunTypes.check(value);
+  const validateSortOrder = (value: unknown): OEQ.Search.SortOrder =>
+    OEQ.Search.SortOrderRunTypes.check(value);
 
   return (
     <FormControl variant="outlined">

@@ -87,6 +87,5 @@ export const getMyResourcesTypeFromLegacyQueryParam = (
  * Return the default sort order for My resources page.
  * todo: Return "Submitted" for Moderation queue when working on OEQ-1343.
  */
-export const defaultSortOrder = (
-  _: MyResourcesType
-): OEQ.SearchSettings.SortOrder => "DATEMODIFIED";
+export const defaultSortOrder = (_: MyResourcesType): OEQ.Search.SortOrder =>
+  "datemodified";

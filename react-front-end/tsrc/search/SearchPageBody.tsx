@@ -462,7 +462,7 @@ export const SearchPageBody = ({
       selectedCategories: undefined,
     });
 
-  const handleSortOrderChanged = (order: OEQ.SearchSettings.SortOrder) =>
+  const handleSortOrderChanged = (order: OEQ.Search.SortOrder) =>
     doSearch({ ...searchPageOptions, sortOrder: order });
 
   const handleWildcardModeChanged = (wildcardMode: boolean) =>
