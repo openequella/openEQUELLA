@@ -67,9 +67,58 @@ public class Search2ApiTest extends AbstractRestApiTest {
     assertTrue(getAvailable(result) > 0);
   }
 
-  @Test(description = "Search by items' created date.")
+  @Test(description = "Search for items and order them by their created date.")
   public void orderTest() throws IOException {
     doSearch(200, null, new NameValuePair("order", "created"));
+    // TODO check if the sort even had an effect - maybe compare date of first vs last
+  }
+
+  @Test(description = "Search by items' created date.")
+  public void orderModerationItemsTest() throws IOException {
+    // order=task_lastaction&status=REJECTED&status=MODERATING&status=REVIEW
+    JsonNode result =
+        doSearch(
+            200,
+            null,
+            new NameValuePair("order", "task_lastaction"),
+            new NameValuePair("status", "MODERATING"),
+            new NameValuePair("status", "REJECTED"),
+            new NameValuePair("status", "REVIEW"));
+    final int available = getAvailable(result);
+
+    assertTrue(available > 1);
+
+    final List<String> lastActionDates =
+        buildResultsStream(result)
+            .map(
+                r ->
+                    Optional.ofNullable(r.get("moderationDetails"))
+                        .flatMap(details -> Optional.ofNullable(details.get("lastActionDate"))))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .filter(JsonNode::isTextual)
+            .map(JsonNode::textValue)
+            .collect(Collectors.toList());
+
+    assertEquals(
+        lastActionDates.size(), available, "Number of dates does not match number of results!");
+
+    // sorting order of 'task_lastaction' should see the first item have the oldest date and the
+    // last action have the most recent date.
+    final String oldestDate = lastActionDates.get(0);
+    final String mostRecentDate = lastActionDates.get(lastActionDates.size() - 1);
+
+    // Being ISO dates we can just use simple string comparison
+    assertEquals(
+        lastActionDates.stream()
+            .filter(isoString -> oldestDate.compareToIgnoreCase(isoString) > 0)
+            .count(),
+        0);
+    assertEquals(
+        lastActionDates.stream()
+            .filter(isoString -> mostRecentDate.compareToIgnoreCase(isoString) < 0)
+            .count(),
+        0);
   }
 
   @Test(description = "Search by items' modified date and the order of results is reversed.")
