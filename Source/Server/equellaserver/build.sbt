@@ -218,7 +218,7 @@ libraryDependencies ++= Seq(
   "javax.json.bind"                      % "javax.json.bind-api"          % "1.0",
   "org.jsoup"                            % "jsoup"                        % jsoupVersion,
   xstreamDep,
-  "org.opensaml" % "xmltooling" % "1.3.1" excludeAll ExclusionRule(organization = "org.slf4j"),
+  "org.opensaml" % "xmltooling" % "1.4.4" excludeAll ExclusionRule(organization = "org.slf4j"),
   postgresDep,
   "org.scannotation"    % "scannotation"           % "1.0.3",
   "org.slf4j"           % "jcl-over-slf4j"         % "1.7.36",
