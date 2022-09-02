@@ -15,14 +15,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ListItemIcon, ListItemText, Menu, MenuItem } from "@material-ui/core";
+import AddIcon from "@material-ui/icons/Add";
+import CloudUploadIcon from "@material-ui/icons/CloudUpload";
+import PagesIcon from "@material-ui/icons/Pages";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as React from "react";
 import { ReactNode, useContext, useMemo, useState } from "react";
 import { useHistory } from "react-router";
+import { TooltipIconButton } from "../components/TooltipIconButton";
 import { AppContext } from "../mainui/App";
 import { NEW_MY_RESOURCES_PATH } from "../mainui/routes";
 import { TemplateUpdateProps } from "../mainui/Template";
+import { openLegacyFileCreatingPage } from "../modules/ScrapbookModule";
 import { nonDeletedStatuses } from "../modules/SearchModule";
 import type { StatusSelectorProps } from "../search/components/StatusSelector";
 import {
@@ -46,14 +52,17 @@ import { languageStrings } from "../util/langstrings";
 import { MyResourcesSelector } from "./components/MyResourcesSelector";
 import type { MyResourcesType } from "./MyResourcesPageHelper";
 import {
+  buildRenderScrapbookResult,
   customUIForMyResources,
   defaultSortOrder,
   myResourcesTypeToItemStatus,
   renderAllResources,
-  buildRenderScrapbookResult,
 } from "./MyResourcesPageHelper";
 
-const { title } = languageStrings.myResources;
+const {
+  title,
+  scrapbook: { addScrapbook, createFile, createPage },
+} = languageStrings.myResources;
 
 /**
  * This component controls how to render My resources page, including:
@@ -72,6 +81,9 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   // The sub-statuses refer to Item statuses that can be selected from Moderation queue and All resources.
   const [subStatus, setSubStatus] = useState<OEQ.Common.ItemStatus[]>([]);
+
+  // Anchor used to control where and when to show the menu for creating new Scrapbook.
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
 
   const initialSearchConfig = useMemo<InitialSearchConfig>(() => {
     const customiseInitialSearchOptions = (
@@ -174,6 +186,17 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
       path: NEW_MY_RESOURCES_PATH,
       criteria: customSearchCriteria(),
     },
+    additionalHeaders:
+      resourceType === "Scrapbook"
+        ? [
+            <TooltipIconButton
+              title={addScrapbook}
+              onClick={({ currentTarget }) => setAnchorEl(currentTarget)}
+            >
+              <AddIcon />
+            </TooltipIconButton>,
+          ]
+        : undefined,
   };
 
   // Build custom configuration for Status selector.
@@ -256,6 +279,24 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
           />
         )}
       </SearchContext.Consumer>
+      <Menu
+        open={anchorEl !== null}
+        anchorEl={anchorEl}
+        onClick={() => setAnchorEl(null)}
+      >
+        <MenuItem onClick={() => openLegacyFileCreatingPage("file", history)}>
+          <ListItemIcon>
+            <CloudUploadIcon />
+          </ListItemIcon>
+          <ListItemText>{createFile}</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => openLegacyFileCreatingPage("page", history)}>
+          <ListItemIcon>
+            <PagesIcon />
+          </ListItemIcon>
+          <ListItemText>{createPage}</ListItemText>
+        </MenuItem>
+      </Menu>
     </Search>
   );
 };
