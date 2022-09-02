@@ -131,7 +131,7 @@ export const SearchContext = React.createContext<SearchContextProps>({
 /**
  * Type definition for configuration of the initial search.
  */
-interface InitialSearchConfig {
+export interface InitialSearchConfig {
   /**
    * Perform the initial search when the value is `true`.
    */
