@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import { stringify } from 'query-string';
+import { Literal, Static, Union } from 'runtypes';
 import { is } from 'typescript-is';
 import { GET, HEAD, POST } from './AxiosInstance';
 import * as Common from './Common';
@@ -26,6 +27,18 @@ import * as Utils from './Utils';
  * any colons (or other exempt Lucene syntax characters).
  */
 export type Must = [string, string[]];
+
+export const SortOrderRunTypes = Union(
+  Literal('rank'),
+  Literal('datemodified'),
+  Literal('datecreated'),
+  Literal('name'),
+  Literal('rating'),
+  Literal('task_lastaction'),
+  Literal('task_submitted')
+);
+
+export type SortOrder = Static<typeof SortOrderRunTypes>;
 
 interface SearchParamsBase {
   /**
@@ -47,7 +60,7 @@ interface SearchParamsBase {
   /**
    * The order of the search results.
    */
-  order?: string;
+  order?: SortOrder;
   /**
    * Reverse the order of the search results.
    */

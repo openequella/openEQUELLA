@@ -26,7 +26,7 @@ import * as UserModuleMock from "./UserModule.mock";
 export const allSearchPageOptions: SearchPageOptions = {
   rowsPerPage: 10,
   currentPage: 0,
-  sortOrder: "NAME",
+  sortOrder: "name",
   rawMode: true,
   status: ["LIVE", "REVIEW"],
   searchAttachments: true,

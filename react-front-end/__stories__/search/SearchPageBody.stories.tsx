@@ -144,8 +144,8 @@ CustomSortingOptions.args = {
   headerConfig: {
     ...defaultSearchPageHeaderConfig,
     customSortingOptions: new Map([
-      ["RANK", "custom option 1"],
-      ["DATEMODIFIED", "custom option 2"],
+      ["rank", "custom option 1"],
+      ["datemodified", "custom option 2"],
     ]),
   },
 };

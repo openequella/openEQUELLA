@@ -154,7 +154,7 @@ describe("<SearchPageBody />", () => {
     const { container } = await renderSearchPageBody({
       ...defaultSearchPageBodyProps,
       headerConfig: {
-        customSortingOptions: new Map([["RANK", option]]),
+        customSortingOptions: new Map([["rank", option]]),
       },
     });
 
@@ -185,7 +185,7 @@ describe("<SearchPageBody />", () => {
     const criteria: SearchPageOptions = {
       ...defaultSearchPageOptions,
       query: "test",
-      sortOrder: "RANK",
+      sortOrder: "rank",
       externalMimeTypes: undefined,
     };
 

@@ -91,7 +91,7 @@ export interface SearchOptions {
   /**
    * Selected search result sorting order.
    */
-  sortOrder: OEQ.SearchSettings.SortOrder | undefined;
+  sortOrder: OEQ.Search.SortOrder | undefined;
   /**
    * A list of collections.
    */

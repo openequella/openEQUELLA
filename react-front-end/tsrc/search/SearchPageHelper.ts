@@ -134,7 +134,7 @@ export interface SearchPageHeaderConfig {
   /**
    * Customised options for sorting the search result.
    */
-  customSortingOptions?: Map<OEQ.SearchSettings.SortOrder, string>;
+  customSortingOptions?: Map<OEQ.Search.SortOrder, string>;
   /**
    * Custom configuration to be used with a 'new search' - e.g. when the 'New Search' button is clicked,
    * or when other actions which trigger the search state to be cleared.
@@ -279,7 +279,7 @@ const DehydratedSearchPageOptionsRunTypes = Partial({
   query: String,
   rowsPerPage: Number,
   currentPage: Number,
-  sortOrder: OEQ.SearchSettings.SortOrderRunTypes,
+  sortOrder: OEQ.Search.SortOrderRunTypes,
   collections: RuntypeArray(Record({ uuid: String })),
   rawMode: Boolean,
   lastModifiedDateRange: Partial({ start: Guard(isDate), end: Guard(isDate) }),
@@ -607,8 +607,8 @@ export const legacyQueryStringToSearchPageOptions = async (
   );
   const owner = await getOwnerFromLegacyParams(getQueryParam("owner"));
   const sortOrder = pipe(
-    getQueryParam("sort")?.toUpperCase(),
-    O.fromPredicate(OEQ.SearchSettings.SortOrderRunTypes.guard),
+    getQueryParam("sort")?.toLowerCase(),
+    O.fromPredicate(OEQ.Search.SortOrderRunTypes.guard),
     O.getOrElse(() => defaultSearchOptions.sortOrder)
   );
 

@@ -27,13 +27,13 @@ export interface SearchOrderSelectProps {
   /**
    * The selected order. Being undefined means no option is selected.
    */
-  value?: OEQ.SearchSettings.SortOrder;
+  value?: OEQ.Search.SortOrder;
   /**
    * Fired when a different sort order is selected.
    * @param sortOrder The new order.
    */
-  onChange: (sortOrder: OEQ.SearchSettings.SortOrder) => void;
-  customSortingOptions?: Map<OEQ.SearchSettings.SortOrder, string>;
+  onChange: (sortOrder: OEQ.Search.SortOrder) => void;
+  customSortingOptions?: Map<OEQ.Search.SortOrder, string>;
 }
 
 export const SearchOrderSelect = ({
@@ -47,15 +47,12 @@ export const SearchOrderSelect = ({
   /**
    * Provide a data source for search sorting control.
    */
-  const defaultSortingOptionStrings = new Map<
-    OEQ.SearchSettings.SortOrder,
-    string
-  >([
-    ["RANK", relevance],
-    ["DATEMODIFIED", lastModified],
-    ["DATECREATED", dateCreated],
-    ["NAME", title],
-    ["RATING", userRating],
+  const defaultSortingOptionStrings = new Map<OEQ.Search.SortOrder, string>([
+    ["rank", relevance],
+    ["datemodified", lastModified],
+    ["datecreated", dateCreated],
+    ["name", title],
+    ["rating", userRating],
   ]);
 
   const baseId = "sort-order-select";
@@ -72,9 +69,7 @@ export const SearchOrderSelect = ({
         // If sortOrder is undefined, pass an empty string to select nothing.
         value={value ?? ""}
         onChange={(event) =>
-          onChange(
-            OEQ.SearchSettings.SortOrderRunTypes.check(event.target.value)
-          )
+          onChange(OEQ.Search.SortOrderRunTypes.check(event.target.value))
         }
       >
         {Array.from(customSortingOptions ?? defaultSortingOptionStrings).map(
