@@ -20,6 +20,8 @@ import * as React from "react";
 import { languageStrings } from "../../util/langstrings";
 import * as OEQ from "@openequella/rest-api-client";
 
+export type SortOrderOptions = Map<OEQ.Search.SortOrder, string>;
+
 /**
  * Type of props passed to SearchOrderSelect.
  */
@@ -33,7 +35,10 @@ export interface SearchOrderSelectProps {
    * @param sortOrder The new order.
    */
   onChange: (sortOrder: OEQ.Search.SortOrder) => void;
-  customSortingOptions?: Map<OEQ.Search.SortOrder, string>;
+  /**
+   * If specified, will override the standard set of sort options.
+   */
+  customSortingOptions?: SortOrderOptions;
 }
 
 export const SearchOrderSelect = ({
@@ -47,13 +52,15 @@ export const SearchOrderSelect = ({
   /**
    * Provide a data source for search sorting control.
    */
-  const defaultSortingOptionStrings = new Map<OEQ.Search.SortOrder, string>([
-    ["rank", relevance],
-    ["datemodified", lastModified],
-    ["datecreated", dateCreated],
-    ["name", title],
-    ["rating", userRating],
-  ]);
+  const sortOptions: SortOrderOptions =
+    customSortingOptions ??
+    new Map<OEQ.Search.SortOrder, string>([
+      ["rank", relevance],
+      ["datemodified", lastModified],
+      ["datecreated", dateCreated],
+      ["name", title],
+      ["rating", userRating],
+    ]);
 
   const baseId = "sort-order-select";
   const labelId = baseId + "-label";
@@ -72,13 +79,11 @@ export const SearchOrderSelect = ({
           onChange(OEQ.Search.SortOrderRunTypes.check(event.target.value))
         }
       >
-        {Array.from(customSortingOptions ?? defaultSortingOptionStrings).map(
-          ([value, text]) => (
-            <MenuItem key={value} value={value}>
-              {text}
-            </MenuItem>
-          )
-        )}
+        {Array.from(sortOptions).map(([value, text]) => (
+          <MenuItem key={value} value={value}>
+            {text}
+          </MenuItem>
+        ))}
       </Select>
     </>
   );

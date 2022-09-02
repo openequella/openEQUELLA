@@ -374,6 +374,15 @@ export const languageStrings = {
     moderating: {
       since: "Moderating since",
     },
+    sortOptions: {
+      dateCreated: "Date created",
+      lastAction: "Last action",
+      lastModified: "Date last modified",
+      relevance: "Relevance",
+      submitted: "Submitted",
+      title: "Title",
+      userRating: "User rating",
+    },
   },
   navigationguard: {
     title: "Close without saving?",
