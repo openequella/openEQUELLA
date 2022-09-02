@@ -11,7 +11,6 @@ import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.framework.soap.SoapService50;
 import com.tle.webtests.pageobject.SettingsPage;
 import com.tle.webtests.pageobject.searching.ItemListPage;
-import com.tle.webtests.pageobject.searching.ItemSearchResult;
 import com.tle.webtests.pageobject.searching.SearchPage;
 import com.tle.webtests.pageobject.searching.SearchScreenOptions;
 import com.tle.webtests.pageobject.searching.SearchSettingsPage;
@@ -245,24 +244,6 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
             "services/SoapService50",
             "http://soap.remoting.web.tle.com",
             null);
-  }
-
-  @SuppressWarnings("unused")
-  private boolean checkItemOrder(List<ItemSearchResult> searchResults, Order order) {
-    boolean orderMatches = true;
-
-    switch (order) {
-      case rank:
-        break;
-      case datemodified:
-        break;
-      case name:
-        break;
-      case rating:
-        break;
-    }
-
-    return orderMatches;
   }
 
   @Override
