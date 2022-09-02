@@ -30,9 +30,6 @@ public class SearchSettingsPage extends AbstractPage<SearchSettingsPage> {
   @FindBy(id = "_saveButton")
   private WebElement save;
 
-  @FindBy(id = "cs_dc")
-  private WebElement disableCloud;
-
   @FindBy(id = "_disableGallery")
   private WebElement disableGalleryCheckbox;
 
@@ -75,13 +72,6 @@ public class SearchSettingsPage extends AbstractPage<SearchSettingsPage> {
   public SearchSettingsPage setGenerateAuthFeeds(boolean authFeeds) {
     if (genAuthFeeds.isSelected() != authFeeds) {
       genAuthFeeds.click();
-    }
-    return get();
-  }
-
-  public SearchSettingsPage setDisableCloud(boolean disable) {
-    if (disableCloud.isSelected() != disable) {
-      disableCloud.click();
     }
     return get();
   }

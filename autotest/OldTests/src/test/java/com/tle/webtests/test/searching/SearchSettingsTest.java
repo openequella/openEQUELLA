@@ -255,7 +255,6 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     SearchSettingsPage searchSettingsPage = sp.searchSettings();
     Order sortOption = SearchSettingsPage.Order.rank;
     searchSettingsPage.setOrder(sortOption).save();
-    searchSettingsPage.setDisableCloud(false);
 
     super.cleanupAfterClass();
   }
