@@ -17,10 +17,10 @@ public class SearchSettingsPage extends AbstractPage<SearchSettingsPage> {
   public static final String SEARCH_SETTINGS_SECTION_TITLE = "Search page settings";
 
   public enum Order {
-    RANK,
-    DATEMODIFIED,
-    NAME,
-    RATING
+    rank,
+    datemodified,
+    name,
+    rating
   }
 
   @FindBy(id = "_showNonLiveCheckbox")

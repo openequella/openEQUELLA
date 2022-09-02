@@ -60,7 +60,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
 
     // Load SearchSettings Page by clicking settings link
     SearchSettingsPage searchSettingsPage = sp.searchSettings();
-    Order sortOption = SearchSettingsPage.Order.RANK;
+    Order sortOption = SearchSettingsPage.Order.rank;
     searchSettingsPage.setOrder(sortOption).save();
 
     logon("AutoTest", "automated");
@@ -69,7 +69,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
 
     assertTrue(searchPage.ensureSortSelected(sortOption.name()));
 
-    sortOption = Order.DATEMODIFIED;
+    sortOption = Order.datemodified;
     searchSettingsPage = new SettingsPage(context).load().searchSettings();
     searchSettingsPage.setOrder(sortOption).save();
 
@@ -79,7 +79,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
 
     assertTrue(searchPage.ensureSortSelected(sortOption.name()));
 
-    sortOption = SearchSettingsPage.Order.NAME;
+    sortOption = SearchSettingsPage.Order.name;
     searchSettingsPage = new SettingsPage(context).load().searchSettings();
     searchSettingsPage.setOrder(sortOption).save();
 
@@ -89,7 +89,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
 
     assertTrue(searchPage.ensureSortSelected(sortOption.name()));
 
-    sortOption = SearchSettingsPage.Order.RATING;
+    sortOption = SearchSettingsPage.Order.rating;
     searchSettingsPage = new SettingsPage(context).load().searchSettings().get();
 
     searchSettingsPage.setOrder(sortOption).save();
@@ -153,8 +153,6 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     // Login
     soapService.login("AutoTest", "automated");
 
-    SearchSettingsPage ssp = new SettingsPage(context).load().searchSettings();
-
     // Do a search and get RSS url
     SearchPage searchPage = new SearchPage(context).load();
     searchPage.search(searchTerm);
@@ -171,7 +169,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     assertTrue(checkAtomResponse(getResponse(soapService, atomUrl, null), true));
 
     // Enable authenticated results
-    ssp = new SettingsPage(context).load().searchSettings();
+    SearchSettingsPage ssp = new SettingsPage(context).load().searchSettings();
     ssp.setGenerateAuthFeeds(true).save();
 
     // Do a search and get RSS url
@@ -254,13 +252,13 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     boolean orderMatches = true;
 
     switch (order) {
-      case RANK:
+      case rank:
         break;
-      case DATEMODIFIED:
+      case datemodified:
         break;
-      case NAME:
+      case name:
         break;
-      case RATING:
+      case rating:
         break;
     }
 
@@ -274,7 +272,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
 
     // Load SearchSettings Page by clicking settings link
     SearchSettingsPage searchSettingsPage = sp.searchSettings();
-    Order sortOption = SearchSettingsPage.Order.RANK;
+    Order sortOption = SearchSettingsPage.Order.rank;
     searchSettingsPage.setOrder(sortOption).save();
     searchSettingsPage.setDisableCloud(false);
 
