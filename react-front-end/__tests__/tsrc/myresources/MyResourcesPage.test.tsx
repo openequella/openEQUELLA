@@ -251,6 +251,11 @@ describe("<MyResourcesPage/>", () => {
   });
 
   describe("custom UI for SearchResult", () => {
+    const {
+      moderating: { since },
+      scrapbook: { addScrapbook, createFile, createPage },
+    } = languageStrings.myResources;
+
     it("displays custom UI for Scrapbook and Moderating items in All resources", async () => {
       const { getByText } = await renderMyResourcesPage("All resources");
 
@@ -271,12 +276,19 @@ describe("<MyResourcesPage/>", () => {
           "Failed to render SearchResult for Items in moderation"
         );
       }
-      expect(
-        queryByText(
-          moderatingItem,
-          languageStrings.myResources.moderating.since
-        )
-      ).toBeInTheDocument();
+      expect(queryByText(moderatingItem, since)).toBeInTheDocument();
+    });
+
+    it("displays custom UI in Scrapbook page", async () => {
+      const { getByLabelText } = await renderMyResourcesPage("Scrapbook");
+
+      const addToScrapbookButton = getByLabelText(addScrapbook);
+      expect(addToScrapbookButton).toBeInTheDocument();
+
+      userEvent.click(addToScrapbookButton);
+
+      expect(screen.getByText(createPage)).toBeInTheDocument();
+      expect(screen.getByText(createFile)).toBeInTheDocument();
     });
   });
 });
