@@ -143,9 +143,16 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     );
 
     switch (resourceType) {
-      // todo: OEQ-1009: custom UI for Scrapbook
       case "Scrapbook":
-        return undefined;
+        return (result: SearchPageSearchResult) =>
+          customUIForMyResources(
+            result,
+            ({
+              results,
+              highlight,
+            }: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>) =>
+              results.map((item) => renderScrapbook(item, highlight))
+          );
       // todo: OEQ-990: custom UI for Moderation queue
       case "Moderation queue":
         return undefined;
