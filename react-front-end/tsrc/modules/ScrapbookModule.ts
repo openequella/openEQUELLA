@@ -16,10 +16,9 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import Axios from "axios";
 import { History } from "history";
 import { API_BASE_URL } from "../AppConfig";
-import type { ChangeRoute } from "../legacycontent/LegacyContent";
+import { getLegacyScrapbookPageRoute } from "./LegacyContentModule";
 
 /**
  * Delete one Scrapbook Item by UUID.
@@ -28,8 +27,7 @@ import type { ChangeRoute } from "../legacycontent/LegacyContent";
 export const deleteScrapbook = (uuid: string): Promise<void> =>
   OEQ.Scrapbook.deleteScrapbook(API_BASE_URL, uuid);
 
-const legacyPageUrl = `${API_BASE_URL}/content/submit/access/myresources.do`;
-
+export type ScrapbookType = "file" | "page";
 /**
  * Open the legacy Scrapbook creating pages.
  *
@@ -40,10 +38,8 @@ const legacyPageUrl = `${API_BASE_URL}/content/submit/access/myresources.do`;
  * @param scrapbookType Type of Scrapbook which must be either 'file' or 'page'.
  * @param history History of browser in which the returning route will be pushed in.
  */
-export const openLegacyFileCreatingPage = (
-  scrapbookType: "file" | "page",
+export const openLegacyFileCreatingPage = async (
+  scrapbookType: ScrapbookType,
   history: History
 ): Promise<void> =>
-  Axios.post<ChangeRoute>(legacyPageUrl, {
-    event__: [`${scrapbookType === "file" ? "cmca" : "cmca2"}.contribute`],
-  }).then(({ data: { route } }) => history.push(`/${route}`));
+  history.push(await getLegacyScrapbookPageRoute(scrapbookType));
