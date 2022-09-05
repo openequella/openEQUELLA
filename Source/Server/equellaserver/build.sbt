@@ -366,6 +366,7 @@ run := {
   case PathList("com", "ibm", "wsdl", _*)                   => MergeStrategy.first
   case PathList("org", "apache", "regexp", _*)              => MergeStrategy.first
   case PathList("javax", "servlet", "jsp", _*)              => MergeStrategy.first
+  case PathList("javax", "servlet", _*)                     => MergeStrategy.last
   case PathList("javax", "annotation", _*)                  => MergeStrategy.first
   case PathList("org", "w3c", "dom", _*)                    => MergeStrategy.first
   case PathList("META-INF", "mailcap")                      => MergeStrategy.first
