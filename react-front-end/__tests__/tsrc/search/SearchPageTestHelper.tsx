@@ -49,6 +49,8 @@ import * as UserModule from "../../../tsrc/modules/UserModule";
 import * as SearchPageHelper from "../../../tsrc/search/SearchPageHelper";
 import SearchPage from "../../../tsrc/search/SearchPage";
 
+export const SORTORDER_SELECT_ID = "#sort-order-select";
+
 /**
  * Provides a centralised place to mock all the Collaborators used by SearchPage, providing an object
  * with those which are often customised or interacted with. Also mocks some key system level items

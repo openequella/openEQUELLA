@@ -19,6 +19,7 @@ import { MuiThemeProvider } from "@material-ui/core";
 import { createTheme } from "@material-ui/core/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import { CurrentUserDetails } from "@openequella/rest-api-client/dist/LegacyContent";
+import "@testing-library/jest-dom/extend-expect";
 import {
   queryByLabelText,
   queryByText,
@@ -26,6 +27,10 @@ import {
   screen,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import * as A from "fp-ts/Array";
+import { pipe } from "fp-ts/function";
+import { concatAll } from "fp-ts/Monoid";
+import * as N from "fp-ts/number";
 import { createMemoryHistory } from "history";
 import * as React from "react";
 import { Router } from "react-router-dom";
@@ -36,17 +41,18 @@ import { nonDeletedStatuses } from "../../../tsrc/modules/SearchModule";
 import { defaultSearchSettings } from "../../../tsrc/modules/SearchSettingsModule";
 import { guestUser } from "../../../tsrc/modules/UserModule";
 import MyResourcesPage from "../../../tsrc/myresources/MyResourcesPage";
-import { defaultSortOrder } from "../../../tsrc/myresources/MyResourcesPageHelper";
 import type { MyResourcesType } from "../../../tsrc/myresources/MyResourcesPageHelper";
+import { defaultSortOrder } from "../../../tsrc/myresources/MyResourcesPageHelper";
 import { defaultSearchPageOptions } from "../../../tsrc/search/SearchPageHelper";
 import { languageStrings } from "../../../tsrc/util/langstrings";
+import { clickSelect, querySelectOption } from "../MuiTestHelpers";
 import {
   initialiseEssentialMocks,
   mockCollaborators,
   queryRefineSearchComponent,
+  SORTORDER_SELECT_ID,
   waitForSearch,
 } from "../search/SearchPageTestHelper";
-import "@testing-library/jest-dom/extend-expect";
 
 const history = createMemoryHistory();
 const defaultTheme = createTheme({
@@ -277,6 +283,75 @@ describe("<MyResourcesPage/>", () => {
           languageStrings.myResources.moderating.since
         )
       ).toBeInTheDocument();
+    });
+  });
+
+  describe("Custom sort orders", () => {
+    const sortOptions = languageStrings.myResources.sortOptions;
+
+    const countOptions = (options: string[]) =>
+      pipe(
+        options,
+        A.map(querySelectOption),
+        A.filter((r) => r !== null),
+        A.size
+      );
+
+    it.each<[MyResourcesType, string[]]>([
+      [
+        "Scrapbook",
+        [sortOptions.lastModified, sortOptions.dateCreated, sortOptions.title],
+      ],
+      [
+        "Moderation queue",
+        [
+          sortOptions.submitted,
+          sortOptions.lastAction,
+          sortOptions.title,
+          sortOptions.lastModified,
+          sortOptions.dateCreated,
+        ],
+      ],
+    ])("has custom sort order for %s", async (type, options) => {
+      const { container } = await renderMyResourcesPage(type);
+
+      // Click the menu
+      clickSelect(container, SORTORDER_SELECT_ID);
+
+      // Check how many of the expected options are now on screen
+      const foundOptions = countOptions(options);
+
+      expect(foundOptions).toBe(options.length);
+    });
+
+    it("does not display the moderation sort options in non-moderation views", async () => {
+      const nonModerationTypes: MyResourcesType[] = [
+        "Scrapbook",
+        "All resources",
+        "Published",
+        "Drafts",
+        "Archive",
+      ];
+
+      const countModOptions = async (
+        type: MyResourcesType
+      ): Promise<number> => {
+        const moderationSortOptions = [
+          sortOptions.submitted,
+          sortOptions.lastAction,
+        ];
+
+        const { container } = await renderMyResourcesPage(type);
+        clickSelect(container, SORTORDER_SELECT_ID);
+        return countOptions(moderationSortOptions);
+      };
+
+      const occurrences = pipe(
+        await Promise.all<number>(nonModerationTypes.map(countModOptions)),
+        concatAll(N.MonoidSum)
+      );
+
+      expect(occurrences).toBe(0);
     });
   });
 });
