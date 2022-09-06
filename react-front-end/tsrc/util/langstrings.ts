@@ -379,6 +379,15 @@ export const languageStrings = {
       createFile: "Upload files",
       createPage: "Author new web pages",
     },
+    sortOptions: {
+      dateCreated: "Date created",
+      lastAction: "Last action",
+      lastModified: "Date last modified",
+      relevance: "Relevance",
+      submitted: "Submitted",
+      title: "Title",
+      userRating: "User rating",
+    },
   },
   navigationguard: {
     title: "Close without saving?",

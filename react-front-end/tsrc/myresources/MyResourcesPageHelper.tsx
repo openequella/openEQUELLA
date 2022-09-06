@@ -22,16 +22,17 @@ import { SearchResultItem } from "@openequella/rest-api-client/dist/Search";
 import { absurd, flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { Location } from "history";
-import { ReactNode } from "react";
 import * as React from "react";
+import { ReactNode } from "react";
 import { TooltipIconButton } from "../components/TooltipIconButton";
 import { nonDeletedStatuses } from "../modules/SearchModule";
+import GallerySearchResult from "../search/components/GallerySearchResult";
+import { SortOrderOptions } from "../search/components/SearchOrderSelect";
+import SearchResult from "../search/components/SearchResult";
+import { SearchPageSearchResult } from "../search/SearchPageReducer";
 import { getISODateString } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
 import { simpleMatch } from "../util/match";
-import GallerySearchResult from "../search/components/GallerySearchResult";
-import SearchResult from "../search/components/SearchResult";
-import { SearchPageSearchResult } from "../search/SearchPageReducer";
 
 export type MyResourcesType =
   | "Published"
@@ -95,19 +96,65 @@ export const getMyResourcesTypeFromLegacyQueryParam = (
   );
 
 /**
+ * Given a specific `MyResourceType` build the SortOrderOptions representing the options used in
+ * UI for sorting in the related view.
+ *
+ * @param resourceType the type of resource to generate the options for
+ */
+export const sortOrderOptions = (
+  resourceType: MyResourcesType
+): SortOrderOptions => {
+  const {
+    dateCreated,
+    lastAction,
+    lastModified,
+    relevance,
+    submitted,
+    title,
+    userRating,
+  } = languageStrings.myResources.sortOptions;
+
+  switch (resourceType) {
+    case "Moderation queue":
+      return new Map<OEQ.Search.SortOrder, string>([
+        ["task_submitted", submitted],
+        ["task_lastaction", lastAction],
+        ["name", title],
+        ["datemodified", lastModified],
+        ["datecreated", dateCreated],
+      ]);
+    case "Scrapbook":
+      return new Map<OEQ.Search.SortOrder, string>([
+        ["datemodified", lastModified],
+        ["datecreated", dateCreated],
+        ["name", title],
+      ]);
+    default:
+      return new Map<OEQ.Search.SortOrder, string>([
+        ["rank", relevance],
+        ["datemodified", lastModified],
+        ["datecreated", dateCreated],
+        ["name", title],
+        ["rating", userRating],
+      ]);
+  }
+};
+
+/**
+ * Return the default sort order for My resources page, depending on the specific `resourceType`.
+ */
+export const defaultSortOrder = (
+  resourceType: MyResourcesType
+): OEQ.Search.SortOrder =>
+  resourceType === "Moderation queue" ? "task_submitted" : "datemodified";
+
+/**
  * Type definition for functions that render custom UI for SearchResult in My resources page.
  */
 export type RenderFunc = (
   item: SearchResultItem,
   highlight: string[]
 ) => JSX.Element;
-
-/**
- * Return the default sort order for My resources page.
- * todo: Return "Submitted" for Moderation queue when working on OEQ-1343.
- */
-export const defaultSortOrder = (_: MyResourcesType): OEQ.Search.SortOrder =>
-  "datemodified";
 
 /**
  * Function to render a standard SearchResult.

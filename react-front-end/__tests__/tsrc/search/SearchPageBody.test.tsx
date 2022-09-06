@@ -50,6 +50,7 @@ import {
 import {
   queryCollectionSelector,
   queryRefineSearchComponent,
+  SORTORDER_SELECT_ID,
 } from "./SearchPageTestHelper";
 
 const remoteSearchesPromise = jest
@@ -158,7 +159,7 @@ describe("<SearchPageBody />", () => {
       },
     });
 
-    const sortingDropdown = container.querySelector("#sort-order-select");
+    const sortingDropdown = container.querySelector(SORTORDER_SELECT_ID);
     if (!sortingDropdown) {
       throw new Error("Failed to find the Sorting selector");
     }

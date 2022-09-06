@@ -75,6 +75,7 @@ import { languageStrings } from "../util/langstrings";
 import { simpleMatch } from "../util/match";
 import { pfTernary } from "../util/pointfree";
 import type { RefinePanelControl } from "./components/RefineSearchPanel";
+import type { SortOrderOptions } from "./components/SearchOrderSelect";
 import type { StatusSelectorProps } from "./components/StatusSelector";
 
 /**
@@ -134,7 +135,7 @@ export interface SearchPageHeaderConfig {
   /**
    * Customised options for sorting the search result.
    */
-  customSortingOptions?: Map<OEQ.Search.SortOrder, string>;
+  customSortingOptions?: SortOrderOptions;
   /**
    * Custom configuration to be used with a 'new search' - e.g. when the 'New Search' button is clicked,
    * or when other actions which trigger the search state to be cleared.

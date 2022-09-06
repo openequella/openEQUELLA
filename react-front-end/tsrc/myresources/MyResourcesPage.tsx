@@ -57,6 +57,7 @@ import {
   defaultSortOrder,
   myResourcesTypeToItemStatus,
   renderAllResources,
+  sortOrderOptions,
 } from "./MyResourcesPageHelper";
 
 const {
@@ -113,12 +114,12 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
   ]);
 
   const customSearchCriteria = (
-    myResourcesType: MyResourcesType = resourceType
+    myResourcesType: MyResourcesType
   ): SearchPageOptions => ({
     ...defaultSearchPageOptions,
     owner: currentUser,
     status: myResourcesTypeToItemStatus(myResourcesType),
-    sortOrder: defaultSortOrder(resourceType),
+    sortOrder: defaultSortOrder(myResourcesType),
   });
 
   // Build an onChange event handler for MyResourcesSelector to do:
@@ -184,8 +185,9 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     ...defaultSearchPageHeaderConfig,
     newSearchConfig: {
       path: NEW_MY_RESOURCES_PATH,
-      criteria: customSearchCriteria(),
+      criteria: customSearchCriteria(resourceType),
     },
+    customSortingOptions: sortOrderOptions(resourceType),
     additionalHeaders:
       resourceType === "Scrapbook"
         ? [

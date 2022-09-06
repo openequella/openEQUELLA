@@ -75,6 +75,7 @@ import {
   querySearchAttachmentsSelector,
   queryStatusSelector,
   renderSearchPage,
+  SORTORDER_SELECT_ID,
   waitForSearch,
 } from "./SearchPageTestHelper";
 
@@ -116,8 +117,6 @@ const defaultSearchPageOptions: SearchPageOptions = {
   includeAttachments: false, // in 'list' displayMode we exclude attachments
 };
 const defaultCollectionPrivileges = [OEQ.Acl.ACL_SEARCH_COLLECTION];
-
-const SORTORDER_SELECT_ID = "#sort-order-select";
 
 const getQueryBar = (container: Element): HTMLElement => {
   const queryBar = container.querySelector<HTMLElement>("#searchBar");
@@ -446,7 +445,7 @@ describe("<SearchPage/>", () => {
     await waitForSearch(searchPromise);
     selectOption(
       container,
-      "#sort-order-select",
+      SORTORDER_SELECT_ID,
       languageStrings.settings.searching.searchPageSettings.title
     );
     await waitForSearch(searchPromise);
