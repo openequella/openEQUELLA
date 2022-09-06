@@ -374,6 +374,11 @@ export const languageStrings = {
     moderating: {
       since: "Moderating since",
     },
+    scrapbook: {
+      addScrapbook: "Add to Scrapbook",
+      createFile: "Upload files",
+      createPage: "Author new web pages",
+    },
     sortOptions: {
       dateCreated: "Date created",
       lastAction: "Last action",
