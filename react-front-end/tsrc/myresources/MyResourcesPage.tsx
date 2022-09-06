@@ -102,7 +102,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     });
 
     return {
-      ready: true,
+      ready: currentUser !== undefined,
       listInitialClassifications: true,
       customiseInitialSearchOptions,
     };
