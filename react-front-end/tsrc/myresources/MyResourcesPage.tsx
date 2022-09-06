@@ -97,6 +97,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
 
   // State to control whether to show a confirmation dialog for deleting a Scrapbook.
+  // The 'string' stored here is actually a UUID of the scrapbook item to delete.
   const [scrapbookToBeDeleted, setScrapbookToBeDeleted] = useState<string>();
 
   const initialSearchConfig = useMemo<InitialSearchConfig>(() => {
