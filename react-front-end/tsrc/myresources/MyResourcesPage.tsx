@@ -24,11 +24,16 @@ import * as A from "fp-ts/Array";
 import * as React from "react";
 import { ReactNode, useContext, useMemo, useState } from "react";
 import { useHistory } from "react-router";
+import ConfirmDialog from "../components/ConfirmDialog";
 import { TooltipIconButton } from "../components/TooltipIconButton";
 import { AppContext } from "../mainui/App";
 import { NEW_MY_RESOURCES_PATH } from "../mainui/routes";
 import { TemplateUpdateProps } from "../mainui/Template";
-import { openLegacyFileCreatingPage } from "../modules/ScrapbookModule";
+import {
+  deleteScrapbook,
+  openLegacyFileCreatingPage,
+  openLegacyFileEditingPage,
+} from "../modules/ScrapbookModule";
 import { nonDeletedStatuses } from "../modules/SearchModule";
 import type { StatusSelectorProps } from "../search/components/StatusSelector";
 import {
@@ -61,7 +66,13 @@ import {
 
 const {
   title,
-  scrapbook: { addScrapbook, createFile, createPage },
+  scrapbook: {
+    addScrapbook,
+    createFile,
+    createPage,
+    deleteDialogTitle,
+    deleteDialogContent,
+  },
 } = languageStrings.myResources;
 
 /**
@@ -84,6 +95,9 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   // Anchor used to control where and when to show the menu for creating new Scrapbook.
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
+
+  // State to control whether to show a confirmation dialog for deleting a Scrapbook.
+  const [scrapbookToBeDeleted, setScrapbookToBeDeleted] = useState<string>();
 
   const initialSearchConfig = useMemo<InitialSearchConfig>(() => {
     const customiseInitialSearchOptions = (
@@ -144,14 +158,29 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
       });
     };
 
+  const onScrapbookDelete = (
+    uuid: string,
+    {
+      search,
+      searchState: { options },
+      searchPageErrorHandler,
+    }: SearchContextProps
+  ) =>
+    deleteScrapbook(uuid)
+      .then(() => {
+        search(options);
+      })
+      .catch(searchPageErrorHandler)
+      .finally(() => setScrapbookToBeDeleted(undefined));
+
   // Return a function to render custom UI for the SearchResult in Scrapbook, Moderation queue
   // and All resources. For others, return undefined.
   const customSearchResultBuilder = ():
     | ((searchResult: SearchPageSearchResult) => ReactNode)
     | undefined => {
     const renderScrapbook = buildRenderScrapbookResult(
-      () => {}, // todo: Open the legacy page for editing Scrapbook.
-      () => {} // todo: Delete the Scrapbook and do a search again.
+      (key: string) => openLegacyFileEditingPage(key, history),
+      setScrapbookToBeDeleted
     );
 
     switch (resourceType) {
@@ -270,13 +299,30 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     >
       <SearchContext.Consumer>
         {(searchContextProps: SearchContextProps) => (
-          <SearchPageBody
-            pathname={NEW_MY_RESOURCES_PATH}
-            enableClassification={false}
-            headerConfig={searchPageHeaderConfig}
-            refinePanelConfig={searchPageRefinePanelConfig(searchContextProps)}
-            customRenderSearchResults={customSearchResultBuilder()}
-          />
+          <>
+            <SearchPageBody
+              pathname={NEW_MY_RESOURCES_PATH}
+              enableClassification={false}
+              headerConfig={searchPageHeaderConfig}
+              refinePanelConfig={searchPageRefinePanelConfig(
+                searchContextProps
+              )}
+              customRenderSearchResults={customSearchResultBuilder()}
+            />
+            {scrapbookToBeDeleted && (
+              <ConfirmDialog
+                open
+                title={deleteDialogTitle}
+                onCancel={() => setScrapbookToBeDeleted(undefined)}
+                onConfirm={() =>
+                  onScrapbookDelete(scrapbookToBeDeleted, searchContextProps)
+                }
+                confirmButtonText={languageStrings.common.action.ok}
+              >
+                {deleteDialogContent}
+              </ConfirmDialog>
+            )}
+          </>
         )}
       </SearchContext.Consumer>
       <Menu

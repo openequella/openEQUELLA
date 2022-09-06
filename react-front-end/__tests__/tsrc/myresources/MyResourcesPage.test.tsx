@@ -20,6 +20,8 @@ import { createTheme } from "@material-ui/core/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import { CurrentUserDetails } from "@openequella/rest-api-client/dist/LegacyContent";
 import {
+  getByLabelText,
+  getByText,
   queryByLabelText,
   queryByText,
   render,
@@ -32,6 +34,7 @@ import { Router } from "react-router-dom";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import { AppContext } from "../../../tsrc/mainui/App";
+import * as ScrapbookModule from "../../../tsrc/modules/ScrapbookModule";
 import { nonDeletedStatuses } from "../../../tsrc/modules/SearchModule";
 import { defaultSearchSettings } from "../../../tsrc/modules/SearchSettingsModule";
 import { guestUser } from "../../../tsrc/modules/UserModule";
@@ -110,6 +113,17 @@ describe("<MyResourcesPage/>", () => {
 
     await waitForSearch(searchPromise);
     return page;
+  };
+
+  // Should only be used when 'getSearchResult' is used to mock the search result because
+  // there is only one Scrapbook in this mocked result.
+  const getScrapbook = (container: HTMLElement) => {
+    const scrapbook = getByText(container, "personal").closest("li");
+    if (!scrapbook) {
+      throw new Error("Failed to render SearchResult for Scrapbook");
+    }
+
+    return scrapbook;
   };
 
   describe("supports views of different My resources types", () => {
@@ -224,7 +238,7 @@ describe("<MyResourcesPage/>", () => {
     });
   });
 
-  describe("Access to Scrapbook", () => {
+  describe("Support for Scrapbook", () => {
     it.each([
       ["shows", "enabled", getCurrentUserMock, true],
       ["hides", "disabled", guestUser, false],
@@ -248,6 +262,41 @@ describe("<MyResourcesPage/>", () => {
         expect(scrapbookOptionFound).toBe(expecting);
       }
     );
+
+    it("supports editing a Scrapbook", async () => {
+      const openLegacyFileEditingPage = jest
+        .spyOn(ScrapbookModule, "openLegacyFileEditingPage")
+        .mockImplementationOnce(() => Promise.resolve());
+
+      const { container } = await renderMyResourcesPage("Scrapbook");
+      const editIcon = getByLabelText(
+        getScrapbook(container),
+        languageStrings.common.action.edit
+      );
+
+      userEvent.click(editIcon);
+      expect(openLegacyFileEditingPage).toHaveBeenCalledTimes(1);
+    });
+
+    it("supports deleting a Scrapbook", async () => {
+      const deleteScrapbook = jest
+        .spyOn(ScrapbookModule, "deleteScrapbook")
+        .mockImplementationOnce(() => Promise.resolve());
+
+      const { container } = await renderMyResourcesPage("Scrapbook");
+      const binButton = getByLabelText(
+        getScrapbook(container),
+        languageStrings.common.action.delete
+      );
+
+      // Click the bin icon should show a dialog which has an 'OK' button.
+      userEvent.click(binButton);
+      const dialog = screen.getByRole("dialog");
+      const okButton = getByText(dialog, languageStrings.common.action.ok);
+
+      userEvent.click(okButton);
+      expect(deleteScrapbook).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe("custom UI for SearchResult", () => {
