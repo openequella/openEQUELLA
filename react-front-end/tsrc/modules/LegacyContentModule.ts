@@ -26,9 +26,22 @@ const legacyMyResourcesUrl = `${API_BASE_URL}/content/submit/access/myresources.
  * Given a Scrapbook type which is either "file" or "page", return a route for
  * accessing the Legacy Scrapbook creating page.
  */
-export const getLegacyScrapbookPageRoute = async (
+export const getLegacyScrapbookCreatingPageRoute = async (
   scrapbookType: ScrapbookType
 ): Promise<string> =>
   Axios.post<ChangeRoute>(legacyMyResourcesUrl, {
     event__: [`${scrapbookType === "file" ? "cmca" : "cmca2"}.contribute`],
+  }).then(({ data: { route } }) => `/${route}`);
+
+/**
+ * Returns a route for accessing the Legacy Scrapbook editing page.
+ *
+ * @param itemKey Unique key of the Scrapbook including the UUID and version.
+ */
+export const getLegacyScrapbookEditingPageRoute = async (
+  itemKey: string
+): Promise<string> =>
+  Axios.post<ChangeRoute>(legacyMyResourcesUrl, {
+    event__: ["mcile.edit"],
+    eventp__0: [itemKey],
   }).then(({ data: { route } }) => `/${route}`);

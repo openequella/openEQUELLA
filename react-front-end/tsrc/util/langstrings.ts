@@ -378,6 +378,8 @@ export const languageStrings = {
       addScrapbook: "Add to Scrapbook",
       createFile: "Upload files",
       createPage: "Author new web pages",
+      deleteDialogTitle: "Delete item?",
+      deleteDialogContent: "Are you sure you want to delete this item?",
     },
     sortOptions: {
       dateCreated: "Date created",

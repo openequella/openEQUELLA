@@ -18,7 +18,10 @@
 import * as OEQ from "@openequella/rest-api-client";
 import { History } from "history";
 import { API_BASE_URL } from "../AppConfig";
-import { getLegacyScrapbookPageRoute } from "./LegacyContentModule";
+import {
+  getLegacyScrapbookCreatingPageRoute,
+  getLegacyScrapbookEditingPageRoute,
+} from "./LegacyContentModule";
 
 /**
  * Delete one Scrapbook Item by UUID.
@@ -29,11 +32,7 @@ export const deleteScrapbook = (uuid: string): Promise<void> =>
 
 export type ScrapbookType = "file" | "page";
 /**
- * Open the legacy Scrapbook creating pages.
- *
- * A LegacyContent request is firstly sent with different payload determined by
- * whether to create a file or a web page. The route to the Legacy creating page
- * will be provided in the response and be used to open the page.
+ * Open Legacy Scrapbook creating pages by pushing the route of the page to the browser history.
  *
  * @param scrapbookType Type of Scrapbook which must be either 'file' or 'page'.
  * @param history History of browser in which the returning route will be pushed in.
@@ -42,4 +41,15 @@ export const openLegacyFileCreatingPage = async (
   scrapbookType: ScrapbookType,
   history: History
 ): Promise<void> =>
-  history.push(await getLegacyScrapbookPageRoute(scrapbookType));
+  history.push(await getLegacyScrapbookCreatingPageRoute(scrapbookType));
+
+/**
+ * Open Legacy Scrapbook editing pages by pushing the route of the page to the browser history.
+ *
+ * @param key Unique key of the Scrapbook including the UUID and version.
+ * @param history History of browser in which the returning route will be pushed in.
+ */
+export const openLegacyFileEditingPage = async (
+  key: string,
+  history: History
+): Promise<void> => history.push(await getLegacyScrapbookEditingPageRoute(key));

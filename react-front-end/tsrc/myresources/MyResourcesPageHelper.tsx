@@ -230,28 +230,32 @@ export const buildRenderScrapbookResult =
     onEdit: (uuid: string) => void,
     onDelete: (uuid: string) => void
   ): RenderFunc =>
-  (item: OEQ.Search.SearchResultItem, highlight: string[]) =>
-    (
+  (item: OEQ.Search.SearchResultItem, highlight: string[]) => {
+    const { uuid, version } = item;
+    const key = `${uuid}/${version}`;
+
+    return (
       <SearchResult
-        key={`${item.uuid}/${item.version}`}
+        key={key}
         item={item}
         highlights={highlight}
         customActionButtons={[
           <TooltipIconButton
             title={languageStrings.common.action.edit}
-            onClick={() => onEdit(item.uuid)}
+            onClick={() => onEdit(key)}
           >
             <EditIcon />
           </TooltipIconButton>,
           <TooltipIconButton
             title={languageStrings.common.action.delete}
-            onClick={() => onDelete(item.uuid)}
+            onClick={() => onDelete(uuid)}
           >
             <DeleteIcon />
           </TooltipIconButton>,
         ]}
       />
     );
+  };
 
 /**
  * Function to render a list of Item displayed in All resources.
