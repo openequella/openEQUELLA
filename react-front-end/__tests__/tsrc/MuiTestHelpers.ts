@@ -50,7 +50,7 @@ const selectFinderOptions: SelectorMatcherOptions = {
  *
  * @param optionText The text which represents the option you wish to find - user visible.
  */
-export const findSelectOption = (optionText: string): HTMLElement =>
+export const getSelectOption = (optionText: string): HTMLElement =>
   screen.getByText(optionText, selectFinderOptions);
 
 /**
@@ -76,5 +76,5 @@ export const selectOption = (
   // Click the <Select>
   clickSelect(container, selector);
   // .. then click the option in the list
-  userEvent.click(findSelectOption(optionText));
+  userEvent.click(getSelectOption(optionText));
 };
