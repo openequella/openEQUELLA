@@ -374,6 +374,15 @@ export const languageStrings = {
     moderating: {
       since: "Moderating since",
     },
+    moderationItemTable: {
+      ariaLabel: "Table of items in moderation",
+      colLastActionDate: "Last action",
+      colStatus: "Status",
+      colSubmittedDate: "Submitted",
+      colTitle: "Title",
+      rejectionCommentButton: "View rejection message",
+      rejectionCommentDialogTitle: "Rejection reason",
+    },
     scrapbook: {
       addScrapbook: "Add to Scrapbook",
       createFile: "Upload files",
