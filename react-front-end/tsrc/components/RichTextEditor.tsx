@@ -122,11 +122,10 @@ const RichTextEditor = ({
       }}
       toolbar="formatselect | bold italic strikethrough underline forecolor backcolor | link image media file | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent hr | removeformat | undo redo | preview | ltr rtl"
       plugins={
-        "anchor autolink autoresize advlist charmap code codesample  " +
-        "directionality fullscreen help hr image imagetools " +
-        "importcss insertdatetime link lists media nonbreaking noneditable pagebreak paste " +
-        "preview print quickbars save searchreplace table template " +
-        "textpattern toc visualblocks visualchars wordcount"
+        "advlist anchor autolink autoresize charmap code codesample " +
+        "directionality emoticons fullscreen help image importcss" +
+        "insertdatetime link lists media nonbreaking pagebreak preview " +
+        "quickbars save searchreplace table visualblocks visualchars wordcount"
       }
       onEditorChange={onStateChange}
       value={htmlInput}
