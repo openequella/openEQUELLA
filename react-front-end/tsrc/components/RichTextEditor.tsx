@@ -87,21 +87,25 @@ const RichTextEditor = ({
   onStateChange,
   imageUploadCallBack,
 }: RichTextEditorProps) => {
-  const uploadImages = (
-    blobInfo: BlobInfo,
-    success: (msg: string) => void,
-    failure: (msg: string) => void
-  ): void => {
-    if (imageUploadCallBack) {
-      imageUploadCallBack(blobInfo)
-        .then((response: AxiosResponse<ImageReturnType>) =>
-          success(response.data.link)
-        )
-        .catch((error: Error) => failure(error.name + error.message));
-    } else {
-      failure("No upload path specified.");
-    }
-  };
+  const uploadImages = (blobInfo: BlobInfo) =>
+    new Promise<string>(
+      (
+        resolve: (value: PromiseLike<string> | string) => void,
+        reject: (reason?: string) => void
+      ) => {
+        if (imageUploadCallBack) {
+          imageUploadCallBack(blobInfo)
+            .then((response: AxiosResponse<ImageReturnType>) => {
+              resolve(response.data.link);
+            })
+            .catch((error: Error) => {
+              reject(error.name + error.message);
+            });
+        } else {
+          reject("No upload path specified.");
+        }
+      }
+    );
 
   const defaultSkinUrl =
     getBaseUrl() + renderData?.baseResources + "reactjs/tinymce/skins/ui/oxide";
