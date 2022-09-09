@@ -36,7 +36,10 @@ import * as N from "fp-ts/number";
 import { createMemoryHistory } from "history";
 import * as React from "react";
 import { Router } from "react-router-dom";
-import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
+import {
+  getModerationItemsSearchResult,
+  getSearchResult,
+} from "../../../__mocks__/SearchResult.mock";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import { AppContext } from "../../../tsrc/mainui/App";
 import * as ScrapbookModule from "../../../tsrc/modules/ScrapbookModule";
@@ -413,6 +416,38 @@ describe("<MyResourcesPage/>", () => {
       );
 
       expect(occurrences).toBe(0);
+    });
+  });
+
+  describe("Moderation queue", () => {
+    const moderationQueueStrings =
+      languageStrings.myResources.moderationItemTable;
+
+    const renderModerationQueue = async () =>
+      await renderMyResourcesPage("Moderation queue");
+
+    it("uses a custom UI for Moderation queue", async () => {
+      const { queryByLabelText } = await renderModerationQueue();
+
+      expect(
+        queryByLabelText(moderationQueueStrings.ariaLabel)
+      ).toBeInTheDocument();
+    });
+
+    it("has a dialog to display rejection comments for rejected items", async () => {
+      mockSearch.mockImplementationOnce(() =>
+        Promise.resolve(getModerationItemsSearchResult())
+      );
+      const { getByText, queryByText } = await renderModerationQueue();
+
+      const displayRejectionButton =
+        getByText("REJECTED").querySelector("button");
+      expect(displayRejectionButton).toBeInTheDocument();
+
+      displayRejectionButton!.click();
+      expect(
+        queryByText(moderationQueueStrings.rejectionCommentDialogTitle)
+      ).toBeInTheDocument();
     });
   });
 });

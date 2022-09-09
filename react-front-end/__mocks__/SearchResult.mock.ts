@@ -18,6 +18,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { range } from "lodash";
+import { DateTime } from "luxon";
 import { v4 as uuidv4 } from "uuid";
 
 export const getEmptySearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> =
@@ -323,3 +324,93 @@ export const getSearchResultsCustom = (
   })),
   highlight: [],
 });
+
+export const getModerationItemsSearchResult =
+  (): OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> => {
+    const oneHourAgo: Date = DateTime.now().minus({ hour: 1 }).toJSDate();
+    const yesterday: Date = DateTime.now()
+      .minus({ day: 1, hours: 2 })
+      .toJSDate();
+
+    return {
+      start: 0,
+      length: 3,
+      available: 3,
+      results: [
+        {
+          uuid: "724c8478-0203-4866-8fb4-463452fa348c",
+          version: 3,
+          name: "Testing workflows v2",
+          status: "moderating",
+          createdDate: oneHourAgo,
+          modifiedDate: oneHourAgo,
+          collectionId: "26679ec5-ac77-4124-8f5c-3a46674b1136",
+          commentCount: 0,
+          starRatings: -1.0,
+          attachmentCount: 1,
+          thumbnail: "default",
+          displayFields: [],
+          keywordFoundInAttachment: false,
+          links: {
+            view: "http://localhost:8080/ian/items/724c8478-0203-4866-8fb4-463452fa348c/3/",
+            self: "http://localhost:8080/ian/api/item/724c8478-0203-4866-8fb4-463452fa348c/3/",
+          },
+          isLatestVersion: true,
+          moderationDetails: {
+            lastActionDate: oneHourAgo,
+            submittedDate: oneHourAgo,
+          },
+        },
+        {
+          uuid: "724c8478-0203-4866-8fb4-463452fa348c",
+          version: 2,
+          name: "Testing workflows",
+          status: "rejected",
+          createdDate: yesterday,
+          modifiedDate: yesterday,
+          collectionId: "26679ec5-ac77-4124-8f5c-3a46674b1136",
+          commentCount: 0,
+          starRatings: -1.0,
+          attachmentCount: 1,
+          thumbnail: "default",
+          displayFields: [],
+          keywordFoundInAttachment: false,
+          links: {
+            view: "http://localhost:8080/ian/items/724c8478-0203-4866-8fb4-463452fa348c/2/",
+            self: "http://localhost:8080/ian/api/item/724c8478-0203-4866-8fb4-463452fa348c/2/",
+          },
+          isLatestVersion: false,
+          moderationDetails: {
+            lastActionDate: oneHourAgo,
+            submittedDate: yesterday,
+            rejectionMessage: "I reject this item, just because I can.",
+          },
+        },
+        {
+          uuid: "1a65f60d-3d35-452b-881f-d01dc66155c3",
+          version: 1,
+          name: "An Error screenshot",
+          description: "DB Issues when attempting to setupForTests",
+          status: "review",
+          createdDate: new Date("2022-09-02T12:26:45.428+10:00"),
+          modifiedDate: new Date("2022-09-02T12:26:45.426+10:00"),
+          collectionId: "241dfa27-5023-4b89-91ca-1f716cb2cf9b",
+          commentCount: 0,
+          starRatings: -1.0,
+          attachmentCount: 1,
+          thumbnail: "default",
+          displayFields: [],
+          keywordFoundInAttachment: false,
+          links: {
+            view: "http://localhost:8080/ian/items/1a65f60d-3d35-452b-881f-d01dc66155c3/1/",
+            self: "http://localhost:8080/ian/api/item/1a65f60d-3d35-452b-881f-d01dc66155c3/1/",
+          },
+          isLatestVersion: true,
+          moderationDetails: {
+            lastActionDate: yesterday,
+            submittedDate: new Date("2022-09-02T12:26:45.434+10:00"),
+          },
+        },
+      ],
+    };
+  };

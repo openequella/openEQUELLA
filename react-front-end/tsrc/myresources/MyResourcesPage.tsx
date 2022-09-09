@@ -25,6 +25,7 @@ import * as React from "react";
 import { ReactNode, useContext, useMemo, useState } from "react";
 import { useHistory } from "react-router";
 import ConfirmDialog from "../components/ConfirmDialog";
+import MessageInfo from "../components/MessageInfo";
 import { TooltipIconButton } from "../components/TooltipIconButton";
 import { AppContext } from "../mainui/App";
 import { NEW_MY_RESOURCES_PATH } from "../mainui/routes";
@@ -54,6 +55,7 @@ import {
 } from "../search/SearchPageHelper";
 import type { SearchPageSearchResult } from "../search/SearchPageReducer";
 import { languageStrings } from "../util/langstrings";
+import { ModerationSearchResult } from "./components/ModerationSearchResult";
 import { MyResourcesSelector } from "./components/MyResourcesSelector";
 import type { MyResourcesType } from "./MyResourcesPageHelper";
 import {
@@ -196,9 +198,18 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
             }: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>) =>
               results.map((item) => renderScrapbook(item, highlight))
           );
-      // todo: OEQ-990: custom UI for Moderation queue
       case "Moderation queue":
-        return undefined;
+        return (searchResult: SearchPageSearchResult) =>
+          searchResult.from === "item-search" ? (
+            <ModerationSearchResult result={searchResult.content} />
+          ) : (
+            <MessageInfo
+              title="Sorry, that display type is not supported - list view only."
+              variant="info"
+              open
+              onClose={() => {}}
+            />
+          );
       case "All resources":
         return (result: SearchPageSearchResult) =>
           customUIForMyResources(
