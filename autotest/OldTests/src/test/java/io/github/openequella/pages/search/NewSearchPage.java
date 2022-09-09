@@ -189,9 +189,7 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
     getWaiter()
         .until(
             driver ->
-                ownerSelectDialog
-                        .findElements(By.xpath(".//ul[@id='UserSearch-UserList']/div"))
-                        .size()
+                ownerSelectDialog.findElements(By.xpath(".//ul[@id='user-search-list']/div")).size()
                     > 0);
     // Click one of found users.
     WebElement owner =
