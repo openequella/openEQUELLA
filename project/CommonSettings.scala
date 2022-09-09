@@ -49,7 +49,7 @@ object CommonSettings extends AutoPlugin {
     lazy val xstreamVersion = "1.4.19"
     lazy val xstreamDep     = "com.thoughtworks.xstream" % "xstream" % xstreamVersion
 
-    lazy val jacksonVersion        = "2.13.3"
+    lazy val jacksonVersion        = "2.13.4"
     lazy val jacksonDataBind       = "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion
     lazy val jacksonDataFormatYaml = "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % jacksonVersion
     lazy val jacksonModuleScala    = "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion
