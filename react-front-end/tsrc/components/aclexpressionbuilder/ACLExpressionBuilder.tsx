@@ -211,7 +211,7 @@ const ACLExpressionBuilder = ({
           />
         ))}
       </RadioGroup>
-      <UserSearch onSelect={() => {}} listHeight={300} />
+      <UserSearch onChange={() => {}} selections={new Set()} listHeight={300} />
     </FormControl>
   );
 
