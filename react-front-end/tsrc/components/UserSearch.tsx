@@ -27,12 +27,13 @@ import {
   Tooltip,
   Typography,
 } from "@material-ui/core";
-import AccountCircle from "@material-ui/icons/AccountCircle";
 import ErrorOutline from "@material-ui/icons/ErrorOutline";
 import InfoIcon from "@material-ui/icons/Info";
 import SearchIcon from "@material-ui/icons/Search";
 import * as OEQ from "@openequella/rest-api-client";
 import { flow, pipe } from "fp-ts/function";
+import * as A from "fp-ts/Array";
+import * as M from "fp-ts/Map";
 import * as O from "fp-ts/Option";
 import * as ORD from "fp-ts/Ord";
 import { not } from "fp-ts/Predicate";
@@ -45,9 +46,11 @@ import * as React from "react";
 import { KeyboardEvent, useEffect, useState } from "react";
 import { sprintf } from "sprintf-js";
 import * as GroupModule from "../modules/GroupModule";
+import { eqUserById, userIds } from "../modules/UserModule";
 import * as UserModule from "../modules/UserModule";
 import { languageStrings } from "../util/langstrings";
 import { OrdAsIs } from "../util/Ord";
+import { CheckboxList } from "./CheckboxList";
 
 const {
   failedToFindUsersMessage,
@@ -61,8 +64,15 @@ export interface UserSearchProps {
   id?: string;
   /** How high (in pixels) the list of users should be. */
   listHeight?: number;
-  /** Callback triggered when a user entry is clicked on. */
-  onSelect: (username: OEQ.UserQuery.UserDetails) => void;
+  /**
+   * A set of users in the user list (fetched from the user search API) which should be 'selected'/ticked/checked.
+   * Except some edge cases it will receive an empty set as an initial value.
+   */
+  selections: ReadonlySet<OEQ.UserQuery.UserDetails>;
+  /** Callback triggered when selected user entries are changed. */
+  onChange: (users: ReadonlySet<OEQ.UserQuery.UserDetails>) => void;
+  /** Whether enable multiple selection or not, default value is `false` **/
+  enableMultiSelection?: boolean;
   /** A list of group UUIDs to filter the users by. */
   groupFilter?: ReadonlySet<string>;
   /** Function which will provide the list of users. */
@@ -86,7 +96,9 @@ export interface UserSearchProps {
 const UserSearch = ({
   id,
   listHeight,
-  onSelect,
+  selections,
+  onChange,
+  enableMultiSelection = false,
   groupFilter,
   userListProvider = (query?: string, groupFilter?: ReadonlySet<string>) =>
     UserModule.listUsers(query ? `${query}*` : undefined, groupFilter),
@@ -97,9 +109,6 @@ const UserSearch = ({
   const [groupDetails, setGroupDetails] = useState<
     OEQ.UserQuery.GroupDetails[]
   >([]);
-  const [selectedUser, setSelectedUser] = useState<
-    OEQ.Common.UuidString | undefined
-  >(undefined);
   const [hasSearched, setHasSearched] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<String>();
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
@@ -156,12 +165,28 @@ const UserSearch = ({
       });
   };
 
+  /**
+   * Generate a `UserDetails` ReadonlySet based on the selected user ids and pass it to `onChange` function.
+   * And if `multipleSelection` is not enabled, the previous selected user would uncheck and then new user will be added.
+   * */
+  const handleSelectedUserChanged = (ids: ReadonlySet<string>) => {
+    pipe(
+      users.filter((u) => ids.has(u.id)),
+      RSET.fromReadonlyArray(eqUserById),
+      (currentSelectedUsers) =>
+        enableMultiSelection
+          ? currentSelectedUsers
+          : RSET.difference(eqUserById)(currentSelectedUsers, selections),
+      onChange
+    );
+  };
+
   const handleQueryFieldKeypress = (event: KeyboardEvent<HTMLDivElement>) => {
     switch (event.key) {
       case "Escape":
         setQuery("");
         setUsers([]);
-        setSelectedUser(undefined);
+        onChange(RSET.empty);
         setHasSearched(false);
         event.stopPropagation();
         break;
@@ -228,6 +253,27 @@ const UserSearch = ({
     );
   };
 
+  /**
+   * A template used to display a user entry in the CheckboxList.
+   */
+  const userOption = (user: OEQ.UserQuery.UserDetails) => (
+    <ListItemText
+      primary={user.username}
+      secondary={`${user.firstName} ${user.lastName}`}
+    />
+  );
+
+  /**
+   * Convert `UserDetails` Array to a simple Map which can be used in CheckboxList.
+   */
+  const userDetailsToIdsMap: (
+    _: OEQ.UserQuery.UserDetails[]
+  ) => Map<string, JSX.Element> = flow(
+    A.reduce(new Map<string, JSX.Element>(), (acc, user) =>
+      pipe(acc, M.upsertAt(S.Eq)(user.id, userOption(user)))
+    )
+  );
+
   const userList = () => {
     // If there's no users because a search has not been done,
     // then return with nothing
@@ -241,25 +287,12 @@ const UserSearch = ({
         style={listHeight ? { height: listHeight, overflow: "auto" } : {}}
       >
         {users.length ? (
-          users.map((userDetails: OEQ.UserQuery.UserDetails) => (
-            <ListItem
-              button
-              onClick={() => {
-                setSelectedUser(userDetails.id);
-                onSelect(userDetails);
-              }}
-              key={userDetails.id}
-              selected={selectedUser === userDetails.id}
-            >
-              <ListItemIcon>
-                <AccountCircle />
-              </ListItemIcon>
-              <ListItemText
-                primary={userDetails.username}
-                secondary={`${userDetails.firstName} ${userDetails.lastName}`}
-              />
-            </ListItem>
-          ))
+          <CheckboxList
+            id="user-search-list"
+            options={userDetailsToIdsMap(users)}
+            checked={userIds(selections)}
+            onChange={handleSelectedUserChanged}
+          />
         ) : (
           <ListItem>
             <ListItemIcon>

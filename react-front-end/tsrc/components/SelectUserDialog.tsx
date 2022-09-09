@@ -22,6 +22,12 @@ import {
   DialogContent,
   DialogTitle,
 } from "@material-ui/core";
+import * as RA from "fp-ts/ReadonlyArray";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import * as S from "fp-ts/string";
+import * as ORD from "fp-ts/Ord";
+import * as RSET from "fp-ts/ReadonlySet";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useState } from "react";
@@ -75,7 +81,26 @@ export const SelectUserDialog = ({
       </DialogTitle>
       <DialogContent>
         <UserSearch
-          onSelect={setSelectedUser}
+          onChange={(users) =>
+            pipe(
+              users,
+              RSET.toReadonlyArray(
+                ORD.contramap((u: OEQ.UserQuery.UserDetails) => u.username)(
+                  S.Ord
+                )
+              ),
+              // SelectUserDialog is for single users only, so we only use the first selection (just in case)
+              RA.head,
+              O.toUndefined,
+              setSelectedUser
+            )
+          }
+          selections={pipe(
+            selectedUser,
+            O.fromNullable,
+            O.map(RSET.singleton),
+            O.getOrElseW(() => RSET.empty)
+          )}
           groupFilter={groupFilter}
           userListProvider={userListProvider}
           resolveGroupsProvider={resolveGroupsProvider}
