@@ -106,19 +106,27 @@ const SettingsPage = ({
   }, [appErrorHandler]);
 
   /**
+   * Given a SettingGroup determine when the UI Settings Editor should be displayed.
+   * This is done by checking the `group` is for the Settings Editor, and that there are settings
+   * present to be managed by it.
+   */
+  const showUiSettings = ({
+    category: { name },
+    settings: { length },
+  }: SettingGroup) => name === languageStrings.settings.ui.name && length > 0;
+
+  /**
    * Create the UI content for setting category
-   * @param category - One of the pre-defined categories
-   * @param settings - settings of the category
+   * @param settingGroup Contains pre-defined `categories` and `settings` of the category
    * @returns {ReactElement} Either a List or UISettingEditor, depending on the category
    */
-  const buildAccordionContent = ({ category, settings }: SettingGroup) => {
-    if (category.name === languageStrings.settings.ui.name) {
-      return <UISettingEditor />;
-    }
-    return (
+  const buildAccordionContent = (settingGroup: SettingGroup) =>
+    showUiSettings(settingGroup) ? (
+      <UISettingEditor />
+    ) : (
       <AccordionDetails>
         <List>
-          {settings.map((setting) => (
+          {settingGroup.settings.map((setting) => (
             <ListItem key={setting.id}>
               <ListItemText
                 primary={<SettingLink {...setting} />}
@@ -129,7 +137,6 @@ const SettingsPage = ({
         </List>
       </AccordionDetails>
     );
-  };
 
   /**
    * Create a link for each setting

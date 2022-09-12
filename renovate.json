@@ -29,6 +29,10 @@
       "groupName": "XStream packages"
     },
     {
+      "matchPackagePatterns": ["^org.apache.ws.commons.axiom"],
+      "groupName": "Apache Axiom packages"
+    },
+    {
       "matchPackagePatterns": ["^org.apache.axis2"],
       "groupName": "Apache Axis 2 packages"
     },
@@ -49,8 +53,8 @@
       "groupName": "Apache Lucene packages"
     },
     {
-      "matchPackagePatterns": ["^org.apache.ws.commons.axiom"],
-      "groupName": "Apache Axiom packages"
+      "matchPackagePatterns": ["^org.apache.rampart"],
+      "groupName": "Apache Rampart packages"
     },
     {
       "matchPackagePatterns": ["^org.apache.tika"],
