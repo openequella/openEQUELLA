@@ -19,7 +19,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 val RestEasyVersion   = "3.15.3.Final"
 val SwaggerVersion    = "1.6.6"
 val TomcatVersion     = "9.0.65"
-val axis2Version      = "1.7.9"
+val axis2Version      = "1.8.2"
 val circeVersion      = "0.12.1"
 val cxfVersion        = "3.5.3"
 val fs2Version        = "2.5.11"
@@ -218,7 +218,7 @@ libraryDependencies ++= Seq(
   "javax.json.bind"                      % "javax.json.bind-api"          % "1.0",
   "org.jsoup"                            % "jsoup"                        % jsoupVersion,
   xstreamDep,
-  "org.opensaml" % "xmltooling" % "1.3.1" excludeAll ExclusionRule(organization = "org.slf4j"),
+  "org.opensaml" % "xmltooling" % "1.4.4" excludeAll ExclusionRule(organization = "org.slf4j"),
   postgresDep,
   "org.scannotation"    % "scannotation"           % "1.0.3",
   "org.slf4j"           % "jcl-over-slf4j"         % "1.7.36",
@@ -366,6 +366,7 @@ run := {
   case PathList("com", "ibm", "wsdl", _*)                   => MergeStrategy.first
   case PathList("org", "apache", "regexp", _*)              => MergeStrategy.first
   case PathList("javax", "servlet", "jsp", _*)              => MergeStrategy.first
+  case PathList("javax", "servlet", _*)                     => MergeStrategy.last
   case PathList("javax", "annotation", _*)                  => MergeStrategy.first
   case PathList("org", "w3c", "dom", _*)                    => MergeStrategy.first
   case PathList("META-INF", "mailcap")                      => MergeStrategy.first
