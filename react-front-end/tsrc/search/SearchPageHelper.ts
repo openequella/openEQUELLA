@@ -18,10 +18,12 @@
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
-import { flow, pipe } from "fp-ts/function";
+import { flow, identity, pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as O from "fp-ts/Option";
 import * as S from "fp-ts/string";
+import * as T from "fp-ts/Task";
+import * as TO from "fp-ts/TaskOption";
 import { History, Location } from "history";
 import { pick } from "lodash";
 import {
@@ -500,16 +502,22 @@ const getDisplayModeFromLegacyParams = (
 
 const getCollectionFromLegacyParams = async (
   collectionUuid: string | undefined
-): Promise<Collection[] | undefined> => {
-  if (!collectionUuid) return defaultSearchOptions.collections;
-  const collectionDetails: Collection[] | undefined =
-    await findCollectionsByUuid([collectionUuid]);
-
-  return typeof collectionDetails !== "undefined" &&
-    collectionDetails.length > 0
-    ? collectionDetails
-    : defaultSearchOptions.collections;
-};
+): Promise<Collection[] | undefined> =>
+  pipe(
+    collectionUuid,
+    O.fromNullable,
+    O.map(
+      pfTernary(
+        (withPrefix) => withPrefix.startsWith("C"),
+        (withPrefix) => withPrefix.substring(1),
+        identity
+      )
+    ),
+    TO.fromOption,
+    TO.chain((uuid) => TO.tryCatch(() => findCollectionsByUuid([uuid]))),
+    TO.filter((collections) => !!collections && A.isNonEmpty(collections)),
+    TO.getOrElse(() => T.of(defaultSearchOptions.collections))
+  )();
 
 const getOwnerFromLegacyParams = async (ownerId: string | undefined) =>
   ownerId ? await findUserById(ownerId) : defaultSearchOptions.owner;
@@ -609,9 +617,7 @@ export const legacyQueryStringToSearchPageOptions = async (
     return params.get(paramName) ?? undefined;
   };
   const query = getQueryParam("q") ?? defaultSearchOptions.query;
-  const collections = await getCollectionFromLegacyParams(
-    getQueryParam("in")?.substring(1)
-  );
+  const collections = await getCollectionFromLegacyParams(getQueryParam("in"));
   const owner = await getOwnerFromLegacyParams(getQueryParam("owner"));
   const sortOrder = pipe(
     getQueryParam("sort")?.toLowerCase(),
