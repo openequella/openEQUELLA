@@ -70,6 +70,7 @@ import {
   SearchOptionsFields,
 } from "../modules/SearchModule";
 import { findUserById } from "../modules/UserModule";
+import { LegacyMyResourcesRuntypes } from "../myresources/MyResourcesPageHelper";
 import { DateRange, isDate } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
 import { simpleMatch } from "../util/match";
@@ -486,6 +487,11 @@ const getDisplayModeFromLegacyParams = (
         gallery: () => "gallery-image",
         video: () => "gallery-video",
         _: (mode) => {
+          // Because Old UI also uses query string `type` for My resources type and Legacy
+          // My resources page does not have galleries, we always return "list".
+          if (LegacyMyResourcesRuntypes.guard(mode)) {
+            return "list";
+          }
           throw new TypeError(`Unknown Legacy display mode [${mode}]`);
         },
       })
