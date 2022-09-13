@@ -62,6 +62,9 @@ import {
   buildRenderScrapbookResult,
   customUIForMyResources,
   defaultSortOrder,
+  getMyResourcesTypeFromQueryParam,
+  getSortOrderFromQueryParam,
+  getSubStatusFromQueryParam,
   myResourcesTypeToItemStatus,
   renderAllResources,
   sortOrderOptions,
@@ -88,13 +91,19 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const { currentUser } = useContext(AppContext);
   const history = useHistory<SearchPageHistoryState<MyResourcesType>>();
   const [resourceType, setResourceType] = useState<MyResourcesType>(
-    // Todo: support getting the resource type from query string. Data saved in browser history
-    // takes precedence over query params. But if both are undefined, default to 'Published'.
-    history.location.state?.customData?.["myResourcesType"] ?? "Published"
+    // Data saved in browser history takes precedence over query params.
+    // But if both are undefined, default to 'Published'.
+    history.location.state?.customData?.["myResourcesType"] ??
+      getMyResourcesTypeFromQueryParam(history.location) ??
+      "Published"
   );
 
   // The sub-statuses refer to Item statuses that can be selected from Moderation queue and All resources.
-  const [subStatus, setSubStatus] = useState<OEQ.Common.ItemStatus[]>([]);
+  const [subStatus, setSubStatus] = useState<OEQ.Common.ItemStatus[]>(
+    history.location.state?.searchPageOptions.status ??
+      getSubStatusFromQueryParam(history.location) ??
+      []
+  );
 
   // Anchor used to control where and when to show the menu for creating new Scrapbook.
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
@@ -109,13 +118,15 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     ): SearchPageOptions => ({
       ...searchPageOptions,
       owner: currentUser,
-      status: myResourcesTypeToItemStatus(resourceType),
+      status: A.isNonEmpty(subStatus)
+        ? subStatus
+        : myResourcesTypeToItemStatus(resourceType),
       // The sort order in My resources initial search is a bit different. If no sort order
       // is present in either the browser history or query string, we use the custom default
       // sort order rather than the one configured in Search settings.
       sortOrder:
-        // todo: support getting the sort order from query string.
         history.location.state?.searchPageOptions?.sortOrder ??
+        getSortOrderFromQueryParam(history.location) ??
         defaultSortOrder(resourceType),
     });
 
@@ -124,11 +135,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
       listInitialClassifications: true,
       customiseInitialSearchOptions,
     };
-  }, [
-    currentUser,
-    history.location.state?.searchPageOptions?.sortOrder,
-    resourceType,
-  ]);
+  }, [currentUser, history.location, resourceType, subStatus]);
 
   const customSearchCriteria = (
     myResourcesType: MyResourcesType
