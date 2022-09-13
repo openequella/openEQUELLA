@@ -100,7 +100,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   // The sub-statuses refer to Item statuses that can be selected from Moderation queue and All resources.
   const [subStatus, setSubStatus] = useState<OEQ.Common.ItemStatus[]>(
-    history.location.state?.searchPageOptions.status ??
+    history.location.state?.searchPageOptions?.status ??
       getSubStatusFromQueryParam(history.location) ??
       []
   );
