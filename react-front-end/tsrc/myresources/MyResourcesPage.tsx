@@ -228,6 +228,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
       path: NEW_MY_RESOURCES_PATH,
       criteria: customSearchCriteria(resourceType),
     },
+    enableShareSearchButton: false,
     customSortingOptions: sortOrderOptions(resourceType),
     additionalHeaders:
       resourceType === "Scrapbook"

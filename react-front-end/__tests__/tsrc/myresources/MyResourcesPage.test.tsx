@@ -348,6 +348,14 @@ describe("<MyResourcesPage/>", () => {
       expect(screen.getByText(createPage)).toBeInTheDocument();
       expect(screen.getByText(createFile)).toBeInTheDocument();
     });
+
+    it("disables the button for sharing a search", async () => {
+      const { queryByLabelText } = await renderMyResourcesPage();
+
+      expect(
+        queryByLabelText(languageStrings.searchpage.shareSearchHelperText)
+      ).not.toBeInTheDocument();
+    });
   });
 
   describe("Custom sort orders", () => {
