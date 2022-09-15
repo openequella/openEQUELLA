@@ -20,11 +20,13 @@ import EditIcon from "@material-ui/icons/Edit";
 import * as OEQ from "@openequella/rest-api-client";
 import { SearchResultItem } from "@openequella/rest-api-client/dist/Search";
 import { absurd, flow, pipe, constant, identity } from "fp-ts/function";
+import * as E from "fp-ts/Either";
+import * as S from "fp-ts/string";
 import * as O from "fp-ts/Option";
 import { Location } from "history";
 import * as React from "react";
 import { ReactNode } from "react";
-import { Literal, match, Union, Unknown, when } from "runtypes";
+import { Literal, match, Static, Union, Unknown, when } from "runtypes";
 import { TooltipIconButton } from "../components/TooltipIconButton";
 import { nonDeletedStatuses } from "../modules/SearchModule";
 import GallerySearchResult from "../search/components/GallerySearchResult";
@@ -58,6 +60,8 @@ export const LegacyMyResourcesRuntypes = Union(
   Literal("all")
 );
 
+type LegacyMyResourcesTypes = Static<typeof LegacyMyResourcesRuntypes>;
+
 /**
  * Return a list of Item status that match the given MyResources type.
  *
@@ -84,6 +88,20 @@ export const myResourcesTypeToItemStatus = (
   }
 };
 
+// Get Legacy My resources type from query string. Invalid types will be logged in the console.
+const getLegacyMyResourceType = (
+  params: URLSearchParams
+): O.Option<LegacyMyResourcesTypes> =>
+  pipe(
+    params.get("type"),
+    E.fromPredicate(
+      LegacyMyResourcesRuntypes.guard,
+      (value) => `Invalid legacy my resources type: ${value}`
+    ),
+    E.mapLeft(console.error),
+    O.fromEither
+  );
+
 // If query string 'searchOptions' exists in the given URL, return it in `Some`. Otherwise, return 'None'.
 // This is mostly used to determine whether the URL is generated from New or Old UI.
 const getSearchOptionsFromQueryParam = (location: Location): O.Option<string> =>
@@ -102,10 +120,8 @@ const getMyResourcesTypeFromLegacyQueryParam = (
   pipe(
     location.search,
     O.fromNullable,
-    O.chain((search) =>
-      O.fromNullable(new URLSearchParams(search).get("type"))
-    ),
-    O.filter(LegacyMyResourcesRuntypes.guard),
+    O.map((search) => new URLSearchParams(search)),
+    O.chain(getLegacyMyResourceType),
     O.map(
       LegacyMyResourcesRuntypes.match<MyResourcesType>(
         (published) => "Published",
@@ -142,18 +158,23 @@ export const getMyResourcesTypeFromQueryParam = (
 const getSubStatusFromLegacyQueryParam = (
   location: Location
 ): OEQ.Common.ItemStatus[] | undefined => {
-  const getStatus = (
-    params: URLSearchParams
-  ): O.Option<OEQ.Common.ItemStatus[]> =>
+  const getStatus = (params: URLSearchParams) =>
     pipe(
-      params.get("type"),
-      O.fromNullable,
-      O.filter(LegacyMyResourcesRuntypes.guard),
+      params,
+      getLegacyMyResourceType,
       O.map((t) => (t === "modqueue" ? "mstatus" : "status")),
       O.map((qs) => params.get(qs)),
       O.chain(O.fromNullable),
-      O.map((status) => status.toUpperCase()),
-      O.filter(OEQ.Common.ItemStatuses.guard),
+      O.map(S.toUpperCase),
+      O.chainEitherK(
+        flow(
+          E.fromPredicate(
+            OEQ.Common.ItemStatuses.guard,
+            (value) => `Invalid Item status: ${value}`
+          ),
+          E.mapLeft(console.error)
+        )
+      ),
       O.map((status) => [status])
     );
 
@@ -195,9 +216,8 @@ const getSortOrderFromLegacyQueryParam = (
     params: URLSearchParams
   ): O.Option<OEQ.Search.SortOrder> =>
     pipe(
-      params.get("type"),
-      O.fromNullable,
-      O.filter(LegacyMyResourcesRuntypes.guard),
+      params,
+      getLegacyMyResourceType,
       O.map(
         match(
           when(ScrapbookLiteral, constant("sbsort")),
@@ -214,7 +234,15 @@ const getSortOrderFromLegacyQueryParam = (
           _: identity,
         })
       ),
-      O.filter(OEQ.Search.SortOrderRunTypes.guard)
+      O.chainEitherK(
+        flow(
+          E.fromPredicate(
+            OEQ.Search.SortOrderRunTypes.guard,
+            (value) => `Invalid sort order: ${value}`
+          ),
+          E.mapLeft(console.error)
+        )
+      )
     );
 
   return pipe(
