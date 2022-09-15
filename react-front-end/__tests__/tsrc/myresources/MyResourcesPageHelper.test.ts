@@ -24,7 +24,7 @@ import {
   MyResourcesType,
 } from "../../../tsrc/myresources/MyResourcesPageHelper";
 
-describe("<MyResourcesPageHelper />", () => {
+describe("MyResourcesPageHelper", () => {
   const history = createMemoryHistory();
 
   describe("support for Legacy query params", () => {
