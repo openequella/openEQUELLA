@@ -61,3 +61,16 @@ export const pfTernaryTypeGuard =
       (a) => (guard(a) ? E.right(a) : E.left(a)),
       E.match(onLeft, onRight)
     );
+
+/**
+ * Point-free ternary for getting a sub string. If the supplied predicate returns true, use the supplied range
+ * to get the sub string. Otherwise, return the original string.
+ *
+ * @param predicate Predicate used to confirm whether to sub string the given text.
+ * @param start Start of sub string range.
+ * @param end End of the sub string range.
+ */
+export const pfTernarySubString =
+  (predicate: (a: string) => boolean, start: number, end?: number) =>
+  (text: string): string =>
+    predicate(text) ? text.substring(start, end) : text;
