@@ -63,14 +63,12 @@ export const pfTernaryTypeGuard =
     );
 
 /**
- * Point-free ternary for getting a sub string. If the supplied predicate returns true, use the supplied range
- * to get the sub string. Otherwise, return the original string.
+ * Point-free function to slice a string.
  *
- * @param predicate Predicate used to confirm whether to sub string the given text.
- * @param start Start of sub string range.
- * @param end End of the sub string range.
+ * @param start The index to the beginning of the sub string.
+ * @param end The index to the end of the sub string.
  */
-export const pfTernarySubString =
-  (predicate: (a: string) => boolean, start: number, end?: number) =>
-  (text: string): string =>
-    predicate(text) ? text.substring(start, end) : text;
+export const pfSlice =
+  (start: number, end?: number) =>
+  (s: string): string =>
+    s.slice(start, end);

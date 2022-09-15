@@ -18,7 +18,7 @@
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
-import { flow, pipe } from "fp-ts/function";
+import { flow, identity, pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as O from "fp-ts/Option";
 import * as S from "fp-ts/string";
@@ -76,7 +76,7 @@ import { LegacyMyResourcesRuntypes } from "../myresources/MyResourcesPageHelper"
 import { DateRange, isDate } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
 import { simpleMatch } from "../util/match";
-import { pfTernary, pfTernarySubString } from "../util/pointfree";
+import { pfSlice, pfTernary } from "../util/pointfree";
 import type { RefinePanelControl } from "./components/RefineSearchPanel";
 import type { SortOrderOptions } from "./components/SearchOrderSelect";
 import type { StatusSelectorProps } from "./components/StatusSelector";
@@ -506,7 +506,7 @@ const getCollectionFromLegacyParams = async (
   pipe(
     collectionUuid,
     O.fromNullable,
-    O.map(pfTernarySubString(S.startsWith("C"), 1)),
+    O.map(pfTernary(S.startsWith("C"), pfSlice(1), identity)),
     TO.fromOption,
     TO.chain((uuid) => TO.tryCatch(() => findCollectionsByUuid([uuid]))),
     TO.filter((collections) => !!collections && A.isNonEmpty(collections)),
