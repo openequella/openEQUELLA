@@ -61,3 +61,14 @@ export const pfTernaryTypeGuard =
       (a) => (guard(a) ? E.right(a) : E.left(a)),
       E.match(onLeft, onRight)
     );
+
+/**
+ * Point-free function to slice a string.
+ *
+ * @param start The index to the beginning of the sub string.
+ * @param end The index to the end of the sub string.
+ */
+export const pfSlice =
+  (start: number, end?: number) =>
+  (s: string): string =>
+    s.slice(start, end);

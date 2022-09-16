@@ -18,10 +18,12 @@
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
-import { flow, pipe } from "fp-ts/function";
+import { flow, identity, pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as O from "fp-ts/Option";
 import * as S from "fp-ts/string";
+import * as T from "fp-ts/Task";
+import * as TO from "fp-ts/TaskOption";
 import { History, Location } from "history";
 import { pick } from "lodash";
 import {
@@ -70,10 +72,11 @@ import {
   SearchOptionsFields,
 } from "../modules/SearchModule";
 import { findUserById } from "../modules/UserModule";
+import { LegacyMyResourcesRuntypes } from "../myresources/MyResourcesPageHelper";
 import { DateRange, isDate } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
 import { simpleMatch } from "../util/match";
-import { pfTernary } from "../util/pointfree";
+import { pfSlice, pfTernary } from "../util/pointfree";
 import type { RefinePanelControl } from "./components/RefineSearchPanel";
 import type { SortOrderOptions } from "./components/SearchOrderSelect";
 import type { StatusSelectorProps } from "./components/StatusSelector";
@@ -486,6 +489,11 @@ const getDisplayModeFromLegacyParams = (
         gallery: () => "gallery-image",
         video: () => "gallery-video",
         _: (mode) => {
+          // Because Old UI also uses query string `type` for My resources type and Legacy
+          // My resources page does not have galleries, we always return "list".
+          if (LegacyMyResourcesRuntypes.guard(mode)) {
+            return "list";
+          }
           throw new TypeError(`Unknown Legacy display mode [${mode}]`);
         },
       })
@@ -494,16 +502,16 @@ const getDisplayModeFromLegacyParams = (
 
 const getCollectionFromLegacyParams = async (
   collectionUuid: string | undefined
-): Promise<Collection[] | undefined> => {
-  if (!collectionUuid) return defaultSearchOptions.collections;
-  const collectionDetails: Collection[] | undefined =
-    await findCollectionsByUuid([collectionUuid]);
-
-  return typeof collectionDetails !== "undefined" &&
-    collectionDetails.length > 0
-    ? collectionDetails
-    : defaultSearchOptions.collections;
-};
+): Promise<Collection[] | undefined> =>
+  pipe(
+    collectionUuid,
+    O.fromNullable,
+    O.map(pfTernary(S.startsWith("C"), pfSlice(1), identity)),
+    TO.fromOption,
+    TO.chain((uuid) => TO.tryCatch(() => findCollectionsByUuid([uuid]))),
+    TO.filter((collections) => !!collections && A.isNonEmpty(collections)),
+    TO.getOrElse(() => T.of(defaultSearchOptions.collections))
+  )();
 
 const getOwnerFromLegacyParams = async (ownerId: string | undefined) =>
   ownerId ? await findUserById(ownerId) : defaultSearchOptions.owner;
@@ -603,9 +611,7 @@ export const legacyQueryStringToSearchPageOptions = async (
     return params.get(paramName) ?? undefined;
   };
   const query = getQueryParam("q") ?? defaultSearchOptions.query;
-  const collections = await getCollectionFromLegacyParams(
-    getQueryParam("in")?.substring(1)
-  );
+  const collections = await getCollectionFromLegacyParams(getQueryParam("in"));
   const owner = await getOwnerFromLegacyParams(getQueryParam("owner"));
   const sortOrder = pipe(
     getQueryParam("sort")?.toLowerCase(),
