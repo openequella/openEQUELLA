@@ -104,12 +104,16 @@ const getLegacyMyResourceType = (
 ): O.Option<LegacyMyResourcesTypes> =>
   pipe(
     params.get("type"),
-    E.fromPredicate(
-      LegacyMyResourcesRuntypes.guard,
-      (value) => `Invalid legacy my resources type: ${value}`
-    ),
-    E.mapLeft(console.error),
-    O.fromEither
+    O.fromNullable,
+    O.chainEitherK(
+      flow(
+        E.fromPredicate(
+          LegacyMyResourcesRuntypes.guard,
+          (value) => `Invalid legacy my resources type: ${value}`
+        ),
+        E.mapLeft(console.error)
+      )
+    )
   );
 
 // If query string 'searchOptions' exists in the given URL, return it in `Some`. Otherwise, return 'None'.
