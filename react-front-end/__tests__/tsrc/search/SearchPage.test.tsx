@@ -48,8 +48,8 @@ import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import { getGlobalCourseList } from "../../../tsrc/modules/LegacySelectionSessionModule";
 import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchFacetsModule from "../../../tsrc/modules/SearchFacetsModule";
-import { SearchOptions } from "../../../tsrc/modules/SearchModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
+import { SearchOptions } from "../../../tsrc/modules/SearchModule";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
 import * as SearchPageHelper from "../../../tsrc/search/SearchPageHelper";
 import { SearchPageOptions } from "../../../tsrc/search/SearchPageHelper";
@@ -57,7 +57,6 @@ import { languageStrings } from "../../../tsrc/util/langstrings";
 import { updateMockGetBaseUrl } from "../BaseUrlHelper";
 import { queryPaginatorControls } from "../components/SearchPaginationTestHelper";
 import { updateMockGlobalCourseList } from "../CourseListHelper";
-import { getMuiButtonByText, getMuiTextField } from "../MuiQueries";
 import { selectOption } from "../MuiTestHelpers";
 import { basicRenderData, updateMockGetRenderData } from "../RenderDataHelper";
 import {
@@ -65,6 +64,7 @@ import {
   selectUser,
 } from "./components/OwnerSelectTestHelpers";
 import {
+  addSearchToFavourites,
   getRefineSearchComponent,
   getRefineSearchPanel,
   initialiseEssentialMocks,
@@ -796,36 +796,12 @@ describe("Add and remove favourite Item,", () => {
 });
 
 describe("Add favourite search", () => {
-  it("shows FavouriteSearchDialog to add a favourite search", async () => {
-    const page = await renderSearchPage(searchPromise);
-    const heartIcon = getByLabelText(
-      page.container,
-      languageStrings.searchpage.favouriteSearch.title,
-      {
-        selector: "button",
-      }
+  it("supports creating a favourite of the current search", async () => {
+    const successfulSave = await addSearchToFavourites(
+      await renderSearchPage(searchPromise),
+      "new favourite"
     );
-    userEvent.click(heartIcon);
-
-    const dialog = page.getByRole("dialog");
-    const searchNameInput = getMuiTextField(
-      dialog,
-      languageStrings.searchpage.favouriteSearch.text
-    );
-    userEvent.type(searchNameInput, "test");
-    const confirmButton = getMuiButtonByText(
-      dialog,
-      languageStrings.common.action.ok
-    );
-    await act(async () => {
-      await userEvent.click(confirmButton);
-    });
-
-    expect(
-      screen.getByText(
-        languageStrings.searchpage.favouriteSearch.saveSearchConfirmationText
-      )
-    ).toBeInTheDocument();
+    expect(successfulSave).toBe(true);
   });
 });
 

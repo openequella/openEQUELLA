@@ -515,6 +515,7 @@ export const languageStrings = {
     },
     favouriteSearch: {
       saveSearchConfirmationText: "Search added to favourites",
+      saveSearchFailedText: "Failed to save new favourite, please try again",
       text: "Please enter a name for this search",
       title: "Add search to favourites",
     },

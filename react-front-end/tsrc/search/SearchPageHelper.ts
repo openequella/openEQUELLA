@@ -279,7 +279,7 @@ type LegacyParams = Static<typeof LegacySearchParams>;
 /**
  * Represents the shape of data returned from generateQueryStringFromSearchOptions
  */
-const DehydratedSearchPageOptionsRunTypes = Partial({
+export const DehydratedSearchPageOptionsRunTypes = Partial({
   query: String,
   rowsPerPage: Number,
   currentPage: Number,
@@ -304,7 +304,7 @@ const DehydratedSearchPageOptionsRunTypes = Partial({
   ),
 });
 
-type DehydratedSearchPageOptions = Static<
+export type DehydratedSearchPageOptions = Static<
   typeof DehydratedSearchPageOptionsRunTypes
 >;
 

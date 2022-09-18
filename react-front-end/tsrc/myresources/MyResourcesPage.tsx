@@ -30,6 +30,7 @@ import { TooltipIconButton } from "../components/TooltipIconButton";
 import { AppContext } from "../mainui/App";
 import { NEW_MY_RESOURCES_PATH } from "../mainui/routes";
 import { TemplateUpdateProps } from "../mainui/Template";
+import { FavouriteURL } from "../modules/FavouriteModule";
 import {
   deleteScrapbook,
   openLegacyFileCreatingPage,
@@ -66,6 +67,7 @@ import {
   getSortOrderFromQueryParam,
   getSubStatusFromQueryParam,
   myResourcesTypeToItemStatus,
+  PARAM_MYRESOURCES_TYPE,
   renderAllResources,
   sortOrderOptions,
 } from "./MyResourcesPageHelper";
@@ -280,6 +282,21 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     };
   };
 
+  /**
+   * Customises the favourite URL by including a parameter to specify the `My Resources` type
+   * so that it is persisted in the favourite.
+   */
+  const customFavouriteUrl = ({ path, params }: FavouriteURL): FavouriteURL => {
+    const updatedParams = new URLSearchParams(params);
+    updatedParams.set(PARAM_MYRESOURCES_TYPE, resourceType);
+    updatedParams.sort();
+
+    return {
+      path,
+      params: updatedParams,
+    };
+  };
+
   const searchPageRefinePanelConfig = (
     searchContextProps: SearchContextProps
   ): SearchPageRefinePanelConfig => ({
@@ -330,6 +347,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 searchContextProps
               )}
               customRenderSearchResults={customSearchResultBuilder()}
+              customFavouriteUrl={customFavouriteUrl}
             />
             {scrapbookToBeDeleted && (
               <ConfirmDialog

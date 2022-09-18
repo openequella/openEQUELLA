@@ -58,4 +58,46 @@ describe("MyResourcesPageHelper", () => {
       ).toBe<OEQ.Search.SortOrder>("task_lastaction");
     });
   });
+
+  describe("support for New UI query params", () => {
+    const baseUrl = "https://oeq/testing/page/myresources";
+
+    it("determines My Resource type via myResourcesType", () => {
+      history.push(baseUrl + "?myResourcesType=All resources");
+
+      expect(
+        getMyResourcesTypeFromQueryParam(history.location)
+      ).toBe<MyResourcesType>("All resources");
+    });
+
+    it("ignores unrecognised values for myResourcesType", () => {
+      history.push(baseUrl + "?myResourcesType=rubbishIn");
+
+      expect(
+        getMyResourcesTypeFromQueryParam(history.location)
+      ).toBeUndefined();
+    });
+
+    it("use the item statuses from sortOptions", () => {
+      history.push(
+        baseUrl +
+          '?myResourcesType=Moderation+queue&searchOptions={"rowsPerPage"%3A10%2C"currentPage"%3A0%2C"sortOrder"%3A"task_submitted"%2C"rawMode"%3Afalse%2C"status"%3A["MODERATING"%2C"REVIEW"]%2C"searchAttachments"%3Atrue%2C"query"%3A""%2C"collections"%3A[]%2C"lastModifiedDateRange"%3A{}%2C"owner"%3A{"id"%3A"TLE_ADMINISTRATOR"}%2C"mimeTypeFilters"%3A[]%2C"displayMode"%3A"list"%2C"dateRangeQuickModeEnabled"%3Atrue}'
+      );
+
+      expect(getSubStatusFromQueryParam(history.location)).toStrictEqual<
+        OEQ.Common.ItemStatus[]
+      >(["MODERATING", "REVIEW"]);
+    });
+
+    it("uses the sort order from sortOptions", () => {
+      history.push(
+        baseUrl +
+          '?myResourcesType=Scrapbook&searchOptions={"rowsPerPage"%3A10%2C"currentPage"%3A0%2C"sortOrder"%3A"datecreated"%2C"rawMode"%3Afalse%2C"status"%3A["PERSONAL"]%2C"searchAttachments"%3Atrue%2C"query"%3A""%2C"collections"%3A[]%2C"lastModifiedDateRange"%3A{}%2C"owner"%3A{"id"%3A"TLE_ADMINISTRATOR"}%2C"mimeTypeFilters"%3A[]%2C"displayMode"%3A"list"%2C"dateRangeQuickModeEnabled"%3Atrue}'
+      );
+
+      expect(
+        getSortOrderFromQueryParam(history.location)
+      ).toBe<OEQ.Search.SortOrder>("datecreated");
+    });
+  });
 });
