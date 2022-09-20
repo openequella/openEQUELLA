@@ -78,7 +78,7 @@ describe("MyResourcesPageHelper", () => {
       ).toBeUndefined();
     });
 
-    it("use the item statuses from sortOptions", () => {
+    it("use the item statuses from searchOptions", () => {
       history.push(
         baseUrl +
           '?myResourcesType=Moderation+queue&searchOptions={"rowsPerPage"%3A10%2C"currentPage"%3A0%2C"sortOrder"%3A"task_submitted"%2C"rawMode"%3Afalse%2C"status"%3A["MODERATING"%2C"REVIEW"]%2C"searchAttachments"%3Atrue%2C"query"%3A""%2C"collections"%3A[]%2C"lastModifiedDateRange"%3A{}%2C"owner"%3A{"id"%3A"TLE_ADMINISTRATOR"}%2C"mimeTypeFilters"%3A[]%2C"displayMode"%3A"list"%2C"dateRangeQuickModeEnabled"%3Atrue}'
@@ -89,7 +89,7 @@ describe("MyResourcesPageHelper", () => {
       >(["MODERATING", "REVIEW"]);
     });
 
-    it("uses the sort order from sortOptions", () => {
+    it("uses the sort order from searchOptions", () => {
       history.push(
         baseUrl +
           '?myResourcesType=Scrapbook&searchOptions={"rowsPerPage"%3A10%2C"currentPage"%3A0%2C"sortOrder"%3A"datecreated"%2C"rawMode"%3Afalse%2C"status"%3A["PERSONAL"]%2C"searchAttachments"%3Atrue%2C"query"%3A""%2C"collections"%3A[]%2C"lastModifiedDateRange"%3A{}%2C"owner"%3A{"id"%3A"TLE_ADMINISTRATOR"}%2C"mimeTypeFilters"%3A[]%2C"displayMode"%3A"list"%2C"dateRangeQuickModeEnabled"%3Atrue}'
