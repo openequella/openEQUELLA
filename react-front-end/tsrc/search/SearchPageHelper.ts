@@ -52,8 +52,8 @@ import {
 import { routes } from "../mainui/routes";
 import {
   clearDataFromLocalStorage,
-  readDataFromLocalStorage,
-  saveDataToLocalStorage,
+  readDataFromStorage,
+  saveDataToStorage,
 } from "../modules/BrowserStorageModule";
 import {
   Collection,
@@ -675,11 +675,11 @@ export const RAW_MODE_STORAGE_KEY = "raw_mode";
  * Read the value of wildcard mode from LocalStorage.
  */
 export const getRawModeFromStorage = (): boolean =>
-  readDataFromLocalStorage(RAW_MODE_STORAGE_KEY, Boolean.guard) ??
+  readDataFromStorage(RAW_MODE_STORAGE_KEY, Boolean.guard) ??
   defaultSearchOptions.rawMode;
 
 export const writeRawModeToStorage = (value: boolean): void =>
-  saveDataToLocalStorage(RAW_MODE_STORAGE_KEY, value);
+  saveDataToStorage(RAW_MODE_STORAGE_KEY, value);
 
 export const deleteRawModeFromStorage = (): void =>
   clearDataFromLocalStorage(RAW_MODE_STORAGE_KEY);
