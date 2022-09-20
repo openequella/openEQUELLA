@@ -19,10 +19,11 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import * as OEQ from "@openequella/rest-api-client";
 import { SearchResultItem } from "@openequella/rest-api-client/dist/Search";
-import { absurd, flow, pipe, constant, identity } from "fp-ts/function";
 import * as E from "fp-ts/Either";
-import * as S from "fp-ts/string";
+import { absurd, constant, flow, identity, pipe } from "fp-ts/function";
+import * as J from "fp-ts/Json";
 import * as O from "fp-ts/Option";
+import * as S from "fp-ts/string";
 import { Location } from "history";
 import * as React from "react";
 import { ReactNode } from "react";
@@ -32,18 +33,27 @@ import { nonDeletedStatuses } from "../modules/SearchModule";
 import GallerySearchResult from "../search/components/GallerySearchResult";
 import { SortOrderOptions } from "../search/components/SearchOrderSelect";
 import SearchResult from "../search/components/SearchResult";
+import {
+  DehydratedSearchPageOptions,
+  DehydratedSearchPageOptionsRunTypes,
+} from "../search/SearchPageHelper";
 import { SearchPageSearchResult } from "../search/SearchPageReducer";
 import { getISODateString } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
 import { simpleMatch } from "../util/match";
 
-export type MyResourcesType =
-  | "Published"
-  | "Drafts"
-  | "Scrapbook"
-  | "Moderation queue"
-  | "Archive"
-  | "All resources";
+export const PARAM_MYRESOURCES_TYPE = "myResourcesType";
+
+export const MyResourcesTypeRuntypes = Union(
+  Literal("Published"),
+  Literal("Drafts"),
+  Literal("Scrapbook"),
+  Literal("Moderation queue"),
+  Literal("Archive"),
+  Literal("All resources")
+);
+
+export type MyResourcesType = Static<typeof MyResourcesTypeRuntypes>;
 
 const ScrapbookLiteral = Literal("scrapbook");
 const ModQueueLiteral = Literal("modqueue");
@@ -94,34 +104,50 @@ const getLegacyMyResourceType = (
 ): O.Option<LegacyMyResourcesTypes> =>
   pipe(
     params.get("type"),
-    E.fromPredicate(
-      LegacyMyResourcesRuntypes.guard,
-      (value) => `Invalid legacy my resources type: ${value}`
-    ),
-    E.mapLeft(console.error),
-    O.fromEither
+    O.fromNullable,
+    O.chainEitherK(
+      flow(
+        E.fromPredicate(
+          LegacyMyResourcesRuntypes.guard,
+          (value) => `Invalid legacy my resources type: ${value}`
+        ),
+        E.mapLeft(console.error)
+      )
+    )
   );
 
 // If query string 'searchOptions' exists in the given URL, return it in `Some`. Otherwise, return 'None'.
-// This is mostly used to determine whether the URL is generated from New or Old UI.
-const getSearchOptionsFromQueryParam = (location: Location): O.Option<string> =>
+const getSearchOptionsFromQueryParam = (
+  location: Location
+): O.Option<DehydratedSearchPageOptions> =>
   pipe(
     location.search,
     O.fromNullable,
     O.chain((search) =>
       O.fromNullable(new URLSearchParams(search).get("searchOptions"))
+    ),
+    O.chainEitherK(
+      flow(
+        J.parse,
+        E.mapLeft((error) => `Failed to parse searchOptions: ${error}`),
+        E.filterOrElse(
+          DehydratedSearchPageOptionsRunTypes.guard,
+          constant(
+            "Parsed searchOptions is not a DehydratedSearchPageOptions - failed type check"
+          )
+        ),
+        E.mapLeft(console.error)
+      )
     )
   );
 
-// Get the Legacy My resources type from the given URL and then convert it to `MyResourcesType`.
+// Get the Legacy My resources type from the given params `MyResourcesType`.
 const getMyResourcesTypeFromLegacyQueryParam = (
-  location: Location
-): MyResourcesType | undefined =>
+  params: URLSearchParams
+): O.Option<MyResourcesType> =>
   pipe(
-    location.search,
-    O.fromNullable,
-    O.map((search) => new URLSearchParams(search)),
-    O.chain(getLegacyMyResourceType),
+    params,
+    getLegacyMyResourceType,
     O.map(
       LegacyMyResourcesRuntypes.match<MyResourcesType>(
         (published) => "Published",
@@ -131,8 +157,16 @@ const getMyResourcesTypeFromLegacyQueryParam = (
         (archived) => "Archive",
         (all) => "All resources"
       )
-    ),
-    O.toUndefined
+    )
+  );
+
+// Get the 'My Resources' type from the given params `MyResourcesType`.
+const getMyResourcesTypeFromNewUIQueryParam = (
+  params: URLSearchParams
+): O.Option<MyResourcesType> =>
+  pipe(
+    params.get(PARAM_MYRESOURCES_TYPE),
+    O.fromPredicate(MyResourcesTypeRuntypes.guard)
   );
 
 /**
@@ -144,11 +178,16 @@ export const getMyResourcesTypeFromQueryParam = (
   location: Location
 ): MyResourcesType | undefined =>
   pipe(
-    getSearchOptionsFromQueryParam(location),
-    O.match(
-      () => getMyResourcesTypeFromLegacyQueryParam(location),
-      (_) => undefined // todo: support getting My resources type from query string. However, "myResourcesType" is not part of query string currently.
-    )
+    location.search,
+    O.fromNullable,
+    O.map((search) => new URLSearchParams(search)),
+    O.chain((params) =>
+      pipe(
+        getMyResourcesTypeFromNewUIQueryParam(params),
+        O.alt(() => getMyResourcesTypeFromLegacyQueryParam(params))
+      )
+    ),
+    O.toUndefined
   );
 
 // Get Item status from query params of a URL generated from Old UI.
@@ -200,7 +239,7 @@ export const getSubStatusFromQueryParam = (
     getSearchOptionsFromQueryParam(location),
     O.match(
       () => getSubStatusFromLegacyQueryParam(location),
-      (_) => undefined // todo: support getting sub status from query string.
+      (options) => options.status
     )
   );
 
@@ -266,7 +305,7 @@ export const getSortOrderFromQueryParam = (
     getSearchOptionsFromQueryParam(location),
     O.match(
       () => getSortOrderFromLegacyQueryParam(location),
-      (_) => undefined // todo: Sort order should come from query string 'searchOptions' for free before this function is called.
+      (options) => options.sortOrder
     )
   );
 /**

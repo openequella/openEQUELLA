@@ -30,6 +30,7 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
+import * as O from "fp-ts/Option";
 import { pipe } from "fp-ts/function";
 import { concatAll } from "fp-ts/Monoid";
 import * as N from "fp-ts/number";
@@ -40,21 +41,32 @@ import {
   getModerationItemsSearchResult,
   getSearchResult,
 } from "../../../__mocks__/SearchResult.mock";
+import * as UserModuleMock from "../../../__mocks__/UserModule.mock";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import { AppContext } from "../../../tsrc/mainui/App";
+import type { FavouriteURL } from "../../../tsrc/modules/FavouriteModule";
 import * as ScrapbookModule from "../../../tsrc/modules/ScrapbookModule";
-import { nonDeletedStatuses } from "../../../tsrc/modules/SearchModule";
+import {
+  nonDeletedStatuses,
+  SearchOptions,
+} from "../../../tsrc/modules/SearchModule";
 import { defaultSearchSettings } from "../../../tsrc/modules/SearchSettingsModule";
+import * as UserModule from "../../../tsrc/modules/UserModule";
 import { guestUser } from "../../../tsrc/modules/UserModule";
 import MyResourcesPage from "../../../tsrc/myresources/MyResourcesPage";
 import type { MyResourcesType } from "../../../tsrc/myresources/MyResourcesPageHelper";
-import { defaultSortOrder } from "../../../tsrc/myresources/MyResourcesPageHelper";
+import {
+  defaultSortOrder,
+  PARAM_MYRESOURCES_TYPE,
+} from "../../../tsrc/myresources/MyResourcesPageHelper";
 import { defaultSearchPageOptions } from "../../../tsrc/search/SearchPageHelper";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { clickSelect, querySelectOption } from "../MuiTestHelpers";
 import {
+  addSearchToFavourites,
   initialiseEssentialMocks,
   mockCollaborators,
+  MockedSearchPromise,
   queryRefineSearchComponent,
   SORTORDER_SELECT_ID,
   waitForSearch,
@@ -75,6 +87,7 @@ const buildMyResourcesSearchPageOptions = (
 });
 
 const {
+  mockAddFavouriteSearch,
   mockCollections,
   mockCurrentUser,
   mockListClassification,
@@ -95,15 +108,13 @@ mockSearchSettings.mockResolvedValue({
 const searchPromise = mockSearch.mockResolvedValue(getSearchResult);
 
 describe("<MyResourcesPage/>", () => {
-  const renderMyResourcesPage = async (
-    resourceType: MyResourcesType = "Published",
-    currentUser: OEQ.LegacyContent.CurrentUserDetails = getCurrentUserMock
+  // Provides increased control over the state of the rendered page compared to
+  // `renderMyResourcesPage`. A key use if is you want to control the Location to
+  // influence how the page is rendered.
+  const renderMyResourcesPageWithUser = async (
+    currentUser: OEQ.LegacyContent.CurrentUserDetails,
+    backingPromise: MockedSearchPromise
   ) => {
-    history.push("/page/myresources", {
-      customData: {
-        myResourcesType: resourceType,
-      },
-    });
     const page = render(
       <MuiThemeProvider theme={defaultTheme}>
         <Router history={history}>
@@ -120,8 +131,21 @@ describe("<MyResourcesPage/>", () => {
       </MuiThemeProvider>
     );
 
-    await waitForSearch(searchPromise);
+    await waitForSearch(backingPromise);
     return page;
+  };
+
+  const renderMyResourcesPage = async (
+    resourceType: MyResourcesType = "Published",
+    currentUser: OEQ.LegacyContent.CurrentUserDetails = getCurrentUserMock
+  ) => {
+    history.push("/page/myresources", {
+      customData: {
+        myResourcesType: resourceType,
+      },
+    });
+
+    return await renderMyResourcesPageWithUser(currentUser, searchPromise);
   };
 
   // Should only be used when 'getSearchResult' is used to mock the search result because
@@ -456,6 +480,79 @@ describe("<MyResourcesPage/>", () => {
       expect(
         queryByText(moderationQueueStrings.rejectionCommentDialogTitle)
       ).toBeInTheDocument();
+    });
+  });
+
+  describe("State definition from query params", () => {
+    const baseUrl = "/page/myresources";
+
+    it("selects the resource type based on myResourcesType", async () => {
+      history.push(baseUrl + "?myResourcesType=Moderation queue");
+      const mockedPromise = mockSearch.mockResolvedValueOnce(
+        getModerationItemsSearchResult()
+      );
+      const { queryByLabelText } = await renderMyResourcesPageWithUser(
+        getCurrentUserMock,
+        mockedPromise
+      );
+
+      expect(
+        queryByLabelText(
+          languageStrings.myResources.moderationItemTable.ariaLabel
+        )
+      ).toBeInTheDocument();
+    });
+
+    it("uses the sort order and statuses from searchOptions", async () => {
+      jest
+        .spyOn(UserModule, "resolveUsers")
+        // UserModuleMock.users[0] matches the owner.id in the `searchOptions` below.
+        .mockResolvedValue([UserModuleMock.users[0]]);
+
+      history.push(
+        baseUrl +
+          '?myResourcesType=All+resources&searchOptions={"rowsPerPage"%3A10%2C"currentPage"%3A0%2C"sortOrder"%3A"name"%2C"rawMode"%3Afalse%2C"status"%3A["PERSONAL"%2C"LIVE"]%2C"searchAttachments"%3Atrue%2C"query"%3A""%2C"collections"%3A[]%2C"lastModifiedDateRange"%3A{}%2C"owner"%3A{"id"%3A"680f5eb7-22e2-4ab6-bcea-25205165e36e"}%2C"mimeTypeFilters"%3A[]%2C"displayMode"%3A"list"%2C"dateRangeQuickModeEnabled"%3Atrue}'
+      );
+      await renderMyResourcesPageWithUser(getCurrentUserMock, searchPromise);
+
+      const searchCriteria: SearchOptions = searchPromise.mock.lastCall[0];
+      expect(searchCriteria.status).toEqual<OEQ.Common.ItemStatus[]>([
+        "PERSONAL",
+        "LIVE",
+      ]);
+      expect(searchCriteria.sortOrder).toBe<OEQ.Search.SortOrder>("name");
+    });
+  });
+
+  describe("Saving Favourites", () => {
+    it("supports creating a favourite of the current my resources state - type and options", async () => {
+      const resourceType: MyResourcesType = "All resources";
+      const successfulSave = await addSearchToFavourites(
+        await renderMyResourcesPage(resourceType),
+        "new favourite"
+      );
+
+      // Pull out the params from the mocked call to save
+      const params = pipe(
+        mockAddFavouriteSearch.mock.lastCall,
+        // get the second argument to the mocked call
+        A.lookup(1),
+        // check type - perhaps excessively
+        O.chain(
+          O.fromPredicate(
+            (a): a is FavouriteURL => typeof a === "object" && "params" in a
+          )
+        ),
+        O.map((url) => url.params),
+        O.toUndefined
+      );
+
+      // Now see if it all worked
+      expect(successfulSave).toBe(true);
+      expect(params).toBeDefined();
+      expect(params!.get(PARAM_MYRESOURCES_TYPE)).toBe<MyResourcesType>(
+        resourceType
+      );
     });
   });
 });

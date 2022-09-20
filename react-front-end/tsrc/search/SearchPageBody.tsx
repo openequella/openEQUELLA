@@ -17,6 +17,10 @@
  */
 import { debounce, Drawer, Grid, Hidden } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
+import { constant, identity, pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import * as T from "fp-ts/Task";
+import * as TO from "fp-ts/TaskOption";
 import { isEqual } from "lodash";
 import * as React from "react";
 import {
@@ -35,7 +39,7 @@ import { AppContext } from "../mainui/App";
 import { NEW_SEARCH_PATH, routes } from "../mainui/routes";
 import { getAdvancedSearchIdFromLocation } from "../modules/AdvancedSearchModule";
 import { Collection } from "../modules/CollectionsModule";
-import { addFavouriteSearch } from "../modules/FavouriteModule";
+import { addFavouriteSearch, FavouriteURL } from "../modules/FavouriteModule";
 import type { GallerySearchResultItem } from "../modules/GallerySearchModule";
 import {
   buildSelectionSessionAdvancedSearchLink,
@@ -91,14 +95,17 @@ import {
   writeRawModeToStorage,
 } from "./SearchPageHelper";
 import { SearchPageSearchResult } from "./SearchPageReducer";
-import * as O from "fp-ts/Option";
-import { pipe } from "fp-ts/function";
 
 const { searchpage: searchStrings } = languageStrings;
 const { title: dateModifiedSelectorTitle, quickOptionDropdown } =
   searchStrings.lastModifiedDateSelector;
 const { title: collectionSelectorTitle } = searchStrings.collectionSelector;
 const { title: displayModeSelectorTitle } = searchStrings.displayModeSelector;
+
+interface SnackBarDetails {
+  message: string;
+  variant?: MessageInfoVariant;
+}
 
 export interface SearchPageBodyProps {
   /**
@@ -137,6 +144,10 @@ export interface SearchPageBodyProps {
   customRenderSearchResults?: (
     searchResult: SearchPageSearchResult
   ) => ReactNode;
+  /**
+   * Function to customise the URL which is used when saving favourites.
+   */
+  customFavouriteUrl?: (url: FavouriteURL) => FavouriteURL;
 }
 
 /**
@@ -157,6 +168,7 @@ export const SearchPageBody = ({
   enableClassification = true,
   customSearchCallback,
   customRenderSearchResults,
+  customFavouriteUrl = identity,
 }: SearchPageBodyProps) => {
   const {
     enableCSVExportButton,
@@ -193,10 +205,7 @@ export const SearchPageBody = ({
   const { currentUser } = useContext(AppContext);
   const history = useHistory();
 
-  const [snackBar, setSnackBar] = useState<{
-    message: string;
-    variant?: MessageInfoVariant;
-  }>({
+  const [snackBar, setSnackBar] = useState<SnackBarDetails>({
     message: "",
   });
   const [alreadyDownloaded, setAlreadyDownloaded] = useState<boolean>(false);
@@ -413,18 +422,27 @@ export const SearchPageBody = ({
       false
     );
 
-  const handleSaveFavouriteSearch = (name: string) => {
-    // We only need pathname and query strings.
-    const url = `${pathname}?${generateQueryStringFromSearchPageOptions(
-      searchPageOptions
-    )}`;
-
-    return addFavouriteSearch(name, url).then(() =>
-      setSnackBar({
-        message: searchStrings.favouriteSearch.saveSearchConfirmationText,
-      })
-    );
-  };
+  const handleSaveFavouriteSearch = async (name: string): Promise<void> =>
+    await pipe(
+      {
+        path: pathname,
+        params: new URLSearchParams(
+          generateQueryStringFromSearchPageOptions(searchPageOptions)
+        ),
+      },
+      customFavouriteUrl,
+      (url) => TO.tryCatch(() => addFavouriteSearch(name, url)),
+      TO.match<SnackBarDetails, OEQ.Favourite.FavouriteSearchModel>(
+        constant({
+          message: searchStrings.favouriteSearch.saveSearchFailedText,
+          variant: "error",
+        }),
+        constant({
+          message: searchStrings.favouriteSearch.saveSearchConfirmationText,
+        })
+      ),
+      T.map(setSnackBar)
+    )();
 
   const handleSearchAttachmentsChange = (searchAttachments: boolean) => {
     doSearch({
