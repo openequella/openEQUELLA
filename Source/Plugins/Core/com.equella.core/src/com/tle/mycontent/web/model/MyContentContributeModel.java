@@ -42,13 +42,13 @@ public class MyContentContributeModel extends TwoColumnLayout.TwoColumnModel {
 
   // This field must be bookmarked so its value can be kept when Sections are forwarding to each
   // other.
-  @Bookmarked private String searchOptionID;
+  @Bookmarked private String newUISearchPageOptionsID;
 
-  public String getSearchOptionID() {
-    return searchOptionID;
+  public String getNewUISearchPageOptionsID() {
+    return newUISearchPageOptionsID;
   }
 
-  public void setSearchOptionID(String searchOptionID) {
-    this.searchOptionID = searchOptionID;
+  public void setNewUISearchPageOptionsID(String newUISearchPageOptionsID) {
+    this.newUISearchPageOptionsID = newUISearchPageOptionsID;
   }
 }

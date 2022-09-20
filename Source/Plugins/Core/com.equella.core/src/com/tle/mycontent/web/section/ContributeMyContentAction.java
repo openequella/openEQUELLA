@@ -88,7 +88,7 @@ public class ContributeMyContentAction extends AbstractPrototypeSection<Object>
   }
 
   @EventHandlerMethod
-  public void contributeFromNewUI(SectionInfo info, String newUISearchOptionID) {
-    myContentService.forwardToContributeFromNewUI(info, handlerId, newUISearchOptionID);
+  public void contributeFromNewUI(SectionInfo info, String newUISearchPageOptionsID) {
+    myContentService.forwardToContributeFromNewUI(info, handlerId, newUISearchPageOptionsID);
   }
 }

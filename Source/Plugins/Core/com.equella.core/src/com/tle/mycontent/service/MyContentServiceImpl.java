@@ -71,7 +71,7 @@ public class MyContentServiceImpl implements MyContentService {
     contributeSection.contribute(forward, handlerId);
 
     if (RenderNewTemplate.isNewSearchPageEnabled() && newUISearchOptionID != null) {
-      contributeSection.getModel(forward).setSearchOptionID(newUISearchOptionID);
+      contributeSection.getModel(forward).setNewUISearchPageOptionsID(newUISearchOptionID);
     }
 
     info.forwardAsBookmark(forward);
@@ -109,9 +109,9 @@ public class MyContentServiceImpl implements MyContentService {
 
   @Override
   public void forwardToEditorFromNewUI(
-      SectionInfo info, ItemId itemId, String newUISearchOptionID) {
+      SectionInfo info, ItemId itemId, String newUISearchPageOptionsID) {
     MyContentContributeSection.forwardToEdit(
-        info, getEditingHandler(itemId), itemId, newUISearchOptionID);
+        info, getEditingHandler(itemId), itemId, newUISearchPageOptionsID);
   }
 
   @Override
@@ -131,10 +131,10 @@ public class MyContentServiceImpl implements MyContentService {
               .flatMap(
                   model -> {
                     Optional<String> url =
-                        Optional.ofNullable(model.getSearchOptionID())
-                            .map(id -> builder.addParameter("searchOptionId", id))
+                        Optional.ofNullable(model.getNewUISearchPageOptionsID())
+                            .map(id -> builder.addParameter("searchPageOptionsID", id))
                             .map(URIBuilder::toString);
-                    model.setSearchOptionID(null);
+                    model.setNewUISearchPageOptionsID(null);
                     return url;
                   })
               .orElse(builder.toString());

@@ -152,7 +152,7 @@ public class MyContentContributeSection extends TwoColumnLayout<MyContentContrib
   }
 
   public static void forwardToEdit(
-      SectionInfo info, String handlerId, ItemId itemId, String newUISearchOptionID) {
+      SectionInfo info, String handlerId, ItemId itemId, String newUISearchPageOptionsID) {
     MyContentContributeSection section = info.lookupSection(MyContentContributeSection.class);
     if (section != null) {
       section.edit(info, handlerId, itemId);
@@ -161,8 +161,8 @@ public class MyContentContributeSection extends TwoColumnLayout<MyContentContrib
       section = forward.lookupSection(MyContentContributeSection.class);
       section.edit(forward, handlerId, itemId);
 
-      if (RenderNewTemplate.isNewSearchPageEnabled() && newUISearchOptionID != null) {
-        section.getModel(forward).setSearchOptionID(newUISearchOptionID);
+      if (RenderNewTemplate.isNewSearchPageEnabled() && newUISearchPageOptionsID != null) {
+        section.getModel(forward).setNewUISearchPageOptionsID(newUISearchPageOptionsID);
       }
 
       if (forward.isRendered()) {
