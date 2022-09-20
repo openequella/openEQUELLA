@@ -126,7 +126,7 @@ const getSearchOptionsFromQueryParam = (
     O.chain((search) =>
       O.fromNullable(new URLSearchParams(search).get("searchOptions"))
     ),
-    O.chain(
+    O.chainEitherK(
       flow(
         J.parse,
         E.mapLeft((error) => `Failed to parse searchOptions: ${error}`),
@@ -136,8 +136,7 @@ const getSearchOptionsFromQueryParam = (
             "Parsed searchOptions is not a DehydratedSearchPageOptions - failed type check"
           )
         ),
-        E.mapLeft(console.error),
-        O.fromEither
+        E.mapLeft(console.error)
       )
     )
   );
