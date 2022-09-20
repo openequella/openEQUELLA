@@ -23,25 +23,38 @@ import type { ScrapbookType } from "./ScrapbookModule";
 const legacyMyResourcesUrl = `${API_BASE_URL}/content/submit/access/myresources.do`;
 
 /**
- * Given a Scrapbook type which is either "file" or "page", return a route for
- * accessing the Legacy Scrapbook creating page.
+ * Send a Legacy content request to trigger server side event 'contributeFromNewUI', which will
+ * return a route for accessing the Legacy Scrapbook creating page. To support the requirement
+ * of persisting SearchPageOptions in the communication between New UI and Legacy UI, the event
+ * also requires the UUID representing a SearchPageOptions to be supplied.
+ *
+ * @param scrapbookType Type of the Scrapbook to be created.
+ * @param searchPageOptionsID UUID generated on front-end to represent a SearchPageOptions.
  */
 export const getLegacyScrapbookCreatingPageRoute = async (
-  scrapbookType: ScrapbookType
+  scrapbookType: ScrapbookType,
+  searchPageOptionsID: String
 ): Promise<string> =>
   Axios.post<ChangeRoute>(legacyMyResourcesUrl, {
-    event__: [`${scrapbookType === "file" ? "cmca" : "cmca2"}.contribute`],
+    event__: [
+      `${scrapbookType === "file" ? "cmca" : "cmca2"}.contributeFromNewUI`,
+    ],
+    eventp__0: [searchPageOptionsID],
   }).then(({ data: { route } }) => `/${route}`);
 
 /**
- * Returns a route for accessing the Legacy Scrapbook editing page.
+ * Similar to {@link getLegacyScrapbookCreatingPageRoute}, return a route for accessing
+ * the Legacy Scrapbook editing page.
  *
  * @param itemKey Unique key of the Scrapbook including the UUID and version.
+ * @param searchOptionID UUID generated on front-end to represent a SearchPageOptions.
  */
 export const getLegacyScrapbookEditingPageRoute = async (
-  itemKey: string
+  itemKey: string,
+  searchOptionID: String
 ): Promise<string> =>
   Axios.post<ChangeRoute>(legacyMyResourcesUrl, {
-    event__: ["mcile.edit"],
+    event__: ["mcile.editFromNewUI"],
     eventp__0: [itemKey],
+    eventp__1: [searchOptionID],
   }).then(({ data: { route } }) => `/${route}`);
