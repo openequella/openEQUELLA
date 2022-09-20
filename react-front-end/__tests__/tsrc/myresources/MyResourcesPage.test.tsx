@@ -44,7 +44,7 @@ import {
 import * as UserModuleMock from "../../../__mocks__/UserModule.mock";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import { AppContext } from "../../../tsrc/mainui/App";
-import { FavouriteURL } from "../../../tsrc/modules/FavouriteModule";
+import type { FavouriteURL } from "../../../tsrc/modules/FavouriteModule";
 import * as ScrapbookModule from "../../../tsrc/modules/ScrapbookModule";
 import {
   nonDeletedStatuses,

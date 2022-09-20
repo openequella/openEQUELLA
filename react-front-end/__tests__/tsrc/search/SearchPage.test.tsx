@@ -49,7 +49,7 @@ import { getGlobalCourseList } from "../../../tsrc/modules/LegacySelectionSessio
 import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchFacetsModule from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
-import { SearchOptions } from "../../../tsrc/modules/SearchModule";
+import type { SearchOptions } from "../../../tsrc/modules/SearchModule";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
 import * as SearchPageHelper from "../../../tsrc/search/SearchPageHelper";
 import { SearchPageOptions } from "../../../tsrc/search/SearchPageHelper";
