@@ -24,6 +24,7 @@ import com.tle.beans.item.ItemId;
 import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.mycontent.ContentHandler;
 import com.tle.mycontent.web.section.ContributeMyContentAction;
+import com.tle.mycontent.web.section.MyContentContributeSection;
 import com.tle.web.sections.SectionInfo;
 import java.util.Set;
 
@@ -60,9 +61,32 @@ public interface MyContentService {
 
   void forwardToEditor(SectionInfo info, ItemId itemId);
 
+  /**
+   * Forward to Section {@link MyContentContributeSection} to edit a Scrapbook from New UI. The ID
+   * of a New UI SearchPageOptions should be provided to make sure the SearchPageOptions will be
+   * applied to the New UI initial search when the page returns to New UI.
+   *
+   * @param info Info of the original Section which receives the request from New UI.
+   * @param itemId ID of an Item including UUID and version.
+   * @param newUISearchOptionID ID of the New UI SearchOptions saved in the browser storage.
+   */
+  void forwardToEditorFromNewUI(SectionInfo info, ItemId itemId, String newUISearchOptionID);
+
   ContributeMyContentAction createActionForHandler(String handlerId);
 
   void forwardToContribute(SectionInfo info, String handlerId);
+
+  /**
+   * Forward to Section {@link MyContentContributeSection} to contribute a Scrapbook from New UI.
+   * The ID of a New UI SearchPageOptions should be provided to make sure the SearchPageOptions will
+   * be applied to the New UI initial search when the page returns to New UI.
+   *
+   * @param info Info of the original Section which receives the request from New UI.
+   * @param handlerId ID of a Scrapbook handler for either File or Webpage.
+   * @param newUISearchOptionID ID of the New UI SearchOptions saved in the local storage of
+   *     browser.
+   */
+  void forwardToContributeFromNewUI(SectionInfo info, String handlerId, String newUISearchOptionID);
 
   void restore(ItemId itemId);
 }

@@ -75,6 +75,11 @@ public class MyContentItemListExtension extends AbstractPrototypeSection<Object>
   }
 
   @EventHandlerMethod
+  public void editFromNewUI(SectionInfo info, ItemId itemId, String newUISearchOptionID) {
+    myContentService.forwardToEditorFromNewUI(info, itemId, newUISearchOptionID);
+  }
+
+  @EventHandlerMethod
   public void delete(SectionInfo info, ItemId itemId) {
     myContentService.delete(itemId);
     receiptService.setReceipt(LABEL_DELETE_RECEIPT);

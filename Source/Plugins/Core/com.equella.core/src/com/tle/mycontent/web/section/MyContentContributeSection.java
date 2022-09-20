@@ -33,6 +33,7 @@ import com.tle.web.sections.events.SectionEvent;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
+import com.tle.web.template.RenderNewTemplate;
 import java.util.Set;
 import javax.inject.Inject;
 
@@ -150,7 +151,8 @@ public class MyContentContributeSection extends TwoColumnLayout<MyContentContrib
     return info.createForward("/access/mycontent.do"); // $NON-NLS-1$
   }
 
-  public static void forwardToEdit(SectionInfo info, String handlerId, ItemId itemId) {
+  public static void forwardToEdit(
+      SectionInfo info, String handlerId, ItemId itemId, String newUISearchOptionID) {
     MyContentContributeSection section = info.lookupSection(MyContentContributeSection.class);
     if (section != null) {
       section.edit(info, handlerId, itemId);
@@ -158,6 +160,11 @@ public class MyContentContributeSection extends TwoColumnLayout<MyContentContrib
       SectionInfo forward = createForForward(info);
       section = forward.lookupSection(MyContentContributeSection.class);
       section.edit(forward, handlerId, itemId);
+
+      if (RenderNewTemplate.isNewSearchPageEnabled() && newUISearchOptionID != null) {
+        section.getModel(forward).setSearchOptionID(newUISearchOptionID);
+      }
+
       if (forward.isRendered()) {
         info.setRendered();
       } else {

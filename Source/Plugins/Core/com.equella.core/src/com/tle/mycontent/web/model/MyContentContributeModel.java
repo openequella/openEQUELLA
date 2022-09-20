@@ -39,4 +39,16 @@ public class MyContentContributeModel extends TwoColumnLayout.TwoColumnModel {
   public CachedData<Set<String>> getAllowedHandlers() {
     return allowedHandlers;
   }
+
+  // This field must be bookmarked so its value can be kept when Sections are forwarding to each
+  // other.
+  @Bookmarked private String searchOptionID;
+
+  public String getSearchOptionID() {
+    return searchOptionID;
+  }
+
+  public void setSearchOptionID(String searchOptionID) {
+    this.searchOptionID = searchOptionID;
+  }
 }
