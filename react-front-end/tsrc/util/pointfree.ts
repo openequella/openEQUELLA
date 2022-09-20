@@ -72,3 +72,13 @@ export const pfSlice =
   (start: number, end?: number) =>
   (s: string): string =>
     s.slice(start, end);
+
+/**
+ * Point-free function to split a string into two parts.
+ *
+ * @param index Index from where to split the string.
+ */
+export const pfSplitAt =
+  (index: number) =>
+  (s: string): [string, string] =>
+    [s.substring(0, index), s.substring(index)];
