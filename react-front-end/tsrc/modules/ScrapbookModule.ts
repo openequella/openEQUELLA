@@ -38,7 +38,7 @@ export type ScrapbookType = "file" | "page";
 
 // Convert the supplied SearchPageOptions into a JSON string, generate a MD5 hash from the string,
 // concatenate the hash and the string into one and save it in session storage.
-const saveSearchPageOptions = (searchPageOptions: SearchPageOptions) => {
+export const saveSearchPageOptions = (searchPageOptions: SearchPageOptions) => {
   const uuid = v4();
 
   saveDataToStorage(
