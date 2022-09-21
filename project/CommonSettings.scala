@@ -42,7 +42,7 @@ object CommonSettings extends AutoPlugin {
     lazy val postgresDep     = "org.postgresql" % "postgresql" % "42.5.0"
     lazy val sqlServerDep    = "com.microsoft.sqlserver" % "mssql-jdbc" % "10.2.0.jre8"
 
-    lazy val log4jVersion   = "2.18.0"
+    lazy val log4jVersion   = "2.19.0"
     lazy val log4j          = "org.apache.logging.log4j" % "log4j" % log4jVersion
     lazy val log4jSlf4jImpl = "org.apache.logging.log4j" % "log4j-slf4j-impl" % log4jVersion
 
