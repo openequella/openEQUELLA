@@ -125,22 +125,20 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     const customiseInitialSearchOptions = (
       searchPageOptions: SearchPageOptions
     ): SearchPageOptions =>
-      optionsFromStorage
-        ? optionsFromStorage
-        : {
-            ...searchPageOptions,
-            owner: currentUser,
-            status: A.isNonEmpty(subStatus)
-              ? subStatus
-              : myResourcesTypeToItemStatus(resourceType),
-            // The sort order in My resources initial search is a bit different. If no sort order
-            // is present in either the browser history or query string, we use the custom default
-            // sort order rather than the one configured in Search settings.
-            sortOrder:
-              history.location.state?.searchPageOptions?.sortOrder ??
-              getSortOrderFromQueryParam(history.location) ??
-              defaultSortOrder(resourceType),
-          };
+      optionsFromStorage ?? {
+        ...searchPageOptions,
+        owner: currentUser,
+        status: A.isNonEmpty(subStatus)
+          ? subStatus
+          : myResourcesTypeToItemStatus(resourceType),
+        // The sort order in My resources initial search is a bit different. If no sort order
+        // is present in either the browser history or query string, we use the custom default
+        // sort order rather than the one configured in Search settings.
+        sortOrder:
+          history.location.state?.searchPageOptions?.sortOrder ??
+          getSortOrderFromQueryParam(history.location) ??
+          defaultSortOrder(resourceType),
+      };
 
     return {
       ready: currentUser !== undefined,
