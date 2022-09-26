@@ -36,8 +36,11 @@ export const deleteScrapbook = (uuid: string): Promise<void> =>
 
 export type ScrapbookType = "file" | "page";
 
-// Convert the supplied SearchPageOptions into a JSON string, generate a MD5 hash from the string,
-// concatenate the hash and the string into one and save it in session storage.
+/**
+ * Stores the provided SearchPageOptions in Session Storage with an MD5 hash used for lightweight data validation when read back in.
+ *
+ * @param searchPageOptions
+ */
 export const saveSearchPageOptions = (searchPageOptions: SearchPageOptions) => {
   const uuid = v4();
 
