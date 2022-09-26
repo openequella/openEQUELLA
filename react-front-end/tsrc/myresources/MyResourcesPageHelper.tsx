@@ -563,7 +563,7 @@ export const getSearchPageOptionsFromStorage = (
       value,
       E.fromPredicate(
         (v) => hash === MD5(v),
-        () => "SearchPageOptions hash check failed"
+        constant("SearchPageOptions hash check failed")
       )
     );
 
@@ -586,7 +586,7 @@ export const getSearchPageOptionsFromStorage = (
             json !== null &&
             typeof json === "object" &&
             "dateRangeQuickModeEnabled" in json,
-          () => "The parsed object is not SearchPageOptions"
+          constant("The parsed object is not SearchPageOptions")
         ),
         E.mapLeft(console.error)
       )
