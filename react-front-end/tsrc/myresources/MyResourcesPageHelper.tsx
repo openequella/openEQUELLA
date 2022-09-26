@@ -569,7 +569,11 @@ export const getSearchPageOptionsFromStorage = (
 
   const parse = flow(
     J.parse,
-    E.mapLeft((error) => `Failed to parse data due to ${error}`)
+    E.mapLeft((error) => `Failed to parse data due to ${error}`),
+    // Also convert the date strings to Date objects.
+    E.map((maybeOptions) =>
+      OEQ.Utils.convertDateFields(maybeOptions, ["start", "end"])
+    )
   );
 
   return pipe(
