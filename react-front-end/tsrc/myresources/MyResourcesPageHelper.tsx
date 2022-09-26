@@ -547,6 +547,9 @@ export const customUIForMyResources = (
  * `SearchPageOptions`, the object is considered as a SearchPageOptions.
  * 7. All errors captured during above steps will be logged to console.
  *
+ * NOTE: The use of the MD5 hash is to provide a lightweight runtime type validation for the data. It is deemed short-lived data and so
+ * there's no need for full validation - just checks against corruption and tampering.
+ *
  * @param location The browser location which includes search query params.
  */
 export const getSearchPageOptionsFromStorage = (
