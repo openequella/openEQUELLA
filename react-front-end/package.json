@@ -75,7 +75,7 @@
     "@types/jquery": "3.5.14",
     "@types/lodash": "4.14.185",
     "@types/luxon": "2.4.0",
-    "@types/node": "16.11.59",
+    "@types/node": "16.11.60",
     "@types/react": "17.0.50",
     "@types/react-autosuggest": "10.1.5",
     "@types/react-beautiful-dnd": "13.1.2",
