@@ -25,10 +25,12 @@ import * as J from "fp-ts/Json";
 import * as O from "fp-ts/Option";
 import * as S from "fp-ts/string";
 import { Location } from "history";
+import { MD5 } from "object-hash";
 import * as React from "react";
 import { ReactNode } from "react";
 import { Literal, match, Static, Union, Unknown, when } from "runtypes";
 import { TooltipIconButton } from "../components/TooltipIconButton";
+import { buildStorageKey } from "../modules/BrowserStorageModule";
 import { nonDeletedStatuses } from "../modules/SearchModule";
 import GallerySearchResult from "../search/components/GallerySearchResult";
 import { SortOrderOptions } from "../search/components/SearchOrderSelect";
@@ -36,11 +38,13 @@ import SearchResult from "../search/components/SearchResult";
 import {
   DehydratedSearchPageOptions,
   DehydratedSearchPageOptionsRunTypes,
+  SearchPageOptions,
 } from "../search/SearchPageHelper";
 import { SearchPageSearchResult } from "../search/SearchPageReducer";
 import { getISODateString } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
 import { simpleMatch } from "../util/match";
+import { pfSplitAt } from "../util/pointfree";
 
 export const PARAM_MYRESOURCES_TYPE = "myResourcesType";
 
@@ -98,6 +102,23 @@ export const myResourcesTypeToItemStatus = (
   }
 };
 
+const buildURLSearchParams = (location: Location): O.Option<URLSearchParams> =>
+  pipe(
+    location.search,
+    O.fromNullable,
+    O.map((search) => new URLSearchParams(search))
+  );
+
+const getParamFromLocation = (
+  location: Location,
+  queryString: string
+): O.Option<string> =>
+  pipe(
+    location,
+    buildURLSearchParams,
+    O.chain((params) => O.fromNullable(params.get(queryString)))
+  );
+
 // Get Legacy My resources type from query string. Invalid types will be logged in the console.
 const getLegacyMyResourceType = (
   params: URLSearchParams
@@ -121,11 +142,7 @@ const getSearchOptionsFromQueryParam = (
   location: Location
 ): O.Option<DehydratedSearchPageOptions> =>
   pipe(
-    location.search,
-    O.fromNullable,
-    O.chain((search) =>
-      O.fromNullable(new URLSearchParams(search).get("searchOptions"))
-    ),
+    getParamFromLocation(location, "searchOptions"),
     O.chainEitherK(
       flow(
         J.parse,
@@ -178,9 +195,7 @@ export const getMyResourcesTypeFromQueryParam = (
   location: Location
 ): MyResourcesType | undefined =>
   pipe(
-    location.search,
-    O.fromNullable,
-    O.map((search) => new URLSearchParams(search)),
+    buildURLSearchParams(location),
     O.chain((params) =>
       pipe(
         getMyResourcesTypeFromNewUIQueryParam(params),
@@ -218,9 +233,7 @@ const getSubStatusFromLegacyQueryParam = (
     );
 
   return pipe(
-    location.search,
-    O.fromNullable,
-    O.map((search) => new URLSearchParams(search)),
+    buildURLSearchParams(location),
     O.chain(getStatus),
     O.toUndefined
   );
@@ -285,9 +298,7 @@ const getSortOrderFromLegacyQueryParam = (
     );
 
   return pipe(
-    location.search,
-    O.fromNullable,
-    O.map((search) => new URLSearchParams(search)),
+    buildURLSearchParams(location),
     O.chain(getSortOrder),
     O.toUndefined
   );
@@ -521,3 +532,69 @@ export const customUIForMyResources = (
   ) : (
     renderList(searchPageSearchResult.content)
   );
+
+/**
+ * Return a SearchPageOptions saved in browser session storage by steps listed below.
+ *
+ * 1. Gets a UUID from query string `newUIStateId`,
+ * 2. Use the UUID as a key get the string value from session storage. The value should consist of two parts: a MD5 hash and a JSON string
+ * from which the hash was generated.
+ * 3. Since the MD5 hash has a fixed length (32 chars), split the string into two strings.
+ * 4. Generate a new hash from the second string and compare it with the first string. If the two hashes are identical, the JSON string is
+ * considered valid.
+ * 5. Parse the JSON string.
+ * 6. Check the parsed object. If it's an object and field `dateRangeQuickModeEnabled` exists in the object, which is mandatory in type
+ * `SearchPageOptions`, the object is considered as a SearchPageOptions.
+ * 7. All errors captured during above steps will be logged to console.
+ *
+ * NOTE: The use of the MD5 hash is to provide a lightweight runtime type validation for the data. It is deemed short-lived data and so
+ * there's no need for full validation - just checks against corruption and tampering.
+ *
+ * @param location The browser location which includes search query params.
+ */
+export const getSearchPageOptionsFromStorage = (
+  location: Location
+): SearchPageOptions | undefined => {
+  const checkHash = ([hash, value]: [string, string]): E.Either<
+    string,
+    string
+  > =>
+    pipe(
+      value,
+      E.fromPredicate(
+        (v) => hash === MD5(v),
+        constant("SearchPageOptions hash check failed")
+      )
+    );
+
+  const parse = flow(
+    J.parse,
+    E.mapLeft((error) => `Failed to parse data due to ${error}`),
+    // Also convert the date strings to Date objects.
+    E.map((maybeOptions) =>
+      OEQ.Utils.convertDateFields(maybeOptions, ["start", "end"])
+    )
+  );
+
+  return pipe(
+    getParamFromLocation(location, "newUIStateId"),
+    O.map(buildStorageKey),
+    O.chain((key) => O.fromNullable(window.sessionStorage.getItem(key))),
+    O.map(pfSplitAt(32)),
+    O.chainEitherK(
+      flow(
+        checkHash,
+        E.chain(parse),
+        E.filterOrElse(
+          (json: unknown): json is SearchPageOptions =>
+            json !== null &&
+            typeof json === "object" &&
+            "dateRangeQuickModeEnabled" in json,
+          constant("The parsed object is not SearchPageOptions")
+        ),
+        E.mapLeft(console.error)
+      )
+    ),
+    O.toUndefined
+  );
+};

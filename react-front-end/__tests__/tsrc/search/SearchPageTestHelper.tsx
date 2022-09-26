@@ -135,11 +135,11 @@ export const mockCollaborators = () => {
       .spyOn(SearchFilterSettingsModule, "getMimeTypeFiltersFromServer")
       .mockResolvedValue(getMimeTypeFilters),
     mockSaveDataToLocalStorage: jest
-      .spyOn(BrowserStorageModule, "saveDataToLocalStorage")
+      .spyOn(BrowserStorageModule, "saveDataToStorage")
       .mockImplementation(jest.fn),
     mockReadDataFromLocalStorage: jest.spyOn(
       BrowserStorageModule,
-      "readDataFromLocalStorage"
+      "readDataFromStorage"
     ),
     mockGetAdvancedSearchByUuid: jest.spyOn(
       AdvancedSearchModule,

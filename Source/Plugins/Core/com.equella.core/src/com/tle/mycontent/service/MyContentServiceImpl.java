@@ -38,10 +38,13 @@ import com.tle.mycontent.web.section.MyContentContributeSection;
 import com.tle.mycontent.workflow.operations.OperationFactory;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.result.util.KeyLabel;
+import com.tle.web.template.RenderNewTemplate;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.apache.http.client.utils.URIBuilder;
 import org.java.plugin.registry.Extension;
 
 /** @author aholland */
@@ -56,6 +59,29 @@ public class MyContentServiceImpl implements MyContentService {
   @Inject private Provider<ContributeMyContentAction> contributeProvider;
   @Inject private OperationFactory editOpFactory;
   @Inject private ItemOperationFactory workflowFactory;
+
+  // Prepare a SectionInfo for MyContentContributeSection and forward to it.
+  // If this method is invoked from New UI and ID of a New UI SearchOptions is provided, save the
+  // ID to the model of MyContentContributeSection.
+  private void prepareContribution(SectionInfo info, String handlerId, String newUIStateId) {
+    SectionInfo forward = MyContentContributeSection.createForForward(info);
+    MyContentContributeSection contributeSection =
+        forward.lookupSection(MyContentContributeSection.class);
+
+    contributeSection.contribute(forward, handlerId);
+
+    if (RenderNewTemplate.isNewSearchPageEnabled() && newUIStateId != null) {
+      contributeSection.getModel(forward).setNewUIStateId(newUIStateId);
+    }
+
+    info.forwardAsBookmark(forward);
+  }
+
+  // Return ID of a Scrapbook editing handler.
+  private String getEditingHandler(ItemId itemId) {
+    PropBagEx itemXml = itemService.getItemXmlPropBag(itemId);
+    return itemXml.getNode(MyContentConstants.CONTENT_TYPE_NODE);
+  }
 
   @Override
   public boolean isMyContentContributionAllowed() {
@@ -78,9 +104,12 @@ public class MyContentServiceImpl implements MyContentService {
 
   @Override
   public void forwardToEditor(SectionInfo info, ItemId itemId) {
-    PropBagEx itemxml = itemService.getItemXmlPropBag(itemId);
-    String handlerId = itemxml.getNode(MyContentConstants.CONTENT_TYPE_NODE);
-    MyContentContributeSection.forwardToEdit(info, handlerId, itemId);
+    MyContentContributeSection.forwardToEdit(info, getEditingHandler(itemId), itemId, null);
+  }
+
+  @Override
+  public void forwardToEditorFromNewUI(SectionInfo info, ItemId itemId, String newUIStateId) {
+    MyContentContributeSection.forwardToEdit(info, getEditingHandler(itemId), itemId, newUIStateId);
   }
 
   @Override
@@ -88,6 +117,29 @@ public class MyContentServiceImpl implements MyContentService {
     MyContentContributeSection myContribute = info.lookupSection(MyContentContributeSection.class);
     if (myContribute != null) {
       myContribute.contributionFinished(info);
+    }
+
+    if (RenderNewTemplate.isNewSearchPageEnabled()) {
+      URIBuilder builder = new URIBuilder();
+      builder.setPath("page/myresources").addParameter("type", "scrapbook");
+
+      String fullUrl =
+          Optional.ofNullable(myContribute)
+              .map(section -> section.getModel(info))
+              .flatMap(
+                  model -> {
+                    Optional<String> url =
+                        Optional.ofNullable(model.getNewUIStateId())
+                            .map(id -> builder.addParameter("newUIStateId", id))
+                            .map(URIBuilder::toString);
+                    model.setNewUIStateId(null);
+                    return url;
+                  })
+              .orElse(builder.toString());
+
+      // Apache URIBuilder always add a starting slash, so we need to drop it here.
+      info.forwardToUrl(fullUrl.substring(1));
+      return true;
     }
 
     // FIXME: is this true??? possibly not
@@ -176,10 +228,12 @@ public class MyContentServiceImpl implements MyContentService {
 
   @Override
   public void forwardToContribute(SectionInfo info, String handlerId) {
-    SectionInfo forward = MyContentContributeSection.createForForward(info);
-    MyContentContributeSection contributeSection =
-        forward.lookupSection(MyContentContributeSection.class);
-    contributeSection.contribute(forward, handlerId);
-    info.forwardAsBookmark(forward);
+    prepareContribution(info, handlerId, null);
+  }
+
+  @Override
+  public void forwardToContributeFromNewUI(
+      SectionInfo info, String handlerId, String newUIStateId) {
+    prepareContribution(info, handlerId, newUIStateId);
   }
 }

@@ -21,6 +21,7 @@ import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import PagesIcon from "@material-ui/icons/Pages";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
+import { pipe } from "fp-ts/function";
 import * as React from "react";
 import { ReactNode, useContext, useMemo, useState } from "react";
 import { useHistory } from "react-router";
@@ -30,11 +31,12 @@ import { TooltipIconButton } from "../components/TooltipIconButton";
 import { AppContext } from "../mainui/App";
 import { NEW_MY_RESOURCES_PATH } from "../mainui/routes";
 import { TemplateUpdateProps } from "../mainui/Template";
-import { FavouriteURL } from "../modules/FavouriteModule";
+import type { FavouriteURL } from "../modules/FavouriteModule";
 import {
   deleteScrapbook,
   openLegacyFileCreatingPage,
   openLegacyFileEditingPage,
+  ScrapbookType,
 } from "../modules/ScrapbookModule";
 import { nonDeletedStatuses } from "../modules/SearchModule";
 import type { StatusSelectorProps } from "../search/components/StatusSelector";
@@ -64,6 +66,7 @@ import {
   customUIForMyResources,
   defaultSortOrder,
   getMyResourcesTypeFromQueryParam,
+  getSearchPageOptionsFromStorage,
   getSortOrderFromQueryParam,
   getSubStatusFromQueryParam,
   myResourcesTypeToItemStatus,
@@ -115,22 +118,27 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [scrapbookToBeDeleted, setScrapbookToBeDeleted] = useState<string>();
 
   const initialSearchConfig = useMemo<InitialSearchConfig>(() => {
+    const optionsFromStorage = getSearchPageOptionsFromStorage(
+      history.location
+    );
+
     const customiseInitialSearchOptions = (
       searchPageOptions: SearchPageOptions
-    ): SearchPageOptions => ({
-      ...searchPageOptions,
-      owner: currentUser,
-      status: A.isNonEmpty(subStatus)
-        ? subStatus
-        : myResourcesTypeToItemStatus(resourceType),
-      // The sort order in My resources initial search is a bit different. If no sort order
-      // is present in either the browser history or query string, we use the custom default
-      // sort order rather than the one configured in Search settings.
-      sortOrder:
-        history.location.state?.searchPageOptions?.sortOrder ??
-        getSortOrderFromQueryParam(history.location) ??
-        defaultSortOrder(resourceType),
-    });
+    ): SearchPageOptions =>
+      optionsFromStorage ?? {
+        ...searchPageOptions,
+        owner: currentUser,
+        status: A.isNonEmpty(subStatus)
+          ? subStatus
+          : myResourcesTypeToItemStatus(resourceType),
+        // The sort order in My resources initial search is a bit different. If no sort order
+        // is present in either the browser history or query string, we use the custom default
+        // sort order rather than the one configured in Search settings.
+        sortOrder:
+          history.location.state?.searchPageOptions?.sortOrder ??
+          getSortOrderFromQueryParam(history.location) ??
+          defaultSortOrder(resourceType),
+      };
 
     return {
       ready: currentUser !== undefined,
@@ -188,11 +196,13 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   // Return a function to render custom UI for the SearchResult in Scrapbook, Moderation queue
   // and All resources. For others, return undefined.
-  const customSearchResultBuilder = ():
+  const customSearchResultBuilder = ({
+    searchState: { options },
+  }: SearchContextProps):
     | ((searchResult: SearchPageSearchResult) => ReactNode)
     | undefined => {
     const renderScrapbook = buildRenderScrapbookResult(
-      (key: string) => openLegacyFileEditingPage(key, history),
+      (key: string) => openLegacyFileEditingPage(key, history, options),
       setScrapbookToBeDeleted
     );
 
@@ -346,7 +356,9 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
               refinePanelConfig={searchPageRefinePanelConfig(
                 searchContextProps
               )}
-              customRenderSearchResults={customSearchResultBuilder()}
+              customRenderSearchResults={customSearchResultBuilder(
+                searchContextProps
+              )}
               customFavouriteUrl={customFavouriteUrl}
             />
             {scrapbookToBeDeleted && (
@@ -362,27 +374,38 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 {deleteDialogContent}
               </ConfirmDialog>
             )}
+            <Menu
+              open={anchorEl !== null}
+              anchorEl={anchorEl}
+              onClick={() => setAnchorEl(null)}
+            >
+              {pipe(
+                [
+                  ["file", createFile, <CloudUploadIcon />],
+                  ["page", createPage, <PagesIcon />],
+                ],
+                A.map<[ScrapbookType, string, JSX.Element], JSX.Element>(
+                  ([scrapbookType, text, icon]) => (
+                    <MenuItem
+                      key={scrapbookType}
+                      onClick={() =>
+                        openLegacyFileCreatingPage(
+                          scrapbookType,
+                          history,
+                          searchContextProps.searchState.options
+                        )
+                      }
+                    >
+                      <ListItemIcon>{icon}</ListItemIcon>
+                      <ListItemText>{text}</ListItemText>
+                    </MenuItem>
+                  )
+                )
+              )}
+            </Menu>
           </>
         )}
       </SearchContext.Consumer>
-      <Menu
-        open={anchorEl !== null}
-        anchorEl={anchorEl}
-        onClick={() => setAnchorEl(null)}
-      >
-        <MenuItem onClick={() => openLegacyFileCreatingPage("file", history)}>
-          <ListItemIcon>
-            <CloudUploadIcon />
-          </ListItemIcon>
-          <ListItemText>{createFile}</ListItemText>
-        </MenuItem>
-        <MenuItem onClick={() => openLegacyFileCreatingPage("page", history)}>
-          <ListItemIcon>
-            <PagesIcon />
-          </ListItemIcon>
-          <ListItemText>{createPage}</ListItemText>
-        </MenuItem>
-      </Menu>
     </Search>
   );
 };

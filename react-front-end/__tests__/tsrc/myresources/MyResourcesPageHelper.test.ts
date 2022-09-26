@@ -17,12 +17,16 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { createMemoryHistory } from "history";
+import { buildStorageKey } from "../../../tsrc/modules/BrowserStorageModule";
+import { saveSearchPageOptions } from "../../../tsrc/modules/ScrapbookModule";
 import {
   getMyResourcesTypeFromQueryParam,
+  getSearchPageOptionsFromStorage,
   getSortOrderFromQueryParam,
   getSubStatusFromQueryParam,
   MyResourcesType,
 } from "../../../tsrc/myresources/MyResourcesPageHelper";
+import { defaultSearchPageOptions } from "../../../tsrc/search/SearchPageHelper";
 
 describe("MyResourcesPageHelper", () => {
   const history = createMemoryHistory();
@@ -98,6 +102,46 @@ describe("MyResourcesPageHelper", () => {
       expect(
         getSortOrderFromQueryParam(history.location)
       ).toBe<OEQ.Search.SortOrder>("datecreated");
+    });
+  });
+
+  describe("interact with session storage", () => {
+    const saveDefaultSearchPageOptions = () => {
+      const uuid = saveSearchPageOptions(defaultSearchPageOptions);
+
+      history.push(
+        `http://localhost:8080/page/myresources?type=scrapbook&newUIStateId=${uuid}`
+      );
+
+      return uuid;
+    };
+
+    it("gets SearchPageOptions from session storage", () => {
+      saveDefaultSearchPageOptions();
+      const searchPageOptions = getSearchPageOptionsFromStorage(
+        history.location
+      );
+
+      // Do not compare the parsed object with `defaultSearchPageOptions` because they do have some acceptable differences.
+      // Here we only need to check the parsed result is an object, and it has the mandatory field `dateRangeQuickModeEnabled`.
+      expect(searchPageOptions).toBeInstanceOf(Object);
+      expect(searchPageOptions?.["dateRangeQuickModeEnabled"]).toBeDefined();
+    });
+
+    it("logs an error for a failed MD5 hash checking", () => {
+      const mockConsoleError = jest
+        .spyOn(console, "error")
+        .mockImplementationOnce(() => {});
+
+      const uuid = saveDefaultSearchPageOptions();
+      // Mock of data tampering.
+      window.sessionStorage.setItem(buildStorageKey(uuid), "abc");
+
+      getSearchPageOptionsFromStorage(history.location);
+
+      expect(mockConsoleError).toHaveBeenLastCalledWith(
+        "SearchPageOptions hash check failed"
+      );
     });
   });
 });
