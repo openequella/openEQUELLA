@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as E from "fp-ts/Either";
-import { constant, pipe } from "fp-ts/function";
+import { identity, pipe } from "fp-ts/function";
 import * as J from "fp-ts/Json";
 import { MD5 } from "object-hash";
 import { buildStorageKey } from "../../../tsrc/modules/BrowserStorageModule";
@@ -28,7 +28,9 @@ describe("saveSearchPageOptions", () => {
     const jsonString = pipe(
       defaultSearchPageOptions,
       J.stringify,
-      E.getOrElseW(constant(""))
+      E.match((error) => {
+        throw new Error(`Failed to parse 'defaultSearchPageOptions': ${error}`);
+      }, identity)
     );
     const hash = MD5(jsonString);
 
