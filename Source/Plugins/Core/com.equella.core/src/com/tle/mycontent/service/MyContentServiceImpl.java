@@ -63,15 +63,15 @@ public class MyContentServiceImpl implements MyContentService {
   // Prepare a SectionInfo for MyContentContributeSection and forward to it.
   // If this method is invoked from New UI and ID of a New UI SearchOptions is provided, save the
   // ID to the model of MyContentContributeSection.
-  private void prepareContribution(SectionInfo info, String handlerId, String newUISearchOptionID) {
+  private void prepareContribution(SectionInfo info, String handlerId, String newUIStateId) {
     SectionInfo forward = MyContentContributeSection.createForForward(info);
     MyContentContributeSection contributeSection =
         forward.lookupSection(MyContentContributeSection.class);
 
     contributeSection.contribute(forward, handlerId);
 
-    if (RenderNewTemplate.isNewSearchPageEnabled() && newUISearchOptionID != null) {
-      contributeSection.getModel(forward).setNewUISearchPageOptionsID(newUISearchOptionID);
+    if (RenderNewTemplate.isNewSearchPageEnabled() && newUIStateId != null) {
+      contributeSection.getModel(forward).setNewUIStateId(newUIStateId);
     }
 
     info.forwardAsBookmark(forward);
@@ -108,10 +108,8 @@ public class MyContentServiceImpl implements MyContentService {
   }
 
   @Override
-  public void forwardToEditorFromNewUI(
-      SectionInfo info, ItemId itemId, String newUISearchPageOptionsID) {
-    MyContentContributeSection.forwardToEdit(
-        info, getEditingHandler(itemId), itemId, newUISearchPageOptionsID);
+  public void forwardToEditorFromNewUI(SectionInfo info, ItemId itemId, String newUIStateId) {
+    MyContentContributeSection.forwardToEdit(info, getEditingHandler(itemId), itemId, newUIStateId);
   }
 
   @Override
@@ -131,10 +129,10 @@ public class MyContentServiceImpl implements MyContentService {
               .flatMap(
                   model -> {
                     Optional<String> url =
-                        Optional.ofNullable(model.getNewUISearchPageOptionsID())
-                            .map(id -> builder.addParameter("searchPageOptionsID", id))
+                        Optional.ofNullable(model.getNewUIStateId())
+                            .map(id -> builder.addParameter("newUIStateId", id))
                             .map(URIBuilder::toString);
-                    model.setNewUISearchPageOptionsID(null);
+                    model.setNewUIStateId(null);
                     return url;
                   })
               .orElse(builder.toString());
@@ -235,7 +233,7 @@ public class MyContentServiceImpl implements MyContentService {
 
   @Override
   public void forwardToContributeFromNewUI(
-      SectionInfo info, String handlerId, String newUISearchOptionID) {
-    prepareContribution(info, handlerId, newUISearchOptionID);
+      SectionInfo info, String handlerId, String newUIStateId) {
+    prepareContribution(info, handlerId, newUIStateId);
   }
 }

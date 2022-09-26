@@ -75,8 +75,8 @@ public class MyContentItemListExtension extends AbstractPrototypeSection<Object>
   }
 
   @EventHandlerMethod
-  public void editFromNewUI(SectionInfo info, ItemId itemId, String newUISearchOptionID) {
-    myContentService.forwardToEditorFromNewUI(info, itemId, newUISearchOptionID);
+  public void editFromNewUI(SectionInfo info, ItemId itemId, String newUIStateId) {
+    myContentService.forwardToEditorFromNewUI(info, itemId, newUIStateId);
   }
 
   @EventHandlerMethod

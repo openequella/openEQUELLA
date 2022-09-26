@@ -536,7 +536,7 @@ export const customUIForMyResources = (
 /**
  * Return a SearchPageOptions saved in browser session storage by steps listed below.
  *
- * 1. Gets a UUID from query string `searchPageOptionsID`,
+ * 1. Gets a UUID from query string `newUIStateId`,
  * 2. Use the UUID as a key get the string value from session storage. The value should consist of two parts: a MD5 hash and a JSON string
  * from which the hash was generated.
  * 3. Since the MD5 hash has a fixed length (32 chars), split the string into two strings.
@@ -570,7 +570,7 @@ export const getSearchPageOptionsFromStorage = (
   );
 
   return pipe(
-    getParamFromLocation(location, "searchPageOptionsID"),
+    getParamFromLocation(location, "newUIStateId"),
     O.map(buildStorageKey),
     O.chain((key) => O.fromNullable(window.sessionStorage.getItem(key))),
     O.map(pfSplitAt(32)),

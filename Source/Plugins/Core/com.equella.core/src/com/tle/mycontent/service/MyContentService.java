@@ -68,10 +68,9 @@ public interface MyContentService {
    *
    * @param info Info of the original Section which receives the request from New UI.
    * @param itemId ID of an Item including UUID and version.
-   * @param newUISearchPageOptionsID ID of the New UI SearchPageOptions saved in the browser
-   *     storage.
+   * @param newUIStateId ID of the New UI SearchPageOptions saved in the browser storage.
    */
-  void forwardToEditorFromNewUI(SectionInfo info, ItemId itemId, String newUISearchPageOptionsID);
+  void forwardToEditorFromNewUI(SectionInfo info, ItemId itemId, String newUIStateId);
 
   ContributeMyContentAction createActionForHandler(String handlerId);
 
@@ -84,11 +83,9 @@ public interface MyContentService {
    *
    * @param info Info of the original Section which receives the request from New UI.
    * @param handlerId ID of a Scrapbook handler for either File or Webpage.
-   * @param newUISearchPageOptionsID ID of the New UI SearchPageOptionsID saved in the local storage
-   *     of browser.
+   * @param newUIStateId ID of the New UI SearchPageOptionsID saved in the local storage of browser.
    */
-  void forwardToContributeFromNewUI(
-      SectionInfo info, String handlerId, String newUISearchPageOptionsID);
+  void forwardToContributeFromNewUI(SectionInfo info, String handlerId, String newUIStateId);
 
   void restore(ItemId itemId);
 }
