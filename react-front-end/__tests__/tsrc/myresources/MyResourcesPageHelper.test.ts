@@ -17,6 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { createMemoryHistory } from "history";
+import { buildStorageKey } from "../../../tsrc/modules/BrowserStorageModule";
 import { saveSearchPageOptions } from "../../../tsrc/modules/ScrapbookModule";
 import {
   getMyResourcesTypeFromQueryParam,
@@ -105,12 +106,18 @@ describe("MyResourcesPageHelper", () => {
   });
 
   describe("interact with session storage", () => {
-    it("gets SearchPageOptions from session storage", () => {
+    const saveDefaultSearchPageOptions = () => {
       const uuid = saveSearchPageOptions(defaultSearchPageOptions);
 
       history.push(
-        `http://localhost:8080/page/myresources?type=scrapbook&searchPageOptionsID=${uuid}`
+        `http://localhost:8080/page/myresources?type=scrapbook&newUIStateId=${uuid}`
       );
+
+      return uuid;
+    };
+
+    it("gets SearchPageOptions from session storage", () => {
+      saveDefaultSearchPageOptions();
       const searchPageOptions = getSearchPageOptionsFromStorage(
         history.location
       );
@@ -119,6 +126,22 @@ describe("MyResourcesPageHelper", () => {
       // Here we only need to check the parsed result is an object, and it has the mandatory field `dateRangeQuickModeEnabled`.
       expect(searchPageOptions).toBeInstanceOf(Object);
       expect(searchPageOptions?.["dateRangeQuickModeEnabled"]).toBeDefined();
+    });
+
+    it("logs an error for a failed MD5 hash checking", () => {
+      const mockConsoleError = jest
+        .spyOn(console, "error")
+        .mockImplementationOnce(() => {});
+
+      const uuid = saveDefaultSearchPageOptions();
+      // Mock of data tampering.
+      window.sessionStorage.setItem(buildStorageKey(uuid), "abc");
+
+      getSearchPageOptionsFromStorage(history.location);
+
+      expect(mockConsoleError).toHaveBeenLastCalledWith(
+        "SearchPageOptions hash check failed"
+      );
     });
   });
 });
