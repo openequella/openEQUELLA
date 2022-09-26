@@ -255,7 +255,7 @@ object SearchHelper {
   def convertToItem(item: SearchItem, includeAttachments: Boolean = true): SearchResultItem = {
     val key  = item.idKey
     val bean = item.bean
-    val sanitisedAttachmentBeans =
+    lazy val sanitisedAttachmentBeans =
       Option(bean.getAttachments).map(_.asScala.map(sanitiseAttachmentBean).toList)
 
     SearchResultItem(
@@ -273,7 +273,7 @@ object SearchHelper {
       attachments =
         if (includeAttachments) convertToAttachment(sanitisedAttachmentBeans, key) else None,
       thumbnail = bean.getThumbnail,
-      thumbnailDetails = getThumbnailDetails(sanitisedAttachmentBeans, key),
+      thumbnailDetails = getThumbnailDetails(Option(bean.getAttachments).map(_.asScala.toList), key),
       displayFields = bean.getDisplayFields.asScala.toList,
       displayOptions = Option(bean.getDisplayOptions),
       keywordFoundInAttachment = item.keywordFound,
