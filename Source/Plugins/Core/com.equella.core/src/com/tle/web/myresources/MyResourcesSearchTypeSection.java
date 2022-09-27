@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import javax.inject.Inject;
+import scala.Option;
 
 @SuppressWarnings("nls")
 @TreeIndexed
@@ -109,7 +110,7 @@ public class MyResourcesSearchTypeSection
               .map(st -> (SubSearch) searchType.getSelectedValue(info).getSubSearches().get(st))
               .map(subSearch -> subSearch.getItemStatus().toString());
 
-      from.forwardToUrl(NewUiRoutes.myResources(type, toScala(status)));
+      from.forwardToUrl(NewUiRoutes.myResources(type, toScala(status), Option.empty()));
       return;
     }
 
