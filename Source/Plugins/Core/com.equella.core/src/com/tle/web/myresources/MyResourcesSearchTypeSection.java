@@ -18,6 +18,8 @@
 
 package com.tle.web.myresources;
 
+import static scala.jdk.javaapi.OptionConverters.toScala;
+
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.search.base.ContextableSearchSection;
@@ -41,9 +43,13 @@ import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.SingleSelectionList;
 import com.tle.web.sections.standard.annotations.Component;
+import com.tle.web.template.NewUiRoutes;
+import com.tle.web.template.RenderNewTemplate;
+import com.tle.web.workflow.myresources.ModerationQueueSearch.SubSearch;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import javax.inject.Inject;
 
@@ -90,15 +96,29 @@ public class MyResourcesSearchTypeSection
 
   public static void startSubSearch(SectionInfo from, String type, int subType) {
     SectionInfo info = RootMyResourcesSection.createForward(from);
+
     MyResourcesSearchTypeSection searchTypeSection =
         info.lookupSection(MyResourcesSearchTypeSection.class);
-    MyResourcesSearchResults resultsSection = info.lookupSection(MyResourcesSearchResults.class);
     SingleSelectionList<MyResourcesSubSearch> searchType = searchTypeSection.getSearchType();
     searchType.setSelectedStringValue(info, type);
+
+    if (RenderNewTemplate.isNewUIEnabled()) {
+      Optional<String> status =
+          Optional.of(subType)
+              .filter(st -> st != -1)
+              .map(st -> (SubSearch) searchType.getSelectedValue(info).getSubSearches().get(st))
+              .map(subSearch -> subSearch.getItemStatus().toString());
+
+      from.forwardToUrl(NewUiRoutes.myResources(type, toScala(status)));
+      return;
+    }
+
     if (subType != -1) {
       MyResourcesSubSearch selectedSearch = searchType.getSelectedValue(info);
       selectedSearch.getSubSearches().get(subType).execute(info);
     }
+
+    MyResourcesSearchResults resultsSection = info.lookupSection(MyResourcesSearchResults.class);
     resultsSection.startSearch(info);
     from.forward(info);
   }
