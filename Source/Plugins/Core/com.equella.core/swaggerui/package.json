@@ -1,13 +1,13 @@
 {
+  "license": "Apache-2.0",
   "scripts": {
     "build": "parcel build index.js --out-dir=target --out-file=bundle.js",
     "clean": "rm -rf target/ node_modules/",
     "dev": "parcel watch index.js --out-dir=../target/scala-2.13/classes/web/apidocs --out-file=bundle.js"
   },
   "dependencies": {
-    "swagger-ui": "4.7.0"
+    "swagger-ui": "4.14.1"
   },
-  "license": "Apache-2.0",
   "devDependencies": {
     "parcel-bundler": "1.12.5"
   }
