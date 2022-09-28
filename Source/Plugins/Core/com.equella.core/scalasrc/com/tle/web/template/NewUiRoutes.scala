@@ -29,6 +29,20 @@ object NewUiRoutes {
   private def buildRelativeUrl(path: String, params: Vector[(String, Option[String])]): String =
     RelativeUrl.parse(path).withQueryString(QueryString(params)).toString()
 
+  /**
+    * Builds a relative URL for the New UI My Resources pages, selecting which one by what is
+    * specified in `myResourcesType`. Optionally, a 'sub status' can be specified to limit what
+    * status to use on the 'Moderation queue' page, and/or a 'state ID' can be added to assist
+    * with persisting state on the client side between calls that take a round trip into Legacy
+    * UI pages - such as Scrapbook creation and editing.
+    *
+    * @param myResourcesType should be one of the accepted `type` param values.
+    * @param subStatus should be one of the standard ItemStatus values and will be passed in the
+    *                  `mstatus` param.
+    * @param stateId Typically the UUID which was generated in an initial request to the server which
+    *                is to then be returned in the `newUIStateId` param.
+    * @return a relative URL in string form suitable for use with `forwardTo` type calls
+    */
   def myResources(myResourcesType: String,
                   subStatus: Option[String] = None,
                   stateId: Option[String] = None): String = {
