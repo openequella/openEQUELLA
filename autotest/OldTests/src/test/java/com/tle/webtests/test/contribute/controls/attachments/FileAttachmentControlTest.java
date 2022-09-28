@@ -1,13 +1,14 @@
 package com.tle.webtests.test.contribute.controls.attachments;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
 import com.dytech.common.legacyio.FileUtils;
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.generic.page.VerifyableAttachment;
 import com.tle.webtests.pageobject.myresources.MyResourcesPage;
-import com.tle.webtests.pageobject.searching.ItemListPage;
 import com.tle.webtests.pageobject.searching.SearchPage;
 import com.tle.webtests.pageobject.viewitem.AttachmentsPage;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
@@ -19,6 +20,7 @@ import com.tle.webtests.pageobject.wizard.controls.universal.FileUniversalContro
 import com.tle.webtests.pageobject.wizard.controls.universal.WebPagesUniversalControlType;
 import com.tle.webtests.test.AbstractCleanupAutoTest;
 import com.tle.webtests.test.files.Attachments;
+import io.github.openequella.pages.search.NewSearchPage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -48,13 +50,13 @@ public class FileAttachmentControlTest extends AbstractCleanupAutoTest {
             .isVerified());
 
     String scrapbookItem = context.getFullName("An authored page");
-    ItemListPage results =
+
+    MyResourcesPage myResourcesPage =
         new MyResourcesPage(context, "scrapbook")
             .load()
-            .authorWebPage(scrapbookItem, "A Page", "This is a verifiable attachment")
-            .resetFilters()
-            .results();
-    assertTrue(results.doesResultExist(scrapbookItem, 1));
+            .authorWebPage(scrapbookItem, "A Page", "This is a verifiable attachment");
+
+    assertTrue(myResourcesPage.isScrapbookCreated(scrapbookItem));
 
     itemName = context.getFullName("Web Page from scrapbook");
     wizard = initialItem(itemName);
@@ -219,7 +221,14 @@ public class FileAttachmentControlTest extends AbstractCleanupAutoTest {
         attachments.viewAttachment("page(4).html", new VerifyableAttachment(context)).isVerified());
 
     new MyResourcesPage(context, "scrapbook").load().uploadFile(theFile, scrapbookItem, "");
-    wizard = SearchPage.searchExact(context, itemName).viewFromTitle(itemName).adminTab().edit();
+    if (getTestConfig().isNewUI()) {
+      NewSearchPage searchPage = new NewSearchPage(context).load();
+      searchPage.changeQuery(itemName);
+      searchPage.waitForSearchCompleted(1);
+      searchPage.selectItem(itemName).adminTab().edit();
+    } else {
+      wizard = SearchPage.searchExact(context, itemName).viewFromTitle(itemName).adminTab().edit();
+    }
 
     UniversalControl control = wizard.universalControl(2);
     FileAttachmentEditPage file =
@@ -310,21 +319,4 @@ public class FileAttachmentControlTest extends AbstractCleanupAutoTest {
     wizard.editbox(1, itemName);
     return wizard;
   }
-
-  // Unsafe to delete all "page.html", matches other items
-  //	@Override
-  //	protected void cleanupAfterClass() throws Exception
-  //	{
-  //		logon("AutoTest", "automated");
-  //		ItemAdminPage filterListPage = new ItemAdminPage(context).load();
-  //		ItemListPage filterResults = filterListPage.all().exactQuery("page.html");
-  //		if( filterResults.isResultsAvailable() )
-  //		{
-  //			filterListPage.bulk().deleteAll();
-  //			filterListPage.get().search("page.html");
-  //			filterListPage.bulk().purgeAll();
-  //		}
-  //		super.cleanupAfterClass();
-  //	}
-
 }

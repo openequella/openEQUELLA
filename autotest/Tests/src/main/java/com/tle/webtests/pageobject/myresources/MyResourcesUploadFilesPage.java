@@ -63,16 +63,22 @@ public class MyResourcesUploadFilesPage extends AbstractPage<MyResourcesUploadFi
             ExpectedConditions.visibilityOfElementLocated(
                 new ByChained(By.id("dndfiles"), By.className("complete"))));
     cancelButton.click();
-    MyResourcesPage searchPage = new MyResourcesPage(context, "scrapbook").get();
+    MyResourcesPage myResourcesPage = new MyResourcesPage(context, "scrapbook").get();
     String fileOnly = PathUtils.getFilenameFromFilepath(path);
-    MyResourcesUploadFilesPage edit =
-        searchPage
-            .exactQuery(fileOnly)
-            .getResultForTitle(fileOnly)
-            .get()
-            .clickAction("Edit", new MyResourcesUploadFilesPage(searchPage));
-    edit.setDescription(description);
-    return edit.save();
+
+    if (isNewUI()) {
+      myResourcesPage.getScrapbookEditIconButton(fileOnly).click();
+    } else {
+      myResourcesPage
+          .exactQuery(fileOnly)
+          .getResultForTitle(fileOnly)
+          .get()
+          .clickAction("Edit", new MyResourcesUploadFilesPage(myResourcesPage));
+    }
+
+    MyResourcesUploadFilesPage editPage = new MyResourcesUploadFilesPage(myResourcesPage).get();
+    editPage.setDescription(description);
+    return editPage.save();
   }
 
   public boolean hasArchiveOption(String option) {

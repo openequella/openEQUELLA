@@ -9,7 +9,6 @@ import com.tle.webtests.pageobject.myresources.MyResourcesPage;
 import com.tle.webtests.pageobject.myresources.MyResourcesUploadFilesPage;
 import com.tle.webtests.pageobject.searching.ItemAdminPage;
 import com.tle.webtests.pageobject.searching.ItemListPage;
-import com.tle.webtests.pageobject.searching.ItemSearchResult;
 import com.tle.webtests.pageobject.viewitem.AttachmentsPage;
 import com.tle.webtests.pageobject.wizard.ContributePage;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
@@ -71,8 +70,8 @@ public class MyResourcesTest extends AbstractCleanupTest {
   }
 
   private void deleteAndVerifyItem(MyResourcesPage myResourcesPage, String itemName) {
-    myResourcesPage.delete(myResourcesPage.results().getResultForTitle(itemName));
-    myResourcesPage.results().doesResultExist(itemName);
+    myResourcesPage.deleteScrapbook(itemName);
+    assertTrue(myResourcesPage.isScrapbookDeleted(itemName));
   }
 
   @Test
@@ -93,41 +92,30 @@ public class MyResourcesTest extends AbstractCleanupTest {
     logon(AUTOTEST_LOGON, AUTOTEST_PASSWD);
     String scrapbookItem = context.getFullName("Another description");
     MyResourcesPage myResourcesPage = uploadAndVerify(scrapbookItem);
+    String originalSearchTags = myResourcesPage.getScrapbookTags(scrapbookItem);
 
-    ItemListPage results = myResourcesPage.results();
-    ItemSearchResult itemAdded = results.getResultForTitle(scrapbookItem);
+    // Edit the page but abandon changes.
+    MyResourcesUploadFilesPage editWizard = myResourcesPage.editFile(scrapbookItem);
+    editWizard.setDescription(
+        "And did those feet in ancient time walk upon England's mountains green?");
+    editWizard.editSearchTags("Blake Mattress");
+    myResourcesPage = editWizard.cancel();
 
-    String originalSearchTags = itemAdded.getDetailText("Tags");
-    MyResourcesUploadFilesPage editWizard = myResourcesPage.editFile(itemAdded);
+    // Tags should not be changed.
+    assertEquals(myResourcesPage.getScrapbookTags(scrapbookItem), originalSearchTags);
 
-    String abandonedDescStr =
-        "And did those feet in ancient time walk upon England's mountains green?";
-    editWizard.setDescription(abandonedDescStr);
-
-    String abandonedTagsStr = "Blake Mattress";
-    editWizard.editSearchTags(abandonedTagsStr);
-
-    // abandon changes
-    results = editWizard.cancel().results();
-    itemAdded = results.getResultForTitle(scrapbookItem);
-    String newSearchTags = itemAdded.getDetailText("Tags");
-    assertEquals(newSearchTags, originalSearchTags);
-
-    editWizard = myResourcesPage.editFile(itemAdded);
+    // Edit tags again and save the changes.
+    editWizard = myResourcesPage.editFile(scrapbookItem);
     // Prefixing the new description (ie: the item name) will ensure the
     // renamed item will be included in post-test cleanup.
     String descStr =
         context.getFullName("And was the holy lamb of god on England's pleasant pastures seen?");
     editWizard.setDescription(descStr);
-
-    String tagsStr = "Python Monty";
-    editWizard.editSearchTags(tagsStr);
-
-    // Save and evaluate changes
+    String newTags = "Python Monty";
+    editWizard.editSearchTags(newTags);
     editWizard.save();
 
-    itemAdded = myResourcesPage.exactQuery(descStr).getResultForTitle(descStr);
-    assertEquals(itemAdded.getDetailText("Tags"), tagsStr);
+    assertEquals(myResourcesPage.getScrapbookTags(descStr), newTags);
   }
 
   /**
@@ -137,12 +125,15 @@ public class MyResourcesTest extends AbstractCleanupTest {
    * @return results page
    */
   private MyResourcesPage uploadAndVerify(String scrapbookItem) {
-    MyResourcesPage myResourcesPage = new MyResourcesPage(context, "scrapbook").load();
-    ItemListPage results =
-        myResourcesPage
-            .uploadFile(Attachments.get(FILE_NAME), scrapbookItem, "page")
-            .exactQuery(scrapbookItem);
-    assertTrue(results.doesResultExist(scrapbookItem));
+    MyResourcesPage myResourcesPage =
+        new MyResourcesPage(context, "scrapbook")
+            .load()
+            .uploadFile(Attachments.get(FILE_NAME), scrapbookItem, "page");
+
+    myResourcesPage.exactQuery(scrapbookItem);
+
+    assertTrue(myResourcesPage.isScrapbookCreated(scrapbookItem));
+
     return myResourcesPage;
   }
 }
