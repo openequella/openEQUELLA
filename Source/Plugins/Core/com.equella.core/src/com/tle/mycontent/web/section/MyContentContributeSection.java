@@ -161,7 +161,7 @@ public class MyContentContributeSection extends TwoColumnLayout<MyContentContrib
       section = forward.lookupSection(MyContentContributeSection.class);
       section.edit(forward, handlerId, itemId);
 
-      if (RenderNewTemplate.isNewSearchPageEnabled() && newUIStateId != null) {
+      if (RenderNewTemplate.isNewUIEnabled() && newUIStateId != null) {
         section.getModel(forward).setNewUIStateId(newUIStateId);
       }
 
