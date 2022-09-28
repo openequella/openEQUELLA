@@ -121,7 +121,7 @@ public class MyResourcesWebPageTest extends AbstractCleanupTest {
     editor.setTitle(pageTitle);
     ((JavascriptExecutor) getContext().getDriver())
         .executeScript("window.scrollTo(0, -document.body.scrollHeight)");
-    editor.save();
+    editor.save().exactQuery(scrapbookItem);
 
     // Verify the page name has changed.
     assertTrue(isIndividualPagePresent(myResourcesPage, scrapbookItem, pageTitle));

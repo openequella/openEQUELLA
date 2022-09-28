@@ -115,6 +115,7 @@ public class MyResourcesTest extends AbstractCleanupTest {
     editWizard.editSearchTags(newTags);
     editWizard.save();
 
+    myResourcesPage.exactQuery(descStr);
     assertEquals(myResourcesPage.getScrapbookTags(descStr), newTags);
   }
 

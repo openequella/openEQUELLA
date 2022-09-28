@@ -56,6 +56,9 @@ public class FileAttachmentControlTest extends AbstractCleanupAutoTest {
             .load()
             .authorWebPage(scrapbookItem, "A Page", "This is a verifiable attachment");
 
+    if (testConfig.isNewUI()) {
+      myResourcesPage.resetFilters();
+    }
     assertTrue(myResourcesPage.isScrapbookCreated(scrapbookItem));
 
     itemName = context.getFullName("Web Page from scrapbook");
