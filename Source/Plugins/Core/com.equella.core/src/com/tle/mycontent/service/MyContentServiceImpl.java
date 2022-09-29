@@ -18,6 +18,8 @@
 
 package com.tle.mycontent.service;
 
+import static scala.jdk.javaapi.OptionConverters.toScala;
+
 import com.dytech.devlib.PropBagEx;
 import com.google.inject.Provider;
 import com.tle.beans.entity.itemdef.ItemDefinition;
@@ -38,14 +40,15 @@ import com.tle.mycontent.web.section.MyContentContributeSection;
 import com.tle.mycontent.workflow.operations.OperationFactory;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.result.util.KeyLabel;
+import com.tle.web.template.NewUiRoutes;
 import com.tle.web.template.RenderNewTemplate;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.http.client.utils.URIBuilder;
 import org.java.plugin.registry.Extension;
+import scala.Option;
 
 /** @author aholland */
 @SuppressWarnings("nls")
@@ -120,25 +123,18 @@ public class MyContentServiceImpl implements MyContentService {
     }
 
     if (RenderNewTemplate.isNewUIEnabled()) {
-      URIBuilder builder = new URIBuilder();
-      builder.setPath("page/myresources").addParameter("type", "scrapbook");
-
-      String fullUrl =
+      Optional<String> stateId =
           Optional.ofNullable(myContribute)
               .map(section -> section.getModel(info))
               .flatMap(
                   model -> {
-                    Optional<String> url =
-                        Optional.ofNullable(model.getNewUIStateId())
-                            .map(id -> builder.addParameter("newUIStateId", id))
-                            .map(URIBuilder::toString);
-                    model.setNewUIStateId(null);
-                    return url;
-                  })
-              .orElse(builder.toString());
+                    Optional<String> sid = Optional.ofNullable(model.getNewUIStateId());
+                    sid.ifPresent(ignored -> model.setNewUIStateId(null));
 
-      // Apache URIBuilder always add a starting slash, so we need to drop it here.
-      info.forwardToUrl(fullUrl.substring(1));
+                    return sid;
+                  });
+
+      info.forwardToUrl(NewUiRoutes.myResources("scrapbook", Option.empty(), toScala(stateId)));
       return true;
     }
 
