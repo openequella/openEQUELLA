@@ -22,11 +22,16 @@ import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.search.base.ContextableSearchSection;
 import com.tle.web.sections.SectionInfo;
+import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.annotations.TreeLookup;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.layout.ContentLayout;
 import com.tle.web.sections.events.RenderContext;
+import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.Label;
+import com.tle.web.selection.SelectionSession;
+import com.tle.web.template.RenderNewSearchPage;
+import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.template.section.event.BlueBarEvent;
 import com.tle.web.template.section.event.BlueBarEventListener;
 
@@ -76,5 +81,14 @@ public class RootMyResourcesSection extends ContextableSearchSection<Contextable
   @Override
   protected String getPageName() {
     return URL;
+  }
+
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    SelectionSession selectionSession = selectionService.getCurrentSession(context);
+    if (selectionSession != null && RenderNewTemplate.isNewUIEnabled()) {
+      getModel(context).setNewUIContent(RenderNewSearchPage.renderNewMyResourcesPage(context));
+    }
+    return super.renderHtml(context);
   }
 }

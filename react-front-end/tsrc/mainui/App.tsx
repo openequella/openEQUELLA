@@ -31,6 +31,7 @@ import { getRouterBaseName } from "../AppConfig";
 import MessageInfo from "../components/MessageInfo";
 import { getOeqTheme } from "../modules/ThemeModule";
 import { getCurrentUserDetails } from "../modules/UserModule";
+import MyResourcesPage from "../myresources/MyResourcesPage";
 import { startHeartbeat } from "../util/heartbeat";
 import { simpleMatch } from "../util/match";
 import type { EntryPage } from "./index";
@@ -171,6 +172,11 @@ const App = ({ entryPage }: AppProps): JSX.Element => {
             </ThemeProvider>
           );
         },
+        myResourcesPage: () => (
+          <NewPage classPrefix="oeq-nsp">
+            <MyResourcesPage updateTemplate={nop} />
+          </NewPage>
+        ),
         searchPage: () => (
           <NewPage classPrefix="oeq-nsp">
             <SearchPage updateTemplate={nop} />
