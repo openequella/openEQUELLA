@@ -490,9 +490,8 @@ public class MyResourcesPage
       expandAttachmentsForScrapbookItem(pageName);
       driver.findElement(individualPageXpath(pageTitle)).click();
 
-      // Switch to new tab.
-      List<String> browserTabs = new ArrayList<>(getContext().getDriver().getWindowHandles());
-      getContext().getDriver().switchTo().window(browserTabs.get(1));
+      // Switch to the second tab where the index is 1.
+      switchTab(1);
 
     } else {
       results().getResultForTitle(pageName).clickLink(pageTitle);
