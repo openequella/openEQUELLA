@@ -94,7 +94,9 @@ public class MyResourcesWebPageTest extends AbstractCleanupTest {
     MyResourcesPage myResourcesPage = editor.cancel();
 
     // Verify the old page name hasn't changed.
-    myResourcesPage.expandAttachmentsForScrapbookItem(scrapbookItem);
+    if (testConfig.isNewUI()) {
+      myResourcesPage.expandAttachmentsForScrapbookItem(scrapbookItem);
+    }
     assertTrue(myResourcesPage.isIndividualPagePresent(scrapbookItem, pageName));
 
     // Now make an edit and save the changes.
@@ -111,7 +113,9 @@ public class MyResourcesWebPageTest extends AbstractCleanupTest {
     editor.save().exactQuery(scrapbookItem);
 
     // Verify the page name has changed.
-    myResourcesPage.expandAttachmentsForScrapbookItem(scrapbookItem);
+    if (testConfig.isNewUI()) {
+      myResourcesPage.expandAttachmentsForScrapbookItem(scrapbookItem);
+    }
     assertTrue(myResourcesPage.isIndividualPagePresent(scrapbookItem, pageTitle));
   }
 

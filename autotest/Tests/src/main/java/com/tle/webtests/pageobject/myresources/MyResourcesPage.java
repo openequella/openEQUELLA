@@ -527,7 +527,7 @@ public class MyResourcesPage
       return driver.findElements(individualPageXpath(pageTitle)).size() == 0;
     } else {
       ItemSearchResult searchResult = results().getResultForTitle(scrapbookName, 1);
-      return searchResult.isDetailLinkPresent("Web Pages", pageTitle);
+      return !searchResult.isDetailLinkPresent("Web Pages", pageTitle);
     }
   }
 }
