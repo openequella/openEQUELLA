@@ -67,7 +67,7 @@ public class MyResourcesUploadFilesPage extends AbstractPage<MyResourcesUploadFi
     String fileOnly = PathUtils.getFilenameFromFilepath(path);
 
     if (isNewUI()) {
-      myResourcesPage.getScrapbookEditIconButton(fileOnly).click();
+      myResourcesPage.editScrapbook(fileOnly);
     } else {
       myResourcesPage
           .exactQuery(fileOnly)

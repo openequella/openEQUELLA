@@ -1,6 +1,5 @@
 package com.tle.webtests.test.myresources;
 
-import static com.tle.webtests.pageobject.AbstractPage.quoteXPath;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
@@ -9,16 +8,10 @@ import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.generic.page.VerifyableAttachment;
 import com.tle.webtests.pageobject.myresources.MyResourcesAuthorWebPage;
 import com.tle.webtests.pageobject.myresources.MyResourcesPage;
-import com.tle.webtests.pageobject.searching.ItemSearchResult;
 import com.tle.webtests.test.AbstractCleanupTest;
 import com.tle.webtests.test.files.Attachments;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.annotations.Test;
 
 /**
@@ -41,9 +34,8 @@ public class MyResourcesWebPageTest extends AbstractCleanupTest {
     String pageContent = "This is a verifiable attachment";
     int presumedPageNo = 1;
 
-    MyResourcesPage myResourcesPage = authorWebPageAndVerify(scrapbookItem, pageTitle, pageContent);
-
-    openWebpage(myResourcesPage, scrapbookItem, pageTitle);
+    authorWebPageAndVerify(scrapbookItem, pageTitle, pageContent)
+        .openWebpage(scrapbookItem, pageTitle);
 
     assertTrue(new VerifyableAttachment(context).get().isVerified());
   }
@@ -64,17 +56,11 @@ public class MyResourcesWebPageTest extends AbstractCleanupTest {
     MyResourcesPage myResourcesPage = editor.save();
 
     if (testConfig.isNewUI()) {
-      myResourcesPage.getScrapbookByName(itemName).click();
-      // Wait until the Accordion is expanded.
-      myResourcesPage
-          .getWaiter()
-          .until(
-              ExpectedConditions.visibilityOfElementLocated(
-                  By.className("MuiAccordionDetails-root")));
+      myResourcesPage.expandAttachmentsForScrapbookItem(itemName);
     }
-
     for (int i = 0; i < pageTitles.length; ++i) {
-      assertEquals(i != deleteIndex, isPageInResult(myResourcesPage, itemName, pageTitles[i]));
+      assertEquals(
+          i == deleteIndex, myResourcesPage.isIndividualPageDeleted(itemName, pageTitles[i]));
     }
   }
 
@@ -108,7 +94,8 @@ public class MyResourcesWebPageTest extends AbstractCleanupTest {
     MyResourcesPage myResourcesPage = editor.cancel();
 
     // Verify the old page name hasn't changed.
-    assertTrue(isIndividualPagePresent(myResourcesPage, scrapbookItem, pageName));
+    myResourcesPage.expandAttachmentsForScrapbookItem(scrapbookItem);
+    assertTrue(myResourcesPage.isIndividualPagePresent(scrapbookItem, pageName));
 
     // Now make an edit and save the changes.
     myResourcesPage.editWebPage(scrapbookItem);
@@ -124,7 +111,8 @@ public class MyResourcesWebPageTest extends AbstractCleanupTest {
     editor.save().exactQuery(scrapbookItem);
 
     // Verify the page name has changed.
-    assertTrue(isIndividualPagePresent(myResourcesPage, scrapbookItem, pageTitle));
+    myResourcesPage.expandAttachmentsForScrapbookItem(scrapbookItem);
+    assertTrue(myResourcesPage.isIndividualPagePresent(scrapbookItem, pageTitle));
   }
 
   @Test
@@ -282,47 +270,6 @@ public class MyResourcesWebPageTest extends AbstractCleanupTest {
     assertTrue(myResourcesPage.isScrapbookCreated(webPageName));
   }
 
-  private boolean isIndividualPagePresent(
-      MyResourcesPage myResourcesPage, String scrapbookName, String pageTitle) {
-    if (testConfig.isNewUI()) {
-      // Click to expand the attachment list.
-      myResourcesPage.getScrapbookByName(scrapbookName).click();
-
-      return myResourcesPage
-              .getWaiter()
-              .until(
-                  ExpectedConditions.visibilityOfAllElementsLocatedBy(
-                      By.xpath(".//div/span[text()=" + quoteXPath(pageTitle) + "]")))
-              .size()
-          > 0;
-    } else {
-      ItemSearchResult searchResult = myResourcesPage.results().getResultForTitle(scrapbookName, 1);
-      return searchResult.isDetailLinkPresent("Web Pages", pageTitle);
-    }
-  }
-
-  private void openWebpage(MyResourcesPage myResourcesPage, String pageName, String pageTitle) {
-    if (testConfig.isNewUI()) {
-      // Click to expand the attachment list.
-      myResourcesPage.getScrapbookByName(pageName).click();
-
-      WebElement link =
-          myResourcesPage
-              .getWaiter()
-              .until(
-                  ExpectedConditions.visibilityOfElementLocated(
-                      By.xpath(".//div/span[text()=" + quoteXPath(pageTitle) + "]")));
-      link.click();
-
-      // Switch to new tab.
-      List<String> browserTabs = new ArrayList<>(getContext().getDriver().getWindowHandles());
-      getContext().getDriver().switchTo().window(browserTabs.get(1));
-
-    } else {
-      myResourcesPage.results().getResultForTitle(pageName).clickLink(pageTitle);
-    }
-  }
-
   // convenience method to create and open editor to a multi-page item.
   public MyResourcesAuthorWebPage openEditorToMultiWebPageItem(
       String itemName, String[] pageTitles) {
@@ -355,19 +302,5 @@ public class MyResourcesWebPageTest extends AbstractCleanupTest {
     assertNewPageCreated(myResourcesPage, scrapbookItem);
 
     return myResourcesPage;
-  }
-
-  private boolean isPageInResult(
-      MyResourcesPage myResourcesPage, String pageName, String pageTitle) {
-    if (testConfig.isNewUI()) {
-      WebElement scrapbook = myResourcesPage.getScrapbookByName(pageName);
-      return scrapbook
-              .findElements(By.xpath(".//div/span[text()=" + quoteXPath(pageTitle) + "]"))
-              .size()
-          > 0;
-    } else {
-      ItemSearchResult searchResult = myResourcesPage.results().getResultForTitle(pageName);
-      return searchResult.isDetailLinkPresent("Web Pages", pageTitle);
-    }
   }
 }

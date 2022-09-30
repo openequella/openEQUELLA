@@ -88,6 +88,23 @@ public class MyResourcesPage
         "//li/div[./span/a[normalize-space(string())=" + quoteXPath(normaliseSpace(name)) + "]]");
   }
 
+  // Applicable to New UI only to build a XPATH for the provided webpage.
+  private By individualPageXpath(String pageTitle) {
+    return By.xpath(".//div/span[text()=" + quoteXPath(pageTitle) + "]");
+  }
+
+  /** Applicable to New UI only to find a SearchResult by Scrapbook name. */
+  private WebElement getScrapbookByName(String scrapbookName) {
+    return waiter.until(
+        ExpectedConditions.visibilityOfElementLocated(scrapbookXpath(scrapbookName)));
+  }
+
+  /** Applicable to New UI only to find All SearchResult that match the provided Scrapbook name. */
+  private List<WebElement> getAllScrapbooksByName(String scrapbookName) {
+    return waiter.until(
+        ExpectedConditions.visibilityOfAllElementsLocatedBy(scrapbookXpath(scrapbookName)));
+  }
+
   @Override
   public ItemListPage search(PrefixedName query) {
     openFilters();
@@ -389,7 +406,7 @@ public class MyResourcesPage
 
   public MyResourcesAuthorWebPage editWebPage(String scrapbookItem) {
     if (isNewUI()) {
-      getScrapbookEditIconButton(scrapbookItem).click();
+      editScrapbook(scrapbookItem);
       return new MyResourcesAuthorWebPage(this).get();
     } else {
       return edit(results().getResultForTitle(scrapbookItem), new MyResourcesAuthorWebPage(this));
@@ -398,23 +415,19 @@ public class MyResourcesPage
 
   public MyResourcesUploadFilesPage editFile(String scrapbookItem) {
     if (isNewUI()) {
-      getScrapbookEditIconButton(scrapbookItem).click();
+      editScrapbook(scrapbookItem);
       return new MyResourcesUploadFilesPage(this).get();
     } else {
       return edit(results().getResultForTitle(scrapbookItem), new MyResourcesUploadFilesPage(this));
     }
   }
 
-  /** Applicable to New UI only to find a SearchResult by Scrapbook name. */
-  public WebElement getScrapbookByName(String scrapbookName) {
-    return waiter.until(
-        ExpectedConditions.visibilityOfElementLocated(scrapbookXpath(scrapbookName)));
-  }
-
-  /** Applicable to New UI only to find All SearchResult that match the provided Scrapbook name. */
-  public List<WebElement> getAllScrapbooksByName(String scrapbookName) {
-    return waiter.until(
-        ExpectedConditions.visibilityOfAllElementsLocatedBy(scrapbookXpath(scrapbookName)));
+  /** Applicable to New UI only to expand the attachment list for a Scrapbook. */
+  public void expandAttachmentsForScrapbookItem(String scrapbookName) {
+    getScrapbookByName(scrapbookName).click();
+    // Wait until the Accordion is expanded.
+    waiter.until(
+        ExpectedConditions.visibilityOfElementLocated(By.className("MuiAccordionDetails-root")));
   }
 
   /** Find tags of a Scrapbook. Both New and Old UI are supported. */
@@ -427,19 +440,14 @@ public class MyResourcesPage
   }
 
   /** Applicable to New UI only to find the action button for editing the provided Scrapbook. */
-  public WebElement getScrapbookEditIconButton(String scrapbookName) {
-    return getScrapbookActionButton(scrapbookName, "Edit");
-  }
-
-  /** Applicable to New UI only to find the action button for deleting the provided Scrapbook. */
-  public WebElement getScrapbookBinIconButton(String scrapbookName) {
-    return getScrapbookActionButton(scrapbookName, "Delete");
+  public void editScrapbook(String scrapbookName) {
+    getScrapbookActionButton(scrapbookName, "Edit").click();
   }
 
   /** Delete the provided Scrapbook and refresh the page. Both New and Old UI are supported. */
   public MyResourcesPage deleteScrapbook(String scrapbookName) {
     if (isNewUI()) {
-      getScrapbookBinIconButton(scrapbookName).click();
+      getScrapbookActionButton(scrapbookName, "Delete").click();
 
       WebElement confirmButton =
           getContext().getDriver().findElement(By.id("confirm-dialog-confirm-button"));
@@ -471,5 +479,56 @@ public class MyResourcesPage
     return isNewUI()
         ? driver.findElements(scrapbookXpath(scrapbookName)).size() == 0
         : !results().doesResultExist(scrapbookName);
+  }
+
+  /**
+   * Open a webpage. Both New and Old UI are supported. But in New UI, since the page is opened in a
+   * new tab, this method will also control the browser to switch to the new tab.
+   */
+  public void openWebpage(String pageName, String pageTitle) {
+    if (isNewUI()) {
+      expandAttachmentsForScrapbookItem(pageName);
+      driver.findElement(individualPageXpath(pageTitle)).click();
+
+      // Switch to new tab.
+      List<String> browserTabs = new ArrayList<>(getContext().getDriver().getWindowHandles());
+      getContext().getDriver().switchTo().window(browserTabs.get(1));
+
+    } else {
+      results().getResultForTitle(pageName).clickLink(pageTitle);
+    }
+  }
+
+  /**
+   * Check if an individual page of a webpage is present. Both New and Old UI are supported.
+   * Recommend to call {@link #expandAttachmentsForScrapbookItem} before calling this method in New
+   * UI.
+   */
+  public boolean isIndividualPagePresent(String scrapbookName, String pageTitle) {
+    if (isNewUI()) {
+      return waiter
+              .until(
+                  ExpectedConditions.visibilityOfAllElementsLocatedBy(
+                      By.xpath(".//div/span[text()=" + quoteXPath(pageTitle) + "]")))
+              .size()
+          > 0;
+    } else {
+      ItemSearchResult searchResult = results().getResultForTitle(scrapbookName, 1);
+      return searchResult.isDetailLinkPresent("Web Pages", pageTitle);
+    }
+  }
+
+  /**
+   * Check if an individual page of a webpage is no longer in the page. Both New and Old UI are
+   * supported. Recommend to call {@link #expandAttachmentsForScrapbookItem} before calling this
+   * method in New UI.
+   */
+  public boolean isIndividualPageDeleted(String scrapbookName, String pageTitle) {
+    if (isNewUI()) {
+      return driver.findElements(individualPageXpath(pageTitle)).size() == 0;
+    } else {
+      ItemSearchResult searchResult = results().getResultForTitle(scrapbookName, 1);
+      return searchResult.isDetailLinkPresent("Web Pages", pageTitle);
+    }
   }
 }
