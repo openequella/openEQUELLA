@@ -224,7 +224,7 @@ public class FileAttachmentControlTest extends AbstractCleanupAutoTest {
         attachments.viewAttachment("page(4).html", new VerifyableAttachment(context)).isVerified());
 
     new MyResourcesPage(context, "scrapbook").load().uploadFile(theFile, scrapbookItem, "");
-    if (getTestConfig().isNewUI()) {
+    if (testConfig.isNewUI()) {
       NewSearchPage searchPage = new NewSearchPage(context).load();
       searchPage.changeQuery(itemName);
       searchPage.waitForSearchCompleted(1);
