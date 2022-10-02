@@ -73,7 +73,7 @@ public class MyContentServiceImpl implements MyContentService {
 
     contributeSection.contribute(forward, handlerId);
 
-    if (RenderNewTemplate.isNewSearchPageEnabled() && newUIStateId != null) {
+    if (RenderNewTemplate.isNewUIEnabled() && newUIStateId != null) {
       contributeSection.getModel(forward).setNewUIStateId(newUIStateId);
     }
 
@@ -122,7 +122,7 @@ public class MyContentServiceImpl implements MyContentService {
       myContribute.contributionFinished(info);
     }
 
-    if (RenderNewTemplate.isNewSearchPageEnabled()) {
+    if (RenderNewTemplate.isNewUIEnabled()) {
       Optional<String> stateId =
           Optional.ofNullable(myContribute)
               .map(section -> section.getModel(info))

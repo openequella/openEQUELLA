@@ -14,7 +14,15 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import org.openqa.selenium.*;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.NotFoundException;
+import org.openqa.selenium.SearchContext;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.ByChained;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -535,5 +543,10 @@ public abstract class AbstractPage<T extends PageObject>
   protected Object executeSubmit(String args) {
     String submitFunc = isNewUI() ? "EQ.event" : "_subev";
     return ((JavascriptExecutor) driver).executeScript(submitFunc + args);
+  }
+
+  protected void switchTab(int tabIndex) {
+    String tab = new ArrayList<>(driver.getWindowHandles()).get(tabIndex);
+    driver.switchTo().window(tab);
   }
 }
