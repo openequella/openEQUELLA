@@ -20,12 +20,17 @@ import { History } from "history";
 import { MD5 } from "object-hash";
 import { v4 } from "uuid";
 import { API_BASE_URL } from "../AppConfig";
-import type { SearchPageOptions } from "../search/SearchPageHelper";
+import type {
+  SearchPageNavigationConfig,
+  SearchPageOptions,
+} from "../search/SearchPageHelper";
+import { navigateTo } from "../search/SearchPageHelper";
 import { saveDataToStorage } from "./BrowserStorageModule";
 import {
   getLegacyScrapbookCreatingPageRoute,
   getLegacyScrapbookEditingPageRoute,
 } from "./LegacyContentModule";
+import { buildSelectionSessionScrapbookLink } from "./LegacySelectionSessionModule";
 
 /**
  * Delete one Scrapbook Item by UUID.
@@ -54,6 +59,15 @@ export const saveSearchPageOptions = (searchPageOptions: SearchPageOptions) => {
   return uuid;
 };
 
+const openScrapbookLegacyPage = (path: string, history: History) => {
+  const navConfig: SearchPageNavigationConfig = {
+    path,
+    selectionSessionPathBuilder: () => buildSelectionSessionScrapbookLink(path),
+  };
+
+  navigateTo(navConfig, history);
+};
+
 /**
  * Open Legacy Scrapbook creating pages by pushing the route of the page to the browser history.
  *
@@ -72,7 +86,9 @@ export const openLegacyFileCreatingPage = async (
   searchPageOptions: SearchPageOptions
 ): Promise<void> => {
   const uuid = saveSearchPageOptions(searchPageOptions);
-  history.push(await getLegacyScrapbookCreatingPageRoute(scrapbookType, uuid));
+  const path = await getLegacyScrapbookCreatingPageRoute(scrapbookType, uuid);
+
+  openScrapbookLegacyPage(path, history);
 };
 
 /**
@@ -88,5 +104,7 @@ export const openLegacyFileEditingPage = async (
   searchPageOptions: SearchPageOptions
 ): Promise<void> => {
   const uuid = saveSearchPageOptions(searchPageOptions);
-  history.push(await getLegacyScrapbookEditingPageRoute(key, uuid));
+  const path = await getLegacyScrapbookEditingPageRoute(key, uuid);
+
+  openScrapbookLegacyPage(path, history);
 };
