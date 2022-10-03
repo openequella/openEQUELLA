@@ -430,6 +430,14 @@ public class MyResourcesPage
         ExpectedConditions.visibilityOfElementLocated(By.className("MuiAccordionDetails-root")));
   }
 
+  /** Applicable to New UI only to check whether a Scrapbook has a certain number of attachments. */
+  public void checkAttachmentNumber(String scrapbookName, int number) {
+    expandAttachmentsForScrapbookItem(scrapbookName);
+    waiter.until(
+        ExpectedConditions.numberOfElementsToBe(
+            By.xpath("//div[contains(@class, 'MuiAccordionDetails-root')]/ul/div"), number));
+  }
+
   /** Find tags of a Scrapbook. Both New and Old UI are supported. */
   public String getScrapbookTags(String scrapbookName) {
     if (isNewUI()) {
