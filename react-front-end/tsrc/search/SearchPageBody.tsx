@@ -80,7 +80,7 @@ import StatusSelector, {
 } from "./components/StatusSelector";
 import { SearchContext } from "./Search";
 import {
-  defaultNewSearchNavigation,
+  buildSearchPageNavigationConfig,
   defaultPagedSearchResult,
   defaultSearchPageHeaderConfig,
   defaultSearchPageOptions,
@@ -88,7 +88,9 @@ import {
   generateExportErrorMessage,
   generateQueryStringFromSearchPageOptions,
   getPartialSearchOptions,
+  navigateTo,
   SearchPageHeaderConfig,
+  SearchPageNavigationConfig,
   SearchPageOptions,
   SearchPageRefinePanelConfig,
   SearchPageSearchBarConfig,
@@ -235,24 +237,8 @@ export const SearchPageBody = ({
     [enableClassification, search, customSearchCallback]
   );
 
-  /**
-   * Depending on the whether in the context of a Selection Session, this function will
-   * use the appropriate method to navigate to the provided `normalPath`.
-   *
-   * @param path The path which the page will be navigated to in normal New UI mode.
-   * @param selectionSessionPathBuilder Function to build the Selection Session specific path.
-   */
-  const navigateTo = ({
-    path,
-    selectionSessionPathBuilder,
-  }: {
-    path: string;
-    selectionSessionPathBuilder: () => string;
-  }) => {
-    isSelectionSessionOpen()
-      ? window.open(selectionSessionPathBuilder(), "_self")
-      : history.push(path);
-  };
+  const navigationWithHistory = (config: SearchPageNavigationConfig) =>
+    navigateTo(config, history);
 
   const handleAdvancedSearchChanged = (
     advancedSearch: OEQ.Common.BaseEntitySummary | null
@@ -267,9 +253,9 @@ export const SearchPageBody = ({
             searchPageOptions.externalMimeTypes
           ),
       })),
-      // Go to the normal mode if none is selected.
-      O.getOrElse(() => defaultNewSearchNavigation(searchPageOptions)),
-      navigateTo
+      // Go to the normal Search page if none is selected.
+      O.getOrElse(() => buildSearchPageNavigationConfig(searchPageOptions)),
+      navigationWithHistory
     );
 
   const handleClearSearchOptions = () => {
@@ -286,7 +272,11 @@ export const SearchPageBody = ({
     });
     setFilterExpansion(false);
 
-    pipe(newSearchConfig?.navigationTo, O.fromNullable, O.map(navigateTo));
+    pipe(
+      newSearchConfig?.navigationTo,
+      O.fromNullable,
+      O.map(navigationWithHistory)
+    );
   };
 
   const handleCollapsibleFilterClick = () => {

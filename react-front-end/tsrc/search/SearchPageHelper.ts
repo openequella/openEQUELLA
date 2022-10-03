@@ -121,6 +121,21 @@ export const defaultSearchPageOptions: SearchPageOptions = {
 };
 
 /**
+ * Type definition for the configuration of navigating to another path from new Search UI.
+ */
+export interface SearchPageNavigationConfig {
+  /**
+   * A path which is typically recognised by the React Router as a route and points to a page
+   * the user will be navigated to.
+   */
+  path: string;
+  /**
+   * Function to build Selection Session specific path for the navigation.
+   */
+  selectionSessionPathBuilder: () => string;
+}
+
+/**
  * Type definition for the configuration of SearchPageHeader.
  */
 export interface SearchPageHeaderConfig {
@@ -146,34 +161,15 @@ export interface SearchPageHeaderConfig {
    */
   newSearchConfig?: {
     /**
-     * If navigation to another path is required in a new search, use this configuration to provide one path
-     * used in the normal page and one function that builds the Selection Session specific path.
+     * Configuration for navigation to another path if required in a new search.
      */
-    navigationTo?: {
-      /**
-       * A path which is recognised by the React Router which points to a page
-       * the user will be navigated to execute the new search.
-       */
-      path: string;
-      /**
-       * Function to build a path used to execute a new search in Selection Session only.
-       */
-      selectionSessionPathBuilder: () => string;
-    };
+    navigationTo?: SearchPageNavigationConfig;
     /**
      * Search criteria that should be included in a new search.
      */
     criteria?: SearchPageOptions;
   };
 }
-
-export const defaultNewSearchNavigation = (
-  searchPageOptions: SearchPageOptions
-) => ({
-  path: NEW_SEARCH_PATH,
-  selectionSessionPathBuilder: () =>
-    buildSelectionSessionSearchPageLink(searchPageOptions.externalMimeTypes),
-});
 
 export const defaultSearchPageHeaderConfig: SearchPageHeaderConfig = {
   enableCSVExportButton: true,
@@ -760,3 +756,32 @@ export const generateExportErrorMessage = (
     })
   );
 };
+
+/**
+ * Navigate to another path from New Search UI or pages built based on New Search UI. Appropriate method is used
+ * to do the navigation, depending on whether the page is in Selection Session or not.
+ *
+ * @param path The path used when the new Search UI is in normal mode. Typically, this is path recognised by a React Router as a route.
+ * @param selectionSessionPathBuilder Function only used in Selection Session to build a special path for the navigation.
+ * @param history History of browser where the path used in normal mode will be pushed in.
+ */
+export const navigateTo = (
+  { path, selectionSessionPathBuilder }: SearchPageNavigationConfig,
+  history: History
+) => {
+  isSelectionSessionOpen()
+    ? window.open(selectionSessionPathBuilder(), "_self")
+    : history.push(path);
+};
+
+/**
+ * Use the provided SearchPageOptions to build a SearchPageNavigationConfig for new Search UI.
+ * @param searchPageOptions
+ */
+export const buildSearchPageNavigationConfig = (
+  searchPageOptions: SearchPageOptions
+): SearchPageNavigationConfig => ({
+  path: NEW_SEARCH_PATH,
+  selectionSessionPathBuilder: () =>
+    buildSelectionSessionSearchPageLink(searchPageOptions.externalMimeTypes),
+});

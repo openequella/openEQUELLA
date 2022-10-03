@@ -49,7 +49,7 @@ import { AdvancedSearchPanel } from "./components/AdvancedSearchPanel";
 import { Search, SearchContext, SearchContextProps } from "./Search";
 import { SearchPageBody } from "./SearchPageBody";
 import {
-  defaultNewSearchNavigation,
+  buildSearchPageNavigationConfig,
   defaultSearchPageHeaderConfig,
   defaultSearchPageRefinePanelConfig,
   SearchPageHeaderConfig,
@@ -181,7 +181,7 @@ export const AdvancedSearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   ): SearchPageHeaderConfig => ({
     ...defaultSearchPageHeaderConfig,
     newSearchConfig: {
-      navigationTo: defaultNewSearchNavigation(options),
+      navigationTo: buildSearchPageNavigationConfig(options),
     },
   });
 
