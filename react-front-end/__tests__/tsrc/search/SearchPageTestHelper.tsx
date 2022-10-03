@@ -332,6 +332,14 @@ export const queryCollectionSelector = (container: HTMLElement) =>
   queryRefineSearchComponent(container, "CollectionSelector");
 
 /**
+ * Helper function to assist in finding the Remote Search selector
+ *
+ * @param container a root container within which `Remote Search selector` exists
+ */
+export const queryRemoteSearchSelector = (container: HTMLElement) =>
+  queryRefineSearchComponent(container, "RemoteSearchSelector");
+
+/**
  * Helper function to assist in finding the Status selector
  *
  * @param container a root container within which <StatusSelector/> exists
