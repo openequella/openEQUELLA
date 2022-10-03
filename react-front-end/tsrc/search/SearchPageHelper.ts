@@ -49,7 +49,7 @@ import {
   RuntypesControlTarget,
   RuntypesControlValue,
 } from "../components/wizard/WizardHelper";
-import { routes } from "../mainui/routes";
+import { NEW_SEARCH_PATH, routes } from "../mainui/routes";
 import {
   clearDataFromLocalStorage,
   readDataFromStorage,
@@ -61,6 +61,7 @@ import {
 } from "../modules/CollectionsModule";
 import {
   buildSelectionSessionItemSummaryLink,
+  buildSelectionSessionSearchPageLink,
   isSelectionSessionOpen,
 } from "../modules/LegacySelectionSessionModule";
 import { getMimeTypeFiltersById } from "../modules/SearchFilterSettingsModule";
@@ -145,16 +146,34 @@ export interface SearchPageHeaderConfig {
    */
   newSearchConfig?: {
     /**
-     * A path which is recognised by the React Router which points to a page
-     * the user will be navigated to execute the new search.
+     * If navigation to another path is required in a new search, use this configuration to provide one path
+     * used in the normal page and one function that builds the Selection Session specific path.
      */
-    path: string;
+    navigationTo?: {
+      /**
+       * A path which is recognised by the React Router which points to a page
+       * the user will be navigated to execute the new search.
+       */
+      path: string;
+      /**
+       * Function to build a path used to execute a new search in Selection Session only.
+       */
+      selectionSessionPathBuilder: () => string;
+    };
     /**
      * Search criteria that should be included in a new search.
      */
     criteria?: SearchPageOptions;
   };
 }
+
+export const defaultNewSearchNavigation = (
+  searchPageOptions: SearchPageOptions
+) => ({
+  path: NEW_SEARCH_PATH,
+  selectionSessionPathBuilder: () =>
+    buildSelectionSessionSearchPageLink(searchPageOptions.externalMimeTypes),
+});
 
 export const defaultSearchPageHeaderConfig: SearchPageHeaderConfig = {
   enableCSVExportButton: true,
