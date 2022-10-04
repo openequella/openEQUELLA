@@ -18,14 +18,18 @@
 
 package com.tle.web.myresources;
 
+import com.tle.mycontent.web.model.MyContentContributeModel;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
+import com.tle.web.myresources.RootMyResourcesSection.RootMyResourcesModel;
 import com.tle.web.search.base.ContextableSearchSection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
+import com.tle.web.sections.annotations.Bookmarked;
 import com.tle.web.sections.annotations.TreeLookup;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.layout.ContentLayout;
+import com.tle.web.sections.events.BookmarkEvent;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.Label;
@@ -34,11 +38,13 @@ import com.tle.web.template.RenderNewSearchPage;
 import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.template.section.event.BlueBarEvent;
 import com.tle.web.template.section.event.BlueBarEventListener;
+import java.util.Map;
+import org.apache.http.client.utils.URIBuilder;
 
-public class RootMyResourcesSection extends ContextableSearchSection<ContextableSearchSection.Model>
+public class RootMyResourcesSection extends ContextableSearchSection<RootMyResourcesModel>
     implements BlueBarEventListener {
-  private static final String CONTEXT_KEY = "myResourcesContext"; // $NON-NLS-1$
-  private static final String URL = "/access/myresources.do"; // $NON-NLS-1$
+  private static final String CONTEXT_KEY = "myResourcesContext";
+  public static final String URL = "/access/myresources.do";
 
   @ViewFactory private FreemarkerFactory view;
 
@@ -55,6 +61,21 @@ public class RootMyResourcesSection extends ContextableSearchSection<Contextable
   @Override
   public Label getTitle(SectionInfo info) {
     return title;
+  }
+
+  /**
+   * Build a URL to access a specific view of My resources in Old UI.
+   *
+   * @param resourceType Resource type used to indicate which view of My resources to be displayed.
+   */
+  public static String buildForwardUrl(String resourceType, Map<String, String> queryParams) {
+    URIBuilder builder = new URIBuilder();
+    builder.setPath(URL);
+    builder.setParameter("type", resourceType);
+
+    queryParams.forEach(builder::setParameter);
+
+    return builder.toString();
   }
 
   public static SectionInfo createForward(SectionInfo from) {
@@ -90,5 +111,35 @@ public class RootMyResourcesSection extends ContextableSearchSection<Contextable
       getModel(context).setNewUIContent(RenderNewSearchPage.renderNewMyResourcesPage(context));
     }
     return super.renderHtml(context);
+  }
+
+  @Override
+  public Class<RootMyResourcesModel> getModelClass() {
+    return RootMyResourcesModel.class;
+  }
+
+  @Override
+  public Object instantiateModel(SectionInfo info) {
+    return new RootMyResourcesModel();
+  }
+
+  // why this ?
+  public static class RootMyResourcesModel extends ContextableSearchSection.Model {
+
+    /**
+     * In Selection Session where My resources New UI is displayed in Old UI, use this field to save
+     * the New UI state ID. For the one used in full New UI mode, check {@link
+     * MyContentContributeModel#newUIStateId}
+     */
+    @Bookmarked(contexts = BookmarkEvent.CONTEXT_SESSION, parameter = "newUIStateId")
+    private String newUIStateId;
+
+    public String getNewUIStateId() {
+      return newUIStateId;
+    }
+
+    public void setNewUIStateId(String newUIStateId) {
+      this.newUIStateId = newUIStateId;
+    }
   }
 }
