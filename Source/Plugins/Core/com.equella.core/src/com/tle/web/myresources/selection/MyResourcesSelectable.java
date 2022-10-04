@@ -19,6 +19,7 @@
 package com.tle.web.myresources.selection;
 
 import com.tle.core.guice.Bind;
+import com.tle.web.myresources.RootMyResourcesSection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.annotation.PluginResourceHandler;
@@ -26,6 +27,8 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.selection.AbstractSelectionNavAction;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.section.RootSelectionSection.Layout;
+import com.tle.web.template.RenderNewTemplate;
+import java.util.Collections;
 import javax.inject.Singleton;
 
 @Bind
@@ -50,7 +53,13 @@ public class MyResourcesSelectable extends AbstractSelectionNavAction {
   }
 
   protected SectionInfo getMyResourcesTree(SectionInfo info) {
-    return info.createForward("/access/myresources.do");
+    // Unlike Old UI which persists previous UI, New UI shows the view of `published` whenever the
+    // nav action for My resources page is clicked.
+    if (RenderNewTemplate.isNewUIEnabled()) {
+      return info.createForwardForUri(
+          RootMyResourcesSection.buildForwardUrl("defaultValue", Collections.emptyMap()));
+    }
+    return info.createForward(RootMyResourcesSection.URL);
   }
 
   @Override
