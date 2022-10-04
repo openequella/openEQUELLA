@@ -195,7 +195,10 @@ describe("<SearchPageBody />", () => {
       headerConfig: {
         ...defaultSearchPageHeaderConfig,
         newSearchConfig: {
-          path,
+          navigationTo: {
+            path,
+            selectionSessionPathBuilder: () => "",
+          },
           criteria,
         },
       },
