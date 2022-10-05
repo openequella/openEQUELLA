@@ -56,7 +56,9 @@ public class MyResourcesWebPageTest extends AbstractCleanupTest {
     MyResourcesPage myResourcesPage = editor.save();
 
     if (testConfig.isNewUI()) {
-      myResourcesPage.expandAttachmentsForScrapbookItem(itemName);
+      // This Scrapbook had 5 pages. Because one was deleted there should be 4 pages in the
+      // attachment list now.
+      myResourcesPage.checkAttachmentNumber(itemName, 4);
     }
     for (int i = 0; i < pageTitles.length; ++i) {
       assertEquals(

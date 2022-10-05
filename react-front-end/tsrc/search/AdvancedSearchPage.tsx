@@ -218,6 +218,7 @@ export const AdvancedSearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
               refinePanelConfig={{
                 ...defaultSearchPageRefinePanelConfig,
                 enableCollectionSelector: false,
+                enableRemoteSearchSelector: false,
               }}
               enableClassification={false}
               customSearchCallback={() => setOpenAdvSearchPanel(false)}
