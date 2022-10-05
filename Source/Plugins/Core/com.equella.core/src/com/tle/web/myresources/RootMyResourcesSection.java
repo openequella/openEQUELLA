@@ -123,7 +123,9 @@ public class RootMyResourcesSection extends ContextableSearchSection<RootMyResou
     return new RootMyResourcesModel();
   }
 
-  // why this ?
+  // The reason for adding this new model class is we want to add 'newUIStateId' to
+  // '/access/myresources.do' as a query string to
+  // help My resources new UI return to the correct state.
   public static class RootMyResourcesModel extends ContextableSearchSection.Model {
 
     /**
