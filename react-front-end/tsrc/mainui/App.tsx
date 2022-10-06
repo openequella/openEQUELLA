@@ -173,7 +173,7 @@ const App = ({ entryPage }: AppProps): JSX.Element => {
           );
         },
         myResourcesPage: () => (
-          <NewPage classPrefix="oeq-nsp">
+          <NewPage classPrefix="oeq-nmr">
             <MyResourcesPage updateTemplate={nop} />
           </NewPage>
         ),
