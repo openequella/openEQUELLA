@@ -53,8 +53,9 @@ public class MyResourcesSelectable extends AbstractSelectionNavAction {
   }
 
   protected SectionInfo getMyResourcesTree(SectionInfo info) {
-    // Unlike Old UI which persists previous UI, New UI shows the view of `published` whenever the
-    // nav action for My resources page is clicked.
+    // The Old UI persists the previous My Resources tab you're on, however on each new visit to
+    // My Resources in the New UI a standard default value is used. To allow the New UI code to look
+    // after that, we send it to `defaultValue`.
     if (RenderNewTemplate.isNewUIEnabled()) {
       return info.createForwardForUri(
           RootMyResourcesSection.buildForwardUrl("defaultValue", Collections.emptyMap()));
