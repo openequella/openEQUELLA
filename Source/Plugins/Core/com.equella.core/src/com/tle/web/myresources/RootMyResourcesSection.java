@@ -39,7 +39,9 @@ import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.template.section.event.BlueBarEvent;
 import com.tle.web.template.section.event.BlueBarEventListener;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.message.BasicNameValuePair;
 
 public class RootMyResourcesSection extends ContextableSearchSection<RootMyResourcesModel>
     implements BlueBarEventListener {
@@ -69,13 +71,14 @@ public class RootMyResourcesSection extends ContextableSearchSection<RootMyResou
    * @param resourceType Resource type used to indicate which view of My resources to be displayed.
    */
   public static String buildForwardUrl(String resourceType, Map<String, String> queryParams) {
-    URIBuilder builder = new URIBuilder();
-    builder.setPath(URL);
-    builder.setParameter("type", resourceType);
-
-    queryParams.forEach(builder::setParameter);
-
-    return builder.toString();
+    return new URIBuilder()
+        .setPath(URL)
+        .setParameters(
+            queryParams.entrySet().stream()
+                .map(param -> new BasicNameValuePair(param.getKey(), param.getValue()))
+                .collect(Collectors.toList()))
+        .addParameter("type", resourceType)
+        .toString();
   }
 
   public static SectionInfo createForward(SectionInfo from) {
