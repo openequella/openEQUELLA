@@ -71,7 +71,8 @@ export const LegacyMyResourcesRuntypes = Union(
   ScrapbookLiteral,
   ModQueueLiteral,
   Literal("archived"),
-  Literal("all")
+  Literal("all"),
+  Literal("defaultValue")
 );
 
 type LegacyMyResourcesTypes = Static<typeof LegacyMyResourcesRuntypes>;
@@ -172,7 +173,8 @@ const getMyResourcesTypeFromLegacyQueryParam = (
         (scrapbook) => "Scrapbook",
         (modqueue) => "Moderation queue",
         (archived) => "Archive",
-        (all) => "All resources"
+        (all) => "All resources",
+        (defaultValue) => "Published"
       )
     )
   );

@@ -244,7 +244,6 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const searchPageHeaderConfig: SearchPageHeaderConfig = {
     ...defaultSearchPageHeaderConfig,
     newSearchConfig: {
-      path: NEW_MY_RESOURCES_PATH,
       criteria: customSearchCriteria(resourceType),
     },
     enableShareSearchButton: false,

@@ -38,8 +38,10 @@ import com.tle.mycontent.MyContentConstants;
 import com.tle.mycontent.web.section.ContributeMyContentAction;
 import com.tle.mycontent.web.section.MyContentContributeSection;
 import com.tle.mycontent.workflow.operations.OperationFactory;
+import com.tle.web.myresources.RootMyResourcesSection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.result.util.KeyLabel;
+import com.tle.web.selection.SelectionService;
 import com.tle.web.template.NewUiRoutes;
 import com.tle.web.template.RenderNewTemplate;
 import java.util.Collections;
@@ -62,6 +64,7 @@ public class MyContentServiceImpl implements MyContentService {
   @Inject private Provider<ContributeMyContentAction> contributeProvider;
   @Inject private OperationFactory editOpFactory;
   @Inject private ItemOperationFactory workflowFactory;
+  @Inject private Provider<SelectionService> selectionService;
 
   // Prepare a SectionInfo for MyContentContributeSection and forward to it.
   // If this method is invoked from New UI and ID of a New UI SearchOptions is provided, save the
@@ -122,24 +125,35 @@ public class MyContentServiceImpl implements MyContentService {
       myContribute.contributionFinished(info);
     }
 
-    if (RenderNewTemplate.isNewUIEnabled()) {
-      Optional<String> stateId =
-          Optional.ofNullable(myContribute)
-              .map(section -> section.getModel(info))
-              .flatMap(
-                  model -> {
-                    Optional<String> sid = Optional.ofNullable(model.getNewUIStateId());
-                    sid.ifPresent(ignored -> model.setNewUIStateId(null));
+    Optional<String> newUIStateId =
+        Optional.ofNullable(myContribute)
+            .map(section -> section.getModel(info))
+            .flatMap(
+                model -> {
+                  Optional<String> sid = Optional.ofNullable(model.getNewUIStateId());
+                  sid.ifPresent(ignored -> model.setNewUIStateId(null));
 
-                    return sid;
-                  });
+                  return sid;
+                });
 
-      info.forwardToUrl(NewUiRoutes.myResources("scrapbook", Option.empty(), toScala(stateId)));
+    // Only return to '/page/myresources' when New UI is enabled and the page is NOT in Selection
+    // Session.
+    if (RenderNewTemplate.isNewUIEnabled()
+        && selectionService.get().getCurrentSession(info) == null) {
+      info.forwardToUrl(
+          NewUiRoutes.myResources("scrapbook", Option.empty(), toScala(newUIStateId)));
       return true;
     }
 
-    // FIXME: is this true??? possibly not
-    SectionInfo fwd = info.createForward("/access/myresources.do");
+    // 'type` must be 'scrapbook' as the page should return to the view of Scrapbook.
+    String path =
+        RootMyResourcesSection.buildForwardUrl(
+            "scrapbook",
+            newUIStateId
+                .map(sid -> Collections.singletonMap("newUIStateId", sid))
+                .orElse(Collections.emptyMap()));
+
+    SectionInfo fwd = info.createForwardForUri(path);
     info.forwardAsBookmark(fwd);
     return true;
   }

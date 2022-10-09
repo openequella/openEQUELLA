@@ -73,7 +73,6 @@ interface Routes {
   LoginNoticeConfig: OEQRouteNewUI;
   Logout: OEQRouteTo<string>;
   MyResources: OEQRouteNewUI;
-  OldMyResources: OEQRouteNewUI;
   Notifications: OEQRouteTo<string>;
   RemoteSearch: OEQRouteTo<ToFunc>;
   SearchFilterSettings: OEQRouteNewUI;
@@ -114,6 +113,7 @@ export const OLD_SEARCH_PATH = "/searching.do";
 export const NEW_SEARCH_PATH = "/page/search";
 export const NEW_ADVANCED_SEARCH_PATH = "/page/advancedsearch";
 export const NEW_MY_RESOURCES_PATH = "/page/myresources";
+export const OLD_MY_RESOURCES_PATH = "/access/myresources.do";
 
 export const routes: Routes = {
   OldAdvancedSearch: {
@@ -146,10 +146,6 @@ export const routes: Routes = {
   },
   MyResources: {
     path: NEW_MY_RESOURCES_PATH,
-    component: MyResourcesPage,
-  },
-  OldMyResources: {
-    path: "/access/myresources.do",
     component: MyResourcesPage,
   },
   Notifications: {

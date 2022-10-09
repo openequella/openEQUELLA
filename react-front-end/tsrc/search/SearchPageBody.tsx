@@ -36,7 +36,7 @@ import { getBaseUrl } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
 import MessageInfo, { MessageInfoVariant } from "../components/MessageInfo";
 import { AppContext } from "../mainui/App";
-import { NEW_SEARCH_PATH, routes } from "../mainui/routes";
+import { routes } from "../mainui/routes";
 import { getAdvancedSearchIdFromLocation } from "../modules/AdvancedSearchModule";
 import { Collection } from "../modules/CollectionsModule";
 import { addFavouriteSearch, FavouriteURL } from "../modules/FavouriteModule";
@@ -44,7 +44,6 @@ import type { GallerySearchResultItem } from "../modules/GallerySearchModule";
 import {
   buildSelectionSessionAdvancedSearchLink,
   buildSelectionSessionRemoteSearchLink,
-  buildSelectionSessionSearchPageLink,
   isSelectionSessionOpen,
 } from "../modules/LegacySelectionSessionModule";
 import { getRemoteSearchesFromServer } from "../modules/RemoteSearchModule";
@@ -81,6 +80,7 @@ import StatusSelector, {
 } from "./components/StatusSelector";
 import { SearchContext } from "./Search";
 import {
+  buildSearchPageNavigationConfig,
   defaultPagedSearchResult,
   defaultSearchPageHeaderConfig,
   defaultSearchPageOptions,
@@ -88,7 +88,9 @@ import {
   generateExportErrorMessage,
   generateQueryStringFromSearchPageOptions,
   getPartialSearchOptions,
+  navigateTo,
   SearchPageHeaderConfig,
+  SearchPageNavigationConfig,
   SearchPageOptions,
   SearchPageRefinePanelConfig,
   SearchPageSearchBarConfig,
@@ -235,43 +237,25 @@ export const SearchPageBody = ({
     [enableClassification, search, customSearchCallback]
   );
 
-  /**
-   * Depending on the whether in the context of a Selection Session, this function will
-   * use the appropriate method to navigate to the provided `normalPath`.
-   *
-   * @param normalPath The path which the page will be navigated to.
-   * @param selectionSessionPathBuilder Function to convert the supplied path to a Selection Session specific path.
-   */
-  const navigateTo = (
-    normalPath: string,
-    selectionSessionPathBuilder: () => string
-  ) => {
-    isSelectionSessionOpen()
-      ? window.open(selectionSessionPathBuilder(), "_self")
-      : history.push(normalPath);
-  };
+  const navigationWithHistory = (config: SearchPageNavigationConfig) =>
+    navigateTo(config, history);
 
   const handleAdvancedSearchChanged = (
     advancedSearch: OEQ.Common.BaseEntitySummary | null
   ) =>
     pipe(
       O.fromNullable(advancedSearch),
-      O.map(({ uuid }) =>
-        navigateTo(routes.NewAdvancedSearch.to(uuid), () =>
+      O.map(({ uuid }) => ({
+        path: routes.NewAdvancedSearch.to(uuid),
+        selectionSessionPathBuilder: () =>
           buildSelectionSessionAdvancedSearchLink(
             uuid,
             searchPageOptions.externalMimeTypes
-          )
-        )
-      ),
-      // Go to the normal mode if none is selected.
-      O.getOrElse(() =>
-        navigateTo(NEW_SEARCH_PATH, () =>
-          buildSelectionSessionSearchPageLink(
-            searchPageOptions.externalMimeTypes
-          )
-        )
-      )
+          ),
+      })),
+      // Go to the normal Search page if none is selected.
+      O.getOrElse(() => buildSearchPageNavigationConfig(searchPageOptions)),
+      navigationWithHistory
     );
 
   const handleClearSearchOptions = () => {
@@ -288,10 +272,10 @@ export const SearchPageBody = ({
     });
     setFilterExpansion(false);
 
-    // If there is no custom new search config, we go to the normal search page.
-    navigateTo(newSearchConfig?.path ?? NEW_SEARCH_PATH, () =>
-      // Todo: support custom new search in Selection Session when working on OEQ-1327.
-      buildSelectionSessionSearchPageLink(searchPageOptions.externalMimeTypes)
+    pipe(
+      newSearchConfig?.navigationTo,
+      O.fromNullable,
+      O.map(navigationWithHistory)
     );
   };
 
