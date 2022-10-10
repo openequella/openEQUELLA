@@ -58,6 +58,14 @@ export const nonDeletedStatuses: OEQ.Common.ItemStatus[] =
     .filter((status) => status !== "DELETED");
 
 /**
+ * Function to check if the supplied SearchResultItem refers to a live Item.
+ */
+export const isLiveItem = (item: OEQ.Search.SearchResultItem): boolean => {
+  const status = item.status.toUpperCase();
+  return OEQ.Common.ItemStatuses.guard(status) && liveStatuses.includes(status);
+};
+
+/**
  * A Runtypes object which represents three display modes: list, gallery-image and gallery-video.
  */
 export const DisplayModeRuntypes = Union(

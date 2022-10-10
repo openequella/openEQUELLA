@@ -57,7 +57,7 @@ import {
   selectResource,
 } from "../../modules/LegacySelectionSessionModule";
 import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
-import { searchItemAttachments } from "../../modules/SearchModule";
+import { isLiveItem, searchItemAttachments } from "../../modules/SearchModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
 import { buildOpenSummaryPageHandler } from "../SearchPageHelper";
@@ -174,6 +174,9 @@ export default function SearchResult({
     uuid,
     version,
   } = item;
+
+  const isItemLive = isLiveItem(item);
+
   const itemKey = `${uuid}/${version}`;
   const classes = useStyles();
   const inSelectionSession: boolean = isSelectionSessionOpen();
@@ -377,7 +380,7 @@ export default function SearchResult({
       data-itemuuid={uuid}
       data-itemversion={version}
     >
-      {inStructured && (
+      {isItemLive && inStructured && (
         <Grid item>
           <IconButton>
             <DragIndicatorIcon />
@@ -385,13 +388,15 @@ export default function SearchResult({
         </Grid>
       )}
       <Grid item>{itemLink()}</Grid>
-      <Grid item>
-        <ResourceSelector
-          labelText={selectResourceStrings.summaryPage}
-          isStopPropagation
-          onClick={() => selectResource(itemKey)}
-        />
-      </Grid>
+      {isItemLive && (
+        <Grid item>
+          <ResourceSelector
+            labelText={selectResourceStrings.summaryPage}
+            isStopPropagation
+            onClick={() => selectResource(itemKey)}
+          />
+        </Grid>
+      )}
     </Grid>
   );
 
@@ -431,6 +436,7 @@ export default function SearchResult({
                   item={item}
                   getViewerDetails={getViewerDetails}
                   getItemAttachments={getItemAttachments}
+                  isItemLive={isItemLive}
                 />
               </ItemDrmContext.Provider>
               {generateItemMetadata()}

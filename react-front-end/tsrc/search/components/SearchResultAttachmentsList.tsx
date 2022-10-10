@@ -106,6 +106,10 @@ export interface SearchResultAttachmentsListProps {
     uuid: string,
     version: number
   ) => Promise<OEQ.Search.Attachment[]>;
+  /**
+   * `true` if status of the Item which the attachments belong to is either LIVE or REVIEW.
+   */
+  isItemLive: boolean;
 }
 
 export const SearchResultAttachmentsList = ({
@@ -118,6 +122,7 @@ export const SearchResultAttachmentsList = ({
   },
   getViewerDetails,
   getItemAttachments,
+  isItemLive,
 }: SearchResultAttachmentsListProps) => {
   const itemKey = `${uuid}/${version}`;
 
@@ -139,14 +144,14 @@ export const SearchResultAttachmentsList = ({
 
   // In Selection Session, make each intact attachment draggable.
   useEffect(() => {
-    if (inStructured) {
+    if (isItemLive && inStructured) {
       attachmentsAndViewerConfigs
         .filter(({ attachment }) => !attachment.brokenAttachment)
         .forEach(({ attachment }) => {
           prepareDraggable(attachment.id, false);
         });
     }
-  }, [attachmentsAndViewerConfigs, inStructured]);
+  }, [attachmentsAndViewerConfigs, inStructured, isItemLive]);
 
   // Responsible for retrieving the attachments and then determining the MIME type viewer for each.
   useEffect(() => {
@@ -232,7 +237,14 @@ export const SearchResultAttachmentsList = ({
         </Tooltip>
       );
     }
-    return inStructured ? <DragIndicatorIcon /> : <InsertDriveFile />;
+
+    const selectionIcon = inStructured ? (
+      <DragIndicatorIcon />
+    ) : (
+      <InsertDriveFile />
+    );
+
+    return isItemLive ? selectionIcon : undefined;
   };
 
   const isAttachmentSelectable = (broken: boolean) =>
@@ -284,7 +296,7 @@ export const SearchResultAttachmentsList = ({
           >
             <ListItemText color="primary" primary={description} />
           </ItemAttachmentLink>
-          {isAttachmentSelectable(brokenAttachment) && (
+          {isItemLive && isAttachmentSelectable(brokenAttachment) && (
             <ListItemSecondaryAction>
               <ResourceSelector
                 labelText={selectResourceStrings.attachment}
@@ -331,13 +343,11 @@ export const SearchResultAttachmentsList = ({
     ({ attachment }) => !attachment.brokenAttachment
   );
 
-  const showSelectAllAttachments = atLeastOneIntactAttachment && !inSkinny;
-
   const accordionSummaryContent = inSelectionSession ? (
     <Grid container alignItems="center">
       <Grid item>{accordionText}</Grid>
       <Grid>
-        {showSelectAllAttachments && (
+        {isItemLive && atLeastOneIntactAttachment && !inSkinny && (
           <ResourceSelector
             labelText={selectResourceStrings.allAttachments}
             isStopPropagation
