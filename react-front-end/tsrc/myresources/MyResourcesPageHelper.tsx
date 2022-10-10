@@ -23,7 +23,9 @@ import * as E from "fp-ts/Either";
 import { absurd, constant, flow, identity, pipe } from "fp-ts/function";
 import * as J from "fp-ts/Json";
 import * as O from "fp-ts/Option";
+import * as R from "fp-ts/Record";
 import * as S from "fp-ts/string";
+import * as t from "io-ts";
 import { Location } from "history";
 import { MD5 } from "object-hash";
 import * as React from "react";
@@ -41,7 +43,7 @@ import {
   SearchPageOptions,
 } from "../search/SearchPageHelper";
 import { SearchPageSearchResult } from "../search/SearchPageReducer";
-import { getISODateString } from "../util/Date";
+import { DateRangeFromString, getISODateString } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
 import { simpleMatch } from "../util/match";
 import { pfSplitAt } from "../util/pointfree";
@@ -141,23 +143,57 @@ const getLegacyMyResourceType = (
 // If query string 'searchOptions' exists in the given URL, return it in `Some`. Otherwise, return 'None'.
 const getSearchOptionsFromQueryParam = (
   location: Location
-): O.Option<DehydratedSearchPageOptions> =>
-  pipe(
+): O.Option<DehydratedSearchPageOptions> => {
+  const stringToDate: (dateString?: string) => O.Option<Date> = flow(
+    O.fromNullable,
+    O.map((dateString) => new Date(dateString)),
+    O.filter((date) => !isNaN(date.getDate()))
+  );
+
+  // If field 'lastModifiedDateRange' exists in the provided JSON object, try to convert its value to a date range.
+  // If the conversion fails or the field does not exist, return the original object.
+  const processLastModifiedDateRange = (json: {
+    [key: string]: unknown;
+  }): { [key: string]: unknown } =>
+    pipe(
+      json,
+      R.lookup("lastModifiedDateRange"),
+      O.filter(DateRangeFromString.is),
+      O.map(R.filterMap(stringToDate)),
+      O.fold(
+        () => json,
+        (lastModifiedDateRange) => ({ ...json, lastModifiedDateRange })
+      )
+    );
+
+  // Validate the parsed JSON which is expected to be a 'DehydratedSearchPageOptions'.
+  const validateParsedObject = (
+    data: J.Json
+  ): E.Either<string | t.Errors, DehydratedSearchPageOptions> =>
+    pipe(
+      data,
+      t.UnknownRecord.decode, // Type of the parsed result should be a record where keys and values are unknown.
+      E.map(processLastModifiedDateRange),
+      E.filterOrElseW(
+        DehydratedSearchPageOptionsRunTypes.guard,
+        constant(
+          "Parsed searchOptions is not a DehydratedSearchPageOptions - failed type check"
+        )
+      )
+    );
+
+  return pipe(
     getParamFromLocation(location, "searchOptions"),
     O.chainEitherK(
       flow(
         J.parse,
         E.mapLeft((error) => `Failed to parse searchOptions: ${error}`),
-        E.filterOrElse(
-          DehydratedSearchPageOptionsRunTypes.guard,
-          constant(
-            "Parsed searchOptions is not a DehydratedSearchPageOptions - failed type check"
-          )
-        ),
+        E.chain(validateParsedObject),
         E.mapLeft(console.error)
       )
     )
   );
+};
 
 // Get the Legacy My resources type from the given params `MyResourcesType`.
 const getMyResourcesTypeFromLegacyQueryParam = (

@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as t from "io-ts";
 import { DateTime } from "luxon";
 
 /**
@@ -30,6 +31,17 @@ export interface DateRange {
    */
   end?: Date;
 }
+
+/**
+ * IO-TS codec for date range where the values of range start and end are both a string.
+ */
+export const DateRangeFromString = t.partial(
+  {
+    start: t.string,
+    end: t.string,
+  },
+  "DateRangeFromString"
+);
 
 /**
  * Standard ISO date formats.
