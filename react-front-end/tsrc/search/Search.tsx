@@ -436,7 +436,6 @@ export const Search = ({
       isSelectionSessionInStructured()
     ) {
       searchState.result.content.results
-        // Item status returned from 'search2' is a lowercase string so convert it to uppercase.
         .filter(isLiveItem)
         .forEach(({ uuid }: OEQ.Search.SearchResultItem) => {
           prepareDraggable(uuid);

@@ -61,6 +61,7 @@ export const nonDeletedStatuses: OEQ.Common.ItemStatus[] =
  * Function to check if the supplied SearchResultItem refers to a live Item.
  */
 export const isLiveItem = (item: OEQ.Search.SearchResultItem): boolean => {
+  // Item status returned from 'search2' is a lowercase string so convert it to uppercase.
   const status = item.status.toUpperCase();
   return OEQ.Common.ItemStatuses.guard(status) && liveStatuses.includes(status);
 };
