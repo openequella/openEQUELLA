@@ -473,7 +473,7 @@ describe("<SearchResult/>", () => {
       });
     });
 
-    it("should not make attachments of non-live items draggable", async () => {
+    it("should not make attachments of non-live Items draggable", async () => {
       updateMockGetRenderData(basicRenderData);
       await renderSearchResult(mockData.nonLiveObj);
 
