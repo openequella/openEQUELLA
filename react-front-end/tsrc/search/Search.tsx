@@ -46,7 +46,11 @@ import {
   listClassifications,
 } from "../modules/SearchFacetsModule";
 import { getMimeTypeFiltersFromServer } from "../modules/SearchFilterSettingsModule";
-import { searchItems, SearchOptions } from "../modules/SearchModule";
+import {
+  isLiveItem,
+  searchItems,
+  SearchOptions,
+} from "../modules/SearchModule";
 import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
 import { languageStrings } from "../util/langstrings";
 import {
@@ -431,11 +435,11 @@ export const Search = ({
       searchState.result.from === "item-search" &&
       isSelectionSessionInStructured()
     ) {
-      searchState.result.content.results.forEach(
-        ({ uuid }: OEQ.Search.SearchResultItem) => {
+      searchState.result.content.results
+        .filter(isLiveItem)
+        .forEach(({ uuid }: OEQ.Search.SearchResultItem) => {
           prepareDraggable(uuid);
-        }
-      );
+        });
     }
   }, [searchState]);
 

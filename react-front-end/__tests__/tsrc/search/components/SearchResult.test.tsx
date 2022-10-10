@@ -335,6 +335,10 @@ describe("<SearchResult/>", () => {
       updateMockGetBaseUrl();
     });
 
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
     const mockSelectResourceForCourseList = jest.spyOn(
       LegacySelectionSessionModule,
       "selectResourceForCourseList"
@@ -454,7 +458,7 @@ describe("<SearchResult/>", () => {
       expect(collapsedAttachment.queryByText("config.json")).toBeFalsy(); // i.e. not rendered so not visible
     });
 
-    it("should make each attachment draggable", async () => {
+    it("should make each attachment of live Items draggable", async () => {
       updateMockGetRenderData(basicRenderData);
       await renderSearchResult(mockData.attachSearchObj);
 
@@ -467,6 +471,15 @@ describe("<SearchResult/>", () => {
           getGlobalCourseList().prepareDraggableAndBind
         ).toHaveBeenCalledWith(`#${attachment.id}`, false);
       });
+    });
+
+    it("should not make attachments of non-live Items draggable", async () => {
+      updateMockGetRenderData(basicRenderData);
+      await renderSearchResult(mockData.nonLiveObj);
+
+      expect(
+        getGlobalCourseList().prepareDraggableAndBind
+      ).not.toHaveBeenCalled();
     });
 
     it("should not make broken attachments draggable", async () => {
