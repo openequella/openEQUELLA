@@ -692,7 +692,7 @@ describe("In Selection Session", () => {
     updateMockGetBaseUrl();
   });
 
-  it("should make each Search result Item draggable", async () => {
+  it("should make each Search result Item which represents a live item draggable", async () => {
     updateMockGetRenderData(basicRenderData);
     mockSearch.mockResolvedValue(getSearchResult);
     await renderSearchPage(searchPromise);
@@ -701,7 +701,7 @@ describe("In Selection Session", () => {
     // Make sure the search result definitely has Items.
     expect(searchResults.length).toBeGreaterThan(0);
 
-    searchResults.forEach(({ uuid }) => {
+    searchResults.filter(SearchModule.isLiveItem).forEach(({ uuid }) => {
       expect(
         getGlobalCourseList().prepareDraggableAndBind
       ).toHaveBeenCalledWith(`#${uuid}`, true);

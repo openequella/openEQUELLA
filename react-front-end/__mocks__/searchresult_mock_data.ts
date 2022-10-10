@@ -356,6 +356,12 @@ const drmUnauthorisedObj = {
   ...drmAttachObj,
   drmStatus: { isAuthorised: false, termsAccepted: false },
 };
+
+const nonLiveObj: OEQ.Search.SearchResultItem = {
+  ...attachSearchObj,
+  status: "draft",
+};
+
 export {
   basicSearchObj,
   attachSearchObj,
@@ -365,4 +371,5 @@ export {
   oneDeadOneAliveAttachObj,
   drmAttachObj,
   drmUnauthorisedObj,
+  nonLiveObj,
 };
