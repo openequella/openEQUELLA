@@ -107,7 +107,7 @@ export interface SearchResultAttachmentsListProps {
     version: number
   ) => Promise<OEQ.Search.Attachment[]>;
   /**
-   * `true` if status of the Item which the attachments belong to is either LIVE or REVIEW.
+   * `true` if the Item which the attachments belong to is live.
    */
   isItemLive: boolean;
 }
