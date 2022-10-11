@@ -35,13 +35,10 @@ export interface DateRange {
 /**
  * IO-TS codec for date range where the values of range start and end are both a string.
  */
-export const DateRangeFromString = t.partial(
-  {
-    start: t.string,
-    end: t.string,
-  },
-  "DateRangeFromString"
-);
+export const DateRangeFromString = t.partial({
+  start: t.string,
+  end: t.string,
+});
 
 /**
  * Standard ISO date formats.

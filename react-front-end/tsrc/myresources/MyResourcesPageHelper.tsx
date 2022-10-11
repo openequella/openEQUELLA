@@ -167,20 +167,18 @@ const getSearchOptionsFromQueryParam = (
     );
 
   // Validate the parsed JSON which is expected to be a 'DehydratedSearchPageOptions'.
-  const validateParsedObject = (
+  const validateParsedObject: (
     data: J.Json
-  ): E.Either<string | t.Errors, DehydratedSearchPageOptions> =>
-    pipe(
-      data,
-      t.UnknownRecord.decode, // Type of the parsed result should be a record where keys and values are unknown.
-      E.map(processLastModifiedDateRange),
-      E.filterOrElseW(
-        DehydratedSearchPageOptionsRunTypes.guard,
-        constant(
-          "Parsed searchOptions is not a DehydratedSearchPageOptions - failed type check"
-        )
+  ) => E.Either<string | t.Errors, DehydratedSearchPageOptions> = flow(
+    t.UnknownRecord.decode, // Type of the parsed result should be a record where keys and values are unknown.
+    E.map(processLastModifiedDateRange),
+    E.filterOrElseW(
+      DehydratedSearchPageOptionsRunTypes.guard,
+      constant(
+        "Parsed searchOptions is not a DehydratedSearchPageOptions - failed type check"
       )
-    );
+    )
+  );
 
   return pipe(
     getParamFromLocation(location, "searchOptions"),
