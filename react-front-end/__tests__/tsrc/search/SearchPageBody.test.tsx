@@ -181,7 +181,7 @@ describe("<SearchPageBody />", () => {
     ).toBeInTheDocument();
   });
 
-  it("supports custom new search criteria", () => {
+  it("supports custom new search configuration", () => {
     const path = "/test";
     const criteria: SearchPageOptions = {
       ...defaultSearchPageOptions,
@@ -189,6 +189,7 @@ describe("<SearchPageBody />", () => {
       sortOrder: "rank",
       externalMimeTypes: undefined,
     };
+    const callback = jest.fn();
 
     const searchPageBodyProps: SearchPageBodyProps = {
       ...defaultSearchPageBodyProps,
@@ -200,6 +201,7 @@ describe("<SearchPageBody />", () => {
             selectionSessionPathBuilder: () => "",
           },
           criteria,
+          callback,
         },
       },
     };
@@ -213,6 +215,7 @@ describe("<SearchPageBody />", () => {
     // should have been pushed the history.
     expect(mockSearch.mock.calls[0][0]).toStrictEqual(criteria);
     expect(mockHistory.location.pathname).toBe(path);
+    expect(callback).toHaveBeenCalledTimes(1);
   });
 
   it("displays custom UI for search results", () => {

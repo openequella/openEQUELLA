@@ -168,6 +168,10 @@ export interface SearchPageHeaderConfig {
      * Search criteria that should be included in a new search.
      */
     criteria?: SearchPageOptions;
+    /**
+     * Callback fired after the new search is executed.
+     */
+    callback?: () => void;
   };
 }
 

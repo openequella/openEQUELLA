@@ -272,6 +272,7 @@ export const SearchPageBody = ({
     });
     setFilterExpansion(false);
 
+    newSearchConfig?.callback?.();
     pipe(
       newSearchConfig?.navigationTo,
       O.fromNullable,

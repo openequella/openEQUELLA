@@ -245,6 +245,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     ...defaultSearchPageHeaderConfig,
     newSearchConfig: {
       criteria: customSearchCriteria(resourceType),
+      callback: () => setSubStatus([]),
     },
     enableShareSearchButton: false,
     customSortingOptions: sortOrderOptions(resourceType),
