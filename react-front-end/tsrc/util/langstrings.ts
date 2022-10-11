@@ -696,6 +696,7 @@ export const languageStrings = {
       logout: "Logout",
       prefs: "My preferences",
       usernameUnknown: "Username unknown",
+      help: "Help",
     },
   },
   termSelector: {

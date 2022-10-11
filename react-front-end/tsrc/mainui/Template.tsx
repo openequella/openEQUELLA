@@ -33,6 +33,7 @@ import { makeStyles, Theme } from "@material-ui/core/styles";
 import AccountIcon from "@material-ui/icons/AccountCircle";
 import BackIcon from "@material-ui/icons/ArrowBack";
 import AssignmentIcon from "@material-ui/icons/Assignment";
+import HelpIcon from "@material-ui/icons/Help";
 import MenuIcon from "@material-ui/icons/Menu";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import clsx, { ClassValue } from "clsx";
@@ -477,6 +478,12 @@ export const Template = ({
         {!disableNotifications && !currentUser.guest && (
           <>
             <Hidden smDown>
+              <TooltipIconButton
+                title={strings.menu.help}
+                onClick={() => window.open("https://docs.edalex.com", "_blank")}
+              >
+                <HelpIcon />
+              </TooltipIconButton>
               {badgedLink(
                 <AssignmentIcon />,
                 itemCounts.tasks,
