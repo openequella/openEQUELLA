@@ -102,8 +102,9 @@ case class SearchResultAttachment(
   *
   * @param termsAccepted Whether terms have been accepted or not.
   * @param isAuthorised Whether user is authorised to access Item or accept DRM.
+  * @param isAllowSummary Whether user can view the Item summary page without accepting the terms.
   */
-case class DrmStatus(termsAccepted: Boolean, isAuthorised: Boolean)
+case class DrmStatus(termsAccepted: Boolean, isAuthorised: Boolean, isAllowSummary: Boolean)
 
 /**
   * Provides details to assist with displaying a thumbnail for a search result, based on the
