@@ -157,7 +157,9 @@ export const GallerySearchItemTiles = ({
             title={viewItem}
             color="secondary"
             item={{ uuid, version }}
-            checkDrmPermission={checkDrmPermission}
+            checkDrmPermission={
+              drmStatus?.isAllowSummary ? undefined : checkDrmPermission
+            }
           />
         }
       />
