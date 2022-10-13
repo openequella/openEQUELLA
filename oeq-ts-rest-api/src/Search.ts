@@ -268,6 +268,10 @@ export interface DrmStatus {
    * `true` if user is authorised to access Item or accept DRM.
    */
   isAuthorised: boolean;
+  /**
+   * `true` to allow viewing the Item summary page without accepting the terms.
+   */
+  isAllowSummary: boolean;
 }
 
 /**
