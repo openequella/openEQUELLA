@@ -529,10 +529,13 @@ describe("<SearchResult/>", () => {
     jest.spyOn(DrmModule, "listDrmTerms").mockResolvedValue(drmTerms);
 
     it.each([
-      ["view a DRM Item's summary page", DRM_ITEM_NAME],
+      [
+        "DRM terms must be accepted before viewing a DRM Item's summary page",
+        DRM_ITEM_NAME,
+      ],
       ["preview an attachment from a DRM item", DRM_ATTACHMENT_NAME],
     ])(
-      "shows the DRM Accept dialog %s",
+      "shows the DRM Accept dialog when %s",
       async (_: string, linkText: string) => {
         const { drmAttachObj } = mockData;
         const { getByText } = await renderSearchResult(drmAttachObj);
@@ -563,5 +566,16 @@ describe("<SearchResult/>", () => {
         });
       }
     );
+
+    it("supports viewing a DRM Item's summary page without accepting the terms", async () => {
+      const { getByText } = await renderSearchResult(
+        mockData.drmAllowSummaryObj
+      );
+      await act(async () => {
+        await userEvent.click(getByText(DRM_ITEM_NAME));
+      });
+
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
   });
 });
