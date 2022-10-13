@@ -238,17 +238,17 @@ export const SearchResultAttachmentsList = ({
       );
     }
 
-    const selectionIcon = inStructured ? (
+    // Only live Items and their attachments can be dragged in Selection Session structure mode, so show 'DragIndicatorIcon'.
+    // For other situations, show 'InsertDriveFile'.
+    return isItemLive && inStructured ? (
       <DragIndicatorIcon />
     ) : (
       <InsertDriveFile />
     );
-
-    return isItemLive ? selectionIcon : undefined;
   };
 
   const isAttachmentSelectable = (broken: boolean) =>
-    inSelectionSession && !broken;
+    inSelectionSession && isItemLive && !broken;
 
   const buildSkeletonList = (howMany: number): JSX.Element[] =>
     pipe(
@@ -296,7 +296,7 @@ export const SearchResultAttachmentsList = ({
           >
             <ListItemText color="primary" primary={description} />
           </ItemAttachmentLink>
-          {isItemLive && isAttachmentSelectable(brokenAttachment) && (
+          {isAttachmentSelectable(brokenAttachment) && (
             <ListItemSecondaryAction>
               <ResourceSelector
                 labelText={selectResourceStrings.attachment}
