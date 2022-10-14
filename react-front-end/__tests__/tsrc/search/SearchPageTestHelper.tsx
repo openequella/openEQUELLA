@@ -17,10 +17,11 @@
  */
 
 import { MuiThemeProvider } from "@material-ui/core";
-import { createTheme } from "@material-ui/core/styles";
 import type { Theme } from "@material-ui/core/styles";
+import { createTheme } from "@material-ui/core/styles";
 import * as OEQ from "@openequella/rest-api-client";
-import { render, RenderResult } from "@testing-library/react";
+import { render, RenderResult, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
 import * as React from "react";
 import { act } from "react-dom/test-utils";
@@ -46,8 +47,12 @@ import * as SearchFilterSettingsModule from "../../../tsrc/modules/SearchFilterS
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
 import * as UserModule from "../../../tsrc/modules/UserModule";
-import * as SearchPageHelper from "../../../tsrc/search/SearchPageHelper";
 import SearchPage from "../../../tsrc/search/SearchPage";
+import * as SearchPageHelper from "../../../tsrc/search/SearchPageHelper";
+import { languageStrings } from "../../../tsrc/util/langstrings";
+import { getMuiButtonByText, getMuiTextField } from "../MuiQueries";
+
+export const SORTORDER_SELECT_ID = "#sort-order-select";
 
 /**
  * Provides a centralised place to mock all the Collaborators used by SearchPage, providing an object
@@ -90,12 +95,6 @@ export const mockCollaborators = () => {
 
   jest.spyOn(FavouriteModule, "deleteFavouriteItem").mockResolvedValue();
 
-  jest.spyOn(FavouriteModule, "addFavouriteSearch").mockResolvedValue({
-    id: 123,
-    name: "test",
-    url: "/page/search?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RATING%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22crab%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D",
-  });
-
   return {
     mockGetAdvancedSearchesFromServer: jest
       .spyOn(AdvancedSearchModule, "getAdvancedSearchesFromServer")
@@ -136,16 +135,23 @@ export const mockCollaborators = () => {
       .spyOn(SearchFilterSettingsModule, "getMimeTypeFiltersFromServer")
       .mockResolvedValue(getMimeTypeFilters),
     mockSaveDataToLocalStorage: jest
-      .spyOn(BrowserStorageModule, "saveDataToLocalStorage")
+      .spyOn(BrowserStorageModule, "saveDataToStorage")
       .mockImplementation(jest.fn),
     mockReadDataFromLocalStorage: jest.spyOn(
       BrowserStorageModule,
-      "readDataFromLocalStorage"
+      "readDataFromStorage"
     ),
     mockGetAdvancedSearchByUuid: jest.spyOn(
       AdvancedSearchModule,
       "getAdvancedSearchByUuid"
     ),
+    mockAddFavouriteSearch: jest
+      .spyOn(FavouriteModule, "addFavouriteSearch")
+      .mockResolvedValue({
+        id: 123,
+        name: "test",
+        url: "/page/search?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RATING%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22crab%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D",
+      }),
   };
 };
 
@@ -326,6 +332,14 @@ export const queryCollectionSelector = (container: HTMLElement) =>
   queryRefineSearchComponent(container, "CollectionSelector");
 
 /**
+ * Helper function to assist in finding the Remote Search selector
+ *
+ * @param container a root container within which `Remote Search selector` exists
+ */
+export const queryRemoteSearchSelector = (container: HTMLElement) =>
+  queryRefineSearchComponent(container, "RemoteSearchSelector");
+
+/**
  * Helper function to assist in finding the Status selector
  *
  * @param container a root container within which <StatusSelector/> exists
@@ -353,4 +367,40 @@ export const getClassificationPanel = (container: Element): HTMLDivElement => {
   }
 
   return classificationPanel;
+};
+
+/**
+ * Interacts with search pages to click the 'favourite search' button and create a new favourite
+ * search with the specified `favouriteName`. If the UI indicates all was successful, will return
+ * `true`.
+ */
+export const addSearchToFavourites = async (
+  { getByLabelText, getByRole }: RenderResult,
+  favouriteName: string
+): Promise<boolean> => {
+  const heartIcon = getByLabelText(
+    languageStrings.searchpage.favouriteSearch.title,
+    {
+      selector: "button",
+    }
+  );
+  userEvent.click(heartIcon);
+
+  const dialog = getByRole("dialog");
+  const favouriteNameInput = getMuiTextField(
+    dialog,
+    languageStrings.searchpage.favouriteSearch.text
+  );
+  userEvent.type(favouriteNameInput, favouriteName);
+  const confirmButton = getMuiButtonByText(
+    dialog,
+    languageStrings.common.action.ok
+  );
+  await act(async () => {
+    await userEvent.click(confirmButton);
+  });
+
+  return !!screen.queryByText(
+    languageStrings.searchpage.favouriteSearch.saveSearchConfirmationText
+  );
 };

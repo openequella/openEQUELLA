@@ -46,10 +46,13 @@ import {
   isAdvSearchCriteriaSet,
 } from "./AdvancedSearchHelper";
 import { AdvancedSearchPanel } from "./components/AdvancedSearchPanel";
-import { Search } from "./Search";
+import { Search, SearchContext, SearchContextProps } from "./Search";
 import { SearchPageBody } from "./SearchPageBody";
 import {
+  buildSearchPageNavigationConfig,
+  defaultSearchPageHeaderConfig,
   defaultSearchPageRefinePanelConfig,
+  SearchPageHeaderConfig,
   SearchPageOptions,
 } from "./SearchPageHelper";
 
@@ -173,6 +176,15 @@ export const AdvancedSearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   const definitionRetrieved = advancedSearchDefinition !== undefined;
 
+  const searchPageHeaderConfig = (
+    options: SearchPageOptions
+  ): SearchPageHeaderConfig => ({
+    ...defaultSearchPageHeaderConfig,
+    newSearchConfig: {
+      navigationTo: buildSearchPageNavigationConfig(options),
+    },
+  });
+
   return (
     <AdvancedSearchPageContext.Provider
       value={{
@@ -189,22 +201,30 @@ export const AdvancedSearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           listInitialClassifications: false,
         }}
       >
-        <SearchPageBody
-          pathname={`${NEW_ADVANCED_SEARCH_PATH}/${advancedSearchId}`}
-          additionalPanels={openAdvSearchPanel ? [panel] : undefined}
-          searchBarConfig={{
-            advancedSearchFilter: {
-              onClick: () => setOpenAdvSearchPanel(!openAdvSearchPanel),
-              accent,
-            },
-          }}
-          refinePanelConfig={{
-            ...defaultSearchPageRefinePanelConfig,
-            enableCollectionSelector: false,
-          }}
-          enableClassification={false}
-          customSearchCallback={() => setOpenAdvSearchPanel(false)}
-        />
+        <SearchContext.Consumer>
+          {(searchContextProps: SearchContextProps) => (
+            <SearchPageBody
+              pathname={`${NEW_ADVANCED_SEARCH_PATH}/${advancedSearchId}`}
+              headerConfig={searchPageHeaderConfig(
+                searchContextProps.searchState.options
+              )}
+              additionalPanels={openAdvSearchPanel ? [panel] : undefined}
+              searchBarConfig={{
+                advancedSearchFilter: {
+                  onClick: () => setOpenAdvSearchPanel(!openAdvSearchPanel),
+                  accent,
+                },
+              }}
+              refinePanelConfig={{
+                ...defaultSearchPageRefinePanelConfig,
+                enableCollectionSelector: false,
+                enableRemoteSearchSelector: false,
+              }}
+              enableClassification={false}
+              customSearchCallback={() => setOpenAdvSearchPanel(false)}
+            />
+          )}
+        </SearchContext.Consumer>
       </Search>
     </AdvancedSearchPageContext.Provider>
   );

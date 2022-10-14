@@ -25,6 +25,7 @@ const useStyles = makeStyles({
     display: "inline-block",
   },
 });
+
 export interface DateProps {
   /**
    * If true, relative date will be used as primary display. Timestamp will be displayed as tooltip on hover
@@ -35,6 +36,11 @@ export interface DateProps {
    */
   date: Date;
 }
+
+/**
+ * Displays the provided `date` in a standard format, including a tooltip to display the alternate
+ * representation of the date (relative vs absolute).
+ */
 export default function Date({ displayRelative, date }: DateProps) {
   const classes = useStyles();
   const luxDate = DateTime.fromJSDate(date);

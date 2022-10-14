@@ -45,10 +45,10 @@ describe('SearchSettings', () => {
     it('updates general search settings in an institution', async () => {
       await OEQ.SearchSettings.updateSearchSettings(TC.API_PATH, {
         ...defaultSearchSettings,
-        defaultSearchSort: 'RATING',
+        defaultSearchSort: 'rating',
       });
       const settings = await OEQ.SearchSettings.getSearchSettings(TC.API_PATH);
-      expect(settings.defaultSearchSort).toBe('RATING');
+      expect(settings.defaultSearchSort).toBe('rating');
     });
   });
 });

@@ -111,7 +111,8 @@ case class CurrentUserDetails(id: String,
                               menuGroups: Iterable[Iterable[MenuItem]],
                               counts: Option[ItemCounts],
                               canDownloadSearchResult: Boolean,
-                              roles: Iterable[String])
+                              roles: Iterable[String],
+                              scrapbookEnabled: Boolean)
 
 object LegacyContentController extends AbstractSectionsController with SectionFilter {
 
@@ -383,6 +384,8 @@ class LegacyContentApi {
 
     val canDownloadSearchResult: Boolean = hasAcl(SecurityConstants.EXPORT_SEARCH_RESULT)
 
+    val scrapbookEnabled = LegacyGuice.myContentService.isMyContentContributionAllowed
+
     val prefsEditable = !(cu.isSystem || cu.isGuest) && !(cu.wasAutoLoggedIn &&
       LegacyGuice.configService.getProperties(new AutoLogin).isEditDetailsDisallowed)
     val menuGroups = {
@@ -444,7 +447,8 @@ class LegacyContentApi {
           counts = counts,
           accessibilityMode = accessibilityMode,
           canDownloadSearchResult = canDownloadSearchResult,
-          roles = cu.getUsersRoles.asScala
+          roles = cu.getUsersRoles.asScala,
+          scrapbookEnabled = scrapbookEnabled
         )
       )
       .cacheControl(cacheControl)

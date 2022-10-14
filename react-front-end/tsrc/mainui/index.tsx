@@ -23,6 +23,7 @@ import "../util/polyfill";
 export type EntryPage =
   | "advancedSearchPage"
   | "mainDiv"
+  | "myResourcesPage"
   | "searchPage"
   | "settingsPage";
 

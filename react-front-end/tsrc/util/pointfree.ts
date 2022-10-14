@@ -61,3 +61,42 @@ export const pfTernaryTypeGuard =
       (a) => (guard(a) ? E.right(a) : E.left(a)),
       E.match(onLeft, onRight)
     );
+
+/**
+ * Point-free function to slice a string.
+ *
+ * For example
+ *
+ * ```typescript
+ *
+ * const substring = pipe("abcd", pfSlice(0, 2));
+ * console.log(substring);
+ * ```
+ * The output of above code is 'ab'.
+ *
+ * @param start The index to the beginning of the sub string.
+ * @param end The index to the end of the sub string.
+ */
+export const pfSlice =
+  (start: number, end?: number) =>
+  (s: string): string =>
+    s.slice(start, end);
+
+/**
+ * Point-free function to split a string into two parts.
+ *
+ * For example
+ *
+ * ```typescript
+ *
+ * const [first, second] = pipe("abcd", pfSplitAt(2));
+ * console.log( first + "," + second);
+ * ```
+ * The output of above code is 'ab,cd'.
+ *
+ * @param index Index from where to split the string.
+ */
+export const pfSplitAt =
+  (index: number) =>
+  (s: string): [string, string] =>
+    [s.substring(0, index), s.substring(index)];

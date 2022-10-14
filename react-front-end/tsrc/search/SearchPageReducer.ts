@@ -36,64 +36,6 @@ export type SearchPageSearchResult =
     };
 
 export type Action =
-  | { type: "init" }
-  | { type: "search"; options: SearchPageOptions; scrollToTop: boolean }
-  | {
-      type: "search-complete";
-      result: SearchPageSearchResult;
-      classifications: Classification[];
-    }
-  | { type: "error"; cause: Error };
-
-export type State =
-  | { status: "initialising" }
-  | {
-      status: "searching";
-      options: SearchPageOptions;
-      previousResult?: SearchPageSearchResult;
-      previousClassifications?: Classification[];
-      scrollToTop: boolean;
-    }
-  | {
-      status: "success";
-      result: SearchPageSearchResult;
-      classifications: Classification[];
-    }
-  | { status: "failure"; cause: Error };
-
-export const reducer = (state: State, action: Action): State => {
-  switch (action.type) {
-    case "init":
-      return { status: "initialising" };
-    case "search":
-      return pipe(
-        state.status === "success"
-          ? {
-              previousResult: state.result,
-              previousClassifications: state.classifications,
-            }
-          : {},
-        (prevResults) => ({
-          status: "searching",
-          options: action.options,
-          scrollToTop: action.scrollToTop,
-          ...prevResults,
-        })
-      );
-    case "search-complete":
-      return {
-        status: "success",
-        result: action.result,
-        classifications: action.classifications,
-      };
-    case "error":
-      return { status: "failure", cause: action.cause };
-    default:
-      throw new TypeError("Unexpected action passed to reducer!");
-  }
-};
-
-export type ActionRefactored =
   | { type: "init"; options: SearchPageOptions }
   | {
       type: "search";
@@ -108,8 +50,7 @@ export type ActionRefactored =
     }
   | { type: "error"; cause: Error };
 
-// todo: rename the type.
-export type StateRefactored =
+export type State =
   | { status: "initialising"; options: SearchPageOptions }
   | {
       status: "searching";
@@ -127,11 +68,7 @@ export type StateRefactored =
     }
   | { status: "failure"; options: SearchPageOptions; cause: Error };
 
-// todo: rename this type and update the types used.
-export const reducerRefactored = (
-  state: StateRefactored,
-  action: ActionRefactored
-): StateRefactored => {
+export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "init":
       return { status: "initialising", options: action.options };

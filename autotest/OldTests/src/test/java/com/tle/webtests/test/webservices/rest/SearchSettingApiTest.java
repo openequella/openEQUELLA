@@ -112,7 +112,7 @@ public class SearchSettingApiTest extends AbstractRestApiTest {
     // Load and check the updated settings
     final JsonNode updatedSearchSettings = getEntity(uri, token);
 
-    assertEquals(updatedSearchSettings.get(DEFAULT_SORT_ORDER).asText(), "RATING");
+    assertEquals(updatedSearchSettings.get(DEFAULT_SORT_ORDER).asText(), "rating");
     assertTrue(updatedSearchSettings.get(SHOW_NON_LIVE).asBoolean());
     assertTrue(updatedSearchSettings.get(AUTHENTICATE_FEEDS).asBoolean());
 

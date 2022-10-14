@@ -221,7 +221,9 @@ export const SearchResultList = ({
               </Grid>
             )}
             {additionalHeaders?.map((header) => (
-              <Grid item>{header}</Grid>
+              <Grid item key={header.key}>
+                {header}
+              </Grid>
             ))}
           </Grid>
         }

@@ -52,6 +52,7 @@ import {
   mockCollaborators,
   queryClassificationPanel,
   queryCollectionSelector,
+  queryRemoteSearchSelector,
   waitForSearch,
 } from "./SearchPageTestHelper";
 
@@ -202,6 +203,11 @@ describe("Hide components", () => {
     const { container } = await renderAdvancedSearchPage();
     expect(mockListClassification).not.toHaveBeenCalled();
     expect(queryClassificationPanel(container)).not.toBeInTheDocument();
+  });
+
+  it("does not show Remote Search Selector", async () => {
+    const { container } = await renderAdvancedSearchPage();
+    expect(queryRemoteSearchSelector(container)).not.toBeInTheDocument();
   });
 });
 
