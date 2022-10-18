@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import resolve from "@rollup/plugin-node-resolve";
-import { terser } from "rollup-plugin-terser";
 import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
 import nodePolyfills from "rollup-plugin-polyfill-node";
@@ -39,11 +38,5 @@ export default {
     // See https://github.com/rollup/rollup-plugin-commonjs/issues/6#issuecomment-519537010
     intro: "const global = window;",
   },
-  plugins: [
-    commonjs(),
-    json(),
-    nodePolyfills(),
-    production && terser(), // minify, but only in production
-    resolve(),
-  ],
+  plugins: [commonjs(), json(), nodePolyfills(), resolve()],
 };
