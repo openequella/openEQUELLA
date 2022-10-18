@@ -38,4 +38,7 @@ object RenderNewSearchPage {
     }
     buildSection(context, file)
   }
+
+  def renderNewMyResourcesPage(context: RenderEventContext): SimpleSectionResult =
+    buildSection(context, "MyResourcesPage.html")
 }

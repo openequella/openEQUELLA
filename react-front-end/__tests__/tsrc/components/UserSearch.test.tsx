@@ -20,13 +20,16 @@ import "@testing-library/jest-dom/extend-expect";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import * as React from "react";
 import { sprintf } from "sprintf-js";
+import { groups } from "../../../__mocks__/GroupModule.mock";
 import * as UserModuleMock from "../../../__mocks__/UserModule.mock";
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
 import { GroupFilter } from "../../../__stories__/components/UserSearch.stories";
 import UserSearch from "../../../tsrc/components/UserSearch";
+import * as GroupModule from "../../../tsrc/modules/GroupModule";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { doSearch, getUserList } from "./UserSearchTestHelpers";
 
+jest.spyOn(GroupModule, "resolveGroups").mockResolvedValue(groups);
 describe("<UserSearch/>", () => {
   // Helper to render and wait for component under test
   const renderUserSearch = async (

@@ -15,10 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Button, Card, CardContent, CardHeader } from "@material-ui/core";
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  List,
+  ListItem,
+} from "@material-ui/core";
 import { Meta, Story } from "@storybook/react";
 import * as React from "react";
 import { classifications } from "../../__mocks__/CategorySelector.mock";
+import { customRefinePanelControl } from "../../__mocks__/RefinePanelControl.mock";
 import { getSearchResult } from "../../__mocks__/SearchResult.mock";
 import { defaultSearchSettings } from "../../tsrc/modules/SearchSettingsModule";
 import { SearchContext, SearchContextProps } from "../../tsrc/search/Search";
@@ -31,6 +39,7 @@ import {
   defaultSearchPageOptions,
   defaultSearchPageRefinePanelConfig,
 } from "../../tsrc/search/SearchPageHelper";
+import { SearchPageSearchResult } from "../../tsrc/search/SearchPageReducer";
 
 const nop = () => {};
 
@@ -135,8 +144,8 @@ CustomSortingOptions.args = {
   headerConfig: {
     ...defaultSearchPageHeaderConfig,
     customSortingOptions: new Map([
-      ["RANK", "custom option 1"],
-      ["DATEMODIFIED", "custom option 2"],
+      ["rank", "custom option 1"],
+      ["datemodified", "custom option 2"],
     ]),
   },
 };
@@ -152,4 +161,32 @@ ShowAdvancedSearchFilter.args = {
       accent: true,
     },
   },
+};
+
+export const CustomRefinePanelControls: Story<SearchPageBodyProps> = (args) => (
+  <SearchPageBody {...args} />
+);
+CustomRefinePanelControls.args = {
+  ...searchPageBodyProps,
+  refinePanelConfig: {
+    ...defaultSearchPageRefinePanelConfig,
+    customRefinePanelControl: [customRefinePanelControl],
+  },
+};
+
+export const CustomSearchResult: Story<SearchPageBodyProps> = (args) => (
+  <SearchPageBody {...args} />
+);
+CustomSearchResult.decorators = WithSearchResult.decorators;
+CustomSearchResult.args = {
+  ...searchPageBodyProps,
+  customRenderSearchResults: (searchResult: SearchPageSearchResult) => (
+    <List>
+      {searchResult.content.results.map(({ name, uuid, version }) => (
+        <ListItem>
+          name: {name} | uuid: {uuid} | version: {version}
+        </ListItem>
+      ))}
+    </List>
+  ),
 };

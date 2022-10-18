@@ -373,6 +373,12 @@ const drmAllowSummaryObj = {
     isAllowSummary: true,
   },
 };
+
+const nonLiveObj: OEQ.Search.SearchResultItem = {
+  ...attachSearchObj,
+  status: "draft",
+};
+
 export {
   basicSearchObj,
   attachSearchObj,
@@ -383,4 +389,5 @@ export {
   drmAllowSummaryObj,
   drmAttachObj,
   drmUnauthorisedObj,
+  nonLiveObj,
 };

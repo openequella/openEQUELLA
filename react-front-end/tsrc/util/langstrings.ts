@@ -361,6 +361,45 @@ export const languageStrings = {
       expired: "This login notice has expired.",
     },
   },
+  myResources: {
+    title: "My resources",
+    resourceType: {
+      published: "Published",
+      drafts: "Drafts",
+      scrapbook: "Scrapbook",
+      modqueue: "Moderation queue",
+      archive: "Archive",
+      all: "All resources",
+    },
+    moderating: {
+      since: "Moderating since",
+    },
+    moderationItemTable: {
+      ariaLabel: "Table of items in moderation",
+      colLastActionDate: "Last action",
+      colStatus: "Status",
+      colSubmittedDate: "Submitted",
+      colTitle: "Title",
+      rejectionCommentButton: "View rejection message",
+      rejectionCommentDialogTitle: "Rejection reason",
+    },
+    scrapbook: {
+      addScrapbook: "Add to Scrapbook",
+      createFile: "Upload files",
+      createPage: "Author new web pages",
+      deleteDialogTitle: "Delete item?",
+      deleteDialogContent: "Are you sure you want to delete this item?",
+    },
+    sortOptions: {
+      dateCreated: "Date created",
+      lastAction: "Last action",
+      lastModified: "Date last modified",
+      relevance: "Relevance",
+      submitted: "Submitted",
+      title: "Title",
+      userRating: "User rating",
+    },
+  },
   navigationguard: {
     title: "Close without saving?",
     message:
@@ -476,6 +515,7 @@ export const languageStrings = {
     },
     favouriteSearch: {
       saveSearchConfirmationText: "Search added to favourites",
+      saveSearchFailedText: "Failed to save new favourite, please try again",
       text: "Please enter a name for this search",
       title: "Add search to favourites",
     },

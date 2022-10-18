@@ -20,14 +20,18 @@ package com.tle.web.api.search
 
 import cats.Semigroup
 import cats.implicits._
+import com.dytech.devlib.PropBagEx
 import com.dytech.edge.exceptions.{BadRequestException, DRMException}
 import com.tle.beans.entity.DynaCollection
-import com.tle.beans.item.{Comment, ItemIdKey}
+import com.tle.beans.item.ItemStatus.{MODERATING, REJECTED, REVIEW}
+import com.tle.beans.item.{Comment, Item, ItemIdKey, ItemStatus}
 import com.tle.common.Check
 import com.tle.common.beans.exception.NotFoundException
 import com.tle.common.collection.AttachmentConfigConstants
+import com.tle.common.interfaces.SimpleI18NString
 import com.tle.common.search.DefaultSearch
 import com.tle.common.search.whereparser.WhereParser
+import com.tle.common.searching.SortField
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.freetext.queries.FreeTextBooleanQuery
 import com.tle.core.item.security.ItemSecurityConstants
@@ -36,6 +40,7 @@ import com.tle.core.security.ACLChecks.hasAcl
 import com.tle.core.services.item.{FreetextResult, FreetextSearchResults}
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean
+import com.tle.web.api.item.equella.interfaces.beans.{DisplayField, EquellaItemBean}
 import com.tle.web.api.item.impl.ItemLinkServiceImpl
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
 import com.tle.web.api.search.AttachmentHelper.{
@@ -49,8 +54,8 @@ import com.tle.web.api.search.model._
 import java.time.format.DateTimeParseException
 import java.time.{LocalDate, LocalDateTime, LocalTime, ZoneId}
 import java.util.Date
-import scala.jdk.CollectionConverters._
 import scala.collection.mutable.ListBuffer
+import scala.jdk.CollectionConverters._
 
 /**
   * This object provides functions that help validate a variety of search criteria(e.g.
@@ -97,9 +102,7 @@ object SearchHelper {
     search.setOwner(params.owner)
     search.setMimeTypes(params.mimeTypes.toList.asJava)
 
-    val orderType =
-      DefaultSearch.getOrderType(Option(params.order).map(_.toLowerCase).orNull, params.query)
-    search.setSortFields(orderType.getSortField(params.reverseOrder))
+    search.setSortFields(handleOrder(params))
 
     val collectionUuids = handleCollections(params.advancedSearch, params.collections)
     search.setCollectionUuids(collectionUuids.orNull)
@@ -131,6 +134,24 @@ object SearchHelper {
     }
 
     search
+  }
+
+  /**
+    * Using a number of the fields from `params` determines what is the requested sort order and
+    * captures that in a `SortField` which is used in setting the order in DefaultSearch. However
+    * if none of the specified orders apply - or the order param is absent or not matched - then
+    * a standard default order is applied.
+    *
+    * @param params the parameters supplied to a search request
+    * @return the definition of ordering to be used with DefaultSearch
+    */
+  def handleOrder(params: SearchParam): SortField = {
+    val providedOrder = Option(params.order).map(_.toLowerCase)
+    val order: SortField = providedOrder.flatMap(TaskSortOrder.apply) getOrElse DefaultSearch
+      .getOrderType(providedOrder.orNull, params.query)
+      .getSortField
+
+    if (params.reverseOrder) order.reversed() else order
   }
 
   /**
@@ -257,6 +278,7 @@ object SearchHelper {
     val bean = item.bean
     lazy val sanitisedAttachmentBeans =
       Option(bean.getAttachments).map(_.asScala.map(sanitiseAttachmentBean).toList)
+    val rawItem = LegacyGuice.itemService.getUnsecureIfExists(key)
 
     SearchResultItem(
       uuid = key.getUuid,
@@ -274,13 +296,14 @@ object SearchHelper {
         if (includeAttachments) convertToAttachment(sanitisedAttachmentBeans, key) else None,
       thumbnail = bean.getThumbnail,
       thumbnailDetails = getThumbnailDetails(Option(bean.getAttachments).map(_.asScala.toList), key),
-      displayFields = bean.getDisplayFields.asScala.toList,
+      displayFields = getDisplayFields(bean),
       displayOptions = Option(bean.getDisplayOptions),
       keywordFoundInAttachment = item.keywordFound,
       links = getLinksFromBean(bean),
       bookmarkId = getBookmarkId(key),
       isLatestVersion = isLatestVersion(key),
-      drmStatus = getItemDrmStatus(item.idKey)
+      drmStatus = getItemDrmStatus(rawItem),
+      moderationDetails = getModerationDetails(rawItem),
     )
   }
 
@@ -301,9 +324,9 @@ object SearchHelper {
     )
   }
 
-  def getItemDrmStatus(itemKey: ItemIdKey): Option[DrmStatus] = {
+  def getItemDrmStatus(rawItem: Item): Option[DrmStatus] = {
     for {
-      item     <- Option(LegacyGuice.itemService.getUnsecureIfExists(itemKey))
+      item     <- Option(rawItem)
       settings <- Option(item.getDrmSettings)
       termsAccepted = try {
         LegacyGuice.drmService.hasAcceptedOrRequiresNoAcceptance(item, false, false)
@@ -321,6 +344,12 @@ object SearchHelper {
       DrmStatus(termsAccepted, isAuthorised, settings.isAllowSummary)
     }
   }
+
+  def getModerationDetails(rawItem: Item): Option[ModerationDetails] =
+    for {
+      item <- Option(rawItem) if Array(REJECTED, REVIEW, MODERATING).contains(item.getStatus)
+      mod  <- Option(item.getModeration)
+    } yield ModerationDetails(mod.getLastAction, mod.getStart, Option(mod.getRejectedMessage))
 
   def getItemComments(key: ItemIdKey): Option[java.util.List[Comment]] =
     Option(LegacyGuice.itemCommentService.getCommentsWithACLCheck(key, null, null, -1))
@@ -389,5 +418,22 @@ object SearchHelper {
           ThumbnailDetails(attachmentType = a.attachmentType,
                            mimeType = a.mimeType,
                            link = determineThumbnailLink(a)))
+  }
+
+  def getDisplayFields(bean: EquellaItemBean): List[DisplayField] = {
+    def standardDisplayFields = bean.getDisplayFields.asScala.toList
+
+    def customDisplayFields: Option[DisplayField] = {
+      def personalTags =
+        Option(bean.getMetadata)
+          .map(new PropBagEx(_).getNode("keywords"))
+          .filter(!Check.isEmpty(_))
+          .map(new SimpleI18NString(_)) // DisplayField requires its value to be an I18N string.
+          .map(new DisplayField("node", new SimpleI18NString("Tags"), _))
+
+      Option.when(bean.getStatus == ItemStatus.PERSONAL.toString)(personalTags).flatten
+    }
+
+    standardDisplayFields ++ customDisplayFields
   }
 }

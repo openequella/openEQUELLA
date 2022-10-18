@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { cloneDeep, set } from 'lodash';
+import { cloneDeep, isArray, set } from 'lodash';
 import { is } from 'typescript-is';
 
 /**
@@ -45,6 +45,10 @@ const convertFields = <R>(
   Object.entries(input).forEach(([field, value]) => {
     if (isRecord(value) && recursive) {
       convertFields(value, targetFields, recursive, converter);
+    } else if (isArray(value)) {
+      value.map((element) =>
+        convertFields(element, targetFields, recursive, converter)
+      );
     } else {
       targetFields
         .filter((targetField) => targetField === field)

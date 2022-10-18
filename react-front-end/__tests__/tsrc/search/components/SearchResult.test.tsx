@@ -17,6 +17,7 @@
  */
 import { createTheme } from "@material-ui/core/styles";
 import { MuiThemeProvider, Theme } from "@material-ui/core";
+import CloseIcon from "@material-ui/icons/Close";
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
 import {
@@ -39,6 +40,7 @@ import {
 } from "../../../../__mocks__/searchresult_mock_data";
 import * as mockData from "../../../../__mocks__/searchresult_mock_data";
 import type { RenderData } from "../../../../tsrc/AppConfig";
+import { TooltipIconButton } from "../../../../tsrc/components/TooltipIconButton";
 import {
   getGlobalCourseList,
   selectResourceForCourseList,
@@ -80,7 +82,8 @@ const defaultTheme = createTheme({
 describe("<SearchResult/>", () => {
   const renderSearchResult = async (
     itemResult: OEQ.Search.SearchResultItem,
-    theme: Theme = defaultTheme
+    theme: Theme = defaultTheme,
+    customActionButtons?: JSX.Element[]
   ) => {
     const renderResult = render(
       // This needs to be wrapped inside a BrowserRouter, to prevent an
@@ -93,6 +96,7 @@ describe("<SearchResult/>", () => {
             item={itemResult}
             highlights={[]}
             getItemAttachments={async () => itemResult.attachments!}
+            customActionButtons={customActionButtons}
           />
         </BrowserRouter>
       </MuiThemeProvider>
@@ -230,6 +234,22 @@ describe("<SearchResult/>", () => {
     }
   );
 
+  it("displays custom action buttons", async () => {
+    const text = "This is a custom action button";
+    const actionButtons = [
+      <TooltipIconButton title={text}>
+        <CloseIcon />
+      </TooltipIconButton>,
+    ];
+    const { queryByLabelText } = await renderSearchResult(
+      mockData.basicSearchObj,
+      defaultTheme,
+      actionButtons
+    );
+
+    expect(queryByLabelText(text, { selector: "button" })).toBeInTheDocument();
+  });
+
   it.each<[string]>([
     [selectSummaryPageString],
     [selectAllAttachmentsString],
@@ -313,6 +333,10 @@ describe("<SearchResult/>", () => {
     beforeAll(() => {
       updateMockGlobalCourseList();
       updateMockGetBaseUrl();
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
     });
 
     const mockSelectResourceForCourseList = jest.spyOn(
@@ -434,7 +458,7 @@ describe("<SearchResult/>", () => {
       expect(collapsedAttachment.queryByText("config.json")).toBeFalsy(); // i.e. not rendered so not visible
     });
 
-    it("should make each attachment draggable", async () => {
+    it("should make each attachment of live Items draggable", async () => {
       updateMockGetRenderData(basicRenderData);
       await renderSearchResult(mockData.attachSearchObj);
 
@@ -447,6 +471,15 @@ describe("<SearchResult/>", () => {
           getGlobalCourseList().prepareDraggableAndBind
         ).toHaveBeenCalledWith(`#${attachment.id}`, false);
       });
+    });
+
+    it("should not make attachments of non-live Items draggable", async () => {
+      updateMockGetRenderData(basicRenderData);
+      await renderSearchResult(mockData.nonLiveObj);
+
+      expect(
+        getGlobalCourseList().prepareDraggableAndBind
+      ).not.toHaveBeenCalled();
     });
 
     it("should not make broken attachments draggable", async () => {

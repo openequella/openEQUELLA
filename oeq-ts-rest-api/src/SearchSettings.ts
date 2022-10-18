@@ -18,6 +18,7 @@
 import { Literal, Static, Union } from 'runtypes';
 import { is } from 'typescript-is';
 import { GET, PUT } from './AxiosInstance';
+import { SortOrder } from './Search';
 
 export const ContentIndexLevelRunTypes = Union(
   Literal(0),
@@ -26,16 +27,6 @@ export const ContentIndexLevelRunTypes = Union(
 );
 
 export type ContentIndexLevel = Static<typeof ContentIndexLevelRunTypes>;
-
-export const SortOrderRunTypes = Union(
-  Literal('RANK'),
-  Literal('DATEMODIFIED'),
-  Literal('DATECREATED'),
-  Literal('NAME'),
-  Literal('RATING')
-);
-
-export type SortOrder = Static<typeof SortOrderRunTypes>;
 
 export interface Settings {
   searchingShowNonLiveCheckbox: boolean;

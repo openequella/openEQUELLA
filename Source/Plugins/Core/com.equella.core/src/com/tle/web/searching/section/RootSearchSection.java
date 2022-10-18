@@ -95,7 +95,7 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
     // is in 'structured' mode. If yes, then render the new search page if it's enabled.
     SelectionSession selectionSession = selectionService.getCurrentSession(context);
     if (isNewSearchUIInSelectionSession(selectionSession) && useNewSearch()) {
-      getModel(context).setNewSearchUIContent(RenderNewSearchPage.renderNewSearchPage(context));
+      getModel(context).setNewUIContent(RenderNewSearchPage.renderNewSearchPage(context));
     }
     return super.renderHtml(context);
   }

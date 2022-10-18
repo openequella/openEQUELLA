@@ -21,6 +21,8 @@ import * as mockData from "../../__mocks__/searchresult_mock_data";
 import SearchResult, {
   SearchResultProps,
 } from "../../tsrc/search/components/SearchResult";
+import { IconButton } from "@material-ui/core";
+import InfoIcon from "@material-ui/icons/Info";
 
 export default {
   title: "Search/SearchResult",
@@ -78,4 +80,17 @@ HighlightedSearchResult.args = {
       "This is the story of a dog and a cat in the city, exploring what cats and dogs do when there are no people. (Using highlights [cat, dog*].)",
   },
   highlights: ["cat", "dog*"],
+};
+
+export const CustomActionButtonSearchResult: Story<SearchResultProps> = (
+  args
+) => <SearchResult {...args} />;
+
+CustomActionButtonSearchResult.args = {
+  ...BasicSearchResult.args,
+  customActionButtons: [
+    <IconButton size="small">
+      <InfoIcon />
+    </IconButton>,
+  ],
 };

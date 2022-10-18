@@ -17,23 +17,33 @@
  */
 import { debounce, Drawer, Grid, Hidden } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
+import { constant, identity, pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import * as T from "fp-ts/Task";
+import * as TO from "fp-ts/TaskOption";
 import { isEqual } from "lodash";
 import * as React from "react";
-import { useCallback, useContext, useMemo, useRef, useState } from "react";
+import {
+  ReactNode,
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useHistory } from "react-router";
 import { getBaseUrl } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
 import MessageInfo, { MessageInfoVariant } from "../components/MessageInfo";
 import { AppContext } from "../mainui/App";
-import { NEW_SEARCH_PATH, routes } from "../mainui/routes";
+import { routes } from "../mainui/routes";
 import { getAdvancedSearchIdFromLocation } from "../modules/AdvancedSearchModule";
 import { Collection } from "../modules/CollectionsModule";
-import { addFavouriteSearch } from "../modules/FavouriteModule";
-import { GallerySearchResultItem } from "../modules/GallerySearchModule";
+import { addFavouriteSearch, FavouriteURL } from "../modules/FavouriteModule";
+import type { GallerySearchResultItem } from "../modules/GallerySearchModule";
 import {
   buildSelectionSessionAdvancedSearchLink,
   buildSelectionSessionRemoteSearchLink,
-  buildSelectionSessionSearchPageLink,
   isSelectionSessionOpen,
 } from "../modules/LegacySelectionSessionModule";
 import { getRemoteSearchesFromServer } from "../modules/RemoteSearchModule";
@@ -65,9 +75,12 @@ import {
   SearchResultList,
 } from "./components/SearchResultList";
 import { SidePanel } from "./components/SidePanel";
-import StatusSelector from "./components/StatusSelector";
+import StatusSelector, {
+  StatusSelectorProps,
+} from "./components/StatusSelector";
 import { SearchContext } from "./Search";
 import {
+  buildSearchPageNavigationConfig,
   defaultPagedSearchResult,
   defaultSearchPageHeaderConfig,
   defaultSearchPageOptions,
@@ -75,21 +88,26 @@ import {
   generateExportErrorMessage,
   generateQueryStringFromSearchPageOptions,
   getPartialSearchOptions,
+  navigateTo,
   SearchPageHeaderConfig,
+  SearchPageNavigationConfig,
   SearchPageOptions,
   SearchPageRefinePanelConfig,
   SearchPageSearchBarConfig,
   writeRawModeToStorage,
 } from "./SearchPageHelper";
 import { SearchPageSearchResult } from "./SearchPageReducer";
-import * as O from "fp-ts/Option";
-import { pipe } from "fp-ts/function";
 
 const { searchpage: searchStrings } = languageStrings;
 const { title: dateModifiedSelectorTitle, quickOptionDropdown } =
   searchStrings.lastModifiedDateSelector;
 const { title: collectionSelectorTitle } = searchStrings.collectionSelector;
 const { title: displayModeSelectorTitle } = searchStrings.displayModeSelector;
+
+interface SnackBarDetails {
+  message: string;
+  variant?: MessageInfoVariant;
+}
 
 export interface SearchPageBodyProps {
   /**
@@ -122,6 +140,16 @@ export interface SearchPageBodyProps {
    * Customised callback fired after a search is complete.
    */
   customSearchCallback?: () => void;
+  /**
+   * Function to render custom UI for a list of SearchResultItem or GallerySearchResultItem.
+   */
+  customRenderSearchResults?: (
+    searchResult: SearchPageSearchResult
+  ) => ReactNode;
+  /**
+   * Function to customise the URL which is used when saving favourites.
+   */
+  customFavouriteUrl?: (url: FavouriteURL) => FavouriteURL;
 }
 
 /**
@@ -141,15 +169,19 @@ export const SearchPageBody = ({
   refinePanelConfig = defaultSearchPageRefinePanelConfig,
   enableClassification = true,
   customSearchCallback,
+  customRenderSearchResults,
+  customFavouriteUrl = identity,
 }: SearchPageBodyProps) => {
   const {
     enableCSVExportButton,
     enableShareSearchButton,
     additionalHeaders,
     customSortingOptions,
+    newSearchConfig,
   } = headerConfig;
 
   const {
+    customRefinePanelControl = [],
     enableAdvancedSearchSelector,
     enableCollectionSelector,
     enableDateRangeSelector,
@@ -159,6 +191,7 @@ export const SearchPageBody = ({
     enableMimeTypeSelector,
     enableOwnerSelector,
     enableSearchAttachmentsSelector,
+    statusSelectorCustomConfig = { alwaysEnabled: false },
   } = refinePanelConfig;
 
   const {
@@ -174,10 +207,7 @@ export const SearchPageBody = ({
   const { currentUser } = useContext(AppContext);
   const history = useHistory();
 
-  const [snackBar, setSnackBar] = useState<{
-    message: string;
-    variant?: MessageInfoVariant;
-  }>({
+  const [snackBar, setSnackBar] = useState<SnackBarDetails>({
     message: "",
   });
   const [alreadyDownloaded, setAlreadyDownloaded] = useState<boolean>(false);
@@ -207,42 +237,25 @@ export const SearchPageBody = ({
     [enableClassification, search, customSearchCallback]
   );
 
-  /**
-   * Depending on the whether in the context of a Selection Session, this function will
-   * use the appropriate method to navigate to the provided `normalPath`.
-   *
-   * @param normalPath The path which the page will be navigated to.
-   * @param selectionSessionPathBuilder Function to convert the supplied path to a Selection Session specific path.
-   */
-  const navigateTo = (
-    normalPath: string,
-    selectionSessionPathBuilder: () => string
-  ) => {
-    isSelectionSessionOpen()
-      ? window.open(selectionSessionPathBuilder(), "_self")
-      : history.push(normalPath);
-  };
-
-  const exitAdvancedSearch = () => {
-    navigateTo(NEW_SEARCH_PATH, () =>
-      buildSelectionSessionSearchPageLink(searchPageOptions.externalMimeTypes)
-    );
-  };
+  const navigationWithHistory = (config: SearchPageNavigationConfig) =>
+    navigateTo(config, history);
 
   const handleAdvancedSearchChanged = (
     advancedSearch: OEQ.Common.BaseEntitySummary | null
   ) =>
     pipe(
       O.fromNullable(advancedSearch),
-      O.map(({ uuid }) =>
-        navigateTo(routes.NewAdvancedSearch.to(uuid), () =>
+      O.map(({ uuid }) => ({
+        path: routes.NewAdvancedSearch.to(uuid),
+        selectionSessionPathBuilder: () =>
           buildSelectionSessionAdvancedSearchLink(
             uuid,
             searchPageOptions.externalMimeTypes
-          )
-        )
-      ),
-      O.getOrElse(() => exitAdvancedSearch())
+          ),
+      })),
+      // Go to the normal Search page if none is selected.
+      O.getOrElse(() => buildSearchPageNavigationConfig(searchPageOptions)),
+      navigationWithHistory
     );
 
   const handleClearSearchOptions = () => {
@@ -254,10 +267,17 @@ export const SearchPageBody = ({
         : undefined,
       // As per requirements for persistence of rawMode, it is _not_ reset for New Searches
       rawMode: searchPageOptions.rawMode,
+      // Apply custom new search criteria.
+      ...newSearchConfig?.criteria,
     });
     setFilterExpansion(false);
 
-    exitAdvancedSearch();
+    newSearchConfig?.callback?.();
+    pipe(
+      newSearchConfig?.navigationTo,
+      O.fromNullable,
+      O.map(navigationWithHistory)
+    );
   };
 
   const handleCollapsibleFilterClick = () => {
@@ -387,18 +407,27 @@ export const SearchPageBody = ({
       false
     );
 
-  const handleSaveFavouriteSearch = (name: string) => {
-    // We only need pathname and query strings.
-    const url = `${pathname}?${generateQueryStringFromSearchPageOptions(
-      searchPageOptions
-    )}`;
-
-    return addFavouriteSearch(name, url).then(() =>
-      setSnackBar({
-        message: searchStrings.favouriteSearch.saveSearchConfirmationText,
-      })
-    );
-  };
+  const handleSaveFavouriteSearch = async (name: string): Promise<void> =>
+    await pipe(
+      {
+        path: pathname,
+        params: new URLSearchParams(
+          generateQueryStringFromSearchPageOptions(searchPageOptions)
+        ),
+      },
+      customFavouriteUrl,
+      (url) => TO.tryCatch(() => addFavouriteSearch(name, url)),
+      TO.match<SnackBarDetails, OEQ.Favourite.FavouriteSearchModel>(
+        constant({
+          message: searchStrings.favouriteSearch.saveSearchFailedText,
+          variant: "error",
+        }),
+        constant({
+          message: searchStrings.favouriteSearch.saveSearchConfirmationText,
+        })
+      ),
+      T.map(setSnackBar)
+    )();
 
   const handleSearchAttachmentsChange = (searchAttachments: boolean) => {
     doSearch({
@@ -436,7 +465,7 @@ export const SearchPageBody = ({
       selectedCategories: undefined,
     });
 
-  const handleSortOrderChanged = (order: OEQ.SearchSettings.SortOrder) =>
+  const handleSortOrderChanged = (order: OEQ.Search.SortOrder) =>
     doSearch({ ...searchPageOptions, sortOrder: order });
 
   const handleWildcardModeChanged = (wildcardMode: boolean) =>
@@ -488,137 +517,146 @@ export const SearchPageBody = ({
     return isQueryOrFiltersSet || isClassificationSelected;
   };
 
-  const refinePanelControls: RefinePanelControl[] = [
-    {
-      idSuffix: "DisplayModeSelector",
-      title: displayModeSelectorTitle,
-      component: (
-        <DisplayModeSelector
-          onChange={handleDisplayModeChanged}
-          value={searchPageOptions.displayMode ?? "list"}
-          disableImageMode={
-            searchSettings.core?.searchingDisableGallery ?? false
-          }
-          disableVideoMode={
-            searchSettings.core?.searchingDisableVideos ?? false
-          }
-        />
-      ),
-      disabled: !enableDisplayModeSelector,
-      alwaysVisible: true,
-    },
-    {
-      idSuffix: "CollectionSelector",
-      title: collectionSelectorTitle,
-      component: (
-        <CollectionSelector
-          onSelectionChange={handleCollectionSelectionChanged}
-          value={searchPageOptions.collections}
-        />
-      ),
-      disabled: !enableCollectionSelector,
-      alwaysVisible: true,
-    },
-    {
-      idSuffix: "AdvancedSearchSelector",
-      title: searchStrings.advancedSearchSelector.title,
-      component: (
-        <AdvancedSearchSelector
-          advancedSearches={advancedSearches}
-          onSelectionChange={handleAdvancedSearchChanged}
-          value={advancedSearches.find(
-            ({ uuid }) =>
-              uuid === getAdvancedSearchIdFromLocation(history.location)
-          )}
-        />
-      ),
-      disabled: advancedSearches.length === 0 || !enableAdvancedSearchSelector,
-      alwaysVisible: true,
-    },
-    {
-      idSuffix: "RemoteSearchSelector",
-      title: searchStrings.remoteSearchSelector.title,
-      component: (
-        <AuxiliarySearchSelector
-          auxiliarySearchesSupplier={getRemoteSearchesFromServer}
-          urlGeneratorForRouteLink={routes.RemoteSearch.to}
-          urlGeneratorForMuiLink={buildSelectionSessionRemoteSearchLink}
-        />
-      ),
-      disabled: !enableRemoteSearchSelector,
-    },
-    {
-      idSuffix: "DateRangeSelector",
-      title: dateModifiedSelectorTitle,
-      component: (
-        <DateRangeSelector
-          onDateRangeChange={handleLastModifiedDateRangeChange}
-          onQuickModeChange={handleQuickDateRangeModeChange}
-          quickOptionDropdownLabel={quickOptionDropdown}
-          dateRange={searchPageOptions.lastModifiedDateRange}
-          quickModeEnabled={searchPageOptions.dateRangeQuickModeEnabled}
-        />
-      ),
-      // Before Search settings are retrieved, do not show.
-      disabled:
-        !enableDateRangeSelector ||
-        (searchSettings.core?.searchingDisableDateModifiedFilter ?? true),
-    },
-    {
-      idSuffix: "MIMETypeSelector",
-      title: searchStrings.mimeTypeFilterSelector.title,
-      component: (
-        <MimeTypeFilterSelector
-          value={searchPageOptions.mimeTypeFilters}
-          onChange={handleMimeTypeFilterChange}
-          filters={searchSettings.mimeTypeFilters}
-        />
-      ),
-      disabled:
-        !enableMimeTypeSelector ||
-        searchPageOptions.displayMode !== "list" ||
-        searchSettings.mimeTypeFilters.length === 0 ||
-        !!searchPageOptions.externalMimeTypes,
-    },
-    {
-      idSuffix: "OwnerSelector",
-      title: searchStrings.filterOwner.title,
-      component: (
-        <OwnerSelector
-          onClearSelect={handleOwnerClear}
-          onSelect={handleOwnerChange}
-          value={searchPageOptions.owner}
-        />
-      ),
-      disabled:
-        !enableOwnerSelector ||
-        (searchSettings.core?.searchingDisableOwnerFilter ?? true),
-    },
-    {
-      idSuffix: "StatusSelector",
-      title: searchStrings.statusSelector.title,
-      component: (
-        <StatusSelector
-          onChange={handleStatusChange}
-          value={searchPageOptions.status}
-        />
-      ),
-      disabled:
-        !enableItemStatusSelector ||
-        (!searchSettings.core?.searchingShowNonLiveCheckbox ?? true),
-    },
-    {
-      idSuffix: "SearchAttachmentsSelector",
-      title: searchStrings.searchAttachmentsSelector.title,
-      component: (
-        <SearchAttachmentsSelector
-          value={searchPageOptions.searchAttachments}
-          onChange={handleSearchAttachmentsChange}
-        />
-      ),
-      disabled: !enableSearchAttachmentsSelector,
-    },
-  ];
+  const buildStatusSelector = () =>
+    pipe(
+      statusSelectorCustomConfig.selectorProps,
+      O.fromNullable,
+      O.getOrElse<StatusSelectorProps>(() => ({
+        value: searchPageOptions.status,
+        onChange: handleStatusChange,
+      })),
+      (props) => <StatusSelector {...props} />
+    );
+
+  const refinePanelControls: RefinePanelControl[] =
+    customRefinePanelControl.concat([
+      {
+        idSuffix: "DisplayModeSelector",
+        title: displayModeSelectorTitle,
+        component: (
+          <DisplayModeSelector
+            onChange={handleDisplayModeChanged}
+            value={searchPageOptions.displayMode ?? "list"}
+            disableImageMode={
+              searchSettings.core?.searchingDisableGallery ?? false
+            }
+            disableVideoMode={
+              searchSettings.core?.searchingDisableVideos ?? false
+            }
+          />
+        ),
+        disabled: !enableDisplayModeSelector,
+        alwaysVisible: true,
+      },
+      {
+        idSuffix: "CollectionSelector",
+        title: collectionSelectorTitle,
+        component: (
+          <CollectionSelector
+            onSelectionChange={handleCollectionSelectionChanged}
+            value={searchPageOptions.collections}
+          />
+        ),
+        disabled: !enableCollectionSelector,
+        alwaysVisible: true,
+      },
+      {
+        idSuffix: "AdvancedSearchSelector",
+        title: searchStrings.advancedSearchSelector.title,
+        component: (
+          <AdvancedSearchSelector
+            advancedSearches={advancedSearches}
+            onSelectionChange={handleAdvancedSearchChanged}
+            value={advancedSearches.find(
+              ({ uuid }) =>
+                uuid === getAdvancedSearchIdFromLocation(history.location)
+            )}
+          />
+        ),
+        disabled:
+          advancedSearches.length === 0 || !enableAdvancedSearchSelector,
+        alwaysVisible: true,
+      },
+      {
+        idSuffix: "RemoteSearchSelector",
+        title: searchStrings.remoteSearchSelector.title,
+        component: (
+          <AuxiliarySearchSelector
+            auxiliarySearchesSupplier={getRemoteSearchesFromServer}
+            urlGeneratorForRouteLink={routes.RemoteSearch.to}
+            urlGeneratorForMuiLink={buildSelectionSessionRemoteSearchLink}
+          />
+        ),
+        disabled: !enableRemoteSearchSelector,
+      },
+      {
+        idSuffix: "DateRangeSelector",
+        title: dateModifiedSelectorTitle,
+        component: (
+          <DateRangeSelector
+            onDateRangeChange={handleLastModifiedDateRangeChange}
+            onQuickModeChange={handleQuickDateRangeModeChange}
+            quickOptionDropdownLabel={quickOptionDropdown}
+            dateRange={searchPageOptions.lastModifiedDateRange}
+            quickModeEnabled={searchPageOptions.dateRangeQuickModeEnabled}
+          />
+        ),
+        // Before Search settings are retrieved, do not show.
+        disabled:
+          !enableDateRangeSelector ||
+          (searchSettings.core?.searchingDisableDateModifiedFilter ?? true),
+      },
+      {
+        idSuffix: "MIMETypeSelector",
+        title: searchStrings.mimeTypeFilterSelector.title,
+        component: (
+          <MimeTypeFilterSelector
+            value={searchPageOptions.mimeTypeFilters}
+            onChange={handleMimeTypeFilterChange}
+            filters={searchSettings.mimeTypeFilters}
+          />
+        ),
+        disabled:
+          !enableMimeTypeSelector ||
+          searchPageOptions.displayMode !== "list" ||
+          searchSettings.mimeTypeFilters.length === 0 ||
+          !!searchPageOptions.externalMimeTypes,
+      },
+      {
+        idSuffix: "OwnerSelector",
+        title: searchStrings.filterOwner.title,
+        component: (
+          <OwnerSelector
+            onClearSelect={handleOwnerClear}
+            onSelect={handleOwnerChange}
+            value={searchPageOptions.owner}
+          />
+        ),
+        disabled:
+          !enableOwnerSelector ||
+          (searchSettings.core?.searchingDisableOwnerFilter ?? true),
+      },
+      {
+        idSuffix: "StatusSelector",
+        title: searchStrings.statusSelector.title,
+        component: buildStatusSelector(),
+        disabled:
+          !statusSelectorCustomConfig?.alwaysEnabled &&
+          (!enableItemStatusSelector ||
+            (!searchSettings.core?.searchingShowNonLiveCheckbox ?? true)),
+      },
+      {
+        idSuffix: "SearchAttachmentsSelector",
+        title: searchStrings.searchAttachmentsSelector.title,
+        component: (
+          <SearchAttachmentsSelector
+            value={searchPageOptions.searchAttachments}
+            onChange={handleSearchAttachmentsChange}
+          />
+        ),
+        disabled: !enableSearchAttachmentsSelector,
+      },
+    ]);
 
   const renderSidePanel = () => {
     const getClassifications = (): Classification[] => {
@@ -673,11 +711,13 @@ export const SearchPageBody = ({
     return defaultResult;
   };
 
-  const renderSearchResults = (): React.ReactNode | null => {
+  const defaultRenderSearchResults = (
+    searchPageSearchResult: SearchPageSearchResult
+  ): ReactNode => {
     const {
       from,
       content: { results: searchResults },
-    } = searchResult();
+    } = searchPageSearchResult;
 
     if (searchResults.length < 1) {
       return null;
@@ -764,7 +804,10 @@ export const SearchPageBody = ({
                 useShareSearchButton={enableShareSearchButton}
                 additionalHeaders={additionalHeaders}
               >
-                {renderSearchResults()}
+                {pipe(
+                  searchResult(),
+                  customRenderSearchResults ?? defaultRenderSearchResults
+                )}
               </SearchResultList>
             </Grid>
           </Grid>

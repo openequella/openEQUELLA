@@ -33,7 +33,7 @@ import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import * as OEQ from "@openequella/rest-api-client";
 import HTMLReactParser from "html-react-parser";
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import { HashLink } from "react-router-hash-link";
 import { sprintf } from "sprintf-js";
@@ -57,7 +57,7 @@ import {
   selectResource,
 } from "../../modules/LegacySelectionSessionModule";
 import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
-import { searchItemAttachments } from "../../modules/SearchModule";
+import { isLiveItem, searchItemAttachments } from "../../modules/SearchModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
 import { buildOpenSummaryPageHandler } from "../SearchPageHelper";
@@ -129,6 +129,11 @@ export interface SearchResultProps {
    * The details of the items to display.
    */
   item: OEQ.Search.SearchResultItem;
+  /**
+   * Custom action buttons to be displayed. Each button will be separated by a vertical divider,
+   * and they are displayed next to the FavoriteIcon.
+   */
+  customActionButtons?: JSX.Element[];
 }
 
 /**
@@ -151,6 +156,7 @@ export default function SearchResult({
   getItemAttachments = searchItemAttachments,
   highlights,
   item,
+  customActionButtons,
 }: SearchResultProps) {
   const {
     bookmarkId: bookmarkDefaultId,
@@ -168,6 +174,9 @@ export default function SearchResult({
     uuid,
     version,
   } = item;
+
+  const isItemLive = isLiveItem(item);
+
   const itemKey = `${uuid}/${version}`;
   const classes = useStyles();
   const inSelectionSession: boolean = isSelectionSessionOpen();
@@ -257,7 +266,7 @@ export default function SearchResult({
         {metaDataDivider}
         <Typography component="span">
           {searchResultStrings.dateModified}&nbsp;
-          <DateDisplay displayRelative date={new Date(modifiedDate)} />
+          <DateDisplay displayRelative date={modifiedDate} />
         </Typography>
 
         {metaDataDivider}
@@ -272,6 +281,12 @@ export default function SearchResult({
         >
           {bookmarkId ? <FavoriteIcon /> : <FavoriteBorderIcon />}
         </TooltipIconButton>
+
+        {customActionButtons?.map((button, index) => (
+          <Fragment key={index}>
+            {metaDataDivider} {button}
+          </Fragment>
+        ))}
 
         {commentCount > 0 && (
           <Hidden smDown>
@@ -367,7 +382,7 @@ export default function SearchResult({
       data-itemuuid={uuid}
       data-itemversion={version}
     >
-      {inStructured && (
+      {isItemLive && inStructured && (
         <Grid item>
           <IconButton>
             <DragIndicatorIcon />
@@ -375,13 +390,15 @@ export default function SearchResult({
         </Grid>
       )}
       <Grid item>{itemLink()}</Grid>
-      <Grid item>
-        <ResourceSelector
-          labelText={selectResourceStrings.summaryPage}
-          isStopPropagation
-          onClick={() => selectResource(itemKey)}
-        />
-      </Grid>
+      {isItemLive && (
+        <Grid item>
+          <ResourceSelector
+            labelText={selectResourceStrings.summaryPage}
+            isStopPropagation
+            onClick={() => selectResource(itemKey)}
+          />
+        </Grid>
+      )}
     </Grid>
   );
 
@@ -421,6 +438,7 @@ export default function SearchResult({
                   item={item}
                   getViewerDetails={getViewerDetails}
                   getItemAttachments={getItemAttachments}
+                  isItemLive={isItemLive}
                 />
               </ItemDrmContext.Provider>
               {generateItemMetadata()}
