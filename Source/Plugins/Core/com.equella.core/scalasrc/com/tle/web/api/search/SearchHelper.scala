@@ -326,8 +326,8 @@ object SearchHelper {
 
   def getItemDrmStatus(rawItem: Item): Option[DrmStatus] = {
     for {
-      item <- Option(rawItem)
-      _    <- Option(item.getDrmSettings)
+      item     <- Option(rawItem)
+      settings <- Option(item.getDrmSettings)
       termsAccepted = try {
         LegacyGuice.drmService.hasAcceptedOrRequiresNoAcceptance(item, false, false)
       } catch {
@@ -341,7 +341,7 @@ object SearchHelper {
         case _: DRMException => false
       }
     } yield {
-      DrmStatus(termsAccepted, isAuthorised)
+      DrmStatus(termsAccepted, isAuthorised, settings.isAllowSummary)
     }
   }
 
