@@ -15,9 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { fireEvent } from "@testing-library/react";
-import { languageStrings } from "../../../tsrc/util/langstrings";
-import { queryMuiTextField } from "../MuiQueries";
+import * as OEQ from "@openequella/rest-api-client";
+import * as A from "fp-ts/Array";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import * as UserModuleMock from "../../../../__mocks__/UserModule.mock";
+import { languageStrings } from "../../../../tsrc/util/langstrings";
+import { doSearch } from "./BaseSearchTestHelper";
+
+const { queryFieldLabel } = languageStrings.userSearchComponent;
 
 /**
  * Helper function to do the steps of entering a submitting a search in the <UserSearch/>
@@ -26,23 +32,22 @@ import { queryMuiTextField } from "../MuiQueries";
  * @param dialog The User Search Dialog
  * @param queryValue the value to put in the query field before pressing enter
  */
-export const doSearch = (dialog: HTMLElement, queryValue: string) => {
-  const queryField = queryMuiTextField(
-    dialog,
-    languageStrings.userSearchComponent.queryFieldLabel
-  );
-  if (!queryField) {
-    throw new Error("Unable to find query field!");
-  }
-
-  fireEvent.change(queryField, { target: { value: queryValue } });
-  fireEvent.keyDown(queryField, { key: "Enter", code: "Enter" });
-};
+export const searchUser = (dialog: HTMLElement, queryValue: string) =>
+  doSearch(dialog, queryFieldLabel, queryValue);
 
 /**
- * Helper function to assist in finding the list of users after a search.
- *
- * @param container a root container within which <UserSearch/> exists
+ * Helper function to assist in finding the specific User from mock data.
  */
-export const getUserList = (container: HTMLElement): Element | null =>
-  container.querySelector("#UserSearch-UserList");
+export const findUserFromMockData = (
+  username: string
+): OEQ.UserQuery.UserDetails =>
+  pipe(
+    UserModuleMock.users,
+    A.findFirst((u) => u.username === username),
+    O.getOrElseW(() => {
+      throw new Error(
+        "Looks like mocked data set has changed, unable to find test user: " +
+          username
+      );
+    })
+  );

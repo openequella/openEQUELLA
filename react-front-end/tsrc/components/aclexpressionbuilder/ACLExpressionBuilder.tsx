@@ -41,7 +41,7 @@ import * as React from "react";
 import { useState, ChangeEvent, ReactNode } from "react";
 import { Union, Static, Literal } from "runtypes";
 import { languageStrings } from "../../util/langstrings";
-import UserSearch from "../UserSearch";
+import UserSearch from "../securityentitysearch/UserSearch";
 import { ACLExpression } from "./ACLExpressionHelper";
 import ACLExpressionTree from "./ACLExpressionTree";
 
@@ -211,7 +211,12 @@ const ACLExpressionBuilder = ({
           />
         ))}
       </RadioGroup>
-      <UserSearch onChange={() => {}} selections={new Set()} listHeight={300} />
+      <UserSearch
+        onChange={() => {}}
+        selections={new Set()}
+        userListProvider={() => Promise.resolve([])}
+        listHeight={300}
+      />
     </FormControl>
   );
 

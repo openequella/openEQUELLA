@@ -32,7 +32,7 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useState } from "react";
 import { languageStrings } from "../util/langstrings";
-import UserSearch from "./UserSearch";
+import UserSearch from "./securityentitysearch/UserSearch";
 
 interface SelectUserDialogProps {
   /** Controls displaying of dialog. */

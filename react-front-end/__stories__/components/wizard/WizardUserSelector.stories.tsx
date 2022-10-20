@@ -24,7 +24,7 @@ import {
   WizardUserSelector,
   WizardUserSelectorProps,
 } from "../../../tsrc/components/wizard/WizardUserSelector";
-import { GroupFilter } from "../UserSearch.stories";
+import { GroupFilter } from "../securityentitysearch/UserSearch.stories";
 
 export default {
   title: "Component/Wizard/WizardUserSelector",
