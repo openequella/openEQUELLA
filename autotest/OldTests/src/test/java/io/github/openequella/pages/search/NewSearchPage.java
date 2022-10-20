@@ -180,7 +180,7 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
     WebElement selectButton = ownerSelector.findElement(By.xpath(".//button[span=('Select')]"));
     selectButton.click();
     WebElement ownerSelectDialog =
-        driver.findElement(By.xpath("//div[@id='UserSearch']/ancestor::div[@role='dialog']"));
+        driver.findElement(By.xpath("//div[@id='BaseSearch']/ancestor::div[@role='dialog']"));
     WebElement ownerQueryInput = ownerSelectDialog.findElement(By.xpath(".//input"));
     // Put a query in and press ENTER to search.
     ownerQueryInput.sendKeys(ownerName);
@@ -189,7 +189,7 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
     getWaiter()
         .until(
             driver ->
-                ownerSelectDialog.findElements(By.xpath(".//ul[@id='user-search-list']/div")).size()
+                ownerSelectDialog.findElements(By.xpath(".//ul[@id='item-search-list']/div")).size()
                     > 0);
     // Click one of found users.
     WebElement owner =

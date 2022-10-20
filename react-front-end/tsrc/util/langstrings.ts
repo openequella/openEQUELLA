@@ -751,11 +751,19 @@ export const languageStrings = {
     enableSearch: "Enable new search page",
     themeSettingsButton: "Edit Theme Settings",
   },
-  userSearchComponent: {
-    failedToFindUsersMessage: "Unable to find any users matching '%s'",
+  baseSearchComponent: {
     filterActiveNotice: "Results will be filtered.",
+    failedToFindMessage: "Unable to find any item matching '%s'",
+    queryFieldLabel: "Item",
+  },
+  userSearchComponent: {
+    failedToFindMessage: "Unable to find any user matching '%s'",
     filteredByPrelude: "Your search results will be filtered by these groups:",
     queryFieldLabel: "Username, first or last name",
+  },
+  groupSearchComponent: {
+    failedToFindMessage: "Unable to find any group matching '%s'",
+    queryFieldLabel: "Name",
   },
   wizard: {
     controls: {

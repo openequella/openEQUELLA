@@ -16,8 +16,17 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import { contramap, Eq } from "fp-ts/Eq";
 import * as RA from "fp-ts/ReadonlyArray";
+import * as S from "fp-ts/string";
 import { API_BASE_URL } from "../AppConfig";
+
+/**
+ * Eq for `OEQ.UserQuery.GroupDetails` with equality based on the user's UUID.
+ */
+export const eqGroupById: Eq<OEQ.UserQuery.GroupDetails> = contramap(
+  (group: OEQ.UserQuery.GroupDetails) => group.id
+)(S.Eq);
 
 /**
  * Lookup groups known in oEQ.
@@ -34,3 +43,18 @@ export const resolveGroups = async (
       roles: [],
     })
   ).groups;
+
+/**
+ * List groups known in oEQ.
+ *
+ * @param query A wildcard supporting string to filter the result based on name
+ */
+export const listGroups = async (
+  query?: string
+): Promise<OEQ.UserQuery.GroupDetails[]> =>
+  await OEQ.UserQuery.search(API_BASE_URL, {
+    q: query,
+    groups: true,
+    users: false,
+    roles: false,
+  }).then((result: OEQ.UserQuery.SearchResult) => result.groups);

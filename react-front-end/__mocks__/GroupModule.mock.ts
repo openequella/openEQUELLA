@@ -17,6 +17,9 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 
+/**
+ * A list of groups to test with group search, deliberately out of order.
+ */
 export const groups: OEQ.UserQuery.GroupDetails[] = [
   {
     id: "3d96df92-4d0b-496f-b865-9f1ad4a67d8d",
@@ -29,6 +32,22 @@ export const groups: OEQ.UserQuery.GroupDetails[] = [
   {
     id: "e810bee1-f2da-4145-8bc3-dc6fec827429",
     name: "Content Administrators",
+  },
+  {
+    id: "680f5eb7-22e2-4ab6-bcea-25205167e36e",
+    name: "group200",
+  },
+  {
+    id: "cda09b86-3662-46bd-b60e-4bce89efbada",
+    name: "group100",
+  },
+  {
+    id: "97254515-6e32-48e9-ba65-5b5c6a1182a6",
+    name: "group400",
+  },
+  {
+    id: "8db50158-757d-44f3-8ccf-7b230a3a6405",
+    name: "group300",
   },
 ];
 
