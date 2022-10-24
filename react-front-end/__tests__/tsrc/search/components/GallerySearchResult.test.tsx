@@ -30,6 +30,7 @@ import { languageStrings } from "../../../../tsrc/util/langstrings";
 import {
   buildItems,
   galleryDrmItem,
+  galleryDrmItemSummaryAllow,
   galleryDrmUnauthorisedItem,
 } from "./GallerySearchResultHelpers";
 import * as ReactRouterDom from "react-router-dom";
@@ -111,7 +112,10 @@ describe("<GallerySearchResult />", () => {
     jest.spyOn(DrmModule, "listDrmTerms").mockResolvedValue(drmTerms);
 
     it.each([
-      ["view a DRM Item's summary page", viewItem],
+      [
+        "DRM terms must be accepted before viewing a DRM Item's summary page",
+        viewItem,
+      ],
       ["preview an gallery entry protected by DRM", ariaLabel],
     ])(
       "shows DRM acceptance dialog when %s",
@@ -149,5 +153,16 @@ describe("<GallerySearchResult />", () => {
         });
       }
     );
+
+    it("supports viewing a DRM Item's summary page without accepting the terms", async () => {
+      const { getByLabelText } = await renderGallery([
+        galleryDrmItemSummaryAllow,
+      ]);
+      await act(async () => {
+        await userEvent.click(getByLabelText(viewItem));
+      });
+
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
   });
 });

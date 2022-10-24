@@ -359,8 +359,10 @@ export default function SearchResult({
         routeLinkUrlProvider={() => url}
         muiLinkUrlProvider={() => url}
         onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
-          e.preventDefault();
-          checkDrmPermission(onClick);
+          if (!drmStatus.isAllowSummary) {
+            e.preventDefault();
+            checkDrmPermission(onClick);
+          }
         }}
       >
         {itemTitle}
