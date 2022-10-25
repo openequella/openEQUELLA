@@ -24,9 +24,10 @@ import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as RSET from "fp-ts/ReadonlySet";
 import * as S from "fp-ts/string";
-import * as React from "react";
 import { sprintf } from "sprintf-js";
+import * as GroupSearchMock from "../../../../__mocks__/GroupSearch.mock";
 import * as UserModuleMock from "../../../../__mocks__/UserModule.mock";
+import { GroupFilter } from "../../../../__stories__/components/securityentitysearch/UserSearch.stories";
 import { eqUserById } from "../../../../tsrc/modules/UserModule";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import {
@@ -98,7 +99,8 @@ describe("<BaseSearch/>", () => {
     it("displays the details of filters used in the search", async () => {
       await renderBaseSearch({
         ...defaultBaseSearchProps,
-        filterDetails: <p>"tooltip content"</p>,
+        groupFilter: GroupFilter.args!.groupFilter,
+        resolveGroupsProvider: GroupSearchMock.resolveGroupsProvider,
       });
 
       expect(
