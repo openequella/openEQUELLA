@@ -463,7 +463,7 @@ export const languageStrings = {
     },
     displayModeSelector: {
       title: "Display mode",
-      modeItemList: "Item list",
+      modeItemList: "Standard",
       modeGalleryImage: "Image gallery",
       modeGalleryVideo: "Video gallery",
     },
