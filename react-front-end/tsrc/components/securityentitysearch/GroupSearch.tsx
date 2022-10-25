@@ -26,7 +26,10 @@ import BaseSearch, { CommonEntitySearchProps } from "./BaseSearch";
 
 export interface GroupSearchProps
   extends CommonEntitySearchProps<OEQ.UserQuery.GroupDetails> {
-  groupListProvider: (query?: string) => Promise<OEQ.UserQuery.GroupDetails[]>;
+  groupListProvider: (
+    query?: string,
+    filter?: ReadonlySet<string>
+  ) => Promise<OEQ.UserQuery.GroupDetails[]>;
 }
 
 /**
@@ -40,6 +43,8 @@ const GroupSearch = ({
   onChange,
   selections,
   enableMultiSelection,
+  groupFilter,
+  resolveGroupsProvider,
 }: GroupSearchProps) => {
   /**
    * A template used to display a group entry in BaseSearch (in CheckboxList).
@@ -58,6 +63,8 @@ const GroupSearch = ({
       itemListProvider={groupListProvider}
       itemDetailsToEntry={groupEntry}
       enableMultiSelection={enableMultiSelection}
+      groupFilter={groupFilter}
+      resolveGroupsProvider={resolveGroupsProvider}
     />
   );
 };

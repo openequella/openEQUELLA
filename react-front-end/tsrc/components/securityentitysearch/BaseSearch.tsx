@@ -35,16 +35,24 @@ import * as A from "fp-ts/Array";
 import * as EQ from "fp-ts/Eq";
 import { flow, pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
+import * as O from "fp-ts/Option";
 import * as ORD from "fp-ts/Ord";
+import { not } from "fp-ts/Predicate";
+import * as RA from "fp-ts/ReadonlyArray";
+import * as TASK from "fp-ts/Task";
+import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
 import * as RSET from "fp-ts/ReadonlySet";
 import * as S from "fp-ts/string";
-import { KeyboardEvent, useState } from "react";
+import { KeyboardEvent, useEffect, useState } from "react";
 import { sprintf } from "sprintf-js";
+import { resolveGroups } from "../../modules/GroupModule";
 import { languageStrings } from "../../util/langstrings";
+import { OrdAsIs } from "../../util/Ord";
 import { CheckboxList } from "../CheckboxList";
 
 const { filterActiveNotice } = languageStrings.baseSearchComponent;
+const { filteredByPrelude } = languageStrings.userSearchComponent;
 
 export interface BaseSecurityEntity {
   id: string;
@@ -79,6 +87,15 @@ export interface CommonEntitySearchProps<T> {
   listHeight?: number;
   /** Whether enable multiple selection or not, default value is `false` **/
   enableMultiSelection?: boolean;
+  /** A list of groups UUIDs to filter the items by. */
+  groupFilter?: ReadonlySet<string>;
+  /**
+   * Function which will resolve group IDs to full group details so that the group names can be
+   * used for display.
+   */
+  resolveGroupsProvider?: (
+    ids: ReadonlyArray<string>
+  ) => Promise<OEQ.UserQuery.GroupDetails[]>;
 }
 
 /**
@@ -123,11 +140,6 @@ export interface BaseSearchProps<T> extends CommonEntitySearchProps<T> {
    * The default value will display the id of item in `ListItemText`.
    */
   itemDetailsToEntry?: (item: T) => JSX.Element;
-  /**
-   * Component providing more details about filters used in the current search.
-   * Shows in a tooltip.
-   */
-  filterDetails?: JSX.Element;
 }
 
 /**
@@ -147,17 +159,61 @@ const BaseSearch = <T extends BaseSecurityEntity>({
   itemDetailsToEntry = (item: T) => <ListItemText primary={item.id} />,
   enableMultiSelection = false,
   itemListProvider,
-  filterDetails,
+  groupFilter,
+  resolveGroupsProvider = resolveGroups,
 }: BaseSearchProps<T>) => {
   const [query, setQuery] = useState<string>("");
-
   const [items, setItems] = useState<T[]>([]);
+  // Group details used for show group's names in the tooltip content
+  const [groupDetails, setGroupDetails] = useState<
+    OEQ.UserQuery.GroupDetails[]
+  >([]);
 
   const [hasSearched, setHasSearched] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<String>();
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
 
   const { queryFieldLabel, failedToFindMessage } = strings;
+
+  useEffect(() => {
+    if (!groupFilter) {
+      setGroupDetails([]);
+      return;
+    }
+
+    const retrieveGroupDetails: TASK.Task<void> = pipe(
+      groupFilter,
+      O.fromPredicate(not(RSET.isEmpty)),
+      O.map(
+        flow(
+          RSET.toReadonlyArray<string>(OrdAsIs),
+          TE.tryCatchK(
+            resolveGroupsProvider,
+            (reason) => `Failed to retrieve full group details: ${reason}`
+          ),
+          TE.match(console.error, setGroupDetails)
+        )
+      ),
+      O.getOrElse(() => TASK.fromIO(() => setGroupDetails([])))
+    );
+
+    (async () => await retrieveGroupDetails())();
+  }, [groupFilter, resolveGroupsProvider]);
+
+  const filterDetails = A.isNonEmpty(groupDetails) ? (
+    <>
+      <Typography variant="caption">{filteredByPrelude}</Typography>
+      <ul>
+        {pipe(
+          groupDetails,
+          RA.sort(
+            ORD.contramap((g: OEQ.UserQuery.GroupDetails) => g.name)(S.Ord)
+          ),
+          RA.map(({ id, name }) => <li key={id}>{name}</li>)
+        )}
+      </ul>
+    </>
+  ) : undefined;
 
   // Simple helper function to assist with providing useful id's for testing and theming.
   const genId = (suffix?: string) =>
@@ -167,7 +223,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
     setShowSpinner(true);
     setErrorMessage(undefined);
 
-    itemListProvider(query)
+    itemListProvider(query, groupFilter)
       .then(flow(A.sort(itemOrd), setItems))
       .catch((error: OEQ.Errors.ApiError) => {
         setItems([]);
