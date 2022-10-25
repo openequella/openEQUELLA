@@ -463,9 +463,9 @@ export const languageStrings = {
     },
     displayModeSelector: {
       title: "Display mode",
-      modeItemList: "Item List",
-      modeGalleryImage: "Image Gallery",
-      modeGalleryVideo: "Video Gallery",
+      modeItemList: "Item list",
+      modeGalleryImage: "Image gallery",
+      modeGalleryVideo: "Video gallery",
     },
     collectionSelector: {
       noOptions: "All",
