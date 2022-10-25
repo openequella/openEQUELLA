@@ -26,6 +26,8 @@ import {
   Theme,
   Typography,
 } from "@material-ui/core";
+import * as O from "fp-ts/Option";
+import { pipe } from "fp-ts/function";
 import { makeStyles } from "@material-ui/core/styles";
 import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
 import FavoriteIcon from "@material-ui/icons/Favorite";
@@ -134,6 +136,10 @@ export interface SearchResultProps {
    * and they are displayed next to the FavoriteIcon.
    */
   customActionButtons?: JSX.Element[];
+  /**
+   * Custom handler for clicking the title of each SearchResult.
+   */
+  customOnClickTitleHandler?: () => void;
 }
 
 /**
@@ -157,6 +163,7 @@ export default function SearchResult({
   highlights,
   item,
   customActionButtons,
+  customOnClickTitleHandler,
 }: SearchResultProps) {
   const {
     bookmarkId: bookmarkDefaultId,
@@ -359,10 +366,19 @@ export default function SearchResult({
         routeLinkUrlProvider={() => url}
         muiLinkUrlProvider={() => url}
         onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
-          if (!drmStatus.isAllowSummary) {
-            e.preventDefault();
-            checkDrmPermission(onClick);
-          }
+          pipe(
+            customOnClickTitleHandler,
+            O.fromNullable,
+            O.alt(() =>
+              drmStatus.isAllowSummary
+                ? O.none
+                : O.of(() => checkDrmPermission(onClick))
+            ),
+            O.map((handler) => {
+              e.preventDefault();
+              handler();
+            })
+          );
         }}
       >
         {itemTitle}
