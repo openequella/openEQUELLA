@@ -376,7 +376,7 @@ export default function SearchResult({
             ),
             O.map((handler) => {
               e.preventDefault();
-              handler();
+              return handler();
             })
           );
         }}
