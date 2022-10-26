@@ -268,6 +268,8 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
       callback: () => setSubStatus([]),
     },
     enableShareSearchButton: false,
+    // Downloading CSV is a feature belonging to Search page so disable it in My resources.
+    enableCSVExportButton: false,
     customSortingOptions: sortOrderOptions(resourceType),
     additionalHeaders:
       resourceType === "Scrapbook"
