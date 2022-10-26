@@ -21,6 +21,7 @@ import * as OEQ from "@openequella/rest-api-client";
 import { CurrentUserDetails } from "@openequella/rest-api-client/dist/LegacyContent";
 import "@testing-library/jest-dom/extend-expect";
 import {
+  act,
   getByLabelText,
   getByText,
   queryByLabelText,
@@ -31,6 +32,7 @@ import {
 import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
 import * as O from "fp-ts/Option";
+import * as TE from "fp-ts/TaskEither";
 import { pipe } from "fp-ts/function";
 import { concatAll } from "fp-ts/Monoid";
 import * as N from "fp-ts/number";
@@ -39,7 +41,12 @@ import * as React from "react";
 import { Router } from "react-router-dom";
 import {
   getModerationItemsSearchResult,
+  getScrapbookItemSearchResult,
   getSearchResult,
+  IMAGE_SCRAPBOOK,
+  WEBPAGE_SCRAPBOOK,
+  webpageScrapbook,
+  ZIP_SCRAPBOOK,
 } from "../../../__mocks__/SearchResult.mock";
 import * as UserModuleMock from "../../../__mocks__/UserModule.mock";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
@@ -53,12 +60,14 @@ import {
 import { defaultSearchSettings } from "../../../tsrc/modules/SearchSettingsModule";
 import * as UserModule from "../../../tsrc/modules/UserModule";
 import { guestUser } from "../../../tsrc/modules/UserModule";
+import type { ViewerConfig } from "../../../tsrc/modules/ViewerModule";
 import MyResourcesPage from "../../../tsrc/myresources/MyResourcesPage";
 import type { MyResourcesType } from "../../../tsrc/myresources/MyResourcesPageHelper";
 import {
   defaultSortOrder,
   PARAM_MYRESOURCES_TYPE,
 } from "../../../tsrc/myresources/MyResourcesPageHelper";
+import * as MyResourcesPageHelper from "../../../tsrc/myresources/MyResourcesPageHelper";
 import { defaultSearchPageOptions } from "../../../tsrc/search/SearchPageHelper";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { clickSelect, querySelectOption } from "../MuiTestHelpers";
@@ -272,6 +281,18 @@ describe("<MyResourcesPage/>", () => {
   });
 
   describe("Support for Scrapbook", () => {
+    const renderWithViewerConfiguration = async (
+      viewerConfig: ViewerConfig
+    ) => {
+      jest
+        .spyOn(MyResourcesPageHelper, "getScrapbookViewerConfig")
+        .mockReturnValueOnce(
+          TE.right<string, O.Option<ViewerConfig>>(O.of(viewerConfig))
+        );
+      searchPromise.mockResolvedValueOnce(getScrapbookItemSearchResult());
+      return await renderMyResourcesPage("Scrapbook");
+    };
+
     it.each([
       ["shows", "enabled", getCurrentUserMock, true],
       ["hides", "disabled", guestUser, false],
@@ -327,9 +348,63 @@ describe("<MyResourcesPage/>", () => {
       const dialog = screen.getByRole("dialog");
       const okButton = getByText(dialog, languageStrings.common.action.ok);
 
-      userEvent.click(okButton);
+      await act(async () => {
+        await userEvent.click(okButton);
+      });
+
       expect(deleteScrapbook).toHaveBeenCalledTimes(1);
     });
+
+    it("supports viewing an image Scrapbook in the Lightbox", async () => {
+      const { getByText, queryByLabelText } =
+        await renderWithViewerConfiguration({
+          viewerType: "lightbox",
+          config: {
+            src: "", // src doesn't matter in the test.
+            mimeType: "image/jpeg",
+          },
+        });
+
+      await act(async () => {
+        await userEvent.click(getByText(IMAGE_SCRAPBOOK, { selector: "a" }));
+      });
+
+      expect(
+        queryByLabelText(languageStrings.embedCode.copy)
+      ).toBeInTheDocument();
+
+      // Access to summary page is disabled.
+      expect(
+        queryByLabelText(languageStrings.lightboxComponent.openSummaryPage)
+      ).not.toBeInTheDocument();
+    });
+
+    it.each([
+      ["non-image file", "http://download", ZIP_SCRAPBOOK],
+      [
+        "webpage",
+        `items/${webpageScrapbook.uuid}/${webpageScrapbook.version}/viewpages.jsp`,
+        WEBPAGE_SCRAPBOOK,
+      ],
+    ])(
+      "opens a new tab to view a %s Scrapbook",
+      async (_: string, url: string, scrapbookTitle: string) => {
+        const mockWindowOpen = jest
+          .spyOn(window, "open")
+          .mockReturnValueOnce(global.window);
+
+        const { getByText } = await renderWithViewerConfiguration({
+          viewerType: "link",
+          url,
+        });
+
+        await act(async () => {
+          await userEvent.click(getByText(scrapbookTitle, { selector: "a" }));
+        });
+
+        expect(mockWindowOpen).toHaveBeenLastCalledWith(url, "_blank");
+      }
+    );
   });
 
   describe("custom UI for SearchResult", () => {

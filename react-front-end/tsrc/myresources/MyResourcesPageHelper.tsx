@@ -19,21 +19,35 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import * as OEQ from "@openequella/rest-api-client";
 import { SearchResultItem } from "@openequella/rest-api-client/dist/Search";
+import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import { absurd, constant, flow, identity, pipe } from "fp-ts/function";
 import * as J from "fp-ts/Json";
 import * as O from "fp-ts/Option";
 import * as R from "fp-ts/Record";
 import * as S from "fp-ts/string";
+import * as TE from "fp-ts/TaskEither";
 import * as t from "io-ts";
 import { Location } from "history";
 import { MD5 } from "object-hash";
 import * as React from "react";
 import { ReactNode } from "react";
 import { Literal, match, Static, Union, Unknown, when } from "runtypes";
+import { getBaseUrl } from "../AppConfig";
 import { TooltipIconButton } from "../components/TooltipIconButton";
 import { buildStorageKey } from "../modules/BrowserStorageModule";
-import { nonDeletedStatuses } from "../modules/SearchModule";
+import { getMimeTypeDefaultViewerDetails } from "../modules/MimeTypesModule";
+import {
+  nonDeletedStatuses,
+  searchItemAttachments,
+} from "../modules/SearchModule";
+import {
+  buildViewerConfigForAttachments,
+  isViewerLightboxConfig,
+  ViewerConfig,
+  ViewerLightboxConfig,
+  ViewerLinkConfig,
+} from "../modules/ViewerModule";
 import GallerySearchResult from "../search/components/GallerySearchResult";
 import { SortOrderOptions } from "../search/components/SearchOrderSelect";
 import SearchResult from "../search/components/SearchResult";
@@ -46,7 +60,7 @@ import { SearchPageSearchResult } from "../search/SearchPageReducer";
 import { DateRangeFromString, getISODateString } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
 import { simpleMatch } from "../util/match";
-import { pfSplitAt } from "../util/pointfree";
+import { pfSplitAt, pfTernaryTypeGuard } from "../util/pointfree";
 
 export const PARAM_MYRESOURCES_TYPE = "myResourcesType";
 
@@ -484,11 +498,13 @@ export const renderModeratingResult: RenderFunc = (
  *
  * @param onEdit Handler for editing the Scrapbook.
  * @param onDelete Handler for deleting the Scrapbook.
+ * @param onClickTitle Handler for clicking the Scrapbook title.
  */
 export const buildRenderScrapbookResult =
   (
     onEdit: (uuid: string) => void,
-    onDelete: (uuid: string) => void
+    onDelete: (uuid: string) => void,
+    onClickTitle: (item: OEQ.Search.SearchResultItem) => void
   ): RenderFunc =>
   (item: OEQ.Search.SearchResultItem, highlight: string[]) => {
     const { uuid, version } = item;
@@ -513,6 +529,7 @@ export const buildRenderScrapbookResult =
             <DeleteIcon />
           </TooltipIconButton>,
         ]}
+        customOnClickTitleHandler={() => onClickTitle(item)}
       />
     );
   };
@@ -633,4 +650,86 @@ export const getSearchPageOptionsFromStorage = (
     ),
     O.toUndefined
   );
+};
+
+/**
+ * Build a TaskEither to retrieve viewer configuration for the provided Scrapbook. If the Scrapbook
+ * has multiple attachments, only use the first attachment's viewer configuration.
+ *
+ * @param uuid UUID of the Scrapbook.
+ * @param version Version of the Scrapbook.
+ */
+export const getScrapbookViewerConfig = (
+  uuid: string,
+  version: number
+): TE.TaskEither<string, O.Option<ViewerConfig>> =>
+  pipe(
+    TE.tryCatch(
+      () => searchItemAttachments(uuid, version),
+      (error) => `Failed to search attachments: ${error}`
+    ),
+    TE.chain((attachments) =>
+      TE.tryCatch(
+        () =>
+          buildViewerConfigForAttachments(
+            attachments,
+            uuid,
+            version,
+            getMimeTypeDefaultViewerDetails
+          ),
+        (error) => `Failed to build viewer configuration: ${error}`
+      )
+    ),
+    TE.map(
+      flow(
+        A.head,
+        O.chain(({ viewerConfig }) => O.fromNullable(viewerConfig))
+      )
+    )
+  );
+
+/**
+ * Function to view Scrapbook, which essentially is to view the Scrapbook's attachments.
+ *
+ * As the thumbnail detail is generated from the first viewable attachment, we can use `attachmentType`, which is part
+ * of the thumbnail detail, to determine whether the Scrapbook is a file or a Webpage.
+ *
+ * If the attachment type is `html` the Scrapbook must be a Webpage. So we construct the Webpage specific URL and open
+ * the page in a new tab.
+ *
+ * For other attachment types, we firstly need to get the viewer configuration, and then depending on the configuration
+ * we either show the attachment in Lightbox or open a new tab.
+ *
+ * @param uuid UUID of the Scrapbook.
+ * @param version Version of the Scrapbook.
+ * @param thumbnailDetails Thumbnail details to be used to determine the Scrapbook type.
+ * @param viewInLightbox Function to show the Scrapbook in Lightbox.
+ */
+export const viewScrapbook = async (
+  { uuid, version, thumbnailDetails }: OEQ.Search.SearchResultItem,
+  viewInLightbox: (config: ViewerLightboxConfig) => void
+): Promise<void> => {
+  const viewInNewTab = (url: string) => window.open(url, "_blank");
+
+  if (thumbnailDetails?.attachmentType === "html") {
+    viewInNewTab(`${getBaseUrl()}items/${uuid}/${version}/viewpages.jsp`);
+  } else {
+    pipe(
+      await getScrapbookViewerConfig(uuid, version)(),
+      E.fold(
+        console.error,
+        flow(
+          O.map(
+            pfTernaryTypeGuard(
+              isViewerLightboxConfig,
+              viewInLightbox,
+              ({ url }: ViewerLinkConfig) => {
+                viewInNewTab(url);
+              }
+            )
+          )
+        )
+      )
+    );
+  }
 };
