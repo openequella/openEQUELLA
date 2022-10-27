@@ -668,11 +668,14 @@ export const getScrapbookViewerConfig = (
       () => searchItemAttachments(uuid, version),
       (error) => `Failed to search attachments: ${error}`
     ),
-    TE.chain((attachments) =>
+    TE.chainOptionK(() => `Scrapbook ${uuid} does not have any attachment`)(
+      A.head
+    ),
+    TE.chain((attachment) =>
       TE.tryCatch(
         () =>
           buildViewerConfigForAttachments(
-            attachments,
+            [attachment],
             uuid,
             version,
             getMimeTypeDefaultViewerDetails
