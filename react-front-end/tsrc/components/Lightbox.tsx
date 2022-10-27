@@ -133,11 +133,21 @@ export interface LightboxProps {
      */
     version: number;
   };
+  /**
+   * Flag to control whether to show the icon button for accessing the Resource summary page.
+   */
+  allowOpenSummaryPage?: boolean;
 }
 
 const domParser = new DOMParser();
 
-const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
+const Lightbox = ({
+  open,
+  onClose,
+  config,
+  item,
+  allowOpenSummaryPage = true,
+}: LightboxProps) => {
   const classes = useStyles();
 
   const [content, setContent] = useState<ReactElement | undefined>();
@@ -261,9 +271,11 @@ const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
         <Typography variant="h6" className={classes.title}>
           {title}
         </Typography>
-        <OEQItemSummaryPageButton
-          {...{ item, title: labelOpenSummaryPage, color: "inherit" }}
-        />
+        {allowOpenSummaryPage && (
+          <OEQItemSummaryPageButton
+            {...{ item, title: labelOpenSummaryPage, color: "inherit" }}
+          />
+        )}
         <TooltipIconButton
           title={labelCopyEmbedCode}
           color="inherit"

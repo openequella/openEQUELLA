@@ -94,3 +94,12 @@ CustomActionButtonSearchResult.args = {
     </IconButton>,
   ],
 };
+
+export const CustomTitleHandlerSearchResult: Story<SearchResultProps> = (
+  args
+) => <SearchResult {...args} />;
+
+CustomTitleHandlerSearchResult.args = {
+  ...BasicSearchResult.args,
+  customOnClickTitleHandler: () => console.log("The is a custom handler"),
+};

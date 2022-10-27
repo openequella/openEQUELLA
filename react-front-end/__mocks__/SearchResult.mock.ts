@@ -414,3 +414,53 @@ export const getModerationItemsSearchResult =
       ],
     };
   };
+
+export const IMAGE_SCRAPBOOK = "Image Scrapbook";
+export const ZIP_SCRAPBOOK = "ZIP Scrapbook";
+export const WEBPAGE_SCRAPBOOK = "Webpage Scrapbook";
+
+const imageScrapbook: OEQ.Search.SearchResultItem = {
+  uuid: "0a89415c-73b6-4e9b-8372-197b6ba49400",
+  name: IMAGE_SCRAPBOOK,
+  version: 1,
+  status: "personal",
+  createdDate: new Date("2020-07-10T09:31:08.557+10:00"),
+  modifiedDate: new Date("2020-07-10T09:31:08.557+10:00"),
+  collectionId: "9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c",
+  commentCount: 0,
+  thumbnail: "initial",
+  thumbnailDetails: {
+    attachmentType: "file",
+  },
+  displayFields: [],
+  keywordFoundInAttachment: false,
+  links: {
+    view: "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+    self: "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+  },
+  isLatestVersion: true,
+};
+
+const zipScrapbook: OEQ.Search.SearchResultItem = {
+  ...imageScrapbook,
+  uuid: "2289415c-73b6-4e9b-8372-197b6ba49465",
+  name: ZIP_SCRAPBOOK,
+};
+
+export const webpageScrapbook: OEQ.Search.SearchResultItem = {
+  ...imageScrapbook,
+  uuid: "0a89415c-73b6-4e9b-8372-197b6ba4946c",
+  name: WEBPAGE_SCRAPBOOK,
+  thumbnailDetails: {
+    attachmentType: "html",
+  },
+};
+
+export const getScrapbookItemSearchResult =
+  (): OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> => ({
+    start: 0,
+    length: 10,
+    available: 3,
+    results: [imageScrapbook, zipScrapbook, webpageScrapbook],
+    highlight: [],
+  });

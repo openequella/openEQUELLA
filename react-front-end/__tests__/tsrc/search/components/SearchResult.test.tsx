@@ -83,7 +83,8 @@ describe("<SearchResult/>", () => {
   const renderSearchResult = async (
     itemResult: OEQ.Search.SearchResultItem,
     theme: Theme = defaultTheme,
-    customActionButtons?: JSX.Element[]
+    customActionButtons?: JSX.Element[],
+    customOnClickTitleHandler?: () => void
   ) => {
     const renderResult = render(
       // This needs to be wrapped inside a BrowserRouter, to prevent an
@@ -97,6 +98,7 @@ describe("<SearchResult/>", () => {
             highlights={[]}
             getItemAttachments={async () => itemResult.attachments!}
             customActionButtons={customActionButtons}
+            customOnClickTitleHandler={customOnClickTitleHandler}
           />
         </BrowserRouter>
       </MuiThemeProvider>
@@ -289,6 +291,23 @@ describe("<SearchResult/>", () => {
       page,
       `${defaultBaseUrl}${basicURL}?_sl.stateId=1&_int.id=2&a=coursesearch`
     );
+  });
+
+  it("supports custom handler for clicking the title", async () => {
+    const customHandler = jest.fn();
+    const item = mockData.basicSearchObj;
+
+    const { getByText } = await renderSearchResult(
+      item,
+      defaultTheme,
+      undefined,
+      customHandler
+    );
+
+    const title = getByText(`${item.name}`, { selector: "a" });
+    userEvent.click(title);
+
+    expect(customHandler).toHaveBeenCalledTimes(1);
   });
 
   describe("Dead attachments handling", () => {
