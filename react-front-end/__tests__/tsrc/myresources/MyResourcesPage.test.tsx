@@ -369,6 +369,8 @@ describe("<MyResourcesPage/>", () => {
         await userEvent.click(getByText(IMAGE_SCRAPBOOK, { selector: "a" }));
       });
 
+      // Confirm that the lightbox has now been displayed - with the unique element being
+      // the lightbox's 'embed code' button.
       expect(
         queryByLabelText(languageStrings.embedCode.copy)
       ).toBeInTheDocument();

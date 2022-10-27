@@ -309,6 +309,7 @@ describe("<SearchResult/>", () => {
 
     expect(customHandler).toHaveBeenCalledTimes(1);
   });
+
   describe("Dead attachments handling", () => {
     it("should display dead attachments with a warning label", async () => {
       const { oneDeadAttachObj } = mockData;
