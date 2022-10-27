@@ -115,3 +115,11 @@ NavigateAttachments.args = {
     onPrevious: () => videoConfig,
   },
 };
+
+export const disableSummaryPage: Story<LightboxProps> = (
+  args: LightboxProps
+) => <Lightbox {...args} />;
+disableSummaryPage.args = {
+  ...displayImage.args,
+  allowOpenSummaryPage: false,
+};
