@@ -713,10 +713,7 @@ export const viewScrapbook = async (
   viewInLightbox: (config: ViewerLightboxConfig) => void
 ): Promise<void> => {
   const viewInNewTab = (url: string) => window.open(url, "_blank");
-
-  if (thumbnailDetails?.attachmentType === "html") {
-    viewInNewTab(`${getBaseUrl()}items/${uuid}/${version}/viewpages.jsp`);
-  } else {
+  const viewFileScrapbook = async () =>
     pipe(
       await getScrapbookViewerConfig(uuid, version)(),
       E.fold(
@@ -734,5 +731,8 @@ export const viewScrapbook = async (
         )
       )
     );
-  }
+
+  thumbnailDetails?.attachmentType === "html"
+    ? viewInNewTab(`${getBaseUrl()}items/${uuid}/${version}/viewpages.jsp`)
+    : await viewFileScrapbook();
 };
