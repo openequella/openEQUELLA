@@ -763,7 +763,11 @@ export const languageStrings = {
   },
   groupSearchComponent: {
     failedToFindMessage: "Unable to find any group matching '%s'",
-    queryFieldLabel: "Name",
+    queryFieldLabel: "Group name",
+  },
+  roleSearchComponent: {
+    failedToFindMessage: "Unable to find any role matching '%s'",
+    queryFieldLabel: "Role name",
   },
   wizard: {
     controls: {

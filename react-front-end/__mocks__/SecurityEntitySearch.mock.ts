@@ -15,30 +15,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as OEQ from "@openequella/rest-api-client";
-import { groups } from "./GroupModule.mock";
-import { entityDetailsProvider } from "./SecurityEntitySearch.mock";
-
 /**
- * Helper function to inject into component for group retrieval.
+ * Helper function to inject into component for security entity (user/role/group) retrieval.
  *
+ * @param mockEntities A list of mock data for specific entity
+ * @param filterCondition A function used to filter the result from mock data.
  * @param query A simple string to filter by (no wildcard support)
  */
-export const groupDetailsProvider = async (
+export const entityDetailsProvider = async <T>(
+  mockEntities: T[],
+  /**
+   * @param e The entity
+   * @param q A query string used to filter entity
+   */
+  filterCondition: (e: T, q: string) => boolean,
   query?: string
-): Promise<OEQ.UserQuery.GroupDetails[]> =>
-  entityDetailsProvider(
-    groups,
-    (g: OEQ.UserQuery.GroupDetails, q) => g.name.search(q) === 0,
+): Promise<T[]> => {
+  // A sleep to emulate latency
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  return Promise.resolve(
     query
+      ? mockEntities.filter((r: T) => filterCondition(r, query))
+      : mockEntities
   );
-
-/**
- * Helper function to inject into component for group retrieval by an array of ids.
- *
- * @param ids A list of group IDs to lookup, should be one of those in `groups`
- */
-export const resolveGroupsProvider = async (
-  ids: ReadonlyArray<string>
-): Promise<OEQ.UserQuery.GroupDetails[]> =>
-  Promise.resolve(groups.filter(({ id }) => ids.includes(id)));
+};
