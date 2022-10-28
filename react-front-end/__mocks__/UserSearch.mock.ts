@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import { entityDetailsProvider } from "./SecurityEntitySearch.mock";
 import { users } from "./UserModule.mock";
 
 /**
@@ -25,10 +26,9 @@ import { users } from "./UserModule.mock";
  */
 export const userDetailsProvider = async (
   query?: string
-): Promise<OEQ.UserQuery.UserDetails[]> => {
-  // A sleep to emulate latency
-  await new Promise((resolve) => setTimeout(resolve, 500));
-  return Promise.resolve(
-    query ? users.filter((u) => u.username.search(query) === 0) : users
+): Promise<OEQ.UserQuery.UserDetails[]> =>
+  entityDetailsProvider(
+    users,
+    (u: OEQ.UserQuery.UserDetails, q) => u.username.search(q) === 0,
+    query
   );
-};

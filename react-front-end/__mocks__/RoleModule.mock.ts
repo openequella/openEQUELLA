@@ -16,29 +16,25 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { groups } from "./GroupModule.mock";
-import { entityDetailsProvider } from "./SecurityEntitySearch.mock";
 
 /**
- * Helper function to inject into component for group retrieval.
- *
- * @param query A simple string to filter by (no wildcard support)
+ * A list of roles to test with role search.
  */
-export const groupDetailsProvider = async (
-  query?: string
-): Promise<OEQ.UserQuery.GroupDetails[]> =>
-  entityDetailsProvider(
-    groups,
-    (g: OEQ.UserQuery.GroupDetails, q) => g.name.search(q) === 0,
-    query
-  );
-
-/**
- * Helper function to inject into component for group retrieval by an array of ids.
- *
- * @param ids A list of group IDs to lookup, should be one of those in `groups`
- */
-export const resolveGroupsProvider = async (
-  ids: ReadonlyArray<string>
-): Promise<OEQ.UserQuery.GroupDetails[]> =>
-  Promise.resolve(groups.filter(({ id }) => ids.includes(id)));
+export const roles: OEQ.UserQuery.RoleDetails[] = [
+  {
+    id: "62ed85d3-278a-46f5-8ee4-391a45f97899",
+    name: "Teachers",
+  },
+  {
+    id: "1ffbf760-2970-48d7-ab9f-62e95a64d07e",
+    name: "Systems Administrators",
+  },
+  {
+    id: "dc97436d-8e52-40db-abc6-ca198cbe6dae",
+    name: "Content Administrators",
+  },
+  {
+    id: "ffff7e1d-bf77-464f-bd41-de89d44a9cc6",
+    name: "Student",
+  },
+];

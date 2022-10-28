@@ -22,31 +22,35 @@ import * as OEQ from "@openequella/rest-api-client";
  */
 export const groups: OEQ.UserQuery.GroupDetails[] = [
   {
-    id: "3d96df92-4d0b-496f-b865-9f1ad4a67d8d",
-    name: "Teachers",
+    id: "42237595-7c90-4292-bf16-059b9a59fcfb",
+    name: "Engineering & Computer Science Students",
   },
   {
-    id: "d0265a33-8f89-4cea-8a36-45fd3c4cf5a1",
-    name: "Systems Administrators",
+    id: "485b5831-e66c-4419-8305-e99e4d2361a0",
+    name: "Engineering & Computer Science Staff",
   },
   {
-    id: "e810bee1-f2da-4145-8bc3-dc6fec827429",
-    name: "Content Administrators",
+    id: "ddb28dd0-e186-47c8-aed7-23e4797d8bf3",
+    name: "Information Technology Services",
   },
   {
-    id: "680f5eb7-22e2-4ab6-bcea-25205167e36e",
+    id: "7ec9fb32-35f4-44bc-9c1d-7c8b02b9d0cb",
+    name: "Library",
+  },
+  {
+    id: "d7dd1907-5731-4244-9a65-e0e847f68604",
     name: "group200",
   },
   {
-    id: "cda09b86-3662-46bd-b60e-4bce89efbada",
+    id: "303e758c-0051-4aea-9a8e-421f93ed9d1a",
     name: "group100",
   },
   {
-    id: "97254515-6e32-48e9-ba65-5b5c6a1182a6",
+    id: "a2576dea-bd5c-490b-a065-637068e1a4fb",
     name: "group400",
   },
   {
-    id: "8db50158-757d-44f3-8ccf-7b230a3a6405",
+    id: "f921a6e3-69a6-4ec4-8cf8-bc193beda5f6",
     name: "group300",
   },
 ];

@@ -16,29 +16,30 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { groups } from "./GroupModule.mock";
-import { entityDetailsProvider } from "./SecurityEntitySearch.mock";
+import { contramap, Eq } from "fp-ts/Eq";
+import * as S from "fp-ts/string";
+import { API_BASE_URL } from "../AppConfig";
 
 /**
- * Helper function to inject into component for group retrieval.
- *
- * @param query A simple string to filter by (no wildcard support)
+ * Eq for `OEQ.UserQuery.RoleDetails` with equality based on the role's UUID.
  */
-export const groupDetailsProvider = async (
+export const eqRoleById: Eq<OEQ.UserQuery.RoleDetails> = contramap(
+  (role: OEQ.UserQuery.RoleDetails) => role.id
+)(S.Eq);
+
+/**
+ * List roles known in oEQ.
+ *
+ * @param query A wildcard supporting string to filter the result based on name
+ */
+export const listRoles = async (
   query?: string
-): Promise<OEQ.UserQuery.GroupDetails[]> =>
-  entityDetailsProvider(
-    groups,
-    (g: OEQ.UserQuery.GroupDetails, q) => g.name.search(q) === 0,
-    query
-  );
-
-/**
- * Helper function to inject into component for group retrieval by an array of ids.
- *
- * @param ids A list of group IDs to lookup, should be one of those in `groups`
- */
-export const resolveGroupsProvider = async (
-  ids: ReadonlyArray<string>
-): Promise<OEQ.UserQuery.GroupDetails[]> =>
-  Promise.resolve(groups.filter(({ id }) => ids.includes(id)));
+): Promise<OEQ.UserQuery.RoleDetails[]> =>
+  (
+    await OEQ.UserQuery.search(API_BASE_URL, {
+      q: query,
+      groups: false,
+      users: false,
+      roles: true,
+    })
+  ).roles;
