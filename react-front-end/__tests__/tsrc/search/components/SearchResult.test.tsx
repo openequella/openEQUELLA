@@ -34,6 +34,7 @@ import { act } from "react-dom/test-utils";
 import { BrowserRouter } from "react-router-dom";
 import { sprintf } from "sprintf-js";
 import { DRM_VIOLATION, drmTerms } from "../../../../__mocks__/Drm.mock";
+import { imageScrapbook } from "../../../../__mocks__/SearchResult.mock";
 import {
   DRM_ATTACHMENT_NAME,
   DRM_ITEM_NAME,
@@ -184,6 +185,22 @@ describe("<SearchResult/>", () => {
     expect(
       queryByLabelText(languageStrings.common.action.openInNewTab)
     ).toBeInTheDocument();
+  });
+
+  it("disable the access to Item summary page in Lightbox for Scrapbook", async () => {
+    const { getByText, queryByLabelText } = await renderSearchResult(
+      imageScrapbook
+    );
+
+    userEvent.click(getByText(imageScrapbook.attachments![0].description!));
+
+    // The lightbox has now been displayed with the unique element being the lightbox's 'embed code' button.
+    expect(
+      queryByLabelText(languageStrings.embedCode.copy)
+    ).toBeInTheDocument();
+    expect(
+      queryByLabelText(languageStrings.lightboxComponent.openSummaryPage)
+    ).not.toBeInTheDocument();
   });
 
   it("hide star rating and comment count in small screen", async () => {

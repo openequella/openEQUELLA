@@ -36,6 +36,7 @@ export const buildItems = (howMany: number): GallerySearchResultItem[] =>
     (i: number): GallerySearchResultItem => ({
       uuid: uuidV4(),
       version: 1,
+      status: "live",
       name: `Test item ${i}`,
       drmStatus: {
         isAuthorised: true,
@@ -56,6 +57,7 @@ export const buildItems = (howMany: number): GallerySearchResultItem[] =>
 export const galleryDrmItem: GallerySearchResultItem = {
   uuid: uuidV4(),
   version: 1,
+  status: "live",
   name: "Test item",
   drmStatus: {
     isAuthorised: true,
@@ -85,4 +87,17 @@ export const galleryDrmItemSummaryAllow = {
     ...galleryDrmUnauthorisedItem.drmStatus,
     isAllowSummary: true,
   },
+};
+
+export const galleryScrapbook: GallerySearchResultItem = {
+  uuid: uuidV4(),
+  version: 1,
+  status: "personal",
+  name: "Test item",
+  links: {
+    self: "link-to-self",
+    view: "link-to-view",
+  },
+  mainEntry: buildGalleryEntry("Main Entry #1"),
+  additionalEntries: [],
 };

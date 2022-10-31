@@ -32,6 +32,7 @@ import {
   galleryDrmItem,
   galleryDrmItemSummaryAllow,
   galleryDrmUnauthorisedItem,
+  galleryScrapbook,
 } from "./GallerySearchResultHelpers";
 import * as ReactRouterDom from "react-router-dom";
 
@@ -42,7 +43,7 @@ const {
   common: {
     action: { openInNewTab },
   },
-  lightboxComponent: { viewNext, viewPrevious },
+  lightboxComponent: { viewNext, viewPrevious, openSummaryPage },
 } = languageStrings;
 
 /*
@@ -83,6 +84,24 @@ describe("<GallerySearchResult />", () => {
 
     expect(mockUseHistoryPush).toHaveBeenCalled();
     expect(mockUseHistoryPush.mock.calls[0][0].match("/items/")).toBeTruthy();
+  });
+
+  it("doesn't show the Info icon for Scrapbook", async () => {
+    const { queryAllByLabelText } = renderGallery([galleryScrapbook]);
+    expect(queryAllByLabelText(viewItem)).toHaveLength(0);
+  });
+
+  it("doesn't support opening Item summary page from Lightbox for Scrapbook", async () => {
+    const { getByLabelText, queryByLabelText } = renderGallery([
+      galleryScrapbook,
+    ]);
+
+    await act(async () => {
+      await userEvent.click(getByLabelText(ariaLabel));
+    });
+
+    // The icon button for accessing summary page should not exist.
+    expect(queryByLabelText(openSummaryPage)).not.toBeInTheDocument();
   });
 
   describe("viewing gallery entries in a loop", () => {
