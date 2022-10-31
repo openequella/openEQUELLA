@@ -62,7 +62,8 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
     lightboxEntries: LightboxEntry[],
     uuid: string,
     version: number,
-    { mimeType, directUrl: src, name, id }: GalleryEntry
+    { mimeType, directUrl: src, name, id }: GalleryEntry,
+    allowOpenSummaryPage = true
   ) => {
     const initialLightboxEntryIndex = lightboxEntries.findIndex(
       (entry) => entry.id === id
@@ -70,6 +71,7 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
 
     return setLightboxProps({
       onClose: () => setLightboxProps(undefined),
+      allowOpenSummaryPage,
       open: true,
       item: {
         uuid,
@@ -124,7 +126,13 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
       );
 
     return (uuid: string, version: number, entry: GalleryEntry) =>
-      lightboxHandler(lightboxEntries, uuid, version, entry);
+      lightboxHandler(
+        lightboxEntries,
+        uuid,
+        version,
+        entry,
+        newItem.status !== "personal"
+      );
   };
 
   const mapItemsToTiles = () =>
@@ -133,6 +141,7 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
         item={item}
         updateGalleryItemList={updateGalleryItemList}
         key={`${item.uuid}/${item.version}`}
+        enableItemSummaryButton={item.status !== "personal"}
       />
     ));
 
