@@ -116,6 +116,7 @@ export const SearchResultAttachmentsList = ({
   item: {
     uuid,
     version,
+    status,
     displayOptions,
     keywordFoundInAttachment,
     attachmentCount,
@@ -292,6 +293,7 @@ export const SearchResultAttachmentsList = ({
             item={{
               uuid,
               version,
+              status,
             }}
           >
             <ListItemText color="primary" primary={description} />
