@@ -52,6 +52,10 @@ export interface ItemAttachmentLinkProps {
      * Version of the Item.
      */
     version: number;
+    /**
+     * Status of the Item used to determine whether to show the button for accessing Item summary page.
+     */
+    status: string;
   };
 }
 
@@ -68,7 +72,7 @@ const ItemAttachmentLink = ({
     attachment: { description, mimeType },
     viewerConfig,
   },
-  item: { uuid, version },
+  item: { uuid, version, status },
 }: ItemAttachmentLinkProps) => {
   const { attachmentLink } = languageStrings.searchpage.searchResult;
   const [lightBoxProps, setLightBoxProps] = useState<LightboxProps>();
@@ -98,6 +102,7 @@ const ItemAttachmentLink = ({
           setLightBoxProps(undefined);
         },
         config,
+        allowOpenSummaryPage: status !== "personal",
         item: { uuid, version },
       });
 

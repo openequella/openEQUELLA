@@ -77,6 +77,10 @@ export interface GallerySearchTileProps {
    * @param item Updated Item which typically only has DRM status changed.
    */
   updateGalleryItemList: (item: GallerySearchResultItem) => LightboxHandler;
+  /**
+   * `true` to show an Info icon in the ImageListItem for accessing Item summary page.
+   */
+  enableItemSummaryButton?: boolean;
 }
 
 /**
@@ -85,6 +89,7 @@ export interface GallerySearchTileProps {
 export const GallerySearchItemTiles = ({
   item,
   updateGalleryItemList,
+  enableItemSummaryButton = true,
 }: GallerySearchTileProps) => {
   const classes = useStyles();
   const {
@@ -150,19 +155,21 @@ export const GallerySearchItemTiles = ({
       className={classes.tile}
     >
       <img className={classes.thumbnail} src={imgSrc} alt={altText} />
-      <ImageListItemBar
-        className={classes.titleBar}
-        actionIcon={
-          <OEQItemSummaryPageButton
-            title={viewItem}
-            color="secondary"
-            item={{ uuid, version }}
-            checkDrmPermission={
-              drmStatus?.isAllowSummary ? undefined : checkDrmPermission
-            }
-          />
-        }
-      />
+      {enableItemSummaryButton && (
+        <ImageListItemBar
+          className={classes.titleBar}
+          actionIcon={
+            <OEQItemSummaryPageButton
+              title={viewItem}
+              color="secondary"
+              item={{ uuid, version }}
+              checkDrmPermission={
+                drmStatus?.isAllowSummary ? undefined : checkDrmPermission
+              }
+            />
+          }
+        />
+      )}
     </ImageListItem>
   );
 
