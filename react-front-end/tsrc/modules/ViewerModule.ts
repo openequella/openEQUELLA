@@ -438,7 +438,6 @@ const buildLightboxViewerConfig = (
     config: {
       item,
       src: viewUrl,
-      allowOpenSummaryPage: item.status !== "personal",
       title: attachment.description,
       mimeType: attachment.mimeType ?? "",
       onNext: buildLightboxNavigationHandler(

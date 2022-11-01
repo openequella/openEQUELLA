@@ -113,10 +113,6 @@ export interface LightboxConfig {
   /** Function fired to view next attachment. */
   onNext?: () => LightboxConfig;
   item: BasicSearchResultItem;
-  /**
-   * Flag to control whether to show the icon button for accessing the Resource summary page.
-   */
-  allowOpenSummaryPage?: boolean;
 }
 
 export interface LightboxProps {
@@ -138,15 +134,7 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
   const [openEmbedCodeDialog, setOpenEmbedCodeDialog] =
     useState<boolean>(false);
 
-  const {
-    src,
-    title,
-    mimeType,
-    onPrevious,
-    onNext,
-    allowOpenSummaryPage,
-    item,
-  } = lightBoxConfig;
+  const { src, title, mimeType, onPrevious, onNext, item } = lightBoxConfig;
 
   const handleNav = (getLightboxConfig: () => LightboxConfig) => {
     setContent(undefined);
@@ -262,7 +250,7 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
         <Typography variant="h6" className={classes.title}>
           {title}
         </Typography>
-        {allowOpenSummaryPage && (
+        {item.status !== "personal" && (
           <OEQItemSummaryPageButton
             {...{ item, title: labelOpenSummaryPage, color: "inherit" }}
           />

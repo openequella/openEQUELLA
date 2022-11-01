@@ -76,7 +76,6 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
         src,
         title: name,
         mimeType,
-        allowOpenSummaryPage,
         item,
         onNext: buildLightboxNavigationHandler(
           lightboxEntries,
