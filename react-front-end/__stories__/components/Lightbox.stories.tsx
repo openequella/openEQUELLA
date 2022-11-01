@@ -116,10 +116,16 @@ NavigateAttachments.args = {
   },
 };
 
-export const disableSummaryPage: Story<LightboxProps> = (
+export const enableSummaryPage: Story<LightboxProps> = (
   args: LightboxProps
 ) => <Lightbox {...args} />;
-disableSummaryPage.args = {
+enableSummaryPage.args = {
   ...displayImage.args,
-  allowOpenSummaryPage: false,
+  config: {
+    ...imageConfig,
+    item: {
+      uuid: "8b3c1f4d-a781-4455-93a3-1d58913143b5",
+      version: 1,
+    },
+  },
 };

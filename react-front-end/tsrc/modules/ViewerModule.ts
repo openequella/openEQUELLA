@@ -73,7 +73,8 @@ export interface LightboxEntry {
   title?: string;
   /** MIME type of the entry specified by `src` */
   mimeType: string;
-  item: BasicSearchResultItem;
+  /** Optional item details can be included if a method to access the item from the Lightbox is required.*/
+  item?: BasicSearchResultItem;
 }
 
 export type ViewerConfig = ViewerLinkConfig | ViewerLightboxConfig;
@@ -103,6 +104,17 @@ export interface AttachmentAndViewerConfig {
    */
   viewerConfig?: ViewerConfig;
 }
+
+/**
+ * If the supplied Item matches the requirements, then return it so that it can be included within
+ * various types controlling lightbox configuration for the display of an item summary button.
+ *
+ * @param item potential item
+ */
+export const maybeIncludeItemInLightbox = (
+  item: BasicSearchResultItem
+): BasicSearchResultItem | undefined =>
+  item.status !== "personal" ? item : undefined;
 
 /**
  * Determine which viewer to use based on the provided `attachmentType` and `mimeType`. The result
@@ -236,7 +248,7 @@ export const buildLightboxNavigationHandler = (
         return () => ({
           src,
           title,
-          item,
+          item: item && maybeIncludeItemInLightbox(item),
           mimeType: mimeType ?? "",
           onNext: buildLightboxNavigationHandler(
             entries,
@@ -378,7 +390,7 @@ export const buildLightboxEntries = (
           title: description,
           mimeType: mimeType ?? "",
           id,
-          item,
+          item: maybeIncludeItemInLightbox(item),
         }))
       )
     ),
@@ -435,7 +447,7 @@ const buildLightboxViewerConfig = (
   viewerConfig: {
     viewerType: "lightbox",
     config: {
-      item,
+      item: maybeIncludeItemInLightbox(item),
       src: viewUrl,
       title: attachment.description,
       mimeType: attachment.mimeType ?? "",

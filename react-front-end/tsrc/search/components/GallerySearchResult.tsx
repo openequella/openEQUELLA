@@ -27,6 +27,7 @@ import type { BasicSearchResultItem } from "../../modules/SearchModule";
 import {
   buildLightboxNavigationHandler,
   LightboxEntry,
+  maybeIncludeItemInLightbox,
 } from "../../modules/ViewerModule";
 import {
   GallerySearchItemTiles,
@@ -75,7 +76,7 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
         src,
         title: name,
         mimeType,
-        item,
+        item: maybeIncludeItemInLightbox(item),
         onNext: buildLightboxNavigationHandler(
           lightboxEntries,
           initialLightboxEntryIndex + 1,

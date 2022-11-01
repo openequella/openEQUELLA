@@ -38,7 +38,6 @@ import {
   isBrowserSupportedVideo,
   splitMimeType,
 } from "../modules/MimeTypesModule";
-import type { BasicSearchResultItem } from "../modules/SearchModule";
 import { languageStrings } from "../util/langstrings";
 import { simpleMatch } from "../util/match";
 import { EmbedCodeDialog } from "./EmbedCodeDialog";
@@ -108,11 +107,24 @@ export interface LightboxConfig {
   title?: string;
   /** MIME type of the items specified by `src` */
   mimeType: string;
+  /**
+   * Optional details for an item which (if present) are used to display a button which when
+   * clicked with navigate the user to the item's summary page.
+   */
+  item?: {
+    /**
+     * UUID of the Item.
+     */
+    uuid: string;
+    /**
+     * Version of the Item.
+     */
+    version: number;
+  };
   /** Function fired to view previous attachment. */
   onPrevious?: () => LightboxConfig;
   /** Function fired to view next attachment. */
   onNext?: () => LightboxConfig;
-  item: BasicSearchResultItem;
 }
 
 export interface LightboxProps {
@@ -250,7 +262,7 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
         <Typography variant="h6" className={classes.title}>
           {title}
         </Typography>
-        {item.status !== "personal" && (
+        {item && (
           <OEQItemSummaryPageButton
             {...{ item, title: labelOpenSummaryPage, color: "inherit" }}
           />
