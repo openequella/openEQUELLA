@@ -47,10 +47,12 @@ const renderLightbox = (config: LightboxConfig) =>
     <Lightbox
       onClose={jest.fn()}
       open
-      config={config}
-      item={{
-        uuid: "369c92fa-ae59-4845-957d-8fcaa22c15e3",
-        version: 1,
+      config={{
+        ...config,
+        item: {
+          uuid: "369c92fa-ae59-4845-957d-8fcaa22c15e3",
+          version: 1,
+        },
       }}
     />
   );
