@@ -62,8 +62,7 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
   const lightboxHandler = (
     item: BasicSearchResultItem,
     lightboxEntries: LightboxEntry[],
-    { mimeType, directUrl: src, name, id }: GalleryEntry,
-    allowOpenSummaryPage = true
+    { mimeType, directUrl: src, name, id }: GalleryEntry
   ) => {
     const initialLightboxEntryIndex = lightboxEntries.findIndex(
       (entry) => entry.id === id
@@ -127,12 +126,7 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
       );
 
     return (item: BasicSearchResultItem, entry: GalleryEntry) =>
-      lightboxHandler(
-        item,
-        lightboxEntries,
-        entry,
-        newItem.status !== "personal"
-      );
+      lightboxHandler(item, lightboxEntries, entry);
   };
 
   const mapItemsToTiles = () =>

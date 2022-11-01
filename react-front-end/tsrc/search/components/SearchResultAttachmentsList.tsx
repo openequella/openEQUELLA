@@ -121,7 +121,6 @@ export const SearchResultAttachmentsList = ({
   const {
     uuid,
     version,
-    status,
     displayOptions,
     keywordFoundInAttachment,
     attachmentCount,
@@ -289,14 +288,7 @@ export const SearchResultAttachmentsList = ({
           data-attachmentuuid={id}
         >
           <ListItemIcon>{buildIcon(brokenAttachment)}</ListItemIcon>
-          <ItemAttachmentLink
-            selectedAttachment={attachmentAndViewerConfig}
-            item={{
-              uuid,
-              version,
-              status,
-            }}
-          >
+          <ItemAttachmentLink selectedAttachment={attachmentAndViewerConfig}>
             <ListItemText color="primary" primary={description} />
           </ItemAttachmentLink>
           {isAttachmentSelectable(brokenAttachment) && (

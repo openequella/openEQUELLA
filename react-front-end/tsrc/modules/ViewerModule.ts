@@ -236,7 +236,6 @@ export const buildLightboxNavigationHandler = (
         return () => ({
           src,
           title,
-          allowOpenSummaryPage: item.status !== "personal",
           item,
           mimeType: mimeType ?? "",
           onNext: buildLightboxNavigationHandler(
