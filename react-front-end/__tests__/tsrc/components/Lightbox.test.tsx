@@ -43,19 +43,7 @@ jest.mock("react-router", () => ({
 const mockWindowOpen = jest.spyOn(window, "open").mockImplementation(jest.fn());
 
 const renderLightbox = (config: LightboxConfig) =>
-  render(
-    <Lightbox
-      onClose={jest.fn()}
-      open
-      config={{
-        ...config,
-        item: {
-          uuid: "369c92fa-ae59-4845-957d-8fcaa22c15e3",
-          version: 1,
-        },
-      }}
-    />
-  );
+  render(<Lightbox onClose={jest.fn()} open config={config} />);
 
 describe("isLightboxSupportedMimeType", () => {
   it.each<[string, boolean]>([
@@ -164,7 +152,13 @@ describe("supports viewing Item Summary page", () => {
         updateMockGetRenderData(basicRenderData);
       }
 
-      const { queryByLabelText } = renderLightbox(displayImage.args!.config!);
+      const { queryByLabelText } = renderLightbox({
+        ...displayImage.args!.config!,
+        item: {
+          uuid: "369c92fa-ae59-4845-957d-8fcaa22c15e3",
+          version: 1,
+        },
+      });
       const viewSummaryPageButton = queryByLabelText(
         languageStrings.lightboxComponent.openSummaryPage
       );
@@ -173,6 +167,15 @@ describe("supports viewing Item Summary page", () => {
       expect(onClick).toHaveBeenCalledTimes(1);
     }
   );
+
+  it("does not display a item summary button if no item details provided", () => {
+    const { queryByLabelText } = renderLightbox(displayImage.args!.config!);
+
+    const viewSummaryPageButton = queryByLabelText(
+      languageStrings.lightboxComponent.openSummaryPage
+    );
+    expect(viewSummaryPageButton).not.toBeInTheDocument();
+  });
 });
 
 describe("Provide embed code", () => {
