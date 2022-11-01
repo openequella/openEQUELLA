@@ -72,7 +72,6 @@ const ItemAttachmentLink = ({
     attachment: { description, mimeType },
     viewerConfig,
   },
-  item: { uuid, version, status },
 }: ItemAttachmentLinkProps) => {
   const { attachmentLink } = languageStrings.searchpage.searchResult;
   const [lightBoxProps, setLightBoxProps] = useState<LightboxProps>();
@@ -102,8 +101,6 @@ const ItemAttachmentLink = ({
           setLightBoxProps(undefined);
         },
         config,
-        allowOpenSummaryPage: status !== "personal",
-        item: { uuid, version },
       });
 
     if (!mimeType) {

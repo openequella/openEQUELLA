@@ -216,9 +216,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
           setLightBoxProps({
             open: true,
             onClose: () => setLightBoxProps(undefined),
-            allowOpenSummaryPage: false,
             config,
-            item,
           });
 
         setShowsSpinner(true);

@@ -34,6 +34,7 @@ import {
   buildFileAttachmentUrl,
   updateAttachmentForCustomInfo,
 } from "./AttachmentsModule";
+import type { BasicSearchResultItem } from "./SearchModule";
 
 export type Viewer = "lightbox" | "link";
 export type ViewerDefinition = [Viewer, string];
@@ -72,6 +73,7 @@ export interface LightboxEntry {
   title?: string;
   /** MIME type of the entry specified by `src` */
   mimeType: string;
+  item: BasicSearchResultItem;
 }
 
 export type ViewerConfig = ViewerLinkConfig | ViewerLightboxConfig;
@@ -230,10 +232,12 @@ export const buildLightboxNavigationHandler = (
     A.lookup(index),
     O.fold(
       () => undefined,
-      ({ title, mimeType, src }) => {
+      ({ title, mimeType, src, item }) => {
         return () => ({
           src,
           title,
+          allowOpenSummaryPage: item.status !== "personal",
+          item,
           mimeType: mimeType ?? "",
           onNext: buildLightboxNavigationHandler(
             entries,
@@ -356,37 +360,44 @@ export const buildAttachmentsAndViewerDefinitions = async (
  * Build Lightbox entries based on a list of attachments and viewer definitions. Attachments not viewed in the
  * Lightbox are dropped.
  *
+ * @param item
  * @param attachmentsAndViewerDefinitions A list of attachments and their viewer definitions.
  */
-export const buildLightboxEntries: (
+export const buildLightboxEntries = (
+  item: BasicSearchResultItem,
   attachmentsAndViewerDefinitions: AttachmentAndViewerDefinition[]
-) => LightboxEntry[] = flow(
-  A.map(({ attachment: { id, description, mimeType }, viewerDefinition }) =>
-    pipe(
-      viewerDefinition,
-      O.fromNullable,
-      O.filter(([viewer]) => viewer === "lightbox"),
-      O.map<ViewerDefinition, LightboxEntry>(([_, viewerUrl]) => ({
-        src: viewerUrl,
-        title: description,
-        mimeType: mimeType ?? "",
-        id,
-      }))
-    )
-  ),
-  A.filter(O.isSome),
-  A.map((some) => some.value)
-);
+): LightboxEntry[] =>
+  pipe(
+    attachmentsAndViewerDefinitions,
+    A.map(({ attachment: { id, description, mimeType }, viewerDefinition }) =>
+      pipe(
+        viewerDefinition,
+        O.fromNullable,
+        O.filter(([viewer]) => viewer === "lightbox"),
+        O.map<ViewerDefinition, LightboxEntry>(([_, viewerUrl]) => ({
+          src: viewerUrl,
+          title: description,
+          mimeType: mimeType ?? "",
+          id,
+          item,
+        }))
+      )
+    ),
+    A.filter(O.isSome),
+    A.map((some) => some.value)
+  );
 
 /**
  * Convert attachments' viewer definitions to their viewer configurations.
  *
  * @param attachmentsAndViewerDefinitions A list of attachments and their viewer definitions.
  * @param lightboxEntries A list of attachments that are viewable in the Lightbox.
+ * @param item
  */
 export const convertViewerDefinitionToViewerConfig = (
   attachmentsAndViewerDefinitions: AttachmentAndViewerDefinition[],
-  lightboxEntries: LightboxEntry[]
+  lightboxEntries: LightboxEntry[],
+  item: BasicSearchResultItem
 ): AttachmentAndViewerConfig[] =>
   pipe(
     attachmentsAndViewerDefinitions,
@@ -405,7 +416,8 @@ export const convertViewerDefinitionToViewerConfig = (
                   attachment,
                   viewUrl,
                   lightboxEntries,
-                  initialLightboxEntryIndex
+                  initialLightboxEntryIndex,
+                  item
                 )
               : buildBasicViewerConfig(attachment, viewUrl)
         )
@@ -417,13 +429,16 @@ const buildLightboxViewerConfig = (
   attachment: OEQ.Search.Attachment,
   viewUrl: string,
   lightboxEntries: LightboxEntry[],
-  initialLightboxEntryIndex: number
+  initialLightboxEntryIndex: number,
+  item: BasicSearchResultItem
 ): AttachmentAndViewerConfig => ({
   attachment,
   viewerConfig: {
     viewerType: "lightbox",
     config: {
+      item,
       src: viewUrl,
+      allowOpenSummaryPage: item.status !== "personal",
       title: attachment.description,
       mimeType: attachment.mimeType ?? "",
       onNext: buildLightboxNavigationHandler(
@@ -452,15 +467,13 @@ const buildBasicViewerConfig = (
 /**
  * Returns a list of provided attachments and their viewer configurations.
  *
+ * @param item
  * @param attachments Attachments provided to find their viewer configurations.
- * @param uuid UUID of the Item which the attachments belong to.
- * @param version Version of the Item which the attachments belong to.
  * @param getViewerDetails Function called to retrieve viewer detail for each attachment.
  */
 export const buildViewerConfigForAttachments = async (
+  item: BasicSearchResultItem,
   attachments: OEQ.Search.Attachment[],
-  uuid: string,
-  version: number,
   getViewerDetails: (
     mimeType: string
   ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>
@@ -470,17 +483,21 @@ export const buildViewerConfigForAttachments = async (
     AttachmentAndViewerDefinition[]
   > = await buildAttachmentsAndViewerDefinitions(
     attachments,
-    uuid,
-    version,
+    item.uuid,
+    item.version,
     getViewerDetails
   );
 
   return pipe(
     Do(E.either)
       .bind("ad", attachmentsAndViewerDefinitions)
-      .bindL("lightboxEntries", ({ ad }) => E.right(buildLightboxEntries(ad)))
+      .bindL("lightboxEntries", ({ ad }) =>
+        E.right(buildLightboxEntries(item, ad))
+      )
       .bindL("ac", ({ ad, lightboxEntries }) =>
-        E.right(convertViewerDefinitionToViewerConfig(ad, lightboxEntries))
+        E.right(
+          convertViewerDefinitionToViewerConfig(ad, lightboxEntries, item)
+        )
       )
       .return(({ ac }) => ac),
     E.fold(

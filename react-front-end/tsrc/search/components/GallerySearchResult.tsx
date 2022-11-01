@@ -23,6 +23,7 @@ import {
   GalleryEntry,
   GallerySearchResultItem,
 } from "../../modules/GallerySearchModule";
+import type { BasicSearchResultItem } from "../../modules/SearchModule";
 import {
   buildLightboxNavigationHandler,
   LightboxEntry,
@@ -59,9 +60,8 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
 
   // Handler for opening the Lightbox
   const lightboxHandler = (
+    item: BasicSearchResultItem,
     lightboxEntries: LightboxEntry[],
-    uuid: string,
-    version: number,
     { mimeType, directUrl: src, name, id }: GalleryEntry,
     allowOpenSummaryPage = true
   ) => {
@@ -71,16 +71,13 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
 
     return setLightboxProps({
       onClose: () => setLightboxProps(undefined),
-      allowOpenSummaryPage,
       open: true,
-      item: {
-        uuid,
-        version,
-      },
       config: {
         src,
         title: name,
         mimeType,
+        allowOpenSummaryPage,
+        item,
         onNext: buildLightboxNavigationHandler(
           lightboxEntries,
           initialLightboxEntryIndex + 1,
@@ -114,22 +111,26 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
         // If not a DRM Item, keep it.
         return true;
       })
-      .flatMap(({ mainEntry, additionalEntries }) =>
+      .flatMap(({ mainEntry, additionalEntries, status, uuid, version }) =>
         [mainEntry, ...additionalEntries].map(
           ({ id, name, mimeType, directUrl }) => ({
             src: directUrl,
             title: name,
-            mimeType: mimeType,
+            mimeType,
             id,
+            item: {
+              uuid,
+              version,
+              status,
+            },
           })
         )
       );
 
-    return (uuid: string, version: number, entry: GalleryEntry) =>
+    return (item: BasicSearchResultItem, entry: GalleryEntry) =>
       lightboxHandler(
+        item,
         lightboxEntries,
-        uuid,
-        version,
         entry,
         newItem.status !== "personal"
       );

@@ -113,18 +113,19 @@ export interface SearchResultAttachmentsListProps {
 }
 
 export const SearchResultAttachmentsList = ({
-  item: {
+  item,
+  getViewerDetails,
+  getItemAttachments,
+  isItemLive,
+}: SearchResultAttachmentsListProps) => {
+  const {
     uuid,
     version,
     status,
     displayOptions,
     keywordFoundInAttachment,
     attachmentCount,
-  },
-  getViewerDetails,
-  getItemAttachments,
-  isItemLive,
-}: SearchResultAttachmentsListProps) => {
+  } = item;
   const itemKey = `${uuid}/${version}`;
 
   const classes = useStyles();
@@ -192,9 +193,8 @@ export const SearchResultAttachmentsList = ({
 
         const attachmentsAndViewerDefinitions =
           await buildViewerConfigForAttachments(
+            item,
             attachments,
-            uuid,
-            version,
             viewerDetails
           );
         if (mounted) {
@@ -214,6 +214,7 @@ export const SearchResultAttachmentsList = ({
       mounted = false;
     };
   }, [
+    item,
     attachExpanded,
     attachmentCount,
     attachmentsAndViewerConfigs.length,
