@@ -52,6 +52,9 @@ const useStyles = makeStyles({
  * Type for the handler of opening Lightbox from Gallery.
  */
 export type LightboxHandler = (
+  /**
+   * @param item Details of the item to which the Lightbox content belongs.
+   */
   item: BasicSearchResultItem,
   /**
    * @param entry A Gallery Entry to be viewed in the Lightbox.

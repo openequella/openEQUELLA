@@ -403,7 +403,7 @@ export const buildLightboxEntries = (
  *
  * @param attachmentsAndViewerDefinitions A list of attachments and their viewer definitions.
  * @param lightboxEntries A list of attachments that are viewable in the Lightbox.
- * @param item
+ * @param item The Item these attachments belong to, and the details of which will be used to provide any 'view item' links/buttons.
  */
 export const convertViewerDefinitionToViewerConfig = (
   attachmentsAndViewerDefinitions: AttachmentAndViewerDefinition[],
@@ -477,7 +477,7 @@ const buildBasicViewerConfig = (
 /**
  * Returns a list of provided attachments and their viewer configurations.
  *
- * @param item
+ * @param item The Item which the attachments belong to.
  * @param attachments Attachments provided to find their viewer configurations.
  * @param getViewerDetails Function called to retrieve viewer detail for each attachment.
  */

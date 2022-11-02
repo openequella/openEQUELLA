@@ -656,7 +656,7 @@ export const getSearchPageOptionsFromStorage = (
  * Build a TaskEither to retrieve viewer configuration for the provided Scrapbook. If the Scrapbook
  * has multiple attachments, only use the first attachment's viewer configuration.
  *
- * @param item
+ * @param item Details of the scrapbook item for which to retrieve viewer configuration.
  */
 export const getScrapbookViewerConfig = (
   item: OEQ.Search.SearchResultItem
@@ -703,7 +703,7 @@ export const getScrapbookViewerConfig = (
  * For other attachment types, we firstly need to get the viewer configuration, and then depending on the configuration
  * we either show the attachment in Lightbox or open a new tab.
  *
- * @param item
+ * @param item Details of the scrapbook item to be viewed.
  * @param viewInLightbox Function to show the Scrapbook in Lightbox.
  */
 export const viewScrapbook = async (
