@@ -394,8 +394,7 @@ export const buildLightboxEntries = (
         }))
       )
     ),
-    A.filter(O.isSome),
-    A.map((some) => some.value)
+    A.compact
   );
 
 /**
