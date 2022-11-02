@@ -24,7 +24,7 @@ import {
   CustomMimeTypes,
   getMimeTypeDefaultViewerDetails,
 } from "../../../tsrc/modules/MimeTypesModule";
-import { BasicSearchResultItem } from "../../../tsrc/modules/SearchModule";
+import type { BasicSearchResultItem } from "../../../tsrc/modules/SearchModule";
 import {
   buildAttachmentsAndViewerDefinitions,
   buildViewerConfigForAttachments,
