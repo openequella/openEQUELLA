@@ -27,6 +27,7 @@ import {
   GalleryEntry,
   GallerySearchResultItem,
 } from "../../modules/GallerySearchModule";
+import type { BasicSearchResultItem } from "../../modules/SearchModule";
 import { languageStrings } from "../../util/langstrings";
 
 const { ariaLabel, viewItem } = languageStrings.searchpage.gallerySearchResult;
@@ -52,13 +53,9 @@ const useStyles = makeStyles({
  */
 export type LightboxHandler = (
   /**
-   * @param uuid Item's UUID.
+   * @param item Details of the item to which the Lightbox content belongs.
    */
-  uuid: string,
-  /**
-   * @param version Item's Version.
-   */
-  version: number,
+  item: BasicSearchResultItem,
   /**
    * @param entry A Gallery Entry to be viewed in the Lightbox.
    */
@@ -138,7 +135,7 @@ export const GallerySearchItemTiles = ({
       const updatedItem = drmStatus
         ? { ...item, drmStatus: defaultDrmStatus }
         : item;
-      updateGalleryItemList(updatedItem)(uuid, version, entry);
+      updateGalleryItemList(updatedItem)(item, entry);
     });
   };
 

@@ -40,30 +40,13 @@ export interface ItemAttachmentLinkProps {
    * Information about an attachment and what viewer to be used for this attachment.
    */
   selectedAttachment: AttachmentAndViewerConfig;
-  /**
-   * Item which this attachment is attached to.
-   */
-  item: {
-    /**
-     * UUID of the Item.
-     */
-    uuid: string;
-    /**
-     * Version of the Item.
-     */
-    version: number;
-    /**
-     * Status of the Item used to determine whether to show the button for accessing Item summary page.
-     */
-    status: string;
-  };
 }
 
 /**
  * A component to be used for viewing attachments in a uniform manner. If the viewer specified
  * in `viewerDetails` is anything other than `lightbox` then a simple link will be created. In
  * future versions of oEQ when the balance of New UI is undertaken, then in theory this component
- * will need to handle the other types of viewers - e.g. generating links for google docs, or
+ * will need to handle the other types of viewers - e.g. generating links for Google Docs, or
  * downloading attachments, etc.
  */
 const ItemAttachmentLink = ({
@@ -72,7 +55,6 @@ const ItemAttachmentLink = ({
     attachment: { description, mimeType },
     viewerConfig,
   },
-  item: { uuid, version, status },
 }: ItemAttachmentLinkProps) => {
   const { attachmentLink } = languageStrings.searchpage.searchResult;
   const [lightBoxProps, setLightBoxProps] = useState<LightboxProps>();
@@ -102,8 +84,6 @@ const ItemAttachmentLink = ({
           setLightBoxProps(undefined);
         },
         config,
-        allowOpenSummaryPage: status !== "personal",
-        item: { uuid, version },
       });
 
     if (!mimeType) {

@@ -656,14 +656,14 @@ export const getSearchPageOptionsFromStorage = (
  * Build a TaskEither to retrieve viewer configuration for the provided Scrapbook. If the Scrapbook
  * has multiple attachments, only use the first attachment's viewer configuration.
  *
- * @param uuid UUID of the Scrapbook.
- * @param version Version of the Scrapbook.
+ * @param item Details of the scrapbook item for which to retrieve viewer configuration.
  */
 export const getScrapbookViewerConfig = (
-  uuid: string,
-  version: number
-): TE.TaskEither<string, O.Option<ViewerConfig>> =>
-  pipe(
+  item: OEQ.Search.SearchResultItem
+): TE.TaskEither<string, O.Option<ViewerConfig>> => {
+  const { uuid, version } = item;
+
+  return pipe(
     TE.tryCatch(
       () => searchItemAttachments(uuid, version),
       (error) => `Failed to search attachments: ${error}`
@@ -675,9 +675,8 @@ export const getScrapbookViewerConfig = (
       TE.tryCatch(
         () =>
           buildViewerConfigForAttachments(
+            item,
             [attachment],
-            uuid,
-            version,
             getMimeTypeDefaultViewerDetails
           ),
         (error) => `Failed to build viewer configuration: ${error}`
@@ -690,6 +689,7 @@ export const getScrapbookViewerConfig = (
       )
     )
   );
+};
 
 /**
  * Function to view Scrapbook, which essentially is to view the Scrapbook's attachments.
@@ -703,19 +703,18 @@ export const getScrapbookViewerConfig = (
  * For other attachment types, we firstly need to get the viewer configuration, and then depending on the configuration
  * we either show the attachment in Lightbox or open a new tab.
  *
- * @param uuid UUID of the Scrapbook.
- * @param version Version of the Scrapbook.
- * @param thumbnailDetails Thumbnail details to be used to determine the Scrapbook type.
+ * @param item Details of the scrapbook item to be viewed.
  * @param viewInLightbox Function to show the Scrapbook in Lightbox.
  */
 export const viewScrapbook = async (
-  { uuid, version, thumbnailDetails }: OEQ.Search.SearchResultItem,
+  item: OEQ.Search.SearchResultItem,
   viewInLightbox: (config: ViewerLightboxConfig) => void
 ): Promise<void> => {
+  const { uuid, version, thumbnailDetails } = item;
   const viewInNewTab = (url: string) => window.open(url, "_blank");
   const viewFileScrapbook = async () =>
     pipe(
-      await getScrapbookViewerConfig(uuid, version)(),
+      await getScrapbookViewerConfig(item)(),
       E.fold(
         console.error,
         flow(

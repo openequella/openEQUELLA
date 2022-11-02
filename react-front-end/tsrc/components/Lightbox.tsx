@@ -107,6 +107,20 @@ export interface LightboxConfig {
   title?: string;
   /** MIME type of the items specified by `src` */
   mimeType: string;
+  /**
+   * Optional details for an item which (if present) are used to display a button which when
+   * clicked with navigate the user to the item's summary page.
+   */
+  item?: {
+    /**
+     * UUID of the Item.
+     */
+    uuid: string;
+    /**
+     * Version of the Item.
+     */
+    version: number;
+  };
   /** Function fired to view previous attachment. */
   onPrevious?: () => LightboxConfig;
   /** Function fired to view next attachment. */
@@ -120,34 +134,11 @@ export interface LightboxProps {
   open: boolean;
   /** Configuration specifying the Lightbox's content. */
   config: LightboxConfig;
-  /**
-   * Item which the Lightbox content is attached to.
-   */
-  item: {
-    /**
-     * UUID of the Item.
-     */
-    uuid: string;
-    /**
-     * Version of the Item.
-     */
-    version: number;
-  };
-  /**
-   * Flag to control whether to show the icon button for accessing the Resource summary page.
-   */
-  allowOpenSummaryPage?: boolean;
 }
 
 const domParser = new DOMParser();
 
-const Lightbox = ({
-  open,
-  onClose,
-  config,
-  item,
-  allowOpenSummaryPage = true,
-}: LightboxProps) => {
+const Lightbox = ({ open, onClose, config }: LightboxProps) => {
   const classes = useStyles();
 
   const [content, setContent] = useState<ReactElement | undefined>();
@@ -155,7 +146,7 @@ const Lightbox = ({
   const [openEmbedCodeDialog, setOpenEmbedCodeDialog] =
     useState<boolean>(false);
 
-  const { src, title, mimeType, onPrevious, onNext } = lightBoxConfig;
+  const { src, title, mimeType, onPrevious, onNext, item } = lightBoxConfig;
 
   const handleNav = (getLightboxConfig: () => LightboxConfig) => {
     setContent(undefined);
@@ -271,7 +262,7 @@ const Lightbox = ({
         <Typography variant="h6" className={classes.title}>
           {title}
         </Typography>
-        {allowOpenSummaryPage && (
+        {item && (
           <OEQItemSummaryPageButton
             {...{ item, title: labelOpenSummaryPage, color: "inherit" }}
           />
