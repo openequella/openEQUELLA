@@ -18,7 +18,6 @@
 
 package com.tle.integration.blackboard;
 
-import com.dytech.devlib.Base64;
 import com.dytech.devlib.PropBagEx;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -68,6 +67,7 @@ import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 import javax.inject.Inject;
@@ -231,7 +231,9 @@ public class BlackboardIntegration extends AbstractIntegrationService<BlackBoard
                 new NameValue(data.getUsername(), "username"),
                 new NameValue(data.getContentId(), "content_id"),
                 new NameValue(data.getCourseId(), "course_id"),
-                new NameValue(new Base64().encode(out.toString().getBytes("UTF-8")), "manifest"),
+                new NameValue(
+                    Base64.getEncoder().encodeToString(out.toString().getBytes("UTF-8")),
+                    "manifest"),
               });
       create = false;
       contentId = resultXml.getNode("content_id");

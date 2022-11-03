@@ -29,8 +29,7 @@ import com.tle.core.security.TLEAclManager
 import com.tle.core.security.impl.SecureInModeration
 import com.tle.exceptions.AccessDeniedException
 import javax.inject.Inject
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 @SecureInModeration
 class WorkflowMoveOperation @AssistedInject()(@Assisted("msg") val msg: String,

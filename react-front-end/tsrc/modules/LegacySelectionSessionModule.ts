@@ -17,9 +17,9 @@
  */
 import Axios from "axios";
 import * as A from "fp-ts/Array";
-import * as IO from "fp-ts/IO";
 import * as E from "fp-ts/Either";
 import { flow, pipe } from "fp-ts/function";
+import * as IO from "fp-ts/IO";
 import * as O from "fp-ts/Option";
 import {
   API_BASE_URL,
@@ -290,6 +290,14 @@ export const buildSelectionSessionAdvancedSearchLink = (
     false,
     externalMimeTypes
   );
+
+/**
+ * Given a URL used to access Scrapbook legacy pages in normal New UI mode, convert the URL into a Selection Session specific one.
+ *
+ * @param url URL used to access Scrapbook legacy pages in normal New UI mode
+ */
+export const buildSelectionSessionScrapbookLink = (url: string): string =>
+  buildSelectionSessionLink(url, false);
 
 /**
  * Build a Selection Session specific Search page link. The three Selection Session layouts are supported.

@@ -30,8 +30,7 @@ import com.tle.web.sections.equella.utils.UserLinkSection
 import com.tle.web.sections.render.{SectionRenderable, TextLabel}
 import com.tle.web.sections.standard.model.{HtmlLinkState, SimpleBookmark}
 import com.tle.web.workflow.servlet.WorkflowMessageServlet
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object ModCommentRender {
 

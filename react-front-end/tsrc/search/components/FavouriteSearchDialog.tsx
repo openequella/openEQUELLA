@@ -20,7 +20,7 @@ import { useContext, useState } from "react";
 import * as React from "react";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import { languageStrings } from "../../util/langstrings";
-import { SearchPageRenderErrorContext } from "../SearchPage";
+import { SearchContext } from "../Search";
 
 export interface FavouriteSearchDialogProps {
   /**
@@ -49,9 +49,9 @@ export const FavouriteSearchDialog = ({
   closeDialog,
 }: FavouriteSearchDialogProps) => {
   const [searchName, setSearchName] = useState<string>("");
-  const { handleError } = useContext(SearchPageRenderErrorContext);
+  const { searchPageErrorHandler } = useContext(SearchContext);
   const confirmHandler = () =>
-    onConfirm(searchName).catch(handleError).finally(closeDialog);
+    onConfirm(searchName).catch(searchPageErrorHandler).finally(closeDialog);
 
   return (
     <ConfirmDialog

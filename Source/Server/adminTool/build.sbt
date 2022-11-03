@@ -1,4 +1,4 @@
-val springVersion = "5.3.17"
+val springVersion = "5.3.23"
 
 libraryDependencies ++= Seq(
   "org.slf4j"              % "jcl-over-slf4j"  % "1.7.36",

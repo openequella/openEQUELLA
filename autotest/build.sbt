@@ -6,12 +6,13 @@ import sbt.complete.DefaultParsers.spaceDelimited
 
 import scala.sys.process._
 import Path.rebase
+import cats.instances.uuid
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 name := "equella-autotests"
 
-libraryDependencies += "org.jacoco" % "org.jacoco.agent" % "0.8.7" classifier "runtime"
+libraryDependencies += "org.jacoco" % "org.jacoco.agent" % "0.8.8" classifier "runtime"
 
 lazy val config = (project in file("config"))
   .settings((Compile / resourceDirectory) := baseDirectory.value / "resources")
@@ -105,8 +106,19 @@ coverageJar := {
     .head
 }
 
+/**
+  * Dumps coverage data to a single file in the target directory, unless the configuration file
+  * has a directory specified at the path of `coverage.file`.
+  */
 dumpCoverage := {
-  val f = target.value / "jacoco.exec"
+  val cc           = autotestBuildConfig.value.getConfig("coverage")
+  val dumpFilename = "jacoco.exec"
+  val f =
+    optPath(cc, "file")
+      .filter(f => f.isDirectory && f.canWrite)
+      // When dumping into a directory, make sure each file is unique
+      .map(_ / s"$dumpFilename-${uuid.hashCode()}")
+      .getOrElse(target.value / dumpFilename)
   sLog.value.info(s"Dumping coverage data to ${f.absolutePath}")
   coverageLoader.value.save(f, false)
   f
@@ -119,7 +131,11 @@ coverageLoader := {
   optPath(cc, "file").filter(_.canRead).foreach { f =>
     log.info(s"Loading coverage data from ${f.absolutePath}")
     if (f.isDirectory)
-      f.listFiles().foreach(ef => l.load(ef))
+      f.listFiles()
+        .foreach(ef => {
+          log.info(s"--> ${ef.name}")
+          l.load(ef)
+        })
     else
       l.load(f)
   }
@@ -175,7 +191,11 @@ coverageReport := {
 
   val srcZip  = sourceZip.value
   val allSrcs = (coverageReport / sourceDirectory).value
-  srcZip.foreach(z => IO.unzip(z, allSrcs))
+  srcZip.foreach(z => {
+    log.info(s"Using source zip file: $z")
+    log.info(s"Extracting to: ${allSrcs.absolutePath}")
+    IO.unzip(z, allSrcs)
+  })
   val coverageDir = (coverageReport / target).value
   log.info(s"Creating coverage report at ${coverageDir.absolutePath}")
   CoverageReporter.createReport(execLoader,

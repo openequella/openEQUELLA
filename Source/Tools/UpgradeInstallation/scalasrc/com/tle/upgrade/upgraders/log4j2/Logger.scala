@@ -23,7 +23,7 @@ import cats.implicits._
 import com.tle.upgrade.upgraders.log4j2.PropertyHelper.readProperty
 
 import java.util.Properties
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 case class AppenderReference(ref: String)
 

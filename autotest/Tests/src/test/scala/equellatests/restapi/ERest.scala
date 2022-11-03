@@ -13,8 +13,7 @@ import org.http4s.circe._
 import org.http4s.client.asynchttpclient.AsyncHttpClient
 import org.http4s.headers.Cookie
 import org.http4s.{Headers, Method, Request, RequestCookie, Response, Status, Uri, headers}
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.concurrent.ExecutionContext
 import io.circe.parser._
 

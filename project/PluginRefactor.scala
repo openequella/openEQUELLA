@@ -9,7 +9,7 @@ import Path.rebase
 import sbt.io.Using
 
 import scala.annotation.tailrec
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection.mutable
 
 class ElementFilter(f: Element => Boolean) extends AbstractFilter[Element] {

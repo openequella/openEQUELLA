@@ -24,7 +24,7 @@ import {
   MenuItem,
   Select,
 } from "@material-ui/core";
-import { AppRenderErrorContext } from "../mainui/App";
+import { AppContext } from "../mainui/App";
 import {
   schemaListSummary,
   SchemaNode,
@@ -56,7 +56,7 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
   const [schema, setSchema] = React.useState<SchemaNode>();
   const [schemaList, setSchemaList] = React.useState<ReactElement[]>([]);
   const [schemaNodePath, setSchemaNodePath] = React.useState<string>("");
-  const { appErrorHandler } = useContext(AppRenderErrorContext);
+  const { appErrorHandler } = useContext(AppContext);
 
   React.useEffect(() => {
     const buildSchemaList = (schemas: Map<string, string>) => {

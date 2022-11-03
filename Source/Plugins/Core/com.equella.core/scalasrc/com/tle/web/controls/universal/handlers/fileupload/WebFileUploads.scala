@@ -21,13 +21,11 @@ package com.tle.web.controls.universal.handlers.fileupload
 import java.io.InputStream
 import java.time.Instant
 import java.util.{Collections, UUID}
-
 import com.dytech.common.GeneralConstants
 import com.dytech.edge.exceptions.BannedFileException
 import com.tle.beans.item.attachments._
 import com.tle.common.PathUtils
 import com.tle.common.wizard.controls.universal.handlers.FileUploadSettings
-import com.tle.web.controls.universal.handlers.fileupload.packages.PackageFileCreate
 import com.tle.web.controls.universal.{ControlContext, StagingContext}
 import com.tle.web.resources.ResourcesService
 import com.tle.web.sections.SectionInfo
@@ -38,9 +36,8 @@ import com.tle.web.sections.js.{JSAssignable, JSExpression}
 import com.tle.web.sections.render._
 import com.tle.web.sections.result.util.KeyLabel
 import com.tle.web.wizard.impl.WebRepository
-
 import scala.annotation.tailrec
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success, Try}
 
 object WebFileUploads {
@@ -132,7 +129,7 @@ object WebFileUploads {
                       uploadPath: String): Either[IllegalFileReason, Seq[PackageType]] = {
     val settings = ctx.controlSettings
     val detected =
-      ctx.repo.determinePackageTypes(info, uploadPath).asScala.map(PackageType.fromString)
+      ctx.repo.determinePackageTypes(info, uploadPath).asScala.map(PackageType.fromString).toSeq
     val allowed = allowedPackageTypes(settings)
     if (settings.isPackagesOnly && detected.isEmpty)
       Left(NotAPackage)
@@ -168,8 +165,8 @@ object WebFileUploads {
   def attachmentCreatorForUpload(info: SectionInfo,
                                  ctx: ControlContext,
                                  v: ValidatedUpload): AttachmentCreate = {
-    if (v.detected.nonEmpty) PackageFileCreate.createForUpload(info, ctx, v.s, v.detected)
-    else StandardFileCreate.fileAttachmentFromUpload(v.s, ctx.controlSettings.isSuppressThumbnails)
+    if (v.detected.nonEmpty) AttachmentCreate(info, ctx, v.s, v.detected)
+    else AttachmentCreate(v.s, ctx.controlSettings.isSuppressThumbnails)
   }
 
   def uniqueName(filename: String,
@@ -218,7 +215,7 @@ object WebFileUploads {
         stg.delete(removeZipPath(za.getUrl))
         stg.delete(za.getUrl)
       })
-    case a: Attachment => PackageFileCreate.extensionForAttachment(a).get.delete(ctx, a)
+    case a: Attachment => AttachmentCreate.extensionForPackageAttachment(a).get.delete(ctx, a)
   }
 
   def removeFilesForUpload(su: SuccessfulUpload)(stg: StagingContext): Unit = {
@@ -248,7 +245,7 @@ object WebFileUploads {
   }
 
   def isPackageAttachment(a: IAttachment): Boolean = a match {
-    case a: Attachment => PackageFileCreate.extensionForAttachment(a).isDefined
+    case a: Attachment => AttachmentCreate.extensionForPackageAttachment(a).isDefined
     case _             => false
   }
 

@@ -5,31 +5,28 @@
     "install": "node install.js && psc-package install",
     "clean": "rm -rf node_modules/ .psc-package/ psc-package",
     "build": "pulp build && parcel build --no-autoinstall --out-dir=target/www www/*.html www/*.tsx",
-    "dev": "pulp build && parcel watch --no-autoinstall --out-dir=../target/scala-2.12/classes/www www/*.html www/*.tsx"
-  },
-  "engines": {
-    "npm": "8.1.4"
+    "dev": "pulp build && parcel watch --no-autoinstall --out-dir=../target/scala-2.13/classes/www www/*.html www/*.tsx"
   },
   "dependencies": {
-    "@material-ui/core": "4.12.3",
-    "axios": "0.26.1",
+    "@material-ui/core": "4.12.4",
+    "axios": "0.27.2",
     "babel-polyfill": "6.26.0",
     "js-md5": "0.7.3",
-    "jss": "10.9.0",
+    "jss": "10.9.2",
     "oeq-cloudproviders": "https://github.com/openequella/openEQUELLA-cloudprovidersdk/archive/refs/tags/v0.0.1.tar.gz",
     "query-string": "7.1.1",
     "react": "17.0.2",
     "react-dom": "17.0.2"
   },
   "devDependencies": {
-    "@types/react": "17.0.41",
-    "@types/react-dom": "17.0.14",
+    "@types/react": "17.0.50",
+    "@types/react-dom": "17.0.17",
     "mkdirp": "1.0.4",
     "parcel-bundler": "1.12.5",
-    "pulp": "15.0.0",
+    "pulp": "16.0.2",
     "purescript": "0.12.3",
-    "typescript": "4.6.2",
-    "follow-redirects": "1.14.9",
+    "typescript": "4.7.4",
+    "follow-redirects": "1.15.2",
     "tar": "6.1.11",
     "shelljs": "0.8.5"
   }

@@ -21,7 +21,7 @@ package com.tle.core.i18n
 import java.util.Locale
 import com.tle.common.i18n.LangUtils
 import io.circe.{Decoder, Encoder}
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 case class LocaleStrings(strings: Map[String, String]) {
   def stringsOrNone: Option[Map[String, String]] =

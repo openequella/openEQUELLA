@@ -20,6 +20,7 @@ import { pipe } from "fp-ts/function";
 import type { GallerySearchResultItem } from "../modules/GallerySearchModule";
 import type { Classification } from "../modules/SearchFacetsModule";
 import type { SearchPageOptions } from "./SearchPageHelper";
+import { absurd } from "fp-ts/function";
 
 /**
  * The types of SearchResultItem that we support within an `OEQ.Search.SearchResult`.
@@ -35,8 +36,13 @@ export type SearchPageSearchResult =
     };
 
 export type Action =
-  | { type: "init" }
-  | { type: "search"; options: SearchPageOptions; scrollToTop: boolean }
+  | { type: "init"; options: SearchPageOptions }
+  | {
+      type: "search";
+      options: SearchPageOptions;
+      updateClassifications: boolean;
+      callback?: () => void;
+    }
   | {
       type: "search-complete";
       result: SearchPageSearchResult;
@@ -45,25 +51,27 @@ export type Action =
   | { type: "error"; cause: Error };
 
 export type State =
-  | { status: "initialising" }
+  | { status: "initialising"; options: SearchPageOptions }
   | {
       status: "searching";
       options: SearchPageOptions;
       previousResult?: SearchPageSearchResult;
       previousClassifications?: Classification[];
-      scrollToTop: boolean;
+      updateClassifications: boolean;
+      callback?: () => void;
     }
   | {
       status: "success";
+      options: SearchPageOptions;
       result: SearchPageSearchResult;
       classifications: Classification[];
     }
-  | { status: "failure"; cause: Error };
+  | { status: "failure"; options: SearchPageOptions; cause: Error };
 
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "init":
-      return { status: "initialising" };
+      return { status: "initialising", options: action.options };
     case "search":
       return pipe(
         state.status === "success"
@@ -75,19 +83,25 @@ export const reducer = (state: State, action: Action): State => {
         (prevResults) => ({
           status: "searching",
           options: action.options,
-          scrollToTop: action.scrollToTop,
+          callback: action.callback,
+          updateClassifications: action.updateClassifications,
           ...prevResults,
         })
       );
     case "search-complete":
       return {
         status: "success",
+        options: state.options,
         result: action.result,
         classifications: action.classifications,
       };
     case "error":
-      return { status: "failure", cause: action.cause };
+      return {
+        status: "failure",
+        options: state.options,
+        cause: action.cause,
+      };
     default:
-      throw new TypeError("Unexpected action passed to reducer!");
+      return absurd(action);
   }
 };

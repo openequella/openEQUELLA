@@ -300,6 +300,13 @@ public class ConnectorManagementResultsSection
 
     } catch (LmsUserNotFoundException e) {
       throw new RuntimeException(e);
+    } catch (UnsupportedOperationException e) {
+      ConnectorManagmentSearchResultEvent erroredSearchResultEvent =
+          new ConnectorManagmentSearchResultEvent(
+              null, null, null, 0, connectorSearchEvent.getConnector());
+      erroredSearchResultEvent.setErrored(true);
+      erroredSearchResultEvent.setErrorMessage(e.getMessage());
+      return erroredSearchResultEvent;
     }
   }
 

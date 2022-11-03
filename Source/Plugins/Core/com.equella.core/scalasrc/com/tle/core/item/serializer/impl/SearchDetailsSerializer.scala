@@ -32,8 +32,7 @@ import com.tle.web.api.item.equella.interfaces.beans.{DisplayField, DisplayOptio
 import com.tle.web.resources.ResourcesService
 import javax.inject.{Inject, Singleton}
 import org.hibernate.criterion.Projections
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection.mutable
 
 @Bind

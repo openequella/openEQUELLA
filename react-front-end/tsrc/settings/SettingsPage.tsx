@@ -34,7 +34,7 @@ import * as React from "react";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getBaseUrl } from "../AppConfig";
-import { AppRenderErrorContext } from "../mainui/App";
+import { AppContext } from "../mainui/App";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import { fetchSettings } from "../modules/GeneralSettingsModule";
 import AdminDownloadDialog from "../settings/AdminDownloadDialog";
@@ -61,12 +61,10 @@ const useStyles = makeStyles((theme: Theme) => {
 });
 
 interface SettingsPageProps extends TemplateUpdateProps {
-  refreshUser: () => void;
   isReloadNeeded: boolean;
 }
 
 const SettingsPage = ({
-  refreshUser,
   updateTemplate,
   isReloadNeeded,
 }: SettingsPageProps) => {
@@ -75,7 +73,7 @@ const SettingsPage = ({
   const [adminDialogOpen, setAdminDialogOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [settingGroups, setSettingGroups] = useState<SettingGroup[]>([]);
-  const { appErrorHandler } = useContext(AppRenderErrorContext);
+  const { appErrorHandler } = useContext(AppContext);
 
   React.useEffect(() => {
     if (isReloadNeeded) {
@@ -108,19 +106,27 @@ const SettingsPage = ({
   }, [appErrorHandler]);
 
   /**
+   * Given a SettingGroup determine when the UI Settings Editor should be displayed.
+   * This is done by checking the `group` is for the Settings Editor, and that there are settings
+   * present to be managed by it.
+   */
+  const showUiSettings = ({
+    category: { name },
+    settings: { length },
+  }: SettingGroup) => name === languageStrings.settings.ui.name && length > 0;
+
+  /**
    * Create the UI content for setting category
-   * @param category - One of the pre-defined categories
-   * @param settings - settings of the category
+   * @param settingGroup Contains pre-defined `categories` and `settings` of the category
    * @returns {ReactElement} Either a List or UISettingEditor, depending on the category
    */
-  const buildAccordionContent = ({ category, settings }: SettingGroup) => {
-    if (category.name === languageStrings.settings.ui.name) {
-      return <UISettingEditor refreshUser={refreshUser} />;
-    }
-    return (
+  const buildAccordionContent = (settingGroup: SettingGroup) =>
+    showUiSettings(settingGroup) ? (
+      <UISettingEditor />
+    ) : (
       <AccordionDetails>
         <List>
-          {settings.map((setting) => (
+          {settingGroup.settings.map((setting) => (
             <ListItem key={setting.id}>
               <ListItemText
                 primary={<SettingLink {...setting} />}
@@ -131,7 +137,6 @@ const SettingsPage = ({
         </List>
       </AccordionDetails>
     );
-  };
 
   /**
    * Create a link for each setting

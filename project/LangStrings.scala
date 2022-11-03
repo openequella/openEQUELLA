@@ -1,6 +1,5 @@
 import java.util.Properties
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 case class LangStrings(group: String, xml: Boolean, strings: Map[String, String])
 

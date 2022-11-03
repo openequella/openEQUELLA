@@ -20,8 +20,6 @@ package com.tle.web.controls.universal.handlers
 
 import java.util
 import java.util.{Collections, UUID}
-
-import com.google.common.collect.Iterables
 import com.google.common.io.ByteStreams
 import com.tle.beans.item.ItemId
 import com.tle.beans.item.attachments._
@@ -57,7 +55,6 @@ import com.tle.web.sections.equella.ajaxupload._
 import com.tle.web.sections.equella.annotation.PlugKey
 import com.tle.web.sections.equella.render.EquellaFileUploadExtension
 import com.tle.web.sections.events.RenderContext
-import com.tle.web.sections.events.js.BookmarkAndModify
 import com.tle.web.sections.generic.InfoBookmark
 import com.tle.web.sections.js.generic.expression.ObjectExpression
 import com.tle.web.sections.js.generic.function.{
@@ -84,8 +81,7 @@ import com.tle.web.viewurl.{AttachmentDetail, ViewItemService, ViewableResource}
 import io.circe.parser.decode
 import io.circe.syntax._
 import javax.inject.Inject
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.io.Source
 
 class FileUploadHandlerModel
@@ -281,32 +277,18 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
 
     case class DetailsEditState(a: Attachment,
                                 page: DetailsPage,
-                                commitFiles: (Attachment, StagingContext) => Attachment,
-                                cleanupFiles: (Attachment, StagingContext) => Unit,
+                                commit: AttachmentCommit,
                                 zipAttachment: Boolean,
                                 editingArea: Option[StagingFile] = None,
-                                commitUnzipPaths: Option[(String, String)] = None,
                                 zipProgress: Option[ZipProgress] = None) {
 
       def removeEditingArea(): Unit =
         editingArea.foreach(sf => stagingService.removeStagingArea(sf, true))
-      def commit(): Unit = (a, zipAttachment) match {
-        case (fa: FileAttachment, true) =>
-          stagingContext.moveFile(fa.getFilename, WebFileUploads.zipPath(fa.getFilename))
-          commitUnzipPaths.foreach(p => stagingContext.moveFile(p._1, fa.getFilename))
-        case (za: ZipAttachment, false) =>
-          stagingContext.delete(za.getUrl)
-          stagingContext.moveFile(WebFileUploads.zipPath(za.getUrl), za.getUrl)
-        case (a, _) =>
-          commitFiles(a, stagingContext)
-          commitUnzipPaths.foreach(p => stagingContext.delete(p._1))
-      }
 
       def afterCommit(): Unit = removeEditingArea()
 
       def cancel(): Unit = {
-        cleanupFiles(a, stagingContext)
-        commitUnzipPaths.foreach(f => stagingContext.delete(f._1))
+        commit.cancel(a, stagingContext)
         removeEditingArea()
       }
     }
@@ -410,13 +392,18 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
         .getOrElse(sys.error("Illegal state - need single upload"))
     }
 
+    /**
+      * Convert attachment type.
+      * It is triggered if user uploads a SCORM package file and chooses `treat as regular file` operation.
+      * It will create a corresponding AttachmentCreate so it can update attachment state and commit type.
+      */
     def resolvedType(info: SectionInfo, vu: ValidatedUpload): Unit = {
       getModel(info).resolved = true
       val creator = WebFileUploads.attachmentCreatorForUpload(info, this, vu)
       val a       = creator.createStaged(stagingContext)
       val ed      = detailsEditorForAttachment(a)
       state.remove(vu.id)
-      setEditState(DetailsEditState(a, ed, creator.commit, creator.cancel, false))
+      setEditState(DetailsEditState(a, ed, creator.commit, false))
       ed.prepareUI(info)
     }
 
@@ -433,8 +420,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
       setEditState(
         DetailsEditState(attachment,
                          page,
-                         (a, _) => a,
-                         (_, _) => (),
+                         EmptyAttachmentCommit,
                          WebFileUploads.zipAttachment(attachment).isDefined))
       page.prepareUI(info)
     }
@@ -449,7 +435,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
 
     def editAttachment(info: SectionInfo, attachment: Attachment): Unit = {
       val editState = getEditState
-      editState.commit()
+      editState.commit(attachment, stagingContext)
       val (newAttach, delattach) =
         detailsEditorForAttachment(attachment).editAttachment(info, attachment, this)
       if (newAttach ne attachment) {
@@ -471,7 +457,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
         val u         = uuid.getOrElse(UUID.randomUUID()).toString
         val _a        = editState.a
         _a.setUuid(u)
-        editState.commit()
+        editState.commit(_a, stagingContext)
         val (a, _) = editState.page.editAttachment(info, _a, this)
         controlState.addAttachment(info, a)
         if (uuid.isEmpty) {
@@ -598,11 +584,18 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
 
     override def unzippedEntries: Seq[FileEntry] = {
       val eds = getEditState
-      val zipFolder = eds.a match {
-        case fa: FileAttachment => eds.commitUnzipPaths.get._1
-        case za: ZipAttachment  => WebFileUploads.removeZipPath(za.getUrl)
+      val zipFolder = eds.commit match {
+        case za: ZipFileCommit => za.unzippedPath
+        case _ =>
+          eds.a match {
+            case zf: ZipAttachment => WebFileUploads.removeZipPath(zf.getUrl)
+          }
       }
-      fileSystemService.enumerateTree(stagingContext.stgFile, zipFolder, null).getFiles.asScala
+      fileSystemService
+        .enumerateTree(stagingContext.stgFile, zipFolder, null)
+        .getFiles
+        .asScala
+        .toSeq
     }
 
     object EmptyZipProgress extends ZipProgress {
@@ -613,22 +606,30 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
       def isFinished: Boolean = true
     }
 
+    def newZipLocation() = s"${FileUploadState.UPLOADS_FOLDER}/${UUID.randomUUID()}"
+
     def unzip: ZipProgress = {
       val eds = getEditState
       if (!eds.zipAttachment) {
-        val (commitUnzipPaths, zp) = eds.a match {
-          case fa: FileAttachment =>
-            if (eds.commitUnzipPaths.isEmpty) {
-              val srcZip = fa.getFilename
-              val target = "_uploads/" + UUID.randomUUID().toString
-              (Some((target, fa.getFilename)), stagingContext.unzip(srcZip, target))
-            } else (eds.commitUnzipPaths, eds.zipProgress.getOrElse(EmptyZipProgress))
-          case _ => (None, EmptyZipProgress)
+        val (newCommit, zp) = eds.commit match {
+          // during creating file process
+          case sf: StandardFileCommit =>
+            val target = sf.unzippedTo.getOrElse(newZipLocation())
+            val progress =
+              if (sf.unzippedTo.isEmpty) stagingContext.unzip(sf.uploaded.uploadPath, target)
+              else EmptyZipProgress
+            (ZipFileCommit(Some(sf), target), progress)
+          // during editing file process
+          case o =>
+            eds.a match {
+              case fa: FileAttachment =>
+                val target = newZipLocation()
+                (ZipFileCommit(None, target), stagingContext.unzip(fa.getFilename, target))
+              case za: ZipAttachment =>
+                (EmptyAttachmentCommit, EmptyZipProgress)
+            }
         }
-        setEditState(
-          eds.copy(zipAttachment = true,
-                   commitUnzipPaths = commitUnzipPaths,
-                   zipProgress = Some(zp)))
+        setEditState(eds.copy(zipAttachment = true, commit = newCommit, zipProgress = Some(zp)))
         zp
       } else EmptyZipProgress
     }
@@ -647,7 +648,23 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
       case _ => Map.empty
     }
 
-    def removeUnzipped: Unit = setEditState(getEditState.copy(zipAttachment = false))
+    /**
+      * Triggered when user chooses `remove unzip files`.
+      */
+    def removeUnzipped: Unit = {
+      val eds = getEditState
+      val newCommit = (eds.commit, eds.a) match {
+        // triggered if it's during during edit process
+        case (ZipFileCommit(None, unzippedPath), _) => CleanupUnzipCommit(unzippedPath)
+        // triggered if it's during create process
+        case (ZipFileCommit(Some(sfc), unzippedPath), _) =>
+          sfc.copy(unzippedTo = Some(unzippedPath))
+        // triggered if the zip file actually has already been unzipped and saved before
+        case (o, zf: ZipAttachment) => RemoveZipCommit
+        case (o, _)                 => o
+      }
+      setEditState(getEditState.copy(zipAttachment = false, commit = newCommit))
+    }
 
     def viewableResource(info: SectionInfo): ViewableResource = {
       val m = getModel(info)

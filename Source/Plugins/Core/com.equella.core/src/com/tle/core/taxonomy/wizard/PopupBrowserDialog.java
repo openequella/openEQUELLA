@@ -26,7 +26,6 @@ import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
-import com.tle.web.sections.SectionUtils;
 import com.tle.web.sections.ajax.AjaxGenerator.EffectType;
 import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.equella.annotation.PlugKey;
@@ -45,6 +44,7 @@ import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.renderers.LinkRenderer;
+import com.tle.web.sections.standard.renderers.SpanRenderer;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
 
@@ -123,10 +123,10 @@ public class PopupBrowserDialog
 
   @Override
   protected SectionRenderable getTermClickTarget(TermResult tr) {
-    SectionRenderable termLabel = SectionUtils.convertToRenderer(tr.getTerm());
+    SectionRenderable termLabel = new SpanRenderer(tr.getTerm()).addClass("termname");
 
     HtmlLinkState view = new HtmlLinkState(new OverrideHandler(showTermFunc, tr.getFullTerm()));
-    view.setLabel(VIEW_TERM_LABEL);
+    view.setTitle(VIEW_TERM_LABEL);
     view.addClass("viewterm");
 
     if (!isSelectable(tr)) {
@@ -134,11 +134,12 @@ public class PopupBrowserDialog
     } else {
       HtmlComponentState select =
           new HtmlComponentState(new OverrideHandler(selectTermFunc, tr.getFullTerm()));
-      select.setLabel(SELECT_TERM_LABEL);
+      select.setTitle(SELECT_TERM_LABEL);
       select.addClass("add");
 
-      return new CombinedRenderer(
-          termLabel, SPACER, new LinkRenderer(select), SPACER, new LinkRenderer(view));
+      LinkRenderer addLink = new LinkRenderer(select);
+      addLink.setTitle(SELECT_TERM_LABEL);
+      return new CombinedRenderer(termLabel, SPACER, addLink, SPACER, new LinkRenderer(view));
     }
   }
 

@@ -61,7 +61,6 @@ import com.tle.web.viewitem.section.RootItemFileSection
 import io.lemonlabs.uri.{Path => _, _}
 import io.swagger.annotations.{Api, ApiOperation}
 import org.slf4j.LoggerFactory
-
 import java.net.URI
 import java.util
 import java.util.Collections
@@ -69,7 +68,7 @@ import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import javax.ws.rs._
 import javax.ws.rs.core.Response.{ResponseBuilder, Status}
 import javax.ws.rs.core.{CacheControl, Context, Response, UriInfo}
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection.mutable
 
 case class InternalRedirect(route: String, userUpdated: Boolean)
@@ -112,7 +111,8 @@ case class CurrentUserDetails(id: String,
                               menuGroups: Iterable[Iterable[MenuItem]],
                               counts: Option[ItemCounts],
                               canDownloadSearchResult: Boolean,
-                              roles: Iterable[String])
+                              roles: Iterable[String],
+                              scrapbookEnabled: Boolean)
 
 object LegacyContentController extends AbstractSectionsController with SectionFilter {
 
@@ -384,6 +384,8 @@ class LegacyContentApi {
 
     val canDownloadSearchResult: Boolean = hasAcl(SecurityConstants.EXPORT_SEARCH_RESULT)
 
+    val scrapbookEnabled = LegacyGuice.myContentService.isMyContentContributionAllowed
+
     val prefsEditable = !(cu.isSystem || cu.isGuest) && !(cu.wasAutoLoggedIn &&
       LegacyGuice.configService.getProperties(new AutoLogin).isEditDetailsDisallowed)
     val menuGroups = {
@@ -445,7 +447,8 @@ class LegacyContentApi {
           counts = counts,
           accessibilityMode = accessibilityMode,
           canDownloadSearchResult = canDownloadSearchResult,
-          roles = cu.getUsersRoles.asScala
+          roles = cu.getUsersRoles.asScala,
+          scrapbookEnabled = scrapbookEnabled
         )
       )
       .cacheControl(cacheControl)
@@ -664,9 +667,9 @@ class LegacyContentApi {
         case ls: HtmlLinkState => new LinkRenderer(ls)
         case o                 => new TagRenderer("span", o)
       } :+ Option(bc.getForcedLastCrumb).getOrElse(d.getTitle)
-      new SpanRenderer(
-        ct,
-        new DelimitedRenderer(" " + CoreStrings.text("breadcrumb.separator") + " ", allCrumbs: _*))
+      new SpanRenderer(ct,
+                       new DelimitedRenderer(" " + CoreStrings.text("breadcrumb.separator") + " ",
+                                             allCrumbs.toSeq: _*))
     } else None
   }
 

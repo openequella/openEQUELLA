@@ -5,8 +5,7 @@ import com.tle.webtests.pageobject.generic.component.EquellaSelect
 import equellatests.browserpage.WaitingBrowserPage
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.{By, WebElement}
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 sealed trait AttachmentEditPage extends WaitingBrowserPage {
 

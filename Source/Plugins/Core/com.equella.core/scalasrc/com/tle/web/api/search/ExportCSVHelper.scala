@@ -25,7 +25,8 @@ import com.tle.core.services.item.FreetextResult
 import com.tle.legacy.LegacyGuice
 import org.apache.commons.lang.StringEscapeUtils
 import java.io.BufferedOutputStream
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
+
 case class CSVHeader(name: String, xpath: String)
 
 object ExportCSVHelper {

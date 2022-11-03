@@ -12,10 +12,6 @@ RUN useradd -ms /bin/bash equella \
     imagemagick \
     ffmpeg \
     unzip \
-  # Setup ffmpeg to act like libav-tools
-  && ln -s /usr/bin/ffmpeg /usr/bin/avconv \
-  && ln -s /usr/bin/ffplay /usr/bin/avplay \
-  && ln -s /usr/bin/ffprobe /usr/bin/avprobe \
   && rm -rf /var/lib/apt/lists/*
 
 # Install openEQUELLA

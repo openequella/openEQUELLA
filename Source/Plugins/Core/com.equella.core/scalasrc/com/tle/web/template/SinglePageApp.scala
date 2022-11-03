@@ -27,8 +27,7 @@ import com.tle.web.sections.render.{HtmlRenderer, SimpleSectionResult, TextLabel
 import com.tle.web.sections.{SectionInfo, SectionResult, SectionTree}
 import com.tle.web.selection.NewSelectionPage
 import javax.servlet.http.HttpServletRequest
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 @Bind
 class SinglePageAppServlet extends SectionsServlet {

@@ -16,19 +16,14 @@
  * limitations under the License.
  */
 
-package com.tle.core.libav;
+package com.tle.core.ffmpeg.guice;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.tle.common.filesystem.handle.FileHandle;
-import java.io.File;
-import java.io.IOException;
+import com.tle.core.config.guice.OptionalConfigModule;
 
-public interface LibAvService {
-  void screenshotVideo(File srcFile, File dstFile) throws IOException;
-
-  void generatePreviewVideo(FileHandle handle, String filename) throws IOException;
-
-  ObjectNode getVideoInfo(File srcFile) throws IOException;
-
-  boolean isLibavInstalled();
+public class FfmpegModule extends OptionalConfigModule {
+  @SuppressWarnings("nls")
+  @Override
+  protected void configure() {
+    bindProp("ffmpeg.path");
+  }
 }

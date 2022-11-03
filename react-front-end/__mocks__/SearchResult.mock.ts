@@ -18,6 +18,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { range } from "lodash";
+import { DateTime } from "luxon";
 import { v4 as uuidv4 } from "uuid";
 
 export const getEmptySearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> =
@@ -107,7 +108,7 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
         uuid: "925f5dd2-66eb-4b68-85be-93837af785d0",
         version: 1,
         name: "new title",
-        status: "personal",
+        status: "moderating",
         createdDate: new Date("2014-06-10T16:01:25.817+10:00"),
         modifiedDate: new Date("2014-06-10T16:01:25.967+10:00"),
         collectionId: "6b356e2e-e6a0-235a-5730-15ad1d8ad630",
@@ -134,6 +135,11 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
           self: "http://localhost:8080/rest/api/item/925f5dd2-66eb-4b68-85be-93837af785d0/1/",
         },
         isLatestVersion: true,
+        moderationDetails: {
+          submittedDate: new Date("2022-08-30"),
+          lastActionDate: Date.now(),
+          rejectionMessage: "rejected",
+        },
       },
       {
         uuid: "266bb0ff-a730-4658-aec0-c68bbefc2271",
@@ -318,3 +324,165 @@ export const getSearchResultsCustom = (
   })),
   highlight: [],
 });
+
+export const getModerationItemsSearchResult =
+  (): OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> => {
+    const oneHourAgo: Date = DateTime.now().minus({ hour: 1 }).toJSDate();
+    const yesterday: Date = DateTime.now()
+      .minus({ day: 1, hours: 2 })
+      .toJSDate();
+
+    return {
+      start: 0,
+      length: 3,
+      available: 3,
+      results: [
+        {
+          uuid: "724c8478-0203-4866-8fb4-463452fa348c",
+          version: 3,
+          name: "Testing workflows v2",
+          status: "moderating",
+          createdDate: oneHourAgo,
+          modifiedDate: oneHourAgo,
+          collectionId: "26679ec5-ac77-4124-8f5c-3a46674b1136",
+          commentCount: 0,
+          starRatings: -1.0,
+          attachmentCount: 1,
+          thumbnail: "default",
+          displayFields: [],
+          keywordFoundInAttachment: false,
+          links: {
+            view: "http://localhost:8080/ian/items/724c8478-0203-4866-8fb4-463452fa348c/3/",
+            self: "http://localhost:8080/ian/api/item/724c8478-0203-4866-8fb4-463452fa348c/3/",
+          },
+          isLatestVersion: true,
+          moderationDetails: {
+            lastActionDate: oneHourAgo,
+            submittedDate: oneHourAgo,
+          },
+        },
+        {
+          uuid: "724c8478-0203-4866-8fb4-463452fa348c",
+          version: 2,
+          name: "Testing workflows",
+          status: "rejected",
+          createdDate: yesterday,
+          modifiedDate: yesterday,
+          collectionId: "26679ec5-ac77-4124-8f5c-3a46674b1136",
+          commentCount: 0,
+          starRatings: -1.0,
+          attachmentCount: 1,
+          thumbnail: "default",
+          displayFields: [],
+          keywordFoundInAttachment: false,
+          links: {
+            view: "http://localhost:8080/ian/items/724c8478-0203-4866-8fb4-463452fa348c/2/",
+            self: "http://localhost:8080/ian/api/item/724c8478-0203-4866-8fb4-463452fa348c/2/",
+          },
+          isLatestVersion: false,
+          moderationDetails: {
+            lastActionDate: oneHourAgo,
+            submittedDate: yesterday,
+            rejectionMessage: "I reject this item, just because I can.",
+          },
+        },
+        {
+          uuid: "1a65f60d-3d35-452b-881f-d01dc66155c3",
+          version: 1,
+          name: "An Error screenshot",
+          description: "DB Issues when attempting to setupForTests",
+          status: "review",
+          createdDate: new Date("2022-09-02T12:26:45.428+10:00"),
+          modifiedDate: new Date("2022-09-02T12:26:45.426+10:00"),
+          collectionId: "241dfa27-5023-4b89-91ca-1f716cb2cf9b",
+          commentCount: 0,
+          starRatings: -1.0,
+          attachmentCount: 1,
+          thumbnail: "default",
+          displayFields: [],
+          keywordFoundInAttachment: false,
+          links: {
+            view: "http://localhost:8080/ian/items/1a65f60d-3d35-452b-881f-d01dc66155c3/1/",
+            self: "http://localhost:8080/ian/api/item/1a65f60d-3d35-452b-881f-d01dc66155c3/1/",
+          },
+          isLatestVersion: true,
+          moderationDetails: {
+            lastActionDate: yesterday,
+            submittedDate: new Date("2022-09-02T12:26:45.434+10:00"),
+          },
+        },
+      ],
+    };
+  };
+
+export const IMAGE_SCRAPBOOK = "Image Scrapbook";
+export const ZIP_SCRAPBOOK = "ZIP Scrapbook";
+export const WEBPAGE_SCRAPBOOK = "Webpage Scrapbook";
+
+export const imageScrapbook: OEQ.Search.SearchResultItem = {
+  uuid: "0a89415c-73b6-4e9b-8372-197b6ba49400",
+  name: IMAGE_SCRAPBOOK,
+  version: 1,
+  status: "personal",
+  createdDate: new Date("2020-07-10T09:31:08.557+10:00"),
+  modifiedDate: new Date("2020-07-10T09:31:08.557+10:00"),
+  collectionId: "9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c",
+  commentCount: 0,
+  thumbnail: "initial",
+  thumbnailDetails: {
+    attachmentType: "file",
+  },
+  attachmentCount: 1,
+  attachments: [
+    {
+      attachmentType: "file",
+      id: "78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
+      description: "image.png",
+      preview: false,
+      mimeType: "image/png",
+      hasGeneratedThumb: true,
+      brokenAttachment: false,
+      links: {
+        view: "http://localhost:8080/rest/items/72558c1d-8788-4515-86c8-b24a28cc451e/1/?attachment.uuid=78b8af7e-f0f5-4b5c-9f44-16f212583fe8",
+        thumbnail: "./thumb.jpg",
+      },
+    },
+  ],
+  displayFields: [],
+  displayOptions: {
+    attachmentType: "STRUCTURED",
+    disableThumbnail: false,
+    standardOpen: true,
+    integrationOpen: true,
+  },
+  keywordFoundInAttachment: false,
+  links: {
+    view: "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+    self: "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+  },
+  isLatestVersion: true,
+};
+
+const zipScrapbook: OEQ.Search.SearchResultItem = {
+  ...imageScrapbook,
+  uuid: "2289415c-73b6-4e9b-8372-197b6ba49465",
+  name: ZIP_SCRAPBOOK,
+};
+
+export const webpageScrapbook: OEQ.Search.SearchResultItem = {
+  ...imageScrapbook,
+  uuid: "0a89415c-73b6-4e9b-8372-197b6ba4946c",
+  name: WEBPAGE_SCRAPBOOK,
+  thumbnailDetails: {
+    attachmentType: "html",
+  },
+};
+
+export const getScrapbookItemSearchResult =
+  (): OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> => ({
+    start: 0,
+    length: 10,
+    available: 3,
+    results: [imageScrapbook, zipScrapbook, webpageScrapbook],
+    highlight: [],
+  });

@@ -1,4 +1,4 @@
-val springVersion = "5.3.17"
+val springVersion = "5.3.23"
 
 libraryDependencies ++= Seq(
   "com.google.guava"         % "guava"           % "31.1-jre",
@@ -18,7 +18,7 @@ dependsOn(platformSwing, LocalProject("com_tle_common_applet"))
   "Caller-Allowable-Codebase"              -> "*"
 )
 
-(assembly / assemblyOption) := (assembly / assemblyOption).value.copy(includeScala = false)
+(assembly / assemblyOption) := (assembly / assemblyOption).value.withIncludeScala(false)
 
 (assembly / assemblyMergeStrategy) := {
   case PathList("org", "xmlpull", "v1", _*) => MergeStrategy.first

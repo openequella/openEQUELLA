@@ -42,8 +42,7 @@ import com.tle.web.settings.UISettings
 import javax.servlet.http.HttpServletRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 case class ReactPageModel(getReactScript: String)
 

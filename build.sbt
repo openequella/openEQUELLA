@@ -5,7 +5,7 @@ import com.typesafe.sbt.license.LicenseReport
 import sbt.io.Using
 
 import java.time.Instant
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 lazy val learningedge_config = project in file("Dev/learningedge-config")
 
@@ -115,14 +115,15 @@ ThisBuild / assemblyMergeStrategy := {
     false
   }
 }
-(ThisBuild / oracleDriverMavenCoordinate) := Seq("com.oracle.database.jdbc" % "ojdbc8" % "19.3.0.0")
+(ThisBuild / oracleDriverMavenCoordinate) := Seq(
+  "com.oracle.database.jdbc" % "ojdbc8" % "19.16.0.0")
 
 (ThisBuild / buildConfig) := Common.buildConfig
 
 name := "Equella"
 
 (ThisBuild / equellaMajor) := 2022
-(ThisBuild / equellaMinor) := 1
+(ThisBuild / equellaMinor) := 2
 (ThisBuild / equellaPatch) := 0
 (ThisBuild / equellaStream) := "Stable"
 (ThisBuild / equellaBuild) := buildConfig.value.getString("build.buildname")

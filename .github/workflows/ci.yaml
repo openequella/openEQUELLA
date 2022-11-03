@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: NPM Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.npm
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
@@ -33,7 +33,7 @@ jobs:
             ${{ runner.os }}-npm-
 
       - name: SBT Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.sbt
           key: ${{ runner.os }}-sbt-${{ hashFiles('**/build.sbt') }}
@@ -41,7 +41,7 @@ jobs:
             ${{ runner.os }}-sbt-
 
       - name: Ivy Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.ivy2/cache
           key: ${{ runner.os }}-ivy-${{ hashFiles('**/build.sbt') }}
@@ -117,7 +117,7 @@ jobs:
             target/*.zip
 
       - name: Save primary artefacts
-        uses: actions/upload-artifact@v3.0.0
+        uses: actions/upload-artifact@v3.1.0
         with:
           name: Artefacts
           path: artefacts.tar
@@ -130,7 +130,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: NPM Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.npm
           key: ${{ runner.os }}-npm.storybook-${{ hashFiles('**/package-lock.json') }}
@@ -162,7 +162,7 @@ jobs:
           tar cvf storybook.tar storybook-static
 
       - name: Save Static Storybook instance
-        uses: actions/upload-artifact@v3.0.0
+        uses: actions/upload-artifact@v3.1.0
         with:
           name: Storybook
           path: react-front-end/storybook.tar
@@ -184,7 +184,7 @@ jobs:
           ./gradlew build
 
       - name: Save primary artefacts
-        uses: actions/upload-artifact@v3.0.0
+        uses: actions/upload-artifact@v3.1.0
         with:
           name: ImportExportTools
           path: import-export-tool/build/libs/
@@ -231,10 +231,6 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             ffmpeg \
             libimage-exiftool-perl
-          # Setup ffmpeg to act like libav-tools
-          sudo ln -s /usr/bin/ffmpeg /usr/bin/avconv
-          sudo ln -s /usr/bin/ffplay /usr/bin/avplay
-          sudo ln -s /usr/bin/ffprobe /usr/bin/avprobe
 
       - name: Set up JDK 1.8
         uses: actions/setup-java@v3
@@ -282,7 +278,7 @@ jobs:
 
       - name: Save Scalacheck results
         if: matrix.newui && failure()
-        uses: actions/upload-artifact@v3.0.0
+        uses: actions/upload-artifact@v3.1.0
         with:
           name: ScalacheckReports
           path: autotest/Tests/target/test-reports
@@ -294,21 +290,21 @@ jobs:
 
       - name: Save TestNG Reports
         if: failure()
-        uses: actions/upload-artifact@v3.0.0
+        uses: actions/upload-artifact@v3.1.0
         with:
           name: TestNGReports-new-${{ matrix.newui }}
           path: autotest/OldTests/target/testng
 
       - name: Save oEQ Logs
         if: failure()
-        uses: actions/upload-artifact@v3.0.0
+        uses: actions/upload-artifact@v3.1.0
         with:
           name: oEQLogs-new-${{ matrix.newui }}
           path: autotest/equella-install/logs
 
       - name: Save Screenshots
         if: failure()
-        uses: actions/upload-artifact@v3.0.0
+        uses: actions/upload-artifact@v3.1.0
         with:
           name: Screenshots-new-${{ matrix.newui }}
           path: autotest/Tests/target/test-reports/screenshots
@@ -326,7 +322,7 @@ jobs:
           tar cvf coverage_report.tar autotest/target/coverage-report/
 
       - name: Save Coverage Report
-        uses: actions/upload-artifact@v3.0.0
+        uses: actions/upload-artifact@v3.1.0
         with:
           name: CoverageReport-newui-${{ matrix.newui }}
           path: coverage_report.tar
@@ -364,10 +360,6 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             ffmpeg \
             libimage-exiftool-perl
-          # Setup ffmpeg to act like libav-tools
-          sudo ln -s /usr/bin/ffmpeg /usr/bin/avconv
-          sudo ln -s /usr/bin/ffplay /usr/bin/avplay
-          sudo ln -s /usr/bin/ffprobe /usr/bin/avprobe
 
       - name: Set up JDK 1.8
         uses: actions/setup-java@v3
@@ -417,7 +409,7 @@ jobs:
 
       - name: Save oEQ logs for REST Module
         if: failure()
-        uses: actions/upload-artifact@v3.0.0
+        uses: actions/upload-artifact@v3.1.0
         with:
           name: oEQ-logs-rest-module
           path: autotest/equella-install/logs

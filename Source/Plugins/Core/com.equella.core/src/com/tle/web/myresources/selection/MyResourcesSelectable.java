@@ -19,6 +19,7 @@
 package com.tle.web.myresources.selection;
 
 import com.tle.core.guice.Bind;
+import com.tle.web.myresources.RootMyResourcesSection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.annotation.PluginResourceHandler;
@@ -26,6 +27,8 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.selection.AbstractSelectionNavAction;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.section.RootSelectionSection.Layout;
+import com.tle.web.template.RenderNewTemplate;
+import java.util.Collections;
 import javax.inject.Singleton;
 
 @Bind
@@ -50,7 +53,14 @@ public class MyResourcesSelectable extends AbstractSelectionNavAction {
   }
 
   protected SectionInfo getMyResourcesTree(SectionInfo info) {
-    return info.createForward("/access/myresources.do");
+    // The Old UI persists the previous My Resources tab you're on, however on each new visit to
+    // My Resources in the New UI a standard default value is used. To allow the New UI code to look
+    // after that, we send it to `defaultValue`.
+    if (RenderNewTemplate.isNewUIEnabled()) {
+      return info.createForwardForUri(
+          RootMyResourcesSection.buildForwardUrl("defaultValue", Collections.emptyMap()));
+    }
+    return info.createForward(RootMyResourcesSection.URL);
   }
 
   @Override

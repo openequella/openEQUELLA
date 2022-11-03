@@ -27,7 +27,7 @@ import com.tle.common.taxonomy.wizard.TermSelectorControl.TermStorageFormat
 import com.tle.web.api.language.LanguageStringHelper.getStringFromCurrentLocale
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.util.Try
 
 /** Data structure representing an option provided by a 'Option' type control such as CheckBox Group and Shuffle List.

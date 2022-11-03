@@ -26,8 +26,7 @@ import com.tle.core.notification.beans.Notification
 import com.tle.web.sections.equella.freemarker.ExtendedFreemarkerFactory
 import com.tle.web.sections.render.{AppendedLabel, Label}
 import javax.inject.Inject
-
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 trait NotificationGroup {
   def headerHello(user: UserBean): Label

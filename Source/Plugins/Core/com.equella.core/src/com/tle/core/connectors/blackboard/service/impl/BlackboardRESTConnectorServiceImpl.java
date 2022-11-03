@@ -18,7 +18,6 @@
 
 package com.tle.core.connectors.blackboard.service.impl;
 
-import com.dytech.devlib.Base64;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -54,6 +53,7 @@ import com.tle.core.connectors.service.ConnectorService;
 import com.tle.core.connectors.utils.ConnectorEntityUtils;
 import com.tle.core.encryption.EncryptionService;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.CoreStrings;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.plugins.AbstractPluginService;
 import com.tle.core.replicatedcache.ReplicatedCacheService;
@@ -71,6 +71,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -411,8 +412,8 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
       int count,
       ConnectorRepositoryService.ExternalContentSortType sortType,
       boolean reverseSort)
-      throws LmsUserNotFoundException {
-    return null;
+      throws LmsUserNotFoundException, UnsupportedOperationException {
+    throw new UnsupportedOperationException(CoreStrings.text("blackboardrest.error.notsupported"));
   }
 
   @Override
@@ -673,7 +674,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
 
         // Encrypt
         byte[] enc = ecipher.doFinal(data.getBytes());
-        return new Base64().encode(enc);
+        return Base64.getEncoder().encodeToString(enc);
 
       } catch (Exception e) {
         throw new RuntimeException("Error encrypting", e);
@@ -688,7 +689,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     LOGGER.debug("Decrypting data");
     if (!Check.isEmpty(encryptedData)) {
       try {
-        byte[] bytes = new Base64().decode(encryptedData);
+        byte[] bytes = Base64.getDecoder().decode(encryptedData);
         SecretKey key = new SecretKeySpec(SHAREPASS, "AES");
         Cipher ecipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         ecipher.init(Cipher.DECRYPT_MODE, key, INITVEC);
@@ -707,8 +708,8 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
     final String apiSecret =
         encryptionService.decrypt(
             connector.getAttribute(BlackboardRESTConnectorConstants.FIELD_API_SECRET));
-    return new Base64()
-        .encode((apiKey + ":" + apiSecret).getBytes())
+    return Base64.getEncoder()
+        .encodeToString((apiKey + ":" + apiSecret).getBytes())
         .replace("\n", "")
         .replace("\r", "");
   }

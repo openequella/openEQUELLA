@@ -19,7 +19,7 @@
 package com.tle.web.sections
 
 import io.lemonlabs.uri.QueryString
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object QueryParams {
 
@@ -27,9 +27,6 @@ object QueryParams {
     val paramVector = map.asScala.toVector.flatMap {
       case (n, vals) => vals.map(v => n -> Some(v))
     }
-    QueryString(paramVector).toString() match {
-      case "" => ""
-      case o  => o.substring(1)
-    }
+    QueryString(paramVector).toString
   }
 }

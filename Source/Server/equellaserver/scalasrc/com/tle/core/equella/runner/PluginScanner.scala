@@ -20,8 +20,6 @@ package com.tle.core.equella.runner
 
 import java.io.File
 import java.net.URL
-import java.nio.file.Files
-
 import org.java.plugin.registry.PluginRegistry
 import org.jdom2.Element
 import org.jdom2.input.SAXBuilder
@@ -29,9 +27,8 @@ import org.jdom2.input.sax.XMLReaders
 import org.jdom2.output.{Format, XMLOutputter}
 import sbt.io.syntax._
 import sbt.io.IO
-
 import scala.annotation.tailrec
-import scala.collection.JavaConversions._
+import scala.jdk.CollectionConverters._
 
 object PluginScanner {
 
@@ -57,7 +54,8 @@ object PluginScanner {
     val pluginId = root.getAttribute("id").getValue
     val (extDeps, deps) = root
       .getChildren("requires")
-      .flatMap(_.getChildren("import"))
+      .asScala
+      .flatMap(_.getChildren("import").asScala)
       .map { e =>
         (e.getAttributeValue("plugin-id"), e.getAttributeValue("exported", "false") == "true")
       }
@@ -65,7 +63,8 @@ object PluginScanner {
 
     val adminConsole = root
       .getChildren("attributes")
-      .flatMap(a => a.getChildren("attribute"))
+      .asScala
+      .flatMap(_.getChildren("attribute").asScala)
       .find {
         _.getAttributeValue("id") == "type"
       }
@@ -134,7 +133,7 @@ object PluginScanner {
 
       convertAll(manifestMap, Set.empty, List.empty, manifestMap.keys)._2.foreach { jpf =>
         val jpfBase      = jpf.baseFile
-        val classesDir   = jpfBase / "target/scala-2.12/classes"
+        val classesDir   = jpfBase / "target/scala-2.13/classes"
         val codeLibrary  = JPFLibrary("code", "code", classesDir.toURI.toString, Some("*"))
         val resourcesDir = Option(jpfBase / "resources").filter(_.isDirectory)
         val resLibrary =
@@ -177,7 +176,7 @@ object PluginScanner {
     val pluginId = root.getAttribute("id").getValue
     Option(root.getChild("requires")).foreach { r =>
       val newchildren =
-        r.getChildren().filterNot(_.getAttribute("plugin-id").getValue.contains(":"))
+        r.getChildren().asScala.filterNot(_.getAttribute("plugin-id").getValue.contains(":")).asJava
       if (newchildren.isEmpty) root.removeChild("requires") else r.setContent(newchildren)
     }
     if (jars.nonEmpty) {

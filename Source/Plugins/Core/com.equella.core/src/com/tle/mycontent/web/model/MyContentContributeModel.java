@@ -39,4 +39,19 @@ public class MyContentContributeModel extends TwoColumnLayout.TwoColumnModel {
   public CachedData<Set<String>> getAllowedHandlers() {
     return allowedHandlers;
   }
+
+  /**
+   * This field must be bookmarked so its value can be kept when Sections are forwarding to each
+   * other. Also, this one is only used when the request to create or edit a Scrapbook comes from
+   * New UI directly.
+   */
+  @Bookmarked private String newUIStateId;
+
+  public String getNewUIStateId() {
+    return newUIStateId;
+  }
+
+  public void setNewUIStateId(String newUIStateId) {
+    this.newUIStateId = newUIStateId;
+  }
 }

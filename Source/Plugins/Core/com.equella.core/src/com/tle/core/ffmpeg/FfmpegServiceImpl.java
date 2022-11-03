@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.tle.core.libav;
+package com.tle.core.ffmpeg;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -36,13 +36,13 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 
-@Bind(LibAvService.class)
+@Bind(FfmpegService.class)
 @Singleton
 @SuppressWarnings("nls")
-public class LibAvServiceImpl implements LibAvService {
-  private String libAvPath;
-  private File avconvExe;
-  private File avprobeExe;
+public class FfmpegServiceImpl implements FfmpegService {
+  private String ffmpegPath;
+  private File ffmpegExe;
+  private File ffprobeExe;
   @Inject private ObjectMapperService objectMapperService;
   @Inject private FileSystemService fileSystemService;
 
@@ -51,20 +51,20 @@ public class LibAvServiceImpl implements LibAvService {
   final int TRANSCODE_LENGTH = 10;
 
   @Inject(optional = true)
-  public void setLibAvPath(@Named("libav.path") String libAvPath) {
-    this.libAvPath = libAvPath.trim();
+  public void setFfmpegPath(@Named("ffmpeg.path") String ffmpegPath) {
+    this.ffmpegPath = ffmpegPath.trim();
   }
 
   @PostConstruct
   public void afterPropertiesSet() throws Exception {
-    if (libAvPath != null) {
-      final File libAvDir = new File(libAvPath);
-      avconvExe = ExecUtils.findExe(libAvDir, "avconv");
-      avprobeExe = ExecUtils.findExe(libAvDir, "avprobe");
-      if (avprobeExe == null || avconvExe == null) {
+    if (ffmpegPath != null) {
+      final File ffmpegDir = new File(ffmpegPath);
+      ffmpegExe = ExecUtils.findExe(ffmpegDir, "ffmpeg");
+      ffprobeExe = ExecUtils.findExe(ffmpegDir, "ffprobe");
+      if (ffprobeExe == null || ffmpegExe == null) {
         throw new RuntimeException(
-            "LibAv was not found, specifically the avconvert and avprobe programs.  The configured path is "
-                + libAvDir.getCanonicalPath());
+            "FFmpeg was not found, specifically the ffmpeg and ffprobe programs.  The configured path is "
+                + ffmpegDir.getCanonicalPath());
       }
     }
   }
@@ -78,10 +78,10 @@ public class LibAvServiceImpl implements LibAvService {
     if (videoDuration == 0) {
       result =
           ExecUtils.exec(
-              avconvExe.getAbsolutePath(),
+              ffmpegExe.getAbsolutePath(),
               "-i",
               new String(srcFile.getAbsolutePath().getBytes("UTF-8")),
-              "-b",
+              "-b:v",
               "350k",
               "-q:v",
               "1",
@@ -92,12 +92,12 @@ public class LibAvServiceImpl implements LibAvService {
     } else if (videoDuration > MIN_VIDEO_LENGTH) {
       result =
           ExecUtils.exec(
-              avconvExe.getAbsolutePath(),
+              ffmpegExe.getAbsolutePath(),
               "-ss",
               "00:00:0" + MIN_VIDEO_LENGTH,
               "-i",
               new String(srcFile.getAbsolutePath().getBytes("UTF-8")),
-              "-b",
+              "-b:v",
               "350k",
               "-q:v",
               "1",
@@ -110,12 +110,12 @@ public class LibAvServiceImpl implements LibAvService {
     else {
       result =
           ExecUtils.exec(
-              avconvExe.getAbsolutePath(),
+              ffmpegExe.getAbsolutePath(),
               "-ss",
               "00:00:0" + videoDuration / 2,
               "-i",
               new String(srcFile.getAbsolutePath().getBytes("UTF-8")),
-              "-b",
+              "-b:v",
               "350k",
               "-q:v",
               "1",
@@ -128,7 +128,7 @@ public class LibAvServiceImpl implements LibAvService {
 
   @Override
   public void generatePreviewVideo(FileHandle handle, String filename) throws IOException {
-    if (!isLibavInstalled()) {
+    if (!isFfmpegInstalled()) {
       return;
     }
     List<String> opts = new ArrayList<String>();
@@ -145,7 +145,7 @@ public class LibAvServiceImpl implements LibAvService {
           "Could not create/confirm directory " + dstFile.getParentFile().getAbsolutePath());
     }
 
-    opts.add(avconvExe.getAbsolutePath());
+    opts.add(ffmpegExe.getAbsolutePath());
     // skip 5 into the video, and capture 10 seconds. but only if it's long
     // enough
     if (videoDuration > MIN_VIDEO_LENGTH) {
@@ -163,14 +163,14 @@ public class LibAvServiceImpl implements LibAvService {
     opts.add("-i");
     opts.add(new String(srcFile.getAbsolutePath().getBytes("UTF-8")));
     // bitrate of transcoded video
-    opts.add("-b");
+    opts.add("-b:v");
     opts.add("350k");
     // audio sampling rate (experimental)
     opts.add("-ar");
     opts.add("44100");
     // audio codec
     opts.add("-acodec");
-    opts.add("libvo_aacenc");
+    opts.add("aac");
     // overwrite if file already exists
     opts.add("-y");
     if (vidDimensions.width > MAX_VIDEO_DIMENSTIONS
@@ -208,7 +208,7 @@ public class LibAvServiceImpl implements LibAvService {
     ObjectNode videoJson;
     ExecResult result =
         ExecUtils.exec(
-            avprobeExe.getAbsolutePath(),
+            ffprobeExe.getAbsolutePath(),
             "-of",
             "json",
             "-show_streams",
@@ -219,8 +219,8 @@ public class LibAvServiceImpl implements LibAvService {
   }
 
   @Override
-  public boolean isLibavInstalled() {
-    if (libAvPath != null) {
+  public boolean isFfmpegInstalled() {
+    if (ffmpegPath != null) {
       return true;
     }
     return false;

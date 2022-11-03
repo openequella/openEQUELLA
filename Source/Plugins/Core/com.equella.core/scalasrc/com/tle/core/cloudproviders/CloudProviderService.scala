@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory
 import java.nio.ByteBuffer
 import java.util.Collections
 import java.util.concurrent.TimeUnit
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 sealed trait CloudProviderError
 case class IOError(throwable: Throwable)                          extends CloudProviderError
