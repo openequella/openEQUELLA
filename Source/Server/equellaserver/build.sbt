@@ -17,19 +17,19 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 (Runtime / unmanagedClasspath) += (LocalProject("learningedge_config") / baseDirectory).value
 
 val RestEasyVersion   = "3.15.3.Final"
-val SwaggerVersion    = "1.6.6"
-val TomcatVersion     = "9.0.67"
+val SwaggerVersion    = "1.6.8"
+val TomcatVersion     = "9.0.68"
 val axis2Version      = "1.8.2"
 val circeVersion      = "0.12.1"
-val cxfVersion        = "3.5.3"
+val cxfVersion        = "3.5.4"
 val fs2Version        = "2.5.11"
 val guiceVersion      = "5.1.0"
-val jsassVersion      = "5.10.4"
+val jsassVersion      = "5.10.5"
 val jsoupVersion      = "1.14.3"
 val prometheusVersion = "0.16.0"
 val springVersion     = "5.3.23"
 val sttpVersion       = "1.7.2"
-val tikaVersion       = "2.4.1"
+val tikaVersion       = "2.5.0"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -65,8 +65,8 @@ libraryDependencies ++= Seq(
   ),
   "com.google.api-client" % "google-api-client"           % "2.0.0",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20220318-2.0.0",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20220719-2.0.0",
-  "com.google.code.gson"  % "gson"                        % "2.9.1",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20220926-2.0.0",
+  "com.google.code.gson"  % "gson"                        % "2.10",
   "com.google.gdata"      % "core"                        % "1.47.1",
   "com.google.guava"      % "guava"                       % "31.1-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
@@ -84,7 +84,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "aopalliance",
                   name = "aopalliance")
   ),
-  "com.ibm.icu" % "icu4j" % "71.1",
+  "com.ibm.icu" % "icu4j" % "72.1",
   sqlServerDep excludeAll (
     // Conflicts with RESTeasy jakarta.xml.bind-api
     ExclusionRule(organization = "javax.xml.bind"),
@@ -104,7 +104,7 @@ libraryDependencies ++= Seq(
   "commons-codec"             % "commons-codec"         % "1.15",
   "commons-collections"       % "commons-collections"   % "3.2.2",
   "commons-configuration"     % "commons-configuration" % "1.10",
-  "commons-daemon"            % "commons-daemon"        % "1.3.1",
+  "commons-daemon"            % "commons-daemon"        % "1.3.2",
   "commons-discovery"         % "commons-discovery"     % "0.5",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
   "commons-io"                % "commons-io"            % "2.11.0",
@@ -130,7 +130,7 @@ libraryDependencies ++= Seq(
   "org.apache.axis2"   % "axis2-adb"                % axis2Version,
   "org.apache.axis2"   % "axis2-transport-http"     % axis2Version,
   "org.apache.axis2"   % "axis2-transport-local"    % axis2Version,
-  "org.apache.commons" % "commons-compress"         % "1.21",
+  "org.apache.commons" % "commons-compress"         % "1.22",
   "org.apache.curator" % "curator-client"           % "5.3.0",
   "org.apache.curator" % "curator-framework"        % "5.3.0",
   "org.apache.curator" % "curator-recipes"          % "5.3.0",
@@ -213,8 +213,8 @@ libraryDependencies ++= Seq(
   "org.reactivestreams"             % "reactive-streams"               % "1.0.4",
   // Upgraded to 2.0.1.Final due to a deduplication issue with jakarta.ws.rs-api
   "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"     % "2.0.2.Final",
-  "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api" % "3.0",
-  "org.eclipse.microprofile.config"      % "microprofile-config-api"      % "3.0.1",
+  "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api" % "3.0.1",
+  "org.eclipse.microprofile.config"      % "microprofile-config-api"      % "3.0.2",
   "javax.json.bind"                      % "javax.json.bind-api"          % "1.0",
   "org.jsoup"                            % "jsoup"                        % jsoupVersion,
   xstreamDep,
@@ -385,8 +385,8 @@ run := {
 
   // Due to the error: deduplicate: different file contents found in the following:
   // ...
-  //  .../org.apache.cxf/cxf-rt-frontend-jaxws/bundles/cxf-rt-frontend-jaxws-3.5.3.jar:META-INF/cxf/bus-extensions.txt
-  //  .../org.apache.cxf/cxf-rt-transports-http/bundles/cxf-rt-transports-http-3.5.3.jar:META-INF/cxf/bus-extensions.txt
+  //  .../org.apache.cxf/cxf-rt-frontend-jaxws/bundles/cxf-rt-frontend-jaxws-3.5.4.jar:META-INF/cxf/bus-extensions.txt
+  //  .../org.apache.cxf/cxf-rt-transports-http/bundles/cxf-rt-transports-http-3.5.4.jar:META-INF/cxf/bus-extensions.txt
   // ...
   // As per https://github.com/johnrengelman/shadow/issues/309 , combining the files.
   case PathList("META-INF", "cxf", "bus-extensions.txt") => MergeStrategy.filterDistinctLines
