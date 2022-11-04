@@ -19,9 +19,11 @@ import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
 import {
   ACLExpression,
+  compactACLExpressions,
   generate,
   parse,
   removeRedundantExpressions,
+  revertCompactedACLExpressions,
 } from "../../../tsrc/modules/ACLExpressionModule";
 import {
   aclEveryone,
@@ -40,7 +42,15 @@ import {
   complexExpressionACLExpression,
   complexRedundantExpression,
   everyoneACLExpression,
+  notExpression,
+  notNestedCompactedExpression,
+  notNestedExpression,
+  notUnexpectedCompactedExpression,
+  notUnexpectedExpression,
+  notUnexpectedRevertCompactExpression,
   notUserACLExpression,
+  notWithChildCompactedExpression,
+  notWithChildExpression,
   ownerACLExpression,
   peerSameOperatorExpression,
   simplifiedChildOneItemRedundantExpression,
@@ -90,6 +100,70 @@ describe("ACLExpressionModule", () => {
       expect(parse(aclWithComplexSubExpression)).toEqual(
         E.right(complexExpressionACLExpression)
       );
+    });
+  });
+
+  describe("compactACLExpressions", () => {
+    it("lift recipient and children into `NOT` ACLExpression", () => {
+      expect(compactACLExpressions(notNestedExpression)).toEqual(
+        notNestedCompactedExpression
+      );
+      expect(compactACLExpressions(notExpression)).toEqual(notExpression);
+      expect(compactACLExpressions(notWithChildExpression)).toEqual(
+        notWithChildCompactedExpression
+      );
+
+      expect(compactACLExpressions(notUnexpectedExpression)).toEqual(
+        notUnexpectedCompactedExpression
+      );
+    });
+  });
+
+  describe("revertCompactedACLExpressions", () => {
+    it("wrap recipient and children into an `OR` ACLExpression", () => {
+      expect(revertCompactedACLExpressions(notExpression)).toEqual(
+        notExpression
+      );
+      expect(
+        revertCompactedACLExpressions(notWithChildCompactedExpression)
+      ).toEqual(notWithChildExpression);
+      expect(
+        revertCompactedACLExpressions(notNestedCompactedExpression)
+      ).toEqual(notNestedExpression);
+      expect(
+        revertCompactedACLExpressions(notUnexpectedCompactedExpression)
+      ).toEqual(notUnexpectedRevertCompactExpression);
+    });
+
+    it("multiple revert actions should still have same results", () => {
+      expect(
+        pipe(
+          notExpression,
+          revertCompactedACLExpressions,
+          revertCompactedACLExpressions
+        )
+      ).toEqual(notExpression);
+      expect(
+        pipe(
+          notWithChildCompactedExpression,
+          revertCompactedACLExpressions,
+          revertCompactedACLExpressions
+        )
+      ).toEqual(notWithChildExpression);
+      expect(
+        pipe(
+          notNestedCompactedExpression,
+          revertCompactedACLExpressions,
+          revertCompactedACLExpressions
+        )
+      ).toEqual(notNestedExpression);
+      expect(
+        pipe(
+          notUnexpectedCompactedExpression,
+          revertCompactedACLExpressions,
+          revertCompactedACLExpressions
+        )
+      ).toEqual(notUnexpectedRevertCompactExpression);
     });
   });
 
