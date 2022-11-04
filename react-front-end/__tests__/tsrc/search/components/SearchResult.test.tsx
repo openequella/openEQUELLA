@@ -34,6 +34,7 @@ import { act } from "react-dom/test-utils";
 import { BrowserRouter } from "react-router-dom";
 import { sprintf } from "sprintf-js";
 import { DRM_VIOLATION, drmTerms } from "../../../../__mocks__/Drm.mock";
+import { imageScrapbook } from "../../../../__mocks__/SearchResult.mock";
 import {
   DRM_ATTACHMENT_NAME,
   DRM_ITEM_NAME,
@@ -83,7 +84,8 @@ describe("<SearchResult/>", () => {
   const renderSearchResult = async (
     itemResult: OEQ.Search.SearchResultItem,
     theme: Theme = defaultTheme,
-    customActionButtons?: JSX.Element[]
+    customActionButtons?: JSX.Element[],
+    customOnClickTitleHandler?: () => void
   ) => {
     const renderResult = render(
       // This needs to be wrapped inside a BrowserRouter, to prevent an
@@ -97,6 +99,7 @@ describe("<SearchResult/>", () => {
             highlights={[]}
             getItemAttachments={async () => itemResult.attachments!}
             customActionButtons={customActionButtons}
+            customOnClickTitleHandler={customOnClickTitleHandler}
           />
         </BrowserRouter>
       </MuiThemeProvider>
@@ -182,6 +185,22 @@ describe("<SearchResult/>", () => {
     expect(
       queryByLabelText(languageStrings.common.action.openInNewTab)
     ).toBeInTheDocument();
+  });
+
+  it("disable the access to Item summary page in Lightbox for Scrapbook", async () => {
+    const { getByText, queryByLabelText } = await renderSearchResult(
+      imageScrapbook
+    );
+
+    userEvent.click(getByText(imageScrapbook.attachments![0].description!));
+
+    // The lightbox has now been displayed with the unique element being the lightbox's 'embed code' button.
+    expect(
+      queryByLabelText(languageStrings.embedCode.copy)
+    ).toBeInTheDocument();
+    expect(
+      queryByLabelText(languageStrings.lightboxComponent.openSummaryPage)
+    ).not.toBeInTheDocument();
   });
 
   it("hide star rating and comment count in small screen", async () => {
@@ -289,6 +308,23 @@ describe("<SearchResult/>", () => {
       page,
       `${defaultBaseUrl}${basicURL}?_sl.stateId=1&_int.id=2&a=coursesearch`
     );
+  });
+
+  it("supports custom handler for clicking the title", async () => {
+    const customHandler = jest.fn();
+    const item = mockData.basicSearchObj;
+
+    const { getByText } = await renderSearchResult(
+      item,
+      defaultTheme,
+      undefined,
+      customHandler
+    );
+
+    const title = getByText(`${item.name}`, { selector: "a" });
+    userEvent.click(title);
+
+    expect(customHandler).toHaveBeenCalledTimes(1);
   });
 
   describe("Dead attachments handling", () => {

@@ -26,6 +26,7 @@ import * as React from "react";
 import { ReactNode, useContext, useMemo, useState } from "react";
 import { useHistory } from "react-router";
 import ConfirmDialog from "../components/ConfirmDialog";
+import Lightbox, { LightboxProps } from "../components/Lightbox";
 import MessageInfo from "../components/MessageInfo";
 import { TooltipIconButton } from "../components/TooltipIconButton";
 import { AppContext } from "../mainui/App";
@@ -39,6 +40,7 @@ import {
   ScrapbookType,
 } from "../modules/ScrapbookModule";
 import { nonDeletedStatuses } from "../modules/SearchModule";
+import type { ViewerLightboxConfig } from "../modules/ViewerModule";
 import type { StatusSelectorProps } from "../search/components/StatusSelector";
 import {
   InitialSearchConfig,
@@ -73,6 +75,7 @@ import {
   PARAM_MYRESOURCES_TYPE,
   renderAllResources,
   sortOrderOptions,
+  viewScrapbook,
 } from "./MyResourcesPageHelper";
 
 const {
@@ -116,6 +119,10 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
   // State to control whether to show a confirmation dialog for deleting a Scrapbook.
   // The 'string' stored here is actually a UUID of the scrapbook item to delete.
   const [scrapbookToBeDeleted, setScrapbookToBeDeleted] = useState<string>();
+
+  const [lightBoxProps, setLightBoxProps] = useState<LightboxProps>();
+  // Used to control whether to show a spinner while retrieving Scrapbook viewer configuration.
+  const [showSpinner, setShowsSpinner] = useState(false);
 
   const initialSearchConfig = useMemo<InitialSearchConfig>(() => {
     const optionsFromStorage = getSearchPageOptionsFromStorage(
@@ -203,7 +210,18 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     | undefined => {
     const renderScrapbook = buildRenderScrapbookResult(
       (key: string) => openLegacyFileEditingPage(key, history, options),
-      setScrapbookToBeDeleted
+      setScrapbookToBeDeleted,
+      (item) => {
+        const openLightbox = ({ config }: ViewerLightboxConfig) =>
+          setLightBoxProps({
+            open: true,
+            onClose: () => setLightBoxProps(undefined),
+            config,
+          });
+
+        setShowsSpinner(true);
+        viewScrapbook(item, openLightbox).finally(() => setShowsSpinner(false));
+      }
     );
 
     switch (resourceType) {
@@ -248,6 +266,8 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
       callback: () => setSubStatus([]),
     },
     enableShareSearchButton: false,
+    // Downloading CSV is a feature belonging to Search page so disable it in My resources.
+    enableCSVExportButton: false,
     customSortingOptions: sortOrderOptions(resourceType),
     additionalHeaders:
       resourceType === "Scrapbook"
@@ -360,6 +380,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 searchContextProps
               )}
               customFavouriteUrl={customFavouriteUrl}
+              customShowSpinner={showSpinner}
             />
             {scrapbookToBeDeleted && (
               <ConfirmDialog
@@ -403,6 +424,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 )
               )}
             </Menu>
+            {lightBoxProps && <Lightbox {...lightBoxProps} />}
           </>
         )}
       </SearchContext.Consumer>

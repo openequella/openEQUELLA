@@ -218,6 +218,35 @@ describe("<SearchPageBody />", () => {
     expect(callback).toHaveBeenCalledTimes(1);
   });
 
+  it("supports custom control over whether to show the spinner", async () => {
+    const state: State = {
+      status: "success",
+      options: defaultSearchPageOptions,
+      result: {
+        from: "item-search",
+        content: {
+          start: 0,
+          length: 1,
+          available: 0,
+          results: [],
+          highlight: [],
+        },
+      },
+      classifications: [],
+    };
+
+    const { queryByRole } = await renderSearchPageBodyWithContext(
+      {
+        ...defaultSearchPageBodyProps,
+        customShowSpinner: true,
+      },
+      state
+    );
+
+    // The spinner should still be displayed although the state status is "success".
+    expect(queryByRole("progressbar")).toBeInTheDocument();
+  });
+
   it("displays custom UI for search results", () => {
     const text = "This is a custom search result";
     const searchPageBodyProps: SearchPageBodyProps = {
