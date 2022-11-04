@@ -565,6 +565,233 @@ export const parse = (
 };
 
 /**
+ * Prepare a simpler tree structure from `parse` for rendering in the UI.
+ * This only has to do with the handling of None groupings (or syntactically, NOT operators).
+ *
+ * Note:
+ * For a normal tree structure used to generate an expression string,
+ * `NOT` is a very special Operator that in theory if an ACLExpression's operator is `NOT` it can only have one recipient or one `OR` child.
+ *
+ * Case 1:
+ * ```
+ * NOT
+ *   A
+ * ```
+ *
+ * Case 2:
+ * ```
+ * NOT
+ *   OR
+ *     A B
+ * ```
+ *
+ * But it's a bit cumbersome for users, in order to simply the UI we have another type of ACLExpression,
+ * called `compacted ACLExpression`
+ * which will compact a `NOT` ACLExpression make it act like a normal ACLExpression
+ * that can have multiple recipients and children.
+ *
+ * Implementation Details:
+ * For a `NOT` ACLExpression, the function extracts all children's recipients and their children, and
+ * then add all recipients to its recipients attribute and overwrite its children attribute with new children. (recursively).
+ *
+ * Besides, although in theory the input `NOT` ACLExpression should follow the rules mention above(only one recipient or child),
+ * if the received ACLExpression breaks rules it will still compact the ACLExpression.
+ * (Thus, although there is another function can be used to revert the compacted ACLExpression
+ * , in this case you will get a different ACLExpression from what you received here.)
+ *
+ * Example 1:
+ *
+ * input:
+ * ```
+ * NOT
+ *   A
+ * ```
+ *
+ * output:
+ * ```
+ * NOT
+ *   A
+ * ```
+ *
+ * Example 2:
+ *
+ * input:
+ * ```
+ * NOT
+ *   OR
+ *     A B
+ *     AND
+ *       C D
+ * ```
+ *
+ * output:
+ * ```
+ * NOT
+ *   A B
+ *   AND
+ *     C D
+ * ```
+ *
+ * Example 3:
+ *
+ * unexpected input:
+ * ```
+ * NOT
+ *   A B
+ *   OR
+ *     C D
+ *     AND
+ *       E F
+ *   AND
+ *     G H
+ * ```
+ *
+ * output:
+ * ```
+ * NOT
+ *   A B C D G H
+ *   AND
+ *     E F
+ * ```
+ * */
+export const compactACLExpressions = (
+  aclExpression: ACLExpression
+): ACLExpression =>
+  pipe(
+    aclExpression.children,
+    A.map(compactACLExpressions),
+    pfTernary(
+      () => aclExpression.operator === "NOT",
+      A.reduce<ACLExpression, ACLExpression>(
+        createACLExpression("NOT", aclExpression.recipients),
+        (result, { recipients, children }) =>
+          pipe(result, addRecipients(recipients), addChildren(children))
+      ),
+      (newChildren) => ({
+        ...aclExpression,
+        children: newChildren,
+      })
+    )
+  );
+
+/**
+ * This function is used to proceed `NOT` ACLExpression in function `revertCompactedACLExpressions`.
+ *
+ * For ACLExpression which only have one recipient, it will return itself.
+ * Otherwise, it will move all recipients and children to a new `OR` ACLExpression,
+ * then return a new `NOT` ACLExpression with the new `OR` child.
+ * Finally, it will remove all redundant expressions.
+ */
+const handleNotACLExpression = (
+  aclExpression: ACLExpression,
+  revertedChildren: ACLExpression[]
+) =>
+  A.isEmpty(revertedChildren) && getRecipientCount(aclExpression) === 1
+    ? aclExpression
+    : pipe(
+        createACLExpression("OR", aclExpression.recipients, revertedChildren),
+        (result) => createACLExpression("NOT", [], [result]),
+        removeRedundantExpressions
+      );
+
+/**
+ * Prepare the tree structure users build with the UI for being sent to generate.
+ * Convert the compacted tree structure and make the result can be passed to function `generate`.
+ *
+ * Implementation Details (recursively):
+ * For `NOT` ACLExpression
+ * Step 1: unless it only have one recipient it will move all recipients and children to a new `OR` ACLExpression.
+ * Step 2: return a new `NOT` ACLExpression with the new `OR` child which we get from step 1.
+ * Step 3: removing all redundant expressions.
+ *
+ * Besides, if you revert an expression multiple times the final output won't be changed.
+ * (ie. expressionA  -> revert -> expressionB -> revert -> expressionB -> revert -> expressionB )
+ *
+ * Example 1:
+ *
+ * input:
+ * ```
+ * NOT
+ *   A
+ * ```
+ *
+ * output:
+ * ```
+ * NOT
+ *   A
+ * ```
+ *
+ *
+ * Example 2:
+ *
+ * input:
+ * ```
+ * NOT
+ *   OR
+ *     A B
+ * ```
+ *
+ * output:
+ * ```
+ * NOT
+ *   OR
+ *     A B
+ * ```
+ *
+ * Example 3:
+ *
+ * input:
+ * ```
+ * NOT
+ *   A B
+ *   AND
+ *     C D
+ * ```
+ *
+ * output:
+ * ```
+ * NOT
+ *   OR
+ *     A B
+ *     AND
+ *       C D
+ * ```
+ *
+ * Example 4:
+ *
+ * input:
+ * ```
+ * NOT
+ *   A B C D G H
+ *   AND
+ *     E F
+ * ```
+ *
+ * output:
+ * ```
+ *   NOT
+ *     OR
+ *       A B C D G H
+ *       AND
+ *         E F
+ * ```
+ * */
+export const revertCompactedACLExpressions = (
+  aclExpression: ACLExpression
+): ACLExpression =>
+  pipe(
+    aclExpression.children,
+    A.map(revertCompactedACLExpressions),
+    (revertedChildren: ACLExpression[]) =>
+      aclExpression.operator === "NOT"
+        ? handleNotACLExpression(aclExpression, revertedChildren)
+        : {
+            ...aclExpression,
+            children: revertedChildren,
+          }
+  );
+
+/**
  * Remove redundant expressions, and return a new ACLExpression object.
  */
 export const removeRedundantExpressions = (aclExpression: ACLExpression) => {
@@ -755,6 +982,7 @@ const generatePostfixResults = (aclExpression: ACLExpression): string[] => {
   return pipe(
     // Process the recipients
     aclExpression,
+    revertCompactedACLExpressions,
     ({ operator, recipients }: ACLExpression) =>
       A.isNonEmpty(recipients) && A.size(recipients) === 1
         ? handleSingleRecipient(operator, NEA.head(recipients))

@@ -494,3 +494,228 @@ export const simplifiedComplexRedundantExpression: ACLExpression =
       ),
     ]
   );
+/**
+ * ```
+ * NOT
+ *   F:A
+ * ```
+ * */
+export const notExpression: ACLExpression = createACLExpression("NOT", [
+  createACLRecipient("F:A"),
+]);
+
+/**
+ * ```
+ * NOT
+ *   OR
+ *     F:A F:B
+ *     AND
+ *       F:C F:D
+ * ```
+ * */
+export const notWithChildExpression: ACLExpression = createACLExpression(
+  "NOT",
+  [],
+  [
+    createACLExpression(
+      "OR",
+      [createACLRecipient("F:A"), createACLRecipient("F:B")],
+      [
+        createACLExpression("AND", [
+          createACLRecipient("F:C"),
+          createACLRecipient("F:D"),
+        ]),
+      ]
+    ),
+  ]
+);
+
+/**
+ * ```
+ * NOT
+ *   F:A F:B
+ *   AND
+ *     F:C F:D
+ * ```
+ * */
+export const notWithChildCompactedExpression: ACLExpression =
+  createACLExpression(
+    "NOT",
+    [createACLRecipient("F:A"), createACLRecipient("F:B")],
+    [
+      createACLExpression("AND", [
+        createACLRecipient("F:C"),
+        createACLRecipient("F:D"),
+      ]),
+    ]
+  );
+
+/**
+ * ```
+ * NOT
+ *   OR
+ *     F:A F:B
+ *     AND
+ *       F:C F:D
+ *       NOT
+ *         OR
+ *           F:E F:F
+ *           NOT
+ *               F:G
+ * ```
+ * */
+export const notNestedExpression: ACLExpression = createACLExpression(
+  "NOT",
+  [],
+  [
+    createACLExpression(
+      "OR",
+      [createACLRecipient("F:A"), createACLRecipient("F:B")],
+      [
+        createACLExpression(
+          "AND",
+          [createACLRecipient("F:C"), createACLRecipient("F:D")],
+          [
+            createACLExpression(
+              "NOT",
+              [],
+              [
+                createACLExpression(
+                  "OR",
+                  [createACLRecipient("F:E"), createACLRecipient("F:F")],
+                  [createACLExpression("NOT", [createACLRecipient("F:G")])]
+                ),
+              ]
+            ),
+          ]
+        ),
+      ]
+    ),
+  ]
+);
+
+/**
+ * ```
+ * NOT
+ *   F:A F:B
+ *   AND
+ *     F:C F:D
+ *     NOT
+ *         F:E F:F
+ *         NOT
+ *           F:G
+ * ```
+ */
+export const notNestedCompactedExpression: ACLExpression = createACLExpression(
+  "NOT",
+  [createACLRecipient("F:A"), createACLRecipient("F:B")],
+  [
+    createACLExpression(
+      "AND",
+      [createACLRecipient("F:C"), createACLRecipient("F:D")],
+      [
+        createACLExpression(
+          "NOT",
+          [createACLRecipient("F:E"), createACLRecipient("F:F")],
+          [createACLExpression("NOT", [createACLRecipient("F:G")])]
+        ),
+      ]
+    ),
+  ]
+);
+
+/**
+ * ```
+ * NOT
+ *   F:1 F:2
+ *   OR
+ *     F:A F:B
+ *     AND
+ *       F:C F:D
+ *   AND
+ *     F:E F:F
+ * ```
+ * */
+export const notUnexpectedExpression: ACLExpression = createACLExpression(
+  "NOT",
+  [createACLRecipient("F:1"), createACLRecipient("F:2")],
+  [
+    createACLExpression(
+      "OR",
+      [createACLRecipient("F:A"), createACLRecipient("F:B")],
+      [
+        createACLExpression("AND", [
+          createACLRecipient("F:C"),
+          createACLRecipient("F:D"),
+        ]),
+      ]
+    ),
+    createACLExpression("AND", [
+      createACLRecipient("F:E"),
+      createACLRecipient("F:F"),
+    ]),
+  ]
+);
+
+/**
+ * ```
+ * NOT
+ *   F:1 F:2 F:A F:B F:E F:F
+ *   AND
+ *     F:C F:D
+ * ```
+ * */
+export const notUnexpectedCompactedExpression: ACLExpression =
+  createACLExpression(
+    "NOT",
+    [
+      createACLRecipient("F:1"),
+      createACLRecipient("F:2"),
+      createACLRecipient("F:A"),
+      createACLRecipient("F:B"),
+      createACLRecipient("F:E"),
+      createACLRecipient("F:F"),
+    ],
+    [
+      createACLExpression("AND", [
+        createACLRecipient("F:C"),
+        createACLRecipient("F:D"),
+      ]),
+    ]
+  );
+
+/**
+ * ```
+ * NOT
+ *   OR
+ *      F:1 F:2 F:A F:B
+ *     AND
+ *       F:C F:D
+ *     AND
+ *       F:E F:F
+ * ```
+ * */
+export const notUnexpectedRevertCompactExpression: ACLExpression =
+  createACLExpression(
+    "NOT",
+    [],
+    [
+      createACLExpression(
+        "OR",
+        [
+          createACLRecipient("F:1"),
+          createACLRecipient("F:2"),
+          createACLRecipient("F:A"),
+          createACLRecipient("F:B"),
+          createACLRecipient("F:E"),
+          createACLRecipient("F:F"),
+        ],
+        [
+          createACLExpression("AND", [
+            createACLRecipient("F:C"),
+            createACLRecipient("F:D"),
+          ]),
+        ]
+      ),
+    ]
+  );
