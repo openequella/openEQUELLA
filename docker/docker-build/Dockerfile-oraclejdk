@@ -1,4 +1,4 @@
-FROM ubuntu:16.04 as baseequella
+FROM ubuntu:22.04 as baseequella
 #  Only run this image if you accept the Oracle JDK 8 license
 
 # Expects a host volume:  
