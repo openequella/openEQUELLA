@@ -122,10 +122,10 @@ ThisBuild / assemblyMergeStrategy := {
 
 name := "Equella"
 
-(ThisBuild / equellaMajor) := 2022
-(ThisBuild / equellaMinor) := 2
+(ThisBuild / equellaMajor) := 2023
+(ThisBuild / equellaMinor) := 1
 (ThisBuild / equellaPatch) := 0
-(ThisBuild / equellaStream) := "Stable"
+(ThisBuild / equellaStream) := "Alpha"
 (ThisBuild / equellaBuild) := buildConfig.value.getString("build.buildname")
 (ThisBuild / buildTimestamp) := Instant.now().getEpochSecond
 
