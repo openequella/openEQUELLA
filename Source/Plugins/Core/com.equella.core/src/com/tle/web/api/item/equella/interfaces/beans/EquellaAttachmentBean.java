@@ -30,6 +30,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 public abstract class EquellaAttachmentBean extends AttachmentBean {
   private boolean restricted;
   private String thumbnail;
+  // TODO: MME 변환파일 저장 경로
+  private String mmePath;
+  //TODO: 첨부파일 설명글
+  private String remark;
 
   public boolean isRestricted() {
     return restricted;
@@ -45,5 +49,21 @@ public abstract class EquellaAttachmentBean extends AttachmentBean {
 
   public void setThumbnail(String thumbnail) {
     this.thumbnail = thumbnail;
+  }
+
+  public String getMmePath() {
+    return mmePath;
+  }
+
+  public void setMmePath(String mmePath) {
+    this.mmePath = mmePath;
+  }
+
+  public String getRemark() {
+    return remark;
+  }
+
+  public void setRemark(String remark) {
+    this.remark = remark;
   }
 }

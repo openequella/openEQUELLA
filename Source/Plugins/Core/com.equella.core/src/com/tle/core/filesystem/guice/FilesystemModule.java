@@ -69,6 +69,8 @@ public class FilesystemModule extends OptionalConfigModule {
     @Override
     protected void configure() {
       bindFile("filestore.root");
+      // TODO: FilesystemMandatoryModule 구성(filestore.mme.root / 가칭) 추가
+      bindFile("filestore.mme.root");
     }
   }
 }

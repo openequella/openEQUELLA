@@ -1,0 +1,22 @@
+Configuration:
+  status: debug
+
+  appenders:
+    Console:
+      name: CONSOLE
+      target: SYSTEM_OUT
+      Filters:
+        ThresholdFilter:
+          level: debug
+        RegexFilter:
+          regex: ".*(HHH90000022|HHH90000014).*"
+          onMatch: "DENY"
+          onMismatch: "NEUTRAL"
+      PatternLayout:
+        Pattern: "%d{ABSOLUTE} %-5p [%c{1}] %m%n"
+
+  Loggers:
+    Root:
+      level: info
+      AppenderRef:
+        - ref: CONSOLE

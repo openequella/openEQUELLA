@@ -63,6 +63,7 @@
     </JavaCodeStyleSettings>
     <ScalaCodeStyleSettings>
       <option name="FORMATTER" value="1" />
+      <option name="USE_SCALADOC2_FORMATTING" value="true" />
     </ScalaCodeStyleSettings>
     <TypeScriptCodeStyleSettings version="0">
       <option name="IMPORT_SORT_MODULE_NAME" value="true" />

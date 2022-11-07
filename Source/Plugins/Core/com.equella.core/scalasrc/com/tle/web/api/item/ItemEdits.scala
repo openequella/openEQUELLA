@@ -61,7 +61,10 @@ case class ItemEditResponses(xml: String, results: Iterable[ItemEditResponse])
 object ItemEdits {
   val attachmentSerializers = LegacyGuice.attachmentSerializerProvider
   val editorMap             = attachmentSerializers.getAttachmentSerializers.asScala
-
+  // TODO: API로 요청한 추가할 첨부파일 목록을 리턴하는 함수
+  def getAttachmentList(itemEdit: ItemEdits): Array[EquellaAttachmentBean] = {
+    itemEdit.edits.collect({case AddAttachment(attachment, xmlPath) => attachment}).toArray
+  }
   def performEdits(itemEdit: ItemEdits, editor: ItemEditor): ItemEditResponses = {
 
     val metadata            = itemEdit.xml.map(new PropBagEx(_)).getOrElse(editor.getMetadata)

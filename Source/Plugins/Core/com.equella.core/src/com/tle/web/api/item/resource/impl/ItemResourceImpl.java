@@ -30,8 +30,15 @@ import com.tle.common.Check;
 import com.tle.common.Pair;
 import com.tle.common.PathUtils;
 import com.tle.common.filesystem.FileEntry;
+// TODO: 현재 접속중인 Institution 정보를 다루는 클래스
+import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.interfaces.CsvList;
+import com.tle.common.search.DefaultSearch;
+import com.tle.common.searching.Search.SortType;
+import com.tle.common.searching.SearchResults;
+import com.tle.core.auditlog.AuditLogService;
 import com.tle.core.filesystem.ItemFile;
+import com.tle.core.freetext.queries.FreeTextBooleanQuery;
 import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.security.ItemSecurityConstants;
@@ -47,12 +54,15 @@ import com.tle.core.item.service.ItemFileService;
 import com.tle.core.item.service.ItemHistoryService;
 import com.tle.core.item.service.ItemLockingService;
 import com.tle.core.item.service.ItemService;
+import com.tle.core.item.standard.ItemOperationFactory;
 import com.tle.core.item.standard.service.ItemCommentService;
 import com.tle.core.item.standard.service.ItemStandardService;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.quickupload.service.QuickUploadService;
 import com.tle.core.services.FileSystemService;
+import com.tle.core.services.user.UserSessionService;
 import com.tle.exceptions.PrivilegeRequiredException;
+import com.tle.ims.service.IMSService;
 import com.tle.web.api.interfaces.beans.BlobBean;
 import com.tle.web.api.interfaces.beans.FileListBean;
 import com.tle.web.api.interfaces.beans.UserBean;
@@ -61,6 +71,7 @@ import com.tle.web.api.item.ItemEdits;
 import com.tle.web.api.item.ItemEditsExisting;
 import com.tle.web.api.item.ItemLinkService;
 import com.tle.web.api.item.ItemSummaryApi;
+import com.tle.web.api.item.equella.interfaces.beans.EquellaAttachmentBean;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
 import com.tle.web.api.item.interfaces.ItemLockResource;
 import com.tle.web.api.item.interfaces.ItemResource;
@@ -68,6 +79,13 @@ import com.tle.web.api.item.interfaces.beans.*;
 import com.tle.web.api.item.resource.EquellaItemResource;
 import com.tle.web.remoting.rest.service.RestImportExportHelper;
 import com.tle.web.remoting.rest.service.UrlLinkService;
+
+import java.util.zip.ZipFile;
+import java.util.zip.ZipException;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -85,6 +103,8 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
+// TODO: property 사용을 위한 Named 추가
+import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
@@ -93,6 +113,10 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import org.jboss.resteasy.util.DateUtil;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * see interface classes for @Path and other annotations
@@ -124,6 +148,22 @@ public class ItemResourceImpl implements EquellaItemResource {
   @Inject private QuickUploadService quickUploadService;
   @Inject private MimeTypeService mimeService;
   @Inject private ItemLockingService lockingService;
+  // TODO: IMS package를 다룰 IMS서비스 추가
+  @Inject private IMSService imsService;
+  // TODO: ItemOperation을 다룰 Factory 추가
+  @Inject private ItemOperationFactory workflowFactory;
+  // TODO: UserSessionService
+  @Inject private UserSessionService sessionService;
+  // TODO: AuditLogService
+  @Inject private AuditLogService auditService;
+
+  // TODO: MME 변환 파일을 담을 디렉토리 File 객체(mmeRootDir) 추가
+  @Inject
+  @Named("filestore.mme.root")
+  private File mmeRootDir;
+
+  // TODO: Logger
+  Logger logger = LoggerFactory.getLogger(ItemResourceImpl.class);
 
   /** NB: import|export=true is also an option in the query parameters. */
   @Override
@@ -583,15 +623,106 @@ public class ItemResourceImpl implements EquellaItemResource {
       String taskUuid,
       ItemEdits edits) {
     boolean ensureOnIndexList = Boolean.parseBoolean(waitForIndex);
+    boolean attachContinue = true; // MME 변환파일 유무
 
     ItemKey itemKey =
-        taskUuid != null ? new ItemTaskId(uuid, version, taskUuid) : new ItemId(uuid, version);
-    Pair<ItemEditResponses, ItemIdKey> response =
-        itemEditsExisting.performEdits(edits, itemKey, lockId, ensureOnIndexList);
-    if (ensureOnIndexList) {
-      freeTextService.waitUntilIndexed(response.getSecond());
+      taskUuid != null ? new ItemTaskId(uuid, version, taskUuid) : new ItemId(uuid, version);
+    // TODO: MME 변환 파일 이동
+    /* MME 변환 파일 이동 START */
+    ItemFile itemFile = itemFileService.getItemFile(itemKey, null);
+    itemFile.setInstitution(CurrentInstitution.get());
+    // MME Root Directory가 없을 시 생성
+    if(!mmeRootDir.exists()) mmeRootDir.mkdir();
+    // MME Root Directory가 존재하고 Directory인 경우
+    if(mmeRootDir.isDirectory()) {
+      // API 요청 시 첨부파일 추가 목록이 있는 경우 각 파일마다 filename, mmePath를 조회한다.
+      if(ItemEdits.getAttachmentList(edits).length != 0) {
+        for (EquellaAttachmentBean attachment : ItemEdits.getAttachmentList(edits)) {
+          if(StringUtils.isNotEmpty(attachment.getMmePath())) {
+            File from = new File(PathUtils.filePath(mmeRootDir.getAbsolutePath(), attachment.getMmePath(), attachment.getDescription()));
+            FileInputStream fileInputStream = null;
+            // TODO : MME 변환 파일 이동 관련 try / catch
+            try {
+              fileInputStream = new FileInputStream(from);
+              int read = fileInputStream.read();// 데이터 1byte 읽기
+
+              try {
+                fileInputStream.close();
+              } catch (IOException e) {// 1. 파일을 열어 정상적으로 읽었으나 Stream을 닫을 때 에러 발생의 경우
+                logger.warn(e.getMessage());
+              }
+
+              // 추가 요청한 MME 변환 파일 존재하고 파일인 경우
+              if(from.exists() && from.isFile()) {
+                File toDir = fileSystemService.getExternalFile(itemFile, null);
+                // 해당 아이템의 Attachment Directory가 없을 시 생성
+                if(!toDir.exists()) fileSystemService.mkdir(itemFile, "");
+                String toPath = toDir.getAbsolutePath();
+                // TODO: scorm/ims package zip 파일 이동
+                if("custom/scorm".equals(attachment.getRawAttachmentType()) || "ims".equals(attachment.getRawAttachmentType())) {
+                  // TODO: _IMS 디렉토리 없을 시 생성
+                  if(!fileSystemService.getExternalFile(itemFile, "_IMS").exists()) fileSystemService.mkdir(itemFile, "_IMS");
+                  toPath = PathUtils.filePath(toPath, "_IMS",attachment.getDescription());
+                }else {
+                  toPath = PathUtils.filePath(toPath, attachment.getDescription());
+                }
+                File to = new File(toPath);
+                // 파일 이동(MME 관련 디렉토리 -> openEQUELLA item attachment 디렉토리
+                FileMove(from.getAbsolutePath(), to.getAbsolutePath());
+                // TODO: scorm/ims package 압축 해제
+                if("custom/scorm".equals(attachment.getRawAttachmentType()) || "ims".equals(attachment.getRawAttachmentType())) {
+                  String imsZipFilePath = toDir.getAbsolutePath()+"/_IMS/" + attachment.getDescription();
+                  FileMove(to.getAbsolutePath(), imsZipFilePath);
+
+                  imsService.ensureIMSPackage(itemFile, "_IMS/" + attachment.getDescription());
+                  //fileSystemService.unzipFile(itemFile, "_IMS/" + attachment.getDescription(), attachment.getDescription());
+
+                  toDir = fileSystemService.getExternalFile(itemFile, attachment.getDescription());
+
+                  logger.info("=================CustomZipDecompress Info==============");
+                  logger.info("Dir Exists : " + toDir.exists());
+                  logger.info("Dir Path : " + toDir.getAbsolutePath());
+                  logger.info("Origin Zip File Path : " + imsZipFilePath);
+                  logger.info("=================CustomZipDecompress Info==============");
+
+                  if(!toDir.exists()) fileSystemService.mkdir(itemFile, attachment.getDescription());
+                  CustomZipDecompress(toDir.getAbsolutePath(), imsZipFilePath);
+                }
+              }else {
+                // MME 변환 파일이 없는 경우
+                attachContinue = false;
+                break;
+              }
+            } catch (FileNotFoundException e) {// 2. 파일을 찾지 못했을 경우
+              logger.warn(e.getMessage());
+              attachContinue = false;
+            } catch (IOException e) {// 3. 파일을 찾았으나 읽지 못했을 경우
+              try {
+                if(fileInputStream != null) {
+                  fileInputStream.close();
+                }
+              } catch (IOException e2) {// 4. 파일을 찾았은 읽지 못하여 fileStream을 닫으려고 했으나 닫지 못했을 경우
+                logger.warn(e2.getMessage());
+              }
+              attachContinue = false;
+            }
+          }
+        }
+      }
     }
-    return response.getFirst();
+    /* MME 변환 파일 이동 END */
+
+    if(attachContinue) {
+      Pair<ItemEditResponses, ItemIdKey> response =
+        itemEditsExisting.performEdits(edits, itemKey, lockId, ensureOnIndexList);
+      if (ensureOnIndexList) {
+        freeTextService.waitUntilIndexed(response.getSecond());
+      }
+      return response.getFirst();
+    }else {
+      // MME 변환 파일이 없는 경우 204에러 유도
+      return null;
+    }
   }
 
   // private methods
@@ -641,8 +772,6 @@ public class ItemResourceImpl implements EquellaItemResource {
    * Similar operation in the ItemLockResource
    *
    * @see com.tle.web.api.item.interfaces.ItemLockResource#get(UriInfo, String, int)
-   * @param uuid
-   * @param version
    * @return
    */
   private ItemLockBean getItemLock(EquellaItemBean equellaBean) {
@@ -667,5 +796,82 @@ public class ItemResourceImpl implements EquellaItemResource {
   @Override
   public ItemSummary getSummary(String uuid, int version) {
     return ItemSummaryApi.getItemSummary(uuid, version);
+  }
+
+  // TODO : Runtime 파일 이동 메소드
+  private void FileMove(String fromPath, String toPath) {
+    try {
+      Runtime runtime = Runtime.getRuntime();
+      String[] runCommand = new String[3];
+      runCommand[0] = "/bin/sh";
+      runCommand[1] = "-c";
+      runCommand[2] = "mv " + fromPath + " " + toPath;
+      Process process = runtime.exec(runCommand);
+      process.waitFor();
+    } catch (Exception e) {
+      e.printStackTrace();
+      logger.warn(e.getMessage());
+    }
+  }
+
+  public void CustomZipDecompress(String upload_fIle_path, String imsZipFilePath)
+    throws IOException {
+    try {
+      new ZipFile(imsZipFilePath);
+    } catch (ZipException e) {
+      logger.warn(e.getMessage());
+    }
+  }
+  //TODO : 아이템 소유자 변경 API(다건)
+  @Override
+  public Response changeOwnershipAll(String oldId, String newId) {
+    DefaultSearch search = new DefaultSearch();
+    FreeTextBooleanQuery freetextQuery = null;
+    final Collection<String> collectionUuids = null;
+    search.setCollectionUuids(collectionUuids);
+    String q = null;
+    String order = null;
+    // set it, null or not
+    search.setFreeTextQuery(freetextQuery);
+
+    final SortType orderType = DefaultSearch.getOrderType(order, q);
+    boolean reverseOrder = false;
+
+    search.setSortFields(orderType.getSortField(reverseOrder));
+    search.setQuery(q);
+    // 이전 소유자 아이템 검색
+    search.setOwner(oldId);
+
+    int start = 0;
+    int length = 50;
+
+    //TODO: length를 기준으로 한 복합 반복문
+    while(true) {
+      SearchResults<ItemIdKey> searchResults = freeTextService.searchIds(search, start, length);
+      List<ItemIdKey> itemIds = searchResults.getResults();
+      int available = searchResults.getAvailable();
+
+      for (ItemIdKey itemId : itemIds) {
+        changeOwner(itemId.getUuid(), itemId.getVersion(), newId);
+      }
+
+      if((available - length) < 0) {
+        break;
+      }
+    }
+    return Response.status(Status.OK).build();
+  }
+
+  //TODO: 아이템 소유자 변경 API(단건)
+  @Override
+  public Response changeOwnership(String uuid, int version, String newId) {
+    changeOwner(uuid, version, newId);
+    return Response.status(Status.OK).build();
+  }
+
+  //TODO : 아이템 소유자 변경 메소드
+  private void changeOwner(String uuid, int version, String newId) {
+    ItemId itemId = new ItemId(uuid, version);
+    itemService.operation(itemId, workflowFactory.changeOwner(newId), workflowFactory.save());
   }
 }

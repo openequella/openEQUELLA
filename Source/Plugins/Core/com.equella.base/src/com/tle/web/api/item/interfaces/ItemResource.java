@@ -252,4 +252,24 @@ public interface ItemResource {
       @ApiParam("File path") @PathParam("path") String path);
   // @formatter:on
 
+  //TODO: 아이템 소유자 변경 API(다건)
+  @POST
+  @Path("/changeOwnership/all")
+  @ApiOperation(value = "Change ownership of a user's all item")
+  public Response changeOwnershipAll(
+    // @formatter:off
+    @ApiParam("An uuid of owner") @QueryParam("oldId") String oldId,
+    @ApiParam("An uuid of new owner") @QueryParam("newId") String newId);
+  // @formatter:on
+
+  //TODO: 아이템 소유자 변경 API(단건)
+  @POST
+  @Path("/changeOwnership/{uuid}/{version}")
+  @ApiOperation(value = "Change ownership of an item")
+  public Response changeOwnership( // @formatter:off
+    @ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
+    @ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version,
+    @ApiParam("An uuid of new owner") @QueryParam("newId") final String newId);
+  // @formatter:on
+
 }
