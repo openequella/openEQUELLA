@@ -77,6 +77,7 @@ public class StandardAttachmentSerializer extends AbstractAttachmentSerializer {
         ZipAttachmentBean zbean = new ZipAttachmentBean();
         zbean.setFolder(zattach.getUrl());
         zbean.setMapped(zattach.isMapped());
+        zbean.setRemark(zattach.getRemark());
         bean = zbean;
         break;
       case LINK:
@@ -84,6 +85,7 @@ public class StandardAttachmentSerializer extends AbstractAttachmentSerializer {
         UrlAttachmentBean ubean = new UrlAttachmentBean();
         ubean.setUrl(lattach.getUrl());
         ubean.setDisabled(urlCheckerService.isUrlDisabled(lattach.getUrl()));
+        ubean.setRemark(lattach.getRemark());
         bean = ubean;
         break;
       case IMS:
@@ -92,6 +94,7 @@ public class StandardAttachmentSerializer extends AbstractAttachmentSerializer {
         pbean.setPackageFile(iattach.getUrl());
         pbean.setSize(iattach.getSize());
         pbean.setExpand(iattach.isExpand());
+        pbean.setRemark(iattach.getRemark());
         bean = pbean;
         break;
       case IMSRES:
@@ -109,6 +112,7 @@ public class StandardAttachmentSerializer extends AbstractAttachmentSerializer {
           Long fileSize = (Long) cattach.getData("fileSize");
           sbean.setSize(fileSize);
           sbean.setScormVersion((String) cattach.getData("SCORM_VERSION"));
+          sbean.setRemark(cattach.getRemark());
           bean = sbean;
         } else {
           ScormResourceAttachmentBean sbean = new ScormResourceAttachmentBean();
@@ -117,6 +121,7 @@ public class StandardAttachmentSerializer extends AbstractAttachmentSerializer {
           if (fileSize != null) {
             sbean.setSize(fileSize);
           }
+          sbean.setRemark(cattach.getRemark());
           sbean.setMd5(cattach.getMd5sum());
           bean = sbean;
         }
@@ -132,6 +137,7 @@ public class StandardAttachmentSerializer extends AbstractAttachmentSerializer {
     fbean.setMd5(fattach.getMd5sum());
     fbean.setFilename(fattach.getFilename());
     fbean.setSize(fattach.getSize());
+    fbean.setRemark(fattach.getRemark());
   }
 
   @Override

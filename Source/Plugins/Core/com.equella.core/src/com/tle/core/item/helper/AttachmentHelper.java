@@ -106,6 +106,7 @@ public class AttachmentHelper extends AbstractHelper {
             setNode(aXml, "description", attachment.getDescription());
             setNode(aXml, "restricted", attachment.isRestricted());
             setNode(aXml, "thumbnail", attachment.getThumbnail());
+            setNode(aXml, "remark", attachment.getRemark());
 
             Map<String, Object> dataAttributes =
                 new HashMap<String, Object>(attachment.getDataAttributesReadOnly());

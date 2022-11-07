@@ -97,6 +97,11 @@ public abstract class AbstractAttachmentEditor implements AttachmentEditor {
   }
 
   @Override
+  public void editRemark(String remark) {
+    attachment.setRemark(remark);
+  }
+
+  @Override
   public String getAttachmentUuid() {
     return attachment.getUuid();
   }

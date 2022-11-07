@@ -68,6 +68,11 @@ public class ScormAttachmentEditorImpl extends AbstractCustomAttachmentEditor
   }
 
   @Override
+  public void editRemark(String remark) {
+    attachment.setRemark(remark);
+  }
+
+  @Override
   public String getCustomType() {
     return "scorm";
   }

@@ -32,4 +32,6 @@ public interface AttachmentEditor {
   void editThumbnail(String thumbnail);
 
   void editErroredIndexing(boolean erroredIndexing);
+
+  void editRemark(String remark);
 }

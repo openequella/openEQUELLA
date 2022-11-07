@@ -53,4 +53,9 @@ public class PackageResourceAttachmentEditorImpl extends AbstractAttachmentEdito
   public Attachment newAttachment() {
     return new IMSResourceAttachment();
   }
+
+  @Override
+  public void editRemark(String remark) {
+    attachment.setRemark(remark);
+  }
 }

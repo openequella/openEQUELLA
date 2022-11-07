@@ -34,6 +34,11 @@ public class ScormResourceAttachmentEditorImpl extends AbstractCustomAttachmentE
   }
 
   @Override
+  public void editRemark(String remark) {
+    attachment.setRemark(remark);
+  }
+
+  @Override
   public String getCustomType() {
     return "scormres"; //$NON-NLS-1$
   }

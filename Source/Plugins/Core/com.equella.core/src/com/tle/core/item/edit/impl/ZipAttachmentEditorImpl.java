@@ -56,6 +56,11 @@ public class ZipAttachmentEditorImpl extends AbstractAttachmentEditor
   }
 
   @Override
+  public void editRemark(String remark) {
+    zipAttachment.setRemark(remark);
+  }
+
+  @Override
   public Attachment newAttachment() {
     return new ZipAttachment();
   }

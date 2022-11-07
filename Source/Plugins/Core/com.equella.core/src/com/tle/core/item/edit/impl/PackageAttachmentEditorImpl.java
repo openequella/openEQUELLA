@@ -71,4 +71,9 @@ public class PackageAttachmentEditorImpl extends AbstractFileAttachmentEditor
       pkgAttachment.setData(KEY_EXPAND_IMS_PACKAGE, expand);
     }
   }
+
+  @Override
+  public void editRemark(String remark) {
+    pkgAttachment.setRemark(remark);
+  }
 }

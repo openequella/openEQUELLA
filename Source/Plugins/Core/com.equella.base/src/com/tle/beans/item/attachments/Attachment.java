@@ -68,6 +68,9 @@ public abstract class Attachment implements IAttachment, Serializable, Cloneable
   @Column(length = 1024)
   protected String value3;
 
+  @Column(length = 1024)
+  protected String value4;
+
   @Column(length = 512)
   protected String thumbnail;
 
@@ -279,6 +282,14 @@ public abstract class Attachment implements IAttachment, Serializable, Cloneable
   @Override
   public void setRestricted(boolean restricted) {
     this.restricted = restricted;
+  }
+
+  public String getRemark() {
+    return value4;
+  }
+
+  public void setRemark(String remark) {
+    this.value4 = remark;
   }
 
   public String getAttachmentSignature() {

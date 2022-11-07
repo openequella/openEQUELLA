@@ -49,6 +49,11 @@ public class UrlAttachmentEditorImpl extends AbstractAttachmentEditor
   }
 
   @Override
+  public void editRemark(String remark) {
+    urlAttachment.setRemark(remark);
+  }
+
+  @Override
   public Attachment newAttachment() {
     return new LinkAttachment();
   }
