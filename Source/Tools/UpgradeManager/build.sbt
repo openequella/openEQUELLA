@@ -10,6 +10,7 @@ libraryDependencies ++= Seq(
   "org.slf4j"            % "jcl-over-slf4j"     % "2.0.3",
   "commons-io"           % "commons-io"         % "2.11.0",
   log4j,
+  log4jCore,
   log4jSlf4jImpl,
   "commons-daemon" % "commons-daemon" % "1.3.2",
   "commons-codec"  % "commons-codec"  % "1.15",

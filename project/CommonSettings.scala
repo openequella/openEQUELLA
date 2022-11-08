@@ -44,7 +44,8 @@ object CommonSettings extends AutoPlugin {
 
     lazy val log4jVersion   = "2.19.0"
     lazy val log4j          = "org.apache.logging.log4j" % "log4j" % log4jVersion
-    lazy val log4jSlf4jImpl = "org.apache.logging.log4j" % "log4j-slf4j-impl" % log4jVersion
+    lazy val log4jCore      = "org.apache.logging.log4j" % "log4j-core" % log4jVersion
+    lazy val log4jSlf4jImpl = "org.apache.logging.log4j" % "log4j-slf4j2-impl" % log4jVersion
 
     lazy val xstreamVersion = "1.4.19"
     lazy val xstreamDep     = "com.thoughtworks.xstream" % "xstream" % xstreamVersion

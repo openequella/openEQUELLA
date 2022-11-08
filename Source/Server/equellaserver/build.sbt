@@ -120,6 +120,7 @@ libraryDependencies ++= Seq(
   "jdom"                      % "jdom"                  % "1.1",
   "com.github.equella.jpf"    % "jpf"                   % "1.0.7",
   log4j,
+  log4jCore,
   log4jSlf4jImpl,
   "net.oauth.core"     % "oauth"                    % "20100527",
   "net.oauth.core"     % "oauth-provider"           % "20100527",
