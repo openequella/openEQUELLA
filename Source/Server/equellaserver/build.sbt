@@ -120,6 +120,7 @@ libraryDependencies ++= Seq(
   "jdom"                      % "jdom"                  % "1.1",
   "com.github.equella.jpf"    % "jpf"                   % "1.0.7",
   log4j,
+  log4jCore,
   log4jSlf4jImpl,
   "net.oauth.core"     % "oauth"                    % "20100527",
   "net.oauth.core"     % "oauth-provider"           % "20100527",
@@ -221,8 +222,8 @@ libraryDependencies ++= Seq(
   "org.opensaml" % "xmltooling" % "1.4.4" excludeAll ExclusionRule(organization = "org.slf4j"),
   postgresDep,
   "org.scannotation"    % "scannotation"           % "1.0.3",
-  "org.slf4j"           % "jcl-over-slf4j"         % "1.7.36",
-  "org.slf4j"           % "slf4j-api"              % "1.7.36",
+  "org.slf4j"           % "jcl-over-slf4j"         % "2.0.3",
+  "org.slf4j"           % "slf4j-api"              % "2.0.3",
   "org.springframework" % "spring-aop"             % springVersion,
   "org.springframework" % "spring-context"         % springVersion,
   "org.springframework" % "spring-context-support" % springVersion excludeAll (
