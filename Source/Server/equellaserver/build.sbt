@@ -27,7 +27,6 @@ val guiceVersion      = "5.1.0"
 val jsassVersion      = "5.10.5"
 val jsoupVersion      = "1.14.3"
 val prometheusVersion = "0.16.0"
-val springVersion     = "5.3.23"
 val sttpVersion       = "1.7.2"
 val tikaVersion       = "2.5.0"
 
@@ -220,21 +219,18 @@ libraryDependencies ++= Seq(
   xstreamDep,
   "org.opensaml" % "xmltooling" % "1.4.4" excludeAll ExclusionRule(organization = "org.slf4j"),
   postgresDep,
-  "org.scannotation"    % "scannotation"           % "1.0.3",
-  "org.slf4j"           % "jcl-over-slf4j"         % "1.7.36",
-  "org.slf4j"           % "slf4j-api"              % "1.7.36",
-  "org.springframework" % "spring-aop"             % springVersion,
-  "org.springframework" % "spring-context"         % springVersion,
+  "org.scannotation" % "scannotation"   % "1.0.3",
+  "org.slf4j"        % "jcl-over-slf4j" % "1.7.36",
+  "org.slf4j"        % "slf4j-api"      % "1.7.36",
+  springAop,
+  springWeb,
+  springContext,
   "org.springframework" % "spring-context-support" % springVersion excludeAll (
     ExclusionRule(organization = "jasperreports",
                   name = "jasperreports")
   ),
-  "org.springframework" % "spring-jdbc" % springVersion,
-  "org.springframework" % "spring-tx"   % springVersion,
-  "org.springframework" % "spring-web"  % springVersion,
-//  "org.springframework" % "spring-webmvc" % "2.5.5" excludeAll (
-//    ExclusionRule(organization = "jasperreports", name = "jasperreports")
-//    ),
+  "org.springframework"       % "spring-jdbc"       % springVersion,
+  "org.springframework"       % "spring-tx"         % springVersion,
   "stax"                      % "stax-api"          % "1.0.1",
   "taglibs"                   % "standard"          % "1.1.2",
   "com.github.equella.legacy" % "qtiworks-jqtiplus" % "1.0-beta3" excludeAll (
