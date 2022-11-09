@@ -349,13 +349,36 @@ const drmAttachObj: OEQ.Search.SearchResultItem = {
     self: "http://localhost:8080/rest/api/item/72558c1d-8788-4515-86c8-b24a28cc451e/1/",
   },
   isLatestVersion: true,
-  drmStatus: { isAuthorised: true, termsAccepted: false },
+  drmStatus: {
+    isAuthorised: true,
+    termsAccepted: false,
+    isAllowSummary: false,
+  },
 };
 
 const drmUnauthorisedObj = {
   ...drmAttachObj,
-  drmStatus: { isAuthorised: false, termsAccepted: false },
+  drmStatus: {
+    isAuthorised: false,
+    termsAccepted: false,
+    isAllowSummary: false,
+  },
 };
+
+const drmAllowSummaryObj = {
+  ...drmAttachObj,
+  drmStatus: {
+    isAuthorised: false,
+    termsAccepted: false,
+    isAllowSummary: true,
+  },
+};
+
+const nonLiveObj: OEQ.Search.SearchResultItem = {
+  ...attachSearchObj,
+  status: "draft",
+};
+
 export {
   basicSearchObj,
   attachSearchObj,
@@ -363,6 +386,8 @@ export {
   keywordFoundInAttachmentObj,
   oneDeadAttachObj,
   oneDeadOneAliveAttachObj,
+  drmAllowSummaryObj,
   drmAttachObj,
   drmUnauthorisedObj,
+  nonLiveObj,
 };

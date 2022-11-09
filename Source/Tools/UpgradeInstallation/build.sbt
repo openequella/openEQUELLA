@@ -1,7 +1,8 @@
 libraryDependencies ++= Seq(
   "com.google.guava" % "guava"          % "31.1-jre",
-  "org.slf4j"        % "jcl-over-slf4j" % "1.7.36",
+  "org.slf4j"        % "jcl-over-slf4j" % "2.0.3",
   log4j,
+  log4jCore,
   log4jSlf4jImpl,
   "org.typelevel" %% "cats-core" % "2.8.0",
   xstreamDep,

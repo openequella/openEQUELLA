@@ -27,7 +27,7 @@ import {
   useState,
 } from "react";
 import * as React from "react";
-import { useHistory, useLocation } from "react-router";
+import { useHistory } from "react-router";
 import { AppContext } from "../mainui/App";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import { getAdvancedSearchesFromServer } from "../modules/AdvancedSearchModule";
@@ -46,7 +46,11 @@ import {
   listClassifications,
 } from "../modules/SearchFacetsModule";
 import { getMimeTypeFiltersFromServer } from "../modules/SearchFilterSettingsModule";
-import { searchItems, SearchOptions } from "../modules/SearchModule";
+import {
+  isLiveItem,
+  searchItems,
+  SearchOptions,
+} from "../modules/SearchModule";
 import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
 import { languageStrings } from "../util/langstrings";
 import {
@@ -55,20 +59,23 @@ import {
   getRawModeFromStorage,
   SearchPageOptions,
 } from "./SearchPageHelper";
-import {
-  reducerRefactored,
-  SearchPageSearchResult,
-  StateRefactored,
-} from "./SearchPageReducer";
+import { reducer, SearchPageSearchResult, State } from "./SearchPageReducer";
 
 /**
- * Structure of data stored in browser history state, to capture the current state of SearchPage
+ * Structure of data stored in browser history state, to capture the current state of SearchPage as well as
+ * custom data required by certain Search components.
  */
-interface SearchPageHistoryState {
+export interface SearchPageHistoryState<T = unknown> {
   /**
    * SearchPageOptions to store in history
    */
   searchPageOptions: SearchPageOptions;
+  /**
+   * Custom data saved in the browser history.
+   */
+  customData?: {
+    [key: string]: T;
+  };
 }
 
 const { searchpage: searchStrings } = languageStrings;
@@ -104,7 +111,7 @@ export interface SearchContextProps {
   /**
    * The state controlling the status of searching.
    */
-  searchState: StateRefactored;
+  searchState: State;
   /**
    * Search settings retrieved from server, including MIME type filters and Advanced searches.
    */
@@ -125,11 +132,18 @@ export const SearchContext = React.createContext<SearchContextProps>({
   searchPageErrorHandler: nop,
 });
 
-interface SearchProps extends TemplateUpdateProps {
+/**
+ * Type definition for configuration of the initial search.
+ */
+export interface InitialSearchConfig {
   /**
-   * Child components which are dependent on SearchContext.
+   * Perform the initial search when the value is `true`.
    */
-  children: ReactNode;
+  ready: boolean;
+  /**
+   * `true` to list the initial classifications.
+   */
+  listInitialClassifications: boolean;
   /**
    * This function will be called before the initial search, allowing for any additional customisation
    * to the initial search options.
@@ -137,10 +151,31 @@ interface SearchProps extends TemplateUpdateProps {
    * @param searchPageOptions General SearchPageOptions for the initial search.
    * @param queryStringSearchOptions The SearchPageOptions transformed from query strings.
    */
-  customiseInitialSearchOptions?: (
+  customiseInitialSearchOptions: (
     searchPageOptions: SearchPageOptions,
     queryStringSearchOptions?: SearchPageOptions
   ) => SearchPageOptions;
+}
+
+const defaultInitialSearchConfig: InitialSearchConfig = {
+  ready: true,
+  listInitialClassifications: true,
+  customiseInitialSearchOptions: identity,
+};
+
+interface SearchProps extends TemplateUpdateProps {
+  /**
+   * Child components which are dependent on SearchContext.
+   */
+  children: ReactNode;
+  /**
+   * Configuration for the initial search.
+   */
+  initialSearchConfig?: InitialSearchConfig;
+  /**
+   * Title of the page where this component is used.
+   */
+  pageTitle?: string;
 }
 
 /**
@@ -151,15 +186,14 @@ interface SearchProps extends TemplateUpdateProps {
 export const Search = ({
   updateTemplate,
   children,
-  customiseInitialSearchOptions = identity,
+  initialSearchConfig = defaultInitialSearchConfig,
+  pageTitle = searchStrings.title,
 }: SearchProps) => {
-  const history = useHistory();
-  const location = useLocation();
+  const history = useHistory<SearchPageHistoryState>();
+  const searchPageHistoryState: SearchPageHistoryState | undefined =
+    history.location.state;
 
-  const searchPageHistoryState: SearchPageHistoryState | undefined = history
-    .location.state as SearchPageHistoryState;
-
-  const [searchState, dispatch] = useReducer(reducerRefactored, {
+  const [searchState, dispatch] = useReducer(reducer, {
     status: "initialising",
     options: searchPageHistoryState?.searchPageOptions ?? {
       ...defaultSearchPageOptions,
@@ -218,17 +252,20 @@ export const Search = ({
     console.debug("SearchPage: useEffect - initialising");
     console.time(timerId);
 
+    const { ready, customiseInitialSearchOptions, listInitialClassifications } =
+      initialSearchConfig;
+
     updateTemplate((tp) => ({
-      ...templateDefaults(searchStrings.title)(tp),
+      ...templateDefaults(pageTitle)(tp),
     }));
 
     Promise.all([
       getSearchSettingsFromServer(),
       getMimeTypeFiltersFromServer(),
       // If the search options are available from browser history, ignore those in the query string.
-      (location.state as SearchPageHistoryState)
+      searchPageHistoryState
         ? Promise.resolve(undefined)
-        : generateSearchPageOptionsFromQueryString(location),
+        : generateSearchPageOptionsFromQueryString(history.location),
       getAdvancedSearchesFromServer(),
     ])
       .then(
@@ -264,7 +301,7 @@ export const Search = ({
             mergeSearchPageOptions
           );
 
-          search(initialSearchPageOptions);
+          ready && search(initialSearchPageOptions, listInitialClassifications);
         }
       )
       .catch(searchPageErrorHandler);
@@ -273,12 +310,14 @@ export const Search = ({
   }, [
     dispatch,
     searchPageErrorHandler,
-    location,
     search,
     searchPageOptions,
     searchState.status,
     updateTemplate,
-    customiseInitialSearchOptions,
+    initialSearchConfig,
+    pageTitle,
+    history.location,
+    searchPageHistoryState,
   ]);
 
   /**
@@ -357,10 +396,13 @@ export const Search = ({
             classifications,
           });
 
-          // Update history
+          // Save searchPageOptions in the browser history.
           history.replace({
             ...history.location,
-            state: { searchPageOptions: options },
+            state: {
+              ...searchPageHistoryState,
+              searchPageOptions: options,
+            },
           });
 
           // Run provided callback.
@@ -375,7 +417,13 @@ export const Search = ({
         console.timeEnd(timerId);
       })();
     }
-  }, [dispatch, searchPageErrorHandler, history, searchState]);
+  }, [
+    dispatch,
+    searchPageErrorHandler,
+    history,
+    searchState,
+    searchPageHistoryState,
+  ]);
 
   // In Selection Session, once a new search result is returned, make each
   // new search result Item draggable. Could probably merge into 'searching'
@@ -387,11 +435,11 @@ export const Search = ({
       searchState.result.from === "item-search" &&
       isSelectionSessionInStructured()
     ) {
-      searchState.result.content.results.forEach(
-        ({ uuid }: OEQ.Search.SearchResultItem) => {
+      searchState.result.content.results
+        .filter(isLiveItem)
+        .forEach(({ uuid }: OEQ.Search.SearchResultItem) => {
           prepareDraggable(uuid);
-        }
-      );
+        });
     }
   }, [searchState]);
 

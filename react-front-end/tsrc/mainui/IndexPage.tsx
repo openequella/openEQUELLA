@@ -28,7 +28,9 @@ import { shallowEqual } from "shallow-equal-object";
 import { ErrorResponse } from "../api/errors";
 import { getRenderData, getRouterBaseName, LEGACY_CSS_URL } from "../AppConfig";
 import { LegacyContent } from "../legacycontent/LegacyContent";
-import { getAdvancedSearchIdFromLocation } from "../modules/AdvancedSearchModule";
+import { isSelectionSessionOpen } from "../modules/LegacySelectionSessionModule";
+import MyResourcesPage from "../myresources/MyResourcesPage";
+import { isLegacyAdvancedSearchUrl } from "../search/AdvancedSearchHelper";
 import ErrorPage from "./ErrorPage";
 import { defaultNavMessage, NavAwayDialog } from "./PreventNavigation";
 import {
@@ -36,12 +38,16 @@ import {
   isNewUIRoute,
   NEW_SEARCH_PATH,
   OEQRouteNewUI,
+  OLD_MY_RESOURCES_PATH,
   OLD_SEARCH_PATH,
   routes,
 } from "./routes";
 import { Template, TemplateProps, TemplateUpdate } from "./Template";
 
 const SearchPage = React.lazy(() => import("../search/SearchPage"));
+const AdvancedSearchPage = React.lazy(
+  () => import("../search/AdvancedSearchPage")
+);
 
 const renderData = getRenderData();
 
@@ -182,13 +188,24 @@ export default function IndexPage() {
               return renderLegacyContent(p);
             }
             removeLegacyCss();
-            return (
-              <SearchPage
-                {...mkRouteProps(p)}
-                advancedSearchId={getAdvancedSearchIdFromLocation(location)}
-              />
+
+            const props = mkRouteProps(p);
+            return isLegacyAdvancedSearchUrl(location) ? (
+              <AdvancedSearchPage {...props} />
+            ) : (
+              <SearchPage {...props} />
             );
           }}
+        />
+        <Route
+          path={OLD_MY_RESOURCES_PATH}
+          render={(p) =>
+            isSelectionSessionOpen() ? (
+              renderLegacyContent(p)
+            ) : (
+              <MyResourcesPage {...mkRouteProps(p)} />
+            )
+          }
         />
         <Route render={renderLegacyContent} />
       </Switch>

@@ -1,7 +1,7 @@
 import Path.{flat, rebase}
 import _root_.io.circe.parser._
 
-libraryDependencies += "org.mockito" % "mockito-core" % "4.6.1" % Test
+libraryDependencies += "org.mockito" % "mockito-core" % "4.8.1" % Test
 
 langStrings := {
   val langDir = (Compile / resourceDirectory).value / "com/tle/core/i18n/service/impl"
@@ -129,6 +129,7 @@ Compile / resourceGenerators += Def.task {
 
 clean := {
   clean.value
+  (inplaceEditorJar / clean).value
   val baseSwagger = baseDirectory.value / "swaggerui"
   Common.nodeScript("clean", baseSwagger)
 }

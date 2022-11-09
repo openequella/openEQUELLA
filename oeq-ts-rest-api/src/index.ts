@@ -30,6 +30,7 @@ export * as LegacyContent from './LegacyContent';
 export * as MimeType from './MimeType';
 export * as RemoteSearch from './RemoteSearch';
 export * as Schema from './Schema';
+export * as Scrapbook from './Scrapbook';
 export * as Search from './Search';
 export * as SearchFacets from './SearchFacets';
 export * as SearchFilterSettings from './SearchFilterSettings';

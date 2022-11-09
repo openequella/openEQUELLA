@@ -65,8 +65,7 @@ class QtiPackageAttachmentHandlerNew extends PackageAttachmentExtension {
         stg.deregisterFilename(upload.id)
         qti
       },
-      (a, stg) => a,
-      (a, stg) => delete(ctx, a).deleteFiles(stg)
+      QtiPackageCommit
     )
   }
 
@@ -106,5 +105,16 @@ class QtiPackageAttachmentHandlerNew extends PackageAttachmentExtension {
   val treatAsLabel = new KeyLabel(r.key("packageoptions.asqti"))
 
   def delete(ctx: ControlContext, a: Attachment): AttachmentDelete =
-    AttachmentDelete(Seq(a), stg => stg.delete(QtiConstants.QTI_FOLDER_PATH))
+    AttachmentDelete(Seq(a), stg => QtiPackageCommit.cancel(a, stg))
+
+  /**
+    * Qti package commit type.
+    * Simply returns the attachment on apply,
+    * but on cancel ensures all content is deleted from the dedicated OTI package folder in the staging area.
+    */
+  object QtiPackageCommit extends AttachmentCommit {
+    override def apply(a: Attachment, stg: StagingContext): Attachment = a
+    override def cancel(a: Attachment, stg: StagingContext): Unit =
+      stg.delete(QtiConstants.QTI_FOLDER_PATH)
+  }
 }

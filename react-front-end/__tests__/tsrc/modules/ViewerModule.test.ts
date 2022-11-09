@@ -24,6 +24,7 @@ import {
   CustomMimeTypes,
   getMimeTypeDefaultViewerDetails,
 } from "../../../tsrc/modules/MimeTypesModule";
+import type { BasicSearchResultItem } from "../../../tsrc/modules/SearchModule";
 import {
   buildAttachmentsAndViewerDefinitions,
   buildViewerConfigForAttachments,
@@ -78,8 +79,11 @@ const attachments = [
   },
 ];
 
-const itemUuid = "4fddbeb7-8d16-4417-be60-8709ce9d7b15";
-const itemVersion = 1;
+const testItem: BasicSearchResultItem = {
+  uuid: "4fddbeb7-8d16-4417-be60-8709ce9d7b15",
+  version: 1,
+  status: "live",
+};
 const mockGetViewerDetails = jest.fn();
 
 describe("determineViewer()", () => {
@@ -169,8 +173,8 @@ describe("buildAttachmentsAndViewerDefinitions()", () => {
     const attachmentsAndViewerDefinitions =
       await buildAttachmentsAndViewerDefinitions(
         attachments,
-        itemUuid,
-        itemVersion,
+        testItem.uuid,
+        testItem.version,
         mockGetViewerDetails
       );
     expect(attachmentsAndViewerDefinitions).toBeLeft();
@@ -181,8 +185,8 @@ describe("buildAttachmentsAndViewerDefinitions()", () => {
     const attachmentsAndViewerDefinitions =
       await buildAttachmentsAndViewerDefinitions(
         attachments,
-        itemUuid,
-        itemVersion,
+        testItem.uuid,
+        testItem.version,
         mockGetViewerDetails
       );
     expect(attachmentsAndViewerDefinitions).toBeRight();
@@ -194,9 +198,8 @@ describe("buildViewerConfigForAttachment", () => {
     mockGetViewerDetails.mockRejectedValue("Failure");
     await expect(
       buildViewerConfigForAttachments(
+        testItem,
         attachments,
-        itemUuid,
-        itemVersion,
         mockGetViewerDetails
       )
     ).rejects.toBeTruthy();
@@ -206,9 +209,8 @@ describe("buildViewerConfigForAttachment", () => {
     mockGetViewerDetails.mockResolvedValue("Success");
     await expect(
       buildViewerConfigForAttachments(
+        testItem,
         attachments,
-        itemUuid,
-        itemVersion,
         mockGetViewerDetails
       )
     ).resolves.toBeTruthy();

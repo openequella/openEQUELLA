@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Button, ButtonGroup } from "@material-ui/core";
+import { Button, ButtonGroup, Tooltip } from "@material-ui/core";
 import LibraryBooksIcon from "@material-ui/icons/LibraryBooks";
 import PhotoLibraryIcon from "@material-ui/icons/PhotoLibrary";
 import VideoLibraryIcon from "@material-ui/icons/VideoLibrary";
@@ -94,15 +94,17 @@ const DisplayModeSelector = ({
       const currentlySelected = displayMode === value;
 
       return (
-        <Button
-          key={displayMode}
-          variant={currentlySelected ? "contained" : "outlined"}
-          onClick={() => onChange(displayMode)}
-          aria-checked={currentlySelected}
-          aria-label={label}
-        >
-          {icon}
-        </Button>
+        <Tooltip title={label}>
+          <Button
+            key={displayMode}
+            variant={currentlySelected ? "contained" : "outlined"}
+            onClick={() => onChange(displayMode)}
+            aria-checked={currentlySelected}
+            aria-label={label}
+          >
+            {icon}
+          </Button>
+        </Tooltip>
       );
     });
 

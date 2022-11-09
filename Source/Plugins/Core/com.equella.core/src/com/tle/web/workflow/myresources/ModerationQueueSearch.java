@@ -161,6 +161,10 @@ public class ModerationQueueSearch extends AbstractPrototypeSection<Object>
     public void execute(SectionInfo info) {
       statusFilter.getItemStatus().setSelectedStringValue(info, itemStatus.name().toLowerCase());
     }
+
+    public ItemStatus getItemStatus() {
+      return itemStatus;
+    }
   }
 
   @Override

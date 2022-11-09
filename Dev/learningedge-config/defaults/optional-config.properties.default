@@ -62,7 +62,7 @@ conversionService.disableConversion = true
 #exiftool.path = /path/to/exiftool
 
 # FFmpeg path. For example C:/FFmpeg/usr/bin
-#ffmeg.path =
+#ffmpeg.path =
 
 # Zip extraction charset. If omitted, defaults to UTF-8.
 #filestore.zipExtractCharset = ISO_8859_1

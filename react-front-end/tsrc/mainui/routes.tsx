@@ -17,7 +17,7 @@
  */
 import { LocationDescriptor } from "history";
 import * as React from "react";
-import SearchPage from "../search/SearchPage";
+import AdvancedSearchPage from "../search/AdvancedSearchPage";
 import { TemplateUpdate } from "./Template";
 
 const ThemePage = React.lazy(() => import("../theme/ThemePage"));
@@ -39,6 +39,9 @@ const FacetedSearchSettingsPage = React.lazy(
 );
 const ContentIndexSettings = React.lazy(
   () => import("../settings/Search/ContentIndexSettings")
+);
+const MyResourcesPage = React.lazy(
+  () => import("../myresources/MyResourcesPage")
 );
 
 export interface BaseOEQRouteComponentProps {
@@ -69,6 +72,7 @@ interface Routes {
   FacetedSearchSetting: OEQRouteNewUI;
   LoginNoticeConfig: OEQRouteNewUI;
   Logout: OEQRouteTo<string>;
+  MyResources: OEQRouteNewUI;
   Notifications: OEQRouteTo<string>;
   RemoteSearch: OEQRouteTo<ToFunc>;
   SearchFilterSettings: OEQRouteNewUI;
@@ -108,6 +112,8 @@ export const legacyPageUrl = (to?: string | ToFunc | ToVersionFunc): string => {
 export const OLD_SEARCH_PATH = "/searching.do";
 export const NEW_SEARCH_PATH = "/page/search";
 export const NEW_ADVANCED_SEARCH_PATH = "/page/advancedsearch";
+export const NEW_MY_RESOURCES_PATH = "/page/myresources";
+export const OLD_MY_RESOURCES_PATH = "/access/myresources.do";
 
 export const routes: Routes = {
   OldAdvancedSearch: {
@@ -116,7 +122,7 @@ export const routes: Routes = {
   NewAdvancedSearch: {
     to: (uuid: string) => `${NEW_ADVANCED_SEARCH_PATH}/${uuid}`,
     path: `${NEW_ADVANCED_SEARCH_PATH}/:advancedSearchId`,
-    component: SearchPage,
+    component: AdvancedSearchPage,
   },
   CloudProviders: {
     path: "/page/cloudprovider",
@@ -137,6 +143,10 @@ export const routes: Routes = {
   Logout: {
     // lack of '/' is significant
     to: "logon.do?logout=true",
+  },
+  MyResources: {
+    path: NEW_MY_RESOURCES_PATH,
+    component: MyResourcesPage,
   },
   Notifications: {
     to: "/access/notifications.do",

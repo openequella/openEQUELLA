@@ -26,7 +26,6 @@ import com.dytech.edge.exceptions.BannedFileException
 import com.tle.beans.item.attachments._
 import com.tle.common.PathUtils
 import com.tle.common.wizard.controls.universal.handlers.FileUploadSettings
-import com.tle.web.controls.universal.handlers.fileupload.packages.PackageFileCreate
 import com.tle.web.controls.universal.{ControlContext, StagingContext}
 import com.tle.web.resources.ResourcesService
 import com.tle.web.sections.SectionInfo
@@ -166,8 +165,8 @@ object WebFileUploads {
   def attachmentCreatorForUpload(info: SectionInfo,
                                  ctx: ControlContext,
                                  v: ValidatedUpload): AttachmentCreate = {
-    if (v.detected.nonEmpty) PackageFileCreate.createForUpload(info, ctx, v.s, v.detected)
-    else StandardFileCreate.fileAttachmentFromUpload(v.s, ctx.controlSettings.isSuppressThumbnails)
+    if (v.detected.nonEmpty) AttachmentCreate(info, ctx, v.s, v.detected)
+    else AttachmentCreate(v.s, ctx.controlSettings.isSuppressThumbnails)
   }
 
   def uniqueName(filename: String,
@@ -216,7 +215,7 @@ object WebFileUploads {
         stg.delete(removeZipPath(za.getUrl))
         stg.delete(za.getUrl)
       })
-    case a: Attachment => PackageFileCreate.extensionForAttachment(a).get.delete(ctx, a)
+    case a: Attachment => AttachmentCreate.extensionForPackageAttachment(a).get.delete(ctx, a)
   }
 
   def removeFilesForUpload(su: SuccessfulUpload)(stg: StagingContext): Unit = {
@@ -246,7 +245,7 @@ object WebFileUploads {
   }
 
   def isPackageAttachment(a: IAttachment): Boolean = a match {
-    case a: Attachment => PackageFileCreate.extensionForAttachment(a).isDefined
+    case a: Attachment => AttachmentCreate.extensionForPackageAttachment(a).isDefined
     case _             => false
   }
 

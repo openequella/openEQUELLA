@@ -81,7 +81,7 @@ public class FfmpegServiceImpl implements FfmpegService {
               ffmpegExe.getAbsolutePath(),
               "-i",
               new String(srcFile.getAbsolutePath().getBytes("UTF-8")),
-              "-b",
+              "-b:v",
               "350k",
               "-q:v",
               "1",
@@ -97,7 +97,7 @@ public class FfmpegServiceImpl implements FfmpegService {
               "00:00:0" + MIN_VIDEO_LENGTH,
               "-i",
               new String(srcFile.getAbsolutePath().getBytes("UTF-8")),
-              "-b",
+              "-b:v",
               "350k",
               "-q:v",
               "1",
@@ -115,7 +115,7 @@ public class FfmpegServiceImpl implements FfmpegService {
               "00:00:0" + videoDuration / 2,
               "-i",
               new String(srcFile.getAbsolutePath().getBytes("UTF-8")),
-              "-b",
+              "-b:v",
               "350k",
               "-q:v",
               "1",
@@ -163,14 +163,14 @@ public class FfmpegServiceImpl implements FfmpegService {
     opts.add("-i");
     opts.add(new String(srcFile.getAbsolutePath().getBytes("UTF-8")));
     // bitrate of transcoded video
-    opts.add("-b");
+    opts.add("-b:v");
     opts.add("350k");
     // audio sampling rate (experimental)
     opts.add("-ar");
     opts.add("44100");
     // audio codec
     opts.add("-acodec");
-    opts.add("libvo_aacenc");
+    opts.add("aac");
     // overwrite if file already exists
     opts.add("-y");
     if (vidDimensions.width > MAX_VIDEO_DIMENSTIONS

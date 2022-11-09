@@ -6,3 +6,8 @@ lazy val filemanagerApplet = (project in file("appletsrc"))
   (jarSigner.value).apply(jarFile, outJar)
   Seq(outJar)
 }.taskValue
+
+clean := {
+  clean.value
+  (filemanagerApplet / clean).value
+}

@@ -115,14 +115,15 @@ ThisBuild / assemblyMergeStrategy := {
     false
   }
 }
-(ThisBuild / oracleDriverMavenCoordinate) := Seq("com.oracle.database.jdbc" % "ojdbc8" % "19.3.0.0")
+(ThisBuild / oracleDriverMavenCoordinate) := Seq(
+  "com.oracle.database.jdbc" % "ojdbc8" % "19.16.0.0")
 
 (ThisBuild / buildConfig) := Common.buildConfig
 
 name := "Equella"
 
-(ThisBuild / equellaMajor) := 2022
-(ThisBuild / equellaMinor) := 2
+(ThisBuild / equellaMajor) := 2023
+(ThisBuild / equellaMinor) := 1
 (ThisBuild / equellaPatch) := 0
 (ThisBuild / equellaStream) := "Alpha"
 (ThisBuild / equellaBuild) := buildConfig.value.getString("build.buildname")
