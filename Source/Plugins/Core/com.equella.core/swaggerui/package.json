@@ -7,7 +7,7 @@
     "dev": "webpack watch --mode development"
   },
   "dependencies": {
-    "swagger-ui": "4.15.2"
+    "swagger-ui": "4.15.5"
   },
   "devDependencies": {
     "webpack": "5.74.0",
