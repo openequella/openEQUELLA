@@ -52,7 +52,7 @@ libraryDependencies ++= Seq(
   "commons-configuration"  % "commons-configuration" % "1.10",
   "commons-beanutils"      % "commons-beanutils"     % "1.9.4",
   "commons-codec"          % "commons-codec"         % "1.15",
-  "org.slf4j"              % "slf4j-nop"             % "1.7.36",
+  "org.slf4j"              % "slf4j-nop"             % "2.0.3",
   "com.yahoo.platform.yui" % "yuicompressor"         % "2.4.8"
 )
 dependencyOverrides += "com.puppycrawl.tools" % "checkstyle" % "9.3"
