@@ -18,7 +18,6 @@ libraryDependencies := Seq(
 
 excludeDependencies ++= Seq(
   "org.slf4j"           % "slf4j-api",
-  "dom4j"               % "dom4j",
   "commons-collections" % "commons-collections",
   "commons-logging"     % "commons-logging",
   "aopalliance"         % "aopalliance"
