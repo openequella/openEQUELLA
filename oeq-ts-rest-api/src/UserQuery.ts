@@ -115,6 +115,22 @@ export const filtered = (
   );
 
 /**
+ * Searches for groups, but filters the results based on the byGroups parameter.
+ *
+ * @param apiBasePath Base URI to the oEQ institution and API
+ * @param params Query parameters to customize result
+ */
+export const filteredGroups = (
+  apiBasePath: string,
+  params: FilteredParams
+): Promise<GroupDetails[]> =>
+  GET<GroupDetails[]>(
+    apiBasePath + USERQUERY_ROOT_PATH + '/filtered-groups',
+    (result: unknown): result is GroupDetails[] => is<GroupDetails[]>(result),
+    params
+  );
+
+/**
  * Lookup users and related entities (i.e. groups and roles) by id.
  *
  * @param apiBasePath Base URI to the oEQ institution and API

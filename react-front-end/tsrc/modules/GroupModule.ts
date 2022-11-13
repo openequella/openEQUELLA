@@ -48,13 +48,13 @@ export const resolveGroups = async (
  * List groups known in oEQ.
  *
  * @param query A wildcard supporting string to filter the result based on name
+ * @param groupFilter A list of group UUIDs to filter the search by
  */
 export const listGroups = async (
-  query?: string
+  query?: string,
+  groupFilter?: ReadonlySet<string>
 ): Promise<OEQ.UserQuery.GroupDetails[]> =>
-  await OEQ.UserQuery.search(API_BASE_URL, {
+  await OEQ.UserQuery.filteredGroups(API_BASE_URL, {
     q: query,
-    groups: true,
-    users: false,
-    roles: false,
-  }).then((result: OEQ.UserQuery.SearchResult) => result.groups);
+    byGroups: groupFilter ? Array.from<string>(groupFilter) : undefined,
+  });
