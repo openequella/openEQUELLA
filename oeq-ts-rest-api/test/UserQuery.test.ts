@@ -136,24 +136,58 @@ describe('/userquery/lookup', () => {
   });
 });
 
-describe('/userquery/filtered', () => {
-  it('returns users matching the "q" param', async () => {
-    const users = await OEQ.UserQuery.filtered(API_PATH, { q: 'auto' });
-    expect(users).toHaveLength(2);
-  });
+describe('filter feature for user and group search', () => {
+  it.each([
+    ['users', OEQ.UserQuery.filtered, 'auto', 2],
+    ['groups', OEQ.UserQuery.filteredGroups, 'Student', 1],
+  ])(
+    'returns %s matching the "q" param',
+    async (_, searchWithFilter, queryText, expectedEntityNumber) => {
+      const entities = await searchWithFilter(API_PATH, { q: queryText });
+      expect(entities).toHaveLength(expectedEntityNumber);
+    }
+  );
 
-  it('filters the users matching the "q" param based on the byGroups param', async () => {
-    const usersWithAdministratorRoleGroup =
-      'e91205b0-684e-51e2-a1be-3ab646aa98dd';
-    const users = await OEQ.UserQuery.filtered(API_PATH, {
-      q: 'auto',
-      byGroups: [usersWithAdministratorRoleGroup],
-    });
-    expect(users).toHaveLength(1);
-  });
+  it.each([
+    [
+      'users',
+      OEQ.UserQuery.filtered,
+      'auto',
+      'e91205b0-684e-51e2-a1be-3ab646aa98dd',
+      1,
+    ],
+    [
+      'groups',
+      OEQ.UserQuery.filteredGroups,
+      'Sub',
+      '144ef487-97ba-4843-915e-24af78cde991',
+      2,
+    ],
+  ])(
+    'filters the %s matching the "q" param based on the byGroups param',
+    async (
+      _,
+      searchWithFilter,
+      queryText,
+      filterGroupId,
+      expectedEntityNumber
+    ) => {
+      const entities = await searchWithFilter(API_PATH, {
+        q: queryText,
+        byGroups: [filterGroupId],
+      });
+      expect(entities).toHaveLength(expectedEntityNumber);
+    }
+  );
 
-  it('returns all users if no params are specified', async () => {
-    const users = await OEQ.UserQuery.filtered(API_PATH, {});
-    expect(users).toHaveLength(12);
-  });
+  it.each([
+    ['users', OEQ.UserQuery.filtered, 12],
+    ['groups', OEQ.UserQuery.filteredGroups, 10],
+  ])(
+    'returns all %s if no params are specified',
+    async (_, searchWithFilter, expectedEntityNumber) => {
+      const entities = await searchWithFilter(API_PATH, {});
+      expect(entities).toHaveLength(expectedEntityNumber);
+    }
+  );
 });

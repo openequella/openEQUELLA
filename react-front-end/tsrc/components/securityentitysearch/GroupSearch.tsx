@@ -38,8 +38,8 @@ export interface GroupSearchProps
  */
 const GroupSearch = ({
   listHeight,
-  groupListProvider = (query?: string) =>
-    listGroups(query ? `${query}*` : undefined),
+  groupListProvider = (query?: string, groupFilter?: ReadonlySet<string>) =>
+    listGroups(query ? `${query}*` : undefined, groupFilter),
   onChange,
   selections,
   enableMultiSelection,
