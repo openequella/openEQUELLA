@@ -21,6 +21,7 @@ val SwaggerVersion    = "1.6.8"
 val TomcatVersion     = "9.0.68"
 val axis2Version      = "1.8.2"
 val circeVersion      = "0.12.1"
+val curatorVersion    = "5.4.0"
 val cxfVersion        = "3.5.4"
 val fs2Version        = "2.5.11"
 val guiceVersion      = "5.1.0"
@@ -130,9 +131,9 @@ libraryDependencies ++= Seq(
   "org.apache.axis2"   % "axis2-transport-http"     % axis2Version,
   "org.apache.axis2"   % "axis2-transport-local"    % axis2Version,
   "org.apache.commons" % "commons-compress"         % "1.22",
-  "org.apache.curator" % "curator-client"           % "5.3.0",
-  "org.apache.curator" % "curator-framework"        % "5.3.0",
-  "org.apache.curator" % "curator-recipes"          % "5.3.0",
+  "org.apache.curator" % "curator-client"           % curatorVersion,
+  "org.apache.curator" % "curator-framework"        % curatorVersion,
+  "org.apache.curator" % "curator-recipes"          % curatorVersion,
   "org.apache.cxf"     % "cxf-rt-frontend-jaxws"    % cxfVersion,
   "org.apache.cxf"     % "cxf-rt-transports-http"   % cxfVersion,
   "org.apache.cxf"     % "cxf-rt-databinding-aegis" % cxfVersion,
@@ -193,11 +194,7 @@ libraryDependencies ++= Seq(
   "org.apache.tomcat"      % "tomcat-util-scan"       % TomcatVersion,
   "org.apache.tomcat"      % "tomcat-ssi"             % TomcatVersion,
   "org.apache.ws.security" % "wss4j"                  % "1.6.19",
-  "org.apache.zookeeper"   % "zookeeper"              % "3.7.0" excludeAll (
-    ExclusionRule(organization = "org.slf4j",
-                  name = "slf4j-log4j12")
-  ),
-  "org.ccil.cowan.tagsoup" % "tagsoup" % "1.2.1",
+  "org.ccil.cowan.tagsoup" % "tagsoup"                % "1.2.1",
   // Removed due to deduplication issues with woodstox-core. core-asl has not been updated for years.
   //   com.fasterxml.woodstox/woodstox-core/bundles/woodstox-core-5.0.3.jar:...
   //   org.codehaus.woodstox/woodstox-core-asl/jars/woodstox-core-asl-4.4.1.jar:...
