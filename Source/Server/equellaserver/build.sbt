@@ -193,7 +193,7 @@ libraryDependencies ++= Seq(
   "org.apache.tomcat"      % "tomcat-util-scan"       % TomcatVersion,
   "org.apache.tomcat"      % "tomcat-ssi"             % TomcatVersion,
   "org.apache.ws.security" % "wss4j"                  % "1.6.19",
-  "org.apache.zookeeper"   % "zookeeper"              % "3.7.0" excludeAll (
+  "org.apache.zookeeper"   % "zookeeper"              % "3.8.0" excludeAll (
     ExclusionRule(organization = "org.slf4j",
                   name = "slf4j-log4j12")
   ),
