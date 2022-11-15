@@ -13,6 +13,11 @@
     "parcelEntryFiles": "entrypoint/*.html entrypoint/scripts/*.js",
     "tools": "target/tools"
   },
+  "engines": {
+    "node": "16.18.1",
+    "npm": "8.19.2"
+  }
+  ,
   "scripts": {
     "prepare": "cross-env-shell \"cd ../oeq-ts-rest-api && npm ci && npm run build\"",
     "install": "cross-env-shell \"mkdirp ${npm_package_config_devlang} ${npm_package_config_buildlang}\"",
