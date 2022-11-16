@@ -10,7 +10,8 @@
     "src"
   ],
   "engines": {
-    "node": ">=10"
+    "node": "16.18.1",
+    "npm": "8.19.2"
   },
   "scripts": {
     "start": "rollup --config --watch --bundleConfigAsCjs",
