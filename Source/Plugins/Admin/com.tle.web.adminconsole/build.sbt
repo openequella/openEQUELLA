@@ -6,3 +6,8 @@ lazy val adminConsoleJar = project in file("jarsrc")
   IO copyFile (jarFile, outJar)
   Seq(outJar)
 }.taskValue
+
+clean := {
+  clean.value
+  (adminConsoleJar / clean).value
+}

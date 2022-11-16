@@ -18,7 +18,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion   = "3.15.3.Final"
 val SwaggerVersion    = "1.6.8"
-val TomcatVersion     = "9.0.68"
+val TomcatVersion     = "9.0.69"
 val axis2Version      = "1.8.2"
 val circeVersion      = "0.12.1"
 val cxfVersion        = "3.5.4"
@@ -27,9 +27,8 @@ val guiceVersion      = "5.1.0"
 val jsassVersion      = "5.10.5"
 val jsoupVersion      = "1.14.3"
 val prometheusVersion = "0.16.0"
-val springVersion     = "5.3.23"
 val sttpVersion       = "1.7.2"
-val tikaVersion       = "2.5.0"
+val tikaVersion       = "2.6.0"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -63,9 +62,9 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
-  "com.google.api-client" % "google-api-client"           % "2.0.0",
+  "com.google.api-client" % "google-api-client"           % "2.0.1",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20220318-2.0.0",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20220926-2.0.0",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20221108-2.0.0",
   "com.google.code.gson"  % "gson"                        % "2.10",
   "com.google.gdata"      % "core"                        % "1.47.1",
   "com.google.guava"      % "guava"                       % "31.1-jre",
@@ -109,7 +108,6 @@ libraryDependencies ++= Seq(
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
   "commons-io"                % "commons-io"            % "2.11.0",
   "commons-lang"              % "commons-lang"          % "2.6",
-  "dom4j"                     % "dom4j"                 % "1.6.1",
   "com.github.equella.legacy" % "itunesu-api-java"      % "1.7",
   "com.github.equella.legacy" % "mets"                  % "1.0",
   "com.metamx"                % "extendedset"           % "1.5.0-mmx",
@@ -120,6 +118,7 @@ libraryDependencies ++= Seq(
   "jdom"                      % "jdom"                  % "1.1",
   "com.github.equella.jpf"    % "jpf"                   % "1.0.7",
   log4j,
+  log4jCore,
   log4jSlf4jImpl,
   "net.oauth.core"     % "oauth"                    % "20100527",
   "net.oauth.core"     % "oauth-provider"           % "20100527",
@@ -220,21 +219,18 @@ libraryDependencies ++= Seq(
   xstreamDep,
   "org.opensaml" % "xmltooling" % "1.4.4" excludeAll ExclusionRule(organization = "org.slf4j"),
   postgresDep,
-  "org.scannotation"    % "scannotation"           % "1.0.3",
-  "org.slf4j"           % "jcl-over-slf4j"         % "1.7.36",
-  "org.slf4j"           % "slf4j-api"              % "1.7.36",
-  "org.springframework" % "spring-aop"             % springVersion,
-  "org.springframework" % "spring-context"         % springVersion,
+  "org.scannotation" % "scannotation"   % "1.0.3",
+  "org.slf4j"        % "jcl-over-slf4j" % "2.0.3",
+  "org.slf4j"        % "slf4j-api"      % "2.0.3",
+  springAop,
+  springWeb,
+  springContext,
   "org.springframework" % "spring-context-support" % springVersion excludeAll (
     ExclusionRule(organization = "jasperreports",
                   name = "jasperreports")
   ),
-  "org.springframework" % "spring-jdbc" % springVersion,
-  "org.springframework" % "spring-tx"   % springVersion,
-  "org.springframework" % "spring-web"  % springVersion,
-//  "org.springframework" % "spring-webmvc" % "2.5.5" excludeAll (
-//    ExclusionRule(organization = "jasperreports", name = "jasperreports")
-//    ),
+  "org.springframework"       % "spring-jdbc"       % springVersion,
+  "org.springframework"       % "spring-tx"         % springVersion,
   "stax"                      % "stax-api"          % "1.0.1",
   "taglibs"                   % "standard"          % "1.1.2",
   "com.github.equella.legacy" % "qtiworks-jqtiplus" % "1.0-beta3" excludeAll (
@@ -243,11 +239,11 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "net.sf.saxon")
   ),
   "xml-resolver"                  % "xml-resolver"              % "1.2",
-  "org.scala-sbt"                 %% "io"                       % "1.7.0",
+  "org.scala-sbt"                 %% "io"                       % "1.8.0",
   "org.mozilla"                   % "rhino"                     % "1.7.14",
-  "io.lemonlabs"                  %% "scala-uri"                % "4.0.2",
+  "io.lemonlabs"                  %% "scala-uri"                % "4.0.3",
   "org.scala-lang.modules"        %% "scala-parser-combinators" % "2.1.1",
-  "io.github.classgraph"          % "classgraph"                % "4.8.149",
+  "io.github.classgraph"          % "classgraph"                % "4.8.150",
   "com.fasterxml"                 % "classmate"                 % "1.5.1",
   "org.glassfish"                 % "javax.el"                  % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"    % "3.0.2",

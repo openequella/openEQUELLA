@@ -150,6 +150,10 @@ export interface SearchPageBodyProps {
    * Function to customise the URL which is used when saving favourites.
    */
   customFavouriteUrl?: (url: FavouriteURL) => FavouriteURL;
+  /**
+   * Flag which takes precedence over state to control whether to show the spinner.
+   */
+  customShowSpinner?: boolean;
 }
 
 /**
@@ -171,6 +175,7 @@ export const SearchPageBody = ({
   customSearchCallback,
   customRenderSearchResults,
   customFavouriteUrl = identity,
+  customShowSpinner = false,
 }: SearchPageBodyProps) => {
   const {
     enableCSVExportButton,
@@ -767,6 +772,7 @@ export const SearchPageBody = ({
             <Grid item xs={12}>
               <SearchResultList
                 showSpinner={
+                  customShowSpinner ||
                   state.status === "initialising" ||
                   state.status === "searching"
                 }

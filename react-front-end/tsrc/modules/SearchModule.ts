@@ -29,6 +29,11 @@ import { DateRange, getISODateString } from "../util/Date";
 import type { Collection } from "./CollectionsModule";
 import type { SelectedCategories } from "./SearchFacetsModule";
 
+export type BasicSearchResultItem = Pick<
+  OEQ.Search.SearchResultItem,
+  "uuid" | "version" | "status"
+>;
+
 /**
  * List of status which are considered 'live'.
  */

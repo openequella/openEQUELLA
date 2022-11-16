@@ -129,6 +129,7 @@ Compile / resourceGenerators += Def.task {
 
 clean := {
   clean.value
+  (inplaceEditorJar / clean).value
   val baseSwagger = baseDirectory.value / "swaggerui"
   Common.nodeScript("clean", baseSwagger)
 }

@@ -113,17 +113,18 @@ export interface SearchResultAttachmentsListProps {
 }
 
 export const SearchResultAttachmentsList = ({
-  item: {
+  item,
+  getViewerDetails,
+  getItemAttachments,
+  isItemLive,
+}: SearchResultAttachmentsListProps) => {
+  const {
     uuid,
     version,
     displayOptions,
     keywordFoundInAttachment,
     attachmentCount,
-  },
-  getViewerDetails,
-  getItemAttachments,
-  isItemLive,
-}: SearchResultAttachmentsListProps) => {
+  } = item;
   const itemKey = `${uuid}/${version}`;
 
   const classes = useStyles();
@@ -191,9 +192,8 @@ export const SearchResultAttachmentsList = ({
 
         const attachmentsAndViewerDefinitions =
           await buildViewerConfigForAttachments(
+            item,
             attachments,
-            uuid,
-            version,
             viewerDetails
           );
         if (mounted) {
@@ -213,6 +213,7 @@ export const SearchResultAttachmentsList = ({
       mounted = false;
     };
   }, [
+    item,
     attachExpanded,
     attachmentCount,
     attachmentsAndViewerConfigs.length,
@@ -287,13 +288,7 @@ export const SearchResultAttachmentsList = ({
           data-attachmentuuid={id}
         >
           <ListItemIcon>{buildIcon(brokenAttachment)}</ListItemIcon>
-          <ItemAttachmentLink
-            selectedAttachment={attachmentAndViewerConfig}
-            item={{
-              uuid,
-              version,
-            }}
-          >
+          <ItemAttachmentLink selectedAttachment={attachmentAndViewerConfig}>
             <ListItemText color="primary" primary={description} />
           </ItemAttachmentLink>
           {isAttachmentSelectable(brokenAttachment) && (

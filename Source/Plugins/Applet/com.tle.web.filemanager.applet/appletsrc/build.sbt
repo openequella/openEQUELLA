@@ -1,11 +1,9 @@
-val springVersion = "5.3.23"
-
 libraryDependencies ++= Seq(
   "com.google.guava"         % "guava"           % "31.1-jre",
   "com.github.insubstantial" % "flamingo"        % "7.3",
   "com.miglayout"            % "miglayout-swing" % "4.2",
-  "org.springframework"      % "spring-web"      % springVersion,
-  "org.springframework"      % "spring-aop"      % springVersion
+  springWeb,
+  springAop
 )
 
 dependsOn(platformSwing, LocalProject("com_tle_common_applet"))
