@@ -81,7 +81,7 @@
     "@testing-library/user-event": "13.5.0",
     "@types/jest": "27.5.2",
     "@types/jquery": "3.5.14",
-    "@types/lodash": "4.14.188",
+    "@types/lodash": "4.14.189",
     "@types/luxon": "2.4.0",
     "@types/node": "16.18.3",
     "@types/react": "17.0.52",
