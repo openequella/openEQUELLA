@@ -18,7 +18,6 @@
 
 package com.tle.integration.blackboard.gateways;
 
-import com.dytech.devlib.Base64;
 import com.dytech.devlib.PropBagEx;
 import com.tle.common.NameValue;
 import com.tle.integration.blackboard.BlackBoardSessionData;
@@ -26,6 +25,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -129,12 +129,12 @@ public class BlackboardExport extends Blackboard {
 
     // Redmine #6600 - BB91 SP8 introduced a bug which not only munges
     // <form> xml tags, but also <format> tags.
-    // Hence by Base64 encoding the xml parameter bore we send it, and
+    // Hence, by Base64 encoding the xml parameter bore we send it, and
     // decoding it here, we avoid the munge.
     // (search for #6600 to find all decoding code, and encoding code on the
     // outward bound, in case we ever
     // consider it appropriate to rollback this workaround.)
-    String xmlBase64Encoded = new Base64().encode(xml.toString().getBytes("UTF-8"));
+    String xmlBase64Encoded = Base64.getEncoder().encodeToString(xml.toString().getBytes("UTF-8"));
 
     parameters.add(new NameValue(xmlBase64Encoded, "xml"));
 

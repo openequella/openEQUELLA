@@ -1,11 +1,5 @@
 package com.tle.webtests.pageobject.oai;
 
-import ORG.oclc.oai.harvester2.verb.GetRecord;
-import ORG.oclc.oai.harvester2.verb.Identify;
-import ORG.oclc.oai.harvester2.verb.ListIdentifiers;
-import ORG.oclc.oai.harvester2.verb.ListMetadataFormats;
-import ORG.oclc.oai.harvester2.verb.ListRecords;
-import ORG.oclc.oai.harvester2.verb.ListSets;
 import com.dytech.devlib.PropBagEx;
 import com.dytech.devlib.PropBagEx.PropBagThoroughIterator;
 import com.tle.common.Check;
@@ -14,6 +8,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.oclc.oai.harvester2.verb.GetRecord;
+import org.oclc.oai.harvester2.verb.Identify;
+import org.oclc.oai.harvester2.verb.ListIdentifiers;
+import org.oclc.oai.harvester2.verb.ListMetadataFormats;
+import org.oclc.oai.harvester2.verb.ListRecords;
+import org.oclc.oai.harvester2.verb.ListSets;
 
 public class OAIPage {
   private final String baseUrl;

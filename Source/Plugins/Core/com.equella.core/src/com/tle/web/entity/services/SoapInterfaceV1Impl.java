@@ -18,7 +18,6 @@
 
 package com.tle.web.entity.services;
 
-import com.dytech.devlib.Base64;
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.valuebean.ItemKey;
 import com.dytech.edge.common.valuebean.SearchRequest;
@@ -52,6 +51,7 @@ import com.tle.web.viewurl.ViewItemUrlFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -178,7 +178,7 @@ public class SoapInterfaceV1Impl extends AbstractSoapService
   public void uploadAttachment(
       String ssid, String stagingid, String filename, String data, boolean overwrite) {
     authenticate(ssid);
-    byte[] bytes = new Base64().decode(data);
+    byte[] bytes = Base64.getDecoder().decode(data);
     StagingFile staging = new StagingFile(stagingid);
     try {
       fileSystemService.write(staging, filename, new ByteArrayInputStream(bytes), !overwrite);

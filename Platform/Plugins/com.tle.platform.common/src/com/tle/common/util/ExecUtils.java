@@ -236,7 +236,7 @@ public final class ExecUtils {
         }
       }
 
-      LOGGER.debug("Exec finished"); // $NON-NLS-1$
+      LOGGER.debug("Exec finished");
       return new ExecResult(exitStatus, stdOut.getResult(), stdErr.getResult());
     } catch (Exception e) {
       throw new RuntimeException(e);
@@ -303,7 +303,10 @@ public final class ExecUtils {
       String[] cmdarray, Map<String, String> additionalEnv, File dir) throws IOException {
 
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("Exec " + Arrays.asList(cmdarray)); // $NON-NLS-1$
+      LOGGER.debug("Executing cmd: " + String.join(" ", cmdarray));
+      LOGGER.debug(
+          "Working directory: "
+              + Optional.ofNullable(dir).map(File::getAbsolutePath).orElse("<unspecified>"));
     }
 
     ProcessBuilder pbuilder = new ProcessBuilder(cmdarray);

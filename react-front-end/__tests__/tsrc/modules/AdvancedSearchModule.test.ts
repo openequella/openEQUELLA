@@ -15,17 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createMemoryHistory, Location } from "history";
 import { getAdvancedSearchIdFromLocation } from "../../../tsrc/modules/AdvancedSearchModule";
 
 describe("getAdvancedSearchIdFromLocation", function () {
   const uuid = "c9fd1ae8-0dc1-ab6f-e923-1f195a22d537";
+  const history = createMemoryHistory();
 
   it.each([
     [
       "new",
-      { ...window.location, pathname: `/fiveo/page/advancedsearch/${uuid}` },
+      { ...history.location, pathname: `/fiveo/page/advancedsearch/${uuid}` },
     ],
-    ["old", { ...window.location, search: `in=P${uuid}` }],
+    ["old", { ...history.location, search: `in=P${uuid}` }],
   ])(
     "supports getting the ID for %s Advanced search URL",
     (_: string, location: Location) => {

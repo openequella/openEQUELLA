@@ -106,19 +106,25 @@ export interface SearchResultAttachmentsListProps {
     uuid: string,
     version: number
   ) => Promise<OEQ.Search.Attachment[]>;
+  /**
+   * `true` if the Item which the attachments belong to is live.
+   */
+  isItemLive: boolean;
 }
 
 export const SearchResultAttachmentsList = ({
-  item: {
+  item,
+  getViewerDetails,
+  getItemAttachments,
+  isItemLive,
+}: SearchResultAttachmentsListProps) => {
+  const {
     uuid,
     version,
     displayOptions,
     keywordFoundInAttachment,
     attachmentCount,
-  },
-  getViewerDetails,
-  getItemAttachments,
-}: SearchResultAttachmentsListProps) => {
+  } = item;
   const itemKey = `${uuid}/${version}`;
 
   const classes = useStyles();
@@ -139,14 +145,14 @@ export const SearchResultAttachmentsList = ({
 
   // In Selection Session, make each intact attachment draggable.
   useEffect(() => {
-    if (inStructured) {
+    if (isItemLive && inStructured) {
       attachmentsAndViewerConfigs
         .filter(({ attachment }) => !attachment.brokenAttachment)
         .forEach(({ attachment }) => {
           prepareDraggable(attachment.id, false);
         });
     }
-  }, [attachmentsAndViewerConfigs, inStructured]);
+  }, [attachmentsAndViewerConfigs, inStructured, isItemLive]);
 
   // Responsible for retrieving the attachments and then determining the MIME type viewer for each.
   useEffect(() => {
@@ -186,9 +192,8 @@ export const SearchResultAttachmentsList = ({
 
         const attachmentsAndViewerDefinitions =
           await buildViewerConfigForAttachments(
+            item,
             attachments,
-            uuid,
-            version,
             viewerDetails
           );
         if (mounted) {
@@ -208,6 +213,7 @@ export const SearchResultAttachmentsList = ({
       mounted = false;
     };
   }, [
+    item,
     attachExpanded,
     attachmentCount,
     attachmentsAndViewerConfigs.length,
@@ -232,11 +238,18 @@ export const SearchResultAttachmentsList = ({
         </Tooltip>
       );
     }
-    return inStructured ? <DragIndicatorIcon /> : <InsertDriveFile />;
+
+    // Only live Items and their attachments can be dragged in Selection Session structure mode, so show 'DragIndicatorIcon'.
+    // For other situations, show 'InsertDriveFile'.
+    return isItemLive && inStructured ? (
+      <DragIndicatorIcon />
+    ) : (
+      <InsertDriveFile />
+    );
   };
 
   const isAttachmentSelectable = (broken: boolean) =>
-    inSelectionSession && !broken;
+    inSelectionSession && isItemLive && !broken;
 
   const buildSkeletonList = (howMany: number): JSX.Element[] =>
     pipe(
@@ -275,13 +288,7 @@ export const SearchResultAttachmentsList = ({
           data-attachmentuuid={id}
         >
           <ListItemIcon>{buildIcon(brokenAttachment)}</ListItemIcon>
-          <ItemAttachmentLink
-            selectedAttachment={attachmentAndViewerConfig}
-            item={{
-              uuid,
-              version,
-            }}
-          >
+          <ItemAttachmentLink selectedAttachment={attachmentAndViewerConfig}>
             <ListItemText color="primary" primary={description} />
           </ItemAttachmentLink>
           {isAttachmentSelectable(brokenAttachment) && (
@@ -331,13 +338,11 @@ export const SearchResultAttachmentsList = ({
     ({ attachment }) => !attachment.brokenAttachment
   );
 
-  const showSelectAllAttachments = atLeastOneIntactAttachment && !inSkinny;
-
   const accordionSummaryContent = inSelectionSession ? (
     <Grid container alignItems="center">
       <Grid item>{accordionText}</Grid>
       <Grid>
-        {showSelectAllAttachments && (
+        {isItemLive && atLeastOneIntactAttachment && !inSkinny && (
           <ResourceSelector
             labelText={selectResourceStrings.allAttachments}
             isStopPropagation

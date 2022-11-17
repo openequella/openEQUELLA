@@ -18,7 +18,6 @@
 
 package com.tle.mycontent.soap;
 
-import com.dytech.devlib.Base64;
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.exceptions.ItemNotFoundException;
 import com.tle.beans.item.Item;
@@ -49,6 +48,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -147,7 +147,7 @@ public class ScrapbookSoapServiceImpl implements ScrapbookSoapService {
 
     final List<WorkflowOperation> ops = new ArrayList<WorkflowOperation>();
     ops.add(workflowFactory.create(myContentService.getMyContentItemDef(), ItemStatus.PERSONAL));
-    ByteArrayInputStream stream = new ByteArrayInputStream(new Base64().decode(base64Data));
+    ByteArrayInputStream stream = new ByteArrayInputStream(Base64.getDecoder().decode(base64Data));
 
     StagingFile staging = stagingService.createStagingArea();
     try {
@@ -185,7 +185,7 @@ public class ScrapbookSoapServiceImpl implements ScrapbookSoapService {
 
     ByteArrayInputStream stream = null;
     if (!Check.isEmpty(base64Data)) {
-      final byte[] bytes = new Base64().decode(base64Data);
+      final byte[] bytes = Base64.getDecoder().decode(base64Data);
       stream = new ByteArrayInputStream(bytes);
     }
     StagingFile staging = stagingService.createStagingArea();

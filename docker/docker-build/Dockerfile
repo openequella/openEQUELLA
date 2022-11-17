@@ -17,10 +17,6 @@ RUN \
     imagemagick \
     ffmpeg \
     libimage-exiftool-perl \
-# symbolic links for ffmpeg to act like the old LibAV
-  && ln -s /usr/bin/ffmpeg /usr/bin/avconv \
-  && ln -s /usr/bin/ffplay /usr/bin/avplay \
-  && ln -s /usr/bin/ffprobe /usr/bin/avprobe \
 # tidy up APT and save some space
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*

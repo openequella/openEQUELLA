@@ -64,6 +64,7 @@ import com.tle.core.services.user.UserSessionService;
 import com.tle.core.settings.service.ConfigurationService;
 import com.tle.core.usermanagement.standard.dao.TLEUserDao;
 import com.tle.freetext.FreetextIndex;
+import com.tle.mycontent.service.MyContentService;
 import com.tle.web.api.item.ItemLinkService;
 import com.tle.web.api.search.service.ExportService;
 import com.tle.web.contentrestrictions.ContentRestrictionsPrivilegeTreeProvider;
@@ -210,6 +211,8 @@ public class LegacyGuice extends AbstractModule {
   @Inject public static MimeTypeService mimeTypeService;
 
   @Inject public static ModerationService moderationService;
+
+  @Inject public static MyContentService myContentService;
 
   @Inject public static OAuthService oAuthService;
 

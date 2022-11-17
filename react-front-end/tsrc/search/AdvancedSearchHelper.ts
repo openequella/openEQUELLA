@@ -30,10 +30,10 @@ import {
   ControlTarget,
   ControlValue,
   controlValueToStringArray,
-  extractDefaultValues,
   FieldValueMap,
   getStringArrayControlValue,
   isControlValueNonEmpty,
+  isNonEmptyString,
   isPathValueMap,
   isStringArray,
   PathValueMap,
@@ -41,7 +41,6 @@ import {
 import { OrdAsIs } from "../util/Ord";
 import { pfTernaryTypeGuard } from "../util/pointfree";
 import type { SearchPageOptions } from "./SearchPageHelper";
-import { Action as SearchPageModeAction } from "./SearchPageModeReducer";
 
 /**
  *  Function to pull values of PathValueMap and copy to FieldValueMap for each unique Schema node.
@@ -84,64 +83,43 @@ export const buildFieldValueMapFromPathValueMap = (
 };
 
 /**
- * Function to initialise an Advanced search. There are three tasks done here.
+ * Function to confirm the initial FieldValueMap.
+ * 1. Extract FieldValueMap or PathValueMap from query strings. If none is returned, fall back to the FieldValueMap
+ *    provided by the state.
+ * 2. If the first steps returns PathValueMap then converts it to FieldValueMap.
+ * 3. Return the FieldValueMap if it is defined. Otherwise, return the supplied default FieldValueMap.
  *
- * 1. Confirm the initial FieldValueMap. If there is an existing one, use it depending on whether it's a FieldValueMap
- * or a PathValueMap. Otherwise, build a new one by extracting the default Wizard control values.
- *
- * 2. Generate the initial Advanced search criteria from the initial FieldValueMap.
- *
- * 3. Update the state of SearchPageModeReducer to `initialiseAdvSearch`.
- *
- * @param advancedSearchDefinition The initial Advanced search definition.
- * @param dispatch The `dispatch` provided by SearchPageModeReducer.
+ * @param defaultValues The default
  * @param stateSearchOptions The SearchPageOptions managed by State.
  * @param queryStringSearchOptions The SearchPageOptions transformed from query strings.
  *
- * @return A tuple including the initial FieldValueMap and the initial Advanced search criteria.
+ * @return The FieldValueMap used in the initial Search.
  */
-export const initialiseAdvancedSearch = (
-  advancedSearchDefinition: OEQ.AdvancedSearch.AdvancedSearchDefinition,
-  dispatch: (action: SearchPageModeAction) => void,
+export const confirmInitialFieldValueMap = (
+  defaultValues: FieldValueMap,
   stateSearchOptions: SearchPageOptions,
   queryStringSearchOptions?: SearchPageOptions
-): [FieldValueMap, OEQ.Search.WizardControlFieldValue[]] => {
-  const existingFieldValue: FieldValueMap | PathValueMap | undefined = pipe(
+): FieldValueMap =>
+  pipe(
     queryStringSearchOptions,
     O.fromNullable,
     O.map(
       ({ advFieldValue, legacyAdvSearchCriteria }) =>
         advFieldValue ?? legacyAdvSearchCriteria
     ),
-    O.getOrElseW(() => stateSearchOptions.advFieldValue)
-  );
-
-  const defaultValues = extractDefaultValues(advancedSearchDefinition.controls);
-
-  const initialQueryValues = pipe(
-    existingFieldValue,
-    O.fromNullable,
-    O.map(
-      pfTernaryTypeGuard<PathValueMap, FieldValueMap, FieldValueMap>(
-        isPathValueMap,
-        (m) => buildFieldValueMapFromPathValueMap(m, defaultValues),
-        identity
+    O.getOrElseW(() => stateSearchOptions.advFieldValue),
+    flow(
+      O.fromNullable,
+      O.map(
+        pfTernaryTypeGuard<PathValueMap, FieldValueMap, FieldValueMap>(
+          isPathValueMap,
+          (m) => buildFieldValueMapFromPathValueMap(m, defaultValues),
+          identity
+        )
       )
     ),
     O.getOrElse(() => defaultValues)
   );
-
-  const initialAdvancedSearchCriteria =
-    generateAdvancedSearchCriteria(initialQueryValues);
-
-  dispatch({
-    type: "initialiseAdvSearch",
-    selectedAdvSearch: advancedSearchDefinition,
-    initialQueryValues,
-  });
-
-  return [initialQueryValues, initialAdvancedSearchCriteria];
-};
 
 // Function to create an Advanced search criterion for each control type.
 const queryFactory = (
@@ -227,3 +205,32 @@ export const generateAdvancedSearchCriteria = (
         criterion !== undefined
     )
   );
+
+/**
+ * Check if any Advanced search criteria has been set.
+ *
+ * @param queryValues FieldValueMap which contains a list of ControlTargets and their values.
+ */
+export const isAdvSearchCriteriaSet = (queryValues: FieldValueMap): boolean => {
+  const isAnyFieldSet = pipe(
+    queryValues,
+    // Some controls like Calendar may have an empty string as their default values which should be
+    // filtered out.
+    M.map(A.filter(isNonEmptyString)),
+    M.values<ControlValue>(OrdAsIs),
+    A.some(isControlValueNonEmpty)
+  );
+  const isValueMapNotEmpty = !M.isEmpty(queryValues);
+
+  return isValueMapNotEmpty && isAnyFieldSet;
+};
+
+/**
+ * Check if the current URL represents the legacy Advanced search path.
+ * @param location Location of current window.
+ */
+export const isLegacyAdvancedSearchUrl = (location: Location) => {
+  const params = new URLSearchParams(location.search);
+  const legacyAdvancedSearchId = params.get("in");
+  return legacyAdvancedSearchId?.startsWith("P") ?? false;
+};

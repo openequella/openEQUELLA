@@ -32,7 +32,7 @@ import {
   collectionListSummary,
 } from "../../modules/CollectionsModule";
 import { languageStrings } from "../../util/langstrings";
-import { SearchPageRenderErrorContext } from "../SearchPage";
+import { SearchContext } from "../Search";
 
 interface CollectionSelectorProps {
   /**
@@ -57,7 +57,7 @@ export const CollectionSelector = ({
   value,
 }: CollectionSelectorProps) => {
   const [collections, setCollections] = useState<Collection[]>([]);
-  const { handleError } = useContext(SearchPageRenderErrorContext);
+  const { searchPageErrorHandler } = useContext(SearchContext);
 
   useEffect(() => {
     collectionListSummary([OEQ.Acl.ACL_SEARCH_COLLECTION])
@@ -65,12 +65,16 @@ export const CollectionSelector = ({
         setCollections(
           pipe(
             collections,
-            A.sort(ORD.contramap<string, Collection>(({ name }) => name)(S.Ord))
+            A.sort(
+              ORD.contramap<string, Collection>(({ name }) =>
+                name.toLowerCase()
+              )(S.Ord)
+            )
           )
         )
       )
-      .catch(handleError);
-  }, [handleError]);
+      .catch(searchPageErrorHandler);
+  }, [searchPageErrorHandler]);
 
   return (
     <Autocomplete

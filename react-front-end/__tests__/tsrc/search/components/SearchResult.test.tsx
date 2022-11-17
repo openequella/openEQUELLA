@@ -17,6 +17,7 @@
  */
 import { createTheme } from "@material-ui/core/styles";
 import { MuiThemeProvider, Theme } from "@material-ui/core";
+import CloseIcon from "@material-ui/icons/Close";
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
 import {
@@ -33,12 +34,14 @@ import { act } from "react-dom/test-utils";
 import { BrowserRouter } from "react-router-dom";
 import { sprintf } from "sprintf-js";
 import { DRM_VIOLATION, drmTerms } from "../../../../__mocks__/Drm.mock";
+import { imageScrapbook } from "../../../../__mocks__/SearchResult.mock";
 import {
   DRM_ATTACHMENT_NAME,
   DRM_ITEM_NAME,
 } from "../../../../__mocks__/searchresult_mock_data";
 import * as mockData from "../../../../__mocks__/searchresult_mock_data";
 import type { RenderData } from "../../../../tsrc/AppConfig";
+import { TooltipIconButton } from "../../../../tsrc/components/TooltipIconButton";
 import {
   getGlobalCourseList,
   selectResourceForCourseList,
@@ -80,7 +83,9 @@ const defaultTheme = createTheme({
 describe("<SearchResult/>", () => {
   const renderSearchResult = async (
     itemResult: OEQ.Search.SearchResultItem,
-    theme: Theme = defaultTheme
+    theme: Theme = defaultTheme,
+    customActionButtons?: JSX.Element[],
+    customOnClickTitleHandler?: () => void
   ) => {
     const renderResult = render(
       // This needs to be wrapped inside a BrowserRouter, to prevent an
@@ -93,6 +98,8 @@ describe("<SearchResult/>", () => {
             item={itemResult}
             highlights={[]}
             getItemAttachments={async () => itemResult.attachments!}
+            customActionButtons={customActionButtons}
+            customOnClickTitleHandler={customOnClickTitleHandler}
           />
         </BrowserRouter>
       </MuiThemeProvider>
@@ -180,6 +187,22 @@ describe("<SearchResult/>", () => {
     ).toBeInTheDocument();
   });
 
+  it("disable the access to Item summary page in Lightbox for Scrapbook", async () => {
+    const { getByText, queryByLabelText } = await renderSearchResult(
+      imageScrapbook
+    );
+
+    userEvent.click(getByText(imageScrapbook.attachments![0].description!));
+
+    // The lightbox has now been displayed with the unique element being the lightbox's 'embed code' button.
+    expect(
+      queryByLabelText(languageStrings.embedCode.copy)
+    ).toBeInTheDocument();
+    expect(
+      queryByLabelText(languageStrings.lightboxComponent.openSummaryPage)
+    ).not.toBeInTheDocument();
+  });
+
   it("hide star rating and comment count in small screen", async () => {
     const theme = createTheme({
       props: { MuiWithWidth: { initialWidth: "sm" } },
@@ -230,6 +253,22 @@ describe("<SearchResult/>", () => {
     }
   );
 
+  it("displays custom action buttons", async () => {
+    const text = "This is a custom action button";
+    const actionButtons = [
+      <TooltipIconButton title={text}>
+        <CloseIcon />
+      </TooltipIconButton>,
+    ];
+    const { queryByLabelText } = await renderSearchResult(
+      mockData.basicSearchObj,
+      defaultTheme,
+      actionButtons
+    );
+
+    expect(queryByLabelText(text, { selector: "button" })).toBeInTheDocument();
+  });
+
   it.each<[string]>([
     [selectSummaryPageString],
     [selectAllAttachmentsString],
@@ -269,6 +308,23 @@ describe("<SearchResult/>", () => {
       page,
       `${defaultBaseUrl}${basicURL}?_sl.stateId=1&_int.id=2&a=coursesearch`
     );
+  });
+
+  it("supports custom handler for clicking the title", async () => {
+    const customHandler = jest.fn();
+    const item = mockData.basicSearchObj;
+
+    const { getByText } = await renderSearchResult(
+      item,
+      defaultTheme,
+      undefined,
+      customHandler
+    );
+
+    const title = getByText(`${item.name}`, { selector: "a" });
+    userEvent.click(title);
+
+    expect(customHandler).toHaveBeenCalledTimes(1);
   });
 
   describe("Dead attachments handling", () => {
@@ -313,6 +369,10 @@ describe("<SearchResult/>", () => {
     beforeAll(() => {
       updateMockGlobalCourseList();
       updateMockGetBaseUrl();
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
     });
 
     const mockSelectResourceForCourseList = jest.spyOn(
@@ -434,7 +494,7 @@ describe("<SearchResult/>", () => {
       expect(collapsedAttachment.queryByText("config.json")).toBeFalsy(); // i.e. not rendered so not visible
     });
 
-    it("should make each attachment draggable", async () => {
+    it("should make each attachment of live Items draggable", async () => {
       updateMockGetRenderData(basicRenderData);
       await renderSearchResult(mockData.attachSearchObj);
 
@@ -447,6 +507,15 @@ describe("<SearchResult/>", () => {
           getGlobalCourseList().prepareDraggableAndBind
         ).toHaveBeenCalledWith(`#${attachment.id}`, false);
       });
+    });
+
+    it("should not make attachments of non-live Items draggable", async () => {
+      updateMockGetRenderData(basicRenderData);
+      await renderSearchResult(mockData.nonLiveObj);
+
+      expect(
+        getGlobalCourseList().prepareDraggableAndBind
+      ).not.toHaveBeenCalled();
     });
 
     it("should not make broken attachments draggable", async () => {
@@ -529,10 +598,13 @@ describe("<SearchResult/>", () => {
     jest.spyOn(DrmModule, "listDrmTerms").mockResolvedValue(drmTerms);
 
     it.each([
-      ["view a DRM Item's summary page", DRM_ITEM_NAME],
+      [
+        "DRM terms must be accepted before viewing a DRM Item's summary page",
+        DRM_ITEM_NAME,
+      ],
       ["preview an attachment from a DRM item", DRM_ATTACHMENT_NAME],
     ])(
-      "shows the DRM Accept dialog %s",
+      "shows the DRM Accept dialog when %s",
       async (_: string, linkText: string) => {
         const { drmAttachObj } = mockData;
         const { getByText } = await renderSearchResult(drmAttachObj);
@@ -563,5 +635,16 @@ describe("<SearchResult/>", () => {
         });
       }
     );
+
+    it("supports viewing a DRM Item's summary page without accepting the terms", async () => {
+      const { getByText } = await renderSearchResult(
+        mockData.drmAllowSummaryObj
+      );
+      await act(async () => {
+        await userEvent.click(getByText(DRM_ITEM_NAME));
+      });
+
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
   });
 });

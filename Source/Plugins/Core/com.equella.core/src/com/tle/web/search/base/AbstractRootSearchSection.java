@@ -81,7 +81,7 @@ public abstract class AbstractRootSearchSection<M extends AbstractRootSearchSect
     CombinedTemplateResult templateResult = new CombinedTemplateResult();
     M model = getModel(info);
     SectionId modalSection = model.getModalSection();
-    SimpleSectionResult newSearchUIContent = model.getNewSearchUIContent();
+    SimpleSectionResult newSearchUIContent = model.getNewUIContent();
 
     if (modalSection != null) {
       templateResult.addNamedResult(
@@ -164,7 +164,7 @@ public abstract class AbstractRootSearchSection<M extends AbstractRootSearchSect
 
   public static class Model extends TwoColumnLayout.TwoColumnModel {
     private InfoBookmark permanentUrl;
-    private SimpleSectionResult newSearchUIContent;
+    private SimpleSectionResult newUIContent;
 
     public InfoBookmark getPermanentUrl() {
       return permanentUrl;
@@ -174,12 +174,12 @@ public abstract class AbstractRootSearchSection<M extends AbstractRootSearchSect
       this.permanentUrl = permanentUrl;
     }
 
-    public SimpleSectionResult getNewSearchUIContent() {
-      return newSearchUIContent;
+    public SimpleSectionResult getNewUIContent() {
+      return newUIContent;
     }
 
-    public void setNewSearchUIContent(SimpleSectionResult newSearchUIContent) {
-      this.newSearchUIContent = newSearchUIContent;
+    public void setNewUIContent(SimpleSectionResult newUIContent) {
+      this.newUIContent = newUIContent;
     }
   }
 }

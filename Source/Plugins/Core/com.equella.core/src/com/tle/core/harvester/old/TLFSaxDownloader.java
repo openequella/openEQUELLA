@@ -18,9 +18,9 @@
 
 package com.tle.core.harvester.old;
 
-import com.dytech.devlib.Base64;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Base64;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -31,7 +31,6 @@ public class TLFSaxDownloader extends DefaultHandler {
   private static final int MIN_ASCII_CHARACTER = 32;
 
   private OutputStream out;
-  private Base64 encoder;
   private boolean downloading;
   private StringBuffer buffer;
   private int length;
@@ -39,7 +38,6 @@ public class TLFSaxDownloader extends DefaultHandler {
 
   public TLFSaxDownloader(OutputStream out) {
     this.out = out;
-    encoder = new Base64();
     downloading = false;
     error = false;
     buffer = new StringBuffer();
@@ -124,7 +122,7 @@ public class TLFSaxDownloader extends DefaultHandler {
    * @throws IOException if the content is not proper Base64 encoded.
    */
   private void decodeBase64() throws IOException {
-    byte[] bytes = encoder.decode(buffer.toString());
+    byte[] bytes = Base64.getDecoder().decode(buffer.toString());
     out.write(bytes);
 
     buffer.setLength(0);

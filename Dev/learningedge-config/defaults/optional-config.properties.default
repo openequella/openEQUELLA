@@ -9,7 +9,7 @@
 
 # Enables/disables the conversion service.
 conversionService.disableConversion = true
-#conversionService.conversionServicePath = 
+#conversionService.conversionServicePath =
 
 # Indicates whether the EQUELLA server is behind a reverse proxy.
 #userService.useXForwardedFor = false
@@ -19,11 +19,11 @@ conversionService.disableConversion = true
 # if the proxy requires authentication.  Exceptions should be separated by a
 # pipe symbol '|'.
 #
-#configurationService.proxyHost = 
-#configurationService.proxyPort = 
-#configurationService.proxyUsername = 
-#configurationService.proxyPassword = 
-#configurationService.proxyExceptions = 
+#configurationService.proxyHost =
+#configurationService.proxyPort =
+#configurationService.proxyUsername =
+#configurationService.proxyPassword =
+#configurationService.proxyExceptions =
 
 # Server-side Plugin Path Resolver
 #pluginPathResolver.wrappedClass = org.java.plugin.standard.StandardPathResolver
@@ -61,8 +61,8 @@ conversionService.disableConversion = true
 # ExifTool path
 #exiftool.path = /path/to/exiftool
 
-# Libav path. For example C:/Libav/usr/bin
-#libav.path =
+# FFmpeg path. For example C:/FFmpeg/usr/bin
+#ffmpeg.path =
 
 # Zip extraction charset. If omitted, defaults to UTF-8.
 #filestore.zipExtractCharset = ISO_8859_1

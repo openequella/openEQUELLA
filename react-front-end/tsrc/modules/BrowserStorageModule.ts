@@ -17,14 +17,14 @@
  */
 
 import * as E from "fp-ts/Either";
-import { pipe, flow } from "fp-ts/function";
+import { flow, identity, pipe } from "fp-ts/function";
 import * as J from "fp-ts/Json";
 import * as O from "fp-ts/Option";
 import { getBaseUrl } from "../AppConfig";
 
 const localStorage = window.localStorage;
 
-const buildStorageKey = (key: string) => `${getBaseUrl()}_${key}`;
+export const buildStorageKey = (key: string) => `${getBaseUrl()}_${key}`;
 
 /**
  * Retrieve data from browser local storage by a key. Return undefined if
@@ -32,13 +32,15 @@ const buildStorageKey = (key: string) => `${getBaseUrl()}_${key}`;
  *
  * @param key Key of the data to be read.
  * @param validator A function to perform type checking against the parsed value.
+ * @param storage Browser storage to read the data. Default to Local storage.
  */
-export const readDataFromLocalStorage = <T>(
+export const readDataFromStorage = <T>(
   key: string,
-  validator: (value: unknown) => value is T
+  validator: (value: unknown) => value is T,
+  storage: Storage = localStorage
 ): T | undefined =>
   pipe(
-    localStorage.getItem(buildStorageKey(key)),
+    storage.getItem(buildStorageKey(key)),
     O.fromNullable,
     O.chain(
       flow(
@@ -60,8 +62,15 @@ export const readDataFromLocalStorage = <T>(
  *
  * @param key Key of the data.
  * @param value Value of the data.
+ * @param valueTransformer Function to transform the json string such as adding a hash as prefix.
+ * @param storage Browser storage where to save the data. Default to Local storage.
  */
-export const saveDataToLocalStorage = (key: string, value: unknown): void =>
+export const saveDataToStorage = (
+  key: string,
+  value: unknown,
+  valueTransformer: (value: string) => string = identity,
+  storage: Storage = localStorage
+): void =>
   pipe(
     value,
     J.stringify,
@@ -69,8 +78,9 @@ export const saveDataToLocalStorage = (key: string, value: unknown): void =>
       (error) =>
         `Failed to stringify the provided value to JSON format: ${error}`
     ),
+    E.map(valueTransformer),
     E.fold(console.error, (right) =>
-      localStorage.setItem(buildStorageKey(key), right)
+      storage.setItem(buildStorageKey(key), right)
     )
   );
 
