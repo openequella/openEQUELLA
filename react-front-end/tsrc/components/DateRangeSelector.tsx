@@ -250,10 +250,8 @@ export const DateRangeSelector = ({
   const dateRangeToDateOptionConverter = (dateRange?: DateRange): string => {
     let option = quickOptionLabels.all;
     if (
-      !dateRange ||
-      !dateRange.start ||
-      (dateRange.end &&
-        dateRange.end.toDateString() !== new Date().toDateString())
+      !dateRange?.start ||
+      dateRange.end?.toDateString() !== new Date().toDateString()
     ) {
       return option;
     }
@@ -261,7 +259,7 @@ export const DateRangeSelector = ({
     const start = DateTime.fromJSDate(dateRange.start);
     getDateRangeOptions().forEach(
       (dateTime: DateTime | undefined, label: string) => {
-        if (dateTime && dateTime.toISODate() === start.toISODate()) {
+        if (dateTime?.toISODate() === start.toISODate()) {
           option = label;
         }
       }
