@@ -19,7 +19,9 @@
 package com.tle.core.hibernate.type;
 
 import com.google.inject.Inject;
+import com.tle.core.hibernate.ExtendedDialect;
 import com.tle.core.xml.service.XmlService;
+import com.tle.hibernate.dialect.ExtendedPostgresDialect;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
@@ -27,6 +29,7 @@ import java.io.StringReader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Objects;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
@@ -35,15 +38,25 @@ import org.hibernate.usertype.UserType;
 public class ImmutableHibernateXStreamType implements UserType {
   // XStream is thread-safe, and this class gets instantiated **a lot**.
   @Inject private static XmlService xstream;
+  private final ExtendedDialect dialect;
 
-  private final int sqlType;
-
-  public ImmutableHibernateXStreamType(int sqlType) {
-    this.sqlType = sqlType;
+  public ImmutableHibernateXStreamType(ExtendedDialect dialect) {
+    this.dialect = dialect;
   }
 
   @Override
   public int[] sqlTypes() {
+    int sqlType = Types.CLOB;
+
+    // Since Hibernate 5.6, the DDL type for `CLOB` is `oid` instead of `text` in Postgres, which
+    // can cause
+    // PSQLException: ERROR: column "xxx" is of type oid but expression is of type character
+    // varying.
+    // Therefore, we use `LONGVARCHAR` instead for Postgres.
+    if (dialect instanceof ExtendedPostgresDialect) {
+      sqlType = Types.LONGVARCHAR;
+    }
+
     return new int[] {sqlType};
   }
 
