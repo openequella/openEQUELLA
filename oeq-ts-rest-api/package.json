@@ -44,7 +44,7 @@
     "@typescript-eslint/eslint-plugin": "5.43.0",
     "@typescript-eslint/parser": "5.43.0",
     "core-js": "3.26.1",
-    "eslint": "8.27.0",
+    "eslint": "8.28.0",
     "eslint-plugin-jest": "27.1.5",
     "jest": "28.1.0",
     "jest-config": "28.1.0",
