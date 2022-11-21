@@ -10,7 +10,8 @@
     "src"
   ],
   "engines": {
-    "node": ">=10"
+    "node": "18.12.1",
+    "npm": "8.19.2"
   },
   "scripts": {
     "start": "rollup --config --watch --bundleConfigAsCjs",
@@ -38,11 +39,11 @@
   "devDependencies": {
     "@types/jest": "27.5.2",
     "@types/node": "17.0.2",
-    "@types/lodash": "4.14.188",
+    "@types/lodash": "4.14.189",
     "@types/tough-cookie": "^4.0.0",
-    "@typescript-eslint/eslint-plugin": "5.42.1",
-    "@typescript-eslint/parser": "5.42.1",
-    "core-js": "3.26.0",
+    "@typescript-eslint/eslint-plugin": "5.43.0",
+    "@typescript-eslint/parser": "5.43.0",
+    "core-js": "3.26.1",
     "eslint": "8.27.0",
     "eslint-plugin-jest": "27.1.5",
     "jest": "28.1.0",

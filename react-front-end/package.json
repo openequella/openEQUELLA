@@ -13,6 +13,10 @@
     "parcelEntryFiles": "entrypoint/*.html entrypoint/scripts/*.js",
     "tools": "target/tools"
   },
+  "engines": {
+    "node": "18.12.1",
+    "npm": "8.19.2"
+  },
   "scripts": {
     "prepare": "cross-env-shell \"cd ../oeq-ts-rest-api && npm ci && npm run build\"",
     "install": "cross-env-shell \"mkdirp ${npm_package_config_devlang} ${npm_package_config_buildlang}\"",
@@ -77,7 +81,7 @@
     "@testing-library/user-event": "13.5.0",
     "@types/jest": "27.5.2",
     "@types/jquery": "3.5.14",
-    "@types/lodash": "4.14.188",
+    "@types/lodash": "4.14.189",
     "@types/luxon": "2.4.0",
     "@types/node": "16.18.3",
     "@types/react": "17.0.52",
@@ -94,7 +98,7 @@
     "@types/sprintf-js": "1.1.2",
     "@types/uuid": "8.3.4",
     "babel-jest": "28.1.0",
-    "core-js": "3.26.0",
+    "core-js": "3.26.1",
     "cross-env": "7.0.3",
     "cross-spawn": "7.0.3",
     "jest": "28.1.0",
