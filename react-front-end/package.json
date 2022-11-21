@@ -15,7 +15,7 @@
   },
   "engines": {
     "node": "18.12.1",
-    "npm": "8.19.3"
+    "npm": "9.1.2"
   },
   "scripts": {
     "prepare": "cross-env-shell \"cd ../oeq-ts-rest-api && npm ci && npm run build\"",
