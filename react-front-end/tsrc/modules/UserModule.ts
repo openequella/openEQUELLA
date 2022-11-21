@@ -52,6 +52,7 @@ export const guestUser: OEQ.LegacyContent.CurrentUserDetails = {
   menuGroups: [],
   canDownloadSearchResult: false,
   roles: [],
+  scrapbookEnabled: false,
 };
 
 /**

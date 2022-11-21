@@ -17,8 +17,8 @@
  */
 import { Boolean } from "runtypes";
 import {
-  readDataFromLocalStorage,
-  saveDataToLocalStorage,
+  readDataFromStorage,
+  saveDataToStorage,
 } from "../../../tsrc/modules/BrowserStorageModule";
 
 const mockGetItem = jest.spyOn(Storage.prototype, "getItem");
@@ -36,19 +36,19 @@ describe("readDataFromLocalStorage", () => {
 
   it("returns undefined when failed to parse value", () => {
     mockGetItem.mockReturnValueOnce('{"a":}');
-    expect(readDataFromLocalStorage(KEY, booleanValidator)).toBeUndefined();
+    expect(readDataFromStorage(KEY, booleanValidator)).toBeUndefined();
     expect(mockConsoleError).toHaveBeenCalledTimes(1);
   });
 
   it("returns undefined when data format doesn't match", () => {
     mockGetItem.mockReturnValueOnce('{"a": 1}');
-    expect(readDataFromLocalStorage(KEY, booleanValidator)).toBeUndefined();
+    expect(readDataFromStorage(KEY, booleanValidator)).toBeUndefined();
     expect(mockConsoleError).toHaveBeenCalledTimes(1);
   });
 
   it("supports reading boolean data", () => {
     mockGetItem.mockReturnValueOnce("true");
-    expect(readDataFromLocalStorage(KEY, booleanValidator)).toBe(true);
+    expect(readDataFromStorage(KEY, booleanValidator)).toBe(true);
   });
 });
 
@@ -58,14 +58,19 @@ describe("saveDataToLocalStorage", function () {
   });
 
   it("outputs errors when fails to stringify the value", () => {
-    saveDataToLocalStorage(KEY, undefined);
+    saveDataToStorage(KEY, undefined);
     expect(mockConsoleError).toHaveBeenCalledTimes(1);
     expect(mockSetItem).not.toHaveBeenCalled();
   });
 
   it("supports saving boolean value", () => {
-    saveDataToLocalStorage(KEY, false);
+    saveDataToStorage(KEY, false);
     expect(mockConsoleError).toHaveBeenCalledTimes(0);
     expect(mockSetItem).toHaveBeenCalledTimes(1);
+  });
+
+  it("supports value transformation", () => {
+    saveDataToStorage(KEY, "world", (value: string) => `hello ${value}`);
+    expect(mockSetItem.mock.calls[0][1]).toBe('hello "world"');
   });
 });

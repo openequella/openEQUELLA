@@ -20,6 +20,8 @@ import * as React from "react";
 import { languageStrings } from "../../util/langstrings";
 import * as OEQ from "@openequella/rest-api-client";
 
+export type SortOrderOptions = Map<OEQ.Search.SortOrder, string>;
+
 /**
  * Type of props passed to SearchOrderSelect.
  */
@@ -27,17 +29,22 @@ export interface SearchOrderSelectProps {
   /**
    * The selected order. Being undefined means no option is selected.
    */
-  value?: OEQ.SearchSettings.SortOrder;
+  value?: OEQ.Search.SortOrder;
   /**
    * Fired when a different sort order is selected.
    * @param sortOrder The new order.
    */
-  onChange: (sortOrder: OEQ.SearchSettings.SortOrder) => void;
+  onChange: (sortOrder: OEQ.Search.SortOrder) => void;
+  /**
+   * If specified, will override the standard set of sort options.
+   */
+  customSortingOptions?: SortOrderOptions;
 }
 
 export const SearchOrderSelect = ({
   value,
   onChange,
+  customSortingOptions,
 }: SearchOrderSelectProps) => {
   const { relevance, lastModified, dateCreated, title, userRating } =
     languageStrings.settings.searching.searchPageSettings;
@@ -45,13 +52,15 @@ export const SearchOrderSelect = ({
   /**
    * Provide a data source for search sorting control.
    */
-  const sortingOptionStrings = new Map<OEQ.SearchSettings.SortOrder, string>([
-    ["RANK", relevance],
-    ["DATEMODIFIED", lastModified],
-    ["DATECREATED", dateCreated],
-    ["NAME", title],
-    ["RATING", userRating],
-  ]);
+  const sortOptions: SortOrderOptions =
+    customSortingOptions ??
+    new Map<OEQ.Search.SortOrder, string>([
+      ["rank", relevance],
+      ["datemodified", lastModified],
+      ["datecreated", dateCreated],
+      ["name", title],
+      ["rating", userRating],
+    ]);
 
   const baseId = "sort-order-select";
   const labelId = baseId + "-label";
@@ -67,12 +76,10 @@ export const SearchOrderSelect = ({
         // If sortOrder is undefined, pass an empty string to select nothing.
         value={value ?? ""}
         onChange={(event) =>
-          onChange(
-            OEQ.SearchSettings.SortOrderRunTypes.check(event.target.value)
-          )
+          onChange(OEQ.Search.SortOrderRunTypes.check(event.target.value))
         }
       >
-        {Array.from(sortingOptionStrings).map(([value, text]) => (
+        {Array.from(sortOptions).map(([value, text]) => (
           <MenuItem key={value} value={value}>
             {text}
           </MenuItem>

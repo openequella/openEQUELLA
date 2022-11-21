@@ -29,6 +29,11 @@ import { DateRange, getISODateString } from "../util/Date";
 import type { Collection } from "./CollectionsModule";
 import type { SelectedCategories } from "./SearchFacetsModule";
 
+export type BasicSearchResultItem = Pick<
+  OEQ.Search.SearchResultItem,
+  "uuid" | "version" | "status"
+>;
+
 /**
  * List of status which are considered 'live'.
  */
@@ -48,6 +53,23 @@ export const nonLiveStatuses: OEQ.Common.ItemStatus[] =
   OEQ.Common.ItemStatuses.alternatives
     .map((status) => status.value)
     .filter(nonLiveStatus);
+
+/**
+ * All statuses except "DELETED".
+ */
+export const nonDeletedStatuses: OEQ.Common.ItemStatus[] =
+  OEQ.Common.ItemStatuses.alternatives
+    .map((status) => status.value)
+    .filter((status) => status !== "DELETED");
+
+/**
+ * Function to check if the supplied SearchResultItem refers to a live Item.
+ */
+export const isLiveItem = (item: OEQ.Search.SearchResultItem): boolean => {
+  // Item status returned from 'search2' is a lowercase string so convert it to uppercase.
+  const status = item.status.toUpperCase();
+  return OEQ.Common.ItemStatuses.guard(status) && liveStatuses.includes(status);
+};
 
 /**
  * A Runtypes object which represents three display modes: list, gallery-image and gallery-video.
@@ -83,7 +105,7 @@ export interface SearchOptions {
   /**
    * Selected search result sorting order.
    */
-  sortOrder: OEQ.SearchSettings.SortOrder | undefined;
+  sortOrder: OEQ.Search.SortOrder | undefined;
   /**
    * A list of collections.
    */
@@ -338,6 +360,7 @@ export const searchItemAttachments = async (
             ["version", [`${version}`]],
           ],
           searchAttachments: false,
+          status: [], // As we are searching for a specific Item we should discard the default Item status.
         }),
       (reason) =>
         `Failed to retrieve details of item ${uuid}/${version}: ${reason}`

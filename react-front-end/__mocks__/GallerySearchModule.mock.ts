@@ -499,6 +499,7 @@ export const transformedBasicImageSearchResponse: OEQ.Search.SearchResult<Galler
       {
         uuid: "fe79c485-a6dd-4743-81e8-52de66494633",
         version: 1,
+        status: "live",
         name: "A history of cattle dogs",
         links: {
           view: "http://localhost:8080/ian/items/fe79c485-a6dd-4743-81e8-52de66494633/1/",
@@ -519,6 +520,7 @@ export const transformedBasicImageSearchResponse: OEQ.Search.SearchResult<Galler
       {
         uuid: "40e879db-393b-4256-bfe2-9a78771d6937",
         version: 1,
+        status: "live",
         name: "Australian Kelpies",
         links: {
           view: "http://localhost:8080/ian/items/40e879db-393b-4256-bfe2-9a78771d6937/1/",
@@ -551,6 +553,7 @@ export const transformedBasicImageSearchResponse: OEQ.Search.SearchResult<Galler
       {
         uuid: "8d25bfcc-f877-4cb6-84cd-391a79c7c67a",
         version: 1,
+        status: "live",
         name: "Authors of the 20th Century",
         links: {
           view: "http://localhost:8080/ian/items/8d25bfcc-f877-4cb6-84cd-391a79c7c67a/1/",
@@ -615,6 +618,7 @@ export const transformedBasicVideoSearchResponse: OEQ.Search.SearchResult<Galler
       {
         uuid: "de8fcb0b-0b1c-4c34-9173-a83d1b0be6b5",
         version: 1,
+        status: "live",
         name: "How to grow African Violets",
         links: {
           view: "http://localhost:8080/ian/items/de8fcb0b-0b1c-4c34-9173-a83d1b0be6b5/1/",
@@ -633,6 +637,7 @@ export const transformedBasicVideoSearchResponse: OEQ.Search.SearchResult<Galler
       {
         uuid: "59139c45-788b-4200-a9cb-e4a39e76ad35",
         version: 1,
+        status: "live",
         name: "Quokka (JS) Example",
         links: {
           view: "http://localhost:8080/ian/items/59139c45-788b-4200-a9cb-e4a39e76ad35/1/",
@@ -654,6 +659,7 @@ export const transformedBasicVideoSearchResponse: OEQ.Search.SearchResult<Galler
       {
         uuid: "9d5112d4-87b6-4ac1-b773-ceaa4a6c5205",
         version: 1,
+        status: "live",
         name: "Daily Stoic Resources",
         links: {
           view: "http://localhost:8080/ian/items/9d5112d4-87b6-4ac1-b773-ceaa4a6c5205/1/",

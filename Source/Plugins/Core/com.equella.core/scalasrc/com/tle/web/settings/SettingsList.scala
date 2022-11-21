@@ -66,7 +66,7 @@ object SettingsList {
     "uisettings.name",
     "uisettings.desc",
     "api/settings/ui",
-    () => hasAcl(SecurityConstants.EDIT_SYSTEM_SETTINGS, includePossibleOwnerAcls = true),
+    () => themePrivProvider.isAuthorised,
     "rest"
   )
 

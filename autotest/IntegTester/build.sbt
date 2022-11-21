@@ -7,9 +7,9 @@ version := "1.0"
 
 val CirceVersion  = "0.12.1"
 val Http4sVersion = "0.21.8"
-val jsoupVersion  = "1.14.3"
+val jsoupVersion  = "1.15.3"
 
-scalaVersion := "2.13.8"
+scalaVersion := "2.13.10"
 
 excludeDependencies ++= Seq("org.typelevel" % "scala-library")
 
@@ -25,7 +25,7 @@ libraryDependencies ++= Seq(
   "org.http4s"    %% "http4s-blaze-server" % Http4sVersion,
   "org.http4s"    %% "http4s-dsl"          % Http4sVersion,
   "org.http4s"    %% "http4s-circe"        % Http4sVersion,
-  "org.slf4j"     % "slf4j-simple"         % "1.7.36",
+  "org.slf4j"     % "slf4j-simple"         % "2.0.3",
   "org.jsoup"     % "jsoup"                % jsoupVersion,
   "com.nulab-inc" %% "scala-oauth2-core"   % "1.5.0"
 )

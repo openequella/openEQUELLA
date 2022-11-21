@@ -21,7 +21,7 @@ object JPFPlugin extends AutoPlugin {
   import autoImport._
 
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
-    scalaVersion := "2.13.8",
+    scalaVersion := "2.13.10",
     javacOptions ++= Seq("--release", "8"),
     jpfCodeDirs := Seq((Compile / classDirectory).value),
     (Compile / resourceDirectory) := baseDirectory.value / "resources",

@@ -18,8 +18,8 @@
 
 package com.tle.core.replicatedcache.dao;
 
-import com.dytech.devlib.Base64;
 import com.tle.beans.Institution;
+import java.util.Base64;
 import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -83,11 +83,11 @@ public class CachedValue {
   }
 
   public byte[] getValue() {
-    return new Base64().decode(value);
+    return Base64.getDecoder().decode(value);
   }
 
   public void setValue(byte[] value) {
-    this.value = new Base64().encode(value);
+    this.value = Base64.getEncoder().encodeToString(value);
   }
 
   public Date getTtl() {

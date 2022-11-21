@@ -18,10 +18,12 @@
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
-import { flow, pipe } from "fp-ts/function";
+import { flow, identity, pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as O from "fp-ts/Option";
 import * as S from "fp-ts/string";
+import * as T from "fp-ts/Task";
+import * as TO from "fp-ts/TaskOption";
 import { History, Location } from "history";
 import { pick } from "lodash";
 import {
@@ -47,11 +49,11 @@ import {
   RuntypesControlTarget,
   RuntypesControlValue,
 } from "../components/wizard/WizardHelper";
-import { routes } from "../mainui/routes";
+import { NEW_SEARCH_PATH, routes } from "../mainui/routes";
 import {
   clearDataFromLocalStorage,
-  readDataFromLocalStorage,
-  saveDataToLocalStorage,
+  readDataFromStorage,
+  saveDataToStorage,
 } from "../modules/BrowserStorageModule";
 import {
   Collection,
@@ -59,6 +61,7 @@ import {
 } from "../modules/CollectionsModule";
 import {
   buildSelectionSessionItemSummaryLink,
+  buildSelectionSessionSearchPageLink,
   isSelectionSessionOpen,
 } from "../modules/LegacySelectionSessionModule";
 import { getMimeTypeFiltersById } from "../modules/SearchFilterSettingsModule";
@@ -70,9 +73,14 @@ import {
   SearchOptionsFields,
 } from "../modules/SearchModule";
 import { findUserById } from "../modules/UserModule";
+import { LegacyMyResourcesRuntypes } from "../myresources/MyResourcesPageHelper";
 import { DateRange, isDate } from "../util/Date";
+import { languageStrings } from "../util/langstrings";
 import { simpleMatch } from "../util/match";
-import { pfTernary } from "../util/pointfree";
+import { pfSlice, pfTernary } from "../util/pointfree";
+import type { RefinePanelControl } from "./components/RefineSearchPanel";
+import type { SortOrderOptions } from "./components/SearchOrderSelect";
+import type { StatusSelectorProps } from "./components/StatusSelector";
 
 /**
  * This helper is intended to assist with processing related to the Presentation Layer -
@@ -100,6 +108,10 @@ export interface SearchPageOptions extends SearchOptions {
    * or favourited from Old UI.
    */
   legacyAdvSearchCriteria?: PathValueMap;
+  /**
+   * Open/closed state of refine expansion panel
+   */
+  filterExpansion?: boolean;
 }
 
 export const defaultSearchPageOptions: SearchPageOptions = {
@@ -107,6 +119,153 @@ export const defaultSearchPageOptions: SearchPageOptions = {
   displayMode: "list",
   dateRangeQuickModeEnabled: true,
 };
+
+/**
+ * Type definition for the configuration of navigating to another path from new Search UI.
+ */
+export interface SearchPageNavigationConfig {
+  /**
+   * A path which is typically recognised by the React Router as a route and points to a page
+   * the user will be navigated to.
+   */
+  path: string;
+  /**
+   * Function to build Selection Session specific path for the navigation.
+   */
+  selectionSessionPathBuilder: () => string;
+}
+
+/**
+ * Type definition for the configuration of SearchPageHeader.
+ */
+export interface SearchPageHeaderConfig {
+  /**
+   * `true` to enable the CSV Export button.
+   */
+  enableCSVExportButton?: boolean;
+  /**
+   * `true` to enable the Share Search button.
+   */
+  enableShareSearchButton?: boolean;
+  /**
+   * Additional components displayed in the CardHeader.
+   */
+  additionalHeaders?: JSX.Element[];
+  /**
+   * Customised options for sorting the search result.
+   */
+  customSortingOptions?: SortOrderOptions;
+  /**
+   * Custom configuration to be used with a 'new search' - e.g. when the 'New Search' button is clicked,
+   * or when other actions which trigger the search state to be cleared.
+   */
+  newSearchConfig?: {
+    /**
+     * Configuration for navigation to another path if required in a new search.
+     */
+    navigationTo?: SearchPageNavigationConfig;
+    /**
+     * Search criteria that should be included in a new search.
+     */
+    criteria?: SearchPageOptions;
+    /**
+     * Callback fired after the new search is executed.
+     */
+    callback?: () => void;
+  };
+}
+
+export const defaultSearchPageHeaderConfig: SearchPageHeaderConfig = {
+  enableCSVExportButton: true,
+  enableShareSearchButton: true,
+};
+
+/**
+ * Type definition for the configuration of SearchPageRefinePanel.
+ */
+export interface SearchPageRefinePanelConfig {
+  /**
+   * A list of custom Refine panel control.
+   */
+  customRefinePanelControl?: RefinePanelControl[];
+  /**
+   * `true` to enable the Display Mode selector.
+   */
+  enableDisplayModeSelector?: boolean;
+  /**
+   * `true` to enable the Collection selector.
+   */
+  enableCollectionSelector?: boolean;
+  /**
+   * `true` to enable the Advanced Search selector.
+   */
+  enableAdvancedSearchSelector?: boolean;
+  /**
+   * `true` to enable the Remote Search selector.
+   */
+  enableRemoteSearchSelector?: boolean;
+  /**
+   * `true` to enable the Date Range selector.
+   */
+  enableDateRangeSelector?: boolean;
+  /**
+   * `true` to enable the MIME Type selector.
+   */
+  enableMimeTypeSelector?: boolean;
+  /**
+   * `true` to enable the Owner selector.
+   */
+  enableOwnerSelector?: boolean;
+  /**
+   * `true` to enable the Search Attachment selector.
+   */
+  enableSearchAttachmentsSelector?: boolean;
+  /**
+   * `true` to enable the Item Status selector. However, whether the selector is displayed
+   * also depends on the Search settings.
+   */
+  enableItemStatusSelector?: boolean;
+  /**
+   * Custom configuration for Status selector.
+   */
+  statusSelectorCustomConfig?: {
+    /**
+     * `true` to always show the selector regardless of 'enableItemStatusSelector' and the Search settings.
+     */
+    alwaysEnabled: boolean;
+    /**
+     * Props passed to the selector for customisation.
+     */
+    selectorProps?: StatusSelectorProps;
+  };
+}
+
+export const defaultSearchPageRefinePanelConfig: SearchPageRefinePanelConfig = {
+  enableDisplayModeSelector: true,
+  enableCollectionSelector: true,
+  enableAdvancedSearchSelector: true,
+  enableRemoteSearchSelector: true,
+  enableDateRangeSelector: true,
+  enableMimeTypeSelector: true,
+  enableOwnerSelector: true,
+  enableItemStatusSelector: true,
+  enableSearchAttachmentsSelector: true,
+};
+
+/**
+ * Type definition for the configuration of SearchPageSearchBar.
+ */
+export interface SearchPageSearchBarConfig {
+  /**
+   * Configuration for the Advanced Search filter.
+   */
+  advancedSearchFilter: {
+    /** Called when the filter button is clicked */
+    onClick: () => void;
+    /** If true the button wil be highlighted by the Secondary colour. */
+    accent: boolean;
+  };
+}
 
 export const defaultPagedSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> =
   {
@@ -139,11 +298,11 @@ type LegacyParams = Static<typeof LegacySearchParams>;
 /**
  * Represents the shape of data returned from generateQueryStringFromSearchOptions
  */
-const DehydratedSearchPageOptionsRunTypes = Partial({
+export const DehydratedSearchPageOptionsRunTypes = Partial({
   query: String,
   rowsPerPage: Number,
   currentPage: Number,
-  sortOrder: OEQ.SearchSettings.SortOrderRunTypes,
+  sortOrder: OEQ.Search.SortOrderRunTypes,
   collections: RuntypeArray(Record({ uuid: String })),
   rawMode: Boolean,
   lastModifiedDateRange: Partial({ start: Guard(isDate), end: Guard(isDate) }),
@@ -164,7 +323,7 @@ const DehydratedSearchPageOptionsRunTypes = Partial({
   ),
 });
 
-type DehydratedSearchPageOptions = Static<
+export type DehydratedSearchPageOptions = Static<
   typeof DehydratedSearchPageOptionsRunTypes
 >;
 
@@ -349,6 +508,11 @@ const getDisplayModeFromLegacyParams = (
         gallery: () => "gallery-image",
         video: () => "gallery-video",
         _: (mode) => {
+          // Because Old UI also uses query string `type` for My resources type and Legacy
+          // My resources page does not have galleries, we always return "list".
+          if (LegacyMyResourcesRuntypes.guard(mode)) {
+            return "list";
+          }
           throw new TypeError(`Unknown Legacy display mode [${mode}]`);
         },
       })
@@ -357,16 +521,16 @@ const getDisplayModeFromLegacyParams = (
 
 const getCollectionFromLegacyParams = async (
   collectionUuid: string | undefined
-): Promise<Collection[] | undefined> => {
-  if (!collectionUuid) return defaultSearchOptions.collections;
-  const collectionDetails: Collection[] | undefined =
-    await findCollectionsByUuid([collectionUuid]);
-
-  return typeof collectionDetails !== "undefined" &&
-    collectionDetails.length > 0
-    ? collectionDetails
-    : defaultSearchOptions.collections;
-};
+): Promise<Collection[] | undefined> =>
+  pipe(
+    collectionUuid,
+    O.fromNullable,
+    O.map(pfTernary(S.startsWith("C"), pfSlice(1), identity)),
+    TO.fromOption,
+    TO.chain((uuid) => TO.tryCatch(() => findCollectionsByUuid([uuid]))),
+    TO.filter((collections) => !!collections && A.isNonEmpty(collections)),
+    TO.getOrElse(() => T.of(defaultSearchOptions.collections))
+  )();
 
 const getOwnerFromLegacyParams = async (ownerId: string | undefined) =>
   ownerId ? await findUserById(ownerId) : defaultSearchOptions.owner;
@@ -466,13 +630,11 @@ export const legacyQueryStringToSearchPageOptions = async (
     return params.get(paramName) ?? undefined;
   };
   const query = getQueryParam("q") ?? defaultSearchOptions.query;
-  const collections = await getCollectionFromLegacyParams(
-    getQueryParam("in")?.substring(1)
-  );
+  const collections = await getCollectionFromLegacyParams(getQueryParam("in"));
   const owner = await getOwnerFromLegacyParams(getQueryParam("owner"));
   const sortOrder = pipe(
-    getQueryParam("sort")?.toUpperCase(),
-    O.fromPredicate(OEQ.SearchSettings.SortOrderRunTypes.guard),
+    getQueryParam("sort")?.toLowerCase(),
+    O.fromPredicate(OEQ.Search.SortOrderRunTypes.guard),
     O.getOrElse(() => defaultSearchOptions.sortOrder)
   );
 
@@ -532,11 +694,11 @@ export const RAW_MODE_STORAGE_KEY = "raw_mode";
  * Read the value of wildcard mode from LocalStorage.
  */
 export const getRawModeFromStorage = (): boolean =>
-  readDataFromLocalStorage(RAW_MODE_STORAGE_KEY, Boolean.guard) ??
+  readDataFromStorage(RAW_MODE_STORAGE_KEY, Boolean.guard) ??
   defaultSearchOptions.rawMode;
 
 export const writeRawModeToStorage = (value: boolean): void =>
-  saveDataToLocalStorage(RAW_MODE_STORAGE_KEY, value);
+  saveDataToStorage(RAW_MODE_STORAGE_KEY, value);
 
 export const deleteRawModeFromStorage = (): void =>
   clearDataFromLocalStorage(RAW_MODE_STORAGE_KEY);
@@ -576,3 +738,54 @@ export const buildOpenSummaryPageHandler = (
       })
     )
   );
+
+/**
+ * Given an `ApiError`, return an error message depending on the status code.
+ *
+ * @param error API error captured when exporting a search result.
+ */
+export const generateExportErrorMessage = (
+  error: OEQ.Errors.ApiError
+): string => {
+  const { badRequest, unauthorised, notFound } =
+    languageStrings.searchpage.export.errorMessages;
+
+  return pipe(
+    error.message,
+    simpleMatch<string>({
+      400: () => badRequest,
+      403: () => unauthorised,
+      404: () => notFound,
+      _: () => error.message,
+    })
+  );
+};
+
+/**
+ * Navigate to another path from New Search UI or pages built based on New Search UI. Appropriate method is used
+ * to do the navigation, depending on whether the page is in Selection Session or not.
+ *
+ * @param path The path used when the new Search UI is in normal mode. Typically, this is path recognised by a React Router as a route.
+ * @param selectionSessionPathBuilder Function only used in Selection Session to build a special path for the navigation.
+ * @param history History of browser where the path used in normal mode will be pushed in.
+ */
+export const navigateTo = (
+  { path, selectionSessionPathBuilder }: SearchPageNavigationConfig,
+  history: History
+) => {
+  isSelectionSessionOpen()
+    ? window.open(selectionSessionPathBuilder(), "_self")
+    : history.push(path);
+};
+
+/**
+ * Use the provided SearchPageOptions to build a SearchPageNavigationConfig for new Search UI.
+ * @param searchPageOptions
+ */
+export const buildSearchPageNavigationConfig = (
+  searchPageOptions: SearchPageOptions
+): SearchPageNavigationConfig => ({
+  path: NEW_SEARCH_PATH,
+  selectionSessionPathBuilder: () =>
+    buildSelectionSessionSearchPageLink(searchPageOptions.externalMimeTypes),
+});

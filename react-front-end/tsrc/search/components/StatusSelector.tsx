@@ -15,18 +15,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Button, ButtonGroup } from "@material-ui/core";
+import { Button, ButtonGroup, Checkbox, TextField } from "@material-ui/core";
+import CheckBoxIcon from "@material-ui/icons/CheckBox";
+import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
+import { Autocomplete } from "@material-ui/lab";
 import * as OEQ from "@openequella/rest-api-client";
 import { isEqual } from "lodash";
 import * as React from "react";
 import { liveStatuses, nonLiveStatuses } from "../../modules/SearchModule";
 import { languageStrings } from "../../util/langstrings";
 
+const { title, live, all } = languageStrings.searchpage.statusSelector;
+
+interface AdvancedModeProps {
+  options: OEQ.Common.ItemStatus[];
+}
+
 export interface StatusSelectorProps {
   /**
-   * A list of the currently selected statuses. This list is then used to determine one of two
-   * possible sets: live OR all. The main reason to not simply abstract this out to a boolean, is
-   * to support the easy passing and storing of a value used in calls to the `SearchModule`.
+   * A list of the currently selected statuses.
+   *
+   * In normal mode, this list is then used to determine one of two
+   * possible sets: live OR all.
+   *
+   * In advanced mode, this list determines what statuses have been selected.
    */
   value?: OEQ.Common.ItemStatus[];
   /**
@@ -36,14 +48,20 @@ export interface StatusSelectorProps {
    * @param value a list representing the new selection.
    */
   onChange: (value: OEQ.Common.ItemStatus[]) => void;
+  /**
+   * Use the component in advanced mode with a list of Item statuses.
+   */
+  advancedMode?: AdvancedModeProps;
 }
 
-/**
- * A button toggle to provide a simple means of either seeing items which are 'live' or otherwise
- * all. To do this, it basically considers that if the provided `value` contains only those known
- * as live then then status is 'live', otherwise it's all. Very simplistic.
- */
-const StatusSelector = ({
+interface AdvancedSelectorProps extends StatusSelectorProps {
+  /**
+   * Override advancedMode to make it mandatory.
+   */
+  advancedMode: AdvancedModeProps;
+}
+
+const NormalSelector = ({
   value = liveStatuses,
   onChange,
 }: StatusSelectorProps) => {
@@ -60,16 +78,71 @@ const StatusSelector = ({
         variant={variant(() => isLive(value))}
         onClick={() => onChange(liveStatuses)}
       >
-        {languageStrings.searchpage.statusSelector.live}
+        {live}
       </Button>
       <Button
         variant={variant(() => !isLive(value))}
         onClick={() => onChange(liveStatuses.concat(nonLiveStatuses))}
       >
-        {languageStrings.searchpage.statusSelector.all}
+        {all}
       </Button>
     </ButtonGroup>
   );
 };
+
+const AdvancedSelector = ({
+  value,
+  advancedMode: { options },
+  onChange,
+}: AdvancedSelectorProps) => (
+  <Autocomplete
+    fullWidth
+    multiple
+    disableCloseOnSelect
+    value={value ?? []}
+    onChange={(_, selected) => {
+      onChange(selected);
+    }}
+    options={options}
+    limitTags={2}
+    getOptionLabel={(status) => status}
+    getOptionSelected={(status, selected) => selected === status}
+    renderOption={(status, { selected }) => (
+      <>
+        <Checkbox
+          icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
+          checkedIcon={<CheckBoxIcon fontSize="small" />}
+          checked={selected}
+        />
+        {status}
+      </>
+    )}
+    renderInput={(params) => (
+      <TextField
+        {...params}
+        variant="outlined"
+        label={title}
+        placeholder={title}
+      />
+    )}
+  />
+);
+
+/**
+ * This component provides two modes for selections of Item status.
+ *
+ * In normal mode, it displays a button toggle to provide a simple means of either seeing items
+ * which are 'live' or otherwise all. To do this, it basically considers that if the provided `value`
+ * contains only those known as live then then status is 'live', otherwise it's all. Very simplistic.
+ *
+ * In advanced mode, it displays a Drop-down to allow users to select individual statuses. It also supports
+ * customising Drop-down options and multiple selections.
+ */
+const StatusSelector = (props: StatusSelectorProps) =>
+  props.advancedMode ? (
+    <AdvancedSelector {...props} advancedMode={props.advancedMode} />
+  ) : (
+    <NormalSelector {...props} />
+  );
 
 export default StatusSelector;

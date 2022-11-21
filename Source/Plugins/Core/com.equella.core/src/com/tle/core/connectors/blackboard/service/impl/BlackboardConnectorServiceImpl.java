@@ -116,7 +116,7 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMMetaFactory;
 import org.apache.axiom.om.OMMetaFactoryLocator;
-import org.apache.axiom.om.impl.llom.factory.OMLinkedListMetaFactory;
+import org.apache.axiom.om.impl.llom.factory.OMLinkedListMetaFactoryLoader;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
@@ -128,7 +128,7 @@ import org.apache.axis2.deployment.ModuleBuilder;
 import org.apache.axis2.description.AxisModule;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.engine.AxisConfigurator;
-import org.apache.axis2.transport.http.HTTPConstants;
+import org.apache.axis2.kernel.http.HTTPConstants;
 import org.apache.axis2.transport.http.HttpTransportProperties;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
@@ -917,8 +917,9 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
    * f.execute is called
    *
    * @param <T>
-   * @param connector
+   * @param serverUrl
    * @param username
+   * @param emulateUser
    * @param f
    * @return
    * @throws LmsUserNotFoundException
@@ -1117,7 +1118,7 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
           new OMMetaFactoryLocator() {
             @Override
             public OMMetaFactory getOMMetaFactory(String feature) {
-              return OMLinkedListMetaFactory.INSTANCE;
+              return new OMLinkedListMetaFactoryLoader().load(null);
             }
           });
       axisConfig =

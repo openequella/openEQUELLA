@@ -38,7 +38,12 @@ class SearchSettingsResource {
     notes = "This endpoint is used to retrieve general search settings excluding search filters."
   )
   def listSearchSettings: SearchSettings = {
-    loadSettings(new SearchSettings)
+    val settings = loadSettings(new SearchSettings)
+    // In 2022.2 it was realised that the DefaultSearch relies on the sort order specifiers to
+    // be in lowercase. So all the New UI now relies on that so it makes sense that this API
+    // only ever returns the sort order in lower case to match.
+    settings.setDefaultSearchSort(Option(settings.getDefaultSearchSort).map(_.toLowerCase).orNull)
+    settings
   }
 
   @PUT

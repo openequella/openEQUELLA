@@ -20,6 +20,8 @@ import { AxiosPromise, AxiosResponse } from "axios";
 import { getBaseUrl, getRenderData } from "../AppConfig";
 import * as React from "react";
 import "tinymce/tinymce";
+import "tinymce/models/dom/model";
+import "tinymce/themes/silver";
 import "tinymce/icons/default";
 import "tinymce/plugins/advlist";
 import "tinymce/plugins/anchor";
@@ -29,33 +31,27 @@ import "tinymce/plugins/charmap";
 import "tinymce/plugins/code";
 import "tinymce/plugins/codesample";
 import "tinymce/plugins/directionality";
+import "tinymce/plugins/emoticons";
 import "tinymce/plugins/fullscreen";
 import "tinymce/plugins/help";
-import "tinymce/plugins/hr";
 import "tinymce/plugins/image";
-import "tinymce/plugins/imagetools";
 import "tinymce/plugins/importcss";
 import "tinymce/plugins/insertdatetime";
 import "tinymce/plugins/link";
 import "tinymce/plugins/lists";
 import "tinymce/plugins/media";
 import "tinymce/plugins/nonbreaking";
-import "tinymce/plugins/noneditable";
 import "tinymce/plugins/pagebreak";
-import "tinymce/plugins/paste";
 import "tinymce/plugins/preview";
-import "tinymce/plugins/print";
 import "tinymce/plugins/quickbars";
 import "tinymce/plugins/save";
 import "tinymce/plugins/searchreplace";
 import "tinymce/plugins/table";
 import "tinymce/plugins/template";
-import "tinymce/plugins/textpattern";
-import "tinymce/plugins/toc";
 import "tinymce/plugins/visualblocks";
 import "tinymce/plugins/visualchars";
 import "tinymce/plugins/wordcount";
-import "tinymce/themes/silver/theme";
+import "tinymce/plugins/emoticons/js/emojis";
 
 const renderData = getRenderData();
 
@@ -91,21 +87,25 @@ const RichTextEditor = ({
   onStateChange,
   imageUploadCallBack,
 }: RichTextEditorProps) => {
-  const uploadImages = (
-    blobInfo: BlobInfo,
-    success: (msg: string) => void,
-    failure: (msg: string) => void
-  ): void => {
-    if (imageUploadCallBack) {
-      imageUploadCallBack(blobInfo)
-        .then((response: AxiosResponse<ImageReturnType>) =>
-          success(response.data.link)
-        )
-        .catch((error: Error) => failure(error.name + error.message));
-    } else {
-      failure("No upload path specified.");
-    }
-  };
+  const uploadImages = (blobInfo: BlobInfo) =>
+    new Promise<string>(
+      (
+        resolve: (value: PromiseLike<string> | string) => void,
+        reject: (reason?: string) => void
+      ) => {
+        if (imageUploadCallBack) {
+          imageUploadCallBack(blobInfo)
+            .then((response: AxiosResponse<ImageReturnType>) => {
+              resolve(response.data.link);
+            })
+            .catch((error: Error) => {
+              reject(error.name + error.message);
+            });
+        } else {
+          reject("No upload path specified.");
+        }
+      }
+    );
 
   const defaultSkinUrl =
     getBaseUrl() + renderData?.baseResources + "reactjs/tinymce/skins/ui/oxide";
@@ -126,11 +126,10 @@ const RichTextEditor = ({
       }}
       toolbar="formatselect | bold italic strikethrough underline forecolor backcolor | link image media file | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent hr | removeformat | undo redo | preview | ltr rtl"
       plugins={
-        "anchor autolink autoresize advlist charmap code codesample  " +
-        "directionality fullscreen help hr image imagetools " +
-        "importcss insertdatetime link lists media nonbreaking noneditable pagebreak paste " +
-        "preview print quickbars save searchreplace table template " +
-        "textpattern toc visualblocks visualchars wordcount"
+        "advlist anchor autolink autoresize charmap code codesample " +
+        "directionality emoticons fullscreen help image importcss" +
+        "insertdatetime link lists media nonbreaking pagebreak preview " +
+        "quickbars save searchreplace table visualblocks visualchars wordcount"
       }
       onEditorChange={onStateChange}
       value={htmlInput}

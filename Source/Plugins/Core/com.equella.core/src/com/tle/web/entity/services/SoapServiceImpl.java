@@ -18,7 +18,6 @@
 
 package com.tle.web.entity.services;
 
-import com.dytech.devlib.Base64;
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.valuebean.SearchRequest;
 import com.dytech.edge.exceptions.ItemNotFoundException;
@@ -84,6 +83,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -318,7 +318,7 @@ public class SoapServiceImpl implements SoapService50 {
   @Override
   public void uploadFile(String stagingId, String filename, String base64Data, boolean overwrite) {
     // decode and upload file
-    byte[] bytes = new Base64().decode(base64Data);
+    byte[] bytes = Base64.getDecoder().decode(base64Data);
     StagingFile staging = new StagingFile(stagingId);
     try {
       fileSystemService.write(staging, filename, new ByteArrayInputStream(bytes), !overwrite);

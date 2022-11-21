@@ -68,7 +68,8 @@ case class SearchResultItem(
     links: java.util.Map[String, String],
     bookmarkId: Option[Long],
     isLatestVersion: Boolean,
-    drmStatus: Option[DrmStatus]
+    drmStatus: Option[DrmStatus],
+    moderationDetails: Option[ModerationDetails],
 )
 
 /**
@@ -102,8 +103,9 @@ case class SearchResultAttachment(
   *
   * @param termsAccepted Whether terms have been accepted or not.
   * @param isAuthorised Whether user is authorised to access Item or accept DRM.
+  * @param isAllowSummary Whether user can view the Item summary page without accepting the terms.
   */
-case class DrmStatus(termsAccepted: Boolean, isAuthorised: Boolean)
+case class DrmStatus(termsAccepted: Boolean, isAuthorised: Boolean, isAllowSummary: Boolean)
 
 /**
   * Provides details to assist with displaying a thumbnail for a search result, based on the
@@ -117,3 +119,14 @@ case class DrmStatus(termsAccepted: Boolean, isAuthorised: Boolean)
   *             provide the URL for it.
   */
 case class ThumbnailDetails(attachmentType: String, mimeType: Option[String], link: Option[String])
+
+/**
+  * Model class to provide an Item's moderation details.
+  *
+  * @param lastActionDate When was the last moderation action performed.
+  * @param submittedDate When was the Item submitted to moderation.
+  * @param rejectionMessage Message for why the Item was rejected.
+  */
+case class ModerationDetails(lastActionDate: Date,
+                             submittedDate: Date,
+                             rejectionMessage: Option[String])

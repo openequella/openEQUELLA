@@ -21,6 +21,7 @@ import { API_BASE_URL } from "../AppConfig";
 export const defaultDrmStatus: OEQ.Search.DrmStatus = {
   termsAccepted: true,
   isAuthorised: true,
+  isAllowSummary: true,
 };
 
 /**

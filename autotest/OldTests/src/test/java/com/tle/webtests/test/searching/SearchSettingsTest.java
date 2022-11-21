@@ -11,7 +11,6 @@ import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.framework.soap.SoapService50;
 import com.tle.webtests.pageobject.SettingsPage;
 import com.tle.webtests.pageobject.searching.ItemListPage;
-import com.tle.webtests.pageobject.searching.ItemSearchResult;
 import com.tle.webtests.pageobject.searching.SearchPage;
 import com.tle.webtests.pageobject.searching.SearchScreenOptions;
 import com.tle.webtests.pageobject.searching.SearchSettingsPage;
@@ -60,7 +59,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
 
     // Load SearchSettings Page by clicking settings link
     SearchSettingsPage searchSettingsPage = sp.searchSettings();
-    Order sortOption = SearchSettingsPage.Order.RANK;
+    Order sortOption = SearchSettingsPage.Order.rank;
     searchSettingsPage.setOrder(sortOption).save();
 
     logon("AutoTest", "automated");
@@ -69,7 +68,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
 
     assertTrue(searchPage.ensureSortSelected(sortOption.name()));
 
-    sortOption = Order.DATEMODIFIED;
+    sortOption = Order.datemodified;
     searchSettingsPage = new SettingsPage(context).load().searchSettings();
     searchSettingsPage.setOrder(sortOption).save();
 
@@ -79,7 +78,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
 
     assertTrue(searchPage.ensureSortSelected(sortOption.name()));
 
-    sortOption = SearchSettingsPage.Order.NAME;
+    sortOption = SearchSettingsPage.Order.name;
     searchSettingsPage = new SettingsPage(context).load().searchSettings();
     searchSettingsPage.setOrder(sortOption).save();
 
@@ -89,7 +88,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
 
     assertTrue(searchPage.ensureSortSelected(sortOption.name()));
 
-    sortOption = SearchSettingsPage.Order.RATING;
+    sortOption = SearchSettingsPage.Order.rating;
     searchSettingsPage = new SettingsPage(context).load().searchSettings().get();
 
     searchSettingsPage.setOrder(sortOption).save();
@@ -153,8 +152,6 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     // Login
     soapService.login("AutoTest", "automated");
 
-    SearchSettingsPage ssp = new SettingsPage(context).load().searchSettings();
-
     // Do a search and get RSS url
     SearchPage searchPage = new SearchPage(context).load();
     searchPage.search(searchTerm);
@@ -171,7 +168,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     assertTrue(checkAtomResponse(getResponse(soapService, atomUrl, null), true));
 
     // Enable authenticated results
-    ssp = new SettingsPage(context).load().searchSettings();
+    SearchSettingsPage ssp = new SettingsPage(context).load().searchSettings();
     ssp.setGenerateAuthFeeds(true).save();
 
     // Do a search and get RSS url
@@ -249,24 +246,6 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
             null);
   }
 
-  @SuppressWarnings("unused")
-  private boolean checkItemOrder(List<ItemSearchResult> searchResults, Order order) {
-    boolean orderMatches = true;
-
-    switch (order) {
-      case RANK:
-        break;
-      case DATEMODIFIED:
-        break;
-      case NAME:
-        break;
-      case RATING:
-        break;
-    }
-
-    return orderMatches;
-  }
-
   @Override
   protected void cleanupAfterClass() throws Exception {
     logon("AutoTest", "automated");
@@ -274,9 +253,8 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
 
     // Load SearchSettings Page by clicking settings link
     SearchSettingsPage searchSettingsPage = sp.searchSettings();
-    Order sortOption = SearchSettingsPage.Order.RANK;
+    Order sortOption = SearchSettingsPage.Order.rank;
     searchSettingsPage.setOrder(sortOption).save();
-    searchSettingsPage.setDisableCloud(false);
 
     super.cleanupAfterClass();
   }

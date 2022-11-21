@@ -33,6 +33,17 @@ import com.tle.web.sections.render.Label
 import com.tle.web.wizard.PackageInfo
 import scala.jdk.CollectionConverters._
 
+/**
+  * IMS attachment commit type.
+  * simply returns the attachment on apply.
+  * Uses the specialised IMSPackageExtension.deleteIMSFiles to ensure that both original zip file and its unzipped contents are deleted.
+  */
+object IMSAttachmentCommit extends AttachmentCommit {
+  override def apply(a: Attachment, stg: StagingContext): Attachment = a
+  override def cancel(a: Attachment, stg: StagingContext): Unit =
+    IMSPackageExtension.deleteIMSFiles(stg, a)
+}
+
 trait PackageAttachmentExtension {
   def treatAsLabel: Label
 
@@ -45,30 +56,6 @@ trait PackageAttachmentExtension {
   def handles(a: Attachment): Boolean
 
   def order: Int = 0
-}
-
-object PackageFileCreate {
-
-  lazy val tracker =
-    new PluginTracker[PackageAttachmentExtension](AbstractPluginService.get(),
-                                                  "com.tle.web.wizard.controls.universal",
-                                                  "packageAttachmentHandler",
-                                                  "type").setBeanKey("class")
-
-  lazy val packageCreateById: Map[String, PackageAttachmentExtension] =
-    tracker.getBeanMap.asScala.toMap
-  lazy val packageTypes: Seq[PackageAttachmentExtension] =
-    packageCreateById.values.toSeq.sortBy(_.order)
-
-  def extensionForAttachment(a: Attachment): Option[PackageAttachmentExtension] =
-    packageTypes.find(_.handles(a))
-
-  def createForUpload(info: SectionInfo,
-                      ctx: ControlContext,
-                      upload: SuccessfulUpload,
-                      d: Seq[PackageType]): AttachmentCreate = {
-    packageTypes.find(_.handlesPackage(upload, d)).get.create(info, ctx, upload)
-  }
 }
 
 object IMSPackageExtension extends PackageAttachmentExtension {
@@ -101,7 +88,9 @@ object IMSPackageExtension extends PackageAttachmentExtension {
 
   def commitFiles(stg: StagingContext, pkgUnzip: String, upload: SuccessfulUpload): Unit = {
     val pkgFolder = upload.originalFilename
+    // move unzip folder
     stg.moveFile(pkgUnzip, pkgFolder)
+    // move zip file
     stg.moveFile(upload.uploadPath, s"${FileSystemConstants.IMS_FOLDER}/${upload.originalFilename}")
     stg.delete(upload.temporaryPath(""))
     stg.setPackageFolder(pkgFolder)
@@ -129,8 +118,7 @@ object IMSPackageExtension extends PackageAttachmentExtension {
         commitFiles(stg, pkgUnzip, upload)
         imsa
       },
-      (a, stg) => a,
-      (a, stg) => deleteIMSFiles(stg, a)
+      IMSAttachmentCommit
     )
   }
 
@@ -156,8 +144,7 @@ object ScormPackageExtension extends PackageAttachmentExtension {
         commitFiles(stg, pkgUnzip, upload)
         attachment
       },
-      (a, stg) => a,
-      (a, stg) => IMSPackageExtension.deleteIMSFiles(stg, a)
+      IMSAttachmentCommit
     )
   }
 
