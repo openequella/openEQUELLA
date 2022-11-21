@@ -116,7 +116,6 @@ libraryDependencies ++= Seq(
   "javax.mail"                % "mail"                  % "1.4.7",
   "javax.servlet"             % "jstl"                  % "1.2",
   "javax.xml"                 % "jaxrpc"                % "1.1",
-  "jdom"                      % "jdom"                  % "1.1",
   "com.github.equella.jpf"    % "jpf"                   % "1.0.7",
   log4j,
   log4jCore,
