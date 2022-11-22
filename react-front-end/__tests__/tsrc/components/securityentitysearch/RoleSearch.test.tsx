@@ -16,19 +16,17 @@
  * limitations under the License.
  */
 import { RenderResult } from "@testing-library/react";
+import { searchAndSelect } from "./BaseSearchTestHelper";
 import {
-  defaultBaseSearchProps,
-  searchAndSelect,
-} from "./BaseSearchTestHelper";
-import {
-  searchUser,
-  renderUserSearch,
-  findUserFromMockData,
-} from "./UserSearchTestHelpler";
+  searchRole,
+  renderRoleSearch,
+  findRoleFromMockData,
+  defaultRoleSearchProps,
+} from "./RoleSearchTestHelper";
 
-describe("<UserSearch/>", () => {
-  // do search and select user
-  const searchAndSelectUser = (
+describe("<RoleSearch/>", () => {
+  // do search and select role
+  const searchAndSelectRole = (
     renderResult: RenderResult,
     searchFor: string,
     selectEntityName: string,
@@ -39,27 +37,27 @@ describe("<UserSearch/>", () => {
       searchFor,
       selectEntityName,
       onChange,
-      searchUser
+      searchRole
     );
 
   it("can search and select", async () => {
-    const queryName = "user100";
+    const queryName = "Teachers";
     // Prepare test values - aligning with mock data and function
-    const selectUser = findUserFromMockData(queryName);
+    const selectRole = findRoleFromMockData(queryName);
     // The expected result for the first arg of the first call of onChange function.
-    const expectedSelections = new Set([selectUser]);
+    const expectedSelections = new Set([selectRole]);
     const onChange = jest.fn();
 
-    const renderResult = await renderUserSearch({
-      ...defaultBaseSearchProps,
+    const renderResult = await renderRoleSearch({
+      ...defaultRoleSearchProps,
       onChange,
     });
 
     expect(
-      await searchAndSelectUser(
+      await searchAndSelectRole(
         renderResult,
         queryName,
-        selectUser.username,
+        selectRole.name,
         onChange
       )
     ).toEqual(expectedSelections);

@@ -22,11 +22,14 @@ import * as S from "fp-ts/string";
 import * as React from "react";
 import { listUsers } from "../../modules/UserModule";
 import { languageStrings } from "../../util/langstrings";
-import BaseSearch, { CommonEntitySearchProps } from "./BaseSearch";
+import BaseSearch, {
+  CommonEntitySearchProps,
+  wildcardQuery,
+} from "./BaseSearch";
 
 export interface UserSearchProps
   extends CommonEntitySearchProps<OEQ.UserQuery.UserDetails> {
-  userListProvider?: (
+  search?: (
     query?: string,
     filter?: ReadonlySet<string>
   ) => Promise<OEQ.UserQuery.UserDetails[]>;
@@ -37,14 +40,9 @@ export interface UserSearchProps
  * Users can then be selected (support single/multiple select).
  */
 const UserSearch = ({
-  listHeight,
-  userListProvider = (query?: string, groupFilter?: ReadonlySet<string>) =>
-    listUsers(query ? `${query}*` : undefined, groupFilter),
-  onChange,
-  selections,
-  enableMultiSelection,
-  groupFilter,
-  resolveGroupsProvider,
+  search = (query?: string, groupFilter?: ReadonlySet<string>) =>
+    listUsers(wildcardQuery(query), groupFilter),
+  ...restProps
 }: UserSearchProps) => {
   /**
    * A template used to display a user entry in BaseSearch (in CheckboxList).
@@ -59,18 +57,13 @@ const UserSearch = ({
 
   return (
     <BaseSearch<OEQ.UserQuery.UserDetails>
-      listHeight={listHeight}
       strings={languageStrings.userSearchComponent}
-      selections={selections}
-      onChange={onChange}
       itemOrd={ORD.contramap((u: OEQ.UserQuery.UserDetails) => u.username)(
         S.Ord
       )}
       itemDetailsToEntry={userEntry}
-      itemListProvider={userListProvider}
-      enableMultiSelection={enableMultiSelection}
-      groupFilter={groupFilter}
-      resolveGroupsProvider={resolveGroupsProvider}
+      search={search}
+      {...restProps}
     />
   );
 };

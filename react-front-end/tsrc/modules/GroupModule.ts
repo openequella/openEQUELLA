@@ -17,7 +17,10 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { contramap, Eq } from "fp-ts/Eq";
+import { flow } from "fp-ts/function";
+import * as ORD from "fp-ts/Ord";
 import * as RA from "fp-ts/ReadonlyArray";
+import * as RSET from "fp-ts/ReadonlySet";
 import * as S from "fp-ts/string";
 import { API_BASE_URL } from "../AppConfig";
 
@@ -27,6 +30,20 @@ import { API_BASE_URL } from "../AppConfig";
 export const eqGroupById: Eq<OEQ.UserQuery.GroupDetails> = contramap(
   (group: OEQ.UserQuery.GroupDetails) => group.id
 )(S.Eq);
+
+/**
+ * Given a set of `OEQ.UserQuery.GroupDetails`, return a set of UUIDs for all the groups.
+ */
+export const groupIds: (
+  a: ReadonlySet<OEQ.UserQuery.GroupDetails>
+) => ReadonlySet<string> = flow(RSET.map(S.Eq)(({ id }) => id));
+
+/**
+ * Ord for `OEQ.UserQuery.GroupDetails` with ordering rule based on the group's name.
+ */
+export const groupOrd = ORD.contramap(
+  (u: OEQ.UserQuery.GroupDetails) => u.name
+)(S.Ord);
 
 /**
  * Lookup groups known in oEQ.

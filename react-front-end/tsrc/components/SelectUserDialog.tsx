@@ -102,8 +102,8 @@ export const SelectUserDialog = ({
             O.getOrElseW(() => RSET.empty)
           )}
           groupFilter={groupFilter}
-          userListProvider={userListProvider}
           resolveGroupsProvider={resolveGroupsProvider}
+          search={userListProvider}
           listHeight={300}
         />
       </DialogContent>

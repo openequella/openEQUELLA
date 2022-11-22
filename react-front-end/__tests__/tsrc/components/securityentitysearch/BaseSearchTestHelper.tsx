@@ -17,8 +17,14 @@
  */
 import { ListItemText } from "@material-ui/core";
 import * as OEQ from "@openequella/rest-api-client";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, RenderResult, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import * as A from "fp-ts/Array";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import { Predicate } from "fp-ts/Predicate";
 import * as React from "react";
+import * as GroupSearchMock from "../../../../__mocks__/GroupSearch.mock";
 import * as UserSearchMock from "../../../../__mocks__/UserSearch.mock";
 import BaseSearch, {
   BaseSearchProps,
@@ -26,8 +32,20 @@ import BaseSearch, {
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import { queryMuiTextField } from "../../MuiQueries";
 
-const { queryFieldLabel: baseQueryFieldLabel } =
-  languageStrings.baseSearchComponent;
+const {
+  edit: editLabel,
+  cancel: cancelLabel,
+  select: selectLabel,
+} = languageStrings.common.action;
+
+const {
+  queryFieldLabel: baseQueryFieldLabel,
+  filterByGroupsButtonLabel,
+  groupFilterSearchHintMessage,
+} = languageStrings.baseSearchComponent;
+
+const { queryFieldLabel: groupQueryFieldLabel } =
+  languageStrings.groupSearchComponent;
 
 /**
  * Generic helper function to do the steps of submitting a search in the <BaseSearch/>
@@ -46,8 +64,7 @@ export const doSearch = (
   if (!queryField) {
     throw new Error("Unable to find query field!");
   }
-  fireEvent.change(queryField, { target: { value: queryValue } });
-  fireEvent.keyDown(queryField, { key: "Enter", code: "Enter" });
+  userEvent.type(queryField, `${queryValue}{enter}`);
 };
 
 /**
@@ -61,19 +78,80 @@ export const searchEntity = (dialog: HTMLElement, queryValue: string) =>
   doSearch(dialog, baseQueryFieldLabel, queryValue);
 
 /**
- * Helper function to assist in finding the list of items after a search.
+ * Helper function to do the steps of submitting a group filter search in the <BaseSearch/>.
+ *
+ * @param dialog The Base Search Dialog
+ * @param queryValue the value to put in the query field before pressing enter
+ */
+export const searchGroupFilter = (dialog: HTMLElement, queryValue: string) =>
+  doSearch(dialog, groupQueryFieldLabel, queryValue);
+
+/**
+ * Clicks an element based on identifying text (found with text).
+ *
+ * @param renderResult The Base Search Dialog render result.
+ * @param text The value used to get the element.
+ */
+const clickByText = ({ getByText }: RenderResult, text: string) =>
+  userEvent.click(getByText(text));
+
+/**
+ * Helper function to mock clicking `filterByGroup` button.
+ *
+ * @param renderResult a root container within which <BaseSearch/> exists
+ */
+export const clickFilterByGroupButton = (renderResult: RenderResult): void =>
+  clickByText(renderResult, filterByGroupsButtonLabel);
+
+/**
+ * Helper function to mock clicking `select` button.
+ *
+ * @param renderResult a root container within which <BaseSearch/> exists
+ */
+export const clickEntitySelectButton = (renderResult: RenderResult): void =>
+  clickByText(renderResult, selectLabel);
+
+/**
+ * Helper function to mock clicking `cancel` button.
+ *
+ * @param renderResult a root container within which <BaseSearch/> exists
+ */
+export const clickCancelGroupFilterButton = (
+  renderResult: RenderResult
+): void => clickByText(renderResult, cancelLabel);
+
+/**
+ * Helper function to mock clicking `edit` button.
+ *
+ * @param renderResult a root container within which <BaseSearch/> exists
+ */
+export const clickEditGroupFilterButton = (renderResult: RenderResult): void =>
+  clickByText(renderResult, editLabel);
+
+/**
+ * Helper function to assist in finding GroupFilterSearch when user choose to edit the group filter.
  *
  * @param container a root container within which <BaseSearch/> exists
  */
-export const getItemList = (container: HTMLElement): Element | null =>
-  container.querySelector("#BaseSearch-ItemList");
+export const queryGroupFilterSearch = (
+  renderResult: RenderResult
+): Element | null => renderResult.queryByText(groupFilterSearchHintMessage);
+
+/**
+ * Some common shared props to render the `EntitySearch`.
+ */
+export const commonSearchProps = {
+  enableMultiSelection: false,
+  onChange: jest.fn(),
+  groupListProvider: GroupSearchMock.groupDetailsProvider,
+  resolveGroupsProvider: GroupSearchMock.resolveGroupsProvider,
+};
 
 export const defaultBaseSearchProps: BaseSearchProps<OEQ.UserQuery.UserDetails> =
   {
-    enableMultiSelection: false,
+    ...commonSearchProps,
     selections: new Set(),
-    onChange: jest.fn(),
-    itemListProvider: UserSearchMock.userDetailsProvider,
+    search: UserSearchMock.userDetailsProvider,
     itemDetailsToEntry: ({
       username,
       firstName,
@@ -86,11 +164,70 @@ export const defaultBaseSearchProps: BaseSearchProps<OEQ.UserQuery.UserDetails> 
 // Helper to render BaseSearch and wait for component under test
 export const renderBaseSearch = async (
   props: BaseSearchProps<OEQ.UserQuery.UserDetails> = defaultBaseSearchProps
-): Promise<HTMLElement> => {
-  const { container } = render(<BaseSearch {...props} />);
+): Promise<RenderResult> => {
+  const renderResult = render(<BaseSearch {...props} />);
 
   // Wait for it to be rendered
-  await waitFor(() => screen.getByText(baseQueryFieldLabel));
+  await waitFor(() => renderResult.getByText(baseQueryFieldLabel));
 
-  return container;
+  return renderResult;
 };
+
+/**
+ * Renders the `ACLEntitySearch` (BaseSearch/UserSearch/GroupSearch/RoleSearch) component
+ * and then executes a search for entities with the `searchFor` query,
+ * after which it will attempt to select the entity identified by selectEntityName.
+ * It then returns the selections from `EntitySearch`.
+ *
+ * @param renderResult The jest render result of ACLEntitySearch.
+ * @param searchFor A keyword will be used to do a search action.
+ * @param selectEntityName The name of the entity which will be selected after search action.
+ * @param onChange A mock function that will be called once after select action.
+ * @param doSearch A function that will trigger the search action.
+ * */
+export const searchAndSelect = async <T,>(
+  renderResult: RenderResult,
+  searchFor: string,
+  selectEntityName: string,
+  onChange = jest.fn(),
+  doSearch: (dialog: HTMLElement, queryValue: string) => void
+): Promise<ReadonlySet<T>> => {
+  const { container } = renderResult;
+  // Attempt search for a specific entity
+  doSearch(container, searchFor);
+
+  // Wait for the results, and then click our entity of interest
+  userEvent.click(
+    await renderResult.findByText(new RegExp(`.*${selectEntityName}.*`))
+  );
+
+  // The handler should've been triggered once with target entity returned
+  expect(onChange).toHaveBeenCalledTimes(1);
+
+  const argToFirstCall: ReadonlySet<T> = onChange.mock.calls[0][0];
+
+  return argToFirstCall;
+};
+
+/**
+ * Generic helper function to assist in finding the specific entity from mock data.
+ *
+ * @param mockEntities A mock entity list data.
+ * @param predicate The predicate function used to find the entity.
+ * @param name The name of the entity we wanted.
+ */
+export const findEntityFromMockData = <T,>(
+  mockEntities: T[],
+  predicate: Predicate<T>,
+  name: string
+): T =>
+  pipe(
+    mockEntities,
+    A.findFirst(predicate),
+    O.getOrElseW(() => {
+      throw new Error(
+        "Looks like mocked data set has changed, unable to find test entity: " +
+          name
+      );
+    })
+  );
