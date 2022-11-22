@@ -32,9 +32,11 @@ import com.tle.core.migration.MigrationResult;
 import com.tle.core.migration.MigrationService;
 import com.tle.core.migration.beans.SystemConfig;
 import com.tle.core.plugins.impl.PluginServiceImpl;
+import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Singleton;
 import org.hibernate.Session;
+import org.hibernate.id.enhanced.SequenceStyleGenerator;
 
 /**
  * This migration creates two tables: sys_system_config and sys_database_schema. Usually, it's
@@ -76,16 +78,18 @@ public class InitialMigration extends AbstractHibernateSchemaMigration {
 
   @Override
   protected List<String> getAddSql(HibernateMigrationHelper helper) {
+    // Create the sequence used as ID generator in the initial migration.
+    List<String> sql = new ArrayList<>(getSqlCreateStringForSequence(helper));
+
     Session session = helper.getFactory().openSession();
     TablesOnlyFilter filter =
         new TablesOnlyFilter(SystemConfig.TABLE_NAME, DatabaseSchema.TABLE_NAME);
-    if (!helper.tableExists(session, ConfigurationProperty.TABLE_NAME)) {
-      filter.setIncludeGenerators(true);
-    }
     session.close();
     // Because `SystemConfig` and `DatabaseSchema` are classified as system tables,
     //  pass `true` to `getCreationSql`.
-    return helper.getCreationSql(filter, true);
+    sql.addAll(helper.getCreationSql(filter, true));
+
+    return sql;
   }
 
   @Override
@@ -173,6 +177,10 @@ public class InitialMigration extends AbstractHibernateSchemaMigration {
     sc.setKey(property);
     sc.setValue(value);
     session.save(sc);
+  }
+
+  private List<String> getSqlCreateStringForSequence(HibernateMigrationHelper helper) {
+    return helper.getSqlCreateStringForSequence(SequenceStyleGenerator.DEF_SEQUENCE_NAME);
   }
 
   @Override
