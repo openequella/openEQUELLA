@@ -24,10 +24,10 @@
     "typescript_glob": "{react-front-end,Source/Plugins/Core/com.equella.core/test/javascript}/**/*.{js,ts,tsx}"
   },
   "devDependencies": {
-    "@commitlint/cli": "17.2.0",
-    "@commitlint/config-conventional": "17.2.0",
-    "@typescript-eslint/eslint-plugin": "5.43.0",
-    "@typescript-eslint/parser": "5.43.0",
+    "@commitlint/cli": "17.3.0",
+    "@commitlint/config-conventional": "17.3.0",
+    "@typescript-eslint/eslint-plugin": "5.44.0",
+    "@typescript-eslint/parser": "5.44.0",
     "babel-eslint": "10.1.0",
     "cross-env": "7.0.3",
     "eslint": "8.28.0",
@@ -42,7 +42,7 @@
     "eslint-plugin-react": "7.31.11",
     "eslint-plugin-react-hooks": "4.6.0",
     "husky": "8.0.2",
-    "licensee": "9.0.0",
+    "licensee": "10.0.0",
     "lint-staged": "13.0.3",
     "npm-run-all": "4.1.5",
     "prettier": "2.7.1",
