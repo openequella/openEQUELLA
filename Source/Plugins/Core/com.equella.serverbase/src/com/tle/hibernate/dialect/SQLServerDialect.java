@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
+import org.hibernate.dialect.SQLServer2012Dialect;
 import org.hibernate.dialect.unique.UniqueDelegate;
 import org.hibernate.engine.spi.Mapping;
 import org.hibernate.internal.util.StringHelper;
@@ -45,8 +46,7 @@ import org.hibernate.type.StandardBasicTypes;
 // TECH_DEBT - StringHelper is now internal - https://github.com/openequella/openEQUELLA/issues/2507
 
 @SuppressWarnings("nls")
-public class SQLServerDialect extends org.hibernate.dialect.SQLServer2005Dialect
-    implements ExtendedDialect {
+public class SQLServerDialect extends SQLServer2012Dialect implements ExtendedDialect {
   // General note on the queries in this class - With the advent of hibernate 5,
   // queries with '?' in them need to be ordinal ( ie `?4` ).  However, this class
   // does not leverage the JPA / Hibernate logic, so we can leave the `?`s as-is.
