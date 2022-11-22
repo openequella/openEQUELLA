@@ -22,11 +22,14 @@ import * as S from "fp-ts/string";
 import * as React from "react";
 import { listGroups } from "../../modules/GroupModule";
 import { languageStrings } from "../../util/langstrings";
-import BaseSearch, { CommonEntitySearchProps } from "./BaseSearch";
+import BaseSearch, {
+  CommonEntitySearchProps,
+  wildcardQuery,
+} from "./BaseSearch";
 
 export interface GroupSearchProps
   extends CommonEntitySearchProps<OEQ.UserQuery.GroupDetails> {
-  groupListProvider: (
+  search: (
     query?: string,
     filter?: ReadonlySet<string>
   ) => Promise<OEQ.UserQuery.GroupDetails[]>;
@@ -37,14 +40,9 @@ export interface GroupSearchProps
  * Groups can then be selected (support single/multiple select).
  */
 const GroupSearch = ({
-  listHeight,
-  groupListProvider = (query?: string, groupFilter?: ReadonlySet<string>) =>
-    listGroups(query ? `${query}*` : undefined, groupFilter),
-  onChange,
-  selections,
-  enableMultiSelection,
-  groupFilter,
-  resolveGroupsProvider,
+  search = (query?: string, groupFilter?: ReadonlySet<string>) =>
+    listGroups(wildcardQuery(query), groupFilter),
+  ...restProps
 }: GroupSearchProps) => {
   /**
    * A template used to display a group entry in BaseSearch (in CheckboxList).
@@ -55,16 +53,11 @@ const GroupSearch = ({
 
   return (
     <BaseSearch
-      listHeight={listHeight}
       strings={languageStrings.groupSearchComponent}
-      selections={selections}
-      onChange={onChange}
       itemOrd={ORD.contramap((g: OEQ.UserQuery.GroupDetails) => g.name)(S.Ord)}
-      itemListProvider={groupListProvider}
       itemDetailsToEntry={groupEntry}
-      enableMultiSelection={enableMultiSelection}
-      groupFilter={groupFilter}
-      resolveGroupsProvider={resolveGroupsProvider}
+      search={search}
+      {...restProps}
     />
   );
 };

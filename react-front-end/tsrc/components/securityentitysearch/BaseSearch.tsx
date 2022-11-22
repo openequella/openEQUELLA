@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import {
+  Button,
   CircularProgress,
   Grid,
   IconButton,
@@ -46,15 +47,33 @@ import * as RSET from "fp-ts/ReadonlySet";
 import * as S from "fp-ts/string";
 import { KeyboardEvent, useEffect, useState } from "react";
 import { sprintf } from "sprintf-js";
-import { resolveGroups } from "../../modules/GroupModule";
+import {
+  eqGroupById,
+  groupIds,
+  groupOrd,
+  listGroups,
+  resolveGroups,
+} from "../../modules/GroupModule";
 import { languageStrings } from "../../util/langstrings";
 import { OrdAsIs } from "../../util/Ord";
 import { CheckboxList } from "../CheckboxList";
+import GroupSearch from "./GroupSearch";
 
-const { filterActiveNotice } = languageStrings.baseSearchComponent;
+const {
+  filterActiveNotice,
+  groupFilterSearchTitle,
+  filterByGroupsButtonLabel,
+  provideQueryMessage,
+  groupFilterSearchHintMessage,
+} = languageStrings.baseSearchComponent;
 const { filteredByPrelude } = languageStrings.userSearchComponent;
+const {
+  edit: editLabel,
+  clear: clearLabel,
+  select: selectLabel,
+} = languageStrings.common.action;
 
-export interface BaseSecurityEntity {
+interface BaseSecurityEntity {
   id: string;
 }
 
@@ -68,7 +87,7 @@ const itemIds: <T extends BaseSecurityEntity>(
 /**
  * Generic function which can generate an `Eq` for item with id attribute.
  */
-export const eqItemById = <T extends BaseSecurityEntity>() =>
+const eqItemById = <T extends BaseSecurityEntity>() =>
   EQ.contramap<string, T>((entry: T) => entry.id)(S.Eq);
 
 /**
@@ -76,32 +95,6 @@ export const eqItemById = <T extends BaseSecurityEntity>() =>
  * `T` represents the type of Item details.
  */
 export interface CommonEntitySearchProps<T> {
-  /**
-   * A set of items in the list which should be 'selected'/ticked/checked.
-   * Except some edge cases it will receive an empty set as an initial value.
-   */
-  selections: ReadonlySet<T>;
-  /** Callback triggered when selected items are changed. */
-  onChange: (items: ReadonlySet<T>) => void;
-  /** How high (in pixels) the list of entries should be. */
-  listHeight?: number;
-  /** Whether enable multiple selection or not, default value is `false` **/
-  enableMultiSelection?: boolean;
-  /** A list of groups UUIDs to filter the items by. */
-  groupFilter?: ReadonlySet<string>;
-  /**
-   * Function which will resolve group IDs to full group details so that the group names can be
-   * used for display.
-   */
-  resolveGroupsProvider?: (
-    ids: ReadonlyArray<string>
-  ) => Promise<OEQ.UserQuery.GroupDetails[]>;
-}
-
-/**
- * `BaseSearch` props definition which accepts a type parameter representing the type of Item details.
- */
-export interface BaseSearchProps<T> extends CommonEntitySearchProps<T> {
   /** An optional `id` attribute for the component. Will also be used to prefix core child elements. */
   id?: string;
   /**
@@ -117,6 +110,60 @@ export interface BaseSearchProps<T> extends CommonEntitySearchProps<T> {
      */
     failedToFindMessage: string;
   };
+  /**
+   * An optional select button can be displayed to allow for an explicit user interaction to mark completion.
+   * If undefined no select button will be displayed.
+   */
+  selectButton?: {
+    /** Disabled flag. */
+    disabled?: boolean;
+    /** Callback triggered when selected button are clicked. */
+    onClick: () => void;
+  };
+  /**
+   * Handler for cancel button, if undefined no cancel button will be displayed.
+   */
+  onCancel?: () => void;
+  /**
+   * A set of items in the list which should be 'selected'/ticked/checked.
+   * Except some edge cases it will receive an empty set as an initial value.
+   */
+  selections: ReadonlySet<T>;
+  /** Callback triggered when selected items are changed. */
+  onChange: (items: ReadonlySet<T>) => void;
+  /** How high (in pixels) the list of entries should be. */
+  listHeight?: number;
+  /** Whether enable multiple selection or not, default value is `false` **/
+  enableMultiSelection?: boolean;
+  /** A list of groups UUIDs to filter the items by. */
+  groupFilter?: ReadonlySet<string>;
+  /** `true` to let user choose groups to filter the search result. The default value is `false`. **/
+  groupFilterEditable?: boolean;
+  /**
+   * Function which will resolve group IDs to full group details so that the group names can be
+   * used for display.
+   */
+  resolveGroupsProvider?: (
+    ids: ReadonlyArray<string>
+  ) => Promise<OEQ.UserQuery.GroupDetails[]>;
+  /** Function which will provide the list of group. Used to let user choose what groups are used to filter the result.
+   *
+   * @param query Text used to query groups.
+   * */
+  groupSearch?: (query?: string) => Promise<OEQ.UserQuery.GroupDetails[]>;
+}
+
+/**
+ * `BaseSearch` props definition which accepts a type parameter representing the type of Item details.
+ */
+export interface BaseSearchProps<T> extends CommonEntitySearchProps<T> {
+  /** Function which will provide the list of items.
+   *
+   * @param query Text used to query items.
+   * @param filter A list of other item's UUIDs to filter the item by.
+   *               Mainly used for searching users since users can be filtered by groups.
+   */
+  search: (query?: string, filter?: ReadonlySet<string>) => Promise<T[]>;
   /** Order used to sort items. Default order is determined by ID.*/
   itemOrd?: ORD.Ord<T>;
   /**
@@ -124,16 +171,6 @@ export interface BaseSearchProps<T> extends CommonEntitySearchProps<T> {
    * The equality is determined by item's ID by default.
    */
   itemEq?: EQ.Eq<T>;
-  /** Function which will provide the list of items.
-   *
-   * @param query Text used to query items.
-   * @param filter A list of other item's UUIDs to filter the item by.
-   *               Mainly used for searching users since users can be filtered by groups.
-   * */
-  itemListProvider: (
-    query?: string,
-    filter?: ReadonlySet<string>
-  ) => Promise<T[]>;
   /**
    * A template used to display an item entry in the CheckboxList.
    * Ideally the element will be ListItemText. But other type of elements are still acceptable.
@@ -141,6 +178,12 @@ export interface BaseSearchProps<T> extends CommonEntitySearchProps<T> {
    */
   itemDetailsToEntry?: (item: T) => JSX.Element;
 }
+
+/**
+ * Generate query with wildcard suffix if it's not undefined.
+ */
+export const wildcardQuery = (query?: string): string | undefined =>
+  query ? `${query}*` : undefined;
 
 /**
  * Provides a control to list items(security entities: user/group/role) via an input field text query filter.
@@ -152,22 +195,32 @@ const BaseSearch = <T extends BaseSecurityEntity>({
   id,
   listHeight,
   strings = languageStrings.baseSearchComponent,
+  selectButton,
+  onCancel,
   selections,
   onChange,
   itemOrd = ORD.contramap(({ id }: T) => id)(S.Ord),
   itemEq = eqItemById<T>(),
   itemDetailsToEntry = (item: T) => <ListItemText primary={item.id} />,
   enableMultiSelection = false,
-  itemListProvider,
+  groupFilterEditable = false,
   groupFilter,
+  search,
+  groupSearch = (query?: string) => listGroups(wildcardQuery(query)),
   resolveGroupsProvider = resolveGroups,
 }: BaseSearchProps<T>) => {
   const [query, setQuery] = useState<string>("");
   const [items, setItems] = useState<T[]>([]);
   // Group details used for show group's names in the tooltip content
   const [groupDetails, setGroupDetails] = useState<
-    OEQ.UserQuery.GroupDetails[]
-  >([]);
+    ReadonlySet<OEQ.UserQuery.GroupDetails>
+  >(RSET.empty);
+
+  // use this intermedia group details to store selections for group filters search, so it can support cancel action.
+  const [groupFilterSearchGroupDetails, setGroupFilterSearchGroupDetails] =
+    useState<ReadonlySet<OEQ.UserQuery.GroupDetails>>(RSET.empty);
+
+  const [showGroupFilterSearch, setShowGroupFilterSearch] = useState(false);
 
   const [hasSearched, setHasSearched] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<String>();
@@ -175,14 +228,30 @@ const BaseSearch = <T extends BaseSecurityEntity>({
 
   const { queryFieldLabel, failedToFindMessage } = strings;
 
+  // look-up of the group details for groupFilter
   useEffect(() => {
-    if (!groupFilter) {
-      setGroupDetails([]);
-      return;
-    }
+    const updateGroupDetails = (
+      groups: ReadonlySet<OEQ.UserQuery.GroupDetails>
+    ) => {
+      setGroupDetails(groups);
+      setGroupFilterSearchGroupDetails(groups);
+    };
+
+    // generate a collection of GroupDetails from groupIds where the name is simply the same as the id
+    const buildUnnamedGroupDetails = (
+      groupIds: ReadonlySet<string>
+    ): ReadonlyArray<OEQ.UserQuery.GroupDetails> =>
+      pipe(
+        groupIds,
+        RSET.map(eqGroupById)((gid: string) => ({ name: gid, id: gid })),
+        RSET.toReadonlyArray(groupOrd)
+      );
+
+    const nonUndefinedGroupFilter: ReadonlySet<string> =
+      groupFilter ?? RSET.empty;
 
     const retrieveGroupDetails: TASK.Task<void> = pipe(
-      groupFilter,
+      nonUndefinedGroupFilter,
       O.fromPredicate(not(RSET.isEmpty)),
       O.map(
         flow(
@@ -191,39 +260,122 @@ const BaseSearch = <T extends BaseSecurityEntity>({
             resolveGroupsProvider,
             (reason) => `Failed to retrieve full group details: ${reason}`
           ),
-          TE.match(console.error, setGroupDetails)
+          TE.mapLeft((e: string) => {
+            console.error(e);
+            return buildUnnamedGroupDetails(nonUndefinedGroupFilter);
+          }),
+          TE.getOrElse(TASK.of),
+          TASK.map(RSET.fromReadonlyArray(eqGroupById))
         )
       ),
-      O.getOrElse(() => TASK.fromIO(() => setGroupDetails([])))
+      O.getOrElse<TASK.Task<ReadonlySet<OEQ.UserQuery.GroupDetails>>>(() =>
+        TASK.of(RSET.empty)
+      ),
+      TASK.map(updateGroupDetails)
     );
 
     (async () => await retrieveGroupDetails())();
   }, [groupFilter, resolveGroupsProvider]);
 
-  const filterDetails = A.isNonEmpty(groupDetails) ? (
-    <>
-      <Typography variant="caption">{filteredByPrelude}</Typography>
-      <ul>
-        {pipe(
-          groupDetails,
-          RA.sort(
-            ORD.contramap((g: OEQ.UserQuery.GroupDetails) => g.name)(S.Ord)
-          ),
-          RA.map(({ id, name }) => <li key={id}>{name}</li>)
-        )}
-      </ul>
-    </>
-  ) : undefined;
-
   // Simple helper function to assist with providing useful id's for testing and theming.
   const genId = (suffix?: string) =>
     (id ? `${id}-` : "") + "BaseSearch" + (suffix ? `-${suffix}` : "");
+
+  /**
+   * The elements related to group filter, display different content based on `filterDetails` and `groupFilterEditable`.
+   */
+  const groupFilterContent = () => {
+    const filterDetails = () => (
+      <>
+        <Typography variant="caption">{filteredByPrelude}</Typography>
+        <ul>
+          {pipe(
+            groupDetails,
+            RSET.toReadonlyArray(groupOrd),
+            RA.sort(
+              ORD.contramap((g: OEQ.UserQuery.GroupDetails) => g.name)(S.Ord)
+            ),
+            RA.map(({ id, name }) => <li key={id}>{name}</li>)
+          )}
+        </ul>
+      </>
+    );
+
+    /**
+     * Filter enabled notice for user.
+     */
+    const filterNotice = (): JSX.Element => (
+      <Grid container spacing={1}>
+        <Grid item>
+          <Tooltip title={filterDetails()}>
+            <InfoIcon fontSize="small" />
+          </Tooltip>
+        </Grid>
+        <Grid item>
+          <Typography variant="caption">{filterActiveNotice}</Typography>
+        </Grid>
+      </Grid>
+    );
+
+    /**
+     * Filter by group button.
+     * If `groupFilterEditable` is enabled it should be displayed when `GroupFilter` is empty.
+     */
+    const filterByGroupButton = () => (
+      <Grid container>
+        <Button onClick={() => setShowGroupFilterSearch(true)} color="primary">
+          {filterByGroupsButtonLabel}
+        </Button>
+      </Grid>
+    );
+
+    /**
+     * Edit and clear button.
+     * If `groupFilterEditable` is enabled it should be displayed when `GroupFilter` is not empty.
+     */
+    const editAndClearGroupFilterButtons = () => (
+      <Grid container>
+        <Button onClick={() => setShowGroupFilterSearch(true)} color="primary">
+          {editLabel}
+        </Button>
+        <Button
+          onClick={() => {
+            setGroupDetails(RSET.empty);
+            setGroupFilterSearchGroupDetails(RSET.empty);
+          }}
+          color="primary"
+        >
+          {clearLabel}
+        </Button>
+      </Grid>
+    );
+
+    const hasGroupDetails = !RSET.isEmpty(groupDetails);
+
+    const groupDetailsWithEdit = () =>
+      hasGroupDetails
+        ? [filterNotice(), editAndClearGroupFilterButtons()]
+        : [filterByGroupButton()];
+
+    const groupDetailsNoEdit = () =>
+      hasGroupDetails ? [filterNotice()] : undefined;
+
+    const groupFilterElements = groupFilterEditable
+      ? groupDetailsWithEdit()
+      : groupDetailsNoEdit();
+
+    return groupFilterElements ? (
+      <Grid item style={{ padding: "15px" }}>
+        {groupFilterElements}
+      </Grid>
+    ) : undefined;
+  };
 
   const handleOnSearch = () => {
     setShowSpinner(true);
     setErrorMessage(undefined);
 
-    itemListProvider(query, groupFilter)
+    search(query, groupIds(groupDetails))
       .then(flow(A.sort(itemOrd), setItems))
       .catch((error: OEQ.Errors.ApiError) => {
         setItems([]);
@@ -291,22 +443,6 @@ const BaseSearch = <T extends BaseSecurityEntity>({
   );
 
   /**
-   * Filter enabled notice for user.
-   */
-  const filterNotice = (filterDetails: JSX.Element): JSX.Element => (
-    <Grid container spacing={1}>
-      <Grid item>
-        <Tooltip title={filterDetails}>
-          <InfoIcon fontSize="small" />
-        </Tooltip>
-      </Grid>
-      <Grid item>
-        <Typography variant="caption">{filterActiveNotice}</Typography>
-      </Grid>
-    </Grid>
-  );
-
-  /**
    * Convert `ItemDetails` Array to a simple Map which can be used in CheckboxList.
    */
   const itemDetailsToEntriesMap: (_: T[]) => Map<string, JSX.Element> = flow(
@@ -320,12 +456,6 @@ const BaseSearch = <T extends BaseSecurityEntity>({
    */
   const itemList = () => {
     const isItemFound = items.length > 0;
-
-    // If there's no entries because a search has not been done,
-    // then return with nothing
-    if (!isItemFound && !hasSearched) {
-      return null;
-    }
 
     return (
       <List
@@ -345,13 +475,39 @@ const BaseSearch = <T extends BaseSecurityEntity>({
               <ErrorOutline color={errorMessage ? "secondary" : "inherit"} />
             </ListItemIcon>
             <ListItemText
-              secondary={errorMessage ?? sprintf(failedToFindMessage, query)}
+              secondary={
+                hasSearched
+                  ? errorMessage ?? sprintf(failedToFindMessage, query)
+                  : provideQueryMessage
+              }
             />
           </ListItem>
         )}
       </List>
     );
   };
+
+  const selectButtonElement = () =>
+    selectButton ? (
+      <Grid>
+        <Button
+          color="primary"
+          onClick={selectButton.onClick}
+          disabled={selectButton.disabled}
+        >
+          {selectLabel}
+        </Button>
+      </Grid>
+    ) : undefined;
+
+  const cancelButton = () =>
+    onCancel ? (
+      <Grid>
+        <Button color="primary" onClick={onCancel}>
+          {languageStrings.common.action.cancel}
+        </Button>
+      </Grid>
+    ) : undefined;
 
   const spinner = (
     <Grid container justifyContent="center">
@@ -361,14 +517,50 @@ const BaseSearch = <T extends BaseSecurityEntity>({
     </Grid>
   );
 
-  return (
+  return showGroupFilterSearch ? (
+    <Grid container direction="column">
+      {/*padding is used to align text with search icon*/}
+      <Grid spacing={2} style={{ padding: "15px" }}>
+        <Typography variant="h6">{groupFilterSearchTitle}</Typography>
+        <Typography variant="body1">{groupFilterSearchHintMessage}</Typography>
+      </Grid>
+      <Grid>
+        <GroupSearch
+          id="GroupFilter"
+          strings={languageStrings.groupSearchComponent}
+          selectButton={{
+            disabled: RSET.isEmpty(groupFilterSearchGroupDetails),
+            onClick: () => {
+              setGroupDetails(groupFilterSearchGroupDetails);
+              setShowGroupFilterSearch(false);
+            },
+          }}
+          onCancel={() => {
+            setGroupFilterSearchGroupDetails(groupDetails);
+            setShowGroupFilterSearch(false);
+          }}
+          listHeight={listHeight}
+          onChange={setGroupFilterSearchGroupDetails}
+          selections={groupFilterSearchGroupDetails}
+          enableMultiSelection
+          groupFilter={RSET.empty}
+          groupFilterEditable={false}
+          search={groupSearch}
+        />
+      </Grid>
+    </Grid>
+  ) : (
     <Grid id={genId()} container direction="column" spacing={1}>
       <Grid item xs={12}>
         {queryBar}
       </Grid>
-      {filterDetails && <Grid item>{filterNotice(filterDetails)}</Grid>}
+      {groupFilterContent()}
       <Grid item xs={12}>
         {showSpinner ? spinner : itemList()}
+      </Grid>
+      <Grid container direction="row" justifyContent="flex-end">
+        {selectButtonElement()}
+        {cancelButton()}
       </Grid>
     </Grid>
   );

@@ -16,19 +16,17 @@
  * limitations under the License.
  */
 import { RenderResult } from "@testing-library/react";
+import { searchAndSelect } from "./BaseSearchTestHelper";
 import {
-  defaultBaseSearchProps,
-  searchAndSelect,
-} from "./BaseSearchTestHelper";
-import {
-  searchUser,
-  renderUserSearch,
-  findUserFromMockData,
-} from "./UserSearchTestHelpler";
+  searchGroup,
+  renderGroupSearch,
+  findGroupFromMockData,
+  defaultGroupSearchProps,
+} from "./GroupSearchTestHelper";
 
-describe("<UserSearch/>", () => {
-  // do search and select user
-  const searchAndSelectUser = (
+describe("<GroupSearch/>", () => {
+  // do search and select group
+  const searchAndSelectGroup = (
     renderResult: RenderResult,
     searchFor: string,
     selectEntityName: string,
@@ -39,27 +37,27 @@ describe("<UserSearch/>", () => {
       searchFor,
       selectEntityName,
       onChange,
-      searchUser
+      searchGroup
     );
 
   it("can search and select", async () => {
-    const queryName = "user100";
+    const queryName = "group100";
     // Prepare test values - aligning with mock data and function
-    const selectUser = findUserFromMockData(queryName);
+    const selectGroup = findGroupFromMockData(queryName);
     // The expected result for the first arg of the first call of onChange function.
-    const expectedSelections = new Set([selectUser]);
+    const expectedSelections = new Set([selectGroup]);
     const onChange = jest.fn();
 
-    const renderResult = await renderUserSearch({
-      ...defaultBaseSearchProps,
+    const renderResult = await renderGroupSearch({
+      ...defaultGroupSearchProps,
       onChange,
     });
 
     expect(
-      await searchAndSelectUser(
+      await searchAndSelectGroup(
         renderResult,
         queryName,
-        selectUser.username,
+        selectGroup.name,
         onChange
       )
     ).toEqual(expectedSelections);

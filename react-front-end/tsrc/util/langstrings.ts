@@ -795,7 +795,12 @@ export const languageStrings = {
   baseSearchComponent: {
     filterActiveNotice: "Results will be filtered.",
     failedToFindMessage: "Unable to find any item matching '%s'",
+    provideQueryMessage: "Please provide a query term",
     queryFieldLabel: "Item",
+    filterByGroupsButtonLabel: "Filter by groups",
+    groupFilterSearchTitle: "Select group(s)",
+    groupFilterSearchHintMessage:
+      "The search query can contain a group name or a partial group name with a wildcard character (nam*).",
   },
   userSearchComponent: {
     failedToFindMessage: "Unable to find any user matching '%s'",

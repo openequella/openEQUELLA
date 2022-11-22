@@ -15,10 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
-import { screen, waitFor } from "@testing-library/react";
+import { RenderResult, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
@@ -27,18 +26,37 @@ import * as S from "fp-ts/string";
 import { sprintf } from "sprintf-js";
 import * as GroupSearchMock from "../../../../__mocks__/GroupSearch.mock";
 import * as UserModuleMock from "../../../../__mocks__/UserModule.mock";
+import * as GroupModuleMock from "../../../../__mocks__/GroupModule.mock";
 import { GroupFilter } from "../../../../__stories__/components/securityentitysearch/UserSearch.stories";
+import {
+  eqGroupById,
+  groupIds,
+  groupOrd,
+} from "../../../../tsrc/modules/GroupModule";
 import { eqUserById } from "../../../../tsrc/modules/UserModule";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import {
   renderBaseSearch,
   searchEntity,
-  getItemList,
   defaultBaseSearchProps,
+  searchAndSelect,
+  searchGroupFilter,
+  clickFilterByGroupButton,
+  clickEntitySelectButton,
+  queryGroupFilterSearch,
+  clickEditGroupFilterButton,
+  clickCancelGroupFilterButton,
 } from "./BaseSearchTestHelper";
 import { findUserFromMockData } from "./UserSearchTestHelpler";
 
-const { failedToFindMessage } = languageStrings.baseSearchComponent;
+const {
+  edit: editLabel,
+  clear: clearLabel,
+  select: selectLabel,
+} = languageStrings.common.action;
+
+const { failedToFindMessage, provideQueryMessage } =
+  languageStrings.baseSearchComponent;
 
 /**
  * BaseSearch is a generic component used for searching entities.
@@ -46,93 +64,67 @@ const { failedToFindMessage } = languageStrings.baseSearchComponent;
  * here just use UserDetails type entity to test its functionalities.
  */
 describe("<BaseSearch/>", () => {
-  /**
-   * Renders the `BaseSearch` component and then executes a search for entities with the `searchFor` query,
-   * after which it will attempt to select the entity identified by selectEntity.
-   * It then returns the selections from BaseSearch.
-   * The operation and state of BaseSearch can be modified with initialSelections and enableMultipleSelection.
-   *
-   * @param searchFor A keyword will be used to do a search action.
-   * @param selectEntity An entity which will be selected after search action.
-   * @param initialSelections Initial selections used for EntitySearch.
-   * @param enableMultipleSelection `true` to enable the multiple selection.
-   * */
-  const getEntitySelection = async (
+  // do search and select entity
+  const searchAndSelectEntity = (
+    renderResult: RenderResult,
     searchFor: string,
-    selectEntity: OEQ.UserQuery.UserDetails,
-    initialSelections: ReadonlySet<OEQ.UserQuery.UserDetails> = RSET.empty,
-    enableMultiSelection: boolean = false
-  ): Promise<ReadonlySet<OEQ.UserQuery.UserDetails>> => {
-    const onChange = jest.fn();
-    const container = await renderBaseSearch({
-      ...defaultBaseSearchProps,
-      selections: initialSelections,
-      enableMultiSelection,
+    selectEntityName: string,
+    onChange = jest.fn()
+  ) =>
+    searchAndSelect(
+      renderResult,
+      searchFor,
+      selectEntityName,
       onChange,
-    });
-
-    // Attempt search for a specific entity
-    searchEntity(container, searchFor);
-
-    // Wait for the results, and then click our entity of interest
-    userEvent.click(
-      await screen.findByText(new RegExp(`.*${selectEntity.lastName}.*`))
+      searchEntity
     );
 
-    // The handler should've been triggered once with target entity returned
-    expect(onChange).toHaveBeenCalledTimes(1);
-
-    const argToFirstCall: ReadonlySet<OEQ.UserQuery.UserDetails> =
-      onChange.mock.calls[0][0];
-
-    return argToFirstCall;
-  };
-
   describe("general features", () => {
-    it("displays the search bar and no entities on initial render", async () => {
-      const container = await renderBaseSearch();
+    it("displays the search bar and the promote query message on initial render", async () => {
+      const renderResult = await renderBaseSearch();
 
-      // Ensure the entity list section is not present
-      expect(getItemList(container)).toBeFalsy();
+      // Ensure the provide query message is present
+      expect(renderResult.queryByText(provideQueryMessage)).toBeInTheDocument();
     });
 
     it("displays the details of filters used in the search", async () => {
-      await renderBaseSearch({
+      const renderResult = await renderBaseSearch({
         ...defaultBaseSearchProps,
         groupFilter: GroupFilter.args!.groupFilter,
         resolveGroupsProvider: GroupSearchMock.resolveGroupsProvider,
       });
 
       expect(
-        screen.queryByText(
+        renderResult.queryByText(
           languageStrings.baseSearchComponent.filterActiveNotice
         )
       ).toBeInTheDocument();
     });
 
     it("displays an error when it can't find requested entity", async () => {
-      const container = await renderBaseSearch();
+      const renderResult = await renderBaseSearch();
 
       // Attempt search for rubbish value
       const noSuchEntity = "la blah blah";
-      searchEntity(container, noSuchEntity);
+      searchEntity(renderResult.container, noSuchEntity);
 
       // Ensure an error was displayed
-      await waitFor(() =>
-        screen.getByText(sprintf(failedToFindMessage, noSuchEntity))
-      ).then((value: HTMLElement) => {
-        expect(value).toBeDefined();
-      });
+      const errorMessage = await waitFor(() =>
+        renderResult.getByText(sprintf(failedToFindMessage, noSuchEntity))
+      );
+      expect(errorMessage).toBeInTheDocument();
     });
 
     it("displays users if there are any returned", async () => {
-      const container = await renderBaseSearch();
+      const renderResult = await renderBaseSearch();
 
       // Attempt search for known entities
-      searchEntity(container, "user");
+      searchEntity(renderResult.container, "user");
 
       // Await for search results
-      const results = await waitFor(() => screen.getAllByText(/user\d00/));
+      const results = await waitFor(() =>
+        renderResult.getAllByText(/user\d00/)
+      );
       expect(results).toHaveLength(4);
     });
 
@@ -142,11 +134,168 @@ describe("<BaseSearch/>", () => {
       const selectEntity = findUserFromMockData(queryName);
 
       // The expected result for the first arg of the first call of onChange function.
-      const resultingSelections = new Set([selectEntity]);
+      const expectedSelections = new Set([selectEntity]);
+
+      const onChange = jest.fn();
+      const renderResult = await renderBaseSearch({
+        ...defaultBaseSearchProps,
+        onChange,
+      });
 
       expect(
-        await getEntitySelection(queryName, selectEntity, RSET.empty)
-      ).toEqual(resultingSelections);
+        await searchAndSelectEntity(
+          renderResult,
+          queryName,
+          selectEntity.username,
+          onChange
+        )
+      ).toEqual(expectedSelections);
+    });
+  });
+
+  describe("group filter editable mode", () => {
+    const groupFilterSelections = pipe(
+      GroupModuleMock.groups,
+      A.filter((group) => pipe(group.name, S.includes("group"))),
+      RSET.fromReadonlyArray(eqGroupById)
+    );
+    const groupFilterIds = groupIds(groupFilterSelections);
+
+    it("switch to GroupSearch when users click `filterByGroup` button", async () => {
+      const renderResult = await renderBaseSearch({
+        ...defaultBaseSearchProps,
+        groupFilterEditable: true,
+      });
+
+      clickFilterByGroupButton(renderResult);
+
+      expect(queryGroupFilterSearch(renderResult)).toBeInTheDocument();
+    });
+
+    it("switch to GroupSearch when users choose to edit group filter", async () => {
+      const renderResult = await renderBaseSearch({
+        ...defaultBaseSearchProps,
+        groupFilterEditable: true,
+        groupFilter: GroupFilter.args!.groupFilter,
+        groupSearch: GroupSearchMock.groupDetailsProvider,
+        resolveGroupsProvider: GroupSearchMock.resolveGroupsProvider,
+      });
+
+      const editGroupFilterButton = renderResult.getByText(editLabel);
+      userEvent.click(editGroupFilterButton);
+
+      expect(queryGroupFilterSearch(renderResult)).toBeInTheDocument();
+    });
+
+    it("select button should be disabled if there is no group filter selected", async () => {
+      const renderResult = await renderBaseSearch({
+        ...defaultBaseSearchProps,
+        groupFilterEditable: true,
+        groupFilter: RSET.empty,
+        groupSearch: GroupSearchMock.groupDetailsProvider,
+        resolveGroupsProvider: GroupSearchMock.resolveGroupsProvider,
+      });
+
+      clickFilterByGroupButton(renderResult);
+
+      const selectButton = renderResult
+        .getByText(selectLabel)
+        .closest("button");
+
+      expect(selectButton).toBeDisabled();
+    });
+
+    it.each([
+      [
+        "should update group filter after users edit and click select button",
+        clickEntitySelectButton,
+        groupFilterIds,
+      ],
+      [
+        "should be able to cancel the changes in group filter search",
+        clickCancelGroupFilterButton,
+        RSET.empty,
+      ],
+    ])("%s", async (_, clickActionButton, expectedResult) => {
+      const search = jest.fn().mockResolvedValue("test");
+
+      const renderResult = await renderBaseSearch({
+        ...defaultBaseSearchProps,
+        search: search,
+        groupFilterEditable: true,
+        groupSearch: GroupSearchMock.groupDetailsProvider,
+        resolveGroupsProvider: GroupSearchMock.resolveGroupsProvider,
+      });
+
+      clickFilterByGroupButton(renderResult);
+
+      // search for groups with name `group`
+      await searchGroupFilter(renderResult.container, "group");
+
+      // Wait for the results, and then click each group
+      for (const group of pipe(
+        groupFilterSelections,
+        RSET.toReadonlyArray(groupOrd)
+      )) {
+        await userEvent.click(await screen.findByText(group.name));
+      }
+
+      // click button
+      clickActionButton(renderResult);
+
+      // trigger search action so that we can check what groups are in use when passed to the search handler
+      await searchEntity(renderResult.container, "");
+
+      expect(search).toHaveBeenCalledTimes(1);
+
+      // get the groupFilter param
+      const argToFirstCall: ReadonlySet<OEQ.UserQuery.UserDetails> =
+        search.mock.calls[0][1];
+
+      expect(argToFirstCall).toEqual(expectedResult);
+    });
+
+    it("should be able to see the group filter search when users click the edit button", async () => {
+      const renderResult = await renderBaseSearch({
+        ...defaultBaseSearchProps,
+        groupFilterEditable: true,
+        groupFilter: GroupFilter.args!.groupFilter,
+        groupSearch: GroupSearchMock.groupDetailsProvider,
+        resolveGroupsProvider: GroupSearchMock.resolveGroupsProvider,
+      });
+
+      clickEditGroupFilterButton(renderResult);
+
+      expect(queryGroupFilterSearch(renderResult)).toBeInTheDocument();
+    });
+
+    it("should clear all group filter when users click clear button", async () => {
+      const search = jest.fn().mockResolvedValue("test");
+
+      const renderResult = await renderBaseSearch({
+        ...defaultBaseSearchProps,
+        search: search,
+        groupFilterEditable: true,
+        groupFilter: GroupFilter.args!.groupFilter,
+        groupSearch: GroupSearchMock.groupDetailsProvider,
+        resolveGroupsProvider: GroupSearchMock.resolveGroupsProvider,
+      });
+
+      // find and click clear button
+      const clearGroupFilterButton = renderResult.getByText(clearLabel);
+      userEvent.click(clearGroupFilterButton);
+
+      // trigger a search action so that we can make sure the search is then done with
+      // no group filter - confirming it was cleared.
+      await searchEntity(renderResult.container, "");
+
+      expect(search).toHaveBeenCalledTimes(1);
+
+      // get the groupFilter parameter
+      const argToFirstCall: ReadonlySet<OEQ.UserQuery.UserDetails> =
+        search.mock.calls[0][1];
+
+      expect(argToFirstCall).toEqual(RSET.empty);
     });
   });
 
@@ -155,11 +304,23 @@ describe("<BaseSearch/>", () => {
       const queryName = "user";
       const selectEntity = findUserFromMockData("user100");
       const initialSelections = new Set([findUserFromMockData("admin999")]);
-      const resultingSelections = new Set([selectEntity]);
+      const expectedSelections = new Set([selectEntity]);
+      const onChange = jest.fn();
+
+      const renderResult = await renderBaseSearch({
+        ...defaultBaseSearchProps,
+        onChange,
+        selections: initialSelections,
+      });
 
       expect(
-        await getEntitySelection(queryName, selectEntity, initialSelections)
-      ).toEqual(resultingSelections);
+        await searchAndSelectEntity(
+          renderResult,
+          queryName,
+          selectEntity.username,
+          onChange
+        )
+      ).toEqual(expectedSelections);
     });
   });
 
@@ -172,35 +333,73 @@ describe("<BaseSearch/>", () => {
 
     it("returns the single selection when there are no previous selections", async () => {
       const clickedEntity = findUserFromMockData("user200");
-      const resultingSelections = new Set([clickedEntity]);
+      const expectedSelections = new Set([clickedEntity]);
+      const onChange = jest.fn();
+
+      const renderResult = await renderBaseSearch({
+        ...defaultBaseSearchProps,
+        onChange,
+        enableMultiSelection: true,
+      });
 
       expect(
-        await getEntitySelection("user", clickedEntity, RSET.empty, true)
-      ).toEqual(resultingSelections);
+        await searchAndSelectEntity(
+          renderResult,
+          "user",
+          clickedEntity.username,
+          onChange
+        )
+      ).toEqual(expectedSelections);
     });
 
     it("adds additional selection to the initial selections", async () => {
       const selectUser = findUserFromMockData("admin999");
-      const resultingSelections = pipe(
+      const expectedSelections = pipe(
         initialSelections,
         RSET.insert(eqUserById)(selectUser)
       );
+      const onChange = jest.fn();
+
+      const renderResult = await renderBaseSearch({
+        ...defaultBaseSearchProps,
+        onChange,
+        selections: initialSelections,
+        enableMultiSelection: true,
+      });
 
       expect(
-        await getEntitySelection("", selectUser, initialSelections, true)
-      ).toEqual(resultingSelections);
+        await searchAndSelectEntity(
+          renderResult,
+          "",
+          selectUser.username,
+          onChange
+        )
+      ).toEqual(expectedSelections);
     });
 
     it("removes previous selections when clicked again", async () => {
       const selectEntity = findUserFromMockData("user100");
-      const resultingSelections = pipe(
+      const expectedSelections = pipe(
         initialSelections,
         RSET.remove(eqUserById)(selectEntity)
       );
+      const onChange = jest.fn();
+
+      const renderResult = await renderBaseSearch({
+        ...defaultBaseSearchProps,
+        onChange,
+        selections: initialSelections,
+        enableMultiSelection: true,
+      });
 
       expect(
-        await getEntitySelection("", selectEntity, initialSelections, true)
-      ).toEqual(resultingSelections);
+        await searchAndSelectEntity(
+          renderResult,
+          "",
+          selectEntity.username,
+          onChange
+        )
+      ).toEqual(expectedSelections);
     });
   });
 });

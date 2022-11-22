@@ -16,14 +16,34 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import * as A from "fp-ts/Array";
-import { pipe } from "fp-ts/function";
-import * as O from "fp-ts/Option";
+import { render, RenderResult, waitFor } from "@testing-library/react";
+import * as React from "react";
 import * as UserModuleMock from "../../../../__mocks__/UserModule.mock";
+import UserSearch, {
+  UserSearchProps,
+} from "../../../../tsrc/components/securityentitysearch/UserSearch";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
-import { doSearch } from "./BaseSearchTestHelper";
+import {
+  defaultBaseSearchProps,
+  doSearch,
+  findEntityFromMockData,
+} from "./BaseSearchTestHelper";
 
 const { queryFieldLabel } = languageStrings.userSearchComponent;
+
+/**
+ * Helper to render UserSearch and wait for component under test
+ */
+export const renderUserSearch = async (
+  props: UserSearchProps = defaultBaseSearchProps
+): Promise<RenderResult> => {
+  const renderResult = render(<UserSearch {...props} />);
+
+  // Wait for it to be rendered
+  await waitFor(() => renderResult.getByText(queryFieldLabel));
+
+  return renderResult;
+};
 
 /**
  * Helper function to do the steps of entering a submitting a search in the <UserSearch/>
@@ -41,13 +61,8 @@ export const searchUser = (dialog: HTMLElement, queryValue: string) =>
 export const findUserFromMockData = (
   username: string
 ): OEQ.UserQuery.UserDetails =>
-  pipe(
+  findEntityFromMockData(
     UserModuleMock.users,
-    A.findFirst((u) => u.username === username),
-    O.getOrElseW(() => {
-      throw new Error(
-        "Looks like mocked data set has changed, unable to find test user: " +
-          username
-      );
-    })
+    (u: OEQ.UserQuery.UserDetails) => u.username === username,
+    username
   );

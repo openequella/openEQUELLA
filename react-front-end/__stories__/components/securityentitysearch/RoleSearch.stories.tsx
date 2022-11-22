@@ -44,7 +44,7 @@ export const Default: Story<RoleSearchProps> = (args) => (
 Default.args = {
   selections: RSET.empty,
   listHeight: 150,
-  roleListProvider: RoleSearchMock.roleDetailsProvider,
+  search: RoleSearchMock.roleDetailsProvider,
 };
 
 export const MultiSelection: Story<RoleSearchProps> = (args) => (

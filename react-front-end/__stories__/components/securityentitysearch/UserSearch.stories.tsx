@@ -22,6 +22,7 @@ import { pipe } from "fp-ts/function";
 import * as S from "fp-ts/string";
 import * as React from "react";
 import * as GroupModuleMock from "../../../__mocks__/GroupModule.mock";
+import * as GroupSearchMock from "../../../__mocks__/GroupSearch.mock";
 import * as UserModuleMock from "../../../__mocks__/UserModule.mock";
 import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
 import UserSearch, {
@@ -45,7 +46,7 @@ export const Default: Story<UserSearchProps> = (args) => (
 Default.args = {
   selections: RSET.empty,
   listHeight: 150,
-  userListProvider: UserSearchMock.userDetailsProvider,
+  search: UserSearchMock.userDetailsProvider,
 };
 
 export const GroupFilter: Story<UserSearchProps> = (args) => (
@@ -53,8 +54,19 @@ export const GroupFilter: Story<UserSearchProps> = (args) => (
 );
 GroupFilter.args = {
   ...Default.args,
+  search: UserSearchMock.userDetailsProvider,
   groupFilter: new Set(GroupModuleMock.groups.map(({ id }) => id)),
   resolveGroupsProvider: GroupModuleMock.resolveGroups,
+};
+
+export const GroupFilterWithFailedGroupsResolver: Story<UserSearchProps> = (
+  args
+) => <UserSearch {...args} />;
+GroupFilterWithFailedGroupsResolver.args = {
+  ...GroupFilter.args,
+  resolveGroupsProvider: async () => {
+    throw Error("test");
+  },
 };
 
 export const MultiSelection: Story<UserSearchProps> = (args) => (
@@ -68,4 +80,16 @@ MultiSelection.args = {
     RSET.fromReadonlyArray(eqUserById)
   ),
   enableMultiSelection: true,
+};
+
+export const GroupFilterEditable: Story<UserSearchProps> = (args) => (
+  <UserSearch {...args} />
+);
+GroupFilterEditable.args = {
+  ...Default.args,
+  search: UserSearchMock.userDetailsProvider,
+  groupFilterEditable: true,
+  groupFilter: RSET.empty,
+  groupSearch: GroupSearchMock.groupDetailsProvider,
+  resolveGroupsProvider: GroupModuleMock.resolveGroups,
 };

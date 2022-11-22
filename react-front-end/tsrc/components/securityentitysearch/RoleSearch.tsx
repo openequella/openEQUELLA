@@ -22,11 +22,14 @@ import * as S from "fp-ts/string";
 import * as React from "react";
 import { listRoles } from "../../modules/RoleModule";
 import { languageStrings } from "../../util/langstrings";
-import BaseSearch, { CommonEntitySearchProps } from "./BaseSearch";
+import BaseSearch, {
+  CommonEntitySearchProps,
+  wildcardQuery,
+} from "./BaseSearch";
 
 export interface RoleSearchProps
   extends CommonEntitySearchProps<OEQ.UserQuery.RoleDetails> {
-  roleListProvider: (query?: string) => Promise<OEQ.UserQuery.RoleDetails[]>;
+  search: (query?: string) => Promise<OEQ.UserQuery.RoleDetails[]>;
 }
 
 /**
@@ -34,8 +37,7 @@ export interface RoleSearchProps
  * Roles can then be selected (support single/multiple select).
  */
 const RoleSearch = ({
-  roleListProvider = (query?: string) =>
-    listRoles(query ? `${query}*` : undefined),
+  search = (query?: string) => listRoles(wildcardQuery(query)),
   ...restProps
 }: RoleSearchProps) => {
   /**
@@ -50,7 +52,7 @@ const RoleSearch = ({
       strings={languageStrings.roleSearchComponent}
       itemOrd={ORD.contramap((r: OEQ.UserQuery.RoleDetails) => r.name)(S.Ord)}
       itemDetailsToEntry={roleEntry}
-      itemListProvider={roleListProvider}
+      search={search}
       {...restProps}
     />
   );

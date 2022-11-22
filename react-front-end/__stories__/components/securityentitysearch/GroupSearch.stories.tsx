@@ -44,7 +44,7 @@ export const Default: Story<GroupSearchProps> = (args) => (
 Default.args = {
   selections: RSET.empty,
   listHeight: 150,
-  groupListProvider: GroupSearchMock.groupDetailsProvider,
+  search: GroupSearchMock.groupDetailsProvider,
 };
 
 export const MultiSelection: Story<GroupSearchProps> = (args) => (
@@ -58,4 +58,16 @@ MultiSelection.args = {
     RSET.fromReadonlyArray(eqGroupById)
   ),
   enableMultiSelection: true,
+};
+
+export const GroupFilterEditable: Story<GroupSearchProps> = (args) => (
+  <GroupSearch {...args} />
+);
+GroupFilterEditable.args = {
+  ...Default.args,
+  search: GroupSearchMock.groupDetailsProvider,
+  groupFilterEditable: true,
+  groupFilter: RSET.empty,
+  groupSearch: GroupSearchMock.groupDetailsProvider,
+  resolveGroupsProvider: GroupModuleMock.resolveGroups,
 };
