@@ -29,7 +29,7 @@ import BaseSearch, {
 
 export interface GroupSearchProps
   extends CommonEntitySearchProps<OEQ.UserQuery.GroupDetails> {
-  search: (
+  search?: (
     query?: string,
     filter?: ReadonlySet<string>
   ) => Promise<OEQ.UserQuery.GroupDetails[]>;

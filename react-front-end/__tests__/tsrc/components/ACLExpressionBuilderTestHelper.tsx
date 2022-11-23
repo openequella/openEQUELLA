@@ -15,7 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { render, RenderResult, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { resolveGroups } from "../../../__mocks__/GroupModule.mock";
 import { groupDetailsProvider } from "../../../__mocks__/GroupSearch.mock";
@@ -24,54 +25,34 @@ import { userDetailsProvider } from "../../../__mocks__/UserSearch.mock";
 import ACLExpressionBuilder, {
   ACLExpressionBuilderProps,
 } from "../../../tsrc/components/aclexpressionbuilder/ACLExpressionBuilder";
+import { languageStrings } from "../../../tsrc/util/langstrings";
 
-export default {
-  title: "Component/ACLExpressionBuilder/ACLExpressionBuilder",
-  component: ACLExpressionBuilder,
-} as Meta<ACLExpressionBuilderProps>;
+const { homeTab, searchFilters } = languageStrings.aclExpressionBuilder;
+const { groups: groupsRadioLabel, roles: rolesRadioLabel } = searchFilters;
 
-export const Basic: Story<ACLExpressionBuilderProps> = (args) => (
-  <ACLExpressionBuilder {...args} />
-);
-
-/**
- * TODO: import mock data from `ACLExpressionModule`.
- * */
-Basic.args = {
-  aclExpression: {
-    id: "1",
-    operator: "OR",
-    recipients: ["admin", "admin2"],
-    children: [
-      {
-        id: "2",
-        operator: "AND",
-        recipients: ["admin", "admin2"],
-        children: [
-          {
-            id: "4",
-            operator: "AND",
-            recipients: ["admin", "admin2"],
-            children: [],
-          },
-          {
-            id: "5",
-            operator: "NOT",
-            recipients: ["admin"],
-            children: [],
-          },
-        ],
-      },
-      {
-        id: "3",
-        operator: "NOT",
-        recipients: ["admin"],
-        children: [],
-      },
-    ],
-  },
+const defaultACLExpressionBuilderProps = {
   searchUserProvider: userDetailsProvider,
   searchGroupProvider: groupDetailsProvider,
   searchRoleProvider: roleDetailsProvider,
   resolveGroupsProvider: resolveGroups,
 };
+
+// Helper to render ACLExpressionBuilder and wait for component under test
+export const renderACLExpressionBuilder = async (
+  props: ACLExpressionBuilderProps = defaultACLExpressionBuilderProps
+): Promise<RenderResult> => {
+  const renderResult = render(<ACLExpressionBuilder {...props} />);
+
+  // Wait for it to be rendered
+  await waitFor(() => renderResult.getByText(homeTab));
+
+  return renderResult;
+};
+
+// Helper function to mock selecting `groups` radio.
+export const selectGroupsRadio = ({ getByText }: RenderResult) =>
+  userEvent.click(getByText(groupsRadioLabel));
+
+// Helper function to mock selecting `roles` radio.
+export const selectRolesRadio = ({ getByText }: RenderResult) =>
+  userEvent.click(getByText(rolesRadioLabel));
