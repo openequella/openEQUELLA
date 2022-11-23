@@ -361,6 +361,7 @@ run := {
   case PathList("META-INF", "axiom.xml")                    => MergeStrategy.first
   case PathList("javax", "wsdl", _*)                        => MergeStrategy.last
   case PathList("javax", "xml", "soap", _*)                 => MergeStrategy.first
+  case PathList("javax", "transaction", _*)                 => MergeStrategy.first
   case PathList("javax", "jws", _*)                         => MergeStrategy.first
   case PathList("com", "ibm", "wsdl", _*)                   => MergeStrategy.first
   case PathList("org", "apache", "regexp", _*)              => MergeStrategy.first
