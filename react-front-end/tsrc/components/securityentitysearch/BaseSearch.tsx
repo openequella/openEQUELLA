@@ -305,7 +305,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
      * Filter enabled notice for user.
      */
     const filterNotice = (): JSX.Element => (
-      <Grid container spacing={1}>
+      <Grid key="filterNotice" container spacing={1}>
         <Grid item>
           <Tooltip title={filterDetails()}>
             <InfoIcon fontSize="small" />
@@ -322,7 +322,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
      * If `groupFilterEditable` is enabled it should be displayed when `GroupFilter` is empty.
      */
     const filterByGroupButton = () => (
-      <Grid container>
+      <Grid key="filterByGroupButton" container>
         <Button onClick={() => setShowGroupFilterSearch(true)} color="primary">
           {filterByGroupsButtonLabel}
         </Button>
@@ -334,7 +334,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
      * If `groupFilterEditable` is enabled it should be displayed when `GroupFilter` is not empty.
      */
     const editAndClearGroupFilterButtons = () => (
-      <Grid container>
+      <Grid key="editAndClearGroupFilterButtons" container>
         <Button onClick={() => setShowGroupFilterSearch(true)} color="primary">
           {editLabel}
         </Button>
@@ -520,7 +520,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
   return showGroupFilterSearch ? (
     <Grid container direction="column">
       {/*padding is used to align text with search icon*/}
-      <Grid spacing={2} style={{ padding: "15px" }}>
+      <Grid container spacing={2} style={{ padding: "15px" }}>
         <Typography variant="h6">{groupFilterSearchTitle}</Typography>
         <Typography variant="body1">{groupFilterSearchHintMessage}</Typography>
       </Grid>

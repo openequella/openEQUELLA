@@ -37,11 +37,17 @@ import {
   createStyles,
 } from "@material-ui/core";
 import { TabContext, TabPanel } from "@material-ui/lab";
+import * as OEQ from "@openequella/rest-api-client";
+import { pipe } from "fp-ts/function";
 import * as React from "react";
 import { useState, ChangeEvent, ReactNode } from "react";
 import { Union, Static, Literal } from "runtypes";
+import { listUsers } from "../../modules/UserModule";
 import { languageStrings } from "../../util/langstrings";
 import UserSearch from "../securityentitysearch/UserSearch";
+import GroupSearch from "../securityentitysearch/GroupSearch";
+import RoleSearch from "../securityentitysearch/RoleSearch";
+import * as RSET from "fp-ts/ReadonlySet";
 import { ACLExpression } from "./ACLExpressionHelper";
 import ACLExpressionTree from "./ACLExpressionTree";
 
@@ -116,7 +122,7 @@ const useACLExpressionBuilderStyles = makeStyles((theme: Theme) =>
       boxShadow: "0px 0px 0px 0px rgb(0 0 0 / 0%)",
     },
     mainContent: {
-      height: 500,
+      height: 600,
     },
     panelWrapper: {
       position: "relative",
@@ -146,6 +152,30 @@ export interface ACLExpressionBuilderProps {
    *  user can use this builder to create an ACLExpression.
    */
   aclExpression?: ACLExpression;
+  /**
+   * Function used to replace the default `search` prop for `UserSearch` component.
+   */
+  searchUserProvider?: (
+    query?: string,
+    filter?: ReadonlySet<string>
+  ) => Promise<OEQ.UserQuery.UserDetails[]>;
+  /**
+   * Function used to replace the default `search` prop for `GroupSearch` component.
+   */
+  searchGroupProvider?: (
+    query?: string,
+    filter?: ReadonlySet<string>
+  ) => Promise<OEQ.UserQuery.GroupDetails[]>;
+  /**
+   * Function used to replace the default `search` prop for `RoleSearch` component.
+   */
+  searchRoleProvider?: (query?: string) => Promise<OEQ.UserQuery.RoleDetails[]>;
+  /**
+   * Function used to replace the default `resolveGroupsProvider` prop for `UserSearch` and `GroupSearch` component.
+   */
+  resolveGroupsProvider?: (
+    ids: ReadonlyArray<string>
+  ) => Promise<OEQ.UserQuery.GroupDetails[]>;
 }
 
 /**
@@ -155,6 +185,10 @@ export interface ACLExpressionBuilderProps {
  */
 const ACLExpressionBuilder = ({
   aclExpression,
+  searchUserProvider = listUsers,
+  searchGroupProvider,
+  searchRoleProvider,
+  resolveGroupsProvider,
 }: ACLExpressionBuilderProps): JSX.Element => {
   const [currentAclExpression] = useState<ACLExpression>(
     aclExpression ?? { id: "1", operator: "OR", recipients: [], children: [] }
@@ -193,27 +227,74 @@ const ACLExpressionBuilder = ({
     actionBtn: actionBtnClass,
   } = useACLExpressionBuilderStyles();
 
-  const homeACLPanel = () => (
-    <FormControl component="fieldset">
-      <FormLabel component="legend">{typeLabel}</FormLabel>
-      <RadioGroup
-        row
-        name="searchFilterType"
-        value={activeSearchFilterType}
-        onChange={handleSearchFilterChange}
-      >
-        {SearchFilterTypesUnion.alternatives.map((searchType) => (
-          <FormControlLabel
-            key={searchType.value}
-            value={searchType.value}
-            control={<Radio />}
-            label={searchType.value}
-          />
-        ))}
-      </RadioGroup>
-      <UserSearch onChange={() => {}} selections={new Set()} listHeight={300} />
-    </FormControl>
-  );
+  const homeACLPanel = () => {
+    const sharedProps = {
+      selections: RSET.empty,
+      listHeight: 300,
+      groupFilterEditable: true,
+      selectButton: { onClick: () => {} },
+      groupSearch: searchGroupProvider,
+      resolveGroupsProvider: resolveGroupsProvider,
+    };
+
+    return (
+      <FormControl fullWidth component="fieldset">
+        <Grid spacing={4} container direction="row" alignItems="center">
+          <Grid item>
+            <FormLabel>{typeLabel}</FormLabel>
+          </Grid>
+          <Grid item>
+            <RadioGroup
+              row
+              name="searchFilterType"
+              value={activeSearchFilterType}
+              onChange={handleSearchFilterChange}
+            >
+              {SearchFilterTypesUnion.alternatives.map((searchType) => (
+                <FormControlLabel
+                  key={searchType.value}
+                  value={searchType.value}
+                  control={<Radio />}
+                  label={searchType.value}
+                />
+              ))}
+            </RadioGroup>
+          </Grid>
+        </Grid>
+        {pipe(
+          activeSearchFilterType,
+          SearchFilterTypesUnion.match(
+            (Users) => (
+              <UserSearch
+                key={Users}
+                onChange={() => {}}
+                search={searchUserProvider}
+                {...sharedProps}
+              />
+            ),
+            (Groups) => (
+              <GroupSearch
+                key={Groups}
+                onChange={() => {}}
+                search={searchGroupProvider}
+                {...sharedProps}
+              />
+            ),
+            (Roles) => (
+              <RoleSearch
+                key={Roles}
+                onChange={() => {}}
+                search={searchRoleProvider}
+                {...sharedProps}
+                listHeight={367}
+                groupFilterEditable={false}
+              />
+            )
+          )
+        )}
+      </FormControl>
+    );
+  };
 
   const otherACLPanel = (): JSX.Element => {
     const handleReferrerTypeChanged = (

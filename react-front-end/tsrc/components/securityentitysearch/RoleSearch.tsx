@@ -29,7 +29,7 @@ import BaseSearch, {
 
 export interface RoleSearchProps
   extends CommonEntitySearchProps<OEQ.UserQuery.RoleDetails> {
-  search: (query?: string) => Promise<OEQ.UserQuery.RoleDetails[]>;
+  search?: (query?: string) => Promise<OEQ.UserQuery.RoleDetails[]>;
 }
 
 /**
