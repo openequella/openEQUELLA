@@ -614,9 +614,8 @@ describe("<MyResourcesPage/>", () => {
       const params = pipe(
         mockAddFavouriteSearch.mock.lastCall,
         O.fromNullable,
-        O.chain(A.lookup(1)),
         // get the second argument to the mocked call
-        // A.lookup(1),
+        O.chain(A.lookup(1)),
         // check type - perhaps excessively
         O.chain(
           O.fromPredicate(
