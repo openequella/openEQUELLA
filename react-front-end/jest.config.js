@@ -27,12 +27,4 @@ module.exports = {
       autotestMode: false,
     },
   },
-  moduleNameMapper: {
-    // Since Jest v28, some tests fail to run due to the error "unexpected token: export" and this error is caused by
-    // the use of 'uuidjs'. Although the latest version of 'uuidjs' (v9) fixes the error, it requires polyfills for other
-    // issues. So the below workaround is the most acceptable fix for now. Please check the links for more details.
-    // https://github.com/uuidjs/uuid/issues/451#issuecomment-1112328417
-    // https://github.com/uuidjs/uuid#getrandomvalues-not-supported
-    uuid: require.resolve("uuid"),
-  },
 };
