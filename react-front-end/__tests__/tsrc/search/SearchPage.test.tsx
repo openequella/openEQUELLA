@@ -133,7 +133,7 @@ const changeQuery = async (
   wildcardMode: boolean = true
 ) => {
   // We will change the debounced query so use fake timer here.
-  jest.useFakeTimers("modern");
+  jest.useFakeTimers();
   // Change search options now.
   if (!wildcardMode) {
     const wildcardModeSwitch = container.querySelector("#wildcardSearch");
