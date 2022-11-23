@@ -94,9 +94,8 @@ const DisplayModeSelector = ({
       const currentlySelected = displayMode === value;
 
       return (
-        <Tooltip title={label}>
+        <Tooltip title={label} key={displayMode}>
           <Button
-            key={displayMode}
             variant={currentlySelected ? "contained" : "outlined"}
             onClick={() => onChange(displayMode)}
             aria-checked={currentlySelected}
