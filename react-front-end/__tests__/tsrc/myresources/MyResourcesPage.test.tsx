@@ -592,12 +592,13 @@ describe("<MyResourcesPage/>", () => {
       );
       await renderMyResourcesPageWithUser(getCurrentUserMock, searchPromise);
 
-      const searchCriteria: SearchOptions = searchPromise.mock.lastCall[0];
-      expect(searchCriteria.status).toEqual<OEQ.Common.ItemStatus[]>([
+      const searchCriteria: SearchOptions | undefined =
+        searchPromise.mock.lastCall?.[0];
+      expect(searchCriteria?.status).toEqual<OEQ.Common.ItemStatus[]>([
         "PERSONAL",
         "LIVE",
       ]);
-      expect(searchCriteria.sortOrder).toBe<OEQ.Search.SortOrder>("name");
+      expect(searchCriteria?.sortOrder).toBe<OEQ.Search.SortOrder>("name");
     });
   });
 
@@ -612,8 +613,9 @@ describe("<MyResourcesPage/>", () => {
       // Pull out the params from the mocked call to save
       const params = pipe(
         mockAddFavouriteSearch.mock.lastCall,
+        O.fromNullable,
         // get the second argument to the mocked call
-        A.lookup(1),
+        O.chain(A.lookup(1)),
         // check type - perhaps excessively
         O.chain(
           O.fromPredicate(
