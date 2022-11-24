@@ -21,6 +21,7 @@ package com.dytech.edge.installer.application;
 import com.dytech.devlib.PropBagEx;
 import com.dytech.installer.Callback;
 import com.dytech.installer.Wizard;
+import com.tle.common.util.ExecUtils;
 import java.awt.Component;
 import java.io.File;
 import javax.swing.JOptionPane;
@@ -35,7 +36,12 @@ public class JavaCallback implements Callback {
   public void task(Wizard installer) {
     PropBagEx output = installer.getOutputNow();
     String dir = output.getNode("java/jdk");
-    File javac = new File(dir + "/bin/javac"); // Use javac to determine if JDK is used.
+    // Use javac to determine if JDK is used.
+    File javac =
+        new File(
+            dir
+                + "/bin/javac"
+                + (ExecUtils.PLATFORM_WIN64.equals(ExecUtils.determinePlatform()) ? ".exe" : ""));
 
     if (javac.exists()) {
       installer.gotoPage(installer.getCurrentPageNumber() + 1);
