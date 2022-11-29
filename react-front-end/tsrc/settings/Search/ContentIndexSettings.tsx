@@ -15,12 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { Mark } from "@mui/base/SliderUnstyled/SliderUnstyledProps";
 import { Card, CardContent, Slider } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
-import { useCallback, useContext } from "react";
 import * as React from "react";
+import { useCallback, useContext } from "react";
 import { shallowEqual } from "shallow-equal-object";
 import SettingPageTemplate from "../../components/SettingPageTemplate";
 import SettingsList from "../../components/SettingsList";
@@ -68,7 +67,7 @@ const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
     [appErrorHandler]
   );
 
-  const boostVals: Mark[] = [
+  const boostVals: { label: string; value: number }[] = [
     { label: markStrings.off, value: 0 },
     { label: "x0.25", value: 1 },
     { label: "x0.5", value: 2 },
@@ -117,7 +116,7 @@ const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
   };
 
   const getAriaLabel = (value: number, index: number): string => {
-    return boostVals[value].label as string;
+    return boostVals[value].label;
   };
 
   return (
