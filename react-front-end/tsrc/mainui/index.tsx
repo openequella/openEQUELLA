@@ -19,8 +19,17 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { initStrings } from "../util/langstrings";
 import "../util/polyfill";
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/material-icons";
 
-export type EntryPage = "mainDiv" | "searchPage" | "settingsPage";
+export type EntryPage =
+  | "advancedSearchPage"
+  | "mainDiv"
+  | "myResourcesPage"
+  | "searchPage"
+  | "settingsPage";
 
 // Lazy import 'App' in order to initialise language strings (independent of imports)
 // before loading of the full app.

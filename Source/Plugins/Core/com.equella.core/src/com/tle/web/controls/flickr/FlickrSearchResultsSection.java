@@ -65,7 +65,7 @@ import java.util.Iterator;
 import java.util.List;
 import javax.inject.Inject;
 import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
+import org.jsoup.safety.Safelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -369,7 +369,7 @@ public class FlickrSearchResultsSection
       return original;
     }
 
-    String cleaned = Jsoup.clean(original, Whitelist.simpleText());
+    String cleaned = Jsoup.clean(original, Safelist.simpleText());
 
     return cleaned;
   }

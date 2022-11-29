@@ -15,29 +15,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import { styled } from "@mui/material/styles";
-import { Avatar, IconButton } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
 import CloudIcon from "@mui/icons-material/CloudCircleRounded";
-import { withErrorHandler, WithErrorHandlerProps } from "../mainui/App";
-import { CloudProviderEntity } from "./CloudProviderEntity";
-import {
-  deleteCloudProvider,
-  getCloudProviders,
-  cloudProviderLangStrings,
-  registerCloudProviderInit,
-  refreshCloudProvider,
-} from "./CloudProviderModule";
-import EntityList from "../components/EntityList";
-import { formatSize } from "../util/langstrings";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { Avatar, IconButton } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import * as React from "react";
 import { sprintf } from "sprintf-js";
 import ConfirmDialog from "../components/ConfirmDialog";
-import CloudProviderAddDialog from "./CloudProviderAddDialog";
+import EntityList from "../components/EntityList";
 import EquellaListItem from "../components/EquellaListItem";
+import MessageInfo from "../components/MessageInfo";
+import { AppContextProps, withAppContext } from "../mainui/App";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import { commonString } from "../util/commonstrings";
-import MessageInfo from "../components/MessageInfo";
+import { formatSize } from "../util/langstrings";
+import CloudProviderAddDialog from "./CloudProviderAddDialog";
+import { CloudProviderEntity } from "./CloudProviderEntity";
+import {
+  cloudProviderLangStrings,
+  deleteCloudProvider,
+  getCloudProviders,
+  refreshCloudProvider,
+  registerCloudProviderInit,
+} from "./CloudProviderModule";
 
 const StyledCloudIcon = styled(CloudIcon)({
   width: 40,
@@ -46,8 +46,7 @@ const StyledCloudIcon = styled(CloudIcon)({
 
 interface CloudProviderBasicProps extends TemplateUpdateProps {}
 
-type CloudProviderListPageProps = CloudProviderBasicProps &
-  WithErrorHandlerProps;
+type CloudProviderListPageProps = CloudProviderBasicProps & AppContextProps;
 
 interface CloudProviderListPageState {
   cloudProviders: CloudProviderEntity[];
@@ -231,4 +230,4 @@ class CloudProviderListPage extends React.Component<
   }
 }
 
-export default withErrorHandler(CloudProviderListPage);
+export default withAppContext(CloudProviderListPage);

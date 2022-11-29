@@ -46,6 +46,19 @@ import LightboxMessage from "./LightboxMessage";
 import { OEQItemSummaryPageButton } from "./OEQItemSummaryPageButton";
 import { TooltipIconButton } from "./TooltipIconButton";
 
+const {
+  common: {
+    action: { close: labelClose, openInNewTab: labelOpenInNewTab },
+  },
+  lightboxComponent: {
+    viewNext: labelViewNext,
+    viewPrevious: labelViewPrevious,
+    openSummaryPage: labelOpenSummaryPage,
+    unsupportedContent: labelUnsupportedContent,
+  },
+  embedCode: { copy: labelCopyEmbedCode },
+} = languageStrings;
+
 const PREFIX = "Lightbox";
 
 const classes = {
@@ -107,19 +120,6 @@ const Root = styled("div")(({ theme }) => ({
   },
 }));
 
-const {
-  common: {
-    action: { close: labelClose, openInNewTab: labelOpenInNewTab },
-  },
-  lightboxComponent: {
-    viewNext: labelViewNext,
-    viewPrevious: labelViewPrevious,
-    openSummaryPage: labelOpenSummaryPage,
-    unsupportedContent: labelUnsupportedContent,
-  },
-  embedCode: { copy: labelCopyEmbedCode },
-} = languageStrings;
-
 export interface LightboxConfig {
   /** URL for the item to display in the Lightbox. */
   src: string;
@@ -127,6 +127,20 @@ export interface LightboxConfig {
   title?: string;
   /** MIME type of the items specified by `src` */
   mimeType: string;
+  /**
+   * Optional details for an item which (if present) are used to display a button which when
+   * clicked with navigate the user to the item's summary page.
+   */
+  item?: {
+    /**
+     * UUID of the Item.
+     */
+    uuid: string;
+    /**
+     * Version of the Item.
+     */
+    version: number;
+  };
   /** Function fired to view previous attachment. */
   onPrevious?: () => LightboxConfig;
   /** Function fired to view next attachment. */
@@ -140,30 +154,17 @@ export interface LightboxProps {
   open: boolean;
   /** Configuration specifying the Lightbox's content. */
   config: LightboxConfig;
-  /**
-   * Item which the Lightbox content is attached to.
-   */
-  item: {
-    /**
-     * UUID of the Item.
-     */
-    uuid: string;
-    /**
-     * Version of the Item.
-     */
-    version: number;
-  };
 }
 
 const domParser = new DOMParser();
 
-const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
+const Lightbox = ({ open, onClose, config }: LightboxProps) => {
   const [content, setContent] = useState<ReactElement | undefined>();
   const [lightBoxConfig, setLightBoxConfig] = useState<LightboxConfig>(config);
   const [openEmbedCodeDialog, setOpenEmbedCodeDialog] =
     useState<boolean>(false);
 
-  const { src, title, mimeType, onPrevious, onNext } = lightBoxConfig;
+  const { src, title, mimeType, onPrevious, onNext, item } = lightBoxConfig;
 
   const handleNav = (getLightboxConfig: () => LightboxConfig) => {
     setContent(undefined);
@@ -280,9 +281,11 @@ const Lightbox = ({ open, onClose, config, item }: LightboxProps) => {
           <Typography variant="h6" className={classes.title}>
             {title}
           </Typography>
-          <OEQItemSummaryPageButton
-            {...{ item, title: labelOpenSummaryPage, color: "inherit" }}
-          />
+          {item && (
+            <OEQItemSummaryPageButton
+              {...{ item, title: labelOpenSummaryPage, color: "inherit" }}
+            />
+          )}
           <TooltipIconButton
             title={labelCopyEmbedCode}
             color="inherit"

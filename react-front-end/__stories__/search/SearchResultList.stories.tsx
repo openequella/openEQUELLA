@@ -17,6 +17,7 @@
  */
 import { action } from "@storybook/addon-actions";
 import type { Meta, Story } from "@storybook/react";
+import { createRef } from "react";
 import * as React from "react";
 import {
   getEmptySearchResult as emptySearch,
@@ -33,7 +34,9 @@ export default {
   title: "Search/SearchResultList",
   component: SearchResultList,
   argTypes: {
-    onClearSearchOptions: { action: "onClearSearchOptions called" },
+    onClearSearchOptions: { action: "Clear search criteria" },
+    onCopySearchLink: { action: "Copy a search link" },
+    onSaveSearch: { action: "Save a search" },
   },
 } as Meta<SearchResultListProps>;
 
@@ -62,6 +65,15 @@ EmptyResultListComponent.args = {
   refineSearchProps: {
     isCriteriaSet: true,
     showRefinePanel: action("show Refine Panel"),
+  },
+  exportProps: {
+    isExportPermitted: true,
+    linkRef: createRef<HTMLAnchorElement>(),
+    exportLinkProps: {
+      url: "http://localhost:8080/export",
+      onExport: action("Export search result"),
+      alreadyExported: false,
+    },
   },
 };
 

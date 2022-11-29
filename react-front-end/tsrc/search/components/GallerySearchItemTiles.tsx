@@ -27,6 +27,7 @@ import {
   GalleryEntry,
   GallerySearchResultItem,
 } from "../../modules/GallerySearchModule";
+import type { BasicSearchResultItem } from "../../modules/SearchModule";
 import { languageStrings } from "../../util/langstrings";
 
 const PREFIX = "GallerySearchItemTiles";
@@ -55,13 +56,9 @@ const { ariaLabel, viewItem } = languageStrings.searchpage.gallerySearchResult;
  */
 export type LightboxHandler = (
   /**
-   * @param uuid Item's UUID.
+   * @param item Details of the item to which the Lightbox content belongs.
    */
-  uuid: string,
-  /**
-   * @param version Item's Version.
-   */
-  version: number,
+  item: BasicSearchResultItem,
   /**
    * @param entry A Gallery Entry to be viewed in the Lightbox.
    */
@@ -80,6 +77,10 @@ export interface GallerySearchTileProps {
    * @param item Updated Item which typically only has DRM status changed.
    */
   updateGalleryItemList: (item: GallerySearchResultItem) => LightboxHandler;
+  /**
+   * `true` to show an Info icon in the ImageListItem for accessing Item summary page.
+   */
+  enableItemSummaryButton?: boolean;
 }
 
 /**
@@ -88,6 +89,7 @@ export interface GallerySearchTileProps {
 export const GallerySearchItemTiles = ({
   item,
   updateGalleryItemList,
+  enableItemSummaryButton = true,
 }: GallerySearchTileProps) => {
   const {
     mainEntry,
@@ -135,7 +137,7 @@ export const GallerySearchItemTiles = ({
       const updatedItem = drmStatus
         ? { ...item, drmStatus: defaultDrmStatus }
         : item;
-      updateGalleryItemList(updatedItem)(uuid, version, entry);
+      updateGalleryItemList(updatedItem)(item, entry);
     });
   };
 
@@ -159,17 +161,21 @@ export const GallerySearchItemTiles = ({
         }}
       >
         <img className={classes.thumbnail} src={imgSrc} alt={altText} />
-        <ImageListItemBar
-          className={classes.titleBar}
-          actionIcon={
-            <OEQItemSummaryPageButton
-              title={viewItem}
-              color="secondary"
-              item={{ uuid, version }}
-              checkDrmPermission={checkDrmPermission}
-            />
-          }
-        />
+        {enableItemSummaryButton && (
+          <ImageListItemBar
+            className={classes.titleBar}
+            actionIcon={
+              <OEQItemSummaryPageButton
+                title={viewItem}
+                color="secondary"
+                item={{ uuid, version }}
+                checkDrmPermission={
+                  drmStatus?.isAllowSummary ? undefined : checkDrmPermission
+                }
+              />
+            }
+          />
+        )}
       </ImageListItem>
     </StyledGridItem>
   );

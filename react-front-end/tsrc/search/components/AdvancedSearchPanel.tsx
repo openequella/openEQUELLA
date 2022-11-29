@@ -15,22 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import CloseIcon from "@mui/icons-material/Close";
 import {
   Button,
   Card,
   CardActions,
   CardContent,
   CardHeader,
+  CircularProgress,
   Grid,
   Typography,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
-import * as SET from "fp-ts/Set";
 import { constFalse, flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import * as TE from "fp-ts/TaskEither";
+import * as SET from "fp-ts/Set";
 import React, {
   useCallback,
   useContext,
@@ -43,11 +43,15 @@ import * as WizardHelper from "../../components/wizard/WizardHelper";
 import {
   buildVisibilityScriptContext,
   eqFullTargetAndControlType,
+  FieldValueMap,
   WizardErrorContext,
 } from "../../components/wizard/WizardHelper";
-import { getCurrentUserDetails, guestUser } from "../../modules/UserModule";
+import { AppContext } from "../../mainui/App";
+import { guestUser } from "../../modules/UserModule";
 import { languageStrings } from "../../util/langstrings";
-import { SearchPageRenderErrorContext } from "../SearchPage";
+import { generateAdvancedSearchCriteria } from "../AdvancedSearchHelper";
+import { AdvancedSearchPageContext } from "../AdvancedSearchPage";
+import { SearchContext } from "../Search";
 
 export interface AdvancedSearchPanelProps {
   /**
@@ -63,40 +67,29 @@ export interface AdvancedSearchPanelProps {
    * The values of current Advanced Search criteria.
    */
   values: WizardHelper.FieldValueMap;
-
-  /**
-   * When the user submits the advanced search criteria to trigger an additional search, this
-   * is called with the current values.
-   */
-  onSubmit: (currentValues: WizardHelper.FieldValueMap) => void;
-
-  /**
-   * Handler for when user click the clear button.
-   */
-  onClear: () => void;
-
-  /**
-   * Handler for when user selects to close the panel.
-   */
-  onClose: () => void;
 }
 
 const { title: defaultTitle, duplicateTargetWarning } =
   languageStrings.searchpage.AdvancedSearchPanel;
 
+/**
+ * This component displays all the Wizard Controls of an Advanced search and allows users
+ * to update the value of each control. User can then do a search with the configured Advanced
+ * search criteria or clear the criteria.
+ */
 export const AdvancedSearchPanel = ({
   wizardControls,
   values,
-  onClose,
-  onSubmit,
-  onClear,
   title,
 }: AdvancedSearchPanelProps) => {
-  const { handleError } = useContext(SearchPageRenderErrorContext);
+  const { updateFieldValueMap, openAdvancedSearchPanel, definitionRetrieved } =
+    useContext(AdvancedSearchPageContext);
+  const { search, searchState, searchPageErrorHandler } =
+    useContext(SearchContext);
+  const currentUser = useContext(AppContext).currentUser ?? guestUser;
+
   const [currentValues, setCurrentValues] =
     useState<WizardHelper.FieldValueMap>(values);
-  const [currentUser, setCurrentUser] =
-    useState<OEQ.LegacyContent.CurrentUserDetails>(guestUser);
 
   const duplicateTarget: boolean = useMemo(
     () =>
@@ -115,20 +108,6 @@ export const AdvancedSearchPanel = ({
     [wizardControls]
   );
 
-  // For visibility scripting we need to have the current user's details
-  useEffect(() => {
-    const initUser = pipe(
-      TE.tryCatch(getCurrentUserDetails, (reason: unknown) =>
-        reason instanceof Error
-          ? reason
-          : new Error("Failed to retrieve current user details: " + reason)
-      ),
-      TE.match(handleError, setCurrentUser)
-    );
-
-    (async () => await initUser())();
-  }, [handleError]);
-
   // Keep the values in state (CurrentValues) in sync with those passed in
   // by props (values). Key when the clear button is triggered.
   useEffect(() => {
@@ -145,6 +124,20 @@ export const AdvancedSearchPanel = ({
       )
     )
   );
+
+  const handleSubmitAdvancedSearch = async (
+    advFieldValue: FieldValueMap,
+    openPanel = true
+  ) => {
+    updateFieldValueMap(advFieldValue);
+    openAdvancedSearchPanel(openPanel);
+    search({
+      ...searchState.options,
+      advancedSearchCriteria: generateAdvancedSearchCriteria(advFieldValue),
+      advFieldValue,
+      currentPage: 0,
+    });
+  };
 
   const onChangeHandler = useCallback(
     (updates: WizardHelper.FieldValue[]): void => {
@@ -175,7 +168,7 @@ export const AdvancedSearchPanel = ({
         action={
           <TooltipIconButton
             title={languageStrings.common.action.close}
-            onClick={onClose}
+            onClick={() => openAdvancedSearchPanel(false)}
           >
             <CloseIcon />
           </TooltipIconButton>
@@ -187,43 +180,57 @@ export const AdvancedSearchPanel = ({
         }
       />
       <CardContent>
-        <Grid
-          id="advanced-search-form"
-          container
-          direction="column"
-          spacing={2}
-        >
-          <WizardErrorContext.Provider value={{ handleError }}>
-            {WizardHelper.render(
-              wizardControls,
-              currentValues,
-              onChangeHandler,
-              buildVisibilityScriptContext(currentValues, currentUser)
-            ).map((e) => (
-              // width is a tricky way to fix additional whitespace issue caused by user selector
-              <Grid key={e.props.id} item style={{ width: "100%" }}>
-                {e}
+        {definitionRetrieved ? (
+          <Grid
+            id="advanced-search-form"
+            container
+            direction="column"
+            spacing={2}
+          >
+            <WizardErrorContext.Provider
+              value={{ handleError: searchPageErrorHandler }}
+            >
+              {WizardHelper.render(
+                wizardControls,
+                currentValues,
+                onChangeHandler,
+                buildVisibilityScriptContext(currentValues, currentUser)
+              ).map((e) => (
+                // width is a tricky way to fix additional whitespace issue caused by user selector
+                <Grid key={e.props.id} item style={{ width: "100%" }}>
+                  {e}
+                </Grid>
+              ))}
+            </WizardErrorContext.Provider>
+            {hasRequiredFields && (
+              <Grid item>
+                <Typography variant="caption" color="textSecondary">
+                  {languageStrings.common.required}
+                </Typography>
               </Grid>
-            ))}
-          </WizardErrorContext.Provider>
-          {hasRequiredFields && (
+            )}
+          </Grid>
+        ) : (
+          <Grid container spacing={1} justifyContent="center">
             <Grid item>
-              <Typography variant="caption" color="textSecondary">
-                {languageStrings.common.required}
-              </Typography>
+              <CircularProgress />
             </Grid>
-          )}
-        </Grid>
+          </Grid>
+        )}
       </CardContent>
       <CardActions>
         <Button
           id={`${idPrefix}-searchBtn`}
-          onClick={() => onSubmit(currentValues)}
+          onClick={() => handleSubmitAdvancedSearch(currentValues, false)}
           color="primary"
         >
           {languageStrings.common.action.search}
         </Button>
-        <Button id={`${idPrefix}-clearBtn`} onClick={onClear} color="secondary">
+        <Button
+          id={`${idPrefix}-clearBtn`}
+          onClick={() => handleSubmitAdvancedSearch(new Map())}
+          color="secondary"
+        >
           {languageStrings.common.action.clear}
         </Button>
       </CardActions>

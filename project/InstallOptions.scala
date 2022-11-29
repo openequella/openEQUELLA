@@ -45,6 +45,7 @@ case class InstallOptions(installDir: File,
         <database>{dbname}</database>
         <username>{dbuser}</username>
         <password>{dbpassword}</password>
+        <trustservercerts>true</trustservercerts>
         <idtype>:</idtype>
       </datasource>
       <webserver>
@@ -68,9 +69,9 @@ case class InstallOptions(installDir: File,
       <imagemagick>
         <path>/usr/bin</path>
       </imagemagick>
-      <libav>
+      <ffmpeg>
         <path>/usr/bin</path>
-      </libav>
+      </ffmpeg>
       <auditing>
         <audit.level>{auditLevel}</audit.level>
       </auditing>

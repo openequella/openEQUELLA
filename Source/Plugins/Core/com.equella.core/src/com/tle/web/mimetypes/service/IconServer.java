@@ -18,7 +18,6 @@
 
 package com.tle.web.mimetypes.service;
 
-import com.dytech.devlib.Base64;
 import com.tle.beans.mime.MimeEntry;
 import com.tle.core.guice.Bind;
 import com.tle.core.mimetypes.MimeTypeConstants;
@@ -32,6 +31,7 @@ import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
 import com.tle.web.stream.ByteArrayContentStream;
 import com.tle.web.stream.ContentStreamWriter;
+import java.util.Base64;
 import javax.inject.Inject;
 
 @Bind
@@ -59,7 +59,7 @@ public class IconServer extends AbstractPrototypeSection<Object> {
   public void serve(SectionInfo info, String mimeType, boolean allowCache) {
     MimeEntry entry = mimeService.getEntryForMimeType(mimeType);
     String base64Icon = entry.getAttributes().get(MimeTypeConstants.KEY_ICON_GIFBASE64);
-    byte[] bytes = new Base64().decode(base64Icon);
+    byte[] bytes = Base64.getDecoder().decode(base64Icon);
     ByteArrayContentStream stream =
         new ByteArrayContentStream(bytes, "icon.gif", "image/gif"); // $NON-NLS-1$ //$NON-NLS-2$
     if (!allowCache) {

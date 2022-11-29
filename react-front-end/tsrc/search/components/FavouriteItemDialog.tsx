@@ -31,7 +31,7 @@ import * as React from "react";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import type { FavouriteItemVersionOption } from "../../modules/FavouriteModule";
 import { languageStrings } from "../../util/langstrings";
-import { SearchPageRenderErrorContext } from "../SearchPage";
+import { SearchContext } from "../Search";
 
 /**
  * Type that includes a function which is fired to add a favourite Item and
@@ -164,7 +164,7 @@ export const FavouriteItemDialog = ({
   const [tags, setTags] = useState<string[]>([]);
   const [versionOption, setVersionOption] =
     useState<FavouriteItemVersionOption>("latest");
-  const { handleError } = useContext(SearchPageRenderErrorContext);
+  const { searchPageErrorHandler } = useContext(SearchContext);
 
   const confirmHandler = () => {
     const doConfirm = isConfirmToDelete(onConfirmProps)
@@ -177,7 +177,7 @@ export const FavouriteItemDialog = ({
         setVersionOption("latest");
         closeDialog();
       })
-      .catch(handleError);
+      .catch(searchPageErrorHandler);
   };
 
   return (

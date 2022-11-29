@@ -19,7 +19,7 @@ import DoubleArrowIcon from "@mui/icons-material/DoubleArrow";
 import { useContext } from "react";
 import * as React from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
-import { SearchPageRenderErrorContext } from "../SearchPage";
+import { SearchContext } from "../Search";
 
 export interface ResourceSelectorProps {
   /**
@@ -45,7 +45,7 @@ export const ResourceSelector = ({
   onClick,
   isStopPropagation = false,
 }: ResourceSelectorProps) => {
-  const { handleError } = useContext(SearchPageRenderErrorContext);
+  const { searchPageErrorHandler } = useContext(SearchContext);
 
   return (
     <TooltipIconButton
@@ -56,7 +56,7 @@ export const ResourceSelector = ({
         if (isStopPropagation) {
           event.stopPropagation();
         }
-        onClick().catch(handleError);
+        onClick().catch(searchPageErrorHandler);
       }}
     >
       <DoubleArrowIcon />

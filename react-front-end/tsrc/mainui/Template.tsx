@@ -15,6 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import AccountIcon from "@mui/icons-material/AccountCircle";
+import BackIcon from "@mui/icons-material/ArrowBack";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import HelpIcon from "@mui/icons-material/Help";
+import MenuIcon from "@mui/icons-material/Menu";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 import {
   AppBar,
   Badge,
@@ -31,16 +37,11 @@ import {
 } from "@mui/material";
 import type { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
-import AccountIcon from "@mui/icons-material/AccountCircle";
-import BackIcon from "@mui/icons-material/ArrowBack";
-import AssignmentIcon from "@mui/icons-material/Assignment";
-import MenuIcon from "@mui/icons-material/Menu";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import * as OEQ from "@openequella/rest-api-client";
 import clsx, { ClassValue } from "clsx";
 import { LocationDescriptor } from "history";
 import { isEqual } from "lodash";
 import * as React from "react";
+import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { ErrorResponse } from "../api/errors";
 import { TooltipIconButton } from "../components/TooltipIconButton";
@@ -51,6 +52,7 @@ import {
 } from "../modules/LegacySelectionSessionModule";
 import { guestUser } from "../modules/UserModule";
 import { languageStrings } from "../util/langstrings";
+import { AppContext } from "./App";
 import MainMenu from "./MainMenu";
 import { legacyPageUrl, routes } from "./routes";
 import ScreenOptions from "./ScreenOptions";
@@ -78,7 +80,6 @@ export interface TemplateProps {
   hideAppBar?: boolean;
   menuMode?: MenuMode;
   disableNotifications?: boolean;
-  currentUser?: OEQ.LegacyContent.CurrentUserDetails;
   /* Extra meta tags */
   metaTags?: string;
 }
@@ -311,7 +312,6 @@ function useFullscreen({ fullscreenMode, hideAppBar }: useFullscreenProps) {
 export const Template = ({
   backRoute,
   children,
-  currentUser = guestUser,
   disableNotifications,
   fixedViewPort,
   footer,
@@ -324,6 +324,7 @@ export const Template = ({
   titleExtra,
   metaTags,
 }: TemplateProps) => {
+  const currentUser = useContext(AppContext).currentUser ?? guestUser;
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLElement>();
   const [navMenuOpen, setNavMenuOpen] = React.useState(false);
 
@@ -481,6 +482,14 @@ export const Template = ({
           <>
             {isMdUp && (
               <>
+                <TooltipIconButton
+                  title={strings.menu.help}
+                  onClick={() =>
+                    window.open("https://docs.edalex.com", "_blank")
+                  }
+                >
+                  <HelpIcon />
+                </TooltipIconButton>
                 {badgedLink(
                   <AssignmentIcon />,
                   itemCounts.tasks,

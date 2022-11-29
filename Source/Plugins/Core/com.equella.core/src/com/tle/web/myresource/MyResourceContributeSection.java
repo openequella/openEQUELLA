@@ -97,6 +97,7 @@ import com.tle.web.sections.standard.model.SimpleHtmlListModel;
 import com.tle.web.sections.standard.renderers.ImageRenderer;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
+import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.template.section.event.BlueBarEvent;
 import com.tle.web.template.section.event.BlueBarEventListener;
 import com.tle.web.template.section.event.BlueBarRenderable;
@@ -548,8 +549,12 @@ public class MyResourceContributeSection
 
     itemService.operation(itemId, ops.toArray(new WorkflowOperation[ops.size()]));
 
-    String key = URL_HELPER.key("edit.success");
-    receiptService.setReceipt(new KeyLabel(key, Utils.ent(title)));
+    // In New UI we will return to New UI after the editing is successful so there is no need
+    // to show the receipt.
+    if (!RenderNewTemplate.isNewUIEnabled()) {
+      String key = URL_HELPER.key("edit.success");
+      receiptService.setReceipt(new KeyLabel(key, Utils.ent(title)));
+    }
 
     myContentService.returnFromContribute(info);
   }

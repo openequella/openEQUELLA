@@ -15,6 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import {
   Divider,
   Grid,
@@ -25,15 +28,14 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import type { Theme } from "@mui/material/styles";
-import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
 import HTMLReactParser from "html-react-parser";
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import { HashLink } from "react-router-hash-link";
 import { sprintf } from "sprintf-js";
@@ -57,7 +59,7 @@ import {
   selectResource,
 } from "../../modules/LegacySelectionSessionModule";
 import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
-import { searchItemAttachments } from "../../modules/SearchModule";
+import { isLiveItem, searchItemAttachments } from "../../modules/SearchModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
 import { buildOpenSummaryPageHandler } from "../SearchPageHelper";
@@ -144,6 +146,15 @@ export interface SearchResultProps {
    * The details of the items to display.
    */
   item: OEQ.Search.SearchResultItem;
+  /**
+   * Custom action buttons to be displayed. Each button will be separated by a vertical divider,
+   * and they are displayed next to the FavoriteIcon.
+   */
+  customActionButtons?: JSX.Element[];
+  /**
+   * Custom handler for clicking the title of each SearchResult.
+   */
+  customOnClickTitleHandler?: () => void;
 }
 
 /**
@@ -166,6 +177,8 @@ export default function SearchResult({
   getItemAttachments = searchItemAttachments,
   highlights,
   item,
+  customActionButtons,
+  customOnClickTitleHandler,
 }: SearchResultProps) {
   const isMdUp = useMediaQuery<Theme>((theme) => theme.breakpoints.up("md"));
 
@@ -185,6 +198,9 @@ export default function SearchResult({
     uuid,
     version,
   } = item;
+
+  const isItemLive = isLiveItem(item);
+
   const itemKey = `${uuid}/${version}`;
 
   const inSelectionSession: boolean = isSelectionSessionOpen();
@@ -275,7 +291,7 @@ export default function SearchResult({
         {metaDataDivider}
         <Typography component="span">
           {searchResultStrings.dateModified}&nbsp;
-          <DateDisplay displayRelative date={new Date(modifiedDate)} />
+          <DateDisplay displayRelative date={modifiedDate} />
         </Typography>
 
         {metaDataDivider}
@@ -290,6 +306,12 @@ export default function SearchResult({
         >
           {bookmarkId ? <FavoriteIcon /> : <FavoriteBorderIcon />}
         </TooltipIconButton>
+
+        {customActionButtons?.map((button, index) => (
+          <Fragment key={index}>
+            {metaDataDivider} {button}
+          </Fragment>
+        ))}
 
         {commentCount > 0 && isMdUp && (
           <>
@@ -362,8 +384,19 @@ export default function SearchResult({
         routeLinkUrlProvider={() => url}
         muiLinkUrlProvider={() => url}
         onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
-          e.preventDefault();
-          checkDrmPermission(onClick);
+          pipe(
+            customOnClickTitleHandler,
+            O.fromNullable,
+            O.alt(() =>
+              drmStatus.isAllowSummary
+                ? O.none
+                : O.of(() => checkDrmPermission(onClick))
+            ),
+            O.map((handler) => {
+              e.preventDefault();
+              return handler();
+            })
+          );
         }}
       >
         {itemTitle}
@@ -383,7 +416,7 @@ export default function SearchResult({
       data-itemuuid={uuid}
       data-itemversion={version}
     >
-      {inStructured && (
+      {isItemLive && inStructured && (
         <Grid item>
           <IconButton size="large">
             <DragIndicatorIcon />
@@ -391,13 +424,15 @@ export default function SearchResult({
         </Grid>
       )}
       <Grid item>{itemLink()}</Grid>
-      <Grid item>
-        <ResourceSelector
-          labelText={selectResourceStrings.summaryPage}
-          isStopPropagation
-          onClick={() => selectResource(itemKey)}
-        />
-      </Grid>
+      {isItemLive && (
+        <Grid item>
+          <ResourceSelector
+            labelText={selectResourceStrings.summaryPage}
+            isStopPropagation
+            onClick={() => selectResource(itemKey)}
+          />
+        </Grid>
+      )}
     </Grid>
   );
 
@@ -437,6 +472,7 @@ export default function SearchResult({
                   item={item}
                   getViewerDetails={getViewerDetails}
                   getItemAttachments={getItemAttachments}
+                  isItemLive={isItemLive}
                 />
               </ItemDrmContext.Provider>
               {generateItemMetadata()}

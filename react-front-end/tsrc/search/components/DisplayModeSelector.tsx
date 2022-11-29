@@ -15,14 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Button, ButtonGroup } from "@mui/material";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
 import VideoLibraryIcon from "@mui/icons-material/VideoLibrary";
+import { Button, ButtonGroup, Tooltip } from "@mui/material";
 import * as React from "react";
 import { ReactElement } from "react";
-import { languageStrings } from "../../util/langstrings";
 import type { DisplayMode } from "../../modules/SearchModule";
+import { languageStrings } from "../../util/langstrings";
 
 const {
   modeGalleryImage: labelImageGallery,
@@ -94,15 +94,16 @@ const DisplayModeSelector = ({
       const currentlySelected = displayMode === value;
 
       return (
-        <Button
-          key={displayMode}
-          variant={currentlySelected ? "contained" : "outlined"}
-          onClick={() => onChange(displayMode)}
-          aria-checked={currentlySelected}
-          aria-label={label}
-        >
-          {icon}
-        </Button>
+        <Tooltip title={label} key={displayMode}>
+          <Button
+            variant={currentlySelected ? "contained" : "outlined"}
+            onClick={() => onChange(displayMode)}
+            aria-checked={currentlySelected}
+            aria-label={label}
+          >
+            {icon}
+          </Button>
+        </Tooltip>
       );
     });
 

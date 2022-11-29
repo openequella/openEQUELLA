@@ -31,6 +31,7 @@ import com.tle.core.zookeeper.ZookeeperService;
 import com.tle.tomcat.events.TomcatRestartListener;
 import com.tle.tomcat.service.TomcatService;
 import com.tle.web.dispatcher.RequestDispatchFilter;
+import io.prometheus.client.exporter.MetricsServlet;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -170,6 +171,10 @@ public class TomcatServiceImpl implements TomcatService, StartupBean, TomcatRest
 
       Tomcat.initWebappDefaults(context);
       context.removeChild(context.findChild("jsp"));
+
+      final String servletName = "PrometheusMetricsServlet";
+      Tomcat.addServlet(context, servletName, new MetricsServlet());
+      context.addServletMappingDecoded("/metrics", servletName);
 
       context.addFilterDef(dispatchFilter("RequestDispatchFilter", "REQUEST"));
       context.addFilterDef(dispatchFilter("ForwardDispatchFilter", "FORWARD"));

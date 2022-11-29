@@ -35,19 +35,27 @@ const StyledFormControl = styled(FormControl)({
 
 export interface DefaultSortOrderSettingProps {
   disabled: boolean;
-  value?: OEQ.SearchSettings.SortOrder;
-  setValue: (order: OEQ.SearchSettings.SortOrder) => void;
+  value?: OEQ.Search.SortOrder;
+  setValue: (order: OEQ.Search.SortOrder) => void;
 }
 export default function DefaultSortOrderSetting({
   disabled,
   value,
   setValue,
 }: DefaultSortOrderSettingProps) {
-  const searchPageSettingsStrings =
+  const { relevance, lastModified, dateCreated, title, userRating } =
     languageStrings.settings.searching.searchPageSettings;
 
-  const validateSortOrder = (value: unknown): OEQ.SearchSettings.SortOrder =>
-    OEQ.SearchSettings.SortOrderRunTypes.check(value);
+  const validateSortOrder = (value: unknown): OEQ.Search.SortOrder =>
+    OEQ.Search.SortOrderRunTypes.check(value);
+
+  const options: [OEQ.Search.SortOrder, string][] = [
+    ["rank", relevance],
+    ["datemodified", lastModified],
+    ["datecreated", dateCreated],
+    ["name", title],
+    ["rating", userRating],
+  ];
 
   return (
     <StyledFormControl variant="outlined">
@@ -60,19 +68,11 @@ export default function DefaultSortOrderSetting({
         className={classes.select}
         input={<OutlinedInput id="_sortOrder" />}
       >
-        <MenuItem value="RANK">{searchPageSettingsStrings.relevance}</MenuItem>
-        <MenuItem value={validateSortOrder("DATEMODIFIED")}>
-          {searchPageSettingsStrings.lastModified}
-        </MenuItem>
-        <MenuItem value={validateSortOrder("DATECREATED")}>
-          {searchPageSettingsStrings.dateCreated}
-        </MenuItem>
-        <MenuItem value={validateSortOrder("NAME")}>
-          {searchPageSettingsStrings.title}
-        </MenuItem>
-        <MenuItem value={validateSortOrder("RATING")}>
-          {searchPageSettingsStrings.userRating}
-        </MenuItem>
+        {options.map(([value, label]) => (
+          <MenuItem key={value} value={value}>
+            {label}
+          </MenuItem>
+        ))}
       </Select>
     </StyledFormControl>
   );

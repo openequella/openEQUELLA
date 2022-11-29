@@ -49,15 +49,24 @@ export const deleteFavouriteItem = (bookmarkID: number): Promise<void> =>
   OEQ.Favourite.deleteFavouriteItem(API_BASE_URL, bookmarkID);
 
 /**
+ * URLs stored for favourites are only partial URLs in that they _only_ contain the path (no host
+ * details) and search parameters.
+ */
+export interface FavouriteURL {
+  readonly path: string;
+  readonly params: URLSearchParams;
+}
+
+/**
  * Add a search definition to user's favourites
  * @param name Name of a search definition
  * @param url Path to the new Search UI, including all query strings
  */
 export const addFavouriteSearch = (
   name: string,
-  url: string
+  { path, params }: FavouriteURL
 ): Promise<OEQ.Favourite.FavouriteSearchModel> =>
   OEQ.Favourite.addFavouriteSearch(API_BASE_URL, {
     name,
-    url,
+    url: `${path}?${params.toString()}`,
   });

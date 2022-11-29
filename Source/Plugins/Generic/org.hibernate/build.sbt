@@ -1,6 +1,5 @@
 lazy val Hibernate     = config("hibernate")
 lazy val CustomCompile = config("compile") extend Hibernate
-val springVersion      = "5.2.9.RELEASE"
 
 libraryDependencies := Seq(
   "org.hibernate"            % "hibernate-core"        % "5.4.21.Final",
@@ -19,7 +18,6 @@ libraryDependencies := Seq(
 
 excludeDependencies ++= Seq(
   "org.slf4j"           % "slf4j-api",
-  "dom4j"               % "dom4j",
   "commons-collections" % "commons-collections",
   "commons-logging"     % "commons-logging",
   "aopalliance"         % "aopalliance"

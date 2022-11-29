@@ -40,7 +40,7 @@ import SettingsList from "../../../components/SettingsList";
 import SettingsListControl from "../../../components/SettingsListControl";
 import SettingsListHeading from "../../../components/SettingsListHeading";
 import SettingsToggleSwitch from "../../../components/SettingsToggleSwitch";
-import { AppRenderErrorContext } from "../../../mainui/App";
+import { AppContext } from "../../../mainui/App";
 import { routes } from "../../../mainui/routes";
 import {
   templateDefaults,
@@ -113,7 +113,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
     []
   );
   const [reset, setReset] = useState<boolean>(true);
-  const { appErrorHandler } = useContext(AppRenderErrorContext);
+  const { appErrorHandler } = useContext(AppContext);
 
   useEffect(() => {
     updateTemplate((tp) => ({

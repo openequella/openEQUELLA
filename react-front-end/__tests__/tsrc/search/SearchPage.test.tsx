@@ -47,8 +47,8 @@ import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import { getGlobalCourseList } from "../../../tsrc/modules/LegacySelectionSessionModule";
 import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchFacetsModule from "../../../tsrc/modules/SearchFacetsModule";
-import { SearchOptions } from "../../../tsrc/modules/SearchModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
+import type { SearchOptions } from "../../../tsrc/modules/SearchModule";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
 import * as SearchPageHelper from "../../../tsrc/search/SearchPageHelper";
 import { SearchPageOptions } from "../../../tsrc/search/SearchPageHelper";
@@ -56,7 +56,6 @@ import { languageStrings } from "../../../tsrc/util/langstrings";
 import { updateMockGetBaseUrl } from "../BaseUrlHelper";
 import { queryPaginatorControls } from "../components/SearchPaginationTestHelper";
 import { updateMockGlobalCourseList } from "../CourseListHelper";
-import { getMuiButtonByText, getMuiTextField } from "../MuiQueries";
 import { selectOption } from "../MuiTestHelpers";
 import { basicRenderData, updateMockGetRenderData } from "../RenderDataHelper";
 import {
@@ -64,6 +63,7 @@ import {
   selectUser,
 } from "./components/OwnerSelectTestHelpers";
 import {
+  addSearchToFavourites,
   getRefineSearchComponent,
   getRefineSearchPanel,
   initialiseEssentialMocks,
@@ -74,6 +74,7 @@ import {
   querySearchAttachmentsSelector,
   queryStatusSelector,
   renderSearchPage,
+  SORTORDER_SELECT_ID,
   waitForSearch,
 } from "./SearchPageTestHelper";
 
@@ -108,15 +109,13 @@ mockListUsers.mockResolvedValue(UserModuleMock.users);
 
 const defaultSearchPageOptions: SearchPageOptions = {
   ...SearchModule.defaultSearchOptions,
-  sortOrder: "RANK",
+  sortOrder: "rank",
   dateRangeQuickModeEnabled: true,
   mimeTypeFilters: [],
   displayMode: "list",
   includeAttachments: false, // in 'list' displayMode we exclude attachments
 };
 const defaultCollectionPrivileges = [OEQ.Acl.ACL_SEARCH_COLLECTION];
-
-const SORTORDER_SELECT_ID = "#sort-order-select";
 
 const getQueryBar = (container: Element): HTMLElement => {
   const queryBar = container.querySelector<HTMLElement>("#searchBar");
@@ -133,7 +132,7 @@ const changeQuery = async (
   wildcardMode: boolean = true
 ) => {
   // We will change the debounced query so use fake timer here.
-  jest.useFakeTimers("modern");
+  jest.useFakeTimers();
   // Change search options now.
   if (!wildcardMode) {
     const wildcardModeSwitch = container.querySelector("#wildcardSearch");
@@ -434,7 +433,8 @@ describe("<SearchPage/>", () => {
   it("should clear search options and perform a new search", async () => {
     const { container } = page;
     const query = "clear query";
-    const sortingDropdown = screen.getByDisplayValue("RANK");
+    const sortOrder: OEQ.Search.SortOrder = "rank";
+    const sortingDropdown = screen.getByDisplayValue(sortOrder);
     const newSearchButton = screen.getByText(
       languageStrings.searchpage.newSearch
     );
@@ -444,7 +444,7 @@ describe("<SearchPage/>", () => {
     await waitForSearch(searchPromise);
     selectOption(
       container,
-      "#sort-order-select",
+      SORTORDER_SELECT_ID,
       languageStrings.settings.searching.searchPageSettings.title
     );
     await waitForSearch(searchPromise);
@@ -452,7 +452,7 @@ describe("<SearchPage/>", () => {
     // Perform a new search and check.
     userEvent.click(newSearchButton);
     await waitFor(() => {
-      expect(sortingDropdown).toHaveValue("RANK");
+      expect(sortingDropdown).toHaveValue(sortOrder);
       expect(getQueryBar(container)).toHaveValue("");
     });
     // Four searches have been performed: initial search, one for query change and
@@ -564,7 +564,7 @@ describe("<SearchPage/>", () => {
     // sort order is included in the search params
     expect(SearchModule.searchItems).toHaveBeenCalledWith({
       ...defaultSearchPageOptions,
-      sortOrder: "DATEMODIFIED",
+      sortOrder: "datemodified",
     });
   });
 
@@ -654,7 +654,7 @@ describe("<SearchPage/>", () => {
       SearchPageHelper.generateSearchPageOptionsFromQueryString
     ).toHaveBeenCalledTimes(1);
     expect(mockClipboard).toHaveBeenCalledWith(
-      "/page/search?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RANK%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22displayMode%22%3A%22list%22%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D"
+      "/page/search?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22rank%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22displayMode%22%3A%22list%22%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D"
     );
     expect(
       screen.getByText(languageStrings.searchpage.shareSearchConfirmationText)
@@ -690,7 +690,7 @@ describe("In Selection Session", () => {
     updateMockGetBaseUrl();
   });
 
-  it("should make each Search result Item draggable", async () => {
+  it("should make each Search result Item which represents a live item draggable", async () => {
     updateMockGetRenderData(basicRenderData);
     mockSearch.mockResolvedValue(getSearchResult);
     await renderSearchPage(searchPromise);
@@ -699,7 +699,7 @@ describe("In Selection Session", () => {
     // Make sure the search result definitely has Items.
     expect(searchResults.length).toBeGreaterThan(0);
 
-    searchResults.forEach(({ uuid }) => {
+    searchResults.filter(SearchModule.isLiveItem).forEach(({ uuid }) => {
       expect(
         getGlobalCourseList().prepareDraggableAndBind
       ).toHaveBeenCalledWith(`#${uuid}`, true);
@@ -725,7 +725,7 @@ describe("Responsiveness", () => {
   let page: RenderResult;
 
   beforeEach(async () => {
-    page = await renderSearchPage(searchPromise, undefined, undefined, 600);
+    page = await renderSearchPage(searchPromise, undefined, 600);
   });
 
   it("should hide the side panel in small screens", async () => {
@@ -790,36 +790,12 @@ describe("Add and remove favourite Item,", () => {
 });
 
 describe("Add favourite search", () => {
-  it("shows FavouriteSearchDialog to add a favourite search", async () => {
-    const page = await renderSearchPage(searchPromise);
-    const heartIcon = getByLabelText(
-      page.container,
-      languageStrings.searchpage.favouriteSearch.title,
-      {
-        selector: "button",
-      }
+  it("supports creating a favourite of the current search", async () => {
+    const successfulSave = await addSearchToFavourites(
+      await renderSearchPage(searchPromise),
+      "new favourite"
     );
-    userEvent.click(heartIcon);
-
-    const dialog = page.getByRole("dialog");
-    const searchNameInput = getMuiTextField(
-      dialog,
-      languageStrings.searchpage.favouriteSearch.text
-    );
-    userEvent.type(searchNameInput, "test");
-    const confirmButton = getMuiButtonByText(
-      dialog,
-      languageStrings.common.action.ok
-    );
-    await act(async () => {
-      await userEvent.click(confirmButton);
-    });
-
-    expect(
-      screen.getByText(
-        languageStrings.searchpage.favouriteSearch.saveSearchConfirmationText
-      )
-    ).toBeInTheDocument();
+    expect(successfulSave).toBe(true);
   });
 });
 
@@ -914,12 +890,10 @@ describe("Changing display mode", () => {
 });
 
 describe("Export search result", () => {
-  let page: RenderResult;
-  beforeEach(async () => {
-    page = await renderSearchPage(searchPromise);
-  });
-
-  const selectCollections = async (...collectionNames: string[]) => {
+  const selectCollections = async (
+    page: RenderResult,
+    ...collectionNames: string[]
+  ) => {
     userEvent.click(
       page.getByLabelText(languageStrings.searchpage.collectionSelector.title)
     );
@@ -930,11 +904,9 @@ describe("Export search result", () => {
     }
   };
 
-  const getDownloadButton = () =>
-    page.getByLabelText(languageStrings.searchpage.export.title);
-
   it("shows a Download Icon button to allow exporting", async () => {
-    await selectCollections(getCollectionMap[0].name);
+    const page = await renderSearchPage(searchPromise);
+    await selectCollections(page, getCollectionMap[0].name);
     expect(
       page.queryByLabelText(languageStrings.searchpage.export.title)
     ).toBeInTheDocument();
@@ -946,8 +918,11 @@ describe("Export search result", () => {
   ])(
     "disables export if %s collection is selected",
     async (collectionNumber: string, collections: string[]) => {
-      await selectCollections(...collections);
-      userEvent.click(getDownloadButton());
+      const page = await renderSearchPage(searchPromise);
+      await selectCollections(page, ...collections);
+      userEvent.click(
+        page.getByLabelText(languageStrings.searchpage.export.title)
+      );
       expect(
         screen.getByText(languageStrings.searchpage.export.collectionLimit)
       ).toBeInTheDocument();
@@ -956,12 +931,16 @@ describe("Export search result", () => {
 
   it("doesn't show the Download button if user have no permission", async () => {
     // Remove previously rendered result so that we can mock the current user details.
-    page.unmount();
-    mockCurrentUser.mockResolvedValueOnce({
-      ...getCurrentUserMock,
-      canDownloadSearchResult: false,
-    });
-    const { queryByLabelText } = await renderSearchPage(searchPromise);
+    const { queryByLabelText } = await renderSearchPage(
+      searchPromise,
+      undefined,
+      undefined,
+      {
+        ...getCurrentUserMock,
+        canDownloadSearchResult: false,
+      }
+    );
+
     expect(
       queryByLabelText(languageStrings.searchpage.export.title)
     ).not.toBeInTheDocument();

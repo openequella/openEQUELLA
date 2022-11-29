@@ -15,8 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import { ReactElement, useContext } from "react";
 import {
   FormHelperText,
   Grid,
@@ -24,7 +22,9 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
-import { AppRenderErrorContext } from "../mainui/App";
+import * as React from "react";
+import { ReactElement, useContext } from "react";
+import { AppContext } from "../mainui/App";
 import {
   schemaListSummary,
   SchemaNode,
@@ -56,7 +56,7 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
   const [schema, setSchema] = React.useState<SchemaNode>();
   const [schemaList, setSchemaList] = React.useState<ReactElement[]>([]);
   const [schemaNodePath, setSchemaNodePath] = React.useState<string>("");
-  const { appErrorHandler } = useContext(AppRenderErrorContext);
+  const { appErrorHandler } = useContext(AppContext);
 
   React.useEffect(() => {
     const buildSchemaList = (schemas: Map<string, string>) => {

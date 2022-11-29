@@ -28,7 +28,7 @@ import * as React from "react";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getBaseUrl } from "../AppConfig";
-import { AppRenderErrorContext } from "../mainui/App";
+import { AppContext } from "../mainui/App";
 import { routes } from "../mainui/routes";
 import {
   fetchUISetting,
@@ -58,16 +58,12 @@ const StyledAccordionDetails = styled(AccordionDetails)({
   },
 });
 
-interface UISettingEditorProps {
-  refreshUser: () => void;
-}
-
-const UISettingEditor = ({ refreshUser }: UISettingEditorProps) => {
+const UISettingEditor = () => {
   const { uiconfig } = languageStrings;
 
   const [newUIEnabled, setNewUIEnabled] = useState<boolean>(true);
   const [newSearchEnabled, setNewSearchEnabled] = useState<boolean>(false);
-  const { appErrorHandler } = useContext(AppRenderErrorContext);
+  const { appErrorHandler } = useContext(AppContext);
 
   useEffect(() => {
     fetchUISetting()
@@ -92,7 +88,6 @@ const UISettingEditor = ({ refreshUser }: UISettingEditorProps) => {
     saveUISetting(newUIEnabled, enabled)
       .then((_) => {
         setNewSearchEnabled(enabled);
-        refreshUser();
       })
       .catch(appErrorHandler);
   };

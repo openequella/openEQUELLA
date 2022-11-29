@@ -32,7 +32,7 @@ import { API_BASE_URL } from "../AppConfig";
 import SettingPageTemplate from "../components/SettingPageTemplate";
 import SettingsList from "../components/SettingsList";
 import SettingsListControl from "../components/SettingsListControl";
-import { AppRenderErrorContext } from "../mainui/App";
+import { AppContext } from "../mainui/App";
 import { routes } from "../mainui/routes";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import { commonString } from "../util/commonstrings";
@@ -89,7 +89,7 @@ interface LogoSettings {
 }
 
 export const ThemePage = ({ updateTemplate }: ThemePageProps) => {
-  const { appErrorHandler } = useContext(AppRenderErrorContext);
+  const { appErrorHandler } = useContext(AppContext);
 
   const mapSettingsToColors = (
     settings: OEQ.Theme.ThemeSettings

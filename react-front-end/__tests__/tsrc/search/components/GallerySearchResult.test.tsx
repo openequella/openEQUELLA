@@ -30,7 +30,9 @@ import { languageStrings } from "../../../../tsrc/util/langstrings";
 import {
   buildItems,
   galleryDrmItem,
+  galleryDrmItemSummaryAllow,
   galleryDrmUnauthorisedItem,
+  galleryScrapbook,
 } from "./GallerySearchResultHelpers";
 import * as ReactRouterDom from "react-router-dom";
 
@@ -41,7 +43,7 @@ const {
   common: {
     action: { openInNewTab },
   },
-  lightboxComponent: { viewNext, viewPrevious },
+  lightboxComponent: { viewNext, viewPrevious, openSummaryPage },
 } = languageStrings;
 
 /*
@@ -84,6 +86,24 @@ describe("<GallerySearchResult />", () => {
     expect(mockUseHistoryPush.mock.calls[0][0].match("/items/")).toBeTruthy();
   });
 
+  it("doesn't show the Info icon for Scrapbook", async () => {
+    const { queryAllByLabelText } = renderGallery([galleryScrapbook]);
+    expect(queryAllByLabelText(viewItem)).toHaveLength(0);
+  });
+
+  it("doesn't support opening Item summary page from Lightbox for Scrapbook", async () => {
+    const { getByLabelText, queryByLabelText } = renderGallery([
+      galleryScrapbook,
+    ]);
+
+    await act(async () => {
+      await userEvent.click(getByLabelText(ariaLabel));
+    });
+
+    // The icon button for accessing summary page should not exist.
+    expect(queryByLabelText(openSummaryPage)).not.toBeInTheDocument();
+  });
+
   describe("viewing gallery entries in a loop", () => {
     it.each([
       ["first", "next", "last", 15, viewNext],
@@ -111,7 +131,10 @@ describe("<GallerySearchResult />", () => {
     jest.spyOn(DrmModule, "listDrmTerms").mockResolvedValue(drmTerms);
 
     it.each([
-      ["view a DRM Item's summary page", viewItem],
+      [
+        "DRM terms must be accepted before viewing a DRM Item's summary page",
+        viewItem,
+      ],
       ["preview an gallery entry protected by DRM", ariaLabel],
     ])(
       "shows DRM acceptance dialog when %s",
@@ -149,5 +172,16 @@ describe("<GallerySearchResult />", () => {
         });
       }
     );
+
+    it("supports viewing a DRM Item's summary page without accepting the terms", async () => {
+      const { getByLabelText } = await renderGallery([
+        galleryDrmItemSummaryAllow,
+      ]);
+      await act(async () => {
+        await userEvent.click(getByLabelText(viewItem));
+      });
+
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
   });
 });

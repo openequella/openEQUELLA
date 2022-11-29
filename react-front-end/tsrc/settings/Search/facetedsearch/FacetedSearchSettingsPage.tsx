@@ -44,7 +44,7 @@ import MessageDialog from "../../../components/MessageDialog";
 import SettingPageTemplate from "../../../components/SettingPageTemplate";
 import SettingsListHeading from "../../../components/SettingsListHeading";
 import { TooltipIconButton } from "../../../components/TooltipIconButton";
-import { AppRenderErrorContext } from "../../../mainui/App";
+import { AppContext } from "../../../mainui/App";
 import { routes } from "../../../mainui/routes";
 import {
   templateDefaults,
@@ -89,7 +89,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
     FacetedSearchClassificationWithFlags | undefined
   >();
   const [reset, setReset] = useState<boolean>(true);
-  const { appErrorHandler } = useContext(AppRenderErrorContext);
+  const { appErrorHandler } = useContext(AppContext);
 
   const listOfUpdates: FacetedSearchClassificationWithFlags[] = facets.filter(
     (facet) => facet.updated && !facet.deleted

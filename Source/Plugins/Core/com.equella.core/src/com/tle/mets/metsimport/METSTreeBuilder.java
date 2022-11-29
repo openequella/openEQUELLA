@@ -20,7 +20,6 @@ package com.tle.mets.metsimport;
 
 import static com.tle.mets.MetsConstants.METS_FILENAME;
 
-import com.dytech.devlib.Base64;
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.FileInfo;
 import com.google.common.collect.Lists;
@@ -70,6 +69,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -421,7 +421,7 @@ public class METSTreeBuilder implements PackageTreeBuilder {
           for (Object data : pc.getContent()) {
             base64data.append(data);
           }
-          byte[] bytes = new Base64().decode(base64data.toString());
+          byte[] bytes = Base64.getDecoder().decode(base64data.toString());
           if (Check.isEmpty(filename)) {
             filename = UUID.randomUUID().toString();
           }

@@ -18,7 +18,6 @@
 
 package com.tle.core.connectors.brightspace.service.impl;
 
-import com.dytech.devlib.Base64;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -87,6 +86,7 @@ import com.tle.web.selection.SelectedResource;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -880,7 +880,7 @@ public class BrightspaceConnectorServiceImpl extends AbstractIntegrationConnecto
 
         // Encrypt
         byte[] enc = ecipher.doFinal(data.getBytes());
-        return new Base64().encode(enc);
+        return Base64.getEncoder().encodeToString(enc);
 
       } catch (Exception e) {
         throw new RuntimeException("Error encrypting", e);
@@ -894,7 +894,7 @@ public class BrightspaceConnectorServiceImpl extends AbstractIntegrationConnecto
   public String decrypt(String encryptedData) {
     if (!Check.isEmpty(encryptedData)) {
       try {
-        byte[] bytes = new Base64().decode(encryptedData);
+        byte[] bytes = Base64.getDecoder().decode(encryptedData);
         SecretKey key = new SecretKeySpec(SHAREPASS, "AES");
         Cipher ecipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         ecipher.init(Cipher.DECRYPT_MODE, key, INITVEC);

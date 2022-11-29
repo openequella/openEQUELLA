@@ -59,6 +59,14 @@ public class RequestDispatchFilter implements Filter {
       throws IOException, ServletException {
     HttpServletRequest httpRequest = (HttpServletRequest) request;
     HttpServletResponse httpResponse = (HttpServletResponse) response;
+
+    if ("/metrics".equals(httpRequest.getServletPath())) {
+      // Prometheus metrics is out on its own, ignore all the
+      // oEQ stuff
+      chain.doFilter(httpRequest, httpResponse);
+      return;
+    }
+
     Map<Extension, WebPathMatcher> locMappings = ensureMappings();
     try {
       for (Map.Entry<Extension, WebPathMatcher> entry : locMappings.entrySet()) {

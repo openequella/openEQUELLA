@@ -18,10 +18,13 @@
 
 package com.tle.core.application;
 
+import com.dytech.edge.common.Version;
 import com.google.common.collect.Sets;
 import com.tle.core.application.impl.PluginServiceImpl;
 import com.tle.core.plugins.AbstractPluginService.TLEPluginLocation;
 import com.tle.core.plugins.PluginTracker;
+import io.prometheus.client.Info;
+import io.prometheus.client.hotspot.DefaultExports;
 import java.net.URL;
 import java.util.Collection;
 import java.util.List;
@@ -36,6 +39,9 @@ import org.java.plugin.registry.ManifestInfo;
 public final class ApplicationStarter {
   private static final Log LOGGER = LogFactory.getLog(ApplicationStarter.class);
 
+  static final Info versionInfo =
+      Info.build().name("version").help("Version information for the server").register();
+
   private static PluginTracker<StartupBean> startupTracker;
 
   private ApplicationStarter() {
@@ -46,6 +52,19 @@ public final class ApplicationStarter {
       PluginManager pluginManager,
       Collection<Object[]> registeredAlready,
       Collection<String> types) {
+    // Setup metrics
+    DefaultExports.initialize();
+    final Version v = Version.load();
+    versionInfo.info(
+        "display_name",
+        v.getDisplay(),
+        "sematic",
+        v.getSemanticVersion(),
+        "full",
+        v.getFull(),
+        "commit",
+        v.getCommit());
+
     Set<TLEPluginLocation> registered = Sets.newHashSet();
 
     for (Object[] entry : registeredAlready) {

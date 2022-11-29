@@ -18,6 +18,8 @@
 
 package com.tle.mycontent.service;
 
+import static scala.jdk.javaapi.OptionConverters.toScala;
+
 import com.dytech.devlib.PropBagEx;
 import com.google.inject.Provider;
 import com.tle.beans.entity.itemdef.ItemDefinition;
@@ -36,13 +38,19 @@ import com.tle.mycontent.MyContentConstants;
 import com.tle.mycontent.web.section.ContributeMyContentAction;
 import com.tle.mycontent.web.section.MyContentContributeSection;
 import com.tle.mycontent.workflow.operations.OperationFactory;
+import com.tle.web.myresources.RootMyResourcesSection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.result.util.KeyLabel;
+import com.tle.web.selection.SelectionService;
+import com.tle.web.template.NewUiRoutes;
+import com.tle.web.template.RenderNewTemplate;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.java.plugin.registry.Extension;
+import scala.Option;
 
 /** @author aholland */
 @SuppressWarnings("nls")
@@ -56,6 +64,30 @@ public class MyContentServiceImpl implements MyContentService {
   @Inject private Provider<ContributeMyContentAction> contributeProvider;
   @Inject private OperationFactory editOpFactory;
   @Inject private ItemOperationFactory workflowFactory;
+  @Inject private Provider<SelectionService> selectionService;
+
+  // Prepare a SectionInfo for MyContentContributeSection and forward to it.
+  // If this method is invoked from New UI and ID of a New UI SearchOptions is provided, save the
+  // ID to the model of MyContentContributeSection.
+  private void prepareContribution(SectionInfo info, String handlerId, String newUIStateId) {
+    SectionInfo forward = MyContentContributeSection.createForForward(info);
+    MyContentContributeSection contributeSection =
+        forward.lookupSection(MyContentContributeSection.class);
+
+    contributeSection.contribute(forward, handlerId);
+
+    if (RenderNewTemplate.isNewUIEnabled() && newUIStateId != null) {
+      contributeSection.getModel(forward).setNewUIStateId(newUIStateId);
+    }
+
+    info.forwardAsBookmark(forward);
+  }
+
+  // Return ID of a Scrapbook editing handler.
+  private String getEditingHandler(ItemId itemId) {
+    PropBagEx itemXml = itemService.getItemXmlPropBag(itemId);
+    return itemXml.getNode(MyContentConstants.CONTENT_TYPE_NODE);
+  }
 
   @Override
   public boolean isMyContentContributionAllowed() {
@@ -78,9 +110,12 @@ public class MyContentServiceImpl implements MyContentService {
 
   @Override
   public void forwardToEditor(SectionInfo info, ItemId itemId) {
-    PropBagEx itemxml = itemService.getItemXmlPropBag(itemId);
-    String handlerId = itemxml.getNode(MyContentConstants.CONTENT_TYPE_NODE);
-    MyContentContributeSection.forwardToEdit(info, handlerId, itemId);
+    MyContentContributeSection.forwardToEdit(info, getEditingHandler(itemId), itemId, null);
+  }
+
+  @Override
+  public void forwardToEditorFromNewUI(SectionInfo info, ItemId itemId, String newUIStateId) {
+    MyContentContributeSection.forwardToEdit(info, getEditingHandler(itemId), itemId, newUIStateId);
   }
 
   @Override
@@ -90,8 +125,35 @@ public class MyContentServiceImpl implements MyContentService {
       myContribute.contributionFinished(info);
     }
 
-    // FIXME: is this true??? possibly not
-    SectionInfo fwd = info.createForward("/access/myresources.do");
+    Optional<String> newUIStateId =
+        Optional.ofNullable(myContribute)
+            .map(section -> section.getModel(info))
+            .flatMap(
+                model -> {
+                  Optional<String> sid = Optional.ofNullable(model.getNewUIStateId());
+                  sid.ifPresent(ignored -> model.setNewUIStateId(null));
+
+                  return sid;
+                });
+
+    // Only return to '/page/myresources' when New UI is enabled and the page is NOT in Selection
+    // Session.
+    if (RenderNewTemplate.isNewUIEnabled()
+        && selectionService.get().getCurrentSession(info) == null) {
+      info.forwardToUrl(
+          NewUiRoutes.myResources("scrapbook", Option.empty(), toScala(newUIStateId)));
+      return true;
+    }
+
+    // 'type` must be 'scrapbook' as the page should return to the view of Scrapbook.
+    String path =
+        RootMyResourcesSection.buildForwardUrl(
+            "scrapbook",
+            newUIStateId
+                .map(sid -> Collections.singletonMap("newUIStateId", sid))
+                .orElse(Collections.emptyMap()));
+
+    SectionInfo fwd = info.createForwardForUri(path);
     info.forwardAsBookmark(fwd);
     return true;
   }
@@ -176,10 +238,12 @@ public class MyContentServiceImpl implements MyContentService {
 
   @Override
   public void forwardToContribute(SectionInfo info, String handlerId) {
-    SectionInfo forward = MyContentContributeSection.createForForward(info);
-    MyContentContributeSection contributeSection =
-        forward.lookupSection(MyContentContributeSection.class);
-    contributeSection.contribute(forward, handlerId);
-    info.forwardAsBookmark(forward);
+    prepareContribution(info, handlerId, null);
+  }
+
+  @Override
+  public void forwardToContributeFromNewUI(
+      SectionInfo info, String handlerId, String newUIStateId) {
+    prepareContribution(info, handlerId, newUIStateId);
   }
 }

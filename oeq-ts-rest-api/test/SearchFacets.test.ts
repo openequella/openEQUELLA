@@ -46,6 +46,7 @@ describe('Search for facets', () => {
     results: OEQ.SearchFacets.SearchFacetsResult,
     term: string
   ): JestMatchers<OEQ.SearchFacets.Facet> =>
+    // eslint-disable-next-line jest/valid-expect
     expect(results.results.find(termPredicate(term)));
 
   const expectTermPresent = (

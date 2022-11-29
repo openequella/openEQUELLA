@@ -54,6 +54,7 @@ const MainMenu = ({ menuGroups, onClickNavItem }: MainMenuProps) => {
     <ListItem
       component="a"
       href={item.href}
+      target={item.newWindow ? "_blank" : "_self"}
       onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
         onClickNavItem();
         if (item.route) {
