@@ -15,56 +15,60 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { DeprecatedThemeOptions } from "@mui/material";
-import { createTheme, adaptV4Theme } from "@mui/material/styles";
-import { getRenderData } from "../AppConfig";
+import type { Theme, ThemeOptions } from "@mui/material";
+import { createTheme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
+import { getRenderData } from "../AppConfig";
 
 declare const themeSettings: OEQ.Theme.ThemeSettings;
 
-const standardThemeSettings = (): DeprecatedThemeOptions =>
-  ({
-    palette: {
-      primary: {
-        main: themeSettings.primaryColor,
-      },
-      secondary: {
-        main: themeSettings.secondaryColor,
-      },
-      background: {
-        default: themeSettings.backgroundColor,
-        paper: themeSettings.paperColor,
-      },
-      text: {
-        primary: themeSettings.primaryTextColor,
-        secondary: themeSettings.menuTextColor,
-      },
-      menu: {
-        text: themeSettings.menuItemTextColor,
-        icon: themeSettings.menuItemIconColor,
-        background: themeSettings.menuItemColor,
-      },
+/**
+ * Extended Theme object for oEQ to capture additional areas of theming - such as the menu.
+ */
+interface ExtTheme extends Theme {
+  menu: {
+    background: string;
+    text: string;
+    icon: string;
+  };
+}
+
+const standardThemeSettings = (): ThemeOptions => ({
+  palette: {
+    primary: {
+      main: themeSettings.primaryColor,
     },
-    typography: {
-      useNextVariants: true,
-      fontSize: themeSettings.fontSize,
+    secondary: {
+      main: themeSettings.secondaryColor,
     },
-    // MUI 5 has changed the values of these breakpoints. To avoid any UI inconsistency,
-    // explicitly define these breakpoints with the same values of MUI 4.
-    breakpoints: {
-      values: {
-        xs: 0,
-        sm: 600,
-        md: 960,
-        lg: 1280,
-        xl: 1920,
-      },
+    background: {
+      default: themeSettings.backgroundColor,
+      paper: themeSettings.paperColor,
     },
-  } as DeprecatedThemeOptions);
+    text: {
+      primary: themeSettings.primaryTextColor,
+      secondary: themeSettings.menuTextColor,
+    },
+  },
+  typography: {
+    fontSize: themeSettings.fontSize,
+  },
+  // MUI 5 has changed the values of these breakpoints. To avoid any UI inconsistency,
+  // explicitly define these breakpoints with the same values of MUI 4.
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 960,
+      lg: 1280,
+      xl: 1920,
+    },
+  },
+});
 
 const renderData = getRenderData();
 
-const autoTestOptions: DeprecatedThemeOptions =
+const autoTestOptions: ThemeOptions =
   typeof renderData == "object" && renderData.autotestMode
     ? {
         transitions: {
@@ -73,11 +77,14 @@ const autoTestOptions: DeprecatedThemeOptions =
       }
     : {};
 
-export const getOeqTheme = () =>
-  //todo: drop adaptV4Theme
-  createTheme(
-    adaptV4Theme({
-      ...standardThemeSettings(),
-      ...autoTestOptions,
-    })
-  );
+export const getOeqTheme = (): ExtTheme => ({
+  ...createTheme({
+    ...standardThemeSettings(),
+    ...autoTestOptions,
+  }),
+  menu: {
+    text: themeSettings.menuItemTextColor,
+    icon: themeSettings.menuItemIconColor,
+    background: themeSettings.menuItemColor,
+  },
+});

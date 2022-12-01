@@ -50,6 +50,7 @@ import {
   isItemViewedFromIntegration,
   isSelectionSessionOpen,
 } from "../modules/LegacySelectionSessionModule";
+import { getOeqTheme } from "../modules/ThemeModule";
 import { guestUser } from "../modules/UserModule";
 import { languageStrings } from "../util/langstrings";
 import { AppContext } from "./App";
@@ -167,16 +168,8 @@ const topBarString = coreStrings.topbar.link;
 
 declare const logoURL: string;
 
-interface ExtTheme {
-  menu: {
-    background: string;
-    text: string;
-    icon: string;
-  };
-}
-
 export const useStyles = makeStyles((theme: Theme) => {
-  const menuColors = (theme.palette as unknown as ExtTheme).menu;
+  const menuColors = getOeqTheme().menu;
   const desktop = theme.breakpoints.up("md");
   const drawerWidth = 240;
   const tabHeight = 48;
