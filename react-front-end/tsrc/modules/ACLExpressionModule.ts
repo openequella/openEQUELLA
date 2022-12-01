@@ -19,15 +19,24 @@ import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import { flow, identity, pipe } from "fp-ts/function";
 import { Monoid } from "fp-ts/Monoid";
+import * as NEA from "fp-ts/NonEmptyArray";
 import * as O from "fp-ts/Option";
 import { not } from "fp-ts/Predicate";
-import * as NEA from "fp-ts/NonEmptyArray";
 import * as RA from "fp-ts/ReadonlyArray";
 import * as RNEA from "fp-ts/ReadonlyNonEmptyArray";
 import { ReadonlyNonEmptyArray } from "fp-ts/ReadonlyNonEmptyArray";
 import * as S from "fp-ts/string";
+import * as T from "fp-ts/Task";
+import * as TE from "fp-ts/TaskEither";
 import { Literal, Static, Union } from "runtypes";
 import { pfTernary, pfTernaryTypeGuard } from "../util/pointfree";
+import { ACLEntityResolvers } from "./ACLEntityModule";
+import {
+  ACLRecipient,
+  createACLRecipient,
+  showRecipient,
+  showRecipientHumanReadable,
+} from "./ACLRecipientModule";
 
 /**
  * ACL Operator types:
@@ -42,78 +51,6 @@ const ACLOperatorTypesUnion = Union(
 );
 
 type ACLOperatorType = Static<typeof ACLOperatorTypesUnion>;
-
-/**
- * ACL Recipient types:
- * * user: U:xxx-xxx-xxx
- * * group: G:xxx-xxx-xxx
- * * role: R:xxx-xxx-xxx
- * * owner: $OWNER
- * * everyone: *
- * * refer: F:xxx
- * * IP: I:255.255.0.0%2F24
- * * Sso: T:xxx
- */
-export const ACLRecipientTypes = {
-  User: "U",
-  Group: "G",
-  Role: "R",
-  Everyone: "*",
-  Owner: "$OWNER",
-  Refer: "F",
-  Ip: "I",
-  Sso: "T",
-};
-
-const ACLRecipientTypesUnion = Union(
-  Literal(ACLRecipientTypes.User),
-  Literal(ACLRecipientTypes.Group),
-  Literal(ACLRecipientTypes.Role),
-  Literal(ACLRecipientTypes.Everyone),
-  Literal(ACLRecipientTypes.Owner),
-  Literal(ACLRecipientTypes.Refer),
-  Literal(ACLRecipientTypes.Ip),
-  Literal(ACLRecipientTypes.Sso)
-);
-
-type ACLRecipientType = Static<typeof ACLRecipientTypesUnion>;
-
-/**
- * Represents a recipient in the ACL expression.
- *
- * Examples:
- * - [types]: [expressions]
- * - user: U:f4c788d1-6e97-5247-e06c-3d4982b9469a
- * - user: U:trish.ahsam
- * - group: G:d72eb802-0ea6-4384-907a-341ee60628c0
- * - role: R:366ac350-4eaa-4377-8f1c-e1b12da96d64
- * - role: R:ROLE_CONTENT_ADMINISTRATOR
- * - owner: $OWNER
- * - everyone: *
- * - refer: F:https://edalex.com
- * - refer: F:*edalex*
- * - IP: I:255.255.0.0%2F24
- * - Sso: T:moodle
- */
-export interface ACLRecipient {
-  /** Represents the type of ACL recipient. */
-  type: ACLRecipientType;
-  /** A human-readable name for the recipient. */
-  name: string;
-  /** The raw recipient expression text without type. */
-  expression: string;
-}
-
-/**
- * Show the full raw expression string for an ACL Recipient.
- *
- * For `Everyone` and `Owner`, directly return the expression.
- * For other types return the expression with type prefix.
- */
-const showRecipient = ({ type, expression }: ACLRecipient) =>
-  type === ACLRecipientTypes.Owner || type === ACLRecipientTypes.Everyone
-    ? expression
-    : `${type}:${expression}`;
 
 /**
  * Represents the ACL Expression string.
@@ -155,41 +92,6 @@ export const generateACLExpressionDisplayString = (
       )
     ),
     A.intercalate(S.Monoid)("\n")
-  );
-
-/**
- * Parse a given string and return corresponding ACL Recipient type.
- */
-const parseACLRecipientTypeEither = (
-  text: string
-): E.Either<string, ACLRecipientType> =>
-  pipe(
-    text,
-    S.split(":"),
-    RNEA.head,
-    E.fromPredicate(
-      ACLRecipientTypesUnion.guard,
-      (invalid) => `Failed to parse recipient: ${invalid}`
-    )
-  );
-
-/**
- * Given an expected ACL Recipient expression, will attempt the parse the string and return a new
- * `ACLRecipient`. However, if there are issues then an error string will be captured in `left`.
- *
- * TODO: name will be fetched from API, currently use `expression` as a placeholder.
- */
-export const createACLRecipientEither = (
-  expression: string
-): E.Either<string, ACLRecipient> =>
-  pipe(
-    expression,
-    parseACLRecipientTypeEither,
-    E.map((recipientType) => ({
-      name: expression,
-      expression: pipe(expression, S.split(":"), RNEA.last),
-      type: recipientType,
-    }))
   );
 
 /**
@@ -294,10 +196,6 @@ const merge = (
   baseExpression: ACLExpression,
   newExpression: ACLExpression
 ): ACLExpression => {
-  // TODO: need discuss what should do if baseExpression and newExpression have same `NOT` operator.
-  // Tow options:
-  // 1. In theory it would never need to merge two `NOT` ACLExpressions, so need return an Either here.
-  // 2. We can just let new implementation support it.
   return baseExpression.operator === newExpression.operator ||
     newExpression.operator === "UNKNOWN"
     ? pipe(
@@ -348,7 +246,7 @@ const buildACLExpression = (text: string): E.Either<string, ACLExpression> =>
       isACLOperator,
       flow(createACLExpression, E.right),
       flow(
-        createACLRecipientEither,
+        createACLRecipient,
         E.map((recipient) => createACLExpression("UNKNOWN", [recipient]))
       )
     )
@@ -486,7 +384,6 @@ export const parse = (
         ),
       })
     );
-
   /**
    * Assumes `currentExpression` has an operator of `UNKNOWN` and appends it to the existing `previousExpressions` before returning the updated state.
    */
@@ -899,22 +796,6 @@ export const removeRedundantExpressions = (aclExpression: ACLExpression) => {
  *
  * input:
  * ```
- * AND A
- *   OR B C
- * ```
- *
- * result:
- * ```
- *  [A]
- *  [A, AND]
- *  [A, AND, B]
- *  [A, AND, B, C]
- *  [A, AND, B, C, OR]
- * ```
- * Example 1:
- *
- * input:
- * ```
  * AND A B C
  * ```
  *
@@ -1004,9 +885,147 @@ const generatePostfixResults = (aclExpression: ACLExpression): string[] => {
 };
 
 /**
- * Generate postfix Acl expression which will stored in DB.
+ * Generate infix ACL expression by placing each part of the expression (operands, operators, and parentheses)
+ * in an element of an array of strings. This array can later be easily combined to form a complete string.
  *
- * Note: in old implementation all the expression stored in DB will end with a blank space except those "singular" expression.
+ * First if the `ACLExpression` only has one recipient and is an operator other than `NOT`, then only return the expression name.
+ * Except the first recipient, every time it will insert an operator before adding a new recipient.
+ * Then start to process each child.
+ * Finally, insert an operator after each child's result. If the child's result has more than one recipient, then
+ * parentheses will be used to group the results.
+ *
+ * Example 1:
+ *
+ * input:
+ * ```
+ * AND A B C
+ * ```
+ *
+ * result:
+ * ```
+ *  [A]
+ *  [A, AND, B]
+ *  [A, AND, B, AND, C]
+ * ```
+ * Example 2:
+ *
+ * input:
+ * ```
+ * AND A
+ *   OR B C
+ * ```
+ *
+ * result:
+ * ```
+ *  [A]
+ *  [A] [B, OR, C]
+ *  [A, AND, (, B, OR, C, )]
+ * ```
+ * */
+const generateInfixResults =
+  (providers: ACLEntityResolvers) =>
+  (aclExpression: ACLExpression): T.Task<string[]> => {
+    // fetch human-readable from server if it's failed log the error and return the raw expression
+    const getHumanReadableResult = (recipient: ACLRecipient) =>
+      pipe(
+        recipient,
+        showRecipientHumanReadable(providers),
+        TE.match((err: string) => {
+          console.error(err);
+          return showRecipient(recipient);
+        }, identity)
+      );
+
+    // For expressions with single recipients:
+    // 1. If the expression has an operator of NOT then return an array of `[NOT, expression]`
+    // 2. Otherwise, encapsulate the expression in a single element array. i.e. `[expression]`
+    const handleSingleRecipient = (
+      operator: ACLOperatorType,
+      recipient: ACLRecipient
+    ): T.Task<string[]> =>
+      pipe(
+        recipient,
+        getHumanReadableResult,
+        T.map<string, string[]>((name) =>
+          operator === "NOT" ? [operator, name] : [name]
+        )
+      );
+
+    const handleRecipients = (
+      operator: ACLOperatorType,
+      recipients: ACLRecipient[]
+    ): T.Task<string[]> =>
+      pipe(
+        recipients,
+        A.map(getHumanReadableResult),
+        T.sequenceArray,
+        T.map(flow(RA.intersperse<string>(operator), RA.toArray))
+      );
+
+    const processRecipients = ({ operator, recipients }: ACLExpression) =>
+      A.isNonEmpty(recipients) && A.size(recipients) === 1
+        ? handleSingleRecipient(operator, NEA.head(recipients))
+        : handleRecipients(operator, recipients);
+
+    const processChildren =
+      (parentOperator: string) =>
+      (children: ACLExpression[]): T.Task<string[]> =>
+        pipe(
+          children,
+          A.map(generateInfixResults(providers)),
+          T.sequenceArray,
+          T.map<readonly string[][], string[]>(
+            flow(
+              RA.intersperse<string[]>([")", parentOperator, "("]),
+              RA.flatten,
+              pfTernary(
+                RA.isNonEmpty,
+                (result) => ["(", ...result, ")"],
+                RA.toArray
+              )
+            )
+          )
+        );
+
+    return pipe(
+      aclExpression,
+      // Make sure it doesn't use the reverted form of ACLExpression. Because the following logic assume
+      // `NOT` expression only have one child or one recipient.
+      revertCompactedACLExpressions,
+      processRecipients,
+      // ... then process the children
+      T.chain((recipientsResult) =>
+        pipe(
+          aclExpression.children,
+          processChildren(aclExpression.operator),
+          T.map((childrenResult: string[]) =>
+            A.isNonEmpty(childrenResult)
+              ? [...recipientsResult, aclExpression.operator, ...childrenResult]
+              : recipientsResult
+          )
+        )
+      )
+    );
+  };
+
+/**
+ * Generate infix Acl expression.
+ * The infix format will be used for human to read.
+ */
+export const generateHumanReadable =
+  (providers: ACLEntityResolvers) =>
+  (aclExpression: ACLExpression): T.Task<string> =>
+    pipe(
+      aclExpression,
+      generateInfixResults(providers),
+      T.map(A.intercalate(S.Monoid)(" "))
+    );
+
+/**
+ * Generate postfix Acl expression.
+ * The postfix format which will stored in DB. While the infix format will be used for human to read.
+ *
+ * Note: in old implementation all the expression (postfix format) stored in DB will end with a blank space except those "singular" expression.
  * Here don't have this end space since it's useless.
  *
  * Example of "singular" expression:
@@ -1014,5 +1033,5 @@ const generatePostfixResults = (aclExpression: ACLExpression): string[] => {
  * - $owner
  * - U:user-id
  */
-export const generate = (aclExpression: ACLExpression): string =>
+export const generate = (aclExpression: ACLExpression) =>
   pipe(aclExpression, generatePostfixResults, A.intercalate(S.Monoid)(" "));

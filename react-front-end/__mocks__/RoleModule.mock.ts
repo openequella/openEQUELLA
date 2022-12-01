@@ -16,14 +16,16 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import { findEntityById } from "../tsrc/modules/ACLEntityModule";
+import { entityDetailsProvider } from "./SecurityEntitySearch.mock";
 
 /**
  * A list of roles to test with role search.
  */
 export const roles: OEQ.UserQuery.RoleDetails[] = [
   {
-    id: "62ed85d3-278a-46f5-8ee4-391a45f97899",
-    name: "Teachers",
+    id: "TLE_GUEST_USER_ROLE",
+    name: "Guest",
   },
   {
     id: "1ffbf760-2970-48d7-ab9f-62e95a64d07e",
@@ -38,3 +40,34 @@ export const roles: OEQ.UserQuery.RoleDetails[] = [
     name: "Student",
   },
 ];
+
+/**
+ * Helper function to inject into component for role retrieval by an array of ids.
+ *
+ * @param ids A list of role IDs to lookup, should be one of those in `roles`
+ */
+export const resolveRoles = async (
+  ids: ReadonlyArray<string>
+): Promise<OEQ.UserQuery.RoleDetails[]> =>
+  Promise.resolve(roles.filter(({ id }) => ids.includes(id)));
+
+/**
+ * Helper function for role retrieval by role id.
+ *
+ * @param id oEQ id
+ */
+export const findRoleById = (id: string) => findEntityById(id, resolveRoles);
+
+/**
+ * Helper function to inject into component for role retrieval.
+ *
+ * @param query A simple string to filter by (no wildcard support)
+ */
+export const listRoles = async (
+  query?: string
+): Promise<OEQ.UserQuery.RoleDetails[]> =>
+  entityDetailsProvider(
+    roles,
+    (r: OEQ.UserQuery.RoleDetails, q: string) => r.name.search(q) === 0,
+    query
+  );

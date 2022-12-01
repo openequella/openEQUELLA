@@ -41,7 +41,7 @@ describe("<RoleSearch/>", () => {
     );
 
   it("can search and select", async () => {
-    const queryName = "Teachers";
+    const queryName = "Student";
     // Prepare test values - aligning with mock data and function
     const selectRole = findRoleFromMockData(queryName);
     // The expected result for the first arg of the first call of onChange function.

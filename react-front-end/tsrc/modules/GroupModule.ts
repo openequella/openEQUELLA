@@ -23,6 +23,7 @@ import * as RA from "fp-ts/ReadonlyArray";
 import * as RSET from "fp-ts/ReadonlySet";
 import * as S from "fp-ts/string";
 import { API_BASE_URL } from "../AppConfig";
+import { findEntityById } from "./ACLEntityModule";
 
 /**
  * Eq for `OEQ.UserQuery.GroupDetails` with equality based on the user's UUID.
@@ -60,6 +61,14 @@ export const resolveGroups = async (
       roles: [],
     })
   ).groups;
+
+/**
+ * Find a group's details by ID.
+ *
+ * @param groupId The unique ID of a role
+ */
+export const findGroupById = (groupId: string) =>
+  findEntityById(groupId, resolveGroups);
 
 /**
  * List groups known in oEQ.

@@ -20,7 +20,6 @@ import * as OEQ from "@openequella/rest-api-client";
 import { render, RenderResult, waitFor } from "@testing-library/react";
 import * as React from "react";
 import * as GroupModuleMock from "../../../../__mocks__/GroupModule.mock";
-import * as GroupSearchMock from "../../../../__mocks__/GroupSearch.mock";
 import { BaseSearchProps } from "../../../../tsrc/components/securityentitysearch/BaseSearch";
 import GroupSearch, {
   GroupSearchProps,
@@ -38,7 +37,7 @@ export const defaultGroupSearchProps: BaseSearchProps<OEQ.UserQuery.GroupDetails
   {
     ...commonSearchProps,
     selections: new Set(),
-    search: GroupSearchMock.groupDetailsProvider,
+    search: GroupModuleMock.listGroups,
     itemDetailsToEntry: ({ name }: OEQ.UserQuery.GroupDetails) => (
       <ListItemText primary={name} />
     ),

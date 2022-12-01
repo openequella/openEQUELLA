@@ -31,7 +31,7 @@ describe("<WizardUserSelector/>", () => {
         onChange={jest.fn()}
         users={new Set([testUser.id])}
         mandatory={false}
-        resolveUsersProvider={UserModuleMock.resolveUsersProvider}
+        resolveUsersProvider={UserModuleMock.resolveUsers}
       />
     );
 

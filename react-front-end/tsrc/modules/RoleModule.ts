@@ -17,8 +17,10 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { contramap, Eq } from "fp-ts/Eq";
+import * as RA from "fp-ts/ReadonlyArray";
 import * as S from "fp-ts/string";
 import { API_BASE_URL } from "../AppConfig";
+import { findEntityById } from "./ACLEntityModule";
 
 /**
  * Eq for `OEQ.UserQuery.RoleDetails` with equality based on the role's UUID.
@@ -26,6 +28,30 @@ import { API_BASE_URL } from "../AppConfig";
 export const eqRoleById: Eq<OEQ.UserQuery.RoleDetails> = contramap(
   (role: OEQ.UserQuery.RoleDetails) => role.id
 )(S.Eq);
+
+/**
+ * Lookup roles known in oEQ.
+ *
+ * @param ids An array of oEQ ids
+ */
+export const resolveRoles = async (
+  ids: ReadonlyArray<string>
+): Promise<OEQ.UserQuery.RoleDetails[]> =>
+  (
+    await OEQ.UserQuery.lookup(API_BASE_URL, {
+      users: [],
+      groups: [],
+      roles: RA.toArray<string>(ids),
+    })
+  ).roles;
+
+/**
+ * Find a role's details by ID.
+ *
+ * @param roleId The unique ID of a role
+ */
+export const findRoleById = (roleId: string) =>
+  findEntityById(roleId, resolveRoles);
 
 /**
  * List roles known in oEQ.
