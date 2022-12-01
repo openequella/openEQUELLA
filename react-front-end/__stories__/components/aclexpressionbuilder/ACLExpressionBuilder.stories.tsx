@@ -17,10 +17,9 @@
  */
 import { Meta, Story } from "@storybook/react";
 import * as React from "react";
-import { resolveGroups } from "../../../__mocks__/GroupModule.mock";
-import { groupDetailsProvider } from "../../../__mocks__/GroupSearch.mock";
-import { roleDetailsProvider } from "../../../__mocks__/RoleSearch.mock";
-import { userDetailsProvider } from "../../../__mocks__/UserSearch.mock";
+import { listGroups, resolveGroups } from "../../../__mocks__/GroupModule.mock";
+import { listRoles } from "../../../__mocks__/RoleModule.mock";
+import { listUsers } from "../../../__mocks__/UserModule.mock";
 import ACLExpressionBuilder, {
   ACLExpressionBuilderProps,
 } from "../../../tsrc/components/aclexpressionbuilder/ACLExpressionBuilder";
@@ -70,8 +69,8 @@ Basic.args = {
       },
     ],
   },
-  searchUserProvider: userDetailsProvider,
-  searchGroupProvider: groupDetailsProvider,
-  searchRoleProvider: roleDetailsProvider,
+  searchUserProvider: listUsers,
+  searchGroupProvider: listGroups,
+  searchRoleProvider: listRoles,
   resolveGroupsProvider: resolveGroups,
 };
