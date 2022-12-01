@@ -22,7 +22,6 @@ import { pipe } from "fp-ts/function";
 import * as S from "fp-ts/string";
 import * as React from "react";
 import * as GroupModuleMock from "../../../__mocks__/GroupModule.mock";
-import * as GroupSearchMock from "../../../__mocks__/GroupSearch.mock";
 import GroupSearch, {
   GroupSearchProps,
 } from "../../../tsrc/components/securityentitysearch/GroupSearch";
@@ -44,7 +43,7 @@ export const Default: Story<GroupSearchProps> = (args) => (
 Default.args = {
   selections: RSET.empty,
   listHeight: 150,
-  search: GroupSearchMock.groupDetailsProvider,
+  search: GroupModuleMock.listGroups,
 };
 
 export const MultiSelection: Story<GroupSearchProps> = (args) => (
@@ -65,9 +64,9 @@ export const GroupFilterEditable: Story<GroupSearchProps> = (args) => (
 );
 GroupFilterEditable.args = {
   ...Default.args,
-  search: GroupSearchMock.groupDetailsProvider,
+  search: GroupModuleMock.listGroups,
   groupFilterEditable: true,
   groupFilter: RSET.empty,
-  groupSearch: GroupSearchMock.groupDetailsProvider,
+  groupSearch: GroupModuleMock.listGroups,
   resolveGroupsProvider: GroupModuleMock.resolveGroups,
 };

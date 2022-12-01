@@ -24,9 +24,8 @@ import { pipe } from "fp-ts/function";
 import * as RSET from "fp-ts/ReadonlySet";
 import * as S from "fp-ts/string";
 import { sprintf } from "sprintf-js";
-import * as GroupSearchMock from "../../../../__mocks__/GroupSearch.mock";
-import * as UserModuleMock from "../../../../__mocks__/UserModule.mock";
 import * as GroupModuleMock from "../../../../__mocks__/GroupModule.mock";
+import * as UserModuleMock from "../../../../__mocks__/UserModule.mock";
 import { GroupFilter } from "../../../../__stories__/components/securityentitysearch/UserSearch.stories";
 import {
   eqGroupById,
@@ -91,7 +90,7 @@ describe("<BaseSearch/>", () => {
       const renderResult = await renderBaseSearch({
         ...defaultBaseSearchProps,
         groupFilter: GroupFilter.args!.groupFilter,
-        resolveGroupsProvider: GroupSearchMock.resolveGroupsProvider,
+        resolveGroupsProvider: GroupModuleMock.resolveGroups,
       });
 
       expect(
@@ -177,8 +176,6 @@ describe("<BaseSearch/>", () => {
         ...defaultBaseSearchProps,
         groupFilterEditable: true,
         groupFilter: GroupFilter.args!.groupFilter,
-        groupSearch: GroupSearchMock.groupDetailsProvider,
-        resolveGroupsProvider: GroupSearchMock.resolveGroupsProvider,
       });
 
       const editGroupFilterButton = renderResult.getByText(editLabel);
@@ -192,8 +189,6 @@ describe("<BaseSearch/>", () => {
         ...defaultBaseSearchProps,
         groupFilterEditable: true,
         groupFilter: RSET.empty,
-        groupSearch: GroupSearchMock.groupDetailsProvider,
-        resolveGroupsProvider: GroupSearchMock.resolveGroupsProvider,
       });
 
       clickFilterByGroupButton(renderResult);
@@ -223,8 +218,6 @@ describe("<BaseSearch/>", () => {
         ...defaultBaseSearchProps,
         search: search,
         groupFilterEditable: true,
-        groupSearch: GroupSearchMock.groupDetailsProvider,
-        resolveGroupsProvider: GroupSearchMock.resolveGroupsProvider,
       });
 
       clickFilterByGroupButton(renderResult);
@@ -260,8 +253,6 @@ describe("<BaseSearch/>", () => {
         ...defaultBaseSearchProps,
         groupFilterEditable: true,
         groupFilter: GroupFilter.args!.groupFilter,
-        groupSearch: GroupSearchMock.groupDetailsProvider,
-        resolveGroupsProvider: GroupSearchMock.resolveGroupsProvider,
       });
 
       clickEditGroupFilterButton(renderResult);
@@ -277,8 +268,6 @@ describe("<BaseSearch/>", () => {
         search: search,
         groupFilterEditable: true,
         groupFilter: GroupFilter.args!.groupFilter,
-        groupSearch: GroupSearchMock.groupDetailsProvider,
-        resolveGroupsProvider: GroupSearchMock.resolveGroupsProvider,
       });
 
       // find and click clear button

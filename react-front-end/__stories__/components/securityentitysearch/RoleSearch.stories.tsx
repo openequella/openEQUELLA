@@ -22,7 +22,6 @@ import { pipe } from "fp-ts/function";
 import * as S from "fp-ts/string";
 import * as React from "react";
 import * as RoleModuleMock from "../../../__mocks__/RoleModule.mock";
-import * as RoleSearchMock from "../../../__mocks__/RoleSearch.mock";
 import RoleSearch, {
   RoleSearchProps,
 } from "../../../tsrc/components/securityentitysearch/RoleSearch";
@@ -44,7 +43,7 @@ export const Default: Story<RoleSearchProps> = (args) => (
 Default.args = {
   selections: RSET.empty,
   listHeight: 150,
-  search: RoleSearchMock.roleDetailsProvider,
+  search: RoleModuleMock.listRoles,
 };
 
 export const MultiSelection: Story<RoleSearchProps> = (args) => (

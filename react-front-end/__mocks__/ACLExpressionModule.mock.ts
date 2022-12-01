@@ -15,95 +15,101 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as E from "fp-ts/Either";
-import { identity, pipe } from "fp-ts/function";
 import {
   ACLExpression,
-  ACLRecipient,
-  ACLRecipientTypes,
   createACLExpression,
-  createACLRecipientEither,
 } from "../tsrc/modules/ACLExpressionModule";
+import { ACLRecipientTypes } from "../tsrc/modules/ACLRecipientModule";
+import {
+  everyoneRecipient,
+  groupStaffRecipient,
+  groupStudentRecipient,
+  ipRecipient,
+  ownerRecipient,
+  referRecipient,
+  roleGuestRecipient,
+  user100Recipient,
+  user200Recipient,
+  user300Recipient,
+  user400Recipient,
+  userAdminRecipient,
+  userContentAdminRecipient,
+} from "./ACLRecipientModule.mock";
 
 export const aclEveryone = ACLRecipientTypes.Everyone;
+export const aclEveryoneInfix = "Everyone";
+
 export const aclOwner = ACLRecipientTypes.Owner;
+export const aclOwnerInfix = "Owner";
+
 export const aclUser = "U:2";
-export const aclGroup = "G:e810bee1-f2da-4145-8bc3-dc6fec827429";
-export const aclRole = "R:e8a88448-cdeb-43d0-afc6-8c491266271a";
-export const aclRefer = "F:*https://google.com/example*";
-export const aclExactRefer = "F:https://google.com/example";
-export const aclIp = "I:123.123.0.0%2F32";
-export const aclSso = "T:moodle";
+export const aclUserInfix = "Content Content [ContentAdmin]";
 
 export const aclNotUser = "U:2 NOT";
-export const aclNotUserInfix = "NOT ( U:2 )";
+export const aclNotUserInfix = "NOT Content Content [ContentAdmin]";
 
 export const aclTwoItems = "U:2 U:75abbd62-d91c-4ce5-b4b5-339e0d44ac0e OR";
+export const aclTwoItemsInfix =
+  "Content Content [ContentAdmin] OR Wat Swindlehurst [admin999]";
 
 export const aclThreeItems =
   "U:eb75a832-6533-4d72-93f4-2b7a1b108951 I:127.0.0.1%2F24 AND F:*google* AND";
+export const aclThreeItemsInfix =
+  "Yasmin Day [user300] AND From 127.0.0.1%2F24 AND From *google*";
 
 export const aclWithSubExpression =
   "U:eb75a832-6533-4d72-93f4-2b7a1b108951 I:127.0.0.1%2F24 AND F:*google* AND $OWNER R:TLE_GUEST_USER_ROLE OR U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef OR AND";
+export const aclWithSubExpressionInfix =
+  "Yasmin Day [user300] AND From 127.0.0.1%2F24 AND From *google* AND ( Owner OR Guest OR Ronny Southgate [user400] )";
 
 export const aclWithMultipleSubExpression =
   "U:eb75a832-6533-4d72-93f4-2b7a1b108951 I:127.0.0.1%2F24 AND F:*google* AND $OWNER R:TLE_GUEST_USER_ROLE OR U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef OR AND G:99806ac8-410e-4c60-b3ab-22575276f0f0 G:d0265a33-8f89-4cea-8a36-45fd3c4cf5a1 OR NOT AND";
+export const aclWithMultipleSubExpressionInfix =
+  "Yasmin Day [user300] AND From 127.0.0.1%2F24 AND From *google* AND ( Owner OR Guest OR Ronny Southgate [user400] ) AND ( NOT ( Engineering & Computer Science Students OR Engineering & Computer Science Staff ) )";
 
 export const aclWithNestedSubExpression =
   "U:eb75a832-6533-4d72-93f4-2b7a1b108951 I:127.0.0.1%2F24 AND F:*google* AND $OWNER R:TLE_GUEST_USER_ROLE OR U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef OR U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a OR NOT OR AND G:99806ac8-410e-4c60-b3ab-22575276f0f0 NOT AND";
+export const aclWithNestedSubExpressionInfix =
+  "Yasmin Day [user300] AND From 127.0.0.1%2F24 AND From *google* AND ( Owner OR Guest OR Ronny Southgate [user400] OR ( NOT ( Fabienne Hobson [user100] OR Racheal Carlyle [user200] ) ) ) AND ( NOT Engineering & Computer Science Students )";
 
 export const aclWithComplexSubExpression =
   "U:eb75a832-6533-4d72-93f4-2b7a1b108951 I:127.0.0.1%2F24 AND F:*google* AND $OWNER R:TLE_GUEST_USER_ROLE OR U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef OR U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a OR NOT OR F:aa F:bb F:cc OR NOT AND OR AND G:99806ac8-410e-4c60-b3ab-22575276f0f0 G:d0265a33-8f89-4cea-8a36-45fd3c4cf5a1 OR NOT AND";
-
-const createACLRecipient = (expression: string): ACLRecipient =>
-  pipe(
-    expression,
-    createACLRecipientEither,
-    E.match((message) => {
-      throw TypeError(message);
-    }, identity)
-  );
+export const aclWithComplexSubExpressionInfix =
+  "Yasmin Day [user300] AND From 127.0.0.1%2F24 AND From *google* AND ( Owner OR Guest OR Ronny Southgate [user400] OR ( NOT ( Fabienne Hobson [user100] OR Racheal Carlyle [user200] ) ) OR ( From aa AND ( NOT ( From bb OR From cc ) ) ) ) AND ( NOT ( Engineering & Computer Science Students OR Engineering & Computer Science Staff ) )";
 
 export const everyoneACLExpression: ACLExpression = createACLExpression(
   "OR",
-  [createACLRecipient(aclEveryone)],
+  [everyoneRecipient],
   []
 );
 
 export const ownerACLExpression: ACLExpression = createACLExpression(
   "OR",
-  [createACLRecipient(aclOwner)],
+  [ownerRecipient],
   []
 );
 
 export const userACLExpression: ACLExpression = createACLExpression(
   "OR",
-  [createACLRecipient(aclUser)],
+  [userContentAdminRecipient],
   []
 );
 
 export const notUserACLExpression: ACLExpression = createACLExpression(
   "NOT",
-  [createACLRecipient("U:2")],
+  [userContentAdminRecipient],
   []
 );
 
 export const twoItemsACLExpression: ACLExpression = createACLExpression(
   "OR",
-  [
-    createACLRecipient("U:2"),
-    createACLRecipient("U:75abbd62-d91c-4ce5-b4b5-339e0d44ac0e"),
-  ],
+  [userContentAdminRecipient, userAdminRecipient],
   []
 );
 
 export const threeItemsACLExpression: ACLExpression = createACLExpression(
   "AND",
-  [
-    createACLRecipient("U:eb75a832-6533-4d72-93f4-2b7a1b108951"),
-    createACLRecipient("I:127.0.0.1%2F24"),
-    createACLRecipient("F:*google*"),
-  ],
+  [user300Recipient, ipRecipient("127.0.0.1%2F24"), referRecipient("*google*")],
   []
 );
 
@@ -111,18 +117,14 @@ export const withSubExpressionACLExpression: ACLExpression =
   createACLExpression(
     "AND",
     [
-      createACLRecipient("U:eb75a832-6533-4d72-93f4-2b7a1b108951"),
-      createACLRecipient("I:127.0.0.1%2F24"),
-      createACLRecipient("F:*google*"),
+      user300Recipient,
+      ipRecipient("127.0.0.1%2F24"),
+      referRecipient("*google*"),
     ],
     [
       createACLExpression(
         "OR",
-        [
-          createACLRecipient("$OWNER"),
-          createACLRecipient("R:TLE_GUEST_USER_ROLE"),
-          createACLRecipient("U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef"),
-        ],
+        [ownerRecipient, roleGuestRecipient, user400Recipient],
         []
       ),
     ]
@@ -130,19 +132,11 @@ export const withSubExpressionACLExpression: ACLExpression =
 
 export const withMultipleSubExpression: ACLExpression = createACLExpression(
   "AND",
-  [
-    createACLRecipient("U:eb75a832-6533-4d72-93f4-2b7a1b108951"),
-    createACLRecipient("I:127.0.0.1%2F24"),
-    createACLRecipient("F:*google*"),
-  ],
+  [user300Recipient, ipRecipient("127.0.0.1%2F24"), referRecipient("*google*")],
   [
     createACLExpression(
       "OR",
-      [
-        createACLRecipient("$OWNER"),
-        createACLRecipient("R:TLE_GUEST_USER_ROLE"),
-        createACLRecipient("U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef"),
-      ],
+      [ownerRecipient, roleGuestRecipient, user400Recipient],
       []
     ),
     createACLExpression(
@@ -151,10 +145,7 @@ export const withMultipleSubExpression: ACLExpression = createACLExpression(
       [
         createACLExpression(
           "OR",
-          [
-            createACLRecipient("G:99806ac8-410e-4c60-b3ab-22575276f0f0"),
-            createACLRecipient("G:d0265a33-8f89-4cea-8a36-45fd3c4cf5a1"),
-          ],
+          [groupStudentRecipient, groupStaffRecipient],
           []
         ),
       ]
@@ -166,18 +157,14 @@ export const withNestedSubExpressionACLExpression: ACLExpression =
   createACLExpression(
     "AND",
     [
-      createACLRecipient("U:eb75a832-6533-4d72-93f4-2b7a1b108951"),
-      createACLRecipient("I:127.0.0.1%2F24"),
-      createACLRecipient("F:*google*"),
+      user300Recipient,
+      ipRecipient("127.0.0.1%2F24"),
+      referRecipient("*google*"),
     ],
     [
       createACLExpression(
         "OR",
-        [
-          createACLRecipient("$OWNER"),
-          createACLRecipient("R:TLE_GUEST_USER_ROLE"),
-          createACLRecipient("U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef"),
-        ],
+        [ownerRecipient, roleGuestRecipient, user400Recipient],
         [
           createACLExpression(
             "NOT",
@@ -185,21 +172,14 @@ export const withNestedSubExpressionACLExpression: ACLExpression =
             [
               createACLExpression(
                 "OR",
-                [
-                  createACLRecipient("U:20483af2-fe56-4499-a54b-8d7452156895"),
-                  createACLRecipient("U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a"),
-                ],
+                [user100Recipient, user200Recipient],
                 []
               ),
             ]
           ),
         ]
       ),
-      createACLExpression(
-        "NOT",
-        [createACLRecipient("G:99806ac8-410e-4c60-b3ab-22575276f0f0")],
-        []
-      ),
+      createACLExpression("NOT", [groupStudentRecipient], []),
     ]
   );
 
@@ -207,18 +187,14 @@ export const complexExpressionACLExpression: ACLExpression =
   createACLExpression(
     "AND",
     [
-      createACLRecipient("U:eb75a832-6533-4d72-93f4-2b7a1b108951"),
-      createACLRecipient("I:127.0.0.1%2F24"),
-      createACLRecipient("F:*google*"),
+      user300Recipient,
+      ipRecipient("127.0.0.1%2F24"),
+      referRecipient("*google*"),
     ],
     [
       createACLExpression(
         "OR",
-        [
-          createACLRecipient("$OWNER"),
-          createACLRecipient("R:TLE_GUEST_USER_ROLE"),
-          createACLRecipient("U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef"),
-        ],
+        [ownerRecipient, roleGuestRecipient, user400Recipient],
         [
           createACLExpression(
             "NOT",
@@ -226,17 +202,14 @@ export const complexExpressionACLExpression: ACLExpression =
             [
               createACLExpression(
                 "OR",
-                [
-                  createACLRecipient("U:20483af2-fe56-4499-a54b-8d7452156895"),
-                  createACLRecipient("U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a"),
-                ],
+                [user100Recipient, user200Recipient],
                 []
               ),
             ]
           ),
           createACLExpression(
             "AND",
-            [createACLRecipient("F:aa")],
+            [referRecipient("aa")],
             [
               createACLExpression(
                 "NOT",
@@ -244,7 +217,7 @@ export const complexExpressionACLExpression: ACLExpression =
                 [
                   createACLExpression(
                     "OR",
-                    [createACLRecipient("F:bb"), createACLRecipient("F:cc")],
+                    [referRecipient("bb"), referRecipient("cc")],
                     []
                   ),
                 ]
@@ -259,10 +232,7 @@ export const complexExpressionACLExpression: ACLExpression =
         [
           createACLExpression(
             "OR",
-            [
-              createACLRecipient("G:99806ac8-410e-4c60-b3ab-22575276f0f0"),
-              createACLRecipient("G:d0265a33-8f89-4cea-8a36-45fd3c4cf5a1"),
-            ],
+            [groupStudentRecipient, groupStaffRecipient],
             []
           ),
         ]
@@ -272,106 +242,68 @@ export const complexExpressionACLExpression: ACLExpression =
 
 export const childSameOperatorExpression: ACLExpression = createACLExpression(
   "AND",
-  [createACLRecipient("U:2")],
-  [
-    createACLExpression(
-      "AND",
-      [
-        createACLRecipient("G:99806ac8-410e-4c60-b3ab-22575276f0f0"),
-        createACLRecipient("G:d0265a33-8f89-4cea-8a36-45fd3c4cf5a1"),
-      ],
-      []
-    ),
-  ]
+  [userContentAdminRecipient],
+  [createACLExpression("AND", [groupStudentRecipient, groupStaffRecipient], [])]
 );
 
 export const simplifiedChildSameOperatorExpression: ACLExpression =
   createACLExpression(
     "AND",
-    [
-      createACLRecipient("U:2"),
-      createACLRecipient("G:99806ac8-410e-4c60-b3ab-22575276f0f0"),
-      createACLRecipient("G:d0265a33-8f89-4cea-8a36-45fd3c4cf5a1"),
-    ],
+    [userContentAdminRecipient, groupStudentRecipient, groupStaffRecipient],
     []
   );
 
 export const childOneItemRedundantExpression: ACLExpression =
   createACLExpression(
     "AND",
-    [createACLRecipient("U:2")],
-    [
-      createACLExpression(
-        "OR",
-        [createACLRecipient("G:99806ac8-410e-4c60-b3ab-22575276f0f0")],
-        []
-      ),
-    ]
+    [userContentAdminRecipient],
+    [createACLExpression("OR", [groupStudentRecipient], [])]
   );
 
 export const simplifiedChildOneItemRedundantExpression: ACLExpression =
   createACLExpression(
     "AND",
-    [
-      createACLRecipient("U:2"),
-      createACLRecipient("G:99806ac8-410e-4c60-b3ab-22575276f0f0"),
-    ],
+    [userContentAdminRecipient, groupStudentRecipient],
     []
   );
 
 export const childrenItemRedundantExpression: ACLExpression =
   createACLExpression(
     "AND",
-    [createACLRecipient("U:2")],
+    [userContentAdminRecipient],
     [
-      createACLExpression(
-        "OR",
-        [createACLRecipient("G:99806ac8-410e-4c60-b3ab-22575276f0f0")],
-        []
-      ),
-      createACLExpression("OR", [createACLRecipient("G:4")], []),
+      createACLExpression("OR", [groupStudentRecipient], []),
+      createACLExpression("OR", [referRecipient("4")], []),
     ]
   );
 
 export const simplifiedChildrenItemRedundantExpression: ACLExpression =
   createACLExpression(
     "AND",
-    [
-      createACLRecipient("U:2"),
-      createACLRecipient("G:99806ac8-410e-4c60-b3ab-22575276f0f0"),
-      createACLRecipient("G:4"),
-    ],
+    [userContentAdminRecipient, groupStudentRecipient, referRecipient("4")],
     []
   );
 
 export const peerSameOperatorExpression: ACLExpression = createACLExpression(
   "OR",
-  [createACLRecipient("U:2")],
+  [userContentAdminRecipient],
   [
-    createACLExpression(
-      "OR",
-      [createACLRecipient("G:99806ac8-410e-4c60-b3ab-22575276f0f0")],
-      []
-    ),
-    createACLExpression("AND", [createACLRecipient("G:4")], []),
+    createACLExpression("OR", [groupStudentRecipient], []),
+    createACLExpression("AND", [referRecipient("4")], []),
     createACLExpression(
       "AND",
-      [createACLRecipient("G:10"), createACLRecipient("G:11")],
+      [referRecipient("10"), referRecipient("11")],
       []
     ),
-    createACLExpression(
-      "OR",
-      [createACLRecipient("G:5"), createACLRecipient("G:6")],
-      []
-    ),
-    createACLExpression("NOT", [createACLRecipient("G:7")], []),
+    createACLExpression("OR", [referRecipient("5"), referRecipient("6")], []),
+    createACLExpression("NOT", [referRecipient("7")], []),
     createACLExpression(
       "NOT",
       [],
       [
         createACLExpression(
           "OR",
-          [createACLRecipient("G:8"), createACLRecipient("G:9")],
+          [referRecipient("8"), referRecipient("9")],
           []
         ),
       ]
@@ -383,26 +315,26 @@ export const simplifiedPeerSameOperatorExpression: ACLExpression =
   createACLExpression(
     "OR",
     [
-      createACLRecipient("U:2"),
-      createACLRecipient("G:99806ac8-410e-4c60-b3ab-22575276f0f0"),
-      createACLRecipient("G:4"),
-      createACLRecipient("G:5"),
-      createACLRecipient("G:6"),
+      userContentAdminRecipient,
+      groupStudentRecipient,
+      referRecipient("4"),
+      referRecipient("5"),
+      referRecipient("6"),
     ],
     [
       createACLExpression(
         "AND",
-        [createACLRecipient("G:10"), createACLRecipient("G:11")],
+        [referRecipient("10"), referRecipient("11")],
         []
       ),
-      createACLExpression("NOT", [createACLRecipient("G:7")], []),
+      createACLExpression("NOT", [referRecipient("7")], []),
       createACLExpression(
         "NOT",
         [],
         [
           createACLExpression(
             "OR",
-            [createACLRecipient("G:8"), createACLRecipient("G:9")],
+            [referRecipient("8"), referRecipient("9")],
             []
           ),
         ]
@@ -412,15 +344,15 @@ export const simplifiedPeerSameOperatorExpression: ACLExpression =
 
 export const complexRedundantExpression: ACLExpression = createACLExpression(
   "OR",
-  [createACLRecipient("U:1"), createACLRecipient("G:1")],
+  [referRecipient("U1"), referRecipient("G1")],
   [
     createACLExpression("AND", [], []),
     createACLExpression(
       "OR",
-      [createACLRecipient("U:2"), createACLRecipient("U:3")],
+      [userContentAdminRecipient, referRecipient("3")],
       [
         createACLExpression("OR", [], []),
-        createACLExpression("AND", [createACLRecipient("U:4")], []),
+        createACLExpression("AND", [referRecipient("4")], []),
       ]
     ),
     createACLExpression("AND", [], []),
@@ -430,21 +362,21 @@ export const complexRedundantExpression: ACLExpression = createACLExpression(
       [
         createACLExpression(
           "OR",
-          [createACLRecipient("G:2"), createACLRecipient("G:3")],
+          [referRecipient("2"), referRecipient("3")],
           [
             createACLExpression(
               "OR",
-              [createACLRecipient("F:aa"), createACLRecipient("F:bb")],
+              [referRecipient("aa"), referRecipient("bb")],
               []
             ),
             createACLExpression(
               "AND",
-              [createACLRecipient("F:cc"), createACLRecipient("F:dd")],
+              [referRecipient("cc"), referRecipient("dd")],
               []
             ),
             createACLExpression(
               "NOT",
-              [createACLRecipient("F:ee"), createACLRecipient("F:ff")],
+              [referRecipient("ee"), referRecipient("ff")],
               []
             ),
           ]
@@ -458,11 +390,11 @@ export const simplifiedComplexRedundantExpression: ACLExpression =
   createACLExpression(
     "OR",
     [
-      createACLRecipient("U:1"),
-      createACLRecipient("G:1"),
-      createACLRecipient("U:2"),
-      createACLRecipient("U:3"),
-      createACLRecipient("U:4"),
+      referRecipient("U1"),
+      referRecipient("G1"),
+      userContentAdminRecipient,
+      referRecipient("3"),
+      referRecipient("4"),
     ],
     [
       createACLExpression(
@@ -472,20 +404,20 @@ export const simplifiedComplexRedundantExpression: ACLExpression =
           createACLExpression(
             "OR",
             [
-              createACLRecipient("G:2"),
-              createACLRecipient("G:3"),
-              createACLRecipient("F:aa"),
-              createACLRecipient("F:bb"),
+              referRecipient("2"),
+              referRecipient("3"),
+              referRecipient("aa"),
+              referRecipient("bb"),
             ],
             [
               createACLExpression(
                 "AND",
-                [createACLRecipient("F:cc"), createACLRecipient("F:dd")],
+                [referRecipient("cc"), referRecipient("dd")],
                 []
               ),
               createACLExpression(
                 "NOT",
-                [createACLRecipient("F:ee"), createACLRecipient("F:ff")],
+                [referRecipient("ee"), referRecipient("ff")],
                 []
               ),
             ]
@@ -501,7 +433,7 @@ export const simplifiedComplexRedundantExpression: ACLExpression =
  * ```
  * */
 export const notExpression: ACLExpression = createACLExpression("NOT", [
-  createACLRecipient("F:A"),
+  referRecipient("A"),
 ]);
 
 /**
@@ -519,13 +451,8 @@ export const notWithChildExpression: ACLExpression = createACLExpression(
   [
     createACLExpression(
       "OR",
-      [createACLRecipient("F:A"), createACLRecipient("F:B")],
-      [
-        createACLExpression("AND", [
-          createACLRecipient("F:C"),
-          createACLRecipient("F:D"),
-        ]),
-      ]
+      [referRecipient("A"), referRecipient("B")],
+      [createACLExpression("AND", [referRecipient("C"), referRecipient("D")])]
     ),
   ]
 );
@@ -541,13 +468,8 @@ export const notWithChildExpression: ACLExpression = createACLExpression(
 export const notWithChildCompactedExpression: ACLExpression =
   createACLExpression(
     "NOT",
-    [createACLRecipient("F:A"), createACLRecipient("F:B")],
-    [
-      createACLExpression("AND", [
-        createACLRecipient("F:C"),
-        createACLRecipient("F:D"),
-      ]),
-    ]
+    [referRecipient("A"), referRecipient("B")],
+    [createACLExpression("AND", [referRecipient("C"), referRecipient("D")])]
   );
 
 /**
@@ -570,11 +492,11 @@ export const notNestedExpression: ACLExpression = createACLExpression(
   [
     createACLExpression(
       "OR",
-      [createACLRecipient("F:A"), createACLRecipient("F:B")],
+      [referRecipient("A"), referRecipient("B")],
       [
         createACLExpression(
           "AND",
-          [createACLRecipient("F:C"), createACLRecipient("F:D")],
+          [referRecipient("C"), referRecipient("D")],
           [
             createACLExpression(
               "NOT",
@@ -582,8 +504,8 @@ export const notNestedExpression: ACLExpression = createACLExpression(
               [
                 createACLExpression(
                   "OR",
-                  [createACLRecipient("F:E"), createACLRecipient("F:F")],
-                  [createACLExpression("NOT", [createACLRecipient("F:G")])]
+                  [referRecipient("E"), referRecipient("F")],
+                  [createACLExpression("NOT", [referRecipient("G")])]
                 ),
               ]
             ),
@@ -608,16 +530,16 @@ export const notNestedExpression: ACLExpression = createACLExpression(
  */
 export const notNestedCompactedExpression: ACLExpression = createACLExpression(
   "NOT",
-  [createACLRecipient("F:A"), createACLRecipient("F:B")],
+  [referRecipient("A"), referRecipient("B")],
   [
     createACLExpression(
       "AND",
-      [createACLRecipient("F:C"), createACLRecipient("F:D")],
+      [referRecipient("C"), referRecipient("D")],
       [
         createACLExpression(
           "NOT",
-          [createACLRecipient("F:E"), createACLRecipient("F:F")],
-          [createACLExpression("NOT", [createACLRecipient("F:G")])]
+          [referRecipient("E"), referRecipient("F")],
+          [createACLExpression("NOT", [referRecipient("G")])]
         ),
       ]
     ),
@@ -638,22 +560,14 @@ export const notNestedCompactedExpression: ACLExpression = createACLExpression(
  * */
 export const notUnexpectedExpression: ACLExpression = createACLExpression(
   "NOT",
-  [createACLRecipient("F:1"), createACLRecipient("F:2")],
+  [referRecipient("1"), referRecipient("2")],
   [
     createACLExpression(
       "OR",
-      [createACLRecipient("F:A"), createACLRecipient("F:B")],
-      [
-        createACLExpression("AND", [
-          createACLRecipient("F:C"),
-          createACLRecipient("F:D"),
-        ]),
-      ]
+      [referRecipient("A"), referRecipient("B")],
+      [createACLExpression("AND", [referRecipient("C"), referRecipient("D")])]
     ),
-    createACLExpression("AND", [
-      createACLRecipient("F:E"),
-      createACLRecipient("F:F"),
-    ]),
+    createACLExpression("AND", [referRecipient("E"), referRecipient("F")]),
   ]
 );
 
@@ -669,19 +583,14 @@ export const notUnexpectedCompactedExpression: ACLExpression =
   createACLExpression(
     "NOT",
     [
-      createACLRecipient("F:1"),
-      createACLRecipient("F:2"),
-      createACLRecipient("F:A"),
-      createACLRecipient("F:B"),
-      createACLRecipient("F:E"),
-      createACLRecipient("F:F"),
+      referRecipient("1"),
+      referRecipient("2"),
+      referRecipient("A"),
+      referRecipient("B"),
+      referRecipient("E"),
+      referRecipient("F"),
     ],
-    [
-      createACLExpression("AND", [
-        createACLRecipient("F:C"),
-        createACLRecipient("F:D"),
-      ]),
-    ]
+    [createACLExpression("AND", [referRecipient("C"), referRecipient("D")])]
   );
 
 /**
@@ -703,19 +612,14 @@ export const notUnexpectedRevertCompactExpression: ACLExpression =
       createACLExpression(
         "OR",
         [
-          createACLRecipient("F:1"),
-          createACLRecipient("F:2"),
-          createACLRecipient("F:A"),
-          createACLRecipient("F:B"),
-          createACLRecipient("F:E"),
-          createACLRecipient("F:F"),
+          referRecipient("1"),
+          referRecipient("2"),
+          referRecipient("A"),
+          referRecipient("B"),
+          referRecipient("E"),
+          referRecipient("F"),
         ],
-        [
-          createACLExpression("AND", [
-            createACLRecipient("F:C"),
-            createACLRecipient("F:D"),
-          ]),
-        ]
+        [createACLExpression("AND", [referRecipient("C"), referRecipient("D")])]
       ),
     ]
   );

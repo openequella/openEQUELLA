@@ -23,10 +23,7 @@ import * as RR from "fp-ts/ReadonlyRecord";
 import * as RSET from "fp-ts/ReadonlySet";
 import { last } from "fp-ts/Semigroup";
 import * as S from "fp-ts/string";
-import {
-  resolveUsersProvider,
-  users,
-} from "../../../__mocks__/UserModule.mock";
+import { resolveUsers, users } from "../../../__mocks__/UserModule.mock";
 import {
   resolveUsersCached,
   UserCache,
@@ -35,7 +32,7 @@ import { expectRight } from "../FpTsMatchers";
 
 describe("resolveUsersCached", () => {
   // Note that this function retrieves unknown users via `resolveUsersProvider` mock which just
-  // looks up IDs within the `users` mock from `UserSearch.mock`.
+  // looks up IDs within the mock `users` data.
   const retrieveTestUser = async (
     ids: ReadonlySet<string>,
     cache: UserCache,
@@ -43,7 +40,7 @@ describe("resolveUsersCached", () => {
   ) => {
     const result = await pipe(
       ids,
-      resolveUsersCached(cache, setCache, resolveUsersProvider)
+      resolveUsersCached(cache, setCache, resolveUsers)
     )();
 
     return expectRight(result)!;

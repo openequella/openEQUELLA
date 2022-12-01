@@ -21,21 +21,35 @@ import {
   ACLExpression,
   compactACLExpressions,
   generate,
+  generateHumanReadable,
   parse,
   removeRedundantExpressions,
   revertCompactedACLExpressions,
 } from "../../../tsrc/modules/ACLExpressionModule";
+import { findUserById } from "../../../__mocks__/UserModule.mock";
+import { findGroupById } from "../../../__mocks__/GroupModule.mock";
+import { findRoleById } from "../../../__mocks__/RoleModule.mock";
 import {
   aclEveryone,
+  aclEveryoneInfix,
   aclNotUser,
+  aclNotUserInfix,
   aclOwner,
+  aclOwnerInfix,
   aclThreeItems,
+  aclThreeItemsInfix,
   aclTwoItems,
+  aclTwoItemsInfix,
   aclUser,
+  aclUserInfix,
   aclWithComplexSubExpression,
+  aclWithComplexSubExpressionInfix,
   aclWithMultipleSubExpression,
+  aclWithMultipleSubExpressionInfix,
   aclWithNestedSubExpression,
+  aclWithNestedSubExpressionInfix,
   aclWithSubExpression,
+  aclWithSubExpressionInfix,
   childOneItemRedundantExpression,
   childrenItemRedundantExpression,
   childSameOperatorExpression,
@@ -67,6 +81,7 @@ import {
 } from "../../../__mocks__/ACLExpressionModule.mock";
 
 describe("ACLExpressionModule", () => {
+  // convert Either to ACLExpression
   const handleParse = (
     result: E.Either<string[], ACLExpression>
   ): ACLExpression =>
@@ -82,6 +97,7 @@ describe("ACLExpressionModule", () => {
 
   describe("parse", () => {
     it("parse text as ACL Expressions", () => {
+      expect(parse(aclUser)).toEqual(E.right(userACLExpression));
       expect(parse(aclEveryone)).toEqual(E.right(everyoneACLExpression));
       expect(parse(aclOwner)).toEqual(E.right(ownerACLExpression));
       expect(parse(aclUser)).toEqual(E.right(userACLExpression));
@@ -101,6 +117,12 @@ describe("ACLExpressionModule", () => {
         E.right(complexExpressionACLExpression)
       );
     });
+
+    it("text with a blank space at the end should still be able to parsed", () => {
+      expect(parse(aclWithComplexSubExpression + " ")).toEqual(
+        E.right(complexExpressionACLExpression)
+      );
+    });
   });
 
   describe("compactACLExpressions", () => {
@@ -112,7 +134,6 @@ describe("ACLExpressionModule", () => {
       expect(compactACLExpressions(notWithChildExpression)).toEqual(
         notWithChildCompactedExpression
       );
-
       expect(compactACLExpressions(notUnexpectedExpression)).toEqual(
         notUnexpectedCompactedExpression
       );
@@ -168,26 +189,86 @@ describe("ACLExpressionModule", () => {
   });
 
   describe("generate", () => {
-    it("generate postfix ACL Expression text from objects of ACL Expression", () => {
-      expect(generate(everyoneACLExpression)).toEqual(aclEveryone);
-      expect(generate(ownerACLExpression)).toEqual(aclOwner);
-      expect(generate(userACLExpression)).toEqual(aclUser);
-      expect(generate(notUserACLExpression)).toEqual(aclNotUser);
-      expect(generate(twoItemsACLExpression)).toEqual(aclTwoItems);
-      expect(generate(threeItemsACLExpression)).toEqual(aclThreeItems);
-      expect(generate(withSubExpressionACLExpression)).toEqual(
-        aclWithSubExpression
-      );
-      expect(generate(withMultipleSubExpression)).toEqual(
-        aclWithMultipleSubExpression
-      );
-      expect(generate(withNestedSubExpressionACLExpression)).toEqual(
-        aclWithNestedSubExpression
-      );
-      expect(generate(complexExpressionACLExpression)).toEqual(
-        aclWithComplexSubExpression
-      );
+    it.each([
+      ["everyoneACLExpression", everyoneACLExpression, aclEveryone],
+      ["ownerACLExpression", ownerACLExpression, aclOwner],
+      ["userACLExpression", userACLExpression, aclUser],
+      ["notUserACLExpression", notUserACLExpression, aclNotUser],
+      ["twoItemsACLExpression", twoItemsACLExpression, aclTwoItems],
+      ["threeItemsACLExpression", threeItemsACLExpression, aclThreeItems],
+      [
+        "withSubExpressionACLExpression",
+        withSubExpressionACLExpression,
+        aclWithSubExpression,
+      ],
+      [
+        "withMultipleSubExpression",
+        withMultipleSubExpression,
+        aclWithMultipleSubExpression,
+      ],
+      [
+        "withNestedSubExpressionACLExpression",
+        withNestedSubExpressionACLExpression,
+        aclWithNestedSubExpression,
+      ],
+      [
+        "complexExpressionACLExpression",
+        complexExpressionACLExpression,
+        aclWithComplexSubExpression,
+      ],
+    ])(
+      "generate postfix ACL Expression text from %s",
+      (_, aclExpression, expectedExpression) => {
+        expect(generate(aclExpression)).toEqual(expectedExpression);
+      }
+    );
+  });
+
+  describe("generateHumanReadable", () => {
+    /**
+     * Generate where mocked versions of functions to look up entities (user, group and role) are provided.
+     */
+    const generateHumanReadableWithMocks = generateHumanReadable({
+      resolveUserProvider: findUserById,
+      resolveGroupProvider: findGroupById,
+      resolveRoleProvider: findRoleById,
     });
+
+    it.each([
+      ["everyoneACLExpression", everyoneACLExpression, aclEveryoneInfix],
+      ["ownerACLExpression", ownerACLExpression, aclOwnerInfix],
+      ["userACLExpression", userACLExpression, aclUserInfix],
+      ["notUserACLExpression", notUserACLExpression, aclNotUserInfix],
+      ["twoItemsACLExpression", twoItemsACLExpression, aclTwoItemsInfix],
+      ["threeItemsACLExpression", threeItemsACLExpression, aclThreeItemsInfix],
+      [
+        "withSubExpressionACLExpression",
+        withSubExpressionACLExpression,
+        aclWithSubExpressionInfix,
+      ],
+      [
+        "withMultipleSubExpression",
+        withMultipleSubExpression,
+        aclWithMultipleSubExpressionInfix,
+      ],
+      [
+        "withNestedSubExpressionACLExpression",
+        withNestedSubExpressionACLExpression,
+        aclWithNestedSubExpressionInfix,
+      ],
+      [
+        "complexExpressionACLExpression",
+        complexExpressionACLExpression,
+        aclWithComplexSubExpressionInfix,
+      ],
+    ])(
+      "generate infix ACL Expression text (human readable text) from %s",
+      async (_, aclExpression, expectedExpression) => {
+        await expect(
+          generateHumanReadableWithMocks(aclExpression)()
+        ).resolves.toEqual(expectedExpression);
+      }
+    );
   });
 
   describe("removeRedundantExpressions", () => {
@@ -211,88 +292,73 @@ describe("ACLExpressionModule", () => {
   });
 
   describe("values produced by the module, should also work with the module", () => {
-    it("parse -> generate -> parse", () => {
-      expect(pipe(aclEveryone, parse, handleParse, generate, parse)).toEqual(
-        E.right(everyoneACLExpression)
+    it.each([
+      ["everyone", aclEveryone, everyoneACLExpression],
+      ["aclOwner", aclOwner, ownerACLExpression],
+      ["aclUser", aclUser, userACLExpression],
+      ["aclNotUser", aclNotUser, notUserACLExpression],
+      ["aclTwoItems", aclTwoItems, twoItemsACLExpression],
+      ["aclThreeItems", aclThreeItems, threeItemsACLExpression],
+      [
+        "aclWithSubExpression",
+        aclWithSubExpression,
+        withSubExpressionACLExpression,
+      ],
+      [
+        "aclWithMultipleSubExpression",
+        aclWithMultipleSubExpression,
+        withMultipleSubExpression,
+      ],
+      [
+        "aclWithNestedSubExpression",
+        aclWithNestedSubExpression,
+        withNestedSubExpressionACLExpression,
+      ],
+      [
+        "aclWithComplexSubExpression",
+        aclWithComplexSubExpression,
+        complexExpressionACLExpression,
+      ],
+    ])("parse -> generate -> parse: %s", (_, acl, expectedACLExpression) => {
+      expect(pipe(acl, parse, handleParse, generate, parse)).toEqual(
+        E.right(expectedACLExpression)
       );
-      expect(pipe(aclOwner, parse, handleParse, generate, parse)).toEqual(
-        E.right(ownerACLExpression)
-      );
-      expect(pipe(aclUser, parse, handleParse, generate, parse)).toEqual(
-        E.right(userACLExpression)
-      );
-      expect(pipe(aclNotUser, parse, handleParse, generate, parse)).toEqual(
-        E.right(notUserACLExpression)
-      );
-      expect(pipe(aclTwoItems, parse, handleParse, generate, parse)).toEqual(
-        E.right(twoItemsACLExpression)
-      );
-      expect(pipe(aclThreeItems, parse, handleParse, generate, parse)).toEqual(
-        E.right(threeItemsACLExpression)
-      );
-      expect(
-        pipe(aclWithSubExpression, parse, handleParse, generate, parse)
-      ).toEqual(E.right(withSubExpressionACLExpression));
-      expect(
-        pipe(aclWithMultipleSubExpression, parse, handleParse, generate, parse)
-      ).toEqual(E.right(withMultipleSubExpression));
-      expect(
-        pipe(aclWithNestedSubExpression, parse, handleParse, generate, parse)
-      ).toEqual(E.right(withNestedSubExpressionACLExpression));
-      expect(
-        pipe(aclWithComplexSubExpression, parse, handleParse, generate, parse)
-      ).toEqual(E.right(complexExpressionACLExpression));
     });
 
-    it("generate -> parse -> generate", () => {
-      expect(
-        pipe(everyoneACLExpression, generate, parse, handleParse, generate)
-      ).toEqual(aclEveryone);
-      expect(
-        pipe(ownerACLExpression, generate, parse, handleParse, generate)
-      ).toEqual(aclOwner);
-      expect(
-        pipe(userACLExpression, generate, parse, handleParse, generate)
-      ).toEqual(aclUser);
-      expect(
-        pipe(notUserACLExpression, generate, parse, handleParse, generate)
-      ).toEqual(aclNotUser);
-      expect(
-        pipe(twoItemsACLExpression, generate, parse, handleParse, generate)
-      ).toEqual(aclTwoItems);
-      expect(
-        pipe(threeItemsACLExpression, generate, parse, handleParse, generate)
-      ).toEqual(aclThreeItems);
-      expect(
-        pipe(
-          withSubExpressionACLExpression,
-          generate,
-          parse,
-          handleParse,
-          generate
-        )
-      ).toEqual(aclWithSubExpression);
-      expect(
-        pipe(withMultipleSubExpression, generate, parse, handleParse, generate)
-      ).toEqual(aclWithMultipleSubExpression);
-      expect(
-        pipe(
-          withNestedSubExpressionACLExpression,
-          generate,
-          parse,
-          handleParse,
-          generate
-        )
-      ).toEqual(aclWithNestedSubExpression);
-      expect(
-        pipe(
-          complexExpressionACLExpression,
-          generate,
-          parse,
-          handleParse,
-          generate
-        )
-      ).toEqual(aclWithComplexSubExpression);
-    });
+    it.each([
+      ["everyone", everyoneACLExpression, aclEveryone],
+      ["aclOwner", ownerACLExpression, aclOwner],
+      ["aclUser", userACLExpression, aclUser],
+      ["aclNotUser", notUserACLExpression, aclNotUser],
+      ["aclTwoItems", twoItemsACLExpression, aclTwoItems],
+      ["aclThreeItems", threeItemsACLExpression, aclThreeItems],
+      [
+        "aclWithSubExpression",
+        withSubExpressionACLExpression,
+        aclWithSubExpression,
+      ],
+      [
+        "aclWithMultipleSubExpression",
+        withMultipleSubExpression,
+        aclWithMultipleSubExpression,
+      ],
+      [
+        "aclWithNestedSubExpression",
+        withNestedSubExpressionACLExpression,
+        aclWithNestedSubExpression,
+      ],
+      [
+        "aclWithComplexSubExpression",
+        complexExpressionACLExpression,
+        aclWithComplexSubExpression,
+      ],
+    ])(
+      "generate -> parse -> generate: %s",
+      (_, aclExpression, expectedText) => {
+        expect(
+          pipe(aclExpression, generate, parse, handleParse, generate)
+        ).toEqual(expectedText);
+      }
+    );
   });
 });

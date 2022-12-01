@@ -22,9 +22,7 @@ import { pipe } from "fp-ts/function";
 import * as S from "fp-ts/string";
 import * as React from "react";
 import * as GroupModuleMock from "../../../__mocks__/GroupModule.mock";
-import * as GroupSearchMock from "../../../__mocks__/GroupSearch.mock";
 import * as UserModuleMock from "../../../__mocks__/UserModule.mock";
-import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
 import UserSearch, {
   UserSearchProps,
 } from "../../../tsrc/components/securityentitysearch/UserSearch";
@@ -46,7 +44,7 @@ export const Default: Story<UserSearchProps> = (args) => (
 Default.args = {
   selections: RSET.empty,
   listHeight: 150,
-  search: UserSearchMock.userDetailsProvider,
+  search: UserModuleMock.listUsers,
 };
 
 export const GroupFilter: Story<UserSearchProps> = (args) => (
@@ -54,7 +52,7 @@ export const GroupFilter: Story<UserSearchProps> = (args) => (
 );
 GroupFilter.args = {
   ...Default.args,
-  search: UserSearchMock.userDetailsProvider,
+  search: UserModuleMock.listUsers,
   groupFilter: new Set(GroupModuleMock.groups.map(({ id }) => id)),
   resolveGroupsProvider: GroupModuleMock.resolveGroups,
 };
@@ -87,9 +85,9 @@ export const GroupFilterEditable: Story<UserSearchProps> = (args) => (
 );
 GroupFilterEditable.args = {
   ...Default.args,
-  search: UserSearchMock.userDetailsProvider,
+  search: UserModuleMock.listUsers,
   groupFilterEditable: true,
   groupFilter: RSET.empty,
-  groupSearch: GroupSearchMock.groupDetailsProvider,
+  groupSearch: GroupModuleMock.listGroups,
   resolveGroupsProvider: GroupModuleMock.resolveGroups,
 };

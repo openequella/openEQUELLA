@@ -16,40 +16,48 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import { findEntityById } from "../tsrc/modules/ACLEntityModule";
+import { entityDetailsProvider } from "./SecurityEntitySearch.mock";
 
 /**
  * A list of users to test with, deliberately out of order. Names are randomly generated.
  */
 export const users: OEQ.UserQuery.UserDetails[] = [
   {
-    id: "680f5eb7-22e2-4ab6-bcea-25205165e36e",
+    id: "f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a",
     username: "user200",
-    firstName: "Fabienne",
-    lastName: "Hobson",
-  },
-  {
-    id: "cda09b86-3662-46bd-b60e-4bce89efba7a",
-    username: "user100",
     firstName: "Racheal",
     lastName: "Carlyle",
   },
   {
-    id: "97254515-6e32-48e9-ba65-5b5c6aa182a6",
+    id: "20483af2-fe56-4499-a54b-8d7452156895",
+    username: "user100",
+    firstName: "Fabienne",
+    lastName: "Hobson",
+  },
+  {
+    id: "1c2ff1d0-9040-4985-a450-0ff6422ba5ef",
     username: "user400",
     firstName: "Ronny",
     lastName: "Southgate",
   },
   {
-    id: "8db50158-757d-44f3-8ccf-7b2e0a3a6405",
+    id: "eb75a832-6533-4d72-93f4-2b7a1b108951",
     username: "user300",
     firstName: "Yasmin",
     lastName: "Day",
   },
   {
-    id: "3f25f543-7231-46f4-8f3b-aaccc8fcf52a",
+    id: "75abbd62-d91c-4ce5-b4b5-339e0d44ac0e",
     username: "admin999",
     firstName: "Wat",
     lastName: "Swindlehurst",
+  },
+  {
+    id: "2",
+    username: "ContentAdmin",
+    firstName: "Content",
+    lastName: "Content",
   },
 ];
 
@@ -73,7 +81,28 @@ export const getCurrentUserMock: OEQ.LegacyContent.CurrentUserDetails = {
  *
  * @param ids A list of user IDs to lookup, should be one of those in `users`
  */
-export const resolveUsersProvider = async (
+export const resolveUsers = async (
   ids: ReadonlyArray<string>
 ): Promise<OEQ.UserQuery.UserDetails[]> =>
   Promise.resolve(users.filter(({ id }) => ids.includes(id)));
+
+/**
+ * Helper function to inject into component for user retrieval by user id.
+ *
+ * @param id oEQ id
+ */
+export const findUserById = (id: string) => findEntityById(id, resolveUsers);
+
+/**
+ * Helper function to inject into component for user retrieval.
+ *
+ * @param query A simple string to filter by (no wildcard support)
+ */
+export const listUsers = async (
+  query?: string
+): Promise<OEQ.UserQuery.UserDetails[]> =>
+  entityDetailsProvider(
+    users,
+    (u: OEQ.UserQuery.UserDetails, q) => u.username.search(q) === 0,
+    query
+  );

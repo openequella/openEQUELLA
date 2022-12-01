@@ -24,8 +24,8 @@ import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { Predicate } from "fp-ts/Predicate";
 import * as React from "react";
-import * as GroupSearchMock from "../../../../__mocks__/GroupSearch.mock";
-import * as UserSearchMock from "../../../../__mocks__/UserSearch.mock";
+import * as GroupModuleMock from "../../../../__mocks__/GroupModule.mock";
+import * as UserModuleMock from "../../../../__mocks__/UserModule.mock";
 import BaseSearch, {
   BaseSearchProps,
 } from "../../../../tsrc/components/securityentitysearch/BaseSearch";
@@ -143,15 +143,15 @@ export const queryGroupFilterSearch = (
 export const commonSearchProps = {
   enableMultiSelection: false,
   onChange: jest.fn(),
-  groupListProvider: GroupSearchMock.groupDetailsProvider,
-  resolveGroupsProvider: GroupSearchMock.resolveGroupsProvider,
+  groupSearch: GroupModuleMock.listGroups,
+  resolveGroupsProvider: GroupModuleMock.resolveGroups,
 };
 
 export const defaultBaseSearchProps: BaseSearchProps<OEQ.UserQuery.UserDetails> =
   {
     ...commonSearchProps,
     selections: new Set(),
-    search: UserSearchMock.userDetailsProvider,
+    search: UserModuleMock.listUsers,
     itemDetailsToEntry: ({
       username,
       firstName,

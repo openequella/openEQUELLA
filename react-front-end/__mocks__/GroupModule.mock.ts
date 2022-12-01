@@ -16,21 +16,23 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import { findEntityById } from "../tsrc/modules/ACLEntityModule";
+import { entityDetailsProvider } from "./SecurityEntitySearch.mock";
 
 /**
  * A list of groups to test with group search, deliberately out of order.
  */
 export const groups: OEQ.UserQuery.GroupDetails[] = [
   {
-    id: "42237595-7c90-4292-bf16-059b9a59fcfb",
+    id: "99806ac8-410e-4c60-b3ab-22575276f0f0",
     name: "Engineering & Computer Science Students",
   },
   {
-    id: "485b5831-e66c-4419-8305-e99e4d2361a0",
+    id: "d0265a33-8f89-4cea-8a36-45fd3c4cf5a1",
     name: "Engineering & Computer Science Staff",
   },
   {
-    id: "ddb28dd0-e186-47c8-aed7-23e4797d8bf3",
+    id: "d8a3f968-c0a8-44ce-83c9-a5bfc99b03b3",
     name: "Information Technology Services",
   },
   {
@@ -56,14 +58,32 @@ export const groups: OEQ.UserQuery.GroupDetails[] = [
 ];
 
 /**
- * A mock of `GroupModule.resolveGroups` which simply looks up the provided ids in `groups` within
- * `GroupModule.mock.ts`
+ * Helper function to inject into component for group retrieval by an array of ids.
  *
- * @param ids group UUIDs which are in the mocked list of groups
+ * @param ids A list of group IDs to lookup, should be one of those in `groups`
  */
 export const resolveGroups = async (
   ids: ReadonlyArray<string>
-): Promise<OEQ.UserQuery.GroupDetails[]> => {
-  const result = groups.filter(({ id }) => ids.includes(id));
-  return Promise.resolve(result);
-};
+): Promise<OEQ.UserQuery.GroupDetails[]> =>
+  Promise.resolve(groups.filter(({ id }) => ids.includes(id)));
+
+/**
+ * Helper function for group retrieval by group id.
+ *
+ * @param id oEQ id
+ */
+export const findGroupById = (id: string) => findEntityById(id, resolveGroups);
+
+/**
+ * Helper function to inject into component for group retrieval.
+ *
+ * @param query A simple string to filter by (no wildcard support)
+ */
+export const listGroups = async (
+  query?: string
+): Promise<OEQ.UserQuery.GroupDetails[]> =>
+  entityDetailsProvider(
+    groups,
+    (g: OEQ.UserQuery.GroupDetails, q) => g.name.search(q) === 0,
+    query
+  );
