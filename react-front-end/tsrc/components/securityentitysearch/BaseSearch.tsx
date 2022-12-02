@@ -71,6 +71,8 @@ const {
   edit: editLabel,
   clear: clearLabel,
   select: selectLabel,
+  selectAll: selectAllLabel,
+  selectNone: clearAllLabel,
 } = languageStrings.common.action;
 
 interface BaseSecurityEntity {
@@ -110,6 +112,14 @@ export interface CommonEntitySearchProps<T> {
      */
     failedToFindMessage: string;
   };
+  /**
+   * Handler for `select all` button, if undefined no `select all` button will be displayed.
+   */
+  onSelectAll?: (allItems: ReadonlySet<T>) => void;
+  /**
+   * Handler for `clear all` (select none) button, if undefined no `clear all` button will be displayed.
+   */
+  onClearAll?: (allItems: ReadonlySet<T>) => void;
   /**
    * An optional select button can be displayed to allow for an explicit user interaction to mark completion.
    * If undefined no select button will be displayed.
@@ -197,6 +207,8 @@ const BaseSearch = <T extends BaseSecurityEntity>({
   strings = languageStrings.baseSearchComponent,
   selectButton,
   onCancel,
+  onSelectAll,
+  onClearAll,
   selections,
   onChange,
   itemOrd = ORD.contramap(({ id }: T) => id)(S.Ord),
@@ -487,6 +499,39 @@ const BaseSearch = <T extends BaseSecurityEntity>({
     );
   };
 
+  const selectAllButton = () =>
+    onSelectAll ? (
+      <Grid>
+        <Button
+          color="secondary"
+          size="small"
+          onClick={() =>
+            pipe(
+              items,
+              RSET.fromReadonlyArray(itemEq),
+              RSET.union(itemEq)(selections),
+              onSelectAll
+            )
+          }
+        >
+          {selectAllLabel}
+        </Button>
+      </Grid>
+    ) : undefined;
+
+  const clearAllButton = () =>
+    onClearAll ? (
+      <Grid>
+        <Button
+          color="secondary"
+          size="small"
+          onClick={() => onClearAll(RSET.empty)}
+        >
+          {clearAllLabel}
+        </Button>
+      </Grid>
+    ) : undefined;
+
   const selectButtonElement = () =>
     selectButton ? (
       <Grid>
@@ -558,9 +603,15 @@ const BaseSearch = <T extends BaseSecurityEntity>({
       <Grid item xs={12}>
         {showSpinner ? spinner : itemList()}
       </Grid>
-      <Grid container direction="row" justifyContent="flex-end">
-        {selectButtonElement()}
-        {cancelButton()}
+      <Grid container direction="row">
+        <Grid container item xs={6}>
+          {selectAllButton()}
+          {clearAllButton()}
+        </Grid>
+        <Grid container item xs={6} direction="row" justifyContent="flex-end">
+          {selectButtonElement()}
+          {cancelButton()}
+        </Grid>
       </Grid>
     </Grid>
   );

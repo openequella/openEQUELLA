@@ -15,10 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { action } from "@storybook/addon-actions";
 import { Meta, Story } from "@storybook/react";
 import * as A from "fp-ts/Array";
-import * as RSET from "fp-ts/ReadonlySet";
 import { pipe } from "fp-ts/function";
+import * as RSET from "fp-ts/ReadonlySet";
 import * as S from "fp-ts/string";
 import * as React from "react";
 import * as GroupModuleMock from "../../../__mocks__/GroupModule.mock";
@@ -90,4 +91,26 @@ GroupFilterEditable.args = {
   groupFilter: RSET.empty,
   groupSearch: GroupModuleMock.listGroups,
   resolveGroupsProvider: GroupModuleMock.resolveGroups,
+};
+
+export const SelectAndCancelButton: Story<UserSearchProps> = (args) => (
+  <UserSearch {...args} />
+);
+SelectAndCancelButton.args = {
+  ...Default.args,
+  selectButton: { onClick: action("select button onClick triggered") },
+};
+SelectAndCancelButton.argTypes = {
+  onCancel: { action: "onCancel triggered" },
+};
+
+export const SelectAllAndClearAllButton: Story<UserSearchProps> = (args) => (
+  <UserSearch {...args} />
+);
+SelectAllAndClearAllButton.args = {
+  ...Default.args,
+};
+SelectAllAndClearAllButton.argTypes = {
+  onSelectAll: { action: "onSelectAll triggered" },
+  onClearAll: { action: "onClearAll triggered" },
 };
