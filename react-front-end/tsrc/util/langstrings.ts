@@ -214,6 +214,8 @@ export const languageStrings = {
       save: "Save",
       search: "Search",
       select: "Select",
+      selectAll: "Select all",
+      selectNone: "Select none",
       showLess: "Show less",
       showMore: "Show more",
       undo: "Undo",

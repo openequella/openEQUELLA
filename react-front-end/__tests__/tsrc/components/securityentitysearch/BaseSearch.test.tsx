@@ -52,6 +52,8 @@ const {
   edit: editLabel,
   clear: clearLabel,
   select: selectLabel,
+  selectAll: selectAllLabel,
+  selectNone: clearAllLabel,
 } = languageStrings.common.action;
 
 const { failedToFindMessage, provideQueryMessage } =
@@ -149,6 +151,63 @@ describe("<BaseSearch/>", () => {
           onChange
         )
       ).toEqual(expectedSelections);
+    });
+
+    it("should return all search results with current selections when users click the `select all` button", async () => {
+      const queryName = "user";
+
+      const initialSelect = findUserFromMockData("admin999");
+      const initialSelections = pipe(
+        [initialSelect],
+        RSET.fromReadonlyArray(eqUserById)
+      );
+
+      const onSelectAll = jest.fn();
+
+      const expectedResult = pipe(
+        UserModuleMock.users,
+        A.filter((user) => pipe(user.username, S.includes(queryName))),
+        A.concat([initialSelect]),
+        RSET.fromReadonlyArray(eqUserById)
+      );
+
+      const renderResult = await renderBaseSearch({
+        ...defaultBaseSearchProps,
+        selections: initialSelections,
+        onSelectAll: onSelectAll,
+      });
+
+      // Attempt search for known entities
+      searchEntity(renderResult.container, queryName);
+      // Await for search results
+      await waitFor(() =>
+        pipe(new RegExp(`${queryName}\\d00`), renderResult.getAllByText)
+      );
+
+      // Click `select all` button
+      userEvent.click(renderResult.getByText(selectAllLabel));
+
+      const argToFirstCall = onSelectAll.mock.calls[0][0];
+
+      expect(onSelectAll).toHaveBeenCalledTimes(1);
+      expect(argToFirstCall).toEqual(expectedResult);
+    });
+
+    it("should return an empty set when users click the `clear all` (select none) button", async () => {
+      const onClearAll = jest.fn();
+
+      const renderResult = await renderBaseSearch({
+        ...defaultBaseSearchProps,
+        onClearAll: onClearAll,
+      });
+
+      // Click `clear all` button
+      userEvent.click(renderResult.getByText(clearAllLabel));
+
+      const argToFirstCall = onClearAll.mock.calls[0][0];
+
+      expect(onClearAll).toHaveBeenCalledTimes(1);
+      expect(argToFirstCall).toEqual(RSET.empty);
     });
   });
 
