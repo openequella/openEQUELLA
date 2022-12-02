@@ -145,3 +145,14 @@ export const lookup = (
     isSearchResult,
     params
   );
+
+/**
+ * Get all existing shared secrets.
+ *
+ * @param apiBasePath Base URI to the oEQ institution and API
+ */
+export const tokens = (apiBasePath: string) =>
+  GET<string[]>(
+    apiBasePath + USERQUERY_ROOT_PATH + '/tokens',
+    (result: unknown): result is string[] => is<string[]>(result)
+  );

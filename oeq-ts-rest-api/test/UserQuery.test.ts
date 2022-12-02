@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as OEQ from '../src';
-import { SearchResult } from '../src/UserQuery';
+import { SearchResult, tokens } from '../src/UserQuery';
 import * as TC from './TestConfig';
 
 // We use Vanilla for this one so that we also have 'roles' to test with.
@@ -190,4 +190,11 @@ describe('filter feature for user and group search', () => {
       expect(entities).toHaveLength(expectedEntityNumber);
     }
   );
+});
+
+describe('/userquery/tokens', () => {
+  it('returns all shared secrets', async () => {
+    const secrets = await tokens(API_PATH);
+    expect(secrets).toEqual(['sso_ip', 'sso_group']);
+  });
 });
