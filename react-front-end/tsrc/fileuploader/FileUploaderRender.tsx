@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ThemeProvider, Theme, StyledEngineProvider } from "@mui/material";
+import { StyledEngineProvider, ThemeProvider } from "@mui/material";
 import createGenerateClassName from "@mui/styles/createGenerateClassName";
 import StylesProvider from "@mui/styles/StylesProvider";
 import * as React from "react";
@@ -29,11 +29,6 @@ import {
   UniversalFileUploader,
   UniversalFileUploaderProps,
 } from "./UniversalFileUploader";
-
-declare module "@mui/styles/defaultTheme" {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface DefaultTheme extends Theme {}
-}
 
 // A type guard used to check if the props passed from server is 'InlineFileUploaderProps' or 'UniversalFileUploaderProps'.
 const isInlineFileUploaderProps = (

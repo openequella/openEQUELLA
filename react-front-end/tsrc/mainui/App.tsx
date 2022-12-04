@@ -34,11 +34,6 @@ import { startHeartbeat } from "../util/heartbeat";
 import { simpleMatch } from "../util/match";
 import type { EntryPage } from "./index";
 
-declare module "@mui/styles/defaultTheme" {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface DefaultTheme extends Theme {}
-}
-
 const SettingsPage = React.lazy(() => import("../settings/SettingsPage"));
 const SearchPage = React.lazy(() => import("../search/SearchPage"));
 const AdvancedSearchPage = React.lazy(
