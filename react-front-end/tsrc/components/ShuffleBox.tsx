@@ -15,11 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Badge, Grid, Paper } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import { Badge, Grid, Paper } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as SET from "fp-ts/Set";
@@ -31,11 +31,10 @@ import { OrdAsIs } from "../util/Ord";
 import { CheckboxList } from "./CheckboxList";
 import { TooltipIconButton } from "./TooltipIconButton";
 
-const PREFIX = "ShuffleBox";
+const strings = languageStrings.shuffleBox;
 
+const PREFIX = "ShuffleBox";
 const classes = {
-  badge: `${PREFIX}-badge`,
-  badge2: `${PREFIX}-badge2`,
   checkboxListPaper: `${PREFIX}-checkboxListPaper`,
 };
 
@@ -46,30 +45,27 @@ const StyledGrid = styled(Grid)({
   },
 });
 
-const strings = languageStrings.shuffleBox;
+const RightSideBadge = styled(Badge)({
+  "& .MuiBadge-badge": {
+    top: 17,
+  },
+});
 
-const RightSideBadge = Badge;
-
-const LeftSideBadge = Badge;
+const LeftSideBadge = styled(Badge)({
+  "& .MuiBadge-badge": {
+    right: 35,
+    top: 17,
+  },
+});
 
 const AddAllIcon = (): JSX.Element => (
-  <LeftSideBadge
-    badgeContent={<AllInclusiveIcon fontSize="small" />}
-    classes={{
-      badge: classes.badge2,
-    }}
-  >
+  <LeftSideBadge badgeContent={<AllInclusiveIcon fontSize="small" />}>
     <ChevronRightIcon fontSize="large" />
   </LeftSideBadge>
 );
 
 const RemoveAllIcon = (): JSX.Element => (
-  <RightSideBadge
-    badgeContent={<AllInclusiveIcon fontSize="small" />}
-    classes={{
-      badge: classes.badge,
-    }}
-  >
+  <RightSideBadge badgeContent={<AllInclusiveIcon fontSize="small" />}>
     <ChevronLeftIcon fontSize="large" />
   </RightSideBadge>
 );
