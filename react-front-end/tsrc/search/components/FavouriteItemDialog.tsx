@@ -113,7 +113,11 @@ const AddFavouriteItemContent = ({
           ))
         }
         renderInput={(params) => (
-          <TextField {...params} label={tagsString.description} />
+          <TextField
+            variant="standard"
+            {...params}
+            label={tagsString.description}
+          />
         )}
         options={[]}
         onChange={(_, value: string[]) => onChangeTags(value)}

@@ -65,6 +65,7 @@ export const FavouriteSearchDialog = ({
       <TextField
         label={favouriteSearchStrings.text}
         value={searchName}
+        variant="standard"
         autoFocus
         required
         fullWidth
