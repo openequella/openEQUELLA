@@ -15,9 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { StyledEngineProvider, ThemeProvider } from "@mui/material";
-import createGenerateClassName from "@mui/styles/createGenerateClassName";
-import StylesProvider from "@mui/styles/StylesProvider";
+import { ThemeProvider } from "@mui/material";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { getRenderData } from "../AppConfig";
@@ -59,25 +57,10 @@ export const render = (
 
   // In New UI, render the File Uploader with oEQ theme settings.
   if (getRenderData()?.newUI) {
-    // ifu: InlineFileUploader, ufu: UniversalFileUploader
-    const uniqueMUIStylePrefix = `oeq-${
-      isInlineFileUploaderProps(props) ? "ifu" : "ufu"
-    }`;
-    const generateClassName = createGenerateClassName({
-      productionPrefix: uniqueMUIStylePrefix,
-      seed: uniqueMUIStylePrefix,
-    });
-
     import("../modules/ThemeModule")
       .then(({ getOeqTheme }) => {
         ReactDOM.render(
-          <StylesProvider generateClassName={generateClassName}>
-            <StyledEngineProvider injectFirst>
-              <ThemeProvider theme={getOeqTheme()}>
-                {fileUploader}
-              </ThemeProvider>
-            </StyledEngineProvider>
-          </StylesProvider>,
+          <ThemeProvider theme={getOeqTheme()}>{fileUploader}</ThemeProvider>,
           props.elem
         );
       })
