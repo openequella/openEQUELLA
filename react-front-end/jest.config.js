@@ -27,4 +27,8 @@ module.exports = {
       autotestMode: false,
     },
   },
+  // Workaround for the failure of importing axios. Check this link(https://github.com/axios/axios/issues/5026) for details.
+  moduleNameMapper: {
+    "^axios$": require.resolve("axios"),
+  },
 };
