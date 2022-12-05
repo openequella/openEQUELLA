@@ -30,7 +30,7 @@ libraryDependencies ++= Seq(
   "org.apache.cxf"            % "cxf-rt-frontend-simple"    % cxfVersion,
   "org.apache.cxf"            % "cxf-rt-databinding-aegis"  % cxfVersion,
   "org.apache.cxf"            % "cxf-rt-transports-http"    % cxfVersion,
-  "org.apache.httpcomponents" % "httpclient"                % "4.5.13",
+  "org.apache.httpcomponents" % "httpclient"                % "4.5.14",
   "com.jcraft"                % "jsch"                      % "0.1.55",
   "org.jacoco"                % "org.jacoco.report"         % "0.8.8",
   "org.dspace"                % "oclc-harvester2"           % "1.0.0",
