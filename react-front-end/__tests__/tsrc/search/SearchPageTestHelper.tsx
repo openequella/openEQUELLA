@@ -204,14 +204,9 @@ export const waitForSearch = async (searchPromise: MockedSearchPromise) =>
  *
  * @param searchPromise a mocked promise for searchItems in SearchModule
  * @param queryString a string to set the query bar to for initial search
-<<<<<<< HEAD
- * @param advancedSearchId a UUID to pass to the search page which will trigger Advanced Search mode
  * @param screenWidth The emulated screen width, default to 1280px.
+ * @param currentUser Details of currently signed-in user.
  *
-=======
- * @param theme control the MUI Theme for the context the search page is rendered in
- * @param currentUser Details of currently signed in user.
->>>>>>> upstream/develop
  * @returns The RenderResult from the `render` of the `<SearchPage>`
  */
 export const renderSearchPage = async (
