@@ -15,6 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import Share from "@mui/icons-material/Share";
 import {
   Button,
   Card,
@@ -29,12 +32,8 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import type { Theme } from "@mui/material/styles";
-
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import FilterListIcon from "@mui/icons-material/FilterList";
-import Share from "@mui/icons-material/Share";
+import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import clsx from "clsx";
 import * as React from "react";
@@ -247,6 +246,7 @@ export const SearchResultList = ({
       <CardContent className={clsx(showSpinner && classes.textCentered)}>
         {showSpinner && (
           <CircularProgress
+            aria-label={searchPageStrings.loading}
             variant="indeterminate"
             className={clsx(children && classes.centralSpinner)}
           />

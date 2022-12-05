@@ -19,7 +19,7 @@
 import { ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
-import { render, RenderResult, screen } from "@testing-library/react";
+import { render, RenderResult, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
 import * as React from "react";
@@ -377,6 +377,11 @@ export const addSearchToFavourites = async (
   { getByLabelText, getByRole }: RenderResult,
   favouriteName: string
 ): Promise<boolean> => {
+  const {
+    saveSearchConfirmationText: successMsg,
+    saveSearchFailedText: failMsg,
+  } = languageStrings.searchpage.favouriteSearch;
+
   const heartIcon = getByLabelText(
     languageStrings.searchpage.favouriteSearch.title,
     {
@@ -395,11 +400,13 @@ export const addSearchToFavourites = async (
     dialog,
     languageStrings.common.action.ok
   );
-  await act(async () => {
-    await userEvent.click(confirmButton);
-  });
 
-  return !!screen.queryByText(
-    languageStrings.searchpage.favouriteSearch.saveSearchConfirmationText
+  userEvent.click(confirmButton);
+
+  // Now wait until either a success or fail message is displayed
+  await waitFor(() =>
+    screen.getByText(new RegExp(`(${successMsg})|(${failMsg})`))
   );
+
+  return !!screen.queryByText(successMsg);
 };

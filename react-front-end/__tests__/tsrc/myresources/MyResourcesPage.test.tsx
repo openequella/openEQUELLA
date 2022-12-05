@@ -28,12 +28,11 @@ import {
   queryByText,
   render,
   screen,
+  waitForElementToBeRemoved,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
-import { concatAll } from "fp-ts/Monoid";
-import * as N from "fp-ts/number";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
 import { createMemoryHistory } from "history";
@@ -76,10 +75,8 @@ import {
   addSearchToFavourites,
   initialiseEssentialMocks,
   mockCollaborators,
-  MockedSearchPromise,
   queryRefineSearchComponent,
   SORTORDER_SELECT_ID,
-  waitForSearch,
 } from "../search/SearchPageTestHelper";
 
 const history = createMemoryHistory();
@@ -119,8 +116,7 @@ describe("<MyResourcesPage/>", () => {
   // `renderMyResourcesPage`. A key use if is you want to control the Location to
   // influence how the page is rendered.
   const renderMyResourcesPageWithUser = async (
-    currentUser: OEQ.LegacyContent.CurrentUserDetails,
-    backingPromise: MockedSearchPromise
+    currentUser: OEQ.LegacyContent.CurrentUserDetails
   ) => {
     window.matchMedia = createMatchMedia(1280);
 
@@ -140,7 +136,10 @@ describe("<MyResourcesPage/>", () => {
       </ThemeProvider>
     );
 
-    await waitForSearch(backingPromise);
+    await waitForElementToBeRemoved(() =>
+      screen.getByLabelText(languageStrings.searchpage.loading)
+    );
+
     return page;
   };
 
@@ -154,7 +153,7 @@ describe("<MyResourcesPage/>", () => {
       },
     });
 
-    return await renderMyResourcesPageWithUser(currentUser, searchPromise);
+    return await renderMyResourcesPageWithUser(currentUser);
   };
 
   // Should only be used when 'getSearchResult' is used to mock the search result because
@@ -497,35 +496,31 @@ describe("<MyResourcesPage/>", () => {
       expect(foundOptions).toBe(options.length);
     });
 
-    it("does not display the moderation sort options in non-moderation views", async () => {
-      const nonModerationTypes: MyResourcesType[] = [
-        "Scrapbook",
-        "All resources",
-        "Published",
-        "Drafts",
-        "Archive",
-      ];
+    it.each<MyResourcesType>([
+      "Scrapbook",
+      "All resources",
+      "Published",
+      "Drafts",
+      "Archive",
+    ])(
+      "does not display the moderation sort options in non-moderation views (%s)",
+      async (nonModerationType: MyResourcesType) => {
+        const countModOptions = async (
+          type: MyResourcesType
+        ): Promise<number> => {
+          const moderationSortOptions = [
+            sortOptions.submitted,
+            sortOptions.lastAction,
+          ];
 
-      const countModOptions = async (
-        type: MyResourcesType
-      ): Promise<number> => {
-        const moderationSortOptions = [
-          sortOptions.submitted,
-          sortOptions.lastAction,
-        ];
+          const { container } = await renderMyResourcesPage(type);
+          clickSelect(container, SORTORDER_SELECT_ID);
+          return countOptions(moderationSortOptions);
+        };
 
-        const { container } = await renderMyResourcesPage(type);
-        clickSelect(container, SORTORDER_SELECT_ID);
-        return countOptions(moderationSortOptions);
-      };
-
-      const occurrences = pipe(
-        await Promise.all<number>(nonModerationTypes.map(countModOptions)),
-        concatAll(N.MonoidSum)
-      );
-
-      expect(occurrences).toBe(0);
-    });
+        expect(await countModOptions(nonModerationType)).toBe(0);
+      }
+    );
   });
 
   describe("Moderation queue", () => {
@@ -565,12 +560,9 @@ describe("<MyResourcesPage/>", () => {
 
     it("selects the resource type based on myResourcesType", async () => {
       history.push(baseUrl + "?myResourcesType=Moderation queue");
-      const mockedPromise = mockSearch.mockResolvedValueOnce(
-        getModerationItemsSearchResult()
-      );
+      mockSearch.mockResolvedValueOnce(getModerationItemsSearchResult());
       const { queryByLabelText } = await renderMyResourcesPageWithUser(
-        getCurrentUserMock,
-        mockedPromise
+        getCurrentUserMock
       );
 
       expect(
@@ -590,7 +582,7 @@ describe("<MyResourcesPage/>", () => {
         baseUrl +
           '?myResourcesType=All+resources&searchOptions={"rowsPerPage"%3A10%2C"currentPage"%3A0%2C"sortOrder"%3A"name"%2C"rawMode"%3Afalse%2C"status"%3A["PERSONAL"%2C"LIVE"]%2C"searchAttachments"%3Atrue%2C"query"%3A""%2C"collections"%3A[]%2C"lastModifiedDateRange"%3A{}%2C"owner"%3A{"id"%3A"680f5eb7-22e2-4ab6-bcea-25205165e36e"}%2C"mimeTypeFilters"%3A[]%2C"displayMode"%3A"list"%2C"dateRangeQuickModeEnabled"%3Atrue}'
       );
-      await renderMyResourcesPageWithUser(getCurrentUserMock, searchPromise);
+      await renderMyResourcesPageWithUser(getCurrentUserMock);
 
       const searchCriteria: SearchOptions | undefined =
         searchPromise.mock.lastCall?.[0];
