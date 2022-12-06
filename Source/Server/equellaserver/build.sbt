@@ -18,7 +18,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion   = "3.15.3.Final"
 val SwaggerVersion    = "1.6.9"
-val TomcatVersion     = "9.0.69"
+val TomcatVersion     = "9.0.70"
 val axis2Version      = "1.8.2"
 val circeVersion      = "0.12.1"
 val curatorVersion    = "5.4.0"
@@ -63,7 +63,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
-  "com.google.api-client" % "google-api-client"           % "2.0.1",
+  "com.google.api-client" % "google-api-client"           % "2.1.1",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20220318-2.0.0",
   "com.google.apis"       % "google-api-services-youtube" % "v3-rev20221108-2.0.0",
   "com.google.code.gson"  % "gson"                        % "2.10",
@@ -104,7 +104,7 @@ libraryDependencies ++= Seq(
   "commons-codec"             % "commons-codec"         % "1.15",
   "commons-collections"       % "commons-collections"   % "3.2.2",
   "commons-configuration"     % "commons-configuration" % "1.10",
-  "commons-daemon"            % "commons-daemon"        % "1.3.2",
+  "commons-daemon"            % "commons-daemon"        % "1.3.3",
   "commons-discovery"         % "commons-discovery"     % "0.5",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
   "commons-io"                % "commons-io"            % "2.11.0",
@@ -160,8 +160,8 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "com.sun.xml.fastinfoset"),
     ExclusionRule(organization = "net.sf.ehcache")
   ),
-  "org.apache.httpcomponents" % "httpclient"       % "4.5.13",
-  "org.apache.httpcomponents" % "httpcore"         % "4.4.15",
+  "org.apache.httpcomponents" % "httpclient"       % "4.5.14",
+  "org.apache.httpcomponents" % "httpcore"         % "4.4.16",
   "org.apache.lucene"         % "lucene-analyzers" % "3.6.2",
   "org.apache.lucene"         % "lucene-core"      % "3.6.2",
   "org.apache.lucene"         % "lucene-queries"   % "3.6.2",
