@@ -1,4 +1,4 @@
-package com.tle.upgrade.upgraders.jsvc
+package com.tle.upgrade.upgraders.apachedaemon
 
 import com.dytech.edge.common.Constants
 import com.tle.common.util.ExecUtils
@@ -6,7 +6,13 @@ import com.tle.upgrade.upgraders.AbstractUpgrader
 import com.tle.upgrade.{UpgradeMain, UpgradeResult}
 import java.io.File
 
-class UpdateJSVC extends AbstractUpgrader {
+/**
+  * This upgrade aims to update Apache Daemon executables to a version that is compatible with Java 11.
+  *
+  * For Linux, it will replace file 'jsvc' as well as the two scripts for Equella server and the Manager server.
+  * For Windows, it will replace 'prunsrv.exe', 'prunmgr.exe' and the two BAT files for Equella server and the Manager server.
+  */
+class UpdateApacheDaemon extends AbstractUpgrader {
   override def getId: String = s"UpdateJSVC-${UpgradeMain.getCommit}"
 
   override def isBackwardsCompatible: Boolean = true
@@ -25,7 +31,8 @@ class UpdateJSVC extends AbstractUpgrader {
 
     ExecUtils.determinePlatform() match {
       case ExecUtils.PLATFORM_WIN64 =>
-        updateFiles(Array("prunmgr.exe", "prunsrv.exe"), "windows")
+        updateFiles(Array("prunmgr.exe", "prunsrv.exe", "equellaserver.bat", "manager.bat"),
+                    "windows")
       case ExecUtils.PLATFORM_LINUX64 =>
         updateFiles(Array("jsvc", "equellaserver", "manager"), "linux")
       case other => result.info(s"Unsupported OS $other")
