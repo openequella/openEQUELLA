@@ -17,8 +17,13 @@
  */
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import { Autocomplete } from "@mui/lab";
-import { Button, ButtonGroup, Checkbox, TextField } from "@mui/material";
+import {
+  Autocomplete,
+  Button,
+  ButtonGroup,
+  Checkbox,
+  TextField,
+} from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import { isEqual } from "lodash";
 import * as React from "react";
