@@ -29,16 +29,17 @@ public class HibernateCustomTypes {
   private static final CustomType TYPE_BLANKABLE =
       new CustomType(new HibernateEscapedString(Types.VARCHAR), new String[] {"blankable"});
 
-  private static final CustomType TYPE_XSTREAM =
-      new CustomType(
-          new ImmutableHibernateXStreamType(Types.CLOB), new String[] {"xstream_immutable"});
-
   private static final CustomType TYPE_CSV =
       new CustomType(new HibernateCsvType(Types.VARCHAR), new String[] {"csv"});
 
   public static List<BasicType> getCustomTypes(ExtendedDialect dialect) {
     final CustomType TYPE_JSON =
         new CustomType(new JsonStringCustomType(dialect), new String[] {"json"});
+
+    final CustomType TYPE_XSTREAM =
+        new CustomType(
+            new ImmutableHibernateXStreamType(dialect), new String[] {"xstream_immutable"});
+
     return Arrays.asList(TYPE_JSON, TYPE_BLANKABLE, TYPE_CSV, TYPE_XSTREAM);
   }
 }

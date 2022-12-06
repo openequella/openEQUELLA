@@ -18,9 +18,10 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion   = "3.15.3.Final"
 val SwaggerVersion    = "1.6.9"
-val TomcatVersion     = "9.0.69"
+val TomcatVersion     = "9.0.70"
 val axis2Version      = "1.8.2"
 val circeVersion      = "0.12.1"
+val curatorVersion    = "5.4.0"
 val cxfVersion        = "3.5.4"
 val fs2Version        = "2.5.11"
 val guiceVersion      = "5.1.0"
@@ -62,7 +63,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
-  "com.google.api-client" % "google-api-client"           % "2.0.1",
+  "com.google.api-client" % "google-api-client"           % "2.1.1",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20220318-2.0.0",
   "com.google.apis"       % "google-api-services-youtube" % "v3-rev20221108-2.0.0",
   "com.google.code.gson"  % "gson"                        % "2.10",
@@ -103,7 +104,7 @@ libraryDependencies ++= Seq(
   "commons-codec"             % "commons-codec"         % "1.15",
   "commons-collections"       % "commons-collections"   % "3.2.2",
   "commons-configuration"     % "commons-configuration" % "1.10",
-  "commons-daemon"            % "commons-daemon"        % "1.3.2",
+  "commons-daemon"            % "commons-daemon"        % "1.3.3",
   "commons-discovery"         % "commons-discovery"     % "0.5",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
   "commons-io"                % "commons-io"            % "2.11.0",
@@ -115,7 +116,6 @@ libraryDependencies ++= Seq(
   "javax.mail"                % "mail"                  % "1.4.7",
   "javax.servlet"             % "jstl"                  % "1.2",
   "javax.xml"                 % "jaxrpc"                % "1.1",
-  "jdom"                      % "jdom"                  % "1.1",
   "com.github.equella.jpf"    % "jpf"                   % "1.0.7",
   log4j,
   log4jCore,
@@ -130,9 +130,9 @@ libraryDependencies ++= Seq(
   "org.apache.axis2"   % "axis2-transport-http"     % axis2Version,
   "org.apache.axis2"   % "axis2-transport-local"    % axis2Version,
   "org.apache.commons" % "commons-compress"         % "1.22",
-  "org.apache.curator" % "curator-client"           % "5.3.0",
-  "org.apache.curator" % "curator-framework"        % "5.3.0",
-  "org.apache.curator" % "curator-recipes"          % "5.3.0",
+  "org.apache.curator" % "curator-client"           % curatorVersion,
+  "org.apache.curator" % "curator-framework"        % curatorVersion,
+  "org.apache.curator" % "curator-recipes"          % curatorVersion,
   "org.apache.cxf"     % "cxf-rt-frontend-jaxws"    % cxfVersion,
   "org.apache.cxf"     % "cxf-rt-transports-http"   % cxfVersion,
   "org.apache.cxf"     % "cxf-rt-databinding-aegis" % cxfVersion,
@@ -160,8 +160,8 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "com.sun.xml.fastinfoset"),
     ExclusionRule(organization = "net.sf.ehcache")
   ),
-  "org.apache.httpcomponents" % "httpclient"       % "4.5.13",
-  "org.apache.httpcomponents" % "httpcore"         % "4.4.15",
+  "org.apache.httpcomponents" % "httpclient"       % "4.5.14",
+  "org.apache.httpcomponents" % "httpcore"         % "4.4.16",
   "org.apache.lucene"         % "lucene-analyzers" % "3.6.2",
   "org.apache.lucene"         % "lucene-core"      % "3.6.2",
   "org.apache.lucene"         % "lucene-queries"   % "3.6.2",
@@ -193,11 +193,7 @@ libraryDependencies ++= Seq(
   "org.apache.tomcat"      % "tomcat-util-scan"       % TomcatVersion,
   "org.apache.tomcat"      % "tomcat-ssi"             % TomcatVersion,
   "org.apache.ws.security" % "wss4j"                  % "1.6.19",
-  "org.apache.zookeeper"   % "zookeeper"              % "3.7.0" excludeAll (
-    ExclusionRule(organization = "org.slf4j",
-                  name = "slf4j-log4j12")
-  ),
-  "org.ccil.cowan.tagsoup" % "tagsoup" % "1.2.1",
+  "org.ccil.cowan.tagsoup" % "tagsoup"                % "1.2.1",
   // Removed due to deduplication issues with woodstox-core. core-asl has not been updated for years.
   //   com.fasterxml.woodstox/woodstox-core/bundles/woodstox-core-5.0.3.jar:...
   //   org.codehaus.woodstox/woodstox-core-asl/jars/woodstox-core-asl-4.4.1.jar:...

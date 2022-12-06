@@ -124,7 +124,10 @@ Compile / resourceGenerators += Def.task {
 Compile / resourceGenerators += Def.task {
   val outDir = (Compile / resourceManaged).value
   val srcDir = buildReactFrontEnd.value
-  IO.copy((srcDir ** ("*.js" | "*.css" | "*.json" | "*.html")).pair(rebase(srcDir, outDir))).toSeq
+  IO.copy(
+      (srcDir ** ("*.js" | "*.css" | "*.json" | "*.html" | "*.woff" | "*.woff2"))
+        .pair(rebase(srcDir, outDir)))
+    .toSeq
 }.taskValue
 
 clean := {

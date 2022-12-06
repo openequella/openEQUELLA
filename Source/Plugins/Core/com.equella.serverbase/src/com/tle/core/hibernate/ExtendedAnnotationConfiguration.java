@@ -196,6 +196,10 @@ public class ExtendedAnnotationConfiguration extends Configuration {
     return METADATA_CAPTURE.getMetadata();
   }
 
+  public Metadata getMetadata() {
+    return METADATA_CAPTURE.metadata;
+  }
+
   @Override
   public Properties getProperties() {
     Properties p = super.getProperties();
