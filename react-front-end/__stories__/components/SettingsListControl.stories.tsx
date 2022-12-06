@@ -26,7 +26,7 @@ import SettingsToggleSwitch, {
 import { Mark, Slider, SliderProps } from "@material-ui/core";
 
 export default {
-  title: "SettingsListControl",
+  title: "Component/SettingsListControl",
   component: SettingsListControl,
   argTypes: {
     setValue: { action: "setValue" },

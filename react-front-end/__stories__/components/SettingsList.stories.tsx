@@ -29,7 +29,7 @@ import SettingsList, {
 } from "../../tsrc/components/SettingsList";
 
 export default {
-  title: "SettingsList",
+  title: "Component/SettingsList",
   component: SettingsList,
   argTypes: {
     setValue: { action: "setValue" },

@@ -16,31 +16,12 @@
  * limitations under the License.
  */
 import { ListItem, ListItemSecondaryAction, ListItemText } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import * as React from "react";
 import { ReactNode } from "react";
-const PREFIX = "SettingsListControl";
-
-const classes = {
-  listItemText: `${PREFIX}-listItemText`,
-  secondaryAction: `${PREFIX}-secondaryAction`,
-};
-
-const StyledListItem = styled(ListItem)({
-  [`& .${classes.listItemText}`]: {
-    maxWidth: "40%",
-    minHeight: "38px",
-  },
-  [`& .${classes.secondaryAction}`]: {
-    width: "55%",
-    display: "flex",
-    justifyContent: "flex-end",
-  },
-});
 
 export interface SettingsListControlProps {
   /**
-   * Whether or not there is a divider at the bottom of this control.
+   * Whether there is a divider at the bottom of this control.
    */
   divider?: boolean;
   /**
@@ -68,15 +49,24 @@ export default function SettingsListControl({
   control,
 }: SettingsListControlProps) {
   return (
-    <StyledListItem alignItems="flex-start" divider={divider}>
+    <ListItem alignItems="flex-start" divider={divider}>
       <ListItemText
-        className={classes.listItemText}
         primary={primaryText}
         secondary={secondaryText}
+        sx={{
+          maxWidth: "40%",
+          minHeight: "38px",
+        }}
       />
-      <ListItemSecondaryAction className={classes.secondaryAction}>
+      <ListItemSecondaryAction
+        sx={{
+          width: "55%",
+          display: "flex",
+          justifyContent: "flex-end",
+        }}
+      >
         {control}
       </ListItemSecondaryAction>
-    </StyledListItem>
+    </ListItem>
   );
 }
