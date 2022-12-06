@@ -21,7 +21,7 @@ import * as mockData from "../../__mocks__/searchresult_mock_data";
 import SearchResult, {
   SearchResultProps,
 } from "../../tsrc/search/components/SearchResult";
-import { IconButton } from "@material-ui/core";
+import { IconButton } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
 
 export default {

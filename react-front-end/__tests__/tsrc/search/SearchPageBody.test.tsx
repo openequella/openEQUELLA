@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createTheme } from "@material-ui/core/styles";
 import { ThemeProvider } from "@mui/material";
+import { createTheme } from "@mui/material/styles";
 import "@testing-library/jest-dom/extend-expect";
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
