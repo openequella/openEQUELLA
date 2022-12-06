@@ -1,7 +1,11 @@
 @echo off
 setlocal
 
-call manager-config.bat
+call equellaserver-config.bat
+
+set MAIN_CLASS=com.tle.core.equella.runner.EQUELLAServer
+set JAVA_VM=%JAVA_HOME%/jre/bin/server/jvm.dll
+IF NOT X%SERVICE_USER%==X SET SERVICE_FLAGS=--ServiceUser %SERVICE_USER% --ServicePassword %SERVICE_PASSWORD%
 
 if "%OS%"=="Windows_NT" goto nt
 echo This script only works with NT-based versions of Windows.
@@ -14,16 +18,16 @@ rem
 rem %~dp0 is name of current script under NT
 set _REALPATH=%~dp0
 set _WRAPPER_EXE=%_REALPATH%prunsrv.exe
-set _WRAPPER_CONF=%_REALPATH%manager.conf
 set WORKING_DIR=%_REALPATH%
 set LOG_PATH=%_REALPATH%..^\logs
 
-set MAIN_CLASS=com.tle.upgrademanager.Main
-set JAVA_VM=%JAVA_HOME%/jre/bin/server/jvm.dll
-
 rem Remove spaces from service name
 set SERVICE_NAME=%SERVICE_NAME: =%
-IF NOT X%SERVICE_USER%==X SET SERVICE_FLAGS=--ServiceUser %SERVICE_USER% --ServicePassword %SERVICE_PASSWORD%
+
+set EXITPARAM=%2
+if "%EXITPARAM%" == "exit" (
+set EXIT=1
+)
 
 rem Find the requested command.
 for /F %%v in ('echo %1^|findstr "^console$ ^start$ ^stop$ ^restart$ ^status$ ^quickstatus$ ^install$ ^update$ ^remove"') do call :exec set COMMAND=%%v
@@ -36,6 +40,14 @@ if "%COMMAND%" == "" (
     shift
 )
 
+rem set options
+if not "%HEAP_CONFIG%" == "" (
+	SET JAVA_ARGS=%JAVA_ARGS%%HEAP_CONFIG%
+)
+
+if not "%JMX_CONFIG%" == "" (
+	SET JAVA_ARGS=%JAVA_ARGS%%JMX_CONFIG%
+)
 
 rem
 rem Run the application.
@@ -53,26 +65,26 @@ goto :eof
 
 :start
 if %INSTALLED%==false goto :End
-echo Starting EQUELLA
 call :update>NUL
-SC START %SERVICE_NAME%
+echo Starting EQUELLA
+NET START %SERVICE_NAME%
 goto :eof
 
 :stop
 if %INSTALLED%==false goto :End
 echo Stopping EQUELLA
-SC STOP %SERVICE_NAME%
+NET STOP %SERVICE_NAME%
 goto :eof
 
 :install
-echo Installing EQUELLA as a service
-"%_WRAPPER_EXE%" //IS//%SERVICE_NAME% --DisplayName="%DISPLAY_NAME%" --Description="%DISPLAY_NAME%" --Jvm="%JAVA_VM%" --StopTimeout=5 --StartMode=jvm --StopMode=jvm --StartClass=%MAIN_CLASS% --StartParams=start --StopClass=%MAIN_CLASS% --StopParams=stop --Classpath="%CLASS_PATH%" --JvmOptions="%JAVA_ARGS%" --LogPath="%LOG_PATH%" --StdOutput=auto --StdError=auto --StartPath="%WORKING_DIR%." --Startup=%START_TYPE% --LogPrefix="manager" --PidFile="manager.pid" %SERVICE_FLAGS%
+echo Installing the EQUELLA service
+"%_WRAPPER_EXE%" //IS//%SERVICE_NAME% --DisplayName="%DISPLAY_NAME%" --Description="%DISPLAY_NAME%" --ServiceUser="LocalSystem" --Jvm="%JAVA_VM%" --StartMode=jvm --StopMode=jvm --StartClass=%MAIN_CLASS% --StartMethod=start --StopClass=%MAIN_CLASS% --StopMethod=stop --StopParams=stop --Classpath="%CLASS_PATH%" --JvmOptions="%JAVA_ARGS%" --LogPath="%LOG_PATH%" --StdOutput=auto --StdError=auto --StartPath="%WORKING_DIR%." --Startup=%START_TYPE% --LogPrefix="equellaserver" --PidFile="equellaserver.pid" %SERVICE_FLAGS%
 COPY "prunmgr.exe" "%SERVICE_NAME%w.exe">NUL
 goto :eof
 
 :update
 echo Updating the EQUELLA service
-"%_WRAPPER_EXE%" //US//%SERVICE_NAME% --DisplayName="%DISPLAY_NAME%" --Description="%DISPLAY_NAME%" --Jvm="%JAVA_VM%" --StopTimeout=5 --StartMode=jvm --StopMode=jvm --StartClass=%MAIN_CLASS% --StartParams=start --StopClass=%MAIN_CLASS% --StopParams=stop --Classpath="%CLASS_PATH%" --JvmOptions="%JAVA_ARGS%" --LogPath="%LOG_PATH%" --StdOutput=auto --StdError=auto --StartPath="%WORKING_DIR%." --Startup=%START_TYPE% --LogPrefix="manager" --PidFile="manager.pid" %SERVICE_FLAGS%
+"%_WRAPPER_EXE%" //US//%SERVICE_NAME% --DisplayName="%DISPLAY_NAME%" --Description="%DISPLAY_NAME%" --ServiceUser="LocalSystem" --Jvm="%JAVA_VM%" --StartMode=jvm --StopMode=jvm --StartClass=%MAIN_CLASS% --StartMethod=start --StopClass=%MAIN_CLASS% --StopMethod=stop --StopParams=stop --Classpath="%CLASS_PATH%" --JvmOptions="%JAVA_ARGS%" --LogPath="%LOG_PATH%" --StdOutput=auto --StdError=auto --StartPath="%WORKING_DIR%." --Startup=%START_TYPE% --LogPrefix="equellaserver" --PidFile="equellaserver.pid" %SERVICE_FLAGS%
 COPY "prunmgr.exe" "%SERVICE_NAME%w.exe">NUL
 goto :eof
 
@@ -112,3 +124,8 @@ goto :eof
 
 :End
 echo Please install the EQUELLA service using the "install" command
+
+:exit
+if "%EXIT%" == "1" (
+ exit /B %ERRORLEVEL%
+)
