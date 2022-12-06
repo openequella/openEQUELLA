@@ -66,13 +66,13 @@ goto :eof
 
 :install
 echo Installing EQUELLA as a service
-"%_WRAPPER_EXE%" //IS//%SERVICE_NAME% --DisplayName="%DISPLAY_NAME%" --Description="%DISPLAY_NAME%" --Jvm="%JAVA_VM%" --StopTimeout=5 --StartMode=jvm --StopMode=jvm --StartClass=%MAIN_CLASS% --StartParams=start --StopClass=%MAIN_CLASS% --StopParams=stop --Classpath="%CLASS_PATH%" --JvmOptions="%JAVA_ARGS%" --LogPath="%LOG_PATH%" --StdOutput=auto --StdError=auto --StartPath="%WORKING_DIR%." --Startup=%START_TYPE% --LogPrefix="manager" --PidFile="manager.pid" %SERVICE_FLAGS%
+"%_WRAPPER_EXE%" //IS//%SERVICE_NAME% --DisplayName="%DISPLAY_NAME%" --Description="%DISPLAY_NAME%" --ServiceUser="LocalSystem" --Jvm="%JAVA_VM%" --StopTimeout=5 --StartMode=jvm --StopMode=jvm --StartClass=%MAIN_CLASS% --StartParams=start --StopClass=%MAIN_CLASS% --StopParams=stop --Classpath="%CLASS_PATH%" --JvmOptions="%JAVA_ARGS%" --LogPath="%LOG_PATH%" --StdOutput=auto --StdError=auto --StartPath="%WORKING_DIR%." --Startup=%START_TYPE% --LogPrefix="manager" --PidFile="manager.pid" %SERVICE_FLAGS%
 COPY "prunmgr.exe" "%SERVICE_NAME%w.exe">NUL
 goto :eof
 
 :update
 echo Updating the EQUELLA service
-"%_WRAPPER_EXE%" //US//%SERVICE_NAME% --DisplayName="%DISPLAY_NAME%" --Description="%DISPLAY_NAME%" --Jvm="%JAVA_VM%" --StopTimeout=5 --StartMode=jvm --StopMode=jvm --StartClass=%MAIN_CLASS% --StartParams=start --StopClass=%MAIN_CLASS% --StopParams=stop --Classpath="%CLASS_PATH%" --JvmOptions="%JAVA_ARGS%" --LogPath="%LOG_PATH%" --StdOutput=auto --StdError=auto --StartPath="%WORKING_DIR%." --Startup=%START_TYPE% --LogPrefix="manager" --PidFile="manager.pid" %SERVICE_FLAGS%
+"%_WRAPPER_EXE%" //US//%SERVICE_NAME% --DisplayName="%DISPLAY_NAME%" --Description="%DISPLAY_NAME%" --ServiceUser="LocalSystem" --Jvm="%JAVA_VM%" --StopTimeout=5 --StartMode=jvm --StopMode=jvm --StartClass=%MAIN_CLASS% --StartParams=start --StopClass=%MAIN_CLASS% --StopParams=stop --Classpath="%CLASS_PATH%" --JvmOptions="%JAVA_ARGS%" --LogPath="%LOG_PATH%" --StdOutput=auto --StdError=auto --StartPath="%WORKING_DIR%." --Startup=%START_TYPE% --LogPrefix="manager" --PidFile="manager.pid" %SERVICE_FLAGS%
 COPY "prunmgr.exe" "%SERVICE_NAME%w.exe">NUL
 goto :eof
 
