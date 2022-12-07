@@ -49,6 +49,8 @@ public class EQUELLAServer {
 
   public PluginManager manager;
 
+  private static volatile boolean stopped;
+
   // JSVC methods (Unix/other)
   public void init(String[] args) {
     System.out.println("Initializing EQUELLA Server");
@@ -68,13 +70,22 @@ public class EQUELLAServer {
   }
 
   // PROCRUN methods (Windows)
+
+  /**
+   * Method to be called when the OEQ is started as a Windows service. According to the Procrun
+   * documentation, this method should not return until the stop method has been called in JVM mode.
+   */
   public static void start(String[] args) {
     System.out.println("Starting EQUELLA Server...");
     main(new String[0]);
+    while (!stopped) {
+      // DO not return until `stop` is called.
+    }
   }
 
   public static void stop(String[] args) {
     System.out.println("Stopping EQUELLA Server...");
+    stopped = true;
   }
 
   public static void main(String[] args) {
