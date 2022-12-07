@@ -112,7 +112,7 @@ class PostLoginNoticeConfigurator extends React.Component<
             <TextField
               id="postNoticeField"
               variant="outlined"
-              rows="12"
+              minRows="12"
               maxRows="35"
               multiline
               fullWidth
