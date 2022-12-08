@@ -498,17 +498,17 @@ public class BrowseFinder extends JPanel implements UserGroupRoleFinder {
       @SuppressWarnings("unchecked")
       public void insertInOrder(MutableTreeNode newChild) {
         if (!Check.isEmpty(children)) {
-          List<MutableTreeNode> mtns = new ArrayList<>();
-          mtns.addAll(
-              children.stream()
-                  .filter(child -> child instanceof MutableTreeNode)
+          List<TreeNode> childNodes = Collections.list(children.elements());
+          List<MutableTreeNode> mutableChildNodes =
+              childNodes.stream()
                   .map(child -> (MutableTreeNode) child)
-                  .collect(Collectors.toList()));
-          mtns.add(newChild);
-          mtns.sort(new NumberStringComparator<>());
+                  .collect(Collectors.toList());
+
+          mutableChildNodes.add(newChild);
+          mutableChildNodes.sort(new NumberStringComparator<>());
 
           removeAllChildren();
-          for (MutableTreeNode mtn : mtns) {
+          for (MutableTreeNode mtn : mutableChildNodes) {
             add(mtn);
           }
         } else {
