@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Grid, ImageListItem, ImageListItemBar } from "@mui/material";
+import { ImageListItem, ImageListItemBar } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
@@ -30,26 +30,15 @@ import {
 import type { BasicSearchResultItem } from "../../modules/SearchModule";
 import { languageStrings } from "../../util/langstrings";
 
-const PREFIX = "GallerySearchItemTiles";
-
-const classes = {
-  titleBar: `${PREFIX}-titleBar`,
-  thumbnail: `${PREFIX}-thumbnail`,
-};
-
-const StyledGridItem = styled(Grid)({
-  [`& .${classes.titleBar}`]: {
-    background:
-      "linear-gradient(to top, rgba(0,0,0,0.5) 0%, " +
-      "rgba(0,0,0,0.1) 70%, rgba(0,0,0,0) 100%)",
-  },
-  [`& .${classes.thumbnail}`]: {
-    cursor: "zoom-in",
-    height: "100%",
-  },
-});
-
 const { ariaLabel, viewItem } = languageStrings.searchpage.gallerySearchResult;
+
+const GalleryThumbnail = styled("img")({
+  cursor: "zoom-in",
+  objectFit: "cover",
+  objectPosition: "center",
+  height: 250,
+  width: "100%",
+});
 
 /**
  * Type for the handler of opening Lightbox from Gallery.
@@ -147,37 +136,28 @@ export const GallerySearchItemTiles = ({
     altText: string,
     onClick: () => void
   ) => (
-    // We use Grid as the container so each ImageListItem must be wrapped by a Grid item.
-    <StyledGridItem item md={3} sm={6} key={key}>
-      <ImageListItem
-        component="div"
-        onClick={onClick}
-        aria-label={ariaLabel}
-        // Don't use the default ImageListItem style so override here.
-        style={{
-          width: "100%",
-          height: 250,
-          padding: 2,
-        }}
-      >
-        <img className={classes.thumbnail} src={imgSrc} alt={altText} />
-        {enableItemSummaryButton && (
-          <ImageListItemBar
-            className={classes.titleBar}
-            actionIcon={
-              <OEQItemSummaryPageButton
-                title={viewItem}
-                color="secondary"
-                item={{ uuid, version }}
-                checkDrmPermission={
-                  drmStatus?.isAllowSummary ? undefined : checkDrmPermission
-                }
-              />
-            }
-          />
-        )}
-      </ImageListItem>
-    </StyledGridItem>
+    <ImageListItem onClick={onClick} aria-label={ariaLabel}>
+      <GalleryThumbnail src={imgSrc} alt={altText} />
+      {enableItemSummaryButton && (
+        <ImageListItemBar
+          sx={{
+            background:
+              "linear-gradient(to top, rgba(0,0,0,0.5) 0%, " +
+              "rgba(0,0,0,0.1) 70%, rgba(0,0,0,0) 100%)",
+          }}
+          actionIcon={
+            <OEQItemSummaryPageButton
+              title={viewItem}
+              color="secondary"
+              item={{ uuid, version }}
+              checkDrmPermission={
+                drmStatus?.isAllowSummary ? undefined : checkDrmPermission
+              }
+            />
+          }
+        />
+      )}
+    </ImageListItem>
   );
 
   const tiles = [
