@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -497,9 +498,14 @@ public class BrowseFinder extends JPanel implements UserGroupRoleFinder {
       @SuppressWarnings("unchecked")
       public void insertInOrder(MutableTreeNode newChild) {
         if (!Check.isEmpty(children)) {
-          List<MutableTreeNode> mtns = new ArrayList<MutableTreeNode>(children);
+          List<MutableTreeNode> mtns = new ArrayList<>();
+          mtns.addAll(
+              children.stream()
+                  .filter(child -> child instanceof MutableTreeNode)
+                  .map(child -> (MutableTreeNode) child)
+                  .collect(Collectors.toList()));
           mtns.add(newChild);
-          Collections.sort(mtns, new NumberStringComparator<MutableTreeNode>());
+          mtns.sort(new NumberStringComparator<>());
 
           removeAllChildren();
           for (MutableTreeNode mtn : mtns) {
