@@ -42,7 +42,6 @@ export const ACLTreeRecipient = ({
   nodeId,
   expressionName,
   onDelete,
-  onSelect,
   ...other
 }: ACLTreeRecipientProps): JSX.Element => {
   const classes = useACLTreeItemStyles();
@@ -67,7 +66,6 @@ export const ACLTreeRecipient = ({
     <TreeItem
       nodeId={nodeId}
       label={treeRecipientLabel()}
-      onSelect={onSelect}
       classes={{
         root: classes.root,
       }}

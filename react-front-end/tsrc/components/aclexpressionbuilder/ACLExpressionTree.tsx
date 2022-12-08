@@ -20,7 +20,8 @@ import * as React from "react";
 import { useState, ChangeEvent } from "react";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowRightIcon from "@material-ui/icons/ArrowRight";
-import { ACLExpression } from "./ACLExpressionHelper";
+import { ACLExpression } from "../../modules/ACLExpressionModule";
+import type { ACLRecipient } from "../../modules/ACLRecipientModule";
 import { ACLTreeOperator } from "./ACLTreeOperator";
 import { ACLTreeRecipient } from "./ACLTreeRecipient";
 
@@ -30,11 +31,11 @@ export interface ACLExpressionTreeProps {
    */
   aclExpression: ACLExpression;
   /**
-   * Fired when the tree item is selected.
+   * Fired when the tree item is selected. Only `ACLTreeOperator` can be selected.
    */
-  onSelect: (nodeID: string) => void;
+  onSelect: (expression: ACLExpression) => void;
   /**
-   * Fired when the tree item is deleted.
+   * Fired when the tree item is deleted. Both `ACLTreeOperator` and `ACLTreeRecipient` can be deleted.
    */
   onDelete: (nodeID: string) => void;
 }
@@ -45,6 +46,8 @@ export interface ACLExpressionTreeProps {
  * */
 const ACLExpressionTree = ({
   aclExpression,
+  onSelect,
+  onDelete,
 }: ACLExpressionTreeProps): JSX.Element => {
   const [expanded, setExpanded] = useState<string[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
@@ -59,25 +62,34 @@ const ACLExpressionTree = ({
     // TODO: handle delete action
   };
 
-  const parseACLExpression = (aclExpression: ACLExpression, isRoot = false) => (
-    <ACLTreeOperator
-      key={aclExpression.id}
-      nodeId={aclExpression.id}
-      operator={aclExpression.operator}
-      isRoot={isRoot}
-      onDelete={() => {}}
-    >
-      {aclExpression.recipients.map((recipient, index) => (
-        <ACLTreeRecipient
-          key={aclExpression.id + recipient}
-          nodeId={aclExpression.id + recipient}
-          expressionName={recipient}
-          onDelete={handleTreeRecipientDelete}
-        ></ACLTreeRecipient>
-      ))}
-      {aclExpression.children.map((aclEx) => parseACLExpression(aclEx))}
-    </ACLTreeOperator>
-  );
+  const parseACLExpression = (aclExpression: ACLExpression, isRoot = false) => {
+    const { id, operator, children, recipients } = aclExpression;
+
+    return (
+      <ACLTreeOperator
+        key={id}
+        nodeId={id}
+        operator={operator}
+        isRoot={isRoot}
+        onSelect={() => onSelect(aclExpression)}
+        onDelete={onDelete}
+      >
+        {recipients.map(({ type, expression, name }: ACLRecipient) => {
+          const unnamedValue = `${type} : ${expression}`;
+
+          return (
+            <ACLTreeRecipient
+              key={unnamedValue}
+              nodeId={unnamedValue}
+              expressionName={name ?? unnamedValue}
+              onDelete={handleTreeRecipientDelete}
+            ></ACLTreeRecipient>
+          );
+        })}
+        {children.map((aclEx) => parseACLExpression(aclEx))}
+      </ACLTreeOperator>
+    );
+  };
 
   return (
     <TreeView

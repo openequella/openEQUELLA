@@ -42,13 +42,29 @@ import { pipe } from "fp-ts/function";
 import * as React from "react";
 import { useState, ChangeEvent, ReactNode } from "react";
 import { Union, Static, Literal } from "runtypes";
+import {
+  ACLExpression,
+  addRecipients,
+  compactACLExpressions,
+  flattenRecipients,
+  replaceACLExpression,
+  revertCompactedACLExpressions,
+} from "../../modules/ACLExpressionModule";
+import {
+  ACLRecipient,
+  groupToRecipient,
+  recipientEq,
+  recipientOrd,
+  roleToRecipient,
+  userToRecipient,
+} from "../../modules/ACLRecipientModule";
 import { listUsers } from "../../modules/UserModule";
 import { languageStrings } from "../../util/langstrings";
 import UserSearch from "../securityentitysearch/UserSearch";
 import GroupSearch from "../securityentitysearch/GroupSearch";
 import RoleSearch from "../securityentitysearch/RoleSearch";
+import * as RA from "fp-ts/ReadonlyArray";
 import * as RSET from "fp-ts/ReadonlySet";
-import { ACLExpression } from "./ACLExpressionHelper";
 import ACLExpressionTree from "./ACLExpressionTree";
 
 const {
@@ -147,6 +163,8 @@ const useACLExpressionBuilderStyles = makeStyles((theme: Theme) =>
 );
 
 export interface ACLExpressionBuilderProps {
+  /** Handler for when user click OK button. */
+  onFinish: (aclExpression: ACLExpression) => void;
   /**
    *  It could be empty like a portlet hasn't been assigning ACL rules,
    *  user can use this builder to create an ACLExpression.
@@ -184,16 +202,27 @@ export interface ACLExpressionBuilderProps {
  *  At the same time, it also renders an ACL tree so that the user can clearly see the content of the current ACL settings.
  */
 const ACLExpressionBuilder = ({
+  onFinish,
   aclExpression,
   searchUserProvider = listUsers,
   searchGroupProvider,
   searchRoleProvider,
   resolveGroupsProvider,
 }: ACLExpressionBuilderProps): JSX.Element => {
-  const [currentAclExpression] = useState<ACLExpression>(
-    aclExpression ?? { id: "1", operator: "OR", recipients: [], children: [] }
-  );
+  const [currentACLExpression, setCurrentAclExpression] =
+    useState<ACLExpression>(
+      aclExpression
+        ? compactACLExpressions(aclExpression)
+        : {
+            id: "default-acl-expression-id",
+            operator: "OR",
+            recipients: [],
+            children: [],
+          }
+    );
+
   const [activeTabValue, setActiveTabValue] = useState(homeTabLabel);
+
   const [activeSearchFilterType, setActiveSearchFilterType] =
     useState<SearchFilterType>("Users");
   const [activeOtherACLType, setActiveOtherACLType] =
@@ -201,15 +230,58 @@ const ACLExpressionBuilder = ({
   const [activeReferrerType, setActiveReferrerType] =
     useState<ReferrerType>("Contain");
 
+  const [userSelections, setUserSelections] = useState<
+    ReadonlySet<OEQ.UserQuery.UserDetails>
+  >(RSET.empty);
+  const [groupSelections, setGroupSelections] = useState<
+    ReadonlySet<OEQ.UserQuery.GroupDetails>
+  >(RSET.empty);
+  const [roleSelections, setRoleSelections] = useState<
+    ReadonlySet<OEQ.UserQuery.RoleDetails>
+  >(RSET.empty);
+
+  const [selectedACLExpression, setSelectedACLExpression] =
+    useState<ACLExpression>(currentACLExpression);
+
   const handleSearchFilterChange = (event: ChangeEvent<HTMLInputElement>) =>
     setActiveSearchFilterType(SearchFilterTypesUnion.check(event.target.value));
 
   const handleTabChanged = (_: ChangeEvent<{}>, newValue: string) =>
     setActiveTabValue(newValue);
 
-  const handleACLItemSelected = (nodeID: string) => {
-    // TODO: handle ACL item selected
+  // add new selected recipients into selected ACLExpression node
+  const updateNewRecipients = (recipients: ReadonlySet<ACLRecipient>) => {
+    // if the recipient is already exiting in the currentAclExpression, ignore it.
+    const filteredRecipients: ACLRecipient[] = pipe(
+      recipients,
+      RSET.difference(recipientEq)(flattenRecipients(currentACLExpression)),
+      RSET.toReadonlyArray(recipientOrd),
+      RA.toArray
+    );
+
+    const newACLExpression: ACLExpression = pipe(
+      selectedACLExpression,
+      addRecipients(filteredRecipients)
+    );
+
+    pipe(
+      currentACLExpression,
+      replaceACLExpression(newACLExpression),
+      setCurrentAclExpression
+    );
+
+    setSelectedACLExpression(newACLExpression);
   };
+
+  const handleEntitySelected = <T,>(
+    selections: ReadonlySet<T>,
+    entityToReceipt: (entity: T) => ACLRecipient
+  ) =>
+    pipe(
+      selections,
+      RSET.map(recipientEq)(entityToReceipt),
+      updateNewRecipients
+    );
 
   const handleACLItemDelete = (nodeID: string) => {
     // TODO: delete ACL item
@@ -229,12 +301,11 @@ const ACLExpressionBuilder = ({
 
   const homeACLPanel = () => {
     const sharedProps = {
-      selections: RSET.empty,
       listHeight: 300,
       groupFilterEditable: true,
-      selectButton: { onClick: () => {} },
       groupSearch: searchGroupProvider,
       resolveGroupsProvider: resolveGroupsProvider,
+      enableMultiSelection: true,
     };
 
     return (
@@ -267,27 +338,42 @@ const ACLExpressionBuilder = ({
             (Users) => (
               <UserSearch
                 key={Users}
-                onChange={() => {}}
-                search={searchUserProvider}
                 {...sharedProps}
+                search={searchUserProvider}
+                selections={userSelections}
+                onChange={setUserSelections}
+                selectButton={{
+                  onClick: () =>
+                    handleEntitySelected(userSelections, userToRecipient),
+                }}
               />
             ),
             (Groups) => (
               <GroupSearch
                 key={Groups}
-                onChange={() => {}}
-                search={searchGroupProvider}
                 {...sharedProps}
+                search={searchGroupProvider}
+                selections={groupSelections}
+                onChange={setGroupSelections}
+                selectButton={{
+                  onClick: () =>
+                    handleEntitySelected(groupSelections, groupToRecipient),
+                }}
               />
             ),
             (Roles) => (
               <RoleSearch
                 key={Roles}
-                onChange={() => {}}
-                search={searchRoleProvider}
                 {...sharedProps}
+                search={searchRoleProvider}
+                selections={roleSelections}
+                onChange={setRoleSelections}
                 listHeight={367}
                 groupFilterEditable={false}
+                selectButton={{
+                  onClick: () =>
+                    handleEntitySelected(roleSelections, roleToRecipient),
+                }}
               />
             )
           )
@@ -436,8 +522,8 @@ const ACLExpressionBuilder = ({
           <Grid item xs={6} className={panelWrapperClass}>
             <Paper className={paperClass}>
               <ACLExpressionTree
-                aclExpression={currentAclExpression}
-                onSelect={handleACLItemSelected}
+                aclExpression={currentACLExpression}
+                onSelect={setSelectedACLExpression}
                 onDelete={handleACLItemDelete}
               />
             </Paper>
@@ -448,6 +534,13 @@ const ACLExpressionBuilder = ({
             variant="contained"
             color="primary"
             className={actionBtnClass}
+            onClick={() =>
+              pipe(
+                currentACLExpression,
+                revertCompactedACLExpressions,
+                onFinish
+              )
+            }
           >
             {languageStrings.common.action.ok}
           </Button>

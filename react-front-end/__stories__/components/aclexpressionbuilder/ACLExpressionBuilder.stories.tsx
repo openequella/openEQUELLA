@@ -17,6 +17,7 @@
  */
 import { Meta, Story } from "@storybook/react";
 import * as React from "react";
+import { complexExpressionACLExpression } from "../../../__mocks__/ACLExpressionModule.mock";
 import { listGroups, resolveGroups } from "../../../__mocks__/GroupModule.mock";
 import { listRoles } from "../../../__mocks__/RoleModule.mock";
 import { listUsers } from "../../../__mocks__/UserModule.mock";
@@ -33,42 +34,8 @@ export const Basic: Story<ACLExpressionBuilderProps> = (args) => (
   <ACLExpressionBuilder {...args} />
 );
 
-/**
- * TODO: import mock data from `ACLExpressionModule`.
- * */
 Basic.args = {
-  aclExpression: {
-    id: "1",
-    operator: "OR",
-    recipients: ["admin", "admin2"],
-    children: [
-      {
-        id: "2",
-        operator: "AND",
-        recipients: ["admin", "admin2"],
-        children: [
-          {
-            id: "4",
-            operator: "AND",
-            recipients: ["admin", "admin2"],
-            children: [],
-          },
-          {
-            id: "5",
-            operator: "NOT",
-            recipients: ["admin"],
-            children: [],
-          },
-        ],
-      },
-      {
-        id: "3",
-        operator: "NOT",
-        recipients: ["admin"],
-        children: [],
-      },
-    ],
-  },
+  aclExpression: complexExpressionACLExpression,
   searchUserProvider: listUsers,
   searchGroupProvider: listGroups,
   searchRoleProvider: listRoles,
