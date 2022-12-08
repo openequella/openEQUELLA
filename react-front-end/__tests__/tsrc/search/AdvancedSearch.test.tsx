@@ -92,7 +92,7 @@ const togglePanel = async () =>
   act(async () => userEvent.click(screen.getByLabelText(filterButtonLabel)));
 
 const renderAdvancedSearchPage = async () => {
-  window.matchMedia = createMatchMedia(1280);
+  window.matchMedia = createMatchMedia(1280, true);
 
   const history = createMemoryHistory();
   history.push("/page/advancedsearch/4be6ae54-68ca-4d8b-acd0-0ca96fc39280");

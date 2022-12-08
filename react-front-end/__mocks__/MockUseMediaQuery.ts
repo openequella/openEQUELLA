@@ -20,26 +20,32 @@ import mediaQuery from "css-mediaquery";
 /**
  * To emulate a screen size where Jest tests are executed, call this function with the intended
  * screen size to generate another function assignable to 'window.matchMedia'.
- * Only `width` is supported now.
+ * Only `width` and `pointer` are currently supported.
  *
  * @param width The screen width to be mocked.
+ * @param pointerFine If `true` will respond to any `@media(pointer: fine)` queries with `true`.
+ *                    This is especially useful for MUI-X pickers which use `@media (pointer: fine)`
+ *                    to determine whether to use Mobile Pickers (`false`) or
+ *                    Desktop Pickers (`true`).
  */
 export const createMatchMedia = (
-  width: number
+  width: number,
+  pointerFine = false
 ): ((query: string) => MediaQueryList) => {
   const nop = () => {};
-  return (query) => {
-    return {
-      matches: mediaQuery.match(query, {
-        width,
-      }),
-      media: query,
-      addListener: nop,
-      addEventListener: nop,
-      removeListener: nop,
-      removeEventListener: nop,
-      onchange: nop,
-      dispatchEvent: () => true,
-    };
-  };
+  return (query) => ({
+    matches:
+      query === "(pointer: fine)" && pointerFine
+        ? pointerFine
+        : mediaQuery.match(query, {
+            width,
+          }),
+    media: query,
+    addListener: nop,
+    addEventListener: nop,
+    removeListener: nop,
+    removeEventListener: nop,
+    onchange: nop,
+    dispatchEvent: () => true,
+  });
 };

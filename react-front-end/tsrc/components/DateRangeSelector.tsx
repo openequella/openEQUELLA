@@ -15,22 +15,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import LuxonUtils from "@date-io/luxon";
-import { styled } from "@mui/material/styles";
-import { FormControl, Grid, InputLabel, MenuItem, Select } from "@mui/material";
 import {
-  KeyboardDatePicker,
-  MuiPickersUtilsProvider,
-} from "@material-ui/pickers";
-import type { DatePickerView } from "@material-ui/pickers/DatePicker/DatePicker";
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import type { CalendarPickerView } from "@mui/x-date-pickers";
+import { DatePicker } from "@mui/x-date-pickers";
+import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import clsx from "clsx";
+import { flow, identity } from "fp-ts/function";
+import * as O from "fp-ts/Option";
 import { DateTime } from "luxon";
 import * as React from "react";
 import { ReactNode, useEffect, useState } from "react";
 import type { DateRange, ISODateFormat } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
+import { pfTernaryTypeGuard } from "../util/pointfree";
 import SettingsToggleSwitch from "./SettingsToggleSwitch";
-import * as O from "fp-ts/Option";
-import { pipe } from "fp-ts/function";
 
 const PREFIX = "DateRangeSelector";
 
@@ -55,15 +62,11 @@ export interface DatePickerCustomProps {
   /**
    * A list of DatePickerView controlling the views of DatePicker.
    */
-  views: DatePickerView[];
+  views: CalendarPickerView[];
   /**
    * Standard date format used in the DatePicker.
    */
   format: ISODateFormat;
-  /**
-   * Function to control what is displayed in the DatePicker input.
-   */
-  labelFunc: (d: DateTime | null) => string;
   /**
    * Function to transform a given date to another date (e.g. convert a day to the first day of a month).
    */
@@ -79,9 +82,8 @@ export interface DatePickerCustomProps {
 export const buildDatePickerCustomProps = (
   format: ISODateFormat = "yyyy-MM-dd"
 ): DatePickerCustomProps => ({
-  views: ["year", "month", "date"],
+  views: ["year", "month", "day"],
   format,
-  labelFunc: (d: DateTime | null) => d?.toFormat(format) ?? "",
   transformDate: (d: DateTime) => d,
 });
 
@@ -302,8 +304,7 @@ export const DateRangeSelector = ({
    * Generate two date pickers and wrap them with Grid items.
    */
   const getDatePickers = (): ReactNode => {
-    const { views, format, labelFunc, transformDate } =
-      datePickerCustomPropsProvider();
+    const { views, format, transformDate } = datePickerCustomPropsProvider();
     const dateRangePickers: DatePickerProps[] = [
       {
         field: "start",
@@ -321,42 +322,58 @@ export const DateRangeSelector = ({
       const isStart = field === "start";
       return (
         <StyledGrid item key={field} xs={12} lg={6}>
-          <KeyboardDatePicker
-            id={`${id}-${field}`}
+          <DatePicker
+            renderInput={(props) => (
+              <TextField id={`${id}-${field}`} {...props} />
+            )}
             views={views}
-            className={classes.datePickerWidth} // Ensure the picker still takes full width when calender icon is hidden.
+            className={classes.datePickerWidth} // Ensure the picker still takes full width when calendar icon is hidden.
             disableFuture
-            variant="dialog"
-            clearable
-            KeyboardButtonProps={{
-              className: showCalenderIcon ? "" : classes.hideCalenderIcon,
+            closeOnSelect
+            componentsProps={{
+              actionBar: {
+                actions: ["clear", "cancel", "accept"],
+              },
             }}
-            inputVariant="outlined"
-            autoOk
-            labelFunc={labelFunc}
-            format={format}
+            OpenPickerButtonProps={{
+              className: clsx(!showCalenderIcon && classes.hideCalenderIcon),
+            }}
+            inputFormat={format}
+            // Need this due to https://github.com/mui/mui-x/issues/4664
+            disableMaskedInput={false}
             // The maximum start date is the range's end whereas minimum end date is the range's start.
             minDate={!isStart ? stateDateRange?.start : undefined}
             maxDate={isStart ? stateDateRange?.end : undefined}
             label={label}
             // When value is undefined use null instead so nothing is displayed in the TextField.
             value={value ?? null}
-            onChange={(newDate, _) =>
-              pipe(
-                newDate,
-                O.fromNullable,
-                O.map((d) => transformDate(d).toJSDate()),
-                O.toUndefined,
-                (d) => {
-                  const newRange = {
-                    ...stateDateRange,
-                    [field]: d,
-                  };
-                  setStateDateRange(newRange);
-                  handleDateRangeChange(newRange);
-                }
-              )
-            }
+            onChange={flow(
+              O.fromNullable,
+              O.map(
+                flow(
+                  // This is nonsense, and really just to accommodate some typing issues.
+                  // It seems that `DatePicker` is always resolving the type of this as `Date`
+                  // even though a DateTime is getting passed through. But just in case, we do
+                  // this dance.
+                  pfTernaryTypeGuard<DateTime, Date, DateTime>(
+                    (x): x is DateTime => DateTime.isDateTime(x),
+                    identity,
+                    DateTime.fromJSDate
+                  ),
+                  transformDate,
+                  (d) => d.toJSDate()
+                )
+              ),
+              O.toUndefined,
+              (d: Date | undefined) => {
+                const newRange = {
+                  ...stateDateRange,
+                  [field]: d,
+                };
+                setStateDateRange(newRange);
+                handleDateRangeChange(newRange);
+              }
+            )}
           />
         </StyledGrid>
       );
@@ -364,9 +381,9 @@ export const DateRangeSelector = ({
   };
 
   const customDatePicker: ReactNode = (
-    <MuiPickersUtilsProvider
-      utils={LuxonUtils}
-      locale={DateTime.local().locale}
+    <LocalizationProvider
+      dateAdapter={AdapterLuxon}
+      adapterLocale={DateTime.local().locale}
     >
       <Grid
         container
@@ -384,7 +401,7 @@ export const DateRangeSelector = ({
       >
         {getDatePickers()}
       </Grid>
-    </MuiPickersUtilsProvider>
+    </LocalizationProvider>
   );
 
   return (
