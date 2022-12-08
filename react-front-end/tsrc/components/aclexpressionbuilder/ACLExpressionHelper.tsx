@@ -15,19 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { createStyles, makeStyles, Theme } from "@material-ui/core";
-
-// TODO: import type from `ACLExpressionModule`
-export type ACLOperatorName = "AND" | "OR" | "NOT";
-
-// TODO: import interface from `ACLExpressionModule`
-export interface ACLExpression {
-  id: string;
-  operator: ACLOperatorName;
-  recipients: string[];
-  children: ACLExpression[];
-}
 
 export const useACLTreeItemStyles = makeStyles((theme: Theme) =>
   createStyles({

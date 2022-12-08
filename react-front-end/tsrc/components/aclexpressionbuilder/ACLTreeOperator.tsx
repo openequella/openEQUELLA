@@ -21,9 +21,10 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import TreeItem, { TreeItemProps } from "@material-ui/lab/TreeItem";
 import * as React from "react";
 import { ChangeEvent } from "react";
+import type { ACLOperatorType } from "../../modules/ACLExpressionModule";
 import { languageStrings } from "../../util/langstrings";
 import { TooltipIconButton } from "../TooltipIconButton";
-import { ACLOperatorName, useACLTreeItemStyles } from "./ACLExpressionHelper";
+import { useACLTreeItemStyles } from "./ACLExpressionHelper";
 
 const {
   aclExpressionBuilder: {
@@ -37,7 +38,7 @@ export interface ACLTreeOperatorProps extends TreeItemProps {
   /**
    * Operator name.
    */
-  operator: ACLOperatorName;
+  operator: ACLOperatorType;
   /**
    * `true` if an operator is a root operator which appears on the top of the tree without a delete button.
    */
@@ -80,13 +81,23 @@ export const ACLTreeOperator = ({
         <MenuItem value="AND">{andLabel}</MenuItem>
         <MenuItem value="NOT">{notLabel}</MenuItem>
       </Select>
-      <TooltipIconButton title={addGroupLabel}>
+      <TooltipIconButton
+        onClick={(event) => {
+          // prevent toggling tree item
+          event.stopPropagation();
+        }}
+        title={addGroupLabel}
+      >
         <CreateNewFolder />
       </TooltipIconButton>
       {!isRoot && (
         <TooltipIconButton
           title={languageStrings.common.action.delete}
-          onClick={(_) => onDelete(nodeId)}
+          onClick={(event) => {
+            onDelete(nodeId);
+            // prevent toggling tree item
+            event.stopPropagation();
+          }}
         >
           <DeleteIcon />
         </TooltipIconButton>
@@ -96,9 +107,10 @@ export const ACLTreeOperator = ({
 
   return (
     <TreeItem
+      id={nodeId}
       nodeId={nodeId}
       label={treeOperatorLabel()}
-      onSelect={onSelect}
+      onClick={onSelect}
       classes={{
         root: classes.root,
       }}

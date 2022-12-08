@@ -25,15 +25,18 @@ import { not } from "fp-ts/Predicate";
 import * as RA from "fp-ts/ReadonlyArray";
 import * as RNEA from "fp-ts/ReadonlyNonEmptyArray";
 import { ReadonlyNonEmptyArray } from "fp-ts/ReadonlyNonEmptyArray";
+import * as RSET from "fp-ts/ReadonlySet";
 import * as S from "fp-ts/string";
 import * as T from "fp-ts/Task";
 import * as TE from "fp-ts/TaskEither";
 import { Literal, Static, Union } from "runtypes";
+import { v4 as uuidv4 } from "uuid";
 import { pfTernary, pfTernaryTypeGuard } from "../util/pointfree";
 import { ACLEntityResolvers } from "./ACLEntityModule";
 import {
   ACLRecipient,
   createACLRecipient,
+  recipientEq,
   showRecipient,
   showRecipientHumanReadable,
 } from "./ACLRecipientModule";
@@ -50,7 +53,7 @@ const ACLOperatorTypesUnion = Union(
   Literal("UNKNOWN")
 );
 
-type ACLOperatorType = Static<typeof ACLOperatorTypesUnion>;
+export type ACLOperatorType = Static<typeof ACLOperatorTypesUnion>;
 
 /**
  * Represents the ACL Expression string.
@@ -59,6 +62,10 @@ type ACLOperatorType = Static<typeof ACLOperatorTypesUnion>;
  * And an ACLExpression object can also generate a raw ACL Expression string.
  */
 export interface ACLExpression {
+  /**
+   * A unique identifier used to render a tree view and locate the selected ACLExpression.
+   */
+  id: string;
   /**
    * Operator relationship between recipient and children.
    */
@@ -102,6 +109,7 @@ export const createACLExpression = (
   recipients: ACLRecipient[] = [],
   children: ACLExpression[] = []
 ): ACLExpression => ({
+  id: uuidv4(),
   operator: operator,
   recipients: [...recipients],
   children: [...children],
@@ -110,7 +118,7 @@ export const createACLExpression = (
 /**
  * Creates a new `ACLExpression` based on the provided `expression` with the additional `recipients` added.
  */
-const addRecipients =
+export const addRecipients =
   (recipients: ACLRecipient[]) =>
   (expression: ACLExpression): ACLExpression => ({
     ...expression,
@@ -126,6 +134,50 @@ const addChildren =
     ...expression,
     children: pipe(expression.children, A.concat(child)),
   });
+
+/**
+ * Find the original ACLExpression by id in `originalACLExpression` and replace it with `newACLExpression`.
+ * If it can't find the corresponding ACLExpression in `originalACLExpression` it will return a new `originalACLExpression`
+ * (recursively) .
+ *
+ * All returned result will be a new object.
+ */
+export const replaceACLExpression = (
+  newACLExpression: ACLExpression
+): ((originalACLExpression: ACLExpression) => ACLExpression) =>
+  pfTernary(
+    (originalACLExpression: ACLExpression) =>
+      originalACLExpression.id === newACLExpression.id,
+    (_) => newACLExpression,
+    (originalACLExpression: ACLExpression) =>
+      pipe(
+        originalACLExpression.children,
+        A.map(replaceACLExpression(newACLExpression)),
+        (newChildren) => ({
+          ...originalACLExpression,
+          children: newChildren,
+        })
+      )
+  );
+
+/**
+ * Return a collection containing all recipients in a given ACLExpression.
+ */
+export const flattenRecipients = ({
+  children,
+  recipients,
+}: ACLExpression): ReadonlySet<ACLRecipient> =>
+  pipe(
+    children,
+    A.reduce<ACLExpression, ACLRecipient[]>(
+      recipients,
+      (acc: ACLRecipient[], child: ACLExpression) => [
+        ...acc,
+        ...child.recipients,
+      ]
+    ),
+    RSET.fromReadonlyArray(recipientEq)
+  );
 
 /**
  * Get the number of recipients for a given ACLExpression.
@@ -384,6 +436,7 @@ export const parse = (
         ),
       })
     );
+
   /**
    * Assumes `currentExpression` has an operator of `UNKNOWN` and appends it to the existing `previousExpressions` before returning the updated state.
    */
@@ -422,6 +475,7 @@ export const parse = (
             RA.reduce<ACLExpression, AclExpressionBuildingState>(
               {
                 result: {
+                  id: uuidv4(),
                   operator: "UNKNOWN",
                   recipients: [],
                   children: [],
@@ -1033,5 +1087,5 @@ export const generateHumanReadable =
  * - $owner
  * - U:user-id
  */
-export const generate = (aclExpression: ACLExpression) =>
+export const generate = (aclExpression: ACLExpression): string =>
   pipe(aclExpression, generatePostfixResults, A.intercalate(S.Monoid)(" "));

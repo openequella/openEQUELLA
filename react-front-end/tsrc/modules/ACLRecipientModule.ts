@@ -17,8 +17,10 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import * as E from "fp-ts/Either";
-import * as O from "fp-ts/Option";
+import * as EQ from "fp-ts/Eq";
 import { constant, flow, pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import * as ORD from "fp-ts/Ord";
 import * as RNEA from "fp-ts/ReadonlyNonEmptyArray";
 import * as S from "fp-ts/string";
 import * as TE from "fp-ts/TaskEither";
@@ -87,6 +89,58 @@ export interface ACLRecipient {
 }
 
 /**
+ * Eq for `ACLRecipient` with equality based on the recipient's type and expression.
+ */
+export const recipientEq: EQ.Eq<ACLRecipient> = EQ.contramap(
+  (r: ACLRecipient) => r.type + r.expression
+)(S.Eq);
+
+/**
+ * Ord for `ACLRecipient` with ordering rule based on the recipient's name.
+ */
+export const recipientOrd: ORD.Ord<ACLRecipient> = ORD.contramap(
+  (r: ACLRecipient) => r.name ?? r.type + r.expression
+)(S.Ord);
+
+/**
+ * Convert user details to ACL recipient.
+ */
+export const userToRecipient = ({
+  firstName,
+  lastName,
+  username,
+  id,
+}: OEQ.UserQuery.UserDetails): ACLRecipient => ({
+  name: `${firstName} ${lastName} [${username}]`,
+  expression: id,
+  type: ACLRecipientTypes.User,
+});
+
+/**
+ * Convert group details to ACL recipient.
+ */
+export const groupToRecipient = ({
+  name,
+  id,
+}: OEQ.UserQuery.GroupDetails): ACLRecipient => ({
+  name: name,
+  expression: id,
+  type: ACLRecipientTypes.Group,
+});
+
+/**
+ * Convert role details to ACL recipient.
+ */
+export const roleToRecipient = ({
+  name,
+  id,
+}: OEQ.UserQuery.RoleDetails): ACLRecipient => ({
+  name: name,
+  expression: id,
+  type: ACLRecipientTypes.Role,
+});
+
+/**
  * Parse a given ACL recipient and return corresponding ACL Recipient name.
  *
  * Recipient Type : Name example
@@ -120,13 +174,8 @@ const generateACLRecipientName =
             TE.chainOptionK<string>(constant(`Can't find user: ${expression}`))(
               flow(
                 O.fromNullable,
-                O.map(
-                  ({
-                    firstName,
-                    lastName,
-                    username,
-                  }: OEQ.UserQuery.UserDetails) =>
-                    `${firstName} ${lastName} [${username}]`
+                O.chainNullableK(
+                  (u: OEQ.UserQuery.UserDetails) => userToRecipient(u).name
                 )
               )
             )

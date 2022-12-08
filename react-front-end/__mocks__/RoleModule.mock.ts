@@ -24,6 +24,10 @@ import { entityDetailsProvider } from "./SecurityEntitySearch.mock";
  */
 export const roles: OEQ.UserQuery.RoleDetails[] = [
   {
+    id: "62ed85d3-278a-46f5-8ee4-391a45f97899",
+    name: "Teachers",
+  },
+  {
     id: "TLE_GUEST_USER_ROLE",
     name: "Guest",
   },
@@ -38,6 +42,14 @@ export const roles: OEQ.UserQuery.RoleDetails[] = [
   {
     id: "ffff7e1d-bf77-464f-bd41-de89d44a9cc6",
     name: "Student",
+  },
+  {
+    id: "fda99983-9eda-440a-ac68-0f746173fdcb",
+    name: "role100",
+  },
+  {
+    id: "1de3a6df-dc81-4a26-b69e-e61f8474594a",
+    name: "role200",
   },
 ];
 

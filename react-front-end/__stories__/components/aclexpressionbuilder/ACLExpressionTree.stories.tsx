@@ -17,6 +17,7 @@
  */
 import { Meta, Story } from "@storybook/react";
 import * as React from "react";
+import { complexExpressionACLExpression } from "../../../__mocks__/ACLExpressionModule.mock";
 import ACLExpressionTree, {
   ACLExpressionTreeProps,
 } from "../../../tsrc/components/aclexpressionbuilder/ACLExpressionTree";
@@ -30,27 +31,6 @@ export const Basic: Story<ACLExpressionTreeProps> = (args) => (
   <ACLExpressionTree {...args} />
 );
 
-/**
- * TODO: import mock data from `ACLExpressionModule`.
- * */
 Basic.args = {
-  aclExpression: {
-    id: "1",
-    operator: "OR",
-    recipients: ["user1", "user2"],
-    children: [
-      {
-        id: "2",
-        operator: "AND",
-        recipients: ["role1", "role2"],
-        children: [],
-      },
-      {
-        id: "3",
-        operator: "NOT",
-        recipients: ["group1"],
-        children: [],
-      },
-    ],
-  },
+  aclExpression: complexExpressionACLExpression,
 };
