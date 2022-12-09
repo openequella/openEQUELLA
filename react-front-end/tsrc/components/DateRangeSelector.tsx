@@ -25,7 +25,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import type { CalendarPickerView } from "@mui/x-date-pickers";
-import { DatePicker } from "@mui/x-date-pickers";
+import { DesktopDatePicker } from "@mui/x-date-pickers";
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import clsx from "clsx";
@@ -326,7 +326,10 @@ export const DateRangeSelector = ({
       const isStart = field === "start";
       return (
         <StyledGrid item key={field} xs={12} lg={6}>
-          <DatePicker
+          {/*Ideally this would be DatePicker, however the responsive switching between Desktop and
+          Mobile was too troublesome culminating in this comment on GitHub:
+          https://github.com/mui/mui-x/issues/4644#issuecomment-1343851120*/}
+          <DesktopDatePicker
             renderInput={(props) => (
               <TextField id={`${id}-${field}`} {...props} />
             )}

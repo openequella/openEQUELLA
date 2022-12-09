@@ -137,9 +137,9 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
     WebElement quickOptionSwitch =
         dateRangeSelector.findElement(By.id("modified_date_selector_mode_switch"));
     quickOptionSwitch.click();
-    WebElement startTextField = dateRangeSelector.findElements(By.tagName("input")).get(0);
+    WebElement startTextField = dateRangeSelector.findElement(By.id("date-range-selector-start"));
     startTextField.sendKeys(start);
-    WebElement endTextField = dateRangeSelector.findElements(By.tagName("input")).get(1);
+    WebElement endTextField = dateRangeSelector.findElement(By.id("date-range-selector-end"));
     endTextField.sendKeys(end);
   }
 
