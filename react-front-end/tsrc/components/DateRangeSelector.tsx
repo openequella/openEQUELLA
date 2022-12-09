@@ -29,14 +29,13 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import clsx from "clsx";
-import { flow, identity } from "fp-ts/function";
+import { flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { DateTime } from "luxon";
 import * as React from "react";
 import { ReactNode, useEffect, useState } from "react";
 import type { DateRange, ISODateFormat } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
-import { pfTernaryTypeGuard } from "../util/pointfree";
 import SettingsToggleSwitch from "./SettingsToggleSwitch";
 
 const PREFIX = "DateRangeSelector";
@@ -60,7 +59,7 @@ const StyledGrid = styled(Grid)({
  */
 export interface DatePickerCustomProps {
   /**
-   * A list of DatePickerView controlling the views of DatePicker.
+   * A list of CalendarPickerView controlling the views of DatePicker.
    */
   views: CalendarPickerView[];
   /**
@@ -97,9 +96,10 @@ interface DatePickerProps {
    */
   label: string;
   /**
-   * The value of a date picker.
+   * The value of a date picker. (Uses DateTime to match the AdapterLuxon adapter used with the
+   * DatePicker.)
    */
-  value?: Date;
+  value?: DateTime;
 }
 
 export interface DateRangeSelectorProps {
@@ -304,17 +304,21 @@ export const DateRangeSelector = ({
    * Generate two date pickers and wrap them with Grid items.
    */
   const getDatePickers = (): ReactNode => {
+    // The DatePicker is used with a Luxon adapter, so we want all our date types aligned.
+    const asLuxonDate = (d: Date | undefined): DateTime | undefined =>
+      pipe(d, O.fromNullable, O.map(DateTime.fromJSDate), O.toUndefined);
+
     const { views, format, transformDate } = datePickerCustomPropsProvider();
     const dateRangePickers: DatePickerProps[] = [
       {
         field: "start",
         label: startLabel,
-        value: stateDateRange?.start,
+        value: asLuxonDate(stateDateRange?.start),
       },
       {
         field: "end",
         label: endLabel,
-        value: stateDateRange?.end,
+        value: asLuxonDate(stateDateRange?.end),
       },
     ];
 
@@ -342,28 +346,14 @@ export const DateRangeSelector = ({
             // Need this due to https://github.com/mui/mui-x/issues/4664
             disableMaskedInput={false}
             // The maximum start date is the range's end whereas minimum end date is the range's start.
-            minDate={!isStart ? stateDateRange?.start : undefined}
-            maxDate={isStart ? stateDateRange?.end : undefined}
+            minDate={asLuxonDate(!isStart ? stateDateRange?.start : undefined)}
+            maxDate={asLuxonDate(isStart ? stateDateRange?.end : undefined)}
             label={label}
             // When value is undefined use null instead so nothing is displayed in the TextField.
             value={value ?? null}
             onChange={flow(
               O.fromNullable,
-              O.map(
-                flow(
-                  // This is nonsense, and really just to accommodate some typing issues.
-                  // It seems that `DatePicker` is always resolving the type of this as `Date`
-                  // even though a DateTime is getting passed through. But just in case, we do
-                  // this dance.
-                  pfTernaryTypeGuard<DateTime, Date, DateTime>(
-                    (x): x is DateTime => DateTime.isDateTime(x),
-                    identity,
-                    DateTime.fromJSDate
-                  ),
-                  transformDate,
-                  (d) => d.toJSDate()
-                )
-              ),
+              O.map(flow(transformDate, (d) => d.toJSDate())),
               O.toUndefined,
               (d: Date | undefined) => {
                 const newRange = {
