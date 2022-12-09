@@ -1,7 +1,7 @@
 rem Java options
 rem set HEAP_CONFIG=-XX:+HeapDumpOnOutOfMemoryError;-XX:HeapDumpPath=../;
 rem set JMX_CONFIG=-Dcom.sun.management.jmxremote.port=8855;-Dcom.sun.management.jmxremote.authenticate=false;-Dcom.sun.management.jmxremote.ssl=false;
-set JAVA_ARGS=-Xms${memory/min};-Xmx${memory/max};-XX:MaxPermSize=256m;-Djava.net.preferIPv4Stack=true;-Djava.net.preferIPv6Addresses=false;-Djava.awt.headless=true;-Djava.io.tmpdir=../server/temp;-XX:MaxGCPauseMillis=500;-XX:NewRatio=3;-XX:GCTimeRatio=16;-XX:+DisableExplicitGC;-XX:+UseConcMarkSweepGC;-XX:+UseParNewGC;-XX:CMSInitiatingOccupancyFraction=70;-Dcom.sun.jndi.ldap.connect.pool.timeout=3000000;-Dcom.sun.jndi.ldap.connect.pool.maxsize=200;-Dcom.sun.jndi.ldap.connect.pool.prefsize=20
+set JAVA_ARGS=-Xms${memory/min};-Xmx${memory/max};-Djava.net.preferIPv4Stack=true;-Djava.net.preferIPv6Addresses=false;-Djava.awt.headless=true;-Djava.io.tmpdir=../server/temp;-XX:MaxGCPauseMillis=500;-XX:NewRatio=3;-XX:GCTimeRatio=16;-XX:+DisableExplicitGC;-XX:+UseG1GC;-XX:CMSInitiatingOccupancyFraction=70;-Dcom.sun.jndi.ldap.connect.pool.timeout=3000000;-Dcom.sun.jndi.ldap.connect.pool.maxsize=200;-Dcom.sun.jndi.ldap.connect.pool.prefsize=20
 rem Class path
 set CLASS_PATH=../learningedge-config;../server/equella-server.jar
 rem Display name for the Windows service

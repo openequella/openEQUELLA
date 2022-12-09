@@ -19,7 +19,7 @@ set WORKING_DIR=%_REALPATH%
 set LOG_PATH=%_REALPATH%..^\logs
 
 set MAIN_CLASS=com.tle.upgrademanager.Main
-set JAVA_VM=%JAVA_HOME%/jre/bin/server/jvm.dll
+set JAVA_VM=%JAVA_HOME%/bin/server/jvm.dll
 
 rem Remove spaces from service name
 set SERVICE_NAME=%SERVICE_NAME: =%
