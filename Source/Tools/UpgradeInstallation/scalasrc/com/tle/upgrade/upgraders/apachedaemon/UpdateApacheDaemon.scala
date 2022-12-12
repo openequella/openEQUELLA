@@ -67,9 +67,12 @@ class UpdateApacheDaemon extends AbstractUpgrader {
       Try {
         new LineFileModifier(new File(managerDir, configFile), result) {
           override protected def processLine(line: String): String = {
-            // The two options are separate by a semicolon on Windows and a whitespace on Linux.
-            val oldGCOption = "-XX:\\+UseConcMarkSweepGC(;|\\s)-XX:\\+UseParNewGC".r
-            oldGCOption.replaceAllIn(line, "-XX:+UseG1GC")
+            val JvmOption =
+              ".*(-XX:MaxPermSize=256m).*(-XX:\\+UseConcMarkSweepGC(;|\\s)-XX:\\+UseParNewGC).*".r
+            line match {
+              case JvmOption(perm, gc) =>
+                line.replace(perm, "").replace(gc, "-XX:+UseG1GC")
+            }
           }
         }.update()
       }
