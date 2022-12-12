@@ -21,38 +21,80 @@ package com.tle.upgrade.upgraders.apachedaemon
 import com.dytech.edge.common.Constants
 import com.tle.common.util.ExecUtils
 import com.tle.upgrade.upgraders.AbstractUpgrader
-import com.tle.upgrade.{UpgradeMain, UpgradeResult}
+import com.tle.upgrade.{LineFileModifier, UpgradeMain, UpgradeResult}
 import java.io.File
+import scala.util.{Failure, Success, Try}
 
 /**
-  * This upgrade aims to update Apache Daemon executables to a version that is compatible with Java 11.
+  * This upgrade aims to update Apache Daemon executables to version v1.3.3 which is compatible with Java 11.
   *
   * For Linux, it will replace file 'jsvc' as well as the two scripts for Equella server and the Manager server.
   * For Windows, it will replace 'prunsrv.exe', 'prunmgr.exe' and the two BAT files for Equella server and the Manager server.
+  *
+  * The upgrade will also try to replace the old Java GC configuration with a new one in the Equella configuration file.
   */
 class UpdateApacheDaemon extends AbstractUpgrader {
+  val JSVC    = "jsvc"
+  val PRUNMGR = "prunmgr.exe"
+  val PRUNSRV = "prunsrv.exe"
+
+  val EQUELLA_SERVER_LINUX          = "equellaserver"
+  val EQUELLA_SERVER_CONFIG_LINUX   = "equellaserver-config.sh"
+  val EQUELLA_SERVER_WINDOWS        = "equellaserver.bat"
+  val EQUELLA_SERVER_CONFIG_WINDOWS = "equellaserver-config.bat"
+
+  val MANAGER_SERVER_LINUX   = "manager"
+  val MANAGER_SERVER_WINDOWS = "manager.bat"
+
   override def getId: String = s"UpdateJSVC-${UpgradeMain.getCommit}"
 
-  override def isBackwardsCompatible: Boolean = true
+  override def isBackwardsCompatible: Boolean = false
 
   override def upgrade(result: UpgradeResult, installDir: File): Unit = {
     val managerDir = new File(installDir, Constants.MANAGER_FOLDER)
 
-    def updateFiles(files: Array[String], os: String): Unit = {
-      files.foreach(file => {
-        val bakFile = new File(managerDir, s"$file.bak")
-        rename(new File(managerDir, file), bakFile)
-        copyResource(s"/daemon/$os/$file", managerDir, true)
-        bakFile.delete()
-      })
+    def updateExecutables(files: Array[String], os: String) =
+      Try {
+        files.foreach(file => {
+          val bakFile = new File(managerDir, s"$file.bak")
+          rename(new File(managerDir, file), bakFile)
+          copyResource(s"/daemon/$os/$file", managerDir, true)
+          bakFile.delete()
+        })
+      }
+
+    def updateJVMOptions(configFile: String) =
+      Try {
+        new LineFileModifier(new File(managerDir, configFile), result) {
+          override protected def processLine(line: String): String = {
+            // The two options are separate by a semicolon on Windows and a whitespace on Linux.
+            val oldGCOption = "-XX:\\+UseConcMarkSweepGC(;|\\s)-XX:\\+UseParNewGC".r
+            oldGCOption.replaceAllIn(line, "-XX:+UseG1GC")
+          }
+        }.update()
+      }
+
+    def update(executables: Array[String], configFile: String, os: String): Unit = {
+      val updateResult = for {
+        _ <- updateExecutables(executables, os)
+        _ <- updateJVMOptions(configFile)
+      } yield ()
+
+      updateResult match {
+        case Success(_)     => result.info("Successfully update Apache Daemon.")
+        case Failure(error) => result.info(s"Failed to update Apache Daemon: ${error.getMessage}")
+      }
     }
 
     ExecUtils.determinePlatform() match {
       case ExecUtils.PLATFORM_WIN64 =>
-        updateFiles(Array("prunmgr.exe", "prunsrv.exe", "equellaserver.bat", "manager.bat"),
-                    "windows")
+        update(Array(PRUNMGR, PRUNSRV, EQUELLA_SERVER_WINDOWS, MANAGER_SERVER_WINDOWS),
+               EQUELLA_SERVER_CONFIG_WINDOWS,
+               "windows")
       case ExecUtils.PLATFORM_LINUX64 =>
-        updateFiles(Array("jsvc", "equellaserver", "manager"), "linux")
+        update(Array(JSVC, EQUELLA_SERVER_LINUX, MANAGER_SERVER_LINUX),
+               EQUELLA_SERVER_CONFIG_LINUX,
+               "linux")
       case other => result.info(s"Unsupported OS $other")
     }
   }
