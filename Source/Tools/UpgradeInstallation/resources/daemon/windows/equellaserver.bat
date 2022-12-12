@@ -4,7 +4,7 @@ setlocal
 call equellaserver-config.bat
 
 set MAIN_CLASS=com.tle.core.equella.runner.EQUELLAServer
-set JAVA_VM=%JAVA_HOME%/jre/bin/server/jvm.dll
+set JAVA_VM=%JAVA_HOME%/bin/server/jvm.dll
 IF NOT X%SERVICE_USER%==X SET SERVICE_FLAGS=--ServiceUser %SERVICE_USER% --ServicePassword %SERVICE_PASSWORD%
 
 if "%OS%"=="Windows_NT" goto nt
