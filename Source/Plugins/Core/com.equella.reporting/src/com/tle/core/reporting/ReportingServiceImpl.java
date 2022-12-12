@@ -198,7 +198,8 @@ public class ReportingServiceImpl
 
     @Override
     public void publish(LogRecord record) {
-      Logger logger = LoggerFactory.getLogger(record.getLoggerName());
+      String loggerName = record.getLoggerName();
+      Logger logger = loggerName != null ? LoggerFactory.getLogger(loggerName) : LOGGER;
       Level level = record.getLevel();
       String message = record.getMessage();
       try {
