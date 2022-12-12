@@ -46,7 +46,7 @@ class UpdateApacheDaemon extends AbstractUpgrader {
   val MANAGER_SERVER_LINUX   = "manager"
   val MANAGER_SERVER_WINDOWS = "manager.bat"
 
-  override def getId: String = s"UpdateJSVC-${UpgradeMain.getCommit}"
+  override def getId: String = s"UpdateApacheDaemon-${UpgradeMain.getCommit}"
 
   override def isBackwardsCompatible: Boolean = false
 
@@ -63,15 +63,22 @@ class UpdateApacheDaemon extends AbstractUpgrader {
         })
       }
 
+    // Any version before 2023.1 may have three JVM options that have been deprecated or
+    // removed since Java 11. So this upgrade will remove them.
     def updateJVMOptions(configFile: String) =
       Try {
         new LineFileModifier(new File(managerDir, configFile), result) {
           override protected def processLine(line: String): String = {
-            val JvmOption =
-              ".*(-XX:MaxPermSize=256m).*(-XX:\\+UseConcMarkSweepGC(;|\\s)-XX:\\+UseParNewGC).*".r
+            // Regex for the three JVM options defined in the config file. Each option is separated by a
+            // semicolon on Windows and a whitespace on Linux.
+            // For example: -Xmx512m;-XX:MaxPermSize=256m;-XX:GCTimeRatio=16;-XX:+UseConcMarkSweepGC;-XX:+UseParNewGC)
+            val JvmOptions =
+              ".*(-XX:MaxPermSize=\\d+m[;|\\s]).*(-XX:\\+UseConcMarkSweepGC[;|\\s]-XX:\\+UseParNewGC).*".r
+
             line match {
-              case JvmOption(perm, gc) =>
-                line.replace(perm, "").replace(gc, "-XX:+UseG1GC")
+              case JvmOptions(permSize, gc) =>
+                line.replace(permSize, "").replace(gc, "-XX:+UseG1GC")
+              case _ => line
             }
           }
         }.update()
