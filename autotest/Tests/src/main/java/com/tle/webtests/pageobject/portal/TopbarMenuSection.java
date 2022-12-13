@@ -19,12 +19,17 @@ public class TopbarMenuSection extends AbstractPage<TopbarMenuSection> {
   }
 
   public int getNumberOfNotifications() {
-    return getCountForElement(
-        getTopBarElement().findElement(By.xpath("//*[@title = 'Notifications']")));
+    By notificationXpath =
+        isNewUI()
+            ? By.xpath("//a[@aria-label = 'Notifications']")
+            : By.xpath("//*[@title = 'Notifications']");
+    return getCountForElement(getTopBarElement().findElement(notificationXpath));
   }
 
   public int getNumberOfTasks() {
-    return getCountForElement(getTopBarElement().findElement(By.xpath("//*[@title = 'Tasks']")));
+    By taskXpath =
+        isNewUI() ? By.xpath("//a[@aria-label = 'Tasks']") : By.xpath("//*[@title = 'Tasks']");
+    return getCountForElement(getTopBarElement().findElement(taskXpath));
   }
 
   private int getCountForElement(WebElement base) {

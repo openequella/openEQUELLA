@@ -22,24 +22,32 @@ import {
   InputBase,
   Paper,
   Switch,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import SearchIcon from "@material-ui/icons/Search";
-import TuneIcon from "@material-ui/icons/Tune";
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import SearchIcon from "@mui/icons-material/Search";
+import TuneIcon from "@mui/icons-material/Tune";
 import * as React from "react";
 import { useCallback, useEffect, useReducer } from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { languageStrings } from "../../util/langstrings";
 
-const useStyles = makeStyles({
-  root: {
+const PREFIX = "SearchBar";
+
+const classes = {
+  root: `${PREFIX}-root`,
+  input: `${PREFIX}-input`,
+  divider: `${PREFIX}-divider`,
+};
+
+const StyledPaper = styled(Paper)({
+  [`&.${classes.root}`]: {
     display: "flex",
     alignItems: "center",
   },
-  input: {
+  [`& .${classes.input}`]: {
     flex: "auto",
   },
-  divider: {
+  [`& .${classes.divider}`]: {
     height: 28,
     margin: "4px 12px",
   },
@@ -119,7 +127,6 @@ export default function SearchBar({
   doSearch,
   advancedSearchFilter,
 }: SearchBarProps) {
-  const classes = useStyles();
   const [state, dispatch] = useReducer(reducer, { status: "init", query });
 
   const search = useCallback(
@@ -177,8 +184,12 @@ export default function SearchBar({
   };
 
   return (
-    <Paper className={classes.root}>
-      <IconButton onClick={doSearch} aria-label={searchStrings.title}>
+    <StyledPaper className={classes.root}>
+      <IconButton
+        onClick={doSearch}
+        aria-label={searchStrings.title}
+        size="large"
+      >
         <SearchIcon />
       </IconButton>
       <InputBase
@@ -206,14 +217,15 @@ export default function SearchBar({
         control={
           <Switch
             id="wildcardSearch"
-            onChange={(_, checked) => onWildcardModeChange(checked)}
+            onChange={(event) => onWildcardModeChange(event.target.checked)}
             value={wildcardMode}
             checked={wildcardMode}
             name={searchStrings.wildcardSearch}
             size="small"
+            color="secondary"
           />
         }
       />
-    </Paper>
+    </StyledPaper>
   );
 }

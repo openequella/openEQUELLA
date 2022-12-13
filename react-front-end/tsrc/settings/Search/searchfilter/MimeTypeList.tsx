@@ -21,22 +21,30 @@ import {
   ListItem,
   ListItemText,
   Typography,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { getMimeTypeDetail } from "../../../modules/SearchFilterSettingsModule";
 import { languageStrings } from "../../../util/langstrings";
 
-const useStyles = makeStyles({
-  item: {
+const PREFIX = "MimeTypeList";
+
+const classes = {
+  item: `${PREFIX}-item`,
+  list: `${PREFIX}-list`,
+  listTitle: `${PREFIX}-listTitle`,
+};
+
+const StyledList = styled(List)({
+  [`& .${classes.item}`]: {
     padding: 0,
   },
-  list: {
+  [`&.${classes.list}`]: {
     maxHeight: 400,
     overflow: "auto",
   },
-  listTitle: {
+  [`& .${classes.listTitle}`]: {
     marginTop: 20,
   },
 });
@@ -61,12 +69,11 @@ const MimeTypeList = ({
   onChange,
   selected,
 }: MimeTypeFilterListProps) => {
-  const classes = useStyles();
   const searchFilterStrings =
     languageStrings.settings.searching.searchfiltersettings;
 
   return (
-    <List
+    <StyledList
       className={classes.list}
       subheader={
         <Typography
@@ -89,7 +96,7 @@ const MimeTypeList = ({
           </ListItem>
         );
       })}
-    </List>
+    </StyledList>
   );
 };
 

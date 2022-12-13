@@ -16,17 +16,16 @@
  * limitations under the License.
  */
 import * as React from "react";
+import { styled } from "@mui/material/styles";
 import { ErrorResponse } from "../api/errors";
-import { CardContent, Card, makeStyles, Typography } from "@material-ui/core";
+import { CardContent, Card, Typography } from "@mui/material";
 
-const useStyles = makeStyles((t) => ({
-  errorPage: {
-    display: "flex",
-    justifyContent: "center",
-    marginTop: t.spacing(8),
-    marginLeft: t.spacing(2),
-    marginRight: t.spacing(2),
-  },
+const StyledDiv = styled("div")(({ theme }) => ({
+  display: "flex",
+  justifyContent: "center",
+  marginTop: theme.spacing(8),
+  marginLeft: theme.spacing(2),
+  marginRight: theme.spacing(2),
 }));
 
 interface ErrorPageProps {
@@ -36,9 +35,8 @@ interface ErrorPageProps {
 export default React.memo(function ErrorPage({
   error: { code, error, error_description },
 }: ErrorPageProps) {
-  const classes = useStyles();
   return (
-    <div id="errorPage" className={classes.errorPage}>
+    <StyledDiv id="errorPage">
       <Card>
         <CardContent>
           <Typography variant="h3" color="error">
@@ -50,6 +48,6 @@ export default React.memo(function ErrorPage({
           )}
         </CardContent>
       </Card>
-    </div>
+    </StyledDiv>
   );
 });

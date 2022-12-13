@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Link } from "@material-ui/core";
+import { Link } from "@mui/material";
 import * as React from "react";
 
 interface FileActionLinkProps {

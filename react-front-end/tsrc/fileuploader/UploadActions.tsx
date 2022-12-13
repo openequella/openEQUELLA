@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Divider, Grid, IconButton } from "@material-ui/core";
+import { Divider, Grid, IconButton } from "@mui/material";
 import * as React from "react";
 import { Fragment } from "react";
 import { ReactElement } from "react";

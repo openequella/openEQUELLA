@@ -15,9 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Star from "@material-ui/icons/Star";
-import StarBorder from "@material-ui/icons/StarBorder";
-import StarHalf from "@material-ui/icons/StarHalf";
+import Star from "@mui/icons-material/Star";
+import StarBorder from "@mui/icons-material/StarBorder";
+import StarHalf from "@mui/icons-material/StarHalf";
 import * as React from "react";
 import { range } from "lodash";
 

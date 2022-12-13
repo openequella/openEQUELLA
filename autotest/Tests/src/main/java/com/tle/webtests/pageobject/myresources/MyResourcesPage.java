@@ -52,7 +52,7 @@ public class MyResourcesPage
 
   // Applicable to New UI only to find the icon button for creating a Scrapbook.
   private WebElement getButtonForCreatingScrapbook(String scrapbookType) {
-    WebElement addIcon = driver.findElement(By.xpath("//button[@title='Add to Scrapbook']"));
+    WebElement addIcon = driver.findElement(By.xpath("//button[@aria-label='Add to Scrapbook']"));
     addIcon.click();
 
     return driver.findElement(By.xpath("//span[text()='" + scrapbookType + "']"));
@@ -79,13 +79,13 @@ public class MyResourcesPage
   // Applicable to New UI only to find the action button for editing or deleting a Scrapbook.
   private WebElement getScrapbookActionButton(String scrapbookName, String buttonTitle) {
     return getScrapbookByName(scrapbookName)
-        .findElement(By.xpath("//button[@title='" + buttonTitle + "']"));
+        .findElement(By.xpath("//button[@aria-label='" + buttonTitle + "']"));
   }
 
   // Applicable to New UI only to build a XPATH for the provided Scrapbook.
   private By scrapbookXpath(String name) {
     return By.xpath(
-        "//li/div[./span/a[normalize-space(string())=" + quoteXPath(normaliseSpace(name)) + "]]");
+        "//li/div[./h6/a[normalize-space(string())=" + quoteXPath(normaliseSpace(name)) + "]]");
   }
 
   // Applicable to New UI only to build a XPATH for the provided webpage.

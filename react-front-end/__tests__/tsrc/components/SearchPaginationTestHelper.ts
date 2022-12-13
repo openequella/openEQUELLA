@@ -73,7 +73,7 @@ export const queryPaginatorControls = (
   component: Element
 ): PaginatorQueries => {
   const _queryCaption = () =>
-    component.querySelector<HTMLElement>("p.MuiTablePagination-caption");
+    component.querySelector<HTMLElement>("p.MuiTablePagination-selectLabel");
   // screen.getByText() is used here as the options are actually added as a child to <body> -
   // so well outside the `component`.
   const _queryItemsPerPageOption = (pageItems: number, labelledById: string) =>

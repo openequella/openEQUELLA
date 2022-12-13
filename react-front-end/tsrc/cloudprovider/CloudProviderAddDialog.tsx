@@ -16,36 +16,31 @@
  * limitations under the License.
  */
 import * as React from "react";
+import { styled } from "@mui/material/styles";
 import {
   Button,
-  createStyles,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
   TextField,
-  Theme,
   Typography,
-  WithStyles,
-  withStyles,
-} from "@material-ui/core";
+} from "@mui/material";
 import { cloudProviderLangStrings } from "./CloudProviderModule";
 import { commonString } from "../util/commonstrings";
-import Link from "@material-ui/core/Link";
+import Link from "@mui/material/Link";
 import CloudProviderDisclaimerDialog from "./CloudProviderDisclaimerDialog";
 
-const styles = (theme: Theme) =>
-  createStyles({
-    disclaimerText: {
-      marginTop: theme.spacing(1),
-    },
-    link: {
-      cursor: "pointer",
-    },
-  });
+const StyledTypography = styled(Typography)(({ theme }) => ({
+  marginTop: theme.spacing(1),
+}));
 
-interface CloudProviderAddDialogProps extends WithStyles<typeof styles> {
+const StyledLink = styled(Link)({
+  cursor: "pointer",
+});
+
+interface CloudProviderAddDialogProps {
   open: boolean;
   onCancel: () => void;
   onRegister: (url: string) => void;
@@ -95,7 +90,7 @@ class CloudProviderAddDialog extends React.Component<
   };
 
   render() {
-    const { open, onCancel, onRegister, classes } = this.props;
+    const { open, onCancel, onRegister } = this.props;
     const { cloudProviderUrl, disclaimerDialogOpen } = this.state;
     const isUrlValid = this.validateUrl();
     return (
@@ -104,7 +99,6 @@ class CloudProviderAddDialog extends React.Component<
           open={open}
           onClose={onCancel}
           aria-labelledby="form-dialog-title"
-          disableBackdropClick
           disableEscapeKeyDown
           fullWidth
         >
@@ -128,18 +122,17 @@ class CloudProviderAddDialog extends React.Component<
               helperText={cloudProviderLangStrings.newcloudprovider.help}
             />
 
-            <Typography variant="body2" className={classes.disclaimerText}>
+            <StyledTypography variant="body2">
               {cloudProviderLangStrings.newcloudprovider.disclaimer.text}
-              <Link
-                className={classes.link}
+              <StyledLink
                 underline="always"
                 onClick={this.openDisclaimerDialog}
               >
                 <b>
                   {cloudProviderLangStrings.newcloudprovider.disclaimer.title}
                 </b>
-              </Link>
-            </Typography>
+              </StyledLink>
+            </StyledTypography>
           </DialogContent>
           <DialogActions>
             <Button id="cancel-register" onClick={onCancel} color="primary">
@@ -167,4 +160,4 @@ class CloudProviderAddDialog extends React.Component<
   }
 }
 
-export default withStyles(styles)(CloudProviderAddDialog);
+export default CloudProviderAddDialog;

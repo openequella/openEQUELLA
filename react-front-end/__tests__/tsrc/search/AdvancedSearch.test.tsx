@@ -15,7 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { MuiThemeProvider } from "@material-ui/core";
+import { ThemeProvider } from "@mui/material";
+import { createTheme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
 import { act, render, screen, waitFor } from "@testing-library/react";
@@ -29,6 +30,7 @@ import {
   getAdvancedSearchDefinition,
   mockWizardControlFactory,
 } from "../../../__mocks__/AdvancedSearchModule.mock";
+import { createMatchMedia } from "../../../__mocks__/MockUseMediaQuery";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import { mockedAdvancedSearchCriteria } from "../../../__mocks__/WizardHelper.mock";
@@ -47,7 +49,6 @@ import {
   WizardControlLabelValue,
 } from "./AdvancedSearchTestHelper";
 import {
-  defaultTheme,
   initialiseEssentialMocks,
   mockCollaborators,
   queryClassificationPanel,
@@ -91,11 +92,13 @@ const togglePanel = async () =>
   act(async () => userEvent.click(screen.getByLabelText(filterButtonLabel)));
 
 const renderAdvancedSearchPage = async () => {
+  window.matchMedia = createMatchMedia(1280, true);
+
   const history = createMemoryHistory();
   history.push("/page/advancedsearch/4be6ae54-68ca-4d8b-acd0-0ca96fc39280");
 
   const page = render(
-    <MuiThemeProvider theme={defaultTheme}>
+    <ThemeProvider theme={createTheme()}>
       <Router history={history}>
         <AppContext.Provider
           value={{
@@ -107,7 +110,7 @@ const renderAdvancedSearchPage = async () => {
           <AdvancedSearchPage updateTemplate={jest.fn()} />
         </AppContext.Provider>
       </Router>
-    </MuiThemeProvider>
+    </ThemeProvider>
   );
   // Wait for the first completion of initial search
   await waitForSearch(searchPromise);

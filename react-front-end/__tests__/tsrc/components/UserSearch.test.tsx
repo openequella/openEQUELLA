@@ -46,7 +46,9 @@ describe("<UserSearch/>", () => {
 
     // Wait for it to be rendered
     await waitFor(() =>
-      screen.getByText(languageStrings.userSearchComponent.queryFieldLabel)
+      screen.getByText(languageStrings.userSearchComponent.queryFieldLabel, {
+        selector: "label",
+      })
     );
 
     return container;

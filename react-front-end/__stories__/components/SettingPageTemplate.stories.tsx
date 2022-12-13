@@ -20,7 +20,7 @@ import type { Meta, Story } from "@storybook/react";
 import SettingPageTemplate, {
   SettingPageTemplateProps,
 } from "../../tsrc/components/SettingPageTemplate";
-import { Card } from "@material-ui/core";
+import { Card } from "@mui/material";
 
 export default {
   title: "SettingPageTemplate",

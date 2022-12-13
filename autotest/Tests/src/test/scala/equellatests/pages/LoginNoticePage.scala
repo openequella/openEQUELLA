@@ -29,7 +29,7 @@ case class LoginNoticePage(ctx: PageContext)
     preNoticeAddImageForm.findElement(By.xpath("//input[contains(@type,'url')]"))
 
   private def preNoticeAddImageOK: WebElement =
-    preNoticeAddImagePopup.findElement(By.xpath("//button[text()='Save']"))
+    preNoticeAddImagePopup.findElement(By.xpath("//button[text()='Save' and @class='tox-button']"))
 
   private def postNoticeClearButton: WebElement = findElementById("postClearButton")
 

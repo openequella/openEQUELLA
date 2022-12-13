@@ -7,7 +7,7 @@ import org.openqa.selenium.WebElement;
 public class MUIHelper {
 
   public static String getBadgeText(WebElement base) {
-    List<WebElement> elems = base.findElements(By.xpath("./button/span/span/span"));
+    List<WebElement> elems = base.findElements(By.xpath("./button/span/span"));
     if (elems.isEmpty()) {
       return null;
     }

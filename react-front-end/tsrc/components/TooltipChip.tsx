@@ -15,8 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Chip, Tooltip } from "@material-ui/core";
-import { AutocompleteGetTagProps } from "@material-ui/lab";
+import { AutocompleteGetTagProps, Chip, Tooltip } from "@mui/material";
 import * as React from "react";
 
 export interface TooltipChipProps {

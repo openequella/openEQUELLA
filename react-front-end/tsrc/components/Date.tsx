@@ -16,15 +16,21 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { Typography, Tooltip } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
+import { Typography, Tooltip } from "@mui/material";
 import { DateTime } from "luxon";
+import { styled } from "@mui/material/styles";
 
-const useStyles = makeStyles({
-  dateModified: {
+const PREFIX = "Date";
+
+const classes = {
+  dateModified: `${PREFIX}-dateModified`,
+};
+
+const StyledTooltip = styled(Tooltip)(() => ({
+  [`& .${classes.dateModified}`]: {
     display: "inline-block",
   },
-});
+}));
 
 export interface DateProps {
   /**
@@ -42,7 +48,6 @@ export interface DateProps {
  * representation of the date (relative vs absolute).
  */
 export default function Date({ displayRelative, date }: DateProps) {
-  const classes = useStyles();
   const luxDate = DateTime.fromJSDate(date);
   let primaryDate: string | null = luxDate.toLocaleString(
     DateTime.DATETIME_MED
@@ -54,11 +59,11 @@ export default function Date({ displayRelative, date }: DateProps) {
   }
 
   return (
-    <Tooltip title={hoverDate ?? "undefined"}>
+    <StyledTooltip title={hoverDate ?? "undefined"}>
       <Typography className={classes.dateModified} component="span">
         {primaryDate}
       </Typography>
-    </Tooltip>
+    </StyledTooltip>
   );
 }
 export { Date };

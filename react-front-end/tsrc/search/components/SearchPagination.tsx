@@ -15,12 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createTheme } from "@material-ui/core/styles";
-import { Grid, IconButton, TablePagination } from "@material-ui/core";
-import FirstPage from "@material-ui/icons/FirstPage";
-import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
-import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
-import LastPage from "@material-ui/icons/LastPage";
+import { createTheme } from "@mui/material/styles";
+import { Grid, IconButton, TablePagination } from "@mui/material";
+import FirstPage from "@mui/icons-material/FirstPage";
+import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
+import LastPage from "@mui/icons-material/LastPage";
 import * as React from "react";
 import { languageStrings } from "../../util/langstrings";
 
@@ -83,6 +83,7 @@ export const SearchPagination = ({
             disabled={isFirstPage}
             aria-label={paginationStrings.firstPageButton}
             id="firstPageButton"
+            size="large"
           >
             <FirstPage />
           </IconButton>
@@ -93,6 +94,7 @@ export const SearchPagination = ({
             aria-label={paginationStrings.previousPageButton}
             disabled={isFirstPage}
             id="previousPageButton"
+            size="large"
           >
             <KeyboardArrowLeft />
           </IconButton>
@@ -103,6 +105,7 @@ export const SearchPagination = ({
             aria-label={paginationStrings.nextPageButton}
             disabled={isLastPage}
             id="nextPageButton"
+            size="large"
           >
             <KeyboardArrowRight />
           </IconButton>
@@ -113,6 +116,7 @@ export const SearchPagination = ({
             aria-label={paginationStrings.lastPageButton}
             disabled={isLastPage}
             id="lastPageButton"
+            size="large"
           >
             <LastPage />
           </IconButton>

@@ -20,9 +20,21 @@ import {
   FormControlLabel,
   FormHelperText,
   FormLabel,
-} from "@material-ui/core";
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
 import * as React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+const PREFIX = "SearchSettingFormControl";
+
+const classes = {
+  formControlLabel: `${PREFIX}-formControlLabel`,
+};
+
+const StyledFormControl = styled(FormControl)({
+  [`& .${classes.formControlLabel}`]: {
+    marginRight: 0,
+  },
+});
+
 export interface SearchSettingFormControlProps {
   title?: string;
   label?: string;
@@ -31,11 +43,6 @@ export interface SearchSettingFormControlProps {
   control: React.ReactElement;
   onChange: (event: React.ChangeEvent<{}>, checked: boolean) => void;
 }
-const useStyles = makeStyles({
-  formControlLabel: {
-    marginRight: 0,
-  },
-});
 export default function SearchSettingFormControl({
   title,
   label,
@@ -44,9 +51,8 @@ export default function SearchSettingFormControl({
   control,
   onChange,
 }: SearchSettingFormControlProps) {
-  const classes = useStyles();
   return (
-    <FormControl>
+    <StyledFormControl>
       {title && <FormLabel>{title}</FormLabel>}
       <FormControlLabel
         className={classes.formControlLabel}
@@ -56,6 +62,6 @@ export default function SearchSettingFormControl({
         onChange={onChange}
       />
       {formHelperText && <FormHelperText>{formHelperText}</FormHelperText>}
-    </FormControl>
+    </StyledFormControl>
   );
 }

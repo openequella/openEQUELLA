@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Radio, FormControlLabel } from "@material-ui/core";
+import { Radio, FormControlLabel } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { WizardOptionGroup } from "./WizardOptionGroup";

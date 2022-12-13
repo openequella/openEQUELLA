@@ -15,17 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createTheme } from "@material-ui/core/styles";
-import { MuiThemeProvider, Theme } from "@material-ui/core";
-import CloseIcon from "@material-ui/icons/Close";
+import CloseIcon from "@mui/icons-material/Close";
+import { ThemeProvider } from "@mui/material";
+import { createTheme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
 import {
+  fireEvent,
+  queryByText,
   render,
   RenderResult,
-  fireEvent,
   screen,
-  queryByText,
   waitFor,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -34,14 +34,17 @@ import { act } from "react-dom/test-utils";
 import { BrowserRouter } from "react-router-dom";
 import { sprintf } from "sprintf-js";
 import { DRM_VIOLATION, drmTerms } from "../../../../__mocks__/Drm.mock";
+import { createMatchMedia } from "../../../../__mocks__/MockUseMediaQuery";
 import { imageScrapbook } from "../../../../__mocks__/SearchResult.mock";
+import * as mockData from "../../../../__mocks__/searchresult_mock_data";
 import {
   DRM_ATTACHMENT_NAME,
   DRM_ITEM_NAME,
 } from "../../../../__mocks__/searchresult_mock_data";
-import * as mockData from "../../../../__mocks__/searchresult_mock_data";
 import type { RenderData } from "../../../../tsrc/AppConfig";
 import { TooltipIconButton } from "../../../../tsrc/components/TooltipIconButton";
+import * as DrmModule from "../../../../tsrc/modules/DrmModule";
+import * as LegacySelectionSessionModule from "../../../../tsrc/modules/LegacySelectionSessionModule";
 import {
   getGlobalCourseList,
   selectResourceForCourseList,
@@ -49,8 +52,6 @@ import {
   selectResourceForSkinny,
 } from "../../../../tsrc/modules/LegacySelectionSessionModule";
 import * as MimeTypesModule from "../../../../tsrc/modules/MimeTypesModule";
-import * as DrmModule from "../../../../tsrc/modules/DrmModule";
-import * as LegacySelectionSessionModule from "../../../../tsrc/modules/LegacySelectionSessionModule";
 import SearchResult from "../../../../tsrc/search/components/SearchResult";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import { defaultBaseUrl, updateMockGetBaseUrl } from "../../BaseUrlHelper";
@@ -76,23 +77,25 @@ const {
   attachment: selectAttachmentString,
 } = languageStrings.searchpage.selectResource;
 
-const defaultTheme = createTheme({
-  props: { MuiWithWidth: { initialWidth: "md" } },
-});
-
 describe("<SearchResult/>", () => {
-  const renderSearchResult = async (
-    itemResult: OEQ.Search.SearchResultItem,
-    theme: Theme = defaultTheme,
-    customActionButtons?: JSX.Element[],
-    customOnClickTitleHandler?: () => void
-  ) => {
+  const renderSearchResultWithConfig = async ({
+    itemResult,
+    customActionButtons,
+    customOnClickTitleHandler,
+    screenWidth = 1280,
+  }: {
+    itemResult: OEQ.Search.SearchResultItem;
+    customActionButtons?: JSX.Element[];
+    customOnClickTitleHandler?: () => void;
+    screenWidth?: number;
+  }) => {
+    window.matchMedia = createMatchMedia(screenWidth);
     const renderResult = render(
       // This needs to be wrapped inside a BrowserRouter, to prevent an
       // `Invariant failed: You should not use <Link> outside a <Router>`
       // error  because of the <Link/> tag within SearchResult
-      <MuiThemeProvider theme={theme}>
-        <BrowserRouter>
+      <BrowserRouter>
+        <ThemeProvider theme={createTheme()}>
           <SearchResult
             key={itemResult.uuid}
             item={itemResult}
@@ -101,8 +104,8 @@ describe("<SearchResult/>", () => {
             customActionButtons={customActionButtons}
             customOnClickTitleHandler={customOnClickTitleHandler}
           />
-        </BrowserRouter>
-      </MuiThemeProvider>
+        </ThemeProvider>
+      </BrowserRouter>
     );
 
     // Make sure we wait for the resolution of viewers - which will update the attachment lists
@@ -113,21 +116,24 @@ describe("<SearchResult/>", () => {
     return renderResult;
   };
 
+  const renderSearchResult = async (
+    itemResult: OEQ.Search.SearchResultItem,
+    screenWidth?: number
+  ) => renderSearchResultWithConfig({ itemResult, screenWidth });
+
   const keywordFoundInAttachmentLabel =
     "Search term found in attachment content";
 
   it("Should show indicator in Attachment panel if keyword was found inside attachment", async () => {
-    const itemWithSearchTermFound = mockData.keywordFoundInAttachmentObj;
     const { queryByLabelText } = await renderSearchResult(
-      itemWithSearchTermFound
+      mockData.keywordFoundInAttachmentObj
     );
     expect(queryByLabelText(keywordFoundInAttachmentLabel)).toBeInTheDocument();
   });
 
   it("Should not show indicator in Attachment panel if keyword was not found inside attachment", async () => {
-    const itemWithNoSearchTermFound = mockData.attachSearchObj;
     const { queryByLabelText } = await renderSearchResult(
-      itemWithNoSearchTermFound
+      mockData.attachSearchObj
     );
     expect(
       queryByLabelText(keywordFoundInAttachmentLabel)
@@ -204,13 +210,10 @@ describe("<SearchResult/>", () => {
   });
 
   it("hide star rating and comment count in small screen", async () => {
-    const theme = createTheme({
-      props: { MuiWithWidth: { initialWidth: "sm" } },
-    });
     const { starRatings, commentCount } = mockData.attachSearchObj;
     const { queryByLabelText, queryByText } = await renderSearchResult(
       mockData.attachSearchObj,
-      theme
+      600
     );
     expect(
       queryByLabelText(
@@ -260,11 +263,10 @@ describe("<SearchResult/>", () => {
         <CloseIcon />
       </TooltipIconButton>,
     ];
-    const { queryByLabelText } = await renderSearchResult(
-      mockData.basicSearchObj,
-      defaultTheme,
-      actionButtons
-    );
+    const { queryByLabelText } = await renderSearchResultWithConfig({
+      itemResult: mockData.basicSearchObj,
+      customActionButtons: actionButtons,
+    });
 
     expect(queryByLabelText(text, { selector: "button" })).toBeInTheDocument();
   });
@@ -314,12 +316,10 @@ describe("<SearchResult/>", () => {
     const customHandler = jest.fn();
     const item = mockData.basicSearchObj;
 
-    const { getByText } = await renderSearchResult(
-      item,
-      defaultTheme,
-      undefined,
-      customHandler
-    );
+    const { getByText } = await renderSearchResultWithConfig({
+      itemResult: item,
+      customOnClickTitleHandler: customHandler,
+    });
 
     const title = getByText(`${item.name}`, { selector: "a" });
     userEvent.click(title);
@@ -330,9 +330,9 @@ describe("<SearchResult/>", () => {
   describe("Dead attachments handling", () => {
     it("should display dead attachments with a warning label", async () => {
       const { oneDeadAttachObj } = mockData;
-      const { queryByTitle } = await renderSearchResult(oneDeadAttachObj);
+      const { queryByLabelText } = await renderSearchResult(oneDeadAttachObj);
       expect(
-        queryByTitle(languageStrings.searchpage.deadAttachmentWarning)
+        queryByLabelText(languageStrings.searchpage.deadAttachmentWarning)
       ).toBeInTheDocument();
     });
 
@@ -562,6 +562,7 @@ describe("<SearchResult/>", () => {
       });
 
       it("Should not show the Select All Attachments button if all attachments are dead", async () => {
+        updateMockGetRenderData(basicRenderData);
         const { queryByLabelText } = await renderSearchResult(
           mockData.oneDeadAttachObj
         );
@@ -571,15 +572,17 @@ describe("<SearchResult/>", () => {
       });
 
       it("Should show the Select All Attachments button if at least one attachment is not dead", async () => {
-        const { queryByLabelText, getByTitle } = await renderSearchResult(
+        updateMockGetRenderData(basicRenderData);
+        const { queryByLabelText, getByLabelText } = await renderSearchResult(
           mockData.oneDeadOneAliveAttachObj
         );
+
         expect(
           queryByLabelText(selectAllAttachmentsString)
         ).toBeInTheDocument();
         // Given the user clicks Select All Attachments for an item with a dead attachment
         // and an alive attachment...
-        userEvent.click(getByTitle(selectAllAttachmentsString));
+        userEvent.click(getByLabelText(selectAllAttachmentsString));
 
         // The function should only have been called with the attachment
         // 78883eff-7cf6-4b14-ab76-2b7f84dbe833 which is the intact one

@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Grid, List, ListItem } from "@material-ui/core";
+import { Grid, List, ListItem } from "@mui/material";
 import * as React from "react";
 import {
   isUploadedFile,
