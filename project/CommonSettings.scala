@@ -68,7 +68,7 @@ object CommonSettings extends AutoPlugin {
     organization := "com.github.equella",
     scalaVersion := "2.13.10",
     scalacOptions ++= Seq("-Vimplicits"),
-    javacOptions ++= Seq("--release", "8"),
+    javacOptions ++= Seq("--release", "11"),
     compileOrder := CompileOrder.Mixed,
     headerLicense := Some(
       HeaderLicense.Custom(
