@@ -209,6 +209,22 @@ describe("<BaseSearch/>", () => {
       expect(onClearAll).toHaveBeenCalledTimes(1);
       expect(argToFirstCall).toEqual(RSET.empty);
     });
+
+    it("should return an empty set when search action is triggered", async () => {
+      const onChange = jest.fn();
+
+      const { container, findByText } = await renderBaseSearch({
+        ...defaultBaseSearchProps,
+        onChange,
+      });
+
+      // trigger a search action
+      searchEntity(container, "");
+      // wait for search completed
+      await waitFor(() => findByText("user100"));
+
+      expect(onChange.mock.lastCall[0]).toEqual(RSET.empty);
+    });
   });
 
   describe("group filter editable mode", () => {

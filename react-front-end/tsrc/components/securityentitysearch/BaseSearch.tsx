@@ -398,6 +398,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
       .finally(() => {
         setShowSpinner(false);
         setHasSearched(true);
+        onChange(RSET.empty);
       });
   };
 
@@ -422,7 +423,6 @@ const BaseSearch = <T extends BaseSecurityEntity>({
       case "Escape":
         setQuery("");
         setItems([]);
-        onChange(RSET.empty);
         setHasSearched(false);
         event.stopPropagation();
         break;

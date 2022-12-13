@@ -17,6 +17,18 @@
  */
 import "@testing-library/jest-dom/extend-expect";
 import userEvent from "@testing-library/user-event";
+import {
+  group100RecipientWithName,
+  group200RecipientWithName,
+  group300RecipientWithName,
+  group400RecipientWithName,
+  role100RecipientWithName,
+  role200RecipientWithName,
+  user100RecipientWithName,
+  user200RecipientWithName,
+  user300RecipientWithName,
+  user400RecipientWithName,
+} from "../../../../__mocks__/ACLRecipientModule.mock";
 import { ACLExpression } from "../../../../tsrc/modules/ACLExpressionModule";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import {
@@ -75,26 +87,10 @@ describe("<ACLExpressionBuilder/>", () => {
       id: "default-acl-expression-id",
       operator: "OR",
       recipients: [
-        {
-          expression: "20483af2-fe56-4499-a54b-8d7452156895",
-          name: "Fabienne Hobson [user100]",
-          type: "U",
-        },
-        {
-          expression: "f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a",
-          name: "Racheal Carlyle [user200]",
-          type: "U",
-        },
-        {
-          expression: "1c2ff1d0-9040-4985-a450-0ff6422ba5ef",
-          name: "Ronny Southgate [user400]",
-          type: "U",
-        },
-        {
-          expression: "eb75a832-6533-4d72-93f4-2b7a1b108951",
-          name: "Yasmin Day [user300]",
-          type: "U",
-        },
+        user100RecipientWithName,
+        user200RecipientWithName,
+        user400RecipientWithName,
+        user300RecipientWithName,
       ],
       children: [],
     };
@@ -104,26 +100,10 @@ describe("<ACLExpressionBuilder/>", () => {
       id: "default-acl-expression-id",
       operator: "OR",
       recipients: [
-        {
-          expression: "303e758c-0051-4aea-9a8e-421f93ed9d1a",
-          name: "group100",
-          type: "G",
-        },
-        {
-          expression: "d7dd1907-5731-4244-9a65-e0e847f68604",
-          name: "group200",
-          type: "G",
-        },
-        {
-          expression: "f921a6e3-69a6-4ec4-8cf8-bc193beda5f6",
-          name: "group300",
-          type: "G",
-        },
-        {
-          expression: "a2576dea-bd5c-490b-a065-637068e1a4fb",
-          name: "group400",
-          type: "G",
-        },
+        group100RecipientWithName,
+        group200RecipientWithName,
+        group300RecipientWithName,
+        group400RecipientWithName,
       ],
     };
 
@@ -131,18 +111,7 @@ describe("<ACLExpressionBuilder/>", () => {
       children: [],
       id: "default-acl-expression-id",
       operator: "OR",
-      recipients: [
-        {
-          expression: "fda99983-9eda-440a-ac68-0f746173fdcb",
-          name: "role100",
-          type: "R",
-        },
-        {
-          expression: "1de3a6df-dc81-4a26-b69e-e61f8474594a",
-          name: "role200",
-          type: "R",
-        },
-      ],
+      recipients: [role100RecipientWithName, role200RecipientWithName],
     };
 
     it("displays home panel's group search when users select groups radio", () => {

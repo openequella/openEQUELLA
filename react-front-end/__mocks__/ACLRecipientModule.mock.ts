@@ -37,20 +37,36 @@ export const user100RecipientRawExpression =
   "U:20483af2-fe56-4499-a54b-8d7452156895";
 export const user100RecipientHumanReadableExpression =
   "Fabienne Hobson [user100]";
+export const user100RecipientWithName = {
+  ...user100Recipient,
+  name: user100RecipientHumanReadableExpression,
+};
 
 export const user200Recipient = {
   expression: "f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a",
   type: "U",
+};
+export const user200RecipientWithName = {
+  ...user200Recipient,
+  name: "Racheal Carlyle [user200]",
 };
 
 export const user300Recipient = {
   expression: "eb75a832-6533-4d72-93f4-2b7a1b108951",
   type: "U",
 };
+export const user300RecipientWithName = {
+  ...user300Recipient,
+  name: "Yasmin Day [user300]",
+};
 
 export const user400Recipient = {
   expression: "1c2ff1d0-9040-4985-a450-0ff6422ba5ef",
   type: "U",
+};
+export const user400RecipientWithName = {
+  ...user400Recipient,
+  name: "Ronny Southgate [user400]",
 };
 
 export const userAdminRecipient = {
@@ -70,6 +86,18 @@ export const roleGuestRecipient = {
 export const roleGuestRecipientRawExpression = "R:TLE_GUEST_USER_ROLE";
 export const roleGuestRecipientHumanReadableExpression = "Guest";
 
+export const role100RecipientWithName = {
+  expression: "fda99983-9eda-440a-ac68-0f746173fdcb",
+  type: "R",
+  name: "role100",
+};
+
+export const role200RecipientWithName = {
+  expression: "1de3a6df-dc81-4a26-b69e-e61f8474594a",
+  type: "R",
+  name: "role200",
+};
+
 export const groupStudentRecipient = {
   expression: "99806ac8-410e-4c60-b3ab-22575276f0f0",
   type: "G",
@@ -82,6 +110,30 @@ export const groupStudentRecipientHumanReadableExpression =
 export const groupStaffRecipient = {
   expression: "d0265a33-8f89-4cea-8a36-45fd3c4cf5a1",
   type: "G",
+};
+
+export const group100RecipientWithName = {
+  expression: "303e758c-0051-4aea-9a8e-421f93ed9d1a",
+  type: "G",
+  name: "group100",
+};
+
+export const group200RecipientWithName = {
+  expression: "d7dd1907-5731-4244-9a65-e0e847f68604",
+  type: "G",
+  name: "group200",
+};
+
+export const group300RecipientWithName = {
+  expression: "f921a6e3-69a6-4ec4-8cf8-bc193beda5f6",
+  type: "G",
+  name: "group300",
+};
+
+export const group400RecipientWithName = {
+  expression: "a2576dea-bd5c-490b-a065-637068e1a4fb",
+  type: "G",
+  name: "group400",
 };
 
 export const ssoMoodleRecipient = {
@@ -97,7 +149,7 @@ export const ipRecipient = (ip: string) => ({
   type: "I",
 });
 
-// helper function to generate a refer recipient
+// helper function to generate an refer recipient
 export const referRecipient = (refer: string) => ({
   expression: refer,
   type: "F",
