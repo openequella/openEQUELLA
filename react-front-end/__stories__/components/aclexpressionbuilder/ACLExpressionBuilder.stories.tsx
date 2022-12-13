@@ -33,11 +33,18 @@ export default {
 export const Basic: Story<ACLExpressionBuilderProps> = (args) => (
   <ACLExpressionBuilder {...args} />
 );
-
 Basic.args = {
   aclExpression: complexExpressionACLExpression,
   searchUserProvider: listUsers,
   searchGroupProvider: listGroups,
   searchRoleProvider: listRoles,
   resolveGroupsProvider: resolveGroups,
+};
+
+export const EmptyTreeView: Story<ACLExpressionBuilderProps> = (args) => (
+  <ACLExpressionBuilder {...args} />
+);
+EmptyTreeView.args = {
+  ...Basic.args,
+  aclExpression: undefined,
 };

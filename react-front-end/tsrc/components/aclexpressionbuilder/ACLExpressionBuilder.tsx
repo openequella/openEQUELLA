@@ -342,6 +342,8 @@ const ACLExpressionBuilder = ({
                 search={searchUserProvider}
                 selections={userSelections}
                 onChange={setUserSelections}
+                onClearAll={setUserSelections}
+                onSelectAll={setUserSelections}
                 selectButton={{
                   onClick: () =>
                     handleEntitySelected(userSelections, userToRecipient),
@@ -355,6 +357,8 @@ const ACLExpressionBuilder = ({
                 search={searchGroupProvider}
                 selections={groupSelections}
                 onChange={setGroupSelections}
+                onClearAll={setGroupSelections}
+                onSelectAll={setGroupSelections}
                 selectButton={{
                   onClick: () =>
                     handleEntitySelected(groupSelections, groupToRecipient),
@@ -368,6 +372,8 @@ const ACLExpressionBuilder = ({
                 search={searchRoleProvider}
                 selections={roleSelections}
                 onChange={setRoleSelections}
+                onClearAll={setRoleSelections}
+                onSelectAll={setRoleSelections}
                 listHeight={367}
                 groupFilterEditable={false}
                 selectButton={{
