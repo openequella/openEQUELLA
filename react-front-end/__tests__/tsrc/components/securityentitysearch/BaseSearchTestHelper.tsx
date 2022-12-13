@@ -182,7 +182,7 @@ export const renderBaseSearch = async (
  * @param renderResult The jest render result of ACLEntitySearch.
  * @param searchFor A keyword will be used to do a search action.
  * @param selectEntityName The name of the entity which will be selected after search action.
- * @param onChange A mock function that will be called once after select action.
+ * @param onChange A mock function that will be called after select action.
  * @param doSearch A function that will trigger the search action.
  * */
 export const searchAndSelect = async <T,>(
@@ -201,10 +201,7 @@ export const searchAndSelect = async <T,>(
     await renderResult.findByText(new RegExp(`.*${selectEntityName}.*`))
   );
 
-  // The handler should've been triggered once with target entity returned
-  expect(onChange).toHaveBeenCalledTimes(1);
-
-  const argToFirstCall: ReadonlySet<T> = onChange.mock.calls[0][0];
+  const argToFirstCall: ReadonlySet<T> = onChange.mock.lastCall[0];
 
   return argToFirstCall;
 };
