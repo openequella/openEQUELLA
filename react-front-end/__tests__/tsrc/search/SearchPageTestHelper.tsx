@@ -19,7 +19,13 @@
 import { ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
-import { render, RenderResult, screen, waitFor } from "@testing-library/react";
+import {
+  render,
+  RenderResult,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
 import * as React from "react";
@@ -199,10 +205,18 @@ export const waitForSearch = async (searchPromise: MockedSearchPromise) =>
   });
 
 /**
+ * Helper function to wrap the process of waiting for the completion of a search which is indicated
+ * by the Spinner being removed from the page.
+ */
+export const waitForSearchCompleted = async () =>
+  await waitForElementToBeRemoved(() =>
+    screen.getByLabelText(languageStrings.searchpage.loading)
+  );
+
+/**
  * Helper function for the initial render of the `<SearchPage>` for tests below. Also includes
  * the wait for the initial search call.
  *
- * @param searchPromise a mocked promise for searchItems in SearchModule
  * @param queryString a string to set the query bar to for initial search
  * @param screenWidth The emulated screen width, default to 1280px.
  * @param currentUser Details of currently signed-in user.
@@ -210,7 +224,6 @@ export const waitForSearch = async (searchPromise: MockedSearchPromise) =>
  * @returns The RenderResult from the `render` of the `<SearchPage>`
  */
 export const renderSearchPage = async (
-  searchPromise: MockedSearchPromise,
   queryString?: string,
   screenWidth: number = 1280,
   currentUser: OEQ.LegacyContent.CurrentUserDetails = getCurrentUserMock
@@ -237,7 +250,7 @@ export const renderSearchPage = async (
     </ThemeProvider>
   );
   // Wait for the first completion of initial search
-  await waitForSearch(searchPromise);
+  await waitForSearchCompleted();
 
   return page;
 };
@@ -388,20 +401,20 @@ export const addSearchToFavourites = async (
       selector: "button",
     }
   );
-  userEvent.click(heartIcon);
+  await userEvent.click(heartIcon);
 
   const dialog = getByRole("dialog");
   const favouriteNameInput = getMuiTextField(
     dialog,
     languageStrings.searchpage.favouriteSearch.text
   );
-  userEvent.type(favouriteNameInput, favouriteName);
+  await userEvent.type(favouriteNameInput, favouriteName);
   const confirmButton = getMuiButtonByText(
     dialog,
     languageStrings.common.action.ok
   );
 
-  userEvent.click(confirmButton);
+  await userEvent.click(confirmButton);
 
   // Now wait until either a success or fail message is displayed
   await waitFor(() =>
@@ -409,4 +422,63 @@ export const addSearchToFavourites = async (
   );
 
   return !!screen.queryByText(successMsg);
+};
+
+/**
+ * Helper function to assist in finding the MIME type selector.
+ *
+ * @param container a root container within which `Remote Search selector` exists
+ */
+export const queryMimeTypesSelector = (container: HTMLElement) =>
+  queryRefineSearchComponent(container, "MIMETypeSelector");
+
+/**
+ * Helper function to assist in finding the Search bar.
+ *
+ * @param container a root container within which `Remote Search selector` exists
+ */
+const getQueryBar = (container: Element): HTMLElement => {
+  const queryBar = container.querySelector<HTMLElement>("#searchBar");
+  if (!queryBar) {
+    throw new Error("Failed to locate the search bar, unable to continue.");
+  }
+
+  return queryBar;
+};
+
+/**
+ * Interact with the Search Bar to type the provided query. The wildcard mode is enabled by default.
+ * This function MUST be used with RTL's fake timer in order to get the debouncing working properly.
+ * It's recommended to call 'useFakeTimer()' in `beforeEach` and call `runOnlyPendingTimers` and `useRealTimer` in `afterEach`.
+ *
+ * @param container Root container within which the Search Bar exists
+ * @param query Query to be typed in the textfield.
+ * @param wildcardMode `true` to enable wildcard mode.
+ * @param user User event which must enable the use of the Jest advance timer.
+ */
+export const changeQuery = async (
+  container: Element,
+  query: string,
+  wildcardMode: boolean = true,
+  user = userEvent.setup({
+    advanceTimers: jest.advanceTimersByTime,
+  })
+) => {
+  if (!wildcardMode) {
+    const wildcardModeSwitch = container.querySelector("#wildcardSearch");
+    if (!wildcardModeSwitch) {
+      throw new Error("Failed to find the raw mode switch!");
+    }
+    await user.click(wildcardModeSwitch);
+  }
+  const _queryBar = () => getQueryBar(container);
+  await user.type(_queryBar(), query);
+
+  await act(async () => {
+    await jest.advanceTimersByTime(1000);
+  });
+
+  await waitFor(() => {
+    expect(_queryBar()).toHaveDisplayValue(query);
+  });
 };
