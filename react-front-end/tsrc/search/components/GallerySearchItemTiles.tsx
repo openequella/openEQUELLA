@@ -136,7 +136,7 @@ export const GallerySearchItemTiles = ({
     altText: string,
     onClick: () => void
   ) => (
-    <ImageListItem onClick={onClick} aria-label={ariaLabel}>
+    <ImageListItem onClick={onClick} aria-label={ariaLabel} key={key}>
       <GalleryThumbnail src={imgSrc} alt={altText} />
       {enableItemSummaryButton && (
         <ImageListItemBar
