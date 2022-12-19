@@ -20,6 +20,7 @@ import { ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import {
+  act,
   render,
   RenderResult,
   screen,
@@ -29,7 +30,6 @@ import {
 import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
 import * as React from "react";
-import { act } from "react-dom/test-utils";
 import { Router } from "react-router-dom";
 import { getAdvancedSearchesFromServerResult } from "../../../__mocks__/AdvancedSearchModule.mock";
 import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock";
@@ -193,16 +193,6 @@ export const initialiseEssentialMocks = ({
 export type MockedSearchPromise = jest.SpyInstance<
   Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>>
 >;
-
-/**
- * Simple helper to wrap the process of waiting for the execution of a search based on checking the
- * `searchPromise`. Being that it is abstracted out, in the future could change as needed to be
- * something other than the `searchPromise`.
- */
-export const waitForSearch = async (searchPromise: MockedSearchPromise) =>
-  await act(async () => {
-    await searchPromise;
-  });
 
 /**
  * Helper function to wrap the process of waiting for the completion of a search which is indicated
@@ -437,7 +427,7 @@ export const queryMimeTypesSelector = (container: HTMLElement) =>
  *
  * @param container a root container within which `Remote Search selector` exists
  */
-const getQueryBar = (container: Element): HTMLElement => {
+export const getQueryBar = (container: Element): HTMLElement => {
   const queryBar = container.querySelector<HTMLElement>("#searchBar");
   if (!queryBar) {
     throw new Error("Failed to locate the search bar, unable to continue.");
@@ -448,37 +438,39 @@ const getQueryBar = (container: Element): HTMLElement => {
 
 /**
  * Interact with the Search Bar to type the provided query. The wildcard mode is enabled by default.
- * This function MUST be used with RTL's fake timer in order to get the debouncing working properly.
- * It's recommended to call 'useFakeTimer()' in `beforeEach` and call `runOnlyPendingTimers` and `useRealTimer` in `afterEach`.
+ * In order to test the debouncing properly, this function will set up a testing environment to use the fake timer.
+ * It's recommended to call 'useFakeTimer()' in `beforeEach` and call `runOnlyPendingTimers` and `useRealTimer`
+ * in `afterEach`.
  *
  * @param container Root container within which the Search Bar exists
  * @param query Query to be typed in the textfield.
  * @param wildcardMode `true` to enable wildcard mode.
- * @param user User event which must enable the use of the Jest advance timer.
  */
 export const changeQuery = async (
   container: Element,
   query: string,
-  wildcardMode: boolean = true,
-  user = userEvent.setup({
-    advanceTimers: jest.advanceTimersByTime,
-  })
+  wildcardMode: boolean = true
 ) => {
+  const fakeTimerUser = userEvent.setup({
+    advanceTimers: jest.advanceTimersByTime,
+  });
+
   if (!wildcardMode) {
     const wildcardModeSwitch = container.querySelector("#wildcardSearch");
     if (!wildcardModeSwitch) {
       throw new Error("Failed to find the raw mode switch!");
     }
-    await user.click(wildcardModeSwitch);
+    await fakeTimerUser.click(wildcardModeSwitch);
   }
-  const _queryBar = () => getQueryBar(container);
-  await user.type(_queryBar(), query);
+
+  const queryBar = getQueryBar(container);
 
   await act(async () => {
-    await jest.advanceTimersByTime(1000);
+    await fakeTimerUser.type(queryBar, query);
+    jest.advanceTimersByTime(1000);
   });
 
   await waitFor(() => {
-    expect(_queryBar()).toHaveDisplayValue(query);
+    expect(queryBar).toHaveDisplayValue(query);
   });
 };

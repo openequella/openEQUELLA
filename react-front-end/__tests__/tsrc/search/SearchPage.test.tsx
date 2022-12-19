@@ -111,9 +111,6 @@ const defaultSearchPageOptions: SearchPageOptions = {
 };
 const defaultCollectionPrivileges = [OEQ.Acl.ACL_SEARCH_COLLECTION];
 
-// Set up a user event to interact with UI.
-const user = userEvent.setup();
-
 describe("<SearchPage/>", () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -143,7 +140,7 @@ describe("<SearchPage/>", () => {
         const heartIcon = getByLabelText(searchResultItem, defaultIcon, {
           selector: "button",
         });
-        await user.click(heartIcon);
+        await userEvent.click(heartIcon);
 
         const dialog = page.getByRole("dialog");
         const confirmBtn = dialog.querySelector(
@@ -153,7 +150,7 @@ describe("<SearchPage/>", () => {
           throw new Error("Failed to find confirm button.");
         }
 
-        await user.click(confirmBtn);
+        await userEvent.click(confirmBtn);
         // Now a different Heart Icon should be used.
         const updatedHeartIcon = queryByLabelText(
           searchResultItem,
@@ -202,16 +199,12 @@ describe("<SearchPage/>", () => {
     };
 
     const changeMode = async (mode: string) => {
-      await user.click(page.getByLabelText(mode));
+      await userEvent.click(page.getByLabelText(mode));
       expect(isChecked(mode)).toBeTruthy();
     };
 
     beforeEach(async () => {
       page = await renderSearchPage();
-    });
-
-    afterEach(() => {
-      jest.clearAllMocks();
     });
 
     it("has a default of item list mode", async () => {
@@ -276,7 +269,7 @@ describe("<SearchPage/>", () => {
       { id: 766942, schemaNode: "/item/language", categories: [JAVA_CATEGORY] },
     ];
     const clickCategory = async (container: HTMLElement, category: string) => {
-      await user.click(getByText(container, category));
+      await userEvent.click(getByText(container, category));
     };
 
     it("should filter search result by categories", async () => {
@@ -311,10 +304,6 @@ describe("<SearchPage/>", () => {
       page = await renderSearchPage();
     });
 
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-
     it("Should contain the correct controls", async () => {
       const refineSearchPanel = getRefineSearchPanel(page.container);
       const collapsibleSection = refineSearchPanel.querySelector(
@@ -347,7 +336,7 @@ describe("<SearchPage/>", () => {
       if (!expansionButton) {
         throw new Error("Unable to find collapsible refine panel button");
       }
-      await user.click(expansionButton);
+      await userEvent.click(expansionButton);
       expect(expansionButton).toHaveTextContent(
         languageStrings.common.action.showLess
       );
@@ -365,7 +354,7 @@ describe("<SearchPage/>", () => {
         languageStrings.searchpage.shareSearchHelperText
       );
 
-      await user.click(copySearchButton);
+      await userEvent.click(copySearchButton);
 
       expect(mockConvertParamsToSearchOptions).toHaveBeenCalledTimes(1);
       expect(mockClipboard).toHaveBeenCalledWith(
@@ -382,12 +371,12 @@ describe("<SearchPage/>", () => {
       page: RenderResult,
       ...collectionNames: string[]
     ) => {
-      await user.click(
+      await userEvent.click(
         page.getByLabelText(languageStrings.searchpage.collectionSelector.title)
       );
       await Promise.all(
         collectionNames.map(
-          async (name) => await user.click(screen.getByText(name))
+          async (name) => await userEvent.click(screen.getByText(name))
         )
       );
     };
@@ -408,7 +397,7 @@ describe("<SearchPage/>", () => {
       async (collectionNumber: string, collections: string[]) => {
         const page = await renderSearchPage();
         await selectCollections(page, ...collections);
-        await user.click(
+        await userEvent.click(
           page.getByLabelText(languageStrings.searchpage.export.title)
         );
         expect(
@@ -490,10 +479,6 @@ describe("<SearchPage/>", () => {
   });
 
   describe("Hide Refine Search controls", () => {
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-
     it.each([
       // Reuse default Search settings as disableStatusSelector, enableOwnerSelector and enableDateSelector.
       [
@@ -544,10 +529,6 @@ describe("<SearchPage/>", () => {
       updateMockGetRenderData(basicRenderData);
     });
 
-    afterAll(() => {
-      jest.clearAllMocks();
-    });
-
     it("should make each Search result Item which represents a live item draggable", async () => {
       await renderSearchPage();
 
@@ -579,7 +560,7 @@ describe("<SearchPage/>", () => {
         languageStrings.searchpage.newSearch
       );
 
-      await user.click(newSearchButton);
+      await userEvent.click(newSearchButton);
       expect(mockSearch).toHaveBeenLastCalledWith(defaultSearchPageOptions);
     });
   });
@@ -592,9 +573,9 @@ describe("<SearchPage/>", () => {
         queryPaginatorControls(page.container);
       expect(getPageCount()).toHaveTextContent("1–10 of 12");
 
-      await user.click(getItemsPerPageSelect());
+      await userEvent.click(getItemsPerPageSelect());
       const itemsPerPageDesired = 25;
-      await user.click(getItemsPerPageOption(itemsPerPageDesired));
+      await userEvent.click(getItemsPerPageOption(itemsPerPageDesired));
 
       expect(SearchModule.searchItems).toHaveBeenCalledWith({
         ...defaultSearchPageOptions,
@@ -609,10 +590,10 @@ describe("<SearchPage/>", () => {
       const { getNextPageButton, getPageCount, getPreviousPageButton } =
         queryPaginatorControls(page.container);
 
-      await user.click(getNextPageButton());
+      await userEvent.click(getNextPageButton());
       expect(getPageCount()).toHaveTextContent("11–12 of 12");
 
-      await user.click(getPreviousPageButton());
+      await userEvent.click(getPreviousPageButton());
       expect(getPageCount()).toHaveTextContent("1–10 of 12");
     });
 
@@ -626,25 +607,22 @@ describe("<SearchPage/>", () => {
         languageStrings.searchpage.pagination.lastPageButton
       );
 
-      await user.click(lastPageButton);
+      await userEvent.click(lastPageButton);
       expect(getPageCount()).toHaveTextContent("11–12 of 12");
 
       const firstPageButton = screen.getByLabelText(
         languageStrings.searchpage.pagination.firstPageButton
       );
       // ... and now back to the first
-      await user.click(firstPageButton);
+      await userEvent.click(firstPageButton);
 
       expect(getPageCount()).toHaveTextContent("1–10 of 12");
     });
   });
 
   describe("Refine search by Collections", () => {
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-
     it("should retrieve collections when the page is opened", async () => {
+      jest.clearAllMocks();
       await renderSearchPage();
       expect(mockCollections).toHaveBeenCalledTimes(1);
       expect(mockCollections).toHaveBeenCalledWith(defaultCollectionPrivileges);
@@ -654,12 +632,12 @@ describe("<SearchPage/>", () => {
       const targetCollection: Collection = getCollectionMap[0];
       await renderSearchPage();
 
-      await user.click(
+      await userEvent.click(
         screen.getByLabelText(
           languageStrings.searchpage.collectionSelector.title
         )
       );
-      await user.click(screen.getByText(targetCollection.name));
+      await userEvent.click(screen.getByText(targetCollection.name));
 
       expect(mockSearch).toHaveBeenLastCalledWith({
         ...defaultSearchPageOptions,
@@ -675,14 +653,10 @@ describe("<SearchPage/>", () => {
       page = await renderSearchPage();
     });
 
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-
     const getSearchAttachmentsSelector = (container: Element): HTMLElement =>
       getRefineSearchComponent(container, "SearchAttachmentsSelector");
     const changeOption = async (selector: HTMLElement, option: string) =>
-      await user.click(getByText(selector, option));
+      await userEvent.click(getByText(selector, option));
     const { yes: yesLabel, no: noLabel } = languageStrings.common.action;
 
     it("Should default to searching attachments", async () => {
@@ -722,7 +696,7 @@ describe("<SearchPage/>", () => {
       getRefineSearchComponent(container, "StatusSelector");
 
     const selectStatus = async (container: Element, status: string) =>
-      await user.click(getByText(getStatusSelector(container), status));
+      await userEvent.click(getByText(getStatusSelector(container), status));
 
     const { liveStatuses, nonLiveStatuses } = SearchModule;
     beforeEach(() => {
@@ -810,14 +784,14 @@ describe("<SearchPage/>", () => {
     it("supports multiple filters", async () => {
       const filters = getMimeTypeFilters;
       const page = await renderSearchPage();
-      await user.click(
+      await userEvent.click(
         page.getByLabelText(
           languageStrings.searchpage.mimeTypeFilterSelector.helperText
         )
       );
       await Promise.all(
         filters.map(
-          async ({ name }) => await user.click(screen.getByText(name))
+          async ({ name }) => await userEvent.click(screen.getByText(name))
         )
       );
 
@@ -836,7 +810,7 @@ describe("<SearchPage/>", () => {
       // Click the <Select>
       await clickSelect(container, "#date-range-selector-quick-options");
       // then click the option in the list
-      await user.click(getSelectOption("Today"));
+      await userEvent.click(getSelectOption("Today"));
 
       const start = mockSearch.mock.lastCall?.[0]?.lastModifiedDateRange?.start;
       expect(start?.toLocaleDateString()).toBe(new Date().toLocaleDateString()); // i.e. Today as per the quick option
@@ -861,7 +835,7 @@ describe("<SearchPage/>", () => {
         languageStrings.searchpage.refineSearchPanel.title
       );
       expect(refineSearchButton).toBeInTheDocument();
-      await user.click(refineSearchButton!); // It's safe to add a '!' now.
+      await userEvent.click(refineSearchButton!); // It's safe to add a '!' now.
       expect(querySidePanel()).toBeInTheDocument();
     });
   });
@@ -937,7 +911,7 @@ describe("<SearchPage/>", () => {
       const wildcardModeSwitch = screen.getByText(
         languageStrings.searchpage.wildcardSearch
       );
-      await user.click(wildcardModeSwitch);
+      await userEvent.click(wildcardModeSwitch);
 
       expect(mockSaveDataToLocalStorage).toHaveBeenCalled();
     });
