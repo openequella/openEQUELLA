@@ -55,12 +55,9 @@ export const selectAndFinished = async (
   onFinish = jest.fn()
 ): Promise<ACLExpression> => {
   // Wait for the results, and then click all entities
-
-  await Promise.all(
-    selectNames.map(async (name: string) =>
-      userEvent.click(await findByText(name))
-    )
-  );
+  for (const name of selectNames) {
+    userEvent.click(await findByText(name));
+  }
 
   // click select button
   userEvent.click(getByText(selectLabel));
