@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import "@testing-library/jest-dom/extend-expect";
+import { waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
   group100RecipientWithName,
@@ -47,6 +48,7 @@ const { queryFieldLabel: groupSearchQueryFieldLabel } =
   languageStrings.groupSearchComponent;
 const { queryFieldLabel: roleSearchQueryFieldLabel } =
   languageStrings.roleSearchComponent;
+const { ok: okLabel, add: addLabel } = languageStrings.common.action;
 
 const { searchFilters } = languageStrings.aclExpressionBuilder;
 const {
@@ -129,6 +131,71 @@ describe("<ACLExpressionBuilder/>", () => {
 
       expect(queryByText(roleSearchQueryFieldLabel)).toBeInTheDocument();
     });
+
+    it.each([
+      [
+        "user",
+        usersRadioLabel,
+        "user100",
+        searchUser,
+        {
+          ...userACLExpression,
+          recipients: [user100RecipientWithName],
+        },
+      ],
+      [
+        "group",
+        groupsRadioLabel,
+        group100RecipientWithName.name,
+        searchGroup,
+        {
+          ...groupACLExpression,
+          recipients: [group100RecipientWithName],
+        },
+      ],
+      [
+        "role",
+        rolesRadioLabel,
+        role100RecipientWithName.name,
+        searchRole,
+        {
+          ...roleACLExpression,
+          recipients: [role100RecipientWithName],
+        },
+      ],
+    ])(
+      "should be able to add one %s result to the expression by clicking the add button in each entry",
+      async (
+        _: string,
+        entityRadioLabel: string,
+        entityToSelect: string,
+        searchEntity: (dialog: HTMLElement, queryValue: string) => void,
+        expectedACLExpressionResult: ACLExpression
+      ) => {
+        const onFinish = jest.fn();
+        const { getByText, container, getByLabelText } =
+          renderACLExpressionBuilder({
+            ...defaultACLExpressionBuilderProps,
+            onFinish,
+          });
+
+        // select entity search radio
+        userEvent.click(getByText(entityRadioLabel));
+        // attempt search for a specific entity
+        searchEntity(container, entityToSelect);
+        // wait for search result
+        await waitFor(() => getByText(entityToSelect));
+
+        // click the add button
+        userEvent.click(getByLabelText(addLabel));
+
+        // click ok button to get the result
+        userEvent.click(getByText(okLabel));
+
+        const result = onFinish.mock.lastCall[0];
+        expect(result).toEqual(expectedACLExpressionResult);
+      }
+    );
 
     it.each<
       [
