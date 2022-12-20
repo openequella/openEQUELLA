@@ -28,6 +28,7 @@ import {
   Tooltip,
   Typography,
 } from "@material-ui/core";
+import AddCircleIcon from "@material-ui/icons/AddCircle";
 import ErrorOutline from "@material-ui/icons/ErrorOutline";
 import InfoIcon from "@material-ui/icons/Info";
 import SearchIcon from "@material-ui/icons/Search";
@@ -57,6 +58,7 @@ import {
 import { languageStrings } from "../../util/langstrings";
 import { OrdAsIs } from "../../util/Ord";
 import { CheckboxList } from "../CheckboxList";
+import { TooltipIconButton } from "../TooltipIconButton";
 import GroupSearch from "./GroupSearch";
 
 const {
@@ -68,6 +70,7 @@ const {
 } = languageStrings.baseSearchComponent;
 const { filteredByPrelude } = languageStrings.userSearchComponent;
 const {
+  add: addLabel,
   edit: editLabel,
   clear: clearLabel,
   select: selectLabel,
@@ -134,6 +137,10 @@ export interface CommonEntitySearchProps<T> {
    * Handler for cancel button, if undefined no cancel button will be displayed.
    */
   onCancel?: () => void;
+  /**
+   * Handler for add button for each entry, if undefined no add button will be displayed.
+   */
+  onAdd?: (item: T) => void;
   /**
    * A set of items in the list which should be 'selected'/ticked/checked.
    * Except some edge cases it will receive an empty set as an initial value.
@@ -211,6 +218,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
   onClearAll,
   selections,
   onChange,
+  onAdd,
   itemOrd = ORD.contramap(({ id }: T) => id)(S.Ord),
   itemEq = eqItemById<T>(),
   itemDetailsToEntry = (item: T) => <ListItemText primary={item.id} />,
@@ -459,7 +467,26 @@ const BaseSearch = <T extends BaseSecurityEntity>({
    */
   const itemDetailsToEntriesMap: (_: T[]) => Map<string, JSX.Element> = flow(
     A.reduce(new Map<string, JSX.Element>(), (entries, item) =>
-      pipe(entries, M.upsertAt(S.Eq)(item.id, itemDetailsToEntry(item)))
+      pipe(
+        entries,
+        M.upsertAt(S.Eq)(
+          item.id,
+          <>
+            {itemDetailsToEntry(item)}
+            {onAdd && (
+              <TooltipIconButton
+                title={addLabel}
+                onClick={(event) => {
+                  onAdd(item);
+                  event.stopPropagation();
+                }}
+              >
+                <AddCircleIcon />
+              </TooltipIconButton>
+            )}
+          </>
+        )
+      )
     )
   );
 
