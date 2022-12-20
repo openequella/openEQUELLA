@@ -138,6 +138,12 @@ export const queryGroupFilterSearch = (
 ): Element | null => renderResult.queryByText(groupFilterSearchHintMessage);
 
 /**
+ * Helper function to assist in finding the search result list.
+ */
+export const querySearchResultList = (container: HTMLElement): Element | null =>
+  container.querySelector("#item-search-list");
+
+/**
  * Some common shared props to render the `EntitySearch`.
  */
 export const commonSearchProps = {

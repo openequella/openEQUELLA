@@ -45,6 +45,7 @@ import {
   queryGroupFilterSearch,
   clickEditGroupFilterButton,
   clickCancelGroupFilterButton,
+  querySearchResultList,
 } from "./BaseSearchTestHelper";
 import { findUserFromMockData } from "./UserSearchTestHelpler";
 
@@ -294,11 +295,12 @@ describe("<BaseSearch/>", () => {
         search: search,
         groupFilterEditable: true,
       });
+      const { container } = renderResult;
 
       clickFilterByGroupButton(renderResult);
 
       // search for groups with name `group`
-      await searchGroupFilter(renderResult.container, "group");
+      await searchGroupFilter(container, "group");
 
       // Wait for the results, and then click each group
       for (const group of pipe(
@@ -312,7 +314,9 @@ describe("<BaseSearch/>", () => {
       clickActionButton(renderResult);
 
       // trigger search action so that we can check what groups are in use when passed to the search handler
-      await searchEntity(renderResult.container, "");
+      searchEntity(container, "");
+      // wait for search completed
+      await waitFor(() => querySearchResultList(container));
 
       expect(search).toHaveBeenCalledTimes(1);
 
@@ -338,7 +342,7 @@ describe("<BaseSearch/>", () => {
     it("should clear all group filter when users click clear button", async () => {
       const search = jest.fn().mockResolvedValue("test");
 
-      const renderResult = await renderBaseSearch({
+      const { container, getByText } = await renderBaseSearch({
         ...defaultBaseSearchProps,
         search: search,
         groupFilterEditable: true,
@@ -346,12 +350,14 @@ describe("<BaseSearch/>", () => {
       });
 
       // find and click clear button
-      const clearGroupFilterButton = renderResult.getByText(clearLabel);
+      const clearGroupFilterButton = getByText(clearLabel);
       userEvent.click(clearGroupFilterButton);
 
       // trigger a search action so that we can make sure the search is then done with
       // no group filter - confirming it was cleared.
-      await searchEntity(renderResult.container, "");
+      searchEntity(container, "");
+      // wait for search completed
+      await waitFor(() => querySearchResultList(container));
 
       expect(search).toHaveBeenCalledTimes(1);
 
