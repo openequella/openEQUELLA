@@ -31,6 +31,7 @@ import * as T from "fp-ts/Task";
 import * as TE from "fp-ts/TaskEither";
 import { Literal, Static, Union } from "runtypes";
 import { v4 as uuidv4 } from "uuid";
+import { languageStrings } from "../util/langstrings";
 import { pfTernary, pfTernaryTypeGuard } from "../util/pointfree";
 import { ACLEntityResolvers } from "./ACLEntityModule";
 import {
@@ -41,12 +42,18 @@ import {
   showRecipientHumanReadable,
 } from "./ACLRecipientModule";
 
+const {
+  aclExpressionBuilder: {
+    operators: { or: orLabel, and: andLabel, not: notLabel },
+  },
+} = languageStrings;
+
 /**
  * ACL Operator types:
  *
  * `UNKNOWN` is only used as a placeholder while parsing an ACL recipient string.
  */
-const ACLOperatorTypesUnion = Union(
+export const ACLOperatorTypesUnion = Union(
   Literal("OR"),
   Literal("AND"),
   Literal("NOT"),
@@ -54,6 +61,13 @@ const ACLOperatorTypesUnion = Union(
 );
 
 export type ACLOperatorType = Static<typeof ACLOperatorTypesUnion>;
+
+export const getOperatorLabel = ACLOperatorTypesUnion.match(
+  (OR) => orLabel,
+  (AND) => andLabel,
+  (NOT) => notLabel,
+  (UNKNOWN) => UNKNOWN
+);
 
 /**
  * Represents the ACL Expression string.
@@ -157,6 +171,35 @@ export const replaceACLExpression = (
           ...originalACLExpression,
           children: newChildren,
         })
+      )
+  );
+
+/**
+ * Given an ACLExpression and an ID, recursively search for an ACLExpression that has the same ID from
+ * the given ACLExpression and its nested ACLExpressions.
+ *
+ * It will return `undefined` if multiple ACLExpression are found.
+ */
+export const getACLExpressionById = (
+  id: string
+): ((aclExpression: ACLExpression) => ACLExpression | undefined) =>
+  pfTernary<ACLExpression, ACLExpression | undefined>(
+    (aclExpression) => aclExpression.id === id,
+    identity,
+    ({ children }) =>
+      pipe(
+        children,
+        A.filterMap(flow(getACLExpressionById(id), O.fromNullable)),
+        NEA.fromArray,
+        O.chainFirstEitherK(
+          E.fromPredicate(
+            (a) => A.size(a) <= 1,
+            (error) =>
+              console.warn(`Find more than one ACLExpression with ID ${id}`)
+          )
+        ),
+        O.map(NEA.head),
+        O.toUndefined
       )
   );
 

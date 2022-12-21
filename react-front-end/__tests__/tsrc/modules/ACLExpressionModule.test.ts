@@ -19,10 +19,15 @@ import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
 import {
+  user100Recipient,
+  user200Recipient,
+} from "../../../__mocks__/ACLRecipientModule.mock";
+import {
   ACLExpression,
   compactACLExpressions,
   generate,
   generateHumanReadable,
+  getACLExpressionById,
   parse,
   removeRedundantExpressions,
   revertCompactedACLExpressions,
@@ -316,6 +321,53 @@ describe("ACLExpressionModule", () => {
       expect(removeRedundantExpressions(complexRedundantExpression)).toEqual(
         ignoreId(simplifiedComplexRedundantExpression)
       );
+    });
+  });
+
+  describe("getACLExpressionById", () => {
+    const child1: ACLExpression = {
+      id: "test",
+      operator: "OR",
+      recipients: [user100Recipient],
+      children: [],
+    };
+
+    const child2: ACLExpression = {
+      id: "test",
+      operator: "AND",
+      recipients: [user200Recipient],
+      children: [],
+    };
+
+    const aclExpression: ACLExpression = {
+      id: "root",
+      operator: "AND",
+      recipients: [],
+      children: [child1],
+    };
+
+    it("should return ACLExpression if it exists", () => {
+      expect(pipe(aclExpression, getACLExpressionById("test"))).toEqual(child1);
+    });
+
+    it("should return undefined if it not exists", () => {
+      expect(
+        pipe(aclExpression, getACLExpressionById("non-exist"))
+      ).toBeUndefined();
+    });
+
+    it("should log warning message and return undefined if it find more than one ACLExpression with same id", () => {
+      const newACLExpression: ACLExpression = {
+        ...aclExpression,
+        children: [child1, child2],
+      };
+      const logWarning = jest.fn();
+      global.console.warn = logWarning;
+
+      const find = pipe(newACLExpression, getACLExpressionById("test"));
+
+      expect(find).toBeUndefined();
+      expect(logWarning).toHaveBeenCalled();
     });
   });
 

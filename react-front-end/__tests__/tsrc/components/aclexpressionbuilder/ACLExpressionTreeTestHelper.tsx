@@ -19,7 +19,12 @@ import { render, RenderResult } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import ACLExpressionTree from "../../../../tsrc/components/aclexpressionbuilder/ACLExpressionTree";
-import { ACLExpression } from "../../../../tsrc/modules/ACLExpressionModule";
+import {
+  ACLExpression,
+  ACLOperatorType,
+  getOperatorLabel,
+} from "../../../../tsrc/modules/ACLExpressionModule";
+import { selectOption } from "../../MuiTestHelpers";
 
 // Helper to render ACLExpressionTree
 export const renderACLExpressionTree = (
@@ -30,6 +35,7 @@ export const renderACLExpressionTree = (
       aclExpression={aclExpression}
       onSelect={jest.fn()}
       onDelete={jest.fn()}
+      onChange={jest.fn()}
     />
   );
 
@@ -41,3 +47,10 @@ export const selectOperatorNode = (container: HTMLElement, nodeId: string) => {
   }
   userEvent.click(node);
 };
+
+// Helper function to mock select an `operator` for group node (`operator` tree item) in the tree view.
+export const selectOperatorForNode = async (
+  container: HTMLElement,
+  nodeId: string,
+  operator: ACLOperatorType
+) => selectOption(container, `#${nodeId}-select`, getOperatorLabel(operator));

@@ -19,19 +19,17 @@ import { InputLabel, MenuItem, Select } from "@material-ui/core";
 import { CreateNewFolder } from "@material-ui/icons";
 import DeleteIcon from "@material-ui/icons/Delete";
 import TreeItem, { TreeItemProps } from "@material-ui/lab/TreeItem";
+import * as A from "fp-ts/Array";
+import { pipe } from "fp-ts/function";
 import * as React from "react";
-import { ChangeEvent } from "react";
+import { getOperatorLabel } from "../../modules/ACLExpressionModule";
 import type { ACLOperatorType } from "../../modules/ACLExpressionModule";
 import { languageStrings } from "../../util/langstrings";
 import { TooltipIconButton } from "../TooltipIconButton";
 import { useACLTreeItemStyles } from "./ACLExpressionHelper";
 
 const {
-  aclExpressionBuilder: {
-    match: matchLabel,
-    addGroup: addGroupLabel,
-    operators: { or: orLabel, and: andLabel, not: notLabel },
-  },
+  aclExpressionBuilder: { match: matchLabel, addGroup: addGroupLabel },
 } = languageStrings;
 
 export interface ACLTreeOperatorProps extends TreeItemProps {
@@ -40,6 +38,14 @@ export interface ACLTreeOperatorProps extends TreeItemProps {
    */
   operator: ACLOperatorType;
   /**
+   * Available operators for the top level expression. Default to `AND` and `OR`.
+   */
+  rootGroupOperators?: ACLOperatorType[];
+  /**
+   * Available operators for the common level expressions. Default to AND and OR and NOT.
+   */
+  groupOperators?: ACLOperatorType[];
+  /**
    * `true` if an operator is a root operator which appears on the top of the tree without a delete button.
    */
   isRoot?: boolean;
@@ -47,6 +53,10 @@ export interface ACLTreeOperatorProps extends TreeItemProps {
    * Fired when the item is deleted.
    */
   onDelete: (nodeID: string) => void;
+  /**
+   * Fired when the operator is changed.
+   */
+  onOperatorChange: (operator: ACLOperatorType) => void;
 }
 
 /**
@@ -54,32 +64,45 @@ export interface ACLTreeOperatorProps extends TreeItemProps {
  */
 export const ACLTreeOperator = ({
   nodeId,
+  rootGroupOperators = ["OR", "AND"],
+  groupOperators = ["OR", "AND", "NOT"],
   isRoot,
   operator,
   onSelect,
   onDelete,
+  onOperatorChange,
   ...other
 }: ACLTreeOperatorProps): JSX.Element => {
   const classes = useACLTreeItemStyles();
 
-  const handleCheckboxChanged = (event: ChangeEvent<{}>) => {
-    // prevent toggling tree item
-    event.stopPropagation();
-  };
+  // default selected value is `OR`
+  const buildMenuItemForOperator = (operator: ACLOperatorType) => (
+    <MenuItem
+      key={operator}
+      selected={operator === "OR" ? true : false}
+      value={operator}
+    >
+      {getOperatorLabel(operator)}
+    </MenuItem>
+  );
 
   const treeOperatorLabel = () => (
     <div className={classes.labelRoot}>
       <InputLabel>{matchLabel}&nbsp;</InputLabel>
       <Select
+        id={`${nodeId}-select`}
         value={operator}
-        onChange={handleCheckboxChanged}
+        onChange={(event) =>
+          onOperatorChange(event.target.value as ACLOperatorType)
+        }
+        // prevent toggling tree item
+        onClick={(event) => event.stopPropagation()}
         className={classes.labelSelect}
       >
-        <MenuItem selected value="OR">
-          {orLabel}
-        </MenuItem>
-        <MenuItem value="AND">{andLabel}</MenuItem>
-        <MenuItem value="NOT">{notLabel}</MenuItem>
+        {pipe(
+          isRoot ? rootGroupOperators : groupOperators,
+          A.map(buildMenuItemForOperator)
+        )}
       </Select>
       <TooltipIconButton
         onClick={(event) => {

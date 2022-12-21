@@ -20,7 +20,10 @@ import * as React from "react";
 import { useState, ChangeEvent } from "react";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowRightIcon from "@material-ui/icons/ArrowRight";
-import { ACLExpression } from "../../modules/ACLExpressionModule";
+import type {
+  ACLExpression,
+  ACLOperatorType,
+} from "../../modules/ACLExpressionModule";
 import type { ACLRecipient } from "../../modules/ACLRecipientModule";
 import { ACLTreeOperator } from "./ACLTreeOperator";
 import { ACLTreeRecipient } from "./ACLTreeRecipient";
@@ -38,6 +41,10 @@ export interface ACLExpressionTreeProps {
    * Fired when the tree item is deleted. Both `ACLTreeOperator` and `ACLTreeRecipient` can be deleted.
    */
   onDelete: (nodeID: string) => void;
+  /**
+   * Fired when the ACLExpression tree view is changed. (Such as delete recipient or update the operator)
+   */
+  onChange: (expression: ACLExpression) => void;
 }
 
 /**
@@ -48,6 +55,7 @@ const ACLExpressionTree = ({
   aclExpression,
   onSelect,
   onDelete,
+  onChange,
 }: ACLExpressionTreeProps): JSX.Element => {
   const [expanded, setExpanded] = useState<string[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
@@ -73,6 +81,12 @@ const ACLExpressionTree = ({
         isRoot={isRoot}
         onSelect={() => onSelect(aclExpression)}
         onDelete={onDelete}
+        onOperatorChange={(newOperator: ACLOperatorType) => {
+          onChange({
+            ...aclExpression,
+            operator: newOperator,
+          });
+        }}
       >
         {recipients.map(({ type, expression, name }: ACLRecipient) => {
           const unnamedValue = `${type} : ${expression}`;

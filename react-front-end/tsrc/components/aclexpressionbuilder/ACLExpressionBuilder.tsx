@@ -16,37 +16,41 @@
  * limitations under the License.
  */
 import {
-  Grid,
-  Button,
   AppBar,
-  Tabs,
-  Tab,
-  TextField,
-  MenuItem,
-  Select,
-  FormControl,
-  FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  InputLabel,
-  Typography,
-  Paper,
-  Theme,
-  makeStyles,
+  Button,
   createStyles,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Grid,
+  InputLabel,
+  makeStyles,
+  MenuItem,
+  Paper,
+  Radio,
+  RadioGroup,
+  Select,
+  Tab,
+  Tabs,
+  TextField,
+  Theme,
+  Typography,
 } from "@material-ui/core";
 import { TabContext, TabPanel } from "@material-ui/lab";
 import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
+import * as A from "fp-ts/Array";
+import * as RA from "fp-ts/ReadonlyArray";
+import * as RSET from "fp-ts/ReadonlySet";
 import * as React from "react";
-import { useState, ChangeEvent, ReactNode } from "react";
-import { Union, Static, Literal } from "runtypes";
+import { ChangeEvent, ReactNode, useState } from "react";
+import { Literal, Static, Union } from "runtypes";
 import {
   ACLExpression,
   addRecipients,
   compactACLExpressions,
   flattenRecipients,
+  getACLExpressionById,
   replaceACLExpression,
   revertCompactedACLExpressions,
 } from "../../modules/ACLExpressionModule";
@@ -60,11 +64,9 @@ import {
 } from "../../modules/ACLRecipientModule";
 import { listUsers } from "../../modules/UserModule";
 import { languageStrings } from "../../util/langstrings";
-import UserSearch from "../securityentitysearch/UserSearch";
 import GroupSearch from "../securityentitysearch/GroupSearch";
 import RoleSearch from "../securityentitysearch/RoleSearch";
-import * as RA from "fp-ts/ReadonlyArray";
-import * as RSET from "fp-ts/ReadonlySet";
+import UserSearch from "../securityentitysearch/UserSearch";
 import ACLExpressionTree from "./ACLExpressionTree";
 
 const {
@@ -209,7 +211,7 @@ const ACLExpressionBuilder = ({
   searchRoleProvider,
   resolveGroupsProvider,
 }: ACLExpressionBuilderProps): JSX.Element => {
-  const [currentACLExpression, setCurrentAclExpression] =
+  const [currentACLExpression, setCurrentACLExpression] =
     useState<ACLExpression>(
       aclExpression
         ? compactACLExpressions(aclExpression)
@@ -249,6 +251,30 @@ const ACLExpressionBuilder = ({
   const handleTabChanged = (_: ChangeEvent<{}>, newValue: string) =>
     setActiveTabValue(newValue);
 
+  // Update an ACLExpression when the expression has changes like operator changed and recipient deleted.
+  const updateACLExpressionRelatedStates = (
+    updatedACLExpression: ACLExpression
+  ) => {
+    // get new selected ACLExpression from new current ACLExpression by id and then update the state
+    const updateSelectedACLExpression = (aclExpression: ACLExpression) =>
+      pipe(
+        aclExpression,
+        getACLExpressionById(selectedACLExpression.id),
+        (newSelectedACL) =>
+          setSelectedACLExpression(newSelectedACL ?? aclExpression)
+      );
+
+    const newCurrentACLExpression = pipe(
+      currentACLExpression,
+      replaceACLExpression(updatedACLExpression)
+    );
+
+    pipe(
+      [setCurrentACLExpression, updateSelectedACLExpression],
+      A.flap(newCurrentACLExpression)
+    );
+  };
+
   // add new selected recipients into selected ACLExpression node
   const updateNewRecipients = (recipients: ReadonlySet<ACLRecipient>) => {
     // if the recipient is already exiting in the currentAclExpression, ignore it.
@@ -259,18 +285,11 @@ const ACLExpressionBuilder = ({
       RA.toArray
     );
 
-    const newACLExpression: ACLExpression = pipe(
-      selectedACLExpression,
-      addRecipients(filteredRecipients)
-    );
-
     pipe(
-      currentACLExpression,
-      replaceACLExpression(newACLExpression),
-      setCurrentAclExpression
+      selectedACLExpression,
+      addRecipients(filteredRecipients),
+      updateACLExpressionRelatedStates
     );
-
-    setSelectedACLExpression(newACLExpression);
   };
 
   const handleEntitySelected = <T,>(
@@ -281,6 +300,15 @@ const ACLExpressionBuilder = ({
       selections,
       RSET.map(recipientEq)(entityToReceipt),
       updateNewRecipients
+    );
+
+  const handleACLExpressionTreeChanged = (
+    changedACLExpression: ACLExpression
+  ) =>
+    pipe(
+      currentACLExpression,
+      replaceACLExpression(changedACLExpression),
+      updateACLExpressionRelatedStates
     );
 
   const handleACLItemDelete = (nodeID: string) => {
@@ -540,6 +568,7 @@ const ACLExpressionBuilder = ({
                 aclExpression={currentACLExpression}
                 onSelect={setSelectedACLExpression}
                 onDelete={handleACLItemDelete}
+                onChange={handleACLExpressionTreeChanged}
               />
             </Paper>
           </Grid>
