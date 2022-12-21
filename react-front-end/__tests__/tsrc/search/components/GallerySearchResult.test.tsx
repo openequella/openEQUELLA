@@ -19,7 +19,6 @@ import "@testing-library/jest-dom/extend-expect";
 import { queryByText, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
-import { act } from "react-dom/test-utils";
 import { Router } from "react-router-dom";
 import * as React from "react";
 import { DRM_VIOLATION, drmTerms } from "../../../../__mocks__/Drm.mock";
@@ -68,9 +67,7 @@ describe("<GallerySearchResult />", () => {
 
   it("displays the lightbox when the image is clicked on", async () => {
     const { getAllByLabelText, queryAllByLabelText } = renderGallery();
-    await act(async () => {
-      await userEvent.click(getAllByLabelText(ariaLabel)[0]);
-    });
+    await userEvent.click(getAllByLabelText(ariaLabel)[0]);
 
     // Then they see the lightbox
     expect(queryAllByLabelText(openInNewTab)[0]).toBeInTheDocument();
@@ -78,9 +75,7 @@ describe("<GallerySearchResult />", () => {
 
   it("navigates to the images item when the information icon is clicked on", async () => {
     const { getAllByLabelText } = renderGallery();
-    await act(async () => {
-      await userEvent.click(getAllByLabelText(viewItem)[0]);
-    });
+    await userEvent.click(getAllByLabelText(viewItem)[0]);
 
     expect(mockUseHistoryPush).toHaveBeenCalled();
     expect(mockUseHistoryPush.mock.calls[0][0].match("/items/")).toBeTruthy();
@@ -96,9 +91,7 @@ describe("<GallerySearchResult />", () => {
       galleryScrapbook,
     ]);
 
-    await act(async () => {
-      await userEvent.click(getByLabelText(ariaLabel));
-    });
+    await userEvent.click(getByLabelText(ariaLabel));
 
     // The icon button for accessing summary page should not exist.
     expect(queryByLabelText(openSummaryPage)).not.toBeInTheDocument();
@@ -110,7 +103,7 @@ describe("<GallerySearchResult />", () => {
       ["last", "previous", "first", 0, viewPrevious],
     ])(
       "shows the %s entry when navigate to the %s entry of the %s entry",
-      (
+      async (
         currentPosition: string,
         direction: string,
         newPosition: string,
@@ -118,7 +111,7 @@ describe("<GallerySearchResult />", () => {
         arrowButtonLabel: string
       ) => {
         const { getAllByLabelText, queryByLabelText } = renderGallery();
-        userEvent.click(getAllByLabelText(ariaLabel)[index]);
+        await userEvent.click(getAllByLabelText(ariaLabel)[index]);
         expect(queryByLabelText(arrowButtonLabel)).toBeInTheDocument();
       }
     );
@@ -140,9 +133,7 @@ describe("<GallerySearchResult />", () => {
       "shows DRM acceptance dialog when %s",
       async (_: string, galleryEntryLabel: string) => {
         const { getByLabelText } = await renderGallery([galleryDrmItem]);
-        await act(async () => {
-          await userEvent.click(getByLabelText(galleryEntryLabel));
-        });
+        await userEvent.click(getByLabelText(galleryEntryLabel));
 
         await waitFor(() => {
           expect(
@@ -161,9 +152,7 @@ describe("<GallerySearchResult />", () => {
         const { getByLabelText } = await renderGallery([
           galleryDrmUnauthorisedItem,
         ]);
-        await act(async () => {
-          await userEvent.click(getByLabelText(galleryEntryLabel));
-        });
+        await userEvent.click(getByLabelText(galleryEntryLabel));
 
         await waitFor(() => {
           expect(
@@ -177,9 +166,7 @@ describe("<GallerySearchResult />", () => {
       const { getByLabelText } = await renderGallery([
         galleryDrmItemSummaryAllow,
       ]);
-      await act(async () => {
-        await userEvent.click(getByLabelText(viewItem));
-      });
+      await userEvent.click(getByLabelText(viewItem));
 
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });

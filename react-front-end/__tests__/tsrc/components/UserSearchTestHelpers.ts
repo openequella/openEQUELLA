@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { fireEvent } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { queryMuiTextField } from "../MuiQueries";
 
@@ -26,7 +26,7 @@ import { queryMuiTextField } from "../MuiQueries";
  * @param dialog The User Search Dialog
  * @param queryValue the value to put in the query field before pressing enter
  */
-export const doSearch = (dialog: HTMLElement, queryValue: string) => {
+export const doSearch = async (dialog: HTMLElement, queryValue: string) => {
   const queryField = queryMuiTextField(
     dialog,
     languageStrings.userSearchComponent.queryFieldLabel
@@ -35,8 +35,8 @@ export const doSearch = (dialog: HTMLElement, queryValue: string) => {
     throw new Error("Unable to find query field!");
   }
 
-  fireEvent.change(queryField, { target: { value: queryValue } });
-  fireEvent.keyDown(queryField, { key: "Enter", code: "Enter" });
+  await userEvent.type(queryField, queryValue);
+  await userEvent.type(queryField, "{enter}");
 };
 
 /**

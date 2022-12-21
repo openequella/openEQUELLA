@@ -135,56 +135,46 @@ describe("<FacetedSearchSettingsPage />", () => {
     getByLabelText(getClassification(name), facetedSearchSettingStrings.delete);
 
   const openDialog = async (name?: string) => {
-    await act(async () => {
-      await userEvent.click(
-        name
-          ? getEditButton(name)
-          : page.getByLabelText(facetedSearchSettingStrings.add)
-      );
-    });
+    await userEvent.click(
+      name
+        ? getEditButton(name)
+        : page.getByLabelText(facetedSearchSettingStrings.add)
+    );
     return screen.getByRole("dialog");
   };
 
   const deleteClassification = async (name: string) => {
-    await act(async () => {
-      userEvent.click(getDeleteButton(name));
-    });
+    await userEvent.click(getDeleteButton(name));
   };
 
   const updateClassification = async (name: string, updatedName: string) => {
     const dialog = await openDialog(name);
     const nameInput = getByDisplayValue(dialog, name);
-    userEvent.clear(nameInput);
-    userEvent.type(nameInput, updatedName);
-    await act(async () => {
-      await userEvent.click(
-        getMuiButtonByText(dialog, languageStrings.common.action.ok)
-      );
-    });
+    await userEvent.clear(nameInput);
+    await userEvent.type(nameInput, updatedName);
+    await userEvent.click(
+      getMuiButtonByText(dialog, languageStrings.common.action.ok)
+    );
   };
 
   const addClassification = async (name: string) => {
     const dialog = await openDialog();
     const [nameInput, schemaInput] = getAllByRole(dialog, "textbox"); // Only two inputs in the dialog are "textbox".
-    userEvent.type(nameInput, name);
+    await userEvent.type(nameInput, name);
 
     // As the input for Schema node is disabled, use 'fireEvent.change`. Alternatively, we can
     // click the Schema node selector and select a node;
     fireEvent.change(schemaInput, { target: { value: "item/year" } });
 
-    await act(async () => {
-      await userEvent.click(
-        getMuiButtonByText(dialog, languageStrings.common.action.add)
-      );
-    });
+    await userEvent.click(
+      getMuiButtonByText(dialog, languageStrings.common.action.add)
+    );
   };
 
   const makeChanges = async () => {
     await deleteClassification(mockFacets[0].name);
     await addClassification("new classification");
-    await act(async () => {
-      await userEvent.click(getSaveButton());
-    });
+    await userEvent.click(getSaveButton());
   };
 
   it("should fetch facets", () => {

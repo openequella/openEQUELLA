@@ -17,7 +17,8 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, act } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { sprintf } from "sprintf-js";
 import { groups } from "../../../__mocks__/GroupModule.mock";
@@ -29,7 +30,9 @@ import * as GroupModule from "../../../tsrc/modules/GroupModule";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { doSearch, getUserList } from "./UserSearchTestHelpers";
 
-jest.spyOn(GroupModule, "resolveGroups").mockResolvedValue(groups);
+const resolveGroupsPromise = jest
+  .spyOn(GroupModule, "resolveGroups")
+  .mockResolvedValue(groups);
 describe("<UserSearch/>", () => {
   // Helper to render and wait for component under test
   const renderUserSearch = async (
@@ -45,11 +48,11 @@ describe("<UserSearch/>", () => {
     );
 
     // Wait for it to be rendered
-    await waitFor(() =>
+    await waitFor(() => {
       screen.getByText(languageStrings.userSearchComponent.queryFieldLabel, {
         selector: "label",
-      })
-    );
+      });
+    });
 
     return container;
   };
@@ -64,6 +67,11 @@ describe("<UserSearch/>", () => {
   it("displays a notice if the results will be filtered by group", async () => {
     await renderUserSearch(jest.fn(), GroupFilter.args!.groupFilter);
 
+    // Group filter is provided so also wait for the promise to be resolved.
+    await act(async () => {
+      await resolveGroupsPromise;
+    });
+
     expect(
       screen.queryByText(languageStrings.userSearchComponent.filterActiveNotice)
     ).toBeInTheDocument();
@@ -74,7 +82,7 @@ describe("<UserSearch/>", () => {
 
     // Attempt search for rubbish value
     const noSuchUser = "la blah blah";
-    doSearch(container, noSuchUser);
+    await doSearch(container, noSuchUser);
 
     // Ensure an error was displayed
     await waitFor(() =>
@@ -93,7 +101,7 @@ describe("<UserSearch/>", () => {
     const container = await renderUserSearch();
 
     // Attempt search for known users
-    doSearch(container, "user");
+    await doSearch(container, "user");
 
     // Await for search results
     const results = await waitFor(() => screen.getAllByText(/user\d00/));
@@ -117,13 +125,13 @@ describe("<UserSearch/>", () => {
     }
 
     // Attempt search for a specific user
-    doSearch(container, username);
+    await doSearch(container, username);
 
     // Wait for the results, and then click our user of interest
     const testUserResult = await waitFor<HTMLElement>(() =>
       screen.getByText(new RegExp(`.*${testUser.lastName}.*`))
     );
-    fireEvent.click(testUserResult);
+    await userEvent.click(testUserResult);
 
     // The handler should've been triggered once with target user returned
     expect(onSelect).toHaveBeenCalledTimes(1);
