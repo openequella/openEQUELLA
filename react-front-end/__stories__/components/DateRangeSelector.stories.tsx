@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { action } from "@storybook/addon-actions";
-import { object, text } from "@storybook/addon-knobs";
 import { Meta } from "@storybook/react";
 import * as React from "react";
 import {
@@ -27,6 +26,10 @@ import {
 export default {
   title: "DateRangeSelector",
   component: DateRangeSelector,
+  argTypes: {
+    dateRange: { control: "object" },
+    quickOptionDropdownLabel: { control: "text" },
+  },
 } as Meta<DateRangeSelectorProps>;
 
 const actions: DateRangeSelectorProps = {
@@ -37,14 +40,11 @@ const actions: DateRangeSelectorProps = {
 export const QuickOptionMode = () => (
   <DateRangeSelector
     quickModeEnabled
-    dateRange={object("Date range", {
+    dateRange={{
       start: new Date(),
       end: undefined,
-    })}
-    quickOptionDropdownLabel={text(
-      "Quick option Dropdown label",
-      "Quick date range options"
-    )}
+    }}
+    quickOptionDropdownLabel="Quick date range options"
     {...actions}
   />
 );
@@ -52,12 +52,12 @@ export const QuickOptionMode = () => (
 export const CustomDateMode = () => (
   <DateRangeSelector
     quickModeEnabled={false}
-    dateRange={object("Date range", {
+    dateRange={{
       start: new Date(),
       end: new Date(),
-    })}
-    startDatePickerLabel={text("Start date", "Start date")}
-    endDatePickerLabel={text("End date", "End date")}
+    }}
+    startDatePickerLabel="Start date"
+    endDatePickerLabel="End date"
     {...actions}
   />
 );
