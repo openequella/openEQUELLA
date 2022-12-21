@@ -50,7 +50,7 @@ export default function main(entry: EntryPage) {
 
   initStrings();
 
-  const rootElement = document.getElementById("app");
+  const rootElement = document.getElementById(entry);
   if (rootElement) {
     const root = createRoot(rootElement);
     root.render(
@@ -59,6 +59,8 @@ export default function main(entry: EntryPage) {
       </React.Suspense>
     );
   } else {
-    throw new Error("Failed to render the New UI: root element is missing.");
+    throw new Error(
+      `Failed to render the New UI: root element ${entry} is missing.`
+    );
   }
 }
