@@ -21,13 +21,13 @@ import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import { absurd, constFalse, constTrue, flow, pipe } from "fp-ts/function";
-import * as IO from "fp-ts/IO";
 import * as M from "fp-ts/Map";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as O from "fp-ts/Option";
 import { contramap, Ord } from "fp-ts/Ord";
 import { not } from "fp-ts/Predicate";
 import * as S from "fp-ts/string";
+import * as T from "fp-ts/Task";
 import {
   BasicControlEssentials,
   getAdvancedSearchDefinition,
@@ -379,7 +379,7 @@ export const generateMockedControls = (
  */
 const selectShuffleBoxOption =
   (shuffleBox: HTMLElement) =>
-  (label: string): IO.IO<void> => {
+  (label: string): T.Task<void> => {
     // Given the DOM ID for a potential shufflebox list, determine which list it is in. (Or, if
     // determined not to be a shufflebox list, return `O.none`.)
     const listFromId = (id: string): O.Option<string> =>
@@ -402,7 +402,7 @@ const selectShuffleBoxOption =
       );
 
     // Functionality to select an option and add it to the 'selections'
-    return () =>
+    return async () =>
       pipe(
         getByText(shuffleBox, label),
         withList,
@@ -417,15 +417,17 @@ const selectShuffleBoxOption =
           flow(
             O.fromPredicate(({ list }) => list === "options"),
             O.match(
-              () =>
+              () => {
                 console.debug(
                   `No action taken on "${label}" as already in target list`
-                ),
-              ({ element: optionCheckbox }) => {
+                );
+                return Promise.resolve();
+              },
+              async ({ element: optionCheckbox }) => {
                 // tick the option
-                userEvent.click(optionCheckbox);
+                await userEvent.click(optionCheckbox);
                 // click button to add to selections
-                userEvent.click(
+                await userEvent.click(
                   getByLabelText(shuffleBox, shuffleBoxStrings.addSelected)
                 );
               }
@@ -443,18 +445,18 @@ const selectShuffleBoxOption =
  * the values the specified controls should be set to.
  * @param controlType Type of the control which is used to determine the method of setting the values.
  */
-export const updateControlValue = (
+export const updateControlValue = async (
   container: HTMLElement,
   updates: WizardControlLabelValue,
   controlType: OEQ.WizardControl.ControlType
-): void => {
+): Promise<void> => {
   const [labels, values] = A.unzip(M.toArray(S.Ord)(updates));
   // Filter down `updates` to only those which have a single value (string vs string[])
   const singleValueUpdates = (): Map<string, string> =>
     pipe(updates, M.filter(S.isString));
   // Function to apply a side effect to each update in IO.
-  const traverseUpdates = (f: (label: string, value: string) => IO.IO<void>) =>
-    M.getTraversableWithIndex(S.Ord).traverseWithIndex(IO.Applicative)(
+  const traverseUpdates = (f: (label: string, value: string) => T.Task<void>) =>
+    M.getTraversableWithIndex(S.Ord).traverseWithIndex(T.ApplicativeSeq)(
       singleValueUpdates(),
       f
     );
@@ -479,7 +481,7 @@ export const updateControlValue = (
         throw new TypeError(e);
       })
     );
-  const updateShuffleValues = (f: (value: string) => IO.IO<void>) =>
+  const updateShuffleValues = (f: (value: string) => T.Task<void>) =>
     pipe(
       values[0],
       E.fromPredicate(
@@ -489,23 +491,23 @@ export const updateControlValue = (
       E.getOrElseW((e) => {
         throw new TypeError(e);
       }),
-      A.traverse(IO.Applicative)(f)
+      A.traverse(T.ApplicativeSeq)(f)
     );
 
   switch (controlType) {
     case "editbox":
-      pipe(inputFieldDetails(), ({ label, value }) => {
+      await pipe(inputFieldDetails(), async ({ label, value }) => {
         const editBox = getByLabelText(container, label);
-        userEvent.clear(editBox);
-        userEvent.type(editBox, value);
+        await userEvent.clear(editBox);
+        await userEvent.type(editBox, value);
       });
       break;
     case "checkboxgroup": {
       const selectCheckBox =
-        (label: string, value: string): IO.IO<void> =>
-        () => {
+        (label: string, value: string): T.Task<void> =>
+        async () => {
           const checkbox = getByLabelText(container, label) as HTMLInputElement;
-          pipe(
+          await pipe(
             value,
             E.fromPredicate<string, string>(
               (v) => ["true", "false"].includes(v),
@@ -518,34 +520,42 @@ export const updateControlValue = (
                 () => "CheckBox status does not match the new value"
               )
             ),
-            E.fold<string, boolean, void>(console.error, () =>
-              userEvent.click(checkbox)
+            E.fold<string, boolean, Promise<void>>(
+              (error) => {
+                console.error(error);
+                return Promise.resolve();
+              },
+              async () => {
+                await userEvent.click(checkbox);
+              }
             )
           );
         };
 
-      traverseUpdates(selectCheckBox)();
+      await traverseUpdates(selectCheckBox)();
       break;
     }
     case "radiogroup":
       // Radiogroup should have only one label provided.
-      userEvent.click(getByLabelText(container, labels[0]));
+      await userEvent.click(getByLabelText(container, labels[0]));
       break;
     case "html":
       break; // Nothing really needs to be done.
     case "listbox":
-      pipe(inputFieldDetails(), ({ label, value }) =>
-        selectOption(container, `#${label}-select`, value)
+      await pipe(
+        inputFieldDetails(),
+        async ({ label, value }) =>
+          await selectOption(container, `#${label}-select`, value)
       );
       break;
     case "calendar": {
       const calendar = getWizardControlByTitle(container, labels[0]);
       const pickDate =
-        ([value, label]: [string, string]): IO.IO<void> =>
-        () =>
-          pipe(getByLabelText(calendar, label), (input) => {
-            userEvent.clear(input);
-            userEvent.type(input, value);
+        ([value, label]: [string, string]): T.Task<void> =>
+        async () =>
+          await pipe(getByLabelText(calendar, label), async (input) => {
+            await userEvent.clear(input);
+            await userEvent.type(input, value);
           });
 
       const datePickerLabels: string[] = [
@@ -553,7 +563,7 @@ export const updateControlValue = (
         languageStrings.dateRangeSelector.defaultEndDatePickerLabel,
       ];
 
-      pipe(
+      await pipe(
         values,
         E.fromPredicate(
           A.isNonEmpty,
@@ -575,27 +585,28 @@ export const updateControlValue = (
           (vs) => vs
         ),
         A.zip<string>(datePickerLabels),
-        A.traverse(IO.Applicative)(pickDate)
+        A.traverse(T.ApplicativeSeq)(pickDate)
       )();
 
       break;
     }
     case "shufflebox":
-      pipe(
+      await pipe(
         getWizardControlByTitle(container, labels[0]),
         selectShuffleBoxOption,
         updateShuffleValues
       )();
       break;
     case "shufflelist":
-      pipe(
+      await pipe(
         getWizardControlByTitle(container, labels[0]),
         (shuffleList) =>
           getByLabelText(shuffleList, shuffleListStrings.newEntry),
         (newEntryField) =>
-          (value: string): IO.IO<void> =>
-          () =>
-            userEvent.type(newEntryField, value + "{enter}"),
+          (value: string): T.Task<void> =>
+          async () => {
+            await userEvent.type(newEntryField, value + "{enter}");
+          },
         updateShuffleValues
       )();
       break;
