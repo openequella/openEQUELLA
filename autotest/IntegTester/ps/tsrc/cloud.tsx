@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as ReactDOM from "react-dom";
 import * as React from "react";
 import axios from "axios";
 import "babel-polyfill";
@@ -30,7 +31,6 @@ import {
 } from "@material-ui/core";
 import { ThemeProvider } from "@material-ui/core/styles";
 import { ProviderRegistrationResponse } from "oeq-cloudproviders/registration";
-import { createRoot } from "react-dom/client";
 import { createRegistration } from "./registration";
 import { theme, useStyles } from "./theme";
 
@@ -170,17 +170,12 @@ function CloudProvider({ query }: CloudProviderProps) {
   );
 }
 
-const rootElement = document.getElementById("app");
-if (rootElement) {
-  const root = createRoot(rootElement);
-  root.render(
-    <>
-      <CssBaseline />
-      <ThemeProvider theme={theme}>
-        <CloudProvider query={parse(window.location.search)} />
-      </ThemeProvider>
-    </>
-  );
-} else {
-  throw new Error("Failed to find the root element");
-}
+ReactDOM.render(
+  <React.Fragment>
+    <CssBaseline />
+    <ThemeProvider theme={theme}>
+      <CloudProvider query={parse(window.location.search)} />
+    </ThemeProvider>
+  </React.Fragment>,
+  document.getElementById("app")
+);

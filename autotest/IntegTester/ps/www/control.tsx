@@ -1,32 +1,14 @@
-/*
- * Licensed to The Apereo Foundation under one or more contributor license
- * agreements. See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * The Apereo Foundation licenses this file to you under the Apache License,
- * Version 2.0, (the "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at:
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+import * as ReactDOM from "react-dom";
+import * as React from "react";
 import axios, { AxiosResponse } from "axios";
 
 import {
-  Attachment,
   ControlApi,
-  ControlValidator,
-  FileEntries,
+  Attachment,
   ItemState,
+  FileEntries,
+  ControlValidator,
 } from "oeq-cloudproviders/controls";
-import * as React from "react";
-import { useCallback } from "react";
-import { createRoot } from "react-dom/client";
 
 interface MyConfig {
   somethingElse: string[];
@@ -48,23 +30,22 @@ function TestControl(p: ControlApi<MyConfig>) {
   const myConfig = p.config;
   const rootNode = myConfig.somethingElse[0];
   const attachXPath = "/xml" + rootNode + "/one//uuid";
-  const myAttachments = useCallback(
-    (xml: XMLDocument, all: Attachment[]): Attachment[] => {
-      var uuids = textValues(
-        xml.evaluate(
-          attachXPath,
-          xml.documentElement,
-          null,
-          XPathResult.ORDERED_NODE_ITERATOR_TYPE,
-          null
-        )
-      );
-
-      return all.filter((a) => uuids.indexOf(a.uuid) !== -1);
-    },
-    [attachXPath]
-  );
-
+  const myAttachments = function (
+    xml: XMLDocument,
+    all: Attachment[]
+  ): Attachment[] {
+    var uuids = textValues(
+      xml.evaluate(
+        attachXPath,
+        xml.documentElement,
+        null,
+        XPathResult.ORDERED_NODE_ITERATOR_TYPE,
+        null
+      )
+    );
+    const filtered = all.filter((a) => uuids.indexOf(a.uuid) != -1);
+    return filtered;
+  };
   const [failValidation, setFailValidation] = React.useState(false);
   const [required, setRequired] = React.useState(false);
   const [files, setFiles] = React.useState(p.files);
@@ -82,7 +63,7 @@ function TestControl(p: ControlApi<MyConfig>) {
   const [serviceResponse, setServiceResponse] = React.useState<
     string | JSON | null
   >(null);
-  const [postRequest] = React.useState(true);
+  const [postRequest, setPostRequest] = React.useState(true);
   const [indexText, setIndexText] = React.useState("");
   const [indexFiles, setIndexFiles] = React.useState<string[]>([]);
   React.useEffect(() => {
@@ -96,7 +77,7 @@ function TestControl(p: ControlApi<MyConfig>) {
     return () => {
       p.unsubscribeUpdates(updateHandler);
     };
-  }, [myAttachments, p]);
+  }, []);
 
   const validator: ControlValidator = React.useCallback(
     (editXml, setRequired) => {
@@ -116,18 +97,17 @@ function TestControl(p: ControlApi<MyConfig>) {
     buttonName: string;
     onClick: () => Promise<AxiosResponse<any>>;
   }
-  const TestingButton = (props: TestingButtonProps) => (
+  const TestingButton = (TestingButtonProps) => (
     <button
       onClick={() => {
-        props
-          .onClick()
+        TestingButtonProps.onClick()
           .then((resp) => setServiceResponse(resp.data))
           .catch((err: Error) => {
             setServiceResponse(err.message);
           });
       }}
     >
-      {props.buttonName}
+      {TestingButtonProps.buttonName}
     </button>
   );
 
@@ -138,7 +118,7 @@ function TestControl(p: ControlApi<MyConfig>) {
   React.useEffect(() => {
     p.registerValidator(validator);
     return () => p.deregisterValidator(validator);
-  }, [validator, p]);
+  }, [validator]);
 
   function writeDir(parentPath: string, entries: FileEntries) {
     return Object.keys(entries).map(function (filename) {
@@ -359,11 +339,9 @@ CloudControl.register<MyConfig>(
   "oeq_autotest",
   "testcontrol",
   function (params) {
-    const root = createRoot(params.element);
-    root.render(<TestControl {...params} />);
+    ReactDOM.render(<TestControl {...params} />, params.element);
   },
   function (elem) {
-    const root = createRoot(elem);
-    root.unmount();
+    ReactDOM.unmountComponentAtNode(elem);
   }
 );
