@@ -60,7 +60,7 @@ import {
 // This has some big tests for rendering the Search Page, but also going through and testing
 // all components as one big wizard - e.g.:
 // "stores values in state when search is clicked, and then re-uses them when the wizard is re-rendered"
-jest.setTimeout(20000);
+jest.setTimeout(25000);
 
 const {
   showAdvancedSearchFilter: filterButtonLabel,
