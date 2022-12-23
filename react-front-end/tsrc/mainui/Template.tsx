@@ -15,32 +15,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import AccountIcon from "@mui/icons-material/AccountCircle";
+import BackIcon from "@mui/icons-material/ArrowBack";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import HelpIcon from "@mui/icons-material/Help";
+import MenuIcon from "@mui/icons-material/Menu";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 import {
   AppBar,
   Badge,
   CssBaseline,
   Drawer,
-  Hidden,
+  GlobalStyles,
   IconButton,
   Menu,
   MenuItem,
   Toolbar,
   Tooltip,
   Typography,
-  useTheme,
-} from "@material-ui/core";
-import { makeStyles, Theme } from "@material-ui/core/styles";
-import AccountIcon from "@material-ui/icons/AccountCircle";
-import BackIcon from "@material-ui/icons/ArrowBack";
-import AssignmentIcon from "@material-ui/icons/Assignment";
-import HelpIcon from "@material-ui/icons/Help";
-import MenuIcon from "@material-ui/icons/Menu";
-import NotificationsIcon from "@material-ui/icons/Notifications";
+  useMediaQuery,
+} from "@mui/material";
+import type { Theme } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import clsx, { ClassValue } from "clsx";
 import { LocationDescriptor } from "history";
 import { isEqual } from "lodash";
-import { useContext } from "react";
 import * as React from "react";
+import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { ErrorResponse } from "../api/errors";
 import { TooltipIconButton } from "../components/TooltipIconButton";
@@ -49,6 +50,7 @@ import {
   isItemViewedFromIntegration,
   isSelectionSessionOpen,
 } from "../modules/LegacySelectionSessionModule";
+import { getOeqTheme } from "../modules/ThemeModule";
 import { guestUser } from "../modules/UserModule";
 import { languageStrings } from "../util/langstrings";
 import { AppContext } from "./App";
@@ -58,6 +60,7 @@ import ScreenOptions from "./ScreenOptions";
 
 export type MenuMode = "HIDDEN" | "COLLAPSED" | "FULL";
 export type FullscreenMode = "YES" | "YES_WITH_TOOLBAR" | "NO";
+
 export interface TemplateProps {
   title: String;
   /* Fix the height of the main content, otherwise use min-height */
@@ -165,129 +168,6 @@ const topBarString = coreStrings.topbar.link;
 
 declare const logoURL: string;
 
-interface ExtTheme {
-  menu: {
-    background: string;
-    text: string;
-    icon: string;
-  };
-}
-
-export const useStyles = makeStyles((theme: Theme) => {
-  const menuColors = (theme.palette as unknown as ExtTheme).menu;
-  const desktop = theme.breakpoints.up("md");
-  const drawerWidth = 240;
-  const tabHeight = 48;
-  return {
-    "@global": {
-      "a, p": {
-        //handle long strings without breaking the layout
-        overflowWrap: "anywhere",
-      },
-      button: {
-        //button text should not overflow mid word
-        overflowWrap: "break-word",
-      },
-      a: {
-        textDecoration: "none",
-        color: theme.palette.primary.main,
-      },
-    },
-    templateRoot: {
-      width: "100%",
-      zIndex: 1,
-    },
-    appFrame: {
-      position: "relative",
-    },
-    appBar: {
-      marginLeft: drawerWidth,
-      [desktop]: {
-        width: `calc(100% - ${drawerWidth}px)`,
-      },
-    },
-    navIconHide: {
-      [desktop]: {
-        display: "none",
-      },
-    },
-    content: {
-      display: "flex",
-      flexDirection: "column",
-      [desktop]: {
-        marginLeft: drawerWidth,
-      },
-    },
-    contentArea: {
-      flexGrow: 1,
-      flexBasis: 0,
-      minHeight: 0,
-      padding: theme.spacing(2),
-    },
-    toolbar: theme.mixins.toolbar,
-    tabs: {
-      height: tabHeight,
-    },
-    contentMinHeight: {
-      minHeight: "100vh",
-    },
-    contentFixedHeight: {
-      height: "100vh",
-    },
-    titleArea: {
-      flexGrow: 1,
-      display: "flex",
-      alignItems: "center",
-      overflow: "hidden",
-    },
-    titlePadding: {
-      [desktop]: {
-        marginLeft: theme.spacing(4),
-      },
-      marginLeft: theme.spacing(1),
-    },
-    titleDense: {
-      marginLeft: theme.spacing(1),
-    },
-    title: {
-      overflow: "hidden",
-      whiteSpace: "nowrap",
-      textOverflow: "ellipsis",
-    },
-    footer: {
-      position: "fixed",
-      right: 0,
-      bottom: 0,
-      zIndex: 1000,
-      width: "100%",
-      [desktop]: {
-        width: `calc(100% - ${drawerWidth}px)`,
-      },
-    },
-    userMenu: {
-      flexShrink: 0,
-    },
-    logo: {
-      textAlign: "center",
-      marginTop: theme.spacing(2),
-    },
-    drawerPaper: {
-      [desktop]: {
-        position: "fixed",
-      },
-      width: drawerWidth,
-      zIndex: 1100,
-      background: menuColors.background,
-    },
-    menuItem: {
-      color: menuColors.text,
-    },
-    menuIcon: {
-      color: menuColors.icon,
-    },
-  };
-});
-
 interface useFullscreenProps {
   fullscreenMode?: FullscreenMode;
   hideAppBar?: boolean;
@@ -306,6 +186,121 @@ function useFullscreen({ fullscreenMode, hideAppBar }: useFullscreenProps) {
   })();
   return hideAppBar || modeIsFullscreen;
 }
+
+const classesPrefix = "Template";
+const classes = {
+  appBar: `${classesPrefix}-appBar`,
+  appFrame: `${classesPrefix}-appFrame`,
+  content: `${classesPrefix}-content`,
+  contentArea: `${classesPrefix}-contentArea`,
+  contentFixedHeight: `${classesPrefix}-contentFixedHeight`,
+  contentMinHeight: `${classesPrefix}-contentMinHeight`,
+  drawerPaper: `${classesPrefix}-drawerPaper`,
+  footer: `${classesPrefix}-footer`,
+  logo: `${classesPrefix}-logo`,
+  navIconHide: `${classesPrefix}-navIconHide`,
+  tabs: `${classesPrefix}-tabs`,
+  title: `${classesPrefix}-title`,
+  titleArea: `${classesPrefix}-titleArea`,
+  titleDense: `${classesPrefix}-titleDense`,
+  titlePadding: `${classesPrefix}-titlePadding`,
+  toolbar: `${classesPrefix}-toolbar`,
+  userMenu: `${classesPrefix}-userMenu`,
+};
+
+const TemplateRoot = styled("div")(({ theme }) => {
+  const menuColors = getOeqTheme().menu;
+  const desktop = theme.breakpoints.up("md");
+  const drawerWidth = 240;
+  const tabHeight = 48;
+
+  return {
+    width: "100%",
+    zIndex: 1,
+    [`& .${classes.appBar}`]: {
+      marginLeft: drawerWidth,
+      [desktop]: {
+        width: `calc(100% - ${drawerWidth}px)`,
+      },
+    },
+    [`& .${classes.appFrame}`]: {
+      position: "relative",
+    },
+    [`& .${classes.content}`]: {
+      display: "flex",
+      flexDirection: "column",
+      [desktop]: {
+        marginLeft: drawerWidth,
+      },
+    },
+    [`& .${classes.contentArea}`]: {
+      flexGrow: 1,
+      flexBasis: 0,
+      minHeight: 0,
+      padding: theme.spacing(2),
+    },
+    [`& .${classes.contentFixedHeight}`]: {
+      height: "100vh",
+    },
+    [`& .${classes.contentMinHeight}`]: {
+      minHeight: "100vh",
+    },
+    [`& .${classes.drawerPaper}`]: {
+      [desktop]: {
+        position: "fixed",
+      },
+      width: drawerWidth,
+      zIndex: 1100,
+      background: menuColors.background,
+    },
+    [`& .${classes.footer}`]: {
+      position: "fixed",
+      right: 0,
+      bottom: 0,
+      zIndex: 1000,
+      width: "100%",
+      [desktop]: {
+        width: `calc(100% - ${drawerWidth}px)`,
+      },
+    },
+    [`& .${classes.logo}`]: {
+      textAlign: "center",
+      marginTop: theme.spacing(2),
+    },
+    [`& .${classes.navIconHide}`]: {
+      [desktop]: {
+        display: "none",
+      },
+    },
+    [`& .${classes.tabs}`]: {
+      height: tabHeight,
+    },
+    [`& .${classes.title}`]: {
+      overflow: "hidden",
+      whiteSpace: "nowrap",
+      textOverflow: "ellipsis",
+    },
+    [`& .${classes.titleArea}`]: {
+      flexGrow: 1,
+      display: "flex",
+      alignItems: "center",
+      overflow: "hidden",
+    },
+    [`& .${classes.titleDense}`]: {
+      marginLeft: theme.spacing(1),
+    },
+    [`& .${classes.titlePadding}`]: {
+      [desktop]: {
+        marginLeft: theme.spacing(4),
+      },
+      marginLeft: theme.spacing(1),
+    },
+    [`& .${classes.toolbar}`]: theme.mixins.toolbar,
+    [`& .${classes.userMenu}`]: {
+      flexShrink: 0,
+    },
+  };
+});
 
 export const Template = ({
   backRoute,
@@ -329,7 +324,8 @@ export const Template = ({
   // Record what customised meta tags have been added into <head>
   const [googleMetaTags, setGoogleMetaTags] = React.useState<Array<string>>([]);
 
-  const classes = useStyles(useTheme());
+  const theme = getOeqTheme();
+  const isMdUp = useMediaQuery<Theme>((theme) => theme.breakpoints.up("md"));
 
   React.useEffect(() => {
     const classList = window.document.getElementsByTagName("html")[0].classList;
@@ -412,7 +408,7 @@ export const Template = ({
     return (
       <Tooltip title={title}>
         <Link to={uri}>
-          <IconButton aria-label={title}>
+          <IconButton aria-label={title} size="large">
             {count === 0 ? (
               icon
             ) : (
@@ -440,7 +436,7 @@ export const Template = ({
         )}
       </div>
     ),
-    [classes.logo, currentUser, hasMenu]
+    [currentUser, hasMenu]
   );
 
   const itemCounts = currentUser.counts
@@ -452,7 +448,7 @@ export const Template = ({
       <div className={classes.titleArea}>
         {backRoute && (
           <Link to={backRoute}>
-            <IconButton>
+            <IconButton size="large">
               <BackIcon />
             </IconButton>
           </Link>
@@ -477,26 +473,30 @@ export const Template = ({
         {menuExtra}
         {!disableNotifications && !currentUser.guest && (
           <>
-            <Hidden smDown>
-              <TooltipIconButton
-                title={strings.menu.help}
-                onClick={() => window.open("https://docs.edalex.com", "_blank")}
-              >
-                <HelpIcon />
-              </TooltipIconButton>
-              {badgedLink(
-                <AssignmentIcon />,
-                itemCounts.tasks,
-                legacyPageUrl(routes.TaskList.to),
-                topBarString.tasks
-              )}
-              {badgedLink(
-                <NotificationsIcon />,
-                itemCounts.notifications,
-                legacyPageUrl(routes.Notifications.to),
-                topBarString.notifications
-              )}
-            </Hidden>
+            {isMdUp && (
+              <>
+                <TooltipIconButton
+                  title={strings.menu.help}
+                  onClick={() =>
+                    window.open("https://docs.edalex.com", "_blank")
+                  }
+                >
+                  <HelpIcon />
+                </TooltipIconButton>
+                {badgedLink(
+                  <AssignmentIcon />,
+                  itemCounts.tasks,
+                  legacyPageUrl(routes.TaskList.to),
+                  topBarString.tasks
+                )}
+                {badgedLink(
+                  <NotificationsIcon />,
+                  itemCounts.notifications,
+                  legacyPageUrl(routes.Notifications.to),
+                  topBarString.notifications
+                )}
+              </>
+            )}
             <TooltipIconButton
               title={
                 currentUser
@@ -542,6 +542,7 @@ export const Template = ({
           <IconButton
             className={classes.navIconHide}
             onClick={() => setNavMenuOpen(!navMenuOpen)}
+            size="large"
           >
             <MenuIcon />
           </IconButton>
@@ -553,30 +554,27 @@ export const Template = ({
     </AppBar>
   );
 
-  const layoutDrawer = !fullScreen && (
-    <>
-      <Hidden mdUp>
-        <Drawer
-          variant="temporary"
-          anchor="left"
-          open={navMenuOpen}
-          onClose={(_) => setNavMenuOpen(false)}
-        >
-          {menuContent}
-        </Drawer>
-      </Hidden>
-      <Hidden smDown implementation="css">
-        <Drawer
-          variant="permanent"
-          anchor="left"
-          open
-          classes={{ paper: classes.drawerPaper }}
-        >
-          {menuContent}
-        </Drawer>
-      </Hidden>
-    </>
-  );
+  const layoutDrawer =
+    !fullScreen &&
+    (isMdUp ? (
+      <Drawer
+        variant="permanent"
+        anchor="left"
+        open
+        classes={{ paper: classes.drawerPaper }}
+      >
+        {menuContent}
+      </Drawer>
+    ) : (
+      <Drawer
+        variant="temporary"
+        anchor="left"
+        open={navMenuOpen}
+        onClose={(_) => setNavMenuOpen(false)}
+      >
+        {menuContent}
+      </Drawer>
+    ));
 
   const layoutToolbarAndTabs = !fullScreen && (
     <>
@@ -624,7 +622,23 @@ export const Template = ({
   return (
     <>
       <CssBaseline />
-      <div className={classes.templateRoot}>{layout}</div>
+      <GlobalStyles
+        styles={{
+          "a, p": {
+            // handle long strings without breaking the layout
+            overflowWrap: "anywhere",
+          },
+          button: {
+            // button text should not overflow mid-word
+            overflowWrap: "break-word",
+          },
+          a: {
+            textDecoration: "none",
+            color: theme.palette.primary.main,
+          },
+        }}
+      />
+      <TemplateRoot>{layout}</TemplateRoot>
     </>
   );
 };

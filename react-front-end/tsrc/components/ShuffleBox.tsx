@@ -15,16 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Badge, Grid, Paper } from "@material-ui/core";
-import {
-  createStyles,
-  makeStyles,
-  Theme,
-  withStyles,
-} from "@material-ui/core/styles";
-import AllInclusiveIcon from "@material-ui/icons/AllInclusive";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import { Badge, Grid, Paper } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as SET from "fp-ts/Set";
@@ -38,29 +33,30 @@ import { TooltipIconButton } from "./TooltipIconButton";
 
 const strings = languageStrings.shuffleBox;
 
-const useStyles = makeStyles({
-  checkboxListPaper: {
+const PREFIX = "ShuffleBox";
+const classes = {
+  checkboxListPaper: `${PREFIX}-checkboxListPaper`,
+};
+
+const StyledGrid = styled(Grid)({
+  [`& .${classes.checkboxListPaper}`]: {
     height: 250,
     overflow: "auto",
   },
 });
 
-const RightSideBadge = withStyles((_: Theme) =>
-  createStyles({
-    badge: {
-      top: 17,
-    },
-  })
-)(Badge);
+const RightSideBadge = styled(Badge)({
+  "& .MuiBadge-badge": {
+    top: 17,
+  },
+});
 
-const LeftSideBadge = withStyles((_: Theme) =>
-  createStyles({
-    badge: {
-      right: 35,
-      top: 17,
-    },
-  })
-)(Badge);
+const LeftSideBadge = styled(Badge)({
+  "& .MuiBadge-badge": {
+    right: 35,
+    top: 17,
+  },
+});
 
 const AddAllIcon = (): JSX.Element => (
   <LeftSideBadge badgeContent={<AllInclusiveIcon fontSize="small" />}>
@@ -101,8 +97,6 @@ export const ShuffleBox = ({
   onSelect,
   values,
 }: ShuffleBoxProps): JSX.Element => {
-  const classes = useStyles();
-
   const [checkedChoices, setCheckedChoices] = useState<Set<string>>(SET.empty);
   const [checkedSelections, setCheckedSelections] = useState<Set<string>>(
     SET.empty
@@ -160,7 +154,7 @@ export const ShuffleBox = ({
   ];
 
   return (
-    <Grid id={id} container spacing={2}>
+    <StyledGrid id={id} container spacing={2}>
       <Grid item xs>
         <Paper
           className={classes.checkboxListPaper}
@@ -202,6 +196,6 @@ export const ShuffleBox = ({
           />
         </Paper>
       </Grid>
-    </Grid>
+    </StyledGrid>
   );
 };

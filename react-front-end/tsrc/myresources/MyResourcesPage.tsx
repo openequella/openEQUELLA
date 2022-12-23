@@ -15,10 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ListItemIcon, ListItemText, Menu, MenuItem } from "@material-ui/core";
-import AddIcon from "@material-ui/icons/Add";
-import CloudUploadIcon from "@material-ui/icons/CloudUpload";
-import PagesIcon from "@material-ui/icons/Pages";
+import { ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import PagesIcon from "@mui/icons-material/Pages";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";

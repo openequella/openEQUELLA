@@ -26,11 +26,11 @@ import {
   TextField,
   Tooltip,
   Typography,
-} from "@material-ui/core";
-import AccountCircle from "@material-ui/icons/AccountCircle";
-import ErrorOutline from "@material-ui/icons/ErrorOutline";
-import InfoIcon from "@material-ui/icons/Info";
-import SearchIcon from "@material-ui/icons/Search";
+} from "@mui/material";
+import AccountCircle from "@mui/icons-material/AccountCircle";
+import ErrorOutline from "@mui/icons-material/ErrorOutline";
+import InfoIcon from "@mui/icons-material/Info";
+import SearchIcon from "@mui/icons-material/Search";
 import * as OEQ from "@openequella/rest-api-client";
 import { flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
@@ -174,7 +174,7 @@ const UserSearch = ({
   const queryBar = (
     <Grid id={genId("QueryBar")} container spacing={1}>
       <Grid item>
-        <IconButton onClick={handleOnSearch}>
+        <IconButton onClick={handleOnSearch} size="large">
           <SearchIcon />
         </IconButton>
       </Grid>
@@ -188,6 +188,7 @@ const UserSearch = ({
           }}
           onKeyDown={handleQueryFieldKeypress}
           fullWidth
+          variant="standard"
         />
       </Grid>
     </Grid>

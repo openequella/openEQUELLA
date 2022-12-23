@@ -16,16 +16,15 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { IconButton, makeStyles, Popover } from "@material-ui/core";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
+import { styled } from "@mui/material/styles";
+import { IconButton, Popover } from "@mui/material";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import JQueryDiv from "../legacycontent/JQueryDiv";
 import { languageStrings } from "../util/langstrings";
 
-const useStyles = makeStyles((t) => ({
-  screenOptions: {
-    margin: 20,
-  },
-}));
+const StyledJQueryDiv = styled(JQueryDiv)({
+  margin: 20,
+});
 
 interface ScreenOptionsProps {
   optionsHtml: string;
@@ -36,13 +35,14 @@ export default React.memo(function ScreenOptions({
   optionsHtml,
 }: ScreenOptionsProps) {
   const [optionsAnchor, setOptionsAnchor] = React.useState<HTMLElement>();
-  const classes = useStyles();
+
   return (
     <>
       <IconButton
         id="screenOptionsOpen"
         onClick={(e) => setOptionsAnchor(e.currentTarget)}
         aria-label={languageStrings.screenoptions.description}
+        size="large"
       >
         <MoreVertIcon />
       </IconButton>
@@ -55,11 +55,7 @@ export default React.memo(function ScreenOptions({
         anchorEl={optionsAnchor}
         onClose={(_) => setOptionsAnchor(undefined)}
       >
-        <JQueryDiv
-          id="screenOptions"
-          className={classes.screenOptions}
-          html={optionsHtml}
-        />
+        <StyledJQueryDiv id="screenOptions" html={optionsHtml} />
       </Popover>
     </>
   );

@@ -15,9 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Button, Grid, PropTypes } from "@material-ui/core";
+import { Button, Grid } from "@mui/material";
 import { ReactElement } from "react";
 import * as React from "react";
+import { ButtonProps } from "@mui/material";
 
 export interface LabelledIconButtonProps {
   /**
@@ -31,7 +32,7 @@ export interface LabelledIconButtonProps {
   /**
    * Color to be used
    */
-  color?: PropTypes.Color;
+  color?: ButtonProps["color"];
   /**
    * The button's ID
    */

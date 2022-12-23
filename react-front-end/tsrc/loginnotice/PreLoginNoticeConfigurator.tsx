@@ -15,8 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import { ChangeEvent } from "react";
 import {
   Card,
   CardContent,
@@ -25,8 +23,17 @@ import {
   Grid,
   Radio,
   RadioGroup,
+  TextField,
   Typography,
-} from "@material-ui/core";
+} from "@mui/material";
+import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AxiosError, AxiosResponse } from "axios";
+import { DateTime } from "luxon";
+import * as React from "react";
+import { ChangeEvent } from "react";
+import SettingsListHeading from "../components/SettingsListHeading";
 import {
   clearPreLoginNotice,
   getPreLoginNotice,
@@ -37,11 +44,6 @@ import {
   unMarshallPreLoginNotice,
   uploadPreLoginNoticeImage,
 } from "../modules/LoginNoticeModule";
-import { AxiosError, AxiosResponse } from "axios";
-import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import SettingsListHeading from "../components/SettingsListHeading";
-import LuxonUtils from "@date-io/luxon";
-import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
 
 const RichTextEditor = React.lazy(() => import("../components/RichTextEditor"));
 
@@ -123,7 +125,48 @@ class PreLoginNoticeConfigurator extends React.Component<
     return this.state.current.endDate.getTime() > new Date().getTime();
   };
 
+  handleStartDateChange = (startDate: DateTime | null) => {
+    if (startDate) {
+      this.setState(
+        { current: { ...this.state.current, startDate: startDate.toJSDate() } },
+        () => this.setPreventNav()
+      );
+    }
+  };
+
+  handleEndDateChange = (endDate: DateTime | null) => {
+    if (endDate) {
+      this.setState(
+        {
+          current: {
+            ...this.state.current,
+            endDate: new Date(endDate.toJSDate()),
+          },
+        },
+        () => this.setPreventNav()
+      );
+    }
+  };
+
+  handleScheduleTypeSelectionChange = (
+    event: ChangeEvent<{}>,
+    value: string
+  ) => {
+    this.setState(
+      {
+        current: {
+          ...this.state.current,
+          scheduleSettings:
+            ScheduleTypeSelection[value as ScheduleTypeSelection],
+        },
+      },
+      () => this.setPreventNav()
+    );
+  };
+
   ScheduleSettings = () => {
+    const dateInputFormat = "d MMM yyyy - h:mm a";
+
     return (
       <FormControl>
         <Typography color="textSecondary" variant="subtitle1">
@@ -165,13 +208,15 @@ class PreLoginNoticeConfigurator extends React.Component<
           <Typography color="textSecondary" variant="subtitle1">
             {strings.scheduling.start}
           </Typography>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
             <DateTimePicker
-              id="startDatePicker"
-              okLabel={<span id="ok">OK</span>}
+              renderInput={(props) => (
+                <TextField id="startDatePicker" {...props} />
+              )}
               onChange={this.handleStartDateChange}
-              format="d MMM yyyy - h:mm a"
+              inputFormat={dateInputFormat}
               value={this.state.current.startDate}
+              showToolbar
             />
 
             <Typography color="textSecondary" variant="subtitle1">
@@ -179,53 +224,16 @@ class PreLoginNoticeConfigurator extends React.Component<
             </Typography>
 
             <DateTimePicker
-              id="endDatePicker"
+              renderInput={(props) => (
+                <TextField id="endDatePicker" {...props} />
+              )}
               onChange={this.handleEndDateChange}
-              format="d MMM yyyy - h:mm a"
+              inputFormat={dateInputFormat}
               value={this.state.current.endDate}
             />
-          </MuiPickersUtilsProvider>
+          </LocalizationProvider>
         </div>
       </FormControl>
-    );
-  };
-
-  handleStartDateChange = (startDate: MaterialUiPickersDate) => {
-    if (startDate) {
-      this.setState(
-        { current: { ...this.state.current, startDate: startDate.toJSDate() } },
-        () => this.setPreventNav()
-      );
-    }
-  };
-
-  handleEndDateChange = (endDate: MaterialUiPickersDate) => {
-    if (endDate) {
-      this.setState(
-        {
-          current: {
-            ...this.state.current,
-            endDate: new Date(endDate.toJSDate()),
-          },
-        },
-        () => this.setPreventNav()
-      );
-    }
-  };
-
-  handleScheduleTypeSelectionChange = (
-    event: ChangeEvent<{}>,
-    value: string
-  ) => {
-    this.setState(
-      {
-        current: {
-          ...this.state.current,
-          scheduleSettings:
-            ScheduleTypeSelection[value as ScheduleTypeSelection],
-        },
-      },
-      () => this.setPreventNav()
     );
   };
 

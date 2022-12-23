@@ -23,7 +23,7 @@ import {
   DialogContent,
   DialogTitle,
   Typography,
-} from "@material-ui/core";
+} from "@mui/material";
 import { commonString } from "../util/commonstrings";
 
 interface MessageDialogProps {

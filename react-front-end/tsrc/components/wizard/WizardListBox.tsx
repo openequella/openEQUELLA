@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FormControl, MenuItem, Select } from "@material-ui/core";
+import { FormControl, MenuItem, Select } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { languageStrings } from "../../util/langstrings";
@@ -76,7 +76,7 @@ export const WizardListBox = ({
           id={`${label}-select`}
           value={value ?? ""}
           variant="outlined"
-          onChange={({ target: { value } }) => onSelect(value as string)}
+          onChange={({ target: { value } }) => onSelect(value)}
           inputProps={{ id }}
           displayEmpty
         >

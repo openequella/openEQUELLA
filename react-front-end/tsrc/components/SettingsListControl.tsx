@@ -15,18 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  ListItem,
-  ListItemSecondaryAction,
-  ListItemText,
-} from "@material-ui/core";
+import { ListItem, ListItemSecondaryAction, ListItemText } from "@mui/material";
 import * as React from "react";
 import { ReactNode } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 
 export interface SettingsListControlProps {
   /**
-   * Whether or not there is a divider at the bottom of this control.
+   * Whether there is a divider at the bottom of this control.
    */
   divider?: boolean;
   /**
@@ -43,18 +38,6 @@ export interface SettingsListControlProps {
   control: ReactNode;
 }
 
-const useStyles = makeStyles({
-  listItemText: {
-    maxWidth: "40%",
-    minHeight: "38px",
-  },
-  secondaryAction: {
-    width: "55%",
-    display: "flex",
-    justifyContent: "flex-end",
-  },
-});
-
 /**
  * This component is used to define a row inside a SettingsList to be used in the page/settings/* pages.
  * It should be placed within a SettingsList.
@@ -65,15 +48,23 @@ export default function SettingsListControl({
   secondaryText,
   control,
 }: SettingsListControlProps) {
-  const classes = useStyles();
   return (
     <ListItem alignItems="flex-start" divider={divider}>
       <ListItemText
-        className={classes.listItemText}
         primary={primaryText}
         secondary={secondaryText}
+        sx={{
+          maxWidth: "40%",
+          minHeight: "38px",
+        }}
       />
-      <ListItemSecondaryAction className={classes.secondaryAction}>
+      <ListItemSecondaryAction
+        sx={{
+          width: "55%",
+          display: "flex",
+          justifyContent: "flex-end",
+        }}
+      >
         {control}
       </ListItemSecondaryAction>
     </ListItem>

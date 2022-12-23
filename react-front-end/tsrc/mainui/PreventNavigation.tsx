@@ -24,7 +24,7 @@ import {
   DialogContentText,
   Button,
   DialogActions,
-} from "@material-ui/core";
+} from "@mui/material";
 import { commonString } from "../util/commonstrings";
 
 export const strings = languageStrings.template;

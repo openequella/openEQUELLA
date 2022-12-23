@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CircularProgress, Grid } from "@material-ui/core";
+import { CircularProgress, Grid } from "@mui/material";
 import Axios from "axios";
 import { pipe } from "fp-ts/function";
 import { isEqual } from "lodash";

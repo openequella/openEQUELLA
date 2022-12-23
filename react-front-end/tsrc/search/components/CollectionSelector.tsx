@@ -15,10 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Checkbox, TextField } from "@material-ui/core";
-import CheckBoxIcon from "@material-ui/icons/CheckBox";
-import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
-import { Autocomplete, AutocompleteGetTagProps } from "@material-ui/lab";
+import { Checkbox, TextField } from "@mui/material";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import { Autocomplete } from "@mui/material";
+import { AutocompleteGetTagProps } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useContext, useEffect, useState } from "react";
@@ -101,18 +102,18 @@ export const CollectionSelector = ({
       options={collections}
       disableCloseOnSelect
       getOptionLabel={(collection) => collection.name}
-      getOptionSelected={(collection, selected) =>
+      isOptionEqualToValue={(collection, selected) =>
         selected.uuid === collection.uuid
       }
-      renderOption={(collection, { selected }) => (
-        <>
+      renderOption={(props, collection, { selected }) => (
+        <li {...props}>
           <Checkbox
             icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
             checkedIcon={<CheckBoxIcon fontSize="small" />}
             checked={selected}
           />
           {collection.name}
-        </>
+        </li>
       )}
       noOptionsText={noOptions}
       renderInput={(params) => (

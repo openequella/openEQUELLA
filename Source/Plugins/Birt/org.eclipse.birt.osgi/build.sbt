@@ -13,8 +13,8 @@ libraryDependencies := Seq(
   "org.apache.commons"           % "com.springsource.org.apache.commons.httpclient" % "3.1.0",
   "org.apache.commons"           % "com.springsource.org.apache.commons.logging"    % "1.1.1",
   "org.apache.commons"           % "com.springsource.org.apache.commons.codec"      % "1.6.0",
-  "com.thoughtworks.xstream"     % "com.springsource.com.thoughtworks.xstream"      % "1.4.1",
-  "javax.xml.stream"             % "com.springsource.javax.xml.stream"              % "1.0.1"
+  xstreamDep,
+  "javax.xml.stream" % "com.springsource.javax.xml.stream" % "1.0.1"
 ).map(_ % BirtOsgi)
 
 resolvers += Resolver.url("my-test-repo",

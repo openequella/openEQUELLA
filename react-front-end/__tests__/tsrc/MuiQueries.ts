@@ -27,8 +27,8 @@ export const queryMuiButtonByText = (container: HTMLElement, text: string) =>
   queryByText(
     container,
     (content: string, element: Element | null | undefined) =>
-      content === text && (element?.parentElement?.matches("button") ?? false)
-  )?.parentElement ?? null;
+      content === text && (element?.matches("button") ?? false)
+  ) ?? null;
 
 /**
  * Similar to queryMuiButtonByText, but throws an error if the MUI Button is not found.
@@ -51,7 +51,9 @@ export const getMuiButtonByText = (container: HTMLElement, text: string) => {
  * @param labelText The text describing the TextField.
  */
 export const queryMuiTextField = (container: HTMLElement, labelText: string) =>
-  queryByText(container, labelText)?.parentElement?.querySelector("input");
+  queryByText(container, labelText, {
+    selector: "label",
+  })?.parentElement?.querySelector("input");
 
 /**
  * Similar to queryMuiTextField, but throws an error if the MUI TextField is not found.

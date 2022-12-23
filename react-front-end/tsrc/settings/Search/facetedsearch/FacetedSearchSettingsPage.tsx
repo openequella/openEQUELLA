@@ -24,12 +24,12 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  makeStyles,
   Typography,
-} from "@material-ui/core";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
-import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import * as React from "react";
 import { ReactElement, useContext, useEffect, useState } from "react";
 import {
@@ -66,11 +66,9 @@ import { addElement, replaceElement } from "../../../util/ImmutableArrayUtil";
 import { languageStrings } from "../../../util/langstrings";
 import FacetDialog from "./FacetDialog";
 
-const useStyles = makeStyles({
-  cardAction: {
-    display: "flex",
-    justifyContent: "flex-end",
-  },
+const StyledCardActions = styled(CardActions)({
+  display: "flex",
+  justifyContent: "flex-end",
 });
 
 /**
@@ -79,7 +77,6 @@ const useStyles = makeStyles({
 const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const facetedsearchsettingStrings =
     languageStrings.settings.searching.facetedsearchsetting;
-  const classes = useStyles();
 
   const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
   const [showResultDialog, setShowResultDialog] = useState<boolean>(false);
@@ -292,7 +289,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
           </Typography>
           {facetList}
         </CardContent>
-        <CardActions className={classes.cardAction}>
+        <StyledCardActions>
           <IconButton
             onClick={() => {
               setCurrentFacet(undefined);
@@ -300,10 +297,11 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
             }}
             aria-label={facetedsearchsettingStrings.add}
             color="primary"
+            size="large"
           >
             <AddCircleIcon fontSize="large" />
           </IconButton>
-        </CardActions>
+        </StyledCardActions>
       </Card>
 
       <FacetDialog

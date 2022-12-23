@@ -16,23 +16,30 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { TreeItem, TreeView } from "@material-ui/lab";
-import Add from "@material-ui/icons/Add";
-import Remove from "@material-ui/icons/Remove";
+import { styled } from "@mui/material/styles";
+import { TreeItem, TreeView } from "@mui/lab";
+import Add from "@mui/icons-material/Add";
+import Remove from "@mui/icons-material/Remove";
 import { getAllPaths, pathForNode, SchemaNode } from "../modules/SchemaModule";
-import { Button, Grid } from "@material-ui/core";
-import { makeStyles, Theme } from "@material-ui/core/styles";
+import { Button, Grid } from "@mui/material";
 import { languageStrings } from "../util/langstrings";
 
-const useStyles = makeStyles((theme: Theme) => {
+const PREFIX = "SchemaNodeSelector";
+
+const classes = {
+  treeView: `${PREFIX}-treeView`,
+  button: `${PREFIX}-button`,
+};
+
+const Root = styled("div")(({ theme }) => {
   return {
-    treeView: {
+    [`& .${classes.treeView}`]: {
       flexGrow: 1,
       height: "30vh",
       overflowY: "auto",
       width: "100%",
     },
-    button: {
+    [`& .${classes.button}`]: {
       marginTop: theme.spacing(1),
       marginBottom: theme.spacing(1),
     },
@@ -85,7 +92,7 @@ export default function SchemaNodeSelector({
   const [selectedNode, setSelected] = React.useState("");
   const [expanded, setExpanded] = React.useState<string[]>([]);
   const [renderedTree, setRenderedTree] = React.useState<JSX.Element>(<div />);
-  const classes = useStyles();
+
   const strings =
     languageStrings.settings.searching.facetedsearchsetting.schemaSelector
       .nodeSelector;
@@ -99,7 +106,7 @@ export default function SchemaNodeSelector({
   }, [tree, setSelectedNode]);
 
   return (
-    <>
+    <Root>
       {expandControls && (
         <Grid container direction="row" wrap="nowrap" justifyContent="flex-end">
           <Grid item>
@@ -141,6 +148,6 @@ export default function SchemaNodeSelector({
       >
         {renderedTree}
       </TreeView>
-    </>
+    </Root>
   );
 }

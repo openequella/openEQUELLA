@@ -13,7 +13,7 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
   @FindBy(id = "searchBar")
   private WebElement searchBar;
 
-  @FindBy(xpath = "//button[span=('New search')]")
+  @FindBy(xpath = "//button[text()='New search']")
   private WebElement newSearchButton;
 
   @FindBy(id = "collapsibleRefinePanelButton")
@@ -137,9 +137,9 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
     WebElement quickOptionSwitch =
         dateRangeSelector.findElement(By.id("modified_date_selector_mode_switch"));
     quickOptionSwitch.click();
-    WebElement startTextField = dateRangeSelector.findElements(By.tagName("input")).get(0);
+    WebElement startTextField = dateRangeSelector.findElement(By.id("date-range-selector-start"));
     startTextField.sendKeys(start);
-    WebElement endTextField = dateRangeSelector.findElements(By.tagName("input")).get(1);
+    WebElement endTextField = dateRangeSelector.findElement(By.id("date-range-selector-end"));
     endTextField.sendKeys(end);
   }
 
@@ -177,7 +177,7 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
   public void selectOwner(String ownerName) {
     WebElement ownerSelector = getRefineControl("OwnerSelector");
     // Click the SELECT button to open the dialog.
-    WebElement selectButton = ownerSelector.findElement(By.xpath(".//button[span=('Select')]"));
+    WebElement selectButton = ownerSelector.findElement(By.xpath(".//button[text()='Select']"));
     selectButton.click();
     WebElement ownerSelectDialog =
         driver.findElement(By.xpath("//div[@id='UserSearch']/ancestor::div[@role='dialog']"));
@@ -199,7 +199,7 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
     owner.click();
     // Press SELECT to close the dialog. Note this is a different SELECT button.
     WebElement confirmButton =
-        ownerSelectDialog.findElement(By.xpath(".//button[span=('Select')]"));
+        ownerSelectDialog.findElement(By.xpath(".//button[text()='Select']"));
     confirmButton.click();
     // Wait until the dialog is closed.
     waiter.until(ExpectedConditions.invisibilityOfElementLocated(By.className("MuiDialog-root")));
@@ -285,7 +285,7 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
    * @param buttonText The text of a button.
    */
   private void selectFromButtonGroup(WebElement buttonGroup, String buttonText) {
-    WebElement button = buttonGroup.findElement(By.xpath(".//button[span=('" + buttonText + "')]"));
+    WebElement button = buttonGroup.findElement(By.xpath(".//button[text()='" + buttonText + "']"));
     button.click();
   }
 }

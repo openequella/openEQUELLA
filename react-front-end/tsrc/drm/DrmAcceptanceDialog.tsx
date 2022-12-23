@@ -20,7 +20,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-} from "@material-ui/core";
+} from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as E from "fp-ts/Either";
 import { flow, pipe } from "fp-ts/function";

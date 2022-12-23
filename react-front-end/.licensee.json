@@ -12,6 +12,9 @@
   },
   "ignore": [
     {
+      "prefix": "caniuse-lite"
+    },
+    {
       "prefix": "oeq-cloudproviders"
     },
     {

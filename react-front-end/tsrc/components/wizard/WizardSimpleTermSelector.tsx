@@ -23,9 +23,9 @@ import {
   ListItemSecondaryAction,
   ListItemText,
   TextField,
-} from "@material-ui/core";
-import DeleteIcon from "@material-ui/icons/Delete";
-import { Autocomplete } from "@material-ui/lab";
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { Autocomplete } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as E from "fp-ts/Either";
 import { flow, pipe } from "fp-ts/function";

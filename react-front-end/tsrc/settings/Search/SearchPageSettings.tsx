@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Card, CardContent } from "@material-ui/core";
+import { Card, CardContent } from "@mui/material";
 import { useCallback, useContext } from "react";
 import * as React from "react";
 import { shallowEqual } from "shallow-equal-object";

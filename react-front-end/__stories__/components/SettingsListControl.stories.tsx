@@ -15,25 +15,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
+import { Slider, SliderProps } from "@mui/material";
 import type { Meta, Story } from "@storybook/react";
+import * as React from "react";
 import SettingsListControl, {
   SettingsListControlProps,
 } from "../../tsrc/components/SettingsListControl";
 import SettingsToggleSwitch, {
   SettingsToggleSwitchProps,
 } from "../../tsrc/components/SettingsToggleSwitch";
-import { Mark, Slider, SliderProps } from "@material-ui/core";
 
 export default {
-  title: "SettingsListControl",
+  title: "Component/SettingsListControl",
   component: SettingsListControl,
   argTypes: {
     setValue: { action: "setValue" },
   },
 } as Meta<SettingsListControlProps>;
 
-const marks: Mark[] = [
+const marks: { label: string; value: number }[] = [
   { label: "Off", value: 0 },
   { label: "x0.25", value: 1 },
   { label: "x0.5", value: 2 },
