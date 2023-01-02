@@ -54,3 +54,16 @@ export const selectOperatorForNode = async (
   nodeId: string,
   operator: ACLOperatorType
 ) => selectOption(container, `#${nodeId}-select`, getOperatorLabel(operator));
+
+// Helper function to mock click the delete button for a gaven recipient (located by name) in the tree view.
+export const clickDeleteButtonForRecipient = async (
+  { findByText }: RenderResult,
+  name: string
+) => {
+  const deleteButton = (await findByText(name)).nextElementSibling;
+  if (!deleteButton) {
+    throw Error(`Can't find delete button for recipient with name: ${name}`);
+  }
+
+  userEvent.click(deleteButton);
+};
