@@ -30,9 +30,9 @@ export interface ACLTreeRecipientProps extends TreeItemProps {
    */
   expressionName: string;
   /**
-   * Fired when the item is deleted.
+   * Fired when the recipient is deleted.
    */
-  onDelete: (nodeID: string) => void;
+  onDelete: () => void;
 }
 
 /**
@@ -53,9 +53,7 @@ export const ACLTreeRecipient = ({
       </Typography>
       <TooltipIconButton
         title={languageStrings.common.action.delete}
-        onClick={(_) => {
-          onDelete(nodeId);
-        }}
+        onClick={onDelete}
       >
         <DeleteIcon />
       </TooltipIconButton>

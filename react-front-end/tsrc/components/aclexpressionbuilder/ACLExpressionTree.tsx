@@ -16,7 +16,9 @@
  * limitations under the License.
  */
 import { TreeView } from "@material-ui/lab";
+import { pipe } from "fp-ts/function";
 import * as React from "react";
+import * as A from "fp-ts/Array";
 import { useState, ChangeEvent } from "react";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowRightIcon from "@material-ui/icons/ArrowRight";
@@ -24,6 +26,7 @@ import type {
   ACLExpression,
   ACLOperatorType,
 } from "../../modules/ACLExpressionModule";
+import { recipientEq } from "../../modules/ACLRecipientModule";
 import type { ACLRecipient } from "../../modules/ACLRecipientModule";
 import { ACLTreeOperator } from "./ACLTreeOperator";
 import { ACLTreeRecipient } from "./ACLTreeRecipient";
@@ -66,12 +69,20 @@ const ACLExpressionTree = ({
   const handleTreeSelect = (_: ChangeEvent<{}>, nodeIds: string[]) =>
     setSelected(nodeIds);
 
-  const handleTreeRecipientDelete = (nodeId: string) => {
-    // TODO: handle delete action
-  };
-
   const parseACLExpression = (aclExpression: ACLExpression, isRoot = false) => {
     const { id, operator, children, recipients } = aclExpression;
+
+    const handleRecipientDelete = (recipient: ACLRecipient) => {
+      const newRecipients = pipe(
+        recipients,
+        A.filter((r) => !recipientEq.equals(r, recipient))
+      );
+
+      onChange({
+        ...aclExpression,
+        recipients: newRecipients,
+      });
+    };
 
     return (
       <ACLTreeOperator
@@ -88,7 +99,8 @@ const ACLExpressionTree = ({
           });
         }}
       >
-        {recipients.map(({ type, expression, name }: ACLRecipient) => {
+        {recipients.map((recipient: ACLRecipient) => {
+          const { type, expression, name } = recipient;
           const unnamedValue = `${type} : ${expression}`;
 
           return (
@@ -96,7 +108,7 @@ const ACLExpressionTree = ({
               key={unnamedValue}
               nodeId={unnamedValue}
               expressionName={name ?? unnamedValue}
-              onDelete={handleTreeRecipientDelete}
+              onDelete={() => handleRecipientDelete(recipient)}
             ></ACLTreeRecipient>
           );
         })}

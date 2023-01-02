@@ -48,6 +48,7 @@ import { searchGroup } from "../securityentitysearch/GroupSearchTestHelper";
 import { searchRole } from "../securityentitysearch/RoleSearchTestHelper";
 import { searchUser } from "../securityentitysearch/UserSearchTestHelpler";
 import {
+  clickDeleteButtonForRecipient,
   selectOperatorForNode,
   selectOperatorNode,
 } from "./ACLExpressionTreeTestHelper";
@@ -67,6 +68,9 @@ const {
   roles: rolesRadioLabel,
 } = searchFilters;
 
+const NODE_NAME_ROOT = "root";
+const NODE_NAME_TEST = "test";
+
 describe("<ACLExpressionBuilder/>", () => {
   it("displays home panel's user search on initial render", () => {
     const { queryByText } = renderACLExpressionBuilder();
@@ -74,10 +78,44 @@ describe("<ACLExpressionBuilder/>", () => {
     expect(queryByText(userSearchQueryFieldLabel)).toBeInTheDocument();
   });
 
+  it("should be able to delete recipient for ACLExpression", async () => {
+    const expectedResult = {
+      ...initialACLExpressionWithValidChild,
+      children: [
+        {
+          ...initialACLExpressionWithValidChild.children[0],
+          recipients: [],
+        },
+      ],
+    };
+    const onFinish = jest.fn();
+    const renderResult = renderACLExpressionBuilder({
+      ...defaultACLExpressionBuilderProps,
+      aclExpression: initialACLExpressionWithValidChild,
+      onFinish,
+    });
+    const { container, getByText } = renderResult;
+
+    // expand root node
+    selectOperatorNode(container, NODE_NAME_ROOT);
+    // expand test node
+    selectOperatorNode(container, NODE_NAME_TEST);
+    // delete recipient
+    await clickDeleteButtonForRecipient(
+      renderResult,
+      user100RecipientWithName.name
+    );
+    // click ok button to see if the result is what we want
+    userEvent.click(getByText(okLabel));
+
+    const result = onFinish.mock.lastCall[0];
+    expect(result).toEqual(expectedResult);
+  });
+
   it.each<[string, string, ACLOperatorType, ACLExpression]>([
     [
       "top level",
-      "root",
+      NODE_NAME_ROOT,
       "AND",
       {
         ...initialACLExpressionWithValidChild,
@@ -86,7 +124,7 @@ describe("<ACLExpressionBuilder/>", () => {
     ],
     [
       "nested",
-      "test",
+      NODE_NAME_TEST,
       "OR",
       {
         ...initialACLExpressionWithValidChild,
@@ -108,8 +146,8 @@ describe("<ACLExpressionBuilder/>", () => {
         onFinish,
       });
 
-      // expend root node
-      selectOperatorNode(container, "root");
+      // expand root node
+      selectOperatorNode(container, NODE_NAME_ROOT);
       // update operator option for provided node
       await selectOperatorForNode(container, nodeId, operator);
       // click ok to see if the result is what we want
@@ -317,7 +355,7 @@ describe("<ACLExpressionBuilder/>", () => {
         searchUser,
         {
           ...initialACLExpression,
-          children: [{ ...userACLExpression, id: "test" }],
+          children: [{ ...userACLExpression, id: NODE_NAME_TEST }],
         },
       ],
       [
@@ -328,7 +366,7 @@ describe("<ACLExpressionBuilder/>", () => {
         searchGroup,
         {
           ...initialACLExpression,
-          children: [{ ...groupACLExpression, id: "test" }],
+          children: [{ ...groupACLExpression, id: NODE_NAME_TEST }],
         },
       ],
       [
@@ -339,7 +377,7 @@ describe("<ACLExpressionBuilder/>", () => {
         searchRole,
         {
           ...initialACLExpression,
-          children: [{ ...roleACLExpression, id: "test" }],
+          children: [{ ...roleACLExpression, id: NODE_NAME_TEST }],
         },
       ],
     ])(
@@ -365,10 +403,10 @@ describe("<ACLExpressionBuilder/>", () => {
         // Attempt search for a specific entity
         searchEntity(container, searchFor);
 
-        // expend the root node
-        selectOperatorNode(container, "root");
+        // expand the root node
+        selectOperatorNode(container, NODE_NAME_ROOT);
         // select the test node
-        selectOperatorNode(container, "test");
+        selectOperatorNode(container, NODE_NAME_TEST);
 
         const result = await selectAndFinished(
           renderResult,
