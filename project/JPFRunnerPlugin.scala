@@ -39,7 +39,6 @@ object JPFRunnerPlugin extends AutoPlugin {
                 r.resources.flatMap(f =>
                   (f ** "*").pair(rebase(f, "resources/"), errorIfNone = false))
               val allJars = r.jars.flatMap(f => flatRebase("lib/").apply(f).map((f, _)))
-              allJars.foreach(j => println(s"jar - ${j._2}"))
               val libs = allCode.headOption.map(_ =>
                 JPFLibrary("code", "code", "classes/", Some("*"))) ++
                 allResources.headOption.map(_ =>
@@ -50,6 +49,12 @@ object JPFRunnerPlugin extends AutoPlugin {
               IO.withTemporaryFile("jpf", "xml") { tf =>
                 IO.write(tf, manifest)
                 val allFiles = (tf, "plugin-jpf.xml") +: (allCode ++ allResources ++ allJars)
+                if (id == "com.equella.reporting") {
+                  allJars.foreach(j => println(j._2))
+                  allCode.foreach(j => println(j._2))
+                  allResources.foreach(j => println(j._2))
+                }
+
                 IO.zip(allFiles, outJar, Option((ThisBuild / buildTimestamp).value))
               }
               ManifestWritten(outJar, id, r.group)
