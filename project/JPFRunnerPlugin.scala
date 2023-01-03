@@ -39,6 +39,7 @@ object JPFRunnerPlugin extends AutoPlugin {
                 r.resources.flatMap(f =>
                   (f ** "*").pair(rebase(f, "resources/"), errorIfNone = false))
               val allJars = r.jars.flatMap(f => flatRebase("lib/").apply(f).map((f, _)))
+              allJars.foreach(j => println(s"jar - ${j._2}"))
               val libs = allCode.headOption.map(_ =>
                 JPFLibrary("code", "code", "classes/", Some("*"))) ++
                 allResources.headOption.map(_ =>
