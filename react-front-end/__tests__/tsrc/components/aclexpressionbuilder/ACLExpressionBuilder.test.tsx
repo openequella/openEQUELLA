@@ -37,8 +37,10 @@ import {
 import {
   ACLExpression,
   ACLOperatorType,
+  createACLExpression,
 } from "../../../../tsrc/modules/ACLExpressionModule";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
+import { ignoreId } from "../../modules/ACLExpressionModuleTestHelper";
 import {
   defaultACLExpressionBuilderProps,
   renderACLExpressionBuilder,
@@ -49,6 +51,7 @@ import { searchRole } from "../securityentitysearch/RoleSearchTestHelper";
 import { searchUser } from "../securityentitysearch/UserSearchTestHelpler";
 import {
   clickDeleteButtonForRecipient,
+  clickDeleteButtonForOperatorNode,
   selectOperatorForNode,
   selectOperatorNode,
 } from "./ACLExpressionTreeTestHelper";
@@ -61,7 +64,8 @@ const { queryFieldLabel: roleSearchQueryFieldLabel } =
   languageStrings.roleSearchComponent;
 const { ok: okLabel, add: addLabel } = languageStrings.common.action;
 
-const { searchFilters } = languageStrings.aclExpressionBuilder;
+const { searchFilters, addGroup: addGroupLabel } =
+  languageStrings.aclExpressionBuilder;
 const {
   users: usersRadioLabel,
   groups: groupsRadioLabel,
@@ -157,6 +161,50 @@ describe("<ACLExpressionBuilder/>", () => {
       expect(result).toEqual(expectedResult);
     }
   );
+
+  it("should be able to add a sub group for ACLExpression", () => {
+    const expectedResult = createACLExpression(
+      "OR",
+      [],
+      [createACLExpression("OR")]
+    );
+    const onFinish = jest.fn();
+    const { getByText, getByLabelText } = renderACLExpressionBuilder({
+      ...defaultACLExpressionBuilderProps,
+      onFinish,
+    });
+
+    // click add group button
+    userEvent.click(getByLabelText(addGroupLabel));
+    // click ok button to see if the result is what we want
+    userEvent.click(getByText(okLabel));
+
+    const result = onFinish.mock.lastCall[0];
+    expect(result).toEqual(ignoreId(expectedResult));
+  });
+
+  it("should be able to delete a sub group in ACLExpression", () => {
+    const expectedResult = {
+      ...initialACLExpression,
+      children: [],
+    };
+    const onFinish = jest.fn();
+    const { container, getByText } = renderACLExpressionBuilder({
+      ...defaultACLExpressionBuilderProps,
+      aclExpression: initialACLExpression,
+      onFinish,
+    });
+
+    // expand root node
+    selectOperatorNode(container, NODE_NAME_ROOT);
+    // click delete group button in node `test`
+    clickDeleteButtonForOperatorNode(container, NODE_NAME_TEST);
+    // click ok button to see if the result is what we want
+    userEvent.click(getByText(okLabel));
+
+    const result = onFinish.mock.lastCall[0];
+    expect(result).toEqual(expectedResult);
+  });
 
   describe("home panel", () => {
     const userACLExpression: ACLExpression = {

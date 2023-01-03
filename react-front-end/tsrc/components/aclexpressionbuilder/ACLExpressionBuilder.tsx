@@ -38,8 +38,9 @@ import {
 } from "@material-ui/core";
 import { TabContext, TabPanel } from "@material-ui/lab";
 import * as OEQ from "@openequella/rest-api-client";
-import { pipe } from "fp-ts/function";
 import * as A from "fp-ts/Array";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
 import * as RA from "fp-ts/ReadonlyArray";
 import * as RSET from "fp-ts/ReadonlySet";
 import * as React from "react";
@@ -51,6 +52,7 @@ import {
   compactACLExpressions,
   flattenRecipients,
   getACLExpressionById,
+  removeACLExpression,
   replaceACLExpression,
   revertCompactedACLExpressions,
 } from "../../modules/ACLExpressionModule";
@@ -277,10 +279,16 @@ const ACLExpressionBuilder = ({
 
   // add new selected recipients into selected ACLExpression node
   const updateNewRecipients = (recipients: ReadonlySet<ACLRecipient>) => {
+    const existingRecipients = pipe(
+      currentACLExpression,
+      flattenRecipients,
+      RSET.fromReadonlyArray(recipientEq)
+    );
+
     // if the recipient is already exiting in the currentAclExpression, ignore it.
     const filteredRecipients: ACLRecipient[] = pipe(
       recipients,
-      RSET.difference(recipientEq)(flattenRecipients(currentACLExpression)),
+      RSET.difference(recipientEq)(existingRecipients),
       RSET.toReadonlyArray(recipientOrd),
       RA.toArray
     );
@@ -311,9 +319,15 @@ const ACLExpressionBuilder = ({
       updateACLExpressionRelatedStates
     );
 
-  const handleACLItemDelete = (nodeID: string) => {
-    // TODO: delete ACL item
-  };
+  const handleACLExpressionDelete = (deleteACLExpression: ACLExpression) =>
+    pipe(
+      currentACLExpression,
+      removeACLExpression(deleteACLExpression.id),
+      // in theory root ACL expression (currentACLExpression) can't be deleted by user
+      // and the result should never be none after removeACLExpression.
+      O.getOrElse(() => currentACLExpression),
+      updateACLExpressionRelatedStates
+    );
 
   const handleOtherAclTypeChanged = (event: ChangeEvent<{ value: unknown }>) =>
     setActiveOtherACLType(OtherACLTypesUnion.check(event.target.value));
@@ -567,7 +581,7 @@ const ACLExpressionBuilder = ({
               <ACLExpressionTree
                 aclExpression={currentACLExpression}
                 onSelect={setSelectedACLExpression}
-                onDelete={handleACLItemDelete}
+                onDelete={handleACLExpressionDelete}
                 onChange={handleACLExpressionTreeChanged}
               />
             </Paper>

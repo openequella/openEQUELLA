@@ -17,7 +17,7 @@
  */
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
-import { flow, identity, pipe } from "fp-ts/function";
+import { constant, flow, identity, pipe } from "fp-ts/function";
 import { Monoid } from "fp-ts/Monoid";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as O from "fp-ts/Option";
@@ -25,7 +25,6 @@ import { not } from "fp-ts/Predicate";
 import * as RA from "fp-ts/ReadonlyArray";
 import * as RNEA from "fp-ts/ReadonlyNonEmptyArray";
 import { ReadonlyNonEmptyArray } from "fp-ts/ReadonlyNonEmptyArray";
-import * as RSET from "fp-ts/ReadonlySet";
 import * as S from "fp-ts/string";
 import * as T from "fp-ts/Task";
 import * as TE from "fp-ts/TaskEither";
@@ -37,7 +36,6 @@ import { ACLEntityResolvers } from "./ACLEntityModule";
 import {
   ACLRecipient,
   createACLRecipient,
-  recipientEq,
   showRecipient,
   showRecipientHumanReadable,
 } from "./ACLRecipientModule";
@@ -175,6 +173,27 @@ export const replaceACLExpression = (
   );
 
 /**
+ * Find the `aclExpression` by id in `originalACLExpression` and remove it (recursively).
+ */
+export const removeACLExpression = (
+  id: string
+): ((originalACLExpression: ACLExpression) => O.Option<ACLExpression>) =>
+  pfTernary(
+    (aclExpression: ACLExpression) => aclExpression.id === id,
+    constant(O.none),
+    (originalACLExpression: ACLExpression) =>
+      pipe(
+        originalACLExpression.children,
+        A.filterMap(removeACLExpression(id)),
+        (newChildren) =>
+          O.some({
+            ...originalACLExpression,
+            children: newChildren,
+          })
+      )
+  );
+
+/**
  * Given an ACLExpression and an ID, recursively search for an ACLExpression that has the same ID from
  * the given ACLExpression and its nested ACLExpressions.
  *
@@ -204,23 +223,13 @@ export const getACLExpressionById = (
   );
 
 /**
- * Return a collection containing all recipients in a given ACLExpression.
+ * Return a collection containing all recipients in a given ACLExpression (recursively).
  */
 export const flattenRecipients = ({
   children,
   recipients,
-}: ACLExpression): ReadonlySet<ACLRecipient> =>
-  pipe(
-    children,
-    A.reduce<ACLExpression, ACLRecipient[]>(
-      recipients,
-      (acc: ACLRecipient[], child: ACLExpression) => [
-        ...acc,
-        ...child.recipients,
-      ]
-    ),
-    RSET.fromReadonlyArray(recipientEq)
-  );
+}: ACLExpression): ACLRecipient[] =>
+  pipe(children, A.chain(flattenRecipients), A.concat(recipients));
 
 /**
  * Get the number of recipients for a given ACLExpression.

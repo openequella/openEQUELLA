@@ -15,19 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TreeView } from "@material-ui/lab";
-import { pipe } from "fp-ts/function";
-import * as React from "react";
-import * as A from "fp-ts/Array";
-import { useState, ChangeEvent } from "react";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowRightIcon from "@material-ui/icons/ArrowRight";
+import { TreeView } from "@material-ui/lab";
+import * as A from "fp-ts/Array";
+import { pipe } from "fp-ts/function";
+import * as S from "fp-ts/string";
+import * as React from "react";
+import { ChangeEvent, useState } from "react";
 import type {
   ACLExpression,
   ACLOperatorType,
 } from "../../modules/ACLExpressionModule";
-import { recipientEq } from "../../modules/ACLRecipientModule";
+import { createACLExpression } from "../../modules/ACLExpressionModule";
 import type { ACLRecipient } from "../../modules/ACLRecipientModule";
+import { recipientEq } from "../../modules/ACLRecipientModule";
 import { ACLTreeOperator } from "./ACLTreeOperator";
 import { ACLTreeRecipient } from "./ACLTreeRecipient";
 
@@ -43,7 +45,7 @@ export interface ACLExpressionTreeProps {
   /**
    * Fired when the tree item is deleted. Both `ACLTreeOperator` and `ACLTreeRecipient` can be deleted.
    */
-  onDelete: (nodeID: string) => void;
+  onDelete: (expression: ACLExpression) => void;
   /**
    * Fired when the ACLExpression tree view is changed. (Such as delete recipient or update the operator)
    */
@@ -84,6 +86,23 @@ const ACLExpressionTree = ({
       });
     };
 
+    const handleAddGroup = () => {
+      const newACLExpression = createACLExpression("OR");
+
+      onChange({
+        ...aclExpression,
+        children: [...children, newACLExpression],
+      });
+      // expand current and new group node for user
+      setExpanded(
+        pipe([...expanded, aclExpression.id, newACLExpression.id], A.uniq(S.Eq))
+      );
+      // select new group node for user
+      // `setSelected` won't trigger the `onSelect` event for operator node, but it can update the UI.
+      setSelected([newACLExpression.id]);
+      onSelect(newACLExpression);
+    };
+
     return (
       <ACLTreeOperator
         key={id}
@@ -91,13 +110,14 @@ const ACLExpressionTree = ({
         operator={operator}
         isRoot={isRoot}
         onSelect={() => onSelect(aclExpression)}
-        onDelete={onDelete}
+        onDelete={() => onDelete(aclExpression)}
         onOperatorChange={(newOperator: ACLOperatorType) => {
           onChange({
             ...aclExpression,
             operator: newOperator,
           });
         }}
+        onAddGroup={handleAddGroup}
       >
         {recipients.map((recipient: ACLRecipient) => {
           const { type, expression, name } = recipient;

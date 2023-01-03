@@ -50,13 +50,17 @@ export interface ACLTreeOperatorProps extends TreeItemProps {
    */
   isRoot?: boolean;
   /**
-   * Fired when the item is deleted.
+   * Fired when the node is deleted.
    */
-  onDelete: (nodeID: string) => void;
+  onDelete: () => void;
   /**
    * Fired when the operator is changed.
    */
   onOperatorChange: (operator: ACLOperatorType) => void;
+  /**
+   * Fired when the add group button is clicked.
+   */
+  onAddGroup: () => void;
 }
 
 /**
@@ -71,6 +75,7 @@ export const ACLTreeOperator = ({
   onSelect,
   onDelete,
   onOperatorChange,
+  onAddGroup,
   ...other
 }: ACLTreeOperatorProps): JSX.Element => {
   const classes = useACLTreeItemStyles();
@@ -106,6 +111,7 @@ export const ACLTreeOperator = ({
       </Select>
       <TooltipIconButton
         onClick={(event) => {
+          onAddGroup();
           // prevent toggling tree item
           event.stopPropagation();
         }}
@@ -117,7 +123,7 @@ export const ACLTreeOperator = ({
         <TooltipIconButton
           title={languageStrings.common.action.delete}
           onClick={(event) => {
-            onDelete(nodeId);
+            onDelete();
             // prevent toggling tree item
             event.stopPropagation();
           }}

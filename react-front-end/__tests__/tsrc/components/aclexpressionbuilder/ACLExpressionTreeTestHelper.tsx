@@ -24,7 +24,10 @@ import {
   ACLOperatorType,
   getOperatorLabel,
 } from "../../../../tsrc/modules/ACLExpressionModule";
+import { languageStrings } from "../../../../tsrc/util/langstrings";
 import { selectOption } from "../../MuiTestHelpers";
+
+const { delete: deleteLabel } = languageStrings.common.action;
 
 // Helper to render ACLExpressionTree
 export const renderACLExpressionTree = (
@@ -66,4 +69,18 @@ export const clickDeleteButtonForRecipient = async (
   }
 
   userEvent.click(deleteButton);
+};
+
+// Helper function to mock click the delete button for the operator node in the tree view.
+export const clickDeleteButtonForOperatorNode = (
+  container: HTMLElement,
+  nodeId: string
+) => {
+  const node = container.querySelector(
+    `#${nodeId} button[title=${deleteLabel}]`
+  );
+  if (!node) {
+    throw Error(`Can't find delete button for node with id: ${nodeId}`);
+  }
+  userEvent.click(node);
 };
