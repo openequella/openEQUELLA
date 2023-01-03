@@ -15,9 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as A from "fp-ts/Array";
+import * as O from "fp-ts/Option";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
+import { initialACLExpression } from "../../../__mocks__/ACLExpressionBuilder.mock";
 import {
   user100Recipient,
   user200Recipient,
@@ -29,6 +30,7 @@ import {
   generateHumanReadable,
   getACLExpressionById,
   parse,
+  removeACLExpression,
   removeRedundantExpressions,
   revertCompactedACLExpressions,
 } from "../../../tsrc/modules/ACLExpressionModule";
@@ -85,6 +87,7 @@ import {
   withNestedSubExpressionACLExpression,
   withSubExpressionACLExpression,
 } from "../../../__mocks__/ACLExpressionModule.mock";
+import { ignoreId } from "./ACLExpressionModuleTestHelper";
 
 describe("ACLExpressionModule", () => {
   const handleParse = (
@@ -98,21 +101,6 @@ describe("ACLExpressionModule", () => {
         },
         (result) => result
       )
-    );
-
-  // Helper function to replace all id with expect.any.
-  // Because depending on how the expression is processed, the ID of an ACLExpression might be changed.
-  const ignoreId = (aclExpression: ACLExpression): ACLExpression =>
-    pipe(
-      aclExpression.children,
-      A.reduce<ACLExpression, ACLExpression[]>([], (acc, child) =>
-        pipe(child, ignoreId, (newChild) => [...acc, newChild])
-      ),
-      (newChildren) => ({
-        ...aclExpression,
-        children: newChildren,
-        id: expect.any(String),
-      })
     );
 
   const expectedRightResult = (
@@ -368,6 +356,28 @@ describe("ACLExpressionModule", () => {
 
       expect(find).toBeUndefined();
       expect(logWarning).toHaveBeenCalled();
+    });
+  });
+
+  describe("removeACLExpression", () => {
+    const NODE_ID_ROOT = "root";
+    const NODE_ID_TEST = "test";
+
+    it("should be able to remove an ACLExpression by a given id", () => {
+      const expectedResult = {
+        ...initialACLExpression,
+        children: [],
+      };
+
+      expect(
+        pipe(initialACLExpression, removeACLExpression(NODE_ID_TEST))
+      ).toEqual(O.some(expectedResult));
+    });
+
+    it("should return Option none if the given id represents the root ACLExpression", () => {
+      expect(
+        pipe(initialACLExpression, removeACLExpression(NODE_ID_ROOT))
+      ).toEqual(O.none);
     });
   });
 
