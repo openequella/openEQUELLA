@@ -25,7 +25,7 @@ libraryDependencies ++= Seq(
   "org.http4s"    %% "http4s-blaze-server" % Http4sVersion,
   "org.http4s"    %% "http4s-dsl"          % Http4sVersion,
   "org.http4s"    %% "http4s-circe"        % Http4sVersion,
-  "org.slf4j"     % "slf4j-simple"         % "2.0.5",
+  "org.slf4j"     % "slf4j-simple"         % "2.0.6",
   "org.jsoup"     % "jsoup"                % jsoupVersion,
   "com.nulab-inc" %% "scala-oauth2-core"   % "1.5.0"
 )
