@@ -32,6 +32,8 @@ libraryDependencies ++= Seq(
   // Copy other managed JARs to the JPF dir.
   IO.copy(managedJars.pair(flat(jpf), errorIfNone = false))
 
+  println("--- birt jars ---")
+  jpf.listFiles().foreach(f => println(f.getName))
   (jpf ** "*.jar").classpath
 }
 
