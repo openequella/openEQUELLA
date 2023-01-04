@@ -40,7 +40,8 @@ libraryDependencies ++= Seq(
 ivyConfigurations := overrideConfigs(Birt, CustomCompile)(ivyConfigurations.value)
 
 jpfLibraryJars := {
+  val jars = (Compile / unmanagedJars).value
   println("JPF Jars in reporting...")
-  ((Compile / target).value / "jpflibs" ** "*.jar").classpath.files.foreach(f => println(f.getName))
-  ((Compile / target).value / "jpflibs" ** "*.jar").classpath
+  jars.files.foreach(f => println(f.getName))
+  jars
 }
