@@ -32,16 +32,9 @@ libraryDependencies ++= Seq(
   // Copy other managed JARs to the JPF dir.
   IO.copy(managedJars.pair(flat(jpf), errorIfNone = false))
 
-  println("Unmanaged Jars in reporting ...")
-  jpf.listFiles().foreach(f => println(f.getName))
   (jpf ** "*.jar").classpath
 }
 
 ivyConfigurations := overrideConfigs(Birt, CustomCompile)(ivyConfigurations.value)
 
-jpfLibraryJars := {
-  val jars = (Compile / unmanagedJars).value
-  println("JPF Jars in reporting...")
-  jars.files.foreach(f => println(f.getName))
-  jars
-}
+jpfLibraryJars := (Compile / unmanagedJars).value

@@ -53,6 +53,5 @@ installerZip := {
   IO.zip(allFiles.map(t => (t._1, s"$dirname/${t._2}")),
          outZip,
          Option((ThisBuild / buildTimestamp).value))
-  log.info(s"Installer size ${outZip.length / (1024 * 1024)}")
   outZip
 }

@@ -49,9 +49,6 @@ object JPFRunnerPlugin extends AutoPlugin {
               IO.withTemporaryFile("jpf", "xml") { tf =>
                 IO.write(tf, manifest)
                 val allFiles = (tf, "plugin-jpf.xml") +: (allCode ++ allResources ++ allJars)
-                if (id == "com.equella.reporting") {
-                  println("birt jar number: " + allJars.size)
-                }
 
                 IO.zip(allFiles, outJar, Option((ThisBuild / buildTimestamp).value))
               }
