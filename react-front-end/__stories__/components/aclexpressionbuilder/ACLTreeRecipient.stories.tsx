@@ -17,6 +17,7 @@
  */
 import { Meta, Story } from "@storybook/react";
 import * as React from "react";
+import { LOGGED_IN_USER_ROLE_NAME } from "../../../__mocks__/ACLRecipientModule.mock";
 import {
   ACLTreeRecipient,
   ACLTreeRecipientProps,
@@ -51,7 +52,7 @@ export const RecipientOwner: Story<ACLTreeRecipientProps> = () =>
   recipient("Owner");
 
 export const RecipientLogged: Story<ACLTreeRecipientProps> = () =>
-  recipient("Logged In User Role");
+  recipient(LOGGED_IN_USER_ROLE_NAME);
 export const RecipientGuest: Story<ACLTreeRecipientProps> = () =>
   recipient("Guest");
 

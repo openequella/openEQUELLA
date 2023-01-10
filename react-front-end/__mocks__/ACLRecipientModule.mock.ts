@@ -15,12 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {
+  ACLRecipient,
+  GUEST_USER_ROLE_ID,
+  LOGGED_IN_USER_ROLE_ID,
+} from "../tsrc/modules/ACLRecipientModule";
+
 export const ownerRecipient = {
   expression: "$OWNER",
   type: "$OWNER",
 };
 export const ownerRecipientRawExpression = "$OWNER";
 export const ownerRecipientHumanReadableExpression = "Owner";
+export const ownerRecipientWithName: ACLRecipient = {
+  ...ownerRecipient,
+  name: ownerRecipientHumanReadableExpression,
+};
 
 export const everyoneRecipient = {
   expression: "*",
@@ -28,6 +38,10 @@ export const everyoneRecipient = {
 };
 export const everyoneRecipientRawExpression = "*";
 export const everyoneRecipientHumanReadableExpression = "Everyone";
+export const everyoneRecipientWithName: ACLRecipient = {
+  ...everyoneRecipient,
+  name: everyoneRecipientHumanReadableExpression,
+};
 
 export const user100Recipient = {
   expression: "20483af2-fe56-4499-a54b-8d7452156895",
@@ -80,11 +94,22 @@ export const userContentAdminRecipient = {
 };
 
 export const roleGuestRecipient = {
-  expression: "TLE_GUEST_USER_ROLE",
+  expression: GUEST_USER_ROLE_ID,
   type: "R",
 };
-export const roleGuestRecipientRawExpression = "R:TLE_GUEST_USER_ROLE";
-export const roleGuestRecipientHumanReadableExpression = "Guest";
+export const roleGuestRecipientRawExpression = `R:${GUEST_USER_ROLE_ID}`;
+export const roleGuestRecipientHumanReadableExpression = "Guest User Role";
+export const roleGuestRecipientWithName = {
+  ...roleGuestRecipient,
+  name: roleGuestRecipientHumanReadableExpression,
+};
+
+export const LOGGED_IN_USER_ROLE_NAME = "Logged In User Role";
+export const roleLoggedRecipientWithName = {
+  expression: LOGGED_IN_USER_ROLE_ID,
+  type: "R",
+  name: LOGGED_IN_USER_ROLE_NAME,
+};
 
 export const role100RecipientWithName = {
   expression: "fda99983-9eda-440a-ac68-0f746173fdcb",
