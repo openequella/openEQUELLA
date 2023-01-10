@@ -60,22 +60,22 @@ export const aclThreeItemsInfix =
 export const aclWithSubExpression =
   "U:eb75a832-6533-4d72-93f4-2b7a1b108951 I:127.0.0.1%2F24 AND F:*google* AND $OWNER R:TLE_GUEST_USER_ROLE OR U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef OR AND";
 export const aclWithSubExpressionInfix =
-  "Yasmin Day [user300] AND From 127.0.0.1%2F24 AND From *google* AND ( Owner OR Guest OR Ronny Southgate [user400] )";
+  "Yasmin Day [user300] AND From 127.0.0.1%2F24 AND From *google* AND ( Owner OR Guest User Role OR Ronny Southgate [user400] )";
 
 export const aclWithMultipleSubExpression =
   "U:eb75a832-6533-4d72-93f4-2b7a1b108951 I:127.0.0.1%2F24 AND F:*google* AND $OWNER R:TLE_GUEST_USER_ROLE OR U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef OR AND G:99806ac8-410e-4c60-b3ab-22575276f0f0 G:d0265a33-8f89-4cea-8a36-45fd3c4cf5a1 OR NOT AND";
 export const aclWithMultipleSubExpressionInfix =
-  "Yasmin Day [user300] AND From 127.0.0.1%2F24 AND From *google* AND ( Owner OR Guest OR Ronny Southgate [user400] ) AND ( NOT ( Engineering & Computer Science Students OR Engineering & Computer Science Staff ) )";
+  "Yasmin Day [user300] AND From 127.0.0.1%2F24 AND From *google* AND ( Owner OR Guest User Role OR Ronny Southgate [user400] ) AND ( NOT ( Engineering & Computer Science Students OR Engineering & Computer Science Staff ) )";
 
 export const aclWithNestedSubExpression =
   "U:eb75a832-6533-4d72-93f4-2b7a1b108951 I:127.0.0.1%2F24 AND F:*google* AND $OWNER R:TLE_GUEST_USER_ROLE OR U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef OR U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a OR NOT OR AND G:99806ac8-410e-4c60-b3ab-22575276f0f0 NOT AND";
 export const aclWithNestedSubExpressionInfix =
-  "Yasmin Day [user300] AND From 127.0.0.1%2F24 AND From *google* AND ( Owner OR Guest OR Ronny Southgate [user400] OR ( NOT ( Fabienne Hobson [user100] OR Racheal Carlyle [user200] ) ) ) AND ( NOT Engineering & Computer Science Students )";
+  "Yasmin Day [user300] AND From 127.0.0.1%2F24 AND From *google* AND ( Owner OR Guest User Role OR Ronny Southgate [user400] OR ( NOT ( Fabienne Hobson [user100] OR Racheal Carlyle [user200] ) ) ) AND ( NOT Engineering & Computer Science Students )";
 
 export const aclWithComplexSubExpression =
   "U:eb75a832-6533-4d72-93f4-2b7a1b108951 I:127.0.0.1%2F24 AND F:*google* AND $OWNER R:TLE_GUEST_USER_ROLE OR U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef OR U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a OR NOT OR F:aa F:bb F:cc OR NOT AND OR AND G:99806ac8-410e-4c60-b3ab-22575276f0f0 G:d0265a33-8f89-4cea-8a36-45fd3c4cf5a1 OR NOT AND";
 export const aclWithComplexSubExpressionInfix =
-  "Yasmin Day [user300] AND From 127.0.0.1%2F24 AND From *google* AND ( Owner OR Guest OR Ronny Southgate [user400] OR ( NOT ( Fabienne Hobson [user100] OR Racheal Carlyle [user200] ) ) OR ( From aa AND ( NOT ( From bb OR From cc ) ) ) ) AND ( NOT ( Engineering & Computer Science Students OR Engineering & Computer Science Staff ) )";
+  "Yasmin Day [user300] AND From 127.0.0.1%2F24 AND From *google* AND ( Owner OR Guest User Role OR Ronny Southgate [user400] OR ( NOT ( Fabienne Hobson [user100] OR Racheal Carlyle [user200] ) ) OR ( From aa AND ( NOT ( From bb OR From cc ) ) ) ) AND ( NOT ( Engineering & Computer Science Students OR Engineering & Computer Science Staff ) )";
 
 export const everyoneACLExpression: ACLExpression = createACLExpression(
   "OR",

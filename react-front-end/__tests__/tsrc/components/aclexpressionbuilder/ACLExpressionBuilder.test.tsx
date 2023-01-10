@@ -23,12 +23,16 @@ import {
   initialACLExpressionWithValidChild,
 } from "../../../../__mocks__/ACLExpressionBuilder.mock";
 import {
+  everyoneRecipientWithName,
   group100RecipientWithName,
   group200RecipientWithName,
   group300RecipientWithName,
   group400RecipientWithName,
+  ownerRecipientWithName,
   role100RecipientWithName,
   role200RecipientWithName,
+  roleGuestRecipientWithName,
+  roleLoggedRecipientWithName,
   user100RecipientWithName,
   user200RecipientWithName,
   user300RecipientWithName,
@@ -45,6 +49,7 @@ import {
   defaultACLExpressionBuilderProps,
   renderACLExpressionBuilder,
   selectAndFinished,
+  selectRecipientType,
 } from "./ACLExpressionBuilderTestHelper";
 import { searchGroup } from "../securityentitysearch/GroupSearchTestHelper";
 import { searchRole } from "../securityentitysearch/RoleSearchTestHelper";
@@ -64,8 +69,17 @@ const { queryFieldLabel: roleSearchQueryFieldLabel } =
   languageStrings.roleSearchComponent;
 const { ok: okLabel, add: addLabel } = languageStrings.common.action;
 
-const { searchFilters, addGroup: addGroupLabel } =
-  languageStrings.aclExpressionBuilder;
+const {
+  searchFilters,
+  addGroup: addGroupLabel,
+  otherTab,
+  otherACLTypes: {
+    everyone: everyoneType,
+    owner: ownerType,
+    logged: loggedType,
+    guest: guestType,
+  },
+} = languageStrings.aclExpressionBuilder;
 const {
   users: usersRadioLabel,
   groups: groupsRadioLabel,
@@ -463,6 +477,75 @@ describe("<ACLExpressionBuilder/>", () => {
         );
 
         expect(result).toEqual(expectedACLExpressionResult);
+      }
+    );
+  });
+
+  describe("other panel", () => {
+    const initialACLExpression: ACLExpression = {
+      operator: "OR",
+      id: NODE_NAME_ROOT,
+      recipients: [],
+      children: [],
+    };
+
+    it.each([
+      [
+        "Everyone",
+        everyoneType,
+        everyoneRecipientWithName.name,
+        { ...initialACLExpression, recipients: [everyoneRecipientWithName] },
+      ],
+      [
+        "Owner",
+        ownerType,
+        ownerRecipientWithName.name,
+        { ...initialACLExpression, recipients: [ownerRecipientWithName] },
+      ],
+      [
+        "Logged",
+        loggedType,
+        roleLoggedRecipientWithName.name,
+        { ...initialACLExpression, recipients: [roleLoggedRecipientWithName] },
+      ],
+      [
+        "Guest",
+        guestType,
+        roleGuestRecipientWithName.name,
+        { ...initialACLExpression, recipients: [roleGuestRecipientWithName] },
+      ],
+    ])(
+      "should be able to add %s recipient to the ACLExpression",
+      async (
+        _,
+        recipientLabel: string,
+        recipientName: string | undefined,
+        expectedResult: ACLExpression
+      ) => {
+        const onFinish = jest.fn();
+        const renderResult = renderACLExpressionBuilder({
+          ...defaultACLExpressionBuilderProps,
+          aclExpression: initialACLExpression,
+          onFinish: onFinish,
+        });
+        const { findAllByText, getByText, container } = renderResult;
+
+        // click other panel
+        userEvent.click(getByText(otherTab));
+        // select a recipient type
+        await selectRecipientType(container, recipientLabel);
+        // click add button
+        userEvent.click(getByText(addLabel));
+        // expand root node to let recipients displayed in UI
+        selectOperatorNode(container, NODE_NAME_ROOT);
+        // wait for adding action
+        await findAllByText(recipientName ?? "");
+
+        // click ok button to check the result
+        userEvent.click(getByText(okLabel));
+
+        const result = onFinish.mock.lastCall[0];
+        expect(result).toEqual(expectedResult);
       }
     );
   });

@@ -23,18 +23,13 @@ import {
   FormControlLabel,
   FormLabel,
   Grid,
-  InputLabel,
   makeStyles,
-  MenuItem,
   Paper,
   Radio,
   RadioGroup,
-  Select,
   Tab,
   Tabs,
-  TextField,
   Theme,
-  Typography,
 } from "@material-ui/core";
 import { TabContext, TabPanel } from "@material-ui/lab";
 import * as OEQ from "@openequella/rest-api-client";
@@ -44,8 +39,9 @@ import * as O from "fp-ts/Option";
 import * as RA from "fp-ts/ReadonlyArray";
 import * as RSET from "fp-ts/ReadonlySet";
 import * as React from "react";
-import { ChangeEvent, ReactNode, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { Literal, Static, Union } from "runtypes";
+import { ACLEntityResolvers } from "../../modules/ACLEntityModule";
 import {
   ACLExpression,
   addRecipients,
@@ -70,33 +66,13 @@ import GroupSearch from "../securityentitysearch/GroupSearch";
 import RoleSearch from "../securityentitysearch/RoleSearch";
 import UserSearch from "../securityentitysearch/UserSearch";
 import ACLExpressionTree from "./ACLExpressionTree";
+import ACLOtherPanel from "./ACLOtherPanel";
 
 const {
   aclExpressionBuilder: {
     type: typeLabel,
     homeTab: homeTabLabel,
     otherTab: otherTabLabel,
-    otherACLDescriptions: {
-      everyone: everyoneDesc,
-      owner: ownerDesc,
-      logged: loggedDesc,
-      guest: guestDesc,
-      sso: ssoDesc,
-      ip: ipDesc,
-      ipPlaceholder,
-      referrer: referrerDesc,
-      exactReferrer: exactReferrerDesc,
-      containReferrer: containReferrerDesc,
-    },
-    otherACLTypes: {
-      everyone: everyoneLabel,
-      owner: ownerLabel,
-      logged: loggedLabel,
-      guest: guestLabel,
-      sso: ssoLabel,
-      ip: ipLabel,
-      referrer: referrerLabel,
-    },
   },
 } = languageStrings;
 
@@ -110,30 +86,6 @@ const SearchFilterTypesUnion = Union(
 );
 
 type SearchFilterType = Static<typeof SearchFilterTypesUnion>;
-
-/**
- * Runtypes definition for ACL expression types in `other` panel.
- */
-const OtherACLTypesUnion = Union(
-  Literal("Everyone"),
-  Literal("Owner"),
-  Literal("Logged"),
-  Literal("Guest"),
-  Literal("Sso"),
-  Literal("Ip"),
-  Literal("Referrer")
-);
-
-type OtherACLType = Static<typeof OtherACLTypesUnion>;
-
-/**
- * Referrer Type.
- * Contain: Match referrers containing this value.
- * Exact: Only match this exact referrer.
- */
-const ReferrerTypesUnion = Union(Literal("Contain"), Literal("Exact"));
-
-type ReferrerType = Static<typeof ReferrerTypesUnion>;
 
 const useACLExpressionBuilderStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -198,6 +150,10 @@ export interface ACLExpressionBuilderProps {
   resolveGroupsProvider?: (
     ids: ReadonlyArray<string>
   ) => Promise<OEQ.UserQuery.GroupDetails[]>;
+  /**
+   * Object includes functions used to replace default acl entity resolvers for `ACLOtherPanel`
+   */
+  aclEntityResolversProvider?: ACLEntityResolvers;
 }
 
 /**
@@ -212,6 +168,7 @@ const ACLExpressionBuilder = ({
   searchGroupProvider,
   searchRoleProvider,
   resolveGroupsProvider,
+  aclEntityResolversProvider,
 }: ACLExpressionBuilderProps): JSX.Element => {
   const [currentACLExpression, setCurrentACLExpression] =
     useState<ACLExpression>(
@@ -229,10 +186,6 @@ const ACLExpressionBuilder = ({
 
   const [activeSearchFilterType, setActiveSearchFilterType] =
     useState<SearchFilterType>("Users");
-  const [activeOtherACLType, setActiveOtherACLType] =
-    useState<OtherACLType>("Everyone");
-  const [activeReferrerType, setActiveReferrerType] =
-    useState<ReferrerType>("Contain");
 
   const [userSelections, setUserSelections] = useState<
     ReadonlySet<OEQ.UserQuery.UserDetails>
@@ -329,8 +282,8 @@ const ACLExpressionBuilder = ({
       updateACLExpressionRelatedStates
     );
 
-  const handleOtherAclTypeChanged = (event: ChangeEvent<{ value: unknown }>) =>
-    setActiveOtherACLType(OtherACLTypesUnion.check(event.target.value));
+  const handleACLOtherPanelAdded = (recipient: ACLRecipient) =>
+    pipe(recipient, RSET.singleton, updateNewRecipients);
 
   const {
     appBar: appBarClass,
@@ -439,121 +392,6 @@ const ACLExpressionBuilder = ({
     );
   };
 
-  const otherACLPanel = (): JSX.Element => {
-    const handleReferrerTypeChanged = (
-      event: ChangeEvent<{ value: unknown }>
-    ) => setActiveReferrerType(event.target.value as ReferrerType);
-
-    const typographyContent = (label: string) => (
-      <Typography>{label}</Typography>
-    );
-
-    const GridContent = ({ children }: { children: ReactNode }) => (
-      <Grid container direction="column" spacing={1}>
-        {children}
-      </Grid>
-    );
-
-    const selection = (value: string, label: string) => (
-      <MenuItem key={value} value={value}>
-        {label}
-      </MenuItem>
-    );
-
-    const bindSelections = OtherACLTypesUnion.match(
-      (Everyone) => selection(Everyone, everyoneLabel),
-      (Owner) => selection(Owner, ownerLabel),
-      (Logged) => selection(Logged, loggedLabel),
-      (Guest) => selection(Guest, guestLabel),
-      (Sso) => selection(Sso, ssoLabel),
-      (Ip) => selection(Ip, ipLabel),
-      (Referrer) => selection(Referrer, referrerLabel)
-    );
-
-    /**
-     * TODO: Get all SSO selects from API
-     * */
-    const bindControls = OtherACLTypesUnion.match(
-      (Everyone) => typographyContent(everyoneDesc),
-      (Owner) => typographyContent(ownerDesc),
-      (Logged) => typographyContent(loggedDesc),
-      (Guest) => typographyContent(guestDesc),
-      (Sso) => (
-        <GridContent>
-          <Grid item>{typographyContent(ssoDesc)}</Grid>
-          <Grid item>
-            <FormControl>
-              <Select displayEmpty>
-                <MenuItem value="Moodle">Moodle</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-        </GridContent>
-      ),
-      (Ip) => (
-        <GridContent>
-          <Grid item>{typographyContent(ipDesc)}</Grid>
-          <Grid item>
-            <TextField name="ip" label={ipPlaceholder}></TextField>
-          </Grid>
-        </GridContent>
-      ),
-      (Referrer) => (
-        <GridContent>
-          <Grid item>{typographyContent(referrerDesc)}</Grid>
-          <Grid item>
-            <TextField name="referrer" />
-          </Grid>
-          <Grid item>
-            <RadioGroup
-              name="referrer"
-              value={activeReferrerType}
-              onChange={handleReferrerTypeChanged}
-            >
-              {ReferrerTypesUnion.alternatives.map((referrerType) => (
-                <FormControlLabel
-                  key={referrerType.value}
-                  value={referrerType.value}
-                  control={<Radio />}
-                  label={ReferrerTypesUnion.match(
-                    (Contain) => containReferrerDesc,
-                    (Exact) => exactReferrerDesc
-                  )(referrerType.value)}
-                />
-              ))}
-            </RadioGroup>
-          </Grid>
-        </GridContent>
-      )
-    );
-
-    return (
-      <Grid container direction="column" spacing={1}>
-        <Grid item>
-          <FormControl variant="outlined">
-            <InputLabel>{typeLabel}</InputLabel>
-            <Select
-              value={activeOtherACLType}
-              onChange={handleOtherAclTypeChanged}
-              label={typeLabel}
-            >
-              {OtherACLTypesUnion.alternatives.map((aclType) =>
-                bindSelections(aclType.value)
-              )}
-            </Select>
-          </FormControl>
-        </Grid>
-        {/*The padding aims to align with the next button's text.*/}
-        <Grid container style={{ padding: 20 }}>
-          {bindControls(activeOtherACLType)}
-        </Grid>
-        <Grid item>
-          <Button color="primary">{languageStrings.common.action.add}</Button>
-        </Grid>
-      </Grid>
-    );
-  };
-
   return (
     <Grid container spacing={2} justifyContent="flex-start">
       <TabContext value={activeTabValue}>
@@ -572,7 +410,10 @@ const ACLExpressionBuilder = ({
                 {homeACLPanel()}
               </TabPanel>
               <TabPanel className={tabPanelClass} value={otherTabLabel}>
-                {otherACLPanel()}
+                <ACLOtherPanel
+                  onAdd={handleACLOtherPanelAdded}
+                  aclEntityResolvers={aclEntityResolversProvider}
+                />
               </TabPanel>
             </Paper>
           </Grid>

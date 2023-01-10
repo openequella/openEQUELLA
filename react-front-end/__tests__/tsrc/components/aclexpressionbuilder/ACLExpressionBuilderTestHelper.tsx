@@ -21,14 +21,16 @@ import * as React from "react";
 import {
   resolveGroups,
   listGroups,
+  findGroupById,
 } from "../../../../__mocks__/GroupModule.mock";
-import { listRoles } from "../../../../__mocks__/RoleModule.mock";
-import { listUsers } from "../../../../__mocks__/UserModule.mock";
+import { findRoleById, listRoles } from "../../../../__mocks__/RoleModule.mock";
+import { findUserById, listUsers } from "../../../../__mocks__/UserModule.mock";
 import ACLExpressionBuilder, {
   ACLExpressionBuilderProps,
 } from "../../../../tsrc/components/aclexpressionbuilder/ACLExpressionBuilder";
 import type { ACLExpression } from "../../../../tsrc/modules/ACLExpressionModule";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
+import { selectOption } from "../../MuiTestHelpers";
 
 const { select: selectLabel, ok: okLabel } = languageStrings.common.action;
 
@@ -38,6 +40,11 @@ export const defaultACLExpressionBuilderProps: ACLExpressionBuilderProps = {
   searchGroupProvider: listGroups,
   searchRoleProvider: listRoles,
   resolveGroupsProvider: resolveGroups,
+  aclEntityResolversProvider: {
+    resolveUserProvider: findUserById,
+    resolveGroupProvider: findGroupById,
+    resolveRoleProvider: findRoleById,
+  },
 };
 
 // Helper to render ACLExpressionBuilder and wait for component under test
@@ -67,3 +74,11 @@ export const selectAndFinished = async (
   // get the result of ACLExpression
   return onFinish.mock.lastCall[0];
 };
+
+/**
+ * Helper function to mock select a recipient type in `Other` panel.
+ */
+export const selectRecipientType = async (
+  container: HTMLElement,
+  recipientLabel: string
+) => selectOption(container, `#recipient-type-select`, recipientLabel);

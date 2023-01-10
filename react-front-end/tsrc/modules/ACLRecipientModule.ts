@@ -88,6 +88,9 @@ export interface ACLRecipient {
   expression: string;
 }
 
+export const LOGGED_IN_USER_ROLE_ID = "TLE_LOGGED_IN_USER_ROLE";
+export const GUEST_USER_ROLE_ID = "TLE_GUEST_USER_ROLE";
+
 /**
  * Eq for `ACLRecipient` with equality based on the recipient's type and expression.
  */

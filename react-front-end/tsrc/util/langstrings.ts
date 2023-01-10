@@ -165,7 +165,7 @@ export const languageStrings = {
       owner: "Owner",
       logged: "Logged user",
       guest: "Guest",
-      sso: "sso",
+      sso: "SSO",
       ip: "IP",
       referrer: "HTTP Referrer",
     },

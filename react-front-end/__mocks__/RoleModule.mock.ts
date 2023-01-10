@@ -17,6 +17,11 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { findEntityById } from "../tsrc/modules/ACLEntityModule";
+import {
+  GUEST_USER_ROLE_ID,
+  LOGGED_IN_USER_ROLE_ID,
+} from "../tsrc/modules/ACLRecipientModule";
+import { LOGGED_IN_USER_ROLE_NAME } from "./ACLRecipientModule.mock";
 import { entityDetailsProvider } from "./SecurityEntitySearch.mock";
 
 /**
@@ -24,12 +29,16 @@ import { entityDetailsProvider } from "./SecurityEntitySearch.mock";
  */
 export const roles: OEQ.UserQuery.RoleDetails[] = [
   {
-    id: "62ed85d3-278a-46f5-8ee4-391a45f97899",
-    name: "Teachers",
+    id: LOGGED_IN_USER_ROLE_ID,
+    name: LOGGED_IN_USER_ROLE_NAME,
   },
   {
-    id: "TLE_GUEST_USER_ROLE",
-    name: "Guest",
+    id: GUEST_USER_ROLE_ID,
+    name: "Guest User Role",
+  },
+  {
+    id: "62ed85d3-278a-46f5-8ee4-391a45f97899",
+    name: "Teachers",
   },
   {
     id: "1ffbf760-2970-48d7-ab9f-62e95a64d07e",
