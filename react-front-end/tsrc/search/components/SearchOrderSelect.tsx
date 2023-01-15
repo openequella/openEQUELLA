@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { InputLabel, MenuItem, Select } from "@material-ui/core";
+import { InputLabel, MenuItem, Select } from "@mui/material";
 import * as React from "react";
 import { languageStrings } from "../../util/langstrings";
 import * as OEQ from "@openequella/rest-api-client";
@@ -78,6 +78,7 @@ export const SearchOrderSelect = ({
         onChange={(event) =>
           onChange(OEQ.Search.SortOrderRunTypes.check(event.target.value))
         }
+        variant="standard"
       >
         {Array.from(sortOptions).map(([value, text]) => (
           <MenuItem key={value} value={value}>

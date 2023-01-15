@@ -77,7 +77,7 @@ export const clickDeleteButtonForOperatorNode = (
   nodeId: string
 ) => {
   const node = container.querySelector(
-    `#${nodeId} button[title=${deleteLabel}]`
+    `#${nodeId} button[aria-label=${deleteLabel}]`
   );
   if (!node) {
     throw Error(`Can't find delete button for node with id: ${nodeId}`);

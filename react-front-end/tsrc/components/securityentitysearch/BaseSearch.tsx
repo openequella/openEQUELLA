@@ -27,11 +27,11 @@ import {
   TextField,
   Tooltip,
   Typography,
-} from "@material-ui/core";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
-import ErrorOutline from "@material-ui/icons/ErrorOutline";
-import InfoIcon from "@material-ui/icons/Info";
-import SearchIcon from "@material-ui/icons/Search";
+} from "@mui/material";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import ErrorOutline from "@mui/icons-material/ErrorOutline";
+import InfoIcon from "@mui/icons-material/Info";
+import SearchIcon from "@mui/icons-material/Search";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as EQ from "fp-ts/Eq";
@@ -457,6 +457,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
           }}
           onKeyDown={handleQueryFieldKeypress}
           fullWidth
+          variant="standard"
         />
       </Grid>
     </Grid>
@@ -630,7 +631,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
       <Grid item xs={12}>
         {showSpinner ? spinner : itemList()}
       </Grid>
-      <Grid container direction="row">
+      <Grid container item direction="row">
         <Grid container item xs={6}>
           {selectAllButton()}
           {clearAllButton()}

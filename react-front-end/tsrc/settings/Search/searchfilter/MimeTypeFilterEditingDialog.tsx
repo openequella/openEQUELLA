@@ -22,7 +22,7 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
-} from "@material-ui/core";
+} from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useContext, useEffect, useState } from "react";
@@ -138,6 +138,7 @@ const MimeTypeFilterEditingDialog = ({
           fullWidth
           onChange={(event) => setFilterName(event.target.value)}
           error={!!filterName && !isNameValid}
+          variant="standard"
         />
         <MimeTypeList
           entries={mimeTypeEntries}

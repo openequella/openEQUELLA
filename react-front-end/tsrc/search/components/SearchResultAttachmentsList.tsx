@@ -27,20 +27,19 @@ import {
   ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
-  Theme,
   Typography,
-} from "@material-ui/core";
+} from "@mui/material";
 
-import { makeStyles } from "@material-ui/core/styles";
-import Tooltip from "@material-ui/core/Tooltip";
-import AttachFile from "@material-ui/icons/AttachFile";
-import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
-import ErrorIcon from "@material-ui/icons/Error";
-import ExpandMore from "@material-ui/icons/ExpandMore";
-import InsertDriveFile from "@material-ui/icons/InsertDriveFile";
-import Search from "@material-ui/icons/Search";
-import Warning from "@material-ui/icons/Warning";
-import { Skeleton } from "@material-ui/lab";
+import { styled } from "@mui/material/styles";
+import Tooltip from "@mui/material/Tooltip";
+import AttachFile from "@mui/icons-material/AttachFile";
+import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
+import ErrorIcon from "@mui/icons-material/Error";
+import ExpandMore from "@mui/icons-material/ExpandMore";
+import InsertDriveFile from "@mui/icons-material/InsertDriveFile";
+import Search from "@mui/icons-material/Search";
+import Warning from "@mui/icons-material/Warning";
+import { Skeleton } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
@@ -65,28 +64,40 @@ import {
 import { languageStrings } from "../../util/langstrings";
 import { ResourceSelector } from "./ResourceSelector";
 
-const {
-  searchResult: searchResultStrings,
-  selectResource: selectResourceStrings,
-} = languageStrings.searchpage;
+const PREFIX = "SearchResultAttachmentsList";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  nested: {
+const classes = {
+  nested: `${PREFIX}-nested`,
+  attachmentExpander: `${PREFIX}-attachmentExpander`,
+  attachmentBadge: `${PREFIX}-attachmentBadge`,
+  attachmentListItem: `${PREFIX}-attachmentListItem`,
+};
+
+const StyledAccordion = styled(Accordion)(({ theme }) => ({
+  [`& .${classes.nested}`]: {
     paddingLeft: theme.spacing(4),
   },
-  attachmentExpander: {
+
+  [`&.${classes.attachmentExpander}`]: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
   },
-  attachmentBadge: {
+
+  [`& .${classes.attachmentBadge}`]: {
     backgroundColor: theme.palette.background.paper,
     color: theme.palette.secondary.main,
     borderRadius: "50%",
   },
-  attachmentListItem: {
+
+  [`& .${classes.attachmentListItem}`]: {
     width: "100%",
   },
 }));
+
+const {
+  searchResult: searchResultStrings,
+  selectResource: selectResourceStrings,
+} = languageStrings.searchpage;
 
 export interface SearchResultAttachmentsListProps {
   /**
@@ -127,7 +138,6 @@ export const SearchResultAttachmentsList = ({
   } = item;
   const itemKey = `${uuid}/${version}`;
 
-  const classes = useStyles();
   const inSelectionSession: boolean = isSelectionSessionOpen();
   const inSkinny = isSelectionSessionInSkinny();
   const inStructured = isSelectionSessionInStructured();
@@ -257,7 +267,12 @@ export const SearchResultAttachmentsList = ({
       NEA.map((id) => (
         <ListItem key={id}>
           <ListItemIcon>
-            <Skeleton variant="rect" width={24} height={24} animation="wave" />
+            <Skeleton
+              variant="rectangular"
+              width={24}
+              height={24}
+              animation="wave"
+            />
           </ListItemIcon>
           <ListItemText>
             <Skeleton variant="text" animation="wave" />
@@ -386,7 +401,7 @@ export const SearchResultAttachmentsList = ({
   );
 
   return attachmentCount > 0 ? (
-    <Accordion
+    <StyledAccordion
       id={`attachments-list-${uuid}:${version}`}
       className={classes.attachmentExpander}
       expanded={attachExpanded}
@@ -401,6 +416,6 @@ export const SearchResultAttachmentsList = ({
       <AccordionDetails>
         {attachExpanded && buildAttachmentList()}
       </AccordionDetails>
-    </Accordion>
+    </StyledAccordion>
   ) : null;
 };

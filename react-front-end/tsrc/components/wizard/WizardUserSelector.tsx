@@ -23,11 +23,11 @@ import {
   ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
-} from "@material-ui/core";
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-import AddIcon from "@material-ui/icons/Add";
-import DeleteIcon from "@material-ui/icons/Delete";
-import ListIcon from "@material-ui/icons/List";
+} from "@mui/material";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ListIcon from "@mui/icons-material/List";
 import * as OEQ from "@openequella/rest-api-client";
 import * as E from "fp-ts/Either";
 import { flow, identity, pipe } from "fp-ts/function";

@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
 import * as React from "react";
 
 export interface WizardLabelProps {

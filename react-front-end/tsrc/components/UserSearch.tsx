@@ -15,23 +15,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createStyles, makeStyles, Theme } from "@material-ui/core";
-
-export const useACLTreeItemStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      color: theme.palette.text.secondary,
-    },
-    labelRoot: {
-      display: "flex",
-      alignItems: "center",
-      padding: theme.spacing(1, 0),
-    },
-    labelText: {
-      flexGrow: 1,
-    },
-    labelSelect: {
-      flexGrow: 1,
-    },
-  })
-);

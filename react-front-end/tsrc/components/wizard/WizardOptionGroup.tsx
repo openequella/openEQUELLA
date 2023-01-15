@@ -15,24 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Theme } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client/";
 import * as React from "react";
 import { WizardControlBasicProps } from "./WizardHelper";
 import { WizardLabel } from "./WizardLabel";
 import { chunk } from "lodash";
 
-const useStyles = makeStyles<Theme, { optionWidth: number }>({
-  optionRow: {
-    flexDirection: "row",
-    display: "flex",
-    alignItems: "center",
+const StyledDiv = styled("div", {
+  shouldForwardProp: (prop) => prop !== "optionWidth",
+})<{ optionWidth: number }>(({ optionWidth }) => ({
+  flexDirection: "row",
+  display: "flex",
+  alignItems: "center",
+  div: {
+    width: `${optionWidth}%`,
   },
-  optionColumn: {
-    width: ({ optionWidth }) => `${optionWidth}%`,
-  },
-});
+}));
 
 export interface WizardCheckBoxGroupTemplateProps
   extends WizardControlBasicProps {
@@ -66,7 +65,6 @@ export const WizardOptionGroup = ({
   buildOption,
 }: WizardCheckBoxGroupTemplateProps) => {
   const columnNumber = Math.max(1, columns);
-  const classes = useStyles({ optionWidth: Math.round(100 / columnNumber) });
 
   return (
     <>
@@ -79,16 +77,16 @@ export const WizardOptionGroup = ({
         options,
         columnNumber
       ).map((row, rowIndex) => (
-        <div className={classes.optionRow} key={`${id}-${rowIndex}`}>
+        <StyledDiv
+          optionWidth={Math.round(100 / columnNumber)}
+          key={`${id}-${rowIndex}`}
+        >
           {row.map((option, optionIndex) => (
-            <div
-              className={classes.optionColumn}
-              key={`${id}-${rowIndex}-${optionIndex}`}
-            >
+            <div key={`${id}-${rowIndex}-${optionIndex}`}>
               {buildOption(option)}
             </div>
           ))}
-        </div>
+        </StyledDiv>
       ))}
     </>
   );

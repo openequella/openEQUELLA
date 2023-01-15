@@ -39,17 +39,20 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.curator.shaded.com.google.common.collect.Lists;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.model.naming.Identifier;
 import org.hibernate.boot.model.relational.AuxiliaryDatabaseObject;
+import org.hibernate.boot.model.relational.Sequence;
+import org.hibernate.boot.model.relational.SqlStringGenerationContext;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.spi.Mapping;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
-import org.hibernate.id.PersistentIdentifierGenerator;
 import org.hibernate.jdbc.Work;
 import org.hibernate.mapping.Column;
 import org.hibernate.mapping.ForeignKey;
 import org.hibernate.mapping.Index;
 import org.hibernate.mapping.Table;
 import org.hibernate.mapping.UniqueKey;
+import org.hibernate.tool.schema.internal.StandardSequenceExporter;
 
 @SuppressWarnings("nls")
 public class HibernateMigrationHelper {
@@ -61,6 +64,7 @@ public class HibernateMigrationHelper {
   private final ExtendedAnnotationConfiguration configuration;
   private final SessionFactory factory;
 
+  private SqlStringGenerationContext sqlStringGenerationContext;
   private static final Log LOGGER = LogFactory.getLog(HibernateMigrationHelper.class);
 
   public HibernateMigrationHelper(HibernateFactory factory) {
@@ -75,6 +79,8 @@ public class HibernateMigrationHelper {
     mapping = configuration.buildMapping();
     this.defaultSchema = defaultSchema;
     defaultCatalog = null;
+    sqlStringGenerationContext =
+        ((SessionFactoryImplementor) this.factory).getSqlStringGenerationContext();
   }
 
   public List<String> getDropTableSql(String... tables) {
@@ -104,8 +110,6 @@ public class HibernateMigrationHelper {
 
     sqlStrings.addAll(getCreationSqlForTableIndexAndFks(filter, tables.values()));
 
-    sqlStrings.addAll(getCreationSqlForIdGenerators(filter));
-
     sqlStrings.addAll(getCreationSqlForAuxDbos(filter));
 
     return sqlStrings;
@@ -113,11 +117,13 @@ public class HibernateMigrationHelper {
 
   private List<String> getCreationSqlForTables(
       HibernateCreationFilter filter, Collection<Table> tables) {
-    List<String> sqlStrings = new ArrayList<String>();
+    List<String> sqlStrings = new ArrayList<>();
 
     for (Table table : tables) {
       if (table.isPhysicalTable() && filter.includeTable(table)) {
-        final String sql = table.sqlCreateString(dialect, mapping, defaultCatalog, defaultSchema);
+        final String sql =
+            table.sqlCreateString(
+                mapping, sqlStringGenerationContext, defaultCatalog, defaultSchema);
         LOGGER.debug("Table create SQL: " + sql);
         sqlStrings.add(sql);
       }
@@ -174,7 +180,8 @@ public class HibernateMigrationHelper {
             }
             if (fk.isPhysicalConstraint() && filter.includeForeignKey(table, fk)) {
               final String sql =
-                  fk.sqlCreateString(dialect, mapping, defaultCatalog, defaultSchema);
+                  fk.sqlCreateString(
+                      mapping, sqlStringGenerationContext, defaultCatalog, defaultSchema);
               LOGGER.debug("FK create SQL: " + sql);
               sqlStrings.add(sql);
             }
@@ -184,28 +191,6 @@ public class HibernateMigrationHelper {
         }
       } else {
         LOGGER.debug("Table is not physical, not generating SQL for it: " + table.getName());
-      }
-    }
-
-    return sqlStrings;
-  }
-
-  private List<String> getCreationSqlForIdGenerators(HibernateCreationFilter filter) {
-    List<String> sqlStrings = new ArrayList<String>();
-
-    Collection<PersistentIdentifierGenerator> generators =
-        configuration.getGenerators(dialect, defaultCatalog, defaultSchema);
-    for (PersistentIdentifierGenerator pig : generators) {
-      if (filter.includeGenerator(pig)) {
-        String[] lines = pig.sqlCreateStrings(dialect);
-        LOGGER.debug(
-            "Filter includes generator ["
-                + pig.toString()
-                + "].  Adding SQL lines: "
-                + Arrays.toString(lines));
-        Collections.addAll(sqlStrings, lines);
-      } else {
-        LOGGER.debug("Filter does not include generator [" + pig.toString() + "]");
       }
     }
 
@@ -224,7 +209,8 @@ public class HibernateMigrationHelper {
       if (object.appliesToDialect(dialect) && filter.includeObject(object)) {
         // Due to SpringHib5, removed the extra parameters and switched packages.
         // DDL for Oracle, Postgres, and Sql Server were comparable.
-        final List<String> lines = Lists.newArrayList(object.sqlCreateStrings(dialect));
+        final List<String> lines =
+            Lists.newArrayList(object.sqlCreateStrings(sqlStringGenerationContext));
         if (LOGGER.isDebugEnabled()) {
           LOGGER.debug(
               "Filter includes Aux DB object ["
@@ -239,16 +225,35 @@ public class HibernateMigrationHelper {
     return sqlStrings;
   }
 
+  /**
+   * Generate SQL statements for creating a sequence in the default DB Schema.
+   *
+   * @param sequenceName Name of the sequence to be created.
+   */
+  public List<String> getSqlCreateStringForSequence(String sequenceName) {
+    Sequence sequence =
+        new Sequence(
+            Identifier.toIdentifier(defaultCatalog),
+            Identifier.toIdentifier(defaultSchema),
+            Identifier.toIdentifier(sequenceName));
+
+    StandardSequenceExporter exporter = new StandardSequenceExporter(dialect);
+
+    return Arrays.asList(
+        exporter.getSqlCreateStrings(
+            sequence, configuration.getMetadata(), sqlStringGenerationContext));
+  }
+
   public List<String> getAddColumnsSQL(String tableName, String... columnNames) {
-    List<String> sqlStrings = new ArrayList<String>();
+    List<String> sqlStrings = new ArrayList<>();
 
     Table table = findTable(tableName);
     for (String columnName : columnNames) {
       Column column = table.getColumn(new Column(columnName));
 
-      StringBuffer alter =
-          new StringBuffer("alter table ")
-              .append(table.getQualifiedName(dialect, defaultCatalog, defaultSchema))
+      StringBuilder alter =
+          new StringBuilder("alter table ")
+              .append(table.getQualifiedName(sqlStringGenerationContext))
               .append(' ')
               .append(dialect.getAddColumnString());
       alter
@@ -345,11 +350,14 @@ public class HibernateMigrationHelper {
         LOGGER.debug("Considering unique key for table [" + tableName + "]: " + uk.getName());
         if (!Collections.disjoint(uk.getColumns(), colSet)) {
           StringBuilder buf = new StringBuilder("alter table ");
-          buf.append(table.getQualifiedName(dialect, defaultCatalog, defaultSchema));
+          buf.append(table.getQualifiedName(sqlStringGenerationContext));
           buf.append(" add constraint ");
           String constraint =
               uk.sqlConstraintString(
-                  dialect, extDialect.getRandomIdentifier(), defaultCatalog, defaultSchema);
+                  sqlStringGenerationContext,
+                  extDialect.getRandomIdentifier(),
+                  defaultCatalog,
+                  defaultSchema);
           LOGGER.debug(
               "Adding unique alter constraint to table [" + tableName + "]: " + constraint);
           if (constraint != null) {
@@ -486,7 +494,7 @@ public class HibernateMigrationHelper {
 
     StringBuffer alter =
         new StringBuffer("alter table ")
-            .append(table.getQualifiedName(dialect, defaultCatalog, defaultSchema))
+            .append(table.getQualifiedName(sqlStringGenerationContext))
             .append(' ')
             .append(extDialect.getModifyColumnSql(mapping, column, changeNotNull, changeType));
 
@@ -531,8 +539,7 @@ public class HibernateMigrationHelper {
             "Could not find column " + columnName + " on table " + tableName);
       }
       sqlStrings.add(
-          extDialect.getDropColumnSql(
-              table.getQualifiedName(dialect, defaultCatalog, defaultSchema), column));
+          extDialect.getDropColumnSql(table.getQualifiedName(sqlStringGenerationContext), column));
     }
     return sqlStrings;
   }
@@ -546,7 +553,7 @@ public class HibernateMigrationHelper {
 
       StringBuffer alter =
           new StringBuffer("alter table ")
-              .append(table.getQualifiedName(dialect, defaultCatalog, defaultSchema))
+              .append(table.getQualifiedName(sqlStringGenerationContext))
               .append(' ')
               .append(extDialect.getAddNotNullSql(mapping, column));
       sqlStrings.add(alter.toString());
@@ -564,7 +571,7 @@ public class HibernateMigrationHelper {
     String alter = null;
     alter =
         extDialect.getRenameColumnSql(
-            table.getQualifiedName(dialect, defaultCatalog, defaultSchema), column, newColumnName);
+            table.getQualifiedName(sqlStringGenerationContext), column, newColumnName);
     sqlStrings.add(alter);
 
     return sqlStrings;
@@ -617,7 +624,7 @@ public class HibernateMigrationHelper {
 
                   StringBuffer alter =
                       new StringBuffer("alter table ")
-                          .append(table.getQualifiedName(dialect, defaultCatalog, defaultSchema))
+                          .append(table.getQualifiedName(sqlStringGenerationContext))
                           .append(' ')
                           .append(extDialect.getAddNotNullSql(mapping, column));
                   sqlStrings.add(alter.toString());

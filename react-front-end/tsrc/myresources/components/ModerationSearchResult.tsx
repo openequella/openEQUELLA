@@ -22,7 +22,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-} from "@material-ui/core";
+} from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as O from "fp-ts/Option";
@@ -36,7 +36,7 @@ import { OEQLink } from "../../components/OEQLink";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { buildOpenSummaryPageHandler } from "../../search/SearchPageHelper";
 import { languageStrings } from "../../util/langstrings";
-import MessageIcon from "@material-ui/icons/Message";
+import MessageIcon from "@mui/icons-material/Message";
 
 const {
   ariaLabel,

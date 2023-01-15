@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import * as OEQ from "@openequella/rest-api-client";
 import { SearchResultItem } from "@openequella/rest-api-client/dist/Search";
 import * as A from "fp-ts/Array";

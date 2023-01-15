@@ -15,16 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FormControl, MenuItem, Select, Theme } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import LinkIcon from "@material-ui/icons/Link";
+import { FormControl, MenuItem, Select } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import LinkIcon from "@mui/icons-material/Link";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { OEQLink } from "../../components/OEQLink";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  linkIcon: {
+const PREFIX = "AuxiliarySearchSelector";
+
+const classes = {
+  linkIcon: `${PREFIX}-linkIcon`,
+};
+
+const StyledFormControl = styled(FormControl)(({ theme }) => ({
+  [`& .${classes.linkIcon}`]: {
     marginRight: theme.spacing(2),
   },
 }));
@@ -56,7 +62,6 @@ export const AuxiliarySearchSelector = ({
   urlGeneratorForRouteLink,
   urlGeneratorForMuiLink,
 }: AuxiliarySearchSelectorProps) => {
-  const classes = useStyles();
   const [auxiliarySearches, setAuxiliarySearches] = useState<
     OEQ.Common.BaseEntitySummary[]
   >([]);
@@ -86,8 +91,8 @@ export const AuxiliarySearchSelector = ({
     ));
 
   return (
-    <FormControl variant="outlined" fullWidth>
+    <StyledFormControl variant="outlined" fullWidth>
       <Select value="">{buildSearchMenuItems()}</Select>
-    </FormControl>
+    </StyledFormControl>
   );
 };

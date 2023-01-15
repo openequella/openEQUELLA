@@ -15,45 +15,57 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import LuxonUtils from "@date-io/luxon";
 import {
   FormControl,
   Grid,
   InputLabel,
   MenuItem,
   Select,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import {
-  KeyboardDatePicker,
-  MuiPickersUtilsProvider,
-} from "@material-ui/pickers";
-import type { DatePickerView } from "@material-ui/pickers/DatePicker/DatePicker";
+  TextField,
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import type { CalendarPickerView } from "@mui/x-date-pickers";
+import { DesktopDatePicker } from "@mui/x-date-pickers";
+import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import clsx from "clsx";
+import { flow, pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
 import { DateTime } from "luxon";
 import * as React from "react";
 import { ReactNode, useEffect, useState } from "react";
 import type { DateRange, ISODateFormat } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
 import SettingsToggleSwitch from "./SettingsToggleSwitch";
-import * as O from "fp-ts/Option";
-import { pipe } from "fp-ts/function";
+
+const PREFIX = "DateRangeSelector";
+
+const classes = {
+  hideCalenderIcon: `${PREFIX}-hideCalenderIcon`,
+  datePickerWidth: `${PREFIX}-datePickerWidth`,
+};
+
+const StyledGrid = styled(Grid)({
+  [`& .${classes.hideCalenderIcon}`]: {
+    display: "none",
+  },
+  [`& .${classes.datePickerWidth}`]: {
+    width: "100%",
+  },
+});
 
 /**
  * Type definition for DatePicker props that needs customisation.
  */
 export interface DatePickerCustomProps {
   /**
-   * A list of DatePickerView controlling the views of DatePicker.
+   * A list of CalendarPickerView controlling the views of DatePicker.
    */
-  views: DatePickerView[];
+  views: CalendarPickerView[];
   /**
    * Standard date format used in the DatePicker.
    */
   format: ISODateFormat;
-  /**
-   * Function to control what is displayed in the DatePicker input.
-   */
-  labelFunc: (d: DateTime | null) => string;
   /**
    * Function to transform a given date to another date (e.g. convert a day to the first day of a month).
    */
@@ -69,9 +81,8 @@ export interface DatePickerCustomProps {
 export const buildDatePickerCustomProps = (
   format: ISODateFormat = "yyyy-MM-dd"
 ): DatePickerCustomProps => ({
-  views: ["year", "month", "date"],
+  views: ["year", "month", "day"],
   format,
-  labelFunc: (d: DateTime | null) => d?.toFormat(format) ?? "",
   transformDate: (d: DateTime) => d,
 });
 
@@ -85,19 +96,11 @@ interface DatePickerProps {
    */
   label: string;
   /**
-   * The value of a date picker.
+   * The value of a date picker. (Uses DateTime to match the AdapterLuxon adapter used with the
+   * DatePicker.)
    */
-  value?: Date;
+  value?: DateTime;
 }
-
-const useStyles = makeStyles({
-  hideCalenderIcon: {
-    display: "none",
-  },
-  datePickerWidth: {
-    width: "100%",
-  },
-});
 
 export interface DateRangeSelectorProps {
   /**
@@ -161,8 +164,6 @@ export const DateRangeSelector = ({
   datePickerCustomPropsProvider = buildDatePickerCustomProps,
   id = "date-range-selector",
 }: DateRangeSelectorProps) => {
-  const classes = useStyles();
-
   const {
     quickOptionSwitchLabel,
     quickOptionLabels,
@@ -250,10 +251,8 @@ export const DateRangeSelector = ({
   const dateRangeToDateOptionConverter = (dateRange?: DateRange): string => {
     let option = quickOptionLabels.all;
     if (
-      !dateRange ||
-      !dateRange.start ||
-      (dateRange.end &&
-        dateRange.end.toDateString() !== new Date().toDateString())
+      !dateRange?.start ||
+      dateRange.end?.toDateString() !== new Date().toDateString()
     ) {
       return option;
     }
@@ -261,7 +260,7 @@ export const DateRangeSelector = ({
     const start = DateTime.fromJSDate(dateRange.start);
     getDateRangeOptions().forEach(
       (dateTime: DateTime | undefined, label: string) => {
-        if (dateTime && dateTime.toISODate() === start.toISODate()) {
+        if (dateTime?.toISODate() === start.toISODate()) {
           option = label;
         }
       }
@@ -289,9 +288,7 @@ export const DateRangeSelector = ({
         value={dateRangeToDateOptionConverter(stateDateRange)}
         id={`${id}-quick-options`}
         labelId={`${id}-quick-option-label`}
-        onChange={(event) =>
-          handleQuickDateOptionChange(event.target.value as string)
-        }
+        onChange={(event) => handleQuickDateOptionChange(event.target.value)}
         label={quickOptionLabel}
       >
         {Array.from(getDateRangeOptions()).map(([option, _]) => (
@@ -307,71 +304,79 @@ export const DateRangeSelector = ({
    * Generate two date pickers and wrap them with Grid items.
    */
   const getDatePickers = (): ReactNode => {
-    const { views, format, labelFunc, transformDate } =
-      datePickerCustomPropsProvider();
+    // The DatePicker is used with a Luxon adapter, so we want all our date types aligned.
+    const asLuxonDate = (d: Date | undefined): DateTime | undefined =>
+      pipe(d, O.fromNullable, O.map(DateTime.fromJSDate), O.toUndefined);
+
+    const { views, format, transformDate } = datePickerCustomPropsProvider();
     const dateRangePickers: DatePickerProps[] = [
       {
         field: "start",
         label: startLabel,
-        value: stateDateRange?.start,
+        value: asLuxonDate(stateDateRange?.start),
       },
       {
         field: "end",
         label: endLabel,
-        value: stateDateRange?.end,
+        value: asLuxonDate(stateDateRange?.end),
       },
     ];
 
     return dateRangePickers.map(({ field, label, value }) => {
       const isStart = field === "start";
       return (
-        <Grid item key={field} xs={12} lg={6}>
-          <KeyboardDatePicker
-            id={`${id}-${field}`}
+        <StyledGrid item key={field} xs={12} lg={6}>
+          {/*Ideally this would be DatePicker, however the responsive switching between Desktop and
+          Mobile was too troublesome culminating in this comment on GitHub:
+          https://github.com/mui/mui-x/issues/4644#issuecomment-1343851120*/}
+          <DesktopDatePicker
+            renderInput={(props) => (
+              <TextField id={`${id}-${field}`} {...props} />
+            )}
             views={views}
-            className={classes.datePickerWidth} // Ensure the picker still takes full width when calender icon is hidden.
+            className={classes.datePickerWidth} // Ensure the picker still takes full width when calendar icon is hidden.
             disableFuture
-            variant="dialog"
-            clearable
-            KeyboardButtonProps={{
-              className: showCalenderIcon ? "" : classes.hideCalenderIcon,
+            closeOnSelect
+            componentsProps={{
+              actionBar: {
+                actions: ["clear", "cancel", "accept"],
+              },
             }}
-            inputVariant="outlined"
-            autoOk
-            labelFunc={labelFunc}
-            format={format}
+            OpenPickerButtonProps={{
+              className: clsx(!showCalenderIcon && classes.hideCalenderIcon),
+            }}
+            inputFormat={format}
+            // Need this due to https://github.com/mui/mui-x/issues/4664
+            disableMaskedInput={false}
             // The maximum start date is the range's end whereas minimum end date is the range's start.
-            minDate={!isStart ? stateDateRange?.start : undefined}
-            maxDate={isStart ? stateDateRange?.end : undefined}
+            minDate={asLuxonDate(!isStart ? stateDateRange?.start : undefined)}
+            maxDate={asLuxonDate(isStart ? stateDateRange?.end : undefined)}
             label={label}
             // When value is undefined use null instead so nothing is displayed in the TextField.
             value={value ?? null}
-            onChange={(newDate, _) =>
-              pipe(
-                newDate,
-                O.fromNullable,
-                O.map((d) => transformDate(d).toJSDate()),
-                O.toUndefined,
-                (d) => {
-                  const newRange = {
-                    ...stateDateRange,
-                    [field]: d,
-                  };
-                  setStateDateRange(newRange);
-                  handleDateRangeChange(newRange);
-                }
-              )
-            }
+            onChange={flow(
+              O.fromNullable,
+              O.map(flow(transformDate, (d) => d.toJSDate())),
+              O.toUndefined,
+              (d: Date | undefined) => {
+                const newRange = {
+                  ...stateDateRange,
+                  [field]: d,
+                };
+                setStateDateRange(newRange);
+                handleDateRangeChange(newRange);
+              }
+            )}
           />
-        </Grid>
+        </StyledGrid>
       );
     });
   };
 
   const customDatePicker: ReactNode = (
-    <MuiPickersUtilsProvider
-      utils={LuxonUtils}
-      locale={DateTime.local().locale}
+    <LocalizationProvider
+      dateAdapter={AdapterLuxon}
+      adapterLocale={DateTime.local().locale}
     >
       <Grid
         container
@@ -389,7 +394,7 @@ export const DateRangeSelector = ({
       >
         {getDatePickers()}
       </Grid>
-    </MuiPickersUtilsProvider>
+    </LocalizationProvider>
   );
 
   return (

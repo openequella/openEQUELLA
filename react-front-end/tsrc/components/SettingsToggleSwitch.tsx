@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import SearchSettingFormControl from "./SearchSettingFormControl";
-import { Switch } from "@material-ui/core";
+import { Switch } from "@mui/material";
 import * as React from "react";
 
 export interface SettingsToggleSwitchProps {
@@ -66,7 +66,7 @@ export default function SettingsToggleSwitch({
     <SearchSettingFormControl
       disabled={disabled}
       onChange={(_, checked) => setValue(checked)}
-      control={<Switch id={id} checked={value} />}
+      control={<Switch id={id} checked={value} color="secondary" />}
       label={label}
       title={title}
       formHelperText={formHelperText}

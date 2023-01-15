@@ -18,20 +18,17 @@
 import {
   AppBar,
   Button,
-  createStyles,
   FormControl,
   FormControlLabel,
   FormLabel,
   Grid,
-  makeStyles,
   Paper,
   Radio,
   RadioGroup,
   Tab,
   Tabs,
-  Theme,
-} from "@material-ui/core";
-import { TabContext, TabPanel } from "@material-ui/lab";
+} from "@mui/material";
+import { TabContext, TabPanel } from "@mui/lab";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
@@ -67,6 +64,7 @@ import RoleSearch from "../securityentitysearch/RoleSearch";
 import UserSearch from "../securityentitysearch/UserSearch";
 import ACLExpressionTree from "./ACLExpressionTree";
 import ACLOtherPanel from "./ACLOtherPanel";
+import { styled } from "@mui/material/styles";
 
 const {
   aclExpressionBuilder: {
@@ -87,36 +85,44 @@ const SearchFilterTypesUnion = Union(
 
 type SearchFilterType = Static<typeof SearchFilterTypesUnion>;
 
-const useACLExpressionBuilderStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    appBar: {
-      backgroundColor: "transparent",
-      boxShadow: "0px 0px 0px 0px rgb(0 0 0 / 0%)",
-    },
-    mainContent: {
-      height: 600,
-    },
-    panelWrapper: {
-      position: "relative",
-      padding: theme.spacing(1),
-      display: "flex",
-      flexDirection: "column",
-      height: "100%",
-    },
-    paper: {
-      flexGrow: 1,
-      padding: theme.spacing(2),
-      overflowY: "auto",
-      overflowX: "hidden",
-    },
-    tabPanel: {
-      padding: 0,
-    },
-    actionBtn: {
-      float: "right",
-    },
-  })
-);
+const PREFIX = "ACLExpressionBuilder";
+const classes = {
+  appBar: `${PREFIX}-appBar`,
+  mainContent: `${PREFIX}-mainContent`,
+  panelWrapper: `${PREFIX}-panelWrapper`,
+  paper: `${PREFIX}-paper`,
+  tabPanel: `${PREFIX}-tabPanel`,
+  actionBtn: `${PREFIX}-actionBtn`,
+};
+
+const StyledGrid = styled(Grid)(({ theme }) => ({
+  [`& .${classes.appBar}`]: {
+    backgroundColor: "transparent",
+    boxShadow: "0px 0px 0px 0px rgb(0 0 0 / 0%)",
+  },
+  [`& .${classes.mainContent}`]: {
+    height: 600,
+  },
+  [`& .${classes.panelWrapper}`]: {
+    position: "relative",
+    padding: theme.spacing(1),
+    display: "flex",
+    flexDirection: "column",
+    height: "100%",
+  },
+  [`& .${classes.paper}`]: {
+    flexGrow: 1,
+    padding: theme.spacing(2),
+    overflowY: "auto",
+    overflowX: "hidden",
+  },
+  [`& .${classes.tabPanel}`]: {
+    padding: 0,
+  },
+  [`& .${classes.actionBtn}`]: {
+    float: "right",
+  },
+}));
 
 export interface ACLExpressionBuilderProps {
   /** Handler for when user click OK button. */
@@ -292,7 +298,7 @@ const ACLExpressionBuilder = ({
     paper: paperClass,
     tabPanel: tabPanelClass,
     actionBtn: actionBtnClass,
-  } = useACLExpressionBuilderStyles();
+  } = classes;
 
   const homeACLPanel = () => {
     const sharedProps = {
@@ -393,7 +399,7 @@ const ACLExpressionBuilder = ({
   };
 
   return (
-    <Grid container spacing={2} justifyContent="flex-start">
+    <StyledGrid spacing={2} container justifyContent="flex-start">
       <TabContext value={activeTabValue}>
         <Grid item>
           <AppBar position="static" color="default" className={appBarClass}>
@@ -445,7 +451,7 @@ const ACLExpressionBuilder = ({
           </Button>
         </Grid>
       </TabContext>
-    </Grid>
+    </StyledGrid>
   );
 };
 

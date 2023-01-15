@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PropTypes } from "@material-ui/core";
-import InfoIcon from "@material-ui/icons/Info";
+import { PropTypes } from "@mui/material";
+import InfoIcon from "@mui/icons-material/Info";
 import * as React from "react";
 import { useHistory } from "react-router";
 import { buildOpenSummaryPageHandler } from "../search/SearchPageHelper";

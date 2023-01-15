@@ -15,17 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import CloseIcon from "@mui/icons-material/Close";
 import {
   Button,
   Card,
   CardActions,
   CardContent,
   CardHeader,
+  CircularProgress,
   Grid,
   Typography,
-  CircularProgress,
-} from "@material-ui/core";
-import CloseIcon from "@material-ui/icons/Close";
+} from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { constFalse, flow, pipe } from "fp-ts/function";

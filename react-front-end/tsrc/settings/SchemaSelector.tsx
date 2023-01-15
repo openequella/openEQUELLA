@@ -15,15 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import { ReactElement, useContext } from "react";
 import {
   FormHelperText,
   Grid,
   InputLabel,
   MenuItem,
   Select,
-} from "@material-ui/core";
+} from "@mui/material";
+import * as React from "react";
+import { ReactElement, useContext } from "react";
 import { AppContext } from "../mainui/App";
 import {
   schemaListSummary,
@@ -109,6 +109,7 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
               onChange={(event) => {
                 setSelectedSchema(event.target.value as string | undefined);
               }}
+              variant="standard"
             >
               {schemaList}
             </Select>

@@ -23,7 +23,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-} from "@material-ui/core";
+} from "@mui/material";
 import { languageStrings } from "../util/langstrings";
 
 interface AdminDownloadDialogProps {

@@ -15,9 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
-import ArrowRightIcon from "@material-ui/icons/ArrowRight";
-import { TreeView } from "@material-ui/lab";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowRightIcon from "@mui/icons-material/ArrowRight";
+import { TreeView } from "@mui/lab";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as S from "fp-ts/string";

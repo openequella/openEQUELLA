@@ -15,6 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import Share from "@mui/icons-material/Share";
 import {
   Button,
   Card,
@@ -23,16 +26,14 @@ import {
   CardHeader,
   CircularProgress,
   Grid,
-  Hidden,
   List,
   ListItem,
   Tooltip,
   Typography,
-} from "@material-ui/core";
-import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
-import FilterListIcon from "@material-ui/icons/FilterList";
-import { makeStyles } from "@material-ui/core/styles";
-import Share from "@material-ui/icons/Share";
+  useMediaQuery,
+} from "@mui/material";
+import type { Theme } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import clsx from "clsx";
 import * as React from "react";
@@ -47,15 +48,23 @@ import SearchOrderSelect, { SearchOrderSelectProps } from "./SearchOrderSelect";
 import { SearchPagination, SearchPaginationProps } from "./SearchPagination";
 import SearchResult from "./SearchResult";
 
-const useStyles = makeStyles({
-  transparentList: {
+const PREFIX = "SearchResultList";
+
+const classes = {
+  transparentList: `${PREFIX}-transparentList`,
+  centralSpinner: `${PREFIX}-centralSpinner`,
+  textCentered: `${PREFIX}-textCentered`,
+};
+
+const StyledCard = styled(Card)({
+  [`& .${classes.transparentList}`]: {
     opacity: 0.2,
   },
-  centralSpinner: {
+  [`& .${classes.centralSpinner}`]: {
     top: "50%",
     position: "fixed",
   },
-  textCentered: {
+  [`& .${classes.textCentered}`]: {
     textAlign: "center",
   },
 });
@@ -152,8 +161,10 @@ export const SearchResultList = ({
   useShareSearchButton = true,
   additionalHeaders,
 }: SearchResultListProps) => {
-  const classes = useStyles();
   const inSelectionSession: boolean = isSelectionSessionOpen();
+  const isMdDown = useMediaQuery<Theme>((theme) =>
+    theme.breakpoints.down("md")
+  );
 
   /**
    * A list that consists of search result items. Lower the list's opacity when spinner displays.
@@ -171,7 +182,7 @@ export const SearchResultList = ({
   );
 
   return (
-    <Card>
+    <StyledCard>
       <CardHeader
         title={searchPageStrings.subtitle + ` (${count})`}
         action={
@@ -181,7 +192,11 @@ export const SearchResultList = ({
             </Grid>
             <Grid item>
               <Tooltip title={searchPageStrings.newSearchHelperText}>
-                <Button variant="outlined" onClick={onClearSearchOptions}>
+                <Button
+                  variant="outlined"
+                  onClick={onClearSearchOptions}
+                  color="inherit"
+                >
                   {searchPageStrings.newSearch}
                 </Button>
               </Tooltip>
@@ -199,7 +214,7 @@ export const SearchResultList = ({
                 <ExportSearchResultLink {...exportLinkProps} ref={linkRef} />
               </Grid>
             )}
-            <Hidden mdUp>
+            {isMdDown && (
               <Grid item>
                 <TooltipIconButton
                   title={searchPageStrings.refineSearchPanel.title}
@@ -209,7 +224,7 @@ export const SearchResultList = ({
                   <FilterListIcon />
                 </TooltipIconButton>
               </Grid>
-            </Hidden>
+            )}
             {!inSelectionSession && useShareSearchButton && (
               <Grid item>
                 <TooltipIconButton
@@ -231,6 +246,7 @@ export const SearchResultList = ({
       <CardContent className={clsx(showSpinner && classes.textCentered)}>
         {showSpinner && (
           <CircularProgress
+            aria-label={searchPageStrings.loading}
             variant="indeterminate"
             className={clsx(children && classes.centralSpinner)}
           />
@@ -252,7 +268,7 @@ export const SearchResultList = ({
           </Grid>
         </Grid>
       </CardActions>
-    </Card>
+    </StyledCard>
   );
 };
 

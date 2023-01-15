@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TextField } from "@material-ui/core";
+import { TextField } from "@mui/material";
 import { useContext, useState } from "react";
 import * as React from "react";
 import ConfirmDialog from "../../components/ConfirmDialog";
@@ -65,6 +65,7 @@ export const FavouriteSearchDialog = ({
       <TextField
         label={favouriteSearchStrings.text}
         value={searchName}
+        variant="standard"
         autoFocus
         required
         fullWidth
