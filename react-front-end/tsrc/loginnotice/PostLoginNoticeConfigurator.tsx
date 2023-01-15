@@ -24,7 +24,7 @@ import {
   DialogContent,
   DialogContentText,
   TextField,
-} from "@material-ui/core";
+} from "@mui/material";
 import { commonString } from "../util/commonstrings";
 import {
   clearPostLoginNotice,
@@ -33,9 +33,9 @@ import {
   submitPostLoginNotice,
 } from "../modules/LoginNoticeModule";
 import { AxiosError, AxiosResponse } from "axios";
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogActions from "@material-ui/core/DialogActions";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogActions from "@mui/material/DialogActions";
 import SettingsListHeading from "../components/SettingsListHeading";
 
 interface PostLoginNoticeConfiguratorProps {
@@ -112,8 +112,8 @@ class PostLoginNoticeConfigurator extends React.Component<
             <TextField
               id="postNoticeField"
               variant="outlined"
-              rows="12"
-              rowsMax="35"
+              minRows="12"
+              maxRows="35"
               multiline
               fullWidth
               inputProps={{ length: 12 }}

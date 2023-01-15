@@ -19,6 +19,10 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { initStrings } from "../util/langstrings";
 import "../util/polyfill";
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/material-icons";
 
 export type EntryPage =
   | "advancedSearchPage"

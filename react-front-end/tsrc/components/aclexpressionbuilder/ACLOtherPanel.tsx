@@ -25,9 +25,10 @@ import {
   Radio,
   RadioGroup,
   Select,
+  SelectChangeEvent,
   TextField,
   Typography,
-} from "@material-ui/core";
+} from "@mui/material";
 import * as E from "fp-ts/Either";
 import { flow, identity, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
@@ -135,7 +136,7 @@ const ACLOtherPanel = ({
   const [ipAddress, setIpAddress] = useState("");
   const [ssoIdentifier, setSSOIdentifier] = useState("");
 
-  const handleAclTypeChanged = (event: ChangeEvent<{ value: unknown }>) =>
+  const handleAclTypeChanged = (event: SelectChangeEvent<OtherACLType>) =>
     setActiveACLType(OtherACLTypesUnion.check(event.target.value));
 
   const handleReferrerTypeChanged = (event: ChangeEvent<{ value: unknown }>) =>
@@ -214,9 +215,9 @@ const ACLOtherPanel = ({
     title: string;
     children?: ReactNode;
   }) => (
-    <Grid container direction="column" spacing={1}>
+    <Grid item>
       <Typography>{title}</Typography>
-      <Grid item> {children}</Grid>
+      {children}
     </Grid>
   );
 
@@ -230,15 +231,13 @@ const ACLOtherPanel = ({
     (Guest) => <OtherControl title={guestDesc} />,
     (Sso) => (
       <OtherControl title={ssoDesc}>
-        <FormControl>
-          <Select
-            value={ssoIdentifier}
-            onChange={(event) => setSSOIdentifier(event.target.value as string)}
-            displayEmpty
-          >
-            <MenuItem value="Moodle">Moodle</MenuItem>
-          </Select>
-        </FormControl>
+        <Select
+          value={ssoIdentifier}
+          onChange={(event) => setSSOIdentifier(event.target.value)}
+          displayEmpty
+        >
+          <MenuItem value="Moodle">Moodle</MenuItem>
+        </Select>
       </OtherControl>
     ),
     (Ip) => (
@@ -254,38 +253,34 @@ const ACLOtherPanel = ({
     ),
     (Referrer) => (
       <OtherControl title={referrerDesc}>
-        <Grid item>
-          <TextField
-            autoFocus
-            value={referrerDetails.value}
-            onChange={(event) =>
-              setReferrerDetails({
-                ...referrerDetails,
-                value: event.target.value,
-              })
-            }
-            name="referrer"
-          />
-        </Grid>
-        <Grid item>
-          <RadioGroup
-            name="referrer"
-            value={referrerDetails.type}
-            onChange={handleReferrerTypeChanged}
-          >
-            {ReferrerTypesUnion.alternatives.map((referrerType) => (
-              <FormControlLabel
-                key={referrerType.value}
-                value={referrerType.value}
-                control={<Radio />}
-                label={ReferrerTypesUnion.match(
-                  (Contain) => containReferrerDesc,
-                  (Exact) => exactReferrerDesc
-                )(referrerType.value)}
-              />
-            ))}
-          </RadioGroup>
-        </Grid>
+        <TextField
+          autoFocus
+          value={referrerDetails.value}
+          onChange={(event) =>
+            setReferrerDetails({
+              ...referrerDetails,
+              value: event.target.value,
+            })
+          }
+          name="referrer"
+        />
+        <RadioGroup
+          name="referrer"
+          value={referrerDetails.type}
+          onChange={handleReferrerTypeChanged}
+        >
+          {ReferrerTypesUnion.alternatives.map((referrerType) => (
+            <FormControlLabel
+              key={referrerType.value}
+              value={referrerType.value}
+              control={<Radio />}
+              label={ReferrerTypesUnion.match(
+                (Contain) => containReferrerDesc,
+                (Exact) => exactReferrerDesc
+              )(referrerType.value)}
+            />
+          ))}
+        </RadioGroup>
       </OtherControl>
     )
   );

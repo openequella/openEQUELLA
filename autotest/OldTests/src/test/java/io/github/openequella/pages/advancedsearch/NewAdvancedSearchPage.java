@@ -31,13 +31,13 @@ public class NewAdvancedSearchPage extends NewSearchPage {
     input.click();
 
     WebElement clearButton =
-        input.findElement(By.xpath("./following-sibling::div/button[@title='Clear']"));
+        input.findElement(By.xpath("./following-sibling::div/button[@aria-label='Clear']"));
     clearButton.click();
   }
 
   public WebElement getAdvancedSearchFilterIcon() {
     List<WebElement> buttons =
-        driver.findElements(By.xpath(".//button[@title='Show advanced search filters']"));
+        driver.findElements(By.xpath(".//button[@aria-label='Show advanced search filters']"));
     if (buttons.size() > 0) {
       return buttons.get(0);
     }
@@ -57,7 +57,7 @@ public class NewAdvancedSearchPage extends NewSearchPage {
   public void closeAdvancedSearchPanel() {
     WebElement panel = getAdvancedSearchPanel();
     if (panel != null) {
-      WebElement closeButton = panel.findElement(By.xpath(".//button[@title='Close']"));
+      WebElement closeButton = panel.findElement(By.xpath(".//button[@aria-label='Close']"));
       closeButton.click();
     } else {
       throw new NoSuchElementException("Failed to find Advanced search panel");

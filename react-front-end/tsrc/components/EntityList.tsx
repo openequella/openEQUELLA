@@ -16,38 +16,47 @@
  * limitations under the License.
  */
 import * as React from "react";
-import {
-  CircularProgress,
-  Fab,
-  List,
-  Paper,
-  Theme,
-  Typography,
-  makeStyles,
-} from "@material-ui/core";
-import AddIcon from "@material-ui/icons/Add";
+import { styled } from "@mui/material/styles";
+import { CircularProgress, Fab, List, Paper, Typography } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  overall: {
+const PREFIX = "EntityList";
+
+const classes = {
+  overall: `${PREFIX}-overall`,
+  results: `${PREFIX}-results`,
+  resultHeader: `${PREFIX}-resultHeader`,
+  resultText: `${PREFIX}-resultText`,
+  progress: `${PREFIX}-progress`,
+  fab: `${PREFIX}-fab`,
+};
+
+const Root = styled("div")(({ theme }) => ({
+  [`& .${classes.overall}`]: {
     padding: theme.spacing(2),
     height: "100%",
   },
-  results: {
+
+  [`& .${classes.results}`]: {
     padding: theme.spacing(2),
     position: "relative",
   },
-  resultHeader: {
+
+  [`& .${classes.resultHeader}`]: {
     display: "flex",
     justifyContent: "flex-end",
   },
-  resultText: {
+
+  [`& .${classes.resultText}`]: {
     flexGrow: 1,
   },
-  progress: {
+
+  [`& .${classes.progress}`]: {
     display: "flex",
     justifyContent: "center",
   },
-  fab: {
+
+  [`& .${classes.fab}`]: {
     zIndex: 1000,
     position: "fixed",
     bottom: theme.spacing(2),
@@ -72,13 +81,12 @@ const EntityList = ({
   children,
   createOnClick,
 }: EntityListProps) => {
-  const styles = useStyles();
   return (
-    <div id={id} className={styles.overall}>
+    <Root id={id} className={classes.overall}>
       {createOnClick && (
         <Fab
           id="add-entity"
-          className={styles.fab}
+          className={classes.fab}
           component="button"
           color="secondary"
           onClick={createOnClick}
@@ -86,21 +94,21 @@ const EntityList = ({
           <AddIcon />
         </Fab>
       )}
-      <Paper className={styles.results}>
-        <div className={styles.resultHeader}>
-          <Typography className={styles.resultText} variant="subtitle1">
+      <Paper className={classes.results}>
+        <div className={classes.resultHeader}>
+          <Typography className={classes.resultText} variant="subtitle1">
             {resultsText}
           </Typography>
           {resultsRight}
         </div>
         <List>{children}</List>
         {progress && (
-          <div className={styles.progress}>
+          <div className={classes.progress}>
             <CircularProgress />
           </div>
         )}
       </Paper>
-    </div>
+    </Root>
   );
 };
 

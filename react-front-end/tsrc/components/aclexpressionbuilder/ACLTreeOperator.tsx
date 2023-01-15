@@ -15,18 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { InputLabel, MenuItem, Select } from "@material-ui/core";
-import { CreateNewFolder } from "@material-ui/icons";
-import DeleteIcon from "@material-ui/icons/Delete";
-import TreeItem, { TreeItemProps } from "@material-ui/lab/TreeItem";
+import { CreateNewFolder } from "@mui/icons-material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { TreeItemProps } from "@mui/lab/TreeItem";
+import { InputLabel, MenuItem, Select } from "@mui/material";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as React from "react";
-import { getOperatorLabel } from "../../modules/ACLExpressionModule";
 import type { ACLOperatorType } from "../../modules/ACLExpressionModule";
+import { getOperatorLabel } from "../../modules/ACLExpressionModule";
 import { languageStrings } from "../../util/langstrings";
 import { TooltipIconButton } from "../TooltipIconButton";
-import { useACLTreeItemStyles } from "./ACLExpressionHelper";
+import { ACLTreeItem, classes } from "./ACLTreeItem";
 
 const {
   aclExpressionBuilder: { match: matchLabel, addGroup: addGroupLabel },
@@ -78,8 +78,6 @@ export const ACLTreeOperator = ({
   onAddGroup,
   ...other
 }: ACLTreeOperatorProps): JSX.Element => {
-  const classes = useACLTreeItemStyles();
-
   // default selected value is `OR`
   const buildMenuItemForOperator = (operator: ACLOperatorType) => (
     <MenuItem
@@ -135,7 +133,7 @@ export const ACLTreeOperator = ({
   );
 
   return (
-    <TreeItem
+    <ACLTreeItem
       id={nodeId}
       nodeId={nodeId}
       label={treeOperatorLabel()}

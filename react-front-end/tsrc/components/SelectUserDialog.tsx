@@ -21,14 +21,14 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-} from "@material-ui/core";
-import * as RA from "fp-ts/ReadonlyArray";
+} from "@mui/material";
+import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import * as S from "fp-ts/string";
 import * as ORD from "fp-ts/Ord";
+import * as RA from "fp-ts/ReadonlyArray";
 import * as RSET from "fp-ts/ReadonlySet";
-import * as OEQ from "@openequella/rest-api-client";
+import * as S from "fp-ts/string";
 import * as React from "react";
 import { useState } from "react";
 import { languageStrings } from "../util/langstrings";

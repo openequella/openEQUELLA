@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { buildSchemaTree, SchemaNode } from "../tsrc/modules/SchemaModule";
-import { TreeItem } from "@material-ui/lab";
+import { TreeItem } from "@mui/lab";
 import * as React from "react";
 
 export const testSchema: SchemaNode = {

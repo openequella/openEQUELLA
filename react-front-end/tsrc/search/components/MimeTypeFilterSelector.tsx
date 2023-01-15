@@ -16,10 +16,14 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { Checkbox, TextField } from "@material-ui/core";
-import CheckBoxIcon from "@material-ui/icons/CheckBox";
-import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
-import { Autocomplete, AutocompleteGetTagProps } from "@material-ui/lab";
+import {
+  Checkbox,
+  TextField,
+  AutocompleteRenderGetTagProps,
+} from "@mui/material";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import { Autocomplete } from "@mui/material";
 import * as React from "react";
 import { TooltipChip } from "../../components/TooltipChip";
 import { languageStrings } from "../../util/langstrings";
@@ -54,7 +58,7 @@ export const MimeTypeFilterSelector = ({
     multiple
     renderTags={(
       filters: OEQ.SearchFilterSettings.MimeTypeFilter[],
-      getTagProps: AutocompleteGetTagProps
+      getTagProps: AutocompleteRenderGetTagProps
     ) =>
       filters.map((filter, index) => (
         <TooltipChip
@@ -72,16 +76,16 @@ export const MimeTypeFilterSelector = ({
     options={filters}
     disableCloseOnSelect
     getOptionLabel={(filter) => filter.name}
-    getOptionSelected={(filter, selected) => filter.id === selected.id}
-    renderOption={(filter, { selected }) => (
-      <>
+    isOptionEqualToValue={(filter, selected) => filter.id === selected.id}
+    renderOption={(props, filter, { selected }) => (
+      <li {...props}>
         <Checkbox
           icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
           checkedIcon={<CheckBoxIcon fontSize="small" />}
           checked={selected}
         />
         {filter.name}
-      </>
+      </li>
     )}
     renderInput={(params) => (
       <TextField

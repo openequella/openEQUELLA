@@ -16,11 +16,10 @@
  * limitations under the License.
  */
 
-import { MuiThemeProvider } from "@material-ui/core";
-import type { Theme } from "@material-ui/core/styles";
-import { createTheme } from "@material-ui/core/styles";
+import { ThemeProvider } from "@mui/material";
+import { createTheme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
-import { render, RenderResult, screen } from "@testing-library/react";
+import { render, RenderResult, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
 import * as React from "react";
@@ -31,6 +30,7 @@ import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock"
 import { DRM_VIOLATION } from "../../../__mocks__/Drm.mock";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import { getMimeTypeFilters } from "../../../__mocks__/MimeTypeFilter.mock";
+import { createMatchMedia } from "../../../__mocks__/MockUseMediaQuery";
 import { getRemoteSearchesFromServerResult } from "../../../__mocks__/RemoteSearchModule.mock";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import { AppContext } from "../../../tsrc/mainui/App";
@@ -180,10 +180,6 @@ export const initialiseEssentialMocks = ({
   );
 };
 
-export const defaultTheme = createTheme({
-  props: { MuiWithWidth: { initialWidth: "md" } },
-});
-
 /**
  * A mock specifically for the Promise for when searches are executed to be able to watch for when
  * a search etc. has occurred.
@@ -208,22 +204,25 @@ export const waitForSearch = async (searchPromise: MockedSearchPromise) =>
  *
  * @param searchPromise a mocked promise for searchItems in SearchModule
  * @param queryString a string to set the query bar to for initial search
- * @param theme control the MUI Theme for the context the search page is rendered in
- * @param currentUser Details of currently signed in user.
+ * @param screenWidth The emulated screen width, default to 1280px.
+ * @param currentUser Details of currently signed-in user.
+ *
  * @returns The RenderResult from the `render` of the `<SearchPage>`
  */
 export const renderSearchPage = async (
   searchPromise: MockedSearchPromise,
   queryString?: string,
-  theme: Theme = defaultTheme,
+  screenWidth: number = 1280,
   currentUser: OEQ.LegacyContent.CurrentUserDetails = getCurrentUserMock
 ): Promise<RenderResult> => {
+  window.matchMedia = createMatchMedia(screenWidth);
+
   const history = createMemoryHistory();
   if (queryString) history.push(queryString);
   history.push({});
 
   const page = render(
-    <MuiThemeProvider theme={theme}>
+    <ThemeProvider theme={createTheme()}>
       <Router history={history}>
         <AppContext.Provider
           value={{
@@ -235,7 +234,7 @@ export const renderSearchPage = async (
           <SearchPage updateTemplate={jest.fn()} />
         </AppContext.Provider>
       </Router>
-    </MuiThemeProvider>
+    </ThemeProvider>
   );
   // Wait for the first completion of initial search
   await waitForSearch(searchPromise);
@@ -378,6 +377,11 @@ export const addSearchToFavourites = async (
   { getByLabelText, getByRole }: RenderResult,
   favouriteName: string
 ): Promise<boolean> => {
+  const {
+    saveSearchConfirmationText: successMsg,
+    saveSearchFailedText: failMsg,
+  } = languageStrings.searchpage.favouriteSearch;
+
   const heartIcon = getByLabelText(
     languageStrings.searchpage.favouriteSearch.title,
     {
@@ -396,11 +400,13 @@ export const addSearchToFavourites = async (
     dialog,
     languageStrings.common.action.ok
   );
-  await act(async () => {
-    await userEvent.click(confirmButton);
-  });
 
-  return !!screen.queryByText(
-    languageStrings.searchpage.favouriteSearch.saveSearchConfirmationText
+  userEvent.click(confirmButton);
+
+  // Now wait until either a success or fail message is displayed
+  await waitFor(() =>
+    screen.getByText(new RegExp(`(${successMsg})|(${failMsg})`))
   );
+
+  return !!screen.queryByText(successMsg);
 };

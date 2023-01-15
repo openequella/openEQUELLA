@@ -15,13 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Typography } from "@material-ui/core";
-import DeleteIcon from "@material-ui/icons/Delete";
-import TreeItem, { TreeItemProps } from "@material-ui/lab/TreeItem";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { TreeItemProps } from "@mui/lab/TreeItem";
+import { Typography } from "@mui/material";
 import * as React from "react";
 import { languageStrings } from "../../util/langstrings";
 import { TooltipIconButton } from "../TooltipIconButton";
-import { useACLTreeItemStyles } from "./ACLExpressionHelper";
+import { classes, ACLTreeItem } from "./ACLTreeItem";
 
 export interface ACLTreeRecipientProps extends TreeItemProps {
   /**
@@ -44,8 +44,6 @@ export const ACLTreeRecipient = ({
   onDelete,
   ...other
 }: ACLTreeRecipientProps): JSX.Element => {
-  const classes = useACLTreeItemStyles();
-
   const treeRecipientLabel = () => (
     <div className={classes.labelRoot}>
       <Typography className={classes.labelText} variant="body2">
@@ -61,7 +59,7 @@ export const ACLTreeRecipient = ({
   );
 
   return (
-    <TreeItem
+    <ACLTreeItem
       nodeId={nodeId}
       label={treeRecipientLabel()}
       classes={{

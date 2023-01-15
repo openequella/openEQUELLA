@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ImageList } from "@material-ui/core";
+import { ImageList } from "@mui/material";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import Lightbox, { LightboxProps } from "../../components/Lightbox";
@@ -142,7 +142,7 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
 
   return (
     <>
-      <ImageList>{mapItemsToTiles()}</ImageList>
+      <ImageList cols={4}>{mapItemsToTiles()}</ImageList>
       {lightboxProps && <Lightbox {...lightboxProps} />}
     </>
   );

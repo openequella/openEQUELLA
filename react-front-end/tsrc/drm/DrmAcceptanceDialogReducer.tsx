@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Button, Grid, PropTypes, Typography } from "@material-ui/core";
-import { Skeleton } from "@material-ui/lab";
+import { Button, Grid, Typography } from "@mui/material";
+import { Skeleton } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
 import { range } from "lodash";
@@ -24,6 +24,7 @@ import * as React from "react";
 import { commonString } from "../util/commonstrings";
 import { languageStrings } from "../util/langstrings";
 import { DrmTerms } from "./DrmTerms";
+import { ButtonProps } from "@mui/material";
 
 const { reject: rejectString, accept: acceptString } =
   languageStrings.common.action;
@@ -31,7 +32,7 @@ const { reject: rejectString, accept: acceptString } =
 // Dialog structure for the Skeleton dialog.
 export const skeletonDialogStructure = {
   title: <Skeleton variant="text" width={80} />,
-  content: <Skeleton variant="rect" width="100%" height={200} />,
+  content: <Skeleton variant="rectangular" width="100%" height={200} />,
   buttons: range(2).map((index) => (
     <Button key={index}>
       <Skeleton variant="text" width={80} animation={false} />
@@ -79,7 +80,7 @@ export const drmReducer = (state: State, action: Action): State => {
   const buildButtons = (
     buttons: {
       handler: () => void;
-      color: PropTypes.Color;
+      color: ButtonProps["color"];
       text: string;
       autoFocus: boolean;
     }[]

@@ -22,7 +22,7 @@ import {
   CardHeader,
   List,
   ListItem,
-} from "@material-ui/core";
+} from "@mui/material";
 import { Meta, Story } from "@storybook/react";
 import * as React from "react";
 import { classifications } from "../../__mocks__/CategorySelector.mock";

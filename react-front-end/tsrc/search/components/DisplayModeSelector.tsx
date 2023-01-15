@@ -15,14 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Button, ButtonGroup, Tooltip } from "@material-ui/core";
-import LibraryBooksIcon from "@material-ui/icons/LibraryBooks";
-import PhotoLibraryIcon from "@material-ui/icons/PhotoLibrary";
-import VideoLibraryIcon from "@material-ui/icons/VideoLibrary";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
+import VideoLibraryIcon from "@mui/icons-material/VideoLibrary";
+import { Button, ButtonGroup, Tooltip } from "@mui/material";
 import * as React from "react";
 import { ReactElement } from "react";
-import { languageStrings } from "../../util/langstrings";
 import type { DisplayMode } from "../../modules/SearchModule";
+import { languageStrings } from "../../util/langstrings";
 
 const {
   modeGalleryImage: labelImageGallery,
@@ -94,9 +94,8 @@ const DisplayModeSelector = ({
       const currentlySelected = displayMode === value;
 
       return (
-        <Tooltip title={label}>
+        <Tooltip title={label} key={displayMode}>
           <Button
-            key={displayMode}
             variant={currentlySelected ? "contained" : "outlined"}
             onClick={() => onChange(displayMode)}
             aria-checked={currentlySelected}

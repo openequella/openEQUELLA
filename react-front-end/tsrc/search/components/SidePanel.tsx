@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
 import * as React from "react";
 import { CategorySelectorProps } from "./CategorySelector";
 

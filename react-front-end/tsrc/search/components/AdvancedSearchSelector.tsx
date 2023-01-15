@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TextField } from "@material-ui/core";
-import { Autocomplete } from "@material-ui/lab";
+import { TextField } from "@mui/material";
+import { Autocomplete } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
@@ -53,7 +53,6 @@ export const AdvancedSearchSelector = ({
   value,
 }: AdvancedSearchSelectorProps) => (
   <Autocomplete
-    debug
     value={value ?? null}
     options={pipe(
       advancedSearches,
@@ -63,12 +62,12 @@ export const AdvancedSearchSelector = ({
         )
       )
     )}
-    getOptionSelected={(option, selected) => selected.uuid === option.uuid}
+    isOptionEqualToValue={(option, selected) => selected.uuid === option.uuid}
     getOptionLabel={({ name }: OEQ.Common.BaseEntitySummary) => name}
     onChange={(_, value: OEQ.Common.BaseEntitySummary | null) =>
       onSelectionChange(value)
     }
-    renderOption={({ name }) => name}
+    renderOption={(props, { name }) => <li {...props}>{name}</li>}
     renderInput={(params) => (
       <TextField
         {...params}

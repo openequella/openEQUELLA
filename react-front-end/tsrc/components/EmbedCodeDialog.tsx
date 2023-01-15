@@ -22,14 +22,19 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Theme,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
 import * as React from "react";
 import { languageStrings } from "../util/langstrings";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  content: {
+const PREFIX = "EmbedCodeDialog";
+
+const classes = {
+  content: `${PREFIX}-content`,
+};
+
+const StyledDialog = styled(Dialog)(({ theme }) => ({
+  [`& .${classes.content}`]: {
     backgroundColor: theme.palette.background.default,
     padding: theme.spacing(2),
   },
@@ -66,9 +71,8 @@ export const EmbedCodeDialog = ({
   onCloseDialog,
   embedCode,
 }: EmbedCodeDialogProps) => {
-  const classes = useStyles();
   return (
-    <Dialog open={open} fullWidth>
+    <StyledDialog open={open} fullWidth>
       <DialogTitle>{embedCodeLabel}</DialogTitle>
       <DialogContent>
         <DialogContentText className={classes.content}>
@@ -102,6 +106,6 @@ export const EmbedCodeDialog = ({
           </Button>
         ))}
       </DialogActions>
-    </Dialog>
+    </StyledDialog>
   );
 };

@@ -30,6 +30,7 @@ public class NewSearchPageTest extends AbstractSessionTest {
   @Test(dependsOnMethods = "initialSearch", description = "Search with a query and refine controls")
   @NewUIOnly
   public void searchByFilters() {
+    searchPage = new NewSearchPage(context).load();
     searchPage.newSearch();
     // Search by Collections.
     searchPage.selectCollection("programming");

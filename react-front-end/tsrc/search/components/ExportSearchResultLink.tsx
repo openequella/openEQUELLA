@@ -15,9 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Tooltip } from "@material-ui/core";
-import DoneIcon from "@material-ui/icons/Done";
-import GetAppIcon from "@material-ui/icons/GetApp";
+import { Tooltip } from "@mui/material";
+import DoneIcon from "@mui/icons-material/Done";
+import GetAppIcon from "@mui/icons-material/GetApp";
 import * as React from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { languageStrings } from "../../util/langstrings";

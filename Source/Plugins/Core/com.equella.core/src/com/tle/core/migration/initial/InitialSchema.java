@@ -65,7 +65,6 @@ import com.tle.core.hibernate.impl.HibernateCreationFilter;
 import com.tle.core.hibernate.impl.HibernateMigrationHelper;
 import com.tle.core.migration.AbstractCreateMigration;
 import com.tle.core.migration.MigrationInfo;
-import com.tle.core.migration.beans.SystemConfig;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.web.resources.PluginResourceHelper;
@@ -242,9 +241,6 @@ public class InitialSchema extends AbstractCreateMigration {
   protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper) {
     AllDataHibernateMigrationFilter filter = new AllDataHibernateMigrationFilter();
     Session session = helper.getFactory().openSession();
-    if (helper.tableExists(session, SystemConfig.TABLE_NAME)) {
-      filter.setIncludeGenerators(false);
-    }
     session.close();
     return filter;
   }

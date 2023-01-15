@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ListItemText } from "@material-ui/core";
+import { ListItemText } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import { render, RenderResult, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";

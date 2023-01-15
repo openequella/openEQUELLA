@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Axios, { CancelTokenSource } from "axios";
+import Axios, { AxiosProgressEvent, CancelTokenSource } from "axios";
 import { sprintf } from "sprintf-js";
 import { v4 } from "uuid";
 import { languageStrings } from "../util/langstrings";
@@ -300,7 +300,7 @@ const doUpload = (
       "Content-Type": fileEntry.type || "application/octet-stream",
     },
     cancelToken: token,
-    onUploadProgress: (progressEvent: ProgressEvent) => {
+    onUploadProgress: (progressEvent: AxiosProgressEvent) => {
       const uploadPercentage = Math.floor(
         (progressEvent.loaded / fileEntry.size) * 100
       );
@@ -351,13 +351,17 @@ export const upload = (
         throw new Error(uploadResponse.reason);
       }
     })
-    .catch((error: Error) => {
+    .catch((error: unknown) => {
       // There is no need to handle Axios cancel error.
       if (!Axios.isCancel(error)) {
+        const { message } =
+          error instanceof Error
+            ? error
+            : new Error(`Failed to upload: ${error}`);
         onError({
           ...file,
           status: "failed",
-          errorMessage: error.message,
+          errorMessage: message,
         });
       }
     });

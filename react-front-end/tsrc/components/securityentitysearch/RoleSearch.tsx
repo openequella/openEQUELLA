@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ListItemText } from "@material-ui/core";
+import { ListItemText } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as ORD from "fp-ts/Ord";
 import * as S from "fp-ts/string";

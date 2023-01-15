@@ -20,7 +20,6 @@ import { wrapper as axiosCookieJarSupport } from 'axios-cookiejar-support';
 import { CookieJar } from 'tough-cookie';
 import { is } from 'typescript-is';
 import { repackageError } from './Errors';
-import { stringify } from 'query-string';
 
 // So that cookies work when used in non-browser (i.e. Node/Jest) type environments. And seeing
 // the oEQ security is based on JSESSIONID cookies currently this is key.
@@ -40,12 +39,14 @@ const catchHandler = (error: AxiosError | Error): never => {
 export const GET = <T>(
   path: string,
   validator: (data: unknown) => data is T,
-  queryParams?: Parameters<typeof stringify>[0] // eslint-disable-line @typescript-eslint/ban-types
+  queryParams?: object
 ): Promise<T> =>
   axios
     .get(path, {
       params: queryParams,
-      paramsSerializer: (params) => stringify(params),
+      paramsSerializer: {
+        indexes: null,
+      },
     })
     .then(({ data }: AxiosResponse<unknown>) => {
       if (!validator(data)) {
@@ -65,14 +66,13 @@ export const GET = <T>(
  * @param path The URL path for the target HEAD
  * @param queryParams The query parameters to send with the HEAD request
  */
-export const HEAD = (
-  path: string,
-  queryParams?: Parameters<typeof stringify>[0] // eslint-disable-line @typescript-eslint/ban-types
-): Promise<boolean> =>
+export const HEAD = (path: string, queryParams?: object): Promise<boolean> =>
   axios
     .head(path, {
       params: queryParams,
-      paramsSerializer: (params) => stringify(params),
+      paramsSerializer: {
+        indexes: null,
+      },
     })
     .then(() => true)
     .catch(catchHandler);
@@ -101,12 +101,14 @@ export const POST = <T, R>(
   path: string,
   validator: (data: unknown) => data is R,
   data?: T,
-  queryParams?: Parameters<typeof stringify>[0]
+  queryParams?: object
 ): Promise<R> =>
   axios
     .post(path, data, {
       params: queryParams,
-      paramsSerializer: (params) => stringify(params),
+      paramsSerializer: {
+        indexes: null,
+      },
     })
     .then(({ data }: AxiosResponse<unknown>) => {
       if (!validator(data)) {
@@ -147,14 +149,13 @@ export const POST_void = <T>(path: string, data?: T): Promise<void> =>
  * @param path The URL path for the target DELETE
  * @param queryParams  The query parameters to send with the DELETE request
  */
-export const DELETE = <R>(
-  path: string,
-  queryParams?: Parameters<typeof stringify>[0]
-): Promise<R> =>
+export const DELETE = <R>(path: string, queryParams?: object): Promise<R> =>
   axios
     .delete(path, {
       params: queryParams,
-      paramsSerializer: (params) => stringify(params),
+      paramsSerializer: {
+        indexes: null,
+      },
     })
     .then(({ data }: AxiosResponse<R>) => data)
     .catch(catchHandler);

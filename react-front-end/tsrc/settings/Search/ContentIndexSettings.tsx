@@ -15,10 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Card, CardContent, Mark, Slider } from "@material-ui/core";
+import { Card, CardContent, Slider } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
-import { useCallback, useContext } from "react";
 import * as React from "react";
+import { useCallback, useContext } from "react";
 import { shallowEqual } from "shallow-equal-object";
 import SettingPageTemplate from "../../components/SettingPageTemplate";
 import SettingsList from "../../components/SettingsList";
@@ -39,6 +40,15 @@ const contentIndexSettingsStrings =
 
 const markStrings = contentIndexSettingsStrings.sliderMarks;
 
+const TermBoostingSlider = styled(Slider)(({ theme }) => ({
+  color: theme.palette.primary.main,
+  height: 2,
+  padding: "15px 0",
+  "& .MuiSlider-track": {
+    border: "none",
+  },
+}));
+
 const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
   const [searchSettings, setSearchSettings] =
     React.useState<OEQ.SearchSettings.Settings>(defaultSearchSettings);
@@ -57,7 +67,7 @@ const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
     [appErrorHandler]
   );
 
-  const boostVals: Mark[] = [
+  const boostVals: { label: string; value: number }[] = [
     { label: markStrings.off, value: 0 },
     { label: "x0.25", value: 1 },
     { label: "x0.5", value: 2 },
@@ -106,7 +116,7 @@ const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
   };
 
   const getAriaLabel = (value: number, index: number): string => {
-    return boostVals[value].label as string;
+    return boostVals[value].label;
   };
 
   return (
@@ -146,7 +156,7 @@ const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
               primaryText={contentIndexSettingsStrings.titleBoostingTitle}
               divider
               control={
-                <Slider
+                <TermBoostingSlider
                   disabled={disableSettings}
                   marks={boostVals}
                   min={0}
@@ -164,7 +174,7 @@ const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
               primaryText={contentIndexSettingsStrings.metaBoostingTitle}
               divider
               control={
-                <Slider
+                <TermBoostingSlider
                   disabled={disableSettings}
                   marks={boostVals}
                   min={0}
@@ -181,7 +191,7 @@ const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
             <SettingsListControl
               primaryText={contentIndexSettingsStrings.attachmentBoostingTitle}
               control={
-                <Slider
+                <TermBoostingSlider
                   disabled={disableSettings}
                   marks={boostVals}
                   min={0}

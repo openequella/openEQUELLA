@@ -20,17 +20,13 @@ import ErrorPage from "../../../tsrc/mainui/ErrorPage";
 import { render } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
 
-jest.mock("@material-ui/core/styles", () => ({
-  makeStyles: () => () => ({ errorPage: "mock-classname" }),
-}));
-
 describe("<ErrorPage />", () => {
   it("should render with no code or description", () => {
     const { container, queryByText } = render(
       <ErrorPage error={{ id: "mock-error", error: "example" }} />
     );
 
-    expect(container.querySelectorAll(".mock-classname")).toHaveLength(1);
+    expect(container.querySelector("#errorPage")).toBeInTheDocument();
     expect(container.querySelectorAll("h3")).toHaveLength(1);
     expect(queryByText("example", { selector: "h3" })).toBeInTheDocument();
   });
@@ -47,7 +43,7 @@ describe("<ErrorPage />", () => {
       />
     );
 
-    expect(container.querySelectorAll(".mock-classname")).toHaveLength(1);
+    expect(container.querySelector("#errorPage")).toBeInTheDocument();
     expect(container.querySelectorAll("h3")).toHaveLength(1);
     expect(
       queryByText("404 : example", { selector: "h3" })

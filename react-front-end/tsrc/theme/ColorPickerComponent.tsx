@@ -21,26 +21,31 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
 import * as React from "react";
 import { useState } from "react";
 import { ColorResult, SketchPicker } from "react-color";
 import { languageStrings } from "../util/langstrings";
 
-const useStyles = makeStyles({
-  color: {
+const PREFIX = "ColorPickerComponent";
+
+const classes = {
+  color: `${PREFIX}-color`,
+  swatch: `${PREFIX}-swatch`,
+};
+
+const StyledDiv = styled("div")({
+  padding: "5px",
+  background: "#fff",
+  borderRadius: "1px",
+  boxShadow: "0 0 0 1px rgba(0,0,0,.1)",
+  display: "inline-block",
+  cursor: "pointer",
+  div: {
     width: "36px",
     height: "14px",
     borderRadius: "2px",
-  },
-  swatch: {
-    padding: "5px",
-    background: "#fff",
-    borderRadius: "1px",
-    boxShadow: "0 0 0 1px rgba(0,0,0,.1)",
-    display: "inline-block",
-    cursor: "pointer",
   },
 });
 
@@ -51,19 +56,19 @@ interface ColorProps {
 
 const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
   const [displayColorPicker, setDisplayColorPicker] = useState<boolean>(false);
-  const classes = useStyles();
+
   const strings = languageStrings.newuisettings.colorPicker;
 
   const changeHandler = (color: ColorResult) => onColorChange(color.hex);
 
   return (
     <>
-      <div
+      <StyledDiv
         className={classes.swatch}
         onClick={() => setDisplayColorPicker(true)}
       >
         <div style={{ background: currentColor }} className={classes.color} />
-      </div>
+      </StyledDiv>
       {displayColorPicker && (
         <Dialog
           open={displayColorPicker}

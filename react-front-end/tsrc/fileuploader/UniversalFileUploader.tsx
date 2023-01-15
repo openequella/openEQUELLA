@@ -15,10 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Grid } from "@material-ui/core";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
-import CancelIcon from "@material-ui/icons/Cancel";
-import DeleteIcon from "@material-ui/icons/Delete";
+import { Grid } from "@mui/material";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
+import DeleteIcon from "@mui/icons-material/Delete";
 import * as React from "react";
 import { ChangeEvent, useState } from "react";
 import { useDropzone } from "react-dropzone";

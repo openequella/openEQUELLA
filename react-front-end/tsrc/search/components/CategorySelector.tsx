@@ -22,10 +22,9 @@ import {
   Grid,
   List,
   ListItem,
-  Theme,
   Typography,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useState } from "react";
@@ -35,19 +34,28 @@ import {
 } from "../../modules/SearchFacetsModule";
 import { languageStrings } from "../../util/langstrings";
 
-const useStyles = makeStyles((theme: Theme) => {
+const PREFIX = "CategorySelector";
+
+const classes = {
+  classificationList: `${PREFIX}-classificationList`,
+  classificationListItem: `${PREFIX}-classificationListItem`,
+  categoryListCheckbox: `${PREFIX}-categoryListCheckbox`,
+  categoryListItemCount: `${PREFIX}-categoryListItemCount`,
+};
+
+const StyledList = styled(List)(({ theme }) => {
   return {
-    classificationList: {
+    [`& .${classes.classificationList}`]: {
       maxHeight: 500,
       overflow: "auto",
     },
-    classificationListItem: {
+    [`& .${classes.classificationListItem}`]: {
       paddingTop: theme.spacing(1),
     },
-    categoryListCheckbox: {
+    [`& .${classes.categoryListCheckbox}`]: {
       overflow: "visible",
     },
-    categoryListItemCount: {
+    [`& .${classes.categoryListItemCount}`]: {
       paddingLeft: theme.spacing(1),
     },
   };
@@ -75,7 +83,6 @@ export const CategorySelector = ({
   selectedCategories = [],
   onSelectedCategoriesChange,
 }: CategorySelectorProps) => {
-  const classes = useStyles();
   const [expandedClassifications, setExpandedClassifications] = useState<
     Map<number, boolean>
   >(
@@ -161,6 +168,7 @@ export const CategorySelector = ({
           <Button
             variant="text"
             onClick={() => onShowMore(classificationID, !expanded)}
+            color="inherit"
           >
             {expanded
               ? languageStrings.common.action.showLess
@@ -325,7 +333,9 @@ export const CategorySelector = ({
               </Typography>
             </Grid>
             <Grid item>
-              <List className={expanded ? classes.classificationList : ""}>
+              <StyledList
+                className={expanded ? classes.classificationList : ""}
+              >
                 <ListCategories
                   classification={{
                     ...classification,
@@ -336,7 +346,7 @@ export const CategorySelector = ({
                 {orderedCategories.length > maxDisplay && (
                   <ShowMoreButton classificationID={id} expanded={expanded} />
                 )}
-              </List>
+              </StyledList>
             </Grid>
           </Grid>
         </ListItem>

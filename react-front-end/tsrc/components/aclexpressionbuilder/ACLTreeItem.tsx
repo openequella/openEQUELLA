@@ -15,36 +15,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Typography } from "@mui/material";
+import TreeItem from "@mui/lab/TreeItem";
 import { styled } from "@mui/material/styles";
-import Paper from "@mui/material/Paper";
-import * as React from "react";
 
-const PREFIX = "Error";
-
-const classes = {
-  error: `${PREFIX}-error`,
+const PREFIX = "ACLTreeItem";
+export const classes = {
+  root: `${PREFIX}-root`,
+  content: "MuiTreeItem-content",
+  labelRoot: `${PREFIX}-labelRoot`,
+  labelText: `${PREFIX}-labelText`,
+  labelSelect: `${PREFIX}-labelSelect`,
 };
 
-const StyledPaper = styled(Paper)(({ theme }) => ({
-  [`& .${classes.error}`]: {
-    padding: theme.spacing(3),
-    backgroundColor: "rgb(255, 220, 220)",
+export const ACLTreeItem = styled(TreeItem)(({ theme }) => ({
+  [`&.${classes.root}`]: {
+    color: theme.palette.text.secondary,
+  },
+  // TreeItem selected effect (changing background color) will ignore the padding.
+  [`& .${classes.content}`]: {
+    boxSizing: "border-box",
+  },
+  [`& .${classes.labelRoot}`]: {
+    display: "flex",
+    alignItems: "center",
+    padding: theme.spacing(1, 0),
+  },
+  [`& .${classes.labelText}`]: {
+    flexGrow: 1,
+  },
+  [`& .${classes.labelSelect}`]: {
+    flexGrow: 1,
   },
 }));
-
-export interface ErrorProps {
-  children: React.ReactNode;
-}
-
-const Error = ({ children }: ErrorProps) => {
-  return (
-    <StyledPaper className={classes.error}>
-      <Typography color="error" align="center">
-        {children}
-      </Typography>
-    </StyledPaper>
-  );
-};
-
-export default Error;

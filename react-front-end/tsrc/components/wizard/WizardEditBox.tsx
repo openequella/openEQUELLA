@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { OutlinedInput } from "@material-ui/core";
+import { OutlinedInput } from "@mui/material";
 import * as React from "react";
 import { WizardControlBasicProps } from "./WizardHelper";
 import { WizardLabel } from "./WizardLabel";

@@ -16,12 +16,8 @@
  * limitations under the License.
  */
 
-import {
-  createGenerateClassName,
-  StylesProvider,
-  Theme,
-  ThemeProvider,
-} from "@material-ui/core";
+import { ThemeProvider } from "@mui/material";
+
 import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
 import * as React from "react";
@@ -49,18 +45,6 @@ interface NewPageProps {
    */
   children: ReactNode;
   /**
-   * The prefix added in MUI styles.
-   */
-  classPrefix: string;
-  /**
-   * The MUI theme configured in the setting page.
-   */
-  theme?: Theme;
-  /**
-   * A string representing the base URL required by React Router.
-   */
-  basename?: string;
-  /**
    * Whether to refresh the page when navigating to different route.
    */
   forceRefresh?: boolean;
@@ -70,27 +54,13 @@ interface NewPageProps {
  * A wrapper component which is typically used in the environment where Old UI and New UI pages
  * are mixed.
  */
-const NewPage = ({
-  children,
-  classPrefix,
-  forceRefresh = false,
-  theme = getOeqTheme(),
-  basename = getRouterBaseName(),
-}: NewPageProps) => {
-  const generateClassName = createGenerateClassName({
-    productionPrefix: classPrefix,
-  });
-
-  return (
-    <StylesProvider generateClassName={generateClassName}>
-      <ThemeProvider theme={theme}>
-        <BrowserRouter basename={basename} forceRefresh={forceRefresh}>
-          {children}
-        </BrowserRouter>
-      </ThemeProvider>
-    </StylesProvider>
-  );
-};
+const NewPage = ({ children, forceRefresh = false }: NewPageProps) => (
+  <ThemeProvider theme={getOeqTheme()}>
+    <BrowserRouter basename={getRouterBaseName()} forceRefresh={forceRefresh}>
+      {children}
+    </BrowserRouter>
+  </ThemeProvider>
+);
 
 interface AppProps {
   entryPage: EntryPage;
@@ -143,7 +113,7 @@ export const withAppContext =
     );
 
 const App = ({ entryPage }: AppProps): JSX.Element => {
-  console.debug("START: <App>");
+  console.debug("START: <App!!>");
 
   const [currentUser, setCurrentUser] =
     React.useState<OEQ.LegacyContent.CurrentUserDetails>();
@@ -173,24 +143,24 @@ const App = ({ entryPage }: AppProps): JSX.Element => {
           );
         },
         myResourcesPage: () => (
-          <NewPage classPrefix="oeq-nmr">
+          <NewPage>
             <MyResourcesPage updateTemplate={nop} />
           </NewPage>
         ),
         searchPage: () => (
-          <NewPage classPrefix="oeq-nsp">
+          <NewPage>
             <SearchPage updateTemplate={nop} />
           </NewPage>
         ),
         advancedSearchPage: () => (
-          <NewPage classPrefix="oeq-nasp">
+          <NewPage>
             <AdvancedSearchPage updateTemplate={nop} />
           </NewPage>
         ),
         settingsPage: () => (
           // When SettingsPage is used in old UI, each route change should trigger a refresh
           // for the whole page because there are no React component matching routes.
-          <NewPage classPrefix="oeq-nst" forceRefresh>
+          <NewPage forceRefresh>
             <SettingsPage updateTemplate={nop} isReloadNeeded={false} />
           </NewPage>
         ),

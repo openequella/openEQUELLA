@@ -22,7 +22,7 @@ import SettingsToggleSwitch, {
 } from "../../tsrc/components/SettingsToggleSwitch";
 
 export default {
-  title: "SettingsToggleSwitch",
+  title: "Component/SettingsToggleSwitch",
   component: SettingsToggleSwitch,
   argTypes: {
     setValue: { action: "setValue" },

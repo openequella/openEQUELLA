@@ -21,7 +21,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-} from "@material-ui/core";
+} from "@mui/material";
 import { pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as RSET from "fp-ts/ReadonlySet";

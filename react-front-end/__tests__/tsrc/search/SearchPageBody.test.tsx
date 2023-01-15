@@ -15,38 +15,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { MuiThemeProvider } from "@material-ui/core";
-import { createTheme } from "@material-ui/core/styles";
+import { ThemeProvider } from "@mui/material";
+import { createTheme } from "@mui/material/styles";
+import "@testing-library/jest-dom/extend-expect";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
 import * as React from "react";
-import { act, render, screen } from "@testing-library/react";
 import { Router } from "react-router-dom";
 import { classifications } from "../../../__mocks__/CategorySelector.mock";
+import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
+import { createMatchMedia } from "../../../__mocks__/MockUseMediaQuery";
 import { customRefinePanelControl } from "../../../__mocks__/RefinePanelControl.mock";
 import { getRemoteSearchesFromServerResult } from "../../../__mocks__/RemoteSearchModule.mock";
+import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import * as RemoteSearchModule from "../../../tsrc/modules/RemoteSearchModule";
-import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
-import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import { defaultSearchSettings } from "../../../tsrc/modules/SearchSettingsModule";
 import { SearchContext } from "../../../tsrc/search/Search";
 import {
   SearchPageBody,
   SearchPageBodyProps,
 } from "../../../tsrc/search/SearchPageBody";
-import "@testing-library/jest-dom/extend-expect";
 import {
   defaultSearchPageHeaderConfig,
   defaultSearchPageOptions,
   defaultSearchPageRefinePanelConfig,
   SearchPageOptions,
 } from "../../../tsrc/search/SearchPageHelper";
-import { languageStrings } from "../../../tsrc/util/langstrings";
 import {
   SearchPageSearchResult,
   State,
 } from "../../../tsrc/search/SearchPageReducer";
+import { languageStrings } from "../../../tsrc/util/langstrings";
 import {
   queryCollectionSelector,
   queryRefineSearchComponent,
@@ -64,22 +65,23 @@ const defaultSearchPageBodyProps: SearchPageBodyProps = {
   pathname: "/page/search",
 };
 
-// Refine panel is hidden in small screens, so we mock the screen size to make it bigger.
-const defaultTheme = createTheme({
-  props: { MuiWithWidth: { initialWidth: "md" } },
-});
-
 const mockSearch = jest.fn();
 const mockHistory = createMemoryHistory();
 
 describe("<SearchPageBody />", () => {
+  const setScreenWidth = () => {
+    window.matchMedia = createMatchMedia(1280);
+  };
+
   const renderSearchPageBody = async (
     props: SearchPageBodyProps = defaultSearchPageBodyProps
   ) => {
+    setScreenWidth();
+
     const page = render(
-      <MuiThemeProvider theme={defaultTheme}>
+      <ThemeProvider theme={createTheme()}>
         <SearchPageBody {...props} />
-      </MuiThemeProvider>
+      </ThemeProvider>
     );
 
     await act(async () => {
@@ -96,8 +98,10 @@ describe("<SearchPageBody />", () => {
       status: "initialising",
       options: defaultSearchPageOptions,
     }
-  ) =>
-    render(
+  ) => {
+    setScreenWidth();
+
+    return render(
       <Router history={mockHistory}>
         <SearchContext.Provider
           value={{
@@ -111,10 +115,13 @@ describe("<SearchPageBody />", () => {
             searchPageErrorHandler: jest.fn(),
           }}
         >
-          <SearchPageBody {...props} />
+          <ThemeProvider theme={createTheme()}>
+            <SearchPageBody {...props} />
+          </ThemeProvider>
         </SearchContext.Provider>
       </Router>
     );
+  };
 
   it("supports additional panels", async () => {
     const label = "additional Panel";

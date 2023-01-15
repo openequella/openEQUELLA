@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import AddCircleIcon from "@material-ui/icons/AddCircle";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { Meta, Story } from "@storybook/react";
 import React from "react";
 import {
