@@ -16,19 +16,20 @@
  * limitations under the License.
  */
 import * as A from 'fp-ts/Array';
-import { constant, pipe } from 'fp-ts/function';
-import * as O from 'fp-ts/Option';
-import * as S from 'fp-ts/string';
+import { flow, pipe } from 'fp-ts/function';
 import {
   ImportDeclaration,
   InterfaceDeclaration,
   Project,
   PropertySignature,
   SourceFile,
+  SyntaxKind,
+  TypeAliasDeclaration,
+  TypeFormatFlags,
 } from 'ts-morph';
 import { pfTernary } from './utils';
 
-interface Import {
+export interface Import {
   /**
    * Name of file which the imports are from. e.g.
    *
@@ -51,9 +52,18 @@ interface Import {
   namedImport: string;
 }
 
-interface Prop {
+export interface Prop {
+  /**
+   * Name of the property.
+   */
   name: string;
+  /**
+   * Type of the property.
+   */
   type: string;
+  /**
+   * `true` if the property is optional.
+   */
   optional: boolean;
   /**
    * For properties which are inline objects, then they'll have further properties of their own.
@@ -61,138 +71,146 @@ interface Prop {
   properties: Prop[];
 }
 
-interface Interface {
+export interface Interface {
+  /**
+   * Name of the interface.
+   */
   name: string;
-  extends: string[];
+  /**
+   * Interfaces that are extended by this interface.
+   */
+  typeExtended: string[];
+  /**
+   * Properties belonging to this interface.
+   */
   properties: Prop[];
+  /**
+   * A list of type arguments required by the interface.
+   */
+  typeArguments: string[];
+}
+
+export interface TypeAlias {
+  /**
+   * Alias for the referenced type.
+   */
+  name: string;
+  /**
+   * The original type referenced by the alias.
+   */
+  referencedType: string;
 }
 
 /**
  * Contains the definitions of interest for a file.
  */
-interface FileDefinition {
+export interface FileDefinition {
+  /**
+   * Name of the Typescript file to be parsed.
+   */
+  readonly filename: string;
+  /**
+   * A list of imports required in this file.
+   */
   readonly imports: Import[];
+  /**
+   * A list of Interface defined in this file.
+   */
   readonly interfaces: Interface[];
+  /**
+   * A list of type alias defined in this file.
+   */
+  readonly typeAliases: TypeAlias[];
 }
 
+// Return names of interfaces extended by the supplied interface.
 const buildExtends = (i: InterfaceDeclaration): string[] =>
-  pipe(
-    // The recommended approach is i.getExtends().map(e => e.getTypeArguments().map(...))
-    // But the getTypeArguments was empty for me.
-    // So I came up with this after using the TypeScript AST Viewer - https://ts-ast-viewer.com/
-    i.getHeritageClauses(),
-    A.chain((hc) =>
-      pipe(
-        hc.getTypeNodes(),
-        A.map((node) => node.getText().replace(/<.+>/, ''))
-      )
-    )
-  );
+  i.getExtends().map((e) => e.getText());
 
 const buildProperties = (props: PropertySignature[]): Prop[] => {
-  const isInlineObject = (p: PropertySignature): boolean =>
-    p.getType().isAnonymous() && p.getType().isObject();
+  const getPropertyType = (p: PropertySignature): string =>
+    p.getTypeNode()?.getText() ??
+    p.getType().getText(undefined, TypeFormatFlags.None);
 
-  const buildObjectProperty = (p: PropertySignature): Prop => ({
+  const commonFields = (p: PropertySignature) => ({
     name: p.getName(),
-    type: 'object',
     optional: p.hasQuestionToken(),
-    properties: pipe(
-      p.getType().getProperties(),
-      A.chain((p) => p.getDeclarations() as PropertySignature[]),
-      buildProperties
-    ),
   });
 
-  // It is possible to get the type via a simple:
-  //   p.getType().getText()
-  // But that didn't always give a simple name, so we've gone with
-  // the below slightly more convoluted approach.
-  const getPropertyType = (p: PropertySignature): string =>
-    pipe(
-      p.getStructure().type,
-      O.fromNullable,
-      O.filter(S.isString),
-      O.getOrElse(constant('unknown'))
-    );
+  const buildNonObjectProperty = (p: PropertySignature) => ({
+    ...commonFields(p),
+    type: getPropertyType(p),
+    properties: [], // not a nested object, so always empty
+  });
 
-  return pipe(
-    props,
-    A.map(
-      pfTernary(isInlineObject, buildObjectProperty, (p) => ({
-        name: p.getName(),
-        type: getPropertyType(p),
-        optional: p.hasQuestionToken(),
-        properties: [], // not a nested object, so always empty
-      }))
+  const buildObjectProperty = (p: PropertySignature): Prop => {
+    const isFunc = p.getTypeNode()?.isKind(SyntaxKind.FunctionType);
+    const isAnonymous = !isFunc && p.getType().isAnonymous();
+    return {
+      ...buildNonObjectProperty(p),
+      type: isAnonymous ? 'object' : getPropertyType(p), // For non-anonymous object we need the real name.
+      properties: isAnonymous
+        ? pipe(
+            p.getType().getProperties(),
+            A.chain((p) => p.getDeclarations() as PropertySignature[]),
+            buildProperties
+          )
+        : [],
+    };
+  };
+
+  return props.map(
+    pfTernary(
+      (p) => p.getType().isObject(),
+      buildObjectProperty,
+      buildNonObjectProperty
     )
   );
 };
 
-const buildInterfaces = (interfaces: InterfaceDeclaration[]): Interface[] =>
-  pipe(
-    interfaces,
-    A.map((i: InterfaceDeclaration) => ({
+const buildInterfaces: (interfaces: InterfaceDeclaration[]) => Interface[] =
+  flow(
+    A.map((i) => ({
       name: i.getName(),
-      extends: buildExtends(i),
+      typeExtended: buildExtends(i),
       properties: buildProperties(i.getProperties()),
+      typeArguments: i
+        .getType()
+        .getTypeArguments()
+        .map((t) => t.getText(undefined, TypeFormatFlags.None)),
     }))
   );
 
-const buildImports = (
-  interfaceExtended: string[],
-  parsedImports: ImportDeclaration[]
-): Import[] => {
-  const interfaceExtendedFromImport = ({
-    namedImport,
-  }: {
-    namedImport: string;
-  }) =>
-    pipe(
-      interfaceExtended,
-      A.some((i) => i === namedImport)
-    );
+const buildImports: (parsedImports: ImportDeclaration[]) => Import[] = flow(
+  A.chain((i) => i.getNamedImports()),
+  A.filter((i) => i.getParent().getParent().isTypeOnly()),
+  A.map((namedImport) => ({
+    filename: namedImport
+      .getParent()
+      .getParent()
+      .getParent()
+      .getModuleSpecifierValue(),
+    namedImport: namedImport.getName(),
+  }))
+);
 
-  console.log(interfaceExtended);
-  const a = pipe(
-    parsedImports,
-    A.chain((i) => i.getNamedImports()),
-    A.map((namedImport) => {
-      const moduleSpecifier = namedImport
-        .getParent()
-        .getParent()
-        .getParent()
-        .getModuleSpecifierValue();
-      return {
-        filename: moduleSpecifier,
-        namedImport: namedImport.getName(),
-      };
-    }),
-    A.filter(interfaceExtendedFromImport),
-    A.map(({ filename, namedImport }) => ({
-      filename,
-      namedImport,
+const buildTypeAliases: (typeAliases: TypeAliasDeclaration[]) => TypeAlias[] =
+  flow(
+    A.map((alias) => ({
+      name: alias.getName(),
+      referencedType:
+        alias.getTypeNode()?.getText() ?? alias.getType().getText(),
     }))
   );
 
-  console.log(a);
-  return a;
-};
+const buildFileDefinition = (file: SourceFile): FileDefinition => ({
+  filename: file.getBaseName(),
+  interfaces: buildInterfaces(file.getInterfaces()),
+  imports: buildImports(file.getImportDeclarations()),
+  typeAliases: buildTypeAliases(file.getTypeAliases()),
+});
 
-const buildFileDefinition = (file: SourceFile): FileDefinition =>
-  pipe(buildInterfaces(file.getInterfaces()), (interfaces) => ({
-    interfaces,
-    imports: buildImports(
-      pipe(
-        interfaces,
-        A.chain((i) => i.extends),
-        A.uniq(S.Eq)
-      ),
-      file.getImportDeclarations()
-    ),
-  }));
-
-export const parseFile = (filename: string) =>
+export const parseFile = (filename: string): FileDefinition =>
   pipe(
     new Project(),
     (p) => p.addSourceFileAtPath(filename),
