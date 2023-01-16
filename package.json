@@ -68,7 +68,8 @@
       [
         "remark-lint-no-dead-urls",
         {
-          "skipLocalhost": true
+          "skipLocalhost": true,
+          "skipUrlPatterns":  ["http://oeq.localhost"]
         }
       ]
     ]

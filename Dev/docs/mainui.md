@@ -4,7 +4,7 @@ When the new UI is turned on, openEQUELLA runs in a Single Page App (SPA) style 
 
 The entrypoint for the SPA is located at [mainui/index.tsx](../../react-front-end/tsrc/mainui/index.tsx).
 
-The route component uses [react-router](https://reacttraining.com/react-router/web/guides/quick-start) for routing
+The route component uses [react-router](https://v5.reactrouter.com/web/guides/quick-start) for routing
 with pages declared inside [mainui/routes.ts](../../react-front-end/tsrc/mainui/routes.tsx)
 
 ## Template
@@ -109,6 +109,6 @@ Now you should be able to see the page by going to:
 
 `http://{insturl}/helloworld/hooks` or `http://{insturl}/helloworld/component`
 
-Please see [react-router](https://reacttraining.com/react-router/web/guides/quick-start)
+Please see [react-router](https://v5.reactrouter.com/web/guides/quick-start)
 for examples on how to use route specific functionaility usage
 (e.g. linking to other pages and extracting parameters for urls).
