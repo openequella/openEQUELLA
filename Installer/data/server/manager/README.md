@@ -1,7 +1,7 @@
 # Background about JSVC and oEQ
 
 JSVC is a binary required to support running oEQ and the Upgrade Manager as a Daemon process in
-Unix alike systems. It has not been updated until 2022 when we started adding the support
+Unix alike systems. It had not been updated until 2022 when we started adding the support
 for Java 11. And the previous version of JSVC used in oEQ does not support Java 11. As a result,
 we tried to build the JSVC binary again.
 
