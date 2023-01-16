@@ -16,18 +16,18 @@
 		<source uri="${install.path}" />
 	</command>
 
-	<!-- Linux 64 and MAC -->
-	<command class="copy" platform="linux64 mac">
+	<!-- Linux 64 -->
+	<command class="copy" platform="linux64">
 		<source uri="${installer/local}/manager/linux/server"/>
 		<destination uri="${install.path}/manager" />
 	</command>
 
-	<command class="resolver" platform="linux64 mac">
+	<command class="resolver" platform="linux64">
 		<source uri="${installer/local}/manager/linux/config/manager-config.sh.unresolved"/>
 		<destination uri="${install.path}/manager/manager-config.sh" />
 	</command>
 
-	<command class="resolver" platform="linux64 mac">
+	<command class="resolver" platform="linux64">
 		<source uri="${installer/local}/manager/linux/config/equellaserver-config.sh.unresolved"/>
 		<destination uri="${install.path}/manager/equellaserver-config.sh" />
 	</command>
@@ -133,15 +133,15 @@
 		<class name="com.dytech.edge.installer.application.SuccessfulInstall"/>
 	</command>
 
-	<command class="mkexec" platform="linux64 mac">
+	<command class="mkexec" platform="linux64">
 		<file uri="${install.path}/manager/jsvc" />
 	</command>
 
-	<command class="mkexec" platform="linux64 mac">
+	<command class="mkexec" platform="linux64">
 		<file uri="${install.path}/manager/equellaserver" />
 	</command>
 
-	<command class="mkexec" platform="linux64 mac">
+	<command class="mkexec" platform="linux64">
 		<file uri="${install.path}/manager/manager" />
 	</command>
 </commands>
