@@ -150,7 +150,7 @@ version := {
   Map(
     "version.display" -> s"${eqVersion.semanticVersion}-${eqVersion.releaseType}",
     "version.commit"  -> eqVersion.sha
-  ) map {
+  ) foreach {
     case (key, value) => props.put(key, value)
   }
 
