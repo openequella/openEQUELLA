@@ -15,26 +15,27 @@ libraryDependencies ++= Seq(
 ).map(_ % Birt)
 
 /**
-  * Previously, we copied `birt-api.jar` to directory `jpflibs` by using `jpfLibraryJars`.
-  * Now because we use the BIRT Report Framework which is a ZIP file of Jars, we need to
-  * extract all the Jars to `jpflibs`. We also need to add these Jars to classpath by
-  * executing task `unmanagedJars`.
+  * Because the BIRT Report Framework is a ZIP file of Jars, we need to extract all the Jars to
+  * the unmanaged Jar base.
   */
 (Compile / unmanagedJars) ++= {
-  val baseDir      = (Compile / target).value
-  val jpf          = baseDir / "jpflibs"
-  val updateReport = update.value
-  val managedJars =
-    Classpaths.managedJars(Birt, Set("jar"), updateReport).files.filter(_.getName.endsWith(".jar"))
+  val unmanagedJarBase = unmanagedBase.value
+  val updateReport     = update.value
 
-  // Unzip 'birt-report-framework' to the JPF dir.
-  IO.unzip(updateReport.select(artifact = artifactFilter(name = "birt-report-framework")).head, jpf)
-  // Copy other managed JARs to the JPF dir.
-  IO.copy(managedJars.pair(flat(jpf), errorIfNone = false))
-
-  (jpf ** "*.jar").classpath
+  IO.unzip(updateReport.select(artifact = artifactFilter(name = "birt-report-framework")).head,
+           unmanagedJarBase)
+  (unmanagedJarBase ** "*.jar").classpath
 }
 
 ivyConfigurations := overrideConfigs(Birt, CustomCompile)(ivyConfigurations.value)
 
-jpfLibraryJars := (Compile / unmanagedJars).value
+// This setting should include all the managed JARs and unmanaged JARs.
+jpfLibraryJars := {
+  val updateReport = update.value
+  val managedJars: Seq[File] =
+    Classpaths.managedJars(Birt, Set("jar"), updateReport).files.filter(_.getName.endsWith(".jar"))
+  // Copy managed Jars to unmanaged Jar base.
+  IO.copy(managedJars.pair(flat(unmanagedBase.value), errorIfNone = false))
+
+  (Compile / unmanagedJars).value
+}
