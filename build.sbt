@@ -182,10 +182,9 @@ writeLanguagePack := {
           val fname = g + (if (xml) ".xml" else ".properties")
           val f     = dir / fname
           val p     = new SortedProperties()
-          lss.foreach(ls =>
-            ls.strings map {
-              case (key, value) => p.put(key, value)
-          })
+          lss.flatMap(_.strings).foreach {
+            case (key, value) => p.put(key, value)
+          }
           Using.fileOutputStream()(f) { os =>
             if (xml) p.storeToXML(os, "") else p.store(os, "")
           }
