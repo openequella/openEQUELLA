@@ -14,28 +14,21 @@ libraryDependencies ++= Seq(
   "rhino"                        % "js"                       % "1.7R2"
 ).map(_ % Birt)
 
-/**
-  * Because the BIRT Report Framework is a ZIP file of Jars, we need to extract all the Jars to
-  * the unmanaged Jar base.
-  */
-(Compile / unmanagedJars) ++= {
-  val unmanagedJarBase = unmanagedBase.value
-  val updateReport     = update.value
-
-  IO.unzip(updateReport.select(artifact = artifactFilter(name = "birt-report-framework")).head,
-           unmanagedJarBase)
-  (unmanagedJarBase ** "*.jar").classpath
-}
-
 ivyConfigurations := overrideConfigs(Birt, CustomCompile)(ivyConfigurations.value)
 
-// This setting should include all the managed JARs and unmanaged JARs.
+// This setting should include all the managed JARs and unmanaged JARs extracted from zip file
+// birt-report-framework.
 jpfLibraryJars := {
+  val unmanagedJarBase = baseDirectory.value / "lib"
+
+  // Copy managed Jars to unmanaged Jar base.
   val updateReport = update.value
   val managedJars: Seq[File] =
     Classpaths.managedJars(Birt, Set("jar"), updateReport).files.filter(_.getName.endsWith(".jar"))
-  // Copy managed Jars to unmanaged Jar base.
-  IO.copy(managedJars.pair(flat(unmanagedBase.value), errorIfNone = false))
+  IO.copy(managedJars.pair(flat(unmanagedJarBase), errorIfNone = false))
 
-  (Compile / unmanagedJars).value
+  IO.unzip(updateReport.select(artifact = artifactFilter(name = "birt-report-framework")).head,
+           unmanagedJarBase)
+
+  (unmanagedJarBase ** "*.jar").classpath
 }
