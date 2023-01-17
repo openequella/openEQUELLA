@@ -24,6 +24,7 @@ import * as RA from 'fp-ts/ReadonlyArray';
 import * as S from 'fp-ts/string';
 import type { TypeReference } from 'io-ts-codegen';
 import * as gen from 'io-ts-codegen';
+import type { TypeDeclaration } from 'io-ts-codegen';
 import type {
   FileDefinition,
   Import,
@@ -117,22 +118,6 @@ const getTypeReference = (
         E.mapLeft(console.error),
         E.foldW(() => gen.unknownType, gen.literalCombinator)
       );
-    case UnionRegex.test(type):
-      return pipe(
-        type.match(UnionRegex)?.input,
-        E.fromNullable(`Failed to extract string union from ${type}`),
-        E.mapLeft(console.error),
-        E.map(
-          flow(
-            S.split('|'),
-            RA.map(S.trim),
-            RA.filter(not(S.isEmpty)),
-            RA.map(plainTypeReference),
-            RA.toArray
-          )
-        ),
-        E.foldW(() => gen.unknownType, gen.unionCombinator)
-      );
     case TupleRegex.test(type):
       return pipe(
         type.match(TupleRegex)?.[1],
@@ -150,6 +135,22 @@ const getTypeReference = (
           () => gen.unknownType,
           (tuple) => gen.tupleCombinator(tuple)
         )
+      );
+    case UnionRegex.test(type):
+      return pipe(
+        type.match(UnionRegex)?.input,
+        E.fromNullable(`Failed to extract string union from ${type}`),
+        E.mapLeft(console.error),
+        E.map(
+          flow(
+            S.split('|'),
+            RA.map(S.trim),
+            RA.filter(not(S.isEmpty)),
+            RA.map(plainTypeReference),
+            RA.toArray
+          )
+        ),
+        E.foldW(() => gen.unknownType, gen.unionCombinator)
       );
     default:
       return pipe(
@@ -180,12 +181,11 @@ const generateExtendIdentifier: (identifiers: string[]) => gen.Identifier[] =
   flow(A.map((identifier) => gen.identifier(`${identifier}Codec`)));
 
 // Generate all the named imports for required Codecs.
-const generateImports: (imports: Import[]) => string = flow(
+const generateImports: (imports: Import[]) => string[] = flow(
   A.map(
     ({ filename, namedImport }) =>
       `import { ${namedImport}Codec } from '${filename}'`
-  ),
-  A.intercalate(S.Monoid)('\n')
+  )
 );
 
 // Use io-ts-codegen to build an interfact that does not take type arguments.
@@ -193,53 +193,57 @@ const buildNormalInterface = ({
   name,
   properties,
   typeExtended,
-}: Interface) => {
+}: Interface): TypeDeclaration => {
   const extendIdentifiers = generateExtendIdentifier(typeExtended);
   const props = gen.typeCombinator(generateProperties(properties));
 
-  const typeDeclaration = gen.typeDeclaration(
+  return gen.typeDeclaration(
     `${name}Codec`,
     A.isNonEmpty(extendIdentifiers)
       ? gen.intersectionCombinator([props, ...extendIdentifiers])
       : props,
     true
   );
-
-  return gen.printRuntime(typeDeclaration);
 };
 
 // is-ts-codegen does not have any support out-of-box for interfaces that takes type arguments.
-// A codec for such a function is represented by a function. As a result, we use a string template
-// to generate the function.
+// A codec for such a function is represented by a function. As a result, we generate a string
+// to representation the function and then put the string representation in a customCombinator.
 const buildGenericTypeInterface = ({
   name,
   properties,
   typeArguments,
   typeExtended,
-}: Interface): string => {
+}: Interface): TypeDeclaration => {
   const typeParameters = typeArguments
     .map((_, index) => `C${index} extends t.Mixed`)
     .join(',');
   const funcParameters = typeArguments
     .map((_, index) => `codec${index}: C${index}`)
     .join(',');
+
   const extendIdentifiers = generateExtendIdentifier(typeExtended);
   const props = gen.typeCombinator(
     generateProperties(properties, typeArguments)
   );
+  const funcBody = A.isNonEmpty(extendIdentifiers)
+    ? gen.intersectionCombinator([props, ...extendIdentifiers])
+    : props;
 
-  const body = gen.printRuntime(
-    A.isNonEmpty(extendIdentifiers)
-      ? gen.intersectionCombinator([props, ...extendIdentifiers])
-      : props
-  );
-
-  return `export const ${name}Codec = <${typeParameters}>(${funcParameters}) => {
-           ${body}
+  const stringRepr = `<${typeParameters}>(${funcParameters}) => {
+           ${gen.printRuntime(funcBody)}
      }`;
+
+  return gen.typeDeclaration(
+    `${name}Codec`,
+    gen.customCombinator(stringRepr, stringRepr),
+    true
+  );
 };
 
-const buildCodecForInterface: (interfaceDefinition: Interface) => string = flow(
+const buildCodecForInterface: (
+  interfaceDefinition: Interface
+) => TypeDeclaration = flow(
   pfTernary(
     ({ typeArguments }) => A.size(typeArguments) > 0,
     buildGenericTypeInterface,
@@ -247,14 +251,11 @@ const buildCodecForInterface: (interfaceDefinition: Interface) => string = flow(
   )
 );
 
-const buildCodecForTypeAlias = ({ name, referencedType }: TypeAlias): string =>
-  gen.printRuntime(
-    gen.typeDeclaration(
-      `${name}Codec`,
-      plainTypeReference(referencedType),
-      true
-    )
-  );
+const buildCodecForTypeAlias = ({
+  name,
+  referencedType,
+}: TypeAlias): TypeDeclaration =>
+  gen.typeDeclaration(`${name}Codec`, plainTypeReference(referencedType), true);
 
 export const generate = ({
   filename,
@@ -266,10 +267,12 @@ export const generate = ({
     typeAliases,
     A.map(buildCodecForTypeAlias),
     A.concat(interfaces.map(buildCodecForInterface)),
+    flow(gen.sort, A.map(gen.printRuntime)),
     (typeDeclarations) => [
       HEADER,
       IOTS_IMPORT,
-      generateImports(imports),
+      IOTSTYPE_IMPORT,
+      ...generateImports(imports),
       ...typeDeclarations,
     ],
     A.intercalate(S.Monoid)('\n'),
