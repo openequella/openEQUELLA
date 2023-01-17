@@ -234,7 +234,7 @@ const buildGenericTypeInterface = ({
       : props
   );
 
-  return `const ${name}Codec = <${typeParameters}>(${funcParameters}) => {
+  return `export const ${name}Codec = <${typeParameters}>(${funcParameters}) => {
            ${body}
      }`;
 };
