@@ -37,6 +37,7 @@ import { pfTernary } from './utils';
 const HEADER =
   "/** This file is created by 'io-ts-gen' so please do not modify it. **/";
 const IOTS_IMPORT = "import * as t from 'io-ts';";
+const IOTSTYPE_IMPORT = "import * as td from 'io-ts-types';";
 
 const ArrayRegex = /^(.+)(\[])+$/;
 const RecordRegex = /^Record<(.+), (.+)>$/;
@@ -95,6 +96,8 @@ const getTypeReference = (
           (t) => gen.arrayCombinator(plainTypeReference(t, typeArguments))
         )
       );
+    case type === 'Date':
+      return gen.customCombinator('td.date', 'td.date');
     case FunctionRegex.test(type):
       return gen.functionType;
     case RecordRegex.test(type):
