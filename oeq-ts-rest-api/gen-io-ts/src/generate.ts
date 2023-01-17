@@ -41,7 +41,7 @@ const ArrayRegex = /^(.+)(\[])+$/;
 const RecordRegex = /^Record<(.+), (.+)>$/;
 const StringLiteralRegex = /^'(\w*)'$/;
 const FunctionRegex = /^\(.*\) => .+$/;
-const StringUnionRegex = /^\|?\s?('\w+'\n?\s+\|\s)+('\w+')$/;
+const UnionRegex = /^\|?\s?(.+\n?\s+\|\s)+(.+)$/;
 const TupleRegex = /^\[(.+)]$/;
 
 export interface CodecDefinition {
@@ -72,12 +72,16 @@ const getTypeReference = (
   switch (true) {
     case type === 'boolean':
       return gen.booleanType;
+    case type === 'null':
+      return gen.nullType;
     case type === 'number':
       return gen.numberType;
     case type === 'object':
       return gen.typeCombinator(generateProperties(properties, typeArguments));
     case type === 'string':
       return gen.stringType;
+    case type === 'undefined':
+      return gen.undefinedType;
     case type === 'unknown':
       return gen.unknownType;
     case ArrayRegex.test(type):
@@ -113,9 +117,9 @@ const getTypeReference = (
         E.mapLeft(console.error),
         E.foldW(() => gen.unknownType, gen.literalCombinator)
       );
-    case StringUnionRegex.test(type):
+    case UnionRegex.test(type):
       return pipe(
-        type.match(StringUnionRegex)?.input,
+        type.match(UnionRegex)?.input,
         E.fromNullable(`Failed to extract string union from ${type}`),
         E.mapLeft(console.error),
         E.map(
