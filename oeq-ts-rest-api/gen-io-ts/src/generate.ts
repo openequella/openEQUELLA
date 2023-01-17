@@ -19,6 +19,7 @@ import * as A from 'fp-ts/Array';
 import * as E from 'fp-ts/Either';
 import { constant, flow, pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
+import { not } from 'fp-ts/Predicate';
 import * as RA from 'fp-ts/ReadonlyArray';
 import * as S from 'fp-ts/string';
 import type { TypeReference } from 'io-ts-codegen';
@@ -38,9 +39,10 @@ const IOTS_IMPORT = "import * as t from 'io-ts';";
 
 const ArrayRegex = /^(.+)(\[])+$/;
 const RecordRegex = /^Record<(.+), (.+)>$/;
-const StringLiteralRegex = /^['|"](.*){1}['|"]$/;
+const StringLiteralRegex = /^'(\w*)'$/;
 const FunctionRegex = /^\(.*\) => .+$/;
-const UnionRegex = /^(.+\|)+[^|]+$/;
+const StringUnionRegex = /^\|?\s?('\w+'\n?\s+\|\s)+('\w+')$/;
+const TupleRegex = /^\[(.+)]$/;
 
 export interface CodecDefinition {
   targetFile: string;
@@ -107,24 +109,43 @@ const getTypeReference = (
     case StringLiteralRegex.test(type):
       return pipe(
         type.match(StringLiteralRegex)?.[1],
-        O.fromNullable,
-        O.map(gen.literalCombinator),
-        O.getOrElse<TypeReference>(() => gen.unknownType)
+        E.fromNullable(`Failed to extract string literal from ${type}`),
+        E.mapLeft(console.error),
+        E.foldW(() => gen.unknownType, gen.literalCombinator)
       );
-    case UnionRegex.test(type):
+    case StringUnionRegex.test(type):
       return pipe(
-        type.match(UnionRegex)?.input,
-        O.fromNullable,
-        O.map(
+        type.match(StringUnionRegex)?.input,
+        E.fromNullable(`Failed to extract string union from ${type}`),
+        E.mapLeft(console.error),
+        E.map(
           flow(
             S.split('|'),
+            RA.map(S.trim),
+            RA.filter(not(S.isEmpty)),
+            RA.map(plainTypeReference),
+            RA.toArray
+          )
+        ),
+        E.foldW(() => gen.unknownType, gen.unionCombinator)
+      );
+    case TupleRegex.test(type):
+      return pipe(
+        type.match(TupleRegex)?.[1],
+        E.fromNullable(`Failed to extract types from tuple ${type}`),
+        E.map(
+          flow(
+            S.split(','),
             RA.map(S.trim),
             RA.map(plainTypeReference),
             RA.toArray
           )
         ),
-        O.map(gen.unionCombinator),
-        O.getOrElse<TypeReference>(() => gen.unknownType)
+        E.mapLeft(console.error),
+        E.foldW(
+          () => gen.unknownType,
+          (tuple) => gen.tupleCombinator(tuple)
+        )
       );
     default:
       return pipe(
@@ -224,7 +245,11 @@ const buildCodecForInterface: (interfaceDefinition: Interface) => string = flow(
 
 const buildCodecForTypeAlias = ({ name, referencedType }: TypeAlias): string =>
   gen.printRuntime(
-    gen.typeDeclaration(`${name}Codec`, plainTypeReference(referencedType))
+    gen.typeDeclaration(
+      `${name}Codec`,
+      plainTypeReference(referencedType),
+      true
+    )
   );
 
 export const generate = ({
