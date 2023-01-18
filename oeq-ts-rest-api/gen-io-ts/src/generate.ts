@@ -22,9 +22,8 @@ import * as O from 'fp-ts/Option';
 import { not } from 'fp-ts/Predicate';
 import * as RA from 'fp-ts/ReadonlyArray';
 import * as S from 'fp-ts/string';
-import type { TypeReference } from 'io-ts-codegen';
+import type { TypeDeclaration, TypeReference } from 'io-ts-codegen';
 import * as gen from 'io-ts-codegen';
-import type { TypeDeclaration } from 'io-ts-codegen';
 import type {
   FileDefinition,
   Import,
@@ -37,7 +36,7 @@ import { pfTernary } from './utils';
 const HEADER =
   "/** This file is created by 'io-ts-gen' so please do not modify it. **/";
 const IOTS_IMPORT = "import * as t from 'io-ts';";
-const IOTSTYPE_IMPORT = "import * as td from 'io-ts-types';";
+const IOTSTYPE_IMPORT = "import * as td from 'io-ts-types';\n"; // This one is the last import so add a newline character.
 
 const ArrayRegex = /^(.+)(\[])+$/;
 const RecordRegex = /^Record<(.+), (.+)>$/;
@@ -270,12 +269,15 @@ export const generate = ({
     typeAliases,
     A.map(buildCodecForTypeAlias),
     A.concat(interfaces.map(buildCodecForInterface)),
-    flow(gen.sort, A.map(gen.printRuntime)),
+    flow(
+      gen.sort,
+      A.map((typeDeclaration) => `${gen.printRuntime(typeDeclaration)}\n`)
+    ),
     (typeDeclarations) => [
       HEADER,
+      ...generateImports(imports),
       IOTS_IMPORT,
       IOTSTYPE_IMPORT,
-      ...generateImports(imports),
       ...typeDeclarations,
     ],
     A.intercalate(S.Monoid)('\n'),
