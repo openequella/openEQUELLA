@@ -17,7 +17,7 @@
  */
 import { is } from 'typescript-is';
 import { GET, POST } from './AxiosInstance';
-import { UuidString } from './Common';
+import type { UuidString } from './Common';
 
 export interface UserDetails {
   id: UuidString;

@@ -17,7 +17,7 @@
  */
 import { Literal, Static, Union } from 'runtypes';
 import { is } from 'typescript-is';
-import * as Security from './Security';
+import type { BaseEntitySecurity } from './Security';
 
 export type i18nString = string;
 
@@ -59,7 +59,7 @@ export interface BaseEntity {
   nameStrings: I18nStrings;
   description?: i18nString;
   descriptionStrings?: I18nStrings;
-  security?: Security.BaseEntitySecurity;
+  security?: BaseEntitySecurity;
   exportDetails?: BaseEntityExport;
   readonly?: BaseEntityReadOnly;
   links: Record<string, string>;

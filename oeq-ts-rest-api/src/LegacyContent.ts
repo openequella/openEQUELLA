@@ -42,7 +42,7 @@ export interface CurrentUserDetails {
   autoLoggedIn: boolean;
   guest: boolean;
   prefsEditable: boolean;
-  menuGroups: Array<Array<MenuItem>>;
+  menuGroups: MenuItem[][];
   counts?: ItemCounts;
   canDownloadSearchResult: boolean;
   /**

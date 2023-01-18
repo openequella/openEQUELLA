@@ -20,8 +20,9 @@
  */
 import { is } from 'typescript-is';
 import { GET } from './AxiosInstance';
-import { UuidString } from './Common';
-import { Must, processMusts } from './Search';
+import type { UuidString } from './Common';
+import type { Must } from './Search';
+import { processMusts } from './Search';
 import { asCsvList } from './Utils';
 
 interface SearchFacetsParamsBase {

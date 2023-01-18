@@ -15,16 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as Common from './Common';
-import { GET } from './AxiosInstance';
 import { is } from 'typescript-is';
+import { GET } from './AxiosInstance';
+import type { BaseEntity, PagedResult } from './Common';
+import { isPagedBaseEntity, ListCommonParams } from './Common';
 
 export interface Citation {
   name: string;
   transformation: string;
 }
 
-export interface Schema extends Common.BaseEntity {
+export interface Schema extends BaseEntity {
   namePath: string;
   descriptionPath: string;
   /**
@@ -57,8 +58,8 @@ export const isEquellaSchema = (instance: unknown): instance is EquellaSchema =>
  */
 export const isPagedEquellaSchema = (
   instance: unknown
-): instance is Common.PagedResult<EquellaSchema> =>
-  is<Common.PagedResult<EquellaSchema>>(instance);
+): instance is PagedResult<EquellaSchema> =>
+  is<PagedResult<EquellaSchema>>(instance);
 
 const SCHEMA_ROOT_PATH = '/schema';
 
@@ -72,15 +73,13 @@ const SCHEMA_ROOT_PATH = '/schema';
  */
 export const listSchemas = (
   apiBasePath: string,
-  params?: Common.ListCommonParams
-): Promise<Common.PagedResult<Common.BaseEntity>> => {
+  params?: ListCommonParams
+): Promise<PagedResult<BaseEntity>> => {
   // Only if the `full` param is specified do you get a whole Schema definition, otherwise
   // it's the bare minimum of BaseEntity.
-  const validator = params?.full
-    ? isPagedEquellaSchema
-    : Common.isPagedBaseEntity;
+  const validator = params?.full ? isPagedEquellaSchema : isPagedBaseEntity;
 
-  return GET<Common.PagedResult<Common.BaseEntity>>(
+  return GET<PagedResult<BaseEntity>>(
     apiBasePath + SCHEMA_ROOT_PATH,
     validator,
     params

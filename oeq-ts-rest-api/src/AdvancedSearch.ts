@@ -17,8 +17,9 @@
  */
 import { is } from 'typescript-is';
 import { GET } from './AxiosInstance';
-import { BaseEntitySummary, isBaseEntitySummaryArray } from './Common';
-import { WizardControl } from './WizardControl';
+import type { BaseEntitySummary } from './Common';
+import { isBaseEntitySummaryArray } from './Common';
+import type { WizardControl } from './WizardControl';
 
 /**
  * Definition of an Advanced Search.

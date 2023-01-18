@@ -18,7 +18,7 @@
 import { Literal, Static, Union } from 'runtypes';
 import { is } from 'typescript-is';
 import { GET, PUT } from './AxiosInstance';
-import { SortOrder } from './Search';
+import type { SortOrder } from './Search';
 
 export const ContentIndexLevelRunTypes = Union(
   Literal(0),

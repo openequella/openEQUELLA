@@ -19,7 +19,7 @@ import { stringify } from 'query-string';
 import { Literal, Static, Union } from 'runtypes';
 import { is } from 'typescript-is';
 import { GET, HEAD, POST } from './AxiosInstance';
-import * as Common from './Common';
+import type { i18nString, ItemStatus } from './Common';
 import * as Utils from './Utils';
 
 /**
@@ -76,7 +76,7 @@ interface SearchParamsBase {
   /**
    * Item status.
    */
-  status?: Common.ItemStatus[];
+  status?: ItemStatus[];
   /**
    * A date before which items are modified. Date format (yyyy-MM-dd).
    */
@@ -183,11 +183,11 @@ export interface DisplayFields {
   /**
    * Name of a field.
    */
-  name: Common.i18nString;
+  name: i18nString;
   /**
    * Html code of a field.
    */
-  html: Common.i18nString;
+  html: i18nString;
 }
 
 /**
@@ -324,11 +324,11 @@ interface SearchResultItemBase {
   /**
    * Item's name.
    */
-  name?: Common.i18nString;
+  name?: i18nString;
   /**
    * Item's description.
    */
-  description?: Common.i18nString;
+  description?: i18nString;
   /**
    * Item's status
    */
