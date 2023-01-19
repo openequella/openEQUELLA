@@ -24,6 +24,7 @@ import * as RA from 'fp-ts/ReadonlyArray';
 import * as S from 'fp-ts/string';
 import type { TypeDeclaration, TypeReference } from 'io-ts-codegen';
 import * as gen from 'io-ts-codegen';
+import { IntFromString } from 'io-ts-types/lib/IntFromString';
 import type {
   FileDefinition,
   Import,
@@ -41,6 +42,7 @@ const IOTSTYPE_IMPORT = "import * as td from 'io-ts-types';\n"; // This one is t
 const ArrayRegex = /^(.+)(\[])+$/;
 const RecordRegex = /^Record<(.+), (.+)>$/;
 const StringLiteralRegex = /^'(\w*)'$/;
+const IntLiteralRegex = /^\d+$/;
 const FunctionRegex = /^\(.*\) => .+$/;
 const UnionRegex = /^\|?\s?(.+\n?\s+\|\s)+(.+)$/;
 const TupleRegex = /^\[(.+)]$/;
@@ -99,6 +101,13 @@ const getTypeReference = (
       return gen.customCombinator('td.date', 'td.date');
     case FunctionRegex.test(type):
       return gen.functionType;
+    case IntLiteralRegex.test(type):
+      return pipe(
+        type.match(IntLiteralRegex)?.input,
+        IntFromString.decode,
+        E.mapLeft(console.error),
+        E.foldW(() => gen.unknownType, gen.literalCombinator)
+      );
     case RecordRegex.test(type):
       return pipe(
         type.match(RecordRegex),
