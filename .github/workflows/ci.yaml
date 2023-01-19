@@ -113,7 +113,7 @@ jobs:
             target/*.zip
 
       - name: Save primary artefacts
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: Artefacts
           path: artefacts.tar
@@ -154,7 +154,7 @@ jobs:
           tar cvf storybook.tar storybook-static
 
       - name: Save Static Storybook instance
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: Storybook
           path: react-front-end/storybook.tar
@@ -176,7 +176,7 @@ jobs:
           ./gradlew build
 
       - name: Save primary artefacts
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: ImportExportTools
           path: import-export-tool/build/libs/
@@ -266,7 +266,7 @@ jobs:
 
       - name: Save Scalacheck results
         if: matrix.newui && failure()
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: ScalacheckReports
           path: autotest/Tests/target/test-reports
@@ -278,21 +278,21 @@ jobs:
 
       - name: Save TestNG Reports
         if: failure()
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: TestNGReports-new-${{ matrix.newui }}
           path: autotest/OldTests/target/testng
 
       - name: Save oEQ Logs
         if: failure()
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: oEQLogs-new-${{ matrix.newui }}
           path: autotest/equella-install/logs
 
       - name: Save Screenshots
         if: failure()
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: Screenshots-new-${{ matrix.newui }}
           path: autotest/Tests/target/test-reports/screenshots
@@ -310,7 +310,7 @@ jobs:
           tar cvf coverage_report.tar autotest/target/coverage-report/
 
       - name: Save Coverage Report
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: CoverageReport-newui-${{ matrix.newui }}
           path: coverage_report.tar
@@ -393,7 +393,7 @@ jobs:
 
       - name: Save oEQ logs for REST Module
         if: failure()
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: oEQ-logs-rest-module
           path: autotest/equella-install/logs
