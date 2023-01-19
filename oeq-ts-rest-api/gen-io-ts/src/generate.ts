@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import * as A from 'fp-ts/Array';
-import * as E from 'fp-ts/Either';
 import { constant, flow, pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
 import { not } from 'fp-ts/Predicate';
@@ -90,14 +89,14 @@ const getTypeReference = (
     case ArrayRegex.test(type):
       return pipe(
         type.match(ArrayRegex)?.[1],
-        E.fromNullable(`Failed to extract the array type from ${type} `),
-        E.mapLeft(console.error),
-        E.foldW(
+        O.fromNullable,
+        O.foldW(
           () => gen.unknownArrayType,
           (t) => gen.arrayCombinator(plainTypeReference(t, typeArguments))
         )
       );
     case type === 'Date':
+      // 'td' is the namespace used in the import of 'io-ts-types'.
       return gen.customCombinator('td.date', 'td.date');
     case FunctionRegex.test(type):
       return gen.functionType;
@@ -105,15 +104,14 @@ const getTypeReference = (
       return pipe(
         type.match(IntLiteralRegex)?.input,
         IntFromString.decode,
-        E.mapLeft(console.error),
-        E.foldW(() => gen.unknownType, gen.literalCombinator)
+        O.fromEither,
+        O.foldW(() => gen.unknownType, gen.literalCombinator)
       );
     case RecordRegex.test(type):
       return pipe(
         type.match(RecordRegex),
-        E.fromNullable(`Failed to extract the generic types from ${type}`),
-        E.mapLeft(console.error),
-        E.foldW(
+        O.fromNullable,
+        O.foldW(
           () => gen.unknownRecordType,
           ([_, domain, codomain]) =>
             gen.recordCombinator(
@@ -125,15 +123,14 @@ const getTypeReference = (
     case StringLiteralRegex.test(type):
       return pipe(
         type.match(StringLiteralRegex)?.[1],
-        E.fromNullable(`Failed to extract string literal from ${type}`),
-        E.mapLeft(console.error),
-        E.foldW(() => gen.unknownType, gen.literalCombinator)
+        O.fromNullable,
+        O.foldW(() => gen.unknownType, gen.literalCombinator)
       );
     case TupleRegex.test(type):
       return pipe(
         type.match(TupleRegex)?.[1],
-        E.fromNullable(`Failed to extract types from tuple ${type}`),
-        E.map(
+        O.fromNullable,
+        O.map(
           flow(
             S.split(','),
             RA.map(S.trim),
@@ -141,18 +138,13 @@ const getTypeReference = (
             RA.toArray
           )
         ),
-        E.mapLeft(console.error),
-        E.foldW(
-          () => gen.unknownType,
-          (tuple) => gen.tupleCombinator(tuple)
-        )
+        O.foldW(() => gen.unknownType, gen.tupleCombinator)
       );
     case UnionRegex.test(type):
       return pipe(
         type.match(UnionRegex)?.input,
-        E.fromNullable(`Failed to extract string union from ${type}`),
-        E.mapLeft(console.error),
-        E.map(
+        O.fromNullable,
+        O.map(
           flow(
             S.split('|'),
             RA.map(S.trim),
@@ -161,15 +153,22 @@ const getTypeReference = (
             RA.toArray
           )
         ),
-        E.foldW(() => gen.unknownType, gen.unionCombinator)
+        O.foldW(() => gen.unknownType, gen.unionCombinator)
       );
     default:
+      // Check whether the property's type is in the list of type argument.
+      // If yes, the codec's name must be in the format of 'codecX' where X is a number.
+      // If no, the name must be the property's type followed by keyword 'Codec'.
       return pipe(
         typeArguments,
         O.fromNullable,
         O.chain(A.findIndex((arg) => arg === type)),
         O.getOrElse(constant(-1)),
-        (index) => (index >= 0 ? `codec${index}` : `${type}Codec`),
+        pfTernary(
+          (index) => index >= 0,
+          (index) => `codec${index}`,
+          () => `${type}Codec`
+        ),
         gen.identifier
       );
   }
