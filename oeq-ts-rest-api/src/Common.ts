@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Literal, Static, Union } from 'runtypes';
+import { Literal, Union } from 'runtypes';
 import { is } from 'typescript-is';
 import type { BaseEntitySecurity } from './Security';
 
@@ -113,7 +113,17 @@ export const ItemStatuses = Union(
   Literal('SUSPENDED')
 );
 
-export type ItemStatus = Static<typeof ItemStatuses>;
+// todo: fix this type alias which is not in sync with the runtype. Jira ticket: OEQ-1438
+export type ItemStatus =
+  | 'ARCHIVED'
+  | 'DELETED'
+  | 'DRAFT'
+  | 'LIVE'
+  | 'MODERATING'
+  | 'PERSONAL'
+  | 'REJECTED'
+  | 'REVIEW'
+  | 'SUSPENDED';
 
 export interface PagedResult<T> {
   start: number;

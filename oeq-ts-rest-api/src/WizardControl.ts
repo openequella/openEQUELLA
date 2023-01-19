@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Literal, Static, Union } from 'runtypes';
+import { Literal, Union } from 'runtypes';
 import type { UuidString } from './Common';
 import type { SelectionRestriction, TermStorageFormat } from './Taxonomy';
 import type {
@@ -40,10 +40,21 @@ export const RuntypesControlType = Union(
   Literal('userselector')
 );
 
+// todo: fix this type alias which is not in sync with the runtype. Jira ticket: OEQ-1438
 /**
  * Supported Wizard Control types.
  */
-export type ControlType = Static<typeof RuntypesControlType>;
+export type ControlType =
+  | 'calendar'
+  | 'checkboxgroup'
+  | 'editbox'
+  | 'html'
+  | 'listbox'
+  | 'radiogroup'
+  | 'shufflebox'
+  | 'shufflelist'
+  | 'termselector'
+  | 'userselector';
 
 /**
  * Provide common properties of Wizard Control.

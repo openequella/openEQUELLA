@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { stringify } from 'query-string';
-import { Literal, Static, Union } from 'runtypes';
+import { Literal, Union } from 'runtypes';
 import { is } from 'typescript-is';
 import { GET, HEAD, POST } from './AxiosInstance';
 import type { i18nString, ItemStatus } from './Common';
@@ -38,7 +38,15 @@ export const SortOrderRunTypes = Union(
   Literal('task_submitted')
 );
 
-export type SortOrder = Static<typeof SortOrderRunTypes>;
+// todo: fix this type alias which is not in sync with the runtype. Jira ticket: OEQ-1438
+export type SortOrder =
+  | 'rank'
+  | 'datemodified'
+  | 'datecreated'
+  | 'name'
+  | 'rating'
+  | 'task_lastaction'
+  | 'task_submitted';
 
 interface SearchParamsBase {
   /**

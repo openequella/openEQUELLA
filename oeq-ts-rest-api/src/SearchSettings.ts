@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Literal, Static, Union } from 'runtypes';
+import { Literal, Union } from 'runtypes';
 import { is } from 'typescript-is';
 import { GET, PUT } from './AxiosInstance';
 import type { SortOrder } from './Search';
@@ -26,7 +26,8 @@ export const ContentIndexLevelRunTypes = Union(
   Literal(2)
 );
 
-export type ContentIndexLevel = Static<typeof ContentIndexLevelRunTypes>;
+// todo: fix this type alias which is not in sync with the runtype. Jira ticket: OEQ-1438
+export type ContentIndexLevel = 0 | 1 | 2;
 
 export interface Settings {
   searchingShowNonLiveCheckbox: boolean;
