@@ -3,7 +3,7 @@ import Path.rebase
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-javacOptions ++= Seq("-source", "1.8")
+javacOptions ++= Seq("--release", "11")
 
 (Compile / resourceDirectory) := baseDirectory.value / "resources"
 
@@ -92,14 +92,15 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "com.sun.xml.bind"),
     ExclusionRule(organization = "com.sun.jersey")
   ),
-  "com.miglayout"             % "miglayout-swing"       % "4.2",
-  "com.ning"                  % "async-http-client"     % "1.9.40",
-  "com.rometools"             % "rome"                  % "1.18.0",
-  "io.swagger"                % "swagger-core"          % SwaggerVersion,
-  "io.swagger"                % "swagger-annotations"   % SwaggerVersion,
-  "io.swagger"                % "swagger-jaxrs"         % SwaggerVersion,
-  "io.swagger"                %% "swagger-scala-module" % "1.0.6",
-  "com.zaxxer"                % "HikariCP"              % "4.0.3",
+  "com.miglayout" % "miglayout-swing"       % "4.2",
+  "com.ning"      % "async-http-client"     % "1.9.40",
+  "com.rometools" % "rome"                  % "1.18.0",
+  "io.swagger"    % "swagger-core"          % SwaggerVersion,
+  "io.swagger"    % "swagger-annotations"   % SwaggerVersion,
+  "io.swagger"    % "swagger-jaxrs"         % SwaggerVersion,
+  "io.swagger"    %% "swagger-scala-module" % "1.0.6",
+  // Exclude slf4j due to issue: https://github.com/brettwooldridge/HikariCP/issues/1746
+  "com.zaxxer"                % "HikariCP"              % "4.0.3" excludeAll ExclusionRule(organization = "org.slf4j"),
   "commons-beanutils"         % "commons-beanutils"     % "1.9.4",
   "commons-codec"             % "commons-codec"         % "1.15",
   "commons-collections"       % "commons-collections"   % "3.2.2",
@@ -355,6 +356,9 @@ run := {
   case PathList("META-INF", "jdom-info.xml")                => MergeStrategy.first
   case PathList("META-INF", "axiom.xml")                    => MergeStrategy.first
   case PathList("javax", "wsdl", _*)                        => MergeStrategy.last
+  case PathList("javax", "xml", "soap", _*)                 => MergeStrategy.first
+  case PathList("javax", "transaction", _*)                 => MergeStrategy.first
+  case PathList("javax", "jws", _*)                         => MergeStrategy.first
   case PathList("com", "ibm", "wsdl", _*)                   => MergeStrategy.first
   case PathList("org", "apache", "regexp", _*)              => MergeStrategy.first
   case PathList("javax", "servlet", "jsp", _*)              => MergeStrategy.first

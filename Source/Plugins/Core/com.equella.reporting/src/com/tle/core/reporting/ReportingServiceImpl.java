@@ -148,7 +148,8 @@ public class ReportingServiceImpl
         if (configService.isDebuggingMode()) {
           engineConfig.setOSGiConfig(ImmutableMap.of("osgi.dev", "true"));
         }
-        URL resource = pluginService.getClassLoader("org.eclipse.birt.osgi").getResource("birt/");
+        URL resource =
+            pluginService.getClassLoader("org.eclipse.birt.osgi").getResource("ReportEngine/");
         String birtHome = IoUtil.url2file(resource).getAbsolutePath();
         engineConfig.setBIRTHome(birtHome);
 
@@ -197,7 +198,8 @@ public class ReportingServiceImpl
 
     @Override
     public void publish(LogRecord record) {
-      Logger logger = LoggerFactory.getLogger(record.getLoggerName());
+      String loggerName = record.getLoggerName();
+      Logger logger = loggerName != null ? LoggerFactory.getLogger(loggerName) : LOGGER;
       Level level = record.getLevel();
       String message = record.getMessage();
       try {

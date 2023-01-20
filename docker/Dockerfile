@@ -1,4 +1,4 @@
-FROM openjdk:8u312-jre as baseequella
+FROM eclipse-temurin:11 as baseequella
 
 # Install needed tools to install and run openEQUELLA, clean up the apt cache afterwards.
 

@@ -21,10 +21,13 @@ package com.tle.beans.user;
 import com.dytech.common.text.NumberStringComparator;
 import com.tle.common.Check;
 import com.tle.common.Check.FieldEquality;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
 
 /** @author Nicholas Read */
 public class GroupTreeNode extends DefaultMutableTreeNode implements FieldEquality<GroupTreeNode> {
@@ -73,14 +76,13 @@ public class GroupTreeNode extends DefaultMutableTreeNode implements FieldEquali
 
   public void sortChildren() {
     if (children != null) {
-      @SuppressWarnings("unchecked")
-      List<GroupTreeNode> childNodes = children;
+      List<TreeNode> childNodes = Collections.list(children.elements());
 
-      Collections.sort(childNodes, SORTER);
-
-      for (GroupTreeNode child : childNodes) {
-        child.sortChildren();
-      }
+      childNodes.stream()
+          .map(child -> (GroupTreeNode) child)
+          .sorted(SORTER)
+          .collect(Collectors.toCollection(ArrayList::new))
+          .forEach(GroupTreeNode::sortChildren);
     }
   }
 

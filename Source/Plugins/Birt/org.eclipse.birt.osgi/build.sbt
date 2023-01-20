@@ -4,9 +4,9 @@ lazy val BirtOsgi      = config("birtosgi")
 lazy val CustomCompile = config("compile") extend BirtOsgi
 
 libraryDependencies := Seq(
-  "com.github.equella.reporting" % "birt-osgi" % "3.7.2" artifacts Artifact("birt-osgi",
-                                                                            Artifact.DefaultType,
-                                                                            "zip"),
+  "com.github.openequella" % "birt-osgi" % "4.9.0" artifacts Artifact("birt-osgi",
+                                                                      Artifact.DefaultType,
+                                                                      "zip"),
   "com.github.equella.reporting" % "reporting-common"                               % "6.5",
   "com.github.equella.reporting" % "reporting-oda"                                  % "6.5",
   "com.github.equella.reporting" % "reporting-oda-connectors"                       % "6.5",
@@ -25,9 +25,9 @@ ivyConfigurations := overrideConfigs(BirtOsgi, CustomCompile)(ivyConfigurations.
 
 (Compile / resourceGenerators) += Def.task {
   val baseDir  = (Compile / resourceManaged).value
-  val baseBirt = baseDir / "birt"
+  val baseBirt = baseDir / "ReportEngine"
   IO.delete(baseBirt)
-  val outPlugins = baseBirt / "plugins"
+  val outPlugins = baseBirt / "lib"
   val ur         = update.value
   val pluginJars =
     Classpaths.managedJars(BirtOsgi, Set("jar"), ur).files.filter(_.getName.endsWith(".jar"))

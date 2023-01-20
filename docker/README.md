@@ -249,7 +249,7 @@ Next, a couple of pre-requisites:
 After that, it's time to start the cluster:
 
 - From the root of your git clone, copy the installer zip from `Installer/target` to the `docker`
-  folder with the name `equella-installer.zip`
+  folder with the name `installer.zip`
 - Change into the `docker` folder and run `docker-compose up`
 - (optional) Run `docker-compose logs | grep 'ClusterMessagingServiceImpl'` and you should expect to
   see `[ClusterMessagingServiceImpl] Successful connection from NODE: xxxx (a string in UUID format)`
