@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 import * as A from 'fp-ts/Array';
-import { constant, flow, pipe } from 'fp-ts/function';
+import { constant, constFalse, flow, pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
 import { not } from 'fp-ts/Predicate';
 import * as RA from 'fp-ts/ReadonlyArray';
+import * as R from 'fp-ts/Record';
 import * as S from 'fp-ts/string';
-import type { TypeDeclaration, TypeReference } from 'io-ts-codegen';
 import * as gen from 'io-ts-codegen';
 import { IntFromString } from 'io-ts-types/lib/IntFromString';
 import type {
@@ -55,7 +55,7 @@ export interface CodecDefinition {
 const plainTypeReference = (
   type: string,
   typeArguments?: string[]
-): TypeReference =>
+): gen.TypeReference =>
   getTypeReference(
     {
       name: '',
@@ -70,7 +70,7 @@ const plainTypeReference = (
 const getTypeReference = (
   { type, properties }: Prop,
   typeArguments?: string[]
-): TypeReference => {
+): gen.TypeReference => {
   switch (true) {
     case type === 'boolean':
       return gen.booleanType;
@@ -203,7 +203,7 @@ const buildNormalInterface = ({
   name,
   properties,
   typeExtended,
-}: Interface): TypeDeclaration => {
+}: Interface): gen.TypeDeclaration => {
   const extendIdentifiers = generateExtendIdentifier(typeExtended);
   const props = gen.typeCombinator(generateProperties(properties));
 
@@ -224,7 +224,7 @@ const buildGenericTypeInterface = ({
   properties,
   typeArguments,
   typeExtended,
-}: Interface): TypeDeclaration => {
+}: Interface): gen.TypeDeclaration => {
   const typeParameters = typeArguments
     .map((_, index) => `C${index} extends t.Mixed`)
     .join(',');
@@ -253,7 +253,7 @@ const buildGenericTypeInterface = ({
 
 const buildCodecForInterface: (
   interfaceDefinition: Interface
-) => TypeDeclaration = flow(
+) => gen.TypeDeclaration = flow(
   pfTernary(
     ({ typeArguments }) => A.size(typeArguments) > 0,
     buildGenericTypeInterface,
@@ -264,8 +264,31 @@ const buildCodecForInterface: (
 const buildCodecForTypeAlias = ({
   name,
   referencedType,
-}: TypeAlias): TypeDeclaration =>
+}: TypeAlias): gen.TypeDeclaration =>
   gen.typeDeclaration(`${name}Codec`, plainTypeReference(referencedType), true);
+
+// Given a list of sorted TypeDeclaration, return a list of string representing runtime type.
+// If recursive type is used in a TypeDeclaration, its static type representation is also added.
+const convertTypeDeclarationToString = (
+  sorted: (gen.TypeDeclaration | gen.CustomTypeDeclaration)[]
+): string[] => {
+  // This is a Record where key is name of a TypeDeclaration and value is always `true`.
+  const { recursive } = gen.tsort(gen.getTypeDeclarationGraph(sorted));
+
+  const isRecursive = (name: string) =>
+    pipe(recursive, R.lookup(name), O.getOrElse(constFalse));
+
+  const toString = (
+    typeDeclaration: gen.TypeDeclaration | gen.CustomTypeDeclaration
+  ) =>
+    `${
+      isRecursive(typeDeclaration.name)
+        ? `${gen.printStatic(typeDeclaration)}\n`
+        : ''
+    }${gen.printRuntime(typeDeclaration)}\n`;
+
+  return sorted.map(toString);
+};
 
 export const generate = ({
   filename,
@@ -277,10 +300,7 @@ export const generate = ({
     typeAliases,
     A.map(buildCodecForTypeAlias),
     A.concat(interfaces.map(buildCodecForInterface)),
-    flow(
-      gen.sort,
-      A.map((typeDeclaration) => `${gen.printRuntime(typeDeclaration)}\n`)
-    ),
+    flow(gen.sort, convertTypeDeclarationToString),
     (typeDeclarations) => [
       HEADER,
       ...generateImports(imports),
