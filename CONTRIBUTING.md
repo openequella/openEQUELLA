@@ -115,11 +115,11 @@ We suggest using SDKMAN for installing (and managing multiple versions of) JDK, 
 Please follow the installation instructions provided by the tool.
 
 ### Install Java
-At the time of writing the openEQUELLA is built with Java 8. For this, we prefer to use
-openJDK which is current at version 8.0.302. To install that with SDKMAN:
+Since January 2023, Java 11 is required to build openEQUELLA. Temurin is the recommended openJDK distribution.
+To install that with SDKMAN:
 
 ```bash
-sdk install java 8.0.302-open
+sdk install java 11.0.17-tem
 ```
 
 ### Install NVM
