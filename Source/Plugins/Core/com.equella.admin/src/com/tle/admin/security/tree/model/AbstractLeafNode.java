@@ -127,7 +127,7 @@ public abstract class AbstractLeafNode<T> implements SecurityTreeNode {
    * @see javax.swing.tree.TreeNode#children()
    */
   @Override
-  public Enumeration<?> children() {
+  public Enumeration<? extends TreeNode> children() {
     throw new UnsupportedOperationException();
   }
 }
