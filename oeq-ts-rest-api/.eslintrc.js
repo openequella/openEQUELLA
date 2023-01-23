@@ -42,8 +42,9 @@ module.exports = {
     ecmaVersion: 2018,
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint', 'notice'],
+  plugins: ['@typescript-eslint', 'notice', 'unused-imports'],
   rules: {
+    'unused-imports/no-unused-imports': 'error',
     'notice/notice': [
       'error',
       {
