@@ -39,7 +39,7 @@
     "@mui/icons-material": "5.10.16",
     "@mui/lab": "5.0.0-alpha.110",
     "@mui/material": "5.10.16",
-    "@mui/x-date-pickers": "5.0.14",
+    "@mui/x-date-pickers": "5.0.15",
     "@openequella/rest-api-client": "file:../oeq-ts-rest-api",
     "@tinymce/tinymce-react": "4.2.0",
     "axios": "1.2.2",
