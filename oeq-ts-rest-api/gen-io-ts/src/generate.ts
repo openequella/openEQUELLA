@@ -241,7 +241,7 @@ const buildGenericTypeInterface = ({
     : props;
 
   const stringRepr = `<${typeParameters}>(${funcParameters}) => {
-           ${gen.printRuntime(funcBody)}
+          return ${gen.printRuntime(funcBody)}
      }`;
 
   return gen.typeDeclaration(
