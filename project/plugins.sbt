@@ -16,7 +16,7 @@ addSbtPlugin("com.etsy" % "sbt-checkstyle-plugin" % "3.1.1")
 //
 // NOTE: Uses a lot of temporary file storage, you may need to:
 //   export JVM_OPTS="-Djava.io.tmpdir=/var/tmp"
-addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "4.2.0")
+addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "4.3.0")
 
 // Provides support for all the tasks found at:
 // https://github.com/sbt/sbt-dependency-graph#main-tasks
