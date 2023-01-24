@@ -1,83 +1,94 @@
-This small project is a code generation project to generate the `io-ts` types based on the
-`interface`s documented in the main module.
+This small project is a code generation project to generate the `io-ts` Codec based on the
+`interface`s and `type alias` documented in the main module.
 
-## Output Format
+## How it works
 
-Given the input a directory with two files. First `File1.ts`:
+1. `ts-morph` is the library used to parse all the TS files in the main module.
+2. Based on the parsing output, a library called `io-ts-codegen` is the major tool we use to generate the Codec. However, this library does not generate Codec
+for some type definitions. For example, it does not support a type definition that takes type arguments. As a result, we use string templates as a supplementary.
+
+## Example 1
+Given a simple type defined as `interface`
 
 ```typescript
-inteface InterfaceA extends InterfaceX, InterfaceY {
+inteface InterfaceA {
   someString: string;
   someNumber?: number;
   someBoolean?: boolean;
 }
-
-inteface InterfaceB {
-  someNumber: number;
-  anArrayOfA: InterfaceA[];
-}
+```
+the output is
+```typescript
+const InterfaceACodec = t.intersection([
+  t.type({
+    someString: t.string,
+  }),
+  t.partial({
+    someNumber: t.number,
+    someBoolean: t.boolean,
+  }),
+])
 ```
 
-Then `File2.ts`:
+## Example 2
+Given a simple type defined as `type alias`
 
 ```typescript
-import InterfaceA from File1;
-
-interface InterfaceC {
-  someNumber: number;
-  someString? string;
-  someObject: {
-    anA: IntefaceA;
-    someBoolean?: boolean;
-  }
+type TypeA = "a" | "b" | 3;
 ```
-This would produce the YAML of:
+the output is
 
-```yaml
-files:
-  - File1.ts
-    interfaces:
-      - InterfaceA:
-        extends:
-          - Interface X
-          - Interface Y
-        properties:
-          someString:
-            type: string
-          someNumber:
-            type: number
-            optional: true
-          someBoolean:
-            type: boolean
-            optional: true
-      - InterfaceB:
-        properties:
-          someNumber:
-            type: number
-          anArrayOfA:
-            type: array(InterfaceA)
-  - File2.ts
-    imports:
-      File1:
-        - InterfaceA
-    interfaces:
-      - InterfaceC
-        properties:
-          someNumber:
-            type: number
-          someString:
-            type: string
-            optional: true
-          someObject:
-            type: inline-object
-            object-properties:
-              anA:
-                type: InterfaceA
-              someBoolean:
-                type: boolean
-                optional: true
+```typescript
+const TypeACodec = t.union([
+  t.literal('a'),
+  t.literal('b'),
+  t.literal(3),
+])
 ```
 
-## Resources
+## Example 3
+Given a more complicated type that extends from another type
 
-Project setup was based on: [Building a Typescript CLI](https://dev.to/akshaynathan/building-a-typescript-cli-26h5)
+```typescript
+interface InterfaceB extends InterfaceA {
+    someArray: string[]
+}
+```
+the output is
+```typescript
+const InterfaceBCodec = t.intersection([
+  t.type({
+    someString: t.string,
+  }),
+  t.partial({
+    someNumber: t.number,
+    someBoolean: t.boolean,
+  }),
+  InterfaceACodec
+])
+```
+
+## TS code requirements
+1. If a type definition is for an object, it must be declared by `interface`.
+   For example, instead of doing this:
+```typescript
+ type A = {
+   prop: string
+ }
+```
+we should do this:
+```
+ interface A {
+   prop: string;
+ }
+```
+2. When a type definition is imported, the import must be a named type import.
+```typescript
+ import type { A } from 'X';
+```
+
+## Unsupported
+1. For `type alias` that accepts type arguments, use interface instead.
+2. For `interface` where type arguments and recursive types are both used, while this
+   complicated type definition in theory can be supported, we don't have such a type yet and the implementation
+   will require a lot more efforts.
