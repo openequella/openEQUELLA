@@ -12,16 +12,13 @@ public class FreeTextReportPage extends AbstractReport<FreeTextReportPage> {
   @FindBy(id = "__bookmark_1")
   private WebElement basicTable;
 
-  @FindBy(id = "__bookmark_5")
-  private WebElement countDiv;
-
-  @FindBy(id = "__bookmark_6")
+  @FindBy(id = "__bookmark_2")
   private WebElement listFileTable;
 
-  @FindBy(id = "__bookmark_7")
+  @FindBy(id = "__bookmark_3")
   private WebElement matrixTable;
 
-  @FindBy(id = "__bookmark_8")
+  @FindBy(id = "__bookmark_4")
   private WebElement matrixCountTable;
 
   ArrayList<String> itemResultNames = new ArrayList<String>();
@@ -51,7 +48,9 @@ public class FreeTextReportPage extends AbstractReport<FreeTextReportPage> {
 
   // should be 3 results
   public boolean checkBasicCountResults() {
-    return countDiv.getText().equals("3");
+    // There should be only one DIV where the text content is exactly '3'.
+    List<WebElement> list = driver.findElements(By.xpath("//div[text()='3']"));
+    return list.size() == 1;
   }
 
   // should only be Reporting Item 3 (one result + footer)

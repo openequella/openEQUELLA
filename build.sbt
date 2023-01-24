@@ -145,12 +145,15 @@ version := {
 (ThisBuild / versionProperties) := {
   val eqVersion = equellaVersion.value
   val props     = new Properties
-  props.putAll(
-    Map(
-      "version.display" -> s"${eqVersion.semanticVersion}-${eqVersion.releaseType}",
-      "version.commit"  -> eqVersion.sha
-    ).asJava)
-  val f = target.value / "version.properties"
+  val f         = target.value / "version.properties"
+
+  Map(
+    "version.display" -> s"${eqVersion.semanticVersion}-${eqVersion.releaseType}",
+    "version.commit"  -> eqVersion.sha
+  ) foreach {
+    case (key, value) => props.put(key, value)
+  }
+
   IO.write(props, "version", f)
   f
 }
@@ -179,7 +182,9 @@ writeLanguagePack := {
           val fname = g + (if (xml) ".xml" else ".properties")
           val f     = dir / fname
           val p     = new SortedProperties()
-          lss.foreach(ls => p.putAll(ls.strings.asJava))
+          lss.flatMap(_.strings).foreach {
+            case (key, value) => p.put(key, value)
+          }
           Using.fileOutputStream()(f) { os =>
             if (xml) p.storeToXML(os, "") else p.store(os, "")
           }
@@ -271,7 +276,7 @@ def javadocSources(base: File): PathFinder = {
   (javadocSources((LocalProject("com_equella_base") / baseDirectory).value)
     +++ javadocSources((LocalProject("com_equella_core") / baseDirectory).value)).get
 }
-(Compile / doc / javacOptions) := Seq()
+(Compile / doc / javacOptions) := Seq("--release", "8")
 
 lazy val allEquella = ScopeFilter(inAggregates(equella))
 

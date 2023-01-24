@@ -43,7 +43,6 @@ import org.apache.commons.logging.LogFactory;
 import org.java.plugin.Plugin;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.PluginDescriptor;
-import sun.reflect.Reflection;
 
 public class PluginServiceImpl extends AbstractPluginService implements PrivatePluginService {
   private static final Log LOGGER = LogFactory.getLog(PluginServiceImpl.class);
@@ -104,11 +103,12 @@ public class PluginServiceImpl extends AbstractPluginService implements PrivateP
   public void ensureActivated(PluginDescriptor plugin) {
     if (LOGGER.isDebugEnabled() && !pluginManager.isPluginActivated(plugin)) {
       int i = 1;
-      Class<?> callerClass = Reflection.getCallerClass(i);
-      while (callerClass == PluginServiceImpl.class
-          || callerClass == AbstractPluginService.class
-          || callerClass == PluginTracker.class) {
-        callerClass = Reflection.getCallerClass(++i);
+      StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+      String callerClass = stackTraceElements[i].getClassName();
+      while (callerClass.equals(PluginServiceImpl.class.getName())
+          || callerClass.equals(AbstractPluginService.class.getName())
+          || callerClass.equals(PluginTracker.class.getName())) {
+        callerClass = stackTraceElements[++i].getClassName();
       }
 
       StringBuilder sb = new StringBuilder("Plug-in ");

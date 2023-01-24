@@ -3,7 +3,7 @@ import Path.rebase
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-javacOptions ++= Seq("-source", "1.8")
+javacOptions ++= Seq("--release", "11")
 
 (Compile / resourceDirectory) := baseDirectory.value / "resources"
 
@@ -18,11 +18,11 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion   = "3.15.3.Final"
 val SwaggerVersion    = "1.6.9"
-val TomcatVersion     = "9.0.70"
+val TomcatVersion     = "9.0.71"
 val axis2Version      = "1.8.2"
 val circeVersion      = "0.12.1"
 val curatorVersion    = "5.4.0"
-val cxfVersion        = "3.5.4"
+val cxfVersion        = "3.5.5"
 val fs2Version        = "2.5.11"
 val guiceVersion      = "5.1.0"
 val jsassVersion      = "5.10.5"
@@ -63,10 +63,10 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
-  "com.google.api-client" % "google-api-client"           % "2.1.1",
+  "com.google.api-client" % "google-api-client"           % "2.1.2",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20220318-2.0.0",
   "com.google.apis"       % "google-api-services-youtube" % "v3-rev20221108-2.0.0",
-  "com.google.code.gson"  % "gson"                        % "2.10",
+  "com.google.code.gson"  % "gson"                        % "2.10.1",
   "com.google.gdata"      % "core"                        % "1.47.1",
   "com.google.guava"      % "guava"                       % "31.1-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
@@ -92,14 +92,15 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "com.sun.xml.bind"),
     ExclusionRule(organization = "com.sun.jersey")
   ),
-  "com.miglayout"             % "miglayout-swing"       % "4.2",
-  "com.ning"                  % "async-http-client"     % "1.9.40",
-  "com.rometools"             % "rome"                  % "1.18.0",
-  "io.swagger"                % "swagger-core"          % SwaggerVersion,
-  "io.swagger"                % "swagger-annotations"   % SwaggerVersion,
-  "io.swagger"                % "swagger-jaxrs"         % SwaggerVersion,
-  "io.swagger"                %% "swagger-scala-module" % "1.0.6",
-  "com.zaxxer"                % "HikariCP"              % "4.0.3",
+  "com.miglayout" % "miglayout-swing"       % "4.2",
+  "com.ning"      % "async-http-client"     % "1.9.40",
+  "com.rometools" % "rome"                  % "1.18.0",
+  "io.swagger"    % "swagger-core"          % SwaggerVersion,
+  "io.swagger"    % "swagger-annotations"   % SwaggerVersion,
+  "io.swagger"    % "swagger-jaxrs"         % SwaggerVersion,
+  "io.swagger"    %% "swagger-scala-module" % "1.0.6",
+  // Exclude slf4j due to issue: https://github.com/brettwooldridge/HikariCP/issues/1746
+  "com.zaxxer"                % "HikariCP"              % "4.0.3" excludeAll ExclusionRule(organization = "org.slf4j"),
   "commons-beanutils"         % "commons-beanutils"     % "1.9.4",
   "commons-codec"             % "commons-codec"         % "1.15",
   "commons-collections"       % "commons-collections"   % "3.2.2",
@@ -216,8 +217,8 @@ libraryDependencies ++= Seq(
   "org.opensaml" % "xmltooling" % "1.4.4" excludeAll ExclusionRule(organization = "org.slf4j"),
   postgresDep,
   "org.scannotation" % "scannotation"   % "1.0.3",
-  "org.slf4j"        % "jcl-over-slf4j" % "2.0.5",
-  "org.slf4j"        % "slf4j-api"      % "2.0.5",
+  "org.slf4j"        % "jcl-over-slf4j" % "2.0.6",
+  "org.slf4j"        % "slf4j-api"      % "2.0.6",
   springAop,
   springWeb,
   springContext,
@@ -239,7 +240,7 @@ libraryDependencies ++= Seq(
   "org.mozilla"                   % "rhino"                     % "1.7.14",
   "io.lemonlabs"                  %% "scala-uri"                % "4.0.3",
   "org.scala-lang.modules"        %% "scala-parser-combinators" % "2.1.1",
-  "io.github.classgraph"          % "classgraph"                % "4.8.151",
+  "io.github.classgraph"          % "classgraph"                % "4.8.154",
   "com.fasterxml"                 % "classmate"                 % "1.5.1",
   "org.glassfish"                 % "javax.el"                  % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"    % "3.0.2",
@@ -355,6 +356,9 @@ run := {
   case PathList("META-INF", "jdom-info.xml")                => MergeStrategy.first
   case PathList("META-INF", "axiom.xml")                    => MergeStrategy.first
   case PathList("javax", "wsdl", _*)                        => MergeStrategy.last
+  case PathList("javax", "xml", "soap", _*)                 => MergeStrategy.first
+  case PathList("javax", "transaction", _*)                 => MergeStrategy.first
+  case PathList("javax", "jws", _*)                         => MergeStrategy.first
   case PathList("com", "ibm", "wsdl", _*)                   => MergeStrategy.first
   case PathList("org", "apache", "regexp", _*)              => MergeStrategy.first
   case PathList("javax", "servlet", "jsp", _*)              => MergeStrategy.first
@@ -377,8 +381,8 @@ run := {
 
   // Due to the error: deduplicate: different file contents found in the following:
   // ...
-  //  .../org.apache.cxf/cxf-rt-frontend-jaxws/bundles/cxf-rt-frontend-jaxws-3.5.4.jar:META-INF/cxf/bus-extensions.txt
-  //  .../org.apache.cxf/cxf-rt-transports-http/bundles/cxf-rt-transports-http-3.5.4.jar:META-INF/cxf/bus-extensions.txt
+  //  .../org.apache.cxf/cxf-rt-frontend-jaxws/bundles/cxf-rt-frontend-jaxws-3.5.5.jar:META-INF/cxf/bus-extensions.txt
+  //  .../org.apache.cxf/cxf-rt-transports-http/bundles/cxf-rt-transports-http-3.5.5.jar:META-INF/cxf/bus-extensions.txt
   // ...
   // As per https://github.com/johnrengelman/shadow/issues/309 , combining the files.
   case PathList("META-INF", "cxf", "bus-extensions.txt") => MergeStrategy.filterDistinctLines

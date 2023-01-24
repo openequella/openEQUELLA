@@ -56,7 +56,7 @@ Some of the useful methods in `TLEAclManager`:
 Set<String> filterNonGrantedPrivileges(Collection<String> privileges, boolean includePossibleOwnerAcls);
 ```
 
-Scala code can use the `AclChecks` object to check "top level" privileges in the [DB](scaladb.md) monad,
+Scala code can use the `AclChecks` object to check "top level" privileges,
 this will be expanded further to check privileges against particular domain objects.
 
 ```scala

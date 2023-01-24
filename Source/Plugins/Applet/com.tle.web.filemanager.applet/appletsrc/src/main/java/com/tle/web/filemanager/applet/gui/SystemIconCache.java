@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileSystemView;
 
@@ -38,19 +37,15 @@ public final class SystemIconCache {
       try {
         temp = File.createTempFile("icon", extension); // $NON-NLS-1$;
         File temp2 = info.isDirectory() ? temp.getParentFile() : temp;
-        try {
-          sun.awt.shell.ShellFolder shellFolder = sun.awt.shell.ShellFolder.getShellFolder(temp2);
-          icon = new ImageIcon(shellFolder.getIcon(large));
-        } catch (Exception ex) {
-          FileSystemView fsView = FileSystemView.getFileSystemView();
-          icon = fsView.getSystemIcon(temp2);
+        FileSystemView fsView = FileSystemView.getFileSystemView();
+        icon = fsView.getSystemIcon(temp2);
 
-          // Ensure that we get a directory icon if it is a directory,
-          // and the thing doesn't work
-          if (icon.equals(failureFileIcon) && info.isDirectory()) {
-            icon = failureFolderIcon;
-          }
+        // Ensure that we get a directory icon if it is a directory,
+        // and the thing doesn't work
+        if (icon.equals(failureFileIcon) && info.isDirectory()) {
+          icon = failureFolderIcon;
         }
+
       } catch (IOException ex) {
         icon = info.isDirectory() ? failureFolderIcon : failureFileIcon;
       } finally {

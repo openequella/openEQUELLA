@@ -16,91 +16,36 @@
 		<source uri="${install.path}" />
 	</command>
 
-	<!--  -->
-	<!-- Copy over the Upgrade Manager -->
-	<!--  -->
-
-	<!-- UNIX -->
-
-	<command class="copy" platform="linux linux64 solaris-sparc solaris-x86 solaris64 mac">
-		<source uri="${installer/local}/manager/unix"/>
+	<!-- Linux 64 -->
+	<command class="copy" platform="linux64">
+		<source uri="${installer/local}/manager/linux/server"/>
 		<destination uri="${install.path}/manager" />
 	</command>
 
-	<command class="resolver" platform="linux linux64 solaris-sparc solaris-x86 solaris64 mac">
-		<source uri="${installer/local}/manager/unix-config/manager-config.sh.unresolved"/>
+	<command class="resolver" platform="linux64">
+		<source uri="${installer/local}/manager/linux/config/manager-config.sh.unresolved"/>
 		<destination uri="${install.path}/manager/manager-config.sh" />
 	</command>
 
-	<command class="resolver" platform="linux linux64 solaris-sparc solaris-x86 solaris64 mac">
-		<source uri="${installer/local}/manager/unix-config/equellaserver-config.sh.unresolved"/>
+	<command class="resolver" platform="linux64">
+		<source uri="${installer/local}/manager/linux/config/equellaserver-config.sh.unresolved"/>
 		<destination uri="${install.path}/manager/equellaserver-config.sh" />
 	</command>
 
-	<!-- Linux -->
-	<command class="copy" platform="linux">
-		<source uri="${installer/local}/manager/linux"/>
-		<destination uri="${install.path}/manager"/>
-		<force value="true"/>
-	</command>
-
-	<!-- Linux -->
-	<command class="copy" platform="linux64">
-		<source uri="${installer/local}/manager/linux64"/>
-		<destination uri="${install.path}/manager"/>
-		<force value="true"/>
-	</command>
-
-	<!-- Solaris-sparc -->
-	<command class="copy" platform="solaris-sparc">
-		<source uri="${installer/local}/manager/solaris-sparc"/>
-		<destination uri="${install.path}/manager"/>
-		<force value="true"/>
-	</command>
-
-	<!-- Solaris-x86 -->
-	<command class="copy" platform="solaris-x86">
-		<source uri="${installer/local}/manager/solaris-x86"/>
-		<destination uri="${install.path}/manager"/>
-		<force value="true"/>
-	</command>
-
-		<!-- Solaris64 -->
-	<command class="copy" platform="solaris64">
-		<source uri="${installer/local}/manager/solaris64"/>
-		<destination uri="${install.path}/manager"/>
-		<force value="true"/>
-	</command>
-
-	<!-- Mac -->
-	<command class="copy" platform="mac">
-		<source uri="${installer/local}/manager/mac"/>
-		<destination uri="${install.path}/manager/"/>
-		<force value="true"/>
-	</command>
-
-	<!-- Windows -->
-	<command class="copy" platform="win32">
-		<source uri="${installer/local}/manager/win32"/>
-		<destination uri="${install.path}/manager/"/>
-		<force value="true"/>
-	</command>
-
-	<!-- Windows 64-->
+	<!-- Windows 64 -->
 	<command class="copy" platform="win64">
-		<source uri="${installer/local}/manager/win64"/>
+		<source uri="${installer/local}/manager/windows/server"/>
 		<destination uri="${install.path}/manager/"/>
 		<force value="true"/>
 	</command>
 
-	<!-- Windows Common -->
-	<command class="resolver" platform="win32 win64">
-		<source uri="${installer/local}/manager/win-config/manager-config.bat.unresolved"/>
+	<command class="resolver" platform="win64">
+		<source uri="${installer/local}/manager/windows/config/manager-config.bat.unresolved"/>
 		<destination uri="${install.path}/manager/manager-config.bat" />
 	</command>
 
-	<command class="resolver" platform="win32 win64">
-		<source uri="${installer/local}/manager/win-config/equellaserver-config.bat.unresolved"/>
+	<command class="resolver" platform="win64">
+		<source uri="${installer/local}/manager/windows/config/equellaserver-config.bat.unresolved"/>
 		<destination uri="${install.path}/manager/equellaserver-config.bat" />
 	</command>
 
@@ -170,36 +115,6 @@
     <source uri="${install.path}/learningedge-config/plugins/com.tle.web.viewitem/mandatory.properties.unresolved" />
   </command>
 
-	<!-- Copy over the conversion service ${installer/local} -->
-	<command class="copy" platform="win32">
-		<source uri="${installer/local}/conversion/win32"/>
-		<destination uri="${install.path}/conversion"/>
-	</command>
-	<command class="copy" platform="linux">
-		<source uri="${installer/local}/conversion/linux"/>
-		<destination uri="${install.path}/conversion"/>
-	</command>
-	<command class="copy" platform="solaris-sparc">
-		<source uri="${installer/local}/conversion/solaris"/>
-		<destination uri="${install.path}/conversion"/>
-	</command>
-	<command class="copy" platform="win32 linux solaris-sparc">
-		<source uri="${installer/local}/conversion/all/base2"/>
-		<destination uri="${install.path}/conversion/base2"/>
-	</command>
-	<command class="copy" platform="win32 linux solaris-sparc">
-		<source uri="${installer/local}/conversion/all/export.xml"/>
-		<destination uri="${install.path}/conversion/export.xml"/>
-	</command>
-	<command class="copy" platform="win32 linux solaris-sparc">
-		<source uri="${installer/local}/conversion/all/log4j2.yaml"/>
-		<destination uri="${install.path}/conversion/log4j2.yaml"/>
-	</command>
-	<command class="move" platform="win32 linux solaris-sparc">
-		<source uri="${install.path}/conversion/dhf_htmlli.dat"/>
-		<destination uri="${install.path}/conversion/base2/dhf_htmlli.dat"/>
-	</command>
-
 	<!--  Copy over Filestore -->
 	<command class="copy">
 		<source uri="${installer/local}/filestore"/>
@@ -218,15 +133,15 @@
 		<class name="com.dytech.edge.installer.application.SuccessfulInstall"/>
 	</command>
 
-	<command class="mkexec" platform="linux linux64 solaris-sparc solaris-x86 solaris64 mac">
+	<command class="mkexec" platform="linux64">
 		<file uri="${install.path}/manager/jsvc" />
 	</command>
 
-	<command class="mkexec" platform="linux linux64 solaris-sparc solaris-x86 solaris64 mac">
+	<command class="mkexec" platform="linux64">
 		<file uri="${install.path}/manager/equellaserver" />
 	</command>
 
-	<command class="mkexec" platform="linux linux64 solaris-sparc solaris-x86 solaris64 mac">
+	<command class="mkexec" platform="linux64">
 		<file uri="${install.path}/manager/manager" />
 	</command>
 </commands>

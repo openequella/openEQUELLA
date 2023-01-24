@@ -21,6 +21,7 @@ package com.dytech.edge.installer.application;
 import com.dytech.devlib.PropBagEx;
 import com.dytech.installer.Callback;
 import com.dytech.installer.Wizard;
+import com.tle.common.util.ExecUtils;
 import java.awt.Component;
 import java.io.File;
 import javax.swing.JOptionPane;
@@ -34,26 +35,16 @@ public class JavaCallback implements Callback {
   @Override
   public void task(Wizard installer) {
     PropBagEx output = installer.getOutputNow();
-    String dir = output.getNode("java/jdk"); // $NON-NLS-1$
-    File tools = new File(dir + "/lib/tools.jar"); // $NON-NLS-1$
+    String dir = output.getNode("java/jdk");
+    // Use javac to determine if JDK is used.
+    File javac =
+        new File(
+            dir
+                + "/bin/javac"
+                + (ExecUtils.PLATFORM_WIN64.equals(ExecUtils.determinePlatform()) ? ".exe" : ""));
 
-    if (tools.exists()) {
-      int result = JOptionPane.YES_OPTION;
-      if (dir.indexOf("1.8") == -1) // $NON-NLS-1$
-      {
-        Component parent = installer.getFrame();
-        result =
-            JOptionPane.showConfirmDialog(
-                parent,
-                "Does the directory refer to a Java 8 installation?",
-                "Warning", //$NON-NLS-1$ //$NON-NLS-2$
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE);
-      }
-
-      if (result == JOptionPane.YES_OPTION) {
-        installer.gotoPage(installer.getCurrentPageNumber() + 1);
-      }
+    if (javac.exists()) {
+      installer.gotoPage(installer.getCurrentPageNumber() + 1);
     } else {
       Component parent = installer.getFrame();
       JOptionPane.showMessageDialog(
