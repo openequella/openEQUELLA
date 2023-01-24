@@ -15,8 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as t from 'io-ts';
+import * as td from 'io-ts-types';
 import * as OEQ from '../src';
-import { is } from 'typescript-is';
 import { asCsvList } from '../src/Utils';
 
 describe('Convert date fields', () => {
@@ -32,12 +33,6 @@ describe('Convert date fields', () => {
       today: Date;
     };
   }
-  interface InvalidDate {
-    dates: {
-      yesterday: undefined;
-      today: undefined;
-    };
-  }
 
   it('should convert valid date strings to objects of Date', () => {
     const validDates: StringDate = {
@@ -51,7 +46,11 @@ describe('Convert date fields', () => {
       'yesterday',
       'today',
     ]);
-    expect(is<StandardDate>(dates)).toBe(true);
+    const standardDateCodec = t.type({
+      dates: t.type({ yesterday: td.date, today: td.date }),
+    });
+
+    expect(standardDateCodec.is(dates)).toBe(true);
   });
 
   it('should return undefined for fields that have invalid date strings', () => {
@@ -65,7 +64,11 @@ describe('Convert date fields', () => {
       'yesterday',
       'today',
     ]);
-    expect(is<InvalidDate>(dates)).toBe(true);
+    const invalidDateCodec = t.type({
+      dates: t.type({ yesterday: t.undefined, today: t.undefined }),
+    });
+
+    expect(invalidDateCodec.is(dates)).toBe(true);
   });
 });
 
