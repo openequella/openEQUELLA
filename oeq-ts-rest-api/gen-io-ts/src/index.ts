@@ -16,10 +16,12 @@
  * limitations under the License.
  */
 import * as A from 'fp-ts/Array';
-import { pipe } from 'fp-ts/function';
+import { constVoid, flow, pipe } from 'fp-ts/function';
+import * as O from 'fp-ts/Option';
 import * as fs from 'fs';
 import * as path from 'path';
 import yargs from 'yargs';
+import { CodecDefinition, generate } from './generate';
 import { parseFile } from './parse';
 
 const args = yargs
@@ -32,34 +34,36 @@ const args = yargs
   })
   .parseSync();
 
+const outputPath = `${path.resolve(__dirname)}/../../gen`;
+
+const writeFile = ({ targetFile, content }: CodecDefinition): void => {
+  console.log(`Writing codec content to ${targetFile}...`);
+  fs.writeFile(
+    `${outputPath}/${targetFile}`,
+    content,
+    flow(O.fromNullable, O.fold(constVoid, console.error))
+  );
+};
+
+if (!fs.existsSync(outputPath)) {
+  fs.mkdirSync(outputPath);
+}
+
 console.log(`Processing directory: ${args.dest}`);
+
 pipe(
   fs.readdirSync(args.dest),
   A.map((filename) => path.resolve(args.dest, filename)),
   A.filter((filename) => !fs.lstatSync(filename).isDirectory()),
-  // A.map(parseFile),
-  A.map(console.log)
+  A.map(
+    flow(
+      parseFile,
+      // Filer out files that neither have interfaces nor type alias.
+      O.fromPredicate(
+        ({ interfaces, typeAliases }) =>
+          A.isNonEmpty(interfaces) || A.isNonEmpty(typeAliases)
+      ),
+      O.fold(constVoid, flow(generate, writeFile))
+    )
+  )
 );
-
-// const program = pipe(
-pipe(
-  // '/home/penghai/Edalex/gitlab/fork/openequella/oeq-ts-rest-api/src/Schema.ts',
-  '/home/penghai/Edalex/gitlab/fork/openequella/oeq-ts-rest-api/src/Settings.ts',
-  parseFile,
-  (output) => console.dir(output, { depth: null })
-  // TE.fold(C.error, C.log)
-);
-
-// const processingFailure = (msg: string) =>
-//   console.error(`Processing failed: ${msg}`);
-//
-// program()
-//   .then(
-//     flow(
-//       E.match(processingFailure, (output) => {
-//         console.dir(output, { depth: null });
-//         console.log('Processing completed successfully.');
-//       })
-//     )
-//   )
-//   .catch(processingFailure);
