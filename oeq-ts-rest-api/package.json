@@ -14,6 +14,7 @@
     "npm": "8.19.3"
   },
   "scripts": {
+    "prepare": "cd gen-io-ts && npm ci && npm run gen",
     "start": "rollup --config --watch --bundleConfigAsCjs",
     "build": "rollup --config --bundleConfigAsCjs",
     "test": "jest --no-cache",
