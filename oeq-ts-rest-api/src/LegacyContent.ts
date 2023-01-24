@@ -15,8 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { is } from 'typescript-is';
+import { CurrentUserDetailsCodec } from '../gen/LegacyContent';
 import { GET } from './AxiosInstance';
+import { validate } from './Utils';
 
 export interface ItemCounts {
   tasks: number;
@@ -66,5 +67,5 @@ export const getCurrentUserDetails = (
 ): Promise<CurrentUserDetails> =>
   GET<CurrentUserDetails>(
     apiBasePath + '/content/currentuser',
-    (data): data is CurrentUserDetails => is<CurrentUserDetails>(data)
+    validate(CurrentUserDetailsCodec)
   );

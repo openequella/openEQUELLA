@@ -15,10 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { is } from 'typescript-is';
+import * as t from 'io-ts';
 import { GET } from './AxiosInstance';
-
-type heartbeatResponse = 'OK';
+import { validate } from './Utils';
 
 const HEART_BEAT_API_PATH = '/status/heartbeat';
 
@@ -27,7 +26,4 @@ const HEART_BEAT_API_PATH = '/status/heartbeat';
  * @param apiBasePath Base URI to the oEQ institution and API
  */
 export const checkHeartbeat = (apiBasePath: string): Promise<string> =>
-  GET<string>(
-    apiBasePath + HEART_BEAT_API_PATH,
-    (data): data is heartbeatResponse => is<heartbeatResponse>(data)
-  );
+  GET<string>(apiBasePath + HEART_BEAT_API_PATH, validate(t.literal('OK')));

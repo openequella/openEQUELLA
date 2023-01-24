@@ -15,9 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { pipe } from 'fp-ts/function';
+import * as t from 'io-ts';
 import { Literal, Union } from 'runtypes';
-import { is } from 'typescript-is';
+import {
+  BaseEntityCodec,
+  BaseEntitySummaryCodec,
+  PagedResultCodec,
+} from '../gen/Common';
 import type { BaseEntitySecurity } from './Security';
+import { validate } from './Utils';
 
 export type i18nString = string;
 
@@ -99,7 +106,8 @@ export interface BaseEntitySummary {
  */
 export const isBaseEntitySummaryArray = (
   instance: unknown
-): instance is BaseEntitySummary[] => is<BaseEntitySummary[]>(instance);
+): instance is BaseEntitySummary[] =>
+  pipe(instance, validate(t.array(BaseEntitySummaryCodec)));
 
 export const ItemStatuses = Union(
   Literal('ARCHIVED'),
@@ -139,10 +147,7 @@ export interface PagedResult<T> {
  *
  * @param instance An instance to validate.
  */
-export const isPagedBaseEntity = (
-  instance: unknown
-): instance is PagedResult<BaseEntity> => is<PagedResult<BaseEntity>>(instance);
-
+export const isPagedBaseEntity = validate(PagedResultCodec(BaseEntityCodec));
 /**
  * Query params for common to listing endpoints. All are optional!
  */

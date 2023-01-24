@@ -16,9 +16,10 @@
  * limitations under the License.
  */
 import { Literal, Union } from 'runtypes';
-import { is } from 'typescript-is';
+import { SettingsCodec } from '../gen/SearchSettings';
 import { GET, PUT } from './AxiosInstance';
 import type { SortOrder } from './Search';
+import { validate } from './Utils';
 
 export const ContentIndexLevelRunTypes = Union(
   Literal(0),
@@ -52,9 +53,7 @@ export const CLOUD_SETTINGS_URL = `${SEARCH_SETTINGS_URL}/cloud`;
  * @param apiBasePath Base URI to the oEQ institution and API
  */
 export const getSearchSettings = (apiBasePath: string): Promise<Settings> =>
-  GET<Settings>(apiBasePath + SEARCH_SETTINGS_URL, (data): data is Settings =>
-    is<Settings>(data)
-  );
+  GET<Settings>(apiBasePath + SEARCH_SETTINGS_URL, validate(SettingsCodec));
 
 /**
  * Update the Search settings.

@@ -17,10 +17,11 @@
  */
 import { stringify } from 'query-string';
 import { Literal, Union } from 'runtypes';
-import { is } from 'typescript-is';
+import { SearchResultCodec, SearchResultItemRawCodec } from '../gen/Search';
 import { GET, HEAD, POST } from './AxiosInstance';
 import type { i18nString, ItemStatus } from './Common';
 import * as Utils from './Utils';
+import { validate } from './Utils';
 
 /**
  * Used for specifying must expressions such as `moderating:true`. Neither string should contain
@@ -537,10 +538,9 @@ const processSearchParams = (
 const SEARCH2_API_PATH = '/search2';
 const EXPORT_PATH = `${SEARCH2_API_PATH}/export`;
 
-const searchResultValidator = (
-  data: unknown
-): data is SearchResult<SearchResultItemRaw> =>
-  is<SearchResult<SearchResultItemRaw>>(data);
+const searchResultValidator = validate(
+  SearchResultCodec(SearchResultItemRawCodec)
+);
 
 const processRawSearchResult = (data: SearchResult<SearchResultItemRaw>) =>
   Utils.convertDateFields<SearchResult<SearchResultItem>>(data, [

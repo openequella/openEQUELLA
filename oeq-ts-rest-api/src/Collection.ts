@@ -15,7 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { is } from 'typescript-is';
+import { CollectionCodec } from '../gen/Collection';
+import { PagedResultCodec } from '../gen/Common';
 import { GET } from './AxiosInstance';
 import type {
   BaseEntity,
@@ -30,6 +31,7 @@ import type {
   ItemMetadataSecurity,
   TargetListEntry,
 } from './Security';
+import { validate } from './Utils';
 
 export interface CollectionSecurity extends BaseEntitySecurity {
   dynamicRules: DynamicRule[];
@@ -44,10 +46,6 @@ export interface Collection extends BaseEntity {
   security: CollectionSecurity;
   filestoreId: string;
 }
-
-const isPagedCollection = (
-  instance: unknown
-): instance is PagedResult<Collection> => is<PagedResult<Collection>>(instance);
 
 const COLLECTION_ROOT_PATH = '/collection';
 
@@ -65,7 +63,9 @@ export const listCollections = (
 ): Promise<PagedResult<BaseEntity>> => {
   // Only if the `full` param is specified do you get a whole Collection definition, otherwise
   // it's the bare minimum of BaseEntity.
-  const validator = params?.full ? isPagedCollection : isPagedBaseEntity;
+  const validator = params?.full
+    ? validate(PagedResultCodec(CollectionCodec))
+    : isPagedBaseEntity;
 
   return GET<PagedResult<BaseEntity>>(
     apiBasePath + COLLECTION_ROOT_PATH,
