@@ -26,10 +26,6 @@ import {
 export default {
   title: "DateRangeSelector",
   component: DateRangeSelector,
-  argTypes: {
-    dateRange: { control: "object" },
-    quickOptionDropdownLabel: { control: "text" },
-  },
 } as Meta<DateRangeSelectorProps>;
 
 const actions: DateRangeSelectorProps = {

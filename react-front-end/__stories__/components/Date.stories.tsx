@@ -22,10 +22,6 @@ import { Date as DateDisplay, DateProps } from "../../tsrc/components/Date";
 export default {
   title: "DateDisplay",
   component: DateDisplay,
-  argTypes: {
-    displayRelative: { control: "boolean" },
-    date: { control: "date" },
-  },
 } as Meta<DateProps>;
 
 export const dateDisplay: Story<DateProps> = (args) => (
