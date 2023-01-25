@@ -17,7 +17,7 @@
  */
 import { ThemeProvider } from "@mui/material";
 import * as React from "react";
-import { createRoot } from "react-dom/client";
+import * as ReactDom from "react-dom/client";
 import { getRenderData } from "../AppConfig";
 import {
   InlineFileUploader,
@@ -55,7 +55,7 @@ export const render = (
     <UniversalFileUploader {...props} />
   );
 
-  const root = createRoot(props.elem);
+  const root = ReactDom.createRoot(props.elem);
   // In New UI, render the File Uploader with oEQ theme settings.
   if (getRenderData()?.newUI) {
     import("../modules/ThemeModule")

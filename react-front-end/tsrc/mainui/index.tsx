@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { createRoot } from "react-dom/client";
+import * as ReactDOM from "react-dom/client";
 import { initStrings } from "../util/langstrings";
 import "../util/polyfill";
 import "@fontsource/roboto/300.css";
@@ -52,8 +52,7 @@ export default function main(entry: EntryPage) {
 
   const rootElement = document.getElementById(entry);
   if (rootElement) {
-    const root = createRoot(rootElement);
-    root.render(
+    ReactDOM.createRoot(rootElement).render(
       <React.Suspense fallback={<>loading</>}>
         <App entryPage={entry} />
       </React.Suspense>
