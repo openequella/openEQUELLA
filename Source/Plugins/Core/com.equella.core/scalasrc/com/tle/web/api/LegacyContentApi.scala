@@ -345,7 +345,7 @@ class LegacyContentApi {
     val path                  = s"/${_path}"
     (Option(LegacyGuice.treeRegistry.getTreeForPath(treePath)) match {
       case None => Response.status(404)
-      case _ if (CurrentUser.isGuest() && path.startsWith(WebConstants.ACCESS_PATH)) =>
+      case Some(_) if (CurrentUser.isGuest() && path.startsWith(WebConstants.ACCESS_PATH)) =>
         Response.status(401)
       case Some(tree) => {
         LegacyGuice.userSessionService.reenableSessionUse()
