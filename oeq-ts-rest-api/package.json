@@ -14,9 +14,9 @@
     "npm": "8.19.3"
   },
   "scripts": {
-    "codecGen": "cd gen-io-ts && npm ci && npm run gen && cd -",
+    "postinstall": "cd gen-io-ts && npm ci && npm run gen && cd -",
     "start": "rollup --config --watch --bundleConfigAsCjs",
-    "build": "npm run codecGen && rollup --config --bundleConfigAsCjs",
+    "build": "rollup --config --bundleConfigAsCjs",
     "test": "jest --no-cache",
     "lint": "eslint \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
     "format": "eslint --fix \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\""
