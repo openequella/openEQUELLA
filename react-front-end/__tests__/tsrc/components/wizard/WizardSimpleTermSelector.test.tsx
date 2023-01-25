@@ -24,6 +24,8 @@ import { WizardSimpleTermSelector } from "../../../../tsrc/components/wizard/Wiz
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 
 describe("<WizardSimpleTermSelector/>", () => {
+  // WizardSimpleTermSelector uses a debounce, so we need to be able to advanced
+  // the timer to trigger a search.
   const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
   const label = languageStrings.termSelector.placeholder;
