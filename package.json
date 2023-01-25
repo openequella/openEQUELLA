@@ -41,6 +41,7 @@
     "eslint-plugin-prettier": "4.2.1",
     "eslint-plugin-react": "7.31.11",
     "eslint-plugin-react-hooks": "4.6.0",
+    "eslint-plugin-unused-imports": "2.0.0",
     "husky": "8.0.3",
     "licensee": "10.0.0",
     "lint-staged": "13.1.0",
@@ -84,7 +85,7 @@
       "plugin:prettier/recommended"
     ],
     "plugins": [
-      "notice"
+      "notice", "unused-imports"
     ],
     "env": {
       "jquery": true
@@ -112,7 +113,8 @@
       "react/jsx-fragments": "error",
       "react/jsx-no-useless-fragment": "error",
       "react/prefer-stateless-function": "error",
-      "react-hooks/exhaustive-deps": "error"
+      "react-hooks/exhaustive-deps": "error",
+      "unused-imports/no-unused-imports": "error"
     },
     "settings": {
       "jest": {
