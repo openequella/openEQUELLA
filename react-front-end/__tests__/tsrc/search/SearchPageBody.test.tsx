@@ -290,6 +290,8 @@ describe("<SearchPageBody />", () => {
       }
     );
 
-    expect(container).toHaveTextContent("No results found."); // Should be the lang string
+    expect(container).toHaveTextContent(
+      languageStrings.searchpage.noResultsFound
+    );
   });
 });
