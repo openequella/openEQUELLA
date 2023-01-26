@@ -60,7 +60,7 @@ describe("<WizardCalendar/>", () => {
     ["year, month and day", "DMY", "yyyy-MM-dd", [today.toISODate(), ""]],
   ])(
     "supports date format: %s",
-    (
+    async (
       _: string,
       wizardControlDateformat: OEQ.WizardCommonTypes.WizardDateFormat,
       displayFormat: ISODateFormat,
@@ -76,7 +76,7 @@ describe("<WizardCalendar/>", () => {
       );
 
       const start = container.querySelectorAll<HTMLInputElement>("input")[0]; // The component must have at least one DatePicker.
-      userEvent.type(start, today.toISODate());
+      await userEvent.type(start, today.toISODate());
       expect(start.value).toEqual(today.toFormat(displayFormat));
 
       // We only set `start` so the

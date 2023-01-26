@@ -16,9 +16,8 @@
  * limitations under the License.
  */
 import "@testing-library/jest-dom/extend-expect";
-import { fireEvent, render, RenderResult } from "@testing-library/react";
+import { fireEvent, render, RenderResult, act } from "@testing-library/react";
 import * as React from "react";
-import { act } from "react-dom/test-utils";
 import { v4 } from "uuid";
 import {
   failedUploadResponse,

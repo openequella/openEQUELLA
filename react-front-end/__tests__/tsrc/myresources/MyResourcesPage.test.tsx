@@ -21,14 +21,12 @@ import * as OEQ from "@openequella/rest-api-client";
 import { CurrentUserDetails } from "@openequella/rest-api-client/dist/LegacyContent";
 import "@testing-library/jest-dom/extend-expect";
 import {
-  act,
   getByLabelText,
   getByText,
   queryByLabelText,
   queryByText,
   render,
   screen,
-  waitForElementToBeRemoved,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
@@ -77,6 +75,7 @@ import {
   mockCollaborators,
   queryRefineSearchComponent,
   SORTORDER_SELECT_ID,
+  waitForSearchCompleted,
 } from "../search/SearchPageTestHelper";
 
 const history = createMemoryHistory();
@@ -110,7 +109,7 @@ mockSearchSettings.mockResolvedValue({
 });
 
 const searchPromise = mockSearch.mockResolvedValue(getSearchResult);
-
+const user = userEvent.setup();
 describe("<MyResourcesPage/>", () => {
   // Provides increased control over the state of the rendered page compared to
   // `renderMyResourcesPage`. A key use if is you want to control the Location to
@@ -136,9 +135,7 @@ describe("<MyResourcesPage/>", () => {
       </ThemeProvider>
     );
 
-    await waitForElementToBeRemoved(() =>
-      screen.getByLabelText(languageStrings.searchpage.loading)
-    );
+    await waitForSearchCompleted();
 
     return page;
   };
@@ -300,12 +297,15 @@ describe("<MyResourcesPage/>", () => {
       async (
         _: string,
         status: string,
-        user: CurrentUserDetails | undefined,
+        userDetails: CurrentUserDetails | undefined,
         expecting: boolean
       ) => {
-        const { getByText } = await renderMyResourcesPage("Published", user);
+        const { getByText } = await renderMyResourcesPage(
+          "Published",
+          userDetails
+        );
 
-        userEvent.click(
+        await user.click(
           getByText(languageStrings.myResources.resourceType.published)
         );
         const scrapbookOptionFound = !!screen.queryByText("Scrapbook", {
@@ -327,7 +327,7 @@ describe("<MyResourcesPage/>", () => {
         languageStrings.common.action.edit
       );
 
-      userEvent.click(editIcon);
+      await user.click(editIcon);
       expect(openLegacyFileEditingPage).toHaveBeenCalledTimes(1);
     });
 
@@ -343,13 +343,11 @@ describe("<MyResourcesPage/>", () => {
       );
 
       // Click the bin icon should show a dialog which has an 'OK' button.
-      userEvent.click(binButton);
+      await user.click(binButton);
       const dialog = screen.getByRole("dialog");
       const okButton = getByText(dialog, languageStrings.common.action.ok);
 
-      await act(async () => {
-        await userEvent.click(okButton);
-      });
+      await user.click(okButton);
 
       expect(deleteScrapbook).toHaveBeenCalledTimes(1);
     });
@@ -364,9 +362,7 @@ describe("<MyResourcesPage/>", () => {
           },
         });
 
-      await act(async () => {
-        await userEvent.click(getByText(IMAGE_SCRAPBOOK, { selector: "a" }));
-      });
+      await user.click(getByText(IMAGE_SCRAPBOOK, { selector: "a" }));
 
       // Confirm that the lightbox has now been displayed - with the unique element being
       // the lightbox's 'embed code' button.
@@ -399,9 +395,7 @@ describe("<MyResourcesPage/>", () => {
           url,
         });
 
-        await act(async () => {
-          await userEvent.click(getByText(scrapbookTitle, { selector: "a" }));
-        });
+        await user.click(getByText(scrapbookTitle, { selector: "a" }));
 
         expect(mockWindowOpen).toHaveBeenLastCalledWith(url, "_blank");
       }
@@ -443,7 +437,7 @@ describe("<MyResourcesPage/>", () => {
       const addToScrapbookButton = getByLabelText(addScrapbook);
       expect(addToScrapbookButton).toBeInTheDocument();
 
-      userEvent.click(addToScrapbookButton);
+      await user.click(addToScrapbookButton);
 
       expect(screen.getByText(createPage)).toBeInTheDocument();
       expect(screen.getByText(createFile)).toBeInTheDocument();
@@ -488,7 +482,7 @@ describe("<MyResourcesPage/>", () => {
       const { container } = await renderMyResourcesPage(type);
 
       // Click the menu
-      clickSelect(container, SORTORDER_SELECT_ID);
+      await clickSelect(container, SORTORDER_SELECT_ID);
 
       // Check how many of the expected options are now on screen
       const foundOptions = countOptions(options);
@@ -514,7 +508,7 @@ describe("<MyResourcesPage/>", () => {
           ];
 
           const { container } = await renderMyResourcesPage(type);
-          clickSelect(container, SORTORDER_SELECT_ID);
+          await clickSelect(container, SORTORDER_SELECT_ID);
           return countOptions(moderationSortOptions);
         };
 
@@ -542,15 +536,17 @@ describe("<MyResourcesPage/>", () => {
       mockSearch.mockImplementationOnce(() =>
         Promise.resolve(getModerationItemsSearchResult())
       );
-      const { getByText, queryByText } = await renderModerationQueue();
+      const { getByText } = await renderModerationQueue();
 
       const displayRejectionButton =
         getByText("REJECTED").querySelector("button");
       expect(displayRejectionButton).toBeInTheDocument();
 
-      displayRejectionButton!.click();
+      await user.click(displayRejectionButton!);
       expect(
-        queryByText(moderationQueueStrings.rejectionCommentDialogTitle)
+        await screen.findByText(
+          moderationQueueStrings.rejectionCommentDialogTitle
+        )
       ).toBeInTheDocument();
     });
   });

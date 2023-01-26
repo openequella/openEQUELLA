@@ -15,33 +15,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { queryMuiButtonByText } from "../../MuiQueries";
+import { screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
-import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { doSearch } from "../../components/UserSearchTestHelpers";
+import { queryMuiButtonByText } from "../../MuiQueries";
 
 export const getSelectButton = (container: HTMLElement) =>
   queryMuiButtonByText(container, languageStrings.common.action.select);
 
 // Helper user action abstraction function
-export const clickSelect = (container: HTMLElement) => {
+export const clickSelect = async (container: HTMLElement) => {
   const selectButton = getSelectButton(container);
   if (!selectButton) {
     throw new Error(
       "Was expecting the 'select' button to be available, but no. :/"
     );
   }
-  fireEvent.click(selectButton);
+  await userEvent.click(selectButton);
 };
 
 export const selectUser = async (container: HTMLElement, username: string) => {
-  clickSelect(container);
-  doSearch(screen.getByRole("dialog"), username);
+  await clickSelect(container);
+  await doSearch(screen.getByRole("dialog"), username);
   // Wait for mock latency
-  const findUsername = () => screen.getByText(username);
-  await waitFor(findUsername);
-  // Click on a user
-  fireEvent.click(findUsername());
+  // click on a user
+  await waitFor(() => userEvent.click(screen.getByText(username)));
   // And click select
   const dialogSelectButton = getSelectButton(screen.getByRole("dialog"));
   if (!dialogSelectButton) {
@@ -49,10 +48,10 @@ export const selectUser = async (container: HTMLElement, username: string) => {
       "Unable to find the 'select' button in the user select dialog."
     );
   }
-  fireEvent.click(dialogSelectButton);
+  await userEvent.click(dialogSelectButton);
 };
 
-export const clearSelection = () =>
-  fireEvent.click(
+export const clearSelection = async () =>
+  await userEvent.click(
     screen.getByLabelText(languageStrings.searchpage.filterOwner.clear)
   );

@@ -40,39 +40,39 @@ describe("<SearchPagination/>", () => {
       />
     );
 
-  it("Goes back to the first page of results when First Page Button is clicked", () => {
+  it("Goes back to the first page of results when First Page Button is clicked", async () => {
     // Start on a page other than the first, to ensure the first page button is active
     const { container } = searchPagination(30, 1, 10);
     const { getFirstPageButton } = queryPaginatorControls(container);
 
-    userEvent.click(getFirstPageButton());
+    await userEvent.click(getFirstPageButton());
     expect(mockOnPageChange).toHaveBeenCalledWith(0);
   });
 
-  it("Goes back to the previous page of results when Previous Page Button is clicked", () => {
+  it("Goes back to the previous page of results when Previous Page Button is clicked", async () => {
     // Start on a page other than the first, to ensure the previous page button is active
     const { container } = searchPagination(20, 1, 10);
     const { getPreviousPageButton } = queryPaginatorControls(container);
 
-    userEvent.click(getPreviousPageButton());
+    await userEvent.click(getPreviousPageButton());
     expect(mockOnPageChange).toHaveBeenCalledWith(0);
   });
 
-  it("Goes to the next page of results when Next Page Button is clicked", () => {
+  it("Goes to the next page of results when Next Page Button is clicked", async () => {
     // Start on a page other than the last, to ensure the next page button is active
     const { container } = searchPagination(20, 0, 10);
     const { getNextPageButton } = queryPaginatorControls(container);
 
-    userEvent.click(getNextPageButton());
+    await userEvent.click(getNextPageButton());
     expect(mockOnPageChange).toHaveBeenCalledWith(1);
   });
 
-  it("Goes to the last page of results when Last Page Button is clicked", () => {
+  it("Goes to the last page of results when Last Page Button is clicked", async () => {
     // Start on a page other than the last, to ensure the last page button is active
     const { container } = searchPagination(30, 0, 10);
     const { getLastPageButton } = queryPaginatorControls(container);
 
-    userEvent.click(getLastPageButton());
+    await userEvent.click(getLastPageButton());
     // should now be on last page
     expect(mockOnPageChange).toHaveBeenCalledWith(2);
   });
@@ -124,15 +124,15 @@ describe("<SearchPagination/>", () => {
     expect(getLastPageButton()).toBeDisabled();
   });
 
-  it("Triggers the page count callback when the user changes the number of rows per page", () => {
+  it("Triggers the page count callback when the user changes the number of rows per page", async () => {
     const { container } = searchPagination(100, 0, 10);
     const { getItemsPerPageOption, getItemsPerPageSelect } =
       queryPaginatorControls(container);
 
-    userEvent.click(getItemsPerPageSelect());
+    await userEvent.click(getItemsPerPageSelect());
 
     const itemsPerPageDesired = 25;
-    userEvent.click(getItemsPerPageOption(itemsPerPageDesired));
+    await userEvent.click(getItemsPerPageOption(itemsPerPageDesired));
 
     expect(mockOnRowsPerPageChange).toHaveBeenLastCalledWith(
       itemsPerPageDesired

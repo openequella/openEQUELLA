@@ -22,6 +22,7 @@ import { isEqual } from "lodash";
 import * as O from "fp-ts/Option";
 import * as React from "react";
 import { useContext } from "react";
+import { flushSync } from "react-dom";
 import { v4 } from "uuid";
 import {
   ErrorResponse,
@@ -208,11 +209,11 @@ export const LegacyContent = React.memo(function LegacyContent({
     content: LegacyContentResponse,
     scrollTop: boolean
   ) {
-    // Setting the below flag is crucial, as it forces the DOM to change (to display a spinner)
-    // thereby circumventing React rendering/DOM optimisations. This mimics the functioning of a web
-    // browser where it would've reloaded the page. Which is needed based on the way some of the
-    // Legacy AJAX code is written.
-    setUpdatingContent(true);
+    // Setting the below flag and page content in `flushSync` is crucial, as it forces the DOM to change immediately (to display a spinner)
+    // thereby circumventing React rendering/DOM optimisations. This mimics the functioning of a web browser where it would've
+    // reloaded the page. Which is needed based on the way some of the Legacy AJAX code is written.
+
+    flushSync(() => setUpdatingContent(true));
     updateIncludes(content.js, content.css).then((extraCss) => {
       const pageContent = {
         ...content,
@@ -227,8 +228,8 @@ export const LegacyContent = React.memo(function LegacyContent({
       if (content.userUpdated) {
         refreshUser();
       }
-      setContent(pageContent);
-      setUpdatingContent(false);
+      flushSync(() => setContent(pageContent));
+      flushSync(() => setUpdatingContent(false));
     });
   }
 

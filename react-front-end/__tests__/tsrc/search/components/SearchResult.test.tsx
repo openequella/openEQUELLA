@@ -21,16 +21,15 @@ import { createTheme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
 import {
-  fireEvent,
   queryByText,
   render,
   RenderResult,
   screen,
   waitFor,
+  act,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
-import { act } from "react-dom/test-utils";
 import { BrowserRouter } from "react-router-dom";
 import { sprintf } from "sprintf-js";
 import { DRM_VIOLATION, drmTerms } from "../../../../__mocks__/Drm.mock";
@@ -185,7 +184,9 @@ describe("<SearchResult/>", () => {
     );
 
     // Given a user clicks on an attachment
-    userEvent.click(getByText(attachSearchObj.attachments![0].description!));
+    await userEvent.click(
+      getByText(attachSearchObj.attachments![0].description!)
+    );
 
     // Then they see the lightbox
     expect(
@@ -198,7 +199,9 @@ describe("<SearchResult/>", () => {
       imageScrapbook
     );
 
-    userEvent.click(getByText(imageScrapbook.attachments![0].description!));
+    await userEvent.click(
+      getByText(imageScrapbook.attachments![0].description!)
+    );
 
     // The lightbox has now been displayed with the unique element being the lightbox's 'embed code' button.
     expect(
@@ -322,7 +325,7 @@ describe("<SearchResult/>", () => {
     });
 
     const title = getByText(`${item.name}`, { selector: "a" });
-    userEvent.click(title);
+    await userEvent.click(title);
 
     expect(customHandler).toHaveBeenCalledTimes(1);
   });
@@ -344,7 +347,7 @@ describe("<SearchResult/>", () => {
       );
 
       // Given a user clicks on a broken attachment
-      userEvent.click(
+      await userEvent.click(
         getByText(oneDeadOneAliveAttachObj.attachments![0].description!)
       );
 
@@ -354,7 +357,7 @@ describe("<SearchResult/>", () => {
       ).not.toBeInTheDocument();
 
       // Now if they click on the intact attachment instead...
-      userEvent.click(
+      await userEvent.click(
         getByText(oneDeadOneAliveAttachObj.attachments![1].description!)
       );
 
@@ -400,13 +403,13 @@ describe("<SearchResult/>", () => {
     const selectForSelectOrAdd = selectResourceForSelectOrAdd;
     const selectForSkinny = selectResourceForSkinny;
 
-    const makeSelection = (findSelector: () => HTMLElement | null) => {
+    const makeSelection = async (findSelector: () => HTMLElement | null) => {
       const selectorControl = findSelector();
       // First, make sure the selector control is active
       expect(selectorControl).toBeInTheDocument();
       // And then make a selection by clicking it.
       // Above expect can make sure selectorControl is not null.
-      fireEvent.click(selectorControl!);
+      await userEvent.click(selectorControl!);
     };
 
     type selectResourceFuncType =
@@ -465,7 +468,7 @@ describe("<SearchResult/>", () => {
         const { queryByLabelText } = await renderSearchResult(
           mockData.attachSearchObj
         );
-        makeSelection(() => queryByLabelText(resourceType));
+        await makeSelection(() => queryByLabelText(resourceType));
         expect(selectResourceFunc).toHaveBeenCalled();
       }
     );
@@ -582,7 +585,7 @@ describe("<SearchResult/>", () => {
         ).toBeInTheDocument();
         // Given the user clicks Select All Attachments for an item with a dead attachment
         // and an alive attachment...
-        userEvent.click(getByLabelText(selectAllAttachmentsString));
+        await userEvent.click(getByLabelText(selectAllAttachmentsString));
 
         // The function should only have been called with the attachment
         // 78883eff-7cf6-4b14-ab76-2b7f84dbe833 which is the intact one
@@ -611,7 +614,7 @@ describe("<SearchResult/>", () => {
       async (_: string, linkText: string) => {
         const { drmAttachObj } = mockData;
         const { getByText } = await renderSearchResult(drmAttachObj);
-        userEvent.click(getByText(linkText));
+        await userEvent.click(getByText(linkText));
 
         await waitFor(() => {
           expect(
@@ -629,7 +632,7 @@ describe("<SearchResult/>", () => {
       async (_: string, linkText: string) => {
         const { drmUnauthorisedObj } = mockData;
         const { getByText } = await renderSearchResult(drmUnauthorisedObj);
-        userEvent.click(getByText(linkText));
+        await userEvent.click(getByText(linkText));
 
         await waitFor(() => {
           expect(
@@ -643,9 +646,7 @@ describe("<SearchResult/>", () => {
       const { getByText } = await renderSearchResult(
         mockData.drmAllowSummaryObj
       );
-      await act(async () => {
-        await userEvent.click(getByText(DRM_ITEM_NAME));
-      });
+      await userEvent.click(getByText(DRM_ITEM_NAME));
 
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });

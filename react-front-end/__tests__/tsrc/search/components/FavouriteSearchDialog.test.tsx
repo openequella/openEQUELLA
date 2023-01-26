@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import "@testing-library/jest-dom/extend-expect";
-import { act, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import {
@@ -55,13 +55,11 @@ describe("<FavouriteSearchDialog/>", () => {
 
   it("enables the Confirm button if a non-empty text is used as the search name", async () => {
     render(<FavouriteSearchDialog {...commonProps} />);
-    userEvent.type(getTextField(), "test");
+    await userEvent.type(getTextField(), "test");
 
     const confirmButton = getConfirmButton();
     expect(confirmButton).not.toBeDisabled();
-    await act(async () => {
-      await userEvent.click(confirmButton);
-    });
+    await userEvent.click(confirmButton);
 
     expect(onConfirm).toHaveBeenCalledTimes(1);
     expect(closeDialog).toHaveBeenCalledTimes(1);
