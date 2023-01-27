@@ -15,20 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  AppBar,
-  Button,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Grid,
-  Paper,
-  Radio,
-  RadioGroup,
-  Tab,
-  Tabs,
-} from "@mui/material";
 import { TabContext, TabPanel } from "@mui/lab";
+import { AppBar, Button, Grid, Paper, Tab, Tabs } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
@@ -37,7 +26,6 @@ import * as RA from "fp-ts/ReadonlyArray";
 import * as RSET from "fp-ts/ReadonlySet";
 import * as React from "react";
 import { ChangeEvent, useState } from "react";
-import { Literal, Static, Union } from "runtypes";
 import { ACLEntityResolvers } from "../../modules/ACLEntityModule";
 import {
   ACLExpression,
@@ -51,39 +39,18 @@ import {
 } from "../../modules/ACLExpressionModule";
 import {
   ACLRecipient,
-  groupToRecipient,
   recipientEq,
   recipientOrd,
-  roleToRecipient,
-  userToRecipient,
 } from "../../modules/ACLRecipientModule";
 import { listUsers } from "../../modules/UserModule";
 import { languageStrings } from "../../util/langstrings";
-import GroupSearch from "../securityentitysearch/GroupSearch";
-import RoleSearch from "../securityentitysearch/RoleSearch";
-import UserSearch from "../securityentitysearch/UserSearch";
 import ACLExpressionTree from "./ACLExpressionTree";
+import ACLHomePanel from "./ACLHomePanel";
 import ACLOtherPanel from "./ACLOtherPanel";
-import { styled } from "@mui/material/styles";
 
 const {
-  aclExpressionBuilder: {
-    type: typeLabel,
-    homeTab: homeTabLabel,
-    otherTab: otherTabLabel,
-  },
+  aclExpressionBuilder: { homeTab: homeTabLabel, otherTab: otherTabLabel },
 } = languageStrings;
-
-/**
- * Runtypes definition for home panel search filter type.
- */
-const SearchFilterTypesUnion = Union(
-  Literal("Users"),
-  Literal("Groups"),
-  Literal("Roles")
-);
-
-type SearchFilterType = Static<typeof SearchFilterTypesUnion>;
 
 const PREFIX = "ACLExpressionBuilder";
 const classes = {
@@ -190,24 +157,8 @@ const ACLExpressionBuilder = ({
 
   const [activeTabValue, setActiveTabValue] = useState(homeTabLabel);
 
-  const [activeSearchFilterType, setActiveSearchFilterType] =
-    useState<SearchFilterType>("Users");
-
-  const [userSelections, setUserSelections] = useState<
-    ReadonlySet<OEQ.UserQuery.UserDetails>
-  >(RSET.empty);
-  const [groupSelections, setGroupSelections] = useState<
-    ReadonlySet<OEQ.UserQuery.GroupDetails>
-  >(RSET.empty);
-  const [roleSelections, setRoleSelections] = useState<
-    ReadonlySet<OEQ.UserQuery.RoleDetails>
-  >(RSET.empty);
-
   const [selectedACLExpression, setSelectedACLExpression] =
     useState<ACLExpression>(currentACLExpression);
-
-  const handleSearchFilterChange = (event: ChangeEvent<HTMLInputElement>) =>
-    setActiveSearchFilterType(SearchFilterTypesUnion.check(event.target.value));
 
   const handleTabChanged = (_: ChangeEvent<{}>, newValue: string) =>
     setActiveTabValue(newValue);
@@ -259,16 +210,6 @@ const ACLExpressionBuilder = ({
     );
   };
 
-  const handleEntitySelected = <T,>(
-    selections: ReadonlySet<T>,
-    entityToReceipt: (entity: T) => ACLRecipient
-  ) =>
-    pipe(
-      selections,
-      RSET.map(recipientEq)(entityToReceipt),
-      updateNewRecipients
-    );
-
   const handleACLExpressionTreeChanged = (
     changedACLExpression: ACLExpression
   ) =>
@@ -300,104 +241,6 @@ const ACLExpressionBuilder = ({
     actionBtn: actionBtnClass,
   } = classes;
 
-  const homeACLPanel = () => {
-    const sharedProps = {
-      listHeight: 300,
-      groupFilterEditable: true,
-      groupSearch: searchGroupProvider,
-      resolveGroupsProvider: resolveGroupsProvider,
-      enableMultiSelection: true,
-    };
-
-    return (
-      <FormControl fullWidth component="fieldset">
-        <Grid spacing={4} container direction="row" alignItems="center">
-          <Grid item>
-            <FormLabel>{typeLabel}</FormLabel>
-          </Grid>
-          <Grid item>
-            <RadioGroup
-              row
-              name="searchFilterType"
-              value={activeSearchFilterType}
-              onChange={handleSearchFilterChange}
-            >
-              {SearchFilterTypesUnion.alternatives.map((searchType) => (
-                <FormControlLabel
-                  key={searchType.value}
-                  value={searchType.value}
-                  control={<Radio />}
-                  label={searchType.value}
-                />
-              ))}
-            </RadioGroup>
-          </Grid>
-        </Grid>
-        {pipe(
-          activeSearchFilterType,
-          SearchFilterTypesUnion.match(
-            (Users) => (
-              <UserSearch
-                key={Users}
-                {...sharedProps}
-                search={searchUserProvider}
-                selections={userSelections}
-                onChange={setUserSelections}
-                onClearAll={setUserSelections}
-                onSelectAll={setUserSelections}
-                onAdd={(user) =>
-                  handleEntitySelected(RSET.singleton(user), userToRecipient)
-                }
-                selectButton={{
-                  onClick: () =>
-                    handleEntitySelected(userSelections, userToRecipient),
-                }}
-              />
-            ),
-            (Groups) => (
-              <GroupSearch
-                key={Groups}
-                {...sharedProps}
-                search={searchGroupProvider}
-                selections={groupSelections}
-                onChange={setGroupSelections}
-                onClearAll={setGroupSelections}
-                onSelectAll={setGroupSelections}
-                onAdd={(group) =>
-                  handleEntitySelected(RSET.singleton(group), groupToRecipient)
-                }
-                selectButton={{
-                  onClick: () =>
-                    handleEntitySelected(groupSelections, groupToRecipient),
-                }}
-              />
-            ),
-            (Roles) => (
-              <RoleSearch
-                key={Roles}
-                {...sharedProps}
-                search={searchRoleProvider}
-                selections={roleSelections}
-                onChange={setRoleSelections}
-                onClearAll={setRoleSelections}
-                onSelectAll={setRoleSelections}
-                onAdd={(role) =>
-                  handleEntitySelected(RSET.singleton(role), roleToRecipient)
-                }
-                listHeight={367}
-                groupFilterEditable={false}
-                selectButton={{
-                  onClick: () =>
-                    handleEntitySelected(roleSelections, roleToRecipient),
-                }}
-              />
-            )
-          )
-        )}
-      </FormControl>
-    );
-  };
-
   return (
     <StyledGrid spacing={2} container justifyContent="flex-start">
       <TabContext value={activeTabValue}>
@@ -413,7 +256,13 @@ const ACLExpressionBuilder = ({
           <Grid item xs={6} className={panelWrapperClass}>
             <Paper className={paperClass}>
               <TabPanel className={tabPanelClass} value={homeTabLabel}>
-                {homeACLPanel()}
+                <ACLHomePanel
+                  onAdd={updateNewRecipients}
+                  resolveGroupsProvider={resolveGroupsProvider}
+                  searchGroupProvider={searchGroupProvider}
+                  searchRoleProvider={searchRoleProvider}
+                  searchUserProvider={searchUserProvider}
+                />
               </TabPanel>
               <TabPanel className={tabPanelClass} value={otherTabLabel}>
                 <ACLOtherPanel
