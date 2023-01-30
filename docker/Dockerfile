@@ -6,8 +6,13 @@ ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 
 RUN apk update \
-  && apk add --no-cache bash curl imagemagick ffmpeg unzip
-RUN adduser equella --disabled-password --gecos -shell /bin/bash
+  && apk add --no-cache \
+    bash \
+    curl \
+    imagemagick \
+    ffmpeg \
+    unzip \
+  && adduser equella --disabled-password --gecos -shell /bin/bash
 
 # Install openEQUELLA
 FROM baseequella as installer
