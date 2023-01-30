@@ -26,34 +26,39 @@ import { parseFile } from './parse';
 
 const args = yargs
   .options({
-    dest: {
+    source: {
       type: 'string',
       demandOption: true,
       describe: 'Folder containing typescript files to parse',
     },
+    dest: {
+      type: 'string',
+      demandOption: true,
+      describe: 'Folder where the generated Codec files are stored',
+    },
   })
   .parseSync();
-
-const outputPath = `${path.resolve(__dirname)}/../../gen`;
 
 const writeFile = ({ targetFile, content }: CodecDefinition): void => {
   console.log(`Writing codec content to ${targetFile}...`);
   fs.writeFile(
-    `${outputPath}/${targetFile}`,
+    `${args.dest}/${targetFile}`,
     content,
     flow(O.fromNullable, O.fold(constVoid, console.error))
   );
 };
 
-if (!fs.existsSync(outputPath)) {
-  fs.mkdirSync(outputPath);
-}
+pipe(
+  args.dest,
+  O.fromPredicate((dest) => !fs.existsSync(dest)),
+  O.fold(constVoid, fs.mkdirSync)
+);
 
-console.log(`Processing directory: ${args.dest}`);
+console.log(`Processing directory: ${args.source}`);
 
 pipe(
-  fs.readdirSync(args.dest),
-  A.map((filename) => path.resolve(args.dest, filename)),
+  fs.readdirSync(args.source),
+  A.map((filename) => path.resolve(args.source, filename)),
   A.filter((filename) => !fs.lstatSync(filename).isDirectory()),
   A.map(
     flow(
