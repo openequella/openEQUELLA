@@ -155,7 +155,6 @@ export const languageStrings = {
       guest: "Guest users",
       sso: "Single signed on with identifier",
       ip: "Add an IP Address",
-      ipPlaceholder: "000.000.000.000/00",
       referrer: "Add a HTTP Referrer",
       exactReferrer: "Only match this exact referrer",
       containReferrer: "Match referrers containing this value",

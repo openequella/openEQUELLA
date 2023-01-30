@@ -34,7 +34,7 @@ import { flow, identity, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
-import { ChangeEvent, ReactNode, useState } from "react";
+import { ChangeEvent, ReactNode, useCallback, useState } from "react";
 import { Literal, Static, Union } from "runtypes";
 import { ACLEntityResolvers } from "../../modules/ACLEntityModule";
 import {
@@ -49,6 +49,7 @@ import { findGroupById } from "../../modules/GroupModule";
 import { findRoleById } from "../../modules/RoleModule";
 import { findUserById } from "../../modules/UserModule";
 import { languageStrings } from "../../util/langstrings";
+import IPv4CIDRInput from "../IPv4CIDRInput";
 
 const {
   aclExpressionBuilder: {
@@ -60,7 +61,6 @@ const {
       guest: guestDesc,
       sso: ssoDesc,
       ip: ipDesc,
-      ipPlaceholder,
       referrer: referrerDesc,
       exactReferrer: exactReferrerDesc,
       containReferrer: containReferrerDesc,
@@ -133,17 +133,12 @@ const ACLOtherPanel = ({
     value: "",
   });
 
-  const [ipAddress, setIpAddress] = useState("");
+  const [ipAddress, setIPAddress] = useState("");
+
   const [ssoIdentifier, setSSOIdentifier] = useState("");
 
   const handleAclTypeChanged = (event: SelectChangeEvent<OtherACLType>) =>
     setActiveACLType(OtherACLTypesUnion.check(event.target.value));
-
-  const handleReferrerTypeChanged = (event: ChangeEvent<{ value: unknown }>) =>
-    setReferrerDetails({
-      ...referrerDetails,
-      type: ReferrerTypesUnion.check(event.target.value),
-    });
 
   const handleAddButtonClicked = async () => {
     const getReferrer = () => {
@@ -224,66 +219,73 @@ const ACLOtherPanel = ({
   /**
    * TODO: Get all SSO selects from API
    * */
-  const buildControls = OtherACLTypesUnion.match(
-    (Everyone) => <OtherControl title={everyoneDesc} />,
-    (Owner) => <OtherControl title={ownerDesc} />,
-    (Logged) => <OtherControl title={loggedDesc} />,
-    (Guest) => <OtherControl title={guestDesc} />,
-    (Sso) => (
-      <OtherControl title={ssoDesc}>
-        <Select
-          value={ssoIdentifier}
-          onChange={(event) => setSSOIdentifier(event.target.value)}
-          displayEmpty
-        >
-          <MenuItem value="Moodle">Moodle</MenuItem>
-        </Select>
-      </OtherControl>
-    ),
-    (Ip) => (
-      <OtherControl title={ipDesc}>
-        <TextField
-          autoFocus
-          value={ipAddress}
-          onChange={(event) => setIpAddress(event.target.value)}
-          name="ip"
-          label={ipPlaceholder}
-        />
-      </OtherControl>
-    ),
-    (Referrer) => (
-      <OtherControl title={referrerDesc}>
-        <TextField
-          autoFocus
-          value={referrerDetails.value}
-          onChange={(event) =>
-            setReferrerDetails({
-              ...referrerDetails,
-              value: event.target.value,
-            })
-          }
-          name="referrer"
-        />
-        <RadioGroup
-          name="referrer"
-          value={referrerDetails.type}
-          onChange={handleReferrerTypeChanged}
-        >
-          {ReferrerTypesUnion.alternatives.map((referrerType) => (
-            <FormControlLabel
-              key={referrerType.value}
-              value={referrerType.value}
-              control={<Radio />}
-              label={ReferrerTypesUnion.match(
-                (Contain) => containReferrerDesc,
-                (Exact) => exactReferrerDesc
-              )(referrerType.value)}
+  const buildControls = useCallback(() => {
+    const handleReferrerTypeChanged = (
+      event: ChangeEvent<{ value: unknown }>
+    ) =>
+      setReferrerDetails({
+        ...referrerDetails,
+        type: ReferrerTypesUnion.check(event.target.value),
+      });
+
+    return pipe(
+      activeACLType,
+      OtherACLTypesUnion.match(
+        (Everyone) => <OtherControl title={everyoneDesc} />,
+        (Owner) => <OtherControl title={ownerDesc} />,
+        (Logged) => <OtherControl title={loggedDesc} />,
+        (Guest) => <OtherControl title={guestDesc} />,
+        (Sso) => (
+          <OtherControl title={ssoDesc}>
+            <Select
+              value={ssoIdentifier}
+              onChange={(event) => setSSOIdentifier(event.target.value)}
+              displayEmpty
+            >
+              <MenuItem value="Moodle">Moodle</MenuItem>
+            </Select>
+          </OtherControl>
+        ),
+        (Ip) => (
+          <OtherControl title={ipDesc}>
+            <IPv4CIDRInput onChange={setIPAddress} />
+          </OtherControl>
+        ),
+        (Referrer) => (
+          <OtherControl title={referrerDesc}>
+            <TextField
+              autoFocus
+              value={referrerDetails.value}
+              onChange={(event) =>
+                setReferrerDetails({
+                  ...referrerDetails,
+                  value: event.target.value,
+                })
+              }
+              name="referrer"
             />
-          ))}
-        </RadioGroup>
-      </OtherControl>
-    )
-  );
+            <RadioGroup
+              name="referrer"
+              value={referrerDetails.type}
+              onChange={handleReferrerTypeChanged}
+            >
+              {ReferrerTypesUnion.alternatives.map((referrerType) => (
+                <FormControlLabel
+                  key={referrerType.value}
+                  value={referrerType.value}
+                  control={<Radio />}
+                  label={ReferrerTypesUnion.match(
+                    (Contain) => containReferrerDesc,
+                    (Exact) => exactReferrerDesc
+                  )(referrerType.value)}
+                />
+              ))}
+            </RadioGroup>
+          </OtherControl>
+        )
+      )
+    );
+  }, [activeACLType, referrerDetails, ssoIdentifier]);
 
   return (
     <Grid container direction="column" spacing={1}>
@@ -304,7 +306,7 @@ const ACLOtherPanel = ({
       </Grid>
       {/*The padding aims to align with the following `add` button's text.*/}
       <Grid container style={{ padding: 25 }}>
-        {buildControls(activeACLType)}
+        {buildControls()}
       </Grid>
       <Grid item>
         <Button color="primary" onClick={handleAddButtonClicked}>

@@ -129,6 +129,8 @@ export interface ACLExpressionBuilderProps {
   aclEntityResolversProvider?: ACLEntityResolvers;
 }
 
+export const DEFAULT_ACL_EXPRESSION_ID = "default-acl-expression-id";
+
 /**
  ** It provides a `home` panel that can search for `users` `groups` and `roles`,
  *  and an `other` panel that includes special ACL permissions like SSO, IP and referrer.
@@ -148,7 +150,7 @@ const ACLExpressionBuilder = ({
       aclExpression
         ? compactACLExpressions(aclExpression)
         : {
-            id: "default-acl-expression-id",
+            id: DEFAULT_ACL_EXPRESSION_ID,
             operator: "OR",
             recipients: [],
             children: [],
