@@ -174,6 +174,13 @@ export const ipRecipient = (ip: string) => ({
   type: "I",
 });
 
+// helper function to generate an IP recipient with name
+export const ipRecipientWithName = (ip: string) => ({
+  expression: ip,
+  type: "I",
+  name: `From ${ip}`,
+});
+
 // helper function to generate an refer recipient
 export const referRecipient = (refer: string) => ({
   expression: refer,

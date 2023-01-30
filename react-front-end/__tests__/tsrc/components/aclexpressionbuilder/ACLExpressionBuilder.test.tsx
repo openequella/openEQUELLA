@@ -28,6 +28,7 @@ import {
   group200RecipientWithName,
   group300RecipientWithName,
   group400RecipientWithName,
+  ipRecipientWithName,
   ownerRecipientWithName,
   role100RecipientWithName,
   role200RecipientWithName,
@@ -38,6 +39,7 @@ import {
   user300RecipientWithName,
   user400RecipientWithName,
 } from "../../../../__mocks__/ACLRecipientModule.mock";
+import { DEFAULT_ACL_EXPRESSION_ID } from "../../../../tsrc/components/aclexpressionbuilder/ACLExpressionBuilder";
 import {
   ACLExpression,
   ACLOperatorType,
@@ -45,6 +47,7 @@ import {
 } from "../../../../tsrc/modules/ACLExpressionModule";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import { ignoreId } from "../../modules/ACLExpressionModuleTestHelper";
+import { typeInIpInput, typeInNetmaskInput } from "../IPv4CIDRInputTestHelper";
 import {
   defaultACLExpressionBuilderProps,
   renderACLExpressionBuilder,
@@ -78,6 +81,7 @@ const {
     owner: ownerType,
     logged: loggedType,
     guest: guestType,
+    ip: ipType,
   },
 } = languageStrings.aclExpressionBuilder;
 const {
@@ -548,5 +552,45 @@ describe("<ACLExpressionBuilder/>", () => {
         expect(result).toEqual(expectedResult);
       }
     );
+  });
+
+  it("should be able to add an IPv4 CIDR specifier to the expression", async () => {
+    const ipRecipient = ipRecipientWithName("192.168.1.1/24");
+    const expectedResult = {
+      id: DEFAULT_ACL_EXPRESSION_ID,
+      operator: "OR",
+      recipients: [ipRecipient],
+      children: [],
+    };
+    const onFinish = jest.fn();
+    const renderResult = renderACLExpressionBuilder({
+      ...defaultACLExpressionBuilderProps,
+      onFinish: onFinish,
+    });
+    const { findByText, getByText, container } = renderResult;
+
+    // click other panel
+    userEvent.click(getByText(otherTab));
+    // select ip recipient type
+    await selectRecipientType(container, ipType);
+    // input an ip address
+    typeInIpInput(container, "192", 0);
+    typeInIpInput(container, "168", 1);
+    typeInIpInput(container, "1", 2);
+    typeInIpInput(container, "1", 3);
+    typeInNetmaskInput(container, "24");
+
+    // click add button
+    userEvent.click(getByText(addLabel));
+    // expand root node to let recipient displayed in UI
+    selectOperatorNode(container, DEFAULT_ACL_EXPRESSION_ID);
+    // wait for adding action
+    await findByText(ipRecipient.name);
+
+    // click ok button to check the result
+    userEvent.click(getByText(okLabel));
+    const result = onFinish.mock.lastCall[0];
+
+    expect(result).toEqual(expectedResult);
   });
 });
