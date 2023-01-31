@@ -21,13 +21,8 @@ import * as A from "fp-ts/Array";
 import { constant, constFalse, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as S from "fp-ts/string";
-import React, {
-  createRef,
-  RefObject,
-  useState,
-  useRef,
-  useEffect,
-} from "react";
+import * as React from "react";
+import { createRef, RefObject, useState, useRef, useEffect } from "react";
 import { Literal, Union } from "runtypes";
 import * as N from "fp-ts/number";
 import * as NEA from "fp-ts/NonEmptyArray";
