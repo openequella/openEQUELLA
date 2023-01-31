@@ -55,7 +55,7 @@ const { queryFieldLabel: groupQueryFieldLabel } =
  * @param queryName the label value displayed in the query bar, and here use it to locate the search bar
  * @param queryValue the value to put in the query field before pressing enter
  */
-export const doSearch = (
+export const doSearch = async (
   dialog: HTMLElement,
   queryName: string,
   queryValue: string
@@ -64,7 +64,7 @@ export const doSearch = (
   if (!queryField) {
     throw new Error("Unable to find query field!");
   }
-  userEvent.type(queryField, `${queryValue}{enter}`);
+  await userEvent.type(queryField, `${queryValue}{enter}`);
 };
 
 /**
@@ -92,50 +92,53 @@ export const searchGroupFilter = (dialog: HTMLElement, queryValue: string) =>
  * @param renderResult The Base Search Dialog render result.
  * @param text The value used to get the element.
  */
-const clickByText = ({ getByText }: RenderResult, text: string) =>
-  userEvent.click(getByText(text));
+const clickByText = async ({ findByText }: RenderResult, text: string) =>
+  await userEvent.click(await findByText(text));
 
 /**
  * Helper function to mock clicking `filterByGroup` button.
  *
  * @param renderResult a root container within which <BaseSearch/> exists
  */
-export const clickFilterByGroupButton = (renderResult: RenderResult): void =>
-  clickByText(renderResult, filterByGroupsButtonLabel);
+export const clickFilterByGroupButton = async (
+  renderResult: RenderResult
+): Promise<void> => await clickByText(renderResult, filterByGroupsButtonLabel);
 
 /**
  * Helper function to mock clicking `select` button.
  *
  * @param renderResult a root container within which <BaseSearch/> exists
  */
-export const clickEntitySelectButton = (renderResult: RenderResult): void =>
-  clickByText(renderResult, selectLabel);
+export const clickEntitySelectButton = async (
+  renderResult: RenderResult
+): Promise<void> => await clickByText(renderResult, selectLabel);
 
 /**
  * Helper function to mock clicking `cancel` button.
  *
  * @param renderResult a root container within which <BaseSearch/> exists
  */
-export const clickCancelGroupFilterButton = (
+export const clickCancelGroupFilterButton = async (
   renderResult: RenderResult
-): void => clickByText(renderResult, cancelLabel);
+): Promise<void> => await clickByText(renderResult, cancelLabel);
 
 /**
  * Helper function to mock clicking `edit` button.
  *
  * @param renderResult a root container within which <BaseSearch/> exists
  */
-export const clickEditGroupFilterButton = (renderResult: RenderResult): void =>
-  clickByText(renderResult, editLabel);
+export const clickEditGroupFilterButton = (
+  renderResult: RenderResult
+): Promise<void> => clickByText(renderResult, editLabel);
 
 /**
  * Helper function to assist in finding GroupFilterSearch when user choose to edit the group filter.
  *
  * @param container a root container within which <BaseSearch/> exists
  */
-export const queryGroupFilterSearch = (
+export const findGroupFilterSearch = (
   renderResult: RenderResult
-): Element | null => renderResult.queryByText(groupFilterSearchHintMessage);
+): Promise<Element> => renderResult.findByText(groupFilterSearchHintMessage);
 
 /**
  * Helper function to assist in finding the search result list.
@@ -196,20 +199,19 @@ export const searchAndSelect = async <T,>(
   searchFor: string,
   selectEntityName: string,
   onChange = jest.fn(),
-  doSearch: (dialog: HTMLElement, queryValue: string) => void
+  doSearch: (dialog: HTMLElement, queryValue: string) => Promise<void>
 ): Promise<ReadonlySet<T>> => {
   const { container } = renderResult;
   // Attempt search for a specific entity
-  doSearch(container, searchFor);
+  await doSearch(container, searchFor);
 
   // Wait for the results, and then click our entity of interest
-  userEvent.click(
-    await renderResult.findByText(new RegExp(`.*${selectEntityName}.*`))
+  const entityName = await renderResult.findByText(
+    new RegExp(`.*${selectEntityName}.*`)
   );
+  await userEvent.click(entityName);
 
-  const argToFirstCall: ReadonlySet<T> = onChange.mock.lastCall[0];
-
-  return argToFirstCall;
+  return onChange.mock.lastCall[0];
 };
 
 /**

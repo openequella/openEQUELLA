@@ -15,10 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render } from "@testing-library/react";
+import { act, render } from "@testing-library/react";
 import { createMemoryHistory } from "history";
 import * as React from "react";
-import { act } from "react-dom/test-utils";
 import { Router } from "react-router-dom";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import { Search } from "../../../tsrc/search/Search";

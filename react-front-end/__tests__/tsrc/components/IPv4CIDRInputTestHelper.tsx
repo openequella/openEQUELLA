@@ -33,7 +33,7 @@ export const queryNetmaskInput = (container: HTMLElement) =>
  * @param text The text will be typed in the input.
  * @param index The index refer to different ip input.
  */
-export const typeInIpInput = (
+export const typeInIpInput = async (
   container: HTMLElement,
   text: string,
   index: number
@@ -42,19 +42,22 @@ export const typeInIpInput = (
   if (!input) {
     throw new Error(`Unable to find ip input ${index}!`);
   }
-  userEvent.click(input);
-  userEvent.keyboard(`${text}`);
+  await userEvent.click(input);
+  await userEvent.keyboard(text);
 };
 
 /**
  * Type ``text` in the netmask input.
  */
-export const typeInNetmaskInput = (container: HTMLElement, text: string) => {
+export const typeInNetmaskInput = async (
+  container: HTMLElement,
+  text: string
+) => {
   const input = queryNetmaskInput(container);
   if (!input) {
     throw new Error(`Unable to find netmask input!`);
   }
-  userEvent.type(input, `${text}`);
+  await userEvent.type(input, `${text}`);
 };
 
 export const renderIPV4CIDRInput = (

@@ -43,12 +43,15 @@ export const renderACLExpressionTree = (
   );
 
 // Helper function to mock select the arrow expend icon for each group node (`operator` tree item) in the tree view.
-export const selectOperatorNode = (container: HTMLElement, nodeId: string) => {
+export const selectOperatorNode = async (
+  container: HTMLElement,
+  nodeId: string
+) => {
   const node = container.querySelector(`#${nodeId} svg`);
   if (!node) {
     throw Error(`Can't find node with id: ${nodeId}`);
   }
-  userEvent.click(node);
+  await userEvent.click(node);
 };
 
 // Helper function to mock select an `operator` for group node (`operator` tree item) in the tree view.
@@ -68,11 +71,11 @@ export const clickDeleteButtonForRecipient = async (
     throw Error(`Can't find delete button for recipient with name: ${name}`);
   }
 
-  userEvent.click(deleteButton);
+  await userEvent.click(deleteButton);
 };
 
 // Helper function to mock click the delete button for the operator node in the tree view.
-export const clickDeleteButtonForOperatorNode = (
+export const clickDeleteButtonForOperatorNode = async (
   container: HTMLElement,
   nodeId: string
 ) => {
@@ -82,5 +85,5 @@ export const clickDeleteButtonForOperatorNode = (
   if (!node) {
     throw Error(`Can't find delete button for node with id: ${nodeId}`);
   }
-  userEvent.click(node);
+  await userEvent.click(node);
 };

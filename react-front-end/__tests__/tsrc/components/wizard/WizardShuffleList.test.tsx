@@ -51,7 +51,7 @@ describe("<WizardShuffleList/>", () => {
     ["using add button", false],
   ])(
     "supports the adding of a value by %s",
-    (_: string, pressEnterKey: boolean) => {
+    async (_: string, pressEnterKey: boolean) => {
       const onChange = jest.fn();
       const { getByLabelText } = render(
         <WizardShuffleList
@@ -61,23 +61,23 @@ describe("<WizardShuffleList/>", () => {
         />
       );
 
-      const doAdd = (value: string) => {
-        userEvent.type(
+      const doAdd = async (value: string) => {
+        await userEvent.type(
           getByLabelText(shuffleListStrings.newEntry),
           `${value}${pressEnterKey ? "{enter}" : ""}`
         );
         if (!pressEnterKey) {
-          userEvent.click(getByLabelText(addString));
+          await userEvent.click(getByLabelText(addString));
         }
       };
 
       const me = "Add me";
-      doAdd(me);
+      await doAdd(me);
       expect(onChange).toHaveBeenLastCalledWith(new Set([me]));
     }
   );
 
-  it("supports removing a value", () => {
+  it("supports removing a value", async () => {
     const onChange = jest.fn();
     const deleteMe = "Please delete me";
     const testValues: ReadonlySet<string> = new Set<string>([
@@ -93,7 +93,7 @@ describe("<WizardShuffleList/>", () => {
       />
     );
 
-    userEvent.click(getByLabelText(`${deleteString} ${deleteMe}`));
+    await userEvent.click(getByLabelText(`${deleteString} ${deleteMe}`));
 
     expect(onChange).toHaveBeenLastCalledWith(
       pipe(testValues, RSET.remove(S.Eq)(deleteMe))

@@ -119,16 +119,16 @@ describe("<ACLExpressionBuilder/>", () => {
     const { container, getByText } = renderResult;
 
     // expand root node
-    selectOperatorNode(container, NODE_NAME_ROOT);
+    await selectOperatorNode(container, NODE_NAME_ROOT);
     // expand test node
-    selectOperatorNode(container, NODE_NAME_TEST);
+    await selectOperatorNode(container, NODE_NAME_TEST);
     // delete recipient
     await clickDeleteButtonForRecipient(
       renderResult,
       user100RecipientWithName.name
     );
     // click ok button to see if the result is what we want
-    userEvent.click(getByText(okLabel));
+    await userEvent.click(getByText(okLabel));
 
     const result = onFinish.mock.lastCall[0];
     expect(result).toEqual(expectedResult);
@@ -169,18 +169,18 @@ describe("<ACLExpressionBuilder/>", () => {
       });
 
       // expand root node
-      selectOperatorNode(container, NODE_NAME_ROOT);
+      await selectOperatorNode(container, NODE_NAME_ROOT);
       // update operator option for provided node
       await selectOperatorForNode(container, nodeId, operator);
       // click ok to see if the result is what we want
-      userEvent.click(getByText(okLabel));
+      await userEvent.click(getByText(okLabel));
 
       const result = onFinish.mock.lastCall[0];
       expect(result).toEqual(expectedResult);
     }
   );
 
-  it("should be able to add a sub group for ACLExpression", () => {
+  it("should be able to add a sub group for ACLExpression", async () => {
     const expectedResult = createACLExpression(
       "OR",
       [],
@@ -193,15 +193,15 @@ describe("<ACLExpressionBuilder/>", () => {
     });
 
     // click add group button
-    userEvent.click(getByLabelText(addGroupLabel));
+    await userEvent.click(getByLabelText(addGroupLabel));
     // click ok button to see if the result is what we want
-    userEvent.click(getByText(okLabel));
+    await userEvent.click(getByText(okLabel));
 
     const result = onFinish.mock.lastCall[0];
     expect(result).toEqual(ignoreId(expectedResult));
   });
 
-  it("should be able to delete a sub group in ACLExpression", () => {
+  it("should be able to delete a sub group in ACLExpression", async () => {
     const expectedResult = {
       ...initialACLExpression,
       children: [],
@@ -214,11 +214,11 @@ describe("<ACLExpressionBuilder/>", () => {
     });
 
     // expand root node
-    selectOperatorNode(container, NODE_NAME_ROOT);
+    await selectOperatorNode(container, NODE_NAME_ROOT);
     // click delete group button in node `test`
-    clickDeleteButtonForOperatorNode(container, NODE_NAME_TEST);
+    await clickDeleteButtonForOperatorNode(container, NODE_NAME_TEST);
     // click ok button to see if the result is what we want
-    userEvent.click(getByText(okLabel));
+    await userEvent.click(getByText(okLabel));
 
     const result = onFinish.mock.lastCall[0];
     expect(result).toEqual(expectedResult);
@@ -256,18 +256,18 @@ describe("<ACLExpressionBuilder/>", () => {
       recipients: [role100RecipientWithName, role200RecipientWithName],
     };
 
-    it("displays home panel's group search when users select groups radio", () => {
+    it("displays home panel's group search when users select groups radio", async () => {
       const { getByText, queryByText } = renderACLExpressionBuilder();
 
-      userEvent.click(getByText(groupsRadioLabel));
+      await userEvent.click(getByText(groupsRadioLabel));
 
       expect(queryByText(groupSearchQueryFieldLabel)).toBeInTheDocument();
     });
 
-    it("displays home panel's role search when users select roles radio", () => {
+    it("displays home panel's role search when users select roles radio", async () => {
       const { getByText, queryByText } = renderACLExpressionBuilder();
 
-      userEvent.click(getByText(rolesRadioLabel));
+      await userEvent.click(getByText(rolesRadioLabel));
 
       expect(queryByText(roleSearchQueryFieldLabel)).toBeInTheDocument();
     });
@@ -309,7 +309,10 @@ describe("<ACLExpressionBuilder/>", () => {
         _: string,
         entityRadioLabel: string,
         entityToSelect: string,
-        searchEntity: (dialog: HTMLElement, queryValue: string) => void,
+        searchEntity: (
+          dialog: HTMLElement,
+          queryValue: string
+        ) => Promise<void>,
         expectedACLExpressionResult: ACLExpression
       ) => {
         const onFinish = jest.fn();
@@ -320,17 +323,17 @@ describe("<ACLExpressionBuilder/>", () => {
           });
 
         // select entity search radio
-        userEvent.click(getByText(entityRadioLabel));
+        await userEvent.click(getByText(entityRadioLabel));
         // attempt search for a specific entity
-        searchEntity(container, entityToSelect);
+        await searchEntity(container, entityToSelect);
         // wait for search result
         await waitFor(() => getByText(entityToSelect));
 
         // click the add button
-        userEvent.click(getByLabelText(addLabel));
+        await userEvent.click(getByLabelText(addLabel));
 
         // click ok button to get the result
-        userEvent.click(getByText(okLabel));
+        await userEvent.click(getByText(okLabel));
 
         const result = onFinish.mock.lastCall[0];
         expect(result).toEqual(expectedACLExpressionResult);
@@ -343,7 +346,7 @@ describe("<ACLExpressionBuilder/>", () => {
         string,
         string,
         string[],
-        (dialog: HTMLElement, queryValue: string) => void,
+        (dialog: HTMLElement, queryValue: string) => Promise<void>,
         ACLExpression
       ]
     >([
@@ -389,9 +392,9 @@ describe("<ACLExpressionBuilder/>", () => {
         const { getByText, container } = renderResult;
 
         // select entity search radio
-        userEvent.click(getByText(entityRadioLabel));
+        await userEvent.click(getByText(entityRadioLabel));
         // Attempt search for a specific entity
-        searchEntity(container, searchFor);
+        await searchEntity(container, searchFor);
 
         const result = await selectAndFinished(
           renderResult,
@@ -409,7 +412,7 @@ describe("<ACLExpressionBuilder/>", () => {
         string,
         string,
         string[],
-        (dialog: HTMLElement, queryValue: string) => void,
+        (dialog: HTMLElement, queryValue: string) => Promise<void>,
         ACLExpression
       ]
     >([
@@ -465,14 +468,14 @@ describe("<ACLExpressionBuilder/>", () => {
         const { getByText, container } = renderResult;
 
         // select entity search radio
-        userEvent.click(getByText(entityRadioLabel));
+        await userEvent.click(getByText(entityRadioLabel));
         // Attempt search for a specific entity
-        searchEntity(container, searchFor);
+        await searchEntity(container, searchFor);
 
         // expand the root node
-        selectOperatorNode(container, NODE_NAME_ROOT);
+        await selectOperatorNode(container, NODE_NAME_ROOT);
         // select the test node
-        selectOperatorNode(container, NODE_NAME_TEST);
+        await selectOperatorNode(container, NODE_NAME_TEST);
 
         const result = await selectAndFinished(
           renderResult,
@@ -535,18 +538,18 @@ describe("<ACLExpressionBuilder/>", () => {
         const { findAllByText, getByText, container } = renderResult;
 
         // click other panel
-        userEvent.click(getByText(otherTab));
+        await userEvent.click(getByText(otherTab));
         // select a recipient type
         await selectRecipientType(container, recipientLabel);
         // click add button
-        userEvent.click(getByText(addLabel));
+        await userEvent.click(getByText(addLabel));
         // expand root node to let recipients displayed in UI
-        selectOperatorNode(container, NODE_NAME_ROOT);
+        await selectOperatorNode(container, NODE_NAME_ROOT);
         // wait for adding action
         await findAllByText(recipientName ?? "");
 
         // click ok button to check the result
-        userEvent.click(getByText(okLabel));
+        await userEvent.click(getByText(okLabel));
 
         const result = onFinish.mock.lastCall[0];
         expect(result).toEqual(expectedResult);
@@ -570,25 +573,25 @@ describe("<ACLExpressionBuilder/>", () => {
     const { findByText, getByText, container } = renderResult;
 
     // click other panel
-    userEvent.click(getByText(otherTab));
+    await userEvent.click(getByText(otherTab));
     // select ip recipient type
     await selectRecipientType(container, ipType);
     // input an ip address
-    typeInIpInput(container, "192", 0);
-    typeInIpInput(container, "168", 1);
-    typeInIpInput(container, "1", 2);
-    typeInIpInput(container, "1", 3);
-    typeInNetmaskInput(container, "24");
+    await typeInIpInput(container, "192", 0);
+    await typeInIpInput(container, "168", 1);
+    await typeInIpInput(container, "1", 2);
+    await typeInIpInput(container, "1", 3);
+    await typeInNetmaskInput(container, "24");
 
     // click add button
-    userEvent.click(getByText(addLabel));
+    await userEvent.click(getByText(addLabel));
     // expand root node to let recipient displayed in UI
-    selectOperatorNode(container, DEFAULT_ACL_EXPRESSION_ID);
+    await selectOperatorNode(container, DEFAULT_ACL_EXPRESSION_ID);
     // wait for adding action
     await findByText(ipRecipient.name);
 
     // click ok button to check the result
-    userEvent.click(getByText(okLabel));
+    await userEvent.click(getByText(okLabel));
     const result = onFinish.mock.lastCall[0];
 
     expect(result).toEqual(expectedResult);

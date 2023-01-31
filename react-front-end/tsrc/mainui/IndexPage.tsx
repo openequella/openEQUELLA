@@ -84,7 +84,7 @@ export default function IndexPage() {
   });
 
   const setPreventNavigation = React.useCallback(
-    (prevent) => {
+    (prevent: boolean) => {
       const message = prevent ? defaultNavMessage() : undefined;
       if (message) {
         window.addEventListener("beforeunload", beforeunload, false);

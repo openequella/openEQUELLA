@@ -50,27 +50,27 @@ describe("<ACLExpressionTree/>", () => {
     children: [],
   };
 
-  it("displays the operator and recipient tree item", () => {
+  it("displays the operator and recipient tree item", async () => {
     const { container, queryByText } =
       renderACLExpressionTree(rootACLExpression);
 
     // expend root node
-    selectOperatorNode(container, "root");
+    await selectOperatorNode(container, "root");
 
     expect(queryByText("Or")).toBeInTheDocument();
     expect(queryByText("User 1 [user1]")).toBeInTheDocument();
   });
 
-  it("displays the child in the tree view", () => {
+  it("displays the child in the tree view", async () => {
     const { container, queryByText } = renderACLExpressionTree({
       ...rootACLExpression,
       children: [childACLExpression],
     });
 
     // expend root node
-    selectOperatorNode(container, "root");
+    await selectOperatorNode(container, "root");
     // expend child node
-    selectOperatorNode(container, "child");
+    await selectOperatorNode(container, "child");
 
     expect(queryByText("And")).toBeInTheDocument();
     expect(queryByText("Group 1")).toBeInTheDocument();

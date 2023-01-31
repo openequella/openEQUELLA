@@ -63,13 +63,13 @@ export const selectAndFinished = async (
 ): Promise<ACLExpression> => {
   // Wait for the results, and then click all entities
   for (const name of selectNames) {
-    userEvent.click(await findByText(name));
+    await userEvent.click(await findByText(name));
   }
 
   // click select button
-  userEvent.click(getByText(selectLabel));
+  await userEvent.click(getByText(selectLabel));
   // click ok button
-  userEvent.click(getByText(okLabel));
+  await userEvent.click(getByText(okLabel));
 
   // get the result of ACLExpression
   return onFinish.mock.lastCall[0];

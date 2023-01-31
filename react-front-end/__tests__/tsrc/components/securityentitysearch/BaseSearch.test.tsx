@@ -42,7 +42,7 @@ import {
   searchGroupFilter,
   clickFilterByGroupButton,
   clickEntitySelectButton,
-  queryGroupFilterSearch,
+  findGroupFilterSearch,
   clickEditGroupFilterButton,
   clickCancelGroupFilterButton,
   querySearchResultList,
@@ -96,37 +96,34 @@ describe("<BaseSearch/>", () => {
         resolveGroupsProvider: GroupModuleMock.resolveGroups,
       });
 
-      expect(
-        renderResult.queryByText(
-          languageStrings.baseSearchComponent.filterActiveNotice
-        )
-      ).toBeInTheDocument();
+      const activeNotice = await renderResult.findByText(
+        languageStrings.baseSearchComponent.filterActiveNotice
+      );
+      expect(activeNotice).toBeInTheDocument();
     });
 
     it("displays an error when it can't find requested entity", async () => {
-      const renderResult = await renderBaseSearch();
+      const { container, findByText } = await renderBaseSearch();
 
       // Attempt search for rubbish value
       const noSuchEntity = "la blah blah";
-      searchEntity(renderResult.container, noSuchEntity);
+      await searchEntity(container, noSuchEntity);
 
       // Ensure an error was displayed
-      const errorMessage = await waitFor(() =>
-        renderResult.getByText(sprintf(failedToFindMessage, noSuchEntity))
+      const errorMessage = await findByText(
+        sprintf(failedToFindMessage, noSuchEntity)
       );
       expect(errorMessage).toBeInTheDocument();
     });
 
     it("displays users if there are any returned", async () => {
-      const renderResult = await renderBaseSearch();
+      const { container, findAllByText } = await renderBaseSearch();
 
       // Attempt search for known entities
-      searchEntity(renderResult.container, "user");
+      await searchEntity(container, "user");
 
       // Await for search results
-      const results = await waitFor(() =>
-        renderResult.getAllByText(/user\d00/)
-      );
+      const results = await findAllByText(/user\d00/);
       expect(results).toHaveLength(4);
     });
 
@@ -144,14 +141,13 @@ describe("<BaseSearch/>", () => {
         onChange,
       });
 
-      expect(
-        await searchAndSelectEntity(
-          renderResult,
-          queryName,
-          selectEntity.username,
-          onChange
-        )
-      ).toEqual(expectedSelections);
+      const selections = await searchAndSelectEntity(
+        renderResult,
+        queryName,
+        selectEntity.username,
+        onChange
+      );
+      expect(selections).toEqual(expectedSelections);
     });
 
     it("should return all search results with current selections when users click the `select all` button", async () => {
@@ -172,21 +168,22 @@ describe("<BaseSearch/>", () => {
         RSET.fromReadonlyArray(eqUserById)
       );
 
-      const renderResult = await renderBaseSearch({
+      const { container, getByText, findAllByText } = await renderBaseSearch({
         ...defaultBaseSearchProps,
         selections: initialSelections,
         onSelectAll: onSelectAll,
       });
 
       // Attempt search for known entities
-      searchEntity(renderResult.container, queryName);
+      await searchEntity(container, queryName);
       // Await for search results
-      await waitFor(() =>
-        pipe(new RegExp(`${queryName}\\d00`), renderResult.getAllByText)
-      );
+      await findAllByText(new RegExp(`${queryName}\\d00`));
+      // await waitFor(() =>
+      //   pipe(new RegExp(`${queryName}\\d00`), renderResult.getAllByText)
+      // );
 
       // Click `select all` button
-      userEvent.click(renderResult.getByText(selectAllLabel));
+      await userEvent.click(getByText(selectAllLabel));
 
       const argToFirstCall = onSelectAll.mock.calls[0][0];
 
@@ -197,13 +194,13 @@ describe("<BaseSearch/>", () => {
     it("should return an empty set when users click the `clear all` (select none) button", async () => {
       const onClearAll = jest.fn();
 
-      const renderResult = await renderBaseSearch({
+      const { getByText } = await renderBaseSearch({
         ...defaultBaseSearchProps,
         onClearAll: onClearAll,
       });
 
       // Click `clear all` button
-      userEvent.click(renderResult.getByText(clearAllLabel));
+      await userEvent.click(getByText(clearAllLabel));
 
       const argToFirstCall = onClearAll.mock.calls[0][0];
 
@@ -220,7 +217,7 @@ describe("<BaseSearch/>", () => {
       });
 
       // trigger a search action
-      searchEntity(container, "");
+      await searchEntity(container, "");
       // wait for search completed
       await waitFor(() => findByText("user100"));
 
@@ -242,9 +239,9 @@ describe("<BaseSearch/>", () => {
         groupFilterEditable: true,
       });
 
-      clickFilterByGroupButton(renderResult);
+      await clickFilterByGroupButton(renderResult);
 
-      expect(queryGroupFilterSearch(renderResult)).toBeInTheDocument();
+      expect(await findGroupFilterSearch(renderResult)).toBeInTheDocument();
     });
 
     it("switch to GroupSearch when users choose to edit group filter", async () => {
@@ -254,10 +251,10 @@ describe("<BaseSearch/>", () => {
         groupFilter: GroupFilter.args!.groupFilter,
       });
 
-      const editGroupFilterButton = renderResult.getByText(editLabel);
-      userEvent.click(editGroupFilterButton);
+      const editGroupFilterButton = await renderResult.findByText(editLabel);
+      await userEvent.click(editGroupFilterButton);
 
-      expect(queryGroupFilterSearch(renderResult)).toBeInTheDocument();
+      expect(await findGroupFilterSearch(renderResult)).toBeInTheDocument();
     });
 
     it("select button should be disabled if there is no group filter selected", async () => {
@@ -267,7 +264,7 @@ describe("<BaseSearch/>", () => {
         groupFilter: RSET.empty,
       });
 
-      clickFilterByGroupButton(renderResult);
+      await clickFilterByGroupButton(renderResult);
 
       const selectButton = renderResult
         .getByText(selectLabel)
@@ -297,7 +294,7 @@ describe("<BaseSearch/>", () => {
       });
       const { container } = renderResult;
 
-      clickFilterByGroupButton(renderResult);
+      await clickFilterByGroupButton(renderResult);
 
       // search for groups with name `group`
       await searchGroupFilter(container, "group");
@@ -311,10 +308,10 @@ describe("<BaseSearch/>", () => {
       }
 
       // click button
-      clickActionButton(renderResult);
+      await clickActionButton(renderResult);
 
       // trigger search action so that we can check what groups are in use when passed to the search handler
-      searchEntity(container, "");
+      await searchEntity(container, "");
       // wait for search completed
       await waitFor(() => querySearchResultList(container));
 
@@ -334,15 +331,15 @@ describe("<BaseSearch/>", () => {
         groupFilter: GroupFilter.args!.groupFilter,
       });
 
-      clickEditGroupFilterButton(renderResult);
+      await clickEditGroupFilterButton(renderResult);
 
-      expect(queryGroupFilterSearch(renderResult)).toBeInTheDocument();
+      expect(await findGroupFilterSearch(renderResult)).toBeInTheDocument();
     });
 
     it("should clear all group filter when users click clear button", async () => {
       const search = jest.fn().mockResolvedValue("test");
 
-      const { container, getByText } = await renderBaseSearch({
+      const { container, findByText } = await renderBaseSearch({
         ...defaultBaseSearchProps,
         search: search,
         groupFilterEditable: true,
@@ -350,14 +347,14 @@ describe("<BaseSearch/>", () => {
       });
 
       // find and click clear button
-      const clearGroupFilterButton = getByText(clearLabel);
-      userEvent.click(clearGroupFilterButton);
+      const clearGroupFilterButton = await findByText(clearLabel);
+      await userEvent.click(clearGroupFilterButton);
 
       // trigger a search action so that we can make sure the search is then done with
       // no group filter - confirming it was cleared.
-      searchEntity(container, "");
+      await searchEntity(container, "");
       // wait for search completed
-      await waitFor(() => querySearchResultList(container));
+      await querySearchResultList(container);
 
       expect(search).toHaveBeenCalledTimes(1);
 

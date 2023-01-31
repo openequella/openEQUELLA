@@ -38,7 +38,7 @@ import * as RSET from "fp-ts/ReadonlySet";
 import * as S from "fp-ts/string";
 import * as T from "fp-ts/Task";
 import * as TE from "fp-ts/TaskEither";
-import React, { useContext, useEffect, useState } from "react";
+import * as React from "react";
 import {
   eqUserById,
   resolveUsers,
@@ -163,15 +163,15 @@ export const WizardUserSelector = ({
   resolveUsersProvider = resolveUsers,
 }: WizardUserSelectorProps): JSX.Element => {
   const [showSelectUserDialog, setShowSelectUserDialog] =
-    useState<boolean>(false);
-  const [fullUsers, setFullUsers] = useState<
+    React.useState<boolean>(false);
+  const [fullUsers, setFullUsers] = React.useState<
     ReadonlySet<OEQ.UserQuery.UserDetails>
   >(new Set());
 
-  const { handleError } = useContext(WizardErrorContext);
+  const { handleError } = React.useContext(WizardErrorContext);
 
   // Update `fullUsers` when `users` changes
-  useEffect(() => {
+  React.useEffect(() => {
     if (RSET.getEq(S.Eq).equals(users, pipe(fullUsers, userIds))) {
       // Already in sync, no action required.
       return;

@@ -15,9 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta } from "@storybook/react";
+import { Meta, Story } from "@storybook/react";
 import * as React from "react";
-import { boolean, date } from "@storybook/addon-knobs";
 import { Date as DateDisplay, DateProps } from "../../tsrc/components/Date";
 
 export default {
@@ -25,14 +24,11 @@ export default {
   component: DateDisplay,
 } as Meta<DateProps>;
 
-function dateKnob(name: string) {
-  const timestamp = date(name);
-  return new Date(timestamp);
-}
-
-export const dateDisplay = () => (
-  <DateDisplay
-    displayRelative={boolean("Relative date", false)}
-    date={dateKnob("Date")}
-  />
+export const dateDisplay: Story<DateProps> = (args) => (
+  <DateDisplay {...args} />
 );
+
+dateDisplay.args = {
+  displayRelative: false,
+  date: new Date(),
+};

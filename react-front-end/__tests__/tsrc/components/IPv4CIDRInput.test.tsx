@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import "@testing-library/jest-dom/extend-expect";
+import { waitFor } from "@testing-library/react";
 import {
   queryIpInput,
   queryNetmaskInput,
@@ -59,31 +60,31 @@ describe("<IPV4CIDRInput />", () => {
   ])("%s", async (_, inputIndex, typeText, expectedInputIndex) => {
     const { container } = renderIPV4CIDRInput();
 
-    typeInIpInput(container, typeText, inputIndex);
+    await typeInIpInput(container, typeText, inputIndex);
 
     const nextInput = queryIpInput(container, expectedInputIndex);
-    expect(nextInput).toHaveFocus();
+    await waitFor(() => expect(nextInput).toHaveFocus());
   });
 
-  it("should be able to automatically change the focus on netmask input if use complete the final ip input", () => {
+  it("should be able to automatically change the focus on netmask input if use complete the final ip input", async () => {
     const { container } = renderIPV4CIDRInput();
 
-    typeInIpInput(container, "123", 3);
+    await typeInIpInput(container, "123", 3);
 
     expect(queryNetmaskInput(container)).toHaveFocus();
   });
 
-  it("should be able to return the result if user complete all inputs", () => {
+  it("should be able to return the result if user complete all inputs", async () => {
     const onChange = jest.fn();
     const expectedResult = "192.168.1.1/32";
     const { container } = renderIPV4CIDRInput(onChange);
 
-    typeInIpInput(container, "192", 0);
-    typeInIpInput(container, "168", 1);
-    typeInIpInput(container, "1", 2);
-    typeInIpInput(container, "1", 3);
+    await typeInIpInput(container, "192", 0);
+    await typeInIpInput(container, "168", 1);
+    await typeInIpInput(container, "1", 2);
+    await typeInIpInput(container, "1", 3);
 
-    typeInNetmaskInput(container, "32");
+    await typeInNetmaskInput(container, "32");
 
     const result = onChange.mock.lastCall[0];
     expect(result).toEqual(expectedResult);
