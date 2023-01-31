@@ -1,0 +1,27 @@
+{
+  "name": "@openequella/io-ts-codec",
+  "version": "2023.1.0-Alpha",
+  "license": "Apache-2.0",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./*": {
+      "import": "./dist/*.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "*": ["dist/*.d.ts"]
+    }
+  },
+  "scripts": {
+    "build": "rollup --config --bundleConfigAsCjs"
+  },
+  "devDependencies": {
+    "rollup": "3.8.0",
+    "rollup-plugin-typescript2": "0.34.1",
+    "rollup-plugin-folder-input": "1.0.1",
+    "typescript": "4.7.4"
+  }
+}

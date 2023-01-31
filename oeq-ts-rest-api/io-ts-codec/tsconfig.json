@@ -1,0 +1,13 @@
+{
+  "include": ["src"],
+  "compilerOptions": {
+    "module": "ES6",
+    "lib": [
+      "ES2017"
+    ],
+    "target": "ES6",
+    "importHelpers": true,
+    "declaration": true,
+    "moduleResolution": "node",
+  },
+}
