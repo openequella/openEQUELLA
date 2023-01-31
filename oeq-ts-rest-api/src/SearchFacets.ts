@@ -15,10 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SearchFacetsResultCodec } from '../gen/SearchFacets';
-/**
- * Params to pass to a call for search facets.
- */
+import { SearchFacetsResultCodec } from '@openequella/io-ts-codec/SearchFacets';
 import { GET } from './AxiosInstance';
 import type { UuidString } from './Common';
 import type { Must } from './Search';

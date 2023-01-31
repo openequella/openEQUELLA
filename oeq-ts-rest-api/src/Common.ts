@@ -15,14 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { pipe } from 'fp-ts/function';
-import * as t from 'io-ts';
-import { Literal, Union } from 'runtypes';
 import {
   BaseEntityCodec,
   BaseEntitySummaryCodec,
   PagedResultCodec,
-} from '../gen/Common';
+} from '@openequella/io-ts-codec/Common';
+import { pipe } from 'fp-ts/function';
+import * as t from 'io-ts';
+import { Literal, Union } from 'runtypes';
 import type { BaseEntitySecurity } from './Security';
 import { validate } from './Utils';
 

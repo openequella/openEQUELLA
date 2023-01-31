@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PagedResultCodec } from '../gen/Common';
-import { EquellaSchemaCodec } from '../gen/Schema';
+import { PagedResultCodec } from '@openequella/io-ts-codec/Common';
+import { EquellaSchemaCodec } from '@openequella/io-ts-codec/Schema';
 import { GET } from './AxiosInstance';
 import type { BaseEntity, PagedResult } from './Common';
 import { isPagedBaseEntity, ListCommonParams } from './Common';

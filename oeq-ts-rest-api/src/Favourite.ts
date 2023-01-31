@@ -18,7 +18,7 @@
 import {
   FavouriteItemCodec,
   FavouriteSearchModelCodec,
-} from '../gen/Favourite';
+} from '@openequella/io-ts-codec/Favourite';
 import { DELETE, POST } from './AxiosInstance';
 import { validate } from './Utils';
 

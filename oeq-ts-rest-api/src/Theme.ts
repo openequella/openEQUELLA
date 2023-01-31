@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ThemeSettingsCodec } from '../gen/Theme';
+import { ThemeSettingsCodec } from '@openequella/io-ts-codec/Theme';
 import { DELETE, GET, PUT } from './AxiosInstance';
 import { validate } from './Utils';
 

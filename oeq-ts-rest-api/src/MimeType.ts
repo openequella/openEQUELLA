@@ -15,11 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as t from 'io-ts';
 import {
   MimeTypeEntryCodec,
   MimeTypeViewerConfigurationCodec,
-} from '../gen/MimeType';
+} from '@openequella/io-ts-codec/MimeType';
+import * as t from 'io-ts';
 import { GET } from './AxiosInstance';
 import { validate } from './Utils';
 

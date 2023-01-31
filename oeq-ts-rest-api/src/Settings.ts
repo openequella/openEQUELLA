@@ -15,8 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {
+  GeneralSettingCodec,
+  UISettingsCodec,
+} from '@openequella/io-ts-codec/Settings';
 import * as t from 'io-ts';
-import { GeneralSettingCodec, UISettingsCodec } from '../gen/Settings';
 import { GET, PUT } from './AxiosInstance';
 import { validate } from './Utils';
 

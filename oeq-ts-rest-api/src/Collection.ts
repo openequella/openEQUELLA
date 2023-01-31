@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CollectionCodec } from '../gen/Collection';
-import { PagedResultCodec } from '../gen/Common';
+import { CollectionCodec } from '@openequella/io-ts-codec/Collection';
+import { PagedResultCodec } from '@openequella/io-ts-codec/Common';
 import { GET } from './AxiosInstance';
 import type {
   BaseEntity,

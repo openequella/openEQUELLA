@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
+import { PagedResultCodec } from '@openequella/io-ts-codec/Common';
 import * as t from 'io-ts';
-import { PagedResultCodec } from '../gen/Common';
-import { TermCodec } from '../gen/Taxonomy';
+import { TermCodec } from '../io-ts-codec/dist/Taxonomy';
 import { GET } from './AxiosInstance';
 import { PagedResult } from './Common';
 import { validate } from './Utils';

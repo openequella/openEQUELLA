@@ -17,11 +17,13 @@
  */
 import { stringify } from 'query-string';
 import { Literal, Union } from 'runtypes';
-import { SearchResultCodec, SearchResultItemRawCodec } from '../gen/Search';
+import {
+  SearchResultCodec,
+  SearchResultItemRawCodec,
+} from '../io-ts-codec/dist/Search';
 import { GET, HEAD, POST } from './AxiosInstance';
 import type { i18nString, ItemStatus } from './Common';
-import * as Utils from './Utils';
-import { validate } from './Utils';
+import { convertDateFields, validate } from './Utils';
 
 /**
  * Used for specifying must expressions such as `moderating:true`. Neither string should contain
@@ -543,7 +545,7 @@ const searchResultValidator = validate(
 );
 
 const processRawSearchResult = (data: SearchResult<SearchResultItemRaw>) =>
-  Utils.convertDateFields<SearchResult<SearchResultItem>>(data, [
+  convertDateFields<SearchResult<SearchResultItem>>(data, [
     'createdDate',
     'modifiedDate',
     'lastActionDate',

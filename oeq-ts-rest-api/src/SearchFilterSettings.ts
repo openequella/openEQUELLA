@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { MimeTypeFilterCodec } from '@openequella/io-ts-codec/SearchFilterSettings';
 import * as t from 'io-ts';
-import { MimeTypeFilterCodec } from '../gen/SearchFilterSettings';
 import { DELETE, GET, PUT } from './AxiosInstance';
 import type { BatchOperationResponse } from './BatchOperationResponse';
 import { validate } from './Utils';

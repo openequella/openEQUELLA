@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { FacetedSearchClassificationCodec } from '@openequella/io-ts-codec/FacetedSearchSettings';
 import * as t from 'io-ts';
-import { FacetedSearchClassificationCodec } from '../gen/FacetedSearchSettings';
 import { DELETE, GET, PUT } from './AxiosInstance';
 import type { BatchOperationResponse } from './BatchOperationResponse';
 import { validate } from './Utils';
