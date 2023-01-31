@@ -18,7 +18,7 @@
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import "@testing-library/jest-dom/extend-expect";
-import { act, render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { getMimeTypesFromServer } from "../../../__mocks__/MimeTypes.mock";
 import MimeTypeFilterEditingDialog from "../../../tsrc/settings/Search/searchfilter/MimeTypeFilterEditingDialog";
 
@@ -27,44 +27,48 @@ describe("<MimeTypeFilterEditingDialog />", () => {
   const addOrUpdate = jest.fn();
   const renderDialog = async (
     filter: OEQ.SearchFilterSettings.MimeTypeFilter | undefined = undefined
-  ) =>
-    await act(async () => {
-      await render(
-        <MimeTypeFilterEditingDialog
-          open
-          onClose={onClose}
-          addOrUpdate={addOrUpdate}
-          mimeTypeFilter={filter}
-          mimeTypeSupplier={jest.fn().mockResolvedValue(getMimeTypesFromServer)}
-        />
-      );
-    });
+  ) => {
+    render(
+      <MimeTypeFilterEditingDialog
+        open
+        onClose={onClose}
+        addOrUpdate={addOrUpdate}
+        mimeTypeFilter={filter}
+        mimeTypeSupplier={jest.fn().mockResolvedValue(getMimeTypesFromServer)}
+      />
+    );
+
+    await waitFor(() => screen.getByRole("dialog"));
+  };
   const getSaveButton = () =>
     screen.queryByTestId("MimeTypeFilterEditingDialog_save");
 
-  describe("when filter is defined", () => {
-    it("should display 'OK' as the Save button text", () => {
-      renderDialog({
+  it.each([
+    [
+      "OK",
+      "filter is defined",
+      {
         id: "testing ID",
         name: "image filter",
         mimeTypes: ["IMAGE/PNG", "IMAGE/JPEG"],
-      });
+      },
+    ],
+    ["Add", "filter is undefined", undefined],
+  ])(
+    "should display %s as the Save button text when %s",
+    async (
+      text: string,
+      condition: string,
+      filter: OEQ.SearchFilterSettings.MimeTypeFilter | undefined
+    ) => {
+      await renderDialog(filter);
 
-      expect(getSaveButton()).toHaveTextContent("OK");
-    });
-  });
+      expect(getSaveButton()).toHaveTextContent(text);
+    }
+  );
 
-  describe("when filter is undefined", () => {
-    it("should display 'Add' as the Save button text", () => {
-      renderDialog();
-      expect(getSaveButton()).toHaveTextContent("Add");
-    });
-  });
-
-  describe("when filter name is empty", () => {
-    it("should disable the Save button", () => {
-      renderDialog();
-      expect(getSaveButton()).toHaveAttribute("disabled");
-    });
+  it("should disable the Save button when filter name is empty", async () => {
+    await renderDialog();
+    expect(getSaveButton()).toHaveAttribute("disabled");
   });
 });

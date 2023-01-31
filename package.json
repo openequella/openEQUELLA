@@ -108,6 +108,15 @@
           "templateFile": "licenseHeader.js"
         }
       ],
+      "no-restricted-syntax": [
+        "error",
+        {
+          "selector":
+          "ImportDeclaration[source.value='react'] :matches(ImportDefaultSpecifier)",
+          "message":
+          "Use namespace import to import React"
+        }
+      ],
       "react/jsx-boolean-value": "error",
       "react/jsx-curly-brace-presence": "error",
       "react/jsx-fragments": "error",

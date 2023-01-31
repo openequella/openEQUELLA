@@ -100,7 +100,7 @@ describe("view previous/next attachment", () => {
     ],
   ])(
     "supports viewing %s attachment",
-    (
+    async (
       which: string,
       config: LightboxConfig,
       handler: jest.Mock,
@@ -108,7 +108,7 @@ describe("view previous/next attachment", () => {
       updatedTitle: string
     ) => {
       const { getByLabelText, queryByText } = renderLightbox(config);
-      userEvent.click(getByLabelText(buttonText));
+      await userEvent.click(getByLabelText(buttonText));
       expect(handler).toHaveBeenCalledTimes(1);
       expect(queryByText(updatedTitle)).toBeInTheDocument();
     }
@@ -142,7 +142,7 @@ describe("supports viewing Item Summary page", () => {
     ["Selection Session", true, mockWindowOpen],
   ])(
     "shows an icon button which is clicked to open the Summary page in %s",
-    (
+    async (
       _: string,
       inSelectionSession: boolean,
       onClick: jest.Mock | jest.SpyInstance
@@ -163,7 +163,7 @@ describe("supports viewing Item Summary page", () => {
         languageStrings.lightboxComponent.openSummaryPage
       );
       expect(viewSummaryPageButton).toBeInTheDocument();
-      userEvent.click(viewSummaryPageButton!);
+      await userEvent.click(viewSummaryPageButton!);
       expect(onClick).toHaveBeenCalledTimes(1);
     }
   );
@@ -179,12 +179,12 @@ describe("supports viewing Item Summary page", () => {
 });
 
 describe("Provide embed code", () => {
-  it("shows a dialog to allow copying embed code", () => {
+  it("shows a dialog to allow copying embed code", async () => {
     const page = renderLightbox(displayImage.args!.config!);
     const codeIconButton = page.getByLabelText(languageStrings.embedCode.copy, {
       selector: "button",
     });
-    userEvent.click(codeIconButton);
+    await userEvent.click(codeIconButton);
     expect(
       queryByText(page.getByRole("dialog"), languageStrings.embedCode.label)
     ).toBeInTheDocument();

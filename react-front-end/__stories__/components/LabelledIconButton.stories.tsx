@@ -17,7 +17,7 @@
  */
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { Meta, Story } from "@storybook/react";
-import React from "react";
+import * as React from "react";
 import {
   LabelledIconButton,
   LabelledIconButtonProps,

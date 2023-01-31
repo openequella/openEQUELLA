@@ -61,7 +61,7 @@ describe("<ShuffleBox/>", () => {
     expect(isInList(optionsListId(id), options.one)).toBeTruthy();
   });
 
-  it("calls onSelect with the existing selections as well as the new ones when the Add Selected button is clicked", () => {
+  it("calls onSelect with the existing selections as well as the new ones when the Add Selected button is clicked", async () => {
     const onSelect = jest.fn();
     const existingSelection = optionKey("one");
     const { getByLabelText, getByText } = render(
@@ -72,15 +72,15 @@ describe("<ShuffleBox/>", () => {
       />
     );
 
-    userEvent.click(getByText(options.two));
-    userEvent.click(getByLabelText(shuffleBoxStrings.addSelected));
+    await userEvent.click(getByText(options.two));
+    await userEvent.click(getByLabelText(shuffleBoxStrings.addSelected));
 
     expect(onSelect).toHaveBeenCalledWith(
       new Set<string>([existingSelection, optionKey("two")])
     );
   });
 
-  it("calls onSelect with the selected selections removed from existing selections when the Removed Selected button is clicked", () => {
+  it("calls onSelect with the selected selections removed from existing selections when the Removed Selected button is clicked", async () => {
     const selectedOption = optionKey("one");
     const remainingOption = optionKey("three");
     const onSelect = jest.fn();
@@ -92,13 +92,13 @@ describe("<ShuffleBox/>", () => {
       />
     );
 
-    userEvent.click(getByText(optionValue(selectedOption)));
-    userEvent.click(getByLabelText(shuffleBoxStrings.removeSelected));
+    await userEvent.click(getByText(optionValue(selectedOption)));
+    await userEvent.click(getByLabelText(shuffleBoxStrings.removeSelected));
 
     expect(onSelect).toHaveBeenCalledWith(new Set<string>([remainingOption]));
   });
 
-  it("calls onSelect with all possible options when the Select All button is clicked", () => {
+  it("calls onSelect with all possible options when the Select All button is clicked", async () => {
     const onSelect = jest.fn();
     const { getByLabelText } = render(
       <ShuffleBox
@@ -108,11 +108,11 @@ describe("<ShuffleBox/>", () => {
       />
     );
 
-    userEvent.click(getByLabelText(shuffleBoxStrings.addAll));
+    await userEvent.click(getByLabelText(shuffleBoxStrings.addAll));
     expect(onSelect).toHaveBeenCalledWith(new Set<string>(optionsAllKeys));
   });
 
-  it("calls onSelect with an empty collection when Remove All button is clicked", () => {
+  it("calls onSelect with an empty collection when Remove All button is clicked", async () => {
     const onSelect = jest.fn();
     const { getByLabelText } = render(
       <ShuffleBox
@@ -122,7 +122,7 @@ describe("<ShuffleBox/>", () => {
       />
     );
 
-    userEvent.click(getByLabelText(shuffleBoxStrings.removeAll));
+    await userEvent.click(getByLabelText(shuffleBoxStrings.removeAll));
     expect(onSelect).toHaveBeenCalledWith(new Set<string>());
   });
 });
