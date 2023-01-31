@@ -14,7 +14,7 @@
     "npm": "8.19.3"
   },
   "scripts": {
-    "prepare": "cd gen-io-ts && npm ci && npm run gen && cd -",
+    "prepare": "cd gen-io-ts && npm ci && npm run build && cd -",
     "start": "rollup --config --watch --bundleConfigAsCjs",
     "build": "rollup --config --bundleConfigAsCjs",
     "test": "jest --no-cache",
@@ -39,7 +39,8 @@
     "io-ts": "2.2.20",
     "newtype-ts": "0.3.5",
     "monocle-ts": "2.3.13",
-    "io-ts-types": "0.5.19"
+    "io-ts-types": "0.5.19",
+    "@openequella/io-ts-codec": "file:io-ts-codec"
   },
   "devDependencies": {
     "@types/jest": "27.5.2",
