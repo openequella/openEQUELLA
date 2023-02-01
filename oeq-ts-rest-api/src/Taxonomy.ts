@@ -17,8 +17,8 @@
  */
 
 import { PagedResultCodec } from '@openequella/io-ts-codec/Common';
+import { TermCodec } from '@openequella/io-ts-codec/Taxonomy';
 import * as t from 'io-ts';
-import { TermCodec } from '../io-ts-codec/dist/Taxonomy';
 import { GET } from './AxiosInstance';
 import { PagedResult } from './Common';
 import { validate } from './Utils';

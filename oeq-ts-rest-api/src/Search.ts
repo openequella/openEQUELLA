@@ -15,12 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { stringify } from 'query-string';
-import { Literal, Union } from 'runtypes';
 import {
   SearchResultCodec,
   SearchResultItemRawCodec,
-} from '../io-ts-codec/dist/Search';
+} from '@openequella/io-ts-codec/Search';
+import { stringify } from 'query-string';
+import { Literal, Union } from 'runtypes';
 import { GET, HEAD, POST } from './AxiosInstance';
 import type { i18nString, ItemStatus } from './Common';
 import { convertDateFields, validate } from './Utils';
