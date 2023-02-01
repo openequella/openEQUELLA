@@ -19,12 +19,13 @@
     "noUnusedLocals": true,
     "baseUrl": ".",
     "paths": {
-      "~*": ["./entrypoint/*", "./tsrc/*"]
+      "~*": ["./entrypoint/*", "./tsrc/*"],
+      "fp-ts/*": ["node_modules/fp-ts/*"] // This helps TSC resolve fp-ts correctly.
     }
   },
   "include": [
     "tsrc/**/*",
-    "__test__/**/*",
+    "__tests__/**/*",
     "__stories__/**/*",
     "__mocks__/**/*"
   ],
