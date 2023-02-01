@@ -24,4 +24,7 @@ module.exports = {
   coverageDirectory: 'coverage',
   preset: 'ts-jest',
   testEnvironment: 'node',
+  moduleNameMapper: {
+    '^gen/(.+)$': '<rootDir>/src/gen/$1',
+  },
 };
