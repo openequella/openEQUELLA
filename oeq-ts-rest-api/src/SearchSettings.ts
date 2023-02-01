@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SettingsCodec } from '@openequella/io-ts-codec/SearchSettings';
 import { Literal, Union } from 'runtypes';
+import { SettingsCodec } from 'gen/SearchSettings';
 import { GET, PUT } from './AxiosInstance';
 import type { SortOrder } from './Search';
 import { validate } from './Utils';

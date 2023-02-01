@@ -18,7 +18,7 @@
 import {
   MimeTypeEntryCodec,
   MimeTypeViewerConfigurationCodec,
-} from '@openequella/io-ts-codec/MimeType';
+} from 'gen/MimeType';
 import * as t from 'io-ts';
 import { GET } from './AxiosInstance';
 import { validate } from './Utils';

@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ErrorResponseCodec } from '@openequella/io-ts-codec/Errors';
 import { AxiosError } from 'axios';
+import { ErrorResponseCodec } from 'gen/Errors';
 import { validate } from './Utils';
 
 export interface ErrorResponse {

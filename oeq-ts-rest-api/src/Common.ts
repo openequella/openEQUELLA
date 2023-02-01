@@ -15,12 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { pipe } from 'fp-ts/function';
 import {
   BaseEntityCodec,
   BaseEntitySummaryCodec,
   PagedResultCodec,
-} from '@openequella/io-ts-codec/Common';
-import { pipe } from 'fp-ts/function';
+} from 'gen/Common';
 import * as t from 'io-ts';
 import { Literal, Union } from 'runtypes';
 import type { BaseEntitySecurity } from './Security';

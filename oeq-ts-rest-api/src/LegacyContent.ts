@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CurrentUserDetailsCodec } from '@openequella/io-ts-codec/LegacyContent';
+import { CurrentUserDetailsCodec } from 'gen/LegacyContent';
 import { GET } from './AxiosInstance';
 import { validate } from './Utils';
 

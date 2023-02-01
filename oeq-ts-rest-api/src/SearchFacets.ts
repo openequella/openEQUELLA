@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SearchFacetsResultCodec } from '@openequella/io-ts-codec/SearchFacets';
+import { SearchFacetsResultCodec } from 'gen/SearchFacets';
 import { GET } from './AxiosInstance';
 import type { UuidString } from './Common';
 import type { Must } from './Search';

@@ -15,10 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  FavouriteItemCodec,
-  FavouriteSearchModelCodec,
-} from '@openequella/io-ts-codec/Favourite';
+import { FavouriteItemCodec, FavouriteSearchModelCodec } from 'gen/Favourite';
 import { DELETE, POST } from './AxiosInstance';
 import { validate } from './Utils';
 

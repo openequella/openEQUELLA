@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AdvancedSearchDefinitionCodec } from '@openequella/io-ts-codec/AdvancedSearch';
-import { BaseEntitySummaryCodec } from '@openequella/io-ts-codec/Common';
+import { AdvancedSearchDefinitionCodec } from 'gen/AdvancedSearch';
+import { BaseEntitySummaryCodec } from 'gen/Common';
 import * as t from 'io-ts';
 import { GET } from './AxiosInstance';
 import type { BaseEntitySummary } from './Common';

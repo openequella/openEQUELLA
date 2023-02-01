@@ -5,9 +5,7 @@
   "license": "Apache-2.0",
   "main": "index.js",
   "scripts": {
-    "gen": "ts-node src/index.ts --source ../src --dest ../io-ts-codec/src  && eslint --fix ../io-ts-codec/src",
-    "bundle": "cd ../io-ts-codec && npm ci && npm run build",
-    "build": "npm run gen && npm run bundle"
+    "gen": "ts-node src/index.ts --source ../src --dest ../src/gen  && eslint --fix ../src"
   },
   "devDependencies": {
     "@types/node": "18.11.13",
