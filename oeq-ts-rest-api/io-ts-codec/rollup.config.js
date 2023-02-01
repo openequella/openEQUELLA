@@ -18,15 +18,13 @@
 import typescript from 'rollup-plugin-typescript2';
 import { folderInput } from 'rollup-plugin-folder-input';
 
+const output = ['es', 'cjs'].map((format) => ({
+  dir: `dist/${format}`,
+  format,
+  exports: 'named',
+}));
 export default {
   input: ['src/*.ts'],
-  output: [
-    {
-      dir: 'dist',
-      format: 'es',
-      exports: 'named',
-      sourcemap: true,
-    },
-  ],
+  output,
   plugins: [folderInput(), typescript()],
 };

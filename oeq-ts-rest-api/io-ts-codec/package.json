@@ -7,12 +7,13 @@
   ],
   "exports": {
     "./*": {
-      "import": "./dist/*.js"
+      "import": "./dist/es/*.js",
+      "require": "./dist/cjs/*.js"
     }
   },
   "typesVersions": {
     "*": {
-      "*": ["dist/*.d.ts"]
+      "*": ["dist/es/*.d.ts"]
     }
   },
   "scripts": {
