@@ -19,7 +19,8 @@
     "build": "rollup --config --bundleConfigAsCjs",
     "test": "jest --no-cache",
     "lint": "eslint \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
-    "format": "eslint --fix \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\""
+    "format": "eslint --fix \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
+    "clean": "rm -rf node_modules/ src/gen dist"
   },
   "peerDependencies": {},
   "prettier": {
