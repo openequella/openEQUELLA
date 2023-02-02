@@ -35,8 +35,8 @@ import { pfTernary } from './utils';
 
 const HEADER =
   "/** This file is created by 'io-ts-gen' so please do not modify it. **/";
-const IOTS_IMPORT = "import * as t from 'io-ts';";
-const IOTSTYPE_IMPORT = "import * as td from 'io-ts-types';\n"; // This one is the last import so add a newline character.
+const IO_TS_IMPORT = "import * as t from 'io-ts';";
+const IO_TSTYPE_IMPORT = "import * as td from 'io-ts-types';\n"; // This one is the last import so add a newline character.
 
 const ArrayRegex = /^(.+)(\[])+$/;
 const RecordRegex = /^Record<(.+), (.+)>$/;
@@ -47,7 +47,13 @@ const UnionRegex = /^\|?\s?(.+\n?\s+\|\s)+(.+)$/;
 const TupleRegex = /^\[(.+)]$/;
 
 export interface CodecDefinition {
+  /**
+   * File where the Codec will be written to.
+   */
   targetFile: string;
+  /**
+   * The string representation of the Codec.
+   */
   content: string;
 }
 
@@ -96,8 +102,8 @@ const getTypeReference = (
         )
       );
     case type === 'Date':
-      // 'td' is the namespace used in the import of 'io-ts-types'.
-      return gen.customCombinator('td.date', 'td.date');
+      // 'td' is the namespace of the import of 'io-ts-types'.
+      return gen.customCombinator('Date', 'td.date');
     case FunctionRegex.test(type):
       return gen.functionType;
     case IntLiteralRegex.test(type):
@@ -179,11 +185,8 @@ const generateProperties = (
   props: Prop[],
   typeArguments?: string[]
 ): gen.Property[] =>
-  pipe(
-    props,
-    A.map((p) =>
-      gen.property(p.name, getTypeReference(p, typeArguments), p.optional)
-    )
+  props.map((p) =>
+    gen.property(p.name, getTypeReference(p, typeArguments), p.optional)
   );
 
 // Return a list of io-ts-codegen Identifier for the supplied list of Interface's name.
@@ -198,7 +201,7 @@ const generateImports: (imports: Import[]) => string[] = flow(
   )
 );
 
-// Use io-ts-codegen to build an interfact that does not take type arguments.
+// Use io-ts-codegen to build an interface that does not take type arguments.
 const buildNormalInterface = ({
   name,
   properties,
@@ -217,8 +220,8 @@ const buildNormalInterface = ({
 };
 
 // is-ts-codegen does not have any support out-of-box for interfaces that takes type arguments.
-// A codec for such a function is represented by a function. As a result, we generate a string
-// to representation the function and then put the string representation in a customCombinator.
+// A codec for such an interface is represented by a function. As a result, we generate a string
+// to represent the function and then put the string representation in a customCombinator.
 const buildGenericTypeInterface = ({
   name,
   properties,
@@ -255,7 +258,7 @@ const buildCodecForInterface: (
   interfaceDefinition: Interface
 ) => gen.TypeDeclaration = flow(
   pfTernary(
-    ({ typeArguments }) => A.size(typeArguments) > 0,
+    ({ typeArguments }) => A.isNonEmpty(typeArguments),
     buildGenericTypeInterface,
     buildNormalInterface
   )
@@ -267,8 +270,8 @@ const buildCodecForTypeAlias = ({
 }: TypeAlias): gen.TypeDeclaration =>
   gen.typeDeclaration(`${name}Codec`, plainTypeReference(referencedType), true);
 
-// Given a list of sorted TypeDeclaration, return a list of string representing runtime type.
-// If recursive type is used in a TypeDeclaration, its static type representation is also added.
+// Given a list of sorted TypeDeclaration, return a list of strings representing their runtime types.
+// If recursive type is found in the TypeDeclaration, its static type representation is also added.
 const convertTypeDeclarationToString = (
   sorted: (gen.TypeDeclaration | gen.CustomTypeDeclaration)[]
 ): string[] => {
@@ -297,15 +300,14 @@ export const generate = ({
   typeAliases,
 }: FileDefinition): CodecDefinition =>
   pipe(
-    typeAliases,
-    A.map(buildCodecForTypeAlias),
+    typeAliases.map(buildCodecForTypeAlias),
     A.concat(interfaces.map(buildCodecForInterface)),
     flow(gen.sort, convertTypeDeclarationToString),
     (typeDeclarations) => [
       HEADER,
       ...generateImports(imports),
-      IOTS_IMPORT,
-      IOTSTYPE_IMPORT,
+      IO_TS_IMPORT,
+      IO_TSTYPE_IMPORT,
       ...typeDeclarations,
     ],
     A.intercalate(S.Monoid)('\n'),

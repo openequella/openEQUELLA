@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "esModuleInterop": true,
-    "module": "commonjs",
+    "module": "ES6",
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
@@ -9,6 +9,7 @@
     "outDir": "dist",
     "rootDir": "src",
     "strict": true,
-    "target": "ES2017",
+    "target": "ES6",
+    "moduleResolution": "node"
   }
 }
