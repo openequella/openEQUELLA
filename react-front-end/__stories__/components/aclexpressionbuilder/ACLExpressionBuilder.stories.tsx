@@ -24,7 +24,11 @@ import {
   resolveGroups,
 } from "../../../__mocks__/GroupModule.mock";
 import { findRoleById, listRoles } from "../../../__mocks__/RoleModule.mock";
-import { findUserById, listUsers } from "../../../__mocks__/UserModule.mock";
+import {
+  findUserById,
+  getTokens,
+  listUsers,
+} from "../../../__mocks__/UserModule.mock";
 import ACLExpressionBuilder, {
   ACLExpressionBuilderProps,
 } from "../../../tsrc/components/aclexpressionbuilder/ACLExpressionBuilder";
@@ -48,6 +52,7 @@ Basic.args = {
     resolveGroupProvider: findGroupById,
     resolveRoleProvider: findRoleById,
   },
+  ssoTokensProvider: getTokens,
 };
 
 export const EmptyTreeView: Story<ACLExpressionBuilderProps> = (args) => (
@@ -56,4 +61,12 @@ export const EmptyTreeView: Story<ACLExpressionBuilderProps> = (args) => (
 EmptyTreeView.args = {
   ...Basic.args,
   aclExpression: undefined,
+};
+
+export const ErrorSSOTokensView: Story<ACLExpressionBuilderProps> = (args) => (
+  <ACLExpressionBuilder {...args} />
+);
+ErrorSSOTokensView.args = {
+  ...Basic.args,
+  ssoTokensProvider: () => Promise.reject(new Error("Failed to get tokens")),
 };

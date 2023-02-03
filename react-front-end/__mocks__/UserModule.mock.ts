@@ -76,6 +76,8 @@ export const getCurrentUserMock: OEQ.LegacyContent.CurrentUserDetails = {
   scrapbookEnabled: true,
 };
 
+export const tokens: string[] = ["moodle", "token1", "token2"];
+
 /**
  * Helper function to inject into component for user retrieval by an array of ids.
  *
@@ -106,3 +108,8 @@ export const listUsers = async (
     (u: OEQ.UserQuery.UserDetails, q) => u.username.search(q) === 0,
     query
   );
+
+/**
+ * Helper function to inject into component for token retrieval.
+ */
+export const getTokens = async (): Promise<string[]> => Promise.resolve(tokens);

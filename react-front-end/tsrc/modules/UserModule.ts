@@ -115,6 +115,12 @@ export const resolveUsers = (
 export const findUserById = (userId: string) =>
   findEntityById(userId, resolveUsers);
 
+/**
+ * Get all available tokens (shared secrets / sso).
+ */
+export const getTokens = (): Promise<string[]> =>
+  OEQ.UserQuery.tokens(API_BASE_URL);
+
 export type UserCache = ReadonlyRecord<string, OEQ.UserQuery.UserDetails>;
 
 /**

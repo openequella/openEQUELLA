@@ -167,6 +167,10 @@ export const ssoMoodleRecipient = {
 };
 export const ssoMoodleRecipientRawExpression = "T:moodle";
 export const ssoMoodleRecipientHumanReadableExpression = "Token ID is moodle";
+export const ssoMoodleRecipientWithName = {
+  ...ssoMoodleRecipient,
+  name: ssoMoodleRecipientHumanReadableExpression,
+};
 
 // helper function to generate an IP recipient
 export const ipRecipient = (ip: string) => ({

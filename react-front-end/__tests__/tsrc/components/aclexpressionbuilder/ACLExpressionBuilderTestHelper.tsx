@@ -24,7 +24,11 @@ import {
   findGroupById,
 } from "../../../../__mocks__/GroupModule.mock";
 import { findRoleById, listRoles } from "../../../../__mocks__/RoleModule.mock";
-import { findUserById, listUsers } from "../../../../__mocks__/UserModule.mock";
+import {
+  findUserById,
+  getTokens,
+  listUsers,
+} from "../../../../__mocks__/UserModule.mock";
 import ACLExpressionBuilder, {
   ACLExpressionBuilderProps,
 } from "../../../../tsrc/components/aclexpressionbuilder/ACLExpressionBuilder";
@@ -45,6 +49,7 @@ export const defaultACLExpressionBuilderProps: ACLExpressionBuilderProps = {
     resolveGroupProvider: findGroupById,
     resolveRoleProvider: findRoleById,
   },
+  ssoTokensProvider: getTokens,
 };
 
 // Helper to render ACLExpressionBuilder and wait for component under test
