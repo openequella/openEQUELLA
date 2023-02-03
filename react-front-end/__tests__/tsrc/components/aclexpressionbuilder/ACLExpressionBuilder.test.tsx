@@ -34,6 +34,7 @@ import {
   role200RecipientWithName,
   roleGuestRecipientWithName,
   roleLoggedRecipientWithName,
+  ssoMoodleRecipientWithName,
   user100RecipientWithName,
   user200RecipientWithName,
   user300RecipientWithName,
@@ -47,6 +48,10 @@ import {
 } from "../../../../tsrc/modules/ACLExpressionModule";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import { ignoreId } from "../../modules/ACLExpressionModuleTestHelper";
+import { selectOption } from "../../MuiTestHelpers";
+import { searchGroup } from "../securityentitysearch/GroupSearchTestHelper";
+import { searchRole } from "../securityentitysearch/RoleSearchTestHelper";
+import { searchUser } from "../securityentitysearch/UserSearchTestHelpler";
 import { typeInIpInput, typeInNetmaskInput } from "../IPv4CIDRInputTestHelper";
 import {
   defaultACLExpressionBuilderProps,
@@ -54,12 +59,9 @@ import {
   selectAndFinished,
   selectRecipientType,
 } from "./ACLExpressionBuilderTestHelper";
-import { searchGroup } from "../securityentitysearch/GroupSearchTestHelper";
-import { searchRole } from "../securityentitysearch/RoleSearchTestHelper";
-import { searchUser } from "../securityentitysearch/UserSearchTestHelpler";
 import {
-  clickDeleteButtonForRecipient,
   clickDeleteButtonForOperatorNode,
+  clickDeleteButtonForRecipient,
   selectOperatorForNode,
   selectOperatorNode,
 } from "./ACLExpressionTreeTestHelper";
@@ -82,6 +84,7 @@ const {
     logged: loggedType,
     guest: guestType,
     ip: ipType,
+    sso: ssoType,
   },
 } = languageStrings.aclExpressionBuilder;
 const {
@@ -595,5 +598,66 @@ describe("<ACLExpressionBuilder/>", () => {
     const result = onFinish.mock.lastCall[0];
 
     expect(result).toEqual(expectedResult);
+  });
+
+  it("should be able to add a SSO token ID to the expression", async () => {
+    // TODO: use const ID from IP MR
+    const expectedResult = {
+      id: "default-acl-expression-id",
+      operator: "OR",
+      children: [],
+      recipients: [ssoMoodleRecipientWithName],
+    };
+    const onFinish = jest.fn();
+    const renderResult = renderACLExpressionBuilder({
+      ...defaultACLExpressionBuilderProps,
+      onFinish: onFinish,
+    });
+    const { findByText, getByText, container } = renderResult;
+
+    // click other panel
+    await userEvent.click(getByText(otherTab));
+    // select a recipient type
+    await selectRecipientType(container, ssoType);
+    // wait for getting tokens from API
+    await findByText(ssoType);
+    // select a sso token
+    await selectOption(
+      container,
+      "#sso-select",
+      ssoMoodleRecipientWithName.expression
+    );
+    // click add button
+    await userEvent.click(getByText(addLabel));
+    // expand root node to let recipients displayed in UI
+    await selectOperatorNode(container, DEFAULT_ACL_EXPRESSION_ID);
+    // wait for adding action
+    await findByText(ssoMoodleRecipientWithName.name);
+
+    // click ok button to check the result
+    await userEvent.click(getByText(okLabel));
+
+    const result = onFinish.mock.lastCall[0];
+    expect(result).toEqual(expectedResult);
+  });
+
+  it("should be able to display an error message if it failed to get SSO tokens", async () => {
+    const error = new Error("Failed to get tokens");
+    const renderResult = renderACLExpressionBuilder({
+      ...defaultACLExpressionBuilderProps,
+      ssoTokensProvider: () => Promise.reject(error),
+    });
+    const { findByText, getByText, container } = renderResult;
+
+    // click other panel
+    await userEvent.click(getByText(otherTab));
+    // select a recipient type
+    await selectRecipientType(container, ssoType);
+    // wait for getting tokens from API
+    await findByText(ssoType);
+    // get error message
+    const errorMessage = await getByText(`Failed to get SSO tokens: ${error}`);
+
+    expect(errorMessage).toBeInTheDocument();
   });
 });

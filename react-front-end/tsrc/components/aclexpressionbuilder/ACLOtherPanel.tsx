@@ -50,6 +50,7 @@ import { findRoleById } from "../../modules/RoleModule";
 import { findUserById } from "../../modules/UserModule";
 import { languageStrings } from "../../util/langstrings";
 import IPv4CIDRInput from "../IPv4CIDRInput";
+import ACLSSOMenu from "./ACLSSOMenu";
 
 const {
   aclExpressionBuilder: {
@@ -109,6 +110,10 @@ export interface ACLOtherPanelProps {
    * An object includes functions used to replace the default `findGroupById`, `findUserById`, `findRoleById` resolvers.
    */
   aclEntityResolvers?: ACLEntityResolvers;
+  /**
+   * Function to provide a list of SSO tokens.
+   */
+  ssoTokensProvider?: () => Promise<string[]>;
 }
 
 /**
@@ -122,6 +127,7 @@ const ACLOtherPanel = ({
     resolveUserProvider: findUserById,
     resolveRoleProvider: findRoleById,
   },
+  ssoTokensProvider,
 }: ACLOtherPanelProps) => {
   const [activeACLType, setActiveACLType] = useState<OtherACLType>("Everyone");
 
@@ -135,7 +141,7 @@ const ACLOtherPanel = ({
 
   const [ipAddress, setIPAddress] = useState("");
 
-  const [ssoIdentifier, setSSOIdentifier] = useState("");
+  const [ssoToken, setSSOToken] = useState("");
 
   const handleAclTypeChanged = (event: SelectChangeEvent<OtherACLType>) =>
     setActiveACLType(OtherACLTypesUnion.check(event.target.value));
@@ -152,8 +158,7 @@ const ACLOtherPanel = ({
       (owner) => ACLRecipientTypes.Owner,
       (logged) => `${ACLRecipientTypes.Role}:${LOGGED_IN_USER_ROLE_ID}`,
       (guest) => `${ACLRecipientTypes.Role}:${GUEST_USER_ROLE_ID}`,
-      (sso) =>
-        ssoIdentifier ? `${ACLRecipientTypes.Sso}:${ssoIdentifier}` : undefined,
+      (sso) => (ssoToken ? `${ACLRecipientTypes.Sso}:${ssoToken}` : undefined),
       (ip) => (ipAddress ? `${ACLRecipientTypes.Ip}:${ipAddress}` : undefined),
       (referrer) =>
         referrer ? `${ACLRecipientTypes.Refer}:${getReferrer()}` : undefined
@@ -237,13 +242,10 @@ const ACLOtherPanel = ({
         (Guest) => <OtherControl title={guestDesc} />,
         (Sso) => (
           <OtherControl title={ssoDesc}>
-            <Select
-              value={ssoIdentifier}
-              onChange={(event) => setSSOIdentifier(event.target.value)}
-              displayEmpty
-            >
-              <MenuItem value="Moodle">Moodle</MenuItem>
-            </Select>
+            <ACLSSOMenu
+              getSSOTokens={ssoTokensProvider}
+              onChange={setSSOToken}
+            />
           </OtherControl>
         ),
         (Ip) => (
@@ -285,7 +287,7 @@ const ACLOtherPanel = ({
         )
       )
     );
-  }, [activeACLType, referrerDetails, ssoIdentifier]);
+  }, [activeACLType, ssoTokensProvider, referrerDetails]);
 
   return (
     <Grid container direction="column" spacing={1}>

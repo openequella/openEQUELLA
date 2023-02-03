@@ -127,6 +127,10 @@ export interface ACLExpressionBuilderProps {
    * Object includes functions used to replace default acl entity resolvers for `ACLOtherPanel`
    */
   aclEntityResolversProvider?: ACLEntityResolvers;
+  /**
+   * Function used to replace default `ssoTokensProvider` for `ACLOtherPanel`.
+   */
+  ssoTokensProvider?: () => Promise<string[]>;
 }
 
 export const DEFAULT_ACL_EXPRESSION_ID = "default-acl-expression-id";
@@ -144,6 +148,7 @@ const ACLExpressionBuilder = ({
   searchRoleProvider,
   resolveGroupsProvider,
   aclEntityResolversProvider,
+  ssoTokensProvider,
 }: ACLExpressionBuilderProps): JSX.Element => {
   const [currentACLExpression, setCurrentACLExpression] =
     useState<ACLExpression>(
@@ -270,6 +275,7 @@ const ACLExpressionBuilder = ({
                 <ACLOtherPanel
                   onAdd={handleACLOtherPanelAdded}
                   aclEntityResolvers={aclEntityResolversProvider}
+                  ssoTokensProvider={ssoTokensProvider}
                 />
               </TabPanel>
             </Paper>
