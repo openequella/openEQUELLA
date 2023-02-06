@@ -85,6 +85,7 @@ public class MessageReceiver implements Runnable {
       }
 
       lastConnectionAttempt = System.currentTimeMillis();
+      LOGGER.info("New message receiver starting targeting " + host + ":" + port);
       try (Socket socket = new Socket(host, port)) {
         checkLastConnected(lastConnected);
         lastConnected = System.currentTimeMillis();
