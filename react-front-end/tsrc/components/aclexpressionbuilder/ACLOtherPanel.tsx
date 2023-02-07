@@ -18,15 +18,11 @@
 import {
   Button,
   FormControl,
-  FormControlLabel,
   Grid,
   InputLabel,
   MenuItem,
-  Radio,
-  RadioGroup,
   Select,
   SelectChangeEvent,
-  TextField,
   Typography,
 } from "@mui/material";
 import * as E from "fp-ts/Either";
@@ -34,7 +30,7 @@ import { flow, identity, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
-import { ChangeEvent, ReactNode, useCallback, useState } from "react";
+import { ReactNode, useCallback, useState } from "react";
 import { Literal, Static, Union } from "runtypes";
 import { ACLEntityResolvers } from "../../modules/ACLEntityModule";
 import {
@@ -50,6 +46,7 @@ import { findRoleById } from "../../modules/RoleModule";
 import { findUserById } from "../../modules/UserModule";
 import { languageStrings } from "../../util/langstrings";
 import IPv4CIDRInput from "../IPv4CIDRInput";
+import ACLHTTPReferrerInput from "./ACLHTTPReferrerInput";
 import ACLSSOMenu from "./ACLSSOMenu";
 
 const {
@@ -63,8 +60,6 @@ const {
       sso: ssoDesc,
       ip: ipDesc,
       referrer: referrerDesc,
-      exactReferrer: exactReferrerDesc,
-      containReferrer: containReferrerDesc,
     },
     otherACLTypes: {
       everyone: everyoneLabel,
@@ -91,14 +86,6 @@ const OtherACLTypesUnion = Union(
   Literal("Referrer")
 );
 type OtherACLType = Static<typeof OtherACLTypesUnion>;
-
-/**
- * Referrer Type.
- * Contain: Match referrers containing this value.
- * Exact: Only match this exact referrer.
- */
-const ReferrerTypesUnion = Union(Literal("Contain"), Literal("Exact"));
-type ReferrerType = Static<typeof ReferrerTypesUnion>;
 
 export interface ACLOtherPanelProps {
   /**
@@ -131,13 +118,7 @@ const ACLOtherPanel = ({
 }: ACLOtherPanelProps) => {
   const [activeACLType, setActiveACLType] = useState<OtherACLType>("Everyone");
 
-  const [referrerDetails, setReferrerDetails] = useState<{
-    type: ReferrerType;
-    value: string;
-  }>({
-    type: "Contain",
-    value: "",
-  });
+  const [httpReferrer, setHTTPReferrer] = useState("");
 
   const [ipAddress, setIPAddress] = useState("");
 
@@ -147,11 +128,6 @@ const ACLOtherPanel = ({
     setActiveACLType(OtherACLTypesUnion.check(event.target.value));
 
   const handleAddButtonClicked = async () => {
-    const getReferrer = () => {
-      const { type, value } = referrerDetails;
-      return type === "Exact" ? value : `*${value}*`;
-    };
-
     // generate raw ACL expression string for corresponding recipient type
     const generateExpression = OtherACLTypesUnion.match(
       (everyone) => ACLRecipientTypes.Everyone,
@@ -161,7 +137,7 @@ const ACLOtherPanel = ({
       (sso) => (ssoToken ? `${ACLRecipientTypes.Sso}:${ssoToken}` : undefined),
       (ip) => (ipAddress ? `${ACLRecipientTypes.Ip}:${ipAddress}` : undefined),
       (referrer) =>
-        referrer ? `${ACLRecipientTypes.Refer}:${getReferrer()}` : undefined
+        httpReferrer ? `${ACLRecipientTypes.Refer}:${httpReferrer}` : undefined
     );
 
     // create an ACLRecipient object
@@ -224,70 +200,37 @@ const ACLOtherPanel = ({
   /**
    * TODO: Get all SSO selects from API
    * */
-  const buildControls = useCallback(() => {
-    const handleReferrerTypeChanged = (
-      event: ChangeEvent<{ value: unknown }>
-    ) =>
-      setReferrerDetails({
-        ...referrerDetails,
-        type: ReferrerTypesUnion.check(event.target.value),
-      });
-
-    return pipe(
-      activeACLType,
-      OtherACLTypesUnion.match(
-        (Everyone) => <OtherControl title={everyoneDesc} />,
-        (Owner) => <OtherControl title={ownerDesc} />,
-        (Logged) => <OtherControl title={loggedDesc} />,
-        (Guest) => <OtherControl title={guestDesc} />,
-        (Sso) => (
-          <OtherControl title={ssoDesc}>
-            <ACLSSOMenu
-              getSSOTokens={ssoTokensProvider}
-              onChange={setSSOToken}
-            />
-          </OtherControl>
-        ),
-        (Ip) => (
-          <OtherControl title={ipDesc}>
-            <IPv4CIDRInput onChange={setIPAddress} />
-          </OtherControl>
-        ),
-        (Referrer) => (
-          <OtherControl title={referrerDesc}>
-            <TextField
-              autoFocus
-              value={referrerDetails.value}
-              onChange={(event) =>
-                setReferrerDetails({
-                  ...referrerDetails,
-                  value: event.target.value,
-                })
-              }
-              name="referrer"
-            />
-            <RadioGroup
-              name="referrer"
-              value={referrerDetails.type}
-              onChange={handleReferrerTypeChanged}
-            >
-              {ReferrerTypesUnion.alternatives.map((referrerType) => (
-                <FormControlLabel
-                  key={referrerType.value}
-                  value={referrerType.value}
-                  control={<Radio />}
-                  label={ReferrerTypesUnion.match(
-                    (Contain) => containReferrerDesc,
-                    (Exact) => exactReferrerDesc
-                  )(referrerType.value)}
-                />
-              ))}
-            </RadioGroup>
-          </OtherControl>
+  const buildControls = useCallback(
+    () =>
+      pipe(
+        activeACLType,
+        OtherACLTypesUnion.match(
+          (Everyone) => <OtherControl title={everyoneDesc} />,
+          (Owner) => <OtherControl title={ownerDesc} />,
+          (Logged) => <OtherControl title={loggedDesc} />,
+          (Guest) => <OtherControl title={guestDesc} />,
+          (Sso) => (
+            <OtherControl title={ssoDesc}>
+              <ACLSSOMenu
+                getSSOTokens={ssoTokensProvider}
+                onChange={setSSOToken}
+              />
+            </OtherControl>
+          ),
+          (Ip) => (
+            <OtherControl title={ipDesc}>
+              <IPv4CIDRInput onChange={setIPAddress} />
+            </OtherControl>
+          ),
+          (Referrer) => (
+            <OtherControl title={referrerDesc}>
+              <ACLHTTPReferrerInput onChange={setHTTPReferrer} />
+            </OtherControl>
+          )
         )
-      )
-    );
-  }, [activeACLType, ssoTokensProvider, referrerDetails]);
+      ),
+    [activeACLType, ssoTokensProvider]
+  );
 
   return (
     <Grid container direction="column" spacing={1}>

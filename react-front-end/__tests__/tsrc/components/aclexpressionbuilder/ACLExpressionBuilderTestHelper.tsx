@@ -19,9 +19,9 @@ import { render, RenderResult } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import {
-  resolveGroups,
-  listGroups,
   findGroupById,
+  listGroups,
+  resolveGroups,
 } from "../../../../__mocks__/GroupModule.mock";
 import { findRoleById, listRoles } from "../../../../__mocks__/RoleModule.mock";
 import {
@@ -32,11 +32,21 @@ import {
 import ACLExpressionBuilder, {
   ACLExpressionBuilderProps,
 } from "../../../../tsrc/components/aclexpressionbuilder/ACLExpressionBuilder";
+import { ReferrerType } from "../../../../tsrc/components/aclexpressionbuilder/ACLHTTPReferrerInput";
 import type { ACLExpression } from "../../../../tsrc/modules/ACLExpressionModule";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import { selectOption } from "../../MuiTestHelpers";
 
 const { select: selectLabel, ok: okLabel } = languageStrings.common.action;
+
+const {
+  aclExpressionBuilder: {
+    otherACLDescriptions: {
+      exactReferrer: exactReferrerDesc,
+      containReferrer: containReferrerDesc,
+    },
+  },
+} = languageStrings;
 
 export const defaultACLExpressionBuilderProps: ACLExpressionBuilderProps = {
   onFinish: jest.fn(),
@@ -87,3 +97,15 @@ export const selectRecipientType = async (
   container: HTMLElement,
   recipientLabel: string
 ) => selectOption(container, `#recipient-type-select`, recipientLabel);
+
+/**
+ * Helper function to mock select a referrer type in ACLHTTPReferrerInput.
+ */
+export const selectReferrerType = async (
+  { getByText }: RenderResult,
+  type: ReferrerType
+) => {
+  const text = type === "Contain" ? containReferrerDesc : exactReferrerDesc;
+  const radio = getByText(text);
+  await userEvent.click(radio);
+};

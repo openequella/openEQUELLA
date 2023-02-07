@@ -30,6 +30,7 @@ import {
   group400RecipientWithName,
   ipRecipientWithName,
   ownerRecipientWithName,
+  referRecipientWithName,
   role100RecipientWithName,
   role200RecipientWithName,
   roleGuestRecipientWithName,
@@ -41,6 +42,7 @@ import {
   user400RecipientWithName,
 } from "../../../../__mocks__/ACLRecipientModule.mock";
 import { DEFAULT_ACL_EXPRESSION_ID } from "../../../../tsrc/components/aclexpressionbuilder/ACLExpressionBuilder";
+import { ReferrerType } from "../../../../tsrc/components/aclexpressionbuilder/ACLHTTPReferrerInput";
 import {
   ACLExpression,
   ACLOperatorType,
@@ -58,6 +60,7 @@ import {
   renderACLExpressionBuilder,
   selectAndFinished,
   selectRecipientType,
+  selectReferrerType,
 } from "./ACLExpressionBuilderTestHelper";
 import {
   clickDeleteButtonForOperatorNode,
@@ -84,8 +87,10 @@ const {
     logged: loggedType,
     guest: guestType,
     ip: ipType,
+    referrer: referrerType,
     sso: ssoType,
   },
+  otherACLDescriptions: { referrerLabel },
 } = languageStrings.aclExpressionBuilder;
 const {
   users: usersRadioLabel,
@@ -558,106 +563,152 @@ describe("<ACLExpressionBuilder/>", () => {
         expect(result).toEqual(expectedResult);
       }
     );
-  });
 
-  it("should be able to add an IPv4 CIDR specifier to the expression", async () => {
-    const ipRecipient = ipRecipientWithName("192.168.1.1/24");
-    const expectedResult = {
-      id: DEFAULT_ACL_EXPRESSION_ID,
-      operator: "OR",
-      recipients: [ipRecipient],
-      children: [],
-    };
-    const onFinish = jest.fn();
-    const renderResult = renderACLExpressionBuilder({
-      ...defaultACLExpressionBuilderProps,
-      onFinish: onFinish,
+    it("should be able to add an IPv4 CIDR specifier to the expression", async () => {
+      const ipRecipient = ipRecipientWithName("192.168.1.1/24");
+      const expectedResult = {
+        id: DEFAULT_ACL_EXPRESSION_ID,
+        operator: "OR",
+        recipients: [ipRecipient],
+        children: [],
+      };
+      const onFinish = jest.fn();
+      const renderResult = renderACLExpressionBuilder({
+        ...defaultACLExpressionBuilderProps,
+        onFinish: onFinish,
+      });
+      const { findByText, getByText, container } = renderResult;
+
+      // click other panel
+      await userEvent.click(getByText(otherTab));
+      // select ip recipient type
+      await selectRecipientType(container, ipType);
+      // input an ip address
+      await typeInIpInput(container, "192", 0);
+      await typeInIpInput(container, "168", 1);
+      await typeInIpInput(container, "1", 2);
+      await typeInIpInput(container, "1", 3);
+      await typeInNetmaskInput(container, "24");
+
+      // click add button
+      await userEvent.click(getByText(addLabel));
+      // expand root node to let recipient displayed in UI
+      await selectOperatorNode(container, DEFAULT_ACL_EXPRESSION_ID);
+      // wait for adding action
+      await findByText(ipRecipient.name);
+
+      // click ok button to check the result
+      await userEvent.click(getByText(okLabel));
+      const result = onFinish.mock.lastCall[0];
+
+      expect(result).toEqual(expectedResult);
     });
-    const { findByText, getByText, container } = renderResult;
 
-    // click other panel
-    await userEvent.click(getByText(otherTab));
-    // select ip recipient type
-    await selectRecipientType(container, ipType);
-    // input an ip address
-    await typeInIpInput(container, "192", 0);
-    await typeInIpInput(container, "168", 1);
-    await typeInIpInput(container, "1", 2);
-    await typeInIpInput(container, "1", 3);
-    await typeInNetmaskInput(container, "24");
+    it.each<[string, ReferrerType, string]>([
+      ["contain", "Contain", "*edalex.com*"],
+      ["exact", "Exact", "edalex.com"],
+    ])(
+      "should be able to add an HTTP Referrer (%s type) to the expression",
+      async (_, httpReferrerType: ReferrerType, expectedReferrer) => {
+        const httpReferrerRecipient = referRecipientWithName(expectedReferrer);
+        const expectedResult = {
+          id: DEFAULT_ACL_EXPRESSION_ID,
+          operator: "OR",
+          recipients: [httpReferrerRecipient],
+          children: [],
+        };
+        const onFinish = jest.fn();
+        const renderResult = renderACLExpressionBuilder({
+          ...defaultACLExpressionBuilderProps,
+          onFinish: onFinish,
+        });
+        const { findByText, getByText, getByLabelText, container } =
+          renderResult;
 
-    // click add button
-    await userEvent.click(getByText(addLabel));
-    // expand root node to let recipient displayed in UI
-    await selectOperatorNode(container, DEFAULT_ACL_EXPRESSION_ID);
-    // wait for adding action
-    await findByText(ipRecipient.name);
+        // click other panel
+        await userEvent.click(getByText(otherTab));
+        // select http recipient type
+        await selectRecipientType(container, referrerType);
+        // input an referrer
+        await userEvent.type(getByLabelText(referrerLabel), "edalex.com");
+        // select http referrer type
+        await selectReferrerType(renderResult, httpReferrerType);
 
-    // click ok button to check the result
-    await userEvent.click(getByText(okLabel));
-    const result = onFinish.mock.lastCall[0];
+        // click add button
+        await userEvent.click(getByText(addLabel));
+        // expand root node to let recipient displayed in UI
+        await selectOperatorNode(container, DEFAULT_ACL_EXPRESSION_ID);
+        // wait for adding action
+        await findByText(httpReferrerRecipient.name);
 
-    expect(result).toEqual(expectedResult);
-  });
-
-  it("should be able to add a SSO token ID to the expression", async () => {
-    // TODO: use const ID from IP MR
-    const expectedResult = {
-      id: "default-acl-expression-id",
-      operator: "OR",
-      children: [],
-      recipients: [ssoMoodleRecipientWithName],
-    };
-    const onFinish = jest.fn();
-    const renderResult = renderACLExpressionBuilder({
-      ...defaultACLExpressionBuilderProps,
-      onFinish: onFinish,
-    });
-    const { findByText, getByText, container } = renderResult;
-
-    // click other panel
-    await userEvent.click(getByText(otherTab));
-    // select a recipient type
-    await selectRecipientType(container, ssoType);
-    // wait for getting tokens from API
-    await findByText(ssoType);
-    // select a sso token
-    await selectOption(
-      container,
-      "#sso-select",
-      ssoMoodleRecipientWithName.expression
+        // click ok button to check the result
+        await userEvent.click(getByText(okLabel));
+        const result = onFinish.mock.lastCall[0];
+        expect(result).toEqual(expectedResult);
+      }
     );
-    // click add button
-    await userEvent.click(getByText(addLabel));
-    // expand root node to let recipients displayed in UI
-    await selectOperatorNode(container, DEFAULT_ACL_EXPRESSION_ID);
-    // wait for adding action
-    await findByText(ssoMoodleRecipientWithName.name);
 
-    // click ok button to check the result
-    await userEvent.click(getByText(okLabel));
+    it("should be able to add a SSO token ID to the expression", async () => {
+      // TODO: use const ID from IP MR
+      const expectedResult = {
+        id: "default-acl-expression-id",
+        operator: "OR",
+        children: [],
+        recipients: [ssoMoodleRecipientWithName],
+      };
+      const onFinish = jest.fn();
+      const renderResult = renderACLExpressionBuilder({
+        ...defaultACLExpressionBuilderProps,
+        onFinish: onFinish,
+      });
+      const { findByText, getByText, container } = renderResult;
 
-    const result = onFinish.mock.lastCall[0];
-    expect(result).toEqual(expectedResult);
-  });
+      // click other panel
+      await userEvent.click(getByText(otherTab));
+      // select a recipient type
+      await selectRecipientType(container, ssoType);
+      // wait for getting tokens from API
+      await findByText(ssoType);
+      // select a sso token
+      await selectOption(
+        container,
+        "#sso-select",
+        ssoMoodleRecipientWithName.expression
+      );
+      // click add button
+      await userEvent.click(getByText(addLabel));
+      // expand root node to let recipients displayed in UI
+      await selectOperatorNode(container, DEFAULT_ACL_EXPRESSION_ID);
+      // wait for adding action
+      await findByText(ssoMoodleRecipientWithName.name);
 
-  it("should be able to display an error message if it failed to get SSO tokens", async () => {
-    const error = new Error("Failed to get tokens");
-    const renderResult = renderACLExpressionBuilder({
-      ...defaultACLExpressionBuilderProps,
-      ssoTokensProvider: () => Promise.reject(error),
+      // click ok button to check the result
+      await userEvent.click(getByText(okLabel));
+
+      const result = onFinish.mock.lastCall[0];
+      expect(result).toEqual(expectedResult);
     });
-    const { findByText, getByText, container } = renderResult;
 
-    // click other panel
-    await userEvent.click(getByText(otherTab));
-    // select a recipient type
-    await selectRecipientType(container, ssoType);
-    // wait for getting tokens from API
-    await findByText(ssoType);
-    // get error message
-    const errorMessage = await getByText(`Failed to get SSO tokens: ${error}`);
+    it("should be able to display an error message if it failed to get SSO tokens", async () => {
+      const error = new Error("Failed to get tokens");
+      const renderResult = renderACLExpressionBuilder({
+        ...defaultACLExpressionBuilderProps,
+        ssoTokensProvider: () => Promise.reject(error),
+      });
+      const { findByText, getByText, container } = renderResult;
 
-    expect(errorMessage).toBeInTheDocument();
+      // click other panel
+      await userEvent.click(getByText(otherTab));
+      // select a recipient type
+      await selectRecipientType(container, ssoType);
+      // wait for getting tokens from API
+      await findByText(ssoType);
+      // get error message
+      const errorMessage = await getByText(
+        `Failed to get SSO tokens: ${error}`
+      );
+
+      expect(errorMessage).toBeInTheDocument();
+    });
   });
 });

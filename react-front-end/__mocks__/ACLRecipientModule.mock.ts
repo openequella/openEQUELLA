@@ -190,3 +190,9 @@ export const referRecipient = (refer: string) => ({
   expression: refer,
   type: "F",
 });
+
+// helper function to generate a referrer recipient with name
+export const referRecipientWithName = (refer: string) => ({
+  ...referRecipient(refer),
+  name: `From ${refer}`,
+});
