@@ -85,6 +85,7 @@ public class AddShortcutUrlDialog
   @ViewFactory private FreemarkerFactory viewFactory;
   @Inject private ConfigurationService configService;
   @Inject private ReceiptService receiptService;
+  @Inject private ShortcutUrlsSettingsPrivilegeTreeProvider securityProvider;
 
   private JSCallable reloadParent;
 
@@ -112,6 +113,7 @@ public class AddShortcutUrlDialog
 
   @EventHandlerMethod
   public void addShortcutUrl(SectionInfo info) {
+    securityProvider.checkAuthorised();
     AddShortculUrlDialogModel model = getModel(info);
     Map<String, Label> errorList = model.getErrors();
     errorList.clear();

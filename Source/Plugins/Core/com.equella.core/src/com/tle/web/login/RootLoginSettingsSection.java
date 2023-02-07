@@ -282,6 +282,7 @@ public class RootLoginSettingsSection
 
   @EventHandlerMethod
   public void save(SectionInfo info) {
+    securityProvider.checkAuthorised();
     if (saveLoginSettings(info)) {
       receiptService.setReceipt(SAVE_RECEIPT_LABEL);
       getModel(info).setLoaded(false);
