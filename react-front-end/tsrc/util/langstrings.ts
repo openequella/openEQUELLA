@@ -156,6 +156,7 @@ export const languageStrings = {
       sso: "Single signed on with identifier",
       ip: "Add an IP Address",
       referrer: "Add a HTTP Referrer",
+      referrerLabel: "example.com",
       exactReferrer: "Only match this exact referrer",
       containReferrer: "Match referrers containing this value",
     },
