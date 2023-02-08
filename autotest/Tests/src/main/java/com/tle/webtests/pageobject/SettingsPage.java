@@ -8,6 +8,7 @@ import com.tle.webtests.pageobject.settings.ContentRestrictionsPage;
 import com.tle.webtests.pageobject.settings.CourseDefaultsPage;
 import com.tle.webtests.pageobject.settings.DateFormatSettingPage;
 import com.tle.webtests.pageobject.settings.DiagnosticsPage;
+import com.tle.webtests.pageobject.settings.GoogleApiSettingsPage;
 import com.tle.webtests.pageobject.settings.GoogleSettingsPage;
 import com.tle.webtests.pageobject.settings.HarvesterSkipDrmPage;
 import com.tle.webtests.pageobject.settings.LanguageSettingsPage;
@@ -89,6 +90,10 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
 
   public MimeSearchPage mimeSettings() {
     return clickSetting("MIME types", new MimeSearchPage(context));
+  }
+
+  public GoogleApiSettingsPage googleApiSettings() {
+    return clickSetting("Google API", new GoogleApiSettingsPage(context));
   }
 
   public GoogleSettingsPage googleSettings() {
