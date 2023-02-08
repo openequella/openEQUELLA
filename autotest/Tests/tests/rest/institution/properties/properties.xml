@@ -443,4 +443,12 @@
     <string>shortcuts.test-shortcut-name</string>
     <string>https://www.testshotcuturl.com</string>
   </entry>
+  <entry>
+    <string>user.quota.quotas.0.expression</string>
+    <string>R:TLE_GUEST_USER_ROLE </string>
+  </entry>
+  <entry>
+    <string>user.quota.quotas.0.size</string>
+    <string>698351616</string>
+  </entry>
 </map>

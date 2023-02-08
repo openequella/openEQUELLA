@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.SettingsPage;
 import com.tle.webtests.pageobject.settings.ActiveCachingPage;
+import com.tle.webtests.pageobject.settings.ContentRestrictionsPage;
 import com.tle.webtests.pageobject.settings.DateFormatSettingPage;
 import com.tle.webtests.pageobject.settings.LoginSettingsPage;
 import com.tle.webtests.pageobject.settings.ShortcutURLsSettingsPage;
@@ -66,7 +67,7 @@ class MixedSessionRestTest extends AbstractSessionTest {
 @TestInstitution("rest")
 public class LegacyContentApiTest extends MixedSessionRestTest {
   final String remoteCachingEndpoint = getAccessApiEndpoint("remotecaching.do");
-
+  final String ContentRestrictionsEndpoint = getAccessApiEndpoint("contentrestrictions.do");
   final String shortcutSettingsEndpoint = getAccessApiEndpoint("shortcuturlssettings.do");
   final String dateFormatSettingsEndpoint = getAccessApiEndpoint("dateformatsettings.do");
   final String loginSettingsEndpoint = getAccessApiEndpoint("loginsettings.do");
@@ -90,6 +91,11 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
   private ActiveCachingPage logonToActiveCachingPage() {
     logon(context, AUTOTEST_LOGON, AUTOTEST_PASSWD);
     return new SettingsPage(context).load().activeCachingSettings();
+  }
+
+  private ContentRestrictionsPage logonToContentRestrictionsPage() {
+    logon(context, AUTOTEST_LOGON, AUTOTEST_PASSWD);
+    return new SettingsPage(context).load().contentRestrictionsSettings();
   }
 
   private ShortcutURLsSettingsPage logonToShortcutURLsSettingsPage() {
@@ -143,6 +149,45 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
     // make sure remote caching is not enabled.
     ActiveCachingPage page = logonToActiveCachingPage();
     assertEquals(page.getEnableUseChecked(), false);
+  }
+
+  @Test(description = "User without permission shouldn't be able to add banned file extensions")
+  public void preventAddingBannedFileExtensionsSettingsTest() throws IOException {
+    final String FILE_EXTENSION_NAME = "example";
+    post(
+        ContentRestrictionsEndpoint,
+        new NameValuePair("event__", "$UP0$.addBannedExtension"),
+        new NameValuePair("eventp__0", FILE_EXTENSION_NAME));
+
+    // make sure the new entry is not added.
+    ContentRestrictionsPage page = logonToContentRestrictionsPage();
+    assertEquals(page.isExtPresent(FILE_EXTENSION_NAME), false);
+  }
+
+  @Test(description = "User without permission shouldn't be able to delete banned file extensions")
+  public void preventDeletingBannedFileExtensionsSettingsTest() throws IOException {
+    final String FILE_EXTENSION_NAME = "exe";
+    post(
+        ContentRestrictionsEndpoint,
+        new NameValuePair("event__", "$UP1$.removeBannedExtension"),
+        new NameValuePair("eventp__0", FILE_EXTENSION_NAME));
+
+    // make sure the entry is not deleted.
+    ContentRestrictionsPage page = logonToContentRestrictionsPage();
+    assertEquals(page.isExtPresent(FILE_EXTENSION_NAME), true);
+  }
+
+  @Test(description = "User without permission shouldn't be able to remove user content quotas")
+  public void preventDeletingUserQuotasSettingsTest() throws IOException {
+    // try to delete the first item
+    post(
+        ContentRestrictionsEndpoint,
+        new NameValuePair("event__", "$UP2$.removeUserQuota"),
+        new NameValuePair("eventp__0", "0"));
+
+    // make sure the quota is not deleted.
+    ContentRestrictionsPage page = logonToContentRestrictionsPage();
+    assertEquals(page.countUserQuotas(), 1);
   }
 
   @Test(description = "User without permission shouldn't be able to add shortcut url settings")
