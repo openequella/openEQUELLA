@@ -13,6 +13,7 @@ import com.tle.webtests.pageobject.settings.GoogleApiSettingsPage;
 import com.tle.webtests.pageobject.settings.GoogleSettingsPage;
 import com.tle.webtests.pageobject.settings.HarvesterSkipDrmPage;
 import com.tle.webtests.pageobject.settings.LoginSettingsPage;
+import com.tle.webtests.pageobject.settings.MailSettingsPage;
 import com.tle.webtests.pageobject.settings.ShortcutURLsSettingsPage;
 import com.tle.webtests.test.AbstractSessionTest;
 import java.io.IOException;
@@ -70,12 +71,13 @@ class MixedSessionRestTest extends AbstractSessionTest {
 @TestInstitution("rest")
 public class LegacyContentApiTest extends MixedSessionRestTest {
   final String remoteCachingSettingsEndpoint = getAccessApiEndpoint("remotecaching.do");
-  final String ContentRestrictionsSettingsEndpoint = getAccessApiEndpoint("contentrestrictions.do");
-  final String GoogleApiSettingsEndpoint = getAccessApiEndpoint("googleapisettings.do");
-  final String GoogleAnalyticsSettingsEndpoint = getAccessApiEndpoint("googleAnalyticsPage.do");
-  final String HarvesterSettingsEndpoint = getAccessApiEndpoint("harvesterskipdrmsettings.do");
-  final String shortcutSettingsEndpoint = getAccessApiEndpoint("shortcuturlssettings.do");
+  final String contentRestrictionsSettingsEndpoint = getAccessApiEndpoint("contentrestrictions.do");
   final String dateFormatSettingsEndpoint = getAccessApiEndpoint("dateformatsettings.do");
+  final String googleApiSettingsEndpoint = getAccessApiEndpoint("googleapisettings.do");
+  final String googleAnalyticsSettingsEndpoint = getAccessApiEndpoint("googleAnalyticsPage.do");
+  final String harvesterSettingsEndpoint = getAccessApiEndpoint("harvesterskipdrmsettings.do");
+  final String shortcutSettingsEndpoint = getAccessApiEndpoint("shortcuturlssettings.do");
+  final String mailSettingsEndpoint = getAccessApiEndpoint("mailsettings.do");
   final String loginSettingsEndpoint = getAccessApiEndpoint("loginsettings.do");
 
   public LegacyContentApiTest() throws URISyntaxException {}
@@ -104,6 +106,11 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
     return new SettingsPage(context).load().contentRestrictionsSettings();
   }
 
+  private DateFormatSettingPage logonToDateFormatSettingsPage() {
+    logon(context, AUTOTEST_LOGON, AUTOTEST_PASSWD);
+    return new SettingsPage(context).load().dateFormatSettingPage();
+  }
+
   private GoogleApiSettingsPage logonToGoogleApiSettingsPage() {
     logon(context, AUTOTEST_LOGON, AUTOTEST_PASSWD);
     return new SettingsPage(context).load().googleApiSettings();
@@ -124,14 +131,14 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
     return new SettingsPage(context).load().shortcutURLsSettingsPage();
   }
 
-  private DateFormatSettingPage logonToDateFormatSettingsPage() {
-    logon(context, AUTOTEST_LOGON, AUTOTEST_PASSWD);
-    return new SettingsPage(context).load().dateFormatSettingPage();
-  }
-
   private LoginSettingsPage logonToLoginSettingsPage() {
     logon(context, AUTOTEST_LOGON, AUTOTEST_PASSWD);
     return new SettingsPage(context).load().loginSettings();
+  }
+
+  private MailSettingsPage logonToMailSettingsPage() {
+    logon(context, AUTOTEST_LOGON, AUTOTEST_PASSWD);
+    return new SettingsPage(context).load().mailSettingsPage();
   }
 
   /** Add each NameValuePair value to JsonNode (wrapped with Array) and `post` it with body. */
@@ -176,7 +183,7 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
   public void preventAddingBannedFileExtensionsSettingsTest() throws IOException {
     final String FILE_EXTENSION_NAME = "example";
     post(
-        ContentRestrictionsSettingsEndpoint,
+        contentRestrictionsSettingsEndpoint,
         new NameValuePair("event__", "$UP0$.addBannedExtension"),
         new NameValuePair("eventp__0", FILE_EXTENSION_NAME));
 
@@ -189,7 +196,7 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
   public void preventDeletingBannedFileExtensionsSettingsTest() throws IOException {
     final String FILE_EXTENSION_NAME = "exe";
     post(
-        ContentRestrictionsSettingsEndpoint,
+        contentRestrictionsSettingsEndpoint,
         new NameValuePair("event__", "$UP1$.removeBannedExtension"),
         new NameValuePair("eventp__0", FILE_EXTENSION_NAME));
 
@@ -202,7 +209,7 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
   public void preventDeletingUserQuotasSettingsTest() throws IOException {
     // try to delete the first item
     post(
-        ContentRestrictionsSettingsEndpoint,
+        contentRestrictionsSettingsEndpoint,
         new NameValuePair("event__", "$UP2$.removeUserQuota"),
         new NameValuePair("eventp__0", "0"));
 
@@ -211,11 +218,23 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
     assertEquals(page.countUserQuotas(), 1);
   }
 
+  @Test(description = "User without permission shouldn't be able to edit date format settings")
+  public void preventEditingDateformatSettingsTest() throws IOException {
+    post(
+        dateFormatSettingsEndpoint,
+        new NameValuePair("event__", ".save"),
+        new NameValuePair("_dateFormats", "format.exact"));
+
+    // make sure the format is not `exact` type
+    DateFormatSettingPage page = logonToDateFormatSettingsPage();
+    assertEquals(page.isExactDateFormat(), false);
+  }
+
   @Test(description = "User without permission shouldn't be able to edit google api settings")
   public void preventEditingGoogleApiSettingsTest() throws IOException {
     final String API = "123";
     post(
-        GoogleApiSettingsEndpoint,
+        googleApiSettingsEndpoint,
         new NameValuePair("event__", ".save"),
         new NameValuePair("_apiKey", API));
 
@@ -228,7 +247,7 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
   public void preventEditingGoogleAnalyticsSettingsTest() throws IOException {
     final String ACCOUNT_ID = "123";
     post(
-        GoogleAnalyticsSettingsEndpoint,
+        googleAnalyticsSettingsEndpoint,
         new NameValuePair("event__", ".setup"),
         new NameValuePair("_g", ACCOUNT_ID));
 
@@ -240,7 +259,7 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
   @Test(description = "User without permission shouldn't be able to edit harvester settings")
   public void preventEditingHarvesterSettingsTest() throws IOException {
     post(
-        HarvesterSettingsEndpoint,
+        harvesterSettingsEndpoint,
         new NameValuePair("event__", ".save"),
         new NameValuePair("sdk", "checked"));
 
@@ -279,18 +298,6 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
     assertEquals(isTextPresent(NAME), true);
   }
 
-  @Test(description = "User without permission shouldn't be able to edit date format settings")
-  public void preventEditingDateformatSettingsTest() throws IOException {
-    post(
-        dateFormatSettingsEndpoint,
-        new NameValuePair("event__", ".save"),
-        new NameValuePair("_dateFormats", "format.exact"));
-
-    // make sure the format is not `exact` type
-    DateFormatSettingPage page = logonToDateFormatSettingsPage();
-    assertEquals(page.isExactDateFormat(), false);
-  }
-
   @Test(description = "User without permission shouldn't be able to edit login settings")
   public void preventEditingLoginSettingsTest() throws IOException {
     // save event without params will overwrite all available settings value to false.
@@ -299,5 +306,17 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
     // make sure enable via ip is still enabled.
     LoginSettingsPage page = logonToLoginSettingsPage();
     assertEquals(page.isEnableViaIp(), true);
+  }
+
+  @Test(description = "User without permission shouldn't be able to edit mail settings")
+  public void preventEditingMailSettingsTest() throws IOException {
+    post(
+        mailSettingsEndpoint,
+        new NameValuePair("event__", ".save"),
+        new NameValuePair("_dn", "Display name"));
+
+    // make sure display name is not changed.
+    logonToMailSettingsPage();
+    assertEquals(getValueInId("_dn"), "");
   }
 }
