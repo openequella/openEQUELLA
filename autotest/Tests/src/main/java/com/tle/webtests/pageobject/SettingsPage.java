@@ -97,7 +97,7 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
   }
 
   public GoogleSettingsPage googleSettings() {
-    return clickSetting("Google analytics", new GoogleSettingsPage(context));
+    return clickSetting("Google Analytics", new GoogleSettingsPage(context));
   }
 
   public SearchSettingsPage searchSettings() {

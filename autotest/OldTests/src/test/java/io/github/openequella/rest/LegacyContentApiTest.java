@@ -10,6 +10,7 @@ import com.tle.webtests.pageobject.settings.ActiveCachingPage;
 import com.tle.webtests.pageobject.settings.ContentRestrictionsPage;
 import com.tle.webtests.pageobject.settings.DateFormatSettingPage;
 import com.tle.webtests.pageobject.settings.GoogleApiSettingsPage;
+import com.tle.webtests.pageobject.settings.GoogleSettingsPage;
 import com.tle.webtests.pageobject.settings.LoginSettingsPage;
 import com.tle.webtests.pageobject.settings.ShortcutURLsSettingsPage;
 import com.tle.webtests.test.AbstractSessionTest;
@@ -23,7 +24,6 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.openqa.selenium.By;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -68,9 +68,10 @@ class MixedSessionRestTest extends AbstractSessionTest {
 
 @TestInstitution("rest")
 public class LegacyContentApiTest extends MixedSessionRestTest {
-  final String remoteCachingEndpoint = getAccessApiEndpoint("remotecaching.do");
-  final String ContentRestrictionsEndpoint = getAccessApiEndpoint("contentrestrictions.do");
+  final String remoteCachingSettingsEndpoint = getAccessApiEndpoint("remotecaching.do");
+  final String ContentRestrictionsSettingsEndpoint = getAccessApiEndpoint("contentrestrictions.do");
   final String GoogleApiSettingsEndpoint = getAccessApiEndpoint("googleapisettings.do");
+  final String GoogleAnalyticsSettingsEndpoint = getAccessApiEndpoint("googleAnalyticsPage.do");
   final String shortcutSettingsEndpoint = getAccessApiEndpoint("shortcuturlssettings.do");
   final String dateFormatSettingsEndpoint = getAccessApiEndpoint("dateformatsettings.do");
   final String loginSettingsEndpoint = getAccessApiEndpoint("loginsettings.do");
@@ -104,6 +105,11 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
   private GoogleApiSettingsPage logonToGoogleApiSettingsPage() {
     logon(context, AUTOTEST_LOGON, AUTOTEST_PASSWD);
     return new SettingsPage(context).load().googleApiSettings();
+  }
+
+  private GoogleSettingsPage logonToGoogleAnalyticsSettingsPage() {
+    logon(context, AUTOTEST_LOGON, AUTOTEST_PASSWD);
+    return new SettingsPage(context).load().googleSettings();
   }
 
   private ShortcutURLsSettingsPage logonToShortcutURLsSettingsPage() {
@@ -150,7 +156,7 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
   @Test(description = "User without permission shouldn't be able to edit remote caching")
   public void preventEditingRemoteCachingSettingsTest() throws IOException {
     post(
-        remoteCachingEndpoint,
+        remoteCachingSettingsEndpoint,
         new NameValuePair("event__", ".save"),
         new NameValuePair("_eu", "checked"));
 
@@ -163,7 +169,7 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
   public void preventAddingBannedFileExtensionsSettingsTest() throws IOException {
     final String FILE_EXTENSION_NAME = "example";
     post(
-        ContentRestrictionsEndpoint,
+        ContentRestrictionsSettingsEndpoint,
         new NameValuePair("event__", "$UP0$.addBannedExtension"),
         new NameValuePair("eventp__0", FILE_EXTENSION_NAME));
 
@@ -176,7 +182,7 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
   public void preventDeletingBannedFileExtensionsSettingsTest() throws IOException {
     final String FILE_EXTENSION_NAME = "exe";
     post(
-        ContentRestrictionsEndpoint,
+        ContentRestrictionsSettingsEndpoint,
         new NameValuePair("event__", "$UP1$.removeBannedExtension"),
         new NameValuePair("eventp__0", FILE_EXTENSION_NAME));
 
@@ -189,7 +195,7 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
   public void preventDeletingUserQuotasSettingsTest() throws IOException {
     // try to delete the first item
     post(
-        ContentRestrictionsEndpoint,
+        ContentRestrictionsSettingsEndpoint,
         new NameValuePair("event__", "$UP2$.removeUserQuota"),
         new NameValuePair("eventp__0", "0"));
 
@@ -199,7 +205,7 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
   }
 
   @Test(description = "User without permission shouldn't be able to edit google api settings")
-  public void preventEditingGoogleSettingsTest() throws IOException {
+  public void preventEditingGoogleApiSettingsTest() throws IOException {
     final String API = "123";
     post(
         GoogleApiSettingsEndpoint,
@@ -208,7 +214,20 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
 
     // make sure the api is not changed.
     logonToGoogleApiSettingsPage();
-    assertEquals(context.getDriver().findElement(By.id("_apiKey")).getAttribute("value"), "");
+    assertEquals(getValueInId("_apiKey"), "");
+  }
+
+  @Test(description = "User without permission shouldn't be able to edit google analytics settings")
+  public void preventEditingGoogleAnalyticsSettingsTest() throws IOException {
+    final String ACCOUNT_ID = "123";
+    post(
+        GoogleAnalyticsSettingsEndpoint,
+        new NameValuePair("event__", ".setup"),
+        new NameValuePair("_g", ACCOUNT_ID));
+
+    // make sure the account id is not changed.
+    logonToGoogleAnalyticsSettingsPage();
+    assertEquals(getValueInId("_g"), "");
   }
 
   @Test(description = "User without permission shouldn't be able to add shortcut url settings")
