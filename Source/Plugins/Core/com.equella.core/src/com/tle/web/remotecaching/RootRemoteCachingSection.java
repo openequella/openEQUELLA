@@ -391,6 +391,7 @@ public class RootRemoteCachingSection
 
   @EventHandlerMethod
   public void save(SectionInfo info) {
+    securityProvider.checkAuthorised();
     doSave(info);
     receiptService.setReceipt(SAVE_RECEIPT_LABEL);
   }

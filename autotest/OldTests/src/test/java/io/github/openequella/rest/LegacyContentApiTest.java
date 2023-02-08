@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.SettingsPage;
+import com.tle.webtests.pageobject.settings.ActiveCachingPage;
 import com.tle.webtests.pageobject.settings.DateFormatSettingPage;
 import com.tle.webtests.pageobject.settings.LoginSettingsPage;
 import com.tle.webtests.pageobject.settings.ShortcutURLsSettingsPage;
@@ -21,6 +22,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -59,15 +61,12 @@ class MixedSessionRestTest extends AbstractSessionTest {
     method.setQueryString(queryVals);
     return method;
   }
-
-  @AfterMethod
-  public void logoutRestClient() throws IOException {
-    makeClientRequest(buildLogoutMethod());
-  }
 }
 
 @TestInstitution("rest")
 public class LegacyContentApiTest extends MixedSessionRestTest {
+  final String remoteCachingEndpoint = getAccessApiEndpoint("remotecaching.do");
+
   final String shortcutSettingsEndpoint = getAccessApiEndpoint("shortcuturlssettings.do");
   final String dateFormatSettingsEndpoint = getAccessApiEndpoint("dateformatsettings.do");
   final String loginSettingsEndpoint = getAccessApiEndpoint("loginsettings.do");
@@ -76,6 +75,21 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
 
   public String getAccessApiEndpoint(String endpoint) throws URISyntaxException {
     return getTestConfig().getInstitutionUrl() + "api/content/submit/access/" + endpoint;
+  }
+
+  @BeforeMethod
+  public void loginRestClient() throws IOException {
+    loginRestWithNoACL();
+  }
+
+  @AfterMethod
+  public void logoutRestClient() throws IOException {
+    makeClientRequest(buildLogoutMethod());
+  }
+
+  private ActiveCachingPage logonToActiveCachingPage() {
+    logon(context, AUTOTEST_LOGON, AUTOTEST_PASSWD);
+    return new SettingsPage(context).load().activeCachingSettings();
   }
 
   private ShortcutURLsSettingsPage logonToShortcutURLsSettingsPage() {
@@ -109,6 +123,7 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
 
   @Test(description = "Guest users are not allowed to access any content under `/access/` path")
   public void preventGuestVisitAccessPathTest() throws IOException {
+    logoutRestClient();
     int statusCode =
         post(
             dateFormatSettingsEndpoint,
@@ -118,11 +133,22 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
         statusCode, HttpStatus.SC_UNAUTHORIZED, "Guest still able to access `access` path.");
   }
 
+  @Test(description = "User without permission shouldn't be able to edit remote caching")
+  public void preventEditingRemoteCachingSettingsTest() throws IOException {
+    post(
+        remoteCachingEndpoint,
+        new NameValuePair("event__", ".save"),
+        new NameValuePair("_eu", "checked"));
+
+    // make sure remote caching is not enabled.
+    ActiveCachingPage page = logonToActiveCachingPage();
+    assertEquals(page.getEnableUseChecked(), false);
+  }
+
   @Test(description = "User without permission shouldn't be able to add shortcut url settings")
   public void preventAddingShortcutUrlSettingsTest() throws IOException {
     final String URL = "https://www.scarywebsite.com";
 
-    loginRestWithNoACL();
     post(
         shortcutSettingsEndpoint,
         new NameValuePair("event__", "$UP$<BODY>"),
@@ -139,7 +165,6 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
   @Test(description = "User without permission shouldn't be able to delete shortcut url settings")
   public void preventDeletingShortcutUrlSettingsTest() throws IOException {
     final String NAME = "test-shortcut-name";
-    loginRestWithNoACL();
     post(
         shortcutSettingsEndpoint,
         new NameValuePair("event__", ".delete"),
@@ -152,7 +177,6 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
 
   @Test(description = "User without permission shouldn't be able to edit date format settings")
   public void preventEditingDateformatSettingsTest() throws IOException {
-    loginRestWithNoACL();
     post(
         dateFormatSettingsEndpoint,
         new NameValuePair("event__", ".save"),
@@ -165,7 +189,6 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
 
   @Test(description = "User without permission shouldn't be able to edit login settings")
   public void preventEditingLoginSettingsTest() throws IOException {
-    loginRestWithNoACL();
     // save event without params will overwrite all available settings value to false.
     post(loginSettingsEndpoint, new NameValuePair("event__", ".save"));
 
