@@ -11,6 +11,7 @@ import com.tle.webtests.pageobject.settings.ContentRestrictionsPage;
 import com.tle.webtests.pageobject.settings.DateFormatSettingPage;
 import com.tle.webtests.pageobject.settings.GoogleApiSettingsPage;
 import com.tle.webtests.pageobject.settings.GoogleSettingsPage;
+import com.tle.webtests.pageobject.settings.HarvesterSkipDrmPage;
 import com.tle.webtests.pageobject.settings.LoginSettingsPage;
 import com.tle.webtests.pageobject.settings.ShortcutURLsSettingsPage;
 import com.tle.webtests.test.AbstractSessionTest;
@@ -72,6 +73,7 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
   final String ContentRestrictionsSettingsEndpoint = getAccessApiEndpoint("contentrestrictions.do");
   final String GoogleApiSettingsEndpoint = getAccessApiEndpoint("googleapisettings.do");
   final String GoogleAnalyticsSettingsEndpoint = getAccessApiEndpoint("googleAnalyticsPage.do");
+  final String HarvesterSettingsEndpoint = getAccessApiEndpoint("harvesterskipdrmsettings.do");
   final String shortcutSettingsEndpoint = getAccessApiEndpoint("shortcuturlssettings.do");
   final String dateFormatSettingsEndpoint = getAccessApiEndpoint("dateformatsettings.do");
   final String loginSettingsEndpoint = getAccessApiEndpoint("loginsettings.do");
@@ -92,12 +94,12 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
     makeClientRequest(buildLogoutMethod());
   }
 
-  private ActiveCachingPage logonToActiveCachingPage() {
+  private ActiveCachingPage logonToActiveCachingSettingsPage() {
     logon(context, AUTOTEST_LOGON, AUTOTEST_PASSWD);
     return new SettingsPage(context).load().activeCachingSettings();
   }
 
-  private ContentRestrictionsPage logonToContentRestrictionsPage() {
+  private ContentRestrictionsPage logonToContentRestrictionsSettingsPage() {
     logon(context, AUTOTEST_LOGON, AUTOTEST_PASSWD);
     return new SettingsPage(context).load().contentRestrictionsSettings();
   }
@@ -110,6 +112,11 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
   private GoogleSettingsPage logonToGoogleAnalyticsSettingsPage() {
     logon(context, AUTOTEST_LOGON, AUTOTEST_PASSWD);
     return new SettingsPage(context).load().googleSettings();
+  }
+
+  private HarvesterSkipDrmPage logonToHarvesterSettingsPage() {
+    logon(context, AUTOTEST_LOGON, AUTOTEST_PASSWD);
+    return new SettingsPage(context).load().harvestSkipDrmSettings();
   }
 
   private ShortcutURLsSettingsPage logonToShortcutURLsSettingsPage() {
@@ -161,7 +168,7 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
         new NameValuePair("_eu", "checked"));
 
     // make sure remote caching is not enabled.
-    ActiveCachingPage page = logonToActiveCachingPage();
+    ActiveCachingPage page = logonToActiveCachingSettingsPage();
     assertEquals(page.getEnableUseChecked(), false);
   }
 
@@ -174,7 +181,7 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
         new NameValuePair("eventp__0", FILE_EXTENSION_NAME));
 
     // make sure the new entry is not added.
-    ContentRestrictionsPage page = logonToContentRestrictionsPage();
+    ContentRestrictionsPage page = logonToContentRestrictionsSettingsPage();
     assertEquals(page.isExtPresent(FILE_EXTENSION_NAME), false);
   }
 
@@ -187,7 +194,7 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
         new NameValuePair("eventp__0", FILE_EXTENSION_NAME));
 
     // make sure the entry is not deleted.
-    ContentRestrictionsPage page = logonToContentRestrictionsPage();
+    ContentRestrictionsPage page = logonToContentRestrictionsSettingsPage();
     assertEquals(page.isExtPresent(FILE_EXTENSION_NAME), true);
   }
 
@@ -200,7 +207,7 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
         new NameValuePair("eventp__0", "0"));
 
     // make sure the quota is not deleted.
-    ContentRestrictionsPage page = logonToContentRestrictionsPage();
+    ContentRestrictionsPage page = logonToContentRestrictionsSettingsPage();
     assertEquals(page.countUserQuotas(), 1);
   }
 
@@ -228,6 +235,18 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
     // make sure the account id is not changed.
     logonToGoogleAnalyticsSettingsPage();
     assertEquals(getValueInId("_g"), "");
+  }
+
+  @Test(description = "User without permission shouldn't be able to edit harvester settings")
+  public void preventEditingHarvesterSettingsTest() throws IOException {
+    post(
+        HarvesterSettingsEndpoint,
+        new NameValuePair("event__", ".save"),
+        new NameValuePair("sdk", "checked"));
+
+    // make sure SkipDrmChecked is not changed.
+    HarvesterSkipDrmPage page = logonToHarvesterSettingsPage();
+    assertEquals(page.getSkipDrmChecked(), false);
   }
 
   @Test(description = "User without permission shouldn't be able to add shortcut url settings")
