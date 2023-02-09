@@ -5,7 +5,10 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 
-/** Helper class to build login/logout methods. */
+/**
+ * Helper class to assist in interacting the with {@code api/auth} endpoint, primarily through the
+ * building of {@code HttpMethod} instances.
+ */
 public class AuthHelper {
   private String institutionUrl;
 
