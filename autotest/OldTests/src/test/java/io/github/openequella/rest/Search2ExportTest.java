@@ -39,7 +39,7 @@ public class Search2ExportTest extends AbstractRestApiTest {
   @Test(description = "Export should fail when ACL is not granted")
   public void withoutACL() throws IOException {
     // Login as a low privilege user.
-    makeClientRequest(buildLoginMethod(AUTOTEST_LOW_PRIVILEGE_LOGON, PASSWORD));
+    makeClientRequest(authHelper.buildLoginMethod(AUTOTEST_LOW_PRIVILEGE_LOGON, PASSWORD));
     assertResponseCode(null, 403);
   }
 

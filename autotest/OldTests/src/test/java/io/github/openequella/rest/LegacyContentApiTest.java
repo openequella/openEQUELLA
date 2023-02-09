@@ -17,14 +17,12 @@ import com.tle.webtests.pageobject.settings.MailSettingsPage;
 import com.tle.webtests.pageobject.settings.ShortcutURLsSettingsPage;
 import com.tle.webtests.test.AbstractSessionTest;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -32,44 +30,15 @@ import org.testng.annotations.Test;
 
 /**
  * Since most HTTP code return by legacy APIs are not credible (for example, it returns 403 code but
- * settings are still changed), thus this class extends `AbstractSessionTest` to use the `Page` to
- * check the test result.
+ * settings are still changed), this class extends `AbstractSessionTest` to use the `Page` to check
+ * the test result.
  */
-class MixedSessionRestTest extends AbstractSessionTest {
-  protected final HttpClient httpClient = new HttpClient();
-  protected final ObjectMapper mapper = new ObjectMapper();
-
-  /** Login as a low privilege user. */
-  public void loginRestWithNoACL() throws IOException {
-    makeClientRequest(buildLoginMethod(AUTOTEST_LOW_PRIVILEGE_LOGON, AUTOTEST_PASSWD));
-  }
-
-  public String getAuthApiEndpoint() {
-    return getTestConfig().getInstitutionUrl() + "api/auth";
-  }
-
-  protected HttpMethod buildLogoutMethod() {
-    final String logoutEndpoint = getAuthApiEndpoint() + "/logout";
-    return new PutMethod(logoutEndpoint);
-  }
-
-  protected int makeClientRequest(HttpMethod method) throws IOException {
-    return httpClient.executeMethod(method);
-  }
-
-  protected HttpMethod buildLoginMethod(String username, String password) {
-    final String loginEndpoint = getAuthApiEndpoint() + "/login";
-    final NameValuePair[] queryVals = {
-      new NameValuePair("username", username), new NameValuePair("password", password)
-    };
-    final HttpMethod method = new PostMethod(loginEndpoint);
-    method.setQueryString(queryVals);
-    return method;
-  }
-}
-
 @TestInstitution("rest")
-public class LegacyContentApiTest extends MixedSessionRestTest {
+public class LegacyContentApiTest extends AbstractSessionTest {
+  final HttpClient httpClient = new HttpClient();
+  final ObjectMapper mapper = new ObjectMapper();
+  final AuthHelper authHelper = new AuthHelper(getTestConfig().getInstitutionUrl());
+
   final String remoteCachingSettingsEndpoint = getAccessApiEndpoint("remotecaching.do");
   final String contentRestrictionsSettingsEndpoint = getAccessApiEndpoint("contentrestrictions.do");
   final String dateFormatSettingsEndpoint = getAccessApiEndpoint("dateformatsettings.do");
@@ -80,20 +49,27 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
   final String mailSettingsEndpoint = getAccessApiEndpoint("mailsettings.do");
   final String loginSettingsEndpoint = getAccessApiEndpoint("loginsettings.do");
 
-  public LegacyContentApiTest() throws URISyntaxException {}
+  final NameValuePair sectionsSaveEvent = sectionsEvent(".save");
 
-  public String getAccessApiEndpoint(String endpoint) throws URISyntaxException {
+  public LegacyContentApiTest() {}
+
+  private String getAccessApiEndpoint(String endpoint) {
     return getTestConfig().getInstitutionUrl() + "api/content/submit/access/" + endpoint;
   }
 
+  private int makeClientRequest(HttpMethod method) throws IOException {
+    return httpClient.executeMethod(method);
+  }
+
   @BeforeMethod
-  public void loginRestClient() throws IOException {
-    loginRestWithNoACL();
+  private void loginRestClient() throws IOException {
+    // Login as a low privilege user.
+    makeClientRequest(authHelper.buildLoginMethod(AUTOTEST_LOW_PRIVILEGE_LOGON, AUTOTEST_PASSWD));
   }
 
   @AfterMethod
-  public void logoutRestClient() throws IOException {
-    makeClientRequest(buildLogoutMethod());
+  private void logoutRestClient() throws IOException {
+    makeClientRequest(authHelper.buildLogoutMethod());
   }
 
   private ActiveCachingPage logonToActiveCachingSettingsPage() {
@@ -142,7 +118,7 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
   }
 
   /** Add each NameValuePair value to JsonNode (wrapped with Array) and `post` it with body. */
-  public int post(String endpoint, NameValuePair... params) throws IOException {
+  private int post(String endpoint, NameValuePair... params) throws IOException {
     final PostMethod method = new PostMethod(endpoint);
 
     ObjectNode payload = mapper.createObjectNode();
@@ -155,24 +131,31 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
     return makeClientRequest(method);
   }
 
+  private NameValuePair sectionsEvent(String eventName) {
+    return new NameValuePair("event__", eventName);
+  }
+
+  final NameValuePair sectionsEventParam0(String param) {
+    return new NameValuePair("eventp__0", param);
+  }
+
+  private int editingRemoteCachingSettings() throws IOException {
+    return post(
+        remoteCachingSettingsEndpoint, sectionsSaveEvent, new NameValuePair("_eu", "checked"));
+  }
+
   @Test(description = "Guest users are not allowed to access any content under `/access/` path")
   public void preventGuestVisitAccessPathTest() throws IOException {
     logoutRestClient();
-    int statusCode =
-        post(
-            dateFormatSettingsEndpoint,
-            new NameValuePair("event__", ".save"),
-            new NameValuePair("_dateFormats", "format.exact"));
     assertEquals(
-        statusCode, HttpStatus.SC_UNAUTHORIZED, "Guest still able to access `access` path.");
+        editingRemoteCachingSettings(),
+        HttpStatus.SC_UNAUTHORIZED,
+        "Guest still able to access `access` path.");
   }
 
   @Test(description = "User without permission shouldn't be able to edit remote caching")
   public void preventEditingRemoteCachingSettingsTest() throws IOException {
-    post(
-        remoteCachingSettingsEndpoint,
-        new NameValuePair("event__", ".save"),
-        new NameValuePair("_eu", "checked"));
+    editingRemoteCachingSettings();
 
     // make sure remote caching is not enabled.
     ActiveCachingPage page = logonToActiveCachingSettingsPage();
@@ -184,8 +167,8 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
     final String FILE_EXTENSION_NAME = "example";
     post(
         contentRestrictionsSettingsEndpoint,
-        new NameValuePair("event__", "$UP0$.addBannedExtension"),
-        new NameValuePair("eventp__0", FILE_EXTENSION_NAME));
+        sectionsEvent("$UP0$.addBannedExtension"),
+        sectionsEventParam0(FILE_EXTENSION_NAME));
 
     // make sure the new entry is not added.
     ContentRestrictionsPage page = logonToContentRestrictionsSettingsPage();
@@ -197,8 +180,8 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
     final String FILE_EXTENSION_NAME = "exe";
     post(
         contentRestrictionsSettingsEndpoint,
-        new NameValuePair("event__", "$UP1$.removeBannedExtension"),
-        new NameValuePair("eventp__0", FILE_EXTENSION_NAME));
+        sectionsEvent("$UP1$.removeBannedExtension"),
+        sectionsEventParam0(FILE_EXTENSION_NAME));
 
     // make sure the entry is not deleted.
     ContentRestrictionsPage page = logonToContentRestrictionsSettingsPage();
@@ -210,8 +193,8 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
     // try to delete the first item
     post(
         contentRestrictionsSettingsEndpoint,
-        new NameValuePair("event__", "$UP2$.removeUserQuota"),
-        new NameValuePair("eventp__0", "0"));
+        sectionsEvent("$UP2$.removeUserQuota"),
+        sectionsEventParam0("0"));
 
     // make sure the quota is not deleted.
     ContentRestrictionsPage page = logonToContentRestrictionsSettingsPage();
@@ -222,7 +205,7 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
   public void preventEditingDateformatSettingsTest() throws IOException {
     post(
         dateFormatSettingsEndpoint,
-        new NameValuePair("event__", ".save"),
+        sectionsSaveEvent,
         new NameValuePair("_dateFormats", "format.exact"));
 
     // make sure the format is not `exact` type
@@ -233,10 +216,7 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
   @Test(description = "User without permission shouldn't be able to edit google api settings")
   public void preventEditingGoogleApiSettingsTest() throws IOException {
     final String API = "123";
-    post(
-        googleApiSettingsEndpoint,
-        new NameValuePair("event__", ".save"),
-        new NameValuePair("_apiKey", API));
+    post(googleApiSettingsEndpoint, sectionsSaveEvent, new NameValuePair("_apiKey", API));
 
     // make sure the api is not changed.
     logonToGoogleApiSettingsPage();
@@ -248,7 +228,7 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
     final String ACCOUNT_ID = "123";
     post(
         googleAnalyticsSettingsEndpoint,
-        new NameValuePair("event__", ".setup"),
+        sectionsEvent(".setup"),
         new NameValuePair("_g", ACCOUNT_ID));
 
     // make sure the account id is not changed.
@@ -258,10 +238,7 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
 
   @Test(description = "User without permission shouldn't be able to edit harvester settings")
   public void preventEditingHarvesterSettingsTest() throws IOException {
-    post(
-        harvesterSettingsEndpoint,
-        new NameValuePair("event__", ".save"),
-        new NameValuePair("sdk", "checked"));
+    post(harvesterSettingsEndpoint, sectionsSaveEvent, new NameValuePair("sdk", "checked"));
 
     // make sure SkipDrmChecked is not changed.
     HarvesterSkipDrmPage page = logonToHarvesterSettingsPage();
@@ -274,8 +251,8 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
 
     post(
         shortcutSettingsEndpoint,
-        new NameValuePair("event__", "$UP$<BODY>"),
-        new NameValuePair("eventp__0", "_addShortcutUrlDialog.addShortcutUrl"),
+        sectionsEvent("$UP$<BODY>"),
+        sectionsEventParam0("_addShortcutUrlDialog.addShortcutUrl"),
         new NameValuePair("_addShortcutUrlDialog.showing", "true"),
         new NameValuePair("_addShortcutUrlDialog_shortcutText", "nope"),
         new NameValuePair("_addShortcutUrlDialog_urlText", URL));
@@ -288,10 +265,7 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
   @Test(description = "User without permission shouldn't be able to delete shortcut url settings")
   public void preventDeletingShortcutUrlSettingsTest() throws IOException {
     final String NAME = "test-shortcut-name";
-    post(
-        shortcutSettingsEndpoint,
-        new NameValuePair("event__", ".delete"),
-        new NameValuePair("eventp__0", NAME));
+    post(shortcutSettingsEndpoint, sectionsEvent(".delete"), sectionsEventParam0(NAME));
 
     // make sure the shortcut url is still existing.
     logonToShortcutURLsSettingsPage();
@@ -301,7 +275,7 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
   @Test(description = "User without permission shouldn't be able to edit login settings")
   public void preventEditingLoginSettingsTest() throws IOException {
     // save event without params will overwrite all available settings value to false.
-    post(loginSettingsEndpoint, new NameValuePair("event__", ".save"));
+    post(loginSettingsEndpoint, sectionsSaveEvent);
 
     // make sure enable via ip is still enabled.
     LoginSettingsPage page = logonToLoginSettingsPage();
@@ -310,10 +284,7 @@ public class LegacyContentApiTest extends MixedSessionRestTest {
 
   @Test(description = "User without permission shouldn't be able to edit mail settings")
   public void preventEditingMailSettingsTest() throws IOException {
-    post(
-        mailSettingsEndpoint,
-        new NameValuePair("event__", ".save"),
-        new NameValuePair("_dn", "Display name"));
+    post(mailSettingsEndpoint, sectionsSaveEvent, new NameValuePair("_dn", "Display name"));
 
     // make sure display name is not changed.
     logonToMailSettingsPage();
