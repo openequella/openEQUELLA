@@ -1,6 +1,8 @@
 package io.github.openequella.rest;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -159,7 +161,7 @@ public class LegacyContentApiTest extends AbstractSessionTest {
 
     // make sure remote caching is not enabled.
     ActiveCachingPage page = logonToActiveCachingSettingsPage();
-    assertEquals(page.getEnableUseChecked(), false);
+    assertFalse(page.getEnableUseChecked());
   }
 
   @Test(description = "User without permission shouldn't be able to add banned file extensions")
@@ -172,7 +174,7 @@ public class LegacyContentApiTest extends AbstractSessionTest {
 
     // make sure the new entry is not added.
     ContentRestrictionsPage page = logonToContentRestrictionsSettingsPage();
-    assertEquals(page.isExtPresent(FILE_EXTENSION_NAME), false);
+    assertFalse(page.isExtPresent(FILE_EXTENSION_NAME));
   }
 
   @Test(description = "User without permission shouldn't be able to delete banned file extensions")
@@ -185,7 +187,7 @@ public class LegacyContentApiTest extends AbstractSessionTest {
 
     // make sure the entry is not deleted.
     ContentRestrictionsPage page = logonToContentRestrictionsSettingsPage();
-    assertEquals(page.isExtPresent(FILE_EXTENSION_NAME), true);
+    assertTrue(page.isExtPresent(FILE_EXTENSION_NAME));
   }
 
   @Test(description = "User without permission shouldn't be able to remove user content quotas")
@@ -210,7 +212,7 @@ public class LegacyContentApiTest extends AbstractSessionTest {
 
     // make sure the format is not `exact` type
     DateFormatSettingPage page = logonToDateFormatSettingsPage();
-    assertEquals(page.isExactDateFormat(), false);
+    assertFalse(page.isExactDateFormat());
   }
 
   @Test(description = "User without permission shouldn't be able to edit google api settings")
@@ -242,7 +244,7 @@ public class LegacyContentApiTest extends AbstractSessionTest {
 
     // make sure SkipDrmChecked is not changed.
     HarvesterSkipDrmPage page = logonToHarvesterSettingsPage();
-    assertEquals(page.getSkipDrmChecked(), false);
+    assertFalse(page.getSkipDrmChecked());
   }
 
   @Test(description = "User without permission shouldn't be able to add shortcut url settings")
@@ -259,7 +261,7 @@ public class LegacyContentApiTest extends AbstractSessionTest {
 
     // make sure the shortcut url is not added.
     logonToShortcutURLsSettingsPage();
-    assertEquals(isTextPresent(URL), false);
+    assertFalse(isTextPresent(URL));
   }
 
   @Test(description = "User without permission shouldn't be able to delete shortcut url settings")
@@ -269,7 +271,7 @@ public class LegacyContentApiTest extends AbstractSessionTest {
 
     // make sure the shortcut url is still existing.
     logonToShortcutURLsSettingsPage();
-    assertEquals(isTextPresent(NAME), true);
+    assertTrue(isTextPresent(NAME));
   }
 
   @Test(description = "User without permission shouldn't be able to edit login settings")
@@ -279,7 +281,7 @@ public class LegacyContentApiTest extends AbstractSessionTest {
 
     // make sure enable via ip is still enabled.
     LoginSettingsPage page = logonToLoginSettingsPage();
-    assertEquals(page.isEnableViaIp(), true);
+    assertTrue(page.isEnableViaIp());
   }
 
   @Test(description = "User without permission shouldn't be able to edit mail settings")
