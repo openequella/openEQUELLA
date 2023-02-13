@@ -19,6 +19,7 @@
 package com.tle.web.api
 
 import com.dytech.common.io.DevNullWriter
+import com.dytech.edge.web.WebConstants
 import com.tle.beans.item.{ItemId, ItemKey, ItemTaskId}
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.security.SecurityConstants
@@ -344,6 +345,8 @@ class LegacyContentApi {
     val path                  = s"/${_path}"
     (Option(LegacyGuice.treeRegistry.getTreeForPath(treePath)) match {
       case None => Response.status(404)
+      case Some(_) if (CurrentUser.isGuest() && path.startsWith(WebConstants.ACCESS_PATH)) =>
+        Response.status(401)
       case Some(tree) => {
         LegacyGuice.userSessionService.reenableSessionUse()
         req.setAttribute(UserIdKey, CurrentUser.getUserID)

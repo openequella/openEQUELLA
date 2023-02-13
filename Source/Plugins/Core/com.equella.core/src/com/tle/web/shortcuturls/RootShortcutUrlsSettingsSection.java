@@ -126,6 +126,7 @@ public class RootShortcutUrlsSettingsSection extends OneColumnLayout<ShortcutUrl
 
   @EventHandlerMethod
   public void delete(SectionInfo info, String key) {
+    securityProvider.checkAuthorised();
     ShortcutUrls shortcutUrls = getShortcutUrls();
     shortcutUrls.getShortcuts().remove(key);
     configService.setProperties(shortcutUrls);
