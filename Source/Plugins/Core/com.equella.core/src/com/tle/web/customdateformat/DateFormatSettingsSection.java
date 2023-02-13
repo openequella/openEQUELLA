@@ -104,6 +104,7 @@ public class DateFormatSettingsSection
 
   @EventHandlerMethod
   public void save(SectionInfo info) {
+    securityProvider.checkAuthorised();
     final DateFormatSettings settings = getDateFormatSettings();
     settings.setDateFormat(dateFormats.getSelectedValueAsString(info));
     configService.setProperties(settings);

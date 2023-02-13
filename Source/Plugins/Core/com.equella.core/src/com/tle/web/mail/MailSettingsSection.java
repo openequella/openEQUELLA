@@ -159,6 +159,7 @@ public class MailSettingsSection extends OneColumnLayout<MailSettingsSection.Mai
 
   @EventHandlerMethod
   public void save(SectionInfo info) {
+    securityProvider.checkAuthorised();
     saveSystemConstants(info);
     receiptService.setReceipt(SAVE_RECEIPT_LABEL);
   }
