@@ -94,7 +94,7 @@ libraryDependencies ++= Seq(
   ),
   "com.miglayout" % "miglayout-swing"       % "4.2",
   "com.ning"      % "async-http-client"     % "1.9.40",
-  "com.rometools" % "rome"                  % "1.18.0",
+  "com.rometools" % "rome"                  % "1.19.0",
   "io.swagger"    % "swagger-core"          % SwaggerVersion,
   "io.swagger"    % "swagger-annotations"   % SwaggerVersion,
   "io.swagger"    % "swagger-jaxrs"         % SwaggerVersion,
