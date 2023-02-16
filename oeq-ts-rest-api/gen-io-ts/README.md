@@ -1,11 +1,19 @@
-This small project is a code generation project to generate the `io-ts` Codec based on the
+# gen-io-ts
+
+This small project is a code generation project to generate the [`io-ts`](https://gcanti.github.io/io-ts/) Codecs based on the
 `interface`s and `type alias` documented in the main module.
 
 ## How it works
 
-1. `ts-morph` is the library used to parse all the TS files in the main module.
-2. Based on the parsing output, a library called `io-ts-codegen` is the major tool we use to generate the Codec. However, this library does not generate Codec
-for some type definitions. For example, it does not support a type definition that takes type arguments. As a result, we use string templates as a supplementary.
+1. [`ts-morph`](https://ts-morph.com/) is used to parse all the TS files in the main module.
+2. Based on the parsing output, [`io-ts-codegen`](https://github.com/gcanti/io-ts-codegen) is used 
+   to generate the `io-ts` Codecs. However, this library is unable to generate Codecs for some type
+   definitions - such as type definition which take type arguments. To support these types string
+   templates are used.
+
+Please see the section further down on 'TS code requirements' for other syntax which needs to be considered
+when writing code in the main module. (Or for when things don't seem to generate correctly.) As there were
+still some cases that were to complex to support.
 
 ## Example 1
 Given a simple type defined as `interface`
@@ -91,4 +99,4 @@ we should do this:
 1. For `type alias` that accepts type arguments, use interface instead.
 2. For `interface` where type arguments and recursive types are both used, while this
    complicated type definition in theory can be supported, we don't have such a type yet and the implementation
-   will require a lot more efforts.
+   will require a lot more effort.
