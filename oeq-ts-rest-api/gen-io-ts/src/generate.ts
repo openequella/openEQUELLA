@@ -36,7 +36,7 @@ import { pfTernary } from './utils';
 const HEADER =
   "/** This file is created by 'io-ts-gen' so please do not modify it. **/";
 const IO_TS_IMPORT = "import * as t from 'io-ts';";
-const IO_TSTYPE_IMPORT = "import * as td from 'io-ts-types';\n"; // This one is the last import so add a newline character.
+const IO_TS_TYPES_IMPORT = "import * as td from 'io-ts-types';"; // This one is the last import so add a newline character.
 
 const ArrayRegex = /^(.+)(\[])+$/;
 const RecordRegex = /^Record<(.+), (.+)>$/;
@@ -307,7 +307,8 @@ export const generate = ({
       HEADER,
       ...generateImports(imports),
       IO_TS_IMPORT,
-      IO_TSTYPE_IMPORT,
+      IO_TS_TYPES_IMPORT,
+      '\n',
       ...typeDeclarations,
     ],
     A.intercalate(S.Monoid)('\n'),
