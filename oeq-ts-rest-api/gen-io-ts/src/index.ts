@@ -54,12 +54,21 @@ pipe(
   O.fold(constVoid, fs.mkdirSync)
 );
 
-console.log(`Processing directory: ${args.source}`);
+// Recursively list all the TS files from the given source directory.
+const listTSFiles = (source: string): string[] => {
+  console.log(`Searching TS files from directory: ${path.resolve(source)}`);
+
+  return pipe(
+    fs.readdirSync(source),
+    A.map((filename) => path.resolve(source, filename)),
+    A.chain((filename) =>
+      fs.lstatSync(filename).isDirectory() ? listTSFiles(filename) : [filename]
+    )
+  );
+};
 
 pipe(
-  fs.readdirSync(args.source),
-  A.map((filename) => path.resolve(args.source, filename)),
-  A.filter((filename) => !fs.lstatSync(filename).isDirectory()),
+  listTSFiles(args.source),
   A.map(
     flow(
       parseFile,
