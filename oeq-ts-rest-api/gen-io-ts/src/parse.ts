@@ -188,7 +188,7 @@ const buildImports: (parsedImports: ImportDeclaration[]) => Import[] = flow(
     filename: namedImport
       .getParent()
       .getParent()
-      .getParent()
+      .getParent() // Call `getParent` three times to get the full import clause.
       .getModuleSpecifierValue(),
     namedImport: namedImport.getName(),
   }))
