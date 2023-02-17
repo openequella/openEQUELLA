@@ -210,9 +210,13 @@ const buildFileDefinition = (file: SourceFile): FileDefinition => ({
   typeAliases: buildTypeAliases(file.getTypeAliases()),
 });
 
-export const parseFile = (filename: string): FileDefinition =>
-  pipe(
-    new Project(),
-    (p) => p.addSourceFileAtPath(filename),
-    buildFileDefinition
-  );
+/**
+ * This function parses a TS file and builds a FileDefinition for the file, which includes:
+ * 1. All the interface definitions.
+ * 2. All the type alias definitions.
+ * 3. All the imports required by above interfaces or type alias.
+ *
+ * @param path Absolute path to a TS file.
+ */
+export const parseFile = (path: string): FileDefinition =>
+  pipe(new Project(), (p) => p.addSourceFileAtPath(path), buildFileDefinition);
