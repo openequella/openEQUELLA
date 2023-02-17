@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ThemeSettingsCodec } from 'gen/Theme';
 import { DELETE, GET, PUT } from './AxiosInstance';
+import { ThemeSettingsCodec } from './gen/Theme';
 import { validate } from './Utils';
 
 const THEME_ROOT_PATH = '/theme';

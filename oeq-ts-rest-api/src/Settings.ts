@@ -15,9 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GeneralSettingCodec, UISettingsCodec } from 'gen/Settings';
 import * as t from 'io-ts';
 import { GET, PUT } from './AxiosInstance';
+import { GeneralSettingCodec, UISettingsCodec } from './gen/Settings';
 import { validate } from './Utils';
 
 export interface GeneralSetting {

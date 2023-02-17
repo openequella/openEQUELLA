@@ -15,11 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PagedResultCodec } from 'gen/Common';
-import { EquellaSchemaCodec } from 'gen/Schema';
 import { GET } from './AxiosInstance';
 import type { BaseEntity, PagedResult } from './Common';
 import { isPagedBaseEntity, ListCommonParams } from './Common';
+import { PagedResultCodec } from './gen/Common';
+import { EquellaSchemaCodec } from './gen/Schema';
 import { validate } from './Utils';
 
 export interface Citation {

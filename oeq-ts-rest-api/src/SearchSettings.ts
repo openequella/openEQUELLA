@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 import { Literal, Union } from 'runtypes';
-import { SettingsCodec } from 'gen/SearchSettings';
 import { GET, PUT } from './AxiosInstance';
+import { SettingsCodec } from './gen/SearchSettings';
 import type { SortOrder } from './Search';
 import { validate } from './Utils';
 

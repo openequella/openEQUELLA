@@ -15,10 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SearchResultCodec, UserDetailsCodec } from 'gen/UserQuery';
 import * as t from 'io-ts';
 import { GET, POST } from './AxiosInstance';
 import type { UuidString } from './Common';
+import { SearchResultCodec, UserDetailsCodec } from './gen/UserQuery';
 import { validate } from './Utils';
 
 export interface UserDetails {

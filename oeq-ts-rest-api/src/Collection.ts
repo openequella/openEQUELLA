@@ -15,8 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CollectionCodec } from 'gen/Collection';
-import { PagedResultCodec } from 'gen/Common';
 import { GET } from './AxiosInstance';
 import type {
   BaseEntity,
@@ -25,6 +23,8 @@ import type {
   PagedResult,
 } from './Common';
 import { isPagedBaseEntity } from './Common';
+import { CollectionCodec } from './gen/Collection';
+import { PagedResultCodec } from './gen/Common';
 import type {
   BaseEntitySecurity,
   DynamicRule,

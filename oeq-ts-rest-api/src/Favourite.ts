@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FavouriteItemCodec, FavouriteSearchModelCodec } from 'gen/Favourite';
 import { DELETE, POST } from './AxiosInstance';
+import { FavouriteItemCodec, FavouriteSearchModelCodec } from './gen/Favourite';
 import { validate } from './Utils';
 
 /**

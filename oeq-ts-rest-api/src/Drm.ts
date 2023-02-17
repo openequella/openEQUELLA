@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DrmViolationCodec, ItemDrmDetailsCodec } from 'gen/Drm';
 import { GET, POST_void } from './AxiosInstance';
+import { DrmViolationCodec, ItemDrmDetailsCodec } from './gen/Drm';
 import { validate } from './Utils';
 
 export interface DrmParties {

@@ -15,10 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { MimeTypeFilterCodec } from 'gen/SearchFilterSettings';
 import * as t from 'io-ts';
 import { DELETE, GET, PUT } from './AxiosInstance';
 import type { BatchOperationResponse } from './BatchOperationResponse';
+import { MimeTypeFilterCodec } from './gen/SearchFilterSettings';
 import { validate } from './Utils';
 
 export interface MimeTypeFilter {

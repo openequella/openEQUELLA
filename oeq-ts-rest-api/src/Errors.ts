@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { AxiosError } from 'axios';
-import { ErrorResponseCodec } from 'gen/Errors';
+import { ErrorResponseCodec } from './gen/Errors';
 import { validate } from './Utils';
 
 export interface ErrorResponse {

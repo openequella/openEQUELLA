@@ -15,9 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SearchFacetsResultCodec } from 'gen/SearchFacets';
 import { GET } from './AxiosInstance';
 import type { UuidString } from './Common';
+import { SearchFacetsResultCodec } from './gen/SearchFacets';
 import type { Must } from './Search';
 import { processMusts } from './Search';
 import { asCsvList, validate } from './Utils';

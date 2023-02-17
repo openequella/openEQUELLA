@@ -17,9 +17,9 @@
  */
 import { stringify } from 'query-string';
 import { Literal, Union } from 'runtypes';
-import { SearchResultCodec, SearchResultItemRawCodec } from 'gen/Search';
 import { GET, HEAD, POST } from './AxiosInstance';
 import type { i18nString, ItemStatus } from './Common';
+import { SearchResultCodec, SearchResultItemRawCodec } from './gen/Search';
 import { convertDateFields, validate } from './Utils';
 
 /**

@@ -15,11 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AdvancedSearchDefinitionCodec } from 'gen/AdvancedSearch';
-import { BaseEntitySummaryCodec } from 'gen/Common';
 import * as t from 'io-ts';
 import { GET } from './AxiosInstance';
 import type { BaseEntitySummary } from './Common';
+import { AdvancedSearchDefinitionCodec } from './gen/AdvancedSearch';
+import { BaseEntitySummaryCodec } from './gen/Common';
 import { validate } from './Utils';
 import type { WizardControl } from './WizardControl';
 

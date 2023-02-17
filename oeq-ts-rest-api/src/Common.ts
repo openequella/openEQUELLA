@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 import { pipe } from 'fp-ts/function';
+import * as t from 'io-ts';
+import { Literal, Union } from 'runtypes';
 import {
   BaseEntityCodec,
   BaseEntitySummaryCodec,
   PagedResultCodec,
-} from 'gen/Common';
-import * as t from 'io-ts';
-import { Literal, Union } from 'runtypes';
+} from './gen/Common';
 import type { BaseEntitySecurity } from './Security';
 import { validate } from './Utils';
 

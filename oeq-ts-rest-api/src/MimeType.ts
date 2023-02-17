@@ -15,12 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as t from 'io-ts';
+import { GET } from './AxiosInstance';
 import {
   MimeTypeEntryCodec,
   MimeTypeViewerConfigurationCodec,
-} from 'gen/MimeType';
-import * as t from 'io-ts';
-import { GET } from './AxiosInstance';
+} from './gen/MimeType';
 import { validate } from './Utils';
 
 export interface MimeTypeEntry {
