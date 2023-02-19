@@ -228,12 +228,17 @@ const buildGenericTypeInterface = ({
   typeArguments,
   typeExtended,
 }: Interface): gen.TypeDeclaration => {
-  const typeParameters = typeArguments
-    .map((_, index) => `C${index} extends t.Mixed`)
-    .join(',');
-  const funcParameters = typeArguments
-    .map((_, index) => `codec${index}: C${index}`)
-    .join(',');
+  const typeParameters = pipe(
+    typeArguments,
+    A.mapWithIndex((index, _) => `C${index} extends t.Mixed`),
+    A.intercalate(S.Monoid)(',')
+  );
+
+  const funcParameters = pipe(
+    typeArguments,
+    A.mapWithIndex((index, _) => `codec${index}: C${index}`),
+    A.intercalate(S.Monoid)(',')
+  );
 
   const extendIdentifiers = generateExtendIdentifier(typeExtended);
   const props = gen.typeCombinator(
