@@ -72,6 +72,15 @@ const plainTypeReference = (
     typeArguments
   );
 
+// Return a list of io-ts-codegen Property for the supplied list of Prop.
+const generateProperties = (
+  props: Prop[],
+  typeArguments?: string[]
+): gen.Property[] =>
+  props.map((p) =>
+    gen.property(p.name, getTypeReference(p, typeArguments), p.optional)
+  );
+
 // Given a property and a list of generic types, find out a matched TypeReference for the property.
 const getTypeReference = (
   { type, properties }: Prop,
@@ -179,15 +188,6 @@ const getTypeReference = (
       );
   }
 };
-
-// Return a list of io-ts-codegen Property for the supplied list of Prop.
-const generateProperties = (
-  props: Prop[],
-  typeArguments?: string[]
-): gen.Property[] =>
-  props.map((p) =>
-    gen.property(p.name, getTypeReference(p, typeArguments), p.optional)
-  );
 
 // Return a list of io-ts-codegen Identifier for the supplied list of Interface's name.
 const generateExtendIdentifier: (identifiers: string[]) => gen.Identifier[] =
