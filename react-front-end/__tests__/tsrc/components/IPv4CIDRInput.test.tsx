@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import "@testing-library/jest-dom/extend-expect";
-import { waitFor } from "@testing-library/react";
 import {
   queryIpInput,
   queryNetmaskInput,
@@ -63,7 +62,7 @@ describe("<IPV4CIDRInput />", () => {
     await typeInIpInput(container, typeText, inputIndex);
 
     const nextInput = queryIpInput(container, expectedInputIndex);
-    await waitFor(() => expect(nextInput).toHaveFocus());
+    expect(nextInput).toHaveFocus();
   });
 
   it("should be able to automatically change the focus on netmask input if use complete the final ip input", async () => {
