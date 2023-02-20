@@ -6,7 +6,7 @@ This small project is a code generation project to generate the [`io-ts`](https:
 ## How it works
 
 1. [`ts-morph`](https://ts-morph.com/) is used to parse all the TS files in the main module.
-2. Based on the parsing output, [`io-ts-codegen`](https://github.com/gcanti/io-ts-codegen) is used 
+2. Based on the parsing output, [`io-ts-codegen`](https://github.com/gcanti/io-ts-codegen) is used
    to generate the `io-ts` Codecs. However, this library is unable to generate Codecs for some type
    definitions - such as type definition which take type arguments. To support these types string
    templates are used.
@@ -93,6 +93,15 @@ we should do this:
 2. When a type definition is imported, the import must be a named type import.
 ```typescript
  import type { A } from 'X';
+```
+
+3. For an Array type, it must be defined in this style:
+```
+ type A = string[]
+```
+rather than this:
+```
+ type A = Array<string>
 ```
 
 ## Unsupported
