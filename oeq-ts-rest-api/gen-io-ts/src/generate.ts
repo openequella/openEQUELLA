@@ -39,11 +39,13 @@ const IO_TS_IMPORT = "import * as t from 'io-ts';";
 const IO_TS_TYPES_IMPORT = "import * as td from 'io-ts-types';"; // This one is the last import so add a newline character.
 
 const ArrayRegex = /^(.+)(\[])+$/;
-const RecordRegex = /^Record<(.+), (.+)>$/;
-const StringLiteralRegex = /^'(\w*)'$/;
+// Regex for Record where the first group does a non-greedy capture to match the first comma.
+const RecordRegex = /^Record<(.+?),(.+)>$/;
+const StringLiteralRegex = /^'(.*)'$/;
 const IntLiteralRegex = /^\d+$/;
-const FunctionRegex = /^\(.*\) => .+$/;
-const UnionRegex = /^\|?\s?(.+\n?\s+\|\s)+(.+)$/;
+const FunctionRegex = /^\(.*\)=>.+$/;
+// A Union may start with "|", but it must not end with "|".
+const UnionRegex = /^(\|?.+\|)+[^|]+$/;
 const TupleRegex = /^\[(.+)]$/;
 
 export interface CodecDefinition {
@@ -81,6 +83,10 @@ const generateProperties = (
     gen.property(p.name, getTypeReference(p, typeArguments), p.optional)
   );
 
+// Some type definitions represented by strings have spaces or newlines that make it harder to find their
+// correct TypeReference. Therefore, call this function to drop them.
+const trimString = (s: string) => s.replace(/\s|\n/g, '');
+
 // Given a property and a list of generic types, find out a matched TypeReference for the property.
 const getTypeReference = (
   { type, properties }: Prop,
@@ -113,11 +119,11 @@ const getTypeReference = (
     case type === 'Date':
       // 'td' is the namespace of the import of 'io-ts-types'.
       return gen.customCombinator('Date', 'td.date');
-    case FunctionRegex.test(type):
+    case FunctionRegex.test(trimString(type)):
       return gen.functionType;
     case IntLiteralRegex.test(type):
       return pipe(
-        type.match(IntLiteralRegex)?.input,
+        type,
         IntFromString.decode,
         O.fromEither,
         O.foldW(() => gen.unknownType, gen.literalCombinator)
@@ -130,8 +136,8 @@ const getTypeReference = (
           () => gen.unknownRecordType,
           ([_, domain, codomain]) =>
             gen.recordCombinator(
-              plainTypeReference(domain, typeArguments),
-              plainTypeReference(codomain, typeArguments)
+              plainTypeReference(S.trim(domain), typeArguments),
+              plainTypeReference(S.trim(codomain), typeArguments)
             )
         )
       );
@@ -155,20 +161,15 @@ const getTypeReference = (
         ),
         O.foldW(() => gen.unknownType, gen.tupleCombinator)
       );
-    case UnionRegex.test(type):
+    case UnionRegex.test(trimString(type)):
       return pipe(
-        type.match(UnionRegex)?.input,
-        O.fromNullable,
-        O.map(
-          flow(
-            S.split('|'),
-            RA.map(S.trim),
-            RA.filter(not(S.isEmpty)),
-            RA.map(plainTypeReference),
-            RA.toArray
-          )
-        ),
-        O.foldW(() => gen.unknownType, gen.unionCombinator)
+        type,
+        S.split('|'),
+        RA.map(S.trim),
+        RA.filter(not(S.isEmpty)),
+        RA.map(plainTypeReference),
+        RA.toArray,
+        gen.unionCombinator
       );
     default:
       // Check whether the property's type is in the list of type argument.
