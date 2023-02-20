@@ -1,6 +1,6 @@
 {
   "name": "gen-io-ts",
-  "version": "0.1.0-alpha",
+  "version": "1.0.0",
   "description": "Generates io-ts types for oeq-ts-rest-api",
   "license": "Apache-2.0",
   "main": "index.js",
