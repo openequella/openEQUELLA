@@ -3,7 +3,7 @@ import java.util.jar.Attributes
 import sbt.Package.ManifestAttributes
 
 libraryDependencies ++= Seq(
-  "commons-fileupload"   % "commons-fileupload" % "1.4",
+  "commons-fileupload"   % "commons-fileupload" % "1.5",
   "com.google.guava"     % "guava"              % "31.1-jre",
   "org.antlr"            % "stringtemplate"     % "3.2.1",
   "com.google.code.gson" % "gson"               % "2.10.1",
