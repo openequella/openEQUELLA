@@ -78,6 +78,7 @@ public class RootHarvesterSkipDrmSettingsSection
 
   @EventHandlerMethod
   public void save(SectionInfo info) {
+    securityProvider.checkAuthorised();
     HarvesterSkipDrmSettings settings = configService.getProperties(new HarvesterSkipDrmSettings());
     boolean oldAllowSkip = settings.isHarvestingSkipDrm();
     boolean newAllowSkip = allowSkip.isChecked(info);

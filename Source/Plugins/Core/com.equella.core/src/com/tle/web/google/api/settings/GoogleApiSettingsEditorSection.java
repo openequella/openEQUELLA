@@ -84,6 +84,7 @@ public class GoogleApiSettingsEditorSection
 
   @EventHandlerMethod
   public void save(SectionInfo info) {
+    securityProvider.checkAuthorised();
     final String key = apiKey.getValue(info).trim();
     if (!Check.isEmpty(key)) {
       configService.setProperty(GoogleApiUtils.GOOGLE_API_KEY, key);

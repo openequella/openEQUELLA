@@ -221,6 +221,10 @@ public abstract class AbstractTest implements HasTestConfig {
     return context.getDriver().findElement(By.id(id)).getText().contains(text);
   }
 
+  protected String getValueInId(String id) {
+    return context.getDriver().findElement(By.id(id)).getAttribute("value");
+  }
+
   protected void prepareBrowserSession() {
     // classes can override
   }

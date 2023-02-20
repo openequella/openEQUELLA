@@ -24,7 +24,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.tle.common.Check;
@@ -34,14 +33,12 @@ import com.tle.core.application.StartupBean;
 import com.tle.core.cluster.ClusterMessageHandler;
 import com.tle.core.cluster.MessageReceiver;
 import com.tle.core.cluster.MessageSender;
+import com.tle.core.cluster.service.ClusterMessageProcessor;
 import com.tle.core.cluster.service.ClusterMessagingService;
 import com.tle.core.guice.Bind;
 import com.tle.core.plugins.PluginAwareObjectOutputStream;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.core.zookeeper.ZookeeperService;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetAddress;
@@ -49,12 +46,13 @@ import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -105,19 +103,17 @@ public class ClusterMessagingServiceImpl
       CacheBuilder.newBuilder()
           .expireAfterAccess(30, TimeUnit.MINUTES)
           .removalListener(
-              new RemovalListener<String, MessageSender>() {
-                @Override
-                public void onRemoval(RemovalNotification<String, MessageSender> notification) {
-                  if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug(
-                        "Removing stale sender from cache for NODE: " + notification.getKey());
-                  }
-                }
-              })
+              (RemovalListener<String, MessageSender>)
+                  notification -> {
+                    if (LOGGER.isDebugEnabled()) {
+                      LOGGER.debug(
+                          "Removing stale sender from cache for NODE: " + notification.getKey());
+                    }
+                  })
           .build(
-              new CacheLoader<String, MessageSender>() {
+              new CacheLoader<>() {
                 @Override
-                public MessageSender load(String receiverId) throws Exception {
+                public MessageSender load(String receiverId) {
                   if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("Loading sender cache for NODE: " + receiverId);
                   }
@@ -132,69 +128,47 @@ public class ClusterMessagingServiceImpl
     }
     if (zookeeperService.isCluster()) {
       Thread thread =
-          new Thread() {
-            @Override
-            public void run() {
-              setupBindAddress();
-              try {
-                @SuppressWarnings("resource")
-                ServerSocket server = new ServerSocket();
-                LOGGER.info("Binding to " + bindAddress + ":" + bindPort);
-                server.bind(new InetSocketAddress(bindAddress, bindPort));
-                zookeeperService.createNode(MESSAGING_ZKPATH, bindAddress + ":" + bindPort);
-                zookeeperService.createPathCache(
-                    MESSAGING_ZKPATH, true, ClusterMessagingServiceImpl.this);
+          new Thread(
+              () -> {
+                setupBindAddress();
+                final String endpoint = bindAddress + ":" + bindPort;
+                try {
+                  ServerSocket server = new ServerSocket();
+                  LOGGER.info("Binding to " + endpoint);
+                  server.bind(new InetSocketAddress(bindAddress, bindPort));
+                  zookeeperService.createNode(MESSAGING_ZKPATH, endpoint);
+                  zookeeperService.createPathCache(
+                      MESSAGING_ZKPATH, true, ClusterMessagingServiceImpl.this);
 
-                // Keep accepting connections while the socket is valid.
-                do {
-                  final Socket sock = server.accept();
-                  senderExecutor.execute(
-                      new Runnable() {
-                        String receiverId;
-
-                        @Override
-                        public void run() {
-                          try (Socket s = sock;
-                              DataInputStream dis = new DataInputStream(sock.getInputStream());
-                              DataOutputStream dos =
-                                  new DataOutputStream(
-                                      new BufferedOutputStream(sock.getOutputStream())); ) {
-                            sock.setSoTimeout(10000);
-                            String thisId = dis.readUTF();
-                            if (!isThisNode(thisId)) {
-                              throw new IOException(
-                                  "Remote NODE trying to communicate with stale reference to this NODE");
-                            }
-                            receiverId = dis.readUTF();
-                            LOGGER.info("Successful connection from NODE: " + receiverId);
-                            MessageSender ms = senders.get(receiverId);
-                            ms.checkExpectedOffset(dis);
-                            while (true) {
-                              ms.sendMessages(dos, dis);
-                              ms = senders.get(receiverId);
-                            }
-                          } catch (IOException ex) {
-                            logError(receiverId, ex);
-                          } catch (Throwable t) {
-                            LOGGER.error("An unexpected error occurred: ", t);
-                          }
-                        }
-
-                        private void logError(String nodeId, Exception e) {
-                          LOGGER.error(
-                              MessageFormat.format(
-                                  "Error communicating with NODE: {0}, Error message was: {1}",
-                                  nodeId, e.getMessage()));
-                        }
-                      });
-                } while (!server.isClosed() && server.isBound());
-              } catch (IOException ex) {
-                LOGGER.error(
-                    "Error while binding or accepting socket " + bindAddress + ":" + bindPort, ex);
-                Throwables.propagate(ex);
-              }
-            }
-          };
+                  // Keep accepting connections while the socket is valid.
+                  do {
+                    // Wait for other nodes in the cluster to connect to this node
+                    LOGGER.debug("Waiting for connections on: " + endpoint);
+                    final Socket sock = retryAccept(server);
+                    // Once they have connected, we establish a ClusterMessageProcessor which:
+                    // 1. Validates the connection, and establishes the ID (nodeId) of the other
+                    // node
+                    // 2. Maintains the connection to that node to:
+                    //    a. Send them any new messages when available; and
+                    //    b. If no messages available, send a regular keep-alive message
+                    senderExecutor.execute(
+                        new ClusterMessageProcessor(
+                            sock,
+                            nodeId -> {
+                              try {
+                                return senders.get(nodeId);
+                              } catch (ExecutionException e) {
+                                throw new RuntimeException(
+                                    "Unable to retrieve details for node: " + nodeId, e);
+                              }
+                            },
+                            this::isThisNode));
+                  } while (!server.isClosed() && server.isBound());
+                } catch (IOException ex) {
+                  LOGGER.error("Error while binding or accepting socket " + endpoint, ex);
+                  Throwables.propagate(ex);
+                }
+              });
       thread.setName("ClusterMessagingServiceImpl.serverSocket");
       thread.start();
     }
@@ -213,7 +187,7 @@ public class ClusterMessagingServiceImpl
           } else {
             throw new RuntimeException(
                 "messaging.bindAddress has not been defined in"
-                    + " optional-config.properties, and EQUELLA could not determine a suitable"
+                    + " optional-config.properties, and openEQUELLA could not determine a suitable"
                     + " network interface to bind to.");
           }
         }
@@ -222,6 +196,26 @@ public class ClusterMessagingServiceImpl
       }
     } catch (UnknownHostException e) {
       Throwables.propagate(e);
+    }
+  }
+
+  /**
+   * Method to continually retry accept calls on the provided server socket for any timeout issues.
+   * Will retry forever, as only intended for mission critical sockets - like the cluster messaging
+   * socket.
+   */
+  private Socket retryAccept(ServerSocket server) throws IOException {
+    while (true) {
+      try {
+        return server.accept();
+      } catch (SocketTimeoutException timeout) {
+        LOGGER.warn("Failed to accept on cluster messaging port, will retry until success.");
+        try {
+          Thread.sleep(5000);
+        } catch (InterruptedException e) {
+          throw new IOException("Failed to properly accept on cluster messaging port", e);
+        }
+      }
     }
   }
 

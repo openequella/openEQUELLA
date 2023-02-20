@@ -41,7 +41,7 @@ public class UserQueryApiTest extends AbstractRestApiTest {
           "Search for all users matching a query, with no group filter specified (so all users)")
   public void filter_unfilteredQueryTest() throws IOException {
     final List<UserDetails> result = filterEndpointQuery(200, COMMON_QUERY, null);
-    assertThat(REASON_UNEXPECTED_NUM_USERS, result.size(), is(8));
+    assertThat(REASON_UNEXPECTED_NUM_USERS, result.size(), is(9));
   }
 
   @Test(description = "Search for all users matching a query, limiting to a single group")

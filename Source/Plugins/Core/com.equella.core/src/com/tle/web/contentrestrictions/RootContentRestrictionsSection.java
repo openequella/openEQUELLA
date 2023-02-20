@@ -273,6 +273,7 @@ public class RootContentRestrictionsSection extends OneColumnLayout<OneColumnLay
 
   @EventHandlerMethod
   public void editUserQuota(SectionInfo info, int index, long quotaSize, String expression) {
+    securityProvider.checkAuthorised();
     SelectedQuota selected = new SelectedQuota(index, quotaSize, expression);
     editContentRestrictionsSection.editUserQuota(info, selected);
   }
@@ -317,6 +318,7 @@ public class RootContentRestrictionsSection extends OneColumnLayout<OneColumnLay
 
   @EventHandlerMethod
   public void addBannedExtension(SectionInfo info, String ext) {
+    securityProvider.checkAuthorised();
     final QuotaSettings config = getConfig();
     final List<String> extensions = config.getBannedExtensions();
     final String upperCase = ext.trim().toUpperCase();
@@ -329,6 +331,7 @@ public class RootContentRestrictionsSection extends OneColumnLayout<OneColumnLay
 
   @EventHandlerMethod
   public void removeBannedExtension(SectionInfo info, String key) {
+    securityProvider.checkAuthorised();
     final QuotaSettings config = getConfig();
     config.getBannedExtensions().remove(key);
     configService.setProperties(config);
@@ -352,6 +355,7 @@ public class RootContentRestrictionsSection extends OneColumnLayout<OneColumnLay
 
   @EventHandlerMethod
   public void removeUserQuota(SectionInfo info, int index) {
+    securityProvider.checkAuthorised();
     final QuotaSettings config = getConfig();
     config.getQuotas().remove(index);
     configService.setProperties(config);
@@ -359,6 +363,7 @@ public class RootContentRestrictionsSection extends OneColumnLayout<OneColumnLay
 
   @EventHandlerMethod
   public void shiftUserQuota(SectionInfo info, int index, boolean up) {
+    securityProvider.checkAuthorised();
     final QuotaSettings config = getConfig();
     final List<UserQuota> quotas = config.getQuotas();
     final UserQuota uq = quotas.get(index);
