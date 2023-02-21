@@ -36,7 +36,7 @@ import { pfTernary } from './utils';
 const HEADER =
   "/** This file is created by 'io-ts-gen' so please do not modify it. **/";
 const IO_TS_IMPORT = "import * as t from 'io-ts';";
-const IO_TS_TYPES_IMPORT = "import * as td from 'io-ts-types';"; // This one is the last import so add a newline character.
+const IO_TS_TYPES_IMPORT = "import * as td from 'io-ts-types';";
 
 const ArrayRegex = /^(.+)(\[])+$/;
 // Regex for Record where the first group does a non-greedy capture to match the first comma.
