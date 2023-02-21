@@ -15,10 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { is } from 'typescript-is';
+import * as t from 'io-ts';
 import { GET } from './AxiosInstance';
-import { BaseEntitySummary, isBaseEntitySummaryArray } from './Common';
-import { WizardControl } from './WizardControl';
+import type { BaseEntitySummary } from './Common';
+import { AdvancedSearchDefinitionCodec } from './gen/AdvancedSearch';
+import { BaseEntitySummaryCodec } from './gen/Common';
+import { validate } from './Utils';
+import type { WizardControl } from './WizardControl';
 
 /**
  * Definition of an Advanced Search.
@@ -50,7 +53,10 @@ const ADV_SEARCH_SETTINGS_ROOT_PATH = '/settings/advancedsearch/';
 export const listAdvancedSearches = (
   apiBasePath: string
 ): Promise<BaseEntitySummary[]> =>
-  GET(apiBasePath + ADV_SEARCH_SETTINGS_ROOT_PATH, isBaseEntitySummaryArray);
+  GET(
+    apiBasePath + ADV_SEARCH_SETTINGS_ROOT_PATH,
+    validate(t.array(BaseEntitySummaryCodec))
+  );
 
 /**
  * Retrieve an Advanced search's definition by UUID.
@@ -64,6 +70,5 @@ export const getAdvancedSearchByUuid = (
 ): Promise<AdvancedSearchDefinition> =>
   GET(
     apiBasePath + ADV_SEARCH_SETTINGS_ROOT_PATH + uuid,
-    (data: unknown): data is AdvancedSearchDefinition =>
-      is<AdvancedSearchDefinition>(data)
+    validate(AdvancedSearchDefinitionCodec)
   );

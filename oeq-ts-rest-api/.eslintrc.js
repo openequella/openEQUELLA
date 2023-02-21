@@ -15,6 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/* eslint-disable-next-line @typescript-eslint/no-var-requires */
+const path = require('path');
+
 module.exports = {
   root: true,
   env: {
@@ -39,12 +42,13 @@ module.exports = {
     ecmaVersion: 2018,
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint', 'notice'],
+  plugins: ['@typescript-eslint', 'notice', 'unused-imports'],
   rules: {
+    'unused-imports/no-unused-imports': 'error',
     'notice/notice': [
       'error',
       {
-        templateFile: '../licenseHeader.js',
+        templateFile: `${path.resolve(__dirname)}/../licenseHeader.js`,
       },
     ],
   },

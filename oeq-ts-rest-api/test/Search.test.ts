@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { is } from 'typescript-is';
 import * as OEQ from '../src';
 import { GET } from '../src/AxiosInstance';
 import * as TC from './TestConfig';
@@ -163,7 +162,7 @@ describe('Exports search results for the specified search params', () => {
     await OEQ.Auth.login(TC.API_PATH, TC.USERNAME_SUPER, TC.PASSWORD_SUPER);
     const exportUrl = OEQ.Search.buildExportUrl(TC.API_PATH, searchParams);
     await expect(
-      GET(exportUrl, (data): data is string => is<string>(data))
+      GET(exportUrl, (data): data is string => typeof data === 'string')
     ).resolves.toBeTruthy();
   });
 

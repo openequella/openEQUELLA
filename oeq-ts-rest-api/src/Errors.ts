@@ -16,7 +16,8 @@
  * limitations under the License.
  */
 import { AxiosError } from 'axios';
-import { is } from 'typescript-is';
+import { ErrorResponseCodec } from './gen/Errors';
+import { validate } from './Utils';
 
 export interface ErrorResponse {
   code: number;
@@ -35,8 +36,9 @@ export class ApiError extends Error {
 
 export const repackageError = (error: AxiosError | Error): Error => {
   if ('isAxiosError' in error) {
+    const validator = validate(ErrorResponseCodec);
     const apiError = new ApiError(error.message, error.response?.status);
-    if (is<ErrorResponse>(error.response?.data)) {
+    if (validator(error.response?.data)) {
       apiError.errorResponse = error.response?.data;
     }
 

@@ -16,9 +16,12 @@
  * limitations under the License.
  */
 
-import { is } from 'typescript-is';
+import * as t from 'io-ts';
 import { GET } from './AxiosInstance';
 import { PagedResult } from './Common';
+import { PagedResultCodec } from './gen/Common';
+import { TermCodec } from './gen/Taxonomy';
+import { validate } from './Utils';
 
 /**
  * Restrictions applied to Taxonomy term selection.
@@ -84,7 +87,7 @@ export const getTaxonomyChildTerms = (
 ): Promise<Term[]> =>
   GET(
     `${apiBasePath}${TAXONOMY_ROOT_PATH}${uuid}/term`,
-    (data): data is Term[] => is<Term[]>(data),
+    validate(t.array(TermCodec)),
     {
       path: path,
     }
@@ -110,7 +113,7 @@ export const searchTaxonomyTerms = (
 ): Promise<PagedResult<Term>> =>
   GET(
     `${apiBasePath}${TAXONOMY_ROOT_PATH}${uuid}/search`,
-    (data): data is PagedResult<Term> => is<PagedResult<Term>>(data),
+    validate(PagedResultCodec(TermCodec)),
     {
       q,
       restriction,

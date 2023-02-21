@@ -14,11 +14,13 @@
     "npm": "8.19.4"
   },
   "scripts": {
+    "prepare": "cd gen-io-ts && npm ci && npm run gen && cd -",
     "start": "rollup --config --watch --bundleConfigAsCjs",
     "build": "rollup --config --bundleConfigAsCjs",
     "test": "jest --no-cache",
     "lint": "eslint \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
-    "format": "eslint --fix \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\""
+    "format": "eslint --fix \"src/**/*.{ts,tsx}\" \"test/**/*.{ts,tsx}\"",
+    "clean": "rm -rf node_modules/ src/gen dist"
   },
   "peerDependencies": {},
   "prettier": {
@@ -34,7 +36,11 @@
     "query-string": "^7.0.0",
     "runtypes": "6.6.0",
     "tough-cookie": "^4.0.0",
-    "typescript-is": "^0.19.0"
+    "fp-ts": "2.13.1",
+    "io-ts": "2.2.20",
+    "newtype-ts": "0.3.5",
+    "monocle-ts": "2.3.13",
+    "io-ts-types": "0.5.19"
   },
   "devDependencies": {
     "@types/jest": "27.5.2",
@@ -52,7 +58,6 @@
     "rollup-plugin-typescript2": "0.34.1",
     "ts-jest": "29.0.5",
     "tslib": "2.5.0",
-    "ttypescript": "1.5.15",
     "typescript": "4.7.4"
   }
 }
