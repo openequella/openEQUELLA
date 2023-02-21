@@ -15,19 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render, RenderResult } from "@testing-library/react";
+import {
+  findByText,
+  getAllByTestId,
+  render,
+  RenderResult,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { pipe } from "fp-ts/function";
 import * as React from "react";
 import ACLExpressionTree from "../../../../tsrc/components/aclexpressionbuilder/ACLExpressionTree";
+import { classes } from "../../../../tsrc/components/aclexpressionbuilder/ACLTreeItem";
 import {
   ACLExpression,
   ACLOperatorType,
   getOperatorLabel,
 } from "../../../../tsrc/modules/ACLExpressionModule";
-import { languageStrings } from "../../../../tsrc/util/langstrings";
-import { selectOption } from "../../MuiTestHelpers";
-
-const { delete: deleteLabel } = languageStrings.common.action;
+import { getSelectOption } from "../../MuiTestHelpers";
 
 // Helper to render ACLExpressionTree
 export const renderACLExpressionTree = (
@@ -42,31 +46,60 @@ export const renderACLExpressionTree = (
     />
   );
 
-// Helper function to mock select the arrow expend icon for each group node (`operator` tree item) in the tree view.
+/**
+ * Helper function to mock select the arrow expend icon for each group node (`operator` tree item) in the tree view.
+ *
+ * @param container The element which contains the element.
+ * @param nodeIndex The index represents the position of the node in the current `displayed` tree
+ * (not the real tree structure, some nodes may not be in the dom tree until their parent node is expended).
+ */
 export const selectOperatorNode = async (
   container: HTMLElement,
-  nodeId: string
+  nodeIndex: number
 ) => {
-  const node = container.querySelector(`#${nodeId} svg`);
-  if (!node) {
-    throw Error(`Can't find node with id: ${nodeId}`);
+  const nodes = getAllByTestId(container, "ACLTreeOperator-label");
+  const operator = nodes[nodeIndex];
+
+  if (!operator) {
+    throw Error(`Can't find operator node: ${nodeIndex}`);
   }
-  await userEvent.click(node);
+
+  await userEvent.click(operator);
 };
 
-// Helper function to mock select an `operator` for group node (`operator` tree item) in the tree view.
+/**
+ * Helper function to mock select an `operator` for group node (`operator` tree item) in the tree view.
+ * @param container The element which contains the element.
+ * @param nodeIndex The index represents the node position in the current `displayed` tree
+ *                  (not the real tree structure,
+ *                  some nodes may not be in the dom tree until their parent node is expended ).
+ * @param operator The expected option to select.
+ */
 export const selectOperatorForNode = async (
   container: HTMLElement,
-  nodeId: string,
+  nodeIndex: number,
   operator: ACLOperatorType
-) => selectOption(container, `#${nodeId}-select`, getOperatorLabel(operator));
+) => {
+  const selects = container.querySelectorAll(
+    `.${classes.labelSelect} div[role="button"]`
+  );
+  const select = selects[nodeIndex];
+
+  if (!select) {
+    throw Error(`Can't find operator select: ${nodeIndex}`);
+  }
+
+  await userEvent.click(select);
+  // Click the option in the list
+  await userEvent.click(pipe(operator, getOperatorLabel, getSelectOption));
+};
 
 // Helper function to mock click the delete button for a gaven recipient (located by name) in the tree view.
 export const clickDeleteButtonForRecipient = async (
-  { findByText }: RenderResult,
+  container: HTMLElement,
   name: string
 ) => {
-  const deleteButton = (await findByText(name)).nextElementSibling;
+  const deleteButton = (await findByText(container, name)).nextElementSibling;
   if (!deleteButton) {
     throw Error(`Can't find delete button for recipient with name: ${name}`);
   }
@@ -77,13 +110,14 @@ export const clickDeleteButtonForRecipient = async (
 // Helper function to mock click the delete button for the operator node in the tree view.
 export const clickDeleteButtonForOperatorNode = async (
   container: HTMLElement,
-  nodeId: string
+  nodeIndex: number
 ) => {
-  const node = container.querySelector(
-    `#${nodeId} button[aria-label=${deleteLabel}]`
-  );
+  const nodes = getAllByTestId(container, "ACLTreeOperator-delete");
+  // the root node doesn't have `delete` button
+  const node = nodes[nodeIndex - 1];
+
   if (!node) {
-    throw Error(`Can't find delete button for node with id: ${nodeId}`);
+    throw Error(`Can't find delete button for node: ${nodeIndex}`);
   }
   await userEvent.click(node);
 };

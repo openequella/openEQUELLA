@@ -23,13 +23,14 @@ import { pipe } from "fp-ts/function";
 import * as S from "fp-ts/string";
 import * as React from "react";
 import { ChangeEvent, useState } from "react";
+import type { ACLEntityResolvers } from "../../modules/ACLEntityModule";
 import type {
   ACLExpression,
   ACLOperatorType,
 } from "../../modules/ACLExpressionModule";
 import { createACLExpression } from "../../modules/ACLExpressionModule";
 import type { ACLRecipient } from "../../modules/ACLRecipientModule";
-import { recipientEq } from "../../modules/ACLRecipientModule";
+import { recipientEq, showRecipient } from "../../modules/ACLRecipientModule";
 import { ACLTreeOperator } from "./ACLTreeOperator";
 import { ACLTreeRecipient } from "./ACLTreeRecipient";
 
@@ -50,6 +51,10 @@ export interface ACLExpressionTreeProps {
    * Fired when the ACLExpression tree view is changed. (Such as delete recipient or update the operator)
    */
   onChange: (expression: ACLExpression) => void;
+  /***
+   * Functions to lookup user, group and role entities.
+   */
+  aclEntityResolvers?: ACLEntityResolvers;
 }
 
 /**
@@ -61,6 +66,7 @@ const ACLExpressionTree = ({
   onSelect,
   onDelete,
   onChange,
+  aclEntityResolvers,
 }: ACLExpressionTreeProps): JSX.Element => {
   const [expanded, setExpanded] = useState<string[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
@@ -120,15 +126,15 @@ const ACLExpressionTree = ({
         onAddGroup={handleAddGroup}
       >
         {recipients.map((recipient: ACLRecipient) => {
-          const { type, expression, name } = recipient;
-          const unnamedValue = `${type} : ${expression}`;
+          const nodeId = showRecipient(recipient);
 
           return (
             <ACLTreeRecipient
-              key={unnamedValue}
-              nodeId={unnamedValue}
-              expressionName={name ?? unnamedValue}
+              key={nodeId}
+              nodeId={nodeId}
+              recipient={recipient}
               onDelete={() => handleRecipientDelete(recipient)}
+              aclEntityResolvers={aclEntityResolvers}
             ></ACLTreeRecipient>
           );
         })}
