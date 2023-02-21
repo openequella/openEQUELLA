@@ -18,17 +18,13 @@
 import { render, RenderResult } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
+import { defaultACLEntityResolvers } from "../../../../__mocks__/ACLExpressionBuilder.mock";
 import {
-  findGroupById,
   listGroups,
   resolveGroups,
 } from "../../../../__mocks__/GroupModule.mock";
-import { findRoleById, listRoles } from "../../../../__mocks__/RoleModule.mock";
-import {
-  findUserById,
-  getTokens,
-  listUsers,
-} from "../../../../__mocks__/UserModule.mock";
+import { listRoles } from "../../../../__mocks__/RoleModule.mock";
+import { getTokens, listUsers } from "../../../../__mocks__/UserModule.mock";
 import ACLExpressionBuilder, {
   ACLExpressionBuilderProps,
 } from "../../../../tsrc/components/aclexpressionbuilder/ACLExpressionBuilder";
@@ -54,11 +50,7 @@ export const defaultACLExpressionBuilderProps: ACLExpressionBuilderProps = {
   searchGroupProvider: listGroups,
   searchRoleProvider: listRoles,
   resolveGroupsProvider: resolveGroups,
-  aclEntityResolversProvider: {
-    resolveUserProvider: findUserById,
-    resolveGroupProvider: findGroupById,
-    resolveRoleProvider: findRoleById,
-  },
+  aclEntityResolversProvider: defaultACLEntityResolvers,
   ssoTokensProvider: getTokens,
 };
 
