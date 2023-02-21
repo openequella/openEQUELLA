@@ -41,7 +41,7 @@ const IO_TS_TYPES_IMPORT = "import * as td from 'io-ts-types';";
 const ArrayRegex = /^(.+)(\[])+$/;
 // Regex for Record where the first group does a non-greedy capture to match the first comma.
 const RecordRegex = /^Record<(.+?),(.+)>$/;
-const StringLiteralRegex = /^'(.*)'$/;
+const StringLiteralRegex = /^'(.+)'$/;
 const IntLiteralRegex = /^\d+$/;
 const FunctionRegex = /^\(.*\)=>.+$/;
 // A Union may start with "|", but it must not end with "|".
