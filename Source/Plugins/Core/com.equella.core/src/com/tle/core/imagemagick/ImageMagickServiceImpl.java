@@ -118,10 +118,6 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
       opts.add(sizeX + "x" + sizeY);
     }
 
-    // Make sure we don't output CMYK as IE won't show it
-    opts.add("-colorspace");
-    opts.add("RGB");
-
     opts.add(srcFile.getAbsolutePath());
 
     if (!options.isNoSize()) {
@@ -179,7 +175,7 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
               "-threshold",
               "99%",
               "-format",
-              "\"%[fx:100*image.mean]\"",
+              "\"%[fx:100*mean]\"",
               "info:"); //$NON-NLS-2$//$NON-NLS-4$
       exec2.ensureOk();
       if (exec2.getStdout().contains("100")) {

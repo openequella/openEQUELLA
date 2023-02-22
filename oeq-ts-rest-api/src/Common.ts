@@ -15,9 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Literal, Static, Union } from 'runtypes';
-import { is } from 'typescript-is';
-import * as Security from './Security';
+import { pipe } from 'fp-ts/function';
+import * as t from 'io-ts';
+import { Literal, Union } from 'runtypes';
+import {
+  BaseEntityCodec,
+  BaseEntitySummaryCodec,
+  PagedResultCodec,
+} from './gen/Common';
+import type { BaseEntitySecurity } from './Security';
+import { validate } from './Utils';
 
 export type i18nString = string;
 
@@ -59,7 +66,7 @@ export interface BaseEntity {
   nameStrings: I18nStrings;
   description?: i18nString;
   descriptionStrings?: I18nStrings;
-  security?: Security.BaseEntitySecurity;
+  security?: BaseEntitySecurity;
   exportDetails?: BaseEntityExport;
   readonly?: BaseEntityReadOnly;
   links: Record<string, string>;
@@ -99,7 +106,8 @@ export interface BaseEntitySummary {
  */
 export const isBaseEntitySummaryArray = (
   instance: unknown
-): instance is BaseEntitySummary[] => is<BaseEntitySummary[]>(instance);
+): instance is BaseEntitySummary[] =>
+  pipe(instance, validate(t.array(BaseEntitySummaryCodec)));
 
 export const ItemStatuses = Union(
   Literal('ARCHIVED'),
@@ -113,7 +121,17 @@ export const ItemStatuses = Union(
   Literal('SUSPENDED')
 );
 
-export type ItemStatus = Static<typeof ItemStatuses>;
+// todo: fix this type alias which is not in sync with the runtype. Jira ticket: OEQ-1438
+export type ItemStatus =
+  | 'ARCHIVED'
+  | 'DELETED'
+  | 'DRAFT'
+  | 'LIVE'
+  | 'MODERATING'
+  | 'PERSONAL'
+  | 'REJECTED'
+  | 'REVIEW'
+  | 'SUSPENDED';
 
 export interface PagedResult<T> {
   start: number;
@@ -129,10 +147,7 @@ export interface PagedResult<T> {
  *
  * @param instance An instance to validate.
  */
-export const isPagedBaseEntity = (
-  instance: unknown
-): instance is PagedResult<BaseEntity> => is<PagedResult<BaseEntity>>(instance);
-
+export const isPagedBaseEntity = validate(PagedResultCodec(BaseEntityCodec));
 /**
  * Query params for common to listing endpoints. All are optional!
  */

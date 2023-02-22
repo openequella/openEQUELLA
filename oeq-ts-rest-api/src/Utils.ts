@@ -15,8 +15,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as E from 'fp-ts/Either';
+import { constTrue, pipe } from 'fp-ts/function';
+import * as t from 'io-ts';
+import * as PathReporter from 'io-ts/PathReporter';
 import { cloneDeep, isArray, set } from 'lodash';
-import { is } from 'typescript-is';
+
+/**
+ * Function that receives an IO-TS codec and returns a new function which uses the codec to validate the provided data.
+ *
+ * @param codec Codec used to do a runtime type checking.
+ */
+export const validate =
+  <T>(codec: t.Type<T>) =>
+  (data: unknown): data is T =>
+    pipe(
+      data,
+      codec.decode,
+      E.match((e) => {
+        console.log('Data validation failed: ' + PathReporter.failure(e));
+        return false;
+      }, constTrue)
+    );
 
 /**
  * The idiomatic modelling for an `object` in Typescript is to use a `Record<string, unknown>`, so
@@ -25,8 +45,7 @@ import { is } from 'typescript-is';
  *
  * @param r a potential `object` / `Record`
  */
-const isRecord = (r?: unknown): r is Record<string, unknown> =>
-  r !== null && is<Record<string, unknown>>(r);
+const isRecord = validate(t.record(t.string, t.unknown));
 
 /**
  * Performs inplace conversion of specified fields with supplied converter.

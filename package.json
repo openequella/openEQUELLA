@@ -24,13 +24,13 @@
     "typescript_glob": "{react-front-end,Source/Plugins/Core/com.equella.core/test/javascript}/**/*.{js,ts,tsx}"
   },
   "devDependencies": {
-    "@commitlint/cli": "17.4.2",
-    "@commitlint/config-conventional": "17.4.2",
-    "@typescript-eslint/eslint-plugin": "5.49.0",
-    "@typescript-eslint/parser": "5.49.0",
+    "@commitlint/cli": "17.4.4",
+    "@commitlint/config-conventional": "17.4.4",
+    "@typescript-eslint/eslint-plugin": "5.52.0",
+    "@typescript-eslint/parser": "5.52.0",
     "babel-eslint": "10.1.0",
     "cross-env": "7.0.3",
-    "eslint": "8.32.0",
+    "eslint": "8.34.0",
     "eslint-config-prettier": "8.6.0",
     "eslint-config-react-app": "7.0.1",
     "eslint-plugin-flowtype": "8.0.3",
@@ -39,13 +39,14 @@
     "eslint-plugin-jsx-a11y": "6.7.1",
     "eslint-plugin-notice": "0.9.10",
     "eslint-plugin-prettier": "4.2.1",
-    "eslint-plugin-react": "7.32.1",
+    "eslint-plugin-react": "7.32.2",
     "eslint-plugin-react-hooks": "4.6.0",
+    "eslint-plugin-unused-imports": "2.0.0",
     "husky": "8.0.3",
     "licensee": "10.0.0",
-    "lint-staged": "13.1.0",
+    "lint-staged": "13.1.2",
     "npm-run-all": "4.1.5",
-    "prettier": "2.8.3",
+    "prettier": "2.8.4",
     "remark-cli": "11.0.0",
     "remark-lint-no-dead-urls": "1.1.0",
     "remark-validate-links": "12.1.0",
@@ -84,7 +85,7 @@
       "plugin:prettier/recommended"
     ],
     "plugins": [
-      "notice"
+      "notice", "unused-imports"
     ],
     "env": {
       "jquery": true
@@ -121,7 +122,8 @@
       "react/jsx-fragments": "error",
       "react/jsx-no-useless-fragment": "error",
       "react/prefer-stateless-function": "error",
-      "react-hooks/exhaustive-deps": "error"
+      "react-hooks/exhaustive-deps": "error",
+      "unused-imports/no-unused-imports": "error"
     },
     "settings": {
       "jest": {

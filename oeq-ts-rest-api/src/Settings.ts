@@ -15,8 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as t from 'io-ts';
 import { GET, PUT } from './AxiosInstance';
-import { is } from 'typescript-is';
+import { GeneralSettingCodec, UISettingsCodec } from './gen/Settings';
+import { validate } from './Utils';
 
 export interface GeneralSetting {
   id: string;
@@ -49,7 +51,7 @@ export const getGeneralSettings = (
 ): Promise<GeneralSetting[]> =>
   GET<GeneralSetting[]>(
     apiBasePath + SETTINGS_ROOT_PATH,
-    (data): data is GeneralSetting[] => is<GeneralSetting[]>(data)
+    validate(t.array(GeneralSettingCodec))
   );
 
 /**
@@ -58,9 +60,7 @@ export const getGeneralSettings = (
  * @param apiBasePath Base URI to the oEQ institution and API
  */
 export const getUiSettings = (apiBasePath: string): Promise<UISettings> =>
-  GET<UISettings>(apiBasePath + UI_SETTINGS_PATH, (data): data is UISettings =>
-    is<UISettings>(data)
-  );
+  GET<UISettings>(apiBasePath + UI_SETTINGS_PATH, validate(UISettingsCodec));
 
 /**
  * Update the UI settings to those provided.

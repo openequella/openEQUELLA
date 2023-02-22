@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 import { stringify } from 'query-string';
-import { Literal, Static, Union } from 'runtypes';
-import { is } from 'typescript-is';
+import { Literal, Union } from 'runtypes';
 import { GET, HEAD, POST } from './AxiosInstance';
-import * as Common from './Common';
-import * as Utils from './Utils';
+import type { i18nString, ItemStatus } from './Common';
+import { SearchResultCodec, SearchResultItemRawCodec } from './gen/Search';
+import { convertDateFields, validate } from './Utils';
 
 /**
  * Used for specifying must expressions such as `moderating:true`. Neither string should contain
@@ -38,7 +38,15 @@ export const SortOrderRunTypes = Union(
   Literal('task_submitted')
 );
 
-export type SortOrder = Static<typeof SortOrderRunTypes>;
+// todo: fix this type alias which is not in sync with the runtype. Jira ticket: OEQ-1438
+export type SortOrder =
+  | 'rank'
+  | 'datemodified'
+  | 'datecreated'
+  | 'name'
+  | 'rating'
+  | 'task_lastaction'
+  | 'task_submitted';
 
 interface SearchParamsBase {
   /**
@@ -76,7 +84,7 @@ interface SearchParamsBase {
   /**
    * Item status.
    */
-  status?: Common.ItemStatus[];
+  status?: ItemStatus[];
   /**
    * A date before which items are modified. Date format (yyyy-MM-dd).
    */
@@ -183,11 +191,11 @@ export interface DisplayFields {
   /**
    * Name of a field.
    */
-  name: Common.i18nString;
+  name: i18nString;
   /**
    * Html code of a field.
    */
-  html: Common.i18nString;
+  html: i18nString;
 }
 
 /**
@@ -324,11 +332,11 @@ interface SearchResultItemBase {
   /**
    * Item's name.
    */
-  name?: Common.i18nString;
+  name?: i18nString;
   /**
    * Item's description.
    */
-  description?: Common.i18nString;
+  description?: i18nString;
   /**
    * Item's status
    */
@@ -529,13 +537,12 @@ const processSearchParams = (
 const SEARCH2_API_PATH = '/search2';
 const EXPORT_PATH = `${SEARCH2_API_PATH}/export`;
 
-const searchResultValidator = (
-  data: unknown
-): data is SearchResult<SearchResultItemRaw> =>
-  is<SearchResult<SearchResultItemRaw>>(data);
+const searchResultValidator = validate(
+  SearchResultCodec(SearchResultItemRawCodec)
+);
 
 const processRawSearchResult = (data: SearchResult<SearchResultItemRaw>) =>
-  Utils.convertDateFields<SearchResult<SearchResultItem>>(data, [
+  convertDateFields<SearchResult<SearchResultItem>>(data, [
     'createdDate',
     'modifiedDate',
     'lastActionDate',

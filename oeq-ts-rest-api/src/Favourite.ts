@@ -15,8 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { is } from 'typescript-is';
 import { DELETE, POST } from './AxiosInstance';
+import { FavouriteItemCodec, FavouriteSearchModelCodec } from './gen/Favourite';
+import { validate } from './Utils';
 
 /**
  * Type matching server-side Favourite Item model
@@ -112,7 +113,7 @@ export const addFavouriteItem = (
 ): Promise<FavouriteItem> =>
   POST(
     apiBasePath + FAVOURITE_ITEM_PATH,
-    (data): data is FavouriteItem => is<FavouriteItem>(data),
+    validate(FavouriteItemCodec),
     favouriteItem
   );
 
@@ -138,6 +139,6 @@ export const addFavouriteSearch = (
 ): Promise<FavouriteSearchModel> =>
   POST(
     apiBasePath + FAVOURITE_SEARCH_PATH,
-    (data): data is FavouriteSearchModel => is<FavouriteSearchModel>(data),
+    validate(FavouriteSearchModelCodec),
     searchInfo
   );

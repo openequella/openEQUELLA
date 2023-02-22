@@ -15,9 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { BatchOperationResponse } from './BatchOperationResponse';
+import * as t from 'io-ts';
 import { DELETE, GET, PUT } from './AxiosInstance';
-import { is } from 'typescript-is';
+import type { BatchOperationResponse } from './BatchOperationResponse';
+import { MimeTypeFilterCodec } from './gen/SearchFilterSettings';
+import { validate } from './Utils';
 
 export interface MimeTypeFilter {
   /**
@@ -47,7 +49,7 @@ export const getSearchFilterSettings = (
 ): Promise<MimeTypeFilter[]> =>
   GET<MimeTypeFilter[]>(
     apiBasePath + SEARCH_FILTER_SETTINGS_URL,
-    (data): data is MimeTypeFilter[] => is<MimeTypeFilter[]>(data)
+    validate(t.array(MimeTypeFilterCodec))
   );
 
 /**

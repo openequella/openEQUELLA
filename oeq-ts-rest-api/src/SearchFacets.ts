@@ -15,14 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * Params to pass to a call for search facets.
- */
-import { is } from 'typescript-is';
 import { GET } from './AxiosInstance';
-import { UuidString } from './Common';
-import { Must, processMusts } from './Search';
-import { asCsvList } from './Utils';
+import type { UuidString } from './Common';
+import { SearchFacetsResultCodec } from './gen/SearchFacets';
+import type { Must } from './Search';
+import { processMusts } from './Search';
+import { asCsvList, validate } from './Utils';
 
 interface SearchFacetsParamsBase {
   /**
@@ -152,7 +150,7 @@ export const searchFacets = (
 ): Promise<SearchFacetsResult> =>
   GET<SearchFacetsResult>(
     apiBasePath + SEARCH_FACETS_API_PATH,
-    (data): data is SearchFacetsResult => is<SearchFacetsResult>(data),
+    validate(SearchFacetsResultCodec),
     {
       ...processSearchFacetsParams(params),
       nodes: asCsvList<string>(params.nodes),

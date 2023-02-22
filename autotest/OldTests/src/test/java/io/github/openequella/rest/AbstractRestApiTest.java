@@ -7,10 +7,7 @@ import java.io.IOException;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.PutMethod;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
@@ -24,6 +21,7 @@ public class AbstractRestApiTest {
 
   protected final HttpClient httpClient = new HttpClient();
   protected final ObjectMapper mapper = new ObjectMapper();
+  protected final AuthHelper authHelper = new AuthHelper(getTestConfig().getInstitutionUrl());
 
   public String getAuthApiEndpoint() {
     return getTestConfig().getInstitutionUrl() + "api/auth";
@@ -38,31 +36,16 @@ public class AbstractRestApiTest {
 
   @BeforeClass
   public void login() throws IOException {
-    makeClientRequest(buildLoginMethod(USERNAME, PASSWORD));
+    makeClientRequest(authHelper.buildLoginMethod(USERNAME, PASSWORD));
   }
 
   @AfterClass
   public void logout() throws IOException {
-    makeClientRequest(buildLogoutMethod());
+    makeClientRequest(authHelper.buildLogoutMethod());
   }
 
   protected int makeClientRequest(HttpMethod method) throws IOException {
     return httpClient.executeMethod(method);
-  }
-
-  protected HttpMethod buildLoginMethod(String username, String password) {
-    final String loginEndpoint = getAuthApiEndpoint() + "/login";
-    final NameValuePair[] queryVals = {
-      new NameValuePair("username", username), new NameValuePair("password", password)
-    };
-    final HttpMethod method = new PostMethod(loginEndpoint);
-    method.setQueryString(queryVals);
-    return method;
-  }
-
-  protected HttpMethod buildLogoutMethod() {
-    final String logoutEndpoint = getAuthApiEndpoint() + "/logout";
-    return new PutMethod(logoutEndpoint);
   }
 
   protected boolean hasAuthenticatedSession() throws IOException {
