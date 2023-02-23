@@ -18,42 +18,30 @@
 import "@testing-library/jest-dom/extend-expect";
 import { waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { pipe } from "fp-ts/function";
 import {
-  initialACLExpression,
-  initialACLExpressionWithValidChild,
+  initialACLExpressionString,
   initialACLExpressionWithValidChildString,
 } from "../../../../__mocks__/ACLExpressionBuilder.mock";
 import {
+  everyoneRecipientRawExpression,
   everyoneRecipientWithName,
   group100RecipientWithName,
-  group200RecipientWithName,
-  group300RecipientWithName,
-  group400RecipientWithName,
   ipRecipientWithName,
+  ownerRecipientRawExpression,
   ownerRecipientWithName,
   referRecipientWithName,
   role100RecipientWithName,
-  role200RecipientWithName,
-  roleGuestRecipient,
+  roleGuestRecipientRawExpression,
   roleGuestRecipientWithName,
+  roleLoggedRecipientRawExpression,
   roleLoggedRecipientWithName,
+  ssoMoodleRecipientRawExpression,
   ssoMoodleRecipientWithName,
-  user100RecipientWithName,
   user200RecipientWithName,
-  user300RecipientWithName,
-  user400RecipientWithName,
 } from "../../../../__mocks__/ACLRecipientModule.mock";
-import { DEFAULT_ACL_EXPRESSION_ID } from "../../../../tsrc/components/aclexpressionbuilder/ACLExpressionBuilder";
 import { ReferrerType } from "../../../../tsrc/components/aclexpressionbuilder/ACLHTTPReferrerInput";
-import {
-  ACLExpression,
-  ACLOperatorType,
-  addRecipients,
-  createACLExpression,
-} from "../../../../tsrc/modules/ACLExpressionModule";
+import type { ACLOperatorType } from "../../../../tsrc/modules/ACLExpressionModule";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
-import { ignoreId } from "../../modules/ACLExpressionModuleTestHelper";
 import { selectOption } from "../../MuiTestHelpers";
 import { searchGroup } from "../securityentitysearch/GroupSearchTestHelper";
 import { searchRole } from "../securityentitysearch/RoleSearchTestHelper";
@@ -110,16 +98,8 @@ describe("<ACLExpressionBuilder/>", () => {
   });
 
   it("should be able to delete recipient for ACLExpression", async () => {
-    // TODO: replace `ignoreId` with ACL Expression string after changing the return type for `onfinish` event.
-    const expectedResult = ignoreId({
-      ...initialACLExpressionWithValidChild,
-      children: [
-        {
-          ...initialACLExpressionWithValidChild.children[0],
-          recipients: [roleGuestRecipient],
-        },
-      ],
-    });
+    const expectedResult =
+      "U:20483af2-fe56-4499-a54b-8d7452156895 R:TLE_GUEST_USER_ROLE OR";
     const onFinish = jest.fn();
     const { container, getByText } = renderACLExpressionBuilder({
       ...defaultACLExpressionBuilderProps,
@@ -144,30 +124,18 @@ describe("<ACLExpressionBuilder/>", () => {
     expect(result).toEqual(expectedResult);
   });
 
-  // TODO: replace `ignoreId` with ACL Expression string after changing the return type for `onfinish` event.
-  it.each<[string, number, ACLOperatorType, ACLExpression]>([
+  it.each<[string, number, ACLOperatorType, string]>([
     [
       "top level",
       0,
       "AND",
-      ignoreId({
-        ...initialACLExpressionWithValidChild,
-        operator: "AND",
-      }),
+      "U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a AND R:TLE_GUEST_USER_ROLE AND",
     ],
     [
       "nested",
       1,
       "OR",
-      ignoreId({
-        ...initialACLExpressionWithValidChild,
-        children: [
-          {
-            ...initialACLExpressionWithValidChild.children[0],
-            operator: "OR",
-          },
-        ],
-      }),
+      "U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a OR R:TLE_GUEST_USER_ROLE OR",
     ],
   ])(
     "should be able to change the grouping method for the %s group",
@@ -192,29 +160,35 @@ describe("<ACLExpressionBuilder/>", () => {
   );
 
   it("should be able to add a sub group for ACLExpression", async () => {
-    const expectedResult = createACLExpression(
-      "OR",
-      [],
-      [createACLExpression("OR")]
-    );
+    const expectedResult =
+      "U:20483af2-fe56-4499-a54b-8d7452156895 U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef U:eb75a832-6533-4d72-93f4-2b7a1b108951 AND OR";
     const onFinish = jest.fn();
-    const { getByText, getByLabelText } = renderACLExpressionBuilder({
+    const { getByLabelText, container } = renderACLExpressionBuilder({
       ...defaultACLExpressionBuilderProps,
       onFinish,
+      aclExpression: initialACLExpressionString,
     });
 
+    // expend root node
+    await selectOperatorNode(container, 0);
     // click add group button
     await userEvent.click(getByLabelText(addGroupLabel));
-    // click ok button to see if the result is what we want
-    await userEvent.click(getByText(okLabel));
+    // change operator type (if operator of sub-group is same with the root it will be combined after return)
+    await selectOperatorForNode(container, 1, "AND");
 
-    const result = onFinish.mock.lastCall[0];
-    expect(result).toEqual(ignoreId(expectedResult));
+    // add user300 and user400 to new group (if group is empty it will be removed when return, and
+    // if group only have one recipient it will be combined into root group).
+    await searchUser(container, "user");
+    const result = await selectAndFinished(
+      container,
+      ["user300", "user400"],
+      onFinish
+    );
+
+    expect(result).toEqual(expectedResult);
   });
 
   it("should be able to delete a sub group in ACLExpression", async () => {
-    // TODO: replace `ignoreId` with ACL Expression string after changing the return type for `onfinish` event.
-    const expectedResult = ignoreId(initialACLExpression);
     const onFinish = jest.fn();
     const { container, getByText } = renderACLExpressionBuilder({
       ...defaultACLExpressionBuilderProps,
@@ -230,41 +204,10 @@ describe("<ACLExpressionBuilder/>", () => {
     await userEvent.click(getByText(okLabel));
 
     const result = onFinish.mock.lastCall[0];
-    expect(result).toEqual(expectedResult);
+    expect(result).toEqual(initialACLExpressionString);
   });
 
   describe("home panel", () => {
-    const userACLExpression: ACLExpression = {
-      id: "default-acl-expression-id",
-      operator: "OR",
-      recipients: [
-        user100RecipientWithName,
-        user200RecipientWithName,
-        user400RecipientWithName,
-        user300RecipientWithName,
-      ],
-      children: [],
-    };
-
-    const groupACLExpression: ACLExpression = {
-      children: [],
-      id: "default-acl-expression-id",
-      operator: "OR",
-      recipients: [
-        group100RecipientWithName,
-        group200RecipientWithName,
-        group300RecipientWithName,
-        group400RecipientWithName,
-      ],
-    };
-
-    const roleACLExpression: ACLExpression = {
-      children: [],
-      id: "default-acl-expression-id",
-      operator: "OR",
-      recipients: [role100RecipientWithName, role200RecipientWithName],
-    };
-
     it("displays home panel's group search when users select groups radio", async () => {
       const { getByText, queryByText } = renderACLExpressionBuilder();
 
@@ -287,30 +230,21 @@ describe("<ACLExpressionBuilder/>", () => {
         usersRadioLabel,
         "user100",
         searchUser,
-        {
-          ...userACLExpression,
-          recipients: [user100RecipientWithName],
-        },
+        "U:20483af2-fe56-4499-a54b-8d7452156895",
       ],
       [
         "group",
         groupsRadioLabel,
         group100RecipientWithName.name,
         searchGroup,
-        {
-          ...groupACLExpression,
-          recipients: [group100RecipientWithName],
-        },
+        "G:303e758c-0051-4aea-9a8e-421f93ed9d1a",
       ],
       [
         "role",
         rolesRadioLabel,
         role100RecipientWithName.name,
         searchRole,
-        {
-          ...roleACLExpression,
-          recipients: [role100RecipientWithName],
-        },
+        "R:fda99983-9eda-440a-ac68-0f746173fdcb",
       ],
     ])(
       "should be able to add one %s result to the expression by clicking the add button in each entry",
@@ -322,7 +256,7 @@ describe("<ACLExpressionBuilder/>", () => {
           dialog: HTMLElement,
           queryValue: string
         ) => Promise<void>,
-        expectedACLExpressionResult: ACLExpression
+        expectedACLExpressionResult: string
       ) => {
         const onFinish = jest.fn();
         const { getByText, container, getByLabelText } =
@@ -356,7 +290,7 @@ describe("<ACLExpressionBuilder/>", () => {
         string,
         string[],
         (dialog: HTMLElement, queryValue: string) => Promise<void>,
-        ACLExpression
+        string
       ]
     >([
       [
@@ -365,7 +299,7 @@ describe("<ACLExpressionBuilder/>", () => {
         "user",
         ["user100", "user200", "user300", "user400"],
         searchUser,
-        userACLExpression,
+        "U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a OR U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef U:eb75a832-6533-4d72-93f4-2b7a1b108951 OR",
       ],
       [
         "groups",
@@ -373,7 +307,7 @@ describe("<ACLExpressionBuilder/>", () => {
         "group",
         ["group100", "group200", "group300", "group400"],
         searchGroup,
-        groupACLExpression,
+        "G:303e758c-0051-4aea-9a8e-421f93ed9d1a G:d7dd1907-5731-4244-9a65-e0e847f68604 OR G:f921a6e3-69a6-4ec4-8cf8-bc193beda5f6 G:a2576dea-bd5c-490b-a065-637068e1a4fb OR",
       ],
       [
         "roles",
@@ -381,7 +315,7 @@ describe("<ACLExpressionBuilder/>", () => {
         "role",
         ["role100", "role200"],
         searchRole,
-        roleACLExpression,
+        "R:fda99983-9eda-440a-ac68-0f746173fdcb R:1de3a6df-dc81-4a26-b69e-e61f8474594a OR",
       ],
     ])(
       "should be able to select multiple %s search result to the expression",
@@ -394,11 +328,10 @@ describe("<ACLExpressionBuilder/>", () => {
         expectedACLExpressionResult
       ) => {
         const onFinish = jest.fn();
-        const renderResult = renderACLExpressionBuilder({
+        const { getByText, container } = renderACLExpressionBuilder({
           ...defaultACLExpressionBuilderProps,
           onFinish,
         });
-        const { getByText, container } = renderResult;
 
         // select entity search radio
         await userEvent.click(getByText(entityRadioLabel));
@@ -406,7 +339,7 @@ describe("<ACLExpressionBuilder/>", () => {
         await searchEntity(container, searchFor);
 
         const result = await selectAndFinished(
-          renderResult,
+          container,
           selectEntitiesName,
           onFinish
         );
@@ -415,7 +348,6 @@ describe("<ACLExpressionBuilder/>", () => {
       }
     );
 
-    // TODO: replace `ignoreId` with ACL Expression string after changing the return type for `onfinish` event.
     it.each<
       [
         string,
@@ -423,7 +355,7 @@ describe("<ACLExpressionBuilder/>", () => {
         string,
         string[],
         (dialog: HTMLElement, queryValue: string) => Promise<void>,
-        ACLExpression
+        string
       ]
     >([
       [
@@ -432,18 +364,7 @@ describe("<ACLExpressionBuilder/>", () => {
         "user",
         ["user300", "user400"],
         searchUser,
-        ignoreId({
-          ...initialACLExpressionWithValidChild,
-          children: [
-            pipe(
-              initialACLExpressionWithValidChild.children[0],
-              addRecipients([
-                user400RecipientWithName,
-                user300RecipientWithName,
-              ])
-            ),
-          ],
-        }),
+        "U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a R:TLE_GUEST_USER_ROLE AND U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef U:eb75a832-6533-4d72-93f4-2b7a1b108951 AND OR",
       ],
       [
         "groups",
@@ -451,20 +372,7 @@ describe("<ACLExpressionBuilder/>", () => {
         "group",
         ["group100", "group200", "group300", "group400"],
         searchGroup,
-        ignoreId({
-          ...initialACLExpressionWithValidChild,
-          children: [
-            pipe(
-              initialACLExpressionWithValidChild.children[0],
-              addRecipients([
-                group100RecipientWithName,
-                group200RecipientWithName,
-                group300RecipientWithName,
-                group400RecipientWithName,
-              ])
-            ),
-          ],
-        }),
+        "U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a R:TLE_GUEST_USER_ROLE AND G:303e758c-0051-4aea-9a8e-421f93ed9d1a G:d7dd1907-5731-4244-9a65-e0e847f68604 AND G:f921a6e3-69a6-4ec4-8cf8-bc193beda5f6 G:a2576dea-bd5c-490b-a065-637068e1a4fb AND OR",
       ],
       [
         "roles",
@@ -472,18 +380,7 @@ describe("<ACLExpressionBuilder/>", () => {
         "role",
         ["role100", "role200"],
         searchRole,
-        ignoreId({
-          ...initialACLExpressionWithValidChild,
-          children: [
-            pipe(
-              initialACLExpressionWithValidChild.children[0],
-              addRecipients([
-                role100RecipientWithName,
-                role200RecipientWithName,
-              ])
-            ),
-          ],
-        }),
+        "U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a R:TLE_GUEST_USER_ROLE AND R:fda99983-9eda-440a-ac68-0f746173fdcb R:1de3a6df-dc81-4a26-b69e-e61f8474594a AND OR",
       ],
     ])(
       "should be able to select multiple %s search result and add them within the currently selected grouping",
@@ -496,12 +393,11 @@ describe("<ACLExpressionBuilder/>", () => {
         expectedACLExpressionResult
       ) => {
         const onFinish = jest.fn();
-        const renderResult = renderACLExpressionBuilder({
+        const { getByText, container } = renderACLExpressionBuilder({
           ...defaultACLExpressionBuilderProps,
           aclExpression: initialACLExpressionWithValidChildString,
           onFinish: onFinish,
         });
-        const { getByText, container } = renderResult;
 
         // select entity search radio
         await userEvent.click(getByText(entityRadioLabel));
@@ -514,7 +410,7 @@ describe("<ACLExpressionBuilder/>", () => {
         await selectOperatorNode(container, 1);
 
         const result = await selectAndFinished(
-          renderResult,
+          container,
           selectEntitiesName,
           onFinish
         );
@@ -525,43 +421,30 @@ describe("<ACLExpressionBuilder/>", () => {
   });
 
   describe("other panel", () => {
-    // TODO: replace `ignoreId` with ACL Expression string after changing the return type for `onfinish` event.
     it.each([
       [
         "Everyone",
         everyoneType,
         everyoneRecipientWithName.name,
-        ignoreId({
-          ...initialACLExpression,
-          recipients: [everyoneRecipientWithName],
-        }),
+        everyoneRecipientRawExpression,
       ],
       [
         "Owner",
         ownerType,
         ownerRecipientWithName.name,
-        ignoreId({
-          ...initialACLExpression,
-          recipients: [ownerRecipientWithName],
-        }),
+        ownerRecipientRawExpression,
       ],
       [
         "Logged",
         loggedType,
         roleLoggedRecipientWithName.name,
-        ignoreId({
-          ...initialACLExpression,
-          recipients: [roleLoggedRecipientWithName],
-        }),
+        roleLoggedRecipientRawExpression,
       ],
       [
         "Guest",
         guestType,
         roleGuestRecipientWithName.name,
-        ignoreId({
-          ...initialACLExpression,
-          recipients: [roleGuestRecipientWithName],
-        }),
+        roleGuestRecipientRawExpression,
       ],
     ])(
       "should be able to add %s recipient to the ACLExpression",
@@ -569,7 +452,7 @@ describe("<ACLExpressionBuilder/>", () => {
         _,
         recipientLabel: string,
         recipientName: string | undefined,
-        expectedResult: ACLExpression
+        expectedResult: string
       ) => {
         const onFinish = jest.fn();
         const { findAllByText, getByText, container } =
@@ -599,12 +482,8 @@ describe("<ACLExpressionBuilder/>", () => {
 
     it("should be able to add an IPv4 CIDR specifier to the expression", async () => {
       const ipRecipient = ipRecipientWithName("192.168.1.1/24");
-      const expectedResult = {
-        id: DEFAULT_ACL_EXPRESSION_ID,
-        operator: "OR",
-        recipients: [ipRecipient],
-        children: [],
-      };
+      const expectedResult = "I:192.168.1.1/24";
+
       const onFinish = jest.fn();
       const { findByText, getByText, container } = renderACLExpressionBuilder({
         ...defaultACLExpressionBuilderProps,
@@ -643,12 +522,7 @@ describe("<ACLExpressionBuilder/>", () => {
       "should be able to add an HTTP Referrer (%s type) to the expression",
       async (_, httpReferrerType: ReferrerType, expectedReferrer) => {
         const httpReferrerRecipient = referRecipientWithName(expectedReferrer);
-        const expectedResult = {
-          id: DEFAULT_ACL_EXPRESSION_ID,
-          operator: "OR",
-          recipients: [httpReferrerRecipient],
-          children: [],
-        };
+        const expectedResult = `F:${expectedReferrer}`;
         const onFinish = jest.fn();
         const renderResult = renderACLExpressionBuilder({
           ...defaultACLExpressionBuilderProps,
@@ -681,12 +555,6 @@ describe("<ACLExpressionBuilder/>", () => {
     );
 
     it("should be able to add a SSO token ID to the expression", async () => {
-      const expectedResult = {
-        id: DEFAULT_ACL_EXPRESSION_ID,
-        operator: "OR",
-        children: [],
-        recipients: [ssoMoodleRecipientWithName],
-      };
       const onFinish = jest.fn();
       const { findByText, getByText, container } = renderACLExpressionBuilder({
         ...defaultACLExpressionBuilderProps,
@@ -716,7 +584,7 @@ describe("<ACLExpressionBuilder/>", () => {
       await userEvent.click(getByText(okLabel));
 
       const result = onFinish.mock.lastCall[0];
-      expect(result).toEqual(expectedResult);
+      expect(result).toEqual(ssoMoodleRecipientRawExpression);
     });
 
     it("should be able to display an error message if it failed to get SSO tokens", async () => {
