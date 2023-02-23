@@ -15,7 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render, RenderResult } from "@testing-library/react";
+import {
+  findByText,
+  getByText,
+  render,
+  RenderResult,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { defaultACLEntityResolvers } from "../../../../__mocks__/ACLExpressionBuilder.mock";
@@ -28,8 +33,7 @@ import { getTokens, listUsers } from "../../../../__mocks__/UserModule.mock";
 import ACLExpressionBuilder, {
   ACLExpressionBuilderProps,
 } from "../../../../tsrc/components/aclexpressionbuilder/ACLExpressionBuilder";
-import { ReferrerType } from "../../../../tsrc/components/aclexpressionbuilder/ACLHTTPReferrerInput";
-import type { ACLExpression } from "../../../../tsrc/modules/ACLExpressionModule";
+import type { ReferrerType } from "../../../../tsrc/components/aclexpressionbuilder/ACLHTTPReferrerInput";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import { selectOption } from "../../MuiTestHelpers";
 
@@ -64,19 +68,19 @@ export const renderACLExpressionBuilder = (
  * It then clicks `select` and then `ok` button to get the updated ACLExpression result from `onFinish`.
  */
 export const selectAndFinished = async (
-  { findByText, getByText }: RenderResult,
+  container: HTMLElement,
   selectNames: string[],
   onFinish = jest.fn()
-): Promise<ACLExpression> => {
+): Promise<string> => {
   // Wait for the results, and then click all entities
   for (const name of selectNames) {
-    await userEvent.click(await findByText(name));
+    await userEvent.click(await findByText(container, name));
   }
 
   // click select button
-  await userEvent.click(getByText(selectLabel));
+  await userEvent.click(getByText(container, selectLabel));
   // click ok button
-  await userEvent.click(getByText(okLabel));
+  await userEvent.click(getByText(container, okLabel));
 
   // get the result of ACLExpression
   return onFinish.mock.lastCall[0];

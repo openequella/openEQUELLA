@@ -17,11 +17,7 @@
  */
 import type { ACLEntityResolvers } from "../tsrc/modules/ACLEntityModule";
 import { ACLExpression, generate } from "../tsrc/modules/ACLExpressionModule";
-import {
-  roleGuestRecipient,
-  user100Recipient,
-  user200Recipient,
-} from "./ACLRecipientModule.mock";
+import { user100Recipient } from "./ACLRecipientModule.mock";
 import { findGroupById } from "./GroupModule.mock";
 import { findRoleById } from "./RoleModule.mock";
 import { findUserById } from "./UserModule.mock";
@@ -32,21 +28,27 @@ export const initialACLExpression: ACLExpression = {
   recipients: [user100Recipient],
   children: [],
 };
+export const initialACLExpressionString = generate(initialACLExpression);
 
-export const initialACLExpressionWithValidChild: ACLExpression = {
-  ...initialACLExpression,
-  children: [
-    {
-      id: "test",
-      operator: "AND",
-      recipients: [user200Recipient, roleGuestRecipient],
-      children: [],
-    },
-  ],
-};
-export const initialACLExpressionWithValidChildString = generate(
-  initialACLExpressionWithValidChild
-);
+/**
+ *  ```
+ *  {
+ *   id: "root",
+ *   operator: "OR",
+ *   recipients: [user100Recipient],
+ *   children: [
+ *     {
+ *       id: "test",
+ *       operator: "AND",
+ *       recipients: [user200Recipient, roleGuestRecipient],
+ *       children: [],
+ *     },
+ *   ],
+ * };
+ *  ```
+ */
+export const initialACLExpressionWithValidChildString =
+  "U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a R:TLE_GUEST_USER_ROLE AND OR";
 
 export const defaultACLEntityResolvers: ACLEntityResolvers = {
   resolveUserProvider: findUserById,

@@ -38,6 +38,8 @@ import {
   removeACLExpression,
   replaceACLExpression,
   revertCompactedACLExpressions,
+  generate,
+  removeRedundantExpressions,
 } from "../../modules/ACLExpressionModule";
 import {
   ACLRecipient,
@@ -95,7 +97,7 @@ const StyledGrid = styled(Grid)(({ theme }) => ({
 
 export interface ACLExpressionBuilderProps {
   /** Handler for when user click OK button. */
-  onFinish: (aclExpression: ACLExpression) => void;
+  onFinish: (aclExpression: string) => void;
   /**
    *  It could be empty like a portlet hasn't been assigning ACL rules,
    *  user can use this builder to build ACL rules.
@@ -312,6 +314,8 @@ const ACLExpressionBuilder = ({
               pipe(
                 currentACLExpression,
                 revertCompactedACLExpressions,
+                removeRedundantExpressions,
+                generate,
                 onFinish
               )
             }
