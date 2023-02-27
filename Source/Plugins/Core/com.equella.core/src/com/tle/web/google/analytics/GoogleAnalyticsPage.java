@@ -97,6 +97,7 @@ public class GoogleAnalyticsPage extends OneColumnLayout<GoogleAnalyticsPage.Goo
 
   @EventHandlerMethod
   public void setup(SectionInfo info) {
+    securityProvider.checkAuthorised();
     final String acctId = accountId.getValue(info);
     if (!Check.isEmpty(acctId)) {
       configService.setProperty(ANALYTICS_KEY, acctId);

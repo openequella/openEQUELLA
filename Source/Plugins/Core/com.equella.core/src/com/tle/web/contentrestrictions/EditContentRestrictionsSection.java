@@ -110,6 +110,7 @@ public class EditContentRestrictionsSection
 
   @Inject private UserSessionService sessionService;
   @Inject private UserService userService;
+  @Inject private ContentRestrictionsPrivilegeTreeProvider securityProvider;
 
   private SubmitValuesHandler cancelFunc;
 
@@ -167,6 +168,7 @@ public class EditContentRestrictionsSection
 
   @EventHandlerMethod
   public void save(SectionInfo info) {
+    securityProvider.checkAuthorised();
     SelectedQuota selected = loadSession(info);
     if (selected.getValidationErrors().isEmpty()) {
       cancelSession(info);

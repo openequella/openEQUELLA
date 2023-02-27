@@ -73,4 +73,13 @@
     <lastName>SearchCreate</lastName>
     <password>MD5:115dbe1db3b5dc7da556fad50fe17436</password>
   </com.tle.beans.user.TLEUser>
+  <com.tle.beans.user.TLEUser>
+    <id>806861</id>
+    <uuid>84a761e8-a973-4bd6-93c0-aa2703a6d262</uuid>
+    <username>AutoTest_Low_Privileged</username>
+    <firstName>low</firstName>
+    <lastName>privileged</lastName>
+    <emailAddress></emailAddress>
+    <password>SHA256:cc9e37d975bb25b2fcecd8c20d9c77dbe7ce2649de0127b9a5ca76038f852da0</password>
+  </com.tle.beans.user.TLEUser>
 </list>
