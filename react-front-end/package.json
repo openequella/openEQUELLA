@@ -85,7 +85,7 @@
     "@types/jquery": "3.5.16",
     "@types/lodash": "4.14.191",
     "@types/luxon": "2.4.0",
-    "@types/node": "16.18.12",
+    "@types/node": "16.18.13",
     "@types/object-hash": "2.2.1",
     "@types/react": "18.0.28",
     "@types/react-autosuggest": "10.1.6",
