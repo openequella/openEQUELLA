@@ -138,6 +138,10 @@ jobs:
         with:
           node-version-file: '.nvmrc'
 
+      - name: Install node dependencies (root)
+        run: |
+          npm ci
+
       - name: Install node dependencies (core)
         working-directory: react-front-end
         run: |
