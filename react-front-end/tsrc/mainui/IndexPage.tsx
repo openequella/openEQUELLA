@@ -238,7 +238,9 @@ export default function IndexPage() {
           setNavAwayCallback(undefined);
         }}
       />
-      <Template {...templateProps}>{routeSwitch()}</Template>
+      <Template {...templateProps}>
+        <React.Suspense fallback={<>loading</>}>{routeSwitch()}</React.Suspense>
+      </Template>
     </BrowserRouter>
   );
 }
