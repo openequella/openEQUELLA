@@ -59,6 +59,10 @@ jobs:
           distribution: adopt
           java-version: 11
 
+      - name: Install node dependencies (root)
+        run: |
+          npm ci
+
       - name: Install node dependencies (core)
         working-directory: react-front-end
         run: |
@@ -66,10 +70,6 @@ jobs:
 
       - name: Install node dependencies (IntegTester)
         working-directory: autotest/IntegTester/ps
-        run: |
-          npm ci
-
-      - name: Install node dependencies (root)
         run: |
           npm ci
 
