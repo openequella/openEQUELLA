@@ -8,6 +8,7 @@
 
 <div class="area">
 	<h2>${b.key("analytics.pagetitle")}</h2>
+
 	<p>${b.key("analytics.description")}</p>
 
 	<p>${b.key("account.dont.have")} <a href="http://www.google.com/analytics/sign_up.html">${b.key("account.signup")}</a></p>
