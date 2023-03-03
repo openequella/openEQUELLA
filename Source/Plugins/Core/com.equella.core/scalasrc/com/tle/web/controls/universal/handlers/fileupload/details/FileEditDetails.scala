@@ -20,7 +20,6 @@ package com.tle.web.controls.universal.handlers.fileupload.details
 
 import java.util
 import java.util.UUID
-import com.tle.beans.item.ItemId
 import com.tle.beans.item.attachments.{Attachment, FileAttachment, ZipAttachment}
 import com.tle.common.NameValue
 import com.tle.common.filesystem.FileEntry
@@ -34,7 +33,6 @@ import com.tle.web.controls.universal.{
 }
 import com.tle.web.freemarker.FreemarkerFactory
 import com.tle.web.freemarker.annotations.ViewFactory
-import com.tle.web.inplaceeditor.service.InPlaceEditorWebService
 import com.tle.web.sections.ajax.AjaxGenerator
 import com.tle.web.sections.ajax.handler.{AjaxFactory, AjaxMethod}
 import com.tle.web.sections.annotations.{Bookmarked, EventFactory, EventHandlerMethod}
@@ -42,8 +40,6 @@ import com.tle.web.sections.equella.AbstractScalaSection
 import com.tle.web.sections.equella.annotation.PlugKey
 import com.tle.web.sections.events.RenderContext
 import com.tle.web.sections.events.js.{EventGenerator, JSHandler}
-import com.tle.web.sections.jquery.JQuerySelector.Type
-import com.tle.web.sections.jquery.Jq
 import com.tle.web.sections.js.generic.expression.{ObjectExpression, ScriptVariable}
 import com.tle.web.sections.js.generic.function.{ExternallyDefinedFunction, IncludeFile}
 import com.tle.web.sections.js.generic.statement.AssignStatement
@@ -65,10 +61,6 @@ object FileEditDetails {
   private val SELECT_FUNCTION = new ExternallyDefinedFunction("zipSelect", INCLUDE)
 
   private val SELECTION_TREE = new ScriptVariable("zipTree")
-
-  private val INPLACE_APPLET_ID     = "inplace_applet"
-  private val INPLACE_APPLET_HEIGHT = "50px"
-  private val INPLACE_APPLET_WIDTH  = "320px"
 }
 
 class FileEditDetails(parentId: String,
@@ -78,8 +70,7 @@ class FileEditDetails(parentId: String,
                       editingHandler: EditingHandler,
                       viewerHandler: ViewerHandler,
                       showRestrict: Boolean,
-                      val editingAttachment: SectionInfo => Attachment,
-                      inplaceEditorService: InPlaceEditorWebService)
+                      val editingAttachment: SectionInfo => Attachment)
     extends AbstractScalaSection
     with RenderHelper
     with DetailsPage {
@@ -95,10 +86,6 @@ class FileEditDetails(parentId: String,
 
   @Component(name = "e") var editFileDiv: Div = _
 
-  @Component
-  @PlugKey("handlers.file.details.link.editfile") var editFileLink: Link = _
-  @Component
-  @PlugKey("handlers.file.details.link.editfilewith") var editFileWithLink: Link = _
   @Component
   @PlugKey("handlers.file.details.unzipfile") var executeUnzip: Button = _
   @Component
@@ -137,7 +124,7 @@ class FileEditDetails(parentId: String,
     model.appletMode = if (openWith) "openwith" else "open"
   }
 
-  @EventHandlerMethod def inplaceSave(info: SectionInfo): Unit = {
+  @EventHandlerMethod def save(info: SectionInfo): Unit = {
     ctx.controlState.save(info)
   }
 
@@ -161,24 +148,7 @@ class FileEditDetails(parentId: String,
                                                              events.getEventHandler("editFile"),
                                                              "editFileAjaxDiv")
 
-    editFileLink.setClickHandler(
-      inplaceEditorService.createOpenHandler(
-        INPLACE_APPLET_ID,
-        false,
-        Js.function(Js.call_s(editFileAjaxFunction, false.asInstanceOf[AnyRef]))))
-    editFileWithLink.setClickHandler(
-      inplaceEditorService.createOpenHandler(
-        INPLACE_APPLET_ID,
-        true,
-        Js.function(Js.call_s(editFileAjaxFunction, true.asInstanceOf[AnyRef]))))
-
-    editFileLink.addReadyStatements(
-      inplaceEditorService.createHideLinksStatements(Jq.$(Type.CLASS, "editLinks"),
-                                                     Jq.$(editFileWithLink)))
-
-    saveClickHandler = inplaceEditorService.createUploadHandler(
-      INPLACE_APPLET_ID,
-      events.getSubmitValuesFunction("inplaceSave"))
+    saveClickHandler = new OverrideHandler(events.getSubmitValuesFunction("save"))
 
     executeUnzip.setClickHandler(events.getNamedHandler("unzipFile"))
     removeUnzip.setClickHandler(events.getNamedHandler("removeZip"))
@@ -198,22 +168,6 @@ class FileEditDetails(parentId: String,
     )
   }
 
-  private def createInplaceApplet(info: SectionInfo) = {
-    val model           = getModel(info)
-    val wizardStagingId = new ItemId(ctx.stagingContext.stgFile.getUuid, 0)
-    inplaceEditorService.createAppletFunction(
-      INPLACE_APPLET_ID,
-      wizardStagingId,
-      editingHandler.editingArea,
-      model.inplaceFilepath,
-      model.appletMode == "openwith",
-      "invoker/file.inplaceedit.service",
-      Jq.$(editFileDiv),
-      INPLACE_APPLET_WIDTH,
-      INPLACE_APPLET_HEIGHT
-    )
-  }
-
   def newModel = FileEditDetailsModel.apply
 
   case class FileEditDetailsModel(info: SectionInfo) {
@@ -225,8 +179,6 @@ class FileEditDetails(parentId: String,
     def getCommonIncludePath = AbstractDetailsAttachmentHandler.COMMON_INCLUDE_PATH
 
     def getCommonPrefix = AbstractDetailsAttachmentHandler.COMMON_PREFIX
-
-    def inplaceFilepath = a.getUrl
 
     var validate = false
 
@@ -254,10 +206,6 @@ class FileEditDetails(parentId: String,
     def getSuppressThumbnails = suppressThumbnails
 
     def getViewers = viewers
-
-    def getEditFileLink = editFileLink
-
-    def getEditFileWithLink = editFileWithLink
 
     def getEditFileDiv = editFileDiv
 
@@ -324,7 +272,6 @@ class FileEditDetails(parentId: String,
 
   def renderDetails(context: RenderContext): (SectionRenderable, DialogRenderOptions => Unit) = {
     val m = getModel(context)
-    if (m.appletMode != null) editFileDiv.addReadyStatements(context, createInplaceApplet(context))
     (renderModel("file/file-edit.ftl", m), _.setSaveClickHandler(saveClickHandler))
   }
 

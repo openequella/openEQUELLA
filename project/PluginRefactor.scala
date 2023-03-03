@@ -52,9 +52,7 @@ object PluginRefactor {
     "com.tle.web.sections.equella",
     "com.tle.core.guice",
     "com.tle.web.adminconsole",
-    "com.tle.common.inplaceeditor",
     "com.tle.core.remoterepo.srw",
-    "com.tle.web.inplaceeditor",
     "com.tle.applet.filemanager",
     "com.tle.web.filemanager.applet"
   ) ++ platformPlugins

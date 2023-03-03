@@ -43,7 +43,6 @@ import com.tle.mycontent.service.MyContentFields;
 import com.tle.mycontent.service.MyContentService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
-import com.tle.web.inplaceeditor.service.InPlaceEditorWebService;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.SectionInfo;
@@ -65,8 +64,6 @@ import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.events.js.JSHandler;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
 import com.tle.web.sections.generic.InfoBookmark;
-import com.tle.web.sections.jquery.JQuerySelector.Type;
-import com.tle.web.sections.jquery.Jq;
 import com.tle.web.sections.js.JSAssignable;
 import com.tle.web.sections.js.JSCallAndReference;
 import com.tle.web.sections.js.JSCallable;
@@ -74,7 +71,6 @@ import com.tle.web.sections.js.generic.Js;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
 import com.tle.web.sections.js.generic.function.PartiallyApply;
-import com.tle.web.sections.js.generic.function.RuntimeFunction;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.TagRenderer;
@@ -84,7 +80,6 @@ import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.Div;
 import com.tle.web.sections.standard.FileDrop;
 import com.tle.web.sections.standard.FileUpload;
-import com.tle.web.sections.standard.Link;
 import com.tle.web.sections.standard.SingleSelectionList;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
@@ -122,10 +117,6 @@ public class MyResourceContributeSection
     extends AbstractPrototypeSection<MyResourceContributeSection.MyResourceModel>
     implements HtmlRenderer, ContentHandlerSection, BlueBarEventListener {
   public static final String TOKEN_PARAMETER = "SESSION"; // $NON-NLS-1$
-
-  private static final String INVOKER_SERVICE = "invoker/myresource.inplaceedit.service";
-
-  private static final String INPLACE_APPLET_ID = "inplace_applet";
 
   private static final String UPLOAD_ONLY = "uploadonly";
   private static final String UNARCHIVE_ONLY = "unarchiveonly";
@@ -171,7 +162,6 @@ public class MyResourceContributeSection
   @Inject private MyContentService myContentService;
   @Inject private FileSystemService fileSystemService;
   @Inject private ReceiptService receiptService;
-  @Inject private InPlaceEditorWebService inplaceEditorService;
   @Inject private ViewableItemFactory viewableItemService;
   @Inject private AttachmentResourceService attachmentResourceService;
   @Inject private ItemOperationFactory workflowFactory;
@@ -200,22 +190,11 @@ public class MyResourceContributeSection
   @Component(name = "c")
   private Button cancelButton;
 
-  @Component(name = "e")
-  private Div editFileDiv;
-
   @Component(name = "rt")
   private Div returnToScrapbookButtonDiv;
 
   @Component(name = "fm")
   private FileDrop fileDrop;
-
-  @Component
-  @PlugKey("inplace.link.editfile")
-  private Link editFileLink;
-
-  @Component
-  @PlugKey("inplace.link.editfilewith")
-  private Link editFileWithLink;
 
   @Component
   @PlugKey("dnd.archiveoptinos")
@@ -295,9 +274,7 @@ public class MyResourceContributeSection
         JSHandler.EVENT_CHANGE,
         events.getNamedHandler("changeType", archiveOptionsDropDown.createGetExpression()));
 
-    saveButton.setClickHandler(
-        inplaceEditorService.createUploadHandler(
-            INPLACE_APPLET_ID, events.getSubmitValuesFunction("contribute")));
+    saveButton.setClickHandler(events.getSubmitValuesFunction("contribute"));
     cancelButton.setClickHandler(events.getSubmitValuesFunction("cancel"));
     cancelButton.setCancel(true);
 
@@ -305,40 +282,10 @@ public class MyResourceContributeSection
         ajax.getAjaxUpdateDomFunction(
             tree, null, events.getEventHandler("editFile"), "editFileAjaxDiv");
 
-    editFileLink.setClickHandler(
-        inplaceEditorService.createOpenHandler(
-            INPLACE_APPLET_ID, false, Js.function(Js.call_s(editFileAjaxFunction, false))));
-    editFileWithLink.setClickHandler(
-        inplaceEditorService.createOpenHandler(
-            INPLACE_APPLET_ID, true, Js.function(Js.call_s(editFileAjaxFunction, true))));
-    editFileLink.addReadyStatements(
-        inplaceEditorService.createHideLinksStatements(
-            Jq.$(Type.CLASS, "editLinks"), Jq.$(editFileWithLink)));
-
-    editFileDiv.addReadyStatements(Js.call_s(new InPlaceEditFunction()));
-    editFileDiv.setStyleClass("editfilediv");
     validateFile =
         AjaxUpload.simpleUploadValidator(
             "uploadProgress",
             PartiallyApply.partial(events.getSubmitValuesFunction("finishedFile"), 2));
-  }
-
-  public class InPlaceEditFunction extends RuntimeFunction {
-    @Override
-    protected JSCallable createFunction(RenderContext info) {
-      final MyResourceModel model = getModel(info);
-      final ItemId itemId = new ItemId(model.getEditItem());
-      return inplaceEditorService.createAppletFunction(
-          INPLACE_APPLET_ID,
-          itemId,
-          model.getStagingId(),
-          getAttachment(info, itemId).getFilename(),
-          model.isOpenWith(),
-          INVOKER_SERVICE,
-          Jq.$(editFileDiv),
-          "50px",
-          "320px");
-    }
   }
 
   private FileAttachment getAttachment(SectionInfo info, ItemId itemId) {
@@ -644,18 +591,6 @@ public class MyResourceContributeSection
 
   public Div getReturnToScrapbookButtonDiv() {
     return returnToScrapbookButtonDiv;
-  }
-
-  public Div getEditFileDiv() {
-    return editFileDiv;
-  }
-
-  public Link getEditFileLink() {
-    return editFileLink;
-  }
-
-  public Link getEditFileWithLink() {
-    return editFileWithLink;
   }
 
   @Override
