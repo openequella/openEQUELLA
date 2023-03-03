@@ -16,16 +16,16 @@
  * limitations under the License.
  */
 
-package com.tle.core.securitykey.helper
+package com.tle.core.webkeyset.helper
 
-import com.tle.beans.securitykey.SecurityKey
+import com.tle.beans.webkeyset.WebKeySet
 import com.tle.legacy.LegacyGuice
 import org.bouncycastle.util.io.pem.{PemObject, PemReader, PemWriter}
 import java.io.{StringReader, StringWriter}
 import java.security.spec.{PKCS8EncodedKeySpec, X509EncodedKeySpec}
 import java.security.{Key, KeyFactory, KeyPair, KeyPairGenerator}
 
-object SecurityKeyHelper {
+object WebKeySetHelper {
   val PUBLIC_KEY_HEADER  = "PUBLIC KEY"
   val PRIVATE_KEY_HEADER = "PRIVATE KEY"
   val RSA                = "RSA"
@@ -53,7 +53,7 @@ object SecurityKeyHelper {
     *
     * @param key Instance of SecurityKey where the private and public keys are saved X.509 PEM format strings.
     */
-  def buildKeyPair(key: SecurityKey): KeyPair = {
+  def buildKeyPair(key: WebKeySet): KeyPair = {
     def getPemContent(key: String) = {
       val pemReader = new PemReader(new StringReader(key))
       val pemObject = pemReader.readPemObject()

@@ -16,18 +16,29 @@
  * limitations under the License.
  */
 
-package com.tle.core.securitykey.dao
+package com.tle.core.webkeyset.dao
 
-import com.tle.beans.securitykey.SecurityKey
-import com.tle.core.hibernate.dao.GenericDao
+import com.tle.beans.webkeyset.WebKeySet
+import com.tle.core.guice.Bind
+import com.tle.core.hibernate.dao.GenericDaoImpl
+import org.hibernate.Session
+import javax.inject.Singleton
+import scala.util.Try
 
-trait SecurityKeyDAO extends GenericDao[SecurityKey, java.lang.Long] {
-
-  /**
-    * Retrieve a SecurityKey by key ID.
-    *
-    * @param keyId Unique ID of the key pair.
-    * @return Option of the retrieved SecurityKey, or None if not found.
-    */
-  def getByKeyID(keyId: String): Option[SecurityKey]
+@Bind(classOf[WebKeySetDAO])
+@Singleton
+class WebKeySetDAOImpl
+    extends GenericDaoImpl[WebKeySet, java.lang.Long](classOf[WebKeySet])
+    with WebKeySetDAO {
+  override def getByKeyID(keyId: String): Option[WebKeySet] =
+    Try {
+      getHibernateTemplate
+        .execute(
+          (session: Session) =>
+            session
+              .getNamedQuery("getByKeyID")
+              .setParameter("keyId", keyId)
+              .getSingleResult)
+        .asInstanceOf[WebKeySet]
+    }.toOption
 }

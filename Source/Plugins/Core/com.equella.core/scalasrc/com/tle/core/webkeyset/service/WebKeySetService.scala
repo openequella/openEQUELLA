@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 
-package com.tle.core.securitykey.service
+package com.tle.core.webkeyset.service
 
-import com.tle.beans.securitykey.{JWKAlg, JWKKeyType, JWKUse, JsonWebKeySet}
+import com.tle.beans.webkeyset.{JWKAlg, JWKKeyType, JWKUse, JsonWebKeySet}
 
 import java.security.KeyPair
 
-trait SecurityKeyService {
+trait WebKeySetService {
 
   /**
     * Retrieve a key pair by key ID.

@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 
-package com.tle.core.securitykey.service
+package com.tle.core.webkeyset.service
 
-import com.tle.beans.securitykey._
+import com.tle.beans.webkeyset._
 import com.tle.core.guice.Bind
-import com.tle.core.securitykey.dao.SecurityKeyDAO
-import com.tle.core.securitykey.helper.SecurityKeyHelper._
+import com.tle.core.webkeyset.dao.WebKeySetDAO
+import com.tle.core.webkeyset.helper.WebKeySetHelper._
 import com.tle.legacy.LegacyGuice
 import io.circe.syntax._
 import org.springframework.transaction.annotation.Transactional
@@ -32,9 +32,9 @@ import java.util.{Base64, UUID}
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-@Bind(classOf[SecurityKeyService])
-class SecurityKeyServiceImpl extends SecurityKeyService {
-  @Inject var jwkDao: SecurityKeyDAO = _
+@Bind(classOf[WebKeySetService])
+class WebKeySetServiceImpl extends WebKeySetService {
+  @Inject var jwkDao: WebKeySetDAO = _
 
   def getKeypairByKeyID(keyId: String): Option[KeyPair] =
     jwkDao.getByKeyID(keyId).map(buildKeyPair)
@@ -43,7 +43,7 @@ class SecurityKeyServiceImpl extends SecurityKeyService {
   def generateKeyPair: String = {
     val keyPair = generateRSAKeyPair
 
-    val securityKey = new SecurityKey
+    val securityKey = new WebKeySet
     securityKey.keyId = UUID.randomUUID().toString
     securityKey.algorithm = RSA
     securityKey.created = Instant.now

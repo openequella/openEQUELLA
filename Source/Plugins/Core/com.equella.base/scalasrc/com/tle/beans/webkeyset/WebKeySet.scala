@@ -16,38 +16,64 @@
  * limitations under the License.
  */
 
-package com.tle.beans.securitykey
+package com.tle.beans.webkeyset
 
 import org.hibernate.annotations.NamedQuery
 import java.time.Instant
 import javax.persistence.{Column, Entity, GeneratedValue, GenerationType, Id, Index, Lob, Table}
 
+/**
+  * The table generated from this Entity is used to store cryptographic keys where the algorithm is asymmetric and generates
+  * a key pair of a private key and a public key.
+  */
 @Entity
 @Table(indexes = Array {
-  new Index(name = "security_key_id", columnList = "keyId")
+  new Index(name = "web_key_set_id", columnList = "keyId")
 })
-@NamedQuery(name = "getByKeyID", query = "from SecurityKey WHERE keyId = :keyId")
-class SecurityKey {
+@NamedQuery(name = "getByKeyID", query = "from WebKeySet WHERE keyId = :keyId")
+class WebKeySet {
+
+  /**
+    * Database automatically generated ID used as the primary key.
+    */
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   var id: Long = _
 
+  /**
+    * Unique ID of the key pair.
+    */
   @Column(nullable = false, unique = true)
   var keyId: String = _
 
+  /**
+    * The algorithm used to generate the key pair.
+    */
   @Column(nullable = false, columnDefinition = "VARCHAR(5)")
   var algorithm: String = _
 
+  /**
+    * The public key in PEM format.
+    */
   @Lob
   @Column(nullable = false)
   var publicKey: String = _
 
+  /**
+    * The private key in PEM format but encrypted.
+    */
   @Lob
   @Column(nullable = false)
   var privateKey: String = _
 
+  /**
+    * The date when the key pair is generated.
+    */
   @Column(nullable = false)
   var created: Instant = _
 
+  /**
+    * The date when the key pair is deactivated. Null if it is still active.
+    */
   var deactivated: Instant = _
 }

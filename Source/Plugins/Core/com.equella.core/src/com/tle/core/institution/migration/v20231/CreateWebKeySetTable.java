@@ -18,7 +18,7 @@
 
 package com.tle.core.institution.migration.v20231;
 
-import com.tle.beans.securitykey.SecurityKey;
+import com.tle.beans.webkeyset.WebKeySet;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.impl.HibernateCreationFilter;
 import com.tle.core.hibernate.impl.HibernateMigrationHelper;
@@ -29,20 +29,20 @@ import javax.inject.Singleton;
 
 @Bind
 @Singleton
-public class CreateSecurityKeyTable extends AbstractCreateMigration {
+public class CreateWebKeySetTable extends AbstractCreateMigration {
 
   @Override
   protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper) {
-    return new TablesOnlyFilter("security_key");
+    return new TablesOnlyFilter("web_key_set");
   }
 
   @Override
   protected Class<?>[] getDomainClasses() {
-    return new Class<?>[] {SecurityKey.class};
+    return new Class<?>[] {WebKeySet.class};
   }
 
   @Override
   public MigrationInfo createMigrationInfo() {
-    return new MigrationInfo("com.tle.core.entity.services.migration.v20231.security.key");
+    return new MigrationInfo("com.tle.core.entity.services.migration.v20231.web.key.set");
   }
 }

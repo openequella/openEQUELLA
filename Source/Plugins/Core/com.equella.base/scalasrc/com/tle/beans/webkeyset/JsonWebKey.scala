@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.tle.beans.securitykey
+package com.tle.beans.webkeyset
 
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
@@ -32,6 +32,16 @@ object JWKAlg extends Enumeration {
   val RS256, RS384, RS512 = Value
 }
 
+/**
+  * Model class for the structure of a public key in JWK format
+  *
+  * @param kty The cryptographic algorithm used with the key, such as "RSA".
+  * @param e Exponent of the public key represented as a Base64urlUInt-encoded value.
+  * @param use The intended use of the key which is either Signature or Encryption.
+  * @param kid Unique ID of the key.
+  * @param alg The algorithm intended for use with the key.
+  * @param n Modules of the public key represented as a Base64urlUInt-encoded value.
+  */
 case class JsonWebKey(kty: JWKKeyType.Value,
                       e: String,
                       use: JWKUse.Value,
