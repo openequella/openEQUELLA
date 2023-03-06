@@ -55,7 +55,7 @@ trait WebKeySetService {
   /**
     * Find an existing key pair by key ID and deactivate it, and then create a new key pair.
     *
-    * @return JSON string representing the JWKS which has a new key added to the end of the set.
+    * @return ID of the new key pair.
     */
   def rotateKeyPair(keyID: String): String
 
