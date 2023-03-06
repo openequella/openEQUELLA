@@ -40,17 +40,11 @@ trait WebKeySetService {
   def generateKeyPair: String
 
   /**
-    * Generate a new key pair and then use the key pair to create a Json Web Key Set.
+    * Retrieve all the key pairs and return a JWKS representing the them.
     *
-    * @param kty Key type to indicate what cryptographic algorithm is used to generate the key pair. Default to RSA.
-    * @param alg Algorithm used to secure the content of a JWT. Default to RS256.
-    * @param use The intended use of the key which is for either signature or encryption. Default to signature.
-    *
-    * @return JSON string representing the new JWKS.
+    * @return JSON string representing the JWKS for all the key pairs.
     */
-  def generateJWKS(kty: JWKKeyType.Value = JWKKeyType.RSA,
-                   alg: JWKAlg.Value = JWKAlg.RS256,
-                   use: JWKUse.Value = JWKUse.sig): String
+  def generateJWKS: String
 
   /**
     * Find an existing key pair by key ID and deactivate it, and then create a new key pair.

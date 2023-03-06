@@ -30,6 +30,7 @@ import java.security.interfaces.RSAPublicKey
 import java.time.Instant
 import java.util.{Base64, UUID}
 import javax.inject.{Inject, Singleton}
+import scala.jdk.CollectionConverters._
 
 @Singleton
 @Bind(classOf[WebKeySetService])
@@ -65,20 +66,27 @@ class WebKeySetServiceImpl extends WebKeySetService {
   }
 
   @Transactional
-  def generateJWKS(kty: JWKKeyType.Value, alg: JWKAlg.Value, use: JWKUse.Value): String = {
+  def generateJWKS: String = {
     def base64UrlEncode(bytes: Array[Byte]): String = Base64.getUrlEncoder.encodeToString(bytes)
+    def exponent(key: RSAPublicKey)                 = base64UrlEncode(key.getPublicExponent.toByteArray)
+    def modules(key: RSAPublicKey)                  = base64UrlEncode(key.getModulus.toByteArray)
+    def buildJWK(keyPair: WebKeySet) = {
+      val publicKey = buildKeyPair(keyPair).getPublic.asInstanceOf[RSAPublicKey]
+      JsonWebKey(kty = JWKKeyType.RSA,
+                 e = exponent(publicKey),
+                 n = modules(publicKey),
+                 kid = keyPair.keyId,
+                 alg = JWKAlg.RS256,
+                 use = JWKUse.sig)
+    }
 
-    val publicKey = generateRSAKeyPair.getPublic.asInstanceOf[RSAPublicKey]
-    val exponent  = base64UrlEncode(publicKey.getPublicExponent.toByteArray)
-    val modules   = base64UrlEncode(publicKey.getModulus.toByteArray)
+    def publicKeys =
+      jwkDao
+        .findAllByCriteria()
+        .asScala
+        .map(buildJWK)
+        .toArray
 
-    val jwk = JsonWebKey(kty = kty,
-                         e = exponent,
-                         n = modules,
-                         kid = UUID.randomUUID().toString,
-                         alg = alg,
-                         use = use)
-
-    JsonWebKeySet(jwk).asJson.spaces2
+    JsonWebKeySet(publicKeys).asJson.spaces2
   }
 }

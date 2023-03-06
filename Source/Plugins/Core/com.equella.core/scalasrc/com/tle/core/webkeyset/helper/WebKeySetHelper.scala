@@ -48,7 +48,7 @@ object WebKeySetHelper {
   }
 
   /**
-    * Given a SecurityKey, convert the X.509 PEM format strings into a private key and a public key
+    * Given a WebKeySet, convert the X.509 PEM format strings into a private key and a public key
     * and return the key pair.
     *
     * @param key Instance of SecurityKey where the private and public keys are saved X.509 PEM format strings.
