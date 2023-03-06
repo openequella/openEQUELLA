@@ -44,7 +44,6 @@ import com.tle.web.controls.universal.handlers.fileupload.WebFileUploads.validat
 import com.tle.web.controls.universal.handlers.fileupload._
 import com.tle.web.controls.universal.handlers.fileupload.details._
 import com.tle.web.freemarker.FreemarkerFactory
-import com.tle.web.inplaceeditor.service.InPlaceEditorWebService
 import com.tle.web.myresource.MyResourceConstants
 import com.tle.web.resources.ResourcesService
 import com.tle.web.sections._
@@ -132,7 +131,6 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
   @Inject var attachmentResourceService: AttachmentResourceService = _
   @Inject var thumbnailService: ThumbnailService                   = _
   @Inject var videoService: VideoService                           = _
-  @Inject var inplaceEditorService: InPlaceEditorWebService        = _
 
   @AjaxFactory var ajax: AjaxGenerator = _
   @Component
@@ -258,15 +256,8 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
 
     val showRestrict                                    = hasInstitutionPrivilege(AttachmentConfigConstants.RESTRICT_ATTACHMENTS)
     private def getEditingAttachment(info: SectionInfo) = getEditState.a
-    val fileEditDetails = new FileEditDetails(id,
-                                              tree,
-                                              this,
-                                              this,
-                                              this,
-                                              this,
-                                              showRestrict,
-                                              getEditingAttachment,
-                                              inplaceEditorService)
+    val fileEditDetails =
+      new FileEditDetails(id, tree, this, this, this, this, showRestrict, getEditingAttachment)
     val packageEditDetails =
       new PackageEditDetails(id, tree, this, this, showRestrict, getEditingAttachment)
     val fileOptions =

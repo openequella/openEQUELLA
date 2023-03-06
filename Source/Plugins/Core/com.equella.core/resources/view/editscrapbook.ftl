@@ -15,22 +15,11 @@
 <h3>${s.editTitle}</h3>
 
 <div class="editing">
-	<#-- floated right -->
-	<@div id="editFileAjaxDiv" class="inplaceAppletDiv">
-		<#if m.loadApplet>
-			<@render s.editFileDiv />
-		</#if>
-	</@div>
-
 	<div class="icon">
 		<@render m.thumbnail />
 	</div>
 	<div class="fileinfo">
 		<div class="filename"><p>${m.filenameLabel}</p></div>
-		<div class="editLinks">
-			<div class="editLink"><@render section=s.editFileLink class="editFileLink" /></div>
-			<div class="editFileWithLink"><@render section=s.editFileWithLink class="editFileLink" /></div>
-		</div>
 	</div>
 
 	<div class="clear"></div>

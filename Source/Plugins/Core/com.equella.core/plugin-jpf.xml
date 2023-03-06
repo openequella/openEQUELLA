@@ -6,7 +6,6 @@
     <import plugin-id="com.equella.serverbase" />
     <import plugin-id="com.tle.common.applet" />
     <import plugin-id="com.tle.common.i18n" />
-    <import plugin-id="com.tle.common.inplaceeditor" />
     <import plugin-id="com.tle.core.activation" />
     <import plugin-id="com.tle.core.application" />
     <import plugin-id="com.tle.core.auditlog" />
@@ -3211,11 +3210,6 @@
     <parameter id="class" value="com.tle.web.myresource.bulkupload.common.ServerBackend" />
     <parameter id="bean" value="bean:com.tle.web.myresource.bulkupload.server.ServerBackendImpl" />
   </extension>
-  <extension plugin-id="com.tle.web.services" point-id="invoker" id="inPlaceEditServiceMapping">
-    <parameter id="url" value="/myresource.inplaceedit.service" />
-    <parameter id="class" value="com.tle.common.inplaceeditor.InPlaceEditorServerBackend" />
-    <parameter id="bean" value="bean:com.tle.web.myresource.inplaceedit.server.ScrapbookInPlaceEditorServerBackend" />
-  </extension>
   <extension plugin-id="com.tle.web.wizard" point-id="webControl" id="editbox">
     <parameter id="class" value="bean:com.tle.web.wizard.standard.controls.EditBox" />
     <parameter id="type" value="editbox" />
@@ -3440,11 +3434,6 @@
   <extension plugin-id="com.tle.web.wizard.controls.universal" point-id="packageAttachmentHandler" id="scormHandler">
     <parameter id="class" value="object:com.tle.web.controls.universal.handlers.fileupload.packages.ScormPackageExtension" />
     <parameter id="type" value="SCORM" />
-  </extension>
-  <extension plugin-id="com.tle.web.services" point-id="invoker" id="fileHandlerInPlaceEditServiceMapping">
-    <parameter id="url" value="/file.inplaceedit.service" />
-    <parameter id="class" value="com.tle.common.inplaceeditor.InPlaceEditorServerBackend" />
-    <parameter id="bean" value="bean:com.tle.web.controls.universal.handlers.FileHandlerInplaceEditorBackend" />
   </extension>
   <extension plugin-id="com.tle.core.harvester" point-id="harvesterProtocol" id="OAIProtocol">
     <parameter id="type" value="OAIHarvesterSettings" />
@@ -6123,10 +6112,6 @@
       <parameter id="id" value="GROUPS" />
       <parameter id="nameKey" value="institutions.tasks.groups" />
     </parameter>
-  </extension>
-  <extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings_inplaceeditor-applet">
-    <parameter id="group" value="inplaceeditor-applet" />
-    <parameter id="file" value="lang/i18n-inplaceeditor-applet.properties" />
   </extension>
   <extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings_admin-console">
     <parameter id="group" value="admin-console" />
