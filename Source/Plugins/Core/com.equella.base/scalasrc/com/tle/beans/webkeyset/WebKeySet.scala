@@ -24,7 +24,7 @@ import javax.persistence.{Column, Entity, GeneratedValue, GenerationType, Id, In
 
 /**
   * The table generated from this Entity is used to store cryptographic keys where the algorithm is asymmetric and generates
-  * a key pair of a private key and a public key.
+  * a key pair of a private key and a public key. This is designed to be used to back the JWKS endpoint.
   */
 @Entity
 @Table(indexes = Array {
