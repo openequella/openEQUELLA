@@ -69,12 +69,12 @@ class WebKeySetServiceImpl extends WebKeySetService {
   def generateJWKS: String = {
     def base64UrlEncode(bytes: Array[Byte]): String = Base64.getUrlEncoder.encodeToString(bytes)
     def exponent(key: RSAPublicKey)                 = base64UrlEncode(key.getPublicExponent.toByteArray)
-    def modules(key: RSAPublicKey)                  = base64UrlEncode(key.getModulus.toByteArray)
+    def modulus(key: RSAPublicKey)                  = base64UrlEncode(key.getModulus.toByteArray)
     def buildJWK(keyPair: WebKeySet) = {
       val publicKey = buildKeyPair(keyPair).getPublic.asInstanceOf[RSAPublicKey]
       JsonWebKey(kty = JWKKeyType.RSA,
                  e = exponent(publicKey),
-                 n = modules(publicKey),
+                 n = modulus(publicKey),
                  kid = keyPair.keyId,
                  alg = JWKAlg.RS256,
                  use = JWKUse.sig)
