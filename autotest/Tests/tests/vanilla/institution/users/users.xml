@@ -107,4 +107,13 @@
     <emailAddress>ttesterson@test.net</emailAddress>
     <password>SHA256:59aa63c9bbdc51a05db11fa61c465f35a1b88c1c6a94bbd7d3872e18a217ae9c</password>
   </com.tle.beans.user.TLEUser>
+  <com.tle.beans.user.TLEUser>
+    <id>257186</id>
+    <uuid>fdd0ba2d-54ac-405b-b30f-7295d91fb6e1</uuid>
+    <username>AutoTest_Low_Privileged</username>
+    <firstName>low</firstName>
+    <lastName>privileged</lastName>
+    <emailAddress></emailAddress>
+    <password>SHA256:cc9e37d975bb25b2fcecd8c20d9c77dbe7ce2649de0127b9a5ca76038f852da0</password>
+  </com.tle.beans.user.TLEUser>
 </list>
