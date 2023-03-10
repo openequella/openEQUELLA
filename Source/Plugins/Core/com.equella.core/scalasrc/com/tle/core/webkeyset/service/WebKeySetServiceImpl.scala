@@ -35,10 +35,12 @@ import scala.jdk.CollectionConverters._
 @Singleton
 @Bind(classOf[WebKeySetService])
 class WebKeySetServiceImpl extends WebKeySetService {
-  @Inject var jwkDao: WebKeySetDAO = _
+  @Inject var webKeySetDAO: WebKeySetDAO = _
 
   def getKeypairByKeyID(keyId: String): Option[KeyPair] =
-    jwkDao.getByKeyID(keyId).map(buildKeyPair)
+    webKeySetDAO.getByKeyID(keyId).map(buildKeyPair)
+
+  def getAll: List[WebKeySet] = webKeySetDAO.findAllByCriteria().asScala.toList
 
   @Transactional
   def generateKeyPair: String = {
@@ -52,16 +54,19 @@ class WebKeySetServiceImpl extends WebKeySetService {
       LegacyGuice.encryptionService.encrypt(toPEM(keyPair.getPrivate, PRIVATE_KEY_HEADER))
     securityKey.publicKey = toPEM(keyPair.getPublic, PUBLIC_KEY_HEADER)
 
-    jwkDao.save(securityKey)
+    webKeySetDAO.save(securityKey)
     securityKey.keyId
   }
 
   @Transactional
-  def delete(keyId: String): Unit = jwkDao.getByKeyID(keyId).foreach(jwkDao.delete)
+  def delete(keyId: String): Unit = webKeySetDAO.getByKeyID(keyId).foreach(webKeySetDAO.delete)
+
+  @Transactional
+  def deleteAll: Unit = webKeySetDAO.findAllByCriteria().asScala.foreach(webKeySetDAO.delete)
 
   @Transactional
   def rotateKeyPair(keyID: String): String = {
-    jwkDao.getByKeyID(keyID).foreach(_.deactivated = Instant.now)
+    webKeySetDAO.getByKeyID(keyID).foreach(_.deactivated = Instant.now)
     generateKeyPair
   }
 
@@ -81,7 +86,7 @@ class WebKeySetServiceImpl extends WebKeySetService {
     }
 
     def publicKeys =
-      jwkDao
+      webKeySetDAO
         .findAllByCriteria()
         .asScala
         .map(buildJWK)

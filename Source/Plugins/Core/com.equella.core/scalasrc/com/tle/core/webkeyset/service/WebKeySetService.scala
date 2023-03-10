@@ -18,7 +18,7 @@
 
 package com.tle.core.webkeyset.service
 
-import com.tle.beans.webkeyset.{JWKAlg, JWKKeyType, JWKUse, JsonWebKeySet}
+import com.tle.beans.webkeyset.WebKeySet
 
 import java.security.KeyPair
 
@@ -31,6 +31,12 @@ trait WebKeySetService {
     * @return KeyPair matching the provided key ID,  or None if no key pair is found.
     */
   def getKeypairByKeyID(keyId: String): Option[KeyPair]
+
+  /**
+    * Retrieve all the key pairs.
+    * @return A list of WebKeySet
+    */
+  def getAll: List[WebKeySet]
 
   /**
     * Generate a new key pair.
@@ -60,4 +66,8 @@ trait WebKeySetService {
     */
   def delete(keyId: String): Unit
 
+  /**
+    * Delete all the key pairs.
+    */
+  def deleteAll(): Unit
 }
