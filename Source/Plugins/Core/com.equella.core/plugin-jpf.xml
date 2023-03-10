@@ -6146,4 +6146,11 @@
     <parameter id="class" value="bean:com.tle.core.item.convert.ViewsConverter" />
     <parameter id="order" value="815" />
   </extension>
+
+  <!-- region LTI 1.3 Support-->
+  <extension plugin-id="com.tle.web.core" point-id="webServlet" id="lti13LaunchServlet">
+    <parameter id="bean" value="bean:com.tle.integration.lti13.OpenIDConnectLaunchServlet" />
+    <parameter id="url-pattern" value="/lti13/launch" />
+  </extension>
+  <!-- endregion -->
 </plugin>
