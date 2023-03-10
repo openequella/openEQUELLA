@@ -70,4 +70,11 @@ trait WebKeySetService {
     * Delete all the key pairs.
     */
   def deleteAll(): Unit
+
+  /**
+    * Save the provided key pair or update it if it exists already.
+    * @param keySet
+    * @return
+    */
+  def createOrUpdate(keySet: WebKeySet): Unit
 }

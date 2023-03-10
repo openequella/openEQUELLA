@@ -94,4 +94,6 @@ class WebKeySetServiceImpl extends WebKeySetService {
 
     JsonWebKeySet(publicKeys).asJson.spaces2
   }
+
+  def createOrUpdate(keySet: WebKeySet): Unit = webKeySetDAO.saveOrUpdate(keySet)
 }
