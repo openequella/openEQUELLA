@@ -91,9 +91,10 @@ export const ACLTreeOperator = ({
 
   const treeOperatorLabel = () => (
     <div className={classes.labelRoot}>
-      <InputLabel>{matchLabel}&nbsp;</InputLabel>
+      <InputLabel data-testid="ACLTreeOperator-label">
+        {matchLabel}&nbsp;
+      </InputLabel>
       <Select
-        id={`${nodeId}-select`}
         value={operator}
         onChange={(event) =>
           onOperatorChange(event.target.value as ACLOperatorType)
@@ -126,12 +127,13 @@ export const ACLTreeOperator = ({
             event.stopPropagation();
           }}
         >
-          <DeleteIcon />
+          <DeleteIcon data-testid="ACLTreeOperator-delete" />
         </TooltipIconButton>
       )}
     </div>
   );
 
+  // the className `ACLTreeOperator` is used for testing purpose (find the element)
   return (
     <ACLTreeItem
       id={nodeId}

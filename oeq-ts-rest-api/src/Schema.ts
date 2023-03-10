@@ -15,16 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as Common from './Common';
 import { GET } from './AxiosInstance';
-import { is } from 'typescript-is';
+import type { BaseEntity, PagedResult } from './Common';
+import { isPagedBaseEntity, ListCommonParams } from './Common';
+import { PagedResultCodec } from './gen/Common';
+import { EquellaSchemaCodec } from './gen/Schema';
+import { validate } from './Utils';
 
 export interface Citation {
   name: string;
   transformation: string;
 }
 
-export interface Schema extends Common.BaseEntity {
+export interface Schema extends BaseEntity {
   namePath: string;
   descriptionPath: string;
   /**
@@ -41,25 +44,6 @@ export interface EquellaSchema extends Schema {
   serializedDefinition: string;
 }
 
-/**
- * Helper function for a standard validator for EquellaSchema instances via typescript-is.
- *
- * @param instance An instance to validate.
- */
-export const isEquellaSchema = (instance: unknown): instance is EquellaSchema =>
-  is<EquellaSchema>(instance);
-
-/**
- * Helper function for a standard validator for EquellaSchema instances wrapped in a PagedResult
- * via typescript-is.
- *
- * @param instance An instance to validate.
- */
-export const isPagedEquellaSchema = (
-  instance: unknown
-): instance is Common.PagedResult<EquellaSchema> =>
-  is<Common.PagedResult<EquellaSchema>>(instance);
-
 const SCHEMA_ROOT_PATH = '/schema';
 
 /**
@@ -72,15 +56,15 @@ const SCHEMA_ROOT_PATH = '/schema';
  */
 export const listSchemas = (
   apiBasePath: string,
-  params?: Common.ListCommonParams
-): Promise<Common.PagedResult<Common.BaseEntity>> => {
+  params?: ListCommonParams
+): Promise<PagedResult<BaseEntity>> => {
   // Only if the `full` param is specified do you get a whole Schema definition, otherwise
   // it's the bare minimum of BaseEntity.
   const validator = params?.full
-    ? isPagedEquellaSchema
-    : Common.isPagedBaseEntity;
+    ? validate(PagedResultCodec(EquellaSchemaCodec))
+    : isPagedBaseEntity;
 
-  return GET<Common.PagedResult<Common.BaseEntity>>(
+  return GET<PagedResult<BaseEntity>>(
     apiBasePath + SCHEMA_ROOT_PATH,
     validator,
     params
@@ -99,5 +83,5 @@ export const getSchema = (
 ): Promise<EquellaSchema> =>
   GET<EquellaSchema>(
     apiBasePath + `${SCHEMA_ROOT_PATH}/${uuid}`,
-    isEquellaSchema
+    validate(EquellaSchemaCodec)
   );

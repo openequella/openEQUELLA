@@ -18,32 +18,69 @@
 import DeleteIcon from "@mui/icons-material/Delete";
 import { TreeItemProps } from "@mui/lab/TreeItem";
 import { Typography } from "@mui/material";
+import * as E from "fp-ts/Either";
+import { pipe } from "fp-ts/function";
+import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
+import { useEffect, useState } from "react";
+import type { ACLEntityResolvers } from "../../modules/ACLEntityModule";
+import {
+  ACLRecipient,
+  showRecipient,
+  showRecipientHumanReadable,
+} from "../../modules/ACLRecipientModule";
+import { findGroupById } from "../../modules/GroupModule";
+import { findRoleById } from "../../modules/RoleModule";
+import { findUserById } from "../../modules/UserModule";
 import { languageStrings } from "../../util/langstrings";
 import { TooltipIconButton } from "../TooltipIconButton";
-import { classes, ACLTreeItem } from "./ACLTreeItem";
+import { ACLTreeItem, classes } from "./ACLTreeItem";
 
 export interface ACLTreeRecipientProps extends TreeItemProps {
   /**
-   * Name of the expression.
-   * Example: `Referred by http://edalex.com`
+   * Recipient object which represents this node.
    */
-  expressionName: string;
+  recipient: ACLRecipient;
   /**
    * Fired when the recipient is deleted.
    */
   onDelete: () => void;
+  /***
+   * Functions to lookup user, group and role entities.
+   */
+  aclEntityResolvers?: ACLEntityResolvers;
 }
+
+const defaultACLEntityResolvers = {
+  resolveGroupProvider: findGroupById,
+  resolveUserProvider: findUserById,
+  resolveRoleProvider: findRoleById,
+};
 
 /**
  * Tree item (node) which represents an ACL Recipient.
  */
 export const ACLTreeRecipient = ({
   nodeId,
-  expressionName,
+  recipient,
   onDelete,
+  aclEntityResolvers = defaultACLEntityResolvers,
   ...other
 }: ACLTreeRecipientProps): JSX.Element => {
+  const [expressionName, setExpressionName] = useState(
+    recipient.name ?? showRecipient(recipient)
+  );
+
+  useEffect(() => {
+    (async () => {
+      const getName: TE.TaskEither<string, string> = pipe(
+        recipient,
+        showRecipientHumanReadable(aclEntityResolvers)
+      );
+      pipe(await getName(), E.fold(console.warn, setExpressionName));
+    })();
+  }, [aclEntityResolvers, recipient]);
+
   const treeRecipientLabel = () => (
     <div className={classes.labelRoot}>
       <Typography className={classes.labelText} variant="body2">

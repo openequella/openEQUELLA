@@ -17,21 +17,15 @@
  */
 import { Meta, Story } from "@storybook/react";
 import * as React from "react";
+import { defaultACLEntityResolvers } from "../../../__mocks__/ACLExpressionBuilder.mock";
 import { complexExpressionACLExpression } from "../../../__mocks__/ACLExpressionModule.mock";
-import {
-  findGroupById,
-  listGroups,
-  resolveGroups,
-} from "../../../__mocks__/GroupModule.mock";
-import { findRoleById, listRoles } from "../../../__mocks__/RoleModule.mock";
-import {
-  findUserById,
-  getTokens,
-  listUsers,
-} from "../../../__mocks__/UserModule.mock";
+import { listGroups, resolveGroups } from "../../../__mocks__/GroupModule.mock";
+import { listRoles } from "../../../__mocks__/RoleModule.mock";
+import { getTokens, listUsers } from "../../../__mocks__/UserModule.mock";
 import ACLExpressionBuilder, {
   ACLExpressionBuilderProps,
 } from "../../../tsrc/components/aclexpressionbuilder/ACLExpressionBuilder";
+import { generate } from "../../../tsrc/modules/ACLExpressionModule";
 
 export default {
   title: "Component/ACLExpressionBuilder/ACLExpressionBuilder",
@@ -42,16 +36,12 @@ export const Basic: Story<ACLExpressionBuilderProps> = (args) => (
   <ACLExpressionBuilder {...args} />
 );
 Basic.args = {
-  aclExpression: complexExpressionACLExpression,
+  aclExpression: generate(complexExpressionACLExpression),
   searchUserProvider: listUsers,
   searchGroupProvider: listGroups,
   searchRoleProvider: listRoles,
   resolveGroupsProvider: resolveGroups,
-  aclEntityResolversProvider: {
-    resolveUserProvider: findUserById,
-    resolveGroupProvider: findGroupById,
-    resolveRoleProvider: findRoleById,
-  },
+  aclEntityResolversProvider: defaultACLEntityResolvers,
   ssoTokensProvider: getTokens,
 };
 

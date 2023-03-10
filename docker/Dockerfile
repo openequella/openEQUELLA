@@ -12,6 +12,7 @@ RUN apk update \
     imagemagick \
     ffmpeg \
     unzip \
+    gcompat \
   && adduser equella --disabled-password --gecos -shell /bin/bash
 
 # Install openEQUELLA

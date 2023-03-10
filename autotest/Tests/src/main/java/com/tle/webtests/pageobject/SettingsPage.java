@@ -8,8 +8,10 @@ import com.tle.webtests.pageobject.settings.ContentRestrictionsPage;
 import com.tle.webtests.pageobject.settings.CourseDefaultsPage;
 import com.tle.webtests.pageobject.settings.DateFormatSettingPage;
 import com.tle.webtests.pageobject.settings.DiagnosticsPage;
+import com.tle.webtests.pageobject.settings.GoogleApiSettingsPage;
 import com.tle.webtests.pageobject.settings.GoogleSettingsPage;
 import com.tle.webtests.pageobject.settings.HarvesterSkipDrmPage;
+import com.tle.webtests.pageobject.settings.LTI13PlatformsSettingsPage;
 import com.tle.webtests.pageobject.settings.LanguageSettingsPage;
 import com.tle.webtests.pageobject.settings.LoginSettingsPage;
 import com.tle.webtests.pageobject.settings.MailSettingsPage;
@@ -91,8 +93,12 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
     return clickSetting("MIME types", new MimeSearchPage(context));
   }
 
+  public GoogleApiSettingsPage googleApiSettings() {
+    return clickSetting("Google API", new GoogleApiSettingsPage(context));
+  }
+
   public GoogleSettingsPage googleSettings() {
-    return clickSetting("Google analytics", new GoogleSettingsPage(context));
+    return clickSetting("Google Analytics", new GoogleSettingsPage(context));
   }
 
   public SearchSettingsPage searchSettings() {
@@ -168,6 +174,11 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
 
   public ManualDataFixesPage maualDataFixPage() {
     return clickSetting("Manual data fixes", new ManualDataFixesPage(context));
+  }
+
+  public LTI13PlatformsSettingsPage lti13PlatformsSettingsPage() {
+    return clickSetting(
+        GROUP_INTEGRATIONS, "LTI 1.3 platforms", new LTI13PlatformsSettingsPage(context));
   }
 
   public void enableNewUI() {

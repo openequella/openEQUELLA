@@ -15,8 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GET, PUT, DELETE } from './AxiosInstance';
-import { is } from 'typescript-is';
+import { DELETE, GET, PUT } from './AxiosInstance';
+import { ThemeSettingsCodec } from './gen/Theme';
+import { validate } from './Utils';
 
 const THEME_ROOT_PATH = '/theme';
 const THEME_SETTINGS_PATH = `${THEME_ROOT_PATH}/settings`;
@@ -43,7 +44,7 @@ export interface ThemeSettings {
 export const getThemeSettings = (apiBasePath: string): Promise<ThemeSettings> =>
   GET<ThemeSettings>(
     apiBasePath + THEME_SETTINGS_PATH,
-    (data): data is ThemeSettings => is<ThemeSettings>(data)
+    validate(ThemeSettingsCodec)
   );
 
 /**

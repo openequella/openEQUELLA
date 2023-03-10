@@ -17,53 +17,67 @@
  */
 import { Meta, Story } from "@storybook/react";
 import * as React from "react";
-import { LOGGED_IN_USER_ROLE_NAME } from "../../../__mocks__/ACLRecipientModule.mock";
+import { defaultACLEntityResolvers } from "../../../__mocks__/ACLExpressionBuilder.mock";
+import {
+  everyoneRecipient,
+  group100RecipientWithName,
+  ipRecipient,
+  ownerRecipient,
+  referRecipient,
+  role100RecipientWithName,
+  roleGuestRecipient,
+  roleLoggedRecipientWithName,
+  ssoMoodleRecipient,
+  user100Recipient,
+} from "../../../__mocks__/ACLRecipientModule.mock";
 import {
   ACLTreeRecipient,
   ACLTreeRecipientProps,
 } from "../../../tsrc/components/aclexpressionbuilder/ACLTreeRecipient";
+import type { ACLRecipient } from "../../../tsrc/modules/ACLRecipientModule";
 
 export default {
   title: "Component/ACLExpressionBuilder/ACLTreeRecipient",
   component: ACLTreeRecipient,
 } as Meta<ACLTreeRecipientProps>;
 
-const recipient = (expressionName: string) => (
+const recipient = (recipient: ACLRecipient) => (
   <ACLTreeRecipient
     nodeId="example"
-    expressionName={expressionName}
+    recipient={recipient}
     onDelete={() => {}}
+    aclEntityResolvers={defaultACLEntityResolvers}
   />
 );
 
 export const RecipientUser: Story<ACLTreeRecipientProps> = () =>
-  recipient("Demonstration Content Admin [democontentadmin]");
+  recipient(user100Recipient);
 
 export const RecipientGroup: Story<ACLTreeRecipientProps> = () =>
-  recipient("INT - Librarians");
+  recipient(group100RecipientWithName);
 
 export const RecipientRole: Story<ACLTreeRecipientProps> = () =>
-  recipient("Teacher Role");
+  recipient(role100RecipientWithName);
 
 export const RecipientEveryone: Story<ACLTreeRecipientProps> = () =>
-  recipient("Everyone");
+  recipient(everyoneRecipient);
 
 export const RecipientOwner: Story<ACLTreeRecipientProps> = () =>
-  recipient("Owner");
+  recipient(ownerRecipient);
 
 export const RecipientLogged: Story<ACLTreeRecipientProps> = () =>
-  recipient(LOGGED_IN_USER_ROLE_NAME);
+  recipient(roleLoggedRecipientWithName);
 export const RecipientGuest: Story<ACLTreeRecipientProps> = () =>
-  recipient("Guest");
+  recipient(roleGuestRecipient);
 
 export const RecipientSso: Story<ACLTreeRecipientProps> = () =>
-  recipient("Token ID is moodle");
+  recipient(ssoMoodleRecipient);
 
 export const RecipientIp: Story<ACLTreeRecipientProps> = () =>
-  recipient("From 255.255.255.255/32");
+  recipient(ipRecipient("255.255.255.255/32"));
 
 export const RecipientReferrerContain: Story<ACLTreeRecipientProps> = () =>
-  recipient("Referred by *edalex*");
+  recipient(referRecipient("*edalex*"));
 
 export const RecipientReferrerExact: Story<ACLTreeRecipientProps> = () =>
-  recipient("Referred by https://edalex.com");
+  recipient(referRecipient("https://edalex.com"));

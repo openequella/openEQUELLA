@@ -15,28 +15,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render, RenderResult } from "@testing-library/react";
+import {
+  findByText,
+  getByText,
+  render,
+  RenderResult,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
+import { defaultACLEntityResolvers } from "../../../../__mocks__/ACLExpressionBuilder.mock";
 import {
-  resolveGroups,
   listGroups,
-  findGroupById,
+  resolveGroups,
 } from "../../../../__mocks__/GroupModule.mock";
-import { findRoleById, listRoles } from "../../../../__mocks__/RoleModule.mock";
-import {
-  findUserById,
-  getTokens,
-  listUsers,
-} from "../../../../__mocks__/UserModule.mock";
+import { listRoles } from "../../../../__mocks__/RoleModule.mock";
+import { getTokens, listUsers } from "../../../../__mocks__/UserModule.mock";
 import ACLExpressionBuilder, {
   ACLExpressionBuilderProps,
 } from "../../../../tsrc/components/aclexpressionbuilder/ACLExpressionBuilder";
-import type { ACLExpression } from "../../../../tsrc/modules/ACLExpressionModule";
+import type { ReferrerType } from "../../../../tsrc/components/aclexpressionbuilder/ACLHTTPReferrerInput";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import { selectOption } from "../../MuiTestHelpers";
 
 const { select: selectLabel, ok: okLabel } = languageStrings.common.action;
+
+const {
+  aclExpressionBuilder: {
+    otherACLDescriptions: {
+      exactReferrer: exactReferrerDesc,
+      containReferrer: containReferrerDesc,
+    },
+  },
+} = languageStrings;
 
 export const defaultACLExpressionBuilderProps: ACLExpressionBuilderProps = {
   onFinish: jest.fn(),
@@ -44,11 +54,7 @@ export const defaultACLExpressionBuilderProps: ACLExpressionBuilderProps = {
   searchGroupProvider: listGroups,
   searchRoleProvider: listRoles,
   resolveGroupsProvider: resolveGroups,
-  aclEntityResolversProvider: {
-    resolveUserProvider: findUserById,
-    resolveGroupProvider: findGroupById,
-    resolveRoleProvider: findRoleById,
-  },
+  aclEntityResolversProvider: defaultACLEntityResolvers,
   ssoTokensProvider: getTokens,
 };
 
@@ -62,19 +68,19 @@ export const renderACLExpressionBuilder = (
  * It then clicks `select` and then `ok` button to get the updated ACLExpression result from `onFinish`.
  */
 export const selectAndFinished = async (
-  { findByText, getByText }: RenderResult,
+  container: HTMLElement,
   selectNames: string[],
   onFinish = jest.fn()
-): Promise<ACLExpression> => {
+): Promise<string> => {
   // Wait for the results, and then click all entities
   for (const name of selectNames) {
-    await userEvent.click(await findByText(name));
+    await userEvent.click(await findByText(container, name));
   }
 
   // click select button
-  await userEvent.click(getByText(selectLabel));
+  await userEvent.click(getByText(container, selectLabel));
   // click ok button
-  await userEvent.click(getByText(okLabel));
+  await userEvent.click(getByText(container, okLabel));
 
   // get the result of ACLExpression
   return onFinish.mock.lastCall[0];
@@ -87,3 +93,15 @@ export const selectRecipientType = async (
   container: HTMLElement,
   recipientLabel: string
 ) => selectOption(container, `#recipient-type-select`, recipientLabel);
+
+/**
+ * Helper function to mock select a referrer type in ACLHTTPReferrerInput.
+ */
+export const selectReferrerType = async (
+  { getByText }: RenderResult,
+  type: ReferrerType
+) => {
+  const text = type === "Contain" ? containReferrerDesc : exactReferrerDesc;
+  const radio = getByText(text);
+  await userEvent.click(radio);
+};

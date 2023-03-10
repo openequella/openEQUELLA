@@ -15,9 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { BatchOperationResponse } from './BatchOperationResponse';
+import * as t from 'io-ts';
 import { DELETE, GET, PUT } from './AxiosInstance';
-import { is } from 'typescript-is';
+import type { BatchOperationResponse } from './BatchOperationResponse';
+import { FacetedSearchClassificationCodec } from './gen/FacetedSearchSettings';
+import { validate } from './Utils';
 
 export interface FacetedSearchClassification {
   /**
@@ -64,8 +66,7 @@ export const getFacetedSearchSettings = (
 ): Promise<FacetedSearchClassification[]> =>
   GET<FacetedSearchClassification[]>(
     apiBasePath + FACETED_SEARCH_SETTINGS_URL,
-    (data): data is FacetedSearchClassification[] =>
-      is<FacetedSearchClassification[]>(data)
+    validate(t.array(FacetedSearchClassificationCodec))
   );
 
 /**
@@ -80,8 +81,7 @@ export const getFacetedSearchSettingById = (
 ): Promise<FacetedSearchClassification> =>
   GET<FacetedSearchClassification>(
     `${apiBasePath}${FACETED_SEARCH_SETTINGS_URL}/${id}`,
-    (data): data is FacetedSearchClassification =>
-      is<FacetedSearchClassification>(data)
+    validate(FacetedSearchClassificationCodec)
   );
 
 /**

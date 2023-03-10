@@ -15,9 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { is } from 'typescript-is';
+import * as t from 'io-ts';
 import { GET, POST } from './AxiosInstance';
-import { UuidString } from './Common';
+import type { UuidString } from './Common';
+import {
+  GroupDetailsCodec,
+  SearchResultCodec,
+  UserDetailsCodec,
+} from './gen/UserQuery';
+import { validate } from './Utils';
 
 export interface UserDetails {
   id: UuidString;
@@ -77,8 +83,7 @@ export interface LookupParams {
   roles: string[];
 }
 
-const isSearchResult = (instance: unknown): instance is SearchResult =>
-  is<SearchResult>(instance);
+const isSearchResult = validate(SearchResultCodec);
 
 const USERQUERY_ROOT_PATH = '/userquery';
 
@@ -110,7 +115,7 @@ export const filtered = (
 ): Promise<UserDetails[]> =>
   GET<UserDetails[]>(
     apiBasePath + USERQUERY_ROOT_PATH + '/filtered',
-    (result: unknown): result is UserDetails[] => is<UserDetails[]>(result),
+    validate(t.array(UserDetailsCodec)),
     params
   );
 
@@ -126,7 +131,7 @@ export const filteredGroups = (
 ): Promise<GroupDetails[]> =>
   GET<GroupDetails[]>(
     apiBasePath + USERQUERY_ROOT_PATH + '/filtered-groups',
-    (result: unknown): result is GroupDetails[] => is<GroupDetails[]>(result),
+    validate(t.array(GroupDetailsCodec)),
     params
   );
 
@@ -154,5 +159,5 @@ export const lookup = (
 export const tokens = (apiBasePath: string) =>
   GET<string[]>(
     apiBasePath + USERQUERY_ROOT_PATH + '/tokens',
-    (result: unknown): result is string[] => is<string[]>(result)
+    validate(t.array(t.string))
   );

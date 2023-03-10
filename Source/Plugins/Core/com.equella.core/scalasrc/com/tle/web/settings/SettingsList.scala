@@ -21,12 +21,10 @@ package com.tle.web.settings
 import com.tle.common.connectors.ConnectorConstants.{PRIV_CREATE_CONNECTOR, PRIV_EDIT_CONNECTOR}
 import com.tle.common.externaltools.constants.ExternalToolConstants
 import com.tle.common.lti.consumers.LtiConsumerConstants
-import com.tle.common.security.SecurityConstants
 import com.tle.common.userscripts.UserScriptsConstants
 import com.tle.core.echo.EchoConstants
 import com.tle.core.i18n.CoreStrings
 import com.tle.core.oauth.OAuthConstants
-import com.tle.core.security.ACLChecks.hasAcl
 import com.tle.legacy.LegacyGuice._
 import com.tle.web.cloudprovider.CloudProviderConstants
 import com.tle.web.mimetypes.MimeEditorUtils
@@ -125,6 +123,15 @@ object SettingsList {
         .isEmpty
   )
 
+  val lti13PlatformsSettings = CoreSettingsPage(
+    "lti1.3platforms",
+    Integration,
+    "lti13.settings.title",
+    "lti13.settings.description",
+    "page/lti13platforms",
+    () => lti13PrivilegeTreeProvider.isAuthorised
+  )
+
   val userScriptSettings = CoreSettingsPage(
     "scripts",
     General,
@@ -207,6 +214,7 @@ object SettingsList {
     connectorSettings,
     echoSettings,
     ltiConsumersSettings,
+    lti13PlatformsSettings,
     userScriptSettings,
     oauthSettings,
     htmlEditorSettings,

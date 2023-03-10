@@ -20,14 +20,16 @@ import { AppBar, Button, Grid, Paper, Tab, Tabs } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
-import { pipe } from "fp-ts/function";
+import { flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
+import * as E from "fp-ts/Either";
 import * as RA from "fp-ts/ReadonlyArray";
 import * as RSET from "fp-ts/ReadonlySet";
 import * as React from "react";
 import { ChangeEvent, useState } from "react";
 import { ACLEntityResolvers } from "../../modules/ACLEntityModule";
 import {
+  parse,
   ACLExpression,
   addRecipients,
   compactACLExpressions,
@@ -36,6 +38,8 @@ import {
   removeACLExpression,
   replaceACLExpression,
   revertCompactedACLExpressions,
+  generate,
+  removeRedundantExpressions,
 } from "../../modules/ACLExpressionModule";
 import {
   ACLRecipient,
@@ -93,12 +97,12 @@ const StyledGrid = styled(Grid)(({ theme }) => ({
 
 export interface ACLExpressionBuilderProps {
   /** Handler for when user click OK button. */
-  onFinish: (aclExpression: ACLExpression) => void;
+  onFinish: (aclExpression: string) => void;
   /**
    *  It could be empty like a portlet hasn't been assigning ACL rules,
-   *  user can use this builder to create an ACLExpression.
+   *  user can use this builder to build ACL rules.
    */
-  aclExpression?: ACLExpression;
+  aclExpression?: string;
   /**
    * Function used to replace the default `search` prop for `UserSearch` component.
    */
@@ -135,6 +139,13 @@ export interface ACLExpressionBuilderProps {
 
 export const DEFAULT_ACL_EXPRESSION_ID = "default-acl-expression-id";
 
+const defaultACLExpression: ACLExpression = {
+  id: DEFAULT_ACL_EXPRESSION_ID,
+  operator: "OR",
+  recipients: [],
+  children: [],
+};
+
 /**
  ** It provides a `home` panel that can search for `users` `groups` and `roles`,
  *  and an `other` panel that includes special ACL permissions like SSO, IP and referrer.
@@ -150,16 +161,18 @@ const ACLExpressionBuilder = ({
   aclEntityResolversProvider,
   ssoTokensProvider,
 }: ACLExpressionBuilderProps): JSX.Element => {
+  const parseACLExpression = flow(
+    parse,
+    E.map(compactACLExpressions),
+    E.mapLeft((err) =>
+      console.warn(`Set ACLExpression with default value because: ${err}`)
+    ),
+    E.getOrElse(() => defaultACLExpression)
+  );
+
   const [currentACLExpression, setCurrentACLExpression] =
     useState<ACLExpression>(
-      aclExpression
-        ? compactACLExpressions(aclExpression)
-        : {
-            id: DEFAULT_ACL_EXPRESSION_ID,
-            operator: "OR",
-            recipients: [],
-            children: [],
-          }
+      aclExpression ? parseACLExpression(aclExpression) : defaultACLExpression
     );
 
   const [activeTabValue, setActiveTabValue] = useState(homeTabLabel);
@@ -287,6 +300,7 @@ const ACLExpressionBuilder = ({
                 onSelect={setSelectedACLExpression}
                 onDelete={handleACLExpressionDelete}
                 onChange={handleACLExpressionTreeChanged}
+                aclEntityResolvers={aclEntityResolversProvider}
               />
             </Paper>
           </Grid>
@@ -300,6 +314,8 @@ const ACLExpressionBuilder = ({
               pipe(
                 currentACLExpression,
                 revertCompactedACLExpressions,
+                removeRedundantExpressions,
+                generate,
                 onFinish
               )
             }

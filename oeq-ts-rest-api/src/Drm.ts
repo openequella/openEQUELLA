@@ -15,8 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { is } from 'typescript-is';
 import { GET, POST_void } from './AxiosInstance';
+import { DrmViolationCodec, ItemDrmDetailsCodec } from './gen/Drm';
+import { validate } from './Utils';
 
 export interface DrmParties {
   /**  Server side language string for DRM party. */
@@ -82,9 +83,7 @@ export const listDrmTerms = (
   uuid: string,
   version: number
 ): Promise<ItemDrmDetails> =>
-  GET(buildPath(apiBasePath, uuid, version), (data): data is ItemDrmDetails =>
-    is<ItemDrmDetails>(data)
-  );
+  GET(buildPath(apiBasePath, uuid, version), validate(ItemDrmDetailsCodec));
 
 /**
  * Accept an Item's DRM terms.
@@ -113,5 +112,5 @@ export const listDrmViolations = (
 ): Promise<DrmViolation> =>
   GET(
     `${buildPath(apiBasePath, uuid, version)}/violations`,
-    (data): data is DrmViolation => is<DrmViolation>(data)
+    validate(DrmViolationCodec)
   );

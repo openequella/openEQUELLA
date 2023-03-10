@@ -156,6 +156,7 @@ export const languageStrings = {
       sso: "Single signed on with identifier",
       ip: "Add an IP Address",
       referrer: "Add a HTTP Referrer",
+      referrerLabel: "example.com",
       exactReferrer: "Only match this exact referrer",
       containReferrer: "Match referrers containing this value",
     },
@@ -653,6 +654,9 @@ export const languageStrings = {
     integration: {
       name: "Integrations",
       desc: "Settings for integrating with external systems",
+      lti13PlatformsSettings: {
+        name: "LTI 1.3 platforms settings",
+      },
     },
     diagnostics: { name: "Diagnostics", desc: "Diagnostic pages" },
     searching: {

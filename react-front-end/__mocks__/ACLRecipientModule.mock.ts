@@ -110,6 +110,7 @@ export const roleLoggedRecipientWithName = {
   type: "R",
   name: LOGGED_IN_USER_ROLE_NAME,
 };
+export const roleLoggedRecipientRawExpression = `R:${LOGGED_IN_USER_ROLE_ID}`;
 
 export const role100RecipientWithName = {
   expression: "fda99983-9eda-440a-ac68-0f746173fdcb",
@@ -189,4 +190,10 @@ export const ipRecipientWithName = (ip: string) => ({
 export const referRecipient = (refer: string) => ({
   expression: refer,
   type: "F",
+});
+
+// helper function to generate a referrer recipient with name
+export const referRecipientWithName = (refer: string) => ({
+  ...referRecipient(refer),
+  name: `From ${refer}`,
 });

@@ -22,7 +22,7 @@ import { constant, constFalse, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as S from "fp-ts/string";
 import * as React from "react";
-import { createRef, RefObject, useState, useRef, useEffect } from "react";
+import { createRef, RefObject, useState, useRef } from "react";
 import { Literal, Union } from "runtypes";
 import * as N from "fp-ts/number";
 import * as NEA from "fp-ts/NonEmptyArray";
@@ -55,7 +55,6 @@ const StyledGrid = styled(Grid)(({ theme }) => ({
 }));
 
 const ipElements = 4;
-const netmaskIndex = 4;
 
 export interface IPv4CIDRInputProps {
   /**
@@ -98,8 +97,6 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
     pipe(separatedValue, RNEA.last)
   );
 
-  const [focusIndex, setFocusIndex] = useState(0);
-
   const ipInputRefs = useRef<NEA.NonEmptyArray<RefObject<HTMLInputElement>>>(
     pipe(
       NEA.range(1, ipElements),
@@ -113,13 +110,11 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
     pipe(
       ipInputRefs.current,
       A.lookup(index),
-      O.map((input) => input.current?.focus()),
-      O.getOrElse(() => netmaskInputRef.current?.focus())
+      O.fold(
+        () => netmaskInputRef.current?.focus(),
+        (input) => input.current?.focus()
+      )
     );
-
-  useEffect(() => {
-    focusInput(focusIndex);
-  }, [focusIndex]);
 
   /**
    * Generate string for IP CIDR address if ip and netmask are both not empty.
@@ -178,7 +173,7 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
       /^(\d{3})$/.test(newIpUnit) ||
       (/^(\d{2})$/.test(newIpUnit) && parseInt(newIpUnit) > 25)
     ) {
-      setFocusIndex(index + 1);
+      focusInput(index + 1);
     }
 
     // update ip address state
@@ -223,22 +218,22 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
       O.fromPredicate(KeyCodeTypesUnion.guard),
       O.map(
         KeyCodeTypesUnion.match(
-          (Enter) => setFocusIndex(index + 1),
+          (Enter) => focusInput(index + 1),
           (Backspace) => {
             if (S.isEmpty(inputValue)) {
-              setFocusIndex(index - 1);
+              focusInput(index - 1);
             }
           },
           (Period) => {
             if (!S.isEmpty(inputValue)) {
-              setFocusIndex(index + 1);
+              focusInput(index + 1);
               // key `Period` will trigger focus event on current input, thus prevent it.
               event.preventDefault();
             }
           },
           (NumpadDecimal) => {
             if (!S.isEmpty(inputValue)) {
-              setFocusIndex(index + 1);
+              focusInput(index + 1);
               // key `NumpadDecimal` will trigger focus event on current input.
               event.preventDefault();
             }
@@ -268,7 +263,6 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
         variant="outlined"
         value={currentValue}
         onChange={(e) => handleIpChanged(e, index)}
-        onFocus={() => setFocusIndex(index)}
       />
     );
   };
@@ -307,7 +301,6 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
           variant="outlined"
           value={netmask}
           onChange={handleNetmaskChanged}
-          onFocus={() => setFocusIndex(netmaskIndex)}
         />
       </Grid>
     </StyledGrid>
