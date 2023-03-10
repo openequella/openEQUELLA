@@ -4817,7 +4817,7 @@
     <parameter id="url-pattern" value="/scorm/" />
   </extension>
   <extension plugin-id="com.tle.web.core" point-id="webServlet" id="JwksServlet">
-    <parameter id="bean" value="bean:com.tle.web.core.servlet.JwksServlet" />
+    <parameter id="bean" value="bean:com.tle.web.jwks.JwksServlet" />
     <parameter id="url-pattern" value="/.well-known/jwks.json" />
   </extension>
   <extension plugin-id="com.tle.web.core" point-id="webSessionListener" id="sessionListener">

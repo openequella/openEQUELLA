@@ -16,31 +16,22 @@
  * limitations under the License.
  */
 
-package com.tle.web.core.servlet;
+package com.tle.web.jwks
 
-import com.tle.core.guice.Bind;
-import com.tle.core.webkeyset.service.WebKeySetService;
-import java.io.IOException;
-import java.io.PrintWriter;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.tle.core.guice.Bind
+import com.tle.core.webkeyset.service.WebKeySetService
+import javax.inject.{Inject, Singleton}
+import javax.servlet.http.{HttpServlet, HttpServletRequest, HttpServletResponse}
 
 @Bind
 @Singleton
-public class JwksServlet extends HttpServlet {
-  @Inject WebKeySetService webKeySetService;
+class JwksServlet extends HttpServlet {
+  @Inject var webKeySetService: WebKeySetService = _
 
-  @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
-    resp.setContentType("application/json");
-
-    PrintWriter out = resp.getWriter();
-    out.print(webKeySetService.generateJWKS());
-    out.flush();
+  override protected def doGet(req: HttpServletRequest, resp: HttpServletResponse): Unit = {
+    resp.setContentType("application/json")
+    val out = resp.getWriter
+    out.print(webKeySetService.generateJWKS)
+    out.flush()
   }
 }
