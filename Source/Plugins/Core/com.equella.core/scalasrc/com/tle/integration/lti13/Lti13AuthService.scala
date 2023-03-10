@@ -477,7 +477,7 @@ class Lti13AuthService {
           newUser.setFirstName(user.firstName)
           newUser.setLastName(user.lastName)
           user.email.foreach(newUser.setEmailAddress)
-          newUser.setPassword(UUID.randomUUID.toString)
+          newUser.setPassword(generateRandomHexString(20))
           // - Add the TLEUser, and set them up with any configured groups
           runAs.executeAsSystem(
             CurrentInstitution.get(),
