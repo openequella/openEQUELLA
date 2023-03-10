@@ -56,7 +56,7 @@ package object lti13 {
     * @return a function which given the name of a claim will optionally return its value.
     */
   def getClaim(jwt: DecodedJWT): String => Option[String] =
-    (claim: String) => Option(jwt.getClaim(claim)).flatMap(c => Option(c.asString()))
+    (claim: String) => getClaim(jwt, claim)
 
   /**
     * Generates a string of random bytes represented as hexadecimal values.
