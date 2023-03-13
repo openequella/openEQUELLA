@@ -6158,4 +6158,9 @@
     <parameter id="class" value="bean:com.tle.core.item.convert.ViewsConverter" />
     <parameter id="order" value="815" />
   </extension>
+  <extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="WebKeySetConverter">
+    <parameter id="id" value="web_key_set" />
+    <parameter id="class" value="bean:com.tle.core.jwks.WebKeySetConverter" />
+    <parameter id="order" value="816" />
+  </extension>
 </plugin>
