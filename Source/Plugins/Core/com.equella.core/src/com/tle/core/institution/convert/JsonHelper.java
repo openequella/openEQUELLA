@@ -21,6 +21,8 @@ package com.tle.core.institution.convert;
 import com.dytech.common.io.UnicodeReader;
 import com.dytech.edge.common.Constants;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.module.scala.DefaultScalaModule;
 import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
 import com.tle.core.jackson.ObjectMapperService;
@@ -47,6 +49,8 @@ public class JsonHelper {
   public synchronized ObjectMapper getMapper() {
     if (mapper == null) {
       mapper = objectMapperService.createObjectMapper();
+      mapper.registerModule(new DefaultScalaModule());
+      mapper.registerModule(new JavaTimeModule());
     }
 
     return mapper;
