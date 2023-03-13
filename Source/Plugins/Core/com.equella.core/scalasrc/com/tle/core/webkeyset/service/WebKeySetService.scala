@@ -33,7 +33,8 @@ trait WebKeySetService {
   def getKeypairByKeyID(keyId: String): Option[KeyPair]
 
   /**
-    * Retrieve all the key pairs.
+    * Retrieve all the key pairs, including those deactivated.
+    *
     * @return A list of WebKeySet
     */
   def getAll: List[WebKeySet]
@@ -73,8 +74,8 @@ trait WebKeySetService {
 
   /**
     * Save the provided key pair or update it if it exists already.
-    * @param keySet
-    * @return
+    *
+    * @param keySet Key pair to be saved or updated.
     */
   def createOrUpdate(keySet: WebKeySet): Unit
 }
