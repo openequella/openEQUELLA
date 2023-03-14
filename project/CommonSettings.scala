@@ -91,6 +91,9 @@ object CommonSettings extends AutoPlugin {
     resolvers ++= Seq(
       Resolver.bintrayRepo("omegat-org", "maven")
     ),
-    libraryDependencies += "com.novocode" % "junit-interface" % "0.11" % Test
+    libraryDependencies ++= Seq(
+      "com.github.sbt" % "junit-interface" % "0.13.3" % Test,
+      "org.scalatest"  %% "scalatest"      % "3.2.15" % Test,
+    )
   )
 }
