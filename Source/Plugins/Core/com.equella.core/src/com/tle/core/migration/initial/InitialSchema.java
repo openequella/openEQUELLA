@@ -48,6 +48,7 @@ import com.tle.beans.user.TLEUser;
 import com.tle.beans.user.UserInfoBackup;
 import com.tle.beans.viewcount.ViewcountAttachment;
 import com.tle.beans.viewcount.ViewcountItem;
+import com.tle.beans.webkeyset.WebKeySet;
 import com.tle.common.security.TargetListEntry;
 import com.tle.common.workflow.Workflow;
 import com.tle.common.workflow.WorkflowItemStatus;
@@ -150,7 +151,8 @@ public class InitialSchema extends AbstractCreateMigration {
         AuditLogEntry.class,
         ViewcountItem.class,
         ViewcountAttachment.class,
-        Entity.class
+        Entity.class,
+        WebKeySet.class
       };
 
   @SuppressWarnings("nls")

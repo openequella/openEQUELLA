@@ -30,4 +30,11 @@ trait WebKeySetDAO extends GenericDao[WebKeySet, java.lang.Long] {
     * @return Option of the retrieved SecurityKey, or None if not found.
     */
   def getByKeyID(keyId: String): Option[WebKeySet]
+
+  /**
+    * Retrieve all the key pairs for the current institution.
+    *
+    * @return List of key pairs belonging to the current institution.
+    */
+  def getAll: List[WebKeySet]
 }

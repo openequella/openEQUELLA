@@ -19,6 +19,7 @@
 package com.tle.core.webkeyset.service
 
 import com.tle.beans.webkeyset._
+import com.tle.common.institution.CurrentInstitution
 import com.tle.core.guice.Bind
 import com.tle.core.webkeyset.dao.WebKeySetDAO
 import com.tle.core.webkeyset.helper.WebKeySetHelper._
@@ -30,7 +31,6 @@ import java.security.interfaces.RSAPublicKey
 import java.time.Instant
 import java.util.{Base64, UUID}
 import javax.inject.{Inject, Singleton}
-import scala.jdk.CollectionConverters._
 
 @Singleton
 @Bind(classOf[WebKeySetService])
@@ -51,6 +51,7 @@ class WebKeySetServiceImpl extends WebKeySetService {
     securityKey.privateKey =
       LegacyGuice.encryptionService.encrypt(toPEM(keyPair.getPrivate, PRIVATE_KEY_HEADER))
     securityKey.publicKey = toPEM(keyPair.getPublic, PUBLIC_KEY_HEADER)
+    securityKey.institution = CurrentInstitution.get()
 
     jwkDao.save(securityKey)
     securityKey.keyId
@@ -60,10 +61,13 @@ class WebKeySetServiceImpl extends WebKeySetService {
   def delete(keyId: String): Unit = jwkDao.getByKeyID(keyId).foreach(jwkDao.delete)
 
   @Transactional
-  def rotateKeyPair(keyID: String): String = {
-    jwkDao.getByKeyID(keyID).foreach(_.deactivated = Instant.now)
-    generateKeyPair
-  }
+  def rotateKeyPair(keyID: String): Option[String] =
+    jwkDao.getByKeyID(keyID) match {
+      case Some(keySet) =>
+        keySet.deactivated = Instant.now
+        Some(generateKeyPair)
+      case None => None
+    }
 
   @Transactional
   def generateJWKS: String = {
@@ -81,9 +85,7 @@ class WebKeySetServiceImpl extends WebKeySetService {
     }
 
     def publicKeys =
-      jwkDao
-        .findAllByCriteria()
-        .asScala
+      jwkDao.getAll
         .map(buildJWK)
         .toArray
 
