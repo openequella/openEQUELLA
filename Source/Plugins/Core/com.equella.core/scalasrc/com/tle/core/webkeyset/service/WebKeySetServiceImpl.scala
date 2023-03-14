@@ -24,14 +24,12 @@ import com.tle.core.webkeyset.dao.WebKeySetDAO
 import com.tle.core.webkeyset.helper.WebKeySetHelper._
 import com.tle.legacy.LegacyGuice
 import io.circe.syntax._
-import org.hibernate.criterion.Restrictions
 import org.springframework.transaction.annotation.Transactional
 import java.security.KeyPair
 import java.security.interfaces.RSAPublicKey
 import java.time.Instant
 import java.util.{Base64, UUID}
 import javax.inject.{Inject, Singleton}
-import scala.jdk.CollectionConverters._
 
 @Singleton
 @Bind(classOf[WebKeySetService])
