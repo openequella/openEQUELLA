@@ -19,6 +19,7 @@
 package com.tle.core.webkeyset.service
 
 import com.tle.beans.webkeyset._
+import com.tle.common.institution.CurrentInstitution
 import com.tle.core.guice.Bind
 import com.tle.core.webkeyset.dao.WebKeySetDAO
 import com.tle.core.webkeyset.helper.WebKeySetHelper._
@@ -40,7 +41,7 @@ class WebKeySetServiceImpl extends WebKeySetService {
     jwkDao.getByKeyID(keyId).map(buildKeyPair)
 
   @Transactional
-  def generateKeyPair(institutionId: Long): String = {
+  def generateKeyPair(): String = {
     val keyPair = generateRSAKeyPair
 
     val securityKey = new WebKeySet
@@ -50,7 +51,7 @@ class WebKeySetServiceImpl extends WebKeySetService {
     securityKey.privateKey =
       LegacyGuice.encryptionService.encrypt(toPEM(keyPair.getPrivate, PRIVATE_KEY_HEADER))
     securityKey.publicKey = toPEM(keyPair.getPublic, PUBLIC_KEY_HEADER)
-    securityKey.inst_id = institutionId
+    securityKey.institution = CurrentInstitution.get()
 
     jwkDao.save(securityKey)
     securityKey.keyId
@@ -64,12 +65,12 @@ class WebKeySetServiceImpl extends WebKeySetService {
     jwkDao.getByKeyID(keyID) match {
       case Some(keySet) =>
         keySet.deactivated = Instant.now
-        Some(generateKeyPair(keySet.inst_id))
+        Some(generateKeyPair())
       case None => None
     }
 
   @Transactional
-  def generateJWKS(institutionId: Long): String = {
+  def generateJWKS(): String = {
     def base64UrlEncode(bytes: Array[Byte]): String = Base64.getUrlEncoder.encodeToString(bytes)
     def exponent(key: RSAPublicKey)                 = base64UrlEncode(key.getPublicExponent.toByteArray)
     def modulus(key: RSAPublicKey)                  = base64UrlEncode(key.getModulus.toByteArray)
@@ -84,8 +85,7 @@ class WebKeySetServiceImpl extends WebKeySetService {
     }
 
     def publicKeys =
-      jwkDao
-        .getAllByInstitution(institutionId)
+      jwkDao.getAll
         .map(buildJWK)
         .toArray
 

@@ -19,11 +19,11 @@
 package com.tle.core.webkeyset.dao
 
 import com.tle.beans.webkeyset.WebKeySet
+import com.tle.common.institution.CurrentInstitution
 import com.tle.core.guice.Bind
 import com.tle.core.hibernate.dao.GenericDaoImpl
 import org.hibernate.Session
 import org.hibernate.criterion.Restrictions
-
 import javax.inject.Singleton
 import scala.util.Try
 import scala.jdk.CollectionConverters._
@@ -41,6 +41,7 @@ class WebKeySetDAOImpl
             session
               .getNamedQuery("getByKeyID")
               .setParameter("keyId", keyId)
+              .setParameter("institution", CurrentInstitution.get())
               .getResultList)
         .asScala
         .toList
@@ -49,6 +50,6 @@ class WebKeySetDAOImpl
       .filterOrElse(_.size <= 1, new Throwable(s"More than one key pairs matching key ID $keyId"))
       .fold(throw _, _.headOption)
 
-  override def getAllByInstitution(institutionId: Long): List[WebKeySet] =
-    findAllByCriteria(Restrictions.eq("inst_id", institutionId)).asScala.toList
+  override def getAll(): List[WebKeySet] =
+    findAllByCriteria(Restrictions.eq("institution", CurrentInstitution.get())).asScala.toList
 }

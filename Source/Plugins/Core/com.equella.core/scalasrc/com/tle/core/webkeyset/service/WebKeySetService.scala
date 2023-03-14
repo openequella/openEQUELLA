@@ -31,20 +31,18 @@ trait WebKeySetService {
   def getKeypairByKeyID(keyId: String): Option[KeyPair]
 
   /**
-    * Generate a new key pair for the specified Institution.
+    * Generate a new key pair for the current Institution.
     *
-    * @param institutionId ID of the institution for which the key pair is generated.
     * @return ID of the new key pair.
     */
-  def generateKeyPair(institutionId: Long): String
+  def generateKeyPair(): String
 
   /**
-    * Retrieve all the key pairs of the specified Institution and return a JWKS representing the them.
+    * Retrieve all the key pairs of the current Institution and return a JWKS representing the them.
     *
-    * @param institutionId ID of the institution for which the JWKS is generated.
     * @return JSON string representing the JWKS.
     */
-  def generateJWKS(institutionId: Long): String
+  def generateJWKS(): String
 
   /**
     * Find an existing key pair by key ID and deactivate it, and then create a new key pair and return its ID.
@@ -59,5 +57,4 @@ trait WebKeySetService {
     * @param keyId ID of a key pair.
     */
   def delete(keyId: String): Unit
-
 }
