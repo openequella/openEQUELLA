@@ -18,6 +18,7 @@
 
 package com.tle.core.institution.migration.v20231;
 
+import com.tle.beans.Institution;
 import com.tle.beans.webkeyset.WebKeySet;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.impl.HibernateCreationFilter;
@@ -38,7 +39,7 @@ public class CreateWebKeySetTable extends AbstractCreateMigration {
 
   @Override
   protected Class<?>[] getDomainClasses() {
-    return new Class<?>[] {WebKeySet.class};
+    return new Class<?>[] {WebKeySet.class, Institution.class};
   }
 
   @Override
