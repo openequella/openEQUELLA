@@ -35,14 +35,14 @@ trait WebKeySetService {
     *
     * @return ID of the new key pair.
     */
-  def generateKeyPair(): String
+  def generateKeyPair: String
 
   /**
     * Retrieve all the key pairs of the current Institution and return a JWKS representing the them.
     *
     * @return JSON string representing the JWKS.
     */
-  def generateJWKS(): String
+  def generateJWKS: String
 
   /**
     * Find an existing key pair by key ID and deactivate it, and then create a new key pair and return its ID.

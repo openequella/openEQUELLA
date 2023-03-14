@@ -93,7 +93,7 @@ class WebKeySet {
   var deactivated: Instant = _
 
   /**
-    * ID of the institution which the key set belongs to.
+    * Institution which the key set belongs to.
     */
   @JoinColumn(nullable = false)
   @ManyToOne(fetch = FetchType.LAZY)

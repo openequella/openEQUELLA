@@ -32,9 +32,9 @@ trait WebKeySetDAO extends GenericDao[WebKeySet, java.lang.Long] {
   def getByKeyID(keyId: String): Option[WebKeySet]
 
   /**
-    * Retrieve all the key pairs of the current institution.
+    * Retrieve all the key pairs for the current institution.
     *
-    * @return List of key pairs belonging to the specified institution.
+    * @return List of key pairs belonging to the current institution.
     */
   def getAll: List[WebKeySet]
 }
