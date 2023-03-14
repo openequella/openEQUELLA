@@ -41,7 +41,7 @@ class WebKeySetServiceImpl extends WebKeySetService {
     jwkDao.getByKeyID(keyId).map(buildKeyPair)
 
   @Transactional
-  def generateKeyPair(): String = {
+  def generateKeyPair: String = {
     val keyPair = generateRSAKeyPair
 
     val securityKey = new WebKeySet
@@ -65,12 +65,12 @@ class WebKeySetServiceImpl extends WebKeySetService {
     jwkDao.getByKeyID(keyID) match {
       case Some(keySet) =>
         keySet.deactivated = Instant.now
-        Some(generateKeyPair())
+        Some(generateKeyPair)
       case None => None
     }
 
   @Transactional
-  def generateJWKS(): String = {
+  def generateJWKS: String = {
     def base64UrlEncode(bytes: Array[Byte]): String = Base64.getUrlEncoder.encodeToString(bytes)
     def exponent(key: RSAPublicKey)                 = base64UrlEncode(key.getPublicExponent.toByteArray)
     def modulus(key: RSAPublicKey)                  = base64UrlEncode(key.getModulus.toByteArray)
