@@ -24,6 +24,7 @@ import com.tle.core.webkeyset.dao.WebKeySetDAO
 import com.tle.core.webkeyset.helper.WebKeySetHelper._
 import com.tle.legacy.LegacyGuice
 import io.circe.syntax._
+import org.hibernate.criterion.Restrictions
 import org.springframework.transaction.annotation.Transactional
 import java.security.KeyPair
 import java.security.interfaces.RSAPublicKey
@@ -41,7 +42,7 @@ class WebKeySetServiceImpl extends WebKeySetService {
     jwkDao.getByKeyID(keyId).map(buildKeyPair)
 
   @Transactional
-  def generateKeyPair: String = {
+  def generateKeyPair(institutionId: Long): String = {
     val keyPair = generateRSAKeyPair
 
     val securityKey = new WebKeySet
@@ -51,6 +52,7 @@ class WebKeySetServiceImpl extends WebKeySetService {
     securityKey.privateKey =
       LegacyGuice.encryptionService.encrypt(toPEM(keyPair.getPrivate, PRIVATE_KEY_HEADER))
     securityKey.publicKey = toPEM(keyPair.getPublic, PUBLIC_KEY_HEADER)
+    securityKey.inst_id = institutionId
 
     jwkDao.save(securityKey)
     securityKey.keyId
@@ -60,13 +62,16 @@ class WebKeySetServiceImpl extends WebKeySetService {
   def delete(keyId: String): Unit = jwkDao.getByKeyID(keyId).foreach(jwkDao.delete)
 
   @Transactional
-  def rotateKeyPair(keyID: String): String = {
-    jwkDao.getByKeyID(keyID).foreach(_.deactivated = Instant.now)
-    generateKeyPair
-  }
+  def rotateKeyPair(keyID: String): Option[String] =
+    jwkDao.getByKeyID(keyID) match {
+      case Some(keySet) =>
+        keySet.deactivated = Instant.now
+        Some(generateKeyPair(keySet.inst_id))
+      case None => None
+    }
 
   @Transactional
-  def generateJWKS: String = {
+  def generateJWKS(institutionId: Long): String = {
     def base64UrlEncode(bytes: Array[Byte]): String = Base64.getUrlEncoder.encodeToString(bytes)
     def exponent(key: RSAPublicKey)                 = base64UrlEncode(key.getPublicExponent.toByteArray)
     def modulus(key: RSAPublicKey)                  = base64UrlEncode(key.getModulus.toByteArray)
@@ -82,8 +87,7 @@ class WebKeySetServiceImpl extends WebKeySetService {
 
     def publicKeys =
       jwkDao
-        .findAllByCriteria()
-        .asScala
+        .getAllByInstitution(institutionId)
         .map(buildJWK)
         .toArray
 

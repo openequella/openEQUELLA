@@ -18,8 +18,6 @@
 
 package com.tle.core.webkeyset.service
 
-import com.tle.beans.webkeyset.{JWKAlg, JWKKeyType, JWKUse, JsonWebKeySet}
-
 import java.security.KeyPair
 
 trait WebKeySetService {
@@ -33,28 +31,30 @@ trait WebKeySetService {
   def getKeypairByKeyID(keyId: String): Option[KeyPair]
 
   /**
-    * Generate a new key pair.
+    * Generate a new key pair for the specified Institution.
     *
+    * @param institutionId ID of the institution for which the key pair is generated.
     * @return ID of the new key pair.
     */
-  def generateKeyPair: String
+  def generateKeyPair(institutionId: Long): String
 
   /**
-    * Retrieve all the key pairs and return a JWKS representing the them.
+    * Retrieve all the key pairs of the specified Institution and return a JWKS representing the them.
     *
-    * @return JSON string representing the JWKS for all the key pairs.
+    * @param institutionId ID of the institution for which the JWKS is generated.
+    * @return JSON string representing the JWKS.
     */
-  def generateJWKS: String
+  def generateJWKS(institutionId: Long): String
 
   /**
-    * Find an existing key pair by key ID and deactivate it, and then create a new key pair.
+    * Find an existing key pair by key ID and deactivate it, and then create a new key pair and return its ID.
     *
-    * @return ID of the new key pair.
+    * @return ID of the new key pair, or None if the original key pair is not found.
     */
-  def rotateKeyPair(keyID: String): String
+  def rotateKeyPair(keyID: String): Option[String]
 
   /**
-    * Delete an existing key pair.
+    * Delete an existing key pair by key ID.
     *
     * @param keyId ID of a key pair.
     */

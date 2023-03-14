@@ -76,4 +76,9 @@ class WebKeySet {
     * The date when the key pair is deactivated. Null if it is still active.
     */
   var deactivated: Instant = _
+
+  /**
+    * ID of the institution which the key set belongs to.
+    */
+  var inst_id: Long = _
 }

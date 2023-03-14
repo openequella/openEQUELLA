@@ -18,14 +18,14 @@
 
 package com.tle.core.webkeyset.dao
 
-import cats.data.NonEmptyList
 import com.tle.beans.webkeyset.WebKeySet
 import com.tle.core.guice.Bind
 import com.tle.core.hibernate.dao.GenericDaoImpl
 import org.hibernate.Session
+import org.hibernate.criterion.Restrictions
 
 import javax.inject.Singleton
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 import scala.jdk.CollectionConverters._
 
 @Bind(classOf[WebKeySetDAO])
@@ -48,4 +48,7 @@ class WebKeySetDAOImpl
     }.toEither
       .filterOrElse(_.size <= 1, new Throwable(s"More than one key pairs matching key ID $keyId"))
       .fold(throw _, _.headOption)
+
+  override def getAllByInstitution(institutionId: Long): List[WebKeySet] =
+    findAllByCriteria(Restrictions.eq("inst_id", institutionId)).asScala.toList
 }
