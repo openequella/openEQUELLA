@@ -314,18 +314,18 @@ class Lti13AuthService {
           s"Failed to establish key (JWK) provider to validate JWT signature: ${t.getMessage}")
       }
       // Setup some helper functions
-      verifyToken = buildJwtVerifierForPlatform(jwkProvider.get(decodedToken.getKeyId), platform)
+      // Both are: DecodedJWT -> Either[String, DecodedJWT]
+      verifyJwt = buildJwtVerifierForPlatform(jwkProvider.get(decodedToken.getKeyId), platform)
       verifyNonce = (jwt: DecodedJWT) =>
         getClaim(jwt, OIDC.NONCE)
           .toRight("Failed to extract nonce from JWT")
-          .flatMap(nonce =>
+          .flatMap(
             // If the nonce is valid, then make sure we return the valid JWT
-            validateNonce(nonce, state).map(_ => jwt))
+            validateNonce(_, state).map(_ => jwt))
+          .left
+          .map(err => s"Provided ID token (JWT) failed nonce verification: ${err}")
       // now finally do the verification
-      verificationResult <- verifyToken(decodedToken)
-        .flatMap(verifyNonce)
-        .left
-        .map(err => s"Provided ID token (JWT) failed nonce verification: ${err}")
+      verificationResult <- verifyJwt(decodedToken).flatMap(verifyNonce)
     } yield (verificationResult, stateDetails)
 
     // And the result is:
