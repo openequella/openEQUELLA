@@ -347,7 +347,7 @@ class Lti13AuthService {
 
     val loginResult = for {
       platformDetails <- getPlatform(userDetails.platformId)
-        .toRight(s"Failed to retrieve platform information for: ${userDetails.platformId}")
+        .toRight(s"Unable to retrieve platform details of ${userDetails.platformId}")
 
       // Setup the user - including adding roles
       userState <- mapUser(
