@@ -18,9 +18,23 @@
 
 package com.tle.beans.webkeyset
 
+import com.thoughtworks.xstream.annotations.XStreamOmitField
+import com.tle.beans.Institution
 import org.hibernate.annotations.NamedQuery
 import java.time.Instant
-import javax.persistence.{Column, Entity, GeneratedValue, GenerationType, Id, Index, Lob, Table}
+import javax.persistence.{
+  Column,
+  Entity,
+  FetchType,
+  GeneratedValue,
+  GenerationType,
+  Id,
+  Index,
+  JoinColumn,
+  Lob,
+  ManyToOne,
+  Table
+}
 
 /**
   * The table generated from this Entity is used to store cryptographic keys where the algorithm is asymmetric and generates
@@ -30,7 +44,8 @@ import javax.persistence.{Column, Entity, GeneratedValue, GenerationType, Id, In
 @Table(indexes = Array {
   new Index(name = "web_key_set_id", columnList = "keyId")
 })
-@NamedQuery(name = "getByKeyID", query = "from WebKeySet WHERE keyId = :keyId")
+@NamedQuery(name = "getByKeyID",
+            query = "from WebKeySet WHERE keyId = :keyId AND institution = :institution")
 class WebKeySet {
 
   /**
@@ -76,4 +91,13 @@ class WebKeySet {
     * The date when the key pair is deactivated. Null if it is still active.
     */
   var deactivated: Instant = _
+
+  /**
+    * Institution which the key set belongs to.
+    */
+  @JoinColumn(nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @Index(name = "web_key_set_institution_id", columnList = "institution_id")
+  @XStreamOmitField
+  var institution: Institution = _
 }

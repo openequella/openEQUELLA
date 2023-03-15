@@ -16,25 +16,21 @@
  * limitations under the License.
  */
 
-package com.tle.core.webkeyset.dao
+package com.tle.webtests.pageobject.settings;
 
-import com.tle.beans.webkeyset.WebKeySet
-import com.tle.core.hibernate.dao.GenericDao
+import com.tle.webtests.framework.PageContext;
+import com.tle.webtests.pageobject.AbstractPage;
+import org.openqa.selenium.By;
 
-trait WebKeySetDAO extends GenericDao[WebKeySet, java.lang.Long] {
+public class LTI13PlatformsSettingsPage extends AbstractPage<LTI13PlatformsSettingsPage> {
+  public static final String TITLE = "LTI 1.3 platforms settings";
 
-  /**
-    * Retrieve a SecurityKey by key ID.
-    *
-    * @param keyId Unique ID of the key pair.
-    * @return Option of the retrieved SecurityKey, or None if not found.
-    */
-  def getByKeyID(keyId: String): Option[WebKeySet]
+  public LTI13PlatformsSettingsPage(PageContext context) {
+    super(context, By.xpath("//h5[text()='" + TITLE + "']"));
+  }
 
-  /**
-    * Retrieve all the key pairs for the current institution.
-    *
-    * @return List of key pairs belonging to the current institution.
-    */
-  def getAll: List[WebKeySet]
+  @Override
+  protected void loadUrl() {
+    driver.get(context.getBaseUrl() + "page/lti13platforms");
+  }
 }

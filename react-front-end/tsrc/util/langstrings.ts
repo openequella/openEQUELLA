@@ -654,6 +654,9 @@ export const languageStrings = {
     integration: {
       name: "Integrations",
       desc: "Settings for integrating with external systems",
+      lti13PlatformsSettings: {
+        name: "LTI 1.3 platforms settings",
+      },
     },
     diagnostics: { name: "Diagnostics", desc: "Diagnostic pages" },
     searching: {

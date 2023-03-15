@@ -138,7 +138,7 @@ describe('/userquery/lookup', () => {
 
 describe('filter feature for user and group search', () => {
   it.each([
-    ['users', OEQ.UserQuery.filtered, 'auto', 2],
+    ['users', OEQ.UserQuery.filtered, 'auto', 3],
     ['groups', OEQ.UserQuery.filteredGroups, 'Student', 1],
   ])(
     'returns %s matching the "q" param',
@@ -181,7 +181,7 @@ describe('filter feature for user and group search', () => {
   );
 
   it.each([
-    ['users', OEQ.UserQuery.filtered, 12],
+    ['users', OEQ.UserQuery.filtered, 13],
     ['groups', OEQ.UserQuery.filteredGroups, 10],
   ])(
     'returns all %s if no params are specified',

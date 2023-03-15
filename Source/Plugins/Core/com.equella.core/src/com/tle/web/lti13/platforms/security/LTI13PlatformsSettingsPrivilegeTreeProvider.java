@@ -16,25 +16,21 @@
  * limitations under the License.
  */
 
-package com.tle.core.webkeyset.dao
+package com.tle.web.lti13.platforms.security;
 
-import com.tle.beans.webkeyset.WebKeySet
-import com.tle.core.hibernate.dao.GenericDao
+import com.tle.common.security.SettingsTarget;
+import com.tle.core.guice.Bind;
+import com.tle.core.settings.security.AbstractSettingsPrivilegeTreeProvider;
+import com.tle.web.resources.ResourcesService;
 
-trait WebKeySetDAO extends GenericDao[WebKeySet, java.lang.Long] {
-
-  /**
-    * Retrieve a SecurityKey by key ID.
-    *
-    * @param keyId Unique ID of the key pair.
-    * @return Option of the retrieved SecurityKey, or None if not found.
-    */
-  def getByKeyID(keyId: String): Option[WebKeySet]
-
-  /**
-    * Retrieve all the key pairs for the current institution.
-    *
-    * @return List of key pairs belonging to the current institution.
-    */
-  def getAll: List[WebKeySet]
+@Bind
+public class LTI13PlatformsSettingsPrivilegeTreeProvider
+    extends AbstractSettingsPrivilegeTreeProvider {
+  public LTI13PlatformsSettingsPrivilegeTreeProvider() {
+    super(
+        Type.SYSTEM_SETTING,
+        ResourcesService.getResourceHelper(LTI13PlatformsSettingsPrivilegeTreeProvider.class)
+            .key("securitytree.lti13platforms"),
+        new SettingsTarget("lti13platforms"));
+  }
 }

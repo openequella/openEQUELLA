@@ -19,6 +19,7 @@
 package com.tle.core.webkeyset.service
 
 import com.tle.beans.webkeyset._
+import com.tle.common.institution.CurrentInstitution
 import com.tle.core.guice.Bind
 import com.tle.core.webkeyset.dao.WebKeySetDAO
 import com.tle.core.webkeyset.helper.WebKeySetHelper._
@@ -30,7 +31,6 @@ import java.security.interfaces.RSAPublicKey
 import java.time.Instant
 import java.util.{Base64, UUID}
 import javax.inject.{Inject, Singleton}
-import scala.jdk.CollectionConverters._
 
 @Singleton
 @Bind(classOf[WebKeySetService])
@@ -40,7 +40,7 @@ class WebKeySetServiceImpl extends WebKeySetService {
   def getKeypairByKeyID(keyId: String): Option[KeyPair] =
     webKeySetDAO.getByKeyID(keyId).map(buildKeyPair)
 
-  def getAll: List[WebKeySet] = webKeySetDAO.findAllByCriteria().asScala.toList
+  def getAll: List[WebKeySet] = webKeySetDAO.getAll
 
   @Transactional
   def generateKeyPair: String = {
@@ -53,6 +53,7 @@ class WebKeySetServiceImpl extends WebKeySetService {
     securityKey.privateKey =
       LegacyGuice.encryptionService.encrypt(toPEM(keyPair.getPrivate, PRIVATE_KEY_HEADER))
     securityKey.publicKey = toPEM(keyPair.getPublic, PUBLIC_KEY_HEADER)
+    securityKey.institution = CurrentInstitution.get()
 
     webKeySetDAO.save(securityKey)
     securityKey.keyId
@@ -62,13 +63,13 @@ class WebKeySetServiceImpl extends WebKeySetService {
   def delete(keyId: String): Unit = webKeySetDAO.getByKeyID(keyId).foreach(webKeySetDAO.delete)
 
   @Transactional
-  def deleteAll: Unit = webKeySetDAO.findAllByCriteria().asScala.foreach(webKeySetDAO.delete)
-
-  @Transactional
-  def rotateKeyPair(keyID: String): String = {
-    webKeySetDAO.getByKeyID(keyID).foreach(_.deactivated = Instant.now)
-    generateKeyPair
-  }
+  def rotateKeyPair(keyID: String): Option[String] =
+    webKeySetDAO.getByKeyID(keyID) match {
+      case Some(keySet) =>
+        keySet.deactivated = Instant.now
+        Some(generateKeyPair)
+      case None => None
+    }
 
   @Transactional
   def generateJWKS: String = {
@@ -86,9 +87,7 @@ class WebKeySetServiceImpl extends WebKeySetService {
     }
 
     def publicKeys =
-      webKeySetDAO
-        .findAllByCriteria()
-        .asScala
+      webKeySetDAO.getAll
         .map(buildJWK)
         .toArray
 
