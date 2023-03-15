@@ -1451,9 +1451,24 @@ div[id^="pportlet"] {
   }
 }
 
-div.load-action button.dropdown-toggle {
-  top: 134px;
-  right: 30px;
+//overwrite the css in `bulkscript.css` to show `load script button` in UI (it was covered by editor area).
+div.load-action {
+  // align button and title
+  top: -40px;
+  position: relative;
+  text-align: right;
+
+  button.dropdown-toggle {
+    width: max-content;
+    float: right;
+  }
+
+  ul.dropdown-menu {
+    position: relative;
+    text-align: left;
+    // add some space between button and dropdown-menu
+    top: 40px;
+  }
 }
 
 /*****************************************************************************
