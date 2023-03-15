@@ -46,7 +46,7 @@ object Lti13StateService {
       // from the server's JWK...)
       generateRandomHexString(16)
     }
-    stateStorage.addOne((state, details.copy()))
+    stateStorage.addOne((state, details))
 
     state
   }
