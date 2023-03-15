@@ -334,7 +334,7 @@ class Lti13AuthService {
 
   /**
     * Given the details for a user authenticating via LTI (in `userDetails`) attempt to establish a
-    * session for them. The result (on success) will the a new `UserState` instance that will be
+    * session for them. The result (on success) will be a new `UserState` instance that will be
     * stored against the user's session.
     *
     * @param wad the details of the HTTP request for this authentication attempt
