@@ -300,7 +300,7 @@ class Lti13AuthService {
         s"Failed to decode token: ${t.getMessage}")
       // Validate the platform by ensure it matches the previous state we setup
       platformId <- Option(stateDetails.platformId)
-        .filter(id => id == decodedToken.getIssuer)
+        .filter(decodedToken.getIssuer.equals)
         .toRight(s"Issuer in token did not match stored state.")
 
       // -- next, validation of the actual JWT
