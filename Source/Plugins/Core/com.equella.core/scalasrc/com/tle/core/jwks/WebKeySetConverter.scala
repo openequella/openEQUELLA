@@ -22,15 +22,15 @@ import com.tle.beans.Institution
 import com.tle.beans.webkeyset.WebKeySet
 import com.tle.common.NameValue
 import com.tle.common.filesystem.handle.{SubTemporaryFile, TemporaryFileHandle}
+import com.tle.common.institution.CurrentInstitution
 import com.tle.core.guice.Bind
-import com.tle.core.institution.convert.service.{AbstractJsonConverter, InstitutionImportService}
+import com.tle.core.institution.convert.service.AbstractJsonConverter
 import com.tle.core.institution.convert.ConverterParams
 import com.tle.core.institution.convert.service.InstitutionImportService.ConvertType
 import com.tle.core.institution.convert.service.impl.InstitutionImportServiceImpl.ConverterTasks
 import com.tle.core.webkeyset.service.WebKeySetService
 import scala.jdk.CollectionConverters._
 import javax.inject.{Inject, Singleton}
-
 import java.time.Instant
 
 /**
@@ -65,11 +65,11 @@ class WebKeySetConverter extends AbstractJsonConverter[Object] {
   override def doExport(staging: TemporaryFileHandle,
                         institution: Institution,
                         callback: ConverterParams): Unit =
-    webKeySetService.getAll.foreach(keySet => {
-      json.write(new SubTemporaryFile(staging, s"${EXPORT_FOLDER}/${keySet.algorithm}"),
-                 s"${keySet.id}.json",
-                 WebKeySetExport(keySet))
-    })
+    webKeySetService.getAll.foreach(
+      keySet =>
+        json.write(new SubTemporaryFile(staging, s"${EXPORT_FOLDER}/${keySet.algorithm}"),
+                   s"${keySet.id}.json",
+                   WebKeySetExport(keySet)))
 
   override def doImport(staging: TemporaryFileHandle,
                         institution: Institution,
@@ -79,7 +79,10 @@ class WebKeySetConverter extends AbstractJsonConverter[Object] {
       .getFileList(dir)
       .asScala
       .map(json.read(dir, _, classOf[WebKeySet]))
-      .foreach(webKeySetService.createOrUpdate)
+      .foreach(keySet => {
+        keySet.institution = CurrentInstitution.get()
+        webKeySetService.createOrUpdate(keySet)
+      })
   }
 
   override def doDelete(institution: Institution, callback: ConverterParams): Unit =

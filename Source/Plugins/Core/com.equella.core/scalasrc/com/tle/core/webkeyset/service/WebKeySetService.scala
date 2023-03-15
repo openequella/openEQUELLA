@@ -65,4 +65,16 @@ trait WebKeySetService {
     * @param keyId ID of a key pair.
     */
   def delete(keyId: String): Unit
+
+  /**
+    * Delete all the key pairs for the current Institution.
+    */
+  def deleteAll(): Unit
+
+  /**
+    * Save the provided key pair for the current Institution. If it exists already, then update it.
+    *
+    * @param keySet Key pair to be either saved or updated.
+    */
+  def createOrUpdate(keySet: WebKeySet): Unit
 }

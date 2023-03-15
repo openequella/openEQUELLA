@@ -63,6 +63,9 @@ class WebKeySetServiceImpl extends WebKeySetService {
   def delete(keyId: String): Unit = webKeySetDAO.getByKeyID(keyId).foreach(webKeySetDAO.delete)
 
   @Transactional
+  def deleteAll(): Unit = webKeySetDAO.getAll.foreach(webKeySetDAO.delete)
+
+  @Transactional
   def rotateKeyPair(keyID: String): Option[String] =
     webKeySetDAO.getByKeyID(keyID) match {
       case Some(keySet) =>
