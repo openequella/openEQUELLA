@@ -502,10 +502,9 @@ class Lti13AuthService {
     }
 
     authenticate(username) match {
-      case Failure(exception) if exception.isInstanceOf[UsernameNotFoundException] =>
-        handleUnknownUser()
-      case Failure(exception) => Left(exception.getMessage)
-      case Success(userState) => Right(userState)
+      case Failure(_: UsernameNotFoundException) => handleUnknownUser()
+      case Failure(exception)                    => Left(exception.getMessage)
+      case Success(userState)                    => Right(userState)
     }
   }
 
