@@ -26,7 +26,7 @@ import com.tle.core.plugins.AbstractPluginService
 import com.tle.legacy.LegacyGuice
 import com.tle.web.DebugSettings
 import com.tle.web.freemarker.FreemarkerFactory
-import com.tle.web.resources.{ResourcesService}
+import com.tle.web.resources.ResourcesService
 import com.tle.web.sections._
 import com.tle.web.sections.equella.ScalaSectionRenderable
 import com.tle.web.sections.events._
@@ -38,7 +38,7 @@ import com.tle.web.selection.section.RootSelectionSection
 import com.tle.web.integration.IntegrationSection
 import com.tle.web.sections.render.CssInclude.{Priority, include}
 import com.tle.web.selection.section.RootSelectionSection.Layout
-import com.tle.web.settings.UISettings
+import com.tle.web.settings.{AnalyticsSettings, UISettings}
 import javax.servlet.http.HttpServletRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
@@ -234,7 +234,9 @@ object RenderNewTemplate {
         "selectionSessionInfo",
         getSelectionSessionInfo(context).orNull,
         "viewedFromIntegration",
-        java.lang.Boolean.valueOf(isViewingItemFromIntegration(req))
+        java.lang.Boolean.valueOf(isViewingItemFromIntegration(req)),
+        "analyticsId",
+        AnalyticsSettings.getAnalyticsId
       )
     val renderData =
       Option(req.getAttribute(SetupJSKey).asInstanceOf[ObjectExpression => ObjectExpression])
