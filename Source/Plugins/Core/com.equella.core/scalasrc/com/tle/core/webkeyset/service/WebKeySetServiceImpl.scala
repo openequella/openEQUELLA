@@ -31,6 +31,7 @@ import java.security.interfaces.RSAPublicKey
 import java.time.Instant
 import java.util.{Base64, UUID}
 import javax.inject.{Inject, Singleton}
+import scala.jdk.CollectionConverters._
 
 @Singleton
 @Bind(classOf[WebKeySetService])
@@ -40,7 +41,7 @@ class WebKeySetServiceImpl extends WebKeySetService {
   def getKeypairByKeyID(keyId: String): Option[KeyPair] =
     webKeySetDAO.getByKeyID(keyId).map(buildKeyPair)
 
-  def getAll: List[WebKeySet] = webKeySetDAO.getAll
+  def getAll: List[WebKeySet] = webKeySetDAO.enumerateAll.asScala.toList
 
   @Transactional
   def generateKeyPair: String = {
@@ -63,7 +64,7 @@ class WebKeySetServiceImpl extends WebKeySetService {
   def delete(keyId: String): Unit = webKeySetDAO.getByKeyID(keyId).foreach(webKeySetDAO.delete)
 
   @Transactional
-  def deleteAll(): Unit = webKeySetDAO.getAll.foreach(webKeySetDAO.delete)
+  def deleteAll(): Unit = getAll.foreach(webKeySetDAO.delete)
 
   @Transactional
   def rotateKeyPair(keyID: String): Option[String] =
@@ -90,7 +91,7 @@ class WebKeySetServiceImpl extends WebKeySetService {
     }
 
     def publicKeys =
-      webKeySetDAO.getAll
+      getAll
         .map(buildJWK)
         .toArray
 

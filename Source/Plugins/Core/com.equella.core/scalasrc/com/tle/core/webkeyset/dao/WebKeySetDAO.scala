@@ -19,9 +19,9 @@
 package com.tle.core.webkeyset.dao
 
 import com.tle.beans.webkeyset.WebKeySet
-import com.tle.core.hibernate.dao.GenericDao
+import com.tle.core.hibernate.dao.GenericInstitutionalDao
 
-trait WebKeySetDAO extends GenericDao[WebKeySet, java.lang.Long] {
+trait WebKeySetDAO extends GenericInstitutionalDao[WebKeySet, java.lang.Long] {
 
   /**
     * Retrieve a SecurityKey by key ID.
@@ -30,11 +30,4 @@ trait WebKeySetDAO extends GenericDao[WebKeySet, java.lang.Long] {
     * @return Option of the retrieved SecurityKey, or None if not found.
     */
   def getByKeyID(keyId: String): Option[WebKeySet]
-
-  /**
-    * Retrieve all the key pairs for the current institution.
-    *
-    * @return List of key pairs belonging to the current institution.
-    */
-  def getAll: List[WebKeySet]
 }
