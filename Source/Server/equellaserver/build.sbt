@@ -45,6 +45,12 @@ libraryDependencies ++= Seq(
   prometheusGroup % "simpleclient_servlet"
 ).map(_ % prometheusVersion)
 
+// Libraries needed for JWT validation in LTI 1.3 / OpenID connect
+libraryDependencies ++= Seq(
+  "com.auth0" % "java-jwt" % "4.3.0",
+  "com.auth0" % "jwks-rsa" % "0.22.0"
+)
+
 libraryDependencies ++= Seq(
   "co.fs2"                         %% "fs2-io"                        % fs2Version,
   "com.softwaremill.sttp"          %% "core"                          % sttpVersion,
