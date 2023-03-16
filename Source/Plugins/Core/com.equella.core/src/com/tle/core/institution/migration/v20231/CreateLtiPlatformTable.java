@@ -22,7 +22,7 @@ public class CreateLtiPlatformTable extends AbstractCreateMigration {
         "lti_instructor_roles",
         "lti_unknown_roles",
         "lti_custom_role",
-        "lti_custom_role_oeq_roles");
+        "lti_custom_role_target");
   }
 
   @Override
