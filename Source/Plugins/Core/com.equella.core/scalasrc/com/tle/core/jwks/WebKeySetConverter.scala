@@ -54,6 +54,13 @@ object WebKeySetExport {
       deactivated = Option(keySet.deactivated)
     )
 }
+
+/**
+  * This Converter is used to support
+  * 1. Exporting RSA keys to JSON files under directory 'keyset';
+  * 2. Reading the JSON files and importing the keys to the current Institution;
+  * 3. Deleting all the keys when the Institution is deleted.
+  */
 @Bind
 @Singleton
 class WebKeySetConverter extends AbstractJsonConverter[Object] {
