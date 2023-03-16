@@ -2,6 +2,7 @@ package com.tle.beans.lti
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField
 import com.tle.beans.Institution
+import org.hibernate.annotations.NamedQuery
 
 import javax.persistence.{
   CascadeType,
@@ -16,13 +17,20 @@ import javax.persistence.{
   Index,
   JoinColumn,
   ManyToOne,
-  OneToMany
+  OneToMany,
+  Table
 }
 
 /**
   * This entity is used to store the configuration of LTI 1.3 platform.
   */
 @Entity
+@Table(indexes = Array {
+  new Index(name = "lti_platform_id", columnList = "platformId")
+})
+@NamedQuery(
+  name = "getByPlatformID",
+  query = "from LtiPlatform WHERE platformId = :platformId AND institution = :institution")
 class LtiPlatform {
 
   /**
