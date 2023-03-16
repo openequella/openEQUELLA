@@ -3,6 +3,7 @@ package com.tle.webtests.pageobject.settings;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.ReceiptPage;
+import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -45,5 +46,26 @@ public class GoogleSettingsPage extends AbstractPage<GoogleSettingsPage> {
                 "//div[@class='settingRow' and ./div[@class='settingLabel' and "
                     + "normalize-space(label/text())='Tracking status:']]//div[@class='control']/span"));
     return trackerStatus.getText().trim().equals("Enabled");
+  }
+
+  public boolean isTrackingTagPresent() {
+    if (!usingNewUI()) {
+      // Old UI puts this directly in the head
+      List<WebElement> tagPresent =
+          driver.findElements(
+              By.xpath(
+                  "/html/head/script[@src='https://www.googletagmanager.com/gtag/js?id=test']"));
+      return tagPresent.size() > 0;
+    } else {
+      // New UI puts this script into the body via React GA package.
+      // Then if it returns valid info from Google, then it goes into the head.
+      // We can't use a valid Google Analytics ID for this,
+      // so just check for the script in the body.
+      List<WebElement> tagPresent =
+          driver.findElements(
+              By.xpath(
+                  "/html/body/script[@src='https://www.googletagmanager.com/gtag/js?id=test']"));
+      return tagPresent.size() > 0;
+    }
   }
 }
