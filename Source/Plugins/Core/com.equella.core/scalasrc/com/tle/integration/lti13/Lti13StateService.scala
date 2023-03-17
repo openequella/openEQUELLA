@@ -77,13 +77,3 @@ object Lti13StateService {
     */
   def invalidateState(state: String): Unit = stateStorage.remove(state)
 }
-
-object TestLti13StateService extends App {
-  val state = Lti13StateService.createState(
-    Lti13StateDetails("http://moodle.local", "1", new URI("http://moodle.local/auth.php")))
-
-  println(s"State: ${state}")
-  println(s"Details: ${Lti13StateService.getState(state)}")
-  Lti13StateService.invalidateState(state)
-  println(s"Details after invalidate: ${Lti13StateService.getState(state)}")
-}
