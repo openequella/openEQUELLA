@@ -34,8 +34,8 @@ public class JwksServletTest extends AbstractSessionTest {
 
     assertTrue("RS256".equals(jwk.getAlgorithm()));
 
-    // String encrypted by the private key of above JWK.
-    final String encrypted =
+    // Signature generated with the private key of the above JWK.
+    final String signatureBase64 =
         "FuHpbQpr9pXfr71CCWDf08P1x+zXzTIYpnK7wWUqZyygrUld31gMyOVAdk7sr63FgKe3ljX7yqjRP7/6+WMEruVJ5PvcluNVX2xR8pSrElYl3nW0vQWHHYok3ArWVzmUX4+6mKddxGNqrAl81JYPmxpW5udcBe0NZ/1ZBzvPKdi2efe/8D4JxZ/Y2ixS5rNWE2yN1fj+vent3p2ppvJd8wTfFJPBQj8dHJ1/FrkwXtebxQ2/aotiDkGmfRoC7pZAQ99fVf2tthtpFwSDtDtzEpFoP3oOKr+DSkov0STNxjXCgTBmQ8nyh73+/zLEppGOWeV90eZEFcxVj36owf34nA==";
     // Verify the signature.
     Signature sig = Signature.getInstance("SHA256withRSA");

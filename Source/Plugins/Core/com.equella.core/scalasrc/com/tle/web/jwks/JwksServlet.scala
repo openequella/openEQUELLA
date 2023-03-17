@@ -31,8 +31,8 @@ import javax.servlet.http.{HttpServlet, HttpServletRequest, HttpServletResponse}
   * used to verify any JSON Web Token (JWT) issued.
   *
   * Reference links:
-  * https://www.rfc-editor.org/rfc/rfc8414
-  * https://auth0.com/docs/secure/tokens/json-web-tokens/json-web-key-sets
+  * - https://www.rfc-editor.org/rfc/rfc8414
+  * - https://auth0.com/docs/secure/tokens/json-web-tokens/json-web-key-sets
   */
 @Bind
 @Singleton
