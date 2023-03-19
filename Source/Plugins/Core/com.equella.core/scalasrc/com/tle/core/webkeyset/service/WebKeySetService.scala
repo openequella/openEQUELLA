@@ -18,6 +18,7 @@
 
 package com.tle.core.webkeyset.service
 
+import com.tle.beans.webkeyset.WebKeySet
 import java.security.KeyPair
 
 trait WebKeySetService {
@@ -29,6 +30,13 @@ trait WebKeySetService {
     * @return KeyPair matching the provided key ID,  or None if no key pair is found.
     */
   def getKeypairByKeyID(keyId: String): Option[KeyPair]
+
+  /**
+    * Retrieve all the key pairs, including those deactivated.
+    *
+    * @return A list of WebKeySet
+    */
+  def getAll: List[WebKeySet]
 
   /**
     * Generate a new key pair for the current Institution.
@@ -57,4 +65,16 @@ trait WebKeySetService {
     * @param keyId ID of a key pair.
     */
   def delete(keyId: String): Unit
+
+  /**
+    * Delete all the key pairs for the current Institution.
+    */
+  def deleteAll(): Unit
+
+  /**
+    * Save the provided key pair for the current Institution. If it exists already, then update it.
+    *
+    * @param keySet Key pair to be either saved or updated.
+    */
+  def createOrUpdate(keySet: WebKeySet): Unit
 }

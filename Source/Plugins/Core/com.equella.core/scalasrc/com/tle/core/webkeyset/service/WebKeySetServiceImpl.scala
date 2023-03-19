@@ -31,14 +31,17 @@ import java.security.interfaces.RSAPublicKey
 import java.time.Instant
 import java.util.{Base64, UUID}
 import javax.inject.{Inject, Singleton}
+import scala.jdk.CollectionConverters._
 
 @Singleton
 @Bind(classOf[WebKeySetService])
 class WebKeySetServiceImpl extends WebKeySetService {
-  @Inject var jwkDao: WebKeySetDAO = _
+  @Inject var webKeySetDAO: WebKeySetDAO = _
 
   def getKeypairByKeyID(keyId: String): Option[KeyPair] =
-    jwkDao.getByKeyID(keyId).map(buildKeyPair)
+    webKeySetDAO.getByKeyID(keyId).map(buildKeyPair)
+
+  def getAll: List[WebKeySet] = webKeySetDAO.enumerateAll.asScala.toList
 
   @Transactional
   def generateKeyPair: String = {
@@ -53,16 +56,19 @@ class WebKeySetServiceImpl extends WebKeySetService {
     securityKey.publicKey = toPEM(keyPair.getPublic, PUBLIC_KEY_HEADER)
     securityKey.institution = CurrentInstitution.get()
 
-    jwkDao.save(securityKey)
+    webKeySetDAO.save(securityKey)
     securityKey.keyId
   }
 
   @Transactional
-  def delete(keyId: String): Unit = jwkDao.getByKeyID(keyId).foreach(jwkDao.delete)
+  def delete(keyId: String): Unit = webKeySetDAO.getByKeyID(keyId).foreach(webKeySetDAO.delete)
+
+  @Transactional
+  def deleteAll(): Unit = getAll.foreach(webKeySetDAO.delete)
 
   @Transactional
   def rotateKeyPair(keyID: String): Option[String] =
-    jwkDao.getByKeyID(keyID) match {
+    webKeySetDAO.getByKeyID(keyID) match {
       case Some(keySet) =>
         keySet.deactivated = Instant.now
         Some(generateKeyPair)
@@ -85,10 +91,12 @@ class WebKeySetServiceImpl extends WebKeySetService {
     }
 
     def publicKeys =
-      jwkDao.getAll
+      getAll
         .map(buildJWK)
         .toArray
 
     JsonWebKeySet(publicKeys).asJson.spaces2
   }
+
+  def createOrUpdate(keySet: WebKeySet): Unit = webKeySetDAO.saveOrUpdate(keySet)
 }
