@@ -38,6 +38,14 @@ object Lti13StateService {
   // TODO: Replace with ReplicatedCacheService - this should have a short TTL too (perhaps 10s)
   private val stateStorage: TrieMap[String, Lti13StateDetails] = TrieMap()
 
+  /**
+    * Given the key details of an LTI Request, store those and create a 'state' value that can
+    * later be used to retrieve these.
+    *
+    * @param details key information for an LTI request
+    * @return a unique value representing this request which can be used as the `state` values
+    *         in subsequent requests.
+    */
   def createState(details: Lti13StateDetails): String = {
     val state = {
       // TODO: Lookup the recommendation in OAuth 2 course on creation of `state`
@@ -68,14 +76,4 @@ object Lti13StateService {
     * @param state the `state` to be invalidated
     */
   def invalidateState(state: String): Unit = stateStorage.remove(state)
-}
-
-object TestLti13StateService extends App {
-  val state = Lti13StateService.createState(
-    Lti13StateDetails("http://moodle.local", "1", new URI("http://moodle.local/auth.php")))
-
-  println(s"State: ${state}")
-  println(s"Details: ${Lti13StateService.getState(state)}")
-  Lti13StateService.invalidateState(state)
-  println(s"Details after invalidate: ${Lti13StateService.getState(state)}")
 }
