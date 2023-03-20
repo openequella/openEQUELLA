@@ -37,6 +37,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
   private val LOGGER = LoggerFactory.getLogger(classOf[OpenIDConnectLaunchServlet])
 
   @Inject private var lti13AuthService: Lti13AuthService = _
+  @Inject private var stateService: Lti13StateService    = _
   @Inject private var userService: UserService           = _
 
   override def doGet(req: HttpServletRequest, resp: HttpServletResponse): Unit = {
@@ -126,6 +127,6 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
     }
 
     // Finished with `state` - it's been used once, so let's dump it
-    Lti13StateService.invalidateState(auth.state)
+    stateService.invalidateState(auth.state)
   }
 }

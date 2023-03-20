@@ -32,14 +32,12 @@ import com.tle.core.security.impl.AclExpressionEvaluator
 import com.tle.core.services.user.UserService
 import com.tle.core.usermanagement.standard.service.{TLEGroupService, TLEUserService}
 import com.tle.exceptions.UsernameNotFoundException
-import com.tle.integration.lti13.Lti13NonceService.{createNonce, validateNonce}
 import com.tle.integration.lti13.{Lti13Params => LTI13, OpenIDConnectParams => OIDC}
 import io.lemonlabs.uri.{QueryString, Url}
 import org.slf4j.LoggerFactory
 
 import java.net.{URI, URL}
 import java.security.interfaces.RSAPublicKey
-import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success, Try}
@@ -242,7 +240,9 @@ case class PlatformDetails(platformId: String,
 class Lti13AuthService {
   private val LOGGER = LoggerFactory.getLogger(classOf[Lti13AuthService])
 
+  @Inject private var nonceService: Lti13NonceService  = _
   @Inject private var runAs: RunAsInstitution          = _
+  @Inject private var stateService: Lti13StateService  = _
   @Inject private var tleGroupService: TLEGroupService = _
   @Inject private var tleUserService: TLEUserService   = _
   @Inject private var userService: UserService         = _
@@ -257,7 +257,7 @@ class Lti13AuthService {
     for {
       platformDetails <- getPlatform(initReq.iss)
       authUrl         <- Url.parseOption(platformDetails.authUrl.toString)
-      state = Lti13StateService.createState(
+      state = stateService.createState(
         Lti13StateDetails(initReq.iss, initReq.login_hint, initReq.target_link_uri))
     } yield
       authUrl
@@ -270,7 +270,7 @@ class Lti13AuthService {
             LTI13.LOGIN_HINT    -> initReq.login_hint,
             OIDC.STATE          -> state,
             LTI13.RESPONSE_MODE -> LTI13.RESPONSE_MODE_FORM_POST,
-            LTI13.NONCE         -> createNonce(state),
+            LTI13.NONCE         -> nonceService.createNonce(state),
             LTI13.PROMPT        -> LTI13.PROMPT_NONE
           ))
         .toString()
@@ -294,7 +294,7 @@ class Lti13AuthService {
     val result = for {
       // -- first, basic validation of the state
       // Short circuit if this isn't even a state we know about
-      stateDetails <- Lti13StateService.getState(state).toRight(s"Invalid state provided: $state")
+      stateDetails <- stateService.getState(state).toRight(s"Invalid state provided: $state")
       // Decode the token to validate the platform this is for
       decodedToken <- Try(JWT.decode(token)).toEither.left.map(t =>
         s"Failed to decode token: ${t.getMessage}")
@@ -321,7 +321,7 @@ class Lti13AuthService {
           .toRight("Failed to extract nonce from JWT")
           .flatMap(
             // If the nonce is valid, then make sure we return the valid JWT
-            validateNonce(_, state).map(_ => jwt))
+            nonceService.validateNonce(_, state).map(_ => jwt))
           .left
           .map(err => s"Provided ID token (JWT) failed nonce verification: ${err}")
       // now finally do the verification
