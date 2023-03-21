@@ -21,6 +21,7 @@ package com.tle.web.lti13.platforms.security;
 import com.tle.common.security.SettingsTarget;
 import com.tle.core.guice.Bind;
 import com.tle.core.settings.security.AbstractSettingsPrivilegeTreeProvider;
+import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.resources.ResourcesService;
 
 @Bind
@@ -32,5 +33,12 @@ public class LTI13PlatformsSettingsPrivilegeTreeProvider
         ResourcesService.getResourceHelper(LTI13PlatformsSettingsPrivilegeTreeProvider.class)
             .key("securitytree.lti13platforms"),
         new SettingsTarget("lti13platforms"));
+  }
+
+  @Override
+  public void checkAuthorised() {
+    if (!isAuthorised()) {
+      throw new AccessDeniedException(r.getString("lti.platform.no.access"));
+    }
   }
 }
