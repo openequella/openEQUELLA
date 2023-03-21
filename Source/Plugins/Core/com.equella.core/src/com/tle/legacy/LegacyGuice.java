@@ -195,6 +195,8 @@ public class LegacyGuice extends AbstractModule {
 
   @Inject public static Lti13Service lti13Service;
 
+  @Inject public static LTI13PlatformsSettingsPrivilegeTreeProvider ltiPrivProvider;
+
   @Inject public static LanguageSettingsPrivilegeTreeProvider langPrivProvider;
 
   @Inject public static LoggedInUsersPrivilegeTreeProvider liuPrivProvider;
