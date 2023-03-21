@@ -64,13 +64,7 @@ class Lti13StateService(stateStorage: ReplicatedCache[Lti13StateDetails]) {
     *         in subsequent requests.
     */
   def createState(details: Lti13StateDetails): String = {
-    val state = {
-      // TODO: Lookup the recommendation in OAuth 2 course on creation of `state`
-      // This is potentially not secure enough, but I don't really want to bind it to the host
-      // with extra crypto unless necessary. (Although one option would be to use the private
-      // from the server's JWK...)
-      generateRandomHexString(16)
-    }
+    val state = generateRandomHexString(16)
     stateStorage.put(state, details)
 
     state
