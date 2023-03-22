@@ -65,9 +65,17 @@ class Lti13NonceService(nonceStorage: ReplicatedCache[Lti13NonceDetails]) {
     * @return a new unique nonce
     */
   def createNonce(state: String): String = {
-    val nonce = generateRandomHexString(16)
-    // TODO: Check if nonce already in use, if so generate another - but only do for x times before
-    //       giving up and failing.
+    // We need to make sure nonces are unique, so up to 10 will be generated
+    // after which we have no option but to trigger a runtime exception!
+    val nonce = LazyList
+      .fill(10) {
+        generateRandomHexString(16)
+      }
+      .find(!nonceStorage.get(_).isPresent) match {
+      case Some(uniqueNonce) => uniqueNonce
+      case None              => throw new RuntimeException("Failed to generate a unique nonce!")
+    }
+
     nonceStorage.put(nonce, Lti13NonceDetails(state, Instant.now()))
 
     nonce
