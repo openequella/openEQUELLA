@@ -52,7 +52,7 @@ case class LtiPlatformBean(
     usernamePrefix: Option[String],
     usernameSuffix: Option[String],
     unknownUserHandling: String,
-    unknownUserDefaultGroups: Set[String],
+    unknownUserDefaultGroups: Option[Set[String]],
     instructorRoles: Set[String],
     unknownRoles: Set[String],
     customRoles: Map[String, Set[String]],
@@ -69,7 +69,7 @@ object LtiPlatformBean {
       usernamePrefix = Option(platform.usernamePrefix),
       usernameSuffix = Option(platform.usernameSuffix),
       unknownUserHandling = platform.unknownUserHandling,
-      unknownUserDefaultGroups = platform.unknownUserDefaultGroups.asScala.toSet,
+      unknownUserDefaultGroups = Option(platform.unknownUserDefaultGroups).map(_.asScala.toSet),
       instructorRoles = platform.instructorRoles.asScala.toSet,
       unknownRoles = platform.unknownRoles.asScala.toSet,
       customRoles = platform.customRoles.asScala
@@ -113,7 +113,8 @@ object LtiPlatformBean {
     platform.allowExpression = params.allowExpression.orNull
 
     platform.unknownRoles = params.unknownRoles.asJava
-    platform.unknownUserDefaultGroups = params.unknownUserDefaultGroups.asJava
+    platform.unknownUserDefaultGroups =
+      params.unknownUserDefaultGroups.getOrElse(Set.empty[String]).asJava
     platform.instructorRoles = params.instructorRoles.asJava
 
     platform.customRoles = updateRoleMapping(platform.customRoles, params.customRoles)
