@@ -32,6 +32,7 @@ import com.tle.web.api.lti.LtiPlatformBean.{
   validate
 }
 import com.tle.web.lti13.platforms.security.LTI13PlatformsSettingsPrivilegeTreeProvider
+import java.net.URI
 
 @NoCache
 @Path("ltiplatform")
@@ -77,13 +78,20 @@ class LtiPlatformResource {
       "This endpoint creates a new LTI Platform configuration and returns ID of the created entity",
     response = classOf[Long],
   )
-  def createPlatform(params: LtiPlatformBean): Response = {
+  def createPlatform(bean: LtiPlatformBean): Response = {
     aclProvider.checkAuthorised()
-    validate(params)
-      .fold(badRequest(_: _*),
-            buildLtiPlatformFromBean
-              andThen (ltiPlatformService.create)
-              andThen (Response.status(Status.CREATED).entity(_).build()))
+    validate(bean)
+      .fold(
+        badRequest(_: _*),
+        buildLtiPlatformFromBean
+          andThen (ltiPlatformService.create)
+          andThen (
+              _ =>
+                Response
+                  .created(new URI(s"/ltiplatform/${bean.platformId}"))
+                  .status(Status.CREATED)
+                  .build())
+      )
   }
 
   @PUT
