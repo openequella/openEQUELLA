@@ -36,16 +36,21 @@ import javax.persistence.{
   JoinColumn,
   ManyToOne,
   OneToMany,
-  Table
+  Table,
+  UniqueConstraint
 }
 
 /**
   * This entity is used to store the configuration of LTI 1.3 platform.
   */
 @Entity
-@Table(indexes = Array {
-  new Index(name = "lti_platform_id", columnList = "platformId")
-})
+@Table(
+  uniqueConstraints =
+    Array(new UniqueConstraint(columnNames = Array("platformId", "institution_id"))),
+  indexes = Array {
+    new Index(name = "lti_platform_id", columnList = "platformId, institution_id")
+  }
+)
 @NamedQuery(
   name = "getByPlatformID",
   query = "from LtiPlatform WHERE platformId = :platformId AND institution = :institution")
@@ -61,7 +66,7 @@ class LtiPlatform {
   /**
     * ID of the learning platform.
     */
-  @Column(nullable = false, unique = true)
+  @Column(nullable = false)
   var platformId: String = _
 
   /**
@@ -106,7 +111,7 @@ class LtiPlatform {
   var unknownUserDefaultGroups: java.util.Set[String] = _
 
   /**
-    * A list of roles to be assigned to a LIT instructor role.
+    * A list of roles to be assigned to a LTI instructor role.
     */
   @ElementCollection(fetch = FetchType.LAZY)
   @CollectionTable(name = "lti_instructor_roles")
