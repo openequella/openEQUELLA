@@ -18,6 +18,12 @@
 
 package com.tle.web.api.lti
 
+import com.tle.core.lti13.bean.LtiPlatformBean
+import com.tle.core.lti13.bean.LtiPlatformBean.{
+  buildLtiPlatformFromBean,
+  updateLtiPlatformWithBean,
+  validate
+}
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.{ApiBatchOperationResponse, ApiErrorResponse}
 import io.swagger.annotations.{Api, ApiOperation, ApiParam}
@@ -26,11 +32,6 @@ import javax.ws.rs.core.Response
 import javax.ws.rs.core.Response.Status
 import javax.ws.rs.{DELETE, GET, POST, PUT, Path, PathParam, Produces, QueryParam}
 import com.tle.web.api.ApiErrorResponse.badRequest
-import com.tle.web.api.lti.LtiPlatformBean.{
-  buildLtiPlatformFromBean,
-  updateLtiPlatformWithBean,
-  validate
-}
 import com.tle.web.lti13.platforms.security.LTI13PlatformsSettingsPrivilegeTreeProvider
 import java.net.URI
 

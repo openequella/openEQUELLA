@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.tle.web.api.lti
+package com.tle.core.lti13.bean
 
 import cats.data.Validated
 import com.tle.beans.lti.{LtiPlatformCustomRole, LtiPlatform}
