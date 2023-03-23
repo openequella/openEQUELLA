@@ -101,32 +101,32 @@ object LtiPlatformBean {
       .asJava
 
   // Populate all the fields of LtiPlatform.
-  private def updatePlatform(platform: LtiPlatform, params: LtiPlatformBean) = {
-    platform.platformId = params.platformId
-    platform.clientId = params.clientId
-    platform.authUrl = params.authUrl
-    platform.keysetUrl = params.keysetUrl
-    platform.unknownUserHandling = params.unknownUserHandling
+  private def updatePlatform(platform: LtiPlatform, bean: LtiPlatformBean) = {
+    platform.platformId = bean.platformId
+    platform.clientId = bean.clientId
+    platform.authUrl = bean.authUrl
+    platform.keysetUrl = bean.keysetUrl
+    platform.unknownUserHandling = bean.unknownUserHandling
 
-    platform.usernamePrefix = params.usernamePrefix.orNull
-    platform.usernameSuffix = params.usernameSuffix.orNull
-    platform.allowExpression = params.allowExpression.orNull
+    platform.usernamePrefix = bean.usernamePrefix.orNull
+    platform.usernameSuffix = bean.usernameSuffix.orNull
+    platform.allowExpression = bean.allowExpression.orNull
 
-    platform.unknownRoles = params.unknownRoles.asJava
+    platform.unknownRoles = bean.unknownRoles.asJava
     platform.unknownUserDefaultGroups =
-      params.unknownUserDefaultGroups.getOrElse(Set.empty[String]).asJava
-    platform.instructorRoles = params.instructorRoles.asJava
+      bean.unknownUserDefaultGroups.getOrElse(Set.empty[String]).asJava
+    platform.instructorRoles = bean.instructorRoles.asJava
 
-    platform.customRoles = updateRoleMapping(platform.customRoles, params.customRoles)
+    platform.customRoles = updateRoleMapping(platform.customRoles, bean.customRoles)
 
     platform
   }
 
   /**
-    * Curried function to build a new instance of LtiPlatform based on the provided LtiPlatformBean.
+    * Function to build a new instance of LtiPlatform based on the provided LtiPlatformBean.
     */
-  val buildLtiPlatformFromParams: LtiPlatformBean => LtiPlatform = params => {
-    val platform = updatePlatform(new LtiPlatform, params)
+  def buildLtiPlatformFromBean: LtiPlatformBean => LtiPlatform = bean => {
+    val platform = updatePlatform(new LtiPlatform, bean)
     platform.institution = CurrentInstitution.get()
     platform
   }
@@ -134,18 +134,18 @@ object LtiPlatformBean {
   /**
     * Curried function to update the provided LtiPlatform with an instance of LtiPlatformBean.
     */
-  val updateLtiPlatformWithParams: (LtiPlatform) => (LtiPlatformBean) => LtiPlatform =
-    platform => params => updatePlatform(platform, params)
+  def updateLtiPlatformWithBean: LtiPlatform => LtiPlatformBean => LtiPlatform =
+    platform => bean => updatePlatform(platform, bean)
 
   /**
     * Check values of mandatory fields for LtiPlatformBean and accumulate all the errors.
     * Return a ValidatedNel which is either a list of error messages or the checked LtiPlatformBean.
     */
-  def validate(params: LtiPlatformBean): Validated[List[String], LtiPlatformBean] = {
+  def validate(bean: LtiPlatformBean): Validated[List[String], LtiPlatformBean] = {
     def checkIDs =
       Map(
-        ("platform ID", params.platformId),
-        ("client ID", params.clientId),
+        ("platform ID", bean.platformId),
+        ("client ID", bean.clientId),
       ).map {
           case (key, value) =>
             Option
@@ -157,8 +157,8 @@ object LtiPlatformBean {
 
     def checkUrls =
       Map(
-        ("AUTH URL", params.authUrl),
-        ("Key set URL", params.keysetUrl)
+        ("AUTH URL", bean.authUrl),
+        ("Key set URL", bean.keysetUrl)
       ).map {
           case (key, value) =>
             Try {
@@ -170,11 +170,11 @@ object LtiPlatformBean {
 
     def checkUnknownUserHandling =
       Try {
-        UnknownUserHandling.withName(params.unknownUserHandling)
+        UnknownUserHandling.withName(bean.unknownUserHandling)
       }.toEither
         .leftMap(err => s"Unknown handling for unknown users: ${err.getMessage}")
         .toValidatedNel
 
-    (checkIDs, checkUrls, checkUnknownUserHandling).mapN((_, _, _) => params).leftMap(_.toList)
+    (checkIDs, checkUrls, checkUnknownUserHandling).mapN((_, _, _) => bean).leftMap(_.toList)
   }
 }

@@ -27,8 +27,8 @@ import javax.ws.rs.core.Response.Status
 import javax.ws.rs.{DELETE, GET, POST, PUT, Path, PathParam, Produces, QueryParam}
 import com.tle.web.api.ApiErrorResponse.badRequest
 import com.tle.web.api.lti.LtiPlatformBean.{
-  buildLtiPlatformFromParams,
-  updateLtiPlatformWithParams,
+  buildLtiPlatformFromBean,
+  updateLtiPlatformWithBean,
   validate
 }
 import com.tle.web.lti13.platforms.security.LTI13PlatformsSettingsPrivilegeTreeProvider
@@ -81,7 +81,7 @@ class LtiPlatformResource {
     aclProvider.checkAuthorised()
     validate(params)
       .fold(badRequest(_: _*),
-            buildLtiPlatformFromParams
+            buildLtiPlatformFromBean
               andThen (ltiPlatformService.create)
               andThen (Response.status(Status.CREATED).entity(_).build()))
   }
@@ -100,7 +100,7 @@ class LtiPlatformResource {
       case Some(platform) =>
         validate(params)
           .fold(badRequest(_: _*),
-                updateLtiPlatformWithParams(platform)
+                updateLtiPlatformWithBean(platform)
                   andThen (ltiPlatformService.update)
                   andThen (_ => Response.ok().build()))
       case None => ApiErrorResponse.resourceNotFound(platformNotFound(platformId))
