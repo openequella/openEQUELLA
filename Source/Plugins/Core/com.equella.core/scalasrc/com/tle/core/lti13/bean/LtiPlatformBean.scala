@@ -79,6 +79,33 @@ object LtiPlatformBean {
     )
   }
 
+  implicit def ltiPlatformBeantoEntity(bean: LtiPlatformBean): LtiPlatform = {
+    val platform = new LtiPlatform
+    platform.platformId = bean.platformId
+    platform.clientId = bean.clientId
+    platform.authUrl = bean.authUrl
+    platform.keysetUrl = bean.keysetUrl
+    platform.usernamePrefix = bean.usernamePrefix.orNull
+    platform.usernameSuffix = bean.usernameSuffix.orNull
+    platform.unknownUserHandling = bean.unknownUserHandling
+    platform.unknownUserDefaultGroups = bean.unknownUserDefaultGroups.getOrElse(Set.empty).asJava
+    platform.instructorRoles = bean.instructorRoles.asJava
+    platform.unknownRoles = bean.unknownRoles.asJava
+    platform.customRoles = bean.customRoles
+      .map {
+        case (ltiRole, oeqRoles) =>
+          val mapping = new LtiPlatformCustomRole
+          mapping.ltiRole = ltiRole
+          mapping.oeqRoles = oeqRoles.asJava
+          mapping
+      }
+      .toSet
+      .asJava
+    platform.allowExpression = bean.allowExpression.orNull
+
+    platform
+  }
+
   // Update the custom role Mapping. If the update has any LTI role that is already in the existing mapping, replace the target OEQ roles.
   // Otherwise, create a new mapping.
   private def updateRoleMapping(oldMappings: java.util.Set[LtiPlatformCustomRole],
@@ -123,25 +150,10 @@ object LtiPlatformBean {
   }
 
   /**
-    * Function to build a new instance of LtiPlatform based on the provided LtiPlatformBean.
-    */
-  def buildLtiPlatformFromBean: LtiPlatformBean => LtiPlatform = bean => {
-    val platform = updatePlatform(new LtiPlatform, bean)
-    platform.institution = CurrentInstitution.get()
-    platform
-  }
-
-  /**
-    * Curried function to update the provided LtiPlatform with an instance of LtiPlatformBean.
-    */
-  def updateLtiPlatformWithBean: LtiPlatform => LtiPlatformBean => LtiPlatform =
-    platform => bean => updatePlatform(platform, bean)
-
-  /**
     * Check values of mandatory fields for LtiPlatformBean and accumulate all the errors.
     * Return a ValidatedNel which is either a list of error messages or the checked LtiPlatformBean.
     */
-  def validate(bean: LtiPlatformBean): Validated[List[String], LtiPlatformBean] = {
+  def validateLtiPlatformBean(bean: LtiPlatformBean): Validated[List[String], LtiPlatformBean] = {
     def checkIDs =
       Map(
         ("platform ID", bean.platformId),
