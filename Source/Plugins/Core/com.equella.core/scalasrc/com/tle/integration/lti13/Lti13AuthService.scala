@@ -399,7 +399,7 @@ class Lti13AuthService {
   }
 
   def getRedirectUri: URI =
-    new URI(s"${CurrentInstitution.get().getUrlAsUrl}lti13/launch")
+    new URI(s"${CurrentInstitution.get().getUrl}lti13/launch")
 
   private def buildJwtVerifierForPlatform(
       jwk: Jwk,
