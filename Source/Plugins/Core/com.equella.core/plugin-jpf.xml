@@ -5987,7 +5987,7 @@
     <parameter id="class" value="com.tle.beans.webkeyset.WebKeySet" />
   </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="LtiCustomRole">
-    <parameter id="class" value="com.tle.beans.lti.LtiCustomRole" />
+    <parameter id="class" value="com.tle.beans.lti.LtiPlatformCustomRole" />
   </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="LtiPlatform">
     <parameter id="class" value="com.tle.beans.lti.LtiPlatform" />

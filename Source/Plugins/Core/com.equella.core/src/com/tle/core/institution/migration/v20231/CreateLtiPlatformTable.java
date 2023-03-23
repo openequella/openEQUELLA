@@ -19,8 +19,8 @@
 package com.tle.core.institution.migration.v20231;
 
 import com.tle.beans.Institution;
-import com.tle.beans.lti.LtiCustomRole;
 import com.tle.beans.lti.LtiPlatform;
+import com.tle.beans.lti.LtiPlatformCustomRole;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.impl.HibernateCreationFilter;
 import com.tle.core.hibernate.impl.HibernateMigrationHelper;
@@ -36,16 +36,16 @@ public class CreateLtiPlatformTable extends AbstractCreateMigration {
   protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper) {
     return new TablesOnlyFilter(
         "lti_platform",
-        "lti_unknown_user_groups",
-        "lti_instructor_roles",
-        "lti_unknown_roles",
-        "lti_custom_role",
-        "lti_custom_role_target");
+        "lti_platform_unknown_groups",
+        "lti_platform_instructor_roles",
+        "lti_platform_unknown_roles",
+        "lti_platform_custom_role",
+        "lti_platform_custom_target");
   }
 
   @Override
   protected Class<?>[] getDomainClasses() {
-    return new Class<?>[] {LtiPlatform.class, LtiCustomRole.class, Institution.class};
+    return new Class<?>[] {LtiPlatform.class, LtiPlatformCustomRole.class, Institution.class};
   }
 
   @Override

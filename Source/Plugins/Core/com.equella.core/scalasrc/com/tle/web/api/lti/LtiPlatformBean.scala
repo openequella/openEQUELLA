@@ -19,7 +19,7 @@
 package com.tle.web.api.lti
 
 import cats.data.Validated
-import com.tle.beans.lti.{LtiCustomRole, LtiPlatform}
+import com.tle.beans.lti.{LtiPlatformCustomRole, LtiPlatform}
 import com.tle.common.Check
 import com.tle.common.institution.CurrentInstitution
 import com.tle.integration.lti13.UnknownUserHandling
@@ -81,7 +81,7 @@ object LtiPlatformBean {
 
   // Update the custom role Mapping. If the update has any LTI role that is already in the existing mapping, replace the target OEQ roles.
   // Otherwise, create a new mapping.
-  private def updateRoleMapping(oldMappings: java.util.Set[LtiCustomRole],
+  private def updateRoleMapping(oldMappings: java.util.Set[LtiPlatformCustomRole],
                                 updates: Map[String, Set[String]]) =
     updates
       .map {
@@ -91,7 +91,7 @@ object LtiPlatformBean {
               oldMapping.oeqRoles = newTarget.asJava
               oldMapping
             case None =>
-              val newMapping = new LtiCustomRole
+              val newMapping = new LtiPlatformCustomRole
               newMapping.ltiRole = ltiRole
               newMapping.oeqRoles = newTarget.asJava
               newMapping

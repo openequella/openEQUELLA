@@ -32,7 +32,7 @@ import javax.persistence.{
   * This entity is used to store the mappings between LTI roles and OEQ roles for LTI 1.3 platforms.
   */
 @Entity
-class LtiCustomRole {
+class LtiPlatformCustomRole {
 
   /**
     * Database automatically generated ID used as the primary key.
@@ -51,7 +51,7 @@ class LtiCustomRole {
     * A list of OEQ roles which is targeted by a LTI role.
     */
   @ElementCollection
-  @CollectionTable(name = "lti_custom_role_target")
+  @CollectionTable(name = "lti_platform_custom_target")
   @Column(name = "oeq_role")
   var oeqRoles: java.util.Set[String] = _
 }
