@@ -24,10 +24,20 @@ import com.tle.core.hibernate.dao.GenericInstitutionalDao
 trait LtiPlatformDAO extends GenericInstitutionalDao[LtiPlatform, java.lang.Long] {
 
   /**
-    * Retrieve a LTI Platform configuration by Platform ID.
+    * Retrieve a LTI Platform by Platform ID. An exception will be thrown if more than one
+    * platforms match the ID.
     *
-    * @param platformID Unique ID of a LTI Platform.
-    * @return Option of the LTI Platform configuration, or None if it does not exist.
+    * @param platformId Unique ID of a LTI Platform.
+    * @return Option of the LTI Platform, or None if it does not exist.
     */
-  def getByPlatformID(platformID: String): Option[LtiPlatform]
+  def getByPlatformId(platformId: String): Option[LtiPlatform]
+
+  /**
+    * Delete a LTI Platform by Platform ID. An exception will be thrown if more than one
+    * platforms have been deleted.
+    *
+    * @param platformId Unique ID of a LTI Platform.
+    * @return `true` to indicate only one platform has been deleted.
+    */
+  def deleteByPlatformId(platformId: String): true
 }

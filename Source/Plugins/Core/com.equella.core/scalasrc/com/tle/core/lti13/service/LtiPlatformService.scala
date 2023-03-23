@@ -18,44 +18,46 @@
 
 package com.tle.core.lti13.service
 
-import com.tle.beans.lti.LtiPlatform
+import com.tle.core.lti13.bean.LtiPlatformBean
 
 trait LtiPlatformService {
 
   /**
-    * Retrieve a LTI Platform Configuration from the current Institution by Platform ID.
+    * Retrieve a LTI platform from the current Institution by platform ID.
     *
-    * @param platformID The ID identifying a LTI Platform.
-    * @return Option of the LTI platform configuration, or None if no configuration matches the ID.
+    * @param platformID The ID identifying a LTI platform.
+    * @return Either an Option of the LTI platform or None if no platforms match the ID, or a throwable if failed.
     */
-  def getByPlatformID(platformID: String): Option[LtiPlatform]
+  def getByPlatformID(platformID: String): Either[Throwable, Option[LtiPlatformBean]]
 
   /**
-    * Retrieve all the LTI Platform configurations for the current Institution.
+    * Retrieve all the LTI platforms for the current Institution.
     *
-    * @return A list of LTI Platform configurations.
+    * @return Either a list of LTI platforms or a throwable.
     */
-  def getAll: List[LtiPlatform]
+  def getAll: Either[Throwable, List[LtiPlatformBean]]
 
   /**
-    * Save the provided LTI Platform configuration for the current Institution.
+    * Create a LTI platform based on the provided bean in the current Institution.
     *
-    * @param ltiPlatform The configuration to be saved.
-    * @return ID of the new saved entity.
+    * @param bean LtiPlatformBean which provides information of a LTI platform.
+    * @return Either platform ID of the new platform, or a throwable if failed to create.
     */
-  def create(ltiPlatform: LtiPlatform): Long
+  def create(bean: LtiPlatformBean): Either[Throwable, String]
 
   /**
-    * Update an existing LTI Platform.
+    * Update an existing LTI Platform based on the provided bean.
     *
-    * @param ltiPlatform The configuration that has updates.
+    * @param bean LtiPlatformBean which provides updates for an existing LTI platform.
+    * @return Either Unit to indicate the successful update, or a throwable if failed to update.
     */
-  def update(ltiPlatform: LtiPlatform): Unit
+  def update(bean: LtiPlatformBean): Either[Throwable, Unit]
 
   /**
-    * Delete LTI Platform configuration from the current Institution.
+    * Delete a LTI platform from the current Institution by ID.
     *
-    * @param platformID The ID identifying a LTI Platform.
+    * @param platformId The ID identifying a LTI platform.
+    * @return Either `true` to indicate one platform has been deleted, or a throwable if failed to delete.
     */
-  def delete(ltiPlatform: LtiPlatform): Unit
+  def delete(platformId: String): Either[Throwable, true]
 }

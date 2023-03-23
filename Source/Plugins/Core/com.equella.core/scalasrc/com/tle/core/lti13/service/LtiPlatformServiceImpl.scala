@@ -18,29 +18,44 @@
 
 package com.tle.core.lti13.service
 
-import com.tle.beans.lti.LtiPlatform
 import com.tle.core.guice.Bind
+import com.tle.core.lti13.bean.LtiPlatformBean
 import com.tle.core.lti13.dao.LtiPlatformDAO
 import org.springframework.transaction.annotation.Transactional
 import javax.inject.{Inject, Singleton}
 import scala.jdk.CollectionConverters._
+import scala.util.Try
 
 @Singleton
 @Bind(classOf[LtiPlatformService])
 class LtiPlatformServiceImpl extends LtiPlatformService {
   @Inject var lti13Dao: LtiPlatformDAO = _
 
-  override def getByPlatformID(platformID: String): Option[LtiPlatform] =
-    lti13Dao.getByPlatformID(platformID)
+  override def getByPlatformID(platformID: String): Either[Throwable, Option[LtiPlatformBean]] =
+    Try {
+      lti13Dao.getByPlatformId(platformID)
+    }.map(_.map(LtiPlatformBean.apply)).toEither
 
-  override def getAll: List[LtiPlatform] = lti13Dao.enumerateAll.asScala.toList
+  override def getAll: Either[Throwable, List[LtiPlatformBean]] =
+    Try {
+      lti13Dao.enumerateAll
+    }.map(_.asScala.toList.map(LtiPlatformBean.apply)).toEither
 
   @Transactional
-  override def create(ltiPlatform: LtiPlatform): Long = lti13Dao.save(ltiPlatform)
+  override def create(bean: LtiPlatformBean): Either[Throwable, String] =
+    Try {
+      lti13Dao.save(bean)
+    }.map(_ => bean.platformId).toEither
 
   @Transactional
-  override def update(ltiPlatform: LtiPlatform): Unit = lti13Dao.update(ltiPlatform)
+  override def update(bean: LtiPlatformBean): Either[Throwable, Unit] =
+    Try {
+      lti13Dao.update(bean)
+    }.toEither
 
   @Transactional
-  override def delete(ltiPlatform: LtiPlatform): Unit = lti13Dao.delete(ltiPlatform)
+  override def delete(platFormId: String): Either[Throwable, true] =
+    Try[true] {
+      lti13Dao.deleteByPlatformId(platFormId)
+    }.toEither
 }

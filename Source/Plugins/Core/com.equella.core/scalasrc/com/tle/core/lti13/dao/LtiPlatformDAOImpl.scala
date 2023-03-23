@@ -21,18 +21,22 @@ package com.tle.core.lti13.dao
 import com.tle.beans.lti.LtiPlatform
 import com.tle.common.institution.CurrentInstitution
 import com.tle.core.guice.Bind
-import com.tle.core.hibernate.dao.DAOHelper.getOnlyOne
-import com.tle.core.hibernate.dao.GenericInstitionalDaoImpl
+import com.tle.core.hibernate.dao.{DAOHelper, GenericInstitionalDaoImpl}
 import javax.inject.Singleton
+
 @Singleton
 @Bind(classOf[LtiPlatformDAO])
 class LtiPlatformDAOImpl
     extends GenericInstitionalDaoImpl[LtiPlatform, java.lang.Long](classOf[LtiPlatform])
     with LtiPlatformDAO {
+  private def buildParams(platformId: String): Map[String, Any] =
+    Map("platformId" -> platformId, "institution" -> CurrentInstitution.get())
+  override def getByPlatformId(platformId: String): Option[LtiPlatform] =
+    DAOHelper.getOnlyOne(this, "getByPlatformID", buildParams(platformId))
 
-  override def getByPlatformID(platformId: String): Option[LtiPlatform] =
-    getOnlyOne(this,
-               "getByPlatformID",
-               Map("platformId" -> platformId, "institution" -> CurrentInstitution.get()))
-
+  override def deleteByPlatformId(platformId: String): true =
+    DAOHelper
+      .delete(this, "deleteByPlatformID", buildParams(platformId))
+      .filterOrElse(_ == 1, new Throwable(s"Unexpected number of platforms have been deleted."))
+      .fold(throw _, _ => true)
 }
