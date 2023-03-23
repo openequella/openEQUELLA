@@ -20,7 +20,7 @@ package com.tle.core.lti13.service
 
 import com.tle.beans.lti.LtiPlatform
 
-trait Lti13Service {
+trait LtiPlatformService {
 
   /**
     * Retrieve a LTI Platform Configuration from the current Institution by Platform ID.

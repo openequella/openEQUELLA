@@ -21,7 +21,7 @@ package com.tle.core.lti13.dao
 import com.tle.beans.lti.LtiPlatform
 import com.tle.core.hibernate.dao.GenericInstitutionalDao
 
-trait Lti13DAO extends GenericInstitutionalDao[LtiPlatform, java.lang.Long] {
+trait LtiPlatformDAO extends GenericInstitutionalDao[LtiPlatform, java.lang.Long] {
 
   /**
     * Retrieve a LTI Platform configuration by Platform ID.

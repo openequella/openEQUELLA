@@ -29,10 +29,10 @@ import scala.jdk.CollectionConverters._
 import scala.util.Try
 
 @Singleton
-@Bind(classOf[Lti13DAO])
-class Lti13DAOImpl
+@Bind(classOf[LtiPlatformDAO])
+class LtiPlatformDAOImpl
     extends GenericInstitionalDaoImpl[LtiPlatform, java.lang.Long](classOf[LtiPlatform])
-    with Lti13DAO {
+    with LtiPlatformDAO {
 
   override def getByPlatformID(platformId: String): Option[LtiPlatform] =
     Try {
