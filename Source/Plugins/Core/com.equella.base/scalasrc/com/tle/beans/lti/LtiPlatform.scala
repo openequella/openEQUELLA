@@ -54,6 +54,9 @@ import javax.persistence.{
 @NamedQuery(
   name = "getByPlatformID",
   query = "from LtiPlatform WHERE platformId = :platformId AND institution = :institution")
+@NamedQuery(
+  name = "deleteByPlatformID",
+  query = "Delete from LtiPlatform WHERE platformId = :platformId AND institution = :institution")
 class LtiPlatform {
 
   /**
