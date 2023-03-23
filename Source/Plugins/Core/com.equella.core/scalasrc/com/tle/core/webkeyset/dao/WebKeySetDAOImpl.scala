@@ -21,12 +21,9 @@ package com.tle.core.webkeyset.dao
 import com.tle.beans.webkeyset.WebKeySet
 import com.tle.common.institution.CurrentInstitution
 import com.tle.core.guice.Bind
+import com.tle.core.hibernate.dao.DAOHelper.getOnlyOne
 import com.tle.core.hibernate.dao.GenericInstitionalDaoImpl
-import org.hibernate.Session
-import org.hibernate.criterion.Restrictions
 import javax.inject.Singleton
-import scala.util.Try
-import scala.jdk.CollectionConverters._
 
 @Bind(classOf[WebKeySetDAO])
 @Singleton
@@ -34,19 +31,5 @@ class WebKeySetDAOImpl
     extends GenericInstitionalDaoImpl[WebKeySet, java.lang.Long](classOf[WebKeySet])
     with WebKeySetDAO {
   override def getByKeyID(keyId: String): Option[WebKeySet] =
-    Try {
-      getHibernateTemplate
-        .execute(
-          (session: Session) =>
-            session
-              .getNamedQuery("getByKeyID")
-              .setParameter("keyId", keyId)
-              .setParameter("institution", CurrentInstitution.get())
-              .getResultList)
-        .asScala
-        .toList
-        .asInstanceOf[List[WebKeySet]]
-    }.toEither
-      .filterOrElse(_.size <= 1, new Throwable(s"More than one key pairs matching key ID $keyId"))
-      .fold(throw _, _.headOption)
+    getOnlyOne(this, "getByKeyID", Map("keyId" -> keyId, "institution" -> CurrentInstitution.get()))
 }
