@@ -18,16 +18,18 @@
 
 package com.tle.integration.lti13
 
-import com.auth0.jwk.{Jwk, JwkProviderBuilder}
+import com.auth0.jwk.{Jwk, JwkProvider, JwkProviderBuilder}
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.interfaces.DecodedJWT
+import com.google.common.cache.{Cache, CacheBuilder, CacheLoader}
 import com.google.common.hash.Hashing.sha256
+import com.tle.beans.Institution
 import com.tle.beans.user.TLEUser
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.usermanagement.user.{UserState, WebAuthenticationDetails}
 import com.tle.core.guice.Bind
-import com.tle.core.institution.RunAsInstitution
+import com.tle.core.institution.{InstitutionCache, InstitutionService, RunAsInstitution}
 import com.tle.core.security.impl.AclExpressionEvaluator
 import com.tle.core.services.user.UserService
 import com.tle.core.usermanagement.standard.service.{TLEGroupService, TLEUserService}
@@ -38,6 +40,7 @@ import org.slf4j.LoggerFactory
 
 import java.net.{URI, URL}
 import java.security.interfaces.RSAPublicKey
+import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success, Try}
@@ -248,6 +251,41 @@ class Lti13AuthService {
   @Inject private var userService: UserService         = _
 
   /**
+    * The JWK Provider Cache is here to cache instances of JWK Providers for each keyset URL
+    * (for an institution). Doing so enables the code to benefit from the internal caching features
+    * of `JwkProvider` (instead of recreating each time) while not keeping around stale instances
+    * (such as if we just store them in a simple `TrieMap`.
+    *
+    * The key benefit being that the JWKS endpoint of the platforms will get queried a reduced number
+    * of times. This also speeds up the JWT validation process - and thereby faster launches.
+    */
+  private var jwkProviderCache: InstitutionCache[Cache[String, JwkProvider]] = _
+
+  @Inject
+  def setupJwkProviderCache(institutionService: InstitutionService): Unit =
+    jwkProviderCache = institutionService.newInstitutionAwareCache(
+      CacheLoader.from(
+        (_: Institution) =>
+          CacheBuilder
+            .newBuilder()
+            .maximumSize(10)
+            .expireAfterAccess(1, TimeUnit.DAYS)
+            .build[String, JwkProvider]()))
+
+  private def getJwkProvider(jwksUrl: URL): Either[String, JwkProvider] =
+    Try(
+      jwkProviderCache.getCache.get(
+        jwksUrl.toString,
+        () => {
+          LOGGER.debug(s"Creating new JwkProvider($jwksUrl)")
+          // The default cache for the JwkProvider is size 5 and 10 hours, but 10 hours seems rather
+          // long to wait for any issues to be resolved - so reduced to 1 hour.
+          new JwkProviderBuilder(jwksUrl).cached(5, 1, TimeUnit.HOURS).build()
+        }
+      )).toEither.left.map(t =>
+      s"Failed to establish key (JWK) provider to validate JWT signature: ${t.getMessage}")
+
+  /**
     * In response to a Third-Party Initiated Login, create the resulting URL which the UA should be
     * redirected so that the Authentication process can begin.
     *
@@ -306,13 +344,7 @@ class Lti13AuthService {
       // -- next, validation of the actual JWT
       platform <- getPlatform(platformId)
         .toRight(s"Unable to retrieve platform details of ${platformId}")
-      jwkProvider <- {
-        // TODO: This should be cached - JwkProviderBuilder supports caching
-        //       Possibly setup another service as we'll need to cache for different
-        //       Platforms. However it doesn't need to be cached across the cluster
-        Try(new JwkProviderBuilder(platform.keysetUrl).build()).toEither.left.map(t =>
-          s"Failed to establish key (JWK) provider to validate JWT signature: ${t.getMessage}")
-      }
+      jwkProvider <- getJwkProvider(platform.keysetUrl)
       // Setup some helper functions
       // Both are: DecodedJWT -> Either[String, DecodedJWT]
       verifyJwt = buildJwtVerifierForPlatform(jwkProvider.get(decodedToken.getKeyId), platform)
