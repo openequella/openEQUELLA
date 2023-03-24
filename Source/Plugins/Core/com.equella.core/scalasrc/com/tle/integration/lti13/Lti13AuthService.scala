@@ -78,9 +78,8 @@ case class InitiateLoginRequest(iss: String,
                                 client_id: Option[String])
 object InitiateLoginRequest {
   def apply(params: Map[String, Array[String]]): Option[InitiateLoginRequest] = {
-    val param = getParam(params)
-    def uriParam(p: String): Option[URI] =
-      param(p).flatMap(maybeUri => Try(new URI(maybeUri)).toOption)
+    val param    = getParam(params)
+    val uriParam = getUriParam(param)
 
     for {
       iss             <- param(Lti13Params.ISSUER)

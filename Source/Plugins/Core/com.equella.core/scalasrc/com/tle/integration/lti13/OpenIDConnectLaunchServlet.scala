@@ -21,12 +21,65 @@ package com.tle.integration.lti13
 import com.tle.common.usermanagement.user.WebAuthenticationDetails
 import com.tle.core.guice.Bind
 import com.tle.core.services.user.UserService
+import org.apache.http.HttpStatus
 import org.slf4j.LoggerFactory
 
 import java.net.URI
 import javax.inject.{Inject, Singleton}
 import javax.servlet.http.{HttpServlet, HttpServletRequest, HttpServletResponse}
 import scala.jdk.CollectionConverters._
+import scala.util.Try
+
+/**
+  * Valid error codes for Error Responses as per section 4.1.2.1 (Error Response) of the RFC 6749
+  * (OAuth 2).
+  */
+object ErrorResponseCode extends Enumeration {
+  type Code = Value
+
+  val invalid_request, unauthorized_client, access_denied, unsupported_response_type, invalid_scope,
+  server_error, temporarily_unavailable = Value
+}
+
+/**
+  * An Error Responses as per section 4.1.2.1 (Error Response) of the RFC 6749 (OAuth 2).
+  *
+  * @param error REQUIRED.  A single ASCII [USASCII] error code from {@link ErrorResponseCode}
+  * @param error_description OPTIONAL.  Human-readable ASCII [USASCII] text providing additional
+  *                          information, used to assist the client developer in understanding the
+  *                          error that occurred. Values for the "error_description" parameter
+  *                          MUST NOT include characters outside the set %x20-21 / %x23-5B / %x5D-7E.
+  * @param error_uri OPTIONAL.  A URI identifying a human-readable web page with information about
+  *                  the error, used to provide the client developer with additional information
+  *                  about the error. Values for the "error_uri" parameter MUST conform to the
+  *                  URI-reference syntax and thus MUST NOT include characters outside the set
+  *                  %x21 / %x23-5B / %x5D-7E.
+  * @param state REQUIRED if a "state" parameter was present in the client authorization request.
+  *              The exact value received from the client.
+  */
+case class ErrorResponse(error: ErrorResponseCode.Code,
+                         error_description: Option[String],
+                         error_uri: Option[URI],
+                         state: String)
+object ErrorResponse {
+  val PARAM_ERRORCODE   = "error"
+  val PARAM_DESCRIPTION = "error_description"
+  val PARAM_URI         = "error_uri"
+  val PARAM_STATE       = "state"
+
+  def apply(params: Map[String, Array[String]]): Option[ErrorResponse] = {
+    val param    = getParam(params)
+    val uriParam = getUriParam(param)
+
+    for {
+      error <- param(PARAM_ERRORCODE).flatMap(asString =>
+        Try(ErrorResponseCode.withName(asString)).toOption)
+      error_description = param(PARAM_DESCRIPTION)
+      error_uri         = uriParam(PARAM_URI)
+      state <- param(PARAM_STATE)
+    } yield ErrorResponse(error, error_description, error_uri, state)
+  }
+}
 
 /**
   * Handles the OpenID Connect Launch Flow as outlined in section 5.1 of the LTI 1.3 spec.
@@ -60,12 +113,9 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
 
     // TODO Needs validation around the request - was it a form POST request, does it have any params, etc.
 
-    val params           = req.getParameterMap.asScala.toMap
-    val processedRequest = InitiateLoginRequest(params) orElse AuthenticationResponse(params)
-    // TODO: There is also one other 'request' type we need to support, and that's an 'error response'
-    //       See section 4.1.2.1 of the OAuth 2.0 spec : https://datatracker.ietf.org/doc/html/rfc6749#autoid-38
-    //       This can be triggered by simple things like sending the wrong 'client_id' to Moodle in the handling
-    //       of the InitiateLoginRequest.
+    val params = req.getParameterMap.asScala.toMap
+    val processedRequest = InitiateLoginRequest(params) orElse AuthenticationResponse(params) orElse ErrorResponse(
+      params)
 
     processedRequest match {
       case Some(validRequest) =>
@@ -75,6 +125,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
             handleAuthenticationResponse(authResp,
                                          userService.getWebAuthenticationDetails(req),
                                          resp)
+          case errorResponse: ErrorResponse => handleErrorResponse(errorResponse, resp)
         }
       case None =>
         resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
@@ -128,5 +179,23 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
 
     // Finished with `state` - it's been used once, so let's dump it
     stateService.invalidateState(auth.state)
+  }
+
+  private def handleErrorResponse(errorResponse: ErrorResponse, resp: HttpServletResponse): Unit = {
+    LOGGER.error(s"Received Error Response from LTI Platform: ${errorResponse}")
+
+    val output =
+      s"""Received Error Response from LTI Platform:
+        |
+        |Error code: ${errorResponse.error.toString}
+        |Description: ${errorResponse.error_description.getOrElse("None provided")}
+        |
+        |Please contact your system administrator.""".stripMargin
+
+    resp.setContentType("text/plain")
+    resp.setStatus(HttpStatus.SC_OK)
+    resp.getWriter.print(output)
+
+    stateService.invalidateState(errorResponse.state)
   }
 }
