@@ -18,21 +18,18 @@
 
 package com.tle.web.api.lti
 
+import cats.data.Validated.{Invalid, Valid}
 import com.tle.core.lti13.bean.LtiPlatformBean
-import com.tle.core.lti13.bean.LtiPlatformBean.{
-  buildLtiPlatformFromBean,
-  updateLtiPlatformWithBean,
-  validate
-}
+import com.tle.core.lti13.bean.LtiPlatformBean.validateLtiPlatformBean
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.{ApiBatchOperationResponse, ApiErrorResponse}
 import io.swagger.annotations.{Api, ApiOperation, ApiParam}
 import org.jboss.resteasy.annotations.cache.NoCache
+import com.tle.beans.lti.LtiPlatform
 import javax.ws.rs.core.Response
-import javax.ws.rs.core.Response.Status
 import javax.ws.rs.{DELETE, GET, POST, PUT, Path, PathParam, Produces, QueryParam}
-import com.tle.web.api.ApiErrorResponse.badRequest
 import com.tle.web.lti13.platforms.security.LTI13PlatformsSettingsPrivilegeTreeProvider
+import org.slf4j.{Logger, LoggerFactory}
 import java.net.URI
 
 @NoCache
@@ -42,116 +39,165 @@ import java.net.URI
 class LtiPlatformResource {
   private val aclProvider: LTI13PlatformsSettingsPrivilegeTreeProvider = LegacyGuice.ltiPrivProvider
   private val ltiPlatformService                                       = LegacyGuice.ltiPlatformService
+  private val logger: Logger                                           = LoggerFactory.getLogger(classOf[LtiPlatformResource])
 
-  private def platformNotFound(id: String) = s"No LTI Platform matching $id"
+  private def serverErrorResponse(error: Throwable, message: String) = {
+    logger.error(message, error)
+    ApiErrorResponse.serverError(s"$message : ${error.getMessage}")
+  }
+
+  private def platformNotFound(id: String) = s"No LTI platform matching ID: $id"
 
   @GET
   @Path("/{id}")
   @ApiOperation(
     value = "Get LTI Platform by ID",
-    notes = "This endpoints retrieves a LTI Platform configuration by Platform ID",
+    notes = "This endpoints retrieves a LTI Platform by Platform ID",
     response = classOf[LtiPlatformBean],
   )
   def getPlatform(@ApiParam("Platform ID") @PathParam("id") id: String): Response = {
     aclProvider.checkAuthorised()
-    ltiPlatformService.getByPlatformID(id) match {
-      case Some(platform) => Response.ok.entity(LtiPlatformBean(platform)).build()
-      case None           => ApiErrorResponse.resourceNotFound(platformNotFound(id))
+
+    val result: Either[Throwable, Option[LtiPlatform]] = ltiPlatformService.getByPlatformID(id)
+    result match {
+      case Left(error) => serverErrorResponse(error, s"Failed to get LTI platform by ID $id")
+      case Right(maybePlatform) =>
+        maybePlatform
+          .map(platform => Response.ok(LtiPlatformBean(platform)).build())
+          .getOrElse(ApiErrorResponse.resourceNotFound(platformNotFound(id)))
     }
   }
 
   @GET
   @ApiOperation(
     value = "Get a list of LTI Platform",
-    notes = "This endpoints retrieves a list of LTI Platform configuration",
+    notes = "This endpoints retrieves a list of LTI Platform",
     response = classOf[LtiPlatformBean],
     responseContainer = "List"
   )
-  def getPlatform: Response = {
+  def getPlatforms: Response = {
     aclProvider.checkAuthorised()
-    Response.ok.entity(ltiPlatformService.getAll.map(LtiPlatformBean.apply)).build()
+
+    val result: Either[Throwable, List[LtiPlatform]] = ltiPlatformService.getAll
+    result match {
+      case Left(error) => serverErrorResponse(error, s"Failed to get a list of LTI platform")
+      case Right(platforms) =>
+        val beans = platforms.map(LtiPlatformBean.apply)
+        Response.ok.entity(beans).build()
+    }
   }
 
   @POST
   @ApiOperation(
-    value = "Create a new LTI Platform configuration",
-    notes =
-      "This endpoint creates a new LTI Platform configuration and returns ID of the created entity",
+    value = "Create a new LTI platform",
+    notes = "This endpoint creates a new LTI platform and returns ID of the created platform",
     response = classOf[Long],
   )
   def createPlatform(bean: LtiPlatformBean): Response = {
     aclProvider.checkAuthorised()
-    validate(bean)
-      .fold(
-        badRequest(_: _*),
-        buildLtiPlatformFromBean
-          andThen (ltiPlatformService.create)
-          andThen (
-              _ =>
-                Response
-                  .created(new URI(s"/ltiplatform/${bean.platformId}"))
-                  .status(Status.CREATED)
-                  .build())
-      )
+
+    def create(bean: LtiPlatformBean): Response = {
+      val result = ltiPlatformService.create(bean)
+      result match {
+        case Left(error) => serverErrorResponse(error, s"Failed to create a new LTI platform")
+        case Right(id) =>
+          Response
+            .created(new URI(s"/ltiplatform/$id"))
+            .build()
+      }
+    }
+
+    validateLtiPlatformBean(bean) match {
+      case Invalid(error) => ApiErrorResponse.badRequest(error: _*)
+      case Valid(bean)    => create(bean)
+    }
   }
 
   @PUT
   @ApiOperation(
-    value = "Update an existing LTI Platform configuration",
-    notes = "This endpoint updates an existing LTI Platform configuration",
+    value = "Update an existing LTI platform",
+    notes = "This endpoint updates an existing LTI platform",
     response = classOf[Unit],
   )
-  def updatePlatform(params: LtiPlatformBean): Response = {
+  def updatePlatform(updates: LtiPlatformBean): Response = {
     aclProvider.checkAuthorised()
-    val platformId = params.platformId
 
-    ltiPlatformService.getByPlatformID(platformId) match {
-      case Some(platform) =>
-        validate(params)
-          .fold(badRequest(_: _*),
-                updateLtiPlatformWithBean(platform)
-                  andThen (ltiPlatformService.update)
-                  andThen (_ => Response.ok().build()))
-      case None => ApiErrorResponse.resourceNotFound(platformNotFound(platformId))
+    def update: Response = {
+      val result: Either[Throwable, Option[Unit]] = ltiPlatformService.update(updates)
+      result match {
+        case Left(error) => serverErrorResponse(error, s"Failed to update LTI platform")
+        case Right(maybeUpdated) =>
+          maybeUpdated
+            .map(_ => Response.ok.build)
+            .getOrElse(ApiErrorResponse.resourceNotFound(platformNotFound(updates.platformId)))
+      }
+    }
+
+    validateLtiPlatformBean(updates) match {
+      case Invalid(error) => ApiErrorResponse.badRequest(error: _*)
+      case Valid(_)       => update
     }
   }
 
   @DELETE
   @Path("/{id}")
   @ApiOperation(
-    value = "Delete a LTI Platform by ID",
-    notes = "This endpoints deletes an existing LTI Platform configuration by Platform ID",
+    value = "Delete a LTI platform by ID",
+    notes = "This endpoints deletes an existing LTI platform by platform ID",
     response = classOf[Int],
   )
   def deletePlatform(@ApiParam("Platform ID") @PathParam("id") id: String): Response = {
     aclProvider.checkAuthorised()
-    ltiPlatformService.getByPlatformID(id) match {
-      case Some(platform) =>
-        ltiPlatformService.delete(platform)
-        Response.ok.build()
-      case None => ApiErrorResponse.resourceNotFound(platformNotFound(id))
+
+    val result: Either[Throwable, Option[Unit]] = ltiPlatformService.delete(id)
+    result match {
+      case Left(error) => serverErrorResponse(error, s"Failed to delete LTI platform by ID $id")
+      case Right(maybeDeleted) =>
+        maybeDeleted
+          .map(_ => Response.ok.build)
+          .getOrElse(ApiErrorResponse.resourceNotFound(platformNotFound(id)))
     }
   }
 
   @DELETE
   @ApiOperation(
-    value = "Delete multiple LTI Platforms by a list of Platform ID",
-    notes = "This endpoints deletes multiple LTI Platform configuration by a list of Platform ID",
+    value = "Delete multiple LTI platforms by a list of Platform ID",
+    notes = "This endpoints deletes multiple LTI platforms by a list of platform ID",
     response = classOf[ApiBatchOperationResponse],
     responseContainer = "List"
   )
   def deletePlatforms(
       @ApiParam(value = "List of Platform ID") @QueryParam("ids") ids: Array[String]): Response = {
     aclProvider.checkAuthorised()
+
+    def errorResponse(id: String, error: Throwable) =
+      ApiBatchOperationResponse(id, 500, s"Failed to delete platform for $id : ${error.getMessage}")
+
+    def delete(id: String): ApiBatchOperationResponse = {
+      val result: Either[Throwable, Option[Unit]] = ltiPlatformService.delete(id)
+      result match {
+        case Left(error) =>
+          errorResponse(id, error)
+        case Right(_) => ApiBatchOperationResponse(id, 200, s"Platform $id has been deleted.")
+      }
+    }
+
+    def deleteIfExists(id: String): ApiBatchOperationResponse = {
+      val result: Either[Throwable, Option[LtiPlatform]] = ltiPlatformService.getByPlatformID(id)
+      result match {
+        case Left(error) =>
+          errorResponse(id, error)
+        case Right(maybePlatform) =>
+          maybePlatform
+            .map(p => delete(p.platformId))
+            .getOrElse(ApiBatchOperationResponse(id, 404, s"No LTI Platform matching $id"))
+      }
+    }
+
     val responses = ids
-      .map(id =>
-        ltiPlatformService.getByPlatformID(id) match {
-          case Some(platform) =>
-            ltiPlatformService.delete(platform)
-            ApiBatchOperationResponse(id, 200, s"Platform $id has been deleted.")
-          case None => ApiBatchOperationResponse(id, 404, platformNotFound(id))
-      })
+      .map(deleteIfExists)
       .toList
+
     Response.status(207).entity(responses).build()
   }
 }
