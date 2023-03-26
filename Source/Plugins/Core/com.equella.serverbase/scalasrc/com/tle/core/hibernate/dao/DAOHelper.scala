@@ -45,21 +45,4 @@ object DAOHelper {
                     new Throwable(s"More than one entities matching the provided parameters"))
       .fold(throw _, _.headOption)
   }
-
-  /**
-    * This generic function is used to delete entities by the provided parameters.
-    *
-    * @param dao Implementation of a DAO.
-    * @param query Name of a pre-defined named query used to delete some entities.
-    * @param params A list of parameters to be applied to the query.
-    * @tparam D Type of the DAO which MUST extend AbstractHibernateDao.
-    * @return Either thrown exceptions or the number of entities that have been deleted.
-    */
-  def delete[D <: AbstractHibernateDao](dao: D,
-                                        query: String,
-                                        params: Map[String, Any]): Either[Throwable, Int] =
-    Try {
-      dao.getHibernateTemplate
-        .execute(prepareQuery(_, query, params).executeUpdate())
-    }.toEither
 }

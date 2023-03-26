@@ -33,10 +33,4 @@ class LtiPlatformDAOImpl
     Map("platformId" -> platformId, "institution" -> CurrentInstitution.get())
   override def getByPlatformId(platformId: String): Option[LtiPlatform] =
     DAOHelper.getOnlyOne(this, "getByPlatformID", buildParams(platformId))
-
-  override def deleteByPlatformId(platformId: String): true =
-    DAOHelper
-      .delete(this, "deleteByPlatformID", buildParams(platformId))
-      .filterOrElse(_ == 1, new Throwable(s"Unexpected number of platforms have been deleted."))
-      .fold(throw _, _ => true)
 }

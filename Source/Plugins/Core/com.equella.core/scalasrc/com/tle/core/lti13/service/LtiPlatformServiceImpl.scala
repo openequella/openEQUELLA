@@ -18,10 +18,13 @@
 
 package com.tle.core.lti13.service
 
+import com.tle.beans.lti.LtiPlatform
 import com.tle.core.guice.Bind
 import com.tle.core.lti13.bean.LtiPlatformBean
+import com.tle.core.lti13.bean.LtiPlatformBean.populatePlatform
 import com.tle.core.lti13.dao.LtiPlatformDAO
 import org.springframework.transaction.annotation.Transactional
+import cats.implicits._
 import javax.inject.{Inject, Singleton}
 import scala.jdk.CollectionConverters._
 import scala.util.Try
@@ -31,31 +34,44 @@ import scala.util.Try
 class LtiPlatformServiceImpl extends LtiPlatformService {
   @Inject var lti13Dao: LtiPlatformDAO = _
 
-  override def getByPlatformID(platformID: String): Either[Throwable, Option[LtiPlatformBean]] =
+  override def getByPlatformID(platformID: String): Either[Throwable, Option[LtiPlatform]] =
     Try {
       lti13Dao.getByPlatformId(platformID)
-    }.map(_.map(LtiPlatformBean.apply)).toEither
+    }.toEither
 
-  override def getAll: Either[Throwable, List[LtiPlatformBean]] =
+  override def getAll: Either[Throwable, List[LtiPlatform]] =
     Try {
       lti13Dao.enumerateAll
-    }.map(_.asScala.toList.map(LtiPlatformBean.apply)).toEither
+    }.map(_.asScala.toList).toEither
 
   @Transactional
   override def create(bean: LtiPlatformBean): Either[Throwable, String] =
     Try {
-      lti13Dao.save(bean)
+      val newPlatform = populatePlatform(new LtiPlatform, bean)
+      lti13Dao.save(newPlatform)
     }.map(_ => bean.platformId).toEither
 
   @Transactional
-  override def update(bean: LtiPlatformBean): Either[Throwable, Unit] =
-    Try {
-      lti13Dao.update(bean)
-    }.toEither
+  override def update(bean: LtiPlatformBean): Either[Throwable, Option[Unit]] = {
+    def updateIfExists(maybePlatform: Option[LtiPlatform]) =
+      maybePlatform
+        .map(
+          platform =>
+            Try(
+              lti13Dao.update(populatePlatform(platform, bean))
+            ).toEither)
+        .sequence
+
+    getByPlatformID(bean.platformId) flatMap updateIfExists
+  }
 
   @Transactional
-  override def delete(platFormId: String): Either[Throwable, true] =
-    Try[true] {
-      lti13Dao.deleteByPlatformId(platFormId)
-    }.toEither
+  override def delete(platFormId: String): Either[Throwable, Option[Unit]] = {
+    def deleteIfExist(maybePlatform: Option[LtiPlatform]) =
+      maybePlatform
+        .map(platform => Try(lti13Dao.delete(platform)).toEither)
+        .sequence
+
+    getByPlatformID(platFormId) flatMap deleteIfExist
+  }
 }

@@ -18,6 +18,7 @@
 
 package com.tle.core.lti13.service
 
+import com.tle.beans.lti.LtiPlatform
 import com.tle.core.lti13.bean.LtiPlatformBean
 
 trait LtiPlatformService {
@@ -26,22 +27,22 @@ trait LtiPlatformService {
     * Retrieve a LTI platform from the current Institution by platform ID.
     *
     * @param platformID The ID identifying a LTI platform.
-    * @return Either an Option of the LTI platform or None if no platforms match the ID, or a throwable if failed.
+    * @return Option of a LTI platform, or None if no platforms match the ID, or a throwable if failed to do so.
     */
-  def getByPlatformID(platformID: String): Either[Throwable, Option[LtiPlatformBean]]
+  def getByPlatformID(platformID: String): Either[Throwable, Option[LtiPlatform]]
 
   /**
     * Retrieve all the LTI platforms for the current Institution.
     *
     * @return Either a list of LTI platforms or a throwable.
     */
-  def getAll: Either[Throwable, List[LtiPlatformBean]]
+  def getAll: Either[Throwable, List[LtiPlatform]]
 
   /**
     * Create a LTI platform based on the provided bean in the current Institution.
     *
     * @param bean LtiPlatformBean which provides information of a LTI platform.
-    * @return Either platform ID of the new platform, or a throwable if failed to create.
+    * @return platform ID of the new platform, or a throwable if failed to create.
     */
   def create(bean: LtiPlatformBean): Either[Throwable, String]
 
@@ -49,15 +50,17 @@ trait LtiPlatformService {
     * Update an existing LTI Platform based on the provided bean.
     *
     * @param bean LtiPlatformBean which provides updates for an existing LTI platform.
-    * @return Either Unit to indicate the successful update, or a throwable if failed to update.
+    * @return Option of Unit to indicate the successful update, or None if no LTI platform can be updated,
+    *         or a throwable if failed to update.
     */
-  def update(bean: LtiPlatformBean): Either[Throwable, Unit]
+  def update(bean: LtiPlatformBean): Either[Throwable, Option[Unit]]
 
   /**
     * Delete a LTI platform from the current Institution by ID.
     *
     * @param platformId The ID identifying a LTI platform.
-    * @return Either `true` to indicate one platform has been deleted, or a throwable if failed to delete.
+    * @return Option of Unit to indicate one platform has been deleted, or None if no such a platform can be deleted,
+    *         or a throwable if failed to delete.
     */
-  def delete(platformId: String): Either[Throwable, true]
+  def delete(platformId: String): Either[Throwable, Option[Unit]]
 }
