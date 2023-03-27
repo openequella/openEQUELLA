@@ -38,7 +38,7 @@ public class LTI13PlatformsSettingsPrivilegeTreeProvider
   @Override
   public void checkAuthorised() {
     if (!isAuthorised()) {
-      throw new AccessDeniedException(r.getString("lti.platform.no.access"));
+      throw new AccessDeniedException(r.getString("lti13.platform.no.access"));
     }
   }
 }
