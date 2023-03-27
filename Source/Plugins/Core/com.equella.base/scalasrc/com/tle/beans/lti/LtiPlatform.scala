@@ -29,7 +29,6 @@ import javax.persistence.{
   Column,
   ElementCollection,
   Entity,
-  FetchType,
   GeneratedValue,
   GenerationType,
   Id,
@@ -132,7 +131,7 @@ class LtiPlatform {
     *
     * Mappings from LTI roles to OEQ roles.
     */
-  @OneToMany(cascade = Array(CascadeType.ALL))
+  @OneToMany(cascade = Array(CascadeType.ALL), orphanRemoval = true)
   @JoinColumn(name = "lti_platform_id", nullable = false)
   var customRoles: java.util.Set[LtiPlatformCustomRole] = _
 

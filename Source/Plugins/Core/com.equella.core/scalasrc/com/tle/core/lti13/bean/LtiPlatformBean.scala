@@ -85,20 +85,6 @@ object LtiPlatformBean {
     )
   }
 
-  // Update the custom role Mapping. If the update has any LTI role that is already in the existing mapping, replace the target OEQ roles.
-  // Otherwise, create a new mapping.
-  private def updateRoleMapping(updates: Map[String, Set[String]]) =
-    updates
-      .map {
-        case (ltiRole, newTarget) =>
-          val newMapping = new LtiPlatformCustomRole
-          newMapping.ltiRole = ltiRole
-          newMapping.oeqRoles = newTarget.asJava
-          newMapping
-      }
-      .toSet
-      .asJava
-
   // Populate all the fields of LtiPlatform.
   def populatePlatform(platform: LtiPlatform, bean: LtiPlatformBean): LtiPlatform = {
     platform.platformId = bean.platformId
@@ -116,17 +102,28 @@ object LtiPlatformBean {
       bean.unknownUserDefaultGroups.getOrElse(Set.empty[String]).asJava
     platform.instructorRoles = bean.instructorRoles.asJava
 
-    platform.customRoles = Option(platform.customRoles) match {
-      case Some(mappings) =>
-        mappings.clear()
-        mappings.addAll(updateRoleMapping(bean.customRoles))
-        mappings
-      case None =>
-        updateRoleMapping(bean.customRoles)
-    }
-
     platform.institution = CurrentInstitution.get()
     platform.enabled = bean.enabled
+
+    val roleMappingUpdate = bean.customRoles
+      .map {
+        case (ltiRole, newTarget) =>
+          val newMapping = new LtiPlatformCustomRole
+          newMapping.ltiRole = ltiRole
+          newMapping.oeqRoles = newTarget.asJava
+          newMapping
+      }
+      .toSet
+      .asJava
+
+    Option(platform.customRoles) match {
+      case Some(mappings) =>
+        mappings.clear()
+        mappings.addAll(roleMappingUpdate)
+      case None =>
+        platform.customRoles = roleMappingUpdate
+    }
+
     platform
   }
 
