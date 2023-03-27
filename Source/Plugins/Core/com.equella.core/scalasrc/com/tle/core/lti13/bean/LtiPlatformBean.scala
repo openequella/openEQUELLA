@@ -24,6 +24,7 @@ import com.tle.common.Check
 import com.tle.common.institution.CurrentInstitution
 import com.tle.integration.lti13.UnknownUserHandling
 import cats.implicits._
+import io.circe.generic.semiauto.deriveEncoder
 import java.net.URL
 import scala.jdk.CollectionConverters._
 import scala.util.Try
@@ -62,6 +63,8 @@ case class LtiPlatformBean(
 )
 
 object LtiPlatformBean {
+  implicit val encoder = deriveEncoder[LtiPlatformBean]
+
   def apply(platform: LtiPlatform): LtiPlatformBean = {
     new LtiPlatformBean(
       platformId = platform.platformId,

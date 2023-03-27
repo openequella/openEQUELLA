@@ -25,7 +25,10 @@ import com.tle.core.lti13.bean.LtiPlatformBean.populatePlatform
 import com.tle.core.lti13.dao.LtiPlatformDAO
 import org.springframework.transaction.annotation.Transactional
 import cats.implicits._
+import com.tle.common.institution.CurrentInstitution
 import com.tle.common.usermanagement.user.CurrentUser
+import org.slf4j.{Logger, LoggerFactory}
+import io.circe.syntax._
 import java.time.Instant
 import javax.inject.{Inject, Singleton}
 import scala.jdk.CollectionConverters._
@@ -36,18 +39,27 @@ import scala.util.Try
 class LtiPlatformServiceImpl extends LtiPlatformService {
   @Inject var lti13Dao: LtiPlatformDAO = _
 
-  override def getByPlatformID(platformID: String): Either[Throwable, Option[LtiPlatform]] =
+  private var logger: Logger            = LoggerFactory.getLogger(classOf[LtiPlatformServiceImpl])
+  private def log(action: String): Unit = logger.info(s"User ${CurrentUser.getUserID} $action")
+
+  override def getByPlatformID(platformID: String): Either[Throwable, Option[LtiPlatform]] = {
+    log(s"queries LTI platform by ID $platformID")
     Try {
       lti13Dao.getByPlatformId(platformID)
     }.toEither
+  }
 
-  override def getAll: Either[Throwable, List[LtiPlatform]] =
+  override def getAll: Either[Throwable, List[LtiPlatform]] = {
+    log(
+      s"queries all the LTI platforms configured for Institution ${CurrentInstitution.get().getName}")
     Try {
       lti13Dao.enumerateAll
     }.map(_.asScala.toList).toEither
+  }
 
   @Transactional
-  override def create(bean: LtiPlatformBean): Either[Throwable, String] =
+  override def create(bean: LtiPlatformBean): Either[Throwable, String] = {
+    log(s"creates a new LTI platform by \n ${bean.asJson.spaces2}")
     Try {
       val newPlatform = populatePlatform(new LtiPlatform, bean)
       newPlatform.enabled = true
@@ -55,9 +67,12 @@ class LtiPlatformServiceImpl extends LtiPlatformService {
       newPlatform.createdBy = CurrentUser.getUserID
       lti13Dao.save(newPlatform)
     }.map(_ => bean.platformId).toEither
+  }
 
   @Transactional
   override def update(bean: LtiPlatformBean): Either[Throwable, Option[Unit]] = {
+    log(s"updates a new LTI platform by \n ${bean.asJson.spaces2}")
+
     def updateIfExists(maybePlatform: Option[LtiPlatform]) =
       maybePlatform
         .map(platform =>
@@ -73,6 +88,8 @@ class LtiPlatformServiceImpl extends LtiPlatformService {
 
   @Transactional
   override def delete(platFormId: String): Either[Throwable, Option[Unit]] = {
+    log(s"deletes a LTI platform by ID $platFormId")
+
     def deleteIfExist(maybePlatform: Option[LtiPlatform]) =
       maybePlatform
         .map(platform => Try(lti13Dao.delete(platform)).toEither)
