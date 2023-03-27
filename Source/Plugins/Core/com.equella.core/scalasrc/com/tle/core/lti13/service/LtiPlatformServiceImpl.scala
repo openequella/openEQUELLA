@@ -25,6 +25,8 @@ import com.tle.core.lti13.bean.LtiPlatformBean.populatePlatform
 import com.tle.core.lti13.dao.LtiPlatformDAO
 import org.springframework.transaction.annotation.Transactional
 import cats.implicits._
+import com.tle.common.usermanagement.user.CurrentUser
+import java.time.Instant
 import javax.inject.{Inject, Singleton}
 import scala.jdk.CollectionConverters._
 import scala.util.Try
@@ -48,6 +50,9 @@ class LtiPlatformServiceImpl extends LtiPlatformService {
   override def create(bean: LtiPlatformBean): Either[Throwable, String] =
     Try {
       val newPlatform = populatePlatform(new LtiPlatform, bean)
+      newPlatform.enabled = true
+      newPlatform.dateCreated = Instant.now
+      newPlatform.createdBy = CurrentUser.getUserID
       lti13Dao.save(newPlatform)
     }.map(_ => bean.platformId).toEither
 
@@ -55,11 +60,12 @@ class LtiPlatformServiceImpl extends LtiPlatformService {
   override def update(bean: LtiPlatformBean): Either[Throwable, Option[Unit]] = {
     def updateIfExists(maybePlatform: Option[LtiPlatform]) =
       maybePlatform
-        .map(
-          platform =>
-            Try(
-              lti13Dao.update(populatePlatform(platform, bean))
-            ).toEither)
+        .map(platform =>
+          Try {
+            platform.dateLastModified = Instant.now
+            platform.lastModifiedBy = CurrentUser.getUserID
+            lti13Dao.update(populatePlatform(platform, bean))
+          }.toEither)
         .sequence
 
     getByPlatformID(bean.platformId) flatMap updateIfExists

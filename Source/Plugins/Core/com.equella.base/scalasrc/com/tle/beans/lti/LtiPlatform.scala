@@ -22,6 +22,7 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField
 import com.tle.beans.Institution
 import org.hibernate.annotations.NamedQuery
 
+import java.time.Instant
 import javax.persistence.{
   CascadeType,
   CollectionTable,
@@ -109,21 +110,21 @@ class LtiPlatform {
   /**
     * The list of groups to be added to the user object If the unknown user handling is CREATE.
     */
-  @ElementCollection(fetch = FetchType.LAZY)
+  @ElementCollection
   @CollectionTable(name = "lti_platform_unknown_groups")
   var unknownUserDefaultGroups: java.util.Set[String] = _
 
   /**
     * A list of roles to be assigned to a LTI instructor role.
     */
-  @ElementCollection(fetch = FetchType.LAZY)
+  @ElementCollection
   @CollectionTable(name = "lti_platform_instructor_roles")
   var instructorRoles: java.util.Set[String] = _
 
   /**
     * A list of roles to be assigned to a LTI role that is neither the instructor or in the list of custom roles.
     */
-  @ElementCollection(fetch = FetchType.LAZY)
+  @ElementCollection
   @CollectionTable(name = "lti_platform_unknown_roles")
   var unknownRoles: java.util.Set[String] = _
 
@@ -131,7 +132,7 @@ class LtiPlatform {
     *
     * Mappings from LTI roles to OEQ roles.
     */
-  @OneToMany(cascade = Array(CascadeType.ALL), fetch = FetchType.LAZY)
+  @OneToMany(cascade = Array(CascadeType.ALL))
   @JoinColumn(name = "lti_platform_id", nullable = false)
   var customRoles: java.util.Set[LtiPlatformCustomRole] = _
 
@@ -144,8 +145,36 @@ class LtiPlatform {
     * Institution which the key set belongs to.
     */
   @JoinColumn(nullable = false)
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne
   @Index(name = "lti_platform_institution_id", columnList = "institution_id")
   @XStreamOmitField
   var institution: Institution = _
+
+  /**
+    * Whether the platform is enabled or not.
+    */
+  @Column(nullable = false)
+  var enabled: Boolean = _
+
+  /**
+    * When the platform was created.
+    */
+  @Column(nullable = false)
+  var dateCreated: Instant = _
+
+  /**
+    * ID of the user who created the platform.
+    */
+  @Column(nullable = false)
+  var createdBy: String = _
+
+  /**
+    * When the platform was lastly modified.
+    */
+  var dateLastModified: Instant = _
+
+  /**
+    * ID of the user Who lastly modified the platform.
+    */
+  var lastModifiedBy: String = _
 }

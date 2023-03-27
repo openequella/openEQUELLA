@@ -19,7 +19,7 @@
 package com.tle.core.lti13.bean
 
 import cats.data.Validated
-import com.tle.beans.lti.{LtiPlatformCustomRole, LtiPlatform}
+import com.tle.beans.lti.{LtiPlatform, LtiPlatformCustomRole}
 import com.tle.common.Check
 import com.tle.common.institution.CurrentInstitution
 import com.tle.integration.lti13.UnknownUserHandling
@@ -43,6 +43,7 @@ import scala.util.Try
   * @param unknownRoles  A list of roles to be assigned to a LTI role that is neither the instructor or in the list of custom roles
   * @param customRoles Mappings from LTI roles to OEQ roles
   * @param allowExpression The ACL Expression to control access from this platform
+  * @param enabled `true` if the platform is enabled
   */
 case class LtiPlatformBean(
     platformId: String,
@@ -56,12 +57,13 @@ case class LtiPlatformBean(
     instructorRoles: Set[String],
     unknownRoles: Set[String],
     customRoles: Map[String, Set[String]],
-    allowExpression: Option[String]
+    allowExpression: Option[String],
+    enabled: Boolean
 )
 
 object LtiPlatformBean {
   def apply(platform: LtiPlatform): LtiPlatformBean = {
-    LtiPlatformBean(
+    new LtiPlatformBean(
       platformId = platform.platformId,
       clientId = platform.clientId,
       authUrl = platform.authUrl,
@@ -75,60 +77,27 @@ object LtiPlatformBean {
       customRoles = platform.customRoles.asScala
         .map(mapping => mapping.ltiRole -> mapping.oeqRoles.asScala.toSet)
         .toMap,
-      allowExpression = Option(platform.allowExpression)
+      allowExpression = Option(platform.allowExpression),
+      enabled = platform.enabled
     )
-  }
-
-  implicit def ltiPlatformBeantoEntity(bean: LtiPlatformBean): LtiPlatform = {
-    val platform = new LtiPlatform
-    platform.platformId = bean.platformId
-    platform.clientId = bean.clientId
-    platform.authUrl = bean.authUrl
-    platform.keysetUrl = bean.keysetUrl
-    platform.usernamePrefix = bean.usernamePrefix.orNull
-    platform.usernameSuffix = bean.usernameSuffix.orNull
-    platform.unknownUserHandling = bean.unknownUserHandling
-    platform.unknownUserDefaultGroups = bean.unknownUserDefaultGroups.getOrElse(Set.empty).asJava
-    platform.instructorRoles = bean.instructorRoles.asJava
-    platform.unknownRoles = bean.unknownRoles.asJava
-    platform.customRoles = bean.customRoles
-      .map {
-        case (ltiRole, oeqRoles) =>
-          val mapping = new LtiPlatformCustomRole
-          mapping.ltiRole = ltiRole
-          mapping.oeqRoles = oeqRoles.asJava
-          mapping
-      }
-      .toSet
-      .asJava
-    platform.allowExpression = bean.allowExpression.orNull
-
-    platform
   }
 
   // Update the custom role Mapping. If the update has any LTI role that is already in the existing mapping, replace the target OEQ roles.
   // Otherwise, create a new mapping.
-  private def updateRoleMapping(oldMappings: java.util.Set[LtiPlatformCustomRole],
-                                updates: Map[String, Set[String]]) =
+  private def updateRoleMapping(updates: Map[String, Set[String]]) =
     updates
       .map {
         case (ltiRole, newTarget) =>
-          Option(oldMappings).map(_.asScala).flatMap(_.find(_.ltiRole == ltiRole)) match {
-            case Some(oldMapping) =>
-              oldMapping.oeqRoles = newTarget.asJava
-              oldMapping
-            case None =>
-              val newMapping = new LtiPlatformCustomRole
-              newMapping.ltiRole = ltiRole
-              newMapping.oeqRoles = newTarget.asJava
-              newMapping
-          }
+          val newMapping = new LtiPlatformCustomRole
+          newMapping.ltiRole = ltiRole
+          newMapping.oeqRoles = newTarget.asJava
+          newMapping
       }
       .toSet
       .asJava
 
   // Populate all the fields of LtiPlatform.
-  private def updatePlatform(platform: LtiPlatform, bean: LtiPlatformBean) = {
+  def populatePlatform(platform: LtiPlatform, bean: LtiPlatformBean): LtiPlatform = {
     platform.platformId = bean.platformId
     platform.clientId = bean.clientId
     platform.authUrl = bean.authUrl
@@ -144,8 +113,17 @@ object LtiPlatformBean {
       bean.unknownUserDefaultGroups.getOrElse(Set.empty[String]).asJava
     platform.instructorRoles = bean.instructorRoles.asJava
 
-    platform.customRoles = updateRoleMapping(platform.customRoles, bean.customRoles)
+    platform.customRoles = Option(platform.customRoles) match {
+      case Some(mappings) =>
+        mappings.clear()
+        mappings.addAll(updateRoleMapping(bean.customRoles))
+        mappings
+      case None =>
+        updateRoleMapping(bean.customRoles)
+    }
 
+    platform.institution = CurrentInstitution.get()
+    platform.enabled = bean.enabled
     platform
   }
 
