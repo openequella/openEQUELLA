@@ -29,6 +29,7 @@ import com.tle.common.institution.CurrentInstitution
 import com.tle.common.usermanagement.user.CurrentUser
 import org.slf4j.{Logger, LoggerFactory}
 import io.circe.syntax._
+import org.hibernate.criterion.Restrictions
 import java.time.Instant
 import javax.inject.{Inject, Singleton}
 import scala.jdk.CollectionConverters._
@@ -49,11 +50,14 @@ class LtiPlatformServiceImpl extends LtiPlatformService {
     }.toEither
   }
 
-  override def getAll: Either[Throwable, List[LtiPlatform]] = {
-    log(
-      s"queries all the LTI platforms configured for Institution ${CurrentInstitution.get().getName}")
+  override def getPlatforms(enabled: Boolean = true): Either[Throwable, List[LtiPlatform]] = {
+    log(s"queries LTI platforms from Institution ${CurrentInstitution.get().getName}")
     Try {
-      lti13Dao.enumerateAll
+      val criteria = Array(
+        Restrictions.eq("institution", CurrentInstitution.get()),
+        Restrictions.eq("enabled", enabled)
+      )
+      lti13Dao.findAllByCriteria(criteria: _*)
     }.map(_.asScala.toList).toEither
   }
 

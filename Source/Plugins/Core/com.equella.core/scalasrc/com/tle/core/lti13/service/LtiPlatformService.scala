@@ -32,11 +32,12 @@ trait LtiPlatformService {
   def getByPlatformID(platformID: String): Either[Throwable, Option[LtiPlatform]]
 
   /**
-    * Retrieve all the LTI platforms for the current Institution.
+    * Retrieve a list of enabled or disabled LTI platforms from the current Institution.
     *
+    * @param enabled whether to get enabled or disabled platforms. Default to true.
     * @return Either a list of LTI platforms or a throwable.
     */
-  def getAll: Either[Throwable, List[LtiPlatform]]
+  def getPlatforms(enabled: Boolean): Either[Throwable, List[LtiPlatform]]
 
   /**
     * Create a LTI platform based on the provided bean in the current Institution.

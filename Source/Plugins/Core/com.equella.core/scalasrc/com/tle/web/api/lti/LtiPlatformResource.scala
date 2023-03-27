@@ -71,14 +71,14 @@ class LtiPlatformResource {
   @GET
   @ApiOperation(
     value = "Get a list of LTI Platform",
-    notes = "This endpoints retrieves a list of LTI Platform",
+    notes = "This endpoints retrieves a list of enabled or disabled LTI Platforms",
     response = classOf[LtiPlatformBean],
     responseContainer = "List"
   )
-  def getPlatforms: Response = {
+  def getPlatforms(@QueryParam("enabled") enabled: Boolean): Response = {
     aclProvider.checkAuthorised()
 
-    val result: Either[Throwable, List[LtiPlatform]] = ltiPlatformService.getAll
+    val result: Either[Throwable, List[LtiPlatform]] = ltiPlatformService.getPlatforms(enabled)
     result match {
       case Left(error) => serverErrorResponse(error, s"Failed to get a list of LTI platform")
       case Right(platforms) =>
