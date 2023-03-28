@@ -236,7 +236,7 @@ object RenderNewTemplate {
         "viewedFromIntegration",
         java.lang.Boolean.valueOf(isViewingItemFromIntegration(req)),
         "analyticsId",
-        AnalyticsSettings.getAnalyticsId
+        AnalyticsSettings.getAnalyticsId.orNull
       )
     val renderData =
       Option(req.getAttribute(SetupJSKey).asInstanceOf[ObjectExpression => ObjectExpression])

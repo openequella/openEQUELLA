@@ -24,11 +24,8 @@ import com.tle.legacy.LegacyGuice
 object AnalyticsSettings {
   private val AnalyticsPropName = "GOOGLE_ANALYTICS"
 
-  def getAnalyticsId: String = {
-    Option(CurrentInstitution.get()) match {
-      case Some(_) =>
-        LegacyGuice.configService.getProperty(AnalyticsPropName)
-      case None => ""
-    }
+  def getAnalyticsId: Option[String] = {
+    Option(CurrentInstitution.get()).flatMap(_ =>
+      Option(LegacyGuice.configService.getProperty(AnalyticsPropName)))
   }
 }
