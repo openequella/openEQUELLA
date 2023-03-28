@@ -26,6 +26,7 @@ import com.tle.web.api.{ApiBatchOperationResponse, ApiErrorResponse}
 import io.swagger.annotations.{Api, ApiOperation, ApiParam}
 import org.jboss.resteasy.annotations.cache.NoCache
 import com.tle.beans.lti.LtiPlatform
+import cats.implicits._
 import javax.ws.rs.core.Response
 import javax.ws.rs.{DELETE, GET, POST, PUT, Path, PathParam, Produces, QueryParam}
 import com.tle.web.lti13.platforms.security.LTI13PlatformsSettingsPrivilegeTreeProvider
@@ -97,7 +98,7 @@ class LtiPlatformResource {
     aclProvider.checkAuthorised()
 
     def create(bean: LtiPlatformBean): Response = {
-      val result = ltiPlatformService.create(bean)
+      val result = Either.catchNonFatal(ltiPlatformService.create(bean))
       result match {
         case Left(error) => serverErrorResponse(error, s"Failed to create a new LTI platform")
         case Right(id) =>
@@ -123,7 +124,8 @@ class LtiPlatformResource {
     aclProvider.checkAuthorised()
 
     def update: Response = {
-      val result: Either[Throwable, Option[Unit]] = ltiPlatformService.update(updates)
+      val result: Either[Throwable, Option[Unit]] =
+        Either.catchNonFatal(ltiPlatformService.update(updates)).flatten
       result match {
         case Left(error) => serverErrorResponse(error, s"Failed to update LTI platform")
         case Right(maybeUpdated) =>
@@ -149,7 +151,8 @@ class LtiPlatformResource {
   def deletePlatform(@ApiParam("Platform ID") @PathParam("id") id: String): Response = {
     aclProvider.checkAuthorised()
 
-    val result: Either[Throwable, Option[Unit]] = ltiPlatformService.delete(id)
+    val result: Either[Throwable, Option[Unit]] =
+      Either.catchNonFatal(ltiPlatformService.delete(id)).flatten
     result match {
       case Left(error) => serverErrorResponse(error, s"Failed to delete LTI platform by ID $id")
       case Right(maybeDeleted) =>
@@ -174,7 +177,8 @@ class LtiPlatformResource {
       ApiBatchOperationResponse(id, 500, s"Failed to delete platform for $id : ${error.getMessage}")
 
     def delete(id: String): ApiBatchOperationResponse = {
-      val result: Either[Throwable, Option[Unit]] = ltiPlatformService.delete(id)
+      val result: Either[Throwable, Option[Unit]] =
+        Either.catchNonFatal(ltiPlatformService.delete(id)).flatten
       result match {
         case Left(error) =>
           errorResponse(id, error)

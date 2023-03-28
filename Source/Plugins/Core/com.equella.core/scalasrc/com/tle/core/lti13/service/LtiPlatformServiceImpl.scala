@@ -45,32 +45,35 @@ class LtiPlatformServiceImpl extends LtiPlatformService {
 
   override def getByPlatformID(platformID: String): Either[Throwable, Option[LtiPlatform]] = {
     log(s"queries LTI platform by ID $platformID")
-    Try {
-      lti13Dao.getByPlatformId(platformID)
-    }.toEither
+    Either.catchNonFatal(lti13Dao.getByPlatformId(platformID))
+
   }
 
   override def getPlatforms(enabled: Boolean = true): Either[Throwable, List[LtiPlatform]] = {
     log(s"queries LTI platforms from Institution ${CurrentInstitution.get().getName}")
-    Try {
-      val criteria = Array(
-        Restrictions.eq("institution", CurrentInstitution.get()),
-        Restrictions.eq("enabled", enabled)
-      )
-      lti13Dao.findAllByCriteria(criteria: _*)
-    }.map(_.asScala.toList).toEither
+    Either
+      .catchNonFatal {
+        val criteria = Array(
+          Restrictions.eq("institution", CurrentInstitution.get()),
+          Restrictions.eq("enabled", enabled)
+        )
+        lti13Dao.findAllByCriteria(criteria: _*)
+      }
+      .map(_.asScala.toList)
   }
 
   @Transactional
   override def create(bean: LtiPlatformBean): Either[Throwable, String] = {
     log(s"creates a new LTI platform by \n ${bean.asJson.spaces2}")
-    Try {
-      val newPlatform = populatePlatform(new LtiPlatform, bean)
-      newPlatform.enabled = true
-      newPlatform.dateCreated = Instant.now
-      newPlatform.createdBy = CurrentUser.getUserID
-      lti13Dao.save(newPlatform)
-    }.map(_ => bean.platformId).toEither
+    Either
+      .catchNonFatal {
+        val newPlatform = populatePlatform(new LtiPlatform, bean)
+        newPlatform.enabled = true
+        newPlatform.dateCreated = Instant.now
+        newPlatform.createdBy = CurrentUser.getUserID
+        lti13Dao.save(newPlatform)
+      }
+      .map(_ => bean.platformId)
   }
 
   @Transactional
@@ -80,11 +83,11 @@ class LtiPlatformServiceImpl extends LtiPlatformService {
     def updateIfExists(maybePlatform: Option[LtiPlatform]) =
       maybePlatform
         .map(platform =>
-          Try {
+          Either.catchNonFatal {
             platform.dateLastModified = Instant.now
             platform.lastModifiedBy = CurrentUser.getUserID
             lti13Dao.update(populatePlatform(platform, bean))
-          }.toEither)
+        })
         .sequence
 
     getByPlatformID(bean.platformId) flatMap updateIfExists
@@ -96,7 +99,7 @@ class LtiPlatformServiceImpl extends LtiPlatformService {
 
     def deleteIfExist(maybePlatform: Option[LtiPlatform]) =
       maybePlatform
-        .map(platform => Try(lti13Dao.delete(platform)).toEither)
+        .map(platform => Either.catchNonFatal(lti13Dao.delete(platform)))
         .sequence
 
     getByPlatformID(platFormId) flatMap deleteIfExist
