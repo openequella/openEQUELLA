@@ -49,14 +49,13 @@ class LtiPlatformServiceImpl extends LtiPlatformService {
 
   }
 
-  override def getPlatforms(enabled: Boolean = true): Either[Throwable, List[LtiPlatform]] = {
+  override def getPlatforms(enabled: Option[Boolean]): Either[Throwable, List[LtiPlatform]] = {
     log(s"queries LTI platforms from Institution ${CurrentInstitution.get().getName}")
     Either
       .catchNonFatal {
         val criteria = Array(
           Restrictions.eq("institution", CurrentInstitution.get()),
-          Restrictions.eq("enabled", enabled)
-        )
+        ) ++ enabled.map(Restrictions.eq("enabled", _))
         lti13Dao.findAllByCriteria(criteria: _*)
       }
       .map(_.asScala.toList)

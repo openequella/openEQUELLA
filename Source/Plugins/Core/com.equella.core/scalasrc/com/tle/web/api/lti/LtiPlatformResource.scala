@@ -79,7 +79,8 @@ class LtiPlatformResource {
   def getPlatforms(@QueryParam("enabled") enabled: Boolean): Response = {
     aclProvider.checkAuthorised()
 
-    val result: Either[Throwable, List[LtiPlatform]] = ltiPlatformService.getPlatforms(enabled)
+    val result: Either[Throwable, List[LtiPlatform]] =
+      ltiPlatformService.getPlatforms(Option(enabled))
     result match {
       case Left(error) => serverErrorResponse(error, s"Failed to get a list of LTI platform")
       case Right(platforms) =>
