@@ -21,6 +21,7 @@ package com.tle.core.hibernate.dao
 import org.hibernate.Session
 import org.hibernate.query.Query
 
+import javax.persistence.NonUniqueResultException
 import scala.jdk.CollectionConverters._
 import scala.util.Try
 
@@ -59,8 +60,9 @@ object DAOHelper {
         .toList
         .asInstanceOf[List[T]]
     }.toEither
-      .filterOrElse(_.size <= 1,
-                    new Throwable(s"More than one entities matching the provided parameters"))
+      .filterOrElse(
+        _.size <= 1,
+        new NonUniqueResultException(s"More than one entities matching the provided parameters"))
       .fold(throw _, _.headOption)
   }
 }
