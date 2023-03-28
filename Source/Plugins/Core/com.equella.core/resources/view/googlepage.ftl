@@ -25,8 +25,8 @@
 		</span>
 	</@setting>
 
-	<p><a target="_blank" href="https://support.google.com/analytics/answer/12270356?hl=en">${b.key("analytics.help.trackingCode")}</a></p>
-	<p><a target="_blank" href="http://www.google.com/analytics/">${b.key("analytics.help.visitorStats")}</a></p>
+	<p><a target="_blank" href="https://support.google.com/analytics/answer/12270356">${b.key("analytics.help.trackingCode")}</a></p>
+	<p><a target="_blank" href="https://support.google.com/analytics/answer/9367631">${b.key("analytics.help.visitorStats")}</a></p>
 
 	<div class="button-strip">
 		<@button section=s.save showAs="save" />
