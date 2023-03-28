@@ -99,7 +99,7 @@ class LtiPlatformResource {
     aclProvider.checkAuthorised()
 
     def create(bean: LtiPlatformBean): Response = {
-      val result = Either.catchNonFatal(ltiPlatformService.create(bean))
+      val result = Either.catchNonFatal(ltiPlatformService.create(bean)).flatten
       result match {
         case Left(error) => serverErrorResponse(error, s"Failed to create a new LTI platform")
         case Right(id) =>
