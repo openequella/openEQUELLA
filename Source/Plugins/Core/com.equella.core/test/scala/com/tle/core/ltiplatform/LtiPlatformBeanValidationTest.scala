@@ -3,8 +3,6 @@ package com.tle.core.ltiplatform
 import com.tle.core.lti13.bean.LtiPlatformBean
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.prop.TableDrivenPropertyChecks._
-import cats.data.Validated
 import cats.data.Validated.{Invalid, Valid}
 
 class LtiPlatformBeanValidationTest extends AnyFunSpec with Matchers {
