@@ -67,7 +67,6 @@ class LtiPlatformServiceImpl extends LtiPlatformService {
     Either
       .catchNonFatal {
         val newPlatform = populatePlatform(new LtiPlatform, bean)
-        newPlatform.enabled = true
         newPlatform.dateCreated = Instant.now
         newPlatform.createdBy = CurrentUser.getUserID
         lti13Dao.save(newPlatform)

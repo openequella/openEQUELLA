@@ -6182,5 +6182,10 @@
     <parameter id="bean" value="bean:com.tle.integration.lti13.OpenIDConnectLaunchServlet" />
     <parameter id="url-pattern" value="/lti13/launch" />
   </extension>
+  <extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="LtiPlatformConverter">
+    <parameter id="id" value="lti_platform" />
+    <parameter id="class" value="bean:com.tle.core.lti13.LtiPlatformConverter" />
+    <parameter id="order" value="817" />
+  </extension>
   <!-- endregion -->
 </plugin>
