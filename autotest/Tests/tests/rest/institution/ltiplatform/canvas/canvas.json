@@ -1,0 +1,17 @@
+{
+  "platformId" : "Canvas-12",
+  "clientId" : "test client",
+  "authUrl" : "http://test",
+  "keysetUrl" : "http://test",
+  "usernamePrefix" : "hello",
+  "usernameSuffix" : "world",
+  "unknownUserHandling" : "CREATE",
+  "unknownUserDefaultGroups" : [ "group A" ],
+  "instructorRoles" : [ "teacher" ],
+  "unknownRoles" : [ "builder" ],
+  "customRoles" : {
+    "tutor" : [ "role A" ]
+  },
+  "allowExpression" : "",
+  "enabled" : false
+}
