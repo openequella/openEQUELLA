@@ -122,6 +122,8 @@ Compile / resourceGenerators += Def.task {
 
 // Pull in the react-front-end
 Compile / resourceGenerators += Def.task {
+  buildOeqTsRestApi.value
+
   val outDir = (Compile / resourceManaged).value
   val srcDir = buildReactFrontEnd.value
   IO.copy(

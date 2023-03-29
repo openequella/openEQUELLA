@@ -59,6 +59,16 @@ jobs:
           distribution: adopt
           java-version: 11
 
+      - name: Install node dependencies (oeq-rest-api)
+        working-directory: oeq-ts-rest-api
+        run: |
+          npm ci
+
+      - name: Build oEQ REST module (oeq-rest-api)
+        working-directory: oeq-ts-rest-api
+        run: |
+          npm run build
+
       - name: Install node dependencies (core)
         working-directory: react-front-end
         run: |
@@ -137,6 +147,16 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
+
+      - name: Install node dependencies (oeq-rest-api)
+        working-directory: oeq-ts-rest-api
+        run: |
+          npm ci
+
+      - name: Build oEQ REST module (oeq-rest-api)
+        working-directory: oeq-ts-rest-api
+        run: |
+          npm run build
 
       - name: Install node dependencies (core)
         working-directory: react-front-end
@@ -397,5 +417,3 @@ jobs:
         with:
           name: oEQ-logs-rest-module
           path: autotest/equella-install/logs
-
-

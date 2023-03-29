@@ -243,6 +243,13 @@ writeScriptingJavadoc := {
   outZip
 }
 
+ThisBuild / oeqTsRestApiDir := baseDirectory.value / "oeq-ts-rest-api"
+ThisBuild / buildOeqTsRestApi := {
+  val dir = oeqTsRestApiDir.value
+  Common.nodeInstall(dir)
+  Common.nodeScript("build", dir)
+}
+
 ThisBuild / reactFrontEndDir := baseDirectory.value / "react-front-end"
 ThisBuild / reactFrontEndOutputDir := reactFrontEndDir.value / "target/resources"
 ThisBuild / buildReactFrontEnd := {
