@@ -244,15 +244,15 @@ writeScriptingJavadoc := {
 }
 
 ThisBuild / oeqTsRestApiDir := baseDirectory.value / "oeq-ts-rest-api"
-ThisBuild / buildOeqTsRestApi := {
-  val dir = oeqTsRestApiDir.value
-  Common.nodeInstall(dir)
-  Common.nodeScript("build", dir)
-}
 
 ThisBuild / reactFrontEndDir := baseDirectory.value / "react-front-end"
 ThisBuild / reactFrontEndOutputDir := reactFrontEndDir.value / "target/resources"
 ThisBuild / buildReactFrontEnd := {
+  // build rest module first since it is a dependency of react front end
+  val apiDir = oeqTsRestApiDir.value
+  Common.nodeInstall(apiDir)
+  Common.nodeScript("build", apiDir)
+
   val dir = reactFrontEndDir.value
   Common.nodeInstall(dir)
   Common.nodeScript("build", dir)
