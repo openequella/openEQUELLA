@@ -44,17 +44,21 @@ class LtiPlatformConverter extends AbstractJsonConverter[Object] {
 
   override def doExport(staging: TemporaryFileHandle,
                         institution: Institution,
-                        callback: ConverterParams): Unit =
-    ltiPlatformService.getPlatforms(None) match {
-      case Left(error) =>
-        throw new RuntimeException(s"Failed to export LTI platforms: ${error.getMessage}")
-      case Right(platforms) =>
-        platforms.foreach(
-          p =>
-            json.write(new SubTemporaryFile(staging, s"${EXPORT_FOLDER}/${p.platformId}"),
-                       s"${p.platformId}.json",
-                       LtiPlatformBean(p)))
-    }
+                        callback: ConverterParams): Unit = {
+    def writePlatformToJson(platform: LtiPlatform): Unit =
+      json.write(new SubTemporaryFile(staging, s"${EXPORT_FOLDER}/${platform.platformId}"),
+                 s"${platform.platformId}.json",
+                 LtiPlatformBean(platform))
+
+    val result = for {
+      platforms <- ltiPlatformService.getAll
+      _         <- Either.catchNonFatal(platforms.foreach(writePlatformToJson))
+    } yield ()
+
+    result.leftMap(error => {
+      throw new RuntimeException(s"Failed to export LTI platforms: ${error.getMessage}")
+    })
+  }
 
   override def doImport(staging: TemporaryFileHandle,
                         institution: Institution,
@@ -73,17 +77,10 @@ class LtiPlatformConverter extends AbstractJsonConverter[Object] {
   }
 
   override def doDelete(institution: Institution, callback: ConverterParams): Unit = {
-    def deleteAll(platforms: List[LtiPlatform]) =
-      platforms
-        .map(_.platformId)
-        .map(ltiPlatformService.delete)
-        .sequence
-
-    val result = ltiPlatformService.getPlatforms(None) flatMap deleteAll
+    val result = ltiPlatformService.deleteAll
 
     result.leftMap(error =>
-      throw new RuntimeException(
-        s"Failed to delete LTI platforms from Institution ${institution.getName}: ${error.getMessage}"))
+      throw new RuntimeException(s"Failed to delete LTI platforms : ${error.getMessage}"))
   }
 
   override def addTasks(convertType: ConvertType,

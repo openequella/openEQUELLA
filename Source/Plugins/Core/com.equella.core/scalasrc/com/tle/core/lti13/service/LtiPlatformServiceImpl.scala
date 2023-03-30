@@ -38,8 +38,7 @@ import scala.util.Try
 @Singleton
 @Bind(classOf[LtiPlatformService])
 class LtiPlatformServiceImpl extends LtiPlatformService {
-  @Inject var lti13Dao: LtiPlatformDAO = _
-
+  @Inject var lti13Dao: LtiPlatformDAO  = _
   private var logger: Logger            = LoggerFactory.getLogger(classOf[LtiPlatformServiceImpl])
   private def log(action: String): Unit = logger.info(s"User ${CurrentUser.getUserID} $action")
 
@@ -59,6 +58,11 @@ class LtiPlatformServiceImpl extends LtiPlatformService {
         lti13Dao.findAllByCriteria(criteria: _*)
       }
       .map(_.asScala.toList)
+  }
+
+  override def getAll: Either[Throwable, List[LtiPlatform]] = {
+    log(s"Retrieve all the LTI platforms")
+    Either.catchNonFatal(lti13Dao.enumerateAll().asScala.toList)
   }
 
   @Transactional
@@ -101,5 +105,13 @@ class LtiPlatformServiceImpl extends LtiPlatformService {
         .sequence
 
     getByPlatformID(platFormId) flatMap deleteIfExist
+  }
+
+  override def deleteAll: Either[Throwable, Unit] = {
+    log(s"deletes all the LTI platforms")
+    for {
+      platforms <- getAll
+      _         <- Either.catchNonFatal(platforms.foreach(lti13Dao.delete))
+    } yield ()
   }
 }

@@ -40,6 +40,13 @@ trait LtiPlatformService {
   def getPlatforms(enabled: Option[Boolean]): Either[Throwable, List[LtiPlatform]]
 
   /**
+    * Retrieve all the platforms including disabled ones from the current Institution.
+    *
+    * @return Either a list of LTI platforms or a throwable.
+    */
+  def getAll: Either[Throwable, List[LtiPlatform]]
+
+  /**
     * Create a LTI platform based on the provided bean in the current Institution.
     *
     * @param bean LtiPlatformBean which provides information of a LTI platform.
@@ -64,4 +71,11 @@ trait LtiPlatformService {
     *         or a throwable if failed to delete.
     */
   def delete(platformId: String): Either[Throwable, Option[Unit]]
+
+  /**
+    * Delete all the platforms from the current Institution.
+    *
+    * @return Either a Unit to indicate the operation is successful or a throwable.
+    */
+  def deleteAll: Either[Throwable, Unit]
 }
