@@ -55,3 +55,12 @@ class LtiPlatformCustomRole {
   @Column(name = "oeq_role")
   var oeqRoles: java.util.Set[String] = _
 }
+
+object LtiPlatformCustomRole {
+  def apply(ltiRole: String, oeqRoles: java.util.Set[String]): LtiPlatformCustomRole = {
+    val mapping = new LtiPlatformCustomRole
+    mapping.ltiRole = ltiRole
+    mapping.oeqRoles = oeqRoles
+    mapping
+  }
+}

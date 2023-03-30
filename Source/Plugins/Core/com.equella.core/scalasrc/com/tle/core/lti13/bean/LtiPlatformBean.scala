@@ -108,10 +108,7 @@ object LtiPlatformBean {
     val roleMappingUpdate = bean.customRoles
       .map {
         case (ltiRole, newTarget) =>
-          val newMapping = new LtiPlatformCustomRole
-          newMapping.ltiRole = ltiRole
-          newMapping.oeqRoles = newTarget.asJava
-          newMapping
+          LtiPlatformCustomRole(ltiRole, newTarget.asJava)
       }
       .toSet
       .asJava
