@@ -150,14 +150,16 @@ case class UserDetails(platformId: String,
                        lastName: String,
                        email: Option[String])
 object UserDetails {
-  def apply(jwt: DecodedJWT): Either[String, UserDetails] = {
+  def apply(jwt: DecodedJWT): Either[InvalidJWT, UserDetails] = {
     val claim = getClaim(jwt)
 
     for {
       platformId <- Option(jwt.getIssuer)
-        .toRight("No issuer claim provided in the JWT, unable to determine origin LTI platform.")
+        .toRight(
+          InvalidJWT(
+            "No issuer claim provided in the JWT, unable to determine origin LTI platform."))
       userId <- Option(jwt.getSubject)
-        .toRight("No subject claim provided in JWT, unable to determine user id.")
+        .toRight(InvalidJWT("No subject claim provided in JWT, unable to determine user id."))
       emptyRoles = List() // helper for readability
       // Attempt to get the claim with the roles. However it could be absent or empty
       // in which case we just go with an 'empty' list of roles. (There is also the case where
@@ -168,7 +170,7 @@ object UserDetails {
           Try {
             Option(c.asList(classOf[String])).map(_.asScala.toList)
           } match {
-            case Failure(_)     => Left("Provided roles claim is not a valid format.")
+            case Failure(_)     => Left(InvalidJWT("Provided roles claim is not a valid format."))
             case Success(value) => Right(value.getOrElse(emptyRoles))
         })
         .getOrElse(Right(emptyRoles))
@@ -177,9 +179,9 @@ object UserDetails {
       // to have configuration set to include these in the result. (For example, in Moodle you
       // need to go into the 'Privacy' settings for the External Tool.)
       firstName <- claim(OIDC.GIVEN_NAME)
-        .toRight(s"No first name (${OIDC.GIVEN_NAME}) was provided.")
+        .toRight(InvalidJWT(s"No first name (${OIDC.GIVEN_NAME}) was provided."))
       lastName <- claim(OIDC.FAMILY_NAME)
-        .toRight(s"No last name (${OIDC.FAMILY_NAME}) was provided.")
+        .toRight(InvalidJWT(s"No last name (${OIDC.FAMILY_NAME}) was provided."))
       email = claim(OIDC.EMAIL)
     } yield UserDetails(platformId, userId, roles, firstName, lastName, email)
   }
@@ -271,7 +273,7 @@ class Lti13AuthService {
             .expireAfterAccess(1, TimeUnit.DAYS)
             .build[String, JwkProvider]()))
 
-  private def getJwkProvider(jwksUrl: URL): Either[String, JwkProvider] =
+  private def getJwkProvider(jwksUrl: URL): Either[ServerError, JwkProvider] =
     Try(
       jwkProviderCache.getCache.get(
         jwksUrl.toString,
@@ -282,7 +284,8 @@ class Lti13AuthService {
           new JwkProviderBuilder(jwksUrl).cached(5, 1, TimeUnit.HOURS).build()
         }
       )).toEither.left.map(t =>
-      s"Failed to establish key (JWK) provider to validate JWT signature: ${t.getMessage}")
+      ServerError(
+        s"Failed to establish key (JWK) provider to validate JWT signature: ${t.getMessage}"))
 
   /**
     * In response to a Third-Party Initiated Login, create the resulting URL which the UA should be
@@ -327,34 +330,37 @@ class Lti13AuthService {
     * @return Either a error string detailing how things failed, or the actual JWT decoded and ready
     *         for further use along with the matching state information.
     */
-  def verifyToken(state: String, token: String): Either[String, (DecodedJWT, Lti13StateDetails)] = {
+  def verifyToken(state: String,
+                  token: String): Either[Lti13Error, (DecodedJWT, Lti13StateDetails)] = {
     val result = for {
       // -- first, basic validation of the state
       // Short circuit if this isn't even a state we know about
-      stateDetails <- stateService.getState(state).toRight(s"Invalid state provided: $state")
+      stateDetails <- stateService
+        .getState(state)
+        .toRight(InvalidState(s"Invalid state provided: $state"))
       // Decode the token to validate the platform this is for
       decodedToken <- Try(JWT.decode(token)).toEither.left.map(t =>
-        s"Failed to decode token: ${t.getMessage}")
+        InvalidJWT(s"Failed to decode token: ${t.getMessage}"))
       // Validate the platform by ensure it matches the previous state we setup
       platformId <- Option(stateDetails.platformId)
         .filter(decodedToken.getIssuer.equals)
-        .toRight(s"Issuer in token did not match stored state.")
+        .toRight(InvalidJWT(s"Issuer in token did not match stored state."))
 
       // -- next, validation of the actual JWT
       platform <- getPlatform(platformId)
-        .toRight(s"Unable to retrieve platform details of ${platformId}")
+        .toRight(PlatformDetailsError(s"Unable to retrieve platform details of ${platformId}"))
       jwkProvider <- getJwkProvider(platform.keysetUrl)
       // Setup some helper functions
       // Both are: DecodedJWT -> Either[String, DecodedJWT]
       verifyJwt = buildJwtVerifierForPlatform(jwkProvider.get(decodedToken.getKeyId), platform)
       verifyNonce = (jwt: DecodedJWT) =>
         getClaim(jwt, OIDC.NONCE)
-          .toRight("Failed to extract nonce from JWT")
+          .toRight(InvalidJWT("Failed to extract nonce from JWT"))
           .flatMap(
             // If the nonce is valid, then make sure we return the valid JWT
             nonceService.validateNonce(_, state).map(_ => jwt))
           .left
-          .map(err => s"Provided ID token (JWT) failed nonce verification: ${err}")
+          .map(err => InvalidJWT(s"Provided ID token (JWT) failed nonce verification: ${err}"))
       // now finally do the verification
       verificationResult <- verifyJwt(decodedToken).flatMap(verifyNonce)
     } yield (verificationResult, stateDetails)
@@ -373,12 +379,13 @@ class Lti13AuthService {
     * @return a new `UserState` being used for the new session OR a string representing what failed.
     */
   def loginUser(wad: WebAuthenticationDetails,
-                userDetails: UserDetails): Either[String, UserState] = {
+                userDetails: UserDetails): Either[Lti13Error, UserState] = {
     LOGGER.debug(s"loginUser(${userDetails})")
 
     val loginResult = for {
       platformDetails <- getPlatform(userDetails.platformId)
-        .toRight(s"Unable to retrieve platform details of ${userDetails.platformId}")
+        .toRight(
+          PlatformDetailsError(s"Unable to retrieve platform details of ${userDetails.platformId}"))
 
       // Setup the user - including adding roles
       userState <- mapUser(
@@ -386,8 +393,11 @@ class Lti13AuthService {
         platform = platformDetails,
         authenticate = username => Try(userService.authenticateAsUser(username, wad)),
         asGuest = () => userService.authenticateAsGuest(wad)
-      ).left.map(error =>
-        s"Failed to authentication user ${userDetails.userId} from platform ${userDetails.platformId}: ${error}")
+      ).left.map(error => {
+        LOGGER.error(
+          s"Failed to authenticate user ${userDetails.userId} from platform ${userDetails.platformId}: ${error}")
+        error
+      })
       _ = addRolesToUser(userState, userDetails, platformDetails)
 
       // And check against any ACLExpression
@@ -395,8 +405,8 @@ class Lti13AuthService {
         case Some(expression) =>
           val aclExpressionEvaluator = new AclExpressionEvaluator
           if (!aclExpressionEvaluator.evaluate(expression, userState, false))
-            Left(
-              s"User ${userDetails.userId} from platform ${userDetails.platformId} is currently not permitted access: ACL Expression violation")
+            Left(NotAuthorized(
+              s"User ${userDetails.userId} from platform ${userDetails.platformId} is currently not permitted access: ACL Expression violation"))
           else Right(userState)
         case None => Right(userState)
       }
@@ -434,7 +444,7 @@ class Lti13AuthService {
 
   private def buildJwtVerifierForPlatform(
       jwk: Jwk,
-      platform: PlatformDetails): DecodedJWT => Either[String, DecodedJWT] = {
+      platform: PlatformDetails): DecodedJWT => Either[Lti13Error, DecodedJWT] = {
     val verifier = Try {
       // Section 5.1.3 of the Security Framework says that RS256 SHOULD be used - but there are
       // some others which are allowed as per the 'best practices'. Perhaps we should add code
@@ -449,13 +459,13 @@ class Lti13AuthService {
         .withIssuer(platform.platformId)
         .withAnyOfAudience(platform.clientId)
         .build()
-    }.toEither.left.map(t => s"Failed to initialise a JWT verifier: ${t.getMessage}")
+    }.toEither.left.map(t => ServerError(s"Failed to initialise a JWT verifier: ${t.getMessage}"))
 
     (decodedToken: DecodedJWT) =>
       verifier.flatMap(
         v =>
           Try(v.verify(decodedToken)).toEither.left
-            .map(t => s"Provided ID token (JWT) failed verification: ${t.getMessage}"))
+            .map(t => InvalidJWT(s"Provided ID token (JWT) failed verification: ${t.getMessage}")))
   }
 
   /**
@@ -479,13 +489,13 @@ class Lti13AuthService {
   private def mapUser(user: UserDetails,
                       platform: PlatformDetails,
                       authenticate: String => Try[UserState],
-                      asGuest: () => UserState): Either[String, UserState] = {
+                      asGuest: () => UserState): Either[Lti13Error, UserState] = {
     val ltiUserId = user.userId
     // The username which will be seen and used in the system
     val username = platform.usernamePrefix.getOrElse("") + ltiUserId + platform.usernameSuffix
       .getOrElse("")
 
-    def handleUnknownUser(): Either[String, UserState] = {
+    def handleUnknownUser(): Either[Lti13Error, UserState] = {
       // Idea based on what was done for LTI 1.x in LtiWrapper: Create a mini hash for the platform
       // ID to use a prefix of the userId to store in the DB. However this column is only 40 chars
       // so we need to minimise down to just 10 chars.
@@ -497,7 +507,7 @@ class Lti13AuthService {
 
       unknownUserHandling match {
         case UnknownUserHandling.ERROR =>
-          Left(s"Failed to authenticate (Unknown User)")
+          Left(AccessDenied(s"Failed to authenticate (Unknown User)"))
         case UnknownUserHandling.GUEST => Right(asGuest())
         case UnknownUserHandling.CREATE =>
           LOGGER.info(s"Creating new user $username($oeqUserId).")
@@ -527,14 +537,14 @@ class Lti13AuthService {
           authenticate(username).toEither.left.map(t => {
             LOGGER.error(
               s"Failed to authenticate with newly created LTI 1.3 user - $username($oeqUserId): ${t.getMessage}")
-            s"Failed to authenticate as newly created user: $username"
+            ServerError(s"Failed to authenticate as newly created user: $username")
           })
       }
     }
 
     authenticate(username) match {
       case Failure(_: UsernameNotFoundException) => handleUnknownUser()
-      case Failure(exception)                    => Left(exception.getMessage)
+      case Failure(exception)                    => Left(ServerError(exception.getMessage))
       case Success(userState)                    => Right(userState)
     }
   }
