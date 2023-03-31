@@ -71,7 +71,7 @@ class LtiPlatformResource {
 
   @GET
   @ApiOperation(
-    value = "Get a list of LTI Platform",
+    value = "Get a list of LTI Platforms",
     notes = "This endpoints retrieves a list of enabled or disabled LTI Platforms",
     response = classOf[LtiPlatformBean],
     responseContainer = "List"

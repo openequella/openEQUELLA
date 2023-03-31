@@ -46,7 +46,6 @@ class LtiPlatformServiceImpl extends LtiPlatformService {
   override def getByPlatformID(platformID: String): Either[Throwable, Option[LtiPlatform]] = {
     log(s"queries LTI platform by ID $platformID")
     Either.catchNonFatal(lti13Dao.getByPlatformId(platformID))
-
   }
 
   override def getPlatforms(enabled: Option[Boolean]): Either[Throwable, List[LtiPlatform]] = {
@@ -77,7 +76,7 @@ class LtiPlatformServiceImpl extends LtiPlatformService {
 
   @Transactional
   override def update(bean: LtiPlatformBean): Either[Throwable, Option[Unit]] = {
-    log(s"updates a new LTI platform by \n ${bean.asJson.spaces2}")
+    log(s"updates LTI platform - ${bean.platformId}")
 
     def updateIfExists(maybePlatform: Option[LtiPlatform]) =
       maybePlatform

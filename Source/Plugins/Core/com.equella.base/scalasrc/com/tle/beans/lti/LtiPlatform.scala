@@ -168,12 +168,12 @@ class LtiPlatform {
   var createdBy: String = _
 
   /**
-    * When the platform was lastly modified.
+    * When the platform was last modified.
     */
   var dateLastModified: Instant = _
 
   /**
-    * ID of the user Who lastly modified the platform.
+    * ID of the user Who last modified the platform.
     */
   var lastModifiedBy: String = _
 }

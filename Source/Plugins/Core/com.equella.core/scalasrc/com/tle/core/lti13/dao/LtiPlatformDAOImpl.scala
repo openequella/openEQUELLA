@@ -31,6 +31,7 @@ class LtiPlatformDAOImpl
     with LtiPlatformDAO {
   private def buildParams(platformId: String): Map[String, Any] =
     Map("platformId" -> platformId, "institution" -> CurrentInstitution.get())
+
   override def getByPlatformId(platformId: String): Option[LtiPlatform] =
     DAOHelper.getOnlyOne(this, "getByPlatformID", buildParams(platformId))
 }

@@ -40,7 +40,7 @@ import scala.util.Try
   * @param usernameSuffix Suffix added to the user ID from the LTI request
   * @param unknownUserHandling How to handle unknown users by one of the three options - ERROR, GUEST OR CREATE.
   * @param unknownUserDefaultGroups The list of groups to be added to the user object If the unknown user handling is CREATE.
-  * @param instructorRoles A list of roles to be assigned to a LIT instructor role
+  * @param instructorRoles A list of roles to be assigned to a LTI instructor role
   * @param unknownRoles  A list of roles to be assigned to a LTI role that is neither the instructor or in the list of custom roles
   * @param customRoles Mappings from LTI roles to OEQ roles
   * @param allowExpression The ACL Expression to control access from this platform
@@ -134,23 +134,23 @@ object LtiPlatformBean {
         ("platform ID", bean.platformId),
         ("client ID", bean.clientId),
       ).map {
-          case (key, value) =>
+          case (fieldName, value) =>
             Option
               .unless(Check.isEmpty(value))(value)
-              .toValidNel(s"Missing value for required field $key")
+              .toValidNel(s"Missing value for required field $fieldName")
         }
         .toList
         .sequence
 
     def checkUrls =
       Map(
-        ("AUTH URL", bean.authUrl),
+        ("Auth URL", bean.authUrl),
         ("Key set URL", bean.keysetUrl)
       ).map {
-          case (key, value) =>
+          case (fieldName, value) =>
             Try {
               new URL(value)
-            }.toEither.leftMap(err => s"Invalid value for $key : ${err.getMessage}")
+            }.toEither.leftMap(err => s"Invalid value for $fieldName : ${err.getMessage}")
         }
         .toList
         .traverse(_.toValidatedNel)
