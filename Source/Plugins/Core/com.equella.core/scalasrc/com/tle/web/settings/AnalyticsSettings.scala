@@ -25,7 +25,6 @@ object AnalyticsSettings {
   private val AnalyticsPropName = "GOOGLE_ANALYTICS"
 
   def getAnalyticsId: Option[String] = {
-    Option(CurrentInstitution.get()).flatMap(_ =>
-      Option(LegacyGuice.configService.getProperty(AnalyticsPropName)))
+    Option(LegacyGuice.configService.getProperty(AnalyticsPropName))
   }
 }
