@@ -148,17 +148,19 @@ object LtiPlatformBean {
         ("Key set URL", bean.keysetUrl)
       ).map {
           case (fieldName, value) =>
-            Try {
-              new URL(value)
-            }.toEither.leftMap(err => s"Invalid value for $fieldName : ${err.getMessage}")
+            Either
+              .catchNonFatal {
+                new URL(value)
+              }
+              .leftMap(err => s"Invalid value for $fieldName : ${err.getMessage}")
+              .toValidatedNel
         }
         .toList
-        .traverse(_.toValidatedNel)
+        .sequence
 
     def checkUnknownUserHandling =
-      Try {
-        UnknownUserHandling.withName(bean.unknownUserHandling)
-      }.toEither
+      Either
+        .catchNonFatal(UnknownUserHandling.withName(bean.unknownUserHandling))
         .leftMap(err => s"Unknown handling for unknown users: ${err.getMessage}")
         .toValidatedNel
 
