@@ -22,6 +22,8 @@ import com.tle.common.portal.entity.Portlet;
 import com.tle.common.portal.entity.PortletPreference;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.portal.service.PortletService;
+import com.tle.core.usermanagement.standard.service.TLEGroupService;
+import com.tle.beans.user.TLEGroup;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.portal.service.PortletWebService;
@@ -51,7 +53,22 @@ import com.tle.web.sections.js.generic.statement.FunctionCallStatement;
 import com.tle.web.sections.render.CssInclude;
 import com.tle.web.sections.render.GenericTemplateResult;
 import com.tle.web.sections.render.HtmlRenderer;
+import java.util.Collection;
+import java.util.Collections;
 import javax.inject.Inject;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.orm.hibernate5.HibernateCallback;
+import org.hibernate.Session;
+import org.hibernate.Query;
+import org.springframework.orm.hibernate5.HibernateTemplate;
+import com.tle.core.hibernate.dao.AbstractHibernateDao;
+import com.tle.core.collection.dao.impl.ItemDefinitionDaoImpl;
+import com.tle.core.hibernate.HibernateFactory;
+import com.tle.core.migration.impl.HibernateMigrationService;
+import com.tle.core.item.dao.ItemDao;
+import com.tle.core.freetext.service.FreeTextService;
+import com.tle.core.freetext.service.impl.FreeTextServiceImpl;
+import com.tle.core.workflow.freetext.TaskListSearch;
 
 /** @author aholland */
 public class ShowPortletsSection
@@ -73,6 +90,9 @@ public class ShowPortletsSection
 
   @Inject private PortletService portletService;
   @Inject private PortletWebService portletWebService;
+  @Inject private TLEGroupService tleGroupService;
+  @Inject private ItemDao itemDao;
+  @Inject private FreeTextService freeTextService;
 
   @ViewFactory private FreemarkerFactory view;
   @AjaxFactory private AjaxGenerator ajax;
@@ -84,6 +104,7 @@ public class ShowPortletsSection
 
   @Override
   @SuppressWarnings("nls")
+  @Transactional(readOnly = true)
   public SectionResult renderHtml(RenderEventContext context) {
     final ShowPortletsModel model = getModel(context);
     final SectionTree tree = model.getTree(false);
@@ -91,6 +112,27 @@ public class ShowPortletsSection
     // Redmine #4496 - Allow TLE_ADMINISTRATOR to fix portal noobage by not
     // having any portals.
     boolean systermUser = CurrentUser.getUserState().isSystem();
+    System.out.println("group count "+CurrentUser.getUsersGroups().size());
+    String user = CurrentUser.getUsername();
+
+    for(String s : CurrentUser.getUsersGroups()) {
+      System.out.println(s);
+      TLEGroup tleGroup = tleGroupService.get(s);
+      if(tleGroup != null) {
+        System.out.println("user is present in group :" +tleGroup.getName());
+      }
+    }
+
+    model.setUsername(CurrentUser.getUsername());
+    int noOfResources = itemDao.listAllItems(CurrentUser.getUserID()).size();
+    // System.out.println("item count : "+ noOfResources);
+    model.setItemcount(noOfResources);
+
+    int taskCount = freeTextService.countsFromFilters(Collections.singletonList(new TaskListSearch()))[0];
+    model.setTaskCount(taskCount);
+    // System.out.println("kapil");
+    // System.out.println("count "+counts[0]);
+
     if (!systermUser && portletWebService.hasPortlets(context, tree)) {
       context.preRender(CSS);
 
@@ -183,6 +225,9 @@ public class ShowPortletsSection
 
     private boolean createPrivs;
     private SectionTree lastTree;
+    private String username;
+    private int itemcount;
+    private int taskCount;
 
     public SectionTree getTree(boolean processParams) {
       final SectionTree portalTree = portletWebService.getPortletRendererTree(info);
@@ -203,8 +248,33 @@ public class ShowPortletsSection
       return createPrivs;
     }
 
+    public String getUsername() {
+      return username;
+    }
+
+    public void setUsername(String username) {
+      this.username = username;
+    }
+
+    public int getItemcount() {
+      return itemcount;
+    }
+
+    public void setItemcount(int itemcount) {
+      this.itemcount = itemcount;
+    }
+
+
     public void setCreatePrivs(boolean noCreatePrivs) {
       this.createPrivs = noCreatePrivs;
     }
+
+    public void setTaskCount(int taskCount) {
+      this.taskCount = taskCount;
+    }
+
+    public int getTaskCount() {
+      return taskCount;
+    }    
   }
 }

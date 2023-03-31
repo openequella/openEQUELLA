@@ -47,6 +47,8 @@ import java.util.Set;
 public interface ItemDao extends GenericInstitutionalDao<Item, Long> {
   List<Integer> getCommentCounts(List<Item> items);
 
+  List<Item> listAllItems(String userName);
+
   List<Item> getItems(List<Long> keys, ItemSelect select, Institution institution);
 
   List<Item> getAllVersionsOfItem(String uuid);
@@ -143,4 +145,6 @@ public interface ItemDao extends GenericInstitutionalDao<Item, Long> {
   Attachment getAttachmentByFilepath(ItemKey itemId, String filepath);
 
   List<String> getNavReferencedAttachmentUuids(List<Item> items);
+
+  List<String> listAllUuidsBasedOnCollectionId(Long collectionId);
 }

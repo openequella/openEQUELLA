@@ -999,4 +999,19 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
     }
     return new ArrayList<String>();
   }
+
+  @Override
+  public List<Item> listAllItems(String userName) {
+    return (List<Item>)
+        getHibernateTemplate()
+            .find("from Item where owner = ?0 and institution = ?1", userName, CurrentInstitution.get());
+  }
+
+
+  @Override
+  public List<String> listAllUuidsBasedOnCollectionId(Long collectionId) {
+    return (List<String>)
+        getHibernateTemplate()
+          .findByNamedParam("select i.uuid from Item i where i.itemDefinition.id = :collectionId","collectionId",collectionId);
+  }
 }
