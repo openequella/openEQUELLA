@@ -781,7 +781,7 @@ export const languageStrings = {
   },
   "com.equella.core": {
     title: "Settings",
-    windowtitlepostfix: " | openEQUELLA",
+    windowtitlepostfix: " | Hyphen",
     topbar: {
       link: {
         notifications: "Notifications",
