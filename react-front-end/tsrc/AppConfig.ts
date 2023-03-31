@@ -70,6 +70,10 @@ export interface RenderData {
    * True if this is an item viewed via integration (integ/gen item link)
    */
   viewedFromIntegration: boolean;
+  /**
+   * Google Analytics ID if it exists. If not, this will be null.
+   */
+  analyticsId: string | null;
 }
 
 declare const renderData: RenderData | undefined;
