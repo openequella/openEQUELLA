@@ -24,16 +24,11 @@ import com.tle.core.lti13.bean.LtiPlatformBean
 import com.tle.core.lti13.bean.LtiPlatformBean.populatePlatform
 import com.tle.core.lti13.dao.LtiPlatformDAO
 import org.springframework.transaction.annotation.Transactional
-import cats.implicits._
-import com.tle.common.institution.CurrentInstitution
 import com.tle.common.usermanagement.user.CurrentUser
 import org.slf4j.{Logger, LoggerFactory}
-import io.circe.syntax._
-import org.hibernate.criterion.Restrictions
 import java.time.Instant
 import javax.inject.{Inject, Singleton}
 import scala.jdk.CollectionConverters._
-import scala.util.Try
 
 @Singleton
 @Bind(classOf[LtiPlatformService])
@@ -43,63 +38,45 @@ class LtiPlatformServiceImpl extends LtiPlatformService {
   private var logger: Logger            = LoggerFactory.getLogger(classOf[LtiPlatformServiceImpl])
   private def log(action: String): Unit = logger.info(s"User ${CurrentUser.getUserID} $action")
 
-  override def getByPlatformID(platformID: String): Either[Throwable, Option[LtiPlatform]] = {
-    log(s"queries LTI platform by ID $platformID")
-    Either.catchNonFatal(lti13Dao.getByPlatformId(platformID))
-  }
+  override def getByPlatformID(platformID: String): Option[LtiPlatformBean] =
+    lti13Dao.getByPlatformId(platformID).map(LtiPlatformBean.apply)
 
-  override def getPlatforms(enabled: Option[Boolean]): Either[Throwable, List[LtiPlatform]] = {
-    log(s"queries LTI platforms from Institution ${CurrentInstitution.get().getName}")
-    Either
-      .catchNonFatal {
-        val criteria = Array(
-          Restrictions.eq("institution", CurrentInstitution.get()),
-        ) ++ enabled.map(Restrictions.eq("enabled", _))
-        lti13Dao.findAllByCriteria(criteria: _*)
-      }
-      .map(_.asScala.toList)
+  override def getAll: List[LtiPlatformBean] =
+    lti13Dao.enumerateAll.asScala.map(LtiPlatformBean.apply).toList
+
+  @Transactional
+  override def create(bean: LtiPlatformBean): String = {
+    log(s"creates LTI platform by ${bean.platformId}")
+
+    val newPlatform = populatePlatform(new LtiPlatform, bean)
+    newPlatform.dateCreated = Instant.now
+    newPlatform.createdBy = CurrentUser.getUserID
+    lti13Dao.save(newPlatform)
+
+    newPlatform.platformId
   }
 
   @Transactional
-  override def create(bean: LtiPlatformBean): Either[Throwable, String] = {
-    log(s"creates a new LTI platform by \n ${bean.asJson.spaces2}")
-    Either
-      .catchNonFatal {
-        val newPlatform = populatePlatform(new LtiPlatform, bean)
-        newPlatform.enabled = true
-        newPlatform.dateCreated = Instant.now
-        newPlatform.createdBy = CurrentUser.getUserID
-        lti13Dao.save(newPlatform)
-      }
-      .map(_ => bean.platformId)
+  override def update(bean: LtiPlatformBean): Option[String] = {
+    val id = bean.platformId
+    log(s"updates LTI platform - $id")
+
+    lti13Dao
+      .getByPlatformId(id)
+      .map(platform => {
+        platform.dateLastModified = Instant.now
+        platform.lastModifiedBy = CurrentUser.getUserID
+        lti13Dao.update(populatePlatform(platform, bean))
+        id
+      })
   }
 
   @Transactional
-  override def update(bean: LtiPlatformBean): Either[Throwable, Option[Unit]] = {
-    log(s"updates LTI platform - ${bean.platformId}")
+  override def delete(platFormId: String): Option[Unit] = {
+    log(s"Deletes LTI platform - $platFormId")
 
-    def updateIfExists(maybePlatform: Option[LtiPlatform]) =
-      maybePlatform
-        .map(platform =>
-          Either.catchNonFatal {
-            platform.dateLastModified = Instant.now
-            platform.lastModifiedBy = CurrentUser.getUserID
-            lti13Dao.update(populatePlatform(platform, bean))
-        })
-        .sequence
-
-    getByPlatformID(bean.platformId) flatMap updateIfExists
-  }
-
-  @Transactional
-  override def delete(platFormId: String): Either[Throwable, Option[Unit]] = {
-    log(s"deletes a LTI platform by ID $platFormId")
-
-    def deleteIfExist(maybePlatform: Option[LtiPlatform]) =
-      maybePlatform
-        .map(platform => Either.catchNonFatal(lti13Dao.delete(platform)))
-        .sequence
-
-    getByPlatformID(platFormId) flatMap deleteIfExist
+    lti13Dao
+      .getByPlatformId(platFormId)
+      .map(lti13Dao.delete)
   }
 }
