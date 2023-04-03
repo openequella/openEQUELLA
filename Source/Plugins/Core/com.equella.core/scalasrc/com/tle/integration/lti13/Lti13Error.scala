@@ -75,7 +75,7 @@ object ErrorResponse {
 }
 
 sealed abstract class Lti13Error {
-  val code: ErrorResponseCode.Code
+  val code: Code
 }
 
 trait HasMessage {
