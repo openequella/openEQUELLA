@@ -5986,6 +5986,12 @@
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="WebKeySet">
     <parameter id="class" value="com.tle.beans.webkeyset.WebKeySet" />
   </extension>
+  <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="LtiCustomRole">
+    <parameter id="class" value="com.tle.beans.lti.LtiPlatformCustomRole" />
+  </extension>
+  <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="LtiPlatform">
+    <parameter id="class" value="com.tle.beans.lti.LtiPlatform" />
+  </extension>
   <extension plugin-id="com.tle.core.freetext" point-id="indexingExtension" id="favouritesIndexer">
     <parameter id="class" value="bean:com.tle.core.favourites.index.FavouritesIndexer" />
   </extension>
@@ -6068,6 +6074,11 @@
     <parameter id="id" value="com.tle.core.institution.migration.v20231.CreateWebKeySetTable"/>
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v20231.CreateWebKeySetTable"/>
     <parameter id="date" value="2023-02-28"/>
+  </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="CreateLtiPlatformTable">
+    <parameter id="id" value="com.tle.core.institution.migration.v20231.CreateLtiPlatformTable"/>
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20231.CreateLtiPlatformTable"/>
+    <parameter id="date" value="2023-03-09"/>
   </extension>
   <extension plugin-id="com.tle.core.migration" point-id="migration" id="EnableDefaultViewerMigration">
     <parameter id="id" value="com.tle.core.institution.migration.v20211.EnableDefaultViewerMigration"/>

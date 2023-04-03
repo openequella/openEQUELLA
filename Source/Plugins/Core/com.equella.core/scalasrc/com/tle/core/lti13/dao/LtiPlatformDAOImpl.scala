@@ -16,20 +16,22 @@
  * limitations under the License.
  */
 
-package com.tle.core.webkeyset.dao
+package com.tle.core.lti13.dao
 
-import com.tle.beans.webkeyset.WebKeySet
+import com.tle.beans.lti.LtiPlatform
 import com.tle.common.institution.CurrentInstitution
 import com.tle.core.guice.Bind
-import com.tle.core.hibernate.dao.DAOHelper.getOnlyOne
-import com.tle.core.hibernate.dao.GenericInstitionalDaoImpl
+import com.tle.core.hibernate.dao.{DAOHelper, GenericInstitionalDaoImpl}
 import javax.inject.Singleton
 
-@Bind(classOf[WebKeySetDAO])
 @Singleton
-class WebKeySetDAOImpl
-    extends GenericInstitionalDaoImpl[WebKeySet, java.lang.Long](classOf[WebKeySet])
-    with WebKeySetDAO {
-  override def getByKeyID(keyId: String): Option[WebKeySet] =
-    getOnlyOne(this, "getByKeyID", Map("keyId" -> keyId, "institution" -> CurrentInstitution.get()))
+@Bind(classOf[LtiPlatformDAO])
+class LtiPlatformDAOImpl
+    extends GenericInstitionalDaoImpl[LtiPlatform, java.lang.Long](classOf[LtiPlatform])
+    with LtiPlatformDAO {
+
+  override def getByPlatformId(platformId: String): Option[LtiPlatform] =
+    DAOHelper.getOnlyOne(this,
+                         "getByPlatformID",
+                         Map("platformId" -> platformId, "institution" -> CurrentInstitution.get()))
 }
