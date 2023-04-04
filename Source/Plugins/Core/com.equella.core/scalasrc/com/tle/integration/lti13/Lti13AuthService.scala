@@ -30,6 +30,7 @@ import com.tle.common.institution.CurrentInstitution
 import com.tle.common.usermanagement.user.{UserState, WebAuthenticationDetails}
 import com.tle.core.guice.Bind
 import com.tle.core.institution.{InstitutionCache, InstitutionService, RunAsInstitution}
+import com.tle.core.lti13.service.LtiPlatformService
 import com.tle.core.security.impl.AclExpressionEvaluator
 import com.tle.core.services.user.UserService
 import com.tle.core.usermanagement.standard.service.{TLEGroupService, TLEUserService}
@@ -188,54 +189,6 @@ object UserDetails {
 }
 
 /**
-  * Definition for how unknown users should be handled:
-  *
-  * - `ERROR`: Report an authentication error
-  * - `GUEST`: Authenticate the user as a 'guest' user
-  * - `CREATE`: a new local oEQ user and authenticate as that user
-  */
-object UnknownUserHandling extends Enumeration {
-  type Handling = Value
-
-  val ERROR, GUEST, CREATE = Value
-}
-
-/**
-  * The details registered with oEQ regarding the platform identified with `platformId`.
-  *
-  * @param platformId The issuer identifier identifying the learning platform.
-  * @param clientId The clientId for oEQ issued by the platform
-  * @param authUrl The platform's authentication request URL
-  * @param keysetUrl The platform's JWKS keyset URL for us to get the keys from
-  * @param usernamePrefix a value to prefix the userId from the LTI request with
-  * @param usernameSuffix value to concatenate to the userId from the LTI request
-  * @param unknownUserHandling a tuple where the first value indicates how unknown users should be
-  *                            handled, and the second value is only present if the handling is to
-  *                            create user objects. In which case, the list of groups (either UUIDs
-  *                            or internal oEQ group names) will be added to the new user object.
-  * @param instructorRoles a list of roles (either UUIDs or internal oEQ group names) to assign to
-  *                        the user's session if they have an LTI Instructor role.
-  * @param unknownRoles a list of roles (either UUIDs or internal oEQ group names) to assign to
-  *                     the user's session for any roles which are not an instructor role or in
-  *                     the list of custom roles.
-  * @param customRoles a mapping of LTI roles to oEQ roles (either UUIDs or internal oEQ group
-  *                    names) to assign to the user's session.
-  * @param allowExpression an ACL Expression to control access from this platform - None is the same
-  *                        as an ACL Expression of 'Everyone' or '*'
-  */
-case class PlatformDetails(platformId: String,
-                           clientId: String,
-                           authUrl: URL,
-                           keysetUrl: URL,
-                           usernamePrefix: Option[String],
-                           usernameSuffix: Option[String],
-                           unknownUserHandling: (UnknownUserHandling.Handling, Option[Set[String]]),
-                           instructorRoles: Set[String],
-                           unknownRoles: Set[String],
-                           customRoles: Map[String, Set[String]],
-                           allowExpression: Option[String])
-
-/**
   * Responsible for the authentication of LTI requests, and where necessary establishing an
   * authenticated openEQUELLA user session (with `UserState`) for an LTI user.
   */
@@ -244,12 +197,13 @@ case class PlatformDetails(platformId: String,
 class Lti13AuthService {
   private val LOGGER = LoggerFactory.getLogger(classOf[Lti13AuthService])
 
-  @Inject private var nonceService: Lti13NonceService  = _
-  @Inject private var runAs: RunAsInstitution          = _
-  @Inject private var stateService: Lti13StateService  = _
-  @Inject private var tleGroupService: TLEGroupService = _
-  @Inject private var tleUserService: TLEUserService   = _
-  @Inject private var userService: UserService         = _
+  @Inject private var nonceService: Lti13NonceService     = _
+  @Inject private var platformService: LtiPlatformService = _
+  @Inject private var runAs: RunAsInstitution             = _
+  @Inject private var stateService: Lti13StateService     = _
+  @Inject private var tleGroupService: TLEGroupService    = _
+  @Inject private var tleUserService: TLEUserService      = _
+  @Inject private var userService: UserService            = _
 
   /**
     * The JWK Provider Cache is here to cache instances of JWK Providers for each keyset URL
@@ -418,27 +372,6 @@ class Lti13AuthService {
     loginResult
   }
 
-  def getPlatform(platform: String): Option[PlatformDetails] = {
-    // TODO: Get from the database
-    Map(
-      "http://localhost:8100" -> PlatformDetails(
-        platformId = "http://localhost:8100",
-        clientId = "uloNvKAvb5xmLin", // Our client ID provided by platform / Moodle
-        authUrl = new URL("http://localhost:8100/mod/lti/auth.php"),
-        keysetUrl = new URL("http://localhost:8100/mod/lti/certs.php"),
-        usernamePrefix = Some("lti13prefix-"),
-        usernameSuffix = Some("-lti13suffix"),
-        unknownUserHandling =
-          (UnknownUserHandling.CREATE, Some(Set("99806ac8-410e-4c60-b3ab-22575276f0f0"))),
-        instructorRoles =
-          Set("e8a88448-cdeb-43d0-afc6-8c491266271a", "bfa5f737-f87f-4909-a822-65b0181ada1a"),
-        unknownRoles = Set.empty,
-        customRoles = Map("http://purl.imsglobal.org/vocab/lis/v2/membership#Learner" -> Set(
-          "1321ada9-7c29-4f02-b9a9-cd591afe48e4")),
-        allowExpression = None //Some("F:http%3A%2F%2Flocalhost%3A8100%2F") == referrer exact http://localhost:8100/ -- Some("*") == Everyone
-      )).get(platform)
-  }
-
   def getRedirectUri: URI =
     new URI(s"${CurrentInstitution.get().getUrl}lti13/launch")
 
@@ -598,4 +531,7 @@ class Lti13AuthService {
     userState.getUsersRoles.addAll(
       (instructorRoles ++ customRoles ++ additionalRoles).asJavaCollection)
   }
+
+  private def getPlatform(platform: String): Option[PlatformDetails] =
+    platformService.getByPlatformID(platform).map(PlatformDetails.apply)
 }
