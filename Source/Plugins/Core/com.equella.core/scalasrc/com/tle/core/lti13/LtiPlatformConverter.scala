@@ -45,43 +45,44 @@ class LtiPlatformConverter extends AbstractJsonConverter[Object] {
   override def doExport(staging: TemporaryFileHandle,
                         institution: Institution,
                         callback: ConverterParams): Unit = {
-    def writePlatformToJson(platform: LtiPlatform): Unit =
-      json.write(new SubTemporaryFile(staging, s"${EXPORT_FOLDER}/${platform.platformId}"),
+    def writePlatformToJson(platform: LtiPlatformBean): Unit =
+      json.write(new SubTemporaryFile(staging, s"$EXPORT_FOLDER/${platform.platformId}"),
                  s"${platform.platformId}.json",
-                 LtiPlatformBean(platform))
+                 LtiPlatformBean)
 
-    val result = for {
-      platforms <- ltiPlatformService.getAll
-      _         <- Either.catchNonFatal(platforms.foreach(writePlatformToJson))
-    } yield ()
-
-    result.leftMap(error => {
-      throw new RuntimeException(s"Failed to export LTI platforms: ${error.getMessage}")
-    })
+    Either
+      .catchNonFatal {
+        ltiPlatformService.getAll.foreach(writePlatformToJson)
+      }
+      .leftMap(error =>
+        throw new RuntimeException(s"Failed to export LTI platforms: ${error.getMessage}"))
   }
 
   override def doImport(staging: TemporaryFileHandle,
                         institution: Institution,
                         params: ConverterParams): Unit = {
     val dir = new SubTemporaryFile(staging, EXPORT_FOLDER)
-    json
-      .getFileList(dir)
-      .asScala
-      .toList
-      .map(json.read(dir, _, classOf[LtiPlatformBean]))
-      .map(ltiPlatformService.create)
-      .sequence
+
+    Either
+      .catchNonFatal {
+        json
+          .getFileList(dir)
+          .asScala
+          .toList
+          .map(json.read(dir, _, classOf[LtiPlatformBean]))
+          .map(ltiPlatformService.create)
+      }
       .leftMap(error =>
-        throw new RuntimeException(
-          s"Failed to import LTI platforms into Institution ${institution.getName}: ${error.getMessage}"))
+        throw new RuntimeException(s"Failed to import LTI platforms: ${error.getMessage}"))
   }
 
-  override def doDelete(institution: Institution, callback: ConverterParams): Unit = {
-    val result = ltiPlatformService.deleteAll
-
-    result.leftMap(error =>
-      throw new RuntimeException(s"Failed to delete LTI platforms : ${error.getMessage}"))
-  }
+  override def doDelete(institution: Institution, callback: ConverterParams): Unit =
+    Either
+      .catchNonFatal {
+        ltiPlatformService.deleteAll
+      }
+      .leftMap(error =>
+        throw new RuntimeException(s"Failed to delete LTI platforms: ${error.getMessage}"))
 
   override def addTasks(convertType: ConvertType,
                         tasks: ConverterTasks,
