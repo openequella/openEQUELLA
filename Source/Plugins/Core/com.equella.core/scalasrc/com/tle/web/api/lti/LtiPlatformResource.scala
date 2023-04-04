@@ -101,7 +101,7 @@ class LtiPlatformResource {
   @ApiOperation(
     value = "Create a new LTI platform",
     notes = "This endpoint creates a new LTI platform and includes ID of the created platform in the response header. " +
-      "The ID has to be double URL encoded to make sure any forward slash is fully escaped due to the Tomcat 'no slash' issue.",
+      "The ID has to be double URL encoded to protect against premature decoding.",
     response = classOf[String],
   )
   def createPlatform(bean: LtiPlatformBean): Response = {
@@ -113,6 +113,7 @@ class LtiPlatformResource {
         ltiPlatformService.create(bean),
         id =>
           Response
+          // Double encoding the ID to make sure any forward slash is fully escaped due to the Tomcat 'no slash' issue.
             .created(new URI(s"/ltiplatform/${urlEncode(urlEncode(id))}"))
             .build(),
         "Failed to create a new LTI platform"
