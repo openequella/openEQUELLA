@@ -209,7 +209,7 @@ jobs:
     strategy:
       matrix:
         newui: [true, false]
-        pgsql-image: [latest, 11]
+        pgsql-image: [latest, 14]
         exclude:
           - newui: false
             pgsql-image: latest
