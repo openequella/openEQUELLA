@@ -73,7 +73,9 @@ class LtiPlatformResource {
     response = classOf[LtiPlatformBean],
   )
   def getPlatform(
-      @ApiParam("Platform ID which must be URL encoded") @PathParam("id") id: String): Response = {
+      @ApiParam(
+        "The Platform ID has to be double URL encoded to protect against premature decoding.") @PathParam(
+        "id") id: String): Response = {
     aclProvider.checkAuthorised()
     val decodedId = URLDecoder.decode(id, StandardCharsets.UTF_8.name())
     processOptionResult[LtiPlatformBean](ltiPlatformService.getByPlatformID(decodedId),
