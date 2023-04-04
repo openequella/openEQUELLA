@@ -293,5 +293,3 @@ Set EQUELLASERVER_HOME in equellaserver-config.sh
 Remove java.io.tmpdir property from equellaserver-config.sh
 Make sure LOGS_HOME dir exists
  */
-
-//test trigger github action
