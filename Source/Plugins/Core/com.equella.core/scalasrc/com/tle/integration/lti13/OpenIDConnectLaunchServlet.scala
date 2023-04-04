@@ -21,6 +21,7 @@ package com.tle.integration.lti13
 import com.tle.common.usermanagement.user.WebAuthenticationDetails
 import com.tle.core.guice.Bind
 import com.tle.core.services.user.UserService
+import org.apache.http.HttpStatus
 import org.slf4j.LoggerFactory
 
 import java.net.URI
@@ -37,6 +38,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
   private val LOGGER = LoggerFactory.getLogger(classOf[OpenIDConnectLaunchServlet])
 
   @Inject private var lti13AuthService: Lti13AuthService = _
+  @Inject private var stateService: Lti13StateService    = _
   @Inject private var userService: UserService           = _
 
   override def doGet(req: HttpServletRequest, resp: HttpServletResponse): Unit = {
@@ -59,12 +61,9 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
 
     // TODO Needs validation around the request - was it a form POST request, does it have any params, etc.
 
-    val params           = req.getParameterMap.asScala.toMap
-    val processedRequest = InitiateLoginRequest(params) orElse AuthenticationResponse(params)
-    // TODO: There is also one other 'request' type we need to support, and that's an 'error response'
-    //       See section 4.1.2.1 of the OAuth 2.0 spec : https://datatracker.ietf.org/doc/html/rfc6749#autoid-38
-    //       This can be triggered by simple things like sending the wrong 'client_id' to Moodle in the handling
-    //       of the InitiateLoginRequest.
+    val params = req.getParameterMap.asScala.toMap
+    val processedRequest = InitiateLoginRequest(params) orElse AuthenticationResponse(params) orElse ErrorResponse(
+      params)
 
     processedRequest match {
       case Some(validRequest) =>
@@ -74,6 +73,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
             handleAuthenticationResponse(authResp,
                                          userService.getWebAuthenticationDetails(req),
                                          resp)
+          case errorResponse: ErrorResponse => handleErrorResponse(errorResponse, resp)
         }
       case None =>
         resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
@@ -101,17 +101,36 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
     LOGGER.debug("Received an authentication response. Supplied values:")
     LOGGER.debug(auth.toString)
 
-    def onAuthFailure(errorMessage: String): Unit = {
-      LOGGER.error(s"Authentication failed: ${errorMessage}")
-      // TODO: Can't just return SC_FORBIDDEN, need to follow the OpenID spec section 3.1.2.6
-      //       which for starters says, "Unless the Redirection URI is invalid, the Authorization
-      //       Server returns the Client to the Redirection URI specified in the Authorization
-      //       Request with the appropriate error and state parameters. Other parameters SHOULD
-      //       NOT be returned."
-      resp.sendError(HttpServletResponse.SC_FORBIDDEN)
+    // If this was not just for LTI Launch then we'd actually need to also support returning
+    // the error details to a redirect URL. As the 1EdTech Security framework spec in section
+    // 5.1.1.5 (Authentication Error Response) it says to follow OpenID spec section 3.1.2.6
+    // which for starters says, "Unless the Redirection URI is invalid, the Authorization
+    // Server returns the Client to the Redirection URI specified in the Authorization
+    // Request with the appropriate error and state parameters. Other parameters SHOULD
+    // NOT be returned."
+    def onAuthFailure(error: Lti13Error): Unit = {
+      val errorMsg = error match {
+        case message: HasMessage => message.msg
+        case _                   => "No further information"
+      }
+
+      LOGGER.error(s"Authentication failed [${error.code}]: $errorMsg")
+
+      val output =
+        s"""Authentication failed:
+           |
+           |Error code: ${error.code}
+           |Description: $errorMsg
+           |
+           |Please contact your system administrator
+           |""".stripMargin
+
+      resp.setContentType("text/plain")
+      resp.setStatus(HttpStatus.SC_FORBIDDEN)
+      resp.getWriter.print(output)
     }
 
-    val authResult: Either[String, URI] = for {
+    val authResult: Either[Lti13Error, URI] = for {
       verificationResult <- lti13AuthService.verifyToken(auth.state, auth.id_token)
       decodedJWT    = verificationResult._1
       targetLinkUri = verificationResult._2.targetLinkUri
@@ -126,6 +145,24 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
     }
 
     // Finished with `state` - it's been used once, so let's dump it
-    Lti13StateService.invalidateState(auth.state)
+    stateService.invalidateState(auth.state)
+  }
+
+  private def handleErrorResponse(errorResponse: ErrorResponse, resp: HttpServletResponse): Unit = {
+    LOGGER.error(s"Received Error Response from LTI Platform: $errorResponse")
+
+    val output =
+      s"""Received Error Response from LTI Platform:
+        |
+        |Error code: ${errorResponse.error.toString}
+        |Description: ${errorResponse.error_description.getOrElse("None provided")}
+        |
+        |Please contact your system administrator.""".stripMargin
+
+    resp.setContentType("text/plain")
+    resp.setStatus(HttpStatus.SC_OK)
+    resp.getWriter.print(output)
+
+    stateService.invalidateState(errorResponse.state)
   }
 }

@@ -18,8 +18,13 @@
 
 package com.tle.integration.lti13
 
+import com.tle.core.guice.Bind
+import com.tle.core.replicatedcache.ReplicatedCacheService
+import com.tle.core.replicatedcache.ReplicatedCacheService.ReplicatedCache
+
 import java.net.URI
-import scala.collection.concurrent.TrieMap
+import java.util.concurrent.TimeUnit
+import javax.inject.{Inject, Singleton}
 
 /**
   * Details for an entry being stored in state.
@@ -29,14 +34,26 @@ import scala.collection.concurrent.TrieMap
   * @param targetLinkUri The intended link to be launched as per the initial request. Once
   *                      authentication is complete, this link should be redirected to.
   */
+@SerialVersionUID(1)
 case class Lti13StateDetails(platformId: String, loginHint: String, targetLinkUri: URI)
+    extends Serializable
 
 /**
   * Manages the `state` values for LTI 1.3 Authentication processes.
   */
-object Lti13StateService {
-  // TODO: Replace with ReplicatedCacheService - this should have a short TTL too (perhaps 10s)
-  private val stateStorage: TrieMap[String, Lti13StateDetails] = TrieMap()
+@Bind
+@Singleton
+class Lti13StateService(stateStorage: ReplicatedCache[Lti13StateDetails]) {
+
+  @Inject def this(rcs: ReplicatedCacheService) = {
+    // Not keen on the idea of having a limit on the number of cache entries, but that's the way
+    // RCS works. And although we set a TTL of 10 seconds, that's only until first access. After
+    // that it's been hard coded to last for 1 day!
+    // (See com.tle.core.replicatedcache.impl.ReplicatedCacheServiceImpl.ReplicatedCacheImpl.ReplicatedCacheImpl)
+    this(
+      rcs
+        .getCache[Lti13StateDetails]("lti13-state", 1000, 10, TimeUnit.SECONDS))
+  }
 
   /**
     * Given the key details of an LTI Request, store those and create a 'state' value that can
@@ -47,14 +64,8 @@ object Lti13StateService {
     *         in subsequent requests.
     */
   def createState(details: Lti13StateDetails): String = {
-    val state = {
-      // TODO: Lookup the recommendation in OAuth 2 course on creation of `state`
-      // This is potentially not secure enough, but I don't really want to bind it to the host
-      // with extra crypto unless necessary. (Although one option would be to use the private
-      // from the server's JWK...)
-      generateRandomHexString(16)
-    }
-    stateStorage.addOne((state, details))
+    val state = generateRandomHexString(16)
+    stateStorage.put(state, details)
 
     state
   }
@@ -67,7 +78,7 @@ object Lti13StateService {
     * @return The stored state details if available, or `None` if there are none - most likely
     *         indicating an invalid `state` value has been provided.
     */
-  def getState(state: String): Option[Lti13StateDetails] = stateStorage.get(state)
+  def getState(state: String): Option[Lti13StateDetails] = Option(stateStorage.get(state).orNull())
 
   /**
     * Given an `state` which is no longer required - already been used perhaps - invalidate it by
@@ -75,5 +86,5 @@ object Lti13StateService {
     *
     * @param state the `state` to be invalidated
     */
-  def invalidateState(state: String): Unit = stateStorage.remove(state)
+  def invalidateState(state: String): Unit = stateStorage.invalidate(state)
 }

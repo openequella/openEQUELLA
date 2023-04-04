@@ -18,8 +18,17 @@
 
 package com.tle.integration.lti13
 
+import com.tle.core.guice.Bind
+import com.tle.core.replicatedcache.ReplicatedCacheService
+import com.tle.core.replicatedcache.ReplicatedCacheService.ReplicatedCache
+
 import java.time.Instant
-import scala.collection.concurrent.TrieMap
+import java.util.concurrent.TimeUnit
+import javax.inject.{Inject, Singleton}
+
+object NonceExpiry {
+  val inSeconds = 10
+}
 
 /**
   * Provides the concrete details behind a nonce to be used for validation.
@@ -27,16 +36,25 @@ import scala.collection.concurrent.TrieMap
   * @param state the state representing the session for which this nonce can be used
   * @param timestamp the timestamp of when this was generated, so that it can be checked for currency
   */
-case class Lti13NonceDetails(state: String, timestamp: Instant)
+@SerialVersionUID(1)
+case class Lti13NonceDetails(state: String, timestamp: Instant) extends Serializable
 
 /**
   * Manages the nonce values for LTI 1.3 Authentication processes.
   */
-object Lti13NonceService {
-  // How many seconds the nonce is valid for
-  private val nonceValidFor = 10
-  // TODO: Replace with ReplicatedCacheService - this should have a short TTL too (perhaps 10s)
-  private val nonceStorage: TrieMap[String, Lti13NonceDetails] = TrieMap()
+@Bind
+@Singleton
+class Lti13NonceService(nonceStorage: ReplicatedCache[Lti13NonceDetails]) {
+
+  @Inject def this(rcs: ReplicatedCacheService) {
+    // Not keen on the idea of having a limit on the number of cache entries, but that's the way
+    // RCS works. And although we set a TTL of 10 seconds, that's only until first access. After
+    // that it's been hard coded to last for 1 day!
+    // (See com.tle.core.replicatedcache.impl.ReplicatedCacheServiceImpl.ReplicatedCacheImpl.ReplicatedCacheImpl)
+    this(
+      rcs
+        .getCache[Lti13NonceDetails]("lti13-nonces", 1000, NonceExpiry.inSeconds, TimeUnit.SECONDS))
+  }
 
   /**
     * Given an existing `state` value, will create a unique `nonce` value and store it in a
@@ -47,10 +65,18 @@ object Lti13NonceService {
     * @return a new unique nonce
     */
   def createNonce(state: String): String = {
-    val nonce = generateRandomHexString(16)
-    // TODO: Check if nonce already in use, if so generate another - but only do for x times before
-    //       giving up and failing.
-    nonceStorage.addOne(nonce, Lti13NonceDetails(state, Instant.now()))
+    // We need to make sure nonces are unique, so up to 10 will be generated
+    // after which we have no option but to trigger a runtime exception!
+    val nonce = LazyList
+      .fill(10) {
+        generateRandomHexString(16)
+      }
+      .find(!nonceStorage.get(_).isPresent) match {
+      case Some(uniqueNonce) => uniqueNonce
+      case None              => throw new RuntimeException("Failed to generate a unique nonce!")
+    }
+
+    nonceStorage.put(nonce, Lti13NonceDetails(state, Instant.now()))
 
     nonce
   }
@@ -71,17 +97,17 @@ object Lti13NonceService {
     */
   def validateNonce(nonce: String, state: String): Either[String, Boolean] = {
     def notExpired(ts: Instant) = {
-      val validUntil = ts.plusSeconds(nonceValidFor)
+      val validUntil = ts.plusSeconds(NonceExpiry.inSeconds)
       Instant
         .now()
         .isBefore(validUntil)
     }
 
-    val valid = nonceStorage.get(nonce) match {
+    val valid = Option(nonceStorage.get(nonce).orNull()) match {
       // Could do a few matches to capture errors around expired, doesn't match state, etc.
       case Some(nonceDetails: Lti13NonceDetails)
           if nonceDetails.state == state && notExpired(nonceDetails.timestamp) =>
-        nonceStorage.remove(nonce)
+        nonceStorage.invalidate(nonce)
         Right(true)
       case Some(nonceDetails: Lti13NonceDetails) if nonceDetails.state == state =>
         // cases with matching timestamp would've been above, so this means it had expired
