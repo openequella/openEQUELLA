@@ -30,7 +30,8 @@ import javax.ws.rs.core.Response
 import javax.ws.rs.{DELETE, GET, POST, PUT, Path, PathParam, Produces, QueryParam}
 import com.tle.web.lti13.platforms.security.LTI13PlatformsSettingsPrivilegeTreeProvider
 import org.slf4j.{Logger, LoggerFactory}
-import java.net.URI
+import java.net.{URI, URLDecoder, URLEncoder}
+import java.nio.charset.StandardCharsets
 
 @NoCache
 @Path("ltiplatform")
@@ -71,10 +72,11 @@ class LtiPlatformResource {
     notes = "This endpoints retrieves a LTI Platform by Platform ID",
     response = classOf[LtiPlatformBean],
   )
-  def getPlatform(@ApiParam("Platform ID") @PathParam("id") id: String): Response = {
+  def getPlatform(
+      @ApiParam("Platform ID which must be URL encoded") @PathParam("id") id: String): Response = {
     aclProvider.checkAuthorised()
-
-    processOptionResult[LtiPlatformBean](ltiPlatformService.getByPlatformID(id),
+    val decodedId = URLDecoder.decode(id, StandardCharsets.UTF_8.name())
+    processOptionResult[LtiPlatformBean](ltiPlatformService.getByPlatformID(decodedId),
                                          Response.ok(_).build,
                                          onFailureMessage = s"Failed to get LTI platform by ID $id")
 
@@ -98,19 +100,23 @@ class LtiPlatformResource {
   @POST
   @ApiOperation(
     value = "Create a new LTI platform",
-    notes = "This endpoint creates a new LTI platform and returns ID of the created platform",
-    response = classOf[Long],
+    notes = "This endpoint creates a new LTI platform and includes ID of the created platform in the response header. " +
+      "The ID has to be double URL encoded to make sure any forward slash is fully escaped due to the Tomcat 'no slash' issue.",
+    response = classOf[String],
   )
   def createPlatform(bean: LtiPlatformBean): Response = {
     aclProvider.checkAuthorised()
 
+    def urlEncode(s: String): String = URLEncoder.encode(s, StandardCharsets.UTF_8.name())
     def create(bean: LtiPlatformBean): Response =
-      processResult[String](ltiPlatformService.create(bean),
-                            id =>
-                              Response
-                                .created(new URI(s"/ltiplatform/$id"))
-                                .build(),
-                            "Failed to create a new LTI platform")
+      processResult[String](
+        ltiPlatformService.create(bean),
+        id =>
+          Response
+            .created(new URI(s"/ltiplatform/${urlEncode(urlEncode(id))}"))
+            .build(),
+        "Failed to create a new LTI platform"
+      )
 
     validateLtiPlatformBean(bean) match {
       case Invalid(error) => ApiErrorResponse.badRequest(error: _*)
