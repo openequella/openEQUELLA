@@ -30,7 +30,7 @@ class LtiPlatformBeanValidationTest extends AnyFunSpec with Matchers {
       result shouldBe Invalid(
         List(
           "Missing value for required field client ID",
-          "Invalid value for AUTH URL : no protocol: abc",
+          "Invalid value for Auth URL : no protocol: abc",
           "Unknown handling for unknown users: No value found for 'RUN'"
         ))
     }
