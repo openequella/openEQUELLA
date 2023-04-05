@@ -1,5 +1,5 @@
 {
-  "platformId" : "Moodle12345",
+  "platformId" : "http://localhost:8100",
   "clientId" : "abc",
   "authUrl" : "http://test",
   "keysetUrl" : "http://test",

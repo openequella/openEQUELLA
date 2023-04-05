@@ -13,11 +13,9 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.DeleteMethod;
-import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -25,19 +23,28 @@ import org.testng.annotations.Test;
 public class LtiPlatformTest extends AbstractRestApiTest {
 
   final String LTI_PLATFORM_API_ENDPOINT = getTestConfig().getInstitutionUrl() + "api/ltiplatform";
-  final String MOODLE_PLATFORM_ID = "Moodle12345";
-  final String BRIGHTSPACE_PLATFORM_ID = "Brightspace12345";
-  final String BRIGHTSPACE_URL = LTI_PLATFORM_API_ENDPOINT + "/" + BRIGHTSPACE_PLATFORM_ID;
+  final String MOODLE_PLATFORM_ID = "http://localhost:8100";
+  final String MOODLE_PLATFORM_ID_DOUBLE_ENCODED = "http%253A%252F%252Flocalhost%253A8100";
+  final String BRIGHTSPACE_PLATFORM_ID = "http://localhost:8300";
+  final String BRIGHTSPACE_PLATFORM_ID_DOUBLE_ENCODED = "http%253A%252F%252Flocalhost%253A8300";
+  final String BRIGHTSPACE_URL =
+      LTI_PLATFORM_API_ENDPOINT + "/" + BRIGHTSPACE_PLATFORM_ID_DOUBLE_ENCODED;
+  final String LTI_ROLE_LEARNER = "http://purl.imsglobal.org/vocab/lis/v2/membership#Learner";
+  final String LTI_ROLE_TEACHER = "http://purl.imsglobal.org/vocab/lis/v2/membership#Teacher";
+  final String OEQ_ROLE_LEARNER = "2583c1cb-109d-474a-a76b-d4af3859a467";
+  final String OEQ_ROLE_TEACHER = "5553c1cb-109d-474a-a76b-d4af3859a467";
+  final String OEQ_ROLE_TUTOR = "4443c1cb-109d-474a-a76b-d4af3859a467";
+  final String OEQ_ROLE_BUILDER = "3333c1cb-109d-474a-a76b-d4af3859a467";
 
   @Test(description = "Retrieve a LTI platform by ID")
   public void getPlatformByID() throws IOException {
-    JsonNode results = getPlatform(MOODLE_PLATFORM_ID);
+    JsonNode results = getPlatform(MOODLE_PLATFORM_ID_DOUBLE_ENCODED);
     assertEquals(MOODLE_PLATFORM_ID, results.get("platformId").asText());
   }
 
   @Test(description = "Retrieve a list of LTI platforms")
   public void getPlatforms() throws IOException {
-    final HttpMethod method = new GetMethod(LTI_PLATFORM_API_ENDPOINT + "?enabled=true");
+    final HttpMethod method = new GetMethod(LTI_PLATFORM_API_ENDPOINT);
 
     assertEquals(HttpStatus.SC_OK, makeClientRequest(method));
     JsonNode results = mapper.readTree(method.getResponseBody());
@@ -51,15 +58,23 @@ public class LtiPlatformTest extends AbstractRestApiTest {
     ObjectNode body = buildRequestBody();
     body.put("platformId", BRIGHTSPACE_PLATFORM_ID);
 
-    int resp_code = sendRequest(method, body);
+    int resp_code = makeClientRequestWithEntity(method, body);
     assertEquals(HttpStatus.SC_CREATED, resp_code);
 
-    // The response header should contain the location of the new platform.
+    // The response header should contain the location of the new platform. Also, the platform ID
+    // present in the location should be
+    // double encoded.
     String location = method.getResponseHeader("Location").getValue();
-    assertEquals(BRIGHTSPACE_URL, location);
+    assertEquals(
+        "http://localhost:8080/rest/api/ltiplatform/http%253A%252F%252Flocalhost%253A8300",
+        location);
+
+    // Now use the location to get the platform again.
+    JsonNode results = getPlatform(BRIGHTSPACE_PLATFORM_ID_DOUBLE_ENCODED);
+    assertTrue(results.size() > 0);
   }
 
-  @Test(description = "Update an existing TI platform", dependsOnMethods = "createPlatform")
+  @Test(description = "Update an existing LTI platform", dependsOnMethods = "createPlatform")
   public void updatePlatform() throws IOException {
     final PutMethod method = new PutMethod(LTI_PLATFORM_API_ENDPOINT);
     ObjectNode body = buildRequestBody();
@@ -69,19 +84,21 @@ public class LtiPlatformTest extends AbstractRestApiTest {
     body.put("enabled", "false");
     body.set(
         "customRoles",
-        mapper.createObjectNode().set("moodle role", mapper.createArrayNode().add("OEQ role")));
+        mapper
+            .createObjectNode()
+            .set(LTI_ROLE_LEARNER, mapper.createArrayNode().add(OEQ_ROLE_LEARNER)));
 
-    int resp_code = sendRequest(method, body);
+    int resp_code = makeClientRequestWithEntity(method, body);
     assertEquals(HttpStatus.SC_OK, resp_code);
 
     // Now get the platform again and check if it has been updated.
-    JsonNode results = getPlatform(BRIGHTSPACE_PLATFORM_ID);
+    JsonNode results = getPlatform(BRIGHTSPACE_PLATFORM_ID_DOUBLE_ENCODED);
     assertFalse(results.get("enabled").asBoolean());
-    ArrayNode targets = (ArrayNode) results.get("customRoles").get("moodle role");
-    assertEquals(targets.get(0).asText(), "OEQ role");
+    ArrayNode targets = (ArrayNode) results.get("customRoles").get(LTI_ROLE_LEARNER);
+    assertEquals(targets.get(0).asText(), OEQ_ROLE_LEARNER);
   }
 
-  @Test(description = "Update an existing TI platform", dependsOnMethods = "updatePlatform")
+  @Test(description = "Delete an LTI platform", dependsOnMethods = "updatePlatform")
   public void deletePlatform() throws IOException {
     final DeleteMethod method = new DeleteMethod(BRIGHTSPACE_URL);
 
@@ -92,7 +109,7 @@ public class LtiPlatformTest extends AbstractRestApiTest {
     assertEquals(HttpStatus.SC_NOT_FOUND, makeClientRequest(new GetMethod(BRIGHTSPACE_URL)));
   }
 
-  @Test(description = "Update an existing TI platform", dependsOnMethods = "getPlatformByID")
+  @Test(description = "Bulk delete TI platform", dependsOnMethods = "getPlatformByID")
   public void deletePlatforms() throws IOException {
     final DeleteMethod method = new DeleteMethod(LTI_PLATFORM_API_ENDPOINT);
 
@@ -130,7 +147,7 @@ public class LtiPlatformTest extends AbstractRestApiTest {
       dataProvider = "invalidBeans")
   public void invalidValues(ObjectNode body) throws IOException {
     final PostMethod method = new PostMethod(LTI_PLATFORM_API_ENDPOINT);
-    int resp_code = sendRequest(method, body);
+    int resp_code = makeClientRequestWithEntity(method, body);
     assertEquals(HttpStatus.SC_BAD_REQUEST, resp_code);
   }
 
@@ -149,22 +166,14 @@ public class LtiPlatformTest extends AbstractRestApiTest {
     body.put("keysetUrl", "http://test");
     body.put("unknownUserHandling", "ERROR");
     body.put("enabled", "true");
-    body.set("instructorRoles", mapper.createArrayNode().add("tutor"));
-    body.set("unknownRoles", mapper.createArrayNode().add("builder"));
+    body.set("instructorRoles", mapper.createArrayNode().add(OEQ_ROLE_TUTOR));
+    body.set("unknownRoles", mapper.createArrayNode().add(OEQ_ROLE_BUILDER));
     body.set(
         "customRoles",
-        mapper.createObjectNode().set("lti role", mapper.createArrayNode().add("OEQ role")));
+        mapper
+            .createObjectNode()
+            .set(LTI_ROLE_TEACHER, mapper.createArrayNode().add(OEQ_ROLE_TEACHER)));
 
     return body;
-  }
-
-  private int sendRequest(HttpMethod method, ObjectNode requestBody) throws IOException {
-    if (method instanceof EntityEnclosingMethod) {
-      ((EntityEnclosingMethod) method)
-          .setRequestEntity(
-              new StringRequestEntity(requestBody.toString(), "application/json", "UTF-8"));
-    }
-
-    return makeClientRequest(method);
   }
 }
