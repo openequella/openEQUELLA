@@ -55,6 +55,11 @@ trait LtiPlatformService {
   def update(bean: LtiPlatformBean): Option[String]
 
   /**
+    * Delete all the platforms from the current Institution.
+    */
+  def deleteAll: Unit
+
+  /**
     * Delete a LTI platform from the current Institution by ID.
     *
     * @param platformId The ID identifying a LTI platform.

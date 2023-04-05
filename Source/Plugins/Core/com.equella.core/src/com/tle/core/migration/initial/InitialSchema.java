@@ -37,6 +37,8 @@ import com.tle.beans.entity.itemdef.ItemdefBlobs;
 import com.tle.beans.item.*;
 import com.tle.beans.item.attachments.*;
 import com.tle.beans.item.cal.request.CourseInfo;
+import com.tle.beans.lti.LtiPlatform;
+import com.tle.beans.lti.LtiPlatformCustomRole;
 import com.tle.beans.mime.MimeEntry;
 import com.tle.beans.newentity.Entity;
 import com.tle.beans.security.ACLEntryMapping;
@@ -152,7 +154,9 @@ public class InitialSchema extends AbstractCreateMigration {
         ViewcountItem.class,
         ViewcountAttachment.class,
         Entity.class,
-        WebKeySet.class
+        WebKeySet.class,
+        LtiPlatformCustomRole.class,
+        LtiPlatform.class
       };
 
   @SuppressWarnings("nls")

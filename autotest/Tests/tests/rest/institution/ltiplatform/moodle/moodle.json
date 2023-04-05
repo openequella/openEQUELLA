@@ -1,0 +1,17 @@
+{
+  "platformId" : "http://localhost:8100",
+  "clientId" : "abc",
+  "authUrl" : "http://test",
+  "keysetUrl" : "http://test",
+  "usernamePrefix" : "prefix",
+  "usernameSuffix" : "suffix",
+  "unknownUserHandling" : "ERROR",
+  "unknownUserDefaultGroups" : [],
+  "instructorRoles" : [ "tutor" ],
+  "unknownRoles" : [ "builder" ],
+  "customRoles" : {
+    "student" : [ "learner" ]
+  },
+  "allowExpression" : "",
+  "enabled" : true
+}

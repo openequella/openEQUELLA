@@ -79,4 +79,10 @@ class LtiPlatformServiceImpl extends LtiPlatformService {
       .getByPlatformId(platFormId)
       .map(lti13Dao.delete)
   }
+
+  override def deleteAll: Unit = {
+    log(s"deletes all the LTI platforms")
+
+    lti13Dao.enumerateAll.asScala.foreach(lti13Dao.delete)
+  }
 }
