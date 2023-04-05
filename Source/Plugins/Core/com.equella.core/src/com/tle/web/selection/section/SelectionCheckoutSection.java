@@ -20,6 +20,8 @@ package com.tle.web.selection.section;
 
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
+import com.tle.web.resources.PluginResourceHelper;
+import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
@@ -30,8 +32,9 @@ import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
-import com.tle.web.sections.js.generic.OverrideHandler;
-import com.tle.web.sections.js.generic.statement.ScriptStatement;
+import com.tle.web.sections.js.JSCallable;
+import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
+import com.tle.web.sections.js.generic.function.IncludeFile;
 import com.tle.web.sections.js.validators.Confirm;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.render.Label;
@@ -40,6 +43,7 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.selection.SelectionService;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.template.Decorations;
+import com.tle.web.template.RenderNewTemplate;
 import javax.inject.Inject;
 
 @SuppressWarnings("nls")
@@ -78,15 +82,18 @@ public class SelectionCheckoutSection
   @Component private Button finishButton;
   @Inject private VersionSelectionSection versionSelectionSection;
 
+  private static final PluginResourceHelper resources =
+      ResourcesService.getResourceHelper(SelectionCheckoutSection.class);
+
+  private static final JSCallable HANDLE_CONTINUE_SELECTION_FUNCTION =
+      new ExternallyDefinedFunction(
+          "continueSelection", new IncludeFile(resources.url("scripts/selectionsession.js")));
+
   @Override
   public void registered(String id, SectionTree tree) {
     super.registered(id, tree);
     versionSelectionSection.setAjaxDivId("checkout-div");
     tree.registerInnerSection(versionSelectionSection, id);
-    // Use JS History API to navigate back so that new search UI can retrieve previous search
-    // options.
-    // This approach also ensure the Old UI still works.
-    continueButton.setClickHandler(new OverrideHandler(new ScriptStatement("history.back();")));
     cancelButton.setClickHandler(
         events.getNamedHandler("cancelled").addValidator(new Confirm(CONFIRM_CANCEL)));
     finishButton.setClickHandler(events.getNamedHandler("finished"));
@@ -97,6 +104,15 @@ public class SelectionCheckoutSection
     Decorations.getDecorations(context).setTitle(TITLE_LABEL);
 
     final SelectionSession ss = selectionService.getCurrentSession(context);
+
+    if (RenderNewTemplate.isNewUIEnabled()) {
+      // Use custom js to navigate back so that new search UI can retrieve previous search
+      // options.
+      continueButton.setClickHandler(context, HANDLE_CONTINUE_SELECTION_FUNCTION);
+    } else {
+      continueButton.setClickHandler(context, events.getNamedHandler("continueSelections"));
+    }
+
     continueButton.setLabel(
         context, ss.isSelectMultiple() ? CONTINUE_MULTIPLE_LABEL : CONTINUE_SINGLE_LABEL);
     finishButton.setLabel(
@@ -119,14 +135,16 @@ public class SelectionCheckoutSection
   }
 
   @EventHandlerMethod
-  public void continueSelections(SectionInfo info) {
+  public void clearSelectionForSingleSelectionMode(SectionInfo info) {
     SelectionSession ss = selectionService.getCurrentSession(info);
     if (!ss.isSelectMultiple()) {
       ss.clearResources();
-    } else {
-      versionSelectionSection.saveVersionChoices(info);
     }
+  }
 
+  @EventHandlerMethod
+  public void continueSelections(SectionInfo info) {
+    this.clearSelectionForSingleSelectionMode(info);
     info.forwardToUrl(getModel(info).getContinueSelectionsBackTo());
   }
 
