@@ -65,6 +65,8 @@ class LtiPlatformResource {
     processResult[Option[A]](result, processOption, onFailureMessage)
   }
 
+  private def decodeId(id: String): String = URLDecoder.decode(id, StandardCharsets.UTF_8.name())
+
   @GET
   @Path("/{id}")
   @ApiOperation(
@@ -77,8 +79,8 @@ class LtiPlatformResource {
         "The Platform ID has to be double URL encoded to protect against premature decoding.") @PathParam(
         "id") id: String): Response = {
     aclProvider.checkAuthorised()
-    val decodedId = URLDecoder.decode(id, StandardCharsets.UTF_8.name())
-    processOptionResult[LtiPlatformBean](ltiPlatformService.getByPlatformID(decodedId),
+
+    processOptionResult[LtiPlatformBean](ltiPlatformService.getByPlatformID(decodeId(id)),
                                          Response.ok(_).build,
                                          onFailureMessage = s"Failed to get LTI platform by ID $id")
 
@@ -154,10 +156,13 @@ class LtiPlatformResource {
     notes = "This endpoints deletes an existing LTI platform by platform ID",
     response = classOf[Int],
   )
-  def deletePlatform(@ApiParam("Platform ID") @PathParam("id") id: String): Response = {
+  def deletePlatform(
+      @ApiParam(
+        "The Platform ID has to be double URL encoded to protect against premature decoding.") @PathParam(
+        "id") id: String): Response = {
     aclProvider.checkAuthorised()
 
-    processOptionResult[Unit](ltiPlatformService.delete(id),
+    processOptionResult[Unit](ltiPlatformService.delete(decodeId(id)),
                               Response.ok(_).build,
                               onFailureMessage = s"Failed to delete LTI platform by ID $id")
   }
