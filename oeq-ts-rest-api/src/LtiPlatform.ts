@@ -96,9 +96,21 @@ export interface LtiPlatformRaw extends LtiPlatformBase {
  * the LTI platform data structure defined on server side.
  */
 export interface LtiPlatform extends LtiPlatformBase {
+  /**
+   * A list of roles to be assigned to a LTI instructor role
+   */
   instructorRoles: Set<string>;
+  /**
+   * A list of roles to be assigned to a LTI role that is neither the instructor or in the list of custom roles
+   */
   unknownRoles: Set<string>;
+  /**
+   * Mappings from LTI roles to OEQ roles
+   */
   customRoles: Map<string, Set<string>>;
+  /**
+   * The list of groups to be added to the user object If the unknown user handling is CREATE
+   */
   unknownUserDefaultGroups?: Set<string>;
 }
 
