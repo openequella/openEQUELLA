@@ -16,4 +16,5 @@
  * limitations under the License.
  */
 import * as Ord from 'fp-ts/Ord';
+
 export const OrdAsIs = Ord.fromCompare(() => 0);
