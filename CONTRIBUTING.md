@@ -293,16 +293,15 @@ npm ci
 npm run build
 ````
 
-after building the REST module,
-then you can go into the `react-front-end` directory and execute:
+After building the REST module (`oeq-ts-rest-api`), then you can go into the `react-front-end` directory and execute:
 
 ```bash
 npm ci
 npm run dev
 ```
 
-the `run dev` will build the React App
-and place the output into the directory from which openEQUELLA serves its web resources.
+The `run dev` command will build the React App and place the output into the directory from which
+openEQUELLA serves its web resources.
 
 Further to this, you may also wish to utilise the Storybook setup when working on UI  components.
 This can be done by:
