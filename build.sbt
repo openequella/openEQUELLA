@@ -262,10 +262,11 @@ ThisBuild / buildReactFrontEnd := {
 }
 ThisBuild / reactFrontEndLanguageBundle := reactFrontEndOutputDir.value / "lang/jsbundle.json"
 
-// Add to the clean to ensure we clean out the react-front-end
+// Add to the clean to ensure we clean out the react-front-end and oeq-ts-rest-api
 clean := {
   clean.value
   Common.nodeScript("clean", reactFrontEndDir.value)
+  Common.nodeScript("clean", oeqTsRestApiDir.value)
 }
 
 val userBeans: FileFilter = ("GroupBean.java" || "UserBean.java" || "RoleBean.java") &&

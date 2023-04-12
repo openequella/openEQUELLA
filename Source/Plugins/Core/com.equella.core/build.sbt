@@ -135,5 +135,4 @@ clean := {
   (inplaceEditorJar / clean).value
   val baseSwagger = baseDirectory.value / "swaggerui"
   Common.nodeScript("clean", baseSwagger)
-  Common.nodeScript("clean", oeqTsRestApiDir.value)
 }

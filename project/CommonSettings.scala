@@ -29,8 +29,9 @@ object CommonSettings extends AutoPlugin {
     lazy val writeScriptingJavadoc = taskKey[File]("Write the scripting javadoc")
     lazy val mergeJPF              = inputKey[Unit]("Merge all")
     lazy val buildReactFrontEnd    = taskKey[File]("Build the ReactJS based front-end")
-    lazy val oeqTsRestApiDir       = settingKey[File]("The base directory of the oEQ REST API project")
-    lazy val reactFrontEndDir      = settingKey[File]("The base directory of the ReactJS project")
+    lazy val oeqTsRestApiDir =
+      settingKey[File]("The base directory of the oEQ Typescript REST module project")
+    lazy val reactFrontEndDir = settingKey[File]("The base directory of the ReactJS project")
     lazy val reactFrontEndOutputDir =
       settingKey[File]("The output/target directory of the ReactJS project")
     lazy val reactFrontEndLanguageBundle =
