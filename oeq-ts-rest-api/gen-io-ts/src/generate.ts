@@ -109,7 +109,8 @@ const customCodecTemplate = (type: string): string => {
       return pipe(
         type.match(SetRegex)?.[1],
         O.fromNullable,
-        O.map(customCodecTemplate),
+        // determine the Codec for the Set's type parameter.
+        O.map((typeArgForSet) => customCodecTemplate(typeArgForSet)),
         O.foldW(
           () => 't.unknown',
           (codec) => `td.setFromArray(${codec}, OrdAsIs)`
@@ -121,10 +122,10 @@ const customCodecTemplate = (type: string): string => {
         O.fromNullable,
         O.foldW(
           () => 't.unknown',
-          ([_, key, value]) =>
+          ([_, keyTypeParam, valueTypeParam]) =>
             `td.mapFromEntries(${customCodecTemplate(
-              S.trim(key)
-            )}, OrdAsIs, ${customCodecTemplate(S.trim(value))})`
+              S.trim(keyTypeParam)
+            )}, OrdAsIs, ${customCodecTemplate(S.trim(valueTypeParam))})`
         )
       );
     default:
