@@ -23,6 +23,10 @@ import { validate } from './Utils';
 import * as t from 'io-ts';
 import * as A from 'fp-ts/Array';
 import * as M from 'fp-ts/Map';
+import * as O from 'fp-ts/Option';
+import * as R from 'fp-ts/Record';
+import * as S from 'fp-ts/string';
+import * as SET from 'fp-ts/Set';
 
 export type UnknownUserHandling = 'ERROR' | 'GUEST' | 'CREATE';
 
@@ -98,16 +102,27 @@ export interface LtiPlatform extends LtiPlatformBase {
   unknownUserDefaultGroups?: Set<string>;
 }
 
+// Helper functions to convert an array of string to a set of string, and vice versa.
+const arrayToSet: (array: string[]) => Set<string> = SET.fromArray(S.Ord);
+const setToArray: (set: Set<string>) => string[] = SET.toArray(S.Ord);
+
 const convertToLtiPlatform = (platform: LtiPlatformRaw): LtiPlatform => ({
   ...platform,
-  instructorRoles: new Set(platform.instructorRoles),
-  unknownRoles: new Set(platform.unknownRoles),
-  unknownUserDefaultGroups: new Set(platform.unknownUserDefaultGroups),
-  customRoles: new Map(
-    Object.entries(platform.customRoles).map(([key, value]) => [
-      key,
-      new Set(value),
-    ])
+  instructorRoles: arrayToSet(platform.instructorRoles),
+  unknownRoles: arrayToSet(platform.unknownRoles),
+  unknownUserDefaultGroups: pipe(
+    O.fromNullable(platform.unknownUserDefaultGroups),
+    O.map(arrayToSet),
+    O.toUndefined
+  ),
+  customRoles: pipe(
+    platform.customRoles,
+    R.toEntries,
+    A.map<[string, string[]], [string, Set<string>]>(([ltiRole, targets]) => [
+      ltiRole,
+      arrayToSet(targets),
+    ]),
+    (entries) => new Map(entries)
   ),
 });
 
@@ -115,13 +130,18 @@ export const convertToRawLtiPlatform = (
   platform: LtiPlatform
 ): LtiPlatformRaw => ({
   ...platform,
-  instructorRoles: Array.from(platform.instructorRoles),
-  unknownRoles: Array.from(platform.unknownRoles),
-  unknownUserDefaultGroups: Array.from(platform.unknownUserDefaultGroups ?? []),
+  instructorRoles: setToArray(platform.instructorRoles),
+  unknownRoles: setToArray(platform.unknownRoles),
+  unknownUserDefaultGroups: pipe(
+    O.fromNullable(platform.unknownUserDefaultGroups),
+    O.map(setToArray),
+    O.toUndefined
+  ),
   customRoles: pipe(
     platform.customRoles,
-    M.map<Set<string>, string[]>(Array.from),
-    Object.fromEntries
+    M.map(setToArray),
+    M.toArray(S.Ord),
+    R.fromEntries
   ),
 });
 
