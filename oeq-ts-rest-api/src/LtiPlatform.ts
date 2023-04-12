@@ -32,7 +32,7 @@ export type UnknownUserHandling = 'ERROR' | 'GUEST' | 'CREATE';
 
 export interface LtiPlatformBase {
   /**
-   * ID of the learning platform which must be double URL encoded
+   * ID of the learning platform.
    */
   platformId: string;
   /**
@@ -157,20 +157,24 @@ export const convertToRawLtiPlatform = (
   ),
 });
 
+// Helper function to encode the provided text twice.
+const doubleEncoded = (text: string): string =>
+  encodeURIComponent(encodeURIComponent(text));
+
 const LTI_PLATFORM_PATH = '/ltiplatform';
 
 /**
  * Retrieve one LTI platform by platform ID.
  *
  * @param apiBasePath Base URI to the oEQ institution and API
- * @param platformId LTI platform ID which must be double URL encoded
+ * @param platformId ID of the learning platform
  */
 export const getPlatformById = (
   apiBasePath: string,
   platformId: string
 ): Promise<LtiPlatform> =>
   GET(
-    `${apiBasePath}${LTI_PLATFORM_PATH}/${platformId}`,
+    `${apiBasePath}${LTI_PLATFORM_PATH}/${doubleEncoded(platformId)}`,
     validate(LtiPlatformRawCodec)
   ).then(convertToLtiPlatform);
 
@@ -186,8 +190,7 @@ export const getAllPlatforms = (apiBasePath: string): Promise<LtiPlatform[]> =>
   ).then(A.map(convertToLtiPlatform));
 
 /**
- * As Axios cannot directly send a POST request with data of type `Map` or `Set`, this function firstly processes Lti platform
- * data structure, and then use transformed structure to create a new LTI platform.
+ * Create a new LTI platform with the provided LTI platform details.
  *
  * @param apiBasePath Base URI to the oEQ institution and API
  * @param platform LTI platform details to be used to create a new platform
@@ -198,12 +201,13 @@ export const createPlatform = (
 ): Promise<void> =>
   POST_void(
     `${apiBasePath}${LTI_PLATFORM_PATH}`,
+    // As Axios cannot directly send a POST request with data of type `Map` or `Set`, we need to transform
+    // `Map` to `Record` and `Set` to `Array`.
     convertToRawLtiPlatform(platform)
   );
 
 /**
- * Similar to `createPlatform`, this function processes Lti platform data structure and then use transformed structure to
- * update an existing LTI platform.
+ * update an existing LTI platform with the provided LTI platform details.
  *
  * @param apiBasePath Base URI to the oEQ institution and API
  * @param platform LTI platform details to be used to update an existing platform
@@ -218,12 +222,13 @@ export const updatePlatform = (
  * Delete one LTI platform by platform ID.
  *
  * @param apiBasePath Base URI to the oEQ institution and API
- * @param platformId LTI platform ID which must be double URL encoded
+ * @param platformId ID of the learning platform
  */
 export const deletePlatformById = (
   apiBasePath: string,
   platformId: string
-): Promise<void> => DELETE(`${apiBasePath}${LTI_PLATFORM_PATH}/${platformId}`);
+): Promise<void> =>
+  DELETE(`${apiBasePath}${LTI_PLATFORM_PATH}/${doubleEncoded(platformId)}`);
 
 /**
  * Bulk delete LTI platforms.

@@ -28,7 +28,6 @@ const OEQ_ROLE_BUILDER = '3333c1cb-109d-474a-a76b-d4af3859a467';
 const BRIGHTSPACE_PLATFORM_ID = 'http://localhost:8300';
 const MOODLE_PLATFORM_ID = 'http://localhost:8100';
 const CANVAS_PLATFORM_ID = 'http://localhost:8200';
-const ENCODED_BRIGHTSPACE_PLATFORM_ID = 'http%253A%252F%252Flocalhost%253A8300';
 
 const platform: LtiPlatformModule.LtiPlatform = {
   authUrl: 'http://test',
@@ -62,7 +61,7 @@ describe('getPlatformById', () => {
   it('retrieves a LTI platform by a double URL encoded platform ID', async () => {
     const platform = await LtiPlatformModule.getPlatformById(
       TC.API_PATH,
-      'http%253A%252F%252Flocalhost%253A8100'
+      MOODLE_PLATFORM_ID
     );
     expect(platform.platformId).toBe('http://localhost:8100');
   });
@@ -93,10 +92,7 @@ describe('updatePlatform', () => {
 describe('deletePlatformById', () => {
   it('deletes a LTI platform by a double URL encoded platform ID', async () => {
     await expect(
-      LtiPlatformModule.deletePlatformById(
-        TC.API_PATH,
-        ENCODED_BRIGHTSPACE_PLATFORM_ID
-      )
+      LtiPlatformModule.deletePlatformById(TC.API_PATH, BRIGHTSPACE_PLATFORM_ID)
     ).resolves.not.toThrow();
   });
 });
