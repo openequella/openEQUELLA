@@ -59,6 +59,16 @@ jobs:
           distribution: adopt
           java-version: 11
 
+      - name: Install node dependencies (oeq-rest-api)
+        working-directory: oeq-ts-rest-api
+        run: |
+          npm ci
+
+      - name: Build oEQ REST module (oeq-rest-api)
+        working-directory: oeq-ts-rest-api
+        run: |
+          npm run build
+
       - name: Install node dependencies (core)
         working-directory: react-front-end
         run: |
@@ -138,6 +148,16 @@ jobs:
         with:
           node-version-file: '.nvmrc'
 
+      - name: Install node dependencies (oeq-rest-api)
+        working-directory: oeq-ts-rest-api
+        run: |
+          npm ci
+
+      - name: Build oEQ REST module (oeq-rest-api)
+        working-directory: oeq-ts-rest-api
+        run: |
+          npm run build
+
       - name: Install node dependencies (core)
         working-directory: react-front-end
         run: |
@@ -189,7 +209,7 @@ jobs:
     strategy:
       matrix:
         newui: [true, false]
-        pgsql-image: [latest, 10]
+        pgsql-image: [latest, 12]
         exclude:
           - newui: false
             pgsql-image: latest
@@ -397,5 +417,3 @@ jobs:
         with:
           name: oEQ-logs-rest-module
           path: autotest/equella-install/logs
-
-

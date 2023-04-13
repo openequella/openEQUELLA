@@ -286,16 +286,22 @@ The New UI consists of two modules:
 - The React based SPA located in the `react-front-end` directory; and
 - The REST Module which is located in the `oeq-ts-rest-api` directory.
 
-For the most part, if you wish to work on the new UI you can simply go into the `react-front-end`
-directory and execute:
+For the most part, if you wish to work on the new UI, you need go into `oeq-ts-rest-api` directory and execute:
+
+```bash
+npm ci
+npm run build
+````
+
+After building the REST module (`oeq-ts-rest-api`), then you can go into the `react-front-end` directory and execute:
 
 ```bash
 npm ci
 npm run dev
 ```
 
-The first will also trigger a build of the REST module, and then `run dev` will build the React App
-and place the output into the directory from which openEQUELLA serves its web resources.
+The `run dev` command will build the React App and place the output into the directory from which
+openEQUELLA serves its web resources.
 
 Further to this, you may also wish to utilise the Storybook setup when working on UI  components.
 This can be done by:
