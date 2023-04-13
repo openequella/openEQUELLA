@@ -37,10 +37,14 @@ const HEADER =
   "/** This file is created by 'io-ts-gen' so please do not modify it. **/";
 const IO_TS_IMPORT = "import * as t from 'io-ts';";
 const IO_TS_TYPES_IMPORT = "import * as td from 'io-ts-types';";
+const FP_TS_ORD_IMPORT = "import { OrdAsIs } from '../fp-ts-ord/Ord';";
 
 const ArrayRegex = /^(.+)(\[])+$/;
 // Regex for Record where the first group does a non-greedy capture to match the first comma.
 const RecordRegex = /^Record<(.+?),(.+)>$/;
+// Regex for Map which is similar to the one for Record.
+const MapRegex = /^Map<(.+?),(.+)>$/;
+const SetRegex = /^Set<(.+)>$/;
 const StringLiteralRegex = /^'(.+)'$/;
 const IntLiteralRegex = /^\d+$/;
 const FunctionRegex = /^\(.*\)=>.+$/;
@@ -87,6 +91,48 @@ const generateProperties = (
 // correct TypeReference. Therefore, call this function to drop them.
 const trimString = (s: string) => s.replace(/\s|\n/g, '');
 
+// For types that not directly supported by 'io-ts-codegen' such as `Map` and `Set`, we need to use `customCombinator`
+// to do the codec generation. Hence, we need a template to help generate a string representation for a codec.
+// Only commonly used types are supported for now, and we can update this function to support more complicated types
+// in the future as needed.
+const customCodecTemplate = (type: string): string => {
+  switch (true) {
+    case type === 'string':
+      return 't.string';
+    case type === 'number':
+      return 't.number';
+    case type === 'boolean':
+      return 't.boolean';
+    case type === 'Date':
+      return 'td.date';
+    case SetRegex.test(type):
+      return pipe(
+        type.match(SetRegex)?.[1],
+        O.fromNullable,
+        // determine the Codec for the Set's type parameter.
+        O.map((typeArgForSet) => customCodecTemplate(typeArgForSet)),
+        O.foldW(
+          () => 't.unknown',
+          (codec) => `td.setFromArray(${codec}, OrdAsIs)`
+        )
+      );
+    case MapRegex.test(type):
+      return pipe(
+        type.match(MapRegex),
+        O.fromNullable,
+        O.foldW(
+          () => 't.unknown',
+          ([_, keyTypeParam, valueTypeParam]) =>
+            `td.mapFromEntries(${customCodecTemplate(
+              S.trim(keyTypeParam)
+            )}, OrdAsIs, ${customCodecTemplate(S.trim(valueTypeParam))})`
+        )
+      );
+    default:
+      return `${type}Codec`;
+  }
+};
+
 // Given a property and a list of generic types, find out a matched TypeReference for the property.
 const getTypeReference = (
   { type, properties }: Prop,
@@ -116,9 +162,6 @@ const getTypeReference = (
           (t) => gen.arrayCombinator(plainTypeReference(t, typeArguments))
         )
       );
-    case type === 'Date':
-      // 'td' is the namespace of the import of 'io-ts-types'.
-      return gen.customCombinator('Date', 'td.date');
     case FunctionRegex.test(trimString(type)):
       return gen.functionType;
     case IntLiteralRegex.test(type):
@@ -140,12 +183,6 @@ const getTypeReference = (
               plainTypeReference(S.trim(codomain), typeArguments)
             )
         )
-      );
-    case StringLiteralRegex.test(type):
-      return pipe(
-        type.match(StringLiteralRegex)?.[1],
-        O.fromNullable,
-        O.foldW(() => gen.unknownType, gen.literalCombinator)
       );
     case TupleRegex.test(type):
       return pipe(
@@ -171,6 +208,14 @@ const getTypeReference = (
         RA.toArray,
         gen.unionCombinator
       );
+    case StringLiteralRegex.test(type):
+      return pipe(
+        type.match(StringLiteralRegex)?.[1],
+        O.fromNullable,
+        O.foldW(() => gen.unknownType, gen.literalCombinator)
+      );
+    case MapRegex.test(type) || SetRegex.test(type) || type === 'Date':
+      return gen.customCombinator(type, customCodecTemplate(type));
     default:
       // Check whether the property's type is in the list of type argument.
       // If yes, the codec's name must be in the format of 'codecX' where X is a number.
@@ -313,6 +358,7 @@ export const generate = ({
       HEADER,
       ...generateImports(imports),
       IO_TS_IMPORT,
+      FP_TS_ORD_IMPORT,
       IO_TS_TYPES_IMPORT,
       '\n',
       ...typeDeclarations,
