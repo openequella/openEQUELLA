@@ -2152,6 +2152,10 @@
     <parameter id="id" value="lti" />
     <parameter id="class" value="bean:com.tle.integration.lti.generic.GenericLtiIntegration" />
   </extension>
+  <extension plugin-id="com.tle.web.integration" point-id="integration" id="lti13IntegrationService">
+    <parameter id="id" value="lti13" />
+    <parameter id="class" value="bean:com.tle.integration.lti13.Lti13IntegrationService" />
+  </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="signon_2">
     <parameter id="path" value="/canvassignon.do" />
     <parameter id="root" value="bean:/canvassignon" />
