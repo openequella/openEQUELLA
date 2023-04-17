@@ -48,6 +48,7 @@ import * as RSET from "fp-ts/ReadonlySet";
 import * as S from "fp-ts/string";
 import { KeyboardEvent, useEffect, useState } from "react";
 import { sprintf } from "sprintf-js";
+import { BaseSecurityEntity } from "../../modules/ACLEntityModule";
 import {
   eqGroupById,
   groupIds,
@@ -77,10 +78,6 @@ const {
   selectAll: selectAllLabel,
   selectNone: clearAllLabel,
 } = languageStrings.common.action;
-
-interface BaseSecurityEntity {
-  id: string;
-}
 
 /**
  * Given a set of items, return a set of UUIDs for all the items.

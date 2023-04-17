@@ -821,6 +821,12 @@ export const languageStrings = {
     failedToFindMessage: "Unable to find any role matching '%s'",
     queryFieldLabel: "Role name",
   },
+  groupSearchDialog: {
+    title: "Select groups to filter by",
+  },
+  roleSearchDialog: {
+    title: "Select roles to filter by",
+  },
   wizard: {
     controls: {
       unsupported: {

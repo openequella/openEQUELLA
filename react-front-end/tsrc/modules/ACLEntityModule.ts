@@ -22,6 +22,15 @@ import * as O from "fp-ts/Option";
 import { constant, flow, pipe } from "fp-ts/function";
 
 /**
+ * The interface defines a basic security entity.
+ * It includes a common property "id" that is used across other interfaces like User, Group, and Role.
+ * The purpose of creating this base interface is to reuse these common properties in some generic component.
+ */
+export interface BaseSecurityEntity {
+  id: string;
+}
+
+/**
  * Contains 3 resolvers for functions to lookup user, group and role entities
  */
 export interface ACLEntityResolvers {
