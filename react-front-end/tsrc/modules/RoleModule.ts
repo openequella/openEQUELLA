@@ -16,7 +16,8 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { contramap, Eq } from "fp-ts/Eq";
+import * as EQ from "fp-ts/Eq";
+import * as ORD from "fp-ts/Ord";
 import * as RA from "fp-ts/ReadonlyArray";
 import * as S from "fp-ts/string";
 import { API_BASE_URL } from "../AppConfig";
@@ -25,9 +26,16 @@ import { findEntityById } from "./ACLEntityModule";
 /**
  * Eq for `OEQ.UserQuery.RoleDetails` with equality based on the role's UUID.
  */
-export const eqRoleById: Eq<OEQ.UserQuery.RoleDetails> = contramap(
+export const eqRoleById: EQ.Eq<OEQ.UserQuery.RoleDetails> = EQ.contramap(
   (role: OEQ.UserQuery.RoleDetails) => role.id
 )(S.Eq);
+
+/**
+ * Ord for `OEQ.UserQuery.RoleDetails` with order based on the role's name.
+ */
+export const ordRole: ORD.Ord<OEQ.UserQuery.RoleDetails> = ORD.contramap(
+  (r: OEQ.UserQuery.RoleDetails) => r.name
+)(S.Ord);
 
 /**
  * Lookup roles known in oEQ.

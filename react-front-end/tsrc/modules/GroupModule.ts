@@ -33,6 +33,13 @@ export const eqGroupById: Eq<OEQ.UserQuery.GroupDetails> = contramap(
 )(S.Eq);
 
 /**
+ * Ord for `OEQ.UserQuery.GroupDetails` with order based on the group's name.
+ */
+export const ordGroup: ORD.Ord<OEQ.UserQuery.GroupDetails> = ORD.contramap(
+  (g: OEQ.UserQuery.GroupDetails) => g.name
+)(S.Ord);
+
+/**
  * Given a set of `OEQ.UserQuery.GroupDetails`, return a set of UUIDs for all the groups.
  */
 export const groupIds: (
