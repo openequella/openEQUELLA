@@ -7,7 +7,7 @@ version := "1.0"
 
 val CirceVersion  = "0.12.1"
 val Http4sVersion = "0.21.8"
-val jsoupVersion  = "1.15.3"
+val jsoupVersion  = "1.15.4"
 
 scalaVersion := "2.13.10"
 

@@ -18,7 +18,6 @@
     "npm": "8.19.4"
   },
   "scripts": {
-    "prepare": "cross-env-shell \"cd ../oeq-ts-rest-api && npm ci && npm run build\"",
     "install": "cross-env-shell \"mkdirp ${npm_package_config_devlang} ${npm_package_config_buildlang}\"",
     "clean": "rm -rf target/ node_modules/ .cache/",
     "compile:langbundle-tool": "cross-env-shell tsc --types \"node\" --outDir ${npm_package_config_languageBundle} build-tools/BuildLanguageBundle.ts",
