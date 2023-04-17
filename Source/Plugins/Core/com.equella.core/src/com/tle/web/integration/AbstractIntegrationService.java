@@ -26,9 +26,11 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.IItem;
 import com.tle.beans.item.ItemId;
+import com.tle.beans.item.ViewableItemType;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.beans.item.attachments.UnmodifiableAttachments;
 import com.tle.common.Check;
+import com.tle.common.NameValue;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.item.service.ItemResolver;
 import com.tle.core.plugins.PluginTracker;
@@ -42,6 +44,7 @@ import com.tle.web.selection.SelectionSession;
 import com.tle.web.template.Decorations;
 import com.tle.web.template.Decorations.MenuMode;
 import com.tle.web.viewable.ViewableItem;
+import com.tle.web.viewable.ViewableItemResolver;
 import com.tle.web.viewurl.ItemUrlExtender;
 import com.tle.web.viewurl.ViewItemUrl;
 import com.tle.web.viewurl.ViewableResource;
@@ -62,6 +65,7 @@ public abstract class AbstractIntegrationService<T extends IntegrationSessionDat
 
   @Inject protected AttachmentResourceService attachmentResourceService;
   @Inject protected ItemResolver itemResolver;
+  @Inject protected ViewableItemResolver viewableItemResolver;
   @Inject private PluginTracker<IntegrationSessionExtension> resultsTracker;
   /* @LazyNonNull */ @Nullable
   private volatile SetMultimap<String, IntegrationSessionExtension> extensionMap;
@@ -70,8 +74,17 @@ public abstract class AbstractIntegrationService<T extends IntegrationSessionDat
 
   protected abstract String getIntegrationType();
 
-  protected abstract <I extends IItem<?>> ViewableItem<I> createViewableItem(
-      I item, SelectedResource resource);
+  public <I extends IItem<?>> ViewableItem<I> createViewableItem(
+      I item, SelectedResource resource) {
+    return viewableItemResolver.createIntegrationViewableItem(
+        item, resource.isLatest(), ViewableItemType.GENERIC, resource.getKey().getExtensionType());
+  }
+
+  public <I extends IItem<?>> ViewableItem<I> createViewableItem(
+      ItemId itemId, boolean latest, @Nullable String itemExtensionType) {
+    return viewableItemResolver.createIntegrationViewableItem(
+        itemId, latest, ViewableItemType.GENERIC, itemExtensionType);
+  }
 
   private SetMultimap<String, IntegrationSessionExtension> getExtensionMap() {
     if (extensionMap == null) {
@@ -262,5 +275,11 @@ public abstract class AbstractIntegrationService<T extends IntegrationSessionDat
         viewableResource.getViewableItem().getItem(),
         viewableResource.getAttachment(),
         new LmsLink(actualUrl, title, description, attachmentUuid));
+  }
+
+  @Nullable
+  @Override
+  public NameValue getLocation(T data) {
+    return null;
   }
 }
