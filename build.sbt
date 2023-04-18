@@ -243,9 +243,16 @@ writeScriptingJavadoc := {
   outZip
 }
 
+ThisBuild / oeqTsRestApiDir := baseDirectory.value / "oeq-ts-rest-api"
+
 ThisBuild / reactFrontEndDir := baseDirectory.value / "react-front-end"
 ThisBuild / reactFrontEndOutputDir := reactFrontEndDir.value / "target/resources"
 ThisBuild / buildReactFrontEnd := {
+  // build rest module first since it is a dependency of react front end
+  val apiDir = oeqTsRestApiDir.value
+  Common.nodeInstall(apiDir)
+  Common.nodeScript("build", apiDir)
+
   val dir = reactFrontEndDir.value
   Common.nodeInstall(dir)
   Common.nodeScript("build", dir)
@@ -255,10 +262,11 @@ ThisBuild / buildReactFrontEnd := {
 }
 ThisBuild / reactFrontEndLanguageBundle := reactFrontEndOutputDir.value / "lang/jsbundle.json"
 
-// Add to the clean to ensure we clean out the react-front-end
+// Add to the clean to ensure we clean out the react-front-end and oeq-ts-rest-api
 clean := {
   clean.value
   Common.nodeScript("clean", reactFrontEndDir.value)
+  Common.nodeScript("clean", oeqTsRestApiDir.value)
 }
 
 val userBeans: FileFilter = ("GroupBean.java" || "UserBean.java" || "RoleBean.java") &&

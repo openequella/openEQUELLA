@@ -17,9 +17,15 @@ public class GoogleAnalyticsTest extends AbstractSessionTest {
     googlePage.save();
     Assert.assertTrue(googlePage.isTrackingEnabled());
 
+    googlePage.load();
+    Assert.assertTrue(googlePage.isTrackingTagPresent());
+
     googlePage = new GoogleSettingsPage(context).load();
     googlePage.clearAccountId();
     googlePage.save();
     Assert.assertFalse(googlePage.isTrackingEnabled());
+
+    googlePage.load();
+    Assert.assertFalse(googlePage.isTrackingTagPresent());
   }
 }

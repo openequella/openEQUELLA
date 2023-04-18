@@ -16,10 +16,15 @@
  * limitations under the License.
  */
 
-package com.tle.common.inplaceeditor;
+package com.tle.web.settings
 
-public interface InPlaceEditorServerBackend {
-  String getDownloadUrl(String itemUuid, int itemVersion, String stagingId, String filename);
+import com.tle.common.institution.CurrentInstitution
+import com.tle.legacy.LegacyGuice
 
-  void write(String stagingId, String filename, boolean append, byte[] upload);
+object AnalyticsSettings {
+  private val AnalyticsPropName = "GOOGLE_ANALYTICS"
+
+  def getAnalyticsId: Option[String] = {
+    Option(LegacyGuice.configService.getProperty(AnalyticsPropName))
+  }
 }

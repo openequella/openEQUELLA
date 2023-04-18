@@ -463,6 +463,7 @@ export const SearchPageBody = ({
         ...c,
         schemaNode: getSchemaNode(c.id),
       })),
+      currentPage: 0,
     });
   };
 

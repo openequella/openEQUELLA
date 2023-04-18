@@ -49,6 +49,7 @@ export const basicRenderData: RenderData = {
   newSearch: true,
   selectionSessionInfo: basicSelectionSessionInfo,
   viewedFromIntegration: false,
+  analyticsId: null,
 };
 
 export const renderDataForSelectOrAdd: RenderData = {

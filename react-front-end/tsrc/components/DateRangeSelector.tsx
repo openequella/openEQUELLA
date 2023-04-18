@@ -252,7 +252,8 @@ export const DateRangeSelector = ({
     let option = quickOptionLabels.all;
     if (
       !dateRange?.start ||
-      dateRange.end?.toDateString() !== new Date().toDateString()
+      (dateRange?.end &&
+        dateRange.end.toDateString() !== new Date().toDateString())
     ) {
       return option;
     }
