@@ -1,5 +1,9 @@
 package com.tle.integration.lti13
 
+import com.auth0.jwt.interfaces.DecodedJWT
+import com.tle.integration.lti13.Lti13Claims.CUSTOM_PARAMETERS
+import cats.implicits._
+
 object LtiMessageType extends Enumeration {
   val LtiDeepLinkingRequest, LtiResourceLinkRequest = Value
 }
@@ -18,6 +22,25 @@ case class LtiDeepLinkingRequest(deepLinkingSettings: DeepLinkingSettings,
                                  customParams: Option[Map[String, String]])
     extends LtiRequest {
   override val messageType: LtiMessageType.Value = LtiMessageType.LtiDeepLinkingRequest
+}
+
+object LtiDeepLinkingRequest {
+
+  /**
+    * Extract custom params from the provided decoded JWT. Values of custom params must be present as String
+    * by the LSM platform, so discard those non-String values.
+    *
+    * @param decodedJWT Decoded JWT which provides the claim of custom params.
+    * @return A key-value map for custom params, or `None` if no such a claim available.
+    */
+  def getCustomParamsFromClaim(decodedJWT: DecodedJWT): Option[Map[String, String]] = {
+    getClaimAsMap(decodedJWT, CUSTOM_PARAMETERS)
+      .map(
+        _.collect {
+          case (k, v) if v.isInstanceOf[String] => (k, v.asInstanceOf[String])
+        }
+      )
+  }
 }
 
 /**

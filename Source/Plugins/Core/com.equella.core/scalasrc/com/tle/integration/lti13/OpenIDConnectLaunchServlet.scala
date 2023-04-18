@@ -18,13 +18,16 @@
 
 package com.tle.integration.lti13
 
+import cats.implicits._
+import com.auth0.jwt.interfaces.DecodedJWT
 import com.tle.common.usermanagement.user.WebAuthenticationDetails
 import com.tle.core.guice.Bind
 import com.tle.core.services.user.UserService
+import com.tle.integration.lti13.Lti13Claims.{MESSAGE_TYPE, TARGET_LINK_URI}
+import com.tle.integration.lti13.LtiDeepLinkingRequest.getCustomParamsFromClaim
+import com.tle.web.integration.service.IntegrationService
 import org.apache.http.HttpStatus
 import org.slf4j.LoggerFactory
-
-import java.net.URI
 import javax.inject.{Inject, Singleton}
 import javax.servlet.http.{HttpServlet, HttpServletRequest, HttpServletResponse}
 import scala.jdk.CollectionConverters._
@@ -37,9 +40,11 @@ import scala.jdk.CollectionConverters._
 class OpenIDConnectLaunchServlet extends HttpServlet {
   private val LOGGER = LoggerFactory.getLogger(classOf[OpenIDConnectLaunchServlet])
 
-  @Inject private var lti13AuthService: Lti13AuthService = _
-  @Inject private var stateService: Lti13StateService    = _
-  @Inject private var userService: UserService           = _
+  @Inject private var lti13AuthService: Lti13AuthService               = _
+  @Inject private var stateService: Lti13StateService                  = _
+  @Inject private var userService: UserService                         = _
+  @Inject private var integrationService: IntegrationService           = _
+  @Inject private var lti13IntegrationService: Lti13IntegrationService = _
 
   override def doGet(req: HttpServletRequest, resp: HttpServletResponse): Unit = {
     LOGGER.debug("doGet() called")
@@ -72,6 +77,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
           case authResp: AuthenticationResponse =>
             handleAuthenticationResponse(authResp,
                                          userService.getWebAuthenticationDetails(req),
+                                         req,
                                          resp)
           case errorResponse: ErrorResponse => handleErrorResponse(errorResponse, resp)
         }
@@ -97,6 +103,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
 
   private def handleAuthenticationResponse(auth: AuthenticationResponse,
                                            wad: WebAuthenticationDetails,
+                                           req: HttpServletRequest,
                                            resp: HttpServletResponse): Unit = {
     LOGGER.debug("Received an authentication response. Supplied values:")
     LOGGER.debug(auth.toString)
@@ -130,18 +137,43 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
       resp.getWriter.print(output)
     }
 
-    val authResult: Either[Lti13Error, URI] = for {
-      verificationResult <- lti13AuthService.verifyToken(auth.state, auth.id_token)
-      decodedJWT    = verificationResult._1
-      targetLinkUri = verificationResult._2.targetLinkUri
+    def verifyToken: Either[Lti13Error, DecodedJWT] =
+      for {
+        verificationResult <- lti13AuthService.verifyToken(auth.state, auth.id_token)
+        decodedJWT = verificationResult._1
+        userDetails <- UserDetails(decodedJWT)
+        _           <- lti13AuthService.loginUser(wad, userDetails)
+      } yield decodedJWT
 
-      userDetails <- UserDetails(decodedJWT)
-      _           <- lti13AuthService.loginUser(wad, userDetails)
-    } yield targetLinkUri
+    def extractLtiRequestDetails(decodedJWT: DecodedJWT): Either[Lti13Error, LtiRequest] =
+      getClaim(decodedJWT, MESSAGE_TYPE)
+        .toRight(InvalidJWT("Failed to extract message type from JWT"))
+        .flatMap(
+          messageType =>
+            Either
+              .catchNonFatal(LtiMessageType.withName(messageType))
+              .leftMap(_ => InvalidJWT(s"Unknown LTI message type")))
+        .flatMap {
+          case LtiMessageType.LtiDeepLinkingRequest =>
+            for {
+              deepLinkingSettings <- DeepLinkingSettings(decodedJWT)
+              customParams = getCustomParamsFromClaim(decodedJWT)
+            } yield LtiDeepLinkingRequest(deepLinkingSettings, customParams)
+          case LtiMessageType.LtiResourceLinkRequest =>
+            getClaim(decodedJWT, TARGET_LINK_URI)
+              .toRight(InvalidJWT(s"Failed to extract target link URI from JWT"))
+              .map(LtiResourceLinkRequest)
+        }
 
-    authResult match {
-      case Left(error)      => onAuthFailure(error)
-      case Right(targetUri) => resp.sendRedirect(resp.encodeRedirectURL(targetUri.toString))
+    verifyToken flatMap extractLtiRequestDetails match {
+      case Left(error) => onAuthFailure(error)
+      case Right(result) =>
+        result match {
+          case deepLinkingRequest: LtiDeepLinkingRequest =>
+            lti13IntegrationService.launchSelectionSession(deepLinkingRequest, req, resp)
+          case resourceLinkRequest: LtiResourceLinkRequest =>
+            resp.sendRedirect(resp.encodeRedirectURL(resourceLinkRequest.targetLinkUri))
+        }
     }
 
     // Finished with `state` - it's been used once, so let's dump it
