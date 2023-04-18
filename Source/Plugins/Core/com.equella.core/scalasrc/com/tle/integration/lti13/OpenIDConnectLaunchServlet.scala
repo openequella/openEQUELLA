@@ -43,7 +43,6 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
   @Inject private var lti13AuthService: Lti13AuthService               = _
   @Inject private var stateService: Lti13StateService                  = _
   @Inject private var userService: UserService                         = _
-  @Inject private var integrationService: IntegrationService           = _
   @Inject private var lti13IntegrationService: Lti13IntegrationService = _
 
   override def doGet(req: HttpServletRequest, resp: HttpServletResponse): Unit = {
