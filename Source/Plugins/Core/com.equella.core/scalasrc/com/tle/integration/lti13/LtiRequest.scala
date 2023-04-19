@@ -20,14 +20,15 @@ package com.tle.integration.lti13
 
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.tle.integration.lti13.Lti13Claims.CUSTOM_PARAMETERS
-import cats.implicits._
+import com.tle.integration.lti13.LtiMessageType.MessageType
 
 object LtiMessageType extends Enumeration {
+  type MessageType = Value
   val LtiDeepLinkingRequest, LtiResourceLinkRequest = Value
 }
 
 trait LtiRequest {
-  val messageType: LtiMessageType.Value
+  val messageType: MessageType
 }
 
 /**
@@ -39,7 +40,7 @@ trait LtiRequest {
 case class LtiDeepLinkingRequest(deepLinkingSettings: DeepLinkingSettings,
                                  customParams: Option[Map[String, String]])
     extends LtiRequest {
-  override val messageType: LtiMessageType.Value = LtiMessageType.LtiDeepLinkingRequest
+  override val messageType: MessageType = LtiMessageType.LtiDeepLinkingRequest
 }
 
 object LtiDeepLinkingRequest {
@@ -67,5 +68,5 @@ object LtiDeepLinkingRequest {
   * todo: Update the structure as needed. Maybe need another case class for the resource link. Check claim "https://purl.imsglobal.org/spec/lti/claim/resource_link".
   */
 case class LtiResourceLinkRequest(targetLinkUri: String) extends LtiRequest {
-  override val messageType: LtiMessageType.Value = LtiMessageType.LtiResourceLinkRequest
+  override val messageType: MessageType = LtiMessageType.LtiResourceLinkRequest
 }
