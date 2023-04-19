@@ -33,7 +33,8 @@ import javax.persistence.{
   JoinColumn,
   Lob,
   ManyToOne,
-  Table
+  Table,
+  UniqueConstraint
 }
 
 /**
@@ -41,9 +42,12 @@ import javax.persistence.{
   * a key pair of a private key and a public key. This is designed to be used to back the JWKS endpoint.
   */
 @Entity
-@Table(indexes = Array {
-  new Index(name = "web_key_set_id", columnList = "keyId")
-})
+@Table(
+  indexes = Array {
+    new Index(name = "web_key_set_key_id", columnList = "keyId, institution_id")
+  },
+  uniqueConstraints = Array(new UniqueConstraint(columnNames = Array("keyId", "institution_id")))
+)
 @NamedQuery(name = "getByKeyID",
             query = "from WebKeySet WHERE keyId = :keyId AND institution = :institution")
 class WebKeySet {
@@ -58,7 +62,7 @@ class WebKeySet {
   /**
     * Unique ID of the key pair.
     */
-  @Column(nullable = false, unique = true)
+  @Column(nullable = false)
   var keyId: String = _
 
   /**
