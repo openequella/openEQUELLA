@@ -26,11 +26,12 @@ import io.circe.generic.extras.semiauto.deriveConfiguredDecoder
 import io.circe.parser.decode
 
 /**
-  * Data structure for LTI 1.3 deep linking settings.
+  * Data structure for LTI 1.3 deep linking settings as per <https://www.imsglobal.org/spec/lti-dl/v2p0#deep-linking-settings>.
   *
   * @param deepLinkReturnUrl URL where the tool redirects the user back to the platform.
-  * @param acceptTypes An list of resource types accepted.
-  * @param acceptPresentationDocumentTargets A list of supported document targets (e.g. iframe & window).
+  * @param acceptTypes A list of resource types accepted such as "link" and "ltiResourceLink".
+  *                    See <https://www.imsglobal.org/spec/lti-dl/v2p0#content-item-types> for more accepted types.
+  * @param acceptPresentationDocumentTargets A list of supported document targets (e.g. `iframe` & window`).
   * @param acceptMediaTypes A list of accepted media types. Only applies to File types.
   * @param acceptMultiple Whether selecting multiple resources in a single response is allowed.
   * @param acceptLineItem Whether the platform supports line items.

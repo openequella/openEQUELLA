@@ -34,6 +34,9 @@ import scala.jdk.CollectionConverters._
 import javax.inject.{Inject, Singleton}
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
+/**
+  * Data required to support the LTI 1.3 content selection workflow.
+  */
 class Lti13IntegrationSessionData extends IntegrationSessionData {
   var deepLinkingSettings: DeepLinkingSettings = _
   override def isForSelection: Boolean         = true
@@ -48,6 +51,12 @@ object Lti13IntegrationSessionData {
   }
 }
 
+/**
+  * This Integration Service is dedicated to the integration established by LTI 1.3. It provides
+  * core functions that are used in the context of Selection Session, such as launching Selection
+  * Session and communicating with LMS to complete content selections.
+  *
+  */
 @Bind
 @Singleton
 class Lti13IntegrationService extends AbstractIntegrationService[Lti13IntegrationSessionData] {

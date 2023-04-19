@@ -75,6 +75,7 @@ package object lti13 {
 
   /**
     * Get value of a claim as a Map.
+    *
     * @param jwt a token containing the claim
     * @param claim name of a string based claim
     * @return If transforming the value to a Map is successful return the Map, or `None`

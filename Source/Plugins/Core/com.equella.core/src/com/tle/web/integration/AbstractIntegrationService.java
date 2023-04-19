@@ -55,7 +55,15 @@ import javax.inject.Inject;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
 
-/** @author aholland */
+/**
+ * This abstract class is used in the integration between OEQ and an LMS through Selection Session.
+ * Each subclass must be registered in the JPF plugin file.
+ *
+ * <p>It provides: 1. Some common implementations for content selections; and 2. Some abstract
+ * methods about setting up the integration context.
+ *
+ * @author aholland
+ */
 @SuppressWarnings("nls")
 @NonNullByDefault
 public abstract class AbstractIntegrationService<T extends IntegrationSessionData>

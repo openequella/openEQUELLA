@@ -37,7 +37,7 @@ object Lti13Claims {
   val ROLES = "https://purl.imsglobal.org/spec/lti/claim/roles"
 
   /**
-    * Contains a string value to provide a fully qualified url which a tool provider must redirect the workflow to
+    * Contains a string value to provide a fully qualified URL which a tool provider must redirect the workflow to
     * once the resource selection is completed.
     */
   val TARGET_LINK_URI = "https://purl.imsglobal.org/spec/lti/claim/target_link_uri"
@@ -54,7 +54,7 @@ object Lti13Claims {
   val CUSTOM_PARAMETERS = "https://purl.imsglobal.org/spec/lti/claim/custom"
 
   /**
-    * Contains a list of deep linking settings for a platform.
+    * Contains a list of deep linking settings for a platform as a JSON string.
     */
   val DEEP_LINKING_SETTINGS = "https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings"
 
