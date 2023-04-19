@@ -144,7 +144,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
         _           <- lti13AuthService.loginUser(wad, userDetails)
       } yield decodedJWT
 
-    def extractLtiRequestDetails(decodedJWT: DecodedJWT): Either[Lti13Error, LtiRequest] =
+    def extractLtiRequestDetails(decodedJWT: DecodedJWT): Either[Lti13Error, Lti13Request] =
       getClaim(decodedJWT, MESSAGE_TYPE)
         .toRight(InvalidJWT("Failed to extract message type from JWT"))
         .flatMap(

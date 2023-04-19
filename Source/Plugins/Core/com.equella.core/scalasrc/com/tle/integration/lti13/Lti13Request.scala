@@ -27,7 +27,7 @@ object LtiMessageType extends Enumeration {
   val LtiDeepLinkingRequest, LtiResourceLinkRequest = Value
 }
 
-trait LtiRequest {
+sealed trait Lti13Request {
   val messageType: MessageType
 }
 
@@ -39,7 +39,7 @@ trait LtiRequest {
   */
 case class LtiDeepLinkingRequest(deepLinkingSettings: DeepLinkingSettings,
                                  customParams: Option[Map[String, String]])
-    extends LtiRequest {
+    extends Lti13Request {
   override val messageType: MessageType = LtiMessageType.LtiDeepLinkingRequest
 }
 
@@ -47,7 +47,7 @@ object LtiDeepLinkingRequest {
 
   /**
     * Extract custom params from the provided decoded JWT. Values of custom params must be present as String
-    * by the LSM platform, so discard those non-String values.
+    * by the LTI platform, so discard those non-String values.
     *
     * @param decodedJWT Decoded JWT which provides the claim of custom params.
     * @return A key-value map for custom params, or `None` if no such a claim available.
@@ -67,6 +67,6 @@ object LtiDeepLinkingRequest {
   *
   * todo: Update the structure as needed. Maybe need another case class for the resource link. Check claim "https://purl.imsglobal.org/spec/lti/claim/resource_link".
   */
-case class LtiResourceLinkRequest(targetLinkUri: String) extends LtiRequest {
+case class LtiResourceLinkRequest(targetLinkUri: String) extends Lti13Request {
   override val messageType: MessageType = LtiMessageType.LtiResourceLinkRequest
 }
