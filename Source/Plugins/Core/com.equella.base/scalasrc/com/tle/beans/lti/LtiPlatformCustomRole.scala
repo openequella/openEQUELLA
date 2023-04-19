@@ -44,7 +44,7 @@ class LtiPlatformCustomRole {
   /**
     * The LTI role which targets to one or multiple OEQ roles.
     */
-  @Column(nullable = false, unique = true)
+  @Column(nullable = false)
   var ltiRole: String = _
 
   /**
