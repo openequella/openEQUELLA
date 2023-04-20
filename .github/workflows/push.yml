@@ -15,7 +15,7 @@ jobs:
     - name: deploying HCL Enterprise Staging
       uses: appleboy/ssh-action@master
       with:
-        password: ${{ secrets.STAGING_MACHINE_PASSWORD }}    # RAC private key from pem file
+        password: ${{ secrets.STAGING_MACHINE_PASSWORD }}    # private key from pem file
         host: ${{ secrets.STAGING_MACHINE_HOST }}            # ec2-13-235-61-252.ap-south-1.compute.amazonaws.com
         username: ${{ secrets.STAGING_MACHINE_USERNAME }}    # ubuntu
         port: 22
