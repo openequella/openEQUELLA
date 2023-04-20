@@ -320,7 +320,6 @@ public class SoapServiceImpl implements SoapService50 {
     // decode and upload file
     String s = "";
     if (base64Data.charAt(base64Data.length() - 1) == '=') {
-      System.out.println("kapil");
       s = base64Data.substring(0, base64Data.length() - 1);
     }
 
