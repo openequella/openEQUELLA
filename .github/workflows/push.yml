@@ -13,10 +13,13 @@ jobs:
     # if: github.event.inputs.env == 'staging'
     steps:
     - name: deploying HCL Enterprise Staging
-      uses: appleboy/ssh-action@master
-      with:
-        remote_key: ${{ secrets.STAGING_MACHINE_PASSWORD }}    # RAC private key from pem file
-        remote_host: ${{ secrets.STAGING_MACHINE_HOST }}            # ec2-13-235-61-252.ap-south-1.compute.amazonaws.com
-        remote_user: ${{ secrets.STAGING_MACHINE_USERNAME }}    # ubuntu  mmmm
+      uses: actions/checkout@v2
+      
+    - name: Deploy to Server 1
+      uses: easingthemes/ssh-deploy@main
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.STAGING_MACHINE_PASSWORD }}    # RAC private key from pem file
+        REMOTE_HOST: ${{ secrets.STAGING_MACHINE_HOST }}            # ec2-13-235-61-252.ap-south-1.compute.amazonaws.com
+        REMOTE_USER: ${{ secrets.STAGING_MACHINE_USERNAME }}    # ubuntu  mmmm
         port: 22
         script: sh /home/ubuntu/openEQUELLA/open_equella_script.sh
