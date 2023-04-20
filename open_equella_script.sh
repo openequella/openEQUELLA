@@ -25,7 +25,7 @@ rm -rf equella-installer*
 # clean sbt and run command to build installer
 # this command will create the installer in openequella/Installer/target/equella-Installer-2023.1.0.zip (use wildcard for this)
 cd ../..
-sbt clean
+./sbt clean
 ./sbt installerZip
 
 
