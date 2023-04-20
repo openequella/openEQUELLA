@@ -2,6 +2,7 @@
 
 # first enter into machine navigate to project location and down the application
 
+echo "kapil"
 echo "$PWD"
 cd /home/ubuntu/openEQUELLA
 echo "$PWD"
