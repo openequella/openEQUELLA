@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     # if: github.event.inputs.env == 'staging'
     steps:
+    - name: deploying HCL Enterprise Staging
+      uses: actions/checkout@v2
     - name: Deploy to Server 1
       uses: appleboy/ssh-action@master
       with:
