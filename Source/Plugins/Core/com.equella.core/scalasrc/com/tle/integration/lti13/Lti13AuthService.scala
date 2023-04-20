@@ -284,8 +284,7 @@ class Lti13AuthService {
     * @return Either a error string detailing how things failed, or the actual JWT decoded and ready
     *         for further use along with the matching state information.
     */
-  def verifyToken(state: String,
-                  token: String): Either[Lti13Error, (DecodedJWT, Lti13StateDetails)] = {
+  def verifyToken(state: String, token: String): Either[Lti13Error, DecodedJWT] = {
     val result = for {
       // -- first, basic validation of the state
       // Short circuit if this isn't even a state we know about
@@ -308,16 +307,15 @@ class Lti13AuthService {
       // Both are: DecodedJWT -> Either[String, DecodedJWT]
       verifyJwt = buildJwtVerifierForPlatform(jwkProvider.get(decodedToken.getKeyId), platform)
       verifyNonce = (jwt: DecodedJWT) =>
-        getClaim(jwt, OIDC.NONCE)
-          .toRight(InvalidJWT("Failed to extract nonce from JWT"))
+        getRequiredClaim(jwt, OIDC.NONCE)
           .flatMap(
             // If the nonce is valid, then make sure we return the valid JWT
             nonceService.validateNonce(_, state).map(_ => jwt))
           .left
           .map(err => InvalidJWT(s"Provided ID token (JWT) failed nonce verification: ${err}"))
       // now finally do the verification
-      verificationResult <- verifyJwt(decodedToken).flatMap(verifyNonce)
-    } yield (verificationResult, stateDetails)
+      verifiedToken <- verifyJwt(decodedToken).flatMap(verifyNonce)
+    } yield verifiedToken
 
     // And the result is:
     result

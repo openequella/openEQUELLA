@@ -21,6 +21,7 @@ package com.tle.integration.lti13
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.tle.integration.lti13.Lti13Claims.CUSTOM_PARAMETERS
 import com.tle.integration.lti13.LtiMessageType.MessageType
+import cats.implicits._
 
 object LtiMessageType extends Enumeration {
   type MessageType = Value
@@ -43,7 +44,16 @@ case class LtiDeepLinkingRequest(deepLinkingSettings: DeepLinkingSettings,
   override val messageType: MessageType = LtiMessageType.LtiDeepLinkingRequest
 }
 
-object LtiDeepLinkingRequest {
+/**
+  * Data structure for LTI 1.3 resource link request.
+  *
+  * todo: Update the structure as needed. Maybe need another case class for the resource link. Check claim "https://purl.imsglobal.org/spec/lti/claim/resource_link".
+  */
+case class LtiResourceLinkRequest(targetLinkUri: String) extends Lti13Request {
+  override val messageType: MessageType = LtiMessageType.LtiResourceLinkRequest
+}
+
+object Lti13Request {
 
   /**
     * Extract custom params from the provided decoded JWT. Values of custom params must be present as String
@@ -60,13 +70,32 @@ object LtiDeepLinkingRequest {
         }
       )
   }
-}
 
-/**
-  * Data structure for LTI 1.3 resource link request.
-  *
-  * todo: Update the structure as needed. Maybe need another case class for the resource link. Check claim "https://purl.imsglobal.org/spec/lti/claim/resource_link".
-  */
-case class LtiResourceLinkRequest(targetLinkUri: String) extends Lti13Request {
-  override val messageType: MessageType = LtiMessageType.LtiResourceLinkRequest
+  /**
+    * Return the details of a LTI 1.3 request message from the provided decoded token.
+    * The request message vary, depending on the message type.
+    *
+    * @param decodedJWT a token containing claims which provides details of an LTI request message.
+    * @return Details of an LTI 1.3 request message, or `Lti13Error` if failed to extract the details.
+    */
+  def getLtiRequestDetails(decodedJWT: DecodedJWT): Either[Lti13Error, Lti13Request] = {
+    def getRequest(messageType: MessageType): Either[InvalidJWT, Lti13Request] = messageType match {
+      case LtiMessageType.LtiDeepLinkingRequest =>
+        for {
+          deepLinkingSettings <- DeepLinkingSettings(decodedJWT)
+          customParams = getCustomParamsFromClaim(decodedJWT)
+        } yield LtiDeepLinkingRequest(deepLinkingSettings, customParams)
+      case LtiMessageType.LtiResourceLinkRequest =>
+        getRequiredClaim(decodedJWT, Lti13Claims.TARGET_LINK_URI)
+          .map(LtiResourceLinkRequest)
+    }
+
+    for {
+      messageType <- getRequiredClaim(decodedJWT, Lti13Claims.MESSAGE_TYPE)
+      validType <- Either
+        .catchNonFatal(LtiMessageType.withName(messageType))
+        .leftMap(_ => InvalidJWT(s"Unknown LTI message type: $messageType"))
+      request <- getRequest(validType)
+    } yield request
+  }
 }

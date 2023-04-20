@@ -18,14 +18,10 @@
 
 package com.tle.integration.lti13
 
-import cats.implicits._
-import com.auth0.jwt.interfaces.DecodedJWT
 import com.tle.common.usermanagement.user.WebAuthenticationDetails
 import com.tle.core.guice.Bind
 import com.tle.core.services.user.UserService
-import com.tle.integration.lti13.Lti13Claims.{MESSAGE_TYPE, TARGET_LINK_URI}
-import com.tle.integration.lti13.LtiDeepLinkingRequest.getCustomParamsFromClaim
-import com.tle.web.integration.service.IntegrationService
+import com.tle.integration.lti13.Lti13Request.getLtiRequestDetails
 import org.apache.http.HttpStatus
 import org.slf4j.LoggerFactory
 import javax.inject.{Inject, Singleton}
@@ -136,35 +132,14 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
       resp.getWriter.print(output)
     }
 
-    def verifyToken: Either[Lti13Error, DecodedJWT] =
-      for {
-        verificationResult <- lti13AuthService.verifyToken(auth.state, auth.id_token)
-        decodedJWT = verificationResult._1
-        userDetails <- UserDetails(decodedJWT)
-        _           <- lti13AuthService.loginUser(wad, userDetails)
-      } yield decodedJWT
+    val authResult: Either[Lti13Error, Lti13Request] = for {
+      decodedJWT   <- lti13AuthService.verifyToken(auth.state, auth.id_token)
+      userDetails  <- UserDetails(decodedJWT)
+      _            <- lti13AuthService.loginUser(wad, userDetails)
+      lti13Request <- getLtiRequestDetails(decodedJWT)
+    } yield lti13Request
 
-    def extractLtiRequestDetails(decodedJWT: DecodedJWT): Either[Lti13Error, Lti13Request] =
-      getClaim(decodedJWT, MESSAGE_TYPE)
-        .toRight(InvalidJWT("Failed to extract message type from JWT"))
-        .flatMap(
-          messageType =>
-            Either
-              .catchNonFatal(LtiMessageType.withName(messageType))
-              .leftMap(_ => InvalidJWT(s"Unknown LTI message type")))
-        .flatMap {
-          case LtiMessageType.LtiDeepLinkingRequest =>
-            for {
-              deepLinkingSettings <- DeepLinkingSettings(decodedJWT)
-              customParams = getCustomParamsFromClaim(decodedJWT)
-            } yield LtiDeepLinkingRequest(deepLinkingSettings, customParams)
-          case LtiMessageType.LtiResourceLinkRequest =>
-            getClaim(decodedJWT, TARGET_LINK_URI)
-              .toRight(InvalidJWT(s"Failed to extract target link URI from JWT"))
-              .map(LtiResourceLinkRequest)
-        }
-
-    verifyToken flatMap extractLtiRequestDetails match {
+    authResult match {
       case Left(error) => onAuthFailure(error)
       case Right(result) =>
         result match {
