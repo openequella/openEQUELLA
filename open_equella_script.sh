@@ -2,9 +2,9 @@
 
 # first enter into machine navigate to project location and down the application
 
-pwd
+echo "$PWD"
 cd /home/ubuntu/openEQUELLA
-pwd
+echo "$PWD"
 cd docker
 sudo docker-compose down
 
@@ -20,7 +20,7 @@ cd ..
 
 
 # the zip file will be created at "openequella/Installer/target/" so delete all the zip files starting with equella-installer*
-pwd
+echo "$PWD"
 
 cd Installer/target/
 rm -rf equella-installer*
@@ -29,7 +29,8 @@ rm -rf equella-installer*
 # clean sbt and run command to build installer
 # this command will create the installer in openequella/Installer/target/equella-Installer-2023.1.0.zip (use wildcard for this)
 cd ../..
-pwd
+echo "kapil"
+echo "$PWD"
 cd /home/ubuntu/openEQUELLA/
 ./sbt clean
 ./sbt installerZip
