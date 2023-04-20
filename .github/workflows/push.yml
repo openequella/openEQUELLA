@@ -12,12 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     # if: github.event.inputs.env == 'staging'
     steps:
-    - name: deploying HCL Enterprise Staging
-      uses: actions/checkout@v2
-      
     - name: Deploy to Server 1
-      uses: easingthemes/ssh-deploy@main
-      env:
+      uses: appleboy/ssh-action@master
+      with:
         SSH_PRIVATE_KEY: ${{ secrets.STAGING_MACHINE_PASSWORD }}    # RAC private key from pem file
         REMOTE_HOST: ${{ secrets.STAGING_MACHINE_HOST }}            # ec2-13-235-61-252.ap-south-1.compute.amazonaws.com
         REMOTE_USER: ${{ secrets.STAGING_MACHINE_USERNAME }}    # ubuntu  mmmm
