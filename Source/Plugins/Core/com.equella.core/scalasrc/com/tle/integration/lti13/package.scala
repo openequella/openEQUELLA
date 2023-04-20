@@ -63,6 +63,18 @@ package object lti13 {
     Option(jwt.getClaim(claim)).flatMap(c => Option(c.asString()))
 
   /**
+    * Return the specified claim which must be present in the provided decoded JWT as a string.
+    *
+    * @param jwt   a token containing the claim
+    * @param claim name of a string based claim
+    * @return The string value of the claim, or `InvalidJWT` if the claim is absent.
+    */
+  def getRequiredClaim(jwt: DecodedJWT, claim: String): Either[InvalidJWT, String] =
+    Option(jwt.getClaim(claim))
+      .flatMap(c => Option(c.asString()))
+      .toRight(InvalidJWT(s"Failed to extract $claim from JWT"))
+
+  /**
     * For a claim where type of the value is non-textual, use this method to get the string representation
     * of the claim value.
     *
