@@ -25,5 +25,5 @@ jobs:
         port: 22
 #         script: sh /home/ubuntu/openEQUELLA/open_equella_script.sh
         SCRIPT_AFTER: |
-         ls -al 
+         uname -a 
          echo $RSYNC_STDOUT
