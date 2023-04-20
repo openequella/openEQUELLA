@@ -27,8 +27,9 @@ import com.tle.web.integration.{
   SingleSignonForm
 }
 import com.tle.web.sections.equella.AbstractScalaSection
-import com.tle.web.sections.{SectionInfo, SectionNode}
+import com.tle.web.sections.{SectionInfo, SectionNode, SectionsController}
 import com.tle.web.sections.generic.DefaultSectionTree
+import com.tle.web.sections.registry.TreeRegistry
 import com.tle.web.selection.SelectionSession
 import scala.jdk.CollectionConverters._
 import javax.inject.{Inject, Singleton}
@@ -60,7 +61,19 @@ object Lti13IntegrationSessionData {
 @Bind
 @Singleton
 class Lti13IntegrationService extends AbstractIntegrationService[Lti13IntegrationSessionData] {
-  @Inject private var integrationService: IntegrationService = _
+  private var integrationService: IntegrationService = _
+  private var sectionsController: SectionsController = _
+  private var treeRegistry: TreeRegistry             = _
+
+  @Inject
+  def this(integrationService: IntegrationService,
+           sectionsController: SectionsController,
+           treeRegistry: TreeRegistry) = {
+    this()
+    this.treeRegistry = treeRegistry
+    this.integrationService = integrationService
+    this.sectionsController = sectionsController
+  }
 
   override protected def canSelect(data: Lti13IntegrationSessionData): Boolean = data.isForSelection
 
@@ -99,26 +112,21 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
                              resp: HttpServletResponse): Unit = {
 
     def buildSectionInfo = {
-      val blankTree =
-        new DefaultSectionTree(
-          LegacyGuice.treeRegistry,
-          new SectionNode(
-            "LTI13SelectionSession",
-            new AbstractScalaSection {
-              // We are not really using any Section so it's fine to use Unit as the model type.
-              override type M = Unit
-              override def newModel: SectionInfo => Unit = _ => ()
-            }
-          )
-        )
+      val section = new AbstractScalaSection {
+        // We are not really using any Section so it's fine to use Unit as the model type.
+        override type M = Unit
+        override def newModel: SectionInfo => Unit = _ => ()
+      }
+      val sectionNode = new SectionNode("LTI13SelectionSession", section)
+      val blankTree   = new DefaultSectionTree(treeRegistry, sectionNode)
 
-      val info = LegacyGuice.sectionsController.createInfo(blankTree,
-                                                           "/",
-                                                           req,
-                                                           resp,
-                                                           null,
-                                                           Map.empty[String, Array[String]].asJava,
-                                                           null)
+      val info = sectionsController.createInfo(blankTree,
+                                               "/",
+                                               req,
+                                               resp,
+                                               null,
+                                               Map.empty[String, Array[String]].asJava,
+                                               null)
 
       info.fireBeforeEvents()
       info
