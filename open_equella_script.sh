@@ -2,6 +2,7 @@
 
 # first enter into machine navigate to project location and down the application
 
+cd /home/ubuntu/openEQUELLA
 cd docker
 sudo docker-compose down
 
