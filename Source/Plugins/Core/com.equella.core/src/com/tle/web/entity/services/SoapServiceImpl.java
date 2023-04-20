@@ -318,7 +318,12 @@ public class SoapServiceImpl implements SoapService50 {
   @Override
   public void uploadFile(String stagingId, String filename, String base64Data, boolean overwrite) {
     // decode and upload file
-    byte[] bytes = Base64.getDecoder().decode(base64Data);
+    String s = "";
+    if (base64Data.charAt(base64Data.length() - 1) == '=') {
+      s = base64Data.substring(0, base64Data.length() - 1);
+    }
+
+    byte[] bytes = Base64.getDecoder().decode(s);
     StagingFile staging = new StagingFile(stagingId);
     try {
       fileSystemService.write(staging, filename, new ByteArrayInputStream(bytes), !overwrite);
