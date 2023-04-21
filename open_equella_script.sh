@@ -35,7 +35,7 @@ cd ../..
 echo "kapil2"
 echo "$PWD"
 cd /home/ubuntu/openEQUELLA/
-java -version
+sudo java -version
 ./sbt clean
 ./sbt installerZip
 echo "kapil3"
