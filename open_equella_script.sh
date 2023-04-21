@@ -3,7 +3,7 @@
 # first enter into machine navigate to project location and down the application
 
 echo "kapil1"
-java -version
+/home/ubuntu/.sdkman/candidates/java/8.0.302-open/bin/java -version
 echo "$PWD"
 cd /home/ubuntu/openEQUELLA
 git pull
