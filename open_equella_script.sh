@@ -3,6 +3,7 @@
 # first enter into machine navigate to project location and down the application
 
 echo "kapil1"
+java -version
 echo "$PWD"
 cd /home/ubuntu/openEQUELLA
 git pull
@@ -34,6 +35,7 @@ cd ../..
 echo "kapil2"
 echo "$PWD"
 cd /home/ubuntu/openEQUELLA/
+java -version
 ./sbt clean
 ./sbt installerZip
 echo "kapil3"
