@@ -5,6 +5,7 @@
 echo "kapil"
 echo "$PWD"
 cd /home/ubuntu/openEQUELLA
+git pull
 echo "$PWD"
 cd docker
 sudo docker-compose down
