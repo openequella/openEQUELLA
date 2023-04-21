@@ -2,7 +2,7 @@
 
 # first enter into machine navigate to project location and down the application
 
-echo "kapil"
+echo "kapil1"
 echo "$PWD"
 cd /home/ubuntu/openEQUELLA
 git pull
@@ -31,11 +31,12 @@ rm -rf equella-installer*
 # clean sbt and run command to build installer
 # this command will create the installer in openequella/Installer/target/equella-Installer-2023.1.0.zip (use wildcard for this)
 cd ../..
-echo "kapil"
+echo "kapil2"
 echo "$PWD"
 cd /home/ubuntu/openEQUELLA/
 ./sbt clean
 ./sbt installerZip
+echo "kapil3"
 
 
 # check for the installer file if present copy it to docker folder
@@ -45,6 +46,7 @@ echo "before if condition"
 cd Installer/target/
 File=equella-installer-2022.2.0.zip  
 if [ -f "$File" ]; then  
+echo "kapil4"
 echo "entered if condition"
 mv ./equella-installer-2022.2.0.zip ./installer.zip
 echo "equella-installer name changed"
@@ -66,14 +68,17 @@ sudo docker-compose up -d
 
 # there will be an image created with name docker_oeq
 # tag it and push it to ECR.
+echo "kapil5"
 echo "Enter the tag name for the docker image"
 read tag
-
+echo "kapil6"
 sudo aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 598864331813.dkr.ecr.ap-south-1.amazonaws.com
 echo "login successful"
 sudo docker tag docker_oeq:latest 598864331813.dkr.ecr.ap-south-1.amazonaws.com/custom_content_repo:"$tag"
 echo "tagged the image"
+echo "kapil7"
 docker push 598864331813.dkr.ecr.ap-south-1.amazonaws.com/custom_content_repo:"$tag"
+echo "kapil8"
 
 
 # sudo docker tag docker_oeq:latest kapilbunni/open:"$tag"
