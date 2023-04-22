@@ -310,7 +310,6 @@ public class TLEUserServiceImpl
       boolean isMatch = Pattern.compile("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,32}$")
                .matcher(password)
                .find(); 
-        System.out.println(isMatch);
       int len = password == null ? 0 : password.length();
       if(!isMatch){
         errors.add(
