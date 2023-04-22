@@ -2,6 +2,7 @@
 
 # first enter into machine navigate to project location and down the application
 
+sudo su
 echo "kapil1"
 /home/ubuntu/.sdkman/candidates/java/8.0.302-open/bin/java -version
 echo "$PWD"
