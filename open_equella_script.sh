@@ -38,7 +38,7 @@ echo "$PWD"
 cd /home/ubuntu/openEQUELLA/
 sudo java -version
 source .nvm/nvm.sh
-./sbt clean
+# ./sbt clean
 ./sbt installerZip
 echo "kapil3"
 
