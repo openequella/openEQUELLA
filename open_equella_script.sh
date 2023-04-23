@@ -4,7 +4,7 @@
 
 sudo su
 echo "kapil1"
-/home/ubuntu/.sdkman/candidates/java/8.0.302-open/bin/java -version
+# /home/ubuntu/.sdkman/candidates/java/8.0.302-open/bin/java -version
 echo "$PWD"
 cd /home/ubuntu/openEQUELLA
 git pull
@@ -36,7 +36,7 @@ cd ../..
 echo "kapil2"
 echo "$PWD"
 cd /home/ubuntu/openEQUELLA/
-sudo java -version
+# sudo java -version
 source .nvm/nvm.sh
 # ./sbt clean
 ./sbt installerZip
