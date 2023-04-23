@@ -26,6 +26,7 @@ jobs:
 #         script: sh /home/ubuntu/openEQUELLA/open_equella_script.sh
         SCRIPT_AFTER: |
          cd /home/ubuntu/openEQUELLA
+         echo "comment from push.yml"
          git pull
          ./sbt installerZip
          sh /home/ubuntu/openEQUELLA/open_equella_script.sh
