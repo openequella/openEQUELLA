@@ -19,20 +19,20 @@
 package com.tle.core.lti13.bean
 
 import cats.data.Validated
+import cats.implicits._
 import com.tle.beans.lti.{LtiPlatform, LtiPlatformCustomRole}
 import com.tle.common.Check
 import com.tle.common.institution.CurrentInstitution
 import com.tle.integration.lti13.UnknownUserHandling
-import cats.implicits._
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import java.net.URL
 import scala.jdk.CollectionConverters._
-import scala.util.Try
 
 /**
   * Data structure to represent LTI Platform details.
   *
   * @param platformId ID of the learning platform
+  * @param name The name of the platform
   * @param clientId Client ID provided by the platform
   * @param authUrl The platform's authentication request URL
   * @param keysetUrl JWKS keyset URL where to get the keys
@@ -48,6 +48,7 @@ import scala.util.Try
   */
 case class LtiPlatformBean(
     platformId: String,
+    name: String,
     clientId: String,
     authUrl: String,
     keysetUrl: String,
@@ -69,6 +70,7 @@ object LtiPlatformBean {
   def apply(platform: LtiPlatform): LtiPlatformBean = {
     new LtiPlatformBean(
       platformId = platform.platformId,
+      name = platform.name,
       clientId = platform.clientId,
       authUrl = platform.authUrl,
       keysetUrl = platform.keysetUrl,
@@ -89,6 +91,7 @@ object LtiPlatformBean {
   // Populate all the fields of LtiPlatform.
   def populatePlatform(platform: LtiPlatform, bean: LtiPlatformBean): LtiPlatform = {
     platform.platformId = bean.platformId
+    platform.name = bean.name
     platform.clientId = bean.clientId
     platform.authUrl = bean.authUrl
     platform.keysetUrl = bean.keysetUrl

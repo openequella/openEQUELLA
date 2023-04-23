@@ -73,6 +73,12 @@ class LtiPlatform {
   var platformId: String = _
 
   /**
+    * Name of the learning platform.
+    */
+  @Column(nullable = false)
+  var name: String = _
+
+  /**
     * Client ID provided by the platform.
     */
   @Column(nullable = false)

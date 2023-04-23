@@ -41,6 +41,7 @@ object UnknownUserHandling extends Enumeration {
   * which needed to be looser for REST endpoints etc.
   *
   * @param platformId The issuer identifier identifying the learning platform.
+  * @param name The name display in oEQ for the learning platform.
   * @param clientId The clientId for oEQ issued by the platform
   * @param authUrl The platform's authentication request URL
   * @param keysetUrl The platform's JWKS keyset URL for us to get the keys from
@@ -61,6 +62,7 @@ object UnknownUserHandling extends Enumeration {
   *                        as an ACL Expression of 'Everyone' or '*'
   */
 case class PlatformDetails(platformId: String,
+                           name: String,
                            clientId: String,
                            authUrl: URL,
                            keysetUrl: URL,
@@ -76,6 +78,7 @@ object PlatformDetails {
   def apply(bean: LtiPlatformBean): PlatformDetails =
     PlatformDetails(
       platformId = bean.platformId,
+      name = bean.name,
       clientId = bean.clientId,
       authUrl = new URL(bean.authUrl),
       keysetUrl = new URL(bean.keysetUrl),

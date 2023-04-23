@@ -161,6 +161,7 @@ public class LtiPlatformTest extends AbstractRestApiTest {
   private ObjectNode buildRequestBody() {
     ObjectNode body = mapper.createObjectNode();
     body.put("platformId", MOODLE_PLATFORM_ID);
+    body.put("name", "Test");
     body.put("clientId", "test");
     body.put("authUrl", "http://test");
     body.put("keysetUrl", "http://test");

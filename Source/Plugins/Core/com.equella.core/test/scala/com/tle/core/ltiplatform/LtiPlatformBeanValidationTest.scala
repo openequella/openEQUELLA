@@ -1,5 +1,6 @@
 package com.tle.core.ltiplatform
 
+import cats.data.Validated.{Invalid, Valid}
 import com.tle.core.lti13.bean.LtiPlatformBean
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
@@ -8,6 +9,7 @@ import cats.data.Validated.{Invalid, Valid}
 class LtiPlatformBeanValidationTest extends AnyFunSpec with Matchers {
   val validBean: LtiPlatformBean = new LtiPlatformBean(
     platformId = "moodle123",
+    name = "moodle",
     clientId = "moodle-user",
     authUrl = "https://test",
     keysetUrl = "https://test",
