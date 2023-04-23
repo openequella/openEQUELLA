@@ -78,9 +78,9 @@ echo "kapil5"
 echo "Enter the tag name for the docker image"
 read tag
 echo "kapil6"
-sudo aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 598864331813.dkr.ecr.ap-south-1.amazonaws.com
+aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 598864331813.dkr.ecr.ap-south-1.amazonaws.com
 echo "login successful"
-sudo docker tag docker_oeq:latest 598864331813.dkr.ecr.ap-south-1.amazonaws.com/custom_content_repo:"$tag"
+docker tag docker_oeq:latest 598864331813.dkr.ecr.ap-south-1.amazonaws.com/custom_content_repo:"$tag"
 echo "tagged the image"
 echo "kapil7"
 docker push 598864331813.dkr.ecr.ap-south-1.amazonaws.com/custom_content_repo:"$tag"
