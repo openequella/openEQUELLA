@@ -15,18 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { pipe } from 'fp-ts/function';
-import { DELETE, GET, POST_void, PUT } from './AxiosInstance';
-import { BatchOperationResponse } from './BatchOperationResponse';
-import { LtiPlatformRawCodec } from './gen/LtiPlatform';
-import { validate } from './Utils';
-import * as t from 'io-ts';
 import * as A from 'fp-ts/Array';
+import { pipe } from 'fp-ts/function';
 import * as M from 'fp-ts/Map';
 import * as O from 'fp-ts/Option';
 import * as R from 'fp-ts/Record';
-import * as S from 'fp-ts/string';
 import * as SET from 'fp-ts/Set';
+import * as S from 'fp-ts/string';
+import * as t from 'io-ts';
+import { DELETE, GET, POST_void, PUT } from './AxiosInstance';
+import type { BatchOperationResponse } from './BatchOperationResponse';
+import { LtiPlatformRawCodec } from './gen/LtiPlatform';
+import { validate } from './Utils';
 
 export type UnknownUserHandling = 'ERROR' | 'GUEST' | 'CREATE';
 
@@ -35,6 +35,10 @@ export interface LtiPlatformBase {
    * ID of the learning platform.
    */
   platformId: string;
+  /**
+   * Name of the learning platform.
+   */
+  name: string;
   /**
    * Client ID provided by the platform
    */

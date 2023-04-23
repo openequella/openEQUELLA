@@ -27,6 +27,7 @@ export * as FacetedSearchSettings from './FacetedSearchSettings';
 export * as Favourite from './Favourite';
 export * as Heartbeat from './Heartbeat';
 export * as LegacyContent from './LegacyContent';
+export * as LtiPlatform from './LtiPlatform';
 export * as MimeType from './MimeType';
 export * as RemoteSearch from './RemoteSearch';
 export * as Schema from './Schema';

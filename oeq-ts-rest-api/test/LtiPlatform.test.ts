@@ -31,6 +31,7 @@ const CANVAS_PLATFORM_ID = 'http://localhost:8200';
 
 const platform: LtiPlatformModule.LtiPlatform = {
   authUrl: 'http://test',
+  name: 'Test name',
   clientId: 'test',
   customRoles: new Map([[LTI_ROLE_TEACHER, new Set([OEQ_ROLE_TEACHER])]]),
   enabled: true,

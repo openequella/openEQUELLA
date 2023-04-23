@@ -1,5 +1,6 @@
 {
   "platformId" : "http://localhost:8200",
+  "name" : "canvas",
   "clientId" : "test client",
   "authUrl" : "http://test",
   "keysetUrl" : "http://test",

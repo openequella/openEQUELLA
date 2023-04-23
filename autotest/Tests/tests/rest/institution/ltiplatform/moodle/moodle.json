@@ -1,5 +1,6 @@
 {
   "platformId" : "http://localhost:8100",
+  "name": "moodle",
   "clientId" : "abc",
   "authUrl" : "http://test",
   "keysetUrl" : "http://test",
