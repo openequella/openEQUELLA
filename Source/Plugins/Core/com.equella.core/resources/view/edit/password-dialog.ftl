@@ -9,7 +9,6 @@
 			<@textfield section=s.oldPassword maxlength=32 password=true class="focus"/>
 		</@setting>
 		<@setting label=b.key('internal.passwordchars') error=m.errorList["password"] labelFor=s.newPassword>
-		<h4>Password should contain a small-letter, capital-letter, special character (#,?,!,@,$,%,^,&,*,-) and minimum of 8 characters</h4>
 			<@textfield section=s.newPassword maxlength=32 password=true />
 		</@setting>
 		<@setting label=b.key('internal.passwordconfirm') error=m.errorList["confirmpass"] labelFor=s.confirmPassword>
