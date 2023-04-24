@@ -62,6 +62,7 @@ import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.regex.*;
 
 /** @author Nicholas Read */
 @Singleton
@@ -306,11 +307,14 @@ public class TLEUserServiceImpl
       String password, boolean passwordNotHashed, List<ValidationError> errors) {
     // Check password
     if (passwordNotHashed) {
+      boolean isMatch = Pattern.compile("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,32}$")
+               .matcher(password)
+               .find(); 
       int len = password == null ? 0 : password.length();
-      if (len < PASSWORD_MIN_LENGTH) {
+      if(!isMatch){
         errors.add(
             new ValidationError(
-                "password", CurrentLocale.get("com.tle.web.userdetails.common.passwordtooshort")));
+                "password", CurrentLocale.get("Password must contain [A-Z][a-z][0-9] special characters allowed #,?,!,@,$,%,^,&,*,- and length 8-32 characters")));
       }
     }
   }
