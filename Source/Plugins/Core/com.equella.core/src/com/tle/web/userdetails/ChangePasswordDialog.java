@@ -142,7 +142,9 @@ public class ChangePasswordDialog
         tleUserService.validatePassword(newPasswordText, true);
       } catch (InvalidDataException ex) {
         for (ValidationError error : ex.getErrors()) {
-          errorList.put(error.getField(), error.getMessage());
+          String s = error.getMessage();
+          String ret = s.substring(3,s.length()-3);
+          errorList.put(error.getField(), ret);
         }
       }
 
