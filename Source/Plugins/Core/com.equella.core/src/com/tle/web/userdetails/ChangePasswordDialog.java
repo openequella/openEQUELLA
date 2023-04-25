@@ -67,6 +67,9 @@ public class ChangePasswordDialog
   @PlugKey("common.invalidpassword")
   private static Label PASSWORD_INVALID;
 
+  @PlugKey("internal.blank")
+  private static Label PASSWORD_BLANK;
+
   @ViewFactory private FreemarkerFactory viewFactory;
 
   @Inject private TLEUserService tleUserService;
@@ -169,7 +172,8 @@ public class ChangePasswordDialog
     if (Check.isEmpty(field.getValue(info))) {
       getModel(info)
           .getErrorList()
-          .put(key, CurrentLocale.get("com.tle.web.userdetails.internal.blank"));
+          // .put(key, CurrentLocale.get("com.tle.web.userdetails.internal.blank"));
+          .put(key, PASSWORD_BLANK.getText());
       return true;
     }
     return false;
