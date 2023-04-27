@@ -35,8 +35,8 @@ sealed trait Lti13Request {
 /**
   * Data structure for LTI 1.3 deep linking request.
   *
-  * @param deepLinkingSettings Deep Linking settings extracted from claim 'https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings'
-  * @param customParams Optional Custom parameters extracted from claim 'https://purl.imsglobal.org/spec/lti/claim/custom'
+  * @param deepLinkingSettings Deep Linking settings extracted from claim <https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings>
+  * @param customParams Optional Custom parameters extracted from claim <https://purl.imsglobal.org/spec/lti/claim/custom'>
   */
 case class LtiDeepLinkingRequest(deepLinkingSettings: DeepLinkingSettings,
                                  customParams: Option[Map[String, String]])
@@ -56,8 +56,8 @@ case class LtiResourceLinkRequest(targetLinkUri: String) extends Lti13Request {
 object Lti13Request {
 
   /**
-    * Extract custom params from the provided decoded JWT. Values of custom params must be present as String
-    * by the LTI platform, so discard those non-String values.
+    * Extract custom params from the provided decoded JWT. Custom params are expected to be `String`s,
+    * so non-String values can be ignored (discarded).
     *
     * @param decodedJWT Decoded JWT which provides the claim of custom params.
     * @return A key-value map for custom params, or `None` if no such a claim available.

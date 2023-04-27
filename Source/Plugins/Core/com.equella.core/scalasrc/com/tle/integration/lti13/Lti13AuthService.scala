@@ -281,8 +281,7 @@ class Lti13AuthService {
     *              is expected to have been provided from the server in a previous login init
     *              request.
     * @param token an 'ID Token' in JWT format
-    * @return Either a error string detailing how things failed, or the actual JWT decoded and ready
-    *         for further use along with the matching state information.
+    * @return Either a error string detailing how things failed, or the actual decoded JWT.
     */
   def verifyToken(state: String, token: String): Either[Lti13Error, DecodedJWT] = {
     val result = for {

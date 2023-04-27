@@ -61,8 +61,6 @@ import org.java.plugin.registry.Extension.Parameter;
  *
  * <p>It provides: 1. Some common implementations for content selections; and 2. Some abstract
  * methods about setting up the integration context.
- *
- * @author aholland
  */
 @SuppressWarnings("nls")
 @NonNullByDefault
