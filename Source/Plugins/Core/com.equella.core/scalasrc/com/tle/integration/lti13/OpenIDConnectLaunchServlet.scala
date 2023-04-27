@@ -21,10 +21,9 @@ package com.tle.integration.lti13
 import com.tle.common.usermanagement.user.WebAuthenticationDetails
 import com.tle.core.guice.Bind
 import com.tle.core.services.user.UserService
+import com.tle.integration.lti13.Lti13Request.getLtiRequestDetails
 import org.apache.http.HttpStatus
 import org.slf4j.LoggerFactory
-
-import java.net.URI
 import javax.inject.{Inject, Singleton}
 import javax.servlet.http.{HttpServlet, HttpServletRequest, HttpServletResponse}
 import scala.jdk.CollectionConverters._
@@ -37,9 +36,10 @@ import scala.jdk.CollectionConverters._
 class OpenIDConnectLaunchServlet extends HttpServlet {
   private val LOGGER = LoggerFactory.getLogger(classOf[OpenIDConnectLaunchServlet])
 
-  @Inject private var lti13AuthService: Lti13AuthService = _
-  @Inject private var stateService: Lti13StateService    = _
-  @Inject private var userService: UserService           = _
+  @Inject private var lti13AuthService: Lti13AuthService               = _
+  @Inject private var stateService: Lti13StateService                  = _
+  @Inject private var userService: UserService                         = _
+  @Inject private var lti13IntegrationService: Lti13IntegrationService = _
 
   override def doGet(req: HttpServletRequest, resp: HttpServletResponse): Unit = {
     LOGGER.debug("doGet() called")
@@ -72,6 +72,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
           case authResp: AuthenticationResponse =>
             handleAuthenticationResponse(authResp,
                                          userService.getWebAuthenticationDetails(req),
+                                         req,
                                          resp)
           case errorResponse: ErrorResponse => handleErrorResponse(errorResponse, resp)
         }
@@ -97,6 +98,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
 
   private def handleAuthenticationResponse(auth: AuthenticationResponse,
                                            wad: WebAuthenticationDetails,
+                                           req: HttpServletRequest,
                                            resp: HttpServletResponse): Unit = {
     LOGGER.debug("Received an authentication response. Supplied values:")
     LOGGER.debug(auth.toString)
@@ -130,18 +132,22 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
       resp.getWriter.print(output)
     }
 
-    val authResult: Either[Lti13Error, URI] = for {
-      verificationResult <- lti13AuthService.verifyToken(auth.state, auth.id_token)
-      decodedJWT    = verificationResult._1
-      targetLinkUri = verificationResult._2.targetLinkUri
-
-      userDetails <- UserDetails(decodedJWT)
-      _           <- lti13AuthService.loginUser(wad, userDetails)
-    } yield targetLinkUri
+    val authResult: Either[Lti13Error, Lti13Request] = for {
+      decodedJWT   <- lti13AuthService.verifyToken(auth.state, auth.id_token)
+      userDetails  <- UserDetails(decodedJWT)
+      _            <- lti13AuthService.loginUser(wad, userDetails)
+      lti13Request <- getLtiRequestDetails(decodedJWT)
+    } yield lti13Request
 
     authResult match {
-      case Left(error)      => onAuthFailure(error)
-      case Right(targetUri) => resp.sendRedirect(resp.encodeRedirectURL(targetUri.toString))
+      case Left(error) => onAuthFailure(error)
+      case Right(result) =>
+        result match {
+          case deepLinkingRequest: LtiDeepLinkingRequest =>
+            lti13IntegrationService.launchSelectionSession(deepLinkingRequest, req, resp)
+          case resourceLinkRequest: LtiResourceLinkRequest =>
+            resp.sendRedirect(resp.encodeRedirectURL(resourceLinkRequest.targetLinkUri))
+        }
     }
 
     // Finished with `state` - it's been used once, so let's dump it

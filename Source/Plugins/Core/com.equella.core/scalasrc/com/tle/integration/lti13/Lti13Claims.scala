@@ -37,6 +37,28 @@ object Lti13Claims {
   val ROLES = "https://purl.imsglobal.org/spec/lti/claim/roles"
 
   /**
+    * Contains a string value to provide a fully qualified URL which a tool provider must redirect the workflow to
+    * once the resource selection is completed.
+    */
+  val TARGET_LINK_URI = "https://purl.imsglobal.org/spec/lti/claim/target_link_uri"
+
+  /**
+    * Contains a string value to specify which kind of the message type is.
+    */
+  val MESSAGE_TYPE = "https://purl.imsglobal.org/spec/lti/claim/message_type"
+
+  /**
+    * Contains a key-value map which provides a list of custom properties configured for a platform.
+    * Map values must be strings, and "empty-string" is a valid value. However, null is not valid.
+    */
+  val CUSTOM_PARAMETERS = "https://purl.imsglobal.org/spec/lti/claim/custom"
+
+  /**
+    * Contains a list of deep linking settings for a platform as a JSON string.
+    */
+  val DEEP_LINKING_SETTINGS = "https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings"
+
+  /**
     * Checks the provided role for the standard LIS (v2) context role identifying a role claim for an
     * 'Instructor'. Does _not_ support 'simple names' as this method is considered deprecated and so
     * "by best practice, vendors should use the full URIs for all roles (context roles included)".
