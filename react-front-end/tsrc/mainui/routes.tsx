@@ -22,7 +22,7 @@ import { TemplateUpdate } from "./Template";
 
 const ThemePage = React.lazy(() => import("../theme/ThemePage"));
 const LTIPlatformsSettingsPage = React.lazy(
-  () => import("../settings/Integrations/LTI13PlatformsSettings")
+  () => import("../settings/Integrations/Lti13PlatformsSettings")
 );
 const CloudProviderListPage = React.lazy(
   () => import("../cloudprovider/CloudProviderListPage")

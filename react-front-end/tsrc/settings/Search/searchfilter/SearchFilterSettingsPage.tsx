@@ -17,7 +17,6 @@
  */
 import {
   Card,
-  CardActions,
   CardContent,
   IconButton,
   List,
@@ -25,7 +24,6 @@ import {
   ListItemSecondaryAction,
   ListItemText,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -36,6 +34,7 @@ import { pipe } from "fp-ts/function";
 import * as TE from "fp-ts/TaskEither";
 import MessageDialog from "../../../components/MessageDialog";
 import SettingPageTemplate from "../../../components/SettingPageTemplate";
+import SettingsCardActions from "../../../components/SettingsCardActions";
 import SettingsList from "../../../components/SettingsList";
 import SettingsListControl from "../../../components/SettingsListControl";
 import SettingsListHeading from "../../../components/SettingsListHeading";
@@ -67,11 +66,6 @@ import {
 import { languageStrings } from "../../../util/langstrings";
 import MimeTypeFilterEditingDialog from "./MimeTypeFilterEditingDialog";
 import * as OEQ from "@openequella/rest-api-client";
-
-const StyledCardActions = styled(CardActions)({
-  display: "flex",
-  justifyContent: "flex-end",
-});
 
 const searchFilterStrings =
   languageStrings.settings.searching.searchfiltersettings;
@@ -367,7 +361,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
           </List>
         </CardContent>
 
-        <StyledCardActions>
+        <SettingsCardActions>
           <IconButton
             onClick={() => openMimeTypeFilterDialog()}
             aria-label={searchFilterStrings.add}
@@ -376,7 +370,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
           >
             <AddCircleIcon fontSize="large" />
           </IconButton>
-        </StyledCardActions>
+        </SettingsCardActions>
       </Card>
 
       {
