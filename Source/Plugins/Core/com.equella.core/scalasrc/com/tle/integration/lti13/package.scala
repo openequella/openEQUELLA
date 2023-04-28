@@ -94,8 +94,10 @@ package object lti13 {
     */
   def getClaimAsMap(jwt: DecodedJWT, claim: String): Option[Map[String, AnyRef]] =
     Option(jwt.getClaim(claim))
-      .map(c => Either.catchNonFatal(c.asMap))
+    // `asMap` may return null or throw JWTDecodeException.
+      .map(c => Either.catchNonFatal(Option(c.asMap)))
       .flatMap(_.toOption)
+      .flatten
       .map(_.asScala.toMap)
 
   /**
