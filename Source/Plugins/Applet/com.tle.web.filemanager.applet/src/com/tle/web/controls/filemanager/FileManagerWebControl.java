@@ -23,7 +23,6 @@ import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.FileAttachment;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
-import com.tle.web.controls.filemanager.popup.FileManagerDialog;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionContext;
@@ -36,31 +35,23 @@ import com.tle.web.sections.equella.component.model.SelectionsTableSelection;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.js.ElementId;
 import com.tle.web.sections.js.generic.OverrideHandler;
-import com.tle.web.sections.js.generic.function.AnonymousFunction;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
-import com.tle.web.sections.js.generic.function.PassThroughFunction;
-import com.tle.web.sections.js.generic.function.SimpleFunction;
-import com.tle.web.sections.js.generic.statement.FunctionCallStatement;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.annotations.Component;
-import com.tle.web.sections.standard.js.modules.StandardModule;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.renderers.LinkRenderer;
 import com.tle.web.wizard.controls.AbstractWebControl;
 import com.tle.web.wizard.controls.WebControlModel;
 import com.tle.web.wizard.impl.WebRepository;
 import java.util.List;
-import javax.inject.Inject;
 
 @SuppressWarnings("nls")
 @Bind
 public class FileManagerWebControl extends AbstractWebControl<WebControlModel> {
   @ViewFactory(name = "wizardFreemarkerFactory")
   private FreemarkerFactory factory;
-
-  @Inject @Component private FileManagerDialog dialog;
 
   @Component private Button openWebdav;
   @Component private Button refreshButton;
@@ -70,7 +61,6 @@ public class FileManagerWebControl extends AbstractWebControl<WebControlModel> {
 
   @Override
   public SectionResult renderHtml(RenderEventContext context) throws Exception {
-    addDisabler(context, dialog.getOpener());
     setupWebdavUrl(context);
     return factory.createResult("filemanager/filemanager.ftl", context);
   }
@@ -98,24 +88,7 @@ public class FileManagerWebControl extends AbstractWebControl<WebControlModel> {
 
     refreshButton.setClickHandler(getReloadFunction(true, null));
 
-    dialog.setFileManagerControl(this);
     filesTable.setSelectionsModel(new FilesModel());
-  }
-
-  @Override
-  public void treeFinished(String id, SectionTree tree) {
-    super.treeFinished(id, tree);
-
-    if (dialog.isAjax()) {
-      SimpleFunction delayedReload =
-          new SimpleFunction(
-              "reloadFileman",
-              new FunctionCallStatement(
-                  StandardModule.SET_TIMEOUT,
-                  new AnonymousFunction(new FunctionCallStatement(getReloadFunction(true, null))),
-                  800));
-      dialog.setDialogClosedCallback(new PassThroughFunction("fin" + id, delayedReload));
-    }
   }
 
   public boolean isAutoMarkAsResource() {
@@ -151,10 +124,6 @@ public class FileManagerWebControl extends AbstractWebControl<WebControlModel> {
   @Override
   public Class<WebControlModel> getModelClass() {
     return WebControlModel.class;
-  }
-
-  public FileManagerDialog getDialog() {
-    return dialog;
   }
 
   public Button getOpenWebdav() {
