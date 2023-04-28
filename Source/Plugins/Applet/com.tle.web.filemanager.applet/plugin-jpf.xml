@@ -20,10 +20,6 @@
   <extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
     <parameter id="class" value="com.tle.web.wizard.guice.WizardBindBothModule" />
   </extension>
-  <extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
-    <parameter id="group" value="file-manager" />
-    <parameter id="file" value="lang/i18n.properties" />
-  </extension>
   <extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings_resource_centre">
     <parameter id="group" value="resource-centre" />
     <parameter id="file" value="lang/i18n-resource-centre.properties" />
