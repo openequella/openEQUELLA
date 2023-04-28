@@ -24,6 +24,12 @@ package com.tle.integration.lti13
 object OpenIDConnectParams {
 
   /**
+    * Required parameter in the OAuth2 protocol used by LTI 1.3, and it specifies the intended audience
+    * of the access token.
+    */
+  val AUDIENCE = "aud"
+
+  /**
     * REQUIRED. OAuth 2.0 Client Identifier valid at the Authorization Server.
     */
   val CLIENT_ID = "client_id"
