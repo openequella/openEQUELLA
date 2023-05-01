@@ -25,7 +25,9 @@ import com.tle.core.lti13.bean.LtiPlatformBean.populatePlatform
 import com.tle.core.lti13.dao.LtiPlatformDAO
 import org.springframework.transaction.annotation.Transactional
 import com.tle.common.usermanagement.user.CurrentUser
+import com.tle.core.webkeyset.service.WebKeySetService
 import org.slf4j.{Logger, LoggerFactory}
+import java.security.interfaces.RSAPrivateKey
 import java.time.Instant
 import javax.inject.{Inject, Singleton}
 import scala.jdk.CollectionConverters._
@@ -33,7 +35,8 @@ import scala.jdk.CollectionConverters._
 @Singleton
 @Bind(classOf[LtiPlatformService])
 class LtiPlatformServiceImpl extends LtiPlatformService {
-  @Inject var lti13Dao: LtiPlatformDAO = _
+  @Inject var lti13Dao: LtiPlatformDAO           = _
+  @Inject var webKeySetService: WebKeySetService = _
 
   private var logger: Logger            = LoggerFactory.getLogger(classOf[LtiPlatformServiceImpl])
   private def log(action: String): Unit = logger.info(s"User ${CurrentUser.getUserID} $action")
@@ -44,11 +47,23 @@ class LtiPlatformServiceImpl extends LtiPlatformService {
   override def getAll: List[LtiPlatformBean] =
     lti13Dao.enumerateAll.asScala.map(LtiPlatformBean.apply).toList
 
+  override def getPrivateKeyForPlatform(
+      platformID: String): Either[String, (String, RSAPrivateKey)] = {
+    val key = for {
+      platform <- lti13Dao.getByPlatformId(platformID)
+      keyId = platform.keyPairId
+      keyPair <- webKeySetService.getKeypairByKeyID(keyId)
+    } yield (keyId, keyPair.getPrivate.asInstanceOf[RSAPrivateKey])
+
+    key.toRight(s"Failed to find keypair for platform $platformID")
+  }
   @Transactional
   override def create(bean: LtiPlatformBean): String = {
     log(s"creates LTI platform by ${bean.platformId}")
 
     val newPlatform = populatePlatform(new LtiPlatform, bean)
+
+    newPlatform.keyPairId = webKeySetService.generateKeyPair
     newPlatform.dateCreated = Instant.now
     newPlatform.createdBy = CurrentUser.getUserID
     lti13Dao.save(newPlatform)

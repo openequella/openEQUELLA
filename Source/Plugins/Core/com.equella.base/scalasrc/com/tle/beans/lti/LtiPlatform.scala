@@ -20,6 +20,7 @@ package com.tle.beans.lti
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField
 import com.tle.beans.Institution
+import com.tle.beans.webkeyset.WebKeySet
 import org.hibernate.annotations.NamedQuery
 
 import java.time.Instant
@@ -36,6 +37,7 @@ import javax.persistence.{
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   Table,
   UniqueConstraint
 }
@@ -160,6 +162,11 @@ class LtiPlatform {
     */
   @Column(nullable = false)
   var enabled: Boolean = _
+
+  /**
+    * ID of the keypair generated to sign the JWT sent back to a platform.
+    */
+  var keyPairId: String = _
 
   /**
     * When the platform was created.

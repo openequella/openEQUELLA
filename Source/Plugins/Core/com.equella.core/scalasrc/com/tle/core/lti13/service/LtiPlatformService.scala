@@ -18,8 +18,8 @@
 
 package com.tle.core.lti13.service
 
-import com.tle.beans.lti.LtiPlatform
 import com.tle.core.lti13.bean.LtiPlatformBean
+import java.security.interfaces.RSAPrivateKey
 
 trait LtiPlatformService {
 
@@ -37,6 +37,14 @@ trait LtiPlatformService {
     * @return List of LtiPlatformBean belonging to the current Institution.
     */
   def getAll: List[LtiPlatformBean]
+
+  /**
+    * Return ID of the RSA key pair dedicated to the platform as well as the private key.
+    *
+    * @param platformID The ID identifying a LTI platform.
+    * @return A tuple of the RSAPrivateKey and the ID, or an error message if no such a keypair found.
+    */
+  def getPrivateKeyForPlatform(platformID: String): Either[String, (String, RSAPrivateKey)]
 
   /**
     * Create a LTI platform based on the provided bean in the current Institution.
