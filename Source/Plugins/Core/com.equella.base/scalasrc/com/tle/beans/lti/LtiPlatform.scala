@@ -35,6 +35,7 @@ import javax.persistence.{
   Id,
   Index,
   JoinColumn,
+  JoinTable,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -164,9 +165,15 @@ class LtiPlatform {
   var enabled: Boolean = _
 
   /**
-    * ID of the keypair generated to sign the JWT sent back to a platform.
+    * Key pairs used to sign the JWT for LTI platform.
     */
-  var keyPairId: String = _
+  @OneToMany(cascade = Array(CascadeType.ALL), orphanRemoval = true)
+  @JoinTable(
+    name = "lti_platform_key_pairs",
+    joinColumns = Array(new JoinColumn(name = "lti_platform_id", referencedColumnName = "id")),
+    inverseJoinColumns = Array(new JoinColumn(name = "web_key_set_id", referencedColumnName = "id"))
+  )
+  var keyPairs: java.util.Set[WebKeySet] = _
 
   /**
     * When the platform was created.
