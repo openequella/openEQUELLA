@@ -44,7 +44,7 @@ class WebKeySetServiceImpl extends WebKeySetService {
   def getAll: List[WebKeySet] = webKeySetDAO.enumerateAll.asScala.toList
 
   @Transactional
-  def generateKeyPair: String = {
+  def generateKeyPair: WebKeySet = {
     val keyPair = generateRSAKeyPair
 
     val securityKey = new WebKeySet
@@ -57,7 +57,7 @@ class WebKeySetServiceImpl extends WebKeySetService {
     securityKey.institution = CurrentInstitution.get()
 
     webKeySetDAO.save(securityKey)
-    securityKey.keyId
+    securityKey
   }
 
   @Transactional
@@ -67,13 +67,11 @@ class WebKeySetServiceImpl extends WebKeySetService {
   def deleteAll(): Unit = getAll.foreach(webKeySetDAO.delete)
 
   @Transactional
-  def rotateKeyPair(keyID: String): Option[String] =
-    webKeySetDAO.getByKeyID(keyID) match {
-      case Some(keySet) =>
-        keySet.deactivated = Instant.now
-        Some(generateKeyPair)
-      case None => None
-    }
+  def rotateKeyPair(activatedKeyPair: WebKeySet): WebKeySet = {
+    activatedKeyPair.deactivated = Instant.now
+    webKeySetDAO.update(activatedKeyPair)
+    generateKeyPair
+  }
 
   @Transactional
   def generateJWKS: String = {
