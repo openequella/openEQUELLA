@@ -19,12 +19,14 @@
 package com.tle.core.lti13.service
 
 import com.tle.beans.lti.LtiPlatform
+import com.tle.beans.webkeyset.WebKeySet
 import com.tle.core.guice.Bind
 import com.tle.core.lti13.bean.LtiPlatformBean
 import com.tle.core.lti13.bean.LtiPlatformBean.populatePlatform
 import com.tle.core.lti13.dao.LtiPlatformDAO
 import org.springframework.transaction.annotation.Transactional
 import com.tle.common.usermanagement.user.CurrentUser
+import com.tle.core.webkeyset.helper.WebKeySetHelper
 import com.tle.core.webkeyset.service.WebKeySetService
 import org.slf4j.{Logger, LoggerFactory}
 import java.security.interfaces.RSAPrivateKey
@@ -41,6 +43,19 @@ class LtiPlatformServiceImpl extends LtiPlatformService {
   private var logger: Logger            = LoggerFactory.getLogger(classOf[LtiPlatformServiceImpl])
   private def log(action: String): Unit = logger.info(s"User ${CurrentUser.getUserID} $action")
 
+  private def getPlatformOrError(platformId: String): Either[String, LtiPlatform] =
+    lti13Dao.getByPlatformId(platformId).toRight(s"No LTI platform matching ID $platformId")
+
+  private def getActivatedKeyPair(platform: LtiPlatform): Either[String, WebKeySet] = {
+    val activatedKeyPairs = platform.keyPairs.asScala.filter(k => Option(k.deactivated).isEmpty)
+
+    Either.cond(
+      activatedKeyPairs.size == 1,
+      activatedKeyPairs.head,
+      s"An LTI platform must have only one activated key pair."
+    )
+  }
+
   override def getByPlatformID(platformID: String): Option[LtiPlatformBean] =
     lti13Dao.getByPlatformId(platformID).map(LtiPlatformBean.apply)
 
@@ -48,22 +63,35 @@ class LtiPlatformServiceImpl extends LtiPlatformService {
     lti13Dao.enumerateAll.asScala.map(LtiPlatformBean.apply).toList
 
   override def getPrivateKeyForPlatform(
-      platformID: String): Either[String, (String, RSAPrivateKey)] = {
-    val key = for {
-      platform <- lti13Dao.getByPlatformId(platformID)
-      keyId = platform.keyPairId
-      keyPair <- webKeySetService.getKeypairByKeyID(keyId)
-    } yield (keyId, keyPair.getPrivate.asInstanceOf[RSAPrivateKey])
+      platformID: String): Either[String, (String, RSAPrivateKey)] =
+    for {
+      platform         <- getPlatformOrError(platformID)
+      activatedKeyPair <- getActivatedKeyPair(platform)
+      rsaPrivateKey = WebKeySetHelper
+        .buildKeyPair(activatedKeyPair)
+        .getPrivate
+        .asInstanceOf[RSAPrivateKey]
+    } yield (activatedKeyPair.keyId, rsaPrivateKey)
 
-    key.toRight(s"Failed to find keypair for platform $platformID")
+  def rotateKeyPairForPlatform(platformID: String): Either[String, String] = {
+    for {
+      platform         <- getPlatformOrError(platformID)
+      activatedKeyPair <- getActivatedKeyPair(platform)
+    } yield {
+      val newActivatedKeyPair = webKeySetService.rotateKeyPair(activatedKeyPair)
+      platform.keyPairs.add(newActivatedKeyPair)
+      lti13Dao.update(platform)
+      newActivatedKeyPair.keyId
+    }
   }
+
   @Transactional
   override def create(bean: LtiPlatformBean): String = {
     log(s"creates LTI platform by ${bean.platformId}")
 
     val newPlatform = populatePlatform(new LtiPlatform, bean)
 
-    newPlatform.keyPairId = webKeySetService.generateKeyPair
+    newPlatform.keyPairs = Set(webKeySetService.generateKeyPair).asJava
     newPlatform.dateCreated = Instant.now
     newPlatform.createdBy = CurrentUser.getUserID
     lti13Dao.save(newPlatform)

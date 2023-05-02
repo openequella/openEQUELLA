@@ -39,12 +39,20 @@ trait LtiPlatformService {
   def getAll: List[LtiPlatformBean]
 
   /**
-    * Return ID of the RSA key pair dedicated to the platform as well as the private key.
+    * Return ID of the activated RSA key pair dedicated to the platform as well as the private key.
     *
     * @param platformID The ID identifying a LTI platform.
-    * @return A tuple of the RSAPrivateKey and the ID, or an error message if no such a keypair found.
+    * @return A tuple of the RSAPrivateKey and the JWKS key ID, or an error message if no such a keypair found.
     */
   def getPrivateKeyForPlatform(platformID: String): Either[String, (String, RSAPrivateKey)]
+
+  /**
+    * Rotate the activated key pair for an LTI platform.
+    *
+    * @param platformID The ID identifying a LTI platform.
+    * @return Key ID of the new activated key pair, or an error message describing why failed to rotate.
+    */
+  def rotateKeyPairForPlatform(platformID: String): Either[String, String]
 
   /**
     * Create a LTI platform based on the provided bean in the current Institution.
