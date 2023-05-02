@@ -633,7 +633,7 @@
   </extension>
   <extension plugin-id="com.tle.admin.controls" point-id="control" id="fileManagerControl">
     <parameter id="id" value="filemanager" />
-    <parameter id="name" value="com.equella.admin.fileman.title" />
+    <parameter id="name" value="com.equella.admin.webdav.title" />
     <parameter id="modelClass" value="com.dytech.edge.admin.wizard.model.CustomControlModel" />
     <parameter id="wrappedClass" value="com.tle.admin.controls.filemanager.FileManagerControl" />
     <parameter id="editorClass" value="com.tle.admin.controls.filemanager.FileManagerEditor" />
