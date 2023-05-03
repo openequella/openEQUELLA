@@ -166,6 +166,11 @@ class LtiPlatform {
 
   /**
     * Key pairs used to sign the JWT for LTI platform.
+    *
+    * NOTE: A join table has been explicitly used here to ensure that `WebKeySet` is not tightly
+    * coupled to LTI Platform, as we can use that for other items in the future - e.g. improved
+    * OAuth2 with JWT support.
+    *
     */
   @OneToMany(cascade = Array(CascadeType.ALL), orphanRemoval = true)
   @JoinTable(
