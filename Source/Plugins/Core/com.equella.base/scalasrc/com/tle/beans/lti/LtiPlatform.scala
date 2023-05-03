@@ -20,6 +20,7 @@ package com.tle.beans.lti
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField
 import com.tle.beans.Institution
+import com.tle.beans.webkeyset.WebKeySet
 import org.hibernate.annotations.NamedQuery
 
 import java.time.Instant
@@ -34,8 +35,10 @@ import javax.persistence.{
   Id,
   Index,
   JoinColumn,
+  JoinTable,
   ManyToOne,
   OneToMany,
+  OneToOne,
   Table,
   UniqueConstraint
 }
@@ -160,6 +163,22 @@ class LtiPlatform {
     */
   @Column(nullable = false)
   var enabled: Boolean = _
+
+  /**
+    * Key pairs used to sign the JWT for LTI platform.
+    *
+    * NOTE: A join table has been explicitly used here to ensure that `WebKeySet` is not tightly
+    * coupled to LTI Platform, as we can use that for other items in the future - e.g. improved
+    * OAuth2 with JWT support.
+    *
+    */
+  @OneToMany(cascade = Array(CascadeType.ALL), orphanRemoval = true)
+  @JoinTable(
+    name = "lti_platform_key_pairs",
+    joinColumns = Array(new JoinColumn(name = "lti_platform_id", referencedColumnName = "id")),
+    inverseJoinColumns = Array(new JoinColumn(name = "web_key_set_id", referencedColumnName = "id"))
+  )
+  var keyPairs: java.util.Set[WebKeySet] = _
 
   /**
     * When the platform was created.

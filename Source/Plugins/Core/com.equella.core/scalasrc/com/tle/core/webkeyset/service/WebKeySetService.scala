@@ -41,9 +41,9 @@ trait WebKeySetService {
   /**
     * Generate a new key pair for the current Institution.
     *
-    * @return ID of the new key pair.
+    * @return The new key pair.
     */
-  def generateKeyPair: String
+  def generateKeyPair: WebKeySet
 
   /**
     * Retrieve all the key pairs of the current Institution and return a JWKS representing the them.
@@ -53,11 +53,11 @@ trait WebKeySetService {
   def generateJWKS: String
 
   /**
-    * Find an existing key pair by key ID and deactivate it, and then create a new key pair and return its ID.
+    * Deactivate the provided key pair and then create a new one.
     *
-    * @return ID of the new key pair, or None if the original key pair is not found.
+    * @return The new activated key pair.
     */
-  def rotateKeyPair(keyID: String): Option[String]
+  def rotateKeyPair(activatedKeyPair: WebKeySet): WebKeySet
 
   /**
     * Delete an existing key pair by key ID.
