@@ -82,6 +82,11 @@ object Lti13Claims {
   val VERSION = "https://purl.imsglobal.org/spec/lti/claim/version"
 
   /**
+    * Contains a JSON object to provide properties for the context from within which the resource link launch occurs.
+    */
+  val CONTEXT = "https://purl.imsglobal.org/spec/lti/claim/context"
+
+  /**
     * Checks the provided role for the standard LIS (v2) context role identifying a role claim for an
     * 'Instructor'. Does _not_ support 'simple names' as this method is considered deprecated and so
     * "by best practice, vendors should use the full URIs for all roles (context roles included)".
