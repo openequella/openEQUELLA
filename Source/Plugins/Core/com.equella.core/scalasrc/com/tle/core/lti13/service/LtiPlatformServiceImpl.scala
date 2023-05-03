@@ -73,7 +73,7 @@ class LtiPlatformServiceImpl extends LtiPlatformService {
         .asInstanceOf[RSAPrivateKey]
     } yield (activatedKeyPair.keyId, rsaPrivateKey)
 
-  def rotateKeyPairForPlatform(platformID: String): Either[String, String] = {
+  def rotateKeyPairForPlatform(platformID: String): Either[String, String] =
     for {
       platform         <- getPlatformOrError(platformID)
       activatedKeyPair <- getActivatedKeyPair(platform)
@@ -83,7 +83,6 @@ class LtiPlatformServiceImpl extends LtiPlatformService {
       lti13Dao.update(platform)
       newActivatedKeyPair.keyId
     }
-  }
 
   @Transactional
   override def create(bean: LtiPlatformBean): String = {
