@@ -249,23 +249,25 @@ class Lti13AuthService {
     */
   def buildAuthReqUrl(initReq: InitiateLoginRequest): Option[String] = {
     for {
-      platformDetails <- getPlatform(initReq.iss)
-      authUrl         <- Url.parseOption(platformDetails.authUrl.toString)
+      platformDetails  <- getPlatform(initReq.iss)
+      authUrl          <- Url.parseOption(platformDetails.authUrl.toString)
+      lti_message_hint <- initReq.lti_message_hint
       state = stateService.createState(
         Lti13StateDetails(initReq.iss, initReq.login_hint, initReq.target_link_uri))
     } yield
       authUrl
         .withQueryString(
           QueryString.fromPairs(
-            OIDC.SCOPE          -> OIDC.SCOPE_OPENID,
-            OIDC.RESPONSE_TYPE  -> OIDC.RESPONSE_TYPE_ID_TOKEN,
-            OIDC.CLIENT_ID      -> platformDetails.clientId,
-            OIDC.REDIRECT_URI   -> getRedirectUri.toString,
-            LTI13.LOGIN_HINT    -> initReq.login_hint,
-            OIDC.STATE          -> state,
-            LTI13.RESPONSE_MODE -> LTI13.RESPONSE_MODE_FORM_POST,
-            LTI13.NONCE         -> nonceService.createNonce(state),
-            LTI13.PROMPT        -> LTI13.PROMPT_NONE
+            OIDC.SCOPE             -> OIDC.SCOPE_OPENID,
+            OIDC.RESPONSE_TYPE     -> OIDC.RESPONSE_TYPE_ID_TOKEN,
+            OIDC.CLIENT_ID         -> platformDetails.clientId,
+            OIDC.REDIRECT_URI      -> getRedirectUri.toString,
+            LTI13.LOGIN_HINT       -> initReq.login_hint,
+            OIDC.STATE             -> state,
+            LTI13.RESPONSE_MODE    -> LTI13.RESPONSE_MODE_FORM_POST,
+            LTI13.NONCE            -> nonceService.createNonce(state),
+            LTI13.PROMPT           -> LTI13.PROMPT_NONE,
+            LTI13.LTI_MESSAGE_HINT -> lti_message_hint
           ))
         .toString()
   }
