@@ -21,8 +21,8 @@ import * as RS from "fp-ts/ReadonlySet";
 import * as RA from "fp-ts/ReadonlyArray";
 import * as React from "react";
 import { languageStrings } from "../../util/langstrings";
-import GroupSearch from "../securityentitysearch/GroupSearch";
 import { ordRole } from "../../modules/RoleModule";
+import RoleSearch from "../securityentitysearch/RoleSearch";
 import BaseSelector from "./BaseSelector";
 import SecurityEntityEntry from "./SecutiryEntityEntry";
 
@@ -34,7 +34,7 @@ export interface RoleSelectorProps {
   /** Handler for when a Role is selected. */
   onSelect: (selections: ReadonlySet<OEQ.UserQuery.RoleDetails>) => void;
   /** Function which will provide the list of Role (search function) for RoleSearch. */
-  RoleListProvider?: (query?: string) => Promise<OEQ.UserQuery.RoleDetails[]>;
+  roleListProvider?: (query?: string) => Promise<OEQ.UserQuery.RoleDetails[]>;
 }
 
 /**
@@ -45,16 +45,16 @@ const RoleSelector = ({
   value,
   onDelete,
   onSelect,
-  RoleListProvider,
+  roleListProvider,
 }: RoleSelectorProps) => {
   const roleSearch = (
     selectedRoles: ReadonlySet<OEQ.UserQuery.RoleDetails>,
     setSelectedRoles: (roles: ReadonlySet<OEQ.UserQuery.RoleDetails>) => void
   ) => (
-    <GroupSearch
+    <RoleSearch
       onChange={setSelectedRoles}
       selections={selectedRoles}
-      search={RoleListProvider}
+      search={roleListProvider}
       enableMultiSelection
       onSelectAll={setSelectedRoles}
       onClearAll={setSelectedRoles}

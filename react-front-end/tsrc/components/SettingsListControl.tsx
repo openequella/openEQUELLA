@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ListItem, ListItemSecondaryAction, ListItemText } from "@mui/material";
+import { Box, ListItem, ListItemText } from "@mui/material";
 import * as React from "react";
 import { ReactNode } from "react";
 
@@ -28,6 +28,10 @@ export interface SettingsListControlProps {
    *  Text to appear on the top line of the row.
    */
   primaryText: string;
+  /**
+   * Don't make the `primaryText` display at the vertical center. Default value is `false`.
+   */
+  disableCenterPrimaryText?: boolean;
   /**
    * Text to appear on the bottom line(s) of the row.
    */
@@ -45,11 +49,18 @@ export interface SettingsListControlProps {
 export default function SettingsListControl({
   divider,
   primaryText,
+  disableCenterPrimaryText,
   secondaryText,
   control,
 }: SettingsListControlProps) {
   return (
-    <ListItem alignItems="flex-start" divider={divider}>
+    <ListItem
+      alignItems={disableCenterPrimaryText ? "flex-start" : "center"}
+      sx={{
+        justifyContent: "space-between",
+      }}
+      divider={divider}
+    >
       <ListItemText
         primary={primaryText}
         secondary={secondaryText}
@@ -58,15 +69,15 @@ export default function SettingsListControl({
           minHeight: "38px",
         }}
       />
-      <ListItemSecondaryAction
+      <Box
         sx={{
-          width: "55%",
+          width: "60%",
           display: "flex",
           justifyContent: "flex-end",
         }}
       >
         {control}
-      </ListItemSecondaryAction>
+      </Box>
     </ListItem>
   );
 }
