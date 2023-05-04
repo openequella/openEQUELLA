@@ -283,9 +283,10 @@ class Lti13AuthService {
     *              is expected to have been provided from the server in a previous login init
     *              request.
     * @param token an 'ID Token' in JWT format
-    * @return Either a error string detailing how things failed, or the actual decoded JWT.
+    * @return Either a error string detailing how things failed, or the actual decoded JWT and details of the LTI platform.
     */
-  def verifyToken(state: String, token: String): Either[Lti13Error, DecodedJWT] = {
+  def verifyToken(state: String,
+                  token: String): Either[Lti13Error, (DecodedJWT, PlatformDetails)] = {
     val result = for {
       // -- first, basic validation of the state
       // Short circuit if this isn't even a state we know about
@@ -316,7 +317,7 @@ class Lti13AuthService {
           .map(err => InvalidJWT(s"Provided ID token (JWT) failed nonce verification: ${err}"))
       // now finally do the verification
       verifiedToken <- verifyJwt(decodedToken).flatMap(verifyNonce)
-    } yield verifiedToken
+    } yield (verifiedToken, platform)
 
     // And the result is:
     result
