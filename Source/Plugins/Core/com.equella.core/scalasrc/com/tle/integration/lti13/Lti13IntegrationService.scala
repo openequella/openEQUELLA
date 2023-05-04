@@ -19,36 +19,43 @@
 package com.tle.integration.lti13
 
 import com.tle.core.guice.Bind
-import com.tle.legacy.LegacyGuice
+import com.tle.core.webkeyset.service.WebKeySetService
 import com.tle.web.integration.service.IntegrationService
 import com.tle.web.integration.{
   AbstractIntegrationService,
   IntegrationSessionData,
   SingleSignonForm
 }
-import com.tle.web.sections.equella.AbstractScalaSection
-import com.tle.web.sections.{SectionInfo, SectionNode, SectionsController}
+import com.tle.web.sections.equella.{AbstractScalaSection, ModalSession}
 import com.tle.web.sections.generic.DefaultSectionTree
 import com.tle.web.sections.registry.TreeRegistry
-import com.tle.web.selection.SelectionSession
-import scala.jdk.CollectionConverters._
+import com.tle.web.sections.{SectionInfo, SectionNode, SectionsController}
+import com.tle.web.selection.{SelectedResource, SelectionSession, SelectionsMadeCallback}
+import java.time.Instant
 import javax.inject.{Inject, Singleton}
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import scala.jdk.CollectionConverters._
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
+import com.tle.core.lti13.service.LtiPlatformService
+import com.tle.web.sections.header.{FormTag, SimpleFormAction}
+import com.tle.web.sections.jquery.{JQuerySelector, JQueryStatement}
+import com.tle.web.sections.render.HiddenInput
+import com.tle.web.template.{Decorations, RenderNewTemplate}
 
 /**
   * Data required to support the LTI 1.3 content selection workflow.
   */
-class Lti13IntegrationSessionData extends IntegrationSessionData {
-  var deepLinkingSettings: DeepLinkingSettings = _
-  override def isForSelection: Boolean         = true
-  override def getIntegrationType: String      = "lti13"
+case class Lti13IntegrationSessionData(deepLinkingSettings: LtiDeepLinkingSettings,
+                                       context: Option[LtiDeepLinkingContext])
+    extends IntegrationSessionData {
+  override def isForSelection: Boolean    = true
+  override def getIntegrationType: String = "lti13"
 }
 
 object Lti13IntegrationSessionData {
-  def apply(deepLinkingSettings: DeepLinkingSettings): Lti13IntegrationSessionData = {
-    val data = new Lti13IntegrationSessionData
-    data.deepLinkingSettings = deepLinkingSettings
-    data
+  def apply(request: LtiDeepLinkingRequest): Lti13IntegrationSessionData = {
+    Lti13IntegrationSessionData(request.deepLinkingSettings, request.context)
   }
 }
 
@@ -64,31 +71,126 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
   private var integrationService: IntegrationService = _
   private var sectionsController: SectionsController = _
   private var treeRegistry: TreeRegistry             = _
+  private var webKeySetService: WebKeySetService     = _
+  private var ltiPlatformService: LtiPlatformService = _
 
   @Inject
   def this(integrationService: IntegrationService,
+           webKeySetService: WebKeySetService,
+           ltiPlatformService: LtiPlatformService,
            sectionsController: SectionsController,
            treeRegistry: TreeRegistry) = {
     this()
     this.treeRegistry = treeRegistry
     this.integrationService = integrationService
     this.sectionsController = sectionsController
+    this.webKeySetService = webKeySetService
+    this.ltiPlatformService = ltiPlatformService
   }
+
+  // The value of each ContentItem must be constructed as a `Map` so that it will be accepted by `com.auth0.jwt.JWTCreator`.
+  private def buildDeepLinkingContentItems(
+      info: SectionInfo,
+      session: SelectionSession): java.util.List[java.util.Map[String, String]] = {
+    def buildUrl(resource: SelectedResource) =
+      getLinkForResource(info,
+                         createViewableItem(getItemForResource(resource), resource),
+                         resource,
+                         false,
+                         session.isAttachmentUuidUrls).getLmsLink.getUrl
+
+    session.getSelectedResources.asScala
+      .map(r => Map("type" -> "link", "title" -> r.getTitle, "url" -> buildUrl(r)).asJava)
+      .toList
+      .asJava
+  }
+
+  // Build a custom call back which will be fired when a selection is either confirmed or cancelled.
+  private def buildSelectionMadeCallback(deepLinkingRequest: LtiDeepLinkingRequest,
+                                         platformDetails: PlatformDetails,
+                                         response: HttpServletResponse): SelectionsMadeCallback =
+    new SelectionsMadeCallback {
+      override def executeSelectionsMade(info: SectionInfo, session: SelectionSession): Boolean =
+        ltiPlatformService.getPrivateKeyForPlatform(platformDetails.platformId) match {
+          case Right((keyId, privateKey)) =>
+            val token = JWT
+              .create()
+              .withIssuer(deepLinkingRequest.aud)
+              .withAudience(deepLinkingRequest.iss)
+              .withIssuedAt(Instant.now)
+              .withExpiresAt(Instant.now.plusSeconds(60))
+              .withKeyId(keyId)
+              .withClaim(Lti13Claims.MESSAGE_TYPE, LtiMessageType.LtiDeepLinkingResponse.toString)
+              .withClaim(Lti13Claims.VERSION, deepLinkingRequest.version)
+              .withClaim(OpenIDConnectParams.NONCE, deepLinkingRequest.nonce)
+              .withClaim(Lti13Claims.DEPLOYMENT_ID, deepLinkingRequest.deploymentId)
+              .withClaim(
+                Lti13Claims.CONTENT_ITEMS,
+                buildDeepLinkingContentItems(info, session)
+              )
+              .sign(Algorithm.RSA256(privateKey))
+
+            val formId = "deep_linking_response"
+
+            // In New UI, we have to rely on `LegacyContentApi` to return the form back to the front-end. So we need to build a `FormTag` and
+            // add it to the render context of `SectionInfo`.
+            // But in Old UI, we can directly output the form and a script to submit the form in the response.
+            if (RenderNewTemplate.isNewUIEnabled) {
+              // Setting this flag to `true` is important. It will make sure this form is available in the page.
+              // Otherwise, this form would be nested under form `eqForm`, which is invalid and the browser will remove this form. So the submit will fail.
+              // Check the usage of `LegacyContent#noForm` for details.
+              Decorations.getDecorations(info).setExcludeForm(true)
+              val form = new FormTag
+              form.setId(formId)
+              form.setAction(
+                new SimpleFormAction(deepLinkingRequest.deepLinkingSettings.deepLinkReturnUrl))
+              form.addHidden(new HiddenInput("JWT", token))
+              form.addReadyStatements(
+                new JQueryStatement(JQuerySelector.Type.ID, formId, "submit()"))
+
+              info.getRootRenderContext.setRenderedBody(form)
+            } else {
+              val formHtml =
+                s"""
+                   |<form method="POST" action="${deepLinkingRequest.deepLinkingSettings.deepLinkReturnUrl}" id="$formId">
+                   |  <input type="hidden" name="JWT" value="$token">
+                   |</form>
+                   |<script>document.getElementById("$formId").submit();</script>
+                   |""".stripMargin
+
+              response.setContentType("text/html")
+
+              val p = response.getWriter
+              p.write(formHtml)
+              p.flush()
+            }
+            false // Return `false` so selections are not maintained, which is what `IntegrationSection` does.
+          case Left(error) => throw new RuntimeException(s"Failed to sign JWT: $error")
+        }
+
+      override def executeModalFinished(info: SectionInfo, session: ModalSession): Unit = ???
+    }
 
   override protected def canSelect(data: Lti13IntegrationSessionData): Boolean = data.isForSelection
 
   override protected def getIntegrationType = "lti13"
 
+  // Usually, the implementation of this method created in `GenericIntegrationService` will be used because the viewing type
+  // is `integ/gen`. So here we don't really need to implement it.
   override def createDataForViewing(info: SectionInfo): Lti13IntegrationSessionData =
-    new Lti13IntegrationSessionData
+    throw new UnsupportedOperationException
 
-  override def getClose(data: Lti13IntegrationSessionData): String = ???
+  // This method should not be used in the context of LTI 1.3 integration because of the custom selection callback.
+  override def getClose(data: Lti13IntegrationSessionData): String =
+    throw new UnsupportedOperationException
 
-  override def getCourseInfoCode(data: Lti13IntegrationSessionData): String = ???
+  override def getCourseInfoCode(data: Lti13IntegrationSessionData): String =
+    data.context.map(_.id).orNull
 
+  // This method should not be used in the context of LTI 1.3 integration because of the custom selection callback.
   override def select(info: SectionInfo,
                       data: Lti13IntegrationSessionData,
-                      session: SelectionSession): Boolean = ???
+                      session: SelectionSession): Boolean = throw new UnsupportedOperationException
 
   // todo: Update implementation to configure Selection Session based on deep linking settings
   override def setupSelectionSession(info: SectionInfo,
@@ -103,11 +205,13 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
     * 2. Use LTI deep linking request details to build an IntegrationData and IntegrationActionInfo.
     * 3. Use `IntegrationService#standardForward` to navigate the page to Selection Session.
     *
-    * @param deepLinkingRequest Deep linking request details
+    * @param deepLinkingRequest Deep linking request details providing claims to be used to configure Selection Session.
+    * @param platformDetails Details of the LTI platform to be used to build a JWT.
     * @param req HTTP Servlet request to be used to build a SectionInfo.
     * @param resp HTTP Servlet response to be used to build a SectionInfo.
     */
   def launchSelectionSession(deepLinkingRequest: LtiDeepLinkingRequest,
+                             platformDetails: PlatformDetails,
                              req: HttpServletRequest,
                              resp: HttpServletResponse): Unit = {
 
@@ -135,12 +239,15 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
     // Use `selectOrAdd` as the default Selection Session display mode.
     val action =
       deepLinkingRequest.customParams.flatMap(_.get("selectionMode")).getOrElse("selectOrAdd")
-    val integrationData = Lti13IntegrationSessionData(deepLinkingRequest.deepLinkingSettings)
+    val integrationData = Lti13IntegrationSessionData(deepLinkingRequest)
 
-    integrationService.standardForward(buildSectionInfo,
-                                       "",
-                                       integrationData,
-                                       integrationService.getActionInfo(action, null),
-                                       new SingleSignonForm)
+    integrationService.standardForward(
+      buildSectionInfo,
+      "",
+      integrationData,
+      integrationService.getActionInfo(action, null),
+      new SingleSignonForm,
+      buildSelectionMadeCallback(deepLinkingRequest, platformDetails, resp)
+    )
   }
 }
