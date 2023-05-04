@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Slider } from "@mui/material";
+import { Slider, TextField } from "@mui/material";
 import type { Meta, Story } from "@storybook/react";
 import * as React from "react";
 import SettingsList, {
@@ -27,6 +27,7 @@ import SettingsListControl, {
 import SettingsToggleSwitch, {
   SettingsToggleSwitchProps,
 } from "../../tsrc/components/SettingsToggleSwitch";
+import { SelectedRoles } from "./securityentityselector/RoleSelector.stories";
 
 export default {
   title: "Component/SettingsList",
@@ -51,8 +52,14 @@ type Props = Pick<SettingsListProps, "subHeading"> &
   Pick<SettingsToggleSwitchProps, "setValue" | "disabled"> &
   Pick<SettingsListControlProps, "primaryText" | "secondaryText">;
 
-export const ListWithTwoItems: Story<Props> = (args) => (
+export const SettingsListWithMultipleItems: Story<Props> = (args) => (
   <SettingsList subHeading={args.subHeading}>
+    <SettingsListControl
+      secondaryText="Textfield for input"
+      control={<TextField fullWidth />}
+      divider
+      primaryText="Textfield"
+    />
     <SettingsListControl
       secondaryText="Box for checking"
       control={
@@ -68,12 +75,18 @@ export const ListWithTwoItems: Story<Props> = (args) => (
     <SettingsListControl
       secondaryText={args.secondaryText}
       control={<Slider marks={marks} min={0} max={7} step={null} />}
-      divider={false}
       primaryText={args.primaryText}
+      divider
+    />
+    <SettingsListControl
+      disableCenterPrimaryText
+      primaryText="Complex settings control"
+      secondaryText="Role Selector"
+      control={<SelectedRoles />}
     />
   </SettingsList>
 );
-ListWithTwoItems.args = {
+SettingsListWithMultipleItems.args = {
   subHeading: "Sub Heading",
   disabled: false,
   primaryText: "SliderControl",
