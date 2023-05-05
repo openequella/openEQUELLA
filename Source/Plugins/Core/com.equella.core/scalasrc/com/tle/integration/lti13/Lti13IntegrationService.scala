@@ -100,7 +100,12 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
                          session.isAttachmentUuidUrls).getLmsLink.getUrl
 
     session.getSelectedResources.asScala
-      .map(r => Map("type" -> "link", "title" -> r.getTitle, "url" -> buildUrl(r)).asJava)
+      .map(
+        r =>
+          Map("type"  -> "ltiResourceLink",
+              "title" -> r.getTitle,
+              "url"   -> buildUrl(r),
+              "text"  -> r.getDescription).asJava)
       .toList
       .asJava
   }
