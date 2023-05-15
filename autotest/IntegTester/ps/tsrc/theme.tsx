@@ -16,36 +16,36 @@
  * limitations under the License.
  */
 import "babel-polyfill";
-import { Theme, createMuiTheme } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { deepOrange, deepPurple } from "@material-ui/core/colors";
+import { Paper, TextField } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { createTheme } from "@mui/material/styles";
+import { deepOrange, deepPurple } from "@mui/material/colors";
 
-export const theme = createMuiTheme({
+export const theme = createTheme({
   palette: {
     primary: deepOrange,
     secondary: deepPurple,
   },
 });
 
-export const useStyles = makeStyles((theme: Theme) => {
-  return {
-    content: {
-      display: "flex",
-      flexDirection: "column",
-      flexGrow: 1,
-    },
-    root: {
-      height: "100vh",
-      display: "flex",
-      flexDirection: "column",
-    },
-    body: {
-      margin: theme.spacing(2),
-    },
-    textField: {
-      marginLeft: theme.spacing(1),
-      marginRight: theme.spacing(1),
-      width: 300,
-    },
-  };
+export const StyledRoot = styled("div")({
+  height: "100vh",
+  display: "flex",
+  flexDirection: "column",
+});
+
+export const StyledPaper = styled(Paper)({
+  display: "flex",
+  flexDirection: "column",
+  flexGrow: 1,
+});
+
+export const StyledBody = styled("div")({
+  margin: theme.spacing(2),
+});
+
+export const StyledTextField = styled(TextField)({
+  marginLeft: theme.spacing(1),
+  marginRight: theme.spacing(1),
+  width: 300,
 });

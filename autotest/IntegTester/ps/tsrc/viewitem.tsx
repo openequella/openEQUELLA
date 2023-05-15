@@ -18,9 +18,9 @@
 import * as ReactDOM from "react-dom";
 import * as React from "react";
 import "babel-polyfill";
-import { CssBaseline } from "@material-ui/core";
-import { ThemeProvider } from "@material-ui/core/styles";
-import { theme, useStyles } from "./theme";
+import { CssBaseline } from "@mui/material";
+import { ThemeProvider } from "@mui/material";
+import { StyledRoot, theme } from "./theme";
 
 interface Props {
   attachment?: string;
@@ -35,21 +35,15 @@ interface ViewItemProps {
 }
 
 function ViewItem({ query: q }: ViewItemProps) {
-  const classes = useStyles();
-
-  return (
-    <div id="testCloudProvider" className={classes.root}>
-      {JSON.stringify(q)}
-    </div>
-  );
+  return <StyledRoot id="testCloudProvider">{JSON.stringify(q)}</StyledRoot>;
 }
 
 ReactDOM.render(
-  <React.Fragment>
+  <>
     <CssBaseline />
     <ThemeProvider theme={theme}>
       <ViewItem query={postValues} />
     </ThemeProvider>
-  </React.Fragment>,
+  </>,
   document.getElementById("app")
 );

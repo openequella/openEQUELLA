@@ -1,16 +1,26 @@
+/*
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import * as React from "react";
 import { useState } from "react";
-import {
-  TextField,
-  Button,
-  AppBar,
-  Toolbar,
-  Typography,
-  Paper
-} from "@material-ui/core";
+import { Button, AppBar, Toolbar, Typography } from "@mui/material";
 import { ProviderRegistration } from "oeq-cloudproviders/registration";
 import axios from "axios";
-import { useStyles } from "./theme";
+import { StyledBody, StyledPaper, StyledRoot, StyledTextField } from "./theme";
 
 export const serverBase = "http://localhost:8083/";
 export const baseUrl = serverBase + "provider/";
@@ -25,7 +35,6 @@ export function UpdateRegistration() {
   const [token, setToken] = useState("a63b07f9-204b-4507-87d0-d220d7aade8a");
   const [name, setName] = useState("Updated provider");
   const [description, setDescription] = useState("");
-  const classes = useStyles();
   function update() {
     axios.put(
       institutionUrl +
@@ -34,14 +43,14 @@ export function UpdateRegistration() {
       createRegistration({ name, description }),
       {
         headers: {
-          "X-Authorization": "access_token=" + token
-        }
+          "X-Authorization": "access_token=" + token,
+        },
       }
     );
   }
 
   return (
-    <div id="testCloudProvider" className={classes.root}>
+    <StyledRoot id="testCloudProvider">
       <AppBar position="static" color="primary">
         <Toolbar>
           <Typography variant="h6" color="inherit">
@@ -49,48 +58,47 @@ export function UpdateRegistration() {
           </Typography>
         </Toolbar>
       </AppBar>
-      <Paper className={classes.content}>
-        <div className={classes.body}>
+      <StyledPaper>
+        <StyledBody>
           <div>
-            <TextField
+            <StyledTextField
               label="Institution URL"
               value={institutionUrl}
-              className={classes.textField}
-              onChange={e => setInstitutionUrl(e.target.value)}
+              onChange={(e) => setInstitutionUrl(e.target.value)}
             />
-            <TextField
+            <StyledTextField
               label="Provider ID"
               value={providerId}
-              className={classes.textField}
-              onChange={e => setProviderId(e.target.value)}
+              onChange={(e) => setProviderId(e.target.value)}
             />
-            <TextField
+            <StyledTextField
               label="Token"
               value={token}
-              className={classes.textField}
-              onChange={e => setToken(e.target.value)}
+              onChange={(e) => setToken(e.target.value)}
             />
           </div>
           <div>
-            <TextField
+            <StyledTextField
               label="Name"
               value={name}
-              className={classes.textField}
-              onChange={e => setName(e.target.value)}
+              onChange={(e) => setName(e.target.value)}
             />
-            <TextField
+            <StyledTextField
               label="Description"
               value={description}
-              className={classes.textField}
-              onChange={e => setDescription(e.target.value)}
+              onChange={(e) => setDescription(e.target.value)}
             />
           </div>
-          <Button variant="contained" color="secondary" onClick={_ => update()}>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={(_) => update()}
+          >
             Update details
           </Button>
-        </div>
-      </Paper>
-    </div>
+        </StyledBody>
+      </StyledPaper>
+    </StyledRoot>
   );
 }
 
@@ -111,29 +119,28 @@ export function createRegistration(params: {
       controls: { url: "${baseUrl}controls", authenticated: true },
       itemNotification: {
         url: "${baseUrl}itemNotification?uuid=${uuid}&version=${version}",
-        authenticated: true
+        authenticated: true,
       },
       control_testcontrol: {
         url: "${baseUrl}control.js",
-        authenticated: false
+        authenticated: false,
       },
       myService: {
-        url:
-          "${baseUrl}myService?param1=${param1}&param2=${param2}&from=${userid}",
-        authenticated: true
+        url: "${baseUrl}myService?param1=${param1}&param2=${param2}&from=${userid}",
+        authenticated: true,
       },
       viewattachment: {
         url:
           serverBase +
           "viewitem.html?attachment=${attachment}&item=${item}&version=${version}&viewer=${viewer}",
-        authenticated: true
-      }
+        authenticated: true,
+      },
     },
     viewers: {
       simple: {
         "": { name: "Default", serviceId: "viewattachment" },
-        other: { name: "Other viewer", serviceId: "viewattachment" }
-      }
-    }
+        other: { name: "Other viewer", serviceId: "viewattachment" },
+      },
+    },
   };
 }
