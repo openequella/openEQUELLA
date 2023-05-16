@@ -31,6 +31,7 @@ import com.tle.web.sections.generic.DefaultSectionTree
 import com.tle.web.sections.registry.TreeRegistry
 import com.tle.web.sections.{SectionInfo, SectionNode, SectionsController}
 import com.tle.web.selection.{SelectedResource, SelectionSession, SelectionsMadeCallback}
+
 import java.time.Instant
 import javax.inject.{Inject, Singleton}
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
@@ -38,6 +39,7 @@ import scala.jdk.CollectionConverters._
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.tle.core.lti13.service.LtiPlatformService
+import com.tle.web.integration.guice.IntegrationModule
 import com.tle.web.sections.header.{FormTag, SimpleFormAction}
 import com.tle.web.sections.jquery.{JQuerySelector, JQueryStatement}
 import com.tle.web.sections.render.HiddenInput
@@ -267,12 +269,15 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
 
     val integrationData = Lti13IntegrationSessionData(deepLinkingRequest)
 
+    // When Selection Session is launched with LTI 1.3, the display mode is `selectOrAdd` Only.
+    // This is because there is no standard way with Deep Linking response to return links targeting
+    // different course sections like is done with structured selection sessions.
     integrationService.standardForward(
       buildSectionInfo,
       "",
       integrationData,
       integrationService
-        .getActionInfo("selectOrAdd", null), // Only use 'selectOrAdd' when LTI 1.3 is used.
+        .getActionInfo(IntegrationModule.SELECT_OR_ADD_DEFAULT_ACTION, null),
       new SingleSignonForm,
       buildSelectionMadeCallback(deepLinkingRequest, platformDetails, resp)
     )
