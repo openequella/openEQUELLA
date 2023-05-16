@@ -15,23 +15,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { DateTime } from "luxon";
 import * as React from "react";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { WizardCalendar } from "../../../../tsrc/components/wizard/WizardCalendar";
-import { DateTime } from "luxon";
 import * as OEQ from "@openequella/rest-api-client";
 import { ISODateFormat } from "../../../../tsrc/util/Date";
 
 describe("<WizardCalendar/>", () => {
-  const today = DateTime.now();
+  const today = "2023-05-16";
+  const tomorrow = "2023-05-17";
+  const yearStart = "2023-01-01";
+  const monthStart = "2023-05-01";
+
   const onChange = jest.fn();
 
   it("displays the date range initially provided", () => {
-    const providedDateRange = [
-      today.toISODate(),
-      today.plus({ days: 1 }).toISODate(),
-    ];
+    const providedDateRange = [today, tomorrow];
     const { container } = render(
       <WizardCalendar
         isRange
@@ -50,14 +51,9 @@ describe("<WizardCalendar/>", () => {
   it.each<
     [string, OEQ.WizardCommonTypes.WizardDateFormat, ISODateFormat, string[]]
   >([
-    ["year only", "Y", "yyyy", [today.startOf("year").toISODate(), ""]],
-    [
-      "year and month",
-      "MY",
-      "yyyy-MM",
-      [today.startOf("month").toISODate(), ""],
-    ],
-    ["year, month and day", "DMY", "yyyy-MM-dd", [today.toISODate(), ""]],
+    ["year only", "Y", "yyyy", [yearStart, ""]],
+    ["year and month", "MY", "yyyy-MM", [monthStart, ""]],
+    ["year, month and day", "DMY", "yyyy-MM-dd", [today, ""]],
   ])(
     "supports date format: %s",
     async (
@@ -76,8 +72,10 @@ describe("<WizardCalendar/>", () => {
       );
 
       const start = container.querySelectorAll<HTMLInputElement>("input")[0]; // The component must have at least one DatePicker.
-      await userEvent.type(start, today.toISODate());
-      expect(start.value).toEqual(today.toFormat(displayFormat));
+      await userEvent.type(start, today);
+      expect(start.value).toEqual(
+        DateTime.fromISO(today).toFormat(displayFormat)
+      );
 
       // We only set `start` so the
       expect(onChange).toHaveBeenLastCalledWith(dateRange);
