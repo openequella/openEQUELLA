@@ -195,7 +195,8 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
               s"Failed to process selections as unable to find details for provided platform: $error")
         }
 
-      override def executeModalFinished(info: SectionInfo, session: ModalSession): Unit = ???
+      override def executeModalFinished(info: SectionInfo, session: ModalSession): Unit =
+        throw new UnsupportedOperationException
     }
 
   override protected def canSelect(data: Lti13IntegrationSessionData): Boolean = data.isForSelection
@@ -219,12 +220,13 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
                       data: Lti13IntegrationSessionData,
                       session: SelectionSession): Boolean = throw new UnsupportedOperationException
 
-  // todo: Update implementation to configure Selection Session based on deep linking settings
   override def setupSelectionSession(info: SectionInfo,
                                      data: Lti13IntegrationSessionData,
                                      session: SelectionSession,
-                                     model: SingleSignonForm): SelectionSession =
+                                     model: SingleSignonForm): SelectionSession = {
+    session.setSelectMultiple(data.deepLinkingSettings.acceptMultiple.getOrElse(true))
     super.setupSelectionSession(info, data, session, model)
+  }
 
   /**
     * Launch Selection Session for LTI 1.3. This is achieved by
