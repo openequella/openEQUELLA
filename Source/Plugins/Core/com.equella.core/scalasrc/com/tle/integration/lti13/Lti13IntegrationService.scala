@@ -265,16 +265,14 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
       info
     }
 
-    // Use `selectOrAdd` as the default Selection Session display mode.
-    val action =
-      deepLinkingRequest.customParams.flatMap(_.get("selectionMode")).getOrElse("selectOrAdd")
     val integrationData = Lti13IntegrationSessionData(deepLinkingRequest)
 
     integrationService.standardForward(
       buildSectionInfo,
       "",
       integrationData,
-      integrationService.getActionInfo(action, null),
+      integrationService
+        .getActionInfo("selectOrAdd", null), // Only use 'selectOrAdd' when LTI 1.3 is used.
       new SingleSignonForm,
       buildSelectionMadeCallback(deepLinkingRequest, platformDetails, resp)
     )
