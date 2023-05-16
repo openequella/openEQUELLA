@@ -110,6 +110,56 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
       .asJava
   }
 
+  /**
+    * According to the spec for LTI 1.3 workflow <https://www.imsglobal.org/spec/lti-dl/v2p0#redirection-back-to-the-platform>,
+    * we (tool provider) MUST redirect the workflow to the return URL provided in the Deep linking setting once the user has
+    * completed the selection or creation portion of the overall flow. To do this, we MUST always perform this redirection using
+    * an auto-submitted form as an HTTP POST request using the JWT parameter.
+    *
+    * In New UI, we have to rely on `LegacyContentApi` to return the form back to the front-end. So we need to build a `FormTag` and
+    * add it to the render context of `SectionInfo`.
+    * But in Old UI, we can directly output the form and a script to submit the form in the response.
+    *
+    * @param deepLinkReturnUrl The URL redirected to to complete a selection
+    * @param jwt JWT generated based on the Deep linking response to be sent back to platform.
+    * @param info The Legacy SectionInfo used to help submit the form in New UI.
+    * @param response HTTP servlet response used to help submit the form in Old UI.
+    */
+  private def submitForm(deepLinkReturnUrl: String,
+                         jwt: String,
+                         info: SectionInfo,
+                         response: HttpServletResponse): Unit = {
+    val formId = "deep_linking_response"
+
+    if (RenderNewTemplate.isNewUIEnabled) {
+      // Setting this flag to `true` is important. It will make sure this form is available in the page.
+      // Otherwise, this form would be nested under form `eqForm`, which is invalid and the browser will remove this form. So the submit will fail.
+      // Check the usage of `LegacyContent#noForm` for details.
+      Decorations.getDecorations(info).setExcludeForm(true)
+      val form = new FormTag
+      form.setId(formId)
+      form.setAction(new SimpleFormAction(deepLinkReturnUrl))
+      form.addHidden(new HiddenInput("JWT", jwt))
+      form.addReadyStatements(new JQueryStatement(JQuerySelector.Type.ID, formId, "submit()"))
+
+      info.getRootRenderContext.setRenderedBody(form)
+    } else {
+      val formHtml =
+        s"""
+           |<form method="POST" action="${deepLinkReturnUrl}" id="$formId">
+           |  <input type="hidden" name="JWT" value="$jwt">
+           |</form>
+           |<script>document.getElementById("$formId").submit();</script>
+           |""".stripMargin
+
+      response.setContentType("text/html")
+
+      val p = response.getWriter
+      p.write(formHtml)
+      p.flush()
+    }
+  }
+
   // Build a custom call back which will be fired when a selection is either confirmed or cancelled.
   private def buildSelectionMadeCallback(deepLinkingRequest: LtiDeepLinkingRequest,
                                          platformDetails: PlatformDetails,
@@ -135,42 +185,14 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
               )
               .sign(Algorithm.RSA256(privateKey))
 
-            val formId = "deep_linking_response"
-
-            // In New UI, we have to rely on `LegacyContentApi` to return the form back to the front-end. So we need to build a `FormTag` and
-            // add it to the render context of `SectionInfo`.
-            // But in Old UI, we can directly output the form and a script to submit the form in the response.
-            if (RenderNewTemplate.isNewUIEnabled) {
-              // Setting this flag to `true` is important. It will make sure this form is available in the page.
-              // Otherwise, this form would be nested under form `eqForm`, which is invalid and the browser will remove this form. So the submit will fail.
-              // Check the usage of `LegacyContent#noForm` for details.
-              Decorations.getDecorations(info).setExcludeForm(true)
-              val form = new FormTag
-              form.setId(formId)
-              form.setAction(
-                new SimpleFormAction(deepLinkingRequest.deepLinkingSettings.deepLinkReturnUrl))
-              form.addHidden(new HiddenInput("JWT", token))
-              form.addReadyStatements(
-                new JQueryStatement(JQuerySelector.Type.ID, formId, "submit()"))
-
-              info.getRootRenderContext.setRenderedBody(form)
-            } else {
-              val formHtml =
-                s"""
-                   |<form method="POST" action="${deepLinkingRequest.deepLinkingSettings.deepLinkReturnUrl}" id="$formId">
-                   |  <input type="hidden" name="JWT" value="$token">
-                   |</form>
-                   |<script>document.getElementById("$formId").submit();</script>
-                   |""".stripMargin
-
-              response.setContentType("text/html")
-
-              val p = response.getWriter
-              p.write(formHtml)
-              p.flush()
-            }
+            submitForm(deepLinkingRequest.deepLinkingSettings.deepLinkReturnUrl,
+                       token,
+                       info,
+                       response)
             false // Return `false` so selections are not maintained, which is what `IntegrationSection` does.
-          case Left(error) => throw new RuntimeException(s"Failed to sign JWT: $error")
+          case Left(error) =>
+            throw new RuntimeException(
+              s"Failed to process selections as unable to find details for provided platform: $error")
         }
 
       override def executeModalFinished(info: SectionInfo, session: ModalSession): Unit = ???
