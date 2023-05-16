@@ -185,7 +185,7 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
               )
               .sign(Algorithm.RSA256(privateKey))
 
-            submitForm(deepLinkingRequest.deepLinkingSettings.deepLinkReturnUrl,
+            submitForm(deepLinkingRequest.deepLinkingSettings.deepLinkReturnUrl.toString,
                        token,
                        info,
                        response)

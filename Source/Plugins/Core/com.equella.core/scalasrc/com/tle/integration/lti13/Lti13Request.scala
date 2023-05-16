@@ -27,6 +27,7 @@ import io.circe.generic.extras.Configuration
 import io.circe.generic.extras.semiauto.deriveConfiguredDecoder
 import io.circe.generic.semiauto.deriveDecoder
 import io.circe.parser.decode
+import java.net.URL
 import scala.jdk.CollectionConverters._
 
 /**
@@ -45,7 +46,7 @@ import scala.jdk.CollectionConverters._
   * @param data An opaque value which must be included in the response if it's present in the request.
   */
 case class LtiDeepLinkingSettings(
-    deepLinkReturnUrl: String,
+    deepLinkReturnUrl: URL,
     acceptTypes: Array[String],
     acceptPresentationDocumentTargets: Array[String],
     acceptMediaTypes: Option[String],
@@ -59,7 +60,12 @@ case class LtiDeepLinkingSettings(
 
 object LtiDeepLinkingSettings {
   // Name of each settings is defined in the format of snake case so add this config to help decode.
-  implicit val config: Configuration                    = Configuration.default.withSnakeCaseMemberNames
+  implicit val config: Configuration = Configuration.default.withSnakeCaseMemberNames
+  implicit val urlDecoder: Decoder[URL] = Decoder.decodeString.emap { str =>
+    Either
+      .catchNonFatal(new URL(str))
+      .leftMap(error => s"Failed to decode URL: ${error.getMessage}")
+  }
   implicit val decoder: Decoder[LtiDeepLinkingSettings] = deriveConfiguredDecoder
 
   private def decodeDeepLinkingSettings(
