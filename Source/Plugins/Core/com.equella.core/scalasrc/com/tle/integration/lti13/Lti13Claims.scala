@@ -59,6 +59,34 @@ object Lti13Claims {
   val DEEP_LINKING_SETTINGS = "https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings"
 
   /**
+    *  Contains a case-sensitive string that identifies the platform-tool integration governing
+    *  the message. It MUST NOT exceed 255 ASCII characters in length.
+    */
+  val DEPLOYMENT_ID = "https://purl.imsglobal.org/spec/lti/claim/deployment_id"
+
+  /**
+    * Contains an opaque value which must be returned by the tool in its response if it was passed in on the request.
+    */
+  val DATA = "https://purl.imsglobal.org/spec/lti-dl/claim/data"
+
+  /**
+    * Contains a JSON array of selected content items. An empty array or the absence of this claim indicates there
+    * should be no item added as a result of this interaction. This claim is optional.
+    */
+  val CONTENT_ITEMS = "https://purl.imsglobal.org/spec/lti-dl/claim/content_items"
+
+  /**
+    * Contains a string that indicates the version of LTI to which the message conforms.
+    * For conformance with LTI 1.3 specification, the claim must have the value 1.3.0.
+    */
+  val VERSION = "https://purl.imsglobal.org/spec/lti/claim/version"
+
+  /**
+    * Contains a JSON object to provide properties for the context from within which the resource link launch occurs.
+    */
+  val CONTEXT = "https://purl.imsglobal.org/spec/lti/claim/context"
+
+  /**
     * Checks the provided role for the standard LIS (v2) context role identifying a role claim for an
     * 'Instructor'. Does _not_ support 'simple names' as this method is considered deprecated and so
     * "by best practice, vendors should use the full URIs for all roles (context roles included)".

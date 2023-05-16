@@ -132,19 +132,24 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
       resp.getWriter.print(output)
     }
 
-    val authResult: Either[Lti13Error, Lti13Request] = for {
-      decodedJWT   <- lti13AuthService.verifyToken(auth.state, auth.id_token)
+    val authResult: Either[Lti13Error, (Lti13Request, PlatformDetails)] = for {
+      verifiedResult <- lti13AuthService.verifyToken(auth.state, auth.id_token)
+      decodedJWT      = verifiedResult._1
+      platformDetails = verifiedResult._2
       userDetails  <- UserDetails(decodedJWT)
       _            <- lti13AuthService.loginUser(wad, userDetails)
       lti13Request <- getLtiRequestDetails(decodedJWT)
-    } yield lti13Request
+    } yield (lti13Request, platformDetails)
 
     authResult match {
       case Left(error) => onAuthFailure(error)
-      case Right(result) =>
-        result match {
+      case Right((ltiRequest, platformDetails)) =>
+        ltiRequest match {
           case deepLinkingRequest: LtiDeepLinkingRequest =>
-            lti13IntegrationService.launchSelectionSession(deepLinkingRequest, req, resp)
+            lti13IntegrationService.launchSelectionSession(deepLinkingRequest,
+                                                           platformDetails,
+                                                           req,
+                                                           resp)
           case resourceLinkRequest: LtiResourceLinkRequest =>
             resp.sendRedirect(resp.encodeRedirectURL(resourceLinkRequest.targetLinkUri))
         }
