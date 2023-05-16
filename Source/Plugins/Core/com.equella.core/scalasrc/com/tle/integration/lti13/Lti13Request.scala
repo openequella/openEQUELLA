@@ -27,6 +27,7 @@ import io.circe.generic.extras.Configuration
 import io.circe.generic.extras.semiauto.deriveConfiguredDecoder
 import io.circe.generic.semiauto.deriveDecoder
 import io.circe.parser.decode
+import scala.jdk.CollectionConverters._
 
 /**
   * Data structure for LTI 1.3 deep linking settings as per <https://www.imsglobal.org/spec/lti-dl/v2p0#deep-linking-settings>.
@@ -74,7 +75,7 @@ object LtiDeepLinkingSettings {
 }
 
 /**
-  * Data structure for LTI 1.3 deep linking context as per <https://purl.imsglobal.org/spec/lti/claim/context>.
+  * Data structure for LTI 1.3 deep linking context claim (`https://purl.imsglobal.org/spec/lti/claim/context`) as per <https://www.imsglobal.org/spec/lti/v1p3#context-claim>.
   *
   * @param id Stable identifier that uniquely identifies the context from which the LTI message initiates.
   * @param `type` An array of URI values for context types. If present, the array MUST include at least one
@@ -168,11 +169,12 @@ object Lti13Request {
     def getRequest(messageType: MessageType): Either[InvalidJWT, Lti13Request] = messageType match {
       case LtiMessageType.LtiDeepLinkingRequest =>
         for {
-          iss                 <- requiredClaim(Lti13Params.ISSUER)
-          aud                 <- requiredClaim(OpenIDConnectParams.AUDIENCE)
+          aud <- decodedJWT.getAudience.asScala.headOption
+            .toRight(InvalidJWT(s"Failed to extract audience from JWT"))
           nonce               <- requiredClaim(OpenIDConnectParams.NONCE)
           deploymentId        <- requiredClaim(Lti13Claims.DEPLOYMENT_ID)
           deepLinkingSettings <- LtiDeepLinkingSettings(decodedJWT)
+          iss          = decodedJWT.getIssuer
           customParams = getCustomParamsFromClaim(decodedJWT)
           context      = LtiDeepLinkingContext(decodedJWT)
         } yield
