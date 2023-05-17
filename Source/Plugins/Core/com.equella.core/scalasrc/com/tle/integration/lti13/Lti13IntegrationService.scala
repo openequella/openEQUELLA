@@ -44,6 +44,7 @@ import com.tle.web.sections.header.{FormTag, SimpleFormAction}
 import com.tle.web.sections.jquery.{JQuerySelector, JQueryStatement}
 import com.tle.web.sections.render.HiddenInput
 import com.tle.web.template.{Decorations, RenderNewTemplate}
+import com.tle.web.viewable.ViewItemLinkFactory
 
 /**
   * Data required to support the LTI 1.3 content selection workflow.
@@ -75,39 +76,71 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
   private var treeRegistry: TreeRegistry             = _
   private var webKeySetService: WebKeySetService     = _
   private var ltiPlatformService: LtiPlatformService = _
+  private var linkFactory: ViewItemLinkFactory       = _
 
   @Inject
   def this(integrationService: IntegrationService,
            webKeySetService: WebKeySetService,
            ltiPlatformService: LtiPlatformService,
            sectionsController: SectionsController,
-           treeRegistry: TreeRegistry) = {
+           treeRegistry: TreeRegistry,
+           linkFactory: ViewItemLinkFactory) = {
     this()
     this.treeRegistry = treeRegistry
     this.integrationService = integrationService
     this.sectionsController = sectionsController
     this.webKeySetService = webKeySetService
     this.ltiPlatformService = ltiPlatformService
+    this.linkFactory = linkFactory
   }
 
   // The value of each ContentItem must be constructed as a `Map` so that it will be accepted by `com.auth0.jwt.JWTCreator`.
   private def buildDeepLinkingContentItems(
       info: SectionInfo,
-      session: SelectionSession): java.util.List[java.util.Map[String, String]] = {
-    def buildUrl(resource: SelectedResource) =
-      getLinkForResource(info,
-                         createViewableItem(getItemForResource(resource), resource),
-                         resource,
-                         false,
-                         session.isAttachmentUuidUrls).getLmsLink.getUrl
+      session: SelectionSession): java.util.List[java.util.Map[String, Object]] = {
+    def buildSelectedContent(resource: SelectedResource): java.util.Map[String, Object] = {
+      val item = getItemForResource(resource)
+
+      def buildUrl: String =
+        getLinkForResource(info,
+                           createViewableItem(item, resource),
+                           resource,
+                           false,
+                           session.isAttachmentUuidUrls).getLmsLink.getUrl
+
+      def buildIcon: Option[java.util.Map[String, String]] = {
+        val itemID = resource.createItemId()
+
+        // If the selected resource is an Attachment or an Item which has attachments, build
+        // the thumbnail link for the resource.
+        val thumbnailLink = resource.getType match {
+          case SelectedResource.TYPE_PATH =>
+            Option(item.getAttachments)
+              .filterNot(_.isEmpty)
+              .map(_ => linkFactory.createThumbnailAttachmentLink(itemID, null))
+          case SelectedResource.TYPE_ATTACHMENT =>
+            Some(linkFactory.createThumbnailAttachmentLink(itemID, resource.getAttachmentUuid))
+          case _ => None
+        }
+
+        thumbnailLink.map(link => Map("url" -> link.getHref).asJava)
+      }
+
+      val selectedContent = Map(
+        "type"  -> "ltiResourceLink",
+        "title" -> resource.getTitle,
+        "url"   -> buildUrl,
+        "text"  -> resource.getDescription,
+      )
+
+      buildIcon
+        .map(icon => selectedContent ++ Map("icon" -> icon))
+        .getOrElse(selectedContent)
+        .asJava
+    }
 
     session.getSelectedResources.asScala
-      .map(
-        r =>
-          Map("type"  -> "ltiResourceLink",
-              "title" -> r.getTitle,
-              "url"   -> buildUrl(r),
-              "text"  -> r.getDescription).asJava)
+      .map(buildSelectedContent)
       .toList
       .asJava
   }
