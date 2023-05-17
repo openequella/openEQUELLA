@@ -31,6 +31,7 @@ import com.tle.web.sections.generic.DefaultSectionTree
 import com.tle.web.sections.registry.TreeRegistry
 import com.tle.web.sections.{SectionInfo, SectionNode, SectionsController}
 import com.tle.web.selection.{SelectedResource, SelectionSession, SelectionsMadeCallback}
+
 import java.time.Instant
 import javax.inject.{Inject, Singleton}
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
@@ -38,6 +39,7 @@ import scala.jdk.CollectionConverters._
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.tle.core.lti13.service.LtiPlatformService
+import com.tle.web.integration.guice.IntegrationModule
 import com.tle.web.sections.header.{FormTag, SimpleFormAction}
 import com.tle.web.sections.jquery.{JQuerySelector, JQueryStatement}
 import com.tle.web.sections.render.HiddenInput
@@ -195,7 +197,8 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
               s"Failed to process selections as unable to find details for provided platform: $error")
         }
 
-      override def executeModalFinished(info: SectionInfo, session: ModalSession): Unit = ???
+      override def executeModalFinished(info: SectionInfo, session: ModalSession): Unit =
+        throw new UnsupportedOperationException
     }
 
   override protected def canSelect(data: Lti13IntegrationSessionData): Boolean = data.isForSelection
@@ -219,12 +222,13 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
                       data: Lti13IntegrationSessionData,
                       session: SelectionSession): Boolean = throw new UnsupportedOperationException
 
-  // todo: Update implementation to configure Selection Session based on deep linking settings
   override def setupSelectionSession(info: SectionInfo,
                                      data: Lti13IntegrationSessionData,
                                      session: SelectionSession,
-                                     model: SingleSignonForm): SelectionSession =
+                                     model: SingleSignonForm): SelectionSession = {
+    session.setSelectMultiple(data.deepLinkingSettings.acceptMultiple.getOrElse(true))
     super.setupSelectionSession(info, data, session, model)
+  }
 
   /**
     * Launch Selection Session for LTI 1.3. This is achieved by
@@ -263,16 +267,17 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
       info
     }
 
-    // Use `selectOrAdd` as the default Selection Session display mode.
-    val action =
-      deepLinkingRequest.customParams.flatMap(_.get("selectionMode")).getOrElse("selectOrAdd")
     val integrationData = Lti13IntegrationSessionData(deepLinkingRequest)
 
+    // When Selection Session is launched with LTI 1.3, the display mode is `selectOrAdd` Only.
+    // This is because there is no standard way with Deep Linking response to return links targeting
+    // different course sections like is done with structured selection sessions.
     integrationService.standardForward(
       buildSectionInfo,
       "",
       integrationData,
-      integrationService.getActionInfo(action, null),
+      integrationService
+        .getActionInfo(IntegrationModule.SELECT_OR_ADD_DEFAULT_ACTION, null),
       new SingleSignonForm,
       buildSelectionMadeCallback(deepLinkingRequest, platformDetails, resp)
     )
