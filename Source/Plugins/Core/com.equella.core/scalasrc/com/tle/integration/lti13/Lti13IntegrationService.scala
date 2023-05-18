@@ -108,7 +108,7 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
                            false,
                            session.isAttachmentUuidUrls).getLmsLink.getUrl
 
-      def buildIcon: Option[java.util.Map[String, String]] = {
+      def buildIcon: Option[java.util.Map[String, Any]] = {
         val itemID = resource.createItemId()
 
         // If the selected resource is an Attachment or an Item which has attachments, build
@@ -123,7 +123,7 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
           case _ => None
         }
 
-        thumbnailLink.map(link => Map("url" -> link.getHref).asJava)
+        thumbnailLink.map(link => Map("url" -> link.getHref, "width" -> 48, "height" -> 48).asJava)
       }
 
       val selectedContent = Map(
