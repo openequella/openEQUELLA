@@ -23,6 +23,8 @@ import cats.implicits._
 import com.tle.beans.lti.{LtiPlatform, LtiPlatformCustomRole}
 import com.tle.common.Check
 import com.tle.common.institution.CurrentInstitution
+import com.tle.common.usermanagement.user.CurrentUser
+import com.tle.core.security.impl.AclExpressionEvaluator
 import com.tle.integration.lti13.UnknownUserHandling
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import java.net.URL
@@ -168,6 +170,21 @@ object LtiPlatformBean {
         .leftMap(err => s"Unknown handling for unknown users: ${err.getMessage}")
         .toValidatedNel
 
-    (checkIDs, checkUrls, checkUnknownUserHandling).mapN((_, _, _) => bean).leftMap(_.toList)
+    def checkACLExpression =
+      bean.allowExpression match {
+        case Some(expression) =>
+          val evaluator = new AclExpressionEvaluator
+          Either
+          // We only check whether the provided ACl Expression is valid so what User State to be used
+          // and whether the user is owner do not really matter.
+            .catchNonFatal(evaluator.evaluate(expression, CurrentUser.getUserState, false))
+            .leftMap(err => s"Invalid value for ACL expression: ${err.getMessage}")
+            .toValidatedNel
+        case None => Validated.valid()
+      }
+
+    (checkIDs, checkUrls, checkUnknownUserHandling, checkACLExpression)
+      .mapN((_, _, _, _) => bean)
+      .leftMap(_.toList)
   }
 }
