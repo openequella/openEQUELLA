@@ -139,7 +139,12 @@ public class LtiPlatformTest extends AbstractRestApiTest {
     ObjectNode wrongUnknownUserHandling = buildRequestBody();
     wrongUnknownUserHandling.put("unknownUserHandling", "RUN");
 
-    return new Object[][] {{invalidUrl}, {emptyClientId}, {wrongUnknownUserHandling}};
+    ObjectNode invalidACLExpression = buildRequestBody();
+    invalidACLExpression.put("allowExpression", "");
+
+    return new Object[][] {
+      {invalidUrl}, {emptyClientId}, {wrongUnknownUserHandling}, {invalidACLExpression}
+    };
   }
 
   @Test(
