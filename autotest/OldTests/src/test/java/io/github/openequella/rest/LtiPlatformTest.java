@@ -2,6 +2,7 @@ package io.github.openequella.rest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -16,6 +17,7 @@ import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -96,6 +98,42 @@ public class LtiPlatformTest extends AbstractRestApiTest {
     assertFalse(results.get("enabled").asBoolean());
     ArrayNode targets = (ArrayNode) results.get("customRoles").get(LTI_ROLE_LEARNER);
     assertEquals(targets.get(0).asText(), OEQ_ROLE_LEARNER);
+  }
+
+  @Test(
+      description = "Bulk update enabled status of LTI platform",
+      dependsOnMethods = "createPlatform")
+  public void updateEnabledStatus() throws IOException {
+    // get current enabled status for platform BrightSpace
+    Boolean initialEnabledStatus =
+        getPlatform(BRIGHTSPACE_PLATFORM_ID_DOUBLE_ENCODED).get("enabled").asBoolean();
+
+    final PutMethod method = new PutMethod(LTI_PLATFORM_API_ENDPOINT + "/enabled");
+
+    Boolean targetEnabledStatus = !initialEnabledStatus;
+    ObjectNode brightspacePlatform =
+        buildEnabledStatus(BRIGHTSPACE_PLATFORM_ID, targetEnabledStatus);
+    ObjectNode unknownPlatform = buildEnabledStatus("unknown", true);
+
+    ArrayNode arrayNode = mapper.createArrayNode();
+    arrayNode.add(brightspacePlatform);
+    arrayNode.add(unknownPlatform);
+
+    method.setRequestEntity(
+        new StringRequestEntity(arrayNode.toString(), "application/json", "UTF-8"));
+    int resp_code = makeClientRequest(method);
+    assertEquals(207, resp_code);
+
+    JsonNode results = mapper.readTree(method.getResponseBody());
+    // The first platform should be updated and second one should fail due to not found (404).
+    assertEquals(200, results.get(0).get("status").asInt());
+    assertEquals(404, results.get(1).get("status").asInt());
+    // make sure the enabled value has been changed
+    Boolean updatedEnabledStatus =
+        getPlatform(BRIGHTSPACE_PLATFORM_ID_DOUBLE_ENCODED).get("enabled").asBoolean();
+    assertNotEquals(
+        "Platform status should have changed", initialEnabledStatus, updatedEnabledStatus);
+    assertEquals(targetEnabledStatus, updatedEnabledStatus);
   }
 
   @Test(description = "Delete an LTI platform", dependsOnMethods = "updatePlatform")
@@ -181,5 +219,12 @@ public class LtiPlatformTest extends AbstractRestApiTest {
             .set(LTI_ROLE_TEACHER, mapper.createArrayNode().add(OEQ_ROLE_TEACHER)));
 
     return body;
+  }
+
+  private ObjectNode buildEnabledStatus(String platformId, Boolean status) {
+    ObjectNode platform = mapper.createObjectNode();
+    platform.put("platformId", platformId);
+    platform.put("enabled", status);
+    return platform;
   }
 }
