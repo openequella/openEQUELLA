@@ -19,19 +19,36 @@
 package com.tle.web.api.lti
 
 import cats.data.Validated.{Invalid, Valid}
+import cats.implicits._
 import com.tle.core.lti13.bean.LtiPlatformBean
 import com.tle.core.lti13.bean.LtiPlatformBean.validateLtiPlatformBean
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.{ApiBatchOperationResponse, ApiErrorResponse}
+import com.tle.web.lti13.platforms.security.LTI13PlatformsSettingsPrivilegeTreeProvider
 import io.swagger.annotations.{Api, ApiOperation, ApiParam}
 import org.jboss.resteasy.annotations.cache.NoCache
-import cats.implicits._
-import javax.ws.rs.core.Response
-import javax.ws.rs.{DELETE, GET, POST, PUT, Path, PathParam, Produces, QueryParam}
-import com.tle.web.lti13.platforms.security.LTI13PlatformsSettingsPrivilegeTreeProvider
 import org.slf4j.{Logger, LoggerFactory}
 import java.net.{URI, URLDecoder, URLEncoder}
 import java.nio.charset.StandardCharsets
+import javax.ws.rs.core.{MediaType, Response}
+import javax.ws.rs._
+
+class UpdateEnabledStatusRequest {
+  var platformId: String = _
+  var enabled: Boolean   = _
+
+  def getPlatformId(): String = platformId
+
+  def setPlatformId(value: String): Unit = {
+    platformId = value
+  }
+
+  def getEnabled(): Boolean = enabled
+
+  def setEnabled(value: Boolean): Unit = {
+    enabled = value
+  }
+}
 
 @NoCache
 @Path("ltiplatform")
@@ -194,6 +211,42 @@ class LtiPlatformResource {
     val responses = ids
       .map(delete)
       .toList
+
+    Response.status(207).entity(responses).build()
+  }
+
+  @PUT
+  @Path("/enabled")
+  @Consumes(Array(MediaType.APPLICATION_JSON))
+  @ApiOperation(
+    value = "Enable or disable multiple LTI platforms by a list of Platform ID with boolean flag",
+    notes =
+      "This endpoints enables/disables multiple LTI platforms by a list of platform ID with boolean flag",
+    response = classOf[ApiBatchOperationResponse],
+    responseContainer = "List"
+  )
+  def enabledPlatforms(idWithStatus: Array[UpdateEnabledStatusRequest]): Response = {
+    aclProvider.checkAuthorised()
+
+    def updateEnabledStatus(idWithStatus: UpdateEnabledStatusRequest): ApiBatchOperationResponse = {
+      val id = idWithStatus.platformId
+
+      ltiPlatformService
+        .getByPlatformID(id)
+        .toRight(ApiBatchOperationResponse(id, 404, s"No LTI Platform matching $id"))
+        .flatMap { p =>
+          {
+            val updatedPlatform = p.copy(enabled = idWithStatus.enabled)
+            ltiPlatformService
+              .update(updatedPlatform)
+              .toRight(ApiBatchOperationResponse(id, 500, s"Failed to update platform $id"))
+          }
+        }
+        .fold(e => identity(e),
+              r => ApiBatchOperationResponse(r, 200, s"Platform $id has been updated."))
+    }
+
+    val responses = idWithStatus.map(updateEnabledStatus).toList
 
     Response.status(207).entity(responses).build()
   }
