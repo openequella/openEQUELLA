@@ -118,6 +118,20 @@ export interface LtiPlatform extends LtiPlatformBase {
   unknownUserDefaultGroups?: Set<string>;
 }
 
+/**
+ * Data structure used for setting enabled status for LTI platform.
+ */
+export interface LtiPlatformEnabledStatus {
+  /**
+   * ID of the LTI platform.
+   */
+  platformId: string;
+  /**
+   * New value of the enabled status.
+   */
+  enabled: boolean;
+}
+
 // Helper functions to convert an array of string to a set of string, and vice versa.
 const arrayToSet: (array: string[]) => Set<string> = SET.fromArray(S.Ord);
 const setToArray: (set: Set<string>) => string[] = SET.toArray(S.Ord);
@@ -245,3 +259,15 @@ export const deletePlatforms = (
   platformIds: string[]
 ): Promise<BatchOperationResponse[]> =>
   DELETE(`${apiBasePath}${LTI_PLATFORM_PATH}`, { ids: platformIds });
+
+/**
+ * Bulk update enabled status for LTI platforms.
+ *
+ * @param apiBasePath Base URI to the oEQ institution and API
+ * @param idWithStatus A list of LTI platform IDs with enabled status
+ */
+export const updateEnabledPlatforms = (
+  apiBasePath: string,
+  idWithStatus: LtiPlatformEnabledStatus[]
+): Promise<BatchOperationResponse[]> =>
+  PUT(`${apiBasePath}${LTI_PLATFORM_PATH}/enabled`, idWithStatus);
