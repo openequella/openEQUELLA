@@ -98,6 +98,36 @@ describe('deletePlatformById', () => {
   });
 });
 
+describe('updateEnabledPlatforms', () => {
+  it('enable multiple LTI platforms', async () => {
+    // get initial enabled value
+    const initialEnabledStatusForMoodle = (
+      await LtiPlatformModule.getPlatformById(TC.API_PATH, MOODLE_PLATFORM_ID)
+    ).enabled;
+    const initialEnabledStatusForCanvas = (
+      await LtiPlatformModule.getPlatformById(TC.API_PATH, CANVAS_PLATFORM_ID)
+    ).enabled;
+
+    const targetEnabledStatusForMoodle = !initialEnabledStatusForMoodle;
+    const targetEnabledStatusForCanvas = !initialEnabledStatusForCanvas;
+
+    const responses = await LtiPlatformModule.updateEnabledPlatforms(
+      TC.API_PATH,
+      [
+        {
+          platformId: MOODLE_PLATFORM_ID,
+          enabled: targetEnabledStatusForMoodle,
+        },
+        {
+          platformId: CANVAS_PLATFORM_ID,
+          enabled: targetEnabledStatusForCanvas,
+        },
+      ]
+    );
+    expect(responses.filter(({ status }) => status === 200)).toHaveLength(2);
+  });
+});
+
 describe('deletePlatforms', () => {
   it('deletes multiple LTI platforms', async () => {
     const responses = await LtiPlatformModule.deletePlatforms(TC.API_PATH, [
