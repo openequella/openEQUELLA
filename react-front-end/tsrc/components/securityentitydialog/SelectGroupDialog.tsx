@@ -16,24 +16,21 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { pipe } from "fp-ts/function";
-import * as RS from "fp-ts/ReadonlySet";
-import * as RA from "fp-ts/ReadonlyArray";
 import * as React from "react";
 import { languageStrings } from "../../util/langstrings";
 import GroupSearch from "../securityentitysearch/GroupSearch";
 import { ordGroup } from "../../modules/GroupModule";
 import GroupIcon from "@mui/icons-material/Group";
-import BaseSelector from "./BaseSelector";
-import SecurityEntityEntry from "./SecutiryEntityEntry";
+import SelectEntityDialog from "./SelectEntityDialog";
+import SecurityEntityEntry from "./SecurityEntityEntry";
 
-export interface GroupSelectorProps {
+export interface SelectGroupDialogProps {
+  /** Open the dialog when true. */
+  open: boolean;
   /** The currently selected Groups. */
   value: ReadonlySet<OEQ.UserQuery.GroupDetails>;
-  /** Handler for when a selection is deleted. */
-  onDelete: (selection: OEQ.UserQuery.GroupDetails) => void;
-  /** Handler for when a Group is selected. */
-  onSelect: (selections: ReadonlySet<OEQ.UserQuery.GroupDetails>) => void;
+  /** Handler for when dialog is closed. */
+  onClose: (selections?: ReadonlySet<OEQ.UserQuery.GroupDetails>) => void;
   /** Function which will provide the list of group (search function) for GroupSearch. */
   groupListProvider?: (query?: string) => Promise<OEQ.UserQuery.GroupDetails[]>;
 }
@@ -42,15 +39,18 @@ export interface GroupSelectorProps {
  * Provide a button for the user to select groups.
  * After clicking the button, the user can search and select groups in the pop-up group search dialog.
  */
-const GroupSelector = ({
+const SelectGroupDialog = ({
+  open,
   value,
-  onDelete,
-  onSelect,
+  onClose,
   groupListProvider,
-}: GroupSelectorProps) => {
+}: SelectGroupDialogProps) => {
   const groupSearch = (
     selectedGroups: ReadonlySet<OEQ.UserQuery.GroupDetails>,
-    setSelectedGroups: (groups: ReadonlySet<OEQ.UserQuery.GroupDetails>) => void
+    setSelectedGroups: (
+      groups: ReadonlySet<OEQ.UserQuery.GroupDetails>
+    ) => void,
+    confirmSelect: (groups: ReadonlySet<OEQ.UserQuery.GroupDetails>) => void
   ) => (
     <GroupSearch
       onChange={setSelectedGroups}
@@ -59,29 +59,36 @@ const GroupSelector = ({
       enableMultiSelection
       onSelectAll={setSelectedGroups}
       onClearAll={setSelectedGroups}
+      selectButton={{
+        onClick: () => {
+          selectedGroups && confirmSelect(selectedGroups);
+        },
+      }}
     />
   );
 
-  const groupEntry = (g: OEQ.UserQuery.GroupDetails) => (
+  const groupEntry = (g: OEQ.UserQuery.GroupDetails, onDelete: () => void) => (
     <SecurityEntityEntry
       key={g.id}
       name={g.name}
-      onDelete={() => onDelete(g)}
+      onDelete={onDelete}
       icon={<GroupIcon color="secondary" />}
     />
   );
 
   return (
-    <BaseSelector
+    <SelectEntityDialog
+      open={open}
       title={languageStrings.groupSearchDialog.title}
-      value={pipe(value, RS.toReadonlyArray(ordGroup), RA.toArray)}
+      value={value}
+      itemOrd={ordGroup}
       entityDetailsToEntry={groupEntry}
-      onClose={(selections) => {
-        selections && onSelect(selections);
-      }}
       searchComponent={groupSearch}
+      onConfirm={onClose}
+      onCancel={onClose}
+      addEntityMessage={languageStrings.selectGroupDialog.addGroups}
     />
   );
 };
 
-export default GroupSelector;
+export default SelectGroupDialog;

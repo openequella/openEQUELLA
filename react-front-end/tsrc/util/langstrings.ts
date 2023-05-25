@@ -660,6 +660,18 @@ export const languageStrings = {
       lti13PlatformsSettings: {
         name: "LTI 1.3 platforms settings",
         platformsTitle: "Platforms",
+        createPage: {
+          accessControl: {
+            unknownUserHandling: "Unknown user handling",
+            unknownUserHandlingDesc:
+              "Choose how to handle logon attempts with a username that doesn't exist",
+            unknownUserHandlingDeny: "Deny access and present error message",
+            unknownUserHandlingGuest: "Treat user as a guest",
+            unknownUserHandlingCreate:
+              "Create local user and add them to the following groups",
+            groups: "Select groups",
+          },
+        },
       },
     },
     diagnostics: { name: "Diagnostics", desc: "Diagnostic pages" },
@@ -801,6 +813,15 @@ export const languageStrings = {
     enableNew: "Enable new UI",
     enableSearch: "Enable new search page",
     themeSettingsButton: "Edit Theme Settings",
+  },
+  selectEntityDialog: {
+    currentSelections: "Current selections",
+  },
+  selectGroupDialog: {
+    addGroups: "Please add groups with the search control",
+  },
+  selectRoleDialog: {
+    addRoles: "Please add roles with the search control",
   },
   baseSearchComponent: {
     filterActiveNotice: "Results will be filtered.",
