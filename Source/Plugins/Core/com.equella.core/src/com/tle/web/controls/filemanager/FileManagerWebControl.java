@@ -21,8 +21,10 @@ package com.tle.web.controls.filemanager;
 import com.dytech.edge.wizard.beans.control.CustomControl;
 import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.FileAttachment;
+import com.tle.beans.item.attachments.ModifiableAttachments;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
+import com.tle.core.wizard.LERepository;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionContext;
@@ -66,7 +68,10 @@ public class FileManagerWebControl extends AbstractWebControl<WebControlModel> {
   }
 
   private List<FileAttachment> getFiles() {
-    return getRepository().getAttachments().getList(AttachmentType.FILE);
+    LERepository repo = getRepository();
+    ModifiableAttachments attachments = repo.getAttachments();
+
+    return attachments.getList(AttachmentType.FILE);
   }
 
   @Override

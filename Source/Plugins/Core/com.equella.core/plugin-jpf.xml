@@ -3266,6 +3266,10 @@
     <parameter id="class" value="bean:com.tle.web.wizard.standard.controls.MultiWebControl" />
     <parameter id="type" value="multi" />
   </extension>
+  <extension plugin-id="com.tle.web.wizard" point-id="webControl" id="resource">
+    <parameter id="class" value="bean:com.tle.web.controls.filemanager.FileManagerWebControl" />
+    <parameter id="type" value="filemanager" />
+  </extension>
   <extension plugin-id="com.tle.web.viewurl" point-id="attachmentResource" id="fileResource">
     <parameter id="class" value="bean:com.tle.web.viewitem.attachments.FileSummariser" />
     <parameter id="type" value="file" />
