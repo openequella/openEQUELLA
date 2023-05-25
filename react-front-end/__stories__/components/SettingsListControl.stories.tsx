@@ -24,7 +24,6 @@ import SettingsListControl, {
 import SettingsToggleSwitch, {
   SettingsToggleSwitchProps,
 } from "../../tsrc/components/SettingsToggleSwitch";
-import { SelectedRoles } from "./securityentityselector/RoleSelector.stories";
 
 export default {
   title: "Component/SettingsListControl",
@@ -100,20 +99,4 @@ SliderControl.args = {
   divider: false,
   min: 0,
   max: 7,
-};
-
-export const ComplexSettingControl: Story<SettingsListControlProps> = (
-  args
-) => <SettingsListControl {...args} control={<SelectedRoles />} />;
-ComplexSettingControl.args = {
-  primaryText: "Complex Setting Control",
-  secondaryText: "Complex content",
-};
-
-export const ComplexSettingControlWithoutCenterLabel: Story<
-  SettingsListControlProps
-> = (args) => <SettingsListControl {...args} control={<SelectedRoles />} />;
-ComplexSettingControlWithoutCenterLabel.args = {
-  ...ComplexSettingControl.args,
-  disableCenterPrimaryText: true,
 };

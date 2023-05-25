@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Breakpoint } from "@mui/system";
 import * as React from "react";
 import { FunctionComponent, ReactNode } from "react";
 import {
@@ -56,6 +57,10 @@ export interface ConfirmDialogProps {
    * `true` to disable the confirmation button.
    */
   disableConfirmButton?: boolean;
+  /**
+   * Determine the max-width of the dialog.
+   */
+  maxWidth?: Breakpoint | false;
 }
 
 const ConfirmDialog: FunctionComponent<ConfirmDialogProps> = ({
@@ -66,6 +71,7 @@ const ConfirmDialog: FunctionComponent<ConfirmDialogProps> = ({
   onConfirm,
   confirmButtonText,
   disableConfirmButton = false,
+  maxWidth,
 }: ConfirmDialogProps) => {
   const { cancel } = commonString.action;
   return (
@@ -75,6 +81,7 @@ const ConfirmDialog: FunctionComponent<ConfirmDialogProps> = ({
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
       fullWidth
+      maxWidth={maxWidth}
     >
       <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
       <DialogContent>

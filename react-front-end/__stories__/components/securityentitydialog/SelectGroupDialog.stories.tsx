@@ -21,28 +21,28 @@ import { pipe } from "fp-ts/function";
 import * as React from "react";
 import { listGroups, groups } from "../../../__mocks__/GroupModule.mock";
 import { eqGroupById } from "../../../tsrc/modules/GroupModule";
-import GroupSelector, {
-  GroupSelectorProps,
-} from "../../../tsrc/components/securityentityselector/GroupSelector";
+import SelectGroupDialog, {
+  SelectGroupDialogProps,
+} from "../../../tsrc/components/securityentitydialog/SelectGroupDialog";
 import * as RS from "fp-ts/ReadonlySet";
 
 export default {
-  title: "component/SecurityEntitySelector/GroupSelector",
-  component: GroupSelector,
-} as Meta<GroupSelectorProps>;
+  title: "component/SecurityEntityDialog/SelectGroupDialog",
+  component: SelectGroupDialog,
+} as Meta<SelectGroupDialogProps>;
 
 const commonParams = {
-  onDelete: action("onDelete"),
-  onSelect: action("onSelect"),
+  open: true,
+  onClose: action("onClose"),
   groupListProvider: listGroups,
 };
 
 export const NoSelectedGroups = () => (
-  <GroupSelector value={RS.empty} {...commonParams} />
+  <SelectGroupDialog value={RS.empty} {...commonParams} />
 );
 
 export const SelectedGroups = () => (
-  <GroupSelector
+  <SelectGroupDialog
     {...commonParams}
     value={pipe(groups, RS.fromReadonlyArray(eqGroupById))}
   />

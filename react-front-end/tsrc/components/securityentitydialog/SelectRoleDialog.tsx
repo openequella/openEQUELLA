@@ -16,23 +16,20 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { pipe } from "fp-ts/function";
-import * as RS from "fp-ts/ReadonlySet";
-import * as RA from "fp-ts/ReadonlyArray";
 import * as React from "react";
-import { languageStrings } from "../../util/langstrings";
 import { ordRole } from "../../modules/RoleModule";
+import { languageStrings } from "../../util/langstrings";
 import RoleSearch from "../securityentitysearch/RoleSearch";
-import BaseSelector from "./BaseSelector";
-import SecurityEntityEntry from "./SecutiryEntityEntry";
+import SelectEntityDialog from "./SelectEntityDialog";
+import SecurityEntityEntry from "./SecurityEntityEntry";
 
-export interface RoleSelectorProps {
+export interface SelectRoleDialogProps {
+  /** Open the dialog when true. */
+  open: boolean;
   /** The currently selected Roles. */
   value: ReadonlySet<OEQ.UserQuery.RoleDetails>;
-  /** Handler for when a selection is deleted. */
-  onDelete: (selection: OEQ.UserQuery.RoleDetails) => void;
-  /** Handler for when a Role is selected. */
-  onSelect: (selections: ReadonlySet<OEQ.UserQuery.RoleDetails>) => void;
+  /** Handler for when dialog is closed. */
+  onClose: (selections?: ReadonlySet<OEQ.UserQuery.RoleDetails>) => void;
   /** Function which will provide the list of Role (search function) for RoleSearch. */
   roleListProvider?: (query?: string) => Promise<OEQ.UserQuery.RoleDetails[]>;
 }
@@ -41,15 +38,16 @@ export interface RoleSelectorProps {
  * Provide a button for the user to select roles.
  * After clicking the button, the user can search and select roles in the pop-up role search dialog.
  */
-const RoleSelector = ({
+const SelectRoleDialog = ({
+  open,
   value,
-  onDelete,
-  onSelect,
+  onClose,
   roleListProvider,
-}: RoleSelectorProps) => {
+}: SelectRoleDialogProps) => {
   const roleSearch = (
     selectedRoles: ReadonlySet<OEQ.UserQuery.RoleDetails>,
-    setSelectedRoles: (roles: ReadonlySet<OEQ.UserQuery.RoleDetails>) => void
+    setSelectedRoles: (groups: ReadonlySet<OEQ.UserQuery.RoleDetails>) => void,
+    confirmSelect: (groups: ReadonlySet<OEQ.UserQuery.RoleDetails>) => void
   ) => (
     <RoleSearch
       onChange={setSelectedRoles}
@@ -58,28 +56,31 @@ const RoleSelector = ({
       enableMultiSelection
       onSelectAll={setSelectedRoles}
       onClearAll={setSelectedRoles}
+      selectButton={{
+        onClick: () => {
+          selectedRoles && confirmSelect(selectedRoles);
+        },
+      }}
     />
   );
 
-  const roleEntry = (r: OEQ.UserQuery.RoleDetails) => (
-    <SecurityEntityEntry
-      key={r.id}
-      name={r.name}
-      onDelete={() => onDelete(r)}
-    />
+  const roleEntry = (r: OEQ.UserQuery.RoleDetails, onDelete: () => void) => (
+    <SecurityEntityEntry key={r.id} name={r.name} onDelete={onDelete} />
   );
 
   return (
-    <BaseSelector
+    <SelectEntityDialog
+      open={open}
       title={languageStrings.roleSearchDialog.title}
-      value={pipe(value, RS.toReadonlyArray(ordRole), RA.toArray)}
+      value={value}
+      itemOrd={ordRole}
       entityDetailsToEntry={roleEntry}
-      onClose={(selections) => {
-        selections && onSelect(selections);
-      }}
       searchComponent={roleSearch}
+      onConfirm={onClose}
+      onCancel={onClose}
+      addEntityMessage={languageStrings.selectRoleDialog.addRoles}
     />
   );
 };
 
-export default RoleSelector;
+export default SelectRoleDialog;

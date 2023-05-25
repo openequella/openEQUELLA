@@ -27,7 +27,6 @@ import SettingsListControl, {
 import SettingsToggleSwitch, {
   SettingsToggleSwitchProps,
 } from "../../tsrc/components/SettingsToggleSwitch";
-import { SelectedRoles } from "./securityentityselector/RoleSelector.stories";
 
 export default {
   title: "Component/SettingsList",
@@ -77,12 +76,6 @@ export const SettingsListWithMultipleItems: Story<Props> = (args) => (
       control={<Slider marks={marks} min={0} max={7} step={null} />}
       primaryText={args.primaryText}
       divider
-    />
-    <SettingsListControl
-      disableCenterPrimaryText
-      primaryText="Complex settings control"
-      secondaryText="Role Selector"
-      control={<SelectedRoles />}
     />
   </SettingsList>
 );

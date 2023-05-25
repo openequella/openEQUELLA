@@ -21,28 +21,28 @@ import { pipe } from "fp-ts/function";
 import * as React from "react";
 import { listRoles, roles } from "../../../__mocks__/RoleModule.mock";
 import { eqRoleById } from "../../../tsrc/modules/RoleModule";
-import RoleSelector, {
-  RoleSelectorProps,
-} from "../../../tsrc/components/securityentityselector/RoleSelector";
+import SelectRoleDialog, {
+  SelectRoleDialogProps,
+} from "../../../tsrc//components/securityentitydialog/SelectRoleDialog";
 import * as RS from "fp-ts/ReadonlySet";
 
 export default {
-  title: "component/SecurityEntitySelector/RoleSelector",
-  component: RoleSelector,
-} as Meta<RoleSelectorProps>;
+  title: "component/SecurityEntityDialog/SelectRoleDialog",
+  component: SelectRoleDialog,
+} as Meta<SelectRoleDialogProps>;
 
 const commonParams = {
-  onDelete: action("onDelete"),
-  onSelect: action("onSelect"),
+  open: true,
+  onClose: action("onClose"),
   roleListProvider: listRoles,
 };
 
 export const NoSelectedRoles = () => (
-  <RoleSelector value={RS.empty} {...commonParams} />
+  <SelectRoleDialog value={RS.empty} {...commonParams} />
 );
 
 export const SelectedRoles = () => (
-  <RoleSelector
+  <SelectRoleDialog
     {...commonParams}
     value={pipe(roles, RS.fromReadonlyArray(eqRoleById))}
   />
