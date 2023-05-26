@@ -2,7 +2,7 @@
 <#include "/com.tle.web.sections.standard@/dialog.ftl"/>
 <#include "/com.tle.web.sections.equella@/component/button.ftl"/>
 
-<@script "filemanager.js"/>
+<@script "webdav.js"/>
 
 <#if c.webdav>
 	<@render section=s.openWebdav class="ctrlbuttonNW">${b.gkey('wizard.controls.file.openfolder')}</@render>

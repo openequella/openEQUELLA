@@ -16,17 +16,17 @@
  * limitations under the License.
  */
 
-package com.tle.admin.controls.filemanager;
+package com.tle.admin.controls.webdav;
 
 import com.dytech.edge.wizard.beans.control.CustomControl;
 
-public class FileManagerControl extends CustomControl {
+public class WebDavControl extends CustomControl {
   private static final long serialVersionUID = -1129109182853406172L;
   private static final String AUTO_MARK_AS_RESOURCE = "autoMarkAsResource"; // $NON-NLS-1$
   private static final String ALLOW_WEBDAV = "allowWebDav"; // $NON-NLS-1$
 
-  public FileManagerControl() {
-    setClassType("filemanager"); // $NON-NLS-1$
+  public WebDavControl() {
+    setClassType("webdav"); // $NON-NLS-1$
   }
 
   public boolean isAutoMarkAsResource() {

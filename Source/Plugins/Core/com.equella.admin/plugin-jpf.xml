@@ -635,8 +635,8 @@
     <parameter id="id" value="filemanager" />
     <parameter id="name" value="com.equella.admin.webdav.title" />
     <parameter id="modelClass" value="com.dytech.edge.admin.wizard.model.CustomControlModel" />
-    <parameter id="wrappedClass" value="com.tle.admin.controls.filemanager.FileManagerControl" />
-    <parameter id="editorClass" value="com.tle.admin.controls.filemanager.FileManagerEditor" />
+    <parameter id="wrappedClass" value="com.tle.admin.controls.webdav.WebDavControl" />
+    <parameter id="editorClass" value="com.tle.admin.controls.webdav.WebDavEditor" />
     <parameter id="context" value="page" />
   </extension>
   <extension plugin-id="com.tle.admin.usermanagement.tool" point-id="configUI" id="shibbolethUI">

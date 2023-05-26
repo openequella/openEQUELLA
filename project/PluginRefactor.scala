@@ -53,8 +53,6 @@ object PluginRefactor {
     "com.tle.core.guice",
     "com.tle.web.adminconsole",
     "com.tle.core.remoterepo.srw",
-    "com.tle.applet.filemanager",
-    "com.tle.web.filemanager.applet"
   ) ++ platformPlugins
 
   sealed trait CycleCheckResult
