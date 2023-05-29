@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.tle.admin.controls.filemanager;
+package com.tle.admin.controls.webdav;
 
 import com.dytech.edge.admin.wizard.editor.AbstractControlEditor;
 import com.dytech.edge.admin.wizard.model.Control;
@@ -33,7 +33,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-public class FileManagerEditor extends AbstractControlEditor<FileManagerControl> {
+public class WebDavEditor extends AbstractControlEditor<WebDavControl> {
   private static final long serialVersionUID = 6872094930875310377L;
 
   private I18nTextField title;
@@ -42,14 +42,14 @@ public class FileManagerEditor extends AbstractControlEditor<FileManagerControl>
   private JCheckBox autoMarkAsResources;
   private JCheckBox webdav;
 
-  public FileManagerEditor(Control control, int wizardType, SchemaModel schema) {
+  public WebDavEditor(Control control, int wizardType, SchemaModel schema) {
     super(control, wizardType, schema);
     setupGUI();
   }
 
   @Override
   protected void loadControl() {
-    FileManagerControl control = getWizardControl();
+    WebDavControl control = getWizardControl();
 
     title.load(control.getTitle());
     description.load(control.getDescription());
@@ -60,7 +60,7 @@ public class FileManagerEditor extends AbstractControlEditor<FileManagerControl>
 
   @Override
   protected void saveControl() {
-    FileManagerControl control = getWizardControl();
+    WebDavControl control = getWizardControl();
 
     control.setTitle(title.save());
     control.setDescription(description.save());

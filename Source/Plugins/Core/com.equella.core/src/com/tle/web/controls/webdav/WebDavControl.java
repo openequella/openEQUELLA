@@ -16,13 +16,15 @@
  * limitations under the License.
  */
 
-package com.tle.web.controls.filemanager;
+package com.tle.web.controls.webdav;
 
 import com.dytech.edge.wizard.beans.control.CustomControl;
 import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.FileAttachment;
+import com.tle.beans.item.attachments.ModifiableAttachments;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
+import com.tle.core.wizard.LERepository;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionContext;
@@ -49,7 +51,7 @@ import java.util.List;
 
 @SuppressWarnings("nls")
 @Bind
-public class FileManagerWebControl extends AbstractWebControl<WebControlModel> {
+public class WebDavControl extends AbstractWebControl<WebControlModel> {
   @ViewFactory(name = "wizardFreemarkerFactory")
   private FreemarkerFactory factory;
 
@@ -62,11 +64,14 @@ public class FileManagerWebControl extends AbstractWebControl<WebControlModel> {
   @Override
   public SectionResult renderHtml(RenderEventContext context) throws Exception {
     setupWebdavUrl(context);
-    return factory.createResult("filemanager/filemanager.ftl", context);
+    return factory.createResult("webdav/webdav.ftl", context);
   }
 
   private List<FileAttachment> getFiles() {
-    return getRepository().getAttachments().getList(AttachmentType.FILE);
+    LERepository repo = getRepository();
+    ModifiableAttachments attachments = repo.getAttachments();
+
+    return attachments.getList(AttachmentType.FILE);
   }
 
   @Override

@@ -16,17 +16,21 @@
  * limitations under the License.
  */
 
-package com.tle.admin.controls.filemanager;
+package com.tle.admin.controls.webdav;
 
 import com.dytech.edge.wizard.beans.control.CustomControl;
 
-public class FileManagerControl extends CustomControl {
+public class WebDavControl extends CustomControl {
   private static final long serialVersionUID = -1129109182853406172L;
   private static final String AUTO_MARK_AS_RESOURCE = "autoMarkAsResource"; // $NON-NLS-1$
   private static final String ALLOW_WEBDAV = "allowWebDav"; // $NON-NLS-1$
 
-  public FileManagerControl() {
-    setClassType("filemanager"); // $NON-NLS-1$
+  public WebDavControl() {
+    // This control used the be the File Manager control. But once the File Manager applet
+    // was removed and the WebDAV support was enhanced (in 2023) it was renamed as the WebDAV
+    // control. However, to ensure existing setups continue to work, the id of 'filemanager' has
+    // been kept here and in the JPF files.
+    setClassType("filemanager");
   }
 
   public boolean isAutoMarkAsResource() {
