@@ -26,7 +26,11 @@ public class WebDavControl extends CustomControl {
   private static final String ALLOW_WEBDAV = "allowWebDav"; // $NON-NLS-1$
 
   public WebDavControl() {
-    setClassType("webdav"); // $NON-NLS-1$
+    // This control used the be the File Manager control. But once the File Manager applet
+    // was removed and the WebDAV support was enhanced (in 2023) it was renamed as the WebDAV
+    // control. However, to ensure existing setups continue to work, the id of 'filemanager' has
+    // been kept here and in the JPF files.
+    setClassType("filemanager");
   }
 
   public boolean isAutoMarkAsResource() {
