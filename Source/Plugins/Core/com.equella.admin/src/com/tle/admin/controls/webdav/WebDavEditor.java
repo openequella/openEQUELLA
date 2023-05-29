@@ -40,7 +40,6 @@ public class WebDavEditor extends AbstractControlEditor<WebDavControl> {
   private I18nTextField description;
   private JCheckBox mandatory;
   private JCheckBox autoMarkAsResources;
-  private JCheckBox webdav;
 
   public WebDavEditor(Control control, int wizardType, SchemaModel schema) {
     super(control, wizardType, schema);
@@ -55,7 +54,6 @@ public class WebDavEditor extends AbstractControlEditor<WebDavControl> {
     description.load(control.getDescription());
     mandatory.setSelected(control.isMandatory());
     autoMarkAsResources.setSelected(control.isAutoMarkAsResource());
-    webdav.setSelected(control.isAllowWebDav());
   }
 
   @Override
@@ -66,7 +64,6 @@ public class WebDavEditor extends AbstractControlEditor<WebDavControl> {
     control.setDescription(description.save());
     control.setMandatory(mandatory.isSelected());
     control.setAutoMarkAsResource(autoMarkAsResources.isSelected());
-    control.setAllowWebDav(webdav.isSelected());
   }
 
   @SuppressWarnings("nls")
@@ -80,7 +77,6 @@ public class WebDavEditor extends AbstractControlEditor<WebDavControl> {
     description = new I18nTextField(BundleCache.getLanguages());
     mandatory = new JCheckBox(CurrentLocale.get("wizard.controls.mandatory"));
     autoMarkAsResources = new JCheckBox(getString("autoMarkAsResource"));
-    webdav = new JCheckBox(getString("webdav"), true);
 
     final int height1 = title.getPreferredSize().height;
     final int width1 = descriptionLabel.getPreferredSize().width;
@@ -102,12 +98,10 @@ public class WebDavEditor extends AbstractControlEditor<WebDavControl> {
 
     all.add(mandatory, new Rectangle(0, 2, 2, 1));
     all.add(autoMarkAsResources, new Rectangle(0, 3, 2, 1));
-    all.add(webdav, new Rectangle(0, 4, 2, 1));
 
     addSection(all);
 
     autoMarkAsResources.addActionListener(autoMarkAndWebDav);
-    webdav.addActionListener(autoMarkAndWebDav);
   }
 
   private final transient ActionListener autoMarkAndWebDav =
@@ -115,7 +109,7 @@ public class WebDavEditor extends AbstractControlEditor<WebDavControl> {
         @SuppressWarnings("nls")
         @Override
         public void actionPerformed(ActionEvent e) {
-          if (autoMarkAsResources.isSelected() && webdav.isSelected()) {
+          if (autoMarkAsResources.isSelected()) {
             JOptionPane.showMessageDialog(
                 autoMarkAsResources, getString("conflict"), null, JOptionPane.WARNING_MESSAGE);
           }
