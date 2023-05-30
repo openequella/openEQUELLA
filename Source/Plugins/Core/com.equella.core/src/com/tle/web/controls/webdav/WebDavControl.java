@@ -81,7 +81,7 @@ public class WebDavControl extends AbstractWebControl<WebControlModel> {
 
   @Override
   public void doEdits(SectionInfo info) {
-    if (isAutoMarkAsResource() && isWebdav()) {
+    if (isAutoMarkAsResource()) {
       WebRepository repository = (WebRepository) control.getRepository();
       repository.selectTopLevelFilesAsAttachments();
     }
@@ -103,27 +103,17 @@ public class WebDavControl extends AbstractWebControl<WebControlModel> {
   }
 
   private void setupWebdavUrl(SectionContext context) {
-    if (isWebdav()) {
-      WebRepository repository = (WebRepository) control.getRepository();
-      String webdav = repository.getWebUrl() + "wd/" + repository.getStagingid() + '/';
+    WebRepository repository = (WebRepository) control.getRepository();
+    String webdav = repository.getWebUrl() + "wd/" + repository.getStagingid() + '/';
 
-      openWebdav.setClickHandler(
-          context,
-          new OverrideHandler(
-              new ExternallyDefinedFunction("openWebDav"),
-              getSectionId(),
-              CurrentLocale.get("wizard.controls.file.url", webdav),
-              webdav));
-      addDisablers(context, openWebdav, refreshButton);
-    } else {
-      openWebdav.setDisplayed(context, false);
-    }
-  }
-
-  public boolean isWebdav() {
-    CustomControl c = (CustomControl) getControlBean();
-    Boolean b = (Boolean) c.getAttributes().get("allowWebDav");
-    return b == null || b.booleanValue();
+    openWebdav.setClickHandler(
+        context,
+        new OverrideHandler(
+            new ExternallyDefinedFunction("openWebDav"),
+            getSectionId(),
+            CurrentLocale.get("wizard.controls.file.url", webdav),
+            webdav));
+    addDisablers(context, openWebdav, refreshButton);
   }
 
   @Override

@@ -22,8 +22,7 @@ import com.dytech.edge.wizard.beans.control.CustomControl;
 
 public class WebDavControl extends CustomControl {
   private static final long serialVersionUID = -1129109182853406172L;
-  private static final String AUTO_MARK_AS_RESOURCE = "autoMarkAsResource"; // $NON-NLS-1$
-  private static final String ALLOW_WEBDAV = "allowWebDav"; // $NON-NLS-1$
+  private static final String AUTO_MARK_AS_RESOURCE = "autoMarkAsResource";
 
   public WebDavControl() {
     // This control used the be the File Manager control. But once the File Manager applet
@@ -40,14 +39,5 @@ public class WebDavControl extends CustomControl {
 
   public void setAutoMarkAsResource(boolean b) {
     getAttributes().put(AUTO_MARK_AS_RESOURCE, b);
-  }
-
-  public boolean isAllowWebDav() {
-    Boolean b = (Boolean) getAttributes().get(ALLOW_WEBDAV);
-    return b == null || b.booleanValue();
-  }
-
-  public void setAllowWebDav(boolean b) {
-    getAttributes().put(ALLOW_WEBDAV, b);
   }
 }
