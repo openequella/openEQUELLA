@@ -1,13 +1,24 @@
 package equellatests.sections.wizard
 
 import equellatests.domain.TestFile
-import org.openqa.selenium.By
+import org.openqa.selenium.{By, StaleElementReferenceException, WebElement}
 import org.openqa.selenium.support.pagefactory.ByChained
 import org.openqa.selenium.support.ui.{ExpectedCondition, ExpectedConditions}
 
 import scala.util.Try
 
 class UniversalControl(val page: WizardPageTab, val ctrlNum: Int) extends WizardControl {
+
+  private def isElementPresent(element: WebElement): Boolean = {
+    try {
+      // try to get text attribute
+      element.getText()
+      // if no exception, the element should still in dom
+      true
+    } catch {
+      case e => false
+    }
+  }
 
   private def actionLinkBy(action: String) =
     By.xpath("div/div/div[contains(@class, 'actions')]/div/a[text()=" + quoteXPath(action) + "]")
@@ -41,7 +52,10 @@ class UniversalControl(val page: WizardPageTab, val ctrlNum: Int) extends Wizard
   def cancelUpload(actualFilename: String) = {
     rowForDescription(actualFilename, true).map { row =>
       row.findElement(cancelBtnBy).click()
-      waitFor(ExpectedConditions.stalenessOf(row))
+      // make sure the element is till in dom before monitoring its state
+      if (isElementPresent(row)) {
+        waitFor(ExpectedConditions.stalenessOf(row))
+      }
     }
   }
 
