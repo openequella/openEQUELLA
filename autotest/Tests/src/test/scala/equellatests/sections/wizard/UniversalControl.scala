@@ -9,16 +9,8 @@ import scala.util.Try
 
 class UniversalControl(val page: WizardPageTab, val ctrlNum: Int) extends WizardControl {
 
-  private def isElementPresent(element: WebElement): Boolean = {
-    try {
-      // try to get text attribute
-      element.getText()
-      // if no exception, the element should still in dom
-      true
-    } catch {
-      case e => false
-    }
-  }
+  private def isElementPresent(element: WebElement): Boolean =
+    Try(element.isDisplayed).getOrElse(false)
 
   private def actionLinkBy(action: String) =
     By.xpath("div/div/div[contains(@class, 'actions')]/div/a[text()=" + quoteXPath(action) + "]")
