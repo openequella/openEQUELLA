@@ -20,7 +20,7 @@ import { roles } from "./RoleModule.mock";
 
 const teacherRoleId = roles[2].id;
 
-const canvas: OEQ.LtiPlatform.LtiPlatform = {
+export const canvas: OEQ.LtiPlatform.LtiPlatform = {
   platformId: "http://localhost:8200",
   name: "canvas",
   clientId: "test client canvas",
@@ -34,11 +34,11 @@ const canvas: OEQ.LtiPlatform.LtiPlatform = {
   unknownRoles: new Set("builder"),
   customRoles: new Map().set("tutor", new Set("role A")),
   allowExpression: "",
-  enabled: false,
+  enabled: true,
 };
 
-const moodle: OEQ.LtiPlatform.LtiPlatform = {
-  platformId: "http://localhost:8200",
+export const moodle: OEQ.LtiPlatform.LtiPlatform = {
+  platformId: "http://localhost:8100",
   name: "moodle",
   clientId: "test client moodle",
   authUrl: "http://testmoodle",
@@ -51,10 +51,27 @@ const moodle: OEQ.LtiPlatform.LtiPlatform = {
   unknownRoles: new Set(),
   customRoles: new Map(),
   allowExpression: "",
+  enabled: true,
+};
+
+export const blackboard: OEQ.LtiPlatform.LtiPlatform = {
+  platformId: "http://blackboard:8200",
+  name: "other",
+  clientId: "test client blackboard",
+  authUrl: "http://blackboard",
+  keysetUrl: "http://blackboard",
+  usernamePrefix: "hello",
+  usernameSuffix: "blackboard",
+  unknownUserHandling: "CREATE",
+  unknownUserDefaultGroups: new Set(),
+  instructorRoles: new Set(),
+  unknownRoles: new Set(),
+  customRoles: new Map(),
+  allowExpression: "",
   enabled: false,
 };
 
-export const platforms = [canvas, moodle];
+export const platforms = [canvas, moodle, blackboard];
 
 /**
  * Helper function to inject into component for platforms retrieval.
