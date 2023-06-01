@@ -15,41 +15,67 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render, RenderResult, waitFor } from "@testing-library/react";
-import { createMemoryHistory } from "history";
-import { Router } from "react-router-dom";
+import userEvent from "@testing-library/user-event";
 import {
-  getPlatforms,
+  blackboard,
+  canvas,
+  moodle,
   platforms,
 } from "../../../../__mocks__/Lti13PlatformsModule.mock";
+import { languageStrings } from "../../../../tsrc/util/langstrings";
+import {
+  clickEnabledSwitchForPlatform,
+  renderLti13PlatformsSettings,
+} from "./Lti13PlatformSettingsTestHelper";
 
-import Lti13PlatformsSettings, {
-  Lti13PlatformsSettingsProps,
-} from "../../../../tsrc/settings/Integrations/Lti13PlatformsSettings";
-import * as React from "react";
-
-// Helper to render ACLExpressionBuilder and wait for component under test
-const renderLti13PlatformsSettings = async (
-  props: Lti13PlatformsSettingsProps = {
-    updateTemplate: () => {},
-    getPlatformsProvider: getPlatforms,
-  }
-): Promise<RenderResult> => {
-  const history = createMemoryHistory();
-  const result = render(
-    <Router history={history}>
-      <Lti13PlatformsSettings {...props} />
-    </Router>
-  );
-  // wait for platform list rendered
-  await waitFor(() => result.getByText(platforms[0].name));
-  return result;
-};
+const { save: saveLabel } = languageStrings.common.action;
 
 describe("Lti13PlatformsSettings", () => {
   it("Should be able to show a list of platforms", async () => {
     const { getAllByRole } = await renderLti13PlatformsSettings();
 
     expect(getAllByRole("listitem")).toHaveLength(platforms.length);
+  });
+
+  it("Should be able to disable platforms", async () => {
+    const onUpdatePlatform = jest.fn();
+    const expectedStatus = [
+      {
+        platformId: canvas.platformId,
+        enabled: false,
+      },
+      { platformId: moodle.platformId, enabled: false },
+    ];
+    const { container, getByText } = await renderLti13PlatformsSettings(
+      onUpdatePlatform
+    );
+
+    await clickEnabledSwitchForPlatform(container, canvas.platformId);
+    await clickEnabledSwitchForPlatform(container, moodle.platformId);
+    // click save button
+    await userEvent.click(getByText(saveLabel));
+
+    const updatedStatus = onUpdatePlatform?.mock.lastCall[0];
+    expect(updatedStatus).toEqual(expectedStatus);
+  });
+
+  it("Should be able to enable platforms", async () => {
+    const onUpdateEnabledPlatforms = jest.fn();
+    const expectedStatus = [
+      {
+        platformId: blackboard.platformId,
+        enabled: true,
+      },
+    ];
+    const { container, getByText } = await renderLti13PlatformsSettings(
+      onUpdateEnabledPlatforms
+    );
+
+    await clickEnabledSwitchForPlatform(container, blackboard.platformId);
+    // click save button
+    await userEvent.click(getByText(saveLabel));
+
+    const updatedStatus = onUpdateEnabledPlatforms.mock.lastCall[0];
+    expect(updatedStatus).toEqual(expectedStatus);
   });
 });
