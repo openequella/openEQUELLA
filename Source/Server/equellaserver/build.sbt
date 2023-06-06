@@ -18,7 +18,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion   = "3.15.3.Final"
 val SwaggerVersion    = "1.6.9"
-val TomcatVersion     = "9.0.73"
+val TomcatVersion     = "9.0.75"
 val axis2Version      = "1.8.2"
 val circeVersion      = "0.12.1"
 val curatorVersion    = "5.4.0"
@@ -59,13 +59,13 @@ libraryDependencies ++= Seq(
   jacksonDataBind,
   jacksonModuleScala,
   "io.bit3"         % "jsass"       % jsassVersion,
-  "com.flickr4java" % "flickr4java" % "3.0.6" excludeAll (
+  "com.flickr4java" % "flickr4java" % "3.0.8" excludeAll (
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
   "com.google.api-client" % "google-api-client"           % "2.2.0",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20230203-2.0.0",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20230319-2.0.0",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20230521-2.0.0",
   "com.google.code.gson"  % "gson"                        % "2.10.1",
   "com.google.gdata"      % "core"                        % "1.47.1",
   "com.google.guava"      % "guava"                       % "31.1-jre",
@@ -105,7 +105,7 @@ libraryDependencies ++= Seq(
   "commons-codec"             % "commons-codec"         % "1.15",
   "commons-collections"       % "commons-collections"   % "3.2.2",
   "commons-configuration"     % "commons-configuration" % "1.10",
-  "commons-daemon"            % "commons-daemon"        % "1.3.3",
+  "commons-daemon"            % "commons-daemon"        % "1.3.4",
   "commons-discovery"         % "commons-discovery"     % "0.5",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
   "commons-io"                % "commons-io"            % "2.11.0",
@@ -240,7 +240,7 @@ libraryDependencies ++= Seq(
   "org.mozilla"                   % "rhino"                     % "1.7.14",
   "io.lemonlabs"                  %% "scala-uri"                % "4.0.3",
   "org.scala-lang.modules"        %% "scala-parser-combinators" % "2.2.0",
-  "io.github.classgraph"          % "classgraph"                % "4.8.157",
+  "io.github.classgraph"          % "classgraph"                % "4.8.160",
   "com.fasterxml"                 % "classmate"                 % "1.5.1",
   "org.glassfish"                 % "javax.el"                  % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"    % "3.0.2",
