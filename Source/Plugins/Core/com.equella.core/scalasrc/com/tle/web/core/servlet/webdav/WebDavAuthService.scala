@@ -46,7 +46,7 @@ trait WebDavAuthService {
   /**
     * Destroys the credentials for the provided context.
     *
-    * @param id the id of the context or which credentials should be cleared.
+    * @param id the id of the context for which credentials should be cleared.
     */
   def removeCredentials(id: String): Unit
 
