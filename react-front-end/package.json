@@ -59,6 +59,7 @@
     "react-color": "2.19.3",
     "react-dom": "18.2.0",
     "react-dropzone": "14.2.3",
+    "react-ga4": "2.1.0",
     "react-router": "5.3.4",
     "react-router-dom": "5.3.4",
     "react-router-hash-link": "2.4.3",

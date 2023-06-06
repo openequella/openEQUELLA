@@ -24,6 +24,7 @@ import {
   RouteComponentProps,
   Switch,
 } from "react-router-dom";
+import ReactGA from "react-ga4";
 import { shallowEqual } from "shallow-equal-object";
 import { ErrorResponse } from "../api/errors";
 import { getRenderData, getRouterBaseName, LEGACY_CSS_URL } from "../AppConfig";
@@ -50,6 +51,10 @@ const AdvancedSearchPage = React.lazy(
 );
 
 const renderData = getRenderData();
+
+if (renderData?.analyticsId != null) {
+  ReactGA.initialize(renderData.analyticsId);
+}
 
 const beforeunload = function (e: BeforeUnloadEvent) {
   e.returnValue = "Are you sure?";
@@ -238,7 +243,9 @@ export default function IndexPage() {
           setNavAwayCallback(undefined);
         }}
       />
-      <Template {...templateProps}>{routeSwitch()}</Template>
+      <Template {...templateProps}>
+        <React.Suspense fallback={<>loading</>}>{routeSwitch()}</React.Suspense>
+      </Template>
     </BrowserRouter>
   );
 }

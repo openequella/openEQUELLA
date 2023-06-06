@@ -20,6 +20,7 @@ package com.tle.hibernate.dialect;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.boot.model.relational.SqlStringGenerationContext;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.unique.DefaultUniqueDelegate;
 import org.hibernate.mapping.Table;
@@ -36,7 +37,8 @@ public class InPlaceUniqueDelegate extends DefaultUniqueDelegate {
   }
 
   @Override
-  public String getTableCreationUniqueConstraintsFragment(Table table) {
+  public String getTableCreationUniqueConstraintsFragment(
+      Table table, SqlStringGenerationContext context) {
     StringBuilder sb = new StringBuilder();
 
     table

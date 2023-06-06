@@ -412,6 +412,7 @@ object SearchHelper {
       .flatMap(
         _.find(isViewable(hasRestrictedAttachmentPrivileges))
       )
+      .map(sanitiseAttachmentBean)
       .map(toSearchResultAttachment(itemKey, _))
       .map(
         a =>

@@ -101,15 +101,6 @@ Compile / resourceGenerators += Def.task {
   IO.copy(Some(versionProperties.value -> base / "web/version.properties")).toSeq
 }.taskValue
 
-lazy val inplaceEditorJar = project in file("jarsrc")
-
-Compile / resourceGenerators += Def.task {
-  val outJar  = (Compile / resourceManaged).value / "web/inplaceedit.jar"
-  val jarFile = (inplaceEditorJar / assembly).value
-  jarSigner.value.apply(jarFile, outJar)
-  Seq(outJar)
-}.taskValue
-
 Compile / resourceGenerators += Def.task {
   val baseSwagger = baseDirectory.value / "swaggerui"
   Common.nodeInstall(baseSwagger)
@@ -132,7 +123,6 @@ Compile / resourceGenerators += Def.task {
 
 clean := {
   clean.value
-  (inplaceEditorJar / clean).value
   val baseSwagger = baseDirectory.value / "swaggerui"
   Common.nodeScript("clean", baseSwagger)
 }

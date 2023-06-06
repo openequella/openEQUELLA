@@ -21,42 +21,42 @@ TreeNav.prototype.nodecreated;
 TreeNav.prototype.selectionChanged;
 
 
-TreeNav.prototype.initialise = function() 
+TreeNav.prototype.initialise = function()
 {
 	var tree = this;
-	
+
 	this.lastSelectedUrl = null
-	
+
 	this.nav = true;
 	this.split = false;
 	this.g_firstlink = null;
 	this.g_nextlink = null;
 	this.g_prevlink = null;
 	this.g_lastlink = null;
-	
+
 	this.closedToggler = "images/folderclosed.gif";
 	this.openToggler = "images/folderopen.gif";
 	this.hiddenToggler = "images/hiddentoggle.gif";
-	
+
 	//events
 	this.nodecreated = this.nodeCreatedCallback;
 	this.selectionChanged = this.selectionChangedCallback;
-	
+
 	this.rootNodes = [];
 }
 
 
 TreeNav.prototype.nodeCreatedCallback = function(node)
 {
-	if (!node.details.url) 
+	if (!node.details.url)
 	{
 		node.link.removeAttr("href");
 		node.label.filter("a").hide();
 		node.link.unbind("click");
 		node.nodeline.removeClass("selectable");
 		node.nodeline.toggleClass("file folder");
-	} 
-	else 
+	}
+	else
 	{
 		node.label.filter("span").hide();
 	}
@@ -65,10 +65,10 @@ TreeNav.prototype.nodeCreatedCallback = function(node)
 
 TreeNav.prototype.selectionChangedCallback = function(old)
 {
-	if (this.selected) 
+	if (this.selected)
 	{
 		this.lastSelectedUrl = this.selected.details.url;
-		$(".content-base").attr("src", this.lastSelectedUrl);	
+		$(".content-base").attr("src", this.lastSelectedUrl);
 		this.updateNavigation();
 	}
 	return false;
@@ -77,7 +77,7 @@ TreeNav.prototype.selectionChangedCallback = function(old)
 
 TreeNav.prototype.select = function(node)
 {
-	if (node && this.selected != node) 
+	if (node && this.selected != node)
 	{
 		TreeLib.clickNode(this, node);
 		TreeLib.ensureVisible(this, node);
@@ -87,62 +87,62 @@ TreeNav.prototype.select = function(node)
 }
 
 
-TreeNav.prototype.setupTopNav = function(nextlink, prevlink, firstlink, lastlink) 
+TreeNav.prototype.setupTopNav = function(nextlink, prevlink, firstlink, lastlink)
 {
 	var tree = this;
-	
+
 	this.g_firstlink = firstlink;
 	this.g_nextlink = nextlink;
 	this.g_prevlink = prevlink;
 	this.g_lastlink = lastlink;
-	
-	nextlink.bind("click", function (event) 
+
+	nextlink.bind("click", function (event)
 	{
 		return tree.select(tree.findNext(tree.selected, false, true));
 	});
-	
-	prevlink.bind("click", function (event) 
+
+	prevlink.bind("click", function (event)
 	{
 		return tree.select(tree.findPrev(tree.selected, false));
 	});
-	
-	firstlink.bind("click", function (event) 
+
+	firstlink.bind("click", function (event)
 	{
 		return tree.select(tree.findNext(null, false, true));
 	});
-	
-	lastlink.bind("click", function (event) 
+
+	lastlink.bind("click", function (event)
 	{
 		return tree.select(tree.findPrev(null, false));
 	});
-	
+
 	this.updateNavigation();
 }
 
 
-TreeNav.prototype.findNext = function(current, checkthis, intochild) 
+TreeNav.prototype.findNext = function(current, checkthis, intochild)
 {
-	if (current == null) 
+	if (current == null)
 	{
 		current = this.rootNodes[0];
 		checkthis = true;
 		intochild = true;
 	}
-	if (checkthis && current.details.url) 
+	if (checkthis && current.details.url)
 	{
 		return current;
 	}
-	if (intochild && current.children.length > 0) 
+	if (intochild && current.children.length > 0)
 	{
 		return this.findNext(current.children[0], true, true);
 	}
-	
+
 	var ind = current.childIndex + 1;
 	var parentList = TreeLib.getParentList(this, current);
-	
-	if (ind >= parentList.length) 
+
+	if (ind >= parentList.length)
 	{
-		if (!current.parent) 
+		if (!current.parent)
 		{
 			return null;
 		}
@@ -152,36 +152,36 @@ TreeNav.prototype.findNext = function(current, checkthis, intochild)
 }
 
 
-TreeNav.prototype.findPrev = function(current, checkthis) 
+TreeNav.prototype.findPrev = function(current, checkthis)
 {
-	if (current == null) 
+	if (current == null)
 	{
 		current = this.rootNodes[this.rootNodes.length - 1];
-		while (current.children.length > 0) 
+		while (current.children.length > 0)
 		{
 			current = current.children[current.children.length - 1];
 		}
 		checkthis = true;
 	}
-	
-	if (checkthis && current.details.url) 
+
+	if (checkthis && current.details.url)
 	{
 		return current;
 	}
-	
+
 	var ind = current.childIndex - 1;
 	var parentList = TreeLib.getParentList(this, current);
-	if (ind < 0) 
+	if (ind < 0)
 	{
-		if (!current.parent) 
+		if (!current.parent)
 		{
 			return null;
 		}
 		return this.findPrev(current.parent, true);
 	}
-	
+
 	current = parentList[ind];
-	while (current.children.length > 0) 
+	while (current.children.length > 0)
 	{
 		current = current.children[current.children.length - 1];
 	}
@@ -189,30 +189,30 @@ TreeNav.prototype.findPrev = function(current, checkthis)
 }
 
 
-TreeNav.prototype.updateNavigation = function() 
+TreeNav.prototype.updateNavigation = function()
 {
-	if (!this.g_nextlink || !this.g_prevlink) 
+	if (!this.g_nextlink || !this.g_prevlink)
 	{
 		return;
 	}
-	
-	if (this.findNext(this.selected, false, true)) 
+
+	if (this.findNext(this.selected, false, true))
 	{
 		this.g_nextlink.removeAttr("disabled");
 		this.g_lastlink.removeAttr("disabled");
-	} 
-	else 
+	}
+	else
 	{
 		this.g_nextlink.attr("disabled", "disabled");
 		this.g_lastlink.attr("disabled", "disabled");
 	}
-	
-	if (this.findPrev(this.selected, false)) 
+
+	if (this.findPrev(this.selected, false))
 	{
 		this.g_prevlink.removeAttr("disabled");
 		this.g_firstlink.removeAttr("disabled");
-	} 
-	else 
+	}
+	else
 	{
 		this.g_prevlink.attr("disabled", "disabled");
 		this.g_firstlink.attr("disabled", "disabled");
@@ -237,27 +237,50 @@ function getWinHeight() {
 	);
 }
 
+/**
+ * Get accurate inner width from computed style.
+ * inner width = width + padding
+ *
+ * @param selector string selector used to find the element
+ */
+const getComputedInnerWidth = (selector) => {
+  const {width, paddingLeft, paddingRight} = getComputedStyle($(selector).get(0));
+  const elements = [width, paddingLeft, paddingRight];
+  return elements.reduce((pre, cur) => parseFloat(pre) + parseFloat(cur));
+}
+
+/**
+ * Get accurate outer width from computed style.
+ * outer width = width + padding + border
+ *
+ * @param selector string selector used to find the element
+ */
+const getComputedOuterWidth = (selector) => {
+  const {width, paddingLeft, paddingRight, borderLeftWidth, borderRightWidth} = getComputedStyle($(selector).get(0));
+  const elements = [width, paddingLeft, paddingRight, borderLeftWidth, borderRightWidth];
+  return elements.reduce((pre, cur) => parseFloat(pre) + parseFloat(cur));
+}
+
 function resizeContent(hideBar) {
-	var newWidth = $('#pv-content').innerWidth();
+	var newWidth = getComputedInnerWidth('#pv-content');
 
 	if( !hideBar ) {
-		newWidth -= $('#pv-divider').outerWidth();	
+		newWidth -= getComputedOuterWidth('#pv-divider');
 	}
 
-	var left = $('#pv-content-left');
-	if( left.is(':visible') ) {
-		newWidth -= left.outerWidth();	
+  const leftSelector = "#pv-content-left"
+	if( $(leftSelector).is(':visible') ) {
+		newWidth -= getComputedOuterWidth(leftSelector);
 	}
 
-	$('#pv-content-right').width(newWidth);
-	//$('#content1 iframe').width(newWidth);
+  $('#pv-content-right').width(newWidth);
 }
 
 function resizeCols(resize, hideBar) {
 	var h = resize ? getWinHeight() : getDocHeight();
 	var msie = $.browser.msie ? 1 : 0;
 	var barSize = hideBar ? 0 : $('.navbar').height();
-	
+
 	$('#pv-content-left').height(h - barSize - msie);
 	$('#pv-content-right').height(h - barSize - msie);
 	$('#pv-content-right-inner').height(h - barSize - msie - 3);
@@ -274,25 +297,25 @@ function positionDivider(resize, hideBar) {
 	var h = resize ? getWinHeight() : getDocHeight();
 	var msie = $.browser.msie ? 1 : 0;
 	var barSize = hideBar ? 0 : 33;
-	
+
 	$('#pv-divider').css('height', h - barSize - 2 - msie);
 	$('#pv-divider-inner').css('height', h - barSize - 4 - msie);
 }
 
-function initTreeNav(treedef, nextId, prevId, firstId, lastId) 
-{	
+function initTreeNav(treedef, nextId, prevId, firstId, lastId)
+{
 	var tree = new TreeNav();
-	
+
 	tree.rootElement = $("#root");
 	tree.names = {open:"open", selected:"sel"};
-	
+
 	tree.initialise();
-	
+
 	TreeLib.addNodes(tree, null, treedef);
-	
+
 	tree.updateNavigation();
 	tree.setupTopNav($("#"+nextId), $("#"+prevId), $("#"+firstId), $("#"+lastId));
 	tree.select(tree.findNext(null, false, false));
-	
+
 	return tree;
 }
