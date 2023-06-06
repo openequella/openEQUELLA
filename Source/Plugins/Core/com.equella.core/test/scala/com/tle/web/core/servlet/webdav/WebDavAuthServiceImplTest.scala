@@ -58,13 +58,13 @@ class WebDavAuthServiceImplTest extends AnyFunSpec with Matchers with GivenWhenT
   }
 
   describe("validateCredentials") {
-    it("should not validate invalid credentials") {
+    it("should return an error if incorrect credentials are provided") {
       val f = fixture
 
       Given("an ID for a WebDav context - e.g. a staging ID")
       val id = UUID.randomUUID().toString
 
-      And("some a some random credentials in a properly structured authorization payload")
+      And("some random credentials in a properly structured authorization payload")
       val invalidUsername = "invalidusername"
       val invalidPassword = "invalidpassword"
       val authHeader      = generateAuthHeaderPayload(invalidUsername, invalidPassword)
@@ -108,9 +108,10 @@ class WebDavAuthServiceImplTest extends AnyFunSpec with Matchers with GivenWhenT
       When("those credentials are removed")
       f.webDavAuthService.removeCredentials(id)
 
-      Then("no further authentication is possible")
+      Then("no further authentication is possible as the ID/context is invalid")
       f.webDavAuthService
-        .validateCredentials(id, generateAuthHeaderPayload(validUsername, validPassword))
+        .validateCredentials(id, generateAuthHeaderPayload(validUsername, validPassword)) shouldBe Left(
+        InvalidContext())
     }
   }
 }
