@@ -40,6 +40,7 @@ import SettingPageTemplate from "../../components/SettingPageTemplate";
 import SettingsCardActions from "../../components/SettingsCardActions";
 import SettingsList from "../../components/SettingsList";
 import SettingsToggleSwitch from "../../components/SettingsToggleSwitch";
+import { TooltipCustomComponent } from "../../components/TooltipCustomComponent";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { AppContext } from "../../mainui/App";
 import { routes } from "../../mainui/routes";
@@ -147,20 +148,24 @@ const Lti13PlatformsSettings = ({
       return (
         <ListItemButton role="listitem" divider key={index}>
           <ListItemText primary={name} secondary={platformId} />
-          <SettingsToggleSwitch
-            value={enabled}
-            setValue={(value) =>
-              pipe(
-                platforms,
-                A.updateAt(index, {
-                  ...platform,
-                  enabled: value,
-                }),
-                O.map(setPlatforms)
-              )
-            }
-            id={`EnabledSwitch-${index}`}
-          />
+          <TooltipCustomComponent
+            title={lti13PlatformsSettingsStrings.enabledSwitch}
+          >
+            <SettingsToggleSwitch
+              value={enabled}
+              setValue={(value) =>
+                pipe(
+                  platforms,
+                  A.updateAt(index, {
+                    ...platform,
+                    enabled: value,
+                  }),
+                  O.map(setPlatforms)
+                )
+              }
+              id={`EnabledSwitch-${index}`}
+            />
+          </TooltipCustomComponent>
           <TooltipIconButton
             title={viewLabel}
             onClick={(e) => {

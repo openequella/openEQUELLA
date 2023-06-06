@@ -660,6 +660,7 @@ export const languageStrings = {
       lti13PlatformsSettings: {
         name: "LTI 1.3 platforms settings",
         platformsTitle: "Platforms",
+        enabledSwitch: "Enable/Disable",
         createPage: {
           accessControl: {
             unknownUserHandling: "Unknown user handling",
