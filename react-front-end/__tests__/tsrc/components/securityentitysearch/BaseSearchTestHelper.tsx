@@ -134,7 +134,7 @@ export const clickEditGroupFilterButton = (
 /**
  * Helper function to assist in finding GroupFilterSearch when user choose to edit the group filter.
  *
- * @param container a root container within which <BaseSearch/> exists
+ * @param renderResult a root container within which <BaseSearch/> exists
  */
 export const findGroupFilterSearch = (
   renderResult: RenderResult
