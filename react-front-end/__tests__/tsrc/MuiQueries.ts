@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { queryByText } from "@testing-library/react";
+import { queryByText, screen } from "@testing-library/react";
 
 /**
  * Helper function to find MUI buttons with React Testing Library.
@@ -54,6 +54,20 @@ export const queryMuiTextField = (container: HTMLElement, labelText: string) =>
   queryByText(container, labelText, {
     selector: "label",
   })?.parentElement?.querySelector("input");
+
+/**
+ * Helper function to find MUI TextField with React Testing Library using the screen object.
+ * This version of the function does not require a container as an input parameter.
+ * It is useful when the element is inside a modal or a pop-up dialog.
+ *
+ * @param labelText The text describing the TextField.
+ */
+export const queryMuiTextFieldFromScreen = (labelText: string) =>
+  screen
+    .queryByText(labelText, {
+      selector: "label",
+    })
+    ?.parentElement?.querySelector("input");
 
 /**
  * Similar to queryMuiTextField, but throws an error if the MUI TextField is not found.

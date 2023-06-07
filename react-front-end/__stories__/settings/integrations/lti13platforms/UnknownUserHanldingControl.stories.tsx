@@ -16,37 +16,42 @@
  * limitations under the License.
  */
 import { action } from "@storybook/addon-actions";
-import { Meta } from "@storybook/react";
+import { Meta, Story } from "@storybook/react";
 import { pipe } from "fp-ts/function";
 import * as RS from "fp-ts/ReadonlySet";
 import * as React from "react";
-import { groups } from "../../../../../__mocks__/GroupModule.mock";
-import { eqGroupById } from "../../../../../tsrc/modules/GroupModule";
+import { groups } from "../../../../__mocks__/GroupModule.mock";
+import { eqGroupById } from "../../../../tsrc/modules/GroupModule";
 import UnknownUserHandlingControl, {
   UnknownUserHandlingControlProps,
-} from "../../../../../tsrc/settings/Integrations/lti13platforms/UnknownUserHandlingControl";
+} from "../../../../tsrc/settings/Integrations/lti13platforms/UnknownUserHandlingControl";
 
 export default {
   title: "settings/Integrations/Lti13Platforms/UnknownUserHandlingControl",
   component: UnknownUserHandlingControl,
 } as Meta<UnknownUserHandlingControlProps>;
 
-const commonParams = {
+export const DefaultOption: Story<UnknownUserHandlingControlProps> = (args) => (
+  <UnknownUserHandlingControl {...args} />
+);
+DefaultOption.args = {
   onChange: action("onChange"),
+  selection: "ERROR",
 };
 
-export const DefaultOption = () => (
-  <UnknownUserHandlingControl selection="ERROR" {...commonParams} />
+export const CreateOption: Story<UnknownUserHandlingControlProps> = (args) => (
+  <UnknownUserHandlingControl {...args} />
 );
+CreateOption.args = {
+  ...DefaultOption.args,
+  selection: "CREATE",
+};
 
-export const CreateOption = () => (
-  <UnknownUserHandlingControl selection="CREATE" {...commonParams} />
-);
-
-export const CreateOptionWithSelectedGroups = () => (
-  <UnknownUserHandlingControl
-    selection="CREATE"
-    groups={pipe(groups, RS.fromReadonlyArray(eqGroupById))}
-    {...commonParams}
-  />
-);
+export const CreateOptionWithSelectedGroups: Story<
+  UnknownUserHandlingControlProps
+> = (args) => <UnknownUserHandlingControl {...args} />;
+CreateOptionWithSelectedGroups.args = {
+  ...DefaultOption.args,
+  selection: "CREATE",
+  groups: pipe(groups, RS.fromReadonlyArray(eqGroupById)),
+};

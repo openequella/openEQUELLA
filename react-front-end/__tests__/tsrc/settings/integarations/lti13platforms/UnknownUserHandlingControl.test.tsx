@@ -17,7 +17,7 @@
  */
 import "@testing-library/jest-dom/extend-expect";
 import { languageStrings } from "../../../../../tsrc/util/langstrings";
-import { renderUnknownUserHandlingControl } from "./UnknownUserHandlingTestHelper";
+import { renderUnknownUserHandlingControl } from "./UnknownUserHandlingControlTestHelper";
 
 const { groups: groupsLabel } =
   languageStrings.settings.integration.lti13PlatformsSettings.createPage
