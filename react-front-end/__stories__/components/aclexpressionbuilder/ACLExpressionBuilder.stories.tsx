@@ -17,11 +17,8 @@
  */
 import { Meta, Story } from "@storybook/react";
 import * as React from "react";
-import { defaultACLEntityResolvers } from "../../../__mocks__/ACLExpressionBuilder.mock";
+import { defaultACLExpressionProps } from "../../../__mocks__/ACLExpressionBuilder.mock";
 import { complexExpressionACLExpression } from "../../../__mocks__/ACLExpressionModule.mock";
-import { listGroups, resolveGroups } from "../../../__mocks__/GroupModule.mock";
-import { listRoles } from "../../../__mocks__/RoleModule.mock";
-import { getTokens, listUsers } from "../../../__mocks__/UserModule.mock";
 import ACLExpressionBuilder, {
   ACLExpressionBuilderProps,
 } from "../../../tsrc/components/aclexpressionbuilder/ACLExpressionBuilder";
@@ -36,13 +33,8 @@ export const Basic: Story<ACLExpressionBuilderProps> = (args) => (
   <ACLExpressionBuilder {...args} />
 );
 Basic.args = {
+  ...defaultACLExpressionProps,
   aclExpression: generate(complexExpressionACLExpression),
-  searchUserProvider: listUsers,
-  searchGroupProvider: listGroups,
-  searchRoleProvider: listRoles,
-  resolveGroupsProvider: resolveGroups,
-  aclEntityResolversProvider: defaultACLEntityResolvers,
-  ssoTokensProvider: getTokens,
 };
 
 export const EmptyTreeView: Story<ACLExpressionBuilderProps> = (args) => (

@@ -18,9 +18,9 @@
 import type { ACLEntityResolvers } from "../tsrc/modules/ACLEntityModule";
 import { ACLExpression, generate } from "../tsrc/modules/ACLExpressionModule";
 import { user100Recipient } from "./ACLRecipientModule.mock";
-import { findGroupById } from "./GroupModule.mock";
-import { findRoleById } from "./RoleModule.mock";
-import { findUserById } from "./UserModule.mock";
+import { findGroupById, listGroups, resolveGroups } from "./GroupModule.mock";
+import { findRoleById, listRoles } from "./RoleModule.mock";
+import { findUserById, getTokens, listUsers } from "./UserModule.mock";
 
 export const initialACLExpression: ACLExpression = {
   id: "root",
@@ -54,4 +54,13 @@ export const defaultACLEntityResolvers: ACLEntityResolvers = {
   resolveUserProvider: findUserById,
   resolveGroupProvider: findGroupById,
   resolveRoleProvider: findRoleById,
+};
+
+export const defaultACLExpressionProps = {
+  searchUserProvider: listUsers,
+  searchGroupProvider: listGroups,
+  searchRoleProvider: listRoles,
+  resolveGroupsProvider: resolveGroups,
+  aclEntityResolversProvider: defaultACLEntityResolvers,
+  ssoTokensProvider: getTokens,
 };
