@@ -175,6 +175,9 @@ export const languageStrings = {
       not: "None",
     },
   },
+  aclExpressionBuilderDialog: {
+    title: "Select recipients",
+  },
   adminconsoledownload: {
     id: "adminconsole",
     title: "Administration Console",
@@ -663,6 +666,9 @@ export const languageStrings = {
         enabledSwitch: "Enable/Disable",
         createPage: {
           accessControl: {
+            usableBy: "Usable by",
+            usableByDesc:
+              "Only allow user matching this expression to use this platform",
             unknownUserHandling: "Unknown user handling",
             unknownUserHandlingDesc:
               "Choose how to handle logon attempts with a username that doesn't exist",

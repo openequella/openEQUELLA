@@ -20,6 +20,9 @@ import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import * as O from "fp-ts/Option";
 import { constant, flow, pipe } from "fp-ts/function";
+import { findGroupById } from "./GroupModule";
+import { findRoleById } from "./RoleModule";
+import { findUserById } from "./UserModule";
 
 /**
  * The interface defines a basic security entity.
@@ -53,6 +56,12 @@ export interface ACLEntityResolvers {
     id: string
   ) => Promise<OEQ.UserQuery.RoleDetails | undefined>;
 }
+
+export const defaultACLEntityResolvers = {
+  resolveGroupProvider: findGroupById,
+  resolveUserProvider: findUserById,
+  resolveRoleProvider: findRoleById,
+};
 
 /**
  * Generic function for finding an entity's details by ID.
