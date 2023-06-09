@@ -28,10 +28,9 @@ import {
 } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
-import { constant, identity, pipe } from "fp-ts/function";
+import { constTrue, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
-import * as T from "fp-ts/Task";
 import * as React from "react";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { shallowEqual } from "shallow-equal-object";
@@ -46,12 +45,15 @@ import { AppContext } from "../../mainui/App";
 import { routes } from "../../mainui/routes";
 import { templateDefaults, TemplateUpdateProps } from "../../mainui/Template";
 import {
+  deletePlatforms,
   getPlatforms,
+  platformEq,
   platformOrd,
   updateEnabledPlatforms,
 } from "../../modules/Lti13PlatformsModule";
 import { commonString } from "../../util/commonstrings";
 import { languageStrings } from "../../util/langstrings";
+import { pfTernary } from "../../util/pointfree";
 
 const lti13PlatformsSettingsStrings =
   languageStrings.settings.integration.lti13PlatformsSettings;
@@ -72,6 +74,12 @@ export interface Lti13PlatformsSettingsProps extends TemplateUpdateProps {
   updateEnabledPlatformsProvider?: (
     enabledStatus: OEQ.LtiPlatform.LtiPlatformEnabledStatus[]
   ) => Promise<OEQ.BatchOperationResponse.BatchOperationResponse[]>;
+  /**
+   * Function to delete platforms.
+   */
+  deletePlatformsProvider?: (
+    platformIds: string[]
+  ) => Promise<OEQ.BatchOperationResponse.BatchOperationResponse[]>;
 }
 
 /**
@@ -84,6 +92,7 @@ const Lti13PlatformsSettings = ({
   updateTemplate,
   getPlatformsProvider = getPlatforms,
   updateEnabledPlatformsProvider = updateEnabledPlatforms,
+  deletePlatformsProvider = deletePlatforms,
 }: Lti13PlatformsSettingsProps) => {
   const [platforms, setPlatforms] = useState<OEQ.LtiPlatform.LtiPlatform[]>([]);
   const [initialPlatforms, setInitialPlatforms] = React.useState<
@@ -117,9 +126,21 @@ const Lti13PlatformsSettings = ({
     setupPlatformRelatedState();
   }, [setupPlatformRelatedState]);
 
-  const isEqualWithOriginalPlatform = (
+  // used in delete platform task to fetch deleted platform
+  const notExistInNewPlatforms = (
+    initialPlatform: OEQ.LtiPlatform.LtiPlatform
+  ): boolean =>
+    pipe(
+      platforms,
+      A.every(
+        (newPlatform) => initialPlatform.platformId !== newPlatform.platformId
+      )
+    );
+
+  // used in update platform task to fetch updated platform
+  const notEqualWithOriginalPlatform = (
     newPlatform: OEQ.LtiPlatform.LtiPlatform
-  ) =>
+  ): boolean =>
     pipe(
       // find out the original value for the provided platform
       initialPlatforms,
@@ -129,16 +150,16 @@ const Lti13PlatformsSettings = ({
       ),
       // compare current value with original value
       O.match(
-        constant(false),
+        constTrue,
         (originalPlatform) => !shallowEqual(newPlatform, originalPlatform)
       )
     );
 
-  // check each platform's settings, if any one of them has changed return true
+  // check each platform's settings, if any one of them has changed or deleted return true
   const changesUnsaved = pipe(
-    platforms,
-    A.map(isEqualWithOriginalPlatform),
-    A.some(identity)
+    initialPlatforms,
+    A.difference(platformEq)(platforms),
+    A.isNonEmpty
   );
 
   const platformEntries = () =>
@@ -181,7 +202,7 @@ const Lti13PlatformsSettings = ({
           <TooltipIconButton
             title={deleteLabel}
             onClick={(e) => {
-              // TODO: delete platform
+              // delete platform from the list
               pipe(platforms, A.deleteAt(index), O.map(setPlatforms));
               e.stopPropagation();
             }}
@@ -196,35 +217,64 @@ const Lti13PlatformsSettings = ({
     });
 
   const handleOnSave = async () => {
-    const updateEnabledPlatformsTask = (
-      enabledStatus: OEQ.LtiPlatform.LtiPlatformEnabledStatus[]
-    ): T.Task<string[]> =>
-      pipe(
-        TE.tryCatch(
-          () => updateEnabledPlatformsProvider(enabledStatus),
-          (e) => {
-            appErrorHandler(`Failed to update platforms: ${e}`);
-            return [];
-          }
-        ),
-        TE.match(identity, OEQ.BatchOperationResponse.groupErrorMessages)
+    const deletePlatformsTask = (): TE.TaskEither<string, string[]> => {
+      const deleteTask = (platformIds: string[]) =>
+        pipe(
+          TE.tryCatch(
+            () => deletePlatformsProvider(platformIds),
+            (e) => `Failed to delete platforms: ${e}`
+          ),
+          TE.map(OEQ.BatchOperationResponse.groupErrorMessages)
+        );
+
+      return pipe(
+        // get all ids of deleted platforms
+        initialPlatforms,
+        A.filter(notExistInNewPlatforms),
+        A.map((p) => p.platformId),
+        pfTernary(A.isNonEmpty, deleteTask, (_) => TE.right([]))
       );
+    };
 
-    const enabledStatus = pipe(
-      platforms,
-      // get all changed platforms
-      A.filter(isEqualWithOriginalPlatform),
-      A.map(({ platformId, enabled }) => ({
-        platformId,
-        enabled,
-      }))
-    );
+    const updateEnabledPlatformsTask = (): TE.TaskEither<string, string[]> => {
+      const updateTask = (
+        enabledStatus: OEQ.LtiPlatform.LtiPlatformEnabledStatus[]
+      ) =>
+        pipe(
+          TE.tryCatch(
+            () => updateEnabledPlatformsProvider(enabledStatus),
+            (e) => `Failed to update platforms: ${e}`
+          ),
+          TE.map(OEQ.BatchOperationResponse.groupErrorMessages)
+        );
 
-    pipe(
-      await updateEnabledPlatformsTask(enabledStatus)(),
-      O.fromPredicate(A.isNonEmpty),
-      O.map(setErrorMessages)
-    );
+      return pipe(
+        platforms,
+        // get all changed platforms
+        A.filter(notEqualWithOriginalPlatform),
+        // generate enabled status request data
+        A.map(({ platformId, enabled }) => ({
+          platformId,
+          enabled,
+        })),
+        pfTernary(A.isNonEmpty, updateTask, (_) => TE.right([]))
+      );
+    };
+
+    // delete platforms
+    await pipe(
+      deletePlatformsTask(),
+      TE.match(appErrorHandler, setErrorMessages)
+    )();
+
+    // update enabled status
+    await pipe(
+      updateEnabledPlatformsTask(),
+      TE.match(appErrorHandler, (messages) =>
+        // keep previous error messages in case delete platforms task is failed
+        setErrorMessages([...errorMessages, ...messages])
+      )
+    )();
 
     setupPlatformRelatedState();
   };

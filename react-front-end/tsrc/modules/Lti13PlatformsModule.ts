@@ -164,3 +164,13 @@ export const updateEnabledPlatforms = (
   enabledStatus: OEQ.LtiPlatform.LtiPlatformEnabledStatus[]
 ): Promise<OEQ.BatchOperationResponse.BatchOperationResponse[]> =>
   OEQ.LtiPlatform.updateEnabledPlatforms(API_BASE_URL, enabledStatus);
+
+/**
+ * Delete a list of LTI platforms.
+ *
+ * @param platformIds Array of platform identifiers to be deleted.
+ */
+export const deletePlatforms = (
+  platformIds: string[]
+): Promise<OEQ.BatchOperationResponse.BatchOperationResponse[]> =>
+  OEQ.LtiPlatform.deletePlatforms(API_BASE_URL, platformIds);

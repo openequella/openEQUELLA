@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import "@testing-library/jest-dom/extend-expect";
 import userEvent from "@testing-library/user-event";
 import {
   blackboard,
@@ -24,6 +25,7 @@ import {
 } from "../../../../__mocks__/Lti13PlatformsModule.mock";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import {
+  clickDeleteButtonForPlatform,
   clickEnabledSwitchForPlatform,
   renderLti13PlatformsSettings,
 } from "./Lti13PlatformSettingsTestHelper";
@@ -77,5 +79,41 @@ describe("Lti13PlatformsSettings", () => {
 
     const updatedStatus = onUpdateEnabledPlatforms.mock.lastCall[0];
     expect(updatedStatus).toEqual(expectedStatus);
+  });
+
+  it("When user clicked delete button for a platform, it should be removed form list", async () => {
+    const { container, queryByText } = await renderLti13PlatformsSettings();
+
+    await clickDeleteButtonForPlatform(container, moodle.name);
+
+    expect(queryByText(moodle.name)).not.toBeInTheDocument();
+  });
+
+  it("Should be able to delete platforms", async () => {
+    const onDeletePlatforms = jest.fn().mockResolvedValue([
+      {
+        id: moodle.platformId,
+        status: 200,
+        message: "Success",
+      },
+      {
+        id: canvas.platformId,
+        status: 200,
+        message: "Success",
+      },
+    ]);
+    const { container, getByText } = await renderLti13PlatformsSettings(
+      jest.fn(),
+      onDeletePlatforms
+    );
+
+    await clickDeleteButtonForPlatform(container, moodle.name);
+    await clickDeleteButtonForPlatform(container, canvas.name);
+    // click save button
+    await userEvent.click(getByText(saveLabel));
+
+    const deletePlatforms = onDeletePlatforms.mock.lastCall[0];
+    expect(onDeletePlatforms.mock.calls).toHaveLength(1);
+    expect(deletePlatforms).toEqual([canvas.platformId, moodle.platformId]);
   });
 });

@@ -17,6 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import {
+  getByLabelText,
   getByText,
   render,
   RenderResult,
@@ -33,11 +34,14 @@ import Lti13PlatformsSettings, {
   Lti13PlatformsSettingsProps,
 } from "../../../../tsrc/settings/Integrations/Lti13PlatformsSettings";
 import * as React from "react";
+import { languageStrings } from "../../../../tsrc/util/langstrings";
 
 const commonProps: Lti13PlatformsSettingsProps = {
   updateTemplate: () => {},
   getPlatformsProvider: getPlatforms,
 };
+
+const { delete: deleteLabel } = languageStrings.common.action;
 
 /**
  * Helper to render Lti13PlatformsSettings and wait for component under test
@@ -45,10 +49,14 @@ const commonProps: Lti13PlatformsSettingsProps = {
 export const renderLti13PlatformsSettings = async (
   updateEnabledPlatformsProvider: (
     enabledStatus: OEQ.LtiPlatform.LtiPlatformEnabledStatus[]
+  ) => Promise<OEQ.BatchOperationResponse.BatchOperationResponse[]> = jest.fn(),
+  deletePlatformsProvider: (
+    platformIds: string[]
   ) => Promise<OEQ.BatchOperationResponse.BatchOperationResponse[]> = jest.fn()
 ): Promise<RenderResult> => {
   const props = {
     ...commonProps,
+    deletePlatformsProvider: deletePlatformsProvider,
     updateEnabledPlatformsProvider: updateEnabledPlatformsProvider,
   };
   const history = createMemoryHistory();
@@ -79,4 +87,23 @@ export const clickEnabledSwitchForPlatform = async (
   }
 
   await userEvent.click(enabledSwitch);
+};
+
+/**
+ * Helper to mock click delete button for the provided platform entry (located by platform name).
+ */
+export const clickDeleteButtonForPlatform = async (
+  container: HTMLElement,
+  platformName: string
+) => {
+  const deleteButton = getByLabelText(
+    container,
+    `${deleteLabel} ${platformName}`
+  );
+
+  if (!deleteButton) {
+    throw Error(`Not able to find delete button for platform ${platformName}`);
+  }
+
+  await userEvent.click(deleteButton);
 };
