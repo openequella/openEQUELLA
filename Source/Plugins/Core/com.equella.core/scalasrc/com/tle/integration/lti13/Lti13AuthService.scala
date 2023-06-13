@@ -533,5 +533,10 @@ class Lti13AuthService {
   }
 
   private def getPlatform(platform: String): Option[PlatformDetails] =
-    platformService.getByPlatformID(platform).map(PlatformDetails.apply)
+    platformService.getByPlatformID(platform).filter(_.enabled) match {
+      case Some(bean) => Option(PlatformDetails(bean))
+      case None =>
+        LOGGER.error(s"Attempt to access unauthorised platform $platform")
+        None
+    }
 }
