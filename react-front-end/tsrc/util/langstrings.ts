@@ -664,6 +664,16 @@ export const languageStrings = {
         name: "LTI 1.3 platforms settings",
         platformsTitle: "Platforms",
         enabledSwitch: "Enable/Disable",
+        providerDetailsTitle: "LTI 1.3 Provider Details",
+        providerDetailsDesc:
+          "Below are the details for this openEQUELLA institution's LTI 1.3 provider interface. Please use these to configure your LTI 1.3 Platform.",
+        providerDetails: {
+          toolUrl: "Tool Url",
+          keysetUrl: "Keyset URL",
+          initialLoginUrl: "Initial Login URL",
+          redirectionUrl: "Redirection URL",
+          contentSelectionUrl: "Content Selection URL",
+        },
         createPage: {
           accessControl: {
             usableBy: "Usable by",

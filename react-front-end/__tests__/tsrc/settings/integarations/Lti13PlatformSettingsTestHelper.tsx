@@ -36,6 +36,9 @@ import Lti13PlatformsSettings, {
 import * as React from "react";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 
+const { platformsTitle } =
+  languageStrings.settings.integration.lti13PlatformsSettings;
+
 const commonProps: Lti13PlatformsSettingsProps = {
   updateTemplate: () => {},
   getPlatformsProvider: getPlatforms,
@@ -68,6 +71,19 @@ export const renderLti13PlatformsSettings = async (
   // wait for platform list rendered
   await waitFor(() => result.getByText(platforms[0].name));
   return result;
+};
+
+/**
+ * Helper to get the platforms section (the section which contains the platforms list).
+ */
+export const getPlatformsSection = (container: HTMLElement) => {
+  const platformsSection = getByText(container, platformsTitle).parentElement;
+
+  if (!platformsSection) {
+    throw Error(`Not able to find platforms section`);
+  }
+
+  return platformsSection;
 };
 
 /**
