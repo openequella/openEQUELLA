@@ -15,18 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { getAllByRole } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
 import userEvent from "@testing-library/user-event";
 import {
   blackboard,
   canvas,
   moodle,
-  platforms,
 } from "../../../../__mocks__/Lti13PlatformsModule.mock";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import {
   clickDeleteButtonForPlatform,
   clickEnabledSwitchForPlatform,
+  getPlatformsSection,
   renderLti13PlatformsSettings,
 } from "./Lti13PlatformSettingsTestHelper";
 
@@ -34,9 +35,11 @@ const { save: saveLabel } = languageStrings.common.action;
 
 describe("Lti13PlatformsSettings", () => {
   it("Should be able to show a list of platforms", async () => {
-    const { getAllByRole } = await renderLti13PlatformsSettings();
+    const { container } = await renderLti13PlatformsSettings();
 
-    expect(getAllByRole("listitem")).toHaveLength(platforms.length);
+    const platforms = getAllByRole(getPlatformsSection(container), "listitem");
+
+    expect(platforms).toHaveLength(platforms.length);
   });
 
   it("Should be able to disable platforms", async () => {

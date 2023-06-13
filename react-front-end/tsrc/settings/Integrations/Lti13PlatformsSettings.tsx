@@ -18,18 +18,22 @@
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import ArticleIcon from "@mui/icons-material/Article";
 import DeleteIcon from "@mui/icons-material/Delete";
+import FileCopyIcon from "@mui/icons-material/FileCopy";
 import {
   Card,
   CardContent,
   IconButton,
   List,
+  ListItem,
   ListItemButton,
+  ListItemSecondaryAction,
   ListItemText,
 } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { constTrue, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
+import * as R from "fp-ts/Record";
 import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
 import { useCallback, useContext, useEffect, useState } from "react";
@@ -49,18 +53,26 @@ import {
   getPlatforms,
   platformEq,
   platformOrd,
+  providerDetails,
   updateEnabledPlatforms,
 } from "../../modules/Lti13PlatformsModule";
 import { commonString } from "../../util/commonstrings";
 import { languageStrings } from "../../util/langstrings";
 import { pfTernary } from "../../util/pointfree";
 
-const lti13PlatformsSettingsStrings =
-  languageStrings.settings.integration.lti13PlatformsSettings;
+const {
+  name: pageName,
+  providerDetailsTitle,
+  providerDetailsDesc,
+  platformsTitle,
+  enabledSwitch: enabledSwitchLabel,
+} = languageStrings.settings.integration.lti13PlatformsSettings;
+
 const {
   add: addLabel,
   delete: deleteLabel,
   view: viewLabel,
+  copy: copyLabel,
 } = languageStrings.common.action;
 
 export interface Lti13PlatformsSettingsProps extends TemplateUpdateProps {
@@ -117,7 +129,7 @@ const Lti13PlatformsSettings = ({
 
   useEffect(() => {
     updateTemplate((tp) => ({
-      ...templateDefaults(lti13PlatformsSettingsStrings.name)(tp),
+      ...templateDefaults(pageName)(tp),
       backRoute: routes.Settings.to,
     }));
   }, [updateTemplate]);
@@ -169,9 +181,7 @@ const Lti13PlatformsSettings = ({
       return (
         <ListItemButton role="listitem" divider key={index}>
           <ListItemText primary={name} secondary={platformId} />
-          <TooltipCustomComponent
-            title={lti13PlatformsSettingsStrings.enabledSwitch}
-          >
+          <TooltipCustomComponent title={enabledSwitchLabel}>
             <SettingsToggleSwitch
               value={enabled}
               setValue={(value) =>
@@ -215,6 +225,29 @@ const Lti13PlatformsSettings = ({
         </ListItemButton>
       );
     });
+
+  const SharedConfigurationList = () => (
+    <List>
+      {pipe(
+        providerDetails,
+        R.toEntries,
+        A.map(([_, { name, value }]) => (
+          <ListItem key={name}>
+            <ListItemText primary={name} secondary={value} />
+            <ListItemSecondaryAction>
+              <TooltipIconButton
+                edge="end"
+                onClick={() => navigator.clipboard.writeText(value)}
+                title={copyLabel}
+              >
+                <FileCopyIcon />
+              </TooltipIconButton>
+            </ListItemSecondaryAction>
+          </ListItem>
+        ))
+      )}
+    </List>
+  );
 
   const handleOnSave = async () => {
     const deletePlatformsTask = (): TE.TaskEither<string, string[]> => {
@@ -290,9 +323,7 @@ const Lti13PlatformsSettings = ({
       >
         <Card>
           <CardContent>
-            <SettingsList
-              subHeading={lti13PlatformsSettingsStrings.platformsTitle}
-            >
+            <SettingsList subHeading={platformsTitle}>
               <List>{platformEntries()}</List>
             </SettingsList>
           </CardContent>
@@ -309,6 +340,17 @@ const Lti13PlatformsSettings = ({
               <AddCircleIcon fontSize="large" />
             </IconButton>
           </SettingsCardActions>
+        </Card>
+
+        <Card>
+          <CardContent>
+            <SettingsList subHeading={providerDetailsTitle}>
+              <ListItem>
+                <ListItemText>{providerDetailsDesc}</ListItemText>
+              </ListItem>
+              <SharedConfigurationList />
+            </SettingsList>
+          </CardContent>
         </Card>
       </SettingPageTemplate>
 

@@ -24,11 +24,53 @@ import * as ORD from "fp-ts/Ord";
 import * as R from "fp-ts/Record";
 import * as S from "fp-ts/string";
 import { shallowEqual } from "shallow-equal-object";
-import { API_BASE_URL } from "../AppConfig";
+import { API_BASE_URL, getBaseUrl } from "../AppConfig";
 import { languageStrings } from "../util/langstrings";
 
+const {
+  providerDetails: {
+    toolUrl: toolUrlLabel,
+    keysetUrl: keysetUrlinitiaLabel,
+    initialLoginUrl: initialLoginUrlLabel,
+    redirectionUrl: redirectionUrlLabel,
+    contentSelectionUrl: contentSelectionUrlLabel,
+  },
+} = languageStrings.settings.integration.lti13PlatformsSettings;
 const { ltiRoles: ltiRolesStrings } =
   languageStrings.settings.integration.lti13PlatformsSettings.createPage;
+
+const baseUrl = getBaseUrl();
+
+interface ProviderDetail {
+  readonly name: string;
+  readonly value: string;
+}
+
+/**
+ * LTI 1.3 provider details which can be used to configure LTI platform.
+ */
+export const providerDetails: { [key: string]: ProviderDetail } = {
+  toolUrl: {
+    name: toolUrlLabel,
+    value: baseUrl,
+  },
+  keysetUrl: {
+    name: keysetUrlinitiaLabel,
+    value: `${baseUrl}.well-known/jwks.json`,
+  },
+  initialLoginUrl: {
+    name: initialLoginUrlLabel,
+    value: `${baseUrl}lti13/launch`,
+  },
+  redirectionUrlUrl: {
+    name: redirectionUrlLabel,
+    value: `${baseUrl}lti13/launch`,
+  },
+  contentSelectionUrl: {
+    name: contentSelectionUrlLabel,
+    value: baseUrl,
+  },
+};
 
 /**
  * Explicit LTI 1.3 role IDs and names.
