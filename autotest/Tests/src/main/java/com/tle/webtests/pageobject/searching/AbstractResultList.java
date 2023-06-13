@@ -11,6 +11,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.internal.WrapsElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public abstract class AbstractResultList<
@@ -31,15 +32,32 @@ public abstract class AbstractResultList<
     return getResultsDiv();
   }
 
+  private boolean isElementPresent(WebElement element) {
+    try {
+      return element.isDisplayed();
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
   public WaitingPageObject<T> getUpdateWaiter() {
     WebElement firstChild =
         ((WrapsElement) getResultsDiv().findElement(By.xpath("*[1]"))).getWrappedElement();
-    return ExpectWaiter.waiter(
-        ExpectedConditions.and(
-            ExpectedConditions.stalenessOf(firstChild),
-            ExpectedConditions.visibilityOfElementLocated(
-                By.xpath("id('searchresults')[div[@class='itemlist'] or h3]"))),
-        this);
+
+    ExpectedCondition<WebElement> showResult =
+        ExpectedConditions.visibilityOfElementLocated(
+            By.xpath("id('searchresults')[div[@class='itemlist'] or h3]"));
+    ExpectedCondition<Boolean> alwaysTrue = driver -> true;
+    ExpectedCondition<Boolean> staleFirstChild =
+        driver -> {
+          if (isElementPresent(firstChild)) {
+            return ExpectedConditions.stalenessOf(firstChild).apply(driver);
+          } else {
+            return alwaysTrue.apply(driver);
+          }
+        };
+
+    return ExpectWaiter.waiter(ExpectedConditions.and(staleFirstChild, showResult), this);
   }
 
   protected static String getXPathForTitle(String title) {
