@@ -46,7 +46,7 @@ public class ExpectedConditions2 {
           try {
             realElement.isDisplayed();
             return null;
-          } catch (StaleElementReferenceException se) {
+          } catch (Exception se) {
             checkingStale = false;
           }
         }
