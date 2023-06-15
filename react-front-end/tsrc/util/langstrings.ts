@@ -663,6 +663,8 @@ export const languageStrings = {
       lti13PlatformsSettings: {
         name: "LTI 1.3 platforms settings",
         platformsTitle: "Platforms",
+        platformsDesc:
+          "LTI 1.3 Platforms are digital learning environments or systems such as a Learning Management System (LMS) that can interact with LTI 1.3 Tools (in this case, openEQUELLA) to provide resources to users.",
         enabledSwitch: "Enable/Disable",
         providerDetailsTitle: "LTI 1.3 Provider Details",
         providerDetailsDesc:
