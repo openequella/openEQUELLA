@@ -3,6 +3,7 @@ package com.tle.webtests.pageobject.searching;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.ExpectWaiter;
+import com.tle.webtests.pageobject.ExpectedConditions2;
 import com.tle.webtests.pageobject.PrefixedName;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import java.util.ArrayList;
@@ -11,7 +12,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.internal.WrapsElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public abstract class AbstractResultList<
@@ -32,33 +32,16 @@ public abstract class AbstractResultList<
     return getResultsDiv();
   }
 
-  private boolean isElementPresent(WebElement element) {
-    try {
-      return element.isDisplayed();
-    } catch (Exception e) {
-      return false;
-    }
-  }
-
   public WaitingPageObject<T> getUpdateWaiter() {
     WebElement firstChild =
         ((WrapsElement) getResultsDiv().findElement(By.xpath("*[1]"))).getWrappedElement();
-
-    ExpectedCondition<WebElement> showResult =
-        ExpectedConditions.visibilityOfElementLocated(
-            By.xpath("id('searchresults')[div[@class='itemlist'] or h3]"));
-    ExpectedCondition<Boolean> alwaysTrue = driver -> true;
-    ExpectedCondition<Boolean> staleFirstChild =
-        driver -> {
-          if (isElementPresent(firstChild)) {
-            return ExpectedConditions.stalenessOf(firstChild).apply(driver);
-          } else {
-            return alwaysTrue.apply(driver);
-          }
-        };
-
-    return ExpectWaiter.waiter(ExpectedConditions.and(staleFirstChild, showResult), this);
-  }
+    return ExpectWaiter.waiter(
+        ExpectedConditions.and(
+            ExpectedConditions2.stalenessOrNonPresenceOf(firstChild),
+            ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("id('searchresults')[div[@class='itemlist'] or h3]"))),
+        this);
+  };
 
   protected static String getXPathForTitle(String title) {
     return "//div/div[contains(@class,'itemresult-wrapper') and .//h3/a[normalize-space(string())="

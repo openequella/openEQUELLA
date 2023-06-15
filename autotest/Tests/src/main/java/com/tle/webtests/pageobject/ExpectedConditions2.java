@@ -12,6 +12,7 @@ import org.openqa.selenium.NoSuchFrameException;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.internal.WrapsElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -34,10 +35,25 @@ public class ExpectedConditions2 {
     return ExpectedConditions.stalenessOf(element);
   }
 
+  /**
+   * Creates an {@code ExpectedCondition} which attempts to check if the provided {@code element} is
+   * displayed, however if that element has become stale, then will use the provided {@code context}
+   * and {@code locator} to find a target element and check if it is displayed/visible.
+   *
+   * @param element a previously found element which will initially be used to see if the target is
+   *     displayed.
+   * @param context a context to use when {@code element} is stale, to search for target element
+   *     with {@code locator}.
+   * @param locator a {@code By} instance used to find the target element with {@code context} for
+   *     when {@code element} is stale.
+   * @return an {@code ExpectedCondition} to check if the target element is displayed/visible.
+   */
   public static ExpectedCondition<WebElement> updateOfElementLocated(
       WebElement element, final SearchContext context, final By locator) {
     final WebElement realElement = unwrappedElement(element);
     return new ExpectedCondition<WebElement>() {
+      // Provides the means to toggle between first checking if 'element' is stale, and then if it
+      // becomes stale later using 'context' and 'locator'.
       private boolean checkingStale = true;
 
       @Override
@@ -46,7 +62,9 @@ public class ExpectedConditions2 {
           try {
             realElement.isDisplayed();
             return null;
-          } catch (Exception se) {
+          } catch (WebDriverException se) {
+            // Once the element has become stale, then the provided element/realElement is no longer
+            // used and every check will instead now rely on context and locator down below.
             checkingStale = false;
           }
         }
@@ -165,9 +183,7 @@ public class ExpectedConditions2 {
         try {
           realElement.isDisplayed();
           return false;
-        } catch (StaleElementReferenceException ser) {
-          return true;
-        } catch (NoSuchElementException e) {
+        } catch (WebDriverException ser) {
           return true;
         }
       }
