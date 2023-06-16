@@ -65,6 +65,7 @@ const {
   providerDetailsTitle,
   providerDetailsDesc,
   platformsTitle,
+  platformsDesc,
   enabledSwitch: enabledSwitchLabel,
 } = languageStrings.settings.integration.lti13PlatformsSettings;
 
@@ -324,6 +325,9 @@ const Lti13PlatformsSettings = ({
         <Card>
           <CardContent>
             <SettingsList subHeading={platformsTitle}>
+              <ListItem>
+                <ListItemText>{platformsDesc}</ListItemText>
+              </ListItem>
               <List>{platformEntries()}</List>
             </SettingsList>
           </CardContent>

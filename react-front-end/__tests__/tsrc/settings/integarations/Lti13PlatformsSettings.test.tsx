@@ -37,7 +37,9 @@ describe("Lti13PlatformsSettings", () => {
   it("Should be able to show a list of platforms", async () => {
     const { container } = await renderLti13PlatformsSettings();
 
-    const platforms = getAllByRole(getPlatformsSection(container), "listitem");
+    const listItems = getAllByRole(getPlatformsSection(container), "listitem");
+    // platforms are displayed in div element
+    const platforms = listItems.filter(({ tagName }) => tagName === "div");
 
     expect(platforms).toHaveLength(platforms.length);
   });
