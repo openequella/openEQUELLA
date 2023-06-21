@@ -102,7 +102,7 @@ object InstallFirstTime extends App {
     println("Line 28: Got database row")
 
     dbRow.initialise()
-    println("Line 29: Initialised dbRow")
+    println("Line 29: Initialised dbRow ")
 
     try {
       dbRow.waitForMigrate()
