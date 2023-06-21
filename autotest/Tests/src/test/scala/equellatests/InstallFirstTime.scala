@@ -104,9 +104,14 @@ object InstallFirstTime extends App {
     dbRow.initialise()
     println("Line 29: Initialised dbRow")
 
-    dbRow.waitForMigrate()
-    println("Line 30: Wait for dbRow migration")
-
+    try {
+      dbRow.waitForMigrate()
+      println("Line 30: Wait for dbRow migration")
+    } catch {
+      case e: Exception => {
+        e.printStackTrace();
+      }
+    }
     driver.quit()
     println("Line 31: Quit driver")
   }
