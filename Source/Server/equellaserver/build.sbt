@@ -18,7 +18,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion   = "3.15.3.Final"
 val SwaggerVersion    = "1.6.9"
-val TomcatVersion     = "9.0.75"
+val TomcatVersion     = "9.0.76"
 val axis2Version      = "1.8.2"
 val circeVersion      = "0.12.1"
 val curatorVersion    = "5.4.0"
@@ -217,8 +217,8 @@ libraryDependencies ++= Seq(
   "org.opensaml" % "xmltooling" % "1.4.4" excludeAll ExclusionRule(organization = "org.slf4j"),
   postgresDep,
   "org.scannotation" % "scannotation"   % "1.0.3",
-  "org.slf4j"        % "jcl-over-slf4j" % "2.0.6",
-  "org.slf4j"        % "slf4j-api"      % "2.0.6",
+  "org.slf4j"        % "jcl-over-slf4j" % "2.0.7",
+  "org.slf4j"        % "slf4j-api"      % "2.0.7",
   springAop,
   springWeb,
   springContext,
