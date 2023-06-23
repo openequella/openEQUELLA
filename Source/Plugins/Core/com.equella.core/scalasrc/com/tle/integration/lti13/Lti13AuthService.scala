@@ -23,7 +23,8 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.google.common.cache.{Cache, CacheBuilder, CacheLoader}
-import com.google.common.hash.Hashing.sha256
+import com.google.common.hash.HashCode
+import com.google.common.hash.Hashing.murmur3_128
 import com.tle.beans.Institution
 import com.tle.beans.user.TLEUser
 import com.tle.common.institution.CurrentInstitution
@@ -43,6 +44,7 @@ import java.net.{URI, URL}
 import java.security.interfaces.RSAPublicKey
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
+import scala.annotation.tailrec
 import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success, Try}
 
@@ -429,13 +431,9 @@ class Lti13AuthService {
       .getOrElse("")
 
     def handleUnknownUser(): Either[Lti13Error, UserState] = {
-      // Idea based on what was done for LTI 1.x in LtiWrapper: Create a mini hash for the platform
-      // ID to use a prefix of the userId to store in the DB. However this column is only 40 chars
-      // so we need to minimise down to just 10 chars.
-      val platformDigest =
-        sha256().hashBytes(platform.platformId.getBytes).toString.substring(0, 10)
-      // A unique ID for the user in the oEQ DB
-      val oeqUserId                                       = s"LTI13:${platformDigest}_${ltiUserId}"
+      // A unique ID for the user in the oEQ DB - not used elsewhere for authentication, but we
+      // need to meeting existing requirements of the tle_user table.
+      val oeqUserId                                       = genId(platform.platformId, ltiUserId)
       val (unknownUserHandling, unknownUserDefaultGroups) = platform.unknownUserHandling
 
       unknownUserHandling match {
@@ -539,4 +537,63 @@ class Lti13AuthService {
         LOGGER.error(s"Attempt to access unauthorised platform $platform")
         None
     }
+
+  /**
+    * Generates a unique structured identifier for the provided user from the specified platform.
+    * The identifier has the structure of `LTI13:<platformid>_<userid>` which is further explained
+    * as:
+    *
+    * - `platformid` is the first 10 characters of a base64 representation of a hash, with
+    * the intention that this should be unique enough to identify the platform from other
+    * platforms - similar to how short hashes are used in git.
+    *  - `userid` is a 128bit hash of `userId` which is represented in base 64 format.
+    *
+    * NOTE: Above where base64 is referred to this is in a numerical encoding sense, not a byte
+    * encoding sense as often used on the internet.
+    *
+    * @param platformId the id of the platform within which `userId` is relevant
+    * @param userId     a user id specific to `platformId`
+    * @return an (ideally) unique structured ID that will fit within 40 characters.
+    */
+  private def genId(platformId: String, userId: String): String = {
+
+    /**
+      * Given a hash (which after all is a number represented by an array of bytes), generate a base
+      * 64 representation of that number. This implementation is not planned to be a generic base 64
+      * representation method, and so has not been properly validated - only validated within this
+      * context.
+      *
+      * @param hashCode the hash to be represented in base 64
+      * @return `hashCode` as a base 64 number
+      */
+    def base64HashCode(hashCode: HashCode): String = {
+      val base   = 64
+      val lookup = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/"
+      // The hashcode byte array is prefixed with a zero byte to force it positive
+      val bigIntHashCode = new BigInt(
+        new java.math.BigInteger(Array[Byte](0x00) ++ hashCode.asBytes()))
+
+      @tailrec
+      def enc(x: BigInt, result: String): String = {
+        if (x > 0) enc(x / base, s"${lookup.charAt(x.mod(base).intValue)}" + result)
+        else result
+      }
+
+      enc(bigIntHashCode, "")
+    }
+
+    // Only a hash for uniqueness is required, not for security.
+    // So we go with the NCH algorithm murmur3.
+    def base64Murmur3(input: String): String = {
+      val hash = murmur3_128().hashBytes(input.getBytes)
+      base64HashCode(hash)
+    }
+
+    val pid = base64Murmur3(platformId)
+    val uid = base64Murmur3(userId)
+
+    // To keep things short, we only use the first 10 bytes for the platform id - that should be
+    // unique enough.
+    s"LTI13:${pid.substring(0, 10)}_$uid"
+  }
 }
