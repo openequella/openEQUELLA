@@ -208,6 +208,13 @@ export const updateEnabledPlatforms = (
   OEQ.LtiPlatform.updateEnabledPlatforms(API_BASE_URL, enabledStatus);
 
 /**
+ * Create a new platform.
+ */
+export const createPlatforms = (
+  platform: OEQ.LtiPlatform.LtiPlatform
+): Promise<void> => OEQ.LtiPlatform.createPlatform(API_BASE_URL, platform);
+
+/**
  * Delete a list of LTI platforms.
  *
  * @param platformIds Array of platform identifiers to be deleted.

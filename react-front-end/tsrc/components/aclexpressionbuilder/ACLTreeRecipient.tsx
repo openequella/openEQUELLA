@@ -24,14 +24,12 @@ import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import type { ACLEntityResolvers } from "../../modules/ACLEntityModule";
+import { defaultACLEntityResolvers } from "../../modules/ACLExpressionModule";
 import {
   ACLRecipient,
   showRecipient,
   showRecipientHumanReadable,
 } from "../../modules/ACLRecipientModule";
-import { findGroupById } from "../../modules/GroupModule";
-import { findRoleById } from "../../modules/RoleModule";
-import { findUserById } from "../../modules/UserModule";
 import { languageStrings } from "../../util/langstrings";
 import { TooltipIconButton } from "../TooltipIconButton";
 import { ACLTreeItem, classes } from "./ACLTreeItem";
@@ -50,12 +48,6 @@ export interface ACLTreeRecipientProps extends TreeItemProps {
    */
   aclEntityResolvers?: ACLEntityResolvers;
 }
-
-const defaultACLEntityResolvers = {
-  resolveGroupProvider: findGroupById,
-  resolveUserProvider: findUserById,
-  resolveRoleProvider: findRoleById,
-};
 
 /**
  * Tree item (node) which represents an ACL Recipient.

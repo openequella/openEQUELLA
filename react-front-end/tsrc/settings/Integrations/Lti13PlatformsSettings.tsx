@@ -37,6 +37,7 @@ import * as R from "fp-ts/Record";
 import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
 import { useCallback, useContext, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { shallowEqual } from "shallow-equal-object";
 import MessageDialog from "../../components/MessageDialog";
 import SettingPageTemplate from "../../components/SettingPageTemplate";
@@ -333,16 +334,11 @@ const Lti13PlatformsSettings = ({
           </CardContent>
 
           <SettingsCardActions>
-            <IconButton
-              onClick={() => {
-                // TODO: jump to `add platform` page
-              }}
-              aria-label={addLabel}
-              color="primary"
-              size="large"
-            >
-              <AddCircleIcon fontSize="large" />
-            </IconButton>
+            <Link to={routes.CreateLti13Platform.path}>
+              <IconButton aria-label={addLabel} color="primary" size="large">
+                <AddCircleIcon fontSize="large" />
+              </IconButton>
+            </Link>
           </SettingsCardActions>
         </Card>
 

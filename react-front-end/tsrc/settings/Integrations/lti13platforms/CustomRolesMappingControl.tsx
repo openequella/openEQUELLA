@@ -24,6 +24,11 @@ import { TooltipIconButton } from "../../../components/TooltipIconButton";
 import { languageStrings } from "../../../util/langstrings";
 import SelectCustomRoleDialog from "./SelectCustomRoleDialog";
 
+const { customRolesDesc, customRoles: customRolesTitle } =
+  languageStrings.settings.integration.lti13PlatformsSettings.createPage
+    .roleMappings;
+const { edit: editLabel } = languageStrings.common.action;
+
 export interface CustomRolesMappingControlProps {
   /** Initial roles mapping value . */
   value: Map<string, Set<OEQ.UserQuery.RoleDetails>>;
@@ -33,10 +38,28 @@ export interface CustomRolesMappingControlProps {
   roleListProvider?: (query?: string) => Promise<OEQ.UserQuery.RoleDetails[]>;
 }
 
-const { customRolesDesc, customRoles: customRolesTitle } =
-  languageStrings.settings.integration.lti13PlatformsSettings.createPage
-    .roleMappings;
-const { edit: editLabel } = languageStrings.common.action;
+const SelectButton = ({
+  badge,
+  onClick,
+}: {
+  badge: React.ReactNode;
+  onClick: () => void;
+}): JSX.Element => {
+  const title = `${editLabel} ${customRolesTitle}`;
+
+  return (
+    <Badge badgeContent={badge} color="secondary">
+      <TooltipIconButton
+        color="primary"
+        title={title}
+        aria-label={title}
+        onClick={onClick}
+      >
+        <EditIcon fontSize="large"></EditIcon>
+      </TooltipIconButton>
+    </Badge>
+  );
+};
 
 const CustomRolesMappingControl = ({
   value,
@@ -45,26 +68,16 @@ const CustomRolesMappingControl = ({
 }: CustomRolesMappingControlProps) => {
   const [showDialog, setShowDialog] = React.useState(false);
 
-  const SelectButton = () => (
-    <Badge badgeContent={value.size} color="secondary">
-      <TooltipIconButton
-        color="primary"
-        title={editLabel}
-        aria-label={editLabel}
-        onClick={() => setShowDialog(true)}
-      >
-        <EditIcon fontSize="large"></EditIcon>
-      </TooltipIconButton>
-    </Badge>
-  );
-
   return (
     <SettingsListControl
       primaryText={customRolesTitle}
       secondaryText={customRolesDesc}
       control={
         <>
-          <SelectButton />
+          <SelectButton
+            badge={value.size}
+            onClick={() => setShowDialog(true)}
+          />
           <SelectCustomRoleDialog
             open={showDialog}
             value={value}

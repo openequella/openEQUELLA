@@ -27,11 +27,14 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as RS from "fp-ts/ReadonlySet";
 import * as React from "react";
 import { useState } from "react";
-import SelectGroupDialog from "../../../components/securityentitydialog/SelectGroupDialog";
+import SelectGroupDialog, {
+  SelectGroupDialogProps,
+} from "../../../components/securityentitydialog/SelectGroupDialog";
 import SettingsListControl from "../../../components/SettingsListControl";
 import { languageStrings } from "../../../util/langstrings";
 
-export interface UnknownUserHandlingControlProps {
+export interface UnknownUserHandlingControlProps
+  extends Pick<SelectGroupDialogProps, "groupListProvider"> {
   /**
    * Initial selected option.
    */
@@ -61,6 +64,7 @@ const {
   groups: selectGroupLabel,
 } = languageStrings.settings.integration.lti13PlatformsSettings.createPage
   .accessControl;
+const { select: selectLabel } = languageStrings.common.action;
 
 const unknownUserHandlingOptions = [
   ["ERROR", unknownUserHandlingDeny],
@@ -76,6 +80,7 @@ const UnknownUserHandlingControl = ({
   selection,
   groups = RS.empty,
   onChange,
+  groupListProvider,
 }: UnknownUserHandlingControlProps) => {
   const [showSelectGroupDialog, setShowSelectGroupDialog] = useState(false);
 
@@ -90,6 +95,7 @@ const UnknownUserHandlingControl = ({
         control={
           <FormControl fullWidth>
             <Select
+              aria-label={`${selectLabel} ${unknownUserHandling}`}
               value={selection}
               onChange={(event) => {
                 onChange(
@@ -129,6 +135,7 @@ const UnknownUserHandlingControl = ({
               setShowSelectGroupDialog(false);
               selectedGroups && onChange(selection, selectedGroups);
             }}
+            groupListProvider={groupListProvider}
           />
         </ListItem>
       )}

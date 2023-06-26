@@ -41,7 +41,8 @@ export const renderSelectRoleDialog = (
   props: SelectRoleDialogProps = commonSelectRoleDialogProps
 ): RenderResult => render(<SelectRoleDialog {...props} />);
 
-const searchRole = (queryName: string) => doSearch(queryFieldLabel, queryName);
+const searchRole = (dialog: HTMLElement, queryName: string) =>
+  doSearch(dialog, queryFieldLabel, queryName);
 
 /**
  * Do search and select a role in SelectRoleDialog.
