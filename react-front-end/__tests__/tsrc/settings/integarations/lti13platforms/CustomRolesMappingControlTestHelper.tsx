@@ -33,10 +33,11 @@ import {
   doSearch,
   searchAndSelect,
 } from "../../../components/securityentitydialog/SelectEntityDialogTestHelper";
+import { clickSelect } from "../../../MuiTestHelpers";
 
 const { edit: editLabel } = languageStrings.common.action;
 const { queryFieldLabel } = languageStrings.roleSearchComponent;
-const { customRoleSelectLtiRole } =
+const { customRoleSelectLtiRole, customRoles } =
   languageStrings.settings.integration.lti13PlatformsSettings.createPage
     .roleMappings;
 
@@ -58,9 +59,10 @@ export const renderCustomRolesMappingControl = (
  * Open select custom role dialog.
  */
 export const openDialog = (container: HTMLElement) =>
-  userEvent.click(getByLabelText(container, editLabel));
+  userEvent.click(getByLabelText(container, `${editLabel} ${customRoles}`));
 
-const searchRole = (queryName: string) => doSearch(queryFieldLabel, queryName);
+const searchRole = (dialog: HTMLElement, queryName: string) =>
+  doSearch(dialog, queryFieldLabel, queryName);
 
 /**
  * Do search and select a role in the dialog.
@@ -75,17 +77,8 @@ export const doSearchAndSelectRole = async (
  * Select a LTI role from the select in dialog.
  */
 export const selectLtiRole = async (dialog: HTMLElement, ltiRole: string) => {
-  const ltiSelect = getByLabelText(
-    dialog,
-    customRoleSelectLtiRole
-  ).firstElementChild;
-
-  if (!ltiSelect) {
-    throw Error(`Can't find LTI select`);
-  }
-
-  // click select
-  await userEvent.click(ltiSelect);
+  await clickSelect(dialog, `div[aria-label='${customRoleSelectLtiRole}'] div`);
+  const option = await screen.findByText(ltiRole);
   // click the option in the list
-  await userEvent.click(screen.getByText(ltiRole));
+  await userEvent.click(option);
 };

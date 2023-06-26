@@ -65,13 +65,12 @@ export const renderACLExpressionBuilder = (
 
 /**
  * Attempt to select the entities show in the `EntitySearch` (User/Group/RoleSearch) result list.
- * It then clicks `select` and then `ok` button to get the updated ACLExpression result from `onFinish`.
+ * It then clicks `select` and then `ok` button.
  */
-export const selectAndFinished = async (
+export const selectAndConfirm = async (
   container: HTMLElement,
-  selectNames: string[],
-  onFinish = jest.fn()
-): Promise<string> => {
+  selectNames: string[]
+) => {
   // Wait for the results, and then click all entities
   for (const name of selectNames) {
     await userEvent.click(await findByText(container, name));
@@ -81,7 +80,18 @@ export const selectAndFinished = async (
   await userEvent.click(getByText(container, selectLabel));
   // click ok button
   await userEvent.click(getByText(container, okLabel));
+};
 
+/**
+ * Attempts to select the entities shown in the `EntitySearch` (User/Group/RoleSearch) result list.
+ * It then clicks 'select' followed by the 'OK' button, and then gets the updated `ACLExpression` result from `onFinish`.
+ */
+export const selectAndFinished = async (
+  container: HTMLElement,
+  selectNames: string[],
+  onFinish = jest.fn()
+): Promise<string> => {
+  await selectAndConfirm(container, selectNames);
   // get the result of ACLExpression
   return onFinish.mock.lastCall[0];
 };

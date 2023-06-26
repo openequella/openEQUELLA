@@ -677,7 +677,21 @@ export const languageStrings = {
           contentSelectionUrl: "Content Selection URL",
         },
         createPage: {
+          name: "Create LTI 1.3 platform",
+          generalDetails: {
+            title: "General Details",
+            platformId: "Platform ID",
+            name: "Name",
+            clientId: "Client ID",
+            needUrl: "URL must include http/https protocol",
+            platformKeysetURL: "Platform Keyset URL",
+            platformAuthenticationRequestURL:
+              "Platform Authentication Request URL",
+            usernamePrefix: "Username Prefix",
+            usernameSuffix: "Username Suffix",
+          },
           accessControl: {
+            title: "Access Control",
             usableBy: "Usable by",
             usableByDesc:
               "Only allow user matching this expression to use this platform",
@@ -693,6 +707,9 @@ export const languageStrings = {
           roleMappings: {
             title: "Role Mappings",
             selectRole: "Select role",
+            instructorRoles: "Instructor roles",
+            instructorRolesDesc:
+              "Select the openEQUELLA roles that should be used when the LTI Instructor role is detected",
             customRoles: "Custom roles",
             customRolesDesc:
               "Select an LTI role, then select the openEQUELLA roles",
@@ -704,6 +721,9 @@ export const languageStrings = {
             customRoleTableOeqRoleColumn: "openEQUELLA Role Name",
             customRoleAddRoles:
               "Please add roles with the selector and search control",
+            unknownRoles: "Unknown roles",
+            unknownRolesDesc:
+              "Select the openEQUELLA roles that should be used for all unmapped LTI roles",
           },
           // The following role names are written according to the LTI 1.3 standard.
           // Reference link: https://www.imsglobal.org/spec/lti/v1p3/#role-vocabularies

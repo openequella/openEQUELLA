@@ -17,10 +17,10 @@
  */
 import EditIcon from "@mui/icons-material/Edit";
 import {
-  ListItemSecondaryAction,
-  ListItem,
-  ListItemText,
   List,
+  ListItem,
+  ListItemSecondaryAction,
+  ListItemText,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import * as E from "fp-ts/Either";
@@ -35,8 +35,8 @@ import ACLExpressionBuilderDialog, {
 import CodeBlock from "../../../components/CodeBlock";
 import SettingsListControl from "../../../components/SettingsListControl";
 import { TooltipIconButton } from "../../../components/TooltipIconButton";
-import { defaultACLEntityResolvers } from "../../../modules/ACLEntityModule";
 import {
+  defaultACLEntityResolvers,
   generateHumanReadable,
   parse,
 } from "../../../modules/ACLExpressionModule";
@@ -68,6 +68,8 @@ export interface UsableByControlProps
 const StyledListItemText = styled(ListItemText)(({ theme }) => ({
   "&": { marginRight: theme.spacing(5) },
 }));
+
+const editIconTitle = `${editLabel} ${usableBy}`;
 
 /**
  * Used to build the ACL Expression to control who can use the platfrom.
@@ -114,8 +116,8 @@ const UsableByControl = ({
         <ListItemSecondaryAction>
           <TooltipIconButton
             color="primary"
-            title={editLabel}
-            aria-label={`${editLabel} ${usableBy}`}
+            title={editIconTitle}
+            aria-label={editIconTitle}
             onClick={() => setShowDialog(true)}
           >
             <EditIcon fontSize="large"></EditIcon>

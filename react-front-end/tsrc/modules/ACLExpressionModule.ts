@@ -39,6 +39,9 @@ import {
   showRecipient,
   showRecipientHumanReadable,
 } from "./ACLRecipientModule";
+import { findGroupById } from "./GroupModule";
+import { findRoleById } from "./RoleModule";
+import { findUserById } from "./UserModule";
 
 const {
   aclExpressionBuilder: {
@@ -1141,3 +1144,9 @@ export const generateHumanReadable =
  */
 export const generate = (aclExpression: ACLExpression): string =>
   pipe(aclExpression, generatePostfixResults, A.intercalate(S.Monoid)(" "));
+
+export const defaultACLEntityResolvers: ACLEntityResolvers = {
+  resolveGroupProvider: findGroupById,
+  resolveUserProvider: findUserById,
+  resolveRoleProvider: findRoleById,
+};

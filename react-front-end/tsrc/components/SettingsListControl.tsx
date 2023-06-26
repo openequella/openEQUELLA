@@ -27,7 +27,7 @@ export interface SettingsListControlProps {
   /**
    *  Text to appear on the top line of the row.
    */
-  primaryText: string;
+  primaryText: ReactNode;
   /**
    * Don't make the `primaryText` display at the vertical center. Default value is `false`.
    */

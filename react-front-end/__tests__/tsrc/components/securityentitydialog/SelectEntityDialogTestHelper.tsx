@@ -17,7 +17,7 @@
  */
 import userEvent from "@testing-library/user-event";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
-import { queryMuiTextFieldFromScreen } from "../../MuiQueries";
+import { queryMuiTextField } from "../../MuiQueries";
 import { findByText, getByText } from "@testing-library/react";
 
 const {
@@ -30,11 +30,16 @@ const {
  * Generic helper function to do the steps of submitting a search in the `SelectSecurityEntityDialog`
  * component. It needs a `queryName` to locate the component.
  *
+ * @param dialog the dialog which contains the search component
  * @param queryName the label value displayed in the query bar, and here use it to locate the search bar
  * @param queryValue the value to put in the query field before pressing enter
  */
-export const doSearch = async (queryName: string, queryValue: string) => {
-  const queryField = queryMuiTextFieldFromScreen(queryName);
+export const doSearch = async (
+  dialog: HTMLElement,
+  queryName: string,
+  queryValue: string
+) => {
+  const queryField = queryMuiTextField(dialog, queryName);
   if (!queryField) {
     throw new Error("Unable to find query field!");
   }
@@ -54,10 +59,10 @@ export const searchAndSelect = async (
   dialog: HTMLElement,
   searchFor: string,
   selectEntityName: string,
-  doSearch: (queryValue: string) => Promise<void>
+  doSearch: (dialog: HTMLElement, queryValue: string) => Promise<void>
 ): Promise<void> => {
   // Attempt search for a specific entity
-  await doSearch(searchFor);
+  await doSearch(dialog, searchFor);
   // Wait for the results, and then click our entity of interest
   const entityName = await findByText(
     dialog,

@@ -41,7 +41,8 @@ export const renderSelectGroupDialog = (
   props: SelectGroupDialogProps = commonSelectGroupDialogProps
 ): RenderResult => render(<SelectGroupDialog {...props} />);
 
-const searchGroup = (queryName: string) => doSearch(queryFieldLabel, queryName);
+const searchGroup = (dialog: HTMLElement, queryName: string) =>
+  doSearch(dialog, queryFieldLabel, queryName);
 
 /**
  * Do search and select a group in SelectGroupDialog.

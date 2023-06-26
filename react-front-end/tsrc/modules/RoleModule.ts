@@ -17,8 +17,10 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import * as EQ from "fp-ts/Eq";
+import { flow } from "fp-ts/function";
 import * as ORD from "fp-ts/Ord";
 import * as RA from "fp-ts/ReadonlyArray";
+import * as RSET from "fp-ts/ReadonlySet";
 import * as S from "fp-ts/string";
 import { API_BASE_URL } from "../AppConfig";
 import { findEntityById } from "./ACLEntityModule";
@@ -36,6 +38,13 @@ export const eqRoleById: EQ.Eq<OEQ.UserQuery.RoleDetails> = EQ.contramap(
 export const ordRole: ORD.Ord<OEQ.UserQuery.RoleDetails> = ORD.contramap(
   (r: OEQ.UserQuery.RoleDetails) => r.name
 )(S.Ord);
+
+/**
+ * Given a set of `OEQ.UserQuery.RoleDetails`, return a set of UUIDs for all the roles.
+ */
+export const roleIds: (
+  r: ReadonlySet<OEQ.UserQuery.RoleDetails>
+) => ReadonlySet<string> = flow(RSET.map(S.Eq)(({ id }) => id));
 
 /**
  * Lookup roles known in oEQ.
