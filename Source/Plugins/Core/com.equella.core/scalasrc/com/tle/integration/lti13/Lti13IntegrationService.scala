@@ -203,11 +203,12 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
       override def executeSelectionsMade(info: SectionInfo, session: SelectionSession): Boolean =
         ltiPlatformService.getPrivateKeyForPlatform(platformDetails.platformId) match {
           case Right((keyId, privateKey)) =>
-            val token = JWT
+            val deepLinkingResponse = JWT
               .create()
               .withIssuer(deepLinkingRequest.aud)
               .withAudience(deepLinkingRequest.iss)
               .withIssuedAt(Instant.now)
+              .withNotBefore(Instant.now)
               .withExpiresAt(Instant.now.plusSeconds(60))
               .withKeyId(keyId)
               .withClaim(Lti13Claims.MESSAGE_TYPE, LtiMessageType.LtiDeepLinkingResponse.toString)
@@ -218,7 +219,12 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
                 Lti13Claims.CONTENT_ITEMS,
                 buildDeepLinkingContentItems(info, session)
               )
-              .sign(Algorithm.RSA256(privateKey))
+
+            // If `data` is present in the Deep linking settings, include it in the response.
+            deepLinkingRequest.deepLinkingSettings.data.foreach(d =>
+              deepLinkingResponse.withClaim(Lti13Claims.DATA, d))
+
+            val token = deepLinkingResponse.sign(Algorithm.RSA256(privateKey))
 
             submitForm(deepLinkingRequest.deepLinkingSettings.deepLinkReturnUrl.toString,
                        token,
