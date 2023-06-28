@@ -221,8 +221,9 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
               )
 
             // If `data` is present in the Deep linking settings, include it in the response.
-            deepLinkingRequest.deepLinkingSettings.data.foreach(d =>
-              deepLinkingResponse.withClaim(Lti13Claims.DATA, d))
+            for {
+              d <- deepLinkingRequest.deepLinkingSettings.data
+            } yield deepLinkingResponse.withClaim(Lti13Claims.DATA, d)
 
             val token = deepLinkingResponse.sign(Algorithm.RSA256(privateKey))
 
