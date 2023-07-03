@@ -20,7 +20,7 @@ import * as React from "react";
 import axios from "axios";
 import "babel-polyfill";
 import { useState } from "react";
-import { parse } from "query-string";
+import queryString from "query-string";
 import {
   AppBar,
   Typography,
@@ -171,11 +171,11 @@ function CloudProvider({ query }: CloudProviderProps) {
 }
 
 ReactDOM.render(
-  <React.Fragment>
+  <>
     <CssBaseline />
     <ThemeProvider theme={theme}>
-      <CloudProvider query={parse(window.location.search)} />
+      <CloudProvider query={queryString.parse(window.location.search)} />
     </ThemeProvider>
-  </React.Fragment>,
+  </>,
   document.getElementById("app")
 );
