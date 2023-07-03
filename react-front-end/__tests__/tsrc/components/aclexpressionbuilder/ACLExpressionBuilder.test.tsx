@@ -299,7 +299,7 @@ describe("<ACLExpressionBuilder/>", () => {
         "user",
         ["user100", "user200", "user300", "user400"],
         searchUser,
-        "U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a OR U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef U:eb75a832-6533-4d72-93f4-2b7a1b108951 OR",
+        "U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a OR U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef OR U:eb75a832-6533-4d72-93f4-2b7a1b108951 OR",
       ],
       [
         "groups",
@@ -307,7 +307,7 @@ describe("<ACLExpressionBuilder/>", () => {
         "group",
         ["group100", "group200", "group300", "group400"],
         searchGroup,
-        "G:303e758c-0051-4aea-9a8e-421f93ed9d1a G:d7dd1907-5731-4244-9a65-e0e847f68604 OR G:f921a6e3-69a6-4ec4-8cf8-bc193beda5f6 G:a2576dea-bd5c-490b-a065-637068e1a4fb OR",
+        "G:303e758c-0051-4aea-9a8e-421f93ed9d1a G:d7dd1907-5731-4244-9a65-e0e847f68604 OR G:f921a6e3-69a6-4ec4-8cf8-bc193beda5f6 OR G:a2576dea-bd5c-490b-a065-637068e1a4fb OR",
       ],
       [
         "roles",
@@ -364,7 +364,7 @@ describe("<ACLExpressionBuilder/>", () => {
         "user",
         ["user300", "user400"],
         searchUser,
-        "U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a R:TLE_GUEST_USER_ROLE AND U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef U:eb75a832-6533-4d72-93f4-2b7a1b108951 AND OR",
+        "U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a R:TLE_GUEST_USER_ROLE AND U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef AND U:eb75a832-6533-4d72-93f4-2b7a1b108951 AND OR",
       ],
       [
         "groups",
@@ -372,7 +372,7 @@ describe("<ACLExpressionBuilder/>", () => {
         "group",
         ["group100", "group200", "group300", "group400"],
         searchGroup,
-        "U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a R:TLE_GUEST_USER_ROLE AND G:303e758c-0051-4aea-9a8e-421f93ed9d1a G:d7dd1907-5731-4244-9a65-e0e847f68604 AND G:f921a6e3-69a6-4ec4-8cf8-bc193beda5f6 G:a2576dea-bd5c-490b-a065-637068e1a4fb AND OR",
+        "U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a R:TLE_GUEST_USER_ROLE AND G:303e758c-0051-4aea-9a8e-421f93ed9d1a AND G:d7dd1907-5731-4244-9a65-e0e847f68604 AND G:f921a6e3-69a6-4ec4-8cf8-bc193beda5f6 AND G:a2576dea-bd5c-490b-a065-637068e1a4fb AND OR",
       ],
       [
         "roles",
@@ -380,7 +380,7 @@ describe("<ACLExpressionBuilder/>", () => {
         "role",
         ["role100", "role200"],
         searchRole,
-        "U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a R:TLE_GUEST_USER_ROLE AND R:fda99983-9eda-440a-ac68-0f746173fdcb R:1de3a6df-dc81-4a26-b69e-e61f8474594a AND OR",
+        "U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a R:TLE_GUEST_USER_ROLE AND R:fda99983-9eda-440a-ac68-0f746173fdcb AND R:1de3a6df-dc81-4a26-b69e-e61f8474594a AND OR",
       ],
     ])(
       "should be able to select multiple %s search result and add them within the currently selected grouping",

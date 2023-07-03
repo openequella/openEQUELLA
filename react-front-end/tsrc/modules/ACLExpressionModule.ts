@@ -953,15 +953,13 @@ const generatePostfixResults = (aclExpression: ACLExpression): string[] => {
       recipients,
       A.reduceWithIndex<ACLRecipient, string[]>(
         [],
-        (index, acc, currentRecipient) => {
-          const result = [...acc, showRecipient(currentRecipient)];
-
-          // After every two recipients, make sure to add the operator
-          return (index + 1) % 2 === 0 ? [...result, operator] : result;
-        }
+        (index, acc, currentRecipient) =>
+          // Insert an operator between each elements, except for the first element."
+          index > 1
+            ? [...acc, operator, showRecipient(currentRecipient)]
+            : [...acc, showRecipient(currentRecipient)]
       ),
-      // Make sure the operator is always added on the end - especially for odd numbered
-      // recipient lists
+      // Make sure the operator is always added on the end
       pfTernary(
         (a) => A.isNonEmpty(a) && NEA.last(a) !== operator,
         A.append(operator as string),

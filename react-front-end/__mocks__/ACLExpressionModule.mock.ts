@@ -57,6 +57,11 @@ export const aclThreeItems =
 export const aclThreeItemsInfix =
   "Yasmin Day [user300] AND From 127.0.0.1%2F24 AND From *google*";
 
+export const aclFourItems =
+  "U:2 U:75abbd62-d91c-4ce5-b4b5-339e0d44ac0e OR I:127.0.0.1%2F24 OR F:*google* OR";
+export const aclFourItemsInfix =
+  "Content Content [ContentAdmin] OR Wat Swindlehurst [admin999] OR From 127.0.0.1%2F24 OR From *google*";
+
 export const aclWithSubExpression =
   "U:eb75a832-6533-4d72-93f4-2b7a1b108951 I:127.0.0.1%2F24 AND F:*google* AND $OWNER R:TLE_GUEST_USER_ROLE OR U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef OR AND";
 export const aclWithSubExpressionInfix =
@@ -110,6 +115,17 @@ export const twoItemsACLExpression: ACLExpression = createACLExpression(
 export const threeItemsACLExpression: ACLExpression = createACLExpression(
   "AND",
   [user300Recipient, ipRecipient("127.0.0.1%2F24"), referRecipient("*google*")],
+  []
+);
+
+export const fourItemsACLExpression: ACLExpression = createACLExpression(
+  "OR",
+  [
+    userContentAdminRecipient,
+    userAdminRecipient,
+    ipRecipient("127.0.0.1%2F24"),
+    referRecipient("*google*"),
+  ],
   []
 );
 
