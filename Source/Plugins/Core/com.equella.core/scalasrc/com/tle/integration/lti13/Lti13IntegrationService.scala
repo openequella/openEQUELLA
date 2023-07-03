@@ -36,6 +36,7 @@ import com.tle.web.selection.{
   SelectionsMadeCallback,
   TreeLookupSelectionCallback
 }
+
 import java.time.Instant
 import javax.inject.{Inject, Singleton}
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
@@ -47,6 +48,7 @@ import com.tle.web.integration.guice.IntegrationModule
 import com.tle.web.sections.header.{FormTag, SimpleFormAction}
 import com.tle.web.sections.jquery.{JQuerySelector, JQueryStatement}
 import com.tle.web.sections.render.HiddenInput
+import com.tle.web.selection.section.RootSelectionSection
 import com.tle.web.template.{Decorations, RenderNewTemplate}
 import com.tle.web.viewable.ViewItemLinkFactory
 
@@ -313,8 +315,11 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
       // This means many things like this Service itself and LtiPlatformService will need to support serialisation.
       // In order not to do this, we must use `TreeLookupSelectionCallback`, which basically is like serialising
       // the index of our callback and using the index to find the real callback when needed.
-      // Because this callback is used when a selection is made, we save it in `RootSelectionSection` who ID is '_sl'.
-      info.getTrees.asScala.find(_.getRootId == "_sl") match {
+      // Because this callback is used when a selection is made, we save it in `RootSelectionSection`.
+      Option(
+        info.lookupSection[RootSelectionSection, RootSelectionSection](
+          classOf[RootSelectionSection]))
+        .flatMap(section => Option(section.getTree)) match {
         case Some(tree) =>
           tree.setAttribute(LTI13_INTEGRATION_CALLBACK,
                             buildSelectionMadeCallback(deepLinkingRequest, platformDetails, resp))
