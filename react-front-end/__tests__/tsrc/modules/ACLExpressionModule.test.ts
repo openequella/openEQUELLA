@@ -40,6 +40,8 @@ import { findRoleById } from "../../../__mocks__/RoleModule.mock";
 import {
   aclEveryone,
   aclEveryoneInfix,
+  aclFourItems,
+  aclFourItemsInfix,
   aclNotUser,
   aclNotUserInfix,
   aclOwner,
@@ -64,6 +66,7 @@ import {
   complexExpressionACLExpression,
   complexRedundantExpression,
   everyoneACLExpression,
+  fourItemsACLExpression,
   notExpression,
   notNestedCompactedExpression,
   notNestedExpression,
@@ -108,34 +111,42 @@ describe("ACLExpressionModule", () => {
   ): E.Either<never, ACLExpression> => pipe(aclExpression, ignoreId, E.right);
 
   describe("parse", () => {
-    it("parse text as ACL Expressions", () => {
-      expect(parse(aclEveryone)).toEqual(
-        expectedRightResult(everyoneACLExpression)
-      );
-      expect(parse(aclOwner)).toEqual(expectedRightResult(ownerACLExpression));
-      expect(parse(aclUser)).toEqual(expectedRightResult(userACLExpression));
-      expect(parse(aclNotUser)).toEqual(
-        expectedRightResult(notUserACLExpression)
-      );
-      expect(parse(aclTwoItems)).toEqual(
-        expectedRightResult(twoItemsACLExpression)
-      );
-      expect(parse(aclThreeItems)).toEqual(
-        expectedRightResult(threeItemsACLExpression)
-      );
-      expect(parse(aclWithSubExpression)).toEqual(
-        expectedRightResult(withSubExpressionACLExpression)
-      );
-      expect(parse(aclWithMultipleSubExpression)).toEqual(
-        expectedRightResult(withMultipleSubExpression)
-      );
-      expect(parse(aclWithNestedSubExpression)).toEqual(
-        expectedRightResult(withNestedSubExpressionACLExpression)
-      );
-      expect(parse(aclWithComplexSubExpression)).toEqual(
-        expectedRightResult(complexExpressionACLExpression)
-      );
-    });
+    it.each([
+      ["everyone", aclEveryone, everyoneACLExpression],
+      ["aclOwner", aclOwner, ownerACLExpression],
+      ["aclUser", aclUser, userACLExpression],
+      ["aclNotUser", aclNotUser, notUserACLExpression],
+      ["aclTwoItems", aclTwoItems, twoItemsACLExpression],
+      ["aclThreeItems", aclThreeItems, threeItemsACLExpression],
+      ["fourItemsACLExpression", aclFourItems, fourItemsACLExpression],
+      [
+        "aclWithSubExpression",
+        aclWithSubExpression,
+        withSubExpressionACLExpression,
+      ],
+      [
+        "aclWithMultipleSubExpression",
+        aclWithMultipleSubExpression,
+        withMultipleSubExpression,
+      ],
+      [
+        "aclWithNestedSubExpression",
+        aclWithNestedSubExpression,
+        withNestedSubExpressionACLExpression,
+      ],
+      [
+        "aclWithComplexSubExpression",
+        aclWithComplexSubExpression,
+        complexExpressionACLExpression,
+      ],
+    ])(
+      "parse %s as ACL Expressions",
+      (_, aclExpression, expectedExpression) => {
+        expect(parse(aclExpression)).toEqual(
+          expectedRightResult(expectedExpression)
+        );
+      }
+    );
 
     it("text with a blank space at the end should still be able to parsed", () => {
       expect(parse(aclWithComplexSubExpression + " ")).toEqual(
@@ -217,6 +228,7 @@ describe("ACLExpressionModule", () => {
       ["notUserACLExpression", notUserACLExpression, aclNotUser],
       ["twoItemsACLExpression", twoItemsACLExpression, aclTwoItems],
       ["threeItemsACLExpression", threeItemsACLExpression, aclThreeItems],
+      ["fourItemsACLExpression", fourItemsACLExpression, aclFourItems],
       [
         "withSubExpressionACLExpression",
         withSubExpressionACLExpression,
@@ -262,6 +274,7 @@ describe("ACLExpressionModule", () => {
       ["notUserACLExpression", notUserACLExpression, aclNotUserInfix],
       ["twoItemsACLExpression", twoItemsACLExpression, aclTwoItemsInfix],
       ["threeItemsACLExpression", threeItemsACLExpression, aclThreeItemsInfix],
+      ["fourItemsACLExpression", fourItemsACLExpression, aclFourItemsInfix],
       [
         "withSubExpressionACLExpression",
         withSubExpressionACLExpression,
@@ -389,6 +402,7 @@ describe("ACLExpressionModule", () => {
       ["aclNotUser", aclNotUser, notUserACLExpression],
       ["aclTwoItems", aclTwoItems, twoItemsACLExpression],
       ["aclThreeItems", aclThreeItems, threeItemsACLExpression],
+      ["fourItemsACLExpression", aclFourItems, fourItemsACLExpression],
       [
         "aclWithSubExpression",
         aclWithSubExpression,
@@ -422,6 +436,7 @@ describe("ACLExpressionModule", () => {
       ["aclNotUser", notUserACLExpression, aclNotUser],
       ["aclTwoItems", twoItemsACLExpression, aclTwoItems],
       ["aclThreeItems", threeItemsACLExpression, aclThreeItems],
+      ["fourItemsACLExpression", fourItemsACLExpression, aclFourItems],
       [
         "aclWithSubExpression",
         withSubExpressionACLExpression,
