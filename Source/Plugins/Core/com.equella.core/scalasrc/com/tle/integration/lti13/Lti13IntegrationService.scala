@@ -30,8 +30,12 @@ import com.tle.web.sections.equella.{AbstractScalaSection, ModalSession}
 import com.tle.web.sections.generic.DefaultSectionTree
 import com.tle.web.sections.registry.TreeRegistry
 import com.tle.web.sections.{SectionInfo, SectionNode, SectionsController}
-import com.tle.web.selection.{SelectedResource, SelectionSession, SelectionsMadeCallback}
-
+import com.tle.web.selection.{
+  SelectedResource,
+  SelectionSession,
+  SelectionsMadeCallback,
+  TreeLookupSelectionCallback
+}
 import java.time.Instant
 import javax.inject.{Inject, Singleton}
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
@@ -77,6 +81,7 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
   private var webKeySetService: WebKeySetService     = _
   private var ltiPlatformService: LtiPlatformService = _
   private var linkFactory: ViewItemLinkFactory       = _
+  private val LTI13_INTEGRATION_CALLBACK             = "$LTI13$INTEG$RETURNER"
 
   @Inject
   def this(integrationService: IntegrationService,
@@ -303,6 +308,21 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
                                                Map.empty[String, Array[String]].asJava,
                                                null)
 
+      // For those wondering why saving the callback in Section Tree, the reason being that in cluster environment,
+      // the callback, which is an anonymous class, will be serialised as part of `SelectionSession`.
+      // This means many things like this Service itself and LtiPlatformService will need to support serialisation.
+      // In order not to do this, we must use `TreeLookupSelectionCallback`, which basically is like serialising
+      // the index of our callback and using the index to find the real callback when needed.
+      // Because this callback is used when a selection is made, we save it in `RootSelectionSection` who ID is '_sl'.
+      info.getTrees.asScala.find(_.getRootId == "_sl") match {
+        case Some(tree) =>
+          tree.setAttribute(LTI13_INTEGRATION_CALLBACK,
+                            buildSelectionMadeCallback(deepLinkingRequest, platformDetails, resp))
+        case None =>
+          throw new RuntimeException(
+            s"Missing RootSelectionSection to create a callback for making selections in LTI 1.3 integration.")
+      }
+
       info.fireBeforeEvents()
       info
     }
@@ -319,7 +339,7 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
       integrationService
         .getActionInfo(IntegrationModule.SELECT_OR_ADD_DEFAULT_ACTION, null),
       new SingleSignonForm,
-      buildSelectionMadeCallback(deepLinkingRequest, platformDetails, resp)
+      new TreeLookupSelectionCallback(LTI13_INTEGRATION_CALLBACK)
     )
   }
 }
