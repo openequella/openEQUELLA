@@ -39,11 +39,9 @@ object InstallFirstTime extends App {
 
     assert(installPage.isNoReplyError)
 
-    installPage.setPassword(testConfig.getAdminPassword)
-    installPage.setPasswordConfirm(testConfig.getAdminPassword)
+    installPage.setPassword(testConfig.getAdminPassword)   installPage.setPasswordConfirm(testConfig.getAdminPassword)
 
     installPage.setEmails("@@")
-
     installPage.setSmtpServer("localhost")
     installPage.setNoReply("noreply@noreply.com")
     installPage = installPage.installInvalid(scalaFunctionToJavaFunction(!_.isPasswordError))
