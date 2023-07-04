@@ -51,7 +51,6 @@ object InstallFirstTime extends App {
     installPage = installPage.installInvalid(scalaFunctionToJavaFunction(!_.isPasswordError))
 
     assert(!installPage.isPasswordError)
-
     assert(installPage.isEmailsError)
 
     installPage.setPassword(testConfig.getAdminPassword)
