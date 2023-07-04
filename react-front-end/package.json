@@ -31,8 +31,8 @@
     "build-storybook": "build-storybook"
   },
   "dependencies": {
-    "@emotion/react": "11.10.5",
-    "@emotion/styled": "11.10.5",
+    "@emotion/react": "11.11.1",
+    "@emotion/styled": "11.11.0",
     "@fontsource/material-icons": "4.5.4",
     "@fontsource/roboto": "4.5.8",
     "@mui/icons-material": "5.11.9",
