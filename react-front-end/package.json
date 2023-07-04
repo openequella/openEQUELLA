@@ -66,7 +66,7 @@
     "runtypes": "6.6.0",
     "shallow-equal-object": "1.1.1",
     "sprintf-js": "1.1.2",
-    "tinymce": "6.3.1",
+    "tinymce": "6.5.1",
     "uuid": "9.0.0",
     "wicked-good-xpath": "1.3.0"
   },
