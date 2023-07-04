@@ -26,7 +26,6 @@ object InstallFirstTime extends App {
     var installPage = new InstallPage(context).load
 
     installPage.setPassword("")
-
     installPage.setPasswordConfirm("")
     installPage.setEmails("")
     installPage.setSmtpServer("")
