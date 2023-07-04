@@ -17,8 +17,8 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 (Runtime / unmanagedClasspath) += (LocalProject("learningedge_config") / baseDirectory).value
 
 val RestEasyVersion   = "3.15.3.Final"
-val SwaggerVersion    = "1.6.9"
-val TomcatVersion     = "9.0.73"
+val SwaggerVersion    = "1.6.11"
+val TomcatVersion     = "9.0.76"
 val axis2Version      = "1.8.2"
 val circeVersion      = "0.12.1"
 val curatorVersion    = "5.4.0"
@@ -65,13 +65,13 @@ libraryDependencies ++= Seq(
   jacksonDataBind,
   jacksonModuleScala,
   "io.bit3"         % "jsass"       % jsassVersion,
-  "com.flickr4java" % "flickr4java" % "3.0.6" excludeAll (
+  "com.flickr4java" % "flickr4java" % "3.0.8" excludeAll (
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
   "com.google.api-client" % "google-api-client"           % "2.2.0",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20230203-2.0.0",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20230319-2.0.0",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20230521-2.0.0",
   "com.google.code.gson"  % "gson"                        % "2.10.1",
   "com.google.gdata"      % "core"                        % "1.47.1",
   "com.google.guava"      % "guava"                       % "31.1-jre",
@@ -111,7 +111,7 @@ libraryDependencies ++= Seq(
   "commons-codec"             % "commons-codec"         % "1.15",
   "commons-collections"       % "commons-collections"   % "3.2.2",
   "commons-configuration"     % "commons-configuration" % "1.10",
-  "commons-daemon"            % "commons-daemon"        % "1.3.3",
+  "commons-daemon"            % "commons-daemon"        % "1.3.4",
   "commons-discovery"         % "commons-discovery"     % "0.5",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
   "commons-io"                % "commons-io"            % "2.11.0",
@@ -216,15 +216,15 @@ libraryDependencies ++= Seq(
   // Upgraded to 2.0.1.Final due to a deduplication issue with jakarta.ws.rs-api
   "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"     % "2.0.2.Final",
   "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api" % "3.0.1",
-  "org.eclipse.microprofile.config"      % "microprofile-config-api"      % "3.0.2",
+  "org.eclipse.microprofile.config"      % "microprofile-config-api"      % "3.0.3",
   "javax.json.bind"                      % "javax.json.bind-api"          % "1.0",
   "org.jsoup"                            % "jsoup"                        % jsoupVersion,
   xstreamDep,
   "org.opensaml" % "xmltooling" % "1.4.4" excludeAll ExclusionRule(organization = "org.slf4j"),
   postgresDep,
   "org.scannotation" % "scannotation"   % "1.0.3",
-  "org.slf4j"        % "jcl-over-slf4j" % "2.0.6",
-  "org.slf4j"        % "slf4j-api"      % "2.0.6",
+  "org.slf4j"        % "jcl-over-slf4j" % "2.0.7",
+  "org.slf4j"        % "slf4j-api"      % "2.0.7",
   springAop,
   springWeb,
   springContext,
@@ -242,11 +242,11 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "net.sf.saxon")
   ),
   "xml-resolver"                  % "xml-resolver"              % "1.2",
-  "org.scala-sbt"                 %% "io"                       % "1.8.0",
+  "org.scala-sbt"                 %% "io"                       % "1.8.1",
   "org.mozilla"                   % "rhino"                     % "1.7.14",
   "io.lemonlabs"                  %% "scala-uri"                % "4.0.3",
   "org.scala-lang.modules"        %% "scala-parser-combinators" % "2.2.0",
-  "io.github.classgraph"          % "classgraph"                % "4.8.157",
+  "io.github.classgraph"          % "classgraph"                % "4.8.160",
   "com.fasterxml"                 % "classmate"                 % "1.5.1",
   "org.glassfish"                 % "javax.el"                  % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"    % "3.0.2",

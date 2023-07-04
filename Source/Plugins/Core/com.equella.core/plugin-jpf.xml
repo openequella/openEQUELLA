@@ -3273,6 +3273,13 @@
     <parameter id="class" value="bean:com.tle.web.wizard.standard.controls.MultiWebControl" />
     <parameter id="type" value="multi" />
   </extension>
+  <extension plugin-id="com.tle.web.wizard" point-id="webControl" id="resource">
+    <parameter id="class" value="bean:com.tle.web.controls.webdav.WebDavControl" />
+    <!-- Note on naming: The 'WebDAV' control used to be part of the 'File Manager' control which
+    also included an applet. However this was reworked in 2023. But to ensure existing configurations
+    worked, the various IDs which mentioned 'filemanager' etc. were kept. -->
+    <parameter id="type" value="filemanager" />
+  </extension>
   <extension plugin-id="com.tle.web.viewurl" point-id="attachmentResource" id="fileResource">
     <parameter id="class" value="bean:com.tle.web.viewitem.attachments.FileSummariser" />
     <parameter id="type" value="file" />

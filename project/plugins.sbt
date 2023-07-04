@@ -45,14 +45,14 @@ libraryDependencies ++= Seq(
 
 libraryDependencies ++= Seq(
   "com.typesafe"           % "config"                % "1.4.2",
-  "org.jacoco"             % "org.jacoco.report"     % "0.8.8",
+  "org.jacoco"             % "org.jacoco.report"     % "0.8.10",
   "org.jdom"               % "jdom2"                 % "2.0.6.1",
   "commons-logging"        % "commons-logging"       % "1.2",
   "commons-discovery"      % "commons-discovery"     % "0.5",
   "commons-configuration"  % "commons-configuration" % "1.10",
   "commons-beanutils"      % "commons-beanutils"     % "1.9.4",
   "commons-codec"          % "commons-codec"         % "1.15",
-  "org.slf4j"              % "slf4j-nop"             % "2.0.6",
+  "org.slf4j"              % "slf4j-nop"             % "2.0.7",
   "com.yahoo.platform.yui" % "yuicompressor"         % "2.4.8"
 )
 dependencyOverrides += "com.puppycrawl.tools" % "checkstyle" % "10.7.0"
