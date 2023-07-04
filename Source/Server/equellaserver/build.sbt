@@ -29,7 +29,7 @@ val jsassVersion      = "5.10.5"
 val jsoupVersion      = "1.15.4"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "1.7.2"
-val tikaVersion       = "2.6.0"
+val tikaVersion       = "2.8.0"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -418,7 +418,12 @@ run := {
   //  .../org.apache.cxf/cxf-rt-databinding-jaxb/bundles/cxf-rt-databinding-jaxb-3.4.0.jar:META-INF/cxf/java2wsbeans.xml
   // ...
   case PathList("META-INF", "cxf", "java2wsbeans.xml") => MergeStrategy.first
-
+  // Apache tika 2.8 brings in bouncycastle:bcprov-jdk18on, which causes SBT Deduplicate issues.
+  // For example:
+  //   Jar name = bcprov-jdk15on-1.51.jar, jar org = org.bouncycastle, entry target = org/bouncycastle/crypto/ec/CustomNamedCurves$2.class
+  //   Jar name = bcprov-jdk18on-1.73.jar, jar org = org.bouncycastle, entry target = org/bouncycastle/crypto/ec/CustomNamedCurves$2.class
+  // Keep the later one to use the newer version of bcprov.
+  case PathList("org", "bouncycastle", _*) => MergeStrategy.last
   case x =>
     val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
     oldStrategy(x)
