@@ -32,16 +32,16 @@ libraryDependencies ++= Seq(
   "org.apache.cxf"            % "cxf-rt-transports-http"    % cxfVersion,
   "org.apache.httpcomponents" % "httpclient"                % "4.5.14",
   "com.jcraft"                % "jsch"                      % "0.1.55",
-  "org.jacoco"                % "org.jacoco.report"         % "0.8.8",
+  "org.jacoco"                % "org.jacoco.report"         % "0.8.10",
   "org.dspace"                % "oclc-harvester2"           % "1.0.0",
   "com.typesafe"              % "config"                    % "1.4.2",
-  "org.slf4j"                 % "slf4j-simple"              % "2.0.6",
+  "org.slf4j"                 % "slf4j-simple"              % "2.0.7",
   "org.scalacheck"            %% "scalacheck"               % "1.17.0" % "test,serial",
   "org.http4s"                %% "http4s-async-http-client" % http4sVersion,
   "org.http4s"                %% "http4s-blaze-client"      % http4sVersion,
   "org.http4s"                %% "http4s-circe"             % http4sVersion,
   "org.typelevel"             %% "cats-free"                % catsVersion,
-  "com.unboundid"             % "unboundid-ldapsdk"         % "6.0.7",
+  "com.unboundid"             % "unboundid-ldapsdk"         % "6.0.9",
   jacksonDataBind
 )
 

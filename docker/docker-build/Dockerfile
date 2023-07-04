@@ -1,6 +1,6 @@
 # A bare image ready for building oEQ and also running test suites
 
-FROM openjdk:8 as basebuild
+FROM eclipse-temurin:11 as basebuild
 
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
@@ -16,7 +16,10 @@ RUN \
     libtinfo5 \
     imagemagick \
     ffmpeg \
+    git \
     libimage-exiftool-perl \
+    unzip \
+    wget \
 # tidy up APT and save some space
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*

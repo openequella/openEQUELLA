@@ -72,8 +72,10 @@ import {
   waitForSearchCompleted,
 } from "./SearchPageTestHelper";
 
-// This has some big tests for rendering the Search Page, so we need a longer timeout
-jest.setTimeout(10000);
+// This has some big tests for rendering the Search Page, so we need a longer timeout.
+// First we used 10s, but then found we started getting increased failures on GitLab CI so
+// bumped it to 15s.
+jest.setTimeout(15000);
 
 const {
   mockConvertParamsToSearchOptions,

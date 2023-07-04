@@ -631,12 +631,15 @@
     <parameter id="id" value="com.tle.admin.controls.itunesu.universal.ITunesUSettingsPanel" />
     <parameter id="class" value="com.tle.admin.controls.itunesu.universal.ITunesUSettingsPanel" />
   </extension>
+  <!-- Note on naming: The 'WebDAV' control used to be part of the 'File Manager' control which
+  also included an applet. However this was reworked in 2023. But to ensure existing configurations
+  worked, the various IDs which mentioned 'filemanager' etc. were kept. -->
   <extension plugin-id="com.tle.admin.controls" point-id="control" id="fileManagerControl">
     <parameter id="id" value="filemanager" />
-    <parameter id="name" value="com.equella.admin.fileman.title" />
+    <parameter id="name" value="com.equella.admin.webdav.title" />
     <parameter id="modelClass" value="com.dytech.edge.admin.wizard.model.CustomControlModel" />
-    <parameter id="wrappedClass" value="com.tle.admin.controls.filemanager.FileManagerControl" />
-    <parameter id="editorClass" value="com.tle.admin.controls.filemanager.FileManagerEditor" />
+    <parameter id="wrappedClass" value="com.tle.admin.controls.webdav.WebDavControl" />
+    <parameter id="editorClass" value="com.tle.admin.controls.webdav.WebDavEditor" />
     <parameter id="context" value="page" />
   </extension>
   <extension plugin-id="com.tle.admin.usermanagement.tool" point-id="configUI" id="shibbolethUI">
