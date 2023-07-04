@@ -58,7 +58,6 @@ object InstallFirstTime extends App {
     installPage.setPassword(testConfig.getAdminPassword)
 
     installPage.setEmails(emails)
-
     installPage.setSmtpServer("mail.google.com")
 
     val dbPage = installPage.install
