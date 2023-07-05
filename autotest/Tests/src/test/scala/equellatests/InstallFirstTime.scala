@@ -34,6 +34,7 @@ object InstallFirstTime extends App {
       assert(installPage.isEmailsError)
       assert(installPage.isStmpError)
       assert(installPage.isNoReplyError)
+
       installPage.setPassword(testConfig.getAdminPassword)
       installPage.setPasswordConfirm(testConfig.getAdminPassword)
       installPage.setEmails("@@")
