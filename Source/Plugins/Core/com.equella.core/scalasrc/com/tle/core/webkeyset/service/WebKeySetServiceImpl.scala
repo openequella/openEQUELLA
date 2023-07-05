@@ -77,7 +77,11 @@ class WebKeySetServiceImpl extends WebKeySetService {
   def generateJWKS: String = {
     def base64UrlEncode(bytes: Array[Byte]): String = Base64.getUrlEncoder.encodeToString(bytes)
     def exponent(key: RSAPublicKey)                 = base64UrlEncode(key.getPublicExponent.toByteArray)
-    def modulus(key: RSAPublicKey)                  = base64UrlEncode(key.getModulus.toByteArray)
+    // According to spec RFC7518 <https://datatracker.ietf.org/doc/html/rfc7518#section-6.3.1.1>,
+    // if the value of 'modulus' has a prefix of a zero-valued octet, the extra octet must be
+    // omitted before encoding . In Java, using `BigInteger.toByteArray()` will result in such a prefix.
+    // So we must drop the first element.
+    def modulus(key: RSAPublicKey) = base64UrlEncode(key.getModulus.toByteArray.drop(1))
     def buildJWK(keyPair: WebKeySet) = {
       val publicKey = buildKeyPair(keyPair).getPublic.asInstanceOf[RSAPublicKey]
       JsonWebKey(kty = JWKKeyType.RSA,
