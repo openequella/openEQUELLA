@@ -72,41 +72,69 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author jmaginnis */
 @Bind(FreetextIndex.class)
 @Singleton
 @SuppressWarnings("nls")
 public class FreetextIndexImpl
     implements FreetextIndex, InstitutionListener, ServiceCheckRequestListener {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(FreetextIndexImpl.class);
   private static final String KEY_PFX =
       PluginServiceImpl.getMyPluginId(FreetextIndexImpl.class) + '.';
 
-  @Inject private ConfigurationService configConstants;
-  @Inject private ItemDao itemDao;
-  @Inject private ItemService itemService;
-  @Inject private ItemHelper itemHelper;
-  @Inject private RunAsInstitution runAs;
-  @Inject private EventService eventService;
-  @Inject private ZookeeperService zkService;
-  @Inject private UserPreferenceService userPrefs;
+  private final ConfigurationService configConstants;
+  private final ItemDao itemDao;
+  private final ItemService itemService;
+  private final ItemHelper itemHelper;
+  private final RunAsInstitution runAs;
+  private final EventService eventService;
+  private final ZookeeperService zkService;
+  private final UserPreferenceService userPrefs;
 
   private final FreetextIndexConfiguration config;
-  private int synchroniseMinutes = 5;
-  private String defaultOperator = "AND";
+  private int synchroniseMinutes;
+  private String defaultOperator;
 
   private int maxBooleanClauses = 8192;
 
-  private PluginTracker<IndexingExtension> indexingTracker;
-  private PluginTracker<ItemIndex<? extends FreetextResult>> indexTracker;
+  private final PluginTracker<IndexingExtension> indexingTracker;
+  private final PluginTracker<ItemIndex<? extends FreetextResult>> indexTracker;
 
   private boolean indexesHaveBeenInited;
 
   @Inject
-  public FreetextIndexImpl(FreetextIndexConfiguration config) {
+  public FreetextIndexImpl(
+      FreetextIndexConfiguration config,
+      ConfigurationService configConstants,
+      ItemDao itemDao,
+      ItemService itemService,
+      ItemHelper itemHelper,
+      RunAsInstitution runAs,
+      EventService eventService,
+      ZookeeperService zkService,
+      UserPreferenceService userPrefs,
+      PluginService pluginService) {
     this.config = config;
     this.defaultOperator = config.getDefaultOperator();
     this.synchroniseMinutes = config.getSynchroniseMinutes();
+
+    this.configConstants = configConstants;
+
+    this.runAs = runAs;
+    this.eventService = eventService;
+    this.zkService = zkService;
+    this.userPrefs = userPrefs;
+
+    this.itemDao = itemDao;
+    this.itemService = itemService;
+    this.itemHelper = itemHelper;
+
+    indexingTracker =
+        new PluginTracker<>(pluginService, "com.tle.core.freetext", "indexingExtension", null);
+    indexingTracker.setBeanKey("class");
+    indexTracker =
+        new PluginTracker<>(pluginService, "com.tle.core.freetext", "freetextIndex", "id");
+    indexTracker.setBeanKey("class");
   }
 
   public File getIndexPath() {
@@ -118,11 +146,7 @@ public class FreetextIndexImpl
     this.synchroniseMinutes = synchroniseMinutes;
   }
 
-  /**
-   * For backwards compatibility.
-   *
-   * @param synchroniseMinutes
-   */
+  /** For backwards compatibility. */
   public void setSynchroiseMinutes(int synchroniseMinutes) {
     this.synchroniseMinutes = synchroniseMinutes;
   }
@@ -262,21 +286,6 @@ public class FreetextIndexImpl
     return beans.values();
   }
 
-  @Inject
-  public void setPluginService(PluginService pluginService) {
-    indexingTracker =
-        new PluginTracker<IndexingExtension>(
-            pluginService, "com.tle.core.freetext", "indexingExtension", null); // $NON-NLS-1$
-    indexingTracker.setBeanKey("class"); // $NON-NLS-1$
-    indexTracker =
-        new PluginTracker<ItemIndex<?>>(
-            pluginService,
-            "com.tle.core.freetext",
-            "freetextIndex",
-            "id"); //$NON-NLS-1$ //$NON-NLS-2$
-    indexTracker.setBeanKey("class"); // $NON-NLS-1$
-  }
-
   @Transactional(readOnly = true)
   @Override
   public void prepareItemsForIndexing(Collection<IndexedItem> indexitems) {
@@ -373,7 +382,6 @@ public class FreetextIndexImpl
   /**
    * @see com.tle.freetext.FreetextIndex#suggestTerm(com.tle.common.searching.Search,
    *     java.lang.String)
-   * @throws InvalidSearchQueryException
    */
   @Override
   public String suggestTerm(Search request, String prefix) {
