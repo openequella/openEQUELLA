@@ -23,7 +23,6 @@ import com.dytech.edge.exceptions.InvalidSearchQueryException;
 import com.dytech.edge.exceptions.SearchingException;
 import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import com.tle.beans.Institution;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemPack;
@@ -83,8 +82,6 @@ public class FreetextIndexImpl
   private static final String KEY_PFX =
       PluginServiceImpl.getMyPluginId(FreetextIndexImpl.class) + '.';
 
-  private final File indexPath;
-
   @Inject private ConfigurationService configConstants;
   @Inject private ItemDao itemDao;
   @Inject private ItemService itemService;
@@ -92,24 +89,11 @@ public class FreetextIndexImpl
   @Inject private RunAsInstitution runAs;
   @Inject private EventService eventService;
   @Inject private ZookeeperService zkService;
-
-  @Inject(optional = true)
-  @Named("freetextIndex.defaultOperator")
-  private String defaultOperator = "AND";
-
-  @Inject(optional = true)
-  @Named("freetextIndex.synchroiseMinutes")
-  private int synchroniseMinutes = 5;
-
-  @Inject
-  @Named("freetext.stopwords.file")
-  private File stopWordsFile;
-
-  @Inject
-  @Named("freetext.analyzer.language")
-  private String analyzerLanguage;
-
   @Inject private UserPreferenceService userPrefs;
+
+  private final FreetextIndexConfiguration config;
+  private int synchroniseMinutes = 5;
+  private String defaultOperator = "AND";
 
   private int maxBooleanClauses = 8192;
 
@@ -119,12 +103,14 @@ public class FreetextIndexImpl
   private boolean indexesHaveBeenInited;
 
   @Inject
-  public FreetextIndexImpl(@Named("freetext.index.location") File indexPath) {
-    this.indexPath = indexPath;
+  public FreetextIndexImpl(FreetextIndexConfiguration config) {
+    this.config = config;
+    this.defaultOperator = config.getDefaultOperator();
+    this.synchroniseMinutes = config.getSynchroniseMinutes();
   }
 
   public File getIndexPath() {
-    return this.indexPath;
+    return config.getIndexPath();
   }
 
   /** Invoked by Spring framework. */
@@ -348,12 +334,12 @@ public class FreetextIndexImpl
 
   @Override
   public File getStopWordsFile() {
-    return stopWordsFile;
+    return config.getStopWordsFile();
   }
 
   @Override
   public String getAnalyzerLanguage() {
-    return analyzerLanguage;
+    return config.getAnalyzerLanguage();
   }
 
   @Override
@@ -363,7 +349,7 @@ public class FreetextIndexImpl
 
   @Override
   public File getRootIndexPath() {
-    return indexPath;
+    return config.getIndexPath();
   }
 
   @Override
