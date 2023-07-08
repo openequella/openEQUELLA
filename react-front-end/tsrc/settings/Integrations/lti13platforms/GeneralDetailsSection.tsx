@@ -53,6 +53,7 @@ type GeneralDetailsType = Omit<
  * @param desc The secondary text shows under the name.
  * @param required The mandatory flag for the final submit value. `true` means empty value are not allowed.
  * @param value Current value.
+ * @param disabled The flag to disable the input.
  * @param validate Function used to validate current value, if return false display the error outline.
  */
 export type GeneralDetailsSectionRenderOptions = {
@@ -61,6 +62,7 @@ export type GeneralDetailsSectionRenderOptions = {
     desc?: string;
     required: boolean;
     value: string;
+    disabled?: boolean;
     validate?: (value: string) => boolean;
   };
 };
@@ -159,6 +161,7 @@ const GeneralDetailsSection = ({
           name,
           desc,
           value: controlValue,
+          disabled,
           required,
           validate,
         } = renderOption;
@@ -185,6 +188,7 @@ const GeneralDetailsSection = ({
                 required={required}
                 value={controlValue}
                 size="small"
+                disabled={disabled}
                 onChange={(event) =>
                   onChange({
                     ...value,

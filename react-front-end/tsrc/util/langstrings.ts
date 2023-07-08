@@ -765,6 +765,10 @@ export const languageStrings = {
             },
           },
         },
+        editPage: {
+          name: "Edit LTI 1.3 platform",
+          wrongURL: "Can't get platform ID from URL",
+        },
       },
     },
     diagnostics: { name: "Diagnostics", desc: "Diagnostic pages" },

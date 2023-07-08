@@ -15,12 +15,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ACLEntityResolvers } from "../tsrc/modules/ACLEntityModule";
+import type {
+  ACLEntityResolversMulti,
+  ACLEntityResolvers,
+} from "../tsrc/modules/ACLEntityModule";
 import { ACLExpression, generate } from "../tsrc/modules/ACLExpressionModule";
 import { user100Recipient } from "./ACLRecipientModule.mock";
 import { findGroupById, listGroups, resolveGroups } from "./GroupModule.mock";
-import { findRoleById, listRoles } from "./RoleModule.mock";
-import { findUserById, getTokens, listUsers } from "./UserModule.mock";
+import { findRoleById, listRoles, resolveRoles } from "./RoleModule.mock";
+import {
+  findUserById,
+  getTokens,
+  listUsers,
+  resolveUsers,
+} from "./UserModule.mock";
 
 export const initialACLExpression: ACLExpression = {
   id: "root",
@@ -54,6 +62,12 @@ export const defaultACLEntityResolvers: ACLEntityResolvers = {
   resolveUserProvider: findUserById,
   resolveGroupProvider: findGroupById,
   resolveRoleProvider: findRoleById,
+};
+
+export const defaultACLEntityResolversMulti: ACLEntityResolversMulti = {
+  resolveUsersProvider: resolveUsers,
+  resolveGroupsProvider: resolveGroups,
+  resolveRolesProvider: resolveRoles,
 };
 
 export const defaultACLExpressionProps = {

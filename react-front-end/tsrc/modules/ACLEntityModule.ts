@@ -18,8 +18,10 @@
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
+import * as EQ from "fp-ts/Eq";
 import * as O from "fp-ts/Option";
 import { constant, flow, pipe } from "fp-ts/function";
+import * as S from "fp-ts/string";
 
 /**
  * The interface defines a basic security entity.
@@ -31,7 +33,8 @@ export interface BaseSecurityEntity {
 }
 
 /**
- * Contains 3 resolvers for functions to lookup user, group and role entities
+ * Contains the functions used to lookup details for individual users, groups or roles.
+ * @see {@link ACLEntityResolversMulti} if you need an interface for dealing with multiple instances.
  */
 export interface ACLEntityResolvers {
   /**
@@ -53,6 +56,37 @@ export interface ACLEntityResolvers {
     id: string
   ) => Promise<OEQ.UserQuery.RoleDetails | undefined>;
 }
+
+/**
+ * Contains the functions used to lookup details for multiple users, groups or roles.
+ * @see {@link ACLEntityResolvers} if you only need functions dealing with single instances.
+ */
+export interface ACLEntityResolversMulti {
+  /**
+   * Lookup users known in oEQ.
+   */
+  resolveUsersProvider: (
+    ids: ReadonlyArray<string>
+  ) => Promise<OEQ.UserQuery.UserDetails[]>;
+  /**
+   * Lookup groups known in oEQ.
+   */
+  resolveGroupsProvider: (
+    ids: ReadonlyArray<string>
+  ) => Promise<OEQ.UserQuery.GroupDetails[]>;
+  /**
+   * Lookup roles known in oEQ.
+   */
+  resolveRolesProvider: (
+    ids: ReadonlyArray<string>
+  ) => Promise<OEQ.UserQuery.RoleDetails[]>;
+}
+
+/**
+ * Generic function which can generate an `Eq` for entity with id attribute.
+ */
+export const eqEntityById = <T extends BaseSecurityEntity>() =>
+  EQ.contramap<string, T>((entry: T) => entry.id)(S.Eq);
 
 /**
  * Generic function for finding an entity's details by ID.

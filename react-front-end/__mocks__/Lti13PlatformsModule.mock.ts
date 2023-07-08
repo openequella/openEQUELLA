@@ -16,7 +16,12 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import { pipe } from "fp-ts/function";
+import * as A from "fp-ts/Array";
+import * as O from "fp-ts/Option";
+import { groups } from "./GroupModule.mock";
 import { roles } from "./RoleModule.mock";
+import { users } from "./UserModule.mock";
 
 const teacherRoleId = roles[2].id;
 
@@ -58,16 +63,16 @@ export const blackboard: OEQ.LtiPlatform.LtiPlatform = {
   platformId: "http://blackboard:8200",
   name: "other",
   clientId: "test client blackboard",
-  authUrl: "http://blackboard",
-  keysetUrl: "http://blackboard",
+  authUrl: "http://blackboard/auth",
+  keysetUrl: "http://blackboard/jwks",
   usernamePrefix: "hello",
   usernameSuffix: "blackboard",
   unknownUserHandling: "CREATE",
-  unknownUserDefaultGroups: new Set(),
-  instructorRoles: new Set(),
-  unknownRoles: new Set(),
-  customRoles: new Map(),
-  allowExpression: "",
+  unknownUserDefaultGroups: new Set([groups[0].id]),
+  instructorRoles: new Set([roles[1].id]),
+  unknownRoles: new Set([roles[2].id]),
+  customRoles: new Map([["", new Set([roles[1].id])]]),
+  allowExpression: `U:${users[0].id}`,
   enabled: false,
 };
 
@@ -77,3 +82,22 @@ export const platforms = [canvas, moodle, blackboard];
  * Helper function to inject into component for platforms retrieval.
  */
 export const getPlatforms = () => Promise.resolve(platforms);
+
+/**
+ * Helper function to inject into component for platform retrieval.
+ */
+export const getPlatform = async (platformId: string) => {
+  // A sleep to emulate latency
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  return Promise.resolve(
+    pipe(
+      platforms,
+      A.findFirst(
+        (p: OEQ.LtiPlatform.LtiPlatform) => p.platformId === platformId
+      ),
+      O.getOrElseW(() => {
+        throw new Error(`Can't find platform with ID: ${platformId}`);
+      })
+    )
+  );
+};

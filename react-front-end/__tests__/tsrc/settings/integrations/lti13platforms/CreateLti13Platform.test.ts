@@ -87,9 +87,9 @@ describe("CreateLti13Platform", () => {
     };
     const createPlatform = jest.fn();
 
-    const renderResult = renderCreateLti13Platform({
+    const renderResult = await renderCreateLti13Platform({
       ...commonCreateLti13PlatformProps,
-      createPlatformsProvider: createPlatform,
+      createPlatformProvider: createPlatform,
     });
     const { container } = renderResult;
 
@@ -127,9 +127,9 @@ describe("CreateLti13Platform", () => {
 
   it("highlights any required fields whose value is empty", async () => {
     const createPlatform = jest.fn();
-    const { container } = renderCreateLti13Platform({
+    const { container } = await renderCreateLti13Platform({
       ...commonCreateLti13PlatformProps,
-      createPlatformsProvider: createPlatform,
+      createPlatformProvider: createPlatform,
     });
 
     await savePlatform(container);
@@ -157,9 +157,9 @@ describe("CreateLti13Platform", () => {
       [platformAuthenticationRequestURLLabel, "httpstest://www.test.com"],
     ]);
     const createPlatform = jest.fn();
-    const { container } = renderCreateLti13Platform({
+    const { container } = await renderCreateLti13Platform({
       ...commonCreateLti13PlatformProps,
-      createPlatformsProvider: createPlatform,
+      createPlatformProvider: createPlatform,
     });
 
     await configureGeneralDetails(container, controls);
