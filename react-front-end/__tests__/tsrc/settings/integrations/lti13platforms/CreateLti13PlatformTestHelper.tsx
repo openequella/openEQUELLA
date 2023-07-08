@@ -68,15 +68,19 @@ export const commonCreateLti13PlatformProps: CreateLti13PlatformProps = {
 /**
  * Helper to render CreateLti13Platform page.
  */
-export const renderCreateLti13Platform = (
+export const renderCreateLti13Platform = async (
   props: CreateLti13PlatformProps = commonCreateLti13PlatformProps
-): RenderResult => {
+): Promise<RenderResult> => {
   const history = createMemoryHistory();
-  return render(
+  const renderResult = render(
     <Router history={history}>
       <CreateLti13Platform {...props} />
     </Router>
   );
+
+  await renderResult.findByText(saveLabel);
+
+  return renderResult;
 };
 
 /**

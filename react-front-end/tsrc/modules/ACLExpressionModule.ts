@@ -32,16 +32,16 @@ import { Literal, Static, Union } from "runtypes";
 import { v4 as uuidv4 } from "uuid";
 import { languageStrings } from "../util/langstrings";
 import { pfTernary, pfTernaryTypeGuard } from "../util/pointfree";
-import { ACLEntityResolvers } from "./ACLEntityModule";
+import { ACLEntityResolversMulti, ACLEntityResolvers } from "./ACLEntityModule";
 import {
   ACLRecipient,
   createACLRecipient,
   showRecipient,
   showRecipientHumanReadable,
 } from "./ACLRecipientModule";
-import { findGroupById } from "./GroupModule";
-import { findRoleById } from "./RoleModule";
-import { findUserById } from "./UserModule";
+import { findGroupById, resolveGroups } from "./GroupModule";
+import { findRoleById, resolveRoles } from "./RoleModule";
+import { findUserById, resolveUsers } from "./UserModule";
 
 const {
   aclExpressionBuilder: {
@@ -1147,4 +1147,10 @@ export const defaultACLEntityResolvers: ACLEntityResolvers = {
   resolveGroupProvider: findGroupById,
   resolveUserProvider: findUserById,
   resolveRoleProvider: findRoleById,
+};
+
+export const defaultACLEntityMultiResolvers: ACLEntityResolversMulti = {
+  resolveGroupsProvider: resolveGroups,
+  resolveUsersProvider: resolveUsers,
+  resolveRolesProvider: resolveRoles,
 };

@@ -192,6 +192,14 @@ export const platformEq = EQ.fromEquals(
 );
 
 /**
+ * Get platform by ID.
+ */
+export const getPlatform = (
+  platformId: string
+): Promise<OEQ.LtiPlatform.LtiPlatform> =>
+  OEQ.LtiPlatform.getPlatformById(API_BASE_URL, platformId);
+
+/**
  * Provide all platforms in a list.
  */
 export const getPlatforms = (): Promise<OEQ.LtiPlatform.LtiPlatform[]> =>
@@ -210,9 +218,16 @@ export const updateEnabledPlatforms = (
 /**
  * Create a new platform.
  */
-export const createPlatforms = (
+export const createPlatform = (
   platform: OEQ.LtiPlatform.LtiPlatform
 ): Promise<void> => OEQ.LtiPlatform.createPlatform(API_BASE_URL, platform);
+
+/**
+ * Update an existing platform.
+ */
+export const updatePlatform = (
+  platform: OEQ.LtiPlatform.LtiPlatform
+): Promise<void> => OEQ.LtiPlatform.updatePlatform(API_BASE_URL, platform);
 
 /**
  * Delete a list of LTI platforms.

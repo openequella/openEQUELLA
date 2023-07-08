@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CircularProgress, Grid } from "@mui/material";
 import Axios from "axios";
 import { pipe } from "fp-ts/function";
 import { isEqual } from "lodash";
@@ -30,6 +29,7 @@ import {
   generateFromError,
 } from "../api/errors";
 import { LEGACY_CSS_URL } from "../AppConfig";
+import LoadingCircle from "../components/LoadingCircle";
 import { AppContext } from "../mainui/App";
 import { BaseOEQRouteComponentProps } from "../mainui/routes";
 import {
@@ -437,11 +437,7 @@ export const LegacyContent = React.memo(function LegacyContent({
   return !updatingContent && content ? (
     <LegacyContentRenderer {...content} />
   ) : (
-    <Grid container direction="column" alignItems="center">
-      <Grid item>
-        <CircularProgress />
-      </Grid>
-    </Grid>
+    <LoadingCircle />
   );
 });
 

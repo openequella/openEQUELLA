@@ -48,7 +48,10 @@ import * as RSET from "fp-ts/ReadonlySet";
 import * as S from "fp-ts/string";
 import { KeyboardEvent, useEffect, useState } from "react";
 import { sprintf } from "sprintf-js";
-import { BaseSecurityEntity } from "../../modules/ACLEntityModule";
+import {
+  BaseSecurityEntity,
+  eqEntityById,
+} from "../../modules/ACLEntityModule";
 import {
   eqGroupById,
   groupIds,
@@ -85,12 +88,6 @@ const {
 const itemIds: <T extends BaseSecurityEntity>(
   a: ReadonlySet<T>
 ) => ReadonlySet<string> = flow(RSET.map(S.Eq)(({ id }) => id));
-
-/**
- * Generic function which can generate an `Eq` for item with id attribute.
- */
-const eqItemById = <T extends BaseSecurityEntity>() =>
-  EQ.contramap<string, T>((entry: T) => entry.id)(S.Eq);
 
 /**
  * Commonly shared props definition for entity search components (BaseSearch/UserSearch/GroupSearch).
@@ -217,7 +214,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
   onChange,
   onAdd,
   itemOrd = ORD.contramap(({ id }: T) => id)(S.Ord),
-  itemEq = eqItemById<T>(),
+  itemEq = eqEntityById<T>(),
   itemDetailsToEntry = (item: T) => <ListItemText primary={item.id} />,
   enableMultiSelection = false,
   groupFilterEditable = false,

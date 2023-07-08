@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import ArticleIcon from "@mui/icons-material/Article";
+import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
 import {
@@ -28,6 +28,7 @@ import {
   ListItemButton,
   ListItemSecondaryAction,
   ListItemText,
+  Tooltip,
 } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
@@ -72,8 +73,8 @@ const {
 
 const {
   add: addLabel,
+  edit: editLabel,
   delete: deleteLabel,
-  view: viewLabel,
   copy: copyLabel,
 } = languageStrings.common.action;
 
@@ -199,18 +200,15 @@ const Lti13PlatformsSettings = ({
               id={`EnabledSwitch-${index}`}
             />
           </TooltipCustomComponent>
-          <TooltipIconButton
-            title={viewLabel}
-            onClick={(e) => {
-              // TODO: show platform details
-              e.stopPropagation();
-            }}
-            aria-label={`${viewLabel} ${name}`}
-            color="secondary"
-            size="large"
-          >
-            <ArticleIcon />
-          </TooltipIconButton>
+
+          <Tooltip title={editLabel} aria-label={`${editLabel} ${name}`}>
+            <Link to={routes.EditLti13Platform.to(platformId)}>
+              <IconButton color="secondary" size="large">
+                <EditIcon />
+              </IconButton>
+            </Link>
+          </Tooltip>
+
           <TooltipIconButton
             title={deleteLabel}
             onClick={(e) => {

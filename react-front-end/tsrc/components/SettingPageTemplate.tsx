@@ -15,13 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Button, Grid } from "@mui/material";
 import * as React from "react";
 import { ReactNode } from "react";
 import { commonString } from "../util/commonstrings";
+import { languageStrings } from "../util/langstrings";
 import MessageInfo from "./MessageInfo";
 import { NavigationGuard } from "./NavigationGuard";
-import { Button, Grid } from "@mui/material";
-import Save from "@mui/icons-material/Save";
+
+const { save: saveLabel, cancel: cancelLabel } = languageStrings.common.action;
 
 export interface SettingPageTemplateProps {
   /**
@@ -32,6 +34,11 @@ export interface SettingPageTemplateProps {
    * Disable the Save button if true.
    */
   saveButtonDisabled: boolean;
+  /**
+   * Fired when the Cancel button is clicked.
+   * The cancel button is displayed if the value is not empty.
+   */
+  onCancel?: () => void;
   /**
    * Open the snack bar if true.
    */
@@ -57,6 +64,7 @@ export interface SettingPageTemplateProps {
  */
 const SettingPageTemplate = ({
   onSave,
+  onCancel,
   snackbarOpen,
   snackBarOnClose,
   saveButtonDisabled,
@@ -78,19 +86,36 @@ const SettingPageTemplate = ({
         </Grid>
 
         <Grid item xs={3}>
-          <Button
-            fullWidth
-            id="_saveButton"
-            color="primary"
-            variant="contained"
-            size="large"
-            onClick={onSave}
-            aria-label={commonString.action.save}
-            disabled={saveButtonDisabled}
-          >
-            <Save />
-            {commonString.action.save}
-          </Button>
+          <Grid item>
+            <Button
+              fullWidth
+              id="_saveButton"
+              color="primary"
+              variant="contained"
+              size="large"
+              onClick={onSave}
+              aria-label={saveLabel}
+              disabled={saveButtonDisabled}
+            >
+              {saveLabel}
+            </Button>
+          </Grid>
+
+          {onCancel && (
+            <Grid item mt={2}>
+              <Button
+                fullWidth
+                id="_cancelButton"
+                color="primary"
+                variant="outlined"
+                size="large"
+                onClick={onCancel}
+                aria-label={cancelLabel}
+              >
+                {cancelLabel}
+              </Button>
+            </Grid>
+          )}
         </Grid>
       </Grid>
 
