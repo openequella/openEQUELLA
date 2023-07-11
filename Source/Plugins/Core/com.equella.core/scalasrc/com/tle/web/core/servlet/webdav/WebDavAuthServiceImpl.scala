@@ -45,7 +45,7 @@ object WebDavCredentials {
                       Base64.getEncoder.encodeToString(s"$username:$password".getBytes))
 }
 
-@Bind
+@Bind(classOf[WebDavAuthService])
 @Singleton
 class WebDavAuthServiceImpl(credStorage: ReplicatedCache[WebDavCredentials])
     extends WebDavAuthService {
