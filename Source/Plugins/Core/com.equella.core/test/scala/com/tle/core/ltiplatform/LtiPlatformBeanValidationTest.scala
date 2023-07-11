@@ -21,6 +21,7 @@ class LtiPlatformBeanValidationTest extends AnyFunSpec with Matchers {
     unknownRoles = Set("builder"),
     customRoles = Map("moodle role" -> Set("oeq role 1", "oeq role 2")),
     allowExpression = None,
+    kid = None,
     enabled = true
   )
 

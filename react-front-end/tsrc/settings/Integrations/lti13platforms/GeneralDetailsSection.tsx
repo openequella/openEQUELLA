@@ -43,7 +43,7 @@ const {
 
 type GeneralDetailsType = Omit<
   OEQ.LtiPlatform.LtiPlatformBase,
-  "enabled" | "allowExpression" | "unknownUserHandling"
+  "kid" | "enabled" | "allowExpression" | "unknownUserHandling"
 >;
 
 /**

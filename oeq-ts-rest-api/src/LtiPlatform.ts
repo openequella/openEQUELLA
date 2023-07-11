@@ -68,6 +68,10 @@ export interface LtiPlatformBase {
    */
   allowExpression?: string;
   /**
+   * The activated key pair ID (Readonly)
+   */
+  kid?: string;
+  /**
    * `true` if the platform is enabled
    */
   enabled: boolean;

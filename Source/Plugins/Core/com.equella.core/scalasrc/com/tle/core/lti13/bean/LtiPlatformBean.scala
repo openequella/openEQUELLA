@@ -46,6 +46,7 @@ import scala.jdk.CollectionConverters._
   * @param unknownRoles  A list of roles to be assigned to a LTI role that is neither the instructor or in the list of custom roles
   * @param customRoles Mappings from LTI roles to OEQ roles
   * @param allowExpression The ACL Expression to control access from this platform
+  * @param kid The activated key pair key ID (Readonly)
   * @param enabled `true` if the platform is enabled
   */
 case class LtiPlatformBean(
@@ -62,6 +63,7 @@ case class LtiPlatformBean(
     unknownRoles: Set[String],
     customRoles: Map[String, Set[String]],
     allowExpression: Option[String],
+    kid: Option[String],
     enabled: Boolean
 )
 
@@ -86,6 +88,10 @@ object LtiPlatformBean {
         .map(mapping => mapping.ltiRole -> mapping.oeqRoles.asScala.toSet)
         .toMap,
       allowExpression = Option(platform.allowExpression),
+      kid = platform.keyPairs.asScala
+        .filter(k => Option(k.deactivated).isEmpty)
+        .headOption
+        .map(_.keyId),
       enabled = platform.enabled
     )
   }
