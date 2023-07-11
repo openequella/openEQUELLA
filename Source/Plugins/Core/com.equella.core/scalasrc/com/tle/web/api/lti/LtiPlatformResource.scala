@@ -250,4 +250,28 @@ class LtiPlatformResource {
 
     Response.status(207).entity(responses).build()
   }
+
+  @GET
+  @Path("/{id}/rotated-keys")
+  @ApiOperation(
+    value = "Rotate Key Pair For the specified Platform",
+    notes = "This endpoint will rotate the activated key pair for an LTI platform.",
+    response = classOf[String],
+  )
+  def rotateKeyPair(
+      @ApiParam(
+        "The Platform ID has to be double URL encoded to protect against premature decoding.") @PathParam(
+        "id") id: String): Response = {
+    aclProvider.checkAuthorised()
+
+    val result = ltiPlatformService.rotateKeyPairForPlatform(decodeId(id));
+
+    result match {
+      case Right(keySetId) =>
+        Response.ok(keySetId).build()
+      case Left(errorMessage) =>
+        logger.error(errorMessage)
+        ApiErrorResponse.serverError(s"Failed to rotate key pair : ${errorMessage}")
+    }
+  }
 }

@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.tle.webtests.framework.TestInstitution;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.stream.StreamSupport;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
@@ -21,10 +23,11 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-@TestInstitution("fiveo")
+@TestInstitution("rest")
 public class LtiPlatformTest extends AbstractRestApiTest {
-
-  final String LTI_PLATFORM_API_ENDPOINT = getTestConfig().getInstitutionUrl() + "api/ltiplatform";
+  final String INSTITUTION_URL = getTestConfig().getInstitutionUrl();
+  final String LTI_PLATFORM_API_ENDPOINT = INSTITUTION_URL + "api/ltiplatform";
+  final String JWKS_URL = INSTITUTION_URL + ".well-known/jwks.json";
   final String MOODLE_PLATFORM_ID = "http://localhost:8100";
   final String MOODLE_PLATFORM_ID_DOUBLE_ENCODED = "http%253A%252F%252Flocalhost%253A8100";
   final String BRIGHTSPACE_PLATFORM_ID = "http://localhost:8300";
@@ -136,7 +139,36 @@ public class LtiPlatformTest extends AbstractRestApiTest {
     assertEquals(targetEnabledStatus, updatedEnabledStatus);
   }
 
-  @Test(description = "Delete an LTI platform", dependsOnMethods = "updatePlatform")
+  @Test(description = "Rotate keypair for an LTI platform", dependsOnMethods = "createPlatform")
+  public void rotateKeypair() throws IOException {
+    final HttpMethod getOriginalId = new GetMethod(BRIGHTSPACE_URL);
+    makeClientRequest(getOriginalId);
+    String originalKeyPairId = mapper.readTree(getOriginalId.getResponseBody()).get("kid").asText();
+
+    final GetMethod getMethod = new GetMethod(BRIGHTSPACE_URL + "/rotated-keys");
+    int resp_code = makeClientRequest(getMethod);
+    String keyPairId = new String(getMethod.getResponseBody(), StandardCharsets.UTF_8);
+
+    final HttpMethod getNewId = new GetMethod(BRIGHTSPACE_URL);
+    makeClientRequest(getNewId);
+    String newKeyPairId = mapper.readTree(getNewId.getResponseBody()).get("kid").asText();
+
+    final HttpMethod getJWKS = new GetMethod(JWKS_URL);
+    makeClientRequest(getJWKS);
+    JsonNode jwks = mapper.readTree(getJWKS.getResponseBody()).get("keys");
+
+    assertEquals(HttpStatus.SC_OK, resp_code);
+    // make sure new key is different from previous key pair
+    assertNotEquals(newKeyPairId, originalKeyPairId);
+    // make sure the created key pair is matched with new activated key pair
+    assertEquals(keyPairId, newKeyPairId);
+    // make sure new key pair can be found in JWKS
+    assertTrue(
+        StreamSupport.stream(jwks.spliterator(), false)
+            .anyMatch(key -> key.get("kid").asText().equals(keyPairId)));
+  }
+
+  @Test(description = "Delete an LTI platform", dependsOnMethods = "rotateKeypair")
   public void deletePlatform() throws IOException {
     final DeleteMethod method = new DeleteMethod(BRIGHTSPACE_URL);
 
