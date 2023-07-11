@@ -22,9 +22,9 @@ import com.dytech.edge.wizard.beans.control.CustomControl;
 import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.FileAttachment;
 import com.tle.beans.item.attachments.ModifiableAttachments;
-import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
 import com.tle.core.wizard.LERepository;
+import com.tle.web.core.servlet.webdav.WebDavAuthService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.sections.SectionContext;
@@ -36,8 +36,6 @@ import com.tle.web.sections.equella.component.model.DynamicSelectionsTableModel;
 import com.tle.web.sections.equella.component.model.SelectionsTableSelection;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.js.ElementId;
-import com.tle.web.sections.js.generic.OverrideHandler;
-import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.standard.Button;
@@ -48,14 +46,17 @@ import com.tle.web.wizard.controls.AbstractWebControl;
 import com.tle.web.wizard.controls.WebControlModel;
 import com.tle.web.wizard.impl.WebRepository;
 import java.util.List;
+import javax.inject.Inject;
+import scala.Tuple2;
 
 @SuppressWarnings("nls")
 @Bind
-public class WebDavControl extends AbstractWebControl<WebControlModel> {
+public class WebDavControl extends AbstractWebControl<WebDavControl.WebDavControlModel> {
   @ViewFactory(name = "wizardFreemarkerFactory")
   private FreemarkerFactory factory;
 
-  @Component private Button openWebdav;
+  @Inject private WebDavAuthService webDavAuthService;
+
   @Component private Button refreshButton;
 
   @Component(name = "f")
@@ -106,23 +107,17 @@ public class WebDavControl extends AbstractWebControl<WebControlModel> {
     WebRepository repository = (WebRepository) control.getRepository();
     String webdav = repository.getWebUrl() + "wd/" + repository.getStagingid() + '/';
 
-    openWebdav.setClickHandler(
-        context,
-        new OverrideHandler(
-            new ExternallyDefinedFunction("openWebDav"),
-            getSectionId(),
-            CurrentLocale.get("wizard.controls.file.url", webdav),
-            webdav));
-    addDisablers(context, openWebdav, refreshButton);
+    Tuple2<String, String> creds = webDavAuthService.createCredentials(repository.getStagingid());
+
+    WebDavControlModel model = getModel(context);
+    model.setWebdavUrl(webdav);
+    model.setWebdavUsername(creds._1());
+    model.setWebdavPassword(creds._2());
   }
 
   @Override
-  public Class<WebControlModel> getModelClass() {
-    return WebControlModel.class;
-  }
-
-  public Button getOpenWebdav() {
-    return openWebdav;
+  public Class<WebDavControlModel> getModelClass() {
+    return WebDavControlModel.class;
   }
 
   public Button getRefreshButton() {
@@ -131,6 +126,11 @@ public class WebDavControl extends AbstractWebControl<WebControlModel> {
 
   public SelectionsTable getFilesTable() {
     return filesTable;
+  }
+
+  @Override
+  protected ElementId getIdForLabel() {
+    return null;
   }
 
   private class FilesModel extends DynamicSelectionsTableModel<FileAttachment> {
@@ -155,8 +155,33 @@ public class WebDavControl extends AbstractWebControl<WebControlModel> {
     }
   }
 
-  @Override
-  protected ElementId getIdForLabel() {
-    return null;
+  public static class WebDavControlModel extends WebControlModel {
+    private String webdavUrl;
+    private String webdavUsername;
+    private String webdavPassword;
+
+    public String getWebdavUrl() {
+      return webdavUrl;
+    }
+
+    public void setWebdavUrl(String webdavUrl) {
+      this.webdavUrl = webdavUrl;
+    }
+
+    public String getWebdavUsername() {
+      return webdavUsername;
+    }
+
+    public void setWebdavUsername(String webdavUsername) {
+      this.webdavUsername = webdavUsername;
+    }
+
+    public String getWebdavPassword() {
+      return webdavPassword;
+    }
+
+    public void setWebdavPassword(String webdavPassword) {
+      this.webdavPassword = webdavPassword;
+    }
   }
 }
