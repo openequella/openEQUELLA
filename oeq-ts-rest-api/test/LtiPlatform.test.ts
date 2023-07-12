@@ -90,6 +90,21 @@ describe('updatePlatform', () => {
   });
 });
 
+describe('rotateKeyPair', () => {
+  it('rotate Key Pair for an LTI platform by a double URL encoded platform ID', async () => {
+    const originalPlatform = await LtiPlatformModule.getPlatformById(
+      TC.API_PATH,
+      platform.platformId
+    );
+    const newKeySetId = await LtiPlatformModule.rotateKeyPair(
+      TC.API_PATH,
+      platform.platformId
+    );
+    // make sure kid has been updated
+    expect(newKeySetId).not.toEqual(originalPlatform.kid);
+  });
+});
+
 describe('deletePlatformById', () => {
   it('deletes a LTI platform by a double URL encoded platform ID', async () => {
     await expect(
