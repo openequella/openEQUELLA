@@ -275,3 +275,20 @@ export const updateEnabledPlatforms = (
   idWithStatus: LtiPlatformEnabledStatus[]
 ): Promise<BatchOperationResponse[]> =>
   PUT(`${apiBasePath}${LTI_PLATFORM_PATH}/enabled`, idWithStatus);
+
+/**
+ * Rotate key pair for one LTI platform by platform ID and get the new key pair ID.
+ *
+ * @param apiBasePath Base URI to the oEQ institution and API
+ * @param platformId ID of the learning platform
+ */
+export const rotateKeyPair = (
+  apiBasePath: string,
+  platformId: string
+): Promise<string> =>
+  GET(
+    `${apiBasePath}${LTI_PLATFORM_PATH}/${doubleEncoded(
+      platformId
+    )}/rotated-keys`,
+    validate(t.string)
+  );
