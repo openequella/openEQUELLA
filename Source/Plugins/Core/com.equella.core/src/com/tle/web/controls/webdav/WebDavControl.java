@@ -107,6 +107,16 @@ public class WebDavControl extends AbstractWebControl<WebDavControl.WebDavContro
     WebRepository repository = (WebRepository) control.getRepository();
     String webdav = repository.getWebUrl() + "wd/" + repository.getStagingid() + '/';
 
+    // It would also be preferable to call
+    // webDavAuthService.removeCredentials(repository.getStagingid())
+    // when the wizard is finished with this control. However I have not been able to find anything
+    // in sections which would support this. If anything we'd have to add something into
+    // com.tle.web.wizard.impl.WizardServiceImpl.removeFromSession to support this.
+    //
+    // For now though, there is the standard timeout for credentials in webDavAuthService, as well
+    // as
+    // once the staging area is deleted no WebDAV operations will work anyway (even if
+    // authenticated).
     Tuple2<String, String> creds = webDavAuthService.createCredentials(repository.getStagingid());
 
     WebDavControlModel model = getModel(context);
