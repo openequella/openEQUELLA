@@ -22,9 +22,11 @@ import com.dytech.edge.queries.FreeTextQuery;
 import com.tle.beans.item.ItemIdKey;
 import com.tle.core.freetext.index.MultipleIndex;
 import com.tle.core.guice.Bind;
+import com.tle.freetext.FreetextIndex;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.lucene.document.Document;
 
@@ -36,6 +38,11 @@ public class NotificationIndex extends MultipleIndex<NotificationResult> {
   public static final String FIELD_USER = "note_user"; // $NON-NLS-1$
   public static final String FIELD_REASON = "note_reason"; // $NON-NLS-1$
   public static final String FIELD_DATE = "note_date"; // $NON-NLS-1$
+
+  @Inject
+  public NotificationIndex(FreetextIndex freetextIndex) {
+    this.freetextIndex = freetextIndex;
+  }
 
   @Override
   public String getIndexId() {

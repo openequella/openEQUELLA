@@ -143,7 +143,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
           "DOWNLOAD_ITEM",
           "ACLL-");
 
-  @Inject private FreetextIndex freetextIndex;
+  @Inject protected FreetextIndex freetextIndex;
 
   private float titleBoost;
   private float descriptionBoost;
@@ -1055,7 +1055,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
   /**
    * Takes a search request and prepares a Lucene Sort object, or null if no sorting is required.
    */
-  private Sort getSorter(Search request) {
+  protected Sort getSorter(Search request) {
     com.tle.common.searching.SortField[] sortfields = request.getSortFields();
     if (sortfields != null) {
       SortField[] convFields = new SortField[sortfields.length];
@@ -1482,8 +1482,8 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
           @Override
           public long buildIndex(NRTManager nrtManager, TrackingIndexWriter writer)
               throws Exception {
-            writer.deleteDocuments(new Term(FreeTextQuery.FIELD_INSTITUTION, Long.toString(id)));
-            return -1;
+            return writer.deleteDocuments(
+                new Term(FreeTextQuery.FIELD_INSTITUTION, Long.toString(id)));
           }
         });
   }

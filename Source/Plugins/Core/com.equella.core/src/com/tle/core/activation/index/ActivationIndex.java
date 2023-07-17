@@ -25,10 +25,12 @@ import com.tle.core.activation.ActivationConstants;
 import com.tle.core.activation.ActivationResult;
 import com.tle.core.freetext.index.MultipleIndex;
 import com.tle.core.guice.Bind;
+import com.tle.freetext.FreetextIndex;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.lucene.document.Document;
 
@@ -41,6 +43,11 @@ public class ActivationIndex extends MultipleIndex<ActivationResult> {
           ActivationConstants.VIEW_ACTIVATION_ITEM_PFX,
           ActivationConstants.DELETE_ACTIVATION_ITEM,
           ActivationConstants.DELETE_ACTIVATION_ITEM_PFX);
+
+  @Inject
+  public ActivationIndex(FreetextIndex freetextIndex) {
+    this.freetextIndex = freetextIndex;
+  }
 
   @Override
   protected Set<String> getKeyFields() {

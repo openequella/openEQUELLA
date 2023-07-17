@@ -19,20 +19,17 @@
 package com.tle.core.freetext.index;
 
 import com.tle.core.services.item.FreetextResult;
-import com.tle.freetext.FreetextIndex;
 import com.tle.freetext.IndexedItem;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.NRTManager;
 import org.apache.lucene.search.NRTManager.TrackingIndexWriter;
 
 public abstract class MultipleIndex<T extends FreetextResult> extends ItemIndex<T> {
-  @Inject private FreetextIndex freetextIndex;
 
   public abstract String getIndexId();
 
