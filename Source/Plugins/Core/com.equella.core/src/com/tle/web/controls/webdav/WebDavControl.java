@@ -64,7 +64,7 @@ public class WebDavControl extends AbstractWebControl<WebDavControl.WebDavContro
 
   @Override
   public SectionResult renderHtml(RenderEventContext context) throws Exception {
-    setupWebdavUrl(context);
+    setupModel(context);
     return factory.createResult("webdav/webdav.ftl", context);
   }
 
@@ -103,7 +103,16 @@ public class WebDavControl extends AbstractWebControl<WebDavControl.WebDavContro
     return b == null || b.booleanValue();
   }
 
-  private void setupWebdavUrl(SectionContext context) {
+  private void setupModel(SectionContext context) {
+    WebDavControlModel model = getModel(context);
+
+    // If the control is currently disabled (say, in Moderation view) then we should
+    // simply not show the WebDAV link. As there will be no Staging ID.
+    if (!control.isEnabled()) {
+      model.setHideDetails(true);
+      return;
+    }
+
     WebRepository repository = (WebRepository) control.getRepository();
     String webdav = repository.getWebUrl() + "wd/" + repository.getStagingid() + '/';
 
@@ -119,7 +128,6 @@ public class WebDavControl extends AbstractWebControl<WebDavControl.WebDavContro
     // authenticated).
     Tuple2<String, String> creds = webDavAuthService.createCredentials(repository.getStagingid());
 
-    WebDavControlModel model = getModel(context);
     model.setWebdavUrl(webdav);
     model.setWebdavUsername(creds._1());
     model.setWebdavPassword(creds._2());
@@ -166,6 +174,7 @@ public class WebDavControl extends AbstractWebControl<WebDavControl.WebDavContro
   }
 
   public static class WebDavControlModel extends WebControlModel {
+    private boolean hideDetails = false;
     private String webdavUrl;
     private String webdavUsername;
     private String webdavPassword;
@@ -192,6 +201,14 @@ public class WebDavControl extends AbstractWebControl<WebDavControl.WebDavContro
 
     public void setWebdavPassword(String webdavPassword) {
       this.webdavPassword = webdavPassword;
+    }
+
+    public boolean isHideDetails() {
+      return hideDetails;
+    }
+
+    public void setHideDetails(boolean hideDetails) {
+      this.hideDetails = hideDetails;
     }
   }
 }
