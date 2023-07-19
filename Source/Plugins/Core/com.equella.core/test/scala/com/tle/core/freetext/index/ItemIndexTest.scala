@@ -378,6 +378,28 @@ class ItemIndexTest
 
       }
     }
+
+    describe("stemming") {
+      it("supports stemming English words") { f =>
+        val (itemIndex, _, searchConfig) = f
+
+        Given("a list of Items that have different names")
+        val items =
+          List("testing", "tested", "other").flatMap(itemName =>
+            generateIndexedItems(itemName = itemName))
+        createIndexes(itemIndex, items)
+
+        When("the query of search configuration is stem word 'test'")
+        searchConfig.setQuery("test")
+
+        Then(
+          "the search result should include all the Items where names are in different forms of 'test'")
+        val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
+        val itemNames =
+          result.map(_.get(FreeTextQuery.FIELD_NAME))
+        itemNames shouldBe Array("testing", "tested")
+      }
+    }
   }
 
 }
