@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 import "@testing-library/jest-dom/extend-expect";
+import { findByText } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import { platforms } from "../../../../../__mocks__/Lti13PlatformsModule.mock";
@@ -26,9 +28,13 @@ import {
   renderEditLti13Platform,
 } from "./EditLti13PlatformTestHelper";
 
+const {
+  security: { rotateKeyPair: rotateKeyPairLabel },
+} = languageStrings.settings.integration.lti13PlatformsSettings.editPage;
 const { unknownUserHandlingCreate } =
   languageStrings.settings.integration.lti13PlatformsSettings.createPage
     .accessControl;
+const { ok: okLabel } = languageStrings.common.action;
 
 describe("EditLti13Platform", () => {
   it("loads the existing platform by platformID from URL", async () => {
@@ -79,5 +85,28 @@ describe("EditLti13Platform", () => {
     const result = updatePlatform.mock.lastCall[0];
 
     expect(result).toEqual(expectedPlatform);
+  });
+
+  it("execute rotateKeyPair function if user confirm the rotate key pair action", async () => {
+    const rotateKeyPair = jest.fn();
+
+    const { getByText, getByRole } = await renderEditLti13Platform(
+      {
+        ...commonEditLti13PlatformProps,
+        rotateKeyPairProvider: rotateKeyPair,
+      },
+      // http://blackboard:8200
+      "aHR0cDovL2JsYWNrYm9hcmQ6ODIwMA=="
+    );
+
+    // click rotate key pair button
+    await userEvent.click(getByText(rotateKeyPairLabel));
+
+    const dialog = getByRole("dialog");
+    const okButton = await findByText(dialog, okLabel);
+    // click ok button
+    await userEvent.click(okButton);
+
+    expect(rotateKeyPair).toHaveBeenCalled();
   });
 });

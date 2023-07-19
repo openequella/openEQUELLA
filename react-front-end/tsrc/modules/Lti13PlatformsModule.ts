@@ -238,3 +238,9 @@ export const deletePlatforms = (
   platformIds: string[]
 ): Promise<OEQ.BatchOperationResponse.BatchOperationResponse[]> =>
   OEQ.LtiPlatform.deletePlatforms(API_BASE_URL, platformIds);
+
+/**
+ * Rotate Key pair for an platform by ID and return the new key pair ID.
+ */
+export const rotateKeyPair = (platformId: string): Promise<string> =>
+  OEQ.LtiPlatform.rotateKeyPair(API_BASE_URL, platformId);

@@ -15,18 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Button } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
-import * as O from "fp-ts/Option";
 import * as R from "fp-ts/Record";
 import * as RS from "fp-ts/ReadonlySet";
-import * as T from "fp-ts/Task";
 import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
 import { useContext, useState } from "react";
 import { useParams } from "react-router-dom";
 import LoadingCircle from "../../../components/LoadingCircle";
+import MessageInfo from "../../../components/MessageInfo";
+import SettingsList from "../../../components/SettingsList";
+import SettingsListControl from "../../../components/SettingsListControl";
+import SimpleConfirmDialog from "../../../components/SimpleConfirmDialog";
 import { AppContext } from "../../../mainui/App";
 import { ACLEntityResolversMulti } from "../../../modules/ACLEntityModule";
 import { defaultACLEntityMultiResolvers } from "../../../modules/ACLExpressionModule";
@@ -34,6 +37,7 @@ import { ACLRecipientTypes } from "../../../modules/ACLRecipientModule";
 import {
   getPlatform,
   updatePlatform,
+  rotateKeyPair,
 } from "../../../modules/Lti13PlatformsModule";
 import { languageStrings } from "../../../util/langstrings";
 import ConfigureLti13Platform, {
@@ -47,8 +51,18 @@ import {
 } from "./EditLti13PlatformHelper";
 import { generalDetailsDefaultRenderOption } from "./GeneralDetailsSection";
 
-const { name: editPageName, wrongURL } =
-  languageStrings.settings.integration.lti13PlatformsSettings.editPage;
+const {
+  name: editPageName,
+  wrongURL,
+  security: {
+    title,
+    keyPair: keyPairLabel,
+    keyPairDesc,
+    rotateKeyPair: rotateKeyPairLabel,
+    rotateKeyPairConfirmText,
+    rotateKeyPairSuccess,
+  },
+} = languageStrings.settings.integration.lti13PlatformsSettings.editPage;
 
 export interface EditLti13PlatformProps
   extends Omit<
@@ -68,6 +82,10 @@ export interface EditLti13PlatformProps
     platform: OEQ.LtiPlatform.LtiPlatform
   ) => Promise<void>;
   /**
+   * Function to rotate keypair for platform.
+   */
+  rotateKeyPairProvider?: (platformId: string) => Promise<string>;
+  /**
    * Object includes functions to find known entities by ids.
    */
   aclEntityResolversMultiProvider?: ACLEntityResolversMulti;
@@ -80,6 +98,7 @@ const EditLti13Platform = ({
   getPlatformProvider = getPlatform,
   updatePlatformProvider = updatePlatform,
   aclEntityResolversMultiProvider = defaultACLEntityMultiResolvers,
+  rotateKeyPairProvider = rotateKeyPair,
   ...configureLti13PlatformProps
 }: EditLti13PlatformProps) => {
   const { platformIdBase64 } = useParams<{
@@ -91,37 +110,35 @@ const EditLti13Platform = ({
     OEQ.LtiPlatform.LtiPlatform | undefined
   >();
 
+  const [openRotateKeyPairDialog, setOpenRotateKeyPairDialog] = useState(false);
+  const [showKeyRotatedMessage, setShowKeyRotatedMessage] = useState(false);
+
   const [configurePlatformValue, setConfigurePlatformValue] = useState<
     ConfigurePlatformValue | undefined
   >();
 
   React.useEffect(() => {
-    // decode platform ID
-    const pid: O.Option<string> = pipe(
-      E.tryCatch(
-        () => atob(platformIdBase64),
-        (e) => appErrorHandler(`${wrongURL}: ${e}`)
-      ),
-      O.fromEither
+    // decode platform ID and update state
+    const pid: E.Either<string, string> = E.tryCatch(
+      () => atob(platformIdBase64),
+      (e) => `${wrongURL}: ${e}`
     );
 
-    const getPlatformTask = (platformId: string): T.Task<void> =>
-      pipe(
-        TE.tryCatch<string, OEQ.LtiPlatform.LtiPlatform>(
-          () => getPlatformProvider(platformId),
-          String
-        ),
-        TE.match(appErrorHandler, setPlatform)
+    const getPlatformTask = (
+      platformId: string
+    ): TE.TaskEither<string, OEQ.LtiPlatform.LtiPlatform> =>
+      TE.tryCatch<string, OEQ.LtiPlatform.LtiPlatform>(
+        () => getPlatformProvider(platformId),
+        (e) => `Failed to get platform: ${e}`
       );
 
-    (async () => {
-      // execute get platform task if platform ID is not None
-      await pipe(
-        pid,
-        O.map(getPlatformTask),
-        O.getOrElseW(() => T.of(undefined))
-      )();
-    })();
+    // execute get platform task if platform ID is not None
+    pipe(
+      pid,
+      TE.fromEither,
+      TE.chain(getPlatformTask),
+      TE.match(appErrorHandler, setPlatform)
+    )();
   }, [getPlatformProvider, appErrorHandler, platformIdBase64]);
 
   // get role and group details from initial platform value and update the related states
@@ -197,6 +214,57 @@ const EditLti13Platform = ({
     })();
   }, [aclEntityResolversMultiProvider, platform]);
 
+  const handleConfirmRotateKeyPair = async () => {
+    const task = pipe(
+      platform?.platformId,
+      TE.fromNullable(
+        "Platform ID is missing in the provided LTI 1.3 Platform"
+      ),
+      TE.chain((id) =>
+        TE.tryCatch(
+          () => rotateKeyPairProvider(id),
+          (e) => `Failed to rotate key pair: ${e}`
+        )
+      )
+    );
+
+    pipe(
+      await task(),
+      E.foldW(appErrorHandler, () => setShowKeyRotatedMessage(true)),
+      () => setOpenRotateKeyPairDialog(false)
+    );
+  };
+
+  const keyRotationSection = () => (
+    <>
+      <SettingsList subHeading={title}>
+        <SettingsListControl
+          primaryText={keyPairLabel}
+          secondaryText={keyPairDesc}
+          control={
+            <Button onClick={() => setOpenRotateKeyPairDialog(true)}>
+              {rotateKeyPairLabel}
+            </Button>
+          }
+        />
+      </SettingsList>
+
+      <SimpleConfirmDialog
+        open={openRotateKeyPairDialog}
+        title={rotateKeyPairConfirmText}
+        onConfirm={handleConfirmRotateKeyPair}
+        onCancel={() => setOpenRotateKeyPairDialog(false)}
+      />
+
+      <MessageInfo
+        title={rotateKeyPairSuccess}
+        open={showKeyRotatedMessage}
+        onClose={() => setShowKeyRotatedMessage(false)}
+        variant="success"
+      />
+    </>
+  );
+
   return !configurePlatformValue ? (
     <LoadingCircle />
   ) : (
@@ -205,6 +273,7 @@ const EditLti13Platform = ({
       pageName={editPageName}
       value={configurePlatformValue}
       configurePlatformProvider={updatePlatformProvider}
+      KeyRotationSection={keyRotationSection()}
     />
   );
 };
