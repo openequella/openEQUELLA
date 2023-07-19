@@ -52,7 +52,7 @@ const {
 } = languageStrings.settings.integration.lti13PlatformsSettings.createPage;
 
 // the `submit value test` needs to fill all the controls with value which will cost more time
-jest.setTimeout(20000);
+jest.setTimeout(25000);
 
 describe("CreateLti13Platform", () => {
   const errorOutlineClass = "Mui-error";

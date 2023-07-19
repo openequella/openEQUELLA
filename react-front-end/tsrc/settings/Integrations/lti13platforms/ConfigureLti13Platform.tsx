@@ -120,6 +120,10 @@ export interface ConfigureLti13PlatformProps
   configurePlatformProvider: (
     platform: OEQ.LtiPlatform.LtiPlatform
   ) => Promise<void>;
+  /**
+   * KeyRotationSection for edit platform page.
+   */
+  KeyRotationSection?: React.ReactNode;
 }
 
 /**
@@ -135,6 +139,7 @@ const ConfigureLti13Platform = ({
   searchRoleProvider,
   configurePlatformProvider,
   aclEntityResolversProvider = defaultACLEntityResolvers,
+  KeyRotationSection,
 }: ConfigureLti13PlatformProps) => {
   const { appErrorHandler } = useContext(AppContext);
   const history = useHistory();
@@ -321,6 +326,13 @@ const ConfigureLti13Platform = ({
               searchRoleProvider={searchRoleProvider}
             />
           </Grid>
+          {KeyRotationSection && (
+            <>
+              <Divider variant="middle" />
+
+              <Grid mt={2}>{KeyRotationSection}</Grid>
+            </>
+          )}
         </CardContent>
       </Card>
     </SettingPageTemplate>

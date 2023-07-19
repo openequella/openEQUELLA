@@ -768,6 +768,15 @@ export const languageStrings = {
         editPage: {
           name: "Edit LTI 1.3 platform",
           wrongURL: "Can't get platform ID from URL",
+          security: {
+            title: "Security",
+            keyPair: "Key pair",
+            keyPairDesc:
+              "Rotating your key pair is an important security measure that helps ensure the integrity of your LTI 1.3 platform",
+            rotateKeyPair: "Rotate Key Pair",
+            rotateKeyPairConfirmText: "Rotate Key Pair?",
+            rotateKeyPairSuccess: "Key pair rotated successfully",
+          },
         },
       },
     },
