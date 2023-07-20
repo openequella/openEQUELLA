@@ -28,7 +28,10 @@ import type {
   ACLExpression,
   ACLOperatorType,
 } from "../../modules/ACLExpressionModule";
-import { createACLExpression } from "../../modules/ACLExpressionModule";
+import {
+  createACLExpression,
+  flattenIds,
+} from "../../modules/ACLExpressionModule";
 import type { ACLRecipient } from "../../modules/ACLRecipientModule";
 import { recipientEq, showRecipient } from "../../modules/ACLRecipientModule";
 import { ACLTreeOperator } from "./ACLTreeOperator";
@@ -68,7 +71,8 @@ const ACLExpressionTree = ({
   onChange,
   aclEntityResolvers,
 }: ACLExpressionTreeProps): JSX.Element => {
-  const [expanded, setExpanded] = useState<string[]>([]);
+  // expand all nodes by default
+  const [expanded, setExpanded] = useState<string[]>(flattenIds(aclExpression));
   const [selected, setSelected] = useState<string[]>([]);
 
   const handleTreeToggle = (_: ChangeEvent<{}>, nodeIds: string[]) =>

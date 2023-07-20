@@ -37,6 +37,7 @@ import {
   roleLoggedRecipientWithName,
   ssoMoodleRecipientRawExpression,
   ssoMoodleRecipientWithName,
+  user100RecipientHumanReadableExpression,
   user200RecipientWithName,
 } from "../../../../__mocks__/ACLRecipientModule.mock";
 import { ReferrerType } from "../../../../tsrc/components/aclexpressionbuilder/ACLHTTPReferrerInput";
@@ -107,11 +108,6 @@ describe("<ACLExpressionBuilder/>", () => {
       onFinish,
     });
 
-    // expand root node
-    await selectOperatorNode(container, 0);
-    // expand child node
-    await selectOperatorNode(container, 1);
-
     // delete recipient
     await clickDeleteButtonForRecipient(
       container,
@@ -147,8 +143,6 @@ describe("<ACLExpressionBuilder/>", () => {
         onFinish,
       });
 
-      // expand root node
-      await selectOperatorNode(container, 0);
       // update operator option for provided node
       await selectOperatorForNode(container, nodeIndex, operator);
       // click ok to see if the result is what we want
@@ -169,8 +163,6 @@ describe("<ACLExpressionBuilder/>", () => {
       aclExpression: initialACLExpressionString,
     });
 
-    // expend root node
-    await selectOperatorNode(container, 0);
     // click add group button
     await userEvent.click(getByLabelText(addGroupLabel));
     // change operator type (if operator of sub-group is same with the root it will be combined after return)
@@ -196,8 +188,6 @@ describe("<ACLExpressionBuilder/>", () => {
       onFinish,
     });
 
-    // expand root node
-    await selectOperatorNode(container, 0);
     // click delete group button in child node
     await clickDeleteButtonForOperatorNode(container, 1);
     // click ok button to see if the result is what we want
@@ -205,6 +195,25 @@ describe("<ACLExpressionBuilder/>", () => {
 
     const result = onFinish.mock.lastCall[0];
     expect(result).toEqual(initialACLExpressionString);
+  });
+
+  it("should be able to return `Everyone` ACL string if users delete all recipients and children", async () => {
+    const onFinish = jest.fn();
+    const { container, getByText } = renderACLExpressionBuilder({
+      ...defaultACLExpressionBuilderProps,
+      aclExpression: initialACLExpressionString,
+      onFinish,
+    });
+
+    await clickDeleteButtonForRecipient(
+      container,
+      user100RecipientHumanReadableExpression
+    );
+    // click ok button to see if the result is what we want
+    await userEvent.click(getByText(okLabel));
+
+    const result = onFinish.mock.lastCall[0];
+    expect(result).toEqual(everyoneRecipientRawExpression);
   });
 
   describe("home panel", () => {
@@ -404,8 +413,6 @@ describe("<ACLExpressionBuilder/>", () => {
         // Attempt search for a specific entity
         await searchEntity(container, searchFor);
 
-        // expand the root node
-        await selectOperatorNode(container, 0);
         // select the child node
         await selectOperatorNode(container, 1);
 
@@ -467,8 +474,6 @@ describe("<ACLExpressionBuilder/>", () => {
         await selectRecipientType(container, recipientLabel);
         // click add button
         await userEvent.click(getByText(addLabel));
-        // expand root node to let recipients displayed in UI
-        await selectOperatorNode(container, 0);
         // wait for adding action
         await findAllByText(recipientName ?? "");
 
@@ -503,8 +508,6 @@ describe("<ACLExpressionBuilder/>", () => {
 
       // click add button
       await userEvent.click(getByText(addLabel));
-      // expand root node to let recipient displayed in UI
-      await selectOperatorNode(container, 0);
       // wait for adding action
       await findByText(ipRecipient.name);
 
@@ -542,8 +545,6 @@ describe("<ACLExpressionBuilder/>", () => {
 
         // click add button
         await userEvent.click(getByText(addLabel));
-        // expand root node to let recipient displayed in UI
-        await selectOperatorNode(container, 0);
         // wait for adding action
         await findByText(httpReferrerRecipient.name);
 
@@ -575,8 +576,6 @@ describe("<ACLExpressionBuilder/>", () => {
       );
       // click add button
       await userEvent.click(getByText(addLabel));
-      // expand root node to let recipients displayed in UI
-      await selectOperatorNode(container, 0);
       // wait for adding action
       await findByText(ssoMoodleRecipientWithName.name);
 

@@ -18,10 +18,7 @@
 import "@testing-library/jest-dom/extend-expect";
 import type { ACLExpression } from "../../../../tsrc/modules/ACLExpressionModule";
 import { ACLRecipientTypes } from "../../../../tsrc/modules/ACLRecipientModule";
-import {
-  renderACLExpressionTree,
-  selectOperatorNode,
-} from "./ACLExpressionTreeTestHelper";
+import { renderACLExpressionTree } from "./ACLExpressionTreeTestHelper";
 
 describe("<ACLExpressionTree/>", () => {
   const rootACLExpression: ACLExpression = {
@@ -51,26 +48,17 @@ describe("<ACLExpressionTree/>", () => {
   };
 
   it("displays the operator and recipient tree item", async () => {
-    const { container, queryByText } =
-      renderACLExpressionTree(rootACLExpression);
-
-    // expend root node
-    await selectOperatorNode(container, 0);
+    const { queryByText } = renderACLExpressionTree(rootACLExpression);
 
     expect(queryByText("Or")).toBeInTheDocument();
     expect(queryByText("User 1 [user1]")).toBeInTheDocument();
   });
 
   it("displays the child in the tree view", async () => {
-    const { container, queryByText } = renderACLExpressionTree({
+    const { queryByText } = renderACLExpressionTree({
       ...rootACLExpression,
       children: [childACLExpression],
     });
-
-    // expend root node
-    await selectOperatorNode(container, 0);
-    // expend child node
-    await selectOperatorNode(container, 1);
 
     expect(queryByText("And")).toBeInTheDocument();
     expect(queryByText("Group 1")).toBeInTheDocument();
