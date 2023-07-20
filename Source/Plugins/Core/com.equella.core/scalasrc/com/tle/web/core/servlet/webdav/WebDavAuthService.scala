@@ -18,7 +18,9 @@
 
 package com.tle.web.core.servlet.webdav
 
-sealed abstract class WebDavAuthError(msg: String)
+sealed abstract class WebDavAuthError(msg: String) {
+  override def toString: String = msg
+}
 
 case class InvalidCredentials() extends WebDavAuthError("Invalid username and/or password")
 
