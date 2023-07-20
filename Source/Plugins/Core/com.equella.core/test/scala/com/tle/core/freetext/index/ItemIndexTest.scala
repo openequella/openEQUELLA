@@ -44,9 +44,19 @@ import com.tle.core.zookeeper.ZookeeperService
 import com.tle.freetext.{FreetextIndexConfiguration, FreetextIndexImpl, IndexedItem}
 import org.apache.lucene.document.Document
 import org.apache.lucene.index.IndexWriter
-import org.apache.lucene.search.{ChainedFilter, IndexSearcher}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{mock, mockStatic, when}
+import org.apache.lucene.search.{
+  ChainedFilter,
+  Filter,
+  IndexSearcher,
+  Query,
+  ScoreDoc,
+  Sort,
+  SortField,
+  TopFieldDocs
+}
+import org.mockito.ArgumentCaptor
+import org.mockito.ArgumentMatchers.{any, anyInt}
+import org.mockito.Mockito.{doReturn, mock, mockStatic, verify, when}
 import org.scalatest.funspec.FixtureAnyFunSpec
 import org.scalatest.matchers.should._
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, GivenWhenThen, Outcome}
@@ -80,7 +90,8 @@ class ItemIndexTest
 
       override def getSynchroniseMinutes: Int = 1
 
-      override def getStopWordsFile: File = new File("/tmp/stopwords.txt")
+      override def getStopWordsFile: File =
+        new File(s"${getClass.getResource("/itemindex/stopwords.txt").getPath}")
 
       override def getAnalyzerLanguage: String = "en"
     }
@@ -400,6 +411,43 @@ class ItemIndexTest
         itemNames shouldBe Array("testing", "tested")
       }
     }
+
+    describe("stopping") {
+      it("supports removing stopping words from search query") { f =>
+        val (itemIndex, _, searchConfig) = f
+
+        Given("a search query which multiple terms and stopping words")
+        val query = "the java and scala are interesting"
+
+        When("the query is set in the search configuration")
+        searchConfig.setQuery(query)
+
+        Then("the search API should be called with those terms without the stopping words")
+        // Mock an IndexSearcher.
+        val mockedSearcher = mock(classOf[IndexSearcher])
+        doReturn(new TopFieldDocs(0, Array.empty[ScoreDoc], Array.empty[SortField], 0.0f))
+          .when(mockedSearcher)
+          .search(any(classOf[Query]), any(classOf[Filter]), anyInt(), any(classOf[Sort]))
+
+        // Do the search with the mocked IndexSearcher.
+        buildSearcher(itemIndex, searchConfig).search(mockedSearcher)
+
+        // Verify the query passed to the mocked IndexSearcher.
+        val queryCaptor = ArgumentCaptor.forClass[Query, Query](classOf[Query])
+
+        verify(mockedSearcher).search(
+          queryCaptor.capture(),
+          ArgumentCaptor.forClass[Filter, Filter](classOf[Filter]).capture(),
+          ArgumentCaptor.forClass[Int, Int](classOf[Int]).capture(),
+          ArgumentCaptor.forClass[Sort, Sort](classOf[Sort]).capture()
+        )
+
+        val processedQuery = queryCaptor.getValue.toString
+        processedQuery shouldBe "(+(name_vectored:java^2.0 body:java) +(name_vectored:scala^2.0 body:scala) +(name_vectored:interest^2.0 body:interest))"
+
+      }
+    }
+
   }
 
 }
