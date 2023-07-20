@@ -20,8 +20,9 @@ import { AppBar, Button, Grid, Paper, Tab, Tabs } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
-import { flow, pipe } from "fp-ts/function";
+import { constant, flow, identity, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
+import * as S from "fp-ts/string";
 import * as E from "fp-ts/Either";
 import * as RA from "fp-ts/ReadonlyArray";
 import * as RSET from "fp-ts/ReadonlySet";
@@ -43,11 +44,13 @@ import {
 } from "../../modules/ACLExpressionModule";
 import {
   ACLRecipient,
+  ACLRecipientTypes,
   recipientEq,
   recipientOrd,
 } from "../../modules/ACLRecipientModule";
 import { listUsers } from "../../modules/UserModule";
 import { languageStrings } from "../../util/langstrings";
+import { pfTernary } from "../../util/pointfree";
 import ACLExpressionTree from "./ACLExpressionTree";
 import ACLHomePanel from "./ACLHomePanel";
 import ACLOtherPanel from "./ACLOtherPanel";
@@ -316,6 +319,13 @@ const ACLExpressionBuilder = ({
                 revertCompactedACLExpressions,
                 removeRedundantExpressions,
                 generate,
+                // if all recipients have been deleted, the ACL string will be an empty,
+                // then return `Everyone` as a default value.
+                pfTernary(
+                  S.isEmpty,
+                  constant(ACLRecipientTypes.Everyone),
+                  identity
+                ),
                 onFinish
               )
             }

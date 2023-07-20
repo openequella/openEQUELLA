@@ -235,6 +235,12 @@ export const flattenRecipients = ({
   pipe(children, A.chain(flattenRecipients), A.concat(recipients));
 
 /**
+ * Return a collection containing all ACLExpression(root + children) IDs in a given ACLExpression (recursively).
+ */
+export const flattenIds = ({ id, children }: ACLExpression): string[] =>
+  pipe(children, A.chain(flattenIds), A.concat([id]));
+
+/**
  * Get the number of recipients for a given ACLExpression.
  */
 const getRecipientCount = (expression: ACLExpression): number =>
