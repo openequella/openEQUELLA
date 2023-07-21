@@ -174,6 +174,10 @@ export const languageStrings = {
       or: "Or",
       not: "None",
     },
+    errors: {
+      ssoTokensNotFound: "No SSO tokens were found",
+      ssoTokensFailed: "Failed to get SSO tokens",
+    },
   },
   aclExpressionBuilderDialog: {
     title: "Select recipients",
