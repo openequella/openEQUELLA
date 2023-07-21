@@ -205,7 +205,7 @@ const generateACLRecipientName =
           ),
         (Everyone) => TE.right("Everyone"),
         ($OWNER) => TE.right("Owner"),
-        (Ip) => TE.right("From " + expression),
+        (Ip) => TE.right("From " + decodeURIComponent(expression)),
         (Refer) => TE.right("From " + expression),
         (Sso) => TE.right("Token ID is " + expression)
       )
@@ -261,7 +261,7 @@ export const createACLRecipient = (
     expression,
     parseACLRecipientType,
     E.map((recipientType) => ({
-      expression: pipe(expression, S.split(":"), RNEA.last),
+      expression: expression.substring(expression.indexOf(":") + 1),
       type: recipientType,
     }))
   );

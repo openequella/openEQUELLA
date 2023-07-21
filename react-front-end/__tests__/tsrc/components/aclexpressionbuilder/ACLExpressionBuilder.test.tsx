@@ -516,8 +516,8 @@ describe("<ACLExpressionBuilder/>", () => {
     });
 
     it.each<[string, ReferrerType, string]>([
-      ["contain", "Contain", "*edalex.com*"],
-      ["exact", "Exact", "edalex.com"],
+      ["contain", "Contain", "*https%3A%2F%2Fedalex.com*"],
+      ["exact", "Exact", "https%3A%2F%2Fedalex.com"],
     ])(
       "should be able to add an HTTP Referrer (%s type) to the expression",
       async (_, httpReferrerType: ReferrerType, expectedReferrer) => {
@@ -536,7 +536,10 @@ describe("<ACLExpressionBuilder/>", () => {
         // select http recipient type
         await selectRecipientType(container, referrerType);
         // input an referrer
-        await userEvent.type(getByLabelText(referrerLabel), "edalex.com");
+        await userEvent.type(
+          getByLabelText(referrerLabel),
+          "https://edalex.com"
+        );
         // select http referrer type
         await selectReferrerType(renderResult, httpReferrerType);
 
