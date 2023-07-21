@@ -56,7 +56,10 @@ const ACLHTTPReferrerInput = ({ onChange }: ACLHTTPReferrerInputProps) => {
   const handleOnChanged = (
     newReferrerType: ReferrerType,
     newReferrer: string
-  ) => onChange(newReferrerType === "Exact" ? newReferrer : `*${newReferrer}*`);
+  ) => {
+    const encodedUrl = encodeURIComponent(newReferrer);
+    onChange(newReferrerType === "Exact" ? encodedUrl : `*${encodedUrl}*`);
+  };
 
   return (
     <>

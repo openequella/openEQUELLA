@@ -195,5 +195,5 @@ export const referRecipient = (refer: string) => ({
 // helper function to generate a referrer recipient with name
 export const referRecipientWithName = (refer: string) => ({
   ...referRecipient(refer),
-  name: `From ${refer}`,
+  name: `From ${decodeURIComponent(refer)}`,
 });

@@ -163,7 +163,7 @@ export const languageStrings = {
     otherACLTypes: {
       everyone: "Everyone",
       owner: "Owner",
-      logged: "Logged user",
+      logged: "Logged in user",
       guest: "Guest",
       sso: "SSO",
       ip: "IP",
