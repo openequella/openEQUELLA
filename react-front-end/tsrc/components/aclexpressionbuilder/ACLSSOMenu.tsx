@@ -15,10 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { MenuItem, Select, Typography } from "@mui/material";
+import { Alert, FormControl, MenuItem, Select } from "@mui/material";
+import * as S from "fp-ts/string";
+import * as NA from "fp-ts/NonEmptyArray";
+import { flow, pipe } from "fp-ts/function";
+import * as E from "fp-ts/Either";
+import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { getTokens } from "../../modules/UserModule";
+import { languageStrings } from "../../util/langstrings";
+import { pfTernary } from "../../util/pointfree";
+import LoadingCircle from "../LoadingCircle";
+
+const { ssoTokensFailed, ssoTokensNotFound } =
+  languageStrings.aclExpressionBuilder.errors;
 
 export interface ACLSSOMenuProps {
   /**
@@ -40,30 +51,57 @@ const ACLSSOMenu = ({
   onChange,
   getSSOTokens = getTokens,
 }: ACLSSOMenuProps) => {
-  const [ssoTokens, setSSOTokens] = useState<string[]>([]);
+  const [ssoTokens, setSSOTokens] = useState<NA.NonEmptyArray<string>>();
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    getSSOTokens()
-      .then(setSSOTokens)
-      .catch((err) => setErrorMessage(`Failed to get SSO tokens: ${err}`));
-  }, [getSSOTokens]);
+    const task = pipe(
+      TE.tryCatch(
+        () => getSSOTokens(),
+        (err) => `${ssoTokensFailed}: ${err}`
+      ),
+      TE.chain(
+        flow(
+          NA.fromArray,
+          TE.fromOption(() => ssoTokensNotFound)
+        )
+      )
+    );
 
-  return errorMessage ? (
-    <Typography color="error">{errorMessage}</Typography>
+    (async () =>
+      pipe(
+        await task(),
+        E.match(setErrorMessage, (tokens) => {
+          setSSOTokens(tokens);
+          // set default sso token
+          pipe(tokens, NA.head, (token) => onChange(token));
+        })
+      ))();
+  }, [getSSOTokens, onChange]);
+
+  return ssoTokens ? (
+    <FormControl>
+      <Select
+        id="sso-select"
+        defaultValue={value ?? NA.head(ssoTokens)}
+        onChange={(event) => onChange(event.target.value)}
+      >
+        {ssoTokens.map((token: string) => (
+          <MenuItem key={token} value={token}>
+            {token}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
   ) : (
-    <Select
-      id="sso-select"
-      displayEmpty
-      defaultValue={value ?? ""}
-      onChange={(event) => onChange(event.target.value)}
-    >
-      {ssoTokens.map((token: string) => (
-        <MenuItem key={token} value={token}>
-          {token}
-        </MenuItem>
-      ))}
-    </Select>
+    pipe(
+      errorMessage,
+      pfTernary(
+        S.isEmpty,
+        () => <LoadingCircle />,
+        () => <Alert severity="warning">{errorMessage}</Alert>
+      )
+    )
   );
 };
 

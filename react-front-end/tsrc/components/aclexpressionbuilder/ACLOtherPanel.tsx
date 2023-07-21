@@ -191,9 +191,12 @@ const ACLOtherPanel = ({
     title: string;
     children?: ReactNode;
   }) => (
-    <Grid item>
-      <Typography>{title}</Typography>
-      {children}
+    <Grid container direction="column" rowSpacing={2}>
+      <Grid item>
+        <Typography>{title}</Typography>
+      </Grid>
+
+      {children && <Grid item>{children}</Grid>}
     </Grid>
   );
 
