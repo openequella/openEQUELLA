@@ -31,10 +31,26 @@ import SelectGroupDialog, {
   SelectGroupDialogProps,
 } from "../../../components/securityentitydialog/SelectGroupDialog";
 import SettingsListControl from "../../../components/SettingsListControl";
+import SettingsListWarning from "../../../components/SettingsListWarning";
 import { languageStrings } from "../../../util/langstrings";
 
+export interface GroupWarning {
+  /**
+   * Show warning message if the IDs of group details fetched form server
+   * can't match with the initial group IDs.
+   *
+   * For example:
+   * suppose users select Group A and Group B for UnknownUserGroups. Later, if Group A gets deleted,
+   * its ID will still be stored in the platform.
+   * When the Edit page tries to get Group A and B, the server will only return Group B.
+   * Consequently, a warning message will be displayed stating that Group A is missing.
+   */
+  warningMessageForGroups?: string[];
+}
+
 export interface UnknownUserHandlingControlProps
-  extends Pick<SelectGroupDialogProps, "groupListProvider"> {
+  extends Pick<SelectGroupDialogProps, "groupListProvider">,
+    GroupWarning {
   /**
    * Initial selected option.
    */
@@ -81,6 +97,7 @@ const UnknownUserHandlingControl = ({
   groups = RS.empty,
   onChange,
   groupListProvider,
+  warningMessageForGroups,
 }: UnknownUserHandlingControlProps) => {
   const [showSelectGroupDialog, setShowSelectGroupDialog] = useState(false);
 
@@ -116,28 +133,34 @@ const UnknownUserHandlingControl = ({
       ></SettingsListControl>
 
       {selection === "CREATE" && (
-        <ListItem>
-          <Badge badgeContent={RS.size(groups)} color="secondary">
-            <Button
-              variant="outlined"
-              color="primary"
-              aria-label={selectGroupLabel}
-              onClick={() => setShowSelectGroupDialog(true)}
-            >
-              {selectGroupLabel}
-            </Button>
-          </Badge>
+        <>
+          {warningMessageForGroups && (
+            <SettingsListWarning messages={warningMessageForGroups} />
+          )}
 
-          <SelectGroupDialog
-            value={groups}
-            open={showSelectGroupDialog}
-            onClose={(selectedGroups) => {
-              setShowSelectGroupDialog(false);
-              selectedGroups && onChange(selection, selectedGroups);
-            }}
-            groupListProvider={groupListProvider}
-          />
-        </ListItem>
+          <ListItem>
+            <Badge badgeContent={RS.size(groups)} color="secondary">
+              <Button
+                variant="outlined"
+                color="primary"
+                aria-label={selectGroupLabel}
+                onClick={() => setShowSelectGroupDialog(true)}
+              >
+                {selectGroupLabel}
+              </Button>
+            </Badge>
+
+            <SelectGroupDialog
+              value={groups}
+              open={showSelectGroupDialog}
+              onClose={(selectedGroups) => {
+                setShowSelectGroupDialog(false);
+                selectedGroups && onChange(selection, selectedGroups);
+              }}
+              groupListProvider={groupListProvider}
+            />
+          </ListItem>
+        </>
       )}
     </>
   );

@@ -772,6 +772,8 @@ export const languageStrings = {
         editPage: {
           name: "Edit LTI 1.3 platform",
           wrongURL: "Can't get platform ID from URL",
+          savingWarning: "Caution, saving will remove these values.",
+          mismatchWarning: "Can't fetch %s for IDs: %s.",
           security: {
             title: "Security",
             keyPair: "Key pair",

@@ -42,6 +42,11 @@ export interface SettingsListControlProps {
   control: ReactNode;
 }
 
+export const listItemTextStyle = {
+  maxWidth: "40%",
+  minHeight: "38px",
+};
+
 /**
  * This component is used to define a row inside a SettingsList to be used in the page/settings/* pages.
  * It should be placed within a SettingsList.
@@ -64,10 +69,7 @@ export default function SettingsListControl({
       <ListItemText
         primary={primaryText}
         secondary={secondaryText}
-        sx={{
-          maxWidth: "40%",
-          minHeight: "38px",
-        }}
+        sx={listItemTextStyle}
       />
       <Box
         sx={{

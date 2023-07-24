@@ -21,6 +21,7 @@ import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import { platforms } from "../../../../../__mocks__/Lti13PlatformsModule.mock";
+import { generateWarnMsgForMissingIds } from "../../../../../tsrc/settings/Integrations/lti13platforms/EditLti13PlatformHelper";
 import { languageStrings } from "../../../../../tsrc/util/langstrings";
 import { savePlatform } from "./CreateLti13PlatformTestHelper";
 import {
@@ -85,6 +86,47 @@ describe("EditLti13Platform", () => {
     const result = updatePlatform.mock.lastCall[0];
 
     expect(result).toEqual(expectedPlatform);
+  });
+
+  it.each<[string, "role" | "group", Set<string>]>([
+    [
+      "UnknownUserDefaultGroups",
+      "group",
+      new Set(["deletedGroup1", "deletedGroup2"]),
+    ],
+    ["InstructorRoles", "role", new Set(["deletedRole1"])],
+    ["UnknownRoles", "role", new Set(["deletedRole2"])],
+  ])(
+    "shows warning messages for %s if any %s has been deleted but still selected in platform",
+    async (_, entityType, missingIds) => {
+      const renderResult = await renderEditLti13Platform(
+        commonEditLti13PlatformProps,
+        // http://localhost:8100
+        "aHR0cDovL2xvY2FsaG9zdDo4MTAw"
+      );
+      const { getByText } = renderResult;
+      const expectedWarnMsg = generateWarnMsgForMissingIds(
+        missingIds,
+        entityType
+      );
+
+      expect(getByText(expectedWarnMsg)).toBeInTheDocument();
+    }
+  );
+
+  it("shows warning messages for CustomRoles if any role has been deleted but still selected in platform", async () => {
+    const renderResult = await renderEditLti13Platform(
+      commonEditLti13PlatformProps,
+      // http://localhost:8100
+      "aHR0cDovL2xvY2FsaG9zdDo4MTAw"
+    );
+    const { getByText } = renderResult;
+    const expectedWarnMsg = `LTI role: http://purl.imsglobal.org/vocab/lis/v2/system/person#Administrator - ${generateWarnMsgForMissingIds(
+      new Set(["deletedRole3"]),
+      "role"
+    )}`;
+
+    expect(getByText(expectedWarnMsg)).toBeInTheDocument();
   });
 
   it("execute rotateKeyPair function if user confirm the rotate key pair action", async () => {

@@ -19,8 +19,9 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import * as EQ from "fp-ts/Eq";
-import * as O from "fp-ts/Option";
 import { constant, flow, pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import * as RSET from "fp-ts/ReadonlySet";
 import * as S from "fp-ts/string";
 
 /**
@@ -87,6 +88,13 @@ export interface ACLEntityResolversMulti {
  */
 export const eqEntityById = <T extends BaseSecurityEntity>() =>
   EQ.contramap<string, T>((entry: T) => entry.id)(S.Eq);
+
+/**
+ * Given a set of `Entities`, return a set of UUIDs for all the entities.
+ */
+export const entityIds: <T extends BaseSecurityEntity>(
+  e: ReadonlySet<T>
+) => ReadonlySet<string> = flow(RSET.map(S.Eq)(({ id }) => id));
 
 /**
  * Generic function for finding an entity's details by ID.

@@ -51,10 +51,15 @@ export const moodle: OEQ.LtiPlatform.LtiPlatform = {
   usernamePrefix: "hello",
   usernameSuffix: "world",
   unknownUserHandling: "CREATE",
-  unknownUserDefaultGroups: new Set(),
-  instructorRoles: new Set(),
-  unknownRoles: new Set(),
-  customRoles: new Map(),
+  unknownUserDefaultGroups: new Set(["deletedGroup1", "deletedGroup2"]),
+  instructorRoles: new Set(["deletedRole1"]),
+  unknownRoles: new Set(["deletedRole2"]),
+  customRoles: new Map([
+    [
+      "http://purl.imsglobal.org/vocab/lis/v2/system/person#Administrator",
+      new Set(["deletedRole3"]),
+    ],
+  ]),
   allowExpression: "",
   enabled: true,
 };
