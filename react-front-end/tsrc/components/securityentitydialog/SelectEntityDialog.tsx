@@ -138,7 +138,11 @@ const SelectEntityDialog = <T extends BaseSecurityEntity>({
       <Grid container>
         <Grid item xs>
           {searchComponent(searchSelections, setSearchSelections, () =>
-            pipe(value, RS.union(eqByID)(searchSelections), setSelectedEntities)
+            pipe(
+              selectedEntities,
+              RS.union(eqByID)(searchSelections),
+              setSelectedEntities
+            )
           )}
         </Grid>
         <Divider orientation="vertical" flexItem light sx={{ margin: "5px" }} />
