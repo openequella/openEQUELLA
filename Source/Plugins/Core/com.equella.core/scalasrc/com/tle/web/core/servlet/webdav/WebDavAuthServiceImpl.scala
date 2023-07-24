@@ -54,9 +54,7 @@ class WebDavAuthServiceImpl(credStorage: ReplicatedCache[WebDavCredentials])
 
   @Inject def this(rcs: ReplicatedCacheService) {
     // Not keen on the idea of having a limit on the number of cache entries, but that's the way
-    // RCS works. And although we set a TTL of 1 hour, that's only until first access. After
-    // that it's been hard coded to last for 1 day!
-    // (See com.tle.core.replicatedcache.impl.ReplicatedCacheServiceImpl.ReplicatedCacheImpl.ReplicatedCacheImpl)
+    // RCS works.
     this(
       rcs
         .getCache[WebDavCredentials]("webdav-creds", 1000, 1, TimeUnit.HOURS))
