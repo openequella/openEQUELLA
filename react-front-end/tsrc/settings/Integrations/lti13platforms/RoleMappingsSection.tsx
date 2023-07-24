@@ -18,6 +18,7 @@
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import SettingsList from "../../../components/SettingsList";
+import SettingsListWarning from "../../../components/SettingsListWarning";
 import { languageStrings } from "../../../util/langstrings";
 import CustomRolesMappingControl from "./CustomRolesMappingControl";
 import SelectRoleControl from "./SelectRoleControl";
@@ -25,6 +26,24 @@ import SelectRoleControl from "./SelectRoleControl";
 const { roleMappings: roleMappingsStrings } =
   languageStrings.settings.integration.lti13PlatformsSettings.createPage;
 const { edit: editLabel } = languageStrings.common.action;
+
+/**
+ * Warning messages for role related controls.
+ *
+ * Those controls will show a warning message if the IDs of role details fetched form server
+ * can't match with the initial role IDs.
+ *
+ * For example:
+ * suppose users select Role A and Role B for instructorRoles. Later, if Role A gets deleted,
+ * its ID will still be stored in the platform.
+ * When the Edit page tries to get Role A and B, the server will only return Role B.
+ * Consequently, a warning message will be displayed stating that Role A is missing.
+ */
+export interface RoleMappingWarnings {
+  instructorRoles?: string[];
+  customRolesMapping?: string[];
+  unknownRoles?: string[];
+}
 
 export interface RoleMappingsSectionProps {
   /**
@@ -57,6 +76,10 @@ export interface RoleMappingsSectionProps {
    * Function used to search roles.
    */
   searchRoleProvider?: (query?: string) => Promise<OEQ.UserQuery.RoleDetails[]>;
+  /**
+   * WarningMessages for each role selectors.
+   */
+  warningMessages?: RoleMappingWarnings;
 }
 
 /**
@@ -71,6 +94,7 @@ const RoleMappingsSection = ({
   unknownRoles,
   setUnknownRoles,
   searchRoleProvider,
+  warningMessages,
 }: RoleMappingsSectionProps) => {
   const {
     title,
@@ -91,12 +115,18 @@ const RoleMappingsSection = ({
         onChange={setInstructorRoles}
         roleListProvider={searchRoleProvider}
       />
+      {warningMessages?.instructorRoles && (
+        <SettingsListWarning messages={warningMessages?.instructorRoles} />
+      )}
 
       <CustomRolesMappingControl
         value={customRolesMapping}
         onChange={setCustomRolesMapping}
         roleListProvider={searchRoleProvider}
       />
+      {warningMessages?.customRolesMapping && (
+        <SettingsListWarning messages={warningMessages?.customRolesMapping} />
+      )}
 
       {/*Unknown Roles*/}
       <SelectRoleControl
@@ -107,6 +137,9 @@ const RoleMappingsSection = ({
         onChange={setUnknownRoles}
         roleListProvider={searchRoleProvider}
       />
+      {warningMessages?.unknownRoles && (
+        <SettingsListWarning messages={warningMessages?.unknownRoles} />
+      )}
     </SettingsList>
   );
 };

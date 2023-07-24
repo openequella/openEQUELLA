@@ -20,8 +20,7 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
 import * as R from "fp-ts/Record";
-import * as RS from "fp-ts/ReadonlySet";
-import * as TE from "fp-ts/TaskEither";
+import * as TE from "../../../util/TaskEither.extended";
 import * as React from "react";
 import { useContext, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -43,6 +42,7 @@ import { languageStrings } from "../../../util/langstrings";
 import ConfigureLti13Platform, {
   ConfigureLti13PlatformProps,
   ConfigurePlatformValue,
+  WarningMessages,
 } from "./ConfigureLti13Platform";
 import {
   generateCustomRoles,
@@ -116,6 +116,9 @@ const EditLti13Platform = ({
   const [configurePlatformValue, setConfigurePlatformValue] = useState<
     ConfigurePlatformValue | undefined
   >();
+  const [warningMessages, setWarningMessages] = useState<
+    WarningMessages | undefined
+  >();
 
   React.useEffect(() => {
     // decode platform ID and update state
@@ -147,45 +150,6 @@ const EditLti13Platform = ({
       if (!platform) {
         return;
       }
-      // initialize groups and roles details
-      const unknownUserDefaultGroups: ReadonlySet<OEQ.UserQuery.GroupDetails> =
-        pipe(
-          await getGroupsTask(
-            platform.unknownUserDefaultGroups ?? new Set(),
-            aclEntityResolversMultiProvider.resolveGroupsProvider
-          )(),
-          E.getOrElseW((e) => {
-            console.warn(e);
-            return RS.empty;
-          })
-        );
-
-      const instructorRoles: ReadonlySet<OEQ.UserQuery.RoleDetails> = pipe(
-        await getRolesTask(
-          platform.instructorRoles,
-          aclEntityResolversMultiProvider.resolveRolesProvider
-        )(),
-        E.getOrElseW((e) => {
-          console.warn(e);
-          return RS.empty;
-        })
-      );
-
-      const customRoles = await generateCustomRoles(
-        platform.customRoles,
-        aclEntityResolversMultiProvider.resolveRolesProvider
-      )();
-
-      const unknownRoles: ReadonlySet<OEQ.UserQuery.RoleDetails> = pipe(
-        await getRolesTask(
-          platform.unknownRoles,
-          aclEntityResolversMultiProvider.resolveRolesProvider
-        )(),
-        E.getOrElseW((e) => {
-          console.warn(e);
-          return RS.empty;
-        })
-      );
 
       // initialize general details render options, using the default values and replacing those
       // in the retrieved 'platform'.
@@ -199,20 +163,80 @@ const EditLti13Platform = ({
         }))
       );
 
-      setConfigurePlatformValue({
-        generalDetailsRenderOptions,
-        aclExpression: platform.allowExpression ?? ACLRecipientTypes.Everyone,
-        unknownRoles,
-        instructorRoles,
-        customRoles,
-        unknownUserHandlingData: {
-          selection: platform.unknownUserHandling,
-          groups: unknownUserDefaultGroups,
-        },
-        enabled: platform.enabled,
-      });
+      // initialize groups and roles details
+      const unknownUserDefaultGroupsWithMsgTask = pipe(
+        getGroupsTask(
+          platform.unknownUserDefaultGroups ?? new Set(),
+          aclEntityResolversMultiProvider.resolveGroupsProvider
+        ),
+        TE.getOrThrow
+      );
+
+      const instructorRolesWithMsgTask = pipe(
+        getRolesTask(
+          platform.instructorRoles,
+          aclEntityResolversMultiProvider.resolveRolesProvider
+        ),
+        TE.getOrThrow
+      );
+
+      const customRolesWithMsgTask = pipe(
+        generateCustomRoles(
+          platform.customRoles,
+          aclEntityResolversMultiProvider.resolveRolesProvider
+        ),
+        TE.getOrThrow
+      );
+
+      const unknownRolesWithMsgTask = pipe(
+        getRolesTask(
+          platform.unknownRoles,
+          aclEntityResolversMultiProvider.resolveRolesProvider
+        ),
+        TE.getOrThrow
+      );
+
+      // execute tasks
+      await Promise.all([
+        unknownUserDefaultGroupsWithMsgTask(),
+        instructorRolesWithMsgTask(),
+        customRolesWithMsgTask(),
+        unknownRolesWithMsgTask(),
+      ])
+        .then(
+          ([
+            unknownUserDefaultGroupsWithMsg,
+            instructorRolesWithMsg,
+            customRolesWithMsg,
+            unknownRolesWithMsg,
+          ]) => {
+            setConfigurePlatformValue({
+              generalDetailsRenderOptions,
+              aclExpression:
+                platform.allowExpression ?? ACLRecipientTypes.Everyone,
+              unknownRoles: unknownRolesWithMsg.entities,
+              instructorRoles: instructorRolesWithMsg.entities,
+              customRoles: customRolesWithMsg.mappings,
+              unknownUserHandlingData: {
+                selection: platform.unknownUserHandling,
+                groups: unknownUserDefaultGroupsWithMsg.entities,
+              },
+              enabled: platform.enabled,
+            });
+            setWarningMessages({
+              unknownRoles: unknownRolesWithMsg.warning,
+              instructorRoles: instructorRolesWithMsg.warning,
+              customRolesMapping: customRolesWithMsg.warnings,
+              warningMessageForGroups: unknownUserDefaultGroupsWithMsg.warning,
+            });
+          }
+        )
+        .catch((e) => {
+          console.warn(e);
+          appErrorHandler(e);
+        });
     })();
-  }, [aclEntityResolversMultiProvider, platform]);
+  }, [aclEntityResolversMultiProvider, appErrorHandler, platform]);
 
   const handleConfirmRotateKeyPair = async () => {
     const task = pipe(
@@ -273,6 +297,7 @@ const EditLti13Platform = ({
       pageName={editPageName}
       value={configurePlatformValue}
       configurePlatformProvider={updatePlatformProvider}
+      warningMessages={warningMessages}
       KeyRotationSection={keyRotationSection()}
     />
   );

@@ -19,7 +19,9 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import SettingsList from "../../../components/SettingsList";
 import { languageStrings } from "../../../util/langstrings";
-import UnknownUserHandlingControl from "./UnknownUserHandlingControl";
+import UnknownUserHandlingControl, {
+  GroupWarning,
+} from "./UnknownUserHandlingControl";
 import UsableByControl, { UsableByControlProps } from "./UsableByControl";
 
 const { accessControl } =
@@ -36,12 +38,13 @@ export interface UnknownUserHandlingData {
 
 export interface AccessControlSectionProps
   extends Pick<
-    UsableByControlProps,
-    | "searchUserProvider"
-    | "searchGroupProvider"
-    | "searchRoleProvider"
-    | "aclEntityResolversProvider"
-  > {
+      UsableByControlProps,
+      | "searchUserProvider"
+      | "searchGroupProvider"
+      | "searchRoleProvider"
+      | "aclEntityResolversProvider"
+    >,
+    GroupWarning {
   /**
    * AclExpression string used to control who can use the platform.
    */
@@ -74,6 +77,7 @@ const AccessControlSection = ({
   searchGroupProvider,
   searchRoleProvider,
   aclEntityResolversProvider,
+  warningMessageForGroups,
 }: AccessControlSectionProps) => (
   <SettingsList subHeading={accessControl.title}>
     <UsableByControl
@@ -95,6 +99,7 @@ const AccessControlSection = ({
         })
       }
       groupListProvider={searchGroupProvider}
+      warningMessageForGroups={warningMessageForGroups}
     />
   </SettingsList>
 );
