@@ -93,7 +93,6 @@ public abstract class AbstractIndexEngine {
   private String analyzerLanguage;
   private FSDirectory directory;
   private TrackingIndexWriter trackingIndexWriter;
-
   private NRTManager nrtManager;
   private NRTManagerReopenThread nrtReopenThread;
   private Timer commiterThread;
