@@ -66,6 +66,7 @@ import java.nio.file.Files
 import java.text.SimpleDateFormat
 import java.util.{Date, Locale, UUID}
 import scala.jdk.CollectionConverters._
+import scala.reflect.io.Directory
 
 class ItemIndexTest
     extends FixtureAnyFunSpec
@@ -200,6 +201,14 @@ class ItemIndexTest
     when(CurrentLocale.getLocale).thenReturn(Locale.getDefault)
 
     AbstractPluginService.thisService = mock(classOf[PluginServiceImpl])
+  }
+
+  override def afterAll = {
+    new File(System.getProperty("java.io.tmpdir")).listFiles
+      .filter(_.isDirectory)
+      .filter(_.getName.contains("ItemIndexTest"))
+      .map(new Directory(_))
+      .foreach(_.deleteRecursively)
   }
 
   describe("index manipulation") {
