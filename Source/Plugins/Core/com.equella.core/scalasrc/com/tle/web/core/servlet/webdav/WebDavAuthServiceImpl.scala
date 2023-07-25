@@ -34,15 +34,21 @@ import javax.inject.{Inject, Singleton}
   * @param username the username part.
   * @param password the password part.
   * @param encoded the HTTP Basic Auth encoded representation - for easy validation.
+  * @param webUserDetails the details of the user from the oEQ Web UI side which is expected to use
+  *                       these credentials.
   */
 @SerialVersionUID(1)
-case class WebDavCredentials(username: String, password: String, encoded: String)
+case class WebDavCredentials(username: String,
+                             password: String,
+                             encoded: String,
+                             webUserDetails: WebUserDetails)
     extends Serializable
 object WebDavCredentials {
-  def apply(username: String, password: String): WebDavCredentials =
+  def apply(username: String, password: String, webUserDetails: WebUserDetails): WebDavCredentials =
     WebDavCredentials(username,
                       password,
-                      Base64.getEncoder.encodeToString(s"$username:$password".getBytes))
+                      Base64.getEncoder.encodeToString(s"$username:$password".getBytes),
+                      webUserDetails)
 }
 
 @Bind(classOf[WebDavAuthService])
@@ -63,7 +69,9 @@ class WebDavAuthServiceImpl(credStorage: ReplicatedCache[WebDavCredentials])
 
   }
 
-  override def createCredentials(id: String): (String, String) =
+  override def createCredentials(id: String,
+                                 oeqUserId: String,
+                                 oeqUsername: String): (String, String) =
     Option(credStorage.get(id).orNull())
       .map(c => (c.username, c.password))
       .getOrElse({
@@ -74,7 +82,8 @@ class WebDavAuthServiceImpl(credStorage: ReplicatedCache[WebDavCredentials])
         val username = generateString
         val password = generateString
 
-        credStorage.put(id, WebDavCredentials(username, password))
+        credStorage
+          .put(id, WebDavCredentials(username, password, WebUserDetails(oeqUserId, oeqUsername)))
 
         (username, password)
       })
@@ -85,9 +94,13 @@ class WebDavAuthServiceImpl(credStorage: ReplicatedCache[WebDavCredentials])
                                    authRequest: String): Either[WebDavAuthError, Boolean] =
     Option(credStorage.get(id).orNull())
       .map {
-        case WebDavCredentials(_, _, expectedPayload) =>
+        case WebDavCredentials(_, _, expectedPayload, _) =>
           if (expectedPayload == authRequest) Right(true)
           else Left(InvalidCredentials())
       }
       .getOrElse(Left(InvalidContext()))
+
+  override def whois(id: String): Option[WebUserDetails] =
+    Option(credStorage.get(id).orNull())
+      .map(_.webUserDetails)
 }

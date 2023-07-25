@@ -43,7 +43,8 @@ class WebDavAuthServiceImplTest extends AnyFunSpec with Matchers with GivenWhenT
       val id = UUID.randomUUID().toString
 
       When("some credentials are created")
-      val (username, password) = f.webDavAuthService.createCredentials(id)
+      val (username, password) =
+        f.webDavAuthService.createCredentials(id, UUID.randomUUID().toString, "oequser1")
 
       Then("each part should be non-blank")
       username.isBlank shouldBe false
@@ -51,7 +52,8 @@ class WebDavAuthServiceImplTest extends AnyFunSpec with Matchers with GivenWhenT
 
       And(
         "if another set of credentials are requested for the same id, the same current ones are returned")
-      val (newCredsUsername, newCredsPassword) = f.webDavAuthService.createCredentials(id)
+      val (newCredsUsername, newCredsPassword) =
+        f.webDavAuthService.createCredentials(id, UUID.randomUUID().toString, "oequser2")
       newCredsUsername shouldBe username
       newCredsPassword shouldBe password
     }
@@ -73,7 +75,7 @@ class WebDavAuthServiceImplTest extends AnyFunSpec with Matchers with GivenWhenT
       f.webDavAuthService.validateCredentials(id, authHeader) shouldBe Left(InvalidContext())
 
       And("should also fail if there is a valid ID - but wrong credentials")
-      f.webDavAuthService.createCredentials(id)
+      f.webDavAuthService.createCredentials(id, UUID.randomUUID().toString, "oequser3")
       f.webDavAuthService.validateCredentials(id, authHeader) shouldBe Left(InvalidCredentials())
     }
 
@@ -84,7 +86,8 @@ class WebDavAuthServiceImplTest extends AnyFunSpec with Matchers with GivenWhenT
       val id = UUID.randomUUID().toString
 
       And("some registered credentials")
-      val (validUsername, validPassword) = f.webDavAuthService.createCredentials(id)
+      val (validUsername, validPassword) =
+        f.webDavAuthService.createCredentials(id, UUID.randomUUID().toString, "oequser4")
 
       When("those credentials are formed into a valid payload")
       val authHeader = generateAuthHeaderPayload(validUsername, validPassword)
@@ -103,7 +106,8 @@ class WebDavAuthServiceImplTest extends AnyFunSpec with Matchers with GivenWhenT
       val id = UUID.randomUUID().toString
 
       And("some registered credentials")
-      val (validUsername, validPassword) = f.webDavAuthService.createCredentials(id)
+      val (validUsername, validPassword) =
+        f.webDavAuthService.createCredentials(id, UUID.randomUUID().toString, "oequser5")
 
       When("those credentials are removed")
       f.webDavAuthService.removeCredentials(id)
@@ -112,6 +116,36 @@ class WebDavAuthServiceImplTest extends AnyFunSpec with Matchers with GivenWhenT
       f.webDavAuthService
         .validateCredentials(id, generateAuthHeaderPayload(validUsername, validPassword)) shouldBe Left(
         InvalidContext())
+    }
+  }
+
+  describe("whois") {
+    it("tells you the details of the oEQ user who setup the credentials") {
+      val f = fixture
+
+      Given("an ID for a WebDav context - e.g. a staging ID")
+      val id = UUID.randomUUID().toString
+
+      And("some registered credentials")
+      val oeqUserId   = UUID.randomUUID().toString
+      val oeqUserName = "oequser6"
+      f.webDavAuthService.createCredentials(id, oeqUserId, oeqUserName)
+
+      When("it is requested who the credentials belong to")
+      val creator = f.webDavAuthService.whois(id)
+
+      Then("the details of the oEQ user who setup the credentials are returned")
+      creator shouldBe Some(WebUserDetails(oeqUserId, oeqUserName))
+    }
+
+    it("returns None if it can't find user details for the specified context") {
+      val f = fixture
+
+      When("a request is made for the user details of a none-extent context")
+      val creator = f.webDavAuthService.whois(UUID.randomUUID().toString)
+
+      Then("None is returned")
+      creator shouldBe None
     }
   }
 }

@@ -22,6 +22,7 @@ import com.dytech.edge.wizard.beans.control.CustomControl;
 import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.FileAttachment;
 import com.tle.beans.item.attachments.ModifiableAttachments;
+import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.guice.Bind;
 import com.tle.core.wizard.LERepository;
 import com.tle.web.core.servlet.webdav.WebDavAuthService;
@@ -126,7 +127,9 @@ public class WebDavControl extends AbstractWebControl<WebDavControl.WebDavContro
     // as
     // once the staging area is deleted no WebDAV operations will work anyway (even if
     // authenticated).
-    Tuple2<String, String> creds = webDavAuthService.createCredentials(repository.getStagingid());
+    Tuple2<String, String> creds =
+        webDavAuthService.createCredentials(
+            repository.getStagingid(), CurrentUser.getUserID(), CurrentUser.getUsername());
 
     model.setWebdavUrl(webdav);
     model.setWebdavUsername(creds._1());

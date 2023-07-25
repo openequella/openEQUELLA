@@ -28,11 +28,14 @@ import com.tle.common.Utils;
 import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.filesystem.FileEntry;
 import com.tle.common.filesystem.handle.StagingFile;
+import com.tle.core.auditlog.AuditLogService;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.services.FileSystemService;
+import com.tle.web.core.servlet.webdav.InvalidCredentials;
 import com.tle.web.core.servlet.webdav.WebDavAuthService;
+import com.tle.web.core.servlet.webdav.WebUserDetails;
 import com.tle.web.core.servlet.webdav.WebdavProps;
 import com.tle.web.stream.ContentStreamWriter;
 import com.tle.web.stream.FileContentStream;
@@ -71,6 +74,7 @@ import org.w3c.dom.Node;
 @Singleton
 public class WebdavServlet extends HttpServlet {
   private static final Logger LOGGER = LoggerFactory.getLogger(WebdavServlet.class);
+  private static final String AUDIT_CATEGORY = "WEBDAV";
   private static final String CONTENT_TYPE_XML = "text/xml; charset=utf-8";
   private static final int SC_MULTI_STATUS = 207;
   private static final String METHODS_ALLOWED =
@@ -105,6 +109,7 @@ public class WebdavServlet extends HttpServlet {
   @Inject private MimeTypeService mimeTypeService;
   @Inject private ContentStreamWriter contentStreamWriter;
   @Inject private WebDavAuthService webDavAuthService;
+  @Inject private AuditLogService auditLogService;
 
   @Override
   public void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
@@ -134,6 +139,27 @@ public class WebdavServlet extends HttpServlet {
 
   private Optional<String> getAuthenticationHeader(HttpServletRequest request) {
     return Optional.ofNullable(request.getHeader("Authorization")).filter(Strings::isNotEmpty);
+  }
+
+  private void auditAuthFailed(String authContext, String remoteAddr) {
+    WebUserDetails userDetails =
+        webDavAuthService
+            .whois(authContext)
+            .getOrElse(
+                () -> {
+                  LOGGER.error(
+                      "Error getting user details behind request to {} from {}",
+                      authContext,
+                      remoteAddr);
+                  return new WebUserDetails("none", "unknown");
+                });
+    auditLogService.logGeneric(
+        AUDIT_CATEGORY,
+        "AUTH ERROR",
+        remoteAddr,
+        userDetails.username(),
+        userDetails.uniqueId(),
+        null);
   }
 
   /**
@@ -171,6 +197,10 @@ public class WebdavServlet extends HttpServlet {
                     error -> {
                       LOGGER.warn(
                           WEB_DAV_AUTH_FAILED + " [Staging ID: {}]: {}", stagingId.get(), error);
+                      if (error.getClass() == InvalidCredentials.class) {
+                        auditAuthFailed(stagingId.get(), request.getRemoteAddr());
+                      }
+
                       return false;
                     },
                     success -> {
