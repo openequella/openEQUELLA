@@ -233,8 +233,9 @@ class ItemIndexTest
     it("deletes indexes for Institution") { f =>
       val (itemIndex, indexWriter, _) = f
 
-      Given("the ID of an Institution")
+      Given("the ID of an Institution which already has indexes generated")
       val id = inst.getUniqueId
+      itemIndex.indexBatch(generateIndexedItems(2).asJava)
 
       When("ItemIndex.deleteForInstitution is invoked")
       itemIndex.deleteForInstitution(id)
