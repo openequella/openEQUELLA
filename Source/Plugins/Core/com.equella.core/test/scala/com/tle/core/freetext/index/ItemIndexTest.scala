@@ -43,20 +43,10 @@ import com.tle.core.settings.service.ConfigurationService
 import com.tle.core.zookeeper.ZookeeperService
 import com.tle.freetext.{FreetextIndexConfiguration, FreetextIndexImpl, IndexedItem}
 import org.apache.lucene.document.Document
-import org.apache.lucene.index.IndexWriter
-import org.apache.lucene.search.{
-  ChainedFilter,
-  Filter,
-  IndexSearcher,
-  Query,
-  ScoreDoc,
-  Sort,
-  SortField,
-  TopFieldDocs
-}
+import org.apache.lucene.search._
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyInt}
-import org.mockito.Mockito.{doReturn, mock, mockStatic, verify, when}
+import org.mockito.Mockito._
 import org.scalatest.funspec.FixtureAnyFunSpec
 import org.scalatest.matchers.should._
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, GivenWhenThen, Outcome}
@@ -183,14 +173,12 @@ class ItemIndexTest
       }
     }
 
-  override type FixtureParam = (ItemIndex[FreetextResult], IndexWriter, DefaultSearch)
+  override type FixtureParam = (ItemIndex[FreetextResult], DefaultSearch)
 
   override def withFixture(test: OneArgTest): Outcome = {
-    val itemIndex   = initialiseItemIndex(test.name)
-    val indexWriter = itemIndex.getTrackingIndexWriter.getIndexWriter
+    val itemIndex = initialiseItemIndex(test.name)
 
-    try withFixture(test.toNoArgTest(itemIndex, indexWriter, buildDefaultSearch))
-    finally indexWriter.close()
+    try withFixture(test.toNoArgTest(itemIndex, buildDefaultSearch))
   }
 
   override def beforeAll = {
@@ -216,7 +204,7 @@ class ItemIndexTest
       itemIndex.count(buildDefaultSearch, false) shouldBe expected
 
     it("creates indexes for new items") { f =>
-      val (itemIndex, indexWriter, _) = f
+      val (itemIndex, _) = f
 
       Given("a list of Items to be indexed")
       val howMany      = 5
@@ -224,14 +212,14 @@ class ItemIndexTest
 
       When("ItemIndex.indexBatch is invoked")
       itemIndex.indexBatch(indexedItems)
-      indexWriter.commit()
+//      indexWriter.commit()
 
       Then("indexes should be created for the Items")
       verifyDocumentNumber(itemIndex, howMany)
     }
 
     it("deletes indexes for Institution") { f =>
-      val (itemIndex, indexWriter, _) = f
+      val (itemIndex, _) = f
 
       Given("the ID of an Institution which already has indexes generated")
       val id = inst.getUniqueId
@@ -239,7 +227,7 @@ class ItemIndexTest
 
       When("ItemIndex.deleteForInstitution is invoked")
       itemIndex.deleteForInstitution(id)
-      indexWriter.commit()
+//      indexWriter.commit()
 
       Then("indexes of the Institution should be deleted")
       verifyDocumentNumber(itemIndex, 0)
@@ -251,12 +239,12 @@ class ItemIndexTest
 
     def createIndexes(itemIndex: ItemIndex[_], indexedItems: List[IndexedItem]): Unit = {
       itemIndex.indexBatch(indexedItems.asJava)
-      itemIndex.getTrackingIndexWriter.getIndexWriter.commit()
+//      itemIndex.getTrackingIndexWriter.getIndexWriter.commit()
     }
 
     describe("filtering") {
       it("supports filtering by text field") { f =>
-        val (itemIndex, _, searchConfig) = f
+        val (itemIndex, searchConfig) = f
 
         Given("a list of Items where Item statuses are different")
         val liveItems  = generateIndexedItems(1)
@@ -273,8 +261,8 @@ class ItemIndexTest
       }
 
       it("supports filtering by numerical field") { f =>
-        val (itemIndex, _, searchConfig) = f
-        val rating                       = "5.00"
+        val (itemIndex, searchConfig) = f
+        val rating                    = "5.00"
 
         Given("a list of Items where Item ratings are either 5 or 1")
         val highRatingItems = generateIndexedItems(1, rating = 5.0f)
@@ -292,7 +280,7 @@ class ItemIndexTest
       }
 
       it("supports filtering by boolean field") { f =>
-        val (itemIndex, _, searchConfig) = f
+        val (itemIndex, searchConfig) = f
 
         Given("a list of Items where one item is in moderation")
         val inModerationItems = generateIndexedItems(1, moderating = true)
@@ -309,7 +297,7 @@ class ItemIndexTest
       }
 
       it("supports filtering by date range field") { f =>
-        val (itemIndex, _, searchConfig) = f
+        val (itemIndex, searchConfig) = f
 
         Given("a list of Items where only one item is last modified yesterday")
         val start          = dateFormatter.parse("2023-07-10")
@@ -337,7 +325,7 @@ class ItemIndexTest
 
     describe("sorting") {
       it("supports sorting by text field") { f =>
-        val (itemIndex, _, searchConfig) = f
+        val (itemIndex, searchConfig) = f
 
         Given("a list of Items that have different names")
         val c     = "c"
@@ -356,7 +344,7 @@ class ItemIndexTest
       }
 
       it("supports sorting by numerical field") { f =>
-        val (itemIndex, _, searchConfig) = f
+        val (itemIndex, searchConfig) = f
 
         Given("a list of Items that have different ratings")
         val great = 5.0f
@@ -374,7 +362,7 @@ class ItemIndexTest
       }
 
       it("supports sorting by date field") { f =>
-        val (itemIndex, _, searchConfig) = f
+        val (itemIndex, searchConfig) = f
 
         Given("a list of Items that have different last modified dates")
         val monday    = dateFormatter.parse("2023-07-10")
@@ -404,7 +392,7 @@ class ItemIndexTest
 
     describe("stemming") {
       it("supports stemming English words") { f =>
-        val (itemIndex, _, searchConfig) = f
+        val (itemIndex, searchConfig) = f
 
         Given("a list of Items that have different names")
         val items =
@@ -426,7 +414,7 @@ class ItemIndexTest
 
     describe("stopping") {
       it("supports removing stopping words from search query") { f =>
-        val (itemIndex, _, searchConfig) = f
+        val (itemIndex, searchConfig) = f
 
         Given("a search query which multiple terms and stopping words")
         val query = "the java and scala are interesting"
