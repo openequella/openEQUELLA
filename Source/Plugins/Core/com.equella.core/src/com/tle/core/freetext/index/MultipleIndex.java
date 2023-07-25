@@ -19,6 +19,7 @@
 package com.tle.core.freetext.index;
 
 import com.tle.core.services.item.FreetextResult;
+import com.tle.freetext.FreetextIndex;
 import com.tle.freetext.IndexedItem;
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +31,10 @@ import org.apache.lucene.search.NRTManager;
 import org.apache.lucene.search.NRTManager.TrackingIndexWriter;
 
 public abstract class MultipleIndex<T extends FreetextResult> extends ItemIndex<T> {
+
+  public MultipleIndex(FreetextIndex freetextIndex) {
+    super(freetextIndex);
+  }
 
   public abstract String getIndexId();
 

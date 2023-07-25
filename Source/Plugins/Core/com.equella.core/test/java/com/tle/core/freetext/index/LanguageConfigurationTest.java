@@ -1,7 +1,10 @@
 package com.tle.core.freetext.index;
 
+import static org.mockito.Mockito.mock;
+
 import com.tle.beans.item.ItemIdKey;
 import com.tle.core.services.item.FreetextResult;
+import com.tle.freetext.FreetextIndex;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.junit.Assert;
@@ -24,12 +27,17 @@ public class LanguageConfigurationTest {
   }
 
   private Analyzer getAnalyser(String language) {
-    TestIndexEngine testIndexEngine = new TestIndexEngine();
+    TestIndexEngine testIndexEngine = new TestIndexEngine(mock(FreetextIndex.class));
     testIndexEngine.setAnalyzerLanguage(language);
     return testIndexEngine.getAnalyser();
   }
 
   class TestIndexEngine extends ItemIndex<FreetextResult> {
+
+    public TestIndexEngine(FreetextIndex freetextIndex) {
+      super(freetextIndex);
+    }
+
     @Override
     protected FreetextResult createResult(
         ItemIdKey key, Document doc, float relevance, boolean sortByRelevance) {

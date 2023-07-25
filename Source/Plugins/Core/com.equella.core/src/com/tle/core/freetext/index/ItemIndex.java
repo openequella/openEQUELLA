@@ -78,7 +78,6 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -143,7 +142,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
           "DOWNLOAD_ITEM",
           "ACLL-");
 
-  @Inject protected FreetextIndex freetextIndex;
+  protected FreetextIndex freetextIndex;
 
   private float titleBoost;
   private float descriptionBoost;
@@ -154,6 +153,10 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
   private FieldSelector keyFieldSelector;
 
+  public ItemIndex(FreetextIndex freetextIndex) {
+    this.freetextIndex = freetextIndex;
+  }
+
   @PostConstruct
   @Override
   public void afterPropertiesSet() throws IOException {
@@ -161,7 +164,6 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     setDefaultOperator(freetextIndex.getDefaultOperator());
     setAnalyzerLanguage(freetextIndex.getAnalyzerLanguage());
     keyFieldSelector = new SetBasedFieldSelector(getKeyFields(), new HashSet<String>());
-
     super.afterPropertiesSet();
   }
 

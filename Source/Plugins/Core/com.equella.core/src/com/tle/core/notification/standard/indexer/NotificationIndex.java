@@ -41,7 +41,7 @@ public class NotificationIndex extends MultipleIndex<NotificationResult> {
 
   @Inject
   public NotificationIndex(FreetextIndex freetextIndex) {
-    this.freetextIndex = freetextIndex;
+    super(freetextIndex);
   }
 
   @Override

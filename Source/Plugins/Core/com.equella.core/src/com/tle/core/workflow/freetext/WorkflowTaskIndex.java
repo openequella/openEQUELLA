@@ -38,7 +38,7 @@ public class WorkflowTaskIndex extends MultipleIndex<TaskResult> {
 
   @Inject
   public WorkflowTaskIndex(FreetextIndex freetextIndex) {
-    this.freetextIndex = freetextIndex;
+    super(freetextIndex);
   }
 
   @Override

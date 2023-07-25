@@ -46,7 +46,7 @@ public class ActivationIndex extends MultipleIndex<ActivationResult> {
 
   @Inject
   public ActivationIndex(FreetextIndex freetextIndex) {
-    this.freetextIndex = freetextIndex;
+    super(freetextIndex);
   }
 
   @Override

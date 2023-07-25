@@ -36,7 +36,7 @@ public class NormalItemIndex extends ItemIndex<FreetextResult> {
 
   @Inject
   public NormalItemIndex(FreetextIndex freetextIndex) {
-    this.freetextIndex = freetextIndex;
+    super(freetextIndex);
   }
 
   @PostConstruct
