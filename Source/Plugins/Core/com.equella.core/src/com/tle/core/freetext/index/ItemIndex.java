@@ -1482,8 +1482,8 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
           @Override
           public long buildIndex(NRTManager nrtManager, TrackingIndexWriter writer)
               throws Exception {
-            return writer.deleteDocuments(
-                new Term(FreeTextQuery.FIELD_INSTITUTION, Long.toString(id)));
+            writer.deleteDocuments(new Term(FreeTextQuery.FIELD_INSTITUTION, Long.toString(id)));
+            return -1;
           }
         });
   }
