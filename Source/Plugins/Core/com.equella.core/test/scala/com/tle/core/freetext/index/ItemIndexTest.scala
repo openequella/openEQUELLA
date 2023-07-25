@@ -163,9 +163,11 @@ class ItemIndexTest
 
   type SearchResult = Array[Document]
 
-  // Build an anonymous class for interface Searcher and make the search method
-  // return an array of documents so that we can easliy verify whether the documents
-  // have correct fields and values.
+  /**
+    * Build an anonymous class for interface Searcher and make the search method
+    * return an array of documents so that we can easily verify whether the documents
+    * have correct fields and values.
+    */
   def buildSearcher(itemIndex: ItemIndex[_], searchConfig: DefaultSearch) =
     new Searcher[SearchResult] {
       override def search(searcher: IndexSearcher): SearchResult = {
@@ -206,6 +208,7 @@ class ItemIndexTest
 
     it("creates indexes for new items") { f =>
       val (itemIndex, indexWriter, _) = f
+
       Given("a list of Items to be indexed")
       val howMany      = 5
       val indexedItems = generateIndexedItems(howMany).asJava
@@ -337,7 +340,7 @@ class ItemIndexTest
         When("the sorting order is 'name' in the search configuration")
         searchConfig.setSortType(SortType.NAME)
 
-        Then("the search result should be order by by Item name")
+        Then("the search result should be ordered by by Item name")
         val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
         result.map(_.get(FreeTextQuery.FIELD_NAME)) shouldBe Array(c, java, scala)
       }
@@ -352,10 +355,10 @@ class ItemIndexTest
         val items = List(ok, great, good).flatMap(rating => generateIndexedItems(rating = rating))
         createIndexes(itemIndex, items)
 
-        When("the sorting order is 'name' in the search configuration")
+        When("the sorting order is 'rating' in the search configuration")
         searchConfig.setSortType(SortType.RATING)
 
-        Then("the search result should be order by by Item name")
+        Then("the search result should be ordered by by Item rating")
         val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
         result.map(_.get(FreeTextQuery.FIELD_RATING).toFloat) shouldBe Array(great, good, ok)
       }
@@ -367,14 +370,14 @@ class ItemIndexTest
         val monday    = dateFormatter.parse("2023-07-10")
         val tuesday   = dateFormatter.parse("2023-07-11")
         val wednesday = dateFormatter.parse("2023-07-12")
-        val items = List(monday, tuesday, wednesday).flatMap(dateModified =>
+        val items = List(monday, wednesday, tuesday).flatMap(dateModified =>
           generateIndexedItems(dateModified = dateModified))
         createIndexes(itemIndex, items)
 
-        When("the sorting order is 'name' in the search configuration")
+        When("the sorting order is 'date modified' in the search configuration")
         searchConfig.setSortType(SortType.DATEMODIFIED)
 
-        Then("the search result should be order by by Item name")
+        Then("the search result should be ordered by by date modified")
         val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
         val dates =
           result.map(d => dateFormatter.parse(d.get(FreeTextQuery.FIELD_REALLASTMODIFIED)))
@@ -386,7 +389,6 @@ class ItemIndexTest
           ._1
 
         isOrderedByLastModifiedDate should equal(true)
-
       }
     }
 
@@ -444,10 +446,7 @@ class ItemIndexTest
 
         val processedQuery = queryCaptor.getValue.toString
         processedQuery shouldBe "(+(name_vectored:java^2.0 body:java) +(name_vectored:scala^2.0 body:scala) +(name_vectored:interest^2.0 body:interest))"
-
       }
     }
-
   }
-
 }
