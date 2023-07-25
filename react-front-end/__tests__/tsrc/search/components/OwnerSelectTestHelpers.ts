@@ -18,7 +18,7 @@
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
-import { doSearch } from "../../components/UserSearchTestHelpers";
+import { searchUser } from "../../components/securityentitysearch/UserSearchTestHelpler";
 import { queryMuiButtonByText } from "../../MuiQueries";
 
 export const getSelectButton = (container: HTMLElement) =>
@@ -37,7 +37,7 @@ export const clickSelect = async (container: HTMLElement) => {
 
 export const selectUser = async (container: HTMLElement, username: string) => {
   await clickSelect(container);
-  await doSearch(screen.getByRole("dialog"), username);
+  await searchUser(screen.getByRole("dialog"), username);
   // Wait for mock latency
   // click on a user
   await waitFor(() => userEvent.click(screen.getByText(username)));

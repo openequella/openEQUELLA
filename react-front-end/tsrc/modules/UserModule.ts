@@ -32,6 +32,7 @@ import * as S from "fp-ts/string";
 import * as TE from "fp-ts/TaskEither";
 import { API_BASE_URL } from "../AppConfig";
 import { OrdAsIs } from "../util/Ord";
+import { findEntityById } from "./ACLEntityModule";
 
 /**
  * A bare bones user, essentially a 'default' user - i.e. start as 'guest'.
@@ -111,14 +112,14 @@ export const resolveUsers = (
  *
  * @param userId The unique ID of a user
  */
-export const findUserById = async (
-  userId: string
-): Promise<OEQ.UserQuery.UserDetails | undefined> => {
-  const userDetails = await resolveUsers([userId]);
-  if (userDetails.length > 1)
-    throw new Error(`More than one user was resolved for id: ${userId}`);
-  return userDetails[0];
-};
+export const findUserById = (userId: string) =>
+  findEntityById(userId, resolveUsers);
+
+/**
+ * Get all available tokens (shared secrets / sso).
+ */
+export const getTokens = (): Promise<string[]> =>
+  OEQ.UserQuery.tokens(API_BASE_URL);
 
 export type UserCache = ReadonlyRecord<string, OEQ.UserQuery.UserDetails>;
 

@@ -7,6 +7,7 @@ tests:
     packages:
       - io.github.openequella.rest
       - io.github.openequella.search
+      - io.github.openequella.jwks
     classes:
       - com.tle.webtests.test.searching.BrowsebyTest
       - com.tle.webtests.test.searching.GallerySearchTest

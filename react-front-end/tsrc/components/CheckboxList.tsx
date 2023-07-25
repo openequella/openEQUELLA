@@ -24,7 +24,7 @@ import {
 } from "@mui/material";
 import { pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
-import * as SET from "fp-ts/Set";
+import * as RSET from "fp-ts/ReadonlySet";
 import * as S from "fp-ts/string";
 import * as React from "react";
 import { OrdAsIs } from "../util/Ord";
@@ -42,16 +42,17 @@ export interface CheckboxListProps {
   /**
    * The available options / checkboxes. Where the **keys** are ultimately the values used at the
    * program level, and the **values** are used for display purposes.
+   * If **value** is react Element it will overwrite the main content which is displayed after checkbox.
    */
-  options: Map<string, string>;
+  options: Map<string, string | JSX.Element>;
   /**
    * The **keys** of the `options` which should be 'checked'/ticked/selected.
    */
-  checked: Set<string>;
+  checked: ReadonlySet<string>;
   /**
    * On change handler which will return the list of currently `checked` `options`.
    */
-  onChange: (checked: Set<string>) => void;
+  onChange: (checked: ReadonlySet<string>) => void;
 }
 
 /**
@@ -67,17 +68,17 @@ export const CheckboxList = ({
   const labelId = (forValue: string): string => `${id}-label-${forValue}`;
 
   const isChecked = (forValue: string): boolean =>
-    pipe(checked, SET.elem(S.Eq)(forValue));
+    pipe(checked, RSET.elem(S.Eq)(forValue));
 
   const handleOnClick = (value: string): void =>
-    pipe(checked, SET.toggle(S.Eq)(value), onChange);
+    pipe(checked, RSET.toggle(S.Eq)(value), onChange);
 
   return (
     <List id={id}>
       {pipe(
         options,
         collectUnOrd(
-          (value: string, text: string): JSX.Element => (
+          (value: string, content: JSX.Element | string): JSX.Element => (
             <ListItem
               key={value}
               dense
@@ -93,7 +94,12 @@ export const CheckboxList = ({
                   checked={isChecked(value)}
                 />
               </ListItemIcon>
-              <ListItemText id={labelId(value)} primary={text} />
+
+              {S.isString(content) ? (
+                <ListItemText id={labelId(value)} primary={content} />
+              ) : (
+                content
+              )}
             </ListItem>
           )
         )

@@ -19,12 +19,11 @@ import { Meta, Story } from "@storybook/react";
 import * as React from "react";
 import * as UserModuleMock from "../../../__mocks__/UserModule.mock";
 import { users } from "../../../__mocks__/UserModule.mock";
-import * as UserSearchMock from "../../../__mocks__/UserSearch.mock";
 import {
   WizardUserSelector,
   WizardUserSelectorProps,
 } from "../../../tsrc/components/wizard/WizardUserSelector";
-import { GroupFilter } from "../UserSearch.stories";
+import { GroupFilter } from "../securityentitysearch/UserSearch.stories";
 
 export default {
   title: "Component/Wizard/WizardUserSelector",
@@ -44,8 +43,8 @@ NoUsers.args = {
   label: "WizardUserSelector",
   description: "A user selector (single selection) with no users specified",
   users: new Set<string>([]),
-  userListProvider: UserSearchMock.userDetailsProvider,
-  resolveUsersProvider: UserModuleMock.resolveUsersProvider,
+  userListProvider: UserModuleMock.listUsers,
+  resolveUsersProvider: UserModuleMock.resolveUsers,
 };
 
 export const WithUsers: Story<WizardUserSelectorProps> = (args) => (

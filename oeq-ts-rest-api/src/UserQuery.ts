@@ -18,7 +18,11 @@
 import * as t from 'io-ts';
 import { GET, POST } from './AxiosInstance';
 import type { UuidString } from './Common';
-import { SearchResultCodec, UserDetailsCodec } from './gen/UserQuery';
+import {
+  GroupDetailsCodec,
+  SearchResultCodec,
+  UserDetailsCodec,
+} from './gen/UserQuery';
 import { validate } from './Utils';
 
 export interface UserDetails {
@@ -116,6 +120,22 @@ export const filtered = (
   );
 
 /**
+ * Searches for groups, but filters the results based on the byGroups parameter.
+ *
+ * @param apiBasePath Base URI to the oEQ institution and API
+ * @param params Query parameters to customize result
+ */
+export const filteredGroups = (
+  apiBasePath: string,
+  params: FilteredParams
+): Promise<GroupDetails[]> =>
+  GET<GroupDetails[]>(
+    apiBasePath + USERQUERY_ROOT_PATH + '/filtered-groups',
+    validate(t.array(GroupDetailsCodec)),
+    params
+  );
+
+/**
  * Lookup users and related entities (i.e. groups and roles) by id.
  *
  * @param apiBasePath Base URI to the oEQ institution and API
@@ -129,4 +149,15 @@ export const lookup = (
     apiBasePath + USERQUERY_ROOT_PATH + '/lookup',
     isSearchResult,
     params
+  );
+
+/**
+ * Get all existing shared secrets.
+ *
+ * @param apiBasePath Base URI to the oEQ institution and API
+ */
+export const tokens = (apiBasePath: string) =>
+  GET<string[]>(
+    apiBasePath + USERQUERY_ROOT_PATH + '/tokens',
+    validate(t.array(t.string))
   );

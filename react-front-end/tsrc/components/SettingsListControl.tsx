@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ListItem, ListItemSecondaryAction, ListItemText } from "@mui/material";
+import { Box, ListItem, ListItemText } from "@mui/material";
 import * as React from "react";
 import { ReactNode } from "react";
 
@@ -27,7 +27,11 @@ export interface SettingsListControlProps {
   /**
    *  Text to appear on the top line of the row.
    */
-  primaryText: string;
+  primaryText: ReactNode;
+  /**
+   * Don't make the `primaryText` display at the vertical center. Default value is `false`.
+   */
+  disableCenterPrimaryText?: boolean;
   /**
    * Text to appear on the bottom line(s) of the row.
    */
@@ -38,6 +42,11 @@ export interface SettingsListControlProps {
   control: ReactNode;
 }
 
+export const listItemTextStyle = {
+  maxWidth: "40%",
+  minHeight: "38px",
+};
+
 /**
  * This component is used to define a row inside a SettingsList to be used in the page/settings/* pages.
  * It should be placed within a SettingsList.
@@ -45,28 +54,32 @@ export interface SettingsListControlProps {
 export default function SettingsListControl({
   divider,
   primaryText,
+  disableCenterPrimaryText,
   secondaryText,
   control,
 }: SettingsListControlProps) {
   return (
-    <ListItem alignItems="flex-start" divider={divider}>
+    <ListItem
+      alignItems={disableCenterPrimaryText ? "flex-start" : "center"}
+      sx={{
+        justifyContent: "space-between",
+      }}
+      divider={divider}
+    >
       <ListItemText
         primary={primaryText}
         secondary={secondaryText}
-        sx={{
-          maxWidth: "40%",
-          minHeight: "38px",
-        }}
+        sx={listItemTextStyle}
       />
-      <ListItemSecondaryAction
+      <Box
         sx={{
-          width: "55%",
+          width: "60%",
           display: "flex",
           justifyContent: "flex-end",
         }}
       >
         {control}
-      </ListItemSecondaryAction>
+      </Box>
     </ListItem>
   );
 }

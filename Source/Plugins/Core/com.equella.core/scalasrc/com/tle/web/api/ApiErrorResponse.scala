@@ -42,6 +42,10 @@ object ApiErrorResponse {
     buildErrorResponse(Status.FORBIDDEN, errors)
   }
 
+  def serverError(errors: String*): Response = {
+    buildErrorResponse(Status.INTERNAL_SERVER_ERROR, errors)
+  }
+
   private def buildErrorResponse(status: Status, errors: Seq[String]): Response = {
     Response.status(status).entity(responseBody(errors)).build()
   }

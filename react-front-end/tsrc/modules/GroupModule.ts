@@ -16,8 +16,42 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import { contramap, Eq } from "fp-ts/Eq";
+import { flow } from "fp-ts/function";
+import * as ORD from "fp-ts/Ord";
 import * as RA from "fp-ts/ReadonlyArray";
+import * as RSET from "fp-ts/ReadonlySet";
+import * as S from "fp-ts/string";
 import { API_BASE_URL } from "../AppConfig";
+import { findEntityById } from "./ACLEntityModule";
+
+/**
+ * Eq for `OEQ.UserQuery.GroupDetails` with equality based on the user's UUID.
+ */
+export const eqGroupById: Eq<OEQ.UserQuery.GroupDetails> = contramap(
+  (group: OEQ.UserQuery.GroupDetails) => group.id
+)(S.Eq);
+
+/**
+ * Ord for `OEQ.UserQuery.GroupDetails` with order based on the group's name.
+ */
+export const ordGroup: ORD.Ord<OEQ.UserQuery.GroupDetails> = ORD.contramap(
+  (g: OEQ.UserQuery.GroupDetails) => g.name
+)(S.Ord);
+
+/**
+ * Given a set of `OEQ.UserQuery.GroupDetails`, return a set of UUIDs for all the groups.
+ */
+export const groupIds: (
+  a: ReadonlySet<OEQ.UserQuery.GroupDetails>
+) => ReadonlySet<string> = flow(RSET.map(S.Eq)(({ id }) => id));
+
+/**
+ * Ord for `OEQ.UserQuery.GroupDetails` with ordering rule based on the group's name.
+ */
+export const groupOrd = ORD.contramap(
+  (u: OEQ.UserQuery.GroupDetails) => u.name
+)(S.Ord);
 
 /**
  * Lookup groups known in oEQ.
@@ -34,3 +68,26 @@ export const resolveGroups = async (
       roles: [],
     })
   ).groups;
+
+/**
+ * Find a group's details by ID.
+ *
+ * @param groupId The unique ID of a role
+ */
+export const findGroupById = (groupId: string) =>
+  findEntityById(groupId, resolveGroups);
+
+/**
+ * List groups known in oEQ.
+ *
+ * @param query A wildcard supporting string to filter the result based on name
+ * @param groupFilter A list of group UUIDs to filter the search by
+ */
+export const listGroups = async (
+  query?: string,
+  groupFilter?: ReadonlySet<string>
+): Promise<OEQ.UserQuery.GroupDetails[]> =>
+  await OEQ.UserQuery.filteredGroups(API_BASE_URL, {
+    q: query,
+    byGroups: groupFilter ? Array.from<string>(groupFilter) : undefined,
+  });

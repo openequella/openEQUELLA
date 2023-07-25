@@ -19,7 +19,6 @@ import { action } from "@storybook/addon-actions";
 import { Meta } from "@storybook/react";
 import * as React from "react";
 import * as UserModuleMock from "../../__mocks__/UserModule.mock";
-import * as UserSearchMock from "../../__mocks__/UserSearch.mock";
 import OwnerSelector, {
   OwnerSelectorProps,
 } from "../../tsrc/search/components/OwnerSelector";
@@ -32,7 +31,7 @@ export default {
 const commonParams = {
   onClearSelect: action("onClearSelect"),
   onSelect: action("onSelect"),
-  userListProvider: UserSearchMock.userDetailsProvider,
+  userListProvider: UserModuleMock.listUsers,
 };
 
 export const NoSelectedUser = () => <OwnerSelector {...commonParams} />;

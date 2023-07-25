@@ -1,13 +1,16 @@
 package io.github.openequella.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.tle.webtests.framework.TestConfig;
 import com.tle.webtests.framework.TestInstitution;
 import java.io.IOException;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
@@ -46,6 +49,17 @@ public class AbstractRestApiTest {
 
   protected int makeClientRequest(HttpMethod method) throws IOException {
     return httpClient.executeMethod(method);
+  }
+
+  protected int makeClientRequestWithEntity(HttpMethod method, ObjectNode entity)
+      throws IOException {
+    if (method instanceof EntityEnclosingMethod) {
+      ((EntityEnclosingMethod) method)
+          .setRequestEntity(
+              new StringRequestEntity(entity.toString(), "application/json", "UTF-8"));
+    }
+
+    return makeClientRequest(method);
   }
 
   protected boolean hasAuthenticatedSession() throws IOException {

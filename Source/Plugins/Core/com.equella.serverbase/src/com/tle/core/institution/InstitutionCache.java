@@ -20,12 +20,44 @@ package com.tle.core.institution;
 
 import com.tle.beans.Institution;
 
+/**
+ * A container of caches specific to institutions, facilitating the caching of values partitioned to
+ * an institution.
+ *
+ * @param <T> the type of the cache which will be stored, typically of a signature along the lines
+ *     of {@code Cache<K, V>}.
+ */
 public interface InstitutionCache<T> {
+
+  /**
+   * Will attempt to return the cache of the current institution (with semantics based on {@code
+   * CurrentInstitution.get()}), or otherwise use the place holder institution of {@code
+   * Institution.FAKE}.
+   *
+   * @return a cache inline with the above contract.
+   */
   T getCache();
 
+  /**
+   * Returns the cache for the specified {@code Institution}. Use instead of {@code getCache()} if
+   * greater control is required.
+   *
+   * @param inst the institution who's cache is required
+   * @return a cache for the specified institution
+   */
   T getCache(Institution inst);
 
+  /**
+   * Completely clears all data in the current institution's (based on sematics like {@code
+   * getCache()}) cache.
+   */
   void clear();
 
+  /**
+   * Completely clears all data for the specified institutions cache. Use if more control over
+   * institution determination is required than found in {@code clear()}.
+   *
+   * @param institution the institution of the target cache to clear
+   */
   void clear(Institution institution);
 }
