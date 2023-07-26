@@ -45,6 +45,7 @@ export interface SettingsListControlProps {
 export const listItemTextStyle = {
   maxWidth: "40%",
   minHeight: "38px",
+  paddingRight: 2,
 };
 
 /**
