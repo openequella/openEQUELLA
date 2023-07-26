@@ -228,7 +228,6 @@ class ItemIndexTest
 
       When("ItemIndex.deleteForInstitution is invoked")
       itemIndex.deleteForInstitution(id)
-//      indexWriter.commit()
 
       Then("indexes of the Institution should be deleted")
       verifyDocumentNumber(itemIndex, 0)
@@ -240,7 +239,6 @@ class ItemIndexTest
 
     def createIndexes(itemIndex: ItemIndex[_], indexedItems: List[IndexedItem]): Unit = {
       itemIndex.indexBatch(indexedItems.asJava)
-//      itemIndex.getTrackingIndexWriter.getIndexWriter.commit()
     }
 
     describe("filtering") {
