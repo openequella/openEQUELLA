@@ -72,10 +72,16 @@ class ItemIndexTest
 
   val owner = "admin"
 
+  val indexRootDirectoryName = "ItemIndexTest"
+
   def initialiseItemIndex(testCaseName: String): ItemIndex[FreetextResult] = {
     val freetextIndexConfiguration = new FreetextIndexConfiguration {
       override def getIndexPath: File =
-        new File(Files.createTempDirectory(s"ItemIndexTest - $testCaseName").toFile.getAbsolutePath)
+        new File(
+          Files
+            .createTempDirectory(s"$indexRootDirectoryName - $testCaseName")
+            .toFile
+            .getAbsolutePath)
 
       override def getDefaultOperator: String = "AND"
 
@@ -192,8 +198,6 @@ class ItemIndexTest
   }
 
   override def afterAll = {
-    val indexRootDirectoryName = "ItemIndexTest"
-
     new File(System.getProperty("java.io.tmpdir")).listFiles
       .filter(_.isDirectory)
       .filter(_.getName.contains(indexRootDirectoryName))
