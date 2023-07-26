@@ -91,8 +91,8 @@ export const ACLTreeOperator = ({
 
   const treeOperatorLabel = () => (
     <div className={classes.labelRoot}>
-      <InputLabel data-testid="ACLTreeOperator-label">
-        {matchLabel}&nbsp;
+      <InputLabel data-testid="ACLTreeOperator-label" sx={{ paddingRight: 2 }}>
+        {matchLabel}
       </InputLabel>
       <Select
         value={operator}
