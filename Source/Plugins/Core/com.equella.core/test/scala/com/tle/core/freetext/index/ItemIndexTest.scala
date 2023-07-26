@@ -212,7 +212,6 @@ class ItemIndexTest
 
       When("ItemIndex.indexBatch is invoked")
       itemIndex.indexBatch(indexedItems)
-//      indexWriter.commit()
 
       Then("indexes should be created for the Items")
       verifyDocumentNumber(itemIndex, howMany)
