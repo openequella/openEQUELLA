@@ -192,9 +192,11 @@ class ItemIndexTest
   }
 
   override def afterAll = {
+    val indexRootDirectoryName = "ItemIndexTest"
+
     new File(System.getProperty("java.io.tmpdir")).listFiles
       .filter(_.isDirectory)
-      .filter(_.getName.contains("ItemIndexTest"))
+      .filter(_.getName.contains(indexRootDirectoryName))
       .map(new Directory(_))
       .foreach(_.deleteRecursively)
   }
