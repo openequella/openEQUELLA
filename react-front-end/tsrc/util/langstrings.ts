@@ -948,15 +948,15 @@ export const languageStrings = {
   userSearchComponent: {
     failedToFindMessage: "Unable to find any user matching '%s'",
     filteredByPrelude: "Your search results will be filtered by these groups:",
-    queryFieldLabel: "Username, first or last name",
+    queryFieldLabel: "Enter username, first or last name",
   },
   groupSearchComponent: {
     failedToFindMessage: "Unable to find any group matching '%s'",
-    queryFieldLabel: "Group name",
+    queryFieldLabel: "Enter group",
   },
   roleSearchComponent: {
     failedToFindMessage: "Unable to find any role matching '%s'",
-    queryFieldLabel: "Role name",
+    queryFieldLabel: "Enter role",
   },
   groupSearchDialog: {
     title: "Select group(s)",
