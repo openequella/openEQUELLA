@@ -959,10 +959,10 @@ export const languageStrings = {
     queryFieldLabel: "Role name",
   },
   groupSearchDialog: {
-    title: "Select groups to filter by",
+    title: "Select group(s)",
   },
   roleSearchDialog: {
-    title: "Select roles to filter by",
+    title: "Select role(s)",
   },
   wizard: {
     controls: {
