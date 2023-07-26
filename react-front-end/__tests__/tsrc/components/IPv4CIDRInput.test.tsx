@@ -75,7 +75,7 @@ describe("<IPV4CIDRInput />", () => {
 
   it("should be able to return the result if user complete all inputs", async () => {
     const onChange = jest.fn();
-    const expectedResult = "192.168.1.1/32";
+    const expectedResult = "192.168.1.1/24";
     const { container } = renderIPV4CIDRInput(onChange);
 
     await typeInIpInput(container, "192", 0);
@@ -83,7 +83,21 @@ describe("<IPV4CIDRInput />", () => {
     await typeInIpInput(container, "1", 2);
     await typeInIpInput(container, "1", 3);
 
-    await typeInNetmaskInput(container, "32");
+    await typeInNetmaskInput(container, "24");
+
+    const result = onChange.mock.lastCall[0];
+    expect(result).toEqual(expectedResult);
+  });
+
+  it("should still be able to return the result if netmask is empty", async () => {
+    const onChange = jest.fn();
+    const expectedResult = "193.169.2.2/32";
+    const { container } = renderIPV4CIDRInput(onChange);
+
+    await typeInIpInput(container, "193", 0);
+    await typeInIpInput(container, "169", 1);
+    await typeInIpInput(container, "2", 2);
+    await typeInIpInput(container, "2", 3);
 
     const result = onChange.mock.lastCall[0];
     expect(result).toEqual(expectedResult);

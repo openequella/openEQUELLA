@@ -20,6 +20,7 @@ import { styled } from "@mui/material/styles";
 import * as A from "fp-ts/Array";
 import { constant, constFalse, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
+import { not } from "fp-ts/Predicate";
 import * as S from "fp-ts/string";
 import * as React from "react";
 import { createRef, RefObject, useState, useRef } from "react";
@@ -55,6 +56,7 @@ const StyledGrid = styled(Grid)(({ theme }) => ({
 }));
 
 const ipElements = 4;
+const defaultNetmask = 32;
 
 export interface IPv4CIDRInputProps {
   /**
@@ -117,8 +119,10 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
     );
 
   /**
-   * Generate string for IP CIDR address if ip and netmask are both not empty.
-   * For example,
+   * Generate string for IP CIDR address if ip is not empty.
+   * Netmask is optional since it will return a default value 32 if it's empty.
+   *
+   * Example 1:
    * ```
    * input:
    * (
@@ -129,6 +133,18 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
    * output
    * `192.168.1.1/24`
    * ```
+   *
+   * Example 2:
+   * ```
+   * input:
+   * (
+   *  ip: ["192", "168", "1", "1"],
+   *  netmask: ""
+   * )
+   *
+   * output
+   * `192.168.1.1/32`
+   * ```
    */
   const generateIPV4CIDRString = (
     ip: RNEA.ReadonlyNonEmptyArray<string>,
@@ -136,9 +152,12 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
   ): O.Option<string> =>
     pipe(
       ip,
-      O.fromPredicate((_) => !ip.some(S.isEmpty) && !S.isEmpty(netmask)),
+      O.fromPredicate(RA.every(not(S.isEmpty))),
       O.map(RNEA.intercalate(S.Monoid)(".")),
-      O.map((ipResult: string) => `${ipResult}/${netmask}`)
+      O.map(
+        (ipResult: string) =>
+          `${ipResult}/${S.isEmpty(netmask) ? defaultNetmask : netmask}`
+      )
     );
 
   const isEmptyOrInRange = (min: number, max: number) => (text: string) =>
@@ -297,7 +316,7 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
             },
           }}
           className={classes.ipInput}
-          placeholder="32"
+          placeholder={defaultNetmask.toString()}
           variant="outlined"
           value={netmask}
           onChange={handleNetmaskChanged}
