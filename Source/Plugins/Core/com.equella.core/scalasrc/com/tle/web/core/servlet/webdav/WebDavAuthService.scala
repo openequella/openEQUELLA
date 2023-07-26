@@ -18,6 +18,15 @@
 
 package com.tle.web.core.servlet.webdav
 
+/**
+  * Details of the user from the oEQ Web UI side.
+  *
+  * @param uniqueId the unique id of the user - typically a UUID
+  * @param username the username of the user - typically human readable
+  */
+@SerialVersionUID(1)
+case class WebUserDetails(uniqueId: String, username: String) extends Serializable
+
 sealed abstract class WebDavAuthError(msg: String) {
   override def toString: String = msg
 }
@@ -41,9 +50,11 @@ trait WebDavAuthService {
     * that is optional and left to the implementation.
     *
     * @param id a unique value representing a context for which these credentials will then be valid.
+    * @param oeqUserId the unique id of the user who will be authenticating with these credentials - typically a UUID
+    * @param oeqUsername the username of the user who will be authenticating with these credentials - typically human readable
     * @return a tuple containing a 'username' and 'password'.
     */
-  def createCredentials(id: String): (String, String)
+  def createCredentials(id: String, oeqUserId: String, oeqUsername: String): (String, String)
 
   /**
     * Destroys the credentials for the provided context.
@@ -63,4 +74,14 @@ trait WebDavAuthService {
     *         `Right(true)` indicate valid credentials.
     */
   def validateCredentials(id: String, authRequest: String): Either[WebDavAuthError, Boolean]
+
+  /**
+    * Given an `id` representing a context, return the details of the user who created the credentials
+    * for that context.
+    *
+    * @param id the identifier used for the context
+    * @return if there are credentials registered for the specified `id` then the details of the user
+    *         who created them, otherwise `None`.
+    */
+  def whois(id: String): Option[WebUserDetails]
 }

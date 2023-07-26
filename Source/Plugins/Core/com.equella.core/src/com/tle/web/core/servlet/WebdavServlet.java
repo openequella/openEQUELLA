@@ -28,11 +28,16 @@ import com.tle.common.Utils;
 import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.filesystem.FileEntry;
 import com.tle.common.filesystem.handle.StagingFile;
+import com.tle.core.auditlog.AuditLogService;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.mimetypes.MimeTypeService;
+import com.tle.core.replicatedcache.ReplicatedCacheService;
+import com.tle.core.replicatedcache.ReplicatedCacheService.ReplicatedCache;
 import com.tle.core.services.FileSystemService;
+import com.tle.web.core.servlet.webdav.InvalidCredentials;
 import com.tle.web.core.servlet.webdav.WebDavAuthService;
+import com.tle.web.core.servlet.webdav.WebUserDetails;
 import com.tle.web.core.servlet.webdav.WebdavProps;
 import com.tle.web.stream.ContentStreamWriter;
 import com.tle.web.stream.FileContentStream;
@@ -50,6 +55,7 @@ import java.rmi.RemoteException;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.ServletException;
@@ -71,6 +77,7 @@ import org.w3c.dom.Node;
 @Singleton
 public class WebdavServlet extends HttpServlet {
   private static final Logger LOGGER = LoggerFactory.getLogger(WebdavServlet.class);
+  private static final String AUDIT_CATEGORY = "WEBDAV";
   private static final String CONTENT_TYPE_XML = "text/xml; charset=utf-8";
   private static final int SC_MULTI_STATUS = 207;
   private static final String METHODS_ALLOWED =
@@ -105,6 +112,18 @@ public class WebdavServlet extends HttpServlet {
   @Inject private MimeTypeService mimeTypeService;
   @Inject private ContentStreamWriter contentStreamWriter;
   @Inject private WebDavAuthService webDavAuthService;
+  @Inject private AuditLogService auditLogService;
+
+  /**
+   * Cache of authentication attempts. This is used to throttle auditing of authentication attempts
+   * to prevent a flood of audit log entries.
+   */
+  private final ReplicatedCache<Boolean> authAudited;
+
+  @Inject
+  WebdavServlet(ReplicatedCacheService replicatedCacheService) {
+    authAudited = replicatedCacheService.getCache("webdav-auth-audited", 100, 5, TimeUnit.MINUTES);
+  }
 
   @Override
   public void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
@@ -134,6 +153,52 @@ public class WebdavServlet extends HttpServlet {
 
   private Optional<String> getAuthenticationHeader(HttpServletRequest request) {
     return Optional.ofNullable(request.getHeader("Authorization")).filter(Strings::isNotEmpty);
+  }
+
+  private WebUserDetails getUserDetails(String authContext) {
+    return webDavAuthService
+        .whois(authContext)
+        .getOrElse(
+            () -> {
+              LOGGER.error("Error getting user details behind request to {}", authContext);
+              return new WebUserDetails("none", "unknown");
+            });
+  }
+
+  private void auditAuthFailed(String authContext, String remoteAddr) {
+    WebUserDetails userDetails = getUserDetails(authContext);
+    auditLogService.logGeneric(
+        AUDIT_CATEGORY,
+        "AUTH ERROR",
+        remoteAddr,
+        userDetails.username(),
+        userDetails.uniqueId(),
+        authContext);
+  }
+
+  private void auditAuthSuccess(String authContext, String remoteAddr) {
+    LOGGER.debug("WebDav Authentication succeeded to {} from {}", authContext, remoteAddr);
+
+    // Because WebDAV authentication is done with basic auth, we don't want to log a successful
+    // authentication with every request. Instead we cache the fact that the user has authenticated
+    // successfully for a period of time and only log the success if the user has not authenticated.
+    authAudited
+        .get(authContext)
+        .or(
+            () -> {
+              authAudited.put(authContext, true);
+
+              WebUserDetails userDetails = getUserDetails(authContext);
+              auditLogService.logGeneric(
+                  AUDIT_CATEGORY,
+                  "AUTH SUCCESS",
+                  remoteAddr,
+                  userDetails.username(),
+                  userDetails.uniqueId(),
+                  authContext);
+
+              return true;
+            });
   }
 
   /**
@@ -171,10 +236,14 @@ public class WebdavServlet extends HttpServlet {
                     error -> {
                       LOGGER.warn(
                           WEB_DAV_AUTH_FAILED + " [Staging ID: {}]: {}", stagingId.get(), error);
+                      if (error.getClass() == InvalidCredentials.class) {
+                        auditAuthFailed(stagingId.get(), request.getRemoteAddr());
+                      }
+
                       return false;
                     },
                     success -> {
-                      LOGGER.debug("WebDav Authentication succeeded");
+                      auditAuthSuccess(stagingId.get(), request.getRemoteAddr());
                       return true;
                     }))
         .orElse(false);
