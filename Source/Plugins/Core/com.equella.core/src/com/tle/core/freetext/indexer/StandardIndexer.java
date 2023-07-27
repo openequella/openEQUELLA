@@ -229,10 +229,18 @@ public class StandardIndexer extends AbstractIndexingExtension {
                   + "."
                   + attachment.getData(DATA_VERSION))); // $NON-NLS-1$
     }
-    String cloudBodyText = CloudProviderService.collectBodyText(attachments);
 
     StringBuilder bodyTextBuf = gatherLanguageBundles(item.getDescription());
-    bodyTextBuf.append(cloudBodyText);
+
+    // The below if statement is added to make this class testable. The challenge is that
+    // CloudProviderService is an Scala object which cannot be mocked by either Mockito
+    // or Scalamock. As a result, we have a find a way to avoid any use of CloudProviderService
+    // in the testing environment. The string literal 'cloud' refers to the custom attachment
+    // type defined in CloudProviderService.
+    if (!attachments.getCustomList("cloud").isEmpty()) {
+      bodyTextBuf.append(CloudProviderService.collectBodyText(attachments));
+    }
+
     if (!Check.isEmpty(item.getComments())) {
       for (Comment comment : item.getComments()) {
         if (!Check.isEmpty(comment.getComment())) {

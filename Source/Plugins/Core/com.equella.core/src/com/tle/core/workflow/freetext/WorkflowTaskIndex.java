@@ -24,15 +24,23 @@ import com.tle.common.searching.Search;
 import com.tle.core.freetext.index.MultipleIndex;
 import com.tle.core.guice.Bind;
 import com.tle.core.services.item.TaskResult;
+import com.tle.freetext.FreetextIndex;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.lucene.document.Document;
 
 @Bind
 @Singleton
 public class WorkflowTaskIndex extends MultipleIndex<TaskResult> {
+
+  @Inject
+  public WorkflowTaskIndex(FreetextIndex freetextIndex) {
+    super(freetextIndex);
+  }
+
   @Override
   protected Set<String> getKeyFields() {
     return new HashSet<String>(
