@@ -247,6 +247,12 @@ const getRecipientCount = (expression: ACLExpression): number =>
   pipe(expression.recipients, A.size);
 
 /**
+ * Get the number of children for a given ACLExpression.
+ */
+const getChildrenCount = (expression: ACLExpression): number =>
+  pipe(expression.children, A.size);
+
+/**
  * Tells whether the provide piece of text is an ACL Operator.
  */
 const isACLOperator = (text: string): text is ACLOperatorType =>
@@ -804,100 +810,125 @@ export const revertCompactedACLExpressions = (
   );
 
 /**
- * Remove redundant expressions, and return a new ACLExpression object.
+ * Return a new AclExpression without any empty children (recursively).
+ * Empty ACLExpression means it doesn't have any children and recipients.
+ *
+ * Example:
+ *
+ * input:
+ * ```
+ * AND A B C
+ *   OR
+ *   OR D E
+ *      AND F G
+ *      AND
+ * ```
+ * output:
+ * ```
+ * AND A B C
+ *   OR D E
+ *     AND F G
+ * ```
  */
-export const removeRedundantExpressions = (aclExpression: ACLExpression) => {
-  /**
-   * Return a new AclExpression without any empty children (recursively).
-   * Empty ACLExpression means it doesn't have any children and recipients.
-   *
-   * Example:
-   *
-   * input:
-   * ```
-   * AND A B C
-   *   OR
-   *   OR D E
-   *      AND F G
-   *      AND
-   * ```
-   * output:
-   * ```
-   * AND A B C
-   *   OR D E
-   *     AND F G
-   * ```
-   */
-  const filterEmptyChildren = (expression: ACLExpression): ACLExpression =>
-    pipe(
-      expression.children,
-      A.filter(
-        ({ children, recipients }) =>
-          A.isNonEmpty(children) || A.isNonEmpty(recipients)
-      ),
-      A.map(filterEmptyChildren),
-      (results) =>
-        createACLExpression(
-          expression.operator,
-          [...expression.recipients],
-          [...results]
-        )
-    );
+const filterEmptyChildren = (expression: ACLExpression): ACLExpression =>
+  pipe(
+    expression.children,
+    A.filter(
+      ({ children, recipients }) =>
+        A.isNonEmpty(children) || A.isNonEmpty(recipients)
+    ),
+    A.map(filterEmptyChildren),
+    (results) =>
+      createACLExpression(
+        expression.operator,
+        [...expression.recipients],
+        [...results]
+      )
+  );
 
-  /**
-   * If a child has same operator with parent or a child only has one recipient,
-   * merge this child's recipients and children into parents (recursively).
-   * Besides, the above rules will not apply to a child if it's operator is "NOT".
-   *
-   * Return a new AclExpression without any children which has same operator with itself.
-   *
-   * Example 1:
-   *
-   * input:
-   * ```
-   * OR A B C
-   *   OR D E
-   * ```
-   * output:
-   * ```
-   * OR A B C D E
-   * ```
-   *
-   * Example 2:
-   *
-   * input:
-   * ```
-   * OR A B C
-   *   AND D
-   * ```
-   * output:
-   * ```
-   * OR A B C D
-   * ```
-   */
-  const mergeChildren = (expression: ACLExpression): ACLExpression => {
-    /** Does this expression have _only_ a single recipient and no children? */
-    const singleRecipientOnlyExpression = (e: ACLExpression): boolean =>
-      getRecipientCount(e) === 1 && A.isEmpty(e.children);
+/** Does this expression have _only_ a single recipient and no children? */
+const singleRecipientOnlyExpression = (e: ACLExpression): boolean =>
+  getRecipientCount(e) === 1 && A.isEmpty(e.children);
 
-    const mergeChildrenMonoid: Monoid<ACLExpression> = {
-      empty: createACLExpression(expression.operator, [
-        ...expression.recipients,
-      ]),
-      concat: (x: ACLExpression, y: ACLExpression): ACLExpression =>
-        y.operator !== "NOT" && singleRecipientOnlyExpression(y)
-          ? addRecipients(y.recipients)(x)
-          : merge(x, y),
-    };
+/** Does this expression have _only_ one child and no recipient? */
+const singleChildOnlyExpression = (e: ACLExpression): boolean =>
+  getChildrenCount(e) === 1 && A.isEmpty(e.recipients);
 
-    return pipe(
-      expression.children,
-      A.foldMap(mergeChildrenMonoid)(mergeChildren)
-    );
+/**
+ * Return a new AclExpression without any children which has same operator with itself (recursively).
+ * It performs merge operations on every child,
+ * using the parent's operator and recipients as the base.
+ *
+ * If a child has same operator with parent or a child only has one recipient,
+ * merge this child's recipients and children into parents.
+ *
+ * And if parent has no recipient and with only one child, then only keep the child.
+ *
+ * Besides, the above 2 rules will not apply to a child if it's operator is "NOT".
+ *
+ * Example 1:
+ *
+ * input:
+ * ```
+ * OR A B C
+ *   OR D E
+ * ```
+ * output:
+ * ```
+ * OR A B C D E
+ * ```
+ *
+ * Example 2:
+ *
+ * input:
+ * ```
+ * OR A B C
+ *   AND D
+ * ```
+ * output:
+ * ```
+ * OR A B C D
+ * ```
+ *
+ * Example 3:
+ *
+ * input:
+ * ```
+ * OR
+ *   AND A B
+ * ```
+ * output:
+ * ```
+ * AND A B
+ * ```
+ */
+const mergeChildren = (expression: ACLExpression): ACLExpression => {
+  const mergeChildrenMonoid: Monoid<ACLExpression> = {
+    empty: createACLExpression(expression.operator, [...expression.recipients]),
+    concat: (x: ACLExpression, y: ACLExpression): ACLExpression => {
+      const handleExpressionWithRecipient = (child: ACLExpression) =>
+        child.operator !== "NOT" && singleRecipientOnlyExpression(child)
+          ? addRecipients(child.recipients)(x)
+          : merge(x, child);
+
+      return expression.operator !== "NOT" &&
+        singleChildOnlyExpression(expression)
+        ? y
+        : handleExpressionWithRecipient(y);
+    },
   };
 
-  return pipe(aclExpression, filterEmptyChildren, mergeChildren);
+  return pipe(
+    expression.children,
+    A.foldMap(mergeChildrenMonoid)(mergeChildren)
+  );
 };
+
+/**
+ * Remove redundant expressions, and return a new ACLExpression object.
+ */
+export const removeRedundantExpressions = (aclExpression: ACLExpression) =>
+  pipe(aclExpression, filterEmptyChildren, mergeChildren);
 
 /**
  * Generate postfix Acl expression strings, and store them in an array, and later they can be combined as a single string easily.
