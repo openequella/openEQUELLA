@@ -442,6 +442,52 @@ export const simplifiedComplexRedundantExpression: ACLExpression =
       ),
     ]
   );
+
+export const emptyRecipientWithOneChildExpression: ACLExpression =
+  createACLExpression(
+    "AND",
+    [],
+    [createACLExpression("OR", [referRecipient("a"), referRecipient("b")], [])]
+  );
+export const simplifiedEmptyRecipientWithOneChildExpression: ACLExpression =
+  createACLExpression("OR", [referRecipient("a"), referRecipient("b")], []);
+
+export const nestedEmptyRecipientWithOneChildExpression: ACLExpression =
+  createACLExpression(
+    "AND",
+    [],
+    [
+      createACLExpression(
+        "OR",
+        [referRecipient("a"), referRecipient("b")],
+        [
+          createACLExpression(
+            "AND",
+            [],
+            [
+              createACLExpression(
+                "OR",
+                [referRecipient("c"), referRecipient("d")],
+                []
+              ),
+            ]
+          ),
+        ]
+      ),
+    ]
+  );
+export const simplifiedNestedEmptyRecipientWithOneChildExpression: ACLExpression =
+  createACLExpression(
+    "OR",
+    [
+      referRecipient("a"),
+      referRecipient("b"),
+      referRecipient("c"),
+      referRecipient("d"),
+    ],
+    []
+  );
+
 /**
  * ```
  * NOT

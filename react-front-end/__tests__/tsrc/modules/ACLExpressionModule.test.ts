@@ -65,8 +65,10 @@ import {
   childSameOperatorExpression,
   complexExpressionACLExpression,
   complexRedundantExpression,
+  emptyRecipientWithOneChildExpression,
   everyoneACLExpression,
   fourItemsACLExpression,
+  nestedEmptyRecipientWithOneChildExpression,
   notExpression,
   notNestedCompactedExpression,
   notNestedExpression,
@@ -82,6 +84,8 @@ import {
   simplifiedChildrenItemRedundantExpression,
   simplifiedChildSameOperatorExpression,
   simplifiedComplexRedundantExpression,
+  simplifiedEmptyRecipientWithOneChildExpression,
+  simplifiedNestedEmptyRecipientWithOneChildExpression,
   simplifiedPeerSameOperatorExpression,
   threeItemsACLExpression,
   twoItemsACLExpression,
@@ -306,23 +310,50 @@ describe("ACLExpressionModule", () => {
   });
 
   describe("removeRedundantExpressions", () => {
-    it("remove redundant expressions in objects of ACL Expression", () => {
-      expect(removeRedundantExpressions(childSameOperatorExpression)).toEqual(
-        ignoreId(simplifiedChildSameOperatorExpression)
-      );
-      expect(
-        removeRedundantExpressions(childOneItemRedundantExpression)
-      ).toEqual(ignoreId(simplifiedChildOneItemRedundantExpression));
-      expect(
-        removeRedundantExpressions(childrenItemRedundantExpression)
-      ).toEqual(ignoreId(simplifiedChildrenItemRedundantExpression));
-      expect(removeRedundantExpressions(peerSameOperatorExpression)).toEqual(
-        ignoreId(simplifiedPeerSameOperatorExpression)
-      );
-      expect(removeRedundantExpressions(complexRedundantExpression)).toEqual(
-        ignoreId(simplifiedComplexRedundantExpression)
-      );
-    });
+    it.each([
+      [
+        "childSameOperatorExpression",
+        childSameOperatorExpression,
+        simplifiedChildSameOperatorExpression,
+      ],
+      [
+        "childOneItemRedundantExpression",
+        childOneItemRedundantExpression,
+        simplifiedChildOneItemRedundantExpression,
+      ],
+      [
+        "childrenItemRedundantExpression",
+        childrenItemRedundantExpression,
+        simplifiedChildrenItemRedundantExpression,
+      ],
+      [
+        "peerSameOperatorExpression",
+        peerSameOperatorExpression,
+        simplifiedPeerSameOperatorExpression,
+      ],
+      [
+        "complexRedundantExpression",
+        complexRedundantExpression,
+        simplifiedComplexRedundantExpression,
+      ],
+      [
+        "emptyRecipientWithOneChildExpression",
+        emptyRecipientWithOneChildExpression,
+        simplifiedEmptyRecipientWithOneChildExpression,
+      ],
+      [
+        "nestedEmptyRecipientWithOneChildExpression",
+        nestedEmptyRecipientWithOneChildExpression,
+        simplifiedNestedEmptyRecipientWithOneChildExpression,
+      ],
+    ])(
+      "remove redundant expressions in objects of ACL Expression",
+      (_, rawACLExpression, simplifiedACLExpression) => {
+        expect(removeRedundantExpressions(rawACLExpression)).toEqual(
+          ignoreId(simplifiedACLExpression)
+        );
+      }
+    );
   });
 
   describe("getACLExpressionById", () => {
