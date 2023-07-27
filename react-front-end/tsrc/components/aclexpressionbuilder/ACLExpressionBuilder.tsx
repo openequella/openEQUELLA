@@ -75,7 +75,7 @@ const StyledGrid = styled(Grid)(({ theme }) => ({
     boxShadow: "0px 0px 0px 0px rgb(0 0 0 / 0%)",
   },
   [`& .${classes.mainContent}`]: {
-    height: 600,
+    height: 660,
   },
   [`& .${classes.panelWrapper}`]: {
     position: "relative",

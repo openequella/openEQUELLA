@@ -38,11 +38,8 @@ const {
   select: selectLabel,
 } = languageStrings.common.action;
 
-const {
-  queryFieldLabel: baseQueryFieldLabel,
-  filterByGroupsButtonLabel,
-  groupFilterSearchHintMessage,
-} = languageStrings.baseSearchComponent;
+const { queryFieldLabel: baseQueryFieldLabel, filterByGroupsButtonLabel } =
+  languageStrings.baseSearchComponent;
 
 const { queryFieldLabel: groupQueryFieldLabel } =
   languageStrings.groupSearchComponent;
@@ -134,11 +131,18 @@ export const clickEditGroupFilterButton = (
 /**
  * Helper function to assist in finding GroupFilterSearch when user choose to edit the group filter.
  *
- * @param renderResult a root container within which <BaseSearch/> exists
+ * @param container a root container within which <BaseSearch/> exists
  */
 export const findGroupFilterSearch = (
-  renderResult: RenderResult
-): Promise<Element> => renderResult.findByText(groupFilterSearchHintMessage);
+  container: HTMLElement
+): Promise<Element> =>
+  waitFor(() => {
+    const search = container.querySelector("#GroupFilter-BaseSearch");
+    if (!search) {
+      throw new Error("Can't find group filter search");
+    }
+    return search;
+  });
 
 /**
  * Helper function to assist in finding the search result list.

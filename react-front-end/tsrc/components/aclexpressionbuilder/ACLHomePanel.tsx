@@ -166,6 +166,7 @@ const ACLHomePanel = ({
               selectButton={{
                 onClick: () => handleOnAdded(userSelections, userToRecipient),
               }}
+              showHelpText
             />
           ),
           (Groups) => (
@@ -183,6 +184,7 @@ const ACLHomePanel = ({
               selectButton={{
                 onClick: () => handleOnAdded(groupSelections, groupToRecipient),
               }}
+              showHelpText
             />
           ),
           (Roles) => (
@@ -202,6 +204,7 @@ const ACLHomePanel = ({
               selectButton={{
                 onClick: () => handleOnAdded(roleSelections, roleToRecipient),
               }}
+              showHelpText
             />
           )
         )
