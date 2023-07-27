@@ -241,7 +241,9 @@ describe("<BaseSearch/>", () => {
 
       await clickFilterByGroupButton(renderResult);
 
-      expect(await findGroupFilterSearch(renderResult)).toBeInTheDocument();
+      expect(
+        await findGroupFilterSearch(renderResult.container)
+      ).toBeInTheDocument();
     });
 
     it("switch to GroupSearch when users choose to edit group filter", async () => {
@@ -254,7 +256,9 @@ describe("<BaseSearch/>", () => {
       const editGroupFilterButton = await renderResult.findByText(editLabel);
       await userEvent.click(editGroupFilterButton);
 
-      expect(await findGroupFilterSearch(renderResult)).toBeInTheDocument();
+      expect(
+        await findGroupFilterSearch(renderResult.container)
+      ).toBeInTheDocument();
     });
 
     it("select button should be disabled if there is no group filter selected", async () => {
@@ -333,7 +337,9 @@ describe("<BaseSearch/>", () => {
 
       await clickEditGroupFilterButton(renderResult);
 
-      expect(await findGroupFilterSearch(renderResult)).toBeInTheDocument();
+      expect(
+        await findGroupFilterSearch(renderResult.container)
+      ).toBeInTheDocument();
     });
 
     it("should clear all group filter when users click clear button", async () => {

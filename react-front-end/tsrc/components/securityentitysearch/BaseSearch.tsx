@@ -67,12 +67,10 @@ import GroupSearch from "./GroupSearch";
 
 const {
   filterActiveNotice,
-  groupFilterSearchTitle,
   filterByGroupsButtonLabel,
+  filteredByPrelude,
   provideQueryMessage,
-  groupFilterSearchHintMessage,
 } = languageStrings.baseSearchComponent;
-const { filteredByPrelude } = languageStrings.userSearchComponent;
 const {
   add: addLabel,
   edit: editLabel,
@@ -101,6 +99,14 @@ export interface CommonEntitySearchProps<T> {
    */
   strings?: {
     /**
+     * The help text tile displayed above the search bar.
+     */
+    helpTitle: string;
+    /**
+     * The help text description displayed above the search bar.
+     */
+    helpDesc: string;
+    /**
      * The text displayed in the search bar.
      */
     queryFieldLabel: string;
@@ -109,6 +115,10 @@ export interface CommonEntitySearchProps<T> {
      */
     failedToFindMessage: string;
   };
+  /**
+   * Show help text displayed above the search bar if `true`. Default value is `false`.
+   */
+  showHelpText?: boolean;
   /**
    * Handler for `select all` button, if undefined no `select all` button will be displayed.
    */
@@ -206,6 +216,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
   id,
   listHeight,
   strings = languageStrings.baseSearchComponent,
+  showHelpText,
   selectButton,
   onCancel,
   onSelectAll,
@@ -240,7 +251,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
   const [errorMessage, setErrorMessage] = useState<String>();
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
 
-  const { queryFieldLabel, failedToFindMessage } = strings;
+  const { helpTitle, helpDesc, queryFieldLabel, failedToFindMessage } = strings;
 
   // look-up of the group details for groupFilter
   useEffect(() => {
@@ -586,11 +597,6 @@ const BaseSearch = <T extends BaseSecurityEntity>({
 
   return showGroupFilterSearch ? (
     <Grid container direction="column">
-      {/*padding is used to align text with search icon*/}
-      <Grid container spacing={2} style={{ padding: "15px" }}>
-        <Typography variant="h6">{groupFilterSearchTitle}</Typography>
-        <Typography variant="body1">{groupFilterSearchHintMessage}</Typography>
-      </Grid>
       <Grid>
         <GroupSearch
           id="GroupFilter"
@@ -613,18 +619,24 @@ const BaseSearch = <T extends BaseSecurityEntity>({
           groupFilter={RSET.empty}
           groupFilterEditable={false}
           search={groupSearch}
+          showHelpText
         />
       </Grid>
     </Grid>
   ) : (
     <Grid id={genId()} container direction="column" spacing={1}>
-      <Grid item xs={12}>
-        {queryBar}
-      </Grid>
+      {showHelpText && (
+        <Grid item>
+          <Typography variant="h6" gutterBottom>
+            {helpTitle}
+          </Typography>
+          <Typography variant="body1">{helpDesc}</Typography>
+        </Grid>
+      )}
+
+      <Grid item>{queryBar}</Grid>
       {groupFilterContent()}
-      <Grid item xs={12}>
-        {showSpinner ? spinner : itemList()}
-      </Grid>
+      <Grid item>{showSpinner ? spinner : itemList()}</Grid>
       <Grid container item direction="row">
         <Grid container item xs={6}>
           {selectAllButton()}

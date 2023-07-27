@@ -936,25 +936,31 @@ export const languageStrings = {
     addRoles: "Please add roles with the search control",
   },
   baseSearchComponent: {
-    filterActiveNotice: "Results will be filtered.",
-    failedToFindMessage: "Unable to find any item matching '%s'",
-    provideQueryMessage: "Please provide a query term",
+    helpTitle: "Select entity(s)",
+    helpDesc: "The search query can contain an entity name or partial name.",
     queryFieldLabel: "Item",
+    failedToFindMessage: "Unable to find any item matching '%s'",
+    filterActiveNotice: "Results will be filtered.",
+    provideQueryMessage: "Please provide a query term",
     filterByGroupsButtonLabel: "Filter by groups",
-    groupFilterSearchTitle: "Select group(s)",
-    groupFilterSearchHintMessage:
-      "The search query can contain a group name or a partial group name with a wildcard character (nam*).",
+    filteredByPrelude: "Your search results will be filtered by these groups:",
   },
   userSearchComponent: {
+    helpTitle: "Select user(s)",
+    helpDesc:
+      "The search query can contain a username, first name, last name or partial name.",
     failedToFindMessage: "Unable to find any user matching '%s'",
-    filteredByPrelude: "Your search results will be filtered by these groups:",
     queryFieldLabel: "Enter username, first or last name",
   },
   groupSearchComponent: {
+    helpTitle: "Select group(s)",
+    helpDesc: "The search query can contain a group name or partial name.",
     failedToFindMessage: "Unable to find any group matching '%s'",
     queryFieldLabel: "Enter group",
   },
   roleSearchComponent: {
+    helpTitle: "Select role(s)",
+    helpDesc: "The search query can contain a role name or partial name.",
     failedToFindMessage: "Unable to find any role matching '%s'",
     queryFieldLabel: "Enter role",
   },
