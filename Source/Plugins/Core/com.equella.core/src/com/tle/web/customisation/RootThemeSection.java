@@ -31,6 +31,7 @@ import com.tle.web.sections.SectionContext;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
+import com.tle.web.sections.SimpleBookmarkModifier;
 import com.tle.web.sections.ajax.AjaxGenerator;
 import com.tle.web.sections.ajax.handler.AjaxFactory;
 import com.tle.web.sections.ajax.handler.AjaxMethod;
@@ -58,6 +59,7 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.settings.menu.SettingsUtils;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
+import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.template.section.HelpAndScreenOptionsSection;
 import java.io.IOException;
 import javax.inject.Inject;
@@ -140,8 +142,14 @@ public class RootThemeSection
         context, viewFactory.createResult("themesettingshelp.ftl", this));
 
     if (model.isExistsCurrentTheme()) {
+
       download.setBookmark(
-          context, new BookmarkAndModify(context, events.getNamedModifier("download")));
+          context,
+          new BookmarkAndModify(
+              context,
+              events.getNamedModifier("download"),
+              // add disable new UI parameter for the download request
+              new SimpleBookmarkModifier(RenderNewTemplate.DisableNewUI(), "true")));
       gtr.addNamedResult(
           OneColumnLayout.BODY, viewFactory.createResult("currentcustomisation.ftl", context));
     } else {
