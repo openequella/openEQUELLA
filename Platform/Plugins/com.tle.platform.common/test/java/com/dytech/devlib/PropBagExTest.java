@@ -424,32 +424,32 @@ public class PropBagExTest extends TestCase {
   }
 
   // Redmine #2459
-  public void testControlCharsReRead() throws Exception {
+  public void testControlCharsReRead() {
     final PropBagEx bag = new PropBagEx("<xml/>");
     bag.setNode("/test", "\u0003\u0008\u0009");
     final String xml = bag.toString();
     final PropBagEx newBag = new PropBagEx(xml);
 
-    // control charcters are lost. this is expected
+    // control characters are lost. this is expected
     final PropBagEx expected = new PropBagEx("<xml><test>\t</test></xml>");
-    assertTrue(newBag.toString().equals(expected.toString()));
+    assertEquals(newBag.toString(), expected.toString());
   }
 
-  public void testControlCharsBulkRead() throws Exception {
+  public void testControlCharsBulkRead() {
     final PropBagEx bag = new PropBagEx("<xml><node1>\u0003&amp;&#x0B;\u0009</node1></xml>");
-    assertTrue(bag.getNode("node1").equals("&\t"));
+    assertEquals("&\t", bag.getNode("node1"));
     final String xml = bag.toString();
-    assertTrue(xml.equals("<xml><node1>&amp;\t</node1></xml>"));
+    assertEquals("<xml><node1>&amp;\t</node1></xml>", xml);
   }
 
-  public void testEscapedChars() throws Exception {
+  public void testEscapedChars() {
     final PropBagEx escp = new PropBagEx(getClass().getResourceAsStream("escaped.xml"));
-    assertTrue(escp.getNode("/node1").equals("Escape char tab: \t"));
-    assertTrue(escp.getNode("/node2").equals("Some more text with an &"));
-    assertTrue(escp.getNode("/node3/@test").equals("ball&shank"));
+    assertEquals("Escape char tab: \t", escp.getNode("/node1"));
+    assertEquals("Some more text with an &", escp.getNode("/node2"));
+    assertEquals("ball&shank", escp.getNode("/node3/@test"));
   }
 
-  public void testIterateAllNodesWithName() throws Exception {
+  public void testIterateAllNodesWithName() {
     final Iterator<String> values = valuesForAllResultXmlA();
     final Iterator<PropBagEx> docIter = doc1.iterateAllNodesWithName("a");
     while (docIter.hasNext() && values.hasNext()) {
@@ -466,7 +466,7 @@ public class PropBagExTest extends TestCase {
     final PropBagEx sub = doc1.getSubtree("result[4]");
     assertNotNull(sub);
     doc1.deleteSubtree(sub);
-    assertTrue(doc1.getSubtree("result[4]") == null);
+    assertNull(doc1.getSubtree("result[4]"));
 
     final PropBagEx sub2 = doc1.getSubtree("result/xml");
     doc1.deleteSubtree(sub2);
@@ -537,11 +537,11 @@ public class PropBagExTest extends TestCase {
 
   private void checkIterators(final Iterator<?> source, final Iterator<?> values) {
     if (source.hasNext()) {
-      assertTrue("Document has more elements to iterate", false);
+      fail("Document has more elements to iterate");
     }
 
     if (values.hasNext()) {
-      assertTrue("Document should have more elements to iterate", false);
+      fail("Document should have more elements to iterate");
     }
   }
 }
