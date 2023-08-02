@@ -38,10 +38,6 @@ export interface ACLTreeOperatorProps extends TreeItemProps {
    */
   operator: ACLOperatorType;
   /**
-   * Available operators for the top level expression. Default to `AND` and `OR`.
-   */
-  rootGroupOperators?: ACLOperatorType[];
-  /**
    * Available operators for the common level expressions. Default to AND and OR and NOT.
    */
   groupOperators?: ACLOperatorType[];
@@ -68,7 +64,6 @@ export interface ACLTreeOperatorProps extends TreeItemProps {
  */
 export const ACLTreeOperator = ({
   nodeId,
-  rootGroupOperators = ["OR", "AND"],
   groupOperators = ["OR", "AND", "NOT"],
   isRoot,
   operator,
@@ -103,10 +98,7 @@ export const ACLTreeOperator = ({
         onClick={(event) => event.stopPropagation()}
         className={classes.labelSelect}
       >
-        {pipe(
-          isRoot ? rootGroupOperators : groupOperators,
-          A.map(buildMenuItemForOperator)
-        )}
+        {pipe(groupOperators, A.map(buildMenuItemForOperator))}
       </Select>
       <TooltipIconButton
         onClick={(event) => {
