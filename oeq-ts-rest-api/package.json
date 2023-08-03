@@ -42,9 +42,9 @@
     "tough-cookie": "^4.0.0"
   },
   "devDependencies": {
-    "@types/jest": "29.5.1",
-    "@types/lodash": "4.14.191",
-    "@types/node": "18.16.9",
+    "@types/jest": "29.5.3",
+    "@types/lodash": "4.14.196",
+    "@types/node": "18.17.1",
     "@types/tough-cookie": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "5.52.0",
     "@typescript-eslint/parser": "5.52.0",
