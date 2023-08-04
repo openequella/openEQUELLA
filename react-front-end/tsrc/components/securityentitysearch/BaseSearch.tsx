@@ -496,12 +496,12 @@ const BaseSearch = <T extends BaseSecurityEntity>({
     )
   );
 
+  const isItemFound = items.length > 0;
+
   /**
    * Display a list of items in CheckboxList.
    */
   const itemList = () => {
-    const isItemFound = items.length > 0;
-
     return (
       <List
         id={genId("ItemList")}
@@ -537,7 +537,6 @@ const BaseSearch = <T extends BaseSecurityEntity>({
       <Grid>
         <Button
           color="secondary"
-          size="small"
           onClick={() =>
             pipe(
               items,
@@ -555,11 +554,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
   const clearAllButton = () =>
     onClearAll ? (
       <Grid>
-        <Button
-          color="secondary"
-          size="small"
-          onClick={() => onClearAll(RSET.empty)}
-        >
+        <Button color="secondary" onClick={() => onClearAll(RSET.empty)}>
           {clearAllLabel}
         </Button>
       </Grid>
@@ -639,8 +634,8 @@ const BaseSearch = <T extends BaseSecurityEntity>({
       <Grid item>{showSpinner ? spinner : itemList()}</Grid>
       <Grid container item direction="row">
         <Grid container item xs={6}>
-          {selectAllButton()}
-          {clearAllButton()}
+          {isItemFound && selectAllButton()}
+          {isItemFound && clearAllButton()}
         </Grid>
         <Grid container item xs={6} direction="row" justifyContent="flex-end">
           {selectButtonElement()}

@@ -194,13 +194,16 @@ describe("<BaseSearch/>", () => {
     it("should return an empty set when users click the `clear all` (select none) button", async () => {
       const onClearAll = jest.fn();
 
-      const { getByText } = await renderBaseSearch({
+      const { container, findByText } = await renderBaseSearch({
         ...defaultBaseSearchProps,
         onClearAll: onClearAll,
       });
 
-      // Click `clear all` button
-      await userEvent.click(getByText(clearAllLabel));
+      // do search to let clear all button displayed
+      await searchEntity(container, "");
+      // click `clear all` button
+      const clearAll = await findByText(clearAllLabel);
+      await userEvent.click(clearAll);
 
       const argToFirstCall = onClearAll.mock.calls[0][0];
 
