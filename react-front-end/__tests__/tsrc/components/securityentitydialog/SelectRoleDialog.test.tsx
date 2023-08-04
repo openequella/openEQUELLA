@@ -23,6 +23,8 @@ import {
   clickCancelButton,
   clickDeleteIconForEntity,
   clickOkButton,
+  testRemoveAll,
+  testRemoveEntity,
 } from "./SelectEntityDialogTestHelper";
 import {
   commonSelectRoleDialogProps,
@@ -49,19 +51,15 @@ describe("SelectRoleDialog", () => {
   });
 
   it("Should be able to remove selected role", async () => {
-    const onClose = jest.fn();
-    const { getByRole } = renderSelectRoleDialog({
-      ...commonSelectRoleDialogProps,
-      value: SET.singleton(roles[0]),
-      onClose,
-    });
-
-    const dialog = getByRole("dialog");
-
-    await clickDeleteIconForEntity(dialog, roles[0].name);
-    await clickOkButton(dialog);
-
-    const result = onClose.mock.lastCall[0];
+    const result = await testRemoveEntity(
+      (onClose: jest.Mock) =>
+        renderSelectRoleDialog({
+          ...commonSelectRoleDialogProps,
+          value: SET.singleton(roles[0]),
+          onClose,
+        }),
+      roles[0].name
+    );
     expect(result).toEqual(new Set());
   });
 
@@ -83,5 +81,16 @@ describe("SelectRoleDialog", () => {
 
     const result = onClose.mock.lastCall[0];
     expect(result).toBeUndefined();
+  });
+
+  it("Should be able to remove all selections by clicking the remove all button", async () => {
+    const result = await testRemoveAll((onClose: jest.Mock) =>
+      renderSelectRoleDialog({
+        ...commonSelectRoleDialogProps,
+        value: new Set(roles),
+        onClose,
+      })
+    );
+    expect(result).toEqual(new Set());
   });
 });

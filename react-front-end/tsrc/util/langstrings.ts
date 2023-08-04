@@ -218,6 +218,7 @@ export const languageStrings = {
       refresh: "Refresh",
       reject: "Reject",
       register: "Register",
+      removeAll: "Remove all",
       resettodefault: "Reset to Default",
       revertchanges: "Revert Changes",
       save: "Save",
