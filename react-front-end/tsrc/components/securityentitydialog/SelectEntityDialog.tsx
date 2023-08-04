@@ -17,6 +17,7 @@
  */
 import ErrorOutline from "@mui/icons-material/ErrorOutline";
 import {
+  Button,
   Divider,
   Grid,
   List,
@@ -36,6 +37,8 @@ import { useState } from "react";
 import type { BaseSecurityEntity } from "../../modules/ACLEntityModule";
 import { languageStrings } from "../../util/langstrings";
 import ConfirmDialog from "../ConfirmDialog";
+
+const { removeAll: removeAllLabel } = languageStrings.common.action;
 
 export interface SelectEntityDialogProps<T extends BaseSecurityEntity> {
   /** Open the dialog when true. */
@@ -145,32 +148,48 @@ const SelectEntityDialog = <T extends BaseSecurityEntity>({
             )
           )}
         </Grid>
+
         <Divider orientation="vertical" flexItem light sx={{ margin: "5px" }} />
-        <Grid item xs>
-          {/*paddingLeft is used to align title with the list icon below it*/}
-          <Typography variant="h6" sx={{ paddingLeft: "16px" }}>
-            {currentSelectionsLabel}
-          </Typography>
-          <List disablePadding>
-            {hasSelectedEntities ? (
-              pipe(
-                selectedEntities,
-                RS.toReadonlyArray(itemOrd),
-                RA.map((entity) =>
-                  entityDetailsToEntry(entity, () =>
-                    handleDeleteForEachEntry(entity)
+
+        <Grid container item xs direction="column" rowSpacing={2}>
+          <Grid item>
+            {/*paddingLeft is used to align title with the list item below it*/}
+            <Typography variant="h6" sx={{ paddingLeft: 2 }} gutterBottom>
+              {currentSelectionsLabel}
+            </Typography>
+
+            <List disablePadding>
+              {hasSelectedEntities ? (
+                pipe(
+                  selectedEntities,
+                  RS.toReadonlyArray(itemOrd),
+                  RA.map((entity) =>
+                    entityDetailsToEntry(entity, () =>
+                      handleDeleteForEachEntry(entity)
+                    )
                   )
                 )
-              )
-            ) : (
-              <ListItem>
-                <ListItemIcon>
-                  <ErrorOutline />
-                </ListItemIcon>
-                <ListItemText secondary={addEntityMessage} />
-              </ListItem>
-            )}
-          </List>
+              ) : (
+                <ListItem>
+                  <ListItemIcon>
+                    <ErrorOutline />
+                  </ListItemIcon>
+                  <ListItemText secondary={addEntityMessage} />
+                </ListItem>
+              )}
+            </List>
+          </Grid>
+          {!RS.isEmpty(selectedEntities) && (
+            <Grid item>
+              <Button
+                color="secondary"
+                onClick={() => setSelectedEntities(RS.empty)}
+                sx={{ float: "right" }}
+              >
+                {removeAllLabel}
+              </Button>
+            </Grid>
+          )}
         </Grid>
       </Grid>
     </ConfirmDialog>

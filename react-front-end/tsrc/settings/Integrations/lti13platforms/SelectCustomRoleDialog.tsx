@@ -17,6 +17,7 @@
  */
 import ErrorOutline from "@mui/icons-material/ErrorOutline";
 import {
+  Button,
   Divider,
   FormControl,
   Grid,
@@ -67,7 +68,8 @@ const {
 } =
   languageStrings.settings.integration.lti13PlatformsSettings.createPage
     .roleMappings;
-const { ok: okLabel } = languageStrings.common.action;
+const { ok: okLabel, removeAll: removeAllLabel } =
+  languageStrings.common.action;
 
 const StyledDivider = styled(Divider)(({ theme }) => ({
   marginLeft: theme.spacing(2),
@@ -244,6 +246,35 @@ const SelectCustomRoleDialog = ({
     setSelectedOeqRoles(RS.empty);
   };
 
+  const selectLtiRole = (
+    <>
+      <Typography variant="h6" gutterBottom>
+        {customRoleSelectLtiRole}
+      </Typography>
+      <LtiRoleSelect />
+    </>
+  );
+
+  const selectOeqRole = (
+    <>
+      <StyledTypography variant="h6" gutterBottom>
+        {customRoleSelectOeqRole}
+      </StyledTypography>
+      <RoleSearch
+        selections={selectedOeqRoles}
+        onChange={setSelectedOeqRoles}
+        search={roleListProvider}
+        enableMultiSelection
+        onSelectAll={setSelectedOeqRoles}
+        onClearAll={setSelectedOeqRoles}
+        selectButton={{
+          disabled: RS.isEmpty(selectedOeqRoles),
+          onClick: handleRoleSearchOnSelect,
+        }}
+      />
+    </>
+  );
+
   return (
     <ConfirmDialog
       title={customRoleDialogTitle}
@@ -254,46 +285,40 @@ const SelectCustomRoleDialog = ({
       maxWidth="lg"
     >
       <Grid container>
-        <Grid container xs item direction="column">
-          <Grid item>
-            <Typography variant="h6" gutterBottom>
-              {customRoleSelectLtiRole}
-            </Typography>
-            <LtiRoleSelect />
-          </Grid>
-
-          <Grid item>
-            <StyledTypography variant="h6" gutterBottom>
-              {customRoleSelectOeqRole}
-            </StyledTypography>
-            <RoleSearch
-              selections={selectedOeqRoles}
-              onChange={setSelectedOeqRoles}
-              search={roleListProvider}
-              enableMultiSelection
-              onSelectAll={setSelectedOeqRoles}
-              onClearAll={setSelectedOeqRoles}
-              selectButton={{
-                disabled: RS.isEmpty(selectedOeqRoles),
-                onClick: handleRoleSearchOnSelect,
-              }}
-            />
-          </Grid>
+        <Grid container item xs direction="column" rowSpacing={2}>
+          <Grid item>{selectLtiRole}</Grid>
+          <Grid item>{selectOeqRole}</Grid>
         </Grid>
 
         <StyledDivider orientation="vertical" flexItem light />
 
-        <Grid item xs>
-          <Typography variant="h6">{customRoleCurrentSelections}</Typography>
-          {M.isEmpty(rolesMapping) ? (
-            <ListItem>
-              <ListItemIcon>
-                <ErrorOutline />
-              </ListItemIcon>
-              <ListItemText secondary={customRoleAddRoles} />
-            </ListItem>
-          ) : (
-            ltiOeqRoleMappingTable(rolesMapping)
+        <Grid container item xs rowSpacing={2} direction="column">
+          <Grid item>
+            <Typography variant="h6" gutterBottom>
+              {customRoleCurrentSelections}
+            </Typography>
+            {M.isEmpty(rolesMapping) ? (
+              <ListItem>
+                <ListItemIcon>
+                  <ErrorOutline />
+                </ListItemIcon>
+                <ListItemText secondary={customRoleAddRoles} />
+              </ListItem>
+            ) : (
+              ltiOeqRoleMappingTable(rolesMapping)
+            )}
+          </Grid>
+
+          {!M.isEmpty(rolesMapping) && (
+            <Grid item>
+              <Button
+                color="secondary"
+                onClick={() => setRolesMapping(new Map())}
+                sx={{ float: "right" }}
+              >
+                {removeAllLabel}
+              </Button>
+            </Grid>
           )}
         </Grid>
       </Grid>
