@@ -54,9 +54,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Fieldable;
-import org.apache.lucene.document.NumericField;
+import org.apache.lucene.document.FieldType;
+import org.apache.lucene.document.LongField;
 import org.hibernate.Hibernate;
 import org.hibernate.type.SerializationException;
 import org.slf4j.Logger;
@@ -113,7 +112,7 @@ public class StandardIndexer extends AbstractIndexingExtension {
 
   @Override
   public void indexSlow(IndexedItem indexedItem) {
-    List<Fieldable> fields =
+    List<Field> fields =
         textExtracter.indexAttachments(indexedItem, freetextIndex.getSearchSettings());
     addAllFields(indexedItem.getItemdoc(), fields);
   }
@@ -154,11 +153,11 @@ public class StandardIndexer extends AbstractIndexingExtension {
   }
 
   @SuppressWarnings("nls")
-  public List<Fieldable> getBasicFields(IndexedItem indexedItem) {
+  public List<Field> getBasicFields(IndexedItem indexedItem) {
     ItemIdKey id = indexedItem.getItemIdKey();
     Item item = indexedItem.getItem();
     long instId = item.getInstitution().getUniqueId();
-    List<Fieldable> fields = new ArrayList<Fieldable>();
+    List<Field> fields = new ArrayList<Field>();
     String szName = gatherLanguageBundles(item.getName()).toString().toLowerCase().trim();
     ItemStatus itemstatus = item.getStatus();
 
@@ -184,9 +183,13 @@ public class StandardIndexer extends AbstractIndexingExtension {
     fields.add(keyword(FreeTextQuery.FIELD_VERSION, sVersion));
     fields.add(keyword(FreeTextQuery.FIELD_UNIQUE, item.getIdString()));
     fields.add(keyword(FreeTextQuery.FIELD_ID, Long.toString(item.getId())));
-    fields.add(
-        new NumericField(FreeTextQuery.FIELD_ID_RANGEABLE, 1, Store.YES, true)
-            .setLongValue(item.getId()));
+
+    FieldType idRangeFieldType = new FieldType();
+    idRangeFieldType.setIndexed(true);
+    idRangeFieldType.setNumericType(FieldType.NumericType.LONG);
+    idRangeFieldType.setNumericPrecisionStep(1);
+    idRangeFieldType.setStored(true);
+    fields.add(new LongField(FreeTextQuery.FIELD_ID_RANGEABLE, item.getId(), idRangeFieldType));
     fields.add(keyword(FreeTextQuery.FIELD_INDEXEDTIME, Long.toString(lastIndexed.getTime())));
     fields.add(keyword(FreeTextQuery.FIELD_ITEMDEFID, item.getItemDefinition().getUuid()));
 
@@ -262,12 +265,12 @@ public class StandardIndexer extends AbstractIndexingExtension {
     return fields;
   }
 
-  private void addName(List<Fieldable> fields, String name) {
+  private void addName(List<Field> fields, String name) {
     fields.add(unstoredAndVectored(FreeTextQuery.FIELD_NAME_VECTORED, name));
     fields.add(unstoredAndVectored(FreeTextQuery.FIELD_NAME_VECTORED_NOSTEM, name));
   }
 
-  private void addBody(List<Fieldable> fields, String body) {
+  private void addBody(List<Field> fields, String body) {
     fields.add(unstoredAndVectored(FreeTextQuery.FIELD_BODY, body));
     fields.add(unstoredAndVectored(FreeTextQuery.FIELD_BODY_NOSTEM, body));
   }

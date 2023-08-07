@@ -29,11 +29,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.AtomicReader;
+import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.DocsEnum;
+import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermDocs;
+import org.apache.lucene.index.Terms;
+import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
+import org.apache.lucene.util.Bits;
+import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.OpenBitSet;
 
 public class SecurityFilter extends Filter {
@@ -94,47 +100,55 @@ public class SecurityFilter extends Filter {
   }
 
   @Override
-  public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
+  public DocIdSet getDocIdSet(AtomicReaderContext context, Bits acceptDocs) throws IOException {
+    AtomicReader reader = context.reader();
     final int max = reader.maxDoc();
     results = new OpenBitSet(max);
 
     if (!systemUser) {
       OpenBitSet owned = new OpenBitSet(max);
       if (ownerSizes > 0) {
-        TermDocs odocs =
-            reader.termDocs(new Term(FreeTextQuery.FIELD_OWNER, CurrentUser.getUserID()));
-        while (odocs.next()) {
-          owned.set(odocs.doc());
+        DocsEnum odocs =
+            reader.termDocsEnum(new Term(FreeTextQuery.FIELD_OWNER, CurrentUser.getUserID()));
+        while (odocs != null && odocs.nextDoc() != DocsEnum.NO_MORE_DOCS) {
+          owned.set(odocs.docID());
         }
       }
 
       Set<Term> allTerms = new TreeSet<Term>(comparator);
-      for (String element : expressions) {
-        FieldIterator iterator = new FieldIterator(reader, element, ""); // $NON-NLS-1$
-        while (iterator.hasNext()) {
-          allTerms.add(iterator.next());
+      for (String field : expressions) {
+        Terms terms = MultiFields.getTerms(reader, field);
+        if (terms != null) {
+          TermsEnum termsEnum = terms.iterator(null);
+          termsEnum.seekCeil(new BytesRef(""));
+          while (termsEnum.next() != null) {
+            String text = termsEnum.term().utf8ToString();
+            allTerms.add(new Term(field, new BytesRef(text)));
+          }
+          ;
         }
       }
 
       for (Term term : allTerms) {
         String type = term.text();
         boolean grant = type.charAt(type.length() - 1) == 'G';
-        TermDocs docs = reader.termDocs(term);
+        DocsEnum docs = reader.termDocsEnum(term);
         Boolean exprType = ownerExprMap.get(term.field());
+
+        int doc;
         if (exprType == null) {
           if (grant) {
-            while (docs.next()) {
-              results.set(docs.doc());
+            while ((doc = docs.nextDoc()) != DocsEnum.NO_MORE_DOCS) {
+              results.set(doc);
             }
           } else {
-            while (docs.next()) {
-              results.clear(docs.doc());
+            while ((doc = docs.nextDoc()) != DocsEnum.NO_MORE_DOCS) {
+              results.clear(doc);
             }
           }
         } else {
-          boolean must = exprType.booleanValue();
-          while (docs.next()) {
-            int doc = docs.doc();
+          boolean must = exprType;
+          while ((doc = docs.nextDoc()) != DocsEnum.NO_MORE_DOCS) {
             if (owned.get(doc) == must) {
               if (grant) {
                 results.set(doc);
@@ -144,14 +158,18 @@ public class SecurityFilter extends Filter {
             }
           }
         }
-        docs.close();
       }
     } else {
-      TermDocs docs = reader.termDocs(null);
-      while (docs.next()) {
-        results.set(docs.doc());
+      Bits liveDocs = reader.getLiveDocs();
+      if (liveDocs != null) {
+        for (int i = 0; i < liveDocs.length(); i++) {
+          results.set(i);
+        }
+      } else {
+        for (int i = 0; i < reader.maxDoc(); i++) {
+          results.set(i);
+        }
       }
-      docs.close();
     }
 
     // If we are only collecting results, we return a full bitset to match

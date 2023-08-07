@@ -20,7 +20,11 @@ package com.tle.core.workflow.freetext;
 
 import com.tle.common.Check;
 import java.io.IOException;
-import org.apache.lucene.index.IndexReader;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.SortedDocValues;
+import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.search.FieldCache;
 import org.apache.lucene.search.FieldComparator;
 
@@ -31,6 +35,7 @@ public final class CustomLuceneSortComparator extends FieldComparator<Integer> {
   private String[] currentReaderValues;
   private final String field;
   private int bottom;
+  private int top;
 
   public CustomLuceneSortComparator(int numHits, String field, String userId) {
     values = new int[numHits];
@@ -56,18 +61,39 @@ public final class CustomLuceneSortComparator extends FieldComparator<Integer> {
   }
 
   @Override
+  public int compareTop(int doc) {
+    final int val2 = isCurrentUser(currentReaderValues[doc]);
+    return top - val2;
+  }
+
+  @Override
   public void copy(int slot, int doc) {
     values[slot] = isCurrentUser(currentReaderValues[doc]);
   }
 
   @Override
-  public void setNextReader(IndexReader reader, int docBase) throws IOException {
-    currentReaderValues = FieldCache.DEFAULT.getStrings(reader, field);
+  public FieldComparator<Integer> setNextReader(AtomicReaderContext context) throws IOException {
+    SortedDocValues sortedDocValues = FieldCache.DEFAULT.getTermsIndex(context.reader(), field);
+    currentReaderValues = new String[sortedDocValues.getValueCount()];
+
+    List<String> values = new ArrayList<>();
+    TermsEnum termsEnum = sortedDocValues.termsEnum();
+    while (termsEnum.next() != null) {
+      values.add(termsEnum.term().utf8ToString());
+    }
+
+    currentReaderValues = values.toArray(new String[sortedDocValues.getValueCount()]);
+    return this;
   }
 
   @Override
   public void setBottom(final int bottom) {
     this.bottom = values[bottom];
+  }
+
+  @Override
+  public void setTopValue(Integer top) {
+    this.top = top;
   }
 
   @Override

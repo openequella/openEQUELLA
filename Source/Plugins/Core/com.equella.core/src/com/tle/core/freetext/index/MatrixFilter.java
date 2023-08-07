@@ -26,11 +26,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.AtomicReader;
+import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.DocsEnum;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
+import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.OpenBitSet;
 
 public class MatrixFilter extends Filter {
@@ -42,7 +44,8 @@ public class MatrixFilter extends Filter {
   }
 
   @Override
-  public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
+  public DocIdSet getDocIdSet(AtomicReaderContext context, Bits acceptDocs) throws IOException {
+    AtomicReader reader = context.reader();
     int maxDoc = reader.maxDoc();
     Map<String, Map<String, OpenBitSet>> xpathMap = new HashMap<String, Map<String, OpenBitSet>>();
     for (Field fieldObj : fields) {
@@ -53,12 +56,11 @@ public class MatrixFilter extends Filter {
       {
         if (term.text().equals(fieldObj.getValue())) {
           OpenBitSet set = new OpenBitSet(maxDoc);
-          TermDocs docs = reader.termDocs(term);
-          while (docs.next()) {
-            set.set(docs.doc());
+          DocsEnum docs = reader.termDocsEnum(term);
+          while (docs != null && docs.nextDoc() != DocsEnum.NO_MORE_DOCS) {
+            set.set(docs.docID());
           }
-          docs.close();
-          String xpathKey = ""; // $NON-NLS-1$
+          String xpathKey = "";
           if (hasXpaths) {
             String fieldName = term.field();
             int ind = fieldName.lastIndexOf(']');

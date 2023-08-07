@@ -39,7 +39,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.document.Field;
 
 public class IndexedItem {
   @Inject private StandardIndexer standardIndexer;
@@ -55,11 +55,11 @@ public class IndexedItem {
   private PropBagEx itemxml;
 
   // cache for basic fields which should go in every index
-  private List<Fieldable> basicFields;
+  private List<Field> basicFields;
 
   private Document itemdoc = new Document();
   private final Map<String, List<Document>> indexDocMap = new HashMap<String, List<Document>>();
-  private final Map<String, List<Fieldable>> aclMap = new HashMap<String, List<Fieldable>>();
+  private final Map<String, List<Field>> aclMap = new HashMap<String, List<Field>>();
   private final ItemSelect itemSelect = new ItemSelect();
   private long expectedReturnTime = Long.MAX_VALUE;
   private boolean finishedFastIndexing;
@@ -91,7 +91,7 @@ public class IndexedItem {
     return docList;
   }
 
-  public List<Fieldable> getBasicFields() {
+  public List<Field> getBasicFields() {
     if (basicFields == null) {
       basicFields = standardIndexer.getBasicFields(this);
     }
@@ -210,7 +210,7 @@ public class IndexedItem {
     return aclManager;
   }
 
-  public List<Fieldable> getACLEntries(String privilege) {
+  public List<Field> getACLEntries(String privilege) {
     return aclMap.get(privilege);
   }
 
@@ -218,8 +218,8 @@ public class IndexedItem {
     prepareACLEntries(indexedItem.getItem(), privilege, ItemIndex.convertStdPriv(privilege));
   }
 
-  public List<Fieldable> queryACLEntries(Object domainObject, String privilege, String prefix) {
-    List<Fieldable> fields = new ArrayList<Fieldable>();
+  public List<Field> queryACLEntries(Object domainObject, String privilege, String prefix) {
+    List<Field> fields = new ArrayList<Field>();
     List<ACLEntryMapping> allEntriesForObject =
         aclManager.getAllEntriesForObject(domainObject, privilege);
 

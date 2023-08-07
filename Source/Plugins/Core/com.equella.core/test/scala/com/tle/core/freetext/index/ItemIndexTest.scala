@@ -43,6 +43,7 @@ import com.tle.core.settings.service.ConfigurationService
 import com.tle.core.zookeeper.ZookeeperService
 import com.tle.freetext.{FreetextIndexConfiguration, FreetextIndexImpl, IndexedItem}
 import org.apache.lucene.document.Document
+import org.apache.lucene.queries.ChainedFilter
 import org.apache.lucene.search._
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyInt}
@@ -302,7 +303,7 @@ class ItemIndexTest
       it("supports filtering by date range field") { f =>
         val (itemIndex, searchConfig) = f
 
-        Given("a list of Items where only one item is last modified yesterday")
+        Given("a list of Items where only one item is last modified within the date range")
         val start          = dateFormatter.parse("2023-07-10")
         val end            = dateFormatter.parse("2023-07-20")
         val modifiedDate   = dateFormatter.parse("2023-07-15")
@@ -312,10 +313,10 @@ class ItemIndexTest
                       generateIndexedItems(1, dateModified = modifiedDate) ++ generateIndexedItems(
                         2,
                         dateModified = outOfRangeDate))
-        When("a date range for yesterday is set in the search configuration")
+        When("the search configuration uses this date range for last modified date")
         searchConfig.setDateRange(Array(start, end))
 
-        Then("the search result should only return Items modified yesterday")
+        Then("the search result should only return Items modified within the date range")
         val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
         result.length shouldBe 1
 
