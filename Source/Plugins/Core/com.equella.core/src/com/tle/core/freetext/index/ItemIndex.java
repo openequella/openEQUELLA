@@ -126,7 +126,6 @@ import org.apache.lucene.search.TotalHitCountCollector;
 import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.OpenBitSet;
-import org.apache.lucene.util.Version;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
@@ -962,8 +961,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
         boosts.put(FreeTextQuery.FIELD_BODY, descriptionBoost);
         boosts.put(FreeTextQuery.FIELD_ATTACHMENT_VECTORED, attachmentBoost);
 
-        TLEQueryParser tleParser =
-            new TLEQueryParser(Version.LUCENE_4_10_4, fields, getAnalyser(), boosts);
+        TLEQueryParser tleParser = new TLEQueryParser(fields, getAnalyser(), boosts);
         tleParser.setDefaultOperator(getDefaultOperator());
         Query tleQuery = tleParser.parse(queryString);
 

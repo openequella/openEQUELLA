@@ -27,21 +27,19 @@ import java.util.regex.Pattern;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.util.Version;
 
 public class TLEQueryParser extends MultiFieldQueryParser {
   private Map<String, String> stemmedToNonStemmed;
   private static final Pattern pattern =
       Pattern.compile("(?<![\\\\])[-+!]$|(?=[-+!][^\\w\"])(?<![\\\\])[-+!]"); // $NON-NLS-1$
 
-  public TLEQueryParser(
-      Version version, String[] fields, Analyzer analyzer, Map<String, Float> boosts) {
-    super(version, fields, analyzer, boosts);
+  public TLEQueryParser(String[] fields, Analyzer analyzer, Map<String, Float> boosts) {
+    super(fields, analyzer, boosts);
     buildStemmedToNonStemmed();
   }
 
   @Override
-  public org.apache.lucene.search.Query parse(String query) throws ParseException {
+  public org.apache.lucene.search.Query parse(String rawQuery) throws ParseException {
     /**
      * Seriously ghetto code follows. This is to combat lucene query syntax in item titles. If the
      * title is autocompleted the query should already be escaped (using QueryParser.escape) and if
@@ -50,12 +48,18 @@ public class TLEQueryParser extends MultiFieldQueryParser {
      * the following fix in Lucene 3.6.1 and higher -
      * https://issues.apache.org/jira/browse/LUCENE-2566 Which changes the way - + ! are handled.
      * Does not appear to work correctly for ! though.
+     *
+     * <p>This method was re-visited when upgrading Lucene to V4.10.4. The above-mentioned issue is
+     * still there. Plus, forward slash will cause a ParseException if it is not escaped. The Regex
+     * pattern defined above is too hard to understand and modifiy without any explanation.
+     * Considering our target is V9 which may have solved the issue, maybe in this stage let's just
+     * do a simple char replacement to escape forward slash.
      */
+    String query = rawQuery.replace("/", "\\/");
     Matcher matcher = pattern.matcher(query);
-    StringBuffer s = new StringBuffer();
-
+    StringBuilder s = new StringBuilder();
     while (matcher.find()) {
-      matcher.appendReplacement(s, "\\\\" + matcher.group()); // $NON-NLS-1$
+      matcher.appendReplacement(s, "\\\\" + matcher.group());
     }
     matcher.appendTail(s);
 
