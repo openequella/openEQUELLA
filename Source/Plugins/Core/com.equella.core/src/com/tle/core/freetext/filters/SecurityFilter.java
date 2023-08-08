@@ -32,7 +32,6 @@ import java.util.TreeSet;
 import org.apache.lucene.index.AtomicReader;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.DocsEnum;
-import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
@@ -115,17 +114,15 @@ public class SecurityFilter extends Filter {
         }
       }
 
-      Set<Term> allTerms = new TreeSet<Term>(comparator);
+      Set<Term> allTerms = new TreeSet<>(comparator);
       for (String field : expressions) {
-        Terms terms = MultiFields.getTerms(reader, field);
+        Terms terms = reader.terms(field);
         if (terms != null) {
           TermsEnum termsEnum = terms.iterator(null);
-          termsEnum.seekCeil(new BytesRef(""));
           while (termsEnum.next() != null) {
             String text = termsEnum.term().utf8ToString();
             allTerms.add(new Term(field, new BytesRef(text)));
           }
-          ;
         }
       }
 
@@ -161,14 +158,9 @@ public class SecurityFilter extends Filter {
       }
     } else {
       Bits liveDocs = reader.getLiveDocs();
-      if (liveDocs != null) {
-        for (int i = 0; i < liveDocs.length(); i++) {
-          results.set(i);
-        }
-      } else {
-        for (int i = 0; i < reader.maxDoc(); i++) {
-          results.set(i);
-        }
+      int maxDoc = liveDocs != null ? liveDocs.length() : reader.maxDoc();
+      for (int i = 0; i < maxDoc; i++) {
+        results.set(i);
       }
     }
 
