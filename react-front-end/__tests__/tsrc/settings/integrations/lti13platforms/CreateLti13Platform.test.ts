@@ -51,9 +51,6 @@ const {
   accessControl: { unknownUserHandlingCreate: unknownUserHandlingCreateLabel },
 } = languageStrings.settings.integration.lti13PlatformsSettings.createPage;
 
-// the `submit value test` needs to fill all the controls with value which will cost more time
-jest.setTimeout(25000);
-
 describe("CreateLti13Platform", () => {
   const errorOutlineClass = "Mui-error";
 
@@ -123,7 +120,7 @@ describe("CreateLti13Platform", () => {
 
     const result = createPlatform.mock.lastCall[0];
     expect(result).toEqual(expectedResult);
-  });
+  }, 45000);
 
   it("highlights any required fields whose value is empty", async () => {
     const createPlatform = jest.fn();

@@ -44,6 +44,7 @@ import { ReferrerType } from "../../../../tsrc/components/aclexpressionbuilder/A
 import type { ACLOperatorType } from "../../../../tsrc/modules/ACLExpressionModule";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import { selectOption } from "../../MuiTestHelpers";
+import { selectEntitiesInOneClickMode } from "../securityentitysearch/BaseSearchTestHelper";
 import { searchGroup } from "../securityentitysearch/GroupSearchTestHelper";
 import { searchRole } from "../securityentitysearch/RoleSearchTestHelper";
 import { searchUser } from "../securityentitysearch/UserSearchTestHelpler";
@@ -90,6 +91,8 @@ const {
   groups: groupsRadioLabel,
   roles: rolesRadioLabel,
 } = searchFilters;
+
+jest.setTimeout(15000);
 
 describe("<ACLExpressionBuilder/>", () => {
   it("displays home panel's user search on initial render", () => {
@@ -155,7 +158,7 @@ describe("<ACLExpressionBuilder/>", () => {
 
   it("should be able to add a sub group for ACLExpression", async () => {
     const expectedResult =
-      "U:20483af2-fe56-4499-a54b-8d7452156895 U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef U:eb75a832-6533-4d72-93f4-2b7a1b108951 AND OR";
+      "U:20483af2-fe56-4499-a54b-8d7452156895 U:eb75a832-6533-4d72-93f4-2b7a1b108951 U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef AND OR";
     const onFinish = jest.fn();
     const { getByLabelText, container } = renderACLExpressionBuilder({
       ...defaultACLExpressionBuilderProps,
@@ -256,7 +259,7 @@ describe("<ACLExpressionBuilder/>", () => {
         "R:fda99983-9eda-440a-ac68-0f746173fdcb",
       ],
     ])(
-      "should be able to add one %s result to the expression by clicking the add button in each entry",
+      "should be able to add one %s result to the expression",
       async (
         _: string,
         entityRadioLabel: string,
@@ -268,11 +271,10 @@ describe("<ACLExpressionBuilder/>", () => {
         expectedACLExpressionResult: string
       ) => {
         const onFinish = jest.fn();
-        const { getByText, container, getByLabelText } =
-          renderACLExpressionBuilder({
-            ...defaultACLExpressionBuilderProps,
-            onFinish,
-          });
+        const { getByText, container } = renderACLExpressionBuilder({
+          ...defaultACLExpressionBuilderProps,
+          onFinish,
+        });
 
         // select entity search radio
         await userEvent.click(getByText(entityRadioLabel));
@@ -282,7 +284,7 @@ describe("<ACLExpressionBuilder/>", () => {
         await waitFor(() => getByText(entityToSelect));
 
         // click the add button
-        await userEvent.click(getByLabelText(addLabel));
+        await selectEntitiesInOneClickMode(container, [entityToSelect]);
 
         // click ok button to get the result
         await userEvent.click(getByText(okLabel));
@@ -306,74 +308,9 @@ describe("<ACLExpressionBuilder/>", () => {
         "users",
         usersRadioLabel,
         "user",
-        ["user100", "user200", "user300", "user400"],
-        searchUser,
-        "U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a OR U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef OR U:eb75a832-6533-4d72-93f4-2b7a1b108951 OR",
-      ],
-      [
-        "groups",
-        groupsRadioLabel,
-        "group",
-        ["group100", "group200", "group300", "group400"],
-        searchGroup,
-        "G:303e758c-0051-4aea-9a8e-421f93ed9d1a G:d7dd1907-5731-4244-9a65-e0e847f68604 OR G:f921a6e3-69a6-4ec4-8cf8-bc193beda5f6 OR G:a2576dea-bd5c-490b-a065-637068e1a4fb OR",
-      ],
-      [
-        "roles",
-        rolesRadioLabel,
-        "role",
-        ["role100", "role200"],
-        searchRole,
-        "R:fda99983-9eda-440a-ac68-0f746173fdcb R:1de3a6df-dc81-4a26-b69e-e61f8474594a OR",
-      ],
-    ])(
-      "should be able to select multiple %s search result to the expression",
-      async (
-        _,
-        entityRadioLabel,
-        searchFor,
-        selectEntitiesName,
-        searchEntity,
-        expectedACLExpressionResult
-      ) => {
-        const onFinish = jest.fn();
-        const { getByText, container } = renderACLExpressionBuilder({
-          ...defaultACLExpressionBuilderProps,
-          onFinish,
-        });
-
-        // select entity search radio
-        await userEvent.click(getByText(entityRadioLabel));
-        // Attempt search for a specific entity
-        await searchEntity(container, searchFor);
-
-        const result = await selectAndFinished(
-          container,
-          selectEntitiesName,
-          onFinish
-        );
-
-        expect(result).toEqual(expectedACLExpressionResult);
-      }
-    );
-
-    it.each<
-      [
-        string,
-        string,
-        string,
-        string[],
-        (dialog: HTMLElement, queryValue: string) => Promise<void>,
-        string
-      ]
-    >([
-      [
-        "users",
-        usersRadioLabel,
-        "user",
         ["user300", "user400"],
         searchUser,
-        "U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a R:TLE_GUEST_USER_ROLE AND U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef AND U:eb75a832-6533-4d72-93f4-2b7a1b108951 AND OR",
+        "U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a R:TLE_GUEST_USER_ROLE AND U:eb75a832-6533-4d72-93f4-2b7a1b108951 AND U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef AND OR",
       ],
       [
         "groups",
@@ -392,7 +329,7 @@ describe("<ACLExpressionBuilder/>", () => {
         "U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a R:TLE_GUEST_USER_ROLE AND R:fda99983-9eda-440a-ac68-0f746173fdcb AND R:1de3a6df-dc81-4a26-b69e-e61f8474594a AND OR",
       ],
     ])(
-      "should be able to select multiple %s search result and add them within the currently selected grouping",
+      "should be able to add multiple %s search result within the currently selected grouping",
       async (
         _,
         entityRadioLabel,

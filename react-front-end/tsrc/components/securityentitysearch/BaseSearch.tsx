@@ -28,7 +28,6 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
 import ErrorOutline from "@mui/icons-material/ErrorOutline";
 import InfoIcon from "@mui/icons-material/Info";
 import SearchIcon from "@mui/icons-material/Search";
@@ -62,7 +61,7 @@ import {
 import { languageStrings } from "../../util/langstrings";
 import { OrdAsIs } from "../../util/Ord";
 import { CheckboxList } from "../CheckboxList";
-import { TooltipIconButton } from "../TooltipIconButton";
+import { SelectList } from "../SelectList";
 import GroupSearch from "./GroupSearch";
 
 const {
@@ -72,7 +71,6 @@ const {
   provideQueryMessage,
 } = languageStrings.baseSearchComponent;
 const {
-  add: addLabel,
   edit: editLabel,
   clear: clearLabel,
   select: selectLabel,
@@ -88,12 +86,61 @@ const itemIds: <T extends BaseSecurityEntity>(
 ) => ReadonlySet<string> = flow(RSET.map(S.Eq)(({ id }) => id));
 
 /**
+ * One click mode definition for BaseSearch.
+ * In this mode onAdd event handler wil be triggered when the add icon is clicked.
+ */
+interface OneClickMode<T> {
+  type: "one_click";
+  onAdd: (item: T) => void;
+}
+
+/**
+ * Type guard function to check if it's checkbox mode.
+ */
+const checkIsCheckboxMode = <T,>(
+  mode: OneClickMode<T> | CheckboxMode<T>
+): mode is CheckboxMode<T> => mode.type === "checkbox";
+
+/**
+ * Checkbox mode definition for BaseSearch.
+ * In this mode, it can accept initial selections and the onChange event handler will be triggered
+ * when the select button is clicked.
+ */
+export interface CheckboxMode<T> {
+  type: "checkbox";
+  /**
+   * A set of items in the list which should be 'selected'/ticked/checked.
+   * Except some edge cases it will receive an empty set as an initial value.
+   */
+  selections: ReadonlySet<T>;
+  /** Callback triggered when selected items are changed. */
+  onChange: (items: ReadonlySet<T>) => void;
+  /**
+   * An optional select button can be displayed to allow for an explicit user interaction to mark completion.
+   * If undefined no select button will be displayed.
+   */
+  selectButton?: {
+    /** Disabled flag. */
+    disabled?: boolean;
+    /** Callback triggered when selected button are clicked. */
+    onClick: () => void;
+  };
+  /** Whether enable multiple selection or not, default value is `false` **/
+  enableMultiSelection?: boolean;
+}
+
+/**
  * Commonly shared props definition for entity search components (BaseSearch/UserSearch/GroupSearch).
  * `T` represents the type of Item details.
  */
 export interface CommonEntitySearchProps<T> {
   /** An optional `id` attribute for the component. Will also be used to prefix core child elements. */
   id?: string;
+  /**
+   * Mode to determine the behaviour of the search component.
+   * See details of two different modes in {@link OneClickMode} and {@link CheckboxMode}.
+   */
+  mode: OneClickMode<T> | CheckboxMode<T>;
   /**
    * Customized strings displayed in UI
    */
@@ -128,34 +175,11 @@ export interface CommonEntitySearchProps<T> {
    */
   onClearAll?: (allItems: ReadonlySet<T>) => void;
   /**
-   * An optional select button can be displayed to allow for an explicit user interaction to mark completion.
-   * If undefined no select button will be displayed.
-   */
-  selectButton?: {
-    /** Disabled flag. */
-    disabled?: boolean;
-    /** Callback triggered when selected button are clicked. */
-    onClick: () => void;
-  };
-  /**
    * Handler for cancel button, if undefined no cancel button will be displayed.
    */
   onCancel?: () => void;
-  /**
-   * Handler for add button for each entry, if undefined no add button will be displayed.
-   */
-  onAdd?: (item: T) => void;
-  /**
-   * A set of items in the list which should be 'selected'/ticked/checked.
-   * Except some edge cases it will receive an empty set as an initial value.
-   */
-  selections: ReadonlySet<T>;
-  /** Callback triggered when selected items are changed. */
-  onChange: (items: ReadonlySet<T>) => void;
   /** How high (in pixels) the list of entries should be. */
   listHeight?: number;
-  /** Whether enable multiple selection or not, default value is `false` **/
-  enableMultiSelection?: boolean;
   /** A list of groups UUIDs to filter the items by. */
   groupFilter?: ReadonlySet<string>;
   /** `true` to let user choose groups to filter the search result. The default value is `false`. **/
@@ -211,23 +235,29 @@ export const wildcardQuery = (query?: string): string | undefined =>
  * Items can then be selected (support single/multiple select).
  *
  * Each Item must have a string ID.
+ *
+ * The search component has 2 modes:
+ *
+ * Default mode: In this mode, a checkbox list is used to display items.
+ *               Users need to tick the checkboxes to select items.
+ *               And under this mode it also has two sub modes multiple selection and single selection mode.
+ *
+ * One click mode: This mode is activated when the `onAdd` property is not undefined.
+ *                 In this scenario, a SelectList is used to display items.
+ *                 Users can trigger the onAdd event directly by clicking the add icon in the corresponding item.
  */
 const BaseSearch = <T extends BaseSecurityEntity>({
   id,
+  mode,
   listHeight,
   strings = languageStrings.baseSearchComponent,
   showHelpText,
-  selectButton,
   onCancel,
   onSelectAll,
   onClearAll,
-  selections,
-  onChange,
-  onAdd,
   itemOrd = ORD.contramap(({ id }: T) => id)(S.Ord),
   itemEq = eqEntityById<T>(),
   itemDetailsToEntry = (item: T) => <ListItemText primary={item.id} />,
-  enableMultiSelection = false,
   groupFilterEditable = false,
   groupFilter,
   search,
@@ -252,6 +282,8 @@ const BaseSearch = <T extends BaseSecurityEntity>({
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
 
   const { helpTitle, helpDesc, queryFieldLabel, failedToFindMessage } = strings;
+
+  const isCheckboxMode = checkIsCheckboxMode<T>(mode);
 
   // look-up of the group details for groupFilter
   useEffect(() => {
@@ -411,7 +443,9 @@ const BaseSearch = <T extends BaseSecurityEntity>({
       .finally(() => {
         setShowSpinner(false);
         setHasSearched(true);
-        onChange(RSET.empty);
+        if (isCheckboxMode) {
+          mode.onChange(RSET.empty);
+        }
       });
   };
 
@@ -419,17 +453,18 @@ const BaseSearch = <T extends BaseSecurityEntity>({
    * Generate a `item` ReadonlySet based on the selected item ids and pass it to `onChange` function.
    * And if `multipleSelection` is not enabled, the previous selected item would uncheck and then new item will be added.
    * */
-  const handleSelectedItemChanged = (ids: ReadonlySet<string>) =>
-    pipe(
-      items,
-      A.filter((i) => ids.has(i.id)),
-      RSET.fromReadonlyArray(itemEq),
-      (currentSelectedEntries) =>
-        enableMultiSelection
-          ? currentSelectedEntries
-          : RSET.difference(itemEq)(currentSelectedEntries, selections),
-      onChange
-    );
+  const handleSelectedItemChanged =
+    (mode: CheckboxMode<T>) => (ids: ReadonlySet<string>) =>
+      pipe(
+        items,
+        A.filter((i) => ids.has(i.id)),
+        RSET.fromReadonlyArray(itemEq),
+        (currentSelectedEntries) =>
+          mode.enableMultiSelection
+            ? currentSelectedEntries
+            : RSET.difference(itemEq)(currentSelectedEntries, mode.selections),
+        mode.onChange
+      );
 
   const handleQueryFieldKeypress = (event: KeyboardEvent<HTMLDivElement>) => {
     switch (event.key) {
@@ -473,27 +508,23 @@ const BaseSearch = <T extends BaseSecurityEntity>({
    */
   const itemDetailsToEntriesMap: (_: T[]) => Map<string, JSX.Element> = flow(
     A.reduce(new Map<string, JSX.Element>(), (entries, item) =>
-      pipe(
-        entries,
-        M.upsertAt(S.Eq)(
-          item.id,
-          <>
-            {itemDetailsToEntry(item)}
-            {onAdd && (
-              <TooltipIconButton
-                title={addLabel}
-                onClick={(event) => {
-                  onAdd(item);
-                  event.stopPropagation();
-                }}
-              >
-                <AddCircleIcon />
-              </TooltipIconButton>
-            )}
-          </>
-        )
-      )
+      pipe(entries, M.upsertAt(S.Eq)(item.id, itemDetailsToEntry(item)))
     )
+  );
+
+  const warningMessage = (
+    <ListItem>
+      <ListItemIcon>
+        <ErrorOutline color={errorMessage ? "secondary" : "inherit"} />
+      </ListItemIcon>
+      <ListItemText
+        secondary={
+          hasSearched
+            ? errorMessage ?? sprintf(failedToFindMessage, query)
+            : provideQueryMessage
+        }
+      />
+    </ListItem>
   );
 
   const isItemFound = items.length > 0;
@@ -502,32 +533,32 @@ const BaseSearch = <T extends BaseSecurityEntity>({
    * Display a list of items in CheckboxList.
    */
   const itemList = () => {
+    const list = !isCheckboxMode ? (
+      <SelectList
+        options={itemDetailsToEntriesMap(items)}
+        onSelect={(itemId) =>
+          pipe(
+            items,
+            A.findFirst(({ id }) => id === itemId),
+            O.map(mode.onAdd)
+          )
+        }
+      />
+    ) : (
+      <CheckboxList
+        id="item-search-list"
+        options={itemDetailsToEntriesMap(items)}
+        checked={itemIds(mode.selections)}
+        onChange={handleSelectedItemChanged(mode)}
+      />
+    );
+
     return (
       <List
         id={genId("ItemList")}
         style={listHeight ? { height: listHeight, overflow: "auto" } : {}}
       >
-        {isItemFound ? (
-          <CheckboxList
-            id="item-search-list"
-            options={itemDetailsToEntriesMap(items)}
-            checked={itemIds(selections)}
-            onChange={handleSelectedItemChanged}
-          />
-        ) : (
-          <ListItem>
-            <ListItemIcon>
-              <ErrorOutline color={errorMessage ? "secondary" : "inherit"} />
-            </ListItemIcon>
-            <ListItemText
-              secondary={
-                hasSearched
-                  ? errorMessage ?? sprintf(failedToFindMessage, query)
-                  : provideQueryMessage
-              }
-            />
-          </ListItem>
-        )}
+        {isItemFound ? list : warningMessage}
       </List>
     );
   };
@@ -541,7 +572,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
             pipe(
               items,
               RSET.fromReadonlyArray(itemEq),
-              RSET.union(itemEq)(selections),
+              RSET.union(itemEq)(isCheckboxMode ? mode.selections : RSET.empty),
               onSelectAll
             )
           }
@@ -561,12 +592,12 @@ const BaseSearch = <T extends BaseSecurityEntity>({
     ) : undefined;
 
   const selectButtonElement = () =>
-    selectButton ? (
+    isCheckboxMode && mode.selectButton ? (
       <Grid>
         <Button
           color="primary"
-          onClick={selectButton.onClick}
-          disabled={selectButton.disabled}
+          onClick={mode.selectButton.onClick}
+          disabled={mode.selectButton.disabled}
         >
           {selectLabel}
         </Button>
@@ -595,22 +626,25 @@ const BaseSearch = <T extends BaseSecurityEntity>({
       <Grid>
         <GroupSearch
           id="GroupFilter"
-          strings={languageStrings.groupSearchComponent}
-          selectButton={{
-            disabled: RSET.isEmpty(groupFilterSearchGroupDetails),
-            onClick: () => {
-              setGroupDetails(groupFilterSearchGroupDetails);
-              setShowGroupFilterSearch(false);
+          mode={{
+            type: "checkbox",
+            onChange: setGroupFilterSearchGroupDetails,
+            selections: groupFilterSearchGroupDetails,
+            selectButton: {
+              disabled: RSET.isEmpty(groupFilterSearchGroupDetails),
+              onClick: () => {
+                setGroupDetails(groupFilterSearchGroupDetails);
+                setShowGroupFilterSearch(false);
+              },
             },
+            enableMultiSelection: true,
           }}
+          strings={languageStrings.groupSearchComponent}
           onCancel={() => {
             setGroupFilterSearchGroupDetails(groupDetails);
             setShowGroupFilterSearch(false);
           }}
           listHeight={listHeight}
-          onChange={setGroupFilterSearchGroupDetails}
-          selections={groupFilterSearchGroupDetails}
-          enableMultiSelection
           groupFilter={RSET.empty}
           groupFilterEditable={false}
           search={groupSearch}
