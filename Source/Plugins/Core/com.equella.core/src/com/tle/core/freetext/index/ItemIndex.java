@@ -79,7 +79,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.Analyzer.TokenStreamComponents;
@@ -88,7 +87,6 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.DocumentStoredFieldVisitor;
-import org.apache.lucene.index.AtomicReader;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.DocsEnum;
 import org.apache.lucene.index.FieldInfo;
@@ -608,18 +606,17 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
               throws IOException {
             final IndexReader reader = searcher.getIndexReader();
             final OpenBitSet filteredBits =
-                searchRequestToBitSet(
-                    searchreq, searcher, reader.getContext().leaves().get(0).reader(), false);
+                searchRequestToBitSet(searchreq, searcher, reader, false);
 
             final Multimap<String, Pair<String, Integer>> rv = ArrayListMultimap.create();
             for (String field : fields) {
               for (Term term : new XPathFieldIterator(reader, field, "")) {
                 int count = 0;
 
-                for (DocIdSetIterator docs : getDocs(reader, term)) {
-                  int currentDoc;
-                  while ((currentDoc = docs.nextDoc()) != DocsEnum.NO_MORE_DOCS) {
-                    if (filteredBits.get(currentDoc)) {
+                for (AtomicReaderContext ctx : reader.getContext().leaves()) {
+                  DocsEnum docsEnum = ctx.reader().termDocsEnum(term);
+                  while (docsEnum != null && docsEnum.nextDoc() != DocsEnum.NO_MORE_DOCS) {
+                    if (filteredBits.get(docsEnum.docID())) {
                       count++;
                     }
                   }
@@ -633,21 +630,6 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
             return rv;
           }
         });
-  }
-
-  private DocIdSetIterator getDocsEnum(AtomicReader reader, Term term) {
-    try {
-      return reader.termDocsEnum(term);
-    } catch (IOException e) {
-      LOGGER.error("Error getting docs enum for term " + term, e);
-      return DocIdSetIterator.empty();
-    }
-  }
-
-  private List<DocIdSetIterator> getDocs(IndexReader reader, Term term) {
-    return reader.getContext().leaves().stream()
-        .map(context -> getDocsEnum(context.reader(), term))
-        .collect(Collectors.toList());
   }
 
   public MatrixResults matrixSearch(
@@ -678,11 +660,10 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
               OpenBitSet perFieldBitSet = new OpenBitSet(maxDoc);
               for (Term term : new XPathFieldIterator(reader, field, "")) {
                 OpenBitSet set = new OpenBitSet(maxDoc);
-
-                for (DocIdSetIterator docs : getDocs(reader, term)) {
-                  int currentDoc;
-                  while ((currentDoc = docs.nextDoc()) != DocsEnum.NO_MORE_DOCS) {
-                    set.set(currentDoc);
+                for (AtomicReaderContext ctx : reader.getContext().leaves()) {
+                  DocsEnum docsEnum = ctx.reader().termDocsEnum(term);
+                  while (docsEnum != null && docsEnum.nextDoc() != DocsEnum.NO_MORE_DOCS) {
+                    set.set(docsEnum.docID());
                   }
                 }
 
