@@ -795,7 +795,6 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
               // are permitted
               // to use and these terms have the specified prefix. So we just return the first one.
               if (docsEnum != null && i != DocsEnum.NO_MORE_DOCS) {
-                System.out.println(termsEnum.term().utf8ToString() + " --------");
                 return termsEnum.term().utf8ToString();
               }
             }

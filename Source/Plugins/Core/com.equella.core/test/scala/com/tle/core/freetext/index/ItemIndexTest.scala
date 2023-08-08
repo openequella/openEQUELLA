@@ -122,7 +122,8 @@ class ItemIndexTest
                            itemStatus: ItemStatus = ItemStatus.LIVE,
                            moderating: Boolean = false,
                            rating: Float = 3.5f,
-                           dateModified: Date = new Date): List[IndexedItem] = {
+                           dateModified: Date = new Date,
+                           itemDescription: String = ""): List[IndexedItem] = {
     val indexer = new StandardIndexer
 
     Range(0, howMany)
@@ -133,6 +134,7 @@ class ItemIndexTest
         item.setItemDefinition(collection)
         item.setOwner(owner)
         item.setName(LangUtils.createTextTempLangugageBundle(itemName))
+        item.setDescription(LangUtils.createTextTempLangugageBundle(itemDescription))
         item.setStatus(itemStatus)
         item.setModerating(moderating)
         item.setRating(rating)
@@ -239,7 +241,7 @@ class ItemIndexTest
     }
   }
 
-  describe("searching") {
+  describe("document searching") {
     val dateFormatter = new SimpleDateFormat("yyyy-MM-dd")
 
     def createIndexes(itemIndex: ItemIndex[_], indexedItems: List[IndexedItem]): Unit = {
@@ -449,6 +451,17 @@ class ItemIndexTest
         val processedQuery = queryCaptor.getValue.toString
         processedQuery shouldBe "(+(name_vectored:java^2.0 body:java) +(name_vectored:scala^2.0 body:scala) +(name_vectored:interest^2.0 body:interest))"
       }
+    }
+  }
+
+  describe("term searching") {
+    it("supports making a term suggestion") { f =>
+      val (itemIndex, _) = f
+      Given("an Item where the keyword 'apple' is in the description")
+      itemIndex.indexBatch(generateIndexedItems(11, itemDescription = "This is an apple.").asJava)
+
+      val suggestion = itemIndex.suggestTerm(buildDefaultSearch, "appl", false)
+      suggestion shouldBe "apple"
     }
   }
 }
