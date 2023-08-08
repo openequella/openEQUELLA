@@ -98,16 +98,6 @@ const ACLHomePanel = ({
   const [activeSearchFilterType, setActiveSearchFilterType] =
     useState<SearchFilterType>("Users");
 
-  const [userSelections, setUserSelections] = useState<
-    ReadonlySet<OEQ.UserQuery.UserDetails>
-  >(RSET.empty);
-  const [groupSelections, setGroupSelections] = useState<
-    ReadonlySet<OEQ.UserQuery.GroupDetails>
-  >(RSET.empty);
-  const [roleSelections, setRoleSelections] = useState<
-    ReadonlySet<OEQ.UserQuery.RoleDetails>
-  >(RSET.empty);
-
   const handleSearchFilterChange = (event: ChangeEvent<HTMLInputElement>) =>
     setActiveSearchFilterType(SearchFilterTypesUnion.check(event.target.value));
 
@@ -154,56 +144,44 @@ const ACLHomePanel = ({
           (Users) => (
             <UserSearch
               key={Users}
+              mode={{
+                type: "one_click",
+                onAdd: (user) =>
+                  handleOnAdded(RSET.singleton(user), userToRecipient),
+              }}
               {...sharedProps}
               search={searchUserProvider}
-              selections={userSelections}
-              onChange={setUserSelections}
-              onClearAll={setUserSelections}
-              onSelectAll={setUserSelections}
-              onAdd={(user) =>
-                handleOnAdded(RSET.singleton(user), userToRecipient)
-              }
-              selectButton={{
-                onClick: () => handleOnAdded(userSelections, userToRecipient),
-              }}
+              onSelectAll={(users) => handleOnAdded(users, userToRecipient)}
               showHelpText
             />
           ),
           (Groups) => (
             <GroupSearch
               key={Groups}
+              mode={{
+                type: "one_click",
+                onAdd: (group) =>
+                  handleOnAdded(RSET.singleton(group), groupToRecipient),
+              }}
               {...sharedProps}
               search={searchGroupProvider}
-              selections={groupSelections}
-              onChange={setGroupSelections}
-              onClearAll={setGroupSelections}
-              onSelectAll={setGroupSelections}
-              onAdd={(group) =>
-                handleOnAdded(RSET.singleton(group), groupToRecipient)
-              }
-              selectButton={{
-                onClick: () => handleOnAdded(groupSelections, groupToRecipient),
-              }}
+              onSelectAll={(groups) => handleOnAdded(groups, groupToRecipient)}
               showHelpText
             />
           ),
           (Roles) => (
             <RoleSearch
               key={Roles}
+              mode={{
+                type: "one_click",
+                onAdd: (role) =>
+                  handleOnAdded(RSET.singleton(role), roleToRecipient),
+              }}
               {...sharedProps}
               search={searchRoleProvider}
-              selections={roleSelections}
-              onChange={setRoleSelections}
-              onClearAll={setRoleSelections}
-              onSelectAll={setRoleSelections}
-              onAdd={(role) =>
-                handleOnAdded(RSET.singleton(role), roleToRecipient)
-              }
+              onSelectAll={(roles) => handleOnAdded(roles, roleToRecipient)}
               listHeight={367}
               groupFilterEditable={false}
-              selectButton={{
-                onClick: () => handleOnAdded(roleSelections, roleToRecipient),
-              }}
               showHelpText
             />
           )

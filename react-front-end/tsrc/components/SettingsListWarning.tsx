@@ -57,7 +57,7 @@ const SettingsListWarning = ({
       {pipe(
         messages,
         A.tail,
-        O.map(A.map((m) => <p>{m}</p>)),
+        O.map(A.map((m) => <p key={m}>{m}</p>)),
         O.getOrElseW(() => [])
       )}
     </Alert>

@@ -46,6 +46,8 @@ import {
   clickEditGroupFilterButton,
   clickCancelGroupFilterButton,
   querySearchResultList,
+  selectEntitiesInOneClickMode,
+  generateDefaultCheckboxModeProps,
 } from "./BaseSearchTestHelper";
 import { findUserFromMockData } from "./UserSearchTestHelpler";
 
@@ -66,6 +68,9 @@ const { failedToFindMessage, provideQueryMessage } =
  * here just use UserDetails type entity to test its functionalities.
  */
 describe("<BaseSearch/>", () => {
+  const defaultCheckboxModeProps =
+    generateDefaultCheckboxModeProps<OEQ.UserQuery.UserDetails>();
+
   // do search and select entity
   const searchAndSelectEntity = (
     renderResult: RenderResult,
@@ -138,7 +143,10 @@ describe("<BaseSearch/>", () => {
       const onChange = jest.fn();
       const renderResult = await renderBaseSearch({
         ...defaultBaseSearchProps,
-        onChange,
+        mode: {
+          ...defaultCheckboxModeProps,
+          onChange: onChange,
+        },
       });
 
       const selections = await searchAndSelectEntity(
@@ -170,7 +178,7 @@ describe("<BaseSearch/>", () => {
 
       const { container, getByText, findAllByText } = await renderBaseSearch({
         ...defaultBaseSearchProps,
-        selections: initialSelections,
+        mode: { ...defaultCheckboxModeProps, selections: initialSelections },
         onSelectAll: onSelectAll,
       });
 
@@ -216,7 +224,7 @@ describe("<BaseSearch/>", () => {
 
       const { container, findByText } = await renderBaseSearch({
         ...defaultBaseSearchProps,
-        onChange,
+        mode: { ...defaultCheckboxModeProps, onChange },
       });
 
       // trigger a search action
@@ -385,8 +393,11 @@ describe("<BaseSearch/>", () => {
 
       const renderResult = await renderBaseSearch({
         ...defaultBaseSearchProps,
-        onChange,
-        selections: initialSelections,
+        mode: {
+          ...defaultCheckboxModeProps,
+          onChange,
+          selections: initialSelections,
+        },
       });
 
       expect(
@@ -414,8 +425,11 @@ describe("<BaseSearch/>", () => {
 
       const renderResult = await renderBaseSearch({
         ...defaultBaseSearchProps,
-        onChange,
-        enableMultiSelection: true,
+        mode: {
+          ...defaultCheckboxModeProps,
+          onChange,
+          enableMultiSelection: true,
+        },
       });
 
       expect(
@@ -438,9 +452,12 @@ describe("<BaseSearch/>", () => {
 
       const renderResult = await renderBaseSearch({
         ...defaultBaseSearchProps,
-        onChange,
-        selections: initialSelections,
-        enableMultiSelection: true,
+        mode: {
+          ...defaultCheckboxModeProps,
+          onChange,
+          selections: initialSelections,
+          enableMultiSelection: true,
+        },
       });
 
       expect(
@@ -463,9 +480,12 @@ describe("<BaseSearch/>", () => {
 
       const renderResult = await renderBaseSearch({
         ...defaultBaseSearchProps,
-        onChange,
-        selections: initialSelections,
-        enableMultiSelection: true,
+        mode: {
+          ...defaultCheckboxModeProps,
+          onChange,
+          selections: initialSelections,
+          enableMultiSelection: true,
+        },
       });
 
       expect(
@@ -476,6 +496,27 @@ describe("<BaseSearch/>", () => {
           onChange
         )
       ).toEqual(expectedSelections);
+    });
+  });
+
+  describe("one click mode", () => {
+    it("returns the result when users click add icon", async () => {
+      const clickedEntity = findUserFromMockData("user200");
+      const onAdd = jest.fn();
+
+      const { container } = await renderBaseSearch({
+        ...defaultBaseSearchProps,
+        mode: {
+          type: "one_click",
+          onAdd,
+        },
+      });
+
+      await searchEntity(container, "user");
+      // Wait for the results, and then click our entity of interest
+      await selectEntitiesInOneClickMode(container, [clickedEntity.username]);
+
+      expect(onAdd.mock.lastCall[0]).toEqual(clickedEntity);
     });
   });
 });

@@ -44,7 +44,6 @@ import * as M from "fp-ts/Map";
 import * as S from "fp-ts/string";
 import * as O from "fp-ts/Option";
 import * as SET from "fp-ts/Set";
-import { useState } from "react";
 import * as React from "react";
 import ConfirmDialog from "../../../components/ConfirmDialog";
 import RoleSearch from "../../../components/securityentitysearch/RoleSearch";
@@ -104,9 +103,6 @@ const SelectCustomRoleDialog = ({
   onClose,
   roleListProvider,
 }: SelectCustomRoleDialogProps) => {
-  const [selectedOeqRoles, setSelectedOeqRoles] = useState<
-    ReadonlySet<OEQ.UserQuery.RoleDetails>
-  >(RS.empty);
   const [selectedLtiRole, setSelectedLtiRole] = React.useState(
     defaultSelectedRoleUrn
   );
@@ -220,7 +216,9 @@ const SelectCustomRoleDialog = ({
     </TableContainer>
   );
 
-  const handleRoleSearchOnSelect = () =>
+  const handleRoleSearchOnSelect = (
+    selectedOeqRoles: Set<OEQ.UserQuery.RoleDetails>
+  ) =>
     pipe(
       rolesMapping,
       // get current oEQ roles set for current lti role
@@ -228,7 +226,7 @@ const SelectCustomRoleDialog = ({
       O.getOrElse<Set<OEQ.UserQuery.RoleDetails>>(() => new Set()),
       // add selected role to role set
       (originalRoles) =>
-        pipe(selectedOeqRoles, RS.toSet, SET.union(eqRoleById)(originalRoles)),
+        pipe(originalRoles, SET.union(eqRoleById)(selectedOeqRoles)),
       // replace old oeq role set in map
       (newRoles) =>
         pipe(rolesMapping, M.upsertAt(S.Eq)(selectedLtiRole, newRoles)),
@@ -237,13 +235,11 @@ const SelectCustomRoleDialog = ({
 
   const handleOnConfirm = () => {
     onClose(rolesMapping);
-    setSelectedOeqRoles(RS.empty);
   };
 
   const handleOnCancel = () => {
     onClose();
     setRolesMapping(value);
-    setSelectedOeqRoles(RS.empty);
   };
 
   const selectLtiRole = (
@@ -261,16 +257,16 @@ const SelectCustomRoleDialog = ({
         {customRoleSelectOeqRole}
       </StyledTypography>
       <RoleSearch
-        selections={selectedOeqRoles}
-        onChange={setSelectedOeqRoles}
-        search={roleListProvider}
-        enableMultiSelection
-        onSelectAll={setSelectedOeqRoles}
-        onClearAll={setSelectedOeqRoles}
-        selectButton={{
-          disabled: RS.isEmpty(selectedOeqRoles),
-          onClick: handleRoleSearchOnSelect,
+        mode={{
+          type: "one_click",
+          onAdd: (role: OEQ.UserQuery.RoleDetails) =>
+            pipe(role, SET.singleton, handleRoleSearchOnSelect),
         }}
+        onSelectAll={(roles: ReadonlySet<OEQ.UserQuery.RoleDetails>) =>
+          pipe(roles, RS.toSet, handleRoleSearchOnSelect)
+        }
+        search={roleListProvider}
+        listHeight={300}
       />
     </>
   );

@@ -19,9 +19,9 @@ import userEvent from "@testing-library/user-event";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import { queryMuiTextField } from "../../MuiQueries";
 import { findByText, getByText, RenderResult } from "@testing-library/react";
+import { selectEntitiesInOneClickMode } from "../securityentitysearch/BaseSearchTestHelper";
 
 const {
-  select: selectLabel,
   cancel: cancelLabel,
   ok: okLabel,
   removeAll: removeAllLabel,
@@ -65,12 +65,7 @@ export const searchAndSelect = async (
   // Attempt search for a specific entity
   await doSearch(dialog, searchFor);
   // Wait for the results, and then click our entity of interest
-  const entityName = await findByText(
-    dialog,
-    new RegExp(`.*${selectEntityName}.*`)
-  );
-  await userEvent.click(entityName);
-  await userEvent.click(getByText(dialog, selectLabel));
+  await selectEntitiesInOneClickMode(dialog, [selectEntityName]);
 };
 
 /**

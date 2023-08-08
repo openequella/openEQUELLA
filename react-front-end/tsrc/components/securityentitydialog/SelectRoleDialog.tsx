@@ -20,8 +20,8 @@ import * as React from "react";
 import { ordRole } from "../../modules/RoleModule";
 import { languageStrings } from "../../util/langstrings";
 import RoleSearch from "../securityentitysearch/RoleSearch";
-import SelectEntityDialog from "./SelectEntityDialog";
 import SecurityEntityEntry from "./SecurityEntityEntry";
+import SelectEntityDialog from "./SelectEntityDialog";
 
 export interface SelectRoleDialogProps {
   /** Open the dialog when true. */
@@ -45,22 +45,16 @@ const SelectRoleDialog = ({
   roleListProvider,
 }: SelectRoleDialogProps) => {
   const roleSearch = (
-    selectedRoles: ReadonlySet<OEQ.UserQuery.RoleDetails>,
-    setSelectedRoles: (groups: ReadonlySet<OEQ.UserQuery.RoleDetails>) => void,
-    confirmSelect: (groups: ReadonlySet<OEQ.UserQuery.RoleDetails>) => void
+    onAdd: (roles: OEQ.UserQuery.RoleDetails) => void,
+    onSelectAll: (entities: ReadonlySet<OEQ.UserQuery.RoleDetails>) => void
   ) => (
     <RoleSearch
-      onChange={setSelectedRoles}
-      selections={selectedRoles}
-      search={roleListProvider}
-      enableMultiSelection
-      onSelectAll={setSelectedRoles}
-      onClearAll={setSelectedRoles}
-      selectButton={{
-        onClick: () => {
-          selectedRoles && confirmSelect(selectedRoles);
-        },
+      mode={{
+        type: "one_click",
+        onAdd: onAdd,
       }}
+      search={roleListProvider}
+      onSelectAll={onSelectAll}
     />
   );
 
