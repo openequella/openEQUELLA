@@ -112,6 +112,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiPhraseQuery;
 import org.apache.lucene.search.MultiTermQuery;
 import org.apache.lucene.search.PrefixQuery;
+import org.apache.lucene.search.PrefixTermsEnum;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.ScoreDoc;
@@ -1373,11 +1374,11 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
     ArrayList<Term> terms = Lists.newArrayList();
     TermsEnum termsEnum = MultiFields.getTerms(ir, field).iterator(null);
-
-    for (BytesRef ref = termsEnum.term();
-        ref != null && ref.utf8ToString().startsWith(prefix);
-        ref = termsEnum.next()) {
-      terms.add(new Term(field, ref));
+    if (termsEnum != null) {
+      PrefixTermsEnum prefixTermsEnum = new PrefixTermsEnum(termsEnum, new BytesRef(prefix));
+      while (prefixTermsEnum.next() != null) {
+        terms.add(new Term(field, prefixTermsEnum.term()));
+      }
     }
 
     return terms.toArray(new Term[terms.size()]);
