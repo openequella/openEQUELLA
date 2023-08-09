@@ -1183,10 +1183,10 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
   /** Converts a FreeTextDateQuery to a BooleanClause */
   private BooleanClause convertDate(FreeTextDateQuery query) {
     TermRangeQuery termQuery =
-        new TermRangeQuery(
+        TermRangeQuery.newStringRange(
             query.getField(),
-            new BytesRef(convertDate(query.getStart(), query)),
-            new BytesRef(convertDate(query.getEnd(), query)),
+            convertDate(query.getStart(), query),
+            convertDate(query.getEnd(), query),
             query.isIncludeStart(),
             query.isIncludeEnd());
     termQuery.setRewriteMethod(MultiTermQuery.CONSTANT_SCORE_FILTER_REWRITE);
