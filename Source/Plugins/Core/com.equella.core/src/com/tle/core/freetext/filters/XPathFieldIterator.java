@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.util.BytesRef;
 
@@ -44,10 +45,12 @@ public class XPathFieldIterator implements Iterator<Term>, Iterable<Term> {
       field = field.substring(0, hasIndex);
     }
 
-    enumerator = MultiFields.getTerms(reader, field).iterator(null);
-    enumerator.seekCeil(new BytesRef(start));
+    Terms terms = MultiFields.getTerms(reader, field);
+    if (terms != null) {
+      enumerator = terms.iterator(null);
+      current = new Term(field, new BytesRef(enumerator.next().utf8ToString()));
+    }
 
-    current = new Term(field, enumerator.next());
     this.field = field;
     findNextMatch();
   }
@@ -88,12 +91,9 @@ public class XPathFieldIterator implements Iterator<Term>, Iterable<Term> {
   }
 
   private void goNext() throws IOException {
-    current = new Term(field, enumerator.next());
-    BytesRef nextTerm = enumerator.next();
+    if (enumerator.next() != null) {
+      current = new Term(field, new BytesRef(enumerator.term().utf8ToString()));
 
-    if (nextTerm != null) {
-      current = new Term(field, enumerator.term());
-      // todo: is current.field() always the same as field?
       if (!current.field().startsWith(field)) {
         current = null;
       }

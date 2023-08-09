@@ -613,13 +613,10 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
               for (Term term : new XPathFieldIterator(reader, field, "")) {
                 int count = 0;
 
-                for (AtomicReaderContext ctx : reader.getContext().leaves()) {
-                  DocsEnum docsEnum = ctx.reader().termDocsEnum(term);
-                  while (docsEnum != null && docsEnum.nextDoc() != DocsEnum.NO_MORE_DOCS) {
-                    if (filteredBits.get(docsEnum.docID())) {
-                      count++;
-                    }
-                  }
+                DocsEnum bits =
+                    MultiFields.getTermDocsEnum(reader, filteredBits, field, term.bytes());
+                while (bits != null && bits.nextDoc() != DocsEnum.NO_MORE_DOCS) {
+                  count++;
                 }
 
                 if (count > 0) {
@@ -643,11 +640,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
           public MatrixResults search(IndexSearcher searcher) throws IOException {
             IndexReader reader = searcher.getIndexReader();
             OpenBitSet filteredBits =
-                searchRequestToBitSet(
-                    searchreq,
-                    searcher,
-                    reader.getContext().leaves().get(0).reader(),
-                    searchAttachments);
+                searchRequestToBitSet(searchreq, searcher, reader, searchAttachments);
             int maxDoc = reader.maxDoc();
 
             Map<String, Map<String, List<TermBitSet>>> xpathMap =
