@@ -20,13 +20,11 @@ package com.tle.core.workflow.freetext;
 
 import com.tle.common.Check;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.lucene.index.AtomicReaderContext;
-import org.apache.lucene.index.SortedDocValues;
-import org.apache.lucene.index.TermsEnum;
+import org.apache.lucene.index.BinaryDocValues;
 import org.apache.lucene.search.FieldCache;
 import org.apache.lucene.search.FieldComparator;
+import org.apache.lucene.util.BytesRef;
 
 public final class CustomLuceneSortComparator extends FieldComparator<Integer> {
 
@@ -73,16 +71,14 @@ public final class CustomLuceneSortComparator extends FieldComparator<Integer> {
 
   @Override
   public FieldComparator<Integer> setNextReader(AtomicReaderContext context) throws IOException {
-    SortedDocValues sortedDocValues = FieldCache.DEFAULT.getTermsIndex(context.reader(), field);
-    currentReaderValues = new String[sortedDocValues.getValueCount()];
+    currentReaderValues = new String[context.reader().maxDoc()];
 
-    List<String> values = new ArrayList<>();
-    TermsEnum termsEnum = sortedDocValues.termsEnum();
-    while (termsEnum.next() != null) {
-      values.add(termsEnum.term().utf8ToString());
+    BinaryDocValues docValues = FieldCache.DEFAULT.getTerms(context.reader(), field, true);
+    for (int i = 0; i < context.reader().maxDoc(); i++) {
+      BytesRef value = docValues.get(i);
+      currentReaderValues[i] = value == null ? "" : value.utf8ToString();
     }
 
-    currentReaderValues = values.toArray(new String[sortedDocValues.getValueCount()]);
     return this;
   }
 
