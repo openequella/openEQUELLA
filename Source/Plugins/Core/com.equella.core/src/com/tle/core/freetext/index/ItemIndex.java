@@ -1370,7 +1370,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     if (termsEnum != null) {
       PrefixTermsEnum prefixTermsEnum = new PrefixTermsEnum(termsEnum, new BytesRef(prefix));
       while (prefixTermsEnum.next() != null) {
-        terms.add(new Term(field, prefixTermsEnum.term()));
+        terms.add(new Term(field, new BytesRef(prefixTermsEnum.term().utf8ToString())));
       }
     }
 
