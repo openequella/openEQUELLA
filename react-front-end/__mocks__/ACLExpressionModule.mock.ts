@@ -82,6 +82,15 @@ export const aclWithComplexSubExpression =
 export const aclWithComplexSubExpressionInfix =
   "Yasmin Day [user300] AND From 127.0.0.1%2F24 AND From *google* AND ( Owner OR Guest User Role OR Ronny Southgate [user400] OR ( NOT ( Fabienne Hobson [user100] OR Racheal Carlyle [user200] ) ) OR ( From aa AND ( NOT ( From bb OR From cc ) ) ) ) AND ( NOT ( Engineering & Computer Science Students OR Engineering & Computer Science Staff ) )";
 
+export const aclWithEmptyRecipientExpression = "I:1 I:2 OR I:3 NOT AND";
+export const aclWithEmptyRecipientExpressionInfix =
+  "( From 1 OR From 2 ) AND ( NOT From 3 )";
+
+export const aclChildWithEmptyRecipientExpression =
+  "I:1 I:2 OR I:3 I:4 OR I:5 NOT AND OR";
+export const aclChildWithEmptyRecipientExpressionInfix =
+  "From 1 OR From 2 OR ( ( From 3 OR From 4 ) AND ( NOT From 5 ) )";
+
 export const everyoneACLExpression: ACLExpression = createACLExpression(
   "OR",
   [everyoneRecipient],
@@ -251,6 +260,46 @@ export const complexExpressionACLExpression: ACLExpression =
             [groupStudentRecipient, groupStaffRecipient],
             []
           ),
+        ]
+      ),
+    ]
+  );
+
+/**
+ * ```
+ *   AND
+ *     OR 1 2
+ *     NOT 3
+ * ```
+ */
+export const withEmptyRecipientExpression: ACLExpression = createACLExpression(
+  "AND",
+  [],
+  [
+    createACLExpression("OR", [ipRecipient("1"), ipRecipient("2")], []),
+    createACLExpression("NOT", [ipRecipient("3")], []),
+  ]
+);
+
+/**
+ * ```
+ * OR 1 2
+ *   AND
+ *     OR 3 4
+ *     NOT 4
+ * ```
+ */
+export const childWithEmptyRecipientExpression: ACLExpression =
+  createACLExpression(
+    "OR",
+    [ipRecipient("1"), ipRecipient("2")],
+    [
+      createACLExpression(
+        "AND",
+        [],
+        [
+          createACLExpression("OR", [ipRecipient("3"), ipRecipient("4")], []),
+          createACLExpression("NOT", [ipRecipient("5")], []),
         ]
       ),
     ]
