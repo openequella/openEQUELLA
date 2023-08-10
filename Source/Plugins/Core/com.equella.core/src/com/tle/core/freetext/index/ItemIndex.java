@@ -653,11 +653,10 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
               OpenBitSet perFieldBitSet = new OpenBitSet(maxDoc);
               for (Term term : new XPathFieldIterator(reader, field, "")) {
                 OpenBitSet set = new OpenBitSet(maxDoc);
-                for (AtomicReaderContext ctx : reader.getContext().leaves()) {
-                  DocsEnum docsEnum = ctx.reader().termDocsEnum(term);
-                  while (docsEnum != null && docsEnum.nextDoc() != DocsEnum.NO_MORE_DOCS) {
-                    set.set(docsEnum.docID());
-                  }
+                DocsEnum docsEnum =
+                    MultiFields.getTermDocsEnum(reader, filteredBits, field, term.bytes());
+                while (docsEnum != null && docsEnum.nextDoc() != DocsEnum.NO_MORE_DOCS) {
+                  set.set(docsEnum.docID());
                 }
 
                 perFieldBitSet.or(set);
