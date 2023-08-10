@@ -982,27 +982,47 @@ const generatePostfixResults = (aclExpression: ACLExpression): string[] => {
       ? [showRecipient(recipient), operator]
       : [showRecipient(recipient)];
 
-  const reduceRecipients = (
+  // This function helps to insert the operator between elements and flatten the array.
+  const insertOperators =
+    (operator: string) =>
+    (results: string[][]): string[] =>
+      pipe(
+        results,
+        A.reduceWithIndex<string[], string[]>([], (index, acc, childResult) =>
+          // Insert an operator between each elements, except for the first element.
+          index > 1
+            ? [...acc, aclExpression.operator, ...childResult]
+            : [...acc, ...childResult]
+        ),
+        // Make sure the operator is always added on the end
+        pfTernary(A.isNonEmpty, A.append(operator), identity)
+      );
+
+  const handleRecipients = (
     operator: ACLOperatorType,
     recipients: ACLRecipient[]
   ): string[] =>
     pipe(
       recipients,
-      A.reduceWithIndex<ACLRecipient, string[]>(
-        [],
-        (index, acc, currentRecipient) =>
-          // Insert an operator between each elements, except for the first element."
-          index > 1
-            ? [...acc, operator, showRecipient(currentRecipient)]
-            : [...acc, showRecipient(currentRecipient)]
-      ),
-      // Make sure the operator is always added on the end
-      pfTernary(
-        (a) => A.isNonEmpty(a) && NEA.last(a) !== operator,
-        A.append(operator as string),
-        identity
-      )
+      A.map((r) => [showRecipient(r)]),
+      insertOperators(operator)
     );
+
+  // generate results from children and combine it with recipients result
+  const handleWithChildren =
+    (recipientResult: string[]) =>
+    (children: ACLExpression[]): string[] =>
+      pipe(
+        children,
+        A.map(generatePostfixResults),
+        // if recipientResult is non-empty, prepend it
+        (results) =>
+          A.isNonEmpty(recipientResult)
+            ? [recipientResult, ...results]
+            : results,
+        // Insert operators between results
+        insertOperators(aclExpression.operator)
+      );
 
   return pipe(
     // Process the recipients
@@ -1011,19 +1031,14 @@ const generatePostfixResults = (aclExpression: ACLExpression): string[] => {
     ({ operator, recipients }: ACLExpression) =>
       A.isNonEmpty(recipients) && A.size(recipients) === 1
         ? handleSingleRecipient(operator, NEA.head(recipients))
-        : reduceRecipients(operator, recipients),
-    // ... then process the children
-    (currentResult) =>
+        : handleRecipients(operator, recipients),
+    // ... then process the children if it's not empty
+    (recipientResult) =>
       pipe(
         aclExpression.children,
-        A.reduce<ACLExpression, string[]>(
-          currentResult,
-          (result, childExpression) => [
-            ...result,
-            ...generatePostfixResults(childExpression),
-            aclExpression.operator,
-          ]
-        )
+        O.fromPredicate(A.isNonEmpty),
+        O.map(handleWithChildren(recipientResult)),
+        O.getOrElse(() => recipientResult)
       )
   );
 };
@@ -1131,6 +1146,47 @@ const generateInfixResults =
           )
         );
 
+    /**
+     * Insert an operator between recipient result and children result if they are not empty.
+     * For `NOT` operator always add a `NOT` prefix, even if the recipient result is empty.
+     *
+     * ( It is due to the structure of `NOT` ACLExpression.
+     *   For example, this is a raw (un-compacted) structure of ACLExpression `NOT` node with multiple recipients,
+     *   and all those recipients will be stored in a child `OR` node:
+     *   ```
+     *   NOT
+     *     OR A B
+     *   ```
+     *   In this case, the `childrenResult` is ["(", "A", "OR", "B", ")"] while `recipientsResult` is an empty array.
+     *   Thus, here the operator `NOT` will be added.
+     *   But for `NOT` ACLExpression with only one recipient, the structure is different:
+     *   ```
+     *    NOT A
+     *   ```
+     *   In this case, `recipientsResult` would be  ["NOT", "A"], and no need to add the operator `NOT` here.
+     * )
+     */
+    const combineRecipientAndChildrenResult = (
+      recipientsResult: string[],
+      childrenResult: string[]
+    ) => {
+      if (A.isEmpty(recipientsResult) && A.isEmpty(childrenResult)) {
+        return [];
+      }
+
+      if (A.isEmpty(recipientsResult)) {
+        return aclExpression.operator !== "NOT"
+          ? childrenResult
+          : [aclExpression.operator, ...childrenResult];
+      }
+
+      if (A.isEmpty(childrenResult)) {
+        return recipientsResult;
+      }
+
+      return [...recipientsResult, aclExpression.operator, ...childrenResult];
+    };
+
     return pipe(
       aclExpression,
       // Make sure it doesn't use the reverted form of ACLExpression. Because the following logic assume
@@ -1143,9 +1199,7 @@ const generateInfixResults =
           aclExpression.children,
           processChildren(aclExpression.operator),
           T.map((childrenResult: string[]) =>
-            A.isNonEmpty(childrenResult)
-              ? [...recipientsResult, aclExpression.operator, ...childrenResult]
-              : recipientsResult
+            combineRecipientAndChildrenResult(recipientsResult, childrenResult)
           )
         )
       )
