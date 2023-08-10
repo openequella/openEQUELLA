@@ -18,8 +18,10 @@
 
 package com.tle.core.freetext.index
 
+import com.dytech.devlib.PropBagEx
 import com.dytech.edge.queries.FreeTextQuery
 import com.tle.beans.Institution
+import com.tle.beans.entity.Schema
 import com.tle.beans.entity.itemdef.ItemDefinition
 import com.tle.beans.item.{Item, ItemIdKey, ItemStatus}
 import com.tle.common.i18n.{CurrentLocale, LangUtils}
@@ -68,8 +70,17 @@ class ItemIndexTest
   val inst = new Institution
   inst.setUniqueId(new scala.util.Random().nextLong)
 
+  val schema = new Schema
+  schema.setUuid(UUID.randomUUID().toString)
+  schema.setDefinition(
+    new PropBagEx(
+      "<xml><item><name field='true'></name><description field='true'></description></item></xml>"))
+  schema.setItemNamePath("/xml/item/name")
+  schema.setItemDescriptionPath("/xml/item/description")
+
   val collection = new ItemDefinition
   collection.setUuid(UUID.randomUUID().toString)
+  collection.setSchema(schema)
 
   val owner = "admin"
 
@@ -123,7 +134,8 @@ class ItemIndexTest
                            moderating: Boolean = false,
                            rating: Float = 3.5f,
                            dateModified: Date = new Date,
-                           itemDescription: String = ""): List[IndexedItem] = {
+                           itemDescription: String = "",
+                           properties: PropBagEx = new PropBagEx): List[IndexedItem] = {
     val indexer = new StandardIndexer
 
     Range(0, howMany)
@@ -144,6 +156,7 @@ class ItemIndexTest
 
         val indexedItem = new IndexedItem(new ItemIdKey(key, UUID.randomUUID().toString, 1), inst)
         indexedItem.setItem(item)
+        indexedItem.setItemXml(properties)
         indexedItem.setAdd(true)
         indexedItem.setNewSearcherRequired(true)
         indexer.getBasicFields(indexedItem).asScala.foreach(indexedItem.getItemdoc.add)
@@ -450,6 +463,34 @@ class ItemIndexTest
 
         val processedQuery = queryCaptor.getValue.toString
         processedQuery shouldBe "(+(name_vectored:java^2.0 body:java) +(name_vectored:scala^2.0 body:scala) +(name_vectored:interest^2.0 body:interest))"
+      }
+    }
+
+    describe("classification searching") {
+      it("search classifications through schema nodes") { f =>
+        val (itemIndex, searchConfig) = f
+        val java8                     = "java 8"
+        val java11                    = "java 11"
+        val scala                     = "scala 3"
+        val node                      = "/item/name"
+        def properties(name: String)  = new PropBagEx(s"<xml><item><name>$name</name></item></xml>")
+
+        Given(s"a list of Items where the schema node for Item name is $node")
+        val java8Item  = generateIndexedItems(itemName = java8, properties = properties(java8))
+        val java11Item = generateIndexedItems(itemName = java11, properties = properties(java11))
+        val scalaItem  = generateIndexedItems(itemName = scala, properties = properties(scala))
+
+        createIndexes(itemIndex, java8Item ++ java11Item ++ scalaItem)
+
+        When("a classification search is performed to search for this schema node and a query")
+        searchConfig.setQuery("java")
+        val result = itemIndex.matrixSearch(searchConfig, List("/item/name").asJava, false, false)
+
+        Then("the search result should only return classifications that match the query")
+        result.getEntries.size() shouldBe 2
+
+        result.getEntries.asScala.flatMap(_.getFieldValues.asScala).toArray shouldBe Array(java11,
+                                                                                           java8)
       }
     }
   }
