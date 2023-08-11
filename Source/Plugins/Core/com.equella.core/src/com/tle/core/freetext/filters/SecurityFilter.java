@@ -120,8 +120,7 @@ public class SecurityFilter extends Filter {
         if (terms != null) {
           TermsEnum termsEnum = terms.iterator(null);
           while (termsEnum.next() != null) {
-            String text = termsEnum.term().utf8ToString();
-            allTerms.add(new Term(field, new BytesRef(text)));
+            allTerms.add(new Term(field, new BytesRef(termsEnum.term().utf8ToString())));
           }
         }
       }

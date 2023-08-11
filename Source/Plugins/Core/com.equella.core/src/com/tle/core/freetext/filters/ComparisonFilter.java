@@ -23,6 +23,7 @@ import org.apache.lucene.index.AtomicReader;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.DocsEnum;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
@@ -36,6 +37,7 @@ import org.apache.lucene.util.OpenBitSet;
  * @author Nicholas Read
  */
 public class ComparisonFilter extends Filter {
+
   private static final long serialVersionUID = 1L;
   private final String field;
   private final String start;
@@ -52,17 +54,21 @@ public class ComparisonFilter extends Filter {
     AtomicReader reader = context.reader();
     OpenBitSet bits = new OpenBitSet(reader.maxDoc());
 
-    TermsEnum termsEnum = reader.terms(field).iterator(null);
-    BytesRef startTerm = new BytesRef(start);
-    BytesRef endTerm = new BytesRef(end);
+    Terms terms = reader.terms(field);
+    if (terms != null) {
+      TermsEnum termsEnum = terms.iterator(null);
+      BytesRef startTerm = new BytesRef(start);
+      BytesRef endTerm = new BytesRef(end);
 
-    termsEnum.seekCeil(startTerm);
-    for (startTerm = termsEnum.term();
-        startTerm != null && startTerm.compareTo(endTerm) <= 0;
-        startTerm = termsEnum.next()) {
-      DocsEnum termDocs = reader.termDocsEnum(new Term(field, startTerm));
-      while (termDocs != null && termDocs.nextDoc() != DocsEnum.NO_MORE_DOCS) {
-        bits.set(termDocs.docID());
+      termsEnum.seekCeil(startTerm);
+
+      for (startTerm = termsEnum.term();
+          startTerm != null && startTerm.compareTo(endTerm) <= 0;
+          startTerm = termsEnum.next()) {
+        DocsEnum termDocs = reader.termDocsEnum(new Term(field, startTerm));
+        while (termDocs != null && termDocs.nextDoc() != DocsEnum.NO_MORE_DOCS) {
+          bits.set(termDocs.docID());
+        }
       }
     }
 

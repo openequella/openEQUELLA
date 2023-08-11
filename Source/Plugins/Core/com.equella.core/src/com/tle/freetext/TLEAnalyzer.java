@@ -33,8 +33,6 @@ public class TLEAnalyzer extends Analyzer {
   private final CharArraySet stopSet;
   private final boolean useStemming;
 
-  private TokenStreamComponents tokenStreamComponents;
-
   public TLEAnalyzer(CharArraySet stopWords, boolean useStemming) {
     this.stopSet = stopWords;
     this.useStemming = useStemming;
@@ -52,14 +50,6 @@ public class TLEAnalyzer extends Analyzer {
       result = new PorterStemFilter(result);
     }
 
-    tokenStreamComponents = new TokenStreamComponents(tokenizer, result);
-    return tokenStreamComponents;
-  }
-
-  public TokenStreamComponents getTokenStreamComponents(String fieldName, Reader reader) {
-    if (tokenStreamComponents == null) {
-      tokenStreamComponents = createComponents(fieldName, reader);
-    }
-    return tokenStreamComponents;
+    return new TokenStreamComponents(tokenizer, result);
   }
 }

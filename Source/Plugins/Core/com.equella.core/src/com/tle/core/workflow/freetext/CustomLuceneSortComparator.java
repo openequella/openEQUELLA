@@ -71,10 +71,11 @@ public final class CustomLuceneSortComparator extends FieldComparator<Integer> {
 
   @Override
   public FieldComparator<Integer> setNextReader(AtomicReaderContext context) throws IOException {
-    currentReaderValues = new String[context.reader().maxDoc()];
+    int maxDoc = context.reader().maxDoc();
+    currentReaderValues = new String[maxDoc];
 
     BinaryDocValues docValues = FieldCache.DEFAULT.getTerms(context.reader(), field, true);
-    for (int i = 0; i < context.reader().maxDoc(); i++) {
+    for (int i = 0; i < maxDoc; i++) {
       BytesRef value = docValues.get(i);
       currentReaderValues[i] = value == null ? "" : value.utf8ToString();
     }

@@ -75,8 +75,6 @@ class ItemIndexTest
   schema.setDefinition(
     new PropBagEx(
       "<xml><item><name field='true'></name><description field='true'></description></item></xml>"))
-  schema.setItemNamePath("/xml/item/name")
-  schema.setItemDescriptionPath("/xml/item/description")
 
   val collection = new ItemDefinition
   collection.setUuid(UUID.randomUUID().toString)
@@ -221,6 +219,10 @@ class ItemIndexTest
       .foreach(_.deleteRecursively)
   }
 
+  def createIndexes(itemIndex: ItemIndex[_], indexedItems: List[IndexedItem]): Unit = {
+    itemIndex.indexBatch(indexedItems.asJava)
+  }
+
   describe("index manipulation") {
     def verifyDocumentNumber(itemIndex: ItemIndex[_], expected: Int) =
       itemIndex.count(buildDefaultSearch, false) shouldBe expected
@@ -256,10 +258,6 @@ class ItemIndexTest
 
   describe("document searching") {
     val dateFormatter = new SimpleDateFormat("yyyy-MM-dd")
-
-    def createIndexes(itemIndex: ItemIndex[_], indexedItems: List[IndexedItem]): Unit = {
-      itemIndex.indexBatch(indexedItems.asJava)
-    }
 
     describe("filtering") {
       it("supports filtering by text field") { f =>
@@ -498,10 +496,13 @@ class ItemIndexTest
   describe("term searching") {
     it("supports making a term suggestion") { f =>
       val (itemIndex, _) = f
-      Given("an Item where the keyword 'apple' is in the description")
-      itemIndex.indexBatch(generateIndexedItems(11, itemDescription = "This is an apple.").asJava)
+      Given("an Item where the keyword is in the description")
+      createIndexes(itemIndex, generateIndexedItems(11, itemDescription = "This is an apple."))
 
+      When("the search query is partial of the keyword")
       val suggestion = itemIndex.suggestTerm(buildDefaultSearch, "appl", false)
+
+      Then("the search result should return the full word of the keyword")
       suggestion shouldBe "apple"
     }
   }

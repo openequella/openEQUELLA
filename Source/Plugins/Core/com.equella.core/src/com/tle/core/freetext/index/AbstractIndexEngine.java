@@ -133,10 +133,9 @@ public abstract class AbstractIndexEngine {
       LOGGER.info("Unlocking index:" + indexPath); // $NON-NLS-1$
       IndexWriter.unlock(directory);
     }
-    LOGGER.info("Opening writer for index:" + indexPath); // $NON-NLS-1$
+    LOGGER.info("Opening writer for index:" + indexPath);
 
-    indexWriter =
-        new IndexWriter(directory, new IndexWriterConfig(Version.LUCENE_4_10_4, getAnalyser()));
+    indexWriter = new IndexWriter(directory, new IndexWriterConfig(Version.LATEST, getAnalyser()));
     trackingIndexWriter = new TrackingIndexWriter(indexWriter);
     searcherManager = new SearcherManager(indexWriter, true, null);
 
@@ -248,7 +247,7 @@ public abstract class AbstractIndexEngine {
                 languageAnalyzer
                     .get()
                     .getDeclaredConstructor(Version.class)
-                    .newInstance(Version.LUCENE_4_10_4);
+                    .newInstance(Version.LATEST);
             // For the non-stemmed analyzer we still use the TLEAnalyzer, however we use the
             // language specific stop words by loading them from the language specific analyzer.
             Method getDefaultStopSet =

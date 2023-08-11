@@ -1288,7 +1288,6 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     List<Integer> increments = Lists.newArrayList();
 
     try {
-
       TLEAnalyzer autocompleteAnalyzer = getAutoCompleteAnalyzer();
       TokenStreamComponents tokenStreamComponents =
           autocompleteAnalyzer.createComponents(
