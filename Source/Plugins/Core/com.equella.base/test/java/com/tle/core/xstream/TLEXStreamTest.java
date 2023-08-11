@@ -31,7 +31,7 @@ public class TLEXStreamTest extends TestCase {
     assertEquals("string", bean.string);
   }
 
-  private static class TestBean {
+  private static final class TestBean {
     String string;
   }
 }

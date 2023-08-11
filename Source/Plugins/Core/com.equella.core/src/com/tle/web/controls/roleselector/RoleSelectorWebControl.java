@@ -220,7 +220,7 @@ public class RoleSelectorWebControl
     return rolesTable;
   }
 
-  private class RolesModel extends DynamicSelectionsTableModel<String> {
+  private final class RolesModel extends DynamicSelectionsTableModel<String> {
     @Override
     protected List<String> getSourceList(SectionInfo info) {
       return storageControl.getValues();

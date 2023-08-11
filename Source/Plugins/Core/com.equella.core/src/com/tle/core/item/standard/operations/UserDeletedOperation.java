@@ -24,7 +24,7 @@ import com.google.inject.assistedinject.AssistedInject;
 /** @author jmaginnis */
 // Sonar maintains that 'Class cannot be instantiated and does not provide any
 // static methods or fields', but methinks thats bunkum
-public class UserDeletedOperation extends AbstractStandardWorkflowOperation // NOSONAR
+public final class UserDeletedOperation extends AbstractStandardWorkflowOperation // NOSONAR
 {
   private final String user;
 

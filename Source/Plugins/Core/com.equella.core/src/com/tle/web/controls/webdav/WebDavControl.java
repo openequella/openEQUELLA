@@ -133,7 +133,7 @@ public class WebDavControl extends AbstractWebControl<WebControlModel> {
     return filesTable;
   }
 
-  private class FilesModel extends DynamicSelectionsTableModel<FileAttachment> {
+  private final class FilesModel extends DynamicSelectionsTableModel<FileAttachment> {
     @Override
     protected List<FileAttachment> getSourceList(SectionInfo info) {
       return getFiles();

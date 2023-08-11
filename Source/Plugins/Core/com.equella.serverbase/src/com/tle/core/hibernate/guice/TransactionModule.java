@@ -67,7 +67,7 @@ public class TransactionModule extends AbstractModule {
     return systemInterceptor;
   }
 
-  private static class TransactionMethodMatcher extends AbstractMatcher<Method> {
+  private static final class TransactionMethodMatcher extends AbstractMatcher<Method> {
     @Override
     public boolean matches(Method t) {
       return !t.isSynthetic() && t.isAnnotationPresent(Transactional.class);

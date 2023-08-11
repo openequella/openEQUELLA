@@ -229,7 +229,7 @@ public class UserSelectorWebControl
     return usersTable;
   }
 
-  private class UsersModel extends DynamicSelectionsTableModel<String> {
+  private final class UsersModel extends DynamicSelectionsTableModel<String> {
     @Override
     protected List<String> getSourceList(SectionInfo info) {
       return storageControl.getValues();

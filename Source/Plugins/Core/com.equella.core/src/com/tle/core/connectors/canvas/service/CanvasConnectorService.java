@@ -868,7 +868,8 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
     return null;
   }
 
-  private static class CourseTransformer implements Function<CanvasCourseBean, ConnectorCourse> {
+  private static final class CourseTransformer
+      implements Function<CanvasCourseBean, ConnectorCourse> {
     @Override
     public ConnectorCourse apply(CanvasCourseBean canvasCourse) {
       final String state = canvasCourse.getState();

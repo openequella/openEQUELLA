@@ -772,7 +772,7 @@ public class UserServiceImpl
     return loggedoutUri;
   }
 
-  private static class InstitutionState {
+  private static final class InstitutionState {
     UserDirectoryChain chain;
     Collection<UserManagementLogonFilter> filters;
     Map<?, ?> attributes;

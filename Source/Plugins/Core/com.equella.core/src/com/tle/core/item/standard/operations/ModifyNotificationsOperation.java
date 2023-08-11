@@ -25,7 +25,7 @@ import java.util.Set;
 
 // Sonar maintains that 'Class cannot be instantiated and does not provide any
 // static methods or fields', but methinks thats bunkum
-public class ModifyNotificationsOperation extends AbstractStandardWorkflowOperation // NOSONAR
+public final class ModifyNotificationsOperation extends AbstractStandardWorkflowOperation // NOSONAR
 {
   private Set<String> userIds;
 

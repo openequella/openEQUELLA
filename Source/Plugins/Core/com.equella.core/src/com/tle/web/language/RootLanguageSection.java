@@ -273,7 +273,7 @@ public class RootLanguageSection extends OneColumnLayout<OneColumnLayout.OneColu
     }
   }
 
-  private class ContributionLanguageTableModel extends DynamicSelectionsTableModel<String> {
+  private final class ContributionLanguageTableModel extends DynamicSelectionsTableModel<String> {
     @Override
     protected List<String> getSourceList(SectionInfo info) {
       List<Language> langList = langService.getLanguages();
@@ -305,7 +305,7 @@ public class RootLanguageSection extends OneColumnLayout<OneColumnLayout.OneColu
     }
   }
 
-  private class LocaleLanguageTableModel extends DynamicSelectionsTableModel<Locale> {
+  private final class LocaleLanguageTableModel extends DynamicSelectionsTableModel<Locale> {
     @Override
     protected List<Locale> getSourceList(SectionInfo info) {
       return langService.listAvailableResourceBundles();

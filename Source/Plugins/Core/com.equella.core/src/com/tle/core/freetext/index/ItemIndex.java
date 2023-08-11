@@ -1409,7 +1409,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     this.defaultOperator = defaultOperator;
   }
 
-  private static class CountingCollector extends Collector {
+  private static final class CountingCollector extends Collector {
     private int count = 0;
 
     public int getCount() {
@@ -1447,7 +1447,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     }
   }
 
-  private static class BitSetCollector extends Collector {
+  private static final class BitSetCollector extends Collector {
     private int docBase;
     private final OpenBitSet bitSet = new OpenBitSet();
 

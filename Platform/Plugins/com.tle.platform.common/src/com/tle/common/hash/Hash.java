@@ -87,7 +87,7 @@ public class Hash {
     String getDigest(String value);
   }
 
-  private static class SHA1Digester implements HashDigester {
+  private static final class SHA1Digester implements HashDigester {
     @SuppressWarnings("nls")
     private static final String customSalt = System.getProperty("equella.salt");
 
@@ -100,7 +100,7 @@ public class Hash {
     }
   }
 
-  private static class MD5Digester implements HashDigester {
+  private static final class MD5Digester implements HashDigester {
     @Override
     public String getDigest(String value) {
       return new Md5(value).getStringDigest();

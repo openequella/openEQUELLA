@@ -60,7 +60,7 @@ public class BrightspaceIntegrationModule extends SectionsModule {
     }
   }
 
-  private class BrightspaceLtiOptionalModule extends OptionalConfigModule {
+  private final class BrightspaceLtiOptionalModule extends OptionalConfigModule {
     @Override
     protected void configure() {
       bindProp("brightspace.parameter.username", "ext_d2l_username");

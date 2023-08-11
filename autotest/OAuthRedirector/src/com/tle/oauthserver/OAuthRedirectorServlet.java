@@ -169,7 +169,7 @@ public class OAuthRedirectorServlet extends HttpServlet {
     }
   }
 
-  private static class TestInfo {
+  private static final class TestInfo {
     public String clientId;
     public String clientSecret;
     public String equellaUrl;

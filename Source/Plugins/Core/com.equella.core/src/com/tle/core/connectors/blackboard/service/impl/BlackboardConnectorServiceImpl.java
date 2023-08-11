@@ -1104,7 +1104,8 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
     }
   }
 
-  private static class CustomConfigurator extends DeploymentEngine implements AxisConfigurator {
+  private static final class CustomConfigurator extends DeploymentEngine
+      implements AxisConfigurator {
     @Override
     public void loadServices() {
       // Do we really need????

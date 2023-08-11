@@ -157,7 +157,7 @@ public class ShuffleList extends AbstractWebControl<WebControlModel> implements 
     return WebControlModel.class;
   }
 
-  private class ListModel extends StringListModel {
+  private final class ListModel extends StringListModel {
     @Override
     public List<Option<String>> getOptions(SectionInfo info) {
       List<Option<String>> opts = new ArrayList<Option<String>>();

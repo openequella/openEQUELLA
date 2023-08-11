@@ -1135,7 +1135,7 @@ public class BrightspaceConnectorServiceImpl extends AbstractIntegrationConnecto
     }
   }
 
-  private static class CourseOfferingTransformer
+  private static final class CourseOfferingTransformer
       implements Function<CourseOffering, ConnectorCourse> {
     @Override
     public ConnectorCourse apply(CourseOffering course) {

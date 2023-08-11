@@ -394,7 +394,7 @@ public class XPathMapper extends Mapper {
     }
   }
 
-  private static class NodeEvent {
+  private static final class NodeEvent {
     int status;
     String name;
     String text;

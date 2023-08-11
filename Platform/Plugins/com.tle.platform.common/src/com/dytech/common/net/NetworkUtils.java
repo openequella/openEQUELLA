@@ -26,7 +26,7 @@ import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.List;
 
-public class NetworkUtils {
+public final class NetworkUtils {
   /**
    * @return a bunch of InetAddresses that are "real", ie, not virtual, loopback, multicast and are
    *     up.

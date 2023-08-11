@@ -60,7 +60,7 @@ public class PreparingDriverPool implements WebDriverPool {
     driverPool.releaseDriver(checkedout);
   }
 
-  private static class PerThreadData {
+  private static final class PerThreadData {
     WebDriverCheckout checkedout;
     WebDriverCheckout preferred;
     boolean invalid;

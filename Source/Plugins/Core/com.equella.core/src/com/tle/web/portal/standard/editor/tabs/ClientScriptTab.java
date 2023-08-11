@@ -256,7 +256,7 @@ public class ClientScriptTab extends AbstractScriptingTab<ClientScriptTab.Client
     return javascriptTable;
   }
 
-  private class JavascriptTableModel extends DynamicSelectionsTableModel<String> {
+  private final class JavascriptTableModel extends DynamicSelectionsTableModel<String> {
     @Override
     protected List<String> getSourceList(SectionInfo info) {
       return javascriptFileList.getListModel().getValues(info);
