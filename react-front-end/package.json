@@ -14,7 +14,7 @@
     "tools": "target/tools"
   },
   "engines": {
-    "node": "16.20.1",
+    "node": "16.20.2",
     "npm": "8.19.4"
   },
   "scripts": {
