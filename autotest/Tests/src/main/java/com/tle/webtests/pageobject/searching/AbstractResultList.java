@@ -3,6 +3,7 @@ package com.tle.webtests.pageobject.searching;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.ExpectWaiter;
+import com.tle.webtests.pageobject.ExpectedConditions2;
 import com.tle.webtests.pageobject.PrefixedName;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import java.util.ArrayList;
@@ -36,11 +37,11 @@ public abstract class AbstractResultList<
         ((WrapsElement) getResultsDiv().findElement(By.xpath("*[1]"))).getWrappedElement();
     return ExpectWaiter.waiter(
         ExpectedConditions.and(
-            ExpectedConditions.stalenessOf(firstChild),
+            ExpectedConditions2.stalenessOrNonPresenceOf(firstChild),
             ExpectedConditions.visibilityOfElementLocated(
                 By.xpath("id('searchresults')[div[@class='itemlist'] or h3]"))),
         this);
-  }
+  };
 
   protected static String getXPathForTitle(String title) {
     return "//div/div[contains(@class,'itemresult-wrapper') and .//h3/a[normalize-space(string())="

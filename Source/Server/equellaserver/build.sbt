@@ -17,19 +17,19 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 (Runtime / unmanagedClasspath) += (LocalProject("learningedge_config") / baseDirectory).value
 
 val RestEasyVersion   = "3.15.3.Final"
-val SwaggerVersion    = "1.6.9"
-val TomcatVersion     = "9.0.75"
+val SwaggerVersion    = "1.6.11"
+val TomcatVersion     = "9.0.78"
 val axis2Version      = "1.8.2"
 val circeVersion      = "0.12.1"
-val curatorVersion    = "5.4.0"
-val cxfVersion        = "3.5.5"
+val curatorVersion    = "5.5.0"
+val cxfVersion        = "3.6.1"
 val fs2Version        = "2.5.11"
 val guiceVersion      = "5.1.0"
 val jsassVersion      = "5.10.5"
-val jsoupVersion      = "1.15.4"
+val jsoupVersion      = "1.16.1"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "1.7.2"
-val tikaVersion       = "2.6.0"
+val tikaVersion       = "2.8.0"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -102,13 +102,13 @@ libraryDependencies ++= Seq(
   // Exclude slf4j due to issue: https://github.com/brettwooldridge/HikariCP/issues/1746
   "com.zaxxer"                % "HikariCP"              % "4.0.3" excludeAll ExclusionRule(organization = "org.slf4j"),
   "commons-beanutils"         % "commons-beanutils"     % "1.9.4",
-  "commons-codec"             % "commons-codec"         % "1.15",
+  "commons-codec"             % "commons-codec"         % "1.16.0",
   "commons-collections"       % "commons-collections"   % "3.2.2",
   "commons-configuration"     % "commons-configuration" % "1.10",
   "commons-daemon"            % "commons-daemon"        % "1.3.4",
   "commons-discovery"         % "commons-discovery"     % "0.5",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
-  "commons-io"                % "commons-io"            % "2.11.0",
+  "commons-io"                % "commons-io"            % "2.13.0",
   "commons-lang"              % "commons-lang"          % "2.6",
   "com.github.equella.legacy" % "itunesu-api-java"      % "1.7",
   "com.github.equella.legacy" % "mets"                  % "1.0",
@@ -130,7 +130,7 @@ libraryDependencies ++= Seq(
   "org.apache.axis2"   % "axis2-adb"                % axis2Version,
   "org.apache.axis2"   % "axis2-transport-http"     % axis2Version,
   "org.apache.axis2"   % "axis2-transport-local"    % axis2Version,
-  "org.apache.commons" % "commons-compress"         % "1.22",
+  "org.apache.commons" % "commons-compress"         % "1.23.0",
   "org.apache.curator" % "curator-client"           % curatorVersion,
   "org.apache.curator" % "curator-framework"        % curatorVersion,
   "org.apache.curator" % "curator-recipes"          % curatorVersion,
@@ -210,15 +210,15 @@ libraryDependencies ++= Seq(
   // Upgraded to 2.0.1.Final due to a deduplication issue with jakarta.ws.rs-api
   "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"     % "2.0.2.Final",
   "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api" % "3.0.1",
-  "org.eclipse.microprofile.config"      % "microprofile-config-api"      % "3.0.2",
+  "org.eclipse.microprofile.config"      % "microprofile-config-api"      % "3.0.3",
   "javax.json.bind"                      % "javax.json.bind-api"          % "1.0",
   "org.jsoup"                            % "jsoup"                        % jsoupVersion,
   xstreamDep,
   "org.opensaml" % "xmltooling" % "1.4.4" excludeAll ExclusionRule(organization = "org.slf4j"),
   postgresDep,
   "org.scannotation" % "scannotation"   % "1.0.3",
-  "org.slf4j"        % "jcl-over-slf4j" % "2.0.6",
-  "org.slf4j"        % "slf4j-api"      % "2.0.6",
+  "org.slf4j"        % "jcl-over-slf4j" % "2.0.7",
+  "org.slf4j"        % "slf4j-api"      % "2.0.7",
   springAop,
   springWeb,
   springContext,
@@ -236,11 +236,11 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "net.sf.saxon")
   ),
   "xml-resolver"                  % "xml-resolver"              % "1.2",
-  "org.scala-sbt"                 %% "io"                       % "1.8.0",
+  "org.scala-sbt"                 %% "io"                       % "1.8.1",
   "org.mozilla"                   % "rhino"                     % "1.7.14",
   "io.lemonlabs"                  %% "scala-uri"                % "4.0.3",
   "org.scala-lang.modules"        %% "scala-parser-combinators" % "2.2.0",
-  "io.github.classgraph"          % "classgraph"                % "4.8.160",
+  "io.github.classgraph"          % "classgraph"                % "4.8.162",
   "com.fasterxml"                 % "classmate"                 % "1.5.1",
   "org.glassfish"                 % "javax.el"                  % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"    % "3.0.2",
@@ -418,7 +418,12 @@ run := {
   //  .../org.apache.cxf/cxf-rt-databinding-jaxb/bundles/cxf-rt-databinding-jaxb-3.4.0.jar:META-INF/cxf/java2wsbeans.xml
   // ...
   case PathList("META-INF", "cxf", "java2wsbeans.xml") => MergeStrategy.first
-
+  // Apache tika 2.8 brings in bouncycastle:bcprov-jdk18on, which causes SBT Deduplicate issues.
+  // For example:
+  //   Jar name = bcprov-jdk15on-1.51.jar, jar org = org.bouncycastle, entry target = org/bouncycastle/crypto/ec/CustomNamedCurves$2.class
+  //   Jar name = bcprov-jdk18on-1.73.jar, jar org = org.bouncycastle, entry target = org/bouncycastle/crypto/ec/CustomNamedCurves$2.class
+  // Keep the later one to use the newer version of bcprov.
+  case PathList("org", "bouncycastle", _*) => MergeStrategy.last
   case x =>
     val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
     oldStrategy(x)

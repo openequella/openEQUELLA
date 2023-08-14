@@ -377,7 +377,7 @@ export const DateRangeSelector = ({
   const customDatePicker: ReactNode = (
     <LocalizationProvider
       dateAdapter={AdapterLuxon}
-      adapterLocale={DateTime.local().locale}
+      adapterLocale={DateTime.local().locale ?? undefined}
     >
       <Grid
         container

@@ -1,13 +1,13 @@
 libraryDependencies ++= Seq(
   "com.google.guava" % "guava"          % "31.1-jre",
-  "org.slf4j"        % "jcl-over-slf4j" % "2.0.6",
+  "org.slf4j"        % "jcl-over-slf4j" % "2.0.7",
   log4j,
   log4jCore,
   log4jSlf4jImpl,
   "org.typelevel" %% "cats-core" % "2.9.0",
   xstreamDep,
   "commons-configuration" % "commons-configuration" % "1.10",
-  "commons-io"            % "commons-io"            % "2.11.0",
+  "commons-io"            % "commons-io"            % "2.13.0",
   "commons-lang"          % "commons-lang"          % "2.6",
   // Need these two jackson deps to allow processing log4j yaml config files.
   jacksonDataBind,
