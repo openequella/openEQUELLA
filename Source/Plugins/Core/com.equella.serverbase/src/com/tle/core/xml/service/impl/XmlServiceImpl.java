@@ -22,6 +22,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.core.util.ClassLoaderReference;
 import com.thoughtworks.xstream.core.util.CompositeClassLoader;
 import com.thoughtworks.xstream.io.xml.XppDriver;
+import com.thoughtworks.xstream.security.WildcardTypePermission;
 import com.tle.common.security.streaming.XStreamSecurityManager;
 import com.tle.core.guice.Bind;
 import com.tle.core.xml.service.XmlService;
@@ -34,9 +35,14 @@ import javax.inject.Singleton;
 @Singleton
 public final class XmlServiceImpl implements XmlService {
   private final XStream xstream;
+  private final WildcardTypePermission xstreamTypePermission;
 
   public XmlServiceImpl() {
     xstream = new ExtXStream(null);
+    /** Allow all inner classes for the DRMPage class. */
+    xstreamTypePermission =
+        new WildcardTypePermission(true, new String[] {"com.dytech.edge.wizard.beans.DRMPage**"});
+    xstream.addPermission(xstreamTypePermission);
   }
 
   @Override
@@ -50,7 +56,9 @@ public final class XmlServiceImpl implements XmlService {
 
   @Override
   public XStream createDefault(ClassLoader loader) {
-    return new ExtXStream(loader);
+    XStream xs = new ExtXStream(loader);
+    xs.addPermission(xstreamTypePermission);
+    return xs;
   }
 
   @Override
