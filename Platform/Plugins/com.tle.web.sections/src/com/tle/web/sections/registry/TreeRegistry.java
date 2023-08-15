@@ -225,7 +225,7 @@ public class TreeRegistry implements RegistrationController {
     }
   }
 
-  private static class SectionTreeData {
+  private static final class SectionTreeData {
     SectionTree tree;
     boolean url;
   }

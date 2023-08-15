@@ -88,7 +88,7 @@ public class HTMLParserTest extends TestCase {
     void parse(HTMLParser parser) throws Exception;
   }
 
-  private static class DefaultParserTester implements ParserTester {
+  private static final class DefaultParserTester implements ParserTester {
     @Override
     public void parse(HTMLParser parser) throws Exception {
       // Just read through the whole stream to make sure it parses
@@ -99,7 +99,7 @@ public class HTMLParserTest extends TestCase {
     }
   }
 
-  private static class Html1Tester implements ParserTester {
+  private static final class Html1Tester implements ParserTester {
     @Override
     public void parse(HTMLParser parser) throws Exception {
       Tag tag = parser.getNextTag();

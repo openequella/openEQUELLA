@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 /** @author aholland */
 // Sonar maintains that 'Class cannot be instantiated and does not provide any
 // static methods or fields', but methinks thats bunkum
-public class UnusedContentCleanupOperation extends AbstractWorkflowOperation // NOSONAR
+public final class UnusedContentCleanupOperation extends AbstractWorkflowOperation // NOSONAR
 {
   private static final Logger LOGGR = LoggerFactory.getLogger(UnusedContentCleanupOperation.class);
 

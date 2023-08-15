@@ -137,7 +137,7 @@ public class RootShortcutUrlsSettingsSection extends OneColumnLayout<ShortcutUrl
     return ShortcutUrlsSettingsModel.class;
   }
 
-  private class ShortcutURLModel extends DynamicSelectionsTableModel<Pair<String, String>> {
+  private final class ShortcutURLModel extends DynamicSelectionsTableModel<Pair<String, String>> {
     @Override
     protected List<Pair<String, String>> getSourceList(SectionInfo info) {
       List<Pair<String, String>> shortcutUrls = Lists.newArrayList();

@@ -209,7 +209,7 @@ public class QtiServiceImpl implements QtiService {
     return testSessionController;
   }
 
-  private class LoggingNotificationListener implements NotificationListener {
+  private final class LoggingNotificationListener implements NotificationListener {
     @Override
     public void onNotification(Notification notification) {
       final NotificationType notificationType = notification.getNotificationType();

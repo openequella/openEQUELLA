@@ -124,7 +124,7 @@ public class CheckURLsScheduledTask implements ScheduledTask {
     }
   }
 
-  private class ReferencedURLIterator extends BatchingIterator<ReferencedURL> {
+  private final class ReferencedURLIterator extends BatchingIterator<ReferencedURL> {
     private static final int BATCH_SIZE = 200;
 
     @Override

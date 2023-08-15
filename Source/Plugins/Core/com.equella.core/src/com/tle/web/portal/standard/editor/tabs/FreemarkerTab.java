@@ -244,7 +244,7 @@ public class FreemarkerTab extends AbstractScriptingTab<FreemarkerTab.Freemarker
     return cssTable;
   }
 
-  private class CssTableModel extends DynamicSelectionsTableModel<String> {
+  private final class CssTableModel extends DynamicSelectionsTableModel<String> {
     @Override
     protected List<String> getSourceList(SectionInfo info) {
       return cssFileList.getListModel().getValues(info);

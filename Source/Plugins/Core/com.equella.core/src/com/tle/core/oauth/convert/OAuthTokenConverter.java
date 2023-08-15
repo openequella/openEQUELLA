@@ -149,7 +149,7 @@ public class OAuthTokenConverter extends AbstractConverter<OAuthToken> {
     return xstream;
   }
 
-  private class ClientXStreamConverter implements Converter {
+  private final class ClientXStreamConverter implements Converter {
     @SuppressWarnings("rawtypes")
     @Override
     public boolean canConvert(Class clazz) {

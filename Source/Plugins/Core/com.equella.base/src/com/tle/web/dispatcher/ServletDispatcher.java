@@ -40,7 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
 
-public class ServletDispatcher {
+public final class ServletDispatcher {
   private static final String DISPATCHER_KEY = "ServletDispatcher"; // $NON-NLS-1$
   private final PluginTracker<HttpServlet> servletTracker;
   private final Set<Extension> initedServlets =

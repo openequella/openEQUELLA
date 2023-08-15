@@ -116,7 +116,7 @@ public class InnerLayout implements LayoutSelector {
     getLayoutSelectorsObj(info).addLayoutSelector(selector);
   }
 
-  private static class LayoutSelectors {
+  private static final class LayoutSelectors {
     private final Set<LayoutSelector> selectors = new LinkedHashSet<LayoutSelector>();
 
     public void addLayoutSelector(LayoutSelector layoutSelector) {

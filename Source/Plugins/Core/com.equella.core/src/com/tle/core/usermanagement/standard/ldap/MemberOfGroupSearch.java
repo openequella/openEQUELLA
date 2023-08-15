@@ -368,7 +368,7 @@ public class MemberOfGroupSearch extends GroupSearch {
     return new AndFilter(ldap.getGroupSearchFilter(query), groupsFilter);
   }
 
-  private class SubgroupResultHitsCollector
+  private final class SubgroupResultHitsCollector
       extends HitsCollector<SubgroupResultHitsCollector.SubgroupResult> {
     private String[] returnAttributes;
 

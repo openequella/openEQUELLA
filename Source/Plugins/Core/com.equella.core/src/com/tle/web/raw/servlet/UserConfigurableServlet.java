@@ -81,7 +81,7 @@ public class UserConfigurableServlet extends HttpServlet {
     }
   }
 
-  private class CacheLoader implements Callable<String> {
+  private final class CacheLoader implements Callable<String> {
     private long lastMod;
     private String lastContent = NO_CONTENT;
 

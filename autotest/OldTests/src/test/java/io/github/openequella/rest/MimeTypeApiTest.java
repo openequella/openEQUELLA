@@ -55,7 +55,7 @@ public class MimeTypeApiTest extends AbstractRestApiTest {
   }
 
   // Mirror of com.tle.web.api.settings.MimeTypeDetail
-  private static class MimeTypeDetail {
+  private static final class MimeTypeDetail {
 
     private String mimeType = null;
     private String desc = null;

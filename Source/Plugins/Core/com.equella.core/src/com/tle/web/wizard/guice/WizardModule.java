@@ -90,7 +90,7 @@ public class WizardModule extends SectionsModule {
     }
   }
 
-  private static class WizardTracker extends PluginTrackerModule {
+  private static final class WizardTracker extends PluginTrackerModule {
     @Override
     protected String getPluginId() {
       return "com.tle.web.wizard";

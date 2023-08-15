@@ -542,7 +542,7 @@ public abstract class AbstractDetailsAttachmentHandler<
     }
   }
 
-  private class ViewersListModel extends DynamicHtmlListModel<NameValue> {
+  private final class ViewersListModel extends DynamicHtmlListModel<NameValue> {
     @Override
     protected Iterable<NameValue> populateModel(SectionInfo info) {
       final String mimeType = getMimeType(info);

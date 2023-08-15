@@ -46,7 +46,7 @@ public class NamedThreadFactory implements ThreadFactory {
     }
   }
 
-  private static class Builder implements Callable<AtomicInteger> {
+  private static final class Builder implements Callable<AtomicInteger> {
     @Override
     public AtomicInteger call() throws Exception {
       return new AtomicInteger(1);
