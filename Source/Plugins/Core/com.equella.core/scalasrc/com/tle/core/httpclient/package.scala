@@ -19,12 +19,11 @@
 package com.tle.core
 
 import java.util.concurrent.Executors
-
 import cats.effect.IO
-import com.softwaremill.sttp.SttpBackendOptions
-import com.softwaremill.sttp.SttpBackendOptions.{Proxy, ProxyType}
-import com.softwaremill.sttp.asynchttpclient.fs2.AsyncHttpClientFs2Backend
 import com.tle.legacy.LegacyGuice
+import sttp.client.SttpBackendOptions
+import sttp.client.SttpBackendOptions.{Proxy, ProxyType}
+import sttp.client.asynchttpclient.fs2.AsyncHttpClientFs2Backend
 
 import scala.concurrent.ExecutionContext
 

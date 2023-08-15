@@ -28,7 +28,7 @@ val guiceVersion      = "5.1.0"
 val jsassVersion      = "5.10.5"
 val jsoupVersion      = "1.16.1"
 val prometheusVersion = "0.16.0"
-val sttpVersion       = "1.7.2"
+val sttpVersion       = "2.3.0"
 val tikaVersion       = "2.8.0"
 
 libraryDependencies ++= Seq(
@@ -52,10 +52,13 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "co.fs2"                         %% "fs2-io"                        % fs2Version,
-  "com.softwaremill.sttp"          %% "core"                          % sttpVersion,
-  "com.softwaremill.sttp"          %% "async-http-client-backend-fs2" % sttpVersion,
-  "com.softwaremill.sttp"          %% "circe"                         % sttpVersion,
+  "co.fs2" %% "fs2-io" % fs2Version,
+//  "com.softwaremill.sttp"          %% "core"                          % sttpVersion,
+//  "com.softwaremill.sttp"          %% "async-http-client-backend-fs2" % sttpVersion,
+//  "com.softwaremill.sttp"          %% "circe"                         % sttpVersion,
+  "com.softwaremill.sttp.client"   %% "core"                          % sttpVersion,
+  "com.softwaremill.sttp.client"   %% "async-http-client-backend-fs2" % sttpVersion,
+  "com.softwaremill.sttp.client"   %% "circe"                         % sttpVersion,
   "cglib"                          % "cglib"                          % "3.3.0",
   "com.fasterxml.jackson.core"     % "jackson-core"                   % jacksonVersion,
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"        % jacksonVersion,
