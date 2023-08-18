@@ -21,10 +21,10 @@ package com.tle.core.freetext.filters;
 import com.dytech.edge.queries.FreeTextQuery;
 import com.tle.beans.Institution;
 import com.tle.common.institution.CurrentInstitution;
+import com.tle.core.freetext.index.LuceneDocumentHelper;
 import java.io.IOException;
 import org.apache.lucene.index.AtomicReader;
 import org.apache.lucene.index.AtomicReaderContext;
-import org.apache.lucene.index.DocsEnum;
 import org.apache.lucene.index.IndexReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.DocIdSet;
@@ -34,15 +34,14 @@ import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.OpenBitSet;
 
 public class InstitutionFilter extends Filter {
+
   private static final long serialVersionUID = 1L;
 
   public OpenBitSet getDocIdSet(IndexReaderContext context, Bits acceptDocs) throws IOException {
     OpenBitSet bitSet = new OpenBitSet(context.reader().maxDoc());
     for (AtomicReaderContext ctx : context.leaves()) {
       DocIdSetIterator iterator = getDocIdSet(ctx, acceptDocs).iterator();
-      while (iterator != null && iterator.nextDoc() != DocsEnum.NO_MORE_DOCS) {
-        bitSet.set(iterator.docID());
-      }
+      LuceneDocumentHelper.forEachDoc(iterator, bitSet::set);
     }
 
     return bitSet;
@@ -54,12 +53,11 @@ public class InstitutionFilter extends Filter {
     int max = reader.maxDoc();
     OpenBitSet good = new OpenBitSet(max);
     Institution institution = CurrentInstitution.get();
-    Term term = new Term(FreeTextQuery.FIELD_INSTITUTION, Long.toString(institution.getUniqueId()));
+    LuceneDocumentHelper.forEachDoc(
+        reader,
+        new Term(FreeTextQuery.FIELD_INSTITUTION, Long.toString(institution.getUniqueId())),
+        good::set);
 
-    DocsEnum docs = reader.termDocsEnum(term);
-    while (docs != null && docs.nextDoc() != DocsEnum.NO_MORE_DOCS) {
-      good.set(docs.docID());
-    }
     return good;
   }
 }

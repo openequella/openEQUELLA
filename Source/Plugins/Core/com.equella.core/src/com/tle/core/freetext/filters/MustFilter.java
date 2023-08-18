@@ -19,11 +19,11 @@
 package com.tle.core.freetext.filters;
 
 import com.tle.common.searching.Field;
+import com.tle.core.freetext.index.LuceneDocumentHelper;
 import java.io.IOException;
 import java.util.List;
 import org.apache.lucene.index.AtomicReader;
 import org.apache.lucene.index.AtomicReaderContext;
-import org.apache.lucene.index.DocsEnum;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
@@ -31,6 +31,7 @@ import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.OpenBitSet;
 
 public class MustFilter extends Filter {
+
   private static final long serialVersionUID = 1L;
   protected List<List<Field>> terms;
 
@@ -47,11 +48,8 @@ public class MustFilter extends Filter {
       if (!values.isEmpty()) {
         OpenBitSet good = new OpenBitSet(max);
         for (Field nv : values) {
-          Term term = new Term(nv.getField(), nv.getValue());
-          DocsEnum docs = reader.termDocsEnum(term);
-          while (docs != null && docs.nextDoc() != DocsEnum.NO_MORE_DOCS) {
-            good.set(docs.docID());
-          }
+          LuceneDocumentHelper.forEachDoc(
+              reader, new Term(nv.getField(), nv.getValue()), good::set);
         }
         if (prev != null) {
           prev.and(good);

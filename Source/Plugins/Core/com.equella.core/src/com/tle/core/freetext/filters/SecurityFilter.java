@@ -21,6 +21,7 @@ package com.tle.core.freetext.filters;
 import com.dytech.edge.queries.FreeTextQuery;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.common.usermanagement.user.UserState;
+import com.tle.core.freetext.index.LuceneDocumentHelper;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
@@ -42,6 +43,7 @@ import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.OpenBitSet;
 
 public class SecurityFilter extends Filter {
+
   private static final long serialVersionUID = 1L;
 
   private OpenBitSet results;
@@ -107,11 +109,8 @@ public class SecurityFilter extends Filter {
     if (!systemUser) {
       OpenBitSet owned = new OpenBitSet(max);
       if (ownerSizes > 0) {
-        DocsEnum odocs =
-            reader.termDocsEnum(new Term(FreeTextQuery.FIELD_OWNER, CurrentUser.getUserID()));
-        while (odocs != null && odocs.nextDoc() != DocsEnum.NO_MORE_DOCS) {
-          owned.set(odocs.docID());
-        }
+        LuceneDocumentHelper.forEachDoc(
+            reader, new Term(FreeTextQuery.FIELD_OWNER, CurrentUser.getUserID()), owned::set);
       }
 
       Set<Term> allTerms = new TreeSet<>(comparator);
@@ -134,25 +133,23 @@ public class SecurityFilter extends Filter {
         int doc;
         if (exprType == null) {
           if (grant) {
-            while ((doc = docs.nextDoc()) != DocsEnum.NO_MORE_DOCS) {
-              results.set(doc);
-            }
+            LuceneDocumentHelper.forEachDoc(docs, results::set);
           } else {
-            while ((doc = docs.nextDoc()) != DocsEnum.NO_MORE_DOCS) {
-              results.clear(doc);
-            }
+            LuceneDocumentHelper.forEachDoc(docs, results::clear);
           }
         } else {
           boolean must = exprType;
-          while ((doc = docs.nextDoc()) != DocsEnum.NO_MORE_DOCS) {
-            if (owned.get(doc) == must) {
-              if (grant) {
-                results.set(doc);
-              } else {
-                results.clear(doc);
-              }
-            }
-          }
+          LuceneDocumentHelper.forEachDoc(
+              docs,
+              (docId) -> {
+                if (owned.get(docId) == must) {
+                  if (grant) {
+                    results.set(docId);
+                  } else {
+                    results.clear(docId);
+                  }
+                }
+              });
         }
       }
     } else {
@@ -175,6 +172,7 @@ public class SecurityFilter extends Filter {
   }
 
   public static class TermValueComparator implements Comparator<Term>, Serializable {
+
     @Override
     public int compare(Term o1, Term o2) {
       int comp = o2.text().compareTo(o1.text());

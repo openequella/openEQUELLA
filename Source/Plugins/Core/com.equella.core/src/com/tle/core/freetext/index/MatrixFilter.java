@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.lucene.index.AtomicReader;
 import org.apache.lucene.index.AtomicReaderContext;
-import org.apache.lucene.index.DocsEnum;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
@@ -56,10 +55,7 @@ public class MatrixFilter extends Filter {
       {
         if (term.text().equals(fieldObj.getValue())) {
           OpenBitSet set = new OpenBitSet(maxDoc);
-          DocsEnum docs = reader.termDocsEnum(term);
-          while (docs != null && docs.nextDoc() != DocsEnum.NO_MORE_DOCS) {
-            set.set(docs.docID());
-          }
+          LuceneDocumentHelper.forEachDoc(reader, term, set::set);
           String xpathKey = "";
           if (hasXpaths) {
             String fieldName = term.field();

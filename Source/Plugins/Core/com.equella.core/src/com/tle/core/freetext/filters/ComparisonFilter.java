@@ -18,10 +18,10 @@
 
 package com.tle.core.freetext.filters;
 
+import com.tle.core.freetext.index.LuceneDocumentHelper;
 import java.io.IOException;
 import org.apache.lucene.index.AtomicReader;
 import org.apache.lucene.index.AtomicReaderContext;
-import org.apache.lucene.index.DocsEnum;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
@@ -65,10 +65,7 @@ public class ComparisonFilter extends Filter {
       for (startTerm = termsEnum.term();
           startTerm != null && startTerm.compareTo(endTerm) <= 0;
           startTerm = termsEnum.next()) {
-        DocsEnum termDocs = reader.termDocsEnum(new Term(field, startTerm));
-        while (termDocs != null && termDocs.nextDoc() != DocsEnum.NO_MORE_DOCS) {
-          bits.set(termDocs.docID());
-        }
+        LuceneDocumentHelper.forEachDoc(reader, new Term(field, startTerm), bits::set);
       }
     }
 

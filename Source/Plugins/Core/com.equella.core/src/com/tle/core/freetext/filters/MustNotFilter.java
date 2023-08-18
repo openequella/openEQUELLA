@@ -19,11 +19,11 @@
 package com.tle.core.freetext.filters;
 
 import com.tle.common.searching.Field;
+import com.tle.core.freetext.index.LuceneDocumentHelper;
 import java.io.IOException;
 import java.util.List;
 import org.apache.lucene.index.AtomicReader;
 import org.apache.lucene.index.AtomicReaderContext;
-import org.apache.lucene.index.DocsEnum;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.util.Bits;
@@ -45,11 +45,8 @@ public class MustNotFilter extends MustFilter {
     good.set(0, max);
     for (List<Field> values : terms) {
       for (Field nv : values) {
-        Term term = new Term(nv.getField(), nv.getValue());
-        DocsEnum docs = reader.termDocsEnum(term);
-        while (docs != null && docs.nextDoc() != DocsEnum.NO_MORE_DOCS) {
-          good.clear(docs.docID());
-        }
+        LuceneDocumentHelper.forEachDoc(
+            reader, new Term(nv.getField(), nv.getValue()), good::clear);
       }
     }
     return good;

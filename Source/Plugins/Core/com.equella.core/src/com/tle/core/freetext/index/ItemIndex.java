@@ -611,17 +611,16 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
             final Multimap<String, Pair<String, Integer>> rv = ArrayListMultimap.create();
             for (String field : fields) {
               for (Term term : new XPathFieldIterator(reader, field, "")) {
-                int count = 0;
-
-                DocsEnum bits =
+                DocsEnum docs =
                     MultiFields.getTermDocsEnum(reader, filteredBits, field, term.bytes());
-                while (bits != null && bits.nextDoc() != DocsEnum.NO_MORE_DOCS) {
-                  count++;
-                }
 
-                if (count > 0) {
-                  rv.put(field, new Pair<>(term.text(), count));
-                }
+                LuceneDocumentHelper.useDocCount(
+                    docs,
+                    count -> {
+                      if (count > 0) {
+                        rv.put(field, new Pair<>(term.text(), count));
+                      }
+                    });
               }
             }
             return rv;
@@ -653,11 +652,9 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
               OpenBitSet perFieldBitSet = new OpenBitSet(maxDoc);
               for (Term term : new XPathFieldIterator(reader, field, "")) {
                 OpenBitSet set = new OpenBitSet(maxDoc);
-                DocsEnum docsEnum =
+                DocsEnum docs =
                     MultiFields.getTermDocsEnum(reader, filteredBits, field, term.bytes());
-                while (docsEnum != null && docsEnum.nextDoc() != DocsEnum.NO_MORE_DOCS) {
-                  set.set(docsEnum.docID());
-                }
+                LuceneDocumentHelper.forEachDoc(docs, set::set);
 
                 perFieldBitSet.or(set);
                 allDocs.or(set);
@@ -746,9 +743,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
             OpenBitSet permittedDocSet = new OpenBitSet(reader.maxDoc());
             for (AtomicReaderContext ctx : reader.leaves()) {
               DocIdSetIterator iterator = chain.getDocIdSet(ctx, null).iterator();
-              while (iterator.nextDoc() != DocsEnum.NO_MORE_DOCS) {
-                permittedDocSet.set(iterator.docID());
-              }
+              LuceneDocumentHelper.forEachDoc(iterator, permittedDocSet::set);
             }
 
             // Get docs that contain terms that begin with the prefix
