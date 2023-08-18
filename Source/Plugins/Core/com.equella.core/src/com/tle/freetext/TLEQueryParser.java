@@ -55,7 +55,7 @@ public class TLEQueryParser extends MultiFieldQueryParser {
      * Considering our target is V9 which may have solved the issue, maybe in this stage let's just
      * do a simple char replacement to escape forward slash.
      *
-     * <p>todo: check whether this custom parsing is needed in future upgrades.
+     * <p>todo(lucene-upgrade): check whether this custom parsing is needed in future upgrades.
      */
     String query = rawQuery.replace("/", "\\/");
     Matcher matcher = pattern.matcher(query);
