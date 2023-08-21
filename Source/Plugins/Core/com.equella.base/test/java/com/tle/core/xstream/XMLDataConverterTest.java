@@ -829,7 +829,7 @@ public class XMLDataConverterTest extends TestCase {
     }
   }
 
-  private static class OverideBean extends TestBean2 {
+  private static final class OverideBean extends TestBean2 {
     private static final long serialVersionUID = 1L;
     // Empty on purpose!
   }

@@ -91,7 +91,7 @@ checkJavaCodeStyle := {
     streams = streams.value
   )
   val errorNumber     = countErrorNumber
-  val thresholdNumber = 569
+  val thresholdNumber = 520
   if (errorNumber > thresholdNumber) {
     throw new MessageOnlyException(
       "Checkstyle error threshold (" + thresholdNumber + ") exceeded with error count of " + errorNumber)
@@ -116,7 +116,7 @@ ThisBuild / assemblyMergeStrategy := {
   }
 }
 (ThisBuild / oracleDriverMavenCoordinate) := Seq(
-  "com.oracle.database.jdbc" % "ojdbc8" % "21.10.0.0")
+  "com.oracle.database.jdbc" % "ojdbc8" % "21.11.0.0")
 
 (ThisBuild / buildConfig) := Common.buildConfig
 

@@ -1,6 +1,6 @@
 package com.tle.webtests.pageobject;
 
-public class DynamicUrlPage<T extends PageObject> extends AbstractPage<T> {
+public final class DynamicUrlPage<T extends PageObject> extends AbstractPage<T> {
   private AbstractPage<? extends T> targetPage;
   private String url;
 

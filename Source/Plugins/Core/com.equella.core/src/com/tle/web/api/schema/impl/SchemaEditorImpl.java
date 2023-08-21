@@ -153,7 +153,7 @@ public class SchemaEditorImpl extends AbstractBaseEntityEditor<Schema, SchemaBea
   }
 
   @Nullable
-  private List<TSchemaNode> buildNodeTree(
+  private final List<TSchemaNode> buildNodeTree(
       @Nullable TSchemaNode parent, @Nullable Map<String, SchemaNodeBean> def) {
     if (def == null) {
       return null;
@@ -186,7 +186,7 @@ public class SchemaEditorImpl extends AbstractBaseEntityEditor<Schema, SchemaBea
   }
 
   @NonNullByDefault(false)
-  private static class TSchemaNode {
+  private static final class TSchemaNode {
     private List<TSchemaNode> childNodes;
     private String name;
     private boolean attribute;

@@ -38,7 +38,7 @@ import java.util.Date;
 import java.util.Iterator;
 import javax.inject.Inject;
 
-public class EditMyPagesOperation extends AbstractWorkflowOperation {
+public final class EditMyPagesOperation extends AbstractWorkflowOperation {
   private final InputStream inputStream;
   private final String filename;
   private final boolean removeExistingAttachments;

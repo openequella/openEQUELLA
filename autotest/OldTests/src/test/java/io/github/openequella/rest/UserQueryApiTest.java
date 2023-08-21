@@ -100,7 +100,7 @@ public class UserQueryApiTest extends AbstractRestApiTest {
   }
 
   // Mirror of com.tle.web.api.users.UserDetails
-  private static class UserDetails {
+  private static final class UserDetails {
 
     private String id;
     private String username;

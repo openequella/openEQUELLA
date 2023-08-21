@@ -366,7 +366,7 @@ public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEv
     }
   }
 
-  private static class CodeReg implements Serializable {
+  private static final class CodeReg implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String clientId;

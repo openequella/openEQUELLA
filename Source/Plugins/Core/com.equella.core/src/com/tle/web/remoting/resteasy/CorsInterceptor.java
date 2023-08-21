@@ -40,6 +40,7 @@ public class CorsInterceptor implements PostProcessInterceptor {
   private static void process(ServerResponse response) {
     final MultivaluedMap<String, Object> metadata = response.getMetadata();
     metadata.putSingle("Access-Control-Allow-Origin", "*");
+    metadata.putSingle("Access-Control-Allow-Headers", "*");
     metadata.putSingle("Access-Control-Expose-Headers", "Location");
   }
 }

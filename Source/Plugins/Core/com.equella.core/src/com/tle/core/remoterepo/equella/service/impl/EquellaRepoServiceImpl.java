@@ -369,7 +369,7 @@ public class EquellaRepoServiceImpl implements EquellaRepoService {
     }
   }
 
-  private static class XFireReturnTypeConfig extends AbstractServiceConfiguration {
+  private static final class XFireReturnTypeConfig extends AbstractServiceConfiguration {
     @Override
     public QName getInParameterName(OperationInfo op, Method method, int paramNumber) {
       return new QName(op.getName().getNamespaceURI(), "in" + paramNumber);

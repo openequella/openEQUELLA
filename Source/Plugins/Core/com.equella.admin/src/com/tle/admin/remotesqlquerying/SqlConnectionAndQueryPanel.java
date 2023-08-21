@@ -223,7 +223,7 @@ public class SqlConnectionAndQueryPanel extends JPanel implements Changeable {
     return CurrentLocale.get(KEY_PFX + keyEnd);
   }
 
-  private static class Editor extends JPanel implements ListWithViewInterface<QueryState> {
+  private static final class Editor extends JPanel implements ListWithViewInterface<QueryState> {
     private JLabel description;
     private JTextArea sql;
     private String originalSql;

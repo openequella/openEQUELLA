@@ -166,7 +166,7 @@ public class TermEditor extends AbstractTreeNodeEditor {
     }
   }
 
-  private static class DataEditor extends JPanel implements ListWithViewInterface<DataEntry> {
+  private static final class DataEditor extends JPanel implements ListWithViewInterface<DataEntry> {
     private JTextArea data;
     private String originalData;
 

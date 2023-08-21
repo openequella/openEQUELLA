@@ -453,7 +453,7 @@ public class IMSExporter extends AbstractPrototypeSection<IMSExporterModel>
     attachmentExporters.setBeanKey("class");
   }
 
-  private static class RootItemInfo {
+  private static final class RootItemInfo {
     private boolean hasAttachments;
 
     public boolean hasAttachments() {

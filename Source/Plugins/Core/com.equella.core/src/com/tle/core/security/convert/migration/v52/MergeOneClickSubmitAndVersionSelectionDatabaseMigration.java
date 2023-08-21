@@ -85,7 +85,7 @@ public class MergeOneClickSubmitAndVersionSelectionDatabaseMigration
   @SuppressWarnings("unused")
   @Entity(name = "AccessEntry")
   @AccessType("field")
-  private static class FakeAccessEntry {
+  private static final class FakeAccessEntry {
     @Id public long id;
     public String targetObject;
   }

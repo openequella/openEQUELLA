@@ -255,7 +255,7 @@ public class ShowOAuthSection
     return tokenTable;
   }
 
-  private class OAuthClientsModel extends DynamicSelectionsTableModel<OAuthClient> {
+  private final class OAuthClientsModel extends DynamicSelectionsTableModel<OAuthClient> {
     @Override
     protected List<OAuthClient> getSourceList(SectionInfo info) {
       return oauthService.enumerateEditable();
@@ -290,7 +290,7 @@ public class ShowOAuthSection
     }
   }
 
-  private class OAuthTokensModel extends DynamicSelectionsTableModel<OAuthToken> {
+  private final class OAuthTokensModel extends DynamicSelectionsTableModel<OAuthToken> {
     @Override
     protected List<OAuthToken> getSourceList(SectionInfo info) {
       return oauthService.listAllTokens();

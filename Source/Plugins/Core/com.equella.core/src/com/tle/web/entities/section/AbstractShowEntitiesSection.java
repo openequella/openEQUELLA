@@ -439,7 +439,7 @@ public abstract class AbstractShowEntitiesSection<
     // Nothing by default
   }
 
-  private class EntitiesListModel extends DynamicSelectionsTableModel<E> {
+  private final class EntitiesListModel extends DynamicSelectionsTableModel<E> {
     @Override
     protected List<E> getSourceList(SectionInfo info) {
       return getEntityList(info);

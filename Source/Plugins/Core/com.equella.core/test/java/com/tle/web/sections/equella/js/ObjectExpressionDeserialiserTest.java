@@ -99,7 +99,7 @@ public class ObjectExpressionDeserialiserTest extends TestCase {
     }
   }
 
-  private static class FakePluginService implements PluginService {
+  private static final class FakePluginService implements PluginService {
 
     @Override
     public PluginBeanLocator getBeanLocator(String pluginId) {

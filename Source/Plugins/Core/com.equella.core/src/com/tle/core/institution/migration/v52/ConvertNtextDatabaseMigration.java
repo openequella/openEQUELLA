@@ -173,7 +173,7 @@ public class ConvertNtextDatabaseMigration extends AbstractHibernateSchemaMigrat
     return new Class[] {};
   }
 
-  private static class ColMeta {
+  private static final class ColMeta {
     public boolean nullable;
     public String name;
   }

@@ -198,7 +198,7 @@ public final class IMSUtilities {
   // ////////////////// HELPER CLASSES
   // /////////////////////////////////////////////////////////
 
-  private static class CollectionHashMap<K, V> extends HashMap<K, Collection<V>> {
+  private static final class CollectionHashMap<K, V> extends HashMap<K, Collection<V>> {
     private static final long serialVersionUID = 1L;
 
     public void add(K key, V value) {

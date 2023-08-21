@@ -22,7 +22,7 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 
-public class JPFPluginModelManager implements IModelProviderListener {
+public final class JPFPluginModelManager implements IModelProviderListener {
   private static JPFPluginModelManager instance;
   private WorkspaceJarModelManager jarManager;
   private WorkspacePluginModelManager projectManager;

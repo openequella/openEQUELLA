@@ -28,7 +28,7 @@ public class LtiModule extends SectionsModule {
     install(new LtiTrackerModule());
   }
 
-  private static class LtiTrackerModule extends PluginTrackerModule {
+  private static final class LtiTrackerModule extends PluginTrackerModule {
     @Override
     protected String getPluginId() {
       return "com.tle.web.lti";
