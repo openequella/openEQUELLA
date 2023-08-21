@@ -100,11 +100,8 @@ public abstract class AbstractIndexEngine {
   // The index generation we should wait for
   private long generation = -1;
 
-  private Analyzer normalAnalyzer;
-
-  private TLEAnalyzer nonStemmedAnalyzer;
-
-  private TLEAnalyzer autoCompleteAnalyzer;
+  // As autoCompleteAnalyzer doesn't need stopwords and stemming so it works for all languages.
+  private final TLEAnalyzer autoCompleteAnalyzer = new TLEAnalyzer(null, false);
 
   public void deleteDirectory() {
     try {
@@ -221,10 +218,8 @@ public abstract class AbstractIndexEngine {
           LOGGER.warn("No stop words available: " + stopWordsFile, e1);
         }
       }
-      normalAnalyzer = new TLEAnalyzer(stopSet, true);
-      nonStemmedAnalyzer = new TLEAnalyzer(stopSet, false);
-      // As autoCompleteAnalyzer doesn't need stopwords and stemming so it works for all languages
-      autoCompleteAnalyzer = new TLEAnalyzer(null, false);
+      Analyzer normalAnalyzer = new TLEAnalyzer(stopSet, true);
+      TLEAnalyzer nonStemmedAnalyzer = new TLEAnalyzer(stopSet, false);
 
       // For non-English
       if (!analyzerLanguage.equals("en")) {
