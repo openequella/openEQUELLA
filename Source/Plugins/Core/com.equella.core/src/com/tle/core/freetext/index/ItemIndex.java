@@ -95,6 +95,7 @@ import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.index.StoredFieldVisitor;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermsEnum;
+import org.apache.lucene.index.TermsEnum.SeekStatus;
 import org.apache.lucene.index.TrackingIndexWriter;
 import org.apache.lucene.queries.ChainedFilter;
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -752,17 +753,20 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
             termList.add(new Term(FreeTextQuery.FIELD_ATTACHMENT_VECTORED_NOSTEM, prefix));
 
             for (Term term : termList) {
-              // Given a field, find out all the terms.
+              // Given a field, find out all the terms and seek the terms that have the provided
+              // prefix so the result
+              // does not have to be the exact term.
               TermsEnum termsEnum = MultiFields.getTerms(reader, term.field()).iterator(null);
-              termsEnum.seekCeil(new BytesRef(prefix));
-
-              // And then find out all the permitted docs for the prefix terms.
-              DocsEnum docsEnum = termsEnum.docs(permittedDocSet, null);
-              // If there is at least one doc available, it means there are one or more terms that
-              // are permitted
-              // to use and these terms have the specified prefix. So we just return the first one.
-              if (docsEnum != null && docsEnum.nextDoc() != DocsEnum.NO_MORE_DOCS) {
-                return termsEnum.term().utf8ToString();
+              if (termsEnum.seekCeil(new BytesRef(prefix)) != SeekStatus.END) {
+                // And then find out all the permitted docs for the prefix terms.
+                DocsEnum docsEnum = termsEnum.docs(permittedDocSet, null);
+                // If there is at least one doc available, it means there are one or more terms that
+                // are permitted
+                // to use and these terms have the specified prefix. So we just return the first
+                // one.
+                if (docsEnum != null && docsEnum.nextDoc() != DocsEnum.NO_MORE_DOCS) {
+                  return termsEnum.term().utf8ToString();
+                }
               }
             }
             return "";
