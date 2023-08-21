@@ -758,11 +758,10 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
               // And then find out all the permitted docs for the prefix terms.
               DocsEnum docsEnum = termsEnum.docs(permittedDocSet, null);
-              int i = docsEnum != null ? docsEnum.nextDoc() : 0;
               // If there is at least one doc available, it means there are one or more terms that
               // are permitted
               // to use and these terms have the specified prefix. So we just return the first one.
-              if (docsEnum != null && i != DocsEnum.NO_MORE_DOCS) {
+              if (docsEnum != null && docsEnum.nextDoc() != DocsEnum.NO_MORE_DOCS) {
                 return termsEnum.term().utf8ToString();
               }
             }
