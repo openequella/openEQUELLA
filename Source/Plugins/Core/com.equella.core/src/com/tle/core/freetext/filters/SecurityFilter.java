@@ -24,9 +24,11 @@ import com.tle.common.usermanagement.user.UserState;
 import com.tle.core.freetext.index.LuceneDocumentHelper;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -114,15 +116,11 @@ public class SecurityFilter extends Filter {
       }
 
       Set<Term> allTerms = new TreeSet<>(comparator);
-      for (String field : expressions) {
-        Terms terms = reader.terms(field);
-        if (terms != null) {
-          TermsEnum termsEnum = terms.iterator(null);
-          while (termsEnum.next() != null) {
-            allTerms.add(new Term(field, new BytesRef(termsEnum.term().utf8ToString())));
-          }
-        }
-      }
+
+      Arrays.stream(expressions)
+          .map(field -> getTermsForField(reader, field))
+          .filter(termSet -> !termSet.isEmpty())
+          .forEach(allTerms::addAll);
 
       for (Term term : allTerms) {
         String type = term.text();
@@ -168,6 +166,23 @@ public class SecurityFilter extends Filter {
       return fullBitSet;
     } else {
       return results;
+    }
+  }
+
+  private Set<Term> getTermsForField(AtomicReader reader, String field) {
+    Set<Term> set = new HashSet<>();
+    try {
+      Terms terms = reader.terms(field);
+      if (terms != null) {
+        TermsEnum termsEnum = terms.iterator(null);
+        while (termsEnum.next() != null) {
+          set.add(new Term(field, new BytesRef(termsEnum.term().utf8ToString())));
+        }
+      }
+
+      return set;
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to list terms for field " + field, e);
     }
   }
 
