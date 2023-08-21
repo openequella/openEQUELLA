@@ -319,10 +319,6 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
             boolean searchAll =
                 Check.isEmpty(searchreq.getQuery()) || searchreq.getQuery().equals("*");
 
-            com.tle.common.searching.SortField[] sortfields = searchreq.getSortFields();
-
-            // todo: this used to be defined in getResultsFromTopDocs, verify whether sorting by
-            // relevance is still OK.
             boolean sortByRelevance =
                 Optional.ofNullable(searchreq.getSortFields())
                     .map(Arrays::stream)
