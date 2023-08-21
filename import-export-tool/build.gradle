@@ -35,7 +35,7 @@ allprojects {
     implementation group: 'javax.xml.soap', name: 'javax.xml.soap-api', version: '1.4.0'
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.7'
     implementation group: 'org.apache.logging.log4j', name: 'log4j', version: '2.20.0'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.19.0'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.20.0'
     implementation group: 'commons-codec', name: 'commons-codec', version: '1.16.0'
     implementation group: 'commons-discovery', name: 'commons-discovery', version: '0.5'
     implementation group: 'org.apache.axis', name: 'axis', version: '1.4'
