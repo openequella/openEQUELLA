@@ -1282,13 +1282,12 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     List<String> termList = Lists.newArrayList();
     List<Integer> increments = Lists.newArrayList();
 
-    try {
-      TLEAnalyzer autocompleteAnalyzer = getAutoCompleteAnalyzer();
-      TokenStreamComponents tokenStreamComponents =
-          autocompleteAnalyzer.createComponents(
-              FreeTextQuery.FIELD_NAME_AUTOCOMPLETE, new StringReader(query.getQuery()));
+    TLEAnalyzer autocompleteAnalyzer = getAutoCompleteAnalyzer();
+    TokenStreamComponents tokenStreamComponents =
+        autocompleteAnalyzer.createComponents(
+            FreeTextQuery.FIELD_NAME_AUTOCOMPLETE, new StringReader(query.getQuery()));
 
-      TokenStream buffer = tokenStreamComponents.getTokenStream();
+    try (TokenStream buffer = tokenStreamComponents.getTokenStream()) {
       buffer.reset();
 
       CharTermAttribute termAtt = buffer.getAttribute(CharTermAttribute.class);
@@ -1299,8 +1298,8 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
           increments.add(posIncrAtt.getPositionIncrement());
         }
       }
+
       buffer.end();
-      buffer.close();
     } catch (IOException ex) {
       throw new RuntimeApplicationException(
           "Error reading auto-complete results from search index");
