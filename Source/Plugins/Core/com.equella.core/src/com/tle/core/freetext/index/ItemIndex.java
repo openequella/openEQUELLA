@@ -98,9 +98,11 @@ import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.index.TermsEnum.SeekStatus;
 import org.apache.lucene.index.TrackingIndexWriter;
 import org.apache.lucene.queries.ChainedFilter;
-import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.queryparser.classic.QueryParser.Operator;
+import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
+import org.apache.lucene.queryparser.flexible.core.messages.QueryParserMessages;
+import org.apache.lucene.queryparser.flexible.messages.MessageImpl;
+import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
+import org.apache.lucene.queryparser.flexible.standard.config.StandardQueryConfigHandler.Operator;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
@@ -948,8 +950,8 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
         boosts.put(FreeTextQuery.FIELD_BODY, descriptionBoost);
         boosts.put(FreeTextQuery.FIELD_ATTACHMENT_VECTORED, attachmentBoost);
 
-        TLEQueryParser tleParser = new TLEQueryParser(fields, getAnalyser(), boosts);
-        tleParser.setDefaultOperator(getDefaultOperator());
+        TLEQueryParser tleParser =
+            new TLEQueryParser(fields, getAnalyser(), boosts, getDefaultOperator());
         Query tleQuery = tleParser.parse(queryString);
 
         BooleanQuery orQuery = new BooleanQuery(true);
@@ -966,7 +968,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
       // This one includes the query built above and all the FreeTextQuery of the search.
       query = addExtraQuery(query, request, reader);
-    } catch (ParseException ex) {
+    } catch (QueryNodeException ex) {
       throw new InvalidSearchQueryException(queryString, ex);
     }
     return query;
@@ -1153,8 +1155,9 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     if (query.isTokenise()) {
       String q = query.getField() + "*";
       try {
-        luceneQuery = new QueryParser(q, getAnalyser()).parse(query.getValue());
-      } catch (ParseException e) {
+        luceneQuery =
+            new StandardQueryParser(getAnalyser()).parse(query.getValue(), query.getField());
+      } catch (QueryNodeException e) {
         LOGGER.warn("Error parsing query: " + q);
         throw new InvalidSearchQueryException("Error parsing query");
       }
@@ -1382,7 +1385,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
         });
   }
 
-  public Operator getDefaultOperator() throws ParseException {
+  public Operator getDefaultOperator() throws QueryNodeException {
     Operator o;
 
     if (this.defaultOperator.equalsIgnoreCase("and")) {
@@ -1390,7 +1393,8 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     } else if (this.defaultOperator.equalsIgnoreCase("OR")) {
       o = Operator.OR;
     } else {
-      throw new ParseException("Invalid Default Operator (AND/OR)");
+      throw new QueryNodeException(
+          new MessageImpl(QueryParserMessages.INVALID_SYNTAX, "Invalid Default Operator (AND/OR)"));
     }
 
     return o;

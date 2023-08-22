@@ -25,21 +25,50 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
-import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
+import org.apache.lucene.queryparser.flexible.core.nodes.FieldQueryNode;
+import org.apache.lucene.queryparser.flexible.core.nodes.FuzzyQueryNode;
+import org.apache.lucene.queryparser.flexible.core.nodes.QueryNode;
+import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
+import org.apache.lucene.queryparser.flexible.standard.builders.FuzzyQueryNodeBuilder;
+import org.apache.lucene.queryparser.flexible.standard.builders.PrefixWildcardQueryNodeBuilder;
+import org.apache.lucene.queryparser.flexible.standard.builders.StandardQueryTreeBuilder;
+import org.apache.lucene.queryparser.flexible.standard.builders.WildcardQueryNodeBuilder;
+import org.apache.lucene.queryparser.flexible.standard.config.StandardQueryConfigHandler.ConfigurationKeys;
+import org.apache.lucene.queryparser.flexible.standard.config.StandardQueryConfigHandler.Operator;
+import org.apache.lucene.queryparser.flexible.standard.nodes.PrefixWildcardQueryNode;
+import org.apache.lucene.queryparser.flexible.standard.nodes.WildcardQueryNode;
+import org.apache.lucene.search.FuzzyQuery;
+import org.apache.lucene.search.PrefixQuery;
+import org.apache.lucene.search.WildcardQuery;
 
-public class TLEQueryParser extends MultiFieldQueryParser {
+public class TLEQueryParser extends StandardQueryParser {
+
   private Map<String, String> stemmedToNonStemmed;
   private static final Pattern pattern =
       Pattern.compile("(?<![\\\\])[-+!]$|(?=[-+!][^\\w\"])(?<![\\\\])[-+!]"); // $NON-NLS-1$
 
-  public TLEQueryParser(String[] fields, Analyzer analyzer, Map<String, Float> boosts) {
-    super(fields, analyzer, boosts);
+  public TLEQueryParser(
+      String[] fields, Analyzer analyzer, Map<String, Float> boosts, Operator defaultOperator) {
+    super(analyzer);
+
     buildStemmedToNonStemmed();
+
+    setMultiFields(fields);
+    setFieldsBoost(boosts);
+    setAllowLeadingWildcard(true);
+    setDefaultOperator(defaultOperator);
+    getQueryConfigHandler().unset(ConfigurationKeys.PHRASE_SLOP);
+
+    StandardQueryTreeBuilder queryTreeBuilder = new StandardQueryTreeBuilder();
+    queryTreeBuilder.setBuilder(WildcardQueryNode.class, new TLEWildcardQueryNodeBuilder());
+    queryTreeBuilder.setBuilder(PrefixWildcardQueryNode.class, new TLEPrefixQueryNodeBuilder());
+    queryTreeBuilder.setBuilder(FuzzyQueryNode.class, new TLEFuzzyQueryNodeBuilder());
+
+    setQueryBuilder(queryTreeBuilder);
   }
 
-  @Override
-  public org.apache.lucene.search.Query parse(String rawQuery) throws ParseException {
+  public org.apache.lucene.search.Query parse(String rawQuery) throws QueryNodeException {
     /**
      * Seriously ghetto code follows. This is to combat lucene query syntax in item titles. If the
      * title is autocompleted the query should already be escaped (using QueryParser.escape) and if
@@ -50,8 +79,12 @@ public class TLEQueryParser extends MultiFieldQueryParser {
      * Does not appear to work correctly for ! though.
      *
      * <p>This method was re-visited when upgrading Lucene to V4.10.4. The above-mentioned issue is
-     * still there. Plus, forward slash will cause a ParseException if it is not escaped. The Regex
-     * pattern defined above is too hard to understand and modifiy without any explanation.
+     * still there, even though we use replace the classic QueryParser with the new
+     * StandardQueryParser. (Someone also reported this in LUCENE-2566 but nobody respond since
+     * then).
+     *
+     * <p>Plus, in v4 forward slash will cause a QueryNodeParseException if it is not escaped. The
+     * Regex pattern defined above is too hard to understand and modifiy without any explanation.
      * Considering our target is V9 which may have solved the issue, maybe in this stage let's just
      * do a simple char replacement to escape forward slash.
      *
@@ -70,7 +103,9 @@ public class TLEQueryParser extends MultiFieldQueryParser {
       query = buffered;
     }
 
-    return super.parse(query);
+    // Use `null` as the default field because the class used to extend from `MultiFieldQueryParser`
+    // where `field` is always `null` when we were using Lucene v3.
+    return parse(query, null);
   }
 
   private void buildStemmedToNonStemmed() {
@@ -92,21 +127,33 @@ public class TLEQueryParser extends MultiFieldQueryParser {
     return stemmedToNonStemmed.get(stemmedField);
   }
 
-  @Override
-  protected org.apache.lucene.search.Query getWildcardQuery(String field, String termStr)
-      throws ParseException {
-    return super.getWildcardQuery(getNonStemmedField(field), termStr);
+  private FieldQueryNode nonStemmedQueryNode(FieldQueryNode queryNode) {
+    String originalField = queryNode.getFieldAsString();
+    queryNode.setField(getNonStemmedField(originalField));
+    return queryNode;
   }
 
-  @Override
-  protected org.apache.lucene.search.Query getPrefixQuery(String field, String termStr)
-      throws ParseException {
-    return super.getPrefixQuery(getNonStemmedField(field), termStr);
+  private class TLEWildcardQueryNodeBuilder extends WildcardQueryNodeBuilder {
+    @Override
+    public WildcardQuery build(QueryNode queryNode) throws QueryNodeException {
+      WildcardQueryNode wildcardNode = (WildcardQueryNode) queryNode;
+      return super.build(nonStemmedQueryNode(wildcardNode));
+    }
   }
 
-  @Override
-  protected org.apache.lucene.search.Query getFuzzyQuery(
-      String field, String termStr, float minSimilarity) throws ParseException {
-    return super.getFuzzyQuery(getNonStemmedField(field), termStr, minSimilarity);
+  private class TLEPrefixQueryNodeBuilder extends PrefixWildcardQueryNodeBuilder {
+    @Override
+    public PrefixQuery build(QueryNode queryNode) throws QueryNodeException {
+      PrefixWildcardQueryNode prefixNode = (PrefixWildcardQueryNode) queryNode;
+      return super.build(nonStemmedQueryNode(prefixNode));
+    }
+  }
+
+  private class TLEFuzzyQueryNodeBuilder extends FuzzyQueryNodeBuilder {
+    @Override
+    public FuzzyQuery build(QueryNode queryNode) throws QueryNodeException {
+      FuzzyQueryNode fuzzyQueryNode = (FuzzyQueryNode) queryNode;
+      return super.build(nonStemmedQueryNode(fuzzyQueryNode));
+    }
   }
 }
