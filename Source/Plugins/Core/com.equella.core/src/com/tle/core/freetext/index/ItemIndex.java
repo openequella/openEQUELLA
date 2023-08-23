@@ -1153,12 +1153,12 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       return convertBoolean(bquery, reader);
     }
     if (query.isTokenise()) {
-      String q = query.getField() + "*";
+      String field = query.getField() + "*";
+      String value = query.getValue();
       try {
-        luceneQuery =
-            new StandardQueryParser(getAnalyser()).parse(query.getValue(), query.getField());
+        luceneQuery = new StandardQueryParser(getAnalyser()).parse(value, field);
       } catch (QueryNodeException e) {
-        LOGGER.warn("Error parsing query: " + q);
+        LOGGER.warn("Error parsing query " + value + " for field " + field);
         throw new InvalidSearchQueryException("Error parsing query");
       }
     } else if (query.isPossibleWildcard()) {
