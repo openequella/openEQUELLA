@@ -101,6 +101,7 @@ import org.apache.lucene.queries.ChainedFilter;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
 import org.apache.lucene.queryparser.flexible.core.messages.QueryParserMessages;
 import org.apache.lucene.queryparser.flexible.messages.MessageImpl;
+import org.apache.lucene.queryparser.flexible.standard.QueryParserUtil;
 import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
 import org.apache.lucene.queryparser.flexible.standard.config.StandardQueryConfigHandler.Operator;
 import org.apache.lucene.search.BooleanClause;
@@ -1156,7 +1157,9 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       String field = query.getField() + "*";
       String value = query.getValue();
       try {
-        luceneQuery = new StandardQueryParser(getAnalyser()).parse(value, field);
+        // Must escape the query when using StandardQueryParser.
+        luceneQuery =
+            new StandardQueryParser(getAnalyser()).parse(QueryParserUtil.escape(value), field);
       } catch (QueryNodeException e) {
         LOGGER.warn("Error parsing query " + value + " for field " + field);
         throw new InvalidSearchQueryException("Error parsing query");
