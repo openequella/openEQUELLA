@@ -243,6 +243,10 @@
     <parameter id="path" value="/oauth/authorise" />
     <parameter id="root" value="bean:com.tle.web.oauth.section.OAuthLogonSection" />
   </extension>
+  <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="oauthLogonAmericanSpell">
+    <parameter id="path" value="/oauth/authorize" />
+    <parameter id="root" value="bean:com.tle.web.oauth.section.OAuthLogonSection" />
+  </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="oauthRedirect">
     <parameter id="path" value="/oauth/redirect" />
     <parameter id="root" value="bean:com.tle.web.oauth.servlet.OAuthDefaultRedirectSection" />
