@@ -18,9 +18,7 @@
 
 package com.tle.core.freetext.index;
 
-import com.tle.common.searching.Field;
 import java.io.IOException;
-import java.util.List;
 import java.util.function.IntConsumer;
 import org.apache.lucene.index.AtomicReader;
 import org.apache.lucene.index.DocsEnum;
@@ -54,24 +52,6 @@ public class LuceneDocumentHelper {
   public static void forEachDoc(AtomicReader reader, Term term, IntConsumer forEach)
       throws IOException {
     forEachDoc(reader.termDocsEnum(term), forEach);
-  }
-
-  /**
-   * Given a list of MUST or MUST NOT clauses, find out all the matched document IDs, and then apply
-   * each ID to the provided function.
-   *
-   * @param clauses MUST or MUST NOT clauses which provide a list of terms
-   * @param reader Reader used to get a document enumeration
-   * @param forEach Function that consumes the ID of a document
-   */
-  public static void forEachMustClause(
-      List<List<Field>> clauses, AtomicReader reader, IntConsumer forEach) throws IOException {
-    for (List<Field> clause : clauses) {
-      // This is OEQ Field and the name is really misleading. The class actually represents Terms.
-      for (Field term : clause) {
-        forEachDoc(reader, new Term(term.getField(), term.getValue()), forEach);
-      }
-    }
   }
 
   /**
