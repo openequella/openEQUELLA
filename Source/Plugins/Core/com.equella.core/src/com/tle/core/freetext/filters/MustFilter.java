@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.List;
 import org.apache.lucene.index.AtomicReader;
 import org.apache.lucene.index.AtomicReaderContext;
-import org.apache.lucene.index.Term;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.util.Bits;
@@ -43,25 +42,13 @@ public class MustFilter extends Filter {
   public DocIdSet getDocIdSet(AtomicReaderContext context, Bits acceptDocs) throws IOException {
     AtomicReader reader = context.reader();
     int max = reader.maxDoc();
-    OpenBitSet prev = null;
-    for (List<Field> values : terms) {
-      if (!values.isEmpty()) {
-        OpenBitSet good = new OpenBitSet(max);
-        for (Field nv : values) {
-          LuceneDocumentHelper.forEachDoc(
-              reader, new Term(nv.getField(), nv.getValue()), good::set);
-        }
-        if (prev != null) {
-          prev.and(good);
-        } else {
-          prev = good;
-        }
-      }
+    OpenBitSet good = new OpenBitSet(max);
+
+    LuceneDocumentHelper.forEachMustClause(terms, reader, good::set);
+
+    if (good.isEmpty()) {
+      good.set(0, max);
     }
-    if (prev == null) {
-      prev = new OpenBitSet(max);
-      prev.set(0, max);
-    }
-    return prev;
+    return good;
   }
 }
