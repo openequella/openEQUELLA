@@ -210,6 +210,10 @@ public class IndexedItem {
     return aclManager;
   }
 
+  public Map<String, List<Field>> getAclMap() {
+    return aclMap;
+  }
+
   public List<Field> getACLEntries(String privilege) {
     return aclMap.get(privilege);
   }

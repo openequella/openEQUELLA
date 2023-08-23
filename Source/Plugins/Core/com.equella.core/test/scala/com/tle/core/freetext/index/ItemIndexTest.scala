@@ -24,12 +24,20 @@ import com.tle.beans.Institution
 import com.tle.beans.entity.Schema
 import com.tle.beans.entity.itemdef.ItemDefinition
 import com.tle.beans.item.{Item, ItemIdKey, ItemStatus}
+import com.tle.common.Triple
 import com.tle.common.i18n.{CurrentLocale, LangUtils}
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.search.DefaultSearch
 import com.tle.common.searching.Search.SortType
+import com.tle.common.security.SecurityConstants
 import com.tle.common.settings.ConfigurationProperties
 import com.tle.common.settings.standard.SearchSettings
+import com.tle.common.usermanagement.user.{
+  AbstractUserState,
+  CurrentUser,
+  DefaultUserState,
+  UserState
+}
 import com.tle.core.events.services.EventService
 import com.tle.core.freetext.index.AbstractIndexEngine.Searcher
 import com.tle.core.freetext.indexer.StandardIndexer
@@ -44,7 +52,7 @@ import com.tle.core.services.user.UserPreferenceService
 import com.tle.core.settings.service.ConfigurationService
 import com.tle.core.zookeeper.ZookeeperService
 import com.tle.freetext.{FreetextIndexConfiguration, FreetextIndexImpl, IndexedItem}
-import org.apache.lucene.document.Document
+import org.apache.lucene.document.{Document, Field, FieldType}
 import org.apache.lucene.queries.ChainedFilter
 import org.apache.lucene.search._
 import org.mockito.ArgumentCaptor
@@ -133,7 +141,8 @@ class ItemIndexTest
                            rating: Float = 3.5f,
                            dateModified: Date = new Date,
                            itemDescription: String = "",
-                           properties: PropBagEx = new PropBagEx): List[IndexedItem] = {
+                           properties: PropBagEx = new PropBagEx,
+                           privilege: Option[String] = None): List[IndexedItem] = {
     val indexer = new StandardIndexer
 
     Range(0, howMany)
@@ -158,6 +167,19 @@ class ItemIndexTest
         indexedItem.setAdd(true)
         indexedItem.setNewSearcherRequired(true)
         indexer.getBasicFields(indexedItem).asScala.foreach(indexedItem.getItemdoc.add)
+
+        privilege match {
+          case Some(p) =>
+            val ft = new FieldType()
+            ft.setIndexed(true)
+            ft.setStored(true)
+            ft.setTokenized(false)
+            indexedItem.getAclMap.put(
+              SecurityConstants.DISCOVER_ITEM,
+              java.util.Collections.singletonList(new Field("ACLD-1000", "001G", ft)))
+            indexer.addAllFields(indexedItem.getItemdoc, indexedItem.getACLEntries(p))
+          case None =>
+        }
 
         indexedItem
       })
@@ -207,6 +229,14 @@ class ItemIndexTest
 
     mockStatic(classOf[CurrentLocale])
     when(CurrentLocale.getLocale).thenReturn(Locale.getDefault)
+
+    val userState: AbstractUserState = new DefaultUserState
+    userState.setAclExpressions(
+      new Triple(java.util.Collections.singleton(1000L),
+                 java.util.Collections.emptyList(),
+                 java.util.Collections.emptyList()))
+    mockStatic(classOf[CurrentUser])
+    when(CurrentUser.getUserState).thenReturn(userState)
 
     AbstractPluginService.thisService = mock(classOf[PluginServiceImpl])
   }
@@ -259,7 +289,7 @@ class ItemIndexTest
   describe("document searching") {
     val dateFormatter = new SimpleDateFormat("yyyy-MM-dd")
 
-    describe("filtering") {
+    describe("basic filtering") {
       it("supports filtering by text field") { f =>
         val (itemIndex, searchConfig) = f
 
@@ -337,6 +367,27 @@ class ItemIndexTest
           dateFormatter.parse(result.head.get(FreeTextQuery.FIELD_REALLASTMODIFIED))
         realModifiedDate should be > start
         realModifiedDate should be < end
+      }
+    }
+
+    describe("advanced filtering") {
+      it("supports filtering by ACL expressions") { f =>
+        val (itemIndex, searchConfig) = f
+
+        Given("two Items where the first one requires ACL 'DISCOVER_ITEM'")
+        val itemName = "acl_item"
+        val permissionItem = generateIndexedItems(itemName = itemName,
+                                                  privilege =
+                                                    Option(SecurityConstants.DISCOVER_ITEM))
+        val nonPermissionItem = generateIndexedItems()
+        createIndexes(itemIndex, permissionItem ++ nonPermissionItem)
+
+        When("ACL 'DISCOVER_ITEM' is configured in the search configuration")
+        searchConfig.setPrivilege(SecurityConstants.DISCOVER_ITEM)
+
+        Then("the search result should be ordered by by Item name")
+        val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
+        result.map(_.get(FreeTextQuery.FIELD_NAME)) shouldBe Array(itemName)
       }
     }
 
