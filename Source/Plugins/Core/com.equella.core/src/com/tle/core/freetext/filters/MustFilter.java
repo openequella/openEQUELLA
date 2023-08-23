@@ -43,7 +43,9 @@ public class MustFilter extends Filter {
   public DocIdSet getDocIdSet(AtomicReaderContext context, Bits acceptDocs) throws IOException {
     AtomicReader reader = context.reader();
     int max = reader.maxDoc();
-    OpenBitSet prev = null;
+    OpenBitSet allDocs = null;
+    // Each Must clause has its own document set, but the final result must be the intersection of
+    // all the sets.
     for (List<Field> values : terms) {
       if (!values.isEmpty()) {
         OpenBitSet good = new OpenBitSet(max);
@@ -51,17 +53,17 @@ public class MustFilter extends Filter {
           LuceneDocumentHelper.forEachDoc(
               reader, new Term(nv.getField(), nv.getValue()), good::set);
         }
-        if (prev != null) {
-          prev.and(good);
+        if (allDocs != null) {
+          allDocs.and(good);
         } else {
-          prev = good;
+          allDocs = good;
         }
       }
     }
-    if (prev == null) {
-      prev = new OpenBitSet(max);
-      prev.set(0, max);
+    if (allDocs == null) {
+      allDocs = new OpenBitSet(max);
+      allDocs.set(0, max);
     }
-    return prev;
+    return allDocs;
   }
 }
