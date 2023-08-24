@@ -15,19 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Badge, Grid, Paper } from "@material-ui/core";
-import {
-  createStyles,
-  makeStyles,
-  Theme,
-  withStyles,
-} from "@material-ui/core/styles";
-import AllInclusiveIcon from "@material-ui/icons/AllInclusive";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import { Badge, Grid, Paper } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
-import * as SET from "fp-ts/Set";
+import * as RSET from "fp-ts/ReadonlySet";
 import * as S from "fp-ts/string";
 import * as React from "react";
 import { useState } from "react";
@@ -38,29 +33,30 @@ import { TooltipIconButton } from "./TooltipIconButton";
 
 const strings = languageStrings.shuffleBox;
 
-const useStyles = makeStyles({
-  checkboxListPaper: {
+const PREFIX = "ShuffleBox";
+const classes = {
+  checkboxListPaper: `${PREFIX}-checkboxListPaper`,
+};
+
+const StyledGrid = styled(Grid)({
+  [`& .${classes.checkboxListPaper}`]: {
     height: 250,
     overflow: "auto",
   },
 });
 
-const RightSideBadge = withStyles((_: Theme) =>
-  createStyles({
-    badge: {
-      top: 17,
-    },
-  })
-)(Badge);
+const RightSideBadge = styled(Badge)({
+  "& .MuiBadge-badge": {
+    top: 17,
+  },
+});
 
-const LeftSideBadge = withStyles((_: Theme) =>
-  createStyles({
-    badge: {
-      right: 35,
-      top: 17,
-    },
-  })
-)(Badge);
+const LeftSideBadge = styled(Badge)({
+  "& .MuiBadge-badge": {
+    right: 35,
+    top: 17,
+  },
+});
 
 const AddAllIcon = (): JSX.Element => (
   <LeftSideBadge badgeContent={<AllInclusiveIcon fontSize="small" />}>
@@ -92,7 +88,7 @@ export interface ShuffleBoxProps {
   /**
    * Handler for selecting an option.
    */
-  onSelect: (selectedValues: Set<string>) => void;
+  onSelect: (selectedValues: ReadonlySet<string>) => void;
 }
 
 export const ShuffleBox = ({
@@ -101,38 +97,43 @@ export const ShuffleBox = ({
   onSelect,
   values,
 }: ShuffleBoxProps): JSX.Element => {
-  const classes = useStyles();
-
-  const [checkedChoices, setCheckedChoices] = useState<Set<string>>(SET.empty);
-  const [checkedSelections, setCheckedSelections] = useState<Set<string>>(
-    SET.empty
+  const [checkedChoices, setCheckedChoices] = useState<ReadonlySet<string>>(
+    RSET.empty
   );
+  const [checkedSelections, setCheckedSelections] = useState<
+    ReadonlySet<string>
+  >(RSET.empty);
 
   const handleAddAll = () => {
-    setCheckedChoices(SET.empty);
-    pipe(options, M.keys<string>(OrdAsIs), SET.fromArray(S.Eq), onSelect);
+    setCheckedChoices(RSET.empty);
+    pipe(
+      options,
+      M.keys<string>(OrdAsIs),
+      RSET.fromReadonlyArray(S.Eq),
+      onSelect
+    );
   };
 
   const handleRemoveAll = () => {
-    setCheckedSelections(SET.empty);
-    onSelect(SET.empty);
+    setCheckedSelections(RSET.empty);
+    onSelect(RSET.empty);
   };
 
   const handleAddSelected = () => {
-    const newValues: Set<string> = pipe(
+    const newValues: ReadonlySet<string> = pipe(
       values,
-      SET.union(S.Eq)(checkedChoices)
+      RSET.union(S.Eq)(checkedChoices)
     );
-    setCheckedChoices(SET.empty);
+    setCheckedChoices(RSET.empty);
     onSelect(newValues);
   };
 
   const handleRemoveSelected = () => {
-    const newValues: Set<string> = pipe(
+    const newValues: ReadonlySet<string> = pipe(
       values,
-      SET.difference(S.Eq)(checkedSelections)
+      RSET.difference(S.Eq)(checkedSelections)
     );
-    setCheckedSelections(SET.empty);
+    setCheckedSelections(RSET.empty);
     onSelect(newValues);
   };
 
@@ -140,7 +141,7 @@ export const ShuffleBox = ({
   const [choices, selections]: [Map<string, string>, Map<string, string>] =
     pipe(
       options,
-      M.partitionWithIndex((k) => pipe(values, SET.elem(S.Eq)(k))),
+      M.partitionWithIndex((k) => pipe(values, RSET.elem(S.Eq)(k))),
       ({ left, right }) => [left, right]
     );
 
@@ -160,7 +161,7 @@ export const ShuffleBox = ({
   ];
 
   return (
-    <Grid id={id} container spacing={2}>
+    <StyledGrid id={id} container spacing={2}>
       <Grid item xs>
         <Paper
           className={classes.checkboxListPaper}
@@ -202,6 +203,6 @@ export const ShuffleBox = ({
           />
         </Paper>
       </Grid>
-    </Grid>
+    </StyledGrid>
   );
 };

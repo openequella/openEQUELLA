@@ -32,11 +32,8 @@ import com.google.common.collect.Sets;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.IItem;
-import com.tle.beans.item.ItemId;
-import com.tle.beans.item.ViewableItemType;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.Check;
-import com.tle.common.NameValue;
 import com.tle.common.connectors.ConnectorFolder;
 import com.tle.common.connectors.entity.Connector;
 import com.tle.common.usermanagement.user.CurrentUser;
@@ -443,37 +440,10 @@ public class CanvasIntegration extends AbstractIntegrationService<CanvasSessionD
     return data.getCourseInfoCode();
   }
 
-  @Nullable
-  @Override
-  public NameValue getLocation(CanvasSessionData data) {
-    return null;
-  }
-
   @Override
   protected boolean canSelect(CanvasSessionData data) {
     // can be select_link, embed_content etc
     final String sd = data.getSelectionDirective();
     return sd != null || "ContentItemSelectionRequest".equals(data.getLtiMessageType());
-  }
-
-  @Override
-  protected <I extends IItem<?>> ViewableItem<I> createViewableItem(
-      I item, SelectedResource resource) {
-    final ViewableItem<I> vitem =
-        viewableItemResolver.createIntegrationViewableItem(
-            item,
-            resource.isLatest(),
-            ViewableItemType.GENERIC,
-            resource.getKey().getExtensionType());
-    return vitem;
-  }
-
-  @Override
-  public <I extends IItem<?>> ViewableItem<I> createViewableItem(
-      ItemId itemId, boolean latest, @Nullable String itemExtensionType) {
-    final ViewableItem<I> vitem =
-        viewableItemResolver.createIntegrationViewableItem(
-            itemId, latest, ViewableItemType.GENERIC, itemExtensionType);
-    return vitem;
   }
 }

@@ -16,21 +16,27 @@
  * limitations under the License.
  */
 
-import { MuiThemeProvider } from "@material-ui/core";
-import type { Theme } from "@material-ui/core/styles";
-import { createTheme } from "@material-ui/core/styles";
+import { ThemeProvider } from "@mui/material";
+import { createTheme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
-import { render, RenderResult, screen } from "@testing-library/react";
+import {
+  act,
+  render,
+  RenderResult,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
 import * as React from "react";
-import { act } from "react-dom/test-utils";
 import { Router } from "react-router-dom";
 import { getAdvancedSearchesFromServerResult } from "../../../__mocks__/AdvancedSearchModule.mock";
 import * as CategorySelectorMock from "../../../__mocks__/CategorySelector.mock";
 import { DRM_VIOLATION } from "../../../__mocks__/Drm.mock";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import { getMimeTypeFilters } from "../../../__mocks__/MimeTypeFilter.mock";
+import { createMatchMedia } from "../../../__mocks__/MockUseMediaQuery";
 import { getRemoteSearchesFromServerResult } from "../../../__mocks__/RemoteSearchModule.mock";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import { AppContext } from "../../../tsrc/mainui/App";
@@ -180,10 +186,6 @@ export const initialiseEssentialMocks = ({
   );
 };
 
-export const defaultTheme = createTheme({
-  props: { MuiWithWidth: { initialWidth: "md" } },
-});
-
 /**
  * A mock specifically for the Promise for when searches are executed to be able to watch for when
  * a search etc. has occurred.
@@ -193,37 +195,37 @@ export type MockedSearchPromise = jest.SpyInstance<
 >;
 
 /**
- * Simple helper to wrap the process of waiting for the execution of a search based on checking the
- * `searchPromise`. Being that it is abstracted out, in the future could change as needed to be
- * something other than the `searchPromise`.
+ * Helper function to wrap the process of waiting for the completion of a search which is indicated
+ * by the Spinner being removed from the page.
  */
-export const waitForSearch = async (searchPromise: MockedSearchPromise) =>
-  await act(async () => {
-    await searchPromise;
-  });
+export const waitForSearchCompleted = async () =>
+  await waitForElementToBeRemoved(() =>
+    screen.getByLabelText(languageStrings.searchpage.loading)
+  );
 
 /**
  * Helper function for the initial render of the `<SearchPage>` for tests below. Also includes
  * the wait for the initial search call.
  *
- * @param searchPromise a mocked promise for searchItems in SearchModule
  * @param queryString a string to set the query bar to for initial search
- * @param theme control the MUI Theme for the context the search page is rendered in
- * @param currentUser Details of currently signed in user.
+ * @param screenWidth The emulated screen width, default to 1280px.
+ * @param currentUser Details of currently signed-in user.
+ *
  * @returns The RenderResult from the `render` of the `<SearchPage>`
  */
 export const renderSearchPage = async (
-  searchPromise: MockedSearchPromise,
   queryString?: string,
-  theme: Theme = defaultTheme,
+  screenWidth: number = 1280,
   currentUser: OEQ.LegacyContent.CurrentUserDetails = getCurrentUserMock
 ): Promise<RenderResult> => {
+  window.matchMedia = createMatchMedia(screenWidth);
+
   const history = createMemoryHistory();
   if (queryString) history.push(queryString);
   history.push({});
 
   const page = render(
-    <MuiThemeProvider theme={theme}>
+    <ThemeProvider theme={createTheme()}>
       <Router history={history}>
         <AppContext.Provider
           value={{
@@ -235,10 +237,10 @@ export const renderSearchPage = async (
           <SearchPage updateTemplate={jest.fn()} />
         </AppContext.Provider>
       </Router>
-    </MuiThemeProvider>
+    </ThemeProvider>
   );
   // Wait for the first completion of initial search
-  await waitForSearch(searchPromise);
+  await waitForSearchCompleted();
 
   return page;
 };
@@ -378,29 +380,97 @@ export const addSearchToFavourites = async (
   { getByLabelText, getByRole }: RenderResult,
   favouriteName: string
 ): Promise<boolean> => {
+  const {
+    saveSearchConfirmationText: successMsg,
+    saveSearchFailedText: failMsg,
+  } = languageStrings.searchpage.favouriteSearch;
+
   const heartIcon = getByLabelText(
     languageStrings.searchpage.favouriteSearch.title,
     {
       selector: "button",
     }
   );
-  userEvent.click(heartIcon);
+  await userEvent.click(heartIcon);
 
   const dialog = getByRole("dialog");
   const favouriteNameInput = getMuiTextField(
     dialog,
     languageStrings.searchpage.favouriteSearch.text
   );
-  userEvent.type(favouriteNameInput, favouriteName);
+  await userEvent.type(favouriteNameInput, favouriteName);
   const confirmButton = getMuiButtonByText(
     dialog,
     languageStrings.common.action.ok
   );
-  await act(async () => {
-    await userEvent.click(confirmButton);
+
+  await userEvent.click(confirmButton);
+
+  // Now wait until either a success or fail message is displayed
+  await waitFor(() =>
+    screen.getByText(new RegExp(`(${successMsg})|(${failMsg})`))
+  );
+
+  return !!screen.queryByText(successMsg);
+};
+
+/**
+ * Helper function to assist in finding the MIME type selector.
+ *
+ * @param container a root container within which `Remote Search selector` exists
+ */
+export const queryMimeTypesSelector = (container: HTMLElement) =>
+  queryRefineSearchComponent(container, "MIMETypeSelector");
+
+/**
+ * Helper function to assist in finding the Search bar.
+ *
+ * @param container a root container within which `Remote Search selector` exists
+ */
+export const getQueryBar = (container: Element): HTMLElement => {
+  const queryBar = container.querySelector<HTMLElement>("#searchBar");
+  if (!queryBar) {
+    throw new Error("Failed to locate the search bar, unable to continue.");
+  }
+
+  return queryBar;
+};
+
+/**
+ * Interact with the Search Bar to type the provided query. The wildcard mode is enabled by default.
+ * In order to test the debouncing properly, this function will set up a testing environment to use the fake timer.
+ * It's recommended to call 'useFakeTimer()' in `beforeEach` and call `runOnlyPendingTimers` and `useRealTimer`
+ * in `afterEach`.
+ *
+ * @param container Root container within which the Search Bar exists
+ * @param query Query to be typed in the textfield.
+ * @param wildcardMode `true` to enable wildcard mode.
+ */
+export const changeQuery = async (
+  container: Element,
+  query: string,
+  wildcardMode: boolean = true
+) => {
+  const fakeTimerUser = userEvent.setup({
+    advanceTimers: jest.advanceTimersByTime,
   });
 
-  return !!screen.queryByText(
-    languageStrings.searchpage.favouriteSearch.saveSearchConfirmationText
-  );
+  if (!wildcardMode) {
+    const wildcardModeSwitch = container.querySelector("#wildcardSearch");
+    if (!wildcardModeSwitch) {
+      throw new Error("Failed to find the raw mode switch!");
+    }
+    await fakeTimerUser.click(wildcardModeSwitch);
+  }
+
+  const queryBar = getQueryBar(container);
+
+  await act(async () => {
+    await fakeTimerUser.type(queryBar, query);
+    jest.advanceTimersByTime(1000);
+  });
+
+  await waitFor(() => {
+    expect(queryBar).toHaveDisplayValue(query);
+  });
 };

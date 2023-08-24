@@ -29,7 +29,9 @@ object CommonSettings extends AutoPlugin {
     lazy val writeScriptingJavadoc = taskKey[File]("Write the scripting javadoc")
     lazy val mergeJPF              = inputKey[Unit]("Merge all")
     lazy val buildReactFrontEnd    = taskKey[File]("Build the ReactJS based front-end")
-    lazy val reactFrontEndDir      = settingKey[File]("The base directory of the ReactJS project")
+    lazy val oeqTsRestApiDir =
+      settingKey[File]("The base directory of the oEQ Typescript REST module project")
+    lazy val reactFrontEndDir = settingKey[File]("The base directory of the ReactJS project")
     lazy val reactFrontEndOutputDir =
       settingKey[File]("The output/target directory of the ReactJS project")
     lazy val reactFrontEndLanguageBundle =
@@ -39,17 +41,23 @@ object CommonSettings extends AutoPlugin {
     lazy val platformCommon  = LocalProject("com_tle_platform_common")
     lazy val platformSwing   = LocalProject("com_tle_platform_swing")
     lazy val platformEquella = LocalProject("com_tle_platform_equella")
-    lazy val postgresDep     = "org.postgresql" % "postgresql" % "42.5.0"
-    lazy val sqlServerDep    = "com.microsoft.sqlserver" % "mssql-jdbc" % "10.2.0.jre8"
+    lazy val postgresDep     = "org.postgresql" % "postgresql" % "42.5.4"
+    lazy val sqlServerDep    = "com.microsoft.sqlserver" % "mssql-jdbc" % "11.2.1.jre8"
 
     lazy val log4jVersion   = "2.19.0"
     lazy val log4j          = "org.apache.logging.log4j" % "log4j" % log4jVersion
-    lazy val log4jSlf4jImpl = "org.apache.logging.log4j" % "log4j-slf4j-impl" % log4jVersion
+    lazy val log4jCore      = "org.apache.logging.log4j" % "log4j-core" % log4jVersion
+    lazy val log4jSlf4jImpl = "org.apache.logging.log4j" % "log4j-slf4j2-impl" % log4jVersion
+
+    lazy val springVersion = "5.3.28"
+    lazy val springWeb     = "org.springframework" % "spring-web" % springVersion
+    lazy val springAop     = "org.springframework" % "spring-aop" % springVersion
+    lazy val springContext = "org.springframework" % "spring-context" % springVersion
 
     lazy val xstreamVersion = "1.4.19"
     lazy val xstreamDep     = "com.thoughtworks.xstream" % "xstream" % xstreamVersion
 
-    lazy val jacksonVersion        = "2.13.4"
+    lazy val jacksonVersion        = "2.15.2"
     lazy val jacksonDataBind       = "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion
     lazy val jacksonDataFormatYaml = "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % jacksonVersion
     lazy val jacksonModuleScala    = "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion
@@ -60,9 +68,9 @@ object CommonSettings extends AutoPlugin {
   override def requires: Plugins = HeaderPlugin && JvmPlugin
   override def projectSettings = Seq(
     organization := "com.github.equella",
-    scalaVersion := "2.13.9",
+    scalaVersion := "2.13.11",
     scalacOptions ++= Seq("-Vimplicits"),
-    javacOptions ++= Seq("-source", "1.8", "-target", "8"),
+    javacOptions ++= Seq("--release", "11"),
     compileOrder := CompileOrder.Mixed,
     headerLicense := Some(
       HeaderLicense.Custom(
@@ -85,6 +93,9 @@ object CommonSettings extends AutoPlugin {
     resolvers ++= Seq(
       Resolver.bintrayRepo("omegat-org", "maven")
     ),
-    libraryDependencies += "com.novocode" % "junit-interface" % "0.11" % Test
+    libraryDependencies ++= Seq(
+      "com.github.sbt" % "junit-interface" % "0.13.3" % Test,
+      "org.scalatest"  %% "scalatest"      % "3.2.16" % Test,
+    )
   )
 }

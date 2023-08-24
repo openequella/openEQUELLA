@@ -23,11 +23,11 @@ import {
   ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
-} from "@material-ui/core";
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-import AddIcon from "@material-ui/icons/Add";
-import DeleteIcon from "@material-ui/icons/Delete";
-import ListIcon from "@material-ui/icons/List";
+} from "@mui/material";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ListIcon from "@mui/icons-material/List";
 import * as OEQ from "@openequella/rest-api-client";
 import * as E from "fp-ts/Either";
 import { flow, identity, pipe } from "fp-ts/function";
@@ -38,7 +38,7 @@ import * as RSET from "fp-ts/ReadonlySet";
 import * as S from "fp-ts/string";
 import * as T from "fp-ts/Task";
 import * as TE from "fp-ts/TaskEither";
-import React, { useContext, useEffect, useState } from "react";
+import * as React from "react";
 import {
   eqUserById,
   resolveUsers,
@@ -47,7 +47,7 @@ import {
   userIds,
 } from "../../modules/UserModule";
 import { languageStrings } from "../../util/langstrings";
-import { SelectUserDialog } from "../SelectUserDialog";
+import { SelectUserDialog } from "../securityentitydialog/SelectUserDialog";
 import { TooltipIconButton } from "../TooltipIconButton";
 import { WizardControlBasicProps, WizardErrorContext } from "./WizardHelper";
 import { WizardLabel } from "./WizardLabel";
@@ -163,15 +163,15 @@ export const WizardUserSelector = ({
   resolveUsersProvider = resolveUsers,
 }: WizardUserSelectorProps): JSX.Element => {
   const [showSelectUserDialog, setShowSelectUserDialog] =
-    useState<boolean>(false);
-  const [fullUsers, setFullUsers] = useState<
+    React.useState<boolean>(false);
+  const [fullUsers, setFullUsers] = React.useState<
     ReadonlySet<OEQ.UserQuery.UserDetails>
   >(new Set());
 
-  const { handleError } = useContext(WizardErrorContext);
+  const { handleError } = React.useContext(WizardErrorContext);
 
   // Update `fullUsers` when `users` changes
-  useEffect(() => {
+  React.useEffect(() => {
     if (RSET.getEq(S.Eq).equals(users, pipe(fullUsers, userIds))) {
       // Already in sync, no action required.
       return;

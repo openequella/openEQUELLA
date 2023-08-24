@@ -97,6 +97,36 @@ public class ReplicatedCacheServiceImpl
     return cache;
   }
 
+  /**
+   * A cache which is replicated across a cluster, where the key/values are partitioned first based
+   * on Institution. If the server is not running in clustered mode, the values are stored in
+   * memory. In clustered mode, synchronisation of the in-memory store is done via Zookeeper
+   * signaling and database persistence.
+   *
+   * <p>Partitioning is done by utilising a two-level cache. The first level is at the institution
+   * level, and the second level is at the key/value level. As well as providing the partitioning,
+   * this also allows us to remove all keys for an institution in one go, which is useful when none
+   * have been used for an extended period of time.
+   *
+   * <p><strong>TTL</strong> for cache entries is controlled in two main ways. Firstly, the values
+   * are wrapped in an {@code ExpiringValue} which allows us to set a TTL on the value itself.
+   * Secondly, both levels of cache have an access TTL on them of one day - this seems to have been
+   * added to ensure that memory isn't wasted by caches being left lying around.
+   *
+   * <p>Reviewing the use of {@code ExpiringValue} it seemed to be done to support the replication
+   * of values and ensure that the TTL could be consistent across nodes. As it can be seen that the
+   * TTL is also stored in {@code CachedValue} as a {@code Date}. And then when it is read back in
+   * via the {@code LoadingCache} mechanisms this is used to set the TTL on the {@code
+   * ExpiringValue}.
+   *
+   * <p>Lastly, note that the {@code ExpiredValue} is also wrapped in an {@code Optional}. It would
+   * seem this has been done to support the case where the value is requested from the DAO but none
+   * is there and in which case {@code null} is returned. (It does unfortunately mean that the cache
+   * is possibly wasting memory storing a number number of `Optional.absent` values rather than
+   * storing nothing. Perhaps something to review.)
+   *
+   * @param <V> the type for the values which will be cached.
+   */
   @NonNullByDefault
   private class ReplicatedCacheImpl<V extends Serializable> implements ReplicatedCache<V> {
     private final String cacheId;

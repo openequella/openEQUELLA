@@ -15,18 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Grid, Theme, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Grid, Typography } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as React from "react";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  li: {
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-  },
+const StyledLi = styled("li")(({ theme }) => ({
+  marginTop: theme.spacing(1),
+  marginBottom: theme.spacing(1),
 }));
 
 /**
@@ -39,9 +37,8 @@ export const NonStandardDrmTerms = ({
   title: string;
   terms: string[];
 }) => {
-  const classes = useStyles();
   return (
-    <li className={classes.li} key={title}>
+    <StyledLi key={title}>
       <Grid container direction="column">
         <Grid item>
           <Typography>{title}</Typography>
@@ -52,7 +49,7 @@ export const NonStandardDrmTerms = ({
           ))}
         </Grid>
       </Grid>
-    </li>
+    </StyledLi>
   );
 };
 
@@ -66,7 +63,6 @@ export const DrmTerms = ({
   parties,
   customTerms,
 }: OEQ.Drm.DrmAgreements) => {
-  const classes = useStyles();
   const standardTerms = [
     regularPermission,
     additionalPermission,
@@ -74,9 +70,9 @@ export const DrmTerms = ({
   ]
     .filter((term) => term !== undefined)
     .map((term) => (
-      <li className={classes.li} key={term}>
+      <StyledLi key={term}>
         <Typography>{term}</Typography>
-      </li>
+      </StyledLi>
     ));
 
   const buildNonStandardDrmTerms = <T,>(

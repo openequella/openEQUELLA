@@ -15,38 +15,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { MuiThemeProvider } from "@material-ui/core";
-import { createTheme } from "@material-ui/core/styles";
+import { ThemeProvider } from "@mui/material";
+import { createTheme } from "@mui/material/styles";
+import "@testing-library/jest-dom/extend-expect";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
 import * as React from "react";
-import { act, render, screen } from "@testing-library/react";
 import { Router } from "react-router-dom";
 import { classifications } from "../../../__mocks__/CategorySelector.mock";
+import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
+import { createMatchMedia } from "../../../__mocks__/MockUseMediaQuery";
 import { customRefinePanelControl } from "../../../__mocks__/RefinePanelControl.mock";
 import { getRemoteSearchesFromServerResult } from "../../../__mocks__/RemoteSearchModule.mock";
+import {
+  getEmptySearchResult,
+  getSearchResult,
+} from "../../../__mocks__/SearchResult.mock";
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import * as RemoteSearchModule from "../../../tsrc/modules/RemoteSearchModule";
-import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
-import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import { defaultSearchSettings } from "../../../tsrc/modules/SearchSettingsModule";
 import { SearchContext } from "../../../tsrc/search/Search";
 import {
   SearchPageBody,
   SearchPageBodyProps,
 } from "../../../tsrc/search/SearchPageBody";
-import "@testing-library/jest-dom/extend-expect";
 import {
   defaultSearchPageHeaderConfig,
   defaultSearchPageOptions,
   defaultSearchPageRefinePanelConfig,
   SearchPageOptions,
 } from "../../../tsrc/search/SearchPageHelper";
-import { languageStrings } from "../../../tsrc/util/langstrings";
 import {
   SearchPageSearchResult,
   State,
 } from "../../../tsrc/search/SearchPageReducer";
+import { languageStrings } from "../../../tsrc/util/langstrings";
 import {
   queryCollectionSelector,
   queryRefineSearchComponent,
@@ -64,40 +68,20 @@ const defaultSearchPageBodyProps: SearchPageBodyProps = {
   pathname: "/page/search",
 };
 
-// Refine panel is hidden in small screens, so we mock the screen size to make it bigger.
-const defaultTheme = createTheme({
-  props: { MuiWithWidth: { initialWidth: "md" } },
-});
-
 const mockSearch = jest.fn();
 const mockHistory = createMemoryHistory();
 
 describe("<SearchPageBody />", () => {
-  const renderSearchPageBody = async (
-    props: SearchPageBodyProps = defaultSearchPageBodyProps
-  ) => {
-    const page = render(
-      <MuiThemeProvider theme={defaultTheme}>
-        <SearchPageBody {...props} />
-      </MuiThemeProvider>
-    );
-
-    await act(async () => {
-      await remoteSearchesPromise;
-      await collectionPromise;
-    });
-
-    return page;
-  };
-
-  const renderSearchPageBodyWithContext = (
+  const renderSearchPageBodyWithContext = async (
     props: SearchPageBodyProps,
     state: State = {
       status: "initialising",
       options: defaultSearchPageOptions,
     }
-  ) =>
-    render(
+  ) => {
+    window.matchMedia = createMatchMedia(1280);
+
+    const page = render(
       <Router history={mockHistory}>
         <SearchContext.Provider
           value={{
@@ -111,10 +95,26 @@ describe("<SearchPageBody />", () => {
             searchPageErrorHandler: jest.fn(),
           }}
         >
-          <SearchPageBody {...props} />
+          <ThemeProvider theme={createTheme()}>
+            <SearchPageBody {...props} />
+          </ThemeProvider>
         </SearchContext.Provider>
       </Router>
     );
+
+    await act(async () => {
+      await remoteSearchesPromise;
+      await collectionPromise;
+    });
+
+    return page;
+  };
+
+  const renderSearchPageBody = async (
+    props: SearchPageBodyProps = defaultSearchPageBodyProps
+  ) => {
+    return await renderSearchPageBodyWithContext(props);
+  };
 
   it("supports additional panels", async () => {
     const label = "additional Panel";
@@ -163,7 +163,7 @@ describe("<SearchPageBody />", () => {
     if (!sortingDropdown) {
       throw new Error("Failed to find the Sorting selector");
     }
-    userEvent.click(sortingDropdown);
+    await userEvent.click(sortingDropdown);
     expect(screen.queryByText(option)).toBeInTheDocument();
   });
 
@@ -181,7 +181,7 @@ describe("<SearchPageBody />", () => {
     ).toBeInTheDocument();
   });
 
-  it("supports custom new search configuration", () => {
+  it("supports custom new search configuration", async () => {
     const path = "/test";
     const criteria: SearchPageOptions = {
       ...defaultSearchPageOptions,
@@ -206,10 +206,12 @@ describe("<SearchPageBody />", () => {
       },
     };
 
-    const { getByText } = renderSearchPageBodyWithContext(searchPageBodyProps);
+    const { getByText } = await renderSearchPageBodyWithContext(
+      searchPageBodyProps
+    );
 
     const newSearchButton = getByText(languageStrings.searchpage.newSearch);
-    userEvent.click(newSearchButton);
+    await userEvent.click(newSearchButton);
 
     // The first parameter should be the custom new search criteria and the new path
     // should have been pushed the history.
@@ -247,7 +249,7 @@ describe("<SearchPageBody />", () => {
     expect(queryByRole("progressbar")).toBeInTheDocument();
   });
 
-  it("displays custom UI for search results", () => {
+  it("displays custom UI for search results", async () => {
     const text = "This is a custom search result";
     const searchPageBodyProps: SearchPageBodyProps = {
       ...defaultSearchPageBodyProps,
@@ -257,7 +259,7 @@ describe("<SearchPageBody />", () => {
         )),
     };
 
-    const { getAllByText } = renderSearchPageBodyWithContext(
+    const { getAllByText } = await renderSearchPageBodyWithContext(
       searchPageBodyProps,
       {
         status: "success",
@@ -272,5 +274,24 @@ describe("<SearchPageBody />", () => {
 
     // The search result list has 12 Items, so we should see that text 12 times.
     expect(getAllByText(text, { selector: "p" })).toHaveLength(12);
+  });
+
+  it("displays 'No results found.' when there are no search results", async () => {
+    const { container } = await renderSearchPageBodyWithContext(
+      defaultSearchPageBodyProps,
+      {
+        status: "success",
+        options: defaultSearchPageOptions,
+        result: {
+          from: "item-search",
+          content: getEmptySearchResult,
+        },
+        classifications,
+      }
+    );
+
+    expect(container).toHaveTextContent(
+      languageStrings.searchpage.noResultsFound
+    );
   });
 });

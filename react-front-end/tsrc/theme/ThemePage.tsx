@@ -21,9 +21,9 @@ import {
   CardActions,
   CardContent,
   Grid,
-  makeStyles,
   Typography,
-} from "@material-ui/core";
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
 import * as React from "react";
@@ -39,6 +39,27 @@ import { commonString } from "../util/commonstrings";
 import { languageStrings } from "../util/langstrings";
 import ColorPickerComponent from "./ColorPickerComponent";
 
+const PREFIX = "ThemePage";
+
+const classes = {
+  fileName: `${PREFIX}-fileName`,
+  labels: `${PREFIX}-labels`,
+  button: `${PREFIX}-button`,
+};
+
+const StyledSettingPageTemplate = styled(SettingPageTemplate)({
+  [`& .${classes.fileName}`]: {
+    marginTop: "8px",
+  },
+  [`& .${classes.labels}`]: {
+    marginBottom: "4px",
+  },
+  [`& .${classes.button}`]: {
+    marginTop: "8px",
+    marginBottom: "8px",
+  },
+});
+
 declare const themeSettings: OEQ.Theme.ThemeSettings;
 declare const logoURL: string;
 
@@ -46,19 +67,6 @@ declare const logoURL: string;
  * @author Samantha Fisher
  */
 export const strings = languageStrings.newuisettings;
-
-const useStyles = makeStyles({
-  fileName: {
-    marginTop: "8px",
-  },
-  labels: {
-    marginBottom: "4px",
-  },
-  button: {
-    marginTop: "8px",
-    marginBottom: "8px",
-  },
-});
 
 interface ThemeColors {
   primary: string;
@@ -81,7 +89,6 @@ interface LogoSettings {
 }
 
 export const ThemePage = ({ updateTemplate }: ThemePageProps) => {
-  const classes = useStyles();
   const { appErrorHandler } = useContext(AppContext);
 
   const mapSettingsToColors = (
@@ -332,7 +339,7 @@ export const ThemePage = ({ updateTemplate }: ThemePageProps) => {
   };
 
   return (
-    <SettingPageTemplate
+    <StyledSettingPageTemplate
       onSave={saveChanges}
       saveButtonDisabled={!isChangesUnsaved}
       snackbarOpen={isShowSuccess}
@@ -343,7 +350,7 @@ export const ThemePage = ({ updateTemplate }: ThemePageProps) => {
     >
       <ColorSchemeSettings />
       <LogoSettings />
-    </SettingPageTemplate>
+    </StyledSettingPageTemplate>
   );
 };
 

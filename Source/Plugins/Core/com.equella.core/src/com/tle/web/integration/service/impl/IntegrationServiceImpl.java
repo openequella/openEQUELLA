@@ -306,11 +306,22 @@ public class IntegrationServiceImpl extends AbstractSectionFilter implements Int
       IntegrationSessionData data,
       IntegrationActionInfo action,
       SingleSignonForm form) {
+    TreeLookupSelectionCallback standardCallback =
+        new TreeLookupSelectionCallback(IntegrationService.KEY_INTEGRATION_CALLBACK);
+    standardForward(info, forward, data, action, form, standardCallback);
+  }
+
+  @Override
+  public void standardForward(
+      SectionInfo info,
+      String forward,
+      IntegrationSessionData data,
+      IntegrationActionInfo action,
+      SingleSignonForm form,
+      SelectionsMadeCallback callback) {
     checkIntegrationAllowed();
 
-    SelectionSession session =
-        new SelectionSession(
-            new TreeLookupSelectionCallback(IntegrationService.KEY_INTEGRATION_CALLBACK));
+    SelectionSession session = new SelectionSession(callback);
     session.setSelectMultiple(false);
     session.setAttribute(IntegrationService.KEY_FORINTEGRATION, true);
 

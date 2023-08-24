@@ -47,6 +47,7 @@ import com.tle.core.item.service.DrmService;
 import com.tle.core.item.service.ItemService;
 import com.tle.core.item.standard.service.ItemCommentService;
 import com.tle.core.jackson.ObjectMapperService;
+import com.tle.core.lti13.service.LtiPlatformService;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.newentity.service.EntityService;
 import com.tle.core.oauth.service.OAuthService;
@@ -82,6 +83,7 @@ import com.tle.web.language.LanguageSettingsPrivilegeTreeProvider;
 import com.tle.web.loggedinusers.LoggedInUsersPrivilegeTreeProvider;
 import com.tle.web.login.LoginSettingsPrivilegeTreeProvider;
 import com.tle.web.loginnotice.LoginNoticeEditorPrivilegeTreeProvider;
+import com.tle.web.lti13.platforms.security.LTI13PlatformsSettingsPrivilegeTreeProvider;
 import com.tle.web.mail.MailSettingsPrivilegeTreeProvider;
 import com.tle.web.manualdatafixes.ManualDataFixesPrivilegeTreeProvider;
 import com.tle.web.mimetypes.MimeSearchPrivilegeTreeProvider;
@@ -191,12 +193,18 @@ public class LegacyGuice extends AbstractModule {
 
   @Inject public static LanguageService languageService;
 
+  @Inject public static LtiPlatformService ltiPlatformService;
+
+  @Inject public static LTI13PlatformsSettingsPrivilegeTreeProvider ltiPrivProvider;
+
   @Inject public static LanguageSettingsPrivilegeTreeProvider langPrivProvider;
 
   @Inject public static LoggedInUsersPrivilegeTreeProvider liuPrivProvider;
 
   @Inject
   public static LoginNoticeEditorPrivilegeTreeProvider loginNoticeEditorPrivilegeTreeProvider;
+
+  @Inject public static LTI13PlatformsSettingsPrivilegeTreeProvider lti13PrivilegeTreeProvider;
 
   @Inject public static LoginSettingsPrivilegeTreeProvider loginPrivProvider;
 

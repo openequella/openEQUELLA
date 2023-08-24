@@ -15,28 +15,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
+import { Slider, TextField } from "@mui/material";
 import type { Meta, Story } from "@storybook/react";
+import * as React from "react";
+import SettingsList, {
+  SettingsListProps,
+} from "../../tsrc/components/SettingsList";
 import SettingsListControl, {
   SettingsListControlProps,
 } from "../../tsrc/components/SettingsListControl";
 import SettingsToggleSwitch, {
   SettingsToggleSwitchProps,
 } from "../../tsrc/components/SettingsToggleSwitch";
-import { Mark, Slider } from "@material-ui/core";
-import SettingsList, {
-  SettingsListProps,
-} from "../../tsrc/components/SettingsList";
 
 export default {
-  title: "SettingsList",
+  title: "Component/SettingsList",
   component: SettingsList,
   argTypes: {
     setValue: { action: "setValue" },
   },
 } as Meta<SettingsListProps>;
 
-const marks: Mark[] = [
+const marks: { label: string; value: number }[] = [
   { label: "Off", value: 0 },
   { label: "x0.25", value: 1 },
   { label: "x0.5", value: 2 },
@@ -51,8 +51,14 @@ type Props = Pick<SettingsListProps, "subHeading"> &
   Pick<SettingsToggleSwitchProps, "setValue" | "disabled"> &
   Pick<SettingsListControlProps, "primaryText" | "secondaryText">;
 
-export const ListWithTwoItems: Story<Props> = (args) => (
+export const SettingsListWithMultipleItems: Story<Props> = (args) => (
   <SettingsList subHeading={args.subHeading}>
+    <SettingsListControl
+      secondaryText="Textfield for input"
+      control={<TextField fullWidth />}
+      divider
+      primaryText="Textfield"
+    />
     <SettingsListControl
       secondaryText="Box for checking"
       control={
@@ -68,12 +74,12 @@ export const ListWithTwoItems: Story<Props> = (args) => (
     <SettingsListControl
       secondaryText={args.secondaryText}
       control={<Slider marks={marks} min={0} max={7} step={null} />}
-      divider={false}
       primaryText={args.primaryText}
+      divider
     />
   </SettingsList>
 );
-ListWithTwoItems.args = {
+SettingsListWithMultipleItems.args = {
   subHeading: "Sub Heading",
   disabled: false,
   primaryText: "SliderControl",

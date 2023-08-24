@@ -33,7 +33,11 @@ import org.apache.lucene.document.Document;
 @Singleton
 @SuppressWarnings("nls")
 public class NormalItemIndex extends ItemIndex<FreetextResult> {
-  @Inject private FreetextIndex freetextIndex;
+
+  @Inject
+  public NormalItemIndex(FreetextIndex freetextIndex) {
+    super(freetextIndex);
+  }
 
   @PostConstruct
   @Override

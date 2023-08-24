@@ -17,7 +17,7 @@
  */
 import userEvent from "@testing-library/user-event";
 import SearchSettingFormControl from "../../../tsrc/components/SearchSettingFormControl";
-import { TextField } from "@material-ui/core";
+import { TextField } from "@mui/material";
 import * as React from "react";
 import { render, RenderResult } from "@testing-library/react";
 
@@ -39,9 +39,9 @@ describe("SearchSettingFormControl.tsx", () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
-  it("should be triggered after call", () => {
+  it("should be triggered after call", async () => {
     const textField = page.getByRole("textbox");
-    userEvent.type(textField, "text");
+    await userEvent.type(textField, "text");
     expect(onChange.mock.calls).toHaveLength(4);
   });
 });

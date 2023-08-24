@@ -4,17 +4,17 @@ lazy val BirtOsgi      = config("birtosgi")
 lazy val CustomCompile = config("compile") extend BirtOsgi
 
 libraryDependencies := Seq(
-  "com.github.equella.reporting" % "birt-osgi" % "3.7.2" artifacts Artifact("birt-osgi",
-                                                                            Artifact.DefaultType,
-                                                                            "zip"),
+  "com.github.openequella" % "birt-osgi" % "4.9.1" artifacts Artifact("birt-osgi",
+                                                                      Artifact.DefaultType,
+                                                                      "zip"),
   "com.github.equella.reporting" % "reporting-common"                               % "6.5",
   "com.github.equella.reporting" % "reporting-oda"                                  % "6.5",
   "com.github.equella.reporting" % "reporting-oda-connectors"                       % "6.5",
   "org.apache.commons"           % "com.springsource.org.apache.commons.httpclient" % "3.1.0",
   "org.apache.commons"           % "com.springsource.org.apache.commons.logging"    % "1.1.1",
   "org.apache.commons"           % "com.springsource.org.apache.commons.codec"      % "1.6.0",
-  "com.thoughtworks.xstream"     % "com.springsource.com.thoughtworks.xstream"      % "1.4.1",
-  "javax.xml.stream"             % "com.springsource.javax.xml.stream"              % "1.0.1"
+  xstreamDep,
+  "javax.xml.stream" % "com.springsource.javax.xml.stream" % "1.0.1"
 ).map(_ % BirtOsgi)
 
 resolvers += Resolver.url("my-test-repo",
@@ -25,9 +25,9 @@ ivyConfigurations := overrideConfigs(BirtOsgi, CustomCompile)(ivyConfigurations.
 
 (Compile / resourceGenerators) += Def.task {
   val baseDir  = (Compile / resourceManaged).value
-  val baseBirt = baseDir / "birt"
+  val baseBirt = baseDir / "ReportEngine"
   IO.delete(baseBirt)
-  val outPlugins = baseBirt / "plugins"
+  val outPlugins = baseBirt / "lib"
   val ur         = update.value
   val pluginJars =
     Classpaths.managedJars(BirtOsgi, Set("jar"), ur).files.filter(_.getName.endsWith(".jar"))

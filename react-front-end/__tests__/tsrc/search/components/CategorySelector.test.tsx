@@ -15,12 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import {
   render,
   queryByText,
   getByText,
-  fireEvent,
   RenderResult,
   getAllByRole,
 } from "@testing-library/react";
@@ -98,14 +98,14 @@ describe("<CategorySelector />", () => {
     ).toBeNull();
   });
 
-  it("should show all categories and 'SHOW LESS' button when 'SHOW MORE' button is clicked", () => {
+  it("should show all categories and 'SHOW LESS' button when 'SHOW MORE' button is clicked", async () => {
     const classification = getClassificationByName(page.container, CITY);
     const showMoreButton = queryMuiButtonByText(classification, SHOW_MORE);
     if (!showMoreButton) {
       throw new Error("Unable to find 'SHOW MORE' button for Classification.");
     }
     expect(getAllByRole(classification, "checkbox")).toHaveLength(2);
-    fireEvent.click(showMoreButton);
+    await userEvent.click(showMoreButton);
     expect(getAllByRole(classification, "checkbox")).toHaveLength(3);
     expect(queryMuiButtonByText(classification, SHOW_LESS)).toBeInTheDocument();
   });
@@ -117,12 +117,12 @@ describe("<CategorySelector />", () => {
     expect(classifications[1].textContent).toBe(LANGUAGE);
   });
 
-  it("should call onSelectedCategoriesChange when a facet is selected", () => {
+  it("should call onSelectedCategoriesChange when a facet is selected", async () => {
     const selectedCategories: SelectedCategories[] = [
       { id: 766943, categories: ["Hobart"] },
     ];
     const hobart = getByText(page.container, HOBART, { selector: "p" });
-    fireEvent.click(hobart);
+    await userEvent.click(hobart);
     expect(onSelectedCategoriesChange).toHaveBeenLastCalledWith(
       selectedCategories
     );

@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ImageListItem, ImageListItemBar } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { ImageListItem, ImageListItemBar } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useEffect, useState } from "react";
@@ -32,20 +32,12 @@ import { languageStrings } from "../../util/langstrings";
 
 const { ariaLabel, viewItem } = languageStrings.searchpage.gallerySearchResult;
 
-const useStyles = makeStyles({
-  tile: {
-    width: "25%",
-    height: 250,
-    padding: 2,
-  },
-  titleBar: {
-    background:
-      "linear-gradient(to top, rgba(0,0,0,0.5) 0%, " +
-      "rgba(0,0,0,0.1) 70%, rgba(0,0,0,0) 100%)",
-  },
-  thumbnail: {
-    cursor: "zoom-in",
-  },
+const GalleryThumbnail = styled("img")({
+  cursor: "zoom-in",
+  objectFit: "cover",
+  objectPosition: "center",
+  height: 250,
+  width: "100%",
 });
 
 /**
@@ -81,14 +73,13 @@ export interface GallerySearchTileProps {
 }
 
 /**
- * Component which builds a list of 'GridListTile' for all gallery entries of an Item.
+ * Component which builds a list of 'ImageListItem' for all gallery entries of an Item.
  */
 export const GallerySearchItemTiles = ({
   item,
   updateGalleryItemList,
   enableItemSummaryButton = true,
 }: GallerySearchTileProps) => {
-  const classes = useStyles();
   const {
     mainEntry,
     additionalEntries,
@@ -145,16 +136,15 @@ export const GallerySearchItemTiles = ({
     altText: string,
     onClick: () => void
   ) => (
-    <ImageListItem
-      key={key}
-      onClick={onClick}
-      aria-label={ariaLabel}
-      className={classes.tile}
-    >
-      <img className={classes.thumbnail} src={imgSrc} alt={altText} />
+    <ImageListItem onClick={onClick} aria-label={ariaLabel} key={key}>
+      <GalleryThumbnail src={imgSrc} alt={altText} />
       {enableItemSummaryButton && (
         <ImageListItemBar
-          className={classes.titleBar}
+          sx={{
+            background:
+              "linear-gradient(to top, rgba(0,0,0,0.5) 0%, " +
+              "rgba(0,0,0,0.1) 70%, rgba(0,0,0,0) 100%)",
+          }}
           actionIcon={
             <OEQItemSummaryPageButton
               title={viewItem}

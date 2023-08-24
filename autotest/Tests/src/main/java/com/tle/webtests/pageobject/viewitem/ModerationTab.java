@@ -46,7 +46,7 @@ public class ModerationTab extends AbstractPage<ModerationTab> {
   public long waitTime() throws ParseException {
     WebElement time = driver.findElement(By.xpath("//div[1]/span/abbr[@class='timeago_nosuf']"));
     String timeStamp = time.getAttribute("title");
-    SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd, yyyy hh:mm a");
+    SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd, yyyy, hh:mm a");
     dateFormat.setTimeZone(TimeZone.getTimeZone("Australia/Hobart"));
     Date d = dateFormat.parse(timeStamp);
     return d.getTime();

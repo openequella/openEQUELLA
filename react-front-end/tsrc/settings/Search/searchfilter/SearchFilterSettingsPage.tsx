@@ -17,18 +17,16 @@
  */
 import {
   Card,
-  CardActions,
   CardContent,
   IconButton,
   List,
   ListItem,
   ListItemSecondaryAction,
   ListItemText,
-  makeStyles,
-} from "@material-ui/core";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
-import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
+} from "@mui/material";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import * as React from "react";
 import { useContext, useEffect, useState } from "react";
 import * as E from "fp-ts/Either";
@@ -36,6 +34,7 @@ import { pipe } from "fp-ts/function";
 import * as TE from "fp-ts/TaskEither";
 import MessageDialog from "../../../components/MessageDialog";
 import SettingPageTemplate from "../../../components/SettingPageTemplate";
+import SettingsCardActions from "../../../components/SettingsCardActions";
 import SettingsList from "../../../components/SettingsList";
 import SettingsListControl from "../../../components/SettingsListControl";
 import SettingsListHeading from "../../../components/SettingsListHeading";
@@ -68,19 +67,10 @@ import { languageStrings } from "../../../util/langstrings";
 import MimeTypeFilterEditingDialog from "./MimeTypeFilterEditingDialog";
 import * as OEQ from "@openequella/rest-api-client";
 
-const useStyles = makeStyles({
-  cardAction: {
-    display: "flex",
-    justifyContent: "flex-end",
-  },
-});
-
 const searchFilterStrings =
   languageStrings.settings.searching.searchfiltersettings;
 
 const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
-  const classes = useStyles();
-
   // The general Search settings. Here only configure searchingDisableOwnerFilter and searchingDisableDateModifiedFilter.
   const [searchSettings, setSearchSettings] =
     useState<OEQ.SearchSettings.Settings>(defaultSearchSettings);
@@ -351,6 +341,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
                       }}
                       aria-label={`${searchFilterStrings.edit} ${filter.name}`}
                       color="secondary"
+                      size="large"
                     >
                       <EditIcon />
                     </IconButton>
@@ -359,6 +350,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
                       onClick={() => deleteMimeTypeFilter(filter)}
                       aria-label={`${searchFilterStrings.delete} ${filter.name}`}
                       color="secondary"
+                      size="large"
                     >
                       <DeleteIcon />
                     </IconButton>
@@ -369,15 +361,16 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
           </List>
         </CardContent>
 
-        <CardActions className={classes.cardAction}>
+        <SettingsCardActions>
           <IconButton
             onClick={() => openMimeTypeFilterDialog()}
             aria-label={searchFilterStrings.add}
             color="primary"
+            size="large"
           >
             <AddCircleIcon fontSize="large" />
           </IconButton>
-        </CardActions>
+        </SettingsCardActions>
       </Card>
 
       {

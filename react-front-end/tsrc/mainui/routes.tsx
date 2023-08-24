@@ -21,6 +21,15 @@ import AdvancedSearchPage from "../search/AdvancedSearchPage";
 import { TemplateUpdate } from "./Template";
 
 const ThemePage = React.lazy(() => import("../theme/ThemePage"));
+const LtiPlatformsSettingsPage = React.lazy(
+  () => import("../settings/Integrations/Lti13PlatformsSettings")
+);
+const CreateLti13PlatformPage = React.lazy(
+  () => import("../settings/Integrations/lti13platforms/CreateLti13Platform")
+);
+const EditLti13PlatformPage = React.lazy(
+  () => import("../settings/Integrations/lti13platforms/EditLti13Platform")
+);
 const CloudProviderListPage = React.lazy(
   () => import("../cloudprovider/CloudProviderListPage")
 );
@@ -67,6 +76,9 @@ interface OEQRouteTo<T = string | ToFunc | ToVersionFunc> {
 interface Routes {
   OldAdvancedSearch: OEQRouteTo<ToFunc>; // Need this route to support using Advanced Search in Selection Session.
   NewAdvancedSearch: OEQRouteNewUI & OEQRouteTo<ToFunc>;
+  Lti13PlatformsSettings: OEQRouteNewUI;
+  CreateLti13Platform: OEQRouteNewUI;
+  EditLti13Platform: OEQRouteNewUI & OEQRouteTo<ToFunc>;
   CloudProviders: OEQRouteNewUI;
   ContentIndexSettings: OEQRouteNewUI;
   FacetedSearchSetting: OEQRouteNewUI;
@@ -123,6 +135,20 @@ export const routes: Routes = {
     to: (uuid: string) => `${NEW_ADVANCED_SEARCH_PATH}/${uuid}`,
     path: `${NEW_ADVANCED_SEARCH_PATH}/:advancedSearchId`,
     component: AdvancedSearchPage,
+  },
+  Lti13PlatformsSettings: {
+    path: "/page/lti13platforms",
+    component: LtiPlatformsSettingsPage,
+  },
+  CreateLti13Platform: {
+    path: "/page/createLti13Platform",
+    component: CreateLti13PlatformPage,
+  },
+  EditLti13Platform: {
+    // normally platform ID will be an URL which need to be encoded first
+    to: (platformId: string) => `/page/editLti13Platform/${btoa(platformId)}`,
+    path: `/page/editLti13Platform/:platformIdBase64`,
+    component: EditLti13PlatformPage,
   },
   CloudProviders: {
     path: "/page/cloudprovider",

@@ -37,6 +37,8 @@ import com.tle.beans.entity.itemdef.ItemdefBlobs;
 import com.tle.beans.item.*;
 import com.tle.beans.item.attachments.*;
 import com.tle.beans.item.cal.request.CourseInfo;
+import com.tle.beans.lti.LtiPlatform;
+import com.tle.beans.lti.LtiPlatformCustomRole;
 import com.tle.beans.mime.MimeEntry;
 import com.tle.beans.newentity.Entity;
 import com.tle.beans.security.ACLEntryMapping;
@@ -48,6 +50,7 @@ import com.tle.beans.user.TLEUser;
 import com.tle.beans.user.UserInfoBackup;
 import com.tle.beans.viewcount.ViewcountAttachment;
 import com.tle.beans.viewcount.ViewcountItem;
+import com.tle.beans.webkeyset.WebKeySet;
 import com.tle.common.security.TargetListEntry;
 import com.tle.common.workflow.Workflow;
 import com.tle.common.workflow.WorkflowItemStatus;
@@ -65,7 +68,6 @@ import com.tle.core.hibernate.impl.HibernateCreationFilter;
 import com.tle.core.hibernate.impl.HibernateMigrationHelper;
 import com.tle.core.migration.AbstractCreateMigration;
 import com.tle.core.migration.MigrationInfo;
-import com.tle.core.migration.beans.SystemConfig;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
 import com.tle.web.resources.PluginResourceHelper;
@@ -151,7 +153,10 @@ public class InitialSchema extends AbstractCreateMigration {
         AuditLogEntry.class,
         ViewcountItem.class,
         ViewcountAttachment.class,
-        Entity.class
+        Entity.class,
+        WebKeySet.class,
+        LtiPlatformCustomRole.class,
+        LtiPlatform.class
       };
 
   @SuppressWarnings("nls")
@@ -242,9 +247,6 @@ public class InitialSchema extends AbstractCreateMigration {
   protected HibernateCreationFilter getFilter(HibernateMigrationHelper helper) {
     AllDataHibernateMigrationFilter filter = new AllDataHibernateMigrationFilter();
     Session session = helper.getFactory().openSession();
-    if (helper.tableExists(session, SystemConfig.TABLE_NAME)) {
-      filter.setIncludeGenerators(false);
-    }
     session.close();
     return filter;
   }

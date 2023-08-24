@@ -16,9 +16,13 @@
  * limitations under the License.
  */
 import * as React from "react";
-import * as ReactDOM from "react-dom";
+import * as ReactDOM from "react-dom/client";
 import { initStrings } from "../util/langstrings";
 import "../util/polyfill";
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/material-icons";
 
 export type EntryPage =
   | "advancedSearchPage"
@@ -45,10 +49,17 @@ export default function main(entry: EntryPage) {
   }
 
   initStrings();
-  ReactDOM.render(
-    <React.Suspense fallback={<>loading</>}>
-      <App entryPage={entry} />
-    </React.Suspense>,
-    document.getElementById(entry)
-  );
+
+  const rootElement = document.getElementById(entry);
+  if (rootElement) {
+    ReactDOM.createRoot(rootElement).render(
+      <React.Suspense fallback={<>loading</>}>
+        <App entryPage={entry} />
+      </React.Suspense>
+    );
+  } else {
+    throw new Error(
+      `Failed to render the New UI: root element ${entry} is missing.`
+    );
+  }
 }

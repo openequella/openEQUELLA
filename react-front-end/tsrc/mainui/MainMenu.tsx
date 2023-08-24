@@ -23,12 +23,11 @@ import {
   ListItemIcon,
   ListItemText,
   Typography,
-  useTheme,
-} from "@material-ui/core";
+} from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useHistory } from "react-router";
-import { useStyles } from "./Template";
+import { getOeqTheme } from "../modules/ThemeModule";
 
 interface MainMenuProps {
   /**
@@ -48,7 +47,8 @@ interface MainMenuProps {
  * main layout.
  */
 const MainMenu = ({ menuGroups, onClickNavItem }: MainMenuProps) => {
-  const classes = useStyles(useTheme());
+  const menuColors = getOeqTheme().menu;
+
   const history = useHistory();
   const navItem = (item: OEQ.LegacyContent.MenuItem, ind: number) => (
     <ListItem
@@ -69,8 +69,8 @@ const MainMenu = ({ menuGroups, onClickNavItem }: MainMenuProps) => {
         {item.iconUrl ? (
           <img src={item.iconUrl} alt={item.title} />
         ) : (
-          <Icon color="inherit" className={classes.menuIcon}>
-            {item.systemIcon ? item.systemIcon : "folder"}
+          <Icon sx={{ color: menuColors.icon }}>
+            {item.systemIcon ?? "folder"}
           </Icon>
         )}
       </ListItemIcon>
@@ -79,8 +79,8 @@ const MainMenu = ({ menuGroups, onClickNavItem }: MainMenuProps) => {
         primary={
           <Typography
             variant="subtitle1"
-            className={classes.menuItem}
             component="div"
+            color={menuColors.text}
           >
             {item.title}
           </Typography>

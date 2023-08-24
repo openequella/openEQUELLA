@@ -15,8 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { is } from 'typescript-is';
+import * as t from 'io-ts';
 import { GET } from './AxiosInstance';
+import {
+  MimeTypeEntryCodec,
+  MimeTypeViewerConfigurationCodec,
+} from './gen/MimeType';
+import { validate } from './Utils';
 
 export interface MimeTypeEntry {
   /**
@@ -111,14 +116,6 @@ export interface MimeTypeViewerConfiguration {
   viewers: MimeTypeViewerDetail[];
 }
 
-const isMimeTypeEntryList = (instance: unknown): instance is MimeTypeEntry[] =>
-  is<MimeTypeEntry[]>(instance);
-
-const isMimeTypeViewerConfiguration = (
-  instance: unknown
-): instance is MimeTypeViewerConfiguration =>
-  is<MimeTypeViewerConfiguration>(instance);
-
 const MIMETYPE_ROOT_PATH = '/mimetype';
 
 /**
@@ -127,7 +124,7 @@ const MIMETYPE_ROOT_PATH = '/mimetype';
  * @param apiBasePath Base URI to the oEQ institution and API
  */
 export const listMimeTypes = (apiBasePath: string): Promise<MimeTypeEntry[]> =>
-  GET(apiBasePath + MIMETYPE_ROOT_PATH, isMimeTypeEntryList);
+  GET(apiBasePath + MIMETYPE_ROOT_PATH, validate(t.array(MimeTypeEntryCodec)));
 
 /**
  * Given a MIME type (e.g. "application/pdf") retrieve the oEQ viewer configuration for it. Note
@@ -143,5 +140,5 @@ export const getViewersForMimeType = (
 ): Promise<MimeTypeViewerConfiguration> =>
   GET(
     apiBasePath + MIMETYPE_ROOT_PATH + '/viewerconfig/' + mimeType,
-    isMimeTypeViewerConfiguration
+    validate(MimeTypeViewerConfigurationCodec)
   );

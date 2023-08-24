@@ -25,14 +25,13 @@ import {
   AppBar,
   Typography,
   Toolbar,
-  Paper,
   Button,
   CssBaseline,
-} from "@material-ui/core";
-import { ThemeProvider } from "@material-ui/core/styles";
+} from "@mui/material";
+import { ThemeProvider } from "@mui/material";
 import { ProviderRegistrationResponse } from "oeq-cloudproviders/registration";
 import { createRegistration } from "./registration";
-import { theme, useStyles } from "./theme";
+import { StyledBody, StyledPaper, StyledRoot, theme } from "./theme";
 
 interface QueryProps {
   register?: string;
@@ -101,10 +100,9 @@ function CloudProvider({ query }: CloudProviderProps) {
       )
       .catch((error: Error) => setError(error));
   }
-  const classes = useStyles();
 
   return (
-    <div id="testCloudProvider" className={classes.root}>
+    <StyledRoot id="testCloudProvider">
       <AppBar position="static" color="primary">
         <Toolbar>
           <Typography variant="h6" color="inherit">
@@ -112,8 +110,8 @@ function CloudProvider({ query }: CloudProviderProps) {
           </Typography>
         </Toolbar>
       </AppBar>
-      <Paper className={classes.content}>
-        <div className={classes.body}>
+      <StyledPaper>
+        <StyledBody>
           {response ? (
             <Typography>Successfully registered.</Typography>
           ) : (
@@ -133,7 +131,7 @@ function CloudProvider({ query }: CloudProviderProps) {
               <Typography id="lastName">{currentUser.lastName}</Typography>
             </div>
           )}
-        </div>
+        </StyledBody>
         <div>
           {response ? (
             <div>
@@ -165,17 +163,17 @@ function CloudProvider({ query }: CloudProviderProps) {
             </Button>
           )}
         </div>
-      </Paper>
-    </div>
+      </StyledPaper>
+    </StyledRoot>
   );
 }
 
 ReactDOM.render(
-  <React.Fragment>
+  <>
     <CssBaseline />
     <ThemeProvider theme={theme}>
       <CloudProvider query={parse(window.location.search)} />
     </ThemeProvider>
-  </React.Fragment>,
+  </>,
   document.getElementById("app")
 );

@@ -116,15 +116,15 @@ ThisBuild / assemblyMergeStrategy := {
   }
 }
 (ThisBuild / oracleDriverMavenCoordinate) := Seq(
-  "com.oracle.database.jdbc" % "ojdbc8" % "19.16.0.0")
+  "com.oracle.database.jdbc" % "ojdbc8" % "21.10.0.0")
 
 (ThisBuild / buildConfig) := Common.buildConfig
 
 name := "Equella"
 
-(ThisBuild / equellaMajor) := 2022
-(ThisBuild / equellaMinor) := 2
-(ThisBuild / equellaPatch) := 1
+(ThisBuild / equellaMajor) := 2023
+(ThisBuild / equellaMinor) := 1
+(ThisBuild / equellaPatch) := 0
 (ThisBuild / equellaStream) := "Stable"
 (ThisBuild / equellaBuild) := buildConfig.value.getString("build.buildname")
 (ThisBuild / buildTimestamp) := Instant.now().getEpochSecond
@@ -146,12 +146,15 @@ version := {
 (ThisBuild / versionProperties) := {
   val eqVersion = equellaVersion.value
   val props     = new Properties
-  props.putAll(
-    Map(
-      "version.display" -> s"${eqVersion.semanticVersion}-${eqVersion.releaseType}",
-      "version.commit"  -> eqVersion.sha
-    ).asJava)
-  val f = target.value / "version.properties"
+  val f         = target.value / "version.properties"
+
+  Map(
+    "version.display" -> s"${eqVersion.semanticVersion}-${eqVersion.releaseType}",
+    "version.commit"  -> eqVersion.sha
+  ) foreach {
+    case (key, value) => props.put(key, value)
+  }
+
   IO.write(props, "version", f)
   f
 }
@@ -180,7 +183,9 @@ writeLanguagePack := {
           val fname = g + (if (xml) ".xml" else ".properties")
           val f     = dir / fname
           val p     = new SortedProperties()
-          lss.foreach(ls => p.putAll(ls.strings.asJava))
+          lss.flatMap(_.strings).foreach {
+            case (key, value) => p.put(key, value)
+          }
           Using.fileOutputStream()(f) { os =>
             if (xml) p.storeToXML(os, "") else p.store(os, "")
           }
@@ -239,9 +244,16 @@ writeScriptingJavadoc := {
   outZip
 }
 
+ThisBuild / oeqTsRestApiDir := baseDirectory.value / "oeq-ts-rest-api"
+
 ThisBuild / reactFrontEndDir := baseDirectory.value / "react-front-end"
 ThisBuild / reactFrontEndOutputDir := reactFrontEndDir.value / "target/resources"
 ThisBuild / buildReactFrontEnd := {
+  // build rest module first since it is a dependency of react front end
+  val apiDir = oeqTsRestApiDir.value
+  Common.nodeInstall(apiDir)
+  Common.nodeScript("build", apiDir)
+
   val dir = reactFrontEndDir.value
   Common.nodeInstall(dir)
   Common.nodeScript("build", dir)
@@ -251,10 +263,11 @@ ThisBuild / buildReactFrontEnd := {
 }
 ThisBuild / reactFrontEndLanguageBundle := reactFrontEndOutputDir.value / "lang/jsbundle.json"
 
-// Add to the clean to ensure we clean out the react-front-end
+// Add to the clean to ensure we clean out the react-front-end and oeq-ts-rest-api
 clean := {
   clean.value
   Common.nodeScript("clean", reactFrontEndDir.value)
+  Common.nodeScript("clean", oeqTsRestApiDir.value)
 }
 
 val userBeans: FileFilter = ("GroupBean.java" || "UserBean.java" || "RoleBean.java") &&
@@ -272,7 +285,7 @@ def javadocSources(base: File): PathFinder = {
   (javadocSources((LocalProject("com_equella_base") / baseDirectory).value)
     +++ javadocSources((LocalProject("com_equella_core") / baseDirectory).value)).get
 }
-(Compile / doc / javacOptions) := Seq()
+(Compile / doc / javacOptions) := Seq("--release", "8")
 
 lazy val allEquella = ScopeFilter(inAggregates(equella))
 

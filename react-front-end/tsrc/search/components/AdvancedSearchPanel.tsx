@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import CloseIcon from "@mui/icons-material/Close";
 import {
   Button,
   Card,
@@ -23,21 +24,14 @@ import {
   CardHeader,
   Grid,
   Typography,
-  CircularProgress,
-} from "@material-ui/core";
-import CloseIcon from "@material-ui/icons/Close";
+} from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { constFalse, flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as SET from "fp-ts/Set";
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import * as React from "react";
+import LoadingCircle from "../../components/LoadingCircle";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import * as WizardHelper from "../../components/wizard/WizardHelper";
 import {
@@ -83,15 +77,15 @@ export const AdvancedSearchPanel = ({
   title,
 }: AdvancedSearchPanelProps) => {
   const { updateFieldValueMap, openAdvancedSearchPanel, definitionRetrieved } =
-    useContext(AdvancedSearchPageContext);
+    React.useContext(AdvancedSearchPageContext);
   const { search, searchState, searchPageErrorHandler } =
-    useContext(SearchContext);
-  const currentUser = useContext(AppContext).currentUser ?? guestUser;
+    React.useContext(SearchContext);
+  const currentUser = React.useContext(AppContext).currentUser ?? guestUser;
 
   const [currentValues, setCurrentValues] =
-    useState<WizardHelper.FieldValueMap>(values);
+    React.useState<WizardHelper.FieldValueMap>(values);
 
-  const duplicateTarget: boolean = useMemo(
+  const duplicateTarget: boolean = React.useMemo(
     () =>
       pipe(
         wizardControls,
@@ -110,7 +104,7 @@ export const AdvancedSearchPanel = ({
 
   // Keep the values in state (CurrentValues) in sync with those passed in
   // by props (values). Key when the clear button is triggered.
-  useEffect(() => {
+  React.useEffect(() => {
     setCurrentValues(values);
   }, [values]);
 
@@ -139,7 +133,7 @@ export const AdvancedSearchPanel = ({
     });
   };
 
-  const onChangeHandler = useCallback(
+  const onChangeHandler = React.useCallback(
     (updates: WizardHelper.FieldValue[]): void => {
       console.debug("AdvancedSearchPanel : onChangeHandler called.", {
         currentValues,
@@ -211,11 +205,7 @@ export const AdvancedSearchPanel = ({
             )}
           </Grid>
         ) : (
-          <Grid container spacing={1} justifyContent="center">
-            <Grid item>
-              <CircularProgress />
-            </Grid>
-          </Grid>
+          <LoadingCircle />
         )}
       </CardContent>
       <CardActions>

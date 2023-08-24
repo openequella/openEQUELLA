@@ -15,13 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CircularProgress, Grid } from "@material-ui/core";
 import Axios from "axios";
 import { pipe } from "fp-ts/function";
 import { isEqual } from "lodash";
 import * as O from "fp-ts/Option";
 import * as React from "react";
 import { useContext } from "react";
+import { flushSync } from "react-dom";
 import { v4 } from "uuid";
 import {
   ErrorResponse,
@@ -29,6 +29,7 @@ import {
   generateFromError,
 } from "../api/errors";
 import { LEGACY_CSS_URL } from "../AppConfig";
+import LoadingCircle from "../components/LoadingCircle";
 import { AppContext } from "../mainui/App";
 import { BaseOEQRouteComponentProps } from "../mainui/routes";
 import {
@@ -208,11 +209,11 @@ export const LegacyContent = React.memo(function LegacyContent({
     content: LegacyContentResponse,
     scrollTop: boolean
   ) {
-    // Setting the below flag is crucial, as it forces the DOM to change (to display a spinner)
-    // thereby circumventing React rendering/DOM optimisations. This mimics the functioning of a web
-    // browser where it would've reloaded the page. Which is needed based on the way some of the
-    // Legacy AJAX code is written.
-    setUpdatingContent(true);
+    // Setting the below flag and page content in `flushSync` is crucial, as it forces the DOM to change immediately (to display a spinner)
+    // thereby circumventing React rendering/DOM optimisations. This mimics the functioning of a web browser where it would've
+    // reloaded the page. Which is needed based on the way some of the Legacy AJAX code is written.
+
+    flushSync(() => setUpdatingContent(true));
     updateIncludes(content.js, content.css).then((extraCss) => {
       const pageContent = {
         ...content,
@@ -227,8 +228,8 @@ export const LegacyContent = React.memo(function LegacyContent({
       if (content.userUpdated) {
         refreshUser();
       }
-      setContent(pageContent);
-      setUpdatingContent(false);
+      flushSync(() => setContent(pageContent));
+      flushSync(() => setUpdatingContent(false));
     });
   }
 
@@ -436,11 +437,7 @@ export const LegacyContent = React.memo(function LegacyContent({
   return !updatingContent && content ? (
     <LegacyContentRenderer {...content} />
   ) : (
-    <Grid container direction="column" alignItems="center">
-      <Grid item>
-        <CircularProgress />
-      </Grid>
-    </Grid>
+    <LoadingCircle />
   );
 });
 

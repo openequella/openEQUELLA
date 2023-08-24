@@ -26,7 +26,7 @@ import { languageStrings } from "../../../../tsrc/util/langstrings";
 describe("<WizardSimpleTermSelector/>", () => {
   // WizardSimpleTermSelector uses a debounce, so we need to be able to advanced
   // the timer to trigger a search.
-  jest.useFakeTimers("modern");
+  const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
   const label = languageStrings.termSelector.placeholder;
   const termProvider = jest.fn().mockResolvedValue({
@@ -57,12 +57,18 @@ describe("<WizardSimpleTermSelector/>", () => {
 
   const searchTerms = async (input: HTMLElement, query: string) =>
     await act(async () => {
-      await userEvent.type(input, query);
+      await user.type(input, query);
       jest.advanceTimersByTime(1000);
     });
 
+  beforeEach(() => {
+    // WizardSimpleTermSelector uses a debounce, so we need to be able to advanced
+    // the timer to trigger a search.
+    jest.useFakeTimers();
+  });
+
   afterEach(() => {
-    jest.clearAllTimers();
+    jest.useRealTimers();
   });
 
   it("debounces the search", async () => {
@@ -91,7 +97,7 @@ describe("<WizardSimpleTermSelector/>", () => {
       values
     );
 
-    userEvent.click(
+    await user.click(
       getByLabelText(`${languageStrings.common.action.delete} ${term}`)
     );
     // The only value has been deleted so the handler should be called with an empty set.

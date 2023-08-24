@@ -55,7 +55,6 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.selection.SelectedResource;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.viewable.ViewableItem;
-import com.tle.web.viewable.ViewableItemResolver;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -88,7 +87,6 @@ public class BlackboardIntegration extends AbstractIntegrationService<BlackBoard
   @Inject private ItemHelper itemHelper;
   @Inject private FileSystemService fileSystemService;
   @Inject private InstitutionService institutionService;
-  @Inject private ViewableItemResolver viewableItemResolver;
   @Inject private ObjectMapperService objectMapperService;
   @Inject private ItemService itemService;
   @Inject private ItemFileService itemFileService;
@@ -356,7 +354,7 @@ public class BlackboardIntegration extends AbstractIntegrationService<BlackBoard
   }
 
   @Override
-  protected <I extends IItem<?>> ViewableItem<I> createViewableItem(
+  public <I extends IItem<?>> ViewableItem<I> createViewableItem(
       I item, SelectedResource resource) {
     final ViewableItem<I> vitem =
         viewableItemResolver.createIntegrationViewableItem(

@@ -25,16 +25,16 @@ import userEvent from "@testing-library/user-event";
  * @param container The base container from which to start a search
  * @param selector A CSS selector to pass to `HTMLElement.querySelector()` to find the `<Select>`
  */
-export const clickSelect = (
+export const clickSelect = async (
   container: HTMLElement,
   selector: string
-): Element => {
+): Promise<Element> => {
   const muiSelect = container.querySelector(selector);
   if (!muiSelect) {
     throw Error("Unable to find MUI Select.");
   }
 
-  userEvent.click(muiSelect);
+  await userEvent.click(muiSelect);
 
   return muiSelect;
 };
@@ -68,13 +68,13 @@ export const querySelectOption = (optionText: string): HTMLElement | null =>
  * @param selector A CSS selector to pass to `HTMLElement.querySelector()` to find the `<Select>`
  * @param optionText The text which represents the option you wish to select - user visible.
  */
-export const selectOption = (
+export const selectOption = async (
   container: HTMLElement,
   selector: string,
   optionText: string
 ) => {
   // Click the <Select>
-  clickSelect(container, selector);
-  // .. then click the option in the list
-  userEvent.click(getSelectOption(optionText));
+  await clickSelect(container, selector);
+  // Click the option in the list
+  await userEvent.click(getSelectOption(optionText));
 };

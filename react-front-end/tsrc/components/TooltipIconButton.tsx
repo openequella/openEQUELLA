@@ -15,9 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IconButton, IconButtonProps } from "@material-ui/core";
-import Tooltip from "@material-ui/core/Tooltip";
-import { TooltipProps } from "@material-ui/core/Tooltip/Tooltip";
+import { IconButton, IconButtonProps } from "@mui/material";
+import Tooltip from "@mui/material/Tooltip";
+import { TooltipProps } from "@mui/material/Tooltip/Tooltip";
 import * as React from "react";
 
 /**

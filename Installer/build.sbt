@@ -2,7 +2,7 @@ import Path.relativeTo
 
 libraryDependencies ++= Seq(
   "com.google.guava" % "guava"         % "31.1-jre",
-  "commons-codec"    % "commons-codec" % "1.15",
+  "commons-codec"    % "commons-codec" % "1.16.0",
   postgresDep,
   sqlServerDep
 )
@@ -49,6 +49,7 @@ installerZip := {
     upZip          -> s"manager/updates/${upZip.getName}"
   ) ++ allServerFiles
   log.info(s"Creating installer ${outZip.absolutePath}")
+
   IO.zip(allFiles.map(t => (t._1, s"$dirname/${t._2}")),
          outZip,
          Option((ThisBuild / buildTimestamp).value))

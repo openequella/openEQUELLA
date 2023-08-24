@@ -23,12 +23,9 @@ import com.google.common.base.Throwables;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.IItem;
-import com.tle.beans.item.ItemId;
-import com.tle.beans.item.ViewableItemType;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.AttachmentType;
 import com.tle.beans.item.attachments.IAttachment;
-import com.tle.common.NameValue;
 import com.tle.common.URLUtils;
 import com.tle.common.connectors.entity.Connector;
 import com.tle.common.usermanagement.user.CurrentUser;
@@ -57,7 +54,6 @@ import com.tle.web.sections.result.util.PluralKeyLabel;
 import com.tle.web.selection.SelectedResource;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.section.RootSelectionSection;
-import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewable.ViewableItemResolver;
 import java.net.URI;
 import java.util.Collection;
@@ -424,35 +420,8 @@ public class BrightspaceIntegration extends AbstractIntegrationService<Brightspa
     return data.getCourseInfoCode();
   }
 
-  @Nullable
-  @Override
-  public NameValue getLocation(BrightspaceSessionData data) {
-    return null;
-  }
-
   @Override
   protected boolean canSelect(BrightspaceSessionData data) {
     return true;
-  }
-
-  @Override
-  protected <I extends IItem<?>> ViewableItem<I> createViewableItem(
-      I item, SelectedResource resource) {
-    final ViewableItem<I> vitem =
-        viewableItemResolver.createIntegrationViewableItem(
-            item,
-            resource.isLatest(),
-            ViewableItemType.GENERIC,
-            resource.getKey().getExtensionType());
-    return vitem;
-  }
-
-  @Override
-  public <I extends IItem<?>> ViewableItem<I> createViewableItem(
-      ItemId itemId, boolean latest, @Nullable String itemExtensionType) {
-    final ViewableItem<I> vitem =
-        viewableItemResolver.createIntegrationViewableItem(
-            itemId, latest, ViewableItemType.GENERIC, itemExtensionType);
-    return vitem;
   }
 }

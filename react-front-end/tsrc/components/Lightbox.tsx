@@ -15,13 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Backdrop, Grid, Theme, Toolbar, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import CloseIcon from "@material-ui/icons/Close";
-import CodeIcon from "@material-ui/icons/Code";
-import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
-import NavigateNextIcon from "@material-ui/icons/NavigateNext";
-import OpenInNewIcon from "@material-ui/icons/OpenInNew";
+import { Backdrop, Grid, Toolbar, Typography } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import CloseIcon from "@mui/icons-material/Close";
+import CodeIcon from "@mui/icons-material/Code";
+import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as React from "react";
@@ -59,41 +59,61 @@ const {
   embedCode: { copy: labelCopyEmbedCode },
 } = languageStrings;
 
-const useStyles = makeStyles((theme: Theme) => ({
-  lightboxBackdrop: {
+const PREFIX = "Lightbox";
+
+const classes = {
+  lightboxBackdrop: `${PREFIX}-lightboxBackdrop`,
+  lightboxAudio: `${PREFIX}-lightboxAudio`,
+  lightboxContent: `${PREFIX}-lightboxContent`,
+  lightboxImage: `${PREFIX}-lightboxImage`,
+  menuButton: `${PREFIX}-menuButton`,
+  title: `${PREFIX}-title`,
+  toolbar: `${PREFIX}-toolbar`,
+  arrowButton: `${PREFIX}-arrowButton`,
+};
+
+const Root = styled("div")(({ theme }) => ({
+  [`& .${classes.lightboxBackdrop}`]: {
     backgroundColor: "#000000cc",
     cursor: "default", // Replace the backdrop 'pointer' style
     zIndex: theme.zIndex.drawer + 1,
   },
-  lightboxAudio: {
+
+  [`& .${classes.lightboxAudio}`]: {
     minWidth: 200,
     width: "60vw",
   },
-  lightboxContent: {
+
+  [`& .${classes.lightboxContent}`]: {
     maxWidth: "80vw",
     maxHeight: "80vh",
   },
-  lightboxImage: {
+
+  [`& .${classes.lightboxImage}`]: {
     minWidth: 100,
     minHeight: 100,
   },
-  menuButton: {
+
+  [`& .${classes.menuButton}`]: {
     color: "#fafafa",
     "&:hover": {
       background: "#505050",
     },
   },
-  title: {
+
+  [`& .${classes.title}`]: {
     flexGrow: 1,
   },
-  toolbar: {
+
+  [`& .${classes.toolbar}`]: {
     backgroundColor: "#0a0a0a",
     color: "#fafafa",
     position: "absolute",
     top: 0,
     width: "100%",
   },
-  arrowButton: {
+
+  [`& .${classes.arrowButton}`]: {
     width: 48,
     height: 48,
     color: "#fafafa",
@@ -139,8 +159,6 @@ export interface LightboxProps {
 const domParser = new DOMParser();
 
 const Lightbox = ({ open, onClose, config }: LightboxProps) => {
-  const classes = useStyles();
-
   const [content, setContent] = useState<ReactElement | undefined>();
   const [lightBoxConfig, setLightBoxConfig] = useState<LightboxConfig>(config);
   const [openEmbedCodeDialog, setOpenEmbedCodeDialog] =
@@ -221,7 +239,7 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
       );
 
     setContent(buildContent());
-  }, [lightBoxConfig, classes, mimeType, src, title]);
+  }, [lightBoxConfig, mimeType, src, title]);
 
   const handleOpenInNewWindow = (event: SyntheticEvent) => {
     event.stopPropagation();
@@ -253,99 +271,101 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
   };
 
   return (
-    <Backdrop
-      className={classes.lightboxBackdrop}
-      open={open}
-      onClick={handleCloseLightbox}
-    >
-      <Toolbar className={classes.toolbar}>
-        <Typography variant="h6" className={classes.title}>
-          {title}
-        </Typography>
-        {item && (
-          <OEQItemSummaryPageButton
-            {...{ item, title: labelOpenSummaryPage, color: "inherit" }}
-          />
-        )}
-        <TooltipIconButton
-          title={labelCopyEmbedCode}
-          color="inherit"
-          className={classes.menuButton}
-          aria-label={labelCopyEmbedCode}
-          onClick={(event) => {
-            event.stopPropagation();
-            setOpenEmbedCodeDialog(true);
-          }}
-        >
-          <CodeIcon />
-        </TooltipIconButton>
-        <TooltipIconButton
-          title={labelOpenInNewTab}
-          color="inherit"
-          className={classes.menuButton}
-          aria-label={labelOpenInNewTab}
-          onClick={handleOpenInNewWindow}
-        >
-          <OpenInNewIcon />
-        </TooltipIconButton>
-        {
-          // This following close button is really just added as a security blanket. A common thing
-          // with most lightboxes which typically support clicking anywhere outside the content to
-          // trigger a close.
-        }
-        <TooltipIconButton
-          title={labelClose}
-          color="inherit"
-          className={classes.menuButton}
-          aria-label={labelClose}
-          onClick={handleCloseLightbox}
-        >
-          <CloseIcon />
-        </TooltipIconButton>
-      </Toolbar>
-      <Grid container alignItems="center">
-        <Grid item xs={1}>
-          {onPrevious && (
-            <TooltipIconButton
-              title={labelViewPrevious}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleNav(onPrevious);
-              }}
-            >
-              <NavigateBeforeIcon className={classes.arrowButton} />
-            </TooltipIconButton>
+    <Root>
+      <Backdrop
+        className={classes.lightboxBackdrop}
+        open={open}
+        onClick={handleCloseLightbox}
+      >
+        <Toolbar className={classes.toolbar}>
+          <Typography variant="h6" className={classes.title}>
+            {title}
+          </Typography>
+          {item && (
+            <OEQItemSummaryPageButton
+              {...{ item, title: labelOpenSummaryPage, color: "inherit" }}
+            />
           )}
-        </Grid>
-        <Grid item container justifyContent="center" xs={10}>
-          <Grid item ref={contentEmbedCodeRef}>
-            {content}
-          </Grid>
-        </Grid>
-        <Grid item container justifyContent="flex-end" xs={1}>
-          <Grid item>
-            {onNext && (
+          <TooltipIconButton
+            title={labelCopyEmbedCode}
+            color="inherit"
+            className={classes.menuButton}
+            aria-label={labelCopyEmbedCode}
+            onClick={(event) => {
+              event.stopPropagation();
+              setOpenEmbedCodeDialog(true);
+            }}
+          >
+            <CodeIcon />
+          </TooltipIconButton>
+          <TooltipIconButton
+            title={labelOpenInNewTab}
+            color="inherit"
+            className={classes.menuButton}
+            aria-label={labelOpenInNewTab}
+            onClick={handleOpenInNewWindow}
+          >
+            <OpenInNewIcon />
+          </TooltipIconButton>
+          {
+            // This following close button is really just added as a security blanket. A common thing
+            // with most lightboxes which typically support clicking anywhere outside the content to
+            // trigger a close.
+          }
+          <TooltipIconButton
+            title={labelClose}
+            color="inherit"
+            className={classes.menuButton}
+            aria-label={labelClose}
+            onClick={handleCloseLightbox}
+          >
+            <CloseIcon />
+          </TooltipIconButton>
+        </Toolbar>
+        <Grid container alignItems="center">
+          <Grid item xs={1}>
+            {onPrevious && (
               <TooltipIconButton
-                title={labelViewNext}
+                title={labelViewPrevious}
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleNav(onNext);
+                  handleNav(onPrevious);
                 }}
               >
-                <NavigateNextIcon className={classes.arrowButton} />
+                <NavigateBeforeIcon className={classes.arrowButton} />
               </TooltipIconButton>
             )}
           </Grid>
+          <Grid item container justifyContent="center" xs={10}>
+            <Grid item ref={contentEmbedCodeRef}>
+              {content}
+            </Grid>
+          </Grid>
+          <Grid item container justifyContent="flex-end" xs={1}>
+            <Grid item>
+              {onNext && (
+                <TooltipIconButton
+                  title={labelViewNext}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleNav(onNext);
+                  }}
+                >
+                  <NavigateNextIcon className={classes.arrowButton} />
+                </TooltipIconButton>
+              )}
+            </Grid>
+          </Grid>
         </Grid>
-      </Grid>
-      {openEmbedCodeDialog && content && (
-        <EmbedCodeDialog
-          open={openEmbedCodeDialog}
-          onCloseDialog={() => setOpenEmbedCodeDialog(false)}
-          embedCode={generateEmbedCode()}
-        />
-      )}
-    </Backdrop>
+        {openEmbedCodeDialog && content && (
+          <EmbedCodeDialog
+            open={openEmbedCodeDialog}
+            onCloseDialog={() => setOpenEmbedCodeDialog(false)}
+            embedCode={generateEmbedCode()}
+          />
+        )}
+      </Backdrop>
+    </Root>
   );
 };
 

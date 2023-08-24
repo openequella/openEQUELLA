@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 import "@testing-library/jest-dom/extend-expect";
-import { fireEvent, render } from "@testing-library/react";
+import { render } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import * as UserModuleMock from "../../../../__mocks__/UserModule.mock";
-import * as UserSearchMock from "../../../../__mocks__/UserSearch.mock";
 import OwnerSelector from "../../../../tsrc/search/components/OwnerSelector";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import { queryMuiButtonByText } from "../../MuiQueries";
@@ -52,7 +52,7 @@ describe("<OwnerSelector/>", () => {
     expect(queryByText(testUser.username)).toBeInTheDocument();
   });
 
-  it("should trigger the clear callback when the clear user button is clicked", () => {
+  it("should trigger the clear callback when the clear user button is clicked", async () => {
     const clearCallback = jest.fn();
     render(
       <OwnerSelector
@@ -62,17 +62,17 @@ describe("<OwnerSelector/>", () => {
       />
     );
 
-    clearSelection();
+    await clearSelection();
 
     expect(clearCallback).toHaveBeenCalled();
   });
 
-  it("should display the select user dialog when select is clicked", () => {
+  it("should display the select user dialog when select is clicked", async () => {
     const { container, queryByText } = render(
       <OwnerSelector onClearSelect={jest.fn()} onSelect={jest.fn()} />
     );
 
-    clickSelect(container);
+    await clickSelect(container);
 
     expect(
       queryByText(languageStrings.searchpage.filterOwner.selectTitle)
@@ -85,7 +85,7 @@ describe("<OwnerSelector/>", () => {
       <OwnerSelector
         onClearSelect={jest.fn()}
         onSelect={onSelectCallback}
-        userListProvider={UserSearchMock.userDetailsProvider}
+        userListProvider={UserModuleMock.listUsers}
       />
     );
 
@@ -95,13 +95,13 @@ describe("<OwnerSelector/>", () => {
     expect(onSelectCallback).toHaveBeenCalledWith(testUser);
   });
 
-  it("should not call the onSelect callback if cancel is clicked", () => {
+  it("should not call the onSelect callback if cancel is clicked", async () => {
     const onSelectCallback = jest.fn();
     const { container, getByRole } = render(
       <OwnerSelector onClearSelect={jest.fn()} onSelect={onSelectCallback} />
     );
 
-    clickSelect(container);
+    await clickSelect(container);
     const dialogCancelButton = queryMuiButtonByText(
       getByRole("dialog"),
       languageStrings.common.action.cancel
@@ -111,7 +111,7 @@ describe("<OwnerSelector/>", () => {
         "Unable to find 'cancel' button in the user select dialog"
       );
     }
-    fireEvent.click(dialogCancelButton);
+    await userEvent.click(dialogCancelButton);
 
     expect(onSelectCallback).not.toHaveBeenCalled();
   });

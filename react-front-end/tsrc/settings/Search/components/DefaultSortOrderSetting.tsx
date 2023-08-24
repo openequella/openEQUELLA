@@ -15,27 +15,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  FormControl,
-  MenuItem,
-  OutlinedInput,
-  Select,
-} from "@material-ui/core";
+import { FormControl, MenuItem, OutlinedInput, Select } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import * as React from "react";
 import { languageStrings } from "../../../util/langstrings";
-import { makeStyles } from "@material-ui/core/styles";
 import * as OEQ from "@openequella/rest-api-client";
+
+const PREFIX = "DefaultSortOrderSetting";
+
+const classes = {
+  select: `${PREFIX}-select`,
+};
+
+const StyledFormControl = styled(FormControl)({
+  [`& .${classes.select}`]: {
+    width: "200px",
+  },
+});
 
 export interface DefaultSortOrderSettingProps {
   disabled: boolean;
   value?: OEQ.Search.SortOrder;
   setValue: (order: OEQ.Search.SortOrder) => void;
 }
-const useStyles = makeStyles({
-  select: {
-    width: "200px",
-  },
-});
 export default function DefaultSortOrderSetting({
   disabled,
   value,
@@ -43,7 +45,6 @@ export default function DefaultSortOrderSetting({
 }: DefaultSortOrderSettingProps) {
   const { relevance, lastModified, dateCreated, title, userRating } =
     languageStrings.settings.searching.searchPageSettings;
-  const classes = useStyles();
 
   const validateSortOrder = (value: unknown): OEQ.Search.SortOrder =>
     OEQ.Search.SortOrderRunTypes.check(value);
@@ -57,7 +58,7 @@ export default function DefaultSortOrderSetting({
   ];
 
   return (
-    <FormControl variant="outlined">
+    <StyledFormControl variant="outlined">
       <Select
         SelectDisplayProps={{ id: "_sortOrder" }}
         disabled={disabled}
@@ -65,7 +66,7 @@ export default function DefaultSortOrderSetting({
         variant="outlined"
         value={value}
         className={classes.select}
-        input={<OutlinedInput labelWidth={0} id="_sortOrder" />}
+        input={<OutlinedInput id="_sortOrder" />}
       >
         {options.map(([value, label]) => (
           <MenuItem key={value} value={value}>
@@ -73,6 +74,6 @@ export default function DefaultSortOrderSetting({
           </MenuItem>
         ))}
       </Select>
-    </FormControl>
+    </StyledFormControl>
   );
 }

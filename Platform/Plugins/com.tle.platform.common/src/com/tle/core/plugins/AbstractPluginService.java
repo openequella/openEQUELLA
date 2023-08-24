@@ -45,7 +45,7 @@ import org.java.plugin.registry.PluginRegistry.RegistryChangeListener;
 
 public abstract class AbstractPluginService extends PluginClassResolver implements PluginService {
   protected PluginManager pluginManager;
-  protected static PluginService thisService;
+  public static PluginService thisService;
 
   protected Map<String, TLEPluginLocation> pluginIdToLocation =
       new HashMap<String, TLEPluginLocation>();

@@ -15,10 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Button, ButtonGroup, Checkbox, TextField } from "@material-ui/core";
-import CheckBoxIcon from "@material-ui/icons/CheckBox";
-import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
-import { Autocomplete } from "@material-ui/lab";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import {
+  Autocomplete,
+  Button,
+  ButtonGroup,
+  Checkbox,
+  TextField,
+} from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import { isEqual } from "lodash";
 import * as React from "react";
@@ -106,16 +111,16 @@ const AdvancedSelector = ({
     options={options}
     limitTags={2}
     getOptionLabel={(status) => status}
-    getOptionSelected={(status, selected) => selected === status}
-    renderOption={(status, { selected }) => (
-      <>
+    isOptionEqualToValue={(status, selected) => selected === status}
+    renderOption={(props, status, { selected }) => (
+      <li {...props}>
         <Checkbox
           icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
           checkedIcon={<CheckBoxIcon fontSize="small" />}
           checked={selected}
         />
         {status}
-      </>
+      </li>
     )}
     renderInput={(params) => (
       <TextField

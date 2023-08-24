@@ -15,16 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { action } from "@storybook/addon-actions";
 import { Meta } from "@storybook/react";
 import * as React from "react";
 import {
   DateRangeSelector,
   DateRangeSelectorProps,
 } from "../../tsrc/components/DateRangeSelector";
-import { action } from "@storybook/addon-actions";
-import { object, text } from "@storybook/addon-knobs";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import LuxonUtils from "@date-io/luxon";
 
 export default {
   title: "DateRangeSelector",
@@ -37,33 +34,26 @@ const actions: DateRangeSelectorProps = {
 };
 
 export const QuickOptionMode = () => (
-  <MuiPickersUtilsProvider utils={LuxonUtils}>
-    <DateRangeSelector
-      quickModeEnabled
-      dateRange={object("Date range", {
-        start: new Date(),
-        end: undefined,
-      })}
-      quickOptionDropdownLabel={text(
-        "Quick option Dropdown label",
-        "Quick date range options"
-      )}
-      {...actions}
-    />
-  </MuiPickersUtilsProvider>
+  <DateRangeSelector
+    quickModeEnabled
+    dateRange={{
+      start: new Date(),
+      end: undefined,
+    }}
+    quickOptionDropdownLabel="Quick date range options"
+    {...actions}
+  />
 );
 
 export const CustomDateMode = () => (
-  <MuiPickersUtilsProvider utils={LuxonUtils}>
-    <DateRangeSelector
-      quickModeEnabled={false}
-      dateRange={object("Date range", {
-        start: new Date(),
-        end: new Date(),
-      })}
-      startDatePickerLabel={text("Start date", "Start date")}
-      endDatePickerLabel={text("End date", "End date")}
-      {...actions}
-    />
-  </MuiPickersUtilsProvider>
+  <DateRangeSelector
+    quickModeEnabled={false}
+    dateRange={{
+      start: new Date(),
+      end: new Date(),
+    }}
+    startDatePickerLabel="Start date"
+    endDatePickerLabel="End date"
+    {...actions}
+  />
 );

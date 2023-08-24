@@ -22,8 +22,8 @@ import {
   FormControlLabel,
   Grid,
   Switch,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
 import * as React from "react";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -36,24 +36,30 @@ import {
 } from "../modules/GeneralSettingsModule";
 import { languageStrings } from "../util/langstrings";
 
-const useStyles = makeStyles({
-  fab: {
+const PREFIX = "UISettingEditor";
+
+const classes = {
+  fab: `${PREFIX}-fab`,
+  enableNewUIColumn: `${PREFIX}-enableNewUIColumn`,
+  enableNewSearchColumn: `${PREFIX}-enableNewSearchColumn`,
+};
+
+const StyledAccordionDetails = styled(AccordionDetails)({
+  [`& .${classes.fab}`]: {
     position: "absolute",
     bottom: 0,
     right: 16,
   },
-  enableNewUIColumn: {
+  [`& .${classes.enableNewUIColumn}`]: {
     flexBasis: "33.3%",
   },
-  enableNewSearchColumn: {
+  [`& .${classes.enableNewSearchColumn}`]: {
     flexBasis: "33.3%",
   },
 });
 
-const { uiconfig } = languageStrings;
-
 const UISettingEditor = () => {
-  const classes = useStyles();
+  const { uiconfig } = languageStrings;
 
   const [newUIEnabled, setNewUIEnabled] = useState<boolean>(true);
   const [newSearchEnabled, setNewSearchEnabled] = useState<boolean>(false);
@@ -87,7 +93,7 @@ const UISettingEditor = () => {
   };
 
   return (
-    <AccordionDetails>
+    <StyledAccordionDetails>
       <Grid container direction="column">
         <Grid item>
           <div className={classes.enableNewUIColumn}>
@@ -97,6 +103,7 @@ const UISettingEditor = () => {
                   <Switch
                     checked={newUIEnabled}
                     onChange={(_, checked) => setNewUI(checked)}
+                    color="secondary"
                   />
                 }
                 label={uiconfig.enableNew}
@@ -114,6 +121,7 @@ const UISettingEditor = () => {
                     checked={newSearchEnabled}
                     disabled={!newUIEnabled}
                     onChange={(_, checked) => setNewSearch(checked)}
+                    color="secondary"
                   />
                 }
                 label={uiconfig.enableSearch}
@@ -130,7 +138,7 @@ const UISettingEditor = () => {
           </Link>
         </Grid>
       </Grid>
-    </AccordionDetails>
+    </StyledAccordionDetails>
   );
 };
 

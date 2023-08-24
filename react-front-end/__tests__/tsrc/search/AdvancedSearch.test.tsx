@@ -15,13 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { MuiThemeProvider } from "@material-ui/core";
+import { ThemeProvider } from "@mui/material";
+import { createTheme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom/extend-expect";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
+import * as T from "fp-ts/Task";
 import { createMemoryHistory } from "history";
 import * as React from "react";
 import { Router } from "react-router-dom";
@@ -29,6 +31,7 @@ import {
   getAdvancedSearchDefinition,
   mockWizardControlFactory,
 } from "../../../__mocks__/AdvancedSearchModule.mock";
+import { createMatchMedia } from "../../../__mocks__/MockUseMediaQuery";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import { mockedAdvancedSearchCriteria } from "../../../__mocks__/WizardHelper.mock";
@@ -47,19 +50,17 @@ import {
   WizardControlLabelValue,
 } from "./AdvancedSearchTestHelper";
 import {
-  defaultTheme,
   initialiseEssentialMocks,
   mockCollaborators,
   queryClassificationPanel,
   queryCollectionSelector,
   queryRemoteSearchSelector,
-  waitForSearch,
 } from "./SearchPageTestHelper";
 
 // This has some big tests for rendering the Search Page, but also going through and testing
 // all components as one big wizard - e.g.:
 // "stores values in state when search is clicked, and then re-uses them when the wizard is re-rendered"
-jest.setTimeout(20000);
+jest.setTimeout(25000);
 
 const {
   showAdvancedSearchFilter: filterButtonLabel,
@@ -88,14 +89,16 @@ const searchPromise = mockSearch.mockResolvedValue(getSearchResult);
 mockGetAdvancedSearchByUuid.mockResolvedValue(getAdvancedSearchDefinition);
 
 const togglePanel = async () =>
-  act(async () => userEvent.click(screen.getByLabelText(filterButtonLabel)));
+  await userEvent.click(screen.getByLabelText(filterButtonLabel));
 
 const renderAdvancedSearchPage = async () => {
+  window.matchMedia = createMatchMedia(1280, true);
+
   const history = createMemoryHistory();
   history.push("/page/advancedsearch/4be6ae54-68ca-4d8b-acd0-0ca96fc39280");
 
   const page = render(
-    <MuiThemeProvider theme={defaultTheme}>
+    <ThemeProvider theme={createTheme()}>
       <Router history={history}>
         <AppContext.Provider
           value={{
@@ -107,10 +110,10 @@ const renderAdvancedSearchPage = async () => {
           <AdvancedSearchPage updateTemplate={jest.fn()} />
         </AppContext.Provider>
       </Router>
-    </MuiThemeProvider>
+    </ThemeProvider>
   );
   // Wait for the first completion of initial search
-  await waitForSearch(searchPromise);
+  await act(async () => await searchPromise);
 
   return page;
 };
@@ -126,7 +129,7 @@ const clickSearchButton = async (container: Element): Promise<void> => {
     throw new Error("Failed to locate Advanced Search 'search' button.");
   }
 
-  await waitFor(() => userEvent.click(searchButton));
+  await userEvent.click(searchButton);
 };
 
 const clickClearButton = async (container: Element) => {
@@ -137,7 +140,7 @@ const clickClearButton = async (container: Element) => {
     throw new Error("Failed to locate Advanced Search 'clear' button.");
   }
 
-  await waitFor(() => userEvent.click(clearButton));
+  await userEvent.click(clearButton);
 };
 
 describe("Display of Advanced Search Criteria panel", () => {
@@ -178,14 +181,14 @@ describe("Advanced Search filter button", () => {
     expect(getHighlightedFilterButton()).not.toBeInTheDocument();
 
     // Put some texts in the EditBox.
-    userEvent.type(getByLabelText(`${editBoxEssentials.title}`), "text");
+    await userEvent.type(getByLabelText(`${editBoxEssentials.title}`), "text");
     await clickSearchButton(container);
     // Now the filter button is highlighted in Secondary color.
     expect(getHighlightedFilterButton()).toBeInTheDocument();
 
     // Open the panel and clear out the EditBox's content.
     await togglePanel();
-    userEvent.clear(getByLabelText(`${editBoxEssentials.title}`));
+    await userEvent.clear(getByLabelText(`${editBoxEssentials.title}`));
     await clickSearchButton(container);
     // Now the filter button is not highlighted again.
     expect(getHighlightedFilterButton()).not.toBeInTheDocument();
@@ -260,14 +263,26 @@ describe("Rendering of wizard", () => {
     const setValuesTimeSummary = [];
     const setValuesTimer = startTimer("Set control values - TOTAL");
     // For each control, trigger an event to update or select their values.
-    mockedControls.forEach(([{ controlType }, controlLabelValue]) => {
-      const controlTimer = startTimer(`Control [${controlType}]`);
+    const updateControlValueTask =
+      ([
+        { controlType },
+        controlLabelValue,
+      ]: MockedControlValue): T.Task<void> =>
+      async () => {
+        const controlTimer = startTimer(`Control [${controlType}]`);
 
-      // Set the value
-      updateControlValue(container, controlLabelValue, controlType);
+        // Set the value
+        await updateControlValue(container, controlLabelValue, controlType);
 
-      setValuesTimeSummary.push(elapsedTime(controlTimer));
-    });
+        setValuesTimeSummary.push(elapsedTime(controlTimer));
+      };
+
+    // Now update all the controls in sequential tasks.
+    await pipe(
+      mockedControls,
+      A.traverse(T.ApplicativeSeq)(updateControlValueTask)
+    )();
+
     setValuesTimeSummary.push(elapsedTime(setValuesTimer));
     console.table(setValuesTimeSummary);
 

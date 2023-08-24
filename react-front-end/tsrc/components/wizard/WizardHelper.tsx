@@ -37,7 +37,6 @@ import * as RSET from "fp-ts/ReadonlySet";
 import { Refinement } from "fp-ts/Refinement";
 import { first } from "fp-ts/Semigroup";
 import * as SEP from "fp-ts/Separated";
-import * as SET from "fp-ts/Set";
 import * as S from "fp-ts/string";
 import * as React from "react";
 import {
@@ -382,9 +381,13 @@ const controlFactory = (
   const onChangeForSingleValue = (newValue: string) =>
     onChange(S.isEmpty(newValue) ? [] : [newValue]);
 
-  // For controls which return a Set<string>, convert to plain ol' array and
+  // For controls which return a ReadonlySet<string>, convert to plain ol' array and
   // call the standard onChange handler.
-  const onChangeForStringSet = flow(SET.toArray<string>(OrdAsIs), onChange);
+  const onChangeForStringSet = flow(
+    RSET.toReadonlyArray<string>(OrdAsIs),
+    RA.toArray,
+    onChange
+  );
 
   switch (controlType) {
     case "editbox":
@@ -454,7 +457,7 @@ const controlFactory = (
         <WizardShuffleList
           {...commonProps}
           values={valueAsStringSet()}
-          onChange={flow(RSET.toSet, onChangeForStringSet)}
+          onChange={onChangeForStringSet}
         />
       );
     case "userselector":
@@ -465,7 +468,7 @@ const controlFactory = (
             {...commonProps}
             groupFilter={isRestricted ? new Set(restrictedTo) : new Set()}
             multiple={isSelectMultiple}
-            onChange={flow(RSET.toSet, onChangeForStringSet)}
+            onChange={onChangeForStringSet}
             users={valueAsStringSet()}
           />
         )
@@ -483,7 +486,7 @@ const controlFactory = (
           <WizardSimpleTermSelector
             {...commonProps}
             values={valueAsStringSet()}
-            onSelect={flow(RSET.toSet, onChangeForStringSet)}
+            onSelect={onChangeForStringSet}
             isAllowMultiple={isAllowMultiple}
             selectedTaxonomy={selectedTaxonomy}
             selectionRestriction={selectionRestriction}

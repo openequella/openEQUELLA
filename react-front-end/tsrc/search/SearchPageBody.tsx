@@ -15,7 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { debounce, Drawer, Grid, Hidden } from "@material-ui/core";
+import { debounce, Drawer, Grid, useMediaQuery } from "@mui/material";
+import type { Theme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import { constant, identity, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
@@ -198,6 +199,8 @@ export const SearchPageBody = ({
     enableSearchAttachmentsSelector,
     statusSelectorCustomConfig = { alwaysEnabled: false },
   } = refinePanelConfig;
+
+  const isMdUp = useMediaQuery<Theme>((theme) => theme.breakpoints.up("md"));
 
   const {
     search,
@@ -460,6 +463,7 @@ export const SearchPageBody = ({
         ...c,
         schemaNode: getSchemaNode(c.id),
       })),
+      currentPage: 0,
     });
   };
 
@@ -818,11 +822,11 @@ export const SearchPageBody = ({
             </Grid>
           </Grid>
         </Grid>
-        <Hidden smDown>
+        {isMdUp && (
           <Grid item md={4}>
             {renderSidePanel()}
           </Grid>
-        </Hidden>
+        )}
       </Grid>
       <MessageInfo
         open={!!snackBar.message}
@@ -830,8 +834,9 @@ export const SearchPageBody = ({
         title={snackBar.message}
         variant={snackBar.variant ?? "success"}
       />
-      <Hidden mdUp>
+      {!isMdUp && (
         <Drawer
+          sx={{ display: { md: "none", xs: "block" } }}
           open={showRefinePanel}
           anchor="right"
           onClose={() => setShowRefinePanel(false)}
@@ -839,7 +844,7 @@ export const SearchPageBody = ({
         >
           {renderSidePanel()}
         </Drawer>
-      </Hidden>
+      )}
 
       {showFavouriteSearchDialog && (
         <FavouriteSearchDialog

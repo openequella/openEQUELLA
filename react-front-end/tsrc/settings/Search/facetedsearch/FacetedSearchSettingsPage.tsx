@@ -17,19 +17,17 @@
  */
 import {
   Card,
-  CardActions,
   CardContent,
   IconButton,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  makeStyles,
   Typography,
-} from "@material-ui/core";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
-import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
+} from "@mui/material";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import * as React from "react";
 import { ReactElement, useContext, useEffect, useState } from "react";
 import {
@@ -42,6 +40,7 @@ import {
 } from "react-beautiful-dnd";
 import MessageDialog from "../../../components/MessageDialog";
 import SettingPageTemplate from "../../../components/SettingPageTemplate";
+import SettingsCardActions from "../../../components/SettingsCardActions";
 import SettingsListHeading from "../../../components/SettingsListHeading";
 import { TooltipIconButton } from "../../../components/TooltipIconButton";
 import { AppContext } from "../../../mainui/App";
@@ -66,20 +65,12 @@ import { addElement, replaceElement } from "../../../util/ImmutableArrayUtil";
 import { languageStrings } from "../../../util/langstrings";
 import FacetDialog from "./FacetDialog";
 
-const useStyles = makeStyles({
-  cardAction: {
-    display: "flex",
-    justifyContent: "flex-end",
-  },
-});
-
 /**
  * A page for setting Faceted search facets.
  */
 const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const facetedsearchsettingStrings =
     languageStrings.settings.searching.facetedsearchsetting;
-  const classes = useStyles();
 
   const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
   const [showResultDialog, setShowResultDialog] = useState<boolean>(false);
@@ -292,7 +283,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
           </Typography>
           {facetList}
         </CardContent>
-        <CardActions className={classes.cardAction}>
+        <SettingsCardActions>
           <IconButton
             onClick={() => {
               setCurrentFacet(undefined);
@@ -300,10 +291,11 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
             }}
             aria-label={facetedsearchsettingStrings.add}
             color="primary"
+            size="large"
           >
             <AddCircleIcon fontSize="large" />
           </IconButton>
-        </CardActions>
+        </SettingsCardActions>
       </Card>
 
       <FacetDialog

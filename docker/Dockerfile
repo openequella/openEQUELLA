@@ -1,18 +1,19 @@
-FROM openjdk:8u312-jre as baseequella
+FROM eclipse-temurin:11-alpine as baseequella
 
 # Install needed tools to install and run openEQUELLA, clean up the apt cache afterwards.
 
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 
-RUN useradd -ms /bin/bash equella \
-  && apt-get update \
-  && apt-get install -y --no-install-recommends \
+RUN apk update \
+  && apk add --no-cache \
+    bash \
     curl \
     imagemagick \
     ffmpeg \
     unzip \
-  && rm -rf /var/lib/apt/lists/*
+    gcompat \
+  && adduser equella --disabled-password --gecos -shell /bin/bash
 
 # Install openEQUELLA
 FROM baseequella as installer

@@ -23,12 +23,11 @@ import {
   List,
   ListItem,
   ListItemText,
-  Theme,
   Typography,
-} from "@material-ui/core";
-import MUILink from "@material-ui/core/Link";
-import { makeStyles } from "@material-ui/core/styles";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import MUILink from "@mui/material/Link";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useContext, useEffect, useState } from "react";
@@ -42,17 +41,25 @@ import { languageStrings } from "../util/langstrings";
 import { groupMap, SettingGroup } from "./SettingGroups";
 import UISettingEditor from "./UISettingEditor";
 
-const useStyles = makeStyles((theme: Theme) => {
+const PREFIX = "SettingsPage";
+
+const classes = {
+  heading: `${PREFIX}-heading`,
+  secondaryHeading: `${PREFIX}-secondaryHeading`,
+  progress: `${PREFIX}-progress`,
+};
+
+const Root = styled("div")(({ theme }) => {
   return {
-    heading: {
+    [`& .${classes.heading}`]: {
       fontSize: theme.typography.pxToRem(15),
       flexBasis: "33.33%",
       flexShrink: 0,
     },
-    secondaryHeading: {
+    [`& .${classes.secondaryHeading}`]: {
       fontSize: theme.typography.pxToRem(15),
     },
-    progress: {
+    [`& .${classes.progress}`]: {
       display: "flex",
       marginTop: theme.spacing(4),
       justifyContent: "center",
@@ -68,8 +75,6 @@ const SettingsPage = ({
   updateTemplate,
   isReloadNeeded,
 }: SettingsPageProps) => {
-  const classes = useStyles();
-
   const [adminDialogOpen, setAdminDialogOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [settingGroups, setSettingGroups] = useState<SettingGroup[]>([]);
@@ -171,7 +176,7 @@ const SettingsPage = ({
   };
 
   return (
-    <div id="settingsPage">
+    <Root id="settingsPage">
       <AdminDownloadDialog
         open={adminDialogOpen}
         onClose={() => setAdminDialogOpen(false)}
@@ -199,7 +204,7 @@ const SettingsPage = ({
           })
         )
       }
-    </div>
+    </Root>
   );
 };
 

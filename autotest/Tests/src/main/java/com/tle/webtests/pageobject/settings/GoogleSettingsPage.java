@@ -46,4 +46,17 @@ public class GoogleSettingsPage extends AbstractPage<GoogleSettingsPage> {
                     + "normalize-space(label/text())='Tracking status:']]//div[@class='control']/span"));
     return trackerStatus.getText().trim().equals("Enabled");
   }
+
+  public boolean isTrackingTagPresent() {
+    // The Old UI puts this tag directly into the head of the page, whereas the New UI initially
+    // puts it into the body via React GA package.
+    // If valid info returns from Google, React GA moves it to the head.
+    // We can't use a valid Google Analytics ID for this, so for the new UI
+    // just check for the script in the body.
+    String tagPath =
+        "/html/"
+            + (usingNewUI() ? "body" : "head")
+            + "/script[@src='https://www.googletagmanager.com/gtag/js?id=test']";
+    return driver.findElements(By.xpath(tagPath)).size() > 0;
+  }
 }

@@ -15,29 +15,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as Common from './Common';
 import { GET } from './AxiosInstance';
-import * as Security from './Security';
-import { is } from 'typescript-is';
+import type {
+  BaseEntity,
+  BaseEntityReference,
+  ListCommonParams,
+  PagedResult,
+} from './Common';
+import { isPagedBaseEntity } from './Common';
+import { CollectionCodec } from './gen/Collection';
+import { PagedResultCodec } from './gen/Common';
+import type {
+  BaseEntitySecurity,
+  DynamicRule,
+  ItemMetadataSecurity,
+  TargetListEntry,
+} from './Security';
+import { validate } from './Utils';
 
-export interface CollectionSecurity extends Security.BaseEntitySecurity {
-  dynamicRules: Security.DynamicRule[];
-  metadata: Record<string, Security.ItemMetadataSecurity>;
-  statuses: Record<string, Security.TargetListEntry[]>;
+export interface CollectionSecurity extends BaseEntitySecurity {
+  dynamicRules: DynamicRule[];
+  metadata: Record<string, ItemMetadataSecurity>;
+  statuses: Record<string, TargetListEntry[]>;
 }
 
-export interface Collection extends Common.BaseEntity {
-  schema: Common.BaseEntityReference;
-  workflow?: Common.BaseEntityReference;
+export interface Collection extends BaseEntity {
+  schema: BaseEntityReference;
+  workflow?: BaseEntityReference;
   reviewPeriod?: number;
   security: CollectionSecurity;
   filestoreId: string;
 }
-
-const isPagedCollection = (
-  instance: unknown
-): instance is Common.PagedResult<Collection> =>
-  is<Common.PagedResult<Collection>>(instance);
 
 const COLLECTION_ROOT_PATH = '/collection';
 
@@ -51,13 +59,15 @@ const COLLECTION_ROOT_PATH = '/collection';
  */
 export const listCollections = (
   apiBasePath: string,
-  params?: Common.ListCommonParams
-): Promise<Common.PagedResult<Common.BaseEntity>> => {
+  params?: ListCommonParams
+): Promise<PagedResult<BaseEntity>> => {
   // Only if the `full` param is specified do you get a whole Collection definition, otherwise
   // it's the bare minimum of BaseEntity.
-  const validator = params?.full ? isPagedCollection : Common.isPagedBaseEntity;
+  const validator = params?.full
+    ? validate(PagedResultCodec(CollectionCodec))
+    : isPagedBaseEntity;
 
-  return GET<Common.PagedResult<Common.BaseEntity>>(
+  return GET<PagedResult<BaseEntity>>(
     apiBasePath + COLLECTION_ROOT_PATH,
     validator,
     params

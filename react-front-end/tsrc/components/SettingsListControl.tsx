@@ -15,24 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  ListItem,
-  ListItemSecondaryAction,
-  ListItemText,
-} from "@material-ui/core";
+import { Box, ListItem, ListItemText } from "@mui/material";
 import * as React from "react";
 import { ReactNode } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 
 export interface SettingsListControlProps {
   /**
-   * Whether or not there is a divider at the bottom of this control.
+   * Whether there is a divider at the bottom of this control.
    */
   divider?: boolean;
   /**
    *  Text to appear on the top line of the row.
    */
-  primaryText: string;
+  primaryText: ReactNode;
+  /**
+   * Don't make the `primaryText` display at the vertical center. Default value is `false`.
+   */
+  disableCenterPrimaryText?: boolean;
   /**
    * Text to appear on the bottom line(s) of the row.
    */
@@ -43,17 +42,11 @@ export interface SettingsListControlProps {
   control: ReactNode;
 }
 
-const useStyles = makeStyles({
-  listItemText: {
-    maxWidth: "40%",
-    minHeight: "38px",
-  },
-  secondaryAction: {
-    width: "55%",
-    display: "flex",
-    justifyContent: "flex-end",
-  },
-});
+export const listItemTextStyle = {
+  maxWidth: "40%",
+  minHeight: "38px",
+  paddingRight: 2,
+};
 
 /**
  * This component is used to define a row inside a SettingsList to be used in the page/settings/* pages.
@@ -62,20 +55,32 @@ const useStyles = makeStyles({
 export default function SettingsListControl({
   divider,
   primaryText,
+  disableCenterPrimaryText,
   secondaryText,
   control,
 }: SettingsListControlProps) {
-  const classes = useStyles();
   return (
-    <ListItem alignItems="flex-start" divider={divider}>
+    <ListItem
+      alignItems={disableCenterPrimaryText ? "flex-start" : "center"}
+      sx={{
+        justifyContent: "space-between",
+      }}
+      divider={divider}
+    >
       <ListItemText
-        className={classes.listItemText}
         primary={primaryText}
         secondary={secondaryText}
+        sx={listItemTextStyle}
       />
-      <ListItemSecondaryAction className={classes.secondaryAction}>
+      <Box
+        sx={{
+          width: "60%",
+          display: "flex",
+          justifyContent: "flex-end",
+        }}
+      >
         {control}
-      </ListItemSecondaryAction>
+      </Box>
     </ListItem>
   );
 }

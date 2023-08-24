@@ -17,11 +17,7 @@
  */
 import * as React from "react";
 import { ReactNode } from "react";
-import {
-  ListItem,
-  ListItemSecondaryAction,
-  ListItemText,
-} from "@material-ui/core";
+import { ListItem, ListItemSecondaryAction, ListItemText } from "@mui/material";
 
 interface EquellaListItemProps {
   listItemPrimaryText: string;
