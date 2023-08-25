@@ -240,9 +240,11 @@ class ItemIndexTest
     when(CurrentLocale.getLocale).thenReturn(Locale.getDefault)
 
     val userState: AbstractUserState = new DefaultUserState
+    // User state contains a `Triple` where the first element is a list of common ACL expression and the second element is
+    // a list of Owner ACL expressions and the third element is a list of Not Owner ACL expressions.
+    // The ACL test case targets to Common ACL expressions, so add the mock of the ACL entry ID in the first list and leave
+    // the other two lists empty.
     userState.setAclExpressions(
-      // The ACL test case targets to Common ACL expressions, so add the mock of the ACL entry ID in the list.
-      // For Ownwer and Not Owner expressions, we can use empty lists.
       new Triple(java.util.Collections.singleton(aclEntryID),
                  java.util.Collections.emptyList(),
                  java.util.Collections.emptyList()))
