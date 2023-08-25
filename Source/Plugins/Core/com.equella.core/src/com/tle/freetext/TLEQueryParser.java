@@ -42,9 +42,18 @@ import org.apache.lucene.search.FuzzyQuery;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.WildcardQuery;
 
+/**
+ * This class works as a Lucene query parser, which is used to parse a query string configured in a
+ * search. The main reason to have this class is to support how to parse a query that has some
+ * special characters such as "+", "-" and "!".
+ *
+ * <p>With Lucene V3 and V4, it has been proved that we still need this customised parsing. However,
+ * there is a hope that in newer versions, we can drop this class and then simply use
+ * `StandardQueryParser`.
+ */
 public class TLEQueryParser extends StandardQueryParser {
 
-  private Map<String, String> stemmedToNonStemmed;
+  private static Map<String, String> stemmedToNonStemmed = Maps.newHashMap();
   private static final Pattern pattern =
       Pattern.compile("(?<![\\\\])[-+!]$|(?=[-+!][^\\w\"])(?<![\\\\])[-+!]"); // $NON-NLS-1$
 
@@ -79,7 +88,7 @@ public class TLEQueryParser extends StandardQueryParser {
      * Does not appear to work correctly for ! though.
      *
      * <p>This method was re-visited when upgrading Lucene to V4.10.4. The above-mentioned issue is
-     * still there, even though we use replace the classic QueryParser with the new
+     * still there, even though we replaced the classic QueryParser with the new
      * StandardQueryParser. (Someone also reported this in LUCENE-2566 but nobody respond since
      * then).
      *
@@ -103,13 +112,13 @@ public class TLEQueryParser extends StandardQueryParser {
       query = buffered;
     }
 
-    // Use `null` as the default field because the class used to extend from `MultiFieldQueryParser`
+    // Use `null` as the default field because the class was originally extended from
+    // `MultiFieldQueryParser`
     // where `field` is always `null` when we were using Lucene v3.
     return parse(query, null);
   }
 
   private void buildStemmedToNonStemmed() {
-    stemmedToNonStemmed = Maps.newHashMap();
     stemmedToNonStemmed.put(FreeTextQuery.FIELD_BODY, FreeTextQuery.FIELD_BODY_NOSTEM);
     stemmedToNonStemmed.put(
         FreeTextQuery.FIELD_NAME_VECTORED, FreeTextQuery.FIELD_NAME_VECTORED_NOSTEM);
@@ -117,7 +126,7 @@ public class TLEQueryParser extends StandardQueryParser {
         FreeTextQuery.FIELD_ATTACHMENT_VECTORED, FreeTextQuery.FIELD_ATTACHMENT_VECTORED_NOSTEM);
   }
 
-  private String getNonStemmedField(String stemmedField) {
+  private static String getNonStemmedField(String stemmedField) {
     if (stemmedField == null
         || stemmedToNonStemmed == null
         || !stemmedToNonStemmed.containsKey(stemmedField)) {
@@ -127,13 +136,13 @@ public class TLEQueryParser extends StandardQueryParser {
     return stemmedToNonStemmed.get(stemmedField);
   }
 
-  private FieldQueryNode nonStemmedQueryNode(FieldQueryNode queryNode) {
+  private static FieldQueryNode nonStemmedQueryNode(FieldQueryNode queryNode) {
     String originalField = queryNode.getFieldAsString();
     queryNode.setField(getNonStemmedField(originalField));
     return queryNode;
   }
 
-  private class TLEWildcardQueryNodeBuilder extends WildcardQueryNodeBuilder {
+  private static class TLEWildcardQueryNodeBuilder extends WildcardQueryNodeBuilder {
     @Override
     public WildcardQuery build(QueryNode queryNode) throws QueryNodeException {
       WildcardQueryNode wildcardNode = (WildcardQueryNode) queryNode;
@@ -141,7 +150,7 @@ public class TLEQueryParser extends StandardQueryParser {
     }
   }
 
-  private class TLEPrefixQueryNodeBuilder extends PrefixWildcardQueryNodeBuilder {
+  private static class TLEPrefixQueryNodeBuilder extends PrefixWildcardQueryNodeBuilder {
     @Override
     public PrefixQuery build(QueryNode queryNode) throws QueryNodeException {
       PrefixWildcardQueryNode prefixNode = (PrefixWildcardQueryNode) queryNode;
@@ -149,7 +158,7 @@ public class TLEQueryParser extends StandardQueryParser {
     }
   }
 
-  private class TLEFuzzyQueryNodeBuilder extends FuzzyQueryNodeBuilder {
+  private static class TLEFuzzyQueryNodeBuilder extends FuzzyQueryNodeBuilder {
     @Override
     public FuzzyQuery build(QueryNode queryNode) throws QueryNodeException {
       FuzzyQueryNode fuzzyQueryNode = (FuzzyQueryNode) queryNode;
