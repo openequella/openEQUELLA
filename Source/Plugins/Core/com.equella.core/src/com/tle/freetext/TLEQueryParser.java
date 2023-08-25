@@ -54,14 +54,21 @@ import org.apache.lucene.search.WildcardQuery;
 public class TLEQueryParser extends StandardQueryParser {
 
   private static Map<String, String> stemmedToNonStemmed = Maps.newHashMap();
+
+  static {
+    stemmedToNonStemmed.put(FreeTextQuery.FIELD_BODY, FreeTextQuery.FIELD_BODY_NOSTEM);
+    stemmedToNonStemmed.put(
+        FreeTextQuery.FIELD_NAME_VECTORED, FreeTextQuery.FIELD_NAME_VECTORED_NOSTEM);
+    stemmedToNonStemmed.put(
+        FreeTextQuery.FIELD_ATTACHMENT_VECTORED, FreeTextQuery.FIELD_ATTACHMENT_VECTORED_NOSTEM);
+  }
+
   private static final Pattern pattern =
       Pattern.compile("(?<![\\\\])[-+!]$|(?=[-+!][^\\w\"])(?<![\\\\])[-+!]"); // $NON-NLS-1$
 
   public TLEQueryParser(
       String[] fields, Analyzer analyzer, Map<String, Float> boosts, Operator defaultOperator) {
     super(analyzer);
-
-    buildStemmedToNonStemmed();
 
     setMultiFields(fields);
     setFieldsBoost(boosts);
@@ -116,14 +123,6 @@ public class TLEQueryParser extends StandardQueryParser {
     // `MultiFieldQueryParser`
     // where `field` is always `null` when we were using Lucene v3.
     return parse(query, null);
-  }
-
-  private void buildStemmedToNonStemmed() {
-    stemmedToNonStemmed.put(FreeTextQuery.FIELD_BODY, FreeTextQuery.FIELD_BODY_NOSTEM);
-    stemmedToNonStemmed.put(
-        FreeTextQuery.FIELD_NAME_VECTORED, FreeTextQuery.FIELD_NAME_VECTORED_NOSTEM);
-    stemmedToNonStemmed.put(
-        FreeTextQuery.FIELD_ATTACHMENT_VECTORED, FreeTextQuery.FIELD_ATTACHMENT_VECTORED_NOSTEM);
   }
 
   private static String getNonStemmedField(String stemmedField) {
