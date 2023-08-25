@@ -105,7 +105,7 @@ public class LoggingContextFilter extends AbstractWebFilter {
 
   // This is for DEV ONLY.  Do not use in a test / staging / prod environment.
   // There is no guarantee that all sensitive information will be blanked!
-  private static class RequestLogger {
+  private static final class RequestLogger {
     private static final Logger REQUEST_LOGGER =
         LoggerFactory.getLogger(LoggingContextFilter.class.getName() + ".RequestLogger");
 

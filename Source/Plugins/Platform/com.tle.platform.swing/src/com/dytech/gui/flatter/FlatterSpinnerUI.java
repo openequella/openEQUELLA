@@ -648,7 +648,7 @@ public class FlatterSpinnerUI extends SpinnerUI {
    * A simple layout manager for the editor and the next/previous buttons. See the BasicSpinnerUI
    * javadoc for more information about exactly how the components are arranged.
    */
-  private static class SpinnerLayout implements LayoutManager {
+  private static final class SpinnerLayout implements LayoutManager {
     private Component nextButton = null;
     private Component previousButton = null;
     private Component editor = null;
@@ -761,7 +761,7 @@ public class FlatterSpinnerUI extends SpinnerUI {
    * createPropertyChangeListener) since all of the interesting property changes are delegated to
    * protected methods.
    */
-  private static class PropertyChangeHandler implements PropertyChangeListener {
+  private static final class PropertyChangeHandler implements PropertyChangeListener {
     @Override
     public void propertyChange(PropertyChangeEvent e) {
       String propertyName = e.getPropertyName();

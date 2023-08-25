@@ -72,7 +72,7 @@ public class SectionsEquellaModule extends SectionsModule {
     }
   }
 
-  private static class PluginModule extends PluginTrackerModule {
+  private static final class PluginModule extends PluginTrackerModule {
     @Override
     protected String getPluginId() {
       return "com.tle.web.sections.equella";

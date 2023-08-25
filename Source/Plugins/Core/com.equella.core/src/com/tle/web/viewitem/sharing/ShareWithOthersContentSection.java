@@ -247,7 +247,7 @@ public class ShareWithOthersContentSection extends AbstractShareWithOthersSectio
     iinfo.modify(workflowFactory.modifyNotifications(new HashSet<String>(userIds)));
   }
 
-  private class OthersTableModel extends DynamicSelectionsTableModel<String> {
+  private final class OthersTableModel extends DynamicSelectionsTableModel<String> {
     @Override
     protected Collection<String> getSourceList(SectionInfo info) {
       return ParentViewItemSectionUtils.getItemInfo(info).getItem().getNotifications();

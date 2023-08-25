@@ -26,7 +26,7 @@ import java.util.Set;
 
 // Sonar maintains that 'Class cannot be instantiated and does not provide any
 // static methods or fields', but methinks thats bunkum
-public class ChangeUserIdOperation extends AbstractStandardWorkflowOperation // NOSONAR
+public final class ChangeUserIdOperation extends AbstractStandardWorkflowOperation // NOSONAR
 {
   private String fromUser;
   private String toUser;

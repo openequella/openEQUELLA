@@ -47,27 +47,29 @@ public class BlindSSLSocketFactory extends SSLSocketFactory {
   private static SSLSocketFactory originalFactory;
   private static HostnameVerifier originalHostnameVerifier;
 
+  public static TrustManager createTrustManager() {
+    return new X509TrustManager() {
+      @Override
+      public X509Certificate[] getAcceptedIssuers() {
+        return null;
+      }
+
+      @Override
+      public void checkClientTrusted(X509Certificate[] c, String a) {
+        // Ignore
+      }
+
+      @Override
+      public void checkServerTrusted(X509Certificate[] c, String a) {
+        // IGNORE
+      }
+    };
+  }
+
   public static SSLContext createBlindSSLContext() {
     // Create a trust manager that will purposefully fall down on the job
-    TrustManager[] blindTrustMan =
-        new TrustManager[] {
-          new X509TrustManager() {
-            @Override
-            public X509Certificate[] getAcceptedIssuers() {
-              return null;
-            }
-
-            @Override
-            public void checkClientTrusted(X509Certificate[] c, String a) {
-              // Ignore
-            }
-
-            @Override
-            public void checkServerTrusted(X509Certificate[] c, String a) {
-              // IGNORE
-            }
-          }
-        };
+    TrustManager manager = createTrustManager();
+    TrustManager[] blindTrustMan = new TrustManager[] {manager};
 
     // create our "blind" ssl socket factory with our lazy trust manager
     try {

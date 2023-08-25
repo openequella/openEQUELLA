@@ -636,7 +636,7 @@ public class LtiConsumerEditorSection
     }
   }
 
-  private class CustomRoleTableModel extends DynamicSelectionsTableModel<CustomRoleMapping> {
+  private final class CustomRoleTableModel extends DynamicSelectionsTableModel<CustomRoleMapping> {
 
     @Override
     protected Collection<CustomRoleMapping> getSourceList(SectionInfo info) {
@@ -661,7 +661,7 @@ public class LtiConsumerEditorSection
     }
   }
 
-  private class GroupsTableModel extends DynamicSelectionsTableModel<SelectedGroup> {
+  private final class GroupsTableModel extends DynamicSelectionsTableModel<SelectedGroup> {
 
     @Override
     protected Collection<SelectedGroup> getSourceList(SectionInfo info) {

@@ -27,16 +27,6 @@ import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import com.ning.http.client.AsyncHandler;
-import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.AsyncHttpClientConfig;
-import com.ning.http.client.AsyncHttpClientConfig.Builder;
-import com.ning.http.client.HttpResponseBodyPart;
-import com.ning.http.client.HttpResponseHeaders;
-import com.ning.http.client.HttpResponseStatus;
-import com.ning.http.client.Realm;
-import com.ning.http.client.Realm.AuthScheme;
-import com.ning.http.client.RequestBuilder;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.ReferencedURL;
 import com.tle.common.Check;
@@ -45,6 +35,9 @@ import com.tle.common.util.BlindSSLSocketFactory;
 import com.tle.core.guice.Bind;
 import com.tle.core.services.HttpService;
 import com.tle.core.url.dao.URLCheckerDao;
+import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
@@ -54,8 +47,18 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.net.ssl.SSLException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.asynchttpclient.AsyncHandler;
+import org.asynchttpclient.AsyncHttpClient;
+import org.asynchttpclient.DefaultAsyncHttpClient;
+import org.asynchttpclient.DefaultAsyncHttpClientConfig.Builder;
+import org.asynchttpclient.HttpResponseBodyPart;
+import org.asynchttpclient.HttpResponseStatus;
+import org.asynchttpclient.Realm;
+import org.asynchttpclient.Realm.AuthScheme;
+import org.asynchttpclient.RequestBuilder;
 
 @NonNullByDefault
 @Bind
@@ -105,8 +108,8 @@ public class URLCheckerService {
   private final AsyncHttpClient client;
 
   public URLCheckerService() {
-    Builder bc = new AsyncHttpClientConfig.Builder();
-    bc.setAllowPoolingConnections(false); // Avoid keep-alive
+    Builder bc = new Builder();
+    bc.setKeepAlive(false);
     bc.setCompressionEnforced(true);
     bc.setUseProxyProperties(true);
     bc.setFollowRedirect(true);
@@ -125,20 +128,23 @@ public class URLCheckerService {
     // Just because a URL uses a self-signed certificate doesn't mean it's
     // not a working URL. We also don't care about MITM attacks since we're
     // just checking the URL.
-    bc.setSSLContext(BlindSSLSocketFactory.createBlindSSLContext());
+    try {
+      SslContext sslContext =
+          SslContextBuilder.forClient()
+              .trustManager(BlindSSLSocketFactory.createTrustManager())
+              .build();
+      bc.setSslContext(sslContext);
+    } catch (SSLException e) {
+      throw new RuntimeException("Failed to set SSL context for Async HTTP Client");
+    }
 
     // Configure a fake authentication in case some the URLs are using it.
     // http://jira.pearsoncmg.com/jira/browse/EQ-411
     Realm realm =
-        new Realm.RealmBuilder()
-            .setPrincipal("")
-            .setPassword("")
-            .setUsePreemptiveAuth(true)
-            .setScheme(AuthScheme.BASIC)
-            .build();
+        new Realm.Builder("", "").setUsePreemptiveAuth(true).setScheme(AuthScheme.BASIC).build();
     bc.setRealm(realm);
 
-    client = new AsyncHttpClient(bc.build());
+    client = new DefaultAsyncHttpClient(bc.build());
   }
 
   public boolean isUrlDisabled(String url) {
@@ -258,7 +264,7 @@ public class URLCheckerService {
           StringBuilder body = new StringBuilder();
 
           @Override
-          public STATE onStatusReceived(HttpResponseStatus responseStatus) {
+          public State onStatusReceived(HttpResponseStatus responseStatus) {
             final String url = rurl.getUrl();
             if (LOGGER.isDebugEnabled()) {
               LOGGER.debug("Checking " + url);
@@ -283,7 +289,7 @@ public class URLCheckerService {
               }
 
               // And abort the current request
-              return STATE.ABORT;
+              return State.ABORT;
             }
 
             // Retrieved status code is valid here
@@ -304,7 +310,7 @@ public class URLCheckerService {
               rurl.setMessage(null);
               rurl.setTries(0);
 
-              return STATE.ABORT;
+              return State.ABORT;
             }
 
             if (LOGGER.isDebugEnabled()) {
@@ -314,24 +320,24 @@ public class URLCheckerService {
             // Don't abort - we need to capture the error message
             rurl.setSuccess(false);
             rurl.setTries(rurl.getTries() + 1);
-            return STATE.CONTINUE;
+            return State.CONTINUE;
           }
 
           @Override
-          public STATE onHeadersReceived(HttpResponseHeaders headers) {
+          public State onHeadersReceived(HttpHeaders headers) {
             // Don't abort - we are probably trying to capture the error
             // message
-            return STATE.CONTINUE;
+            return State.CONTINUE;
           }
 
           @Override
-          public STATE onBodyPartReceived(HttpResponseBodyPart content) {
+          public State onBodyPartReceived(HttpResponseBodyPart content) {
             body.append(new String(content.getBodyPartBytes()));
             if (body.length() < ReferencedURL.MAX_MESSAGE_LENGTH) {
-              return STATE.CONTINUE;
+              return State.CONTINUE;
             }
 
-            return STATE.ABORT;
+            return State.ABORT;
           }
 
           @Override
@@ -401,9 +407,9 @@ public class URLCheckerService {
    * map/transform the result.
    */
   private static class AsyncHttpToGuavaAdapter<T> implements ListenableFuture<T> {
-    private final com.ning.http.client.ListenableFuture<T> delegate;
+    private final org.asynchttpclient.ListenableFuture<T> delegate;
 
-    public AsyncHttpToGuavaAdapter(com.ning.http.client.ListenableFuture<T> delegate) {
+    public AsyncHttpToGuavaAdapter(org.asynchttpclient.ListenableFuture<T> delegate) {
       this.delegate = delegate;
     }
 

@@ -51,7 +51,7 @@ public class ExtendedAnnotationConfiguration extends Configuration {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(ExtendedAnnotationConfiguration.class);
 
-  private static class MetadataCapture implements Integrator {
+  private static final class MetadataCapture implements Integrator {
     private Metadata metadata;
     private final Map<String, Table> systemTables = new HashMap<>();
 

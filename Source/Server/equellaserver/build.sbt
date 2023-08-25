@@ -16,9 +16,9 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 (Runtime / unmanagedClasspath) += (LocalProject("learningedge_config") / baseDirectory).value
 
-val RestEasyVersion   = "3.15.3.Final"
+val RestEasyVersion   = "3.15.6.Final"
 val SwaggerVersion    = "1.6.11"
-val TomcatVersion     = "9.0.76"
+val TomcatVersion     = "9.0.79"
 val axis2Version      = "1.8.2"
 val circeVersion      = "0.12.1"
 val curatorVersion    = "5.5.0"
@@ -72,7 +72,7 @@ libraryDependencies ++= Seq(
   ),
   "com.google.api-client" % "google-api-client"           % "2.2.0",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20230203-2.0.0",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20230521-2.0.0",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20230807-2.0.0",
   "com.google.code.gson"  % "gson"                        % "2.10.1",
   "com.google.gdata"      % "core"                        % "1.47.1",
   "com.google.guava"      % "guava"                       % "31.1-jre",
@@ -99,13 +99,13 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "com.sun.xml.bind"),
     ExclusionRule(organization = "com.sun.jersey")
   ),
-  "com.miglayout" % "miglayout-swing"       % "4.2",
-  "com.ning"      % "async-http-client"     % "1.9.40",
-  "com.rometools" % "rome"                  % "1.19.0",
-  "io.swagger"    % "swagger-core"          % SwaggerVersion,
-  "io.swagger"    % "swagger-annotations"   % SwaggerVersion,
-  "io.swagger"    % "swagger-jaxrs"         % SwaggerVersion,
-  "io.swagger"    %% "swagger-scala-module" % "1.0.6",
+  "com.miglayout"       % "miglayout-swing"       % "4.2",
+  "org.asynchttpclient" % "async-http-client"     % "2.12.3",
+  "com.rometools"       % "rome"                  % "1.19.0",
+  "io.swagger"          % "swagger-core"          % SwaggerVersion,
+  "io.swagger"          % "swagger-annotations"   % SwaggerVersion,
+  "io.swagger"          % "swagger-jaxrs"         % SwaggerVersion,
+  "io.swagger"          %% "swagger-scala-module" % "1.0.6",
   // Exclude slf4j due to issue: https://github.com/brettwooldridge/HikariCP/issues/1746
   "com.zaxxer"                % "HikariCP"              % "4.0.3" excludeAll ExclusionRule(organization = "org.slf4j"),
   "commons-beanutils"         % "commons-beanutils"     % "1.9.4",
@@ -244,11 +244,11 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "net.sf.saxon")
   ),
   "xml-resolver"                  % "xml-resolver"              % "1.2",
-  "org.scala-sbt"                 %% "io"                       % "1.8.1",
+  "org.scala-sbt"                 %% "io"                       % "1.9.1",
   "org.mozilla"                   % "rhino"                     % "1.7.14",
   "io.lemonlabs"                  %% "scala-uri"                % "4.0.3",
-  "org.scala-lang.modules"        %% "scala-parser-combinators" % "2.2.0",
-  "io.github.classgraph"          % "classgraph"                % "4.8.161",
+  "org.scala-lang.modules"        %% "scala-parser-combinators" % "2.3.0",
+  "io.github.classgraph"          % "classgraph"                % "4.8.162",
   "com.fasterxml"                 % "classmate"                 % "1.5.1",
   "org.glassfish"                 % "javax.el"                  % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"    % "3.0.2",

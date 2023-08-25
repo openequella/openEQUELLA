@@ -295,7 +295,7 @@ public class ChangeOwnershipContentSection
     return ChangeOwnershipModel.class;
   }
 
-  private class OwnerTableModel extends DynamicSelectionsTableModel<String> {
+  private final class OwnerTableModel extends DynamicSelectionsTableModel<String> {
     @Override
     protected List<String> getSourceList(SectionInfo info) {
       final ItemSectionInfo iinfo = ParentViewItemSectionUtils.getItemInfo(info);
@@ -320,7 +320,7 @@ public class ChangeOwnershipContentSection
     }
   }
 
-  private class CollabTableModel extends DynamicSelectionsTableModel<String> {
+  private final class CollabTableModel extends DynamicSelectionsTableModel<String> {
     @Override
     protected List<String> getSourceList(SectionInfo info) {
       final ItemSectionInfo iinfo = ParentViewItemSectionUtils.getItemInfo(info);

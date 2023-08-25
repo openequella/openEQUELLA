@@ -60,7 +60,7 @@ public class SelectionModule extends SectionsModule {
     return node;
   }
 
-  private static class TrackerModule extends PluginTrackerModule {
+  private static final class TrackerModule extends PluginTrackerModule {
     @Override
     protected String getPluginId() {
       return "com.tle.web.selection";
