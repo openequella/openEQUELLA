@@ -141,7 +141,7 @@ public class TLEQueryParser extends StandardQueryParser {
     return queryNode;
   }
 
-  private static class TLEWildcardQueryNodeBuilder extends WildcardQueryNodeBuilder {
+  private static final class TLEWildcardQueryNodeBuilder extends WildcardQueryNodeBuilder {
     @Override
     public WildcardQuery build(QueryNode queryNode) throws QueryNodeException {
       WildcardQueryNode wildcardNode = (WildcardQueryNode) queryNode;
@@ -149,7 +149,7 @@ public class TLEQueryParser extends StandardQueryParser {
     }
   }
 
-  private static class TLEPrefixQueryNodeBuilder extends PrefixWildcardQueryNodeBuilder {
+  private static final class TLEPrefixQueryNodeBuilder extends PrefixWildcardQueryNodeBuilder {
     @Override
     public PrefixQuery build(QueryNode queryNode) throws QueryNodeException {
       PrefixWildcardQueryNode prefixNode = (PrefixWildcardQueryNode) queryNode;
@@ -157,7 +157,7 @@ public class TLEQueryParser extends StandardQueryParser {
     }
   }
 
-  private static class TLEFuzzyQueryNodeBuilder extends FuzzyQueryNodeBuilder {
+  private static final class TLEFuzzyQueryNodeBuilder extends FuzzyQueryNodeBuilder {
     @Override
     public FuzzyQuery build(QueryNode queryNode) throws QueryNodeException {
       FuzzyQueryNode fuzzyQueryNode = (FuzzyQueryNode) queryNode;

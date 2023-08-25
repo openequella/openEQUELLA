@@ -25,7 +25,7 @@ import org.apache.lucene.index.DocsEnum;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.DocIdSetIterator;
 
-public class LuceneDocumentHelper {
+public final class LuceneDocumentHelper {
 
   /**
    * * Iterate the provided document ID enumeration and apply each ID to the provided function.
