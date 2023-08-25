@@ -92,6 +92,15 @@ class ItemIndexTest
 
   val indexRootDirectoryName = "ItemIndexTest"
 
+  val aclEntryID = 1000L
+  // The field format for ACL permission is "ACLx-y" where "x" is the shortcut for the permission
+  // and "y" is the unique ID of the permission. The mapping between permissions and their shortcuts
+  // is defined in class `ItemIndex`.
+  def aclField(privilege: String) = s"${ItemIndex.convertStdPriv(privilege)}$aclEntryID"
+  // The value format for ACL permission is "xxxG" where "xxx" must be a three-digit number which starts
+  // from 000 and "G" stands for "Grant".
+  val aclValue = "001G"
+
   def initialiseItemIndex(testCaseName: String): ItemIndex[FreetextResult] = {
     val freetextIndexConfiguration = new FreetextIndexConfiguration {
       override def getIndexPath: File =
@@ -176,7 +185,7 @@ class ItemIndexTest
             ft.setTokenized(false)
             indexedItem.getAclMap.put(
               SecurityConstants.DISCOVER_ITEM,
-              java.util.Collections.singletonList(new Field("ACLD-1000", "001G", ft)))
+              java.util.Collections.singletonList(new Field(aclField(p), aclValue, ft)))
             indexer.addAllFields(indexedItem.getItemdoc, indexedItem.getACLEntries(p))
           case None =>
         }
@@ -232,7 +241,9 @@ class ItemIndexTest
 
     val userState: AbstractUserState = new DefaultUserState
     userState.setAclExpressions(
-      new Triple(java.util.Collections.singleton(1000L),
+      // The ACL test case targets to Common ACL expressions, so add the mock of the ACL entry ID in the list.
+      // For Ownwer and Not Owner expressions, we can use empty lists.
+      new Triple(java.util.Collections.singleton(aclEntryID),
                  java.util.Collections.emptyList(),
                  java.util.Collections.emptyList()))
     mockStatic(classOf[CurrentUser])
