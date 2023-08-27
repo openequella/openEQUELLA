@@ -196,8 +196,9 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
         return 4;
       case 7:
         return 8;
+      default:
+        return -1;
     }
-    return -1;
   }
 
   protected Set<String> getKeyFields() {
