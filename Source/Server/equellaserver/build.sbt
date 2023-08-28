@@ -20,7 +20,7 @@ val RestEasyVersion   = "3.15.3.Final"
 val SwaggerVersion    = "1.6.11"
 val TomcatVersion     = "9.0.76"
 val axis2Version      = "1.8.2"
-val circeVersion      = "0.12.1"
+val circeVersion      = "0.14.5"
 val curatorVersion    = "5.5.0"
 val cxfVersion        = "3.6.1"
 val fs2Version        = "2.5.11"
@@ -34,9 +34,9 @@ val tikaVersion       = "2.8.0"
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
   "io.circe" %% "circe-generic",
-  "io.circe" %% "circe-parser",
-  "io.circe" %% "circe-generic-extras"
+  "io.circe" %% "circe-parser"
 ).map(_ % circeVersion)
+libraryDependencies += "io.circe" %% "circe-generic-extras" % "0.14.3"
 
 val prometheusGroup = "io.prometheus"
 libraryDependencies ++= Seq(
