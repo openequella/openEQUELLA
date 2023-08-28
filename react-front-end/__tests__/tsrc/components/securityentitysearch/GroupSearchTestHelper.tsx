@@ -29,6 +29,7 @@ import {
   commonSearchProps,
   doSearch,
   findEntityFromMockData,
+  generateDefaultCheckboxModeProps,
 } from "./BaseSearchTestHelper";
 
 const { queryFieldLabel } = languageStrings.groupSearchComponent;
@@ -36,7 +37,7 @@ const { queryFieldLabel } = languageStrings.groupSearchComponent;
 export const defaultGroupSearchProps: BaseSearchProps<OEQ.UserQuery.GroupDetails> =
   {
     ...commonSearchProps,
-    selections: new Set(),
+    mode: generateDefaultCheckboxModeProps<OEQ.UserQuery.GroupDetails>(),
     search: GroupModuleMock.listGroups,
     itemDetailsToEntry: ({ name }: OEQ.UserQuery.GroupDetails) => (
       <ListItemText primary={name} />

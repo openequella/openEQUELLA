@@ -17,20 +17,29 @@
  */
 import { ListItemText } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
-import { render, RenderResult, waitFor } from "@testing-library/react";
+import {
+  findByText,
+  getByLabelText,
+  render,
+  RenderResult,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { Predicate } from "fp-ts/Predicate";
+import * as TE from "../../../../tsrc/util/TaskEither.extended";
 import * as React from "react";
 import * as GroupModuleMock from "../../../../__mocks__/GroupModule.mock";
 import * as UserModuleMock from "../../../../__mocks__/UserModule.mock";
 import BaseSearch, {
   BaseSearchProps,
+  CheckboxMode,
 } from "../../../../tsrc/components/securityentitysearch/BaseSearch";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import { queryMuiTextField } from "../../MuiQueries";
+import * as RS from "fp-ts/ReadonlySet";
 
 const {
   edit: editLabel,
@@ -160,10 +169,19 @@ export const commonSearchProps = {
   resolveGroupsProvider: GroupModuleMock.resolveGroups,
 };
 
+/**
+ * Generate checkbox mode props with type info.
+ */
+export const generateDefaultCheckboxModeProps = <T,>(): CheckboxMode<T> => ({
+  type: "checkbox",
+  selections: RS.empty,
+  onChange: jest.fn(),
+});
+
 export const defaultBaseSearchProps: BaseSearchProps<OEQ.UserQuery.UserDetails> =
   {
     ...commonSearchProps,
-    selections: new Set(),
+    mode: generateDefaultCheckboxModeProps<OEQ.UserQuery.UserDetails>(),
     search: UserModuleMock.listUsers,
     itemDetailsToEntry: ({
       username,
@@ -240,3 +258,22 @@ export const findEntityFromMockData = <T,>(
       );
     })
   );
+
+export const selectEntitiesInOneClickMode = async (
+  container: HTMLElement,
+  selectNames: string[]
+) => {
+  // Wait for the results, and then click entity
+  const selectEntity = async (name: string) => {
+    const entityName = await findByText(container, name);
+    const entity = entityName.parentElement?.parentElement;
+    if (!entity) {
+      throw new Error(`Can't find entity ${name}`);
+    }
+    await userEvent.click(getByLabelText(entity, selectLabel));
+  };
+
+  const task = (name: string) => TE.tryCatch(() => selectEntity(name), String);
+
+  await pipe(selectNames, A.map(task), TE.sequenceSeqArray, TE.getOrThrow)();
+};

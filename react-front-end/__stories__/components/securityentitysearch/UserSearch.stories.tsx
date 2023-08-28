@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
 import { action } from "@storybook/addon-actions";
 import { Meta, Story } from "@storybook/react";
 import * as A from "fp-ts/Array";
@@ -24,6 +25,7 @@ import * as S from "fp-ts/string";
 import * as React from "react";
 import * as GroupModuleMock from "../../../__mocks__/GroupModule.mock";
 import * as UserModuleMock from "../../../__mocks__/UserModule.mock";
+import { CheckboxMode } from "../../../tsrc/components/securityentitysearch/BaseSearch";
 import UserSearch, {
   UserSearchProps,
 } from "../../../tsrc/components/securityentitysearch/UserSearch";
@@ -32,18 +34,19 @@ import { eqUserById } from "../../../tsrc/modules/UserModule";
 export default {
   title: "component/SecurityEntitySearch/UserSearch",
   component: UserSearch,
-  argTypes: {
-    onChange: {
-      action: "onChange called",
-    },
-  },
 } as Meta<UserSearchProps>;
+
+const defaultCheckboxModeProps: CheckboxMode<OEQ.UserQuery.UserDetails> = {
+  type: "checkbox",
+  onChange: action("onChange called"),
+  selections: RSET.empty,
+};
 
 export const Default: Story<UserSearchProps> = (args) => (
   <UserSearch {...args} />
 );
 Default.args = {
-  selections: RSET.empty,
+  mode: defaultCheckboxModeProps,
   listHeight: 150,
   search: UserModuleMock.listUsers,
 };
@@ -73,12 +76,15 @@ export const MultiSelection: Story<UserSearchProps> = (args) => (
 );
 MultiSelection.args = {
   ...Default.args,
-  selections: pipe(
-    UserModuleMock.users,
-    A.filter((user) => pipe(user.username, S.includes("user"))),
-    RSET.fromReadonlyArray(eqUserById)
-  ),
-  enableMultiSelection: true,
+  mode: {
+    ...defaultCheckboxModeProps,
+    selections: pipe(
+      UserModuleMock.users,
+      A.filter((user) => pipe(user.username, S.includes("user"))),
+      RSET.fromReadonlyArray(eqUserById)
+    ),
+    enableMultiSelection: true,
+  },
 };
 
 export const GroupFilterEditable: Story<UserSearchProps> = (args) => (
@@ -98,7 +104,10 @@ export const SelectAndCancelButton: Story<UserSearchProps> = (args) => (
 );
 SelectAndCancelButton.args = {
   ...Default.args,
-  selectButton: { onClick: action("select button onClick triggered") },
+  mode: {
+    ...defaultCheckboxModeProps,
+    selectButton: { onClick: action("select button onClick triggered") },
+  },
 };
 SelectAndCancelButton.argTypes = {
   onCancel: { action: "onCancel triggered" },
@@ -113,4 +122,15 @@ SelectAllAndClearAllButton.args = {
 SelectAllAndClearAllButton.argTypes = {
   onSelectAll: { action: "onSelectAll triggered" },
   onClearAll: { action: "onClearAll triggered" },
+};
+
+export const OneClickMode: Story<UserSearchProps> = (args) => (
+  <UserSearch {...args} />
+);
+OneClickMode.args = {
+  ...Default.args,
+  mode: {
+    type: "one_click",
+    onAdd: action("anAdd called"),
+  },
 };

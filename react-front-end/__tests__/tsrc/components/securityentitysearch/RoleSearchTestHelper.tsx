@@ -29,6 +29,7 @@ import {
   commonSearchProps,
   doSearch,
   findEntityFromMockData,
+  generateDefaultCheckboxModeProps,
 } from "./BaseSearchTestHelper";
 
 const { queryFieldLabel } = languageStrings.roleSearchComponent;
@@ -36,7 +37,7 @@ const { queryFieldLabel } = languageStrings.roleSearchComponent;
 export const defaultRoleSearchProps: BaseSearchProps<OEQ.UserQuery.RoleDetails> =
   {
     ...commonSearchProps,
-    selections: new Set(),
+    mode: generateDefaultCheckboxModeProps<OEQ.UserQuery.GroupDetails>(),
     search: RoleModuleMock.listRoles,
     itemDetailsToEntry: ({ name }: OEQ.UserQuery.RoleDetails) => (
       <ListItemText primary={name} />

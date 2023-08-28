@@ -15,6 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
+import { action } from "@storybook/addon-actions";
 import { Meta, Story } from "@storybook/react";
 import * as A from "fp-ts/Array";
 import * as RSET from "fp-ts/ReadonlySet";
@@ -22,6 +24,7 @@ import { pipe } from "fp-ts/function";
 import * as S from "fp-ts/string";
 import * as React from "react";
 import * as GroupModuleMock from "../../../__mocks__/GroupModule.mock";
+import { CheckboxMode } from "../../../tsrc/components/securityentitysearch/BaseSearch";
 import GroupSearch, {
   GroupSearchProps,
 } from "../../../tsrc/components/securityentitysearch/GroupSearch";
@@ -37,11 +40,17 @@ export default {
   },
 } as Meta<GroupSearchProps>;
 
+const defaultCheckboxModeProps: CheckboxMode<OEQ.UserQuery.GroupDetails> = {
+  type: "checkbox",
+  onChange: action("onChange called"),
+  selections: RSET.empty,
+};
+
 export const Default: Story<GroupSearchProps> = (args) => (
   <GroupSearch {...args} />
 );
 Default.args = {
-  selections: RSET.empty,
+  mode: defaultCheckboxModeProps,
   listHeight: 150,
   search: GroupModuleMock.listGroups,
 };
@@ -51,12 +60,15 @@ export const MultiSelection: Story<GroupSearchProps> = (args) => (
 );
 MultiSelection.args = {
   ...Default.args,
-  selections: pipe(
-    GroupModuleMock.groups,
-    A.filter((g) => pipe(g.name, S.includes("group"))),
-    RSET.fromReadonlyArray(eqGroupById)
-  ),
-  enableMultiSelection: true,
+  mode: {
+    ...defaultCheckboxModeProps,
+    selections: pipe(
+      GroupModuleMock.groups,
+      A.filter((g) => pipe(g.name, S.includes("group"))),
+      RSET.fromReadonlyArray(eqGroupById)
+    ),
+    enableMultiSelection: true,
+  },
 };
 
 export const GroupFilterEditable: Story<GroupSearchProps> = (args) => (
@@ -69,4 +81,15 @@ GroupFilterEditable.args = {
   groupFilter: RSET.empty,
   groupSearch: GroupModuleMock.listGroups,
   resolveGroupsProvider: GroupModuleMock.resolveGroups,
+};
+
+export const OneClickMode: Story<GroupSearchProps> = (args) => (
+  <GroupSearch {...args} />
+);
+OneClickMode.args = {
+  ...Default.args,
+  mode: {
+    type: "one_click",
+    onAdd: action("anAdd called"),
+  },
 };

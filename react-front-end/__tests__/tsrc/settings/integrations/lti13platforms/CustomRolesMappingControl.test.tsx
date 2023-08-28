@@ -24,6 +24,7 @@ import { languageStrings } from "../../../../../tsrc/util/langstrings";
 import {
   clickDeleteIconForEntity,
   clickOkButton,
+  testRemoveAllAsync,
 } from "../../../components/securityentitydialog/SelectEntityDialogTestHelper";
 import {
   commonCustomRolesMappingControlProps,
@@ -142,5 +143,19 @@ describe("CustomRolesMappingControl", () => {
 
     const result = onChange.mock.lastCall[0];
     expect(result).toEqual(expectedResult);
+  });
+
+  it("Should be able to remove all selections by clicking the remove all button", async () => {
+    const result = await testRemoveAllAsync(async (onChange: jest.Mock) => {
+      const renderResult = renderCustomRolesMappingControl({
+        ...commonCustomRolesMappingControlProps,
+        onChange,
+        value: sharedRoleMapping,
+      });
+      await openDialog(renderResult.container);
+      return renderResult;
+    });
+
+    expect(result).toEqual(new Map());
   });
 });

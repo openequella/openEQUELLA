@@ -17,6 +17,7 @@
  */
 import ErrorOutline from "@mui/icons-material/ErrorOutline";
 import {
+  Button,
   Divider,
   FormControl,
   Grid,
@@ -43,7 +44,6 @@ import * as M from "fp-ts/Map";
 import * as S from "fp-ts/string";
 import * as O from "fp-ts/Option";
 import * as SET from "fp-ts/Set";
-import { useState } from "react";
 import * as React from "react";
 import ConfirmDialog from "../../../components/ConfirmDialog";
 import RoleSearch from "../../../components/securityentitysearch/RoleSearch";
@@ -67,7 +67,8 @@ const {
 } =
   languageStrings.settings.integration.lti13PlatformsSettings.createPage
     .roleMappings;
-const { ok: okLabel } = languageStrings.common.action;
+const { ok: okLabel, removeAll: removeAllLabel } =
+  languageStrings.common.action;
 
 const StyledDivider = styled(Divider)(({ theme }) => ({
   marginLeft: theme.spacing(2),
@@ -102,9 +103,6 @@ const SelectCustomRoleDialog = ({
   onClose,
   roleListProvider,
 }: SelectCustomRoleDialogProps) => {
-  const [selectedOeqRoles, setSelectedOeqRoles] = useState<
-    ReadonlySet<OEQ.UserQuery.RoleDetails>
-  >(RS.empty);
   const [selectedLtiRole, setSelectedLtiRole] = React.useState(
     defaultSelectedRoleUrn
   );
@@ -218,7 +216,9 @@ const SelectCustomRoleDialog = ({
     </TableContainer>
   );
 
-  const handleRoleSearchOnSelect = () =>
+  const handleRoleSearchOnSelect = (
+    selectedOeqRoles: Set<OEQ.UserQuery.RoleDetails>
+  ) =>
     pipe(
       rolesMapping,
       // get current oEQ roles set for current lti role
@@ -226,7 +226,7 @@ const SelectCustomRoleDialog = ({
       O.getOrElse<Set<OEQ.UserQuery.RoleDetails>>(() => new Set()),
       // add selected role to role set
       (originalRoles) =>
-        pipe(selectedOeqRoles, RS.toSet, SET.union(eqRoleById)(originalRoles)),
+        pipe(originalRoles, SET.union(eqRoleById)(selectedOeqRoles)),
       // replace old oeq role set in map
       (newRoles) =>
         pipe(rolesMapping, M.upsertAt(S.Eq)(selectedLtiRole, newRoles)),
@@ -235,14 +235,41 @@ const SelectCustomRoleDialog = ({
 
   const handleOnConfirm = () => {
     onClose(rolesMapping);
-    setSelectedOeqRoles(RS.empty);
   };
 
   const handleOnCancel = () => {
     onClose();
     setRolesMapping(value);
-    setSelectedOeqRoles(RS.empty);
   };
+
+  const selectLtiRole = (
+    <>
+      <Typography variant="h6" gutterBottom>
+        {customRoleSelectLtiRole}
+      </Typography>
+      <LtiRoleSelect />
+    </>
+  );
+
+  const selectOeqRole = (
+    <>
+      <StyledTypography variant="h6" gutterBottom>
+        {customRoleSelectOeqRole}
+      </StyledTypography>
+      <RoleSearch
+        mode={{
+          type: "one_click",
+          onAdd: (role: OEQ.UserQuery.RoleDetails) =>
+            pipe(role, SET.singleton, handleRoleSearchOnSelect),
+        }}
+        onSelectAll={(roles: ReadonlySet<OEQ.UserQuery.RoleDetails>) =>
+          pipe(roles, RS.toSet, handleRoleSearchOnSelect)
+        }
+        search={roleListProvider}
+        listHeight={300}
+      />
+    </>
+  );
 
   return (
     <ConfirmDialog
@@ -254,46 +281,40 @@ const SelectCustomRoleDialog = ({
       maxWidth="lg"
     >
       <Grid container>
-        <Grid container xs item direction="column">
-          <Grid item>
-            <Typography variant="h6" gutterBottom>
-              {customRoleSelectLtiRole}
-            </Typography>
-            <LtiRoleSelect />
-          </Grid>
-
-          <Grid item>
-            <StyledTypography variant="h6" gutterBottom>
-              {customRoleSelectOeqRole}
-            </StyledTypography>
-            <RoleSearch
-              selections={selectedOeqRoles}
-              onChange={setSelectedOeqRoles}
-              search={roleListProvider}
-              enableMultiSelection
-              onSelectAll={setSelectedOeqRoles}
-              onClearAll={setSelectedOeqRoles}
-              selectButton={{
-                disabled: RS.isEmpty(selectedOeqRoles),
-                onClick: handleRoleSearchOnSelect,
-              }}
-            />
-          </Grid>
+        <Grid container item xs direction="column" rowSpacing={2}>
+          <Grid item>{selectLtiRole}</Grid>
+          <Grid item>{selectOeqRole}</Grid>
         </Grid>
 
         <StyledDivider orientation="vertical" flexItem light />
 
-        <Grid item xs>
-          <Typography variant="h6">{customRoleCurrentSelections}</Typography>
-          {M.isEmpty(rolesMapping) ? (
-            <ListItem>
-              <ListItemIcon>
-                <ErrorOutline />
-              </ListItemIcon>
-              <ListItemText secondary={customRoleAddRoles} />
-            </ListItem>
-          ) : (
-            ltiOeqRoleMappingTable(rolesMapping)
+        <Grid container item xs rowSpacing={2} direction="column">
+          <Grid item>
+            <Typography variant="h6" gutterBottom>
+              {customRoleCurrentSelections}
+            </Typography>
+            {M.isEmpty(rolesMapping) ? (
+              <ListItem>
+                <ListItemIcon>
+                  <ErrorOutline />
+                </ListItemIcon>
+                <ListItemText secondary={customRoleAddRoles} />
+              </ListItem>
+            ) : (
+              ltiOeqRoleMappingTable(rolesMapping)
+            )}
+          </Grid>
+
+          {!M.isEmpty(rolesMapping) && (
+            <Grid item>
+              <Button
+                color="secondary"
+                onClick={() => setRolesMapping(new Map())}
+                sx={{ float: "right" }}
+              >
+                {removeAllLabel}
+              </Button>
+            </Grid>
           )}
         </Grid>
       </Grid>

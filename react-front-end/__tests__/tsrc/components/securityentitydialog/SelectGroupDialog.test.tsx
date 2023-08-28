@@ -22,6 +22,8 @@ import {
   clickCancelButton,
   clickDeleteIconForEntity,
   clickOkButton,
+  testRemoveAll,
+  testRemoveEntity,
 } from "./SelectEntityDialogTestHelper";
 import {
   commonSelectGroupDialogProps,
@@ -48,19 +50,15 @@ describe("SelectGroupDialog", () => {
   });
 
   it("Should be able to remove selected group", async () => {
-    const onClose = jest.fn();
-    const { getByRole } = renderSelectGroupDialog({
-      ...commonSelectGroupDialogProps,
-      value: SET.singleton(groups[0]),
-      onClose,
-    });
-
-    const dialog = getByRole("dialog");
-
-    await clickDeleteIconForEntity(dialog, groups[0].name);
-    await clickOkButton(dialog);
-
-    const result = onClose.mock.lastCall[0];
+    const result = await testRemoveEntity(
+      (onClose: jest.Mock) =>
+        renderSelectGroupDialog({
+          ...commonSelectGroupDialogProps,
+          value: SET.singleton(groups[0]),
+          onClose,
+        }),
+      groups[0].name
+    );
     expect(result).toEqual(new Set());
   });
 
@@ -82,5 +80,17 @@ describe("SelectGroupDialog", () => {
 
     const result = onClose.mock.lastCall[0];
     expect(result).toBeUndefined();
+  });
+
+  it("Should be able to remove all selections by clicking the remove all button", async () => {
+    const result = await testRemoveAll((onClose: jest.Mock) =>
+      renderSelectGroupDialog({
+        ...commonSelectGroupDialogProps,
+        value: new Set(groups),
+        onClose,
+      })
+    );
+
+    expect(result).toEqual(new Set());
   });
 });

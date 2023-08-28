@@ -15,9 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
 import { RenderResult } from "@testing-library/react";
 import {
   defaultBaseSearchProps,
+  generateDefaultCheckboxModeProps,
   searchAndSelect,
 } from "./BaseSearchTestHelper";
 import {
@@ -27,6 +29,8 @@ import {
 } from "./UserSearchTestHelpler";
 
 describe("<UserSearch/>", () => {
+  const defaultCheckboxModeProps =
+    generateDefaultCheckboxModeProps<OEQ.UserQuery.UserDetails>();
   // do search and select user
   const searchAndSelectUser = (
     renderResult: RenderResult,
@@ -52,7 +56,10 @@ describe("<UserSearch/>", () => {
 
     const renderResult = await renderUserSearch({
       ...defaultBaseSearchProps,
-      onChange,
+      mode: {
+        ...defaultCheckboxModeProps,
+        onChange,
+      },
     });
 
     expect(

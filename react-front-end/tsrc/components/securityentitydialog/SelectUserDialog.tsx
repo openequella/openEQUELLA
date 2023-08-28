@@ -81,26 +81,28 @@ export const SelectUserDialog = ({
       </DialogTitle>
       <DialogContent>
         <UserSearch
-          onChange={(users) =>
-            pipe(
-              users,
-              RSET.toReadonlyArray(
-                ORD.contramap((u: OEQ.UserQuery.UserDetails) => u.username)(
-                  S.Ord
-                )
+          mode={{
+            type: "checkbox",
+            onChange: (users) =>
+              pipe(
+                users,
+                RSET.toReadonlyArray(
+                  ORD.contramap((u: OEQ.UserQuery.UserDetails) => u.username)(
+                    S.Ord
+                  )
+                ),
+                // SelectUserDialog is for single users only, so we only use the first selection (just in case)
+                RA.head,
+                O.toUndefined,
+                setSelectedUser
               ),
-              // SelectUserDialog is for single users only, so we only use the first selection (just in case)
-              RA.head,
-              O.toUndefined,
-              setSelectedUser
-            )
-          }
-          selections={pipe(
-            selectedUser,
-            O.fromNullable,
-            O.map(RSET.singleton),
-            O.getOrElseW(() => RSET.empty)
-          )}
+            selections: pipe(
+              selectedUser,
+              O.fromNullable,
+              O.map(RSET.singleton),
+              O.getOrElseW(() => RSET.empty)
+            ),
+          }}
           groupFilter={groupFilter}
           resolveGroupsProvider={resolveGroupsProvider}
           search={userListProvider}

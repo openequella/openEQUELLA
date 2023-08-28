@@ -15,6 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
+import { action } from "@storybook/addon-actions";
 import { Meta, Story } from "@storybook/react";
 import * as A from "fp-ts/Array";
 import * as RSET from "fp-ts/ReadonlySet";
@@ -22,6 +24,7 @@ import { pipe } from "fp-ts/function";
 import * as S from "fp-ts/string";
 import * as React from "react";
 import * as RoleModuleMock from "../../../__mocks__/RoleModule.mock";
+import { CheckboxMode } from "../../../tsrc/components/securityentitysearch/BaseSearch";
 import RoleSearch, {
   RoleSearchProps,
 } from "../../../tsrc/components/securityentitysearch/RoleSearch";
@@ -37,11 +40,17 @@ export default {
   },
 } as Meta<RoleSearchProps>;
 
+const defaultCheckboxModeProps: CheckboxMode<OEQ.UserQuery.RoleDetails> = {
+  type: "checkbox",
+  onChange: action("onChange called"),
+  selections: RSET.empty,
+};
+
 export const Default: Story<RoleSearchProps> = (args) => (
   <RoleSearch {...args} />
 );
 Default.args = {
-  selections: RSET.empty,
+  mode: defaultCheckboxModeProps,
   listHeight: 150,
   search: RoleModuleMock.listRoles,
 };
@@ -51,10 +60,24 @@ export const MultiSelection: Story<RoleSearchProps> = (args) => (
 );
 MultiSelection.args = {
   ...Default.args,
-  selections: pipe(
-    RoleModuleMock.roles,
-    A.filter((g) => pipe(g.name, S.includes("role"))),
-    RSET.fromReadonlyArray(eqRoleById)
-  ),
-  enableMultiSelection: true,
+  mode: {
+    ...defaultCheckboxModeProps,
+    selections: pipe(
+      RoleModuleMock.roles,
+      A.filter((g) => pipe(g.name, S.includes("role"))),
+      RSET.fromReadonlyArray(eqRoleById)
+    ),
+    enableMultiSelection: true,
+  },
+};
+
+export const OneClickMode: Story<RoleSearchProps> = (args) => (
+  <RoleSearch {...args} />
+);
+OneClickMode.args = {
+  ...Default.args,
+  mode: {
+    type: "one_click",
+    onAdd: action("anAdd called"),
+  },
 };

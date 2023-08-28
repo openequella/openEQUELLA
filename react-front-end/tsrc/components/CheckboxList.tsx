@@ -18,21 +18,15 @@
 import {
   Checkbox,
   List,
-  ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
 import { pipe } from "fp-ts/function";
-import * as M from "fp-ts/Map";
 import * as RSET from "fp-ts/ReadonlySet";
 import * as S from "fp-ts/string";
 import * as React from "react";
-import { OrdAsIs } from "../util/Ord";
-
-/**
- * Map collect where order is unimportant.
- */
-const collectUnOrd = M.collect<string>(OrdAsIs);
+import { collectUnOrd } from "../util/Map";
 
 export interface CheckboxListProps {
   /**
@@ -79,10 +73,9 @@ export const CheckboxList = ({
         options,
         collectUnOrd(
           (value: string, content: JSX.Element | string): JSX.Element => (
-            <ListItem
+            <ListItemButton
               key={value}
               dense
-              button
               onClick={() => pipe(value, handleOnClick)}
             >
               <ListItemIcon>
@@ -100,7 +93,7 @@ export const CheckboxList = ({
               ) : (
                 content
               )}
-            </ListItem>
+            </ListItemButton>
           )
         )
       )}

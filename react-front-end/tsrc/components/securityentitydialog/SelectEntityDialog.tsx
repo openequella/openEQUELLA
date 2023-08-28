@@ -17,6 +17,7 @@
  */
 import ErrorOutline from "@mui/icons-material/ErrorOutline";
 import {
+  Button,
   Divider,
   Grid,
   List,
@@ -36,6 +37,8 @@ import { useState } from "react";
 import type { BaseSecurityEntity } from "../../modules/ACLEntityModule";
 import { languageStrings } from "../../util/langstrings";
 import ConfirmDialog from "../ConfirmDialog";
+
+const { removeAll: removeAllLabel } = languageStrings.common.action;
 
 export interface SelectEntityDialogProps<T extends BaseSecurityEntity> {
   /** Open the dialog when true. */
@@ -62,15 +65,12 @@ export interface SelectEntityDialogProps<T extends BaseSecurityEntity> {
    * Function use to build the search component specific to the type of security entity to be searched.
    * Receives the various handlers for that component, and returns the completed search component.
    *
-   * @param selection Initial selected entity.
-   * @param setSelection SetState function to update selected entity.
-   * @param confirmSelect Triggered when user clicks the select button in search component.
-   *                      Note it's different from the OK button in dialog.
+   * @param onAdd Triggered when user clicks the `add` icon in search component.
+   * @param onSelectAll Triggered when user clicks the `Select All` button in search component.
    */
   searchComponent: (
-    selection: ReadonlySet<T>,
-    setSelection: (selection: ReadonlySet<T>) => void,
-    confirmSelect: () => void
+    onAdd: (entity: T) => void,
+    onSelectAll: (entities: ReadonlySet<T>) => void
   ) => JSX.Element;
   /** The message is displayed in the right-hand result list when there is no selected entity. */
   addEntityMessage: string;
@@ -97,9 +97,6 @@ const SelectEntityDialog = <T extends BaseSecurityEntity>({
   searchComponent,
   addEntityMessage,
 }: SelectEntityDialogProps<T>) => {
-  const [searchSelections, setSearchSelections] = useState<ReadonlySet<T>>(
-    RS.empty
-  );
   // state for final selections which will be returned to the calling component when the user clicks OK
   const [selectedEntities, setSelectedEntities] =
     useState<ReadonlySet<T>>(value);
@@ -108,13 +105,11 @@ const SelectEntityDialog = <T extends BaseSecurityEntity>({
 
   const handleConfirm = () => {
     onConfirm(selectedEntities);
-    setSearchSelections(RS.empty);
   };
 
   const handleCancel = () => {
     onCancel();
     setSelectedEntities(value);
-    setSearchSelections(RS.empty);
   };
 
   const handleDeleteForEachEntry = (entity: T) =>
@@ -125,6 +120,12 @@ const SelectEntityDialog = <T extends BaseSecurityEntity>({
     );
 
   const hasSelectedEntities = !RS.isEmpty(selectedEntities);
+
+  const handleOnAdd = (entity: T) =>
+    pipe(selectedEntities, RS.insert(eqByID)(entity), setSelectedEntities);
+
+  const handleOnSelectAll = (entities: ReadonlySet<T>) =>
+    pipe(selectedEntities, RS.union(eqByID)(entities), setSelectedEntities);
 
   return (
     <ConfirmDialog
@@ -137,40 +138,50 @@ const SelectEntityDialog = <T extends BaseSecurityEntity>({
     >
       <Grid container>
         <Grid item xs>
-          {searchComponent(searchSelections, setSearchSelections, () =>
-            pipe(
-              selectedEntities,
-              RS.union(eqByID)(searchSelections),
-              setSelectedEntities
-            )
-          )}
+          {searchComponent(handleOnAdd, handleOnSelectAll)}
         </Grid>
+
         <Divider orientation="vertical" flexItem light sx={{ margin: "5px" }} />
-        <Grid item xs>
-          {/*paddingLeft is used to align title with the list icon below it*/}
-          <Typography variant="h6" sx={{ paddingLeft: "16px" }}>
-            {currentSelectionsLabel}
-          </Typography>
-          <List disablePadding>
-            {hasSelectedEntities ? (
-              pipe(
-                selectedEntities,
-                RS.toReadonlyArray(itemOrd),
-                RA.map((entity) =>
-                  entityDetailsToEntry(entity, () =>
-                    handleDeleteForEachEntry(entity)
+
+        <Grid container item xs direction="column" rowSpacing={2}>
+          <Grid item>
+            {/*paddingLeft is used to align title with the list item below it*/}
+            <Typography variant="h6" sx={{ paddingLeft: 2 }} gutterBottom>
+              {currentSelectionsLabel}
+            </Typography>
+
+            <List disablePadding>
+              {hasSelectedEntities ? (
+                pipe(
+                  selectedEntities,
+                  RS.toReadonlyArray(itemOrd),
+                  RA.map((entity) =>
+                    entityDetailsToEntry(entity, () =>
+                      handleDeleteForEachEntry(entity)
+                    )
                   )
                 )
-              )
-            ) : (
-              <ListItem>
-                <ListItemIcon>
-                  <ErrorOutline />
-                </ListItemIcon>
-                <ListItemText secondary={addEntityMessage} />
-              </ListItem>
-            )}
-          </List>
+              ) : (
+                <ListItem>
+                  <ListItemIcon>
+                    <ErrorOutline />
+                  </ListItemIcon>
+                  <ListItemText secondary={addEntityMessage} />
+                </ListItem>
+              )}
+            </List>
+          </Grid>
+          {!RS.isEmpty(selectedEntities) && (
+            <Grid item>
+              <Button
+                color="secondary"
+                onClick={() => setSelectedEntities(RS.empty)}
+                sx={{ float: "right" }}
+              >
+                {removeAllLabel}
+              </Button>
+            </Grid>
+          )}
         </Grid>
       </Grid>
     </ConfirmDialog>

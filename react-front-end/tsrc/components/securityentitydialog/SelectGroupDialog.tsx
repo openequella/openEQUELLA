@@ -15,14 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import GroupIcon from "@mui/icons-material/Group";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
+import { ordGroup } from "../../modules/GroupModule";
 import { languageStrings } from "../../util/langstrings";
 import GroupSearch from "../securityentitysearch/GroupSearch";
-import { ordGroup } from "../../modules/GroupModule";
-import GroupIcon from "@mui/icons-material/Group";
-import SelectEntityDialog from "./SelectEntityDialog";
 import SecurityEntityEntry from "./SecurityEntityEntry";
+import SelectEntityDialog from "./SelectEntityDialog";
 
 export interface SelectGroupDialogProps {
   /** Open the dialog when true. */
@@ -46,24 +46,16 @@ const SelectGroupDialog = ({
   groupListProvider,
 }: SelectGroupDialogProps) => {
   const groupSearch = (
-    selectedGroups: ReadonlySet<OEQ.UserQuery.GroupDetails>,
-    setSelectedGroups: (
-      groups: ReadonlySet<OEQ.UserQuery.GroupDetails>
-    ) => void,
-    confirmSelect: (groups: ReadonlySet<OEQ.UserQuery.GroupDetails>) => void
+    onAdd: (group: OEQ.UserQuery.GroupDetails) => void,
+    onSelectAll: (entities: ReadonlySet<OEQ.UserQuery.GroupDetails>) => void
   ) => (
     <GroupSearch
-      onChange={setSelectedGroups}
-      selections={selectedGroups}
-      search={groupListProvider}
-      enableMultiSelection
-      onSelectAll={setSelectedGroups}
-      onClearAll={setSelectedGroups}
-      selectButton={{
-        onClick: () => {
-          selectedGroups && confirmSelect(selectedGroups);
-        },
+      mode={{
+        type: "one_click",
+        onAdd: onAdd,
       }}
+      search={groupListProvider}
+      onSelectAll={onSelectAll}
     />
   );
 

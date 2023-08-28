@@ -15,12 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  findByText,
-  getByText,
-  render,
-  RenderResult,
-} from "@testing-library/react";
+import { getByText, render, RenderResult } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { defaultACLEntityResolvers } from "../../../../__mocks__/ACLExpressionBuilder.mock";
@@ -36,8 +31,9 @@ import ACLExpressionBuilder, {
 import type { ReferrerType } from "../../../../tsrc/components/aclexpressionbuilder/ACLHTTPReferrerInput";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import { selectOption } from "../../MuiTestHelpers";
+import { selectEntitiesInOneClickMode } from "../securityentitysearch/BaseSearchTestHelper";
 
-const { select: selectLabel, ok: okLabel } = languageStrings.common.action;
+const { ok: okLabel } = languageStrings.common.action;
 
 const {
   aclExpressionBuilder: {
@@ -71,13 +67,8 @@ export const selectAndConfirm = async (
   container: HTMLElement,
   selectNames: string[]
 ) => {
-  // Wait for the results, and then click all entities
-  for (const name of selectNames) {
-    await userEvent.click(await findByText(container, name));
-  }
-
-  // click select button
-  await userEvent.click(getByText(container, selectLabel));
+  // wait for the results, and then click all entities
+  await selectEntitiesInOneClickMode(container, selectNames);
   // click ok button
   await userEvent.click(getByText(container, okLabel));
 };

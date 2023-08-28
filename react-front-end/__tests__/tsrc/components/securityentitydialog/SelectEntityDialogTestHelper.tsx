@@ -18,12 +18,13 @@
 import userEvent from "@testing-library/user-event";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import { queryMuiTextField } from "../../MuiQueries";
-import { findByText, getByText } from "@testing-library/react";
+import { findByText, getByText, RenderResult } from "@testing-library/react";
+import { selectEntitiesInOneClickMode } from "../securityentitysearch/BaseSearchTestHelper";
 
 const {
-  select: selectLabel,
   cancel: cancelLabel,
   ok: okLabel,
+  removeAll: removeAllLabel,
 } = languageStrings.common.action;
 
 /**
@@ -64,12 +65,7 @@ export const searchAndSelect = async (
   // Attempt search for a specific entity
   await doSearch(dialog, searchFor);
   // Wait for the results, and then click our entity of interest
-  const entityName = await findByText(
-    dialog,
-    new RegExp(`.*${selectEntityName}.*`)
-  );
-  await userEvent.click(entityName);
-  await userEvent.click(getByText(dialog, selectLabel));
+  await selectEntitiesInOneClickMode(dialog, [selectEntityName]);
 };
 
 /**
@@ -106,3 +102,60 @@ export const clickOkButton = async (dialog: HTMLElement) => {
  */
 export const clickCancelButton = (dialog: HTMLElement) =>
   userEvent.click(getByText(dialog, cancelLabel));
+
+/**
+ * Click remove all button in the dialog.
+ */
+export const clickRemoveAllButton = (dialog: HTMLElement) =>
+  userEvent.click(getByText(dialog, removeAllLabel));
+
+/**
+ * Test functionality of removing entity in the dialog.
+ *
+ * @param render A render function which takes a mock function to render the dialog.
+ *               The mock function is used to get the final result when dialog is closed.
+ * @param entityName The name of the entity users want to remove.
+ */
+export const testRemoveEntity = async (
+  render: (onClose: jest.Mock) => RenderResult,
+  entityName: string
+) => {
+  const onClose = jest.fn();
+  const { getByRole } = render(onClose);
+
+  const dialog = getByRole("dialog");
+
+  await clickDeleteIconForEntity(dialog, entityName);
+  await clickOkButton(dialog);
+
+  return onClose.mock.lastCall[0];
+};
+
+/**
+ * Test functionality of the remove all button in the dialog.
+ *
+ * @param render A render function which takes a mock function to render the dialog.
+ *               The mock function is used to get the final result when dialog is closed.
+ */
+export const testRemoveAllAsync = async (
+  render: (onClose: jest.Mock) => Promise<RenderResult>
+) => {
+  const onClose = jest.fn();
+  const { getByRole } = await render(onClose);
+
+  const dialog = getByRole("dialog");
+  await clickRemoveAllButton(dialog);
+  await clickOkButton(dialog);
+
+  return onClose.mock.lastCall[0];
+};
+
+/**
+ * Variety version of `testRemoveAllAsync`.
+ * The only difference is it accepts a non-async render function as its param.
+ *
+ * @param render An non-async render function which takes a mock function to render the dialog.
+ */
+export const testRemoveAll = async (
+  render: (onClose: jest.Mock) => RenderResult
+) => await testRemoveAllAsync((onClose) => Promise.resolve(render(onClose)));
