@@ -8,7 +8,7 @@ inConfig(Serial)(Defaults.testTasks)
 
 val circeVersion  = "0.12.1"
 val http4sVersion = "0.21.8"
-val catsVersion   = "2.9.0"
+val catsVersion   = "2.10.0"
 val cxfVersion    = "3.6.1"
 
 addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full)
@@ -26,7 +26,8 @@ libraryDependencies ++= Seq(
   "org.seleniumhq.selenium"   % "selenium-java"             % "3.141.59",
   "org.easytesting"           % "fest-util"                 % "1.2.5",
   "org.easytesting"           % "fest-swing"                % "1.2.1",
-  "xalan"                     % "xalan"                     % "2.7.2",
+  "xalan"                     % "xalan"                     % "2.7.3",
+  "xalan"                     % "serializer"                % "2.7.3",
   "org.apache.cxf"            % "cxf-rt-frontend-simple"    % cxfVersion,
   "org.apache.cxf"            % "cxf-rt-databinding-aegis"  % cxfVersion,
   "org.apache.cxf"            % "cxf-rt-transports-http"    % cxfVersion,

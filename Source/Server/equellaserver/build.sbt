@@ -72,10 +72,10 @@ libraryDependencies ++= Seq(
   ),
   "com.google.api-client" % "google-api-client"           % "2.2.0",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20230203-2.0.0",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20230807-2.0.0",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20230816-2.0.0",
   "com.google.code.gson"  % "gson"                        % "2.10.1",
   "com.google.gdata"      % "core"                        % "1.47.1",
-  "com.google.guava"      % "guava"                       % "31.1-jre",
+  "com.google.guava"      % "guava"                       % "32.1.2-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
     // Due to deduplicates with aopalliance via Spring AOP.
     ExclusionRule(organization = "aopalliance",
@@ -91,7 +91,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "aopalliance",
                   name = "aopalliance")
   ),
-  "com.ibm.icu" % "icu4j" % "72.1",
+  "com.ibm.icu" % "icu4j" % "73.2",
   sqlServerDep excludeAll (
     // Conflicts with RESTeasy jakarta.xml.bind-api
     ExclusionRule(organization = "javax.xml.bind"),
@@ -101,7 +101,7 @@ libraryDependencies ++= Seq(
   ),
   "com.miglayout"       % "miglayout-swing"       % "4.2",
   "org.asynchttpclient" % "async-http-client"     % "2.12.3",
-  "com.rometools"       % "rome"                  % "1.19.0",
+  "com.rometools"       % "rome"                  % "2.1.0",
   "io.swagger"          % "swagger-core"          % SwaggerVersion,
   "io.swagger"          % "swagger-annotations"   % SwaggerVersion,
   "io.swagger"          % "swagger-jaxrs"         % SwaggerVersion,
