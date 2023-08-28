@@ -1,4 +1,4 @@
 include:
   project: edalex-group/development/oeq/openequella-ci
   file: build/main.yml
-  ref: 16db45894f11b9ba9780d720486f37d485e13239
+  ref: main
