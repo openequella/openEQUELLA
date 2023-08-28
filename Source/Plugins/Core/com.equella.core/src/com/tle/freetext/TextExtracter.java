@@ -55,7 +55,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import javax.inject.Singleton;
-import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.document.Field;
 import org.ccil.cowan.tagsoup.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,8 +95,8 @@ public class TextExtracter {
   private long parseDurationCap = 60000;
 
   @SuppressWarnings("nls")
-  public List<Fieldable> indexAttachments(IndexedItem indexedItem, SearchSettings searchSettings) {
-    final List<Fieldable> fields = new ArrayList<Fieldable>();
+  public List<Field> indexAttachments(IndexedItem indexedItem, SearchSettings searchSettings) {
+    final List<Field> fields = new ArrayList<Field>();
     final Item item = indexedItem.getItem();
     final int urlLevel = searchSettings.getUrlLevel();
 
@@ -315,7 +315,7 @@ public class TextExtracter {
     }
   }
 
-  private void indexMimeEntry(String mimeEntry, List<Fieldable> fields) {
+  private void indexMimeEntry(String mimeEntry, List<Field> fields) {
     fields.add(
         AbstractIndexingExtension.indexed(FreeTextQuery.FIELD_ATTACHMENT_MIME_TYPES, mimeEntry));
   }

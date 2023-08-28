@@ -18,13 +18,17 @@
 
 package com.tle.core.freetext.filters;
 
+import com.tle.core.freetext.index.LuceneDocumentHelper;
 import java.io.IOException;
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.AtomicReader;
+import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermDocs;
-import org.apache.lucene.index.TermEnum;
+import org.apache.lucene.index.Terms;
+import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
+import org.apache.lucene.util.Bits;
+import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.OpenBitSet;
 
 /**
@@ -33,6 +37,7 @@ import org.apache.lucene.util.OpenBitSet;
  * @author Nicholas Read
  */
 public class ComparisonFilter extends Filter {
+
   private static final long serialVersionUID = 1L;
   private final String field;
   private final String start;
@@ -45,35 +50,23 @@ public class ComparisonFilter extends Filter {
   }
 
   @Override
-  public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
+  public DocIdSet getDocIdSet(AtomicReaderContext context, Bits acceptDocs) throws IOException {
+    AtomicReader reader = context.reader();
     OpenBitSet bits = new OpenBitSet(reader.maxDoc());
 
-    Term startTerm = new Term(field, start);
-    Term endTerm = new Term(field, end);
+    Terms terms = reader.terms(field);
+    if (terms != null) {
+      TermsEnum termsEnum = terms.iterator(null);
+      BytesRef startTerm = new BytesRef(start);
+      BytesRef endTerm = new BytesRef(end);
 
-    TermEnum enumerator = reader.terms(startTerm);
-    if (enumerator.term() == null) {
-      return bits;
-    }
+      termsEnum.seekCeil(startTerm);
 
-    TermDocs termDocs = reader.termDocs();
-    try {
-      Term current = enumerator.term();
-      while (current.compareTo(endTerm) <= 0) {
-        termDocs.seek(enumerator.term());
-        while (termDocs.next()) {
-          bits.set(termDocs.doc());
-        }
-
-        if (!enumerator.next()) {
-          break;
-        }
-
-        current = enumerator.term();
+      for (startTerm = termsEnum.term();
+          startTerm != null && startTerm.compareTo(endTerm) <= 0;
+          startTerm = termsEnum.next()) {
+        LuceneDocumentHelper.forEachDoc(reader, new Term(field, startTerm), bits::set);
       }
-    } finally {
-      enumerator.close();
-      termDocs.close();
     }
 
     return bits;

@@ -27,8 +27,7 @@ import java.util.Collection;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.search.NRTManager;
-import org.apache.lucene.search.NRTManager.TrackingIndexWriter;
+import org.apache.lucene.index.TrackingIndexWriter;
 
 public abstract class MultipleIndex<T extends FreetextResult> extends ItemIndex<T> {
 
@@ -47,8 +46,7 @@ public abstract class MultipleIndex<T extends FreetextResult> extends ItemIndex<
   }
 
   @Override
-  public long addDocuments(
-      Collection<IndexedItem> documents, NRTManager nrtManager, TrackingIndexWriter writer) {
+  public long addDocuments(Collection<IndexedItem> documents, TrackingIndexWriter writer) {
     long generation = -1;
     for (IndexedItem item : documents) {
       if (item.isAdd()) {

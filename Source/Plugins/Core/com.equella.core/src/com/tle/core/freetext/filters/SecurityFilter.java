@@ -21,22 +21,31 @@ package com.tle.core.freetext.filters;
 import com.dytech.edge.queries.FreeTextQuery;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.common.usermanagement.user.UserState;
+import com.tle.core.freetext.index.LuceneDocumentHelper;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.AtomicReader;
+import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.DocsEnum;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermDocs;
+import org.apache.lucene.index.Terms;
+import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
+import org.apache.lucene.util.Bits;
+import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.OpenBitSet;
 
 public class SecurityFilter extends Filter {
+
   private static final long serialVersionUID = 1L;
 
   private OpenBitSet results;
@@ -94,64 +103,59 @@ public class SecurityFilter extends Filter {
   }
 
   @Override
-  public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
+  public DocIdSet getDocIdSet(AtomicReaderContext context, Bits acceptDocs) throws IOException {
+    AtomicReader reader = context.reader();
     final int max = reader.maxDoc();
     results = new OpenBitSet(max);
 
     if (!systemUser) {
       OpenBitSet owned = new OpenBitSet(max);
       if (ownerSizes > 0) {
-        TermDocs odocs =
-            reader.termDocs(new Term(FreeTextQuery.FIELD_OWNER, CurrentUser.getUserID()));
-        while (odocs.next()) {
-          owned.set(odocs.doc());
-        }
+        LuceneDocumentHelper.forEachDoc(
+            reader, new Term(FreeTextQuery.FIELD_OWNER, CurrentUser.getUserID()), owned::set);
       }
 
-      Set<Term> allTerms = new TreeSet<Term>(comparator);
-      for (String element : expressions) {
-        FieldIterator iterator = new FieldIterator(reader, element, ""); // $NON-NLS-1$
-        while (iterator.hasNext()) {
-          allTerms.add(iterator.next());
-        }
-      }
+      Set<Term> allTerms = new TreeSet<>(comparator);
+
+      Arrays.stream(expressions)
+          .map(field -> getTermsForField(reader, field))
+          .filter(termSet -> !termSet.isEmpty())
+          .forEach(allTerms::addAll);
 
       for (Term term : allTerms) {
         String type = term.text();
         boolean grant = type.charAt(type.length() - 1) == 'G';
-        TermDocs docs = reader.termDocs(term);
+        DocsEnum docs = reader.termDocsEnum(term);
         Boolean exprType = ownerExprMap.get(term.field());
+
+        int doc;
         if (exprType == null) {
           if (grant) {
-            while (docs.next()) {
-              results.set(docs.doc());
-            }
+            LuceneDocumentHelper.forEachDoc(docs, results::set);
           } else {
-            while (docs.next()) {
-              results.clear(docs.doc());
-            }
+            LuceneDocumentHelper.forEachDoc(docs, results::clear);
           }
         } else {
-          boolean must = exprType.booleanValue();
-          while (docs.next()) {
-            int doc = docs.doc();
-            if (owned.get(doc) == must) {
-              if (grant) {
-                results.set(doc);
-              } else {
-                results.clear(doc);
-              }
-            }
-          }
+          boolean must = exprType;
+          LuceneDocumentHelper.forEachDoc(
+              docs,
+              (docId) -> {
+                if (owned.get(docId) == must) {
+                  if (grant) {
+                    results.set(docId);
+                  } else {
+                    results.clear(docId);
+                  }
+                }
+              });
         }
-        docs.close();
       }
     } else {
-      TermDocs docs = reader.termDocs(null);
-      while (docs.next()) {
-        results.set(docs.doc());
+      Bits liveDocs = reader.getLiveDocs();
+      int maxDoc = liveDocs != null ? liveDocs.length() : reader.maxDoc();
+      for (int i = 0; i < maxDoc; i++) {
+        results.set(i);
       }
-      docs.close();
     }
 
     // If we are only collecting results, we return a full bitset to match
@@ -165,7 +169,25 @@ public class SecurityFilter extends Filter {
     }
   }
 
+  private Set<Term> getTermsForField(AtomicReader reader, String field) {
+    Set<Term> set = new HashSet<>();
+    try {
+      Terms terms = reader.terms(field);
+      if (terms != null) {
+        TermsEnum termsEnum = terms.iterator(null);
+        while (termsEnum.next() != null) {
+          set.add(new Term(field, new BytesRef(termsEnum.term().utf8ToString())));
+        }
+      }
+
+      return set;
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to list terms for field " + field, e);
+    }
+  }
+
   public static class TermValueComparator implements Comparator<Term>, Serializable {
+
     @Override
     public int compare(Term o1, Term o2) {
       int comp = o2.text().compareTo(o1.text());

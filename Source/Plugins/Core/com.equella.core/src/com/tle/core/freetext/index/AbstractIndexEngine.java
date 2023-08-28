@@ -21,7 +21,6 @@ package com.tle.core.freetext.index;
 import com.dytech.common.io.FileUtils;
 import com.dytech.edge.exceptions.ErrorDuringSearchException;
 import com.google.common.base.Throwables;
-import com.tle.freetext.LuceneConstants;
 import com.tle.freetext.TLEAnalyzer;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfoList;
@@ -39,16 +38,15 @@ import java.util.Timer;
 import java.util.TimerTask;
 import javax.annotation.PostConstruct;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.CharArraySet;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
-import org.apache.lucene.analysis.ReusableAnalyzerBase;
-import org.apache.lucene.analysis.WordlistLoader;
+import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
+import org.apache.lucene.analysis.util.CharArraySet;
+import org.apache.lucene.analysis.util.WordlistLoader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.TrackingIndexWriter;
+import org.apache.lucene.search.ControlledRealTimeReopenThread;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.NRTManager;
-import org.apache.lucene.search.NRTManager.TrackingIndexWriter;
-import org.apache.lucene.search.NRTManagerReopenThread;
+import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
@@ -92,20 +90,25 @@ public abstract class AbstractIndexEngine {
   private File stopWordsFile;
   private String analyzerLanguage;
   private FSDirectory directory;
+
+  private IndexWriter indexWriter;
   private TrackingIndexWriter trackingIndexWriter;
-  private NRTManager nrtManager;
-  private NRTManagerReopenThread nrtReopenThread;
+  private SearcherManager searcherManager;
+  private ControlledRealTimeReopenThread<IndexSearcher> controlledRealTimeReopenThread;
   private Timer commiterThread;
 
   // The index generation we should wait for
   private long generation = -1;
 
+  // As autoCompleteAnalyzer doesn't need stopwords and stemming so it works for all languages.
+  private final TLEAnalyzer autoCompleteAnalyzer = new TLEAnalyzer(null, false);
+
   public void deleteDirectory() {
     try {
       commiterThread.cancel();
-      nrtReopenThread.close();
-      nrtManager.close();
-      trackingIndexWriter.getIndexWriter().close();
+      controlledRealTimeReopenThread.close();
+      searcherManager.close();
+      indexWriter.close();
       directory.close();
       FileUtils.delete(indexPath);
       afterPropertiesSet();
@@ -127,21 +130,22 @@ public abstract class AbstractIndexEngine {
       LOGGER.info("Unlocking index:" + indexPath); // $NON-NLS-1$
       IndexWriter.unlock(directory);
     }
-    LOGGER.info("Opening writer for index:" + indexPath); // $NON-NLS-1$
-    trackingIndexWriter =
-        new TrackingIndexWriter(
-            new IndexWriter(
-                directory, new IndexWriterConfig(LuceneConstants.LATEST_VERSION, getAnalyser())));
-    nrtManager = new NRTManager(trackingIndexWriter, null);
+    LOGGER.info("Opening writer for index:" + indexPath);
+
+    indexWriter =
+        new IndexWriter(directory, new IndexWriterConfig(Version.LUCENE_4_10_4, getAnalyser()));
+    trackingIndexWriter = new TrackingIndexWriter(indexWriter);
+    searcherManager = new SearcherManager(indexWriter, true, null);
 
     // Possibly reopen a searcher every 5 seconds if necessary in the
     // background
-    nrtReopenThread = new NRTManagerReopenThread(nrtManager, 5.0, 0.1);
-    nrtReopenThread.setName("NRT Reopen Thread: " + getClass());
-    nrtReopenThread.setPriority(
+    controlledRealTimeReopenThread =
+        new ControlledRealTimeReopenThread<>(trackingIndexWriter, searcherManager, 5.0, 0.1);
+    controlledRealTimeReopenThread.setName("Controlled Real Time Reopen Thread: " + getClass());
+    controlledRealTimeReopenThread.setPriority(
         Math.min(Thread.currentThread().getPriority() + 2, Thread.MAX_PRIORITY));
-    nrtReopenThread.setDaemon(true);
-    nrtReopenThread.start();
+    controlledRealTimeReopenThread.setDaemon(true);
+    controlledRealTimeReopenThread.start();
 
     // Commit any changes to disk every 5 minutes
     commiterThread = new Timer(true);
@@ -150,7 +154,7 @@ public abstract class AbstractIndexEngine {
           @Override
           public void run() {
             try {
-              trackingIndexWriter.getIndexWriter().commit();
+              indexWriter.commit();
             } catch (IOException ex) {
               LOGGER.error("Error attempting to commit index writer", ex);
             }
@@ -164,29 +168,31 @@ public abstract class AbstractIndexEngine {
     try {
       long g = -1;
       try {
-        g = builder.buildIndex(nrtManager, trackingIndexWriter);
+        g = builder.buildIndex(searcherManager, trackingIndexWriter);
       } finally {
         generation = Math.max(g, generation);
       }
     } catch (Exception ex) {
-      throw new RuntimeException("Error while building index", ex); // $NON-NLS-1$
+      throw new RuntimeException("Error while building index", ex);
     }
   }
 
   public <RV> RV search(Searcher<RV> s) {
-    nrtManager.waitForGeneration(generation);
-    IndexSearcher indexSearcher = nrtManager.acquire();
+    IndexSearcher indexSearcher = null;
     try {
+      controlledRealTimeReopenThread.waitForGeneration(generation);
+      indexSearcher = searcherManager.acquire();
+
       return s.search(indexSearcher);
-    } catch (IOException ex) {
-      LOGGER.error("Error searching index", ex); // $NON-NLS-1$
-      throw new ErrorDuringSearchException("Error searching index", ex); // $NON-NLS-1$
+    } catch (IOException | InterruptedException ex) {
+      LOGGER.error("Error searching index", ex);
+      throw new ErrorDuringSearchException("Error searching index", ex);
     } finally {
       if (indexSearcher != null) {
         try {
-          nrtManager.release(indexSearcher);
+          searcherManager.release(indexSearcher);
         } catch (IOException ex) {
-          throw new ErrorDuringSearchException("Error releasing searcher", ex); // $NON-NLS-1$
+          throw new ErrorDuringSearchException("Error releasing searcher", ex);
         }
       }
     }
@@ -207,17 +213,13 @@ public abstract class AbstractIndexEngine {
       if (stopWordsFile != null && stopWordsFile.exists()) {
         try {
           stopSet =
-              WordlistLoader.getWordSet(
-                  new FileReader(stopWordsFile),
-                  new CharArraySet(LuceneConstants.LATEST_VERSION, 0, true));
+              WordlistLoader.getWordSet(new FileReader(stopWordsFile), new CharArraySet(0, true));
         } catch (IOException e1) {
           LOGGER.warn("No stop words available: " + stopWordsFile, e1);
         }
       }
       Analyzer normalAnalyzer = new TLEAnalyzer(stopSet, true);
-      Analyzer nonStemmedAnalyzer = new TLEAnalyzer(stopSet, false);
-      // As autoCompleteAnalyzer doesn't need stopwords and stemming so it works for all languages
-      Analyzer autoCompleteAnalyzer = new TLEAnalyzer(null, false);
+      TLEAnalyzer nonStemmedAnalyzer = new TLEAnalyzer(stopSet, false);
 
       // For non-English
       if (!analyzerLanguage.equals("en")) {
@@ -226,10 +228,10 @@ public abstract class AbstractIndexEngine {
         try (ScanResult scanResult =
             new ClassGraph().enableClassInfo().whitelistPackages(languageAnalyzerPackage).scan()) {
           ClassInfoList languageAnalyzerClasses =
-              scanResult.getSubclasses(ReusableAnalyzerBase.class.getName());
-          List<Class<ReusableAnalyzerBase>> languageAnalyzers =
-              languageAnalyzerClasses.loadClasses(ReusableAnalyzerBase.class);
-          Optional<Class<ReusableAnalyzerBase>> languageAnalyzer =
+              scanResult.getSubclasses(Analyzer.class.getName());
+          List<Class<Analyzer>> languageAnalyzers =
+              languageAnalyzerClasses.loadClasses(Analyzer.class);
+          Optional<Class<Analyzer>> languageAnalyzer =
               languageAnalyzers.stream()
                   .filter(
                       languageAnalyzerClass ->
@@ -241,15 +243,14 @@ public abstract class AbstractIndexEngine {
                 languageAnalyzer
                     .get()
                     .getDeclaredConstructor(Version.class)
-                    .newInstance(Version.LUCENE_36);
+                    .newInstance(Version.LUCENE_4_10_4);
             // For the non-stemmed analyzer we still use the TLEAnalyzer, however we use the
             // language specific stop words by loading them from the language specific analyzer.
             Method getDefaultStopSet =
                 languageAnalyzer.get().getDeclaredMethod("getDefaultStopSet");
             nonStemmedAnalyzer =
                 new TLEAnalyzer(
-                    new CharArraySet(Version.LUCENE_36, (Set) getDefaultStopSet.invoke(null), true),
-                    false);
+                    new CharArraySet((Set) getDefaultStopSet.invoke(null), true), false);
 
             LOGGER.info("Using Lucene analyzer: " + languageAnalyzer.get().getName());
           }
@@ -264,13 +265,16 @@ public abstract class AbstractIndexEngine {
               analyzerLanguage + " language analyzer is not avaiable so use the default analyzer");
         }
       }
-
       analyzer =
           new PerFieldAnalyzerWrapper(
               normalAnalyzer, getAnalyzerFieldMap(autoCompleteAnalyzer, nonStemmedAnalyzer));
     }
 
     return analyzer;
+  }
+
+  public TLEAnalyzer getAutoCompleteAnalyzer() {
+    return autoCompleteAnalyzer;
   }
 
   protected abstract Map<String, Analyzer> getAnalyzerFieldMap(
@@ -282,7 +286,7 @@ public abstract class AbstractIndexEngine {
 
   public interface IndexBuilder {
     /** @return The index generation to wait for, or -1 if you don't care. */
-    long buildIndex(NRTManager nrtManager, TrackingIndexWriter writer) throws Exception;
+    long buildIndex(SearcherManager searcherManager, TrackingIndexWriter writer) throws Exception;
   }
 
   public void setIndexPath(File indexPath) {

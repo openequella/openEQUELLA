@@ -18,16 +18,26 @@
 
 package com.tle.core.freetext.index
 
+import com.dytech.devlib.PropBagEx
 import com.dytech.edge.queries.FreeTextQuery
 import com.tle.beans.Institution
+import com.tle.beans.entity.Schema
 import com.tle.beans.entity.itemdef.ItemDefinition
 import com.tle.beans.item.{Item, ItemIdKey, ItemStatus}
+import com.tle.common.Triple
 import com.tle.common.i18n.{CurrentLocale, LangUtils}
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.search.DefaultSearch
 import com.tle.common.searching.Search.SortType
+import com.tle.common.security.SecurityConstants
 import com.tle.common.settings.ConfigurationProperties
 import com.tle.common.settings.standard.SearchSettings
+import com.tle.common.usermanagement.user.{
+  AbstractUserState,
+  CurrentUser,
+  DefaultUserState,
+  UserState
+}
 import com.tle.core.events.services.EventService
 import com.tle.core.freetext.index.AbstractIndexEngine.Searcher
 import com.tle.core.freetext.indexer.StandardIndexer
@@ -42,7 +52,8 @@ import com.tle.core.services.user.UserPreferenceService
 import com.tle.core.settings.service.ConfigurationService
 import com.tle.core.zookeeper.ZookeeperService
 import com.tle.freetext.{FreetextIndexConfiguration, FreetextIndexImpl, IndexedItem}
-import org.apache.lucene.document.Document
+import org.apache.lucene.document.{Document, Field, FieldType}
+import org.apache.lucene.queries.ChainedFilter
 import org.apache.lucene.search._
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyInt}
@@ -67,12 +78,28 @@ class ItemIndexTest
   val inst = new Institution
   inst.setUniqueId(new scala.util.Random().nextLong)
 
+  val schema = new Schema
+  schema.setUuid(UUID.randomUUID().toString)
+  schema.setDefinition(
+    new PropBagEx(
+      "<xml><item><name field='true'></name><description field='true'></description></item></xml>"))
+
   val collection = new ItemDefinition
   collection.setUuid(UUID.randomUUID().toString)
+  collection.setSchema(schema)
 
   val owner = "admin"
 
   val indexRootDirectoryName = "ItemIndexTest"
+
+  val aclEntryID = 1000L
+  // The field format for ACL permission is "ACLx-y" where "x" is the shortcut for the permission
+  // and "y" is the unique ID of the permission. The mapping between permissions and their shortcuts
+  // is defined in class `ItemIndex`.
+  def aclField(privilege: String) = s"${ItemIndex.convertStdPriv(privilege)}$aclEntryID"
+  // The value format for ACL permission is "xxxG" where "xxx" must be a three-digit number which starts
+  // from 000 and "G" stands for "Grant".
+  val aclValue = "001G"
 
   def initialiseItemIndex(testCaseName: String): ItemIndex[FreetextResult] = {
     val freetextIndexConfiguration = new FreetextIndexConfiguration {
@@ -121,7 +148,10 @@ class ItemIndexTest
                            itemStatus: ItemStatus = ItemStatus.LIVE,
                            moderating: Boolean = false,
                            rating: Float = 3.5f,
-                           dateModified: Date = new Date): List[IndexedItem] = {
+                           dateModified: Date = new Date,
+                           itemDescription: String = "",
+                           properties: PropBagEx = new PropBagEx,
+                           privilege: Option[String] = None): List[IndexedItem] = {
     val indexer = new StandardIndexer
 
     Range(0, howMany)
@@ -132,6 +162,7 @@ class ItemIndexTest
         item.setItemDefinition(collection)
         item.setOwner(owner)
         item.setName(LangUtils.createTextTempLangugageBundle(itemName))
+        item.setDescription(LangUtils.createTextTempLangugageBundle(itemDescription))
         item.setStatus(itemStatus)
         item.setModerating(moderating)
         item.setRating(rating)
@@ -141,9 +172,23 @@ class ItemIndexTest
 
         val indexedItem = new IndexedItem(new ItemIdKey(key, UUID.randomUUID().toString, 1), inst)
         indexedItem.setItem(item)
+        indexedItem.setItemXml(properties)
         indexedItem.setAdd(true)
         indexedItem.setNewSearcherRequired(true)
         indexer.getBasicFields(indexedItem).asScala.foreach(indexedItem.getItemdoc.add)
+
+        privilege match {
+          case Some(p) =>
+            val ft = new FieldType()
+            ft.setIndexed(true)
+            ft.setStored(true)
+            ft.setTokenized(false)
+            indexedItem.getAclMap.put(
+              SecurityConstants.DISCOVER_ITEM,
+              java.util.Collections.singletonList(new Field(aclField(p), aclValue, ft)))
+            indexer.addAllFields(indexedItem.getItemdoc, indexedItem.getACLEntries(p))
+          case None =>
+        }
 
         indexedItem
       })
@@ -194,6 +239,18 @@ class ItemIndexTest
     mockStatic(classOf[CurrentLocale])
     when(CurrentLocale.getLocale).thenReturn(Locale.getDefault)
 
+    val userState: AbstractUserState = new DefaultUserState
+    // User state contains a `Triple` where the first element is a list of common ACL expression and the second element is
+    // a list of Owner ACL expressions and the third element is a list of Not Owner ACL expressions.
+    // The ACL test case targets to Common ACL expressions, so add the mock of the ACL entry ID in the first list and leave
+    // the other two lists empty.
+    userState.setAclExpressions(
+      new Triple(java.util.Collections.singleton(aclEntryID),
+                 java.util.Collections.emptyList(),
+                 java.util.Collections.emptyList()))
+    mockStatic(classOf[CurrentUser])
+    when(CurrentUser.getUserState).thenReturn(userState)
+
     AbstractPluginService.thisService = mock(classOf[PluginServiceImpl])
   }
 
@@ -203,6 +260,10 @@ class ItemIndexTest
       .filter(_.getName.contains(indexRootDirectoryName))
       .map(new Directory(_))
       .foreach(_.deleteRecursively)
+  }
+
+  def createIndexes(itemIndex: ItemIndex[_], indexedItems: List[IndexedItem]): Unit = {
+    itemIndex.indexBatch(indexedItems.asJava)
   }
 
   describe("index manipulation") {
@@ -238,14 +299,10 @@ class ItemIndexTest
     }
   }
 
-  describe("searching") {
+  describe("document searching") {
     val dateFormatter = new SimpleDateFormat("yyyy-MM-dd")
 
-    def createIndexes(itemIndex: ItemIndex[_], indexedItems: List[IndexedItem]): Unit = {
-      itemIndex.indexBatch(indexedItems.asJava)
-    }
-
-    describe("filtering") {
+    describe("basic filtering") {
       it("supports filtering by text field") { f =>
         val (itemIndex, searchConfig) = f
 
@@ -302,7 +359,7 @@ class ItemIndexTest
       it("supports filtering by date range field") { f =>
         val (itemIndex, searchConfig) = f
 
-        Given("a list of Items where only one item is last modified yesterday")
+        Given("a list of Items where only one item is last modified within the date range")
         val start          = dateFormatter.parse("2023-07-10")
         val end            = dateFormatter.parse("2023-07-20")
         val modifiedDate   = dateFormatter.parse("2023-07-15")
@@ -312,10 +369,10 @@ class ItemIndexTest
                       generateIndexedItems(1, dateModified = modifiedDate) ++ generateIndexedItems(
                         2,
                         dateModified = outOfRangeDate))
-        When("a date range for yesterday is set in the search configuration")
+        When("the search configuration uses this date range for last modified date")
         searchConfig.setDateRange(Array(start, end))
 
-        Then("the search result should only return Items modified yesterday")
+        Then("the search result should only return Items modified within the date range")
         val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
         result.length shouldBe 1
 
@@ -323,6 +380,27 @@ class ItemIndexTest
           dateFormatter.parse(result.head.get(FreeTextQuery.FIELD_REALLASTMODIFIED))
         realModifiedDate should be > start
         realModifiedDate should be < end
+      }
+    }
+
+    describe("advanced filtering") {
+      it("supports filtering by ACL expressions") { f =>
+        val (itemIndex, searchConfig) = f
+
+        Given("two Items where the first one requires ACL 'DISCOVER_ITEM'")
+        val itemName = "acl_item"
+        val permissionItem = generateIndexedItems(itemName = itemName,
+                                                  privilege =
+                                                    Option(SecurityConstants.DISCOVER_ITEM))
+        val nonPermissionItem = generateIndexedItems()
+        createIndexes(itemIndex, permissionItem ++ nonPermissionItem)
+
+        When("ACL 'DISCOVER_ITEM' is configured in the search configuration")
+        searchConfig.setPrivilege(SecurityConstants.DISCOVER_ITEM)
+
+        Then("the search result should be ordered by by Item name")
+        val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
+        result.map(_.get(FreeTextQuery.FIELD_NAME)) shouldBe Array(itemName)
       }
     }
 
@@ -448,6 +526,48 @@ class ItemIndexTest
         val processedQuery = queryCaptor.getValue.toString
         processedQuery shouldBe "(+(name_vectored:java^2.0 body:java) +(name_vectored:scala^2.0 body:scala) +(name_vectored:interest^2.0 body:interest))"
       }
+    }
+
+    describe("classification searching") {
+      it("search classifications through schema nodes") { f =>
+        val (itemIndex, searchConfig) = f
+        val java8                     = "java 8"
+        val java11                    = "java 11"
+        val scala                     = "scala 3"
+        val node                      = "/item/name"
+        def properties(name: String)  = new PropBagEx(s"<xml><item><name>$name</name></item></xml>")
+
+        Given(s"a list of Items where the schema node for Item name is $node")
+        val java8Item  = generateIndexedItems(itemName = java8, properties = properties(java8))
+        val java11Item = generateIndexedItems(itemName = java11, properties = properties(java11))
+        val scalaItem  = generateIndexedItems(itemName = scala, properties = properties(scala))
+
+        createIndexes(itemIndex, java8Item ++ java11Item ++ scalaItem)
+
+        When("a classification search is performed to search for this schema node and a query")
+        searchConfig.setQuery("java")
+        val result = itemIndex.matrixSearch(searchConfig, List("/item/name").asJava, false, false)
+
+        Then("the search result should only return classifications that match the query")
+        result.getEntries.size() shouldBe 2
+
+        result.getEntries.asScala.flatMap(_.getFieldValues.asScala).toArray shouldBe Array(java11,
+                                                                                           java8)
+      }
+    }
+  }
+
+  describe("term searching") {
+    it("supports making a term suggestion") { f =>
+      val (itemIndex, _) = f
+      Given("an Item where the keyword is in the description")
+      createIndexes(itemIndex, generateIndexedItems(11, itemDescription = "This is an apple."))
+
+      When("the search query is partial of the keyword")
+      val suggestion = itemIndex.suggestTerm(buildDefaultSearch, "appl", false)
+
+      Then("the search result should return the full word of the keyword")
+      suggestion shouldBe "apple"
     }
   }
 }

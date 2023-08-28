@@ -24,9 +24,10 @@ import com.tle.common.util.UtcDate;
 import java.io.IOException;
 import java.util.Date;
 import java.util.TimeZone;
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
+import org.apache.lucene.util.Bits;
 
 /**
  * Filters dates out. Most of the work is simply delegated to a ComparisonFilter.
@@ -39,11 +40,8 @@ public class DateFilter extends Filter {
 
   public DateFilter(
       String field, Date startDate, Date endDate, Dates indexedDateFormat, TimeZone timeZone) {
-    Date newStart = startDate;
-    Date newEnd = endDate;
-
-    String start = dateToString(newStart, 0, indexedDateFormat, timeZone);
-    String end = dateToString(newEnd, Long.MAX_VALUE, indexedDateFormat, timeZone);
+    String start = dateToString(startDate, 0, indexedDateFormat, timeZone);
+    String end = dateToString(endDate, Long.MAX_VALUE, indexedDateFormat, timeZone);
     subfilter = new ComparisonFilter(field, start, end);
   }
 
@@ -67,7 +65,7 @@ public class DateFilter extends Filter {
   }
 
   @Override
-  public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
-    return subfilter.getDocIdSet(reader);
+  public DocIdSet getDocIdSet(AtomicReaderContext context, Bits acceptDocs) throws IOException {
+    return subfilter.getDocIdSet(context, acceptDocs);
   }
 }

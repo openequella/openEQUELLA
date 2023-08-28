@@ -31,7 +31,6 @@ import java.util.Map;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
 
 public abstract class AbstractIndexingExtension implements IndexingExtension {
   @Override
@@ -39,8 +38,8 @@ public abstract class AbstractIndexingExtension implements IndexingExtension {
     // nothing by default
   }
 
-  public void addAllFields(Document doc, List<Fieldable> fields) {
-    for (Fieldable field : fields) {
+  public void addAllFields(Document doc, List<Field> fields) {
+    for (Field field : fields) {
       doc.add(field);
     }
   }
