@@ -29,7 +29,7 @@ val jsassVersion      = "5.10.5"
 val jsoupVersion      = "1.16.1"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "1.7.2"
-val tikaVersion       = "2.8.0"
+val tikaVersion       = "2.9.0"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
