@@ -22,12 +22,13 @@ import com.tle.common.searching.Field;
 import com.tle.core.freetext.index.LuceneDocumentHelper;
 import java.io.IOException;
 import java.util.List;
-import org.apache.lucene.index.AtomicReader;
-import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.LeafReader;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.DocIdSet;
+import org.apache.lucene.util.BitDocIdSet;
 import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.OpenBitSet;
+import org.apache.lucene.util.FixedBitSet;
 
 public class MustNotFilter extends MustFilter {
 
@@ -38,10 +39,10 @@ public class MustNotFilter extends MustFilter {
   }
 
   @Override
-  public DocIdSet getDocIdSet(AtomicReaderContext context, Bits acceptDocs) throws IOException {
-    AtomicReader reader = context.reader();
+  public DocIdSet getDocIdSet(LeafReaderContext context, Bits acceptDocs) throws IOException {
+    LeafReader reader = context.reader();
     int max = reader.maxDoc();
-    OpenBitSet good = new OpenBitSet(max);
+    FixedBitSet good = new FixedBitSet(max);
     good.set(0, max);
     for (List<Field> values : terms) {
       for (Field nv : values) {
@@ -49,6 +50,7 @@ public class MustNotFilter extends MustFilter {
             reader, new Term(nv.getField(), nv.getValue()), good::clear);
       }
     }
-    return good;
+
+    return new BitDocIdSet(good);
   }
 }

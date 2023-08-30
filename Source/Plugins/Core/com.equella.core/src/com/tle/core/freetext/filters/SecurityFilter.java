@@ -32,23 +32,24 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import org.apache.lucene.index.AtomicReader;
-import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.DocsEnum;
+import org.apache.lucene.index.LeafReader;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
+import org.apache.lucene.util.BitDocIdSet;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.OpenBitSet;
+import org.apache.lucene.util.FixedBitSet;
 
 public class SecurityFilter extends Filter {
 
   private static final long serialVersionUID = 1L;
 
-  private OpenBitSet results;
+  private FixedBitSet results;
   private boolean onlyCollectResults;
 
   private String[] expressions;
@@ -94,7 +95,7 @@ public class SecurityFilter extends Filter {
     }
   }
 
-  public OpenBitSet getResults() {
+  public FixedBitSet getResults() {
     return results;
   }
 
@@ -103,13 +104,13 @@ public class SecurityFilter extends Filter {
   }
 
   @Override
-  public DocIdSet getDocIdSet(AtomicReaderContext context, Bits acceptDocs) throws IOException {
-    AtomicReader reader = context.reader();
+  public DocIdSet getDocIdSet(LeafReaderContext context, Bits acceptDocs) throws IOException {
+    LeafReader reader = context.reader();
     final int max = reader.maxDoc();
-    results = new OpenBitSet(max);
+    results = new FixedBitSet(max);
 
     if (!systemUser) {
-      OpenBitSet owned = new OpenBitSet(max);
+      FixedBitSet owned = new FixedBitSet(max);
       if (ownerSizes > 0) {
         LuceneDocumentHelper.forEachDoc(
             reader, new Term(FreeTextQuery.FIELD_OWNER, CurrentUser.getUserID()), owned::set);
@@ -161,20 +162,20 @@ public class SecurityFilter extends Filter {
     // If we are only collecting results, we return a full bitset to match
     // every document.
     if (onlyCollectResults) {
-      OpenBitSet fullBitSet = new OpenBitSet(max);
+      FixedBitSet fullBitSet = new FixedBitSet(max);
       fullBitSet.set(0, max);
-      return fullBitSet;
+      return new BitDocIdSet(fullBitSet);
     } else {
-      return results;
+      return new BitDocIdSet(results);
     }
   }
 
-  private Set<Term> getTermsForField(AtomicReader reader, String field) {
+  private Set<Term> getTermsForField(LeafReader reader, String field) {
     Set<Term> set = new HashSet<>();
     try {
       Terms terms = reader.terms(field);
       if (terms != null) {
-        TermsEnum termsEnum = terms.iterator(null);
+        TermsEnum termsEnum = terms.iterator();
         while (termsEnum.next() != null) {
           set.add(new Term(field, new BytesRef(termsEnum.term().utf8ToString())));
         }
@@ -184,6 +185,11 @@ public class SecurityFilter extends Filter {
     } catch (IOException e) {
       throw new RuntimeException("Failed to list terms for field " + field, e);
     }
+  }
+
+  @Override
+  public String toString(String field) {
+    return null;
   }
 
   public static class TermValueComparator implements Comparator<Term>, Serializable {

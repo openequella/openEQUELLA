@@ -64,7 +64,6 @@ import it.uniroma3.mat.extendedset.intset.ConciseSet;
 import it.uniroma3.mat.extendedset.intset.FastSet;
 import it.uniroma3.mat.extendedset.wrappers.LongSet;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -87,17 +86,17 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.DocumentStoredFieldVisitor;
-import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.DocsEnum;
 import org.apache.lucene.index.FieldInfo;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.index.PostingsEnum;
 import org.apache.lucene.index.StoredFieldVisitor;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.index.TermsEnum.SeekStatus;
 import org.apache.lucene.index.TrackingIndexWriter;
-import org.apache.lucene.queries.ChainedFilter;
+import org.apache.lucene.queries.BooleanFilter;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
 import org.apache.lucene.queryparser.flexible.core.messages.QueryParserMessages;
 import org.apache.lucene.queryparser.flexible.messages.MessageImpl;
@@ -107,21 +106,18 @@ import org.apache.lucene.queryparser.flexible.standard.config.StandardQueryConfi
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Collector;
-import org.apache.lucene.search.DocIdSetIterator;
-import org.apache.lucene.search.FieldCacheRangeFilter;
 import org.apache.lucene.search.FieldComparatorSource;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiPhraseQuery;
 import org.apache.lucene.search.MultiTermQuery;
 import org.apache.lucene.search.PrefixQuery;
-import org.apache.lucene.search.PrefixTermsEnum;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Scorer;
 import org.apache.lucene.search.SearcherManager;
+import org.apache.lucene.search.SimpleCollector;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TermQuery;
@@ -130,7 +126,7 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TotalHitCountCollector;
 import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.OpenBitSet;
+import org.apache.lucene.util.FixedBitSet;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
@@ -295,8 +291,9 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
               deleteablesFilter.setOnlyCollectResults(true);
               filters.add(deleteablesFilter);
             }
-            Filter filter =
-                new ChainedFilter(filters.toArray(new Filter[filters.size()]), ChainedFilter.AND);
+            //            Filter filter =
+            //                new ChainedFilter(filters.toArray(new Filter[filters.size()]),
+            // ChainedFilter.AND);
 
             Sort sorter = getSorter(searchreq);
 
@@ -331,12 +328,12 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
             if (actualCount == 0) {
               TotalHitCountCollector hitCount = new TotalHitCountCollector();
-              searcher.search(query, filter, hitCount);
+              searcher.search(query, hitCount);
               results =
                   new SimpleSearchResults<T>(new ArrayList<T>(), 0, 0, hitCount.getTotalHits());
             } else {
               final TopDocs hits =
-                  searcher.search(query, filter, actualCount, sorter, sortByRelevance, false);
+                  searcher.search(query, actualCount, sorter, sortByRelevance, false);
               final SearchResults<T> itemResults =
                   getResultsFromTopDocs(
                       searcher, hits, actualStart, deleteablesFilter, sortByRelevance);
@@ -356,7 +353,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
                         queryAttachmentOnly, itemResults, searcher.getIndexReader());
 
                 final TopDocs attachmentHits =
-                    searcher.search(queryAttachmentOnly, filter, actualCount, sorter);
+                    searcher.search(queryAttachmentOnly, actualCount, sorter);
                 attachmentResults =
                     getResultsFromTopDocs(
                         searcher, attachmentHits, 0, deleteablesFilter, sortByRelevance);
@@ -447,15 +444,16 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
               deleteablesFilter.setOnlyCollectResults(true);
               filters.add(deleteablesFilter);
             }
-            Filter filter =
-                new ChainedFilter(filters.toArray(new Filter[filters.size()]), ChainedFilter.AND);
+            //            Filter filter =
+            //                new ChainedFilter(filters.toArray(new Filter[filters.size()]),
+            // ChainedFilter.AND);
 
             IndexReader indexReader = searcher.getIndexReader();
             Query query = getQuery(searchreq, indexReader, searchAttachments);
             int numDocs = indexReader.numDocs();
 
             CompressedSetCollector compCollector = new CompressedSetCollector();
-            searcher.search(query, filter, compCollector);
+            searcher.search(query, compCollector);
             LongSet docIdSet = compCollector.getSet();
 
             LongSet longSet = new LongSet(new FastSet());
@@ -526,7 +524,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       throws IOException {
     List<T> retrievedResults = new ArrayList<T>();
 
-    OpenBitSet deleteableDocIds = null;
+    FixedBitSet deleteableDocIds = null;
     if (deleteables != null) {
       deleteableDocIds = deleteables.getResults();
     }
@@ -606,14 +604,13 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
           public Multimap<String, Pair<String, Integer>> search(IndexSearcher searcher)
               throws IOException {
             final IndexReader reader = searcher.getIndexReader();
-            final OpenBitSet filteredBits =
+            final FixedBitSet filteredBits =
                 searchRequestToBitSet(searchreq, searcher, reader, false);
 
             final Multimap<String, Pair<String, Integer>> rv = ArrayListMultimap.create();
             for (String field : fields) {
               for (Term term : new XPathFieldIterator(reader, field, "")) {
-                DocsEnum docs =
-                    MultiFields.getTermDocsEnum(reader, filteredBits, field, term.bytes());
+                PostingsEnum docs = MultiFields.getTermDocsEnum(reader, field, term.bytes());
 
                 LuceneDocumentHelper.useDocCount(
                     docs,
@@ -639,22 +636,21 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
           @Override
           public MatrixResults search(IndexSearcher searcher) throws IOException {
             IndexReader reader = searcher.getIndexReader();
-            OpenBitSet filteredBits =
+            FixedBitSet filteredBits =
                 searchRequestToBitSet(searchreq, searcher, reader, searchAttachments);
             int maxDoc = reader.maxDoc();
 
             Map<String, Map<String, List<TermBitSet>>> xpathMap =
                 new HashMap<String, Map<String, List<TermBitSet>>>();
 
-            List<OpenBitSet> perFieldBitSets = new ArrayList<OpenBitSet>();
-            OpenBitSet allDocs = new OpenBitSet();
+            List<FixedBitSet> perFieldBitSets = new ArrayList<FixedBitSet>();
+            FixedBitSet allDocs = new FixedBitSet(reader.maxDoc());
             for (String field : fields) {
               boolean hasXpaths = field.indexOf('[') != -1;
-              OpenBitSet perFieldBitSet = new OpenBitSet(maxDoc);
+              FixedBitSet perFieldBitSet = new FixedBitSet(maxDoc);
               for (Term term : new XPathFieldIterator(reader, field, "")) {
-                OpenBitSet set = new OpenBitSet(maxDoc);
-                DocsEnum docs =
-                    MultiFields.getTermDocsEnum(reader, filteredBits, field, term.bytes());
+                FixedBitSet set = new FixedBitSet(maxDoc);
+                PostingsEnum docs = MultiFields.getTermDocsEnum(reader, field, term.bytes());
                 LuceneDocumentHelper.forEachDoc(docs, set::set);
 
                 perFieldBitSet.or(set);
@@ -675,7 +671,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
               addFieldBitSet(new Term(field, ""), perFieldBitSet, "", xpathMap, field);
               perFieldBitSets.add(perFieldBitSet);
             }
-            for (OpenBitSet set : perFieldBitSets) {
+            for (FixedBitSet set : perFieldBitSets) {
               set.xor(allDocs);
             }
 
@@ -706,7 +702,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
         });
   }
 
-  private OpenBitSet searchRequestToBitSet(
+  private FixedBitSet searchRequestToBitSet(
       @Nullable final Search searchreq,
       IndexSearcher searcher,
       IndexReader reader,
@@ -716,7 +712,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       Filter filters = getFilter(searchreq);
       Query query = getQuery(searchreq, null, searchAttachments);
 
-      BitSetCollector collector = new BitSetCollector();
+      BitSetCollector collector = new BitSetCollector(reader.maxDoc());
       searcher.search(query, filters, collector);
       return collector.getBitSet();
     } else {
@@ -737,15 +733,16 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
             Collection<Filter> filters = getFilters(request);
             Query query = getQuery(request, reader, isSearchAttachment);
             filters.add(new QueryWrapperFilter(query));
-            ChainedFilter chain =
-                new ChainedFilter(filters.toArray(new Filter[filters.size()]), ChainedFilter.AND);
+            //            ChainedFilter chain =
+            //                new ChainedFilter(filters.toArray(new Filter[filters.size()]),
+            // ChainedFilter.AND);
 
             // This is all the docs that are permitted by the filters.
-            OpenBitSet permittedDocSet = new OpenBitSet(reader.maxDoc());
-            for (AtomicReaderContext ctx : reader.leaves()) {
-              DocIdSetIterator iterator = chain.getDocIdSet(ctx, null).iterator();
-              LuceneDocumentHelper.forEachDoc(iterator, permittedDocSet::set);
-            }
+            FixedBitSet permittedDocSet = new FixedBitSet(reader.maxDoc());
+            //            for (LeafReaderContext ctx : reader.leaves()) {
+            //              DocIdSetIterator iterator = chain.getDocIdSet(ctx, null).iterator();
+            //              LuceneDocumentHelper.forEachDoc(iterator, permittedDocSet::set);
+            //            }
 
             // Get docs that contain terms that begin with the prefix
             List<Term> termList = Lists.newArrayList();
@@ -756,7 +753,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
               // Given a field, find out all the terms and seek the terms that have the provided
               // prefix so the result
               // does not have to be the exact term.
-              TermsEnum termsEnum = MultiFields.getTerms(reader, term.field()).iterator(null);
+              TermsEnum termsEnum = MultiFields.getTerms(reader, term.field()).iterator();
               if (termsEnum.seekCeil(new BytesRef(prefix)) != SeekStatus.END) {
                 // And then find out all the permitted docs for the prefix terms.
                 DocsEnum docsEnum = termsEnum.docs(permittedDocSet, null);
@@ -776,7 +773,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
   private void addFieldBitSet(
       Term term,
-      OpenBitSet set,
+      FixedBitSet set,
       String xpathKey,
       Map<String, Map<String, List<TermBitSet>>> xpathMap,
       String field) {
@@ -801,42 +798,32 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     }
   }
 
-  protected final class CompressedSetCollector extends Collector {
+  protected final class CompressedSetCollector extends SimpleCollector {
 
     private final LongSet set = new LongSet(new ConciseSet());
     private int docBase;
-
-    @Override
-    public void setScorer(Scorer scorer) throws IOException {
-      // nothing
-    }
-
-    @Override
-    public void setNextReader(AtomicReaderContext context) throws IOException {
-      this.docBase = context.docBase;
-    }
 
     @Override
     public void collect(int docId) throws IOException {
       set.add(docBase + docId);
     }
 
-    @Override
-    public boolean acceptsDocsOutOfOrder() {
-      return true;
-    }
-
     public LongSet getSet() {
       return set;
+    }
+
+    @Override
+    public boolean needsScores() {
+      return false;
     }
   }
 
   public static class TermBitSet {
 
     Term term;
-    OpenBitSet bitSet;
+    FixedBitSet bitSet;
 
-    public TermBitSet(Term term, OpenBitSet bitSet) {
+    public TermBitSet(Term term, FixedBitSet bitSet) {
       this.term = term;
       this.bitSet = bitSet;
     }
@@ -846,20 +833,20 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       List<List<TermBitSet>> bitSets,
       int index,
       String[] curValues,
-      OpenBitSet curBits,
+      FixedBitSet curBits,
       MatrixResults results,
       IndexReader reader,
       boolean countOnly) {
     List<TermBitSet> termBitSetList = bitSets.get(index);
     boolean last = index == curValues.length - 1;
     for (TermBitSet termBitSet : termBitSetList) {
-      OpenBitSet termBits = termBitSet.bitSet;
+      FixedBitSet termBits = termBitSet.bitSet;
       Term term = termBitSet.term;
       // if we don't intersect there's no point in recursing further in
       if (curBits.intersects(termBits)) {
         // Collect current term's value into the value array
         curValues[index] = term.text();
-        OpenBitSet docBits = (OpenBitSet) curBits.clone();
+        FixedBitSet docBits = (FixedBitSet) curBits.clone();
         docBits.and(termBits);
         if (last) {
           int count;
@@ -879,7 +866,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     }
   }
 
-  private List<ItemIdKey> getIdsForBitset(OpenBitSet docBits, IndexReader reader) {
+  private List<ItemIdKey> getIdsForBitset(FixedBitSet docBits, IndexReader reader) {
     int docid = 0;
     List<ItemIdKey> keys = new ArrayList<ItemIdKey>();
     while (true) {
@@ -978,7 +965,8 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
   protected Filter getFilter(Search request) {
     Collection<Filter> filters = getFilters(request);
-    return new ChainedFilter(filters.toArray(new Filter[filters.size()]), ChainedFilter.AND);
+    //    return new ChainedFilter(filters.toArray(new Filter[filters.size()]), ChainedFilter.AND);
+    return new BooleanFilter();
   }
 
   /**
@@ -1009,7 +997,8 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
         } else {
           Long start = range[0] != null ? range[0].getTime() : null;
           Long end = range[1] != null ? range[1].getTime() : null;
-          filters.add(FieldCacheRangeFilter.newLongRange(indexFieldName, start, end, true, true));
+          //          filters.add(DocValuesRangeQuery.newLongRange(indexFieldName, start, end, true,
+          // true));
         }
       }
     }
@@ -1290,8 +1279,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
     TLEAnalyzer autocompleteAnalyzer = getAutoCompleteAnalyzer();
     TokenStreamComponents tokenStreamComponents =
-        autocompleteAnalyzer.createComponents(
-            FreeTextQuery.FIELD_NAME_AUTOCOMPLETE, new StringReader(query.getQuery()));
+        autocompleteAnalyzer.createComponents(FreeTextQuery.FIELD_NAME_AUTOCOMPLETE);
 
     try (TokenStream buffer = tokenStreamComponents.getTokenStream()) {
       buffer.reset();
@@ -1364,12 +1352,14 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     }
 
     ArrayList<Term> terms = Lists.newArrayList();
-    TermsEnum termsEnum = MultiFields.getTerms(ir, field).iterator(null);
+    TermsEnum termsEnum = MultiFields.getTerms(ir, field).iterator();
     if (termsEnum != null) {
-      PrefixTermsEnum prefixTermsEnum = new PrefixTermsEnum(termsEnum, new BytesRef(prefix));
-      while (prefixTermsEnum.next() != null) {
-        terms.add(new Term(field, new BytesRef(prefixTermsEnum.term().utf8ToString())));
-      }
+      PrefixQuery p = new PrefixQuery(new Term(field, prefix));
+      //      PrefixTermsEnum prefixTermsEnum = new PrefixTermsEnum(termsEnum, new
+      // BytesRef(prefix));
+      //      while (prefixTermsEnum.next() != null) {
+      //        terms.add(new Term(field, new BytesRef(prefixTermsEnum.term().utf8ToString())));
+      //      }
     }
 
     return terms.toArray(new Term[terms.size()]);
@@ -1408,7 +1398,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     this.defaultOperator = defaultOperator;
   }
 
-  private static final class CountingCollector extends Collector {
+  private static final class CountingCollector extends SimpleCollector {
 
     private int count = 0;
 
@@ -1432,25 +1422,21 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     }
 
     @Override
-    public boolean acceptsDocsOutOfOrder() {
-      return true;
+    public boolean needsScores() {
+      return false;
     }
-
-    @Override
-    public void setScorer(Scorer scorer) throws IOException {
-      // Nothing to do
-    }
-
-    @Override
-    public void setNextReader(AtomicReaderContext context) throws IOException {}
   }
 
-  private static final class BitSetCollector extends Collector {
+  private static final class BitSetCollector extends SimpleCollector {
 
     private int docBase;
-    private final OpenBitSet bitSet = new OpenBitSet();
+    private final FixedBitSet bitSet;
 
-    public OpenBitSet getBitSet() {
+    private BitSetCollector(int maxDoc) {
+      this.bitSet = new FixedBitSet(maxDoc);
+    }
+
+    public FixedBitSet getBitSet() {
       return bitSet;
     }
 
@@ -1460,18 +1446,13 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     }
 
     @Override
-    public boolean acceptsDocsOutOfOrder() {
-      return true;
-    }
-
-    @Override
     public void setScorer(Scorer scorer) throws IOException {
       // Nothing to do
     }
 
     @Override
-    public void setNextReader(AtomicReaderContext context) throws IOException {
-      this.docBase = context.docBase;
+    public boolean needsScores() {
+      return false;
     }
   }
 
@@ -1510,7 +1491,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
           @Override
           public T search(IndexSearcher searcher) throws IOException {
             MultiFields.getTerms(searcher.getIndexReader(), FreeTextQuery.FIELD_ALL)
-                .iterator(null)
+                .iterator()
                 .term();
             return null;
           }

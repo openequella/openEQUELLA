@@ -56,6 +56,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.LongField;
+import org.apache.lucene.index.IndexOptions;
 import org.hibernate.Hibernate;
 import org.hibernate.type.SerializationException;
 import org.slf4j.Logger;
@@ -185,7 +186,7 @@ public class StandardIndexer extends AbstractIndexingExtension {
     fields.add(keyword(FreeTextQuery.FIELD_ID, Long.toString(item.getId())));
 
     FieldType idRangeFieldType = new FieldType();
-    idRangeFieldType.setIndexed(true);
+    idRangeFieldType.setIndexOptions(IndexOptions.DOCS);
     idRangeFieldType.setNumericType(FieldType.NumericType.LONG);
     idRangeFieldType.setNumericPrecisionStep(1);
     idRangeFieldType.setStored(true);

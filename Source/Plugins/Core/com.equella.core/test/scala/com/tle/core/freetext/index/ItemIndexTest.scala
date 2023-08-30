@@ -53,7 +53,7 @@ import com.tle.core.settings.service.ConfigurationService
 import com.tle.core.zookeeper.ZookeeperService
 import com.tle.freetext.{FreetextIndexConfiguration, FreetextIndexImpl, IndexedItem}
 import org.apache.lucene.document.{Document, Field, FieldType}
-import org.apache.lucene.queries.ChainedFilter
+import org.apache.lucene.index.IndexOptions
 import org.apache.lucene.search._
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyInt}
@@ -180,7 +180,7 @@ class ItemIndexTest
         privilege match {
           case Some(p) =>
             val ft = new FieldType()
-            ft.setIndexed(true)
+            ft.setIndexOptions(IndexOptions.DOCS)
             ft.setStored(true)
             ft.setTokenized(false)
             indexedItem.getAclMap.put(
@@ -213,14 +213,11 @@ class ItemIndexTest
   def buildSearcher(itemIndex: ItemIndex[_], searchConfig: DefaultSearch) =
     new Searcher[SearchResult] {
       override def search(searcher: IndexSearcher): SearchResult = {
-        def filters =
-          new ChainedFilter(itemIndex.getFilters(searchConfig).asScala.toArray, ChainedFilter.AND)
-
         def query = itemIndex.getQuery(searchConfig, searcher.getIndexReader, false)
 
         def sorter = itemIndex.getSorter(searchConfig)
 
-        searcher.search(query, filters, 10, sorter).scoreDocs.map(d => searcher.doc(d.doc))
+        searcher.search(query, 10, sorter).scoreDocs.map(d => searcher.doc(d.doc))
       }
     }
 

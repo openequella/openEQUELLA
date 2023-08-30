@@ -20,16 +20,17 @@ package com.tle.core.freetext.filters;
 
 import com.tle.core.freetext.index.LuceneDocumentHelper;
 import java.io.IOException;
-import org.apache.lucene.index.AtomicReader;
-import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.LeafReader;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
+import org.apache.lucene.util.BitDocIdSet;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.OpenBitSet;
+import org.apache.lucene.util.FixedBitSet;
 
 /**
  * Filters string by comparison. This is inclusive.
@@ -50,13 +51,13 @@ public class ComparisonFilter extends Filter {
   }
 
   @Override
-  public DocIdSet getDocIdSet(AtomicReaderContext context, Bits acceptDocs) throws IOException {
-    AtomicReader reader = context.reader();
-    OpenBitSet bits = new OpenBitSet(reader.maxDoc());
+  public DocIdSet getDocIdSet(LeafReaderContext context, Bits acceptDocs) throws IOException {
+    LeafReader reader = context.reader();
+    FixedBitSet bits = new FixedBitSet(reader.maxDoc());
 
     Terms terms = reader.terms(field);
     if (terms != null) {
-      TermsEnum termsEnum = terms.iterator(null);
+      TermsEnum termsEnum = terms.iterator();
       BytesRef startTerm = new BytesRef(start);
       BytesRef endTerm = new BytesRef(end);
 
@@ -69,6 +70,11 @@ public class ComparisonFilter extends Filter {
       }
     }
 
-    return bits;
+    return new BitDocIdSet(bits);
+  }
+
+  @Override
+  public String toString(String field) {
+    return null;
   }
 }

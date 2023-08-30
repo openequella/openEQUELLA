@@ -47,7 +47,7 @@ public class XPathFieldIterator implements Iterator<Term>, Iterable<Term> {
 
     Terms terms = MultiFields.getTerms(reader, field);
     if (terms != null) {
-      enumerator = terms.iterator(null);
+      enumerator = terms.iterator();
       current = new Term(field, new BytesRef(enumerator.next().utf8ToString()));
     }
 

@@ -20,16 +20,16 @@ package com.tle.core.workflow.freetext;
 
 import com.tle.common.Check;
 import java.io.IOException;
-import org.apache.lucene.index.AtomicReaderContext;
-import org.apache.lucene.index.BinaryDocValues;
-import org.apache.lucene.search.FieldCache;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.search.FieldComparator;
-import org.apache.lucene.util.BytesRef;
+import org.apache.lucene.search.LeafFieldComparator;
 
 public final class CustomLuceneSortComparator extends FieldComparator<Integer> {
 
   private final String userId;
   private int[] values;
+
+  private int numHits;
   private String[] currentReaderValues;
   private final String field;
   private int bottom;
@@ -37,6 +37,7 @@ public final class CustomLuceneSortComparator extends FieldComparator<Integer> {
 
   public CustomLuceneSortComparator(int numHits, String field, String userId) {
     values = new int[numHits];
+    this.numHits = numHits;
     this.field = field;
     this.userId = userId;
   }
@@ -52,41 +53,19 @@ public final class CustomLuceneSortComparator extends FieldComparator<Integer> {
     return this.userId.equals(userId) ? 0 : Check.isEmpty(userId) ? 1 : 2;
   }
 
-  @Override
-  public int compareBottom(int doc) {
-    final int val2 = isCurrentUser(currentReaderValues[doc]);
-    return bottom - val2;
-  }
-
-  @Override
-  public int compareTop(int doc) {
-    final int val2 = isCurrentUser(currentReaderValues[doc]);
-    return top - val2;
-  }
-
-  @Override
-  public void copy(int slot, int doc) {
-    values[slot] = isCurrentUser(currentReaderValues[doc]);
-  }
-
-  @Override
-  public FieldComparator<Integer> setNextReader(AtomicReaderContext context) throws IOException {
-    int maxDoc = context.reader().maxDoc();
-    currentReaderValues = new String[maxDoc];
-
-    BinaryDocValues docValues = FieldCache.DEFAULT.getTerms(context.reader(), field, true);
-    for (int i = 0; i < maxDoc; i++) {
-      BytesRef value = docValues.get(i);
-      currentReaderValues[i] = value == null ? "" : value.utf8ToString();
-    }
-
-    return this;
-  }
-
-  @Override
-  public void setBottom(final int bottom) {
-    this.bottom = values[bottom];
-  }
+  //  @Override
+  //  public FieldComparator<Integer> setNextReader(LeafReaderContext context) throws IOException {
+  //    int maxDoc = context.reader().maxDoc();
+  //    currentReaderValues = new String[maxDoc];
+  //
+  //    BinaryDocValues docValues = FieldCache.DEFAULT.getTerms(context.reader(), field, true);
+  //    for (int i = 0; i < maxDoc; i++) {
+  //      BytesRef value = docValues.get(i);
+  //      currentReaderValues[i] = value == null ? "" : value.utf8ToString();
+  //    }
+  //
+  //    return this;
+  //  }
 
   @Override
   public void setTopValue(Integer top) {
@@ -96,6 +75,11 @@ public final class CustomLuceneSortComparator extends FieldComparator<Integer> {
   @Override
   public Integer value(int slot) {
     return values[slot];
+  }
+
+  @Override
+  public LeafFieldComparator getLeafComparator(LeafReaderContext context) throws IOException {
+    return new IntComparator(numHits, field, 0);
   }
 
   @Override

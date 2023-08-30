@@ -22,13 +22,14 @@ import com.tle.common.searching.Field;
 import com.tle.core.freetext.index.LuceneDocumentHelper;
 import java.io.IOException;
 import java.util.List;
-import org.apache.lucene.index.AtomicReader;
-import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.LeafReader;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
+import org.apache.lucene.util.BitDocIdSet;
 import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.OpenBitSet;
+import org.apache.lucene.util.FixedBitSet;
 
 public class MustFilter extends Filter {
 
@@ -40,15 +41,15 @@ public class MustFilter extends Filter {
   }
 
   @Override
-  public DocIdSet getDocIdSet(AtomicReaderContext context, Bits acceptDocs) throws IOException {
-    AtomicReader reader = context.reader();
+  public DocIdSet getDocIdSet(LeafReaderContext context, Bits acceptDocs) throws IOException {
+    LeafReader reader = context.reader();
     int max = reader.maxDoc();
-    OpenBitSet allDocs = null;
+    FixedBitSet allDocs = null;
     // Each Must clause has its own document set, but the final result must be the intersection of
     // all the sets.
     for (List<Field> values : terms) {
       if (!values.isEmpty()) {
-        OpenBitSet good = new OpenBitSet(max);
+        FixedBitSet good = new FixedBitSet(max);
         for (Field nv : values) {
           LuceneDocumentHelper.forEachDoc(
               reader, new Term(nv.getField(), nv.getValue()), good::set);
@@ -61,9 +62,14 @@ public class MustFilter extends Filter {
       }
     }
     if (allDocs == null) {
-      allDocs = new OpenBitSet(max);
+      allDocs = new FixedBitSet(max);
       allDocs.set(0, max);
     }
-    return allDocs;
+    return new BitDocIdSet(allDocs);
+  }
+
+  @Override
+  public String toString(String field) {
+    return null;
   }
 }

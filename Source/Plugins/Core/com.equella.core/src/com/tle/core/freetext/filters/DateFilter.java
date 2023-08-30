@@ -24,7 +24,7 @@ import com.tle.common.util.UtcDate;
 import java.io.IOException;
 import java.util.Date;
 import java.util.TimeZone;
-import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.util.Bits;
@@ -65,7 +65,12 @@ public class DateFilter extends Filter {
   }
 
   @Override
-  public DocIdSet getDocIdSet(AtomicReaderContext context, Bits acceptDocs) throws IOException {
+  public DocIdSet getDocIdSet(LeafReaderContext context, Bits acceptDocs) throws IOException {
     return subfilter.getDocIdSet(context, acceptDocs);
+  }
+
+  @Override
+  public String toString(String field) {
+    return null;
   }
 }

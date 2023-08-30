@@ -26,13 +26,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.lucene.index.AtomicReader;
-import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.LeafReader;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
+import org.apache.lucene.util.BitDocIdSet;
 import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.OpenBitSet;
+import org.apache.lucene.util.FixedBitSet;
 
 public class MatrixFilter extends Filter {
 
@@ -43,10 +44,11 @@ public class MatrixFilter extends Filter {
   }
 
   @Override
-  public DocIdSet getDocIdSet(AtomicReaderContext context, Bits acceptDocs) throws IOException {
-    AtomicReader reader = context.reader();
+  public DocIdSet getDocIdSet(LeafReaderContext context, Bits acceptDocs) throws IOException {
+    LeafReader reader = context.reader();
     int maxDoc = reader.maxDoc();
-    Map<String, Map<String, OpenBitSet>> xpathMap = new HashMap<String, Map<String, OpenBitSet>>();
+    Map<String, Map<String, FixedBitSet>> xpathMap =
+        new HashMap<String, Map<String, FixedBitSet>>();
     for (Field fieldObj : fields) {
       String field = fieldObj.getField();
       boolean hasXpaths = field.indexOf('[') != -1;
@@ -54,7 +56,7 @@ public class MatrixFilter extends Filter {
       for (Term term : new XPathFieldIterator(reader, field, "")) // $NON-NLS-1$
       {
         if (term.text().equals(fieldObj.getValue())) {
-          OpenBitSet set = new OpenBitSet(maxDoc);
+          FixedBitSet set = new FixedBitSet(maxDoc);
           LuceneDocumentHelper.forEachDoc(reader, term, set::set);
           String xpathKey = "";
           if (hasXpaths) {
@@ -65,21 +67,21 @@ public class MatrixFilter extends Filter {
             }
           }
           mustHave.add(xpathKey);
-          Map<String, OpenBitSet> bitSetMap = xpathMap.get(xpathKey);
+          Map<String, FixedBitSet> bitSetMap = xpathMap.get(xpathKey);
           if (bitSetMap == null) {
-            bitSetMap = new HashMap<String, OpenBitSet>();
+            bitSetMap = new HashMap<String, FixedBitSet>();
             xpathMap.put(xpathKey, bitSetMap);
           }
           bitSetMap.put(field, set);
         }
       }
     }
-    OpenBitSet retSet = null;
-    for (Map<String, OpenBitSet> bitSetMap : xpathMap.values()) {
-      OpenBitSet set = null;
+    FixedBitSet retSet = null;
+    for (Map<String, FixedBitSet> bitSetMap : xpathMap.values()) {
+      FixedBitSet set = null;
       for (Field fieldObj : fields) {
         String field = fieldObj.getField();
-        OpenBitSet thisSet = bitSetMap.get(field);
+        FixedBitSet thisSet = bitSetMap.get(field);
         if (thisSet == null) {
           set = null;
           break;
@@ -95,6 +97,11 @@ public class MatrixFilter extends Filter {
         retSet.or(set);
       }
     }
-    return retSet == null ? new OpenBitSet(maxDoc) : retSet;
+    return retSet == null ? new BitDocIdSet(new FixedBitSet(maxDoc)) : new BitDocIdSet(retSet);
+  }
+
+  @Override
+  public String toString(String field) {
+    return null;
   }
 }

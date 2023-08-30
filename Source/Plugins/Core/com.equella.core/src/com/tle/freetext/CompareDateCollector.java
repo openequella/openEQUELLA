@@ -22,12 +22,10 @@ import com.dytech.edge.common.valuebean.ItemIndexDate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.tle.beans.Institution;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import org.apache.lucene.index.AtomicReaderContext;
 
 public class CompareDateCollector extends AbstractCompareDateCollector {
   private final List<IndexedItem> toIndex = Lists.newArrayList();
@@ -84,10 +82,5 @@ public class CompareDateCollector extends AbstractCompareDateCollector {
       toIndex.add(indItem);
     }
     return toIndex;
-  }
-
-  @Override
-  public void setNextReader(AtomicReaderContext context) throws IOException {
-    super.setNextReader(context);
   }
 }

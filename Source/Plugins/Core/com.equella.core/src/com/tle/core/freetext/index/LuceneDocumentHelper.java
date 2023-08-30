@@ -20,8 +20,8 @@ package com.tle.core.freetext.index;
 
 import java.io.IOException;
 import java.util.function.IntConsumer;
-import org.apache.lucene.index.AtomicReader;
 import org.apache.lucene.index.DocsEnum;
+import org.apache.lucene.index.LeafReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.DocIdSetIterator;
 
@@ -49,9 +49,9 @@ public final class LuceneDocumentHelper {
    * @param term Term for which a document enumeration is generated
    * @param forEach Function that consumes the ID of a document
    */
-  public static void forEachDoc(AtomicReader reader, Term term, IntConsumer forEach)
+  public static void forEachDoc(LeafReader reader, Term term, IntConsumer forEach)
       throws IOException {
-    forEachDoc(reader.termDocsEnum(term), forEach);
+    forEachDoc(reader.postings(term), forEach);
   }
 
   /**
