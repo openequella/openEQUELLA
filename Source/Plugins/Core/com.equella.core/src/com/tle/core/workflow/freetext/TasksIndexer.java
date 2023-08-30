@@ -85,6 +85,7 @@ public class TasksIndexer extends AbstractIndexingExtension {
 
     Document itemdoc = indexedItem.getItemdoc();
     itemdoc.add(indexed(FIELD_WORKFLOW, workflow.getUuid()));
+    itemdoc.add(stringSortingField(FIELD_WORKFLOW, workflow.getUuid()));
 
     for (WorkflowNodeStatus nodestatus : modstatus.getStatuses()) {
       if (nodestatus.getNode().getType() == WorkflowNode.ITEM_TYPE
@@ -109,10 +110,11 @@ public class TasksIndexer extends AbstractIndexingExtension {
             assignedTo = ""; // $NON-NLS-1$
           }
           doc.add(indexed(FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO, assignedTo));
-          doc.add(
-              indexed(
-                  FIELD_PRIORITY,
-                  Integer.toString(((WorkflowItem) taskstatus.getNode()).getPriority())));
+          doc.add(stringSortingField(FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO, assignedTo));
+
+          String priority = Integer.toString(((WorkflowItem) taskstatus.getNode()).getPriority());
+          doc.add(indexed(FIELD_PRIORITY, priority));
+          doc.add(stringSortingField(FIELD_PRIORITY, priority));
 
           addDateField(
               doc, FIELD_DUEDATE, taskstatus.getDateDue(), DateFilter.Format.LONG, Long.MAX_VALUE);
@@ -133,6 +135,7 @@ public class TasksIndexer extends AbstractIndexingExtension {
                   itemTask, MODERATE_ITEM, ItemIndex.convertStdPriv(MODERATE_ITEM)));
 
           doc.add(indexed(FIELD_WORKFLOW, workflow.getUuid()));
+          doc.add(stringSortingField(FIELD_WORKFLOW, workflow.getUuid()));
           indexedItem.getDocumentsForIndex(Search.INDEX_TASK).add(doc);
         }
       } else if (nodestatus.getNode().getType() == WorkflowNode.SCRIPT_TYPE
@@ -148,6 +151,7 @@ public class TasksIndexer extends AbstractIndexingExtension {
           doc.add(taskField);
 
           doc.add(indexed(FIELD_WORKFLOW, workflow.getUuid()));
+          doc.add(stringSortingField(FIELD_WORKFLOW, workflow.getUuid()));
           indexedItem.getDocumentsForIndex(Search.INDEX_SCRIPT_TASK).add(doc);
         }
       }

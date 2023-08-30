@@ -31,6 +31,13 @@ import java.util.Map;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
+import org.apache.lucene.document.NumericDocValuesField;
+import org.apache.lucene.document.SortedDocValuesField;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.IndexOptions;
+import org.apache.lucene.util.BytesRef;
 
 public abstract class AbstractIndexingExtension implements IndexingExtension {
   @Override
@@ -48,10 +55,10 @@ public abstract class AbstractIndexingExtension implements IndexingExtension {
     return new UtcDate(date).format(Dates.ISO);
   }
 
-  public static Field addDateField(
+  public static void addDateField(
       Document doc, String name, Date date, DateFilter.Format format, Long defaultTime) {
     if (date == null && defaultTime == null) {
-      return null;
+      return;
     }
     String val;
     if (format == Format.ISO) {
@@ -61,34 +68,66 @@ public abstract class AbstractIndexingExtension implements IndexingExtension {
       val = new UtcDate(date).format(Dates.ISO);
     } else {
       if (date != null) {
-        val = Long.toString(date.getTime());
+        long time = date.getTime();
+        val = Long.toString(time);
+        // If the date is in format 'LONG', also add a NumericDocValuesField for this field so that
+        // sorting by this date field will work correctly.
+        doc.add(numericSortingField(name, time));
       } else {
         val = defaultTime.toString();
       }
     }
-    Field field = new Field(name, val, Field.Store.NO, Field.Index.NOT_ANALYZED);
+    StringField field = new StringField(name, val, Field.Store.NO);
     doc.add(field);
-    return field;
+  }
+
+  public static Field stringSortingField(String field, String value) {
+    return new SortedDocValuesField(field, new BytesRef(value));
+  }
+
+  public static Field numericSortingField(String field, long value) {
+    return new NumericDocValuesField(field, value);
   }
 
   public static Field indexed(String name, String value) {
-    return new Field(name, value, Field.Store.NO, Field.Index.NOT_ANALYZED);
+    FieldType ft = new FieldType();
+    ft.setStored(false);
+    ft.setIndexOptions(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS);
+    ft.setTokenized(false);
+
+    return new Field(name, value, ft);
   }
 
   public static Field keyword(String name, String value) {
-    return new Field(name, value, Field.Store.YES, Field.Index.NOT_ANALYZED);
+    FieldType ft = new FieldType();
+    ft.setStored(true);
+    ft.setIndexOptions(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS);
+    ft.setTokenized(false);
+
+    return new Field(name, value, ft);
   }
 
   public static Field keyword(String name, TokenStream value) {
-    return new Field(name, value);
+    return new TextField(name, value);
   }
 
   public static Field unstored(String name, String value) {
-    return new Field(name, value, Field.Store.NO, Field.Index.ANALYZED);
+    FieldType ft = new FieldType();
+    ft.setStored(false);
+    ft.setIndexOptions(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS);
+    ft.setTokenized(true);
+
+    return new Field(name, value, ft);
   }
 
   public static Field unstoredAndVectored(String name, String value) {
-    return new Field(name, value, Field.Store.NO, Field.Index.ANALYZED, Field.TermVector.YES);
+    FieldType ft = new FieldType();
+    ft.setStored(false);
+    ft.setIndexOptions(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS);
+    ft.setTokenized(true);
+    ft.setStoreTermVectors(true);
+
+    return new Field(name, value, ft);
   }
 
   protected StringBuilder gatherLanguageBundles(LanguageBundle... bundles) {

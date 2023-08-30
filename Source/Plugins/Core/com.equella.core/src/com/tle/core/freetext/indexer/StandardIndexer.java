@@ -263,6 +263,12 @@ public class StandardIndexer extends AbstractIndexingExtension {
       }
     }
 
+    // Since Lucene v5, sorting fields must be added explicitly.
+    fields.add(stringSortingField(FreeTextQuery.FIELD_REALCREATED, realCreated));
+    fields.add(stringSortingField(FreeTextQuery.FIELD_REALLASTMODIFIED, realLastModified));
+    fields.add(stringSortingField(FreeTextQuery.FIELD_NAME, szName));
+    fields.add(stringSortingField(FreeTextQuery.FIELD_RATING, rating));
+
     return fields;
   }
 

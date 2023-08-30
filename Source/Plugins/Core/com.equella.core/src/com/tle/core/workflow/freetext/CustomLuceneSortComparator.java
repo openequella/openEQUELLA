@@ -20,11 +20,13 @@ package com.tle.core.workflow.freetext;
 
 import com.tle.common.Check;
 import java.io.IOException;
+import org.apache.lucene.index.BinaryDocValues;
+import org.apache.lucene.index.LeafReader;
 import org.apache.lucene.index.LeafReaderContext;
-import org.apache.lucene.search.FieldComparator;
-import org.apache.lucene.search.LeafFieldComparator;
+import org.apache.lucene.search.SimpleFieldComparator;
+import org.apache.lucene.util.BytesRef;
 
-public final class CustomLuceneSortComparator extends FieldComparator<Integer> {
+public final class CustomLuceneSortComparator extends SimpleFieldComparator<Integer> {
 
   private final String userId;
   private int[] values;
@@ -53,19 +55,40 @@ public final class CustomLuceneSortComparator extends FieldComparator<Integer> {
     return this.userId.equals(userId) ? 0 : Check.isEmpty(userId) ? 1 : 2;
   }
 
-  //  @Override
-  //  public FieldComparator<Integer> setNextReader(LeafReaderContext context) throws IOException {
-  //    int maxDoc = context.reader().maxDoc();
-  //    currentReaderValues = new String[maxDoc];
-  //
-  //    BinaryDocValues docValues = FieldCache.DEFAULT.getTerms(context.reader(), field, true);
-  //    for (int i = 0; i < maxDoc; i++) {
-  //      BytesRef value = docValues.get(i);
-  //      currentReaderValues[i] = value == null ? "" : value.utf8ToString();
-  //    }
-  //
-  //    return this;
-  //  }
+  @Override
+  public int compareBottom(int doc) {
+    final int val2 = isCurrentUser(currentReaderValues[doc]);
+    return bottom - val2;
+  }
+
+  @Override
+  public int compareTop(int doc) {
+    final int val2 = isCurrentUser(currentReaderValues[doc]);
+    return top - val2;
+  }
+
+  @Override
+  public void copy(int slot, int doc) {
+    values[slot] = isCurrentUser(currentReaderValues[doc]);
+  }
+
+  @Override
+  public void doSetNextReader(LeafReaderContext context) throws IOException {
+    LeafReader reader = context.reader();
+    int maxDoc = reader.maxDoc();
+    currentReaderValues = new String[maxDoc];
+
+    BinaryDocValues docValues = reader.getBinaryDocValues(field);
+    for (int i = 0; i < maxDoc; i++) {
+      BytesRef value = docValues.get(i);
+      currentReaderValues[i] = value == null ? "" : value.utf8ToString();
+    }
+  }
+
+  @Override
+  public void setBottom(final int bottom) {
+    this.bottom = values[bottom];
+  }
 
   @Override
   public void setTopValue(Integer top) {
@@ -75,11 +98,6 @@ public final class CustomLuceneSortComparator extends FieldComparator<Integer> {
   @Override
   public Integer value(int slot) {
     return values[slot];
-  }
-
-  @Override
-  public LeafFieldComparator getLeafComparator(LeafReaderContext context) throws IOException {
-    return new IntComparator(numHits, field, 0);
   }
 
   @Override
