@@ -54,7 +54,7 @@
     "eslint-config-prettier": "9.0.0",
     "eslint-plugin-jest": "27.2.3",
     "eslint-plugin-notice": "0.9.10",
-    "eslint-plugin-prettier": "4.2.1",
+    "eslint-plugin-prettier": "5.0.0",
     "jest": "29.6.4",
     "jest-config": "29.6.4",
     "prettier": "2.8.8",
