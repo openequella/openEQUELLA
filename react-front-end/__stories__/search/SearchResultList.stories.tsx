@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { action } from "@storybook/addon-actions";
-import type { Meta, Story } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react";
 import { createRef } from "react";
 import * as React from "react";
 import {
@@ -48,7 +48,7 @@ const sharedPaginationArgs = {
   onRowsPerPageChange: action("onRowsPerPageChange"),
 };
 
-export const EmptyResultListComponent: Story<SearchResultListProps> = (
+export const EmptyResultListComponent: StoryFn<SearchResultListProps> = (
   args
 ) => <SearchResultList {...args} />;
 
@@ -77,7 +77,7 @@ EmptyResultListComponent.args = {
   },
 };
 
-export const BasicSearchResultListComponent: Story<SearchResultListProps> = (
+export const BasicSearchResultListComponent: StoryFn<SearchResultListProps> = (
   args
 ) => (
   <SearchResultList {...args}>
@@ -95,9 +95,9 @@ BasicSearchResultListComponent.args = {
   },
 };
 
-export const LoadingSearchResultListComponent: Story<SearchResultListProps> = (
-  args
-) => <SearchResultList {...args} />;
+export const LoadingSearchResultListComponent: StoryFn<
+  SearchResultListProps
+> = (args) => <SearchResultList {...args} />;
 
 LoadingSearchResultListComponent.args = {
   ...BasicSearchResultListComponent.args,

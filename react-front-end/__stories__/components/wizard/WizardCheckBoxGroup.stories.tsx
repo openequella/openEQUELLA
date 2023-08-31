@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import {
   WizardCheckBoxGroup,
   WizardCheckBoxGroupProps,
@@ -32,7 +32,7 @@ export default {
   },
 } as Meta<WizardCheckBoxGroupProps>;
 
-export const Normal: Story<WizardCheckBoxGroupProps> = (args) => (
+export const Normal: StoryFn<WizardCheckBoxGroupProps> = (args) => (
   <WizardCheckBoxGroup {...args} />
 );
 Normal.args = {
@@ -73,7 +73,7 @@ Normal.args = {
   ],
 };
 
-export const MultipleColumns: Story<WizardCheckBoxGroupProps> = (args) => (
+export const MultipleColumns: StoryFn<WizardCheckBoxGroupProps> = (args) => (
   <WizardCheckBoxGroup {...args} />
 );
 MultipleColumns.args = {
@@ -82,7 +82,7 @@ MultipleColumns.args = {
   description: "Options are displayed in 4 columns 2 rows",
 };
 
-export const ValueSelected: Story<WizardCheckBoxGroupProps> = (args) => (
+export const ValueSelected: StoryFn<WizardCheckBoxGroupProps> = (args) => (
   <WizardCheckBoxGroup {...args} />
 );
 ValueSelected.args = {

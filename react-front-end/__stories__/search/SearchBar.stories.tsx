@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { action } from "@storybook/addon-actions";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import SearchBar, {
   SearchBarProps,
@@ -34,7 +34,7 @@ export default {
   },
 } as Meta<SearchBarProps>;
 
-export const NonWildcardMode: Story<SearchBarProps> = (args) => (
+export const NonWildcardMode: StoryFn<SearchBarProps> = (args) => (
   <SearchBar {...args} />
 );
 NonWildcardMode.args = {
@@ -42,7 +42,7 @@ NonWildcardMode.args = {
   wildcardMode: false,
 };
 
-export const WildcardMode: Story<SearchBarProps> = (args) => (
+export const WildcardMode: StoryFn<SearchBarProps> = (args) => (
   <SearchBar {...args} />
 );
 WildcardMode.args = {
@@ -50,7 +50,7 @@ WildcardMode.args = {
   wildcardMode: true,
 };
 
-export const AdvancedSearchMode: Story<SearchBarProps> = (args) => (
+export const AdvancedSearchMode: StoryFn<SearchBarProps> = (args) => (
   <SearchBar {...args} />
 );
 const advancedSearchFilter = {
@@ -62,7 +62,7 @@ AdvancedSearchMode.args = {
   advancedSearchFilter: { ...advancedSearchFilter },
 };
 
-export const AdvancedSearchModeAccented: Story<SearchBarProps> = (args) => (
+export const AdvancedSearchModeAccented: StoryFn<SearchBarProps> = (args) => (
   <SearchBar {...args} />
 );
 AdvancedSearchModeAccented.args = {
@@ -73,7 +73,7 @@ AdvancedSearchModeAccented.args = {
   },
 };
 
-export const AdvancedSearchModeAccentedAndWildcardMode: Story<
+export const AdvancedSearchModeAccentedAndWildcardMode: StoryFn<
   SearchBarProps
 > = (args) => <SearchBar {...args} />;
 AdvancedSearchModeAccentedAndWildcardMode.args = {

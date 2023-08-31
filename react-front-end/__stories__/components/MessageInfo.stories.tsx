@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import type { Meta, Story } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react";
 import MessageInfo, {
   MessageInfoProps,
 } from "../../tsrc/components/MessageInfo";
@@ -32,7 +32,7 @@ const sharedArgs = {
   title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
 };
 
-export const VariantSuccess: Story<MessageInfoProps> = (args) => (
+export const VariantSuccess: StoryFn<MessageInfoProps> = (args) => (
   <MessageInfo {...args} />
 );
 VariantSuccess.args = {
@@ -40,7 +40,7 @@ VariantSuccess.args = {
   variant: "success",
 };
 
-export const VariantError: Story<MessageInfoProps> = (args) => (
+export const VariantError: StoryFn<MessageInfoProps> = (args) => (
   <MessageInfo {...args} />
 );
 VariantError.args = {
@@ -48,7 +48,7 @@ VariantError.args = {
   variant: "error",
 };
 
-export const VariantInfo: Story<MessageInfoProps> = (args) => (
+export const VariantInfo: StoryFn<MessageInfoProps> = (args) => (
   <MessageInfo {...args} />
 );
 VariantInfo.args = {
@@ -56,7 +56,7 @@ VariantInfo.args = {
   variant: "info",
 };
 
-export const VariantWarning: Story<MessageInfoProps> = (args) => (
+export const VariantWarning: StoryFn<MessageInfoProps> = (args) => (
   <MessageInfo {...args} />
 );
 VariantWarning.args = {

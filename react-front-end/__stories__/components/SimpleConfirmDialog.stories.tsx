@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import type { Meta, Story } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react";
 import SimpleConfirmDialog, {
   SimpleConfirmDialogProps,
 } from "../../tsrc/components/SimpleConfirmDialog";
@@ -30,7 +30,7 @@ export default {
   },
 } as Meta<SimpleConfirmDialogProps>;
 
-export const ShowDialog: Story<SimpleConfirmDialogProps> = (args) => (
+export const ShowDialog: StoryFn<SimpleConfirmDialogProps> = (args) => (
   <SimpleConfirmDialog {...args} />
 );
 ShowDialog.args = {

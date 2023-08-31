@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import { getRemoteSearchesFromServerResult } from "../../__mocks__/RemoteSearchModule.mock";
 import {
@@ -28,7 +28,7 @@ export default {
   component: AuxiliarySearchSelector,
 } as Meta<AuxiliarySearchSelectorProps>;
 
-export const standard: Story<AuxiliarySearchSelectorProps> = (
+export const standard: StoryFn<AuxiliarySearchSelectorProps> = (
   args: AuxiliarySearchSelectorProps
 ) => <AuxiliarySearchSelector {...args} />;
 standard.args = {
