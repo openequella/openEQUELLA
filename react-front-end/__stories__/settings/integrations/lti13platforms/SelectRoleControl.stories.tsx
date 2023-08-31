@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { action } from "@storybook/addon-actions";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import { pipe } from "fp-ts/function";
 import * as RS from "fp-ts/ReadonlySet";
 import * as React from "react";
@@ -31,7 +31,7 @@ export default {
   component: SelectRoleControl,
 } as Meta<SelectRoleControlProps>;
 
-export const Empty: Story<SelectRoleControlProps> = (args) => (
+export const Empty: StoryFn<SelectRoleControlProps> = (args) => (
   <SelectRoleControl {...args} />
 );
 Empty.args = {
@@ -42,7 +42,7 @@ Empty.args = {
   roleListProvider: listRoles,
 };
 
-export const WithValue: Story<SelectRoleControlProps> = (args) => (
+export const WithValue: StoryFn<SelectRoleControlProps> = (args) => (
   <SelectRoleControl {...args} />
 );
 WithValue.args = {

@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import Lightbox, {
   LightboxConfig,
@@ -60,7 +60,7 @@ const youTubeConfig: LightboxConfig = {
   title: "1788-L - N U / V E R / K A",
   mimeType: CustomMimeTypes.YOUTUBE,
 };
-export const displayImage: Story<LightboxProps> = (args: LightboxProps) => (
+export const displayImage: StoryFn<LightboxProps> = (args: LightboxProps) => (
   <Lightbox {...args} />
 );
 displayImage.args = {
@@ -68,7 +68,7 @@ displayImage.args = {
   config: imageConfig,
 };
 
-export const displayAudio: Story<LightboxProps> = (args: LightboxProps) => (
+export const displayAudio: StoryFn<LightboxProps> = (args: LightboxProps) => (
   <Lightbox {...args} />
 );
 displayAudio.args = {
@@ -76,7 +76,7 @@ displayAudio.args = {
   config: audioConfig,
 };
 
-export const displayVideo: Story<LightboxProps> = (args: LightboxProps) => (
+export const displayVideo: StoryFn<LightboxProps> = (args: LightboxProps) => (
   <Lightbox {...args} />
 );
 displayVideo.args = {
@@ -84,7 +84,7 @@ displayVideo.args = {
   config: videoConfig,
 };
 
-export const displayYouTube: Story<LightboxProps> = (args: LightboxProps) => (
+export const displayYouTube: StoryFn<LightboxProps> = (args: LightboxProps) => (
   <Lightbox {...args} />
 );
 displayYouTube.args = {
@@ -92,7 +92,7 @@ displayYouTube.args = {
   config: youTubeConfig,
 };
 
-export const unsupportedContent: Story<LightboxProps> = (
+export const unsupportedContent: StoryFn<LightboxProps> = (
   args: LightboxProps
 ) => <Lightbox {...args} />;
 unsupportedContent.args = {
@@ -104,7 +104,7 @@ unsupportedContent.args = {
   },
 };
 
-export const NavigateAttachments: Story<LightboxProps> = (
+export const NavigateAttachments: StoryFn<LightboxProps> = (
   args: LightboxProps
 ) => <Lightbox {...args} />;
 NavigateAttachments.args = {
@@ -116,7 +116,7 @@ NavigateAttachments.args = {
   },
 };
 
-export const enableSummaryPage: Story<LightboxProps> = (
+export const enableSummaryPage: StoryFn<LightboxProps> = (
   args: LightboxProps
 ) => <Lightbox {...args} />;
 enableSummaryPage.args = {

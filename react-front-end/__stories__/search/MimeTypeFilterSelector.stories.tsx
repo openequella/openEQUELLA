@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import { getMimeTypeFilters } from "../../__mocks__/MimeTypeFilter.mock";
 import {
@@ -38,16 +38,16 @@ const commonProps = {
   filters: mockedFilters,
 };
 
-export const NoFilterSelected: Story<MimeTypeFilterSelectorProps> = (args) => (
-  <MimeTypeFilterSelector {...args} />
-);
+export const NoFilterSelected: StoryFn<MimeTypeFilterSelectorProps> = (
+  args
+) => <MimeTypeFilterSelector {...args} />;
 
 NoFilterSelected.args = {
   value: [],
   ...commonProps,
 };
 
-export const FilterSelected: Story<MimeTypeFilterSelectorProps> = (args) => (
+export const FilterSelected: StoryFn<MimeTypeFilterSelectorProps> = (args) => (
   <MimeTypeFilterSelector {...args} />
 );
 

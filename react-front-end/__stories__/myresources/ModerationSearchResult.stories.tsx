@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import {
   getEmptySearchResult,
@@ -31,14 +31,14 @@ export default {
   component: ModerationSearchResult,
 } as Meta<ModerationSearchResultProps>;
 
-export const Standard: Story<ModerationSearchResultProps> = (args) => (
+export const Standard: StoryFn<ModerationSearchResultProps> = (args) => (
   <ModerationSearchResult {...args} />
 );
 Standard.args = {
   result: getModerationItemsSearchResult(),
 };
 
-export const Empty: Story<ModerationSearchResultProps> = (args) => (
+export const Empty: StoryFn<ModerationSearchResultProps> = (args) => (
   <ModerationSearchResult {...args} />
 );
 Empty.args = {

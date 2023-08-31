@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import { Date as DateDisplay, DateProps } from "../../tsrc/components/Date";
 
@@ -24,7 +24,7 @@ export default {
   component: DateDisplay,
 } as Meta<DateProps>;
 
-export const dateDisplay: Story<DateProps> = (args) => (
+export const dateDisplay: StoryFn<DateProps> = (args) => (
   <DateDisplay {...args} />
 );
 

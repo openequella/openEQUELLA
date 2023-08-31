@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import type { Meta, Story } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react";
 import ConfirmDialog, {
   ConfirmDialogProps,
 } from "../../tsrc/components/ConfirmDialog";
@@ -30,7 +30,7 @@ export default {
   },
 } as Meta<ConfirmDialogProps>;
 
-export const ShowDialog: Story<ConfirmDialogProps> = (args) => (
+export const ShowDialog: StoryFn<ConfirmDialogProps> = (args) => (
   <ConfirmDialog {...args} />
 );
 
@@ -40,7 +40,7 @@ ShowDialog.args = {
   confirmButtonText: "ok",
 };
 
-export const DisableConfirmButton: Story<ConfirmDialogProps> = (args) => (
+export const DisableConfirmButton: StoryFn<ConfirmDialogProps> = (args) => (
   <ConfirmDialog {...args} />
 );
 

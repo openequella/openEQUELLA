@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import { mockRawHtmlContent } from "../../../__mocks__/AdvancedSearchModule.mock";
 import {
@@ -28,7 +28,7 @@ export default {
   component: WizardRawHtml,
 } as Meta<WizardRawHtmlProps>;
 
-export const Standard: Story<WizardRawHtmlProps> = (args) => (
+export const Standard: StoryFn<WizardRawHtmlProps> = (args) => (
   <WizardRawHtml
     id="wizard-rawhtml-story"
     description={mockRawHtmlContent}

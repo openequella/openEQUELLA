@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import {
   ExportSearchResultLink,
   ExportSearchResultLinkProps,
@@ -30,7 +30,7 @@ export default {
   },
 } as Meta<ExportSearchResultLinkProps>;
 
-export const ExportEnabled: Story<ExportSearchResultLinkProps> = (args) => (
+export const ExportEnabled: StoryFn<ExportSearchResultLinkProps> = (args) => (
   <ExportSearchResultLink {...args} />
 );
 ExportEnabled.args = {
@@ -38,7 +38,7 @@ ExportEnabled.args = {
   alreadyExported: false,
 };
 
-export const ExportCompleted: Story<ExportSearchResultLinkProps> = (args) => (
+export const ExportCompleted: StoryFn<ExportSearchResultLinkProps> = (args) => (
   <ExportSearchResultLink {...args} />
 );
 ExportCompleted.args = {

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import type { Meta, Story } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react";
 import SettingsToggleSwitch, {
   SettingsToggleSwitchProps,
 } from "../../tsrc/components/SettingsToggleSwitch";
@@ -29,9 +29,9 @@ export default {
   },
 } as Meta<SettingsToggleSwitchProps>;
 
-export const ToggleSwitchControl: Story<SettingsToggleSwitchProps> = (args) => (
-  <SettingsToggleSwitch {...args} />
-);
+export const ToggleSwitchControl: StoryFn<SettingsToggleSwitchProps> = (
+  args
+) => <SettingsToggleSwitch {...args} />;
 ToggleSwitchControl.args = {
   disabled: false,
   id: "toggle",

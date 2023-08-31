@@ -26,6 +26,7 @@ import * as T from "fp-ts/Task";
 import * as TO from "fp-ts/TaskOption";
 import { History, Location } from "history";
 import { pick } from "lodash";
+import { createContext } from "react";
 import {
   Array as RuntypeArray,
   Boolean,
@@ -59,6 +60,7 @@ import {
   Collection,
   findCollectionsByUuid,
 } from "../modules/CollectionsModule";
+import { LegacyMyResourcesRuntypes } from "../modules/LegacyContentModule";
 import {
   buildSelectionSessionItemSummaryLink,
   buildSelectionSessionSearchPageLink,
@@ -73,7 +75,6 @@ import {
   SearchOptionsFields,
 } from "../modules/SearchModule";
 import { findUserById } from "../modules/UserModule";
-import { LegacyMyResourcesRuntypes } from "../myresources/MyResourcesPageHelper";
 import { DateRange, isDate } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
 import { simpleMatch } from "../util/match";
@@ -81,6 +82,9 @@ import { pfSlice, pfTernary } from "../util/pointfree";
 import type { RefinePanelControl } from "./components/RefineSearchPanel";
 import type { SortOrderOptions } from "./components/SearchOrderSelect";
 import type { StatusSelectorProps } from "./components/StatusSelector";
+import type { State } from "./SearchPageReducer";
+
+const nop = () => {};
 
 /**
  * This helper is intended to assist with processing related to the Presentation Layer -
@@ -119,6 +123,64 @@ export const defaultSearchPageOptions: SearchPageOptions = {
   displayMode: "list",
   dateRangeQuickModeEnabled: true,
 };
+
+/**
+ * Search settings retrieved from server.
+ */
+export interface GeneralSearchSettings {
+  core: OEQ.SearchSettings.Settings | undefined;
+  mimeTypeFilters: OEQ.SearchFilterSettings.MimeTypeFilter[];
+  advancedSearches: OEQ.Common.BaseEntitySummary[];
+}
+
+export const defaultGeneralSearchSettings: GeneralSearchSettings = {
+  core: undefined,
+  mimeTypeFilters: [],
+  advancedSearches: [],
+};
+
+/**
+ * Data structure for what SearchContext provides.
+ */
+export interface SearchContextProps {
+  /**
+   * Function to perform a search.
+   * @param searchPageOptions The SearchPageOptions to be applied in a search.
+   * @param updateClassifications Whether to update the list of classifications based on the current search criteria.
+   * @param callback Callback fired after a search is completed.
+   */
+  search: (
+    searchPageOptions: SearchPageOptions,
+    updateClassifications?: boolean,
+    callback?: () => void
+  ) => void;
+  /**
+   * The state controlling the status of searching.
+   */
+  searchState: State;
+  /**
+   * Search settings retrieved from server, including MIME type filters and Advanced searches.
+   */
+  searchSettings: GeneralSearchSettings;
+  /**
+   * Error handler specific to the New Search UI.
+   */
+  searchPageErrorHandler: (error: Error) => void;
+}
+
+export const SearchContext = createContext<SearchContextProps>({
+  search: nop,
+  searchState: {
+    status: "initialising",
+    options: defaultSearchPageOptions,
+  },
+  searchSettings: {
+    core: undefined,
+    mimeTypeFilters: [],
+    advancedSearches: [],
+  },
+  searchPageErrorHandler: nop,
+});
 
 /**
  * Type definition for the configuration of navigating to another path from new Search UI.

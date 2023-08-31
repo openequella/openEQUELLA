@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import { defaultACLExpressionProps } from "../../../__mocks__/ACLExpressionBuilder.mock";
 import { complexExpressionACLExpression } from "../../../__mocks__/ACLExpressionModule.mock";
@@ -29,7 +29,7 @@ export default {
   component: ACLExpressionBuilder,
 } as Meta<ACLExpressionBuilderProps>;
 
-export const Basic: Story<ACLExpressionBuilderProps> = (args) => (
+export const Basic: StoryFn<ACLExpressionBuilderProps> = (args) => (
   <ACLExpressionBuilder {...args} />
 );
 Basic.args = {
@@ -37,7 +37,7 @@ Basic.args = {
   aclExpression: generate(complexExpressionACLExpression),
 };
 
-export const EmptyTreeView: Story<ACLExpressionBuilderProps> = (args) => (
+export const EmptyTreeView: StoryFn<ACLExpressionBuilderProps> = (args) => (
   <ACLExpressionBuilder {...args} />
 );
 EmptyTreeView.args = {
@@ -45,9 +45,9 @@ EmptyTreeView.args = {
   aclExpression: undefined,
 };
 
-export const ErrorSSOTokensView: Story<ACLExpressionBuilderProps> = (args) => (
-  <ACLExpressionBuilder {...args} />
-);
+export const ErrorSSOTokensView: StoryFn<ACLExpressionBuilderProps> = (
+  args
+) => <ACLExpressionBuilder {...args} />;
 ErrorSSOTokensView.args = {
   ...Basic.args,
   ssoTokensProvider: () => Promise.reject(new Error("Failed to get tokens")),

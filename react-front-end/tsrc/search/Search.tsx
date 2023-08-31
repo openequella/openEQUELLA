@@ -18,6 +18,7 @@
 import * as OEQ from "@openequella/rest-api-client";
 import { identity, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
+import * as React from "react";
 import {
   ReactNode,
   useCallback,
@@ -26,7 +27,6 @@ import {
   useReducer,
   useState,
 } from "react";
-import * as React from "react";
 import { useHistory } from "react-router";
 import { AppContext } from "../mainui/App";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
@@ -54,12 +54,15 @@ import {
 import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
 import { languageStrings } from "../util/langstrings";
 import {
+  defaultGeneralSearchSettings,
   defaultSearchPageOptions,
+  GeneralSearchSettings,
   generateSearchPageOptionsFromQueryString,
   getRawModeFromStorage,
+  SearchContext,
   SearchPageOptions,
 } from "./SearchPageHelper";
-import { reducer, SearchPageSearchResult, State } from "./SearchPageReducer";
+import { reducer, SearchPageSearchResult } from "./SearchPageReducer";
 
 /**
  * Structure of data stored in browser history state, to capture the current state of SearchPage as well as
@@ -80,57 +83,6 @@ export interface SearchPageHistoryState<T = unknown> {
 
 const { searchpage: searchStrings } = languageStrings;
 const nop = () => {};
-
-interface GeneralSearchSettings {
-  core: OEQ.SearchSettings.Settings | undefined;
-  mimeTypeFilters: OEQ.SearchFilterSettings.MimeTypeFilter[];
-  advancedSearches: OEQ.Common.BaseEntitySummary[];
-}
-
-const defaultGeneralSearchSettings: GeneralSearchSettings = {
-  core: undefined,
-  mimeTypeFilters: [],
-  advancedSearches: [],
-};
-
-/**
- * Data structure for what SearchContext provides.
- */
-export interface SearchContextProps {
-  /**
-   * Function to perform a search.
-   * @param searchPageOptions The SearchPageOptions to be applied in a search.
-   * @param updateClassifications Whether to update the list of classifications based on the current search criteria.
-   * @param callback Callback fired after a search is completed.
-   */
-  search: (
-    searchPageOptions: SearchPageOptions,
-    updateClassifications?: boolean,
-    callback?: () => void
-  ) => void;
-  /**
-   * The state controlling the status of searching.
-   */
-  searchState: State;
-  /**
-   * Search settings retrieved from server, including MIME type filters and Advanced searches.
-   */
-  searchSettings: GeneralSearchSettings;
-  /**
-   * Error handler specific to the New Search UI.
-   */
-  searchPageErrorHandler: (error: Error) => void;
-}
-
-export const SearchContext = React.createContext<SearchContextProps>({
-  search: nop,
-  searchState: {
-    status: "initialising",
-    options: defaultSearchPageOptions,
-  },
-  searchSettings: defaultGeneralSearchSettings,
-  searchPageErrorHandler: nop,
-});
 
 /**
  * Type definition for configuration of the initial search.

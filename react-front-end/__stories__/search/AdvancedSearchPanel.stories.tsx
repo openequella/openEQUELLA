@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import { controls } from "../../__mocks__/WizardHelper.mock";
 import {
@@ -37,7 +37,7 @@ export default {
   },
 } as Meta<AdvancedSearchPanelProps>;
 
-export const Simple: Story<AdvancedSearchPanelProps> = (args) => (
+export const Simple: StoryFn<AdvancedSearchPanelProps> = (args) => (
   <AdvancedSearchPanel {...args} />
 );
 Simple.args = {
@@ -46,7 +46,7 @@ Simple.args = {
   values: new Map(),
 };
 
-export const NoRequiredFields: Story<AdvancedSearchPanelProps> = (args) => (
+export const NoRequiredFields: StoryFn<AdvancedSearchPanelProps> = (args) => (
   <AdvancedSearchPanel {...args} />
 );
 NoRequiredFields.args = {

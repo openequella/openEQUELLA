@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { action } from "@storybook/addon-actions";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import { defaultACLEntityResolvers } from "../../../../__mocks__/ACLExpressionBuilder.mock";
 import {
@@ -35,7 +35,7 @@ export default {
   component: UsableByControlControl,
 } as Meta<UsableByControlProps>;
 
-export const Standard: Story<UsableByControlProps> = (args) => (
+export const Standard: StoryFn<UsableByControlProps> = (args) => (
   <UsableByControlControl {...args} />
 );
 Standard.args = {
@@ -47,7 +47,7 @@ Standard.args = {
   aclEntityResolversProvider: defaultACLEntityResolvers,
 };
 
-export const ComplexACLExpression: Story<UsableByControlProps> = (args) => (
+export const ComplexACLExpression: StoryFn<UsableByControlProps> = (args) => (
   <UsableByControlControl {...args} />
 );
 ComplexACLExpression.args = {

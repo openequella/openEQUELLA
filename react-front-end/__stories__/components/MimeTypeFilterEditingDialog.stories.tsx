@@ -17,7 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
-import type { Meta, Story } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react";
 import { getMimeTypesFromServer } from "../../__mocks__/MimeTypes.mock";
 import MimeTypeFilterEditingDialog, {
   MimeTypeFilterEditingDialogProps,
@@ -38,15 +38,15 @@ const mimeTypeFilter: OEQ.SearchFilterSettings.MimeTypeFilter = {
   mimeTypes: ["image/png", "image/jpeg"],
 };
 
-export const withFilterNotProvided: Story<MimeTypeFilterEditingDialogProps> = (
-  args
-) => <MimeTypeFilterEditingDialog {...args} />;
+export const withFilterNotProvided: StoryFn<
+  MimeTypeFilterEditingDialogProps
+> = (args) => <MimeTypeFilterEditingDialog {...args} />;
 withFilterNotProvided.args = {
   open: true,
   mimeTypeSupplier: () => Promise.resolve(getMimeTypesFromServer),
 };
 
-export const withFilterProvided: Story<MimeTypeFilterEditingDialogProps> = (
+export const withFilterProvided: StoryFn<MimeTypeFilterEditingDialogProps> = (
   args
 ) => <MimeTypeFilterEditingDialog {...args} />;
 withFilterProvided.args = {

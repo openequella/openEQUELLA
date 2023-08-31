@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import type { Meta, Story } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react";
 import IPv4CIDRInput, {
   IPv4CIDRInputProps,
 } from "../../tsrc/components/IPv4CIDRInput";
@@ -29,6 +29,6 @@ export default {
   },
 } as Meta<IPv4CIDRInputProps>;
 
-export const Basic: Story<IPv4CIDRInputProps> = (args) => (
+export const Basic: StoryFn<IPv4CIDRInputProps> = (args) => (
   <IPv4CIDRInput {...args} />
 );

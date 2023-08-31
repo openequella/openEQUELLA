@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { action } from "@storybook/addon-actions";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import { pipe } from "fp-ts/function";
 import * as RS from "fp-ts/ReadonlySet";
 import * as React from "react";
@@ -31,23 +31,23 @@ export default {
   component: UnknownUserHandlingControl,
 } as Meta<UnknownUserHandlingControlProps>;
 
-export const DefaultOption: Story<UnknownUserHandlingControlProps> = (args) => (
-  <UnknownUserHandlingControl {...args} />
-);
+export const DefaultOption: StoryFn<UnknownUserHandlingControlProps> = (
+  args
+) => <UnknownUserHandlingControl {...args} />;
 DefaultOption.args = {
   onChange: action("onChange"),
   selection: "ERROR",
 };
 
-export const CreateOption: Story<UnknownUserHandlingControlProps> = (args) => (
-  <UnknownUserHandlingControl {...args} />
-);
+export const CreateOption: StoryFn<UnknownUserHandlingControlProps> = (
+  args
+) => <UnknownUserHandlingControl {...args} />;
 CreateOption.args = {
   ...DefaultOption.args,
   selection: "CREATE",
 };
 
-export const CreateOptionWithSelectedGroups: Story<
+export const CreateOptionWithSelectedGroups: StoryFn<
   UnknownUserHandlingControlProps
 > = (args) => <UnknownUserHandlingControl {...args} />;
 CreateOptionWithSelectedGroups.args = {

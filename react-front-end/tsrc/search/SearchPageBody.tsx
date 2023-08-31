@@ -79,7 +79,6 @@ import { SidePanel } from "./components/SidePanel";
 import StatusSelector, {
   StatusSelectorProps,
 } from "./components/StatusSelector";
-import { SearchContext } from "./Search";
 import {
   buildSearchPageNavigationConfig,
   defaultPagedSearchResult,
@@ -90,6 +89,7 @@ import {
   generateQueryStringFromSearchPageOptions,
   getPartialSearchOptions,
   navigateTo,
+  SearchContext,
   SearchPageHeaderConfig,
   SearchPageNavigationConfig,
   SearchPageOptions,
@@ -155,6 +155,10 @@ export interface SearchPageBodyProps {
    * Flag which takes precedence over state to control whether to show the spinner.
    */
   customShowSpinner?: boolean;
+  /**
+   * Function to get the list of remote searches from the server.
+   */
+  getRemoteSearchesProvider?: () => Promise<OEQ.Common.BaseEntitySummary[]>;
 }
 
 /**
@@ -177,6 +181,7 @@ export const SearchPageBody = ({
   customRenderSearchResults,
   customFavouriteUrl = identity,
   customShowSpinner = false,
+  getRemoteSearchesProvider = getRemoteSearchesFromServer,
 }: SearchPageBodyProps) => {
   const {
     enableCSVExportButton,
@@ -591,7 +596,7 @@ export const SearchPageBody = ({
         title: searchStrings.remoteSearchSelector.title,
         component: (
           <AuxiliarySearchSelector
-            auxiliarySearchesSupplier={getRemoteSearchesFromServer}
+            auxiliarySearchesSupplier={getRemoteSearchesProvider}
             urlGeneratorForRouteLink={routes.RemoteSearch.to}
             urlGeneratorForMuiLink={buildSelectionSessionRemoteSearchLink}
           />

@@ -36,6 +36,12 @@ import { Literal, match, Static, Union, Unknown, when } from "runtypes";
 import { getBaseUrl } from "../AppConfig";
 import { TooltipIconButton } from "../components/TooltipIconButton";
 import { buildStorageKey } from "../modules/BrowserStorageModule";
+import {
+  LegacyMyResourcesRuntypes,
+  LegacyMyResourcesTypes,
+  ModQueueLiteral,
+  ScrapbookLiteral,
+} from "../modules/LegacyContentModule";
 import { getMimeTypeDefaultViewerDetails } from "../modules/MimeTypesModule";
 import {
   nonDeletedStatuses,
@@ -74,24 +80,6 @@ export const MyResourcesTypeRuntypes = Union(
 );
 
 export type MyResourcesType = Static<typeof MyResourcesTypeRuntypes>;
-
-const ScrapbookLiteral = Literal("scrapbook");
-const ModQueueLiteral = Literal("modqueue");
-
-/**
- * Runtypes definition to represent the Legacy My resources types.
- */
-export const LegacyMyResourcesRuntypes = Union(
-  Literal("published"),
-  Literal("draft"),
-  ScrapbookLiteral,
-  ModQueueLiteral,
-  Literal("archived"),
-  Literal("all"),
-  Literal("defaultValue")
-);
-
-type LegacyMyResourcesTypes = Static<typeof LegacyMyResourcesRuntypes>;
 
 /**
  * Return a list of Item status that match the given MyResources type.

@@ -43,9 +43,14 @@ import {
 import { AppContext } from "../../mainui/App";
 import { guestUser } from "../../modules/UserModule";
 import { languageStrings } from "../../util/langstrings";
-import { generateAdvancedSearchCriteria } from "../AdvancedSearchHelper";
-import { AdvancedSearchPageContext } from "../AdvancedSearchPage";
-import { SearchContext } from "../Search";
+import {
+  AdvancedSearchPageContext,
+  generateAdvancedSearchCriteria,
+} from "../AdvancedSearchHelper";
+import { SearchContext } from "../SearchPageHelper";
+
+const { title: defaultTitle, duplicateTargetWarning } =
+  languageStrings.searchpage.AdvancedSearchPanel;
 
 export interface AdvancedSearchPanelProps {
   /**
@@ -62,9 +67,6 @@ export interface AdvancedSearchPanelProps {
    */
   values: WizardHelper.FieldValueMap;
 }
-
-const { title: defaultTitle, duplicateTargetWarning } =
-  languageStrings.searchpage.AdvancedSearchPanel;
 
 /**
  * This component displays all the Wizard Controls of an Advanced search and allows users

@@ -17,7 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { action } from "@storybook/addon-actions";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as A from "fp-ts/Array";
 import * as RSET from "fp-ts/ReadonlySet";
 import { pipe } from "fp-ts/function";
@@ -46,7 +46,7 @@ const defaultCheckboxModeProps: CheckboxMode<OEQ.UserQuery.RoleDetails> = {
   selections: RSET.empty,
 };
 
-export const Default: Story<RoleSearchProps> = (args) => (
+export const Default: StoryFn<RoleSearchProps> = (args) => (
   <RoleSearch {...args} />
 );
 Default.args = {
@@ -55,7 +55,7 @@ Default.args = {
   search: RoleModuleMock.listRoles,
 };
 
-export const MultiSelection: Story<RoleSearchProps> = (args) => (
+export const MultiSelection: StoryFn<RoleSearchProps> = (args) => (
   <RoleSearch {...args} />
 );
 MultiSelection.args = {
@@ -71,7 +71,7 @@ MultiSelection.args = {
   },
 };
 
-export const OneClickMode: Story<RoleSearchProps> = (args) => (
+export const OneClickMode: StoryFn<RoleSearchProps> = (args) => (
   <RoleSearch {...args} />
 );
 OneClickMode.args = {

@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import {
   WizardShuffleBox,
@@ -33,7 +33,7 @@ export default {
   },
 } as Meta<WizardShuffleBoxProps>;
 
-export const Basic: Story<WizardShuffleBoxProps> = (args) => (
+export const Basic: StoryFn<WizardShuffleBoxProps> = (args) => (
   <WizardShuffleBox {...args} />
 );
 Basic.args = {

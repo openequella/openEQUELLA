@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Story, Meta } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import ThemePage from "../../tsrc/theme/ThemePage";
 import { ThemePageProps } from "../../tsrc/theme/ThemePage";
@@ -25,7 +25,7 @@ export default {
   component: ThemePage,
 } as Meta<ThemePageProps>;
 
-export const standard: Story<ThemePageProps> = (args) => (
+export const standard: StoryFn<ThemePageProps> = (args) => (
   <ThemePage {...args} />
 );
 
