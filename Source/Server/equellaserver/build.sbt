@@ -18,7 +18,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion   = "3.15.6.Final"
 val SwaggerVersion    = "1.6.11"
-val TomcatVersion     = "9.0.79"
+val TomcatVersion     = "9.0.80"
 val axis2Version      = "1.8.2"
 val circeVersion      = "0.14.5"
 val curatorVersion    = "5.5.0"
@@ -29,7 +29,7 @@ val jsassVersion      = "5.10.5"
 val jsoupVersion      = "1.16.1"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "2.3.0"
-val tikaVersion       = "2.8.0"
+val tikaVersion       = "2.9.0"
 val luceneVersion     = "4.10.4"
 
 libraryDependencies ++= Seq(
