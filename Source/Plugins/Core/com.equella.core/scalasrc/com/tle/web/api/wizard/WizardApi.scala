@@ -18,12 +18,7 @@
 
 package com.tle.web.api.wizard
 
-import java.io.{InputStream, OutputStream}
-import java.nio.ByteBuffer
-import java.nio.channels.Channels
-import java.util.UUID
 import cats.effect.{Blocker, IO}
-import com.softwaremill.sttp._
 import com.tle.beans.item.{Item, ItemPack}
 import com.tle.common.filesystem.FileEntry
 import com.tle.core.cloudproviders.{CloudProviderHelper, CloudProviderService}
@@ -38,11 +33,16 @@ import com.tle.web.wizard.{WizardState, WizardStateInterface}
 import fs2.Stream
 import fs2.io._
 import io.swagger.annotations.Api
+import org.jboss.resteasy.annotations.cache.NoCache
+import sttp.client._
+import sttp.model.{HeaderNames, Uri}
+import java.io.{InputStream, OutputStream}
+import java.nio.channels.Channels
+import java.util.UUID
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs._
 import javax.ws.rs.core.Response.{ResponseBuilder, Status}
 import javax.ws.rs.core.{Context, Response, StreamingOutput, UriInfo}
-import org.jboss.resteasy.annotations.cache.NoCache
 import scala.jdk.CollectionConverters._
 
 case class FileInfo(size: Long, files: Option[Map[String, FileInfo]])
@@ -133,21 +133,27 @@ class WizardApi {
   }
 
   def streamedResponse(
-      response: com.softwaremill.sttp.Response[Stream[IO, ByteBuffer]]): ResponseBuilder = {
+      response: sttp.client.Response[Either[String, Stream[IO, Byte]]]): ResponseBuilder = {
+    val statusCode = response.code.code
+
     response.body match {
       case Right(responseStream) =>
         val stream = new StreamingOutput {
           override def write(output: OutputStream): Unit = {
             val channel = Channels.newChannel(output)
-            responseStream.evalMap(bb => IO(channel.write(bb))).compile.drain.unsafeRunSync()
+            responseStream.chunks
+              .evalMap(c => IO(channel.write(c.toByteBuffer)))
+              .compile
+              .drain
+              .unsafeRunSync()
           }
         }
         Response
-          .status(response.code)
+          .status(statusCode)
           .header(HeaderNames.ContentType, response.contentType.orNull)
           .header(HeaderNames.ContentLength, response.contentLength.orNull)
           .entity(stream)
-      case _ => Response.status(response.code)
+      case Left(_) => Response.status(statusCode)
     }
   }
 
@@ -156,7 +162,7 @@ class WizardApi {
       request: HttpServletRequest,
       providerId: UUID,
       serviceId: String,
-      uriInfo: UriInfo)(f: Uri => Request[T, Stream[IO, ByteBuffer]]): Response = {
+      uriInfo: UriInfo)(f: Uri => Request[T, Stream[IO, Byte]]): Response = {
     withWizardState(wizid, request, false) { _ =>
       ()
     }
@@ -172,7 +178,7 @@ class WizardApi {
                 .serviceRequest(serviceUri,
                                 cp,
                                 queryParams,
-                                uri => f(uri).response(asStream[Stream[IO, ByteBuffer]]))
+                                uri => f(uri).response(asStream[Stream[IO, Byte]]))
                 .unsafeRunSync
           )
           .map(streamedResponse)
@@ -181,10 +187,10 @@ class WizardApi {
       .build()
   }
 
-  private def getStreamedBody(content: InputStream): Stream[IO, ByteBuffer] = {
+  private def getStreamedBody(content: InputStream): Stream[IO, Byte] = {
     Stream
       .resource(Blocker[IO])
-      .flatMap(blocker => readInputStream(IO(content), 4096, blocker).chunks.map(_.toByteBuffer))
+      .flatMap(blocker => readInputStream(IO(content), 4096, blocker))
   }
 
   private def getRequestHeaders(req: HttpServletRequest): Map[String, String] = {
@@ -219,7 +225,7 @@ class WizardApi {
                @Context uriInfo: UriInfo,
                @Context req: HttpServletRequest): Response = {
     proxyRequest(wizid, req, providerId, serviceId, uriInfo) { uri =>
-      sttp.get(uri).headers(getRequestHeaders(req))
+      basicRequest.get(uri).headers(getRequestHeaders(req))
     }
   }
 
@@ -232,7 +238,7 @@ class WizardApi {
                 @Context req: HttpServletRequest,
                 content: InputStream): Response = {
     proxyRequest(wizid, req, providerId, serviceId, uriInfo) { uri =>
-      sttp
+      basicRequest
         .post(uri)
         .headers(getRequestHeaders(req))
         .streamBody(getStreamedBody(content))
@@ -248,7 +254,7 @@ class WizardApi {
                @Context req: HttpServletRequest,
                content: InputStream): Response = {
     proxyRequest(wizid, req, providerId, serviceId, uriInfo) { uri =>
-      sttp
+      basicRequest
         .put(uri)
         .headers(getRequestHeaders(req))
         .streamBody(getStreamedBody(content))
@@ -263,7 +269,7 @@ class WizardApi {
                   @Context uriInfo: UriInfo,
                   @Context req: HttpServletRequest): Response = {
     proxyRequest(wizid, req, providerId, serviceId, uriInfo) { uri =>
-      sttp.delete(uri).headers(getRequestHeaders(req))
+      basicRequest.delete(uri).headers(getRequestHeaders(req))
     }
   }
 }
@@ -305,7 +311,7 @@ case class NotifyProvider(providerId: UUID) extends DuringSaveOperation with Ser
                                   cp,
                                   Map("uuid"    -> getItem.getUuid,
                                       "version" -> getItem.getVersion.toString),
-                                  sttp.post)
+                                  basicRequest.post)
                   .unsafeRunSync
                 false
               }))

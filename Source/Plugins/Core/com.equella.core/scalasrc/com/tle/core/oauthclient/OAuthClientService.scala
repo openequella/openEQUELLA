@@ -18,12 +18,11 @@
 
 package com.tle.core.oauthclient
 
-import java.nio.ByteBuffer
 import java.time.Instant
 import java.util.concurrent._
 import cats.effect.IO
-import com.softwaremill.sttp._
-import com.softwaremill.sttp.circe._
+import sttp.client._
+import sttp.client.circe._
 import com.tle.common.institution.CurrentInstitution
 import com.tle.web.oauth.OAuthWebConstants
 import fs2.Stream
@@ -33,6 +32,8 @@ import com.tle.core.httpclient._
 import com.tle.core.oauthclient.OAuthClientService.{replicatedCache, responseToState}
 import com.tle.core.oauthclient.OAuthTokenCacheHelper.{buildCacheKey, cacheId, requestToken}
 import com.tle.legacy.LegacyGuice
+import sttp.model.Header
+import sttp.model.StatusCode
 
 object OAuthTokenType extends Enumeration {
   val Bearer, EquellaApi = Value
@@ -68,8 +69,8 @@ object OAuthTokenResponse {
 }
 
 object OAuthTokenState {
-  implicit val encodeEnum    = Encoder.enumEncoder(OAuthTokenType)
-  implicit val decodeEnum    = Decoder.enumDecoder(OAuthTokenType)
+  implicit val encodeEnum    = Encoder.encodeEnumeration(OAuthTokenType)
+  implicit val decodeEnum    = Decoder.decodeEnumeration(OAuthTokenType)
   implicit val encodeInstant = Encoder.encodeInstant
   implicit val decodeInstant = Decoder.decodeInstant
   implicit val enc           = deriveEncoder[OAuthTokenState]
@@ -85,18 +86,19 @@ object OAuthTokenCacheHelper {
   }
 
   def requestToken(token: TokenRequest, tokenKey: String): OAuthTokenState = {
-    val postRequest = sttp.auth
+    val postRequest = basicRequest.auth
       .basic(token.clientId, token.clientSecret)
       .body(
         OAuthWebConstants.PARAM_GRANT_TYPE -> OAuthWebConstants.GRANT_TYPE_CREDENTIALS
       )
-      .response(asJson[OAuthTokenResponse])
+      .response(asJsonAlways[OAuthTokenResponse])
       .post(uri"${token.authTokenUrl}")
 
-    lazy val newOAuthTokenState = postRequest
-      .send()
-      .map(_.unsafeBody.fold(de => throw de.error, responseToState))
-      .unsafeRunSync()
+    lazy val newOAuthTokenState =
+      sttpBackend
+        .flatMap(implicit backend => postRequest.send())
+        .map(r => r.body.fold(de => throw de.error, responseToState))
+        .unsafeRunSync()
 
     // Save the token in both cache and DB.
     newOAuthTokenState.expires match {
@@ -132,26 +134,29 @@ object OAuthClientService {
     replicatedCache.get(tokenKey).or(() => requestToken(tokenRequest, tokenKey))
   }
 
-  def requestWithToken[T](request: Request[T, Stream[IO, ByteBuffer]],
+  def requestWithToken[T](request: Request[T, Stream[IO, Byte]],
                           token: String,
                           tokenType: OAuthTokenType.Value): Response[T] = {
-    val authHeader = tokenType match {
+    val (name, value) = tokenType match {
       case OAuthTokenType.EquellaApi =>
         OAuthWebConstants.HEADER_X_AUTHORIZATION -> s"${OAuthWebConstants.AUTHORIZATION_ACCESS_TOKEN}=$token"
       case OAuthTokenType.Bearer =>
         OAuthWebConstants.HEADER_AUTHORIZATION -> s"${OAuthWebConstants.AUTHORIZATION_BEARER} $token"
     }
-    request.headers(authHeader).send[IO].unsafeRunSync()
+
+    sttpBackend
+      .flatMap(implicit backend => request.headers(Header(name, value)).send[IO])
+      .unsafeRunSync()
   }
 
   def authorizedRequest[T](authTokenUrl: String,
                            clientId: String,
                            clientSecret: String,
-                           request: Request[T, Stream[IO, ByteBuffer]]): Response[T] = {
+                           request: Request[T, Stream[IO, Byte]]): Response[T] = {
     val tokenRequest = TokenRequest(authTokenUrl, clientId, clientSecret)
     val token        = tokenForClient(tokenRequest)
     val res          = requestWithToken(request, token.token, token.tokenType)
-    if (res.code == StatusCodes.Unauthorized) removeToken(tokenRequest)
+    if (res.code == StatusCode.Unauthorized) removeToken(tokenRequest)
     res
   }
 }
