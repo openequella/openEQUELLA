@@ -382,19 +382,12 @@ export const Template = ({
     text: string
   ) {
     return (
-      <MenuItem
-        onClick={() => setMenuAnchorEl(undefined)}
-        component={(p) =>
-          serverSide ? (
-            <a {...p} href={link as string}>
-              {}
-            </a>
-          ) : (
-            <Link {...p} to={link} />
-          )
-        }
-      >
-        {text}
+      <MenuItem onClick={() => setMenuAnchorEl(undefined)}>
+        {serverSide ? (
+          <a href={link as string}>{text}</a>
+        ) : (
+          <Link to={link}>{text}</Link>
+        )}
       </MenuItem>
     );
   }
