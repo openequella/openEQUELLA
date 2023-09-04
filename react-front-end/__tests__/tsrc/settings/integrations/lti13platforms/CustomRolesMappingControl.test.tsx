@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import * as SET from "fp-ts/Set";
 import { roles } from "../../../../../__mocks__/RoleModule.mock";
 import { eqRoleById } from "../../../../../tsrc/modules/RoleModule";

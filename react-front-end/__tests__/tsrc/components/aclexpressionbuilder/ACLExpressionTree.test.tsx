@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import type { ACLExpression } from "../../../../tsrc/modules/ACLExpressionModule";
 import { ACLRecipientTypes } from "../../../../tsrc/modules/ACLRecipientModule";
 import { renderACLExpressionTree } from "./ACLExpressionTreeTestHelper";

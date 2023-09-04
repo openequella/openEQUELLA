@@ -18,7 +18,7 @@
 import * as React from "react";
 import ErrorPage from "../../../tsrc/mainui/ErrorPage";
 import { render } from "@testing-library/react";
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 
 describe("<ErrorPage />", () => {
   it("should render with no code or description", () => {
