@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import { render } from "@testing-library/react";
 import type { FieldValueMap } from "../../../../tsrc/components/wizard/WizardHelper";
 import { WizardRawHtml } from "../../../../tsrc/components/wizard/WizardRawHtml";
