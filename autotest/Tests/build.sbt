@@ -44,7 +44,7 @@ libraryDependencies ++= Seq(
   "org.typelevel"             %% "cats-free"                % catsVersion,
   "com.unboundid"             % "unboundid-ldapsdk"         % "6.0.9",
   jacksonDataBind,
-  "com.auth0" % "jwks-rsa" % "0.22.0"
+  "com.auth0" % "jwks-rsa" % "0.22.1"
 )
 
 (Compile / unmanagedBase) := baseDirectory.value / "lib/adminjars"
