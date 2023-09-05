@@ -48,7 +48,6 @@ import org.apache.lucene.search.ControlledRealTimeReopenThread;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -234,11 +233,7 @@ public abstract class AbstractIndexEngine {
                   .findFirst();
 
           if (languageAnalyzer.isPresent()) {
-            normalAnalyzer =
-                languageAnalyzer
-                    .get()
-                    .getDeclaredConstructor(Version.class)
-                    .newInstance(Version.LUCENE_4_10_4);
+            normalAnalyzer = languageAnalyzer.get().getDeclaredConstructor().newInstance();
             // For the non-stemmed analyzer we still use the TLEAnalyzer, however we use the
             // language specific stop words by loading them from the language specific analyzer.
             Method getDefaultStopSet =
