@@ -20,8 +20,8 @@ package com.tle.core.cloudproviders
 
 import cats.data.{Validated, ValidatedNec}
 import cats.implicits._
-import com.softwaremill.sttp._
-import com.softwaremill.sttp.circe._
+import sttp.client._
+import sttp.client.circe._
 import com.tle.beans.newentity.Entity
 import com.tle.common.i18n.CurrentLocale
 import com.tle.core.cloudproviders.CloudProviderHelper._
@@ -206,21 +206,17 @@ class CloudProviderRegistrationService {
                 provider,
                 Map.empty,
                 uri =>
-                  sttp
+                  basicRequest
                     .post(uri)
                     .body(CloudProviderRefreshRequest(provider.id))
                     .response(asJson[CloudProviderRegistration])
               )
               .map(
-                // Body is a nested Either.
                 _.body match {
-                  case Right(Right(registration)) =>
+                  case Right(registration) =>
                     // Update with the new registration. If errors happen during the update, combine all errors into one string.
                     editRegistered(entity, registration).leftMap(EntityValidation.collectErrors)
-
-                  case Right(Left(deserializationError)) =>
-                    List(deserializationError.message).invalid
-                  case Left(error) => List(error).invalid
+                  case Left(error) => List(error.getMessage).invalid
                 }
               )
               .unsafeRunSync

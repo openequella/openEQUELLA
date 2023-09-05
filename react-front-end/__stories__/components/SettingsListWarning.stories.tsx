@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 
 import SettingsListWarning, {
@@ -27,14 +27,14 @@ export default {
   component: SettingsListWarning,
 } as Meta<SettingsListWarningProps>;
 
-export const Standard: Story<SettingsListWarningProps> = (args) => (
+export const Standard: StoryFn<SettingsListWarningProps> = (args) => (
   <SettingsListWarning {...args} />
 );
 Standard.args = {
   messages: ["This is a warning alert - check it out!"],
 };
 
-export const MultipleLines: Story<SettingsListWarningProps> = (args) => (
+export const MultipleLines: StoryFn<SettingsListWarningProps> = (args) => (
   <SettingsListWarning {...args} />
 );
 MultipleLines.args = {

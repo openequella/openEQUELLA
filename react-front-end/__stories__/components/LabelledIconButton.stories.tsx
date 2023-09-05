@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import {
   LabelledIconButton,
@@ -31,7 +31,7 @@ export default {
   },
 } as Meta<LabelledIconButtonProps>;
 
-export const addButton: Story<LabelledIconButtonProps> = (
+export const addButton: StoryFn<LabelledIconButtonProps> = (
   args: LabelledIconButtonProps
 ) => <LabelledIconButton {...args} />;
 

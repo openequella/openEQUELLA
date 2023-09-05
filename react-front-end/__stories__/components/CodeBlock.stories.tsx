@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import CodeBlock, { CodeBlockProps } from "../../tsrc/components/CodeBlock";
 
@@ -24,14 +24,14 @@ export default {
   component: CodeBlock,
 } as Meta<CodeBlockProps>;
 
-export const Standard: Story<CodeBlockProps> = (args) => (
+export const Standard: StoryFn<CodeBlockProps> = (args) => (
   <CodeBlock {...args} />
 );
 Standard.args = {
   value: "Code",
 };
 
-export const LongCodeBlock: Story<CodeBlockProps> = (args) => (
+export const LongCodeBlock: StoryFn<CodeBlockProps> = (args) => (
   <CodeBlock {...args} />
 );
 LongCodeBlock.args = {

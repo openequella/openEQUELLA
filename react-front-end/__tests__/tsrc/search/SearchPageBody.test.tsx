@@ -35,7 +35,6 @@ import {
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import * as RemoteSearchModule from "../../../tsrc/modules/RemoteSearchModule";
 import { defaultSearchSettings } from "../../../tsrc/modules/SearchSettingsModule";
-import { SearchContext } from "../../../tsrc/search/Search";
 import {
   SearchPageBody,
   SearchPageBodyProps,
@@ -44,6 +43,7 @@ import {
   defaultSearchPageHeaderConfig,
   defaultSearchPageOptions,
   defaultSearchPageRefinePanelConfig,
+  SearchContext,
   SearchPageOptions,
 } from "../../../tsrc/search/SearchPageHelper";
 import {

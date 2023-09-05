@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { Typography } from "@mui/material";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import {
   WizardLabel,
@@ -28,7 +28,7 @@ export default {
   component: WizardLabel,
 } as Meta<WizardLabelProps>;
 
-export const FullySpecified: Story<WizardLabelProps> = (args) => (
+export const FullySpecified: StoryFn<WizardLabelProps> = (args) => (
   <WizardLabel {...args} />
 );
 FullySpecified.args = {
@@ -37,7 +37,7 @@ FullySpecified.args = {
   mandatory: true,
 };
 
-export const Optional: Story<WizardLabelProps> = (args) => (
+export const Optional: StoryFn<WizardLabelProps> = (args) => (
   <WizardLabel {...args} />
 );
 Optional.args = {
@@ -46,7 +46,7 @@ Optional.args = {
   mandatory: false,
 };
 
-export const NoDescription: Story<WizardLabelProps> = (args) => (
+export const NoDescription: StoryFn<WizardLabelProps> = (args) => (
   <WizardLabel {...args} />
 );
 NoDescription.args = {
@@ -54,7 +54,7 @@ NoDescription.args = {
   description: undefined,
 };
 
-export const NoLabel: Story<WizardLabelProps> = (args) => (
+export const NoLabel: StoryFn<WizardLabelProps> = (args) => (
   <WizardLabel {...args} />
 );
 NoLabel.args = {
@@ -62,7 +62,7 @@ NoLabel.args = {
   label: undefined,
 };
 
-export const NoDescriptionOrLabel: Story<WizardLabelProps> = (args) => (
+export const NoDescriptionOrLabel: StoryFn<WizardLabelProps> = (args) => (
   <>
     <WizardLabel {...args} />
     <br />

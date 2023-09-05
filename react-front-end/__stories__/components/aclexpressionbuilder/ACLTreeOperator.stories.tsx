@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import {
   ACLTreeOperator,
@@ -27,7 +27,7 @@ export default {
   component: ACLTreeOperator,
 } as Meta<ACLTreeOperatorProps>;
 
-export const Basic: Story<ACLTreeOperatorProps> = (args) => (
+export const Basic: StoryFn<ACLTreeOperatorProps> = (args) => (
   <ACLTreeOperator {...args} />
 );
 

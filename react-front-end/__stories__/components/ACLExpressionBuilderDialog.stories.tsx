@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { action } from "@storybook/addon-actions";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import { defaultACLEntityResolvers } from "../../__mocks__/ACLExpressionBuilder.mock";
 import { complexExpressionACLExpression } from "../../__mocks__/ACLExpressionModule.mock";
@@ -33,7 +33,7 @@ export default {
   component: ACLExpressionBuilderDialog,
 } as Meta<ACLExpressionBuilderDialogProps>;
 
-export const Standard: Story<ACLExpressionBuilderDialogProps> = (args) => (
+export const Standard: StoryFn<ACLExpressionBuilderDialogProps> = (args) => (
   <ACLExpressionBuilderDialog {...args} />
 );
 Standard.args = {

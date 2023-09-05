@@ -5661,3 +5661,21 @@ button:focus {
 .itemsummary-layout #col2 hr {
   display: none;
 }
+
+// fix the layout of custom link on setting page,
+// make sure the icon is on the left and the button is on the right
+#cls_us {
+  .ui-state-default {
+    background-repeat: no-repeat;
+    background-position: 10px center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    margin-bottom: 8px;
+
+    .link-name {
+      padding-left: 48px;
+    }
+  }
+}

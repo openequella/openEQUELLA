@@ -17,7 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { action } from "@storybook/addon-actions";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as A from "fp-ts/Array";
 import * as RSET from "fp-ts/ReadonlySet";
 import { pipe } from "fp-ts/function";
@@ -46,7 +46,7 @@ const defaultCheckboxModeProps: CheckboxMode<OEQ.UserQuery.GroupDetails> = {
   selections: RSET.empty,
 };
 
-export const Default: Story<GroupSearchProps> = (args) => (
+export const Default: StoryFn<GroupSearchProps> = (args) => (
   <GroupSearch {...args} />
 );
 Default.args = {
@@ -55,7 +55,7 @@ Default.args = {
   search: GroupModuleMock.listGroups,
 };
 
-export const MultiSelection: Story<GroupSearchProps> = (args) => (
+export const MultiSelection: StoryFn<GroupSearchProps> = (args) => (
   <GroupSearch {...args} />
 );
 MultiSelection.args = {
@@ -71,7 +71,7 @@ MultiSelection.args = {
   },
 };
 
-export const GroupFilterEditable: Story<GroupSearchProps> = (args) => (
+export const GroupFilterEditable: StoryFn<GroupSearchProps> = (args) => (
   <GroupSearch {...args} />
 );
 GroupFilterEditable.args = {
@@ -83,7 +83,7 @@ GroupFilterEditable.args = {
   resolveGroupsProvider: GroupModuleMock.resolveGroups,
 };
 
-export const OneClickMode: Story<GroupSearchProps> = (args) => (
+export const OneClickMode: StoryFn<GroupSearchProps> = (args) => (
   <GroupSearch {...args} />
 );
 OneClickMode.args = {

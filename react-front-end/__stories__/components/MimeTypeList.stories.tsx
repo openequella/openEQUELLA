@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import type { Meta, Story } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react";
 import MimeTypeList, {
   MimeTypeFilterListProps,
 } from "../../tsrc/settings/Search/searchfilter/MimeTypeList";
@@ -35,7 +35,7 @@ const defaultMimeTypes: OEQ.MimeType.MimeTypeEntry[] = [
   { mimeType: "image/jpeg", desc: "This is a Image filter" },
 ];
 
-export const listOfMimeTypes: Story<MimeTypeFilterListProps> = (args) => (
+export const listOfMimeTypes: StoryFn<MimeTypeFilterListProps> = (args) => (
   <MimeTypeList {...args} />
 );
 listOfMimeTypes.args = {

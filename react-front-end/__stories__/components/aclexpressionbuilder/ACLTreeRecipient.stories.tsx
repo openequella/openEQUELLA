@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import { defaultACLEntityResolvers } from "../../../__mocks__/ACLExpressionBuilder.mock";
 import {
@@ -50,34 +50,34 @@ const recipient = (recipient: ACLRecipient) => (
   />
 );
 
-export const RecipientUser: Story<ACLTreeRecipientProps> = () =>
+export const RecipientUser: StoryFn<ACLTreeRecipientProps> = () =>
   recipient(user100Recipient);
 
-export const RecipientGroup: Story<ACLTreeRecipientProps> = () =>
+export const RecipientGroup: StoryFn<ACLTreeRecipientProps> = () =>
   recipient(group100RecipientWithName);
 
-export const RecipientRole: Story<ACLTreeRecipientProps> = () =>
+export const RecipientRole: StoryFn<ACLTreeRecipientProps> = () =>
   recipient(role100RecipientWithName);
 
-export const RecipientEveryone: Story<ACLTreeRecipientProps> = () =>
+export const RecipientEveryone: StoryFn<ACLTreeRecipientProps> = () =>
   recipient(everyoneRecipient);
 
-export const RecipientOwner: Story<ACLTreeRecipientProps> = () =>
+export const RecipientOwner: StoryFn<ACLTreeRecipientProps> = () =>
   recipient(ownerRecipient);
 
-export const RecipientLogged: Story<ACLTreeRecipientProps> = () =>
+export const RecipientLogged: StoryFn<ACLTreeRecipientProps> = () =>
   recipient(roleLoggedRecipientWithName);
-export const RecipientGuest: Story<ACLTreeRecipientProps> = () =>
+export const RecipientGuest: StoryFn<ACLTreeRecipientProps> = () =>
   recipient(roleGuestRecipient);
 
-export const RecipientSso: Story<ACLTreeRecipientProps> = () =>
+export const RecipientSso: StoryFn<ACLTreeRecipientProps> = () =>
   recipient(ssoMoodleRecipient);
 
-export const RecipientIp: Story<ACLTreeRecipientProps> = () =>
+export const RecipientIp: StoryFn<ACLTreeRecipientProps> = () =>
   recipient(ipRecipient("255.255.255.255/32"));
 
-export const RecipientReferrerContain: Story<ACLTreeRecipientProps> = () =>
+export const RecipientReferrerContain: StoryFn<ACLTreeRecipientProps> = () =>
   recipient(referRecipient("*edalex*"));
 
-export const RecipientReferrerExact: Story<ACLTreeRecipientProps> = () =>
+export const RecipientReferrerExact: StoryFn<ACLTreeRecipientProps> = () =>
   recipient(referRecipient("https://edalex.com"));

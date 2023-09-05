@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import {
   WizardRadioButtonGroup,
   WizardRadioButtonGroupProps,
@@ -32,7 +32,7 @@ export default {
   },
 } as Meta<WizardRadioButtonGroupProps>;
 
-export const Normal: Story<WizardRadioButtonGroupProps> = (args) => (
+export const Normal: StoryFn<WizardRadioButtonGroupProps> = (args) => (
   <WizardRadioButtonGroup {...args} />
 );
 Normal.args = {
@@ -61,7 +61,7 @@ Normal.args = {
   ],
 };
 
-export const MultipleColumns: Story<WizardRadioButtonGroupProps> = (args) => (
+export const MultipleColumns: StoryFn<WizardRadioButtonGroupProps> = (args) => (
   <WizardRadioButtonGroup {...args} />
 );
 MultipleColumns.args = {
@@ -70,7 +70,7 @@ MultipleColumns.args = {
   description: "Options are displayed in 2 columns 2 rows",
 };
 
-export const ValueSelected: Story<WizardRadioButtonGroupProps> = (args) => (
+export const ValueSelected: StoryFn<WizardRadioButtonGroupProps> = (args) => (
   <WizardRadioButtonGroup {...args} />
 );
 ValueSelected.args = {

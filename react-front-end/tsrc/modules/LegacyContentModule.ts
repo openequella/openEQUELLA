@@ -16,12 +16,27 @@
  * limitations under the License.
  */
 import Axios from "axios";
+import { Literal, Static, Union } from "runtypes";
 import { API_BASE_URL } from "../AppConfig";
 import type { ChangeRoute } from "../legacycontent/LegacyContent";
 import type { ScrapbookType } from "./ScrapbookModule";
 
 const legacyMyResourcesUrl = `${API_BASE_URL}/content/submit/access/myresources.do`;
 
+export const ScrapbookLiteral = Literal("scrapbook");
+export const ModQueueLiteral = Literal("modqueue");
+
+export const LegacyMyResourcesRuntypes = Union(
+  Literal("published"),
+  Literal("draft"),
+  ScrapbookLiteral,
+  ModQueueLiteral,
+  Literal("archived"),
+  Literal("all"),
+  Literal("defaultValue")
+);
+
+export type LegacyMyResourcesTypes = Static<typeof LegacyMyResourcesRuntypes>;
 /**
  * Send a Legacy content request to trigger server side event 'contributeFromNewUI', which will
  * return a route for accessing the Legacy Scrapbook creating page. To support the requirement

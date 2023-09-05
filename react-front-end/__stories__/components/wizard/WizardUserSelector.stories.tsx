@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import * as UserModuleMock from "../../../__mocks__/UserModule.mock";
 import { users } from "../../../__mocks__/UserModule.mock";
@@ -35,7 +35,7 @@ export default {
   },
 } as Meta<WizardUserSelectorProps>;
 
-export const NoUsers: Story<WizardUserSelectorProps> = (args) => (
+export const NoUsers: StoryFn<WizardUserSelectorProps> = (args) => (
   <WizardUserSelector {...args} />
 );
 NoUsers.args = {
@@ -47,7 +47,7 @@ NoUsers.args = {
   resolveUsersProvider: UserModuleMock.resolveUsers,
 };
 
-export const WithUsers: Story<WizardUserSelectorProps> = (args) => (
+export const WithUsers: StoryFn<WizardUserSelectorProps> = (args) => (
   <WizardUserSelector {...args} />
 );
 WithUsers.args = {
@@ -58,7 +58,7 @@ WithUsers.args = {
   multiple: true,
 };
 
-export const WithGroupFilter: Story<WizardUserSelectorProps> = (args) => (
+export const WithGroupFilter: StoryFn<WizardUserSelectorProps> = (args) => (
   <WizardUserSelector {...args} />
 );
 WithGroupFilter.args = {
@@ -69,7 +69,7 @@ WithGroupFilter.args = {
   resolveGroupsProvider: GroupFilter.args?.resolveGroupsProvider,
 };
 
-export const ErrorOnResolvingUserIds: Story<WizardUserSelectorProps> = (
+export const ErrorOnResolvingUserIds: StoryFn<WizardUserSelectorProps> = (
   args
 ) => <WizardUserSelector {...args} />;
 ErrorOnResolvingUserIds.args = {

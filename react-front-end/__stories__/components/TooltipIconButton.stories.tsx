@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import {
   TooltipIconButton,
@@ -31,7 +31,7 @@ export default {
   },
 } as Meta<TooltipIconButtonProps>;
 
-export const Standard: Story<TooltipIconButtonProps> = (args) => (
+export const Standard: StoryFn<TooltipIconButtonProps> = (args) => (
   <TooltipIconButton {...args}>
     <FavoriteIcon />
   </TooltipIconButton>

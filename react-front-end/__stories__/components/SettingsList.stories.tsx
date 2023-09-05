@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { Slider, TextField } from "@mui/material";
-import type { Meta, Story } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import SettingsList, {
   SettingsListProps,
@@ -51,7 +51,7 @@ type Props = Pick<SettingsListProps, "subHeading"> &
   Pick<SettingsToggleSwitchProps, "setValue" | "disabled"> &
   Pick<SettingsListControlProps, "primaryText" | "secondaryText">;
 
-export const SettingsListWithMultipleItems: Story<Props> = (args) => (
+export const SettingsListWithMultipleItems: StoryFn<Props> = (args) => (
   <SettingsList subHeading={args.subHeading}>
     <SettingsListControl
       secondaryText="Textfield for input"
