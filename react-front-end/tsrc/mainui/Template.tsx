@@ -381,18 +381,17 @@ export const Template = ({
     serverSide: boolean,
     text: string
   ) {
-    const props = serverSide
-      ? {
-          component: "a",
-          href: link as string,
-          sx: { textDecoration: "none !important" },
-        }
-      : {
-          component: Link,
-          to: link,
-        };
     return (
-      <MenuItem onClick={() => setMenuAnchorEl(undefined)} {...props}>
+      <MenuItem
+        onClick={() => setMenuAnchorEl(undefined)}
+        component={(p: React.AnchorHTMLAttributes<HTMLAnchorElement>) =>
+          serverSide ? (
+            <a {...p} href={link as string} />
+          ) : (
+            <Link {...p} to={link} />
+          )
+        }
+      >
         {text}
       </MenuItem>
     );
