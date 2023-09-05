@@ -22,8 +22,10 @@ import java.io.IOException;
 import java.util.function.IntConsumer;
 import org.apache.lucene.index.DocsEnum;
 import org.apache.lucene.index.LeafReader;
+import org.apache.lucene.index.PostingsEnum;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.DocIdSetIterator;
+import org.apache.lucene.util.FixedBitSet;
 
 public final class LuceneDocumentHelper {
 
@@ -60,11 +62,14 @@ public final class LuceneDocumentHelper {
    * @param docs Document ID enumeration to be iterated
    * @param useCount Function that consumes the count of documents
    */
-  public static void useDocCount(DocIdSetIterator docs, IntConsumer useCount) throws IOException {
+  public static void useDocCount(
+      DocIdSetIterator docs, FixedBitSet acceptedBits, IntConsumer useCount) throws IOException {
     if (docs != null) {
       int count = 0;
-      while (docs.nextDoc() != DocsEnum.NO_MORE_DOCS) {
-        count++;
+      while (docs.nextDoc() != PostingsEnum.NO_MORE_DOCS) {
+        if (acceptedBits != null && acceptedBits.get(docs.docID())) {
+          count++;
+        }
       }
 
       useCount.accept(count);

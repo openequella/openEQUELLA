@@ -21,44 +21,39 @@ package com.tle.core.freetext.filters;
 import com.dytech.edge.queries.FreeTextQuery;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.common.usermanagement.user.UserState;
-import com.tle.core.freetext.index.LuceneDocumentHelper;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import org.apache.lucene.index.DocsEnum;
-import org.apache.lucene.index.LeafReader;
-import org.apache.lucene.index.LeafReaderContext;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
-import org.apache.lucene.search.DocIdSet;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.util.BitDocIdSet;
-import org.apache.lucene.util.Bits;
+import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.lucene.search.BooleanQuery.Builder;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.FixedBitSet;
 
-public class SecurityFilter extends Filter {
-
-  private static final long serialVersionUID = 1L;
+public class SecurityFilter implements CustomFilter {
 
   private FixedBitSet results;
-  private boolean onlyCollectResults;
 
   private String[] expressions;
   private Map<String, Boolean> ownerExprMap;
-  private TermValueComparator comparator = new TermValueComparator();
   private int ownerSizes;
   private boolean systemUser;
 
-  public SecurityFilter(String aclType) {
+  private IndexReader reader;
+
+  public SecurityFilter(String aclType, IndexReader reader) {
+    this.reader = reader;
     ownerExprMap = new HashMap<String, Boolean>();
 
     UserState userState = CurrentUser.getUserState();
@@ -95,85 +90,10 @@ public class SecurityFilter extends Filter {
     }
   }
 
-  public FixedBitSet getResults() {
-    return results;
-  }
-
-  public void setOnlyCollectResults(boolean onlyCollectResults) {
-    this.onlyCollectResults = onlyCollectResults;
-  }
-
-  @Override
-  public DocIdSet getDocIdSet(LeafReaderContext context, Bits acceptDocs) throws IOException {
-    LeafReader reader = context.reader();
-    final int max = reader.maxDoc();
-    results = new FixedBitSet(max);
-
-    if (!systemUser) {
-      FixedBitSet owned = new FixedBitSet(max);
-      if (ownerSizes > 0) {
-        LuceneDocumentHelper.forEachDoc(
-            reader, new Term(FreeTextQuery.FIELD_OWNER, CurrentUser.getUserID()), owned::set);
-      }
-
-      Set<Term> allTerms = new TreeSet<>(comparator);
-
-      Arrays.stream(expressions)
-          .map(field -> getTermsForField(reader, field))
-          .filter(termSet -> !termSet.isEmpty())
-          .forEach(allTerms::addAll);
-
-      for (Term term : allTerms) {
-        String type = term.text();
-        boolean grant = type.charAt(type.length() - 1) == 'G';
-        DocsEnum docs = reader.termDocsEnum(term);
-        Boolean exprType = ownerExprMap.get(term.field());
-
-        int doc;
-        if (exprType == null) {
-          if (grant) {
-            LuceneDocumentHelper.forEachDoc(docs, results::set);
-          } else {
-            LuceneDocumentHelper.forEachDoc(docs, results::clear);
-          }
-        } else {
-          boolean must = exprType;
-          LuceneDocumentHelper.forEachDoc(
-              docs,
-              (docId) -> {
-                if (owned.get(docId) == must) {
-                  if (grant) {
-                    results.set(docId);
-                  } else {
-                    results.clear(docId);
-                  }
-                }
-              });
-        }
-      }
-    } else {
-      Bits liveDocs = reader.getLiveDocs();
-      int maxDoc = liveDocs != null ? liveDocs.length() : reader.maxDoc();
-      for (int i = 0; i < maxDoc; i++) {
-        results.set(i);
-      }
-    }
-
-    // If we are only collecting results, we return a full bitset to match
-    // every document.
-    if (onlyCollectResults) {
-      FixedBitSet fullBitSet = new FixedBitSet(max);
-      fullBitSet.set(0, max);
-      return new BitDocIdSet(fullBitSet);
-    } else {
-      return new BitDocIdSet(results);
-    }
-  }
-
-  private Set<Term> getTermsForField(LeafReader reader, String field) {
+  private Set<Term> getTermsForField(String field) {
     Set<Term> set = new HashSet<>();
     try {
-      Terms terms = reader.terms(field);
+      Terms terms = MultiFields.getTerms(reader, field);
       if (terms != null) {
         TermsEnum termsEnum = terms.iterator();
         while (termsEnum.next() != null) {
@@ -188,19 +108,48 @@ public class SecurityFilter extends Filter {
   }
 
   @Override
-  public String toString(String field) {
-    return null;
-  }
+  public Query buildQuery() {
+    Builder builder = new Builder();
 
-  public static class TermValueComparator implements Comparator<Term>, Serializable {
-
-    @Override
-    public int compare(Term o1, Term o2) {
-      int comp = o2.text().compareTo(o1.text());
-      if (comp == 0) {
-        return o1.field().compareTo(o2.field());
-      }
-      return comp;
+    if (systemUser) {
+      return null;
     }
+
+    if (ownerSizes > 0) {
+      builder.add(
+          new TermQuery(new Term(FreeTextQuery.FIELD_OWNER, CurrentUser.getUserID())),
+          Occur.SHOULD);
+    }
+
+    Set<Term> allTerms = new TreeSet<>();
+
+    Arrays.stream(expressions)
+        .map(this::getTermsForField)
+        .filter(termSet -> !termSet.isEmpty())
+        .forEach(allTerms::addAll);
+
+    for (Term term : allTerms) {
+      String type = term.text();
+      boolean grant = type.charAt(type.length() - 1) == 'G';
+      Boolean isOwnerExpression = ownerExprMap.get(term.field());
+
+      if (isOwnerExpression == null) {
+        if (grant) {
+          builder.add(new TermQuery(term), Occur.SHOULD);
+        } else {
+          builder.add(new TermQuery(term), Occur.MUST_NOT);
+        }
+      } else {
+        if (isOwnerExpression) {
+          if (grant) {
+            builder.add(new TermQuery(term), Occur.SHOULD);
+          } else {
+            builder.add(new TermQuery(term), Occur.MUST_NOT);
+          }
+        }
+      }
+    }
+
+    return builder.build();
   }
 }

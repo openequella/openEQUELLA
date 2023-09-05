@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.search.Scorer;
 import org.apache.lucene.search.SimpleCollector;
 
@@ -43,6 +44,11 @@ public abstract class AbstractCompareDateCollector extends SimpleCollector {
       Map<Long, Institution> instMap, List<ItemIndexDelete> toDelete) {
     this.instMap = instMap;
     this.toDelete = toDelete;
+  }
+
+  @Override
+  protected void doSetNextReader(LeafReaderContext context) throws IOException {
+    this.reader = context.reader();
   }
 
   @Override

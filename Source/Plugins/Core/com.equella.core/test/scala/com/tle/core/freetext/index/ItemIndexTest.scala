@@ -505,7 +505,7 @@ class ItemIndexTest
         val mockedSearcher = mock(classOf[IndexSearcher])
         doReturn(new TopFieldDocs(0, Array.empty[ScoreDoc], Array.empty[SortField], 0.0f))
           .when(mockedSearcher)
-          .search(any(classOf[Query]), any(classOf[Filter]), anyInt(), any(classOf[Sort]))
+          .search(any(classOf[Query]), anyInt(), any(classOf[Sort]))
 
         // Do the search with the mocked IndexSearcher.
         buildSearcher(itemIndex, searchConfig).search(mockedSearcher)
@@ -515,13 +515,12 @@ class ItemIndexTest
 
         verify(mockedSearcher).search(
           queryCaptor.capture(),
-          ArgumentCaptor.forClass[Filter, Filter](classOf[Filter]).capture(),
           ArgumentCaptor.forClass[Int, Int](classOf[Int]).capture(),
           ArgumentCaptor.forClass[Sort, Sort](classOf[Sort]).capture()
         )
 
         val processedQuery = queryCaptor.getValue.toString
-        processedQuery shouldBe "(+(name_vectored:java^2.0 body:java) +(name_vectored:scala^2.0 body:scala) +(name_vectored:interest^2.0 body:interest))"
+        processedQuery shouldBe s"#institution:${inst.getUniqueId} +(+(name_vectored:java^2.0 body:java^1.0) +(name_vectored:scala^2.0 body:scala^1.0) +(name_vectored:interest^2.0 body:interest^1.0))"
       }
     }
 

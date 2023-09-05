@@ -19,39 +19,48 @@
 package com.tle.core.freetext.filters;
 
 import com.tle.common.searching.Field;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause.Occur;
-import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanQuery.Builder;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.util.FixedBitSet;
 
-public class MustNotFilter extends MustFilter {
-  public MustNotFilter(List<List<Field>> mustNotClauses) {
-    super(mustNotClauses);
+public class MatrixFilter implements CustomFilter {
+
+  private List<Field> fields;
+
+  private IndexReader reader;
+
+  public MatrixFilter(List<Field> matrixFields, IndexReader reader) {
+    this.fields = matrixFields;
+    this.reader = reader;
   }
 
-  public BooleanQuery buildQuery() {
-    List<List<Field>> nonEmptyClauses = getNonEmptyClauses();
-
-    if (nonEmptyClauses.isEmpty()) {
-      return null;
-    }
-
+  @Override
+  public Query buildQuery() {
     Builder builder = new Builder();
-    nonEmptyClauses.forEach(
-        clause ->
-            clause.forEach(
-                mustNot ->
-                    builder.add(
-                        new TermQuery(new Term(mustNot.getField(), mustNot.getValue())),
-                        Occur.MUST_NOT)));
+
+    Map<String, Map<String, FixedBitSet>> xpathMap =
+        new HashMap<String, Map<String, FixedBitSet>>();
+    for (Field fieldObj : fields) {
+      String field = fieldObj.getField();
+      try {
+        for (Term term : new XPathFieldIterator(reader, field, "")) {
+          if (term.text().equals(fieldObj.getValue())) {
+            builder.add(new TermQuery(term), Occur.SHOULD);
+          }
+        }
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
 
     return builder.build();
   }
-
-  //  @Override
-  //  public Occur getOccur() {
-  //    return Occur.MUST_NOT;
-  //  }
 }

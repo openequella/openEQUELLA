@@ -21,28 +21,26 @@ package com.tle.core.freetext.filters;
 import com.tle.common.util.Dates;
 import com.tle.common.util.LocalDate;
 import com.tle.common.util.UtcDate;
-import java.io.IOException;
 import java.util.Date;
 import java.util.TimeZone;
-import org.apache.lucene.index.LeafReaderContext;
-import org.apache.lucene.search.DocIdSet;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.util.Bits;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermRangeQuery;
 
 /**
  * Filters dates out. Most of the work is simply delegated to a ComparisonFilter.
  *
  * @author Nicholas Read
  */
-public class DateFilter extends Filter {
-  private static final long serialVersionUID = 1L;
-  private final ComparisonFilter subfilter;
+public class DateFilter implements CustomFilter {
+  private String start;
+  private String end;
+  private String field;
 
   public DateFilter(
       String field, Date startDate, Date endDate, Dates indexedDateFormat, TimeZone timeZone) {
-    String start = dateToString(startDate, 0, indexedDateFormat, timeZone);
-    String end = dateToString(endDate, Long.MAX_VALUE, indexedDateFormat, timeZone);
-    subfilter = new ComparisonFilter(field, start, end);
+    this.start = dateToString(startDate, 0, indexedDateFormat, timeZone);
+    this.end = dateToString(endDate, Long.MAX_VALUE, indexedDateFormat, timeZone);
+    this.field = field;
   }
 
   /**
@@ -65,12 +63,7 @@ public class DateFilter extends Filter {
   }
 
   @Override
-  public DocIdSet getDocIdSet(LeafReaderContext context, Bits acceptDocs) throws IOException {
-    return subfilter.getDocIdSet(context, acceptDocs);
-  }
-
-  @Override
-  public String toString(String field) {
-    return null;
+  public Query buildQuery() {
+    return TermRangeQuery.newStringRange(field, start, end, true, false);
   }
 }
