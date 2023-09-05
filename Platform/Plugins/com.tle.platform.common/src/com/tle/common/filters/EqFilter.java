@@ -18,7 +18,7 @@
 
 package com.tle.common.filters;
 
-import com.tle.common.Check;
+import java.util.Objects;
 
 public class EqFilter<T> implements Filter<T> {
   private final Object v;
@@ -29,7 +29,7 @@ public class EqFilter<T> implements Filter<T> {
 
   @Override
   public boolean include(T t) {
-    return Check.bothNullOrEqual(getForComparison(t), v);
+    return Objects.equals(getForComparison(t), v);
   }
 
   protected Object getForComparison(T t) {
