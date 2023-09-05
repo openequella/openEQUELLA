@@ -31,6 +31,13 @@ public class MustNotFilter extends MustFilter {
     super(mustNotClauses);
   }
 
+  /**
+   * Build a BooleanQuery from the Must Not clauses. All the criteria are joint by `Occur.SHOULD`,
+   * but the whole query is negated by `Occur.MUST_NOT`.
+   *
+   * <p>For example, given two clauses for Collection and Item status, the result is '-(collection:A
+   * status:live status:archived)'.
+   */
   public BooleanQuery buildQuery() {
     List<List<Field>> nonEmptyClauses = getNonEmptyClauses();
 
@@ -45,13 +52,13 @@ public class MustNotFilter extends MustFilter {
                 mustNot ->
                     builder.add(
                         new TermQuery(new Term(mustNot.getField(), mustNot.getValue())),
-                        Occur.MUST_NOT)));
+                        Occur.SHOULD)));
 
     return builder.build();
   }
 
-  //  @Override
-  //  public Occur getOccur() {
-  //    return Occur.MUST_NOT;
-  //  }
+  @Override
+  public Occur getOccur() {
+    return Occur.MUST_NOT;
+  }
 }
