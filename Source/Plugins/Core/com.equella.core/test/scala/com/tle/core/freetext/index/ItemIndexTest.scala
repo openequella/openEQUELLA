@@ -151,7 +151,8 @@ class ItemIndexTest
                            dateModified: Date = new Date,
                            itemDescription: String = "",
                            properties: PropBagEx = new PropBagEx,
-                           privilege: Option[String] = None): List[IndexedItem] = {
+                           privilege: Option[String] = None,
+                           itemDef: ItemDefinition = collection): List[IndexedItem] = {
     val indexer = new StandardIndexer
 
     Range(0, howMany)
@@ -159,7 +160,7 @@ class ItemIndexTest
         val item = new Item()
         item.setUuid(UUID.randomUUID().toString)
         item.setInstitution(inst)
-        item.setItemDefinition(collection)
+        item.setItemDefinition(itemDef)
         item.setOwner(owner)
         item.setName(LangUtils.createTextTempLangugageBundle(itemName))
         item.setDescription(LangUtils.createTextTempLangugageBundle(itemDescription))
@@ -381,6 +382,9 @@ class ItemIndexTest
     }
 
     describe("advanced filtering") {
+      val newCollection = new ItemDefinition()
+      newCollection.setUuid(UUID.randomUUID().toString)
+
       it("supports filtering by ACL expressions") { f =>
         val (itemIndex, searchConfig) = f
 
@@ -395,9 +399,62 @@ class ItemIndexTest
         When("ACL 'DISCOVER_ITEM' is configured in the search configuration")
         searchConfig.setPrivilege(SecurityConstants.DISCOVER_ITEM)
 
-        Then("the search result should be ordered by by Item name")
+        Then("the search result should only return the Item that require this ACL")
         val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
         result.map(_.get(FreeTextQuery.FIELD_NAME)) shouldBe Array(itemName)
+      }
+
+      it("supports filtering by Must clauses") { f =>
+        val (itemIndex, searchConfig) = f
+        val moderatingItemName        = "moderating item"
+
+        Given("Items generated in different Collections with different Item status")
+        val newCollectionDraftItem =
+          generateIndexedItems(itemStatus = ItemStatus.DRAFT, itemDef = newCollection)
+        val newCollectionModeratingItem = generateIndexedItems(itemStatus = ItemStatus.MODERATING,
+                                                               itemName = moderatingItemName,
+                                                               itemDef = newCollection)
+        val oldCollectionItem = generateIndexedItems(itemStatus = ItemStatus.DRAFT)
+
+        createIndexes(itemIndex,
+                      newCollectionDraftItem ++ newCollectionModeratingItem ++ oldCollectionItem)
+
+        When("a search configuration has Must clauses for Collection and Item status")
+        searchConfig.addMust(FreeTextQuery.FIELD_ITEMDEFID, newCollection.getUuid)
+        searchConfig.addMust(FreeTextQuery.FIELD_ITEMSTATUS, List("moderating").asJava)
+
+        Then(
+          "the search result should only return Items that belong to the specified Collection and have the specified Item status")
+        val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
+        result.map(_.get(FreeTextQuery.FIELD_NAME)) shouldBe Array(moderatingItemName)
+      }
+
+      it("supports filtering by Must Not clauses") { f =>
+        val (itemIndex, searchConfig) = f
+        val draftItemName             = "draft item"
+
+        Given("Items generated in different Collections with different Item status")
+        val newCollectionDraftItem =
+          generateIndexedItems(itemStatus = ItemStatus.DRAFT, itemDef = newCollection)
+        val newCollectionModeratingItem =
+          generateIndexedItems(itemStatus = ItemStatus.MODERATING, itemDef = newCollection)
+        val oldCollectionDraftItem =
+          generateIndexedItems(itemStatus = ItemStatus.DRAFT, itemName = draftItemName)
+        val oldCollectionModeratingItem = generateIndexedItems(itemStatus = ItemStatus.MODERATING)
+
+        createIndexes(
+          itemIndex,
+          newCollectionDraftItem ++ newCollectionModeratingItem ++ oldCollectionDraftItem ++ oldCollectionModeratingItem)
+
+        When("a search configuration has multiple Must Not clause for Collection and Item status")
+        searchConfig.addMustNot(FreeTextQuery.FIELD_ITEMDEFID, newCollection.getUuid)
+        searchConfig.addMustNot(FreeTextQuery.FIELD_ITEMSTATUS, List("moderating").asJava)
+
+        Then(
+          "the search result should only return Items that don't belong to the specified Collection and don't have the specified Item status")
+        val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
+        result.map(_.get(FreeTextQuery.FIELD_NAME)) shouldBe Array(draftItemName)
+
       }
     }
 
