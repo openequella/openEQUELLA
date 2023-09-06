@@ -112,9 +112,9 @@ public class TasksIndexer extends AbstractIndexingExtension {
           doc.add(indexed(FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO, assignedTo));
           doc.add(stringSortingField(FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO, assignedTo));
 
-          String priority = Integer.toString(((WorkflowItem) taskstatus.getNode()).getPriority());
-          doc.add(indexed(FIELD_PRIORITY, priority));
-          doc.add(stringSortingField(FIELD_PRIORITY, priority));
+          int priority = ((WorkflowItem) taskstatus.getNode()).getPriority();
+          doc.add(indexed(FIELD_PRIORITY, Integer.toString(priority)));
+          doc.add(numericSortingField(FIELD_PRIORITY, priority));
 
           addDateField(doc, FIELD_DUEDATE, taskstatus.getDateDue(), DateFilter.Format.LONG);
           addDateField(doc, FIELD_STARTED, taskstatus.getStarted(), DateFilter.Format.LONG);

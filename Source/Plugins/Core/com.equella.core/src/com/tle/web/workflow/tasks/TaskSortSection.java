@@ -94,7 +94,7 @@ public class TaskSortSection extends AbstractSortOptionsSection<FreetextSearchEv
   }
 
   private SortField[] getDefaultSortFields() {
-    SortField prioritySortField = new SortField(TasksIndexer.FIELD_PRIORITY, true, Type.STRING);
+    SortField prioritySortField = new SortField(TasksIndexer.FIELD_PRIORITY, true, Type.INT);
     SortField waitingSortField = new SortField(TasksIndexer.FIELD_STARTED, true, Type.LONG);
     return new SortField[] {prioritySortField, ASSIGNEE_SORT, waitingSortField};
   }
