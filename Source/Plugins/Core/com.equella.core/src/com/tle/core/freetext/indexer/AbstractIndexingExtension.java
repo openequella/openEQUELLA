@@ -55,30 +55,26 @@ public abstract class AbstractIndexingExtension implements IndexingExtension {
     return new UtcDate(date).format(Dates.ISO);
   }
 
-  public static void addDateField(
-      Document doc, String name, Date date, DateFilter.Format format, Long defaultTime) {
-    if (date == null && defaultTime == null) {
-      return;
-    }
+  public static void addDateField(Document doc, String name, Date date, DateFilter.Format format) {
     String val;
+    Long time = Long.MAX_VALUE;
     if (format == Format.ISO) {
       if (date == null) {
-        date = new Date(defaultTime);
+        date = new Date(time);
       }
       val = new UtcDate(date).format(Dates.ISO);
     } else {
       if (date != null) {
-        long time = date.getTime();
+        time = date.getTime();
         val = Long.toString(time);
         // If the date is in format 'LONG', also add a NumericDocValuesField for this field so that
         // sorting by this date field will work correctly.
-        doc.add(numericSortingField(name, time));
       } else {
-        val = defaultTime.toString();
+        val = time.toString();
       }
     }
-    StringField field = new StringField(name, val, Field.Store.NO);
-    doc.add(field);
+    doc.add(numericSortingField(name, time));
+    doc.add(new StringField(name, val, Field.Store.NO));
   }
 
   public static Field stringSortingField(String field, String value) {

@@ -116,9 +116,8 @@ public class TasksIndexer extends AbstractIndexingExtension {
           doc.add(indexed(FIELD_PRIORITY, priority));
           doc.add(stringSortingField(FIELD_PRIORITY, priority));
 
-          addDateField(
-              doc, FIELD_DUEDATE, taskstatus.getDateDue(), DateFilter.Format.LONG, Long.MAX_VALUE);
-          addDateField(doc, FIELD_STARTED, taskstatus.getStarted(), DateFilter.Format.LONG, null);
+          addDateField(doc, FIELD_DUEDATE, taskstatus.getDateDue(), DateFilter.Format.LONG);
+          addDateField(doc, FIELD_STARTED, taskstatus.getStarted(), DateFilter.Format.LONG);
 
           for (String userid : taskstatus.getAcceptedUsers()) {
             doc.add(indexed(FreeTextQuery.FIELD_WORKFLOW_ACCEPTED, userid));
@@ -168,8 +167,8 @@ public class TasksIndexer extends AbstractIndexingExtension {
     Document doc = indexedItem.getItemdoc();
     ModerationStatus modStatus = indexedItem.getItem().getModeration();
     if (modStatus != null) {
-      addDateField(doc, FIELD_LASTACTION, modStatus.getLastAction(), Format.LONG, null);
-      addDateField(doc, FIELD_STARTWORKFLOW, modStatus.getStart(), Format.LONG, null);
+      addDateField(doc, FIELD_LASTACTION, modStatus.getLastAction(), Format.LONG);
+      addDateField(doc, FIELD_STARTWORKFLOW, modStatus.getStart(), Format.LONG);
     }
   }
 
