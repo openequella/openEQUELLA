@@ -288,7 +288,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
             String collectPriv = searchreq.getPrivilegeToCollect();
 
-            List<CustomFilter> advancedFilters =
+            List<CustomFilter> extraFilters =
                 collectPriv != null
                     ? Collections.singletonList(
                         new SecurityFilter(
@@ -316,7 +316,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
             SearchResults<T> results;
             Query query =
-                getQuery(searchreq, searcher.getIndexReader(), searchAttachment, advancedFilters);
+                getQuery(searchreq, searcher.getIndexReader(), searchAttachment, extraFilters);
             boolean searchAll =
                 Check.isEmpty(searchreq.getQuery()) || searchreq.getQuery().equals("*");
 
@@ -351,7 +351,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
                         searcher.getIndexReader(),
                         fields,
                         searchAttachment,
-                        advancedFilters);
+                        extraFilters);
                 queryAttachmentOnly =
                     addUniqueIdClauseToQuery(
                         queryAttachmentOnly, itemResults, searcher.getIndexReader());
