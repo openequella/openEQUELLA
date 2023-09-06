@@ -78,7 +78,7 @@ public final class CustomLuceneSortComparator extends SimpleFieldComparator<Inte
     int maxDoc = reader.maxDoc();
     currentReaderValues = new String[maxDoc];
 
-    BinaryDocValues docValues = reader.getBinaryDocValues(field);
+    BinaryDocValues docValues = reader.getSortedDocValues(field);
     for (int i = 0; i < maxDoc; i++) {
       BytesRef value = docValues.get(i);
       currentReaderValues[i] = value == null ? "" : value.utf8ToString();
