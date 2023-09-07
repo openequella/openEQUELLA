@@ -287,13 +287,13 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
             long t1 = System.currentTimeMillis();
 
             String collectPriv = searchreq.getPrivilegeToCollect();
-
-            List<CustomFilter> extraFilters =
+            List<CustomFilter> extraFilter =
                 collectPriv != null
                     ? Collections.singletonList(
                         new SecurityFilter(
                             getPrefixForPrivilege(collectPriv), searcher.getIndexReader()))
                     : Collections.emptyList();
+
             Sort sorter = getSorter(searchreq);
 
             // TODO: We should really be doing a
@@ -316,7 +316,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
             SearchResults<T> results;
             Query query =
-                getQuery(searchreq, searcher.getIndexReader(), searchAttachment, extraFilters);
+                getQuery(searchreq, searcher.getIndexReader(), searchAttachment, extraFilter);
             boolean searchAll =
                 Check.isEmpty(searchreq.getQuery()) || searchreq.getQuery().equals("*");
 
@@ -351,7 +351,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
                         searcher.getIndexReader(),
                         fields,
                         searchAttachment,
-                        extraFilters);
+                        extraFilter);
                 queryAttachmentOnly =
                     addUniqueIdClauseToQuery(
                         queryAttachmentOnly, itemResults, searcher.getIndexReader());
@@ -440,7 +440,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
             long t1 = System.currentTimeMillis();
 
             String collectPriv = searchreq.getPrivilegeToCollect();
-            List<CustomFilter> advancedFilters =
+            List<CustomFilter> extraFilter =
                 collectPriv != null
                     ? Collections.singletonList(
                         new SecurityFilter(
@@ -448,7 +448,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
                     : Collections.emptyList();
 
             IndexReader indexReader = searcher.getIndexReader();
-            Query query = getQuery(searchreq, indexReader, searchAttachments, advancedFilters);
+            Query query = getQuery(searchreq, indexReader, searchAttachments, extraFilter);
             int numDocs = indexReader.numDocs();
 
             CompressedSetCollector compCollector = new CompressedSetCollector();
@@ -899,79 +899,33 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       String[] allFields,
       boolean searchAttachment,
       List<CustomFilter> extraFilters) {
-    Builder builder = new Builder();
+    String[] fields = buildSearchFields(allFields, searchAttachment);
 
-    List<String> searchFields = new ArrayList<String>(Arrays.asList(allFields));
+    // This full query builder includes all the general search queries plus the queries for filters.
+    Builder fullQuerybuilder = new Builder();
+    fullQuerybuilder.add(getFilterQuery(request, reader, extraFilters), Occur.FILTER);
 
-    SearchSettings searchSettings = freetextIndex.getSearchSettings();
+    // This search query builder includes the normal query string and all the extra queries like
+    // FreeText query.
+    Builder searchQueryBuilder = new Builder();
+    searchQueryBuilder.add(buildNormalQuery(request, fields), Occur.MUST);
+    Optional.ofNullable(buildExtraQuery(request, reader))
+        .ifPresent(q -> searchQueryBuilder.add(q, Occur.MUST));
+    fullQuerybuilder.add(searchQueryBuilder.build(), Occur.MUST);
 
-    float titleBoostValue = getRealBoostValue(searchSettings.getTitleBoost());
-    if (titleBoostValue == 0) {
-      searchFields.remove(FreeTextQuery.FIELD_NAME_VECTORED);
-    }
-    setTitleBoost(titleBoostValue == -1 ? 1 : titleBoostValue);
-
-    float descriptionBoostValue = getRealBoostValue(searchSettings.getDescriptionBoost());
-
-    if (descriptionBoostValue == 0) {
-      searchFields.remove(FreeTextQuery.FIELD_BODY);
-    }
-    setDescriptionBoost(descriptionBoostValue == -1 ? 1 : descriptionBoostValue);
-
-    float attachmentBoostValue = getRealBoostValue(searchSettings.getAttachmentBoost());
-    if (attachmentBoostValue == 0 || !searchAttachment) {
-      searchFields.remove(FreeTextQuery.FIELD_ATTACHMENT_VECTORED);
-    }
-    setAttachmentBoost(attachmentBoostValue == -1 ? 1 : attachmentBoostValue);
-
-    final String[] fields = searchFields.toArray(new String[searchFields.size()]);
-
-    addFilters(builder, getFilters(request, reader));
-    addFilters(builder, extraFilters);
-
-    String queryString = request.getQuery();
-    try {
-      if (Check.isEmpty(queryString) || queryString.trim().equals("*")) {
-        builder.add(new TermQuery(new Term(FreeTextQuery.FIELD_ALL, "1")), Occur.MUST);
-      } else {
-        queryString = queryString.toLowerCase();
-        queryString = AND.matcher(queryString).replaceAll("$1AND$2");
-        queryString = OR.matcher(queryString).replaceAll("$1OR$2");
-        queryString = NOT.matcher(queryString).replaceAll("$1NOT$2");
-
-        Map<String, Float> boosts = Maps.newHashMap();
-        boosts.put(FreeTextQuery.FIELD_NAME_VECTORED, titleBoost);
-        boosts.put(FreeTextQuery.FIELD_BODY, descriptionBoost);
-        boosts.put(FreeTextQuery.FIELD_ATTACHMENT_VECTORED, attachmentBoost);
-
-        TLEQueryParser tleParser =
-            new TLEQueryParser(fields, getAnalyser(), boosts, getDefaultOperator());
-        Query tleQuery = tleParser.parse(queryString);
-
-        builder.add(tleQuery, Occur.MUST);
-
-        List<String> queries = request.getExtraQueries();
-        if (queries != null) {
-          for (String queryStr : queries) {
-            builder.add(tleParser.parse(queryStr), Occur.MUST);
-          }
-        }
-      }
-
-      // This one includes the query built above and all the FreeTextQuery of the search.
-      addExtraQuery(builder, request, reader);
-    } catch (QueryNodeException ex) {
-      throw new InvalidSearchQueryException(queryString, ex);
-    }
-    return builder.build();
+    return fullQuerybuilder.build();
   }
 
   /**
    * Takes a search request and prepares a Lucene Filter object, or null if no filtering is
    * required.
    */
-  protected Collection<CustomFilter> getFilters(Search request, IndexReader reader) {
+  protected BooleanQuery getFilterQuery(
+      Search request, IndexReader reader, List<CustomFilter> extraFilters) {
+    Builder filterQueryBuilder = new Builder();
+
     List<CustomFilter> filters = Lists.newArrayList();
+    filters.addAll(extraFilters);
 
     Date[] dateRange = request.getDateRange();
     if (dateRange != null) {
@@ -1025,17 +979,40 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       filters.add(new MatrixFilter(matrixFields, reader));
     }
     filters.add(new InstitutionFilter());
-    return filters;
+
+    filters.forEach(
+        f ->
+            Optional.ofNullable(f.buildQuery())
+                .ifPresent(q -> filterQueryBuilder.add(q, f.getOccur())));
+
+    return filterQueryBuilder.build();
   }
 
-  private void addFilters(Builder builder, Collection<CustomFilter> filters) {
-    filters.forEach(
-        f -> {
-          Query q = f.buildQuery();
-          if (q != null) {
-            builder.add(q, f.getOccur());
-          }
-        });
+  private String[] buildSearchFields(String[] allFields, boolean searchAttachment) {
+    List<String> searchFields = new ArrayList<String>(Arrays.asList(allFields));
+
+    SearchSettings searchSettings = freetextIndex.getSearchSettings();
+
+    float titleBoostValue = getRealBoostValue(searchSettings.getTitleBoost());
+    if (titleBoostValue == 0) {
+      searchFields.remove(FreeTextQuery.FIELD_NAME_VECTORED);
+    }
+    setTitleBoost(titleBoostValue == -1 ? 1 : titleBoostValue);
+
+    float descriptionBoostValue = getRealBoostValue(searchSettings.getDescriptionBoost());
+
+    if (descriptionBoostValue == 0) {
+      searchFields.remove(FreeTextQuery.FIELD_BODY);
+    }
+    setDescriptionBoost(descriptionBoostValue == -1 ? 1 : descriptionBoostValue);
+
+    float attachmentBoostValue = getRealBoostValue(searchSettings.getAttachmentBoost());
+    if (attachmentBoostValue == 0 || !searchAttachment) {
+      searchFields.remove(FreeTextQuery.FIELD_ATTACHMENT_VECTORED);
+    }
+    setAttachmentBoost(attachmentBoostValue == -1 ? 1 : attachmentBoostValue);
+
+    return searchFields.toArray(new String[searchFields.size()]);
   }
 
   protected DateFilter createDateFilter(
@@ -1094,26 +1071,56 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     return new Sort(new SortField(null, SortField.Type.SCORE, false));
   }
 
-  /** @dytech.jira see Jira Review TLE-784 : http://apps.dytech.com.au/jira/browse/TLE-784 */
-  protected void addExtraQuery(Builder builder, Search searchreq, IndexReader reader) {
+  private BooleanQuery buildNormalQuery(Search request, String[] fields) {
+    String queryString = request.getQuery();
+    Builder normalQueryBuilder = new Builder();
+    try {
+      if (Check.isEmpty(queryString) || queryString.trim().equals("*")) {
+        normalQueryBuilder.add(new TermQuery(new Term(FreeTextQuery.FIELD_ALL, "1")), Occur.MUST);
+      } else {
+        queryString = queryString.toLowerCase();
+        queryString = AND.matcher(queryString).replaceAll("$1AND$2");
+        queryString = OR.matcher(queryString).replaceAll("$1OR$2");
+        queryString = NOT.matcher(queryString).replaceAll("$1NOT$2");
+
+        Map<String, Float> boosts = Maps.newHashMap();
+        boosts.put(FreeTextQuery.FIELD_NAME_VECTORED, titleBoost);
+        boosts.put(FreeTextQuery.FIELD_BODY, descriptionBoost);
+        boosts.put(FreeTextQuery.FIELD_ATTACHMENT_VECTORED, attachmentBoost);
+
+        TLEQueryParser tleParser =
+            new TLEQueryParser(fields, getAnalyser(), boosts, getDefaultOperator());
+        Query tleQuery = tleParser.parse(queryString);
+
+        normalQueryBuilder.add(tleQuery, Occur.SHOULD);
+
+        List<String> queries = request.getExtraQueries();
+        if (queries != null) {
+          for (String queryStr : queries) {
+            normalQueryBuilder.add(tleParser.parse(queryStr), Occur.SHOULD);
+          }
+        }
+      }
+
+    } catch (QueryNodeException ex) {
+      throw new InvalidSearchQueryException(queryString, ex);
+    }
+    return normalQueryBuilder.build();
+  }
+
+  private BooleanQuery buildExtraQuery(Search searchreq, IndexReader reader) {
+    Builder extraQueryBuilder = new Builder();
     FreeTextQuery fullftQuery = searchreq.getFreeTextQuery();
     if (fullftQuery == null) {
-      return;
+      return null;
     }
     BooleanClause clause = convertToBooleanClause(fullftQuery, reader);
     if (!clause.isProhibited() && !clause.isRequired()) {
       clause.setOccur(Occur.MUST);
     }
+    extraQueryBuilder.add(clause);
 
-    builder.add(clause);
-    //    BooleanQuery andThem = new BooleanQuery();
-    //    andThem.add(clause);
-    //
-    //    builder.add(andThem, Occur.MUST);
-    //    if (query != null) {
-    //      andThem.add(query, Occur.MUST);
-    //    }
-    return;
+    return extraQueryBuilder.build();
   }
 
   /**
