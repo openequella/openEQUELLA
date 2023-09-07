@@ -286,14 +286,6 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
           public SearchResults<T> search(IndexSearcher searcher) throws IOException {
             long t1 = System.currentTimeMillis();
 
-            String collectPriv = searchreq.getPrivilegeToCollect();
-            List<CustomFilter> extraFilter =
-                collectPriv != null
-                    ? Collections.singletonList(
-                        new SecurityFilter(
-                            getPrefixForPrivilege(collectPriv), searcher.getIndexReader()))
-                    : Collections.emptyList();
-
             Sort sorter = getSorter(searchreq);
 
             // TODO: We should really be doing a
@@ -315,8 +307,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
             }
 
             SearchResults<T> results;
-            Query query =
-                getQuery(searchreq, searcher.getIndexReader(), searchAttachment, extraFilter);
+            Query query = getQuery(searchreq, searcher.getIndexReader(), searchAttachment);
             boolean searchAll =
                 Check.isEmpty(searchreq.getQuery()) || searchreq.getQuery().equals("*");
 
@@ -346,12 +337,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
                 final String[] fields = new String[] {FreeTextQuery.FIELD_ATTACHMENT_VECTORED};
 
                 Query queryAttachmentOnly =
-                    getQuery(
-                        searchreq,
-                        searcher.getIndexReader(),
-                        fields,
-                        searchAttachment,
-                        extraFilter);
+                    getQuery(searchreq, searcher.getIndexReader(), fields, searchAttachment);
                 queryAttachmentOnly =
                     addUniqueIdClauseToQuery(
                         queryAttachmentOnly, itemResults, searcher.getIndexReader());
@@ -439,16 +425,8 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
           public LongSet search(IndexSearcher searcher) throws IOException {
             long t1 = System.currentTimeMillis();
 
-            String collectPriv = searchreq.getPrivilegeToCollect();
-            List<CustomFilter> extraFilter =
-                collectPriv != null
-                    ? Collections.singletonList(
-                        new SecurityFilter(
-                            getPrefixForPrivilege(collectPriv), searcher.getIndexReader()))
-                    : Collections.emptyList();
-
             IndexReader indexReader = searcher.getIndexReader();
-            Query query = getQuery(searchreq, indexReader, searchAttachments, extraFilter);
+            Query query = getQuery(searchreq, indexReader, searchAttachments);
             int numDocs = indexReader.numDocs();
 
             CompressedSetCollector compCollector = new CompressedSetCollector();
@@ -874,36 +852,21 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     return keys;
   }
 
+  /** Takes a search request and prepares a Lucene Query object. */
   protected BooleanQuery getQuery(Search request, IndexReader reader, boolean searchAttachment) {
     final String[] fields =
         FreeTextQuery.BASIC_NAME_BODY_ATTACHMENT_FIELDS.toArray(
             new String[FreeTextQuery.BASIC_NAME_BODY_ATTACHMENT_FIELDS.size()]);
-    return getQuery(request, reader, fields, searchAttachment, Collections.emptyList());
-  }
-
-  /** Takes a search request and prepares a Lucene Query object. */
-  protected BooleanQuery getQuery(
-      Search request,
-      IndexReader reader,
-      boolean searchAttachment,
-      List<CustomFilter> extraFilters) {
-    final String[] fields =
-        FreeTextQuery.BASIC_NAME_BODY_ATTACHMENT_FIELDS.toArray(
-            new String[FreeTextQuery.BASIC_NAME_BODY_ATTACHMENT_FIELDS.size()]);
-    return getQuery(request, reader, fields, searchAttachment, extraFilters);
+    return getQuery(request, reader, fields, searchAttachment);
   }
 
   private BooleanQuery getQuery(
-      Search request,
-      IndexReader reader,
-      String[] allFields,
-      boolean searchAttachment,
-      List<CustomFilter> extraFilters) {
+      Search request, IndexReader reader, String[] allFields, boolean searchAttachment) {
     String[] fields = buildSearchFields(allFields, searchAttachment);
 
     // This full query builder includes all the general search queries plus the queries for filters.
     Builder fullQuerybuilder = new Builder();
-    fullQuerybuilder.add(getFilterQuery(request, reader, extraFilters), Occur.FILTER);
+    fullQuerybuilder.add(getFilterQuery(request, reader), Occur.FILTER);
 
     // This search query builder includes the normal query string and all the extra queries like
     // FreeText query.
@@ -920,12 +883,10 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
    * Takes a search request and prepares a Lucene Filter object, or null if no filtering is
    * required.
    */
-  protected BooleanQuery getFilterQuery(
-      Search request, IndexReader reader, List<CustomFilter> extraFilters) {
+  protected BooleanQuery getFilterQuery(Search request, IndexReader reader) {
     Builder filterQueryBuilder = new Builder();
 
     List<CustomFilter> filters = Lists.newArrayList();
-    filters.addAll(extraFilters);
 
     Date[] dateRange = request.getDateRange();
     if (dateRange != null) {

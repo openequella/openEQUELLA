@@ -39,18 +39,13 @@ import org.apache.lucene.search.BooleanQuery.Builder;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.FixedBitSet;
 
 public class SecurityFilter implements CustomFilter {
-
-  private FixedBitSet results;
-
-  private String[] expressions;
-  private Map<String, Boolean> ownerExprMap;
-  private int ownerSizes;
-  private boolean systemUser;
-
-  private IndexReader reader;
+  private final String[] expressions;
+  private final Map<String, Boolean> ownerExprMap;
+  private final int ownerSizes;
+  private final boolean systemUser;
+  private final IndexReader reader;
 
   public SecurityFilter(String aclType, IndexReader reader) {
     this.reader = reader;
