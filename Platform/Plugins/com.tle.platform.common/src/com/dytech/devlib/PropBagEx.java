@@ -64,10 +64,10 @@ public class PropBagEx implements Serializable {
 
   private static final int MAX_BUILDERS = 16;
 
-  private static final String WILD = "*"; // $NON-NLS-1$
-  private static final String PATH_SEP = "/"; // $NON-NLS-1$
-  private static final String BLANK = ""; // $NON-NLS-1$
-  private static final String ATTR = "@"; // $NON-NLS-1$
+  private static final String WILD = "*";
+  private static final String PATH_SEP = "/";
+  private static final String BLANK = "";
+  private static final String ATTR = "@";
 
   private static final long serialVersionUID = 55378008;
 
@@ -253,7 +253,7 @@ public class PropBagEx implements Serializable {
       }
     }
 
-    if (foundNode == null && create == true) {
+    if (foundNode == null && create) {
       // If the Index is 0 and we didn't find a node or if the number
       // found (which is not zero based) equals the index (which is)
       // then this is the same as saying index is one more that the
@@ -334,83 +334,71 @@ public class PropBagEx implements Serializable {
       final int type = subRoot.getNodeType();
       switch (type) {
         case Node.DOCUMENT_TYPE_NODE:
-          {
-            final DocumentType doctype = (DocumentType) subRoot;
-            sbuf.write("<!DOCTYPE ");
-            sbuf.write(doctype.getName());
-            // see Jira Defect TLE-1295 :
-            // http://apps.dytech.com.au/jira/browse/TLE-1295
-            // Tidy DOMs don't correctly support this functionality
-            if (doctype.getPublicId() != null) {
-              sbuf.write(" PUBLIC \"");
-              sbuf.write(doctype.getPublicId());
-              sbuf.write("\" \"");
-              sbuf.write(doctype.getSystemId());
-              sbuf.write("\"");
-            }
-            sbuf.write(">\n");
-            // doc.getDoctype();
-            // System.out.println("<?xml version=\"1.0\" encoding=\""+
-            // "UTF-8" + "\"?>");
-            break;
+          final DocumentType doctype = (DocumentType) subRoot;
+          sbuf.write("<!DOCTYPE ");
+          sbuf.write(doctype.getName());
+          // see Jira Defect TLE-1295 :
+          // http://apps.dytech.com.au/jira/browse/TLE-1295
+          // Tidy DOMs don't correctly support this functionality
+          if (doctype.getPublicId() != null) {
+            sbuf.write(" PUBLIC \"");
+            sbuf.write(doctype.getPublicId());
+            sbuf.write("\" \"");
+            sbuf.write(doctype.getSystemId());
+            sbuf.write("\"");
           }
+          sbuf.write(">\n");
+          // doc.getDoctype();
+          // System.out.println("<?xml version=\"1.0\" encoding=\""+
+          // "UTF-8" + "\"?>");
+          break;
         case Node.ELEMENT_NODE:
-          {
-            sbuf.write('<');
-            sbuf.write(subRoot.getNodeName());
-            final NamedNodeMap nnm = subRoot.getAttributes();
-            if (nnm != null) {
-              final int len = nnm.getLength();
-              Attr attr;
-              for (int i = 0; i < len; i++) {
-                attr = (Attr) nnm.item(i);
-                sbuf.write(' ' + attr.getNodeName() + "=\"" + ent(attr.getNodeValue()) + '"');
-              }
+          sbuf.write('<');
+          sbuf.write(subRoot.getNodeName());
+          final NamedNodeMap nnm = subRoot.getAttributes();
+          if (nnm != null) {
+            final int len = nnm.getLength();
+            Attr attr;
+            for (int i = 0; i < len; i++) {
+              attr = (Attr) nnm.item(i);
+              sbuf.write(' ' + attr.getNodeName() + "=\"" + ent(attr.getNodeValue()) + '"');
             }
-            // Check for an empty parent element
-            // no children, or a single TEXT_NODE with length() == 0
-            final Node child = subRoot.getFirstChild();
-            if (child == null
-                || (child.getNodeType() == Node.TEXT_NODE
-                    && (child.getNextSibling() == null && child.getNodeValue().length() == 0))) {
-              sbuf.write(PATH_SEP);
-            } else {
-              bEndElem = true;
-            }
-            sbuf.write('>');
-            break;
           }
+          // Check for an empty parent element
+          // no children, or a single TEXT_NODE with length() == 0
+          final Node child = subRoot.getFirstChild();
+          if (child == null
+              || (child.getNodeType() == Node.TEXT_NODE
+                  && (child.getNextSibling() == null && child.getNodeValue().length() == 0))) {
+            sbuf.write(PATH_SEP);
+          } else {
+            bEndElem = true;
+          }
+          sbuf.write('>');
+          break;
         case Node.ENTITY_REFERENCE_NODE:
-          {
-            sbuf.write('&' + subRoot.getNodeName() + ';');
-            break;
-          }
+          sbuf.write('&' + subRoot.getNodeName() + ';');
+          break;
         case Node.CDATA_SECTION_NODE:
-          {
-            sbuf.write("<![CDATA[" + subRoot.getNodeValue() + "]]>");
-            break;
-          }
+          sbuf.write("<![CDATA[" + subRoot.getNodeValue() + "]]>");
+          break;
         case Node.TEXT_NODE:
-          {
-            sbuf.write(ent(subRoot.getNodeValue()));
-            break;
-          }
+          sbuf.write(ent(subRoot.getNodeValue()));
+          break;
         case Node.PROCESSING_INSTRUCTION_NODE:
-          {
-            sbuf.write("<?" + subRoot.getNodeName());
-            final String data = subRoot.getNodeValue();
-            if (data != null && data.length() > 0) {
-              sbuf.write(' ');
-              sbuf.write(data);
-            }
-            sbuf.write("?>");
-            break;
+          sbuf.write("<?" + subRoot.getNodeName());
+          final String data = subRoot.getNodeValue();
+          if (data != null && data.length() > 0) {
+            sbuf.write(' ');
+            sbuf.write(data);
           }
+          sbuf.write("?>");
+          break;
         case Node.COMMENT_NODE:
-          {
-            sbuf.write("<!--" + subRoot.getNodeValue() + "-->");
-            break;
-          }
+          sbuf.write("<!--" + subRoot.getNodeValue() + "-->");
+          break;
+        default:
+          log.debug("Unsupported node type: " + type);
       }
 
       for (Node child = subRoot.getFirstChild(); child != null; child = child.getNextSibling()) {
