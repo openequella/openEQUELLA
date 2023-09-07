@@ -27,7 +27,6 @@ import com.flickr4java.flickr.people.User;
 import com.flickr4java.flickr.photos.Photo;
 import com.flickr4java.flickr.photos.PhotoList;
 import com.flickr4java.flickr.photos.PhotosInterface;
-import com.google.common.base.Throwables;
 import com.tle.common.Check;
 import com.tle.core.guice.Bind;
 import java.util.Arrays;
@@ -101,7 +100,7 @@ public class FlickrServiceImpl implements FlickrService {
 
     if (params.getSearchRawText() != null) {
       String rawText = params.getSearchRawText().trim();
-      if (rawText.length() > 0) {
+      if (!rawText.isEmpty()) {
         if (params.isTagsNotText()) {
           if (rawText.contains(",")) {
             params.setTags(rawText.split(","));
@@ -124,15 +123,8 @@ public class FlickrServiceImpl implements FlickrService {
 
     PhotosInterface photosInterface = flickr.getPhotosInterface();
 
-    try {
-      PhotoList<Photo> photoList = photosInterface.search(params, queryLimit, pageToGet);
-      return photoList;
-    } catch (FlickrException fe) // NOSONAR
-    {
-      throw fe;
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
-    }
+    PhotoList<Photo> photoList = photosInterface.search(params, queryLimit, pageToGet);
+    return photoList;
   }
 
   /**
@@ -214,16 +206,7 @@ public class FlickrServiceImpl implements FlickrService {
       throws FlickrException {
     String flickrUserId = null;
     PeopleInterface pi = flickr.getPeopleInterface();
-    User flickrUser = null;
-    try {
-      flickrUser = pi.findByEmail(presumedEmail);
-    } catch (FlickrException fe) // NOSONAR - throw these in the raw, wrap
-    // any others
-    {
-      throw fe;
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
-    }
+    User flickrUser = pi.findByEmail(presumedEmail);
 
     if (flickrUser != null) {
       flickrUserId = flickrUser.getId();
@@ -243,16 +226,7 @@ public class FlickrServiceImpl implements FlickrService {
       throws FlickrException {
     String flickrUserId = null;
     PeopleInterface pi = flickr.getPeopleInterface();
-    User flickrUser = null;
-    try {
-      flickrUser = pi.findByUsername(presumedUsername);
-    } catch (FlickrException fe) // NOSONAR - throw these in the raw, wrap
-    // any others
-    {
-      throw fe;
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
-    }
+    User flickrUser = pi.findByUsername(presumedUsername);
 
     if (flickrUser != null) {
       flickrUserId = flickrUser.getId();

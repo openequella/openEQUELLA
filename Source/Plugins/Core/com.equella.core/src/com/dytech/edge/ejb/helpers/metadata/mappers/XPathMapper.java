@@ -23,7 +23,6 @@ import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.Constants;
 import com.dytech.edge.ejb.helpers.metadata.mapping.GenericPackageMapping;
 import com.dytech.edge.ejb.helpers.metadata.mapping.Mapping;
-import com.google.common.base.Throwables;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.mapping.IMSMapping;
 import com.tle.beans.entity.itemdef.mapping.IMSMapping.MappingType;
@@ -84,12 +83,12 @@ public class XPathMapper extends Mapper {
     }
     RewindableParser parser = new RewindableParser(xpp);
 
-    List<Mapping> list = new ArrayList<Mapping>();
+    List<Mapping> list = new ArrayList<>();
     boolean firstNode = true;
     try {
       NodeEvent event = parser.current();
 
-      List<String> nodes = new ArrayList<String>();
+      List<String> nodes = new ArrayList<>();
       while (event == null || event.status != XmlPullParser.END_DOCUMENT) {
         if (event == null) {
           event = parser.next();
@@ -119,8 +118,8 @@ public class XPathMapper extends Mapper {
 
         event = parser.next();
       }
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+    } catch (XmlPullParserException | IOException e) {
+      throw new RuntimeException(e);
     }
 
     return list;

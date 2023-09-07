@@ -19,7 +19,6 @@
 package com.tle.core.activation.convert;
 
 import com.dytech.common.io.UnicodeReader;
-import com.google.common.base.Throwables;
 import com.thoughtworks.xstream.XStream;
 import com.tle.beans.activation.ActivateRequest;
 import com.tle.beans.item.Item;
@@ -79,8 +78,8 @@ public class ActivationsConverter implements ItemExtrasConverter {
           request.setId(0);
           requestDao.saveAny(request);
         }
-      } catch (Exception e) {
-        throw Throwables.propagate(e);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
       }
     }
   }

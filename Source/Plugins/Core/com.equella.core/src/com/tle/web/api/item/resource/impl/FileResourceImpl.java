@@ -20,7 +20,6 @@ package com.tle.web.api.item.resource.impl;
 
 import com.dytech.edge.common.FileInfo;
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
@@ -140,7 +139,7 @@ public class FileResourceImpl implements FileResource {
       folder.setFiles(subFiles);
       folder.setFolders(subFolders);
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 
@@ -182,7 +181,7 @@ public class FileResourceImpl implements FileResource {
     try {
       entry.setLength(fileSystemService.fileLength(stagingFile, filepath));
     } catch (FileNotFoundException e) {
-      throw Throwables.propagate(e); // can't happen
+      throw new RuntimeException(e); // can't happen
     }
     return convertFileEntry(stagingFile, filepath, entry);
   }
@@ -433,7 +432,7 @@ public class FileResourceImpl implements FileResource {
               })
           .build();
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 
@@ -473,7 +472,7 @@ public class FileResourceImpl implements FileResource {
       }
       return resp.build();
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 

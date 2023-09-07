@@ -23,7 +23,6 @@ import static com.tle.common.collection.AttachmentConfigConstants.DISPLAY_MODE_T
 
 import com.dytech.devlib.PropBagEx;
 import com.google.common.base.Function;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.itemdef.ItemDefinition;
@@ -695,7 +694,7 @@ public class LMSExportSection extends AbstractContentSection<LMSExportSection.LM
     } catch (LmsUserNotFoundException e) {
       // Not going to happen, this would have already happened
       // when populating the tree.
-      throw Throwables.propagate(e);
+      throw new AssertionError(e);
     }
   }
 
@@ -931,7 +930,7 @@ public class LMSExportSection extends AbstractContentSection<LMSExportSection.LM
         try {
           return Lists.transform(getCourses(info), new FolderToTreeNodeTransform(info));
         } catch (LmsUserNotFoundException e) {
-          throw Throwables.propagate(e);
+          throw new RuntimeException(e);
         }
       } else if (id.contains("$")) {
         final String[] ids = id.split("\\$");

@@ -19,8 +19,6 @@
 package com.tle.core.google;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.youtube.YouTube;
@@ -30,12 +28,12 @@ import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoListResponse;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.gdata.client.books.BooksService;
 import com.google.gdata.client.books.VolumeQuery;
 import com.google.gdata.data.books.VolumeEntry;
 import com.google.gdata.data.books.VolumeFeed;
+import com.google.gdata.util.ServiceException;
 import com.tle.common.Check;
 import com.tle.core.guice.Bind;
 import com.tle.core.settings.service.ConfigurationService;
@@ -85,7 +83,7 @@ public class GoogleServiceImpl implements GoogleService {
       YouTube.Search.List search = getTubeService().search().list(Arrays.asList(data.split(",")));
       search.setKey(getApiKey());
       search.setQ(query);
-      search.setType(Arrays.asList("video"));
+      search.setType(List.of("video"));
       search.setMaxResults(limit);
       search.setVideoEmbeddable("true");
       search.setOrder(orderBy);
@@ -115,8 +113,8 @@ public class GoogleServiceImpl implements GoogleService {
 
       // Throw the exception to be handled by the Youtube Handler
       throw gjre;
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -137,8 +135,8 @@ public class GoogleServiceImpl implements GoogleService {
       List<Channel> items = channelListResponse.getItems();
 
       return Check.isEmpty(items) ? null : items.get(0);
-    } catch (Exception ex) {
-      throw Throwables.propagate(ex);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -151,8 +149,8 @@ public class GoogleServiceImpl implements GoogleService {
       ChannelListResponse channelListResponse = channels.execute();
 
       return channelListResponse.getItems();
-    } catch (Exception ex) {
-      throw Throwables.propagate(ex);
+    } catch (IOException ex) {
+      throw new RuntimeException(ex);
     }
   }
 
@@ -174,8 +172,8 @@ public class GoogleServiceImpl implements GoogleService {
       VideoListResponse vlr = videos.execute();
 
       return vlr.getItems();
-    } catch (Exception ex) {
-      throw Throwables.propagate(ex);
+    } catch (IOException ex) {
+      throw new RuntimeException(ex);
     }
   }
 
@@ -185,11 +183,8 @@ public class GoogleServiceImpl implements GoogleService {
           new YouTube.Builder(
                   new NetHttpTransport(),
                   new GsonFactory(),
-                  new HttpRequestInitializer() {
-                    @Override
-                    public void initialize(HttpRequest request) throws IOException {
-                      // Nothing?
-                    }
+                  request -> {
+                    // Nothing?
                   })
               .setApplicationName(EQUELLA)
               .build();
@@ -201,8 +196,8 @@ public class GoogleServiceImpl implements GoogleService {
   public VolumeEntry getBook(String bookId) {
     try {
       return getBooksService().getEntry(new URL(bookId), VolumeEntry.class);
-    } catch (Exception ex) {
-      throw Throwables.propagate(ex);
+    } catch (IOException | ServiceException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -215,8 +210,8 @@ public class GoogleServiceImpl implements GoogleService {
       vquery.setStartIndex(offset + 1);
       vquery.setMaxResults(limit);
       return getBooksService().query(vquery, VolumeFeed.class);
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+    } catch (IOException | ServiceException e) {
+      throw new RuntimeException(e);
     }
   }
 

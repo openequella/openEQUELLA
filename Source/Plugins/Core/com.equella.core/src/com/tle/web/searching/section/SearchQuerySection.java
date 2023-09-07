@@ -20,7 +20,6 @@ package com.tle.web.searching.section;
 
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.queries.FreeTextQuery;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
@@ -767,7 +766,7 @@ public class SearchQuerySection
         powerPage.loadFromDocument(info);
         powerPage.saveDefaults();
       } catch (Exception e) {
-        Throwables.propagate(e);
+        throw (e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e));
       }
       powerPage.ensureTreeAdded(info, isEditQuery() || isSubmitWizard());
 

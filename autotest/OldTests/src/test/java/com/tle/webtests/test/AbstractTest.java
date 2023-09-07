@@ -2,10 +2,14 @@ package com.tle.webtests.test;
 
 import static org.testng.Assert.assertEquals;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
-import com.tle.webtests.framework.*;
+import com.tle.webtests.framework.HasTestConfig;
+import com.tle.webtests.framework.Name;
+import com.tle.webtests.framework.PageContext;
+import com.tle.webtests.framework.ScreenshotListener;
+import com.tle.webtests.framework.StandardDriverFactory;
+import com.tle.webtests.framework.TestConfig;
 import com.tle.webtests.pageobject.ClassPrefixedName;
 import com.tle.webtests.pageobject.PageObject;
 import com.tle.webtests.pageobject.PrefixedName;
@@ -293,7 +297,7 @@ public abstract class AbstractTest implements HasTestConfig {
     try {
       Thread.sleep(time);
     } catch (InterruptedException e) {
-      Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 

@@ -22,7 +22,6 @@ import com.dytech.edge.admin.wizard.WizardHelper;
 import com.dytech.edge.admin.wizard.editor.Editor;
 import com.dytech.edge.admin.wizard.model.Control;
 import com.dytech.edge.wizard.beans.control.CustomControl;
-import com.google.common.base.Throwables;
 import com.tle.admin.controls.repository.ControlDefinition;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.common.i18n.CurrentLocale;
@@ -104,7 +103,7 @@ public class PluginControlExtension implements ControlDefinition {
 
       return (Editor) cons.newInstance(params);
     } catch (Exception e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 
@@ -130,7 +129,7 @@ public class PluginControlExtension implements ControlDefinition {
           (Control) modelClass.getConstructor(ControlDefinition.class).newInstance(this);
       return controlModel;
     } catch (Exception e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 

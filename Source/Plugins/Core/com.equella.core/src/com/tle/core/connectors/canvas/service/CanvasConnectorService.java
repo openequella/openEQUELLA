@@ -28,12 +28,12 @@ import static com.tle.core.connectors.canvas.CanvasConnectorConstants.MODULE_ITE
 import static com.tle.core.connectors.canvas.CanvasConnectorConstants.MODULE_ITEM_TITLE;
 import static com.tle.core.connectors.canvas.CanvasConnectorConstants.MODULE_ITEM_TYPE;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.io.CharStreams;
 import com.tle.annotation.NonNullByDefault;
@@ -211,9 +211,9 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
                 moduleKey.getContentId()));
     request.setMethod(Method.DELETE);
     try (final Response response = getCanvasResponse(request, connector, username)) {
-      return true;
+      return response.isOk();
     } catch (IOException io) {
-      throw Throwables.propagate(io);
+      throw new RuntimeException(io);
     }
   }
 
@@ -241,9 +241,9 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
     request.setHtmlForm(params);
 
     try (final Response response = getCanvasResponse(request, connector, username)) {
-      return true;
+      return response.isOk();
     } catch (IOException io) {
-      throw Throwables.propagate(io);
+      throw new RuntimeException(io);
     }
   }
 
@@ -272,9 +272,9 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
       request.setHtmlForm(params);
 
       try (final Response response = getCanvasResponse(request, connector, username)) {
-        return true;
+        return response.isOk();
       } catch (IOException io) {
-        throw Throwables.propagate(io);
+        throw new RuntimeException(io);
       }
     } else {
       // For a diff course, this is going to have to be a delete and
@@ -398,8 +398,8 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
         return;
       }
       throw new RuntimeException(response.getMessage());
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+    } catch (IOException io) {
+      throw new RuntimeException(io);
     }
   }
 
@@ -420,27 +420,9 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
 
   private CanvasExternalToolBean findExternalToolForInst(Connector connector, String courseId) {
     Request request = new Request(apiPath(connector, COURSES, courseId, EXTERNAL_TOOLS));
+    CanvasExternalToolBean tool = getCanvasExternalToolBean(connector, request);
+    if (tool != null) return tool;
 
-    while (request != null) {
-      // Note: null username param, needs to be done as admin
-      try (final Response response = getCanvasResponse(request, connector, null)) {
-        final List<CanvasExternalToolBean> tools =
-            jsonMapper.readValue(
-                response.getInputStream(),
-                new TypeReference<List<CanvasExternalToolBean>>() {
-                  // nada
-                });
-
-        for (CanvasExternalToolBean tool : tools) {
-          if (institutionService.isInstitutionUrl(tool.getUrl())) {
-            return tool;
-          }
-        }
-        request = getNextRequest(connector, null, response.getHeader(RESPONSE_HEADER_LINK));
-      } catch (Exception e) {
-        throw Throwables.propagate(e);
-      }
-    }
     // couldn't find a tool on the course, check account
     final CanvasCourseBean course = getCanvasCourse(connector, null, courseId);
 
@@ -451,12 +433,19 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
     String rootAccountId =
         Check.isEmpty(account.getRootAccount()) ? account.getId() : account.getRootAccount();
     request = new Request(apiPath(connector, ACCOUNTS, rootAccountId, EXTERNAL_TOOLS));
+    tool = getCanvasExternalToolBean(connector, request);
+    if (tool != null) return tool;
+
+    throw new RuntimeException(CurrentLocale.get(getKey("error.notool")));
+  }
+
+  private CanvasExternalToolBean getCanvasExternalToolBean(Connector connector, Request request) {
     while (request != null) {
       try (final Response response = getCanvasResponse(request, connector, null)) {
         final List<CanvasExternalToolBean> tools =
             jsonMapper.readValue(
                 response.getInputStream(),
-                new TypeReference<List<CanvasExternalToolBean>>() {
+                new TypeReference<>() {
                   // nada
                 });
         for (CanvasExternalToolBean tool : tools) {
@@ -465,12 +454,11 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
           }
         }
         request = getNextRequest(connector, null, response.getHeader(RESPONSE_HEADER_LINK));
-      } catch (Exception e) {
-        throw Throwables.propagate(e);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
       }
     }
-
-    throw new RuntimeException(CurrentLocale.get(getKey("error.notool")));
+    return null;
   }
 
   @Override
@@ -515,7 +503,7 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
             final List<CanvasModuleItemBean> items =
                 jsonMapper.readValue(
                     response.getInputStream(),
-                    new TypeReference<List<CanvasModuleItemBean>>() {
+                    new TypeReference<>() {
                       // nada
                     });
 
@@ -532,8 +520,8 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
 
             nextRequest =
                 getNextRequest(connector, username, response.getHeader(RESPONSE_HEADER_LINK));
-          } catch (Exception e) {
-            throw Throwables.propagate(e);
+          } catch (IOException e) {
+            throw new RuntimeException(e);
           }
         }
       }
@@ -596,7 +584,7 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
         final List<CanvasCourseBean> courses =
             jsonMapper.readValue(
                 response.getInputStream(),
-                new TypeReference<List<CanvasCourseBean>>() {
+                new TypeReference<>() {
                   // nada
                 });
         for (CanvasCourseBean canvasCourse : courses) {
@@ -607,8 +595,8 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
         }
 
         nextRequest = getNextRequest(connector, username, response.getHeader(RESPONSE_HEADER_LINK));
-      } catch (Exception e) {
-        throw Throwables.propagate(e);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
       }
     }
 
@@ -623,7 +611,7 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
           final List<CanvasCourseBean> courses =
               jsonMapper.readValue(
                   response.getInputStream(),
-                  new TypeReference<List<CanvasCourseBean>>() {
+                  new TypeReference<>() {
                     // nada
                   });
           for (CanvasCourseBean canvasCourse : courses) {
@@ -637,8 +625,8 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
 
           nextRequest =
               getNextRequest(connector, username, response.getHeader(RESPONSE_HEADER_LINK));
-        } catch (Exception e) {
-          throw Throwables.propagate(e);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
         }
       }
     }
@@ -653,8 +641,8 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
       final CanvasCourseBean canvasCourse =
           jsonMapper.readValue(courseResponse, CanvasCourseBean.class);
       return canvasCourse;
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -667,8 +655,8 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
       final CanvasAccountBean canvasAccount =
           jsonMapper.readValue(accountResponse, CanvasAccountBean.class);
       return canvasAccount;
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -679,12 +667,12 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
       // won't do nextRequest stuff. Shouldn't be more than 100 accounts
       return jsonMapper.readValue(
           accountsResponse,
-          new TypeReference<List<CanvasAccountBean>>() {
+          new TypeReference<>() {
             // nada
           });
 
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -698,14 +686,14 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
         final List<CanvasModuleBean> modules =
             jsonMapper.readValue(
                 response.getInputStream(),
-                new TypeReference<List<CanvasModuleBean>>() {
+                new TypeReference<>() {
                   // nada
                 });
         canvasModules.addAll(modules);
 
         nextRequest = getNextRequest(connector, username, response.getHeader(RESPONSE_HEADER_LINK));
-      } catch (Exception e) {
-        throw Throwables.propagate(e);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
       }
     }
     return canvasModules;
@@ -722,8 +710,8 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
       final CanvasModuleBean canvasModule =
           jsonMapper.readValue(moduleResponse, CanvasModuleBean.class);
       return canvasModule;
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -740,8 +728,8 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
       final CanvasModuleItemBean canvasModule =
           jsonMapper.readValue(moduleResponse, CanvasModuleItemBean.class);
       return canvasModule;
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -752,7 +740,7 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
       CharStreams.copy(new InputStreamReader(response.getInputStream()), sw);
       return sw.toString();
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 

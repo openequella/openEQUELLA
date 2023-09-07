@@ -22,7 +22,6 @@ import static com.tle.common.PathUtils.filePath;
 
 import com.dytech.edge.common.Constants;
 import com.google.common.base.Function;
-import com.google.common.base.Throwables;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.HtmlAttachment;
@@ -106,7 +105,7 @@ public class MyPagesPackageExporterUtils {
     try {
       return new InputStreamReader(viewPage.getContentStream().getInputStream(), Constants.UTF8);
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 

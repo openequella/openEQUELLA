@@ -19,7 +19,6 @@
 package com.tle.admin.baseentity;
 
 import com.dytech.gui.workers.GlassSwingWorker;
-import com.google.common.base.Throwables;
 import com.tle.common.applet.client.DialogUtils;
 import com.tle.common.applet.client.DialogUtils.DialogResult;
 import com.tle.common.filesystem.FileEntry;
@@ -210,7 +209,7 @@ public class EntityStagingFileViewer extends JPanel {
               }
               uploadFile(stagingID, path + file.getName(), in);
             } catch (IOException e1) {
-              throw Throwables.propagate(e1);
+              throw new RuntimeException(e1);
             }
 
             fileTreeModel.reload();
@@ -239,7 +238,7 @@ public class EntityStagingFileViewer extends JPanel {
               try {
                 downloadedData = service.downloadFile(stagingID, path);
               } catch (IOException e1) {
-                throw Throwables.propagate(e1);
+                throw new RuntimeException(e1);
               }
 
               // Show save dialog with appropriate filename
@@ -251,7 +250,7 @@ public class EntityStagingFileViewer extends JPanel {
                 try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(file))) {
                   stream.write(downloadedData);
                 } catch (IOException e1) {
-                  throw Throwables.propagate(e1);
+                  throw new RuntimeException(e1);
                 }
               }
               fileTreeModel.reload();

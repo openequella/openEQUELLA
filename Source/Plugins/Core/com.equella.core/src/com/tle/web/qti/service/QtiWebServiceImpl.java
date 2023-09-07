@@ -19,7 +19,6 @@
 package com.tle.web.qti.service;
 
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.tle.annotation.NonNullByDefault;
@@ -56,7 +55,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -538,15 +536,9 @@ public class QtiWebServiceImpl implements QtiWebService {
     final String testUuid = (String) qti.getData(QtiConstants.KEY_TEST_UUID);
     try {
       return assessmentTestCache.get(
-          getCacheKey(testUuid),
-          new Callable<ResolvedAssessmentTest>() {
-            @Override
-            public ResolvedAssessmentTest call() throws Exception {
-              return loadAssessmentTest(info, viewableItem, xmlLoc, testUuid);
-            }
-          });
+          getCacheKey(testUuid), () -> loadAssessmentTest(info, viewableItem, xmlLoc, testUuid));
     } catch (ExecutionException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 

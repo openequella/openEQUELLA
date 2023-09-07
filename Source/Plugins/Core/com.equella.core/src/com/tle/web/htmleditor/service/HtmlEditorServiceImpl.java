@@ -20,7 +20,6 @@ package com.tle.web.htmleditor.service;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Throwables;
 import com.google.common.io.CharStreams;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
@@ -162,7 +161,7 @@ public class HtmlEditorServiceImpl implements HtmlEditorService {
         CharStreams.copy(rdr, sw);
         return sw.toString();
       } catch (IOException e) {
-        throw Throwables.propagate(e);
+        throw new RuntimeException(e);
       }
     }
     return "";
@@ -184,7 +183,7 @@ public class HtmlEditorServiceImpl implements HtmlEditorService {
           (Check.isEmpty(oldUuid) ? "styles.css" : PathUtils.filePath(oldUuid, "styles.css"));
       fileSystemService.removeFile(styles, oldFilename);
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 

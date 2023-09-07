@@ -18,7 +18,6 @@
 
 package com.tle.web.viewable;
 
-import com.google.common.base.Throwables;
 import com.tle.beans.item.ItemKey;
 import com.tle.core.institution.InstitutionService;
 import java.io.Serializable;
@@ -97,7 +96,7 @@ public class NewViewableItemState implements Serializable {
     try {
       return new URI(null, null, '/' + context + itemIdPart + '/', null);
     } catch (URISyntaxException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 

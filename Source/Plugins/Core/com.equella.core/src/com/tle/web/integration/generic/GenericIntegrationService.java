@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.IItem;
@@ -113,7 +112,7 @@ public class GenericIntegrationService
             new HiddenInput(data.getPrefix() + "links", mapper.writeValueAsString(resources)));
         renderContext.setRenderedBody(form);
       } catch (IOException json) {
-        throw Throwables.propagate(json);
+        throw new RuntimeException(json);
       }
     } else {
       SelectedResource resource = getFirstSelectedResource(session);

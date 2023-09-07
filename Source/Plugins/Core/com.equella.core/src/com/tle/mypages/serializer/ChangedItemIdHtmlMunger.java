@@ -19,7 +19,6 @@
 package com.tle.mypages.serializer;
 
 import com.dytech.edge.common.Constants;
-import com.google.common.base.Throwables;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.attachments.Attachment;
@@ -31,8 +30,10 @@ import com.tle.core.services.FileSystemService;
 import com.tle.mypages.parse.ConvertHtmlService;
 import com.tle.mypages.parse.conversion.PrefixConversion;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -68,10 +69,10 @@ public class ChangedItemIdHtmlMunger implements CloneFileProcessingExtension {
           fileSystemService.write(
               newHandle,
               html.getFilename(),
-              new ByteArrayInputStream(newHtml.getBytes(Constants.UTF8)),
+              new ByteArrayInputStream(newHtml.getBytes(StandardCharsets.UTF_8)),
               false);
-        } catch (Exception e) {
-          throw Throwables.propagate(e);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
         }
       }
     }

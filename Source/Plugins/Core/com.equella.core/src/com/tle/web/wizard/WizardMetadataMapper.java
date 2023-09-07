@@ -18,7 +18,6 @@
 
 package com.tle.web.wizard;
 
-import com.google.common.base.Throwables;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -60,11 +59,7 @@ public class WizardMetadataMapper implements Serializable, Cloneable {
   }
 
   @Override
-  protected WizardMetadataMapper clone() {
-    try {
-      return (WizardMetadataMapper) super.clone();
-    } catch (CloneNotSupportedException e) {
-      throw Throwables.propagate(e);
-    }
+  protected WizardMetadataMapper clone() throws CloneNotSupportedException {
+    return (WizardMetadataMapper) super.clone();
   }
 }

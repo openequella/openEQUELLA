@@ -18,7 +18,6 @@
 
 package com.tle.ims.imsimport;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.attachments.Attachment;
@@ -171,8 +170,8 @@ public class IMSTreeBuilder implements PackageTreeBuilder {
           }
           return Lists.newArrayList(IMSPackageType.IMS);
         }
-      } catch (Exception e) {
-        throw Throwables.propagate(e);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
       }
     }
     throw new RuntimeException("Not a package type!");

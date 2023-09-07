@@ -19,11 +19,11 @@
 package com.tle.web.selection;
 
 import com.dytech.edge.queries.FreeTextQuery;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
@@ -287,13 +287,13 @@ public class SelectionServiceImpl extends AbstractModalSessionServiceImpl<Select
       userPreferenceService.setPreference(
           UserPreferenceService.RECENT_SELECTIONS,
           mapper.writeValueAsString(mapper.convertValue(list.toArray(), ArrayNode.class)));
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
     }
   }
 
   private List<SelectionHistory> getAllSavedRecentSelections(ObjectMapper mapper) {
-    List<SelectionHistory> recentSel = new ArrayList<SelectionHistory>();
+    List<SelectionHistory> recentSel = new ArrayList<>();
     final String data =
         userPreferenceService.getPreference(UserPreferenceService.RECENT_SELECTIONS);
     if (data != null) {
@@ -309,8 +309,8 @@ public class SelectionServiceImpl extends AbstractModalSessionServiceImpl<Select
               recentSel.add(new SelectionHistory((ObjectNode) obj));
             }
           }
-        } catch (Exception e2) {
-          throw Throwables.propagate(e2);
+        } catch (JsonProcessingException e2) {
+          throw new RuntimeException(e2);
         }
       }
 

@@ -18,7 +18,6 @@
 
 package com.tle.tomcat.service.impl;
 
-import com.google.common.base.Throwables;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
@@ -39,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletContext;
 import org.apache.catalina.Context;
+import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Manager;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
@@ -138,123 +138,128 @@ public class TomcatServiceImpl implements TomcatService, StartupBean, TomcatRest
     }
     try {
       setupDirectories();
+    } catch (IOException e) {
+      LOGGER.error("Failed to setup tomcat directories: ", e);
+      throw new RuntimeException(e);
+    }
 
-      tomcat = new Tomcat();
-      tomcat.setBaseDir(tomcatBasePath);
+    tomcat = new Tomcat();
+    tomcat.setBaseDir(tomcatBasePath);
 
-      Context context = new StandardContext();
-      context.addLifecycleListener(new AprLifecycleListener());
-      context.setName("/");
-      context.setPath("");
-      context.setDocBase(tomcatContextPath);
-      context.setUseHttpOnly(false);
-      if (useXForwardedFor) {
-        LOGGER.debug("Enabling the Tomcat RemoteIpValve.");
-        RemoteIpValve protoValve = new RemoteIpValve();
-        protoValve.setProtocolHeader("X-Forwarded-Proto");
+    Context context = new StandardContext();
+    context.addLifecycleListener(new AprLifecycleListener());
+    context.setName("/");
+    context.setPath("");
+    context.setDocBase(tomcatContextPath);
+    context.setUseHttpOnly(false);
+    if (useXForwardedFor) {
+      LOGGER.debug("Enabling the Tomcat RemoteIpValve.");
+      RemoteIpValve protoValve = new RemoteIpValve();
+      protoValve.setProtocolHeader("X-Forwarded-Proto");
 
-        if (!Check.isEmpty(internalProxies)) {
-          LOGGER.debug(
-              "Setting the Tomcat RemoteIpValve InternalProxies to: [" + internalProxies + "]");
-          protoValve.setInternalProxies(internalProxies);
-        } else {
-          LOGGER.debug("Not enabling the Tomcat RemoteIpValve InternalProxies - config is empty");
-        }
-        context.getPipeline().addValve(protoValve);
+      if (!Check.isEmpty(internalProxies)) {
+        LOGGER.debug(
+            "Setting the Tomcat RemoteIpValve InternalProxies to: [" + internalProxies + "]");
+        protoValve.setInternalProxies(internalProxies);
+      } else {
+        LOGGER.debug("Not enabling the Tomcat RemoteIpValve InternalProxies - config is empty");
       }
+      context.getPipeline().addValve(protoValve);
+    }
 
-      ContextConfig ctxCfg = new ContextConfig();
-      context.addLifecycleListener(ctxCfg);
-      ctxCfg.setDefaultWebXml(tomcat.noDefaultWebXmlPath());
+    ContextConfig ctxCfg = new ContextConfig();
+    context.addLifecycleListener(ctxCfg);
+    ctxCfg.setDefaultWebXml(tomcat.noDefaultWebXmlPath());
 
-      tomcat.getHost().addChild(context);
+    tomcat.getHost().addChild(context);
 
-      Tomcat.initWebappDefaults(context);
-      context.removeChild(context.findChild("jsp"));
+    Tomcat.initWebappDefaults(context);
+    context.removeChild(context.findChild("jsp"));
 
-      final String servletName = "PrometheusMetricsServlet";
-      Tomcat.addServlet(context, servletName, new MetricsServlet());
-      context.addServletMappingDecoded("/metrics", servletName);
+    final String servletName = "PrometheusMetricsServlet";
+    Tomcat.addServlet(context, servletName, new MetricsServlet());
+    context.addServletMappingDecoded("/metrics", servletName);
 
-      context.addFilterDef(dispatchFilter("RequestDispatchFilter", "REQUEST"));
-      context.addFilterDef(dispatchFilter("ForwardDispatchFilter", "FORWARD"));
-      context.addFilterDef(dispatchFilter("ErrorDispatchFilter", "ERROR"));
+    context.addFilterDef(dispatchFilter("RequestDispatchFilter", "REQUEST"));
+    context.addFilterDef(dispatchFilter("ForwardDispatchFilter", "FORWARD"));
+    context.addFilterDef(dispatchFilter("ErrorDispatchFilter", "ERROR"));
 
-      context.addFilterMap(dispatchMap("RequestDispatchFilter", "REQUEST"));
-      context.addFilterMap(dispatchMap("ForwardDispatchFilter", "FORWARD"));
-      context.addFilterMap(dispatchMap("ErrorDispatchFilter", "ERROR"));
+    context.addFilterMap(dispatchMap("RequestDispatchFilter", "REQUEST"));
+    context.addFilterMap(dispatchMap("ForwardDispatchFilter", "FORWARD"));
+    context.addFilterMap(dispatchMap("ErrorDispatchFilter", "ERROR"));
 
-      StandardWrapper defaultServlet = (StandardWrapper) context.findChild("default");
-      defaultServlet.setMultipartConfigElement(
-          new MultipartConfigElement("", 1000000000L, 1000000000L, 1000000000));
+    StandardWrapper defaultServlet = (StandardWrapper) context.findChild("default");
+    defaultServlet.setMultipartConfigElement(
+        new MultipartConfigElement("", 1000000000L, 1000000000L, 1000000000));
 
-      ErrorPage notFound = new ErrorPage();
-      notFound.setErrorCode(404);
-      notFound.setLocation("/error.do?method=notFound");
+    ErrorPage notFound = new ErrorPage();
+    notFound.setErrorCode(404);
+    notFound.setLocation("/error.do?method=notFound");
 
-      ErrorPage accessDenied = new ErrorPage();
-      accessDenied.setErrorCode(403);
-      accessDenied.setLocation("/error.do?method=accessDenied");
+    ErrorPage accessDenied = new ErrorPage();
+    accessDenied.setErrorCode(403);
+    accessDenied.setLocation("/error.do?method=accessDenied");
 
-      ErrorPage throwableError = new ErrorPage();
-      throwableError.setExceptionType("java.lang.Throwable");
-      throwableError.setLocation("/error.do?method=throwable");
+    ErrorPage throwableError = new ErrorPage();
+    throwableError.setExceptionType("java.lang.Throwable");
+    throwableError.setLocation("/error.do?method=throwable");
 
-      context.addErrorPage(notFound);
-      context.addErrorPage(accessDenied);
-      context.addErrorPage(throwableError);
+    context.addErrorPage(notFound);
+    context.addErrorPage(accessDenied);
+    context.addErrorPage(throwableError);
 
-      if (ajpPort != -1) {
-        Connector connector = new Connector(useBio ? BIO_AJP : "AJP/1.3");
-        connector.setPort(ajpPort);
-        if (!ajpSecret.equals("ignore")) {
-          connector.setAttribute("secret", ajpSecret);
-        }
-        connector.setAttribute("secretRequired", ajpSecretRequired);
-        connector.setAttribute("tomcatAuthentication", false);
-        connector.setAttribute("packetSize", "65536");
-        connector.setAttribute("address", ajpAddress);
-        setConnector(connector);
+    if (ajpPort != -1) {
+      Connector connector = new Connector(useBio ? BIO_AJP : "AJP/1.3");
+      connector.setPort(ajpPort);
+      if (!ajpSecret.equals("ignore")) {
+        connector.setProperty("secret", ajpSecret);
       }
+      connector.setProperty("secretRequired", String.valueOf(ajpSecretRequired));
+      connector.setProperty("tomcatAuthentication", String.valueOf(false));
+      connector.setProperty("packetSize", "65536");
+      connector.setProperty("address", ajpAddress);
+      setConnector(connector);
+    }
 
-      if (httpPort != -1) {
-        Connector connector = new Connector(useBio ? BIO_HTTP : "HTTP/1.1");
-        connector.setPort(httpPort);
-        setConnector(connector);
-      }
+    if (httpPort != -1) {
+      Connector connector = new Connector(useBio ? BIO_HTTP : "HTTP/1.1");
+      connector.setPort(httpPort);
+      setConnector(connector);
+    }
 
-      if (httpsPort != -1) {
-        Connector connector = new Connector(useBio ? BIO_HTTP : "HTTP/1.1");
-        connector.setPort(httpsPort);
-        connector.setSecure(true);
-        setConnector(connector);
-      }
+    if (httpsPort != -1) {
+      Connector connector = new Connector(useBio ? BIO_HTTP : "HTTP/1.1");
+      connector.setPort(httpsPort);
+      connector.setSecure(true);
+      setConnector(connector);
+    }
 
-      // Clustering
-      setupClusteringConfig(context);
+    // Clustering
+    setupClusteringConfig(context);
 
-      context.setJarScanner(
-          new JarScanner() {
-            @Override
-            public void scan(
-                JarScanType scanType, ServletContext context, JarScannerCallback callback) {
-              // No-op
-            }
+    context.setJarScanner(
+        new JarScanner() {
+          @Override
+          public void scan(
+              JarScanType scanType, ServletContext context, JarScannerCallback callback) {
+            // No-op
+          }
 
-            @Override
-            public JarScanFilter getJarScanFilter() {
-              return null;
-            }
+          @Override
+          public JarScanFilter getJarScanFilter() {
+            return null;
+          }
 
-            @Override
-            public void setJarScanFilter(JarScanFilter jarScanFilter) {}
-          });
+          @Override
+          public void setJarScanFilter(JarScanFilter jarScanFilter) {}
+        });
 
+    try {
       tomcat.getServer().setParentClassLoader(getClass().getClassLoader());
       tomcat.start();
-    } catch (Throwable e) // NOSONAR
-    {
-      Throwables.propagate(e);
+    } catch (LifecycleException e) {
+      LOGGER.error("Failed to start tomcat: ", e);
+      throw new RuntimeException(e);
     }
   }
 

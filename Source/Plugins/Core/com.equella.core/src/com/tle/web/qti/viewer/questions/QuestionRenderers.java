@@ -18,7 +18,6 @@
 
 package com.tle.web.qti.viewer.questions;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
@@ -70,7 +69,6 @@ import com.tle.web.qti.viewer.questions.renderer.unsupported.UnrenderableNodeTyp
 import com.tle.web.qti.viewer.questions.renderer.xhtml.ObjectRenderer;
 import com.tle.web.qti.viewer.questions.renderer.xhtml.TableRenderer;
 import com.tle.web.qti.viewer.questions.renderer.xhtml.XhtmlElementRenderer;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -206,8 +204,8 @@ public class QuestionRenderers {
         final QtiNodeRenderer renderer = (QtiNodeRenderer) method.invoke(qfac, model, viewer);
         renderer.preProcess();
         return renderer;
-      } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-        throw Throwables.propagate(e);
+      } catch (ReflectiveOperationException | IllegalArgumentException e) {
+        throw (e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e));
       }
     } else if (model instanceof QtiNode) {
       throw new UnrenderableNodeTypeException("Unrenderable qti node type " + modelClass.getName());

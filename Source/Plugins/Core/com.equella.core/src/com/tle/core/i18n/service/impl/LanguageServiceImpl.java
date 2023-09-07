@@ -19,7 +19,6 @@
 package com.tle.core.i18n.service.impl;
 
 import com.dytech.edge.exceptions.RuntimeApplicationException;
-import com.google.common.base.Throwables;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
 import com.tle.beans.Institution;
@@ -317,7 +316,7 @@ public class LanguageServiceImpl implements LanguageService {
         @Override
         public ResourceBundle newBundle(
             String baseName, Locale locale, String format, ClassLoader loader, boolean reload)
-            throws IllegalAccessException, InstantiationException, IOException {
+            throws IOException {
           try {
             final PluginResourcesBundle bundle = new PluginResourcesBundle();
 
@@ -369,9 +368,9 @@ public class LanguageServiceImpl implements LanguageService {
             }
 
             return (bundle.isEmpty() && locale != Locale.ROOT) ? null : bundle;
-          } catch (Exception e) {
+          } catch (IOException e) {
             LOGGER.error("Error loading language bundles", e);
-            throw Throwables.propagate(e);
+            throw e;
           }
         }
 

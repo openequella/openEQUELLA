@@ -18,7 +18,6 @@
 
 package com.tle.core.plugins;
 
-import com.google.common.base.Throwables;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -26,8 +25,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 
 public abstract class AbstractBeanLocatorCallable<V> implements Callable<V> {
-  private Map<BlockingQueue<Object>, BlockingQueue<Object>> waitingList =
-      new IdentityHashMap<BlockingQueue<Object>, BlockingQueue<Object>>();
+  private final Map<BlockingQueue<Object>, BlockingQueue<Object>> waitingList =
+      new IdentityHashMap<>();
   protected boolean submitted;
 
   protected final PrivatePluginBeanLocator locator;
@@ -64,9 +63,9 @@ public abstract class AbstractBeanLocatorCallable<V> implements Callable<V> {
   public V call() throws Exception {
     try {
       return doWork();
-    } catch (Throwable t) {
-      locator.setThrowable(t);
-      throw Throwables.propagate(t);
+    } catch (Exception e) {
+      locator.setThrowable(e);
+      throw new RuntimeException(e);
     } finally {
       finished();
     }
