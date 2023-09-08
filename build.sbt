@@ -5,7 +5,7 @@ import com.typesafe.sbt.license.LicenseReport
 import sbt.io.Using
 
 import java.time.Instant
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 lazy val learningedge_config = project in file("Dev/learningedge-config")
 
@@ -65,7 +65,7 @@ lazy val equella = (project in file("."))
              learningedge_config)
 
 checkJavaCodeStyle := {
-  import com.etsy.sbt.checkstyle._
+  import com.etsy.sbt.checkstyle.*
   val rootDirectory       = (LocalProject("equella") / baseDirectory).value
   val rootTargetDirectory = (LocalProject("equella") / target).value
   def countErrorNumber: Int = {
@@ -91,7 +91,7 @@ checkJavaCodeStyle := {
     streams = streams.value
   )
   val errorNumber     = countErrorNumber
-  val thresholdNumber = 520
+  val thresholdNumber = 498
   if (errorNumber > thresholdNumber) {
     throw new MessageOnlyException(
       "Checkstyle error threshold (" + thresholdNumber + ") exceeded with error count of " + errorNumber)
@@ -209,7 +209,7 @@ val pluginAndLibs = Def.task {
 
 mergeJPF := {
 
-  import complete.DefaultParsers._
+  import complete.DefaultParsers.*
 
   val adminConsole = false
   val args         = spaceDelimited("<arg>").parsed
