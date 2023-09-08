@@ -18,6 +18,8 @@
 
 package com.tle.common;
 
+import java.util.Objects;
+
 public class Triple<FIRST, SECOND, THIRD> extends Pair<FIRST, SECOND> {
   private static final long serialVersionUID = 1;
 
@@ -49,6 +51,6 @@ public class Triple<FIRST, SECOND, THIRD> extends Pair<FIRST, SECOND> {
   @SuppressWarnings("unchecked")
   public boolean checkFields(Pair<FIRST, SECOND> rhs) {
     Triple<FIRST, SECOND, THIRD> t = (Triple<FIRST, SECOND, THIRD>) rhs;
-    return super.checkFields(t) && Check.bothNullOrEqual(t.getThird(), getThird());
+    return super.checkFields(t) && Objects.equals(t.getThird(), getThird());
   }
 }

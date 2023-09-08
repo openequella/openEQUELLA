@@ -19,7 +19,6 @@
 package com.tle.web.plugin.download;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.io.Resources;
 import com.tle.common.filters.EqFilter;
@@ -54,7 +53,7 @@ public class PluginDownloadService implements RemotePluginDownloadService {
   @Inject private InstitutionService institutionService;
 
   @SuppressWarnings("nls")
-  private Set<String> DISALLOWED =
+  private final Set<String> DISALLOWED =
       ImmutableSet.of(
           "com.tle.core.guice",
           "com.tle.core.spring",
@@ -93,7 +92,7 @@ public class PluginDownloadService implements RemotePluginDownloadService {
           }
           details.add(new PluginDetails(jarUrl, manWriter.toString()));
         } catch (IOException e) {
-          throw Throwables.propagate(e);
+          throw new RuntimeException(e);
         }
       }
     }

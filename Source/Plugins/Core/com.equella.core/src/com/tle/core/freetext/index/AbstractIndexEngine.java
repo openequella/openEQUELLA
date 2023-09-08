@@ -20,7 +20,6 @@ package com.tle.core.freetext.index;
 
 import com.dytech.common.io.FileUtils;
 import com.dytech.edge.exceptions.ErrorDuringSearchException;
-import com.google.common.base.Throwables;
 import com.tle.freetext.TLEAnalyzer;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfoList;
@@ -113,7 +112,7 @@ public abstract class AbstractIndexEngine {
       FileUtils.delete(indexPath);
       afterPropertiesSet();
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 

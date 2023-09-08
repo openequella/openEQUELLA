@@ -18,12 +18,22 @@
 
 package com.tle.web.sections.registry;
 
-import com.google.common.base.Throwables;
 import com.tle.annotation.Nullable;
-import com.tle.web.sections.*;
+import com.tle.web.sections.MutableSectionInfo;
+import com.tle.web.sections.SectionFilter;
+import com.tle.web.sections.SectionInfo;
+import com.tle.web.sections.SectionTree;
+import com.tle.web.sections.SectionUtils;
+import com.tle.web.sections.SectionsController;
+import com.tle.web.sections.SectionsRuntimeException;
 import com.tle.web.sections.errors.SectionsExceptionHandler;
-import com.tle.web.sections.events.*;
+import com.tle.web.sections.events.ForwardEvent;
+import com.tle.web.sections.events.ParametersEvent;
+import com.tle.web.sections.events.RenderContext;
+import com.tle.web.sections.events.RenderEvent;
+import com.tle.web.sections.events.SectionEvent;
 import com.tle.web.sections.generic.DefaultSectionInfo;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -202,8 +212,8 @@ public abstract class AbstractSectionsController implements SectionsController {
       response.setStatus(code);
       response.setHeader("Location", link);
       response.flushBuffer();
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 

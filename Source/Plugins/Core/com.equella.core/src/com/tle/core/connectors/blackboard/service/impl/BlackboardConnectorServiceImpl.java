@@ -27,7 +27,6 @@ import com.blackboard.ContextWSStub.RegisterToolResponse;
 import com.blackboard.ContextWSStub.RegisterToolResultVO;
 import com.dytech.devlib.PropBagEx;
 import com.google.common.base.Function;
-import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Collections2;
@@ -852,7 +851,7 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
       throw new RuntimeException(message);
     }
 
-    throw Throwables.propagate(t);
+    throw new RuntimeException(t);
   }
 
   private String getSecretKey(String url) {

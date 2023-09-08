@@ -18,11 +18,11 @@
 
 package com.tle.hibernate.dialect;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.tle.core.hibernate.ExtendedDialect;
 import com.tle.core.hibernate.type.HibernateCustomTypes;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -82,8 +82,8 @@ public class SQLServerDialect extends SQLServer2012Dialect implements ExtendedDi
         sbuf.append('\n');
       }
       dropConstraintsSQL = sbuf.toString();
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 

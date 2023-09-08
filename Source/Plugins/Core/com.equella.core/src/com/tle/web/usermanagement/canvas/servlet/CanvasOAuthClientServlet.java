@@ -21,7 +21,6 @@ package com.tle.web.usermanagement.canvas.servlet;
 import com.dytech.edge.web.WebConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Throwables;
 import com.tle.beans.usermanagement.canvas.CanvasWrapperSettings;
 import com.tle.common.PathUtils;
 import com.tle.common.i18n.CurrentLocale;
@@ -39,8 +38,8 @@ import com.tle.exceptions.UsernameNotFoundException;
 import com.tle.web.login.LogonSection;
 import com.tle.web.sections.SectionsController;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.ServletException;
@@ -173,11 +172,7 @@ public class CanvasOAuthClientServlet extends HttpServlet {
     final String baseUrl = institutionService.institutionalise("canvassso");
     final String page = request.getParameter("page");
     if (page != null) {
-      try {
-        return baseUrl + "?page=" + URLEncoder.encode(page, "UTF-8");
-      } catch (UnsupportedEncodingException e) {
-        throw Throwables.propagate(e);
-      }
+      return baseUrl + "?page=" + URLEncoder.encode(page, StandardCharsets.UTF_8);
     }
     return baseUrl;
   }

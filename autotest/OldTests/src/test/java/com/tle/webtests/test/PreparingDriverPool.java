@@ -1,6 +1,5 @@
 package com.tle.webtests.test;
 
-import com.google.common.base.Throwables;
 import com.tle.webtests.framework.StandardDriverPool;
 import com.tle.webtests.framework.WebDriverCheckout;
 import com.tle.webtests.framework.WebDriverPool;
@@ -28,7 +27,7 @@ public class PreparingDriverPool implements WebDriverPool {
         }
         perThread.checkedout = newDriver;
       } catch (Exception e) {
-        throw Throwables.propagate(e);
+        throw (e instanceof RuntimeException) ? (RuntimeException) e : new RuntimeException(e);
       }
     }
     if (perThread.invalid) {

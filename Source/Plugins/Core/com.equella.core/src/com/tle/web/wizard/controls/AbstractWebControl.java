@@ -19,7 +19,6 @@
 package com.tle.web.wizard.controls;
 
 import com.dytech.devlib.PropBagEx;
-import com.google.common.base.Throwables;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.core.wizard.controls.HTMLControl;
@@ -126,9 +125,9 @@ public abstract class AbstractWebControl<M extends WebControlModel> extends HTML
   @Override
   public M instantiateModel(@Nullable SectionInfo info) {
     try {
-      return getModelClass().newInstance();
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+      return getModelClass().getDeclaredConstructor().newInstance();
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException(e);
     }
   }
 

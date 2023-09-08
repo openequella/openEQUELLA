@@ -18,7 +18,6 @@
 
 package com.tle.web.freemarker;
 
-import com.google.common.base.Throwables;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.CurrentTimeZone;
@@ -27,6 +26,7 @@ import com.tle.web.sections.render.PreRenderable;
 import freemarker.core.Environment;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -58,9 +58,9 @@ public abstract class AbstractFreemarkerFactory {
       environment.process();
       finishedRender(writer, result, environment);
       return environment;
-    } catch (Throwable te) {
+    } catch (TemplateException | IOException e) {
       LOGGER.error("Error rendering " + result.getTemplate().getName());
-      throw Throwables.propagate(te);
+      throw new RuntimeException(e);
     } finally {
       currentThread.setContextClassLoader(origLoader);
     }

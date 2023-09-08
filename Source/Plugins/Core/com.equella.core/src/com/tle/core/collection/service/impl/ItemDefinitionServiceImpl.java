@@ -20,7 +20,6 @@ package com.tle.core.collection.service.impl;
 
 import static com.tle.beans.entity.LanguageBundle.initBundle;
 
-import com.google.common.base.Throwables;
 import com.google.common.io.CharStreams;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.Schema;
@@ -52,7 +51,6 @@ import com.tle.core.plugins.PluginTracker;
 import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.core.schema.SchemaReferences;
 import com.tle.core.schema.event.listener.SchemaReferencesListener;
-import com.tle.core.security.TLEAclManager;
 import com.tle.core.security.impl.SecureEntity;
 import com.tle.core.security.impl.SecureOnReturn;
 import com.tle.core.services.ValidationHelper;
@@ -91,8 +89,6 @@ public class ItemDefinitionServiceImpl
 
   private final ItemDefinitionDao itemDefinitionDao;
 
-  @Inject private TLEAclManager aclService;
-
   @Inject private PluginTracker<CollectionSaveExtension> saveExtensions;
 
   @Inject
@@ -104,18 +100,16 @@ public class ItemDefinitionServiceImpl
   @Override
   protected Collection<Pair<Object, Node>> getOtherTargetListObjects(
       ItemDefinition itemDefinition) {
-    Collection<Pair<Object, Node>> results = new ArrayList<Pair<Object, Node>>();
+    Collection<Pair<Object, Node>> results = new ArrayList<>();
 
     for (ItemStatus status : ItemStatus.values()) {
-      results.add(
-          new Pair<Object, Node>(new ItemStatusTarget(status, itemDefinition), Node.ITEM_STATUS));
+      results.add(new Pair<>(new ItemStatusTarget(status, itemDefinition), Node.ITEM_STATUS));
     }
 
     if (itemDefinition.getItemMetadataRules() != null) {
       for (ItemMetadataRule rule : itemDefinition.getItemMetadataRules()) {
         results.add(
-            new Pair<Object, Node>(
-                new ItemMetadataTarget(rule.getId(), itemDefinition), Node.ITEM_METADATA));
+            new Pair<>(new ItemMetadataTarget(rule.getId(), itemDefinition), Node.ITEM_METADATA));
       }
     }
 
@@ -368,7 +362,7 @@ public class ItemDefinitionServiceImpl
       fileSystemService.zipFile(file, out, ArchiveType.ZIP);
       return out.toByteArray();
     } catch (IOException io) {
-      throw Throwables.propagate(io);
+      throw new RuntimeException(io);
     } finally {
       stagingService.removeStagingArea(file, true);
     }
@@ -384,8 +378,7 @@ public class ItemDefinitionServiceImpl
       CharStreams.copy(reader, writer);
       return writer.toString();
     } catch (IOException io) {
-      Throwables.propagate(io);
-      return null; // unreachable
+      throw new RuntimeException(io);
     } finally {
       stagingService.removeStagingArea(staging, true);
     }

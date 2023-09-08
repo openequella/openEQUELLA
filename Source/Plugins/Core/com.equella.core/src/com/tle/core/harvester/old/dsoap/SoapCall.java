@@ -18,7 +18,6 @@
 
 package com.tle.core.harvester.old.dsoap;
 
-import com.google.common.base.Throwables;
 import com.google.common.io.Closeables;
 import com.tle.common.Pair;
 import com.tle.core.harvester.old.dsoap.sax.DefaultSoapHandler;
@@ -42,6 +41,7 @@ import java.util.List;
 import javax.net.ssl.HttpsURLConnection;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.helpers.DefaultHandler;
@@ -277,11 +277,12 @@ public class SoapCall {
     } catch (Exception e) {
       throw new SoapCallException(e);
     } finally {
-      try {
-        Closeables.close(inp, true);
-      } catch (IOException e) {
-        throw Throwables.propagate(e);
-      }
+      // TODO: If this function is even still used, then it should be refactored to better
+      //       structure the try/catch clauses above. And then try-with-resources could be used
+      //       to handle this. (That work is definitely outside the current scope - which is
+      // removing
+      //       uses of Throwables.propagate() - but it would be nice to do.)
+      IOUtils.closeQuietly(inp);
     }
   }
 

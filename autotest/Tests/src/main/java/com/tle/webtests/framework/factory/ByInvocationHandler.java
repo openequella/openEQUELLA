@@ -1,6 +1,5 @@
 package com.tle.webtests.framework.factory;
 
-import com.google.common.base.Throwables;
 import com.tle.webtests.pageobject.PageObject;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -45,8 +44,8 @@ public class ByInvocationHandler implements InvocationHandler {
             Method m = findMethod(pageClass, methodName);
             m.setAccessible(true);
             use.append(m.invoke(page));
-          } catch (Exception e) {
-            throw Throwables.propagate(e);
+          } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
           }
           insideText = new StringBuilder();
         } else if (inside) {

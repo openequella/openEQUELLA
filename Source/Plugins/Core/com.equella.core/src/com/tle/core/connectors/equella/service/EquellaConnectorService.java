@@ -19,7 +19,6 @@
 package com.tle.core.connectors.equella.service;
 
 import com.dytech.edge.queries.FreeTextQuery;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
@@ -255,7 +254,7 @@ public class EquellaConnectorService implements ConnectorRepositoryImplementatio
               false)
           .getAvailable();
     } catch (LmsUserNotFoundException lms) {
-      throw Throwables.propagate(lms);
+      throw new RuntimeException(lms);
     }
   }
 

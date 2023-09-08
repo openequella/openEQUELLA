@@ -18,7 +18,6 @@
 
 package com.tle.web.sections.equella.render;
 
-import com.google.common.base.Throwables;
 import com.tle.common.Check;
 import com.tle.web.sections.SectionWriter;
 import com.tle.web.sections.events.js.JSHandler;
@@ -142,10 +141,10 @@ public abstract class AbstractFauxDropDownRenderer extends AbstractElementRender
         }
       }
     }
-    if (optionList.size() > 0) {
+    if (!optionList.isEmpty()) {
       return optionList.get(0);
     } else {
-      throw Throwables.propagate(new IllegalArgumentException("Must have at least 1 option!"));
+      throw new IllegalArgumentException("Must have at least 1 option!");
     }
   }
 }

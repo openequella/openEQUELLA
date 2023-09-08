@@ -18,9 +18,12 @@
 
 package com.tle.core.hibernate.equella.service.impl;
 
-import com.google.common.base.Throwables;
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.hibernate.converter.*;
+import com.thoughtworks.xstream.hibernate.converter.HibernatePersistentCollectionConverter;
+import com.thoughtworks.xstream.hibernate.converter.HibernatePersistentMapConverter;
+import com.thoughtworks.xstream.hibernate.converter.HibernatePersistentSortedMapConverter;
+import com.thoughtworks.xstream.hibernate.converter.HibernatePersistentSortedSetConverter;
+import com.thoughtworks.xstream.hibernate.converter.HibernateProxyConverter;
 import com.thoughtworks.xstream.hibernate.mapper.HibernateMapper;
 import com.thoughtworks.xstream.mapper.MapperWrapper;
 import com.tle.beans.IdCloneable;
@@ -272,7 +275,7 @@ public class InitialiserServiceImpl extends AbstractHibernateDao implements Init
     Property idField = cacheObject.getIdField();
     if (idField != null) {
       try {
-        Object newObject = persistent.newInstance();
+        Object newObject = persistent.getDeclaredConstructor().newInstance();
         Object id;
         if (object instanceof HibernateProxy) {
           id = ((HibernateProxy) object).getHibernateLazyInitializer().getIdentifier();
@@ -282,8 +285,8 @@ public class InitialiserServiceImpl extends AbstractHibernateDao implements Init
         idField.set(newObject, id);
         callback.entitySimplified(object, newObject);
         return newObject;
-      } catch (Exception e) {
-        throw Throwables.propagate(e);
+      } catch (ReflectiveOperationException e) {
+        throw new RuntimeException(e);
       }
     }
     return object;

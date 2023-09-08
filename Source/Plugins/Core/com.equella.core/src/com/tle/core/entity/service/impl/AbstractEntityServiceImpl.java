@@ -26,7 +26,6 @@ import com.dytech.edge.exceptions.ModifyingSystemTypeException;
 import com.dytech.edge.exceptions.RuntimeApplicationException;
 import com.dytech.edge.wizard.WizardTimeoutException;
 import com.google.common.base.Function;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
@@ -928,8 +927,7 @@ public abstract class AbstractEntityServiceImpl<
 
   @Override
   @Transactional(propagation = Propagation.MANDATORY)
-  public final void afterImport(
-      TemporaryFileHandle importFolder, T entity, ConverterParams params) {
+  public void afterImport(TemporaryFileHandle importFolder, T entity, ConverterParams params) {
     doAfterImport(importFolder, null, entity, params);
   }
 
@@ -1046,14 +1044,15 @@ public abstract class AbstractEntityServiceImpl<
     }
     cleanCloneBeans(bean);
 
-    final EntityPack<T> pack = new EntityPack<T>();
+    final EntityPack<T> pack = new EntityPack<>();
     try {
-      final T blankEnt = getEntityClass().newInstance();
+      final T blankEnt = getEntityClass().getDeclaredConstructor().newInstance();
       blankEnt.setUuid(bean.getUuid());
       pack.setEntity(blankEnt);
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException(e);
     }
+
     final SESSION session = createSession(UUID.randomUUID().toString(), pack, bean);
     onStartNewSession(session, new EntityFile(oldEntity));
     sessionService.setAttribute(session.getSessionId(), session);

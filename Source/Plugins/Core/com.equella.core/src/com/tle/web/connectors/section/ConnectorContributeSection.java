@@ -100,7 +100,7 @@ public class ConnectorContributeSection
       final ConnectorEditingBean editedConnector = ed.getEditedEntity(context);
       if (editedConnector.getId() == 0) {
         ensureCreatePriv(context);
-      } else if (!canEdit(context, editedConnector)) {
+      } else if (!canEdit(editedConnector)) {
         throw accessDenied(getEditPriv());
       }
 

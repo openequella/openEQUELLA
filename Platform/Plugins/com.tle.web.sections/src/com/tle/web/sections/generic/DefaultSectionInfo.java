@@ -18,7 +18,6 @@
 
 package com.tle.web.sections.generic;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
@@ -199,9 +198,9 @@ public class DefaultSectionInfo implements MutableSectionInfo {
     T obj = (T) attributeMap.get(name);
     if (obj == null) {
       try {
-        obj = (T) clazz.newInstance();
-      } catch (Exception e) {
-        throw Throwables.propagate(e);
+        obj = (T) clazz.getDeclaredConstructor().newInstance();
+      } catch (ReflectiveOperationException e) {
+        throw new RuntimeException(e);
       }
       attributeMap.put(name, obj);
     }

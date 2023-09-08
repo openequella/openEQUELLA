@@ -18,7 +18,6 @@
 
 package com.tle.web.sections.generic;
 
-import com.google.common.base.Throwables;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.common.Utils;
@@ -82,9 +81,9 @@ public abstract class AbstractSection implements Section {
   @Override
   public Object instantiateModel(SectionInfo info) {
     try {
-      return getModelClass().newInstance();
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+      return getModelClass().getDeclaredConstructor().newInstance();
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException(e);
     }
   }
 

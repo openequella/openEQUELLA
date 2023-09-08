@@ -19,7 +19,6 @@
 package com.tle.web.usermanagement.canvas;
 
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.usermanagement.canvas.CanvasWrapperSettings;
@@ -37,8 +36,8 @@ import com.tle.web.sections.standard.Link;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.SimpleBookmark;
 import com.tle.web.sections.standard.renderers.LinkRenderer;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import javax.inject.Inject;
 
 @SuppressWarnings("nls")
@@ -59,11 +58,7 @@ public class CanvasLogonLink extends AbstractPrototypeSection<CanvasLogonLink.Ca
       final String page = model.getPage();
       String ssoLink = institutionService.institutionalise("canvassso");
       if (!Strings.isNullOrEmpty(page)) {
-        try {
-          ssoLink = ssoLink + "?page=" + URLEncoder.encode(page, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-          throw Throwables.propagate(e);
-        }
+        ssoLink = ssoLink + "?page=" + URLEncoder.encode(page, StandardCharsets.UTF_8);
       }
       link.setBookmark(context, new SimpleBookmark(ssoLink));
     }

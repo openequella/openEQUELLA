@@ -19,7 +19,6 @@
 package com.tle.web.lti.service.impl;
 
 import com.google.api.client.util.Base64;
-import com.google.common.base.Throwables;
 import com.google.common.io.CharStreams;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
@@ -45,9 +44,11 @@ import com.tle.web.lti.imsx.ResultType;
 import com.tle.web.lti.imsx.SourcedGUIDType;
 import com.tle.web.lti.imsx.TextType;
 import com.tle.web.lti.service.LtiService;
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -88,7 +89,7 @@ public class LtiServiceImpl implements LtiService {
           parseError(resp, outcomeServiceUrl);
         }
       } catch (Exception e) {
-        throw Throwables.propagate(e);
+        throw (e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e));
       }
     }
   }
@@ -113,7 +114,7 @@ public class LtiServiceImpl implements LtiService {
           CharStreams.copy(new StringReader(httpResp.getBody()), servletResponse.getWriter());
         }
       } catch (Exception e) {
-        throw Throwables.propagate(e);
+        throw (e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e));
       }
     }
   }
@@ -230,8 +231,8 @@ public class LtiServiceImpl implements LtiService {
       crypt.update(data.getBytes("UTF-8"));
       byte[] rawHmac = crypt.digest();
       return Base64.encodeBase64String(rawHmac);
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+    } catch (NoSuchAlgorithmException | IOException e) {
+      throw new RuntimeException(e);
     }
   }
 

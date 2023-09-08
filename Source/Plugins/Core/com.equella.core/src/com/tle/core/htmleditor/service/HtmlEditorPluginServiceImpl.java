@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Throwables;
 import com.google.common.io.CharStreams;
 import com.thoughtworks.xstream.XStream;
 import com.tle.annotation.Nullable;
@@ -429,7 +428,7 @@ public class HtmlEditorPluginServiceImpl
         CharStreams.copy(reader, sw);
         return sw.toString();
       } catch (IOException io) {
-        throw Throwables.propagate(io);
+        throw new RuntimeException(io);
       }
     }
     return null;

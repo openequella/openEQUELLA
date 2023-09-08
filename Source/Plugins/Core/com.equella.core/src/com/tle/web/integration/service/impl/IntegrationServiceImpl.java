@@ -19,7 +19,6 @@
 package com.tle.web.integration.service.impl;
 
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.IItem;
 import com.tle.beans.item.ItemId;
@@ -54,7 +53,12 @@ import com.tle.web.sections.generic.AbstractSectionFilter;
 import com.tle.web.sections.js.JSStatements;
 import com.tle.web.sections.js.generic.Js;
 import com.tle.web.sections.js.generic.expression.ScriptExpression;
-import com.tle.web.selection.*;
+import com.tle.web.selection.SelectableInterface;
+import com.tle.web.selection.SelectedResource;
+import com.tle.web.selection.SelectionService;
+import com.tle.web.selection.SelectionSession;
+import com.tle.web.selection.SelectionsMadeCallback;
+import com.tle.web.selection.TreeLookupSelectionCallback;
 import com.tle.web.selection.section.RootSelectionSection.Layout;
 import com.tle.web.viewable.ViewableItemResolver;
 import com.tle.web.viewurl.ViewAuditEntry;
@@ -341,7 +345,7 @@ public class IntegrationServiceImpl extends AbstractSectionFilter implements Int
       try {
         forwardUrl = new URL(iUrl, forward);
       } catch (MalformedURLException e) {
-        throw Throwables.propagate(e);
+        throw new RuntimeException(e);
       }
       forward = forwardUrl.getPath().substring(iUrl.getPath().length() - 1);
 

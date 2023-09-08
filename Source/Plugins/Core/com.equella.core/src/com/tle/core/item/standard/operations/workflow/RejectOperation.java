@@ -19,7 +19,6 @@
 package com.tle.core.item.standard.operations.workflow;
 
 import com.dytech.edge.exceptions.WorkflowException;
-import com.google.common.base.Throwables;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.tle.annotation.Nullable;
@@ -100,7 +99,7 @@ public final class RejectOperation extends SpecificTaskOperation // NOSONAR
         fileSystemService.commitFiles(
             new StagingFile(messageUuid), new WorkflowMessageFile(messageUuid));
       } catch (IOException ex) {
-        throw Throwables.propagate(ex);
+        throw new RuntimeException(ex);
       }
     }
     return true;

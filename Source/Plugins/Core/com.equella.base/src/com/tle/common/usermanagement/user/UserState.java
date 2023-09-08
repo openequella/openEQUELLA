@@ -74,7 +74,7 @@ public interface UserState extends Cloneable, Serializable {
 
   boolean isNeedsSessionUpdate();
 
-  UserState clone(); // NOSONAR - instance class attends to exception
+  UserState clone() throws CloneNotSupportedException;
 
   void updatedInSession();
 

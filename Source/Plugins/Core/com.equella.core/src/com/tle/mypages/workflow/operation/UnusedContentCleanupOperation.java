@@ -18,7 +18,6 @@
 
 package com.tle.mypages.workflow.operation;
 
-import com.google.common.base.Throwables;
 import com.google.common.io.CharStreams;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
@@ -80,7 +79,7 @@ public final class UnusedContentCleanupOperation extends AbstractWorkflowOperati
         try {
           scanHtml(metadataHtmls, staging, HtmlEditorService.CONTENT_DIRECTORY);
         } catch (IOException e) {
-          Throwables.propagate(e);
+          throw new RuntimeException(e);
         }
       }
 
@@ -90,7 +89,7 @@ public final class UnusedContentCleanupOperation extends AbstractWorkflowOperati
         try {
           scanHtml(Collections.singletonList(getHtml(staging, page)), staging, page.getFolder());
         } catch (IOException e) {
-          Throwables.propagate(e);
+          throw new RuntimeException(e);
         }
       }
     }

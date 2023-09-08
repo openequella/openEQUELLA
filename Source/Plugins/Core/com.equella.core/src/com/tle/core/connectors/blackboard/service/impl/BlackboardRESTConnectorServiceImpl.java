@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
@@ -44,7 +43,14 @@ import com.tle.common.util.BlindSSLSocketFactory;
 import com.tle.core.auditlog.AuditLogService;
 import com.tle.core.connectors.blackboard.BlackboardRESTConnectorConstants;
 import com.tle.core.connectors.blackboard.BlackboardRestAppContext;
-import com.tle.core.connectors.blackboard.beans.*;
+import com.tle.core.connectors.blackboard.beans.Availability;
+import com.tle.core.connectors.blackboard.beans.Content;
+import com.tle.core.connectors.blackboard.beans.Contents;
+import com.tle.core.connectors.blackboard.beans.Course;
+import com.tle.core.connectors.blackboard.beans.CourseByUser;
+import com.tle.core.connectors.blackboard.beans.CoursesByUser;
+import com.tle.core.connectors.blackboard.beans.Paging;
+import com.tle.core.connectors.blackboard.beans.Token;
 import com.tle.core.connectors.blackboard.service.BlackboardRESTConnectorService;
 import com.tle.core.connectors.exception.LmsUserNotFoundException;
 import com.tle.core.connectors.service.AbstractIntegrationConnectorRespository;
@@ -230,7 +236,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
               encrypt(mapper.writeValueAsString(stateJson)));
     } catch (JsonProcessingException e) {
       LOGGER.trace("Unable to provide the auth url for [" + connectorUuid + "]");
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
     return uri.toString();
   }
@@ -541,7 +547,7 @@ public class BlackboardRESTConnectorServiceImpl extends AbstractIntegrationConne
         return null;
       }
     } catch (IOException ex) {
-      throw Throwables.propagate(ex);
+      throw new RuntimeException(ex);
     }
   }
 

@@ -21,7 +21,6 @@ package com.tle.web.controls.flickr;
 import com.flickr4java.flickr.photos.Photo;
 import com.flickr4java.flickr.photos.Size;
 import com.google.common.base.Charsets;
-import com.google.common.base.Throwables;
 import com.google.common.io.Resources;
 import com.tle.common.Check;
 import com.tle.common.NameValue;
@@ -94,7 +93,7 @@ public final class FlickrUtils {
       }
       return nameStrings;
     } catch (IOException ioe) {
-      throw Throwables.propagate(ioe);
+      throw new RuntimeException(ioe);
     }
   }
 
@@ -140,7 +139,7 @@ public final class FlickrUtils {
       }
       return nameValues;
     } catch (IOException ioe) {
-      throw Throwables.propagate(ioe);
+      throw new RuntimeException(ioe);
     }
   }
 
