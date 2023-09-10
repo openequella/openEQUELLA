@@ -40,16 +40,36 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.util.BytesRef;
 
+/**
+ * This filter was significantly refactored when we upgraded Lucene V5.5.5. To generate a proper
+ * query for this filter, a big change about how to handle the Owner ACL was required.
+ *
+ * <p>An Owner ACL refers to an ACL that is granted or revoked for `OWNER` or for a complex
+ * expression where `OWNER` is part of the expression. If a user account has Owner related ACLs, we
+ * must create a BooleanQuery which contains not only the Owner ACL term but also the OWNER term of
+ * the current user.
+ *
+ * <p>If the user account does not have any Owner related ACLs, then we do not need such a
+ * BooleanQuery.
+ *
+ * <p>Example 1: an Owner ACL (ACLD-1111:000G) and a common ACL (ACLD-2222:000G) are available in
+ * user account A, the result is ((+owner:A +ACLD-1111:000G) ACLD-2222:000G).
+ *
+ * <p>Example 2: an Owner ACL (ACLD-1111:000R) and a common ACL (ACLD-2222:000G) are available in
+ * user account A, the result is ((-owner:A +ACLD-1111:000G) ACLD-2222:000G).
+ *
+ * <p>Example 3: two common ACLs (ACLD-2222 and ACLD-3333) are available in user account A, the
+ * result is (ACLD-2222 OR ACLD-3333).
+ */
 public class SecurityFilter implements CustomFilter {
   private final String[] expressions;
-  private final Map<String, Boolean> ownerExprMap;
+  private final Map<String, Boolean> ownerExprMap = new HashMap<>();
   private final int ownerSizes;
   private final boolean systemUser;
   private final IndexReader reader;
 
   public SecurityFilter(String aclType, IndexReader reader) {
     this.reader = reader;
-    ownerExprMap = new HashMap<String, Boolean>();
 
     UserState userState = CurrentUser.getUserState();
     systemUser = userState.isSystem();
@@ -110,12 +130,6 @@ public class SecurityFilter implements CustomFilter {
       return null;
     }
 
-    if (ownerSizes > 0) {
-      builder.add(
-          new TermQuery(new Term(FreeTextQuery.FIELD_OWNER, CurrentUser.getUserID())),
-          Occur.SHOULD);
-    }
-
     Set<Term> allTerms = new TreeSet<>();
 
     Arrays.stream(expressions)
@@ -126,22 +140,21 @@ public class SecurityFilter implements CustomFilter {
     for (Term term : allTerms) {
       String type = term.text();
       boolean grant = type.charAt(type.length() - 1) == 'G';
-      Boolean isOwnerExpression = ownerExprMap.get(term.field());
-
-      if (isOwnerExpression == null) {
+      Boolean isOwnerAcl = ownerExprMap.get(term.field());
+      if (isOwnerAcl == null) {
         if (grant) {
           builder.add(new TermQuery(term), Occur.SHOULD);
         } else {
           builder.add(new TermQuery(term), Occur.MUST_NOT);
         }
       } else {
-        if (isOwnerExpression) {
-          if (grant) {
-            builder.add(new TermQuery(term), Occur.SHOULD);
-          } else {
-            builder.add(new TermQuery(term), Occur.MUST_NOT);
-          }
-        }
+        Builder ownerClauseBuilder = new Builder();
+        ownerClauseBuilder.add(new TermQuery(term), Occur.MUST);
+        ownerClauseBuilder.add(
+            new TermQuery(
+                new Term(FreeTextQuery.FIELD_OWNER, new BytesRef(CurrentUser.getUserID()))),
+            isOwnerAcl ? Occur.MUST : Occur.MUST_NOT);
+        builder.add(ownerClauseBuilder.build(), Occur.SHOULD);
       }
     }
 
