@@ -573,7 +573,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
             final Multimap<String, Pair<String, Integer>> rv = ArrayListMultimap.create();
             for (String field : fields) {
-              for (Term term : new XPathFieldIterator(reader, field, "")) {
+              for (Term term : new XPathFieldIterator(reader, field)) {
                 PostingsEnum docs = MultiFields.getTermDocsEnum(reader, field, term.bytes());
 
                 LuceneDocumentHelper.useDocCount(
@@ -613,7 +613,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
             for (String field : fields) {
               boolean hasXpaths = field.indexOf('[') != -1;
               FixedBitSet perFieldBitSet = new FixedBitSet(maxDoc);
-              for (Term term : new XPathFieldIterator(reader, field, "")) {
+              for (Term term : new XPathFieldIterator(reader, field)) {
                 FixedBitSet set = new FixedBitSet(maxDoc);
                 PostingsEnum docs = MultiFields.getTermDocsEnum(reader, field, term.bytes());
                 LuceneDocumentHelper.forEachDoc(docs, set::set);

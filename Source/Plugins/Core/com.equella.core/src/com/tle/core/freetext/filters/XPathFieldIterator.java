@@ -37,8 +37,7 @@ public class XPathFieldIterator implements Iterator<Term>, Iterable<Term> {
 
   private Pattern pattern;
 
-  public XPathFieldIterator(IndexReader reader, String field, String start) throws IOException {
-
+  public XPathFieldIterator(IndexReader reader, String field) throws IOException {
     int hasIndex = field.indexOf('[');
     if (hasIndex >= 0) {
       pattern = Pattern.compile(field.replaceAll("\\[\\]", "(\\\\[\\\\d*\\\\])?") + "/\\$XPATH\\$");

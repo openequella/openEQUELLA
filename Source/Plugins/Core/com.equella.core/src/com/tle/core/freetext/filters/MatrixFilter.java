@@ -20,16 +20,13 @@ package com.tle.core.freetext.filters;
 
 import com.tle.common.searching.Field;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery.Builder;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.util.FixedBitSet;
 
 public class MatrixFilter implements CustomFilter {
 
@@ -46,18 +43,15 @@ public class MatrixFilter implements CustomFilter {
   public Query buildQuery() {
     Builder builder = new Builder();
 
-    Map<String, Map<String, FixedBitSet>> xpathMap =
-        new HashMap<String, Map<String, FixedBitSet>>();
     for (Field fieldObj : fields) {
-      String field = fieldObj.getField();
       try {
-        for (Term term : new XPathFieldIterator(reader, field, "")) {
+        for (Term term : new XPathFieldIterator(reader, fieldObj.getField())) {
           if (term.text().equals(fieldObj.getValue())) {
             builder.add(new TermQuery(term), Occur.SHOULD);
           }
         }
       } catch (IOException e) {
-        throw new RuntimeException(e);
+        throw new RuntimeException("Failed to build Lucene Query for MatrixFilter", e);
       }
     }
 
