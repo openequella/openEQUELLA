@@ -29,9 +29,8 @@ import org.apache.lucene.util.BytesRef;
 public final class CustomLuceneSortComparator extends SimpleFieldComparator<Integer> {
 
   private final String userId;
-  private int[] values;
+  private final int[] values;
 
-  private int numHits;
   private String[] currentReaderValues;
   private final String field;
   private int bottom;
@@ -39,7 +38,6 @@ public final class CustomLuceneSortComparator extends SimpleFieldComparator<Inte
 
   public CustomLuceneSortComparator(int numHits, String field, String userId) {
     values = new int[numHits];
-    this.numHits = numHits;
     this.field = field;
     this.userId = userId;
   }
