@@ -92,11 +92,14 @@ class ItemIndexTest
 
   val indexRootDirectoryName = "ItemIndexTest"
 
-  val aclEntryID = 1000L
+  val commonAclEntryID = 1000L
+  val ownerAclEntryID  = 1001L
+
   // The field format for ACL permission is "ACLx-y" where "x" is the shortcut for the permission
   // and "y" is the unique ID of the permission. The mapping between permissions and their shortcuts
   // is defined in class `ItemIndex`.
-  def aclField(privilege: String) = s"${ItemIndex.convertStdPriv(privilege)}$aclEntryID"
+  def aclField(privilege: String, aclEntryID: Long) =
+    s"${ItemIndex.convertStdPriv(privilege)}$aclEntryID"
   // The value format for ACL permission is "xxxG" where "xxx" must be a three-digit number which starts
   // from 000 and "G" stands for "Grant".
   val aclValue = "001G"
@@ -186,7 +189,8 @@ class ItemIndexTest
             ft.setTokenized(false)
             indexedItem.getAclMap.put(
               SecurityConstants.DISCOVER_ITEM,
-              java.util.Collections.singletonList(new Field(aclField(p), aclValue, ft)))
+              List(new Field(aclField(p, commonAclEntryID), aclValue, ft),
+                   new Field(aclField(p, ownerAclEntryID), aclValue, ft)).asJava)
             indexer.addAllFields(indexedItem.getItemdoc, indexedItem.getACLEntries(p))
           case None =>
         }
@@ -240,14 +244,15 @@ class ItemIndexTest
     val userState: AbstractUserState = new DefaultUserState
     // User state contains a `Triple` where the first element is a list of common ACL expression and the second element is
     // a list of Owner ACL expressions and the third element is a list of Not Owner ACL expressions.
-    // The ACL test case targets to Common ACL expressions, so add the mock of the ACL entry ID in the first list and leave
-    // the other two lists empty.
+    // Not Owner ACL expressions work similarily to Owner ACL expressions, so we just add mocks for the first two lists.
+    // This will test whether the mix of Common ACL expressions and Owner ACL expressions work correctly.
     userState.setAclExpressions(
-      new Triple(java.util.Collections.singleton(aclEntryID),
-                 java.util.Collections.emptyList(),
+      new Triple(java.util.Collections.singleton(commonAclEntryID),
+                 java.util.Collections.singleton(ownerAclEntryID),
                  java.util.Collections.emptyList()))
     mockStatic(classOf[CurrentUser])
     when(CurrentUser.getUserState).thenReturn(userState)
+    when(CurrentUser.getUserID).thenReturn(UUID.randomUUID().toString)
 
     AbstractPluginService.thisService = mock(classOf[PluginServiceImpl])
   }
