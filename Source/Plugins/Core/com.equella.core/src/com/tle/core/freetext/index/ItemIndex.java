@@ -379,8 +379,8 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
   private Query addUniqueIdClauseToQuery(
       Query query, SearchResults<T> itemResults, IndexReader reader) {
     List<T> results = itemResults.getResults();
-    BooleanQuery orQuery = new BooleanQuery();
-
+    Builder fullQueryBuilder = new Builder();
+    Builder freeTextBuilder = new Builder();
     for (T t : results) {
       ItemIdKey itemIdKey = t.getItemIdKey();
       String[] split = itemIdKey.toString().split("/");
@@ -388,16 +388,14 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
       FreeTextBooleanQuery bquery = new FreeTextBooleanQuery(false, true);
       bquery.add(new FreeTextFieldQuery(FreeTextQuery.FIELD_UNIQUE, uniqueId));
-      BooleanClause convertBoolean = convertToBooleanClause(bquery, reader);
-      convertBoolean.setOccur(Occur.SHOULD);
-      orQuery.add(convertBoolean);
+      BooleanClause clause = convertToBooleanClause(bquery, reader);
+      freeTextBuilder.add(clause.getQuery(), Occur.SHOULD);
     }
 
-    BooleanQuery newQuery = new BooleanQuery();
-    newQuery.add(query, Occur.MUST);
-    newQuery.add(orQuery, Occur.MUST);
+    fullQueryBuilder.add(query, Occur.MUST);
+    fullQueryBuilder.add(freeTextBuilder.build(), Occur.MUST);
 
-    return newQuery;
+    return fullQueryBuilder.build();
   }
 
   private SearchResults<T> markItemKeywordFoundInAttachment(
@@ -1076,10 +1074,11 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       return null;
     }
     BooleanClause clause = convertToBooleanClause(fullftQuery, reader);
+    Occur occur = clause.getOccur();
     if (!clause.isProhibited() && !clause.isRequired()) {
-      clause.setOccur(Occur.MUST);
+      occur = Occur.MUST;
     }
-    extraQueryBuilder.add(clause);
+    extraQueryBuilder.add(clause.getQuery(), occur);
 
     return extraQueryBuilder.build();
   }
@@ -1173,9 +1172,10 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
   /** Converts a FreeTextBooleanQuery to a BooleanClause */
   private BooleanClause convertBoolean(FreeTextBooleanQuery query, IndexReader reader) {
-    List<BooleanClause> lclauses = new ArrayList<BooleanClause>();
-
+    Builder queryBuilder = new Builder();
+    List<BooleanClause> lclauses = new ArrayList<>();
     List<FreeTextQuery> clauses = query.getClauses();
+
     boolean and = query.isAnd() && clauses.size() > 1;
     boolean not = query.isNot();
 
@@ -1186,8 +1186,6 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       }
     }
 
-    BooleanQuery bquery = new BooleanQuery();
-    BooleanClause theclause = new BooleanClause(bquery, Occur.SHOULD);
     boolean bprohib = false;
     boolean brequired = false;
     boolean addplus = false;
@@ -1204,33 +1202,24 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       if (!not) {
         return first;
       } else if (!(first.isRequired() || first.isProhibited())) {
-        first.setOccur(Occur.MUST_NOT);
-        return first;
+        return new BooleanClause(first.getQuery(), Occur.MUST_NOT);
       }
     }
 
     for (BooleanClause bclause : lclauses) {
+      Occur clauseOccur = bclause.getOccur();
       if (addplus && !(bclause.isRequired() || bclause.isProhibited())) {
-        bclause.setOccur(Occur.MUST);
+        clauseOccur = Occur.MUST;
       }
       allnot &= bclause.isProhibited();
-      bquery.add(bclause);
+      queryBuilder.add(bclause.getQuery(), clauseOccur);
     }
 
     if (allnot) {
-      bquery.add(
-          new BooleanClause(
-              new TermQuery(new Term(FreeTextQuery.FIELD_ALL, "1")), // $NON-NLS-1$
-              Occur.SHOULD));
+      queryBuilder.add(new TermQuery(new Term(FreeTextQuery.FIELD_ALL, "1")), Occur.SHOULD);
     }
-    if (bprohib) {
-      theclause.setOccur(Occur.MUST_NOT);
-    } else if (brequired) {
-      theclause.setOccur(Occur.MUST);
-    } else {
-      theclause.setOccur(Occur.SHOULD);
-    }
-    return theclause;
+
+    return new BooleanClause(queryBuilder.build(), bprohib ? Occur.MUST_NOT : Occur.SHOULD);
   }
 
   /**
