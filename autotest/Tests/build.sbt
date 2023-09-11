@@ -36,7 +36,7 @@ libraryDependencies ++= Seq(
   "org.jacoco"                % "org.jacoco.report"         % "0.8.10",
   "org.dspace"                % "oclc-harvester2"           % "1.0.0",
   "com.typesafe"              % "config"                    % "1.4.2",
-  "org.slf4j"                 % "slf4j-simple"              % "2.0.7",
+  "org.slf4j"                 % "slf4j-simple"              % "2.0.9",
   "org.scalacheck"            %% "scalacheck"               % "1.17.0" % "test,serial",
   "org.http4s"                %% "http4s-async-http-client" % http4sVersion,
   "org.http4s"                %% "http4s-blaze-client"      % http4sVersion,
@@ -44,7 +44,7 @@ libraryDependencies ++= Seq(
   "org.typelevel"             %% "cats-free"                % catsVersion,
   "com.unboundid"             % "unboundid-ldapsdk"         % "6.0.9",
   jacksonDataBind,
-  "com.auth0" % "jwks-rsa" % "0.22.0"
+  "com.auth0" % "jwks-rsa" % "0.22.1"
 )
 
 (Compile / unmanagedBase) := baseDirectory.value / "lib/adminjars"

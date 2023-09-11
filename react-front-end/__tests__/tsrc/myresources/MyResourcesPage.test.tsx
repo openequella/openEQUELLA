@@ -19,7 +19,7 @@ import { ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import { CurrentUserDetails } from "@openequella/rest-api-client/dist/LegacyContent";
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import {
   getByLabelText,
   getByText,

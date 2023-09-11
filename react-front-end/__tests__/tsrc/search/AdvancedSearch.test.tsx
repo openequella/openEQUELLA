@@ -18,7 +18,7 @@
 import { ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";

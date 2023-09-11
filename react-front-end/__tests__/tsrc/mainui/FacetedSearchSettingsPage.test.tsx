@@ -32,7 +32,7 @@ import {
   getByText,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import FacetedSearchSettingsPage from "../../../tsrc/settings/Search/facetedsearch/FacetedSearchSettingsPage";
 import * as FacetedSearchSettingsModule from "../../../tsrc/modules/FacetedSearchSettingsModule";
 import { FacetedSearchClassificationWithFlags } from "../../../tsrc/modules/FacetedSearchSettingsModule";

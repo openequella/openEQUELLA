@@ -48,8 +48,8 @@ libraryDependencies ++= Seq(
 
 // Libraries needed for JWT validation in LTI 1.3 / OpenID connect
 libraryDependencies ++= Seq(
-  "com.auth0" % "java-jwt" % "4.3.0",
-  "com.auth0" % "jwks-rsa" % "0.22.0"
+  "com.auth0" % "java-jwt" % "4.4.0",
+  "com.auth0" % "jwks-rsa" % "0.22.1"
 )
 
 libraryDependencies ++= Seq(
@@ -72,7 +72,7 @@ libraryDependencies ++= Seq(
   ),
   "com.google.api-client" % "google-api-client"           % "2.2.0",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20230203-2.0.0",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20230816-2.0.0",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20230904-2.0.0",
   "com.google.code.gson"  % "gson"                        % "2.10.1",
   "com.google.gdata"      % "core"                        % "1.47.1",
   "com.google.guava"      % "guava"                       % "32.1.2-jre",
@@ -225,8 +225,8 @@ libraryDependencies ++= Seq(
   "org.opensaml" % "xmltooling" % "1.4.4" excludeAll ExclusionRule(organization = "org.slf4j"),
   postgresDep,
   "org.scannotation" % "scannotation"   % "1.0.3",
-  "org.slf4j"        % "jcl-over-slf4j" % "2.0.7",
-  "org.slf4j"        % "slf4j-api"      % "2.0.7",
+  "org.slf4j"        % "jcl-over-slf4j" % "2.0.9",
+  "org.slf4j"        % "slf4j-api"      % "2.0.9",
   springAop,
   springWeb,
   springContext,
