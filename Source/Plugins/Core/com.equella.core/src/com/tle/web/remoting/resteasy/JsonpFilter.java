@@ -18,7 +18,6 @@
 
 package com.tle.web.remoting.resteasy;
 
-import com.google.common.base.Throwables;
 import com.tle.core.guice.Bind;
 import com.tle.web.dispatcher.FilterResult;
 import com.tle.web.dispatcher.WebFilter;
@@ -98,7 +97,7 @@ public class JsonpFilter implements WebFilter {
               try {
                 wrapper.flushWrapper();
               } catch (IOException e) {
-                throw Throwables.propagate(e);
+                throw new RuntimeException(e);
               }
             }
           });

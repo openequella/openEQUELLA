@@ -1,6 +1,5 @@
 package com.tle.webtests.pageobject.generic.component;
 
-import com.google.common.base.Throwables;
 import com.tle.common.Check;
 import com.tle.webtests.framework.Assert;
 import com.tle.webtests.framework.PageContext;
@@ -117,7 +116,7 @@ public class Calendar extends AbstractPage<Calendar> {
       long ll = Long.parseLong(rawDate);
       return new Date(ll);
     } catch (NumberFormatException nfe) {
-      throw Throwables.propagate(nfe);
+      throw new RuntimeException(nfe);
     }
   }
 

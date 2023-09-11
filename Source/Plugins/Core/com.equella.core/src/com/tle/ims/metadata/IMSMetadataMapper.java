@@ -19,7 +19,6 @@
 package com.tle.ims.metadata;
 
 import com.dytech.edge.ejb.helpers.metadata.mappers.AbstractXPathPackageMapper;
-import com.google.common.base.Throwables;
 import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.guice.Bind;
@@ -42,7 +41,7 @@ public class IMSMetadataMapper extends AbstractXPathPackageMapper {
         imsService.getImsManifestAsStream(handle, packageExtractedFolder, false)) {
       return inp != null;
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 

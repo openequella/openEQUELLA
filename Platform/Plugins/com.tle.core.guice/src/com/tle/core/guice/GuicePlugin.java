@@ -18,7 +18,6 @@
 
 package com.tle.core.guice;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -84,9 +83,9 @@ public class GuicePlugin extends Plugin implements RegistryChangeListener {
   }
 
   public class GuiceBeanLocator implements PrivatePluginBeanLocator {
-    private String pluginId;
+    private final String pluginId;
     private Injector injector;
-    private Extension extension;
+    private final Extension extension;
     private Throwable exception;
     private AbstractBeanLocatorCallable<?> callable;
     private List<PluginBeanLocator> dependentLocators;
@@ -205,8 +204,8 @@ public class GuicePlugin extends Plugin implements RegistryChangeListener {
 
     private void checkException() {
       if (exception != null) {
-        LOGGER.error("Error creating injector for:" + pluginId, exception); // $NON-NLS-1$
-        throw Throwables.propagate(exception);
+        LOGGER.error("Error creating injector for:" + pluginId, exception);
+        throw new RuntimeException(exception);
       }
     }
 
@@ -282,7 +281,7 @@ public class GuicePlugin extends Plugin implements RegistryChangeListener {
         List<AbstractBeanLocatorCallable<?>> callableList,
         Set<PrivatePluginBeanLocator> seenLocators) {
       if (exception != null) {
-        throw Throwables.propagate(exception);
+        throw new RuntimeException(exception);
       }
       if (injector != null) {
         return;

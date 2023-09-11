@@ -18,7 +18,6 @@
 
 package com.tle.common;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import java.io.ByteArrayOutputStream;
@@ -102,19 +101,6 @@ public final class Check {
 
   public static boolean isEmpty(Map<?, ?> s) {
     return s == null || s.isEmpty();
-  }
-
-  /**
-   * Does an equality check, but checks for nulls on either the LHS or RHS at the same time. It is
-   * true if both 'a' and 'b' are null, 'a == b', or 'a.equals(b)'
-   *
-   * @deprecated Use Objects.equal(a, b) instead. For pre-6.1 stuff use
-   *     com.google.common.base.Objects; or 6.1 and up just use java.util.Objects which provides the
-   *     same methods, but from Java 7 and up.
-   */
-  @Deprecated
-  public static boolean bothNullOrEqual(Object a, Object b) {
-    return Objects.equal(a, b);
   }
 
   /**

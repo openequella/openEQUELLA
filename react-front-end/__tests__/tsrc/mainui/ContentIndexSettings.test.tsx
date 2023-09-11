@@ -23,7 +23,7 @@ import {
   queryByDisplayValue,
 } from "@testing-library/react";
 import ContentIndexSettings from "../../../tsrc/settings/Search/ContentIndexSettings";
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule"; // eslint-disable-line
 import { NavigationGuardProps } from "../../../tsrc/components/NavigationGuard";
 import { languageStrings } from "../../../tsrc/util/langstrings";

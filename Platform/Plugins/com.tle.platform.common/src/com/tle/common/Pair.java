@@ -19,6 +19,7 @@
 package com.tle.common;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Pair<FIRST, SECOND> implements Serializable {
   private static final long serialVersionUID = 1;
@@ -83,7 +84,7 @@ public class Pair<FIRST, SECOND> implements Serializable {
   }
 
   public boolean checkFields(Pair<FIRST, SECOND> rhs) {
-    return Check.bothNullOrEqual(rhs.getFirst(), getFirst())
-        && Check.bothNullOrEqual(rhs.getSecond(), getSecond());
+    return Objects.equals(rhs.getFirst(), getFirst())
+        && Objects.equals(rhs.getSecond(), getSecond());
   }
 }

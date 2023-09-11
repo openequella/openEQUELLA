@@ -8,7 +8,6 @@ import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.ejb.helpers.metadata.mappers.PackageMapper;
 import com.dytech.edge.ejb.helpers.metadata.mappers.XPathMapper;
 import com.dytech.edge.ejb.helpers.metadata.mapping.Mapping;
-import com.google.common.base.Throwables;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.MetadataMapping;
 import com.tle.beans.entity.itemdef.mapping.IMSMapping;
@@ -58,8 +57,8 @@ public abstract class AbstractMetadataMapperTester extends TestCase {
 
       schema = new Schema();
       schema.setDefinition(sxml);
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -115,7 +114,7 @@ public abstract class AbstractMetadataMapperTester extends TestCase {
         mapping.update(xml);
       }
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
 
     PropBagEx results = new PropBagEx(getResourceAsReader(folder, resultsFile));

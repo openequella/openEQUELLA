@@ -28,7 +28,7 @@
     "@commitlint/config-conventional": "17.7.0",
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
-    "@babel/eslint-parser": "7.22.11",
+    "@babel/eslint-parser": "7.22.15",
     "cross-env": "7.0.3",
     "eslint": "8.48.0",
     "eslint-config-prettier": "9.0.0",
@@ -50,7 +50,7 @@
     "remark-cli": "11.0.0",
     "remark-lint-no-dead-urls": "1.1.0",
     "remark-validate-links": "12.1.1",
-    "typescript": "4.9.5"
+    "typescript": "5.2.2"
   },
   "commitlint": {
     "extends": [

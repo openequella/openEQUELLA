@@ -18,7 +18,6 @@
 
 package com.tle.core.workflow.convert;
 
-import com.google.common.base.Throwables;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -50,7 +49,7 @@ import javax.inject.Singleton;
 @Bind
 @Singleton
 public class TaskHistoryConverter implements ItemExtrasConverter {
-  public static final String TASKHISTORY_XML = "taskhistory.xml"; // $NON-NLS-1$
+  public static final String TASKHISTORY_XML = "taskhistory.xml";
 
   @Inject private FileSystemService fileSystemService;
   @Inject private TaskHistoryDao taskHistoryDao;
@@ -68,7 +67,7 @@ public class TaskHistoryConverter implements ItemExtrasConverter {
       workflowMaps =
           CacheBuilder.newBuilder()
               .build(
-                  new CacheLoader<String, Map<String, WorkflowNode>>() {
+                  new CacheLoader<>() {
                     @Override
                     public Map<String, WorkflowNode> load(String input) {
                       Workflow workflow = workflowDao.getByUuid(input);
@@ -83,27 +82,20 @@ public class TaskHistoryConverter implements ItemExtrasConverter {
     if (!Check.isEmpty(taskHistories)) {
       saveTaskHistories(info, taskHistories);
     } else {
-      try {
-        if (fileSystemService.fileExists(extrasFolder, TASKHISTORY_XML)) {
-          DataHolder data = getXStream().newDataHolder();
-          data.put(
-              WorkflowNodeSupplier.class,
-              new WorkflowNodeSupplier() {
-                @Override
-                public long getIdForNode(String workflowUuid, String uuid) {
+      if (fileSystemService.fileExists(extrasFolder, TASKHISTORY_XML)) {
+        DataHolder data = getXStream().newDataHolder();
+        data.put(
+            WorkflowNodeSupplier.class,
+            (WorkflowNodeSupplier)
+                (workflowUuid, uuid) -> {
                   Map<String, WorkflowNode> unchecked = workflowMappings.getUnchecked(workflowUuid);
                   WorkflowNode workflowNode = unchecked.get(uuid);
-                  long id = workflowNode.getId();
-                  return id;
-                }
-              });
+                  return workflowNode.getId();
+                });
 
-          taskHistories =
-              xmlHelper.readXmlFile(extrasFolder, TASKHISTORY_XML, getXStream(), null, data);
-          saveTaskHistories(info, taskHistories);
-        }
-      } catch (Exception e) {
-        throw Throwables.propagate(e);
+        taskHistories =
+            xmlHelper.readXmlFile(extrasFolder, TASKHISTORY_XML, getXStream(), null, data);
+        saveTaskHistories(info, taskHistories);
       }
     }
   }

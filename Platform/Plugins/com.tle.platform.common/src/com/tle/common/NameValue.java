@@ -18,6 +18,8 @@
 
 package com.tle.common;
 
+import java.util.Objects;
+
 /** @author Nicholas Read */
 public class NameValue extends Pair<String, String> {
   private static final long serialVersionUID = 1;
@@ -57,6 +59,6 @@ public class NameValue extends Pair<String, String> {
   @Override
   public boolean checkFields(Pair<String, String> rhs) {
     // Only check the value of this object type
-    return Check.bothNullOrEqual(rhs.getSecond(), getSecond());
+    return Objects.equals(rhs.getSecond(), getSecond());
   }
 }

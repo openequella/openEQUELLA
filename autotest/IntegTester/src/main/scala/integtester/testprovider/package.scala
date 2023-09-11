@@ -1,5 +1,6 @@
 package integtester
 
+import integtester.testprovider.RCloudControlConfigType
 import io.circe.Encoder
 import io.circe.generic.semiauto.deriveEncoder
 
@@ -24,9 +25,11 @@ package object testprovider {
                                         configuration: Iterable[RCloudControlConfig])
 
   object RProviderControlDefinition {
-    implicit val typeEnc        = Encoder.enumEncoder(RCloudControlConfigType)
-    implicit val ccoEnc         = deriveEncoder[RCloudConfigOption]
-    implicit val enc            = deriveEncoder[RCloudControlConfig]
-    implicit val encodeControls = deriveEncoder[RProviderControlDefinition]
+    implicit val typeEnc: Encoder[RCloudControlConfigType.Value] =
+      Encoder.enumEncoder(RCloudControlConfigType)
+    implicit val ccoEnc: Encoder.AsObject[RCloudConfigOption] = deriveEncoder[RCloudConfigOption]
+    implicit val enc: Encoder.AsObject[RCloudControlConfig]   = deriveEncoder[RCloudControlConfig]
+    implicit val encodeControls: Encoder.AsObject[RProviderControlDefinition] =
+      deriveEncoder[RProviderControlDefinition]
   }
 }

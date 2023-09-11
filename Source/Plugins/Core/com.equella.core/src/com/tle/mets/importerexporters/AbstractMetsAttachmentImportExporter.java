@@ -20,7 +20,6 @@ package com.tle.mets.importerexporters;
 
 import com.dytech.devlib.PropBagEx;
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.google.common.io.ByteStreams;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.FileAttachment;
@@ -122,7 +121,7 @@ public abstract class AbstractMetsAttachmentImportExporter
       data.getContent().add(new PCData(Base64.getEncoder().encodeToString(baos.toByteArray())));
       return data;
     } catch (IOException io) {
-      throw Throwables.propagate(io);
+      throw new RuntimeException(io);
     }
   }
 

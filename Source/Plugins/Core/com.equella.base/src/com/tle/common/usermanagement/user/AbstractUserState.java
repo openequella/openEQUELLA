@@ -18,7 +18,6 @@
 
 package com.tle.common.usermanagement.user;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 import com.tle.beans.Institution;
 import com.tle.common.Triple;
@@ -258,15 +257,9 @@ public abstract class AbstractUserState implements ModifiableUserState {
     return auditable;
   }
 
-  // Explicit catch of CloneNotSupportedException from super.clone()
   @Override
-  public UserState clone() // NOSONAR
-      {
-    try {
-      return (UserState) super.clone();
-    } catch (CloneNotSupportedException e) {
-      throw Throwables.propagate(e);
-    }
+  public UserState clone() throws CloneNotSupportedException {
+    return (UserState) super.clone();
   }
 
   @Override

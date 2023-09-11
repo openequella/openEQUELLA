@@ -18,9 +18,9 @@
 
 package com.tle.web.selection.section;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.VersionSelection;
@@ -69,7 +69,6 @@ import com.tle.web.selection.SelectedResourceKey;
 import com.tle.web.selection.SelectionService;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.TargetFolder;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -303,8 +302,8 @@ public class VersionSelectionSection
   private String getSelectedResourceAsString(ObjectMapper mapper, SelectedResource res) {
     try {
       return mapper.writeValueAsString(res.getKey());
-    } catch (IOException e) {
-      throw Throwables.propagate(e);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
     }
   }
 

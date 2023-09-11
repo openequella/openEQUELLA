@@ -18,7 +18,6 @@
 
 package com.tle.core.plugins;
 
-import com.google.common.base.Throwables;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Externalizable;
@@ -63,7 +62,7 @@ public class SerialisedValue<T> implements Externalizable {
         paois = new PluginAwareObjectInputStream(new ByteArrayInputStream(data));
         object = (T) paois.readObject();
       } catch (Exception e) {
-        Throwables.propagate(e);
+        throw new RuntimeException(e);
       }
       objectRead = true;
     }
@@ -78,7 +77,7 @@ public class SerialisedValue<T> implements Externalizable {
         oos.flush();
         data = baos.toByteArray();
       } catch (IOException e) {
-        Throwables.propagate(e);
+        throw new RuntimeException(e);
       }
     }
     return data;

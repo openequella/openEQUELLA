@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.tle.annotation.NonNullByDefault;
@@ -202,8 +201,8 @@ public class BrightspaceConnectorServiceImpl extends AbstractIntegrationConnecto
       final BrightspaceWhoAmIUser user = jsonMapper.readValue(body, BrightspaceWhoAmIUser.class);
 
       return user.getUniqueName();
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -269,7 +268,7 @@ public class BrightspaceConnectorServiceImpl extends AbstractIntegrationConnecto
                   institutionService.institutionalise(BrightspaceConnectorConstants.AUTH_URL)),
               encrypt(mapper.writeValueAsString(stateJson)));
     } catch (JsonProcessingException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
     return uri.toString();
   }
@@ -372,7 +371,7 @@ public class BrightspaceConnectorServiceImpl extends AbstractIntegrationConnecto
       }
       return folders;
     } catch (IOException io) {
-      throw Throwables.propagate(io);
+      throw new RuntimeException(io);
     }
   }
 
@@ -1008,11 +1007,9 @@ public class BrightspaceConnectorServiceImpl extends AbstractIntegrationConnecto
           return content;
         }
         return null;
-      } catch (IOException io) {
-        throw Throwables.propagate(io);
       }
     } catch (IOException io) {
-      throw Throwables.propagate(io);
+      throw new RuntimeException(io);
     }
   }
 

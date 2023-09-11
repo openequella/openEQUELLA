@@ -18,10 +18,10 @@
 
 package com.tle.common;
 
-import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -41,8 +41,8 @@ public class NamedThreadFactory implements ThreadFactory {
     try {
       final AtomicInteger ctr = threadNumber.get(name, builder);
       return new Thread(r, name + "-" + ctr.getAndIncrement());
-    } catch (Throwable t) {
-      throw Throwables.propagate(t);
+    } catch (ExecutionException e) {
+      throw new RuntimeException(e);
     }
   }
 

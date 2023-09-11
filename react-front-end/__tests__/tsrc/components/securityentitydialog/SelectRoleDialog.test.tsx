@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import * as SET from "fp-ts/Set";
 import { LOGGED_IN_USER_ROLE_NAME } from "../../../../__mocks__/ACLRecipientModule.mock";
 import { roles } from "../../../../__mocks__/RoleModule.mock";

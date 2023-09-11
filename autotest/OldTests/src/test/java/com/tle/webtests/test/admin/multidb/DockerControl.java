@@ -1,7 +1,6 @@
 package com.tle.webtests.test.admin.multidb;
 
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
@@ -57,8 +56,8 @@ public class DockerControl {
         }
         try {
           Thread.sleep(1000);
-        } catch (Exception ee) {
-          Throwables.propagate(ee);
+        } catch (InterruptedException ee) {
+          throw new RuntimeException(ee);
         }
       }
 
@@ -69,7 +68,7 @@ public class DockerControl {
       c.disconnect();
       s.disconnect();
     } catch (JSchException | IOException e) {
-      Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 

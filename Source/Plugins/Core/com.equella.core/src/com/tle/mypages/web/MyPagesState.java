@@ -19,7 +19,6 @@
 package com.tle.mypages.web;
 
 import com.dytech.devlib.PropBagEx;
-import com.google.common.base.Throwables;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemPack;
@@ -149,7 +148,7 @@ public class MyPagesState implements WizardStateInterface {
 
       return other;
     } catch (CloneNotSupportedException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 

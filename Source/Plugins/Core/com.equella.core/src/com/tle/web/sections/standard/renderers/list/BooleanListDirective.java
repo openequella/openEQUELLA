@@ -18,7 +18,6 @@
 
 package com.tle.web.sections.standard.renderers.list;
 
-import com.google.common.base.Throwables;
 import com.tle.web.sections.SectionWriter;
 import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.JSExpression;
@@ -94,7 +93,7 @@ public class BooleanListDirective extends AbstractListDirective {
         try {
           body.render(writer);
         } catch (TemplateException e) {
-          throw Throwables.propagate(e);
+          throw new RuntimeException(e);
         }
       }
     }

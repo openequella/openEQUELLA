@@ -19,7 +19,6 @@
 package com.tle.core.services.user.impl;
 
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
@@ -82,9 +81,9 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -237,7 +236,7 @@ public class UserServiceImpl
   }
 
   @Transactional
-  protected ModifiableUserState setupUserState(
+  public ModifiableUserState setupUserState(
       ModifiableUserState auth, WebAuthenticationDetails details, boolean authenticated) {
     auth.setSessionID(UUID.randomUUID().toString());
     auth.setInstitution(CurrentInstitution.get());
@@ -269,9 +268,9 @@ public class UserServiceImpl
       // Can be thrown by SharedSecretWrapper
       LOGGER.error("Error initialising user state.", e);
       throw e;
-    } catch (Exception e) {
-      LOGGER.warn("Error initialising user state: " + e.getMessage()); // $NON-NLS-1$
-      throw Throwables.propagate(e);
+    } catch (RuntimeException e) {
+      LOGGER.warn("Error initialising user state: " + e.getMessage());
+      throw e;
     }
 
     final AutoLogin settings = configurationService.getProperties(new AutoLogin());
@@ -605,7 +604,7 @@ public class UserServiceImpl
       String settingsClass = entry.getKey();
       try {
         UserManagementSettings settings = getPluginConfigInternal(settingsClass);
-        if (settings.isEnabled()) {
+        if (settings != null && settings.isEnabled()) {
           UserDirectory ud = umpTracker.getBeanByParameter(entry.getValue(), "class");
           uds.add(ud);
 
@@ -622,13 +621,7 @@ public class UserServiceImpl
     Map<Object, Object> chainAttributes = Maps.newHashMap();
 
     Collection<UserManagementLogonFilter> filters = logonFilterTracker.getNewBeanList();
-    Iterator<UserManagementLogonFilter> iter = filters.iterator();
-    while (iter.hasNext()) {
-      UserManagementLogonFilter filter = iter.next();
-      if (!filter.init(chainAttributes)) {
-        iter.remove();
-      }
-    }
+    filters.removeIf(filter -> !filter.init(chainAttributes));
     InstitutionState state = new InstitutionState();
     state.chain = chain;
     state.filters = filters;
@@ -649,7 +642,9 @@ public class UserServiceImpl
 
   @Override
   public boolean isWrapperEnabled(String settingsClass) {
-    return getPluginConfigInternal(settingsClass).isEnabled();
+    return Optional.ofNullable(getPluginConfigInternal(settingsClass))
+        .map(UserManagementSettings::isEnabled)
+        .orElse(false);
   }
 
   @Override

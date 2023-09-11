@@ -21,7 +21,6 @@ package com.tle.web.core.filter;
 import com.dytech.edge.common.Constants;
 import com.dytech.edge.exceptions.WebException;
 import com.dytech.edge.web.WebConstants;
-import com.google.common.base.Throwables;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.usermanagement.user.AnonymousUserState;
 import com.tle.common.usermanagement.user.CurrentUser;
@@ -35,11 +34,8 @@ import com.tle.core.services.user.UserSessionService;
 import com.tle.web.core.filter.UserStateResult.Result;
 import com.tle.web.dispatcher.AbstractWebFilter;
 import com.tle.web.dispatcher.FilterResult;
-import com.tle.web.dispatcher.WebFilterCallback;
-import java.io.IOException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.ThreadContext;
@@ -61,16 +57,12 @@ public class TleSessionFilter extends AbstractWebFilter {
   private PluginTracker<UserStateHook> userStateHooks;
 
   @Override
-  public FilterResult filterRequest(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+  public FilterResult filterRequest(HttpServletRequest request, HttpServletResponse response) {
     final FilterResult result =
         new FilterResult(
-            new WebFilterCallback() {
-              @Override
-              public void afterServlet(HttpServletRequest request, HttpServletResponse response) {
-                sessionService.unbind();
-                CurrentUser.setUserState(null);
-              }
+            (request1, response1) -> {
+              sessionService.unbind();
+              CurrentUser.setUserState(null);
             });
     try {
       sessionService.bindRequest(request);
@@ -105,9 +97,9 @@ public class TleSessionFilter extends AbstractWebFilter {
       } else {
         ThreadContext.put(Constants.MDC_SESSION_ID, userState.getSessionID());
       }
-    } catch (Exception t) {
+    } catch (RuntimeException t) {
       userService.logoutToGuest(userService.getWebAuthenticationDetails(request), false);
-      throw Throwables.propagate(t);
+      throw t;
     }
 
     return result;

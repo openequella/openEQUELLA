@@ -18,7 +18,6 @@
 
 package com.tle.core.freetext.extracter.standard;
 
-import com.google.common.base.Throwables;
 import com.tle.beans.mime.MimeEntry;
 import com.tle.core.freetext.extracter.handler.CappedBodyContentHandler;
 import com.tle.core.guice.Bind;
@@ -32,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import javax.inject.Singleton;
 import org.apache.tika.config.TikaConfig;
+import org.apache.tika.exception.TikaException;
 import org.apache.tika.exception.WriteLimitReachedException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
@@ -41,6 +41,7 @@ import org.apache.tika.sax.WriteOutContentHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
 
 /** @author aholland */
 @SuppressWarnings("nls")
@@ -57,7 +58,7 @@ public class PdfExtracter extends AbstractTextExtracterExtension {
   @Override
   public void extractText(
       String mimeType, InputStream input, StringBuilder outputText, int maxSize, long parseDuration)
-      throws IOException, InterruptedException, ExecutionException, TimeoutException {
+      throws InterruptedException, ExecutionException, TimeoutException {
     WriteOutContentHandler wrapped = new WriteOutContentHandler(maxSize);
     ContentHandler handler = new CappedBodyContentHandler(wrapped, parseDuration);
     Runnable runnableParse =
@@ -68,14 +69,14 @@ public class PdfExtracter extends AbstractTextExtracterExtension {
             parser.parse(input, handler, meta, new ParseContext());
 
             appendText(handler, outputText, maxSize);
-          } catch (Exception t) {
+          } catch (IOException | SAXException | TikaException t) {
             if (WriteLimitReachedException.isWriteLimitReached(t)) {
               // keep going
               LOGGER.info("PDF size limit reached.  Indexing truncated text");
               appendText(handler, outputText, maxSize);
               return;
             }
-            throw Throwables.propagate(t);
+            throw new RuntimeException(t);
           }
         };
     ExecutorService executor = Executors.newSingleThreadExecutor();

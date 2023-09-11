@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import { render } from "@testing-library/react";
 import * as React from "react";
 import { StarRating } from "../../../tsrc/components/StarRating";

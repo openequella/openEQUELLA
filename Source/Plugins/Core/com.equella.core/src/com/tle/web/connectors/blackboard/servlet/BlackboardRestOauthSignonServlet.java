@@ -21,7 +21,6 @@ package com.tle.web.connectors.blackboard.servlet;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Throwables;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.common.PathUtils;
 import com.tle.common.connectors.entity.Connector;
@@ -141,14 +140,14 @@ public class BlackboardRestOauthSignonServlet extends HttpServlet {
         throw new AuthenticationException(
             "Unable to authenticate with Blackboard - " + bbErr.getErrorDescription());
       }
-    } catch (Exception e) {
+    } catch (IOException e) {
       LOGGER.warn(
           "Unable to gather Blackboard access token for ["
               + connectorUuid
               + "] - "
               + e.getMessage(),
           e);
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
 
     // close dialog OR redirect...

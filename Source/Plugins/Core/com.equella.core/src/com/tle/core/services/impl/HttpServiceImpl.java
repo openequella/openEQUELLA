@@ -25,7 +25,6 @@ import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 
 import com.dytech.edge.common.Constants;
 import com.google.common.base.Function;
-import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
@@ -42,7 +41,12 @@ import com.tle.core.guice.Bind;
 import com.tle.core.services.HttpService;
 import com.tle.core.services.http.Request;
 import com.tle.core.services.http.Response;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -75,7 +79,13 @@ import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.*;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpOptions;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.params.HttpClientParams;
@@ -397,6 +407,8 @@ public class HttpServiceImpl implements HttpService {
     }
 
     final HttpRequestBase req;
+    String mimeType = request.getMimeType();
+    String charset = request.getCharset();
     switch (request.getMethod()) {
       case GET:
         req = createGET(request.getUrl(), convParams);
@@ -404,35 +416,31 @@ public class HttpServiceImpl implements HttpService {
 
       case POST:
         req = createPOST(request.getUrl(), convParams);
-        String mimeType = request.getMimeType();
         if (mimeType == null) {
           mimeType = ContentType.APPLICATION_JSON.getMimeType();
         }
-        String charset = request.getCharset();
         if (charset == null) {
           charset = ContentType.APPLICATION_JSON.getCharset().name();
         }
         try {
           ((HttpPost) req).setEntity(new StringEntity(request.getBody(), mimeType, charset));
         } catch (UnsupportedEncodingException e) {
-          throw Throwables.propagate(e);
+          throw new RuntimeException(e);
         }
         break;
 
       case PUT:
         req = createPUT(request.getUrl(), convParams);
-        mimeType = request.getMimeType();
         if (mimeType == null) {
           mimeType = ContentType.APPLICATION_JSON.getMimeType();
         }
-        charset = request.getCharset();
         if (charset == null) {
           charset = ContentType.APPLICATION_JSON.getCharset().name();
         }
         try {
           ((HttpPut) req).setEntity(new StringEntity(request.getBody(), mimeType, charset));
         } catch (UnsupportedEncodingException e) {
-          throw Throwables.propagate(e);
+          throw new RuntimeException(e);
         }
         break;
 
@@ -531,7 +539,7 @@ public class HttpServiceImpl implements HttpService {
             LOGGER.trace("Received\n" + body);
           }
         } catch (IOException u) {
-          throw Throwables.propagate(u);
+          throw new RuntimeException(u);
         }
       }
       return body;
@@ -591,7 +599,7 @@ public class HttpServiceImpl implements HttpService {
         }
         consumed = true;
       } catch (IOException io) {
-        throw Throwables.propagate(io);
+        throw new RuntimeException(io);
       } finally {
         close();
       }
@@ -605,7 +613,7 @@ public class HttpServiceImpl implements HttpService {
           try {
             EntityUtils.consume(entity);
           } catch (IOException io) {
-            throw Throwables.propagate(io);
+            throw new RuntimeException(io);
           }
         }
         consumed = true;

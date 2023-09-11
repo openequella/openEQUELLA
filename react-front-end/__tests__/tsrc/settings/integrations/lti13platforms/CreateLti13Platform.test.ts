@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as SET from "fp-ts/Set";

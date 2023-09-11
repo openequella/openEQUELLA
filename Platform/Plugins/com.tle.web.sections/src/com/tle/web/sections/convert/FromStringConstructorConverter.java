@@ -18,7 +18,6 @@
 
 package com.tle.web.sections.convert;
 
-import com.google.common.base.Throwables;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
@@ -31,7 +30,7 @@ import net.entropysoft.transmorph.type.TypeReference;
 
 public class FromStringConstructorConverter extends AbstractConverter {
   private final Map<Class<?>, Constructor<?>> constructors =
-      Collections.synchronizedMap(new HashMap<Class<?>, Constructor<?>>());
+      Collections.synchronizedMap(new HashMap<>());
 
   @Override
   protected boolean canHandleDestinationType(TypeReference<?> destinationType) {
@@ -64,9 +63,9 @@ public class FromStringConstructorConverter extends AbstractConverter {
       if (t.getTargetException() instanceof ConvertedToNull) {
         return null;
       }
-      throw Throwables.propagate(t.getTargetException());
+      throw new RuntimeException(t.getTargetException());
     } catch (Exception e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 }

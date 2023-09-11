@@ -18,7 +18,6 @@
 
 package com.tle.web.selection.contribute;
 
-import com.google.common.base.Throwables;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.attachments.Attachment;
@@ -147,7 +146,7 @@ public class QuickUploadSection extends AbstractPrototypeSection<QuickUploadMode
           val.setReturnFromSession(true);
         }
       } catch (IOException e) {
-        Throwables.propagate(e);
+        throw new RuntimeException(e);
       }
     }
     return val;
