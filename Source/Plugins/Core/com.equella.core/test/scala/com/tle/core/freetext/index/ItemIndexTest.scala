@@ -582,9 +582,9 @@ class ItemIndexTest
         )
 
         val processedQuery = queryCaptor.getValue.toString
-        processedQuery should (include("name_vectored:java^2.0 body:java^1.0") and
-          include("name_vectored:scala^2.0 body:scala^1.0") and
-          include("name_vectored:interest^2.0 body:interest^1.0"))
+        processedQuery should (include("(name_vectored:java)^2.0 (body:java)^1.0") and
+          include("(name_vectored:scala)^2.0 (body:scala)^1.0") and
+          include("(name_vectored:interest)^2.0 (body:interest)^1.0"))
       }
     }
 

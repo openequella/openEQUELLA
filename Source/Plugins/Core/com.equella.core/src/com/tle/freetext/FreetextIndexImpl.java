@@ -65,7 +65,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import javax.inject.Singleton;
-import org.apache.lucene.index.TrackingIndexWriter;
+import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.SearcherManager;
 import org.slf4j.Logger;
@@ -238,9 +238,9 @@ public class FreetextIndexImpl
       IndexBuilder resetBuilder =
           new IndexBuilder() {
             @Override
-            public long buildIndex(SearcherManager searcherManager, TrackingIndexWriter writer)
+            public long buildIndex(SearcherManager searcherManager, IndexWriter writer)
                 throws Exception {
-              return writer.getGeneration();
+              return writer.getMaxCompletedSequenceNumber();
             }
           };
       for (ItemIndex<? extends FreetextResult> itemIndex : indexerMap.values()) {

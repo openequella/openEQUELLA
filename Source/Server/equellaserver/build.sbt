@@ -30,7 +30,7 @@ val jsoupVersion      = "1.16.1"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "2.3.0"
 val tikaVersion       = "2.9.0"
-val luceneVersion     = "5.5.5"
+val luceneVersion     = "6.6.6"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",

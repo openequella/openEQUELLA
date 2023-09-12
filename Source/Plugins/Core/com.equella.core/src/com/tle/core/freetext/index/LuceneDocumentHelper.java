@@ -20,7 +20,6 @@ package com.tle.core.freetext.index;
 
 import java.io.IOException;
 import java.util.function.IntConsumer;
-import org.apache.lucene.index.DocsEnum;
 import org.apache.lucene.index.LeafReader;
 import org.apache.lucene.index.PostingsEnum;
 import org.apache.lucene.index.Term;
@@ -37,7 +36,7 @@ public final class LuceneDocumentHelper {
    */
   public static void forEachDoc(DocIdSetIterator docs, IntConsumer forEach) throws IOException {
     if (docs != null) {
-      while (docs.nextDoc() != DocsEnum.NO_MORE_DOCS) {
+      while (docs.nextDoc() != PostingsEnum.NO_MORE_DOCS) {
         forEach.accept(docs.docID());
       }
     }

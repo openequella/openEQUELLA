@@ -42,7 +42,6 @@ import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.analysis.util.WordlistLoader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.TrackingIndexWriter;
 import org.apache.lucene.search.ControlledRealTimeReopenThread;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.SearcherManager;
@@ -90,7 +89,6 @@ public abstract class AbstractIndexEngine {
   private FSDirectory directory;
 
   private IndexWriter indexWriter;
-  private TrackingIndexWriter trackingIndexWriter;
   private SearcherManager searcherManager;
   private ControlledRealTimeReopenThread<IndexSearcher> controlledRealTimeReopenThread;
   private Timer commiterThread;
@@ -127,13 +125,12 @@ public abstract class AbstractIndexEngine {
     LOGGER.info("Opening writer for index:" + indexPath);
 
     indexWriter = new IndexWriter(directory, new IndexWriterConfig(getAnalyser()));
-    trackingIndexWriter = new TrackingIndexWriter(indexWriter);
-    searcherManager = new SearcherManager(indexWriter, true, null);
+    searcherManager = new SearcherManager(indexWriter, true, true, null);
 
     // Possibly reopen a searcher every 5 seconds if necessary in the
     // background
     controlledRealTimeReopenThread =
-        new ControlledRealTimeReopenThread<>(trackingIndexWriter, searcherManager, 5.0, 0.1);
+        new ControlledRealTimeReopenThread<>(indexWriter, searcherManager, 5.0, 0.1);
     controlledRealTimeReopenThread.setName("Controlled Real Time Reopen Thread: " + getClass());
     controlledRealTimeReopenThread.setPriority(
         Math.min(Thread.currentThread().getPriority() + 2, Thread.MAX_PRIORITY));
@@ -161,7 +158,7 @@ public abstract class AbstractIndexEngine {
     try {
       long g = -1;
       try {
-        g = builder.buildIndex(searcherManager, trackingIndexWriter);
+        g = builder.buildIndex(searcherManager, indexWriter);
       } finally {
         generation = Math.max(g, generation);
       }
@@ -275,7 +272,7 @@ public abstract class AbstractIndexEngine {
 
   public interface IndexBuilder {
     /** @return The index generation to wait for, or -1 if you don't care. */
-    long buildIndex(SearcherManager searcherManager, TrackingIndexWriter writer) throws Exception;
+    long buildIndex(SearcherManager searcherManager, IndexWriter writer) throws Exception;
   }
 
   public void setIndexPath(File indexPath) {
