@@ -88,6 +88,7 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.DocumentStoredFieldVisitor;
+import org.apache.lucene.document.LongPoint;
 import org.apache.lucene.index.AutomatonTermsEnum;
 import org.apache.lucene.index.FieldInfo;
 import org.apache.lucene.index.IndexReader;
@@ -109,7 +110,6 @@ import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanQuery.Builder;
-import org.apache.lucene.search.DocValuesRangeQuery;
 import org.apache.lucene.search.FieldComparatorSource;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiPhraseQuery;
@@ -507,8 +507,13 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       }
     }
 
+    // Accoding to Lucene V7 doco, TopDocs instances returned by IndexSearcher will still have a
+    // total
+    // number of hits which is less than 2B since Lucene indexes are still bound to at most 2B
+    // documents,
+    // so it can safely be casted to an int in that case.
     return new SimpleSearchResults<T>(
-        retrievedResults, retrievedResults.size(), firstHit, hits.totalHits);
+        retrievedResults, retrievedResults.size(), firstHit, (int) hits.totalHits);
   }
 
   protected abstract T createResult(
@@ -907,10 +912,9 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
           filters.add(
               createDateFilter(indexFieldName, range, Dates.ISO, request.useServerTimeZone()));
         } else {
-          Long start = range[0] != null ? range[0].getTime() : null;
-          Long end = range[1] != null ? range[1].getTime() : null;
-          filters.add(
-              () -> DocValuesRangeQuery.newLongRange(indexFieldName, start, end, true, true));
+          long start = range[0] != null ? range[0].getTime() : Long.MIN_VALUE;
+          long end = range[1] != null ? range[1].getTime() : Long.MAX_VALUE;
+          filters.add(() -> LongPoint.newRangeQuery(indexFieldName, start, end));
         }
       }
     }
