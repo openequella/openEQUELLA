@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.index.MultiTerms;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
@@ -44,7 +44,7 @@ public class XPathFieldIterator implements Iterator<Term>, Iterable<Term> {
       field = field.substring(0, hasIndex);
     }
 
-    Terms terms = MultiFields.getTerms(reader, field);
+    Terms terms = MultiTerms.getTerms(reader, field);
     if (terms != null) {
       enumerator = terms.iterator();
       current = new Term(field, new BytesRef(enumerator.next().utf8ToString()));

@@ -198,7 +198,7 @@ public class ItemSyncer implements Callable<Void> {
             Occur.SHOULD);
       }
       fullQueryBuilder.add(institutionQueryBuilder.build(), Occur.MUST);
-      institutionQueryBuilder.add(
+      fullQueryBuilder.add(
           LongPoint.newRangeQuery(FreeTextQuery.FIELD_ID_RANGEABLE, firstId, lastId), Occur.MUST);
       searcher.search(fullQueryBuilder.build(), compareDates);
       return compareDates.getModifiedDocs();

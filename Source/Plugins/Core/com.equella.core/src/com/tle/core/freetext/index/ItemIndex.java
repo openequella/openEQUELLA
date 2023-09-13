@@ -94,7 +94,7 @@ import org.apache.lucene.index.FieldInfo;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.LeafReaderContext;
-import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.index.MultiTerms;
 import org.apache.lucene.index.PostingsEnum;
 import org.apache.lucene.index.StoredFieldVisitor;
 import org.apache.lucene.index.Term;
@@ -117,7 +117,7 @@ import org.apache.lucene.search.MultiTermQuery;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.Scorer;
+import org.apache.lucene.search.ScoreMode;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.SimpleCollector;
 import org.apache.lucene.search.Sort;
@@ -323,8 +323,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
               results =
                   new SimpleSearchResults<T>(new ArrayList<T>(), 0, 0, hitCount.getTotalHits());
             } else {
-              final TopDocs hits =
-                  searcher.search(query, actualCount, sorter, sortByRelevance, false);
+              final TopDocs hits = searcher.search(query, actualCount, sorter, sortByRelevance);
               final SearchResults<T> itemResults =
                   getResultsFromTopDocs(searcher, hits, actualStart, sortByRelevance);
 
@@ -513,7 +512,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     // documents,
     // so it can safely be casted to an int in that case.
     return new SimpleSearchResults<T>(
-        retrievedResults, retrievedResults.size(), firstHit, (int) hits.totalHits);
+        retrievedResults, retrievedResults.size(), firstHit, (int) hits.totalHits.value);
   }
 
   protected abstract T createResult(
@@ -577,7 +576,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
             final Multimap<String, Pair<String, Integer>> rv = ArrayListMultimap.create();
             for (String field : fields) {
               for (Term term : new XPathFieldIterator(reader, field)) {
-                PostingsEnum docs = MultiFields.getTermDocsEnum(reader, field, term.bytes());
+                PostingsEnum docs = MultiTerms.getTermPostingsEnum(reader, field, term.bytes());
 
                 LuceneDocumentHelper.useDocCount(
                     docs,
@@ -618,7 +617,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
               FixedBitSet perFieldBitSet = new FixedBitSet(maxDoc);
               for (Term term : new XPathFieldIterator(reader, field)) {
                 FixedBitSet set = new FixedBitSet(maxDoc);
-                PostingsEnum docs = MultiFields.getTermDocsEnum(reader, field, term.bytes());
+                PostingsEnum docs = MultiTerms.getTermPostingsEnum(reader, field, term.bytes());
                 LuceneDocumentHelper.forEachDoc(docs, set::set);
 
                 perFieldBitSet.or(set);
@@ -716,7 +715,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
               // Given a field, find out all the terms and seek the terms that have the provided
               // prefix so the result
               // does not have to be the exact term.
-              TermsEnum termsEnum = MultiFields.getTerms(reader, term.field()).iterator();
+              TermsEnum termsEnum = MultiTerms.getTerms(reader, term.field()).iterator();
               if (termsEnum.seekCeil(new BytesRef(prefix)) != SeekStatus.END) {
                 // And then find out all the permitted docs for the prefix terms.
                 PostingsEnum docsEnum = termsEnum.postings(null);
@@ -778,13 +777,13 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     }
 
     @Override
-    public boolean needsScores() {
-      return false;
+    protected void doSetNextReader(LeafReaderContext context) throws IOException {
+      this.docBase = context.docBase;
     }
 
     @Override
-    protected void doSetNextReader(LeafReaderContext context) throws IOException {
-      this.docBase = context.docBase;
+    public ScoreMode scoreMode() {
+      return ScoreMode.COMPLETE_NO_SCORES;
     }
   }
 
@@ -1309,7 +1308,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     }
 
     ArrayList<Term> terms = Lists.newArrayList();
-    TermsEnum termsEnum = MultiFields.getTerms(ir, field).iterator();
+    TermsEnum termsEnum = MultiTerms.getTerms(ir, field).iterator();
     if (termsEnum != null) {
       AutomatonTermsEnum automatonTermsEnum =
           new AutomatonTermsEnum(
@@ -1379,8 +1378,8 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     }
 
     @Override
-    public boolean needsScores() {
-      return false;
+    public ScoreMode scoreMode() {
+      return ScoreMode.COMPLETE_NO_SCORES;
     }
   }
 
@@ -1403,18 +1402,13 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     }
 
     @Override
-    public void setScorer(Scorer scorer) throws IOException {
-      // Nothing to do
-    }
-
-    @Override
-    public boolean needsScores() {
-      return false;
-    }
-
-    @Override
     protected void doSetNextReader(LeafReaderContext context) throws IOException {
       this.docBase = context.docBase;
+    }
+
+    @Override
+    public ScoreMode scoreMode() {
+      return ScoreMode.COMPLETE_NO_SCORES;
     }
   }
 
@@ -1452,7 +1446,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
           @Override
           public T search(IndexSearcher searcher) throws IOException {
-            MultiFields.getTerms(searcher.getIndexReader(), FreeTextQuery.FIELD_ALL)
+            MultiTerms.getTerms(searcher.getIndexReader(), FreeTextQuery.FIELD_ALL)
                 .iterator()
                 .term();
             return null;

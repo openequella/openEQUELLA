@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.index.MultiTerms;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
@@ -108,7 +108,7 @@ public class SecurityFilter implements CustomFilter {
   private Set<Term> getTermsForField(String field) {
     Set<Term> set = new HashSet<>();
     try {
-      Terms terms = MultiFields.getTerms(reader, field);
+      Terms terms = MultiTerms.getTerms(reader, field);
       if (terms != null) {
         TermsEnum termsEnum = terms.iterator();
         while (termsEnum.next() != null) {

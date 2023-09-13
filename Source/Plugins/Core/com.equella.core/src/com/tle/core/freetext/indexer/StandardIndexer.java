@@ -55,6 +55,7 @@ import javax.inject.Singleton;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.LongPoint;
+import org.apache.lucene.document.StoredField;
 import org.hibernate.Hibernate;
 import org.hibernate.type.SerializationException;
 import org.slf4j.Logger;
@@ -184,7 +185,9 @@ public class StandardIndexer extends AbstractIndexingExtension {
     fields.add(keyword(FreeTextQuery.FIELD_ID, Long.toString(item.getId())));
 
     LongPoint idRange = new LongPoint(FreeTextQuery.FIELD_ID_RANGEABLE, item.getId());
+    StoredField storedIdRange = new StoredField(FreeTextQuery.FIELD_ID_RANGEABLE, item.getId());
     fields.add(idRange);
+    fields.add(storedIdRange);
 
     fields.add(keyword(FreeTextQuery.FIELD_INDEXEDTIME, Long.toString(lastIndexed.getTime())));
     fields.add(keyword(FreeTextQuery.FIELD_ITEMDEFID, item.getItemDefinition().getUuid()));
