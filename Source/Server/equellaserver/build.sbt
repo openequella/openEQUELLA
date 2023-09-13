@@ -362,14 +362,21 @@ run := {
                 "plugins",
                 "Log4j2Plugins.dat") =>
     MergeStrategy.last
-  case PathList("META-INF", "jdom-info.xml")                => MergeStrategy.first
-  case PathList("META-INF", "axiom.xml")                    => MergeStrategy.first
-  case PathList("javax", "wsdl", _*)                        => MergeStrategy.last
-  case PathList("javax", "xml", "soap", _*)                 => MergeStrategy.first
-  case PathList("javax", "transaction", _*)                 => MergeStrategy.first
-  case PathList("javax", "jws", _*)                         => MergeStrategy.first
-  case PathList("com", "ibm", "wsdl", _*)                   => MergeStrategy.first
-  case PathList("org", "apache", "regexp", _*)              => MergeStrategy.first
+  case PathList("META-INF", "jdom-info.xml")   => MergeStrategy.first
+  case PathList("META-INF", "axiom.xml")       => MergeStrategy.first
+  case PathList("javax", "wsdl", _*)           => MergeStrategy.last
+  case PathList("javax", "xml", "soap", _*)    => MergeStrategy.first
+  case PathList("javax", "transaction", _*)    => MergeStrategy.first
+  case PathList("javax", "jws", _*)            => MergeStrategy.first
+  case PathList("com", "ibm", "wsdl", _*)      => MergeStrategy.first
+  case PathList("org", "apache", "regexp", _*) => MergeStrategy.first
+  case PathList("org",
+                "apache",
+                "lucene",
+                "analysis",
+                "standard",
+                "StandardTokenizerFactory.class") =>
+    MergeStrategy.first
   case PathList("javax", "servlet", "jsp", _*)              => MergeStrategy.first
   case PathList("javax", "servlet", _*)                     => MergeStrategy.last
   case PathList("javax", "annotation", _*)                  => MergeStrategy.first
