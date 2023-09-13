@@ -22,10 +22,10 @@ import com.tle.common.Check;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.lucene.index.BinaryDocValues;
 import org.apache.lucene.index.LeafReader;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.PostingsEnum;
+import org.apache.lucene.index.SortedDocValues;
 import org.apache.lucene.search.SimpleFieldComparator;
 
 public final class CustomLuceneSortComparator extends SimpleFieldComparator<Integer> {
@@ -79,9 +79,9 @@ public final class CustomLuceneSortComparator extends SimpleFieldComparator<Inte
     currentReaderValues = new String[maxDoc];
 
     List<String> values = new ArrayList<>();
-    BinaryDocValues docValues = reader.getSortedDocValues(field);
+    SortedDocValues docValues = reader.getSortedDocValues(field);
     while (docValues.nextDoc() != PostingsEnum.NO_MORE_DOCS) {
-      values.add(docValues.binaryValue().utf8ToString());
+      values.add(docValues.lookupOrd(docValues.ordValue()).utf8ToString());
     }
 
     currentReaderValues = values.toArray(new String[0]);

@@ -103,7 +103,7 @@ public class TaskSortSection extends AbstractSortOptionsSection<FreetextSearchEv
 
       @Override
       public FieldComparator<Integer> newComparator(
-          final String fieldName, final int numHits, final int sortPos, boolean reversed) {
+          String fieldName, int numHits, boolean enableSkipping, boolean reversed) {
         return new CustomLuceneSortComparator(numHits, fieldName, CurrentUser.getUserID());
       }
     };

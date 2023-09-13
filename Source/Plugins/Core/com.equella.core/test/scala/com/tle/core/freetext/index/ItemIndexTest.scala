@@ -32,7 +32,7 @@ import com.tle.common.searching.Search.SortType
 import com.tle.common.security.SecurityConstants
 import com.tle.common.settings.ConfigurationProperties
 import com.tle.common.settings.standard.SearchSettings
-import com.tle.common.usermanagement.user.{AbstractUserState, CurrentUser, DefaultUserState,}
+import com.tle.common.usermanagement.user.{AbstractUserState, CurrentUser, DefaultUserState}
 import com.tle.core.events.services.EventService
 import com.tle.core.freetext.index.AbstractIndexEngine.Searcher
 import com.tle.core.freetext.indexer.StandardIndexer
