@@ -23,6 +23,7 @@ import com.tle.common.institution.CurrentInstitution;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.TermQuery;
 
+/** Custom filter to generate a Lucene Term query for the current Institution ID. */
 public class InstitutionFilter implements CustomFilter {
 
   public TermQuery buildQuery() {

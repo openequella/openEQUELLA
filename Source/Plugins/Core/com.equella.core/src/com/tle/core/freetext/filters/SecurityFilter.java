@@ -51,20 +51,22 @@ import org.apache.lucene.util.BytesRef;
  *
  * <p>If the user account does not have any Owner related ACLs, then we do not need such a
  * BooleanQuery.
+ * <li>Example 1: an Owner ACL (ACLD-1111:000G) and a common ACL (ACLD-2222:000G) are available in
+ *     user account A, the result is ((+owner:A +ACLD-1111:000G) ACLD-2222:000G).
+ * <li>Example 2: an Owner ACL (ACLD-1111:000R) and a common ACL (ACLD-2222:000G) are available in
+ *     user account A, the result is ((-owner:A +ACLD-1111:000G) ACLD-2222:000G).
  *
- * <p>Example 1: an Owner ACL (ACLD-1111:000G) and a common ACL (ACLD-2222:000G) are available in
- * user account A, the result is ((+owner:A +ACLD-1111:000G) ACLD-2222:000G).
+ *     <p>Please note that the value of Owner ACL is <b>000R</b>, so the prefix before owner in the
+ *     query is <b>-</b>.
  *
- * <p>Example 2: an Owner ACL (ACLD-1111:000R) and a common ACL (ACLD-2222:000G) are available in
- * user account A, the result is ((-owner:A +ACLD-1111:000G) ACLD-2222:000G).
- *
- * <p>Example 3: two common ACLs (ACLD-2222 and ACLD-3333) are available in user account A, the
- * result is (ACLD-2222 OR ACLD-3333).
+ *     <p>This translation of this expression is : you can access resources that are available to
+ *     OWNER, but the owner must not be A.
+ * <li>Example 3: two common ACLs (ACLD-2222 and ACLD-3333) are available in user account A, the
+ *     result is (ACLD-2222 OR ACLD-3333).
  */
 public class SecurityFilter implements CustomFilter {
   private final String[] expressions;
   private final Map<String, Boolean> ownerExprMap = new HashMap<>();
-  private final int ownerSizes;
   private final boolean systemUser;
   private final IndexReader reader;
 
@@ -77,7 +79,7 @@ public class SecurityFilter implements CustomFilter {
     Collection<Long> ownerAclExpressions = userState.getOwnerAclExpressions();
     Collection<Long> notOwnerAclExpressions = userState.getNotOwnerAclExpressions();
 
-    ownerSizes =
+    int ownerSizes =
         (ownerAclExpressions == null ? 0 : ownerAclExpressions.size())
             + (notOwnerAclExpressions == null ? 0 : notOwnerAclExpressions.size());
     expressions = new String[(aclExpressions == null ? 0 : aclExpressions.size()) + ownerSizes];
@@ -139,7 +141,8 @@ public class SecurityFilter implements CustomFilter {
 
     for (Term term : allTerms) {
       String type = term.text();
-      boolean grant = type.charAt(type.length() - 1) == 'G';
+      boolean grant = type.endsWith("G");
+
       Boolean isOwnerAcl = ownerExprMap.get(term.field());
       if (isOwnerAcl == null) {
         if (grant) {

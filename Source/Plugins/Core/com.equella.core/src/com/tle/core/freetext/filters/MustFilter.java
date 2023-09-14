@@ -27,22 +27,23 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanQuery.Builder;
 import org.apache.lucene.search.TermQuery;
 
+/**
+ * Custom filter to generate a Lucene Boolean query for a list of MUST clauses. Each clause is
+ * joined by `Occur.FILTER`. If a clause has multiple criteria, then the criteria are joined by
+ * `Occur.SHOULD`.
+ * <li>Example 1: Given one clause for two Item statuses, the result is {@code status:live OR
+ *     status:archived}.
+ * <li>Example 2: Given two clauses for Collection A and two Item statuses, the result is {@code
+ *     (collection:A) AND (status:live OR status:archived)}. </li
+ */
 public class MustFilter implements CustomFilter {
 
   private final List<List<Field>> clauses;
 
   public MustFilter(List<List<Field>> clauses) {
-    this.clauses = clauses;
+    this.clauses = List.copyOf(clauses);
   }
 
-  /**
-   * Build a BooleanQuery for MUST clauses. Each clause is joint by `Occur.FILTER`. If a clause has
-   * multiple criteria, then the criteria are joint by `Occur.SHOULD`.
-   *
-   * <p>Example 1: Given one clause for two Item statuses, the result is 'status:live OR
-   * status:archived'. Example 2: Given two clauses for Collection A and two Item statuses, the
-   * result is '(collection:A) AND (status:live OR status:archived)'.
-   */
   public BooleanQuery buildQuery() {
     List<List<Field>> nonEmptyClauses = getNonEmptyClauses();
 
