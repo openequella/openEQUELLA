@@ -379,7 +379,6 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
   private Query addUniqueIdClauseToQuery(
       Query query, SearchResults<T> itemResults, IndexReader reader) {
     List<T> results = itemResults.getResults();
-    Builder fullQueryBuilder = new Builder();
     Builder freeTextBuilder = new Builder();
     for (T t : results) {
       ItemIdKey itemIdKey = t.getItemIdKey();
@@ -392,6 +391,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       freeTextBuilder.add(clause.getQuery(), Occur.SHOULD);
     }
 
+    Builder fullQueryBuilder = new Builder();
     fullQueryBuilder.add(query, Occur.MUST);
     fullQueryBuilder.add(freeTextBuilder.build(), Occur.MUST);
 
@@ -682,7 +682,6 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     }
 
     BitSetCollector collector = new BitSetCollector(reader.maxDoc());
-    int count = searcher.count(query);
     searcher.search(query, collector);
     return collector.getBitSet();
   }
@@ -751,33 +750,8 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
   private final class ItemIdFieldSelector extends StoredFieldVisitor {
 
     @Override
-    public Status needsField(FieldInfo fieldInfo) throws IOException {
+    public Status needsField(FieldInfo fieldInfo) {
       return FreeTextQuery.FIELD_ID.equals(fieldInfo.name) ? Status.YES : Status.NO;
-    }
-  }
-
-  protected final class CompressedSetCollector extends SimpleCollector {
-
-    private final LongSet set = new LongSet(new ConciseSet());
-    private int docBase;
-
-    @Override
-    public void collect(int docId) throws IOException {
-      set.add(docBase + docId);
-    }
-
-    public LongSet getSet() {
-      return set;
-    }
-
-    @Override
-    public boolean needsScores() {
-      return false;
-    }
-
-    @Override
-    protected void doSetNextReader(LeafReaderContext context) throws IOException {
-      this.docBase = context.docBase;
     }
   }
 
@@ -878,8 +852,14 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
   }
 
   /**
-   * Takes a search request and prepares a Lucene Filter object, or null if no filtering is
-   * required.
+   * Build a BooleanQuery to represent all the Lucene filters applied in the search in two steps.
+   *
+   * <p>1. Build a custom Lucene filter for each applied configuration. Each filter is responsible
+   * for their equivalent query and occurrence. 2. Build a BooleanQuery to include queries of all
+   * the filters.
+   *
+   * <p>Note that some filters may return `null` as their queries, which means they are actually not
+   * applicable. So they will not be added to the final BooleanQuery.
    */
   protected BooleanQuery getFilterQuery(Search request, IndexReader reader) {
     Builder filterQueryBuilder = new Builder();
@@ -971,7 +951,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     }
     setAttachmentBoost(attachmentBoostValue == -1 ? 1 : attachmentBoostValue);
 
-    return searchFields.toArray(new String[searchFields.size()]);
+    return searchFields.toArray(new String[0]);
   }
 
   protected DateFilter createDateFilter(
@@ -1030,6 +1010,15 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     return new Sort(new SortField(null, SortField.Type.SCORE, false));
   }
 
+  /**
+   * Build a BooleanQuery for the normal query string of a search and some extra query strings
+   * provided by certain contexts such as tags of a favourite search.
+   *
+   * <p>There are three steps.
+   * <li>Get the text of a normal query string and use {@link TLEQueryParser} to parse it.
+   * <li>Get a list of extra query strings and parse them as well.
+   * <li>Join all the parsed results by `Occur.SHOULD`.
+   */
   private BooleanQuery buildNormalQuery(Search request, String[] fields) {
     String queryString = request.getQuery();
     Builder normalQueryBuilder = new Builder();
@@ -1067,6 +1056,10 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     return normalQueryBuilder.build();
   }
 
+  /**
+   * Build a BooleanQuery for different implementations of {@link FreeTextQuery} such as
+   * `FreeTextAutocompleteQuery` and `FreeTextDateQuery`.
+   */
   private BooleanQuery buildExtraQuery(Search searchreq, IndexReader reader) {
     Builder extraQueryBuilder = new Builder();
     FreeTextQuery fullftQuery = searchreq.getFreeTextQuery();
@@ -1187,7 +1180,6 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     }
 
     boolean bprohib = false;
-    boolean brequired = false;
     boolean addplus = false;
     if (and) {
       addplus = true;
@@ -1215,6 +1207,11 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       queryBuilder.add(bclause.getQuery(), clauseOccur);
     }
 
+    // When `allnot` is true, it means all the BooleanClause are prohibited, so their occurrences
+    // are MUST_NOT.
+    // In this case the query has to have a term that can return some documents, and we use field
+    // `ALL` to
+    // return all the documents.
     if (allnot) {
       queryBuilder.add(new TermQuery(new Term(FreeTextQuery.FIELD_ALL, "1")), Occur.SHOULD);
     }
@@ -1413,8 +1410,31 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     }
 
     @Override
-    public void setScorer(Scorer scorer) throws IOException {
-      // Nothing to do
+    public void setScorer(Scorer scorer) {}
+
+    @Override
+    public boolean needsScores() {
+      return false;
+    }
+
+    @Override
+    protected void doSetNextReader(LeafReaderContext context) {
+      this.docBase = context.docBase;
+    }
+  }
+
+  private static final class CompressedSetCollector extends SimpleCollector {
+
+    private final LongSet set = new LongSet(new ConciseSet());
+    private int docBase;
+
+    @Override
+    public void collect(int docId) throws IOException {
+      set.add(docBase + docId);
+    }
+
+    public LongSet getSet() {
+      return set;
     }
 
     @Override
@@ -1423,7 +1443,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     }
 
     @Override
-    protected void doSetNextReader(LeafReaderContext context) throws IOException {
+    protected void doSetNextReader(LeafReaderContext context) {
       this.docBase = context.docBase;
     }
   }
