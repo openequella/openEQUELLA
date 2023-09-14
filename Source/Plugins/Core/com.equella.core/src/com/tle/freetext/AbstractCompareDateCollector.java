@@ -47,14 +47,12 @@ public abstract class AbstractCompareDateCollector extends SimpleCollector {
   }
 
   @Override
-  protected void doSetNextReader(LeafReaderContext context) throws IOException {
+  protected void doSetNextReader(LeafReaderContext context) {
     this.reader = context.reader();
   }
 
   @Override
-  public void setScorer(Scorer scorer) throws IOException {
-    // don't care
-  }
+  public void setScorer(Scorer scorer) {}
 
   @SuppressWarnings("nls")
   @Override
