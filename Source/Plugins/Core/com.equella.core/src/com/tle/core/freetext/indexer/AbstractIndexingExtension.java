@@ -57,7 +57,7 @@ public abstract class AbstractIndexingExtension implements IndexingExtension {
 
   public static void addDateField(Document doc, String name, Date date, DateFilter.Format format) {
     String val;
-    Long time = Long.MAX_VALUE;
+    long time = Long.MAX_VALUE;
     if (format == Format.ISO) {
       if (date == null) {
         date = new Date(time);
@@ -67,10 +67,8 @@ public abstract class AbstractIndexingExtension implements IndexingExtension {
       if (date != null) {
         time = date.getTime();
         val = Long.toString(time);
-        // If the date is in format 'LONG', also add a NumericDocValuesField for this field so that
-        // sorting by this date field will work correctly.
       } else {
-        val = time.toString();
+        val = Long.toString(time);
       }
     }
     doc.add(numericSortingField(name, time));
