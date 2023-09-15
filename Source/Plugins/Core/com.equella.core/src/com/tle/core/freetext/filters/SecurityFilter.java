@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import org.apache.lucene.index.IndexReader;
@@ -126,8 +127,6 @@ public class SecurityFilter implements CustomFilter {
 
   @Override
   public Query buildQuery() {
-    Builder builder = new Builder();
-
     if (systemUser) {
       return null;
     }
@@ -139,28 +138,29 @@ public class SecurityFilter implements CustomFilter {
         .filter(termSet -> !termSet.isEmpty())
         .forEach(allTerms::addAll);
 
+    Builder fullQueryBuilder = new Builder();
     for (Term term : allTerms) {
-      String type = term.text();
-      boolean grant = type.endsWith("G");
-
-      Boolean isOwnerAcl = ownerExprMap.get(term.field());
-      if (isOwnerAcl == null) {
-        if (grant) {
-          builder.add(new TermQuery(term), Occur.SHOULD);
-        } else {
-          builder.add(new TermQuery(term), Occur.MUST_NOT);
-        }
-      } else {
+      Optional<Boolean> ownerAcl = Optional.ofNullable(ownerExprMap.get(term.field()));
+      if (ownerAcl.isPresent()) {
+        boolean isOwnerAcl = ownerAcl.get();
         Builder ownerClauseBuilder = new Builder();
         ownerClauseBuilder.add(new TermQuery(term), Occur.MUST);
         ownerClauseBuilder.add(
             new TermQuery(
                 new Term(FreeTextQuery.FIELD_OWNER, new BytesRef(CurrentUser.getUserID()))),
             isOwnerAcl ? Occur.MUST : Occur.MUST_NOT);
-        builder.add(ownerClauseBuilder.build(), Occur.SHOULD);
+        fullQueryBuilder.add(ownerClauseBuilder.build(), Occur.SHOULD);
+      } else {
+        String type = term.text();
+        boolean grant = type.endsWith("G");
+        if (grant) {
+          fullQueryBuilder.add(new TermQuery(term), Occur.SHOULD);
+        } else {
+          fullQueryBuilder.add(new TermQuery(term), Occur.MUST_NOT);
+        }
       }
     }
 
-    return builder.build();
+    return fullQueryBuilder.build();
   }
 }
