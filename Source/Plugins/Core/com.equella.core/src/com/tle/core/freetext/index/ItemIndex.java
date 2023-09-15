@@ -1365,6 +1365,48 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     this.defaultOperator = defaultOperator;
   }
 
+  public void deleteForInstitution(final long id) {
+    modifyIndex(
+        new IndexBuilder() {
+          @Override
+          public long buildIndex(SearcherManager searcherManager, TrackingIndexWriter writer)
+              throws Exception {
+            writer.deleteDocuments(new Term(FreeTextQuery.FIELD_INSTITUTION, Long.toString(id)));
+            return -1;
+          }
+        });
+  }
+
+  @Override
+  protected Map<String, Analyzer> getAnalyzerFieldMap(Analyzer autoComplete, Analyzer nonStemmed) {
+    return ImmutableMap.of(
+        FreeTextQuery.FIELD_BODY_NOSTEM,
+        nonStemmed,
+        FreeTextQuery.FIELD_NAME_AUTOCOMPLETE,
+        autoComplete,
+        FreeTextQuery.FIELD_NAME_VECTORED_NOSTEM,
+        nonStemmed,
+        FreeTextQuery.FIELD_BOOKMARK_TAGS,
+        nonStemmed,
+        FreeTextQuery.FIELD_ATTACHMENT_VECTORED_NOSTEM,
+        nonStemmed);
+  }
+
+  @Override
+  public void checkHealth() {
+    search(
+        new Searcher<T>() {
+
+          @Override
+          public T search(IndexSearcher searcher) throws IOException {
+            MultiFields.getTerms(searcher.getIndexReader(), FreeTextQuery.FIELD_ALL)
+                .iterator()
+                .term();
+            return null;
+          }
+        });
+  }
+
   private static final class CountingCollector extends SimpleCollector {
 
     private int count = 0;
@@ -1449,47 +1491,5 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     protected void doSetNextReader(LeafReaderContext context) {
       this.docBase = context.docBase;
     }
-  }
-
-  public void deleteForInstitution(final long id) {
-    modifyIndex(
-        new IndexBuilder() {
-          @Override
-          public long buildIndex(SearcherManager searcherManager, TrackingIndexWriter writer)
-              throws Exception {
-            writer.deleteDocuments(new Term(FreeTextQuery.FIELD_INSTITUTION, Long.toString(id)));
-            return -1;
-          }
-        });
-  }
-
-  @Override
-  protected Map<String, Analyzer> getAnalyzerFieldMap(Analyzer autoComplete, Analyzer nonStemmed) {
-    return ImmutableMap.of(
-        FreeTextQuery.FIELD_BODY_NOSTEM,
-        nonStemmed,
-        FreeTextQuery.FIELD_NAME_AUTOCOMPLETE,
-        autoComplete,
-        FreeTextQuery.FIELD_NAME_VECTORED_NOSTEM,
-        nonStemmed,
-        FreeTextQuery.FIELD_BOOKMARK_TAGS,
-        nonStemmed,
-        FreeTextQuery.FIELD_ATTACHMENT_VECTORED_NOSTEM,
-        nonStemmed);
-  }
-
-  @Override
-  public void checkHealth() {
-    search(
-        new Searcher<T>() {
-
-          @Override
-          public T search(IndexSearcher searcher) throws IOException {
-            MultiFields.getTerms(searcher.getIndexReader(), FreeTextQuery.FIELD_ALL)
-                .iterator()
-                .term();
-            return null;
-          }
-        });
   }
 }
