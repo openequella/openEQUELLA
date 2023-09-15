@@ -80,6 +80,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 import org.apache.lucene.analysis.Analyzer;
@@ -196,8 +197,15 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       case 7:
         return 8;
       default:
-        return -1;
+        return 1;
     }
+  }
+
+  private void configureBoost(float boostValue, Consumer<Float> setter, Runnable onZero) {
+    if (boostValue == 0) {
+      onZero.run();
+    }
+    setter.accept(boostValue);
   }
 
   protected Set<String> getKeyFields() {
@@ -928,28 +936,23 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
   }
 
   private String[] buildSearchFields(String[] allFields, boolean searchAttachment) {
-    List<String> searchFields = new ArrayList<String>(Arrays.asList(allFields));
-
+    List<String> searchFields = new ArrayList<>(Arrays.asList(allFields));
     SearchSettings searchSettings = freetextIndex.getSearchSettings();
 
-    float titleBoostValue = getRealBoostValue(searchSettings.getTitleBoost());
-    if (titleBoostValue == 0) {
-      searchFields.remove(FreeTextQuery.FIELD_NAME_VECTORED);
-    }
-    setTitleBoost(titleBoostValue == -1 ? 1 : titleBoostValue);
+    configureBoost(
+        getRealBoostValue(searchSettings.getTitleBoost()),
+        this::setTitleBoost,
+        () -> searchFields.remove(FreeTextQuery.FIELD_NAME_VECTORED));
 
-    float descriptionBoostValue = getRealBoostValue(searchSettings.getDescriptionBoost());
+    configureBoost(
+        getRealBoostValue(searchSettings.getDescriptionBoost()),
+        this::setDescriptionBoost,
+        () -> searchFields.remove(FreeTextQuery.FIELD_BODY));
 
-    if (descriptionBoostValue == 0) {
-      searchFields.remove(FreeTextQuery.FIELD_BODY);
-    }
-    setDescriptionBoost(descriptionBoostValue == -1 ? 1 : descriptionBoostValue);
-
-    float attachmentBoostValue = getRealBoostValue(searchSettings.getAttachmentBoost());
-    if (attachmentBoostValue == 0 || !searchAttachment) {
-      searchFields.remove(FreeTextQuery.FIELD_ATTACHMENT_VECTORED);
-    }
-    setAttachmentBoost(attachmentBoostValue == -1 ? 1 : attachmentBoostValue);
+    configureBoost(
+        !searchAttachment ? 0 : getRealBoostValue(searchSettings.getAttachmentBoost()),
+        this::setAttachmentBoost,
+        () -> searchFields.remove(FreeTextQuery.FIELD_ATTACHMENT_VECTORED));
 
     return searchFields.toArray(new String[0]);
   }
