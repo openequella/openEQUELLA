@@ -29,6 +29,7 @@ import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.util.BytesRef;
 
 @SuppressWarnings("nls")
+/** Iterates over Lucene terms for the provided field which typically is in the format of XPATH. */
 public class XPathFieldIterator implements Iterator<Term>, Iterable<Term> {
   private final String field;
 
@@ -37,8 +38,7 @@ public class XPathFieldIterator implements Iterator<Term>, Iterable<Term> {
 
   private Pattern pattern;
 
-  public XPathFieldIterator(IndexReader reader, String field, String start) throws IOException {
-
+  public XPathFieldIterator(IndexReader reader, String field) throws IOException {
     int hasIndex = field.indexOf('[');
     if (hasIndex >= 0) {
       pattern = Pattern.compile(field.replaceAll("\\[\\]", "(\\\\[\\\\d*\\\\])?") + "/\\$XPATH\\$");
@@ -47,7 +47,7 @@ public class XPathFieldIterator implements Iterator<Term>, Iterable<Term> {
 
     Terms terms = MultiFields.getTerms(reader, field);
     if (terms != null) {
-      enumerator = terms.iterator(null);
+      enumerator = terms.iterator();
       current = new Term(field, new BytesRef(enumerator.next().utf8ToString()));
     }
 

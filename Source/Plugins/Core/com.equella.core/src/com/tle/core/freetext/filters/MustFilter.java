@@ -19,51 +19,53 @@
 package com.tle.core.freetext.filters;
 
 import com.tle.common.searching.Field;
-import com.tle.core.freetext.index.LuceneDocumentHelper;
-import java.io.IOException;
 import java.util.List;
-import org.apache.lucene.index.AtomicReader;
-import org.apache.lucene.index.AtomicReaderContext;
+import java.util.stream.Collectors;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.DocIdSet;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.OpenBitSet;
+import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.BooleanQuery.Builder;
+import org.apache.lucene.search.TermQuery;
 
-public class MustFilter extends Filter {
+/**
+ * Custom filter to generate a Lucene Boolean query for a list of MUST clauses. Each clause is
+ * joined by `Occur.FILTER`. If a clause has multiple criteria, then the criteria are joined by
+ * `Occur.SHOULD`.
+ * <li>Example 1: Given one clause for two Item statuses, the result is {@code status:live OR
+ *     status:archived}.
+ * <li>Example 2: Given two clauses for Collection A and two Item statuses, the result is {@code
+ *     (collection:A) AND (status:live OR status:archived)}.
+ */
+public class MustFilter implements CustomFilter {
 
-  private static final long serialVersionUID = 1L;
-  protected List<List<Field>> terms;
+  private final List<List<Field>> clauses;
 
-  public MustFilter(List<List<Field>> terms) {
-    this.terms = terms;
+  public MustFilter(List<List<Field>> clauses) {
+    this.clauses = List.copyOf(clauses);
   }
 
-  @Override
-  public DocIdSet getDocIdSet(AtomicReaderContext context, Bits acceptDocs) throws IOException {
-    AtomicReader reader = context.reader();
-    int max = reader.maxDoc();
-    OpenBitSet allDocs = null;
-    // Each Must clause has its own document set, but the final result must be the intersection of
-    // all the sets.
-    for (List<Field> values : terms) {
-      if (!values.isEmpty()) {
-        OpenBitSet good = new OpenBitSet(max);
-        for (Field nv : values) {
-          LuceneDocumentHelper.forEachDoc(
-              reader, new Term(nv.getField(), nv.getValue()), good::set);
-        }
-        if (allDocs != null) {
-          allDocs.and(good);
-        } else {
-          allDocs = good;
-        }
-      }
+  public BooleanQuery buildQuery() {
+    List<List<Field>> nonEmptyClauses = getNonEmptyClauses();
+
+    if (nonEmptyClauses.isEmpty()) {
+      return null;
     }
-    if (allDocs == null) {
-      allDocs = new OpenBitSet(max);
-      allDocs.set(0, max);
-    }
-    return allDocs;
+
+    Builder topLevelBuilder = new Builder();
+    nonEmptyClauses.forEach(
+        clause -> {
+          Builder clauseBuilder = new Builder();
+          clause.forEach(
+              must ->
+                  clauseBuilder.add(
+                      new TermQuery(new Term(must.getField(), must.getValue())), Occur.SHOULD));
+          topLevelBuilder.add(clauseBuilder.build(), Occur.FILTER);
+        });
+
+    return topLevelBuilder.build();
+  }
+
+  protected List<List<Field>> getNonEmptyClauses() {
+    return clauses.stream().filter(clause -> !clause.isEmpty()).collect(Collectors.toList());
   }
 }

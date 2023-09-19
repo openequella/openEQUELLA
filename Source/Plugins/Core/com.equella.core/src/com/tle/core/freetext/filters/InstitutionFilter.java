@@ -19,45 +19,17 @@
 package com.tle.core.freetext.filters;
 
 import com.dytech.edge.queries.FreeTextQuery;
-import com.tle.beans.Institution;
 import com.tle.common.institution.CurrentInstitution;
-import com.tle.core.freetext.index.LuceneDocumentHelper;
-import java.io.IOException;
-import org.apache.lucene.index.AtomicReader;
-import org.apache.lucene.index.AtomicReaderContext;
-import org.apache.lucene.index.IndexReaderContext;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.DocIdSet;
-import org.apache.lucene.search.DocIdSetIterator;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.OpenBitSet;
+import org.apache.lucene.search.TermQuery;
 
-public class InstitutionFilter extends Filter {
+/** Custom filter to generate a Lucene Term query for the current Institution ID. */
+public class InstitutionFilter implements CustomFilter {
 
-  private static final long serialVersionUID = 1L;
-
-  public OpenBitSet getDocIdSet(IndexReaderContext context, Bits acceptDocs) throws IOException {
-    OpenBitSet bitSet = new OpenBitSet(context.reader().maxDoc());
-    for (AtomicReaderContext ctx : context.leaves()) {
-      DocIdSetIterator iterator = getDocIdSet(ctx, acceptDocs).iterator();
-      LuceneDocumentHelper.forEachDoc(iterator, bitSet::set);
-    }
-
-    return bitSet;
-  }
-
-  @Override
-  public DocIdSet getDocIdSet(AtomicReaderContext context, Bits acceptDocs) throws IOException {
-    AtomicReader reader = context.reader();
-    int max = reader.maxDoc();
-    OpenBitSet good = new OpenBitSet(max);
-    Institution institution = CurrentInstitution.get();
-    LuceneDocumentHelper.forEachDoc(
-        reader,
-        new Term(FreeTextQuery.FIELD_INSTITUTION, Long.toString(institution.getUniqueId())),
-        good::set);
-
-    return good;
+  public TermQuery buildQuery() {
+    return new TermQuery(
+        new Term(
+            FreeTextQuery.FIELD_INSTITUTION,
+            Long.toString(CurrentInstitution.get().getUniqueId())));
   }
 }

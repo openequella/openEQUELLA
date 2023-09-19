@@ -19,46 +19,46 @@
 package com.tle.core.freetext.filters;
 
 import com.tle.common.searching.Field;
+import java.io.IOException;
 import java.util.List;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause.Occur;
-import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanQuery.Builder;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
 /**
- * Custom filter to generate a Lucene Boolean query for a list of MUST NOT clauses. All the criteria
- * are joined by `Occur.SHOULD`, but the whole query is negated by `Occur.MUST_NOT`.
- *
- * <p>For example, given two clauses for Collection and Item status, the result is {@code
- * -(collection:A status:live status:archived)}.
+ * Custom filter to generate a Lucene Boolean query for a list of matrix fields. This one is
+ * typically used together with Schema nodes.
  */
-public class MustNotFilter extends MustFilter {
-  public MustNotFilter(List<List<Field>> mustNotClauses) {
-    super(mustNotClauses);
-  }
+public class MatrixFilter implements CustomFilter {
 
-  public BooleanQuery buildQuery() {
-    List<List<Field>> nonEmptyClauses = getNonEmptyClauses();
+  private final List<Field> fields;
 
-    if (nonEmptyClauses.isEmpty()) {
-      return null;
-    }
+  private final IndexReader reader;
 
-    Builder builder = new Builder();
-    nonEmptyClauses.forEach(
-        clause ->
-            clause.forEach(
-                mustNot ->
-                    builder.add(
-                        new TermQuery(new Term(mustNot.getField(), mustNot.getValue())),
-                        Occur.SHOULD)));
-
-    return builder.build();
+  public MatrixFilter(List<Field> matrixFields, IndexReader reader) {
+    this.fields = List.copyOf(matrixFields);
+    this.reader = reader;
   }
 
   @Override
-  public Occur getOccur() {
-    return Occur.MUST_NOT;
+  public Query buildQuery() {
+    Builder builder = new Builder();
+
+    for (Field fieldObj : fields) {
+      try {
+        for (Term term : new XPathFieldIterator(reader, fieldObj.getField())) {
+          if (term.text().equals(fieldObj.getValue())) {
+            builder.add(new TermQuery(term), Occur.SHOULD);
+          }
+        }
+      } catch (IOException e) {
+        throw new RuntimeException("Failed to build Lucene Query for MatrixFilter", e);
+      }
+    }
+
+    return builder.build();
   }
 }

@@ -47,7 +47,6 @@ import org.apache.lucene.search.ControlledRealTimeReopenThread;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,16 +122,11 @@ public abstract class AbstractIndexEngine {
         throw new Error("Error creating index:" + indexPath); // $NON-NLS-1$
       }
     }
-    directory = FSDirectory.open(indexPath);
+    directory = FSDirectory.open(indexPath.toPath());
 
-    if (IndexWriter.isLocked(directory)) {
-      LOGGER.info("Unlocking index:" + indexPath); // $NON-NLS-1$
-      IndexWriter.unlock(directory);
-    }
     LOGGER.info("Opening writer for index:" + indexPath);
 
-    indexWriter =
-        new IndexWriter(directory, new IndexWriterConfig(Version.LUCENE_4_10_4, getAnalyser()));
+    indexWriter = new IndexWriter(directory, new IndexWriterConfig(getAnalyser()));
     trackingIndexWriter = new TrackingIndexWriter(indexWriter);
     searcherManager = new SearcherManager(indexWriter, true, null);
 
@@ -238,11 +232,7 @@ public abstract class AbstractIndexEngine {
                   .findFirst();
 
           if (languageAnalyzer.isPresent()) {
-            normalAnalyzer =
-                languageAnalyzer
-                    .get()
-                    .getDeclaredConstructor(Version.class)
-                    .newInstance(Version.LUCENE_4_10_4);
+            normalAnalyzer = languageAnalyzer.get().getDeclaredConstructor().newInstance();
             // For the non-stemmed analyzer we still use the TLEAnalyzer, however we use the
             // language specific stop words by loading them from the language specific analyzer.
             Method getDefaultStopSet =

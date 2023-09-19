@@ -21,44 +21,58 @@ package com.tle.core.freetext.filters;
 import com.dytech.edge.queries.FreeTextQuery;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.common.usermanagement.user.UserState;
-import com.tle.core.freetext.index.LuceneDocumentHelper;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
-import org.apache.lucene.index.AtomicReader;
-import org.apache.lucene.index.AtomicReaderContext;
-import org.apache.lucene.index.DocsEnum;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
-import org.apache.lucene.search.DocIdSet;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.util.Bits;
+import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.lucene.search.BooleanQuery.Builder;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.OpenBitSet;
 
-public class SecurityFilter extends Filter {
+/**
+ * This filter was significantly refactored when we upgraded Lucene V5.5.5. To generate a proper
+ * query for this filter, a big change about how to handle the Owner ACL was required.
+ *
+ * <p>An Owner ACL refers to an ACL that is granted or revoked for `OWNER` or for a complex
+ * expression where `OWNER` is part of the expression. If a user account has Owner related ACLs, we
+ * must create a BooleanQuery which contains not only the Owner ACL term but also the OWNER term of
+ * the current user.
+ *
+ * <p>If the user account does not have any Owner related ACLs, then we do not need such a
+ * BooleanQuery.
+ * <li>Example 1: an Owner ACL (ACLD-1111:000G) and a common ACL (ACLD-2222:000G) are available in
+ *     user account A, the result is ((+owner:A +ACLD-1111:000G) ACLD-2222:000G).
+ * <li>Example 2: an Owner ACL (ACLD-1111:000R) and a common ACL (ACLD-2222:000G) are available in
+ *     user account A, the result is ((-owner:A +ACLD-1111:000G) ACLD-2222:000G).
+ *
+ *     <p>Please note that the value of Owner ACL is <b>000R</b>, so the prefix before owner in the
+ *     query is <b>-</b>.
+ *
+ *     <p>The translation of this expression is: you can access resources that are available to
+ *     OWNER, but the owner must not be A.
+ * <li>Example 3: two common ACLs (ACLD-2222 and ACLD-3333) are available in user account A, the
+ *     result is (ACLD-2222 OR ACLD-3333).
+ */
+public class SecurityFilter implements CustomFilter {
+  private final String[] expressions;
+  private final Map<String, Boolean> ownerExprMap = new HashMap<>();
+  private final boolean systemUser;
+  private final IndexReader reader;
 
-  private static final long serialVersionUID = 1L;
-
-  private OpenBitSet results;
-  private boolean onlyCollectResults;
-
-  private String[] expressions;
-  private Map<String, Boolean> ownerExprMap;
-  private TermValueComparator comparator = new TermValueComparator();
-  private int ownerSizes;
-  private boolean systemUser;
-
-  public SecurityFilter(String aclType) {
-    ownerExprMap = new HashMap<String, Boolean>();
+  public SecurityFilter(String aclType, IndexReader reader) {
+    this.reader = reader;
 
     UserState userState = CurrentUser.getUserState();
     systemUser = userState.isSystem();
@@ -66,7 +80,7 @@ public class SecurityFilter extends Filter {
     Collection<Long> ownerAclExpressions = userState.getOwnerAclExpressions();
     Collection<Long> notOwnerAclExpressions = userState.getNotOwnerAclExpressions();
 
-    ownerSizes =
+    int ownerSizes =
         (ownerAclExpressions == null ? 0 : ownerAclExpressions.size())
             + (notOwnerAclExpressions == null ? 0 : notOwnerAclExpressions.size());
     expressions = new String[(aclExpressions == null ? 0 : aclExpressions.size()) + ownerSizes];
@@ -94,87 +108,12 @@ public class SecurityFilter extends Filter {
     }
   }
 
-  public OpenBitSet getResults() {
-    return results;
-  }
-
-  public void setOnlyCollectResults(boolean onlyCollectResults) {
-    this.onlyCollectResults = onlyCollectResults;
-  }
-
-  @Override
-  public DocIdSet getDocIdSet(AtomicReaderContext context, Bits acceptDocs) throws IOException {
-    AtomicReader reader = context.reader();
-    final int max = reader.maxDoc();
-    results = new OpenBitSet(max);
-
-    if (!systemUser) {
-      OpenBitSet owned = new OpenBitSet(max);
-      if (ownerSizes > 0) {
-        LuceneDocumentHelper.forEachDoc(
-            reader, new Term(FreeTextQuery.FIELD_OWNER, CurrentUser.getUserID()), owned::set);
-      }
-
-      Set<Term> allTerms = new TreeSet<>(comparator);
-
-      Arrays.stream(expressions)
-          .map(field -> getTermsForField(reader, field))
-          .filter(termSet -> !termSet.isEmpty())
-          .forEach(allTerms::addAll);
-
-      for (Term term : allTerms) {
-        String type = term.text();
-        boolean grant = type.charAt(type.length() - 1) == 'G';
-        DocsEnum docs = reader.termDocsEnum(term);
-        Boolean exprType = ownerExprMap.get(term.field());
-
-        int doc;
-        if (exprType == null) {
-          if (grant) {
-            LuceneDocumentHelper.forEachDoc(docs, results::set);
-          } else {
-            LuceneDocumentHelper.forEachDoc(docs, results::clear);
-          }
-        } else {
-          boolean must = exprType;
-          LuceneDocumentHelper.forEachDoc(
-              docs,
-              (docId) -> {
-                if (owned.get(docId) == must) {
-                  if (grant) {
-                    results.set(docId);
-                  } else {
-                    results.clear(docId);
-                  }
-                }
-              });
-        }
-      }
-    } else {
-      Bits liveDocs = reader.getLiveDocs();
-      int maxDoc = liveDocs != null ? liveDocs.length() : reader.maxDoc();
-      for (int i = 0; i < maxDoc; i++) {
-        results.set(i);
-      }
-    }
-
-    // If we are only collecting results, we return a full bitset to match
-    // every document.
-    if (onlyCollectResults) {
-      OpenBitSet fullBitSet = new OpenBitSet(max);
-      fullBitSet.set(0, max);
-      return fullBitSet;
-    } else {
-      return results;
-    }
-  }
-
-  private Set<Term> getTermsForField(AtomicReader reader, String field) {
+  private Set<Term> getTermsForField(String field) {
     Set<Term> set = new HashSet<>();
     try {
-      Terms terms = reader.terms(field);
+      Terms terms = MultiFields.getTerms(reader, field);
       if (terms != null) {
-        TermsEnum termsEnum = terms.iterator(null);
+        TermsEnum termsEnum = terms.iterator();
         while (termsEnum.next() != null) {
           set.add(new Term(field, new BytesRef(termsEnum.term().utf8ToString())));
         }
@@ -186,15 +125,42 @@ public class SecurityFilter extends Filter {
     }
   }
 
-  public static class TermValueComparator implements Comparator<Term>, Serializable {
-
-    @Override
-    public int compare(Term o1, Term o2) {
-      int comp = o2.text().compareTo(o1.text());
-      if (comp == 0) {
-        return o1.field().compareTo(o2.field());
-      }
-      return comp;
+  @Override
+  public Query buildQuery() {
+    if (systemUser) {
+      return null;
     }
+
+    Set<Term> allTerms = new TreeSet<>();
+
+    Arrays.stream(expressions)
+        .map(this::getTermsForField)
+        .filter(termSet -> !termSet.isEmpty())
+        .forEach(allTerms::addAll);
+
+    Builder fullQueryBuilder = new Builder();
+    for (Term term : allTerms) {
+      Optional<Boolean> ownerAcl = Optional.ofNullable(ownerExprMap.get(term.field()));
+      if (ownerAcl.isPresent()) {
+        boolean isOwnerAcl = ownerAcl.get();
+        Builder ownerClauseBuilder = new Builder();
+        ownerClauseBuilder.add(new TermQuery(term), Occur.MUST);
+        ownerClauseBuilder.add(
+            new TermQuery(
+                new Term(FreeTextQuery.FIELD_OWNER, new BytesRef(CurrentUser.getUserID()))),
+            isOwnerAcl ? Occur.MUST : Occur.MUST_NOT);
+        fullQueryBuilder.add(ownerClauseBuilder.build(), Occur.SHOULD);
+      } else {
+        String type = term.text();
+        boolean grant = type.endsWith("G");
+        if (grant) {
+          fullQueryBuilder.add(new TermQuery(term), Occur.SHOULD);
+        } else {
+          fullQueryBuilder.add(new TermQuery(term), Occur.MUST_NOT);
+        }
+      }
+    }
+
+    return fullQueryBuilder.build();
   }
 }

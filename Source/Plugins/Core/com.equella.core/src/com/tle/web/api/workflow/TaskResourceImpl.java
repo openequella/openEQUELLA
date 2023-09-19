@@ -254,7 +254,7 @@ public class TaskResourceImpl implements EquellaTaskResource {
     if (order != null) {
       // allowed values are priority, duedate, name, waiting
       if (order.equals("priority")) {
-        return new SortField(TasksIndexer.FIELD_PRIORITY, true, Type.LONG);
+        return new SortField(TasksIndexer.FIELD_PRIORITY, true, Type.INT);
       } else if (order.equals("duedate")) {
         return new SortField(TasksIndexer.FIELD_DUEDATE, false, Type.LONG);
       } else if (order.equals("waiting")) {
