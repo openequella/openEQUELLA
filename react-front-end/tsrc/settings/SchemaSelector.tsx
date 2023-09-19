@@ -23,8 +23,7 @@ import {
   Select,
 } from "@mui/material";
 import * as React from "react";
-import { ReactElement, useContext } from "react";
-import { AppContext } from "../mainui/App";
+import { ReactElement } from "react";
 import {
   schemaListSummary,
   SchemaNode,
@@ -39,6 +38,12 @@ interface SchemaSelectorProps {
    * @param node  Path of the selected node.
    */
   setSchemaNode: (node: string) => void;
+
+  /**
+   * Define how to handle error
+   * @param error  Error data.
+   */
+  handleError: (error: string | Error) => void;
 }
 
 const strings =
@@ -49,14 +54,16 @@ const strings =
  * When a schema is selected, it will display that schema within a SchemaNodeSelector.
  *
  */
-export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
+export default function SchemaSelector({
+  setSchemaNode,
+  handleError,
+}: SchemaSelectorProps) {
   const [selectedSchema, setSelectedSchema] = React.useState<
     string | undefined
   >(undefined);
   const [schema, setSchema] = React.useState<SchemaNode>();
   const [schemaList, setSchemaList] = React.useState<ReactElement[]>([]);
   const [schemaNodePath, setSchemaNodePath] = React.useState<string>("");
-  const { appErrorHandler } = useContext(AppContext);
 
   React.useEffect(() => {
     const buildSchemaList = (schemas: Map<string, string>) => {
@@ -73,18 +80,18 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
       .then((schemas) => {
         setSchemaList(buildSchemaList(schemas));
       })
-      .catch(appErrorHandler);
-  }, [appErrorHandler]);
+      .catch(handleError);
+  }, [handleError]);
 
   React.useEffect(() => {
     if (selectedSchema?.trim()) {
       schemaTree(selectedSchema)
         .then((tree) => setSchema(tree))
-        .catch(appErrorHandler);
+        .catch(handleError);
     } else {
       setSchema(undefined);
     }
-  }, [selectedSchema, appErrorHandler]);
+  }, [selectedSchema, handleError]);
 
   React.useEffect(() => {
     if (schemaNodePath?.trim()) {

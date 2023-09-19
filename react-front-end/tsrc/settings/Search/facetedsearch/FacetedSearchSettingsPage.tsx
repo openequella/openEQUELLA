@@ -299,6 +299,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
       </Card>
 
       <FacetDialog
+        handleError={appErrorHandler}
         addOrEdit={addOrEdit}
         open={showEditingDialog}
         onClose={() => setShowEditingDialog(false)}

@@ -51,6 +51,10 @@ export interface FacetDialogProps {
     maxResults: number | undefined
   ) => void;
   /**
+   * Define how to handle error
+   */
+  handleError: (error: string | Error) => void;
+  /**
    * The facet to be edited; undefined if the action is to add a new one.
    */
   facet?: FacetedSearchClassificationWithFlags;
@@ -59,7 +63,13 @@ export interface FacetDialogProps {
 /**
  * A dialog for adding/editing a facet
  */
-const FacetDialog = ({ open, onClose, addOrEdit, facet }: FacetDialogProps) => {
+const FacetDialog = ({
+  open,
+  handleError,
+  onClose,
+  addOrEdit,
+  facet
+}: FacetDialogProps) => {
   const { facetedsearchsetting: facetedSearchSettingStrings } =
     languageStrings.settings.searching;
   const { facetfields: facetFieldStrings } = facetedSearchSettingStrings;
@@ -135,6 +145,7 @@ const FacetDialog = ({ open, onClose, addOrEdit, facet }: FacetDialogProps) => {
           variant="standard"
         />
         <SchemaSelector
+          handleError={handleError}
           setSchemaNode={(node) => {
             setSchemaNode(node.replace("/xml", ""));
           }}
