@@ -71,17 +71,22 @@ class ItemIndexTest
     with GivenWhenThen
     with BeforeAndAfterAll
     with BeforeAndAfter {
+  val schemaUuid      = "adfcaf58-241b-4eca-9740-6a26d1c3dd58"
+  val collectionUuid  = "bdfcaf58-241b-4eca-9740-6a26d1c3dd58"
+  val itemUuid        = "zzzcaf58-241b-4eca-9740-6a26d1c3dd58"
+  val currentUserUuid = "sdscaf66-241b-4eca-9740-6a26d1c3dd58"
+
   val inst = new Institution
-  inst.setUniqueId(new scala.util.Random().nextLong)
+  inst.setUniqueId(2023L)
 
   val schema = new Schema
-  schema.setUuid(UUID.randomUUID().toString)
+  schema.setUuid(schemaUuid)
   schema.setDefinition(
     new PropBagEx(
       "<xml><item><name field='true'></name><description field='true'></description></item></xml>"))
 
   val collection = new ItemDefinition
-  collection.setUuid(UUID.randomUUID().toString)
+  collection.setUuid(collectionUuid)
   collection.setSchema(schema)
 
   val owner = "admin"
@@ -157,7 +162,7 @@ class ItemIndexTest
     Range(0, howMany)
       .map(key => {
         val item = new Item()
-        item.setUuid(UUID.randomUUID().toString)
+        item.setUuid(itemUuid)
         item.setInstitution(inst)
         item.setItemDefinition(itemDef)
         item.setOwner(owner)
@@ -170,7 +175,7 @@ class ItemIndexTest
         item.setDateForIndex(dateModified)
         item.setDateModified(dateModified)
 
-        val indexedItem = new IndexedItem(new ItemIdKey(key, UUID.randomUUID().toString, 1), inst)
+        val indexedItem = new IndexedItem(new ItemIdKey(key, itemUuid, 1), inst)
         indexedItem.setItem(item)
         indexedItem.setItemXml(properties)
         indexedItem.setAdd(true)
@@ -248,7 +253,7 @@ class ItemIndexTest
                  java.util.Collections.emptyList()))
     mockStatic(classOf[CurrentUser])
     when(CurrentUser.getUserState).thenReturn(userState)
-    when(CurrentUser.getUserID).thenReturn(UUID.randomUUID().toString)
+    when(CurrentUser.getUserID).thenReturn(currentUserUuid)
 
     AbstractPluginService.thisService = mock(classOf[PluginServiceImpl])
   }
@@ -384,7 +389,7 @@ class ItemIndexTest
 
     describe("advanced filtering") {
       val newCollection = new ItemDefinition()
-      newCollection.setUuid(UUID.randomUUID().toString)
+      newCollection.setUuid("46392820-5bce-3d29-b4b3-61131cfe20a4")
 
       it("supports filtering by ACL expressions") { f =>
         val (itemIndex, searchConfig) = f

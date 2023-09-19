@@ -29,6 +29,7 @@ import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.util.BytesRef;
 
 @SuppressWarnings("nls")
+/** Iterates over Lucene terms for the provided field which typically is in the format of XPATH. */
 public class XPathFieldIterator implements Iterator<Term>, Iterable<Term> {
   private final String field;
 

@@ -28,14 +28,18 @@ import org.apache.lucene.search.BooleanQuery.Builder;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
+/**
+ * Custom filter to generate a Lucene Boolean query for a list of matrix fields. This one is
+ * typically used together with Schema nodes.
+ */
 public class MatrixFilter implements CustomFilter {
 
-  private List<Field> fields;
+  private final List<Field> fields;
 
-  private IndexReader reader;
+  private final IndexReader reader;
 
   public MatrixFilter(List<Field> matrixFields, IndexReader reader) {
-    this.fields = matrixFields;
+    this.fields = List.copyOf(matrixFields);
     this.reader = reader;
   }
 

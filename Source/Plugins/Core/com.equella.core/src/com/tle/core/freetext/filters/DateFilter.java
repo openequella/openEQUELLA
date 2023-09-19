@@ -26,21 +26,21 @@ import java.util.TimeZone;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermRangeQuery;
 
-/**
- * Filters dates out. Most of the work is simply delegated to a ComparisonFilter.
- *
- * @author Nicholas Read
- */
+/** Custom filter to generate a Lucene Range query for date range. */
 public class DateFilter implements CustomFilter {
-  private String start;
-  private String end;
-  private String field;
+
+  private final Query dateFilterQuery;
 
   public DateFilter(
       String field, Date startDate, Date endDate, Dates indexedDateFormat, TimeZone timeZone) {
-    this.start = dateToString(startDate, 0, indexedDateFormat, timeZone);
-    this.end = dateToString(endDate, Long.MAX_VALUE, indexedDateFormat, timeZone);
-    this.field = field;
+    String start = dateToString(startDate, 0, indexedDateFormat, timeZone);
+    String end = dateToString(endDate, Long.MAX_VALUE, indexedDateFormat, timeZone);
+    this.dateFilterQuery = TermRangeQuery.newStringRange(field, start, end, true, false);
+  }
+
+  @Override
+  public Query buildQuery() {
+    return dateFilterQuery;
   }
 
   /**
@@ -60,10 +60,5 @@ public class DateFilter implements CustomFilter {
       return new LocalDate(date, timeZone).format(indexedDateFormat);
     }
     return new UtcDate(date).format(indexedDateFormat);
-  }
-
-  @Override
-  public Query buildQuery() {
-    return TermRangeQuery.newStringRange(field, start, end, true, false);
   }
 }

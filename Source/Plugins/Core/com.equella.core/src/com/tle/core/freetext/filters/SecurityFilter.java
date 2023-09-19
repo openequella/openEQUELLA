@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import org.apache.lucene.index.IndexReader;
@@ -51,20 +52,22 @@ import org.apache.lucene.util.BytesRef;
  *
  * <p>If the user account does not have any Owner related ACLs, then we do not need such a
  * BooleanQuery.
+ * <li>Example 1: an Owner ACL (ACLD-1111:000G) and a common ACL (ACLD-2222:000G) are available in
+ *     user account A, the result is ((+owner:A +ACLD-1111:000G) ACLD-2222:000G).
+ * <li>Example 2: an Owner ACL (ACLD-1111:000R) and a common ACL (ACLD-2222:000G) are available in
+ *     user account A, the result is ((-owner:A +ACLD-1111:000G) ACLD-2222:000G).
  *
- * <p>Example 1: an Owner ACL (ACLD-1111:000G) and a common ACL (ACLD-2222:000G) are available in
- * user account A, the result is ((+owner:A +ACLD-1111:000G) ACLD-2222:000G).
+ *     <p>Please note that the value of Owner ACL is <b>000R</b>, so the prefix before owner in the
+ *     query is <b>-</b>.
  *
- * <p>Example 2: an Owner ACL (ACLD-1111:000R) and a common ACL (ACLD-2222:000G) are available in
- * user account A, the result is ((-owner:A +ACLD-1111:000G) ACLD-2222:000G).
- *
- * <p>Example 3: two common ACLs (ACLD-2222 and ACLD-3333) are available in user account A, the
- * result is (ACLD-2222 OR ACLD-3333).
+ *     <p>The translation of this expression is: you can access resources that are available to
+ *     OWNER, but the owner must not be A.
+ * <li>Example 3: two common ACLs (ACLD-2222 and ACLD-3333) are available in user account A, the
+ *     result is (ACLD-2222 OR ACLD-3333).
  */
 public class SecurityFilter implements CustomFilter {
   private final String[] expressions;
   private final Map<String, Boolean> ownerExprMap = new HashMap<>();
-  private final int ownerSizes;
   private final boolean systemUser;
   private final IndexReader reader;
 
@@ -77,7 +80,7 @@ public class SecurityFilter implements CustomFilter {
     Collection<Long> ownerAclExpressions = userState.getOwnerAclExpressions();
     Collection<Long> notOwnerAclExpressions = userState.getNotOwnerAclExpressions();
 
-    ownerSizes =
+    int ownerSizes =
         (ownerAclExpressions == null ? 0 : ownerAclExpressions.size())
             + (notOwnerAclExpressions == null ? 0 : notOwnerAclExpressions.size());
     expressions = new String[(aclExpressions == null ? 0 : aclExpressions.size()) + ownerSizes];
@@ -124,8 +127,6 @@ public class SecurityFilter implements CustomFilter {
 
   @Override
   public Query buildQuery() {
-    Builder builder = new Builder();
-
     if (systemUser) {
       return null;
     }
@@ -137,27 +138,29 @@ public class SecurityFilter implements CustomFilter {
         .filter(termSet -> !termSet.isEmpty())
         .forEach(allTerms::addAll);
 
+    Builder fullQueryBuilder = new Builder();
     for (Term term : allTerms) {
-      String type = term.text();
-      boolean grant = type.charAt(type.length() - 1) == 'G';
-      Boolean isOwnerAcl = ownerExprMap.get(term.field());
-      if (isOwnerAcl == null) {
-        if (grant) {
-          builder.add(new TermQuery(term), Occur.SHOULD);
-        } else {
-          builder.add(new TermQuery(term), Occur.MUST_NOT);
-        }
-      } else {
+      Optional<Boolean> ownerAcl = Optional.ofNullable(ownerExprMap.get(term.field()));
+      if (ownerAcl.isPresent()) {
+        boolean isOwnerAcl = ownerAcl.get();
         Builder ownerClauseBuilder = new Builder();
         ownerClauseBuilder.add(new TermQuery(term), Occur.MUST);
         ownerClauseBuilder.add(
             new TermQuery(
                 new Term(FreeTextQuery.FIELD_OWNER, new BytesRef(CurrentUser.getUserID()))),
             isOwnerAcl ? Occur.MUST : Occur.MUST_NOT);
-        builder.add(ownerClauseBuilder.build(), Occur.SHOULD);
+        fullQueryBuilder.add(ownerClauseBuilder.build(), Occur.SHOULD);
+      } else {
+        String type = term.text();
+        boolean grant = type.endsWith("G");
+        if (grant) {
+          fullQueryBuilder.add(new TermQuery(term), Occur.SHOULD);
+        } else {
+          fullQueryBuilder.add(new TermQuery(term), Occur.MUST_NOT);
+        }
       }
     }
 
-    return builder.build();
+    return fullQueryBuilder.build();
   }
 }
