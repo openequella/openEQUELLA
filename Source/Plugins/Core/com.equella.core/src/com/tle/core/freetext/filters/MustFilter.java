@@ -34,7 +34,7 @@ import org.apache.lucene.search.TermQuery;
  * <li>Example 1: Given one clause for two Item statuses, the result is {@code status:live OR
  *     status:archived}.
  * <li>Example 2: Given two clauses for Collection A and two Item statuses, the result is {@code
- *     (collection:A) AND (status:live OR status:archived)}. </li
+ *     (collection:A) AND (status:live OR status:archived)}.
  */
 public class MustFilter implements CustomFilter {
 

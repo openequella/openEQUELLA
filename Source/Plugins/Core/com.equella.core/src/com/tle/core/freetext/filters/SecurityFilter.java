@@ -60,7 +60,7 @@ import org.apache.lucene.util.BytesRef;
  *     <p>Please note that the value of Owner ACL is <b>000R</b>, so the prefix before owner in the
  *     query is <b>-</b>.
  *
- *     <p>This translation of this expression is : you can access resources that are available to
+ *     <p>The translation of this expression is: you can access resources that are available to
  *     OWNER, but the owner must not be A.
  * <li>Example 3: two common ACLs (ACLD-2222 and ACLD-3333) are available in user account A, the
  *     result is (ACLD-2222 OR ACLD-3333).

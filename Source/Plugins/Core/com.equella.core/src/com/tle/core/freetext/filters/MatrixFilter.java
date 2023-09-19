@@ -30,7 +30,7 @@ import org.apache.lucene.search.TermQuery;
 
 /**
  * Custom filter to generate a Lucene Boolean query for a list of matrix fields. This one is
- * typically used together as Schema nodes.
+ * typically used together with Schema nodes.
  */
 public class MatrixFilter implements CustomFilter {
 
