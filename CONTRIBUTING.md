@@ -149,8 +149,8 @@ is PostgreSQL. The two main ways to do this are:
 Once you have an instance running, make sure you create a database with a user for access:
 
     CREATE DATABASE equella;
-    CREATE USER euqellauser WITH PASSWORD 'password';
-    GRANT ALL PRIVILEGES ON DATABASE "equella" to euqellauser;
+    CREATE USER equellauser WITH PASSWORD 'password';
+    GRANT ALL PRIVILEGES ON DATABASE "equella" to equellauser;
 
 ### Install build-essential
 
