@@ -8,7 +8,7 @@
     "gen": "ts-node src/index.ts --source ../src --dest ../src/gen  && eslint --fix ../src"
   },
   "devDependencies": {
-    "@types/node": "18.17.14",
+    "@types/node": "18.17.18",
     "@types/yargs": "17.0.24",
     "ts-morph": "19.0.0",
     "ts-node": "10.9.1",
