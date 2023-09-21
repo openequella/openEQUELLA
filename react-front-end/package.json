@@ -89,7 +89,7 @@
     "@types/jquery": "3.5.18",
     "@types/lodash": "4.14.198",
     "@types/luxon": "3.3.2",
-    "@types/node": "18.17.14",
+    "@types/node": "18.17.15",
     "@types/object-hash": "3.0.4",
     "@types/react": "18.2.21",
     "@types/react-autosuggest": "10.1.6",
