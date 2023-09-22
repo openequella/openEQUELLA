@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as t from "io-ts";
 import {
   FormControl,
   FormControlLabel,
@@ -23,12 +24,12 @@ import {
   RadioGroup,
   Radio,
 } from "@mui/material";
+import * as E from "fp-ts/Either";
 import * as React from "react";
 import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
 import * as RSET from "fp-ts/ReadonlySet";
 import { ChangeEvent, useState } from "react";
-import { Literal, Static, Union } from "runtypes";
 import {
   ACLRecipient,
   groupToRecipient,
@@ -44,13 +45,13 @@ import UserSearch from "../securityentitysearch/UserSearch";
 /**
  * Runtypes definition for home panel search filter type.
  */
-const SearchFilterTypesUnion = Union(
-  Literal("Users"),
-  Literal("Groups"),
-  Literal("Roles")
-);
+const SearchFilterTypesUnion = t.union([
+  t.literal("Users"),
+  t.literal("Groups"),
+  t.literal("Roles"),
+]);
 
-type SearchFilterType = Static<typeof SearchFilterTypesUnion>;
+type SearchFilterType = t.TypeOf<typeof SearchFilterTypesUnion>;
 
 const {
   aclExpressionBuilder: { type: typeLabel },
@@ -99,7 +100,11 @@ const ACLHomePanel = ({
     useState<SearchFilterType>("Users");
 
   const handleSearchFilterChange = (event: ChangeEvent<HTMLInputElement>) =>
-    setActiveSearchFilterType(SearchFilterTypesUnion.check(event.target.value));
+    pipe(
+      event.target.value,
+      SearchFilterTypesUnion.decode,
+      E.fold(console.error, setActiveSearchFilterType)
+    );
 
   const handleOnAdded = <T,>(
     selections: ReadonlySet<T>,
@@ -127,7 +132,7 @@ const ACLHomePanel = ({
             value={activeSearchFilterType}
             onChange={handleSearchFilterChange}
           >
-            {SearchFilterTypesUnion.alternatives.map((searchType) => (
+            {SearchFilterTypesUnion.types.map((searchType) => (
               <FormControlLabel
                 key={searchType.value}
                 value={searchType.value}
@@ -138,55 +143,59 @@ const ACLHomePanel = ({
           </RadioGroup>
         </Grid>
       </Grid>
-      {pipe(
-        activeSearchFilterType,
-        SearchFilterTypesUnion.match(
-          (Users) => (
-            <UserSearch
-              key={Users}
-              mode={{
-                type: "one_click",
-                onAdd: (user) =>
-                  handleOnAdded(RSET.singleton(user), userToRecipient),
-              }}
-              {...sharedProps}
-              search={searchUserProvider}
-              onSelectAll={(users) => handleOnAdded(users, userToRecipient)}
-              showHelpText
-            />
-          ),
-          (Groups) => (
-            <GroupSearch
-              key={Groups}
-              mode={{
-                type: "one_click",
-                onAdd: (group) =>
-                  handleOnAdded(RSET.singleton(group), groupToRecipient),
-              }}
-              {...sharedProps}
-              search={searchGroupProvider}
-              onSelectAll={(groups) => handleOnAdded(groups, groupToRecipient)}
-              showHelpText
-            />
-          ),
-          (Roles) => (
-            <RoleSearch
-              key={Roles}
-              mode={{
-                type: "one_click",
-                onAdd: (role) =>
-                  handleOnAdded(RSET.singleton(role), roleToRecipient),
-              }}
-              {...sharedProps}
-              search={searchRoleProvider}
-              onSelectAll={(roles) => handleOnAdded(roles, roleToRecipient)}
-              listHeight={367}
-              groupFilterEditable={false}
-              showHelpText
-            />
-          )
-        )
-      )}
+      {pipe(activeSearchFilterType, (filterType) => {
+        switch (filterType) {
+          case "Users":
+            return (
+              <UserSearch
+                key={filterType}
+                mode={{
+                  type: "one_click",
+                  onAdd: (user) =>
+                    handleOnAdded(RSET.singleton(user), userToRecipient),
+                }}
+                {...sharedProps}
+                search={searchUserProvider}
+                onSelectAll={(users) => handleOnAdded(users, userToRecipient)}
+                showHelpText
+              />
+            );
+          case "Groups":
+            return (
+              <GroupSearch
+                key={filterType}
+                mode={{
+                  type: "one_click",
+                  onAdd: (group) =>
+                    handleOnAdded(RSET.singleton(group), groupToRecipient),
+                }}
+                {...sharedProps}
+                search={searchGroupProvider}
+                onSelectAll={(groups) =>
+                  handleOnAdded(groups, groupToRecipient)
+                }
+                showHelpText
+              />
+            );
+          case "Roles":
+            return (
+              <RoleSearch
+                key={filterType}
+                mode={{
+                  type: "one_click",
+                  onAdd: (role) =>
+                    handleOnAdded(RSET.singleton(role), roleToRecipient),
+                }}
+                {...sharedProps}
+                search={searchRoleProvider}
+                onSelectAll={(roles) => handleOnAdded(roles, roleToRecipient)}
+                listHeight={367}
+                groupFilterEditable={false}
+                showHelpText
+              />
+            );
+        }
+      })}
     </FormControl>
   );
 };

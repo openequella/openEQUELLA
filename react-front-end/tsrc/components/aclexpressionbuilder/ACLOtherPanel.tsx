@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as t from "io-ts";
 import {
   Button,
   FormControl,
@@ -26,12 +27,11 @@ import {
   Typography,
 } from "@mui/material";
 import * as E from "fp-ts/Either";
-import { flow, identity, pipe } from "fp-ts/function";
+import { absurd, flow, identity, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
 import { ReactNode, useCallback, useState } from "react";
-import { Literal, Static, Union } from "runtypes";
 import { ACLEntityResolvers } from "../../modules/ACLEntityModule";
 import {
   ACLRecipient,
@@ -76,16 +76,16 @@ const {
 /**
  * Runtypes definition for ACL expression types in `other` panel.
  */
-const OtherACLTypesUnion = Union(
-  Literal("Everyone"),
-  Literal("Owner"),
-  Literal("Logged"),
-  Literal("Guest"),
-  Literal("SSO"),
-  Literal("IP"),
-  Literal("Referrer")
-);
-type OtherACLType = Static<typeof OtherACLTypesUnion>;
+const OtherACLTypesUnion = t.union([
+  t.literal("Everyone"),
+  t.literal("Owner"),
+  t.literal("Logged"),
+  t.literal("Guest"),
+  t.literal("SSO"),
+  t.literal("IP"),
+  t.literal("Referrer"),
+]);
+type OtherACLType = t.TypeOf<typeof OtherACLTypesUnion>;
 
 export interface ACLOtherPanelProps {
   /**
@@ -125,20 +125,36 @@ const ACLOtherPanel = ({
   const [ssoToken, setSSOToken] = useState("");
 
   const handleAclTypeChanged = (event: SelectChangeEvent<OtherACLType>) =>
-    setActiveACLType(OtherACLTypesUnion.check(event.target.value));
+    pipe(
+      event.target.value,
+      OtherACLTypesUnion.decode,
+      E.fold(console.error, setActiveACLType)
+    );
 
   const handleAddButtonClicked = async () => {
     // generate raw ACL expression string for corresponding recipient type
-    const generateExpression = OtherACLTypesUnion.match(
-      (everyone) => ACLRecipientTypes.Everyone,
-      (owner) => ACLRecipientTypes.Owner,
-      (logged) => `${ACLRecipientTypes.Role}:${LOGGED_IN_USER_ROLE_ID}`,
-      (guest) => `${ACLRecipientTypes.Role}:${GUEST_USER_ROLE_ID}`,
-      (sso) => (ssoToken ? `${ACLRecipientTypes.Sso}:${ssoToken}` : undefined),
-      (ip) => (ipAddress ? `${ACLRecipientTypes.Ip}:${ipAddress}` : undefined),
-      (referrer) =>
-        httpReferrer ? `${ACLRecipientTypes.Refer}:${httpReferrer}` : undefined
-    );
+    const generateExpression = (aclType: OtherACLType): string | undefined => {
+      switch (aclType) {
+        case "Everyone":
+          return ACLRecipientTypes.Everyone;
+        case "Owner":
+          return ACLRecipientTypes.Owner;
+        case "Logged":
+          return `${ACLRecipientTypes.Role}:${LOGGED_IN_USER_ROLE_ID}`;
+        case "Guest":
+          return `${ACLRecipientTypes.Role}:${GUEST_USER_ROLE_ID}`;
+        case "SSO":
+          return ssoToken ? `${ACLRecipientTypes.Sso}:${ssoToken}` : undefined;
+        case "IP":
+          return ipAddress ? `${ACLRecipientTypes.Ip}:${ipAddress}` : undefined;
+        case "Referrer":
+          return httpReferrer
+            ? `${ACLRecipientTypes.Refer}:${httpReferrer}`
+            : undefined;
+        default:
+          return absurd(aclType);
+      }
+    };
 
     // create an ACLRecipient object
     const optionRecipient: O.Option<ACLRecipient> = pipe(
@@ -174,15 +190,29 @@ const ACLOtherPanel = ({
     </MenuItem>
   );
 
-  const buildSelections = OtherACLTypesUnion.match(
-    (Everyone) => selection(Everyone, everyoneLabel),
-    (Owner) => selection(Owner, ownerLabel),
-    (Logged) => selection(Logged, loggedLabel),
-    (Guest) => selection(Guest, guestLabel),
-    (Sso) => selection(Sso, ssoLabel),
-    (Ip) => selection(Ip, ipLabel),
-    (Referrer) => selection(Referrer, referrerLabel)
-  );
+  const buildSelections = (aclType: OtherACLType): React.JSX.Element => {
+    const label = (): string => {
+      switch (aclType) {
+        case "Everyone":
+          return everyoneLabel;
+        case "Owner":
+          return ownerLabel;
+        case "Logged":
+          return loggedLabel;
+        case "Guest":
+          return guestLabel;
+        case "SSO":
+          return ssoLabel;
+        case "IP":
+          return ipLabel;
+        case "Referrer":
+          return referrerLabel;
+        default:
+          return absurd(aclType);
+      }
+    };
+    return selection(aclType, label());
+  };
 
   const OtherControl = ({
     title,
@@ -203,37 +233,41 @@ const ACLOtherPanel = ({
   /**
    * TODO: Get all SSO selects from API
    * */
-  const buildControls = useCallback(
-    () =>
-      pipe(
-        activeACLType,
-        OtherACLTypesUnion.match(
-          (Everyone) => <OtherControl title={everyoneDesc} />,
-          (Owner) => <OtherControl title={ownerDesc} />,
-          (Logged) => <OtherControl title={loggedDesc} />,
-          (Guest) => <OtherControl title={guestDesc} />,
-          (Sso) => (
-            <OtherControl title={ssoDesc}>
-              <ACLSSOMenu
-                getSSOTokens={ssoTokensProvider}
-                onChange={setSSOToken}
-              />
-            </OtherControl>
-          ),
-          (Ip) => (
-            <OtherControl title={ipDesc}>
-              <IPv4CIDRInput onChange={setIPAddress} />
-            </OtherControl>
-          ),
-          (Referrer) => (
-            <OtherControl title={referrerDesc}>
-              <ACLHTTPReferrerInput onChange={setHTTPReferrer} />
-            </OtherControl>
-          )
-        )
-      ),
-    [activeACLType, ssoTokensProvider]
-  );
+  const buildControls = useCallback((): React.JSX.Element => {
+    switch (activeACLType) {
+      case "Everyone":
+        return <OtherControl title={everyoneDesc} />;
+      case "Owner":
+        return <OtherControl title={ownerDesc} />;
+      case "Logged":
+        return <OtherControl title={loggedDesc} />;
+      case "Guest":
+        return <OtherControl title={guestDesc} />;
+      case "SSO":
+        return (
+          <OtherControl title={ssoDesc}>
+            <ACLSSOMenu
+              getSSOTokens={ssoTokensProvider}
+              onChange={setSSOToken}
+            />
+          </OtherControl>
+        );
+      case "IP":
+        return (
+          <OtherControl title={ipDesc}>
+            <IPv4CIDRInput onChange={setIPAddress} />
+          </OtherControl>
+        );
+      case "Referrer":
+        return (
+          <OtherControl title={referrerDesc}>
+            <ACLHTTPReferrerInput onChange={setHTTPReferrer} />
+          </OtherControl>
+        );
+      default:
+        return absurd(activeACLType);
+    }
+  }, [activeACLType, ssoTokensProvider]);
 
   return (
     <Grid container direction="column" spacing={1}>
@@ -246,7 +280,7 @@ const ACLOtherPanel = ({
             onChange={handleAclTypeChanged}
             label={typeLabel}
           >
-            {OtherACLTypesUnion.alternatives.map((aclType) =>
+            {OtherACLTypesUnion.types.map((aclType) =>
               buildSelections(aclType.value)
             )}
           </Select>

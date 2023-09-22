@@ -15,17 +15,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as t from "io-ts";
 import * as OEQ from "@openequella/rest-api-client";
 import * as E from "fp-ts/Either";
 import * as EQ from "fp-ts/Eq";
-import { constant, flow, pipe } from "fp-ts/function";
+import { absurd, constant, flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as ORD from "fp-ts/Ord";
 import * as RNEA from "fp-ts/ReadonlyNonEmptyArray";
 import * as S from "fp-ts/string";
 import * as TE from "fp-ts/TaskEither";
-import { Literal, Static, Union } from "runtypes";
 import { ACLEntityResolvers } from "./ACLEntityModule";
+
+const ACLRecipientTypesUnion = t.union([
+  t.literal("U"),
+  t.literal("G"),
+  t.literal("R"),
+  t.literal("*"),
+  t.literal("$OWNER"),
+  t.literal("F"),
+  t.literal("I"),
+  t.literal("T"),
+]);
+
+export type ACLRecipientType = t.TypeOf<typeof ACLRecipientTypesUnion>;
 
 /**
  * ACL Recipient types:
@@ -38,7 +51,7 @@ import { ACLEntityResolvers } from "./ACLEntityModule";
  * * IP: I:255.255.0.0%2F24
  * * Sso: T:xxx
  */
-export const ACLRecipientTypes = {
+export const ACLRecipientTypes: { [prefix: string]: ACLRecipientType } = {
   User: "U",
   Group: "G",
   Role: "R",
@@ -48,19 +61,6 @@ export const ACLRecipientTypes = {
   Ip: "I",
   Sso: "T",
 };
-
-const ACLRecipientTypesUnion = Union(
-  Literal(ACLRecipientTypes.User),
-  Literal(ACLRecipientTypes.Group),
-  Literal(ACLRecipientTypes.Role),
-  Literal(ACLRecipientTypes.Everyone),
-  Literal(ACLRecipientTypes.Owner),
-  Literal(ACLRecipientTypes.Refer),
-  Literal(ACLRecipientTypes.Ip),
-  Literal(ACLRecipientTypes.Sso)
-);
-
-export type ACLRecipientType = Static<typeof ACLRecipientTypesUnion>;
 
 /**
  * Represents a recipient in the ACL expression.
@@ -165,51 +165,55 @@ const generateACLRecipientName =
   (recipient: ACLRecipient): TE.TaskEither<string, string> => {
     const { type, expression } = recipient;
 
-    return pipe(
-      type,
-      ACLRecipientTypesUnion.match(
-        (User) =>
-          pipe(
-            TE.tryCatch<string, OEQ.UserQuery.UserDetails | undefined>(
-              () => resolveUserProvider(expression),
-              (err) => `Failed to fetch user details: ${err}`
-            ),
-            TE.chainOptionK<string>(constant(`Can't find user: ${expression}`))(
-              flow(
-                O.fromNullable,
-                O.chainNullableK(
-                  (u: OEQ.UserQuery.UserDetails) => userToRecipient(u).name
-                )
+    switch (type) {
+      case "U":
+        return pipe(
+          TE.tryCatch<string, OEQ.UserQuery.UserDetails | undefined>(
+            () => resolveUserProvider(expression),
+            (err) => `Failed to fetch user details: ${err}`
+          ),
+          TE.chainOptionK<string>(constant(`Can't find user: ${expression}`))(
+            flow(
+              O.fromNullable,
+              O.chainNullableK(
+                (u: OEQ.UserQuery.UserDetails) => userToRecipient(u).name
               )
             )
+          )
+        );
+      case "G":
+        return pipe(
+          TE.tryCatch(
+            () => resolveGroupProvider(expression),
+            (err) => `Failed to fetch group details: ${err}`
           ),
-        (Group) =>
-          pipe(
-            TE.tryCatch(
-              () => resolveGroupProvider(expression),
-              (err) => `Failed to fetch group details: ${err}`
-            ),
-            TE.chainNullableK<string>(`Can't find group: ${expression}`)(
-              (g: OEQ.UserQuery.GroupDetails | undefined) => g?.name
-            )
+          TE.chainNullableK<string>(`Can't find group: ${expression}`)(
+            (g: OEQ.UserQuery.GroupDetails | undefined) => g?.name
+          )
+        );
+      case "R":
+        return pipe(
+          TE.tryCatch(
+            () => resolveRoleProvider(expression),
+            (err) => `Failed to fetch role details: ${err}`
           ),
-        (Role) =>
-          pipe(
-            TE.tryCatch(
-              () => resolveRoleProvider(expression),
-              (err) => `Failed to fetch role details: ${err}`
-            ),
-            TE.chainNullableK<string>(`Can't find role: ${expression}`)(
-              (r: OEQ.UserQuery.RoleDetails | undefined) => r?.name
-            )
-          ),
-        (Everyone) => TE.right("Everyone"),
-        ($OWNER) => TE.right("Owner"),
-        (Ip) => TE.right("From " + decodeURIComponent(expression)),
-        (Refer) => TE.right("From " + expression),
-        (Sso) => TE.right("Token ID is " + expression)
-      )
-    );
+          TE.chainNullableK<string>(`Can't find role: ${expression}`)(
+            (r: OEQ.UserQuery.RoleDetails | undefined) => r?.name
+          )
+        );
+      case "*":
+        return TE.right("Everyone");
+      case "$OWNER":
+        return TE.right("Owner");
+      case "I":
+        return TE.right("From " + decodeURIComponent(expression));
+      case "F":
+        return TE.right("From " + expression);
+      case "T":
+        return TE.right("Token ID is " + expression);
+      default:
+        return absurd(type);
+    }
   };
 
 /**
@@ -245,7 +249,7 @@ const parseACLRecipientType = (
     S.split(":"),
     RNEA.head,
     E.fromPredicate(
-      ACLRecipientTypesUnion.guard,
+      ACLRecipientTypesUnion.is,
       (invalid) => `Failed to parse recipient: ${invalid}`
     )
   );

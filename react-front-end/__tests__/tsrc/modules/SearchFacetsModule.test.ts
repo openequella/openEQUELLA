@@ -104,7 +104,7 @@ describe("SearchFacetsModule", () => {
         firstName: "Test",
         lastName: "Owner",
       },
-      status: OEQ.Common.ItemStatuses.alternatives.map((i) => i.value), // i.e. All statuses
+      status: OEQ.Codec.Common.ItemStatusCodec.types.map(({ value }) => value), // i.e. All statuses
       sortOrder: undefined,
       mimeTypes: mimeTypes,
     });

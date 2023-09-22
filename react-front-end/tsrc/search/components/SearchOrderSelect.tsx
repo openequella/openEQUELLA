@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 import { InputLabel, MenuItem, Select } from "@mui/material";
+import { pipe } from "fp-ts/function";
+import * as E from "fp-ts/Either";
 import * as React from "react";
 import { languageStrings } from "../../util/langstrings";
 import * as OEQ from "@openequella/rest-api-client";
@@ -76,7 +78,11 @@ export const SearchOrderSelect = ({
         // If sortOrder is undefined, pass an empty string to select nothing.
         value={value ?? ""}
         onChange={(event) =>
-          onChange(OEQ.Search.SortOrderRunTypes.check(event.target.value))
+          pipe(
+            event.target.value,
+            OEQ.Codec.Search.SortOrderCodec.decode,
+            E.fold(console.error, onChange)
+          )
         }
         variant="standard"
       >
