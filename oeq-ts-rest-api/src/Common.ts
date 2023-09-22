@@ -17,7 +17,6 @@
  */
 import { pipe } from 'fp-ts/function';
 import * as t from 'io-ts';
-import { Literal, Union } from 'runtypes';
 import {
   BaseEntityCodec,
   BaseEntitySummaryCodec,
@@ -109,19 +108,6 @@ export const isBaseEntitySummaryArray = (
 ): instance is BaseEntitySummary[] =>
   pipe(instance, validate(t.array(BaseEntitySummaryCodec)));
 
-export const ItemStatuses = Union(
-  Literal('ARCHIVED'),
-  Literal('DELETED'),
-  Literal('DRAFT'),
-  Literal('LIVE'),
-  Literal('MODERATING'),
-  Literal('PERSONAL'),
-  Literal('REJECTED'),
-  Literal('REVIEW'),
-  Literal('SUSPENDED')
-);
-
-// todo: fix this type alias which is not in sync with the runtype. Jira ticket: OEQ-1438
 export type ItemStatus =
   | 'ARCHIVED'
   | 'DELETED'
