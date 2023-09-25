@@ -22,7 +22,7 @@ val TomcatVersion     = "9.0.80"
 val axis2Version      = "1.8.2"
 val circeVersion      = "0.14.5"
 val curatorVersion    = "5.5.0"
-val cxfVersion        = "3.6.1"
+val cxfVersion        = "3.6.2"
 val fs2Version        = "2.5.11"
 val guiceVersion      = "5.1.0"
 val jsassVersion      = "5.10.5"
@@ -137,7 +137,7 @@ libraryDependencies ++= Seq(
   "org.apache.axis2"   % "axis2-adb"                % axis2Version,
   "org.apache.axis2"   % "axis2-transport-http"     % axis2Version,
   "org.apache.axis2"   % "axis2-transport-local"    % axis2Version,
-  "org.apache.commons" % "commons-compress"         % "1.23.0",
+  "org.apache.commons" % "commons-compress"         % "1.24.0",
   "org.apache.curator" % "curator-client"           % curatorVersion,
   "org.apache.curator" % "curator-framework"        % curatorVersion,
   "org.apache.curator" % "curator-recipes"          % curatorVersion,
