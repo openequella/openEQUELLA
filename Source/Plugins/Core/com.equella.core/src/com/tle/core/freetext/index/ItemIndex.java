@@ -515,10 +515,8 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     }
 
     // Accoding to Lucene V7 doco, TopDocs instances returned by IndexSearcher will still have a
-    // total
-    // number of hits which is less than 2B since Lucene indexes are still bound to at most 2B
-    // documents,
-    // so it can safely be casted to an int in that case.
+    // total number of hits which is less than 2B since Lucene indexes are still bound to at most
+    // 2B documents, so it can safely be cast to an int in that case.
     return new SimpleSearchResults<T>(
         retrievedResults, retrievedResults.size(), firstHit, (int) hits.totalHits.value);
   }
