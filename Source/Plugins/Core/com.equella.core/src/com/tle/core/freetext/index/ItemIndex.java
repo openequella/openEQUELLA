@@ -723,9 +723,8 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
               // does not have to be the exact term.
               TermsEnum termsEnum = MultiTerms.getTerms(reader, term.field()).iterator();
               if (termsEnum.seekCeil(new BytesRef(prefix)) != SeekStatus.END) {
-                // And then find out all the permitted docs for the prefix terms.
-                PostingsEnum docsEnum = termsEnum.postings(null);
-                Stream<Integer> docIds = LuceneDocumentHelper.postingEnumToStream(docsEnum);
+                Stream<Integer> docIds =
+                    LuceneDocumentHelper.postingEnumToStream(termsEnum.postings(null));
                 // Check if any of the documents with the term are 'permitted' to the user
                 if (docIds.anyMatch(permittedDocSet::get)) {
                   // If so, return that as the term to use
