@@ -82,6 +82,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
@@ -728,10 +729,9 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
                 // are permitted
                 // to use and these terms have the specified prefix. So we just return the first
                 // one.
-                while (docsEnum != null && docsEnum.nextDoc() != PostingsEnum.NO_MORE_DOCS) {
-                  if (permittedDocSet.get(docsEnum.docID())) {
-                    return termsEnum.term().utf8ToString();
-                  }
+                Stream<Integer> docIds = LuceneDocumentHelper.postingEnumToStream(docsEnum);
+                if (docIds.anyMatch(permittedDocSet::get)) {
+                  return termsEnum.term().utf8ToString();
                 }
               }
             }
