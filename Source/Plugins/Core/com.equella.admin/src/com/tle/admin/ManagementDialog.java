@@ -25,6 +25,7 @@ import com.dytech.gui.TableLayout;
 import com.dytech.gui.VerticalFlowLayout;
 import com.dytech.gui.flatter.FlatterLookAndFeel;
 import com.dytech.gui.workers.GlassSwingWorker;
+import com.tle.admin.utils.IconUtil;
 import com.tle.common.adminconsole.RemoteAdminService;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
@@ -177,8 +178,7 @@ public class ManagementDialog extends JFrame implements ActionListener, WindowLi
             "com.tle.admin.gui.managementdialog.title",
             Driver.instance().getVersion().getFull(),
             Driver.instance().getInstitutionName()));
-    setIconImage(
-        new ImageIcon(ManagementDialog.class.getResource("/icons/windowicon.gif")).getImage());
+    setIconImages(IconUtil.ICONS);
     setContentPane(all);
     setResizable(false);
     setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
