@@ -47,8 +47,7 @@ public class LoadingDialog extends JFrame {
     anim.setBounds(258, 41, 24, 24);
 
     setIconImage(
-        new ImageIcon(LoadingDialog.class.getResource("/icons/windowicon.gif"))
-            .getImage()); //$NON-NLS-1$
+        new ImageIcon(LoadingDialog.class.getResource("/icons/windowicon.64x64px.png")).getImage());
 
     setTitle(windowTitle);
     setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
