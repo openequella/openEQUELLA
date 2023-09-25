@@ -206,9 +206,9 @@ const generateACLRecipientName =
       case "$OWNER":
         return TE.right("Owner");
       case "I":
-        return TE.right("From " + decodeURIComponent(expression));
-      case "F":
         return TE.right("From " + expression);
+      case "F":
+        return TE.right("From " + decodeURIComponent(expression));
       case "T":
         return TE.right("Token ID is " + expression);
       default:
