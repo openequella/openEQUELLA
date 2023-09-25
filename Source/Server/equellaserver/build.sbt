@@ -168,14 +168,14 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "com.sun.xml.fastinfoset"),
     ExclusionRule(organization = "net.sf.ehcache")
   ),
-  "org.apache.httpcomponents" % "httpclient"              % "4.5.14",
-  "org.apache.httpcomponents" % "httpcore"                % "4.4.16",
-  "org.apache.lucene"         % "lucene-core"             % luceneVersion,
-  "org.apache.lucene"         % "lucene-analyzers-common" % "8.11.2", // This one has not got version 9 by 13 Sep 2023/
-  "org.apache.lucene"         % "lucene-queryparser"      % luceneVersion,
-  "org.apache.lucene"         % "lucene-queries"          % luceneVersion,
-  "org.apache.lucene"         % "lucene-backward-codecs"  % luceneVersion,
-  "org.apache.rampart"        % "rampart-core"            % "1.6.3" excludeAll (
+  "org.apache.httpcomponents" % "httpclient"             % "4.5.14",
+  "org.apache.httpcomponents" % "httpcore"               % "4.4.16",
+  "org.apache.lucene"         % "lucene-core"            % luceneVersion,
+  "org.apache.lucene"         % "lucene-analysis-common" % luceneVersion,
+  "org.apache.lucene"         % "lucene-queryparser"     % luceneVersion,
+  "org.apache.lucene"         % "lucene-queries"         % luceneVersion,
+  "org.apache.lucene"         % "lucene-backward-codecs" % luceneVersion,
+  "org.apache.rampart"        % "rampart-core"           % "1.6.3" excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces")
   ),
@@ -362,21 +362,14 @@ run := {
                 "plugins",
                 "Log4j2Plugins.dat") =>
     MergeStrategy.last
-  case PathList("META-INF", "jdom-info.xml")   => MergeStrategy.first
-  case PathList("META-INF", "axiom.xml")       => MergeStrategy.first
-  case PathList("javax", "wsdl", _*)           => MergeStrategy.last
-  case PathList("javax", "xml", "soap", _*)    => MergeStrategy.first
-  case PathList("javax", "transaction", _*)    => MergeStrategy.first
-  case PathList("javax", "jws", _*)            => MergeStrategy.first
-  case PathList("com", "ibm", "wsdl", _*)      => MergeStrategy.first
-  case PathList("org", "apache", "regexp", _*) => MergeStrategy.first
-  case PathList("org",
-                "apache",
-                "lucene",
-                "analysis",
-                "standard",
-                "StandardTokenizerFactory.class") =>
-    MergeStrategy.first
+  case PathList("META-INF", "jdom-info.xml")                => MergeStrategy.first
+  case PathList("META-INF", "axiom.xml")                    => MergeStrategy.first
+  case PathList("javax", "wsdl", _*)                        => MergeStrategy.last
+  case PathList("javax", "xml", "soap", _*)                 => MergeStrategy.first
+  case PathList("javax", "transaction", _*)                 => MergeStrategy.first
+  case PathList("javax", "jws", _*)                         => MergeStrategy.first
+  case PathList("com", "ibm", "wsdl", _*)                   => MergeStrategy.first
+  case PathList("org", "apache", "regexp", _*)              => MergeStrategy.first
   case PathList("javax", "servlet", "jsp", _*)              => MergeStrategy.first
   case PathList("javax", "servlet", _*)                     => MergeStrategy.last
   case PathList("javax", "annotation", _*)                  => MergeStrategy.first
