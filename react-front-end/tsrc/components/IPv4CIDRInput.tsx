@@ -19,6 +19,7 @@ import * as t from "io-ts";
 import { Grid, TextField } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import * as A from "fp-ts/Array";
+import * as E from "fp-ts/Either";
 import { absurd, constant, constFalse, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { not } from "fp-ts/Predicate";
@@ -235,34 +236,31 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
     pipe(
       event.code,
       KeyCodeTypesUnion.decode,
-      O.fromEither,
-      O.map((keyCodeType) => {
+      E.fold(console.error, (keyCodeType) => {
         switch (keyCodeType) {
           case "Enter":
-            focusInput(index + 1);
-            break;
+            return focusInput(index + 1);
           case "Backspace":
             if (S.isEmpty(inputValue)) {
               focusInput(index - 1);
             }
-            break;
+            return;
           case "Period":
             if (!S.isEmpty(inputValue)) {
               focusInput(index + 1);
               // key `Period` will trigger focus event on current input, thus prevent it.
               event.preventDefault();
             }
-            break;
+            return;
           case "NumpadDecimal":
             if (!S.isEmpty(inputValue)) {
               focusInput(index + 1);
               // key `NumpadDecimal` will trigger focus event on current input.
               event.preventDefault();
             }
-            break;
+            return;
           default:
-            absurd(keyCodeType);
-            break;
+            return absurd(keyCodeType);
         }
       })
     );
