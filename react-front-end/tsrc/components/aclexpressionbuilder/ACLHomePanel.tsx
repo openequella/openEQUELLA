@@ -38,6 +38,7 @@ import {
   userToRecipient,
 } from "../../modules/ACLRecipientModule";
 import { languageStrings } from "../../util/langstrings";
+import { simpleUnionMatch } from "../../util/match";
 import GroupSearch from "../securityentitysearch/GroupSearch";
 import RoleSearch from "../securityentitysearch/RoleSearch";
 import UserSearch from "../securityentitysearch/UserSearch";
@@ -143,59 +144,55 @@ const ACLHomePanel = ({
           </RadioGroup>
         </Grid>
       </Grid>
-      {pipe(activeSearchFilterType, (filterType) => {
-        switch (filterType) {
-          case "Users":
-            return (
-              <UserSearch
-                key={filterType}
-                mode={{
-                  type: "one_click",
-                  onAdd: (user) =>
-                    handleOnAdded(RSET.singleton(user), userToRecipient),
-                }}
-                {...sharedProps}
-                search={searchUserProvider}
-                onSelectAll={(users) => handleOnAdded(users, userToRecipient)}
-                showHelpText
-              />
-            );
-          case "Groups":
-            return (
-              <GroupSearch
-                key={filterType}
-                mode={{
-                  type: "one_click",
-                  onAdd: (group) =>
-                    handleOnAdded(RSET.singleton(group), groupToRecipient),
-                }}
-                {...sharedProps}
-                search={searchGroupProvider}
-                onSelectAll={(groups) =>
-                  handleOnAdded(groups, groupToRecipient)
-                }
-                showHelpText
-              />
-            );
-          case "Roles":
-            return (
-              <RoleSearch
-                key={filterType}
-                mode={{
-                  type: "one_click",
-                  onAdd: (role) =>
-                    handleOnAdded(RSET.singleton(role), roleToRecipient),
-                }}
-                {...sharedProps}
-                search={searchRoleProvider}
-                onSelectAll={(roles) => handleOnAdded(roles, roleToRecipient)}
-                listHeight={367}
-                groupFilterEditable={false}
-                showHelpText
-              />
-            );
-        }
-      })}
+      {pipe(
+        activeSearchFilterType,
+        simpleUnionMatch<SearchFilterType, React.JSX.Element>({
+          Users: () => (
+            <UserSearch
+              key={activeSearchFilterType}
+              mode={{
+                type: "one_click",
+                onAdd: (user) =>
+                  handleOnAdded(RSET.singleton(user), userToRecipient),
+              }}
+              {...sharedProps}
+              search={searchUserProvider}
+              onSelectAll={(users) => handleOnAdded(users, userToRecipient)}
+              showHelpText
+            />
+          ),
+          Groups: () => (
+            <GroupSearch
+              key={activeSearchFilterType}
+              mode={{
+                type: "one_click",
+                onAdd: (group) =>
+                  handleOnAdded(RSET.singleton(group), groupToRecipient),
+              }}
+              {...sharedProps}
+              search={searchGroupProvider}
+              onSelectAll={(groups) => handleOnAdded(groups, groupToRecipient)}
+              showHelpText
+            />
+          ),
+          Roles: () => (
+            <RoleSearch
+              key={activeSearchFilterType}
+              mode={{
+                type: "one_click",
+                onAdd: (role) =>
+                  handleOnAdded(RSET.singleton(role), roleToRecipient),
+              }}
+              {...sharedProps}
+              search={searchRoleProvider}
+              onSelectAll={(roles) => handleOnAdded(roles, roleToRecipient)}
+              listHeight={367}
+              groupFilterEditable={false}
+              showHelpText
+            />
+          ),
+        })
+      )}
     </FormControl>
   );
 };

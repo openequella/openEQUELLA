@@ -19,12 +19,13 @@ import * as t from "io-ts";
 import * as OEQ from "@openequella/rest-api-client";
 import * as E from "fp-ts/Either";
 import * as EQ from "fp-ts/Eq";
-import { absurd, constant, flow, pipe } from "fp-ts/function";
+import { constant, flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as ORD from "fp-ts/Ord";
 import * as RNEA from "fp-ts/ReadonlyNonEmptyArray";
 import * as S from "fp-ts/string";
 import * as TE from "fp-ts/TaskEither";
+import { simpleUnionMatch } from "../util/match";
 import { ACLEntityResolvers } from "./ACLEntityModule";
 
 const ACLRecipientTypesUnion = t.union([
@@ -162,59 +163,52 @@ const generateACLRecipientName =
     resolveGroupProvider,
     resolveRoleProvider,
   }: ACLEntityResolvers) =>
-  (recipient: ACLRecipient): TE.TaskEither<string, string> => {
-    const { type, expression } = recipient;
-
-    switch (type) {
-      case "U":
-        return pipe(
-          TE.tryCatch<string, OEQ.UserQuery.UserDetails | undefined>(
-            () => resolveUserProvider(expression),
-            (err) => `Failed to fetch user details: ${err}`
-          ),
-          TE.chainOptionK<string>(constant(`Can't find user: ${expression}`))(
-            flow(
-              O.fromNullable,
-              O.chainNullableK(
-                (u: OEQ.UserQuery.UserDetails) => userToRecipient(u).name
+  ({ type, expression }: ACLRecipient): TE.TaskEither<string, string> =>
+    pipe(
+      type,
+      simpleUnionMatch<ACLRecipientType, TE.TaskEither<string, string>>({
+        U: () =>
+          pipe(
+            TE.tryCatch<string, OEQ.UserQuery.UserDetails | undefined>(
+              () => resolveUserProvider(expression),
+              (err) => `Failed to fetch user details: ${err}`
+            ),
+            TE.chainOptionK<string>(constant(`Can't find user: ${expression}`))(
+              flow(
+                O.fromNullable,
+                O.chainNullableK(
+                  (u: OEQ.UserQuery.UserDetails) => userToRecipient(u).name
+                )
               )
             )
-          )
-        );
-      case "G":
-        return pipe(
-          TE.tryCatch(
-            () => resolveGroupProvider(expression),
-            (err) => `Failed to fetch group details: ${err}`
           ),
-          TE.chainNullableK<string>(`Can't find group: ${expression}`)(
-            (g: OEQ.UserQuery.GroupDetails | undefined) => g?.name
-          )
-        );
-      case "R":
-        return pipe(
-          TE.tryCatch(
-            () => resolveRoleProvider(expression),
-            (err) => `Failed to fetch role details: ${err}`
+        G: () =>
+          pipe(
+            TE.tryCatch(
+              () => resolveGroupProvider(expression),
+              (err) => `Failed to fetch group details: ${err}`
+            ),
+            TE.chainNullableK<string>(`Can't find group: ${expression}`)(
+              (g: OEQ.UserQuery.GroupDetails | undefined) => g?.name
+            )
           ),
-          TE.chainNullableK<string>(`Can't find role: ${expression}`)(
-            (r: OEQ.UserQuery.RoleDetails | undefined) => r?.name
-          )
-        );
-      case "*":
-        return TE.right("Everyone");
-      case "$OWNER":
-        return TE.right("Owner");
-      case "I":
-        return TE.right("From " + expression);
-      case "F":
-        return TE.right("From " + decodeURIComponent(expression));
-      case "T":
-        return TE.right("Token ID is " + expression);
-      default:
-        return absurd(type);
-    }
-  };
+        R: () =>
+          pipe(
+            TE.tryCatch(
+              () => resolveRoleProvider(expression),
+              (err) => `Failed to fetch role details: ${err}`
+            ),
+            TE.chainNullableK<string>(`Can't find role: ${expression}`)(
+              (r: OEQ.UserQuery.RoleDetails | undefined) => r?.name
+            )
+          ),
+        "*": () => TE.right("Everyone"),
+        $OWNER: () => TE.right("Owner"),
+        I: () => TE.right("From " + expression),
+        F: () => TE.right("From " + decodeURIComponent(expression)),
+        T: () => TE.right("Token ID is " + expression),
+      })
+    );
 
 /**
  * Show the full raw expression string for an ACL Recipient.

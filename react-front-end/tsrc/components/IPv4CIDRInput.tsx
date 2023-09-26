@@ -20,7 +20,7 @@ import { Grid, TextField } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
-import { absurd, constant, constFalse, pipe } from "fp-ts/function";
+import { constant, constFalse, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { not } from "fp-ts/Predicate";
 import * as S from "fp-ts/string";
@@ -30,6 +30,7 @@ import * as N from "fp-ts/number";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as RA from "fp-ts/ReadonlyArray";
 import * as RNEA from "fp-ts/ReadonlyNonEmptyArray";
+import { simpleUnionMatch } from "../util/match";
 
 /**
  * Runtypes definition for key code which need to be handled here.
@@ -40,6 +41,8 @@ const KeyCodeTypesUnion = t.union([
   t.literal("Period"),
   t.literal("NumpadDecimal"),
 ]);
+
+type KeyCodeTypes = t.TypeOf<typeof KeyCodeTypesUnion>;
 
 const PREFIX = "IPv4CIDRInput";
 const classes = {
@@ -236,33 +239,31 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
     pipe(
       event.code,
       KeyCodeTypesUnion.decode,
-      E.fold(console.error, (keyCodeType) => {
-        switch (keyCodeType) {
-          case "Enter":
-            return focusInput(index + 1);
-          case "Backspace":
+      E.fold(
+        console.error,
+        simpleUnionMatch<KeyCodeTypes, void>({
+          Enter: () => focusInput(index + 1),
+          Backspace: () => {
             if (S.isEmpty(inputValue)) {
               focusInput(index - 1);
             }
-            return;
-          case "Period":
+          },
+          Period: () => {
             if (!S.isEmpty(inputValue)) {
               focusInput(index + 1);
               // key `Period` will trigger focus event on current input, thus prevent it.
               event.preventDefault();
             }
-            return;
-          case "NumpadDecimal":
+          },
+          NumpadDecimal: () => {
             if (!S.isEmpty(inputValue)) {
               focusInput(index + 1);
               // key `NumpadDecimal` will trigger focus event on current input.
               event.preventDefault();
             }
-            return;
-          default:
-            return absurd(keyCodeType);
-        }
-      })
+          },
+        })
+      )
     );
 
   const ipInput = (index: number) => {

@@ -415,29 +415,18 @@ export const generateQueryStringFromSearchPageOptions = (
     "searchOptions",
     JSON.stringify(
       searchPageOptions,
-      (key: string, value: object[] | undefined) => {
-        switch (key) {
-          case "collections":
-            return value?.map((collection) => pick(collection, ["uuid"]));
-          case "owner":
-            return value ? pick(value, ["id"]) : undefined;
-          case "mimeTypeFilters":
-            return value?.map((filter) => pick(filter, ["id"]));
-          case "mimeTypes":
-            return undefined; // As we can get MIME types from filters, we can skip key "mimeTypes".
-          case "advancedSearchCriteria":
-            return undefined; // Skip advancedSearchCriteria as we can build it from `advFieldValue`.
-          case "advFieldValue":
-            return pipe(
-              value,
-              O.fromNullable,
-              O.map(Array.from),
-              O.toUndefined
-            );
-          default:
-            return value ?? undefined;
-        }
-      }
+      (key: string, value: object[] | undefined) =>
+        simpleMatch({
+          collections: () =>
+            value?.map((collection) => pick(collection, ["uuid"])),
+          owner: () => (value ? pick(value, ["id"]) : undefined),
+          mimeTypeFilters: () => value?.map((filter) => pick(filter, ["id"])),
+          mimeTypes: () => undefined, // As we can get MIME types from filters, we can skip key "mimeTypes".
+          advancedSearchCriteria: () => undefined, // Skip advancedSearchCriteria as we can build it from `advFieldValue`.
+          advFieldValue: () =>
+            pipe(value, O.fromNullable, O.map(Array.from), O.toUndefined),
+          _: () => value ?? undefined,
+        })(key)
     )
   );
   return params.toString();

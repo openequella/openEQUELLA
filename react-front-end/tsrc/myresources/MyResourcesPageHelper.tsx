@@ -62,7 +62,7 @@ import {
 import { SearchPageSearchResult } from "../search/SearchPageReducer";
 import { DateRangeFromString, getISODateString } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
-import { simpleMatch } from "../util/match";
+import { simpleMatch, simpleUnionMatch } from "../util/match";
 import { pfSplitAt, pfTernaryTypeGuard } from "../util/pointfree";
 
 export const PARAM_MYRESOURCES_TYPE = "myResourcesType";
@@ -199,26 +199,17 @@ const getMyResourcesTypeFromLegacyQueryParam = (
   pipe(
     params,
     getLegacyMyResourceType,
-    O.map((myResourcesType) => {
-      switch (myResourcesType) {
-        case "published":
-          return "Published";
-        case "draft":
-          return "Drafts";
-        case "scrapbook":
-          return "Scrapbook";
-        case "modqueue":
-          return "Moderation queue";
-        case "archived":
-          return "Archive";
-        case "all":
-          return "All resources";
-        case "defaultValue":
-          return "Published";
-        default:
-          return absurd(myResourcesType);
-      }
-    })
+    O.map(
+      simpleUnionMatch<LegacyMyResourcesTypes, MyResourcesType>({
+        published: constant("Published"),
+        draft: constant("Drafts"),
+        scrapbook: constant("Scrapbook"),
+        modqueue: constant("Moderation queue"),
+        archived: constant("Archive"),
+        all: constant("All resources"),
+        defaultValue: constant("Published"),
+      })
+    )
   );
 
 // Get the 'My Resources' type from the given params `MyResourcesType`.
@@ -314,16 +305,15 @@ const getSortOrderFromLegacyQueryParam = (
     pipe(
       params,
       getLegacyMyResourceType,
-      O.map((myResourcesType) => {
-        switch (myResourcesType) {
-          case "scrapbook":
-            return "sbsort";
-          case "modqueue":
-            return "modsort";
-          default:
-            return "sort";
-        }
-      }),
+      O.map(
+        simpleUnionMatch<LegacyMyResourcesTypes, string>(
+          {
+            modqueue: constant("modsort"),
+            scrapbook: constant("sbsort"),
+          },
+          constant("sort")
+        )
+      ),
       O.chain((queryString) => pipe(params.get(queryString), O.fromNullable)),
       // Need to translate the presentation values of Moderation specific sort orders to the real sorting values.
       O.map(
