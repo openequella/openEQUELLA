@@ -40,11 +40,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import org.apache.lucene.document.LongPoint;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause.Occur;
-import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.BooleanQuery.Builder;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.NumericRangeQuery;
 import org.apache.lucene.search.TermQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -189,20 +189,18 @@ public class ItemSyncer implements Callable<Void> {
 
     @Override
     public Collection<IndexedItem> search(IndexSearcher searcher) throws IOException {
-      BooleanQuery overall = new BooleanQuery();
-      BooleanQuery collections = new BooleanQuery();
+      Builder fullQueryBuilder = new Builder();
+      Builder institutionQueryBuilder = new Builder();
       for (Institution inst : institutions) {
-        collections.add(
+        institutionQueryBuilder.add(
             new TermQuery(
                 new Term(FreeTextQuery.FIELD_INSTITUTION, Long.toString(inst.getUniqueId()))),
             Occur.SHOULD);
       }
-      overall.add(collections, Occur.MUST);
-      overall.add(
-          NumericRangeQuery.newLongRange(
-              FreeTextQuery.FIELD_ID_RANGEABLE, firstId, lastId, true, true),
-          Occur.MUST);
-      searcher.search(overall, compareDates);
+      fullQueryBuilder.add(institutionQueryBuilder.build(), Occur.MUST);
+      fullQueryBuilder.add(
+          LongPoint.newRangeQuery(FreeTextQuery.FIELD_ID_RANGEABLE, firstId, lastId), Occur.MUST);
+      searcher.search(fullQueryBuilder.build(), compareDates);
       return compareDates.getModifiedDocs();
     }
   }

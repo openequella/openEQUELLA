@@ -20,11 +20,13 @@ package com.tle.core.workflow.freetext;
 
 import com.tle.common.Check;
 import java.io.IOException;
-import org.apache.lucene.index.BinaryDocValues;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.lucene.index.LeafReader;
 import org.apache.lucene.index.LeafReaderContext;
+import org.apache.lucene.index.PostingsEnum;
+import org.apache.lucene.index.SortedDocValues;
 import org.apache.lucene.search.SimpleFieldComparator;
-import org.apache.lucene.util.BytesRef;
 
 public final class CustomLuceneSortComparator extends SimpleFieldComparator<Integer> {
 
@@ -76,11 +78,13 @@ public final class CustomLuceneSortComparator extends SimpleFieldComparator<Inte
     int maxDoc = reader.maxDoc();
     currentReaderValues = new String[maxDoc];
 
-    BinaryDocValues docValues = reader.getSortedDocValues(field);
-    for (int i = 0; i < maxDoc; i++) {
-      BytesRef value = docValues.get(i);
-      currentReaderValues[i] = value == null ? "" : value.utf8ToString();
+    List<String> values = new ArrayList<>();
+    SortedDocValues docValues = reader.getSortedDocValues(field);
+    while (docValues.nextDoc() != PostingsEnum.NO_MORE_DOCS) {
+      values.add(docValues.lookupOrd(docValues.ordValue()).utf8ToString());
     }
+
+    currentReaderValues = values.toArray(new String[0]);
   }
 
   @Override

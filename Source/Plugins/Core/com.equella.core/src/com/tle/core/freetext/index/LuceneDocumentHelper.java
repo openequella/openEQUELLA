@@ -19,8 +19,9 @@
 package com.tle.core.freetext.index;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.function.IntConsumer;
-import org.apache.lucene.index.DocsEnum;
+import java.util.stream.Stream;
 import org.apache.lucene.index.LeafReader;
 import org.apache.lucene.index.PostingsEnum;
 import org.apache.lucene.index.Term;
@@ -37,7 +38,7 @@ public final class LuceneDocumentHelper {
    */
   public static void forEachDoc(DocIdSetIterator docs, IntConsumer forEach) throws IOException {
     if (docs != null) {
-      while (docs.nextDoc() != DocsEnum.NO_MORE_DOCS) {
+      while (docs.nextDoc() != PostingsEnum.NO_MORE_DOCS) {
         forEach.accept(docs.docID());
       }
     }
@@ -73,6 +74,25 @@ public final class LuceneDocumentHelper {
       }
 
       useCount.accept(count);
+    }
+  }
+
+  public static Stream<Integer> postingEnumToStream(PostingsEnum postingsEnum) {
+    return Optional.ofNullable(postingsEnum)
+        .map(
+            idEnum ->
+                Stream.iterate(
+                    getNextDocId(idEnum),
+                    docId -> docId != PostingsEnum.NO_MORE_DOCS,
+                    (previousId) -> getNextDocId(idEnum)))
+        .orElse(Stream.empty());
+  }
+
+  private static int getNextDocId(PostingsEnum postingsEnum) {
+    try {
+      return postingsEnum.nextDoc();
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to get the next Lucene document ID", e);
     }
   }
 }

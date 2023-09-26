@@ -19,13 +19,12 @@
 package com.tle.freetext;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.core.LowerCaseFilter;
 import org.apache.lucene.analysis.core.StopFilter;
 import org.apache.lucene.analysis.en.PorterStemFilter;
-import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
-import org.apache.lucene.analysis.util.CharArraySet;
 
 /** @author aholland */
 public class TLEAnalyzer extends Analyzer {
@@ -40,8 +39,7 @@ public class TLEAnalyzer extends Analyzer {
   @Override
   public TokenStreamComponents createComponents(String fieldName) {
     StandardTokenizer tokenizer = new StandardTokenizer();
-    TokenStream result = new StandardFilter(tokenizer);
-    result = new LowerCaseFilter(result);
+    TokenStream result = new LowerCaseFilter(tokenizer);
     if (stopSet != null) {
       result = new StopFilter(result, stopSet);
     }

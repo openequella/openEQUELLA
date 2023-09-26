@@ -29,7 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.LeafReaderContext;
-import org.apache.lucene.search.Scorer;
+import org.apache.lucene.search.ScoreMode;
 import org.apache.lucene.search.SimpleCollector;
 
 public abstract class AbstractCompareDateCollector extends SimpleCollector {
@@ -50,9 +50,6 @@ public abstract class AbstractCompareDateCollector extends SimpleCollector {
   protected void doSetNextReader(LeafReaderContext context) {
     this.reader = context.reader();
   }
-
-  @Override
-  public void setScorer(Scorer scorer) {}
 
   @SuppressWarnings("nls")
   @Override
@@ -89,7 +86,7 @@ public abstract class AbstractCompareDateCollector extends SimpleCollector {
   public abstract List<IndexedItem> getModifiedDocs();
 
   @Override
-  public boolean needsScores() {
-    return false;
+  public ScoreMode scoreMode() {
+    return ScoreMode.COMPLETE_NO_SCORES;
   }
 }

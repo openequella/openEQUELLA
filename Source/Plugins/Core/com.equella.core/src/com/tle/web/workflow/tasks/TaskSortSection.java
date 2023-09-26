@@ -31,7 +31,6 @@ import com.tle.web.search.sort.SortOption;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.render.Label;
-import java.io.IOException;
 import java.util.List;
 import org.apache.lucene.search.FieldComparator;
 import org.apache.lucene.search.FieldComparatorSource;
@@ -104,8 +103,7 @@ public class TaskSortSection extends AbstractSortOptionsSection<FreetextSearchEv
 
       @Override
       public FieldComparator<Integer> newComparator(
-          final String fieldName, final int numHits, final int sortPos, boolean reversed)
-          throws IOException {
+          String fieldName, int numHits, boolean enableSkipping, boolean reversed) {
         return new CustomLuceneSortComparator(numHits, fieldName, CurrentUser.getUserID());
       }
     };

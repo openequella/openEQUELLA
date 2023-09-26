@@ -32,12 +32,7 @@ import com.tle.common.searching.Search.SortType
 import com.tle.common.security.SecurityConstants
 import com.tle.common.settings.ConfigurationProperties
 import com.tle.common.settings.standard.SearchSettings
-import com.tle.common.usermanagement.user.{
-  AbstractUserState,
-  CurrentUser,
-  DefaultUserState,
-  UserState
-}
+import com.tle.common.usermanagement.user.{AbstractUserState, CurrentUser, DefaultUserState}
 import com.tle.core.events.services.EventService
 import com.tle.core.freetext.index.AbstractIndexEngine.Searcher
 import com.tle.core.freetext.indexer.StandardIndexer
@@ -54,6 +49,7 @@ import com.tle.core.zookeeper.ZookeeperService
 import com.tle.freetext.{FreetextIndexConfiguration, FreetextIndexImpl, IndexedItem}
 import org.apache.lucene.document.{Document, Field, FieldType}
 import org.apache.lucene.index.IndexOptions
+import org.apache.lucene.search.TotalHits.Relation
 import org.apache.lucene.search._
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyInt}
@@ -570,7 +566,10 @@ class ItemIndexTest
         Then("the search API should be called with those terms without the stopping words")
         // Mock an IndexSearcher.
         val mockedSearcher = mock(classOf[IndexSearcher])
-        doReturn(new TopFieldDocs(0, Array.empty[ScoreDoc], Array.empty[SortField], 0.0f))
+        doReturn(
+          new TopFieldDocs(new TotalHits(0, Relation.EQUAL_TO),
+                           Array.empty[ScoreDoc],
+                           Array.empty[SortField]))
           .when(mockedSearcher)
           .search(any(classOf[Query]), anyInt(), any(classOf[Sort]))
 
@@ -587,9 +586,9 @@ class ItemIndexTest
         )
 
         val processedQuery = queryCaptor.getValue.toString
-        processedQuery should (include("name_vectored:java^2.0 body:java^1.0") and
-          include("name_vectored:scala^2.0 body:scala^1.0") and
-          include("name_vectored:interest^2.0 body:interest^1.0"))
+        processedQuery should (include("(name_vectored:java)^2.0 (body:java)^1.0") and
+          include("(name_vectored:scala)^2.0 (body:scala)^1.0") and
+          include("(name_vectored:interest)^2.0 (body:interest)^1.0"))
       }
     }
 

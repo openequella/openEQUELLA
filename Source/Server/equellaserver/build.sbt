@@ -30,7 +30,7 @@ val jsoupVersion      = "1.16.1"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "2.3.0"
 val tikaVersion       = "2.9.0"
-val luceneVersion     = "5.5.5"
+val luceneVersion     = "9.7.0"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -168,13 +168,14 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "com.sun.xml.fastinfoset"),
     ExclusionRule(organization = "net.sf.ehcache")
   ),
-  "org.apache.httpcomponents" % "httpclient"              % "4.5.14",
-  "org.apache.httpcomponents" % "httpcore"                % "4.4.16",
-  "org.apache.lucene"         % "lucene-core"             % luceneVersion,
-  "org.apache.lucene"         % "lucene-analyzers-common" % luceneVersion,
-  "org.apache.lucene"         % "lucene-queryparser"      % luceneVersion,
-  "org.apache.lucene"         % "lucene-queries"          % luceneVersion,
-  "org.apache.rampart"        % "rampart-core"            % "1.6.3" excludeAll (
+  "org.apache.httpcomponents" % "httpclient"             % "4.5.14",
+  "org.apache.httpcomponents" % "httpcore"               % "4.4.16",
+  "org.apache.lucene"         % "lucene-core"            % luceneVersion,
+  "org.apache.lucene"         % "lucene-analysis-common" % luceneVersion,
+  "org.apache.lucene"         % "lucene-queryparser"     % luceneVersion,
+  "org.apache.lucene"         % "lucene-queries"         % luceneVersion,
+  "org.apache.lucene"         % "lucene-backward-codecs" % luceneVersion,
+  "org.apache.rampart"        % "rampart-core"           % "1.6.3" excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces")
   ),
