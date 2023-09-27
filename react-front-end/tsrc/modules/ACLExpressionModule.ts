@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as t from "io-ts";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import { constant, flow, identity, pipe } from "fp-ts/function";
@@ -28,9 +29,9 @@ import { ReadonlyNonEmptyArray } from "fp-ts/ReadonlyNonEmptyArray";
 import * as S from "fp-ts/string";
 import * as T from "fp-ts/Task";
 import * as TE from "fp-ts/TaskEither";
-import { Literal, Static, Union } from "runtypes";
 import { v4 as uuidv4 } from "uuid";
 import { languageStrings } from "../util/langstrings";
+import { simpleUnionMatch } from "../util/match";
 import { pfTernary, pfTernaryTypeGuard } from "../util/pointfree";
 import { ACLEntityResolversMulti, ACLEntityResolvers } from "./ACLEntityModule";
 import {
@@ -54,21 +55,21 @@ const {
  *
  * `UNKNOWN` is only used as a placeholder while parsing an ACL recipient string.
  */
-export const ACLOperatorTypesUnion = Union(
-  Literal("OR"),
-  Literal("AND"),
-  Literal("NOT"),
-  Literal("UNKNOWN")
-);
+export const ACLOperatorTypesUnion = t.union([
+  t.literal("OR"),
+  t.literal("AND"),
+  t.literal("NOT"),
+  t.literal("UNKNOWN"),
+]);
 
-export type ACLOperatorType = Static<typeof ACLOperatorTypesUnion>;
+export type ACLOperatorType = t.TypeOf<typeof ACLOperatorTypesUnion>;
 
-export const getOperatorLabel = ACLOperatorTypesUnion.match(
-  (OR) => orLabel,
-  (AND) => andLabel,
-  (NOT) => notLabel,
-  (UNKNOWN) => UNKNOWN
-);
+export const getOperatorLabel = simpleUnionMatch<ACLOperatorType, string>({
+  OR: () => orLabel,
+  AND: () => andLabel,
+  NOT: () => notLabel,
+  UNKNOWN: () => "UNKNOWN",
+});
 
 /**
  * Represents the ACL Expression string.
@@ -256,7 +257,7 @@ const getChildrenCount = (expression: ACLExpression): number =>
  * Tells whether the provide piece of text is an ACL Operator.
  */
 const isACLOperator = (text: string): text is ACLOperatorType =>
-  ACLOperatorTypesUnion.guard(text);
+  ACLOperatorTypesUnion.is(text);
 
 /**
  * Merge a given base ACL Expression with a new ACL Expression.
