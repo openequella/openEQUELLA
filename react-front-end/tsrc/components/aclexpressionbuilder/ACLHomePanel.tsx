@@ -104,7 +104,6 @@ const ACLHomePanel = ({
     pipe(
       event.target.value,
       SearchFilterTypesUnion.decode,
-      E.mapLeft((err) => err),
       E.getOrThrow,
       setActiveSearchFilterType
     );
