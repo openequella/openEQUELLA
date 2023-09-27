@@ -64,7 +64,6 @@
     "react-router": "5.3.4",
     "react-router-dom": "5.3.4",
     "react-router-hash-link": "2.4.3",
-    "runtypes": "6.7.0",
     "shallow-equal-object": "1.1.1",
     "sprintf-js": "1.1.2",
     "tinymce": "6.7.0",
