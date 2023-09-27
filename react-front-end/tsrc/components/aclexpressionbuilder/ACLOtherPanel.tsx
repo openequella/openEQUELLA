@@ -26,7 +26,7 @@ import {
   SelectChangeEvent,
   Typography,
 } from "@mui/material";
-import * as E from "fp-ts/Either";
+import * as E from "../../util/Either.extended";
 import { flow, identity, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
@@ -129,7 +129,8 @@ const ACLOtherPanel = ({
     pipe(
       event.target.value,
       OtherACLTypesUnion.decode,
-      E.fold(console.error, setActiveACLType)
+      E.getOrThrow,
+      setActiveACLType
     );
 
   const handleAddButtonClicked = async () => {

@@ -24,7 +24,7 @@ import {
   RadioGroup,
   Radio,
 } from "@mui/material";
-import * as E from "fp-ts/Either";
+import * as E from "../../util/Either.extended";
 import * as React from "react";
 import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
@@ -104,7 +104,9 @@ const ACLHomePanel = ({
     pipe(
       event.target.value,
       SearchFilterTypesUnion.decode,
-      E.fold(console.error, setActiveSearchFilterType)
+      E.mapLeft((err) => err),
+      E.getOrThrow,
+      setActiveSearchFilterType
     );
 
   const handleOnAdded = <T,>(

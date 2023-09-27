@@ -18,7 +18,7 @@
 import { FormControl, MenuItem, OutlinedInput, Select } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { pipe } from "fp-ts/function";
-import * as E from "fp-ts/Either";
+import * as E from "../../../util/Either.extended";
 import * as React from "react";
 import { languageStrings } from "../../../util/langstrings";
 import * as OEQ from "@openequella/rest-api-client";
@@ -65,7 +65,8 @@ export default function DefaultSortOrderSetting({
           pipe(
             event.target.value,
             OEQ.Codec.Search.SortOrderCodec.decode,
-            E.fold(console.error, setValue)
+            E.getOrThrow,
+            setValue
           )
         }
         variant="outlined"

@@ -17,7 +17,7 @@
  */
 import { InputLabel, MenuItem, Select } from "@mui/material";
 import { pipe } from "fp-ts/function";
-import * as E from "fp-ts/Either";
+import * as E from "../../util/Either.extended";
 import * as React from "react";
 import { languageStrings } from "../../util/langstrings";
 import * as OEQ from "@openequella/rest-api-client";
@@ -81,7 +81,8 @@ export const SearchOrderSelect = ({
           pipe(
             event.target.value,
             OEQ.Codec.Search.SortOrderCodec.decode,
-            E.fold(console.error, onChange)
+            E.getOrThrow,
+            onChange
           )
         }
         variant="standard"
