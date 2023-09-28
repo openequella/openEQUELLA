@@ -31,12 +31,11 @@ const buildErrorFromValidation: (e: Errors) => Error = flow(
   (error) => new Error(error)
 );
 
+const buildErrorFromString = (e: string | Errors): Error =>
+  typeof e === "string" ? new Error(e) : buildErrorFromValidation(e);
+
 const buildError = (e: string | Error | Errors): Error =>
-  e instanceof Error
-    ? e
-    : typeof e === "string"
-    ? new Error(e)
-    : buildErrorFromValidation(e);
+  e instanceof Error ? e : buildErrorFromString(e);
 
 /**
  * Given an Either, return the value or throw an error.
