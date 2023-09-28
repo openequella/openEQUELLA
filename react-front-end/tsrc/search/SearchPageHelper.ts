@@ -15,6 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as t from "io-ts";
+import * as td from "io-ts-types";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
@@ -27,28 +29,13 @@ import * as TO from "fp-ts/TaskOption";
 import { History, Location } from "history";
 import { pick } from "lodash";
 import { createContext } from "react";
-import {
-  Array as RuntypeArray,
-  Boolean,
-  Guard,
-  Literal,
-  match,
-  Number,
-  Partial,
-  Record,
-  Static,
-  String,
-  Tuple,
-  Union,
-  Unknown,
-} from "runtypes";
 import type {
   FieldValueMap,
   PathValueMap,
 } from "../components/wizard/WizardHelper";
 import {
-  RuntypesControlTarget,
-  RuntypesControlValue,
+  ControlTargetCodec,
+  ControlValueCodec,
 } from "../components/wizard/WizardHelper";
 import { NEW_SEARCH_PATH, routes } from "../mainui/routes";
 import {
@@ -60,7 +47,7 @@ import {
   Collection,
   findCollectionsByUuid,
 } from "../modules/CollectionsModule";
-import { LegacyMyResourcesRuntypes } from "../modules/LegacyContentModule";
+import { LegacyMyResourcesCodec } from "../modules/LegacyContentModule";
 import {
   buildSelectionSessionItemSummaryLink,
   buildSelectionSessionSearchPageLink,
@@ -70,12 +57,12 @@ import { getMimeTypeFiltersById } from "../modules/SearchFilterSettingsModule";
 import {
   defaultSearchOptions,
   DisplayMode,
-  DisplayModeRuntypes,
+  DisplayModeCodec,
   SearchOptions,
   SearchOptionsFields,
 } from "../modules/SearchModule";
 import { findUserById } from "../modules/UserModule";
-import { DateRange, isDate } from "../util/Date";
+import { DateRange } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
 import { simpleMatch } from "../util/match";
 import { pfSlice, pfTernary } from "../util/pointfree";
@@ -341,52 +328,47 @@ export const defaultPagedSearchResult: OEQ.Search.SearchResult<OEQ.Search.Search
 /**
  * Legacy searching.do parameters currently supported by SearchPage component.
  */
-const LegacySearchParams = Union(
-  Literal("dp"),
-  Literal("ds"),
-  Literal("dr"),
-  Literal("q"),
-  Literal("sort"),
-  Literal("owner"),
-  Literal("in"),
-  Literal("mt"),
-  Literal("_int.mimeTypes"),
-  Literal("type"),
-  Literal("doc")
-);
+const LegacySearchParamsCodec = t.union([
+  t.literal("dp"),
+  t.literal("ds"),
+  t.literal("dr"),
+  t.literal("q"),
+  t.literal("sort"),
+  t.literal("owner"),
+  t.literal("in"),
+  t.literal("mt"),
+  t.literal("_int.mimeTypes"),
+  t.literal("type"),
+  t.literal("doc"),
+]);
 
-type LegacyParams = Static<typeof LegacySearchParams>;
+type LegacyParams = t.TypeOf<typeof LegacySearchParamsCodec>;
 
 /**
  * Represents the shape of data returned from generateQueryStringFromSearchOptions
  */
-export const DehydratedSearchPageOptionsRunTypes = Partial({
-  query: String,
-  rowsPerPage: Number,
-  currentPage: Number,
-  sortOrder: OEQ.Search.SortOrderRunTypes,
-  collections: RuntypeArray(Record({ uuid: String })),
-  rawMode: Boolean,
-  lastModifiedDateRange: Partial({ start: Guard(isDate), end: Guard(isDate) }),
-  owner: Record({ id: String }),
-  status: RuntypeArray(OEQ.Common.ItemStatuses),
-  selectedCategories: RuntypeArray(
-    Record({
-      id: Number,
-      categories: RuntypeArray(String),
-    })
+export const DehydratedSearchPageOptionsCodec = t.partial({
+  query: t.string,
+  rowsPerPage: t.number,
+  currentPage: t.number,
+  sortOrder: OEQ.Codec.Search.SortOrderCodec,
+  collections: t.array(t.type({ uuid: t.string })),
+  rawMode: t.boolean,
+  lastModifiedDateRange: t.partial({ start: td.date, end: td.date }),
+  owner: t.type({ id: t.string }),
+  status: t.array(OEQ.Codec.Common.ItemStatusCodec),
+  selectedCategories: t.array(
+    t.type({ id: t.number, categories: t.array(t.string) })
   ),
-  searchAttachments: Boolean,
-  mimeTypeFilters: RuntypeArray(Record({ id: String })),
-  displayMode: DisplayModeRuntypes,
-  dateRangeQuickModeEnabled: Boolean,
-  advFieldValue: RuntypeArray(
-    Tuple(RuntypesControlTarget, RuntypesControlValue)
-  ),
+  searchAttachments: t.boolean,
+  mimeTypeFilters: t.array(t.type({ id: t.string })),
+  displayMode: DisplayModeCodec,
+  dateRangeQuickModeEnabled: t.boolean,
+  advFieldValue: t.array(t.tuple([ControlTargetCodec, ControlValueCodec])),
 });
 
-export type DehydratedSearchPageOptions = Static<
-  typeof DehydratedSearchPageOptionsRunTypes
+export type DehydratedSearchPageOptions = t.TypeOf<
+  typeof DehydratedSearchPageOptionsCodec
 >;
 
 /**
@@ -410,9 +392,7 @@ export const generateSearchPageOptionsFromQueryString = async (
   // For all else, return `undefined`.
   if (searchPageOptions) {
     return await newSearchQueryToSearchPageOptions(searchPageOptions);
-  } else if (
-    Array.from(params.keys()).some((key) => LegacySearchParams.guard(key))
-  ) {
+  } else if (Array.from(params.keys()).some(LegacySearchParamsCodec.is)) {
     return await legacyQueryStringToSearchPageOptions(params);
   }
   return undefined;
@@ -435,28 +415,18 @@ export const generateQueryStringFromSearchPageOptions = (
     "searchOptions",
     JSON.stringify(
       searchPageOptions,
-      (key: string, value: object[] | undefined) => {
-        return match(
-          [
-            Literal("collections"),
-            () => value?.map((collection) => pick(collection, ["uuid"])),
-          ],
-          [Literal("owner"), () => (value ? pick(value, ["id"]) : undefined)],
-          [
-            Literal("mimeTypeFilters"),
-            () => value?.map((filter) => pick(filter, ["id"])),
-          ],
-          // As we can get MIME types from filters, we can skip key "mimeTypes".
-          [Literal("mimeTypes"), () => undefined],
-          // Skip advancedSearchCriteria as we can build it from `advFieldValue`.
-          [Literal("advancedSearchCriteria"), () => undefined],
-          [
-            Literal("advFieldValue"),
-            () => pipe(value, O.fromNullable, O.map(Array.from), O.toUndefined),
-          ],
-          [Unknown, () => value ?? undefined]
-        )(key);
-      }
+      (key: string, value: object[] | undefined) =>
+        simpleMatch({
+          collections: () =>
+            value?.map((collection) => pick(collection, ["uuid"])),
+          owner: () => (value ? pick(value, ["id"]) : undefined),
+          mimeTypeFilters: () => value?.map((filter) => pick(filter, ["id"])),
+          mimeTypes: () => undefined, // As we can get MIME types from filters, we can skip key "mimeTypes".
+          advancedSearchCriteria: () => undefined, // Skip advancedSearchCriteria as we can build it from `advFieldValue`.
+          advFieldValue: () =>
+            pipe(value, O.fromNullable, O.map(Array.from), O.toUndefined),
+          _: () => value ?? undefined,
+        })(key)
     )
   );
   return params.toString();
@@ -511,7 +481,7 @@ export const newSearchQueryToSearchPageOptions = async (
     return value;
   });
 
-  if (!DehydratedSearchPageOptionsRunTypes.guard(parsedOptions)) {
+  if (!DehydratedSearchPageOptionsCodec.is(parsedOptions)) {
     console.warn("Invalid search query params received. Using defaults.");
     return defaultSearchPageOptions;
   }
@@ -572,7 +542,7 @@ const getDisplayModeFromLegacyParams = (
         _: (mode) => {
           // Because Old UI also uses query string `type` for My resources type and Legacy
           // My resources page does not have galleries, we always return "list".
-          if (LegacyMyResourcesRuntypes.guard(mode)) {
+          if (LegacyMyResourcesCodec.is(mode)) {
             return "list";
           }
           throw new TypeError(`Unknown Legacy display mode [${mode}]`);
@@ -696,8 +666,8 @@ export const legacyQueryStringToSearchPageOptions = async (
   const owner = await getOwnerFromLegacyParams(getQueryParam("owner"));
   const sortOrder = pipe(
     getQueryParam("sort")?.toLowerCase(),
-    O.fromPredicate(OEQ.Search.SortOrderRunTypes.guard),
-    O.getOrElse(() => defaultSearchOptions.sortOrder)
+    OEQ.Codec.Search.SortOrderCodec.decode,
+    E.getOrElse(() => defaultSearchOptions.sortOrder)
   );
 
   const datePrimary = getQueryParam("dp");
@@ -756,7 +726,7 @@ export const RAW_MODE_STORAGE_KEY = "raw_mode";
  * Read the value of wildcard mode from LocalStorage.
  */
 export const getRawModeFromStorage = (): boolean =>
-  readDataFromStorage(RAW_MODE_STORAGE_KEY, Boolean.guard) ??
+  readDataFromStorage(RAW_MODE_STORAGE_KEY, t.boolean.is) ??
   defaultSearchOptions.rawMode;
 
 export const writeRawModeToStorage = (value: boolean): void =>

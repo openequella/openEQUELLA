@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as t from "io-ts";
 import * as OEQ from "@openequella/rest-api-client";
 import * as E from "fp-ts/Either";
 import * as EQ from "fp-ts/Eq";
@@ -24,8 +25,21 @@ import * as ORD from "fp-ts/Ord";
 import * as RNEA from "fp-ts/ReadonlyNonEmptyArray";
 import * as S from "fp-ts/string";
 import * as TE from "fp-ts/TaskEither";
-import { Literal, Static, Union } from "runtypes";
+import { simpleUnionMatch } from "../util/match";
 import { ACLEntityResolvers } from "./ACLEntityModule";
+
+const ACLRecipientTypesUnion = t.union([
+  t.literal("U"),
+  t.literal("G"),
+  t.literal("R"),
+  t.literal("*"),
+  t.literal("$OWNER"),
+  t.literal("F"),
+  t.literal("I"),
+  t.literal("T"),
+]);
+
+export type ACLRecipientType = t.TypeOf<typeof ACLRecipientTypesUnion>;
 
 /**
  * ACL Recipient types:
@@ -38,7 +52,7 @@ import { ACLEntityResolvers } from "./ACLEntityModule";
  * * IP: I:255.255.0.0%2F24
  * * Sso: T:xxx
  */
-export const ACLRecipientTypes = {
+export const ACLRecipientTypes: { [prefix: string]: ACLRecipientType } = {
   User: "U",
   Group: "G",
   Role: "R",
@@ -48,19 +62,6 @@ export const ACLRecipientTypes = {
   Ip: "I",
   Sso: "T",
 };
-
-const ACLRecipientTypesUnion = Union(
-  Literal(ACLRecipientTypes.User),
-  Literal(ACLRecipientTypes.Group),
-  Literal(ACLRecipientTypes.Role),
-  Literal(ACLRecipientTypes.Everyone),
-  Literal(ACLRecipientTypes.Owner),
-  Literal(ACLRecipientTypes.Refer),
-  Literal(ACLRecipientTypes.Ip),
-  Literal(ACLRecipientTypes.Sso)
-);
-
-export type ACLRecipientType = Static<typeof ACLRecipientTypesUnion>;
 
 /**
  * Represents a recipient in the ACL expression.
@@ -162,13 +163,11 @@ const generateACLRecipientName =
     resolveGroupProvider,
     resolveRoleProvider,
   }: ACLEntityResolvers) =>
-  (recipient: ACLRecipient): TE.TaskEither<string, string> => {
-    const { type, expression } = recipient;
-
-    return pipe(
+  ({ type, expression }: ACLRecipient): TE.TaskEither<string, string> =>
+    pipe(
       type,
-      ACLRecipientTypesUnion.match(
-        (User) =>
+      simpleUnionMatch<ACLRecipientType, TE.TaskEither<string, string>>({
+        U: () =>
           pipe(
             TE.tryCatch<string, OEQ.UserQuery.UserDetails | undefined>(
               () => resolveUserProvider(expression),
@@ -183,7 +182,7 @@ const generateACLRecipientName =
               )
             )
           ),
-        (Group) =>
+        G: () =>
           pipe(
             TE.tryCatch(
               () => resolveGroupProvider(expression),
@@ -193,7 +192,7 @@ const generateACLRecipientName =
               (g: OEQ.UserQuery.GroupDetails | undefined) => g?.name
             )
           ),
-        (Role) =>
+        R: () =>
           pipe(
             TE.tryCatch(
               () => resolveRoleProvider(expression),
@@ -203,14 +202,13 @@ const generateACLRecipientName =
               (r: OEQ.UserQuery.RoleDetails | undefined) => r?.name
             )
           ),
-        (Everyone) => TE.right("Everyone"),
-        ($OWNER) => TE.right("Owner"),
-        (Ip) => TE.right("From " + decodeURIComponent(expression)),
-        (Refer) => TE.right("From " + expression),
-        (Sso) => TE.right("Token ID is " + expression)
-      )
+        "*": () => TE.right("Everyone"),
+        $OWNER: () => TE.right("Owner"),
+        I: () => TE.right("From " + expression),
+        F: () => TE.right("From " + decodeURIComponent(expression)),
+        T: () => TE.right("Token ID is " + expression),
+      })
     );
-  };
 
 /**
  * Show the full raw expression string for an ACL Recipient.
@@ -245,7 +243,7 @@ const parseACLRecipientType = (
     S.split(":"),
     RNEA.head,
     E.fromPredicate(
-      ACLRecipientTypesUnion.guard,
+      ACLRecipientTypesUnion.is,
       (invalid) => `Failed to parse recipient: ${invalid}`
     )
   );

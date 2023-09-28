@@ -105,7 +105,7 @@ const convertSearchOptions: (
       owner: owner?.id,
       showall: isEqual(
         status?.sort(),
-        OEQ.Common.ItemStatuses.alternatives.map((i) => i.value).sort()
+        OEQ.Codec.Common.ItemStatusCodec.types.map(({ value }) => value).sort()
       ),
       mimeTypes,
       musts,

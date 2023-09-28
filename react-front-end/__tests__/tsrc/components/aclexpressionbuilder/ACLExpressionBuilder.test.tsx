@@ -114,7 +114,7 @@ describe("<ACLExpressionBuilder/>", () => {
     // delete recipient
     await clickDeleteButtonForRecipient(
       container,
-      user200RecipientWithName.name
+      user200RecipientWithName.name!
     );
     // click ok button to see if the result is what we want
     await userEvent.click(getByText(okLabel));
@@ -247,14 +247,14 @@ describe("<ACLExpressionBuilder/>", () => {
       [
         "group",
         groupsRadioLabel,
-        group100RecipientWithName.name,
+        group100RecipientWithName.name!,
         searchGroup,
         "G:303e758c-0051-4aea-9a8e-421f93ed9d1a",
       ],
       [
         "role",
         rolesRadioLabel,
-        role100RecipientWithName.name,
+        role100RecipientWithName.name!,
         searchRole,
         "R:fda99983-9eda-440a-ac68-0f746173fdcb",
       ],
@@ -446,7 +446,7 @@ describe("<ACLExpressionBuilder/>", () => {
       // click add button
       await userEvent.click(getByText(addLabel));
       // wait for adding action
-      await findByText(ipRecipient.name);
+      await findByText(ipRecipient.name!);
 
       // click ok button to check the result
       await userEvent.click(getByText(okLabel));
@@ -486,7 +486,7 @@ describe("<ACLExpressionBuilder/>", () => {
         // click add button
         await userEvent.click(getByText(addLabel));
         // wait for adding action
-        await findByText(httpReferrerRecipient.name);
+        await findByText(httpReferrerRecipient.name!);
 
         // click ok button to check the result
         await userEvent.click(getByText(okLabel));

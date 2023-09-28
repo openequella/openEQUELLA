@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as t from "io-ts";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
@@ -39,16 +40,6 @@ import { first } from "fp-ts/Semigroup";
 import * as SEP from "fp-ts/Separated";
 import * as S from "fp-ts/string";
 import * as React from "react";
-import {
-  Array as RuntypeArray,
-  Boolean,
-  Number,
-  Optional,
-  Record,
-  Static,
-  String,
-  Union,
-} from "runtypes";
 import {
   buildVisibilityScript,
   ScriptContext,
@@ -103,40 +94,35 @@ export interface WizardControlBasicProps {
 /**
  * Runtypes definition for ControlTarget.
  */
-export const RuntypesControlTarget = Record({
-  /**
-   * The 'fullPath's for the targetNode.
-   */
-  schemaNode: RuntypeArray(String),
-  /**
-   * The type of control that is being targeted.
-   */
-  type: OEQ.WizardControl.RuntypesControlType,
-  /**
-   * Whether to tokenise the value.
-   */
-  isValueTokenised: Optional(Boolean),
-});
+export const ControlTargetCodec = t.intersection([
+  t.type({
+    schemaNode: t.array(t.string),
+    type: OEQ.Codec.WizardControl.ControlTypeCodec,
+  }),
+  t.partial({
+    isValueTokenised: t.boolean,
+  }),
+]);
 
 /**
  * Used to loosely target what a value (typically a `ControlValue`) is being used for.
  */
-export type ControlTarget = Static<typeof RuntypesControlTarget>;
+export type ControlTarget = t.TypeOf<typeof ControlTargetCodec>;
 
 /**
  * Runtypes definition for ControlValue.
  */
-export const RuntypesControlValue = Union(
-  RuntypeArray(String),
-  RuntypeArray(Number)
-);
+export const ControlValueCodec = t.union([
+  t.array(t.string),
+  t.array(t.number),
+]);
 
 /**
  * Convenience type for our way of storing the two main value types across our controls. Represents
  * that some controls are textual, and some are numeric; and that some controls store more than one
  * value.
  */
-export type ControlValue = Static<typeof RuntypesControlValue>;
+export type ControlValue = t.TypeOf<typeof ControlValueCodec>;
 
 /**
  * Identifies a Wizard 'field' and specifies its value.
