@@ -72,9 +72,9 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@babel/core": "7.22.15",
+    "@babel/core": "7.23.0",
     "@babel/preset-react": "7.22.15",
-    "@babel/preset-typescript": "7.22.15",
+    "@babel/preset-typescript": "7.23.0",
     "@storybook/addon-a11y": "7.3.2",
     "@storybook/addon-controls": "7.3.2",
     "@storybook/addon-essentials": "7.3.2",
