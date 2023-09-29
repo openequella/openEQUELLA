@@ -28,6 +28,7 @@
     	<script type="text/javascript">
       	var renderData = ${m.renderJs};
     	</script>
+      ${m.head}
     </head>
     ${m.body}
 </html>
