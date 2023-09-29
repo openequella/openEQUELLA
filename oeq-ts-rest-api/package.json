@@ -29,7 +29,7 @@
     "trailingComma": "es5"
   },
   "dependencies": {
-    "axios": "1.5.0",
+    "axios": "1.5.1",
     "axios-cookiejar-support": "^4.0.0",
     "fp-ts": "2.16.1",
     "io-ts": "2.2.20",
