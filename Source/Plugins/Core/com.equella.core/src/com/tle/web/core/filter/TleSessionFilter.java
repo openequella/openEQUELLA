@@ -34,6 +34,7 @@ import com.tle.core.services.user.UserSessionService;
 import com.tle.web.core.filter.UserStateResult.Result;
 import com.tle.web.dispatcher.AbstractWebFilter;
 import com.tle.web.dispatcher.FilterResult;
+import java.io.IOException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
@@ -57,7 +58,8 @@ public class TleSessionFilter extends AbstractWebFilter {
   private PluginTracker<UserStateHook> userStateHooks;
 
   @Override
-  public FilterResult filterRequest(HttpServletRequest request, HttpServletResponse response) {
+  public FilterResult filterRequest(HttpServletRequest request, HttpServletResponse response)
+      throws IOException {
     final FilterResult result =
         new FilterResult(
             (request1, response1) -> {
@@ -99,7 +101,11 @@ public class TleSessionFilter extends AbstractWebFilter {
       }
     } catch (RuntimeException t) {
       userService.logoutToGuest(userService.getWebAuthenticationDetails(request), false);
-      throw t;
+      if (t instanceof WebException) {
+        response.sendError(((WebException) t).getCode());
+      } else {
+        throw t;
+      }
     }
 
     return result;
