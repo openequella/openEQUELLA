@@ -23,7 +23,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.tle.beans.item.ItemStatus;
 import com.tle.beans.item.ModerationStatus;
-import com.tle.common.i18n.CurrentLocale;
+import com.tle.core.i18n.CoreStrings;
 import com.tle.core.security.impl.SecureItemStatus;
 import com.tle.core.security.impl.SecureOnCall;
 import com.tle.exceptions.AccessDeniedException;
@@ -50,7 +50,7 @@ public class ReviewOperation extends TaskOperation {
   @Override
   public boolean execute() {
     if (getWorkflow() == null) {
-      throw new AccessDeniedException(CurrentLocale.get("com.tle.web.itemadmin.error.noworkflow"));
+      throw new AccessDeniedException(CoreStrings.text("error.noworkflow"));
     }
 
     ModerationStatus status = getModerationStatus();
