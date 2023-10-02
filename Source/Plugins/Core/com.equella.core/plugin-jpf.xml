@@ -243,6 +243,10 @@
     <parameter id="path" value="/oauth/authorise" />
     <parameter id="root" value="bean:com.tle.web.oauth.section.OAuthLogonSection" />
   </extension>
+  <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="oauthLogonAmericanSpell">
+    <parameter id="path" value="/oauth/authorize" />
+    <parameter id="root" value="bean:com.tle.web.oauth.section.OAuthLogonSection" />
+  </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="oauthRedirect">
     <parameter id="path" value="/oauth/redirect" />
     <parameter id="root" value="bean:com.tle.web.oauth.servlet.OAuthDefaultRedirectSection" />
@@ -1418,6 +1422,9 @@
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="loginNoticeEditorPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.loginnotice.LoginNoticeEditorPrivilegeTreeProvider" />
   </extension>
+  <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="lti13PlatformsSettingsPrivilegeTreeProvider">
+    <parameter id="provider" value="bean:com.tle.web.lti13.platforms.security.LTI13PlatformsSettingsPrivilegeTreeProvider" />
+  </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="userScriptsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.userscripts.privileges.UserScriptsPrivilegeTreeProvider" />
   </extension>
@@ -2147,6 +2154,10 @@
   <extension plugin-id="com.tle.web.integration" point-id="integration" id="genericltiintegration">
     <parameter id="id" value="lti" />
     <parameter id="class" value="bean:com.tle.integration.lti.generic.GenericLtiIntegration" />
+  </extension>
+  <extension plugin-id="com.tle.web.integration" point-id="integration" id="lti13IntegrationService">
+    <parameter id="id" value="lti13" />
+    <parameter id="class" value="bean:com.tle.integration.lti13.Lti13IntegrationService" />
   </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="signon_2">
     <parameter id="path" value="/canvassignon.do" />
@@ -4812,6 +4823,10 @@
     <parameter id="bean" value="bean:com.tle.web.core.servlet.ScormServlet" />
     <parameter id="url-pattern" value="/scorm/" />
   </extension>
+  <extension plugin-id="com.tle.web.core" point-id="webServlet" id="JwksServlet">
+    <parameter id="bean" value="bean:com.tle.web.jwks.JwksServlet" />
+    <parameter id="url-pattern" value="/.well-known/jwks.json" />
+  </extension>
   <extension plugin-id="com.tle.web.core" point-id="webSessionListener" id="sessionListener">
     <parameter id="bean" value="bean:com.tle.web.core.listener.UserSessionDestructionListener" />
   </extension>
@@ -5972,6 +5987,15 @@
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="NewEntity">
     <parameter id="class" value="com.tle.beans.newentity.Entity" />
   </extension>
+  <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="WebKeySet">
+    <parameter id="class" value="com.tle.beans.webkeyset.WebKeySet" />
+  </extension>
+  <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="LtiCustomRole">
+    <parameter id="class" value="com.tle.beans.lti.LtiPlatformCustomRole" />
+  </extension>
+  <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="LtiPlatform">
+    <parameter id="class" value="com.tle.beans.lti.LtiPlatform" />
+  </extension>
   <extension plugin-id="com.tle.core.freetext" point-id="indexingExtension" id="favouritesIndexer">
     <parameter id="class" value="bean:com.tle.core.favourites.index.FavouritesIndexer" />
   </extension>
@@ -6049,6 +6073,16 @@
     <parameter id="id" value="com.tle.core.institution.migration.v20221.RenameViewCount"/>
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v20221.RenameViewCount"/>
     <parameter id="date" value="2022-04-07"/>
+  </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="CreateWebKeySetTable">
+    <parameter id="id" value="com.tle.core.institution.migration.v20231.CreateWebKeySetTable"/>
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20231.CreateWebKeySetTable"/>
+    <parameter id="date" value="2023-02-28"/>
+  </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="CreateLtiPlatformTable">
+    <parameter id="id" value="com.tle.core.institution.migration.v20231.CreateLtiPlatformTable"/>
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20231.CreateLtiPlatformTable"/>
+    <parameter id="date" value="2023-03-09"/>
   </extension>
   <extension plugin-id="com.tle.core.migration" point-id="migration" id="EnableDefaultViewerMigration">
     <parameter id="id" value="com.tle.core.institution.migration.v20211.EnableDefaultViewerMigration"/>
@@ -6138,4 +6172,20 @@
     <parameter id="class" value="bean:com.tle.core.item.convert.ViewsConverter" />
     <parameter id="order" value="815" />
   </extension>
+  <extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="WebKeySetConverter">
+    <parameter id="id" value="web_key_set" />
+    <parameter id="class" value="bean:com.tle.core.jwks.WebKeySetConverter" />
+    <parameter id="order" value="816" />
+  </extension>
+  <!-- region LTI 1.3 Support-->
+  <extension plugin-id="com.tle.web.core" point-id="webServlet" id="lti13LaunchServlet">
+    <parameter id="bean" value="bean:com.tle.integration.lti13.OpenIDConnectLaunchServlet" />
+    <parameter id="url-pattern" value="/lti13/launch" />
+  </extension>
+  <extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="LtiPlatformConverter">
+    <parameter id="id" value="lti_platform" />
+    <parameter id="class" value="bean:com.tle.core.lti13.LtiPlatformConverter" />
+    <parameter id="order" value="817" />
+  </extension>
+  <!-- endregion -->
 </plugin>

@@ -26,20 +26,17 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.IItem;
-import com.tle.beans.item.ItemId;
-import com.tle.beans.item.ViewableItemType;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.Check;
-import com.tle.common.NameValue;
 import com.tle.common.connectors.ConnectorFolder;
 import com.tle.common.connectors.entity.Connector;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.common.usermanagement.user.UserState;
 import com.tle.core.connectors.blackboard.BlackboardRESTConnectorConstants;
+import com.tle.core.connectors.exception.LmsUserNotFoundException;
 import com.tle.core.connectors.service.ConnectorRepositoryService;
 import com.tle.core.connectors.service.ConnectorService;
 import com.tle.core.guice.Bind;
@@ -68,6 +65,7 @@ import com.tle.web.selection.section.RootSelectionSection;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewable.ViewableItemResolver;
 import com.tle.web.viewurl.ViewableResource;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.List;
@@ -355,7 +353,7 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
       try {
         structure = objectMapper.writer().with(pp).writeValueAsString(root);
       } catch (JsonProcessingException e) {
-        throw Throwables.propagate(e);
+        throw new RuntimeException(e);
       }
     }
 
@@ -494,8 +492,8 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
       }
 
       return false;
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+    } catch (IOException | LmsUserNotFoundException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -510,37 +508,10 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
     return data.getCourseInfoCode();
   }
 
-  @Nullable
-  @Override
-  public NameValue getLocation(GenericLtiSessionData data) {
-    return null;
-  }
-
   @Override
   protected boolean canSelect(GenericLtiSessionData data) {
     // can be select_link, embed_content etc
     final String sd = data.getSelectionDirective();
     return sd != null || "ContentItemSelectionRequest".equals(data.getLtiMessageType());
-  }
-
-  @Override
-  protected <I extends IItem<?>> ViewableItem<I> createViewableItem(
-      I item, SelectedResource resource) {
-    final ViewableItem<I> vitem =
-        viewableItemResolver.createIntegrationViewableItem(
-            item,
-            resource.isLatest(),
-            ViewableItemType.GENERIC,
-            resource.getKey().getExtensionType());
-    return vitem;
-  }
-
-  @Override
-  public <I extends IItem<?>> ViewableItem<I> createViewableItem(
-      ItemId itemId, boolean latest, @Nullable String itemExtensionType) {
-    final ViewableItem<I> vitem =
-        viewableItemResolver.createIntegrationViewableItem(
-            itemId, latest, ViewableItemType.GENERIC, itemExtensionType);
-    return vitem;
   }
 }

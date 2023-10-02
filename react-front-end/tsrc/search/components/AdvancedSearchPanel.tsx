@@ -22,7 +22,6 @@ import {
   CardActions,
   CardContent,
   CardHeader,
-  CircularProgress,
   Grid,
   Typography,
 } from "@mui/material";
@@ -32,6 +31,7 @@ import { constFalse, flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as SET from "fp-ts/Set";
 import * as React from "react";
+import LoadingCircle from "../../components/LoadingCircle";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import * as WizardHelper from "../../components/wizard/WizardHelper";
 import {
@@ -43,9 +43,14 @@ import {
 import { AppContext } from "../../mainui/App";
 import { guestUser } from "../../modules/UserModule";
 import { languageStrings } from "../../util/langstrings";
-import { generateAdvancedSearchCriteria } from "../AdvancedSearchHelper";
-import { AdvancedSearchPageContext } from "../AdvancedSearchPage";
-import { SearchContext } from "../Search";
+import {
+  AdvancedSearchPageContext,
+  generateAdvancedSearchCriteria,
+} from "../AdvancedSearchHelper";
+import { SearchContext } from "../SearchPageHelper";
+
+const { title: defaultTitle, duplicateTargetWarning } =
+  languageStrings.searchpage.AdvancedSearchPanel;
 
 export interface AdvancedSearchPanelProps {
   /**
@@ -62,9 +67,6 @@ export interface AdvancedSearchPanelProps {
    */
   values: WizardHelper.FieldValueMap;
 }
-
-const { title: defaultTitle, duplicateTargetWarning } =
-  languageStrings.searchpage.AdvancedSearchPanel;
 
 /**
  * This component displays all the Wizard Controls of an Advanced search and allows users
@@ -205,11 +207,7 @@ export const AdvancedSearchPanel = ({
             )}
           </Grid>
         ) : (
-          <Grid container spacing={1} justifyContent="center">
-            <Grid item>
-              <CircularProgress />
-            </Grid>
-          </Grid>
+          <LoadingCircle />
         )}
       </CardContent>
       <CardActions>

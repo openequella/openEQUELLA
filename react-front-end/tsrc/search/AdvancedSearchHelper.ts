@@ -26,6 +26,7 @@ import * as O from "fp-ts/Option";
 import { not } from "fp-ts/Predicate";
 import * as RA from "fp-ts/ReadonlyArray";
 import * as S from "fp-ts/string";
+import { createContext } from "react";
 import {
   ControlTarget,
   ControlValue,
@@ -41,6 +42,30 @@ import {
 import { OrdAsIs } from "../util/Ord";
 import { pfTernaryTypeGuard } from "../util/pointfree";
 import type { SearchPageOptions } from "./SearchPageHelper";
+
+const nop = () => {};
+
+interface AdvancedSearchPageContextProps {
+  /**
+   * Function to update each control's value.
+   */
+  updateFieldValueMap: (fieldValueMap: FieldValueMap) => void;
+  /**
+   * Function to control whether the Advanced search panel is open.
+   */
+  openAdvancedSearchPanel: (open: boolean) => void;
+  /**
+   * `true` when the Advanced search definition is retrieved from server.
+   */
+  definitionRetrieved: boolean;
+}
+
+export const AdvancedSearchPageContext =
+  createContext<AdvancedSearchPageContextProps>({
+    updateFieldValueMap: nop,
+    openAdvancedSearchPanel: nop,
+    definitionRetrieved: false,
+  });
 
 /**
  *  Function to pull values of PathValueMap and copy to FieldValueMap for each unique Schema node.

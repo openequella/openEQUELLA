@@ -60,7 +60,7 @@ case class ProviderControlDefinition(name: String,
                                      configuration: Iterable[CloudControlConfig])
 
 object ProviderControlDefinition {
-  implicit val typeDec        = Decoder.enumDecoder(CloudControlConfigType)
+  implicit val typeDec        = Decoder.decodeEnumeration(CloudControlConfigType)
   implicit val ccoDec         = deriveDecoder[CloudConfigOption]
   implicit val dec            = deriveDecoder[CloudControlConfig]
   implicit val decodeControls = deriveDecoder[ProviderControlDefinition]

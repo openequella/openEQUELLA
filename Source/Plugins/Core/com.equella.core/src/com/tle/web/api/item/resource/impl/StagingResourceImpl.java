@@ -20,7 +20,6 @@ package com.tle.web.api.item.resource.impl;
 
 import com.dytech.edge.common.FileInfo;
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
@@ -220,7 +219,7 @@ public class StagingResourceImpl implements StagingResource {
               })
           .build();
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 
@@ -348,7 +347,7 @@ public class StagingResourceImpl implements StagingResource {
           .location(stagingUri(uuid, filepath))
           .build();
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 

@@ -54,9 +54,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Fieldable;
-import org.apache.lucene.document.NumericField;
+import org.apache.lucene.document.LongPoint;
+import org.apache.lucene.document.StoredField;
 import org.hibernate.Hibernate;
 import org.hibernate.type.SerializationException;
 import org.slf4j.Logger;
@@ -113,7 +112,7 @@ public class StandardIndexer extends AbstractIndexingExtension {
 
   @Override
   public void indexSlow(IndexedItem indexedItem) {
-    List<Fieldable> fields =
+    List<Field> fields =
         textExtracter.indexAttachments(indexedItem, freetextIndex.getSearchSettings());
     addAllFields(indexedItem.getItemdoc(), fields);
   }
@@ -154,11 +153,11 @@ public class StandardIndexer extends AbstractIndexingExtension {
   }
 
   @SuppressWarnings("nls")
-  public List<Fieldable> getBasicFields(IndexedItem indexedItem) {
+  public List<Field> getBasicFields(IndexedItem indexedItem) {
     ItemIdKey id = indexedItem.getItemIdKey();
     Item item = indexedItem.getItem();
     long instId = item.getInstitution().getUniqueId();
-    List<Fieldable> fields = new ArrayList<Fieldable>();
+    List<Field> fields = new ArrayList<Field>();
     String szName = gatherLanguageBundles(item.getName()).toString().toLowerCase().trim();
     ItemStatus itemstatus = item.getStatus();
 
@@ -184,9 +183,12 @@ public class StandardIndexer extends AbstractIndexingExtension {
     fields.add(keyword(FreeTextQuery.FIELD_VERSION, sVersion));
     fields.add(keyword(FreeTextQuery.FIELD_UNIQUE, item.getIdString()));
     fields.add(keyword(FreeTextQuery.FIELD_ID, Long.toString(item.getId())));
-    fields.add(
-        new NumericField(FreeTextQuery.FIELD_ID_RANGEABLE, 1, Store.YES, true)
-            .setLongValue(item.getId()));
+
+    LongPoint idRange = new LongPoint(FreeTextQuery.FIELD_ID_RANGEABLE, item.getId());
+    StoredField storedIdRange = new StoredField(FreeTextQuery.FIELD_ID_RANGEABLE, item.getId());
+    fields.add(idRange);
+    fields.add(storedIdRange);
+
     fields.add(keyword(FreeTextQuery.FIELD_INDEXEDTIME, Long.toString(lastIndexed.getTime())));
     fields.add(keyword(FreeTextQuery.FIELD_ITEMDEFID, item.getItemDefinition().getUuid()));
 
@@ -229,10 +231,18 @@ public class StandardIndexer extends AbstractIndexingExtension {
                   + "."
                   + attachment.getData(DATA_VERSION))); // $NON-NLS-1$
     }
-    String cloudBodyText = CloudProviderService.collectBodyText(attachments);
 
     StringBuilder bodyTextBuf = gatherLanguageBundles(item.getDescription());
-    bodyTextBuf.append(cloudBodyText);
+
+    // The below if statement is added to make this class testable. The challenge is that
+    // CloudProviderService is an Scala object which cannot be mocked by either Mockito
+    // or Scalamock. As a result, we have a find a way to avoid any use of CloudProviderService
+    // in the testing environment. The string literal 'cloud' refers to the custom attachment
+    // type defined in CloudProviderService.
+    if (!attachments.getCustomList("cloud").isEmpty()) {
+      bodyTextBuf.append(CloudProviderService.collectBodyText(attachments));
+    }
+
     if (!Check.isEmpty(item.getComments())) {
       for (Comment comment : item.getComments()) {
         if (!Check.isEmpty(comment.getComment())) {
@@ -251,15 +261,21 @@ public class StandardIndexer extends AbstractIndexingExtension {
       }
     }
 
+    // Since Lucene v5, sorting fields must be added explicitly.
+    fields.add(stringSortingField(FreeTextQuery.FIELD_REALCREATED, realCreated));
+    fields.add(stringSortingField(FreeTextQuery.FIELD_REALLASTMODIFIED, realLastModified));
+    fields.add(stringSortingField(FreeTextQuery.FIELD_NAME, szName));
+    fields.add(stringSortingField(FreeTextQuery.FIELD_RATING, rating));
+
     return fields;
   }
 
-  private void addName(List<Fieldable> fields, String name) {
+  private void addName(List<Field> fields, String name) {
     fields.add(unstoredAndVectored(FreeTextQuery.FIELD_NAME_VECTORED, name));
     fields.add(unstoredAndVectored(FreeTextQuery.FIELD_NAME_VECTORED_NOSTEM, name));
   }
 
-  private void addBody(List<Fieldable> fields, String body) {
+  private void addBody(List<Field> fields, String body) {
     fields.add(unstoredAndVectored(FreeTextQuery.FIELD_BODY, body));
     fields.add(unstoredAndVectored(FreeTextQuery.FIELD_BODY_NOSTEM, body));
   }

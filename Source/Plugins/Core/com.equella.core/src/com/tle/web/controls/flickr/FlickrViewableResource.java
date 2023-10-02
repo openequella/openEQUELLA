@@ -18,7 +18,6 @@
 
 package com.tle.web.controls.flickr;
 
-import com.google.common.base.Throwables;
 import com.tle.beans.item.attachments.CustomAttachment;
 import com.tle.common.Check;
 import com.tle.web.sections.Bookmark;
@@ -129,7 +128,7 @@ public class FlickrViewableResource extends AbstractWrappedResource {
     try {
       return new ThumbRef(new URL(getThumbUrl()));
     } catch (MalformedURLException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 

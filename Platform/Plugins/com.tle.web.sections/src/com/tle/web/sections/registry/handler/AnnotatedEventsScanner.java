@@ -18,7 +18,6 @@
 
 package com.tle.web.sections.registry.handler;
 
-import com.google.common.base.Throwables;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.web.sections.SectionContext;
@@ -195,7 +194,7 @@ public class AnnotatedEventsScanner {
         if (t instanceof Exception) {
           throw (Exception) t;
         } else if (t != null) {
-          throw Throwables.propagate(t);
+          throw new RuntimeException(t);
         }
         throw e;
       }

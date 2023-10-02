@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import {
   FavouriteItemDialog,
@@ -39,13 +39,13 @@ const commonProps = {
   isOnLatestVersion: false,
 };
 
-export const AddFavouriteItemOnOlderVersion: Story<FavouriteItemDialogProps> = (
-  args
-) => <FavouriteItemDialog {...args} />;
+export const AddFavouriteItemOnOlderVersion: StoryFn<
+  FavouriteItemDialogProps
+> = (args) => <FavouriteItemDialog {...args} />;
 
 AddFavouriteItemOnOlderVersion.args = { ...commonProps };
 
-export const AddFavouriteItemOnLatestVersion: Story<
+export const AddFavouriteItemOnLatestVersion: StoryFn<
   FavouriteItemDialogProps
 > = (args) => <FavouriteItemDialog {...args} />;
 
@@ -54,9 +54,9 @@ AddFavouriteItemOnLatestVersion.args = {
   isLatestVersion: true,
 };
 
-export const RemoveFavouriteItem: Story<FavouriteItemDialogProps> = (args) => (
-  <FavouriteItemDialog {...args} />
-);
+export const RemoveFavouriteItem: StoryFn<FavouriteItemDialogProps> = (
+  args
+) => <FavouriteItemDialog {...args} />;
 
 RemoveFavouriteItem.args = {
   ...commonProps,

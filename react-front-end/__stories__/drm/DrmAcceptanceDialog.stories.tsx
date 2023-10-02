@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import { drmTermsRejected, drmTermsResolved } from "../../__mocks__/Drm.mock";
 import {
@@ -36,14 +36,14 @@ export default {
   },
 } as Meta<DrmAcceptanceDialogProps>;
 
-export const Standard: Story<DrmAcceptanceDialogProps> = (args) => (
+export const Standard: StoryFn<DrmAcceptanceDialogProps> = (args) => (
   <DrmAcceptanceDialog {...args} />
 );
 Standard.args = {
   termsProvider: drmTermsResolved,
 };
 
-export const FailedToGetTerms: Story<DrmAcceptanceDialogProps> = (args) => (
+export const FailedToGetTerms: StoryFn<DrmAcceptanceDialogProps> = (args) => (
   <DrmAcceptanceDialog {...args} />
 );
 FailedToGetTerms.args = {

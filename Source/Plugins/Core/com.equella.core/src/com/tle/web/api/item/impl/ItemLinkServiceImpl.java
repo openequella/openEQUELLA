@@ -18,7 +18,6 @@
 
 package com.tle.web.api.item.impl;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemKey;
@@ -131,7 +130,7 @@ public class ItemLinkServiceImpl implements ItemLinkService {
           institutionService.institutionalise(
               PathUtils.filePath(PATH_FILE_API, staging.getUuid(), CONTEXT_FILE_DIR, path)));
     } catch (URISyntaxException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 
@@ -142,7 +141,7 @@ public class ItemLinkServiceImpl implements ItemLinkService {
           institutionService.institutionalise(
               PathUtils.filePath(PATH_FILE_API, staging.getUuid(), CONTEXT_FILE_CONTENT, path)));
     } catch (URISyntaxException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 

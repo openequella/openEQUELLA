@@ -29,6 +29,7 @@ import com.tle.web.integration.SingleSignonForm;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.js.JSStatements;
 import com.tle.web.selection.SelectionSession;
+import com.tle.web.selection.SelectionsMadeCallback;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
@@ -76,6 +77,14 @@ public interface IntegrationService {
       IntegrationSessionData data,
       IntegrationActionInfo action,
       SingleSignonForm form);
+
+  void standardForward(
+      SectionInfo info,
+      String forward,
+      IntegrationSessionData data,
+      IntegrationActionInfo action,
+      SingleSignonForm form,
+      SelectionsMadeCallback callback);
 
   void checkIntegrationAllowed() throws AccessDeniedException;
 

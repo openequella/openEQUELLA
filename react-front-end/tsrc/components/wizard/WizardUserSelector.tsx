@@ -47,7 +47,7 @@ import {
   userIds,
 } from "../../modules/UserModule";
 import { languageStrings } from "../../util/langstrings";
-import { SelectUserDialog } from "../SelectUserDialog";
+import { SelectUserDialog } from "../securityentitydialog/SelectUserDialog";
 import { TooltipIconButton } from "../TooltipIconButton";
 import { WizardControlBasicProps, WizardErrorContext } from "./WizardHelper";
 import { WizardLabel } from "./WizardLabel";

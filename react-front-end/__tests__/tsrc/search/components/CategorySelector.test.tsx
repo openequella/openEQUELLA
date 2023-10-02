@@ -27,7 +27,7 @@ import {
 import type { SelectedCategories } from "../../../../tsrc/modules/SearchFacetsModule";
 import { CategorySelector } from "../../../../tsrc/search/components/CategorySelector";
 import * as CategorySelectorMock from "../../../../__mocks__/CategorySelector.mock";
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import { queryMuiButtonByText } from "../../MuiQueries";
 

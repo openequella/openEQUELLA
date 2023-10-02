@@ -23,7 +23,6 @@ import com.dytech.edge.exceptions.InvalidSearchQueryException;
 import com.dytech.edge.exceptions.SearchingException;
 import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import com.tle.beans.Institution;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemPack;
@@ -66,65 +65,80 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import javax.inject.Singleton;
+import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.NRTManager;
-import org.apache.lucene.search.NRTManager.TrackingIndexWriter;
+import org.apache.lucene.search.SearcherManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author jmaginnis */
 @Bind(FreetextIndex.class)
 @Singleton
 @SuppressWarnings("nls")
 public class FreetextIndexImpl
     implements FreetextIndex, InstitutionListener, ServiceCheckRequestListener {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(FreetextIndexImpl.class);
   private static final String KEY_PFX =
       PluginServiceImpl.getMyPluginId(FreetextIndexImpl.class) + '.';
 
-  private final File indexPath;
+  private final ConfigurationService configConstants;
+  private final ItemDao itemDao;
+  private final ItemService itemService;
+  private final ItemHelper itemHelper;
+  private final RunAsInstitution runAs;
+  private final EventService eventService;
+  private final ZookeeperService zkService;
+  private final UserPreferenceService userPrefs;
 
-  @Inject private ConfigurationService configConstants;
-  @Inject private ItemDao itemDao;
-  @Inject private ItemService itemService;
-  @Inject private ItemHelper itemHelper;
-  @Inject private RunAsInstitution runAs;
-  @Inject private EventService eventService;
-  @Inject private ZookeeperService zkService;
-
-  @Inject(optional = true)
-  @Named("freetextIndex.defaultOperator")
-  private String defaultOperator = "AND";
-
-  @Inject(optional = true)
-  @Named("freetextIndex.synchroiseMinutes")
-  private int synchroniseMinutes = 5;
-
-  @Inject
-  @Named("freetext.stopwords.file")
-  private File stopWordsFile;
-
-  @Inject
-  @Named("freetext.analyzer.language")
-  private String analyzerLanguage;
-
-  @Inject private UserPreferenceService userPrefs;
+  private final FreetextIndexConfiguration config;
+  private int synchroniseMinutes;
+  private String defaultOperator;
 
   private int maxBooleanClauses = 8192;
 
-  private PluginTracker<IndexingExtension> indexingTracker;
-  private PluginTracker<ItemIndex<? extends FreetextResult>> indexTracker;
+  private final PluginTracker<IndexingExtension> indexingTracker;
+  private final PluginTracker<ItemIndex<? extends FreetextResult>> indexTracker;
 
   private boolean indexesHaveBeenInited;
 
   @Inject
-  public FreetextIndexImpl(@Named("freetext.index.location") File indexPath) {
-    this.indexPath = indexPath;
+  public FreetextIndexImpl(
+      FreetextIndexConfiguration config,
+      ConfigurationService configConstants,
+      ItemDao itemDao,
+      ItemService itemService,
+      ItemHelper itemHelper,
+      RunAsInstitution runAs,
+      EventService eventService,
+      ZookeeperService zkService,
+      UserPreferenceService userPrefs,
+      PluginService pluginService) {
+    this.config = config;
+    this.defaultOperator = config.getDefaultOperator();
+    this.synchroniseMinutes = config.getSynchroniseMinutes();
+
+    this.configConstants = configConstants;
+
+    this.runAs = runAs;
+    this.eventService = eventService;
+    this.zkService = zkService;
+    this.userPrefs = userPrefs;
+
+    this.itemDao = itemDao;
+    this.itemService = itemService;
+    this.itemHelper = itemHelper;
+
+    indexingTracker =
+        new PluginTracker<>(pluginService, "com.tle.core.freetext", "indexingExtension", null);
+    indexingTracker.setBeanKey("class");
+    indexTracker =
+        new PluginTracker<>(pluginService, "com.tle.core.freetext", "freetextIndex", "id");
+    indexTracker.setBeanKey("class");
   }
 
   public File getIndexPath() {
-    return this.indexPath;
+    return config.getIndexPath();
   }
 
   /** Invoked by Spring framework. */
@@ -132,11 +146,7 @@ public class FreetextIndexImpl
     this.synchroniseMinutes = synchroniseMinutes;
   }
 
-  /**
-   * For backwards compatibility.
-   *
-   * @param synchroniseMinutes
-   */
+  /** For backwards compatibility. */
   public void setSynchroiseMinutes(int synchroniseMinutes) {
     this.synchroniseMinutes = synchroniseMinutes;
   }
@@ -228,9 +238,9 @@ public class FreetextIndexImpl
       IndexBuilder resetBuilder =
           new IndexBuilder() {
             @Override
-            public long buildIndex(NRTManager nrtManager, TrackingIndexWriter writer)
+            public long buildIndex(SearcherManager searcherManager, IndexWriter writer)
                 throws Exception {
-              return nrtManager.getCurrentSearchingGen();
+              return writer.getMaxCompletedSequenceNumber();
             }
           };
       for (ItemIndex<? extends FreetextResult> itemIndex : indexerMap.values()) {
@@ -274,21 +284,6 @@ public class FreetextIndexImpl
   public Collection<IndexingExtension> getIndexingExtensions() {
     Map<String, IndexingExtension> beans = indexingTracker.getBeanMap();
     return beans.values();
-  }
-
-  @Inject
-  public void setPluginService(PluginService pluginService) {
-    indexingTracker =
-        new PluginTracker<IndexingExtension>(
-            pluginService, "com.tle.core.freetext", "indexingExtension", null); // $NON-NLS-1$
-    indexingTracker.setBeanKey("class"); // $NON-NLS-1$
-    indexTracker =
-        new PluginTracker<ItemIndex<?>>(
-            pluginService,
-            "com.tle.core.freetext",
-            "freetextIndex",
-            "id"); //$NON-NLS-1$ //$NON-NLS-2$
-    indexTracker.setBeanKey("class"); // $NON-NLS-1$
   }
 
   @Transactional(readOnly = true)
@@ -348,12 +343,12 @@ public class FreetextIndexImpl
 
   @Override
   public File getStopWordsFile() {
-    return stopWordsFile;
+    return config.getStopWordsFile();
   }
 
   @Override
   public String getAnalyzerLanguage() {
-    return analyzerLanguage;
+    return config.getAnalyzerLanguage();
   }
 
   @Override
@@ -363,7 +358,7 @@ public class FreetextIndexImpl
 
   @Override
   public File getRootIndexPath() {
-    return indexPath;
+    return config.getIndexPath();
   }
 
   @Override
@@ -387,7 +382,6 @@ public class FreetextIndexImpl
   /**
    * @see com.tle.freetext.FreetextIndex#suggestTerm(com.tle.common.searching.Search,
    *     java.lang.String)
-   * @throws InvalidSearchQueryException
    */
   @Override
   public String suggestTerm(Search request, String prefix) {

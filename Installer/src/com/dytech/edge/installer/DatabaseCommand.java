@@ -18,11 +18,11 @@
 
 package com.dytech.edge.installer;
 
-import com.tle.common.Check;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Objects;
 
 public abstract class DatabaseCommand {
   public static int getDefaultPort(String dbtype) {
@@ -87,7 +87,7 @@ public abstract class DatabaseCommand {
       throws SQLException, NonUnicodeEncodingException {
     T encoding = klass.cast(getValueOfFirstColumn(conn, sql));
     for (T expectedValue : expectedValues) {
-      if (Check.bothNullOrEqual(encoding, expectedValue)) {
+      if (Objects.equals(encoding, expectedValue)) {
         return;
       }
     }

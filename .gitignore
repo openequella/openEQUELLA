@@ -1,7 +1,7 @@
 *.pyc
 *.pmd
 *.iml
-.cache/
+.parcel-cache/
 .idea/.name
 
 target/

@@ -47,12 +47,22 @@ import com.tle.web.oauth.OAuthWebConstants;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
-import net.oauth.*;
+import net.oauth.OAuth;
+import net.oauth.OAuthAccessor;
+import net.oauth.OAuthConsumer;
+import net.oauth.OAuthMessage;
+import net.oauth.OAuthProblemException;
 import net.oauth.signature.OAuthSignatureMethod;
 
 /** @author Aaron */
@@ -179,7 +189,12 @@ public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEv
       oauthUserState = OAuthServerAccess.findUserState(tokenData, request);
       userCache.put(tokenData, oauthUserState);
     }
-    return oauthUserState.clone();
+
+    try {
+      return oauthUserState.clone();
+    } catch (CloneNotSupportedException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private Cache<String, UserState> getUserCache(Institution institution) {

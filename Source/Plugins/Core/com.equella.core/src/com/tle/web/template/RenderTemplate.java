@@ -70,6 +70,7 @@ import com.tle.web.template.Decorations.MenuMode;
 import com.tle.web.template.section.HeaderSection;
 import com.tle.web.template.section.HtmlStyleClass;
 import java.util.List;
+import java.util.Optional;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
@@ -135,17 +136,28 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
   @Inject private AccessibilityModeService acMode;
   @Inject private PluginTracker<HtmlStyleClass> htmlCssClassTracker;
 
+  /**
+   * Checks whether the context attribute new UI has been disabled or if the URL contains
+   * "DISABLE_NEWUI". The "DISABLE_NEWUI" parameter serves as a temporary disable, specifically
+   * targeted for a single request, such as a request to download the theme package in the new UI.
+   */
+  private boolean isNewUIDisabled(RenderEventContext context) {
+    return context.getBooleanAttribute(RenderNewTemplate.DisableNewUI())
+        || Optional.ofNullable(context.getParameterMap().get(RenderNewTemplate.DisableNewUI()))
+            .map(arr -> arr[0])
+            .map(Boolean::parseBoolean)
+            .orElse(false);
+  }
+
   @Override
   public SectionResult renderHtml(RenderEventContext context) throws Exception {
     RenderNewTemplate.supportIEPolyFills(context.getPreRenderContext());
-    boolean oldLayout = !RenderNewTemplate.isNewLayout(context);
+    boolean oldLayout = !RenderNewTemplate.isNewLayout(context) || isNewUIDisabled(context);
     setupHeaderHelper(context);
     if (checkForResponse(context)) {
       return null;
     }
-    if (!oldLayout
-        && context.getAttributeForClass(AjaxRenderContext.class) == null
-        && !context.getBooleanAttribute(RenderNewTemplate.DisableNewUI())) {
+    if (!oldLayout && context.getAttributeForClass(AjaxRenderContext.class) == null) {
       return RenderNewTemplate.renderNewHtml(context, viewFactory);
     }
     RenderTemplateModel model = getModel(context);

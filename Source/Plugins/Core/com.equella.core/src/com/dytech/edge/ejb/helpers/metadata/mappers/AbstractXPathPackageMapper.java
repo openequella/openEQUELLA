@@ -20,7 +20,6 @@ package com.dytech.edge.ejb.helpers.metadata.mappers;
 
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.ejb.helpers.metadata.mapping.Mapping;
-import com.google.common.base.Throwables;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.MetadataMapping;
@@ -56,7 +55,7 @@ public abstract class AbstractXPathPackageMapper implements PackageMapper {
         mapping.update(item);
       }
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 

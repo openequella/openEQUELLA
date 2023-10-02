@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import ItemAttachmentLink, {
   ItemAttachmentLinkProps,
@@ -81,7 +81,7 @@ const lightboxAttachmentAndViewer: AttachmentAndViewerConfig = {
   },
 };
 
-export const linkToLightbox: Story<ItemAttachmentLinkProps> = (
+export const linkToLightbox: StoryFn<ItemAttachmentLinkProps> = (
   args: ItemAttachmentLinkProps
 ) => (
   <ItemAttachmentLink {...args}>
@@ -92,7 +92,7 @@ linkToLightbox.args = {
   selectedAttachment: lightboxAttachmentAndViewer,
 };
 
-export const linkToURL: Story<ItemAttachmentLinkProps> = (
+export const linkToURL: StoryFn<ItemAttachmentLinkProps> = (
   args: ItemAttachmentLinkProps
 ) => (
   <ItemAttachmentLink {...args}>

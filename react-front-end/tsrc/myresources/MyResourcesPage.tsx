@@ -45,8 +45,6 @@ import type { StatusSelectorProps } from "../search/components/StatusSelector";
 import {
   InitialSearchConfig,
   Search,
-  SearchContext,
-  SearchContextProps,
   SearchPageHistoryState,
 } from "../search/Search";
 import { SearchPageBody } from "../search/SearchPageBody";
@@ -54,6 +52,8 @@ import {
   defaultSearchPageHeaderConfig,
   defaultSearchPageOptions,
   defaultSearchPageRefinePanelConfig,
+  SearchContext,
+  SearchContextProps,
   SearchPageHeaderConfig,
   SearchPageOptions,
   SearchPageRefinePanelConfig,

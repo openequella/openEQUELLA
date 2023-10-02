@@ -17,6 +17,8 @@
  */
 import { FormControl, MenuItem, OutlinedInput, Select } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { pipe } from "fp-ts/function";
+import * as E from "../../../util/Either.extended";
 import * as React from "react";
 import { languageStrings } from "../../../util/langstrings";
 import * as OEQ from "@openequella/rest-api-client";
@@ -46,9 +48,6 @@ export default function DefaultSortOrderSetting({
   const { relevance, lastModified, dateCreated, title, userRating } =
     languageStrings.settings.searching.searchPageSettings;
 
-  const validateSortOrder = (value: unknown): OEQ.Search.SortOrder =>
-    OEQ.Search.SortOrderRunTypes.check(value);
-
   const options: [OEQ.Search.SortOrder, string][] = [
     ["rank", relevance],
     ["datemodified", lastModified],
@@ -62,7 +61,14 @@ export default function DefaultSortOrderSetting({
       <Select
         SelectDisplayProps={{ id: "_sortOrder" }}
         disabled={disabled}
-        onChange={(event) => setValue(validateSortOrder(event.target.value))}
+        onChange={(event) =>
+          pipe(
+            event.target.value,
+            OEQ.Codec.Search.SortOrderCodec.decode,
+            E.getOrThrow,
+            setValue
+          )
+        }
         variant="outlined"
         value={value}
         className={classes.select}

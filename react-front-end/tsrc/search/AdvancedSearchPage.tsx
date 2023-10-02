@@ -21,13 +21,7 @@ import * as O from "fp-ts/Option";
 import * as E from "fp-ts/Either";
 import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router";
 import {
   extractDefaultValues,
@@ -44,41 +38,20 @@ import {
   generateAdvancedSearchCriteria,
   confirmInitialFieldValueMap,
   isAdvSearchCriteriaSet,
+  AdvancedSearchPageContext,
 } from "./AdvancedSearchHelper";
 import { AdvancedSearchPanel } from "./components/AdvancedSearchPanel";
-import { Search, SearchContext, SearchContextProps } from "./Search";
+import { Search } from "./Search";
 import { SearchPageBody } from "./SearchPageBody";
 import {
   buildSearchPageNavigationConfig,
   defaultSearchPageHeaderConfig,
   defaultSearchPageRefinePanelConfig,
+  SearchContext,
+  SearchContextProps,
   SearchPageHeaderConfig,
   SearchPageOptions,
 } from "./SearchPageHelper";
-
-interface AdvancedSearchPageContextProps {
-  /**
-   * Function to update each control's value.
-   */
-  updateFieldValueMap: (fieldValueMap: FieldValueMap) => void;
-  /**
-   * Function to control whether the Advanced search panel is open.
-   */
-  openAdvancedSearchPanel: (open: boolean) => void;
-  /**
-   * `true` when the Advanced search definition is retrieved from server.
-   */
-  definitionRetrieved: boolean;
-}
-
-const nop = () => {};
-
-export const AdvancedSearchPageContext =
-  createContext<AdvancedSearchPageContextProps>({
-    updateFieldValueMap: nop,
-    openAdvancedSearchPanel: nop,
-    definitionRetrieved: false,
-  });
 
 /**
  * This component controls how to render the Advanced search page, including:

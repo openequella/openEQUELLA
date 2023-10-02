@@ -23,7 +23,6 @@ import com.dytech.edge.common.FileInfo;
 import com.dytech.edge.common.ScriptContext;
 import com.dytech.edge.wizard.WizardException;
 import com.google.common.base.Function;
-import com.google.common.base.Throwables;
 import com.google.common.io.CharStreams;
 import com.google.inject.Provider;
 import com.tle.annotation.Nullable;
@@ -732,7 +731,7 @@ public class MyPagesServiceImpl implements MyPagesService {
     try (Writer wrt = getWriter(handle, filename)) {
       CharStreams.copy(html, wrt);
     } catch (IOException ex) {
-      throw Throwables.propagate(ex);
+      throw new RuntimeException(ex);
     }
 
     return fileSystemService.getFileInfo(handle, filename);
@@ -743,8 +742,8 @@ public class MyPagesServiceImpl implements MyPagesService {
     try (Reader reader =
         new InputStreamReader(fileSystemService.read(handle, filename), Constants.UTF8)) {
       return withReader.apply(reader);
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -752,7 +751,7 @@ public class MyPagesServiceImpl implements MyPagesService {
     try {
       return new OutputStreamWriter(
           fileSystemService.getOutputStream(handle, filename, false), Constants.UTF8);
-    } catch (Exception e) {
+    } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }

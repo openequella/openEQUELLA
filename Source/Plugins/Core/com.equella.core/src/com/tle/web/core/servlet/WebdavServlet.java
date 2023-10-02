@@ -22,15 +22,22 @@ import com.dytech.common.io.UnicodeReader;
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.Constants;
 import com.google.common.io.CharStreams;
+import com.rometools.utils.Strings;
 import com.tle.common.Check;
 import com.tle.common.Utils;
 import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.filesystem.FileEntry;
 import com.tle.common.filesystem.handle.StagingFile;
+import com.tle.core.auditlog.AuditLogService;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.mimetypes.MimeTypeService;
+import com.tle.core.replicatedcache.ReplicatedCacheService;
+import com.tle.core.replicatedcache.ReplicatedCacheService.ReplicatedCache;
 import com.tle.core.services.FileSystemService;
+import com.tle.web.core.servlet.webdav.InvalidCredentials;
+import com.tle.web.core.servlet.webdav.WebDavAuthService;
+import com.tle.web.core.servlet.webdav.WebUserDetails;
 import com.tle.web.core.servlet.webdav.WebdavProps;
 import com.tle.web.stream.ContentStreamWriter;
 import com.tle.web.stream.FileContentStream;
@@ -46,7 +53,9 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.ServletException;
@@ -68,11 +77,13 @@ import org.w3c.dom.Node;
 @Singleton
 public class WebdavServlet extends HttpServlet {
   private static final Logger LOGGER = LoggerFactory.getLogger(WebdavServlet.class);
+  private static final String AUDIT_CATEGORY = "WEBDAV";
   private static final String CONTENT_TYPE_XML = "text/xml; charset=utf-8";
   private static final int SC_MULTI_STATUS = 207;
   private static final String METHODS_ALLOWED =
       "OPTIONS, GET, HEAD, POST, DELETE,"
           + " TRACE, PROPFIND, PROPPATCH, COPY, MOVE, PUT, LOCK, UNLOCK";
+  private static final String BASIC_AUTH = "Basic";
 
   public static final class HttpMethod {
     public static final String GET = "GET";
@@ -100,19 +111,146 @@ public class WebdavServlet extends HttpServlet {
   @Inject private InstitutionService institutionService;
   @Inject private MimeTypeService mimeTypeService;
   @Inject private ContentStreamWriter contentStreamWriter;
+  @Inject private WebDavAuthService webDavAuthService;
+  @Inject private AuditLogService auditLogService;
+
+  /**
+   * Cache of authentication attempts. This is used to throttle auditing of authentication attempts
+   * to prevent a flood of audit log entries.
+   */
+  private final ReplicatedCache<Boolean> authAudited;
+
+  @Inject
+  WebdavServlet(ReplicatedCacheService replicatedCacheService) {
+    authAudited = replicatedCacheService.getCache("webdav-auth-audited", 100, 5, TimeUnit.MINUTES);
+  }
 
   @Override
   public void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
     try {
-      doProcessing(req, resp);
+      if (isAuthenticated(req)) {
+        doProcessing(req, resp);
+      } else {
+        resp.setHeader("WWW-Authenticate", "Basic realm=\"openEQUELLA WebDAV\"");
+        resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+      }
     } catch (Exception ex) {
       LOGGER.error("Error in Webdav Servlet", ex);
       throw new ServletException(ex);
     }
   }
 
+  /**
+   * The Staging ID is always the first part of the path. The path is always of the form
+   * /{stagingId}/path/to/file
+   */
+  private Optional<String> getStagingId(HttpServletRequest request) {
+    return Optional.ofNullable(request.getPathInfo())
+        .map(pathInfo -> pathInfo.split("/"))
+        .filter(parts -> parts.length > 0)
+        .map(parts -> parts[1]);
+  }
+
+  private Optional<String> getAuthenticationHeader(HttpServletRequest request) {
+    return Optional.ofNullable(request.getHeader("Authorization")).filter(Strings::isNotEmpty);
+  }
+
+  private WebUserDetails getUserDetails(String authContext) {
+    return webDavAuthService
+        .whois(authContext)
+        .getOrElse(
+            () -> {
+              LOGGER.error("Error getting user details behind request to {}", authContext);
+              return new WebUserDetails("none", "unknown");
+            });
+  }
+
+  private void auditAuthFailed(String authContext, String remoteAddr) {
+    WebUserDetails userDetails = getUserDetails(authContext);
+    auditLogService.logGeneric(
+        AUDIT_CATEGORY,
+        "AUTH ERROR",
+        remoteAddr,
+        userDetails.username(),
+        userDetails.uniqueId(),
+        authContext);
+  }
+
+  private void auditAuthSuccess(String authContext, String remoteAddr) {
+    LOGGER.debug("WebDav Authentication succeeded to {} from {}", authContext, remoteAddr);
+
+    // Because WebDAV authentication is done with basic auth, we don't want to log a successful
+    // authentication with every request. Instead we cache the fact that the user has authenticated
+    // successfully for a period of time and only log the success if the user has not authenticated.
+    authAudited
+        .get(authContext)
+        .or(
+            () -> {
+              authAudited.put(authContext, true);
+
+              WebUserDetails userDetails = getUserDetails(authContext);
+              auditLogService.logGeneric(
+                  AUDIT_CATEGORY,
+                  "AUTH SUCCESS",
+                  remoteAddr,
+                  userDetails.username(),
+                  userDetails.uniqueId(),
+                  authContext);
+
+              return true;
+            });
+  }
+
+  /**
+   * Checks to see if the request includes a Staging ID and a HTTP Basic authentication header. If
+   * so it uses the WebDavAuthService to validate the credentials. It is assumed the
+   * WebDavAuthService has been used elsewhere prior to establish credentials for this
+   * 'context'/Staging ID. (For example, in the WebDavControl.)
+   */
+  private boolean isAuthenticated(HttpServletRequest request) {
+    final String WEB_DAV_AUTH_FAILED = "WebDav Authentication failed";
+
+    Optional<String> stagingId = getStagingId(request);
+    if (stagingId.isEmpty()) {
+      LOGGER.warn(WEB_DAV_AUTH_FAILED + ": Staging ID not present");
+      return false;
+    }
+
+    return getAuthenticationHeader(request)
+        .filter(
+            header -> {
+              if (!header.startsWith(BASIC_AUTH)) {
+                LOGGER.warn(WEB_DAV_AUTH_FAILED + ": Authentication Header not 'Basic'");
+                return false;
+              }
+              return true;
+            })
+        .map(header -> header.substring(BASIC_AUTH.length()).trim())
+        .filter(Strings::isNotEmpty)
+        .flatMap(
+            authz ->
+                stagingId.map(context -> webDavAuthService.validateCredentials(context, authz)))
+        .map(
+            authResult ->
+                authResult.fold(
+                    error -> {
+                      LOGGER.warn(
+                          WEB_DAV_AUTH_FAILED + " [Staging ID: {}]: {}", stagingId.get(), error);
+                      if (error.getClass() == InvalidCredentials.class) {
+                        auditAuthFailed(stagingId.get(), request.getRemoteAddr());
+                      }
+
+                      return false;
+                    },
+                    success -> {
+                      auditAuthSuccess(stagingId.get(), request.getRemoteAddr());
+                      return true;
+                    }))
+        .orElse(false);
+  }
+
   protected void doProcessing(HttpServletRequest request, HttpServletResponse response)
-      throws IOException, Exception {
+      throws IOException, NotFoundException {
     String requestedUrl = request.getRequestURI();
 
     LOGGER.info("URL:" + requestedUrl);
@@ -211,7 +349,7 @@ public class WebdavServlet extends HttpServlet {
       String requestedUrl,
       String stagingid,
       String filename)
-      throws IOException, Exception {
+      throws IOException, NotFoundException, IllegalArgumentException {
     StagingFile stagingFile = null;
 
     if (stagingid.length() > 0) {
@@ -256,23 +394,14 @@ public class WebdavServlet extends HttpServlet {
     }
   }
 
-  /**
-   * Process a GET request
-   *
-   * @param req
-   * @param resp
-   * @param itemurl
-   * @param fileSystem
-   * @param actualserve
-   * @throws Exception
-   */
+  /** Process a GET request */
   private void getMethod(
       HttpServletRequest request,
       HttpServletResponse response,
       StagingFile staging,
       String fname,
       boolean actualserve)
-      throws Exception {
+      throws IOException, NotFoundException {
     if (fileSystemService.fileExists(staging, fname)) {
       if (Check.isEmpty(fname) && actualserve) {
         // tell n00bs not to paste the URL in the browser
@@ -422,7 +551,7 @@ public class WebdavServlet extends HttpServlet {
    */
   public void propFindMethod(
       HttpServletRequest req, HttpServletResponse resp, StagingFile staging, String filename)
-      throws IOException, Exception {
+      throws IOException {
     // Don't want double //'s
     final String basepath =
         institutionService.getInstitutionUrl() + req.getServletPath().substring(1);

@@ -20,7 +20,6 @@ package com.tle.web.wizard.controls;
 
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.wizard.beans.control.WizardControl;
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.tle.core.wizard.controls.HTMLControl;
 import com.tle.core.wizard.controls.WizardPage;
@@ -176,11 +175,7 @@ public class GroupsCtrl extends OptionCtrl {
 
   protected void afterSaveValidateGroup(ControlGroup group) {
     for (HTMLControl ctrl : group.getControls()) {
-      try {
-        ctrl.afterSaveValidate();
-      } catch (Exception e) {
-        throw Throwables.propagate(e);
-      }
+      ctrl.afterSaveValidate();
     }
   }
 

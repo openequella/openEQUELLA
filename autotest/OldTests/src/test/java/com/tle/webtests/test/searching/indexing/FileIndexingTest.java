@@ -15,8 +15,10 @@ import com.tle.webtests.pageobject.wizard.WizardPageTab;
 import com.tle.webtests.test.AbstractCleanupTest;
 import java.util.List;
 import org.testng.annotations.Test;
+import testng.annotation.RetryTest;
 
 // TODO: refactor with a data source
+@RetryTest
 @TestInstitution("fiveo")
 public class FileIndexingTest extends AbstractCleanupTest {
   // DTEC 14899

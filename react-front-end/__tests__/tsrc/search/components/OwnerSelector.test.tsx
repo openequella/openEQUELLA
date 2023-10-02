@@ -15,12 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import * as UserModuleMock from "../../../../__mocks__/UserModule.mock";
-import * as UserSearchMock from "../../../../__mocks__/UserSearch.mock";
 import OwnerSelector from "../../../../tsrc/search/components/OwnerSelector";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import { queryMuiButtonByText } from "../../MuiQueries";
@@ -86,7 +85,7 @@ describe("<OwnerSelector/>", () => {
       <OwnerSelector
         onClearSelect={jest.fn()}
         onSelect={onSelectCallback}
-        userListProvider={UserSearchMock.userDetailsProvider}
+        userListProvider={UserModuleMock.listUsers}
       />
     );
 

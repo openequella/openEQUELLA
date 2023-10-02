@@ -22,14 +22,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.IItem;
 import com.tle.beans.item.Item;
-import com.tle.beans.item.ItemId;
-import com.tle.beans.item.ViewableItemType;
-import com.tle.common.NameValue;
 import com.tle.common.URLUtils;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.common.usermanagement.user.UserState;
@@ -53,7 +49,6 @@ import com.tle.web.selection.SelectedResource;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.section.RootSelectionException;
 import com.tle.web.template.Decorations;
-import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewable.ViewableItemResolver;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -117,7 +112,7 @@ public class GenericIntegrationService
             new HiddenInput(data.getPrefix() + "links", mapper.writeValueAsString(resources)));
         renderContext.setRenderedBody(form);
       } catch (IOException json) {
-        throw Throwables.propagate(json);
+        throw new RuntimeException(json);
       }
     } else {
       SelectedResource resource = getFirstSelectedResource(session);
@@ -329,12 +324,6 @@ public class GenericIntegrationService
     return GenericIntegrationService.class;
   }
 
-  @Nullable
-  @Override
-  public NameValue getLocation(GenericIntegrationData data) {
-    return null;
-  }
-
   @Override
   protected boolean canSelect(GenericIntegrationData data) {
     return data.getCallbackURL() != null;
@@ -353,26 +342,5 @@ public class GenericIntegrationService
       }
     }
     return type;
-  }
-
-  @Override
-  protected <I extends IItem<?>> ViewableItem<I> createViewableItem(
-      I item, SelectedResource resource) {
-    final ViewableItem<I> vitem =
-        viewableItemResolver.createIntegrationViewableItem(
-            item,
-            resource.isLatest(),
-            ViewableItemType.GENERIC,
-            resource.getKey().getExtensionType());
-    return vitem;
-  }
-
-  @Override
-  public <I extends IItem<?>> ViewableItem<I> createViewableItem(
-      ItemId itemId, boolean latest, String itemExtensionType) {
-    final ViewableItem<I> vitem =
-        viewableItemResolver.createIntegrationViewableItem(
-            itemId, latest, ViewableItemType.GENERIC, itemExtensionType);
-    return vitem;
   }
 }

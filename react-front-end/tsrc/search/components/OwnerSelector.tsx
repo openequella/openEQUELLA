@@ -30,7 +30,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useState } from "react";
-import { SelectUserDialog } from "../../components/SelectUserDialog";
+import { SelectUserDialog } from "../../components/securityentitydialog/SelectUserDialog";
 import { languageStrings } from "../../util/langstrings";
 
 export interface OwnerSelectorProps {

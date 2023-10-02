@@ -23,13 +23,13 @@ import {
   List,
   ListItem,
 } from "@mui/material";
-import { Meta, Story } from "@storybook/react";
+import { Meta, Story, StoryFn } from "@storybook/react";
 import * as React from "react";
 import { classifications } from "../../__mocks__/CategorySelector.mock";
 import { customRefinePanelControl } from "../../__mocks__/RefinePanelControl.mock";
+import { getRemoteSearchesFromServer } from "../../__mocks__/RemoteSearchModule.mock";
 import { getSearchResult } from "../../__mocks__/SearchResult.mock";
 import { defaultSearchSettings } from "../../tsrc/modules/SearchSettingsModule";
-import { SearchContext, SearchContextProps } from "../../tsrc/search/Search";
 import {
   SearchPageBody,
   SearchPageBodyProps,
@@ -38,6 +38,8 @@ import {
   defaultSearchPageHeaderConfig,
   defaultSearchPageOptions,
   defaultSearchPageRefinePanelConfig,
+  SearchContext,
+  SearchContextProps,
 } from "../../tsrc/search/SearchPageHelper";
 import { SearchPageSearchResult } from "../../tsrc/search/SearchPageReducer";
 
@@ -56,6 +58,7 @@ const defaultSearchContextProps: SearchContextProps = {
 
 const searchPageBodyProps: SearchPageBodyProps = {
   pathname: "/page/search",
+  getRemoteSearchesProvider: getRemoteSearchesFromServer,
 };
 
 const buildSearchContextDecorator =
@@ -73,14 +76,14 @@ export default {
   decorators: [buildSearchContextDecorator()],
 } as Meta<SearchPageBodyProps>;
 
-export const Initialising: Story<SearchPageBodyProps> = (args) => (
+export const Initialising: StoryFn<SearchPageBodyProps> = (args) => (
   <SearchPageBody {...args} />
 );
 Initialising.args = {
   ...searchPageBodyProps,
 };
 
-export const WithSearchResult: Story<SearchPageBodyProps> = (args) => (
+export const WithSearchResult: StoryFn<SearchPageBodyProps> = (args) => (
   <SearchPageBody {...args} />
 );
 WithSearchResult.decorators = [
@@ -101,7 +104,7 @@ WithSearchResult.args = {
   ...searchPageBodyProps,
 };
 
-export const AdditionalPanel: Story<SearchPageBodyProps> = (args) => (
+export const AdditionalPanel: StoryFn<SearchPageBodyProps> = (args) => (
   <SearchPageBody {...args} />
 );
 AdditionalPanel.args = {
@@ -114,7 +117,7 @@ AdditionalPanel.args = {
   ],
 };
 
-export const AdditionalHeader: Story<SearchPageBodyProps> = (args) => (
+export const AdditionalHeader: StoryFn<SearchPageBodyProps> = (args) => (
   <SearchPageBody {...args} />
 );
 AdditionalHeader.args = {
@@ -125,7 +128,7 @@ AdditionalHeader.args = {
   },
 };
 
-export const DisableCollectionFilter: Story<SearchPageBodyProps> = (args) => (
+export const DisableCollectionFilter: StoryFn<SearchPageBodyProps> = (args) => (
   <SearchPageBody {...args} />
 );
 DisableCollectionFilter.args = {
@@ -136,7 +139,7 @@ DisableCollectionFilter.args = {
   },
 };
 
-export const CustomSortingOptions: Story<SearchPageBodyProps> = (args) => (
+export const CustomSortingOptions: StoryFn<SearchPageBodyProps> = (args) => (
   <SearchPageBody {...args} />
 );
 CustomSortingOptions.args = {
@@ -150,9 +153,9 @@ CustomSortingOptions.args = {
   },
 };
 
-export const ShowAdvancedSearchFilter: Story<SearchPageBodyProps> = (args) => (
-  <SearchPageBody {...args} />
-);
+export const ShowAdvancedSearchFilter: StoryFn<SearchPageBodyProps> = (
+  args
+) => <SearchPageBody {...args} />;
 ShowAdvancedSearchFilter.args = {
   ...searchPageBodyProps,
   searchBarConfig: {
@@ -163,9 +166,9 @@ ShowAdvancedSearchFilter.args = {
   },
 };
 
-export const CustomRefinePanelControls: Story<SearchPageBodyProps> = (args) => (
-  <SearchPageBody {...args} />
-);
+export const CustomRefinePanelControls: StoryFn<SearchPageBodyProps> = (
+  args
+) => <SearchPageBody {...args} />;
 CustomRefinePanelControls.args = {
   ...searchPageBodyProps,
   refinePanelConfig: {
@@ -174,7 +177,7 @@ CustomRefinePanelControls.args = {
   },
 };
 
-export const CustomSearchResult: Story<SearchPageBodyProps> = (args) => (
+export const CustomSearchResult: StoryFn<SearchPageBodyProps> = (args) => (
   <SearchPageBody {...args} />
 );
 CustomSearchResult.decorators = WithSearchResult.decorators;
@@ -183,7 +186,7 @@ CustomSearchResult.args = {
   customRenderSearchResults: (searchResult: SearchPageSearchResult) => (
     <List>
       {searchResult.content.results.map(({ name, uuid, version }) => (
-        <ListItem>
+        <ListItem key={uuid}>
           name: {name} | uuid: {uuid} | version: {version}
         </ListItem>
       ))}

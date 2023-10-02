@@ -16,14 +16,14 @@
  * limitations under the License.
  */
 
+import * as t from "io-ts";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
-import { flow, pipe } from "fp-ts/function";
+import { flow, pipe, constFalse } from "fp-ts/function";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
-import { Literal, Static, Union } from "runtypes";
 import { API_BASE_URL } from "../AppConfig";
 import { DateRange, getISODateString } from "../util/Date";
 import type { Collection } from "./CollectionsModule";
@@ -50,41 +50,39 @@ export const nonLiveStatus = (status: OEQ.Common.ItemStatus): boolean =>
  * List of statuses which are considered non-live.
  */
 export const nonLiveStatuses: OEQ.Common.ItemStatus[] =
-  OEQ.Common.ItemStatuses.alternatives
-    .map((status) => status.value)
+  OEQ.Codec.Common.ItemStatusCodec.types
+    .map(({ value }) => value)
     .filter(nonLiveStatus);
 
 /**
  * All statuses except "DELETED".
  */
 export const nonDeletedStatuses: OEQ.Common.ItemStatus[] =
-  OEQ.Common.ItemStatuses.alternatives
-    .map((status) => status.value)
+  OEQ.Codec.Common.ItemStatusCodec.types
+    .map(({ value }) => value)
     .filter((status) => status !== "DELETED");
 
 /**
  * Function to check if the supplied SearchResultItem refers to a live Item.
+ * Item status returned from 'search2' is a lowercase string so convert it to uppercase.
  */
-export const isLiveItem = (item: OEQ.Search.SearchResultItem): boolean => {
-  // Item status returned from 'search2' is a lowercase string so convert it to uppercase.
-  const status = item.status.toUpperCase();
-  return OEQ.Common.ItemStatuses.guard(status) && liveStatuses.includes(status);
-};
+export const isLiveItem = (item: OEQ.Search.SearchResultItem): boolean =>
+  pipe(
+    OEQ.Codec.Common.ItemStatusCodec.decode(item.status.toUpperCase()),
+    E.fold(constFalse, (s) => liveStatuses.includes(s))
+  );
 
-/**
- * A Runtypes object which represents three display modes: list, gallery-image and gallery-video.
- */
-export const DisplayModeRuntypes = Union(
-  Literal("list"),
-  Literal("gallery-image"),
-  Literal("gallery-video")
-);
+export const DisplayModeCodec = t.union([
+  t.literal("list"),
+  t.literal("gallery-image"),
+  t.literal("gallery-video"),
+]);
 
 /**
  * Available modes for displaying search results.
  * @see { @link DisplayModeRuntypes } for original definition.
  */
-export type DisplayMode = Static<typeof DisplayModeRuntypes>;
+export type DisplayMode = t.TypeOf<typeof DisplayModeCodec>;
 
 /**
  * Type of all search options on Search page

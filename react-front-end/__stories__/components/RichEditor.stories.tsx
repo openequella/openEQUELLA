@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import type { Meta, Story } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react";
 import RichTextEditor, {
   RichTextEditorProps,
 } from "../../tsrc/components/RichTextEditor";
@@ -38,14 +38,14 @@ export default {
   },
 } as Meta<RichTextEditorProps>;
 
-export const WithoutHTMLInput: Story<RichTextEditorProps> = (args) => (
+export const WithoutHTMLInput: StoryFn<RichTextEditorProps> = (args) => (
   <RichTextEditor {...args} />
 );
 WithoutHTMLInput.args = {
   skinUrl: "http://localhost:6006/tinymce/skins/ui/oxide",
 };
 
-export const WithHTMLInput: Story<RichTextEditorProps> = (args) => (
+export const WithHTMLInput: StoryFn<RichTextEditorProps> = (args) => (
   <RichTextEditor {...args} />
 );
 WithHTMLInput.args = {

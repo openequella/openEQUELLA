@@ -21,7 +21,6 @@ package com.tle.web.wizard.controls;
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.wizard.beans.control.Repeater;
 import com.dytech.edge.wizard.beans.control.WizardControl;
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.tle.core.wizard.WizardPageException;
 import com.tle.core.wizard.controls.HTMLControl;
@@ -92,7 +91,7 @@ public class CRepeater extends GroupsCtrl {
         control.setParent(this);
       }
     } catch (WizardPageException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
 
     final ControlGroup group = new ControlGroup(controls, index);

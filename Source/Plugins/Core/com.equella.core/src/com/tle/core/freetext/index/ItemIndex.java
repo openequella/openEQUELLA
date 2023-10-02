@@ -43,8 +43,10 @@ import com.tle.common.settings.standard.SearchSettings;
 import com.tle.common.util.Dates;
 import com.tle.common.util.LocalDate;
 import com.tle.common.util.TleDate;
+import com.tle.core.freetext.filters.CustomFilter;
 import com.tle.core.freetext.filters.DateFilter;
 import com.tle.core.freetext.filters.InstitutionFilter;
+import com.tle.core.freetext.filters.MatrixFilter;
 import com.tle.core.freetext.filters.MustFilter;
 import com.tle.core.freetext.filters.MustNotFilter;
 import com.tle.core.freetext.filters.SecurityFilter;
@@ -58,7 +60,7 @@ import com.tle.core.remoting.MatrixResults;
 import com.tle.core.services.item.FreetextResult;
 import com.tle.freetext.FreetextIndex;
 import com.tle.freetext.IndexedItem;
-import com.tle.freetext.LuceneConstants;
+import com.tle.freetext.TLEAnalyzer;
 import com.tle.freetext.TLEQueryParser;
 import it.uniroma3.mat.extendedset.intset.ConciseSet;
 import it.uniroma3.mat.extendedset.intset.FastSet;
@@ -68,51 +70,58 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.FieldSelector;
-import org.apache.lucene.document.FieldSelectorResult;
-import org.apache.lucene.document.SetBasedFieldSelector;
+import org.apache.lucene.document.DocumentStoredFieldVisitor;
+import org.apache.lucene.document.LongPoint;
+import org.apache.lucene.index.AutomatonTermsEnum;
+import org.apache.lucene.index.FieldInfo;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.LeafReaderContext;
+import org.apache.lucene.index.MultiTerms;
+import org.apache.lucene.index.PostingsEnum;
+import org.apache.lucene.index.StoredFieldVisitor;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermDocs;
-import org.apache.lucene.index.TermEnum;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.apache.lucene.index.TermsEnum;
+import org.apache.lucene.index.TermsEnum.SeekStatus;
+import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
+import org.apache.lucene.queryparser.flexible.core.messages.QueryParserMessages;
+import org.apache.lucene.queryparser.flexible.messages.MessageImpl;
+import org.apache.lucene.queryparser.flexible.standard.QueryParserUtil;
+import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
+import org.apache.lucene.queryparser.flexible.standard.config.StandardQueryConfigHandler.Operator;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.ChainedFilter;
-import org.apache.lucene.search.Collector;
-import org.apache.lucene.search.DocIdSetIterator;
-import org.apache.lucene.search.FieldCacheRangeFilter;
+import org.apache.lucene.search.BooleanQuery.Builder;
 import org.apache.lucene.search.FieldComparatorSource;
-import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiPhraseQuery;
 import org.apache.lucene.search.MultiTermQuery;
-import org.apache.lucene.search.NRTManager;
-import org.apache.lucene.search.NRTManager.TrackingIndexWriter;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.Scorer;
+import org.apache.lucene.search.ScoreMode;
+import org.apache.lucene.search.SearcherManager;
+import org.apache.lucene.search.SimpleCollector;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TermQuery;
@@ -120,12 +129,14 @@ import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TotalHitCountCollector;
 import org.apache.lucene.search.WildcardQuery;
-import org.apache.lucene.util.OpenBitSet;
-import org.apache.lucene.util.Version;
+import org.apache.lucene.util.BytesRef;
+import org.apache.lucene.util.FixedBitSet;
+import org.apache.lucene.util.automaton.CompiledAutomaton;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
 public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexEngine {
+
   private static final Pattern AND = Pattern.compile("(\\W)and(\\W)"); // $NON-NLS-1$
   private static final Pattern OR = Pattern.compile("(\\W)or(\\W)"); // $NON-NLS-1$
   private static final Pattern NOT = Pattern.compile("(\\W)not(\\W)"); // $NON-NLS-1$
@@ -143,7 +154,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
           "DOWNLOAD_ITEM",
           "ACLL-");
 
-  @Inject private FreetextIndex freetextIndex;
+  protected FreetextIndex freetextIndex;
 
   private float titleBoost;
   private float descriptionBoost;
@@ -152,7 +163,11 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
   /** AND or OR */
   private String defaultOperator;
 
-  private FieldSelector keyFieldSelector;
+  private StoredFieldVisitor keyFieldSelector;
+
+  public ItemIndex(FreetextIndex freetextIndex) {
+    this.freetextIndex = freetextIndex;
+  }
 
   @PostConstruct
   @Override
@@ -160,8 +175,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     setStopWordsFile(freetextIndex.getStopWordsFile());
     setDefaultOperator(freetextIndex.getDefaultOperator());
     setAnalyzerLanguage(freetextIndex.getAnalyzerLanguage());
-    keyFieldSelector = new SetBasedFieldSelector(getKeyFields(), new HashSet<String>());
-
+    keyFieldSelector = new DocumentStoredFieldVisitor(getKeyFields());
     super.afterPropertiesSet();
   }
 
@@ -183,8 +197,16 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
         return 4;
       case 7:
         return 8;
+      default:
+        return 1;
     }
-    return -1;
+  }
+
+  private void configureBoost(float boostValue, Consumer<Float> setter, Runnable onZero) {
+    if (boostValue == 0) {
+      onZero.run();
+    }
+    setter.accept(boostValue);
   }
 
   protected Set<String> getKeyFields() {
@@ -203,24 +225,23 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     this.attachmentBoost = attachmentBoost;
   }
 
-  protected long removeDocuments(
-      Collection<IndexedItem> documents, NRTManager manager, TrackingIndexWriter writer) {
+  protected long removeDocuments(Collection<IndexedItem> documents, IndexWriter writer) {
     long generation = -1;
     for (IndexedItem item : documents) {
       ItemIdKey itemId = item.getItemIdKey();
       String unique = ItemId.fromKey(itemId).toString();
       try {
-        BooleanQuery delQuery = new BooleanQuery();
-        delQuery.add(
+        Builder delQueryBuilder = new Builder();
+        delQueryBuilder.add(
             new TermQuery(new Term(FreeTextQuery.FIELD_ID, Long.toString(itemId.getKey()))),
             Occur.MUST);
-        delQuery.add(
+        delQueryBuilder.add(
             new TermQuery(
                 new Term(
                     FreeTextQuery.FIELD_INSTITUTION,
                     Long.toString(item.getInstitution().getUniqueId()))),
             Occur.MUST);
-        long g = writer.deleteDocuments(delQuery);
+        long g = writer.deleteDocuments(delQueryBuilder.build());
         if (item.isNewSearcherRequired()) {
           generation = g;
         }
@@ -233,8 +254,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     return generation;
   }
 
-  public long addDocuments(
-      Collection<IndexedItem> documents, NRTManager nrtManager, TrackingIndexWriter writer) {
+  public long addDocuments(Collection<IndexedItem> documents, IndexWriter writer) {
     long generation = -1;
     for (IndexedItem item : documents) {
       if (item.isAdd()) {
@@ -275,17 +295,6 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
           public SearchResults<T> search(IndexSearcher searcher) throws IOException {
             long t1 = System.currentTimeMillis();
 
-            Collection<Filter> filters = getFilters(searchreq);
-            SecurityFilter deleteablesFilter = null;
-            String collectPriv = searchreq.getPrivilegeToCollect();
-            if (collectPriv != null) {
-              deleteablesFilter = new SecurityFilter(getPrefixForPrivilege(collectPriv));
-              deleteablesFilter.setOnlyCollectResults(true);
-              filters.add(deleteablesFilter);
-            }
-            Filter filter =
-                new ChainedFilter(filters.toArray(new Filter[filters.size()]), ChainedFilter.AND);
-
             Sort sorter = getSorter(searchreq);
 
             // TODO: We should really be doing a
@@ -311,15 +320,21 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
             boolean searchAll =
                 Check.isEmpty(searchreq.getQuery()) || searchreq.getQuery().equals("*");
 
+            boolean sortByRelevance =
+                Optional.ofNullable(searchreq.getSortFields())
+                    .map(Arrays::stream)
+                    .flatMap(fields -> fields.filter(f -> f.getType() == Type.SCORE).findFirst())
+                    .isPresent();
+
             if (actualCount == 0) {
               TotalHitCountCollector hitCount = new TotalHitCountCollector();
-              searcher.search(query, filter, hitCount);
+              searcher.search(query, hitCount);
               results =
                   new SimpleSearchResults<T>(new ArrayList<T>(), 0, 0, hitCount.getTotalHits());
             } else {
-              final TopDocs hits = searcher.search(query, filter, actualCount, sorter);
+              final TopDocs hits = searcher.search(query, actualCount, sorter, sortByRelevance);
               final SearchResults<T> itemResults =
-                  getResultsFromTopDocs(searcher, hits, actualStart, deleteablesFilter, searchreq);
+                  getResultsFromTopDocs(searcher, hits, actualStart, sortByRelevance);
 
               SearchResults<T> attachmentResults = null;
               int attachmentBoostValue = freetextIndex.getSearchSettings().getAttachmentBoost();
@@ -336,10 +351,9 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
                         queryAttachmentOnly, itemResults, searcher.getIndexReader());
 
                 final TopDocs attachmentHits =
-                    searcher.search(queryAttachmentOnly, filter, actualCount, sorter);
+                    searcher.search(queryAttachmentOnly, actualCount, sorter);
                 attachmentResults =
-                    getResultsFromTopDocs(
-                        searcher, attachmentHits, 0, deleteablesFilter, searchreq);
+                    getResultsFromTopDocs(searcher, attachmentHits, 0, sortByRelevance);
               }
 
               if (attachmentResults != null) {
@@ -373,8 +387,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
   private Query addUniqueIdClauseToQuery(
       Query query, SearchResults<T> itemResults, IndexReader reader) {
     List<T> results = itemResults.getResults();
-    BooleanQuery orQuery = new BooleanQuery();
-
+    Builder freeTextBuilder = new Builder();
     for (T t : results) {
       ItemIdKey itemIdKey = t.getItemIdKey();
       String[] split = itemIdKey.toString().split("/");
@@ -382,16 +395,15 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
       FreeTextBooleanQuery bquery = new FreeTextBooleanQuery(false, true);
       bquery.add(new FreeTextFieldQuery(FreeTextQuery.FIELD_UNIQUE, uniqueId));
-      BooleanClause convertBoolean = convertToBooleanClause(bquery, reader);
-      convertBoolean.setOccur(Occur.SHOULD);
-      orQuery.add(convertBoolean);
+      BooleanClause clause = convertToBooleanClause(bquery, reader);
+      freeTextBuilder.add(clause.getQuery(), Occur.SHOULD);
     }
 
-    BooleanQuery newQuery = new BooleanQuery();
-    newQuery.add(query, Occur.MUST);
-    newQuery.add(orQuery, Occur.MUST);
+    Builder fullQueryBuilder = new Builder();
+    fullQueryBuilder.add(query, Occur.MUST);
+    fullQueryBuilder.add(freeTextBuilder.build(), Occur.MUST);
 
-    return newQuery;
+    return fullQueryBuilder.build();
   }
 
   private SearchResults<T> markItemKeywordFoundInAttachment(
@@ -419,31 +431,20 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
           public LongSet search(IndexSearcher searcher) throws IOException {
             long t1 = System.currentTimeMillis();
 
-            Collection<Filter> filters = getFilters(searchreq);
-            SecurityFilter deleteablesFilter = null;
-            String collectPriv = searchreq.getPrivilegeToCollect();
-            if (collectPriv != null) {
-              deleteablesFilter = new SecurityFilter(getPrefixForPrivilege(collectPriv));
-              deleteablesFilter.setOnlyCollectResults(true);
-              filters.add(deleteablesFilter);
-            }
-            Filter filter =
-                new ChainedFilter(filters.toArray(new Filter[filters.size()]), ChainedFilter.AND);
-
             IndexReader indexReader = searcher.getIndexReader();
             Query query = getQuery(searchreq, indexReader, searchAttachments);
             int numDocs = indexReader.numDocs();
 
             CompressedSetCollector compCollector = new CompressedSetCollector();
-            searcher.search(query, filter, compCollector);
+            searcher.search(query, compCollector);
             LongSet docIdSet = compCollector.getSet();
 
             LongSet longSet = new LongSet(new FastSet());
-            FieldSelector fieldSelector = new ItemIdFieldSelector();
             Iterator<Long> iterator = docIdSet.iterator();
             while (iterator.hasNext()) {
               long doc = iterator.next();
-              Document document = indexReader.document((int) doc, fieldSelector);
+              Document document =
+                  indexReader.document((int) doc, Collections.singleton(FreeTextQuery.FIELD_ID));
               long key = Long.parseLong(document.get(FreeTextQuery.FIELD_ID));
               longSet.add(key);
             }
@@ -489,7 +490,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     if (firstHit < results.length) {
       for (int i = firstHit; i < results.length; i++) {
         int docId = results[i].doc;
-        Document doc = searcher.doc(docId, keyFieldSelector);
+        Document doc = searcher.doc(docId, getKeyFields());
         ItemIdKey key = getKeyForDocument(doc);
         longSet.add(key.getKey());
       }
@@ -498,47 +499,27 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
   }
 
   protected SearchResults<T> getResultsFromTopDocs(
-      IndexSearcher searcher,
-      TopDocs hits,
-      int firstHit,
-      @Nullable SecurityFilter deleteables,
-      Search originalSearch)
+      IndexSearcher searcher, TopDocs hits, int firstHit, boolean sortByRelevance)
       throws IOException {
     List<T> retrievedResults = new ArrayList<T>();
-
-    OpenBitSet deleteableDocIds = null;
-    if (deleteables != null) {
-      deleteableDocIds = deleteables.getResults();
-    }
-
-    boolean sortByRelevance = false;
-    com.tle.common.searching.SortField[] sortfields = originalSearch.getSortFields();
-    if (sortfields != null) {
-      for (com.tle.common.searching.SortField sortfield : sortfields) {
-        if (sortfield.getType() == Type.SCORE) {
-          sortByRelevance = true;
-          searcher.setDefaultFieldSortScoring(true, false);
-        }
-      }
-    }
 
     ScoreDoc[] results = hits.scoreDocs;
     if (firstHit < results.length) {
       for (int i = firstHit; i < results.length; i++) {
         int docId = results[i].doc;
         float relevance = results[i].score;
-        Document doc = searcher.doc(docId, keyFieldSelector);
+        Document doc = searcher.doc(docId, getKeyFields());
         ItemIdKey key = getKeyForDocument(doc);
         T result = createResult(key, doc, relevance, sortByRelevance);
-        if (deleteableDocIds != null && deleteableDocIds.get(docId)) {
-          result.setMatchesPrivilege(true);
-        }
         retrievedResults.add(result);
       }
     }
 
+    // Accoding to Lucene V7 doco, TopDocs instances returned by IndexSearcher will still have a
+    // total number of hits which is less than 2B since Lucene indexes are still bound to at most
+    // 2B documents, so it can safely be cast to an int in that case.
     return new SimpleSearchResults<T>(
-        retrievedResults, retrievedResults.size(), firstHit, hits.totalHits);
+        retrievedResults, retrievedResults.size(), firstHit, (int) hits.totalHits.value);
   }
 
   protected abstract T createResult(
@@ -559,15 +540,14 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
         new Searcher<Integer>() {
           @Override
           public Integer search(IndexSearcher searcher) throws IOException {
-            Filter filters = getFilter(searchreq);
-            Query query = getQuery(searchreq, null, isSearchAttachment);
+            Query query = getQuery(searchreq, searcher.getIndexReader(), isSearchAttachment);
 
             if (LOGGER.isDebugEnabled()) {
               LOGGER.debug("Counting for " + query);
             }
 
             CountingCollector collector = new CountingCollector();
-            searcher.search(query, filters, collector);
+            searcher.search(query, collector);
 
             int count = collector.getCount();
             if (LOGGER.isDebugEnabled()) {
@@ -597,25 +577,22 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
           public Multimap<String, Pair<String, Integer>> search(IndexSearcher searcher)
               throws IOException {
             final IndexReader reader = searcher.getIndexReader();
-            final OpenBitSet filteredBits =
+            final FixedBitSet filteredBits =
                 searchRequestToBitSet(searchreq, searcher, reader, false);
 
             final Multimap<String, Pair<String, Integer>> rv = ArrayListMultimap.create();
             for (String field : fields) {
-              for (Term term : new XPathFieldIterator(reader, field, "")) {
-                int count = 0;
+              for (Term term : new XPathFieldIterator(reader, field)) {
+                PostingsEnum docs = MultiTerms.getTermPostingsEnum(reader, field, term.bytes());
 
-                TermDocs docs = reader.termDocs(term);
-                while (docs.next()) {
-                  if (filteredBits.get(docs.doc())) {
-                    count++;
-                  }
-                }
-                docs.close();
-
-                if (count > 0) {
-                  rv.put(field, new Pair<String, Integer>(term.text(), count));
-                }
+                LuceneDocumentHelper.useDocCount(
+                    docs,
+                    filteredBits,
+                    count -> {
+                      if (count > 0) {
+                        rv.put(field, new Pair<>(term.text(), count));
+                      }
+                    });
               }
             }
             return rv;
@@ -633,26 +610,23 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
           @Override
           public MatrixResults search(IndexSearcher searcher) throws IOException {
             IndexReader reader = searcher.getIndexReader();
-
-            OpenBitSet filteredBits =
+            FixedBitSet filteredBits =
                 searchRequestToBitSet(searchreq, searcher, reader, searchAttachments);
             int maxDoc = reader.maxDoc();
 
             Map<String, Map<String, List<TermBitSet>>> xpathMap =
                 new HashMap<String, Map<String, List<TermBitSet>>>();
 
-            List<OpenBitSet> perFieldBitSets = new ArrayList<OpenBitSet>();
-            OpenBitSet allDocs = new OpenBitSet();
+            List<FixedBitSet> perFieldBitSets = new ArrayList<FixedBitSet>();
+            FixedBitSet allDocs = new FixedBitSet(reader.maxDoc());
             for (String field : fields) {
               boolean hasXpaths = field.indexOf('[') != -1;
-              OpenBitSet perFieldBitSet = new OpenBitSet(maxDoc);
-              for (Term term : new XPathFieldIterator(reader, field, "")) {
-                OpenBitSet set = new OpenBitSet(maxDoc);
-                TermDocs docs = reader.termDocs(term);
-                while (docs.next()) {
-                  set.set(docs.doc());
-                }
-                docs.close();
+              FixedBitSet perFieldBitSet = new FixedBitSet(maxDoc);
+              for (Term term : new XPathFieldIterator(reader, field)) {
+                FixedBitSet set = new FixedBitSet(maxDoc);
+                PostingsEnum docs = MultiTerms.getTermPostingsEnum(reader, field, term.bytes());
+                LuceneDocumentHelper.forEachDoc(docs, set::set);
+
                 perFieldBitSet.or(set);
                 allDocs.or(set);
                 String xpathKey = "";
@@ -671,7 +645,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
               addFieldBitSet(new Term(field, ""), perFieldBitSet, "", xpathMap, field);
               perFieldBitSets.add(perFieldBitSet);
             }
-            for (OpenBitSet set : perFieldBitSets) {
+            for (FixedBitSet set : perFieldBitSets) {
               set.xor(allDocs);
             }
 
@@ -702,22 +676,25 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
         });
   }
 
-  private OpenBitSet searchRequestToBitSet(
+  private FixedBitSet searchRequestToBitSet(
       @Nullable final Search searchreq,
       IndexSearcher searcher,
       IndexReader reader,
       boolean searchAttachments)
       throws IOException {
+    Builder builder = new Builder();
+    Query query;
     if (searchreq != null) {
-      Filter filters = getFilter(searchreq);
-      Query query = getQuery(searchreq, null, searchAttachments);
-
-      BitSetCollector collector = new BitSetCollector();
-      searcher.search(query, filters, collector);
-      return collector.getBitSet();
+      query = getQuery(searchreq, reader, searchAttachments);
     } else {
-      return (OpenBitSet) new InstitutionFilter().getDocIdSet(reader);
+      InstitutionFilter institutionFilter = new InstitutionFilter();
+      builder.add(institutionFilter.buildQuery(), institutionFilter.getOccur());
+      query = builder.build();
     }
+
+    BitSetCollector collector = new BitSetCollector(reader.maxDoc());
+    searcher.search(query, collector);
+    return collector.getBitSet();
   }
 
   public String suggestTerm(
@@ -728,14 +705,12 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
           public String search(IndexSearcher searcher) throws IOException {
             // Get the reader
             IndexReader reader = searcher.getIndexReader();
-
-            // Get all the docs from the filters
-            Collection<Filter> filters = getFilters(request);
             Query query = getQuery(request, reader, isSearchAttachment);
-            filters.add(new QueryWrapperFilter(query));
-            ChainedFilter chain =
-                new ChainedFilter(filters.toArray(new Filter[filters.size()]), ChainedFilter.AND);
-            DocIdSetIterator iterator = chain.getDocIdSet(reader).iterator();
+            BitSetCollector collector = new BitSetCollector(reader.maxDoc());
+            searcher.search(query, collector);
+
+            // This is all the docs that are permitted by the filters.
+            FixedBitSet permittedDocSet = collector.getBitSet();
 
             // Get docs that contain terms that begin with the prefix
             List<Term> termList = Lists.newArrayList();
@@ -743,20 +718,18 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
             termList.add(new Term(FreeTextQuery.FIELD_ATTACHMENT_VECTORED_NOSTEM, prefix));
 
             for (Term term : termList) {
-              TermDocs termDocs = reader.termDocs(term);
-              TermEnum terms = reader.terms(term);
-
-              // Check if doc is in the filter and return the term
-              Term t;
-              for (t = terms.term(); t != null && t.text().startsWith(prefix); t = terms.term()) {
-                termDocs.seek(t);
-                while (termDocs.next()) {
-                  int docId = termDocs.doc();
-                  if (docId == iterator.advance(docId)) {
-                    return t.text();
-                  }
+              // Given a field, find out all the terms and seek the terms that have the provided
+              // prefix so the result
+              // does not have to be the exact term.
+              TermsEnum termsEnum = MultiTerms.getTerms(reader, term.field()).iterator();
+              if (termsEnum.seekCeil(new BytesRef(prefix)) != SeekStatus.END) {
+                Stream<Integer> docIds =
+                    LuceneDocumentHelper.postingEnumToStream(termsEnum.postings(null));
+                // Check if any of the documents with the term are 'permitted' to the user
+                if (docIds.anyMatch(permittedDocSet::get)) {
+                  // If so, return that as the term to use
+                  return termsEnum.term().utf8ToString();
                 }
-                terms.next();
               }
             }
             return "";
@@ -766,7 +739,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
   private void addFieldBitSet(
       Term term,
-      OpenBitSet set,
+      FixedBitSet set,
       String xpathKey,
       Map<String, Map<String, List<TermBitSet>>> xpathMap,
       String field) {
@@ -783,52 +756,20 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     list.add(new TermBitSet(term, set));
   }
 
-  private final class ItemIdFieldSelector implements FieldSelector {
-    @Override
-    public FieldSelectorResult accept(String fieldName) {
-      if (FreeTextQuery.FIELD_ID.equals(fieldName)) {
-        return FieldSelectorResult.LOAD_AND_BREAK;
-      } else {
-        return FieldSelectorResult.NO_LOAD;
-      }
-    }
-  }
-
-  protected final class CompressedSetCollector extends Collector {
-
-    private final LongSet set = new LongSet(new ConciseSet());
-    private int docBase;
+  private final class ItemIdFieldSelector extends StoredFieldVisitor {
 
     @Override
-    public void setScorer(Scorer scorer) throws IOException {
-      // nothing
-    }
-
-    @Override
-    public void setNextReader(IndexReader reader, int docBase) throws IOException {
-      this.docBase = docBase;
-    }
-
-    @Override
-    public void collect(int docId) throws IOException {
-      set.add(docBase + docId);
-    }
-
-    @Override
-    public boolean acceptsDocsOutOfOrder() {
-      return true;
-    }
-
-    public LongSet getSet() {
-      return set;
+    public Status needsField(FieldInfo fieldInfo) {
+      return FreeTextQuery.FIELD_ID.equals(fieldInfo.name) ? Status.YES : Status.NO;
     }
   }
 
   public static class TermBitSet {
-    Term term;
-    OpenBitSet bitSet;
 
-    public TermBitSet(Term term, OpenBitSet bitSet) {
+    Term term;
+    FixedBitSet bitSet;
+
+    public TermBitSet(Term term, FixedBitSet bitSet) {
       this.term = term;
       this.bitSet = bitSet;
     }
@@ -838,20 +779,20 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       List<List<TermBitSet>> bitSets,
       int index,
       String[] curValues,
-      OpenBitSet curBits,
+      FixedBitSet curBits,
       MatrixResults results,
       IndexReader reader,
       boolean countOnly) {
     List<TermBitSet> termBitSetList = bitSets.get(index);
     boolean last = index == curValues.length - 1;
     for (TermBitSet termBitSet : termBitSetList) {
-      OpenBitSet termBits = termBitSet.bitSet;
+      FixedBitSet termBits = termBitSet.bitSet;
       Term term = termBitSet.term;
       // if we don't intersect there's no point in recursing further in
       if (curBits.intersects(termBits)) {
         // Collect current term's value into the value array
         curValues[index] = term.text();
-        OpenBitSet docBits = (OpenBitSet) curBits.clone();
+        FixedBitSet docBits = (FixedBitSet) curBits.clone();
         docBits.and(termBits);
         if (last) {
           int count;
@@ -871,12 +812,12 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     }
   }
 
-  private List<ItemIdKey> getIdsForBitset(OpenBitSet docBits, IndexReader reader) {
+  private List<ItemIdKey> getIdsForBitset(FixedBitSet docBits, IndexReader reader) {
     int docid = 0;
     List<ItemIdKey> keys = new ArrayList<ItemIdKey>();
     while (true) {
       docid = docBits.nextSetBit(docid);
-      if (docid == -1) {
+      if (docid == -1 || docid == PostingsEnum.NO_MORE_DOCS) {
         break;
       }
       Document doc;
@@ -893,97 +834,46 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
   }
 
   /** Takes a search request and prepares a Lucene Query object. */
-  protected Query getQuery(Search request, IndexReader reader, boolean searchAttachment) {
+  protected BooleanQuery getQuery(Search request, IndexReader reader, boolean searchAttachment) {
     final String[] fields =
         FreeTextQuery.BASIC_NAME_BODY_ATTACHMENT_FIELDS.toArray(
             new String[FreeTextQuery.BASIC_NAME_BODY_ATTACHMENT_FIELDS.size()]);
     return getQuery(request, reader, fields, searchAttachment);
   }
 
-  private Query getQuery(
+  private BooleanQuery getQuery(
       Search request, IndexReader reader, String[] allFields, boolean searchAttachment) {
-    List<String> searchFields = new ArrayList<String>();
-    for (String string : allFields) {
-      searchFields.add(string);
-    }
+    String[] fields = buildSearchFields(allFields, searchAttachment);
 
-    SearchSettings searchSettings = freetextIndex.getSearchSettings();
+    // This full query builder includes all the general search queries plus the queries for filters.
+    Builder fullQuerybuilder = new Builder();
+    fullQuerybuilder.add(getFilterQuery(request, reader), Occur.FILTER);
 
-    float titleBoostValue = getRealBoostValue(searchSettings.getTitleBoost());
-    if (titleBoostValue == 0) {
-      searchFields.remove(FreeTextQuery.FIELD_NAME_VECTORED);
-    }
-    setTitleBoost(titleBoostValue == -1 ? 1 : titleBoostValue);
+    // This search query builder includes the normal query string and all the extra queries like
+    // FreeText query.
+    Builder searchQueryBuilder = new Builder();
+    searchQueryBuilder.add(buildNormalQuery(request, fields), Occur.MUST);
+    Optional.ofNullable(buildExtraQuery(request, reader))
+        .ifPresent(q -> searchQueryBuilder.add(q, Occur.MUST));
+    fullQuerybuilder.add(searchQueryBuilder.build(), Occur.MUST);
 
-    float descriptionBoostValue = getRealBoostValue(searchSettings.getDescriptionBoost());
-
-    if (descriptionBoostValue == 0) {
-      searchFields.remove(FreeTextQuery.FIELD_BODY);
-    }
-    setDescriptionBoost(descriptionBoostValue == -1 ? 1 : descriptionBoostValue);
-
-    float attachmentBoostValue = getRealBoostValue(searchSettings.getAttachmentBoost());
-    if (attachmentBoostValue == 0 || !searchAttachment) {
-      searchFields.remove(FreeTextQuery.FIELD_ATTACHMENT_VECTORED);
-    }
-    setAttachmentBoost(attachmentBoostValue == -1 ? 1 : attachmentBoostValue);
-
-    final String[] fields = searchFields.toArray(new String[searchFields.size()]);
-
-    Query query;
-
-    String queryString = request.getQuery();
-    try {
-      if (Check.isEmpty(queryString) || queryString.trim().equals("*")) {
-        query = new TermQuery(new Term(FreeTextQuery.FIELD_ALL, "1"));
-      } else {
-        queryString = queryString.toLowerCase();
-        queryString = AND.matcher(queryString).replaceAll("$1AND$2");
-        queryString = OR.matcher(queryString).replaceAll("$1OR$2");
-        queryString = NOT.matcher(queryString).replaceAll("$1NOT$2");
-
-        Version luceneVersion = LuceneConstants.LATEST_VERSION;
-
-        Map<String, Float> boosts = Maps.newHashMap();
-        boosts.put(FreeTextQuery.FIELD_NAME_VECTORED, titleBoost);
-        boosts.put(FreeTextQuery.FIELD_BODY, descriptionBoost);
-        boosts.put(FreeTextQuery.FIELD_ATTACHMENT_VECTORED, attachmentBoost);
-
-        TLEQueryParser tleParser = new TLEQueryParser(luceneVersion, fields, getAnalyser(), boosts);
-        tleParser.setDefaultOperator(getDefaultOperator());
-        Query tleQuery = tleParser.parse(queryString);
-
-        BooleanQuery orQuery = new BooleanQuery(true);
-        orQuery.add(tleQuery, Occur.SHOULD);
-
-        List<String> queries = request.getExtraQueries();
-        if (queries != null) {
-          for (String queryStr : queries) {
-            orQuery.add(tleParser.parse(queryStr), Occur.SHOULD);
-          }
-        }
-        query = orQuery;
-      }
-
-      // This one includes the query built above and all the FreeTextQuery of the search.
-      query = addExtraQuery(query, request, reader);
-    } catch (ParseException ex) {
-      throw new InvalidSearchQueryException(queryString, ex);
-    }
-    return query;
-  }
-
-  protected Filter getFilter(Search request) {
-    Collection<Filter> filters = getFilters(request);
-    return new ChainedFilter(filters.toArray(new Filter[filters.size()]), ChainedFilter.AND);
+    return fullQuerybuilder.build();
   }
 
   /**
-   * Takes a search request and prepares a Lucene Filter object, or null if no filtering is
-   * required.
+   * Build a BooleanQuery to represent all the Lucene filters applied in the search in two steps.
+   *
+   * <p>1. Build a custom Lucene filter for each applied configuration. Each filter is responsible
+   * for their equivalent query and occurrence. 2. Build a BooleanQuery to include queries of all
+   * the filters.
+   *
+   * <p>Note that some filters may return `null` as their queries, which means they are actually not
+   * applicable. So they will not be added to the final BooleanQuery.
    */
-  protected Collection<Filter> getFilters(Search request) {
-    List<Filter> filters = Lists.newArrayList();
+  protected BooleanQuery getFilterQuery(Search request, IndexReader reader) {
+    Builder filterQueryBuilder = new Builder();
+
+    List<CustomFilter> filters = Lists.newArrayList();
 
     Date[] dateRange = request.getDateRange();
     if (dateRange != null) {
@@ -1004,9 +894,9 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
           filters.add(
               createDateFilter(indexFieldName, range, Dates.ISO, request.useServerTimeZone()));
         } else {
-          Long start = range[0] != null ? range[0].getTime() : null;
-          Long end = range[1] != null ? range[1].getTime() : null;
-          filters.add(FieldCacheRangeFilter.newLongRange(indexFieldName, start, end, true, true));
+          long start = range[0] != null ? range[0].getTime() : Long.MIN_VALUE;
+          long end = range[1] != null ? range[1].getTime() : Long.MAX_VALUE;
+          filters.add(() -> LongPoint.newRangeQuery(indexFieldName, start, end));
         }
       }
     }
@@ -1017,7 +907,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       privPrefix = getPrefixForPrivilege(privilege);
     }
     if (privPrefix != null) {
-      filters.add(new SecurityFilter(privPrefix));
+      filters.add(new SecurityFilter(privPrefix, reader));
     }
 
     List<List<Field>> must = request.getMust();
@@ -1033,10 +923,38 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     }
     List<Field> matrixFields = request.getMatrixFields();
     if (matrixFields != null) {
-      filters.add(new MatrixFilter(matrixFields));
+      filters.add(new MatrixFilter(matrixFields, reader));
     }
     filters.add(new InstitutionFilter());
-    return filters;
+
+    filters.forEach(
+        f ->
+            Optional.ofNullable(f.buildQuery())
+                .ifPresent(q -> filterQueryBuilder.add(q, f.getOccur())));
+
+    return filterQueryBuilder.build();
+  }
+
+  private String[] buildSearchFields(String[] allFields, boolean searchAttachment) {
+    List<String> searchFields = new ArrayList<>(Arrays.asList(allFields));
+    SearchSettings searchSettings = freetextIndex.getSearchSettings();
+
+    configureBoost(
+        getRealBoostValue(searchSettings.getTitleBoost()),
+        this::setTitleBoost,
+        () -> searchFields.remove(FreeTextQuery.FIELD_NAME_VECTORED));
+
+    configureBoost(
+        getRealBoostValue(searchSettings.getDescriptionBoost()),
+        this::setDescriptionBoost,
+        () -> searchFields.remove(FreeTextQuery.FIELD_BODY));
+
+    configureBoost(
+        !searchAttachment ? 0 : getRealBoostValue(searchSettings.getAttachmentBoost()),
+        this::setAttachmentBoost,
+        () -> searchFields.remove(FreeTextQuery.FIELD_ATTACHMENT_VECTORED));
+
+    return searchFields.toArray(new String[0]);
   }
 
   protected DateFilter createDateFilter(
@@ -1055,26 +973,26 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
   /**
    * Takes a search request and prepares a Lucene Sort object, or null if no sorting is required.
    */
-  private Sort getSorter(Search request) {
+  protected Sort getSorter(Search request) {
     com.tle.common.searching.SortField[] sortfields = request.getSortFields();
     if (sortfields != null) {
       SortField[] convFields = new SortField[sortfields.length];
       int i = 0;
       for (com.tle.common.searching.SortField sortfield : sortfields) {
         FieldComparatorSource fieldComparatorSource = null;
-        int type = SortField.STRING;
+        SortField.Type type = SortField.Type.STRING;
         switch (sortfield.getType()) {
           case INT:
-            type = SortField.INT;
+            type = SortField.Type.INT;
             break;
           case LONG:
-            type = SortField.LONG;
+            type = SortField.Type.LONG;
             break;
           case SCORE:
-            type = SortField.SCORE;
+            type = SortField.Type.SCORE;
             break;
           case CUSTOM:
-            type = SortField.CUSTOM;
+            type = SortField.Type.CUSTOM;
             fieldComparatorSource = sortfield.getFieldComparatorSource();
           default:
             // Stays STRING
@@ -1092,34 +1010,78 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       }
       return new Sort(convFields);
     }
-    return new Sort(new SortField(null, SortField.SCORE, false));
+    return new Sort(new SortField(null, SortField.Type.SCORE, false));
   }
 
-  /** @dytech.jira see Jira Review TLE-784 : http://apps.dytech.com.au/jira/browse/TLE-784 */
-  protected Query addExtraQuery(@Nullable Query query, Search searchreq, IndexReader reader) {
+  /**
+   * Build a BooleanQuery for the normal query string of a search and some extra query strings
+   * provided by certain contexts such as tags of a favourite search.
+   *
+   * <p>There are three steps.
+   * <li>Get the text of a normal query string and use {@link TLEQueryParser} to parse it.
+   * <li>Get a list of extra query strings and parse them as well.
+   * <li>Join all the parsed results by `Occur.SHOULD`.
+   */
+  private BooleanQuery buildNormalQuery(Search request, String[] fields) {
+    String queryString = request.getQuery();
+    Builder normalQueryBuilder = new Builder();
+    try {
+      if (Check.isEmpty(queryString) || queryString.trim().equals("*")) {
+        normalQueryBuilder.add(new TermQuery(new Term(FreeTextQuery.FIELD_ALL, "1")), Occur.MUST);
+      } else {
+        queryString = queryString.toLowerCase();
+        queryString = AND.matcher(queryString).replaceAll("$1AND$2");
+        queryString = OR.matcher(queryString).replaceAll("$1OR$2");
+        queryString = NOT.matcher(queryString).replaceAll("$1NOT$2");
+
+        Map<String, Float> boosts = Maps.newHashMap();
+        boosts.put(FreeTextQuery.FIELD_NAME_VECTORED, titleBoost);
+        boosts.put(FreeTextQuery.FIELD_BODY, descriptionBoost);
+        boosts.put(FreeTextQuery.FIELD_ATTACHMENT_VECTORED, attachmentBoost);
+
+        TLEQueryParser tleParser =
+            new TLEQueryParser(fields, getAnalyser(), boosts, getDefaultOperator());
+        Query tleQuery = tleParser.parse(queryString);
+
+        normalQueryBuilder.add(tleQuery, Occur.SHOULD);
+
+        List<String> queries = request.getExtraQueries();
+        if (queries != null) {
+          for (String queryStr : queries) {
+            normalQueryBuilder.add(tleParser.parse(queryStr), Occur.SHOULD);
+          }
+        }
+      }
+
+    } catch (QueryNodeException ex) {
+      throw new InvalidSearchQueryException(queryString, ex);
+    }
+    return normalQueryBuilder.build();
+  }
+
+  /**
+   * Build a BooleanQuery for different implementations of {@link FreeTextQuery} such as
+   * `FreeTextAutocompleteQuery` and `FreeTextDateQuery`.
+   */
+  private BooleanQuery buildExtraQuery(Search searchreq, IndexReader reader) {
+    Builder extraQueryBuilder = new Builder();
     FreeTextQuery fullftQuery = searchreq.getFreeTextQuery();
     if (fullftQuery == null) {
-      return query;
+      return null;
     }
     BooleanClause clause = convertToBooleanClause(fullftQuery, reader);
+    Occur occur = clause.getOccur();
     if (!clause.isProhibited() && !clause.isRequired()) {
-      clause.setOccur(Occur.MUST);
+      occur = Occur.MUST;
     }
+    extraQueryBuilder.add(clause.getQuery(), occur);
 
-    BooleanQuery andThem = new BooleanQuery();
-    andThem.add(clause);
-    if (query != null) {
-      andThem.add(query, Occur.MUST);
-    }
-    return andThem;
+    return extraQueryBuilder.build();
   }
 
   /**
    * Takes a FreeTextQuery and converts it to a BooleanClause by dispatching to the correct
    * implementation.
-   *
-   * @throws IOException
-   * @throws ParseException
    */
   @Nullable
   private BooleanClause convertToBooleanClause(FreeTextQuery query, IndexReader reader) {
@@ -1142,11 +1104,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     return convertBoolean(bquery, reader);
   }
 
-  /**
-   * Converts a FreeTextFieldQuery to a BooleanClause
-   *
-   * @throws ParseException
-   */
+  /** Converts a FreeTextFieldQuery to a BooleanClause */
   private BooleanClause convertField(FreeTextFieldQuery query, IndexReader reader) {
     Query luceneQuery = null;
     if (query.isMustExist()) {
@@ -1159,13 +1117,14 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       return convertBoolean(bquery, reader);
     }
     if (query.isTokenise()) {
-      String q = query.getField() + "*";
+      String field = query.getField() + "*";
+      String value = query.getValue();
       try {
+        // Must escape the query when using StandardQueryParser.
         luceneQuery =
-            new QueryParser(LuceneConstants.LATEST_VERSION, q, getAnalyser())
-                .parse(query.getValue());
-      } catch (ParseException e) {
-        LOGGER.warn("Error parsing query: " + q);
+            new StandardQueryParser(getAnalyser()).parse(QueryParserUtil.escape(value), field);
+      } catch (QueryNodeException e) {
+        LOGGER.warn("Error parsing query " + value + " for field " + field);
         throw new InvalidSearchQueryException("Error parsing query");
       }
     } else if (query.isPossibleWildcard()) {
@@ -1179,13 +1138,13 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
   /** Converts a FreeTextDateQuery to a BooleanClause */
   private BooleanClause convertDate(FreeTextDateQuery query) {
     TermRangeQuery termQuery =
-        new TermRangeQuery(
+        TermRangeQuery.newStringRange(
             query.getField(),
             convertDate(query.getStart(), query),
             convertDate(query.getEnd(), query),
             query.isIncludeStart(),
             query.isIncludeEnd());
-    termQuery.setRewriteMethod(MultiTermQuery.CONSTANT_SCORE_FILTER_REWRITE);
+    termQuery.setRewriteMethod(MultiTermQuery.CONSTANT_SCORE_REWRITE);
     return new BooleanClause(termQuery, Occur.SHOULD);
   }
 
@@ -1209,9 +1168,10 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
   /** Converts a FreeTextBooleanQuery to a BooleanClause */
   private BooleanClause convertBoolean(FreeTextBooleanQuery query, IndexReader reader) {
-    List<BooleanClause> lclauses = new ArrayList<BooleanClause>();
-
+    Builder queryBuilder = new Builder();
+    List<BooleanClause> lclauses = new ArrayList<>();
     List<FreeTextQuery> clauses = query.getClauses();
+
     boolean and = query.isAnd() && clauses.size() > 1;
     boolean not = query.isNot();
 
@@ -1222,10 +1182,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       }
     }
 
-    BooleanQuery bquery = new BooleanQuery();
-    BooleanClause theclause = new BooleanClause(bquery, Occur.SHOULD);
     boolean bprohib = false;
-    boolean brequired = false;
     boolean addplus = false;
     if (and) {
       addplus = true;
@@ -1240,91 +1197,71 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       if (!not) {
         return first;
       } else if (!(first.isRequired() || first.isProhibited())) {
-        first.setOccur(Occur.MUST_NOT);
-        return first;
+        return new BooleanClause(first.getQuery(), Occur.MUST_NOT);
       }
     }
 
     for (BooleanClause bclause : lclauses) {
+      Occur clauseOccur = bclause.getOccur();
       if (addplus && !(bclause.isRequired() || bclause.isProhibited())) {
-        bclause.setOccur(Occur.MUST);
+        clauseOccur = Occur.MUST;
       }
       allnot &= bclause.isProhibited();
-      bquery.add(bclause);
+      queryBuilder.add(bclause.getQuery(), clauseOccur);
     }
 
+    // When `allnot` is true, it means all the BooleanClause are prohibited, so their occurrences
+    // are MUST_NOT.
+    // In this case the query has to have a term that can return some documents, and we use field
+    // `ALL` to
+    // return all the documents.
     if (allnot) {
-      bquery.add(
-          new BooleanClause(
-              new TermQuery(new Term(FreeTextQuery.FIELD_ALL, "1")), // $NON-NLS-1$
-              Occur.SHOULD));
+      queryBuilder.add(new TermQuery(new Term(FreeTextQuery.FIELD_ALL, "1")), Occur.SHOULD);
     }
-    if (bprohib) {
-      theclause.setOccur(Occur.MUST_NOT);
-    } else if (brequired) {
-      theclause.setOccur(Occur.MUST);
-    } else {
-      theclause.setOccur(Occur.SHOULD);
-    }
-    return theclause;
-  }
 
-  /**
-   * Stops the MultiPhraseQuery from being re-written as a BooleanQuery which could potentially hit
-   * the BooleanQuery.maxClauseCount of 1024
-   */
-  private MultiPhraseQuery getMultiPhrase() {
-    MultiPhraseQuery parsed =
-        new MultiPhraseQuery() {
-          private static final long serialVersionUID = 1L;
-
-          @Override
-          public Query rewrite(IndexReader reader) {
-            return this;
-          }
-        };
-    return parsed;
+    return new BooleanClause(queryBuilder.build(), bprohib ? Occur.MUST_NOT : Occur.SHOULD);
   }
 
   // Uses PrefixQuery for a single term
   private BooleanClause convertAutoComplete(FreeTextAutocompleteQuery query, IndexReader reader) {
-    Query finished = null;
-    String raw = query.getQuery();
-
     List<String> termList = Lists.newArrayList();
     List<Integer> increments = Lists.newArrayList();
 
+    TLEAnalyzer autocompleteAnalyzer = getAutoCompleteAnalyzer();
+
     try (TokenStream buffer =
-        getAnalyser()
-            .reusableTokenStream(FreeTextQuery.FIELD_NAME_AUTOCOMPLETE, new StringReader(raw))) {
+        autocompleteAnalyzer.tokenStream(
+            FreeTextQuery.FIELD_NAME_AUTOCOMPLETE, new StringReader(query.getQuery()))) {
       buffer.reset();
 
       CharTermAttribute termAtt = buffer.getAttribute(CharTermAttribute.class);
       PositionIncrementAttribute posIncrAtt = buffer.getAttribute(PositionIncrementAttribute.class);
-
       if (termAtt != null) {
         while (buffer.incrementToken()) {
           termList.add(termAtt.toString());
           increments.add(posIncrAtt.getPositionIncrement());
         }
       }
+
+      buffer.end();
     } catch (IOException ex) {
       throw new RuntimeApplicationException(
           "Error reading auto-complete results from search index");
     }
 
     try {
+      Query finished = null;
       int termListSize = termList.size();
       if (termListSize == 1) {
         String firstTerm = termList.get(0);
         finished = new PrefixQuery(new Term(FreeTextQuery.FIELD_NAME_AUTOCOMPLETE, firstTerm));
       } else {
-        MultiPhraseQuery multiPhraseQuery = getMultiPhrase();
+        MultiPhraseQuery.Builder multiPhraseQueryBuilder = new MultiPhraseQuery.Builder();
         int count = -1;
         for (int i = 0; i < termListSize; i++) {
           count += increments.get(i);
           if (i < termListSize - 1) {
-            multiPhraseQuery.add(
+            multiPhraseQueryBuilder.add(
                 new Term[] {new Term(FreeTextQuery.FIELD_NAME_AUTOCOMPLETE, termList.get(i))},
                 count);
           }
@@ -1333,10 +1270,10 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
         // Expand prefix
         addExpandedTerms(
             reader,
-            multiPhraseQuery,
+            multiPhraseQueryBuilder,
             termListSize > 0 ? termList.get(termListSize - 1) : "",
             count);
-        finished = multiPhraseQuery;
+        finished = multiPhraseQueryBuilder.build();
       }
       return new BooleanClause(finished, Occur.MUST);
     } catch (IOException ex) {
@@ -1346,12 +1283,13 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
   }
 
   private void addExpandedTerms(
-      IndexReader reader, MultiPhraseQuery query, String lastTerm, int count) throws IOException {
+      IndexReader reader, MultiPhraseQuery.Builder builder, String lastTerm, int count)
+      throws IOException {
     final Term[] expandedTerms = expand(reader, FreeTextQuery.FIELD_NAME_AUTOCOMPLETE, lastTerm);
     if (expandedTerms.length > 0) {
-      query.add(expandedTerms, count);
+      builder.add(expandedTerms, count);
     } else if (!lastTerm.isEmpty()) {
-      query.add(new Term[] {new Term(FreeTextQuery.FIELD_NAME_AUTOCOMPLETE, lastTerm)}, count);
+      builder.add(new Term[] {new Term(FreeTextQuery.FIELD_NAME_AUTOCOMPLETE, lastTerm)}, count);
     }
   }
 
@@ -1365,15 +1303,16 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     }
 
     ArrayList<Term> terms = Lists.newArrayList();
-    try (TermEnum t = ir.terms(new Term(field, prefix))) {
-      do {
-        if (t.term().text().startsWith(prefix)) {
-          terms.add(t.term());
-        } else {
-          break;
-        }
-      } while (t.next());
+    TermsEnum termsEnum = MultiTerms.getTerms(ir, field).iterator();
+    if (termsEnum != null) {
+      AutomatonTermsEnum automatonTermsEnum =
+          new AutomatonTermsEnum(
+              termsEnum, new CompiledAutomaton(PrefixQuery.toAutomaton(new BytesRef(prefix))));
+      while (automatonTermsEnum.next() != null) {
+        terms.add(new Term(field, new BytesRef(automatonTermsEnum.term().utf8ToString())));
+      }
     }
+
     return terms.toArray(new Term[terms.size()]);
   }
 
@@ -1381,17 +1320,17 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     modifyIndex(
         new IndexBuilder() {
           @Override
-          public long buildIndex(NRTManager nrtManager, TrackingIndexWriter writer)
+          public long buildIndex(SearcherManager searcherManager, IndexWriter writer)
               throws Exception {
             long generation = -1;
-            generation = Math.max(generation, removeDocuments(batch, nrtManager, writer));
-            generation = Math.max(generation, addDocuments(batch, nrtManager, writer));
+            generation = Math.max(generation, removeDocuments(batch, writer));
+            generation = Math.max(generation, addDocuments(batch, writer));
             return generation;
           }
         });
   }
 
-  public Operator getDefaultOperator() throws ParseException {
+  public Operator getDefaultOperator() throws QueryNodeException {
     Operator o;
 
     if (this.defaultOperator.equalsIgnoreCase("and")) {
@@ -1399,7 +1338,8 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     } else if (this.defaultOperator.equalsIgnoreCase("OR")) {
       o = Operator.OR;
     } else {
-      throw new ParseException("Invalid Default Operator (AND/OR)");
+      throw new QueryNodeException(
+          new MessageImpl(QueryParserMessages.INVALID_SYNTAX, "Invalid Default Operator (AND/OR)"));
     }
 
     return o;
@@ -1409,78 +1349,11 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     this.defaultOperator = defaultOperator;
   }
 
-  private static final class CountingCollector extends Collector {
-    private int count = 0;
-
-    public int getCount() {
-      return count;
-    }
-
-    @Override
-    public void collect(int doc) {
-      /*
-       * The original HitCollector that counted the docs used a bitset to
-       * the docs, then returned the cardinality. According to Lucence,
-       * <code>collect</code> is only supposed to be called once per
-       * document, so it should be safe to just increment the count for
-       * each invocation. If you start getting counts that are too high,
-       * this may have to change back to using BitSet + cardinality, but
-       * it's probably a bug in Lucene that needs further investigation
-       * anyway.
-       */
-      count++;
-    }
-
-    @Override
-    public boolean acceptsDocsOutOfOrder() {
-      return true;
-    }
-
-    @Override
-    public void setScorer(Scorer scorer) throws IOException {
-      // Nothing to do
-    }
-
-    @Override
-    public void setNextReader(IndexReader reader, int docBase) throws IOException {
-      // Nothing to do
-    }
-  }
-
-  private static final class BitSetCollector extends Collector {
-    private int docBase;
-    private final OpenBitSet bitSet = new OpenBitSet();
-
-    public OpenBitSet getBitSet() {
-      return bitSet;
-    }
-
-    @Override
-    public void collect(int doc) {
-      bitSet.set(docBase + doc);
-    }
-
-    @Override
-    public boolean acceptsDocsOutOfOrder() {
-      return true;
-    }
-
-    @Override
-    public void setScorer(Scorer scorer) throws IOException {
-      // Nothing to do
-    }
-
-    @Override
-    public void setNextReader(IndexReader reader, int docBase) throws IOException {
-      this.docBase = docBase;
-    }
-  }
-
   public void deleteForInstitution(final long id) {
     modifyIndex(
         new IndexBuilder() {
           @Override
-          public long buildIndex(NRTManager nrtManager, TrackingIndexWriter writer)
+          public long buildIndex(SearcherManager searcherManager, IndexWriter writer)
               throws Exception {
             writer.deleteDocuments(new Term(FreeTextQuery.FIELD_INSTITUTION, Long.toString(id)));
             return -1;
@@ -1510,9 +1383,94 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
           @Override
           public T search(IndexSearcher searcher) throws IOException {
-            searcher.getIndexReader().terms(new Term(FreeTextQuery.FIELD_ALL)).term();
+            MultiTerms.getTerms(searcher.getIndexReader(), FreeTextQuery.FIELD_ALL)
+                .iterator()
+                .term();
             return null;
           }
         });
+  }
+
+  private static final class CountingCollector extends SimpleCollector {
+
+    private int count = 0;
+
+    public int getCount() {
+      return count;
+    }
+
+    @Override
+    public void collect(int doc) {
+      /*
+       * The original HitCollector that counted the docs used a bitset to
+       * the docs, then returned the cardinality. According to Lucence,
+       * <code>collect</code> is only supposed to be called once per
+       * document, so it should be safe to just increment the count for
+       * each invocation. If you start getting counts that are too high,
+       * this may have to change back to using BitSet + cardinality, but
+       * it's probably a bug in Lucene that needs further investigation
+       * anyway.
+       */
+      count++;
+    }
+
+    @Override
+    public ScoreMode scoreMode() {
+      return ScoreMode.COMPLETE_NO_SCORES;
+    }
+  }
+
+  private static final class BitSetCollector extends SimpleCollector {
+
+    private int docBase;
+    private final FixedBitSet bitSet;
+
+    private BitSetCollector(int maxDoc) {
+      this.bitSet = new FixedBitSet(maxDoc);
+    }
+
+    public FixedBitSet getBitSet() {
+      return bitSet;
+    }
+
+    @Override
+    public void collect(int doc) {
+      bitSet.set(docBase + doc);
+    }
+
+    @Override
+    protected void doSetNextReader(LeafReaderContext context) {
+      this.docBase = context.docBase;
+    }
+
+    @Override
+    public ScoreMode scoreMode() {
+      return ScoreMode.COMPLETE_NO_SCORES;
+    }
+  }
+
+  private static final class CompressedSetCollector extends SimpleCollector {
+
+    private final LongSet set = new LongSet(new ConciseSet());
+    private int docBase;
+
+    @Override
+    public void collect(int docId) {
+      set.add(docBase + docId);
+    }
+
+    public LongSet getSet() {
+      return set;
+    }
+
+    @Override
+    protected void doSetNextReader(LeafReaderContext context) {
+      this.docBase = context.docBase;
+    }
+
+    @Override
+    public ScoreMode scoreMode() {
+      return ScoreMode.COMPLETE_NO_SCORES;
+    }
   }
 }

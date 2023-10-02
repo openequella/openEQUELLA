@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as t from "io-ts";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
@@ -37,19 +38,8 @@ import * as RSET from "fp-ts/ReadonlySet";
 import { Refinement } from "fp-ts/Refinement";
 import { first } from "fp-ts/Semigroup";
 import * as SEP from "fp-ts/Separated";
-import * as SET from "fp-ts/Set";
 import * as S from "fp-ts/string";
 import * as React from "react";
-import {
-  Array as RuntypeArray,
-  Boolean,
-  Number,
-  Optional,
-  Record,
-  Static,
-  String,
-  Union,
-} from "runtypes";
 import {
   buildVisibilityScript,
   ScriptContext,
@@ -104,40 +94,35 @@ export interface WizardControlBasicProps {
 /**
  * Runtypes definition for ControlTarget.
  */
-export const RuntypesControlTarget = Record({
-  /**
-   * The 'fullPath's for the targetNode.
-   */
-  schemaNode: RuntypeArray(String),
-  /**
-   * The type of control that is being targeted.
-   */
-  type: OEQ.WizardControl.RuntypesControlType,
-  /**
-   * Whether to tokenise the value.
-   */
-  isValueTokenised: Optional(Boolean),
-});
+export const ControlTargetCodec = t.intersection([
+  t.type({
+    schemaNode: t.array(t.string),
+    type: OEQ.Codec.WizardControl.ControlTypeCodec,
+  }),
+  t.partial({
+    isValueTokenised: t.boolean,
+  }),
+]);
 
 /**
  * Used to loosely target what a value (typically a `ControlValue`) is being used for.
  */
-export type ControlTarget = Static<typeof RuntypesControlTarget>;
+export type ControlTarget = t.TypeOf<typeof ControlTargetCodec>;
 
 /**
  * Runtypes definition for ControlValue.
  */
-export const RuntypesControlValue = Union(
-  RuntypeArray(String),
-  RuntypeArray(Number)
-);
+export const ControlValueCodec = t.union([
+  t.array(t.string),
+  t.array(t.number),
+]);
 
 /**
  * Convenience type for our way of storing the two main value types across our controls. Represents
  * that some controls are textual, and some are numeric; and that some controls store more than one
  * value.
  */
-export type ControlValue = Static<typeof RuntypesControlValue>;
+export type ControlValue = t.TypeOf<typeof ControlValueCodec>;
 
 /**
  * Identifies a Wizard 'field' and specifies its value.
@@ -382,9 +367,13 @@ const controlFactory = (
   const onChangeForSingleValue = (newValue: string) =>
     onChange(S.isEmpty(newValue) ? [] : [newValue]);
 
-  // For controls which return a Set<string>, convert to plain ol' array and
+  // For controls which return a ReadonlySet<string>, convert to plain ol' array and
   // call the standard onChange handler.
-  const onChangeForStringSet = flow(SET.toArray<string>(OrdAsIs), onChange);
+  const onChangeForStringSet = flow(
+    RSET.toReadonlyArray<string>(OrdAsIs),
+    RA.toArray,
+    onChange
+  );
 
   switch (controlType) {
     case "editbox":
@@ -454,7 +443,7 @@ const controlFactory = (
         <WizardShuffleList
           {...commonProps}
           values={valueAsStringSet()}
-          onChange={flow(RSET.toSet, onChangeForStringSet)}
+          onChange={onChangeForStringSet}
         />
       );
     case "userselector":
@@ -465,7 +454,7 @@ const controlFactory = (
             {...commonProps}
             groupFilter={isRestricted ? new Set(restrictedTo) : new Set()}
             multiple={isSelectMultiple}
-            onChange={flow(RSET.toSet, onChangeForStringSet)}
+            onChange={onChangeForStringSet}
             users={valueAsStringSet()}
           />
         )
@@ -483,7 +472,7 @@ const controlFactory = (
           <WizardSimpleTermSelector
             {...commonProps}
             values={valueAsStringSet()}
-            onSelect={flow(RSET.toSet, onChangeForStringSet)}
+            onSelect={onChangeForStringSet}
             isAllowMultiple={isAllowMultiple}
             selectedTaxonomy={selectedTaxonomy}
             selectionRestriction={selectionRestriction}

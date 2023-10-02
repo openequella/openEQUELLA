@@ -19,7 +19,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import {
   queryByText,
   render,

@@ -18,7 +18,6 @@
 
 package com.tle.core.freetext.extracter.standard;
 
-import com.google.common.base.Throwables;
 import com.tle.core.util.archive.ArchiveEntry;
 import com.tle.core.util.archive.ArchiveExtractor;
 import com.tle.core.util.archive.ArchiveType;
@@ -64,7 +63,7 @@ public abstract class AbstractOffice2007Extracter extends AbstractTextExtracterE
         entry = extractor.getNextEntry();
       }
     } catch (XmlPullParserException e) {
-      Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 

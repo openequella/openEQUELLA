@@ -19,6 +19,7 @@
 package com.tle.freetext;
 
 import com.dytech.edge.queries.FreeTextQuery;
+import com.google.common.collect.ImmutableSet;
 import com.tle.beans.Institution;
 import java.io.IOException;
 import java.util.List;
@@ -26,12 +27,12 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.MapFieldSelector;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.search.Collector;
-import org.apache.lucene.search.Scorer;
+import org.apache.lucene.index.LeafReaderContext;
+import org.apache.lucene.search.ScoreMode;
+import org.apache.lucene.search.SimpleCollector;
 
-public abstract class AbstractCompareDateCollector extends Collector {
+public abstract class AbstractCompareDateCollector extends SimpleCollector {
 
   private static final Log LOGGER = LogFactory.getLog(AbstractCompareDateCollector.class);
 
@@ -46,18 +47,8 @@ public abstract class AbstractCompareDateCollector extends Collector {
   }
 
   @Override
-  public void setNextReader(IndexReader reader, int docBase) throws IOException {
-    this.reader = reader;
-  }
-
-  @Override
-  public boolean acceptsDocsOutOfOrder() {
-    return true;
-  }
-
-  @Override
-  public void setScorer(Scorer scorer) throws IOException {
-    // don't care
+  protected void doSetNextReader(LeafReaderContext context) {
+    this.reader = context.reader();
   }
 
   @SuppressWarnings("nls")
@@ -66,7 +57,7 @@ public abstract class AbstractCompareDateCollector extends Collector {
     Document doc =
         reader.document(
             docNum,
-            new MapFieldSelector(
+            ImmutableSet.of(
                 FreeTextQuery.FIELD_UNIQUE,
                 FreeTextQuery.FIELD_ID,
                 FreeTextQuery.FIELD_INDEXEDTIME,
@@ -93,4 +84,9 @@ public abstract class AbstractCompareDateCollector extends Collector {
   public abstract void compareDate(long itemId, long instId, long time);
 
   public abstract List<IndexedItem> getModifiedDocs();
+
+  @Override
+  public ScoreMode scoreMode() {
+    return ScoreMode.COMPLETE_NO_SCORES;
+  }
 }

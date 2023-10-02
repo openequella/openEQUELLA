@@ -43,6 +43,7 @@ class SettingsSection extends AbstractScalaSection with HtmlRenderer {
     val decs = Decorations.getDecorations(context)
     decs.setExcludeForm(true)
     decs.setTitle(new TextLabel(CoreStrings.text("title")))
+    // add head resources
     context.getBody.addPreRenderable(preRender);
     return new SimpleSectionResult(body.body().children());
   }

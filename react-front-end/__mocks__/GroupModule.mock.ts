@@ -16,31 +16,74 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import { findEntityById } from "../tsrc/modules/ACLEntityModule";
+import { entityDetailsProvider } from "./SecurityEntitySearch.mock";
 
+/**
+ * A list of groups to test with group search, deliberately out of order.
+ */
 export const groups: OEQ.UserQuery.GroupDetails[] = [
   {
-    id: "3d96df92-4d0b-496f-b865-9f1ad4a67d8d",
-    name: "Teachers",
+    id: "99806ac8-410e-4c60-b3ab-22575276f0f0",
+    name: "Engineering & Computer Science Students",
   },
   {
     id: "d0265a33-8f89-4cea-8a36-45fd3c4cf5a1",
-    name: "Systems Administrators",
+    name: "Engineering & Computer Science Staff",
   },
   {
-    id: "e810bee1-f2da-4145-8bc3-dc6fec827429",
-    name: "Content Administrators",
+    id: "d8a3f968-c0a8-44ce-83c9-a5bfc99b03b3",
+    name: "Information Technology Services",
+  },
+  {
+    id: "7ec9fb32-35f4-44bc-9c1d-7c8b02b9d0cb",
+    name: "Library",
+  },
+  {
+    id: "d7dd1907-5731-4244-9a65-e0e847f68604",
+    name: "group200",
+  },
+  {
+    id: "303e758c-0051-4aea-9a8e-421f93ed9d1a",
+    name: "group100",
+  },
+  {
+    id: "a2576dea-bd5c-490b-a065-637068e1a4fb",
+    name: "group400",
+  },
+  {
+    id: "f921a6e3-69a6-4ec4-8cf8-bc193beda5f6",
+    name: "group300",
   },
 ];
 
 /**
- * A mock of `GroupModule.resolveGroups` which simply looks up the provided ids in `groups` within
- * `GroupModule.mock.ts`
+ * Helper function to inject into component for group retrieval by an array of ids.
  *
- * @param ids group UUIDs which are in the mocked list of groups
+ * @param ids A list of group IDs to lookup, should be one of those in `groups`
  */
 export const resolveGroups = async (
   ids: ReadonlyArray<string>
-): Promise<OEQ.UserQuery.GroupDetails[]> => {
-  const result = groups.filter(({ id }) => ids.includes(id));
-  return Promise.resolve(result);
-};
+): Promise<OEQ.UserQuery.GroupDetails[]> =>
+  Promise.resolve(groups.filter(({ id }) => ids.includes(id)));
+
+/**
+ * Helper function for group retrieval by group id.
+ *
+ * @param id oEQ id
+ */
+export const findGroupById = (id: string) => findEntityById(id, resolveGroups);
+
+/**
+ * Helper function to inject into component for group retrieval.
+ *
+ * @param query A simple string to filter by (no wildcard support)
+ */
+export const listGroups = async (
+  query?: string
+): Promise<OEQ.UserQuery.GroupDetails[]> =>
+  entityDetailsProvider(
+    groups,
+    (g: OEQ.UserQuery.GroupDetails, q) => g.name.search(q) === 0,
+    query
+  );

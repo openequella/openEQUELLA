@@ -1,0 +1,11 @@
+<com.tle.beans.user.TLEGroup>
+  <id>928402</id>
+  <uuid>19e2ab0b-e659-4585-a073-8af576cc0ed9</uuid>
+  <name>Sub Group 1</name>
+  <parent>
+    <id>928401</id>
+    <uuid>144ef487-97ba-4843-915e-24af78cde991</uuid>
+    <allParents/>
+  </parent>
+  <users/>
+</com.tle.beans.user.TLEGroup>

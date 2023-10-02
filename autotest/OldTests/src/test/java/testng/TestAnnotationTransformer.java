@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import org.testng.IAnnotationTransformer;
 import org.testng.annotations.ITestAnnotation;
 import testng.annotation.NewUIOnly;
-import testng.annotation.RetryTest;
 
 public class TestAnnotationTransformer implements IAnnotationTransformer {
   private static final String OLD_TEST_NEWUI = "OLD_TEST_NEWUI";
@@ -21,8 +20,7 @@ public class TestAnnotationTransformer implements IAnnotationTransformer {
 
   // Check if a method is annotated with 'RetryTest'
   private void checkRetryAnnotation(ITestAnnotation annotation, Method testMethod) {
-    RetryTest maxRetryCount = testMethod.getAnnotation(RetryTest.class);
-    if (maxRetryCount != null && maxRetryCount.value() > 1) {
+    if (FailureRetryAnalyzer.getRetryCount(testMethod) > 1) {
       annotation.setRetryAnalyzer(FailureRetryAnalyzer.class);
     }
   }

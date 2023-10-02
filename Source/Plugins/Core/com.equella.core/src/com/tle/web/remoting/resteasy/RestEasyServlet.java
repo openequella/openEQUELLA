@@ -47,6 +47,7 @@ import com.tle.web.api.item.SelectionApi;
 import com.tle.web.api.language.LanguageResource;
 import com.tle.web.api.loginnotice.PostLoginNoticeResource;
 import com.tle.web.api.loginnotice.PreLoginNoticeResource;
+import com.tle.web.api.lti.LtiPlatformResource;
 import com.tle.web.api.newuitheme.NewUIThemeResource;
 import com.tle.web.api.search.SearchResource;
 import com.tle.web.api.settings.AdvancedSearchResource;
@@ -119,6 +120,7 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
           GdprResource.class,
           LanguageResource.class,
           LegacyContentApi.class,
+          LtiPlatformResource.class,
           MimeTypeResource.class,
           RemoteSearchResource.class,
           SearchFilterResource.class,

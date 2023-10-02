@@ -15,6 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as CommonCodec from './gen/Common';
+import * as SearchCodec from './gen/Search';
+import * as WizardControlCodec from './gen/WizardControl';
+
 export * as Acl from './Acl';
 export * as AdvancedSearch from './AdvancedSearch';
 export * as Auth from './Auth';
@@ -27,6 +31,7 @@ export * as FacetedSearchSettings from './FacetedSearchSettings';
 export * as Favourite from './Favourite';
 export * as Heartbeat from './Heartbeat';
 export * as LegacyContent from './LegacyContent';
+export * as LtiPlatform from './LtiPlatform';
 export * as MimeType from './MimeType';
 export * as RemoteSearch from './RemoteSearch';
 export * as Schema from './Schema';
@@ -43,3 +48,9 @@ export * as UserQuery from './UserQuery';
 export * as Utils from './Utils';
 export * as WizardCommonTypes from './WizardCommonTypes';
 export * as WizardControl from './WizardControl';
+
+export const Codec = {
+  Common: CommonCodec,
+  Search: SearchCodec,
+  WizardControl: WizardControlCodec,
+};

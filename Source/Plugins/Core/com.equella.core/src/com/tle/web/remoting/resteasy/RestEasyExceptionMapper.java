@@ -22,10 +22,12 @@ import com.dytech.edge.common.LockedException;
 import com.dytech.edge.exceptions.InUseException;
 import com.dytech.edge.exceptions.WebException;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.tle.beans.item.ItemEditingException;
 import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.exceptions.AccessDeniedException;
+import java.util.Optional;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -111,6 +113,16 @@ public class RestEasyExceptionMapper implements ExceptionMapper<Throwable> {
       webAppException = new WebApplicationException(t, Status.INTERNAL_SERVER_ERROR);
     } else if (t instanceof UnrecognizedPropertyException) {
       webAppException = new WebApplicationException(t, Status.BAD_REQUEST);
+    } else if (t instanceof MismatchedInputException) {
+      MismatchedInputException exception = (MismatchedInputException) t;
+      // This exception does not accumulate errors for all the missing fields, so we only need to
+      // know the first field.
+      String errorMessage =
+          Optional.ofNullable(exception.getPath().get(0))
+              .map(path -> "Missing required field " + path.getFieldName())
+              .orElse("Failed to build " + exception.getTargetType().getName());
+
+      webAppException = new WebApplicationException(errorMessage, Status.BAD_REQUEST);
     } else {
       webAppException = new WebApplicationException(t);
     }

@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Literal, Union } from 'runtypes';
 import type { UuidString } from './Common';
 import type { SelectionRestriction, TermStorageFormat } from './Taxonomy';
 import type {
@@ -24,23 +23,6 @@ import type {
   WizardDateFormat,
 } from './WizardCommonTypes';
 
-/**
- * Runtypes definition for Wizard control type.
- */
-export const RuntypesControlType = Union(
-  Literal('calendar'),
-  Literal('checkboxgroup'),
-  Literal('editbox'),
-  Literal('html'),
-  Literal('listbox'),
-  Literal('radiogroup'),
-  Literal('shufflebox'),
-  Literal('shufflelist'),
-  Literal('termselector'),
-  Literal('userselector')
-);
-
-// todo: fix this type alias which is not in sync with the runtype. Jira ticket: OEQ-1438
 /**
  * Supported Wizard Control types.
  */

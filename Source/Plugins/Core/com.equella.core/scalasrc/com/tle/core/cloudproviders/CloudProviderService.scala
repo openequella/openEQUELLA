@@ -20,8 +20,8 @@ package com.tle.core.cloudproviders
 
 import cats.effect.IO
 import cats.implicits._
-import com.softwaremill.sttp._
-import com.softwaremill.sttp.circe._
+import sttp.client._
+import sttp.client.circe._
 import com.tle.beans.cloudproviders.{CloudControlDefinition, ProviderControlDefinition}
 import com.tle.beans.item.attachments.{CustomAttachment, UnmodifiableAttachments}
 import com.tle.common.usermanagement.user.CurrentUser
@@ -31,15 +31,12 @@ import com.tle.legacy.LegacyGuice
 import fs2.Stream
 import org.apache.commons.lang.RandomStringUtils
 import org.slf4j.LoggerFactory
-import java.nio.ByteBuffer
+import sttp.model.Uri
 import java.util.Collections
 import java.util.concurrent.TimeUnit
 import scala.jdk.CollectionConverters._
 
-sealed trait CloudProviderError
-case class IOError(throwable: Throwable)                          extends CloudProviderError
-case class HttpError(message: String)                             extends CloudProviderError
-case class JSONError(error: DeserializationError[io.circe.Error]) extends CloudProviderError
+case class CloudProviderError(throwable: Throwable)
 
 object CloudProviderService {
 
@@ -77,7 +74,7 @@ object CloudProviderService {
   def serviceRequest[T](serviceUri: ServiceUrl,
                         provider: CloudProviderInstance,
                         params: Map[String, Any],
-                        f: Uri => Request[T, Stream[IO, ByteBuffer]]): IO[Response[T]] = {
+                        f: Uri => Request[T, Stream[IO, Byte]]): IO[Response[T]] = {
     for {
       uri <- IO.fromEither(
         UriTemplateService
@@ -86,14 +83,15 @@ object CloudProviderService {
       req            = f(uri)
       requestContext = "[" + RandomStringUtils.randomAlphanumeric(6) + "] provider: " + provider.id + ", vendor: " + provider.vendorId
       _ = Logger.debug(
-        requestContext + ", method: " + req.method.m + ", request: " + uri.toString.split('?')(0))
+        requestContext + ", method: " + req.method.method + ", request: " + uri.toString.split('?')(
+          0))
       auth = provider.providerAuth
       response <- if (serviceUri.authenticated) {
         tokenUrlForProvider(provider).map { oauthUrl =>
           OAuthClientService
             .authorizedRequest(oauthUrl.toString, auth.clientId, auth.clientSecret, req)
         }
-      } else req.send()
+      } else sttpBackend.flatMap(implicit backend => req.send())
 
     } yield {
       Logger.debug(requestContext + ", response status: " + response.code)
@@ -110,11 +108,11 @@ object CloudProviderService {
           controlsService,
           provider,
           Map(),
-          u => sttp.get(u).response(asJson[Map[String, ProviderControlDefinition]])).attempt
+          u => basicRequest.get(u).response(asJson[Map[String, ProviderControlDefinition]])).attempt
           .map { responseOrError =>
             for {
-              response   <- responseOrError.leftMap(IOError)
-              controlMap <- response.body.leftMap(HttpError).flatMap(_.leftMap(JSONError))
+              response   <- responseOrError.leftMap(CloudProviderError)
+              controlMap <- response.body.leftMap(CloudProviderError)
             } yield {
               controlMap.map {
                 case (controlId, config) =>

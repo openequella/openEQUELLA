@@ -32,22 +32,22 @@ import scala.jdk.CollectionConverters._
 
 case class LookupQuery(users: Seq[String], groups: Seq[String], roles: Seq[String])
 
-case class GroupQueryResult(id: String, name: String)
+case class GroupDetails(id: String, name: String)
 
-case class RoleQueryResult(id: String, name: String)
+case class RoleDetails(id: String, name: String)
 
-object GroupQueryResult {
-  def apply(gb: GroupBean): GroupQueryResult =
-    GroupQueryResult(gb.getUniqueID, gb.getName)
+object GroupDetails {
+  def apply(gb: GroupBean): GroupDetails =
+    GroupDetails(gb.getUniqueID, gb.getName)
 }
 
-object RoleQueryResult {
-  def apply(rb: RoleBean): RoleQueryResult = RoleQueryResult(rb.getUniqueID, rb.getName)
+object RoleDetails {
+  def apply(rb: RoleBean): RoleDetails = RoleDetails(rb.getUniqueID, rb.getName)
 }
 
 case class LookupQueryResult(users: Iterable[UserDetails],
-                             groups: Iterable[GroupQueryResult],
-                             roles: Iterable[RoleQueryResult])
+                             groups: Iterable[GroupDetails],
+                             roles: Iterable[RoleDetails])
 
 @Path("userquery/")
 @Produces(value = Array("application/json"))
@@ -64,8 +64,8 @@ class UserQueryResource {
     val groups = us.getInformationForGroups(queries.groups.asJava)
     val roles  = us.getInformationForRoles(queries.roles.asJava)
     LookupQueryResult(users.asScala.values.map(UserDetails.apply),
-                      groups.asScala.values.map(GroupQueryResult.apply),
-                      roles.asScala.values.map(RoleQueryResult.apply))
+                      groups.asScala.values.map(GroupDetails.apply),
+                      roles.asScala.values.map(RoleDetails.apply))
   }
 
   @GET
@@ -82,8 +82,8 @@ class UserQueryResource {
     val groups = if (sgroups) us.searchGroups(q).asScala else Iterable.empty
     val roles  = if (sroles) us.searchRoles(q).asScala else Iterable.empty
     LookupQueryResult(users.map(UserDetails.apply),
-                      groups.map(GroupQueryResult.apply),
-                      roles.filterNot(r => exclude(r.getUniqueID)).map(RoleQueryResult.apply))
+                      groups.map(GroupDetails.apply),
+                      roles.filterNot(r => exclude(r.getUniqueID)).map(RoleDetails.apply))
   }
 
   @GET
@@ -112,6 +112,29 @@ class UserQueryResource {
         Response.ok.entity(details).build()
       case _ => resourceNotFound("No users were found matching the specified criteria")
     }
+  }
+
+  @GET
+  @Path("filtered-groups")
+  @ApiOperation(
+    value = "Search for groups",
+    notes = "Searches for groups, but filters the results based on the byGroups parameter.",
+    response = classOf[GroupDetails],
+    responseContainer = "List"
+  )
+  def filteredGroups(
+      @QueryParam("q") @ApiParam("Query string") q: String,
+      @QueryParam("byGroups") @ApiParam("A list of group UUIDs to filter the search by") groups: Array[
+        String]
+  ): Response = {
+    val us = LegacyGuice.userService
+
+    Option
+      .when(groups.nonEmpty)(groups.flatMap(us.searchGroups(q, _).asScala))
+      .orElse(Option(us.searchGroups(q).asScala.toArray))
+      .filter(_.nonEmpty)
+      .map(groups => Response.ok.entity(groups.toSet.map(GroupDetails.apply)).build())
+      .getOrElse(resourceNotFound("No groups were found matching the specified criteria"))
   }
 
   @GET

@@ -22,7 +22,7 @@ import {
   CategorySelectorProps,
 } from "../../tsrc/search/components/CategorySelector";
 import * as CategorySelectorMock from "../../__mocks__/CategorySelector.mock";
-import type { Meta, Story } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react";
 
 export default {
   title: "Search/CategorySelector",
@@ -40,13 +40,13 @@ const selectedCategories: SelectedCategories[] = [
   { id: 766943, categories: ["Hobart"] },
 ];
 
-export const noCategoriesSelected: Story<CategorySelectorProps> =
+export const noCategoriesSelected: StoryFn<CategorySelectorProps> =
   CategorySelectorTemplate.bind({});
 noCategoriesSelected.args = {
   classifications: CategorySelectorMock.classifications,
 };
 
-export const categoriesSelected: Story<CategorySelectorProps> =
+export const categoriesSelected: StoryFn<CategorySelectorProps> =
   CategorySelectorTemplate.bind({});
 categoriesSelected.args = {
   ...noCategoriesSelected.args,

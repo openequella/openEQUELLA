@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Slider } from "@mui/material";
-import type { Meta, Story } from "@storybook/react";
+import { Slider, TextField } from "@mui/material";
+import type { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import SettingsList, {
   SettingsListProps,
@@ -51,8 +51,14 @@ type Props = Pick<SettingsListProps, "subHeading"> &
   Pick<SettingsToggleSwitchProps, "setValue" | "disabled"> &
   Pick<SettingsListControlProps, "primaryText" | "secondaryText">;
 
-export const ListWithTwoItems: Story<Props> = (args) => (
+export const SettingsListWithMultipleItems: StoryFn<Props> = (args) => (
   <SettingsList subHeading={args.subHeading}>
+    <SettingsListControl
+      secondaryText="Textfield for input"
+      control={<TextField fullWidth />}
+      divider
+      primaryText="Textfield"
+    />
     <SettingsListControl
       secondaryText="Box for checking"
       control={
@@ -68,12 +74,12 @@ export const ListWithTwoItems: Story<Props> = (args) => (
     <SettingsListControl
       secondaryText={args.secondaryText}
       control={<Slider marks={marks} min={0} max={7} step={null} />}
-      divider={false}
       primaryText={args.primaryText}
+      divider
     />
   </SettingsList>
 );
-ListWithTwoItems.args = {
+SettingsListWithMultipleItems.args = {
   subHeading: "Sub Heading",
   disabled: false,
   primaryText: "SliderControl",

@@ -384,7 +384,7 @@ export const Template = ({
     return (
       <MenuItem
         onClick={() => setMenuAnchorEl(undefined)}
-        component={(p) =>
+        component={(p: React.AnchorHTMLAttributes<HTMLAnchorElement>) =>
           serverSide ? (
             <a {...p} href={link as string}>
               {}

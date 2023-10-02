@@ -22,7 +22,6 @@ import com.dytech.devlib.PropBagEx;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Throwables;
 import com.google.common.io.CharStreams;
 import com.tle.annotation.Nullable;
 import com.tle.beans.activation.ActivateRequest;
@@ -55,15 +54,14 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.selection.SelectedResource;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.viewable.ViewableItem;
-import com.tle.web.viewable.ViewableItemResolver;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -88,7 +86,6 @@ public class BlackboardIntegration extends AbstractIntegrationService<BlackBoard
   @Inject private ItemHelper itemHelper;
   @Inject private FileSystemService fileSystemService;
   @Inject private InstitutionService institutionService;
-  @Inject private ViewableItemResolver viewableItemResolver;
   @Inject private ObjectMapperService objectMapperService;
   @Inject private ItemService itemService;
   @Inject private ItemFileService itemFileService;
@@ -327,7 +324,7 @@ public class BlackboardIntegration extends AbstractIntegrationService<BlackBoard
   }
 
   public void initSession(BlackBoardSessionData data) {
-    List<NameValue> parameters = new ArrayList<NameValue>();
+    List<NameValue> parameters = new ArrayList<>();
 
     String courseId = data.getCourseId();
     String contentId = data.getContentId();
@@ -341,22 +338,18 @@ public class BlackboardIntegration extends AbstractIntegrationService<BlackBoard
 
     String entryUrl = data.getEntryUrl();
     if (entryUrl.toLowerCase().contains(".jnlp")) {
-      try {
-        entryUrl +=
-            (entryUrl.indexOf('?') >= 0 ? '&' : '?')
-                + "bburl="
-                + URLEncoder.encode(data.getBbUrl(), "UTF-8")
-                + "&bbsession="
-                + URLEncoder.encode(data.getBlackBoardSession(), "UTF-8");
-      } catch (UnsupportedEncodingException e) {
-        throw Throwables.propagate(e);
-      }
+      entryUrl +=
+          (entryUrl.indexOf('?') >= 0 ? '&' : '?')
+              + "bburl="
+              + URLEncoder.encode(data.getBbUrl(), StandardCharsets.UTF_8)
+              + "&bbsession="
+              + URLEncoder.encode(data.getBlackBoardSession(), StandardCharsets.UTF_8);
       data.setEntryUrl(entryUrl);
     }
   }
 
   @Override
-  protected <I extends IItem<?>> ViewableItem<I> createViewableItem(
+  public <I extends IItem<?>> ViewableItem<I> createViewableItem(
       I item, SelectedResource resource) {
     final ViewableItem<I> vitem =
         viewableItemResolver.createIntegrationViewableItem(

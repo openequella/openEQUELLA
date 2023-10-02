@@ -142,7 +142,8 @@ public class ZookeeperServiceImpl implements ZookeeperService, StartupBean {
         membersCache = createPathCache(SERVER_REL_PATH, false);
         ensureDebug = curator.newNamespaceAwareEnsurePath(CLUSTER_DEBUG_FULL_PATH);
       } catch (Exception e) {
-        Throwables.propagate(e);
+        Throwables.throwIfUnchecked(e);
+        throw new RuntimeException(e);
       }
     }
     hasStarted = true;
@@ -170,7 +171,8 @@ public class ZookeeperServiceImpl implements ZookeeperService, StartupBean {
       cache.start(startMode);
       return cache;
     } catch (Exception e) {
-      throw Throwables.propagate(e);
+      Throwables.throwIfUnchecked(e);
+      throw new RuntimeException(e);
     }
   }
 

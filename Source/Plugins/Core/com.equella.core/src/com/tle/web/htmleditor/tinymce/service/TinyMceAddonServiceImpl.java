@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Function;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.tle.annotation.NonNull;
 import com.tle.annotation.NonNullByDefault;
@@ -171,7 +170,7 @@ public class TinyMceAddonServiceImpl implements TinyMceAddonService {
           this.extra = (ObjectNode) jsonMapper.readTree(extraStr);
         } catch (IOException io) {
           // This should never happen! Extra is determined by our code
-          throw Throwables.propagate(io);
+          throw new AssertionError(io);
         }
       } else {
         this.extra = jsonMapper.createObjectNode();
@@ -330,7 +329,7 @@ public class TinyMceAddonServiceImpl implements TinyMceAddonService {
       inner.realRender(wtr);
       return outbuf.toString();
     } catch (IOException io) {
-      throw Throwables.propagate(io);
+      throw new RuntimeException(io);
     }
   }
 

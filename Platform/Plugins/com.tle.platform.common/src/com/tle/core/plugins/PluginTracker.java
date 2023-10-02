@@ -19,7 +19,6 @@
 package com.tle.core.plugins;
 
 import com.google.common.collect.Sets;
-import com.tle.common.Check;
 import com.tle.common.filters.Filter;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -31,6 +30,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
@@ -421,7 +421,7 @@ public class PluginTracker<T extends Object> implements RegistryChangeListener {
     @Override
     protected boolean compareParam(Parameter param) {
       for (String value : values) {
-        if (Check.bothNullOrEqual(param.valueAsString(), value)) {
+        if (Objects.equals(param.valueAsString(), value)) {
           return true;
         }
       }

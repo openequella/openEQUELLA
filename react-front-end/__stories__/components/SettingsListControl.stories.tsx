@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { Slider, SliderProps } from "@mui/material";
-import type { Meta, Story } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import SettingsListControl, {
   SettingsListControlProps,
@@ -49,7 +49,9 @@ type ToggleSwitchControlProps = Pick<
   "primaryText" | "secondaryText" | "divider"
 > &
   Pick<SettingsToggleSwitchProps, "disabled" | "setValue" | "value">;
-export const ToggleSwitchControl: Story<ToggleSwitchControlProps> = (args) => (
+export const ToggleSwitchControl: StoryFn<ToggleSwitchControlProps> = (
+  args
+) => (
   <SettingsListControl
     primaryText={args.primaryText}
     secondaryText={args.secondaryText}
@@ -77,7 +79,7 @@ type SliderControlProps = Pick<
   "primaryText" | "secondaryText" | "divider"
 > &
   Pick<SliderProps, "min" | "max" | "onChangeCommitted">;
-export const SliderControl: Story<SliderControlProps> = (args) => (
+export const SliderControl: StoryFn<SliderControlProps> = (args) => (
   <SettingsListControl
     primaryText={args.primaryText}
     secondaryText={args.secondaryText}

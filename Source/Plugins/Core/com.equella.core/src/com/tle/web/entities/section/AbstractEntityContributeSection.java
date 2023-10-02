@@ -18,7 +18,6 @@
 
 package com.tle.web.entities.section;
 
-import com.google.common.base.Throwables;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.entity.EntityEditingBean;
@@ -108,7 +107,7 @@ public abstract class AbstractEntityContributeSection<
       final EntityEditingBean editedEnt = ed.getEditedEntity(context);
       if (editedEnt.getId() == 0) {
         ensureCreatePriv(context);
-      } else if (!canEdit(context, editedEnt)) {
+      } else if (!canEdit(editedEnt)) {
         throw accessDenied(getEditPriv());
       }
 
@@ -135,13 +134,13 @@ public abstract class AbstractEntityContributeSection<
     cancelButton.setClickHandler(events.getNamedHandler("cancel"));
   }
 
-  protected boolean canEdit(SectionInfo info, EntityEditingBean editedEnt) {
+  protected boolean canEdit(EntityEditingBean editedEnt) {
     // TODO: rather dodgy
     E entityTemplate;
     try {
-      entityTemplate = getEntityService().getEntityClass().newInstance();
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+      entityTemplate = getEntityService().getEntityClass().getDeclaredConstructor().newInstance();
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException(e);
     }
     entityTemplate.setId(editedEnt.getId());
     return getEntityService().canEdit(entityTemplate);

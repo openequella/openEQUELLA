@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import {
   KalturaPlayerEmbed,
@@ -27,7 +27,7 @@ export default {
   component: KalturaPlayerEmbed,
 } as Meta<KalturaPlayerEmbedProps>;
 
-export const EmbeddedKalturaVideoPlayer: Story<KalturaPlayerEmbedProps> = (
+export const EmbeddedKalturaVideoPlayer: StoryFn<KalturaPlayerEmbedProps> = (
   args
 ) => <KalturaPlayerEmbed {...args} />;
 EmbeddedKalturaVideoPlayer.args = {
@@ -38,9 +38,9 @@ EmbeddedKalturaVideoPlayer.args = {
   entryId: "1_sf5ovm7u",
 };
 
-export const EmbeddedKalturaVideoPlayerLarge: Story<KalturaPlayerEmbedProps> = (
-  args
-) => <KalturaPlayerEmbed {...args} />;
+export const EmbeddedKalturaVideoPlayerLarge: StoryFn<
+  KalturaPlayerEmbedProps
+> = (args) => <KalturaPlayerEmbed {...args} />;
 EmbeddedKalturaVideoPlayerLarge.args = {
   ...EmbeddedKalturaVideoPlayer.args,
   dimensions: {

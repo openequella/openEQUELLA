@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Functions;
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
-import com.google.common.base.Throwables;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -106,7 +105,7 @@ public class ExifTool implements MetadataHandler {
       flatten(om.readTree(stdout).get(0), jsonMap, false);
       outputList.add(jsonMap);
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
 
     // This is a bit dodgical... but seems to be a necessary evil

@@ -20,7 +20,6 @@ package com.tle.core.remoterepo.merlot.service.impl;
 
 import com.dytech.devlib.PropBagEx;
 import com.dytech.devlib.PropBagEx.PropBagThoroughIterator;
-import com.google.common.base.Throwables;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.gdata.util.common.html.HtmlToText;
@@ -46,6 +45,7 @@ import com.tle.core.services.HttpService;
 import com.tle.core.services.http.Request;
 import com.tle.core.services.http.Response;
 import com.tle.core.settings.service.ConfigurationService;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -171,11 +171,9 @@ public class MerlotServiceImpl implements MerlotService {
       appendParam(buildUrl, "size", perpage);
     }
 
-    Response response = null;
-    try {
-      response =
-          httpService.getWebContent(
-              new Request(buildUrl.toString()), configService.getProxyDetails());
+    try (Response response =
+        httpService.getWebContent(
+            new Request(buildUrl.toString()), configService.getProxyDetails())) {
       final PropBagEx xml = new PropBagEx(response.getBody());
 
       checkForError(xml, advanced);
@@ -207,10 +205,8 @@ public class MerlotServiceImpl implements MerlotService {
       }
 
       return new MerlotSearchResults(results, resultCount, offset, available);
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
-    } finally {
-      Closeables.closeQuietly(response);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -276,7 +272,7 @@ public class MerlotServiceImpl implements MerlotService {
   }
 
   private void convertXmlToSearchResult(
-      MerlotSearchResult searchResult, PropBagEx r, boolean advanced) throws Exception {
+      MerlotSearchResult searchResult, PropBagEx r, boolean advanced) {
     searchResult.setTitle(r.getNode("title"));
 
     String description = HtmlToText.htmlToPlainText(r.getNode("description"));
@@ -294,8 +290,7 @@ public class MerlotServiceImpl implements MerlotService {
     }
   }
 
-  private void readAdvancedProperties(MerlotSearchResult searchResult, PropBagEx r)
-      throws Exception {
+  private void readAdvancedProperties(MerlotSearchResult searchResult, PropBagEx r) {
     searchResult.setPublishedDate(readStringDateProperty(r, "creationDate"));
     searchResult.setModifiedDate(readStringDateProperty(r, "modifiedDate"));
     searchResult.setCreativeCommons(readProperty(r, "creativecommons"));
@@ -336,7 +331,7 @@ public class MerlotServiceImpl implements MerlotService {
     searchResult.setXml(r);
   }
 
-  private void readBasicProperties(MerlotSearchResult searchResult, PropBagEx r) throws Exception {
+  private void readBasicProperties(MerlotSearchResult searchResult, PropBagEx r) {
     final String creationDateString = r.getNode("creationDate");
     if (!Check.isEmpty(creationDateString)) {
       searchResult.setPublishedDate(new Date(Long.parseLong(creationDateString)));
@@ -394,7 +389,7 @@ public class MerlotServiceImpl implements MerlotService {
       }
       return null;
     } catch (ParseException dp) {
-      throw Throwables.propagate(dp);
+      throw new RuntimeException(dp);
     }
   }
 

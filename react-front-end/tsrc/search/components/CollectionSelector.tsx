@@ -33,7 +33,7 @@ import {
   collectionListSummary,
 } from "../../modules/CollectionsModule";
 import { languageStrings } from "../../util/langstrings";
-import { SearchContext } from "../Search";
+import { SearchContext } from "../SearchPageHelper";
 
 interface CollectionSelectorProps {
   /**

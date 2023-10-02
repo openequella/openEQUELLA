@@ -25,7 +25,7 @@ import java.util
 import java.util.Collections
 import cats.data.OptionT
 import cats.effect.IO
-import com.softwaremill.sttp._
+import sttp.client._
 import com.tle.beans.item.Item
 import com.tle.beans.item.attachments.{CustomAttachment, IAttachment}
 import com.tle.common.NameValue
@@ -177,7 +177,7 @@ case class CloudAttachmentViewableResource(info: SectionInfo,
           viewerDetails._2,
           provider,
           uriParameters,
-          uri => sttp.get(uri).response(asStream[Stream[IO, ByteBuffer]])))
+          uri => basicRequest.get(uri).response(asStream[Stream[IO, Byte]])))
     } yield response).value map {
       case None => EmptyResponseStream
       case Some(response) =>
@@ -206,15 +206,15 @@ object MetaJsonFolder extends Folder[Any] {
     value.toMap.view.mapValues(_.foldWith(this))
 }
 
-case class SttpResponseContentStream(response: Response[fs2.Stream[IO, ByteBuffer]],
-                                     responseStream: fs2.Stream[IO, ByteBuffer])
+case class SttpResponseContentStream(response: Response[Either[String, fs2.Stream[IO, Byte]]],
+                                     responseStream: fs2.Stream[IO, Byte])
     extends AbstractContentStream(null, response.contentType.orNull) {
   override def getContentLength: Long      = response.contentLength.getOrElse(-1L)
   override def getInputStream: InputStream = null
   override def mustWrite(): Boolean        = true
   override def write(out: OutputStream): Unit = {
     val channel = Channels.newChannel(out)
-    responseStream.evalMap(bb => IO(channel.write(bb))).compile.drain.unsafeRunSync()
+    responseStream.chunks.map(c => IO(channel.write(c.toByteBuffer))).compile.drain.unsafeRunSync()
   }
 }
 

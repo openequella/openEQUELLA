@@ -20,7 +20,7 @@ import { useContext, useState } from "react";
 import * as React from "react";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import { languageStrings } from "../../util/langstrings";
-import { SearchContext } from "../Search";
+import { SearchContext } from "../SearchPageHelper";
 
 export interface FavouriteSearchDialogProps {
   /**

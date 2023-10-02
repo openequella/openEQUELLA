@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import {
   brokenFileDetails,
@@ -37,57 +37,57 @@ export default {
   },
 } as Meta<OEQThumbProps>;
 
-export const file: Story<OEQThumbProps> = (args) => <OEQThumb {...args} />;
+export const file: StoryFn<OEQThumbProps> = (args) => <OEQThumb {...args} />;
 file.args = {
   details: fileDetails,
 };
 
-export const brokenFile: Story<OEQThumbProps> = (args) => (
+export const brokenFile: StoryFn<OEQThumbProps> = (args) => (
   <OEQThumb {...args} />
 );
 brokenFile.args = {
   details: brokenFileDetails,
 };
 
-export const customResource: Story<OEQThumbProps> = (args) => (
+export const customResource: StoryFn<OEQThumbProps> = (args) => (
   <OEQThumb {...args} />
 );
 customResource.args = {
   details: resourceFileDetails,
 };
 
-export const link: Story<OEQThumbProps> = (args) => <OEQThumb {...args} />;
+export const link: StoryFn<OEQThumbProps> = (args) => <OEQThumb {...args} />;
 link.args = {
   details: linkDetails,
 };
 
-export const resourceLink: Story<OEQThumbProps> = (args) => (
+export const resourceLink: StoryFn<OEQThumbProps> = (args) => (
   <OEQThumb {...args} />
 );
 resourceLink.args = {
   details: resourceLinkDetails,
 };
 
-export const equellaItem: Story<OEQThumbProps> = (args) => (
+export const equellaItem: StoryFn<OEQThumbProps> = (args) => (
   <OEQThumb {...args} />
 );
 equellaItem.args = {
   details: equellaItemDetails,
 };
 
-export const html: Story<OEQThumbProps> = (args) => <OEQThumb {...args} />;
+export const html: StoryFn<OEQThumbProps> = (args) => <OEQThumb {...args} />;
 html.args = {
   details: htmlDetails,
 };
 
-export const resourceHtml: Story<OEQThumbProps> = (args) => (
+export const resourceHtml: StoryFn<OEQThumbProps> = (args) => (
   <OEQThumb {...args} />
 );
 resourceHtml.args = {
   details: resourceHtmlDetails,
 };
 
-export const placeHolder: Story<OEQThumbProps> = (args) => (
+export const placeHolder: StoryFn<OEQThumbProps> = (args) => (
   <OEQThumb {...args} />
 );
 placeHolder.args = {

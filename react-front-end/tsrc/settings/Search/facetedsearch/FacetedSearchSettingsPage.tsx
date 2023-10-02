@@ -17,7 +17,6 @@
  */
 import {
   Card,
-  CardActions,
   CardContent,
   IconButton,
   List,
@@ -26,7 +25,6 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -42,6 +40,7 @@ import {
 } from "react-beautiful-dnd";
 import MessageDialog from "../../../components/MessageDialog";
 import SettingPageTemplate from "../../../components/SettingPageTemplate";
+import SettingsCardActions from "../../../components/SettingsCardActions";
 import SettingsListHeading from "../../../components/SettingsListHeading";
 import { TooltipIconButton } from "../../../components/TooltipIconButton";
 import { AppContext } from "../../../mainui/App";
@@ -65,11 +64,6 @@ import { idExtractor } from "../../../util/idExtractor";
 import { addElement, replaceElement } from "../../../util/ImmutableArrayUtil";
 import { languageStrings } from "../../../util/langstrings";
 import FacetDialog from "./FacetDialog";
-
-const StyledCardActions = styled(CardActions)({
-  display: "flex",
-  justifyContent: "flex-end",
-});
 
 /**
  * A page for setting Faceted search facets.
@@ -289,7 +283,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
           </Typography>
           {facetList}
         </CardContent>
-        <StyledCardActions>
+        <SettingsCardActions>
           <IconButton
             onClick={() => {
               setCurrentFacet(undefined);
@@ -301,7 +295,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
           >
             <AddCircleIcon fontSize="large" />
           </IconButton>
-        </StyledCardActions>
+        </SettingsCardActions>
       </Card>
 
       <FacetDialog

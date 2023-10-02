@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import {
   TooltipChip,
@@ -27,7 +27,7 @@ export default {
   component: TooltipChip,
 } as Meta<TooltipChipProps>;
 
-export const Standard: Story<TooltipChipProps> = (args) => (
+export const Standard: StoryFn<TooltipChipProps> = (args) => (
   <TooltipChip {...args} />
 );
 Standard.args = {
@@ -35,7 +35,7 @@ Standard.args = {
   maxWidth: 150,
 };
 
-export const ReallyLongChip: Story<TooltipChipProps> = (args) => (
+export const ReallyLongChip: StoryFn<TooltipChipProps> = (args) => (
   <TooltipChip {...args} />
 );
 ReallyLongChip.args = {

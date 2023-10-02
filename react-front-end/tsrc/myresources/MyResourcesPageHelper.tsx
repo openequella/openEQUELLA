@@ -32,10 +32,13 @@ import { Location } from "history";
 import { MD5 } from "object-hash";
 import * as React from "react";
 import { ReactNode } from "react";
-import { Literal, match, Static, Union, Unknown, when } from "runtypes";
 import { getBaseUrl } from "../AppConfig";
 import { TooltipIconButton } from "../components/TooltipIconButton";
 import { buildStorageKey } from "../modules/BrowserStorageModule";
+import {
+  LegacyMyResourcesCodec,
+  LegacyMyResourcesTypes,
+} from "../modules/LegacyContentModule";
 import { getMimeTypeDefaultViewerDetails } from "../modules/MimeTypesModule";
 import {
   nonDeletedStatuses,
@@ -53,45 +56,27 @@ import { SortOrderOptions } from "../search/components/SearchOrderSelect";
 import SearchResult from "../search/components/SearchResult";
 import {
   DehydratedSearchPageOptions,
-  DehydratedSearchPageOptionsRunTypes,
+  DehydratedSearchPageOptionsCodec,
   SearchPageOptions,
 } from "../search/SearchPageHelper";
 import { SearchPageSearchResult } from "../search/SearchPageReducer";
 import { DateRangeFromString, getISODateString } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
-import { simpleMatch } from "../util/match";
+import { simpleMatch, simpleUnionMatch } from "../util/match";
 import { pfSplitAt, pfTernaryTypeGuard } from "../util/pointfree";
 
 export const PARAM_MYRESOURCES_TYPE = "myResourcesType";
 
-export const MyResourcesTypeRuntypes = Union(
-  Literal("Published"),
-  Literal("Drafts"),
-  Literal("Scrapbook"),
-  Literal("Moderation queue"),
-  Literal("Archive"),
-  Literal("All resources")
-);
+export const MyResourcesTypeRuntypes = t.union([
+  t.literal("Published"),
+  t.literal("Drafts"),
+  t.literal("Scrapbook"),
+  t.literal("Moderation queue"),
+  t.literal("Archive"),
+  t.literal("All resources"),
+]);
 
-export type MyResourcesType = Static<typeof MyResourcesTypeRuntypes>;
-
-const ScrapbookLiteral = Literal("scrapbook");
-const ModQueueLiteral = Literal("modqueue");
-
-/**
- * Runtypes definition to represent the Legacy My resources types.
- */
-export const LegacyMyResourcesRuntypes = Union(
-  Literal("published"),
-  Literal("draft"),
-  ScrapbookLiteral,
-  ModQueueLiteral,
-  Literal("archived"),
-  Literal("all"),
-  Literal("defaultValue")
-);
-
-type LegacyMyResourcesTypes = Static<typeof LegacyMyResourcesRuntypes>;
+export type MyResourcesType = t.TypeOf<typeof MyResourcesTypeRuntypes>;
 
 /**
  * Return a list of Item status that match the given MyResources type.
@@ -146,7 +131,7 @@ const getLegacyMyResourceType = (
     O.chainEitherK(
       flow(
         E.fromPredicate(
-          LegacyMyResourcesRuntypes.guard,
+          LegacyMyResourcesCodec.is,
           (value) => `Invalid legacy my resources type: ${value}`
         ),
         E.mapLeft(console.error)
@@ -187,7 +172,7 @@ const getSearchOptionsFromQueryParam = (
     t.UnknownRecord.decode, // Type of the parsed result should be a record where keys and values are unknown.
     E.map(processLastModifiedDateRange),
     E.filterOrElseW(
-      DehydratedSearchPageOptionsRunTypes.guard,
+      DehydratedSearchPageOptionsCodec.is,
       constant(
         "Parsed searchOptions is not a DehydratedSearchPageOptions - failed type check"
       )
@@ -215,15 +200,15 @@ const getMyResourcesTypeFromLegacyQueryParam = (
     params,
     getLegacyMyResourceType,
     O.map(
-      LegacyMyResourcesRuntypes.match<MyResourcesType>(
-        (published) => "Published",
-        (draft) => "Drafts",
-        (scrapbook) => "Scrapbook",
-        (modqueue) => "Moderation queue",
-        (archived) => "Archive",
-        (all) => "All resources",
-        (defaultValue) => "Published"
-      )
+      simpleUnionMatch<LegacyMyResourcesTypes, MyResourcesType>({
+        published: constant("Published"),
+        draft: constant("Drafts"),
+        scrapbook: constant("Scrapbook"),
+        modqueue: constant("Moderation queue"),
+        archived: constant("Archive"),
+        all: constant("All resources"),
+        defaultValue: constant("Published"),
+      })
     )
   );
 
@@ -233,7 +218,7 @@ const getMyResourcesTypeFromNewUIQueryParam = (
 ): O.Option<MyResourcesType> =>
   pipe(
     params.get(PARAM_MYRESOURCES_TYPE),
-    O.fromPredicate(MyResourcesTypeRuntypes.guard)
+    O.fromPredicate(MyResourcesTypeRuntypes.is)
   );
 
 /**
@@ -273,7 +258,7 @@ const getSubStatusFromLegacyQueryParam = (
       O.chainEitherK(
         flow(
           E.fromPredicate(
-            OEQ.Common.ItemStatuses.guard,
+            OEQ.Codec.Common.ItemStatusCodec.is,
             (value) => `Invalid Item status: ${value}`
           ),
           E.mapLeft(console.error)
@@ -321,10 +306,12 @@ const getSortOrderFromLegacyQueryParam = (
       params,
       getLegacyMyResourceType,
       O.map(
-        match(
-          when(ScrapbookLiteral, constant("sbsort")),
-          when(ModQueueLiteral, constant("modsort")),
-          when(Unknown, constant("sort"))
+        simpleUnionMatch<LegacyMyResourcesTypes, string>(
+          {
+            modqueue: constant("modsort"),
+            scrapbook: constant("sbsort"),
+          },
+          constant("sort")
         )
       ),
       O.chain((queryString) => pipe(params.get(queryString), O.fromNullable)),
@@ -339,7 +326,7 @@ const getSortOrderFromLegacyQueryParam = (
       O.chainEitherK(
         flow(
           E.fromPredicate(
-            OEQ.Search.SortOrderRunTypes.guard,
+            OEQ.Codec.Search.SortOrderCodec.is,
             (value) => `Invalid sort order: ${value}`
           ),
           E.mapLeft(console.error)
