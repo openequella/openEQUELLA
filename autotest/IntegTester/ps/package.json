@@ -10,7 +10,7 @@
   "dependencies": {
     "@emotion/react": "11.11.1",
     "@emotion/styled": "11.11.0",
-    "@mui/material": "5.14.5",
+    "@mui/material": "5.14.11",
     "axios": "1.5.1",
     "babel-polyfill": "6.26.0",
     "js-md5": "0.7.3",
