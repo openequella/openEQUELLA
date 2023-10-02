@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 public class ListenerRegistry {
   private final Map<ListenerKey, List<Object>> eventListeners =
@@ -57,7 +58,7 @@ public class ListenerRegistry {
       }
 
       ListenerKey key2 = (ListenerKey) obj;
-      return Check.bothNullOrEqual(target, key2.target) && listenerClass.equals(key2.listenerClass);
+      return Objects.equals(target, key2.target) && listenerClass.equals(key2.listenerClass);
     }
 
     @Override

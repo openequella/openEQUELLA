@@ -21,7 +21,7 @@ import {
   LOGGED_IN_USER_ROLE_ID,
 } from "../tsrc/modules/ACLRecipientModule";
 
-export const ownerRecipient = {
+export const ownerRecipient: ACLRecipient = {
   expression: "$OWNER",
   type: "$OWNER",
 };
@@ -32,7 +32,7 @@ export const ownerRecipientWithName: ACLRecipient = {
   name: ownerRecipientHumanReadableExpression,
 };
 
-export const everyoneRecipient = {
+export const everyoneRecipient: ACLRecipient = {
   expression: "*",
   type: "*",
 };
@@ -43,7 +43,7 @@ export const everyoneRecipientWithName: ACLRecipient = {
   name: everyoneRecipientHumanReadableExpression,
 };
 
-export const user100Recipient = {
+export const user100Recipient: ACLRecipient = {
   expression: "20483af2-fe56-4499-a54b-8d7452156895",
   type: "U",
 };
@@ -56,16 +56,16 @@ export const user100RecipientWithName = {
   name: user100RecipientHumanReadableExpression,
 };
 
-export const user200Recipient = {
+export const user200Recipient: ACLRecipient = {
   expression: "f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a",
   type: "U",
 };
-export const user200RecipientWithName = {
+export const user200RecipientWithName: ACLRecipient = {
   ...user200Recipient,
   name: "Racheal Carlyle [user200]",
 };
 
-export const user300Recipient = {
+export const user300Recipient: ACLRecipient = {
   expression: "eb75a832-6533-4d72-93f4-2b7a1b108951",
   type: "U",
 };
@@ -74,26 +74,26 @@ export const user300RecipientWithName = {
   name: "Yasmin Day [user300]",
 };
 
-export const user400Recipient = {
+export const user400Recipient: ACLRecipient = {
   expression: "1c2ff1d0-9040-4985-a450-0ff6422ba5ef",
   type: "U",
 };
-export const user400RecipientWithName = {
+export const user400RecipientWithName: ACLRecipient = {
   ...user400Recipient,
   name: "Ronny Southgate [user400]",
 };
 
-export const userAdminRecipient = {
+export const userAdminRecipient: ACLRecipient = {
   expression: "75abbd62-d91c-4ce5-b4b5-339e0d44ac0e",
   type: "U",
 };
 
-export const userContentAdminRecipient = {
+export const userContentAdminRecipient: ACLRecipient = {
   expression: "2",
   type: "U",
 };
 
-export const roleGuestRecipient = {
+export const roleGuestRecipient: ACLRecipient = {
   expression: GUEST_USER_ROLE_ID,
   type: "R",
 };
@@ -105,14 +105,14 @@ export const roleGuestRecipientWithName = {
 };
 
 export const LOGGED_IN_USER_ROLE_NAME = "Logged In User Role";
-export const roleLoggedRecipientWithName = {
+export const roleLoggedRecipientWithName: ACLRecipient = {
   expression: LOGGED_IN_USER_ROLE_ID,
   type: "R",
   name: LOGGED_IN_USER_ROLE_NAME,
 };
 export const roleLoggedRecipientRawExpression = `R:${LOGGED_IN_USER_ROLE_ID}`;
 
-export const role100RecipientWithName = {
+export const role100RecipientWithName: ACLRecipient = {
   expression: "fda99983-9eda-440a-ac68-0f746173fdcb",
   type: "R",
   name: "role100",
@@ -124,7 +124,7 @@ export const role200RecipientWithName = {
   name: "role200",
 };
 
-export const groupStudentRecipient = {
+export const groupStudentRecipient: ACLRecipient = {
   expression: "99806ac8-410e-4c60-b3ab-22575276f0f0",
   type: "G",
 };
@@ -133,36 +133,36 @@ export const groupStudentRecipientRawExpression =
 export const groupStudentRecipientHumanReadableExpression =
   "Engineering & Computer Science Students";
 
-export const groupStaffRecipient = {
+export const groupStaffRecipient: ACLRecipient = {
   expression: "d0265a33-8f89-4cea-8a36-45fd3c4cf5a1",
   type: "G",
 };
 
-export const group100RecipientWithName = {
+export const group100RecipientWithName: ACLRecipient = {
   expression: "303e758c-0051-4aea-9a8e-421f93ed9d1a",
   type: "G",
   name: "group100",
 };
 
-export const group200RecipientWithName = {
+export const group200RecipientWithName: ACLRecipient = {
   expression: "d7dd1907-5731-4244-9a65-e0e847f68604",
   type: "G",
   name: "group200",
 };
 
-export const group300RecipientWithName = {
+export const group300RecipientWithName: ACLRecipient = {
   expression: "f921a6e3-69a6-4ec4-8cf8-bc193beda5f6",
   type: "G",
   name: "group300",
 };
 
-export const group400RecipientWithName = {
+export const group400RecipientWithName: ACLRecipient = {
   expression: "a2576dea-bd5c-490b-a065-637068e1a4fb",
   type: "G",
   name: "group400",
 };
 
-export const ssoMoodleRecipient = {
+export const ssoMoodleRecipient: ACLRecipient = {
   expression: "moodle",
   type: "T",
 };
@@ -174,26 +174,26 @@ export const ssoMoodleRecipientWithName = {
 };
 
 // helper function to generate an IP recipient
-export const ipRecipient = (ip: string) => ({
+export const ipRecipient = (ip: string): ACLRecipient => ({
   expression: ip,
   type: "I",
 });
 
 // helper function to generate an IP recipient with name
-export const ipRecipientWithName = (ip: string) => ({
+export const ipRecipientWithName = (ip: string): ACLRecipient => ({
   expression: ip,
   type: "I",
   name: `From ${ip}`,
 });
 
 // helper function to generate an refer recipient
-export const referRecipient = (refer: string) => ({
+export const referRecipient = (refer: string): ACLRecipient => ({
   expression: refer,
   type: "F",
 });
 
 // helper function to generate a referrer recipient with name
-export const referRecipientWithName = (refer: string) => ({
+export const referRecipientWithName = (refer: string): ACLRecipient => ({
   ...referRecipient(refer),
   name: `From ${decodeURIComponent(refer)}`,
 });

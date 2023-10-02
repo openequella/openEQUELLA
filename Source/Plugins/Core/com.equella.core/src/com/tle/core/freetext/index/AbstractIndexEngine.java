@@ -20,7 +20,6 @@ package com.tle.core.freetext.index;
 
 import com.dytech.common.io.FileUtils;
 import com.dytech.edge.exceptions.ErrorDuringSearchException;
-import com.google.common.base.Throwables;
 import com.tle.freetext.TLEAnalyzer;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfoList;
@@ -38,17 +37,15 @@ import java.util.Timer;
 import java.util.TimerTask;
 import javax.annotation.PostConstruct;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.CharArraySet;
+import org.apache.lucene.analysis.WordlistLoader;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
-import org.apache.lucene.analysis.util.CharArraySet;
-import org.apache.lucene.analysis.util.WordlistLoader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.TrackingIndexWriter;
 import org.apache.lucene.search.ControlledRealTimeReopenThread;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,7 +89,6 @@ public abstract class AbstractIndexEngine {
   private FSDirectory directory;
 
   private IndexWriter indexWriter;
-  private TrackingIndexWriter trackingIndexWriter;
   private SearcherManager searcherManager;
   private ControlledRealTimeReopenThread<IndexSearcher> controlledRealTimeReopenThread;
   private Timer commiterThread;
@@ -113,7 +109,7 @@ public abstract class AbstractIndexEngine {
       FileUtils.delete(indexPath);
       afterPropertiesSet();
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 
@@ -124,23 +120,17 @@ public abstract class AbstractIndexEngine {
         throw new Error("Error creating index:" + indexPath); // $NON-NLS-1$
       }
     }
-    directory = FSDirectory.open(indexPath);
+    directory = FSDirectory.open(indexPath.toPath());
 
-    if (IndexWriter.isLocked(directory)) {
-      LOGGER.info("Unlocking index:" + indexPath); // $NON-NLS-1$
-      IndexWriter.unlock(directory);
-    }
     LOGGER.info("Opening writer for index:" + indexPath);
 
-    indexWriter =
-        new IndexWriter(directory, new IndexWriterConfig(Version.LUCENE_4_10_4, getAnalyser()));
-    trackingIndexWriter = new TrackingIndexWriter(indexWriter);
-    searcherManager = new SearcherManager(indexWriter, true, null);
+    indexWriter = new IndexWriter(directory, new IndexWriterConfig(getAnalyser()));
+    searcherManager = new SearcherManager(indexWriter, true, true, null);
 
     // Possibly reopen a searcher every 5 seconds if necessary in the
     // background
     controlledRealTimeReopenThread =
-        new ControlledRealTimeReopenThread<>(trackingIndexWriter, searcherManager, 5.0, 0.1);
+        new ControlledRealTimeReopenThread<>(indexWriter, searcherManager, 5.0, 0.1);
     controlledRealTimeReopenThread.setName("Controlled Real Time Reopen Thread: " + getClass());
     controlledRealTimeReopenThread.setPriority(
         Math.min(Thread.currentThread().getPriority() + 2, Thread.MAX_PRIORITY));
@@ -168,7 +158,7 @@ public abstract class AbstractIndexEngine {
     try {
       long g = -1;
       try {
-        g = builder.buildIndex(searcherManager, trackingIndexWriter);
+        g = builder.buildIndex(searcherManager, indexWriter);
       } finally {
         generation = Math.max(g, generation);
       }
@@ -239,11 +229,7 @@ public abstract class AbstractIndexEngine {
                   .findFirst();
 
           if (languageAnalyzer.isPresent()) {
-            normalAnalyzer =
-                languageAnalyzer
-                    .get()
-                    .getDeclaredConstructor(Version.class)
-                    .newInstance(Version.LUCENE_4_10_4);
+            normalAnalyzer = languageAnalyzer.get().getDeclaredConstructor().newInstance();
             // For the non-stemmed analyzer we still use the TLEAnalyzer, however we use the
             // language specific stop words by loading them from the language specific analyzer.
             Method getDefaultStopSet =
@@ -286,7 +272,7 @@ public abstract class AbstractIndexEngine {
 
   public interface IndexBuilder {
     /** @return The index generation to wait for, or -1 if you don't care. */
-    long buildIndex(SearcherManager searcherManager, TrackingIndexWriter writer) throws Exception;
+    long buildIndex(SearcherManager searcherManager, IndexWriter writer) throws Exception;
   }
 
   public void setIndexPath(File indexPath) {

@@ -19,7 +19,6 @@
 package com.tle.core.connectors.service;
 
 import com.dytech.edge.common.ScriptContext;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.item.IItem;
@@ -385,7 +384,7 @@ public class ConnectorRepositoryServiceImpl implements ConnectorRepositoryServic
           .getFoldersForCourse(connector, mungeUsername(username, connector), courseId, management);
     } catch (LmsUserNotFoundException e) {
       // the reality is, this will never happen
-      throw Throwables.propagate(e);
+      throw new AssertionError(e);
     }
   }
 
@@ -399,7 +398,7 @@ public class ConnectorRepositoryServiceImpl implements ConnectorRepositoryServic
               connector, mungeUsername(username, connector), courseId, folderId, management);
     } catch (LmsUserNotFoundException e) {
       // the reality is, this will never happen
-      throw Throwables.propagate(e);
+      throw new AssertionError(e);
     }
   }
 

@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import { act, render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
@@ -39,7 +39,7 @@ describe("<WizardSimpleTermSelector/>", () => {
 
   const renderWizardSimpleTermSelector = (
     isAllowMultiple: boolean = false,
-    values = new Set<string>()
+    values = new Set<string>(),
   ) =>
     render(
       <WizardSimpleTermSelector
@@ -52,7 +52,7 @@ describe("<WizardSimpleTermSelector/>", () => {
         termStorageFormat="FULL_PATH"
         values={values}
         id="test"
-      />
+      />,
     );
 
   const searchTerms = async (input: HTMLElement, query: string) =>
@@ -83,7 +83,7 @@ describe("<WizardSimpleTermSelector/>", () => {
     const terms: string[] = ["term1", "term2"];
     const { queryByText } = await renderWizardSimpleTermSelector(
       true,
-      new Set(terms)
+      new Set(terms),
     );
 
     expect(terms.every((t) => queryByText(t))).toBeTruthy();
@@ -94,11 +94,11 @@ describe("<WizardSimpleTermSelector/>", () => {
     const values = new Set([term]);
     const { getByLabelText } = await renderWizardSimpleTermSelector(
       true,
-      values
+      values,
     );
 
     await user.click(
-      getByLabelText(`${languageStrings.common.action.delete} ${term}`)
+      getByLabelText(`${languageStrings.common.action.delete} ${term}`),
     );
     // The only value has been deleted so the handler should be called with an empty set.
     expect(onSelect).toHaveBeenLastCalledWith(new Set());

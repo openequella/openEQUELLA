@@ -18,12 +18,12 @@
 import * as React from "react";
 import ErrorPage from "../../../tsrc/mainui/ErrorPage";
 import { render } from "@testing-library/react";
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 
 describe("<ErrorPage />", () => {
   it("should render with no code or description", () => {
     const { container, queryByText } = render(
-      <ErrorPage error={{ id: "mock-error", error: "example" }} />
+      <ErrorPage error={{ id: "mock-error", error: "example" }} />,
     );
 
     expect(container.querySelector("#errorPage")).toBeInTheDocument();
@@ -40,17 +40,17 @@ describe("<ErrorPage />", () => {
           code: 404,
           error_description: "mock description",
         }}
-      />
+      />,
     );
 
     expect(container.querySelector("#errorPage")).toBeInTheDocument();
     expect(container.querySelectorAll("h3")).toHaveLength(1);
     expect(
-      queryByText("404 : example", { selector: "h3" })
+      queryByText("404 : example", { selector: "h3" }),
     ).toBeInTheDocument();
     expect(container.querySelectorAll("h5")).toHaveLength(1);
     expect(
-      queryByText("mock description", { selector: "h5" })
+      queryByText("mock description", { selector: "h5" }),
     ).toBeInTheDocument();
   });
 });

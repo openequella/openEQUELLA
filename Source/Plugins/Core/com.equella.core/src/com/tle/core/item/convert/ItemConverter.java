@@ -21,7 +21,6 @@ package com.tle.core.item.convert;
 import com.dytech.common.io.FileExtensionFilter;
 import com.dytech.common.io.UnicodeReader;
 import com.dytech.edge.common.Constants;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
@@ -413,7 +412,7 @@ public class ItemConverter extends AbstractConverter<ItemConverter.ItemConverter
       ByteStreams.copy(xmlStream, xmlData);
       item.setItemXml(new ItemXml(xmlData.toString(Constants.UTF8)));
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
     fileSystemService.removeFile(file, ITEM_XML_FILE);
   }
@@ -533,7 +532,7 @@ public class ItemConverter extends AbstractConverter<ItemConverter.ItemConverter
           new StringReader(item.getItemXml().getXml()),
           false);
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 

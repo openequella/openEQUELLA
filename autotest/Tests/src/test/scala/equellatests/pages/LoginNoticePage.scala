@@ -67,7 +67,7 @@ case class LoginNoticePage(ctx: PageContext)
   }
 
   def setPreLoginNoticeWithImageURL(imgURL: String): Unit = {
-    clearAndPopulatePreNoticeField("Image Test: ")
+    clearAndPopulatePreNoticeField("Image Test:")
     switchFromTinyMCEIFrame()
     preNoticeAddImageButton.click()
     waitFor(ExpectedConditions.visibilityOf(preNoticeAddImagePopup))

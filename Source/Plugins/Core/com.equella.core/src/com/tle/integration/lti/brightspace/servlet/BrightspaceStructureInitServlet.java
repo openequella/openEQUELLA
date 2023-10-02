@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.common.connectors.ConnectorCourse;
 import com.tle.common.connectors.ConnectorFolder;
@@ -148,7 +147,7 @@ public class BrightspaceStructureInitServlet extends HttpServlet {
         try {
           structure = objectMapper.writer().with(pp).writeValueAsString(root);
         } catch (JsonProcessingException e) {
-          throw Throwables.propagate(e);
+          throw new RuntimeException(e);
         }
 
         if (structure == null) {
@@ -160,7 +159,7 @@ public class BrightspaceStructureInitServlet extends HttpServlet {
 
       return structure;
     } catch (LmsUserNotFoundException lms) {
-      throw Throwables.propagate(lms);
+      throw new RuntimeException(lms);
     }
   }
 
@@ -190,7 +189,7 @@ public class BrightspaceStructureInitServlet extends HttpServlet {
         }
       }
     } catch (LmsUserNotFoundException lms) {
-      throw Throwables.propagate(lms);
+      throw new RuntimeException(lms);
     }
   }
 }

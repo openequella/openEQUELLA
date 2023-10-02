@@ -18,9 +18,7 @@
 
 package com.tle.upgrade;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
-import com.google.common.io.Closeables;
 import com.tle.common.Check;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -30,6 +28,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @SuppressWarnings("nls")
@@ -48,11 +47,12 @@ public abstract class LineFileModifier {
     File bakFile = new File(parent, file.getName() + ".bak");
     new FileCopier(file, bakFile, true).rename();
 
-    BufferedReader inFile = null;
-    BufferedWriter outFile = null;
-    try {
-      inFile = new BufferedReader(new InputStreamReader(new FileInputStream(bakFile), "UTF-8"));
-      outFile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
+    try (BufferedReader inFile =
+            new BufferedReader(
+                new InputStreamReader(new FileInputStream(bakFile), StandardCharsets.UTF_8));
+        BufferedWriter outFile =
+            new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
       String line;
       while ((line = inFile.readLine()) != null) {
         String newLine = processLine(line);
@@ -81,16 +81,10 @@ public abstract class LineFileModifier {
         }
       }
 
-    } catch (Exception t) {
-      // Need to close these to restore the backup
-      Closeables.close(outFile, true);
-      Closeables.close(inFile, true);
+    } catch (IOException t) {
       new FileCopier(bakFile, file, false).rename();
 
-      throw Throwables.propagate(t);
-    } finally {
-      Closeables.close(outFile, true);
-      Closeables.close(inFile, true);
+      throw new RuntimeException(t);
     }
     bakFile.delete();
   }

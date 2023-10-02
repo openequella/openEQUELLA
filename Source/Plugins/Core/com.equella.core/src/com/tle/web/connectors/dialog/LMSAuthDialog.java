@@ -18,7 +18,6 @@
 
 package com.tle.web.connectors.dialog;
 
-import com.google.common.base.Throwables;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.common.connectors.entity.Connector;
@@ -85,30 +84,25 @@ public class LMSAuthDialog extends AbstractOkayableDialog<LMSAuthDialog.Model> {
     String forwardUrl =
         new BookmarkAndModify(context, events.getNamedModifier("finishedAuth")).getHref();
 
-    try {
-      final String authUrl;
-      if (authUrlCallable != null) {
-        authUrl = authUrlCallable.getAuthorisationUrl(context, forwardUrl);
-      } else {
-        final String connectorUuid = model.getConnectorUuid();
-        if (connectorUuid == null) {
-          throw new RuntimeException("No connector UUID supplied to LMSAuthDialog");
-        }
-        final Connector connector = connectorService.getByUuid(connectorUuid);
-        if (connector.getLmsType().equals(BlackboardRESTConnectorConstants.CONNECTOR_TYPE)) {
-          model.setShowNewTabLauncher(true);
-          forwardUrl =
-              new BookmarkAndModify(context, events.getNamedModifier("finishedAuthNewTab"))
-                  .getHref();
-        }
-
-        authUrl = repositoryService.getAuthorisationUrl(connector, forwardUrl, null);
+    final String authUrl;
+    if (authUrlCallable != null) {
+      authUrl = authUrlCallable.getAuthorisationUrl(context, forwardUrl);
+    } else {
+      final String connectorUuid = model.getConnectorUuid();
+      if (connectorUuid == null) {
+        throw new RuntimeException("No connector UUID supplied to LMSAuthDialog");
       }
-      LOGGER.trace("Setting authUrl to [" + authUrl + "].");
-      model.setAuthUrl(authUrl);
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+      final Connector connector = connectorService.getByUuid(connectorUuid);
+      if (connector.getLmsType().equals(BlackboardRESTConnectorConstants.CONNECTOR_TYPE)) {
+        model.setShowNewTabLauncher(true);
+        forwardUrl =
+            new BookmarkAndModify(context, events.getNamedModifier("finishedAuthNewTab")).getHref();
+      }
+
+      authUrl = repositoryService.getAuthorisationUrl(connector, forwardUrl, null);
     }
+    LOGGER.trace("Setting authUrl to [" + authUrl + "].");
+    model.setAuthUrl(authUrl);
 
     return view.createResult("dialog/lmsauth.ftl", this);
   }

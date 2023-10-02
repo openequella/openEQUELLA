@@ -31,7 +31,6 @@ import static com.tle.core.connectors.moodle.MoodleConnectorConstants.VALUE_NODE
 
 import com.dytech.common.io.UnicodeReader;
 import com.dytech.edge.common.Constants;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.tle.annotation.NonNullByDefault;
@@ -75,6 +74,7 @@ import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewable.ViewableItemResolver;
 import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.attachments.AttachmentResourceService;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -89,6 +89,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 @NonNullByDefault
@@ -605,8 +606,8 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
         }
 
         return xml;
-      } catch (Exception e) {
-        throw Throwables.propagate(e);
+      } catch (IOException | SAXException e) {
+        throw new RuntimeException(e);
       }
     }
 

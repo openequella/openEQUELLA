@@ -23,7 +23,7 @@ import {
   queryByDisplayValue,
 } from "@testing-library/react";
 import ContentIndexSettings from "../../../tsrc/settings/Search/ContentIndexSettings";
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule"; // eslint-disable-line
 import { NavigationGuardProps } from "../../../tsrc/components/NavigationGuard";
 import { languageStrings } from "../../../tsrc/util/langstrings";
@@ -45,7 +45,7 @@ describe("Content Index Settings Page", () => {
   jest
     .spyOn(SearchSettingsModule, "getSearchSettingsFromServer")
     .mockImplementation(() =>
-      Promise.resolve(SearchSettingsModule.defaultSearchSettings)
+      Promise.resolve(SearchSettingsModule.defaultSearchSettings),
     );
 
   let page: RenderResult;
@@ -55,13 +55,13 @@ describe("Content Index Settings Page", () => {
 
   it("Should fetch the search settings on page load", () => {
     expect(
-      SearchSettingsModule.getSearchSettingsFromServer
+      SearchSettingsModule.getSearchSettingsFromServer,
     ).toHaveBeenCalledTimes(1);
   });
 
   it("shows the default Content indexing value", () => {
     expect(
-      page.queryByText(contentIndexSettingsStrings.general)
+      page.queryByText(contentIndexSettingsStrings.general),
     ).toBeInTheDocument();
     const contentIndexingSetting = page
       .getByText(contentIndexSettingsStrings.name)
@@ -72,11 +72,11 @@ describe("Content Index Settings Page", () => {
     expect(
       queryByText(
         contentIndexingSetting,
-        contentIndexSettingsStrings.option.none
-      )
+        contentIndexSettingsStrings.option.none,
+      ),
     ).toBeInTheDocument();
     expect(
-      queryByDisplayValue(contentIndexingSetting, defaultVals.urlLevel)
+      queryByDisplayValue(contentIndexingSetting, defaultVals.urlLevel),
     ).toBeInTheDocument();
   });
 
@@ -98,6 +98,6 @@ describe("Content Index Settings Page", () => {
         throw new Error(`Failed to find the ${boostingType} boosting setting`);
       }
       expect(queryByDisplayValue(boosting, defaultValue)).toBeInTheDocument();
-    }
+    },
   );
 });

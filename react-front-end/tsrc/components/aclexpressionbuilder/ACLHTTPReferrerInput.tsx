@@ -15,9 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as t from "io-ts";
 import { FormControlLabel, Radio, RadioGroup, TextField } from "@mui/material";
 import * as React from "react";
-import { Literal, Static, Union } from "runtypes";
 import { languageStrings } from "../../util/langstrings";
 
 /**
@@ -25,8 +25,8 @@ import { languageStrings } from "../../util/langstrings";
  * Contain: Match referrers containing this value.
  * Exact: Only match this exact referrer.
  */
-const ReferrerTypesUnion = Union(Literal("Contain"), Literal("Exact"));
-export type ReferrerType = Static<typeof ReferrerTypesUnion>;
+const ReferrerTypesUnion = t.union([t.literal("Contain"), t.literal("Exact")]);
+export type ReferrerType = t.TypeOf<typeof ReferrerTypesUnion>;
 
 const {
   aclExpressionBuilder: {
@@ -55,7 +55,7 @@ const ACLHTTPReferrerInput = ({ onChange }: ACLHTTPReferrerInputProps) => {
 
   const handleOnChanged = (
     newReferrerType: ReferrerType,
-    newReferrer: string
+    newReferrer: string,
   ) => {
     const encodedUrl = encodeURIComponent(newReferrer);
     onChange(newReferrerType === "Exact" ? encodedUrl : `*${encodedUrl}*`);

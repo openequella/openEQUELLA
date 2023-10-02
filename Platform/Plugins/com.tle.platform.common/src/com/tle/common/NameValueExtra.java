@@ -18,6 +18,8 @@
 
 package com.tle.common;
 
+import java.util.Objects;
+
 /**
  * Rather than make the NameValue parent a Comparable and risk unintended consequences in any of the
  * many places where that class is utilised, we'll adopt this class as our comparable-by-name
@@ -43,7 +45,7 @@ public class NameValueExtra extends NameValue implements Comparable<NameValueExt
   @Override
   public boolean checkFields(Pair<String, String> rhs) {
     NameValueExtra t = (NameValueExtra) rhs;
-    return super.checkFields(t) && Check.bothNullOrEqual(t.getExtra(), getExtra());
+    return super.checkFields(t) && Objects.equals(t.getExtra(), getExtra());
   }
 
   /** compare name, value, extra in that order until we get a non-0 result */

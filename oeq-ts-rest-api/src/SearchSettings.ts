@@ -15,19 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Literal, Union } from 'runtypes';
 import { GET, PUT } from './AxiosInstance';
 import { SettingsCodec } from './gen/SearchSettings';
 import type { SortOrder } from './Search';
 import { validate } from './Utils';
 
-export const ContentIndexLevelRunTypes = Union(
-  Literal(0),
-  Literal(1),
-  Literal(2)
-);
-
-// todo: fix this type alias which is not in sync with the runtype. Jira ticket: OEQ-1438
 export type ContentIndexLevel = 0 | 1 | 2;
 
 export interface Settings {

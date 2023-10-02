@@ -27,7 +27,7 @@ import org.w3c.dom.Node;
 /** @author Nicholas Read */
 final class DOMHelper {
   private DOMHelper() {
-    throw new IllegalAccessError("Do not invoke"); // $NON-NLS-1$
+    throw new IllegalAccessError("Do not invoke");
   }
 
   /** Removes namespace from a given path element. */
@@ -41,8 +41,7 @@ final class DOMHelper {
 
   /** Removes namespace from a given path element. */
   static String stripAttribute(String name) {
-    if (name.startsWith("@")) // $NON-NLS-1$
-    {
+    if (name.startsWith("@")) {
       return name.substring(1);
     } else {
       return name;
@@ -55,20 +54,14 @@ final class DOMHelper {
     if (node != null) {
       switch (node.getNodeType()) {
         case Node.ELEMENT_NODE:
-          {
-            Node textNode = node.getFirstChild();
-            if (textNode != null) {
-              value = textNode.getNodeValue();
-            }
-            break;
+          Node textNode = node.getFirstChild();
+          if (textNode != null) {
+            value = textNode.getNodeValue();
           }
-
+          break;
         case Node.ATTRIBUTE_NODE:
-          {
-            value = node.getNodeValue();
-            break;
-          }
-
+          value = node.getNodeValue();
+          break;
         default:
           break;
       }
@@ -86,24 +79,18 @@ final class DOMHelper {
     if (node != null) {
       switch (node.getNodeType()) {
         case Node.ELEMENT_NODE:
-          {
-            Node child = node.getFirstChild();
-            if (child == null) {
-              Document doc = node.getOwnerDocument();
-              node.appendChild(doc.createTextNode(value));
-            } else {
-              child.setNodeValue(value);
-            }
-            break;
+          Node child = node.getFirstChild();
+          if (child == null) {
+            Document doc = node.getOwnerDocument();
+            node.appendChild(doc.createTextNode(value));
+          } else {
+            child.setNodeValue(value);
           }
-
+          break;
         case Node.ATTRIBUTE_NODE:
-          {
-            Attr attribute = (Attr) node;
-            attribute.getOwnerElement().setAttribute(attribute.getName(), value);
-            break;
-          }
-
+          Attr attribute = (Attr) node;
+          attribute.getOwnerElement().setAttribute(attribute.getName(), value);
+          break;
         default:
           break;
       }
@@ -114,7 +101,7 @@ final class DOMHelper {
     for (; child != null; child = child.getNextSibling()) {
       if (child.getNodeType() == Node.ELEMENT_NODE) {
         if (nodeName == null
-            || nodeName.equals("*") // $NON-NLS-1$
+            || nodeName.equals("*")
             || nodeName.equals(DOMHelper.stripNamespace(child.getNodeName()))) {
           return child;
         }
@@ -127,13 +114,12 @@ final class DOMHelper {
   static List<String> splitPath(String path) {
     List<String> parts = new ArrayList<String>();
 
-    String[] split = path.split("/"); // $NON-NLS-1$
+    String[] split = path.split("/");
     for (int i = 0; i < split.length; i++) {
       if (split[i].length() > 0) {
         boolean isLastPart = i == split.length - 1;
         if (!isLastPart && split[i].indexOf('@') >= 0) {
-          throw new IllegalArgumentException(
-              "Attribute must be last component of path"); //$NON-NLS-1$
+          throw new IllegalArgumentException("Attribute must be last component of path");
         }
         parts.add(split[i]);
       }
@@ -155,21 +141,18 @@ final class DOMHelper {
     if (node != null) {
       switch (node.getNodeType()) {
         case Node.ELEMENT_NODE:
-          {
-            Node parent = node.getParentNode();
-            if (parent != null) {
-              parent.removeChild(node);
-              return true;
-            }
-            break;
-          }
-
-        case Node.ATTRIBUTE_NODE:
-          {
-            Attr attr = (Attr) node;
-            attr.getOwnerElement().removeAttribute(attr.getName());
+          Node parent = node.getParentNode();
+          if (parent != null) {
+            parent.removeChild(node);
             return true;
           }
+          break;
+        case Node.ATTRIBUTE_NODE:
+          Attr attr = (Attr) node;
+          attr.getOwnerElement().removeAttribute(attr.getName());
+          return true;
+        default:
+          break;
       }
     }
     return false;

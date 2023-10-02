@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
@@ -28,7 +28,7 @@ describe("<SearchPagination/>", () => {
   const searchPagination = (
     resultCount: number,
     currentPage: number,
-    rowsPerPage: number
+    rowsPerPage: number,
   ) =>
     render(
       <SearchPagination
@@ -37,7 +37,7 @@ describe("<SearchPagination/>", () => {
         rowsPerPage={rowsPerPage}
         onPageChange={mockOnPageChange}
         onRowsPerPageChange={mockOnRowsPerPageChange}
-      />
+      />,
     );
 
   it("Goes back to the first page of results when First Page Button is clicked", async () => {
@@ -135,7 +135,7 @@ describe("<SearchPagination/>", () => {
     await userEvent.click(getItemsPerPageOption(itemsPerPageDesired));
 
     expect(mockOnRowsPerPageChange).toHaveBeenLastCalledWith(
-      itemsPerPageDesired
+      itemsPerPageDesired,
     );
   });
 });

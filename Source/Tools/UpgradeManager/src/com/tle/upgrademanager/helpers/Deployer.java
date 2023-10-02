@@ -21,7 +21,6 @@ package com.tle.upgrademanager.helpers;
 import com.dytech.common.io.FileUtils;
 import com.dytech.common.io.ZipUtils;
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.google.common.io.Closeables;
 import com.google.common.io.Files;
 import com.tle.upgrademanager.ManagerConfig;
@@ -135,14 +134,14 @@ public class Deployer {
       moveToInstall(new File(tempDir, VERSION_PROPS), "server/" + VERSION_PROPS);
 
       ajax.addHeading(ajaxId, "Upgrade Complete");
-    } catch (Exception e) {
+    } catch (IOException e) {
       String message = e.getMessage();
       if (Strings.isNullOrEmpty(message)) {
         message = e.toString();
       }
       ajax.addError(ajaxId, message);
       LOG.error("Error unzipping upgrade", e);
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     } finally {
       Closeables.close(zip, true);
       ajax.addBasic(ajaxId, "Removing temporary directory...");

@@ -18,7 +18,6 @@
 
 package com.tle.web.sections.standard.renderers.tree;
 
-import com.google.common.base.Throwables;
 import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.SectionUtils;
 import com.tle.web.sections.SectionWriter;
@@ -96,7 +95,7 @@ public class TreeViewRenderer extends AbstractComponentRenderer
           try {
             renderer.realRender(new SectionWriter(outbuf, info));
           } catch (IOException e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException();
           }
           initNode.put("text", outbuf.toString());
           initial.add(initNode);

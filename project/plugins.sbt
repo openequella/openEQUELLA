@@ -2,7 +2,7 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-license-report" % "1.2.0")
 
 addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.10.0")
 
-addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "2.1.1")
+addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "2.1.3")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "1.0.2")
 
@@ -26,7 +26,7 @@ addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "5.1.0")
 //    - revision is optional
 addDependencyTreePlugin
 
-val circeVersion = "0.14.5"
+val circeVersion = "0.14.6"
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core"    % circeVersion,
   "io.circe" %% "circe-generic" % circeVersion,
@@ -52,7 +52,7 @@ libraryDependencies ++= Seq(
   "commons-configuration"  % "commons-configuration" % "1.10",
   "commons-beanutils"      % "commons-beanutils"     % "1.9.4",
   "commons-codec"          % "commons-codec"         % "1.16.0",
-  "org.slf4j"              % "slf4j-nop"             % "2.0.7",
+  "org.slf4j"              % "slf4j-nop"             % "2.0.9",
   "com.yahoo.platform.yui" % "yuicompressor"         % "2.4.8"
 )
 dependencyOverrides += "com.puppycrawl.tools" % "checkstyle" % "10.12.3"

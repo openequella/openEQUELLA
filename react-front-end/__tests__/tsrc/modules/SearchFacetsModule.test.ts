@@ -61,7 +61,7 @@ const mockedSearchFacets = (
 ).mockImplementation(
   (
     _: string,
-    params?: OEQ.SearchFacets.SearchFacetsParams
+    params?: OEQ.SearchFacets.SearchFacetsParams,
   ): Promise<OEQ.SearchFacets.SearchFacetsResult> => {
     const mockData = new Map<string, OEQ.SearchFacets.Facet[]>([
       [CLASSIFICATION_SUBJECT.schemaNode, CATEGORIES_SUBJECT],
@@ -73,7 +73,7 @@ const mockedSearchFacets = (
     return Promise.resolve({
       results: mockData.get(params.nodes[0]),
     } as OEQ.SearchFacets.SearchFacetsResult);
-  }
+  },
 );
 
 describe("SearchFacetsModule", () => {
@@ -104,7 +104,7 @@ describe("SearchFacetsModule", () => {
         firstName: "Test",
         lastName: "Owner",
       },
-      status: OEQ.Common.ItemStatuses.alternatives.map((i) => i.value), // i.e. All statuses
+      status: OEQ.Codec.Common.ItemStatusCodec.types.map(({ value }) => value), // i.e. All statuses
       sortOrder: undefined,
       mimeTypes: mimeTypes,
     });

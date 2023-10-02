@@ -54,8 +54,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.FieldType;
-import org.apache.lucene.document.LongField;
+import org.apache.lucene.document.LongPoint;
+import org.apache.lucene.document.StoredField;
 import org.hibernate.Hibernate;
 import org.hibernate.type.SerializationException;
 import org.slf4j.Logger;
@@ -184,12 +184,11 @@ public class StandardIndexer extends AbstractIndexingExtension {
     fields.add(keyword(FreeTextQuery.FIELD_UNIQUE, item.getIdString()));
     fields.add(keyword(FreeTextQuery.FIELD_ID, Long.toString(item.getId())));
 
-    FieldType idRangeFieldType = new FieldType();
-    idRangeFieldType.setIndexed(true);
-    idRangeFieldType.setNumericType(FieldType.NumericType.LONG);
-    idRangeFieldType.setNumericPrecisionStep(1);
-    idRangeFieldType.setStored(true);
-    fields.add(new LongField(FreeTextQuery.FIELD_ID_RANGEABLE, item.getId(), idRangeFieldType));
+    LongPoint idRange = new LongPoint(FreeTextQuery.FIELD_ID_RANGEABLE, item.getId());
+    StoredField storedIdRange = new StoredField(FreeTextQuery.FIELD_ID_RANGEABLE, item.getId());
+    fields.add(idRange);
+    fields.add(storedIdRange);
+
     fields.add(keyword(FreeTextQuery.FIELD_INDEXEDTIME, Long.toString(lastIndexed.getTime())));
     fields.add(keyword(FreeTextQuery.FIELD_ITEMDEFID, item.getItemDefinition().getUuid()));
 
@@ -261,6 +260,12 @@ public class StandardIndexer extends AbstractIndexingExtension {
         fields.add(indexed(FreeTextQuery.FIELD_OWNER, collab));
       }
     }
+
+    // Since Lucene v5, sorting fields must be added explicitly.
+    fields.add(stringSortingField(FreeTextQuery.FIELD_REALCREATED, realCreated));
+    fields.add(stringSortingField(FreeTextQuery.FIELD_REALLASTMODIFIED, realLastModified));
+    fields.add(stringSortingField(FreeTextQuery.FIELD_NAME, szName));
+    fields.add(stringSortingField(FreeTextQuery.FIELD_RATING, rating));
 
     return fields;
   }

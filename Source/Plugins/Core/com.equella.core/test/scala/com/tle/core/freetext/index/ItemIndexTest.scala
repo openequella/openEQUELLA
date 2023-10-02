@@ -32,12 +32,7 @@ import com.tle.common.searching.Search.SortType
 import com.tle.common.security.SecurityConstants
 import com.tle.common.settings.ConfigurationProperties
 import com.tle.common.settings.standard.SearchSettings
-import com.tle.common.usermanagement.user.{
-  AbstractUserState,
-  CurrentUser,
-  DefaultUserState,
-  UserState
-}
+import com.tle.common.usermanagement.user.{AbstractUserState, CurrentUser, DefaultUserState}
 import com.tle.core.events.services.EventService
 import com.tle.core.freetext.index.AbstractIndexEngine.Searcher
 import com.tle.core.freetext.indexer.StandardIndexer
@@ -53,7 +48,8 @@ import com.tle.core.settings.service.ConfigurationService
 import com.tle.core.zookeeper.ZookeeperService
 import com.tle.freetext.{FreetextIndexConfiguration, FreetextIndexImpl, IndexedItem}
 import org.apache.lucene.document.{Document, Field, FieldType}
-import org.apache.lucene.queries.ChainedFilter
+import org.apache.lucene.index.IndexOptions
+import org.apache.lucene.search.TotalHits.Relation
 import org.apache.lucene.search._
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyInt}
@@ -75,28 +71,36 @@ class ItemIndexTest
     with GivenWhenThen
     with BeforeAndAfterAll
     with BeforeAndAfter {
+  val schemaUuid      = "adfcaf58-241b-4eca-9740-6a26d1c3dd58"
+  val collectionUuid  = "bdfcaf58-241b-4eca-9740-6a26d1c3dd58"
+  val itemUuid        = "zzzcaf58-241b-4eca-9740-6a26d1c3dd58"
+  val currentUserUuid = "sdscaf66-241b-4eca-9740-6a26d1c3dd58"
+
   val inst = new Institution
-  inst.setUniqueId(new scala.util.Random().nextLong)
+  inst.setUniqueId(2023L)
 
   val schema = new Schema
-  schema.setUuid(UUID.randomUUID().toString)
+  schema.setUuid(schemaUuid)
   schema.setDefinition(
     new PropBagEx(
       "<xml><item><name field='true'></name><description field='true'></description></item></xml>"))
 
   val collection = new ItemDefinition
-  collection.setUuid(UUID.randomUUID().toString)
+  collection.setUuid(collectionUuid)
   collection.setSchema(schema)
 
   val owner = "admin"
 
   val indexRootDirectoryName = "ItemIndexTest"
 
-  val aclEntryID = 1000L
+  val commonAclEntryID = 1000L
+  val ownerAclEntryID  = 1001L
+
   // The field format for ACL permission is "ACLx-y" where "x" is the shortcut for the permission
   // and "y" is the unique ID of the permission. The mapping between permissions and their shortcuts
   // is defined in class `ItemIndex`.
-  def aclField(privilege: String) = s"${ItemIndex.convertStdPriv(privilege)}$aclEntryID"
+  def aclField(privilege: String, aclEntryID: Long) =
+    s"${ItemIndex.convertStdPriv(privilege)}$aclEntryID"
   // The value format for ACL permission is "xxxG" where "xxx" must be a three-digit number which starts
   // from 000 and "G" stands for "Grant".
   val aclValue = "001G"
@@ -151,15 +155,16 @@ class ItemIndexTest
                            dateModified: Date = new Date,
                            itemDescription: String = "",
                            properties: PropBagEx = new PropBagEx,
-                           privilege: Option[String] = None): List[IndexedItem] = {
+                           privilege: Option[String] = None,
+                           itemDef: ItemDefinition = collection): List[IndexedItem] = {
     val indexer = new StandardIndexer
 
     Range(0, howMany)
       .map(key => {
         val item = new Item()
-        item.setUuid(UUID.randomUUID().toString)
+        item.setUuid(itemUuid)
         item.setInstitution(inst)
-        item.setItemDefinition(collection)
+        item.setItemDefinition(itemDef)
         item.setOwner(owner)
         item.setName(LangUtils.createTextTempLangugageBundle(itemName))
         item.setDescription(LangUtils.createTextTempLangugageBundle(itemDescription))
@@ -170,7 +175,7 @@ class ItemIndexTest
         item.setDateForIndex(dateModified)
         item.setDateModified(dateModified)
 
-        val indexedItem = new IndexedItem(new ItemIdKey(key, UUID.randomUUID().toString, 1), inst)
+        val indexedItem = new IndexedItem(new ItemIdKey(key, itemUuid, 1), inst)
         indexedItem.setItem(item)
         indexedItem.setItemXml(properties)
         indexedItem.setAdd(true)
@@ -180,12 +185,13 @@ class ItemIndexTest
         privilege match {
           case Some(p) =>
             val ft = new FieldType()
-            ft.setIndexed(true)
+            ft.setIndexOptions(IndexOptions.DOCS)
             ft.setStored(true)
             ft.setTokenized(false)
             indexedItem.getAclMap.put(
               SecurityConstants.DISCOVER_ITEM,
-              java.util.Collections.singletonList(new Field(aclField(p), aclValue, ft)))
+              List(new Field(aclField(p, commonAclEntryID), aclValue, ft),
+                   new Field(aclField(p, ownerAclEntryID), aclValue, ft)).asJava)
             indexer.addAllFields(indexedItem.getItemdoc, indexedItem.getACLEntries(p))
           case None =>
         }
@@ -213,14 +219,11 @@ class ItemIndexTest
   def buildSearcher(itemIndex: ItemIndex[_], searchConfig: DefaultSearch) =
     new Searcher[SearchResult] {
       override def search(searcher: IndexSearcher): SearchResult = {
-        def filters =
-          new ChainedFilter(itemIndex.getFilters(searchConfig).asScala.toArray, ChainedFilter.AND)
-
         def query = itemIndex.getQuery(searchConfig, searcher.getIndexReader, false)
 
         def sorter = itemIndex.getSorter(searchConfig)
 
-        searcher.search(query, filters, 10, sorter).scoreDocs.map(d => searcher.doc(d.doc))
+        searcher.search(query, 10, sorter).scoreDocs.map(d => searcher.doc(d.doc))
       }
     }
 
@@ -242,14 +245,15 @@ class ItemIndexTest
     val userState: AbstractUserState = new DefaultUserState
     // User state contains a `Triple` where the first element is a list of common ACL expression and the second element is
     // a list of Owner ACL expressions and the third element is a list of Not Owner ACL expressions.
-    // The ACL test case targets to Common ACL expressions, so add the mock of the ACL entry ID in the first list and leave
-    // the other two lists empty.
+    // Not Owner ACL expressions work similarily to Owner ACL expressions, so we just add mocks for the first two lists.
+    // This will test whether the mix of Common ACL expressions and Owner ACL expressions work correctly.
     userState.setAclExpressions(
-      new Triple(java.util.Collections.singleton(aclEntryID),
-                 java.util.Collections.emptyList(),
+      new Triple(java.util.Collections.singleton(commonAclEntryID),
+                 java.util.Collections.singleton(ownerAclEntryID),
                  java.util.Collections.emptyList()))
     mockStatic(classOf[CurrentUser])
     when(CurrentUser.getUserState).thenReturn(userState)
+    when(CurrentUser.getUserID).thenReturn(currentUserUuid)
 
     AbstractPluginService.thisService = mock(classOf[PluginServiceImpl])
   }
@@ -384,6 +388,9 @@ class ItemIndexTest
     }
 
     describe("advanced filtering") {
+      val newCollection = new ItemDefinition()
+      newCollection.setUuid("46392820-5bce-3d29-b4b3-61131cfe20a4")
+
       it("supports filtering by ACL expressions") { f =>
         val (itemIndex, searchConfig) = f
 
@@ -398,9 +405,62 @@ class ItemIndexTest
         When("ACL 'DISCOVER_ITEM' is configured in the search configuration")
         searchConfig.setPrivilege(SecurityConstants.DISCOVER_ITEM)
 
-        Then("the search result should be ordered by by Item name")
+        Then("the search result should only return the Item that require this ACL")
         val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
         result.map(_.get(FreeTextQuery.FIELD_NAME)) shouldBe Array(itemName)
+      }
+
+      it("supports filtering by Must clauses") { f =>
+        val (itemIndex, searchConfig) = f
+        val moderatingItemName        = "moderating item"
+
+        Given("Items generated in different Collections with different Item status")
+        val newCollectionDraftItem =
+          generateIndexedItems(itemStatus = ItemStatus.DRAFT, itemDef = newCollection)
+        val newCollectionModeratingItem = generateIndexedItems(itemStatus = ItemStatus.MODERATING,
+                                                               itemName = moderatingItemName,
+                                                               itemDef = newCollection)
+        val oldCollectionItem = generateIndexedItems(itemStatus = ItemStatus.DRAFT)
+
+        createIndexes(itemIndex,
+                      newCollectionDraftItem ++ newCollectionModeratingItem ++ oldCollectionItem)
+
+        When("a search configuration has Must clauses for Collection and Item status")
+        searchConfig.addMust(FreeTextQuery.FIELD_ITEMDEFID, newCollection.getUuid)
+        searchConfig.addMust(FreeTextQuery.FIELD_ITEMSTATUS, List("moderating").asJava)
+
+        Then(
+          "the search result should only return Items that belong to the specified Collection and have the specified Item status")
+        val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
+        result.map(_.get(FreeTextQuery.FIELD_NAME)) shouldBe Array(moderatingItemName)
+      }
+
+      it("supports filtering by Must Not clauses") { f =>
+        val (itemIndex, searchConfig) = f
+        val draftItemName             = "draft item"
+
+        Given("Items generated in different Collections with different Item status")
+        val newCollectionDraftItem =
+          generateIndexedItems(itemStatus = ItemStatus.DRAFT, itemDef = newCollection)
+        val newCollectionModeratingItem =
+          generateIndexedItems(itemStatus = ItemStatus.MODERATING, itemDef = newCollection)
+        val oldCollectionDraftItem =
+          generateIndexedItems(itemStatus = ItemStatus.DRAFT, itemName = draftItemName)
+        val oldCollectionModeratingItem = generateIndexedItems(itemStatus = ItemStatus.MODERATING)
+
+        createIndexes(
+          itemIndex,
+          newCollectionDraftItem ++ newCollectionModeratingItem ++ oldCollectionDraftItem ++ oldCollectionModeratingItem)
+
+        When("a search configuration has multiple Must Not clause for Collection and Item status")
+        searchConfig.addMustNot(FreeTextQuery.FIELD_ITEMDEFID, newCollection.getUuid)
+        searchConfig.addMustNot(FreeTextQuery.FIELD_ITEMSTATUS, List("moderating").asJava)
+
+        Then(
+          "the search result should only return Items that don't belong to the specified Collection and don't have the specified Item status")
+        val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
+        result.map(_.get(FreeTextQuery.FIELD_NAME)) shouldBe Array(draftItemName)
+
       }
     }
 
@@ -506,9 +566,12 @@ class ItemIndexTest
         Then("the search API should be called with those terms without the stopping words")
         // Mock an IndexSearcher.
         val mockedSearcher = mock(classOf[IndexSearcher])
-        doReturn(new TopFieldDocs(0, Array.empty[ScoreDoc], Array.empty[SortField], 0.0f))
+        doReturn(
+          new TopFieldDocs(new TotalHits(0, Relation.EQUAL_TO),
+                           Array.empty[ScoreDoc],
+                           Array.empty[SortField]))
           .when(mockedSearcher)
-          .search(any(classOf[Query]), any(classOf[Filter]), anyInt(), any(classOf[Sort]))
+          .search(any(classOf[Query]), anyInt(), any(classOf[Sort]))
 
         // Do the search with the mocked IndexSearcher.
         buildSearcher(itemIndex, searchConfig).search(mockedSearcher)
@@ -518,13 +581,14 @@ class ItemIndexTest
 
         verify(mockedSearcher).search(
           queryCaptor.capture(),
-          ArgumentCaptor.forClass[Filter, Filter](classOf[Filter]).capture(),
           ArgumentCaptor.forClass[Int, Int](classOf[Int]).capture(),
           ArgumentCaptor.forClass[Sort, Sort](classOf[Sort]).capture()
         )
 
         val processedQuery = queryCaptor.getValue.toString
-        processedQuery shouldBe "(+(name_vectored:java^2.0 body:java) +(name_vectored:scala^2.0 body:scala) +(name_vectored:interest^2.0 body:interest))"
+        processedQuery should (include("(name_vectored:java)^2.0 (body:java)^1.0") and
+          include("(name_vectored:scala)^2.0 (body:scala)^1.0") and
+          include("(name_vectored:interest)^2.0 (body:interest)^1.0"))
       }
     }
 

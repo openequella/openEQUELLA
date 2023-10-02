@@ -19,7 +19,7 @@
 package com.dytech.devlib;
 
 import com.dytech.common.io.UnicodeReader;
-import com.google.common.base.Throwables;
+import com.google.common.base.VerifyException;
 import com.google.common.collect.Lists;
 import com.tle.common.Check;
 import java.io.BufferedReader;
@@ -47,6 +47,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -58,36 +60,36 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 public class PropBagEx implements Serializable {
+  private static final Logger log = LoggerFactory.getLogger(PropBagEx.class);
+
   private static final int MAX_BUILDERS = 16;
 
-  private static final String WILD = "*"; // $NON-NLS-1$
-  private static final String PATH_SEP = "/"; // $NON-NLS-1$
-  private static final String BLANK = ""; // $NON-NLS-1$
-  private static final String ATTR = "@"; // $NON-NLS-1$
+  private static final String WILD = "*";
+  private static final String PATH_SEP = "/";
+  private static final String BLANK = "";
+  private static final String ATTR = "@";
 
-  static final long serialVersionUID = 55378008;
+  private static final long serialVersionUID = 55378008;
 
-  private static DocumentBuilderFactory factory;
-  private static ConcurrentLinkedQueue<DocumentBuilder> builders =
-      new ConcurrentLinkedQueue<DocumentBuilder>();
+  private static final DocumentBuilderFactory factory;
+  private static final ConcurrentLinkedQueue<DocumentBuilder> builders =
+      new ConcurrentLinkedQueue<>();
 
   private Element m_elRoot;
 
   static {
-    if (factory == null) {
-      factory = DocumentBuilderFactory.newInstance();
-      factory.setValidating(false);
+    factory = DocumentBuilderFactory.newInstance();
+    factory.setValidating(false);
 
-      try {
-        factory.setFeature(
-            "http://apache.org/xml/features/nonvalidating/load-external-dtd", false); // $NON-NLS-1$
-      } catch (ParserConfigurationException e) {
-        // nothing
-      } catch (NoSuchMethodError nup) {
-        // java 1.4,doesn't like it
-      }
-      factory.setNamespaceAware(false);
+    try {
+      factory.setFeature(
+          "http://apache.org/xml/features/nonvalidating/load-external-dtd", false); // $NON-NLS-1$
+    } catch (ParserConfigurationException e) {
+      // nothing
+    } catch (NoSuchMethodError nup) {
+      // java 1.4,doesn't like it
     }
+    factory.setNamespaceAware(false);
   }
 
   private DocumentBuilder getBuilder() {
@@ -97,7 +99,7 @@ public class PropBagEx implements Serializable {
         try {
           return factory.newDocumentBuilder();
         } catch (ParserConfigurationException pce) {
-          throw Throwables.propagate(pce);
+          throw new VerifyException(pce);
         }
       }
     }
@@ -113,7 +115,6 @@ public class PropBagEx implements Serializable {
    * Creates a new PropBagEx from the given stream.
    *
    * @param reader The stream to read from.
-   * @throws PropBagExException if the XML being read is invalid.
    */
   public PropBagEx(final Reader reader) {
     setXML(reader);
@@ -123,7 +124,7 @@ public class PropBagEx implements Serializable {
    * Creates a new PropBagEx rooted at the given node. This is equivalent to <code>
    * new PropBagEx(n, false)</code>
    *
-   * @param node The node to root the new PropBagEx at.
+   * @param n The node to root the new PropBagEx at.
    */
   public PropBagEx(final Node n) {
     this(n, false);
@@ -132,7 +133,7 @@ public class PropBagEx implements Serializable {
   /**
    * Creates a new PropBagEx rooted at the given node.
    *
-   * @param node The node to root the new PropBagEx at.
+   * @param n The node to root the new PropBagEx at.
    * @param sameDocument Use the nodes document for the new PropBagEx.
    */
   public PropBagEx(final Node n, final boolean sameDocument) {
@@ -163,7 +164,6 @@ public class PropBagEx implements Serializable {
    * Creates a new PropBagEx from the given string.
    *
    * @param szXML The string to read.
-   * @throws PropBagExException if the XML being read is invalid.
    */
   public PropBagEx(final String szXML) {
     if (szXML == null) {
@@ -176,7 +176,6 @@ public class PropBagEx implements Serializable {
    * Creates a new PropBagEx from the given file's content.
    *
    * @param file The file to read in.
-   * @throws PropBagExException
    */
   public PropBagEx(final File file) {
     try {
@@ -190,7 +189,6 @@ public class PropBagEx implements Serializable {
    * Creates a new PropBagEx from the given stream.
    *
    * @param is The stream to read from.
-   * @throws PropBagExException if the XML being read is invalid.
    */
   public PropBagEx(final InputStream is) {
     if (is == null) {
@@ -208,17 +206,13 @@ public class PropBagEx implements Serializable {
     }
   }
 
-  /**
-   * Returns the document for this PropBag.
-   *
-   * @return
-   */
+  /** Returns the document for this PropBag. */
   public Element getRootElement() {
     ensureRoot();
     return m_elRoot;
   }
 
-  /** @return true if both propbag's point to the same root node */
+  /** @return true if both PropBag objects point to the same root node */
   public boolean equalsDOM(final PropBagEx obj) {
     if (obj == null) {
       return false;
@@ -243,7 +237,7 @@ public class PropBagEx implements Serializable {
       final boolean matchAny = nodeName.equals(WILD);
 
       final NodeList children = parent.getChildNodes();
-      for (int i = 0; i < children.getLength() && foundNode == null; i++) {
+      for (int i = 0; i < children.getLength(); i++) {
         final Node child = children.item(i);
         if (child.getNodeType() == Node.ELEMENT_NODE) {
           final String childName = DOMHelper.stripNamespace(child.getNodeName());
@@ -259,7 +253,7 @@ public class PropBagEx implements Serializable {
       }
     }
 
-    if (foundNode == null && create == true) {
+    if (foundNode == null && create) {
       // If the Index is 0 and we didn't find a node or if the number
       // found (which is not zero based) equals the index (which is)
       // then this is the same as saying index is one more that the
@@ -274,7 +268,7 @@ public class PropBagEx implements Serializable {
         }
       } else {
         // An illegal index has been used - throw an error
-        String szError = new String("Error creating node ");
+        String szError = "Error creating node ";
         szError += nodeName;
         szError += " with an index of ";
         szError += index;
@@ -340,83 +334,71 @@ public class PropBagEx implements Serializable {
       final int type = subRoot.getNodeType();
       switch (type) {
         case Node.DOCUMENT_TYPE_NODE:
-          {
-            final DocumentType doctype = (DocumentType) subRoot;
-            sbuf.write("<!DOCTYPE ");
-            sbuf.write(doctype.getName());
-            // see Jira Defect TLE-1295 :
-            // http://apps.dytech.com.au/jira/browse/TLE-1295
-            // Tidy DOMs don't correctly support this functionality
-            if (doctype.getPublicId() != null) {
-              sbuf.write(" PUBLIC \"");
-              sbuf.write(doctype.getPublicId());
-              sbuf.write("\" \"");
-              sbuf.write(doctype.getSystemId());
-              sbuf.write("\"");
-            }
-            sbuf.write(">\n");
-            // doc.getDoctype();
-            // System.out.println("<?xml version=\"1.0\" encoding=\""+
-            // "UTF-8" + "\"?>");
-            break;
+          final DocumentType doctype = (DocumentType) subRoot;
+          sbuf.write("<!DOCTYPE ");
+          sbuf.write(doctype.getName());
+          // see Jira Defect TLE-1295 :
+          // http://apps.dytech.com.au/jira/browse/TLE-1295
+          // Tidy DOMs don't correctly support this functionality
+          if (doctype.getPublicId() != null) {
+            sbuf.write(" PUBLIC \"");
+            sbuf.write(doctype.getPublicId());
+            sbuf.write("\" \"");
+            sbuf.write(doctype.getSystemId());
+            sbuf.write("\"");
           }
+          sbuf.write(">\n");
+          // doc.getDoctype();
+          // System.out.println("<?xml version=\"1.0\" encoding=\""+
+          // "UTF-8" + "\"?>");
+          break;
         case Node.ELEMENT_NODE:
-          {
-            sbuf.write('<');
-            sbuf.write(subRoot.getNodeName());
-            final NamedNodeMap nnm = subRoot.getAttributes();
-            if (nnm != null) {
-              final int len = nnm.getLength();
-              Attr attr;
-              for (int i = 0; i < len; i++) {
-                attr = (Attr) nnm.item(i);
-                sbuf.write(' ' + attr.getNodeName() + "=\"" + ent(attr.getNodeValue()) + '"');
-              }
+          sbuf.write('<');
+          sbuf.write(subRoot.getNodeName());
+          final NamedNodeMap nnm = subRoot.getAttributes();
+          if (nnm != null) {
+            final int len = nnm.getLength();
+            Attr attr;
+            for (int i = 0; i < len; i++) {
+              attr = (Attr) nnm.item(i);
+              sbuf.write(' ' + attr.getNodeName() + "=\"" + ent(attr.getNodeValue()) + '"');
             }
-            // Check for an empty parent element
-            // no children, or a single TEXT_NODE with length() == 0
-            final Node child = subRoot.getFirstChild();
-            if (child == null
-                || (child.getNodeType() == Node.TEXT_NODE
-                    && (child.getNextSibling() == null && child.getNodeValue().length() == 0))) {
-              sbuf.write(PATH_SEP);
-            } else {
-              bEndElem = true;
-            }
-            sbuf.write('>');
-            break;
           }
+          // Check for an empty parent element
+          // no children, or a single TEXT_NODE with length() == 0
+          final Node child = subRoot.getFirstChild();
+          if (child == null
+              || (child.getNodeType() == Node.TEXT_NODE
+                  && (child.getNextSibling() == null && child.getNodeValue().length() == 0))) {
+            sbuf.write(PATH_SEP);
+          } else {
+            bEndElem = true;
+          }
+          sbuf.write('>');
+          break;
         case Node.ENTITY_REFERENCE_NODE:
-          {
-            sbuf.write('&' + subRoot.getNodeName() + ';');
-            break;
-          }
+          sbuf.write('&' + subRoot.getNodeName() + ';');
+          break;
         case Node.CDATA_SECTION_NODE:
-          {
-            sbuf.write("<![CDATA[" + subRoot.getNodeValue() + "]]>");
-            break;
-          }
+          sbuf.write("<![CDATA[" + subRoot.getNodeValue() + "]]>");
+          break;
         case Node.TEXT_NODE:
-          {
-            sbuf.write(ent(subRoot.getNodeValue()));
-            break;
-          }
+          sbuf.write(ent(subRoot.getNodeValue()));
+          break;
         case Node.PROCESSING_INSTRUCTION_NODE:
-          {
-            sbuf.write("<?" + subRoot.getNodeName());
-            final String data = subRoot.getNodeValue();
-            if (data != null && data.length() > 0) {
-              sbuf.write(' ');
-              sbuf.write(data);
-            }
-            sbuf.write("?>");
-            break;
+          sbuf.write("<?" + subRoot.getNodeName());
+          final String data = subRoot.getNodeValue();
+          if (data != null && data.length() > 0) {
+            sbuf.write(' ');
+            sbuf.write(data);
           }
+          sbuf.write("?>");
+          break;
         case Node.COMMENT_NODE:
-          {
-            sbuf.write("<!--" + subRoot.getNodeValue() + "-->");
-            break;
-          }
+          sbuf.write("<!--" + subRoot.getNodeValue() + "-->");
+          break;
+        default:
+          log.debug("Unsupported node type: " + type);
       }
 
       for (Node child = subRoot.getFirstChild(); child != null; child = child.getNextSibling()) {
@@ -700,12 +682,7 @@ public class PropBagEx implements Serializable {
   private abstract static class InternalThoroughIterator<T> extends ListOfNodesIterator<T> {
     public InternalThoroughIterator(final Node parent, final String path) {
       final List<String> names = Lists.newArrayList(path.split(PATH_SEP));
-      for (final Iterator<String> iter = names.iterator(); iter.hasNext(); ) {
-        final String p = iter.next();
-        if (p.trim().length() == 0) {
-          iter.remove();
-        }
-      }
+      names.removeIf(p -> p.trim().isEmpty());
 
       if (!names.isEmpty()) {
         findAllNodes(parent, names, 0);
@@ -792,8 +769,8 @@ public class PropBagEx implements Serializable {
    * /path/node/item<br>
    * Will iterate over all the "item" nodes.
    *
-   * @param path
-   * @return
+   * @param path The path to iterate over
+   * @return An iterator which return's PropBagEx's for each child for the path given
    */
   public PropBagIterator iterator(final String path) {
     checkNotAttribute(path);
@@ -857,7 +834,7 @@ public class PropBagEx implements Serializable {
     return new NodeThoroughIterator(m_elRoot, path);
   }
 
-  private class AllNodesWithNameIterator extends ListOfNodesIterator<PropBagEx> {
+  private static class AllNodesWithNameIterator extends ListOfNodesIterator<PropBagEx> {
     public AllNodesWithNameIterator(final Node root, final String name) {
       process(root, name);
     }
@@ -896,12 +873,7 @@ public class PropBagEx implements Serializable {
     ensureRoot();
     final Node rootNode = m_elRoot.getParentNode();
     if (rootNode instanceof Element) {
-      final Element root = (Element) m_elRoot.getParentNode();
-      if (root != null) {
-        return new PropBagEx(root, true);
-      } else {
-        return null;
-      }
+      return new PropBagEx(rootNode, true);
     } else {
       return null;
     }
@@ -915,7 +887,7 @@ public class PropBagEx implements Serializable {
    */
   public List<PropBagEx> getChildren() {
     ensureRoot();
-    final Element root = (Element) m_elRoot;
+    final Element root = m_elRoot;
     if (root != null) {
       List<PropBagEx> childrenPropBagEx = new ArrayList<>();
       NodeList childrenNodes = root.getChildNodes();
@@ -1148,7 +1120,7 @@ public class PropBagEx implements Serializable {
   }
 
   /**
-   * Create's a new subtree with the path given
+   * Creates a new subtree with the path given
    *
    * @param szNodeName The path for the new Subtree being created
    * @return PropBagEx the new subtree (or null if the path was invalid)
@@ -1184,9 +1156,6 @@ public class PropBagEx implements Serializable {
   /**
    * Sets the name of the root element. Warning this can be expensive operation until we use DOM
    * Level 3
-   *
-   * @param newname
-   * @return
    */
   public void setNodeName(final String newname) {
     ensureRoot();
@@ -1541,8 +1510,8 @@ public class PropBagEx implements Serializable {
   public List<String> getNodeList(final String path) {
     ensureRoot();
 
-    final List<String> results = new ArrayList<String>();
-    if (path.indexOf(ATTR) < 0) {
+    final List<String> results = new ArrayList<>();
+    if (!path.contains(ATTR)) {
       final Iterator<String> iter = iterateValues(path);
       while (iter.hasNext()) {
         results.add(iter.next());
@@ -1557,15 +1526,12 @@ public class PropBagEx implements Serializable {
     ensureRoot();
     Node oNode = getNodeHelper(szPath, false, false);
     if (oNode != null) {
-      final Collection<String> vals = new ArrayList<String>();
+      final Collection<String> vals = new ArrayList<>();
       final String szNodeName = oNode.getNodeName();
 
       for (; oNode != null; oNode = oNode.getNextSibling()) {
         if (oNode.getNodeType() == Node.ELEMENT_NODE && szNodeName.equals(oNode.getNodeName())) {
           String val = ((Element) oNode).getAttribute(szAtt);
-          if (val == null) {
-            val = BLANK;
-          }
           vals.add(val);
         }
       }
@@ -1591,7 +1557,7 @@ public class PropBagEx implements Serializable {
    * @throws IllegalArgumentException if the path is to an attribute.
    */
   private void checkNotAttribute(final String path) throws IllegalArgumentException {
-    if (path.indexOf(ATTR) >= 0) {
+    if (path.contains(ATTR)) {
       throw new IllegalArgumentException("Path must not point to an attribute");
     }
   }
@@ -1600,7 +1566,7 @@ public class PropBagEx implements Serializable {
       final String attributeName, final String attributeValue) {
     final Element element = getRootElement();
 
-    final List<Element> list = new ArrayList<Element>();
+    final List<Element> list = new ArrayList<>();
     if (element.hasAttribute(attributeName)
         && element.getAttribute(attributeName).equals(attributeValue)) {
       list.add(element);
@@ -1648,7 +1614,6 @@ public class PropBagEx implements Serializable {
     try {
       this.setXML(xmlString);
     } catch (final Exception e) {
-      e.printStackTrace();
       throw new IOException("Error parsing xml");
     }
   }
@@ -1660,6 +1625,10 @@ public class PropBagEx implements Serializable {
 
   @Override
   public boolean equals(final Object obj) {
+    if (!(obj instanceof PropBagEx)) {
+      return false;
+    }
+
     try {
       final PropBagEx xml2 = (PropBagEx) obj;
 
@@ -1724,8 +1693,7 @@ public class PropBagEx implements Serializable {
         }
       }
     } catch (final Exception ex) {
-      System.err.println("Error comparing " + m_elRoot.getNodeName());
-      ex.printStackTrace();
+      log.error("Error comparing " + m_elRoot.getNodeName(), ex);
       return false;
     }
     return true;

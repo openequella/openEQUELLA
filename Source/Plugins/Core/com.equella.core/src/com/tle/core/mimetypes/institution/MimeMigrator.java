@@ -19,7 +19,6 @@
 package com.tle.core.mimetypes.institution;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Throwables;
 import com.google.common.io.Resources;
 import com.tle.beans.mime.MimeEntry;
 import com.tle.common.filesystem.handle.SubTemporaryFile;
@@ -94,7 +93,7 @@ public class MimeMigrator extends XmlMigrator {
         }
       }
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
 
     for (MimeEntry mimeEntry : defaultTypes) {

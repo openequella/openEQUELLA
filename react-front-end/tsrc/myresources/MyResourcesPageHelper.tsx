@@ -32,15 +32,12 @@ import { Location } from "history";
 import { MD5 } from "object-hash";
 import * as React from "react";
 import { ReactNode } from "react";
-import { Literal, match, Static, Union, Unknown, when } from "runtypes";
 import { getBaseUrl } from "../AppConfig";
 import { TooltipIconButton } from "../components/TooltipIconButton";
 import { buildStorageKey } from "../modules/BrowserStorageModule";
 import {
-  LegacyMyResourcesRuntypes,
+  LegacyMyResourcesCodec,
   LegacyMyResourcesTypes,
-  ModQueueLiteral,
-  ScrapbookLiteral,
 } from "../modules/LegacyContentModule";
 import { getMimeTypeDefaultViewerDetails } from "../modules/MimeTypesModule";
 import {
@@ -59,27 +56,27 @@ import { SortOrderOptions } from "../search/components/SearchOrderSelect";
 import SearchResult from "../search/components/SearchResult";
 import {
   DehydratedSearchPageOptions,
-  DehydratedSearchPageOptionsRunTypes,
+  DehydratedSearchPageOptionsCodec,
   SearchPageOptions,
 } from "../search/SearchPageHelper";
 import { SearchPageSearchResult } from "../search/SearchPageReducer";
 import { DateRangeFromString, getISODateString } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
-import { simpleMatch } from "../util/match";
+import { simpleMatch, simpleUnionMatch } from "../util/match";
 import { pfSplitAt, pfTernaryTypeGuard } from "../util/pointfree";
 
 export const PARAM_MYRESOURCES_TYPE = "myResourcesType";
 
-export const MyResourcesTypeRuntypes = Union(
-  Literal("Published"),
-  Literal("Drafts"),
-  Literal("Scrapbook"),
-  Literal("Moderation queue"),
-  Literal("Archive"),
-  Literal("All resources")
-);
+export const MyResourcesTypeRuntypes = t.union([
+  t.literal("Published"),
+  t.literal("Drafts"),
+  t.literal("Scrapbook"),
+  t.literal("Moderation queue"),
+  t.literal("Archive"),
+  t.literal("All resources"),
+]);
 
-export type MyResourcesType = Static<typeof MyResourcesTypeRuntypes>;
+export type MyResourcesType = t.TypeOf<typeof MyResourcesTypeRuntypes>;
 
 /**
  * Return a list of Item status that match the given MyResources type.
@@ -87,7 +84,7 @@ export type MyResourcesType = Static<typeof MyResourcesTypeRuntypes>;
  * @param resourceType MyResources type that may represent one or multiple Item statuses.
  */
 export const myResourcesTypeToItemStatus = (
-  resourceType: MyResourcesType
+  resourceType: MyResourcesType,
 ): OEQ.Common.ItemStatus[] => {
   switch (resourceType) {
     case "Published":
@@ -111,22 +108,22 @@ const buildURLSearchParams = (location: Location): O.Option<URLSearchParams> =>
   pipe(
     location.search,
     O.fromNullable,
-    O.map((search) => new URLSearchParams(search))
+    O.map((search) => new URLSearchParams(search)),
   );
 
 const getParamFromLocation = (
   location: Location,
-  queryString: string
+  queryString: string,
 ): O.Option<string> =>
   pipe(
     location,
     buildURLSearchParams,
-    O.chain((params) => O.fromNullable(params.get(queryString)))
+    O.chain((params) => O.fromNullable(params.get(queryString))),
   );
 
 // Get Legacy My resources type from query string. Invalid types will be logged in the console.
 const getLegacyMyResourceType = (
-  params: URLSearchParams
+  params: URLSearchParams,
 ): O.Option<LegacyMyResourcesTypes> =>
   pipe(
     params.get("type"),
@@ -134,22 +131,22 @@ const getLegacyMyResourceType = (
     O.chainEitherK(
       flow(
         E.fromPredicate(
-          LegacyMyResourcesRuntypes.guard,
-          (value) => `Invalid legacy my resources type: ${value}`
+          LegacyMyResourcesCodec.is,
+          (value) => `Invalid legacy my resources type: ${value}`,
         ),
-        E.mapLeft(console.error)
-      )
-    )
+        E.mapLeft(console.error),
+      ),
+    ),
   );
 
 // If query string 'searchOptions' exists in the given URL, return it in `Some`. Otherwise, return 'None'.
 const getSearchOptionsFromQueryParam = (
-  location: Location
+  location: Location,
 ): O.Option<DehydratedSearchPageOptions> => {
   const stringToDate: (dateString?: string) => O.Option<Date> = flow(
     O.fromNullable,
     O.map((dateString) => new Date(dateString)),
-    O.filter((date) => !isNaN(date.getDate()))
+    O.filter((date) => !isNaN(date.getDate())),
   );
 
   // If field 'lastModifiedDateRange' exists in the provided JSON object, try to convert its value to a date range.
@@ -164,22 +161,22 @@ const getSearchOptionsFromQueryParam = (
       O.map(R.filterMap(stringToDate)),
       O.fold(
         () => json,
-        (lastModifiedDateRange) => ({ ...json, lastModifiedDateRange })
-      )
+        (lastModifiedDateRange) => ({ ...json, lastModifiedDateRange }),
+      ),
     );
 
   // Validate the parsed JSON which is expected to be a 'DehydratedSearchPageOptions'.
   const validateParsedObject: (
-    data: J.Json
+    data: J.Json,
   ) => E.Either<string | t.Errors, DehydratedSearchPageOptions> = flow(
     t.UnknownRecord.decode, // Type of the parsed result should be a record where keys and values are unknown.
     E.map(processLastModifiedDateRange),
     E.filterOrElseW(
-      DehydratedSearchPageOptionsRunTypes.guard,
+      DehydratedSearchPageOptionsCodec.is,
       constant(
-        "Parsed searchOptions is not a DehydratedSearchPageOptions - failed type check"
-      )
-    )
+        "Parsed searchOptions is not a DehydratedSearchPageOptions - failed type check",
+      ),
+    ),
   );
 
   return pipe(
@@ -189,39 +186,39 @@ const getSearchOptionsFromQueryParam = (
         J.parse,
         E.mapLeft((error) => `Failed to parse searchOptions: ${error}`),
         E.chain(validateParsedObject),
-        E.mapLeft(console.error)
-      )
-    )
+        E.mapLeft(console.error),
+      ),
+    ),
   );
 };
 
 // Get the Legacy My resources type from the given params `MyResourcesType`.
 const getMyResourcesTypeFromLegacyQueryParam = (
-  params: URLSearchParams
+  params: URLSearchParams,
 ): O.Option<MyResourcesType> =>
   pipe(
     params,
     getLegacyMyResourceType,
     O.map(
-      LegacyMyResourcesRuntypes.match<MyResourcesType>(
-        (published) => "Published",
-        (draft) => "Drafts",
-        (scrapbook) => "Scrapbook",
-        (modqueue) => "Moderation queue",
-        (archived) => "Archive",
-        (all) => "All resources",
-        (defaultValue) => "Published"
-      )
-    )
+      simpleUnionMatch<LegacyMyResourcesTypes, MyResourcesType>({
+        published: constant("Published"),
+        draft: constant("Drafts"),
+        scrapbook: constant("Scrapbook"),
+        modqueue: constant("Moderation queue"),
+        archived: constant("Archive"),
+        all: constant("All resources"),
+        defaultValue: constant("Published"),
+      }),
+    ),
   );
 
 // Get the 'My Resources' type from the given params `MyResourcesType`.
 const getMyResourcesTypeFromNewUIQueryParam = (
-  params: URLSearchParams
+  params: URLSearchParams,
 ): O.Option<MyResourcesType> =>
   pipe(
     params.get(PARAM_MYRESOURCES_TYPE),
-    O.fromPredicate(MyResourcesTypeRuntypes.guard)
+    O.fromPredicate(MyResourcesTypeRuntypes.is),
   );
 
 /**
@@ -230,17 +227,17 @@ const getMyResourcesTypeFromNewUIQueryParam = (
  * @param location The browser location which includes search query params.
  */
 export const getMyResourcesTypeFromQueryParam = (
-  location: Location
+  location: Location,
 ): MyResourcesType | undefined =>
   pipe(
     buildURLSearchParams(location),
     O.chain((params) =>
       pipe(
         getMyResourcesTypeFromNewUIQueryParam(params),
-        O.alt(() => getMyResourcesTypeFromLegacyQueryParam(params))
-      )
+        O.alt(() => getMyResourcesTypeFromLegacyQueryParam(params)),
+      ),
     ),
-    O.toUndefined
+    O.toUndefined,
   );
 
 // Get Item status from query params of a URL generated from Old UI.
@@ -248,7 +245,7 @@ export const getMyResourcesTypeFromQueryParam = (
 // And the two query strings can be both present in one URL. As a result, we need to firstly find out what
 // My resources type is and then use the type to determine whether to use 'mstatus' or 'status'.
 const getSubStatusFromLegacyQueryParam = (
-  location: Location
+  location: Location,
 ): OEQ.Common.ItemStatus[] | undefined => {
   const getStatus = (params: URLSearchParams) =>
     pipe(
@@ -261,19 +258,19 @@ const getSubStatusFromLegacyQueryParam = (
       O.chainEitherK(
         flow(
           E.fromPredicate(
-            OEQ.Common.ItemStatuses.guard,
-            (value) => `Invalid Item status: ${value}`
+            OEQ.Codec.Common.ItemStatusCodec.is,
+            (value) => `Invalid Item status: ${value}`,
           ),
-          E.mapLeft(console.error)
-        )
+          E.mapLeft(console.error),
+        ),
       ),
-      O.map((status) => [status])
+      O.map((status) => [status]),
     );
 
   return pipe(
     buildURLSearchParams(location),
     O.chain(getStatus),
-    O.toUndefined
+    O.toUndefined,
   );
 };
 
@@ -284,14 +281,14 @@ const getSubStatusFromLegacyQueryParam = (
  * @param location The browser location which includes search query params.
  */
 export const getSubStatusFromQueryParam = (
-  location: Location
+  location: Location,
 ): OEQ.Common.ItemStatus[] | undefined =>
   pipe(
     getSearchOptionsFromQueryParam(location),
     O.match(
       () => getSubStatusFromLegacyQueryParam(location),
-      (options) => options.status
-    )
+      (options) => options.status,
+    ),
   );
 
 // Get sort order from query params of a URL generated from Old UI.
@@ -300,20 +297,22 @@ export const getSubStatusFromQueryParam = (
 // to firstly find out what My resources type is and then use the type to determine which query string to
 // use to get the sort order.
 const getSortOrderFromLegacyQueryParam = (
-  location: Location
+  location: Location,
 ): OEQ.Search.SortOrder | undefined => {
   const getSortOrder = (
-    params: URLSearchParams
+    params: URLSearchParams,
   ): O.Option<OEQ.Search.SortOrder> =>
     pipe(
       params,
       getLegacyMyResourceType,
       O.map(
-        match(
-          when(ScrapbookLiteral, constant("sbsort")),
-          when(ModQueueLiteral, constant("modsort")),
-          when(Unknown, constant("sort"))
-        )
+        simpleUnionMatch<LegacyMyResourcesTypes, string>(
+          {
+            modqueue: constant("modsort"),
+            scrapbook: constant("sbsort"),
+          },
+          constant("sort"),
+        ),
       ),
       O.chain((queryString) => pipe(params.get(queryString), O.fromNullable)),
       // Need to translate the presentation values of Moderation specific sort orders to the real sorting values.
@@ -322,23 +321,23 @@ const getSortOrderFromLegacyQueryParam = (
           lastmod: constant("task_lastaction"),
           started: constant("task_submitted"),
           _: identity,
-        })
+        }),
       ),
       O.chainEitherK(
         flow(
           E.fromPredicate(
-            OEQ.Search.SortOrderRunTypes.guard,
-            (value) => `Invalid sort order: ${value}`
+            OEQ.Codec.Search.SortOrderCodec.is,
+            (value) => `Invalid sort order: ${value}`,
           ),
-          E.mapLeft(console.error)
-        )
-      )
+          E.mapLeft(console.error),
+        ),
+      ),
     );
 
   return pipe(
     buildURLSearchParams(location),
     O.chain(getSortOrder),
-    O.toUndefined
+    O.toUndefined,
   );
 };
 
@@ -348,14 +347,14 @@ const getSortOrderFromLegacyQueryParam = (
  * @param location The browser location which includes search query params.
  */
 export const getSortOrderFromQueryParam = (
-  location: Location
+  location: Location,
 ): OEQ.Search.SortOrder | undefined =>
   pipe(
     getSearchOptionsFromQueryParam(location),
     O.match(
       () => getSortOrderFromLegacyQueryParam(location),
-      (options) => options.sortOrder
-    )
+      (options) => options.sortOrder,
+    ),
   );
 /**
  * Given a specific `MyResourceType` build the SortOrderOptions representing the options used in
@@ -364,7 +363,7 @@ export const getSortOrderFromQueryParam = (
  * @param resourceType the type of resource to generate the options for
  */
 export const sortOrderOptions = (
-  resourceType: MyResourcesType
+  resourceType: MyResourcesType,
 ): SortOrderOptions => {
   const {
     dateCreated,
@@ -406,7 +405,7 @@ export const sortOrderOptions = (
  * Return the default sort order for My resources page, depending on the specific `resourceType`.
  */
 export const defaultSortOrder = (
-  resourceType: MyResourcesType
+  resourceType: MyResourcesType,
 ): OEQ.Search.SortOrder =>
   resourceType === "Moderation queue" ? "task_submitted" : "datemodified";
 
@@ -415,7 +414,7 @@ export const defaultSortOrder = (
  */
 export type RenderFunc = (
   item: SearchResultItem,
-  highlight: string[]
+  highlight: string[],
 ) => JSX.Element;
 
 /**
@@ -426,7 +425,7 @@ export type RenderFunc = (
  */
 export const renderStandardResult: RenderFunc = (
   item: SearchResultItem,
-  highlight: string[]
+  highlight: string[],
 ) => (
   <SearchResult
     key={`${item.uuid}/${item.version}`}
@@ -444,7 +443,7 @@ export const renderStandardResult: RenderFunc = (
  */
 export const renderModeratingResult: RenderFunc = (
   item: OEQ.Search.SearchResultItem,
-  highlight: string[]
+  highlight: string[],
 ) => {
   const { uuid, version, displayFields, moderationDetails } = item;
 
@@ -454,8 +453,8 @@ export const renderModeratingResult: RenderFunc = (
     O.chain(
       flow(
         ({ submittedDate }) => getISODateString(submittedDate),
-        O.fromNullable
-      )
+        O.fromNullable,
+      ),
     ),
     O.map((submittedDate) => ({
       ...item,
@@ -475,7 +474,7 @@ export const renderModeratingResult: RenderFunc = (
         item={processedItem}
         highlights={highlight}
       />
-    )
+    ),
   );
 };
 
@@ -492,7 +491,7 @@ export const buildRenderScrapbookResult =
   (
     onEdit: (uuid: string) => void,
     onDelete: (uuid: string) => void,
-    onClickTitle: (item: OEQ.Search.SearchResultItem) => void
+    onClickTitle: (item: OEQ.Search.SearchResultItem) => void,
   ): RenderFunc =>
   (item: OEQ.Search.SearchResultItem, highlight: string[]) => {
     const { uuid, version } = item;
@@ -539,7 +538,7 @@ export const buildRenderScrapbookResult =
  */
 export const renderAllResources = (
   { results, highlight }: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>,
-  renderScrapbook: RenderFunc
+  renderScrapbook: RenderFunc,
 ): ReactNode =>
   results.map((item) =>
     pipe(
@@ -549,8 +548,8 @@ export const renderAllResources = (
         moderating: () => renderModeratingResult,
         _: () => renderStandardResult,
       }),
-      (renderFunc) => renderFunc(item, highlight)
-    )
+      (renderFunc) => renderFunc(item, highlight),
+    ),
   );
 
 /**
@@ -565,8 +564,8 @@ export const renderAllResources = (
 export const customUIForMyResources = (
   searchPageSearchResult: SearchPageSearchResult,
   renderList: (
-    searchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>
-  ) => ReactNode
+    searchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>,
+  ) => ReactNode,
 ): ReactNode =>
   searchPageSearchResult.from === "gallery-search" ? (
     <GallerySearchResult items={searchPageSearchResult.content.results} />
@@ -594,7 +593,7 @@ export const customUIForMyResources = (
  * @param location The browser location which includes search query params.
  */
 export const getSearchPageOptionsFromStorage = (
-  location: Location
+  location: Location,
 ): SearchPageOptions | undefined => {
   const checkHash = ([hash, value]: [string, string]): E.Either<
     string,
@@ -604,8 +603,8 @@ export const getSearchPageOptionsFromStorage = (
       value,
       E.fromPredicate(
         (v) => hash === MD5(v),
-        constant("SearchPageOptions hash check failed")
-      )
+        constant("SearchPageOptions hash check failed"),
+      ),
     );
 
   const parse = flow(
@@ -613,8 +612,8 @@ export const getSearchPageOptionsFromStorage = (
     E.mapLeft((error) => `Failed to parse data due to ${error}`),
     // Also convert the date strings to Date objects.
     E.map((maybeOptions) =>
-      OEQ.Utils.convertDateFields(maybeOptions, ["start", "end"])
-    )
+      OEQ.Utils.convertDateFields(maybeOptions, ["start", "end"]),
+    ),
   );
 
   return pipe(
@@ -631,12 +630,12 @@ export const getSearchPageOptionsFromStorage = (
             json !== null &&
             typeof json === "object" &&
             "dateRangeQuickModeEnabled" in json,
-          constant("The parsed object is not SearchPageOptions")
+          constant("The parsed object is not SearchPageOptions"),
         ),
-        E.mapLeft(console.error)
-      )
+        E.mapLeft(console.error),
+      ),
     ),
-    O.toUndefined
+    O.toUndefined,
   );
 };
 
@@ -647,17 +646,17 @@ export const getSearchPageOptionsFromStorage = (
  * @param item Details of the scrapbook item for which to retrieve viewer configuration.
  */
 export const getScrapbookViewerConfig = (
-  item: OEQ.Search.SearchResultItem
+  item: OEQ.Search.SearchResultItem,
 ): TE.TaskEither<string, O.Option<ViewerConfig>> => {
   const { uuid, version } = item;
 
   return pipe(
     TE.tryCatch(
       () => searchItemAttachments(uuid, version),
-      (error) => `Failed to search attachments: ${error}`
+      (error) => `Failed to search attachments: ${error}`,
     ),
     TE.chainOptionK(() => `Scrapbook ${uuid} does not have any attachment`)(
-      A.head
+      A.head,
     ),
     TE.chain((attachment) =>
       TE.tryCatch(
@@ -665,17 +664,17 @@ export const getScrapbookViewerConfig = (
           buildViewerConfigForAttachments(
             item,
             [attachment],
-            getMimeTypeDefaultViewerDetails
+            getMimeTypeDefaultViewerDetails,
           ),
-        (error) => `Failed to build viewer configuration: ${error}`
-      )
+        (error) => `Failed to build viewer configuration: ${error}`,
+      ),
     ),
     TE.map(
       flow(
         A.head,
-        O.chain(({ viewerConfig }) => O.fromNullable(viewerConfig))
-      )
-    )
+        O.chain(({ viewerConfig }) => O.fromNullable(viewerConfig)),
+      ),
+    ),
   );
 };
 
@@ -696,7 +695,7 @@ export const getScrapbookViewerConfig = (
  */
 export const viewScrapbook = async (
   item: OEQ.Search.SearchResultItem,
-  viewInLightbox: (config: ViewerLightboxConfig) => void
+  viewInLightbox: (config: ViewerLightboxConfig) => void,
 ): Promise<void> => {
   const { uuid, version, thumbnailDetails } = item;
   const viewInNewTab = (url: string) => window.open(url, "_blank");
@@ -712,11 +711,11 @@ export const viewScrapbook = async (
               viewInLightbox,
               ({ url }: ViewerLinkConfig) => {
                 viewInNewTab(url);
-              }
-            )
-          )
-        )
-      )
+              },
+            ),
+          ),
+        ),
+      ),
     );
 
   thumbnailDetails?.attachmentType === "html"

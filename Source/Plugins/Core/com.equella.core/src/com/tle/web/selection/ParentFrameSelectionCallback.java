@@ -19,10 +19,8 @@
 package com.tle.web.selection;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Throwables;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.ParentFrameCallback;
-import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.js.JSCallAndReference;
 import com.tle.web.sections.js.JSCallable;
@@ -54,18 +52,13 @@ public class ParentFrameSelectionCallback extends ParentFrameCallback
           new FunctionCallStatement(
               call, new ObjectMapper().writeValueAsString(session.getSelectionDetails()));
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
     if (closeWindow) {
       renderContext.setRenderedBody(new CloseWindowResult(callStatements));
     } else {
       renderContext.setRenderedBody(
-          new PreRenderable() {
-            @Override
-            public void preRender(PreRenderContext info) {
-              info.addReadyStatements(callStatements);
-            }
-          });
+          (PreRenderable) info1 -> info1.addReadyStatements(callStatements));
     }
 
     return false;

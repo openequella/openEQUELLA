@@ -24,7 +24,6 @@ import com.dytech.devlib.Md5;
 import com.dytech.edge.common.FileInfo;
 import com.dytech.edge.exceptions.BannedFileException;
 import com.dytech.edge.exceptions.FileSystemException;
-import com.google.common.base.Throwables;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
 import com.tle.beans.Institution;
@@ -34,7 +33,11 @@ import com.tle.common.filesystem.FileCallback;
 import com.tle.common.filesystem.FileEntry;
 import com.tle.common.filesystem.FileSystemHelper;
 import com.tle.common.filesystem.Filestore;
-import com.tle.common.filesystem.handle.*;
+import com.tle.common.filesystem.handle.ConversionFile;
+import com.tle.common.filesystem.handle.FileHandle;
+import com.tle.common.filesystem.handle.StagingFile;
+import com.tle.common.filesystem.handle.TemporaryFileHandle;
+import com.tle.common.filesystem.handle.TrashFile;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.quota.settings.QuotaSettings;
@@ -50,10 +53,27 @@ import com.tle.core.plugins.AbstractPluginService;
 import com.tle.core.services.FileSystemService;
 import com.tle.core.services.ZipProgress;
 import com.tle.core.settings.service.ConfigurationService;
-import com.tle.core.util.archive.*;
+import com.tle.core.util.archive.ArchiveCreator;
+import com.tle.core.util.archive.ArchiveEntry;
+import com.tle.core.util.archive.ArchiveExtractor;
+import com.tle.core.util.archive.ArchiveProgress;
+import com.tle.core.util.archive.ArchiveType;
 import com.tle.core.zookeeper.ZookeeperService;
 import com.tle.web.stream.FileContentStream;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AccessDeniedException;
@@ -62,8 +82,15 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import javax.annotation.PostConstruct;
@@ -494,7 +521,7 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
     try {
       return Files.isSameFile(file1.toPath(), file2.toPath());
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 
@@ -963,8 +990,8 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
         entry = extractor.getNextEntry();
       }
       return null;
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -991,8 +1018,8 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
           throw ex;
         }
       }
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -1088,10 +1115,9 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
     final File file = getFile(handle, path);
     File parent = file.getParentFile();
     while (parent != null) {
-      if (parent.getName().toUpperCase().equals(SECURE_FOLDER)) {
-        throw Throwables.propagate(
-            new com.tle.exceptions.AccessDeniedException(
-                CurrentLocale.get(KEY_PFX + "error.protectedresource")));
+      if (parent.getName().equalsIgnoreCase(SECURE_FOLDER)) {
+        throw new com.tle.exceptions.AccessDeniedException(
+            CurrentLocale.get(KEY_PFX + "error.protectedresource"));
       }
       parent = parent.getParentFile();
     }

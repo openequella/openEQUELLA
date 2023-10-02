@@ -19,7 +19,6 @@
 package com.tle.core.cluster.service.impl;
 
 import com.dytech.common.net.NetworkUtils;
-import com.google.common.base.Throwables;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -166,7 +165,7 @@ public class ClusterMessagingServiceImpl
                   } while (!server.isClosed() && server.isBound());
                 } catch (IOException ex) {
                   LOGGER.error("Error while binding or accepting socket " + endpoint, ex);
-                  Throwables.propagate(ex);
+                  throw new RuntimeException(ex);
                 }
               });
       thread.setName("ClusterMessagingServiceImpl.serverSocket");
@@ -195,7 +194,7 @@ public class ClusterMessagingServiceImpl
         bindAddress = InetAddress.getByName(bindAddress).getHostAddress();
       }
     } catch (UnknownHostException e) {
-      Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 

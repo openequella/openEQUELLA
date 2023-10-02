@@ -20,16 +20,19 @@ package com.tle.core.workflow.freetext;
 
 import com.tle.common.Check;
 import java.io.IOException;
-import org.apache.lucene.index.AtomicReaderContext;
-import org.apache.lucene.index.BinaryDocValues;
-import org.apache.lucene.search.FieldCache;
-import org.apache.lucene.search.FieldComparator;
-import org.apache.lucene.util.BytesRef;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.lucene.index.LeafReader;
+import org.apache.lucene.index.LeafReaderContext;
+import org.apache.lucene.index.PostingsEnum;
+import org.apache.lucene.index.SortedDocValues;
+import org.apache.lucene.search.SimpleFieldComparator;
 
-public final class CustomLuceneSortComparator extends FieldComparator<Integer> {
+public final class CustomLuceneSortComparator extends SimpleFieldComparator<Integer> {
 
   private final String userId;
-  private int[] values;
+  private final int[] values;
+
   private String[] currentReaderValues;
   private final String field;
   private int bottom;
@@ -70,17 +73,18 @@ public final class CustomLuceneSortComparator extends FieldComparator<Integer> {
   }
 
   @Override
-  public FieldComparator<Integer> setNextReader(AtomicReaderContext context) throws IOException {
-    int maxDoc = context.reader().maxDoc();
+  public void doSetNextReader(LeafReaderContext context) throws IOException {
+    LeafReader reader = context.reader();
+    int maxDoc = reader.maxDoc();
     currentReaderValues = new String[maxDoc];
 
-    BinaryDocValues docValues = FieldCache.DEFAULT.getTerms(context.reader(), field, true);
-    for (int i = 0; i < maxDoc; i++) {
-      BytesRef value = docValues.get(i);
-      currentReaderValues[i] = value == null ? "" : value.utf8ToString();
+    List<String> values = new ArrayList<>();
+    SortedDocValues docValues = reader.getSortedDocValues(field);
+    while (docValues.nextDoc() != PostingsEnum.NO_MORE_DOCS) {
+      values.add(docValues.lookupOrd(docValues.ordValue()).utf8ToString());
     }
 
-    return this;
+    currentReaderValues = values.toArray(new String[0]);
   }
 
   @Override

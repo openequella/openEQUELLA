@@ -60,10 +60,11 @@ public class NotificationIndexer extends AbstractIndexingExtension {
         doc.add(keyword(NotificationIndex.FIELD_ID, Long.toString(notification.getId())));
         doc.add(indexed(NotificationIndex.FIELD_USER, notification.getUserTo()));
         doc.add(indexed(NotificationIndex.FIELD_REASON, reason));
-        doc.add(
-            indexed(
-                NotificationIndex.FIELD_DATE,
-                new UtcDate(notification.getDate()).format(Dates.ISO)));
+
+        String notificationDate = new UtcDate(notification.getDate()).format(Dates.ISO);
+        doc.add(indexed(NotificationIndex.FIELD_DATE, notificationDate));
+        doc.add(stringSortingField(NotificationIndex.FIELD_DATE, notificationDate));
+
         addAllFields(doc, indexedItem.getACLEntries(DISCOVER_ITEM));
         docs.add(doc);
       }

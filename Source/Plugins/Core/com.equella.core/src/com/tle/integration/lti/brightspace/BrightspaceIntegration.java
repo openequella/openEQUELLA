@@ -19,7 +19,6 @@
 package com.tle.integration.lti.brightspace;
 
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.IItem;
@@ -257,120 +256,110 @@ public class BrightspaceIntegration extends AbstractIntegrationService<Brightspa
 
   @Override
   public boolean select(SectionInfo info, BrightspaceSessionData data, SelectionSession session) {
-    try {
-      final Connector connector = findConnector(data);
-      final String sessionType = session.getAttribute(BrightspaceSignon.KEY_SESSION_TYPE);
+    final Connector connector = findConnector(data);
+    final String sessionType = session.getAttribute(BrightspaceSignon.KEY_SESSION_TYPE);
 
-      if (!session.isSelectMultiple()) {
-        final SelectedResource resource = getFirstSelectedResource(session);
-        final IItem<?> item = getItemForResource(resource);
+    if (!session.isSelectMultiple()) {
+      final SelectedResource resource = getFirstSelectedResource(session);
+      final IItem<?> item = getItemForResource(resource);
 
-        final String courseId = data.getCourseId();
+      final String courseId = data.getCourseId();
 
-        final LmsLinkInfo linkInfo =
-            getLinkForResource(
-                info,
-                createViewableItem(item, resource),
-                resource,
-                false,
-                session.isAttachmentUuidUrls());
-        final LmsLink link = linkInfo.getLmsLink();
+      final LmsLinkInfo linkInfo =
+          getLinkForResource(
+              info,
+              createViewableItem(item, resource),
+              resource,
+              false,
+              session.isAttachmentUuidUrls());
+      final LmsLink link = linkInfo.getLmsLink();
 
-        final boolean insertStuff = BrightspaceSignon.SESSION_TYPE_INSERTSTUFF.equals(sessionType);
+      final boolean insertStuff = BrightspaceSignon.SESSION_TYPE_INSERTSTUFF.equals(sessionType);
 
-        final String launchPresentationReturnUrl = data.getLaunchPresentationReturnUrl();
-        final String nakedUrl = URLUtils.decompose(launchPresentationReturnUrl)[0];
+      final String launchPresentationReturnUrl = data.getLaunchPresentationReturnUrl();
+      final String nakedUrl = URLUtils.decompose(launchPresentationReturnUrl)[0];
 
-        final String finalUrl;
-        if (insertStuff) {
-          // INSERT STUFF PLUGIN
+      final String finalUrl;
+      if (insertStuff) {
+        // INSERT STUFF PLUGIN
 
-          // TODO: Could possibly adapt the MIME type templates.
+        // TODO: Could possibly adapt the MIME type templates.
 
-          // If the selected attachment is an image, we'll assume it's public and the user wants to
-          // embed it, otherwise we need an iframe
-          // to enable the LTI launch.
-          String markup = null;
+        // If the selected attachment is an image, we'll assume it's public and the user wants to
+        // embed it, otherwise we need an iframe
+        // to enable the LTI launch.
+        String markup = null;
 
-          // Might be a cloud attachment..
-          final IAttachment attachment = linkInfo.getResourceAttachment();
-          if (attachment != null && attachment.getAttachmentType() == AttachmentType.FILE) {
-            final String mimeType =
-                mimeTypeService.getMimeEntryForAttachment((Attachment) attachment);
-            if (mimeType != null) {
-              if (mimeType.startsWith("image/")) {
-                markup = "<img src=\"" + link.getUrl() + "\" alt=\"" + link.getName() + "\">";
-              }
+        // Might be a cloud attachment..
+        final IAttachment attachment = linkInfo.getResourceAttachment();
+        if (attachment != null && attachment.getAttachmentType() == AttachmentType.FILE) {
+          final String mimeType =
+              mimeTypeService.getMimeEntryForAttachment((Attachment) attachment);
+          if (mimeType != null) {
+            if (mimeType.startsWith("image/")) {
+              markup = "<img src=\"" + link.getUrl() + "\" alt=\"" + link.getName() + "\">";
             }
           }
-
-          if (markup == null) {
-            markup = linkMarkup(connector, courseId, link);
-          }
-
-          finalUrl = nakedUrl + "?content=" + URLUtils.urlEncode(markup);
-        } else {
-          // QUICKLINK PLUGIN
-
-          // Null module ID here is OK, since we aren't creating a topic and the redirection in the
-          // Brightspace UI handles that.
-          final BrightspaceQuicklink ql =
-              brightspaceService.addQuicklink(
-                  connector, courseId, null, link, TopicCreationOption.NONE);
-          finalUrl =
-              nakedUrl
-                  + "?quicklink="
-                  + URLUtils.urlEncode(ql.getPublicUrl())
-                  + "&title="
-                  + URLUtils.urlEncode(resource.getTitle())
-                  + "&target=NewWindow";
         }
 
-        session.clearResources();
-        info.forwardToUrl(finalUrl);
+        if (markup == null) {
+          markup = linkMarkup(connector, courseId, link);
+        }
+
+        finalUrl = nakedUrl + "?content=" + URLUtils.urlEncode(markup);
       } else {
-        final String courseId = session.getStructure().getId();
+        // QUICKLINK PLUGIN
 
-        // add resources via REST
-        final Collection<SelectedResource> selectedResources = session.getSelectedResources();
-        for (SelectedResource resource : selectedResources) {
-          final IItem<?> item = getItemForResource(resource);
-          final String moduleId = resource.getKey().getFolderId();
-
-          final LmsLink link =
-              getLinkForResource(
-                      info,
-                      createViewableItem(item, resource),
-                      resource,
-                      false,
-                      session.isAttachmentUuidUrls())
-                  .getLmsLink();
-          brightspaceService.addQuicklink(
-              connector, courseId, moduleId, link, TopicCreationOption.CREATE);
-        }
-        final int count = selectedResources.size();
-
-        session.clearResources();
-        if (BrightspaceSignon.SESSION_TYPE_COURSEBUILDER.equals(sessionType)) {
-          final String launchPresentationReturnUrl = data.getLaunchPresentationReturnUrl();
-          info.forwardToUrl(launchPresentationReturnUrl);
-        } else {
-          // provide receipt and stay where we are
-          receiptService.setReceipt(new PluralKeyLabel(KEY_RECEIPT_ADDED, count));
-        }
+        // Null module ID here is OK, since we aren't creating a topic and the redirection in the
+        // Brightspace UI handles that.
+        final BrightspaceQuicklink ql =
+            brightspaceService.addQuicklink(
+                connector, courseId, null, link, TopicCreationOption.NONE);
+        finalUrl =
+            nakedUrl
+                + "?quicklink="
+                + URLUtils.urlEncode(ql.getPublicUrl())
+                + "&title="
+                + URLUtils.urlEncode(resource.getTitle())
+                + "&target=NewWindow";
       }
 
-      return false;
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
-    }
-  }
+      session.clearResources();
+      info.forwardToUrl(finalUrl);
+    } else {
+      final String courseId = session.getStructure().getId();
 
-  //	private String iframeMarkup(Connector connector, String courseId, LmsLink link)
-  //	{
-  //		return "<iframe src=\"" + mangledQuicklink(connector, courseId, link, true)
-  //			+ "\" width=\"1024\" height=\"800\"></iframe>";
-  //	}
+      // add resources via REST
+      final Collection<SelectedResource> selectedResources = session.getSelectedResources();
+      for (SelectedResource resource : selectedResources) {
+        final IItem<?> item = getItemForResource(resource);
+        final String moduleId = resource.getKey().getFolderId();
+
+        final LmsLink link =
+            getLinkForResource(
+                    info,
+                    createViewableItem(item, resource),
+                    resource,
+                    false,
+                    session.isAttachmentUuidUrls())
+                .getLmsLink();
+        brightspaceService.addQuicklink(
+            connector, courseId, moduleId, link, TopicCreationOption.CREATE);
+      }
+      final int count = selectedResources.size();
+
+      session.clearResources();
+      if (BrightspaceSignon.SESSION_TYPE_COURSEBUILDER.equals(sessionType)) {
+        final String launchPresentationReturnUrl = data.getLaunchPresentationReturnUrl();
+        info.forwardToUrl(launchPresentationReturnUrl);
+      } else {
+        // provide receipt and stay where we are
+        receiptService.setReceipt(new PluralKeyLabel(KEY_RECEIPT_ADDED, count));
+      }
+    }
+
+    return false;
+  }
 
   private String linkMarkup(Connector connector, String courseId, LmsLink link) {
     return "<a href=\""

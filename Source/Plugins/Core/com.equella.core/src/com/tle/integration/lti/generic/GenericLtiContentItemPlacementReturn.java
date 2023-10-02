@@ -21,7 +21,6 @@ package com.tle.integration.lti.generic;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.client.util.Throwables;
 import com.tle.beans.item.IItem;
 import com.tle.beans.item.ItemId;
 import com.tle.common.Check;
@@ -162,7 +161,7 @@ public class GenericLtiContentItemPlacementReturn extends AbstractPrototypeSecti
     try {
       return mapper.writeValueAsString(selection);
     } catch (JsonProcessingException ex) {
-      throw Throwables.propagate(ex);
+      throw new RuntimeException(ex);
     }
   }
 

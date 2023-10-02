@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { stringify } from 'query-string';
-import { Literal, Union } from 'runtypes';
 import { GET, HEAD, POST } from './AxiosInstance';
 import type { i18nString, ItemStatus } from './Common';
 import { SearchResultCodec, SearchResultItemRawCodec } from './gen/Search';
@@ -28,17 +27,6 @@ import { convertDateFields, validate } from './Utils';
  */
 export type Must = [string, string[]];
 
-export const SortOrderRunTypes = Union(
-  Literal('rank'),
-  Literal('datemodified'),
-  Literal('datecreated'),
-  Literal('name'),
-  Literal('rating'),
-  Literal('task_lastaction'),
-  Literal('task_submitted')
-);
-
-// todo: fix this type alias which is not in sync with the runtype. Jira ticket: OEQ-1438
 export type SortOrder =
   | 'rank'
   | 'datemodified'

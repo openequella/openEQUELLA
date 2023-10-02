@@ -18,7 +18,7 @@
 
 package com.dytech.common.io;
 
-import com.google.common.base.Throwables;
+import com.google.common.base.VerifyException;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import java.io.File;
@@ -46,18 +46,13 @@ import org.slf4j.LoggerFactory;
 public final class FileUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(FileUtils.class);
 
-  /**
-   * Use delete(Path f) instead
-   *
-   * @param f
-   * @throws IOException
-   */
+  /** @deprecated Use delete(Path f) instead */
   @Deprecated
   public static boolean delete(File f) {
     try {
       return delete(f.toPath(), null, false);
     } catch (IOException io) {
-      // Can't happen
+      // Can't happen due to failOnError=false
       return false;
     }
   }
@@ -66,7 +61,7 @@ public final class FileUtils {
     try {
       return delete(f, null, false);
     } catch (IOException io) {
-      // Can't happen
+      // Can't happen due to failOnError=false
       return false;
     }
   }
@@ -75,7 +70,7 @@ public final class FileUtils {
     try {
       return delete(f, callback, false);
     } catch (IOException io) {
-      // Can't happen
+      // Can't happen due to failOnError=false
       return false;
     }
   }
@@ -97,15 +92,9 @@ public final class FileUtils {
         final DeleteVisitor visitor = new DeleteVisitor(callback);
         Files.walkFileTree(f, EnumSet.noneOf(FileVisitOption.class), Integer.MAX_VALUE, visitor);
         return visitor.isSuccess();
-      } catch (IOException io) {
-        if (failOnError) {
-          throw io;
-        }
-        LOGGER.error("Failed to walk file tree for " + f.toString(), io);
-        return false;
       } catch (Exception e) {
         if (failOnError) {
-          throw Throwables.propagate(e);
+          throwErrorOnDelete(e);
         }
         LOGGER.error("Failed to walk file tree for " + f.toString(), e);
         return false;
@@ -115,20 +104,21 @@ public final class FileUtils {
         LOGGER.debug("Deleting file " + f.toString());
         Files.delete(f);
         return true;
-      } catch (IOException io) {
-        if (failOnError) {
-          throw io;
-        }
-        LOGGER.warn("Failed to delete file " + f.toString(), io);
-        return false;
       } catch (Exception e) {
         if (failOnError) {
-          throw Throwables.propagate(e);
+          throwErrorOnDelete(e);
         }
         LOGGER.error("Failed to delete file " + f.toString(), e);
         return false;
       }
     }
+  }
+
+  private static void throwErrorOnDelete(Exception e) throws IOException {
+    if (e instanceof IOException) {
+      throw (IOException) e;
+    }
+    throw new VerifyException(e);
   }
 
   private static int getTreeDepth(String pattern) {
@@ -205,21 +195,6 @@ public final class FileUtils {
       throw new RuntimeException("Error walking file tree for " + dirs.toString(), io);
     }
     return results;
-  }
-
-  public static int oldCountFiles(File file) {
-    int current = 0;
-    if (file.isDirectory()) {
-      File[] fileList = file.listFiles();
-      for (File element : fileList) {
-        if (element.isDirectory()) {
-          current += oldCountFiles(element);
-        } else {
-          current++;
-        }
-      }
-    }
-    return current + 1;
   }
 
   public static long countFiles(Path file) {

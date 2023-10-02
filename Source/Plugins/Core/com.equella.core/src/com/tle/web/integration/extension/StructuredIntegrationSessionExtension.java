@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Throwables;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.IItem;
@@ -68,7 +67,7 @@ public class StructuredIntegrationSessionExtension implements IntegrationSession
       try {
         structureNode = (ObjectNode) mapper.readTree(structureJson);
       } catch (IOException e) {
-        throw Throwables.propagate(e);
+        throw new RuntimeException(e);
       }
       final TargetStructure struct = session.getStructure();
       struct.putAttribute(KEY_COURSE_CODE, nodeValue(structureNode, "code", null));

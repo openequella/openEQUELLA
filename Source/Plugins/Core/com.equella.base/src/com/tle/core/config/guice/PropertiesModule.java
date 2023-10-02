@@ -19,7 +19,6 @@
 package com.tle.core.config.guice;
 
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -40,7 +39,7 @@ public abstract class PropertiesModule extends AbstractModule {
   protected static final LoadingCache<String, Properties> propertiesCache =
       CacheBuilder.newBuilder()
           .build(
-              new CacheLoader<String, Properties>() {
+              new CacheLoader<>() {
                 @Override
                 public Properties load(String filename) {
                   try (InputStream propStream =
@@ -51,7 +50,7 @@ public abstract class PropertiesModule extends AbstractModule {
                     }
                     return newProperties;
                   } catch (IOException e) {
-                    throw Throwables.propagate(e);
+                    throw new RuntimeException(e);
                   }
                 }
               });
@@ -134,7 +133,7 @@ public abstract class PropertiesModule extends AbstractModule {
     Boolean bindVal = !Check.isEmpty(value) ? Boolean.valueOf(value) : defaultValue;
     if (bindVal != null) {
       // actually important that new Boolean() is used (on this version of guice anyway)
-      bind(Boolean.class).annotatedWith(Names.named(property)).toInstance(new Boolean(bindVal));
+      bind(Boolean.class).annotatedWith(Names.named(property)).toInstance(Boolean.valueOf(bindVal));
     }
   }
 
@@ -168,12 +167,17 @@ public abstract class PropertiesModule extends AbstractModule {
       try {
         bind(type)
             .annotatedWith(Names.named(property))
-            .toInstance(type.cast(getClass().getClassLoader().loadClass(value).newInstance()));
+            .toInstance(
+                type.cast(
+                    getClass()
+                        .getClassLoader()
+                        .loadClass(value)
+                        .getDeclaredConstructor()
+                        .newInstance()));
       }
       // In the interests of diagnostics, we'll allow an explicit catch of
       // generic exception
-      catch (Exception e) // NOSONAR
-      {
+      catch (Exception e) {
         throw new ProvisionException("Class not found in property: " + property);
       }
     }

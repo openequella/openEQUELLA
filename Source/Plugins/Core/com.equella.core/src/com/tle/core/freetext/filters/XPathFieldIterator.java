@@ -22,13 +22,14 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.index.MultiTerms;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.util.BytesRef;
 
 @SuppressWarnings("nls")
+/** Iterates over Lucene terms for the provided field which typically is in the format of XPATH. */
 public class XPathFieldIterator implements Iterator<Term>, Iterable<Term> {
   private final String field;
 
@@ -37,17 +38,16 @@ public class XPathFieldIterator implements Iterator<Term>, Iterable<Term> {
 
   private Pattern pattern;
 
-  public XPathFieldIterator(IndexReader reader, String field, String start) throws IOException {
-
+  public XPathFieldIterator(IndexReader reader, String field) throws IOException {
     int hasIndex = field.indexOf('[');
     if (hasIndex >= 0) {
       pattern = Pattern.compile(field.replaceAll("\\[\\]", "(\\\\[\\\\d*\\\\])?") + "/\\$XPATH\\$");
       field = field.substring(0, hasIndex);
     }
 
-    Terms terms = MultiFields.getTerms(reader, field);
+    Terms terms = MultiTerms.getTerms(reader, field);
     if (terms != null) {
-      enumerator = terms.iterator(null);
+      enumerator = terms.iterator();
       current = new Term(field, new BytesRef(enumerator.next().utf8ToString()));
     }
 

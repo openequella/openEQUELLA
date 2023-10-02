@@ -55,7 +55,8 @@ public abstract class AbstractListBirtType extends AbstractBirtType {
     List<?> errors = paramTask.getErrors();
     for (Object o : errors) {
       if (o instanceof Throwable) {
-        throw Throwables.propagate((Throwable) o);
+        Throwables.throwIfUnchecked((Throwable) o);
+        throw new RuntimeException((Throwable) o);
       }
       throw new RuntimeException("An unknown error occurred");
     }

@@ -27,7 +27,7 @@ import {
 import type { SelectedCategories } from "../../../../tsrc/modules/SearchFacetsModule";
 import { CategorySelector } from "../../../../tsrc/search/components/CategorySelector";
 import * as CategorySelectorMock from "../../../../__mocks__/CategorySelector.mock";
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import { queryMuiButtonByText } from "../../MuiQueries";
 
@@ -51,13 +51,13 @@ describe("<CategorySelector />", () => {
       <CategorySelector
         classifications={CategorySelectorMock.classifications}
         onSelectedCategoriesChange={onSelectedCategoriesChange}
-      />
+      />,
     );
 
   // Return a 'li' that represents a Classification.
   const getClassificationByName = (
     container: HTMLElement,
-    name: string
+    name: string,
   ): HTMLElement => {
     // All needed information of a Classification is contained inside a 'li'.
     const classification = queryByText(container, name)?.closest("li");
@@ -86,15 +86,15 @@ describe("<CategorySelector />", () => {
     expect(
       queryMuiButtonByText(
         getClassificationByName(page.container, CITY),
-        SHOW_MORE
-      )
+        SHOW_MORE,
+      ),
     ).toBeInTheDocument();
     // Language does not have more categories to show.
     expect(
       queryMuiButtonByText(
         getClassificationByName(page.container, LANGUAGE),
-        SHOW_MORE
-      )
+        SHOW_MORE,
+      ),
     ).toBeNull();
   });
 
@@ -124,7 +124,7 @@ describe("<CategorySelector />", () => {
     const hobart = getByText(page.container, HOBART, { selector: "p" });
     await userEvent.click(hobart);
     expect(onSelectedCategoriesChange).toHaveBeenLastCalledWith(
-      selectedCategories
+      selectedCategories,
     );
   });
 });

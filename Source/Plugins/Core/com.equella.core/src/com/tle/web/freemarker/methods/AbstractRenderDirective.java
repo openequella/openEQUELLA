@@ -18,7 +18,6 @@
 
 package com.tle.web.freemarker.methods;
 
-import com.google.common.base.Throwables;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.web.sections.SectionWriter;
@@ -89,7 +88,7 @@ public abstract class AbstractRenderDirective extends SectionsTemplateModel
                 + ").  Perhaps you named your section property the same as a method name?");
       }
     } catch (Exception e) {
-      throw Throwables.propagate(e);
+      throw (e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e));
     }
   }
 

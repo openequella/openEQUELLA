@@ -18,7 +18,6 @@
 
 package com.tle.common.beans.xml;
 
-import com.google.common.base.Throwables;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
@@ -53,14 +52,14 @@ public class IdOnlyConverter implements Converter {
     Class<? extends IdCloneable> idClass = context.getRequiredType();
     IdCloneable newIdType;
     try {
-      newIdType = idClass.newInstance();
+      newIdType = idClass.getDeclaredConstructor().newInstance();
       reader.moveDown();
       String value = reader.getValue();
       newIdType.setId(Long.parseLong(value));
       reader.moveUp();
       return newIdType;
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException(e);
     }
   }
 }

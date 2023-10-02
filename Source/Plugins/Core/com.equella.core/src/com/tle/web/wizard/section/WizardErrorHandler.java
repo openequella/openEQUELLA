@@ -50,7 +50,8 @@ public class WizardErrorHandler implements SectionsExceptionHandler {
       info.preventGET();
       info.renderNow();
     } else {
-      Throwables.propagate(exception);
+      Throwables.throwIfUnchecked(exception);
+      throw new RuntimeException(exception);
     }
   }
 }
